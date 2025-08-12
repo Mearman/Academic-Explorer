@@ -8,6 +8,17 @@ export default defineConfig({
     environment: 'jsdom',
     globals: true,
     setupFiles: ['./src/test/setup.ts'],
+    // Test file patterns for different test types
+    include: (() => {
+      const testType = process.env.TEST_TYPE;
+      if (testType) {
+        return [`**/*.${testType}.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}`];
+      }
+      return [
+        '**/*.{unit,component,integration,e2e}.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}',
+        '**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}', // Fallback for existing tests
+      ];
+    })(),
     coverage: {
       provider: 'v8',
       reporter: ['text', 'json', 'html'],
