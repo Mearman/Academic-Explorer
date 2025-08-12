@@ -250,13 +250,16 @@ export const filters = {
 
 // Export helper to combine multiple filters
 export function combineFilters(...filters: (QueryBuilder | string)[]): string {
-  const qb = new QueryBuilder();
+  const filterStrings: string[] = [];
+  
   filters.forEach(filter => {
     if (filter instanceof QueryBuilder) {
-      qb.and(filter);
-    } else if (filter) {
-      qb.and(filter);
+      const built = filter.build();
+      if (built) filterStrings.push(built);
+    } else if (filter && typeof filter === 'string') {
+      filterStrings.push(filter);
     }
   });
-  return qb.build();
+  
+  return filterStrings.join(',');
 }
