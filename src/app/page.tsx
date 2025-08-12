@@ -1,4 +1,6 @@
 import * as styles from './page.css';
+import { SearchBar } from '@/components/search-bar';
+import { SearchHistory } from '@/components/search-history';
 
 export default function Home() {
   return (
@@ -8,6 +10,9 @@ export default function Home() {
         <p className={styles.description}>
           Explore academic research and literature with powerful tools
         </p>
+        
+        <SearchBar />
+        <SearchHistory />
         
         <div className={styles.grid}>
           <div className={styles.card}>
