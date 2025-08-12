@@ -1,6 +1,7 @@
 import * as styles from './page.css';
 import { SearchBar } from '@/components/search-bar';
 import { SearchHistory } from '@/components/search-history';
+import { StorageManager } from '@/components/storage-manager';
 
 export default function Home() {
   return (
@@ -35,6 +36,8 @@ export default function Home() {
             <p>Organise and manage your research references</p>
           </div>
         </div>
+        
+        <StorageManager />
       </main>
     </div>
   );
