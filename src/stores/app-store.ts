@@ -64,7 +64,7 @@ export const useAppStore = create<AppState>()(
         
       updateSearchFilters: (filters) =>
         set((state) => {
-          state.searchFilters = { ...state.searchFilters, ...filters };
+          Object.assign(state.searchFilters, filters);
         }),
         
       clearSearchFilters: () =>
@@ -86,7 +86,7 @@ export const useAppStore = create<AppState>()(
         
       updatePreferences: (prefs) =>
         set((state) => {
-          state.preferences = { ...state.preferences, ...prefs };
+          Object.assign(state.preferences, prefs);
         }),
     })),
     {
