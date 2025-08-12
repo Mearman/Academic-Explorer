@@ -35,12 +35,15 @@ export function reconstructAbstract(invertedIndex?: Record<string, number[]>): s
 
 // Extract author names from work
 export function extractAuthorNames(work: Work): string[] {
+  if (!work.authorships) return [];
   return work.authorships.map(authorship => authorship.author.display_name);
 }
 
 // Extract institution names from work
 export function extractInstitutionNames(work: Work): string[] {
   const institutions = new Set<string>();
+  
+  if (!work.authorships) return [];
   
   work.authorships.forEach(authorship => {
     authorship.institutions.forEach(institution => {
@@ -54,7 +57,7 @@ export function extractInstitutionNames(work: Work): string[] {
 // Get best available URL for accessing a work
 export function getBestAccessUrl(work: Work): string | null {
   // First try OA URL
-  if (work.open_access.oa_url) {
+  if (work.open_access?.oa_url) {
     return work.open_access.oa_url;
   }
   
@@ -98,12 +101,14 @@ export function getBestAccessUrl(work: Work): string | null {
 
 // Format citation in various styles
 export interface CitationOptions {
-  style?: 'apa' | 'mla' | 'chicago' | 'harvard' | 'vancouver';
+  style?: 'apa' | 'mla' | 'chicago' | 'harvard' | 'vancouver' | 'bibtex';
   includeUrl?: boolean;
+  includeDoi?: boolean;
+  maxAuthors?: number;
 }
 
 export function formatCitation(work: Work, options: CitationOptions = {}): string {
-  const { style = 'apa', includeUrl = false } = options;
+  const { style = 'apa', includeUrl = false, includeDoi = false } = options;
   const authors = extractAuthorNames(work);
   const year = work.publication_year || 'n.d.';
   const title = work.display_name || 'Untitled';
@@ -166,7 +171,11 @@ export function formatCitation(work: Work, options: CitationOptions = {}): strin
       citation = `${authors.join(', ')} (${year}). ${title}.`;
   }
   
-  if (includeUrl && work.doi) {
+  if (includeDoi && work.doi) {
+    // Extract just the DOI part if it's a URL
+    const doi = work.doi.replace('https://doi.org/', '');
+    citation += ` https://doi.org/${doi}`;
+  } else if (includeUrl && work.doi) {
     citation += ` https://doi.org/${work.doi}`;
   }
   
@@ -209,16 +218,30 @@ function formatAuthorListMLA(authors: string[]): string {
 
 // Calculate collaboration metrics
 export interface CollaborationMetrics {
-  totalAuthors: number;
-  totalInstitutions: number;
-  totalCountries: number;
-  internationalCollaboration: boolean;
-  institutionalCollaboration: boolean;
+  authorCount: number;
+  institutionCount: number;
+  countryCount: number;
+  isInternational: boolean;
+  isInterInstitutional: boolean;
+  isSingleAuthor: boolean;
   averageAuthorsPerInstitution: number;
   correspondingAuthors: string[];
 }
 
 export function calculateCollaborationMetrics(work: Work): CollaborationMetrics {
+  if (!work.authorships) {
+    return {
+      authorCount: 0,
+      institutionCount: 0,
+      countryCount: 0,
+      isInternational: false,
+      isInterInstitutional: false,
+      isSingleAuthor: false,
+      averageAuthorsPerInstitution: 0,
+      correspondingAuthors: [],
+    };
+  }
+
   const institutions = new Set<string>();
   const countries = new Set<string>();
   const correspondingAuthors: string[] = [];
@@ -228,26 +251,33 @@ export function calculateCollaborationMetrics(work: Work): CollaborationMetrics 
       correspondingAuthors.push(authorship.author.display_name);
     }
     
-    authorship.institutions.forEach(inst => {
-      institutions.add(inst.id);
-      if (inst.country_code) {
-        countries.add(inst.country_code);
-      }
-    });
+    if (authorship.institutions) {
+      authorship.institutions.forEach(inst => {
+        institutions.add(inst.id);
+        if (inst.country_code) {
+          countries.add(inst.country_code);
+        }
+      });
+    }
     
     authorship.countries?.forEach(country => {
       countries.add(country);
     });
   });
   
+  // Use Work's distinct counts if available
+  const institutionCount = work.institutions_distinct_count ?? institutions.size;
+  const countryCount = work.countries_distinct_count ?? countries.size;
+  
   return {
-    totalAuthors: work.authorships.length,
-    totalInstitutions: institutions.size,
-    totalCountries: countries.size,
-    internationalCollaboration: countries.size > 1,
-    institutionalCollaboration: institutions.size > 1,
-    averageAuthorsPerInstitution: institutions.size > 0 
-      ? work.authorships.length / institutions.size 
+    authorCount: work.authorships.length,
+    institutionCount,
+    countryCount,
+    isInternational: countryCount > 1,
+    isInterInstitutional: institutionCount > 1,
+    isSingleAuthor: work.authorships.length === 1,
+    averageAuthorsPerInstitution: institutionCount > 0 
+      ? work.authorships.length / institutionCount 
       : 0,
     correspondingAuthors,
   };
@@ -257,9 +287,13 @@ export function calculateCollaborationMetrics(work: Work): CollaborationMetrics 
 export function extractAllKeywords(work: Work): string[] {
   const keywords = new Set<string>();
   
-  // Add direct keywords
+  // Add direct keywords (can be strings or objects)
   work.keywords?.forEach(kw => {
-    keywords.add(kw.display_name);
+    if (typeof kw === 'string') {
+      keywords.add(kw);
+    } else if (kw && typeof kw === 'object' && 'display_name' in kw) {
+      keywords.add((kw as any).display_name);
+    }
   });
   
   // Add topic keywords
@@ -278,16 +312,19 @@ export function extractAllKeywords(work: Work): string[] {
 // Group works by various criteria
 export function groupWorksBy<K extends keyof Work>(
   works: Work[],
-  key: K
-): Map<Work[K], Work[]> {
-  const groups = new Map<Work[K], Work[]>();
+  key: K,
+  groupTransform?: (value: Work[K]) => string
+): Record<string, Work[]> {
+  const groups: Record<string, Work[]> = {};
   
   works.forEach(work => {
     const value = work[key];
-    if (!groups.has(value)) {
-      groups.set(value, []);
+    const groupKey = groupTransform ? groupTransform(value) : String(value);
+    
+    if (!groups[groupKey]) {
+      groups[groupKey] = [];
     }
-    groups.get(value)!.push(work);
+    groups[groupKey].push(work);
   });
   
   return groups;
@@ -295,60 +332,37 @@ export function groupWorksBy<K extends keyof Work>(
 
 // Calculate temporal distribution
 export interface TemporalDistribution {
-  yearlyDistribution: Map<number, number>;
-  monthlyDistribution?: Map<string, number>;
-  range: {
+  years: number[];
+  counts: Record<number, number>;
+  totalWorks: number;
+  citationsByYear?: Record<number, number>;
+  range?: {
     min: number;
     max: number;
   };
-  median: number;
-  mode: number;
 }
 
 export function calculateTemporalDistribution(works: Work[]): TemporalDistribution {
-  const yearlyDistribution = new Map<number, number>();
-  const monthlyDistribution = new Map<string, number>();
-  const years: number[] = [];
+  const counts: Record<number, number> = {};
+  const yearSet = new Set<number>();
   
   works.forEach(work => {
     if (work.publication_year) {
-      years.push(work.publication_year);
-      yearlyDistribution.set(
-        work.publication_year,
-        (yearlyDistribution.get(work.publication_year) || 0) + 1
-      );
-    }
-    
-    if (work.publication_date) {
-      const month = work.publication_date.substring(0, 7); // YYYY-MM
-      monthlyDistribution.set(
-        month,
-        (monthlyDistribution.get(month) || 0) + 1
-      );
+      yearSet.add(work.publication_year);
+      counts[work.publication_year] = (counts[work.publication_year] || 0) + 1;
     }
   });
   
-  years.sort((a, b) => a - b);
-  
-  // Calculate mode (most frequent year)
-  let mode = 0;
-  let maxCount = 0;
-  yearlyDistribution.forEach((count, year) => {
-    if (count > maxCount) {
-      maxCount = count;
-      mode = year;
-    }
-  });
+  const years = Array.from(yearSet).sort((a, b) => a - b);
   
   return {
-    yearlyDistribution,
-    monthlyDistribution: monthlyDistribution.size > 0 ? monthlyDistribution : undefined,
-    range: {
-      min: Math.min(...years),
-      max: Math.max(...years),
-    },
-    median: years[Math.floor(years.length / 2)] || 0,
-    mode,
+    years,
+    counts,
+    totalWorks: works.length,
+    range: years.length > 0 ? {
+      min: years[0],
+      max: years[years.length - 1],
+    } : undefined,
   };
 }
 
@@ -424,16 +438,17 @@ export function entitiesToCSV<T extends Record<string, unknown>>(
   
   const keys = fields || (Object.keys(entities[0]) as (keyof T)[]);
   
-  // Header row
-  const header = keys.map(key => `"${String(key)}"`).join(delimiter);
+  // Header row - simple format without quotes
+  const header = keys.map(key => String(key)).join(delimiter);
   
   // Data rows
   const rows = entities.map(entity => {
     return keys.map(key => {
       const value = entity[key];
       if (value === null || value === undefined) return '';
-      if (typeof value === 'object') return `"${JSON.stringify(value)}"`;
-      if (typeof value === 'string' && (value.includes(delimiter) || value.includes('"'))) {
+      if (typeof value === 'object') return JSON.stringify(value);
+      // Only quote if contains delimiter or quotes
+      if (typeof value === 'string' && (value.includes(delimiter) || value.includes('"') || value.includes('\n'))) {
         return `"${value.replace(/"/g, '""')}"`;
       }
       return String(value);

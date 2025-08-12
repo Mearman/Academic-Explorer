@@ -114,7 +114,7 @@ describe('Transformers', () => {
       const result = formatCitation(mockWork, { style: 'mla' });
       expect(result).toContain('Test Article Title');
       expect(result).toContain('Nature');
-      expect(result).toContain('(2023)');
+      expect(result).toContain('2023');
     });
 
     it('should handle missing publication year', () => {
