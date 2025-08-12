@@ -10,6 +10,11 @@ export * from './utils';
 
 // Re-export commonly used items for convenience
 export { OpenAlexClient, openAlex, OpenAlexError } from './client';
+
+// Export cached client
+export { cachedClient, createCachedClient, clearCache, getCacheStats, warmupCache } from './cached-client';
+export { CachedOpenAlexClient, cachedOpenAlex } from './client-with-cache';
+export { CacheInterceptor, withCache } from './utils/cache-interceptor';
 export { query, filters, combineFilters } from './utils/query-builder';
 export { paginate, Paginator, BatchProcessor } from './utils/pagination';
 export { 
