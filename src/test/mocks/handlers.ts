@@ -85,6 +85,28 @@ export const handlers = [
     });
   }),
 
+  http.get(`${API_BASE}/autocomplete/authors`, ({ request }) => {
+    const url = new URL(request.url);
+    const query = url.searchParams.get('q');
+    
+    return HttpResponse.json({
+      meta: {
+        count: 1,
+        db_response_time_ms: 10,
+      },
+      results: [
+        {
+          id: 'https://openalex.org/A5000000001',
+          display_name: query ? `${query} Doe` : 'John Doe',
+          hint: 'Harvard University',
+          cited_by_count: 500,
+          works_count: 50,
+          entity_type: 'author',
+        },
+      ],
+    });
+  }),
+
   // Error scenarios
   http.get(`${API_BASE}/error/404`, () => {
     return HttpResponse.json(
@@ -129,8 +151,9 @@ export const errorHandlers = {
   }),
 
   timeout: http.get(`${API_BASE}/*`, async () => {
-    await new Promise(resolve => setTimeout(resolve, 100000));
-    return HttpResponse.json({});
+    // Simulate a timeout by returning an error after a delay
+    await new Promise(resolve => setTimeout(resolve, 150));
+    return new HttpResponse(null, { status: 408, statusText: 'Request Timeout' });
   }),
 
   emptyResponse: http.get(`${API_BASE}/works`, () => {
