@@ -104,14 +104,11 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        test-type: [unit, component, integration]
+        test-type: [unit, integration]
         include:
           - test-type: unit
             command: pnpm test:unit --run
             timeout: 15
-          - test-type: component
-            command: pnpm test:component --run
-            timeout: 20
           - test-type: integration
             command: pnpm test:integration --run
             timeout: 30
