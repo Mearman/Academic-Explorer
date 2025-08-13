@@ -23,9 +23,9 @@ export default defineConfig({
     // Global test configuration
     globals: true,
     setupFiles: ['./src/test/setup.ts'],
-    // Default coverage for all tests
+    // Default coverage for all tests - disable globally to prevent memory/inspector issues
     coverage: {
-      enabled: true,
+      enabled: false,
       provider: 'v8',
       reporter: process.env.CI === 'true' ? ['text'] : ['text', 'html'],
       exclude: [
@@ -45,6 +45,10 @@ export default defineConfig({
           name: 'unit',
           include: ['**/*.unit.test.{js,ts,jsx,tsx}'],
           environment: 'jsdom',
+          // Disable coverage for unit tests to prevent memory issues
+          coverage: {
+            enabled: false,
+          },
           // Optimized for unit tests to prevent memory issues
           pool: 'forks',
           poolOptions: {
@@ -61,6 +65,8 @@ export default defineConfig({
           testTimeout: process.env.CI === 'true' ? 30000 : 15000,
           hookTimeout: 5000,
           teardownTimeout: 5000,
+          // Additional memory optimization
+          logHeapUsage: true,
         },
       },
       {
@@ -80,6 +86,10 @@ export default defineConfig({
           name: 'integration',
           include: ['**/*.integration.test.{js,ts,jsx,tsx}'],
           environment: 'node',
+          // Disable coverage for integration tests to prevent inspector errors
+          coverage: {
+            enabled: false,
+          },
           testTimeout: process.env.CI === 'true' ? 60000 : 45000,
           hookTimeout: 15000,
           teardownTimeout: 15000,
