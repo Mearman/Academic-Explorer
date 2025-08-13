@@ -5,7 +5,7 @@ import { EntityHeader, EntityHeaderSkeleton } from '../organisms/entity-header';
 import { ErrorMessage } from '../atoms/error-message';
 import { LoadingSkeleton } from '../atoms/loading-skeleton';
 import { Icon } from '../atoms/icon';
-import * as styles from './entity-page-template.css';
+import * as styles from './entity-page-template.css.ts';
 import type { EntityPageTemplateProps } from '../types';
 
 export const EntityPageTemplate = forwardRef<HTMLDivElement, EntityPageTemplateProps>(
