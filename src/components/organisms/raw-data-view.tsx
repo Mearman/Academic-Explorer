@@ -13,9 +13,10 @@ import {
   Paper,
   Badge,
   ActionIcon,
-  Notification
+  Notification,
+  Switch
 } from '@mantine/core';
-import { IconCode, IconCopy, IconCheck, IconDownload, IconEye } from '@tabler/icons-react';
+import { IconCode, IconCopy, IconCheck, IconDownload, IconEye, IconTextWrap } from '@tabler/icons-react';
 
 interface RawDataViewProps {
   /** The raw data object to display */
@@ -33,6 +34,40 @@ interface RawDataViewProps {
 }
 
 /**
+ * Custom JSON replacer to handle long strings and improve readability
+ */
+function jsonReplacer(key: string, value: unknown): unknown {
+  if (typeof value === 'string') {
+    // Split very long strings into multiple lines for better readability
+    if (value.length > 100) {
+      // Break at word boundaries if possible, otherwise at character limit
+      const chunks = [];
+      let remaining = value;
+      
+      while (remaining.length > 80) {
+        let breakPoint = 80;
+        // Try to find a good break point (space, slash, etc.)
+        const possibleBreaks = [' ', '/', '&', '?', '=', '.', ',', ';'];
+        for (const breakChar of possibleBreaks) {
+          const lastBreak = remaining.lastIndexOf(breakChar, 80);
+          if (lastBreak > 60) { // Only use if it's not too early
+            breakPoint = lastBreak + 1;
+            break;
+          }
+        }
+        
+        chunks.push(remaining.slice(0, breakPoint));
+        remaining = remaining.slice(breakPoint);
+      }
+      if (remaining) chunks.push(remaining);
+      
+      return chunks.join('\n    '); // Add indentation for continuation lines
+    }
+  }
+  return value;
+}
+
+/**
  * Component to display raw API data with copy and download functionality
  */
 export function RawDataView({ 
@@ -45,9 +80,18 @@ export function RawDataView({
 }: RawDataViewProps) {
   const [copied, setCopied] = useState(false);
   const [activeTab, setActiveTab] = useState<string | null>('formatted');
+  const [wordWrap, setWordWrap] = useState(true);
+  const [prettyPrint, setPrettyPrint] = useState(true);
   
-  // Format JSON with proper indentation
-  const formattedJson = JSON.stringify(data, null, 2);
+  // Format JSON with different options
+  const formatJson = (useReplacer: boolean, spaces: number) => {
+    if (useReplacer) {
+      return JSON.stringify(data, jsonReplacer, spaces);
+    }
+    return JSON.stringify(data, null, spaces);
+  };
+  
+  const formattedJson = formatJson(prettyPrint, 2);
   const compactJson = JSON.stringify(data);
   
   // Get data size and basic stats
@@ -139,6 +183,28 @@ export function RawDataView({
                 )}
               </Group>
             </Group>
+
+            {/* Formatting Controls */}
+            <Group gap="md" bg="gray.0" p="sm" style={{ borderRadius: '4px' }}>
+              <Group gap="xs">
+                <IconTextWrap size={16} />
+                <Switch
+                  size="sm"
+                  label="Word Wrap"
+                  checked={wordWrap}
+                  onChange={(event) => setWordWrap(event.currentTarget.checked)}
+                />
+              </Group>
+              <Group gap="xs">
+                <Switch
+                  size="sm"
+                  label="Smart Line Breaking"
+                  checked={prettyPrint}
+                  onChange={(event) => setPrettyPrint(event.currentTarget.checked)}
+                  description="Break long strings at word boundaries"
+                />
+              </Group>
+            </Group>
             
             <Paper withBorder>
               <ScrollArea h={maxHeight} scrollbarSize={6}>
@@ -147,9 +213,12 @@ export function RawDataView({
                   p="md"
                   style={{ 
                     fontSize: '12px',
-                    lineHeight: '1.4',
-                    fontFamily: 'Monaco, Menlo, "Ubuntu Mono", monospace',
-                    whiteSpace: 'pre'
+                    lineHeight: '1.5',
+                    fontFamily: 'Monaco, Menlo, "Ubuntu Mono", "SF Mono", "Consolas", monospace',
+                    whiteSpace: wordWrap ? 'pre-wrap' : 'pre',
+                    wordBreak: wordWrap ? 'break-word' : 'normal',
+                    overflowWrap: wordWrap ? 'break-word' : 'normal',
+                    maxWidth: '100%',
                   }}
                 >
                   {formattedJson}
@@ -186,6 +255,20 @@ export function RawDataView({
                 )}
               </Group>
             </Group>
+
+            {/* Compact View Controls */}
+            <Group gap="md" bg="gray.0" p="sm" style={{ borderRadius: '4px' }}>
+              <Text size="sm" fw={500}>Formatting Options:</Text>
+              <Group gap="xs">
+                <IconTextWrap size={16} />
+                <Switch
+                  size="sm"
+                  label="Word Wrap"
+                  checked={wordWrap}
+                  onChange={(event) => setWordWrap(event.currentTarget.checked)}
+                />
+              </Group>
+            </Group>
             
             <Paper withBorder>
               <ScrollArea h={maxHeight} scrollbarSize={6}>
@@ -194,9 +277,12 @@ export function RawDataView({
                   p="md"
                   style={{ 
                     fontSize: '12px',
-                    lineHeight: '1.4',
-                    fontFamily: 'Monaco, Menlo, "Ubuntu Mono", monospace',
-                    wordBreak: 'break-all'
+                    lineHeight: '1.5',
+                    fontFamily: 'Monaco, Menlo, "Ubuntu Mono", "SF Mono", "Consolas", monospace',
+                    whiteSpace: wordWrap ? 'pre-wrap' : 'pre',
+                    wordBreak: wordWrap ? 'break-word' : 'break-all',
+                    overflowWrap: wordWrap ? 'break-word' : 'normal',
+                    maxWidth: '100%',
                   }}
                 >
                   {compactJson}
