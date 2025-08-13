@@ -52,6 +52,7 @@
     "happy-dom": "^18.0.1",
     "jsdom": "^26.1.0",
     "msw": "^2.10.4",
+    "playwright": "^1.54.2",
     "typescript": "^5",
     "typescript-eslint": "^8.39.1",
     "undici": "^7.13.0",

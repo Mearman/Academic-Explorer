@@ -8,8 +8,10 @@ import {
   EntitySection,
   Badge,
   MetricBadge,
-  EntityErrorBoundary
+  EntityErrorBoundary,
+  Icon
 } from '@/components';
+import * as styles from './works.$id.css';
 
 function WorkDisplay({ work }: { work: Work }) {
   // External links for the work
@@ -32,145 +34,131 @@ function WorkDisplay({ work }: { work: Work }) {
   ].filter(Boolean);
 
   return (
-    <EntityPageTemplate
-      entity={work}
-    >
-      {/* Key Metrics */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', gap: '16px', marginBottom: '32px' }}>
-        <MetricBadge
-          value={work.cited_by_count}
-          label="Citations"
-          variant="primary"
-          size="lg"
-        />
-        <MetricBadge
-          value={work.publication_year || 'N/A'}
-          label="Published"
-          variant="default"
-          size="lg"
-        />
-        <MetricBadge
-          value={work.authorships?.length || 0}
-          label="Authors"
-          variant="default"
-          size="lg"
-        />
-        <MetricBadge
-          value={work.open_access.is_oa ? 'Open' : 'Closed'}
-          label="Access"
-          variant={work.open_access.is_oa ? 'success' : 'warning'}
-          size="lg"
-        />
-      </div>
+    <EntityPageTemplate entity={work}>
+      <div className={styles.workContainer}>
+        {/* Enhanced Key Metrics */}
+        <div className={styles.metricsGrid}>
+          <MetricBadge
+            value={work.cited_by_count}
+            label="Citations"
+            variant="primary"
+            size="xl"
+          />
+          <MetricBadge
+            value={work.publication_year || 'N/A'}
+            label="Published"
+            variant="default"
+            size="xl"
+          />
+          <MetricBadge
+            value={work.authorships?.length || 0}
+            label="Authors"
+            variant="default"
+            size="xl"
+          />
+          <MetricBadge
+            value={work.open_access.is_oa ? 'Open Access' : 'Restricted'}
+            label="Access Status"
+            variant={work.open_access.is_oa ? 'success' : 'error'}
+            size="xl"
+          />
+        </div>
 
-      {/* Publication Details */}
-      <EntitySection title="Publication Details" icon="info">
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '16px' }}>
-          {work.primary_location?.source && (
-            <div>
-              <dt style={{ fontWeight: '500', marginBottom: '4px' }}>Source</dt>
-              <dd>{work.primary_location.source.display_name}</dd>
+        {/* Enhanced Publication Details */}
+        <EntitySection title="Publication Details" icon="info">
+          <div className={styles.detailsGrid}>
+            {work.primary_location?.source && (
+              <div className={styles.detailItem}>
+                <div className={styles.detailLabel}>Source Journal</div>
+                <div className={styles.detailValue}>{work.primary_location.source.display_name}</div>
+              </div>
+            )}
+            
+            {work.publication_date && (
+              <div className={styles.detailItem}>
+                <div className={styles.detailLabel}>Publication Date</div>
+                <div className={styles.detailValue}>{work.publication_date}</div>
+              </div>
+            )}
+            
+            {work.ids.doi && (
+              <div className={styles.detailItem}>
+                <div className={styles.detailLabel}>Digital Object Identifier</div>
+                <div className={styles.detailValue}>
+                  <a 
+                    href={`https://doi.org/${work.ids.doi}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className={styles.doiLink}
+                  >
+                    {work.ids.doi}
+                  </a>
+                </div>
+              </div>
+            )}
+            
+            {work.language && (
+              <div className={styles.detailItem}>
+                <div className={styles.detailLabel}>Language</div>
+                <div className={styles.detailValue}>{work.language}</div>
+              </div>
+            )}
+          </div>
+        </EntitySection>
+
+        {/* Enhanced Abstract */}
+        {work.abstract_inverted_index && (
+          <EntitySection title="Abstract" icon="document">
+            <div className={styles.abstractSection}>
+              <p className={styles.abstractText}>
+                <Icon name="info" size="sm" />
+                Abstract available in inverted index format. 
+                Full text reconstruction feature coming soon.
+              </p>
             </div>
-          )}
-          
-          {work.publication_date && (
-            <div>
-              <dt style={{ fontWeight: '500', marginBottom: '4px' }}>Publication Date</dt>
-              <dd>{work.publication_date}</dd>
+          </EntitySection>
+        )}
+
+        {/* Enhanced Topics */}
+        {work.topics && work.topics.length > 0 && (
+          <EntitySection title="Research Topics" icon="tag">
+            <div className={styles.topicsContainer}>
+              {work.topics.map((topic) => (
+                <Badge
+                  key={topic.id}
+                  variant="secondary"
+                  size="md"
+                >
+                  {topic.display_name}
+                </Badge>
+              ))}
             </div>
-          )}
-          
-          {work.ids.doi && (
-            <div>
-              <dt style={{ fontWeight: '500', marginBottom: '4px' }}>DOI</dt>
-              <dd>
-                <a 
-                  href={`https://doi.org/${work.ids.doi}`}
+          </EntitySection>
+        )}
+
+        {/* Enhanced External Links */}
+        <EntitySection title="Access & Resources" icon="link">
+          <div className={styles.externalLinksContainer}>
+            {externalLinks.map((link, index) => (
+              link && (
+                <a
+                  key={index}
+                  href={link.url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  style={{ color: 'var(--color-primary)', textDecoration: 'none' }}
+                  className={`${styles.externalLink} ${styles.linkVariants[link.type]}`}
                 >
-                  {work.ids.doi}
+                  <Icon 
+                    name={link.type === 'pdf' ? 'download' : link.type === 'publisher' ? 'external' : 'info'} 
+                    size="sm" 
+                  />
+                  {link.label}
                 </a>
-              </dd>
-            </div>
-          )}
-          
-          {work.language && (
-            <div>
-              <dt style={{ fontWeight: '500', marginBottom: '4px' }}>Language</dt>
-              <dd>{work.language}</dd>
-            </div>
-          )}
-        </div>
-      </EntitySection>
-
-      {/* Abstract */}
-      {work.abstract_inverted_index && (
-        <EntitySection title="Abstract" icon="document">
-          <p style={{ fontStyle: 'italic', opacity: 0.7 }}>
-            Abstract available (inverted index format). 
-            Implementation needed to reconstruct full text.
-          </p>
-        </EntitySection>
-      )}
-
-      {/* Topics */}
-      {work.topics && work.topics.length > 0 && (
-        <EntitySection title="Topics" icon="tag">
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
-            {work.topics.map((topic) => (
-              <Badge
-                key={topic.id}
-                variant="secondary"
-                size="sm"
-              >
-                {topic.display_name}
-              </Badge>
+              )
             ))}
           </div>
         </EntitySection>
-      )}
-
-      {/* External Links */}
-      <EntitySection title="External Links" icon="link">
-        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '12px' }}>
-          {externalLinks.map((link, index) => (
-            link && (
-              <a
-                key={index}
-                href={link.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                style={{
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  gap: '6px',
-                  padding: '8px 12px',
-                  backgroundColor: 'var(--color-card-background, #f8f9fa)',
-                  border: '1px solid var(--color-border, #e5e7eb)',
-                  borderRadius: '6px',
-                  textDecoration: 'none',
-                  color: 'var(--color-primary, #3b82f6)',
-                  fontSize: '14px',
-                  fontWeight: '500',
-                  transition: 'all 150ms ease',
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.backgroundColor = 'var(--color-primary, #3b82f6)';
-                  e.currentTarget.style.color = 'white';
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.backgroundColor = 'var(--color-card-background, #f8f9fa)';
-                  e.currentTarget.style.color = 'var(--color-primary, #3b82f6)';
-                }}
-              >
-                {link.label}
-              </a>
-            )
-          ))}
-        </div>
-      </EntitySection>
+      </div>
     </EntityPageTemplate>
   );
 }
