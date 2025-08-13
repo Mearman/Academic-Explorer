@@ -7,29 +7,6 @@
     <title>Academic Explorer</title>
     <meta name="description" content="Explore academic literature through the OpenAlex API. Discover researchers, publications, institutions, and more." />
     
-    <!-- GitHub Pages SPA redirect script -->
-    <script type="text/javascript">
-      // Single Page Application for GitHub Pages
-      // Check for redirected paths from 404.html
-      (function(l) {
-        if (l.search[1] === '/' || (l.search.length > 0 && decodeURIComponent(l.search).indexOf('/') === 1)) {
-          var searchParam = l.search.slice(1);
-          // Remove any trailing = characters from malformed URLs
-          searchParam = searchParam.replace(/=+$/, '');
-          var decoded = decodeURIComponent(searchParam).split('&').map(function(s) { 
-            return s.replace(/~and~/g, '&')
-          }).join('?');
-          
-          // Ensure we create a proper query parameter, not a path
-          // decoded should be like "/W2741809807", we want "?/W2741809807"
-          var finalPath = decoded.startsWith('/') ? '?' + decoded : '?/' + decoded;
-          
-          window.history.replaceState(null, null,
-              l.pathname + finalPath + l.hash
-          );
-        }
-      }(window.location))
-    </script>
   </head>
   <body>
     <div id="root"></div>

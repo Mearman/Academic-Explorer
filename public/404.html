@@ -1,29 +1,15 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="utf-8">
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.ico" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Academic Explorer</title>
-    <script type="text/javascript">
-        // Single Page Application SPA for GitHub Pages
-        // https://github.com/rafgraph/spa-github-pages
-        // 
-        // This script handles client-side routing for SPAs hosted on GitHub Pages
-        // by redirecting 404 errors to the main index.html with the path encoded
-        // in the URL search parameters
-
-        var pathSegments = 1; // GitHub Pages with repository name: /Academic-Explorer/
-        var l = window.location;
-        
-        l.replace(
-            l.protocol + '//' + l.hostname + (l.port ? ':' + l.port : '') +
-            '/' + l.pathname.split('/').slice(0, pathSegments + 1).join('/') + 
-            '/?/' + l.pathname.slice(1).split('/').slice(pathSegments).join('/').replace(/&/g, '~and~') +
-            (l.search ? '&' + l.search.slice(1).replace(/&/g, '~and~') : '') +
-            l.hash
-        );
-    </script>
+    <meta name="description" content="Explore academic literature through the OpenAlex API. Discover researchers, publications, institutions, and more." />
+    <script type="module" crossorigin src="/Academic-Explorer/assets/main-DGwJkwrp.js"></script>
+    <link rel="stylesheet" crossorigin href="/Academic-Explorer/assets/main-6kYn00ig.css">
 </head>
 <body>
-    <div>Redirecting...</div>
+    <div id="root"></div>
 </body>
 </html>
