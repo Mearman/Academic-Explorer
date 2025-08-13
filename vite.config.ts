@@ -14,7 +14,7 @@ export default defineConfig(({ command }) => ({
     // Custom plugin to copy built index.html to 404.html for GitHub Pages SPA routing
     {
       name: 'copy-index-to-404',
-      closeBundle() {
+      writeBundle() {
         try {
           copyFileSync('dist/index.html', 'dist/404.html');
           console.log('✓ Copied dist/index.html to dist/404.html for GitHub Pages SPA routing');
