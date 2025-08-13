@@ -310,3 +310,172 @@ export const mockAuthorsResponse: ApiResponse<Author> = {
   },
   results: [mockAuthor],
 };
+
+// Mock data for Geo endpoints
+export const mockContinent = {
+  id: 'https://openalex.org/continents/europe',
+  display_name: 'Europe',
+  wikidata: 'https://www.wikidata.org/wiki/Q46',
+  works_count: 15000000,
+  cited_by_count: 500000000,
+  countries_count: 44,
+  updated_date: '2024-01-01T00:00:00.000Z',
+  created_date: '2020-01-01T00:00:00.000Z',
+};
+
+export const mockRegion = {
+  id: 'https://openalex.org/regions/western-europe',
+  display_name: 'Western Europe',
+  wikidata: 'https://www.wikidata.org/wiki/Q27496',
+  works_count: 8000000,
+  cited_by_count: 300000000,
+  countries_count: 20,
+  updated_date: '2024-01-01T00:00:00.000Z',
+  created_date: '2020-01-01T00:00:00.000Z',
+};
+
+export const mockContinentsResponse = {
+  meta: {
+    count: 7,
+    db_response_time_ms: 15,
+    page: 1,
+    per_page: 25,
+  },
+  results: [
+    mockContinent,
+    {
+      id: 'https://openalex.org/continents/asia',
+      display_name: 'Asia',
+      wikidata: 'https://www.wikidata.org/wiki/Q48',
+      works_count: 20000000,
+      cited_by_count: 600000000,
+      countries_count: 48,
+      updated_date: '2024-01-01T00:00:00.000Z',
+      created_date: '2020-01-01T00:00:00.000Z',
+    },
+    {
+      id: 'https://openalex.org/continents/north-america',
+      display_name: 'North America',
+      wikidata: 'https://www.wikidata.org/wiki/Q49',
+      works_count: 25000000,
+      cited_by_count: 800000000,
+      countries_count: 23,
+      updated_date: '2024-01-01T00:00:00.000Z',
+      created_date: '2020-01-01T00:00:00.000Z',
+    },
+  ],
+};
+
+export const mockRegionsResponse = {
+  meta: {
+    count: 22,
+    db_response_time_ms: 18,
+    page: 1,
+    per_page: 25,
+  },
+  results: [
+    mockRegion,
+    {
+      id: 'https://openalex.org/regions/eastern-europe',
+      display_name: 'Eastern Europe',
+      wikidata: 'https://www.wikidata.org/wiki/Q27468',
+      works_count: 5000000,
+      cited_by_count: 150000000,
+      countries_count: 10,
+      updated_date: '2024-01-01T00:00:00.000Z',
+      created_date: '2020-01-01T00:00:00.000Z',
+    },
+    {
+      id: 'https://openalex.org/regions/southeast-asia',
+      display_name: 'Southeast Asia',
+      wikidata: 'https://www.wikidata.org/wiki/Q11708',
+      works_count: 3000000,
+      cited_by_count: 100000000,
+      countries_count: 11,
+      updated_date: '2024-01-01T00:00:00.000Z',
+      created_date: '2020-01-01T00:00:00.000Z',
+    },
+  ],
+};
+
+// Mock data for Aboutness endpoint
+export const mockAboutnessResponse = {
+  concepts: [
+    {
+      score: 0.95,
+      concept: {
+        id: 'https://openalex.org/C41008148',
+        wikidata: 'https://www.wikidata.org/wiki/Q11862829',
+        display_name: 'Computer science',
+        level: 0,
+        score: 0.95,
+      },
+    },
+    {
+      score: 0.87,
+      concept: {
+        id: 'https://openalex.org/C154945302',
+        wikidata: 'https://www.wikidata.org/wiki/Q11660',
+        display_name: 'Artificial intelligence',
+        level: 1,
+        score: 0.87,
+      },
+    },
+    {
+      score: 0.76,
+      concept: {
+        id: 'https://openalex.org/C119857082',
+        wikidata: 'https://www.wikidata.org/wiki/Q2539',
+        display_name: 'Machine learning',
+        level: 2,
+        score: 0.76,
+      },
+    },
+    {
+      score: 0.65,
+      concept: {
+        id: 'https://openalex.org/C31972630',
+        wikidata: 'https://www.wikidata.org/wiki/Q189436',
+        display_name: 'Deep learning',
+        level: 3,
+        score: 0.65,
+      },
+    },
+  ],
+  topics: [
+    {
+      id: 'https://openalex.org/T10555',
+      display_name: 'Machine Learning and AI Applications',
+      score: 0.9,
+      subfield: {
+        id: 'https://openalex.org/subfield/1702',
+        display_name: 'Artificial Intelligence',
+      },
+      field: {
+        id: 'https://openalex.org/field/17',
+        display_name: 'Computer Science',
+      },
+      domain: {
+        id: 'https://openalex.org/domain/3',
+        display_name: 'Physical Sciences',
+      },
+    },
+    {
+      id: 'https://openalex.org/T11333',
+      display_name: 'Neural Networks and Deep Learning',
+      score: 0.82,
+      subfield: {
+        id: 'https://openalex.org/subfield/1702',
+        display_name: 'Artificial Intelligence',
+      },
+      field: {
+        id: 'https://openalex.org/field/17',
+        display_name: 'Computer Science',
+      },
+      domain: {
+        id: 'https://openalex.org/domain/3',
+        display_name: 'Physical Sciences',
+      },
+    },
+  ],
+};
