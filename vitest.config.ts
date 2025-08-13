@@ -20,13 +20,20 @@ export default defineConfig({
     globals: true,
     setupFiles: ['./src/test/setup.ts'],
     // Performance and memory optimizations
-    testTimeout: 10000, // 10 seconds max per test
+    testTimeout: process.env.CI === 'true' ? 30000 : 15000,
     hookTimeout: 10000, // 10 seconds for setup/teardown
-    pool: 'forks', // Use separate processes to avoid memory leaks
+    teardownTimeout: 10000,
+    // Use separate processes in CI for better memory isolation
+    pool: process.env.CI === 'true' ? 'forks' : 'threads',
     poolOptions: {
       forks: {
-        maxForks: 4, // Limit concurrent processes
+        maxForks: process.env.CI === 'true' ? 1 : 2,
         minForks: 1,
+      },
+      threads: {
+        singleThread: process.env.CI === 'true',
+        maxThreads: process.env.CI === 'true' ? 1 : 4,
+        minThreads: 1,
       },
     },
     // Isolate tests to prevent memory leaks

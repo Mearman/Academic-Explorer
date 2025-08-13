@@ -31,7 +31,10 @@ export function useHybridStorage() {
     let localStorageSize = 0;
     for (const key in localStorage) {
       if (Object.prototype.hasOwnProperty.call(localStorage, key)) {
-        localStorageSize += localStorage[key].length + key.length;
+        const value = localStorage[key];
+        if (value !== null && value !== undefined) {
+          localStorageSize += value.length + key.length;
+        }
       }
     }
 
