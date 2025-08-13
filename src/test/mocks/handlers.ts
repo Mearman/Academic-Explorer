@@ -435,13 +435,13 @@ export const errorHandlers = {
 
   timeout: [
     http.get(`${API_BASE}/*`, async () => {
-      // Simulate a timeout by returning an error after a delay
-      await new Promise(resolve => setTimeout(resolve, 150));
+      // Simulate a timeout by returning an error after a minimal delay
+      await new Promise(resolve => setTimeout(resolve, 10));
       return new HttpResponse(null, { status: 408, statusText: 'Request Timeout' });
     }),
     http.post(`${API_BASE}/*`, async () => {
-      // Simulate a timeout by returning an error after a delay
-      await new Promise(resolve => setTimeout(resolve, 150));
+      // Simulate a timeout by returning an error after a minimal delay
+      await new Promise(resolve => setTimeout(resolve, 10));
       return new HttpResponse(null, { status: 408, statusText: 'Request Timeout' });
     }),
   ],
