@@ -54,8 +54,8 @@ yarn.lock
 # demo and temporary files
 *DEMO*.ts
 *DEMO*.js
-*TEMP*.ts
-*TEMP*.js
+TEMP*.ts
+TEMP*.js
 
 # IDE and editor files
 .vscode/
