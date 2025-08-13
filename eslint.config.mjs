@@ -8,6 +8,7 @@ export default tseslint.config(
   { 
     ignores: [
       'dist',
+      'coverage',
       'src/components/examples/**',
       '**/*.unit.test.ts',
       '**/*.component.test.ts',
