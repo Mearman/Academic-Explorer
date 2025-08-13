@@ -229,7 +229,7 @@ describe('cached-client', () => {
         const result = await examples.searchWorks(query);
         
         expect(mockBaseClient.works).toHaveBeenCalledWith({ search: query });
-        expect(mockBaseClient.works).toHaveBeenCalledTimes(2); // Called twice in the example
+        expect(mockBaseClient.works).toHaveBeenCalledTimes(1); // Called once in the example
         expect(result).toEqual(mockWorksResponse);
       });
     });

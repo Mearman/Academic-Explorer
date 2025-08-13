@@ -4,7 +4,7 @@
  */
 
 import { CacheManager } from './cache';
-import { db } from '@/lib/db';
+// import { db } from '@/lib/db'; // Currently unused
 
 export interface CacheStrategy {
   shouldCache: (endpoint: string, params: unknown) => boolean;
@@ -191,7 +191,7 @@ export class CacheInterceptor {
 
   // Invalidate cache for specific patterns
   async invalidate(pattern: string | RegExp) {
-    const regex = typeof pattern === 'string' ? new RegExp(pattern) : pattern;
+    // const regex = typeof pattern === 'string' ? new RegExp(pattern) : pattern; // Currently unused
     
     // This would need to be implemented in the base cache manager
     // For now, we can clear all cache
@@ -278,6 +278,8 @@ function getEndpointFromMethod(method: string, args: unknown[]): string | null {
     funder: (args) => `/funders/${args[0]}`,
     topics: () => '/topics',
     topic: (args) => `/topics/${args[0]}`,
+    concepts: () => '/concepts',
+    concept: (args) => `/concepts/${args[0]}`,
     worksAutocomplete: () => '/autocomplete/works',
     authorsAutocomplete: () => '/autocomplete/authors',
     randomWork: () => '/works/random',
@@ -291,7 +293,7 @@ function getEndpointFromMethod(method: string, args: unknown[]): string | null {
 // Helper to extract params from method arguments
 function getParamsFromArgs(method: string, args: unknown[]): unknown {
   // For list methods, first arg is params
-  if (['works', 'authors', 'sources', 'institutions', 'publishers', 'funders', 'topics'].includes(method)) {
+  if (['works', 'authors', 'sources', 'institutions', 'publishers', 'funders', 'topics', 'concepts'].includes(method)) {
     return args[0] || {};
   }
   

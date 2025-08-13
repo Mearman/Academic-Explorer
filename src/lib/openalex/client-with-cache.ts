@@ -236,6 +236,25 @@ export class CachedOpenAlexClient extends OpenAlexClient {
     );
   }
 
+  async concepts(params = {}, skipCache = false): Promise<ApiResponse<import('./types').Concept>> {
+    return this.cachedRequest(
+      () => super.concepts(params),
+      'concepts',
+      params,
+      skipCache
+    );
+  }
+
+  async concept(id: string, skipCache = false): Promise<import('./types').Concept> {
+    const normalizedId = this.normalizeId(id);
+    return this.cachedRequest(
+      () => super.concept(id),
+      `concept:${normalizedId}`,
+      {},
+      skipCache
+    );
+  }
+
   // Cache management methods
   setCacheEnabled(enabled: boolean): void {
     this.cacheEnabled = enabled;

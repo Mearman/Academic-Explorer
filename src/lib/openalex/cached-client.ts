@@ -109,7 +109,7 @@ export const examples = {
     const results1 = await cachedClient.works({ search: query });
     
     // Second call with same params will use cache
-    const results2 = await cachedClient.works({ search: query });
+    // const results2 = await cachedClient.works({ search: query }); // For demonstration
     
     return results1;
   },

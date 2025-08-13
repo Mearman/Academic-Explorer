@@ -294,7 +294,7 @@ export function extractAllKeywords(work: Work): string[] {
     if (typeof kw === 'string') {
       keywords.add(kw);
     } else if (kw && typeof kw === 'object' && 'display_name' in kw) {
-      keywords.add((kw as any).display_name);
+      keywords.add((kw as { display_name: string }).display_name);
     }
   });
   
@@ -469,12 +469,12 @@ export function continentsToCSV(continents: Continent[], delimiter = ','): strin
     'display_name',
     'wikidata',
     'works_count',
-    'cited_by_count',
-    'created_date',
-    'updated_date'
+    'cited_by_count'
   ];
   
-  return entitiesToCSV(continents, fields, delimiter);
+  // Convert to records for CSV export
+  const records = continents.map(continent => ({ ...continent }));
+  return entitiesToCSV(records, fields, delimiter);
 }
 
 // Export regions to CSV format
@@ -484,14 +484,15 @@ export function regionsToCSV(regions: Region[], delimiter = ','): string {
   const fields: (keyof Region)[] = [
     'id',
     'display_name',
+    'description',
     'wikidata',
     'works_count',
-    'cited_by_count',
-    'created_date',
-    'updated_date'
+    'cited_by_count'
   ];
   
-  return entitiesToCSV(regions, fields, delimiter);
+  // Convert to records for CSV export
+  const records = regions.map(region => ({ ...region }));
+  return entitiesToCSV(records, fields, delimiter);
 }
 
 // Extract continent name from entity
@@ -528,4 +529,60 @@ export function deduplicateEntities<T extends { id: string }>(entities: T[]): T[
     seen.add(entity.id);
     return true;
   });
+}
+
+/**
+ * Format numbers with locale-appropriate thousands separators and abbreviations
+ */
+export function formatNumber(
+  value: number | string,
+  options: {
+    format?: 'number' | 'percentage' | 'currency' | 'compact';
+    locale?: string;
+    currency?: string;
+    maximumFractionDigits?: number;
+  } = {}
+): string {
+  const {
+    format = 'number',
+    locale = 'en-US',
+    currency = 'USD',
+    maximumFractionDigits = format === 'percentage' ? 1 : 0,
+  } = options;
+
+  const numValue = typeof value === 'string' ? parseFloat(value) : value;
+  
+  if (isNaN(numValue)) {
+    return String(value);
+  }
+
+  switch (format) {
+    case 'percentage':
+      return new Intl.NumberFormat(locale, {
+        style: 'percent',
+        maximumFractionDigits,
+      }).format(numValue / 100);
+      
+    case 'currency':
+      return new Intl.NumberFormat(locale, {
+        style: 'currency',
+        currency,
+        maximumFractionDigits,
+      }).format(numValue);
+      
+    case 'compact':
+      if (numValue >= 1000000) {
+        return (numValue / 1000000).toFixed(1) + 'M';
+      } else if (numValue >= 1000) {
+        return (numValue / 1000).toFixed(1) + 'K';
+      } else {
+        return numValue.toString();
+      }
+      
+    case 'number':
+    default:
+      return new Intl.NumberFormat(locale, {
+        maximumFractionDigits,
+      }).format(numValue);
+  }
 }

@@ -13,7 +13,7 @@ import {
   entitiesToCSV,
   deduplicateEntities,
 } from './transformers';
-import type { Work, Author, Institution } from '../../types';
+import type { Work } from '../../types';
 
 describe('Transformers', () => {
   describe('reconstructAbstract', () => {
