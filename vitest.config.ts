@@ -23,14 +23,9 @@ export default defineConfig({
     testTimeout: process.env.CI === 'true' ? 30000 : 15000,
     hookTimeout: 10000, // 10 seconds for setup/teardown
     teardownTimeout: 10000,
-    // Use separate processes in CI for better memory isolation
-    pool: process.env.CI === 'true' ? 'forks' : 'threads',
+    // Use threads pool for better compatibility across environments
+    pool: 'threads',
     poolOptions: {
-      forks: {
-        // Force single process in CI to minimize memory usage
-        maxForks: 1,
-        minForks: 1,
-      },
       threads: {
         singleThread: true,
         maxThreads: 1,
