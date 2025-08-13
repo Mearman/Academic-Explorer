@@ -1,17 +1,26 @@
 import { createFileRoute } from '@tanstack/react-router';
+import { 
+  Card, 
+  Badge, 
+  Group, 
+  Stack, 
+  Text, 
+  Title, 
+  Anchor, 
+  Paper,
+  Grid,
+  ActionIcon,
+  Tooltip
+} from '@mantine/core';
+import { IconExternalLink, IconDownload, IconInfoCircle, IconFileText, IconTags, IconLink } from '@tabler/icons-react';
 import type { Work } from '@/lib/openalex/types';
 import { EntityType } from '@/lib/openalex/utils/entity-detection';
 import { useWorkData } from '@/hooks/use-entity-data';
 import { EntityError, EntitySkeleton, EntityFallback } from '@/components/entity-error';
 import { 
   EntityPageTemplate,
-  EntitySection,
-  Badge,
-  MetricBadge,
-  EntityErrorBoundary,
-  Icon
+  EntityErrorBoundary
 } from '@/components';
-import * as styles from './works.$id.css';
 
 function WorkDisplay({ work }: { work: Work }) {
   // External links for the work
@@ -35,130 +44,244 @@ function WorkDisplay({ work }: { work: Work }) {
 
   return (
     <EntityPageTemplate entity={work}>
-      <div className={styles.workContainer}>
+      <Stack gap="xl">
         {/* Enhanced Key Metrics */}
-        <div className={styles.metricsGrid}>
-          <MetricBadge
-            value={work.cited_by_count}
-            label="Citations"
-            variant="primary"
-            size="xl"
-          />
-          <MetricBadge
-            value={work.publication_year || 'N/A'}
-            label="Published"
-            variant="default"
-            size="xl"
-          />
-          <MetricBadge
-            value={work.authorships?.length || 0}
-            label="Authors"
-            variant="default"
-            size="xl"
-          />
-          <MetricBadge
-            value={work.open_access.is_oa ? 'Open Access' : 'Restricted'}
-            label="Access Status"
-            variant={work.open_access.is_oa ? 'success' : 'error'}
-            size="xl"
-          />
-        </div>
+        <Grid>
+          <Grid.Col span={{ base: 12, sm: 6, md: 3 }}>
+            <Paper p="lg" radius="md" withBorder>
+              <Stack gap="xs" align="center">
+                <Text size="xl" fw={700} c="work">
+                  {work.cited_by_count}
+                </Text>
+                <Text size="sm" c="dimmed" ta="center">
+                  Citations
+                </Text>
+              </Stack>
+            </Paper>
+          </Grid.Col>
+          <Grid.Col span={{ base: 12, sm: 6, md: 3 }}>
+            <Paper p="lg" radius="md" withBorder>
+              <Stack gap="xs" align="center">
+                <Text size="xl" fw={700}>
+                  {work.publication_year || 'N/A'}
+                </Text>
+                <Text size="sm" c="dimmed" ta="center">
+                  Published
+                </Text>
+              </Stack>
+            </Paper>
+          </Grid.Col>
+          <Grid.Col span={{ base: 12, sm: 6, md: 3 }}>
+            <Paper p="lg" radius="md" withBorder>
+              <Stack gap="xs" align="center">
+                <Text size="xl" fw={700}>
+                  {work.authorships?.length || 0}
+                </Text>
+                <Text size="sm" c="dimmed" ta="center">
+                  Authors
+                </Text>
+              </Stack>
+            </Paper>
+          </Grid.Col>
+          <Grid.Col span={{ base: 12, sm: 6, md: 3 }}>
+            <Paper p="lg" radius="md" withBorder>
+              <Stack gap="xs" align="center">
+                <Badge 
+                  color={work.open_access.is_oa ? 'openAccess' : 'publisher'} 
+                  size="lg" 
+                  radius="sm"
+                >
+                  {work.open_access.is_oa ? 'Open Access' : 'Restricted'}
+                </Badge>
+                <Text size="sm" c="dimmed" ta="center">
+                  Access Status
+                </Text>
+              </Stack>
+            </Paper>
+          </Grid.Col>
+        </Grid>
 
         {/* Enhanced Publication Details */}
-        <EntitySection title="Publication Details" icon="info">
-          <div className={styles.detailsGrid}>
+        <Card withBorder radius="md" p="xl">
+          <Group mb="lg">
+            <IconFileText size={20} />
+            <Title order={2} size="lg">Publication Details</Title>
+          </Group>
+          
+          <Grid>
             {work.primary_location?.source && (
-              <div className={styles.detailItem}>
-                <div className={styles.detailLabel}>Source Journal</div>
-                <div className={styles.detailValue}>{work.primary_location.source.display_name}</div>
-              </div>
+              <Grid.Col span={{ base: 12, md: 6 }}>
+                <Paper p="md" withBorder radius="sm" bg="gray.0">
+                  <Text size="xs" tt="uppercase" fw={600} c="dimmed" mb="xs">
+                    Source Journal
+                  </Text>
+                  <Text size="sm" fw={500}>
+                    {work.primary_location.source.display_name}
+                  </Text>
+                </Paper>
+              </Grid.Col>
             )}
             
             {work.publication_date && (
-              <div className={styles.detailItem}>
-                <div className={styles.detailLabel}>Publication Date</div>
-                <div className={styles.detailValue}>{work.publication_date}</div>
-              </div>
+              <Grid.Col span={{ base: 12, md: 6 }}>
+                <Paper p="md" withBorder radius="sm" bg="gray.0">
+                  <Text size="xs" tt="uppercase" fw={600} c="dimmed" mb="xs">
+                    Publication Date
+                  </Text>
+                  <Text size="sm" fw={500}>
+                    {work.publication_date}
+                  </Text>
+                </Paper>
+              </Grid.Col>
             )}
             
             {work.ids.doi && (
-              <div className={styles.detailItem}>
-                <div className={styles.detailLabel}>Digital Object Identifier</div>
-                <div className={styles.detailValue}>
-                  <a 
+              <Grid.Col span={{ base: 12, md: 6 }}>
+                <Paper p="md" withBorder radius="sm" bg="gray.0">
+                  <Text size="xs" tt="uppercase" fw={600} c="dimmed" mb="xs">
+                    Digital Object Identifier
+                  </Text>
+                  <Anchor 
                     href={`https://doi.org/${work.ids.doi}`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className={styles.doiLink}
+                    size="sm"
+                    fw={500}
+                    c="work"
                   >
                     {work.ids.doi}
-                  </a>
-                </div>
-              </div>
+                  </Anchor>
+                </Paper>
+              </Grid.Col>
             )}
             
             {work.language && (
-              <div className={styles.detailItem}>
-                <div className={styles.detailLabel}>Language</div>
-                <div className={styles.detailValue}>{work.language}</div>
-              </div>
+              <Grid.Col span={{ base: 12, md: 6 }}>
+                <Paper p="md" withBorder radius="sm" bg="gray.0">
+                  <Text size="xs" tt="uppercase" fw={600} c="dimmed" mb="xs">
+                    Language
+                  </Text>
+                  <Text size="sm" fw={500}>
+                    {work.language}
+                  </Text>
+                </Paper>
+              </Grid.Col>
             )}
-          </div>
-        </EntitySection>
+          </Grid>
+        </Card>
 
         {/* Enhanced Abstract */}
         {work.abstract_inverted_index && (
-          <EntitySection title="Abstract" icon="document">
-            <div className={styles.abstractSection}>
-              <p className={styles.abstractText}>
-                <Icon name="info" size="sm" />
-                Abstract available in inverted index format. 
-                Full text reconstruction feature coming soon.
-              </p>
-            </div>
-          </EntitySection>
+          <Card withBorder radius="md" p="xl" bg="blue.0">
+            <Group mb="lg">
+              <IconFileText size={20} />
+              <Title order={2} size="lg">Abstract</Title>
+            </Group>
+            
+            <Paper p="lg" radius="md" withBorder>
+              <Group mb="md">
+                <IconInfoCircle size={16} color="blue" />
+                <Text size="sm" c="dimmed" fs="italic">
+                  Abstract available in inverted index format. 
+                  Full text reconstruction feature coming soon.
+                </Text>
+              </Group>
+            </Paper>
+          </Card>
         )}
 
         {/* Enhanced Topics */}
         {work.topics && work.topics.length > 0 && (
-          <EntitySection title="Research Topics" icon="tag">
-            <div className={styles.topicsContainer}>
+          <Card withBorder radius="md" p="xl">
+            <Group mb="lg">
+              <IconTags size={20} />
+              <Title order={2} size="lg">Research Topics</Title>
+            </Group>
+            
+            <Group gap="sm">
               {work.topics.map((topic) => (
                 <Badge
                   key={topic.id}
-                  variant="secondary"
+                  variant="light"
                   size="md"
+                  radius="sm"
                 >
                   {topic.display_name}
                 </Badge>
               ))}
-            </div>
-          </EntitySection>
+            </Group>
+          </Card>
         )}
 
         {/* Enhanced External Links */}
-        <EntitySection title="Access & Resources" icon="link">
-          <div className={styles.externalLinksContainer}>
-            {externalLinks.map((link, index) => (
-              link && (
-                <a
-                  key={index}
-                  href={link.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className={`${styles.externalLink} ${styles.linkVariants[link.type]}`}
-                >
-                  <Icon 
-                    name={link.type === 'pdf' ? 'download' : link.type === 'publisher' ? 'external' : 'info'} 
-                    size="sm" 
-                  />
-                  {link.label}
-                </a>
-              )
-            ))}
-          </div>
-        </EntitySection>
-      </div>
+        <Card withBorder radius="md" p="xl">
+          <Group mb="lg">
+            <IconLink size={20} />
+            <Title order={2} size="lg">Access & Resources</Title>
+          </Group>
+          
+          <Grid>
+            {externalLinks.map((link, index) => {
+              if (!link) return null;
+              
+              const getIcon = () => {
+                switch (link.type) {
+                  case 'pdf':
+                    return <IconDownload size={16} />;
+                  case 'publisher':
+                    return <IconExternalLink size={16} />;
+                  default:
+                    return <IconInfoCircle size={16} />;
+                }
+              };
+
+              const getColor = () => {
+                switch (link.type) {
+                  case 'pdf':
+                    return 'openAccess';
+                  case 'publisher':
+                    return 'publisher';
+                  default:
+                    return 'work';
+                }
+              };
+
+              return (
+                <Grid.Col key={index} span={{ base: 12, sm: 6, md: 4 }}>
+                  <Anchor
+                    href={link.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    style={{ textDecoration: 'none' }}
+                  >
+                    <Paper
+                      p="md"
+                      withBorder
+                      radius="md"
+                      style={(theme) => ({
+                        transition: 'all 150ms ease',
+                        cursor: 'pointer',
+                        '&:hover': {
+                          transform: 'translateY(-2px)',
+                          boxShadow: theme.shadows.md,
+                          borderColor: theme.colors[getColor()][5],
+                        },
+                      })}
+                    >
+                      <Group>
+                        {getIcon()}
+                        <Text size="sm" fw={500} c={getColor()}>
+                          {link.label}
+                        </Text>
+                      </Group>
+                    </Paper>
+                  </Anchor>
+                </Grid.Col>
+              );
+            })}
+          </Grid>
+        </Card>
+      </Stack>
     </EntityPageTemplate>
   );
 }
