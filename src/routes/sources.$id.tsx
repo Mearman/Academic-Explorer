@@ -1,10 +1,44 @@
 import { createFileRoute } from '@tanstack/react-router';
+import { 
+  Card, 
+  Badge, 
+  Group, 
+  Stack, 
+  Text, 
+  Title, 
+  Anchor, 
+  Paper,
+  Grid,
+  Tabs
+} from '@mantine/core';
+import { 
+  IconExternalLink, 
+  IconInfoCircle, 
+  IconFileText, 
+  IconTags, 
+  IconLink, 
+  IconCode,
+  IconWorldWww,
+  IconBuildingBank,
+  IconCurrencyDollar,
+  IconCalendar,
+  IconBarChart,
+  IconCertificate,
+  IconId,
+  IconLanguage,
+  IconBook2,
+  IconChartLine
+} from '@tabler/icons-react';
+import { RawDataView } from '@/components/organisms/raw-data-view';
 import type { Source } from '@/lib/openalex/types';
 import { EntityType } from '@/lib/openalex/utils/entity-detection';
-import EntityErrorBoundary from '@/components/error-boundary';
 import { useSourceData } from '@/hooks/use-entity-data';
 import { EntityError, EntitySkeleton, EntityFallback } from '@/components/entity-error';
 import { useNumericIdRedirect } from '@/hooks/use-numeric-id-redirect';
+import { 
+  EntityPageTemplate,
+  EntityErrorBoundary
+} from '@/components';
 
 function SourceDisplay({ source }: { source: Source }) {
   return (
