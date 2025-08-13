@@ -16,6 +16,7 @@ import { RawDataView } from '@/components/organisms/raw-data-view';
 import type { Work } from '@/lib/openalex/types';
 import { EntityType } from '@/lib/openalex/utils/entity-detection';
 import { useWorkData } from '@/hooks/use-entity-data';
+import { reconstructAbstract } from '@/lib/openalex/utils/transformers';
 import { EntityError, EntitySkeleton, EntityFallback } from '@/components/entity-error';
 import { 
   EntityPageTemplate,
