@@ -96,6 +96,9 @@ importers:
       msw:
         specifier: ^2.10.4
         version: 2.10.4(@types/node@20.19.10)(typescript@5.9.2)
+      playwright:
+        specifier: ^1.54.2
+        version: 1.54.2
       typescript:
         specifier: ^5
         version: 5.9.2
