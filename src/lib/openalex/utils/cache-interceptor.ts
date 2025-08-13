@@ -18,27 +18,27 @@ export const defaultStrategies: Record<string, CacheStrategy> = {
   entity: {
     shouldCache: () => true,
     getCacheTTL: () => 7 * 24 * 60 * 60 * 1000, // 7 days
-    getCacheKey: (endpoint, params) => `entity:${endpoint}:${JSON.stringify(params)}`,
+    getCacheKey: (endpoint, params) => `entity:${endpoint}:${JSON.stringify(params || {})}`,
   },
   
   // Search results - cache for shorter period
   search: {
     shouldCache: (endpoint, params) => {
       // Don't cache if sorting by recent or if it's a very specific query
-      const p = params as Record<string, unknown>;
+      const p = (params as Record<string, unknown>) || {};
       if (p.sort?.toString().includes('date:desc')) return false;
       if (p.sample !== undefined) return false; // Don't cache random samples
       return true;
     },
     getCacheTTL: () => 60 * 60 * 1000, // 1 hour
-    getCacheKey: (endpoint, params) => `search:${endpoint}:${JSON.stringify(params)}`,
+    getCacheKey: (endpoint, params) => `search:${endpoint}:${JSON.stringify(params || {})}`,
   },
   
   // Autocomplete - cache for medium period
   autocomplete: {
     shouldCache: () => true,
     getCacheTTL: () => 24 * 60 * 60 * 1000, // 24 hours
-    getCacheKey: (endpoint, params) => `autocomplete:${endpoint}:${JSON.stringify(params)}`,
+    getCacheKey: (endpoint, params) => `autocomplete:${endpoint}:${JSON.stringify(params || {})}`,
   },
   
   // Random endpoints - never cache
@@ -125,7 +125,7 @@ export class CacheInterceptor {
       // Try to get from cache
       const cached = await this.cache.get<T>(
         cacheKey,
-        params as Record<string, unknown>
+        (params as Record<string, unknown>) || {}
       );
       
       if (cached !== null) {
@@ -167,9 +167,9 @@ export class CacheInterceptor {
         useIndexedDB: this.cache['options'].useIndexedDB,
         namespace: this.cache['options'].namespace,
       });
-      await tempCache.set(key, params as Record<string, unknown>, data);
+      await tempCache.set(key, (params as Record<string, unknown>) || {}, data);
     } else {
-      await this.cache.set(key, params as Record<string, unknown>, data);
+      await this.cache.set(key, (params as Record<string, unknown>) || {}, data);
     }
   }
 
