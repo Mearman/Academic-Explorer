@@ -107,10 +107,10 @@ jobs:
         test-type: [unit, integration]
         include:
           - test-type: unit
-            command: pnpm test:unit --run
+            command: pnpm test:unit
             timeout: 15
           - test-type: integration
-            command: pnpm test:integration --run
+            command: pnpm test:integration
             timeout: 30
     steps:
       - name: Checkout
