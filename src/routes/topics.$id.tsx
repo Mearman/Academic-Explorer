@@ -1,64 +1,421 @@
 import { createFileRoute } from '@tanstack/react-router';
+import { 
+  Card, 
+  Badge, 
+  Group, 
+  Stack, 
+  Text, 
+  Title, 
+  Anchor, 
+  Paper,
+  Grid,
+  Tabs
+} from '@mantine/core';
+import { 
+  IconExternalLink, 
+  IconInfoCircle, 
+  IconFileText, 
+  IconTags, 
+  IconLink, 
+  IconCode,
+  IconHierarchy,
+  IconCalendar,
+  IconWorld,
+  IconSearch,
+  IconBrandWikipedia
+} from '@tabler/icons-react';
+import { RawDataView } from '@/components/organisms/raw-data-view';
 import type { Topic } from '@/lib/openalex/types';
 import { EntityType } from '@/lib/openalex/utils/entity-detection';
-import EntityErrorBoundary from '@/components/error-boundary';
 import { useTopicData } from '@/hooks/use-entity-data';
 import { EntityError, EntitySkeleton, EntityFallback } from '@/components/entity-error';
 import { useNumericIdRedirect } from '@/hooks/use-numeric-id-redirect';
+import { 
+  EntityPageTemplate,
+  EntityErrorBoundary
+} from '@/components';
 
 function TopicDisplay({ topic }: { topic: Topic }) {
+  // External links for the topic
+  const externalLinks = [
+    topic.works_api_url && {
+      url: topic.works_api_url,
+      label: 'View Works (API)',
+      type: 'api' as const,
+      icon: <IconSearch size={16} />
+    },
+    topic.ids.wikipedia && {
+      url: topic.ids.wikipedia,
+      label: 'Wikipedia Page',
+      type: 'wikipedia' as const,
+      icon: <IconBrandWikipedia size={16} />
+    },
+    topic.ids.wikidata && {
+      url: `https://www.wikidata.org/wiki/${topic.ids.wikidata}`,
+      label: 'Wikidata Entry',
+      type: 'wikidata' as const,
+      icon: <IconWorld size={16} />
+    },
+    {
+      url: `https://openalex.org/${topic.id}`,
+      label: 'View on OpenAlex',
+      type: 'openalex' as const,
+      icon: <IconExternalLink size={16} />
+    }
+  ].filter(Boolean);
+
   return (
-    <div className="max-w-4xl mx-auto p-6 space-y-8">
-      <header className="space-y-4">
-        <div className="flex items-center space-x-3">
-          <span className="bg-indigo-100 text-indigo-800 text-sm font-medium px-2.5 py-0.5 rounded">Topic</span>
-          <span className="text-gray-500 text-sm font-mono">{topic.id}</span>
-        </div>
-        <h1 className="text-3xl font-bold text-gray-900">{topic.display_name || 'Unknown Topic'}</h1>
-        
-        {(topic.field || topic.subfield || topic.domain) && (
-          <div className="flex flex-wrap gap-2">
-            {topic.domain && <span className="bg-blue-50 text-blue-700 px-2 py-1 rounded text-sm">Domain: {topic.domain.display_name}</span>}
-            {topic.field && <span className="bg-green-50 text-green-700 px-2 py-1 rounded text-sm">Field: {topic.field.display_name}</span>}
-            {topic.subfield && <span className="bg-purple-50 text-purple-700 px-2 py-1 rounded text-sm">Subfield: {topic.subfield.display_name}</span>}
-          </div>
-        )}
-      </header>
+    <EntityPageTemplate entity={topic}>
+      <Tabs defaultValue="overview" keepMounted={false}>
+        <Tabs.List grow mb="xl">
+          <Tabs.Tab value="overview" leftSection={<IconFileText size={16} />}>
+            Overview
+          </Tabs.Tab>
+          <Tabs.Tab value="raw-data" leftSection={<IconCode size={16} />}>
+            Raw Data
+          </Tabs.Tab>
+        </Tabs.List>
 
-      <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-        <div className="bg-white p-4 rounded-lg border text-center">
-          <div className="text-2xl font-bold text-blue-600">{topic.works_count.toLocaleString()}</div>
-          <div className="text-sm text-gray-600">Works</div>
-        </div>
-        <div className="bg-white p-4 rounded-lg border text-center">
-          <div className="text-2xl font-bold text-green-600">{topic.cited_by_count.toLocaleString()}</div>
-          <div className="text-sm text-gray-600">Citations</div>
-        </div>
-        <div className="bg-white p-4 rounded-lg border text-center">
-          <div className="text-2xl font-bold text-indigo-600">{topic.keywords?.length || 0}</div>
-          <div className="text-sm text-gray-600">Keywords</div>
-        </div>
-      </div>
+        <Tabs.Panel value="overview">
+          <Stack gap="xl">
+            {/* Enhanced Key Metrics */}
+            <Grid>
+              <Grid.Col span={{ base: 12, sm: 6, md: 3 }}>
+                <Paper p="lg" radius="md" withBorder>
+                  <Stack gap="xs" align="center">
+                    <Text size="xl" fw={700} c="topic">
+                      {topic.works_count.toLocaleString()}
+                    </Text>
+                    <Text size="sm" c="dimmed" ta="center">
+                      Works
+                    </Text>
+                  </Stack>
+                </Paper>
+              </Grid.Col>
+              <Grid.Col span={{ base: 12, sm: 6, md: 3 }}>
+                <Paper p="lg" radius="md" withBorder>
+                  <Stack gap="xs" align="center">
+                    <Text size="xl" fw={700} c="green">
+                      {topic.cited_by_count.toLocaleString()}
+                    </Text>
+                    <Text size="sm" c="dimmed" ta="center">
+                      Citations
+                    </Text>
+                  </Stack>
+                </Paper>
+              </Grid.Col>
+              <Grid.Col span={{ base: 12, sm: 6, md: 3 }}>
+                <Paper p="lg" radius="md" withBorder>
+                  <Stack gap="xs" align="center">
+                    <Text size="xl" fw={700} c="blue">
+                      {topic.keywords?.length || 0}
+                    </Text>
+                    <Text size="sm" c="dimmed" ta="center">
+                      Keywords
+                    </Text>
+                  </Stack>
+                </Paper>
+              </Grid.Col>
+              <Grid.Col span={{ base: 12, sm: 6, md: 3 }}>
+                <Paper p="lg" radius="md" withBorder>
+                  <Stack gap="xs" align="center">
+                    <Text size="xl" fw={700} c="violet">
+                      {topic.siblings?.length || 0}
+                    </Text>
+                    <Text size="sm" c="dimmed" ta="center">
+                      Sibling Topics
+                    </Text>
+                  </Stack>
+                </Paper>
+              </Grid.Col>
+            </Grid>
 
-      {topic.keywords && topic.keywords.length > 0 && (
-        <div className="bg-white p-6 rounded-lg border">
-          <h2 className="text-xl font-semibold mb-4">Keywords</h2>
-          <div className="flex flex-wrap gap-2">
-            {topic.keywords.map((keyword) => (
-              <span key={keyword} className="bg-indigo-50 text-indigo-700 px-3 py-1 rounded-full text-sm">{keyword}</span>
-            ))}
-          </div>
-        </div>
-      )}
+            {/* Enhanced Topic Hierarchy */}
+            <Card withBorder radius="md" p="xl">
+              <Group mb="lg">
+                <IconHierarchy size={20} />
+                <Title order={2} size="lg">Topic Hierarchy</Title>
+              </Group>
+              
+              <Grid>
+                {topic.domain && (
+                  <Grid.Col span={{ base: 12, md: 4 }}>
+                    <Paper p="md" withBorder radius="sm" bg="blue.0">
+                      <Text size="xs" tt="uppercase" fw={600} c="dimmed" mb="xs">
+                        Domain
+                      </Text>
+                      <Badge variant="light" color="blue" size="lg" radius="sm" fullWidth>
+                        {topic.domain.display_name}
+                      </Badge>
+                    </Paper>
+                  </Grid.Col>
+                )}
+                
+                {topic.field && (
+                  <Grid.Col span={{ base: 12, md: 4 }}>
+                    <Paper p="md" withBorder radius="sm" bg="green.0">
+                      <Text size="xs" tt="uppercase" fw={600} c="dimmed" mb="xs">
+                        Field
+                      </Text>
+                      <Badge variant="light" color="green" size="lg" radius="sm" fullWidth>
+                        {topic.field.display_name}
+                      </Badge>
+                    </Paper>
+                  </Grid.Col>
+                )}
 
-      <div className="bg-white p-6 rounded-lg border">
-        <h2 className="text-xl font-semibold mb-4">External Links</h2>
-        <div className="space-y-2">
-          <a href={topic.works_api_url} target="_blank" rel="noopener noreferrer" className="block text-blue-600 hover:underline">View Works (API)</a>
-          <a href={`https://openalex.org/${topic.id}`} target="_blank" rel="noopener noreferrer" className="block text-gray-600 hover:underline">View on OpenAlex</a>
-        </div>
-      </div>
-    </div>
+                {topic.subfield && (
+                  <Grid.Col span={{ base: 12, md: 4 }}>
+                    <Paper p="md" withBorder radius="sm" bg="violet.0">
+                      <Text size="xs" tt="uppercase" fw={600} c="dimmed" mb="xs">
+                        Subfield
+                      </Text>
+                      <Badge variant="light" color="violet" size="lg" radius="sm" fullWidth>
+                        {topic.subfield.display_name}
+                      </Badge>
+                    </Paper>
+                  </Grid.Col>
+                )}
+              </Grid>
+            </Card>
+
+            {/* Enhanced Keywords Section */}
+            {topic.keywords && topic.keywords.length > 0 && (
+              <Card withBorder radius="md" p="xl">
+                <Group mb="lg">
+                  <IconTags size={20} />
+                  <Title order={2} size="lg">Keywords</Title>
+                  <Badge variant="light" color="blue" radius="sm">
+                    {topic.keywords.length} keywords
+                  </Badge>
+                </Group>
+                
+                <Group gap="sm">
+                  {topic.keywords.map((keyword) => (
+                    <Badge
+                      key={keyword}
+                      variant="light"
+                      color="topic"
+                      size="md"
+                      radius="sm"
+                    >
+                      {keyword}
+                    </Badge>
+                  ))}
+                </Group>
+              </Card>
+            )}
+
+            {/* Enhanced Sibling Topics */}
+            {topic.siblings && topic.siblings.length > 0 && (
+              <Card withBorder radius="md" p="xl">
+                <Group mb="lg">
+                  <IconHierarchy size={20} />
+                  <Title order={2} size="lg">Related Topics</Title>
+                  <Badge variant="light" color="violet" radius="sm">
+                    {topic.siblings.length} sibling topics
+                  </Badge>
+                </Group>
+                
+                <Grid>
+                  {topic.siblings.slice(0, 8).map((sibling) => (
+                    <Grid.Col key={sibling.id} span={{ base: 12, sm: 6, md: 4 }}>
+                      <Paper p="md" withBorder radius="sm" bg="gray.0">
+                        <Stack gap="xs">
+                          <Text size="sm" fw={500} lineClamp={2}>
+                            {sibling.display_name}
+                          </Text>
+                          <Group gap="xs">
+                            <Text size="xs" c="dimmed">
+                              {sibling.works_count.toLocaleString()} works
+                            </Text>
+                            <Text size="xs" c="dimmed">
+                              {sibling.cited_by_count.toLocaleString()} citations
+                            </Text>
+                          </Group>
+                        </Stack>
+                      </Paper>
+                    </Grid.Col>
+                  ))}
+                </Grid>
+                
+                {topic.siblings.length > 8 && (
+                  <Text size="sm" c="dimmed" mt="md" ta="center" fs="italic">
+                    Showing 8 of {topic.siblings.length} sibling topics
+                  </Text>
+                )}
+              </Card>
+            )}
+
+            {/* Enhanced Topic Metadata */}
+            <Card withBorder radius="md" p="xl">
+              <Group mb="lg">
+                <IconInfoCircle size={20} />
+                <Title order={2} size="lg">Topic Metadata</Title>
+              </Group>
+              
+              <Grid>
+                <Grid.Col span={{ base: 12, md: 6 }}>
+                  <Paper p="md" withBorder radius="sm" bg="gray.0">
+                    <Text size="xs" tt="uppercase" fw={600} c="dimmed" mb="xs">
+                      Topic ID
+                    </Text>
+                    <Text size="sm" fw={500} ff="monospace">
+                      {topic.id}
+                    </Text>
+                  </Paper>
+                </Grid.Col>
+                
+                {topic.created_date && (
+                  <Grid.Col span={{ base: 12, md: 6 }}>
+                    <Paper p="md" withBorder radius="sm" bg="gray.0">
+                      <Group gap="xs" mb="xs">
+                        <IconCalendar size={14} />
+                        <Text size="xs" tt="uppercase" fw={600} c="dimmed">
+                          Created Date
+                        </Text>
+                      </Group>
+                      <Text size="sm" fw={500}>
+                        {new Date(topic.created_date).toLocaleDateString()}
+                      </Text>
+                    </Paper>
+                  </Grid.Col>
+                )}
+
+                {topic.updated_date && (
+                  <Grid.Col span={{ base: 12, md: 6 }}>
+                    <Paper p="md" withBorder radius="sm" bg="gray.0">
+                      <Group gap="xs" mb="xs">
+                        <IconCalendar size={14} />
+                        <Text size="xs" tt="uppercase" fw={600} c="dimmed">
+                          Last Updated
+                        </Text>
+                      </Group>
+                      <Text size="sm" fw={500}>
+                        {new Date(topic.updated_date).toLocaleDateString()}
+                      </Text>
+                    </Paper>
+                  </Grid.Col>
+                )}
+
+                {/* External IDs */}
+                {topic.ids.wikipedia && (
+                  <Grid.Col span={{ base: 12, md: 6 }}>
+                    <Paper p="md" withBorder radius="sm" bg="gray.0">
+                      <Text size="xs" tt="uppercase" fw={600} c="dimmed" mb="xs">
+                        Wikipedia URL
+                      </Text>
+                      <Anchor 
+                        href={topic.ids.wikipedia}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        size="sm"
+                        fw={500}
+                        c="blue"
+                        truncate
+                      >
+                        {topic.ids.wikipedia}
+                      </Anchor>
+                    </Paper>
+                  </Grid.Col>
+                )}
+
+                {topic.ids.wikidata && (
+                  <Grid.Col span={{ base: 12, md: 6 }}>
+                    <Paper p="md" withBorder radius="sm" bg="gray.0">
+                      <Text size="xs" tt="uppercase" fw={600} c="dimmed" mb="xs">
+                        Wikidata ID
+                      </Text>
+                      <Anchor 
+                        href={`https://www.wikidata.org/wiki/${topic.ids.wikidata}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        size="sm"
+                        fw={500}
+                        c="blue"
+                      >
+                        {topic.ids.wikidata}
+                      </Anchor>
+                    </Paper>
+                  </Grid.Col>
+                )}
+              </Grid>
+            </Card>
+
+            {/* Enhanced External Links */}
+            <Card withBorder radius="md" p="xl">
+              <Group mb="lg">
+                <IconLink size={20} />
+                <Title order={2} size="lg">External Resources</Title>
+              </Group>
+              
+              <Grid>
+                {externalLinks.map((link, index) => {
+                  if (!link) return null;
+                  
+                  const getColor = () => {
+                    switch (link.type) {
+                      case 'wikipedia':
+                        return 'orange';
+                      case 'wikidata':
+                        return 'blue';
+                      case 'api':
+                        return 'green';
+                      default:
+                        return 'topic';
+                    }
+                  };
+
+                  return (
+                    <Grid.Col key={index} span={{ base: 12, sm: 6, md: 3 }}>
+                      <Anchor
+                        href={link.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        style={{ textDecoration: 'none' }}
+                      >
+                        <Paper
+                          p="md"
+                          withBorder
+                          radius="md"
+                          style={(theme) => ({
+                            transition: 'all 150ms ease',
+                            cursor: 'pointer',
+                            '&:hover': {
+                              transform: 'translateY(-2px)',
+                              boxShadow: theme.shadows.md,
+                              borderColor: theme.colors[getColor()][5],
+                            },
+                          })}
+                        >
+                          <Group>
+                            {link.icon}
+                            <Text size="sm" fw={500} c={getColor()}>
+                              {link.label}
+                            </Text>
+                          </Group>
+                        </Paper>
+                      </Anchor>
+                    </Grid.Col>
+                  );
+                })}
+              </Grid>
+            </Card>
+          </Stack>
+        </Tabs.Panel>
+
+        <Tabs.Panel value="raw-data">
+          <RawDataView 
+            data={topic}
+            title="Topic Raw Data"
+            entityType="topic"
+            entityId={topic.id}
+            maxHeight={700}
+            showDownload={true}
+          />
+        </Tabs.Panel>
+      </Tabs>
+    </EntityPageTemplate>
   );
 }
 
