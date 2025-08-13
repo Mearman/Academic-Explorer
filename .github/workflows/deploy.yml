@@ -212,9 +212,9 @@ jobs:
   #     - name: Run type checking
   #       run: pnpm exec tsc --noEmit
 
-  # Build job
+  # Build job (runs in parallel with quality checks)
   build:
-    needs: [install, lint, test]
+    needs: install
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -248,11 +248,11 @@ jobs:
         with:
           path: ./dist
 
-  # Deploy job
+  # Deploy job (waits for both build and quality checks to pass)
   deploy:
     # Only deploy on push to main branch
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-    needs: build
+    needs: [build, lint, test]
     runs-on: ubuntu-latest
     environment:
       name: github-pages
