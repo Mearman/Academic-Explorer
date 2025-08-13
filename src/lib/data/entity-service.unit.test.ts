@@ -41,10 +41,14 @@ vi.mock('@/lib/openalex', () => ({
 
 describe('Entity Service Functions', () => {
   // Get mock reference for accessing mocked functions
-  const { cachedOpenAlex } = vi.mocked(await import('@/lib/openalex'));
+  let cachedOpenAlex: any;
 
-  beforeEach(() => {
+  beforeEach(async () => {
     vi.clearAllMocks();
+    // Get mock reference for accessing mocked functions
+    const openAlexModule = vi.mocked(await import('@/lib/openalex'));
+    cachedOpenAlex = openAlexModule.cachedOpenAlex;
+    
     // Reset mock implementations
     cachedOpenAlex.work.mockReset();
     cachedOpenAlex.author.mockReset();
