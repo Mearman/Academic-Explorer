@@ -2,7 +2,7 @@
  * OpenAlex API Request and Response Types
  */
 
-import type { Work, Author, Source, Institution, Publisher, Funder, Topic, Concept, Keyword } from './entities';
+import type { Work, Author, Source, Institution, Publisher, Funder, Topic, Concept, Keyword, Continent, Region } from './entities';
 
 // Base API response structure
 export interface ApiResponse<T> {
@@ -254,6 +254,40 @@ export interface KeywordsParams extends BaseParams {
   };
 }
 
+export interface ContinentsParams extends BaseParams {
+  filter?: string | {
+    display_name?: string;
+    works_count?: number | string;
+    cited_by_count?: number | string;
+  };
+}
+
+export interface RegionsParams extends BaseParams {
+  filter?: string | {
+    display_name?: string;
+    works_count?: number | string;
+    cited_by_count?: number | string;
+  };
+}
+
+// Aboutness endpoint params and response
+export interface AboutnessParams {
+  text: string;
+  return_concepts?: number;
+  return_topics?: number;
+}
+
+export interface AboutnessResult {
+  id: string;
+  display_name: string;
+  score: number;
+}
+
+export interface AboutnessResponse {
+  concepts: AboutnessResult[];
+  topics: AboutnessResult[];
+}
+
 // Group by results
 export interface GroupByResult {
   key: string;
@@ -314,6 +348,8 @@ export type FundersResponse = ApiResponse<Funder>;
 export type TopicsResponse = ApiResponse<Topic>;
 export type ConceptsResponse = ApiResponse<Concept>;
 export type KeywordsResponse = ApiResponse<Keyword>;
+export type ContinentsResponse = ApiResponse<Continent>;
+export type RegionsResponse = ApiResponse<Region>;
 
 // Single entity responses
 export interface SingleEntityResponse<T> {
