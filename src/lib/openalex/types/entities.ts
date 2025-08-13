@@ -388,6 +388,24 @@ export interface Keyword {
   created_date: string;
 }
 
+// Geo entities
+export interface Continent {
+  id: string;
+  display_name: string;
+  wikidata?: string;
+  works_count: number;
+  cited_by_count: number;
+}
+
+export interface Region {
+  id: string;
+  display_name: string;
+  description?: string;
+  wikidata?: string;
+  works_count: number;
+  cited_by_count: number;
+}
+
 // Supporting types
 export interface Grant {
   funder: string;
@@ -451,4 +469,12 @@ export function isTopic(entity: unknown): entity is Topic {
 
 export function isConcept(entity: unknown): entity is Concept {
   return typeof entity === 'object' && entity !== null && 'level' in entity;
+}
+
+export function isContinent(entity: unknown): entity is Continent {
+  return typeof entity === 'object' && entity !== null && 'display_name' in entity && 'works_count' in entity && 'cited_by_count' in entity && !('description' in entity);
+}
+
+export function isRegion(entity: unknown): entity is Region {
+  return typeof entity === 'object' && entity !== null && 'display_name' in entity && 'works_count' in entity && 'cited_by_count' in entity && 'description' in entity;
 }
