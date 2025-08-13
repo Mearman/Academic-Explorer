@@ -16,7 +16,8 @@ import {
   Notification,
   Switch
 } from '@mantine/core';
-import { IconCode, IconCopy, IconCheck, IconDownload, IconEye, IconTextWrap } from '@tabler/icons-react';
+import { IconCode, IconCopy, IconCheck, IconDownload, IconEye, IconTextWrap, IconFileText } from '@tabler/icons-react';
+import { reconstructAbstract } from '@/lib/openalex/utils/transformers';
 
 interface RawDataViewProps {
   /** The raw data object to display */
@@ -83,6 +84,18 @@ export function RawDataView({
   const [wordWrap, setWordWrap] = useState(true);
   const [prettyPrint, setPrettyPrint] = useState(true);
   
+  // Check if data has an abstract inverted index (for OpenAlex Works)
+  const hasAbstractIndex = data && 
+    typeof data === 'object' && 
+    'abstract_inverted_index' in data && 
+    data.abstract_inverted_index &&
+    typeof data.abstract_inverted_index === 'object' &&
+    Object.keys(data.abstract_inverted_index).length > 0;
+  
+  const reconstructedAbstract = hasAbstractIndex 
+    ? reconstructAbstract(data.abstract_inverted_index as Record<string, number[]>)
+    : null;
+  
   // Format JSON with different options
   const formatJson = (useReplacer: boolean, spaces: number) => {
     if (useReplacer) {
@@ -109,9 +122,19 @@ export function RawDataView({
     }
   };
 
-  const handleDownload = (text: string, format: 'json' | 'compact' = 'json') => {
-    const filename = `${entityType || 'entity'}-${entityId || 'data'}-${format}.json`;
-    const blob = new Blob([text], { type: 'application/json' });
+  const handleDownload = (text: string, format: 'json' | 'compact' | 'abstract' = 'json') => {
+    let filename: string;
+    let mimeType: string;
+    
+    if (format === 'abstract') {
+      filename = `${entityType || 'entity'}-${entityId || 'data'}-abstract.txt`;
+      mimeType = 'text/plain';
+    } else {
+      filename = `${entityType || 'entity'}-${entityId || 'data'}-${format}.json`;
+      mimeType = 'application/json';
+    }
+    
+    const blob = new Blob([text], { type: mimeType });
     const url = URL.createObjectURL(blob);
     
     const link = document.createElement('a');
@@ -154,6 +177,11 @@ export function RawDataView({
           <Tabs.Tab value="compact" leftSection={<IconCode size={14} />}>
             Compact
           </Tabs.Tab>
+          {hasAbstractIndex && (
+            <Tabs.Tab value="abstract" leftSection={<IconFileText size={14} />}>
+              Abstract
+            </Tabs.Tab>
+          )}
         </Tabs.List>
 
         <Tabs.Panel value="formatted" pt="md">
@@ -291,6 +319,85 @@ export function RawDataView({
             </Paper>
           </Stack>
         </Tabs.Panel>
+
+        {hasAbstractIndex && (
+          <Tabs.Panel value="abstract" pt="md">
+            <Stack gap="sm">
+              <Group justify="space-between">
+                <Text size="sm" c="dimmed">
+                  Abstract reconstructed from inverted index
+                </Text>
+                <Group gap="xs">
+                  <ActionIcon
+                    variant="light"
+                    size="sm"
+                    onClick={() => handleCopy(reconstructedAbstract || '')}
+                    title="Copy reconstructed abstract"
+                  >
+                    {copied ? <IconCheck size={14} color="green" /> : <IconCopy size={14} />}
+                  </ActionIcon>
+                  {showDownload && (
+                    <ActionIcon
+                      variant="light"
+                      size="sm"
+                      onClick={() => handleDownload(reconstructedAbstract || '', 'abstract')}
+                      title="Download abstract as text file"
+                    >
+                      <IconDownload size={14} />
+                    </ActionIcon>
+                  )}
+                </Group>
+              </Group>
+
+              {/* Abstract Statistics */}
+              <Group gap="md" bg="blue.0" p="sm" style={{ borderRadius: '4px' }}>
+                <Text size="sm" fw={500}>Statistics:</Text>
+                {reconstructedAbstract && (
+                  <>
+                    <Badge variant="light" size="sm" color="blue">
+                      {reconstructedAbstract.split(' ').length} words
+                    </Badge>
+                    <Badge variant="light" size="sm" color="blue">
+                      {reconstructedAbstract.length} characters
+                    </Badge>
+                    <Badge variant="light" size="sm" color="blue">
+                      {Object.keys(data.abstract_inverted_index as object).length} unique terms
+                    </Badge>
+                  </>
+                )}
+              </Group>
+              
+              <Paper withBorder>
+                <ScrollArea h={Math.min(maxHeight, 400)} scrollbarSize={6}>
+                  <Text
+                    p="md"
+                    style={{ 
+                      fontSize: '14px',
+                      lineHeight: '1.6',
+                      fontFamily: '"Segoe UI", Tahoma, Geneva, Verdana, sans-serif',
+                      whiteSpace: 'pre-wrap',
+                      textAlign: 'justify',
+                    }}
+                  >
+                    {reconstructedAbstract || 'Unable to reconstruct abstract from inverted index.'}
+                  </Text>
+                </ScrollArea>
+              </Paper>
+
+              {/* Show inverted index details */}
+              <Paper withBorder bg="gray.50" p="sm">
+                <Group gap="xs" mb="xs">
+                  <IconCode size={16} />
+                  <Text size="sm" fw={500}>Inverted Index Structure</Text>
+                </Group>
+                <Text size="xs" c="dimmed">
+                  The abstract is stored as an inverted index where each word maps to its position(s) in the original text. 
+                  This format is used by OpenAlex to save space and enable efficient text searching.
+                </Text>
+              </Paper>
+            </Stack>
+          </Tabs.Panel>
+        )}
       </Tabs>
 
       {copied && (
