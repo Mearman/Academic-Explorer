@@ -8,7 +8,7 @@ vi.mock('idb', () => ({
   openDB: vi.fn(),
 }));
 
-describe.skip('CacheInterceptor', () => {
+describe('CacheInterceptor', () => {
   let interceptor: CacheInterceptor;
   let mockDB: any;
   let mockStore: any;
