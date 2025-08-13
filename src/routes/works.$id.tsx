@@ -8,9 +8,7 @@ import {
   Title, 
   Anchor, 
   Paper,
-  Grid,
-  ActionIcon,
-  Tooltip
+  Grid
 } from '@mantine/core';
 import { IconExternalLink, IconDownload, IconInfoCircle, IconFileText, IconTags, IconLink } from '@tabler/icons-react';
 import type { Work } from '@/lib/openalex/types';
