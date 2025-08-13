@@ -26,20 +26,20 @@ import {
 import { EntityType } from '@/lib/openalex/utils/entity-detection';
 import { mockWork, mockAuthor, mockSource, mockInstitution } from '@/test/mocks/data';
 
-// Mock the cachedOpenAlex client
-vi.mock('@/lib/openalex', () => ({
-  cachedOpenAlex: {
-    work: vi.fn(),
-    author: vi.fn(),
-    source: vi.fn(),
-    institution: vi.fn(),
-    publisher: vi.fn(),
-    funder: vi.fn(),
-    topic: vi.fn()
-  }
+// Mock the cachedOpenAlex client using vi.hoisted for proper mock isolation
+const mockCachedOpenAlex = vi.hoisted(() => ({
+  work: vi.fn(),
+  author: vi.fn(),
+  source: vi.fn(),
+  institution: vi.fn(),
+  publisher: vi.fn(),
+  funder: vi.fn(),
+  topic: vi.fn()
 }));
 
-const mockCachedOpenAlex = vi.mocked(await import('@/lib/openalex')).cachedOpenAlex;
+vi.mock('@/lib/openalex', () => ({
+  cachedOpenAlex: mockCachedOpenAlex
+}));
 
 describe('Entity Service Functions', () => {
   beforeEach(() => {
