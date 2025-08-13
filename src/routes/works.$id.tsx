@@ -8,9 +8,11 @@ import {
   Title, 
   Anchor, 
   Paper,
-  Grid
+  Grid,
+  Tabs
 } from '@mantine/core';
-import { IconExternalLink, IconDownload, IconInfoCircle, IconFileText, IconTags, IconLink } from '@tabler/icons-react';
+import { IconExternalLink, IconDownload, IconInfoCircle, IconFileText, IconTags, IconLink, IconCode } from '@tabler/icons-react';
+import { RawDataView } from '@/components/organisms/raw-data-view';
 import type { Work } from '@/lib/openalex/types';
 import { EntityType } from '@/lib/openalex/utils/entity-detection';
 import { useWorkData } from '@/hooks/use-entity-data';
@@ -42,8 +44,19 @@ function WorkDisplay({ work }: { work: Work }) {
 
   return (
     <EntityPageTemplate entity={work}>
-      <Stack gap="xl">
-        {/* Enhanced Key Metrics */}
+      <Tabs defaultValue="overview" keepMounted={false}>
+        <Tabs.List grow mb="xl">
+          <Tabs.Tab value="overview" leftSection={<IconFileText size={16} />}>
+            Overview
+          </Tabs.Tab>
+          <Tabs.Tab value="raw-data" leftSection={<IconCode size={16} />}>
+            Raw Data
+          </Tabs.Tab>
+        </Tabs.List>
+
+        <Tabs.Panel value="overview">
+          <Stack gap="xl">
+            {/* Enhanced Key Metrics */}
         <Grid>
           <Grid.Col span={{ base: 12, sm: 6, md: 3 }}>
             <Paper p="lg" radius="md" withBorder>
@@ -279,7 +292,20 @@ function WorkDisplay({ work }: { work: Work }) {
             })}
           </Grid>
         </Card>
-      </Stack>
+          </Stack>
+        </Tabs.Panel>
+
+        <Tabs.Panel value="raw-data">
+          <RawDataView 
+            data={work}
+            title="Work Raw Data"
+            entityType="work"
+            entityId={work.id}
+            maxHeight={700}
+            showDownload={true}
+          />
+        </Tabs.Panel>
+      </Tabs>
     </EntityPageTemplate>
   );
 }
