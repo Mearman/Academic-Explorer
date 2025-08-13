@@ -11,14 +11,15 @@ export default defineConfig(({ command }) => ({
     react(),
     TanStackRouterVite(),
     vanillaExtractPlugin(),
-    // Custom plugin to copy 404.html for GitHub Pages SPA routing
+    // Custom plugin to copy built index.html to 404.html for GitHub Pages SPA routing
     {
-      name: 'copy-404',
+      name: 'copy-index-to-404',
       closeBundle() {
         try {
-          copyFileSync('public/404.html', 'dist/404.html');
+          copyFileSync('dist/index.html', 'dist/404.html');
+          console.log('✓ Copied dist/index.html to dist/404.html for GitHub Pages SPA routing');
         } catch (error) {
-          console.warn('Failed to copy 404.html:', error);
+          console.warn('Failed to copy index.html to 404.html:', error);
         }
       }
     }
