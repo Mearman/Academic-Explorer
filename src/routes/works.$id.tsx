@@ -1,106 +1,94 @@
 import { createFileRoute } from '@tanstack/react-router';
 import type { Work } from '@/lib/openalex/types';
 import { EntityType } from '@/lib/openalex/utils/entity-detection';
-import EntityErrorBoundary from '@/components/error-boundary';
 import { useWorkData } from '@/hooks/use-entity-data';
 import { EntityError, EntitySkeleton, EntityFallback } from '@/components/entity-error';
+import { 
+  EntityPageTemplate,
+  EntitySection,
+  Badge,
+  MetricBadge,
+  EntityErrorBoundary
+} from '@/components';
 
 function WorkDisplay({ work }: { work: Work }) {
-  return (
-    <div className="max-w-4xl mx-auto p-6 space-y-8">
-      {/* Header */}
-      <header className="space-y-4">
-        <div className="flex items-center space-x-3">
-          <span className="bg-blue-100 text-blue-800 text-sm font-medium px-2.5 py-0.5 rounded">
-            Work
-          </span>
-          <span className="text-gray-500 text-sm font-mono">
-            {work.id}
-          </span>
-          {work.type && (
-            <span className="bg-gray-100 text-gray-700 text-sm px-2 py-0.5 rounded">
-              {work.type.replace('-', ' ')}
-            </span>
-          )}
-        </div>
-        
-        <h1 className="text-3xl font-bold text-gray-900">
-          {work.display_name || work.title || 'Untitled Work'}
-        </h1>
-        
-        {work.authorships && work.authorships.length > 0 && (
-          <div className="flex flex-wrap items-center gap-2">
-            <span className="text-gray-600">By:</span>
-            {work.authorships.slice(0, 10).map((authorship, index) => (
-              <span key={authorship.author.id} className="text-blue-600 hover:underline">
-                {authorship.author.display_name}
-                {index < work.authorships.length - 1 && index < 9 ? ',' : ''}
-                {index === 9 && work.authorships.length > 10 && '...'}
-              </span>
-            ))}
-          </div>
-        )}
-      </header>
+  // External links for the work
+  const externalLinks = [
+    work.primary_location?.landing_page_url && {
+      url: work.primary_location.landing_page_url,
+      label: 'Publisher Page',
+      type: 'publisher' as const
+    },
+    work.best_oa_location?.pdf_url && {
+      url: work.best_oa_location.pdf_url,
+      label: 'Free PDF Access',
+      type: 'pdf' as const
+    },
+    {
+      url: `https://openalex.org/${work.id}`,
+      label: 'View on OpenAlex',
+      type: 'openalex' as const
+    }
+  ].filter(Boolean);
 
+  return (
+    <EntityPageTemplate
+      entity={work}
+    >
       {/* Key Metrics */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <div className="bg-white p-4 rounded-lg border text-center">
-          <div className="text-2xl font-bold text-blue-600">
-            {work.cited_by_count.toLocaleString()}
-          </div>
-          <div className="text-sm text-gray-600">Citations</div>
-        </div>
-        
-        <div className="bg-white p-4 rounded-lg border text-center">
-          <div className="text-2xl font-bold text-green-600">
-            {work.publication_year || 'N/A'}
-          </div>
-          <div className="text-sm text-gray-600">Published</div>
-        </div>
-        
-        <div className="bg-white p-4 rounded-lg border text-center">
-          <div className="text-2xl font-bold text-purple-600">
-            {work.authorships?.length || 0}
-          </div>
-          <div className="text-sm text-gray-600">Authors</div>
-        </div>
-        
-        <div className="bg-white p-4 rounded-lg border text-center">
-          <div className="text-2xl font-bold text-orange-600">
-            {work.open_access.is_oa ? 'Open' : 'Closed'}
-          </div>
-          <div className="text-sm text-gray-600">Access</div>
-        </div>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', gap: '16px', marginBottom: '32px' }}>
+        <MetricBadge
+          value={work.cited_by_count}
+          label="Citations"
+          variant="primary"
+          size="lg"
+        />
+        <MetricBadge
+          value={work.publication_year || 'N/A'}
+          label="Published"
+          variant="default"
+          size="lg"
+        />
+        <MetricBadge
+          value={work.authorships?.length || 0}
+          label="Authors"
+          variant="default"
+          size="lg"
+        />
+        <MetricBadge
+          value={work.open_access.is_oa ? 'Open' : 'Closed'}
+          label="Access"
+          variant={work.open_access.is_oa ? 'success' : 'warning'}
+          size="lg"
+        />
       </div>
 
       {/* Publication Details */}
-      <div className="bg-white p-6 rounded-lg border space-y-4">
-        <h2 className="text-xl font-semibold">Publication Details</h2>
-        
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <EntitySection title="Publication Details" icon="info">
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '16px' }}>
           {work.primary_location?.source && (
             <div>
-              <dt className="font-medium text-gray-700">Source</dt>
-              <dd className="text-gray-900">{work.primary_location.source.display_name}</dd>
+              <dt style={{ fontWeight: '500', marginBottom: '4px' }}>Source</dt>
+              <dd>{work.primary_location.source.display_name}</dd>
             </div>
           )}
           
           {work.publication_date && (
             <div>
-              <dt className="font-medium text-gray-700">Publication Date</dt>
-              <dd className="text-gray-900">{work.publication_date}</dd>
+              <dt style={{ fontWeight: '500', marginBottom: '4px' }}>Publication Date</dt>
+              <dd>{work.publication_date}</dd>
             </div>
           )}
           
           {work.ids.doi && (
             <div>
-              <dt className="font-medium text-gray-700">DOI</dt>
-              <dd className="text-gray-900">
+              <dt style={{ fontWeight: '500', marginBottom: '4px' }}>DOI</dt>
+              <dd>
                 <a 
                   href={`https://doi.org/${work.ids.doi}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-blue-600 hover:underline"
+                  style={{ color: 'var(--color-primary)', textDecoration: 'none' }}
                 >
                   {work.ids.doi}
                 </a>
@@ -110,81 +98,80 @@ function WorkDisplay({ work }: { work: Work }) {
           
           {work.language && (
             <div>
-              <dt className="font-medium text-gray-700">Language</dt>
-              <dd className="text-gray-900">{work.language}</dd>
+              <dt style={{ fontWeight: '500', marginBottom: '4px' }}>Language</dt>
+              <dd>{work.language}</dd>
             </div>
           )}
         </div>
-      </div>
+      </EntitySection>
 
       {/* Abstract */}
       {work.abstract_inverted_index && (
-        <div className="bg-white p-6 rounded-lg border">
-          <h2 className="text-xl font-semibold mb-4">Abstract</h2>
-          <div className="text-gray-700 leading-relaxed">
-            {/* Note: In a real implementation, you'd reconstruct the abstract from the inverted index */}
-            <p className="italic text-gray-600">
-              Abstract available (inverted index format). 
-              Implementation needed to reconstruct full text.
-            </p>
-          </div>
-        </div>
+        <EntitySection title="Abstract" icon="document">
+          <p style={{ fontStyle: 'italic', opacity: 0.7 }}>
+            Abstract available (inverted index format). 
+            Implementation needed to reconstruct full text.
+          </p>
+        </EntitySection>
       )}
 
       {/* Topics */}
       {work.topics && work.topics.length > 0 && (
-        <div className="bg-white p-6 rounded-lg border">
-          <h2 className="text-xl font-semibold mb-4">Topics</h2>
-          <div className="flex flex-wrap gap-2">
+        <EntitySection title="Topics" icon="tag">
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
             {work.topics.map((topic) => (
-              <span
+              <Badge
                 key={topic.id}
-                className="bg-blue-50 text-blue-700 px-3 py-1 rounded-full text-sm"
+                variant="secondary"
+                size="sm"
               >
                 {topic.display_name}
-              </span>
+              </Badge>
             ))}
           </div>
-        </div>
+        </EntitySection>
       )}
 
-      {/* Links */}
-      <div className="bg-white p-6 rounded-lg border">
-        <h2 className="text-xl font-semibold mb-4">External Links</h2>
-        <div className="space-y-2">
-          {work.primary_location?.landing_page_url && (
-            <a
-              href={work.primary_location.landing_page_url}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="block text-blue-600 hover:underline"
-            >
-              Publisher Page
-            </a>
-          )}
-          
-          {work.best_oa_location?.pdf_url && (
-            <a
-              href={work.best_oa_location.pdf_url}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="block text-green-600 hover:underline"
-            >
-              Free PDF Access
-            </a>
-          )}
-          
-          <a
-            href={`https://openalex.org/${work.id}`}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="block text-gray-600 hover:underline"
-          >
-            View on OpenAlex
-          </a>
+      {/* External Links */}
+      <EntitySection title="External Links" icon="link">
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '12px' }}>
+          {externalLinks.map((link, index) => (
+            link && (
+              <a
+                key={index}
+                href={link.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '6px',
+                  padding: '8px 12px',
+                  backgroundColor: 'var(--color-card-background, #f8f9fa)',
+                  border: '1px solid var(--color-border, #e5e7eb)',
+                  borderRadius: '6px',
+                  textDecoration: 'none',
+                  color: 'var(--color-primary, #3b82f6)',
+                  fontSize: '14px',
+                  fontWeight: '500',
+                  transition: 'all 150ms ease',
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.backgroundColor = 'var(--color-primary, #3b82f6)';
+                  e.currentTarget.style.color = 'white';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.backgroundColor = 'var(--color-card-background, #f8f9fa)';
+                  e.currentTarget.style.color = 'var(--color-primary, #3b82f6)';
+                }}
+              >
+                {link.label}
+              </a>
+            )
+          ))}
         </div>
-      </div>
-    </div>
+      </EntitySection>
+    </EntityPageTemplate>
   );
 }
 
