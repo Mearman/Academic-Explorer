@@ -71,8 +71,8 @@ export type {
 } from './types';
 
 // Design tokens
+export { entityVars } from './design-tokens.css';
 export { 
-  entityVars, 
   getEntityColour, 
   getOpenAccessColour 
-} from './design-tokens.css';
+} from './design-tokens.utils';
