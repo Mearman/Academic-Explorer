@@ -18,6 +18,15 @@ export class CachedOpenAlexClient extends OpenAlexClient {
   private cacheEnabled = true;
   private deduplicateEnabled = true;
 
+  // Normalize OpenAlex IDs to extract just the entity identifier
+  private normalizeId(id: string): string {
+    // If it's a full OpenAlex URL, extract just the ID part
+    if (id.startsWith('https://openalex.org/')) {
+      return id.split('/').pop() || id;
+    }
+    return id;
+  }
+
   constructor(config: CachedOpenAlexConfig = {}) {
     super(config);
     
@@ -46,30 +55,50 @@ export class CachedOpenAlexClient extends OpenAlexClient {
     }
 
     // Try to get from cache first
-    const cached = await this.cache.get<T>(cacheKey, params as Record<string, unknown>);
-    if (cached !== null) {
-      this.cache.recordHit();
-      console.debug(`Cache hit for ${cacheKey}`);
-      return cached;
+    try {
+      const cached = await this.cache.get<T>(cacheKey, params as Record<string, unknown>);
+      if (cached !== null) {
+        this.cache.recordHit();
+        console.debug(`Cache hit for ${cacheKey}`);
+        return cached;
+      }
+    } catch (error) {
+      console.error(`Cache read error for ${cacheKey}:`, error);
+      // Continue with normal request flow
     }
 
     // Deduplicate parallel requests for the same resource
     if (this.deduplicateEnabled) {
       const dedupeKey = `${cacheKey}:${JSON.stringify(params)}`;
-      return this.deduplicator.deduplicate(dedupeKey, async () => {
-        const result = await method();
-        await this.cache.set(cacheKey, params as Record<string, unknown>, result);
-        this.cache.recordMiss();
-        console.debug(`Cache miss for ${cacheKey} - cached for future use`);
-        return result;
-      }) as Promise<T>;
+      try {
+        return await this.deduplicator.deduplicate(dedupeKey, async () => {
+          const result = await method();
+          try {
+            await this.cache.set(cacheKey, params as Record<string, unknown>, result);
+            console.debug(`Cache miss for ${cacheKey} - cached for future use`);
+          } catch (cacheError) {
+            console.error(`Cache write error for ${cacheKey}:`, cacheError);
+            // Continue without failing the request
+          }
+          this.cache.recordMiss();
+          return result;
+        }) as Promise<T>;
+      } catch (dedupeError) {
+        console.error(`Deduplication error for ${cacheKey}:`, dedupeError);
+        // Fall back to direct API call (continue to code below)
+      }
     }
 
-    // Make the request and cache the result
+    // Make the request and cache the result (fallback or no deduplication)
     this.cache.recordMiss();
     const result = await method();
-    await this.cache.set(cacheKey, params as Record<string, unknown>, result);
-    console.debug(`Cache miss for ${cacheKey} - cached for future use`);
+    try {
+      await this.cache.set(cacheKey, params as Record<string, unknown>, result);
+      console.debug(`Cache miss for ${cacheKey} - cached for future use`);
+    } catch (cacheError) {
+      console.error(`Cache write error for ${cacheKey}:`, cacheError);
+      // Continue without failing the request
+    }
     return result;
   }
 
@@ -84,9 +113,10 @@ export class CachedOpenAlexClient extends OpenAlexClient {
   }
 
   async work(id: string, skipCache = false): Promise<import('./types').Work> {
+    const normalizedId = this.normalizeId(id);
     return this.cachedRequest(
       () => super.work(id),
-      `work:${id}`,
+      `work:${normalizedId}`,
       {},
       skipCache
     );
@@ -102,9 +132,10 @@ export class CachedOpenAlexClient extends OpenAlexClient {
   }
 
   async author(id: string, skipCache = false): Promise<import('./types').Author> {
+    const normalizedId = this.normalizeId(id);
     return this.cachedRequest(
       () => super.author(id),
-      `author:${id}`,
+      `author:${normalizedId}`,
       {},
       skipCache
     );
@@ -120,9 +151,10 @@ export class CachedOpenAlexClient extends OpenAlexClient {
   }
 
   async source(id: string, skipCache = false): Promise<import('./types').Source> {
+    const normalizedId = this.normalizeId(id);
     return this.cachedRequest(
       () => super.source(id),
-      `source:${id}`,
+      `source:${normalizedId}`,
       {},
       skipCache
     );
@@ -138,9 +170,10 @@ export class CachedOpenAlexClient extends OpenAlexClient {
   }
 
   async institution(id: string, skipCache = false): Promise<import('./types').Institution> {
+    const normalizedId = this.normalizeId(id);
     return this.cachedRequest(
       () => super.institution(id),
-      `institution:${id}`,
+      `institution:${normalizedId}`,
       {},
       skipCache
     );
@@ -156,9 +189,10 @@ export class CachedOpenAlexClient extends OpenAlexClient {
   }
 
   async publisher(id: string, skipCache = false): Promise<import('./types').Publisher> {
+    const normalizedId = this.normalizeId(id);
     return this.cachedRequest(
       () => super.publisher(id),
-      `publisher:${id}`,
+      `publisher:${normalizedId}`,
       {},
       skipCache
     );
@@ -174,9 +208,10 @@ export class CachedOpenAlexClient extends OpenAlexClient {
   }
 
   async funder(id: string, skipCache = false): Promise<import('./types').Funder> {
+    const normalizedId = this.normalizeId(id);
     return this.cachedRequest(
       () => super.funder(id),
-      `funder:${id}`,
+      `funder:${normalizedId}`,
       {},
       skipCache
     );
@@ -192,9 +227,10 @@ export class CachedOpenAlexClient extends OpenAlexClient {
   }
 
   async topic(id: string, skipCache = false): Promise<import('./types').Topic> {
+    const normalizedId = this.normalizeId(id);
     return this.cachedRequest(
       () => super.topic(id),
-      `topic:${id}`,
+      `topic:${normalizedId}`,
       {},
       skipCache
     );
