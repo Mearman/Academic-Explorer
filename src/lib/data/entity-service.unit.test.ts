@@ -26,37 +26,38 @@ import {
 import { EntityType } from '@/lib/openalex/utils/entity-detection';
 import { mockWork, mockAuthor, mockSource, mockInstitution } from '@/test/mocks/data';
 
-// Mock the cachedOpenAlex client using vi.hoisted for proper mock isolation
-const mockCachedOpenAlex = vi.hoisted(() => ({
-  work: vi.fn(),
-  author: vi.fn(),
-  source: vi.fn(),
-  institution: vi.fn(),
-  publisher: vi.fn(),
-  funder: vi.fn(),
-  topic: vi.fn()
-}));
-
+// Mock the cachedOpenAlex client with simpler approach to reduce memory usage
 vi.mock('@/lib/openalex', () => ({
-  cachedOpenAlex: mockCachedOpenAlex
+  cachedOpenAlex: {
+    work: vi.fn(),
+    author: vi.fn(),
+    source: vi.fn(),
+    institution: vi.fn(),
+    publisher: vi.fn(),
+    funder: vi.fn(),
+    topic: vi.fn()
+  }
 }));
 
 describe('Entity Service Functions', () => {
+  // Get mock reference for accessing mocked functions
+  const { cachedOpenAlex } = vi.mocked(await import('@/lib/openalex'));
+
   beforeEach(() => {
     vi.clearAllMocks();
     // Reset mock implementations
-    mockCachedOpenAlex.work.mockReset();
-    mockCachedOpenAlex.author.mockReset();
-    mockCachedOpenAlex.source.mockReset();
-    mockCachedOpenAlex.institution.mockReset();
-    mockCachedOpenAlex.publisher.mockReset();
-    mockCachedOpenAlex.funder.mockReset();
-    mockCachedOpenAlex.topic.mockReset();
+    cachedOpenAlex.work.mockReset();
+    cachedOpenAlex.author.mockReset();
+    cachedOpenAlex.source.mockReset();
+    cachedOpenAlex.institution.mockReset();
+    cachedOpenAlex.publisher.mockReset();
+    cachedOpenAlex.funder.mockReset();
+    cachedOpenAlex.topic.mockReset();
   });
 
   describe('fetchWork', () => {
     it('should fetch work successfully', async () => {
-      mockCachedOpenAlex.work.mockResolvedValue(mockWork);
+      cachedOpenAlex.work.mockResolvedValue(mockWork);
 
       const result = await fetchWork('W2741809807');
 
@@ -65,35 +66,35 @@ describe('Entity Service Functions', () => {
       expect(result.error).toBeUndefined();
       expect(result.cached).toBe(true);
       expect(result.fetchTime).toBeGreaterThan(0);
-      expect(mockCachedOpenAlex.work).toHaveBeenCalledWith('W2741809807', false);
+      expect(cachedOpenAlex.work).toHaveBeenCalledWith('W2741809807', false);
     });
 
     it('should handle work with numeric ID', async () => {
-      mockCachedOpenAlex.work.mockResolvedValue(mockWork);
+      cachedOpenAlex.work.mockResolvedValue(mockWork);
 
       const result = await fetchWork('2741809807');
 
       expect(result.success).toBe(true);
-      expect(mockCachedOpenAlex.work).toHaveBeenCalledWith('W2741809807', false);
+      expect(cachedOpenAlex.work).toHaveBeenCalledWith('W2741809807', false);
     });
 
     it('should handle work from URL', async () => {
-      mockCachedOpenAlex.work.mockResolvedValue(mockWork);
+      cachedOpenAlex.work.mockResolvedValue(mockWork);
 
       const result = await fetchWork('https://openalex.org/W2741809807');
 
       expect(result.success).toBe(true);
-      expect(mockCachedOpenAlex.work).toHaveBeenCalledWith('W2741809807', false);
+      expect(cachedOpenAlex.work).toHaveBeenCalledWith('W2741809807', false);
     });
 
     it('should skip cache when requested', async () => {
-      mockCachedOpenAlex.work.mockResolvedValue(mockWork);
+      cachedOpenAlex.work.mockResolvedValue(mockWork);
 
       const result = await fetchWork('W2741809807', { skipCache: true });
 
       expect(result.success).toBe(true);
       expect(result.cached).toBe(false);
-      expect(mockCachedOpenAlex.work).toHaveBeenCalledWith('W2741809807', true);
+      expect(cachedOpenAlex.work).toHaveBeenCalledWith('W2741809807', true);
     });
 
     it('should return error for invalid ID format', async () => {
@@ -111,7 +112,7 @@ describe('Entity Service Functions', () => {
     });
 
     it('should handle 404 errors', async () => {
-      mockCachedOpenAlex.work.mockRejectedValue(new Error('Not found - 404'));
+      cachedOpenAlex.work.mockRejectedValue(new Error('Not found - 404'));
 
       const result = await fetchWork('W2741809807');
 
@@ -128,7 +129,7 @@ describe('Entity Service Functions', () => {
     });
 
     it('should handle network errors', async () => {
-      mockCachedOpenAlex.work.mockRejectedValue(new Error('Network connection failed'));
+      cachedOpenAlex.work.mockRejectedValue(new Error('Network connection failed'));
 
       const result = await fetchWork('W2741809807');
 
@@ -143,7 +144,7 @@ describe('Entity Service Functions', () => {
     });
 
     it('should handle rate limiting errors', async () => {
-      mockCachedOpenAlex.work.mockRejectedValue(new Error('Too many requests - 429'));
+      cachedOpenAlex.work.mockRejectedValue(new Error('Too many requests - 429'));
 
       const result = await fetchWork('W2741809807');
 
@@ -162,7 +163,7 @@ describe('Entity Service Functions', () => {
       // Mock an AbortError to simulate timeout
       const abortError = new Error('Request timeout');
       abortError.name = 'AbortError';
-      mockCachedOpenAlex.work.mockRejectedValue(abortError);
+      cachedOpenAlex.work.mockRejectedValue(abortError);
 
       const result = await fetchWork('W2741809807');
 
@@ -171,7 +172,7 @@ describe('Entity Service Functions', () => {
     });
 
     it('should throw errors when throwOnError is true', async () => {
-      mockCachedOpenAlex.work.mockRejectedValue(new Error('Test error'));
+      cachedOpenAlex.work.mockRejectedValue(new Error('Test error'));
 
       await expect(
         fetchWork('W2741809807', { throwOnError: true })
@@ -181,22 +182,22 @@ describe('Entity Service Functions', () => {
 
   describe('fetchAuthor', () => {
     it('should fetch author successfully', async () => {
-      mockCachedOpenAlex.author.mockResolvedValue(mockAuthor);
+      cachedOpenAlex.author.mockResolvedValue(mockAuthor);
 
       const result = await fetchAuthor('A2887492');
 
       expect(result.success).toBe(true);
       expect(result.data).toEqual(mockAuthor);
-      expect(mockCachedOpenAlex.author).toHaveBeenCalledWith('A2887492', false);
+      expect(cachedOpenAlex.author).toHaveBeenCalledWith('A2887492', false);
     });
 
     it('should handle numeric author ID', async () => {
-      mockCachedOpenAlex.author.mockResolvedValue(mockAuthor);
+      cachedOpenAlex.author.mockResolvedValue(mockAuthor);
 
       const result = await fetchAuthor('2887492');
 
       expect(result.success).toBe(true);
-      expect(mockCachedOpenAlex.author).toHaveBeenCalledWith('A2887492', false);
+      expect(cachedOpenAlex.author).toHaveBeenCalledWith('A2887492', false);
     });
 
     it('should return error for invalid author ID', async () => {
@@ -209,25 +210,25 @@ describe('Entity Service Functions', () => {
 
   describe('fetchSource', () => {
     it('should fetch source successfully', async () => {
-      mockCachedOpenAlex.source.mockResolvedValue(mockSource);
+      cachedOpenAlex.source.mockResolvedValue(mockSource);
 
       const result = await fetchSource('S123456789');
 
       expect(result.success).toBe(true);
       expect(result.data).toEqual(mockSource);
-      expect(mockCachedOpenAlex.source).toHaveBeenCalledWith('S123456789', false);
+      expect(cachedOpenAlex.source).toHaveBeenCalledWith('S123456789', false);
     });
   });
 
   describe('fetchInstitution', () => {
     it('should fetch institution successfully', async () => {
-      mockCachedOpenAlex.institution.mockResolvedValue(mockInstitution);
+      cachedOpenAlex.institution.mockResolvedValue(mockInstitution);
 
       const result = await fetchInstitution('I123456789');
 
       expect(result.success).toBe(true);
       expect(result.data).toEqual(mockInstitution);
-      expect(mockCachedOpenAlex.institution).toHaveBeenCalledWith('I123456789', false);
+      expect(cachedOpenAlex.institution).toHaveBeenCalledWith('I123456789', false);
     });
   });
 
@@ -238,13 +239,13 @@ describe('Entity Service Functions', () => {
         display_name: 'Test Publisher',
         works_count: 1000
       };
-      mockCachedOpenAlex.publisher.mockResolvedValue(mockPublisher);
+      cachedOpenAlex.publisher.mockResolvedValue(mockPublisher);
 
       const result = await fetchPublisher('P123456789');
 
       expect(result.success).toBe(true);
       expect(result.data).toEqual(mockPublisher);
-      expect(mockCachedOpenAlex.publisher).toHaveBeenCalledWith('P123456789', false);
+      expect(cachedOpenAlex.publisher).toHaveBeenCalledWith('P123456789', false);
     });
   });
 
@@ -255,13 +256,13 @@ describe('Entity Service Functions', () => {
         display_name: 'Test Funder',
         grants_count: 500
       };
-      mockCachedOpenAlex.funder.mockResolvedValue(mockFunder);
+      cachedOpenAlex.funder.mockResolvedValue(mockFunder);
 
       const result = await fetchFunder('F123456789');
 
       expect(result.success).toBe(true);
       expect(result.data).toEqual(mockFunder);
-      expect(mockCachedOpenAlex.funder).toHaveBeenCalledWith('F123456789', false);
+      expect(cachedOpenAlex.funder).toHaveBeenCalledWith('F123456789', false);
     });
   });
 
@@ -272,45 +273,45 @@ describe('Entity Service Functions', () => {
         display_name: 'Test Topic',
         works_count: 2000
       };
-      mockCachedOpenAlex.topic.mockResolvedValue(mockTopic);
+      cachedOpenAlex.topic.mockResolvedValue(mockTopic);
 
       const result = await fetchTopic('T123456789');
 
       expect(result.success).toBe(true);
       expect(result.data).toEqual(mockTopic);
-      expect(mockCachedOpenAlex.topic).toHaveBeenCalledWith('T123456789', false);
+      expect(cachedOpenAlex.topic).toHaveBeenCalledWith('T123456789', false);
     });
   });
 
   describe('fetchAnyEntity', () => {
     it('should auto-detect entity type and fetch work', async () => {
-      mockCachedOpenAlex.work.mockResolvedValue(mockWork);
+      cachedOpenAlex.work.mockResolvedValue(mockWork);
 
       const result = await fetchAnyEntity('W2741809807');
 
       expect(result.success).toBe(true);
       expect(result.data).toEqual(mockWork);
-      expect(mockCachedOpenAlex.work).toHaveBeenCalledWith('W2741809807', false);
+      expect(cachedOpenAlex.work).toHaveBeenCalledWith('W2741809807', false);
     });
 
     it('should auto-detect entity type and fetch author', async () => {
-      mockCachedOpenAlex.author.mockResolvedValue(mockAuthor);
+      cachedOpenAlex.author.mockResolvedValue(mockAuthor);
 
       const result = await fetchAnyEntity('A2887492');
 
       expect(result.success).toBe(true);
       expect(result.data).toEqual(mockAuthor);
-      expect(mockCachedOpenAlex.author).toHaveBeenCalledWith('A2887492', false);
+      expect(cachedOpenAlex.author).toHaveBeenCalledWith('A2887492', false);
     });
 
     it('should handle URLs for any entity type', async () => {
-      mockCachedOpenAlex.source.mockResolvedValue(mockSource);
+      cachedOpenAlex.source.mockResolvedValue(mockSource);
 
       const result = await fetchAnyEntity('https://openalex.org/S123456789');
 
       expect(result.success).toBe(true);
       expect(result.data).toEqual(mockSource);
-      expect(mockCachedOpenAlex.source).toHaveBeenCalledWith('S123456789', false);
+      expect(cachedOpenAlex.source).toHaveBeenCalledWith('S123456789', false);
     });
 
     it('should return error for invalid entity ID', async () => {
@@ -329,7 +330,7 @@ describe('Entity Service Functions', () => {
         { ...mockWork, id: 'https://openalex.org/W2741809803' }
       ];
 
-      mockCachedOpenAlex.work
+      cachedOpenAlex.work
         .mockResolvedValueOnce(mockWorks[0])
         .mockResolvedValueOnce(mockWorks[1])
         .mockResolvedValueOnce(mockWorks[2]);
@@ -354,7 +355,7 @@ describe('Entity Service Functions', () => {
     });
 
     it('should handle mixed success and failure in batch', async () => {
-      mockCachedOpenAlex.work
+      cachedOpenAlex.work
         .mockResolvedValueOnce(mockWork)
         .mockRejectedValueOnce(new Error('Not found'))
         .mockResolvedValueOnce(mockWork);
@@ -398,17 +399,17 @@ describe('Entity Service Functions', () => {
 
   describe('fetchEntityWithRetry', () => {
     it('should succeed on first attempt', async () => {
-      mockCachedOpenAlex.work.mockResolvedValue(mockWork);
+      cachedOpenAlex.work.mockResolvedValue(mockWork);
 
       const result = await fetchEntityWithRetry('W2741809807');
 
       expect(result.success).toBe(true);
       expect(result.data).toEqual(mockWork);
-      expect(mockCachedOpenAlex.work).toHaveBeenCalledTimes(1);
+      expect(cachedOpenAlex.work).toHaveBeenCalledTimes(1);
     });
 
     it('should retry on retryable errors', async () => {
-      mockCachedOpenAlex.work
+      cachedOpenAlex.work
         .mockRejectedValueOnce(new Error('Network connection failed'))
         .mockRejectedValueOnce(new Error('Network connection failed'))
         .mockResolvedValue(mockWork);
@@ -420,7 +421,7 @@ describe('Entity Service Functions', () => {
 
       expect(result.success).toBe(true);
       expect(result.data).toEqual(mockWork);
-      expect(mockCachedOpenAlex.work).toHaveBeenCalledTimes(3);
+      expect(cachedOpenAlex.work).toHaveBeenCalledTimes(3);
     });
 
     it('should not retry non-retryable errors', async () => {
@@ -431,11 +432,11 @@ describe('Entity Service Functions', () => {
       expect(result.success).toBe(false);
       expect(result.error?.type).toBe(ServiceErrorType.INVALID_ID);
       expect(result.error?.retryable).toBe(false);
-      expect(mockCachedOpenAlex.work).toHaveBeenCalledTimes(0);
+      expect(cachedOpenAlex.work).toHaveBeenCalledTimes(0);
     });
 
     it('should stop retrying after max retries', async () => {
-      mockCachedOpenAlex.work.mockRejectedValue(new Error('Network connection failed'));
+      cachedOpenAlex.work.mockRejectedValue(new Error('Network connection failed'));
 
       const result = await fetchEntityWithRetry('W2741809807', undefined, {
         maxRetries: 2,
@@ -444,11 +445,11 @@ describe('Entity Service Functions', () => {
 
       expect(result.success).toBe(false);
       expect(result.error?.type).toBe(ServiceErrorType.NETWORK_ERROR);
-      expect(mockCachedOpenAlex.work).toHaveBeenCalledTimes(3); // Initial + 2 retries
+      expect(cachedOpenAlex.work).toHaveBeenCalledTimes(3); // Initial + 2 retries
     });
 
     it('should use exponential backoff for retries', async () => {
-      mockCachedOpenAlex.work.mockRejectedValue(new Error('Network connection failed'));
+      cachedOpenAlex.work.mockRejectedValue(new Error('Network connection failed'));
 
       const start = Date.now();
       await fetchEntityWithRetry('W2741809807', undefined, {
@@ -515,7 +516,7 @@ describe('Entity Service Functions', () => {
 
   describe('checkEntityExists', () => {
     it('should return true for existing entity', async () => {
-      mockCachedOpenAlex.work.mockResolvedValue(mockWork);
+      cachedOpenAlex.work.mockResolvedValue(mockWork);
 
       const result = await checkEntityExists('W2741809807');
 
@@ -524,7 +525,7 @@ describe('Entity Service Functions', () => {
     });
 
     it('should return false for non-existent entity', async () => {
-      mockCachedOpenAlex.work.mockRejectedValue(new Error('Not found - 404'));
+      cachedOpenAlex.work.mockRejectedValue(new Error('Not found - 404'));
 
       const result = await checkEntityExists('W2741809807');
 
@@ -533,7 +534,7 @@ describe('Entity Service Functions', () => {
     });
 
     it('should return error for other failures', async () => {
-      mockCachedOpenAlex.work.mockRejectedValue(new Error('Network connection failed'));
+      cachedOpenAlex.work.mockRejectedValue(new Error('Network connection failed'));
 
       const result = await checkEntityExists('W2741809807');
 
@@ -662,7 +663,7 @@ describe('Entity Service Functions', () => {
 
     errorTestCases.forEach(({ error, expectedType, expectedRetryable }) => {
       it(`should detect ${expectedType} error type`, async () => {
-        mockCachedOpenAlex.work.mockRejectedValue(error);
+        cachedOpenAlex.work.mockRejectedValue(error);
 
         const result = await fetchWork('W2741809807');
 
@@ -675,7 +676,7 @@ describe('Entity Service Functions', () => {
 
   describe('Service Response Properties', () => {
     it('should include all required response properties for success', async () => {
-      mockCachedOpenAlex.work.mockResolvedValue(mockWork);
+      cachedOpenAlex.work.mockResolvedValue(mockWork);
 
       const result = await fetchWork('W2741809807');
 
@@ -691,7 +692,7 @@ describe('Entity Service Functions', () => {
     });
 
     it('should include all required response properties for failure', async () => {
-      mockCachedOpenAlex.work.mockRejectedValue(new Error('Test error'));
+      cachedOpenAlex.work.mockRejectedValue(new Error('Test error'));
 
       const result = await fetchWork('W2741809807');
 
@@ -715,25 +716,25 @@ describe('Entity Service Functions', () => {
 
   describe('Edge Cases', () => {
     it('should handle whitespace in entity IDs', async () => {
-      mockCachedOpenAlex.work.mockResolvedValue(mockWork);
+      cachedOpenAlex.work.mockResolvedValue(mockWork);
 
       const result = await fetchWork('  W2741809807  ');
 
       expect(result.success).toBe(true);
-      expect(mockCachedOpenAlex.work).toHaveBeenCalledWith('W2741809807', false);
+      expect(cachedOpenAlex.work).toHaveBeenCalledWith('W2741809807', false);
     });
 
     it('should handle case-insensitive entity IDs', async () => {
-      mockCachedOpenAlex.work.mockResolvedValue(mockWork);
+      cachedOpenAlex.work.mockResolvedValue(mockWork);
 
       const result = await fetchWork('w2741809807');
 
       expect(result.success).toBe(true);
-      expect(mockCachedOpenAlex.work).toHaveBeenCalledWith('W2741809807', false);
+      expect(cachedOpenAlex.work).toHaveBeenCalledWith('W2741809807', false);
     });
 
     it('should handle very long timeout values', async () => {
-      mockCachedOpenAlex.work.mockResolvedValue(mockWork);
+      cachedOpenAlex.work.mockResolvedValue(mockWork);
 
       const result = await fetchWork('W2741809807', { timeout: 5000 });
 
@@ -744,7 +745,7 @@ describe('Entity Service Functions', () => {
       // Mock an AbortError to simulate immediate timeout with zero timeout
       const abortError = new Error('Request timeout');
       abortError.name = 'AbortError';
-      mockCachedOpenAlex.work.mockRejectedValue(abortError);
+      cachedOpenAlex.work.mockRejectedValue(abortError);
 
       const result = await fetchWork('W2741809807', { timeout: 1 });
 
