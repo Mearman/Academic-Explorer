@@ -4,6 +4,8 @@
 
 import type {
   Work,
+  Continent,
+  Region,
 } from '../types';
 
 // Transform abstract from inverted index to plain text
@@ -456,6 +458,66 @@ export function entitiesToCSV<T extends Record<string, unknown>>(
   });
   
   return [header, ...rows].join('\n');
+}
+
+// Export continents to CSV format
+export function continentsToCSV(continents: Continent[], delimiter = ','): string {
+  if (continents.length === 0) return '';
+  
+  const fields: (keyof Continent)[] = [
+    'id',
+    'display_name',
+    'wikidata',
+    'works_count',
+    'cited_by_count',
+    'created_date',
+    'updated_date'
+  ];
+  
+  return entitiesToCSV(continents, fields, delimiter);
+}
+
+// Export regions to CSV format
+export function regionsToCSV(regions: Region[], delimiter = ','): string {
+  if (regions.length === 0) return '';
+  
+  const fields: (keyof Region)[] = [
+    'id',
+    'display_name',
+    'wikidata',
+    'works_count',
+    'cited_by_count',
+    'created_date',
+    'updated_date'
+  ];
+  
+  return entitiesToCSV(regions, fields, delimiter);
+}
+
+// Extract continent name from entity
+export function extractContinentName(entity?: Continent | null): string | null {
+  if (!entity) return null;
+  return entity.display_name || null;
+}
+
+// Extract region name from entity
+export function extractRegionName(entity?: Region | null): string | null {
+  if (!entity) return null;
+  return entity.display_name || null;
+}
+
+// Format geographic entity (Continent or Region) for display
+export function formatGeoEntity(entity?: Continent | Region | null): string | null {
+  if (!entity) return null;
+  
+  let formatted = entity.display_name;
+  
+  // Add wikidata info if available
+  if (entity.wikidata) {
+    formatted += ` (${entity.wikidata})`;
+  }
+  
+  return formatted;
 }
 
 // Deduplicate entities by ID
