@@ -128,7 +128,7 @@ describe('OpenAlexClient', () => {
     });
 
     it('should handle timeout', async () => {
-      const timeoutClient = new OpenAlexClient({ timeout: 100 });
+      const timeoutClient = new OpenAlexClient({ timeout: 50, maxRetries: 1 });
       server.use(...errorHandlers.timeout);
       
       await expect(timeoutClient.works()).rejects.toThrow();
@@ -423,7 +423,7 @@ describe('OpenAlexClient', () => {
     });
 
     it('should handle timeout for aboutness', async () => {
-      const timeoutClient = new OpenAlexClient({ timeout: 100 });
+      const timeoutClient = new OpenAlexClient({ timeout: 50, maxRetries: 1 });
       server.use(...errorHandlers.timeout);
       
       await expect(
