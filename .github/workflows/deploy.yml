@@ -141,45 +141,6 @@ jobs:
           NODE_OPTIONS: "--max-old-space-size=8192"
           CI: true
 
-  # Coverage job (optional - runs independently)
-  coverage:
-    needs: install
-    runs-on: ubuntu-latest
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          version: 9
-
-      - name: Restore node_modules cache
-        uses: actions/cache@v4
-        with:
-          path: node_modules
-          key: ${{ needs.install.outputs.cache-key }}-node-modules
-          restore-keys: |
-            ${{ runner.os }}-pnpm-
-
-      - name: Run tests with coverage
-        run: pnpm test:coverage --run
-        env:
-          NODE_OPTIONS: "--max-old-space-size=8192"
-          CI: true
-
-      - name: Upload coverage reports
-        uses: actions/upload-artifact@v4
-        with:
-          name: coverage-reports
-          path: coverage/
-
   # Type checking job (currently disabled)
   # type-check:
   #   needs: install
