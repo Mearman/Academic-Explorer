@@ -12,16 +12,24 @@
 
 # testing
 /coverage
+.nyc_output
 
-# next.js
+# vite
+/dist
+/.vite
+.vite/
+vite.config.js.timestamp-*
+vite.config.ts.timestamp-*
+
+# legacy next.js (should not exist in vite project)
 /.next/
-/out/
+.next/
 
 # production
 /build
+/out
 
 # misc
-.DS_Store
 *.pem
 
 # debug
@@ -38,4 +46,64 @@ yarn-error.log*
 
 # typescript
 *.tsbuildinfo
-next-env.d.ts
+
+# lock files (using pnpm, ignore npm/yarn locks)
+package-lock.json
+yarn.lock
+
+# demo and temporary files
+*DEMO*.ts
+*DEMO*.js
+*TEMP*.ts
+*TEMP*.js
+
+# IDE and editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# vitest
+/test-results/
+/playwright-report/
+/blob-report/
+/playwright/.cache/
+
+# TanStack Router
+/src/routeTree.gen.ts.tmp
+
+# logs
+*.log
+logs/
+
+# runtime data
+pids
+*.pid
+*.seed
+*.pid.lock
+
+# coverage directory used by tools like istanbul
+coverage/
+*.lcov
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# project specific
+/data/
+/cache/
+*.sqlite
+*.db
+.cache/
+
+# API keys and sensitive files (additional protection)
+api-keys.json
+secrets.json
+.secrets
