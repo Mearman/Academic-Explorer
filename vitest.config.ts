@@ -20,15 +20,15 @@ export default defineConfig({
     globals: true,
     setupFiles: ['./src/test/setup.ts'],
     // Performance and memory optimizations
-    testTimeout: process.env.CI === 'true' ? 30000 : 15000,
+    testTimeout: process.env.CI === 'true' ? 60000 : 15000, // Extra time for coverage in CI
     hookTimeout: 10000, // 10 seconds for setup/teardown
     teardownTimeout: 10000,
     // Use threads pool for better compatibility across environments
     pool: 'threads',
     poolOptions: {
       threads: {
-        singleThread: true,
-        maxThreads: 1,
+        singleThread: process.env.CI !== 'true', // Allow multi-threading in CI for coverage
+        maxThreads: process.env.CI === 'true' ? 4 : 1,
         minThreads: 1,
       },
     },
@@ -51,7 +51,7 @@ export default defineConfig({
     })(),
     coverage: {
       provider: 'v8',
-      reporter: ['text', 'json', 'html'],
+      reporter: process.env.CI === 'true' ? ['text', 'json'] : ['text', 'json', 'html'], // Skip HTML in CI for speed
       exclude: [
         'node_modules/',
         'src/test/',
