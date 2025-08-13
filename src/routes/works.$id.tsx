@@ -191,13 +191,34 @@ function WorkDisplay({ work }: { work: Work }) {
             </Group>
             
             <Paper p="lg" radius="md" withBorder>
-              <Group mb="md">
-                <IconInfoCircle size={16} color="blue" />
-                <Text size="sm" c="dimmed" fs="italic">
-                  Abstract available in inverted index format. 
-                  Full text reconstruction feature coming soon.
-                </Text>
-              </Group>
+              {(() => {
+                const reconstructedAbstract = reconstructAbstract(work.abstract_inverted_index);
+                
+                if (reconstructedAbstract) {
+                  return (
+                    <>
+                      <Group mb="md">
+                        <IconInfoCircle size={16} color="blue" />
+                        <Text size="sm" c="dimmed" fs="italic">
+                          Abstract reconstructed from inverted index ({Object.keys(work.abstract_inverted_index).length} unique terms)
+                        </Text>
+                      </Group>
+                      <Text size="sm" style={{ lineHeight: 1.6 }}>
+                        {reconstructedAbstract}
+                      </Text>
+                    </>
+                  );
+                } else {
+                  return (
+                    <Group mb="md">
+                      <IconInfoCircle size={16} color="orange" />
+                      <Text size="sm" c="dimmed" fs="italic">
+                        Unable to reconstruct abstract from inverted index.
+                      </Text>
+                    </Group>
+                  );
+                }
+              })()}
             </Paper>
           </Card>
         )}
