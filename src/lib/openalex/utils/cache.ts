@@ -28,10 +28,12 @@ export class CacheManager {
 
   // Generate cache key from endpoint and params
   private getCacheKey(endpoint: string, params: Record<string, unknown> = {}): string {
-    const sortedParams = Object.keys(params)
+    // Handle null/undefined params
+    const safeParams = params || {};
+    const sortedParams = Object.keys(safeParams)
       .sort()
       .reduce((acc, key) => {
-        acc[key] = params[key];
+        acc[key] = safeParams[key];
         return acc;
       }, {} as Record<string, unknown>);
     
