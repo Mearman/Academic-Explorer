@@ -14,10 +14,14 @@ import type {
   TopicsParams,
   ConceptsParams,
   KeywordsParams,
+  ContinentsParams,
+  RegionsParams,
   AutocompleteParams,
   AutocompleteResponse,
   NgramsParams,
   NgramResult,
+  AboutnessParams,
+  AboutnessResponse,
   Work,
   Author,
   Source,
@@ -27,6 +31,8 @@ import type {
   Topic,
   Concept,
   Keyword,
+  Continent,
+  Region,
   ErrorResponse,
 } from './types';
 
@@ -356,6 +362,40 @@ export class OpenAlexClient {
     return this.request<Keyword>(`/keywords/${this.normaliseId(id)}`);
   }
 
+  // Geo endpoints - Continents
+  public async continents(params: ContinentsParams = {}): Promise<ApiResponse<Continent>> {
+    return this.request<ApiResponse<Continent>>('/continents', params);
+  }
+
+  public async continent(id: string): Promise<Continent> {
+    return this.request<Continent>(`/continents/${this.normaliseId(id)}`);
+  }
+
+  public async randomContinent(): Promise<Continent> {
+    return this.request<Continent>('/continents/random');
+  }
+
+  // Geo endpoints - Regions
+  public async regions(params: RegionsParams = {}): Promise<ApiResponse<Region>> {
+    return this.request<ApiResponse<Region>>('/regions', params);
+  }
+
+  public async region(id: string): Promise<Region> {
+    return this.request<Region>(`/regions/${this.normaliseId(id)}`);
+  }
+
+  public async randomRegion(): Promise<Region> {
+    return this.request<Region>('/regions/random');
+  }
+
+  // Aboutness endpoint
+  public async aboutness(params: AboutnessParams): Promise<AboutnessResponse> {
+    return this.request<AboutnessResponse>('/text', {}, {
+      method: 'POST',
+      body: JSON.stringify(params),
+    });
+  }
+
   // Batch operations
   public async worksBatch(ids: string[]): Promise<Work[]> {
     const normalizedIds = ids.map(id => this.normaliseId(id));
@@ -375,7 +415,17 @@ export class OpenAlexClient {
   private normaliseId(id: string): string {
     // Remove OpenAlex URL prefix if present
     if (id.startsWith('https://openalex.org/')) {
-      return id.replace('https://openalex.org/', '');
+      const cleanId = id.replace('https://openalex.org/', '');
+      
+      // For geo endpoints, extract just the final part after the entity type
+      if (cleanId.startsWith('continents/')) {
+        return cleanId.replace('continents/', '');
+      }
+      if (cleanId.startsWith('regions/')) {
+        return cleanId.replace('regions/', '');
+      }
+      
+      return cleanId;
     }
     // Ensure ID starts with entity prefix if not present
     if (!id.match(/^[WASCIPTFK]\d+$/i)) {
