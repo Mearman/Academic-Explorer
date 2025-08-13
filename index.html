@@ -12,8 +12,11 @@
       // Single Page Application for GitHub Pages
       // Check for redirected paths from 404.html
       (function(l) {
-        if (l.search[1] === '/' ) {
-          var decoded = l.search.slice(1).split('&').map(function(s) { 
+        if (l.search[1] === '/' || (l.search.length > 0 && decodeURIComponent(l.search).indexOf('/') === 1)) {
+          var searchParam = l.search.slice(1);
+          // Remove any trailing = characters from malformed URLs
+          searchParam = searchParam.replace(/=+$/, '');
+          var decoded = decodeURIComponent(searchParam).split('&').map(function(s) { 
             return s.replace(/~and~/g, '&')
           }).join('?');
           window.history.replaceState(null, null,
