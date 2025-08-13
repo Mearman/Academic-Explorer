@@ -19,8 +19,13 @@
           var decoded = decodeURIComponent(searchParam).split('&').map(function(s) { 
             return s.replace(/~and~/g, '&')
           }).join('?');
+          
+          // Ensure we create a proper query parameter, not a path
+          // decoded should be like "/W2741809807", we want "?/W2741809807"
+          var finalPath = decoded.startsWith('/') ? '?' + decoded : '?/' + decoded;
+          
           window.history.replaceState(null, null,
-              l.pathname.slice(0, -1) + decoded + l.hash
+              l.pathname + finalPath + l.hash
           );
         }
       }(window.location))
