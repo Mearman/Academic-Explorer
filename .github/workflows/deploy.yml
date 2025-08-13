@@ -138,7 +138,7 @@ jobs:
         run: ${{ matrix.command }}
         timeout-minutes: ${{ matrix.timeout }}
         env:
-          NODE_OPTIONS: "--max-old-space-size=4096"
+          NODE_OPTIONS: "--max-old-space-size=8192 --optimize-for-size --gc-interval=10"
           CI: true
 
   # Coverage job (optional - runs independently)
@@ -171,7 +171,7 @@ jobs:
       - name: Run tests with coverage
         run: pnpm test:coverage --run
         env:
-          NODE_OPTIONS: "--max-old-space-size=4096"
+          NODE_OPTIONS: "--max-old-space-size=8192 --optimize-for-size --gc-interval=10"
           CI: true
 
       - name: Upload coverage reports
