@@ -27,17 +27,22 @@ export default defineConfig({
     pool: process.env.CI === 'true' ? 'forks' : 'threads',
     poolOptions: {
       forks: {
-        maxForks: process.env.CI === 'true' ? 1 : 2,
+        // Force single process in CI to minimize memory usage
+        maxForks: 1,
         minForks: 1,
       },
       threads: {
-        singleThread: process.env.CI === 'true',
-        maxThreads: process.env.CI === 'true' ? 1 : 4,
+        singleThread: true,
+        maxThreads: 1,
         minThreads: 1,
       },
     },
     // Isolate tests to prevent memory leaks
     isolate: true,
+    // Reduce memory usage
+    sequence: {
+      concurrent: false, // Run tests sequentially to reduce memory pressure
+    },
     // Test file patterns for different test types
     include: (() => {
       const testType = process.env.TEST_TYPE;
