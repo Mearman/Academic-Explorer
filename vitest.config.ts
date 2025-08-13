@@ -20,20 +20,13 @@ export default defineConfig({
     globals: true,
     setupFiles: ['./src/test/setup.ts'],
     // Performance and memory optimizations
-    testTimeout: process.env.CI === 'true' ? 60000 : 15000, // Extra time for coverage in CI
+    testTimeout: process.env.CI === 'true' ? 60000 : 30000, // Extra time for CI, reasonable time locally
     hookTimeout: 10000, // 10 seconds for setup/teardown
     teardownTimeout: 10000,
-    // Use threads pool for better compatibility across environments
-    pool: 'threads',
-    poolOptions: {
-      threads: {
-        singleThread: process.env.CI !== 'true', // Allow multi-threading in CI for coverage
-        maxThreads: process.env.CI === 'true' ? 4 : 1,
-        minThreads: 1,
-      },
-    },
-    // Isolate tests to prevent memory leaks
-    isolate: true,
+    // Disable worker threads entirely - run in main process
+    pool: undefined, // Use default pool
+    // Disable isolation to run in main thread
+    isolate: false,
     // Reduce memory usage
     sequence: {
       concurrent: false, // Run tests sequentially to reduce memory pressure
