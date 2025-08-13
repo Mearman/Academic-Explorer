@@ -6,7 +6,7 @@
 
 'use client';
 
-import { useParams } from 'next/navigation';
+import { useParams } from '@tanstack/react-router';
 import { ReactNode } from 'react';
 import { EntityType } from '@/lib/openalex/utils/entity-detection';
 import EntityErrorBoundary from '@/components/error-boundary';

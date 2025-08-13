@@ -6,7 +6,7 @@
 
 'use client';
 
-import Link from 'next/link';
+import { Link } from '@tanstack/react-router';
 import { EntityErrorType } from '@/hooks/use-entity-data';
 import { EntityType } from '@/lib/openalex/utils/entity-detection';
 
@@ -152,7 +152,7 @@ export function EntityError({ error, onRetry, entityId, entityType }: EntityErro
           
           <div className="flex justify-center space-x-4 text-sm">
             <Link
-              href="/"
+              to="/"
               className="text-red-600 hover:text-red-800 underline font-medium"
             >
               Return to Home
@@ -160,7 +160,7 @@ export function EntityError({ error, onRetry, entityId, entityType }: EntityErro
             
             {entityType && (
               <Link
-                href={`/${getEntityEndpoint(entityType)}`}
+                to={`/${getEntityEndpoint(entityType)}`}
                 className="text-red-600 hover:text-red-800 underline font-medium"
               >
                 Browse {entityType.charAt(0).toUpperCase() + entityType.slice(1)}s
@@ -291,7 +291,7 @@ export function EntityFallback({
         </button>
         <div className="mt-4">
           <Link
-            href="/"
+            to="/"
             className="text-blue-600 hover:text-blue-800 underline"
           >
             Return to Home
