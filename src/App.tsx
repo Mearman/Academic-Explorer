@@ -4,8 +4,11 @@ import { ErrorBoundary } from 'react-error-boundary';
 // Import the generated route tree
 import { routeTree } from './routeTree.gen';
 
-// Create a new router instance
-const router = createRouter({ routeTree });
+// Create a new router instance with base path for GitHub Pages
+const router = createRouter({ 
+  routeTree,
+  basepath: import.meta.env.MODE === 'production' ? '/Academic-Explorer' : undefined
+});
 
 // Register the router instance for type safety
 declare module '@tanstack/react-router' {
