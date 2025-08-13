@@ -411,7 +411,7 @@ export class OpenAlexClient {
     return response.results;
   }
 
-  // Helper to normalise IDs (handle different ID formats)
+  // Helper to normalise IDs (handle different ID formats including external IDs)
   private normaliseId(id: string): string {
     // Remove OpenAlex URL prefix if present
     if (id.startsWith('https://openalex.org/')) {
@@ -427,14 +427,50 @@ export class OpenAlexClient {
       
       return cleanId;
     }
-    // Ensure ID starts with entity prefix if not present
-    if (!id.match(/^[WASCIPTFK]\d+$/i)) {
-      // Try to detect entity type from ID pattern
-      if (id.match(/^\d+$/)) {
-        // Pure numeric ID, can't determine type
-        return id;
-      }
+    
+    // Handle external IDs - OpenAlex API accepts them directly
+    // DOI patterns
+    if (id.match(/^10\.\d{4,}\/[^\s]+$/) || id.match(/^https?:\/\/(dx\.)?doi\.org\//i)) {
+      return id; // Pass DOIs through unchanged
     }
+    
+    // ORCID patterns
+    if (id.match(/^\d{4}-\d{4}-\d{4}-\d{3}[\dX]$/) || id.match(/^https?:\/\/orcid\.org\//i)) {
+      return id; // Pass ORCIDs through unchanged
+    }
+    
+    // ROR patterns
+    if (id.match(/^https?:\/\/ror\.org\//i) || (id.match(/^[0-9a-z]+$/i) && id.length >= 9)) {
+      return id; // Pass ROR IDs through unchanged
+    }
+    
+    // ISSN-L patterns
+    if (id.match(/^\d{4}-\d{3}[\dX]$/)) {
+      return id; // Pass ISSN-L through unchanged
+    }
+    
+    // Wikidata patterns
+    if (id.match(/^Q\d+$/i)) {
+      return id; // Pass Wikidata IDs through unchanged
+    }
+    
+    // PMID patterns
+    if (id.match(/^\d{7,}$/)) {
+      return id; // Pass potential PMIDs through unchanged
+    }
+    
+    // PMCID patterns
+    if (id.match(/^PMC\d+$/i)) {
+      return id; // Pass PMCIDs through unchanged
+    }
+    
+    // Handle OpenAlex IDs
+    if (id.match(/^[WASIPFTCKRN]\d+$/i)) {
+      return id.toUpperCase(); // Normalise case for OpenAlex IDs
+    }
+    
+    // For any other format, pass through unchanged
+    // The OpenAlex API will handle validation and return appropriate errors
     return id;
   }
 
@@ -446,6 +482,73 @@ export class OpenAlexClient {
   // Update configuration
   public updateConfig(config: Partial<OpenAlexConfig>): void {
     this.config = { ...this.config, ...config };
+  }
+
+  // Handle entity redirects (for merged entities)
+  public async handleEntityRedirect<T>(
+    entityFetcher: () => Promise<T>,
+    originalId: string
+  ): Promise<{ data: T; redirectedId?: string }> {
+    const data = await entityFetcher();
+    
+    // Check if the returned entity has a different ID than requested
+    // This indicates a redirect due to merged entities
+    if (typeof data === 'object' && data !== null && 'id' in data) {
+      const returnedId = (data as { id: string }).id;
+      const normalizedOriginal = this.normaliseId(originalId);
+      const normalizedReturned = this.normaliseId(returnedId);
+      
+      if (normalizedOriginal !== normalizedReturned) {
+        return { data, redirectedId: returnedId };
+      }
+    }
+    
+    return { data };
+  }
+
+  // Enhanced entity fetchers with redirect support
+  public async workWithRedirect(id: string): Promise<{ data: Work; redirectedId?: string }> {
+    return this.handleEntityRedirect(() => this.work(id), id);
+  }
+
+  public async authorWithRedirect(id: string): Promise<{ data: Author; redirectedId?: string }> {
+    return this.handleEntityRedirect(() => this.author(id), id);
+  }
+
+  public async sourceWithRedirect(id: string): Promise<{ data: Source; redirectedId?: string }> {
+    return this.handleEntityRedirect(() => this.source(id), id);
+  }
+
+  public async institutionWithRedirect(id: string): Promise<{ data: Institution; redirectedId?: string }> {
+    return this.handleEntityRedirect(() => this.institution(id), id);
+  }
+
+  public async publisherWithRedirect(id: string): Promise<{ data: Publisher; redirectedId?: string }> {
+    return this.handleEntityRedirect(() => this.publisher(id), id);
+  }
+
+  public async funderWithRedirect(id: string): Promise<{ data: Funder; redirectedId?: string }> {
+    return this.handleEntityRedirect(() => this.funder(id), id);
+  }
+
+  public async topicWithRedirect(id: string): Promise<{ data: Topic; redirectedId?: string }> {
+    return this.handleEntityRedirect(() => this.topic(id), id);
+  }
+
+  public async conceptWithRedirect(id: string): Promise<{ data: Concept; redirectedId?: string }> {
+    return this.handleEntityRedirect(() => this.concept(id), id);
+  }
+
+  public async keywordWithRedirect(id: string): Promise<{ data: Keyword; redirectedId?: string }> {
+    return this.handleEntityRedirect(() => this.keyword(id), id);
+  }
+
+  public async continentWithRedirect(id: string): Promise<{ data: Continent; redirectedId?: string }> {
+    return this.handleEntityRedirect(() => this.continent(id), id);
+  }
+
+  public async regionWithRedirect(id: string): Promise<{ data: Region; redirectedId?: string }> {
+    return this.handleEntityRedirect(() => this.region(id), id);
   }
 }
 
