@@ -29,6 +29,7 @@ export { ExternalLinksGroup } from './molecules/external-links-group';
 
 // Organisms
 export { EntityHeader, EntityHeaderSkeleton } from './organisms/entity-header';
+export { RawDataView } from './organisms/raw-data-view';
 
 // Templates
 export { 
