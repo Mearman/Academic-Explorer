@@ -4,6 +4,7 @@ import { EntityType } from '@/lib/openalex/utils/entity-detection';
 import EntityErrorBoundary from '@/components/error-boundary';
 import { usePublisherData } from '@/hooks/use-entity-data';
 import { EntityError, EntitySkeleton, EntityFallback } from '@/components/entity-error';
+import { useNumericIdRedirect } from '@/hooks/use-numeric-id-redirect';
 
 function PublisherDisplay({ publisher }: { publisher: Publisher }) {
   return (
@@ -50,6 +51,7 @@ function PublisherDisplay({ publisher }: { publisher: Publisher }) {
 
 function PublisherPage() {
   const { id } = Route.useParams();
+  const isRedirecting = useNumericIdRedirect(id, EntityType.PUBLISHER);
   
   const { 
     data: publisher, 
@@ -57,13 +59,22 @@ function PublisherPage() {
     error, 
     retry 
   } = usePublisherData(id, {
-    enabled: !!id,
+    enabled: !!id && !isRedirecting,
     refetchOnWindowFocus: true,
     staleTime: 10 * 60 * 1000, // 10 minutes
     onError: (error) => {
       console.error('Publisher fetch error:', error);
     }
   });
+
+  // Show redirection loading state
+  if (isRedirecting) {
+    return (
+      <EntityErrorBoundary entityType="publishers" entityId={id}>
+        <EntitySkeleton entityType={EntityType.PUBLISHER} />
+      </EntityErrorBoundary>
+    );
+  }
 
   // Show loading skeleton
   if (loading) {

@@ -4,6 +4,7 @@ import { EntityType } from '@/lib/openalex/utils/entity-detection';
 import EntityErrorBoundary from '@/components/error-boundary';
 import { useConceptData } from '@/hooks/use-entity-data';
 import { EntityError, EntitySkeleton, EntityFallback } from '@/components/entity-error';
+import { useNumericIdRedirect } from '@/hooks/use-numeric-id-redirect';
 
 function ConceptDisplay({ concept }: { concept: Concept }) {
   return (
@@ -52,6 +53,7 @@ function ConceptDisplay({ concept }: { concept: Concept }) {
 
 function ConceptPage() {
   const { id } = Route.useParams();
+  const isRedirecting = useNumericIdRedirect(id, EntityType.CONCEPT);
   
   const { 
     data: concept, 
@@ -59,13 +61,22 @@ function ConceptPage() {
     error, 
     retry 
   } = useConceptData(id, {
-    enabled: !!id,
+    enabled: !!id && !isRedirecting,
     refetchOnWindowFocus: true,
     staleTime: 10 * 60 * 1000, // 10 minutes
     onError: (error) => {
       console.error('Concept fetch error:', error);
     }
   });
+
+  // Show redirection loading state
+  if (isRedirecting) {
+    return (
+      <EntityErrorBoundary entityType="concepts" entityId={id}>
+        <EntitySkeleton entityType={EntityType.CONCEPT} />
+      </EntityErrorBoundary>
+    );
+  }
 
   // Show loading state
   if (loading) {

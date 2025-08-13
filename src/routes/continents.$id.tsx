@@ -4,6 +4,7 @@ import { EntityType } from '@/lib/openalex/utils/entity-detection';
 import EntityErrorBoundary from '@/components/error-boundary';
 import { useContinentData } from '@/hooks/use-entity-data';
 import { EntityError, EntitySkeleton, EntityFallback } from '@/components/entity-error';
+import { useNumericIdRedirect } from '@/hooks/use-numeric-id-redirect';
 
 function ContinentDisplay({ continent }: { continent: Continent }) {
   return (
@@ -42,6 +43,7 @@ function ContinentDisplay({ continent }: { continent: Continent }) {
 
 function ContinentPage() {
   const { id } = Route.useParams();
+  const isRedirecting = useNumericIdRedirect(id, EntityType.CONTINENT);
   
   const { 
     data: continent, 
@@ -49,13 +51,21 @@ function ContinentPage() {
     error, 
     retry 
   } = useContinentData(id, {
-    enabled: !!id,
+    enabled: !!id && !isRedirecting,
     refetchOnWindowFocus: true,
     staleTime: 10 * 60 * 1000, // 10 minutes
     onError: (error) => {
       console.error('Continent fetch error:', error);
     }
   });
+
+  if (isRedirecting) {
+    return (
+      <EntityErrorBoundary entityType="continents" entityId={id}>
+        <EntitySkeleton entityType={EntityType.CONTINENT} />
+      </EntityErrorBoundary>
+    );
+  }
 
   // Show loading skeleton
   if (loading) {

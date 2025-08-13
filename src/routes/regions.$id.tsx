@@ -4,6 +4,7 @@ import { EntityType } from '@/lib/openalex/utils/entity-detection';
 import EntityErrorBoundary from '@/components/error-boundary';
 import { useRegionData } from '@/hooks/use-entity-data';
 import { EntityError, EntitySkeleton, EntityFallback } from '@/components/entity-error';
+import { useNumericIdRedirect } from '@/hooks/use-numeric-id-redirect';
 
 function RegionDisplay({ region }: { region: Region }) {
   return (
@@ -43,6 +44,7 @@ function RegionDisplay({ region }: { region: Region }) {
 
 function RegionPage() {
   const { id } = Route.useParams();
+  const isRedirecting = useNumericIdRedirect(id, EntityType.REGION);
   
   const { 
     data: region, 
@@ -50,13 +52,22 @@ function RegionPage() {
     error, 
     retry 
   } = useRegionData(id, {
-    enabled: !!id,
+    enabled: !!id && !isRedirecting,
     refetchOnWindowFocus: true,
     staleTime: 10 * 60 * 1000, // 10 minutes
     onError: (error) => {
       console.error('Region fetch error:', error);
     }
   });
+
+  // Show redirection loading state
+  if (isRedirecting) {
+    return (
+      <EntityErrorBoundary entityType="regions" entityId={id}>
+        <EntitySkeleton entityType={EntityType.REGION} />
+      </EntityErrorBoundary>
+    );
+  }
 
   // Show loading skeleton
   if (loading) {

@@ -4,6 +4,7 @@ import { EntityType } from '@/lib/openalex/utils/entity-detection';
 import EntityErrorBoundary from '@/components/error-boundary';
 import { useTopicData } from '@/hooks/use-entity-data';
 import { EntityError, EntitySkeleton, EntityFallback } from '@/components/entity-error';
+import { useNumericIdRedirect } from '@/hooks/use-numeric-id-redirect';
 
 function TopicDisplay({ topic }: { topic: Topic }) {
   return (
@@ -63,6 +64,7 @@ function TopicDisplay({ topic }: { topic: Topic }) {
 
 function TopicPage() {
   const { id } = Route.useParams();
+  const isRedirecting = useNumericIdRedirect(id, EntityType.TOPIC);
   
   const { 
     data: topic, 
@@ -70,13 +72,22 @@ function TopicPage() {
     error, 
     retry 
   } = useTopicData(id, {
-    enabled: !!id,
+    enabled: !!id && !isRedirecting,
     refetchOnWindowFocus: true,
     staleTime: 10 * 60 * 1000, // 10 minutes
     onError: (error) => {
       console.error('Topic fetch error:', error);
     }
   });
+
+  // Show redirection loading state
+  if (isRedirecting) {
+    return (
+      <EntityErrorBoundary entityType="topics" entityId={id}>
+        <EntitySkeleton entityType={EntityType.TOPIC} />
+      </EntityErrorBoundary>
+    );
+  }
 
   // Show loading skeleton
   if (loading) {
