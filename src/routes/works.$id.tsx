@@ -1,4 +1,4 @@
-import { createFileRoute, useNavigate } from '@tanstack/react-router';
+import { createFileRoute } from '@tanstack/react-router';
 import { 
   Card, 
   Badge, 
@@ -18,7 +18,7 @@ import { EntityType } from '@/lib/openalex/utils/entity-detection';
 import { useWorkData } from '@/hooks/use-entity-data';
 import { reconstructAbstract } from '@/lib/openalex/utils/transformers';
 import { EntityError, EntitySkeleton, EntityFallback } from '@/components/entity-error';
-import { useEffect } from 'react';
+import { useNumericIdRedirect } from '@/hooks/use-numeric-id-redirect';
 import { 
   EntityPageTemplate,
   EntityErrorBoundary
@@ -335,20 +335,9 @@ function WorkDisplay({ work }: { work: Work }) {
 
 function WorkPage() {
   const { id } = Route.useParams();
-  const navigate = useNavigate();
-
-  // Check if ID is numeric (without prefix) and redirect to full OpenAlex ID
-  useEffect(() => {
-    if (id && /^\d{7,10}$/.test(id)) {
-      // Numeric ID without prefix - redirect to full OpenAlex ID
-      const fullId = `W${id}`;
-      navigate({ 
-        to: '/works/$id', 
-        params: { id: fullId },
-        replace: true 
-      });
-    }
-  }, [id, navigate]);
+  
+  // Handle numeric ID redirection to /entity/ route
+  const isRedirecting = useNumericIdRedirect(id, EntityType.WORK);
   
   const { 
     data: work, 
@@ -356,7 +345,7 @@ function WorkPage() {
     error, 
     retry 
   } = useWorkData(id, {
-    enabled: !!id && !/^\d{7,10}$/.test(id), // Don't fetch if redirecting
+    enabled: !!id && !isRedirecting, // Don't fetch if redirecting
     refetchOnWindowFocus: true,
     staleTime: 10 * 60 * 1000, // 10 minutes
     onError: (error) => {
@@ -365,7 +354,7 @@ function WorkPage() {
   });
 
   // Show loading state for redirection
-  if (id && /^\d{7,10}$/.test(id)) {
+  if (isRedirecting) {
     return (
       <EntityErrorBoundary entityType="works" entityId={id}>
         <EntitySkeleton entityType={EntityType.WORK} />

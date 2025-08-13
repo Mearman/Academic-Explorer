@@ -4,6 +4,7 @@ import { EntityType } from '@/lib/openalex/utils/entity-detection';
 import EntityErrorBoundary from '@/components/error-boundary';
 import { useAuthorData } from '@/hooks/use-entity-data';
 import { EntityError, EntitySkeleton, EntityFallback } from '@/components/entity-error';
+import { useNumericIdRedirect } from '@/hooks/use-numeric-id-redirect';
 
 function AuthorDisplay({ author }: { author: Author }) {
   return (
@@ -137,19 +138,31 @@ function AuthorDisplay({ author }: { author: Author }) {
 function AuthorPage() {
   const { id } = Route.useParams();
   
+  // Handle numeric ID redirection to proper prefixed format
+  const isRedirecting = useNumericIdRedirect(id, EntityType.AUTHOR);
+  
   const { 
     data: author, 
     loading, 
     error, 
     retry 
   } = useAuthorData(id, {
-    enabled: !!id,
+    enabled: !!id && !isRedirecting, // Don't fetch if redirecting
     refetchOnWindowFocus: true,
     staleTime: 10 * 60 * 1000, // 10 minutes
     onError: (error) => {
       console.error('Author fetch error:', error);
     }
   });
+
+  // Show loading state for redirection
+  if (isRedirecting) {
+    return (
+      <EntityErrorBoundary entityType="authors" entityId={id}>
+        <EntitySkeleton entityType={EntityType.AUTHOR} />
+      </EntityErrorBoundary>
+    );
+  }
 
   // Show loading skeleton
   if (loading) {

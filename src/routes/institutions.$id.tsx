@@ -4,6 +4,7 @@ import { EntityType } from '@/lib/openalex/utils/entity-detection';
 import EntityErrorBoundary from '@/components/error-boundary';
 import { useInstitutionData } from '@/hooks/use-entity-data';
 import { EntityError, EntitySkeleton, EntityFallback } from '@/components/entity-error';
+import { useNumericIdRedirect } from '@/hooks/use-numeric-id-redirect';
 
 function InstitutionDisplay({ institution }: { institution: Institution }) {
   return (
@@ -151,6 +152,7 @@ function InstitutionDisplay({ institution }: { institution: Institution }) {
 
 function InstitutionPage() {
   const { id } = Route.useParams();
+  const isRedirecting = useNumericIdRedirect(id, EntityType.INSTITUTION);
   
   const { 
     data: institution, 
@@ -158,13 +160,21 @@ function InstitutionPage() {
     error, 
     retry 
   } = useInstitutionData(id, {
-    enabled: !!id,
+    enabled: !!id && !isRedirecting,
     refetchOnWindowFocus: true,
     staleTime: 10 * 60 * 1000, // 10 minutes
     onError: (error) => {
       console.error('Institution fetch error:', error);
     }
   });
+
+  if (isRedirecting) {
+    return (
+      <EntityErrorBoundary entityType="institutions" entityId={id}>
+        <EntitySkeleton entityType={EntityType.INSTITUTION} />
+      </EntityErrorBoundary>
+    );
+  }
 
   // Show loading skeleton
   if (loading) {

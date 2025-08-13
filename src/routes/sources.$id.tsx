@@ -4,6 +4,7 @@ import { EntityType } from '@/lib/openalex/utils/entity-detection';
 import EntityErrorBoundary from '@/components/error-boundary';
 import { useSourceData } from '@/hooks/use-entity-data';
 import { EntityError, EntitySkeleton, EntityFallback } from '@/components/entity-error';
+import { useNumericIdRedirect } from '@/hooks/use-numeric-id-redirect';
 
 function SourceDisplay({ source }: { source: Source }) {
   return (
@@ -226,6 +227,7 @@ function SourceDisplay({ source }: { source: Source }) {
 
 function SourcePage() {
   const { id } = Route.useParams();
+  const isRedirecting = useNumericIdRedirect(id, EntityType.SOURCE);
   
   const { 
     data: source, 
@@ -233,13 +235,22 @@ function SourcePage() {
     error, 
     retry 
   } = useSourceData(id, {
-    enabled: !!id,
+    enabled: !!id && !isRedirecting,
     refetchOnWindowFocus: true,
     staleTime: 10 * 60 * 1000, // 10 minutes
     onError: (error) => {
       console.error('Source fetch error:', error);
     }
   });
+
+  // Show redirection loading state
+  if (isRedirecting) {
+    return (
+      <EntityErrorBoundary entityType="sources" entityId={id}>
+        <EntitySkeleton entityType={EntityType.SOURCE} />
+      </EntityErrorBoundary>
+    );
+  }
 
   // Show loading state
   if (loading) {

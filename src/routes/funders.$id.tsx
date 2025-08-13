@@ -4,6 +4,7 @@ import { EntityType } from '@/lib/openalex/utils/entity-detection';
 import EntityErrorBoundary from '@/components/error-boundary';
 import { useFunderData } from '@/hooks/use-entity-data';
 import { EntityError, EntitySkeleton, EntityFallback } from '@/components/entity-error';
+import { useNumericIdRedirect } from '@/hooks/use-numeric-id-redirect';
 
 function FunderDisplay({ funder }: { funder: Funder }) {
   return (
@@ -54,6 +55,7 @@ function FunderDisplay({ funder }: { funder: Funder }) {
 
 function FunderPage() {
   const { id } = Route.useParams();
+  const isRedirecting = useNumericIdRedirect(id, EntityType.FUNDER);
   
   const { 
     data: funder, 
@@ -61,13 +63,22 @@ function FunderPage() {
     error, 
     retry 
   } = useFunderData(id, {
-    enabled: !!id,
+    enabled: !!id && !isRedirecting,
     refetchOnWindowFocus: true,
     staleTime: 10 * 60 * 1000, // 10 minutes
     onError: (error) => {
       console.error('Funder fetch error:', error);
     }
   });
+
+  // Show redirection loading state
+  if (isRedirecting) {
+    return (
+      <EntityErrorBoundary entityType="funders" entityId={id}>
+        <EntitySkeleton entityType={EntityType.FUNDER} />
+      </EntityErrorBoundary>
+    );
+  }
 
   // Show loading skeleton
   if (loading) {

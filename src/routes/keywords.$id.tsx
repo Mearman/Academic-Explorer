@@ -3,6 +3,7 @@ import type { Keyword } from '@/lib/openalex/types';
 import { EntityType } from '@/lib/openalex/utils/entity-detection';
 import EntityErrorBoundary from '@/components/error-boundary';
 import { useKeywordData } from '@/hooks/use-entity-data';
+import { useNumericIdRedirect } from '@/hooks/use-numeric-id-redirect';
 import { EntityError, EntitySkeleton, EntityFallback } from '@/components/entity-error';
 
 function KeywordDisplay({ keyword }: { keyword: Keyword }) {
@@ -46,6 +47,7 @@ function KeywordDisplay({ keyword }: { keyword: Keyword }) {
 
 function KeywordPage() {
   const { id } = Route.useParams();
+  const isRedirecting = useNumericIdRedirect(id, EntityType.KEYWORD);
   
   const { 
     data: keyword, 
@@ -53,13 +55,22 @@ function KeywordPage() {
     error, 
     retry 
   } = useKeywordData(id, {
-    enabled: !!id,
+    enabled: !!id && !isRedirecting,
     refetchOnWindowFocus: true,
     staleTime: 10 * 60 * 1000, // 10 minutes
     onError: (error) => {
       console.error('Keyword fetch error:', error);
     }
   });
+
+  // Show redirection loading state
+  if (isRedirecting) {
+    return (
+      <EntityErrorBoundary entityType="keywords" entityId={id}>
+        <EntitySkeleton entityType={EntityType.KEYWORD} />
+      </EntityErrorBoundary>
+    );
+  }
 
   // Show loading skeleton
   if (loading) {
