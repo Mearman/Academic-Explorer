@@ -3,12 +3,25 @@ import react from '@vitejs/plugin-react';
 import { vanillaExtractPlugin } from '@vanilla-extract/vite-plugin';
 import { TanStackRouterVite } from '@tanstack/router-vite-plugin';
 import path from 'path';
+import { copyFileSync } from 'fs';
 
-export default defineConfig({
+export default defineConfig(({ command }) => ({
+  base: command === 'build' ? '/Academic-Explorer/' : '/',
   plugins: [
     react(),
     TanStackRouterVite(),
     vanillaExtractPlugin(),
+    // Custom plugin to copy 404.html for GitHub Pages SPA routing
+    {
+      name: 'copy-404',
+      closeBundle() {
+        try {
+          copyFileSync('public/404.html', 'dist/404.html');
+        } catch (error) {
+          console.warn('Failed to copy 404.html:', error);
+        }
+      }
+    }
   ],
   resolve: {
     alias: {
@@ -57,4 +70,4 @@ export default defineConfig({
     port: 3000,
     open: true,
   },
-});
+}));

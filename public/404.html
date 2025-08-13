@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Academic Explorer</title>
+    <script type="text/javascript">
+        // Single Page Application SPA for GitHub Pages
+        // https://github.com/rafgraph/spa-github-pages
+        // 
+        // This script handles client-side routing for SPAs hosted on GitHub Pages
+        // by redirecting 404 errors to the main index.html with the path encoded
+        // in the URL search parameters
+
+        var pathSegments = 1; // Change this to the number of directories in your GitHub Pages URL
+        var l = window.location;
+        
+        l.replace(
+            l.protocol + '//' + l.hostname + (l.port ? ':' + l.port : '') +
+            '/' + l.pathname.split('/').slice(0, pathSegments + 1).join('/') + 
+            '/?/' + l.pathname.slice(1).split('/').slice(pathSegments).join('/').replace(/&/g, '~and~') +
+            (l.search ? '&' + l.search.slice(1).replace(/&/g, '~and~') : '') +
+            l.hash
+        );
+    </script>
+</head>
+<body>
+    <div>Redirecting...</div>
+</body>
+</html>
