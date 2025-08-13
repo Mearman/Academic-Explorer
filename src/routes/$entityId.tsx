@@ -102,8 +102,8 @@ function GenericEntityPage() {
         const entityType = detectEntityType(decodedEntityId);
         const endpoint = getEntityEndpoint(entityType);
         
-        // Extract numeric part for the route
-        const numericId = decodedEntityId.replace(/^[A-Za-z]/, '');
+        // Use the full OpenAlex ID (with prefix) for the route
+        const fullId = decodedEntityId.toUpperCase();
         
         setState({ 
           status: 'redirecting', 
@@ -111,8 +111,8 @@ function GenericEntityPage() {
           idType: 'openalex'
         });
 
-        // Perform client-side redirect
-        navigate({ to: `/${endpoint}/${numericId}` });
+        // Perform client-side redirect with full ID
+        navigate({ to: `/${endpoint}/${fullId}` });
         
       } else {
         // Handle external ID - parse it for more details
