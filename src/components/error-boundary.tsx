@@ -6,7 +6,7 @@
  */
 
 import React from 'react';
-import Link from 'next/link';
+import { Link } from '@tanstack/react-router';
 import { ErrorBoundary } from 'react-error-boundary';
 
 export interface EntityErrorProps {
@@ -82,7 +82,7 @@ function EntityError({
           </button>
           
           <Link
-            href="/"
+            to="/"
             className="block w-full bg-gray-100 text-gray-700 py-2 px-4 rounded-md hover:bg-gray-200 transition-colors"
           >
             Home
