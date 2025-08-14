@@ -29,13 +29,19 @@ export function useHybridStorage() {
   const updateMetrics = async () => {
     // Calculate localStorage usage
     let localStorageSize = 0;
-    for (const key in localStorage) {
-      if (Object.prototype.hasOwnProperty.call(localStorage, key)) {
-        const value = localStorage[key];
-        if (value !== null && value !== undefined) {
-          localStorageSize += value.length + key.length;
+    try {
+      for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        if (key !== null) {
+          const value = localStorage.getItem(key);
+          if (value !== null) {
+            localStorageSize += value.length + key.length;
+          }
         }
       }
+    } catch (error) {
+      console.warn('Error calculating localStorage size:', error);
+      localStorageSize = 0;
     }
 
     // Get IndexedDB usage

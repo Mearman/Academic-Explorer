@@ -55,7 +55,7 @@ beforeEach(async () => {
   vi.clearAllMocks();
 });
 
-describe.skip('useEntityData Hook', () => {
+describe('useEntityData Hook', () => {
   beforeEach(() => {
     server.resetHandlers();
   });
