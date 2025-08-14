@@ -12,7 +12,7 @@ import {
   Tabs
 } from '@mantine/core';
 import { IconExternalLink, IconDownload, IconInfoCircle, IconFileText, IconTags, IconLink, IconCode } from '@tabler/icons-react';
-import { RawDataView } from '@/components';
+import { RawDataView, AuthorList, ConceptList, EntityLink } from '@/components';
 import type { Work } from '@/lib/openalex/types';
 import { EntityType } from '@/lib/openalex/utils/entity-detection';
 import { useWorkData } from '@/hooks/use-entity-data';
@@ -224,28 +224,311 @@ function WorkDisplay({ work }: { work: Work }) {
           </Card>
         )}
 
-        {/* Enhanced Topics */}
-        {work.topics && work.topics.length > 0 && (
+        {/* Enhanced Authors */}
+        {work.authorships && work.authorships.length > 0 && (
           <Card withBorder radius="md" p="xl">
             <Group mb="lg">
               <IconTags size={20} />
-              <Title order={2} size="lg">Research Topics</Title>
+              <Title order={2} size="lg">Authors & Affiliations</Title>
+              <Badge variant="light" color="blue" radius="sm">
+                {work.authorships.length} authors
+              </Badge>
             </Group>
             
-            <Group gap="sm">
-              {work.topics.map((topic) => (
-                <Badge
-                  key={topic.id}
-                  variant="light"
-                  size="md"
-                  radius="sm"
-                >
-                  {topic.display_name}
-                </Badge>
-              ))}
-            </Group>
+            <AuthorList 
+              authorships={work.authorships}
+              showInstitutions={true}
+              showPositions={true}
+              maxAuthors={10}
+            />
           </Card>
         )}
+
+        {/* Enhanced Topics & Concepts */}
+        {((work.topics && work.topics.length > 0) || (work.concepts && work.concepts.length > 0)) && (
+          <Card withBorder radius="md" p="xl">
+            <Group mb="lg">
+              <IconTags size={20} />
+              <Title order={2} size="lg">Research Topics & Concepts</Title>
+            </Group>
+            
+            <ConceptList 
+              topics={work.topics}
+              concepts={work.concepts}
+              showScores={true}
+              variant="detailed"
+              maxItems={15}
+            />
+          </Card>
+        )}
+
+        {/* Bibliographic Information */}
+        {work.biblio && (work.biblio.volume || work.biblio.issue || work.biblio.first_page) && (
+          <Card withBorder radius="md" p="xl">
+            <Group mb="lg">
+              <IconFileText size={20} />
+              <Title order={2} size="lg">Bibliographic Details</Title>
+            </Group>
+            
+            <Grid>
+              {work.biblio.volume && (
+                <Grid.Col span={{ base: 12, sm: 6, md: 3 }}>
+                  <Paper p="md" withBorder radius="sm" bg="gray.0">
+                    <Text size="xs" tt="uppercase" fw={600} c="dimmed" mb="xs">
+                      Volume
+                    </Text>
+                    <Text size="sm" fw={500}>
+                      {work.biblio.volume}
+                    </Text>
+                  </Paper>
+                </Grid.Col>
+              )}
+              
+              {work.biblio.issue && (
+                <Grid.Col span={{ base: 12, sm: 6, md: 3 }}>
+                  <Paper p="md" withBorder radius="sm" bg="gray.0">
+                    <Text size="xs" tt="uppercase" fw={600} c="dimmed" mb="xs">
+                      Issue
+                    </Text>
+                    <Text size="sm" fw={500}>
+                      {work.biblio.issue}
+                    </Text>
+                  </Paper>
+                </Grid.Col>
+              )}
+              
+              {work.biblio.first_page && (
+                <Grid.Col span={{ base: 12, sm: 6, md: 3 }}>
+                  <Paper p="md" withBorder radius="sm" bg="gray.0">
+                    <Text size="xs" tt="uppercase" fw={600} c="dimmed" mb="xs">
+                      Pages
+                    </Text>
+                    <Text size="sm" fw={500}>
+                      {work.biblio.first_page}{work.biblio.last_page ? `-${work.biblio.last_page}` : ''}
+                    </Text>
+                  </Paper>
+                </Grid.Col>
+              )}
+              
+              <Grid.Col span={{ base: 12, sm: 6, md: 3 }}>
+                <Paper p="md" withBorder radius="sm" bg="gray.0">
+                  <Text size="xs" tt="uppercase" fw={600} c="dimmed" mb="xs">
+                    Work Type
+                  </Text>
+                  <Text size="sm" fw={500}>
+                    {work.type || work.type_crossref || 'Not specified'}
+                  </Text>
+                </Paper>
+              </Grid.Col>
+            </Grid>
+          </Card>
+        )}
+
+        {/* Funding Information */}
+        {work.grants && work.grants.length > 0 && (
+          <Card withBorder radius="md" p="xl">
+            <Group mb="lg">
+              <IconInfoCircle size={20} />
+              <Title order={2} size="lg">Funding & Grants</Title>
+              <Badge variant="light" color="green" radius="sm">
+                {work.grants.length} grants
+              </Badge>
+            </Group>
+            
+            <Stack gap="sm">
+              {work.grants.map((grant, index) => (
+                <Paper key={index} p="md" withBorder radius="sm" bg="green.0">
+                  <Stack gap="xs">
+                    <Text size="sm" fw={500}>
+                      {grant.display_name || `Grant ${index + 1}`}
+                    </Text>
+                    {grant.funder_display_name && (
+                      <Group gap="xs">
+                        <Text size="xs" c="dimmed">Funder:</Text>
+                        <EntityLink
+                          entityId={grant.funder}
+                          displayName={grant.funder_display_name}
+                          size="xs"
+                        />
+                      </Group>
+                    )}
+                    {grant.award_id && (
+                      <Text size="xs" c="dimmed">
+                        Award ID: {grant.award_id}
+                      </Text>
+                    )}
+                  </Stack>
+                </Paper>
+              ))}
+            </Stack>
+          </Card>
+        )}
+
+        {/* Citation and Reference Information */}
+        {(work.referenced_works_count > 0 || work.cited_by_count > 0) && (
+          <Card withBorder radius="md" p="xl">
+            <Group mb="lg">
+              <IconLink size={20} />
+              <Title order={2} size="lg">Citations & References</Title>
+            </Group>
+            
+            <Grid>
+              <Grid.Col span={{ base: 12, md: 6 }}>
+                <Paper p="lg" withBorder radius="sm" bg="work.0">
+                  <Stack gap="xs" align="center">
+                    <Text size="xl" fw={700} c="work">
+                      {work.cited_by_count}
+                    </Text>
+                    <Text size="sm" c="dimmed" ta="center">
+                      Times Cited
+                    </Text>
+                    {work.cited_by_percentile_year && (
+                      <Badge size="xs" variant="light" color="work">
+                        {Math.round(work.cited_by_percentile_year.max)}th percentile
+                      </Badge>
+                    )}
+                  </Stack>
+                </Paper>
+              </Grid.Col>
+              
+              <Grid.Col span={{ base: 12, md: 6 }}>
+                <Paper p="lg" withBorder radius="sm" bg="blue.0">
+                  <Stack gap="xs" align="center">
+                    <Text size="xl" fw={700} c="blue">
+                      {work.referenced_works_count}
+                    </Text>
+                    <Text size="sm" c="dimmed" ta="center">
+                      References Cited
+                    </Text>
+                  </Stack>
+                </Paper>
+              </Grid.Col>
+            </Grid>
+          </Card>
+        )}
+
+        {/* Alternative Access Locations */}
+        {work.locations && work.locations.length > 1 && (
+          <Card withBorder radius="md" p="xl">
+            <Group mb="lg">
+              <IconLink size={20} />
+              <Title order={2} size="lg">Alternative Access Locations</Title>
+              <Badge variant="light" color="orange" radius="sm">
+                {work.locations.length} locations
+              </Badge>
+            </Group>
+            
+            <Stack gap="sm">
+              {work.locations.slice(1).map((location, index) => (
+                <Paper key={index} p="md" withBorder radius="sm" bg={location.is_oa ? 'openAccess.0' : 'gray.0'}>
+                  <Group justify="space-between">
+                    <Stack gap="xs">
+                      {location.source && (
+                        <EntityLink
+                          entityId={location.source.id}
+                          displayName={location.source.display_name}
+                          size="sm"
+                          weight={500}
+                        />
+                      )}
+                      <Group gap="xs">
+                        <Badge
+                          size="xs"
+                          variant="light"
+                          color={location.is_oa ? 'openAccess' : 'gray'}
+                        >
+                          {location.is_oa ? 'Open Access' : 'Restricted'}
+                        </Badge>
+                        {location.license && (
+                          <Badge size="xs" variant="outline" color="blue">
+                            {location.license}
+                          </Badge>
+                        )}
+                        {location.version && (
+                          <Badge size="xs" variant="outline" color="gray">
+                            {location.version}
+                          </Badge>
+                        )}
+                      </Group>
+                    </Stack>
+                    
+                    {location.landing_page_url && (
+                      <Anchor
+                        href={location.landing_page_url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        size="sm"
+                        c="blue"
+                      >
+                        Visit
+                      </Anchor>
+                    )}
+                  </Group>
+                </Paper>
+              ))}
+            </Stack>
+          </Card>
+        )}
+
+        {/* Additional Metadata */}
+        <Card withBorder radius="md" p="xl">
+          <Group mb="lg">
+            <IconInfoCircle size={20} />
+            <Title order={2} size="lg">Additional Metadata</Title>
+          </Group>
+          
+          <Grid>
+            <Grid.Col span={{ base: 12, md: 6 }}>
+              <Paper p="md" withBorder radius="sm" bg="gray.0">
+                <Text size="xs" tt="uppercase" fw={600} c="dimmed" mb="xs">
+                  Distinct Countries
+                </Text>
+                <Text size="sm" fw={500}>
+                  {work.countries_distinct_count || 0}
+                </Text>
+              </Paper>
+            </Grid.Col>
+            
+            <Grid.Col span={{ base: 12, md: 6 }}>
+              <Paper p="md" withBorder radius="sm" bg="gray.0">
+                <Text size="xs" tt="uppercase" fw={600} c="dimmed" mb="xs">
+                  Distinct Institutions
+                </Text>
+                <Text size="sm" fw={500}>
+                  {work.institutions_distinct_count || 0}
+                </Text>
+              </Paper>
+            </Grid.Col>
+            
+            {work.fwci && (
+              <Grid.Col span={{ base: 12, md: 6 }}>
+                <Paper p="md" withBorder radius="sm" bg="gray.0">
+                  <Text size="xs" tt="uppercase" fw={600} c="dimmed" mb="xs">
+                    Field Weighted Citation Impact
+                  </Text>
+                  <Text size="sm" fw={500}>
+                    {work.fwci.toFixed(2)}
+                  </Text>
+                </Paper>
+              </Grid.Col>
+            )}
+            
+            <Grid.Col span={{ base: 12, md: 6 }}>
+              <Paper p="md" withBorder radius="sm" bg="gray.0">
+                <Text size="xs" tt="uppercase" fw={600} c="dimmed" mb="xs">
+                  Has Fulltext
+                </Text>
+                <Badge
+                  size="sm"
+                  variant="light"
+                  color={work.has_fulltext ? 'green' : 'gray'}
+                >
+                  {work.has_fulltext ? 'Yes' : 'No'}
+                </Badge>
+              </Paper>
+            </Grid.Col>
+          </Grid>
+        </Card>
 
         {/* Enhanced External Links */}
         <Card withBorder radius="md" p="xl">
