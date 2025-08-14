@@ -1,8 +1,8 @@
 import { createFileRoute, Link } from '@tanstack/react-router';
 import { useEffect } from 'react';
 import { parseEntityIdentifier, EntityType } from '@/lib/openalex/utils/entity-detection';
-import EntityErrorBoundary from '@/components/error-boundary';
-import { EntityPageTemplate } from '@/components/entity-page-template';
+import { EntityErrorBoundary } from '@/components';
+import { EntityPageTemplate } from '@/components';
 import type { OpenAlexEntity } from '@/components/types';
 
 /**

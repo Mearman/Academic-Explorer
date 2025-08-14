@@ -1,7 +1,7 @@
 import { createFileRoute, useNavigate } from '@tanstack/react-router';
 import { useEffect, useState } from 'react';
 import { decodeExternalId, parseExternalId, ExternalIdType } from '@/lib/openalex/utils/entity-detection';
-import EntityErrorBoundary from '@/components/error-boundary';
+import { EntityErrorBoundary } from '@/components';
 
 function RORRedirectLoading({ ror }: { ror: string }) {
   return (

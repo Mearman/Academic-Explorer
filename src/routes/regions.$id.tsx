@@ -24,11 +24,11 @@ import {
   IconMapPin,
   IconTextCaption
 } from '@tabler/icons-react';
-import { RawDataView } from '@/components/organisms/raw-data-view';
+import { RawDataView } from '@/components';
 import type { Region } from '@/lib/openalex/types';
 import { EntityType } from '@/lib/openalex/utils/entity-detection';
 import { useRegionData } from '@/hooks/use-entity-data';
-import { EntityError, EntitySkeleton, EntityFallback } from '@/components/entity-error';
+import { EntityError, EntitySkeleton, EntityFallback } from '@/components';
 import { useNumericIdRedirect } from '@/hooks/use-numeric-id-redirect';
 import { 
   EntityPageTemplate,

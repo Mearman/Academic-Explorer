@@ -26,11 +26,11 @@ import {
   IconPhoto,
   IconGlobe
 } from '@tabler/icons-react';
-import { RawDataView } from '@/components/organisms/raw-data-view';
+import { RawDataView } from '@/components';
 import type { Concept } from '@/lib/openalex/types';
 import { EntityType } from '@/lib/openalex/utils/entity-detection';
 import { useConceptData } from '@/hooks/use-entity-data';
-import { EntityError, EntitySkeleton, EntityFallback } from '@/components/entity-error';
+import { EntityError, EntitySkeleton, EntityFallback } from '@/components';
 import { useNumericIdRedirect } from '@/hooks/use-numeric-id-redirect';
 import { 
   EntityPageTemplate,

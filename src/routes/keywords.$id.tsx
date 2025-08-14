@@ -23,12 +23,12 @@ import {
   IconStar,
   IconQuote
 } from '@tabler/icons-react';
-import { RawDataView } from '@/components/organisms/raw-data-view';
+import { RawDataView } from '@/components';
 import type { Keyword } from '@/lib/openalex/types';
 import { EntityType } from '@/lib/openalex/utils/entity-detection';
 import { useKeywordData } from '@/hooks/use-entity-data';
 import { useNumericIdRedirect } from '@/hooks/use-numeric-id-redirect';
-import { EntityError, EntitySkeleton, EntityFallback } from '@/components/entity-error';
+import { EntityError, EntitySkeleton, EntityFallback } from '@/components';
 import { 
   EntityPageTemplate,
   EntityErrorBoundary
