@@ -63,7 +63,7 @@ function WorkDisplay({ work }: { work: Work }) {
           <Grid.Col span={{ base: 12, sm: 6, md: 3 }}>
             <Paper p="lg" radius="md" withBorder>
               <Stack gap="xs" align="center">
-                <Text size="xl" fw={700} c="work">
+                <Text size="xl" fw={700} c="blue">
                   {work.cited_by_count}
                 </Text>
                 <Text size="sm" c="dimmed" ta="center">
@@ -160,7 +160,7 @@ function WorkDisplay({ work }: { work: Work }) {
                     rel="noopener noreferrer"
                     size="sm"
                     fw={500}
-                    c="work"
+                    c="blue"
                   >
                     {work.ids.doi}
                   </Anchor>
@@ -376,7 +376,7 @@ function WorkDisplay({ work }: { work: Work }) {
               <Grid.Col span={{ base: 12, md: 6 }}>
                 <Paper p="lg" withBorder radius="sm" bg="work.0">
                   <Stack gap="xs" align="center">
-                    <Text size="xl" fw={700} c="work">
+                    <Text size="xl" fw={700} c="blue">
                       {work.cited_by_count}
                     </Text>
                     <Text size="sm" c="dimmed" ta="center">

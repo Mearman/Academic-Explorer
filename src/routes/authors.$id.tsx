@@ -81,7 +81,7 @@ function AuthorDisplay({ author }: { author: Author }) {
               <Grid.Col span={{ base: 12, sm: 6, md: 3 }}>
                 <Paper p="lg" radius="md" withBorder>
                   <Stack gap="xs" align="center">
-                    <Text size="xl" fw={700} c="author">
+                    <Text size="xl" fw={700} c="blue">
                       {author.works_count.toLocaleString()}
                     </Text>
                     <Text size="sm" c="dimmed" ta="center">
@@ -331,7 +331,7 @@ function AuthorDisplay({ author }: { author: Author }) {
                             <Text size="sm" fw={600}>
                               {yearData.year}
                             </Text>
-                            <Text size="lg" fw={700} c="author">
+                            <Text size="lg" fw={700} c="blue">
                               {yearData.works_count}
                             </Text>
                             <Text size="xs" c="dimmed">
@@ -379,7 +379,7 @@ function AuthorDisplay({ author }: { author: Author }) {
                         rel="noopener noreferrer"
                         size="sm"
                         fw={500}
-                        c="author"
+                        c="blue"
                       >
                         {author.orcid}
                       </Anchor>
@@ -444,7 +444,7 @@ function AuthorDisplay({ author }: { author: Author }) {
                       case 'wikidata':
                         return 'indigo';
                       default:
-                        return 'author';
+                        return 'gray';
                     }
                   };
 

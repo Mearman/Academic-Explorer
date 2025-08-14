@@ -71,7 +71,7 @@ function RegionDisplay({ region }: { region: Region }) {
               <Grid.Col span={{ base: 12, sm: 6, md: 3 }}>
                 <Paper p="lg" radius="md" withBorder>
                   <Stack gap="xs" align="center">
-                    <Text size="xl" fw={700} c="region">
+                    <Text size="xl" fw={700} c="lime">
                       {region.works_count.toLocaleString()}
                     </Text>
                     <Text size="sm" c="dimmed" ta="center">
@@ -127,7 +127,7 @@ function RegionDisplay({ region }: { region: Region }) {
               
               <Paper p="xl" withBorder radius="md" bg="region.0">
                 <Stack align="center" gap="md">
-                  <Text size="xxl" fw={700} c="region" ta="center">
+                  <Text size="xxl" fw={700} c="lime" ta="center">
                     {region.display_name}
                   </Text>
                   <Badge variant="light" color="region" size="lg" radius="sm">
@@ -218,7 +218,7 @@ function RegionDisplay({ region }: { region: Region }) {
                     <Text size="xs" tt="uppercase" fw={600} c="dimmed" mb="xs">
                       Region Name
                     </Text>
-                    <Text size="lg" fw={600} c="region">
+                    <Text size="lg" fw={600} c="lime">
                       {region.display_name}
                     </Text>
                   </Paper>
