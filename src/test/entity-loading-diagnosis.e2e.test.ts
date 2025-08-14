@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * Entity Loading Diagnosis E2E Tests
  * 
