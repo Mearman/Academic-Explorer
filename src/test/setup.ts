@@ -17,8 +17,10 @@ afterEach(() => {
 });
 
 // Clean up after all tests
-afterAll(() => {
+afterAll(async () => {
   server.close();
+  // Give time for cleanup
+  await new Promise(resolve => setTimeout(resolve, 100));
 });
 
 // Mock fetch for Node environment - MSW handles this
