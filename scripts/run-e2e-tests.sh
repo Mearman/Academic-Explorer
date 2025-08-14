@@ -62,5 +62,13 @@ pnpm test:e2e src/test/entity-loading-diagnosis.e2e.test.ts
 echo -e "\n${YELLOW}Running works page loading tests...${NC}"
 pnpm test:e2e src/test/works-page-loading.e2e.test.ts
 
+# Run search functionality tests
+echo -e "\n${YELLOW}Running search functionality tests...${NC}"
+pnpm test:e2e src/test/search-functionality.e2e.test.ts
+
+# Run search results tests
+echo -e "\n${YELLOW}Running search results tests...${NC}"
+pnpm test:e2e src/test/search-results.e2e.test.ts
+
 echo -e "\n${GREEN}✅ E2E tests completed${NC}"
 echo -e "${YELLOW}Check test-results/ directory for screenshots and logs${NC}"
