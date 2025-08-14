@@ -81,7 +81,7 @@ function SearchPage() {
     }
 
     // Parse filter string for structured params
-    if (worksParams.filter) {
+    if (worksParams.filter && typeof worksParams.filter === 'string') {
       const filters = worksParams.filter.split(',');
       filters.forEach(filter => {
         const [key, value] = filter.split(':');

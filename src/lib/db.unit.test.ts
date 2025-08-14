@@ -232,6 +232,7 @@ describe('DatabaseService', () => {
         id: 'paper1',
         title: 'Test Paper',
         authors: ['Author 1'],
+        savedAt: Date.now(),
       };
 
       await db.savePaper(paper);
@@ -565,6 +566,7 @@ describe('DatabaseService', () => {
         id: 'test',
         title: 'Test',
         authors: [],
+        savedAt: Date.now(),
       };
 
       await expect(db.savePaper(paper)).rejects.toThrow('Put operation failed');
@@ -604,6 +606,7 @@ describe('DatabaseService', () => {
         id: 'minimal',
         title: '',
         authors: [],
+        savedAt: Date.now(),
       };
 
       await db.savePaper(minimalPaper);
