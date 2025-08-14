@@ -1,4 +1,4 @@
-import { style } from '@vanilla-extract/css';
+import { style, globalStyle } from '@vanilla-extract/css';
 import { entityVars } from '../design-tokens.css';
 
 export const container = style({
@@ -293,23 +293,29 @@ export const retryButton = style([
 ]);
 
 // Responsive design
-export const responsiveLayout = style({
+globalStyle(resultHeader, {
   '@media': {
     'screen and (max-width: 768px)': {
-      selectors: {
-        [`${resultHeader}`]: {
-          flexDirection: 'column',
-          alignItems: 'flex-start',
-        },
-        [`${resultMeta}`]: {
-          alignSelf: 'flex-end',
-        },
-        [`${metrics}`]: {
-          flexDirection: 'column',
-          alignItems: 'flex-start',
-          gap: entityVars.spacing.sm,
-        },
-      },
+      flexDirection: 'column',
+      alignItems: 'flex-start',
+    },
+  },
+});
+
+globalStyle(resultMeta, {
+  '@media': {
+    'screen and (max-width: 768px)': {
+      alignSelf: 'flex-end',
+    },
+  },
+});
+
+globalStyle(metrics, {
+  '@media': {
+    'screen and (max-width: 768px)': {
+      flexDirection: 'column',
+      alignItems: 'flex-start',
+      gap: entityVars.spacing.sm,
     },
   },
 });

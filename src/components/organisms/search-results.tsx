@@ -1,11 +1,12 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from '@tanstack/react-router';
 import * as styles from './search-results.css';
 import { cachedOpenAlex } from '@/lib/openalex';
 import type { Work, ApiResponse, WorksParams } from '@/lib/openalex/types';
 import { EntityBadge, LoadingSkeleton, ErrorMessage, ExternalLink, MetricDisplay } from '@/components';
+import { ExportControls } from '@/components/molecules/export-controls';
 
 interface SearchResultsProps {
   searchParams: WorksParams;
@@ -32,7 +33,7 @@ export function SearchResults({ searchParams, onParamsChange }: SearchResultsPro
     currentPage: 1,
   });
 
-  const performSearch = async (params: WorksParams) => {
+  const performSearch = useCallback(async (params: WorksParams) => {
     setState(prev => ({ ...prev, loading: true, error: null }));
     
     try {
@@ -56,13 +57,13 @@ export function SearchResults({ searchParams, onParamsChange }: SearchResultsPro
         error: error instanceof Error ? error.message : 'Search failed',
       }));
     }
-  };
+  }, [searchParams.group_by]);
 
   useEffect(() => {
     if (searchParams.search || searchParams.filter) {
       performSearch(searchParams);
     }
-  }, [searchParams]);
+  }, [searchParams, performSearch]);
 
   const handlePageChange = (page: number) => {
     const newParams = { ...searchParams, page };
@@ -155,6 +156,18 @@ export function SearchResults({ searchParams, onParamsChange }: SearchResultsPro
             ))}
           </div>
         </div>
+      )}
+
+      {/* Export Controls */}
+      {state.results.length > 0 && (
+        <ExportControls
+          results={state.results}
+          totalResults={state.meta?.count}
+          searchQuery={searchParams.q || ''}
+          onExport={(format, count) => {
+            console.log(`Exported ${count} results in ${format} format`);
+          }}
+        />
       )}
 
       {/* Search Results */}

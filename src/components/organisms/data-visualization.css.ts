@@ -1,4 +1,4 @@
-import { style } from '@vanilla-extract/css';
+import { style, globalStyle } from '@vanilla-extract/css';
 import { entityVars } from '../design-tokens.css';
 
 // Chart container styles
@@ -261,28 +261,39 @@ export const metricTrend = style({
 });
 
 // Responsive design
-export const responsiveChart = style({
+globalStyle(chartContainer, {
   '@media': {
     'screen and (max-width: 768px)': {
-      selectors: {
-        [`${chartContainer}`]: {
-          padding: entityVars.spacing.md,
-        },
-        [`${networkContainer}`]: {
-          padding: entityVars.spacing.md,
-        },
-        [`${networkLegend}`]: {
-          position: 'relative',
-          top: 'auto',
-          right: 'auto',
-          marginTop: entityVars.spacing.lg,
-          flexDirection: 'row',
-          flexWrap: 'wrap',
-        },
-        [`${metricsGrid}`]: {
-          gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))',
-        },
-      },
+      padding: entityVars.spacing.md,
+    },
+  },
+});
+
+globalStyle(networkContainer, {
+  '@media': {
+    'screen and (max-width: 768px)': {
+      padding: entityVars.spacing.md,
+    },
+  },
+});
+
+globalStyle(networkLegend, {
+  '@media': {
+    'screen and (max-width: 768px)': {
+      position: 'relative',
+      top: 'auto',
+      right: 'auto',
+      marginTop: entityVars.spacing.lg,
+      flexDirection: 'row',
+      flexWrap: 'wrap',
+    },
+  },
+});
+
+globalStyle(metricsGrid, {
+  '@media': {
+    'screen and (max-width: 768px)': {
+      gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))',
     },
   },
 });
@@ -322,42 +333,49 @@ export const visuallyHidden = style({
 });
 
 // High contrast support
-export const highContrast = style({
+globalStyle(chartBar, {
   '@media': {
     '(prefers-contrast: high)': {
-      selectors: {
-        [`${chartBar}`]: {
-          stroke: entityVars.color.accent,
-          strokeWidth: '2',
-        },
-        [`${networkEdge}`]: {
-          stroke: entityVars.color.accent,
-          strokeWidth: '2',
-        },
-        [`${axis}`]: {
-          strokeWidth: '2',
-        },
-      },
+      stroke: entityVars.color.accent,
+      strokeWidth: '2',
+    },
+  },
+});
+
+globalStyle(networkEdge, {
+  '@media': {
+    '(prefers-contrast: high)': {
+      stroke: entityVars.color.accent,
+      strokeWidth: '2',
+    },
+  },
+});
+
+globalStyle(axis, {
+  '@media': {
+    '(prefers-contrast: high)': {
+      strokeWidth: '2',
     },
   },
 });
 
 // Print styles
-export const printOptimized = style({
+globalStyle(chartContainer, {
   '@media': {
     print: {
-      selectors: {
-        [`${chartContainer}`]: {
-          backgroundColor: 'white',
-          border: '1px solid black',
-          boxShadow: 'none',
-        },
-        [`${networkContainer}`]: {
-          backgroundColor: 'white',
-          border: '1px solid black',
-          boxShadow: 'none',
-        },
-      },
+      backgroundColor: 'white',
+      border: '1px solid black',
+      boxShadow: 'none',
+    },
+  },
+});
+
+globalStyle(networkContainer, {
+  '@media': {
+    print: {
+      backgroundColor: 'white',
+      border: '1px solid black',
+      boxShadow: 'none',
     },
   },
 });

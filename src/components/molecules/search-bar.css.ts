@@ -1,4 +1,4 @@
-import { style } from '@vanilla-extract/css';
+import { style, globalStyle } from '@vanilla-extract/css';
 import { entityVars } from '../design-tokens.css';
 
 // Container for autocomplete search mode
@@ -87,19 +87,20 @@ export const button = style([
 ]);
 
 // Responsive design
-export const responsiveContainer = style({
+globalStyle(form, {
   '@media': {
     'screen and (max-width: 640px)': {
-      selectors: {
-        [`${form}`]: {
-          flexDirection: 'column',
-          gap: entityVars.spacing.md,
-        },
-        [`${button}`]: {
-          width: '100%',
-          justifyContent: 'center',
-        },
-      },
+      flexDirection: 'column',
+      gap: entityVars.spacing.md,
+    },
+  },
+});
+
+globalStyle(button, {
+  '@media': {
+    'screen and (max-width: 640px)': {
+      width: '100%',
+      justifyContent: 'center',
     },
   },
 });

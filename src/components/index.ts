@@ -32,6 +32,8 @@ export { ExternalLinksGroup } from './molecules/external-links-group';
 export { SearchBar } from './molecules/search-bar';
 export { AdvancedSearchForm } from './molecules/advanced-search-form';
 export { AutocompleteSearch } from './molecules/autocomplete-search';
+export { ExportControls } from './molecules/export-controls';
+export { SavedSearches } from './molecules/saved-searches';
 export { EntityLoading } from './molecules/entity-loading';
 export { AuthorList } from './molecules/author-list';
 export { ConceptList } from './molecules/concept-list';

@@ -1,4 +1,4 @@
-import { style } from '@vanilla-extract/css';
+import { style, globalStyle } from '@vanilla-extract/css';
 import { entityVars } from '../design-tokens.css';
 
 export const container = style({
@@ -148,19 +148,20 @@ export const metricBadge = style({
 });
 
 // Responsive design
-export const responsiveContainer = style({
+globalStyle(suggestionHeader, {
   '@media': {
     'screen and (max-width: 640px)': {
-      selectors: {
-        [`${suggestionHeader}`]: {
-          flexDirection: 'column',
-          alignItems: 'flex-start',
-          gap: entityVars.spacing.sm,
-        },
-        [`${suggestionMeta}`]: {
-          justifyContent: 'flex-start',
-        },
-      },
+      flexDirection: 'column',
+      alignItems: 'flex-start',
+      gap: entityVars.spacing.sm,
+    },
+  },
+});
+
+globalStyle(suggestionMeta, {
+  '@media': {
+    'screen and (max-width: 640px)': {
+      justifyContent: 'flex-start',
     },
   },
 });
@@ -196,37 +197,44 @@ export const emptyState = style({
 });
 
 // High contrast mode support
-export const highContrast = style({
+globalStyle(input, {
   '@media': {
     '(prefers-contrast: high)': {
-      selectors: {
-        [`${input}`]: {
-          borderWidth: '3px',
-        },
-        [`${suggestionsList}`]: {
-          border: `2px solid ${entityVars.color.accent}`,
-        },
-        [`${suggestionSelected}`]: {
-          backgroundColor: entityVars.color.accent,
-          color: entityVars.color.cardBackground,
-        },
-      },
+      borderWidth: '3px',
+    },
+  },
+});
+
+globalStyle(suggestionsList, {
+  '@media': {
+    '(prefers-contrast: high)': {
+      border: `2px solid ${entityVars.color.accent}`,
+    },
+  },
+});
+
+globalStyle(suggestionSelected, {
+  '@media': {
+    '(prefers-contrast: high)': {
+      backgroundColor: entityVars.color.accent,
+      color: entityVars.color.cardBackground,
     },
   },
 });
 
 // Reduced motion support
-export const reducedMotion = style({
+globalStyle(input, {
   '@media': {
     '(prefers-reduced-motion: reduce)': {
-      selectors: {
-        [`${input}`]: {
-          transition: 'none',
-        },
-        [`${suggestionLink}`]: {
-          transition: 'none',
-        },
-      },
+      transition: 'none',
+    },
+  },
+});
+
+globalStyle(suggestionLink, {
+  '@media': {
+    '(prefers-reduced-motion: reduce)': {
+      transition: 'none',
     },
   },
 });
