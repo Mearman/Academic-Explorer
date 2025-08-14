@@ -56,19 +56,29 @@ export function createCachedClient(config?: {
   useMemoryCache?: boolean;
   useIndexedDB?: boolean;
 }): OpenAlexClient {
-  const client = new OpenAlexClient({
-    mailto: config?.mailto,
-    apiKey: config?.apiKey,
-    polite: true,
-  });
+  try {
+    const client = new OpenAlexClient({
+      mailto: config?.mailto,
+      apiKey: config?.apiKey,
+      polite: true,
+    });
 
-  const interceptor = new CacheInterceptor({
-    ttl: config?.cacheTTL || 60 * 60 * 1000,
-    useMemory: config?.useMemoryCache !== false,
-    useIndexedDB: config?.useIndexedDB !== false,
-  });
+    const interceptor = new CacheInterceptor({
+      ttl: config?.cacheTTL || 60 * 60 * 1000,
+      useMemory: config?.useMemoryCache !== false,
+      useIndexedDB: config?.useIndexedDB !== false,
+    });
 
-  return withCache(client, interceptor);
+    return withCache(client, interceptor);
+  } catch (error) {
+    console.warn('Failed to create cached client, falling back to regular client:', error);
+    // Fallback to regular client if cache setup fails
+    return new OpenAlexClient({
+      mailto: config?.mailto,
+      apiKey: config?.apiKey,
+      polite: true,
+    });
+  }
 }
 
 // Export cache management functions

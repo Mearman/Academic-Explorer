@@ -3,8 +3,26 @@
  * Integrates with IndexedDB for persistent storage
  */
 
-import { db } from '@/lib/db';
 import type { ApiResponse } from '../types';
+
+// Lazy import db to avoid initialization issues in tests
+let db: any = null;
+async function getDb() {
+  if (!db) {
+    try {
+      const dbModule = await import('@/lib/db');
+      db = dbModule.db;
+    } catch (error) {
+      // In test environment, db might not be available
+      console.warn('Database not available:', error);
+      db = {
+        cacheSearchResults: () => Promise.resolve(),
+        getSearchResults: () => Promise.resolve(null),
+      };
+    }
+  }
+  return db;
+}
 
 export interface CacheOptions {
   ttl?: number; // Time to live in milliseconds
@@ -64,7 +82,8 @@ export class CacheManager {
     // Try IndexedDB
     if (this.options.useIndexedDB) {
       try {
-        const cached = await db.getSearchResults(key, params, this.options.ttl);
+        const database = await getDb();
+        const cached = await database.getSearchResults(key, params, this.options.ttl);
         if (cached && cached.results) {
           // Also store in memory cache for faster access
           if (this.options.useMemory) {
@@ -108,7 +127,8 @@ export class CacheManager {
     // Store in IndexedDB
     if (this.options.useIndexedDB && isApiResponse(data)) {
       try {
-        await db.cacheSearchResults(
+        const database = await getDb();
+        await database.cacheSearchResults(
           key,
           data.results,
           data.meta.count,
@@ -141,7 +161,8 @@ export class CacheManager {
     // Clear IndexedDB cache
     if (this.options.useIndexedDB) {
       try {
-        await db.cleanOldSearchResults(0); // Remove all
+        const database = await getDb();
+        await database.cleanOldSearchResults(0); // Remove all
       } catch (error) {
         console.error('Failed to clear IndexedDB cache:', error);
       }
