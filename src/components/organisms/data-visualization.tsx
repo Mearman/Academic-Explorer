@@ -66,7 +66,10 @@ export function Chart({
     if (isNumeric) {
       const maxX = Math.max(...(xValues as number[]));
       const minX = Math.min(...(xValues as number[]));
-      xScale = (x: number) => ((x - minX) / (maxX - minX)) * chartWidth;
+      xScale = (x: string | number) => {
+        const numX = typeof x === 'string' ? parseFloat(x) : x;
+        return ((numX - minX) / (maxX - minX)) * chartWidth;
+      };
     } else {
       xScale = (_x: string | number, index: number = 0) => (index / (data.length - 1)) * chartWidth;
     }
@@ -315,7 +318,7 @@ export function NetworkVisualization({
         {Array.from(new Set(nodes.map(n => n.entity_type))).map(entityType => (
           <div key={entityType} className={styles.legendItem}>
             <div className={`${styles.legendColor} ${styles[`node${entityType}` as keyof typeof styles] || ''}`}></div>
-            <EntityBadge type={entityType} size="sm" />
+            <EntityBadge entityType={entityType as any} size="sm" />
           </div>
         ))}
       </div>

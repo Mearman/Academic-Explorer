@@ -160,10 +160,11 @@ export function EntityError({ error, onRetry, entityId, entityType }: EntityErro
             
             {entityType && (
               <Link
-                to={`/${getEntityEndpoint(entityType)}`}
+                to="/"
+                search={{ q: entityType }}
                 className="text-red-600 hover:text-red-800 underline font-medium"
               >
-                Browse {entityType.charAt(0).toUpperCase() + entityType.slice(1)}s
+                Search {entityType.charAt(0).toUpperCase() + entityType.slice(1)}s
               </Link>
             )}
           </div>

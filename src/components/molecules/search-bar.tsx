@@ -40,7 +40,6 @@ export function SearchBar({
         to: '/search',
         search: {
           q: localQuery.trim(),
-          entity_type: 'works', // Default to works search
         }
       });
     }
