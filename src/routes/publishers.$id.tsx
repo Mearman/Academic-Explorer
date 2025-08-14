@@ -287,7 +287,7 @@ function PublisherDisplay({ publisher }: { publisher: Publisher }) {
                         <Text size="xs" tt="uppercase" fw={600} c="dimmed" mb="xs">
                           OpenAlex ID
                         </Text>
-                        <Text size="sm" fw={500} family="monospace">
+                        <Text size="sm" fw={500}>
                           {publisher.ids.openalex}
                         </Text>
                       </Paper>
@@ -306,8 +306,7 @@ function PublisherDisplay({ publisher }: { publisher: Publisher }) {
                           rel="noopener noreferrer"
                           size="sm"
                           fw={500}
-                          family="monospace"
-                        >
+                                                  >
                           {publisher.ids.wikidata}
                         </Anchor>
                       </Paper>
@@ -326,8 +325,7 @@ function PublisherDisplay({ publisher }: { publisher: Publisher }) {
                           rel="noopener noreferrer"
                           size="sm"
                           fw={500}
-                          family="monospace"
-                        >
+                                                  >
                           {publisher.ids.ror}
                         </Anchor>
                       </Paper>
