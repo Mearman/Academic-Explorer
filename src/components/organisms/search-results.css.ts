@@ -141,6 +141,13 @@ export const year = style({
   fontWeight: '500',
 });
 
+export const openAccess = style({
+  color: entityVars.color.success,
+  fontSize: entityVars.fontSize.sm,
+  fontWeight: entityVars.fontWeight.medium,
+  textTransform: 'uppercase',
+});
+
 export const authors = style({
   marginBottom: entityVars.spacing.sm,
   fontSize: entityVars.fontSize.sm,
@@ -221,34 +228,33 @@ export const pagination = style({
   padding: entityVars.spacing.lg,
 });
 
-export const paginationButton = style([
-  {
-    padding: `${entityVars.spacing.sm} ${entityVars.spacing.md}`,
-    background: entityVars.color.cardBackground,
-    color: entityVars.color.accent,
-    border: `1px solid ${entityVars.color.border}`,
-    borderRadius: entityVars.borderRadius.sm,
-    fontSize: entityVars.fontSize.sm,
-    fontWeight: '500',
-    cursor: 'pointer',
-    transition: 'all 0.2s ease',
+export const paginationButton = style({
+  padding: `${entityVars.spacing.sm} ${entityVars.spacing.md}`,
+  background: entityVars.color.cardBackground,
+  color: entityVars.color.accent,
+  border: `1px solid ${entityVars.color.border}`,
+  borderRadius: entityVars.borderRadius.sm,
+  fontSize: entityVars.fontSize.sm,
+  fontWeight: '500',
+  cursor: 'pointer',
+  transition: 'all 0.2s ease',
+  
+  ':hover': {
+    background: entityVars.color.work,
+    color: entityVars.color.cardBackground,
+    borderColor: entityVars.color.work,
   },
-  {
-    ':hover:not(:disabled)': {
-      background: entityVars.color.work,
-      color: entityVars.color.cardBackground,
-      borderColor: entityVars.color.work,
-    },
-    ':disabled': {
-      opacity: '0.5',
-      cursor: 'not-allowed',
-    },
-    ':focus': {
-      outline: 'none',
-      boxShadow: `0 0 0 2px ${entityVars.color.work}40`,
-    },
+  
+  ':disabled': {
+    opacity: '0.5',
+    cursor: 'not-allowed',
   },
-]);
+  
+  ':focus': {
+    outline: 'none',
+    boxShadow: `0 0 0 2px ${entityVars.color.work}40`,
+  },
+});
 
 export const paginationInfo = style({
   fontSize: entityVars.fontSize.sm,

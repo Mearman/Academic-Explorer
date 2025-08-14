@@ -2,6 +2,7 @@ import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import { vanillaExtractPlugin } from '@vanilla-extract/vite-plugin';
 import { TanStackRouterVite } from '@tanstack/router-vite-plugin';
+import checker from 'vite-plugin-checker';
 import path from 'path';
 import { copyFileSync } from 'fs';
 
@@ -11,6 +12,11 @@ export default defineConfig(({ command }) => ({
     react(),
     TanStackRouterVite(),
     vanillaExtractPlugin(),
+    // TypeScript checking during build
+    checker({
+      typescript: true,
+      overlay: false,
+    }),
     // Custom plugin to copy built index.html to 404.html for GitHub Pages SPA routing
     {
       name: 'copy-index-to-404',

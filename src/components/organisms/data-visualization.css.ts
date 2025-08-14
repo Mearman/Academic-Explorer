@@ -46,7 +46,6 @@ export const chartLine = style({
 export const chartPoint = style({
   transition: entityVars.transition.normal,
   ':hover': {
-    r: '6',
     stroke: entityVars.color.cardBackground,
     strokeWidth: '2',
   },

@@ -5,8 +5,7 @@ import { useNavigate } from '@tanstack/react-router';
 import * as styles from './search-results.css';
 import { cachedOpenAlex } from '@/lib/openalex';
 import type { Work, ApiResponse, WorksParams } from '@/lib/openalex/types';
-import { EntityBadge, LoadingSkeleton, ErrorMessage, ExternalLink, MetricDisplay } from '@/components';
-import { ExportControls } from '@/components/molecules/export-controls';
+import { EntityBadge, LoadingSkeleton, SkeletonGroup, ErrorMessage, ExternalLink, MetricDisplay } from '@/components';
 
 interface SearchResultsProps {
   searchParams: WorksParams;
@@ -79,7 +78,9 @@ export function SearchResults({ searchParams, onParamsChange }: SearchResultsPro
     return (
       <div className={styles.container}>
         <div className={styles.loading}>
-          <LoadingSkeleton count={5} height="120px" />
+          <SkeletonGroup lines={5}>
+            <LoadingSkeleton height="120px" />
+          </SkeletonGroup>
         </div>
       </div>
     );
@@ -91,14 +92,12 @@ export function SearchResults({ searchParams, onParamsChange }: SearchResultsPro
         <ErrorMessage 
           title="Search Error"
           message={state.error}
-          action={
-            <button 
-              onClick={() => performSearch(searchParams)}
-              className={styles.retryButton}
-            >
-              Try Again
-            </button>
-          }
+          actions={[
+            {
+              label: "Try Again",
+              onClick: () => performSearch(searchParams)
+            }
+          ]}
         />
       </div>
     );
@@ -158,17 +157,6 @@ export function SearchResults({ searchParams, onParamsChange }: SearchResultsPro
         </div>
       )}
 
-      {/* Export Controls */}
-      {state.results.length > 0 && (
-        <ExportControls
-          results={state.results}
-          totalResults={state.meta?.count}
-          searchQuery={searchParams.q || ''}
-          onExport={(format, count) => {
-            console.log(`Exported ${count} results in ${format} format`);
-          }}
-        />
-      )}
 
       {/* Search Results */}
       {state.results.length > 0 && (
@@ -184,20 +172,16 @@ export function SearchResults({ searchParams, onParamsChange }: SearchResultsPro
                   {work.title}
                 </h3>
                 <div className={styles.resultMeta}>
-                  <EntityBadge type="work" />
+                  <EntityBadge entityType="work" />
                   {work.publication_year && (
                     <span className={styles.year}>
                       {work.publication_year}
                     </span>
                   )}
                   {work.open_access?.is_oa && (
-                    <EntityBadge 
-                      type="openaccess" 
-                      variant="success"
-                      size="sm"
-                    >
+                    <span className={styles.openAccess}>
                       Open Access
-                    </EntityBadge>
+                    </span>
                   )}
                 </div>
               </div>
@@ -216,11 +200,11 @@ export function SearchResults({ searchParams, onParamsChange }: SearchResultsPro
                 </div>
               )}
 
-              {work.host_venue?.display_name && (
+              {work.primary_location?.source?.display_name && (
                 <div className={styles.venue}>
                   <span className={styles.venueLabel}>Published in:</span>
                   <span className={styles.venueName}>
-                    {work.host_venue.display_name}
+                    {work.primary_location.source.display_name}
                   </span>
                 </div>
               )}
@@ -239,9 +223,8 @@ export function SearchResults({ searchParams, onParamsChange }: SearchResultsPro
                       .map((concept) => (
                         <EntityBadge
                           key={concept.id}
-                          type="concept"
+                          entityType="concept"
                           size="sm"
-                          variant="muted"
                         >
                           {concept.display_name}
                         </EntityBadge>
@@ -252,7 +235,7 @@ export function SearchResults({ searchParams, onParamsChange }: SearchResultsPro
 
               {work.doi && (
                 <div className={styles.links}>
-                  <ExternalLink href={`https://doi.org/${work.doi}`}>
+                  <ExternalLink href={`https://doi.org/${work.doi}`} type="doi">
                     DOI: {work.doi}
                   </ExternalLink>
                 </div>
