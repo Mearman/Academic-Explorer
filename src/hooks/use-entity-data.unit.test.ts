@@ -535,7 +535,7 @@ describe('useEntityData Hook', () => {
   });
 });
 
-describe.skip('Specialized Entity Hooks', () => {
+describe('Specialized Entity Hooks', () => {
   beforeEach(() => {
     vi.clearAllMocks();
   });
@@ -654,7 +654,7 @@ describe.skip('Specialized Entity Hooks', () => {
   });
 });
 
-describe.skip('useBatchEntityData Hook', () => {
+describe('useBatchEntityData Hook', () => {
   beforeEach(() => {
     vi.clearAllMocks();
   });
@@ -758,7 +758,7 @@ describe.skip('useBatchEntityData Hook', () => {
   });
 });
 
-describe.skip('Entity Type Detection', () => {
+describe('Entity Type Detection', () => {
   beforeEach(() => {
     vi.clearAllMocks();
   });
@@ -803,7 +803,7 @@ describe.skip('Entity Type Detection', () => {
   });
 });
 
-describe.skip('Cleanup and Memory Management', () => {
+describe('Cleanup and Memory Management', () => {
   it('should cleanup timers on unmount', async () => {
     mockCachedOpenAlex.work.mockRejectedValue(new Error('Network error'));
 
