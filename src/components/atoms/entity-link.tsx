@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from '@tanstack/react-router';
 import { Anchor, Text } from '@mantine/core';
-import { EntityType, detectEntityType } from '@/lib/openalex/utils/entity-detection';
+import { EntityType, parseEntityIdentifier } from '@/lib/openalex/utils/entity-detection';
 
 interface EntityLinkProps {
   entityId: string;
@@ -31,7 +31,16 @@ export function EntityLink({
   fallbackToExternal = true
 }: EntityLinkProps) {
   // Detect entity type if not provided
-  const detectedType = entityType || detectEntityType(entityId);
+  let detectedType: EntityType | null = entityType || null;
+  
+  if (!detectedType) {
+    try {
+      const parsed = parseEntityIdentifier(entityId);
+      detectedType = parsed.type;
+    } catch {
+      detectedType = null;
+    }
+  }
   
   // Generate internal route path
   const getInternalPath = (type: EntityType, id: string): string => {
