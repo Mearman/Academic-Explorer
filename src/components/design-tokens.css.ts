@@ -33,6 +33,7 @@ export const entityVars = createGlobalTheme(':root', {
     errorBackground: '#fef2f2',
     infoBackground: '#f0f9ff',
     warning: '#f59e0b',
+    success: '#10b981',
     workDark: '#1e40af',
     error: '#ef4444',
     text: '#1f2937',
