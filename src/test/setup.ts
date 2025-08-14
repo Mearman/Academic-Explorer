@@ -100,11 +100,13 @@ const mockIDBOpenDBRequest = {
 
 const mockIndexedDB = {
   open: vi.fn(() => {
-    const request = { ...mockIDBOpenDBRequest };
+    const request = { ...mockIDBOpenDBRequest, result: mockIDBDatabase };
     // Simulate successful database opening
     setTimeout(() => {
-      request.result = mockIDBDatabase;
-      if (request.onsuccess) request.onsuccess({ target: request } as any);
+      if (request.onsuccess) {
+        const event = { target: request } as Event & { target: typeof request };
+        (request.onsuccess as (event: Event) => void)(event);
+      }
     }, 0);
     return request;
   }),
