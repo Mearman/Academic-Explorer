@@ -24,7 +24,19 @@ vi.mock('./utils/cache-interceptor', () => {
 
   return {
     CacheInterceptor: vi.fn().mockImplementation(() => mockCacheInterceptor),
-    withCache: vi.fn().mockImplementation((client) => client),
+    withCache: vi.fn().mockImplementation((client) => {
+      // Return a wrapped client that still calls the underlying client
+      return new Proxy(client, {
+        get(target, prop) {
+          if (typeof target[prop] === 'function') {
+            return function(...args: any[]) {
+              return target[prop](...args);
+            };
+          }
+          return target[prop];
+        },
+      });
+    }),
     defaultStrategies: {
       entity: {
         shouldCache: () => true,
