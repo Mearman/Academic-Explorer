@@ -69,7 +69,7 @@ function ContinentDisplay({ continent }: { continent: Continent }) {
               <Grid.Col span={{ base: 12, sm: 6, md: 3 }}>
                 <Paper p="lg" radius="md" withBorder>
                   <Stack gap="xs" align="center">
-                    <Text size="xl" fw={700} c="continent">
+                    <Text size="xl" fw={700} c="pink">
                       {continent.works_count.toLocaleString()}
                     </Text>
                     <Text size="sm" c="dimmed" ta="center">
@@ -125,7 +125,7 @@ function ContinentDisplay({ continent }: { continent: Continent }) {
               
               <Paper p="xl" withBorder radius="md" bg="continent.0">
                 <Stack align="center" gap="md">
-                  <Text size="xxl" fw={700} c="continent" ta="center">
+                  <Text size="xxl" fw={700} c="pink" ta="center">
                     {continent.display_name}
                   </Text>
                   <Badge variant="light" color="continent" size="lg" radius="sm">
@@ -200,7 +200,7 @@ function ContinentDisplay({ continent }: { continent: Continent }) {
                     <Text size="xs" tt="uppercase" fw={600} c="dimmed" mb="xs">
                       Continent Name
                     </Text>
-                    <Text size="lg" fw={600} c="continent">
+                    <Text size="lg" fw={600} c="pink">
                       {continent.display_name}
                     </Text>
                   </Paper>

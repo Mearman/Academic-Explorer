@@ -70,7 +70,7 @@ function KeywordDisplay({ keyword }: { keyword: Keyword }) {
               <Grid.Col span={{ base: 12, sm: 6, md: 3 }}>
                 <Paper p="lg" radius="md" withBorder>
                   <Stack gap="xs" align="center">
-                    <Text size="xl" fw={700} c="keyword">
+                    <Text size="xl" fw={700} c="cyan">
                       {keyword.works_count.toLocaleString()}
                     </Text>
                     <Text size="sm" c="dimmed" ta="center">
@@ -128,7 +128,7 @@ function KeywordDisplay({ keyword }: { keyword: Keyword }) {
               
               <Paper p="xl" withBorder radius="md" bg="keyword.0">
                 <Group justify="center">
-                  <Text size="xl" fw={600} c="keyword" ta="center" fs="italic">
+                  <Text size="xl" fw={600} c="cyan" ta="center" fs="italic">
                     &ldquo;{keyword.display_name}&rdquo;
                   </Text>
                 </Group>

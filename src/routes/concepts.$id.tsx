@@ -85,7 +85,7 @@ function ConceptDisplay({ concept }: { concept: Concept }) {
               <Grid.Col span={{ base: 12, sm: 6, md: 3 }}>
                 <Paper p="lg" radius="md" withBorder>
                   <Stack gap="xs" align="center">
-                    <Text size="xl" fw={700} c="concept">
+                    <Text size="xl" fw={700} c="grape">
                       {concept.works_count.toLocaleString()}
                     </Text>
                     <Text size="sm" c="dimmed" ta="center">

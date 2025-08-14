@@ -73,7 +73,7 @@ function PublisherDisplay({ publisher }: { publisher: Publisher }) {
               <Grid.Col span={{ base: 12, sm: 6, md: 3 }}>
                 <Paper p="lg" radius="md" withBorder>
                   <Stack gap="xs" align="center">
-                    <Text size="xl" fw={700} c="publisher">
+                    <Text size="xl" fw={700} c="purple">
                       {publisher.works_count.toLocaleString()}
                     </Text>
                     <Text size="sm" c="dimmed" ta="center">
@@ -263,7 +263,7 @@ function PublisherDisplay({ publisher }: { publisher: Publisher }) {
                       rel="noopener noreferrer"
                       size="sm"
                       fw={500}
-                      c="publisher"
+                      c="purple"
                     >
                       View Works API
                     </Anchor>

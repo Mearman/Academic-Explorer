@@ -82,7 +82,7 @@ function SourceDisplay({ source }: { source: Source }) {
               <Grid.Col span={{ base: 12, sm: 6, md: 3 }}>
                 <Paper p="lg" radius="md" withBorder>
                   <Stack gap="xs" align="center">
-                    <Text size="xl" fw={700} c="source">
+                    <Text size="xl" fw={700} c="green">
                       {source.works_count.toLocaleString()}
                     </Text>
                     <Text size="sm" c="dimmed" ta="center">

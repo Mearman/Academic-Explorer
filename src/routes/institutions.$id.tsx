@@ -88,7 +88,7 @@ function InstitutionDisplay({ institution }: { institution: Institution }) {
               <Grid.Col span={{ base: 12, sm: 6, md: 3 }}>
                 <Paper p="lg" radius="md" withBorder>
                   <Stack gap="xs" align="center">
-                    <Text size="xl" fw={700} c="institution">
+                    <Text size="xl" fw={700} c="orange">
                       {institution.works_count.toLocaleString()}
                     </Text>
                     <Text size="sm" c="dimmed" ta="center">
@@ -100,7 +100,7 @@ function InstitutionDisplay({ institution }: { institution: Institution }) {
               <Grid.Col span={{ base: 12, sm: 6, md: 3 }}>
                 <Paper p="lg" radius="md" withBorder>
                   <Stack gap="xs" align="center">
-                    <Text size="xl" fw={700} c="institution">
+                    <Text size="xl" fw={700} c="orange">
                       {institution.cited_by_count.toLocaleString()}
                     </Text>
                     <Text size="sm" c="dimmed" ta="center">
@@ -112,7 +112,7 @@ function InstitutionDisplay({ institution }: { institution: Institution }) {
               <Grid.Col span={{ base: 12, sm: 6, md: 3 }}>
                 <Paper p="lg" radius="md" withBorder>
                   <Stack gap="xs" align="center">
-                    <Text size="xl" fw={700} c="institution">
+                    <Text size="xl" fw={700} c="orange">
                       {institution.summary_stats.h_index}
                     </Text>
                     <Text size="sm" c="dimmed" ta="center">
@@ -124,7 +124,7 @@ function InstitutionDisplay({ institution }: { institution: Institution }) {
               <Grid.Col span={{ base: 12, sm: 6, md: 3 }}>
                 <Paper p="lg" radius="md" withBorder>
                   <Stack gap="xs" align="center">
-                    <Text size="xl" fw={700} c="institution">
+                    <Text size="xl" fw={700} c="orange">
                       {institution.summary_stats.i10_index}
                     </Text>
                     <Text size="sm" c="dimmed" ta="center">
@@ -140,7 +140,7 @@ function InstitutionDisplay({ institution }: { institution: Institution }) {
               <Grid.Col span={{ base: 12, sm: 6, md: 3 }}>
                 <Paper p="lg" radius="md" withBorder>
                   <Stack gap="xs" align="center">
-                    <Text size="lg" fw={600} c="institution">
+                    <Text size="lg" fw={600} c="orange">
                       {institution.summary_stats['2yr_mean_citedness'].toFixed(2)}
                     </Text>
                     <Text size="sm" c="dimmed" ta="center">
@@ -153,7 +153,7 @@ function InstitutionDisplay({ institution }: { institution: Institution }) {
                 <Grid.Col span={{ base: 12, sm: 6, md: 3 }}>
                   <Paper p="lg" radius="md" withBorder>
                     <Stack gap="xs" align="center">
-                      <Text size="lg" fw={600} c="institution">
+                      <Text size="lg" fw={600} c="orange">
                         {institution.repositories.length}
                       </Text>
                       <Text size="sm" c="dimmed" ta="center">
@@ -167,7 +167,7 @@ function InstitutionDisplay({ institution }: { institution: Institution }) {
                 <Grid.Col span={{ base: 12, sm: 6, md: 3 }}>
                   <Paper p="lg" radius="md" withBorder>
                     <Stack gap="xs" align="center">
-                      <Text size="lg" fw={600} c="institution">
+                      <Text size="lg" fw={600} c="orange">
                         {institution.associated_institutions.length}
                       </Text>
                       <Text size="sm" c="dimmed" ta="center">
@@ -181,7 +181,7 @@ function InstitutionDisplay({ institution }: { institution: Institution }) {
                 <Grid.Col span={{ base: 12, sm: 6, md: 3 }}>
                   <Paper p="lg" radius="md" withBorder>
                     <Stack gap="xs" align="center">
-                      <Text size="lg" fw={600} c="institution">
+                      <Text size="lg" fw={600} c="orange">
                         {institution.lineage.length}
                       </Text>
                       <Text size="sm" c="dimmed" ta="center">

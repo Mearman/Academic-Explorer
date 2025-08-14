@@ -83,7 +83,7 @@ function TopicDisplay({ topic }: { topic: Topic }) {
               <Grid.Col span={{ base: 12, sm: 6, md: 3 }}>
                 <Paper p="lg" radius="md" withBorder>
                   <Stack gap="xs" align="center">
-                    <Text size="xl" fw={700} c="topic">
+                    <Text size="xl" fw={700} c="violet">
                       {topic.works_count.toLocaleString()}
                     </Text>
                     <Text size="sm" c="dimmed" ta="center">
