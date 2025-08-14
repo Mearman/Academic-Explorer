@@ -1,4 +1,4 @@
-import { createFileRoute } from '@tanstack/react-router';
+import { createFileRoute, Link } from '@tanstack/react-router';
 import * as styles from '../app/page.css';
 import { SearchBar, SearchHistory, StorageManager } from '@/components';
 
@@ -18,6 +18,9 @@ function HomePage() {
           <div className={styles.card}>
             <h2>Search Literature</h2>
             <p>Find relevant academic papers and research</p>
+            <Link to="/search" style={{ marginTop: '1rem', display: 'inline-block', color: '#3b82f6', textDecoration: 'underline' }}>
+              Advanced Search →
+            </Link>
           </div>
           
           <div className={styles.card}>

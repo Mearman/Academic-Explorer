@@ -9,6 +9,7 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as SearchRouteImport } from './routes/search'
 import { Route as R404RouteImport } from './routes/404'
 import { Route as EntityIdRouteImport } from './routes/$entityId'
 import { Route as IndexRouteImport } from './routes/index'
@@ -30,6 +31,11 @@ import { Route as ContinentsIdRouteImport } from './routes/continents.$id'
 import { Route as ConceptsIdRouteImport } from './routes/concepts.$id'
 import { Route as AuthorsIdRouteImport } from './routes/authors.$id'
 
+const SearchRoute = SearchRouteImport.update({
+  id: '/search',
+  path: '/search',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const R404Route = R404RouteImport.update({
   id: '/404',
   path: '/404',
@@ -135,6 +141,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/$entityId': typeof EntityIdRoute
   '/404': typeof R404Route
+  '/search': typeof SearchRoute
   '/authors/$id': typeof AuthorsIdRoute
   '/concepts/$id': typeof ConceptsIdRoute
   '/continents/$id': typeof ContinentsIdRoute
@@ -157,6 +164,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/$entityId': typeof EntityIdRoute
   '/404': typeof R404Route
+  '/search': typeof SearchRoute
   '/authors/$id': typeof AuthorsIdRoute
   '/concepts/$id': typeof ConceptsIdRoute
   '/continents/$id': typeof ContinentsIdRoute
@@ -180,6 +188,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/$entityId': typeof EntityIdRoute
   '/404': typeof R404Route
+  '/search': typeof SearchRoute
   '/authors/$id': typeof AuthorsIdRoute
   '/concepts/$id': typeof ConceptsIdRoute
   '/continents/$id': typeof ContinentsIdRoute
@@ -204,6 +213,7 @@ export interface FileRouteTypes {
     | '/'
     | '/$entityId'
     | '/404'
+    | '/search'
     | '/authors/$id'
     | '/concepts/$id'
     | '/continents/$id'
@@ -226,6 +236,7 @@ export interface FileRouteTypes {
     | '/'
     | '/$entityId'
     | '/404'
+    | '/search'
     | '/authors/$id'
     | '/concepts/$id'
     | '/continents/$id'
@@ -248,6 +259,7 @@ export interface FileRouteTypes {
     | '/'
     | '/$entityId'
     | '/404'
+    | '/search'
     | '/authors/$id'
     | '/concepts/$id'
     | '/continents/$id'
@@ -271,6 +283,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   EntityIdRoute: typeof EntityIdRoute
   R404Route: typeof R404Route
+  SearchRoute: typeof SearchRoute
   AuthorsIdRoute: typeof AuthorsIdRoute
   ConceptsIdRoute: typeof ConceptsIdRoute
   ContinentsIdRoute: typeof ContinentsIdRoute
@@ -292,6 +305,13 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/search': {
+      id: '/search'
+      path: '/search'
+      fullPath: '/search'
+      preLoaderRoute: typeof SearchRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/404': {
       id: '/404'
       path: '/404'
@@ -439,6 +459,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   EntityIdRoute: EntityIdRoute,
   R404Route: R404Route,
+  SearchRoute: SearchRoute,
   AuthorsIdRoute: AuthorsIdRoute,
   ConceptsIdRoute: ConceptsIdRoute,
   ContinentsIdRoute: ContinentsIdRoute,
