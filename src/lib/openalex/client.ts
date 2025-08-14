@@ -218,6 +218,10 @@ export class OpenAlexClient {
     return this.request<ApiResponse<Work>>('/works', params);
   }
 
+  public async worksGroupBy(params: WorksParams & { group_by: string }): Promise<ApiResponse<Work>> {
+    return this.request<ApiResponse<Work>>('/works', params);
+  }
+
   public async work(id: string): Promise<Work> {
     return this.request<Work>(`/works/${this.normaliseId(id)}`);
   }
@@ -239,6 +243,10 @@ export class OpenAlexClient {
     return this.request<ApiResponse<Author>>('/authors', params);
   }
 
+  public async authorsGroupBy(params: AuthorsParams & { group_by: string }): Promise<ApiResponse<Author>> {
+    return this.request<ApiResponse<Author>>('/authors', params);
+  }
+
   public async author(id: string): Promise<Author> {
     return this.request<Author>(`/authors/${this.normaliseId(id)}`);
   }
@@ -253,6 +261,10 @@ export class OpenAlexClient {
 
   // Sources endpoints
   public async sources(params: SourcesParams = {}): Promise<ApiResponse<Source>> {
+    return this.request<ApiResponse<Source>>('/sources', params);
+  }
+
+  public async sourcesGroupBy(params: SourcesParams & { group_by: string }): Promise<ApiResponse<Source>> {
     return this.request<ApiResponse<Source>>('/sources', params);
   }
 
@@ -273,6 +285,10 @@ export class OpenAlexClient {
     return this.request<ApiResponse<Institution>>('/institutions', params);
   }
 
+  public async institutionsGroupBy(params: InstitutionsParams & { group_by: string }): Promise<ApiResponse<Institution>> {
+    return this.request<ApiResponse<Institution>>('/institutions', params);
+  }
+
   public async institution(id: string): Promise<Institution> {
     return this.request<Institution>(`/institutions/${this.normaliseId(id)}`);
   }
@@ -287,6 +303,10 @@ export class OpenAlexClient {
 
   // Publishers endpoints
   public async publishers(params: PublishersParams = {}): Promise<ApiResponse<Publisher>> {
+    return this.request<ApiResponse<Publisher>>('/publishers', params);
+  }
+
+  public async publishersGroupBy(params: PublishersParams & { group_by: string }): Promise<ApiResponse<Publisher>> {
     return this.request<ApiResponse<Publisher>>('/publishers', params);
   }
 
@@ -307,6 +327,10 @@ export class OpenAlexClient {
     return this.request<ApiResponse<Funder>>('/funders', params);
   }
 
+  public async fundersGroupBy(params: FundersParams & { group_by: string }): Promise<ApiResponse<Funder>> {
+    return this.request<ApiResponse<Funder>>('/funders', params);
+  }
+
   public async funder(id: string): Promise<Funder> {
     return this.request<Funder>(`/funders/${this.normaliseId(id)}`);
   }
@@ -321,6 +345,10 @@ export class OpenAlexClient {
 
   // Topics endpoints
   public async topics(params: TopicsParams = {}): Promise<ApiResponse<Topic>> {
+    return this.request<ApiResponse<Topic>>('/topics', params);
+  }
+
+  public async topicsGroupBy(params: TopicsParams & { group_by: string }): Promise<ApiResponse<Topic>> {
     return this.request<ApiResponse<Topic>>('/topics', params);
   }
 
@@ -341,6 +369,10 @@ export class OpenAlexClient {
     return this.request<ApiResponse<Concept>>('/concepts', params);
   }
 
+  public async conceptsGroupBy(params: ConceptsParams & { group_by: string }): Promise<ApiResponse<Concept>> {
+    return this.request<ApiResponse<Concept>>('/concepts', params);
+  }
+
   public async concept(id: string): Promise<Concept> {
     return this.request<Concept>(`/concepts/${this.normaliseId(id)}`);
   }
@@ -358,12 +390,20 @@ export class OpenAlexClient {
     return this.request<ApiResponse<Keyword>>('/keywords', params);
   }
 
+  public async keywordsGroupBy(params: KeywordsParams & { group_by: string }): Promise<ApiResponse<Keyword>> {
+    return this.request<ApiResponse<Keyword>>('/keywords', params);
+  }
+
   public async keyword(id: string): Promise<Keyword> {
     return this.request<Keyword>(`/keywords/${this.normaliseId(id)}`);
   }
 
   // Geo endpoints - Continents
   public async continents(params: ContinentsParams = {}): Promise<ApiResponse<Continent>> {
+    return this.request<ApiResponse<Continent>>('/continents', params);
+  }
+
+  public async continentsGroupBy(params: ContinentsParams & { group_by: string }): Promise<ApiResponse<Continent>> {
     return this.request<ApiResponse<Continent>>('/continents', params);
   }
 
@@ -377,6 +417,10 @@ export class OpenAlexClient {
 
   // Geo endpoints - Regions
   public async regions(params: RegionsParams = {}): Promise<ApiResponse<Region>> {
+    return this.request<ApiResponse<Region>>('/regions', params);
+  }
+
+  public async regionsGroupBy(params: RegionsParams & { group_by: string }): Promise<ApiResponse<Region>> {
     return this.request<ApiResponse<Region>>('/regions', params);
   }
 
