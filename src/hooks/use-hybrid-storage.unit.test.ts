@@ -20,22 +20,8 @@ vi.mock('@/stores/app-store', () => ({
   useAppStore: vi.fn(),
 }));
 
-// Mock localStorage
-const mockLocalStorage = {
-  getItem: vi.fn(),
-  setItem: vi.fn(),
-  removeItem: vi.fn(),
-  clear: vi.fn(),
-  length: 0,
-  key: vi.fn(),
-  'test-key': 'test-value',
-  hasOwnProperty: vi.fn(),
-};
-
-Object.defineProperty(window, 'localStorage', {
-  value: mockLocalStorage,
-  writable: true,
-});
+// Use jsdom's built-in localStorage implementation
+// No need to mock it since Vitest with jsdom provides it
 
 // Mock console methods
 const consoleSpy = {
@@ -66,12 +52,8 @@ describe('useHybridStorage', () => {
     // Mock useAppStore to return empty search history by default
     (useAppStore as any).mockReturnValue([]);
 
-    // Mock localStorage properties
-    mockLocalStorage.hasOwnProperty.mockImplementation((key) => key === 'test-key');
-    Object.defineProperty(mockLocalStorage, 'test-key', {
-      value: 'test-value',
-      configurable: true,
-    });
+    // Clear localStorage before each test
+    localStorage.clear();
   });
 
   afterEach(() => {
@@ -121,7 +103,7 @@ describe('useHybridStorage', () => {
   });
 
   describe('Metrics calculation', () => {
-    it.skip('should calculate localStorage size', async () => {
+    it('should calculate localStorage size', async () => {
       // Clear localStorage first to ensure clean state
       localStorage.clear();
       
