@@ -6,7 +6,22 @@
 import type { ApiResponse } from '../types';
 
 // Lazy import db to avoid initialization issues in tests
-let db: any = null;
+let db: unknown = null;
+// Type guard for database object
+function isDbObject(obj: unknown): obj is {
+  cacheSearchResults: (key: string, results: unknown[], count: number, params: Record<string, unknown>) => Promise<void>;
+  getSearchResults: (key: string, params: Record<string, unknown>, ttl: number) => Promise<{ results: unknown[]; timestamp: number } | null>;
+  cleanOldSearchResults: (ageInMs: number) => Promise<void>;
+} {
+  return (
+    typeof obj === 'object' &&
+    obj !== null &&
+    'cacheSearchResults' in obj &&
+    'getSearchResults' in obj &&
+    'cleanOldSearchResults' in obj
+  );
+}
+
 async function getDb() {
   if (!db) {
     try {
@@ -18,10 +33,15 @@ async function getDb() {
       db = {
         cacheSearchResults: () => Promise.resolve(),
         getSearchResults: () => Promise.resolve(null),
+        cleanOldSearchResults: () => Promise.resolve(),
       };
     }
   }
-  return db;
+  return isDbObject(db) ? db : {
+    cacheSearchResults: () => Promise.resolve(),
+    getSearchResults: () => Promise.resolve(null),
+    cleanOldSearchResults: () => Promise.resolve(),
+  };
 }
 
 export interface CacheOptions {
