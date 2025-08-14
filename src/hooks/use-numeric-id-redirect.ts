@@ -35,11 +35,27 @@ export function useNumericIdRedirect(id: string | undefined, entityType: EntityT
       if (prefix && endpoint) {
         // Create full OpenAlex ID and redirect to same route with prefix
         const fullId = `${prefix}${id}`;
-        navigate({ 
-          to: `/${endpoint}/$id` as const, 
-          params: { id: fullId },
-          replace: true 
-        });
+        
+        // Use explicit route paths instead of dynamic construction
+        const routeMap: Record<EntityType, string> = {
+          [EntityType.WORK]: '/works/$id',
+          [EntityType.AUTHOR]: '/authors/$id',
+          [EntityType.SOURCE]: '/sources/$id',
+          [EntityType.INSTITUTION]: '/institutions/$id',
+          [EntityType.PUBLISHER]: '/publishers/$id',
+          [EntityType.FUNDER]: '/funders/$id',
+          [EntityType.TOPIC]: '/topics/$id',
+          [EntityType.CONCEPT]: '/concepts/$id',
+          [EntityType.KEYWORD]: '/keywords/$id',
+          [EntityType.CONTINENT]: '/continents/$id',
+          [EntityType.REGION]: '/regions/$id',
+        };
+        
+        const routePath = routeMap[entityType];
+        if (routePath) {
+          // Navigate to the constructed route with URL replacement
+          window.location.replace(`${routePath.replace('$id', fullId)}`);
+        }
       }
     }
   }, [id, entityType, navigate]);
