@@ -2,9 +2,9 @@ import { createFileRoute, useNavigate, useSearch } from '@tanstack/react-router'
 import { useState } from 'react';
 import { z } from 'zod';
 import * as styles from '../app/page.css';
-import { AdvancedSearchForm } from '@/components/molecules/advanced-search-form';
+import { AdvancedSearchForm, type AdvancedSearchFormData } from '@/components/molecules/advanced-search-form';
 import { SearchResults } from '@/components/organisms/search-results';
-import { SavedSearches } from '@/components/molecules/saved-searches';
+// import { SavedSearches } from '@/components/molecules/saved-searches'; // Removed - component not implemented
 import type { WorksParams } from '@/lib/openalex/types';
 
 // Search params validation schema
@@ -43,11 +43,11 @@ function SearchPage() {
   const [currentParams, setCurrentParams] = useState<WorksParams>({});
 
   // Convert URL search params to AdvancedSearchFormData
-  const getFormDataFromParams = (params: SearchParams) => {
+  const getFormDataFromParams = (params: SearchParams): Partial<AdvancedSearchFormData> => {
     return {
       query: params.q || '',
-      searchField: params.field || 'all',
-      searchMode: params.mode || 'basic',
+      searchField: (params.field as 'all' | 'title' | 'abstract' | 'fulltext') || 'all',
+      searchMode: (params.mode as 'basic' | 'boolean' | 'exact' | 'no_stem') || 'basic',
       fromPublicationDate: params.from_date,
       toPublicationDate: params.to_date,
       publicationYear: params.year,
@@ -58,16 +58,7 @@ function SearchPage() {
       isRetracted: params.not_retracted ? false : undefined,
       citationCountMin: params.min_citations,
       citationCountMax: params.max_citations,
-      authorId: params.author_id,
-      institutionId: params.institution_id,
-      sourceId: params.source_id,
-      funderId: params.funder_id,
-      topicId: params.topic_id,
-      sortBy: params.sort,
-      sortOrder: params.order,
-      perPage: params.per_page,
-      sample: params.sample,
-      groupBy: params.group_by,
+      // Note: Other fields like authorId, etc. are not part of AdvancedSearchFormData interface
     };
   };
 
@@ -168,7 +159,7 @@ function SearchPage() {
     updateUrlParams(worksParams);
   };
 
-  const handleLoadSavedSearch = (worksParams: WorksParams) => {
+  const _handleLoadSavedSearch = (worksParams: WorksParams) => {
     setCurrentParams(worksParams);
     updateUrlParams(worksParams);
   };
@@ -187,12 +178,12 @@ function SearchPage() {
         </div>
 
         <div className={styles.searchInterface}>
-          <div className={styles.searchSidebar}>
+          {/* <div className={styles.searchSidebar}>
             <SavedSearches
               currentParams={currentParams}
               onLoadSearch={handleLoadSavedSearch}
             />
-          </div>
+          </div> */}
           
           <div className={styles.searchMainContent}>
             <AdvancedSearchForm

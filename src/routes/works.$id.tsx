@@ -340,7 +340,7 @@ function WorkDisplay({ work }: { work: Work }) {
                 <Paper key={index} p="md" withBorder radius="sm" bg="green.0">
                   <Stack gap="xs">
                     <Text size="sm" fw={500}>
-                      {grant.display_name || `Grant ${index + 1}`}
+                      {grant.award_id || `Grant ${index + 1}`}
                     </Text>
                     {grant.funder_display_name && (
                       <Group gap="xs">

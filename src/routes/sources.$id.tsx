@@ -1,3 +1,4 @@
+import React from 'react';
 import { createFileRoute } from '@tanstack/react-router';
 import { 
   Card, 
@@ -183,25 +184,7 @@ function SourceDisplay({ source }: { source: Source }) {
                   </Grid.Col>
                 )}
                 
-                {source.fatcat_id && (
-                  <Grid.Col span={{ base: 12, md: 6 }}>
-                    <Paper p="md" withBorder radius="sm" bg="gray.0">
-                      <Text size="xs" tt="uppercase" fw={600} c="dimmed" mb="xs">
-                        Fatcat ID
-                      </Text>
-                      <Anchor 
-                        href={`https://fatcat.wiki/container/${source.fatcat_id}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        size="sm"
-                        fw={500}
-                        c="blue"
-                      >
-                        {source.fatcat_id}
-                      </Anchor>
-                    </Paper>
-                  </Grid.Col>
-                )}
+                {/* Fatcat ID not available in current Source type definition */}
               </Grid>
             </Card>
 
@@ -245,18 +228,18 @@ function SourceDisplay({ source }: { source: Source }) {
                     </Group>
                   </Paper>
                   
-                  {source.host_organization_lineage_names && source.host_organization_lineage_names.length > 1 && (
+                  {source.host_organization_lineage && source.host_organization_lineage.length > 1 && (
                     <Paper p="sm" withBorder radius="sm" bg="gray.0">
                       <Text size="xs" tt="uppercase" fw={600} c="dimmed" mb="xs">
                         Organization Hierarchy
                       </Text>
                       <Group gap="xs">
-                        {source.host_organization_lineage_names.map((name, index) => (
+                        {source.host_organization_lineage.map((orgId, index) => (
                           <React.Fragment key={index}>
                             <Text size="xs" c="dimmed">
-                              {name}
+                              {orgId}
                             </Text>
-                            {index < source.host_organization_lineage_names!.length - 1 && (
+                            {index < source.host_organization_lineage!.length - 1 && (
                               <Text size="xs" c="dimmed">→</Text>
                             )}
                           </React.Fragment>
