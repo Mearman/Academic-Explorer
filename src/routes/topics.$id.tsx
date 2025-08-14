@@ -24,7 +24,7 @@ import {
   IconSearch,
   IconBrandWikipedia
 } from '@tabler/icons-react';
-import { RawDataView } from '@/components';
+import { RawDataView, EntityLink } from '@/components';
 import type { Topic } from '@/lib/openalex/types';
 import { EntityType } from '@/lib/openalex/utils/entity-detection';
 import { useTopicData } from '@/hooks/use-entity-data';
@@ -144,9 +144,12 @@ function TopicDisplay({ topic }: { topic: Topic }) {
                       <Text size="xs" tt="uppercase" fw={600} c="dimmed" mb="xs">
                         Domain
                       </Text>
-                      <Badge variant="light" color="blue" size="lg" radius="sm" fullWidth>
-                        {topic.domain.display_name}
-                      </Badge>
+                      <EntityLink
+                        entityId={topic.domain.id}
+                        displayName={topic.domain.display_name}
+                        size="sm"
+                        weight={500}
+                      />
                     </Paper>
                   </Grid.Col>
                 )}
@@ -157,9 +160,12 @@ function TopicDisplay({ topic }: { topic: Topic }) {
                       <Text size="xs" tt="uppercase" fw={600} c="dimmed" mb="xs">
                         Field
                       </Text>
-                      <Badge variant="light" color="green" size="lg" radius="sm" fullWidth>
-                        {topic.field.display_name}
-                      </Badge>
+                      <EntityLink
+                        entityId={topic.field.id}
+                        displayName={topic.field.display_name}
+                        size="sm"
+                        weight={500}
+                      />
                     </Paper>
                   </Grid.Col>
                 )}
@@ -170,9 +176,12 @@ function TopicDisplay({ topic }: { topic: Topic }) {
                       <Text size="xs" tt="uppercase" fw={600} c="dimmed" mb="xs">
                         Subfield
                       </Text>
-                      <Badge variant="light" color="violet" size="lg" radius="sm" fullWidth>
-                        {topic.subfield.display_name}
-                      </Badge>
+                      <EntityLink
+                        entityId={topic.subfield.id}
+                        displayName={topic.subfield.display_name}
+                        size="sm"
+                        weight={500}
+                      />
                     </Paper>
                   </Grid.Col>
                 )}
@@ -222,9 +231,12 @@ function TopicDisplay({ topic }: { topic: Topic }) {
                     <Grid.Col key={sibling.id} span={{ base: 12, sm: 6, md: 4 }}>
                       <Paper p="md" withBorder radius="sm" bg="gray.0">
                         <Stack gap="xs">
-                          <Text size="sm" fw={500} lineClamp={2}>
-                            {sibling.display_name}
-                          </Text>
+                          <EntityLink
+                            entityId={sibling.id}
+                            displayName={sibling.display_name}
+                            size="sm"
+                            weight={500}
+                          />
                           <Group gap="xs">
                             <Text size="xs" c="dimmed">
                               {sibling.works_count.toLocaleString()} works

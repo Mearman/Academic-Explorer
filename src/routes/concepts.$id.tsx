@@ -26,7 +26,7 @@ import {
   IconPhoto,
   IconGlobe
 } from '@tabler/icons-react';
-import { RawDataView } from '@/components';
+import { RawDataView, EntityLink } from '@/components';
 import type { Concept } from '@/lib/openalex/types';
 import { EntityType } from '@/lib/openalex/utils/entity-detection';
 import { useConceptData } from '@/hooks/use-entity-data';
@@ -166,9 +166,12 @@ function ConceptDisplay({ concept }: { concept: Concept }) {
                             <Badge variant="light" color="blue" size="sm">
                               Level {ancestor.level}
                             </Badge>
-                            <Text size="sm" fw={500}>
-                              {ancestor.display_name}
-                            </Text>
+                            <EntityLink
+                              entityId={ancestor.id}
+                              displayName={ancestor.display_name}
+                              size="sm"
+                              weight={500}
+                            />
                           </Group>
                           {ancestor.description && (
                             <Text size="xs" c="dimmed" lineClamp={2}>
@@ -217,9 +220,12 @@ function ConceptDisplay({ concept }: { concept: Concept }) {
                             <Badge variant="light" color="teal" size="xs">
                               Level {related.level}
                             </Badge>
-                            <Text size="sm" fw={500} lineClamp={2}>
-                              {related.display_name}
-                            </Text>
+                            <EntityLink
+                              entityId={related.id}
+                              displayName={related.display_name}
+                              size="sm"
+                              weight={500}
+                            />
                           </Group>
                           <Group gap="xs">
                             <Text size="xs" c="dimmed">
