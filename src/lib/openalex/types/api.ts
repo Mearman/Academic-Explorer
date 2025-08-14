@@ -31,6 +31,14 @@ export interface BaseParams {
   select?: string[];
   sample?: number;
   seed?: number;
+  group_by?: string;
+  // Special date range filters for works
+  from_publication_date?: string;
+  to_publication_date?: string;
+  from_created_date?: string;
+  to_created_date?: string;
+  from_updated_date?: string;
+  to_updated_date?: string;
 }
 
 export interface WorksParams extends BaseParams {
