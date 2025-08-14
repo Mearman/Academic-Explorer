@@ -31,6 +31,9 @@ function HomePage() {
           <div className={styles.card}>
             <h2>Research Analytics</h2>
             <p>Analyse trends and patterns in academic literature</p>
+            <Link to="/dashboard" style={{ marginTop: '1rem', display: 'inline-block', color: '#3b82f6', textDecoration: 'underline' }}>
+              View Dashboard →
+            </Link>
           </div>
           
           <div className={styles.card}>
