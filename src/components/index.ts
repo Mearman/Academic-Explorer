@@ -7,6 +7,7 @@ export { StatusIndicator } from './atoms/status-indicator';
 export { ExternalLink } from './atoms/external-link';
 export { LoadingSpinner } from './atoms/loading-spinner';
 export { Skeleton } from './atoms/skeleton';
+export { EntityLink } from './atoms/entity-link';
 export { 
   LoadingSkeleton,
   SkeletonGroup,
@@ -30,6 +31,8 @@ export { MetricDisplay } from './molecules/metric-display';
 export { ExternalLinksGroup } from './molecules/external-links-group';
 export { SearchBar } from './molecules/search-bar';
 export { EntityLoading } from './molecules/entity-loading';
+export { AuthorList } from './molecules/author-list';
+export { ConceptList } from './molecules/concept-list';
 
 // Organisms
 export { EntityHeader, EntityHeaderSkeleton } from './organisms/entity-header';

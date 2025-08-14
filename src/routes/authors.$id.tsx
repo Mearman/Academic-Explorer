@@ -26,7 +26,7 @@ import {
   IconInfoCircle,
   IconId
 } from '@tabler/icons-react';
-import { RawDataView } from '@/components';
+import { RawDataView, EntityLink } from '@/components';
 import type { Author } from '@/lib/openalex/types';
 import { EntityType } from '@/lib/openalex/utils/entity-detection';
 import { useAuthorData } from '@/hooks/use-entity-data';
@@ -193,9 +193,14 @@ function AuthorDisplay({ author }: { author: Author }) {
                     <Paper key={index} p="md" withBorder radius="sm" bg="blue.0">
                       <Group justify="space-between" align="flex-start">
                         <div style={{ flex: 1 }}>
-                          <Text size="sm" fw={600} mb="xs">
-                            {affiliation.institution.display_name}
-                          </Text>
+                          <div style={{ marginBottom: '8px' }}>
+                            <EntityLink
+                              entityId={affiliation.institution.id}
+                              displayName={affiliation.institution.display_name}
+                              size="sm"
+                              weight={600}
+                            />
+                          </div>
                           {affiliation.institution.country_code && (
                             <Badge variant="light" size="sm" mb="xs">
                               {affiliation.institution.country_code}
@@ -231,9 +236,12 @@ function AuthorDisplay({ author }: { author: Author }) {
                   {author.last_known_institutions.map((institution, index) => (
                     <Grid.Col key={index} span={{ base: 12, md: 6 }}>
                       <Paper p="md" withBorder radius="sm">
-                        <Text size="sm" fw={500} mb="xs">
-                          {institution.display_name}
-                        </Text>
+                        <EntityLink
+                          entityId={institution.id}
+                          displayName={institution.display_name}
+                          size="sm"
+                          weight={500}
+                        />
                         <Group gap="xs">
                           {institution.country_code && (
                             <Badge variant="light" size="xs">
