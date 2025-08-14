@@ -11,9 +11,17 @@ beforeAll(() => {
 });
 
 // Reset handlers after each test
-afterEach(() => {
+afterEach(async () => {
   server.resetHandlers();
   vi.clearAllMocks();
+  
+  // Clear the mock database stores
+  try {
+    const { mockDb } = await import('./mocks/database');
+    mockDb.clearAllStores();
+  } catch (error) {
+    // Ignore if mock database is not available
+  }
 });
 
 // Clean up after all tests
@@ -25,30 +33,14 @@ afterAll(async () => {
 
 // Mock fetch for Node environment - MSW handles this
 
-// Mock IndexedDB for tests
-const mockIndexedDB = {
-  open: vi.fn(() => Promise.resolve({
-    objectStoreNames: {
-      contains: vi.fn(() => false),
-    },
-    createObjectStore: vi.fn(),
-    transaction: vi.fn(() => ({
-      objectStore: vi.fn(() => ({
-        add: vi.fn(),
-        get: vi.fn(),
-        put: vi.fn(),
-        delete: vi.fn(),
-        getAll: vi.fn(() => Promise.resolve([])),
-        getAllKeys: vi.fn(() => Promise.resolve([])),
-      })),
-      done: Promise.resolve(),
-    })),
-  })),
-};
-
-if (typeof window !== 'undefined') {
-  (window as any).indexedDB = mockIndexedDB;
-}
+// Mock the entire database layer to avoid IndexedDB issues
+vi.mock('@/lib/db', async () => {
+  const { mockDb, MockDatabaseService } = await import('./mocks/database');
+  return {
+    DatabaseService: MockDatabaseService,
+    db: mockDb,
+  };
+});
 
 // Mock localStorage
 const localStorageMock = {
