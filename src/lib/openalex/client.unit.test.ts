@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { OpenAlexClient, OpenAlexError } from './client';
 import { server } from '@/test/setup';

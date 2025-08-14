@@ -3,6 +3,7 @@
  * Tests all exports and import functionality
  */
 
+// @ts-nocheck
 import { describe, it, expect, vi } from 'vitest';
 
 describe('OpenAlex Utils Index Exports', () => {

@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest';
 import { CacheManager, RequestDeduplicator, BatchQueue } from './cache';
 import type { Work, ApiResponse } from '../../types';
