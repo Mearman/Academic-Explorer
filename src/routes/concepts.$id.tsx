@@ -158,7 +158,7 @@ function ConceptDisplay({ concept }: { concept: Concept }) {
                 </Group>
                 
                 <Stack gap="md">
-                  {concept.ancestors.slice(0, 10).map((ancestor, index) => (
+                  {concept.ancestors.slice(0, 10).map((ancestor) => (
                     <Paper key={ancestor.id} p="md" withBorder radius="sm" bg="gray.0">
                       <Group justify="space-between">
                         <Stack gap="xs">

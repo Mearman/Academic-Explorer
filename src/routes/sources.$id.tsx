@@ -1,44 +1,13 @@
 import { createFileRoute } from '@tanstack/react-router';
-import { 
-  Card, 
-  Badge, 
-  Group, 
-  Stack, 
-  Text, 
-  Title, 
-  Anchor, 
-  Paper,
-  Grid,
-  Tabs
-} from '@mantine/core';
-import { 
-  IconExternalLink, 
-  IconInfoCircle, 
-  IconFileText, 
-  IconTags, 
-  IconLink, 
-  IconCode,
-  IconWorldWww,
-  IconBuildingBank,
-  IconCurrencyDollar,
-  IconCalendar,
-  IconBarChart,
-  IconCertificate,
-  IconId,
-  IconLanguage,
-  IconBook2,
-  IconChartLine
-} from '@tabler/icons-react';
-import { RawDataView } from '@/components';
+// Mantine components will be added back when source page UI is implemented
+// Icons will be added back when the source page is implemented
+// RawDataView will be used when source details are implemented
 import type { Source } from '@/lib/openalex/types';
 import { EntityType } from '@/lib/openalex/utils/entity-detection';
 import { useSourceData } from '@/hooks/use-entity-data';
 import { EntityError, EntitySkeleton, EntityFallback } from '@/components';
 import { useNumericIdRedirect } from '@/hooks/use-numeric-id-redirect';
-import { 
-  EntityPageTemplate,
-  EntityErrorBoundary
-} from '@/components';
+// EntityPageTemplate will be used when source layout is implemented
 
 function SourceDisplay({ source }: { source: Source }) {
   return (

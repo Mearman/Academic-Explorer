@@ -10,7 +10,6 @@ import {
   Paper,
   Grid,
   Tabs,
-  Avatar
 } from '@mantine/core';
 import { 
   IconExternalLink, 
