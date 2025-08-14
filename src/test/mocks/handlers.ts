@@ -24,17 +24,18 @@ export const handlers = [
   http.get(`${API_BASE}/works/:id`, ({ params }) => {
     const { id } = params;
     
-    // Return 404 for nonexistent works
+    // Return 404 for nonexistent works (only specific nonexistent test)
     if (String(id) === 'nonexistent') {
       return HttpResponse.json(
         {
-          error: 'Not Found',
+          error: 'NOT FOUND',
           message: 'The requested work was not found',
         },
         { status: 404 }
       );
     }
     
+    // Return success for all valid-looking work IDs
     return HttpResponse.json({ ...mockWork, id: `https://openalex.org/${id}` });
   }),
 
@@ -49,6 +50,12 @@ export const handlers = [
 
   http.get(`${API_BASE}/authors/:id`, ({ params }) => {
     const { id } = params;
+    
+    // Handle test IDs specifically - return mock author for test IDs
+    if (String(id) === 'A123' || String(id) === 'A456') {
+      return HttpResponse.json({ ...mockAuthor, id: `https://openalex.org/${id}` });
+    }
+    
     return HttpResponse.json({ ...mockAuthor, id: `https://openalex.org/${id}` });
   }),
 
