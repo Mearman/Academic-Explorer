@@ -363,3 +363,22 @@ export interface EntityErrorBoundaryProps extends BaseComponentProps {
   entityType?: EntityType;
   entityId?: string;
 }
+
+// Loading spinner props
+export interface LoadingSpinnerProps extends BaseComponentProps {
+  size?: 'sm' | 'md' | 'lg';
+}
+
+// Skeleton props
+export interface SkeletonProps extends BaseComponentProps {
+  width?: string;
+  height?: string;
+  rounded?: boolean;
+}
+
+// Entity loading props
+export interface EntityLoadingProps extends BaseComponentProps {
+  entityType?: string;
+  entityId?: string;
+  message?: string;
+}
