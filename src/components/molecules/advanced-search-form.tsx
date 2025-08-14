@@ -208,7 +208,7 @@ export function AdvancedSearchForm({ onSearch, initialData }: AdvancedSearchForm
           
           <select
             value={formData.searchField}
-            onChange={(e) => updateField('searchField', e.target.value as any)}
+            onChange={(e) => updateField('searchField', e.target.value as 'all' | 'title' | 'abstract' | 'fulltext')}
             className={styles.select}
           >
             <option value="all">All Fields</option>
@@ -219,7 +219,7 @@ export function AdvancedSearchForm({ onSearch, initialData }: AdvancedSearchForm
 
           <select
             value={formData.searchMode}
-            onChange={(e) => updateField('searchMode', e.target.value as any)}
+            onChange={(e) => updateField('searchMode', e.target.value as 'basic' | 'boolean' | 'exact' | 'no_stem')}
             className={styles.select}
           >
             <option value="basic">Basic Search</option>
@@ -429,7 +429,7 @@ export function AdvancedSearchForm({ onSearch, initialData }: AdvancedSearchForm
                 Sort By:
                 <select
                   value={formData.sortBy || ''}
-                  onChange={(e) => updateField('sortBy', e.target.value as any || undefined)}
+                  onChange={(e) => updateField('sortBy', (e.target.value || undefined) as 'relevance_score' | 'cited_by_count' | 'publication_date' | 'display_name' | undefined)}
                   className={styles.select}
                 >
                   <option value="relevance_score">Relevance</option>
@@ -442,7 +442,7 @@ export function AdvancedSearchForm({ onSearch, initialData }: AdvancedSearchForm
                 Order:
                 <select
                   value={formData.sortOrder || 'desc'}
-                  onChange={(e) => updateField('sortOrder', e.target.value as any)}
+                  onChange={(e) => updateField('sortOrder', e.target.value as 'asc' | 'desc')}
                   className={styles.select}
                 >
                   <option value="desc">Descending</option>
