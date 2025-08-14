@@ -20,7 +20,10 @@
     "test:watch:integration": "NODE_OPTIONS='--max-old-space-size=8192' vitest --project integration",
     "test:watch:e2e": "NODE_OPTIONS='--max-old-space-size=8192' vitest --project e2e",
     "test:safe": "NODE_OPTIONS='--max-old-space-size=8192' vitest run --project unit --project component",
-    "test:component-only": "NODE_OPTIONS='--max-old-space-size=8192' vitest run src/components/**/*.test.*"
+    "test:component-only": "NODE_OPTIONS='--max-old-space-size=8192' vitest run src/components/**/*.test.*",
+    "test:e2e:diagnose": "NODE_OPTIONS='--max-old-space-size=8192' vitest run --project e2e src/test/entity-loading-diagnosis.e2e.test.ts",
+    "test:e2e:works": "NODE_OPTIONS='--max-old-space-size=8192' vitest run --project e2e src/test/works-page-loading.e2e.test.ts",
+    "test:e2e:all": "./scripts/run-e2e-tests.sh"
   },
   "dependencies": {
     "@mantine/core": "^8.2.4",
