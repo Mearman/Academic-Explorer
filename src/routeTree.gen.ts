@@ -12,7 +12,6 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as SearchRouteImport } from './routes/search'
 import { Route as HelpRouteImport } from './routes/help'
 import { Route as DashboardRouteImport } from './routes/dashboard'
-import { Route as R404RouteImport } from './routes/404'
 import { Route as EntityIdRouteImport } from './routes/$entityId'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as WorksIdRouteImport } from './routes/works.$id'
@@ -46,11 +45,6 @@ const HelpRoute = HelpRouteImport.update({
 const DashboardRoute = DashboardRouteImport.update({
   id: '/dashboard',
   path: '/dashboard',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const R404Route = R404RouteImport.update({
-  id: '/404',
-  path: '/404',
   getParentRoute: () => rootRouteImport,
 } as any)
 const EntityIdRoute = EntityIdRouteImport.update({
@@ -152,7 +146,6 @@ const AuthorsIdRoute = AuthorsIdRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/$entityId': typeof EntityIdRoute
-  '/404': typeof R404Route
   '/dashboard': typeof DashboardRoute
   '/help': typeof HelpRoute
   '/search': typeof SearchRoute
@@ -177,7 +170,6 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/$entityId': typeof EntityIdRoute
-  '/404': typeof R404Route
   '/dashboard': typeof DashboardRoute
   '/help': typeof HelpRoute
   '/search': typeof SearchRoute
@@ -203,7 +195,6 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/$entityId': typeof EntityIdRoute
-  '/404': typeof R404Route
   '/dashboard': typeof DashboardRoute
   '/help': typeof HelpRoute
   '/search': typeof SearchRoute
@@ -230,7 +221,6 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/$entityId'
-    | '/404'
     | '/dashboard'
     | '/help'
     | '/search'
@@ -255,7 +245,6 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/$entityId'
-    | '/404'
     | '/dashboard'
     | '/help'
     | '/search'
@@ -280,7 +269,6 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/$entityId'
-    | '/404'
     | '/dashboard'
     | '/help'
     | '/search'
@@ -306,7 +294,6 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   EntityIdRoute: typeof EntityIdRoute
-  R404Route: typeof R404Route
   DashboardRoute: typeof DashboardRoute
   HelpRoute: typeof HelpRoute
   SearchRoute: typeof SearchRoute
@@ -350,13 +337,6 @@ declare module '@tanstack/react-router' {
       path: '/dashboard'
       fullPath: '/dashboard'
       preLoaderRoute: typeof DashboardRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/404': {
-      id: '/404'
-      path: '/404'
-      fullPath: '/404'
-      preLoaderRoute: typeof R404RouteImport
       parentRoute: typeof rootRouteImport
     }
     '/$entityId': {
@@ -498,7 +478,6 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   EntityIdRoute: EntityIdRoute,
-  R404Route: R404Route,
   DashboardRoute: DashboardRoute,
   HelpRoute: HelpRoute,
   SearchRoute: SearchRoute,
