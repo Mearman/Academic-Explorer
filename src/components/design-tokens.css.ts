@@ -23,6 +23,7 @@ export const entityVars = createGlobalTheme(':root', {
     gold: '#eab308',        // Gold
     
     // UI elements
+    background: '#ffffff',
     border: '#e5e7eb',
     borderHover: '#d1d5db',
     cardBackground: '#ffffff',
@@ -31,6 +32,10 @@ export const entityVars = createGlobalTheme(':root', {
     warningBackground: '#fffbeb',
     errorBackground: '#fef2f2',
     infoBackground: '#f0f9ff',
+    warning: '#f59e0b',
+    workDark: '#1e40af',
+    error: '#ef4444',
+    text: '#1f2937',
     
     // Text variants
     muted: '#6b7280',
@@ -49,6 +54,7 @@ export const entityVars = createGlobalTheme(':root', {
     '4xl': '32px',
     '5xl': '40px',
     '6xl': '48px',
+    xxl: '64px',
   },
   
   borderRadius: {
@@ -69,6 +75,7 @@ export const entityVars = createGlobalTheme(':root', {
     '2xl': '1.5rem',  // 24px
     '3xl': '1.875rem', // 30px
     '4xl': '2.25rem', // 36px
+    xxl: '3rem',      // 48px
   },
   
   fontWeight: {
