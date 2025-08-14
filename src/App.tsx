@@ -7,7 +7,7 @@ import { routeTree } from './routeTree.gen';
 // Create a new router instance with base path for GitHub Pages
 const router = createRouter({ 
   routeTree,
-  basepath: import.meta.env.MODE === 'production' ? '/Academic-Explorer' : undefined
+  basepath: import.meta.env.PROD ? '/Academic-Explorer' : undefined
 });
 
 // Register the router instance for type safety
