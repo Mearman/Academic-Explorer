@@ -196,18 +196,19 @@ async function fetchEntityWithTimeout(
   timeout: number,
   skipCache: boolean
 ): Promise<EntityData> {
-  const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), timeout);
-
   try {
     const normalizedId = normalizeEntityId(entityId, entityType);
+    
+    console.log(`[fetchEntityWithTimeout] Fetching ${entityType}:${normalizedId}, skipCache: ${skipCache}`);
     
     let result: EntityData;
     
     // Route to appropriate client method based on entity type
     switch (entityType) {
       case EntityType.WORK:
+        console.log(`[fetchEntityWithTimeout] Calling cachedOpenAlex.work(${normalizedId})`);
         result = await cachedOpenAlex.work(normalizedId, skipCache);
+        console.log(`[fetchEntityWithTimeout] cachedOpenAlex.work returned:`, !!result);
         break;
       case EntityType.AUTHOR:
         result = await cachedOpenAlex.author(normalizedId, skipCache);
@@ -242,17 +243,16 @@ async function fetchEntityWithTimeout(
       default:
         throw new Error(`Unsupported entity type: ${entityType}`);
     }
-
-    clearTimeout(timeoutId);
-    return result;
-  } catch (error) {
-    clearTimeout(timeoutId);
     
-    // Handle abort as timeout
-    if (error instanceof Error && error.name === 'AbortError') {
-      throw new Error('Request timeout');
+    if (!result) {
+      throw new Error(`Entity ${entityType}:${normalizedId} returned null or undefined`);
     }
     
+    console.log(`[fetchEntityWithTimeout] Successfully fetched ${entityType}:${normalizedId}:`, result.display_name || result.id);
+    
+    return result;
+  } catch (error) {
+    console.error(`[fetchEntityWithTimeout] Error fetching ${entityType}:${entityId}:`, error);
     throw error;
   }
 }
@@ -341,6 +341,12 @@ export function useEntityData<T extends EntityData = EntityData>(
       return;
     }
 
+    // Clear any existing retry timeout
+    if (retryTimeoutRef.current) {
+      clearTimeout(retryTimeoutRef.current);
+      retryTimeoutRef.current = null;
+    }
+
     // Validate entity ID and determine type
     let detectedType: EntityType;
     try {
@@ -369,6 +375,15 @@ export function useEntityData<T extends EntityData = EntityData>(
     }));
 
     try {
+      console.log(`[useEntityData] Fetching entity: ${entityId} (type: ${detectedType}, retry: ${isRetry})`);
+      
+      // Add timeout debug indicator  
+      const debugEl = document.getElementById('debug-entity-fetch');
+      if (debugEl) {
+        debugEl.style.background = 'blue';
+        debugEl.textContent = `API Call: ${entityId}`;
+      }
+      
       const data = await fetchEntityWithTimeout(
         entityId,
         detectedType,
@@ -376,7 +391,12 @@ export function useEntityData<T extends EntityData = EntityData>(
         optionsRef.current.skipCache
       );
 
-      if (!mountedRef.current) return;
+      if (!mountedRef.current) {
+        console.log(`[useEntityData] Component unmounted, skipping state update for ${entityId}`);
+        return;
+      }
+
+      console.log(`[useEntityData] Successfully fetched data for ${entityId}:`, data);
 
       setState(prev => ({
         ...prev,
@@ -388,40 +408,86 @@ export function useEntityData<T extends EntityData = EntityData>(
         lastFetchTime: Date.now()
       }));
 
+      // Add success debug indicator
+      const successDebugEl = document.getElementById('debug-entity-fetch');
+      if (successDebugEl) {
+        successDebugEl.style.background = 'green';
+        successDebugEl.textContent = `Success: ${entityId}`;
+        setTimeout(() => {
+          successDebugEl.remove();
+        }, 3000);
+      }
+
       optionsRef.current.onSuccess(data);
     } catch (error) {
-      if (!mountedRef.current) return;
+      if (!mountedRef.current) {
+        console.log(`[useEntityData] Component unmounted, skipping error state update for ${entityId}`);
+        return;
+      }
 
+      console.error(`[useEntityData] Error fetching entity ${entityId}:`, error);
+      
+      // Add error debug indicator
+      const debugEl = document.getElementById('debug-entity-fetch');
+      if (debugEl) {
+        debugEl.style.background = 'orange';
+        debugEl.textContent = `Error: ${error.message || 'Unknown error'}`;
+      }
+      
       const entityError = createEntityError(error, entityId);
       
-      setState(prev => ({
-        ...prev,
-        loading: false,
-        error: entityError,
-        state: EntityLoadingState.ERROR,
-        retryCount: isRetry ? prev.retryCount + 1 : 0
-      }));
+      setState(prev => {
+        const newRetryCount = isRetry ? prev.retryCount + 1 : 1;
+        
+        console.log(`[useEntityData] Setting error state. Retry count: ${newRetryCount}, Max retries: ${optionsRef.current.maxRetries}`);
+        
+        // Schedule retry if retryable
+        if (entityError.retryable && newRetryCount < optionsRef.current.maxRetries) {
+          const delay = calculateRetryDelay(newRetryCount, optionsRef.current.retryDelay);
+          
+          console.log(`[useEntityData] Scheduling retry ${newRetryCount + 1}/${optionsRef.current.maxRetries} in ${delay}ms for ${entityId}`);
+          
+          retryTimeoutRef.current = setTimeout(() => {
+            if (mountedRef.current) {
+              console.log(`[useEntityData] Executing retry ${newRetryCount + 1} for ${entityId}`);
+              fetchEntity(true);
+            }
+          }, delay);
+        } else {
+          console.log(`[useEntityData] No retry: retryable=${entityError.retryable}, retryCount=${newRetryCount}, maxRetries=${optionsRef.current.maxRetries}`);
+        }
+        
+        return {
+          ...prev,
+          loading: false,
+          error: entityError,
+          state: EntityLoadingState.ERROR,
+          retryCount: newRetryCount
+        };
+      });
 
       optionsRef.current.onError(entityError);
-
-      // Auto-retry for retryable errors
-      const currentRetryCount = isRetry ? state.retryCount + 1 : 0;
-      if (entityError.retryable && currentRetryCount < optionsRef.current.maxRetries) {
-        const delay = calculateRetryDelay(currentRetryCount, optionsRef.current.retryDelay);
-        
-        retryTimeoutRef.current = setTimeout(() => {
-          if (mountedRef.current) {
-            fetchEntity(true);
-          }
-        }, delay);
-      }
     }
-  }, [entityId, entityType, state.retryCount]);
+  }, [entityId, entityType]); // Removed state.retryCount from dependencies
 
   // Auto-fetch effect
   useEffect(() => {
     if (opts.enabled && entityId) {
+      console.log(`[useEntityData] Auto-fetch effect triggered for ${entityId}, enabled: ${opts.enabled}`);
+      // Add a visible debug indicator
+      const debugEl = document.getElementById('debug-entity-fetch');
+      if (!debugEl) {
+        const el = document.createElement('div');
+        el.id = 'debug-entity-fetch';
+        el.style.cssText = 'position:fixed;top:10px;right:10px;background:red;color:white;padding:10px;z-index:9999;font-size:12px;';
+        el.textContent = `Fetching: ${entityId}`;
+        document.body.appendChild(el);
+      } else {
+        debugEl.textContent = `Fetching: ${entityId}`;
+      }
       fetchEntity();
+    } else {
+      console.log(`[useEntityData] Auto-fetch skipped - enabled: ${opts.enabled}, entityId: ${entityId}`);
     }
   }, [entityId, entityType, opts.enabled, fetchEntity]);
 
@@ -449,10 +515,14 @@ export function useEntityData<T extends EntityData = EntityData>(
   }, [fetchEntity]);
 
   const retry = useCallback(async (): Promise<void> => {
-    if (state.error?.retryable) {
+    console.log(`[useEntityData] Manual retry requested for ${entityId}`);
+    if (state.error?.retryable || state.error) {
+      setState(prev => ({ ...prev, retryCount: 0 })); // Reset retry count for manual retries
       await fetchEntity(true);
+    } else {
+      console.log(`[useEntityData] Retry not available - no retryable error`);
     }
-  }, [fetchEntity, state.error]);
+  }, [fetchEntity, entityId, state.error]);
 
   const reset = useCallback((): void => {
     if (retryTimeoutRef.current) {
