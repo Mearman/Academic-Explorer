@@ -31,6 +31,7 @@ export { MetricDisplay } from './molecules/metric-display';
 export { ExternalLinksGroup } from './molecules/external-links-group';
 export { SearchBar } from './molecules/search-bar';
 export { AdvancedSearchForm } from './molecules/advanced-search-form';
+export { AutocompleteSearch } from './molecules/autocomplete-search';
 export { EntityLoading } from './molecules/entity-loading';
 export { AuthorList } from './molecules/author-list';
 export { ConceptList } from './molecules/concept-list';
@@ -41,6 +42,11 @@ export { RawDataView } from './organisms/raw-data-view';
 export { SearchHistory } from './organisms/search-history';
 export { SearchResults } from './organisms/search-results';
 export { StorageManager } from './organisms/storage-manager';
+export { 
+  Chart,
+  NetworkVisualization,
+  MetricsPanel
+} from './organisms/data-visualization';
 export { 
   EntityPageSkeleton, 
   CompactEntitySkeleton, 
