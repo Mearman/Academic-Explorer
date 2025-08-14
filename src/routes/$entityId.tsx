@@ -9,7 +9,7 @@ import {
   decodeExternalId,
   ExternalIdType
 } from '@/lib/openalex/utils/entity-detection';
-import EntityErrorBoundary from '@/components/error-boundary';
+import { EntityErrorBoundary } from '@/components';
 
 function RedirectLoading({ entityId, entityType, idType }: { 
   entityId: string; 

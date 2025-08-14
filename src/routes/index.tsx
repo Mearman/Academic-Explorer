@@ -1,8 +1,6 @@
 import { createFileRoute } from '@tanstack/react-router';
 import * as styles from '../app/page.css';
-import { SearchBar } from '@/components/search-bar';
-import { SearchHistory } from '@/components/search-history';
-import { StorageManager } from '@/components/storage-manager';
+import { SearchBar, SearchHistory, StorageManager } from '@/components';
 
 function HomePage() {
   return (
