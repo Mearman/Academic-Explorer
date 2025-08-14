@@ -23,6 +23,9 @@
     "test:component-only": "NODE_OPTIONS='--max-old-space-size=8192' vitest run src/components/**/*.test.*",
     "test:e2e:diagnose": "NODE_OPTIONS='--max-old-space-size=8192' vitest run --project e2e src/test/entity-loading-diagnosis.e2e.test.ts",
     "test:e2e:works": "NODE_OPTIONS='--max-old-space-size=8192' vitest run --project e2e src/test/works-page-loading.e2e.test.ts",
+    "test:e2e:search": "NODE_OPTIONS='--max-old-space-size=8192' vitest run --project e2e src/test/search-functionality.e2e.test.ts",
+    "test:e2e:search-results": "NODE_OPTIONS='--max-old-space-size=8192' vitest run --project e2e src/test/search-results.e2e.test.ts",
+    "test:e2e:search-all": "NODE_OPTIONS='--max-old-space-size=8192' vitest run --project e2e src/test/search*.e2e.test.ts",
     "test:e2e:all": "./scripts/run-e2e-tests.sh"
   },
   "dependencies": {
