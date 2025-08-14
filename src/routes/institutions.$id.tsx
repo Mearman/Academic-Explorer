@@ -11,8 +11,6 @@ import {
   Grid,
   Tabs,
   List,
-  ThemeIcon,
-  Avatar
 } from '@mantine/core';
 import { 
   IconBuilding, 
@@ -24,13 +22,11 @@ import {
   IconCode,
   IconTags,
   IconUsers,
-  IconChartBar,
   IconBooks,
   IconBuildingBank,
   IconWorld,
   IconId,
-  IconCalendar,
-  IconTrendingUp
+  IconCalendar
 } from '@tabler/icons-react';
 import { RawDataView } from '@/components';
 import type { Institution } from '@/lib/openalex/types';

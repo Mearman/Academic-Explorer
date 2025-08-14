@@ -19,8 +19,6 @@ import {
   IconWorld,
   IconHierarchy,
   IconTrendingUp,
-  IconFiles,
-  IconCitation,
   IconCalendar,
   IconLink,
   IconBuildingBank

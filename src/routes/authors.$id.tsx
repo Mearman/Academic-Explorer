@@ -10,14 +10,10 @@ import {
   Paper,
   Grid,
   Tabs,
-  List,
-  Divider
+  List
 } from '@mantine/core';
 import { 
   IconUser, 
-  IconTrophy, 
-  IconBookmark, 
-  IconQuote, 
   IconCalendar, 
   IconBuilding, 
   IconExternalLink, 
