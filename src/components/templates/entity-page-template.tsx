@@ -1,6 +1,7 @@
 'use client';
 
 import { forwardRef, useState, useEffect, Suspense } from 'react';
+import { useNavigate } from '@tanstack/react-router';
 import { EntityHeader, EntityHeaderSkeleton } from '../organisms/entity-header';
 import { ErrorMessage } from '../atoms/error-message';
 import { LoadingSkeleton } from '../atoms/loading-skeleton';
@@ -271,7 +272,10 @@ export const EntityPageErrorTemplate = ({
 }: {
   error: string;
   onRetry?: () => void;
-}) => (
+}) => {
+  const navigate = useNavigate();
+  
+  return (
   <div className={styles.container}>
     <div className={`${styles.pageWrapper} ${styles.layoutVariants.centered}`}>
       <div className={styles.errorContainer}>
@@ -289,11 +293,12 @@ export const EntityPageErrorTemplate = ({
             },
             {
               label: 'Go Home',
-              onClick: () => window.location.href = '/',
+              onClick: () => navigate({ to: '/', replace: true }),
             },
           ] : undefined}
         />
       </div>
     </div>
   </div>
-);
+  );
+};

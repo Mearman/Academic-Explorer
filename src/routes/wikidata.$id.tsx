@@ -1,4 +1,4 @@
-import { createFileRoute, useNavigate } from '@tanstack/react-router';
+import { createFileRoute, useNavigate, Link } from '@tanstack/react-router';
 import { useEffect, useState } from 'react';
 import { decodeExternalId, parseExternalId, ExternalIdType } from '@/lib/openalex/utils/entity-detection';
 import { EntityErrorBoundary } from '@/components';
@@ -40,12 +40,12 @@ function WikidataError({ wikidataId, error }: { wikidataId: string; error: strin
           {error}
         </p>
         <div className="space-y-3">
-          <a
-            href="/"
-            className="block w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 transition-colors"
+          <Link
+            to="/"
+            className="block w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 transition-colors text-center"
           >
             Return to Home
-          </a>
+          </Link>
           <p className="text-xs text-gray-500">
             Valid Wikidata format: Q123456
           </p>

@@ -53,8 +53,11 @@ export function useNumericIdRedirect(id: string | undefined, entityType: EntityT
         
         const routePath = routeMap[entityType];
         if (routePath) {
-          // Navigate to the constructed route with URL replacement
-          window.location.replace(`${routePath.replace('$id', fullId)}`);
+          // Navigate using TanStack Router which respects basepath
+          navigate({ 
+            to: routePath.replace('$id', fullId),
+            replace: true 
+          });
         }
       }
     }
