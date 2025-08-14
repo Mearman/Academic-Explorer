@@ -1,12 +1,13 @@
-import { createRouter, RouterProvider } from '@tanstack/react-router';
+import { createRouter, RouterProvider, createHashHistory } from '@tanstack/react-router';
 import { ErrorBoundary } from 'react-error-boundary';
 
 // Import the generated route tree
 import { routeTree } from './routeTree.gen';
 
-// Create a new router instance with base path for GitHub Pages
+// Create a new router instance with hash routing for GitHub Pages
 const router = createRouter({ 
   routeTree,
+  history: createHashHistory(),
   basepath: import.meta.env.PROD ? '/Academic-Explorer' : undefined
 });
 
