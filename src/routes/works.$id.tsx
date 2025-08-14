@@ -619,25 +619,36 @@ function WorkDisplay({ work }: { work: Work }) {
 function WorkPage() {
   const { id } = Route.useParams();
   
+  console.log(`[WorkPage] Rendering with id: ${id}`);
+  
   // Handle numeric ID redirection to /entity/ route
   const isRedirecting = useNumericIdRedirect(id, EntityType.WORK);
+  
+  console.log(`[WorkPage] isRedirecting: ${isRedirecting}`);
   
   const { 
     data: work, 
     loading, 
     error, 
-    retry 
+    retry,
+    state 
   } = useWorkData(id, {
     enabled: !!id && !isRedirecting, // Don't fetch if redirecting
     refetchOnWindowFocus: true,
     staleTime: 10 * 60 * 1000, // 10 minutes
+    onSuccess: (data) => {
+      console.log('[WorkPage] Successfully loaded work data:', data?.display_name);
+    },
     onError: (error) => {
-      console.error('Work fetch error:', error);
+      console.error('[WorkPage] Work fetch error:', error);
     }
   });
 
+  console.log(`[WorkPage] Hook state: loading=${loading}, hasData=${!!work}, error=${!!error}, state=${state}`);
+
   // Show loading state for redirection
   if (isRedirecting) {
+    console.log('[WorkPage] Rendering redirection skeleton');
     return (
       <EntityErrorBoundary entityType="works" entityId={id}>
         <EntitySkeleton entityType={EntityType.WORK} />
@@ -647,6 +658,7 @@ function WorkPage() {
 
   // Show loading state for data fetch
   if (loading) {
+    console.log('[WorkPage] Rendering loading skeleton');
     return (
       <EntityErrorBoundary entityType="works" entityId={id}>
         <EntitySkeleton entityType={EntityType.WORK} />
@@ -656,6 +668,7 @@ function WorkPage() {
 
   // Show error state
   if (error) {
+    console.log('[WorkPage] Rendering error state:', error);
     return (
       <EntityErrorBoundary entityType="works" entityId={id}>
         <EntityError 
@@ -670,6 +683,7 @@ function WorkPage() {
 
   // Show work data
   if (work) {
+    console.log('[WorkPage] Rendering work data:', work.display_name);
     return (
       <EntityErrorBoundary entityType="works" entityId={id}>
         <WorkDisplay work={work} />
@@ -678,6 +692,7 @@ function WorkPage() {
   }
 
   // Fallback state
+  console.log('[WorkPage] Rendering fallback state');
   return (
     <EntityErrorBoundary entityType="works" entityId={id}>
       <EntityFallback 
