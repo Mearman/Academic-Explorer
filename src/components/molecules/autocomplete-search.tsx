@@ -1,19 +1,28 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { Link } from '@tanstack/react-router';
 import { cachedOpenAlex } from '@/lib/openalex/client-with-cache';
-import { EntityBadge, LoadingSpinner, Icon } from '@/components/atoms';
-import { detectEntityType, getEntityIdFromUrl } from '@/lib/openalex/utils/entity-detection';
+import { EntityBadge, LoadingSpinner, Icon } from '@/components';
+import { detectEntityType, parseEntityIdentifier } from '@/lib/openalex/utils/entity-detection';
+import type { EntityType } from '@/components/types';
 import * as styles from './autocomplete-search.css';
-import type { OpenAlexEntity } from '@/components/types';
 
 interface AutocompleteSuggestion {
   id: string;
   display_name: string;
-  entity_type: string;
+  entity_type: EntityType;
   hint?: string;
   cited_by_count?: number;
   works_count?: number;
-  external_ids?: Record<string, any>;
+  external_ids?: Record<string, unknown>;
+}
+
+const VALID_ENTITY_TYPES: EntityType[] = [
+  'work', 'author', 'source', 'institution', 'publisher', 
+  'funder', 'topic', 'concept', 'keyword', 'continent', 'region'
+];
+
+function isValidEntityType(type: string): type is EntityType {
+  return VALID_ENTITY_TYPES.includes(type as EntityType);
 }
 
 interface AutocompleteSearchProps {
@@ -39,7 +48,7 @@ export function AutocompleteSearch({
   
   const inputRef = useRef<HTMLInputElement>(null);
   const listRef = useRef<HTMLUListElement>(null);
-  const debounceRef = useRef<NodeJS.Timeout>();
+  const debounceRef = useRef<NodeJS.Timeout | null>(null);
 
   // Debounced search function
   const searchSuggestions = useCallback(async (searchQuery: string) => {
@@ -51,24 +60,73 @@ export function AutocompleteSearch({
 
     setIsLoading(true);
     try {
-      // Use OpenAlex autocomplete endpoint
-      const response = await cachedOpenAlex.get(`/autocomplete`, {
-        q: searchQuery,
-        per_page: maxSuggestions
-      });
+      // Search across multiple entity types using their specific autocomplete endpoints
+      const searchParams = { q: searchQuery };
+      const maxPerType = Math.ceil(maxSuggestions / 4); // Distribute across 4 main types
+      
+      const [worksResponse, authorsResponse, sourcesResponse, institutionsResponse] = await Promise.allSettled([
+        cachedOpenAlex.worksAutocomplete(searchParams),
+        cachedOpenAlex.authorsAutocomplete(searchParams), 
+        cachedOpenAlex.sourcesAutocomplete(searchParams),
+        cachedOpenAlex.institutionsAutocomplete(searchParams)
+      ]);
 
-      const suggestions: AutocompleteSuggestion[] = response.results.map((result: any) => ({
-        id: result.id,
-        display_name: result.display_name,
-        entity_type: result.entity_type || detectEntityType(result.id) || 'unknown',
-        hint: result.hint,
-        cited_by_count: result.cited_by_count,
-        works_count: result.works_count,
-        external_ids: result.external_ids
-      }));
+      const allSuggestions: AutocompleteSuggestion[] = [];
+      
+      // Process each response and combine results
+      const processResponse = (response: PromiseSettledResult<{ results: unknown[] }>, entityType: string) => {
+        if (response.status === 'fulfilled' && response.value?.results) {
+          return response.value.results.slice(0, maxPerType).map((result: unknown): AutocompleteSuggestion => {
+            if (!result || typeof result !== 'object') {
+              throw new Error('Invalid autocomplete result format');
+            }
+            
+            const item = result as Record<string, unknown>;
+            const id = typeof item.id === 'string' ? item.id : '';
+            const display_name = typeof item.display_name === 'string' ? item.display_name : '';
+            const hint = typeof item.hint === 'string' ? item.hint : undefined;
+            const cited_by_count = typeof item.cited_by_count === 'number' ? item.cited_by_count : undefined;
+            const works_count = typeof item.works_count === 'number' ? item.works_count : undefined;
+            const external_ids = item.external_ids && typeof item.external_ids === 'object' ? 
+              item.external_ids as Record<string, unknown> : undefined;
 
-      setSuggestions(suggestions);
-      setIsOpen(suggestions.length > 0);
+            // Ensure entity_type is valid, fallback to detected type or 'work'
+            const validEntityType = isValidEntityType(entityType) ? entityType : 
+              (detectEntityType(id) && isValidEntityType(detectEntityType(id)!)) ? detectEntityType(id)! : 'work' as EntityType;
+
+            return {
+              id,
+              display_name,
+              entity_type: validEntityType,
+              hint,
+              cited_by_count,
+              works_count,
+              external_ids
+            };
+          });
+        }
+        return [];
+      };
+
+      // Combine all results
+      allSuggestions.push(
+        ...processResponse(worksResponse, 'work'),
+        ...processResponse(authorsResponse, 'author'),
+        ...processResponse(sourcesResponse, 'source'),
+        ...processResponse(institutionsResponse, 'institution')
+      );
+
+      // Sort by relevance (cited_by_count or works_count) and limit
+      const sortedSuggestions = allSuggestions
+        .sort((a, b) => {
+          const aScore = a.cited_by_count || a.works_count || 0;
+          const bScore = b.cited_by_count || b.works_count || 0;
+          return bScore - aScore;
+        })
+        .slice(0, maxSuggestions);
+
+      setSuggestions(sortedSuggestions);
+      setIsOpen(sortedSuggestions.length > 0);
       setSelectedIndex(-1);
     } catch (error) {
       console.error('Autocomplete search failed:', error);
@@ -159,7 +217,7 @@ export function AutocompleteSearch({
 
   // Generate suggestion link URL
   const getSuggestionUrl = (suggestion: AutocompleteSuggestion) => {
-    const entityId = getEntityIdFromUrl(suggestion.id);
+    const entityId = parseEntityIdentifier(suggestion.id).numericId;
     const entityType = suggestion.entity_type;
     
     // Map entity types to routes
@@ -237,7 +295,7 @@ export function AutocompleteSearch({
                     </span>
                     {showEntityBadges && (
                       <EntityBadge 
-                        type={suggestion.entity_type as any}
+                        entityType={suggestion.entity_type}
                         size="sm"
                       />
                     )}
