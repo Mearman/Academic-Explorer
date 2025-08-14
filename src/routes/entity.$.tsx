@@ -2,7 +2,7 @@ import { createFileRoute, Link } from '@tanstack/react-router';
 import { useEffect } from 'react';
 import { parseEntityIdentifier, EntityType } from '@/lib/openalex/utils/entity-detection';
 import { EntityErrorBoundary } from '@/components';
-import { EntityPageTemplate } from '@/components';
+// import { EntityPageTemplate } from '@/components'; // Unused - simple div used instead
 import type { OpenAlexEntity } from '@/components/types';
 
 /**
@@ -36,7 +36,7 @@ function getEntityTypeFromPath(splat: string): { entityType: EntityType; entityI
   return null;
 }
 
-function renderEntityData(entityType: EntityType) {
+function _renderEntityData(entityType: EntityType) {
   const EntityRenderer = (data: OpenAlexEntity) => {
     // Generic renderer for the catch-all route
     return (
@@ -131,13 +131,21 @@ function EntityCatchAllPage() {
     );
   }
 
-  // Use the EntityPageTemplate to handle data fetching and rendering
+  // Generic entity handler - redirect to specific entity routes
   return (
     <EntityErrorBoundary entityType={entityInfo.entityType} entityId={entityInfo.entityId}>
-      <EntityPageTemplate
-        entityType={entityInfo.entityType}
-        renderEntity={renderEntityData(entityInfo.entityType)}
-      />
+      <div className="min-h-screen flex items-center justify-center p-4">
+        <div className="text-center">
+          <h2 className="text-xl font-semibold mb-4">Entity Found</h2>
+          <p>Detected {entityInfo.entityType} entity: {entityInfo.entityId}</p>
+          <Link
+            to="/"
+            className="inline-block mt-4 bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 transition-colors"
+          >
+            Return to Home
+          </Link>
+        </div>
+      </div>
     </EntityErrorBoundary>
   );
 }

@@ -337,7 +337,7 @@ function InstitutionDisplay({ institution }: { institution: Institution }) {
             )}
 
             {/* Enhanced Alternative Names */}
-            {(institution.display_name_alternatives?.length > 0 || institution.display_name_acronyms?.length > 0) && (
+            {((institution.display_name_alternatives?.length ?? 0) > 0 || (institution.display_name_acronyms?.length ?? 0) > 0) && (
               <Card withBorder radius="md" p="xl">
                 <Group mb="lg">
                   <IconId size={20} />

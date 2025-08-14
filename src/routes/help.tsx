@@ -88,15 +88,15 @@ function HelpPage() {
                     <p>Standard keyword search with stemming</p>
                   </div>
                   <div className={styles.mode}>
-                    <Badge variant="work">Boolean</Badge>
+                    <Badge variant="info">Boolean</Badge>
                     <p>Use AND, OR, NOT operators for precise queries</p>
                   </div>
                   <div className={styles.mode}>
-                    <Badge variant="author">Exact</Badge>
+                    <Badge variant="success">Exact</Badge>
                     <p>Match exact terms without stemming</p>
                   </div>
                   <div className={styles.mode}>
-                    <Badge variant="muted">No Stem</Badge>
+                    <Badge variant="secondary">No Stem</Badge>
                     <p>Disable automatic word stemming</p>
                   </div>
                 </div>
@@ -238,7 +238,7 @@ function HelpPage() {
                 </div>
                 
                 <div className={styles.step}>
-                  <Badge variant="work">2</Badge>
+                  <Badge variant="info">2</Badge>
                   <div>
                     <h4>Save the Query</h4>
                     <p>Click "Save Current Search" and provide a descriptive name</p>
@@ -246,7 +246,7 @@ function HelpPage() {
                 </div>
                 
                 <div className={styles.step}>
-                  <Badge variant="author">3</Badge>
+                  <Badge variant="success">3</Badge>
                   <div>
                     <h4>Reuse Anytime</h4>
                     <p>Access your saved searches from the Advanced Search sidebar</p>
