@@ -59,7 +59,7 @@ export class CachedOpenAlexClient extends OpenAlexClient {
       const cached = await this.cache.get<T>(cacheKey, params as Record<string, unknown>);
       if (cached !== null) {
         this.cache.recordHit();
-        console.debug(`Cache hit for ${cacheKey}`);
+        // console.debug(`Cache hit for ${cacheKey}`);
         return cached;
       }
     } catch (error) {
@@ -75,7 +75,7 @@ export class CachedOpenAlexClient extends OpenAlexClient {
           const result = await method();
           try {
             await this.cache.set(cacheKey, params as Record<string, unknown>, result);
-            console.debug(`Cache miss for ${cacheKey} - cached for future use`);
+            // console.debug(`Cache miss for ${cacheKey} - cached for future use`);
           } catch (cacheError) {
             console.error(`Cache write error for ${cacheKey}:`, cacheError);
             // Continue without failing the request
@@ -94,7 +94,7 @@ export class CachedOpenAlexClient extends OpenAlexClient {
     const result = await method();
     try {
       await this.cache.set(cacheKey, params as Record<string, unknown>, result);
-      console.debug(`Cache miss for ${cacheKey} - cached for future use`);
+      // console.debug(`Cache miss for ${cacheKey} - cached for future use`);
     } catch (cacheError) {
       console.error(`Cache write error for ${cacheKey}:`, cacheError);
       // Continue without failing the request
