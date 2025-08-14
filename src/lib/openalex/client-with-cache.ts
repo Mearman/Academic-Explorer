@@ -59,11 +59,15 @@ export class CachedOpenAlexClient extends OpenAlexClient {
       const cached = await this.cache.get<T>(cacheKey, params as Record<string, unknown>);
       if (cached !== null) {
         this.cache.recordHit();
-        // console.debug(`Cache hit for ${cacheKey}`);
+        console.debug(`Cache hit for ${cacheKey}`);
         return cached;
       }
     } catch (error) {
-      console.error(`Cache read error for ${cacheKey}:`, error);
+      // Cache read error - continue with normal request flow
+      // Only log in development to avoid test noise
+      if (process.env.NODE_ENV === 'development') {
+        console.debug(`Cache read error for ${cacheKey}:`, error);
+      }
       // Continue with normal request flow
     }
 
@@ -75,16 +79,24 @@ export class CachedOpenAlexClient extends OpenAlexClient {
           const result = await method();
           try {
             await this.cache.set(cacheKey, params as Record<string, unknown>, result);
-            // console.debug(`Cache miss for ${cacheKey} - cached for future use`);
+            console.debug(`Cache miss for ${cacheKey} - cached for future use`);
           } catch (cacheError) {
-            console.error(`Cache write error for ${cacheKey}:`, cacheError);
+            // Cache write error - continue without failing the request
+            // Only log in development to avoid test noise
+            if (process.env.NODE_ENV === 'development') {
+              console.debug(`Cache write error for ${cacheKey}:`, cacheError);
+            }
             // Continue without failing the request
           }
           this.cache.recordMiss();
           return result;
         }) as Promise<T>;
       } catch (dedupeError) {
-        console.error(`Deduplication error for ${cacheKey}:`, dedupeError);
+        // Deduplication error - fall back to direct API call
+        // Only log in development to avoid test noise
+        if (process.env.NODE_ENV === 'development') {
+          console.debug(`Deduplication error for ${cacheKey}:`, dedupeError);
+        }
         // Fall back to direct API call (continue to code below)
       }
     }
@@ -94,9 +106,13 @@ export class CachedOpenAlexClient extends OpenAlexClient {
     const result = await method();
     try {
       await this.cache.set(cacheKey, params as Record<string, unknown>, result);
-      // console.debug(`Cache miss for ${cacheKey} - cached for future use`);
+      console.debug(`Cache miss for ${cacheKey} - cached for future use`);
     } catch (cacheError) {
-      console.error(`Cache write error for ${cacheKey}:`, cacheError);
+      // Cache write error - continue without failing the request
+      // Only log in development to avoid test noise
+      if (process.env.NODE_ENV === 'development') {
+        console.debug(`Cache write error for ${cacheKey}:`, cacheError);
+      }
       // Continue without failing the request
     }
     return result;
