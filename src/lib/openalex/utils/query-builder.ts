@@ -78,6 +78,25 @@ export class QueryBuilder {
     return this.and(`${field}.search:${value}`);
   }
 
+  containsNoStem(field: string, value: string): this {
+    return this.and(`${field}.search.no_stem:${value}`);
+  }
+
+  // Search field shortcut for default search
+  defaultSearch(value: string): this {
+    return this.and(`default.search:${value}`);
+  }
+
+  // Boolean search (using parentheses and uppercase operators)
+  booleanSearch(field: string, query: string): this {
+    return this.and(`${field}.search:${query}`);
+  }
+
+  // Search with exact phrases (double quotes)
+  exactPhrase(field: string, phrase: string): this {
+    return this.and(`${field}.search:"${phrase}"`);
+  }
+
   startsWith(field: string, value: string): this {
     return this.and(`${field}:${value}*`);
   }
@@ -120,6 +139,38 @@ export class QueryBuilder {
 
   isFalse(field: string): this {
     return this.and(`${field}:false`);
+  }
+
+  // Advanced operators that handle special cases
+  includeUnknown(field: string, values: (string | number)[]): this {
+    // For group_by operations that need :include_unknown
+    if (field.includes('group_by')) {
+      return this.and(`${field}:${values.join('|')}:include_unknown`);
+    }
+    return this.in(field, values);
+  }
+
+  // Range with exclusive endpoints
+  betweenExclusive(field: string, min: number, max: number): this {
+    return this.and(`${field}:>${min}`).and(`${field}:<${max}`);
+  }
+
+  // Convenience method for OR within same attribute with limit handling
+  inWithLimit(field: string, values: (string | number)[], limit: number = 100): this {
+    if (values.length > limit) {
+      // Split into chunks if exceeding API limit
+      const chunks = [];
+      for (let i = 0; i < values.length; i += limit) {
+        chunks.push(values.slice(i, i + limit));
+      }
+      // Create OR groups for each chunk
+      const groupBuilder = new QueryBuilder();
+      chunks.forEach(chunk => {
+        groupBuilder.or(new QueryBuilder().in(field, chunk));
+      });
+      return this.and(groupBuilder);
+    }
+    return this.in(field, values);
   }
 
   // Build the final filter string
@@ -192,6 +243,29 @@ export const filters = {
     titleContains: (text: string) => query().contains('title', text),
     abstractContains: (text: string) => query().contains('abstract', text),
     fulltextContains: (text: string) => query().contains('fulltext', text),
+    
+    // Advanced search methods
+    titleBooleanSearch: (query: string) => filters.works.titleContains(`(${query})`),
+    abstractBooleanSearch: (query: string) => filters.works.abstractContains(`(${query})`),
+    titleNoStem: (text: string) => new QueryBuilder().containsNoStem('title', text),
+    abstractNoStem: (text: string) => new QueryBuilder().containsNoStem('abstract', text),
+    titleExactPhrase: (phrase: string) => new QueryBuilder().exactPhrase('title', phrase),
+    abstractExactPhrase: (phrase: string) => new QueryBuilder().exactPhrase('abstract', phrase),
+    
+    // Special date range filters
+    fromPublicationDate: (date: string | Date) => {
+      const dateStr = typeof date === 'string' ? date : date.toISOString().split('T')[0];
+      return new QueryBuilder().and(`from_publication_date:${dateStr}`);
+    },
+    toPublicationDate: (date: string | Date) => {
+      const dateStr = typeof date === 'string' ? date : date.toISOString().split('T')[0];
+      return new QueryBuilder().and(`to_publication_date:${dateStr}`);
+    },
+    publicationDateRange: (from: string | Date, to: string | Date) => {
+      const fromStr = typeof from === 'string' ? from : from.toISOString().split('T')[0];
+      const toStr = typeof to === 'string' ? to : to.toISOString().split('T')[0];
+      return query().and(`from_publication_date:${fromStr}`).and(`to_publication_date:${toStr}`);
+    },
   },
   
   // Authors filters
