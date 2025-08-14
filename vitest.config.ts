@@ -23,6 +23,20 @@ export default defineConfig({
     // Global test configuration
     globals: true,
     setupFiles: ['./src/test/setup.ts'],
+    // Global memory optimization
+    pool: 'forks',
+    poolOptions: {
+      forks: {
+        singleFork: true,
+        maxForks: 1,
+        minForks: 1,
+      },
+    },
+    // Reduce memory usage
+    isolate: false,
+    sequence: {
+      concurrent: false,
+    },
     // Default coverage for all tests - disable globally to prevent memory/inspector issues
     coverage: {
       enabled: false,
