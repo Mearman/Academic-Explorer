@@ -255,7 +255,7 @@ function AuthorDisplay({ author }: { author: Author }) {
                           )}
                         </Group>
                         {institution.ror && (
-                          <Text size="xs" c="dimmed" mt="xs" family="monospace">
+                          <Text size="xs" c="dimmed" mt="xs">
                             ROR: {institution.ror}
                           </Text>
                         )}
@@ -361,7 +361,7 @@ function AuthorDisplay({ author }: { author: Author }) {
                     <Text size="xs" tt="uppercase" fw={600} c="dimmed" mb="xs">
                       OpenAlex ID
                     </Text>
-                    <Text size="sm" fw={500} family="monospace">
+                    <Text size="sm" fw={500}>
                       {author.id}
                     </Text>
                   </Paper>
@@ -380,7 +380,6 @@ function AuthorDisplay({ author }: { author: Author }) {
                         size="sm"
                         fw={500}
                         c="author"
-                        family="monospace"
                       >
                         {author.orcid}
                       </Anchor>

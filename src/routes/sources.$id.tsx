@@ -159,7 +159,7 @@ function SourceDisplay({ source }: { source: Source }) {
                       <Text size="xs" tt="uppercase" fw={600} c="dimmed" mb="xs">
                         ISSN-L
                       </Text>
-                      <Text size="sm" fw={500} family="monospace">
+                      <Text size="sm" fw={500} >
                         {source.issn_l}
                       </Text>
                     </Paper>
@@ -174,7 +174,7 @@ function SourceDisplay({ source }: { source: Source }) {
                       </Text>
                       <Group gap="xs">
                         {source.issn.map((issn) => (
-                          <Badge key={issn} variant="outline" size="sm" family="monospace">
+                          <Badge key={issn} variant="outline" size="sm" >
                             {issn}
                           </Badge>
                         ))}

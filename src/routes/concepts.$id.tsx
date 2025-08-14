@@ -323,7 +323,7 @@ function ConceptDisplay({ concept }: { concept: Concept }) {
                         <Text size="sm" fw={500}>
                           {name}
                         </Text>
-                        {concept.international.description?.[lang] && (
+                        {concept.international?.description?.[lang] && (
                           <Text size="xs" c="dimmed" mt="xs" lineClamp={2}>
                             {concept.international.description[lang]}
                           </Text>
