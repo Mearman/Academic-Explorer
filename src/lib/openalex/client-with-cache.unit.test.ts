@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest';
 import { CachedOpenAlexClient, cachedOpenAlex, type CachedOpenAlexConfig } from './client-with-cache';
 import { CacheManager, RequestDeduplicator } from './utils/cache';

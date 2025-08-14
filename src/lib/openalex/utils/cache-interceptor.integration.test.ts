@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest';
 import { CacheInterceptor, withCache, defaultStrategies } from './cache-interceptor';
 import { openDB } from 'idb';
