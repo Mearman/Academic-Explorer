@@ -1,4 +1,4 @@
-import { style, globalStyle } from '@vanilla-extract/css';
+import { style, globalStyle, keyframes } from '@vanilla-extract/css';
 import { entityVars } from '../design-tokens.css';
 
 // Chart container styles
@@ -299,24 +299,22 @@ globalStyle(metricsGrid, {
 });
 
 // Animation styles
+const fadeInKeyframes = keyframes({
+  '0%': { opacity: 0, transform: 'translateY(20px)' },
+  '100%': { opacity: 1, transform: 'translateY(0)' },
+});
+
 export const fadeIn = style({
-  animation: 'fadeIn 0.5s ease-in',
-  '@keyframes': {
-    fadeIn: {
-      '0%': { opacity: 0, transform: 'translateY(20px)' },
-      '100%': { opacity: 1, transform: 'translateY(0)' },
-    },
-  },
+  animation: `${fadeInKeyframes} 0.5s ease-in`,
+});
+
+const slideInKeyframes = keyframes({
+  '0%': { transform: 'translateX(-20px)', opacity: 0 },
+  '100%': { transform: 'translateX(0)', opacity: 1 },
 });
 
 export const slideIn = style({
-  animation: 'slideIn 0.3s ease-out',
-  '@keyframes': {
-    slideIn: {
-      '0%': { transform: 'translateX(-20px)', opacity: 0 },
-      '100%': { transform: 'translateX(0)', opacity: 1 },
-    },
-  },
+  animation: `${slideInKeyframes} 0.3s ease-out`,
 });
 
 // Accessibility enhancements
