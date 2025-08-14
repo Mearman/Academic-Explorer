@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { EntityBadge, MetricBadge } from '@/components/atoms';
+import { EntityBadge } from '@/components';
 import * as styles from './data-visualization.css';
 
 interface DataPoint {
@@ -62,13 +62,13 @@ export function Chart({
     const xValues = data.map(d => d.x);
     const isNumeric = typeof xValues[0] === 'number';
     
-    let xScale: (value: any) => number;
+    let xScale: (value: string | number, index?: number) => number;
     if (isNumeric) {
       const maxX = Math.max(...(xValues as number[]));
       const minX = Math.min(...(xValues as number[]));
       xScale = (x: number) => ((x - minX) / (maxX - minX)) * chartWidth;
     } else {
-      xScale = (x: any, index: number) => (index / (data.length - 1)) * chartWidth;
+      xScale = (_x: string | number, index: number = 0) => (index / (data.length - 1)) * chartWidth;
     }
     
     const yScale = (y: number) => chartHeight - ((y - minY) / (maxY - minY)) * chartHeight;
@@ -315,7 +315,7 @@ export function NetworkVisualization({
         {Array.from(new Set(nodes.map(n => n.entity_type))).map(entityType => (
           <div key={entityType} className={styles.legendItem}>
             <div className={`${styles.legendColor} ${styles[`node${entityType}` as keyof typeof styles] || ''}`}></div>
-            <EntityBadge type={entityType as any} size="sm" />
+            <EntityBadge type={entityType} size="sm" />
           </div>
         ))}
       </div>

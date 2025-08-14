@@ -4,6 +4,16 @@ import { useState } from 'react';
 import { useRouter } from '@tanstack/react-router';
 import { useAppStore } from '@/stores/app-store';
 import { AutocompleteSearch } from './autocomplete-search';
+
+interface AutocompleteSuggestion {
+  id: string;
+  display_name: string;
+  entity_type: string;
+  hint?: string;
+  cited_by_count?: number;
+  works_count?: number;
+  external_ids?: Record<string, unknown>;
+}
 import * as styles from './search-bar.css';
 
 interface SearchBarProps {
@@ -36,7 +46,7 @@ export function SearchBar({
     }
   };
 
-  const handleAutocompleteSelect = (suggestion: any) => {
+  const handleAutocompleteSelect = (suggestion: AutocompleteSuggestion) => {
     setSearchQuery(suggestion.display_name);
     addToSearchHistory(suggestion.display_name);
     

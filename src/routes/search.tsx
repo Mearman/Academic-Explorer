@@ -4,6 +4,7 @@ import { z } from 'zod';
 import * as styles from '../app/page.css';
 import { AdvancedSearchForm } from '@/components/molecules/advanced-search-form';
 import { SearchResults } from '@/components/organisms/search-results';
+import { SavedSearches } from '@/components/molecules/saved-searches';
 import type { WorksParams } from '@/lib/openalex/types';
 
 // Search params validation schema
@@ -62,7 +63,7 @@ function SearchPage() {
       sourceId: params.source_id,
       funderId: params.funder_id,
       topicId: params.topic_id,
-      sortBy: params.sort as any,
+      sortBy: params.sort,
       sortOrder: params.order,
       perPage: params.per_page,
       sample: params.sample,
@@ -167,6 +168,11 @@ function SearchPage() {
     updateUrlParams(worksParams);
   };
 
+  const handleLoadSavedSearch = (worksParams: WorksParams) => {
+    setCurrentParams(worksParams);
+    updateUrlParams(worksParams);
+  };
+
   // Initialize from URL params on load
   const hasSearchParams = Object.keys(searchParams).length > 0;
 
@@ -181,16 +187,25 @@ function SearchPage() {
         </div>
 
         <div className={styles.searchInterface}>
-          <AdvancedSearchForm
-            onSearch={handleSearch}
-            initialData={hasSearchParams ? getFormDataFromParams(searchParams) : undefined}
-          />
-
-          <div className={styles.searchResultsSection}>
-            <SearchResults
-              searchParams={currentParams}
-              onParamsChange={handleParamsChange}
+          <div className={styles.searchSidebar}>
+            <SavedSearches
+              currentParams={currentParams}
+              onLoadSearch={handleLoadSavedSearch}
             />
+          </div>
+          
+          <div className={styles.searchMainContent}>
+            <AdvancedSearchForm
+              onSearch={handleSearch}
+              initialData={hasSearchParams ? getFormDataFromParams(searchParams) : undefined}
+            />
+
+            <div className={styles.searchResultsSection}>
+              <SearchResults
+                searchParams={currentParams}
+                onParamsChange={handleParamsChange}
+              />
+            </div>
           </div>
         </div>
       </main>

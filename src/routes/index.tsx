@@ -40,6 +40,14 @@ function HomePage() {
             <h2>Bibliography Management</h2>
             <p>Organise and manage your research references</p>
           </div>
+
+          <div className={styles.card}>
+            <h2>Help & Documentation</h2>
+            <p>Learn how to use all of Academic Explorer's features</p>
+            <Link to="/help" style={{ marginTop: '1rem', display: 'inline-block', color: '#3b82f6', textDecoration: 'underline' }}>
+              View Help Guide →
+            </Link>
+          </div>
         </div>
         
         <StorageManager />

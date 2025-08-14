@@ -47,9 +47,39 @@ export const searchPageHeader = style({
 });
 
 export const searchInterface = style({
+  display: 'grid',
+  gridTemplateColumns: '300px 1fr',
+  gap: '2rem',
+  alignItems: 'start',
+  '@media': {
+    'screen and (max-width: 1024px)': {
+      gridTemplateColumns: '1fr',
+      gap: '1.5rem',
+    },
+  },
+});
+
+export const searchSidebar = style({
+  display: 'flex',
+  flexDirection: 'column',
+  gap: '1rem',
+  '@media': {
+    'screen and (max-width: 1024px)': {
+      order: 2,
+    },
+  },
+});
+
+export const searchMainContent = style({
   display: 'flex',
   flexDirection: 'column',
   gap: '2rem',
+  minWidth: 0, // Allow flex shrinking
+  '@media': {
+    'screen and (max-width: 1024px)': {
+      order: 1,
+    },
+  },
 });
 
 export const searchResultsSection = style({
