@@ -32,7 +32,7 @@ export function ConceptList({
     ...topics.map(topic => ({
       id: topic.id,
       display_name: topic.display_name,
-      score: topic.score,
+      score: 'score' in topic ? (topic as Topic & { score: number }).score : undefined,
       level: undefined,
       type: 'topic' as const
     }))

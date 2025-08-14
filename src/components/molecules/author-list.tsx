@@ -24,7 +24,7 @@ export function AuthorList({
 
   if (variant === 'compact') {
     return (
-      <Group gap="xs" wrap>
+      <Group gap="xs" wrap="wrap">
         {displayedAuthorships.map((authorship, index) => (
           <React.Fragment key={authorship.author.id}>
             <EntityLink
@@ -90,7 +90,7 @@ export function AuthorList({
             {showInstitutions && authorship.institutions.length > 0 && (
               <Group gap="xs" pl="md">
                 <IconBuilding size={14} />
-                <Group gap="xs" wrap>
+                <Group gap="xs" wrap="wrap">
                   {authorship.institutions.map((institution, index) => (
                     <React.Fragment key={institution.id}>
                       <EntityLink
