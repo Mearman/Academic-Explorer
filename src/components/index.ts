@@ -5,6 +5,8 @@ export { Icon } from './atoms/icon';
 export { MetricBadge } from './atoms/metric-badge';
 export { StatusIndicator } from './atoms/status-indicator';
 export { ExternalLink } from './atoms/external-link';
+export { LoadingSpinner } from './atoms/loading-spinner';
+export { Skeleton } from './atoms/skeleton';
 export { 
   LoadingSkeleton,
   SkeletonGroup,
@@ -26,10 +28,25 @@ export {
 // Molecules
 export { MetricDisplay } from './molecules/metric-display';
 export { ExternalLinksGroup } from './molecules/external-links-group';
+export { SearchBar } from './molecules/search-bar';
+export { EntityLoading } from './molecules/entity-loading';
 
 // Organisms
 export { EntityHeader, EntityHeaderSkeleton } from './organisms/entity-header';
 export { RawDataView } from './organisms/raw-data-view';
+export { SearchHistory } from './organisms/search-history';
+export { StorageManager } from './organisms/storage-manager';
+export { 
+  EntityPageSkeleton, 
+  CompactEntitySkeleton, 
+  TableRowSkeleton 
+} from './organisms/entity-page-skeleton';
+export { 
+  EntityError,
+  CompactEntityError,
+  EntitySkeleton,
+  EntityFallback
+} from './organisms/entity-error';
 
 // Templates
 export { 
@@ -39,10 +56,7 @@ export {
   EntityPageLoadingTemplate,
   EntityPageErrorTemplate
 } from './templates/entity-page-template';
-
-// Utility components
-export { default as EntityErrorBoundary } from './error-boundary';
-export { EntityLoading, EntityPageSkeleton } from './loading';
+export { default as EntityErrorBoundary } from './templates/error-boundary';
 
 // Types
 export type {
@@ -69,6 +83,9 @@ export type {
   EntityFetcherProps,
   FormatterOptions,
   EntityErrorBoundaryProps,
+  LoadingSpinnerProps,
+  SkeletonProps,
+  EntityLoadingProps,
 } from './types';
 
 // Design tokens
