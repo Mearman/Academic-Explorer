@@ -85,14 +85,21 @@ export function RawDataView({
   const [prettyPrint, setPrettyPrint] = useState(true);
   
   // Check if data has an abstract inverted index (for OpenAlex Works)
-  const hasAbstractIndex = data && 
+  const hasAbstractIndex: boolean = Boolean(
+    data && 
     typeof data === 'object' && 
     'abstract_inverted_index' in data && 
     data.abstract_inverted_index &&
     typeof data.abstract_inverted_index === 'object' &&
-    Object.keys(data.abstract_inverted_index).length > 0;
+    Object.keys(data.abstract_inverted_index).length > 0
+  );
   
-  const reconstructedAbstract = hasAbstractIndex 
+  const reconstructedAbstract = hasAbstractIndex && 
+    data && 
+    typeof data === 'object' && 
+    'abstract_inverted_index' in data &&
+    data.abstract_inverted_index &&
+    typeof data.abstract_inverted_index === 'object'
     ? reconstructAbstract(data.abstract_inverted_index as Record<string, number[]>)
     : null;
   
@@ -361,7 +368,13 @@ export function RawDataView({
                       {reconstructedAbstract.length} characters
                     </Badge>
                     <Badge variant="light" size="sm" color="blue">
-                      {Object.keys(data.abstract_inverted_index as object).length} unique terms
+                      {data && 
+                       typeof data === 'object' && 
+                       'abstract_inverted_index' in data &&
+                       data.abstract_inverted_index &&
+                       typeof data.abstract_inverted_index === 'object'
+                        ? Object.keys(data.abstract_inverted_index).length
+                        : 0} unique terms
                     </Badge>
                   </>
                 )}

@@ -1,5 +1,6 @@
 import React, { useMemo } from 'react';
 import { EntityBadge } from '@/components';
+import { EntityType } from '@/lib/openalex/utils/entity-detection';
 import * as styles from './data-visualization.css';
 
 interface DataPoint {
@@ -318,7 +319,7 @@ export function NetworkVisualization({
         {Array.from(new Set(nodes.map(n => n.entity_type))).map(entityType => (
           <div key={entityType} className={styles.legendItem}>
             <div className={`${styles.legendColor} ${styles[`node${entityType}` as keyof typeof styles] || ''}`}></div>
-            <EntityBadge entityType={entityType as any} size="sm" />
+            <EntityBadge entityType={entityType as EntityType} size="sm" />
           </div>
         ))}
       </div>

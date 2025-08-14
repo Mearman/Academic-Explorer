@@ -306,7 +306,7 @@ export function EntityFallback({
 /**
  * Helper function to get entity endpoint
  */
-function getEntityEndpoint(entityType: EntityType): string {
+function _getEntityEndpoint(entityType: EntityType): string {
   switch (entityType) {
     case EntityType.WORK:
       return 'works';
