@@ -431,7 +431,7 @@ export function useEntityData<T extends EntityData = EntityData>(
       const debugEl = document.getElementById('debug-entity-fetch');
       if (debugEl) {
         debugEl.style.background = 'orange';
-        debugEl.textContent = `Error: ${error.message || 'Unknown error'}`;
+        debugEl.textContent = `Error: ${error instanceof Error ? error.message : 'Unknown error'}`;
       }
       
       const entityError = createEntityError(error, entityId);

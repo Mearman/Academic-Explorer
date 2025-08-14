@@ -53,7 +53,7 @@ function NotFoundComponent() {
   }, [location.pathname, navigate]);
 
   const handleGoBack = () => {
-    navigate({ to: -1 as const });
+    window.history.back();
   };
 
   return (
