@@ -39,3 +39,19 @@ export const card = style({
   borderRadius: '0.5rem',
   boxShadow: '0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06)',
 });
+
+// Search page specific styles
+export const searchPageHeader = style({
+  textAlign: 'center',
+  marginBottom: '2rem',
+});
+
+export const searchInterface = style({
+  display: 'flex',
+  flexDirection: 'column',
+  gap: '2rem',
+});
+
+export const searchResultsSection = style({
+  minHeight: '400px',
+});
