@@ -37,6 +37,10 @@ export default defineConfig({
     sequence: {
       concurrent: false,
     },
+    // Global timeouts
+    testTimeout: 30000,
+    hookTimeout: 10000,
+    teardownTimeout: 5000,
     // Default coverage for all tests - disable globally to prevent memory/inspector issues
     coverage: {
       enabled: false,
