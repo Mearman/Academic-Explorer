@@ -1,22 +1,31 @@
 'use client';
 
+import {
+  IconFileTypePdf,
+  IconMicroscope,
+  IconBuilding,
+  IconLink,
+  IconBook,
+  IconExternalLink,
+  IconMail
+} from '@tabler/icons-react';
 import { forwardRef } from 'react';
 
 import type { ExternalLinkProps } from '../types';
 
 import * as styles from './external-link.css';
 
-const getLinkIcon = (type: string): string => {
+const getLinkIcon = (type: string) => {
   const icons = {
-    doi: '📄',
-    orcid: '🔬',
-    ror: '🏛️',
-    wikidata: '🔗',
-    wikipedia: '📖',
-    website: '🌐',
-    email: '✉️',
+    doi: IconFileTypePdf,
+    orcid: IconMicroscope,
+    ror: IconBuilding,
+    wikidata: IconLink,
+    wikipedia: IconBook,
+    website: IconExternalLink,
+    email: IconMail,
   };
-  return icons[type as keyof typeof icons] || '🔗';
+  return icons[type as keyof typeof icons] || IconLink;
 };
 
 const formatLinkLabel = (href: string, type: string): string => {
@@ -77,9 +86,11 @@ function buildLinkClasses(type: string, className?: string): string {
 function renderIcon(showIcon: boolean, type: string) {
   if (!showIcon) return null;
   
+  const IconComponent = getLinkIcon(type);
+  
   return (
     <span className={styles.iconStyle} aria-hidden="true">
-      {getLinkIcon(type)}
+      <IconComponent size={14} />
     </span>
   );
 }
@@ -92,7 +103,7 @@ function renderExternalIndicator(external: boolean) {
   
   return (
     <span className={styles.externalIconStyle} aria-hidden="true">
-      ↗
+      <IconExternalLink size={12} />
     </span>
   );
 }

@@ -6,6 +6,15 @@
 
 'use client';
 
+import {
+  IconX,
+  IconSearch,
+  IconWorld,
+  IconClock,
+  IconTrafficLights,
+  IconAlertTriangle,
+  IconFileText
+} from '@tabler/icons-react';
 import { Link } from '@tanstack/react-router';
 
 import { EntityErrorType } from '@/hooks/use-entity-data';
@@ -42,7 +51,7 @@ function generateInvalidIdError(entityName: string, entityId: string, entityType
     title: `Invalid ${entityName} ID`,
     message: `The ${entityType || 'entity'} ID "${entityId}" is not in a valid format. Please ensure you're using a correct OpenAlex ${entityType || 'entity'} ID (e.g., ${entityIdExample}).`,
     showRetry: false,
-    icon: '❌'
+    icon: IconX
   };
 }
 
@@ -51,7 +60,7 @@ function generateNotFoundError(entityName: string, entityId: string, entityType?
     title: `${entityName} Not Found`,
     message: `The ${entityType || 'entity'} "${entityId}" could not be found. It may have been removed or the ID may be incorrect.`,
     showRetry: false,
-    icon: '🔍'
+    icon: IconSearch
   };
 }
 
@@ -60,7 +69,7 @@ function generateNetworkError() {
     title: 'Connection Error',
     message: 'Unable to connect to OpenAlex. Please check your internet connection.',
     showRetry: true,
-    icon: '🌐'
+    icon: IconWorld
   };
 }
 
@@ -69,7 +78,7 @@ function generateTimeoutError() {
     title: 'Request Timeout',
     message: 'The request took too long to complete. The service may be experiencing high load.',
     showRetry: true,
-    icon: '⏱️'
+    icon: IconClock
   };
 }
 
@@ -78,7 +87,7 @@ function generateRateLimitedError() {
     title: 'Rate Limited',
     message: 'Too many requests have been made. Please wait a moment before trying again.',
     showRetry: true,
-    icon: '🚦'
+    icon: IconTrafficLights
   };
 }
 
@@ -87,7 +96,7 @@ function generateGenericError(error: Error | EntityErrorType | unknown, entityNa
     title: `Error Loading ${entityName}`,
     message: error instanceof Error ? error.message : `An unexpected error occurred while loading the ${entityType || 'entity'}.`,
     showRetry: true,
-    icon: '⚠️'
+    icon: IconAlertTriangle
   };
 }
 
@@ -168,11 +177,14 @@ function getEntityIdExample(entityType?: EntityType): string {
  */
 export function EntityError({ error, onRetry, entityId, entityType }: EntityErrorProps) {
   const { title, message, showRetry, icon } = getErrorDetails(error, entityId, entityType);
+  const IconComponent = icon;
 
   return (
     <div className="max-w-4xl mx-auto p-6">
       <div className="bg-red-50 border border-red-200 rounded-lg p-8 text-center">
-        <div className="text-4xl mb-4">{icon}</div>
+        <div className="text-4xl mb-4 text-red-600">
+          <IconComponent size={48} />
+        </div>
         <h1 className="text-xl font-semibold text-red-800 mb-3">{title}</h1>
         <p className="text-red-700 mb-6 max-w-md mx-auto">{message}</p>
         
@@ -223,10 +235,13 @@ export function EntityError({ error, onRetry, entityId, entityType }: EntityErro
  */
 export function CompactEntityError({ error, onRetry, entityId, entityType }: EntityErrorProps) {
   const { title, message, showRetry, icon } = getErrorDetails(error, entityId, entityType);
+  const IconComponent = icon;
 
   return (
     <div className="bg-red-50 border border-red-200 rounded-lg p-4 text-center max-w-md mx-auto">
-      <div className="text-2xl mb-2">{icon}</div>
+      <div className="text-2xl mb-2 text-red-600">
+        <IconComponent size={32} />
+      </div>
       <h3 className="font-semibold text-red-800 mb-2">{title}</h3>
       <p className="text-sm text-red-700 mb-4">{message}</p>
       
@@ -321,7 +336,9 @@ export function EntityFallback({
   return (
     <div className="max-w-4xl mx-auto p-6 text-center">
       <div className="bg-gray-50 border border-gray-200 rounded-lg p-8">
-        <div className="text-4xl mb-4">📄</div>
+        <div className="text-4xl mb-4 text-gray-600">
+          <IconFileText size={48} />
+        </div>
         <h2 className="text-xl font-semibold text-gray-800 mb-3">
           No {entityName} Data Available
         </h2>
