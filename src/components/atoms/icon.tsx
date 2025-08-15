@@ -1,83 +1,140 @@
 'use client';
 
+import {
+  IconFileText,
+  IconUser,
+  IconBooks,
+  IconBuilding,
+  IconBuildingStore,
+  IconCash,
+  IconTag,
+  IconBulb,
+  IconBookmark,
+  IconWorld,
+  IconMap,
+  IconSearch,
+  IconFilter,
+  IconArrowsSort,
+  IconDownload,
+  IconUpload,
+  IconEdit,
+  IconTrash,
+  IconDeviceFloppy,
+  IconCopy,
+  IconShare,
+  IconPrinter,
+  IconRefresh,
+  IconSettings,
+  IconHelp,
+  IconInfoCircle,
+  IconAlertTriangle,
+  IconX,
+  IconCheck,
+  IconLoader,
+  IconArrowLeft,
+  IconArrowRight,
+  IconArrowUp,
+  IconArrowDown,
+  IconHome,
+  IconMenu2,
+  IconXboxX,
+  IconBook,
+  IconFileTypePdf,
+  IconMicroscope,
+  IconLink,
+  IconExternalLink,
+  IconMail,
+  IconChartBar,
+  IconNote,
+  IconTrendingUp,
+  IconBolt,
+  IconTrendingDown,
+  IconMinus,
+  IconLockOpen,
+  IconLock,
+  IconTrophy,
+  IconLeaf,
+  IconRepeat,
+  IconMedal
+} from '@tabler/icons-react';
 import { forwardRef } from 'react';
 
 import type { IconProps, EntityType } from '../types';
 
 import * as styles from './icon.css';
 
-// Emoji-based icon mapping for different entities and actions
+// Icon component mapping for different entities and actions
 const iconMap = {
   // Entity types
-  work: '📄',
-  author: '👨‍🔬',
-  source: '📚',
-  institution: '🏛️',
-  publisher: '🏢',
-  funder: '💰',
-  topic: '🏷️',
-  concept: '💡',
-  keyword: '🔖',
-  continent: '🌍',
-  region: '🗺️',
+  work: IconFileText,
+  author: IconUser,
+  source: IconBooks,
+  institution: IconBuilding,
+  publisher: IconBuildingStore,
+  funder: IconCash,
+  topic: IconTag,
+  concept: IconBulb,
+  keyword: IconBookmark,
+  continent: IconWorld,
+  region: IconMap,
   
   // Actions and states
-  search: '🔍',
-  filter: '🔽',
-  sort: '↕️',
-  download: '⬇️',
-  upload: '⬆️',
-  edit: '✏️',
-  delete: '🗑️',
-  save: '💾',
-  copy: '📋',
-  share: '🔗',
-  print: '🖨️',
-  refresh: '🔄',
-  settings: '⚙️',
-  help: '❓',
-  info: 'ℹ️',
-  warning: '⚠️',
-  error: '❌',
-  success: '✅',
-  loading: '⏳',
+  search: IconSearch,
+  filter: IconFilter,
+  sort: IconArrowsSort,
+  download: IconDownload,
+  upload: IconUpload,
+  edit: IconEdit,
+  delete: IconTrash,
+  save: IconDeviceFloppy,
+  copy: IconCopy,
+  share: IconShare,
+  print: IconPrinter,
+  refresh: IconRefresh,
+  settings: IconSettings,
+  help: IconHelp,
+  info: IconInfoCircle,
+  warning: IconAlertTriangle,
+  error: IconX,
+  success: IconCheck,
+  loading: IconLoader,
   
   // Navigation
-  back: '⬅️',
-  forward: '➡️',
-  up: '⬆️',
-  down: '⬇️',
-  home: '🏠',
-  menu: '☰',
-  close: '✖️',
-  expand: '📖',
-  collapse: '📕',
+  back: IconArrowLeft,
+  forward: IconArrowRight,
+  up: IconArrowUp,
+  down: IconArrowDown,
+  home: IconHome,
+  menu: IconMenu2,
+  close: IconXboxX,
+  expand: IconBook,
+  collapse: IconBook,
   
   // External links
-  doi: '📄',
-  orcid: '🔬',
-  ror: '🏛️',
-  wikidata: '🔗',
-  wikipedia: '📖',
-  website: '🌐',
-  email: '✉️',
+  doi: IconFileTypePdf,
+  orcid: IconMicroscope,
+  ror: IconBuilding,
+  wikidata: IconLink,
+  wikipedia: IconBook,
+  website: IconExternalLink,
+  email: IconMail,
   
   // Metrics
-  citation: '📊',
-  publication: '📝',
-  hindex: '📈',
-  impact: '💥',
-  trend_up: '📈',
-  trend_down: '📉',
-  trend_neutral: '➖',
+  citation: IconChartBar,
+  publication: IconNote,
+  hindex: IconTrendingUp,
+  impact: IconBolt,
+  trend_up: IconTrendingUp,
+  trend_down: IconTrendingDown,
+  trend_neutral: IconMinus,
   
   // Open access
-  open_access: '🔓',
-  closed_access: '🔒',
-  gold: '🏆',
-  green: '🌱',
-  hybrid: '🔄',
-  bronze: '🥉',
+  open_access: IconLockOpen,
+  closed_access: IconLock,
+  gold: IconTrophy,
+  green: IconLeaf,
+  hybrid: IconRepeat,
+  bronze: IconMedal,
 };
 
 /**
@@ -121,9 +178,21 @@ export const Icon = forwardRef<HTMLSpanElement, IconProps>(
     'data-testid': testId,
     ...props 
   }, ref) => {
-    const iconSymbol = iconMap[name as keyof typeof iconMap] || '❓';
+    const IconComponent = iconMap[name as keyof typeof iconMap] || IconHelp;
     const cssClasses = buildIconClasses(size, color, className);
     const customStyle = color && !getColorClass(color) ? { color } : undefined;
+
+    // Convert size to numeric value for Tabler icons
+    const getIconSize = (size: string): number => {
+      switch (size) {
+        case 'xs': return 12;
+        case 'sm': return 16;
+        case 'md': return 20;
+        case 'lg': return 24;
+        case 'xl': return 32;
+        default: return 20;
+      }
+    };
 
     return (
       <span
@@ -135,7 +204,7 @@ export const Icon = forwardRef<HTMLSpanElement, IconProps>(
         role="img"
         {...props}
       >
-        {iconSymbol}
+        <IconComponent size={getIconSize(size)} />
       </span>
     );
   }
