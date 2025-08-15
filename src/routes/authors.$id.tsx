@@ -420,13 +420,13 @@ function AuthorDisplay({ author }: { author: Author }) {
                               {yearData.year}
                             </Text>
                             <Text size="lg" fw={700} c="blue">
-                              {yearData.works_count}
+                              {yearData.works_count ?? 0}
                             </Text>
                             <Text size="xs" c="dimmed">
                               works
                             </Text>
                             <Text size="sm" c="blue">
-                              {yearData.cited_by_count} cites
+                              {yearData.cited_by_count ?? 0} cites
                             </Text>
                           </Stack>
                         </Grid.Col>
