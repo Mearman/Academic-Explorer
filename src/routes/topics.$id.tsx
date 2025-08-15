@@ -1,4 +1,3 @@
-import { createFileRoute } from '@tanstack/react-router';
 import { 
   Card, 
   Badge, 
@@ -24,16 +23,18 @@ import {
   IconSearch,
   IconBrandWikipedia
 } from '@tabler/icons-react';
+import { createFileRoute } from '@tanstack/react-router';
+
 import { RawDataView, EntityLink } from '@/components';
-import type { Topic } from '@/lib/openalex/types';
-import { EntityType } from '@/lib/openalex/utils/entity-detection';
-import { useTopicData } from '@/hooks/use-entity-data';
 import { EntityError, EntitySkeleton, EntityFallback } from '@/components';
-import { useNumericIdRedirect } from '@/hooks/use-numeric-id-redirect';
 import { 
   EntityPageTemplate,
   EntityErrorBoundary
 } from '@/components';
+import { useTopicData } from '@/hooks/use-entity-data';
+import { useNumericIdRedirect } from '@/hooks/use-numeric-id-redirect';
+import type { Topic } from '@/lib/openalex/types';
+import { EntityType } from '@/lib/openalex/utils/entity-detection';
 
 function TopicDisplay({ topic }: { topic: Topic }) {
   // External links for the topic

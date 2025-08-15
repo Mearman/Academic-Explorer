@@ -1,4 +1,3 @@
-import { createFileRoute } from '@tanstack/react-router';
 import { 
   Card, 
   Badge, 
@@ -12,21 +11,25 @@ import {
   Tabs
 } from '@mantine/core';
 import { IconExternalLink, IconDownload, IconInfoCircle, IconFileText, IconTags, IconLink, IconCode } from '@tabler/icons-react';
+import { createFileRoute } from '@tanstack/react-router';
+
 import { RawDataView, AuthorList, ConceptList, EntityLink } from '@/components';
-import type { Work } from '@/lib/openalex/types';
-import { EntityType } from '@/lib/openalex/utils/entity-detection';
-import { useWorkData } from '@/hooks/use-entity-data';
-import { reconstructAbstract } from '@/lib/openalex/utils/transformers';
 import { EntityError, EntitySkeleton, EntityFallback } from '@/components';
-import { useNumericIdRedirect } from '@/hooks/use-numeric-id-redirect';
 import { 
   EntityPageWithGraph,
   EntityErrorBoundary
 } from '@/components';
+import { useWorkData } from '@/hooks/use-entity-data';
+import { useNumericIdRedirect } from '@/hooks/use-numeric-id-redirect';
+import type { Work } from '@/lib/openalex/types';
+import { EntityType } from '@/lib/openalex/utils/entity-detection';
+import { reconstructAbstract } from '@/lib/openalex/utils/transformers';
 
-function WorkDisplay({ work }: { work: Work }) {
-  // External links for the work
-  const externalLinks = [
+/**
+ * Build external links for work
+ */
+function buildWorkExternalLinks(work: Work) {
+  return [
     work.primary_location?.landing_page_url && {
       url: work.primary_location.landing_page_url,
       label: 'Publisher Page',
@@ -43,6 +46,113 @@ function WorkDisplay({ work }: { work: Work }) {
       type: 'openalex' as const
     }
   ].filter(Boolean);
+}
+
+/**
+ * Get icon for work external link type
+ */
+function getWorkLinkIcon(type: string) {
+  switch (type) {
+    case 'pdf':
+      return <IconDownload size={16} />;
+    case 'publisher':
+      return <IconExternalLink size={16} />;
+    default:
+      return <IconInfoCircle size={16} />;
+  }
+}
+
+/**
+ * Get color for work external link type
+ */
+function getWorkLinkColor(type: string): string {
+  switch (type) {
+    case 'pdf':
+      return 'openAccess';
+    case 'publisher':
+      return 'publisher';
+    default:
+      return 'work';
+  }
+}
+
+/**
+ * Render work external link card
+ */
+function renderWorkLinkCard(link: { url: string; label: string; type: string }, index: number) {
+  return (
+    <Grid.Col key={index} span={{ base: 12, sm: 6, md: 4 }}>
+      <Anchor
+        href={link.url}
+        target="_blank"
+        rel="noopener noreferrer"
+        style={{ textDecoration: 'none' }}
+      >
+        <Paper
+          p="md"
+          withBorder
+          radius="md"
+          style={(theme) => {
+            const color = getWorkLinkColor(link.type);
+            return {
+              transition: 'all 150ms ease',
+              cursor: 'pointer',
+              '&:hover': {
+                transform: 'translateY(-2px)',
+                boxShadow: theme.shadows.md,
+                borderColor: theme.colors[color]?.[5],
+              },
+            };
+          }}
+        >
+          <Group>
+            {getWorkLinkIcon(link.type)}
+            <Text size="sm" fw={500} c={getWorkLinkColor(link.type)}>
+              {link.label}
+            </Text>
+          </Group>
+        </Paper>
+      </Anchor>
+    </Grid.Col>
+  );
+}
+
+/**
+ * Render abstract content
+ */
+function renderAbstractContent(work: Work) {
+  if (!work.abstract_inverted_index) return null;
+  
+  const reconstructedAbstract = reconstructAbstract(work.abstract_inverted_index);
+  
+  if (reconstructedAbstract) {
+    return (
+      <>
+        <Group mb="md">
+          <IconInfoCircle size={16} color="blue" />
+          <Text size="sm" c="dimmed" fs="italic">
+            Abstract reconstructed from inverted index ({Object.keys(work.abstract_inverted_index).length} unique terms)
+          </Text>
+        </Group>
+        <Text size="sm" style={{ lineHeight: 1.6 }}>
+          {reconstructedAbstract}
+        </Text>
+      </>
+    );
+  } else {
+    return (
+      <Group mb="md">
+        <IconInfoCircle size={16} color="orange" />
+        <Text size="sm" c="dimmed" fs="italic">
+          Unable to reconstruct abstract from inverted index.
+        </Text>
+      </Group>
+    );
+  }
+}
+
+function WorkDisplay({ work }: { work: Work }) {
+  const externalLinks = buildWorkExternalLinks(work);
 
   return (
     <EntityPageWithGraph entity={work}>
@@ -192,34 +302,7 @@ function WorkDisplay({ work }: { work: Work }) {
             </Group>
             
             <Paper p="lg" radius="md" withBorder>
-              {(() => {
-                const reconstructedAbstract = reconstructAbstract(work.abstract_inverted_index);
-                
-                if (reconstructedAbstract) {
-                  return (
-                    <>
-                      <Group mb="md">
-                        <IconInfoCircle size={16} color="blue" />
-                        <Text size="sm" c="dimmed" fs="italic">
-                          Abstract reconstructed from inverted index ({Object.keys(work.abstract_inverted_index).length} unique terms)
-                        </Text>
-                      </Group>
-                      <Text size="sm" style={{ lineHeight: 1.6 }}>
-                        {reconstructedAbstract}
-                      </Text>
-                    </>
-                  );
-                } else {
-                  return (
-                    <Group mb="md">
-                      <IconInfoCircle size={16} color="orange" />
-                      <Text size="sm" c="dimmed" fs="italic">
-                        Unable to reconstruct abstract from inverted index.
-                      </Text>
-                    </Group>
-                  );
-                }
-              })()}
+              {renderAbstractContent(work)}
             </Paper>
           </Card>
         )}
@@ -540,61 +623,7 @@ function WorkDisplay({ work }: { work: Work }) {
           <Grid>
             {externalLinks.map((link, index) => {
               if (!link) return null;
-              
-              const getIcon = () => {
-                switch (link.type) {
-                  case 'pdf':
-                    return <IconDownload size={16} />;
-                  case 'publisher':
-                    return <IconExternalLink size={16} />;
-                  default:
-                    return <IconInfoCircle size={16} />;
-                }
-              };
-
-              const getColor = () => {
-                switch (link.type) {
-                  case 'pdf':
-                    return 'openAccess';
-                  case 'publisher':
-                    return 'publisher';
-                  default:
-                    return 'work';
-                }
-              };
-
-              return (
-                <Grid.Col key={index} span={{ base: 12, sm: 6, md: 4 }}>
-                  <Anchor
-                    href={link.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    style={{ textDecoration: 'none' }}
-                  >
-                    <Paper
-                      p="md"
-                      withBorder
-                      radius="md"
-                      style={(theme) => ({
-                        transition: 'all 150ms ease',
-                        cursor: 'pointer',
-                        '&:hover': {
-                          transform: 'translateY(-2px)',
-                          boxShadow: theme.shadows.md,
-                          borderColor: theme.colors[getColor()][5],
-                        },
-                      })}
-                    >
-                      <Group>
-                        {getIcon()}
-                        <Text size="sm" fw={500} c={getColor()}>
-                          {link.label}
-                        </Text>
-                      </Group>
-                    </Paper>
-                  </Anchor>
-                </Grid.Col>
-              );
+              return renderWorkLinkCard(link, index);
             })}
           </Grid>
         </Card>

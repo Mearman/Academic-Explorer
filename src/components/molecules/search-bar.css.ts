@@ -1,4 +1,5 @@
 import { style, globalStyle } from '@vanilla-extract/css';
+
 import { entityVars } from '../design-tokens.css';
 
 // Container for autocomplete search mode

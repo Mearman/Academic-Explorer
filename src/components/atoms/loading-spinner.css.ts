@@ -1,4 +1,5 @@
 import { style, keyframes } from '@vanilla-extract/css';
+
 import { entityVars } from '../design-tokens.css';
 
 const spin = keyframes({

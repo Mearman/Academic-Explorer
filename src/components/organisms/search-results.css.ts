@@ -1,4 +1,5 @@
 import { style, globalStyle } from '@vanilla-extract/css';
+
 import { entityVars } from '../design-tokens.css';
 
 export const container = style({

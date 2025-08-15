@@ -2,8 +2,10 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
-import { normaliseEntityId, validateEntityId, EntityType as DetectionEntityType } from '@/lib/openalex/utils/entity-detection';
+
 import { openAlex } from '@/lib/openalex';
+import { normaliseEntityId, validateEntityId, EntityType as DetectionEntityType } from '@/lib/openalex/utils/entity-detection';
+
 import type { EntityFetcherProps, DataState, EntityType, OpenAlexEntity } from '../types';
 
 /**

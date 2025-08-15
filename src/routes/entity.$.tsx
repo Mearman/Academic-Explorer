@@ -1,9 +1,10 @@
 import { createFileRoute, Link } from '@tanstack/react-router';
 import { useEffect } from 'react';
-import { parseEntityIdentifier, EntityType } from '@/lib/openalex/utils/entity-detection';
+
 import { EntityErrorBoundary } from '@/components';
 // import { EntityPageTemplate } from '@/components'; // Unused - simple div used instead
 import type { OpenAlexEntity } from '@/components/types';
+import { parseEntityIdentifier, EntityType } from '@/lib/openalex/utils/entity-detection';
 
 /**
  * Universal catch-all route for handling all entity patterns under /entity/

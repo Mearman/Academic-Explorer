@@ -4,7 +4,9 @@
  */
 
 import React from 'react';
+
 import { LoadingSpinner } from '../atoms/loading-spinner';
+
 import * as styles from './entity-loading.css';
 
 export interface EntityLoadingProps {

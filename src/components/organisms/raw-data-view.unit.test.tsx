@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 // @ts-nocheck
 import { describe, it, expect } from 'vitest';
+
 import { reconstructAbstract } from '@/lib/openalex/utils/transformers';
 
 // Mock data with abstract_inverted_index

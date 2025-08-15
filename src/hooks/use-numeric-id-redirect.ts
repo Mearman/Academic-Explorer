@@ -1,5 +1,6 @@
-import { useEffect } from 'react';
 import { useNavigate } from '@tanstack/react-router';
+import { useEffect } from 'react';
+
 import { EntityType, TYPE_TO_PREFIX, ENTITY_ENDPOINTS } from '@/lib/openalex/utils/entity-detection';
 
 /**

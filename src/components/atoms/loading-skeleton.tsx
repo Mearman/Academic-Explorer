@@ -1,8 +1,10 @@
 'use client';
 
 import { forwardRef } from 'react';
-import * as styles from './loading-skeleton.css';
+
 import type { SizeVariant } from '../types';
+
+import * as styles from './loading-skeleton.css';
 
 export interface LoadingSkeletonProps {
   width?: 'xs' | 'sm' | 'md' | 'lg' | 'xl' | '2xl' | '3xl' | 'full' | string;
@@ -22,6 +24,82 @@ export interface SkeletonGroupProps {
   'data-testid'?: string;
 }
 
+/**
+ * Get width CSS class for given width value
+ */
+function getWidthClass(widthProp?: string): string {
+  if (!widthProp) return '';
+  
+  if (widthProp in styles.widthVariants) {
+    return styles.widthVariants[widthProp as keyof typeof styles.widthVariants];
+  }
+  
+  return '';
+}
+
+/**
+ * Get height CSS class for given height value
+ */
+function getHeightClass(heightProp: string): string {
+  if (heightProp in styles.sizeVariants) {
+    return styles.sizeVariants[heightProp as SizeVariant];
+  }
+  
+  return '';
+}
+
+/**
+ * Build CSS classes for skeleton
+ */
+function buildSkeletonClasses(
+  preset?: string,
+  height?: string,
+  width?: string,
+  shape?: string,
+  animation?: string,
+  inline?: boolean,
+  className?: string
+): string {
+  const classes = [styles.base];
+  
+  if (preset) {
+    classes.push(styles.presetVariants[preset as keyof typeof styles.presetVariants]);
+  } else {
+    if (height) classes.push(getHeightClass(height));
+    if (width) classes.push(getWidthClass(width));
+    if (shape) classes.push(styles.shapeVariants[shape as keyof typeof styles.shapeVariants]);
+  }
+  
+  if (animation) classes.push(styles.animationVariants[animation as keyof typeof styles.animationVariants]);
+  classes.push(inline ? styles.inlineStyle : styles.blockStyle);
+  if (className) classes.push(className);
+  
+  return classes.filter(Boolean).join(' ');
+}
+
+/**
+ * Build custom inline styles for skeleton
+ */
+function buildCustomStyles(
+  preset?: string,
+  width?: string,
+  height?: string | SizeVariant
+): React.CSSProperties {
+  if (preset) return {};
+  
+  const customStyle: React.CSSProperties = {};
+  
+  if (width && !getWidthClass(width)) {
+    customStyle.width = width;
+  }
+  
+  if (typeof height === 'string' && !getHeightClass(height)) {
+    customStyle.height = height;
+  }
+  
+  return customStyle;
+}
+
 export const LoadingSkeleton = forwardRef<HTMLDivElement, LoadingSkeletonProps>(
   ({ 
     width,
@@ -34,54 +112,15 @@ export const LoadingSkeleton = forwardRef<HTMLDivElement, LoadingSkeletonProps>(
     'data-testid': testId,
     ...props 
   }, ref) => {
-    const getWidthClass = (widthProp?: string) => {
-      if (!widthProp) return '';
-      
-      // Check if it's a preset width
-      if (widthProp in styles.widthVariants) {
-        return styles.widthVariants[widthProp as keyof typeof styles.widthVariants];
-      }
-      
-      return '';
-    };
-
-    const getHeightClass = (heightProp: string) => {
-      // Check if it's a size variant
-      if (heightProp in styles.sizeVariants) {
-        return styles.sizeVariants[heightProp as SizeVariant];
-      }
-      
-      return '';
-    };
-
-    const baseClasses = [
-      styles.base,
-      preset ? styles.presetVariants[preset] : '',
-      !preset && getHeightClass(height),
-      !preset && width && getWidthClass(width),
-      !preset && shape && styles.shapeVariants[shape],
-      animation && styles.animationVariants[animation],
-      inline ? styles.inlineStyle : styles.blockStyle,
-      className,
-    ].filter(Boolean).join(' ');
-
-    const customStyle: React.CSSProperties = {};
-    
-    // Handle custom width/height values
-    if (!preset) {
-      if (width && !getWidthClass(width)) {
-        customStyle.width = width;
-      }
-      if (typeof height === 'string' && !getHeightClass(height)) {
-        customStyle.height = height;
-      }
-    }
+    const cssClasses = buildSkeletonClasses(preset, height, width, shape, animation, inline, className);
+    const customStyle = buildCustomStyles(preset, width, height);
+    const hasCustomStyle = Object.keys(customStyle).length > 0;
 
     return (
       <div
         ref={ref}
-        className={baseClasses}
-        style={Object.keys(customStyle).length > 0 ? customStyle : undefined}
+        className={cssClasses}
+        style={hasCustomStyle ? customStyle : undefined}
         data-testid={testId}
         aria-hidden="true"
         {...props}
@@ -92,6 +131,19 @@ export const LoadingSkeleton = forwardRef<HTMLDivElement, LoadingSkeletonProps>(
 
 LoadingSkeleton.displayName = 'LoadingSkeleton';
 
+/**
+ * Render default skeleton lines
+ */
+function renderDefaultLines(lines: number) {
+  return Array.from({ length: lines }, (_, index) => (
+    <LoadingSkeleton
+      key={index}
+      preset="text"
+      width={index === lines - 1 ? '75%' : 'full'}
+    />
+  ));
+}
+
 export const SkeletonGroup = forwardRef<HTMLDivElement, SkeletonGroupProps>(
   ({ 
     lines = 3, 
@@ -100,28 +152,17 @@ export const SkeletonGroup = forwardRef<HTMLDivElement, SkeletonGroupProps>(
     'data-testid': testId,
     ...props 
   }, ref) => {
-    const baseClasses = [
-      styles.groupStyle,
-      className,
-    ].filter(Boolean).join(' ');
+    const cssClasses = [styles.groupStyle, className].filter(Boolean).join(' ');
 
     return (
       <div
         ref={ref}
-        className={baseClasses}
+        className={cssClasses}
         data-testid={testId}
         aria-hidden="true"
         {...props}
       >
-        {children || (
-          Array.from({ length: lines }, (_, index) => (
-            <LoadingSkeleton
-              key={index}
-              preset="text"
-              width={index === lines - 1 ? '75%' : 'full'}
-            />
-          ))
-        )}
+        {children || renderDefaultLines(lines)}
       </div>
     );
   }

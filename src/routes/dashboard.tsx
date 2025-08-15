@@ -1,5 +1,7 @@
 import { createFileRoute } from '@tanstack/react-router';
+
 import { Chart, NetworkVisualization, MetricsPanel } from '@/components';
+
 import * as styles from '../app/page.css';
 
 // Sample data for demonstration

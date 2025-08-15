@@ -7,6 +7,7 @@
 'use client';
 
 import { Link } from '@tanstack/react-router';
+
 import { EntityErrorType } from '@/hooks/use-entity-data';
 import { EntityType } from '@/lib/openalex/utils/entity-detection';
 

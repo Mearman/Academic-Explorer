@@ -4,7 +4,9 @@
  */
 
 import React from 'react';
+
 import { Skeleton } from '../atoms/skeleton';
+
 import * as styles from './entity-page-skeleton.css';
 
 export function EntityPageSkeleton() {

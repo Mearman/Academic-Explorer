@@ -8,7 +8,6 @@ import {
   rem,
 } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
-import { Link, useLocation } from '@tanstack/react-router';
 import {
   IconSearch,
   IconUsers,
@@ -18,6 +17,8 @@ import {
   IconTags,
   IconWorld,
 } from '@tabler/icons-react';
+import { Link, useLocation } from '@tanstack/react-router';
+
 import { TopbarSearch } from '../molecules/topbar-search';
 
 interface AppShellLayoutProps {

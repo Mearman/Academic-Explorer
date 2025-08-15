@@ -1,4 +1,5 @@
 import { style, globalStyle, keyframes } from '@vanilla-extract/css';
+
 import { entityVars } from '../design-tokens.css';
 
 // Chart container styles

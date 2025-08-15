@@ -1,4 +1,5 @@
 import { style, styleVariants, keyframes } from '@vanilla-extract/css';
+
 import { entityVars } from '../design-tokens.css';
 
 const shimmer = keyframes({

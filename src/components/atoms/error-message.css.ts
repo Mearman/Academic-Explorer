@@ -1,4 +1,5 @@
 import { style, styleVariants } from '@vanilla-extract/css';
+
 import { entityVars } from '../design-tokens.css';
 
 export const base = style({
