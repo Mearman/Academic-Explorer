@@ -309,17 +309,35 @@ export const useEntityGraphStore = create<EntityGraphState>()(
       // Actions - Filtering and layout
       updateFilter: (options: Partial<GraphFilterOptions>) =>
         set((state) => {
-          state.filterOptions = { ...state.filterOptions, ...options };
+          if (options.entityTypes !== undefined) state.filterOptions.entityTypes = options.entityTypes;
+          if (options.edgeTypes !== undefined) state.filterOptions.edgeTypes = options.edgeTypes;
+          if (options.directlyVisitedOnly !== undefined) state.filterOptions.directlyVisitedOnly = options.directlyVisitedOnly;
+          if (options.maxHopsFromVisited !== undefined) state.filterOptions.maxHopsFromVisited = options.maxHopsFromVisited;
+          if (options.minVisitCount !== undefined) state.filterOptions.minVisitCount = options.minVisitCount;
+          if (options.minCitationCount !== undefined) state.filterOptions.minCitationCount = options.minCitationCount;
+          if (options.dateRange !== undefined) state.filterOptions.dateRange = options.dateRange;
         }),
       
       updateLayout: (config: Partial<GraphLayoutConfig>) =>
         set((state) => {
-          state.layoutConfig = { ...state.layoutConfig, ...config };
+          if (config.algorithm !== undefined) state.layoutConfig.algorithm = config.algorithm;
+          if (config.separateVisitedEntities !== undefined) state.layoutConfig.separateVisitedEntities = config.separateVisitedEntities;
+          if (config.clusterByEntityType !== undefined) state.layoutConfig.clusterByEntityType = config.clusterByEntityType;
+          if (config.sizeByVisitCount !== undefined) state.layoutConfig.sizeByVisitCount = config.sizeByVisitCount;
+          if (config.weightEdgesByStrength !== undefined) state.layoutConfig.weightEdgesByStrength = config.weightEdgesByStrength;
+          if (config.maxVertices !== undefined) state.layoutConfig.maxVertices = config.maxVertices;
+          if (config.minEdgeWeight !== undefined) state.layoutConfig.minEdgeWeight = config.minEdgeWeight;
         }),
       
       resetFilters: () =>
         set((state) => {
-          state.filterOptions = { ...defaultFilterOptions };
+          state.filterOptions.entityTypes = defaultFilterOptions.entityTypes;
+          state.filterOptions.edgeTypes = defaultFilterOptions.edgeTypes;
+          state.filterOptions.directlyVisitedOnly = defaultFilterOptions.directlyVisitedOnly;
+          state.filterOptions.maxHopsFromVisited = defaultFilterOptions.maxHopsFromVisited;
+          state.filterOptions.minVisitCount = defaultFilterOptions.minVisitCount;
+          state.filterOptions.minCitationCount = defaultFilterOptions.minCitationCount;
+          state.filterOptions.dateRange = defaultFilterOptions.dateRange;
         }),
       
       // Actions - View state
