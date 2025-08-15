@@ -517,14 +517,17 @@ export function EntityGraphVisualization({
 
 // Loading component for when the graph is being computed
 export function EntityGraphVisualizationSkeleton({
-  width = 800,
-  height = 400,
+  width: _width = 800,
+  height: _height = 400,
   className,
 }: {
   width?: number;
   height?: number;
   className?: string;
 }) {
+  // Silence unused parameter warnings
+  void _width;
+  void _height;
   return (
     <div className={`${styles.container} ${className || ''}`}>
       <div className={styles.loadingState}>
