@@ -1,28 +1,23 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { Paginator, PaginationError, paginate, BatchProcessor } from './pagination';
 import type { ApiResponse, Work } from '../types';
+import type { OpenAlexClient } from '../client';
 
 // Mock client with method implementations
 const mockWorks = vi.fn();
 const mockAuthors = vi.fn();
 
-// Create a proper mock client without type coercion
-const mockClient = {
+// Import OpenAlexClient and extend it for testing
+import { OpenAlexClient } from '../client';
+
+// Create a mock that implements OpenAlexClient interface
+const mockClient = Object.create(OpenAlexClient.prototype);
+Object.assign(mockClient, {
   works: mockWorks,
   authors: mockAuthors,
-  // Add minimal required methods for OpenAlexClient interface
   request: vi.fn(),
   updateConfig: vi.fn(),
-  sources: vi.fn(),
-  institutions: vi.fn(),
-  publishers: vi.fn(),
-  funders: vi.fn(),
-  topics: vi.fn(),
-  concepts: vi.fn(),
-  keywords: vi.fn(),
-  continents: vi.fn(),
-  regions: vi.fn(),
-};
+});
 
 describe('Paginator', () => {
   beforeEach(() => {
