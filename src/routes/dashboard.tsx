@@ -1,3 +1,9 @@
+import { 
+  IconChartBar, 
+  IconNetwork, 
+  IconTrendingUp, 
+  IconPalette 
+} from '@tabler/icons-react';
 import { createFileRoute } from '@tanstack/react-router';
 
 import { Chart, NetworkVisualization, MetricsPanel } from '@/components';
@@ -106,22 +112,34 @@ function DashboardPage() {
         {/* Feature Cards */}
         <div className={styles.grid} style={{ marginTop: '3rem' }}>
           <div className={styles.card}>
-            <h2>📊 Interactive Charts</h2>
+            <h2 className="flex items-center gap-2">
+              <IconChartBar size={24} />
+              Interactive Charts
+            </h2>
             <p>Visualise citation trends, publication metrics, and research impact with responsive SVG charts</p>
           </div>
           
           <div className={styles.card}>
-            <h2>🕸️ Network Analysis</h2>
+            <h2 className="flex items-center gap-2">
+              <IconNetwork size={24} />
+              Network Analysis
+            </h2>
             <p>Explore collaboration networks between authors, institutions, and publication venues</p>
           </div>
           
           <div className={styles.card}>
-            <h2>📈 Metrics Dashboard</h2>
+            <h2 className="flex items-center gap-2">
+              <IconTrendingUp size={24} />
+              Metrics Dashboard
+            </h2>
             <p>Track key research indicators with trend analysis and performance monitoring</p>
           </div>
           
           <div className={styles.card}>
-            <h2>🎨 Entity-Aware Styling</h2>
+            <h2 className="flex items-center gap-2">
+              <IconPalette size={24} />
+              Entity-Aware Styling
+            </h2>
             <p>Colour-coded visualizations that match OpenAlex entity types for consistent branding</p>
           </div>
         </div>
