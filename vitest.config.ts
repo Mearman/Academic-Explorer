@@ -25,7 +25,7 @@ export default defineConfig({
     setupFiles: ['./src/test/setup.ts', './src/test/jest-dom-setup.ts'],
     environment: 'jsdom',
     
-    // CRITICAL: Use threads pool instead of forks to prevent process communication issues
+    // CRITICAL: Force serial execution - no parallelism at all
     pool: 'threads',
     poolOptions: {
       threads: {
@@ -37,7 +37,7 @@ export default defineConfig({
       },
     },
     
-    // CRITICAL: Sequential execution to prevent memory fragmentation
+    // CRITICAL: Fully serial execution mode
     isolate: true,
     sequence: {
       concurrent: false,         // No concurrent execution
@@ -45,16 +45,17 @@ export default defineConfig({
       hooks: 'stack',          // Stack hooks to prevent memory leaks
     },
     
-    // CRITICAL: Memory management
+    // CRITICAL: Absolute serial execution
     maxConcurrency: 1,          // Absolute limit: 1 test at a time
     maxWorkers: 1,              // Only 1 worker process
     minWorkers: 1,              // Minimum 1 worker
-    workerMemoryLimit: '4GB',   // Memory limit per worker
+    workerMemoryLimit: '6GB',   // Increased memory limit per worker
+    fileParallelism: false,     // Disable file-level parallelism
     
-    // CRITICAL: Timeout configuration for stability
-    testTimeout: 30000,         // 30 seconds max per test
-    hookTimeout: 10000,         // 10 seconds for hooks
-    teardownTimeout: 10000,     // 10 seconds for teardown
+    // CRITICAL: Extended timeouts for serial execution
+    testTimeout: 60000,         // 60 seconds max per test (increased for serial mode)
+    hookTimeout: 20000,         // 20 seconds for hooks
+    teardownTimeout: 20000,     // 20 seconds for teardown
     
     // CRITICAL: Disable coverage globally to prevent inspector/memory crashes
     coverage: {
@@ -69,8 +70,9 @@ export default defineConfig({
       '**/pnpm-lock.yaml'
     ],
     
-    // CRITICAL: Disable file watching in test environment
+    // CRITICAL: Disable file watching and force test completion
     watch: false,
+    run: true,
     
     // CRITICAL: Minimal reporter configuration for stability
     reporter: process.env.CI === 'true' ? ['dot'] : ['default'],
@@ -97,7 +99,7 @@ export default defineConfig({
             },
           },
           
-          // CRITICAL: No concurrency for unit tests
+          // CRITICAL: Full serial execution for unit tests
           isolate: true,
           sequence: {
             concurrent: false,
@@ -105,12 +107,13 @@ export default defineConfig({
             hooks: 'stack',
           },
           maxConcurrency: 1,
-          workerMemoryLimit: '4GB',
+          workerMemoryLimit: '6GB',
+          fileParallelism: false,
           
-          // CRITICAL: Conservative timeouts
-          testTimeout: process.env.CI === 'true' ? 30000 : 20000,
-          hookTimeout: 8000,
-          teardownTimeout: 8000,
+          // CRITICAL: Extended timeouts for serial execution
+          testTimeout: process.env.CI === 'true' ? 90000 : 60000,
+          hookTimeout: 30000,
+          teardownTimeout: 30000,
           
           // CRITICAL: Coverage disabled
           coverage: { enabled: false },
@@ -142,7 +145,7 @@ export default defineConfig({
             },
           },
           
-          // CRITICAL: Sequential execution for component tests
+          // CRITICAL: Full serial execution for component tests
           isolate: true,
           sequence: {
             concurrent: false,
@@ -150,12 +153,13 @@ export default defineConfig({
             hooks: 'stack',
           },
           maxConcurrency: 1,
-          workerMemoryLimit: '4GB',
+          workerMemoryLimit: '6GB',
+          fileParallelism: false,
           
-          // CRITICAL: Extended timeouts for DOM operations
-          testTimeout: process.env.CI === 'true' ? 45000 : 35000,
-          hookTimeout: 12000,
-          teardownTimeout: 12000,
+          // CRITICAL: Extended timeouts for DOM operations and serial mode
+          testTimeout: process.env.CI === 'true' ? 120000 : 90000,
+          hookTimeout: 40000,
+          teardownTimeout: 40000,
           
           // CRITICAL: Coverage disabled
           coverage: { enabled: false },
@@ -184,7 +188,7 @@ export default defineConfig({
             },
           },
           
-          // CRITICAL: Sequential for integration tests
+          // CRITICAL: Full serial execution for integration tests
           isolate: true,
           sequence: {
             concurrent: false,
@@ -192,12 +196,13 @@ export default defineConfig({
             hooks: 'stack',
           },
           maxConcurrency: 1,
-          workerMemoryLimit: '4GB',
+          workerMemoryLimit: '6GB',
+          fileParallelism: false,
           
-          // CRITICAL: Extended timeouts for API calls
-          testTimeout: process.env.CI === 'true' ? 60000 : 50000,
-          hookTimeout: 15000,
-          teardownTimeout: 15000,
+          // CRITICAL: Extended timeouts for API calls and serial mode
+          testTimeout: process.env.CI === 'true' ? 180000 : 120000,
+          hookTimeout: 60000,
+          teardownTimeout: 60000,
           
           // CRITICAL: Coverage disabled
           coverage: { enabled: false },
@@ -226,7 +231,7 @@ export default defineConfig({
             },
           },
           
-          // CRITICAL: Sequential E2E execution
+          // CRITICAL: Full serial E2E execution
           isolate: true,
           sequence: {
             concurrent: false,
@@ -234,12 +239,13 @@ export default defineConfig({
             hooks: 'stack',
           },
           maxConcurrency: 1,
-          workerMemoryLimit: '4GB',
+          workerMemoryLimit: '6GB',
+          fileParallelism: false,
           
-          // CRITICAL: Very long timeouts for E2E
-          testTimeout: process.env.CI === 'true' ? 120000 : 100000,
-          hookTimeout: 30000,
-          teardownTimeout: 30000,
+          // CRITICAL: Very long timeouts for E2E and serial mode
+          testTimeout: process.env.CI === 'true' ? 300000 : 240000,
+          hookTimeout: 120000,
+          teardownTimeout: 120000,
           
           // CRITICAL: Coverage disabled
           coverage: { enabled: false },
