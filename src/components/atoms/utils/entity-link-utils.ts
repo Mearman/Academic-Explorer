@@ -1,9 +1,17 @@
 import { EntityType, parseEntityIdentifier } from '@/lib/openalex/utils/entity-detection';
 
-const PATH_MAP = {
-  [EntityType.WORK]: 'works', [EntityType.AUTHOR]: 'authors', [EntityType.SOURCE]: 'sources',
-  [EntityType.INSTITUTION]: 'institutions', [EntityType.CONCEPT]: 'concepts', [EntityType.TOPIC]: 'topics',
-  [EntityType.PUBLISHER]: 'publishers', [EntityType.FUNDER]: 'funders',
+const PATH_MAP: Record<EntityType, string> = {
+  [EntityType.WORK]: 'works',
+  [EntityType.AUTHOR]: 'authors', 
+  [EntityType.SOURCE]: 'sources',
+  [EntityType.INSTITUTION]: 'institutions',
+  [EntityType.CONCEPT]: 'concepts',
+  [EntityType.TOPIC]: 'topics',
+  [EntityType.PUBLISHER]: 'publishers',
+  [EntityType.FUNDER]: 'funders',
+  [EntityType.KEYWORD]: 'keywords',
+  [EntityType.CONTINENT]: 'continents',
+  [EntityType.REGION]: 'regions',
 } as const;
 
 export function detectEntityType(entityId: string, providedType?: EntityType): EntityType | null {
@@ -17,7 +25,10 @@ export function detectEntityType(entityId: string, providedType?: EntityType): E
 
 export function buildEntityPath(detectedType: EntityType, entityId: string): string {
   const cleanId = entityId.replace('https://openalex.org/', '');
-  const pathSegment = PATH_MAP[detectedType] || 'entity';
+  const pathSegment = PATH_MAP[detectedType];
+  if (!pathSegment) {
+    throw new Error(`No path mapping found for entity type: ${detectedType}`);
+  }
   return `/${pathSegment}/${cleanId}`;
 }
 
