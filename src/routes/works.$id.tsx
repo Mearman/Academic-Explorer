@@ -20,7 +20,7 @@ import { reconstructAbstract } from '@/lib/openalex/utils/transformers';
 import { EntityError, EntitySkeleton, EntityFallback } from '@/components';
 import { useNumericIdRedirect } from '@/hooks/use-numeric-id-redirect';
 import { 
-  EntityPageTemplate,
+  EntityPageWithGraph,
   EntityErrorBoundary
 } from '@/components';
 
@@ -45,7 +45,7 @@ function WorkDisplay({ work }: { work: Work }) {
   ].filter(Boolean);
 
   return (
-    <EntityPageTemplate entity={work}>
+    <EntityPageWithGraph entity={work}>
       <Tabs defaultValue="overview" keepMounted={false}>
         <Tabs.List grow mb="xl">
           <Tabs.Tab value="overview" leftSection={<IconFileText size={16} />}>
@@ -612,7 +612,7 @@ function WorkDisplay({ work }: { work: Work }) {
           />
         </Tabs.Panel>
       </Tabs>
-    </EntityPageTemplate>
+    </EntityPageWithGraph>
   );
 }
 

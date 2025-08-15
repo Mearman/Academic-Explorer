@@ -432,15 +432,78 @@ export const handlers = [
 // Handler overrides for specific test scenarios
 export const errorHandlers = {
   networkError: [
+    // Network error responses for specific endpoints - return 500 status instead of HttpResponse.error()
+    http.get(`${API_BASE}/continents`, () => {
+      return new HttpResponse(null, { 
+        status: 500, 
+        statusText: 'Internal Server Error',
+        headers: { 'Content-Type': 'application/json' }
+      });
+    }),
+    http.get(`${API_BASE}/continents/:id`, () => {
+      return new HttpResponse(null, { 
+        status: 500, 
+        statusText: 'Internal Server Error' 
+      });
+    }),
+    http.get(`${API_BASE}/continents/random`, () => {
+      return new HttpResponse(null, { 
+        status: 500, 
+        statusText: 'Internal Server Error' 
+      });
+    }),
+    http.get(`${API_BASE}/regions`, () => {
+      return new HttpResponse(null, { 
+        status: 500, 
+        statusText: 'Internal Server Error' 
+      });
+    }),
+    http.get(`${API_BASE}/regions/:id`, () => {
+      return new HttpResponse(null, { 
+        status: 500, 
+        statusText: 'Internal Server Error' 
+      });
+    }),
+    http.get(`${API_BASE}/regions/random`, () => {
+      return new HttpResponse(null, { 
+        status: 500, 
+        statusText: 'Internal Server Error' 
+      });
+    }),
+    http.post(`${API_BASE}/text`, () => {
+      return new HttpResponse(null, { 
+        status: 500, 
+        statusText: 'Internal Server Error' 
+      });
+    }),
+    // Fallback for all other endpoints
     http.get(`${API_BASE}/*`, () => {
-      return HttpResponse.error();
+      return new HttpResponse(null, { 
+        status: 500, 
+        statusText: 'Internal Server Error' 
+      });
     }),
     http.post(`${API_BASE}/*`, () => {
-      return HttpResponse.error();
+      return new HttpResponse(null, { 
+        status: 500, 
+        statusText: 'Internal Server Error' 
+      });
     }),
   ],
 
   timeout: [
+    // Specific timeout handlers
+    http.post(`${API_BASE}/text`, async () => {
+      // Simulate a timeout by returning an error after a minimal delay
+      await new Promise(resolve => setTimeout(resolve, 10));
+      return new HttpResponse(null, { status: 408, statusText: 'Request Timeout' });
+    }),
+    http.get(`${API_BASE}/continents`, async () => {
+      // Simulate a timeout by returning an error after a minimal delay
+      await new Promise(resolve => setTimeout(resolve, 10));
+      return new HttpResponse(null, { status: 408, statusText: 'Request Timeout' });
+    }),
+    // Wildcard handlers for everything else
     http.get(`${API_BASE}/*`, async () => {
       // Simulate a timeout by returning an error after a minimal delay
       await new Promise(resolve => setTimeout(resolve, 10));

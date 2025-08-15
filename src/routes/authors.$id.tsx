@@ -34,7 +34,7 @@ import { useAuthorData } from '@/hooks/use-entity-data';
 import { EntityError, EntitySkeleton, EntityFallback } from '@/components';
 import { useNumericIdRedirect } from '@/hooks/use-numeric-id-redirect';
 import { 
-  EntityPageTemplate,
+  EntityPageWithGraph,
   EntityErrorBoundary
 } from '@/components';
 
@@ -64,7 +64,7 @@ function AuthorDisplay({ author }: { author: Author }) {
   ].filter(Boolean);
 
   return (
-    <EntityPageTemplate entity={author}>
+    <EntityPageWithGraph entity={author}>
       <Tabs defaultValue="overview" keepMounted={false}>
         <Tabs.List grow mb="xl">
           <Tabs.Tab value="overview" leftSection={<IconUser size={16} />}>
@@ -508,7 +508,7 @@ function AuthorDisplay({ author }: { author: Author }) {
           />
         </Tabs.Panel>
       </Tabs>
-    </EntityPageTemplate>
+    </EntityPageWithGraph>
   );
 }
 
