@@ -2,7 +2,7 @@ import { Badge, Group, Paper, Stack, Text } from '@mantine/core';
 import { IconUser, IconBuilding } from '@tabler/icons-react';
 import React from 'react';
 
-import type { Authorship, Institution } from '@/lib/openalex/types';
+import type { Authorship } from '@/lib/openalex/types';
 
 import { EntityLink } from '../atoms/entity-link';
 
