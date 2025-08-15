@@ -72,9 +72,14 @@ jobs:
   lint:
     needs: install
     runs-on: ubuntu-latest
+    permissions:
+      contents: write  # Allow committing auto-fixes
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          fetch-depth: 0  # Fetch full history for commits
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -95,7 +100,63 @@ jobs:
             ${{ runner.os }}-pnpm-
 
       - name: Run linting
-        run: pnpm lint
+        id: lint-check
+        run: |
+          echo "Running initial lint check..."
+          if pnpm lint; then
+            echo "Linting passed!"
+            echo "lint-passed=true" >> $GITHUB_OUTPUT
+          else
+            echo "Linting failed, attempting auto-fix..."
+            echo "lint-passed=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Apply lint auto-fixes
+        if: steps.lint-check.outputs.lint-passed == 'false'
+        id: lint-fix
+        run: |
+          echo "Applying ESLint auto-fixes..."
+          pnpm lint --fix || true
+          
+          # Check if any files were modified
+          if git diff --quiet; then
+            echo "No auto-fixable issues found."
+            echo "fixes-applied=false" >> $GITHUB_OUTPUT
+          else
+            echo "Auto-fixes applied to the following files:"
+            git diff --name-only
+            echo "fixes-applied=true" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Commit auto-fixes
+        if: steps.lint-fix.outputs.fixes-applied == 'true'
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action [Auto-fix]"
+          git add .
+          git commit -m "style: apply ESLint auto-fixes
+
+          - Automatically applied ESLint fixes during CI
+          - Fixes applied by GitHub Actions workflow
+          - No manual changes required"
+
+      - name: Push auto-fixes
+        if: steps.lint-fix.outputs.fixes-applied == 'true'
+        run: |
+          git push origin HEAD:${{ github.ref_name }}
+
+      - name: Run final lint check
+        if: steps.lint-fix.outputs.fixes-applied == 'true'
+        run: |
+          echo "Running final lint check after auto-fixes..."
+          pnpm lint
+
+      - name: Fail if linting still fails
+        if: steps.lint-check.outputs.lint-passed == 'false' && steps.lint-fix.outputs.fixes-applied == 'false'
+        run: |
+          echo "Linting failed and no auto-fixes could be applied."
+          echo "Manual intervention required."
+          exit 1
 
   # Test job (unit and component tests with timeout)
   test:
