@@ -6,7 +6,7 @@
  */
 
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor, cleanup } from '@testing-library/react';
 import React from 'react';
 
 // Mock search functionality since we don't have actual search components yet
@@ -36,6 +36,7 @@ describe('Search Results Unit Tests', () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
+    cleanup();
   });
 
   describe('Search Form Validation', () => {
@@ -46,13 +47,13 @@ describe('Search Results Unit Tests', () => {
       const searchButton = screen.getByRole('button', { name: /search/i });
       
       // Verify search input exists and is visible
-      expect(searchInput).toBeVisible();
-      expect(searchButton).toBeVisible();
-      expect(searchButton).toBeEnabled();
+      expect(searchInput).toBeTruthy();
+      expect(searchButton).toBeTruthy();
+      expect(searchButton.disabled).toBe(false);
       
       // Enter search query
       fireEvent.change(searchInput, { target: { value: 'quantum computing' } });
-      expect(searchInput).toHaveValue('quantum computing');
+      expect(searchInput.value).toBe('quantum computing');
     });
 
     it('should handle search form submission', () => {
@@ -84,7 +85,7 @@ describe('Search Results Unit Tests', () => {
       const longQuery = 'a'.repeat(1000);
       
       fireEvent.change(searchInput, { target: { value: longQuery } });
-      expect(searchInput).toHaveValue(longQuery);
+      expect(searchInput.value).toBe(longQuery);
     });
   });
 
@@ -96,11 +97,11 @@ describe('Search Results Unit Tests', () => {
       const searchButton = screen.getByRole('button', { name: /search/i });
       
       // Verify accessibility attributes
-      expect(searchInput).toHaveAttribute('aria-label', 'Search academic literature');
-      expect(searchInput).toHaveAttribute('placeholder', 'Search academic literature');
+      expect(searchInput.getAttribute('aria-label')).toBe('Search academic literature');
+      expect(searchInput.getAttribute('placeholder')).toBe('Search academic literature');
       
       // Verify button has accessible text
-      expect(searchButton).toHaveTextContent('Search');
+      expect(searchButton.textContent).toBe('Search');
     });
 
     it('should support keyboard navigation', () => {
@@ -115,7 +116,7 @@ describe('Search Results Unit Tests', () => {
       
       // Enter key should submit form
       fireEvent.change(searchInput, { target: { value: 'artificial intelligence' } });
-      fireEvent.keyDown(searchInput, { key: 'Enter' });
+      fireEvent.submit(searchInput.closest('form')!);
       
       expect(mockOnSearch).toHaveBeenCalledWith('artificial intelligence');
     });

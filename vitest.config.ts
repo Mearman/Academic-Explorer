@@ -22,7 +22,8 @@ export default defineConfig({
   test: {
     // Global test configuration
     globals: true,
-    setupFiles: ['./src/test/setup.ts'],
+    setupFiles: ['./src/test/setup.ts', './src/test/jest-dom-setup.ts'],
+    environment: 'jsdom',
     // Global memory optimization
     pool: 'forks',
     poolOptions: {
