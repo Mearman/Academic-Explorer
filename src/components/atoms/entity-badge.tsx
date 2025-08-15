@@ -4,9 +4,9 @@ import { forwardRef } from 'react';
 
 import { EntityBadgeProps } from '../types';
 
+import * as styles from './badge.css';
 import { Badge } from './badge';
 import { Icon } from './icon';
-import * as styles from './badge.css';
 
 const ENTITY_LABELS = {
   work: 'Work',
@@ -37,14 +37,14 @@ const ENTITY_ICONS = {
 } as const;
 
 export const EntityBadge = forwardRef<HTMLSpanElement, EntityBadgeProps>(
-  ({ 
+  function EntityBadge({ 
     entityType, 
     size = 'md', 
     showIcon = true, 
     className, 
     'data-testid': testId,
     ...props 
-  }, ref) => {
+  }, ref) {
     const label = ENTITY_LABELS[entityType];
     const iconName = ENTITY_ICONS[entityType];
     
