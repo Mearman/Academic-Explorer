@@ -24,19 +24,19 @@ export default defineConfig({
     globals: true,
     setupFiles: ['./src/test/setup.ts', './src/test/jest-dom-setup.ts'],
     environment: 'jsdom',
-    // Global memory optimization
+    // Optimized for performance now that IndexedDB issues are resolved
     pool: 'forks',
     poolOptions: {
       forks: {
-        singleFork: true,
-        maxForks: 1,
+        singleFork: false,
+        maxForks: 4,
         minForks: 1,
       },
     },
-    // Reduce memory usage
-    isolate: false,
+    // Enable parallel execution
+    isolate: true,
     sequence: {
-      concurrent: false,
+      concurrent: true,
     },
     // Global timeouts
     testTimeout: 30000,
@@ -68,18 +68,18 @@ export default defineConfig({
           coverage: {
             enabled: false,
           },
-          // Optimized for unit tests to prevent memory issues
+          // Optimized for unit tests
           pool: 'forks',
           poolOptions: {
             forks: {
-              singleFork: true,
-              maxForks: 1,
+              singleFork: false,
+              maxForks: 4,
               minForks: 1,
             },
           },
-          isolate: false,
+          isolate: true,
           sequence: {
-            concurrent: false,
+            concurrent: true,
           },
           testTimeout: process.env.CI === 'true' ? 30000 : 15000,
           hookTimeout: 5000,
