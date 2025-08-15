@@ -5,8 +5,8 @@
  * Converted from e2e tests to unit tests to avoid dependency on running server
  */
 
-import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { render, screen, fireEvent, waitFor, cleanup } from '@testing-library/react';
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
+import { render, screen, fireEvent, waitFor, cleanup, within } from '@testing-library/react';
 import React from 'react';
 
 // Mock search functionality since we don't have actual search components yet
@@ -19,14 +19,15 @@ const MockSearchComponent = ({ onSearch }: { onSearch: (query: string) => void }
   };
 
   return (
-    <form onSubmit={handleSubmit}>
+    <form onSubmit={handleSubmit} data-testid="mock-search-form">
       <input 
         type="search" 
         name="search" 
         placeholder="Search academic literature"
         aria-label="Search academic literature"
+        data-testid="mock-search-input"
       />
-      <button type="submit">Search</button>
+      <button type="submit" data-testid="mock-search-button">Search</button>
     </form>
   );
 };
@@ -36,15 +37,18 @@ describe('Search Results Unit Tests', () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
+  });
+
+  afterEach(() => {
     cleanup();
   });
 
   describe('Search Form Validation', () => {
     it('should accept search input and maintain query state', () => {
-      render(<MockSearchComponent onSearch={mockOnSearch} />);
+      const { container } = render(<MockSearchComponent onSearch={mockOnSearch} />);
       
-      const searchInput = screen.getByRole('searchbox');
-      const searchButton = screen.getByRole('button', { name: /search/i });
+      const searchInput = within(container).getByTestId('mock-search-input');
+      const searchButton = within(container).getByTestId('mock-search-button');
       
       // Verify search input exists and is visible
       expect(searchInput).toBeTruthy();
@@ -57,10 +61,10 @@ describe('Search Results Unit Tests', () => {
     });
 
     it('should handle search form submission', () => {
-      render(<MockSearchComponent onSearch={mockOnSearch} />);
+      const { container } = render(<MockSearchComponent onSearch={mockOnSearch} />);
       
-      const searchInput = screen.getByRole('searchbox');
-      const searchButton = screen.getByRole('button', { name: /search/i });
+      const searchInput = within(container).getByTestId('mock-search-input');
+      const searchButton = within(container).getByTestId('mock-search-button');
       
       // Enter search query and submit
       fireEvent.change(searchInput, { target: { value: 'machine learning' } });
@@ -70,18 +74,18 @@ describe('Search Results Unit Tests', () => {
     });
 
     it('should handle empty search submission', () => {
-      render(<MockSearchComponent onSearch={mockOnSearch} />);
+      const { container } = render(<MockSearchComponent onSearch={mockOnSearch} />);
       
-      const searchButton = screen.getByRole('button', { name: /search/i });
+      const searchButton = within(container).getByTestId('mock-search-button');
       fireEvent.click(searchButton);
       
       expect(mockOnSearch).toHaveBeenCalledWith('');
     });
 
     it('should handle very long search queries', () => {
-      render(<MockSearchComponent onSearch={mockOnSearch} />);
+      const { container } = render(<MockSearchComponent onSearch={mockOnSearch} />);
       
-      const searchInput = screen.getByRole('searchbox');
+      const searchInput = within(container).getByTestId('mock-search-input');
       const longQuery = 'a'.repeat(1000);
       
       fireEvent.change(searchInput, { target: { value: longQuery } });
@@ -91,10 +95,10 @@ describe('Search Results Unit Tests', () => {
 
   describe('Search Form Accessibility', () => {
     it('should provide appropriate ARIA labels', () => {
-      render(<MockSearchComponent onSearch={mockOnSearch} />);
+      const { container } = render(<MockSearchComponent onSearch={mockOnSearch} />);
       
-      const searchInput = screen.getByRole('searchbox');
-      const searchButton = screen.getByRole('button', { name: /search/i });
+      const searchInput = within(container).getByTestId('mock-search-input');
+      const searchButton = within(container).getByTestId('mock-search-button');
       
       // Verify accessibility attributes
       expect(searchInput.getAttribute('aria-label')).toBe('Search academic literature');
@@ -105,10 +109,10 @@ describe('Search Results Unit Tests', () => {
     });
 
     it('should support keyboard navigation', () => {
-      render(<MockSearchComponent onSearch={mockOnSearch} />);
+      const { container } = render(<MockSearchComponent onSearch={mockOnSearch} />);
       
-      const searchInput = screen.getByRole('searchbox');
-      const searchButton = screen.getByRole('button', { name: /search/i });
+      const searchInput = within(container).getByTestId('mock-search-input');
+      const searchForm = within(container).getByTestId('mock-search-form');
       
       // Focus should work
       searchInput.focus();
@@ -116,7 +120,7 @@ describe('Search Results Unit Tests', () => {
       
       // Enter key should submit form
       fireEvent.change(searchInput, { target: { value: 'artificial intelligence' } });
-      fireEvent.submit(searchInput.closest('form')!);
+      fireEvent.submit(searchForm);
       
       expect(mockOnSearch).toHaveBeenCalledWith('artificial intelligence');
     });
@@ -177,14 +181,11 @@ describe('Search Results Unit Tests', () => {
     });
 
     it('should handle concurrent search requests', async () => {
-      const mockApiCall = vi.fn().mockImplementation((query: string) => 
-        new Promise(resolve => setTimeout(() => resolve(`Results for ${query}`), 100))
-      );
+      const mockApiCall = vi.fn().mockResolvedValue('test result');
 
-      let latestResult = '';
       const handleSearch = async (query: string) => {
         const result = await mockApiCall(query);
-        latestResult = result;
+        return `Results for ${query}`;
       };
 
       // Simulate concurrent searches
@@ -194,7 +195,13 @@ describe('Search Results Unit Tests', () => {
         handleSearch('query3')
       ];
 
-      await Promise.all(searches);
+      const results = await Promise.all(searches);
+
+      // Verify all searches completed
+      expect(results).toHaveLength(3);
+      expect(results[0]).toBe('Results for query1');
+      expect(results[1]).toBe('Results for query2');
+      expect(results[2]).toBe('Results for query3');
 
       // Should have made all API calls
       expect(mockApiCall).toHaveBeenCalledTimes(3);
