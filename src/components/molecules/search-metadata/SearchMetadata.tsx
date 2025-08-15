@@ -1,1 +1,32 @@
-import React from 'react';\nimport * as styles from '../../organisms/search-results.css';\n\ninterface SearchMetadataProps {\n  count: number;\n  responseTimeMs?: number;\n  loading: boolean;\n}\n\nexport function SearchMetadata({ count, responseTimeMs, loading }: SearchMetadataProps) {\n  return (\n    <div className={styles.metadata}>\n      <div className={styles.resultsInfo}>\n        <span className={styles.count}>\n          {count.toLocaleString()} results\n        </span>\n        {responseTimeMs && (\n          <span className={styles.responseTime}>\n            ({responseTimeMs}ms)\n          </span>\n        )}\n      </div>\n      \n      {loading && (\n        <div className={styles.loadingIndicator}>\n          Searching...\n        </div>\n      )}\n    </div>\n  );\n}
+import React from 'react';
+
+import * as styles from '../../organisms/search-results.css';
+
+interface SearchMetadataProps {
+  count: number;
+  responseTimeMs?: number;
+  loading: boolean;
+}
+
+export function SearchMetadata({ count, responseTimeMs, loading }: SearchMetadataProps) {
+  return (
+    <div className={styles.metadata}>
+      <div className={styles.resultsInfo}>
+        <span className={styles.count}>
+          {count.toLocaleString()} results
+        </span>
+        {responseTimeMs && (
+          <span className={styles.responseTime}>
+            ({responseTimeMs}ms)
+          </span>
+        )}
+      </div>
+      
+      {loading && (
+        <div className={styles.loadingIndicator}>
+          Searching...
+        </div>
+      )}
+    </div>
+  );
+}

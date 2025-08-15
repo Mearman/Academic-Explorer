@@ -1,1 +1,45 @@
-import React from 'react';\nimport * as styles from '../../organisms/search-results.css';\n\ninterface PaginationControlsProps {\n  currentPage: number;\n  totalCount: number;\n  perPage: number;\n  onPageChange: (page: number) => void;\n}\n\nexport function PaginationControls({\n  currentPage,\n  totalCount,\n  perPage,\n  onPageChange,\n}: PaginationControlsProps) {\n  const totalPages = Math.ceil(totalCount / perPage);\n  \n  if (totalCount <= perPage) return null;\n\n  return (\n    <div className={styles.pagination}>\n      <button\n        onClick={() => onPageChange(currentPage - 1)}\n        disabled={currentPage <= 1}\n        className={styles.paginationButton}\n      >\n        Previous\n      </button>\n      \n      <span className={styles.paginationInfo}>\n        Page {currentPage} of {totalPages}\n      </span>\n      \n      <button\n        onClick={() => onPageChange(currentPage + 1)}\n        disabled={currentPage >= totalPages}\n        className={styles.paginationButton}\n      >\n        Next\n      </button>\n    </div>\n  );\n}
+import React from 'react';
+
+import * as styles from '../../organisms/search-results.css';
+
+interface PaginationControlsProps {
+  currentPage: number;
+  totalCount: number;
+  perPage: number;
+  onPageChange: (page: number) => void;
+}
+
+export function PaginationControls({
+  currentPage,
+  totalCount,
+  perPage,
+  onPageChange,
+}: PaginationControlsProps) {
+  const totalPages = Math.ceil(totalCount / perPage);
+  
+  if (totalCount <= perPage) return null;
+
+  return (
+    <div className={styles.pagination}>
+      <button
+        onClick={() => onPageChange(currentPage - 1)}
+        disabled={currentPage <= 1}
+        className={styles.paginationButton}
+      >
+        Previous
+      </button>
+      
+      <span className={styles.paginationInfo}>
+        Page {currentPage} of {totalPages}
+      </span>
+      
+      <button
+        onClick={() => onPageChange(currentPage + 1)}
+        disabled={currentPage >= totalPages}
+        className={styles.paginationButton}
+      >
+        Next
+      </button>
+    </div>
+  );
+}
