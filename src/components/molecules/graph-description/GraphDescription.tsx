@@ -1,3 +1,8 @@
+import { 
+  IconCircleFilled, 
+  IconCircle, 
+  IconClick 
+} from '@tabler/icons-react';
 import React from 'react';
 
 export function GraphDescription() {
@@ -15,10 +20,19 @@ export function GraphDescription() {
         Larger circles indicate entities you've visited more frequently. Lines show connections like authorship, 
         citations, affiliations, and topic relationships.
       </p>
-      <div style={{ display: 'flex', gap: '16px', fontSize: '12px' }}>
-        <span>🔵 <strong>Bold border:</strong> Directly visited</span>
-        <span>⚪ <strong>Thin border:</strong> Related entity</span>
-        <span>🖱️ <strong>Click:</strong> Navigate to entity</span>
+      <div style={{ display: 'flex', gap: '16px', fontSize: '12px', alignItems: 'center' }}>
+        <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+          <IconCircleFilled size={12} style={{ color: '#3b82f6' }} />
+          <strong>Bold border:</strong> Directly visited
+        </span>
+        <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+          <IconCircle size={12} style={{ color: '#9ca3af' }} />
+          <strong>Thin border:</strong> Related entity
+        </span>
+        <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+          <IconClick size={12} />
+          <strong>Click:</strong> Navigate to entity
+        </span>
       </div>
     </div>
   );

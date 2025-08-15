@@ -1,3 +1,4 @@
+import { IconTrendingUp, IconTrendingDown, IconMinus } from '@tabler/icons-react';
 import React, { useMemo } from 'react';
 
 import { EntityBadge } from '@/components';
@@ -379,10 +380,10 @@ export function MetricsPanel({ title, metrics }: MetricsPanelProps) {
 
   const getTrendIcon = (trend?: string) => {
     switch (trend) {
-      case 'up': return '📈';
-      case 'down': return '📉';
-      case 'neutral': return '➖';
-      default: return '';
+      case 'up': return <IconTrendingUp size={16} className="text-green-600" />;
+      case 'down': return <IconTrendingDown size={16} className="text-red-600" />;
+      case 'neutral': return <IconMinus size={16} className="text-gray-600" />;
+      default: return null;
     }
   };
 

@@ -32,6 +32,7 @@ import {
   IconRefresh,
   IconEye
 } from '@tabler/icons-react';
+import { Link } from '@tanstack/react-router';
 import React, { useState, useMemo } from 'react';
 
 import { EntityLink } from '@/components';
@@ -203,13 +204,33 @@ function WorkCard({ work }: { work: Work }) {
   const publicationYear = work.publication_year || new Date(work.publication_date || '').getFullYear();
   const oaColour = getOpenAccessColour(work.open_access.oa_status);
   
+  // Extract clean work ID for routing
+  const workId = work.id.replace('https://openalex.org/', '');
+  const workPath = `/works/${workId}`;
+  
   return (
-    <Paper p="md" withBorder radius="sm" mb="sm">
+    <Paper 
+      p="md" 
+      withBorder 
+      radius="sm" 
+      mb="sm"
+      component={Link}
+      to={workPath}
+      style={{ 
+        textDecoration: 'none',
+        cursor: 'pointer',
+        transition: 'all 0.2s ease',
+        ':hover': {
+          transform: 'translateY(-2px)',
+          boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)'
+        }
+      }}
+    >
       <Stack gap="xs">
         {/* Title and Basic Info */}
         <Group justify="space-between" align="flex-start">
           <div style={{ flex: 1 }}>
-            <Title order={4} size="sm" lineClamp={2} mb="xs">
+            <Title order={4} size="sm" lineClamp={2} mb="xs" c="blue">
               {work.display_name}
             </Title>
             
@@ -246,6 +267,7 @@ function WorkCard({ work }: { work: Work }) {
                   href={`https://doi.org/${work.ids.doi}`}
                   target="_blank"
                   rel="noopener noreferrer"
+                  onClick={(e) => e.stopPropagation()} // Prevent card click when clicking DOI
                 >
                   <IconExternalLink size={12} />
                 </ActionIcon>
@@ -259,11 +281,13 @@ function WorkCard({ work }: { work: Work }) {
           {work.primary_location?.source && (
             <Group gap="xs">
               <IconBook size={14} />
-              <EntityLink
-                entityId={work.primary_location.source.id}
-                displayName={work.primary_location.source.display_name}
-                size="xs"
-              />
+              <Text size="xs" onClick={(e) => e.stopPropagation()}>
+                <EntityLink
+                  entityId={work.primary_location.source.id}
+                  displayName={work.primary_location.source.display_name}
+                  size="xs"
+                />
+              </Text>
             </Group>
           )}
           
