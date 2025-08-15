@@ -128,6 +128,9 @@ export { EntityPageWithGraph } from './templates/entity-page-with-graph';
 export { default as EntityErrorBoundary } from './templates/error-boundary';
 export { AppShellLayout } from './templates/app-shell-layout';
 
+// Examples & Testing Components
+export { ErrorBoundaryTest } from './examples/error-boundary-test';
+
 // Types
 export type {
   EntityType,
