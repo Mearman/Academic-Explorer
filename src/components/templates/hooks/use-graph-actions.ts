@@ -1,7 +1,5 @@
 import { useCallback } from 'react';
 
-import type { EntityType } from '@/types/entity-graph';
-
 import { getEntityEndpointFromType } from './use-entity-type-detection';
 
 export function useGraphActions() {

@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useCallback } from 'react';
 
 import { cachedOpenAlex } from '@/lib/openalex';
 import type { Work, ApiResponse, WorksParams } from '@/lib/openalex/types';
