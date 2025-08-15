@@ -32,6 +32,7 @@ export { ExternalLinksGroup } from './molecules/external-links-group';
 export { SearchBar } from './molecules/search-bar';
 export { AdvancedSearchForm } from './molecules/advanced-search-form';
 export { AutocompleteSearch } from './molecules/autocomplete-search';
+export { TopbarSearch } from './molecules/topbar-search';
 export { EntityLoading } from './molecules/entity-loading';
 export { AuthorList } from './molecules/author-list';
 export { ConceptList } from './molecules/concept-list';
@@ -69,6 +70,7 @@ export {
   EntityPageErrorTemplate
 } from './templates/entity-page-template';
 export { default as EntityErrorBoundary } from './templates/error-boundary';
+export { AppShellLayout } from './templates/app-shell-layout';
 
 // Types
 export type {
