@@ -541,59 +541,84 @@ describe('Specialized Entity Hooks', () => {
   });
 
   it('should useWorkData hook work correctly', async () => {
-    mockCachedOpenAlex.work.mockResolvedValue(mockWork);
+    // Use MSW instead of direct mocking for consistency
+    server.use(
+      http.get('https://api.openalex.org/works/W2741809807', () => {
+        return HttpResponse.json(mockWork);
+      })
+    );
 
     const { result } = renderHook(() => 
       useWorkData('W2741809807')
     );
 
     await waitFor(() => {
-      expect(result.current.data).toEqual(mockWork);
+      expect(result.current.loading).toBe(false);
     });
 
-    expect(mockCachedOpenAlex.work).toHaveBeenCalledWith('W2741809807', false);
+    expect(result.current.data).toEqual(mockWork);
+    expect(result.current.error).toBeNull();
+    expect(result.current.state).toBe(EntityLoadingState.SUCCESS);
   });
 
   it('should useAuthorData hook work correctly', async () => {
-    mockCachedOpenAlex.author.mockResolvedValue(mockAuthor);
+    server.use(
+      http.get('https://api.openalex.org/authors/A2887492', () => {
+        return HttpResponse.json(mockAuthor);
+      })
+    );
 
     const { result } = renderHook(() => 
       useAuthorData('A2887492')
     );
 
     await waitFor(() => {
-      expect(result.current.data).toEqual(mockAuthor);
+      expect(result.current.loading).toBe(false);
     });
 
-    expect(mockCachedOpenAlex.author).toHaveBeenCalledWith('A2887492', false);
+    expect(result.current.data).toEqual(mockAuthor);
+    expect(result.current.error).toBeNull();
+    expect(result.current.state).toBe(EntityLoadingState.SUCCESS);
   });
 
   it('should useSourceData hook work correctly', async () => {
-    mockCachedOpenAlex.source.mockResolvedValue(mockSource);
+    server.use(
+      http.get('https://api.openalex.org/sources/S123456789', () => {
+        return HttpResponse.json(mockSource);
+      })
+    );
 
     const { result } = renderHook(() => 
       useSourceData('S123456789')
     );
 
     await waitFor(() => {
-      expect(result.current.data).toEqual(mockSource);
+      expect(result.current.loading).toBe(false);
     });
 
-    expect(mockCachedOpenAlex.source).toHaveBeenCalledWith('S123456789', false);
+    expect(result.current.data).toEqual(mockSource);
+    expect(result.current.error).toBeNull();
+    expect(result.current.state).toBe(EntityLoadingState.SUCCESS);
   });
 
   it('should useInstitutionData hook work correctly', async () => {
-    mockCachedOpenAlex.institution.mockResolvedValue(mockInstitution);
+    server.use(
+      http.get('https://api.openalex.org/institutions/I123456789', () => {
+        return HttpResponse.json(mockInstitution);
+      })
+    );
 
     const { result } = renderHook(() => 
       useInstitutionData('I123456789')
     );
 
     await waitFor(() => {
-      expect(result.current.data).toEqual(mockInstitution);
+      expect(result.current.loading).toBe(false);
     });
 
-    expect(mockCachedOpenAlex.institution).toHaveBeenCalledWith('I123456789', false);
+    expect(result.current.data).toEqual(mockInstitution);
+    expect(result.current.error).toBeNull();
+    expect(result.current.state).toBe(EntityLoadingState.SUCCESS);
   });
 
   it('should usePublisherData hook work correctly', async () => {
@@ -602,17 +627,24 @@ describe('Specialized Entity Hooks', () => {
       display_name: 'Test Publisher',
       works_count: 1000
     };
-    mockCachedOpenAlex.publisher.mockResolvedValue(mockPublisher);
+
+    server.use(
+      http.get('https://api.openalex.org/publishers/P123456789', () => {
+        return HttpResponse.json(mockPublisher);
+      })
+    );
 
     const { result } = renderHook(() => 
       usePublisherData('P123456789')
     );
 
     await waitFor(() => {
-      expect(result.current.data).toEqual(mockPublisher);
+      expect(result.current.loading).toBe(false);
     });
 
-    expect(mockCachedOpenAlex.publisher).toHaveBeenCalledWith('P123456789', false);
+    expect(result.current.data).toEqual(mockPublisher);
+    expect(result.current.error).toBeNull();
+    expect(result.current.state).toBe(EntityLoadingState.SUCCESS);
   });
 
   it('should useFunderData hook work correctly', async () => {
@@ -621,17 +653,24 @@ describe('Specialized Entity Hooks', () => {
       display_name: 'Test Funder',
       grants_count: 500
     };
-    mockCachedOpenAlex.funder.mockResolvedValue(mockFunder);
+
+    server.use(
+      http.get('https://api.openalex.org/funders/F123456789', () => {
+        return HttpResponse.json(mockFunder);
+      })
+    );
 
     const { result } = renderHook(() => 
       useFunderData('F123456789')
     );
 
     await waitFor(() => {
-      expect(result.current.data).toEqual(mockFunder);
+      expect(result.current.loading).toBe(false);
     });
 
-    expect(mockCachedOpenAlex.funder).toHaveBeenCalledWith('F123456789', false);
+    expect(result.current.data).toEqual(mockFunder);
+    expect(result.current.error).toBeNull();
+    expect(result.current.state).toBe(EntityLoadingState.SUCCESS);
   });
 
   it('should useTopicData hook work correctly', async () => {
@@ -640,17 +679,24 @@ describe('Specialized Entity Hooks', () => {
       display_name: 'Test Topic',
       works_count: 2000
     };
-    mockCachedOpenAlex.topic.mockResolvedValue(mockTopic);
+
+    server.use(
+      http.get('https://api.openalex.org/topics/T123456789', () => {
+        return HttpResponse.json(mockTopic);
+      })
+    );
 
     const { result } = renderHook(() => 
       useTopicData('T123456789')
     );
 
     await waitFor(() => {
-      expect(result.current.data).toEqual(mockTopic);
+      expect(result.current.loading).toBe(false);
     });
 
-    expect(mockCachedOpenAlex.topic).toHaveBeenCalledWith('T123456789', false);
+    expect(result.current.data).toEqual(mockTopic);
+    expect(result.current.error).toBeNull();
+    expect(result.current.state).toBe(EntityLoadingState.SUCCESS);
   });
 });
 
