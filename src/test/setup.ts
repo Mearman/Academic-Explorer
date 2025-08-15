@@ -42,94 +42,8 @@ vi.mock('@/lib/db', async () => {
   };
 });
 
-// Mock IndexedDB
-const mockIDBRequest = {
-  result: undefined,
-  error: null,
-  onsuccess: null,
-  onerror: null,
-  addEventListener: vi.fn(),
-  removeEventListener: vi.fn(),
-  dispatchEvent: vi.fn(),
-};
-
-const mockIDBObjectStore = {
-  add: vi.fn(() => mockIDBRequest),
-  put: vi.fn(() => mockIDBRequest),
-  get: vi.fn(() => mockIDBRequest),
-  delete: vi.fn(() => mockIDBRequest),
-  clear: vi.fn(() => mockIDBRequest),
-  count: vi.fn(() => mockIDBRequest),
-  getAll: vi.fn(() => mockIDBRequest),
-  getAllKeys: vi.fn(() => mockIDBRequest),
-  index: vi.fn(() => ({
-    get: vi.fn(() => mockIDBRequest),
-    getAll: vi.fn(() => mockIDBRequest),
-    getAllKeys: vi.fn(() => mockIDBRequest),
-  })),
-  createIndex: vi.fn(),
-  deleteIndex: vi.fn(),
-};
-
-const mockIDBTransaction = {
-  objectStore: vi.fn(() => mockIDBObjectStore),
-  abort: vi.fn(),
-  addEventListener: vi.fn(),
-  removeEventListener: vi.fn(),
-  dispatchEvent: vi.fn(),
-  oncomplete: null,
-  onerror: null,
-  onabort: null,
-};
-
-const mockIDBDatabase = {
-  transaction: vi.fn(() => mockIDBTransaction),
-  createObjectStore: vi.fn(() => mockIDBObjectStore),
-  deleteObjectStore: vi.fn(),
-  close: vi.fn(),
-  addEventListener: vi.fn(),
-  removeEventListener: vi.fn(),
-  dispatchEvent: vi.fn(),
-};
-
-const mockIDBOpenDBRequest = {
-  ...mockIDBRequest,
-  onupgradeneeded: null,
-  onblocked: null,
-};
-
-const mockIndexedDB = {
-  open: vi.fn(() => {
-    const request = { ...mockIDBOpenDBRequest, result: mockIDBDatabase };
-    // Simulate successful database opening
-    setTimeout(() => {
-      if (request.onsuccess) {
-        const event = { target: request } as Event & { target: typeof request };
-        (request.onsuccess as (event: Event) => void)(event);
-      }
-    }, 0);
-    return request;
-  }),
-  deleteDatabase: vi.fn(() => mockIDBRequest),
-  databases: vi.fn(() => Promise.resolve([])),
-  cmp: vi.fn(),
-};
-
-// Setup IndexedDB mock in global scope
-Object.defineProperty(globalThis, 'indexedDB', {
-  value: mockIndexedDB,
-  writable: true,
-});
-
-Object.defineProperty(globalThis, 'IDBKeyRange', {
-  value: {
-    bound: vi.fn(),
-    only: vi.fn(),
-    lowerBound: vi.fn(),
-    upperBound: vi.fn(),
-  },
-  writable: true,
-});
+// Setup fake-indexeddb for proper IndexedDB mocking
+import 'fake-indexeddb/auto';
 
 // Mock localStorage
 const localStorageMock = {
@@ -144,9 +58,6 @@ const localStorageMock = {
 if (typeof window !== 'undefined') {
   Object.defineProperty(window, 'localStorage', {
     value: localStorageMock,
-  });
-  Object.defineProperty(window, 'indexedDB', {
-    value: mockIndexedDB,
   });
 }
 
