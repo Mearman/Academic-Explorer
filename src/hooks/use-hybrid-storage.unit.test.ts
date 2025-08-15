@@ -3,17 +3,7 @@ import { renderHook, act, waitFor } from '@testing-library/react';
 import { useHybridStorage } from './use-hybrid-storage';
 import { useAppStore } from '@/stores/app-store';
 
-// Mock the db module
-vi.mock('@/lib/db', () => ({
-  db: {
-    init: vi.fn(),
-    getStorageEstimate: vi.fn(),
-    cacheSearchResults: vi.fn(),
-    getSearchResults: vi.fn(),
-    savePaper: vi.fn(),
-    cleanOldSearchResults: vi.fn(),
-  },
-}));
+// The db module is already mocked in setup.ts, so we just need to import it
 
 // Mock the app store
 vi.mock('@/stores/app-store', () => ({
@@ -39,18 +29,18 @@ describe('useHybridStorage', () => {
     mockDb = db;
     
     // Reset mock implementations
-    mockDb.init.mockResolvedValue(undefined);
-    mockDb.getStorageEstimate.mockResolvedValue({
+    vi.mocked(mockDb.init).mockResolvedValue(undefined);
+    vi.mocked(mockDb.getStorageEstimate).mockResolvedValue({
       usage: 1024000,
       quota: 50000000,
     });
-    mockDb.cacheSearchResults.mockResolvedValue(undefined);
-    mockDb.getSearchResults.mockResolvedValue(null);
-    mockDb.savePaper.mockResolvedValue(undefined);
-    mockDb.cleanOldSearchResults.mockResolvedValue(5);
+    vi.mocked(mockDb.cacheSearchResults).mockResolvedValue(undefined);
+    vi.mocked(mockDb.getSearchResults).mockResolvedValue(null);
+    vi.mocked(mockDb.savePaper).mockResolvedValue(undefined);
+    vi.mocked(mockDb.cleanOldSearchResults).mockResolvedValue(5);
 
     // Mock useAppStore to return empty search history by default
-    (useAppStore as any).mockReturnValue([]);
+    vi.mocked(useAppStore).mockReturnValue([]);
 
     // Clear localStorage before each test
     localStorage.clear();
@@ -186,7 +176,7 @@ describe('useHybridStorage', () => {
     });
 
     it('should not archive when not initialized', async () => {
-      mockDb.init.mockResolvedValue(new Promise(() => {})); // Never resolves
+      vi.mocked(mockDb.init).mockResolvedValue(new Promise(() => {})); // Never resolves
 
       const { result } = renderHook(() => useHybridStorage());
 
@@ -226,7 +216,7 @@ describe('useHybridStorage', () => {
       });
 
       const mockCachedData = { results: [], totalCount: 0 };
-      mockDb.getSearchResults.mockResolvedValue(mockCachedData);
+      vi.mocked(mockDb.getSearchResults).mockResolvedValue(mockCachedData);
 
       let cachedResults;
       await act(async () => {
@@ -244,7 +234,7 @@ describe('useHybridStorage', () => {
     });
 
     it('should return null when not initialized', async () => {
-      mockDb.init.mockResolvedValue(new Promise(() => {})); // Never resolves
+      vi.mocked(mockDb.init).mockResolvedValue(new Promise(() => {})); // Never resolves
 
       const { result } = renderHook(() => useHybridStorage());
 
@@ -311,7 +301,7 @@ describe('useHybridStorage', () => {
     });
 
     it('should not save when not initialized', async () => {
-      mockDb.init.mockResolvedValue(new Promise(() => {})); // Never resolves
+      vi.mocked(mockDb.init).mockResolvedValue(new Promise(() => {})); // Never resolves
 
       const { result } = renderHook(() => useHybridStorage());
 
@@ -382,7 +372,7 @@ describe('useHybridStorage', () => {
     });
 
     it('should not cleanup when not initialized', async () => {
-      mockDb.init.mockResolvedValue(new Promise(() => {})); // Never resolves
+      vi.mocked(mockDb.init).mockResolvedValue(new Promise(() => {})); // Never resolves
 
       const { result } = renderHook(() => useHybridStorage());
 
@@ -454,7 +444,7 @@ describe('useHybridStorage', () => {
     });
 
     it('should not migrate when not initialized', async () => {
-      mockDb.init.mockResolvedValue(new Promise(() => {})); // Never resolves
+      vi.mocked(mockDb.init).mockResolvedValue(new Promise(() => {})); // Never resolves
       
       const largeHistory = Array.from({ length: 10 }, (_, i) => `query${i + 1}`);
       (useAppStore as any).mockReturnValue(largeHistory);
