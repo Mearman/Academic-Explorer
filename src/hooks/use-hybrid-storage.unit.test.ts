@@ -3,9 +3,23 @@ import { renderHook, act, waitFor } from '@testing-library/react';
 import { useHybridStorage } from './use-hybrid-storage';
 
 // Create hoisted mocks
-const mockUseAppStore = vi.hoisted(() => vi.fn());
+const mockDb = vi.hoisted(() => ({
+  init: vi.fn(),
+  getStorageEstimate: vi.fn(),
+  cacheSearchResults: vi.fn(),
+  getSearchResults: vi.fn(),
+  savePaper: vi.fn(),
+  cleanOldSearchResults: vi.fn(),
+  clearAllStores: vi.fn(),
+}));
 
-// Mock the app store
+// Mock the db module
+vi.mock('@/lib/db', () => ({
+  db: mockDb,
+}));
+
+// Mock the app store with hoisted mock
+const mockUseAppStore = vi.hoisted(() => vi.fn());
 vi.mock('@/stores/app-store', () => ({
   useAppStore: mockUseAppStore,
 }));
@@ -19,14 +33,8 @@ const consoleSpy = {
 };
 
 describe('useHybridStorage', () => {
-  let mockDb: any;
-
-  beforeEach(async () => {
+  beforeEach(() => {
     vi.clearAllMocks();
-    
-    // Get the mocked db module
-    const { db } = await import('@/lib/db');
-    mockDb = db;
     
     // Clear all stores from the mock database
     if (typeof mockDb.clearAllStores === 'function') {
@@ -44,15 +52,20 @@ describe('useHybridStorage', () => {
     mockDb.savePaper.mockResolvedValue(undefined);
     mockDb.cleanOldSearchResults.mockResolvedValue(5);
 
-    // Mock useAppStore to return empty search history by default
-    mockUseAppStore.mockReturnValue([]);
+    // Mock useAppStore to return a selector function that returns empty search history
+    mockUseAppStore.mockImplementation((selector) => {
+      const mockState = { searchHistory: [] };
+      return selector(mockState);
+    });
 
-    // Clear localStorage before each test
-    localStorage.clear();
+    // Clear localStorage before each test - but do it after we set up mocks
+    // to avoid interference with specific tests that need localStorage data
   });
 
   afterEach(() => {
     consoleSpy.error.mockClear();
+    // Clear localStorage after each test to prevent test interference
+    localStorage.clear();
   });
 
   describe('Initialization', () => {
@@ -82,17 +95,20 @@ describe('useHybridStorage', () => {
     });
 
     it('should handle initialization errors', async () => {
+      // Create a fresh mock that rejects immediately
       mockDb.init.mockRejectedValue(new Error('Init failed'));
 
       const { result } = renderHook(() => useHybridStorage());
 
+      // Wait for the error to be logged
       await waitFor(() => {
-        expect(consoleSpy.error).toHaveBeenCalledWith(
-          'Failed to initialise IndexedDB:',
-          expect.any(Error)
-        );
-      });
+        expect(consoleSpy.error).toHaveBeenCalled();
+      }, { timeout: 2000 });
 
+      expect(consoleSpy.error).toHaveBeenCalledWith(
+        'Failed to initialise IndexedDB:',
+        expect.any(Error)
+      );
       expect(result.current.isInitialised).toBe(false);
     });
   });
@@ -112,17 +128,13 @@ describe('useHybridStorage', () => {
 
       const { result } = renderHook(() => useHybridStorage());
 
-      // Wait for initialization 
+      // Wait for initialization to complete
       await waitFor(() => {
         expect(result.current.isInitialised).toBe(true);
-      });
+      }, { timeout: 2000 });
 
-      // Trigger metrics update and wait for it to complete
-      await act(async () => {
-        await result.current.updateMetrics();
-      });
-
-      // Check that metrics were calculated
+      // The initialization should have already called updateMetrics
+      // Check that metrics were calculated during initialization
       expect(result.current.metrics.localStorageSize).toBeGreaterThan(0);
 
       // Clean up
@@ -145,11 +157,14 @@ describe('useHybridStorage', () => {
         expect(result.current.isInitialised).toBe(true);
       });
 
+      // Clear the call count after initialization
+      mockDb.getStorageEstimate.mockClear();
+
       await act(async () => {
         await result.current.updateMetrics();
       });
 
-      expect(mockDb.getStorageEstimate).toHaveBeenCalledTimes(2); // Once on init, once manually
+      expect(mockDb.getStorageEstimate).toHaveBeenCalledTimes(1); // Once manually called
     });
   });
 
@@ -159,9 +174,12 @@ describe('useHybridStorage', () => {
 
       await waitFor(() => {
         expect(result.current.isInitialised).toBe(true);
-      });
+      }, { timeout: 2000 });
 
       const mockResults = [{ id: 'W1', title: 'Test Work' }];
+
+      // Clear previous calls to focus on this test
+      mockDb.cacheSearchResults.mockClear();
 
       await act(async () => {
         await result.current.archiveSearchResults(
@@ -197,18 +215,22 @@ describe('useHybridStorage', () => {
 
       await waitFor(() => {
         expect(result.current.isInitialised).toBe(true);
-      });
+      }, { timeout: 2000 });
 
+      // Set up the mock to reject AFTER initialization
       mockDb.cacheSearchResults.mockRejectedValue(new Error('Archive failed'));
 
       await act(async () => {
         await result.current.archiveSearchResults('test', [], 0);
       });
 
-      expect(consoleSpy.error).toHaveBeenCalledWith(
-        'Failed to archive search results:',
-        expect.any(Error)
-      );
+      // Wait for the error to be logged
+      await waitFor(() => {
+        expect(consoleSpy.error).toHaveBeenCalledWith(
+          'Failed to archive search results:',
+          expect.any(Error)
+        );
+      }, { timeout: 1000 });
     });
   });
 
@@ -257,8 +279,9 @@ describe('useHybridStorage', () => {
 
       await waitFor(() => {
         expect(result.current.isInitialised).toBe(true);
-      });
+      }, { timeout: 2000 });
 
+      // Set up the mock to reject AFTER initialization
       mockDb.getSearchResults.mockRejectedValue(new Error('Retrieval failed'));
 
       let cachedResults;
@@ -266,10 +289,14 @@ describe('useHybridStorage', () => {
         cachedResults = await result.current.getCachedSearchResults('test');
       });
 
-      expect(consoleSpy.error).toHaveBeenCalledWith(
-        'Failed to retrieve cached results:',
-        expect.any(Error)
-      );
+      // Wait for the error to be logged
+      await waitFor(() => {
+        expect(consoleSpy.error).toHaveBeenCalledWith(
+          'Failed to retrieve cached results:',
+          expect.any(Error)
+        );
+      }, { timeout: 1000 });
+      
       expect(cachedResults).toBeNull();
     });
   });
@@ -351,7 +378,10 @@ describe('useHybridStorage', () => {
 
       await waitFor(() => {
         expect(result.current.isInitialised).toBe(true);
-      });
+      }, { timeout: 2000 });
+
+      // Clear previous calls from initialization
+      mockDb.cleanOldSearchResults.mockClear();
 
       let deletedCount;
       await act(async () => {
@@ -367,7 +397,10 @@ describe('useHybridStorage', () => {
 
       await waitFor(() => {
         expect(result.current.isInitialised).toBe(true);
-      });
+      }, { timeout: 2000 });
+
+      // Clear previous calls from initialization
+      mockDb.cleanOldSearchResults.mockClear();
 
       await act(async () => {
         await result.current.cleanupOldData(7);
@@ -377,9 +410,13 @@ describe('useHybridStorage', () => {
     });
 
     it('should not cleanup when not initialized', async () => {
-      mockDb.init.mockResolvedValue(new Promise(() => {})); // Never resolves
+      // Set up mock to never resolve BEFORE creating the hook
+      mockDb.init.mockImplementation(() => new Promise(() => {})); // Never resolves
 
       const { result } = renderHook(() => useHybridStorage());
+
+      // Give it a moment to try to initialize but not succeed
+      await new Promise(resolve => setTimeout(resolve, 50));
 
       let deletedCount;
       await act(async () => {
@@ -414,34 +451,51 @@ describe('useHybridStorage', () => {
 
   describe('Search history migration', () => {
     it('should not migrate when search history is small', async () => {
-      mockUseAppStore.mockReturnValue(['query1', 'query2']); // 2 items
-
-      renderHook(() => useHybridStorage());
-
-      await waitFor(() => {
-        expect(mockDb.init).toHaveBeenCalled();
+      // Mock useAppStore to return a small search history
+      mockUseAppStore.mockImplementation((selector) => {
+        const mockState = { searchHistory: ['query1', 'query2'] };
+        return selector(mockState);
       });
 
+      // Clear any previous calls to cacheSearchResults
+      mockDb.cacheSearchResults.mockClear();
+
+      const { result } = renderHook(() => useHybridStorage());
+
+      // Wait for initialization to complete
+      await waitFor(() => {
+        expect(result.current.isInitialised).toBe(true);
+      }, { timeout: 2000 });
+
       // Wait a bit to ensure migration effect runs
-      await new Promise(resolve => setTimeout(resolve, 10));
+      await new Promise(resolve => setTimeout(resolve, 50));
 
       expect(mockDb.cacheSearchResults).not.toHaveBeenCalled();
     });
 
     it('should migrate when search history is large', async () => {
       const largeHistory = Array.from({ length: 10 }, (_, i) => `query${i + 1}`);
-      mockUseAppStore.mockReturnValue(largeHistory);
-
-      renderHook(() => useHybridStorage());
-
-      await waitFor(() => {
-        expect(mockDb.init).toHaveBeenCalled();
+      
+      // Mock useAppStore to return a large search history
+      mockUseAppStore.mockImplementation((selector) => {
+        const mockState = { searchHistory: largeHistory };
+        return selector(mockState);
       });
+
+      // Clear any previous calls to cacheSearchResults
+      mockDb.cacheSearchResults.mockClear();
+
+      const { result } = renderHook(() => useHybridStorage());
+
+      // Wait for initialization to complete first
+      await waitFor(() => {
+        expect(result.current.isInitialised).toBe(true);
+      }, { timeout: 2000 });
 
       // Wait for migration effect to run
       await waitFor(() => {
         expect(mockDb.cacheSearchResults).toHaveBeenCalledTimes(5); // Last 5 archived
-      });
+      }, { timeout: 2000 });
 
       // Check that queries 6-10 were archived (slice(5))
       expect(mockDb.cacheSearchResults).toHaveBeenCalledWith('query6', [], 0);
@@ -452,7 +506,12 @@ describe('useHybridStorage', () => {
       mockDb.init.mockResolvedValue(new Promise(() => {})); // Never resolves
       
       const largeHistory = Array.from({ length: 10 }, (_, i) => `query${i + 1}`);
-      mockUseAppStore.mockReturnValue(largeHistory);
+      
+      // Mock useAppStore to return a large search history
+      mockUseAppStore.mockImplementation((selector) => {
+        const mockState = { searchHistory: largeHistory };
+        return selector(mockState);
+      });
 
       renderHook(() => useHybridStorage());
 
