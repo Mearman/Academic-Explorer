@@ -92,7 +92,7 @@ export function SearchBar({
         type="text"
         value={localQuery}
         onChange={(e) => setLocalQuery(e.target.value)}
-        placeholder="Search academic literature..."
+        placeholder="Search academic literature"
         className={styles.input}
         aria-label="Search"
       />

@@ -30,7 +30,7 @@ interface TopbarSearchProps {
 }
 
 export function TopbarSearch({ 
-  placeholder = "Search academic literature...",
+  placeholder = "Quick search...",
   width = 400 
 }: TopbarSearchProps) {
   const [query, setQuery] = useState('');
