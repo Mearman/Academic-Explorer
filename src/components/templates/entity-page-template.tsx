@@ -1,11 +1,14 @@
 'use client';
 
 import { useNavigate } from '@tanstack/react-router';
-import { forwardRef, useState, useEffect, Suspense } from 'react';
+import { forwardRef, Suspense } from 'react';
 
 import { ErrorMessage } from '../atoms/error-message';
 import { Icon } from '../atoms/icon';
 import { LoadingSkeleton } from '../atoms/loading-skeleton';
+import { EntityBreadcrumbs } from '../molecules/entity-breadcrumbs';
+import { EntitySectionHeader } from '../molecules/entity-section-header';
+import { FloatingActions } from '../molecules/floating-actions';
 import { EntityHeader, EntityHeaderSkeleton } from '../organisms/entity-header';
 import type { EntityPageTemplateProps } from '../types';
 
@@ -23,22 +26,6 @@ export const EntityPageTemplate = forwardRef<HTMLDivElement, EntityPageTemplateP
     'data-testid': testId,
     ...props 
   }, ref) => {
-    const [showBackToTop, setShowBackToTop] = useState(false);
-
-    // Handle scroll to show/hide back to top button
-    useEffect(() => {
-      const handleScroll = () => {
-        setShowBackToTop(window.scrollY > 300);
-      };
-
-      window.addEventListener('scroll', handleScroll);
-      return () => window.removeEventListener('scroll', handleScroll);
-    }, []);
-
-    const scrollToTop = () => {
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    };
-
     const layoutClass = sidebar ? styles.layoutVariants.withSidebar : styles.layoutVariants.default;
 
     return (
@@ -51,33 +38,9 @@ export const EntityPageTemplate = forwardRef<HTMLDivElement, EntityPageTemplateP
         <div className={`${styles.pageWrapper} ${layoutClass} ${className || ''}`}>
           {/* Breadcrumbs */}
           {breadcrumbs && breadcrumbs.length > 0 && (
-            <nav className={styles.breadcrumbsWrapper} aria-label="Breadcrumb">
-              <ol style={{ display: 'flex', gap: '8px', margin: 0, padding: 0, listStyle: 'none' }}>
-                {breadcrumbs.map((crumb, index) => (
-                  <li key={index} style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    {index > 0 && (
-                      <Icon name="forward" size="sm" aria-hidden="true" />
-                    )}
-                    {crumb.href ? (
-                      <a 
-                        href={crumb.href}
-                        style={{ 
-                          textDecoration: 'none', 
-                          color: 'inherit',
-                          fontSize: '14px',
-                        }}
-                      >
-                        {crumb.label}
-                      </a>
-                    ) : (
-                      <span style={{ fontSize: '14px', fontWeight: '500' }}>
-                        {crumb.label}
-                      </span>
-                    )}
-                  </li>
-                ))}
-              </ol>
-            </nav>
+            <div className={styles.breadcrumbsWrapper}>
+              <EntityBreadcrumbs breadcrumbs={breadcrumbs} />
+            </div>
           )}
 
           {/* Main content area */}
@@ -109,24 +72,28 @@ export const EntityPageTemplate = forwardRef<HTMLDivElement, EntityPageTemplateP
         </div>
 
         {/* Floating Actions */}
-        <div className={styles.floatingActions}>
-          {showBackToTop && (
-            <button
-              className={styles.backToTop}
-              onClick={scrollToTop}
-              aria-label="Back to top"
-              title="Back to top"
-            >
-              <Icon name="up" size="md" aria-hidden="true" />
-            </button>
-          )}
-        </div>
+        <FloatingActions />
       </div>
     );
   }
 );
 
 EntityPageTemplate.displayName = 'EntityPageTemplate';
+
+// Helper function to render section content
+const renderSectionContent = (loading: boolean, children: React.ReactNode) => {
+  if (loading) {
+    return (
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+        <LoadingSkeleton preset="title" width="60%" />
+        <LoadingSkeleton preset="text" width="100%" />
+        <LoadingSkeleton preset="text" width="80%" />
+        <LoadingSkeleton preset="text" width="90%" />
+      </div>
+    );
+  }
+  return children;
+};
 
 // Section component for consistent styling
 export const EntitySection = forwardRef<
@@ -160,12 +127,7 @@ export const EntitySection = forwardRef<
         data-testid={testId}
         {...props}
       >
-        <div className={styles.sectionHeader}>
-          <h2 className={styles.sectionTitle}>
-            {icon && <Icon name={icon} size="md" aria-hidden="true" />}
-            {title}
-          </h2>
-        </div>
+        <EntitySectionHeader title={title} icon={icon} />
         <ErrorMessage
           message={error}
           severity="error"
@@ -187,28 +149,8 @@ export const EntitySection = forwardRef<
       data-testid={testId}
       {...props}
     >
-      <div className={styles.sectionHeader}>
-        <h2 className={styles.sectionTitle}>
-          {icon && <Icon name={icon} size="md" aria-hidden="true" />}
-          {title}
-        </h2>
-        {actions && (
-          <div className={styles.sectionActions}>
-            {actions}
-          </div>
-        )}
-      </div>
-      
-      {loading ? (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-          <LoadingSkeleton preset="title" width="60%" />
-          <LoadingSkeleton preset="text" width="100%" />
-          <LoadingSkeleton preset="text" width="80%" />
-          <LoadingSkeleton preset="text" width="90%" />
-        </div>
-      ) : (
-        children
-      )}
+      <EntitySectionHeader title={title} icon={icon} actions={actions} />
+      {renderSectionContent(loading, children)}
     </section>
   );
 });

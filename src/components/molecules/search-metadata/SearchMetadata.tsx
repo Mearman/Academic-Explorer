@@ -1,6 +1,6 @@
 import React from 'react';
 
-import * as styles from '../../organisms/search-results.css';
+import * as styles from './search-metadata.css';
 
 interface SearchMetadataProps {
   count: number;

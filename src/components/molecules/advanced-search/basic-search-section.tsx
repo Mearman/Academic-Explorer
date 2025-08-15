@@ -1,6 +1,10 @@
+import { BasicSearchControls } from '@/components/atoms/basic-search-controls';
+import { ToggleButton } from '@/components/atoms/toggle-button';
 import type { AdvancedSearchFormData } from '@/hooks/use-advanced-search-form';
 
 import * as styles from '../advanced-search-form.css';
+import { SearchFieldSelector } from '../search-field-selector';
+import { SearchModeSelector } from '../search-mode-selector';
 
 interface BasicSearchSectionProps {
   formData: AdvancedSearchFormData;
@@ -21,50 +25,30 @@ export function BasicSearchSection({
   return (
     <div className={styles.section}>
       <div className={styles.basicSearch}>
-        <input
-          type="text"
-          value={formData.query}
-          onChange={(e) => updateField('query', e.target.value)}
-          placeholder="Enter search terms..."
-          className={styles.searchInput}
-          required
+        <BasicSearchControls
+          formData={formData}
+          updateField={updateField}
+          className=""
+          inputClassName={styles.searchInput}
+          buttonClassName={styles.searchButton}
         />
         
-        <select
+        <SearchFieldSelector
           value={formData.searchField}
-          onChange={(e) => updateField('searchField', e.target.value as 'all' | 'title' | 'abstract' | 'fulltext')}
-          className={styles.select}
-        >
-          <option value="all">All Fields</option>
-          <option value="title">Title Only</option>
-          <option value="abstract">Abstract Only</option>
-          <option value="fulltext">Full Text</option>
-        </select>
+          onChange={(value) => updateField('searchField', value)}
+        />
 
-        <select
+        <SearchModeSelector
           value={formData.searchMode}
-          onChange={(e) => updateField('searchMode', e.target.value as 'basic' | 'boolean' | 'exact' | 'no_stem')}
-          className={styles.select}
-        >
-          <option value="basic">Basic Search</option>
-          <option value="boolean">Boolean (AND/OR/NOT)</option>
-          <option value="exact">Exact Phrase</option>
-          <option value="no_stem">No Stemming</option>
-        </select>
-
-        <button type="submit" className={styles.searchButton}>
-          Search
-        </button>
+          onChange={(value) => updateField('searchMode', value)}
+        />
       </div>
 
-      <button
-        type="button"
-        onClick={() => setIsCollapsed(!isCollapsed)}
+      <ToggleButton 
+        isCollapsed={isCollapsed}
+        onToggle={setIsCollapsed}
         className={styles.toggleButton}
-        aria-expanded={!isCollapsed}
-      >
-        {isCollapsed ? 'Show Advanced Options' : 'Hide Advanced Options'}
-      </button>
+      />
     </div>
   );
 }

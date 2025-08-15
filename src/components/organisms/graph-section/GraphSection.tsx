@@ -1,9 +1,12 @@
 import React from 'react';
-import { EntityGraphVisualization, EntityGraphVisualizationSkeleton } from '../entity-graph-visualization';
-import { EntitySection } from '../../templates/entity-page-template';
-import { GraphStatsDisplay } from '@/components/molecules/graph-stats-display/GraphStatsDisplay';
+
 import { GraphDescription } from '@/components/molecules/graph-description/GraphDescription';
 import { GraphEmptyState } from '@/components/molecules/graph-empty-state/GraphEmptyState';
+import { GraphStatsDisplay } from '@/components/molecules/graph-stats-display/GraphStatsDisplay';
+import type { EntityGraphVertex } from '@/types/entity-graph';
+
+import { EntitySection } from '../../templates/entity-page-template';
+import { EntityGraphVisualization, EntityGraphVisualizationSkeleton } from '../entity-graph-visualization';
 
 interface GraphSectionProps {
   isVisible: boolean;
@@ -15,7 +18,7 @@ interface GraphSectionProps {
     hasCurrentEntity: boolean;
   };
   totalVisits: number;
-  onVertexClick: (vertex: any) => void;
+  onVertexClick: (vertex: EntityGraphVertex) => void;
 }
 
 export function GraphSection({

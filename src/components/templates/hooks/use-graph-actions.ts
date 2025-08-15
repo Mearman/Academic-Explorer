@@ -1,9 +1,11 @@
 import { useCallback } from 'react';
 
+import type { EntityGraphVertex } from '@/types/entity-graph';
+
 import { getEntityEndpointFromType } from './use-entity-type-detection';
 
 export function useGraphActions() {
-  const handleVertexClick = useCallback((vertex: any) => {
+  const handleVertexClick = useCallback((vertex: EntityGraphVertex) => {
     if (vertex.metadata?.url) {
       window.location.href = vertex.metadata.url;
     } else {

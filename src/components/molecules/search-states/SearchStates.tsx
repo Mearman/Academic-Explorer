@@ -2,7 +2,7 @@ import React from 'react';
 
 import { LoadingSkeleton, SkeletonGroup, ErrorMessage } from '@/components';
 
-import * as styles from '../../organisms/search-results.css';
+import * as styles from './search-states.css';
 
 interface LoadingStateProps {
   className?: string;

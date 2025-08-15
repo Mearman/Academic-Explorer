@@ -24,6 +24,22 @@ export interface ErrorMessageProps {
   'data-testid'?: string;
 }
 
+const buildClassNames = (
+  severity: 'error' | 'warning' | 'info' | 'success',
+  sizeVariant: SizeVariant, 
+  compact: boolean,
+  inline: boolean, 
+  dismissible: boolean,
+  className?: string
+) => {
+  const classes = [styles.base, styles.severityVariants[severity], styles.sizeVariants[sizeVariant]];
+  if (compact) classes.push(styles.compactStyle);
+  if (inline) classes.push(styles.inlineStyle);
+  if (dismissible) classes.push(styles.dismissibleStyle);
+  if (className) classes.push(className);
+  return classes.join(' ');
+};
+
 export const ErrorMessage = forwardRef<HTMLDivElement, ErrorMessageProps>(
   ({ title, message, details, severity = 'error', size = 'md', dismissible = false, compact = false, inline = false, actions, onDismiss, className, 'data-testid': testId, ...props }, ref) => {
     const [isVisible, setIsVisible] = useState(true);
@@ -33,15 +49,10 @@ export const ErrorMessage = forwardRef<HTMLDivElement, ErrorMessageProps>(
     const handleDismiss = () => { setIsVisible(false); onDismiss?.(); };
     const sizeVariant = mapSizeToVariant(size);
     const { role, ariaLive } = getAriaAttributes(severity);
-    
-    const classes = [styles.base, styles.severityVariants[severity], styles.sizeVariants[sizeVariant]];
-    if (compact) classes.push(styles.compactStyle);
-    if (inline) classes.push(styles.inlineStyle);
-    if (dismissible) classes.push(styles.dismissibleStyle);
-    if (className) classes.push(className);
+    const classes = buildClassNames(severity, sizeVariant, compact, inline, dismissible, className);
 
     return (
-      <div ref={ref} className={classes.join(' ')} data-testid={testId} role={role} aria-live={ariaLive} {...props}>
+      <div ref={ref} className={classes} data-testid={testId} role={role} aria-live={ariaLive} {...props}>
         <Icon name={SEVERITY_ICONS[severity] || 'info'} size={size} className={styles.iconStyle} aria-hidden="true" />
         <div className={styles.contentStyle}>
           {renderTitle(title, compact)}

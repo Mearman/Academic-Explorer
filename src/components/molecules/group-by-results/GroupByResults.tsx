@@ -2,7 +2,7 @@ import React from 'react';
 
 import type { ApiResponse, Work } from '@/lib/openalex/types';
 
-import * as styles from '../../organisms/search-results.css';
+import * as styles from './group-by-results.css';
 
 interface GroupByResultsProps {
   groupBy: ApiResponse<Work>['group_by'];

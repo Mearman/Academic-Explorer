@@ -18,6 +18,64 @@ import { FormattedTab } from './data-tabs/FormattedTab';
 import { useDataFormatting } from './hooks/use-data-formatting';
 import { useRawDataActions } from './hooks/use-raw-data-actions';
 
+// Utility component for RawDataView header
+function RawDataHeader({ title, dataSizeKB, objectKeys }: {
+  title: string;
+  dataSizeKB: string;
+  objectKeys: number;
+}) {
+  return (
+    <Group mb="lg" justify="space-between">
+      <Group>
+        <IconCode size={20} />
+        <Title order={2} size="lg">{title}</Title>
+      </Group>
+      
+      {/* Data Stats */}
+      <DataStats sizeKB={dataSizeKB} fieldCount={objectKeys} />
+    </Group>
+  );
+}
+
+// Utility component for tab list
+function RawDataTabs({ hasAbstractIndex }: { hasAbstractIndex: boolean }) {
+  return (
+    <Tabs.List grow>
+      <Tabs.Tab value="formatted" leftSection={<IconEye size={14} />}>
+        Formatted
+      </Tabs.Tab>
+      <Tabs.Tab value="compact" leftSection={<IconCode size={14} />}>
+        Compact
+      </Tabs.Tab>
+      {hasAbstractIndex && (
+        <Tabs.Tab value="abstract" leftSection={<IconFileText size={14} />}>
+          Abstract
+        </Tabs.Tab>
+      )}
+    </Tabs.List>
+  );
+}
+
+// Utility function to create action handlers
+function createActionHandlers(
+  formattedJson: string,
+  compactJson: string,
+  reconstructedAbstract: string | null,
+  handleCopy: (content: string) => Promise<void>,
+  handleDownload: (content: string, format?: 'json' | 'compact' | 'abstract', entityType?: string, entityId?: string) => void,
+  entityType?: string,
+  entityId?: string
+) {
+  return {
+    handleCopyFormatted: () => handleCopy(formattedJson),
+    handleCopyCompact: () => handleCopy(compactJson),
+    handleCopyAbstract: () => handleCopy(reconstructedAbstract || ''),
+    handleDownloadFormatted: () => handleDownload(formattedJson, 'json', entityType, entityId),
+    handleDownloadCompact: () => handleDownload(compactJson, 'compact', entityType, entityId),
+    handleDownloadAbstract: () => handleDownload(reconstructedAbstract || '', 'abstract', entityType, entityId),
+  };
+}
+
 interface RawDataViewProps {
   /** The raw data object to display */
   data: unknown;
@@ -61,40 +119,26 @@ export function RawDataView({
   } = useDataFormatting(data, prettyPrint);
 
   // Create action handlers with context
-  const handleCopyFormatted = () => handleCopy(formattedJson);
-  const handleCopyCompact = () => handleCopy(compactJson);
-  const handleCopyAbstract = () => handleCopy(reconstructedAbstract || '');
-  
-  const handleDownloadFormatted = () => handleDownload(formattedJson, 'json', entityType, entityId);
-  const handleDownloadCompact = () => handleDownload(compactJson, 'compact', entityType, entityId);
-  const handleDownloadAbstract = () => handleDownload(reconstructedAbstract || '', 'abstract', entityType, entityId);
+  const actionHandlers = createActionHandlers(
+    formattedJson,
+    compactJson,
+    reconstructedAbstract,
+    handleCopy,
+    handleDownload,
+    entityType,
+    entityId
+  );
 
   return (
     <Card withBorder radius="md" p="xl">
-      <Group mb="lg" justify="space-between">
-        <Group>
-          <IconCode size={20} />
-          <Title order={2} size="lg">{title}</Title>
-        </Group>
-        
-        {/* Data Stats */}
-        <DataStats sizeKB={dataSizeKB} fieldCount={objectKeys} />
-      </Group>
+      <RawDataHeader 
+        title={title}
+        dataSizeKB={dataSizeKB}
+        objectKeys={objectKeys}
+      />
 
       <Tabs value={activeTab} onChange={setActiveTab} keepMounted={false}>
-        <Tabs.List grow>
-          <Tabs.Tab value="formatted" leftSection={<IconEye size={14} />}>
-            Formatted
-          </Tabs.Tab>
-          <Tabs.Tab value="compact" leftSection={<IconCode size={14} />}>
-            Compact
-          </Tabs.Tab>
-          {hasAbstractIndex && (
-            <Tabs.Tab value="abstract" leftSection={<IconFileText size={14} />}>
-              Abstract
-            </Tabs.Tab>
-          )}
-        </Tabs.List>
+        <RawDataTabs hasAbstractIndex={hasAbstractIndex} />
 
         <FormattedTab
           formattedJson={formattedJson}
@@ -103,8 +147,8 @@ export function RawDataView({
           wordWrap={wordWrap}
           prettyPrint={prettyPrint}
           maxHeight={maxHeight}
-          onCopy={handleCopyFormatted}
-          onDownload={handleDownloadFormatted}
+          onCopy={actionHandlers.handleCopyFormatted}
+          onDownload={actionHandlers.handleDownloadFormatted}
           onWordWrapChange={setWordWrap}
           onPrettyPrintChange={setPrettyPrint}
         />
@@ -115,8 +159,8 @@ export function RawDataView({
           showDownload={showDownload}
           wordWrap={wordWrap}
           maxHeight={maxHeight}
-          onCopy={handleCopyCompact}
-          onDownload={handleDownloadCompact}
+          onCopy={actionHandlers.handleCopyCompact}
+          onDownload={actionHandlers.handleDownloadCompact}
           onWordWrapChange={setWordWrap}
         />
 
@@ -127,8 +171,8 @@ export function RawDataView({
             copied={copied}
             showDownload={showDownload}
             maxHeight={maxHeight}
-            onCopy={handleCopyAbstract}
-            onDownload={handleDownloadAbstract}
+            onCopy={actionHandlers.handleCopyAbstract}
+            onDownload={actionHandlers.handleDownloadAbstract}
           />
         )}
       </Tabs>

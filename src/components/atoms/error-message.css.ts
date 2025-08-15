@@ -37,6 +37,11 @@ export const severityVariants = styleVariants({
 });
 
 export const sizeVariants = styleVariants({
+  xs: {
+    padding: entityVars.spacing.sm,
+    fontSize: entityVars.fontSize.xs,
+    gap: entityVars.spacing.xs,
+  },
   sm: {
     padding: entityVars.spacing.md,
     fontSize: entityVars.fontSize.xs,
@@ -51,6 +56,11 @@ export const sizeVariants = styleVariants({
     padding: entityVars.spacing.xl,
     fontSize: entityVars.fontSize.base,
     gap: entityVars.spacing.lg,
+  },
+  xl: {
+    padding: entityVars.spacing['2xl'],
+    fontSize: entityVars.fontSize.lg,
+    gap: entityVars.spacing.xl,
   },
 });
 

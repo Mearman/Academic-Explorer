@@ -1,6 +1,6 @@
 import React from 'react';
 
-import * as styles from '../../organisms/search-results.css';
+import * as styles from './pagination-controls.css';
 
 interface PaginationControlsProps {
   currentPage: number;
