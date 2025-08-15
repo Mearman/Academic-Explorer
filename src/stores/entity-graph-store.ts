@@ -165,26 +165,28 @@ export const useEntityGraphStore = create<EntityGraphState>()(
         set((state) => {
           const edgeId = generateEdgeId(event.sourceEntityId, event.targetEntityId, event.relationshipType);
           
+          // Early exit conditions - check before starting any mutations
           // Don't add duplicate edges
           if (state.graph.edges.has(edgeId)) {
-            return;
+            return; // Safe - no mutations yet
           }
           
-          // Ensure both vertices exist (at least as discovered entities)
+          // Ensure source vertex exists (at least as discovered entities)
           if (!state.graph.vertices.has(event.sourceEntityId)) {
             // This shouldn't happen in normal flow, but handle gracefully
-            return;
+            return; // Safe - no mutations yet
           }
           
+          // Check target vertex and validate metadata early
           if (!state.graph.vertices.has(event.targetEntityId)) {
-            // Create a discovered (not directly visited) vertex
-            // This would need entity type and display name from the event metadata
             const targetEntityType = event.metadata?.targetEntityType as EntityType;
             const targetDisplayName = event.metadata?.targetDisplayName as string;
             
             if (!targetEntityType || !targetDisplayName) {
-              return; // Can't create vertex without basic info
+              return; // Safe - no mutations yet, can't create vertex without basic info
             }
+            
+            // Now we can safely mutate - create the discovered vertex
             
             const discoveredVertex: EntityGraphVertex = {
               id: event.targetEntityId,
@@ -241,7 +243,7 @@ export const useEntityGraphStore = create<EntityGraphState>()(
       removeVertex: (vertexId: string) =>
         set((state) => {
           const vertex = state.graph.vertices.get(vertexId);
-          if (!vertex) return;
+          if (!vertex) return; // Safe - only reading state, no mutations yet
           
           // Remove all connected edges
           const connectedEdges = [
@@ -279,7 +281,7 @@ export const useEntityGraphStore = create<EntityGraphState>()(
       removeEdge: (edgeId: string) =>
         set((state) => {
           const edge = state.graph.edges.get(edgeId);
-          if (!edge) return;
+          if (!edge) return; // Safe - only reading state, no mutations yet
           
           state.graph.edges.delete(edgeId);
           state.graph.edgesBySource.get(edge.sourceId)?.delete(edgeId);
