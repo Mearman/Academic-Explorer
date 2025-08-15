@@ -1,7 +1,6 @@
 import { forwardRef } from 'react';
 
 import { LoadingSkeleton } from '@/components/atoms/loading-skeleton';
-import type { SizeVariant } from '@/components/types';
 
 import * as styles from '../metric-display.css';
 
