@@ -60,6 +60,10 @@ export {
   EntityFallback
 } from './organisms/entity-error';
 export { WorksTimeline } from './organisms/WorksTimeline';
+export { 
+  EntityGraphVisualization,
+  EntityGraphVisualizationSkeleton 
+} from './organisms/entity-graph-visualization';
 
 // Templates
 export { 
@@ -69,6 +73,7 @@ export {
   EntityPageLoadingTemplate,
   EntityPageErrorTemplate
 } from './templates/entity-page-template';
+export { EntityPageWithGraph } from './templates/entity-page-with-graph';
 export { default as EntityErrorBoundary } from './templates/error-boundary';
 export { AppShellLayout } from './templates/app-shell-layout';
 
