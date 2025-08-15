@@ -22,8 +22,8 @@ interface EntityGraphVisualizationProps {
 }
 
 export function EntityGraphVisualization({
-  width = 800,
-  height = 400,
+  width: _width = 800,
+  height: _height = 400,
   className,
   showControls = true,
   showLegend = true,
@@ -59,8 +59,8 @@ export function EntityGraphVisualization({
   const simulateLayout = useCallback((vertices: EntityGraphVertex[]): PositionedVertex[] => {
     if (vertices.length === 0) return [];
 
-    const centerX = width / 2;
-    const centerY = height / 2;
+    const centerX = _width / 2;
+    const centerY = _height / 2;
     const iterations = 150;
     const repulsionStrength = 1000;
     const attractionStrength = 0.1;
@@ -80,7 +80,7 @@ export function EntityGraphVisualization({
       }
 
       const angle = (index / vertices.length) * 2 * Math.PI;
-      const radius = Math.min(width, height) * 0.3;
+      const radius = Math.min(_width, _height) * 0.3;
       return {
         ...vertex,
         x: centerX + Math.cos(angle) * radius,
@@ -149,22 +149,22 @@ export function EntityGraphVisualization({
 
         // Keep vertices within bounds
         const margin = 50;
-        vertex.x = Math.max(margin, Math.min(width - margin, vertex.x));
-        vertex.y = Math.max(margin, Math.min(height - margin, vertex.y));
+        vertex.x = Math.max(margin, Math.min(_width - margin, vertex.x));
+        vertex.y = Math.max(margin, Math.min(_height - margin, vertex.y));
       });
     }
 
     return positionedVertices;
-  }, [width, height, filteredEdges]);
+  }, [_width, _height, filteredEdges]);
 
   const positionedVertices = useMemo(() => {
     if (isSimulating || filteredVertices.length === 0) return [];
     
     if (layoutConfig.algorithm === 'circular') {
       // Simple circular layout
-      const centerX = width / 2;
-      const centerY = height / 2;
-      const radius = Math.min(width, height) * 0.3;
+      const centerX = _width / 2;
+      const centerY = _height / 2;
+      const radius = Math.min(_width, _height) * 0.3;
       
       return filteredVertices.map((vertex, index) => {
         const angle = (index / filteredVertices.length) * 2 * Math.PI;
@@ -177,7 +177,7 @@ export function EntityGraphVisualization({
     }
     
     return simulateLayout(filteredVertices);
-  }, [filteredVertices, layoutConfig.algorithm, simulateLayout, isSimulating, width, height]);
+  }, [filteredVertices, layoutConfig.algorithm, simulateLayout, isSimulating, _width, _height]);
 
   // Get entity color
   const getEntityColor = (entityType: EntityType): string => {
@@ -309,8 +309,8 @@ export function EntityGraphVisualization({
       {/* Main SVG */}
       <svg
         ref={svgRef}
-        width={width}
-        height={height}
+        width={_width}
+        height={_height}
         className={styles.svg}
         onMouseDown={handleMouseDown}
         onMouseMove={handleMouseMove}

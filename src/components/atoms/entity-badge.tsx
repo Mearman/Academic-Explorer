@@ -3,6 +3,7 @@
 import { forwardRef } from 'react';
 
 import { EntityBadgeProps } from '../types';
+
 import { Badge } from './badge';
 import { Icon } from './icon';
 import * as styles from './badge.css';

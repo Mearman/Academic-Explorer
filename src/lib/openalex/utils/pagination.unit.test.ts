@@ -1,14 +1,11 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { Paginator, PaginationError, paginate, BatchProcessor } from './pagination';
 import type { ApiResponse, Work } from '../types';
-import type { OpenAlexClient } from '../client';
+import { OpenAlexClient } from '../client';
 
 // Mock client with method implementations
 const mockWorks = vi.fn();
 const mockAuthors = vi.fn();
-
-// Import OpenAlexClient and extend it for testing
-import { OpenAlexClient } from '../client';
 
 // Create a mock that implements OpenAlexClient interface
 const mockClient = Object.create(OpenAlexClient.prototype);
