@@ -2,9 +2,11 @@ import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest';
 import { db } from './db';
 import type { IDBPDatabase } from 'idb';
 
-// Mock the idb module
+// Mock the idb module using hoisted pattern
+const mockOpenDB = vi.hoisted(() => vi.fn());
+
 vi.mock('idb', () => ({
-  openDB: vi.fn(),
+  openDB: mockOpenDB,
 }));
 
 describe('DatabaseService', () => {
@@ -49,8 +51,7 @@ describe('DatabaseService', () => {
     };
 
     // Mock openDB to return our mock database
-    const { openDB } = await import('idb');
-    (openDB as any).mockImplementation((name: string, version: number, config: any) => {
+    mockOpenDB.mockImplementation((name: string, version: number, config: any) => {
       // Simulate upgrade callback
       if (config && config.upgrade) {
         config.upgrade(mockDB);
@@ -65,18 +66,14 @@ describe('DatabaseService', () => {
 
   describe('Database Initialization', () => {
     it('should initialize database with correct stores', async () => {
-      const { openDB } = await import('idb');
-      
       await db.init();
 
-      expect(openDB).toHaveBeenCalledWith('academic-explorer', 1, {
+      expect(mockOpenDB).toHaveBeenCalledWith('academic-explorer', 1, {
         upgrade: expect.any(Function),
       });
     });
 
     it('should create object stores during upgrade', async () => {
-      const { openDB } = await import('idb');
-      
       // Test the upgrade function
       mockDB.objectStoreNames.contains.mockReturnValue(false);
       
@@ -89,8 +86,6 @@ describe('DatabaseService', () => {
     });
 
     it('should not recreate existing object stores', async () => {
-      const { openDB } = await import('idb');
-      
       // Simulate that stores already exist
       mockDB.objectStoreNames.contains.mockReturnValue(true);
       
@@ -100,13 +95,11 @@ describe('DatabaseService', () => {
     });
 
     it('should not reinitialize if already initialized', async () => {
-      const { openDB } = await import('idb');
-      
       await db.init();
       await db.init(); // Second call
       
       // Should only be called once
-      expect(openDB).toHaveBeenCalledTimes(1);
+      expect(mockOpenDB).toHaveBeenCalledTimes(1);
     });
 
     it('should throw error if database fails to initialize', async () => {
