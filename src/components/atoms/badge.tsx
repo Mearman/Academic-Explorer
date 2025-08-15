@@ -23,6 +23,25 @@ function buildBadgeClasses(
   ].filter(Boolean).join(' ');
 }
 
+function RemoveButton({ onRemove }: { onRemove: () => void }) {
+  const handleClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    onRemove();
+  };
+
+  return (
+    <button
+      type="button"
+      className={styles.removeButton}
+      onClick={handleClick}
+      aria-label="Remove"
+      tabIndex={0}
+    >
+      ×
+    </button>
+  );
+}
+
 export const Badge = forwardRef<HTMLSpanElement, BadgeProps>(
   function Badge({ 
     children, 
@@ -35,11 +54,6 @@ export const Badge = forwardRef<HTMLSpanElement, BadgeProps>(
     'data-testid': testId,
     ...props 
   }, ref) {
-    const handleRemove = (e: React.MouseEvent) => {
-      e.stopPropagation();
-      onRemove?.();
-    };
-
     const baseClasses = buildBadgeClasses(variant, size, pill, removable, className);
 
     return (
@@ -51,17 +65,7 @@ export const Badge = forwardRef<HTMLSpanElement, BadgeProps>(
         {...props}
       >
         {children}
-        {removable && onRemove && (
-          <button
-            type="button"
-            className={styles.removeButton}
-            onClick={handleRemove}
-            aria-label="Remove"
-            tabIndex={0}
-          >
-            ×
-          </button>
-        )}
+        {removable && onRemove && <RemoveButton onRemove={onRemove} />}
       </span>
     );
   }
