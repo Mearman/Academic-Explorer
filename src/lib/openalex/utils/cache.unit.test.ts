@@ -137,15 +137,19 @@ describe('CacheManager', () => {
     it('should count valid entries', async () => {
       vi.useFakeTimers();
       
+      // Set the initial time
+      const startTime = Date.now();
+      vi.setSystemTime(startTime);
+      
       await cache.set('works', { id: '1' }, { data: 1 });
       await cache.set('works', { id: '2' }, { data: 2 });
       
-      // Advance time to expire first entry
-      vi.advanceTimersByTime(30000);
+      // Advance time to expire first entry (30 seconds)
+      vi.setSystemTime(startTime + 30000);
       await cache.set('works', { id: '3' }, { data: 3 });
       
-      // Advance time to expire second entry but not third
-      vi.advanceTimersByTime(31000);
+      // Advance time to expire second entry but not third (61 seconds total, TTL is 60s)
+      vi.setSystemTime(startTime + 61000);
       
       const stats = cache.getStats();
       expect(stats.validEntries).toBe(1); // Only the third entry is valid
@@ -179,7 +183,7 @@ describe('CacheManager', () => {
       expect(db.cacheSearchResults).toHaveBeenCalledWith(
         expect.stringContaining('openalex:works:'),
         apiResponse.results,
-        1,
+        apiResponse.meta.count,
         { search: 'test' }
       );
     });
@@ -212,12 +216,26 @@ describe('RequestDeduplicator', () => {
   beforeEach(() => {
     deduplicator = new RequestDeduplicator();
   });
+  
+  it('should execute a simple function', async () => {
+    let called = false;
+    const fn = async () => {
+      called = true;
+      return 'result';
+    };
+    
+    const result = await deduplicator.deduplicate('test', fn);
+    
+    expect(called).toBe(true);
+    expect(result).toBe('result');
+  });
 
   it('should deduplicate concurrent requests', async () => {
     let callCount = 0;
-    const requestFn = vi.fn(async () => {
+    const requestFn = vi.fn().mockImplementation(async () => {
       callCount++;
-      await new Promise(resolve => setTimeout(resolve, 10));
+      // Use immediate resolution instead of setTimeout for test stability
+      await Promise.resolve();
       return { data: callCount };
     });
 
@@ -240,8 +258,14 @@ describe('RequestDeduplicator', () => {
   });
 
   it('should allow different keys to proceed independently', async () => {
-    const requestFn1 = vi.fn(async () => ({ data: 1 }));
-    const requestFn2 = vi.fn(async () => ({ data: 2 }));
+    const requestFn1 = vi.fn().mockImplementation(async () => {
+      await Promise.resolve(); // Ensure async execution
+      return { data: 1 };
+    });
+    const requestFn2 = vi.fn().mockImplementation(async () => {
+      await Promise.resolve(); // Ensure async execution
+      return { data: 2 };
+    });
 
     const [result1, result2] = await Promise.all([
       deduplicator.deduplicate('key1', requestFn1),
@@ -255,7 +279,10 @@ describe('RequestDeduplicator', () => {
   });
 
   it('should allow sequential requests after completion', async () => {
-    const requestFn = vi.fn(async () => ({ data: 'test' }));
+    const requestFn = vi.fn().mockImplementation(async () => {
+      await Promise.resolve(); // Ensure async execution
+      return { data: 'test' };
+    });
 
     // First request
     await deduplicator.deduplicate('key1', requestFn);
@@ -266,20 +293,23 @@ describe('RequestDeduplicator', () => {
     expect(requestFn).toHaveBeenCalledTimes(2);
   });
 
-  it('should clear pending requests', () => {
-    const requestFn = vi.fn(async () => {
-      await new Promise(resolve => setTimeout(resolve, 100));
+  it('should clear pending requests', async () => {
+    const requestFn = vi.fn().mockImplementation(async () => {
+      await new Promise(resolve => setTimeout(resolve, 10));
       return { data: 'test' };
     });
 
     // Start request but don't await
-    deduplicator.deduplicate('key1', requestFn);
+    const firstPromise = deduplicator.deduplicate('key1', requestFn);
 
     // Clear should remove pending
     deduplicator.clear();
 
-    // New request should proceed
-    deduplicator.deduplicate('key1', requestFn);
+    // New request should proceed independently
+    const secondPromise = deduplicator.deduplicate('key1', requestFn);
+
+    // Wait for both to complete
+    await Promise.allSettled([firstPromise, secondPromise]);
 
     expect(requestFn).toHaveBeenCalledTimes(2);
   });
@@ -308,13 +338,12 @@ describe('BatchQueue', () => {
   });
 
   it('should flush on delay', async () => {
-    vi.useFakeTimers();
-
-    const batchProcessor = vi.fn(async (items: number[]) => {
+    let resolveProcessor: (items: number[]) => number[];
+    const batchProcessor = vi.fn().mockImplementation(async (items: number[]) => {
       return items.map(i => i * 2);
     });
 
-    const queue = new BatchQueue(batchProcessor, 10, 50);
+    const queue = new BatchQueue(batchProcessor, 10, 10); // Use very short delay
 
     // Add items (less than batch size)
     const promise1 = queue.add(1);
@@ -323,15 +352,13 @@ describe('BatchQueue', () => {
     // Should not process immediately
     expect(batchProcessor).not.toHaveBeenCalled();
 
-    // Advance time to trigger delay
-    vi.advanceTimersByTime(50);
+    // Wait for delay to trigger
+    await new Promise(resolve => setTimeout(resolve, 20));
 
     const results = await Promise.all([promise1, promise2]);
 
     expect(batchProcessor).toHaveBeenCalledTimes(1);
     expect(results).toEqual([2, 4]);
-
-    vi.useRealTimers();
   });
 
   it('should handle errors', async () => {

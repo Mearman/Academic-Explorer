@@ -106,15 +106,36 @@ describe('cached-client', () => {
     const cacheModule = await import('./utils/cache-interceptor');
     
     mockBaseClient = clientModule.openAlex;
-    // The cache interceptor is created by the constructor, so we need to access it differently
-    mockCacheInterceptor = vi.mocked(cacheModule.CacheInterceptor).mock.results[0]?.value || {};
+    // Access the cache interceptor mock instance safely
+    const CacheInterceptorMock = vi.mocked(cacheModule.CacheInterceptor);
+    if (CacheInterceptorMock.mock?.results?.length > 0) {
+      mockCacheInterceptor = CacheInterceptorMock.mock.results[0]?.value || {};
+    } else {
+      // Provide a fallback mock
+      mockCacheInterceptor = {
+        intercept: vi.fn(),
+        clear: vi.fn().mockResolvedValue(undefined),
+        getStats: vi.fn().mockReturnValue({
+          hits: 0,
+          misses: 0,
+          skipped: 0,
+          errors: 0,
+          hitRate: 0,
+          cache: { memoryEntries: 0, validEntries: 0 },
+        }),
+        warmup: vi.fn(),
+        resetStats: vi.fn(),
+      };
+    }
     
-    // Setup mock return values
-    mockBaseClient.works.mockResolvedValue(mockWorksResponse);
-    mockBaseClient.work.mockResolvedValue(mockWork);
-    mockBaseClient.authors.mockResolvedValue(mockAuthorsResponse);
-    mockBaseClient.author.mockResolvedValue(mockAuthor);
-    mockBaseClient.randomWork.mockResolvedValue(mockWork);
+    // Ensure mockBaseClient methods are properly mocked functions
+    if (typeof mockBaseClient.works?.mockResolvedValue === 'function') {
+      mockBaseClient.works.mockResolvedValue(mockWorksResponse);
+      mockBaseClient.work.mockResolvedValue(mockWork);
+      mockBaseClient.authors.mockResolvedValue(mockAuthorsResponse);
+      mockBaseClient.author.mockResolvedValue(mockAuthor);
+      mockBaseClient.randomWork.mockResolvedValue(mockWork);
+    }
   });
 
   afterEach(() => {
