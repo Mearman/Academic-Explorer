@@ -91,10 +91,8 @@ export default tseslint.config(
             'src/stores/**/*',
             'src/types/**/*',
             'src/design-tokens.css.ts',
-            'src/components/atoms/utils/**/*',
-            'src/components/molecules/*/hooks/**/*',
-            'src/components/organisms/*/hooks/**/*',
-            'src/components/templates/hooks/**/*'
+            'src/components/**/utils/**/*',
+            'src/components/**/hooks/**/*'
           ],
           mode: 'folder'
         }
