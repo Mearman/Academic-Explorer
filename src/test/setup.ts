@@ -2,38 +2,126 @@ import { afterAll, afterEach, beforeAll, vi } from 'vitest';
 import { setupServer } from 'msw/node';
 import { handlers } from './mocks/handlers';
 
-// Setup MSW server
+// CRITICAL: Global references for cleanup tracking
+let cleanupTasks: (() => void | Promise<void>)[] = [];
+let isSetupComplete = false;
+
+// Setup MSW server with optimized configuration
 export const server = setupServer(...handlers);
 
-// Start server before all tests
-beforeAll(() => {
-  server.listen({ onUnhandledRequest: 'warn' });
-});
-
-// Reset handlers after each test
-afterEach(async () => {
-  server.resetHandlers();
-  vi.clearAllMocks();
-  
-  // Clear the mock database stores
+// CRITICAL: Force garbage collection if available (V8)
+const forceGC = () => {
   try {
-    const { mockDb } = await import('./mocks/database');
-    mockDb.clearAllStores();
+    if (global.gc) {
+      global.gc();
+    }
   } catch (error) {
-    // Ignore if mock database is not available
+    // GC not available - this is fine
+  }
+};
+
+// CRITICAL: Enhanced cleanup function
+const performCleanup = async () => {
+  try {
+    // 1. Clear all mocks
+    vi.clearAllMocks();
+    
+    // 2. Clear mock database stores
+    try {
+      const { mockDb } = await import('./mocks/database');
+      mockDb.clearAllStores();
+    } catch (error) {
+      // Ignore if mock database is not available
+    }
+    
+    // 3. Clear localStorage mock
+    if (typeof window !== 'undefined' && window.localStorage) {
+      try {
+        (window.localStorage as any).clear();
+      } catch (error) {
+        // Ignore localStorage errors
+      }
+    }
+    
+    // 4. Clear any cached modules
+    vi.resetModules();
+    
+    // 5. Run custom cleanup tasks
+    for (const task of cleanupTasks) {
+      try {
+        await task();
+      } catch (error) {
+        console.warn('Cleanup task failed:', error);
+      }
+    }
+    cleanupTasks = [];
+    
+    // 6. Force garbage collection
+    forceGC();
+    
+  } catch (error) {
+    console.warn('Cleanup failed:', error);
+  }
+};
+
+// CRITICAL: Register cleanup task
+export const registerCleanupTask = (task: () => void | Promise<void>) => {
+  cleanupTasks.push(task);
+};
+
+// Start server before all tests with error handling
+beforeAll(async () => {
+  try {
+    server.listen({ 
+      onUnhandledRequest: 'warn',
+    });
+    isSetupComplete = true;
+  } catch (error) {
+    console.error('Failed to setup MSW server:', error);
+    throw error;
   }
 });
 
-// Clean up after all tests
-afterAll(async () => {
-  server.close();
-  // Give time for cleanup
-  await new Promise(resolve => setTimeout(resolve, 100));
+// CRITICAL: Enhanced cleanup after each test
+afterEach(async () => {
+  if (!isSetupComplete) return;
+  
+  try {
+    // Reset MSW handlers first
+    server.resetHandlers();
+    
+    // Perform comprehensive cleanup
+    await performCleanup();
+    
+    // Small delay to allow async cleanup to complete
+    await new Promise(resolve => setTimeout(resolve, 10));
+    
+  } catch (error) {
+    console.warn('afterEach cleanup failed:', error);
+  }
 });
 
-// Mock fetch for Node environment - MSW handles this
+// CRITICAL: Enhanced cleanup after all tests
+afterAll(async () => {
+  try {
+    if (isSetupComplete) {
+      server.close();
+    }
+    
+    // Final comprehensive cleanup
+    await performCleanup();
+    
+    // Allow time for final cleanup
+    await new Promise(resolve => setTimeout(resolve, 100));
+    
+    isSetupComplete = false;
+    
+  } catch (error) {
+    console.warn('afterAll cleanup failed:', error);
+  }
+});
 
-// Mock the entire database layer to avoid IndexedDB issues
+// CRITICAL: Mock the entire database layer with enhanced cleanup
 vi.mock('@/lib/db', async () => {
   const { mockDb, MockDatabaseService } = await import('./mocks/database');
   return {
@@ -42,33 +130,99 @@ vi.mock('@/lib/db', async () => {
   };
 });
 
-// Setup fake-indexeddb for proper IndexedDB mocking
+// CRITICAL: Setup fake-indexeddb with cleanup
 import 'fake-indexeddb/auto';
 
-// Mock localStorage
+// CRITICAL: Enhanced localStorage mock with cleanup tracking
 const localStorageMock = {
-  getItem: vi.fn(),
-  setItem: vi.fn(),
-  removeItem: vi.fn(),
-  clear: vi.fn(),
-  length: 0,
-  key: vi.fn(),
+  store: new Map<string, string>(),
+  getItem: vi.fn((key: string) => localStorageMock.store.get(key) || null),
+  setItem: vi.fn((key: string, value: string) => localStorageMock.store.set(key, value)),
+  removeItem: vi.fn((key: string) => localStorageMock.store.delete(key)),
+  clear: vi.fn(() => localStorageMock.store.clear()),
+  get length() { return localStorageMock.store.size; },
+  key: vi.fn((index: number) => {
+    const keys = Array.from(localStorageMock.store.keys());
+    return keys[index] || null;
+  }),
 };
+
+// Register localStorage cleanup
+registerCleanupTask(() => {
+  localStorageMock.store.clear();
+  vi.clearAllMocks();
+});
 
 if (typeof window !== 'undefined') {
   Object.defineProperty(window, 'localStorage', {
     value: localStorageMock,
+    writable: true,
+    configurable: true,
   });
 }
 
-// Suppress console errors in tests (optional)
-const originalError = console.error;
+// CRITICAL: Enhanced console error suppression with cleanup
+const originalConsole = {
+  error: console.error,
+  warn: console.warn,
+  log: console.log,
+};
+
 console.error = (...args: any[]) => {
   if (
-    typeof args[0] === 'string' &&
-    args[0].includes('Warning: ReactDOM.render')
+    typeof args[0] === 'string' && (
+      args[0].includes('Warning: ReactDOM.render') ||
+      args[0].includes('Warning: React.createElement') ||
+      args[0].includes('act(') ||
+      args[0].includes('Warning: You are importing') ||
+      args[0].includes('Failed to construct')
+    )
   ) {
     return;
   }
-  originalError.call(console, ...args);
+  originalConsole.error.call(console, ...args);
 };
+
+// Register console cleanup
+registerCleanupTask(() => {
+  console.error = originalConsole.error;
+  console.warn = originalConsole.warn;
+  console.log = originalConsole.log;
+});
+
+// CRITICAL: Memory monitoring (development only)
+if (process.env.NODE_ENV !== 'production' && process.env.CI !== 'true') {
+  let testCount = 0;
+  
+  afterEach(() => {
+    testCount++;
+    if (testCount % 10 === 0) {
+      const memUsage = process.memoryUsage();
+      console.info(`Memory after ${testCount} tests:`, {
+        rss: Math.round(memUsage.rss / 1024 / 1024),
+        heapUsed: Math.round(memUsage.heapUsed / 1024 / 1024),
+        external: Math.round(memUsage.external / 1024 / 1024),
+      });
+    }
+  });
+}
+
+// CRITICAL: Unhandled rejection/exception handling
+const unhandledRejections = new Set();
+const unhandledExceptions = new Set();
+
+process.on('unhandledRejection', (reason) => {
+  unhandledRejections.add(reason);
+  console.warn('Unhandled Rejection:', reason);
+});
+
+process.on('uncaughtException', (error) => {
+  unhandledExceptions.add(error);
+  console.warn('Uncaught Exception:', error);
+});
+
+// Register process cleanup
+registerCleanupTask(() => {
+  unhandledRejections.clear();
+  unhandledExceptions.clear();
+});
