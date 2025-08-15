@@ -44,6 +44,7 @@ export {
   InfoAlert,
   SuccessAlert
 } from './atoms/error-message';
+export { BuildInfo } from './atoms/build-info';
 
 // Molecules
 export { MetricDisplay } from './molecules/metric-display';
