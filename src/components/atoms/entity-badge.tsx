@@ -4,9 +4,10 @@ import { forwardRef } from 'react';
 
 import { EntityBadgeProps } from '../types';
 
-import * as styles from './badge.css';
 import { Badge } from './badge';
 import { Icon } from './icon';
+
+import * as styles from './badge.css';
 
 const ENTITY_LABELS = {
   work: 'Work',
@@ -36,6 +37,28 @@ const ENTITY_ICONS = {
   region: 'map',
 } as const;
 
+function buildEntityClasses(entityType: keyof typeof styles.entityTypeVariants, className?: string) {
+  return [
+    styles.entityTypeVariants[entityType],
+    className,
+  ].filter(Boolean).join(' ');
+}
+
+function EntityIcon({ entityType, size, showIcon }: { 
+  entityType: keyof typeof ENTITY_ICONS; 
+  size: string; 
+  showIcon: boolean; 
+}) {
+  if (!showIcon) return null;
+  return (
+    <Icon 
+      name={ENTITY_ICONS[entityType]} 
+      size={size} 
+      aria-hidden="true"
+    />
+  );
+}
+
 export const EntityBadge = forwardRef<HTMLSpanElement, EntityBadgeProps>(
   function EntityBadge({ 
     entityType, 
@@ -46,12 +69,7 @@ export const EntityBadge = forwardRef<HTMLSpanElement, EntityBadgeProps>(
     ...props 
   }, ref) {
     const label = ENTITY_LABELS[entityType];
-    const iconName = ENTITY_ICONS[entityType];
-    
-    const entityClasses = [
-      styles.entityTypeVariants[entityType],
-      className,
-    ].filter(Boolean).join(' ');
+    const entityClasses = buildEntityClasses(entityType, className);
 
     return (
       <Badge
@@ -62,13 +80,7 @@ export const EntityBadge = forwardRef<HTMLSpanElement, EntityBadgeProps>(
         aria-label={`${label} entity type`}
         {...props}
       >
-        {showIcon && (
-          <Icon 
-            name={iconName} 
-            size={size} 
-            aria-hidden="true"
-          />
-        )}
+        <EntityIcon entityType={entityType} size={size} showIcon={showIcon} />
         {label}
       </Badge>
     );
