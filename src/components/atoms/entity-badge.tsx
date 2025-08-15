@@ -2,12 +2,11 @@
 
 import { forwardRef } from 'react';
 
-import { EntityBadgeProps } from '../types';
+import { EntityBadgeProps, SizeVariant } from '../types';
 
 import { Badge } from './badge';
-import { Icon } from './icon';
-
 import * as styles from './badge.css';
+import { Icon } from './icon';
 
 const ENTITY_LABELS = {
   work: 'Work',
@@ -46,7 +45,7 @@ function buildEntityClasses(entityType: keyof typeof styles.entityTypeVariants, 
 
 function EntityIcon({ entityType, size, showIcon }: { 
   entityType: keyof typeof ENTITY_ICONS; 
-  size: string; 
+  size: SizeVariant; 
   showIcon: boolean; 
 }) {
   if (!showIcon) return null;
