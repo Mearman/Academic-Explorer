@@ -87,7 +87,7 @@ function AuthorDisplay({ author }: { author: Author }) {
                 <Paper p="lg" radius="md" withBorder>
                   <Stack gap="xs" align="center">
                     <Text size="xl" fw={700} c="blue">
-                      {author.works_count.toLocaleString()}
+                      {(author.works_count ?? 0).toLocaleString()}
                     </Text>
                     <Text size="sm" c="dimmed" ta="center">
                       Works Published
@@ -99,7 +99,7 @@ function AuthorDisplay({ author }: { author: Author }) {
                 <Paper p="lg" radius="md" withBorder>
                   <Stack gap="xs" align="center">
                     <Text size="xl" fw={700} c="blue">
-                      {author.cited_by_count.toLocaleString()}
+                      {(author.cited_by_count ?? 0).toLocaleString()}
                     </Text>
                     <Text size="sm" c="dimmed" ta="center">
                       Total Citations
@@ -111,7 +111,7 @@ function AuthorDisplay({ author }: { author: Author }) {
                 <Paper p="lg" radius="md" withBorder>
                   <Stack gap="xs" align="center">
                     <Text size="xl" fw={700} c="grape">
-                      {author.summary_stats.h_index}
+                      {author.summary_stats?.h_index ?? 0}
                     </Text>
                     <Text size="sm" c="dimmed" ta="center">
                       h-index
@@ -123,7 +123,7 @@ function AuthorDisplay({ author }: { author: Author }) {
                 <Paper p="lg" radius="md" withBorder>
                   <Stack gap="xs" align="center">
                     <Text size="xl" fw={700} c="orange">
-                      {author.summary_stats.i10_index}
+                      {author.summary_stats?.i10_index ?? 0}
                     </Text>
                     <Text size="sm" c="dimmed" ta="center">
                       i10-index
@@ -147,7 +147,7 @@ function AuthorDisplay({ author }: { author: Author }) {
                       2-Year Mean Citedness
                     </Text>
                     <Text size="lg" fw={600}>
-                      {author.summary_stats['2yr_mean_citedness'].toFixed(2)}
+                      {(author.summary_stats?.['2yr_mean_citedness'] ?? 0).toFixed(2)}
                     </Text>
                     <Text size="xs" c="dimmed" mt="xs">
                       Average citations per work over last 2 years
@@ -161,10 +161,10 @@ function AuthorDisplay({ author }: { author: Author }) {
                       h-index
                     </Text>
                     <Text size="lg" fw={600}>
-                      {author.summary_stats.h_index}
+                      {author.summary_stats?.h_index ?? 0}
                     </Text>
                     <Text size="xs" c="dimmed" mt="xs">
-                      Has {author.summary_stats.h_index} papers with ≥{author.summary_stats.h_index} citations each
+                      Has {author.summary_stats?.h_index ?? 0} papers with ≥{author.summary_stats?.h_index ?? 0} citations each
                     </Text>
                   </Paper>
                 </Grid.Col>
@@ -175,7 +175,7 @@ function AuthorDisplay({ author }: { author: Author }) {
                       i10-index
                     </Text>
                     <Text size="lg" fw={600}>
-                      {author.summary_stats.i10_index}
+                      {author.summary_stats?.i10_index ?? 0}
                     </Text>
                     <Text size="xs" c="dimmed" mt="xs">
                       Number of works with ≥10 citations
