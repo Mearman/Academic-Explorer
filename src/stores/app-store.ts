@@ -64,7 +64,10 @@ export const useAppStore = create<AppState>()(
         
       updateSearchFilters: (filters) =>
         set((state) => {
-          Object.assign(state.searchFilters, filters);
+          // Use direct property assignment instead of Object.assign for Immer compatibility
+          if (filters.dateRange !== undefined) state.searchFilters.dateRange = filters.dateRange;
+          if (filters.publicationType !== undefined) state.searchFilters.publicationType = filters.publicationType;
+          if (filters.openAccess !== undefined) state.searchFilters.openAccess = filters.openAccess;
         }),
         
       clearSearchFilters: () =>
@@ -86,7 +89,10 @@ export const useAppStore = create<AppState>()(
         
       updatePreferences: (prefs) =>
         set((state) => {
-          Object.assign(state.preferences, prefs);
+          // Use direct property assignment instead of Object.assign for Immer compatibility
+          if (prefs.resultsPerPage !== undefined) state.preferences.resultsPerPage = prefs.resultsPerPage;
+          if (prefs.defaultView !== undefined) state.preferences.defaultView = prefs.defaultView;
+          if (prefs.showAbstracts !== undefined) state.preferences.showAbstracts = prefs.showAbstracts;
         }),
     })),
     {
