@@ -127,6 +127,13 @@ export const useEntityGraphStore = create<EntityGraphState>()(
             existingVertex.lastVisited = event.timestamp;
             existingVertex.visitCount += 1;
             existingVertex.metadata.url = event.metadata?.url as string;
+            
+            // Update display name if we have better data
+            if (event.displayName && 
+                !event.displayName.includes('loading') && 
+                !event.displayName.includes('Loading')) {
+              existingVertex.displayName = event.displayName;
+            }
           } else {
             // Create new vertex
             const newVertex: EntityGraphVertex = {
