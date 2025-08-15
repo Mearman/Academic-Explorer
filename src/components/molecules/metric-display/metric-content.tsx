@@ -1,11 +1,11 @@
-import { Icon } from '@/components/atoms/icon';
+import { MetricIcon } from '@/components/atoms/metric-icon';
+import { MetricLabel } from '@/components/atoms/metric-label';
+import { MetricValue } from '@/components/atoms/metric-value';
 import type { SizeVariant } from '@/components/types';
-import { formatMetricValue } from '@/lib/metric-formatting';
 import type { MetricFormat, TrendDirection } from '@/lib/metric-formatting';
 
 import * as styles from '../metric-display.css';
-
-import { TrendIndicator } from './trend-indicator';
+import { MetricExtras } from '../metric-extras';
 
 interface MetricContentProps {
   label: string;
@@ -37,48 +37,27 @@ export function MetricContent({
   return (
     <>
       {icon && layout !== 'compact' && (
-        <div className={styles.iconContainer}>
-          <Icon 
-            name={icon} 
-            size={size === 'sm' ? 'sm' : 'md'} 
-            aria-hidden="true" 
-          />
-        </div>
+        <MetricIcon icon={icon} size={size} layout={layout} className={styles.iconContainer} />
       )}
       
       <div className={styles.contentContainer}>
-        <div className={styles.labelStyle}>
-          {icon && layout === 'compact' && (
-            <Icon name={icon} size="sm" aria-hidden="true" />
-          )}
-          {label}
-        </div>
+        <MetricLabel
+          label={label}
+          icon={icon}
+          size={size}
+          layout={layout}
+          className={styles.labelStyle}
+        />
         
-        <div className={styles.valueContainer}>
-          <span className={styles.valueStyle}>
-            {formatMetricValue(value, format)}
-          </span>
-          
-          {trend && (
-            <TrendIndicator
-              direction={trend.direction}
-              value={trend.value}
-              label={trend.label}
-            />
-          )}
-        </div>
-        
-        {description && (
-          <div className={styles.descriptionStyle}>
-            {description}
-          </div>
-        )}
-        
-        {accessories && (
-          <div className={styles.accessoryContainer}>
-            {accessories}
-          </div>
-        )}
+        <MetricValue 
+          value={value} 
+          format={format} 
+          trend={trend}
+          className={styles.valueContainer}
+          valueClassName={styles.valueStyle}
+          trendClassName={`${styles.trendContainer} ${trend ? styles.trendVariants[trend.direction] : ''}`}
+        />
+        <MetricExtras description={description} accessories={accessories} />
       </div>
     </>
   );

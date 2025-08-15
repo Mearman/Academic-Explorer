@@ -8,6 +8,25 @@ export { ExternalLink } from './atoms/external-link';
 export { LoadingSpinner } from './atoms/loading-spinner';
 export { Skeleton } from './atoms/skeleton';
 export { EntityLink } from './atoms/entity-link';
+export { ToggleButton } from './atoms/toggle-button';
+export { FilterCheckbox } from './atoms/filter-checkbox';
+export { MetricIcon } from './atoms/metric-icon';
+export { MetricValue } from './atoms/metric-value';
+export { SuggestionHeader } from './atoms/suggestion-header';
+export { SuggestionMetrics } from './atoms/suggestion-metrics';
+export { BasicSearchControls } from './atoms/basic-search-controls';
+export { ContentFiltersList } from './atoms/content-filters-list';
+export { EntityInputsList } from './atoms/entity-inputs-list';
+export { MetricLabel } from './atoms/metric-label';
+export { TrendIndicator } from './atoms/trend-indicator';
+export { AutocompleteInput } from './atoms/autocomplete-input';
+export { SuggestionsList } from './atoms/suggestions-list';
+export { SuggestionContent } from './atoms/suggestion-content';
+export { WorkHeader } from './atoms/work-header';
+export { WorkAuthors } from './atoms/work-authors';
+export { WorkVenue } from './atoms/work-venue';
+export { WorkConcepts } from './atoms/work-concepts';
+export { WorkLinks } from './atoms/work-links';
 export { 
   LoadingSkeleton,
   SkeletonGroup,
@@ -36,6 +55,15 @@ export { TopbarSearch } from './molecules/topbar-search';
 export { EntityLoading } from './molecules/entity-loading';
 export { AuthorList } from './molecules/author-list';
 export { ConceptList } from './molecules/concept-list';
+export { AppShellHeader } from './molecules/app-shell-header';
+export { AppShellNavbar } from './molecules/app-shell-navbar';
+export { EntityBreadcrumbs } from './molecules/entity-breadcrumbs';
+export { EntitySectionHeader } from './molecules/entity-section-header';
+export { FloatingActions } from './molecules/floating-actions';
+export { ErrorIcon } from './molecules/error-icon';
+export { ErrorMessageContent } from './molecules/error-message-content';
+export { ErrorActions } from './molecules/error-actions';
+export { ErrorDebugDetails } from './molecules/error-debug-details';
 
 // Organisms
 export { EntityHeader, EntityHeaderSkeleton } from './organisms/entity-header';
@@ -64,6 +92,29 @@ export {
   EntityGraphVisualization,
   EntityGraphVisualizationSkeleton 
 } from './organisms/entity-graph-visualization';
+export { EntityGraphActions } from './organisms/entity-graph-actions';
+export { WorkMetricsGrid } from './organisms/work-metrics-grid';
+export { WorkPublicationDetails } from './organisms/work-publication-details';
+export { WorkAbstract } from './atoms/work-abstract';
+export { WorkExternalLinks } from './organisms/work-external-links';
+export { InstitutionMetrics } from './organisms/InstitutionMetrics';
+export { InstitutionDetails } from './organisms/InstitutionDetails';
+export { InstitutionRelations } from './organisms/InstitutionRelations';
+export { InstitutionExternalLinks } from './organisms/InstitutionExternalLinks';
+export { ConceptMetrics } from './organisms/ConceptMetrics';
+export { ConceptDetails } from './organisms/ConceptDetails';
+export { ConceptExternalLinks } from './organisms/ConceptExternalLinks';
+export { ConceptMetricsGrid } from './organisms/concept-metrics-grid';
+export { ConceptHierarchy } from './organisms/concept-hierarchy';
+export { ConceptDescription } from './organisms/concept-description';
+export { ConceptRelatedConcepts } from './organisms/concept-related-concepts';
+export { ConceptInternationalNames } from './organisms/concept-international-names';
+export { ConceptImages } from './organisms/concept-images';
+export { ConceptMetadata } from './organisms/concept-metadata';
+export { ConceptExternalLinksEnhanced } from './organisms/concept-external-links-enhanced';
+export { SourceMetricsGrid } from './organisms/source-metrics-grid';
+export { SourcePublicationDetails } from './organisms/source-publication-details';
+export { SourceExternalLinks } from './organisms/source-external-links';
 
 // Templates
 export { 

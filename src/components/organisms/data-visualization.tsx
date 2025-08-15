@@ -5,6 +5,182 @@ import { EntityType } from '@/lib/openalex/utils/entity-detection';
 
 import * as styles from './data-visualization.css';
 
+// Utility functions for chart calculations
+function calculateScales(data: DataPoint[], chartWidth: number, chartHeight: number) {
+  const maxY = Math.max(...data.map(d => d.y));
+  const minY = Math.min(...data.map(d => d.y));
+  
+  const xValues = data.map(d => d.x);
+  const isNumeric = typeof xValues[0] === 'number';
+  
+  let xScale: (value: string | number, index?: number) => number;
+  if (isNumeric) {
+    const maxX = Math.max(...(xValues as number[]));
+    const minX = Math.min(...(xValues as number[]));
+    xScale = (x: string | number) => {
+      const numX = typeof x === 'string' ? parseFloat(x) : x;
+      return ((numX - minX) / (maxX - minX)) * chartWidth;
+    };
+  } else {
+    xScale = (_x: string | number, index: number = 0) => (index / (data.length - 1)) * chartWidth;
+  }
+  
+  const yScale = (y: number) => chartHeight - ((y - minY) / (maxY - minY)) * chartHeight;
+  
+  return { xScale, yScale, maxY };
+}
+
+function renderBarChart(
+  data: DataPoint[],
+  yScale: (y: number) => number,
+  chartWidth: number,
+  chartHeight: number,
+  showLabels: boolean
+) {
+  const barWidth = chartWidth / data.length * 0.8;
+  
+  return data.map((point, index) => (
+    <g key={index}>
+      <rect
+        x={index * (chartWidth / data.length) + (chartWidth / data.length - barWidth) / 2}
+        y={yScale(point.y)}
+        width={barWidth}
+        height={chartHeight - yScale(point.y)}
+        className={styles.chartBar}
+        fill={`hsl(${210 + index * 20}, 70%, 50%)`}
+      />
+      {showLabels && (
+        <text
+          x={index * (chartWidth / data.length) + chartWidth / data.length / 2}
+          y={chartHeight + 20}
+          className={styles.chartLabel}
+          textAnchor="middle"
+        >
+          {point.x}
+        </text>
+      )}
+    </g>
+  ));
+}
+
+function renderLineChart(
+  data: DataPoint[],
+  xScale: (value: string | number, index?: number) => number,
+  yScale: (y: number) => number,
+  chartWidth: number,
+  chartHeight: number,
+  showLabels: boolean
+) {
+  const points = data.map((point, index) => {
+    const x = typeof point.x === 'number' 
+      ? xScale(point.x) 
+      : index * (chartWidth / (data.length - 1));
+    const y = yScale(point.y);
+    return { x, y, original: point };
+  });
+
+  const pathData = points
+    .map((point, index) => `${index === 0 ? 'M' : 'L'} ${point.x} ${point.y}`)
+    .join(' ');
+
+  return (
+    <>
+      <path
+        d={pathData}
+        fill="none"
+        stroke="hsl(210, 70%, 50%)"
+        strokeWidth="2"
+        className={styles.chartLine}
+      />
+      {points.map((point, index) => (
+        <g key={index}>
+          <circle
+            cx={point.x}
+            cy={point.y}
+            r="4"
+            fill="hsl(210, 70%, 50%)"
+            className={styles.chartPoint}
+          />
+          {showLabels && (
+            <text
+              x={point.x}
+              y={chartHeight + 20}
+              className={styles.chartLabel}
+              textAnchor="middle"
+            >
+              {point.original.x}
+            </text>
+          )}
+        </g>
+      ))}
+    </>
+  );
+}
+
+function renderGrid(showGrid: boolean, chartWidth: number, chartHeight: number) {
+  if (!showGrid) return null;
+
+  const gridLines = [];
+  const ySteps = 5;
+  
+  for (let i = 0; i <= ySteps; i++) {
+    const y = (chartHeight / ySteps) * i;
+    gridLines.push(
+      <line
+        key={`grid-${i}`}
+        x1={0}
+        y1={y}
+        x2={chartWidth}
+        y2={y}
+        className={styles.gridLine}
+      />
+    );
+  }
+
+  return <g className={styles.grid}>{gridLines}</g>;
+}
+
+function renderAxes(chartWidth: number, chartHeight: number, maxY: number) {
+  return (
+    <>
+      {/* Y-axis */}
+      <line
+        x1={0}
+        y1={0}
+        x2={0}
+        y2={chartHeight}
+        className={styles.axis}
+      />
+      
+      {/* X-axis */}
+      <line
+        x1={0}
+        y1={chartHeight}
+        x2={chartWidth}
+        y2={chartHeight}
+        className={styles.axis}
+      />
+      
+      {/* Y-axis labels */}
+      {Array.from({ length: 6 }, (_, i) => {
+        const value = (maxY / 5) * i;
+        const y = chartHeight - (i / 5) * chartHeight;
+        return (
+          <text
+            key={`y-label-${i}`}
+            x={-10}
+            y={y + 4}
+            className={styles.axisLabel}
+            textAnchor="end"
+          >
+            {Math.round(value).toLocaleString()}
+          </text>
+        );
+      })}
+    </>
+  );
+}
+
 interface DataPoint {
   x: number | string;
   y: number;
@@ -59,169 +235,18 @@ export function Chart({
   const chartHeight = height - margin.top - margin.bottom;
 
   const { xScale, yScale, maxY } = useMemo(() => {
-    const maxY = Math.max(...data.map(d => d.y));
-    const minY = Math.min(...data.map(d => d.y));
-    
-    const xValues = data.map(d => d.x);
-    const isNumeric = typeof xValues[0] === 'number';
-    
-    let xScale: (value: string | number, index?: number) => number;
-    if (isNumeric) {
-      const maxX = Math.max(...(xValues as number[]));
-      const minX = Math.min(...(xValues as number[]));
-      xScale = (x: string | number) => {
-        const numX = typeof x === 'string' ? parseFloat(x) : x;
-        return ((numX - minX) / (maxX - minX)) * chartWidth;
-      };
-    } else {
-      xScale = (_x: string | number, index: number = 0) => (index / (data.length - 1)) * chartWidth;
-    }
-    
-    const yScale = (y: number) => chartHeight - ((y - minY) / (maxY - minY)) * chartHeight;
-    
-    return { xScale, yScale, maxY };
+    return calculateScales(data, chartWidth, chartHeight);
   }, [data, chartWidth, chartHeight]);
-
-  const renderBarChart = () => {
-    const barWidth = chartWidth / data.length * 0.8;
-    
-    return data.map((point, index) => (
-      <g key={index}>
-        <rect
-          x={index * (chartWidth / data.length) + (chartWidth / data.length - barWidth) / 2}
-          y={yScale(point.y)}
-          width={barWidth}
-          height={chartHeight - yScale(point.y)}
-          className={styles.chartBar}
-          fill={`hsl(${210 + index * 20}, 70%, 50%)`}
-        />
-        {showLabels && (
-          <text
-            x={index * (chartWidth / data.length) + chartWidth / data.length / 2}
-            y={chartHeight + 20}
-            className={styles.chartLabel}
-            textAnchor="middle"
-          >
-            {point.x}
-          </text>
-        )}
-      </g>
-    ));
-  };
-
-  const renderLineChart = () => {
-    const points = data.map((point, index) => {
-      const x = typeof point.x === 'number' 
-        ? xScale(point.x) 
-        : index * (chartWidth / (data.length - 1));
-      const y = yScale(point.y);
-      return { x, y, original: point };
-    });
-
-    const pathData = points
-      .map((point, index) => `${index === 0 ? 'M' : 'L'} ${point.x} ${point.y}`)
-      .join(' ');
-
-    return (
-      <>
-        <path
-          d={pathData}
-          fill="none"
-          stroke="hsl(210, 70%, 50%)"
-          strokeWidth="2"
-          className={styles.chartLine}
-        />
-        {points.map((point, index) => (
-          <g key={index}>
-            <circle
-              cx={point.x}
-              cy={point.y}
-              r="4"
-              fill="hsl(210, 70%, 50%)"
-              className={styles.chartPoint}
-            />
-            {showLabels && (
-              <text
-                x={point.x}
-                y={chartHeight + 20}
-                className={styles.chartLabel}
-                textAnchor="middle"
-              >
-                {point.original.x}
-              </text>
-            )}
-          </g>
-        ))}
-      </>
-    );
-  };
-
-  const renderGrid = () => {
-    if (!showGrid) return null;
-
-    const gridLines = [];
-    const ySteps = 5;
-    
-    for (let i = 0; i <= ySteps; i++) {
-      const y = (chartHeight / ySteps) * i;
-      gridLines.push(
-        <line
-          key={`grid-${i}`}
-          x1={0}
-          y1={y}
-          x2={chartWidth}
-          y2={y}
-          className={styles.gridLine}
-        />
-      );
-    }
-
-    return <g className={styles.grid}>{gridLines}</g>;
-  };
 
   return (
     <div className={styles.chartContainer}>
       <h3 className={styles.chartTitle}>{title}</h3>
       <svg width={width} height={height} className={styles.chart}>
         <g transform={`translate(${margin.left}, ${margin.top})`}>
-          {renderGrid()}
-          {type === 'bar' && renderBarChart()}
-          {type === 'line' && renderLineChart()}
-          
-          {/* Y-axis */}
-          <line
-            x1={0}
-            y1={0}
-            x2={0}
-            y2={chartHeight}
-            className={styles.axis}
-          />
-          
-          {/* X-axis */}
-          <line
-            x1={0}
-            y1={chartHeight}
-            x2={chartWidth}
-            y2={chartHeight}
-            className={styles.axis}
-          />
-          
-          {/* Y-axis labels */}
-          {Array.from({ length: 6 }, (_, i) => {
-            const value = (maxY / 5) * i;
-            const y = chartHeight - (i / 5) * chartHeight;
-            return (
-              <text
-                key={`y-label-${i}`}
-                x={-10}
-                y={y + 4}
-                className={styles.axisLabel}
-                textAnchor="end"
-              >
-                {Math.round(value).toLocaleString()}
-              </text>
-            );
-          })}
+          {renderGrid(showGrid, chartWidth, chartHeight)}
+          {type === 'bar' && renderBarChart(data, yScale, chartWidth, chartHeight, showLabels)}
+          {type === 'line' && renderLineChart(data, xScale, yScale, chartWidth, chartHeight, showLabels)}
+          {renderAxes(chartWidth, chartHeight, maxY)}
         </g>
       </svg>
     </div>

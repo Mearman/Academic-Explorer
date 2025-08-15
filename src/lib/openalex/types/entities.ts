@@ -478,3 +478,17 @@ export function isContinent(entity: unknown): entity is Continent {
 export function isRegion(entity: unknown): entity is Region {
   return typeof entity === 'object' && entity !== null && 'display_name' in entity && 'works_count' in entity && 'cited_by_count' in entity && 'description' in entity;
 }
+
+// Union type for all OpenAlex entities
+export type OpenAlexEntity = 
+  | Work 
+  | Author 
+  | Source 
+  | Institution 
+  | Publisher 
+  | Funder 
+  | Topic 
+  | Concept 
+  | Keyword 
+  | Continent 
+  | Region;

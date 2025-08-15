@@ -2,7 +2,12 @@ import React, { useState, useMemo, useCallback } from 'react';
 
 import { Icon, LoadingSkeleton } from '@/components';
 import { useEntityGraphStore } from '@/stores/entity-graph-store';
-import type { EntityGraphVertex, EntityType } from '@/types/entity-graph';
+import type { 
+  EntityGraphVertex, 
+  EntityGraphEdge, 
+  EntityType, 
+  GraphLayoutConfig 
+} from '@/types/entity-graph';
 
 import * as styles from './entity-graph-visualization.css';
 import { GraphControls } from './graph-controls/GraphControls';
@@ -13,6 +18,69 @@ import { GraphLegend } from './graph-legend/GraphLegend';
 import { GraphSVG } from './graph-svg/GraphSVG';
 import { GraphTooltip } from './graph-tooltip/GraphTooltip';
 import { useGraphInteractions } from './hooks/use-graph-interactions';
+
+// Utility functions for entity graph calculations
+function getEntityColor(entityType: EntityType): string {
+  return (styles.entityColors as Record<string, string>)[entityType] || styles.entityColors.work;
+}
+
+function calculateVertexRadius(vertex: EntityGraphVertex, sizeByVisitCount: boolean): number {
+  const baseRadius = 8;
+  const maxRadius = 20;
+  
+  if (sizeByVisitCount && vertex.visitCount > 0) {
+    return Math.min(maxRadius, baseRadius + Math.sqrt(vertex.visitCount) * 3);
+  }
+  
+  if (vertex.metadata.citedByCount) {
+    const citationScale = Math.log(vertex.metadata.citedByCount + 1) / Math.log(1000);
+    return Math.min(maxRadius, baseRadius + citationScale * 8);
+  }
+  
+  return baseRadius;
+}
+
+function generatePositionedVertices(
+  filteredVertices: EntityGraphVertex[],
+  filteredEdges: EntityGraphEdge[],
+  layoutConfig: GraphLayoutConfig,
+  isSimulating: boolean,
+  width: number,
+  height: number
+) {
+  if (isSimulating || filteredVertices.length === 0) return [];
+  
+  if (layoutConfig.algorithm === 'circular') {
+    return createCircularLayout(filteredVertices, width, height);
+  }
+  
+  return createForceSimulation(filteredVertices, filteredEdges, {
+    width,
+    height,
+  });
+}
+
+function calculateConnectedEdges(selectedVertexId: string | null, filteredEdges: EntityGraphEdge[]): Set<string> {
+  if (!selectedVertexId) return new Set<string>();
+  return new Set(filteredEdges
+    .filter(edge => edge.sourceId === selectedVertexId || edge.targetId === selectedVertexId)
+    .map(edge => edge.id)
+  );
+}
+
+function EmptyGraphState({ isFullscreen, className }: { isFullscreen: boolean; className?: string }) {
+  return (
+    <div className={`${styles.container} ${isFullscreen ? styles.fullscreenContainer : ''} ${className || ''}`}>
+      <div className={styles.emptyState}>
+        <Icon name="graph" size="xl" />
+        <p>No entities to display</p>
+        <p style={{ fontSize: '12px', marginTop: '8px' }}>
+          Visit some entities to see them appear in the graph
+        </p>
+      </div>
+    </div>
+  );
+}
 
 
 interface EntityGraphVisualizationProps {
@@ -66,41 +134,16 @@ export function EntityGraphVisualization({
   const filteredVertices = useMemo(() => getFilteredVertices(), [getFilteredVertices]);
   const filteredEdges = useMemo(() => getFilteredEdges(), [getFilteredEdges]);
 
-
   const positionedVertices = useMemo(() => {
-    if (isSimulating || filteredVertices.length === 0) return [];
-    
-    if (layoutConfig.algorithm === 'circular') {
-      return createCircularLayout(filteredVertices, _width, _height);
-    }
-    
-    return createForceSimulation(filteredVertices, filteredEdges, {
-      width: _width,
-      height: _height,
-    });
-  }, [filteredVertices, filteredEdges, layoutConfig.algorithm, isSimulating, _width, _height]);
-
-  // Get entity color
-  const getEntityColor = useCallback((entityType: EntityType): string => {
-    return (styles.entityColors as Record<string, string>)[entityType] || styles.entityColors.work;
-  }, []);
-
-  // Calculate vertex radius based on visit count and configuration
-  const getVertexRadius = useCallback((vertex: EntityGraphVertex): number => {
-    const baseRadius = 8;
-    const maxRadius = 20;
-    
-    if (layoutConfig.sizeByVisitCount && vertex.visitCount > 0) {
-      return Math.min(maxRadius, baseRadius + Math.sqrt(vertex.visitCount) * 3);
-    }
-    
-    if (vertex.metadata.citedByCount) {
-      const citationScale = Math.log(vertex.metadata.citedByCount + 1) / Math.log(1000);
-      return Math.min(maxRadius, baseRadius + citationScale * 8);
-    }
-    
-    return baseRadius;
-  }, [layoutConfig.sizeByVisitCount]);
+    return generatePositionedVertices(
+      filteredVertices, 
+      filteredEdges, 
+      layoutConfig, 
+      isSimulating, 
+      _width, 
+      _height
+    );
+  }, [filteredVertices, filteredEdges, layoutConfig, isSimulating, _width, _height]);
 
   // Handle vertex interactions
   const handleVertexClick = useCallback((event: React.MouseEvent, vertex: EntityGraphVertex) => {
@@ -132,25 +175,18 @@ export function EntityGraphVisualization({
 
   // Get connected edges for highlighting
   const connectedEdges = useMemo(() => {
-    if (!selectedVertexId) return new Set<string>();
-    return new Set(filteredEdges
-      .filter(edge => edge.sourceId === selectedVertexId || edge.targetId === selectedVertexId)
-      .map(edge => edge.id)
-    );
+    return calculateConnectedEdges(selectedVertexId, filteredEdges);
   }, [selectedVertexId, filteredEdges]);
 
+  // Callback versions of utility functions
+  const getEntityColorCallback = useCallback(getEntityColor, []);
+  const getVertexRadius = useCallback((vertex: EntityGraphVertex) => 
+    calculateVertexRadius(vertex, layoutConfig.sizeByVisitCount), 
+    [layoutConfig.sizeByVisitCount]
+  );
+
   if (filteredVertices.length === 0) {
-    return (
-      <div className={`${styles.container} ${isFullscreen ? styles.fullscreenContainer : ''} ${className || ''}`}>
-        <div className={styles.emptyState}>
-          <Icon name="graph" size="xl" />
-          <p>No entities to display</p>
-          <p style={{ fontSize: '12px', marginTop: '8px' }}>
-            Visit some entities to see them appear in the graph
-          </p>
-        </div>
-      </div>
-    );
+    return <EmptyGraphState isFullscreen={isFullscreen} className={className} />;
   }
 
   return (
@@ -176,7 +212,7 @@ export function EntityGraphVisualization({
         hoveredVertexId={hoveredVertexId}
         connectedEdges={connectedEdges}
         layoutConfig={layoutConfig}
-        getEntityColor={getEntityColor}
+        getEntityColor={getEntityColorCallback}
         getVertexRadius={getVertexRadius}
         onVertexClick={handleVertexClick}
         onVertexMouseEnter={handleVertexMouseEnter}
@@ -198,7 +234,7 @@ export function EntityGraphVisualization({
       {showLegend && (
         <GraphLegend
           vertices={filteredVertices}
-          getEntityColor={getEntityColor}
+          getEntityColor={getEntityColorCallback}
         />
       )}
 

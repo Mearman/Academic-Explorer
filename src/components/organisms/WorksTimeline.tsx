@@ -50,6 +50,155 @@ interface YearGroup {
   totalCitations: number;
 }
 
+// Utility function to group works by year
+function groupWorksByYear(works: Work[], sortOrder: 'asc' | 'desc' = 'desc'): YearGroup[] {
+  const groups = new Map<number, Work[]>();
+  
+  works.forEach(work => {
+    const year = work.publication_year || new Date(work.publication_date || '').getFullYear();
+    if (!groups.has(year)) {
+      groups.set(year, []);
+    }
+    groups.get(year)!.push(work);
+  });
+
+  return Array.from(groups.entries())
+    .map(([year, yearWorks]) => ({
+      year,
+      works: yearWorks,
+      totalCitations: yearWorks.reduce((sum, work) => sum + work.cited_by_count, 0)
+    }))
+    .sort((a, b) => sortOrder === 'desc' ? b.year - a.year : a.year - b.year);
+}
+
+// Utility function to render timeline header
+function TimelineHeader({ authorName }: { authorName?: string }) {
+  return (
+    <div>
+      <Group mb="md">
+        <IconCalendar size={20} />
+        <Title order={2}>Works Timeline</Title>
+        {authorName && (
+          <Text size="sm" c="dimmed">for {authorName}</Text>
+        )}
+      </Group>
+      
+      <Text size="sm" c="dimmed">
+        Chronological view of all works with detailed information and metrics
+      </Text>
+    </div>
+  );
+}
+
+// Utility function to render loading and empty states
+function TimelineStates({ 
+  loading, 
+  works, 
+  refetch: _refetch 
+}: { 
+  loading: boolean; 
+  works: Work[]; 
+  refetch: () => void;
+}) {
+  if (loading) {
+    return (
+      <Group justify="center" py="xl">
+        <Loader size="lg" />
+        <Text>Loading works...</Text>
+      </Group>
+    );
+  }
+
+  if (works.length === 0) {
+    return (
+      <Alert title="No works found">
+        No works found for the selected criteria. Try adjusting the filters.
+      </Alert>
+    );
+  }
+
+  return null;
+}
+
+// Utility function to render timeline content with year groups
+function TimelineContent({ 
+  worksByYear 
+}: { 
+  worksByYear: YearGroup[];
+}) {
+  if (worksByYear.length === 0) return null;
+  
+  return (
+    <Timeline active={worksByYear.length} bulletSize={24} lineWidth={2}>
+      {worksByYear.map((yearGroup, index) => (
+        <Timeline.Item
+          key={yearGroup.year}
+          bullet={<IconCalendar size={12} />}
+          title={
+            <Group gap="md" mb="md">
+              <Title order={3} size="lg">{yearGroup.year}</Title>
+              <Badge variant="light" size="lg" radius="sm">
+                {yearGroup.works.length} {yearGroup.works.length === 1 ? 'work' : 'works'}
+              </Badge>
+              <Badge variant="outline" size="lg" radius="sm" color="blue">
+                {yearGroup.totalCitations} total citations
+              </Badge>
+            </Group>
+          }
+        >
+          <Stack gap="xs">
+            {yearGroup.works.map((work) => (
+              <WorkCard key={work.id} work={work} />
+            ))}
+          </Stack>
+          
+          {index < worksByYear.length - 1 && <Divider my="xl" />}
+        </Timeline.Item>
+      ))}
+    </Timeline>
+  );
+}
+
+// Utility function to render load more and pagination info
+function TimelinePagination({ 
+  hasNextPage, 
+  isLoadingMore, 
+  loadMore, 
+  works, 
+  totalCount 
+}: {
+  hasNextPage: boolean;
+  isLoadingMore: boolean;
+  loadMore: () => void;
+  works: Work[];
+  totalCount: number;
+}) {
+  if (hasNextPage) {
+    return (
+      <Group justify="center" mt="xl">
+        <Button
+          variant="light"
+          loading={isLoadingMore}
+          onClick={loadMore}
+          leftSection={<IconEye size={16} />}
+        >
+          Load More Works
+        </Button>
+      </Group>
+    );
+  }
+
+  if (works.length > 0) {
+    return (
+      <Text ta="center" size="sm" c="dimmed" mt="xl">
+        All works loaded ({totalCount} total)
+      </Text>
+    );
+  }
+
+  return null;
+}
+
 function WorkCard({ work }: { work: Work }) {
   const publicationYear = work.publication_year || new Date(work.publication_date || '').getFullYear();
   const oaColour = getOpenAccessColour(work.open_access.oa_status);
@@ -286,23 +435,7 @@ export function WorksTimeline({ authorId, authorName }: WorksTimelineProps) {
 
   // Group works by year
   const worksByYear = useMemo((): YearGroup[] => {
-    const groups = new Map<number, Work[]>();
-    
-    works.forEach(work => {
-      const year = work.publication_year || new Date(work.publication_date || '').getFullYear();
-      if (!groups.has(year)) {
-        groups.set(year, []);
-      }
-      groups.get(year)!.push(work);
-    });
-
-    return Array.from(groups.entries())
-      .map(([year, yearWorks]) => ({
-        year,
-        works: yearWorks,
-        totalCitations: yearWorks.reduce((sum, work) => sum + work.cited_by_count, 0)
-      }))
-      .sort((a, b) => options.sortOrder === 'desc' ? b.year - a.year : a.year - b.year);
+    return groupWorksByYear(works, options.sortOrder);
   }, [works, options.sortOrder]);
 
   const handleOptionsChange = (newOptions: Partial<AuthorWorksOptions>) => {
@@ -323,19 +456,7 @@ export function WorksTimeline({ authorId, authorName }: WorksTimelineProps) {
 
   return (
     <Stack gap="lg">
-      <div>
-        <Group mb="md">
-          <IconCalendar size={20} />
-          <Title order={2}>Works Timeline</Title>
-          {authorName && (
-            <Text size="sm" c="dimmed">for {authorName}</Text>
-          )}
-        </Group>
-        
-        <Text size="sm" c="dimmed">
-          Chronological view of all works with detailed information and metrics
-        </Text>
-      </div>
+      <TimelineHeader authorName={authorName} />
 
       <TimelineFilters
         options={options}
@@ -344,67 +465,17 @@ export function WorksTimeline({ authorId, authorName }: WorksTimelineProps) {
         onRefetch={refetch}
       />
 
-      {loading && (
-        <Group justify="center" py="xl">
-          <Loader size="lg" />
-          <Text>Loading works...</Text>
-        </Group>
-      )}
+      <TimelineStates loading={loading} works={works} refetch={refetch} />
 
-      {!loading && works.length === 0 && (
-        <Alert title="No works found">
-          No works found for the selected criteria. Try adjusting the filters.
-        </Alert>
-      )}
+      {!loading && <TimelineContent worksByYear={worksByYear} />}
 
-      {!loading && worksByYear.length > 0 && (
-        <Timeline active={worksByYear.length} bulletSize={24} lineWidth={2}>
-          {worksByYear.map((yearGroup, index) => (
-            <Timeline.Item
-              key={yearGroup.year}
-              bullet={<IconCalendar size={12} />}
-              title={
-                <Group gap="md" mb="md">
-                  <Title order={3} size="lg">{yearGroup.year}</Title>
-                  <Badge variant="light" size="lg" radius="sm">
-                    {yearGroup.works.length} {yearGroup.works.length === 1 ? 'work' : 'works'}
-                  </Badge>
-                  <Badge variant="outline" size="lg" radius="sm" color="blue">
-                    {yearGroup.totalCitations} total citations
-                  </Badge>
-                </Group>
-              }
-            >
-              <Stack gap="xs">
-                {yearGroup.works.map((work) => (
-                  <WorkCard key={work.id} work={work} />
-                ))}
-              </Stack>
-              
-              {index < worksByYear.length - 1 && <Divider my="xl" />}
-            </Timeline.Item>
-          ))}
-        </Timeline>
-      )}
-
-      {hasNextPage && (
-        <Group justify="center" mt="xl">
-          <Button
-            variant="light"
-            loading={isLoadingMore}
-            onClick={loadMore}
-            leftSection={<IconEye size={16} />}
-          >
-            Load More Works
-          </Button>
-        </Group>
-      )}
-
-      {!hasNextPage && works.length > 0 && (
-        <Text ta="center" size="sm" c="dimmed" mt="xl">
-          All works loaded ({totalCount} total)
-        </Text>
-      )}
+      <TimelinePagination 
+        hasNextPage={hasNextPage}
+        isLoadingMore={isLoadingMore}
+        loadMore={loadMore}
+        works={works}
+        totalCount={totalCount}
+      />
     </Stack>
   );
 }

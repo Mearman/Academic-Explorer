@@ -379,13 +379,13 @@ export function useEntityGraphTracking({
         // Add more cases as needed for Publisher, Funder, etc.
         default: {
           // For other entity types, we might have basic topic relationships
-          const basicEntity = entity as { topics?: Topic[] };
-          if (basicEntity.topics) {
+          const basicEntity = entity as { id?: string; topics?: Topic[] };
+          if (basicEntity.topics && basicEntity.id) {
             const timestamp = new Date().toISOString();
             basicEntity.topics.forEach(topic => {
-              if (topic.id && (entity as any).id) {
+              if (topic.id && basicEntity.id) {
                 const event: RelationshipDiscoveryEvent = {
-                  sourceEntityId: (entity as any).id,
+                  sourceEntityId: basicEntity.id,
                   targetEntityId: topic.id,
                   relationshipType: EdgeType.RELATED_TO_TOPIC,
                   timestamp,

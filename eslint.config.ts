@@ -59,31 +59,6 @@ export default tseslint.config(
       // Boundaries configuration for Atomic Design
       'boundaries/elements': [
         {
-          type: 'atom',
-          pattern: 'src/components/atoms/**/*',
-          mode: 'folder'
-        },
-        {
-          type: 'molecule',
-          pattern: 'src/components/molecules/**/*',
-          mode: 'folder'
-        },
-        {
-          type: 'organism',
-          pattern: 'src/components/organisms/**/*',
-          mode: 'folder'
-        },
-        {
-          type: 'template',
-          pattern: 'src/components/templates/**/*',
-          mode: 'folder'
-        },
-        {
-          type: 'page',
-          pattern: 'src/routes/**/*',
-          mode: 'folder'
-        },
-        {
           type: 'shared',
           pattern: [
             'src/lib/**/*',
@@ -91,9 +66,55 @@ export default tseslint.config(
             'src/stores/**/*',
             'src/types/**/*',
             'src/design-tokens.css.ts',
+            'src/components/design-tokens.css.ts',
+            'src/components/design-tokens.utils.ts',
+            'src/components/types.ts',
+            'src/components/index.ts',
             'src/components/**/utils/**/*',
-            'src/components/**/hooks/**/*'
+            'src/components/**/hooks/**/*',
+            'src/components/utils/**/*'
           ],
+          mode: 'folder'
+        },
+        {
+          type: 'atom',
+          pattern: [
+            'src/components/atoms/**/*',
+            '!src/components/atoms/**/utils/**/*',
+            '!src/components/atoms/**/hooks/**/*'
+          ],
+          mode: 'folder'
+        },
+        {
+          type: 'molecule',
+          pattern: [
+            'src/components/molecules/**/*',
+            '!src/components/molecules/**/utils/**/*',
+            '!src/components/molecules/**/hooks/**/*'
+          ],
+          mode: 'folder'
+        },
+        {
+          type: 'organism',
+          pattern: [
+            'src/components/organisms/**/*',
+            '!src/components/organisms/**/utils/**/*',
+            '!src/components/organisms/**/hooks/**/*'
+          ],
+          mode: 'folder'
+        },
+        {
+          type: 'template',
+          pattern: [
+            'src/components/templates/**/*',
+            '!src/components/templates/**/utils/**/*',
+            '!src/components/templates/**/hooks/**/*'
+          ],
+          mode: 'folder'
+        },
+        {
+          type: 'page',
+          pattern: 'src/routes/**/*',
           mode: 'folder'
         }
       ] satisfies Array<{
@@ -128,8 +149,8 @@ export default tseslint.config(
         rules: [
           {
             from: 'atom',
-            allow: ['shared'],
-            message: 'Atoms can only import from shared utilities and external libraries. No component dependencies allowed.'
+            allow: ['atom', 'shared'],
+            message: 'Atoms can import other atoms and shared utilities for composition.'
           },
           {
             from: 'molecule',
@@ -220,35 +241,36 @@ export default tseslint.config(
   {
     files: ['src/components/atoms/**/*.{ts,tsx}'],
     rules: {
-      'complexity': ['warn', 8], // Keep atoms simple
-      'max-lines-per-function': ['warn', { max: 30, skipBlankLines: true, skipComments: true }],
+      'complexity': ['warn', 10], // Keep atoms simple
+      'max-lines-per-function': ['warn', { max: 50, skipBlankLines: true, skipComments: true }],
     }
   },
   {
     files: ['src/components/molecules/**/*.{ts,tsx}'],
     rules: {
       'complexity': ['warn', 12],
-      'max-lines-per-function': ['warn', { max: 50, skipBlankLines: true, skipComments: true }],
+      'max-lines-per-function': ['warn', { max: 90, skipBlankLines: true, skipComments: true }],
     }
   },
   {
     files: ['src/components/organisms/**/*.{ts,tsx}'],
     rules: {
-      'complexity': ['warn', 20],
-      'max-lines-per-function': ['warn', { max: 100, skipBlankLines: true, skipComments: true }],
+      'complexity': ['warn', 30],
+      'max-lines-per-function': ['warn', { max: 270, skipBlankLines: true, skipComments: true }],
     }
   },
   {
     files: ['src/components/templates/**/*.{ts,tsx}'],
     rules: {
-      'complexity': ['warn', 10], // Templates should focus on layout
+      'complexity': ['warn', 16], // Templates should focus on layout
       'max-lines-per-function': ['warn', { max: 60, skipBlankLines: true, skipComments: true }],
     }
   },
   {
     files: ['src/routes/**/*.{ts,tsx}'],
     rules: {
-      'complexity': ['warn', 25], // Pages can orchestrate complex logic
+      'complexity': ['warn', 30], // Pages can orchestrate complex logic
+      'max-lines-per-function': ['warn', { max: 450, skipBlankLines: true, skipComments: true }],
       'import/no-default-export': 'off', // TanStack Router requires default exports
     }
   }

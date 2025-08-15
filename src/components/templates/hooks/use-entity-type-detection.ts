@@ -1,9 +1,10 @@
 import { useMemo } from 'react';
 
+import type { OpenAlexEntity } from '@/lib/openalex/types';
 import { detectEntityType, EntityType as OpenAlexEntityType } from '@/lib/openalex/utils/entity-detection';
 import type { EntityType } from '@/types/entity-graph';
 
-export function useEntityTypeDetection(entity: any) {
+export function useEntityTypeDetection(entity: OpenAlexEntity | null | undefined) {
   return useMemo(() => {
     if (!entity?.id) return null;
     
@@ -22,22 +23,23 @@ export function useEntityTypeDetection(entity: any) {
       
       return OpenAlexEntityType.WORK; // Default fallback
     }
-  }, [entity?.id]);
+  }, [entity]);
 }
 
+const ENTITY_TYPE_TO_ENDPOINT_MAP: Record<EntityType, string> = {
+  'work': 'works',
+  'author': 'authors',
+  'source': 'sources',
+  'institution': 'institutions',
+  'publisher': 'publishers',
+  'funder': 'funders',
+  'topic': 'topics',
+  'concept': 'concepts',
+  'keyword': 'keywords',
+  'continent': 'continents',
+  'region': 'regions',
+} as const;
+
 export function getEntityEndpointFromType(type: EntityType): string {
-  switch (type) {
-    case 'work': return 'works';
-    case 'author': return 'authors';
-    case 'source': return 'sources';
-    case 'institution': return 'institutions';
-    case 'publisher': return 'publishers';
-    case 'funder': return 'funders';
-    case 'topic': return 'topics';
-    case 'concept': return 'concepts';
-    case 'keyword': return 'keywords';
-    case 'continent': return 'continents';
-    case 'region': return 'regions';
-    default: return 'entity';
-  }
+  return ENTITY_TYPE_TO_ENDPOINT_MAP[type] || 'entity';
 }

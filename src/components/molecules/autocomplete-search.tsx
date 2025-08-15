@@ -1,9 +1,10 @@
 import React, { useEffect, useRef } from 'react';
 
-import { LoadingSpinner, Icon } from '@/components';
+import { AutocompleteInput, SuggestionsList } from '@/components';
 import { useAutocompleteSearch } from '@/hooks/use-autocomplete-search';
 import type { AutocompleteSuggestion } from '@/hooks/use-autocomplete-search';
 
+import { useAutocompleteHandlers } from './autocomplete-handlers';
 import { SuggestionItem } from './autocomplete-search/suggestion-item';
 import { createClickOutsideHandler } from './autocomplete-search/utils';
 import * as styles from './autocomplete-search.css';
@@ -42,29 +43,14 @@ export function AutocompleteSearch({
   const inputRef = useRef<HTMLInputElement>(null);
   const listRef = useRef<HTMLUListElement>(null);
 
-  // Handle enhanced keyboard navigation
-  const handleKeyDownEnhanced = (e: React.KeyboardEvent) => {
-    handleKeyDown(e);
-    
-    // Handle Enter key for suggestion selection
-    if (e.key === 'Enter' && selectedIndex >= 0) {
-      e.preventDefault();
-      const suggestion = suggestions[selectedIndex];
-      handleSuggestionSelect(suggestion);
-      onSelect?.(suggestion);
-    }
-    
-    // Handle Escape key to blur input
-    if (e.key === 'Escape') {
-      inputRef.current?.blur();
-    }
-  };
-
-  // Handle suggestion selection with callback
-  const handleSuggestionSelectEnhanced = (suggestion: AutocompleteSuggestion) => {
-    handleSuggestionSelect(suggestion);
-    onSelect?.(suggestion);
-  };
+  const { handleKeyDownEnhanced, handleSuggestionSelectEnhanced } = useAutocompleteHandlers(
+    suggestions,
+    selectedIndex,
+    handleKeyDown,
+    handleSuggestionSelect,
+    onSelect,
+    inputRef
+  );
 
   // Handle clicks outside to close
   useEffect(() => {
@@ -81,41 +67,34 @@ export function AutocompleteSearch({
 
   return (
     <div className={`${styles.container} ${className || ''}`}>
-      <div className={styles.inputWrapper}>
-        <input
-          ref={inputRef}
-          type="text"
-          value={query}
-          onChange={(e) => handleInputChange(e.target.value)}
-          onKeyDown={handleKeyDownEnhanced}
-          onFocus={() => {
-            if (suggestions.length > 0) {
-              setIsOpen(true);
-            }
-          }}
-          placeholder={placeholder}
-          className={styles.input}
-          aria-expanded={isOpen}
-          aria-haspopup="listbox"
-          aria-activedescendant={selectedIndex >= 0 ? `suggestion-${selectedIndex}` : undefined}
-          autoComplete="off"
-        />
-        
-        <div className={styles.inputSuffix}>
-          {isLoading ? (
-            <LoadingSpinner size="sm" />
-          ) : (
-            <Icon name="search" size="sm" className={styles.searchIcon} />
-          )}
-        </div>
-      </div>
+      <AutocompleteInput
+        ref={inputRef}
+        query={query}
+        placeholder={placeholder}
+        isLoading={isLoading}
+        isOpen={isOpen}
+        selectedIndex={selectedIndex}
+        onInputChange={handleInputChange}
+        onKeyDown={handleKeyDownEnhanced}
+        onFocus={() => {
+          if (suggestions.length > 0) {
+            setIsOpen(true);
+          }
+        }}
+        wrapperClassName={styles.inputWrapper}
+        inputClassName={styles.input}
+        suffixClassName={styles.inputSuffix}
+        searchIconClassName={styles.searchIcon}
+      />
 
-      {isOpen && suggestions.length > 0 && (
-        <ul
+      {isOpen && (
+        <SuggestionsList
           ref={listRef}
+          suggestions={suggestions}
+          selectedIndex={selectedIndex}
+          showEntityBadges={showEntityBadges}
+          onSelect={handleSuggestionSelectEnhanced}
           className={styles.suggestionsList}
-          role="listbox"
-          aria-label="Search suggestions"
         >
           {suggestions.map((suggestion, index) => (
             <SuggestionItem
@@ -127,7 +106,7 @@ export function AutocompleteSearch({
               onSelect={handleSuggestionSelectEnhanced}
             />
           ))}
-        </ul>
+        </SuggestionsList>
       )}
     </div>
   );

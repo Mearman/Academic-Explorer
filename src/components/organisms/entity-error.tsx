@@ -11,6 +11,86 @@ import { Link } from '@tanstack/react-router';
 import { EntityErrorType } from '@/hooks/use-entity-data';
 import { EntityType } from '@/lib/openalex/utils/entity-detection';
 
+// Utility functions for error handling
+function checkErrorType(error: unknown): EntityErrorType | null {
+  if (error === EntityErrorType.INVALID_ID || (hasErrorType(error) && error.type === EntityErrorType.INVALID_ID)) {
+    return EntityErrorType.INVALID_ID;
+  }
+  
+  if (error === EntityErrorType.NOT_FOUND || (hasErrorType(error) && error.type === EntityErrorType.NOT_FOUND)) {
+    return EntityErrorType.NOT_FOUND;
+  }
+  
+  if (error === EntityErrorType.NETWORK_ERROR || (hasErrorType(error) && error.type === EntityErrorType.NETWORK_ERROR)) {
+    return EntityErrorType.NETWORK_ERROR;
+  }
+  
+  if (error === EntityErrorType.TIMEOUT || (hasErrorType(error) && error.type === EntityErrorType.TIMEOUT)) {
+    return EntityErrorType.TIMEOUT;
+  }
+  
+  if (error === EntityErrorType.RATE_LIMITED || (hasErrorType(error) && error.type === EntityErrorType.RATE_LIMITED)) {
+    return EntityErrorType.RATE_LIMITED;
+  }
+  
+  return null;
+}
+
+function generateInvalidIdError(entityName: string, entityId: string, entityType?: EntityType) {
+  const entityIdExample = getEntityIdExample(entityType);
+  return {
+    title: `Invalid ${entityName} ID`,
+    message: `The ${entityType || 'entity'} ID "${entityId}" is not in a valid format. Please ensure you're using a correct OpenAlex ${entityType || 'entity'} ID (e.g., ${entityIdExample}).`,
+    showRetry: false,
+    icon: '❌'
+  };
+}
+
+function generateNotFoundError(entityName: string, entityId: string, entityType?: EntityType) {
+  return {
+    title: `${entityName} Not Found`,
+    message: `The ${entityType || 'entity'} "${entityId}" could not be found. It may have been removed or the ID may be incorrect.`,
+    showRetry: false,
+    icon: '🔍'
+  };
+}
+
+function generateNetworkError() {
+  return {
+    title: 'Connection Error',
+    message: 'Unable to connect to OpenAlex. Please check your internet connection.',
+    showRetry: true,
+    icon: '🌐'
+  };
+}
+
+function generateTimeoutError() {
+  return {
+    title: 'Request Timeout',
+    message: 'The request took too long to complete. The service may be experiencing high load.',
+    showRetry: true,
+    icon: '⏱️'
+  };
+}
+
+function generateRateLimitedError() {
+  return {
+    title: 'Rate Limited',
+    message: 'Too many requests have been made. Please wait a moment before trying again.',
+    showRetry: true,
+    icon: '🚦'
+  };
+}
+
+function generateGenericError(error: Error | EntityErrorType | unknown, entityName: string, entityType?: EntityType) {
+  return {
+    title: `Error Loading ${entityName}`,
+    message: error instanceof Error ? error.message : `An unexpected error occurred while loading the ${entityType || 'entity'}.`,
+    showRetry: true,
+    icon: '⚠️'
+  };
+}
+
 /**
  * Props for entity error components
  */
@@ -33,59 +113,22 @@ function hasErrorType(error: unknown): error is { type: EntityErrorType } {
  */
 function getErrorDetails(error: Error | EntityErrorType | unknown, entityId: string, entityType?: EntityType) {
   const entityName = entityType ? entityType.charAt(0).toUpperCase() + entityType.slice(1) : 'Entity';
-  const entityIdExample = getEntityIdExample(entityType);
+  const errorType = checkErrorType(error);
   
-  if (error === EntityErrorType.INVALID_ID || (hasErrorType(error) && error.type === EntityErrorType.INVALID_ID)) {
-    return {
-      title: `Invalid ${entityName} ID`,
-      message: `The ${entityType || 'entity'} ID "${entityId}" is not in a valid format. Please ensure you're using a correct OpenAlex ${entityType || 'entity'} ID (e.g., ${entityIdExample}).`,
-      showRetry: false,
-      icon: '❌'
-    };
+  switch (errorType) {
+    case EntityErrorType.INVALID_ID:
+      return generateInvalidIdError(entityName, entityId, entityType);
+    case EntityErrorType.NOT_FOUND:
+      return generateNotFoundError(entityName, entityId, entityType);
+    case EntityErrorType.NETWORK_ERROR:
+      return generateNetworkError();
+    case EntityErrorType.TIMEOUT:
+      return generateTimeoutError();
+    case EntityErrorType.RATE_LIMITED:
+      return generateRateLimitedError();
+    default:
+      return generateGenericError(error, entityName, entityType);
   }
-  
-  if (error === EntityErrorType.NOT_FOUND || (hasErrorType(error) && error.type === EntityErrorType.NOT_FOUND)) {
-    return {
-      title: `${entityName} Not Found`,
-      message: `The ${entityType || 'entity'} "${entityId}" could not be found. It may have been removed or the ID may be incorrect.`,
-      showRetry: false,
-      icon: '🔍'
-    };
-  }
-  
-  if (error === EntityErrorType.NETWORK_ERROR || (hasErrorType(error) && error.type === EntityErrorType.NETWORK_ERROR)) {
-    return {
-      title: 'Connection Error',
-      message: 'Unable to connect to OpenAlex. Please check your internet connection.',
-      showRetry: true,
-      icon: '🌐'
-    };
-  }
-  
-  if (error === EntityErrorType.TIMEOUT || (hasErrorType(error) && error.type === EntityErrorType.TIMEOUT)) {
-    return {
-      title: 'Request Timeout',
-      message: 'The request took too long to complete. The service may be experiencing high load.',
-      showRetry: true,
-      icon: '⏱️'
-    };
-  }
-  
-  if (error === EntityErrorType.RATE_LIMITED || (hasErrorType(error) && error.type === EntityErrorType.RATE_LIMITED)) {
-    return {
-      title: 'Rate Limited',
-      message: 'Too many requests have been made. Please wait a moment before trying again.',
-      showRetry: true,
-      icon: '🚦'
-    };
-  }
-  
-  return {
-    title: `Error Loading ${entityName}`,
-    message: error instanceof Error ? error.message : `An unexpected error occurred while loading the ${entityType || 'entity'}.`,
-    showRetry: true,
-    icon: '⚠️'
-  };
 }
 
 /**
