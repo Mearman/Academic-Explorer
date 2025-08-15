@@ -69,41 +69,41 @@ async function testOpenAlexAPI() {
 }
 
 async function main() {
-  console.log('🔍 Quick Diagnostic for Works Page Loading Issue');
+  console.log('[SEARCH] Quick Diagnostic for Works Page Loading Issue');
   console.log('================================================\n');
 
   // Test 1: Check OpenAlex API directly
   console.log('1. Testing OpenAlex API directly...');
   const apiResult = await testOpenAlexAPI();
   if (apiResult.error) {
-    console.log(`   ❌ API Error: ${apiResult.error}`);
+    console.log(`   [ERROR] API Error: ${apiResult.error}`);
   } else {
-    console.log(`   ✅ API Response: ${apiResult.statusCode}`);
-    console.log(`   📊 Has Data: ${apiResult.hasData}`);
-    console.log(`   📝 Title: ${apiResult.title || 'N/A'}`);
+    console.log(`   [OK] API Response: ${apiResult.statusCode}`);
+    console.log(`   [DATA] Has Data: ${apiResult.hasData}`);
+    console.log(`   [INFO] Title: ${apiResult.title || 'N/A'}`);
   }
 
   // Test 2: Check if dev server is running
   console.log('\n2. Checking development server...');
   const serverRunning = await checkServer();
   if (!serverRunning) {
-    console.log('   ❌ Server not running. Please start with: pnpm dev');
+    console.log('   [ERROR] Server not running. Please start with: pnpm dev');
     return;
   }
-  console.log('   ✅ Server is running');
+  console.log('   [OK] Server is running');
 
   // Test 3: Check works page response
   console.log('\n3. Testing works page response...');
   const pageResult = await checkWorksPage();
   if (pageResult.error) {
-    console.log(`   ❌ Page Error: ${pageResult.error}`);
+    console.log(`   [ERROR] Page Error: ${pageResult.error}`);
   } else {
-    console.log(`   📄 Status Code: ${pageResult.statusCode}`);
-    console.log(`   🎯 Has Content: ${pageResult.hasContent}`);
-    console.log(`   ⏳ Is Loading: ${pageResult.isLoading}`);
+    console.log(`   [STATUS] Status Code: ${pageResult.statusCode}`);
+    console.log(`   [STATUS] Has Content: ${pageResult.hasContent}`);
+    console.log(`   [INFO] Is Loading: ${pageResult.isLoading}`);
     
     if (pageResult.statusCode === 200) {
-      console.log('   📄 First 200 chars of response:');
+      console.log('   [INFO] First 200 chars of response:');
       console.log(`   "${pageResult.body.substring(0, 200)}..."`);
     }
   }
@@ -114,30 +114,30 @@ async function main() {
   const delayedResult = await checkWorksPage();
   
   if (delayedResult.error) {
-    console.log(`   ❌ Delayed test error: ${delayedResult.error}`);
+    console.log(`   [ERROR] Delayed test error: ${delayedResult.error}`);
   } else {
-    console.log(`   ⏳ Still Loading: ${delayedResult.isLoading}`);
-    console.log(`   🎯 Has Content: ${delayedResult.hasContent}`);
+    console.log(`   [INFO] Still Loading: ${delayedResult.isLoading}`);
+    console.log(`   [STATUS] Has Content: ${delayedResult.hasContent}`);
   }
 
   // Summary
-  console.log('\n📋 DIAGNOSTIC SUMMARY');
+  console.log('\n[INFO] DIAGNOSTIC SUMMARY');
   console.log('====================');
   
   if (apiResult.hasData && serverRunning) {
     if (pageResult.isLoading && delayedResult.isLoading) {
-      console.log('❌ ISSUE CONFIRMED: Page stuck in loading state');
-      console.log('   - OpenAlex API is working ✅');
-      console.log('   - Server is running ✅');
-      console.log('   - Page responds but stuck loading ❌');
+      console.log('[ERROR] ISSUE CONFIRMED: Page stuck in loading state');
+      console.log('   - OpenAlex API is working [OK]');
+      console.log('   - Server is running [OK]');
+      console.log('   - Page responds but stuck loading [ERROR]');
       console.log('   - Likely React state management issue');
     } else if (pageResult.hasContent) {
-      console.log('✅ Page appears to be working correctly');
+      console.log('[OK] Page appears to be working correctly');
     } else {
-      console.log('⚠️  Page loading but unclear state');
+      console.log('[WARNING] Page loading but unclear state');
     }
   } else {
-    console.log('❌ Underlying infrastructure issues detected');
+    console.log('[ERROR] Underlying infrastructure issues detected');
   }
 
   console.log('\nTo run full E2E tests: pnpm test:e2e:diagnose');
