@@ -4,7 +4,8 @@ import { LoadingSpinner, Icon } from '@/components';
 import { useAutocompleteSearch } from '@/hooks/use-autocomplete-search';
 import type { AutocompleteSuggestion } from '@/hooks/use-autocomplete-search';
 
-import { SuggestionItem, createClickOutsideHandler } from './autocomplete-search';
+import { SuggestionItem } from './autocomplete-search/suggestion-item';
+import { createClickOutsideHandler } from './autocomplete-search/utils';
 import * as styles from './autocomplete-search.css';
 
 // Re-export the type for external use

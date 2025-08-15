@@ -56,3 +56,24 @@ export const ErrorMessage = forwardRef<HTMLDivElement, ErrorMessageProps>(
 );
 
 ErrorMessage.displayName = 'ErrorMessage';
+
+// Alert type components for semantic convenience
+export const ErrorAlert = forwardRef<HTMLDivElement, Omit<ErrorMessageProps, 'severity'>>(
+  (props, ref) => <ErrorMessage ref={ref} severity="error" {...props} />
+);
+ErrorAlert.displayName = 'ErrorAlert';
+
+export const WarningAlert = forwardRef<HTMLDivElement, Omit<ErrorMessageProps, 'severity'>>(
+  (props, ref) => <ErrorMessage ref={ref} severity="warning" {...props} />
+);
+WarningAlert.displayName = 'WarningAlert';
+
+export const InfoAlert = forwardRef<HTMLDivElement, Omit<ErrorMessageProps, 'severity'>>(
+  (props, ref) => <ErrorMessage ref={ref} severity="info" {...props} />
+);
+InfoAlert.displayName = 'InfoAlert';
+
+export const SuccessAlert = forwardRef<HTMLDivElement, Omit<ErrorMessageProps, 'severity'>>(
+  (props, ref) => <ErrorMessage ref={ref} severity="success" {...props} />
+);
+SuccessAlert.displayName = 'SuccessAlert';

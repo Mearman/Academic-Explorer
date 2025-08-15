@@ -52,8 +52,8 @@ function renderAuthorBadges(authorship: Authorship, showPositions: boolean) {
   );
 }
 
-// Render institution item
-function renderInstitution(institution: Institution, index: number, totalCount: number) {
+// Render institution item (using the simplified institution structure from Authorship)
+function renderInstitution(institution: Authorship['institutions'][0], index: number, totalCount: number) {
   return (
     <React.Fragment key={institution.id}>
       <EntityLink

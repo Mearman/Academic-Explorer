@@ -23,8 +23,8 @@ export function getSuggestionUrl(suggestion: AutocompleteSuggestion): string {
 
 // Handle clicks outside to close autocomplete
 export function createClickOutsideHandler(
-  inputRef: React.RefObject<HTMLInputElement>,
-  listRef: React.RefObject<HTMLUListElement>,
+  inputRef: React.RefObject<HTMLInputElement | null>,
+  listRef: React.RefObject<HTMLUListElement | null>,
   setIsOpen: (open: boolean) => void,
   setSelectedIndex: (index: number) => void
 ) {

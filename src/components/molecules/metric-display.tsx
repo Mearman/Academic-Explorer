@@ -7,7 +7,8 @@ import type { MetricFormat, TrendDirection } from '@/lib/metric-formatting';
 
 import type { SizeVariant } from '../types';
 
-import { LoadingState, MetricContent } from './metric-display';
+import { LoadingState } from './metric-display/loading-state';
+import { MetricContent } from './metric-display/metric-content';
 import * as styles from './metric-display.css';
 
 export interface MetricDisplayProps {

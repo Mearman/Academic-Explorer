@@ -2,6 +2,8 @@
 
 import { forwardRef } from 'react';
 
+import type { ExternalIds } from '@/lib/openalex/types';
+
 import { ExternalLink } from '../atoms/external-link';
 import { Icon } from '../atoms/icon';
 import type { ExternalLinksGroupProps, ExternalLinkProps } from '../types';
@@ -34,7 +36,7 @@ const linkLabels = {
 } as const;
 
 // Process external IDs into structured links
-function processExternalIds(externalIds: Record<string, unknown>): ProcessedLink[] {
+function processExternalIds(externalIds: ExternalIds): ProcessedLink[] {
   const processedLinks: ProcessedLink[] = [];
 
   Object.entries(externalIds).forEach(([key, value]) => {

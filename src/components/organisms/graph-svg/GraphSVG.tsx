@@ -24,7 +24,7 @@ interface GraphSVGProps {
   onMouseDown: (event: React.MouseEvent) => void;
   onMouseMove: (event: React.MouseEvent) => void;
   onMouseUp: () => void;
-  svgRef: React.RefObject<SVGSVGElement>;
+  svgRef: React.RefObject<SVGSVGElement | null>;
 }
 
 export function GraphSVG({
