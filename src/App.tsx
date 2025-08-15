@@ -7,7 +7,7 @@ import { routeTree } from './routeTree.gen';
 const router = createRouter({ 
   routeTree,
   history: createHashHistory(),
-  basepath: import.meta.env.PROD ? '/Academic-Explorer' : undefined
+  // basepath removed - Vite's base config handles GitHub Pages deployment
 });
 
 // Register the router instance for type safety
