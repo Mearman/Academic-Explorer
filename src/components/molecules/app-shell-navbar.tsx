@@ -10,6 +10,8 @@ import {
 } from '@tabler/icons-react';
 import { Link, useLocation } from '@tanstack/react-router';
 
+import { BuildInfo } from '../atoms/build-info';
+
 const navigationItems = [
   { icon: IconSearch, label: 'Search', href: '/' },
   { icon: IconBook, label: 'Works', href: '/works' },
@@ -69,6 +71,10 @@ export function AppShellNavbar({ onItemClick }: AppShellNavbarProps) {
         <Text size="sm" c="dimmed">
           No recent searches
         </Text>
+      </AppShell.Section>
+
+      <AppShell.Section>
+        <BuildInfo className="mt-4 pt-4 border-t border-gray-200" />
       </AppShell.Section>
     </>
   );
