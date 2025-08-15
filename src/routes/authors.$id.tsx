@@ -24,9 +24,10 @@ import {
   IconTags,
   IconChartBar,
   IconInfoCircle,
-  IconId
+  IconId,
+  IconBook
 } from '@tabler/icons-react';
-import { RawDataView, EntityLink } from '@/components';
+import { RawDataView, EntityLink, WorksTimeline } from '@/components';
 import type { Author } from '@/lib/openalex/types';
 import { EntityType } from '@/lib/openalex/utils/entity-detection';
 import { useAuthorData } from '@/hooks/use-entity-data';
@@ -68,6 +69,9 @@ function AuthorDisplay({ author }: { author: Author }) {
         <Tabs.List grow mb="xl">
           <Tabs.Tab value="overview" leftSection={<IconUser size={16} />}>
             Overview
+          </Tabs.Tab>
+          <Tabs.Tab value="works" leftSection={<IconBook size={16} />}>
+            Works
           </Tabs.Tab>
           <Tabs.Tab value="raw-data" leftSection={<IconCode size={16} />}>
             Raw Data
@@ -484,6 +488,13 @@ function AuthorDisplay({ author }: { author: Author }) {
               </Grid>
             </Card>
           </Stack>
+        </Tabs.Panel>
+
+        <Tabs.Panel value="works">
+          <WorksTimeline 
+            authorId={author.id} 
+            authorName={author.display_name}
+          />
         </Tabs.Panel>
 
         <Tabs.Panel value="raw-data">
