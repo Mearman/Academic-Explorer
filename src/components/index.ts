@@ -58,6 +58,7 @@ export {
   EntitySkeleton,
   EntityFallback
 } from './organisms/entity-error';
+export { WorksTimeline } from './organisms/WorksTimeline';
 
 // Templates
 export { 
