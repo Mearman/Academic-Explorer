@@ -1,3 +1,4 @@
+import { IconAlertTriangle } from '@tabler/icons-react';
 import { createFileRoute, useNavigate, Link } from '@tanstack/react-router';
 import { useEffect, useState } from 'react';
 
@@ -27,7 +28,9 @@ function ISSNError({ issn, error }: { issn: string; error: string }) {
   return (
     <div className="min-h-screen flex items-center justify-center p-4">
       <div className="max-w-md w-full bg-white rounded-lg shadow-lg p-6 text-center">
-        <div className="text-red-600 text-4xl mb-4">⚠️</div>
+        <div className="text-red-600 text-4xl mb-4">
+          <IconAlertTriangle size={48} />
+        </div>
         <h1 className="text-xl font-semibold text-gray-900 mb-2">
           Invalid ISSN-L Format
         </h1>
