@@ -309,12 +309,12 @@ export const useEntityGraphStore = create<EntityGraphState>()(
       // Actions - Filtering and layout
       updateFilter: (options: Partial<GraphFilterOptions>) =>
         set((state) => {
-          Object.assign(state.filterOptions, options);
+          state.filterOptions = { ...state.filterOptions, ...options };
         }),
       
       updateLayout: (config: Partial<GraphLayoutConfig>) =>
         set((state) => {
-          Object.assign(state.layoutConfig, config);
+          state.layoutConfig = { ...state.layoutConfig, ...config };
         }),
       
       resetFilters: () =>
