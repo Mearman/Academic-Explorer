@@ -12,8 +12,6 @@ import type {
   Author, 
   Institution, 
   Source, 
-  Publisher, 
-  Funder,
   Topic,
   Concept
 } from '@/lib/openalex/types';

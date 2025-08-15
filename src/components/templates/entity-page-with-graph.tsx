@@ -6,7 +6,7 @@ import { EntityGraphVisualization, EntityGraphVisualizationSkeleton } from '../o
 import { EntitySection } from './entity-page-template';
 import { Icon } from '../atoms/icon';
 import { detectEntityType, EntityType as OpenAlexEntityType } from '@/lib/openalex/utils/entity-detection';
-import type { EntityPageTemplateProps, OpenAlexEntity } from '../types';
+import type { EntityPageTemplateProps } from '../types';
 import type { EntityType } from '@/types/entity-graph';
 
 interface EntityPageWithGraphProps extends EntityPageTemplateProps {
