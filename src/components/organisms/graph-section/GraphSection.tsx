@@ -1,1 +1,80 @@
-import React from 'react';\nimport { EntityGraphVisualization, EntityGraphVisualizationSkeleton } from '../entity-graph-visualization';\nimport { EntitySection } from '../../templates/entity-page-template';\nimport { GraphStatsDisplay } from '@/components/molecules/graph-stats-display/GraphStatsDisplay';\nimport { GraphDescription } from '@/components/molecules/graph-description/GraphDescription';\nimport { GraphEmptyState } from '@/components/molecules/graph-empty-state/GraphEmptyState';\n\ninterface GraphSectionProps {\n  isVisible: boolean;\n  graphHeight: number;\n  graphStats: {\n    totalVertices: number;\n    totalEdges: number;\n    directlyVisited: number;\n    hasCurrentEntity: boolean;\n  };\n  totalVisits: number;\n  onVertexClick: (vertex: any) => void;\n}\n\nexport function GraphSection({\n  isVisible,\n  graphHeight,\n  graphStats,\n  totalVisits,\n  onVertexClick,\n}: GraphSectionProps) {\n  if (!isVisible) return null;\n\n  // Show graph with data\n  if (graphStats.totalVertices > 0) {\n    return (\n      <EntitySection\n        title=\"Related Entities\"\n        icon=\"graph\"\n        actions={\n          <GraphStatsDisplay\n            directlyVisited={graphStats.directlyVisited}\n            totalEdges={graphStats.totalEdges}\n            hasCurrentEntity={graphStats.hasCurrentEntity}\n          />\n        }\n      >\n        <div style={{ marginBottom: '16px' }}>\n          <EntityGraphVisualization\n            height={graphHeight}\n            onVertexClick={onVertexClick}\n            showControls={true}\n            showLegend={true}\n          />\n        </div>\n        \n        <GraphDescription />\n      </EntitySection>\n    );\n  }\n\n  // Show loading state if we have visits but no graph data yet\n  if (totalVisits > 0) {\n    return (\n      <EntitySection\n        title=\"Related Entities\"\n        icon=\"graph\"\n        loading={true}\n      >\n        <EntityGraphVisualizationSkeleton height={graphHeight} />\n      </EntitySection>\n    );\n  }\n\n  // Show empty state\n  return (\n    <EntitySection\n      title=\"Related Entities\"\n      icon=\"graph\"\n    >\n      <GraphEmptyState />\n    </EntitySection>\n  );\n}
+import React from 'react';
+import { EntityGraphVisualization, EntityGraphVisualizationSkeleton } from '../entity-graph-visualization';
+import { EntitySection } from '../../templates/entity-page-template';
+import { GraphStatsDisplay } from '@/components/molecules/graph-stats-display/GraphStatsDisplay';
+import { GraphDescription } from '@/components/molecules/graph-description/GraphDescription';
+import { GraphEmptyState } from '@/components/molecules/graph-empty-state/GraphEmptyState';
+
+interface GraphSectionProps {
+  isVisible: boolean;
+  graphHeight: number;
+  graphStats: {
+    totalVertices: number;
+    totalEdges: number;
+    directlyVisited: number;
+    hasCurrentEntity: boolean;
+  };
+  totalVisits: number;
+  onVertexClick: (vertex: any) => void;
+}
+
+export function GraphSection({
+  isVisible,
+  graphHeight,
+  graphStats,
+  totalVisits,
+  onVertexClick,
+}: GraphSectionProps) {
+  if (!isVisible) return null;
+
+  // Show graph with data
+  if (graphStats.totalVertices > 0) {
+    return (
+      <EntitySection
+        title="Related Entities"
+        icon="graph"
+        actions={
+          <GraphStatsDisplay
+            directlyVisited={graphStats.directlyVisited}
+            totalEdges={graphStats.totalEdges}
+            hasCurrentEntity={graphStats.hasCurrentEntity}
+          />
+        }
+      >
+        <div style={{ marginBottom: '16px' }}>
+          <EntityGraphVisualization
+            height={graphHeight}
+            onVertexClick={onVertexClick}
+            showControls={true}
+            showLegend={true}
+          />
+        </div>
+        
+        <GraphDescription />
+      </EntitySection>
+    );
+  }
+
+  // Show loading state if we have visits but no graph data yet
+  if (totalVisits > 0) {
+    return (
+      <EntitySection
+        title="Related Entities"
+        icon="graph"
+        loading={true}
+      >
+        <EntityGraphVisualizationSkeleton height={graphHeight} />
+      </EntitySection>
+    );
+  }
+
+  // Show empty state
+  return (
+    <EntitySection
+      title="Related Entities"
+      icon="graph"
+    >
+      <GraphEmptyState />
+    </EntitySection>
+  );
+}

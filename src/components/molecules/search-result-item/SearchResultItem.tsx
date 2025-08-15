@@ -1,1 +1,106 @@
-import React from 'react';\nimport { EntityBadge, MetricDisplay, ExternalLink } from '@/components';\nimport type { Work } from '@/lib/openalex/types';\nimport * as styles from '../../organisms/search-results.css';\n\ninterface SearchResultItemProps {\n  work: Work;\n  onClick: (work: Work) => void;\n}\n\nexport function SearchResultItem({ work, onClick }: SearchResultItemProps) {\n  return (\n    <div \n      className={styles.resultItem}\n      onClick={() => onClick(work)}\n    >\n      <div className={styles.resultHeader}>\n        <h3 className={styles.resultTitle}>\n          {work.title}\n        </h3>\n        <div className={styles.resultMeta}>\n          <EntityBadge entityType=\"work\" />\n          {work.publication_year && (\n            <span className={styles.year}>\n              {work.publication_year}\n            </span>\n          )}\n          {work.open_access?.is_oa && (\n            <span className={styles.openAccess}>\n              Open Access\n            </span>\n          )}\n        </div>\n      </div>\n\n      {work.authorships && work.authorships.length > 0 && (\n        <div className={styles.authors}>\n          <span className={styles.authorsLabel}>Authors:</span>\n          <span className={styles.authorsList}>\n            {work.authorships\n              .slice(0, 3)\n              .map(auth => auth.author?.display_name)\n              .filter(Boolean)\n              .join(', ')}\n            {work.authorships.length > 3 && ` and ${work.authorships.length - 3} more`}\n          </span>\n        </div>\n      )}\n\n      {work.primary_location?.source?.display_name && (\n        <div className={styles.venue}>\n          <span className={styles.venueLabel}>Published in:</span>\n          <span className={styles.venueName}>\n            {work.primary_location.source.display_name}\n          </span>\n        </div>\n      )}\n\n      <div className={styles.metrics}>\n        <MetricDisplay \n          label=\"Citations\"\n          value={work.cited_by_count || 0}\n          variant=\"default\"\n        />\n        \n        {work.concepts && work.concepts.length > 0 && (\n          <div className={styles.concepts}>\n            {work.concepts\n              .slice(0, 3)\n              .map((concept) => (\n                <EntityBadge\n                  key={concept.id}\n                  entityType=\"concept\"\n                  size=\"sm\"\n                >\n                  {concept.display_name}\n                </EntityBadge>\n              ))}\n          </div>\n        )}\n      </div>\n\n      {work.doi && (\n        <div className={styles.links}>\n          <ExternalLink href={`https://doi.org/${work.doi}`} type=\"doi\">\n            DOI: {work.doi}\n          </ExternalLink>\n        </div>\n      )}\n\n      {work.abstract_inverted_index && (\n        <div className={styles.abstract}>\n          <details>\n            <summary className={styles.abstractToggle}>\n              Show Abstract\n            </summary>\n            <div className={styles.abstractContent}>\n              {/* We'll need to reconstruct the abstract from inverted index */}\n              Abstract available (click to view full paper)\n            </div>\n          </details>\n        </div>\n      )}\n    </div>\n  );\n}
+import React from 'react';
+import { EntityBadge, MetricDisplay, ExternalLink } from '@/components';
+import type { Work } from '@/lib/openalex/types';
+import * as styles from '../../organisms/search-results.css';
+
+interface SearchResultItemProps {
+  work: Work;
+  onClick: (work: Work) => void;
+}
+
+export function SearchResultItem({ work, onClick }: SearchResultItemProps) {
+  return (
+    <div 
+      className={styles.resultItem}
+      onClick={() => onClick(work)}
+    >
+      <div className={styles.resultHeader}>
+        <h3 className={styles.resultTitle}>
+          {work.title}
+        </h3>
+        <div className={styles.resultMeta}>
+          <EntityBadge entityType="work" />
+          {work.publication_year && (
+            <span className={styles.year}>
+              {work.publication_year}
+            </span>
+          )}
+          {work.open_access?.is_oa && (
+            <span className={styles.openAccess}>
+              Open Access
+            </span>
+          )}
+        </div>
+      </div>
+
+      {work.authorships && work.authorships.length > 0 && (
+        <div className={styles.authors}>
+          <span className={styles.authorsLabel}>Authors:</span>
+          <span className={styles.authorsList}>
+            {work.authorships
+              .slice(0, 3)
+              .map(auth => auth.author?.display_name)
+              .filter(Boolean)
+              .join(', ')}
+            {work.authorships.length > 3 && ` and ${work.authorships.length - 3} more`}
+          </span>
+        </div>
+      )}
+
+      {work.primary_location?.source?.display_name && (
+        <div className={styles.venue}>
+          <span className={styles.venueLabel}>Published in:</span>
+          <span className={styles.venueName}>
+            {work.primary_location.source.display_name}
+          </span>
+        </div>
+      )}
+
+      <div className={styles.metrics}>
+        <MetricDisplay 
+          label="Citations"
+          value={work.cited_by_count || 0}
+          variant="default"
+        />
+        
+        {work.concepts && work.concepts.length > 0 && (
+          <div className={styles.concepts}>
+            {work.concepts
+              .slice(0, 3)
+              .map((concept) => (
+                <EntityBadge
+                  key={concept.id}
+                  entityType="concept"
+                  size="sm"
+                >
+                  {concept.display_name}
+                </EntityBadge>
+              ))}
+          </div>
+        )}
+      </div>
+
+      {work.doi && (
+        <div className={styles.links}>
+          <ExternalLink href={`https://doi.org/${work.doi}`} type="doi">
+            DOI: {work.doi}
+          </ExternalLink>
+        </div>
+      )}
+
+      {work.abstract_inverted_index && (
+        <div className={styles.abstract}>
+          <details>
+            <summary className={styles.abstractToggle}>
+              Show Abstract
+            </summary>
+            <div className={styles.abstractContent}>
+              {/* We'll need to reconstruct the abstract from inverted index */}
+              Abstract available (click to view full paper)
+            </div>
+          </details>
+        </div>
+      )}
+    </div>
+  );
+}

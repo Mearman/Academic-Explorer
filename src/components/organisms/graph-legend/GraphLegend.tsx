@@ -1,6 +1,7 @@
 import React from 'react';
 import { EntityBadge } from '@/components';
-import type { EntityGraphVertex, EntityType } from '@/types/entity-graph';\nimport * as styles from '../entity-graph-visualization.css';
+import type { EntityGraphVertex, EntityType } from '@/types/entity-graph';
+import * as styles from '../entity-graph-visualization.css';
 
 interface GraphLegendProps {
   vertices: EntityGraphVertex[];
