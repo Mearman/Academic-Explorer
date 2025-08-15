@@ -5,10 +5,23 @@ import { TanStackRouterVite } from '@tanstack/router-vite-plugin';
 import checker from 'vite-plugin-checker';
 import path from 'path';
 import { copyFileSync } from 'fs';
+import { generateBuildInfoFile } from './scripts/generate-build-info';
 
 export default defineConfig(({ command }) => ({
   base: command === 'build' ? '/Academic-Explorer/' : '/',
   plugins: [
+    // Generate build info before other plugins
+    {
+      name: 'generate-build-info',
+      buildStart() {
+        try {
+          generateBuildInfoFile();
+          console.log('✓ Generated build info for deployment');
+        } catch (error) {
+          console.warn('Failed to generate build info:', error);
+        }
+      }
+    },
     react(),
     TanStackRouterVite(),
     vanillaExtractPlugin(),
