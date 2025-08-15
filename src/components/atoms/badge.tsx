@@ -6,6 +6,17 @@ import { BadgeProps } from '../types';
 
 import * as styles from './badge.css';
 
+function buildBadgeClasses(variant: string, size: string, pill: boolean, removable: boolean, className?: string) {
+  return [
+    styles.base,
+    styles.sizeVariants[size],
+    styles.variantStyles[variant],
+    pill && styles.pillStyle,
+    removable && styles.removableStyle,
+    className,
+  ].filter(Boolean).join(' ');
+}
+
 export const Badge = forwardRef<HTMLSpanElement, BadgeProps>(
   function Badge({ 
     children, 
@@ -23,14 +34,7 @@ export const Badge = forwardRef<HTMLSpanElement, BadgeProps>(
       onRemove?.();
     };
 
-    const baseClasses = [
-      styles.base,
-      styles.sizeVariants[size],
-      styles.variantStyles[variant],
-      pill && styles.pillStyle,
-      removable && styles.removableStyle,
-      className,
-    ].filter(Boolean).join(' ');
+    const baseClasses = buildBadgeClasses(variant, size, pill, removable, className);
 
     return (
       <span

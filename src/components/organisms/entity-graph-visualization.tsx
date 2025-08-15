@@ -22,6 +22,8 @@ interface EntityGraphVisualizationProps {
 }
 
 export function EntityGraphVisualization({
+  width = 800,
+  height = 400,
   className,
   showControls = true,
   showLegend = true,

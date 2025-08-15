@@ -12,13 +12,8 @@ import type {
   Author, 
   Institution, 
   Source, 
-  Topic,
-  Concept
+  Topic
 } from '@/lib/openalex/types';
-import { 
-  detectEntityType,
-  getEntityEndpoint 
-} from '@/lib/openalex/utils/entity-detection';
 
 interface UseEntityGraphTrackingProps {
   /** Whether to automatically track entity visits */
@@ -381,7 +376,7 @@ export function useEntityGraphTracking({
           extractSourceRelationships(entity as Source);
           break;
         // Add more cases as needed for Publisher, Funder, etc.
-        default:
+        default: {
           // For other entity types, we might have basic topic relationships
           const basicEntity = entity as { topics?: Topic[] };
           if (basicEntity.topics) {
@@ -405,6 +400,7 @@ export function useEntityGraphTracking({
             });
           }
           break;
+        }
       }
     } catch (error) {
       console.warn('Error extracting relationships:', error);
