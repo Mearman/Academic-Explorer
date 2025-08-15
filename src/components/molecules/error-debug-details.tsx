@@ -1,5 +1,16 @@
 import React, { useState } from 'react';
 
+import { getFullBuildInfo } from '@/lib/build-info-utils';
+
+import { 
+  ErrorSummary, 
+  SystemInfoSection, 
+  BuildInfoSection, 
+  StackTraceSection, 
+  ComponentStackSection, 
+  FullReportSection 
+} from './error-debug-sections';
+
 interface ErrorDebugDetailsProps {
   error: Error;
   errorInfo?: React.ErrorInfo;
@@ -16,9 +27,20 @@ interface SystemInfo {
   sessionStorage: boolean;
   indexedDB: boolean;
   reactVersion?: string;
+  buildInfo: {
+    commitHash: string;
+    commitMessage: string;
+    branch: string;
+    buildTimestamp: string;
+    nodeVersion: string;
+    platform: string;
+    environment: string;
+  };
 }
 
 function getSystemInfo(): SystemInfo {
+  const buildInfo = getFullBuildInfo();
+  
   return {
     userAgent: navigator.userAgent,
     url: window.location.href,
@@ -28,6 +50,15 @@ function getSystemInfo(): SystemInfo {
     sessionStorage: typeof Storage !== 'undefined',
     indexedDB: 'indexedDB' in window,
     reactVersion: React.version,
+    buildInfo: {
+      commitHash: `${buildInfo.git.short} (${buildInfo.git.full})`,
+      commitMessage: buildInfo.git.message,
+      branch: buildInfo.git.branch,
+      buildTimestamp: buildInfo.buildTimestamp,
+      nodeVersion: buildInfo.nodeVersion,
+      platform: buildInfo.platform,
+      environment: buildInfo.env.NODE_ENV,
+    },
   };
 }
 
@@ -52,6 +83,43 @@ function generateErrorReport(
   return JSON.stringify(report, null, 2);
 }
 
+async function copyToClipboard(text: string): Promise<void> {
+  if (navigator.clipboard && window.isSecureContext) {
+    await navigator.clipboard.writeText(text);
+  } else {
+    // Fallback for older browsers or non-HTTPS
+    const textArea = document.createElement('textarea');
+    textArea.value = text;
+    textArea.style.position = 'fixed';
+    textArea.style.left = '-999999px';
+    textArea.style.top = '-999999px';
+    document.body.appendChild(textArea);
+    textArea.focus();
+    textArea.select();
+    document.execCommand('copy');
+    textArea.remove();
+  }
+}
+
+function getCopyButtonTextForStatus(status: 'idle' | 'copying' | 'copied' | 'error'): string {
+  switch (status) {
+    case 'copying': return 'Copying...';
+    case 'copied': return 'Copied!';
+    case 'error': return 'Copy Failed';
+    default: return 'Copy Error Details';
+  }
+}
+
+function getCopyButtonClassForStatus(status: 'idle' | 'copying' | 'copied' | 'error'): string {
+  const baseClass = "mt-3 px-3 py-1 text-xs rounded transition-colors duration-200";
+  switch (status) {
+    case 'copying': return `${baseClass} bg-blue-100 text-blue-700 cursor-wait`;
+    case 'copied': return `${baseClass} bg-green-100 text-green-700`;
+    case 'error': return `${baseClass} bg-red-100 text-red-700`;
+    default: return `${baseClass} bg-gray-100 text-gray-700 hover:bg-gray-200 cursor-pointer`;
+  }
+}
+
 export function ErrorDebugDetails({ 
   error, 
   errorInfo, 
@@ -72,22 +140,7 @@ export function ErrorDebugDetails({
     setCopyStatus('copying');
     
     try {
-      if (navigator.clipboard && window.isSecureContext) {
-        await navigator.clipboard.writeText(fullErrorReport);
-      } else {
-        // Fallback for older browsers or non-HTTPS
-        const textArea = document.createElement('textarea');
-        textArea.value = fullErrorReport;
-        textArea.style.position = 'fixed';
-        textArea.style.left = '-999999px';
-        textArea.style.top = '-999999px';
-        document.body.appendChild(textArea);
-        textArea.focus();
-        textArea.select();
-        document.execCommand('copy');
-        textArea.remove();
-      }
-      
+      await copyToClipboard(fullErrorReport);
       setCopyStatus('copied');
       setTimeout(() => setCopyStatus('idle'), 2000);
     } catch (err) {
@@ -97,23 +150,12 @@ export function ErrorDebugDetails({
     }
   };
 
-  const getCopyButtonText = () => {
-    switch (copyStatus) {
-      case 'copying': return 'Copying...';
-      case 'copied': return 'Copied!';
-      case 'error': return 'Copy Failed';
-      default: return 'Copy Error Details';
-    }
+  const getCopyButtonText = (): string => {
+    return getCopyButtonTextForStatus(copyStatus);
   };
 
-  const getCopyButtonClass = () => {
-    const baseClass = "mt-3 px-3 py-1 text-xs rounded transition-colors duration-200";
-    switch (copyStatus) {
-      case 'copying': return `${baseClass} bg-blue-100 text-blue-700 cursor-wait`;
-      case 'copied': return `${baseClass} bg-green-100 text-green-700`;
-      case 'error': return `${baseClass} bg-red-100 text-red-700`;
-      default: return `${baseClass} bg-gray-100 text-gray-700 hover:bg-gray-200 cursor-pointer`;
-    }
+  const getCopyButtonClass = (): string => {
+    return getCopyButtonClassForStatus(copyStatus);
   };
 
   return (
@@ -126,72 +168,25 @@ export function ErrorDebugDetails({
       </summary>
       
       <div className="mt-3 space-y-3">
-        {/* Error Summary */}
-        <div className="bg-red-50 border border-red-200 rounded p-3">
-          <h4 className="text-sm font-semibold text-red-800 mb-2">Error Summary</h4>
-          <div className="text-xs space-y-1">
-            <div><span className="font-medium">Type:</span> {error.name}</div>
-            <div><span className="font-medium">Message:</span> {error.message}</div>
-          </div>
-        </div>
-
-        {/* System Information */}
-        {systemInfo && (
-          <div className="bg-blue-50 border border-blue-200 rounded p-3">
-            <h4 className="text-sm font-semibold text-blue-800 mb-2">System Information</h4>
-            <div className="text-xs space-y-1">
-              <div><span className="font-medium">URL:</span> {systemInfo.url}</div>
-              <div><span className="font-medium">Timestamp:</span> {systemInfo.timestamp}</div>
-              <div><span className="font-medium">Viewport:</span> {systemInfo.viewport}</div>
-              <div><span className="font-medium">User Agent:</span> {systemInfo.userAgent}</div>
-              <div><span className="font-medium">React Version:</span> {systemInfo.reactVersion}</div>
-              <div>
-                <span className="font-medium">Storage Support:</span>
-                <span className={systemInfo.localStorage ? 'text-green-600' : 'text-red-600'}>
-                  {' '}localStorage: {systemInfo.localStorage ? '✓' : '✗'}
-                </span>
-                <span className={systemInfo.indexedDB ? 'text-green-600' : 'text-red-600'}>
-                  {' '}IndexedDB: {systemInfo.indexedDB ? '✓' : '✗'}
-                </span>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* Stack Trace */}
-        <div className="bg-gray-50 border border-gray-200 rounded p-3">
-          <h4 className="text-sm font-semibold text-gray-800 mb-2">Stack Trace</h4>
-          <pre className="text-xs text-gray-600 overflow-auto max-h-48 whitespace-pre-wrap">
-            {error.stack}
-          </pre>
-        </div>
-
-        {/* Component Stack */}
+        <ErrorSummary error={error} />
+        
+        {systemInfo && <SystemInfoSection systemInfo={systemInfo} />}
+        
+        {systemInfo?.buildInfo && <BuildInfoSection buildInfo={systemInfo.buildInfo} />}
+        
+        <StackTraceSection error={error} />
+        
         {errorInfo?.componentStack && (
-          <div className="bg-yellow-50 border border-yellow-200 rounded p-3">
-            <h4 className="text-sm font-semibold text-yellow-800 mb-2">Component Stack</h4>
-            <pre className="text-xs text-yellow-700 overflow-auto max-h-32 whitespace-pre-wrap">
-              {errorInfo.componentStack}
-            </pre>
-          </div>
+          <ComponentStackSection componentStack={errorInfo.componentStack} />
         )}
-
-        {/* Full Report */}
-        <div className="bg-gray-50 border border-gray-200 rounded p-3">
-          <div className="flex items-center justify-between mb-2">
-            <h4 className="text-sm font-semibold text-gray-800">Complete Error Report</h4>
-            <button
-              onClick={handleCopyToClipboard}
-              disabled={copyStatus === 'copying'}
-              className={getCopyButtonClass()}
-            >
-              {getCopyButtonText()}
-            </button>
-          </div>
-          <pre className="text-xs text-gray-600 overflow-auto max-h-64 whitespace-pre-wrap bg-white border rounded p-2">
-            {fullErrorReport}
-          </pre>
-        </div>
+        
+        <FullReportSection
+          fullErrorReport={fullErrorReport}
+          onCopy={handleCopyToClipboard}
+          copyStatus={copyStatus}
+          copyButtonText={getCopyButtonText()}
+          copyButtonClass={getCopyButtonClass()}
+        />
 
         {/* Helper Text */}
         <div className="text-xs text-gray-500 bg-gray-50 rounded p-2">
