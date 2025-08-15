@@ -103,6 +103,9 @@ Thumbs.db
 *.db
 .cache/
 
+# auto-generated build metadata
+/src/lib/build-info.ts
+
 # API keys and sensitive files (additional protection)
 api-keys.json
 secrets.json
