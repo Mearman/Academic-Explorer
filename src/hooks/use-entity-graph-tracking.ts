@@ -472,7 +472,7 @@ export function useEntityGraphTracking({
         
         // For now, just track the visit with basic info
         // The actual entity data will be tracked when it's loaded
-        trackEntityVisit(entityId, type, 'Loading...', {
+        trackEntityVisit(entityId, type, `${type.charAt(0).toUpperCase() + type.slice(1)} (loading...)`, {
           autoTracked: true,
           route: pathname,
         });
