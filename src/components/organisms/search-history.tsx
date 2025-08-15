@@ -1,6 +1,7 @@
 'use client';
 
 import { useAppStore } from '@/stores/app-store';
+
 import * as styles from './search-history.css';
 
 export function SearchHistory() {

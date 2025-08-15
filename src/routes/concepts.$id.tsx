@@ -1,4 +1,3 @@
-import { createFileRoute } from '@tanstack/react-router';
 import { 
   Card, 
   Badge, 
@@ -26,16 +25,18 @@ import {
   IconPhoto,
   IconGlobe
 } from '@tabler/icons-react';
+import { createFileRoute } from '@tanstack/react-router';
+
 import { RawDataView, EntityLink } from '@/components';
-import type { Concept } from '@/lib/openalex/types';
-import { EntityType } from '@/lib/openalex/utils/entity-detection';
-import { useConceptData } from '@/hooks/use-entity-data';
 import { EntityError, EntitySkeleton, EntityFallback } from '@/components';
-import { useNumericIdRedirect } from '@/hooks/use-numeric-id-redirect';
 import { 
   EntityPageTemplate,
   EntityErrorBoundary
 } from '@/components';
+import { useConceptData } from '@/hooks/use-entity-data';
+import { useNumericIdRedirect } from '@/hooks/use-numeric-id-redirect';
+import type { Concept } from '@/lib/openalex/types';
+import { EntityType } from '@/lib/openalex/utils/entity-detection';
 
 function ConceptDisplay({ concept }: { concept: Concept }) {
   // External links for the concept

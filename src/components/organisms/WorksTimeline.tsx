@@ -4,7 +4,6 @@
  * Displays an author's works organized chronologically with timeline visualization
  */
 
-import React, { useState, useMemo } from 'react';
 import {
   Card,
   Stack,
@@ -33,10 +32,12 @@ import {
   IconRefresh,
   IconEye
 } from '@tabler/icons-react';
-import type { Work } from '@/lib/openalex/types';
+import React, { useState, useMemo } from 'react';
+
 import { EntityLink } from '@/components';
-import { useAuthorWorks, type AuthorWorksOptions } from '@/hooks/use-author-works';
 import { getOpenAccessColour } from '@/components/design-tokens.utils';
+import { useAuthorWorks, type AuthorWorksOptions } from '@/hooks/use-author-works';
+import type { Work } from '@/lib/openalex/types';
 
 interface WorksTimelineProps {
   authorId: string;

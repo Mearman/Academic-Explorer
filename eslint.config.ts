@@ -45,11 +45,15 @@ export default tseslint.config(
       'boundaries': boundaries,
     },
     settings: {
-      // Import resolver for TypeScript
+      // Import resolver for TypeScript - Flat config syntax
       'import/resolver': {
         typescript: {
           alwaysTryTypes: true,
-          project: './tsconfig.json'
+          project: './tsconfig.json',
+          extensions: ['.ts', '.tsx', '.js', '.jsx']
+        },
+        node: {
+          extensions: ['.js', '.jsx', '.ts', '.tsx']
         }
       },
       // Boundaries configuration for Atomic Design
@@ -86,7 +90,11 @@ export default tseslint.config(
             'src/hooks/**/*',
             'src/stores/**/*',
             'src/types/**/*',
-            'src/design-tokens.css.ts'
+            'src/design-tokens.css.ts',
+            'src/components/atoms/utils/**/*',
+            'src/components/molecules/*/hooks/**/*',
+            'src/components/organisms/*/hooks/**/*',
+            'src/components/templates/hooks/**/*'
           ],
           mode: 'folder'
         }

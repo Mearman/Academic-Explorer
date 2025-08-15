@@ -1,5 +1,3 @@
-import React from 'react';
-import { createFileRoute } from '@tanstack/react-router';
 import { 
   Card, 
   Badge, 
@@ -27,20 +25,25 @@ import {
   IconBook2,
   IconChartLine
 } from '@tabler/icons-react';
+import { createFileRoute } from '@tanstack/react-router';
+import React from 'react';
+
 import { RawDataView, EntityLink, ConceptList } from '@/components';
-import type { Source } from '@/lib/openalex/types';
-import { EntityType } from '@/lib/openalex/utils/entity-detection';
-import { useSourceData } from '@/hooks/use-entity-data';
 import { EntityError, EntitySkeleton, EntityFallback } from '@/components';
-import { useNumericIdRedirect } from '@/hooks/use-numeric-id-redirect';
 import { 
   EntityPageTemplate,
   EntityErrorBoundary
 } from '@/components';
+import { useSourceData } from '@/hooks/use-entity-data';
+import { useNumericIdRedirect } from '@/hooks/use-numeric-id-redirect';
+import type { Source } from '@/lib/openalex/types';
+import { EntityType } from '@/lib/openalex/utils/entity-detection';
 
-function SourceDisplay({ source }: { source: Source }) {
-  // External links for the source
-  const externalLinks = [
+/**
+ * Build external links for source
+ */
+function buildExternalLinks(source: Source) {
+  return [
     source.homepage_url && {
       url: source.homepage_url,
       label: 'Source Homepage',
@@ -62,6 +65,83 @@ function SourceDisplay({ source }: { source: Source }) {
       type: 'openalex' as const
     }
   ].filter(Boolean);
+}
+
+/**
+ * Get icon for external link type
+ */
+function getExternalLinkIcon(type: string) {
+  switch (type) {
+    case 'homepage':
+      return <IconWorldWww size={16} />;
+    case 'issn':
+      return <IconCertificate size={16} />;
+    case 'doaj':
+      return <IconFileText size={16} />;
+    default:
+      return <IconExternalLink size={16} />;
+  }
+}
+
+/**
+ * Get color for external link type
+ */
+function getExternalLinkColor(type: string): string {
+  switch (type) {
+    case 'homepage':
+      return 'blue';
+    case 'issn':
+      return 'purple';
+    case 'doaj':
+      return 'openAccess';
+    default:
+      return 'source';
+  }
+}
+
+/**
+ * Render external link card
+ */
+function renderExternalLinkCard(link: { url: string; label: string; type: string }, index: number) {
+  return (
+    <Grid.Col key={index} span={{ base: 12, sm: 6, md: 4 }}>
+      <Anchor
+        href={link.url}
+        target="_blank"
+        rel="noopener noreferrer"
+        style={{ textDecoration: 'none' }}
+      >
+        <Paper
+          p="md"
+          withBorder
+          radius="md"
+          style={(theme) => {
+            const color = getExternalLinkColor(link.type);
+            return {
+              transition: 'all 150ms ease',
+              cursor: 'pointer',
+              '&:hover': {
+                transform: 'translateY(-2px)',
+                boxShadow: theme.shadows.md,
+                borderColor: theme.colors[color]?.[5],
+              },
+            };
+          }}
+        >
+          <Group>
+            {getExternalLinkIcon(link.type)}
+            <Text size="sm" fw={500} c={getExternalLinkColor(link.type)}>
+              {link.label}
+            </Text>
+          </Group>
+        </Paper>
+      </Anchor>
+    </Grid.Col>
+  );
+}
+
+function SourceDisplay({ source }: { source: Source }) {
+  const externalLinks = buildExternalLinks(source);
 
   return (
     <EntityPageTemplate entity={source}>
@@ -423,65 +503,7 @@ function SourceDisplay({ source }: { source: Source }) {
               <Grid>
                 {externalLinks.map((link, index) => {
                   if (!link) return null;
-                  
-                  const getIcon = () => {
-                    switch (link.type) {
-                      case 'homepage':
-                        return <IconWorldWww size={16} />;
-                      case 'issn':
-                        return <IconCertificate size={16} />;
-                      case 'doaj':
-                        return <IconFileText size={16} />;
-                      default:
-                        return <IconExternalLink size={16} />;
-                    }
-                  };
-
-                  const getColor = () => {
-                    switch (link.type) {
-                      case 'homepage':
-                        return 'blue';
-                      case 'issn':
-                        return 'purple';
-                      case 'doaj':
-                        return 'openAccess';
-                      default:
-                        return 'source';
-                    }
-                  };
-
-                  return (
-                    <Grid.Col key={index} span={{ base: 12, sm: 6, md: 4 }}>
-                      <Anchor
-                        href={link.url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        style={{ textDecoration: 'none' }}
-                      >
-                        <Paper
-                          p="md"
-                          withBorder
-                          radius="md"
-                          style={(theme) => ({
-                            transition: 'all 150ms ease',
-                            cursor: 'pointer',
-                            '&:hover': {
-                              transform: 'translateY(-2px)',
-                              boxShadow: theme.shadows.md,
-                              borderColor: theme.colors[getColor()][5],
-                            },
-                          })}
-                        >
-                          <Group>
-                            {getIcon()}
-                            <Text size="sm" fw={500} c={getColor()}>
-                              {link.label}
-                            </Text>
-                          </Group>
-                        </Paper>
-                      </Anchor>
-                    </Grid.Col>
-                  );
+                  return renderExternalLinkCard(link, index);
                 })}
               </Grid>
             </Card>

@@ -1,4 +1,3 @@
-import { createFileRoute } from '@tanstack/react-router';
 import { 
   Card, 
   Badge, 
@@ -24,16 +23,18 @@ import {
   IconMapPin,
   IconTextCaption
 } from '@tabler/icons-react';
+import { createFileRoute } from '@tanstack/react-router';
+
 import { RawDataView } from '@/components';
-import type { Region } from '@/lib/openalex/types';
-import { EntityType } from '@/lib/openalex/utils/entity-detection';
-import { useRegionData } from '@/hooks/use-entity-data';
 import { EntityError, EntitySkeleton, EntityFallback } from '@/components';
-import { useNumericIdRedirect } from '@/hooks/use-numeric-id-redirect';
 import { 
   EntityPageTemplate,
   EntityErrorBoundary
 } from '@/components';
+import { useRegionData } from '@/hooks/use-entity-data';
+import { useNumericIdRedirect } from '@/hooks/use-numeric-id-redirect';
+import type { Region } from '@/lib/openalex/types';
+import { EntityType } from '@/lib/openalex/utils/entity-detection';
 
 function RegionDisplay({ region }: { region: Region }) {
   // External links for the region

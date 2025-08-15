@@ -1,12 +1,6 @@
-import { useEffect, useCallback } from 'react';
 import { useLocation } from '@tanstack/react-router';
-import { useEntityGraphStore } from '@/stores/entity-graph-store';
-import type {
-  EntityVisitEvent,
-  RelationshipDiscoveryEvent,
-  EntityType,
-} from '@/types/entity-graph';
-import { EdgeType } from '@/types/entity-graph';
+import { useEffect, useCallback } from 'react';
+
 import type { 
   Work, 
   Author, 
@@ -14,6 +8,13 @@ import type {
   Source, 
   Topic
 } from '@/lib/openalex/types';
+import { useEntityGraphStore } from '@/stores/entity-graph-store';
+import type {
+  EntityVisitEvent,
+  RelationshipDiscoveryEvent,
+  EntityType,
+} from '@/types/entity-graph';
+import { EdgeType } from '@/types/entity-graph';
 
 interface UseEntityGraphTrackingProps {
   /** Whether to automatically track entity visits */

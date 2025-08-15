@@ -1,8 +1,10 @@
 'use client';
 
 import { forwardRef } from 'react';
-import * as styles from './icon.css';
+
 import type { IconProps, EntityType } from '../types';
+
+import * as styles from './icon.css';
 
 // Emoji-based icon mapping for different entities and actions
 const iconMap = {
@@ -78,6 +80,37 @@ const iconMap = {
   bronze: '🥉',
 };
 
+/**
+ * Get colour CSS class for icon
+ */
+function getColorClass(colorProp?: string): string {
+  if (!colorProp) return '';
+  
+  // Check if it's an entity type
+  if (colorProp in styles.entityIconVariants) {
+    return styles.entityIconVariants[colorProp as EntityType];
+  }
+  
+  // Check if it's an action colour
+  if (colorProp in styles.actionIconVariants) {
+    return styles.actionIconVariants[colorProp as keyof typeof styles.actionIconVariants];
+  }
+  
+  return '';
+}
+
+/**
+ * Build CSS classes for icon
+ */
+function buildIconClasses(size: string, color?: string, className?: string): string {
+  return [
+    styles.base,
+    styles.sizeVariants[size as keyof typeof styles.sizeVariants],
+    getColorClass(color),
+    className,
+  ].filter(Boolean).join(' ');
+}
+
 export const Icon = forwardRef<HTMLSpanElement, IconProps>(
   ({ 
     name, 
@@ -89,37 +122,13 @@ export const Icon = forwardRef<HTMLSpanElement, IconProps>(
     ...props 
   }, ref) => {
     const iconSymbol = iconMap[name as keyof typeof iconMap] || '❓';
-    
-    const getColorClass = (colorProp?: string) => {
-      if (!colorProp) return '';
-      
-      // Check if it's an entity type
-      if (colorProp in styles.entityIconVariants) {
-        return styles.entityIconVariants[colorProp as EntityType];
-      }
-      
-      // Check if it's an action colour
-      if (colorProp in styles.actionIconVariants) {
-        return styles.actionIconVariants[colorProp as keyof typeof styles.actionIconVariants];
-      }
-      
-      // Return empty string for custom colours (handled via style prop)
-      return '';
-    };
-
-    const baseClasses = [
-      styles.base,
-      styles.sizeVariants[size],
-      getColorClass(color),
-      className,
-    ].filter(Boolean).join(' ');
-
+    const cssClasses = buildIconClasses(size, color, className);
     const customStyle = color && !getColorClass(color) ? { color } : undefined;
 
     return (
       <span
         ref={ref}
-        className={baseClasses}
+        className={cssClasses}
         style={customStyle}
         data-testid={testId}
         aria-label={ariaLabel || `${name} icon`}

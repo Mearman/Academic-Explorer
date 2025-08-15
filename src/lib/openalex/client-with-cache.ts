@@ -4,8 +4,8 @@
  */
 
 import { OpenAlexClient, OpenAlexConfig } from './client';
-import { CacheManager, CacheOptions, RequestDeduplicator } from './utils/cache';
 import type { ApiResponse } from './types';
+import { CacheManager, CacheOptions, RequestDeduplicator } from './utils/cache';
 
 export interface CachedOpenAlexConfig extends OpenAlexConfig {
   cache?: CacheOptions;

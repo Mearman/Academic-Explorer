@@ -1,4 +1,5 @@
 import { style, styleVariants, createVar } from '@vanilla-extract/css';
+
 import { entityVars } from '../design-tokens.css';
 
 // CSS custom properties for dynamic values

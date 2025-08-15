@@ -1,7 +1,10 @@
-import React from 'react';
-import { Link } from '@tanstack/react-router';
 import { Anchor, Text } from '@mantine/core';
-import { EntityType, parseEntityIdentifier } from '@/lib/openalex/utils/entity-detection';
+import { Link } from '@tanstack/react-router';
+import React from 'react';
+
+import { EntityType } from '@/lib/openalex/utils/entity-detection';
+
+import { detectEntityType, buildEntityPath, buildExternalUrl } from './utils/entity-link-utils';
 
 interface EntityLinkProps {
   entityId: string;
@@ -15,103 +18,21 @@ interface EntityLinkProps {
   fallbackToExternal?: boolean;
 }
 
-/**
- * EntityLink component creates internal links to other entities within the platform
- * Automatically detects entity type from ID if not provided
- */
-export function EntityLink({
-  entityId,
-  displayName,
-  entityType,
-  size = 'sm',
-  weight,
-  color,
-  underline = true,
-  className,
-  fallbackToExternal = true
-}: EntityLinkProps) {
-  // Detect entity type if not provided
-  let detectedType: EntityType | null = entityType || null;
+function renderFallback(entityId: string, displayName: string, size: string, weight?: number, color?: string, underline?: boolean, className?: string, fallbackToExternal?: boolean) {
+  if (!fallbackToExternal) {
+    return <Text size={size} fw={weight} c={color || 'dimmed'} className={className}>{displayName}</Text>;
+  }
+  const href = buildExternalUrl(entityId);
+  return <Anchor href={href} target="_blank" rel="noopener noreferrer" size={size} fw={weight} c={color} td={underline ? 'underline' : 'none'} className={className}>{displayName}</Anchor>;
+}
+
+export function EntityLink({ entityId, displayName, entityType, size = 'sm', weight, color, underline = true, className, fallbackToExternal = true }: EntityLinkProps) {
+  const detectedType = detectEntityType(entityId, entityType);
   
   if (!detectedType) {
-    try {
-      const parsed = parseEntityIdentifier(entityId);
-      detectedType = parsed.type;
-    } catch {
-      detectedType = null;
-    }
-  }
-  
-  // Generate internal route path
-  const getInternalPath = (type: EntityType, id: string): string => {
-    const cleanId = id.replace('https://openalex.org/', '');
-    
-    switch (type) {
-      case EntityType.WORK:
-        return `/works/${cleanId}`;
-      case EntityType.AUTHOR:
-        return `/authors/${cleanId}`;
-      case EntityType.SOURCE:
-        return `/sources/${cleanId}`;
-      case EntityType.INSTITUTION:
-        return `/institutions/${cleanId}`;
-      case EntityType.CONCEPT:
-        return `/concepts/${cleanId}`;
-      case EntityType.TOPIC:
-        return `/topics/${cleanId}`;
-      case EntityType.PUBLISHER:
-        return `/publishers/${cleanId}`;
-      case EntityType.FUNDER:
-        return `/funders/${cleanId}`;
-      default:
-        return `/entity/${cleanId}`;
-    }
-  };
-
-  // Handle unknown entity types
-  if (!detectedType) {
-    if (fallbackToExternal) {
-      return (
-        <Anchor
-          href={entityId.startsWith('http') ? entityId : `https://openalex.org/${entityId}`}
-          target="_blank"
-          rel="noopener noreferrer"
-          size={size}
-          fw={weight}
-          c={color}
-          td={underline ? 'underline' : 'none'}
-          className={className}
-        >
-          {displayName}
-        </Anchor>
-      );
-    } else {
-      return (
-        <Text
-          size={size}
-          fw={weight}
-          c={color || 'dimmed'}
-          className={className}
-        >
-          {displayName}
-        </Text>
-      );
-    }
+    return renderFallback(entityId, displayName, size, weight, color, underline, className, fallbackToExternal);
   }
 
-  const internalPath = getInternalPath(detectedType, entityId);
-
-  return (
-    <Anchor
-      component={Link}
-      to={internalPath}
-      size={size}
-      fw={weight}
-      c={color}
-      td={underline ? 'underline' : 'none'}
-      className={className}
-    >
-      {displayName}
-    </Anchor>
-  );
+  const internalPath = buildEntityPath(detectedType, entityId);
+  return <Anchor component={Link} to={internalPath} size={size} fw={weight} c={color} td={underline ? 'underline' : 'none'} className={className}>{displayName}</Anchor>;
 }

@@ -1,15 +1,18 @@
 'use client';
 
 import { forwardRef } from 'react';
+
+import type { ExternalIds } from '@/lib/openalex/types/entities';
+
 import { Badge } from '../atoms/badge';
-import { StatusIndicator } from '../atoms/status-indicator';
 import { Icon } from '../atoms/icon';
 import { LoadingSkeleton } from '../atoms/loading-skeleton';
+import { StatusIndicator } from '../atoms/status-indicator';
 import { ExternalLinksGroup } from '../molecules/external-links-group';
 // import { getEntityColour } from '../design-tokens.css'; // Removed - not used after removing style prop
-import * as styles from './entity-header.css';
 import type { EntityHeaderProps, OpenAlexEntity, EntityType } from '../types';
-import type { ExternalIds } from '@/lib/openalex/types/entities';
+
+import * as styles from './entity-header.css';
 
 // Type guards for different entity types
 function hasOrcid(entity: OpenAlexEntity): entity is OpenAlexEntity & { orcid?: string } {

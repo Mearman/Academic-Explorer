@@ -1,8 +1,10 @@
 'use client';
 
 import { forwardRef } from 'react';
-import * as styles from './external-link.css';
+
 import type { ExternalLinkProps } from '../types';
+
+import * as styles from './external-link.css';
 
 const getLinkIcon = (type: string): string => {
   const icons = {
@@ -42,24 +44,58 @@ const formatLinkLabel = (href: string, type: string): string => {
 };
 
 const getFullUrl = (href: string, type: string): string => {
-  // Handle relative URLs and add proper prefixes
-  switch (type) {
-    case 'doi':
-      return href.startsWith('http') ? href : `https://doi.org/${href.replace(/^doi:/, '')}`;
-    case 'orcid':
-      return href.startsWith('http') ? href : `https://orcid.org/${href}`;
-    case 'ror':
-      return href.startsWith('http') ? href : `https://ror.org/${href}`;
-    case 'wikidata':
-      return href.startsWith('http') ? href : `https://wikidata.org/wiki/${href}`;
-    case 'wikipedia':
-      return href.startsWith('http') ? href : `https://en.wikipedia.org/wiki/${href}`;
-    case 'email':
-      return href.startsWith('mailto:') ? href : `mailto:${href}`;
-    default:
-      return href.startsWith('http') ? href : `https://${href}`;
+  if (href.startsWith('http') || href.startsWith('mailto:')) {
+    return href;
   }
+  
+  const prefixes = {
+    doi: `https://doi.org/${href.replace(/^doi:/, '')}`,
+    orcid: `https://orcid.org/${href}`,
+    ror: `https://ror.org/${href}`,
+    wikidata: `https://wikidata.org/wiki/${href}`,
+    wikipedia: `https://en.wikipedia.org/wiki/${href}`,
+    email: `mailto:${href}`,
+  };
+  
+  return prefixes[type as keyof typeof prefixes] || `https://${href}`;
 };
+
+/**
+ * Build CSS classes for external link
+ */
+function buildLinkClasses(type: string, className?: string): string {
+  return [
+    styles.base,
+    styles.linkTypeVariants[type as keyof typeof styles.linkTypeVariants],
+    className,
+  ].filter(Boolean).join(' ');
+}
+
+/**
+ * Render icon if enabled
+ */
+function renderIcon(showIcon: boolean, type: string) {
+  if (!showIcon) return null;
+  
+  return (
+    <span className={styles.iconStyle} aria-hidden="true">
+      {getLinkIcon(type)}
+    </span>
+  );
+}
+
+/**
+ * Render external indicator if external link
+ */
+function renderExternalIndicator(external: boolean) {
+  if (!external) return null;
+  
+  return (
+    <span className={styles.externalIconStyle} aria-hidden="true">
+      ↗
+    </span>
+  );
+}
 
 export const ExternalLink = forwardRef<HTMLAnchorElement, ExternalLinkProps>(
   ({ 
@@ -74,12 +110,7 @@ export const ExternalLink = forwardRef<HTMLAnchorElement, ExternalLinkProps>(
   }, ref) => {
     const fullUrl = getFullUrl(href, type);
     const displayText = children || formatLinkLabel(href, type);
-    
-    const baseClasses = [
-      styles.base,
-      styles.linkTypeVariants[type],
-      className,
-    ].filter(Boolean).join(' ');
+    const cssClasses = buildLinkClasses(type, className);
 
     return (
       <a
@@ -87,22 +118,14 @@ export const ExternalLink = forwardRef<HTMLAnchorElement, ExternalLinkProps>(
         href={fullUrl}
         target={external ? '_blank' : undefined}
         rel={external ? 'noopener noreferrer' : undefined}
-        className={baseClasses}
+        className={cssClasses}
         data-testid={testId}
         aria-label={`${type.toUpperCase()}: ${displayText}`}
         {...props}
       >
-        {showIcon && (
-          <span className={styles.iconStyle} aria-hidden="true">
-            {getLinkIcon(type)}
-          </span>
-        )}
+        {renderIcon(showIcon, type)}
         <span>{displayText}</span>
-        {external && (
-          <span className={styles.externalIconStyle} aria-hidden="true">
-            ↗
-          </span>
-        )}
+        {renderExternalIndicator(external)}
       </a>
     );
   }

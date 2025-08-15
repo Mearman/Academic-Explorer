@@ -1,4 +1,3 @@
-import { createFileRoute } from '@tanstack/react-router';
 import { 
   Card, 
   Badge, 
@@ -23,16 +22,18 @@ import {
   IconStar,
   IconQuote
 } from '@tabler/icons-react';
+import { createFileRoute } from '@tanstack/react-router';
+
 import { RawDataView } from '@/components';
-import type { Keyword } from '@/lib/openalex/types';
-import { EntityType } from '@/lib/openalex/utils/entity-detection';
-import { useKeywordData } from '@/hooks/use-entity-data';
-import { useNumericIdRedirect } from '@/hooks/use-numeric-id-redirect';
 import { EntityError, EntitySkeleton, EntityFallback } from '@/components';
 import { 
   EntityPageTemplate,
   EntityErrorBoundary
 } from '@/components';
+import { useKeywordData } from '@/hooks/use-entity-data';
+import { useNumericIdRedirect } from '@/hooks/use-numeric-id-redirect';
+import type { Keyword } from '@/lib/openalex/types';
+import { EntityType } from '@/lib/openalex/utils/entity-detection';
 
 function KeywordDisplay({ keyword }: { keyword: Keyword }) {
   // External links for the keyword

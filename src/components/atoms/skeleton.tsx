@@ -4,6 +4,7 @@
  */
 
 import React from 'react';
+
 import * as styles from './skeleton.css';
 
 export interface SkeletonProps {

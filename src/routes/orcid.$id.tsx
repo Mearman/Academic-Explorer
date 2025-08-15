@@ -1,7 +1,8 @@
 import { createFileRoute, useNavigate, Link } from '@tanstack/react-router';
 import { useEffect, useState } from 'react';
-import { decodeExternalId, parseExternalId, ExternalIdType } from '@/lib/openalex/utils/entity-detection';
+
 import { EntityErrorBoundary } from '@/components';
+import { decodeExternalId, parseExternalId, ExternalIdType } from '@/lib/openalex/utils/entity-detection';
 
 function ORCIDRedirectLoading({ orcid }: { orcid: string }) {
   return (

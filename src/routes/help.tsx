@@ -1,6 +1,8 @@
 import { createFileRoute } from '@tanstack/react-router';
-import * as styles from '../app/help.css';
+
 import { Icon, Badge } from '@/components';
+
+import * as styles from '../app/help.css';
 
 function HelpPage() {
   return (

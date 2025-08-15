@@ -4,6 +4,7 @@
  */
 
 import React from 'react';
+
 import * as styles from './loading-spinner.css';
 
 export interface LoadingSpinnerProps {

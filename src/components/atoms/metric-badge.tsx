@@ -1,9 +1,12 @@
 'use client';
 
 import { forwardRef } from 'react';
-import { formatNumber } from '@/lib/openalex/utils/transformers';
-import * as styles from './metric-badge.css';
+
 import type { SizeVariant } from '../types';
+
+import * as styles from './metric-badge.css';
+import { renderIcon, renderLabel, renderTrendIcon, buildMetricClasses } from './utils/metric-render-utils';
+import { formatMetricValue, TREND_ICONS } from './utils/metric-utils';
 
 export interface MetricBadgeProps {
   value: number | string;
@@ -20,90 +23,17 @@ export interface MetricBadgeProps {
 }
 
 export const MetricBadge = forwardRef<HTMLSpanElement, MetricBadgeProps>(
-  ({ 
-    value, 
-    label, 
-    format = 'number',
-    trend,
-    variant = 'default',
-    size = 'md',
-    icon,
-    className,
-    compact = false,
-    inline = true,
-    'data-testid': testId,
-    ...props 
-  }, ref) => {
-    const formatValue = (val: number | string): string => {
-      if (typeof val === 'string') return val;
-      
-      switch (format) {
-        case 'percentage':
-          return `${val.toFixed(1)}%`;
-        case 'currency':
-          return new Intl.NumberFormat('en-GB', { 
-            style: 'currency', 
-            currency: 'GBP' 
-          }).format(val);
-        case 'compact':
-          return formatNumber(val);
-        case 'number':
-        default:
-          return val.toLocaleString('en-GB');
-      }
-    };
-
-    const getTrendIcon = (trendType?: string) => {
-      switch (trendType) {
-        case 'up': return '↗';
-        case 'down': return '↘';
-        case 'neutral': return '→';
-        default: return null;
-      }
-    };
-
-    const baseClasses = [
-      styles.base,
-      styles.sizeVariants[size],
-      styles.variantStyles[variant],
-      compact && styles.compactStyle,
-      inline && styles.inlineStyle,
-      className,
-    ].filter(Boolean).join(' ');
-
-    const content = compact ? (
-      <>
-        <span className={styles.valueStyle}>{formatValue(value)}</span>
-        {label && <span className={styles.labelStyle}>{label}</span>}
-        {trend && (
-          <span className={`${styles.trendIndicator} ${styles.trendVariants[trend]}`}>
-            {getTrendIcon(trend)}
-          </span>
-        )}
-      </>
-    ) : (
-      <>
-        {icon && <span className={styles.iconStyle}>{icon}</span>}
-        <span className={styles.valueStyle}>{formatValue(value)}</span>
-        {label && <span className={styles.labelStyle}>{label}</span>}
-        {trend && (
-          <span className={`${styles.trendIndicator} ${styles.trendVariants[trend]}`}>
-            {getTrendIcon(trend)}
-          </span>
-        )}
-      </>
-    );
+  ({ value, label, format = 'number', trend, variant = 'default', size = 'md', icon, className, compact = false, inline = true, 'data-testid': testId, ...props }, ref) => {
+    const formattedValue = formatMetricValue(value, format);
+    const classes = buildMetricClasses(size, variant, compact, inline, className);
+    const trendIcon = trend ? TREND_ICONS[trend] : null;
 
     return (
-      <span
-        ref={ref}
-        className={baseClasses}
-        data-testid={testId}
-        role="status"
-        aria-label={label ? `${label}: ${formatValue(value)}` : `Value: ${formatValue(value)}`}
-        {...props}
-      >
-        {content}
+      <span ref={ref} className={classes} data-testid={testId} role="status" aria-label={label ? `${label}: ${formattedValue}` : `Value: ${formattedValue}`} {...props}>
+        {renderIcon(icon, compact)}
+        <span className={styles.valueStyle}>{formattedValue}</span>
+        {renderLabel(label)}
+        {renderTrendIcon(trendIcon, trend)}
       </span>
     );
   }

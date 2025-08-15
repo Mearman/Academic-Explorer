@@ -1,13 +1,16 @@
 'use client';
 
-import { forwardRef, useState, useEffect, Suspense } from 'react';
 import { useNavigate } from '@tanstack/react-router';
-import { EntityHeader, EntityHeaderSkeleton } from '../organisms/entity-header';
+import { forwardRef, useState, useEffect, Suspense } from 'react';
+
 import { ErrorMessage } from '../atoms/error-message';
-import { LoadingSkeleton } from '../atoms/loading-skeleton';
 import { Icon } from '../atoms/icon';
-import * as styles from './entity-page-template.css.ts';
+import { LoadingSkeleton } from '../atoms/loading-skeleton';
+import { EntityHeader, EntityHeaderSkeleton } from '../organisms/entity-header';
 import type { EntityPageTemplateProps } from '../types';
+
+import * as styles from './entity-page-template.css.ts';
+
 
 export const EntityPageTemplate = forwardRef<HTMLDivElement, EntityPageTemplateProps>(
   ({ 

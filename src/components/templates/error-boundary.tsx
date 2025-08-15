@@ -5,8 +5,8 @@
  * Provides graceful error handling with user-friendly messages
  */
 
-import React from 'react';
 import { Link } from '@tanstack/react-router';
+import React from 'react';
 import { ErrorBoundary } from 'react-error-boundary';
 
 export interface EntityErrorProps {

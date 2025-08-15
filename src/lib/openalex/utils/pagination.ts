@@ -3,8 +3,8 @@
  * Handles both page-based and cursor-based pagination
  */
 
-import type { ApiResponse, BaseParams } from '../types';
 import type { OpenAlexClient } from '../client';
+import type { ApiResponse, BaseParams } from '../types';
 
 export interface PaginationOptions {
   perPage?: number;

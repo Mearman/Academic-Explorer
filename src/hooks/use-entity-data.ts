@@ -9,14 +9,8 @@
 'use client';
 
 import { useState, useEffect, useCallback, useRef } from 'react';
+
 import { cachedOpenAlex } from '@/lib/openalex';
-import { 
-  EntityType, 
-  detectEntityType, 
-  normalizeEntityId, 
-  // validateEntityId, // Currently unused
-  EntityDetectionError 
-} from '@/lib/openalex/utils/entity-detection';
 import type { 
   Work, 
   Author, 
@@ -30,6 +24,13 @@ import type {
   Keyword,
   Region
 } from '@/lib/openalex/types';
+import { 
+  EntityType, 
+  detectEntityType, 
+  normalizeEntityId, 
+  // validateEntityId, // Currently unused
+  EntityDetectionError 
+} from '@/lib/openalex/utils/entity-detection';
 
 /**
  * Union type for all possible entity data types

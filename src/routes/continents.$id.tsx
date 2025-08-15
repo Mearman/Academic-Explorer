@@ -1,4 +1,3 @@
-import { createFileRoute } from '@tanstack/react-router';
 import { 
   Card, 
   Badge, 
@@ -22,16 +21,18 @@ import {
   IconChartBar,
   IconBrandWikipedia
 } from '@tabler/icons-react';
+import { createFileRoute } from '@tanstack/react-router';
+
 import { RawDataView } from '@/components';
-import type { Continent } from '@/lib/openalex/types';
-import { EntityType } from '@/lib/openalex/utils/entity-detection';
-import { useContinentData } from '@/hooks/use-entity-data';
 import { EntityError, EntitySkeleton, EntityFallback } from '@/components';
-import { useNumericIdRedirect } from '@/hooks/use-numeric-id-redirect';
 import { 
   EntityPageTemplate,
   EntityErrorBoundary
 } from '@/components';
+import { useContinentData } from '@/hooks/use-entity-data';
+import { useNumericIdRedirect } from '@/hooks/use-numeric-id-redirect';
+import type { Continent } from '@/lib/openalex/types';
+import { EntityType } from '@/lib/openalex/utils/entity-detection';
 
 function ContinentDisplay({ continent }: { continent: Continent }) {
   // External links for the continent

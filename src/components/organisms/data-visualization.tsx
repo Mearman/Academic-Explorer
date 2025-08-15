@@ -1,6 +1,8 @@
 import React, { useMemo } from 'react';
+
 import { EntityBadge } from '@/components';
 import { EntityType } from '@/lib/openalex/utils/entity-detection';
+
 import * as styles from './data-visualization.css';
 
 interface DataPoint {

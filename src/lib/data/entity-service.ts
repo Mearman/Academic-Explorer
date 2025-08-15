@@ -9,15 +9,6 @@
 'use client';
 
 import { cachedOpenAlex } from '@/lib/openalex';
-import { 
-  EntityType, 
-  detectEntityType, 
-  normalizeEntityId, 
-  // validateEntityId, // Currently unused
-  EntityDetectionError,
-  parseEntityIdentifier,
-  // isValidEntityIdentifier // Currently unused
-} from '@/lib/openalex/utils/entity-detection';
 import type { 
   Work, 
   Author, 
@@ -28,6 +19,15 @@ import type {
   Topic,
   // ApiResponse // Currently unused
 } from '@/lib/openalex/types';
+import { 
+  EntityType, 
+  detectEntityType, 
+  normalizeEntityId, 
+  // validateEntityId, // Currently unused
+  EntityDetectionError,
+  parseEntityIdentifier,
+  // isValidEntityIdentifier // Currently unused
+} from '@/lib/openalex/utils/entity-detection';
 
 /**
  * Union type for all possible entity data types

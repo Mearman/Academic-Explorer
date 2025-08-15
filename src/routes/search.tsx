@@ -1,11 +1,13 @@
 import { createFileRoute, useNavigate, useSearch } from '@tanstack/react-router';
 import { useState } from 'react';
 import { z } from 'zod';
-import * as styles from '../app/page.css';
+
 import { AdvancedSearchForm, type AdvancedSearchFormData } from '@/components/molecules/advanced-search-form';
 import { SearchResults } from '@/components/organisms/search-results';
 // import { SavedSearches } from '@/components/molecules/saved-searches'; // Removed - component not implemented
 import type { WorksParams } from '@/lib/openalex/types';
+
+import * as styles from '../app/page.css';
 
 // Search params validation schema
 const searchSchema = z.object({
