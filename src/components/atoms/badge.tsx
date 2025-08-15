@@ -1,11 +1,13 @@
 'use client';
 
 import { forwardRef } from 'react';
+
 import { BadgeProps } from '../types';
+
 import * as styles from './badge.css';
 
 export const Badge = forwardRef<HTMLSpanElement, BadgeProps>(
-  ({ 
+  function Badge({ 
     children, 
     variant = 'default', 
     size = 'md', 
@@ -15,7 +17,7 @@ export const Badge = forwardRef<HTMLSpanElement, BadgeProps>(
     className, 
     'data-testid': testId,
     ...props 
-  }, ref) => {
+  }, ref) {
     const handleRemove = (e: React.MouseEvent) => {
       e.stopPropagation();
       onRemove?.();

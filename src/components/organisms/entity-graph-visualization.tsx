@@ -1,13 +1,8 @@
-import React, { useEffect, useRef, useState, useMemo, useCallback } from 'react';
+import React, { useRef, useState, useMemo, useCallback } from 'react';
 import { useEntityGraphStore } from '@/stores/entity-graph-store';
 import { Icon, LoadingSkeleton, EntityBadge } from '@/components';
-import type { EntityGraphVertex, EntityGraphEdge, EntityType } from '@/types/entity-graph';
+import type { EntityGraphVertex, EntityType } from '@/types/entity-graph';
 import * as styles from './entity-graph-visualization.css';
-
-interface GraphPosition {
-  x: number;
-  y: number;
-}
 
 interface PositionedVertex extends EntityGraphVertex {
   x: number;
@@ -27,8 +22,6 @@ interface EntityGraphVisualizationProps {
 }
 
 export function EntityGraphVisualization({
-  width = 800,
-  height = 400,
   className,
   showControls = true,
   showLegend = true,
@@ -46,11 +39,9 @@ export function EntityGraphVisualization({
   } | null>(null);
 
   const {
-    graph,
     selectedVertexId,
     hoveredVertexId,
     isFullscreen,
-    filterOptions,
     layoutConfig,
     getFilteredVertices,
     getFilteredEdges,
