@@ -16,6 +16,7 @@ import { ErrorMessageContent } from '../molecules/error-message-content';
 export interface EntityErrorProps {
   error: Error;
   resetErrorBoundary: () => void;
+  errorInfo?: React.ErrorInfo;
   entityType?: string;
   entityId?: string;
 }
@@ -23,6 +24,7 @@ export interface EntityErrorProps {
 function EntityError({ 
   error, 
   resetErrorBoundary, 
+  errorInfo,
   entityType, 
   entityId 
 }: EntityErrorProps) {
@@ -45,7 +47,12 @@ function EntityError({
         
         <ErrorActions onRetry={resetErrorBoundary} />
         
-        <ErrorDebugDetails error={error} />
+        <ErrorDebugDetails 
+          error={error} 
+          errorInfo={errorInfo}
+          showInProduction={true}
+          includeSystemInfo={true}
+        />
       </div>
     </div>
   );
@@ -64,17 +71,56 @@ export function EntityErrorBoundary({
   entityId,
   fallback: Fallback = EntityError
 }: EntityErrorBoundaryProps) {
+  // Store errorInfo in a ref to pass it to the fallback component
+  const errorInfoRef = React.useRef<React.ErrorInfo | undefined>(undefined);
+
   return (
     <ErrorBoundary
       FallbackComponent={(props) => (
-        <Fallback {...props} entityType={entityType} entityId={entityId} />
+        <Fallback 
+          {...props} 
+          errorInfo={errorInfoRef.current}
+          entityType={entityType} 
+          entityId={entityId} 
+        />
       )}
       onError={(error, errorInfo) => {
-        // Log error for monitoring (could integrate with Sentry, etc.)
-        console.error('Entity page error:', error, errorInfo);
+        // Store errorInfo for the fallback component
+        errorInfoRef.current = errorInfo;
         
-        // Could send to analytics/monitoring service
-        // Note: Analytics integration can be added later with proper type definitions
+        // Enhanced logging with full context
+        const logData = {
+          error: {
+            name: error.name,
+            message: error.message,
+            stack: error.stack,
+          },
+          errorInfo: {
+            componentStack: errorInfo.componentStack,
+          },
+          context: {
+            entityType,
+            entityId,
+            url: window.location.href,
+            timestamp: new Date().toISOString(),
+            userAgent: navigator.userAgent,
+          },
+        };
+        
+        console.error('Entity page error:', error, errorInfo);
+        console.error('Full error context:', logData);
+        
+        // Could send to analytics/monitoring service like Sentry
+        // if (window.Sentry) {
+        //   window.Sentry.captureException(error, {
+        //     tags: { entityType, entityId },
+        //     extra: { errorInfo, context: logData.context }
+        //   });
+        // }
+      }}
+      onReset={() => {
+        // Clear errorInfo when boundary resets
+        errorInfoRef.current = undefined;
       }}
     >
       {children}
