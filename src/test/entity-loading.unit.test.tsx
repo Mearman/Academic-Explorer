@@ -6,7 +6,7 @@
  */
 
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { render, screen, waitFor } from '@testing-library/react';
+import { render, screen, waitFor, cleanup } from '@testing-library/react';
 import React from 'react';
 import { useEntityData } from '@/hooks/use-entity-data';
 import { EntityLoadingState } from '@/hooks/use-entity-data';
@@ -55,6 +55,7 @@ describe('Entity Loading Unit Tests', () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
+    cleanup();
   });
 
   describe('Loading States', () => {
@@ -73,8 +74,12 @@ describe('Entity Loading Unit Tests', () => {
 
       render(<MockEntityPage entityId="W2741809807" entityType="work" />);
       
-      expect(screen.getByTestId('loading-state')).toBeInTheDocument();
-      expect(screen.getByText('Loading...')).toBeInTheDocument();
+      const loadingElement = screen.getByTestId('loading-state');
+      const loadingText = screen.getByText('Loading...');
+      
+      expect(loadingElement).toBeTruthy();
+      expect(loadingText).toBeTruthy();
+      expect(loadingElement.textContent).toBe('Loading...');
     });
 
     it('should show content when data loads successfully', () => {
@@ -99,10 +104,15 @@ describe('Entity Loading Unit Tests', () => {
 
       render(<MockEntityPage entityId="W2741809807" entityType="work" />);
       
-      expect(screen.getByTestId('entity-content')).toBeInTheDocument();
-      expect(screen.getByTestId('entity-title')).toHaveTextContent('Test Academic Work');
-      expect(screen.getByTestId('metric-citations')).toHaveTextContent('Citations: 42');
-      expect(screen.getByTestId('metric-works')).toHaveTextContent('Works: 100');
+      const contentElement = screen.getByTestId('entity-content');
+      const titleElement = screen.getByTestId('entity-title');
+      const citationsElement = screen.getByTestId('metric-citations');
+      const worksElement = screen.getByTestId('metric-works');
+      
+      expect(contentElement).toBeTruthy();
+      expect(titleElement.textContent).toBe('Test Academic Work');
+      expect(citationsElement.textContent).toBe('Citations: 42');
+      expect(worksElement.textContent).toBe('Works: 100');
     });
 
     it('should show error state when loading fails', () => {
@@ -120,8 +130,12 @@ describe('Entity Loading Unit Tests', () => {
 
       render(<MockEntityPage entityId="W999999999" entityType="work" />);
       
-      expect(screen.getByTestId('error-state')).toBeInTheDocument();
-      expect(screen.getByText('Error: Entity not found')).toBeInTheDocument();
+      const errorElement = screen.getByTestId('error-state');
+      const errorText = screen.getByText('Error: Entity not found');
+      
+      expect(errorElement).toBeTruthy();
+      expect(errorText).toBeTruthy();
+      expect(errorElement.textContent).toBe('Error: Entity not found');
     });
 
     it('should handle different entity types', () => {
@@ -133,6 +147,10 @@ describe('Entity Loading Unit Tests', () => {
       ];
 
       testCases.forEach(({ entityId, entityType, title }) => {
+        // Clean DOM between each test case
+        cleanup();
+        vi.clearAllMocks();
+        
         mockUseEntityData.mockReturnValue({
           data: { display_name: title, cited_by_count: 10, works_count: 5 },
           loading: false,
@@ -145,13 +163,11 @@ describe('Entity Loading Unit Tests', () => {
           reset: vi.fn()
         });
 
-        const { unmount } = render(<MockEntityPage entityId={entityId} entityType={entityType} />);
+        render(<MockEntityPage entityId={entityId} entityType={entityType} />);
         
-        expect(screen.getByTestId('entity-title')).toHaveTextContent(title);
+        const titleElement = screen.getByTestId('entity-title');
+        expect(titleElement.textContent).toBe(title);
         expect(mockUseEntityData).toHaveBeenCalledWith(entityId, entityType);
-        
-        unmount();
-        vi.clearAllMocks();
       });
     });
   });
@@ -176,7 +192,8 @@ describe('Entity Loading Unit Tests', () => {
       const { rerender } = render(<MockEntityPage entityId="W2741809807" entityType="work" />);
       
       const startTime = Date.now();
-      expect(screen.getByTestId('loading-state')).toBeInTheDocument();
+      const loadingElement = screen.getByTestId('loading-state');
+      expect(loadingElement).toBeTruthy();
 
       // Simulate successful loading after delay
       setTimeout(() => {
@@ -196,7 +213,8 @@ describe('Entity Loading Unit Tests', () => {
       }, 100);
 
       await waitFor(() => {
-        expect(screen.getByTestId('entity-content')).toBeInTheDocument();
+        const contentElement = screen.getByTestId('entity-content');
+        expect(contentElement).toBeTruthy();
       });
 
       const loadingDuration = Date.now() - startTime;
@@ -220,7 +238,8 @@ describe('Entity Loading Unit Tests', () => {
       render(<MockEntityPage entityId="W2741809807" entityType="work" />);
       
       // Should still be loading after reasonable time
-      expect(screen.getByTestId('loading-state')).toBeInTheDocument();
+      const loadingElement = screen.getByTestId('loading-state');
+      expect(loadingElement).toBeTruthy();
       
       // In a real app, we'd want to detect if loading takes too long
       const hasLoadingElements = screen.queryByTestId('loading-state') !== null;
@@ -247,9 +266,13 @@ describe('Entity Loading Unit Tests', () => {
 
       render(<MockEntityPage entityId="W999999999" entityType="work" />);
       
-      expect(screen.getByTestId('error-state')).toBeInTheDocument();
-      expect(screen.queryByTestId('loading-state')).not.toBeInTheDocument();
-      expect(screen.queryByTestId('entity-content')).not.toBeInTheDocument();
+      const errorElement = screen.getByTestId('error-state');
+      const loadingElement = screen.queryByTestId('loading-state');
+      const contentElement = screen.queryByTestId('entity-content');
+      
+      expect(errorElement).toBeTruthy();
+      expect(loadingElement).toBeNull();
+      expect(contentElement).toBeNull();
     });
 
     it('should handle network errors', () => {
@@ -267,7 +290,8 @@ describe('Entity Loading Unit Tests', () => {
 
       render(<MockEntityPage entityId="W2741809807" entityType="work" />);
       
-      expect(screen.getByText('Error: Network connection failed')).toBeInTheDocument();
+      const errorText = screen.getByText('Error: Network connection failed');
+      expect(errorText).toBeTruthy();
     });
 
     it('should handle timeout errors', () => {
@@ -285,7 +309,8 @@ describe('Entity Loading Unit Tests', () => {
 
       render(<MockEntityPage entityId="W2741809807" entityType="work" />);
       
-      expect(screen.getByText('Error: Request timed out')).toBeInTheDocument();
+      const errorText = screen.getByText('Error: Request timed out');
+      expect(errorText).toBeTruthy();
     });
   });
 
@@ -313,16 +338,24 @@ describe('Entity Loading Unit Tests', () => {
       render(<MockEntityPage entityId="W2741809807" entityType="work" />);
       
       // Verify page structure
-      expect(screen.getByTestId('entity-content')).toBeInTheDocument();
-      expect(screen.getByTestId('entity-title')).toBeInTheDocument();
-      expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('Machine Learning in Academic Research');
+      const contentElement = screen.getByTestId('entity-content');
+      const titleElement = screen.getByTestId('entity-title');
+      const headingElement = screen.getByRole('heading', { level: 1 });
+      
+      expect(contentElement).toBeTruthy();
+      expect(titleElement).toBeTruthy();
+      expect(headingElement.textContent).toBe('Machine Learning in Academic Research');
       
       // Verify metrics are displayed
-      expect(screen.getByTestId('metric-citations')).toBeInTheDocument();
-      expect(screen.getByTestId('metric-works')).toBeInTheDocument();
+      const citationsElement = screen.getByTestId('metric-citations');
+      const worksElement = screen.getByTestId('metric-works');
+      
+      expect(citationsElement).toBeTruthy();
+      expect(worksElement).toBeTruthy();
       
       // Verify card structure exists
-      expect(document.querySelector('.mantine-Card-root')).toBeInTheDocument();
+      const cardElement = document.querySelector('.mantine-Card-root');
+      expect(cardElement).toBeTruthy();
     });
   });
 });
