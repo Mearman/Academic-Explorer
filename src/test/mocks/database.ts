@@ -7,11 +7,37 @@
 
 import { vi } from 'vitest';
 
-// In-memory storage maps to simulate IndexedDB
-const searchResultsStore = new Map<string, any>();
-const papersStore = new Map<string, any>();
-const citationsStore = new Map<string, any>();
-const collectionsStore = new Map<string, any>();
+// CRITICAL: In-memory storage maps to simulate IndexedDB with cleanup tracking
+let searchResultsStore = new Map<string, any>();
+let papersStore = new Map<string, any>();
+let citationsStore = new Map<string, any>();
+let collectionsStore = new Map<string, any>();
+
+// CRITICAL: Store references for complete cleanup
+const allStores = [searchResultsStore, papersStore, citationsStore, collectionsStore];
+
+// CRITICAL: Enhanced store cleanup with memory management
+const resetStores = () => {
+  try {
+    // Clear existing stores
+    searchResultsStore.clear();
+    papersStore.clear();
+    citationsStore.clear();
+    collectionsStore.clear();
+    
+    // Create new store instances to prevent memory leaks
+    searchResultsStore = new Map<string, any>();
+    papersStore = new Map<string, any>();
+    citationsStore = new Map<string, any>();
+    collectionsStore = new Map<string, any>();
+    
+    // Update references
+    allStores.splice(0, allStores.length, searchResultsStore, papersStore, citationsStore, collectionsStore);
+    
+  } catch (error) {
+    console.warn('Store reset failed:', error);
+  }
+};
 
 // Mock database service implementation
 export const mockDatabaseService = {
@@ -143,12 +169,41 @@ export const mockDatabaseService = {
     });
   }),
 
-  // Test utility methods
+  // CRITICAL: Enhanced store cleanup methods
   clearAllStores: vi.fn().mockImplementation(() => {
-    searchResultsStore.clear();
-    papersStore.clear();
-    citationsStore.clear();
-    collectionsStore.clear();
+    resetStores();
+  }),
+  
+  // CRITICAL: Complete cleanup with garbage collection hints
+  deepCleanup: vi.fn().mockImplementation(() => {
+    resetStores();
+    
+    // Clear all mock function call history
+    Object.values(mockDatabaseService).forEach(fn => {
+      if (vi.isMockFunction(fn)) {
+        fn.mockClear();
+      }
+    });
+    
+    // Force garbage collection hints
+    if (global.gc) {
+      try {
+        global.gc();
+      } catch (error) {
+        // GC not available
+      }
+    }
+  }),
+  
+  // CRITICAL: Get current memory usage for debugging
+  getMemoryStats: vi.fn().mockImplementation(() => {
+    return {
+      searchResults: searchResultsStore.size,
+      papers: papersStore.size,
+      citations: citationsStore.size,
+      collections: collectionsStore.size,
+      total: searchResultsStore.size + papersStore.size + citationsStore.size + collectionsStore.size,
+    };
   }),
 
   // Mock access to internal stores for testing
@@ -199,8 +254,10 @@ export class MockDatabaseService {
   cleanOldSearchResults = mockDatabaseService.cleanOldSearchResults;
   getStorageEstimate = mockDatabaseService.getStorageEstimate;
   
-  // Test utilities
+  // CRITICAL: Enhanced test utilities with cleanup
   clearAllStores = mockDatabaseService.clearAllStores;
+  deepCleanup = mockDatabaseService.deepCleanup;
+  getMemoryStats = mockDatabaseService.getMemoryStats;
   __getStore = mockDatabaseService.__getStore;
 }
 

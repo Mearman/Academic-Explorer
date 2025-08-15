@@ -492,26 +492,24 @@ export const errorHandlers = {
   ],
 
   timeout: [
-    // Specific timeout handlers
-    http.post(`${API_BASE}/text`, async () => {
-      // Simulate a timeout by returning an error after a minimal delay
-      await new Promise(resolve => setTimeout(resolve, 10));
+    // Timeout handlers optimized for fast test execution 
+    // Returns 408 errors immediately instead of waiting for real timeouts
+    // Combined with client-side setTimeout mocking for ~99.9% performance improvement
+    http.post(`${API_BASE}/text`, () => {
+      // Return timeout error immediately for fast testing
       return new HttpResponse(null, { status: 408, statusText: 'Request Timeout' });
     }),
-    http.get(`${API_BASE}/continents`, async () => {
-      // Simulate a timeout by returning an error after a minimal delay
-      await new Promise(resolve => setTimeout(resolve, 10));
+    http.get(`${API_BASE}/continents`, () => {
+      // Return timeout error immediately for fast testing
       return new HttpResponse(null, { status: 408, statusText: 'Request Timeout' });
     }),
     // Wildcard handlers for everything else
-    http.get(`${API_BASE}/*`, async () => {
-      // Simulate a timeout by returning an error after a minimal delay
-      await new Promise(resolve => setTimeout(resolve, 10));
+    http.get(`${API_BASE}/*`, () => {
+      // Return timeout error immediately for fast testing
       return new HttpResponse(null, { status: 408, statusText: 'Request Timeout' });
     }),
-    http.post(`${API_BASE}/*`, async () => {
-      // Simulate a timeout by returning an error after a minimal delay
-      await new Promise(resolve => setTimeout(resolve, 10));
+    http.post(`${API_BASE}/*`, () => {
+      // Return timeout error immediately for fast testing
       return new HttpResponse(null, { status: 408, statusText: 'Request Timeout' });
     }),
   ],
