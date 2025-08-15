@@ -6,7 +6,13 @@ import { BadgeProps } from '../types';
 
 import * as styles from './badge.css';
 
-function buildBadgeClasses(variant: string, size: string, pill: boolean, removable: boolean, className?: string) {
+function buildBadgeClasses(
+  variant: keyof typeof styles.variantStyles, 
+  size: keyof typeof styles.sizeVariants, 
+  pill: boolean, 
+  removable: boolean, 
+  className?: string
+) {
   return [
     styles.base,
     styles.sizeVariants[size],

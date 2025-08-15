@@ -1,6 +1,7 @@
 'use client';
 
 import { forwardRef } from 'react';
+
 import { EntityBadgeProps } from '../types';
 import { Badge } from './badge';
 import { Icon } from './icon';
