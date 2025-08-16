@@ -162,6 +162,16 @@ export type {
   EntityLoadingProps,
 } from './types';
 
+// Entity Display Components
+export { AuthorDisplay } from './entity-displays/AuthorDisplay';
+export { WorkDisplay } from './entity-displays/WorkDisplay';
+export { SourceDisplay } from './entity-displays/SourceDisplay';
+export { InstitutionDisplay } from './entity-displays/InstitutionDisplay';
+export { FunderDisplay } from './entity-displays/FunderDisplay';
+export { TopicDisplay } from './entity-displays/TopicDisplay';
+export { ConceptDisplay } from './entity-displays/ConceptDisplay';
+export { PublisherDisplay } from './entity-displays/PublisherDisplay';
+
 // Design tokens
 export { entityVars } from './design-tokens.css';
 export { 
