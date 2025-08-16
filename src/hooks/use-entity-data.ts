@@ -11,7 +11,7 @@
 
 'use client';
 
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 
 import { cachedOpenAlex } from '@/lib/openalex';
 import type { 
@@ -274,7 +274,7 @@ export function useEntityData<T extends EntityData = EntityData>(
   /** Reset the hook state */
   reset: () => void;
 } {
-  const opts = { ...DEFAULT_OPTIONS, ...options };
+  const opts = useMemo(() => ({ ...DEFAULT_OPTIONS, ...options }), [options]);
   
   const [state, setState] = useState<UseEntityDataState<T>>({
     data: null,
@@ -363,7 +363,7 @@ export function useEntityData<T extends EntityData = EntityData>(
         opts.onError(entityError);
       }
     })();
-  }, [entityId, entityType, opts.enabled, opts.skipCache]);
+  }, [entityId, entityType, opts]);
 
   // Control functions
   const refetch = useCallback(async (): Promise<void> => {
