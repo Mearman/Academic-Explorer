@@ -17,7 +17,44 @@ const API_BASE = 'https://api.openalex.org';
 
 export const handlers = [
   // Works endpoints
-  http.get(`${API_BASE}/works`, () => {
+  http.get(`${API_BASE}/works`, ({ request }) => {
+    const url = new URL(request.url);
+    const perPage = url.searchParams.get('per_page');
+    const filter = url.searchParams.get('filter');
+    
+    // Handle specific test cases
+    if (filter === 'from_publication_date:1800-01-01,to_publication_date:1800-12-31') {
+      // Return empty results for out-of-range date filter (old dates)
+      return HttpResponse.json({
+        meta: {
+          count: 0,
+          db_response_time_ms: 15,
+          page: 1,
+          per_page: parseInt(perPage || '25'),
+        },
+        results: [],
+      });
+    }
+
+    if (perPage) {
+      const perPageNum = parseInt(perPage);
+      // Generate array of the requested size
+      const results = Array.from({ length: perPageNum }, (_, i) => ({
+        ...mockWork,
+        id: `https://openalex.org/W${2741809807 + i}`,
+      }));
+      
+      return HttpResponse.json({
+        meta: {
+          count: perPageNum,
+          db_response_time_ms: 15,
+          page: 1,
+          per_page: perPageNum,
+        },
+        results,
+      });
+    }
+    
     return HttpResponse.json(mockWorksResponse);
   }),
 
@@ -43,8 +80,73 @@ export const handlers = [
     return HttpResponse.json(mockWork);
   }),
 
+  // Work ngrams endpoint
+  http.get(`${API_BASE}/works/ngrams`, ({ request }) => {
+    const url = new URL(request.url);
+    const filter = url.searchParams.get('filter');
+    
+    // Return error for invalid filters
+    if (filter && filter.includes('invalid')) {
+      return HttpResponse.json(
+        {
+          error: 'Invalid',
+          message: 'Invalid filter parameter',
+        },
+        { status: 400 }
+      );
+    }
+    
+    return HttpResponse.json({
+      meta: {
+        count: 10,
+        db_response_time_ms: 25,
+      },
+      results: [
+        {
+          ngram: 'machine learning',
+          ngram_count: 1500,
+          ngram_tokens: 2,
+          term_frequency: 0.045,
+        },
+        {
+          ngram: 'neural networks',
+          ngram_count: 1200,
+          ngram_tokens: 2,
+          term_frequency: 0.036,
+        },
+      ],
+    });
+  }),
+
   // Authors endpoints
-  http.get(`${API_BASE}/authors`, () => {
+  http.get(`${API_BASE}/authors`, ({ request }) => {
+    const url = new URL(request.url);
+    const groupBy = url.searchParams.get('group_by');
+    
+    if (groupBy) {
+      // Return group_by data structure
+      return HttpResponse.json({
+        meta: {
+          count: 5,
+          db_response_time_ms: 20,
+          page: 1,
+          per_page: 25,
+        },
+        group_by: [
+          {
+            key: 'Harvard University',
+            key_display_name: 'Harvard University',
+            count: 150,
+          },
+          {
+            key: 'MIT',
+            key_display_name: 'MIT',
+            count: 120,
+          },
+        ],
+      });
+    }
+    
     return HttpResponse.json(mockAuthorsResponse);
   }),
 

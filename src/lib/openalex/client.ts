@@ -442,6 +442,9 @@ export class OpenAlexClient {
 
   // Batch operations
   public async worksBatch(ids: string[]): Promise<Work[]> {
+    if (ids.length === 0) {
+      return [];
+    }
     const normalizedIds = ids.map(id => this.normaliseId(id));
     const filter = `openalex_id:${normalizedIds.join('|')}`;
     const response = await this.works({ filter, per_page: ids.length });
@@ -449,6 +452,9 @@ export class OpenAlexClient {
   }
 
   public async authorsBatch(ids: string[]): Promise<Author[]> {
+    if (ids.length === 0) {
+      return [];
+    }
     const normalizedIds = ids.map(id => this.normaliseId(id));
     const filter = `openalex_id:${normalizedIds.join('|')}`;
     const response = await this.authors({ filter, per_page: ids.length });
