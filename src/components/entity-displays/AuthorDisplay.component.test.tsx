@@ -11,32 +11,130 @@ import type { Author } from '@/lib/openalex/types';
 
 import { AuthorDisplay } from './AuthorDisplay';
 
+// Mock component prop types for proper TypeScript support
+interface MockComponentProps {
+  children?: React.ReactNode;
+  [key: string]: unknown;
+}
+
+interface MockBadgeProps extends MockComponentProps {
+  variant?: string;
+  color?: string;
+  size?: string;
+}
+
+interface MockTextProps extends MockComponentProps {
+  size?: string;
+  fw?: string | number;
+  c?: string;
+}
+
+interface MockTitleProps extends MockComponentProps {
+  order?: number;
+  size?: string;
+}
+
+interface MockAnchorProps extends MockComponentProps {
+  href?: string;
+}
+
+interface MockPaperProps extends MockComponentProps {
+  p?: string | number;
+  withBorder?: boolean;
+  radius?: string;
+  bg?: string;
+  style?: React.CSSProperties | ((theme: unknown) => React.CSSProperties);
+}
+
+interface MockGridColProps extends MockComponentProps {
+  span?: unknown;
+}
+
+interface MockTabsProps extends MockComponentProps {
+  defaultValue?: string;
+}
+
+interface MockTabProps extends MockComponentProps {
+  value?: string;
+  leftSection?: React.ReactNode;
+}
+
+interface MockTabsPanelProps extends MockComponentProps {
+  value?: string;
+}
+
+interface MockTimelineItemProps extends MockComponentProps {
+  title?: string;
+}
+
+interface MockSelectProps extends MockComponentProps {
+  data?: Array<{value: string; label: string}>;
+  value?: string;
+  onChange?: (event: React.ChangeEvent<HTMLSelectElement>) => void;
+}
+
+interface MockInputProps extends MockComponentProps {
+  value?: string | number;
+  onChange?: (event: React.ChangeEvent<HTMLInputElement>) => void;
+}
+
+interface MockButtonProps extends MockComponentProps {
+  onClick?: (event: React.MouseEvent<HTMLButtonElement>) => void;
+}
+
+interface MockAlertProps extends MockComponentProps {
+  title?: string;
+}
+
+interface MockLinkProps extends MockComponentProps {
+  to?: string;
+}
+
+interface MockRawDataViewProps extends MockComponentProps {
+  data?: unknown;
+  title?: string;
+  entityType?: string;
+  entityId?: string;
+}
+
+interface MockEntityLinkProps extends MockComponentProps {
+  entityId?: string;
+  displayName?: string;
+  size?: string;
+  weight?: string | number;
+}
+
+interface MockWorksTimelineProps extends MockComponentProps {
+  authorId?: string;
+  authorName?: string;
+}
+
 // Mock external dependencies
 vi.mock('@mantine/core', () => ({
-  Card: ({ children, ...props }: any) => <div data-testid="card" {...props}>{children}</div>,
-  Badge: ({ children, variant, color, size, ...props }: any) => (
+  Card: ({ children, ...props }: MockComponentProps) => <div data-testid="card" {...props}>{children}</div>,
+  Badge: ({ children, variant, color, size, ...props }: MockBadgeProps) => (
     <span data-testid="badge" data-variant={variant} data-color={color} data-size={size} {...props}>
       {children}
     </span>
   ),
-  Group: ({ children, ...props }: any) => <div data-testid="group" {...props}>{children}</div>,
-  Stack: ({ children, ...props }: any) => <div data-testid="stack" {...props}>{children}</div>,
-  Text: ({ children, size, fw, c, ...props }: any) => (
+  Group: ({ children, ...props }: MockComponentProps) => <div data-testid="group" {...props}>{children}</div>,
+  Stack: ({ children, ...props }: MockComponentProps) => <div data-testid="stack" {...props}>{children}</div>,
+  Text: ({ children, size, fw, c, ...props }: MockTextProps) => (
     <span data-testid="text" data-size={size} data-fw={fw} data-c={c} {...props}>
       {children}
     </span>
   ),
-  Title: ({ children, order, size, ...props }: any) => (
+  Title: ({ children, order, size, ...props }: MockTitleProps) => (
     <h1 data-testid="title" data-order={order} data-size={size} {...props}>
       {children}
     </h1>
   ),
-  Anchor: ({ children, href, ...props }: any) => (
+  Anchor: ({ children, href, ...props }: MockAnchorProps) => (
     <a data-testid="anchor" href={href} {...props}>
       {children}
     </a>
   ),
-  Paper: ({ children, p, withBorder, radius, bg, style, ...props }: any) => {
+  Paper: ({ children, p, withBorder, radius, bg, style, ...props }: MockPaperProps) => {
     // Handle function-based styles by calling with a mock theme
     const mockTheme = {
       shadows: { md: '0 4px 8px rgba(0,0,0,0.1)' },
@@ -66,9 +164,9 @@ vi.mock('@mantine/core', () => ({
     );
   },
   Grid: Object.assign(
-    ({ children, ...props }: any) => <div data-testid="grid" {...props}>{children}</div>,
+    ({ children, ...props }: MockComponentProps) => <div data-testid="grid" {...props}>{children}</div>,
     {
-      Col: ({ children, span, ...props }: any) => (
+      Col: ({ children, span, ...props }: MockGridColProps) => (
         <div data-testid="grid-col" data-span={JSON.stringify(span)} {...props}>
           {children}
         </div>
@@ -76,20 +174,20 @@ vi.mock('@mantine/core', () => ({
     }
   ),
   Tabs: Object.assign(
-    ({ children, defaultValue, ...props }: any) => (
+    ({ children, defaultValue, ...props }: MockTabsProps) => (
       <div data-testid="tabs" data-default-value={defaultValue} {...props}>
         {children}
       </div>
     ),
     {
-      List: ({ children, ...props }: any) => <div data-testid="tabs-list" {...props}>{children}</div>,
-      Tab: ({ children, value, leftSection, ...props }: any) => (
+      List: ({ children, ...props }: MockComponentProps) => <div data-testid="tabs-list" {...props}>{children}</div>,
+      Tab: ({ children, value, leftSection, ...props }: MockTabProps) => (
         <button data-testid="tabs-tab" data-value={value} {...props}>
           {leftSection}
           {children}
         </button>
       ),
-      Panel: ({ children, value, ...props }: any) => (
+      Panel: ({ children, value, ...props }: MockTabsPanelProps) => (
         <div data-testid="tabs-panel" data-value={value} {...props}>
           {children}
         </div>
@@ -97,39 +195,39 @@ vi.mock('@mantine/core', () => ({
     }
   ),
   List: Object.assign(
-    ({ children, ...props }: any) => <ul data-testid="list" {...props}>{children}</ul>,
+    ({ children, ...props }: MockComponentProps) => <ul data-testid="list" {...props}>{children}</ul>,
     {
-      Item: ({ children, ...props }: any) => <li data-testid="list-item" {...props}>{children}</li>,
+      Item: ({ children, ...props }: MockComponentProps) => <li data-testid="list-item" {...props}>{children}</li>,
     }
   ),
-  Timeline: ({ children, ...props }: any) => <div data-testid="timeline" {...props}>{children}</div>,
-  'Timeline.Item': ({ children, title, ...props }: any) => (
+  Timeline: ({ children, ...props }: MockComponentProps) => <div data-testid="timeline" {...props}>{children}</div>,
+  'Timeline.Item': ({ children, title, ...props }: MockTimelineItemProps) => (
     <div data-testid="timeline-item" data-title={title} {...props}>
       {children}
     </div>
   ),
-  Select: ({ data, value, onChange, ...props }: any) => (
+  Select: ({ data, value, onChange, ...props }: MockSelectProps) => (
     <select data-testid="select" value={value} onChange={onChange} {...props}>
-      {data?.map((item: any) => (
+      {data?.map((item) => (
         <option key={item.value} value={item.value}>{item.label}</option>
       ))}
     </select>
   ),
-  NumberInput: ({ value, onChange, ...props }: any) => (
+  NumberInput: ({ value, onChange, ...props }: MockInputProps) => (
     <input data-testid="number-input" type="number" value={value} onChange={onChange} {...props} />
   ),
-  Button: ({ children, onClick, ...props }: any) => (
+  Button: ({ children, onClick, ...props }: MockButtonProps) => (
     <button data-testid="button" onClick={onClick} {...props}>{children}</button>
   ),
-  Loader: ({ ...props }: any) => <div data-testid="loader" {...props}>Loading...</div>,
-  Alert: ({ children, title, ...props }: any) => (
+  Loader: ({ ...props }: MockComponentProps) => <div data-testid="loader" {...props}>Loading...</div>,
+  Alert: ({ children, title, ...props }: MockAlertProps) => (
     <div data-testid="alert" data-title={title} {...props}>{children}</div>
   ),
 }));
 
 // Mock icons - use a generic mock that covers all possible icons
 vi.mock('@tabler/icons-react', async (importOriginal) => {
-  const actual = await importOriginal() as any;
+  const actual = await importOriginal() as Record<string, unknown>;
   
   // Create a generic icon component factory
   const createMockIcon = (name: string) => () => (
@@ -142,9 +240,9 @@ vi.mock('@tabler/icons-react', async (importOriginal) => {
   return new Proxy(actual, {
     get(target, prop) {
       if (typeof prop === 'string' && prop.startsWith('Icon')) {
-        return target[prop] || createMockIcon(prop);
+        return target[prop as keyof typeof target] || createMockIcon(prop);
       }
-      return target[prop];
+      return target[prop as string];
     }
   });
 });
@@ -172,7 +270,7 @@ vi.mock('@/components/design-tokens.utils', () => ({
 
 // Mock TanStack Router
 vi.mock('@tanstack/react-router', () => ({
-  Link: ({ children, to, ...props }: any) => (
+  Link: ({ children, to, ...props }: MockLinkProps) => (
     <a data-testid="router-link" data-to={to} {...props}>
       {children}
     </a>
@@ -181,7 +279,7 @@ vi.mock('@tanstack/react-router', () => ({
 
 // Mock specific components that AuthorDisplay imports
 vi.mock('@/components/organisms/raw-data-view', () => ({
-  RawDataView: ({ data, title, entityType, entityId }: any) => (
+  RawDataView: ({ data, title, entityType, entityId }: MockRawDataViewProps) => (
     <div data-testid="raw-data-view" data-title={title} data-entity-type={entityType} data-entity-id={entityId}>
       Raw Data: {JSON.stringify(data, null, 2)}
     </div>
@@ -189,7 +287,7 @@ vi.mock('@/components/organisms/raw-data-view', () => ({
 }));
 
 vi.mock('@/components/atoms/entity-link', () => ({
-  EntityLink: ({ entityId, displayName, size, weight }: any) => (
+  EntityLink: ({ entityId, displayName, size, weight }: MockEntityLinkProps) => (
     <a data-testid="entity-link" data-entity-id={entityId} data-size={size} data-weight={weight}>
       {displayName}
     </a>
@@ -197,7 +295,7 @@ vi.mock('@/components/atoms/entity-link', () => ({
 }));
 
 vi.mock('@/components/organisms/WorksTimeline', () => ({
-  WorksTimeline: ({ authorId, authorName }: any) => (
+  WorksTimeline: ({ authorId, authorName }: MockWorksTimelineProps) => (
     <div data-testid="works-timeline" data-author-id={authorId} data-author-name={authorName}>
       Works Timeline for {authorName}
     </div>
