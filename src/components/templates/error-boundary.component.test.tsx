@@ -10,9 +10,46 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 
 import { EntityErrorBoundary, EntityError } from './error-boundary';
 
+// Interface definitions for mock components
+interface ErrorActionsProps {
+  onRetry: () => void;
+}
+
+interface ErrorDebugDetailsProps {
+  error: Error;
+  errorInfo?: React.ErrorInfo;
+  showInProduction?: boolean;
+  includeSystemInfo?: boolean;
+}
+
+interface ErrorIconProps {
+  isNotFound: boolean;
+}
+
+interface ErrorMessageContentProps {
+  isNotFound: boolean;
+  isNetworkError: boolean;
+  entityType?: string;
+  entityId?: string;
+}
+
+interface ErrorBoundaryProps {
+  children: React.ReactNode;
+  FallbackComponent?: React.ComponentType<CustomFallbackProps>;
+  onError?: (error: Error, errorInfo: React.ErrorInfo) => void;
+  onReset?: () => void;
+}
+
+interface CustomFallbackProps {
+  error?: Error;
+  resetErrorBoundary?: () => void;
+  entityType?: string;
+  entityId?: string;
+}
+
 // Mock dependencies
 vi.mock('../molecules/error-actions', () => ({
-  ErrorActions: ({ onRetry }: any) => (
+  ErrorActions: ({ onRetry }: ErrorActionsProps) => (
     <button data-testid="error-actions" onClick={onRetry}>
       Retry
     </button>
@@ -20,7 +57,7 @@ vi.mock('../molecules/error-actions', () => ({
 }));
 
 vi.mock('../molecules/error-debug-details', () => ({
-  ErrorDebugDetails: ({ error, errorInfo, showInProduction, includeSystemInfo }: any) => (
+  ErrorDebugDetails: ({ error, errorInfo, showInProduction, includeSystemInfo }: ErrorDebugDetailsProps) => (
     <div 
       data-testid="error-debug-details"
       data-show-in-production={showInProduction}
@@ -33,7 +70,7 @@ vi.mock('../molecules/error-debug-details', () => ({
 }));
 
 vi.mock('../molecules/error-icon', () => ({
-  ErrorIcon: ({ isNotFound }: any) => (
+  ErrorIcon: ({ isNotFound }: ErrorIconProps) => (
     <div data-testid="error-icon" data-is-not-found={isNotFound}>
       {isNotFound ? '404 Icon' : 'Error Icon'}
     </div>
@@ -41,7 +78,7 @@ vi.mock('../molecules/error-icon', () => ({
 }));
 
 vi.mock('../molecules/error-message-content', () => ({
-  ErrorMessageContent: ({ isNotFound, isNetworkError, entityType, entityId }: any) => (
+  ErrorMessageContent: ({ isNotFound, isNetworkError, entityType, entityId }: ErrorMessageContentProps) => (
     <div 
       data-testid="error-message-content"
       data-is-not-found={isNotFound}
@@ -56,7 +93,7 @@ vi.mock('../molecules/error-message-content', () => ({
 
 // Mock react-error-boundary
 vi.mock('react-error-boundary', () => ({
-  ErrorBoundary: ({ children, FallbackComponent, onError, onReset }: any) => {
+  ErrorBoundary: ({ children, FallbackComponent, onError, onReset }: ErrorBoundaryProps) => {
     const TestErrorBoundary = ({ children }: { children: React.ReactNode }) => {
       const [hasError, setHasError] = React.useState(false);
       const [error, setError] = React.useState<Error | null>(null);
@@ -76,16 +113,19 @@ vi.mock('react-error-boundary', () => ({
       }, []);
 
       if (hasError && error) {
-        return (
-          <FallbackComponent 
-            error={error}
-            resetErrorBoundary={() => {
-              setHasError(false);
-              setError(null);
-              onReset?.();
-            }}
-          />
-        );
+        if (FallbackComponent) {
+          return (
+            <FallbackComponent 
+              error={error}
+              resetErrorBoundary={() => {
+                setHasError(false);
+                setError(null);
+                onReset?.();
+              }}
+            />
+          );
+        }
+        return <div>Error: {error.message}</div>;
       }
 
       return children;
@@ -113,155 +153,221 @@ const TriggerError = ({ errorMessage = 'Test error' }: { errorMessage?: string }
   return <div data-testid="trigger-component">Trigger Component</div>;
 };
 
-describe('EntityError Component', () => {
+describe('EntityError Basic Rendering', () => {
   const mockResetErrorBoundary = vi.fn();
 
   beforeEach(() => {
     vi.clearAllMocks();
   });
 
-  describe('Basic Rendering', () => {
-    it('should render error component with basic props', () => {
-      const error = new Error('Test error message');
-      
-      render(
-        <EntityError 
-          error={error} 
-          resetErrorBoundary={mockResetErrorBoundary} 
-        />
-      );
+  it('should render error component with basic props', () => {
+    const error = new Error('Test error message');
+    
+    render(
+      <EntityError 
+        error={error} 
+        resetErrorBoundary={mockResetErrorBoundary} 
+      />
+    );
 
-      expect(screen.getByTestId('error-icon')).toBeInTheDocument();
-      expect(screen.getByTestId('error-message-content')).toBeInTheDocument();
-      expect(screen.getByTestId('error-actions')).toBeInTheDocument();
-      expect(screen.getByTestId('error-debug-details')).toBeInTheDocument();
-    });
-
-    it('should pass entity context to components', () => {
-      const error = new Error('Test error message');
-      
-      render(
-        <EntityError 
-          error={error} 
-          resetErrorBoundary={mockResetErrorBoundary}
-          entityType="author"
-          entityId="A123456789"
-        />
-      );
-
-      const messageContent = screen.getByTestId('error-message-content');
-      expect(messageContent).toHaveAttribute('data-entity-type', 'author');
-      expect(messageContent).toHaveAttribute('data-entity-id', 'A123456789');
-    });
-
-    it('should pass errorInfo to debug details', () => {
-      const error = new Error('Test error message');
-      const errorInfo = { componentStack: 'Test component stack' };
-      
-      render(
-        <EntityError 
-          error={error} 
-          resetErrorBoundary={mockResetErrorBoundary}
-          errorInfo={errorInfo}
-        />
-      );
-
-      const debugDetails = screen.getByTestId('error-debug-details');
-      expect(debugDetails).toHaveTextContent('Component Stack: Test component stack');
-    });
+    expect(screen.getByTestId('error-icon')).toBeInTheDocument();
+    expect(screen.getByTestId('error-message-content')).toBeInTheDocument();
+    expect(screen.getByTestId('error-actions')).toBeInTheDocument();
+    expect(screen.getByTestId('error-debug-details')).toBeInTheDocument();
   });
 
-  describe('Error Type Detection', () => {
-    it('should detect 404/not found errors', () => {
-      const error = new Error('Entity not found (404)');
-      
-      render(
-        <EntityError 
-          error={error} 
-          resetErrorBoundary={mockResetErrorBoundary} 
-        />
-      );
+  it('should pass entity context to components', () => {
+    const error = new Error('Test error message');
+    
+    render(
+      <EntityError 
+        error={error} 
+        resetErrorBoundary={mockResetErrorBoundary}
+        entityType="author"
+        entityId="A123456789"
+      />
+    );
 
-      const errorIcon = screen.getByTestId('error-icon');
-      const messageContent = screen.getByTestId('error-message-content');
-      
-      expect(errorIcon).toHaveAttribute('data-is-not-found', 'true');
-      expect(messageContent).toHaveAttribute('data-is-not-found', 'true');
-      expect(messageContent).toHaveTextContent('Not Found Message');
-    });
-
-    it('should detect network errors', () => {
-      const error = new Error('Failed to fetch data from network');
-      
-      render(
-        <EntityError 
-          error={error} 
-          resetErrorBoundary={mockResetErrorBoundary} 
-        />
-      );
-
-      const messageContent = screen.getByTestId('error-message-content');
-      expect(messageContent).toHaveAttribute('data-is-network-error', 'true');
-    });
-
-    it('should handle generic errors', () => {
-      const error = new Error('Generic error message');
-      
-      render(
-        <EntityError 
-          error={error} 
-          resetErrorBoundary={mockResetErrorBoundary} 
-        />
-      );
-
-      const errorIcon = screen.getByTestId('error-icon');
-      const messageContent = screen.getByTestId('error-message-content');
-      
-      expect(errorIcon).toHaveAttribute('data-is-not-found', 'false');
-      expect(messageContent).toHaveAttribute('data-is-not-found', 'false');
-      expect(messageContent).toHaveAttribute('data-is-network-error', 'false');
-      expect(messageContent).toHaveTextContent('Generic Error Message');
-    });
+    const messageContent = screen.getByTestId('error-message-content');
+    expect(messageContent).toHaveAttribute('data-entity-type', 'author');
+    expect(messageContent).toHaveAttribute('data-entity-id', 'A123456789');
   });
 
-  describe('User Interactions', () => {
-    it('should call resetErrorBoundary when retry button is clicked', async () => {
-      const user = userEvent.setup();
-      const error = new Error('Test error message');
-      
-      render(
-        <EntityError 
-          error={error} 
-          resetErrorBoundary={mockResetErrorBoundary} 
-        />
-      );
+  it('should pass errorInfo to debug details', () => {
+    const error = new Error('Test error message');
+    const errorInfo = { componentStack: 'Test component stack' };
+    
+    render(
+      <EntityError 
+        error={error} 
+        resetErrorBoundary={mockResetErrorBoundary}
+        errorInfo={errorInfo}
+      />
+    );
 
-      const retryButton = screen.getByTestId('error-actions');
-      await user.click(retryButton);
-
-      expect(mockResetErrorBoundary).toHaveBeenCalledTimes(1);
-    });
-  });
-
-  describe('Debug Information', () => {
-    it('should show debug details in production', () => {
-      const error = new Error('Test error message');
-      
-      render(
-        <EntityError 
-          error={error} 
-          resetErrorBoundary={mockResetErrorBoundary} 
-        />
-      );
-
-      const debugDetails = screen.getByTestId('error-debug-details');
-      expect(debugDetails).toHaveAttribute('data-show-in-production', 'true');
-      expect(debugDetails).toHaveAttribute('data-include-system-info', 'true');
-    });
+    const debugDetails = screen.getByTestId('error-debug-details');
+    expect(debugDetails).toHaveTextContent('Component Stack: Test component stack');
   });
 });
 
-describe('EntityErrorBoundary Component', () => {
+describe('EntityError Type Detection', () => {
+  const mockResetErrorBoundary = vi.fn();
+
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  it('should detect 404/not found errors', () => {
+    const error = new Error('Entity not found (404)');
+    
+    render(
+      <EntityError 
+        error={error} 
+        resetErrorBoundary={mockResetErrorBoundary} 
+      />
+    );
+
+    const errorIcon = screen.getByTestId('error-icon');
+    const messageContent = screen.getByTestId('error-message-content');
+    
+    expect(errorIcon).toHaveAttribute('data-is-not-found', 'true');
+    expect(messageContent).toHaveAttribute('data-is-not-found', 'true');
+    expect(messageContent).toHaveTextContent('Not Found Message');
+  });
+
+  it('should detect network errors', () => {
+    const error = new Error('Failed to fetch data from network');
+    
+    render(
+      <EntityError 
+        error={error} 
+        resetErrorBoundary={mockResetErrorBoundary} 
+      />
+    );
+
+    const messageContent = screen.getByTestId('error-message-content');
+    expect(messageContent).toHaveAttribute('data-is-network-error', 'true');
+  });
+
+  it('should handle generic errors', () => {
+    const error = new Error('Generic error message');
+    
+    render(
+      <EntityError 
+        error={error} 
+        resetErrorBoundary={mockResetErrorBoundary} 
+      />
+    );
+
+    const errorIcon = screen.getByTestId('error-icon');
+    const messageContent = screen.getByTestId('error-message-content');
+    
+    expect(errorIcon).toHaveAttribute('data-is-not-found', 'false');
+    expect(messageContent).toHaveAttribute('data-is-not-found', 'false');
+    expect(messageContent).toHaveAttribute('data-is-network-error', 'false');
+    expect(messageContent).toHaveTextContent('Generic Error Message');
+  });
+});
+
+describe('EntityError User Interactions and Debug Info', () => {
+  const mockResetErrorBoundary = vi.fn();
+
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  it('should call resetErrorBoundary when retry button is clicked', async () => {
+    const user = userEvent.setup();
+    const error = new Error('Test error message');
+    
+    render(
+      <EntityError 
+        error={error} 
+        resetErrorBoundary={mockResetErrorBoundary} 
+      />
+    );
+
+    const retryButton = screen.getByTestId('error-actions');
+    await user.click(retryButton);
+
+    expect(mockResetErrorBoundary).toHaveBeenCalledTimes(1);
+  });
+
+  it('should show debug details in production', () => {
+    const error = new Error('Test error message');
+    
+    render(
+      <EntityError 
+        error={error} 
+        resetErrorBoundary={mockResetErrorBoundary} 
+      />
+    );
+
+    const debugDetails = screen.getByTestId('error-debug-details');
+    expect(debugDetails).toHaveAttribute('data-show-in-production', 'true');
+    expect(debugDetails).toHaveAttribute('data-include-system-info', 'true');
+  });
+});
+
+describe('EntityErrorBoundary Normal Operation', () => {
+  it('should render children when no error occurs', () => {
+    render(
+      <EntityErrorBoundary>
+        <div data-testid="normal-content">Normal Content</div>
+      </EntityErrorBoundary>
+    );
+
+    expect(screen.getByTestId('normal-content')).toBeInTheDocument();
+    expect(screen.queryByTestId('error-icon')).not.toBeInTheDocument();
+  });
+
+  it('should pass entity context to children', () => {
+    render(
+      <EntityErrorBoundary entityType="work" entityId="W123456789">
+        <div data-testid="normal-content">Normal Content</div>
+      </EntityErrorBoundary>
+    );
+
+    expect(screen.getByTestId('normal-content')).toBeInTheDocument();
+  });
+});
+
+describe('EntityErrorBoundary Error Handling', () => {
+  it('should catch and display errors from children', async () => {
+    render(
+      <EntityErrorBoundary entityType="author" entityId="A123456789">
+        <TriggerError errorMessage="Test error" />
+      </EntityErrorBoundary>
+    );
+
+    // Wait for error to be triggered
+    await act(async () => {
+      await new Promise(resolve => setTimeout(resolve, 0));
+    });
+
+    expect(screen.getByTestId('error-icon')).toBeInTheDocument();
+    expect(screen.getByTestId('error-message-content')).toBeInTheDocument();
+    expect(screen.queryByTestId('trigger-component')).not.toBeInTheDocument();
+  });
+
+  it('should pass entity context to error fallback', async () => {
+    render(
+      <EntityErrorBoundary entityType="work" entityId="W987654321">
+        <TriggerError errorMessage="Test error" />
+      </EntityErrorBoundary>
+    );
+
+    await act(async () => {
+      await new Promise(resolve => setTimeout(resolve, 0));
+    });
+
+    const messageContent = screen.getByTestId('error-message-content');
+    expect(messageContent).toHaveAttribute('data-entity-type', 'work');
+    expect(messageContent).toHaveAttribute('data-entity-id', 'W987654321');
+  });
+});
+
+describe('EntityErrorBoundary Error Logging', () => {
   let consoleSpy: ReturnType<typeof vi.spyOn>;
 
   beforeEach(() => {
@@ -272,279 +378,219 @@ describe('EntityErrorBoundary Component', () => {
     consoleSpy.mockRestore();
   });
 
-  describe('Normal Operation', () => {
-    it('should render children when no error occurs', () => {
-      render(
-        <EntityErrorBoundary>
-          <div data-testid="normal-content">Normal Content</div>
-        </EntityErrorBoundary>
-      );
+  it('should log error with full context', async () => {
+    render(
+      <EntityErrorBoundary entityType="source" entityId="S123456789">
+        <TriggerError errorMessage="Test logging error" />
+      </EntityErrorBoundary>
+    );
 
-      expect(screen.getByTestId('normal-content')).toBeInTheDocument();
-      expect(screen.queryByTestId('error-icon')).not.toBeInTheDocument();
+    await act(async () => {
+      await new Promise(resolve => setTimeout(resolve, 0));
     });
 
-    it('should pass entity context to children', () => {
-      render(
-        <EntityErrorBoundary entityType="work" entityId="W123456789">
-          <div data-testid="normal-content">Normal Content</div>
-        </EntityErrorBoundary>
-      );
+    expect(consoleSpy).toHaveBeenCalledWith(
+      'Entity page error:',
+      expect.any(Error),
+      expect.objectContaining({
+        componentStack: expect.any(String)
+      })
+    );
 
-      expect(screen.getByTestId('normal-content')).toBeInTheDocument();
-    });
-  });
-
-  describe('Error Handling', () => {
-    it('should catch and display errors from children', async () => {
-      render(
-        <EntityErrorBoundary entityType="author" entityId="A123456789">
-          <TriggerError errorMessage="Test error" />
-        </EntityErrorBoundary>
-      );
-
-      // Wait for error to be triggered
-      await act(async () => {
-        await new Promise(resolve => setTimeout(resolve, 0));
-      });
-
-      expect(screen.getByTestId('error-icon')).toBeInTheDocument();
-      expect(screen.getByTestId('error-message-content')).toBeInTheDocument();
-      expect(screen.queryByTestId('trigger-component')).not.toBeInTheDocument();
-    });
-
-    it('should pass entity context to error fallback', async () => {
-      render(
-        <EntityErrorBoundary entityType="work" entityId="W987654321">
-          <TriggerError errorMessage="Test error" />
-        </EntityErrorBoundary>
-      );
-
-      await act(async () => {
-        await new Promise(resolve => setTimeout(resolve, 0));
-      });
-
-      const messageContent = screen.getByTestId('error-message-content');
-      expect(messageContent).toHaveAttribute('data-entity-type', 'work');
-      expect(messageContent).toHaveAttribute('data-entity-id', 'W987654321');
-    });
-
-    it('should log error with full context', async () => {
-      render(
-        <EntityErrorBoundary entityType="source" entityId="S123456789">
-          <TriggerError errorMessage="Test logging error" />
-        </EntityErrorBoundary>
-      );
-
-      await act(async () => {
-        await new Promise(resolve => setTimeout(resolve, 0));
-      });
-
-      expect(consoleSpy).toHaveBeenCalledWith(
-        'Entity page error:',
-        expect.any(Error),
-        expect.objectContaining({
-          componentStack: expect.any(String)
+    expect(consoleSpy).toHaveBeenCalledWith(
+      'Full error context:',
+      expect.objectContaining({
+        error: expect.objectContaining({
+          name: 'Error',
+          message: 'Test logging error',
+          stack: expect.any(String)
+        }),
+        context: expect.objectContaining({
+          entityType: 'source',
+          entityId: 'S123456789',
+          url: expect.any(String),
+          timestamp: expect.any(String),
+          userAgent: expect.any(String)
         })
-      );
+      })
+    );
+  });
+});
 
-      expect(consoleSpy).toHaveBeenCalledWith(
-        'Full error context:',
-        expect.objectContaining({
-          error: expect.objectContaining({
-            name: 'Error',
-            message: 'Test logging error',
-            stack: expect.any(String)
-          }),
-          context: expect.objectContaining({
-            entityType: 'source',
-            entityId: 'S123456789',
-            url: expect.any(String),
-            timestamp: expect.any(String),
-            userAgent: expect.any(String)
-          })
-        })
-      );
+describe('EntityErrorBoundary Error Recovery', () => {
+  it('should reset and show children again when resetErrorBoundary is called', async () => {
+    const user = userEvent.setup();
+    
+    render(
+      <EntityErrorBoundary>
+        <TriggerError errorMessage="Recoverable error" />
+      </EntityErrorBoundary>
+    );
+
+    // Wait for error
+    await act(async () => {
+      await new Promise(resolve => setTimeout(resolve, 0));
     });
+
+    expect(screen.getByTestId('error-icon')).toBeInTheDocument();
+
+    // Click retry button
+    const retryButton = screen.getByTestId('error-actions');
+    await user.click(retryButton);
+
+    // Should show the trigger component again (simulating recovery)
+    expect(screen.queryByTestId('error-icon')).not.toBeInTheDocument();
+  });
+});
+
+describe('EntityErrorBoundary Custom Fallback', () => {
+  it('should use custom fallback component when provided', async () => {
+    const CustomFallback = ({ error, resetErrorBoundary }: CustomFallbackProps) => (
+      <div data-testid="custom-fallback">
+        Custom Error: {error?.message ?? 'Unknown error'}
+        <button onClick={resetErrorBoundary}>Custom Retry</button>
+      </div>
+    );
+
+    render(
+      <EntityErrorBoundary fallback={CustomFallback}>
+        <TriggerError errorMessage="Custom fallback test" />
+      </EntityErrorBoundary>
+    );
+
+    await act(async () => {
+      await new Promise(resolve => setTimeout(resolve, 0));
+    });
+
+    expect(screen.getByTestId('custom-fallback')).toBeInTheDocument();
+    expect(screen.getByText('Custom Error: Custom fallback test')).toBeInTheDocument();
+    expect(screen.queryByTestId('error-icon')).not.toBeInTheDocument();
   });
 
-  describe('Error Recovery', () => {
-    it('should reset and show children again when resetErrorBoundary is called', async () => {
-      const user = userEvent.setup();
-      
-      render(
-        <EntityErrorBoundary>
-          <TriggerError errorMessage="Recoverable error" />
-        </EntityErrorBoundary>
-      );
+  it('should pass entity context to custom fallback', async () => {
+    const CustomFallback = ({ entityType, entityId }: CustomFallbackProps) => (
+      <div data-testid="custom-fallback">
+        Entity: {entityType} - {entityId}
+      </div>
+    );
 
-      // Wait for error
-      await act(async () => {
-        await new Promise(resolve => setTimeout(resolve, 0));
-      });
+    render(
+      <EntityErrorBoundary 
+        fallback={CustomFallback}
+        entityType="institution"
+        entityId="I555666777"
+      >
+        <TriggerError errorMessage="Custom context test" />
+      </EntityErrorBoundary>
+    );
 
-      expect(screen.getByTestId('error-icon')).toBeInTheDocument();
-
-      // Click retry button
-      const retryButton = screen.getByTestId('error-actions');
-      await user.click(retryButton);
-
-      // Should show the trigger component again (simulating recovery)
-      expect(screen.queryByTestId('error-icon')).not.toBeInTheDocument();
+    await act(async () => {
+      await new Promise(resolve => setTimeout(resolve, 0));
     });
+
+    expect(screen.getByTestId('custom-fallback')).toBeInTheDocument();
+    expect(screen.getByText('Entity: institution - I555666777')).toBeInTheDocument();
+  });
+});
+
+describe('EntityErrorBoundary Error Information Persistence', () => {
+  it('should maintain errorInfo across renders', async () => {
+    render(
+      <EntityErrorBoundary>
+        <TriggerError errorMessage="ErrorInfo test" />
+      </EntityErrorBoundary>
+    );
+
+    await act(async () => {
+      await new Promise(resolve => setTimeout(resolve, 0));
+    });
+
+    const debugDetails = screen.getByTestId('error-debug-details');
+    expect(debugDetails).toHaveTextContent('Component Stack: test stack');
   });
 
-  describe('Custom Fallback', () => {
-    it('should use custom fallback component when provided', async () => {
-      const CustomFallback = ({ error, resetErrorBoundary }: any) => (
-        <div data-testid="custom-fallback">
-          Custom Error: {error.message}
-          <button onClick={resetErrorBoundary}>Custom Retry</button>
-        </div>
-      );
+  it('should clear errorInfo on reset', async () => {
+    const user = userEvent.setup();
+    
+    render(
+      <EntityErrorBoundary>
+        <TriggerError errorMessage="Reset test" />
+      </EntityErrorBoundary>
+    );
 
-      render(
-        <EntityErrorBoundary fallback={CustomFallback}>
-          <TriggerError errorMessage="Custom fallback test" />
-        </EntityErrorBoundary>
-      );
-
-      await act(async () => {
-        await new Promise(resolve => setTimeout(resolve, 0));
-      });
-
-      expect(screen.getByTestId('custom-fallback')).toBeInTheDocument();
-      expect(screen.getByText('Custom Error: Custom fallback test')).toBeInTheDocument();
-      expect(screen.queryByTestId('error-icon')).not.toBeInTheDocument();
+    await act(async () => {
+      await new Promise(resolve => setTimeout(resolve, 0));
     });
 
-    it('should pass entity context to custom fallback', async () => {
-      const CustomFallback = ({ entityType, entityId }: any) => (
-        <div data-testid="custom-fallback">
-          Entity: {entityType} - {entityId}
-        </div>
-      );
+    // Error should be shown
+    expect(screen.getByTestId('error-debug-details')).toBeInTheDocument();
 
-      render(
-        <EntityErrorBoundary 
-          fallback={CustomFallback}
-          entityType="institution"
-          entityId="I555666777"
-        >
-          <TriggerError errorMessage="Custom context test" />
-        </EntityErrorBoundary>
-      );
+    // Reset the error boundary
+    const retryButton = screen.getByTestId('error-actions');
+    await user.click(retryButton);
 
-      await act(async () => {
-        await new Promise(resolve => setTimeout(resolve, 0));
-      });
+    // ErrorInfo should be cleared (component should reset to normal state)
+    expect(screen.queryByTestId('error-debug-details')).not.toBeInTheDocument();
+  });
+});
 
-      expect(screen.getByTestId('custom-fallback')).toBeInTheDocument();
-      expect(screen.getByText('Entity: institution - I555666777')).toBeInTheDocument();
+describe('EntityErrorBoundary Edge Cases and Accessibility', () => {
+  it('should handle errors without entityType and entityId', async () => {
+    render(
+      <EntityErrorBoundary>
+        <TriggerError errorMessage="No context error" />
+      </EntityErrorBoundary>
+    );
+
+    await act(async () => {
+      await new Promise(resolve => setTimeout(resolve, 0));
     });
+
+    const messageContent = screen.getByTestId('error-message-content');
+    expect(messageContent).toHaveAttribute('data-entity-type', '');
+    expect(messageContent).toHaveAttribute('data-entity-id', '');
   });
 
-  describe('Error Information Persistence', () => {
-    it('should maintain errorInfo across renders', async () => {
-      render(
-        <EntityErrorBoundary>
-          <TriggerError errorMessage="ErrorInfo test" />
-        </EntityErrorBoundary>
-      );
+  it('should handle multiple error boundary resets', async () => {
+    const user = userEvent.setup();
+    
+    render(
+      <EntityErrorBoundary>
+        <TriggerError errorMessage="Multiple reset test" />
+      </EntityErrorBoundary>
+    );
 
-      await act(async () => {
-        await new Promise(resolve => setTimeout(resolve, 0));
-      });
-
-      const debugDetails = screen.getByTestId('error-debug-details');
-      expect(debugDetails).toHaveTextContent('Component Stack: test stack');
+    await act(async () => {
+      await new Promise(resolve => setTimeout(resolve, 0));
     });
 
-    it('should clear errorInfo on reset', async () => {
-      const user = userEvent.setup();
-      
+    // First reset
+    await user.click(screen.getByTestId('error-actions'));
+    
+    // Should be able to handle another error
+    expect(() => {
       render(
         <EntityErrorBoundary>
-          <TriggerError errorMessage="Reset test" />
+          <TriggerError errorMessage="Second error" />
         </EntityErrorBoundary>
       );
-
-      await act(async () => {
-        await new Promise(resolve => setTimeout(resolve, 0));
-      });
-
-      // Error should be shown
-      expect(screen.getByTestId('error-debug-details')).toBeInTheDocument();
-
-      // Reset the error boundary
-      const retryButton = screen.getByTestId('error-actions');
-      await user.click(retryButton);
-
-      // ErrorInfo should be cleared (component should reset to normal state)
-      expect(screen.queryByTestId('error-debug-details')).not.toBeInTheDocument();
-    });
+    }).not.toThrow();
   });
 
-  describe('Edge Cases', () => {
-    it('should handle errors without entityType and entityId', async () => {
-      render(
-        <EntityErrorBoundary>
-          <TriggerError errorMessage="No context error" />
-        </EntityErrorBoundary>
-      );
+  it('should maintain accessibility structure in error state', async () => {
+    render(
+      <EntityErrorBoundary>
+        <TriggerError errorMessage="Accessibility test" />
+      </EntityErrorBoundary>
+    );
 
-      await act(async () => {
-        await new Promise(resolve => setTimeout(resolve, 0));
-      });
-
-      const messageContent = screen.getByTestId('error-message-content');
-      expect(messageContent).toHaveAttribute('data-entity-type', '');
-      expect(messageContent).toHaveAttribute('data-entity-id', '');
+    await act(async () => {
+      await new Promise(resolve => setTimeout(resolve, 0));
     });
 
-    it('should handle multiple error boundary resets', async () => {
-      const user = userEvent.setup();
-      
-      render(
-        <EntityErrorBoundary>
-          <TriggerError errorMessage="Multiple reset test" />
-        </EntityErrorBoundary>
-      );
-
-      await act(async () => {
-        await new Promise(resolve => setTimeout(resolve, 0));
-      });
-
-      // First reset
-      await user.click(screen.getByTestId('error-actions'));
-      
-      // Should be able to handle another error
-      expect(() => {
-        render(
-          <EntityErrorBoundary>
-            <TriggerError errorMessage="Second error" />
-          </EntityErrorBoundary>
-        );
-      }).not.toThrow();
-    });
-  });
-
-  describe('Accessibility', () => {
-    it('should maintain accessibility structure in error state', async () => {
-      render(
-        <EntityErrorBoundary>
-          <TriggerError errorMessage="Accessibility test" />
-        </EntityErrorBoundary>
-      );
-
-      await act(async () => {
-        await new Promise(resolve => setTimeout(resolve, 0));
-      });
-
-      // Error boundary should maintain proper structure
-      const retryButton = screen.getByTestId('error-actions');
-      expect(retryButton).toBeInTheDocument();
-      expect(retryButton.tagName).toBe('BUTTON');
-    });
+    // Error boundary should maintain proper structure
+    const retryButton = screen.getByTestId('error-actions');
+    expect(retryButton).toBeInTheDocument();
+    expect(retryButton.tagName).toBe('BUTTON');
   });
 });
