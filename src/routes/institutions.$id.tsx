@@ -1,63 +1,15 @@
-import { Stack, Tabs } from '@mantine/core';
-import { IconBuilding, IconCode } from '@tabler/icons-react';
 import { createFileRoute } from '@tanstack/react-router';
 
-import { 
-  RawDataView,
-  EntityError, 
-  EntitySkeleton, 
-  EntityFallback,
-  EntityPageTemplate,
-  EntityErrorBoundary,
-  InstitutionMetrics,
-  InstitutionDetails,
-  InstitutionRelations,
-  InstitutionExternalLinks
-} from '@/components';
+import { EntityPageWithGraph, EntityErrorBoundary, EntitySkeleton, EntityError, EntityFallback } from '@/components';
 import { useInstitutionData } from '@/hooks/use-entity-data';
 import { useNumericIdRedirect } from '@/hooks/use-numeric-id-redirect';
-import type { Institution } from '@/lib/openalex/types';
 import { EntityType } from '@/lib/openalex/utils/entity-detection';
-
-function InstitutionDisplay({ institution }: { institution: Institution }) {
-  return (
-    <EntityPageTemplate entity={institution}>
-      <Tabs defaultValue="overview" keepMounted={false}>
-        <Tabs.List grow mb="xl">
-          <Tabs.Tab value="overview" leftSection={<IconBuilding size={16} />}>
-            Overview
-          </Tabs.Tab>
-          <Tabs.Tab value="raw-data" leftSection={<IconCode size={16} />}>
-            Raw Data
-          </Tabs.Tab>
-        </Tabs.List>
-
-        <Tabs.Panel value="overview">
-          <Stack gap="xl">
-            <InstitutionMetrics institution={institution} />
-            <InstitutionDetails institution={institution} />
-            <InstitutionRelations institution={institution} />
-            <InstitutionExternalLinks institution={institution} />
-          </Stack>
-        </Tabs.Panel>
-
-        <Tabs.Panel value="raw-data">
-          <RawDataView 
-            data={institution}
-            title="Institution Raw Data"
-            entityType="institution"
-            entityId={institution.id}
-            maxHeight={700}
-            showDownload={true}
-          />
-        </Tabs.Panel>
-      </Tabs>
-    </EntityPageTemplate>
-  );
-}
+import { InstitutionDisplay } from '@/components/entity-displays/InstitutionDisplay';
 
 function InstitutionPage() {
   const { id } = Route.useParams();
+  
+  // Handle numeric ID redirection to proper prefixed format
   const isRedirecting = useNumericIdRedirect(id, EntityType.INSTITUTION);
   
   const { 
@@ -70,10 +22,11 @@ function InstitutionPage() {
     refetchOnWindowFocus: true,
     staleTime: 10 * 60 * 1000, // 10 minutes
     onError: (error) => {
-      console.error('Institution fetch error:', error);
+      console.error(`Institution fetch error:`, error);
     }
   });
 
+  // Show loading state for redirection
   if (isRedirecting) {
     return (
       <EntityErrorBoundary entityType="institutions" entityId={id}>
@@ -109,7 +62,7 @@ function InstitutionPage() {
   if (institution) {
     return (
       <EntityErrorBoundary entityType="institutions" entityId={id}>
-        <InstitutionDisplay institution={institution} />
+        <InstitutionDisplay entity={institution} />
       </EntityErrorBoundary>
     );
   }

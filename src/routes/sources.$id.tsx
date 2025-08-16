@@ -1,63 +1,15 @@
-import { Stack, Tabs } from '@mantine/core';
-import { IconBook2, IconCode } from '@tabler/icons-react';
 import { createFileRoute } from '@tanstack/react-router';
 
-import { 
-  RawDataView,
-  EntityError, 
-  EntitySkeleton, 
-  EntityFallback,
-  EntityPageTemplate,
-  EntityErrorBoundary,
-  SourceMetricsGrid,
-  SourcePublicationDetails,
-  SourceExternalLinks
-} from '@/components';
+import { EntityPageWithGraph, EntityErrorBoundary, EntitySkeleton, EntityError, EntityFallback } from '@/components';
 import { useSourceData } from '@/hooks/use-entity-data';
 import { useNumericIdRedirect } from '@/hooks/use-numeric-id-redirect';
-import type { Source } from '@/lib/openalex/types';
 import { EntityType } from '@/lib/openalex/utils/entity-detection';
-
-function SourceDisplay({ source }: { source: Source }) {
-  return (
-    <EntityPageTemplate entity={source}>
-      <Tabs defaultValue="overview" keepMounted={false}>
-        <Tabs.List grow mb="xl">
-          <Tabs.Tab value="overview" leftSection={<IconBook2 size={16} />}>
-            Overview
-          </Tabs.Tab>
-          <Tabs.Tab value="raw-data" leftSection={<IconCode size={16} />}>
-            Raw Data
-          </Tabs.Tab>
-        </Tabs.List>
-
-        <Tabs.Panel value="overview">
-          <Stack gap="xl">
-            <SourceMetricsGrid source={source} />
-            <SourcePublicationDetails source={source} />
-            <SourceExternalLinks source={source} />
-          </Stack>
-        </Tabs.Panel>
-
-        <Tabs.Panel value="raw-data">
-          <RawDataView 
-            data={source}
-            title="Source Raw Data"
-            entityType="source"
-            entityId={source.id}
-            maxHeight={700}
-            showDownload={true}
-          />
-        </Tabs.Panel>
-      </Tabs>
-    </EntityPageTemplate>
-  );
-}
+import { SourceDisplay } from '@/components/entity-displays/SourceDisplay';
 
 function SourcePage() {
   const { id } = Route.useParams();
   
-  // Handle numeric ID redirection to /entity/ route
+  // Handle numeric ID redirection to proper prefixed format
   const isRedirecting = useNumericIdRedirect(id, EntityType.SOURCE);
   
   const { 
@@ -66,11 +18,11 @@ function SourcePage() {
     error, 
     retry 
   } = useSourceData(id, {
-    enabled: !!id && !isRedirecting, // Don't fetch if redirecting
+    enabled: !!id && !isRedirecting,
     refetchOnWindowFocus: true,
     staleTime: 10 * 60 * 1000, // 10 minutes
     onError: (error) => {
-      console.error('Source fetch error:', error);
+      console.error(`Source fetch error:`, error);
     }
   });
 
@@ -83,7 +35,7 @@ function SourcePage() {
     );
   }
 
-  // Show loading state for data fetch
+  // Show loading skeleton
   if (loading) {
     return (
       <EntityErrorBoundary entityType="sources" entityId={id}>
@@ -110,7 +62,7 @@ function SourcePage() {
   if (source) {
     return (
       <EntityErrorBoundary entityType="sources" entityId={id}>
-        <SourceDisplay source={source} />
+        <SourceDisplay entity={source} />
       </EntityErrorBoundary>
     );
   }
