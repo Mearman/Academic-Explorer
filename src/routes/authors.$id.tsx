@@ -38,12 +38,12 @@ function AuthorPage() {
         return;
       }
       
-      // Check if this is a full OpenAlex URL
+      // Check if this is a full OpenAlex URL (including HTTPS patterns)
       if (decodedId.includes('openalex.org/')) {
         const match = decodedId.match(/openalex\.org\/([WASIPFTCKRN]\d{7,10})/i);
         if (match) {
           const openAlexId = match[1].toUpperCase();
-          // Only redirect if this is an author ID, otherwise let it fail
+          // Only redirect if this is an author ID, otherwise redirect to correct entity type
           if (openAlexId.startsWith('A')) {
             console.log('AuthorPage: OpenAlex author URL detected, redirecting to clean URL');
             navigate({ to: `/authors/${openAlexId}`, replace: true });
@@ -75,6 +75,64 @@ function AuthorPage() {
             return;
           }
         }
+      }
+      
+      // Handle HTTPS URLs (both original and browser-transformed)
+      if (decodedId.startsWith('https://') || decodedId.startsWith('https:/')) {
+        console.log('AuthorPage: HTTPS URL detected');
+        
+        // Handle OpenAlex HTTPS URLs
+        if (decodedId.includes('openalex.org/')) {
+          const openAlexMatch = decodedId.match(/openalex\.org\/([WASIPFTCKRN]\d{7,10})/i);
+          if (openAlexMatch) {
+            const openAlexId = openAlexMatch[1].toUpperCase();
+            if (openAlexId.startsWith('A')) {
+              console.log(`AuthorPage: HTTPS OpenAlex author URL detected, redirecting to /authors/${openAlexId}`);
+              navigate({ to: `/authors/${openAlexId}`, replace: true });
+              return;
+            } else {
+              // This is not an author ID, redirect to the correct entity type
+              const entityType = detectEntityType(openAlexId);
+              const endpoint = getEntityEndpoint(entityType);
+              console.log(`AuthorPage: HTTPS Non-author OpenAlex URL detected, redirecting to /${endpoint}/${openAlexId}`);
+              navigate({ to: `/${endpoint}/${openAlexId}`, replace: true });
+              return;
+            }
+          }
+          
+          // Handle alternative OpenAlex URL patterns like https://openalex.org/authors/A5017898742
+          const altOpenAlexMatch = decodedId.match(/openalex\.org\/authors\/([WASIPFTCKRN]\d{7,10})/i);
+          if (altOpenAlexMatch) {
+            const openAlexId = altOpenAlexMatch[1].toUpperCase();
+            if (openAlexId.startsWith('A')) {
+              console.log(`AuthorPage: HTTPS Alternative OpenAlex author URL detected, redirecting to /authors/${openAlexId}`);
+              navigate({ to: `/authors/${openAlexId}`, replace: true });
+              return;
+            } else {
+              // This is not an author ID, redirect to the correct entity type
+              const entityType = detectEntityType(openAlexId);
+              const endpoint = getEntityEndpoint(entityType);
+              console.log(`AuthorPage: HTTPS Non-author in authors path detected, redirecting to /${endpoint}/${openAlexId}`);
+              navigate({ to: `/${endpoint}/${openAlexId}`, replace: true });
+              return;
+            }
+          }
+        }
+        
+        // Handle ORCID HTTPS URLs
+        if (decodedId.includes('orcid.org/')) {
+          const orcidMatch = decodedId.match(/orcid\.org\/(\d{4}-\d{4}-\d{4}-\d{3}[\dX])/i);
+          if (orcidMatch) {
+            const orcidId = orcidMatch[1];
+            console.log(`AuthorPage: HTTPS ORCID URL detected, redirecting to /authors/${orcidId}`);
+            navigate({ to: `/authors/${orcidId}`, replace: true });
+            return;
+          }
+        }
+        
+        // If we get here, we couldn't handle this HTTPS URL in the authors context
+        console.log('AuthorPage: Could not handle HTTPS URL in authors context');
+        // Let it continue to normal processing which will likely result in an error
       }
       
       // Check if this is a full ORCID URL
