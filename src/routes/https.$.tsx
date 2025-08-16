@@ -5,9 +5,7 @@ import {
   detectEntityType,
   parseExternalId,
   decodeExternalId,
-  getEntityEndpoint,
-  ExternalIdType,
-  detectIdType
+  getEntityEndpoint
 } from '@/lib/openalex/utils/entity-detection';
 
 function HttpsUrlRedirect() {

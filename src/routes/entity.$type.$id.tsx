@@ -1,21 +1,21 @@
 import { createFileRoute } from '@tanstack/react-router';
-import { useState, useEffect } from 'react';
+import React from 'react';
 
 import { EntityPageWithGraph, EntityErrorBoundary, EntitySkeleton, EntityError, EntityFallback } from '@/components';
+import { AuthorDisplay } from '@/components/entity-displays/AuthorDisplay';
+import { ConceptDisplay } from '@/components/entity-displays/ConceptDisplay';
+import { FunderDisplay } from '@/components/entity-displays/FunderDisplay';
+import { InstitutionDisplay } from '@/components/entity-displays/InstitutionDisplay';
+import { PublisherDisplay } from '@/components/entity-displays/PublisherDisplay';
+import { SourceDisplay } from '@/components/entity-displays/SourceDisplay';
+import { TopicDisplay } from '@/components/entity-displays/TopicDisplay';
+import { WorkDisplay } from '@/components/entity-displays/WorkDisplay';
 import { useEntityData } from '@/hooks/use-entity-data';
-import { useNumericIdRedirect } from '@/hooks/use-numeric-id-redirect';
-import { detectEntityType, EntityType } from '@/lib/openalex/utils/entity-detection';
 import type { EntityData } from '@/hooks/use-entity-data';
+import { useNumericIdRedirect } from '@/hooks/use-numeric-id-redirect';
+import { EntityType } from '@/lib/openalex/utils/entity-detection';
 
 // Entity-specific display components
-import { AuthorDisplay } from '@/components/entity-displays/AuthorDisplay';
-import { WorkDisplay } from '@/components/entity-displays/WorkDisplay';
-import { SourceDisplay } from '@/components/entity-displays/SourceDisplay';
-import { InstitutionDisplay } from '@/components/entity-displays/InstitutionDisplay';
-import { FunderDisplay } from '@/components/entity-displays/FunderDisplay';
-import { TopicDisplay } from '@/components/entity-displays/TopicDisplay';
-import { ConceptDisplay } from '@/components/entity-displays/ConceptDisplay';
-import { PublisherDisplay } from '@/components/entity-displays/PublisherDisplay';
 
 // Mapping of entity types to their display components
 const ENTITY_DISPLAY_COMPONENTS = {
