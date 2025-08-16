@@ -10,15 +10,18 @@ import { generateBuildInfoFile } from './scripts/generate-build-info';
 export default defineConfig(({ command }) => ({
   base: command === 'build' ? '/Academic-Explorer/' : '/',
   plugins: [
-    // Generate build info before other plugins
+    // Generate build info only during build, not during dev server
     {
       name: 'generate-build-info',
       buildStart() {
-        try {
-          generateBuildInfoFile();
-          console.log('✓ Generated build info for deployment');
-        } catch (error) {
-          console.warn('Failed to generate build info:', error);
+        // Only generate build info during build command, not dev server
+        if (command === 'build') {
+          try {
+            generateBuildInfoFile();
+            console.log('✓ Generated build info for deployment');
+          } catch (error) {
+            console.warn('Failed to generate build info:', error);
+          }
         }
       }
     },
