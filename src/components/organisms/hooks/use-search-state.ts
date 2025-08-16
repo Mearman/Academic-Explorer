@@ -2,6 +2,7 @@ import { useState, useCallback } from 'react';
 
 import { cachedOpenAlex } from '@/lib/openalex';
 import type { Work, ApiResponse, WorksParams } from '@/lib/openalex/types';
+import { useAppStore } from '@/stores/app-store';
 
 interface SearchState {
   results: Work[];
@@ -13,6 +14,7 @@ interface SearchState {
 }
 
 export function useSearchState() {
+  const { recordQuery, updateQueryResults, updateQueryError } = useAppStore();
   const [state, setState] = useState<SearchState>({
     results: [],
     meta: null,
@@ -25,10 +27,27 @@ export function useSearchState() {
   const performSearch = useCallback(async (params: WorksParams) => {
     setState(prev => ({ ...prev, loading: true, error: null }));
     
+    // Record the query start
+    const queryText = params.search || 'Advanced Query';
+    const queryId = recordQuery(queryText, params);
+    const startTime = Date.now();
+    
     try {
       const response = params.group_by 
         ? await cachedOpenAlex.worksGroupBy({ ...params, group_by: params.group_by })
         : await cachedOpenAlex.works(params);
+      
+      const responseTime = Date.now() - startTime;
+      
+      // Record successful query results
+      updateQueryResults(queryId, {
+        count: response.meta.count,
+        responseTimeMs: response.meta.db_response_time_ms || responseTime,
+        firstResult: response.results.length > 0 ? {
+          id: response.results[0].id,
+          title: response.results[0].title || 'Untitled',
+        } : undefined,
+      });
       
       setState(prev => ({
         ...prev,
@@ -40,13 +59,18 @@ export function useSearchState() {
       }));
     } catch (error) {
       console.error('Search error:', error);
+      const errorMessage = error instanceof Error ? error.message : 'Search failed';
+      
+      // Record query error
+      updateQueryError(queryId, errorMessage);
+      
       setState(prev => ({
         ...prev,
         loading: false,
-        error: error instanceof Error ? error.message : 'Search failed',
+        error: errorMessage,
       }));
     }
-  }, []);
+  }, [recordQuery, updateQueryResults, updateQueryError]);
 
   return {
     state,
