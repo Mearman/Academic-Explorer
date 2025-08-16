@@ -535,4 +535,406 @@ describe('useHybridStorage', () => {
       expect(typeof result.current.updateMetrics).toBe('function');
     });
   });
+
+  describe('Storage Quota Exceeded Scenarios', () => {
+    it('should handle quota exceeded during archiving', async () => {
+      const { result } = renderHook(() => useHybridStorage());
+
+      await waitFor(() => {
+        expect(result.current.isInitialised).toBe(true);
+      });
+
+      const quotaError = new Error('QuotaExceededError');
+      quotaError.name = 'QuotaExceededError';
+      mockDb.cacheSearchResults.mockRejectedValueOnce(quotaError);
+
+      await act(async () => {
+        await result.current.archiveSearchResults('test', [], 0);
+      });
+
+      expect(consoleSpy.error).toHaveBeenCalledWith(
+        'Failed to archive search results:',
+        expect.any(Error)
+      );
+    });
+
+    it('should handle quota exceeded during paper saving', async () => {
+      const { result } = renderHook(() => useHybridStorage());
+
+      await waitFor(() => {
+        expect(result.current.isInitialised).toBe(true);
+      });
+
+      const quotaError = new Error('QuotaExceededError');
+      quotaError.name = 'QuotaExceededError';
+      mockDb.savePaper.mockRejectedValueOnce(quotaError);
+
+      await act(async () => {
+        await result.current.savePaperOffline({
+          id: 'W123',
+          title: 'Test',
+          authors: [],
+        });
+      });
+
+      expect(consoleSpy.error).toHaveBeenCalledWith(
+        'Failed to save paper:',
+        expect.any(Error)
+      );
+    });
+
+    it('should handle storage estimate failures', async () => {
+      mockDb.getStorageEstimate.mockRejectedValue(new Error('Storage API unavailable'));
+
+      const { result } = renderHook(() => useHybridStorage());
+
+      await waitFor(() => {
+        expect(result.current.isInitialised).toBe(true);
+      });
+
+      // Metrics should still be initialized, even without storage estimate
+      expect(result.current.metrics).toBeDefined();
+      expect(result.current.metrics.localStorageSize).toBeGreaterThanOrEqual(0);
+    });
+  });
+
+  describe('Concurrent Operations', () => {
+    it('should handle concurrent archiving operations', async () => {
+      const { result } = renderHook(() => useHybridStorage());
+
+      await waitFor(() => {
+        expect(result.current.isInitialised).toBe(true);
+      });
+
+      // Setup delayed responses
+      mockDb.cacheSearchResults.mockImplementation(() =>
+        new Promise(resolve => setTimeout(resolve, 50))
+      );
+
+      const operations = [
+        result.current.archiveSearchResults('query1', [], 0),
+        result.current.archiveSearchResults('query2', [], 0),
+        result.current.archiveSearchResults('query3', [], 0),
+      ];
+
+      await act(async () => {
+        await Promise.all(operations);
+      });
+
+      expect(mockDb.cacheSearchResults).toHaveBeenCalledTimes(3);
+    });
+
+    it('should handle concurrent read/write operations', async () => {
+      const { result } = renderHook(() => useHybridStorage());
+
+      await waitFor(() => {
+        expect(result.current.isInitialised).toBe(true);
+      });
+
+      mockDb.getSearchResults.mockResolvedValue({ results: [], totalCount: 0 });
+
+      const operations = [
+        result.current.getCachedSearchResults('query1'),
+        result.current.archiveSearchResults('query2', [], 0),
+        result.current.savePaperOffline({ id: 'W1', title: 'Test', authors: [] }),
+        result.current.cleanupOldData(7),
+      ];
+
+      await act(async () => {
+        await Promise.all(operations);
+      });
+
+      expect(mockDb.getSearchResults).toHaveBeenCalled();
+      expect(mockDb.cacheSearchResults).toHaveBeenCalled();
+      expect(mockDb.savePaper).toHaveBeenCalled();
+      expect(mockDb.cleanOldSearchResults).toHaveBeenCalled();
+    });
+  });
+
+  describe('localStorage Fallback Scenarios', () => {
+    it('should handle localStorage access errors during metrics calculation', async () => {
+      // Mock localStorage to throw on access
+      const originalLength = Object.getOwnPropertyDescriptor(Storage.prototype, 'length');
+      Object.defineProperty(Storage.prototype, 'length', {
+        get() {
+          throw new Error('localStorage access denied');
+        },
+        configurable: true,
+      });
+
+      const consoleWarnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
+
+      const { result } = renderHook(() => useHybridStorage());
+
+      await waitFor(() => {
+        expect(result.current.isInitialised).toBe(true);
+      });
+
+      expect(consoleWarnSpy).toHaveBeenCalledWith(
+        'Error calculating localStorage size:',
+        expect.any(Error)
+      );
+      expect(result.current.metrics.localStorageSize).toBe(0);
+
+      // Restore original descriptor
+      if (originalLength) {
+        Object.defineProperty(Storage.prototype, 'length', originalLength);
+      }
+      consoleWarnSpy.mockRestore();
+    });
+
+    it('should handle localStorage getItem errors', async () => {
+      // Add data to localStorage first
+      localStorage.setItem('test-key', 'test-value');
+      
+      // Mock getItem to throw
+      const originalGetItem = Storage.prototype.getItem;
+      Storage.prototype.getItem = vi.fn().mockImplementation(() => {
+        throw new Error('getItem failed');
+      });
+
+      const consoleWarnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
+
+      const { result } = renderHook(() => useHybridStorage());
+
+      await waitFor(() => {
+        expect(result.current.isInitialised).toBe(true);
+      });
+
+      expect(consoleWarnSpy).toHaveBeenCalledWith(
+        'Error calculating localStorage size:',
+        expect.any(Error)
+      );
+      expect(result.current.metrics.localStorageSize).toBe(0);
+
+      // Restore original method
+      Storage.prototype.getItem = originalGetItem;
+      consoleWarnSpy.mockRestore();
+    });
+
+    it('should handle null localStorage values gracefully', async () => {
+      // Mock localStorage with null values
+      const originalGetItem = Storage.prototype.getItem;
+      const originalKey = Storage.prototype.key;
+      
+      Storage.prototype.key = vi.fn().mockReturnValue('test-key');
+      Storage.prototype.getItem = vi.fn().mockReturnValue(null);
+      Object.defineProperty(Storage.prototype, 'length', {
+        get: () => 1,
+        configurable: true,
+      });
+
+      const { result } = renderHook(() => useHybridStorage());
+
+      await waitFor(() => {
+        expect(result.current.isInitialised).toBe(true);
+      });
+
+      // Should handle null values without error
+      expect(result.current.metrics.localStorageSize).toBeGreaterThanOrEqual(0);
+
+      // Restore original methods
+      Storage.prototype.getItem = originalGetItem;
+      Storage.prototype.key = originalKey;
+    });
+  });
+
+  describe('Performance Under Load', () => {
+    it('should handle large search result archiving', async () => {
+      const { result } = renderHook(() => useHybridStorage());
+
+      await waitFor(() => {
+        expect(result.current.isInitialised).toBe(true);
+      });
+
+      // Create large result set
+      const largeResults = Array.from({ length: 1000 }, (_, i) => ({
+        id: `W${i}`,
+        title: `Paper ${i}`,
+        authors: [`Author ${i}`],
+      }));
+
+      await act(async () => {
+        await result.current.archiveSearchResults('large query', largeResults, 1000);
+      });
+
+      expect(mockDb.cacheSearchResults).toHaveBeenCalledWith(
+        'large query',
+        largeResults,
+        1000,
+        undefined
+      );
+    });
+
+    it('should handle batch paper operations', async () => {
+      const { result } = renderHook(() => useHybridStorage());
+
+      await waitFor(() => {
+        expect(result.current.isInitialised).toBe(true);
+      });
+
+      const papers = Array.from({ length: 50 }, (_, i) => ({
+        id: `paper${i}`,
+        title: `Paper ${i}`,
+        authors: [`Author ${i}`],
+      }));
+
+      const saveOperations = papers.map(paper => 
+        result.current.savePaperOffline(paper)
+      );
+
+      await act(async () => {
+        await Promise.all(saveOperations);
+      });
+
+      expect(mockDb.savePaper).toHaveBeenCalledTimes(50);
+    });
+
+    it('should handle frequent metrics updates', async () => {
+      const { result } = renderHook(() => useHybridStorage());
+
+      await waitFor(() => {
+        expect(result.current.isInitialised).toBe(true);
+      });
+
+      // Clear initial calls
+      mockDb.getStorageEstimate.mockClear();
+
+      const updateOperations = Array.from({ length: 10 }, () =>
+        result.current.updateMetrics()
+      );
+
+      await act(async () => {
+        await Promise.all(updateOperations);
+      });
+
+      expect(mockDb.getStorageEstimate).toHaveBeenCalledTimes(10);
+    });
+  });
+
+  describe('Edge Cases and Error Recovery', () => {
+    it('should handle undefined search history in store', async () => {
+      mockUseAppStore.mockImplementation((selector) => {
+        const mockState = { searchHistory: undefined };
+        return selector(mockState);
+      });
+
+      const { result } = renderHook(() => useHybridStorage());
+
+      await waitFor(() => {
+        expect(result.current.isInitialised).toBe(true);
+      });
+
+      // Should not crash with undefined search history
+      expect(result.current.isInitialised).toBe(true);
+    });
+
+    it('should handle null search history in store', async () => {
+      mockUseAppStore.mockImplementation((selector) => {
+        const mockState = { searchHistory: null };
+        return selector(mockState);
+      });
+
+      const { result } = renderHook(() => useHybridStorage());
+
+      await waitFor(() => {
+        expect(result.current.isInitialised).toBe(true);
+      });
+
+      // Should not crash with null search history
+      expect(result.current.isInitialised).toBe(true);
+    });
+
+    it('should handle component unmounting during async operations', async () => {
+      const { result, unmount } = renderHook(() => useHybridStorage());
+
+      await waitFor(() => {
+        expect(result.current.isInitialised).toBe(true);
+      });
+
+      // Start async operation
+      const archivePromise = act(async () => {
+        await result.current.archiveSearchResults('test', [], 0);
+      });
+
+      // Unmount component during operation
+      unmount();
+
+      // Should not throw error
+      await expect(archivePromise).resolves.toBeUndefined();
+    });
+
+    it('should handle rapid initialization attempts', async () => {
+      // Mount and unmount multiple times quickly
+      const hooks = Array.from({ length: 5 }, () => {
+        const hook = renderHook(() => useHybridStorage());
+        hook.unmount();
+        return hook;
+      });
+
+      // Final hook that stays mounted
+      const { result } = renderHook(() => useHybridStorage());
+
+      await waitFor(() => {
+        expect(result.current.isInitialised).toBe(true);
+      });
+
+      // Should successfully initialize despite rapid mount/unmount cycles
+      expect(result.current.isInitialised).toBe(true);
+    });
+
+    it('should handle storage operations with malformed data', async () => {
+      const { result } = renderHook(() => useHybridStorage());
+
+      await waitFor(() => {
+        expect(result.current.isInitialised).toBe(true);
+      });
+
+      // Try to save paper with circular reference
+      const circularPaper: any = {
+        id: 'circular',
+        title: 'Circular Paper',
+        authors: [],
+      };
+      circularPaper.self = circularPaper;
+
+      // Should handle circular references gracefully
+      await act(async () => {
+        await result.current.savePaperOffline(circularPaper);
+      });
+
+      expect(mockDb.savePaper).toHaveBeenCalled();
+    });
+
+    it('should handle very large localStorage calculations', async () => {
+      // Mock localStorage with many large entries
+      const originalLength = Object.getOwnPropertyDescriptor(Storage.prototype, 'length');
+      const originalKey = Storage.prototype.key;
+      const originalGetItem = Storage.prototype.getItem;
+
+      Object.defineProperty(Storage.prototype, 'length', {
+        get: () => 1000, // Many entries
+        configurable: true,
+      });
+
+      Storage.prototype.key = vi.fn().mockImplementation((index) => `key${index}`);
+      Storage.prototype.getItem = vi.fn().mockImplementation(() => 'x'.repeat(1000)); // Large values
+
+      const { result } = renderHook(() => useHybridStorage());
+
+      await waitFor(() => {
+        expect(result.current.isInitialised).toBe(true);
+      });
+
+      // Should handle large localStorage without timeout
+      expect(result.current.metrics.localStorageSize).toBeGreaterThan(0);
+
+      // Restore original methods
+      if (originalLength) {
+        Object.defineProperty(Storage.prototype, 'length', originalLength);
+      }
+      Storage.prototype.key = originalKey;
+      Storage.prototype.getItem = originalGetItem;
+    });
+  });
 });
