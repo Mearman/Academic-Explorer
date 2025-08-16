@@ -39,65 +39,9 @@ import { useNumericIdRedirect } from '@/hooks/use-numeric-id-redirect';
 import type { Author } from '@/lib/openalex/types';
 import { EntityType } from '@/lib/openalex/utils/entity-detection';
 
-// Helper component for key metrics
-function KeyMetrics({ author }: { author: Author }) {
-  return (
-    <Grid>
-      <Grid.Col span={{ base: 12, sm: 6, md: 3 }}>
-        <Paper p="lg" radius="md" withBorder>
-          <Stack gap="xs" align="center">
-            <Text size="xl" fw={700} c="blue">
-              {(author.works_count ?? 0).toLocaleString()}
-            </Text>
-            <Text size="sm" c="dimmed" ta="center">
-              Works Published
-            </Text>
-          </Stack>
-        </Paper>
-      </Grid.Col>
-      <Grid.Col span={{ base: 12, sm: 6, md: 3 }}>
-        <Paper p="lg" radius="md" withBorder>
-          <Stack gap="xs" align="center">
-            <Text size="xl" fw={700} c="blue">
-              {(author.cited_by_count ?? 0).toLocaleString()}
-            </Text>
-            <Text size="sm" c="dimmed" ta="center">
-              Total Citations
-            </Text>
-          </Stack>
-        </Paper>
-      </Grid.Col>
-      <Grid.Col span={{ base: 12, sm: 6, md: 3 }}>
-        <Paper p="lg" radius="md" withBorder>
-          <Stack gap="xs" align="center">
-            <Text size="xl" fw={700} c="grape">
-              {author.summary_stats?.h_index ?? 0}
-            </Text>
-            <Text size="sm" c="dimmed" ta="center">
-              h-index
-            </Text>
-          </Stack>
-        </Paper>
-      </Grid.Col>
-      <Grid.Col span={{ base: 12, sm: 6, md: 3 }}>
-        <Paper p="lg" radius="md" withBorder>
-          <Stack gap="xs" align="center">
-            <Text size="xl" fw={700} c="orange">
-              {author.summary_stats?.i10_index ?? 0}
-            </Text>
-            <Text size="sm" c="dimmed" ta="center">
-              i10-index
-            </Text>
-          </Stack>
-        </Paper>
-      </Grid.Col>
-    </Grid>
-  );
-}
-
-// Helper component for external links
-function ExternalLinks({ author }: { author: Author }) {
-  const externalLinks = [
+// Helper function to get external links for an author
+function getAuthorExternalLinks(author: Author) {
+  return [
     author.orcid && {
       url: `https://orcid.org/${author.orcid}`,
       label: 'ORCID Profile',
@@ -119,82 +63,38 @@ function ExternalLinks({ author }: { author: Author }) {
       type: 'openalex' as const
     }
   ].filter(Boolean);
+}
 
-  const getIcon = (type: string) => {
-    switch (type) {
-      case 'orcid':
-        return <IconId size={16} />;
-      case 'wikipedia':
-      case 'wikidata':
-        return <IconWorldWww size={16} />;
-      default:
-        return <IconExternalLink size={16} />;
-    }
-  };
+// Helper function to get icon for external link type
+function getExternalLinkIcon(type: string) {
+  switch (type) {
+    case 'orcid':
+      return <IconId size={16} />;
+    case 'wikipedia':
+      return <IconWorldWww size={16} />;
+    case 'wikidata':
+      return <IconWorldWww size={16} />;
+    default:
+      return <IconExternalLink size={16} />;
+  }
+}
 
-  const getColor = (type: string) => {
-    switch (type) {
-      case 'orcid':
-        return 'green';
-      case 'wikipedia':
-        return 'blue';
-      case 'wikidata':
-        return 'indigo';
-      default:
-        return 'gray';
-    }
-  };
-
-  return (
-    <Card withBorder radius="md" p="xl">
-      <Group mb="lg">
-        <IconLink size={20} />
-        <Title order={2} size="lg">External Resources</Title>
-      </Group>
-      
-      <Grid>
-        {externalLinks.map((link, index) => {
-          if (!link) return null;
-          
-          return (
-            <Grid.Col key={index} span={{ base: 12, sm: 6, md: 4 }}>
-              <Anchor
-                href={link.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                style={{ textDecoration: 'none' }}
-              >
-                <Paper
-                  p="md"
-                  withBorder
-                  radius="md"
-                  style={(theme) => ({
-                    transition: 'all 150ms ease',
-                    cursor: 'pointer',
-                    '&:hover': {
-                      transform: 'translateY(-2px)',
-                      boxShadow: theme.shadows.md,
-                      borderColor: theme.colors[getColor(link.type)][5],
-                    },
-                  })}
-                >
-                  <Group>
-                    {getIcon(link.type)}
-                    <Text size="sm" fw={500} c={getColor(link.type)}>
-                      {link.label}
-                    </Text>
-                  </Group>
-                </Paper>
-              </Anchor>
-            </Grid.Col>
-          );
-        })}
-      </Grid>
-    </Card>
-  );
+// Helper function to get color for external link type
+function getExternalLinkColor(type: string) {
+  switch (type) {
+    case 'orcid':
+      return 'green';
+    case 'wikipedia':
+      return 'blue';
+    case 'wikidata':
+      return 'indigo';
+    default:
+      return 'gray';
+  }
 }
 
 function AuthorDisplay({ author }: { author: Author }) {
+  const externalLinks = getAuthorExternalLinks(author);
 
   return (
     <EntityPageWithGraph entity={author}>
@@ -214,7 +114,56 @@ function AuthorDisplay({ author }: { author: Author }) {
         <Tabs.Panel value="overview">
           <Stack gap="xl">
             {/* Enhanced Key Metrics */}
-            <KeyMetrics author={author} />
+            <Grid>
+              <Grid.Col span={{ base: 12, sm: 6, md: 3 }}>
+                <Paper p="lg" radius="md" withBorder>
+                  <Stack gap="xs" align="center">
+                    <Text size="xl" fw={700} c="blue">
+                      {(author.works_count ?? 0).toLocaleString()}
+                    </Text>
+                    <Text size="sm" c="dimmed" ta="center">
+                      Works Published
+                    </Text>
+                  </Stack>
+                </Paper>
+              </Grid.Col>
+              <Grid.Col span={{ base: 12, sm: 6, md: 3 }}>
+                <Paper p="lg" radius="md" withBorder>
+                  <Stack gap="xs" align="center">
+                    <Text size="xl" fw={700} c="blue">
+                      {(author.cited_by_count ?? 0).toLocaleString()}
+                    </Text>
+                    <Text size="sm" c="dimmed" ta="center">
+                      Total Citations
+                    </Text>
+                  </Stack>
+                </Paper>
+              </Grid.Col>
+              <Grid.Col span={{ base: 12, sm: 6, md: 3 }}>
+                <Paper p="lg" radius="md" withBorder>
+                  <Stack gap="xs" align="center">
+                    <Text size="xl" fw={700} c="grape">
+                      {author.summary_stats?.h_index ?? 0}
+                    </Text>
+                    <Text size="sm" c="dimmed" ta="center">
+                      h-index
+                    </Text>
+                  </Stack>
+                </Paper>
+              </Grid.Col>
+              <Grid.Col span={{ base: 12, sm: 6, md: 3 }}>
+                <Paper p="lg" radius="md" withBorder>
+                  <Stack gap="xs" align="center">
+                    <Text size="xl" fw={700} c="orange">
+                      {author.summary_stats?.i10_index ?? 0}
+                    </Text>
+                    <Text size="sm" c="dimmed" ta="center">
+                      i10-index
+                    </Text>
+                  </Stack>
+                </Paper>
+              </Grid.Col>
+            </Grid>
 
             {/* Enhanced Research Metrics */}
             <Card withBorder radius="md" p="xl">
@@ -500,7 +449,51 @@ function AuthorDisplay({ author }: { author: Author }) {
             </Card>
 
             {/* Enhanced External Links */}
-            <ExternalLinks author={author} />
+            <Card withBorder radius="md" p="xl">
+              <Group mb="lg">
+                <IconLink size={20} />
+                <Title order={2} size="lg">External Resources</Title>
+              </Group>
+              
+              <Grid>
+                {externalLinks.map((link, index) => {
+                  if (!link) return null;
+                  
+                  return (
+                    <Grid.Col key={index} span={{ base: 12, sm: 6, md: 4 }}>
+                      <Anchor
+                        href={link.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        style={{ textDecoration: 'none' }}
+                      >
+                        <Paper
+                          p="md"
+                          withBorder
+                          radius="md"
+                          style={(theme) => ({
+                            transition: 'all 150ms ease',
+                            cursor: 'pointer',
+                            '&:hover': {
+                              transform: 'translateY(-2px)',
+                              boxShadow: theme.shadows.md,
+                              borderColor: theme.colors[getExternalLinkColor(link.type)][5],
+                            },
+                          })}
+                        >
+                          <Group>
+                            {getExternalLinkIcon(link.type)}
+                            <Text size="sm" fw={500} c={getExternalLinkColor(link.type)}>
+                              {link.label}
+                            </Text>
+                          </Group>
+                        </Paper>
+                      </Anchor>
+                    </Grid.Col>
+                  );
+                })}
+              </Grid>
+            </Card>
           </Stack>
         </Tabs.Panel>
 
