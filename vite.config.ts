@@ -26,7 +26,16 @@ export default defineConfig(({ command }) => ({
       }
     },
     react(),
-    TanStackRouterVite(),
+    TanStackRouterVite({
+      routesDirectory: './src/routes',
+      generatedRouteTree: './src/routeTree.gen.ts',
+      exclude: [
+        '**/*.test.*',
+        '**/*.spec.*',
+        '**/*.story.*',
+        '**/*.stories.*',
+      ],
+    }),
     vanillaExtractPlugin(),
     // TypeScript checking during build
     checker({
