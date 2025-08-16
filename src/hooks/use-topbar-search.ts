@@ -4,7 +4,6 @@ import { useState, useCallback, useEffect } from 'react';
 
 import type { EntityType } from '@/components/types';
 import { cachedOpenAlex } from '@/lib/openalex/client-with-cache';
-import { parseEntityIdentifier } from '@/lib/openalex/utils/entity-detection';
 
 export interface SearchSuggestion {
   value: string;
@@ -108,7 +107,22 @@ export function useTopbarSearch({
 
   // Handle suggestion selection
   const handleSelect = useCallback((suggestion: SearchSuggestion) => {
-    const entityId = parseEntityIdentifier(suggestion.id).numericId;
+    // Extract the OpenAlex ID from URL or use direct ID
+    let entityId = suggestion.id;
+    
+    // If suggestion.id is a URL, extract just the ID part
+    if (entityId.includes('openalex.org/')) {
+      const match = entityId.match(/openalex\.org\/([WASIPFTCKRN]\d{7,10})/i);
+      if (match) {
+        entityId = match[1];
+      }
+    }
+    
+    // Ensure the entityId is properly formatted (uppercase prefix)
+    if (entityId.match(/^[wasipftckrn]\d{7,10}$/i)) {
+      entityId = entityId.toUpperCase();
+    }
+    
     const entityType = suggestion.entity_type;
     
     const routeMap: Record<string, string> = {

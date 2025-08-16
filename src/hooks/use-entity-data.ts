@@ -113,7 +113,7 @@ const DEFAULT_OPTIONS: Required<UseEntityDataOptions> = {
   enabled: true,
   maxRetries: 3,
   retryDelay: 1000,
-  timeout: 30000,
+  timeout: 10000, // Reduced to 10 seconds for faster debugging
   skipCache: false,
   onSuccess: () => {},
   onError: () => {},
@@ -200,9 +200,18 @@ async function fetchEntityWithTimeout(
   try {
     const normalizedId = normalizeEntityId(entityId, entityType);
     
-    console.log(`[fetchEntityWithTimeout] Fetching ${entityType}:${normalizedId}, skipCache: ${skipCache}`);
+    console.log(`[fetchEntityWithTimeout] Fetching ${entityType}:${normalizedId}, skipCache: ${skipCache}, timeout: ${timeout}ms`);
     
-    let result: EntityData;
+    // Create a timeout promise that rejects after the specified timeout
+    const timeoutPromise = new Promise<never>((_, reject) => {
+      setTimeout(() => {
+        reject(new Error(`Request timeout: ${entityType}:${normalizedId} took longer than ${timeout}ms`));
+      }, timeout);
+    });
+    
+    // Create the actual fetch promise
+    const fetchPromise = (async (): Promise<EntityData> => {
+      let result: EntityData;
     
     // Route to appropriate client method based on entity type
     switch (entityType) {
@@ -250,6 +259,12 @@ async function fetchEntityWithTimeout(
     }
     
     console.log(`[fetchEntityWithTimeout] Successfully fetched ${entityType}:${normalizedId}:`, result.display_name || result.id);
+    
+    return result;
+    })();
+
+    // Race the fetch promise against the timeout promise
+    const result = await Promise.race([fetchPromise, timeoutPromise]);
     
     return result;
   } catch (error) {
