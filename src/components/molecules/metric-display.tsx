@@ -1,6 +1,6 @@
 'use client';
 
-import { forwardRef } from 'react';
+import React, { forwardRef } from 'react';
 
 import { mapSizeVariant } from '@/lib/metric-formatting';
 import type { MetricFormat, TrendDirection } from '@/lib/metric-formatting';
@@ -11,7 +11,7 @@ import { LoadingState } from './metric-display/loading-state';
 import { MetricContent } from './metric-display/metric-content';
 import * as styles from './metric-display.css';
 
-export interface MetricDisplayProps {
+export interface MetricDisplayProps extends Omit<React.HTMLAttributes<HTMLDivElement>, 'className'> {
   label: string;
   value: number | string;
   description?: string;

@@ -1,6 +1,6 @@
 'use client';
 
-import { forwardRef, useState } from 'react';
+import React, { forwardRef, useState } from 'react';
 
 import type { SizeVariant } from '../types';
 
@@ -9,7 +9,7 @@ import { Icon } from './icon';
 import { renderTitle, renderDetails, renderActions, renderDismissButton } from './utils/error-render-utils';
 import { SEVERITY_ICONS, mapSizeToVariant, getAriaAttributes } from './utils/error-utils';
 
-export interface ErrorMessageProps {
+export interface ErrorMessageProps extends Omit<React.HTMLAttributes<HTMLDivElement>, 'className'> {
   title?: string;
   message: string;
   details?: string;

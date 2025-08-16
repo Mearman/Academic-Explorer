@@ -128,4 +128,5 @@ export function EntityErrorBoundary({
   );
 }
 
+export { EntityError };
 export default EntityErrorBoundary;
