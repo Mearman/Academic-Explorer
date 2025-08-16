@@ -1,5 +1,5 @@
 import { createFileRoute, useNavigate, useSearch } from '@tanstack/react-router';
-import { useState } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { z } from 'zod';
 
 import { AdvancedSearchForm, type AdvancedSearchFormData } from '@/components/molecules/advanced-search-form';
@@ -45,6 +45,87 @@ function SearchPage() {
   const navigate = useNavigate();
   const searchParams = useSearch({ from: '/query' });
   const [currentParams, setCurrentParams] = useState<WorksParams>({});
+
+  // Convert URL search params to WorksParams
+  const convertUrlParamsToWorksParams = useCallback((params: SearchParams): WorksParams => {
+    const worksParams: WorksParams = {};
+
+    // Basic search query
+    if (params.q) {
+      worksParams.search = params.q;
+    }
+
+    // Build filter string from params
+    const filters: string[] = [];
+    
+    if (params.is_oa !== undefined) {
+      filters.push(`is_oa:${params.is_oa}`);
+    }
+    if (params.has_fulltext !== undefined) {
+      filters.push(`has_fulltext:${params.has_fulltext}`);
+    }
+    if (params.has_doi !== undefined) {
+      filters.push(`has_doi:${params.has_doi}`);
+    }
+    if (params.has_abstract !== undefined) {
+      filters.push(`has_abstract:${params.has_abstract}`);
+    }
+    if (params.not_retracted !== undefined) {
+      filters.push(`is_retracted:${!params.not_retracted}`);
+    }
+    if (params.year !== undefined) {
+      filters.push(`publication_year:${params.year}`);
+    }
+    if (params.author_id) {
+      filters.push(`authorships.author.id:${params.author_id}`);
+    }
+    if (params.institution_id) {
+      filters.push(`authorships.institutions.id:${params.institution_id}`);
+    }
+    if (params.source_id) {
+      filters.push(`primary_location.source.id:${params.source_id}`);
+    }
+    if (params.funder_id) {
+      filters.push(`grants.funder:${params.funder_id}`);
+    }
+    if (params.topic_id) {
+      filters.push(`topics.id:${params.topic_id}`);
+    }
+
+    if (filters.length > 0) {
+      worksParams.filter = filters.join(',');
+    }
+
+    // Date range
+    if (params.from_date) {
+      worksParams.from_publication_date = params.from_date;
+    }
+    if (params.to_date) {
+      worksParams.to_publication_date = params.to_date;
+    }
+
+    // Sort and pagination
+    if (params.sort && params.order) {
+      worksParams.sort = `${params.sort}:${params.order}`;
+    } else if (params.sort) {
+      worksParams.sort = `${params.sort}:desc`;
+    }
+    
+    if (params.per_page) {
+      worksParams.per_page = params.per_page;
+    }
+    if (params.sample) {
+      worksParams.sample = params.sample;
+    }
+    if (params.group_by) {
+      worksParams.group_by = params.group_by;
+    }
+    if (params.page) {
+      worksParams.page = params.page;
+    }
+
+    return worksParams;
+  }, []);
 
   // Convert URL search params to AdvancedSearchFormData
   const getFormDataFromParams = (params: SearchParams): Partial<AdvancedSearchFormData> => {
@@ -170,6 +251,14 @@ function SearchPage() {
 
   // Initialize from URL params on load
   const hasSearchParams = Object.keys(searchParams).length > 0;
+  
+  // Convert URL search params to WorksParams and set as currentParams on mount
+  useEffect(() => {
+    if (hasSearchParams) {
+      const worksParams = convertUrlParamsToWorksParams(searchParams);
+      setCurrentParams(worksParams);
+    }
+  }, [hasSearchParams, searchParams, convertUrlParamsToWorksParams]);
 
   return (
     <div className={styles.page}>
