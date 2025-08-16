@@ -605,4 +605,523 @@ describe('OpenAlexClient', () => {
       }
     });
   });
+
+  describe('Entity Redirect Handling', () => {
+    describe('handleEntityRedirect', () => {
+      it('should detect redirect when returned ID differs from requested ID', async () => {
+        const entityFetcher = vi.fn().mockResolvedValue({
+          id: 'https://openalex.org/W999999999',
+          title: 'Merged Work',
+        });
+
+        const result = await client.handleEntityRedirect(entityFetcher, 'W123456789');
+
+        expect(result.data.id).toBe('https://openalex.org/W999999999');
+        expect(result.redirectedId).toBe('https://openalex.org/W999999999');
+      });
+
+      it('should not detect redirect when IDs match', async () => {
+        const entityFetcher = vi.fn().mockResolvedValue({
+          id: 'https://openalex.org/W123456789',
+          title: 'Original Work',
+        });
+
+        const result = await client.handleEntityRedirect(entityFetcher, 'W123456789');
+
+        expect(result.data.id).toBe('https://openalex.org/W123456789');
+        expect(result.redirectedId).toBeUndefined();
+      });
+
+      it('should handle entities without id property', async () => {
+        const entityFetcher = vi.fn().mockResolvedValue({
+          title: 'Work without ID',
+        });
+
+        const result = await client.handleEntityRedirect(entityFetcher, 'W123456789');
+
+        expect(result.data.title).toBe('Work without ID');
+        expect(result.redirectedId).toBeUndefined();
+      });
+
+      it('should handle null entities', async () => {
+        const entityFetcher = vi.fn().mockResolvedValue(null);
+
+        const result = await client.handleEntityRedirect(entityFetcher, 'W123456789');
+
+        expect(result.data).toBeNull();
+        expect(result.redirectedId).toBeUndefined();
+      });
+
+      it('should handle non-object entities', async () => {
+        const entityFetcher = vi.fn().mockResolvedValue('string result');
+
+        const result = await client.handleEntityRedirect(entityFetcher, 'W123456789');
+
+        expect(result.data).toBe('string result');
+        expect(result.redirectedId).toBeUndefined();
+      });
+
+      it('should normalize IDs when comparing', async () => {
+        const entityFetcher = vi.fn().mockResolvedValue({
+          id: 'W123456789', // Without URL prefix
+        });
+
+        // Request with URL prefix
+        const result = await client.handleEntityRedirect(
+          entityFetcher, 
+          'https://openalex.org/W123456789'
+        );
+
+        expect(result.redirectedId).toBeUndefined(); // Should not detect redirect
+      });
+
+      it('should propagate errors from entity fetcher', async () => {
+        const entityFetcher = vi.fn().mockRejectedValue(new Error('Fetch failed'));
+
+        await expect(
+          client.handleEntityRedirect(entityFetcher, 'W123456789')
+        ).rejects.toThrow('Fetch failed');
+      });
+    });
+
+    describe('workWithRedirect', () => {
+      it('should call handleEntityRedirect with work fetcher', async () => {
+        const spy = vi.spyOn(client, 'handleEntityRedirect');
+        spy.mockResolvedValue({ data: mockWork });
+
+        await client.workWithRedirect('W123456789');
+
+        expect(spy).toHaveBeenCalledWith(expect.any(Function), 'W123456789');
+      });
+
+      it('should return work data with redirect info', async () => {
+        const redirectedWork = {
+          ...mockWork,
+          id: 'https://openalex.org/W999999999',
+        };
+
+        // Mock the work method to return different ID
+        vi.spyOn(client, 'work').mockResolvedValue(redirectedWork);
+
+        const result = await client.workWithRedirect('W123456789');
+
+        expect(result.data).toEqual(redirectedWork);
+        expect(result.redirectedId).toBe('https://openalex.org/W999999999');
+      });
+    });
+
+    describe('authorWithRedirect', () => {
+      it('should call handleEntityRedirect with author fetcher', async () => {
+        const spy = vi.spyOn(client, 'handleEntityRedirect');
+        spy.mockResolvedValue({ data: mockAuthor });
+
+        await client.authorWithRedirect('A123456789');
+
+        expect(spy).toHaveBeenCalledWith(expect.any(Function), 'A123456789');
+      });
+    });
+
+    describe('sourceWithRedirect', () => {
+      it('should call handleEntityRedirect with source fetcher', async () => {
+        const spy = vi.spyOn(client, 'handleEntityRedirect');
+        spy.mockResolvedValue({ data: { id: 'S123', display_name: 'Test Source' } });
+
+        await client.sourceWithRedirect('S123456789');
+
+        expect(spy).toHaveBeenCalledWith(expect.any(Function), 'S123456789');
+      });
+    });
+
+    describe('institutionWithRedirect', () => {
+      it('should call handleEntityRedirect with institution fetcher', async () => {
+        const spy = vi.spyOn(client, 'handleEntityRedirect');
+        spy.mockResolvedValue({ data: { id: 'I123', display_name: 'Test Institution' } });
+
+        await client.institutionWithRedirect('I123456789');
+
+        expect(spy).toHaveBeenCalledWith(expect.any(Function), 'I123456789');
+      });
+    });
+
+    describe('publisherWithRedirect', () => {
+      it('should call handleEntityRedirect with publisher fetcher', async () => {
+        const spy = vi.spyOn(client, 'handleEntityRedirect');
+        spy.mockResolvedValue({ data: { id: 'P123', display_name: 'Test Publisher' } });
+
+        await client.publisherWithRedirect('P123456789');
+
+        expect(spy).toHaveBeenCalledWith(expect.any(Function), 'P123456789');
+      });
+    });
+
+    describe('funderWithRedirect', () => {
+      it('should call handleEntityRedirect with funder fetcher', async () => {
+        const spy = vi.spyOn(client, 'handleEntityRedirect');
+        spy.mockResolvedValue({ data: { id: 'F123', display_name: 'Test Funder' } });
+
+        await client.funderWithRedirect('F123456789');
+
+        expect(spy).toHaveBeenCalledWith(expect.any(Function), 'F123456789');
+      });
+    });
+
+    describe('topicWithRedirect', () => {
+      it('should call handleEntityRedirect with topic fetcher', async () => {
+        const spy = vi.spyOn(client, 'handleEntityRedirect');
+        spy.mockResolvedValue({ data: { id: 'T123', display_name: 'Test Topic' } });
+
+        await client.topicWithRedirect('T123456789');
+
+        expect(spy).toHaveBeenCalledWith(expect.any(Function), 'T123456789');
+      });
+    });
+
+    describe('conceptWithRedirect', () => {
+      it('should call handleEntityRedirect with concept fetcher', async () => {
+        const spy = vi.spyOn(client, 'handleEntityRedirect');
+        spy.mockResolvedValue({ data: { id: 'C123', display_name: 'Test Concept' } });
+
+        await client.conceptWithRedirect('C123456789');
+
+        expect(spy).toHaveBeenCalledWith(expect.any(Function), 'C123456789');
+      });
+    });
+
+    describe('keywordWithRedirect', () => {
+      it('should call handleEntityRedirect with keyword fetcher', async () => {
+        const spy = vi.spyOn(client, 'handleEntityRedirect');
+        spy.mockResolvedValue({ data: { id: 'K123', display_name: 'Test Keyword' } });
+
+        await client.keywordWithRedirect('K123456789');
+
+        expect(spy).toHaveBeenCalledWith(expect.any(Function), 'K123456789');
+      });
+    });
+
+    describe('continentWithRedirect', () => {
+      it('should call handleEntityRedirect with continent fetcher', async () => {
+        const spy = vi.spyOn(client, 'handleEntityRedirect');
+        spy.mockResolvedValue({ data: mockContinent });
+
+        await client.continentWithRedirect('europe');
+
+        expect(spy).toHaveBeenCalledWith(expect.any(Function), 'europe');
+      });
+    });
+
+    describe('regionWithRedirect', () => {
+      it('should call handleEntityRedirect with region fetcher', async () => {
+        const spy = vi.spyOn(client, 'handleEntityRedirect');
+        spy.mockResolvedValue({ data: mockRegion });
+
+        await client.regionWithRedirect('western-europe');
+
+        expect(spy).toHaveBeenCalledWith(expect.any(Function), 'western-europe');
+      });
+    });
+  });
+
+  describe('Advanced ID Normalisation', () => {
+    describe('normaliseId edge cases', () => {
+      it('should handle DOI URLs correctly', async () => {
+        const work = await client.work('https://doi.org/10.1038/nature12345');
+        expect(work.id).toContain('W2741809807');
+      });
+
+      it('should handle DOI without URL', async () => {
+        const work = await client.work('10.1038/nature12345');
+        expect(work.id).toContain('W2741809807');
+      });
+
+      it('should handle ORCID URLs correctly', async () => {
+        const author = await client.author('https://orcid.org/0000-0001-0000-0001');
+        expect(author.id).toContain('A5000000001');
+      });
+
+      it('should handle ORCID without URL', async () => {
+        const author = await client.author('0000-0001-0000-0001');
+        expect(author.id).toContain('A5000000001');
+      });
+
+      it('should handle ROR URLs correctly', async () => {
+        const institution = await client.institution('https://ror.org/123456789');
+        expect(institution.id).toBeDefined();
+      });
+
+      it('should handle ROR IDs without URL', async () => {
+        const institution = await client.institution('123456789ab');
+        expect(institution.id).toBeDefined();
+      });
+
+      it('should handle ISSN-L format', async () => {
+        const source = await client.source('1234-567X');
+        expect(source.id).toBeDefined();
+      });
+
+      it('should handle Wikidata IDs', async () => {
+        const work = await client.work('Q12345');
+        expect(work.id).toBeDefined();
+      });
+
+      it('should handle PMID format', async () => {
+        const work = await client.work('12345678');
+        expect(work.id).toBeDefined();
+      });
+
+      it('should handle PMCID format', async () => {
+        const work = await client.work('PMC1234567');
+        expect(work.id).toBeDefined();
+      });
+
+      it('should normalize OpenAlex IDs to uppercase', async () => {
+        const work = await client.work('w2741809807');
+        expect(work.id).toContain('W2741809807');
+      });
+
+      it('should pass through unknown formats unchanged', async () => {
+        const work = await client.work('unknown-format-123');
+        expect(work.id).toBeDefined();
+      });
+    });
+
+    describe('Geographic ID normalisation', () => {
+      it('should handle continent URLs correctly', async () => {
+        const continent = await client.continent('https://openalex.org/continents/europe');
+        expect(continent.id).toContain('europe');
+      });
+
+      it('should handle region URLs correctly', async () => {
+        const region = await client.region('https://openalex.org/regions/western-europe');
+        expect(region.id).toContain('western-europe');
+      });
+
+      it('should handle plain continent IDs', async () => {
+        const continent = await client.continent('asia');
+        expect(continent.id).toContain('asia');
+      });
+
+      it('should handle plain region IDs', async () => {
+        const region = await client.region('eastern-asia');
+        expect(region.id).toContain('eastern-asia');
+      });
+    });
+  });
+
+  describe('Batch Operations', () => {
+    describe('worksBatch', () => {
+      it('should handle mixed ID formats', async () => {
+        const ids = [
+          'W123456789',
+          'https://openalex.org/W987654321',
+          'w111222333'
+        ];
+
+        const works = await client.worksBatch(ids);
+        expect(Array.isArray(works)).toBe(true);
+      });
+
+      it('should handle empty array', async () => {
+        const works = await client.worksBatch([]);
+        expect(works).toEqual([]);
+      });
+    });
+
+    describe('authorsBatch', () => {
+      it('should handle mixed ID formats', async () => {
+        const ids = [
+          'A123456789',
+          'https://openalex.org/A987654321',
+          '0000-0001-0000-0001'
+        ];
+
+        const authors = await client.authorsBatch(ids);
+        expect(Array.isArray(authors)).toBe(true);
+      });
+
+      it('should handle empty array', async () => {
+        const authors = await client.authorsBatch([]);
+        expect(authors).toEqual([]);
+      });
+    });
+  });
+
+  describe('Advanced Error Handling', () => {
+    it('should handle malformed JSON responses', async () => {
+      server.use(
+        handlers.filter(h => h.info?.real).find(h => 
+          h.info?.path === '/works'
+        )?.respondWith((req) => 
+          new Response('invalid json', { status: 200 })
+        ) || handlers[0]
+      );
+
+      await expect(client.works()).rejects.toThrow();
+    });
+
+    it('should handle empty response bodies', async () => {
+      server.use(
+        handlers.filter(h => h.info?.real).find(h => 
+          h.info?.path === '/works'
+        )?.respondWith((req) => 
+          new Response('', { status: 200 })
+        ) || handlers[0]
+      );
+
+      await expect(client.works()).rejects.toThrow();
+    });
+
+    it('should handle network disconnection during request', mockRetryDelays(async () => {
+      // Simulate network error that would trigger retries
+      await expect(
+        client.request('error/500', {})
+      ).rejects.toThrow(OpenAlexError);
+    }));
+
+    it('should handle very large response payloads', async () => {
+      // Test with a response that has many results
+      const largeResponse = {
+        meta: { count: 10000, per_page: 200 },
+        results: new Array(200).fill(mockWork),
+        group_by: []
+      };
+
+      server.use(
+        handlers.filter(h => h.info?.real).find(h => 
+          h.info?.path === '/works'
+        )?.respondWith((req) => 
+          Response.json(largeResponse)
+        ) || handlers[0]
+      );
+
+      const response = await client.works({ per_page: 200 });
+      expect(response.results).toHaveLength(200);
+    });
+  });
+
+  describe('Configuration Edge Cases', () => {
+    it('should handle zero timeout correctly', async () => {
+      const zeroTimeoutClient = new OpenAlexClient({ timeout: 0 });
+      
+      // With zero timeout, requests should proceed without timeout
+      const work = await zeroTimeoutClient.work('W2741809807');
+      expect(work.id).toContain('W2741809807');
+    });
+
+    it('should handle negative timeout correctly', async () => {
+      const negativeTimeoutClient = new OpenAlexClient({ timeout: -1000 });
+      
+      // Should treat negative timeout as no timeout
+      const work = await negativeTimeoutClient.work('W2741809807');
+      expect(work.id).toContain('W2741809807');
+    });
+
+    it('should handle zero max retries', async () => {
+      const noRetryClient = new OpenAlexClient({ maxRetries: 0 });
+      
+      // Should fail immediately on error without retries
+      await expect(
+        noRetryClient.request('error/500', {})
+      ).rejects.toThrow(OpenAlexError);
+    });
+
+    it('should handle very high max retries', async () => {
+      const highRetryClient = new OpenAlexClient({ maxRetries: 100 });
+      expect(highRetryClient.getConfig().maxRetries).toBe(100);
+    });
+
+    it('should handle empty mailto in polite mode', () => {
+      const emptyMailtoClient = new OpenAlexClient({ 
+        mailto: '',
+        polite: true 
+      });
+      
+      const config = emptyMailtoClient.getConfig();
+      expect(config.mailto).toBe('');
+      expect(config.polite).toBe(true);
+    });
+
+    it('should handle empty API key', () => {
+      const emptyKeyClient = new OpenAlexClient({ apiKey: '' });
+      expect(emptyKeyClient.getConfig().apiKey).toBe('');
+    });
+  });
+
+  describe('URL Building Edge Cases', () => {
+    it('should handle complex parameter objects', async () => {
+      const complexParams = {
+        filter: {
+          'publication_year': '>2020',
+          'is_oa': true,
+          'authors.orcid': '0000-0001-0000-0001'
+        },
+        sort: 'cited_by_count:desc',
+        per_page: 200,
+        cursor: '*',
+        nested: {
+          deep: {
+            value: 'test'
+          }
+        }
+      };
+
+      const response = await client.works(complexParams);
+      expect(response.results).toBeDefined();
+    });
+
+    it('should handle null and undefined parameters', async () => {
+      const paramsWithNulls = {
+        search: 'test',
+        filter: null,
+        sort: undefined,
+        per_page: 0, // Should be excluded
+        cursor: '', // Should be excluded
+        valid_param: 'included'
+      };
+
+      const response = await client.works(paramsWithNulls);
+      expect(response.results).toBeDefined();
+    });
+
+    it('should handle array parameters', async () => {
+      const arrayParams = {
+        filter: ['type:article', 'is_oa:true'],
+        topics: ['T1', 'T2', 'T3']
+      };
+
+      const response = await client.works(arrayParams);
+      expect(response.results).toBeDefined();
+    });
+  });
+
+  describe('Edge Cases in Method Calls', () => {
+    it('should handle workNgrams with complex parameters', async () => {
+      const ngrams = await client.workNgrams('W2741809807', {
+        return_type: 'frequency',
+        min_frequency: 5,
+        max_frequency: 100
+      });
+      
+      expect(Array.isArray(ngrams)).toBe(true);
+    });
+
+    it('should handle aboutness with edge case parameters', async () => {
+      const response = await client.aboutness({
+        text: '',
+        return_concepts: false,
+        return_topics: false
+      });
+      
+      expect(response.concepts).toBeDefined();
+      expect(response.topics).toBeDefined();
+    });
+
+    it('should handle groupBy methods with complex grouping', async () => {
+      const response = await client.worksGroupBy({
+        group_by: 'publication_year',
+        filter: 'publication_year:>2020'
+      });
+      
+      expect(response.group_by).toBeDefined();
+    });
+  });
 });

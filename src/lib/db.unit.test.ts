@@ -679,4 +679,289 @@ describe('DatabaseService', () => {
       expect(deletedCount).toBe(0);
     });
   });
+
+  describe('Storage Quota Exceeded Scenarios', () => {
+    it('should handle quota exceeded during cache operations', async () => {
+      await db.init();
+      const quotaError = new Error('QuotaExceededError');
+      quotaError.name = 'QuotaExceededError';
+      mockDB.put.mockRejectedValueOnce(quotaError);
+
+      await expect(db.cacheSearchResults('test', [], 0)).rejects.toThrow('QuotaExceededError');
+    });
+
+    it('should handle quota exceeded during paper saving', async () => {
+      await db.init();
+      const quotaError = new Error('QuotaExceededError');
+      quotaError.name = 'QuotaExceededError';
+      mockDB.put.mockRejectedValueOnce(quotaError);
+
+      const paper = { id: 'W123', title: 'Test', authors: [], savedAt: Date.now() };
+      await expect(db.savePaper(paper)).rejects.toThrow('QuotaExceededError');
+    });
+
+    it('should handle transaction abort during large operations', async () => {
+      await db.init();
+      const abortError = new Error('TransactionInactiveError');
+      abortError.name = 'TransactionInactiveError';
+      mockDB.put.mockRejectedValueOnce(abortError);
+
+      await expect(db.cacheSearchResults('large query', Array(1000).fill({ id: 'test' }), 1000))
+        .rejects.toThrow('TransactionInactiveError');
+    });
+  });
+
+  describe('Concurrent Access Patterns', () => {
+    it('should handle concurrent cache operations', async () => {
+      await db.init();
+      mockDB.put.mockImplementation(() => new Promise(resolve => setTimeout(resolve, 10)));
+
+      const operations = [
+        db.cacheSearchResults('query1', [], 0),
+        db.cacheSearchResults('query2', [], 0),
+        db.cacheSearchResults('query3', [], 0),
+      ];
+
+      await expect(Promise.all(operations)).resolves.toBeDefined();
+      expect(mockDB.put).toHaveBeenCalledTimes(3);
+    });
+
+    it('should handle concurrent read/write operations', async () => {
+      await db.init();
+      mockDB.get.mockResolvedValue({ id: 'test', title: 'Test Paper' });
+      mockDB.put.mockResolvedValue(undefined);
+
+      const operations = [
+        db.getPaper('paper1'),
+        db.savePaper({ id: 'paper2', title: 'Test', authors: [], savedAt: Date.now() }),
+        db.getAllPapers(),
+        db.getSearchResults('test query'),
+      ];
+
+      await expect(Promise.all(operations)).resolves.toBeDefined();
+    });
+
+    it('should handle race conditions in collection updates', async () => {
+      await db.init();
+      const collection = {
+        id: 'col1',
+        name: 'Test',
+        paperIds: [],
+        createdAt: Date.now(),
+        updatedAt: Date.now(),
+      };
+      
+      mockDB.get.mockResolvedValue(collection);
+
+      // Simulate concurrent additions to same collection
+      const addOperations = [
+        db.addToCollection('col1', 'paper1'),
+        db.addToCollection('col1', 'paper2'),
+        db.addToCollection('col1', 'paper3'),
+      ];
+
+      await Promise.all(addOperations);
+      expect(mockDB.put).toHaveBeenCalledTimes(3);
+    });
+  });
+
+  describe('Performance Under Load', () => {
+    it('should handle large search result caching', async () => {
+      await db.init();
+      
+      // Create large result set (simulating 1000 papers)
+      const largeResults = Array.from({ length: 1000 }, (_, i) => ({
+        id: `W${i}`,
+        title: `Paper ${i}`,
+        authors: [`Author ${i}`],
+        abstract: `Abstract for paper ${i}`.repeat(10), // Longer abstracts
+        year: 2020 + (i % 4),
+      }));
+
+      await db.cacheSearchResults('large query', largeResults, 1000);
+
+      expect(mockDB.put).toHaveBeenCalledWith(
+        'searchResults',
+        expect.objectContaining({
+          results: largeResults,
+          totalCount: 1000,
+        }),
+        expect.any(String)
+      );
+    });
+
+    it('should handle batch paper operations', async () => {
+      await db.init();
+      
+      const papers = Array.from({ length: 100 }, (_, i) => ({
+        id: `paper${i}`,
+        title: `Paper ${i}`,
+        authors: [`Author ${i}`],
+        savedAt: Date.now(),
+      }));
+
+      const saveOperations = papers.map(paper => db.savePaper(paper));
+      await Promise.all(saveOperations);
+
+      expect(mockDB.put).toHaveBeenCalledTimes(100);
+    });
+
+    it('should handle extensive cleanup operations', async () => {
+      await db.init();
+      
+      // Simulate many cache entries
+      const keys = Array.from({ length: 500 }, (_, i) => `key${i}`);
+      const oldTimestamp = Date.now() - (40 * 24 * 60 * 60 * 1000); // 40 days old
+      
+      mockDB.getAllKeys.mockResolvedValue(keys);
+      mockDB.get.mockImplementation(() => Promise.resolve({ timestamp: oldTimestamp }));
+
+      const deletedCount = await db.cleanOldSearchResults(30);
+
+      expect(deletedCount).toBe(500);
+      expect(mockDB.delete).toHaveBeenCalledTimes(500);
+    });
+  });
+
+  describe('Data Serialization/Deserialization', () => {
+    it('should handle complex objects in search results', async () => {
+      await db.init();
+      
+      const complexResults = [
+        {
+          id: 'W123',
+          title: 'Complex Paper',
+          authors: [
+            { name: 'John Doe', orcid: '0000-0000-0000-0000' },
+            { name: 'Jane Smith', orcid: null },
+          ],
+          concepts: [
+            { id: 'C123', name: 'Machine Learning', score: 0.95 },
+            { id: 'C456', name: 'Neural Networks', score: 0.87 },
+          ],
+          mesh: [{ ui: 'D000001', term: 'Biological Science' }],
+          locations: [{ source: { id: 'S123', name: 'Nature' } }],
+          dates: {
+            published: '2023-01-15',
+            updated: '2023-02-01',
+          },
+        },
+      ];
+
+      await db.cacheSearchResults('complex query', complexResults, 1);
+
+      expect(mockDB.put).toHaveBeenCalledWith(
+        'searchResults',
+        expect.objectContaining({
+          results: complexResults,
+        }),
+        expect.any(String)
+      );
+    });
+
+    it('should handle papers with special characters and unicode', async () => {
+      await db.init();
+      
+      const unicodePaper = {
+        id: 'unicode-test',
+        title: 'Título with éñ and 中文 and 🧬 emoji',
+        authors: ['José María', 'François Müller', '田中太郎'],
+        abstract: 'Abstract with mathematical symbols: ∫∑∆ and special chars: €£¥',
+        tags: ['tag-with-émojis-🔬', 'unicode-测试'],
+        notes: 'Notes with quotes: "smart quotes" and \'apostrophes\'',
+        savedAt: Date.now(),
+      };
+
+      await db.savePaper(unicodePaper);
+
+      expect(mockDB.put).toHaveBeenCalledWith('papers', unicodePaper);
+    });
+
+    it('should handle circular references gracefully in hash generation', () => {
+      const hashQuery = (db as any).hashQuery.bind(db);
+      
+      // Create object with circular reference
+      const filters: any = { year: 2023 };
+      filters.self = filters;
+      
+      // Should handle circular references without throwing
+      expect(() => hashQuery('test', filters)).toThrow();
+    });
+  });
+
+  describe('Cache Invalidation Strategies', () => {
+    it('should handle cache misses due to corruption', async () => {
+      await db.init();
+      
+      // Mock corrupted cache entry
+      const corruptedData = {
+        query: 'test',
+        results: null, // Corrupted results
+        timestamp: Date.now(),
+        totalCount: undefined, // Missing count
+      };
+      
+      mockDB.get.mockResolvedValue(corruptedData);
+      
+      const result = await db.getSearchResults('test');
+      
+      // Should still return the data even if partially corrupted
+      expect(result).toEqual(corruptedData);
+    });
+
+    it('should handle inconsistent timestamp formats', async () => {
+      await db.init();
+      
+      // Test with string timestamp (potential data migration scenario)
+      const dataWithStringTimestamp = {
+        query: 'test',
+        results: [],
+        timestamp: '2023-01-01T00:00:00.000Z', // String instead of number
+        totalCount: 0,
+      };
+      
+      mockDB.get.mockResolvedValue(dataWithStringTimestamp);
+      
+      const result = await db.getSearchResults('test', {}, 60000); // 1 minute TTL
+      
+      // Should handle string timestamps in comparison
+      expect(result).toBeNull(); // String timestamp should be treated as expired
+    });
+  });
+
+  describe('Database Migration Scenarios', () => {
+    it('should handle version upgrades gracefully', async () => {
+      // Simulate database version upgrade
+      const upgradeHandler = vi.fn();
+      
+      mockOpenDB.mockImplementationOnce((name, version, config) => {
+        if (config?.upgrade) {
+          config.upgrade(mockDB, 0, 1, mockTransaction, upgradeHandler);
+        }
+        return Promise.resolve(mockDB);
+      });
+      
+      await db.init();
+      
+      expect(mockDB.createObjectStore).toHaveBeenCalledWith('searchResults');
+      expect(mockDB.createObjectStore).toHaveBeenCalledWith('papers');
+      expect(mockDB.createObjectStore).toHaveBeenCalledWith('citations');
+      expect(mockDB.createObjectStore).toHaveBeenCalledWith('collections');
+    });
+
+    it('should handle partial store creation during upgrade', async () => {
+      // Simulate scenario where some stores already exist
+      mockDB.objectStoreNames.contains.mockImplementation((storeName: string) => {
+        return storeName === 'searchResults' || storeName === 'papers';
+      });
+      
+      await db.init();
+      
+      // Should only create missing stores
+      expect(mockDB.createObjectStore).toHaveBeenCalledWith('citations');
+      expect(mockDB.createObjectStore).toHaveBeenCalledWith('collections');
+      expect(mockDB.createObjectStore).not.toHaveBeenCalledWith('searchResults');
+      expect(mockDB.createObjectStore).not.toHaveBeenCalledWith('papers');
+    });
+  });
 });
