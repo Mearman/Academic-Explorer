@@ -20,6 +20,7 @@ import { Route as FundersRouteImport } from './routes/funders'
 import { Route as DashboardRouteImport } from './routes/dashboard'
 import { Route as ConceptsRouteImport } from './routes/concepts'
 import { Route as AuthorsRouteImport } from './routes/authors'
+import { Route as BareIdRouteImport } from './routes/$bareId'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as WorksIndexRouteImport } from './routes/works.index'
 import { Route as TopicsIndexRouteImport } from './routes/topics.index'
@@ -40,6 +41,7 @@ import { Route as OrcidIdRouteImport } from './routes/orcid.$id'
 import { Route as KeywordsIdRouteImport } from './routes/keywords.$id'
 import { Route as IssnIdRouteImport } from './routes/issn.$id'
 import { Route as InstitutionsIdRouteImport } from './routes/institutions.$id'
+import { Route as HttpsSplatRouteImport } from './routes/https.$'
 import { Route as FundersIdRouteImport } from './routes/funders.$id'
 import { Route as EntitySplatRouteImport } from './routes/entity.$'
 import { Route as DoiPathRouteImport } from './routes/doi.$path'
@@ -101,6 +103,11 @@ const ConceptsRoute = ConceptsRouteImport.update({
 const AuthorsRoute = AuthorsRouteImport.update({
   id: '/authors',
   path: '/authors',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const BareIdRoute = BareIdRouteImport.update({
+  id: '/$bareId',
+  path: '/$bareId',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IndexRoute = IndexRouteImport.update({
@@ -203,6 +210,11 @@ const InstitutionsIdRoute = InstitutionsIdRouteImport.update({
   path: '/$id',
   getParentRoute: () => InstitutionsRoute,
 } as any)
+const HttpsSplatRoute = HttpsSplatRouteImport.update({
+  id: '/https/$',
+  path: '/https/$',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const FundersIdRoute = FundersIdRouteImport.update({
   id: '/$id',
   path: '/$id',
@@ -241,6 +253,7 @@ const EntityTypeIdRoute = EntityTypeIdRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/$bareId': typeof BareIdRoute
   '/authors': typeof AuthorsRouteWithChildren
   '/concepts': typeof ConceptsRouteWithChildren
   '/dashboard': typeof DashboardRoute
@@ -258,6 +271,7 @@ export interface FileRoutesByFullPath {
   '/doi/$path': typeof DoiPathRoute
   '/entity/$': typeof EntitySplatRoute
   '/funders/$id': typeof FundersIdRoute
+  '/https/$': typeof HttpsSplatRoute
   '/institutions/$id': typeof InstitutionsIdRoute
   '/issn/$id': typeof IssnIdRoute
   '/keywords/$id': typeof KeywordsIdRoute
@@ -281,6 +295,7 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/$bareId': typeof BareIdRoute
   '/dashboard': typeof DashboardRoute
   '/help': typeof HelpRoute
   '/search': typeof SearchRoute
@@ -290,6 +305,7 @@ export interface FileRoutesByTo {
   '/doi/$path': typeof DoiPathRoute
   '/entity/$': typeof EntitySplatRoute
   '/funders/$id': typeof FundersIdRoute
+  '/https/$': typeof HttpsSplatRoute
   '/institutions/$id': typeof InstitutionsIdRoute
   '/issn/$id': typeof IssnIdRoute
   '/keywords/$id': typeof KeywordsIdRoute
@@ -314,6 +330,7 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/$bareId': typeof BareIdRoute
   '/authors': typeof AuthorsRouteWithChildren
   '/concepts': typeof ConceptsRouteWithChildren
   '/dashboard': typeof DashboardRoute
@@ -331,6 +348,7 @@ export interface FileRoutesById {
   '/doi/$path': typeof DoiPathRoute
   '/entity/$': typeof EntitySplatRoute
   '/funders/$id': typeof FundersIdRoute
+  '/https/$': typeof HttpsSplatRoute
   '/institutions/$id': typeof InstitutionsIdRoute
   '/issn/$id': typeof IssnIdRoute
   '/keywords/$id': typeof KeywordsIdRoute
@@ -356,6 +374,7 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/$bareId'
     | '/authors'
     | '/concepts'
     | '/dashboard'
@@ -373,6 +392,7 @@ export interface FileRouteTypes {
     | '/doi/$path'
     | '/entity/$'
     | '/funders/$id'
+    | '/https/$'
     | '/institutions/$id'
     | '/issn/$id'
     | '/keywords/$id'
@@ -396,6 +416,7 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/$bareId'
     | '/dashboard'
     | '/help'
     | '/search'
@@ -405,6 +426,7 @@ export interface FileRouteTypes {
     | '/doi/$path'
     | '/entity/$'
     | '/funders/$id'
+    | '/https/$'
     | '/institutions/$id'
     | '/issn/$id'
     | '/keywords/$id'
@@ -428,6 +450,7 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/'
+    | '/$bareId'
     | '/authors'
     | '/concepts'
     | '/dashboard'
@@ -445,6 +468,7 @@ export interface FileRouteTypes {
     | '/doi/$path'
     | '/entity/$'
     | '/funders/$id'
+    | '/https/$'
     | '/institutions/$id'
     | '/issn/$id'
     | '/keywords/$id'
@@ -469,6 +493,7 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  BareIdRoute: typeof BareIdRoute
   AuthorsRoute: typeof AuthorsRouteWithChildren
   ConceptsRoute: typeof ConceptsRouteWithChildren
   DashboardRoute: typeof DashboardRoute
@@ -483,6 +508,7 @@ export interface RootRouteChildren {
   ContinentsIdRoute: typeof ContinentsIdRoute
   DoiPathRoute: typeof DoiPathRoute
   EntitySplatRoute: typeof EntitySplatRoute
+  HttpsSplatRoute: typeof HttpsSplatRoute
   IssnIdRoute: typeof IssnIdRoute
   KeywordsIdRoute: typeof KeywordsIdRoute
   OrcidIdRoute: typeof OrcidIdRoute
@@ -569,6 +595,13 @@ declare module '@tanstack/react-router' {
       path: '/authors'
       fullPath: '/authors'
       preLoaderRoute: typeof AuthorsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/$bareId': {
+      id: '/$bareId'
+      path: '/$bareId'
+      fullPath: '/$bareId'
+      preLoaderRoute: typeof BareIdRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/': {
@@ -710,6 +743,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/institutions/$id'
       preLoaderRoute: typeof InstitutionsIdRouteImport
       parentRoute: typeof InstitutionsRoute
+    }
+    '/https/$': {
+      id: '/https/$'
+      path: '/https/$'
+      fullPath: '/https/$'
+      preLoaderRoute: typeof HttpsSplatRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/funders/$id': {
       id: '/funders/$id'
@@ -871,6 +911,7 @@ const WorksRouteWithChildren = WorksRoute._addFileChildren(WorksRouteChildren)
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  BareIdRoute: BareIdRoute,
   AuthorsRoute: AuthorsRouteWithChildren,
   ConceptsRoute: ConceptsRouteWithChildren,
   DashboardRoute: DashboardRoute,
@@ -885,6 +926,7 @@ const rootRouteChildren: RootRouteChildren = {
   ContinentsIdRoute: ContinentsIdRoute,
   DoiPathRoute: DoiPathRoute,
   EntitySplatRoute: EntitySplatRoute,
+  HttpsSplatRoute: HttpsSplatRoute,
   IssnIdRoute: IssnIdRoute,
   KeywordsIdRoute: KeywordsIdRoute,
   OrcidIdRoute: OrcidIdRoute,
