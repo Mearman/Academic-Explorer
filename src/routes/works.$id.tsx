@@ -1,10 +1,10 @@
 import { createFileRoute } from '@tanstack/react-router';
 
-import { EntityPageWithGraph, EntityErrorBoundary, EntitySkeleton, EntityError, EntityFallback } from '@/components';
+import { EntityErrorBoundary, EntitySkeleton, EntityError, EntityFallback } from '@/components';
+import { WorkDisplay } from '@/components/entity-displays/WorkDisplay';
 import { useWorkData } from '@/hooks/use-entity-data';
 import { useNumericIdRedirect } from '@/hooks/use-numeric-id-redirect';
 import { EntityType } from '@/lib/openalex/utils/entity-detection';
-import { WorkDisplay } from '@/components/entity-displays/WorkDisplay';
 
 function WorkPage() {
   const { id } = Route.useParams();

@@ -1,10 +1,10 @@
 import { createFileRoute } from '@tanstack/react-router';
 
-import { EntityPageWithGraph, EntityErrorBoundary, EntitySkeleton, EntityError, EntityFallback } from '@/components';
+import { EntityErrorBoundary, EntitySkeleton, EntityError, EntityFallback } from '@/components';
+import { InstitutionDisplay } from '@/components/entity-displays/InstitutionDisplay';
 import { useInstitutionData } from '@/hooks/use-entity-data';
 import { useNumericIdRedirect } from '@/hooks/use-numeric-id-redirect';
 import { EntityType } from '@/lib/openalex/utils/entity-detection';
-import { InstitutionDisplay } from '@/components/entity-displays/InstitutionDisplay';
 
 function InstitutionPage() {
   const { id } = Route.useParams();

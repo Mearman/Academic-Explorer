@@ -1,11 +1,11 @@
 import { createFileRoute, useNavigate } from '@tanstack/react-router';
 import { useEffect, useState } from 'react';
 
-import { EntityPageWithGraph, EntityErrorBoundary, EntitySkeleton, EntityError, EntityFallback } from '@/components';
+import { EntityErrorBoundary, EntitySkeleton, EntityError, EntityFallback } from '@/components';
+import { AuthorDisplay } from '@/components/entity-displays/AuthorDisplay';
 import { useAuthorData } from '@/hooks/use-entity-data';
 import { useNumericIdRedirect } from '@/hooks/use-numeric-id-redirect';
-import { EntityType, detectIdType, parseExternalId, decodeExternalId, ExternalIdType, detectEntityType, getEntityEndpoint } from '@/lib/openalex/utils/entity-detection';
-import { AuthorDisplay } from '@/components/entity-displays/AuthorDisplay';
+import { EntityType, detectIdType, decodeExternalId, ExternalIdType, detectEntityType, getEntityEndpoint } from '@/lib/openalex/utils/entity-detection';
 
 function AuthorPage() {
   const { id } = Route.useParams();

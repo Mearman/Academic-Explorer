@@ -1,10 +1,10 @@
 import { createFileRoute } from '@tanstack/react-router';
 
-import { EntityPageWithGraph, EntityErrorBoundary, EntitySkeleton, EntityError, EntityFallback } from '@/components';
+import { EntityErrorBoundary, EntitySkeleton, EntityError, EntityFallback } from '@/components';
+import { ConceptDisplay } from '@/components/entity-displays/ConceptDisplay';
 import { useConceptData } from '@/hooks/use-entity-data';
 import { useNumericIdRedirect } from '@/hooks/use-numeric-id-redirect';
 import { EntityType } from '@/lib/openalex/utils/entity-detection';
-import { ConceptDisplay } from '@/components/entity-displays/ConceptDisplay';
 
 function ConceptPage() {
   const { id } = Route.useParams();
