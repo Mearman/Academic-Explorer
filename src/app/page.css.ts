@@ -48,6 +48,19 @@ export const searchPageHeader = style({
 
 export const searchInterface = style({
   display: 'grid',
+  gridTemplateColumns: '1fr',
+  gap: '2rem',
+  alignItems: 'start',
+  '@media': {
+    'screen and (max-width: 1024px)': {
+      gridTemplateColumns: '1fr',
+      gap: '1.5rem',
+    },
+  },
+});
+
+export const searchInterfaceWithSidebar = style({
+  display: 'grid',
   gridTemplateColumns: '300px 1fr',
   gap: '2rem',
   alignItems: 'start',
