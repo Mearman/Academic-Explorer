@@ -138,14 +138,16 @@ function isError(error: unknown): error is Error {
   return error instanceof Error;
 }
 
-// Always run when this script is executed (for now)
-try {
-  generateBuildInfoFile();
-  console.log('✓ Build info generated successfully');
-} catch (error) {
-  const errorMessage = isError(error) ? error.message : 'Unknown error occurred';
-  console.error('✗ Failed to generate build info:', errorMessage);
-  process.exit(1);
+// Only run when this script is executed directly, not when imported
+if (import.meta.url === `file://${process.argv[1]}`) {
+  try {
+    generateBuildInfoFile();
+    console.log('✓ Build info generated successfully');
+  } catch (error) {
+    const errorMessage = isError(error) ? error.message : 'Unknown error occurred';
+    console.error('✗ Failed to generate build info:', errorMessage);
+    process.exit(1);
+  }
 }
 
 export { generateBuildInfoFile, getBuildInfo };
