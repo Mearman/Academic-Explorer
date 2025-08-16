@@ -11,8 +11,9 @@ import { SourceDisplay } from '@/components/entity-displays/SourceDisplay';
 import { TopicDisplay } from '@/components/entity-displays/TopicDisplay';
 import { WorkDisplay } from '@/components/entity-displays/WorkDisplay';
 import { useEntityData } from '@/hooks/use-entity-data';
-import type { EntityData } from '@/hooks/use-entity-data';
+import type { EntityData, EntityError as EntityErrorType } from '@/hooks/use-entity-data';
 import { useNumericIdRedirect } from '@/hooks/use-numeric-id-redirect';
+import type { Work, Author, Source, Institution, Funder, Topic, Concept, Publisher } from '@/lib/openalex/types';
 import { EntityType } from '@/lib/openalex/utils/entity-detection';
 
 // Entity-specific display components
@@ -66,7 +67,8 @@ function GenericEntityDisplay({ entity, entityType }: { entity: EntityData; enti
   }
   
   // TypeScript needs help understanding that entity matches the component's expected type
-  return <DisplayComponent entity={entity as any} />;
+  // This is safe because we've already determined the entityType and verified the component exists
+  return <DisplayComponent entity={entity as Work & Author & Source & Institution & Funder & Topic & Concept & Publisher} />;
 }
 
 function EntityPage() {
@@ -87,7 +89,7 @@ function EntityPage() {
     enabled: !!id && !isRedirecting && !!entityType,
     refetchOnWindowFocus: true,
     staleTime: 10 * 60 * 1000, // 10 minutes
-    onError: (error: any) => {
+    onError: (error: EntityErrorType) => {
       console.error(`${entityType} fetch error:`, error);
     }
   });
@@ -100,7 +102,7 @@ function EntityPage() {
           error={new Error(`Unknown entity type: ${type}`)}
           onRetry={() => window.location.reload()}
           entityId={id} 
-          entityType={type as any}
+          entityType={undefined}
         />
       </EntityErrorBoundary>
     );
