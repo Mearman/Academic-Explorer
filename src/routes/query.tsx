@@ -3,8 +3,9 @@ import { useState } from 'react';
 import { z } from 'zod';
 
 import { AdvancedSearchForm, type AdvancedSearchFormData } from '@/components/molecules/advanced-search-form';
-import { SearchResults } from '@/components/organisms/search-results';
+import { QueryHistory } from '@/components/organisms/query-history';
 import { SearchHistory } from '@/components/organisms/search-history';
+import { SearchResults } from '@/components/organisms/search-results';
 // import { SavedSearches } from '@/components/molecules/saved-searches'; // Removed - component not implemented
 import type { WorksParams } from '@/lib/openalex/types';
 
@@ -202,6 +203,8 @@ function SearchPage() {
                 onParamsChange={handleParamsChange}
               />
             </div>
+
+            <QueryHistory onRerunQuery={handleSearch} />
           </div>
         </div>
       </main>
