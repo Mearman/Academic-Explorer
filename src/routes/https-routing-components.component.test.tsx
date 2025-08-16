@@ -3,7 +3,6 @@
  * Tests React component rendering and behavior in isolation
  */
 
-import React from 'react';
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 
 // Mock navigate function to capture redirects
@@ -47,136 +46,9 @@ vi.mock('@/hooks/use-numeric-id-redirect', () => ({
   useNumericIdRedirect: () => false,
 }));
 
-// Create simplified test components that implement the core logic
-function MockHttpsUrlRedirect() {
-  const navigate = mockNavigate;
-  const params = mockParams;
-  
-  React.useEffect(() => {
-    const splat = params._splat;
-    if (!splat) {
-      throw new Error('Not Found');
-    }
-    
-    const reconstructedUrl = `https${splat}`;
-    
-    // Handle OpenAlex URLs
-    if (reconstructedUrl.includes('openalex.org/')) {
-      const openAlexMatch = reconstructedUrl.match(/openalex\.org\/([WASIPFTCKRN]\d{7,10})/i);
-      if (openAlexMatch) {
-        const openAlexId = openAlexMatch[1].toUpperCase();
-        navigate({ to: `/authors/${openAlexId}`, replace: true });
-        return;
-      }
-    }
-    
-    // Handle ORCID URLs
-    if (reconstructedUrl.includes('orcid.org/')) {
-      const orcidMatch = reconstructedUrl.match(/orcid\.org\/(\d{4}-\d{4}-\d{4}-\d{3}[\dX])/i);
-      if (orcidMatch) {
-        const orcidId = orcidMatch[1];
-        navigate({ to: `/authors/${orcidId}`, replace: true });
-        return;
-      }
-    }
-    
-    throw new Error('Not Found');
-  }, [navigate, params]);
-  
-  return (
-    <div className="min-h-screen flex items-center justify-center">
-      <div role="progressbar" className="animate-spin"></div>
-    </div>
-  );
-}
-
-function MockAuthorPage() {
-  const navigate = mockNavigate;
-  const params = mockParams;
-  
-  React.useEffect(() => {
-    const id = params.id;
-    if (!id) return;
-    
-    const decodedId = decodeURIComponent(id);
-    
-    // Handle HTTPS URLs
-    if (decodedId.startsWith('https://') || decodedId.startsWith('https:/')) {
-      if (decodedId.includes('openalex.org/')) {
-        const openAlexMatch = decodedId.match(/openalex\.org\/([WASIPFTCKRN]\d{7,10})/i);
-        if (openAlexMatch) {
-          const openAlexId = openAlexMatch[1].toUpperCase();
-          navigate({ to: `/authors/${openAlexId}`, replace: true });
-          return;
-        }
-      }
-      
-      if (decodedId.includes('orcid.org/')) {
-        const orcidMatch = decodedId.match(/orcid\.org\/(\d{4}-\d{4}-\d{4}-\d{3}[\dX])/i);
-        if (orcidMatch) {
-          const orcidId = orcidMatch[1];
-          navigate({ to: `/authors/${orcidId}`, replace: true });
-          return;
-        }
-      }
-    }
-  }, [navigate, params]);
-  
-  return (
-    <div data-testid="error-boundary">
-      <div data-testid="entity-skeleton">Loading...</div>
-    </div>
-  );
-}
-
-function MockBareIdRedirect() {
-  const navigate = mockNavigate;
-  const params = mockParams;
-  
-  React.useEffect(() => {
-    const bareId = params.bareId;
-    if (!bareId) {
-      throw new Error('Not Found');
-    }
-    
-    // Handle numeric IDs
-    if (/^\d{7,10}$/.test(bareId)) {
-      navigate({ to: `/authors/A${bareId}`, replace: true });
-      return;
-    }
-    
-    // Handle OpenAlex IDs
-    if (/^[WASIPFTCKRN]\d{7,10}$/i.test(bareId)) {
-      navigate({ to: `/authors/${bareId.toUpperCase()}`, replace: true });
-      return;
-    }
-    
-    // Handle HTTPS URLs
-    if (bareId.startsWith('https:/')) {
-      if (bareId.includes('openalex.org/')) {
-        const openAlexMatch = bareId.match(/openalex\.org\/([WASIPFTCKRN]\d{7,10})/i);
-        if (openAlexMatch) {
-          const openAlexId = openAlexMatch[1].toUpperCase();
-          navigate({ to: `/authors/${openAlexId}`, replace: true });
-          return;
-        }
-      }
-    }
-    
-    throw new Error('Not Found');
-  }, [navigate, params]);
-  
-  return (
-    <div className="min-h-screen flex items-center justify-center">
-      <div role="progressbar" className="animate-spin"></div>
-    </div>
-  );
-}
-
 describe('HTTPS URL Routing Components', () => {
   beforeEach(() => {
-    mockNavigate.mockClear();
-    mockParams = {};
+    vi.clearAllMocks();
     vi.clearAllTimers();
   });
 
