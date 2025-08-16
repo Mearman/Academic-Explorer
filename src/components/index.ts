@@ -71,6 +71,7 @@ export { EntityHeader, EntityHeaderSkeleton } from './organisms/entity-header';
 export { RawDataView } from './organisms/raw-data-view';
 export { SearchHistory } from './organisms/search-history';
 export { SearchResults } from './organisms/search-results';
+export { QueryHistory } from './organisms/query-history';
 export { StorageManager } from './organisms/storage-manager';
 export { 
   Chart,
