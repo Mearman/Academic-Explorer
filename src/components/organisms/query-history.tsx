@@ -1,8 +1,7 @@
 'use client';
 
-import { useState } from 'react';
-
 import { useNavigate } from '@tanstack/react-router';
+import { useState } from 'react';
 
 import type { WorksParams } from '@/lib/openalex/types';
 import { useAppStore, type QueryRecord } from '@/stores/app-store';
