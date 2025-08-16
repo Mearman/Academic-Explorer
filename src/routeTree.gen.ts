@@ -9,11 +9,26 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as WorksRouteImport } from './routes/works'
+import { Route as TopicsRouteImport } from './routes/topics'
+import { Route as SourcesRouteImport } from './routes/sources'
 import { Route as SearchRouteImport } from './routes/search'
+import { Route as PublishersRouteImport } from './routes/publishers'
+import { Route as InstitutionsRouteImport } from './routes/institutions'
 import { Route as HelpRouteImport } from './routes/help'
+import { Route as FundersRouteImport } from './routes/funders'
 import { Route as DashboardRouteImport } from './routes/dashboard'
-import { Route as EntityIdRouteImport } from './routes/$entityId'
+import { Route as ConceptsRouteImport } from './routes/concepts'
+import { Route as AuthorsRouteImport } from './routes/authors'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as WorksIndexRouteImport } from './routes/works.index'
+import { Route as TopicsIndexRouteImport } from './routes/topics.index'
+import { Route as SourcesIndexRouteImport } from './routes/sources.index'
+import { Route as PublishersIndexRouteImport } from './routes/publishers.index'
+import { Route as InstitutionsIndexRouteImport } from './routes/institutions.index'
+import { Route as FundersIndexRouteImport } from './routes/funders.index'
+import { Route as ConceptsIndexRouteImport } from './routes/concepts.index'
+import { Route as AuthorsIndexRouteImport } from './routes/authors.index'
 import { Route as WorksIdRouteImport } from './routes/works.$id'
 import { Route as WikidataIdRouteImport } from './routes/wikidata.$id'
 import { Route as TopicsIdRouteImport } from './routes/topics.$id'
@@ -32,9 +47,34 @@ import { Route as ContinentsIdRouteImport } from './routes/continents.$id'
 import { Route as ConceptsIdRouteImport } from './routes/concepts.$id'
 import { Route as AuthorsIdRouteImport } from './routes/authors.$id'
 
+const WorksRoute = WorksRouteImport.update({
+  id: '/works',
+  path: '/works',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TopicsRoute = TopicsRouteImport.update({
+  id: '/topics',
+  path: '/topics',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SourcesRoute = SourcesRouteImport.update({
+  id: '/sources',
+  path: '/sources',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const SearchRoute = SearchRouteImport.update({
   id: '/search',
   path: '/search',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PublishersRoute = PublishersRouteImport.update({
+  id: '/publishers',
+  path: '/publishers',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const InstitutionsRoute = InstitutionsRouteImport.update({
+  id: '/institutions',
+  path: '/institutions',
   getParentRoute: () => rootRouteImport,
 } as any)
 const HelpRoute = HelpRouteImport.update({
@@ -42,14 +82,24 @@ const HelpRoute = HelpRouteImport.update({
   path: '/help',
   getParentRoute: () => rootRouteImport,
 } as any)
+const FundersRoute = FundersRouteImport.update({
+  id: '/funders',
+  path: '/funders',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const DashboardRoute = DashboardRouteImport.update({
   id: '/dashboard',
   path: '/dashboard',
   getParentRoute: () => rootRouteImport,
 } as any)
-const EntityIdRoute = EntityIdRouteImport.update({
-  id: '/$entityId',
-  path: '/$entityId',
+const ConceptsRoute = ConceptsRouteImport.update({
+  id: '/concepts',
+  path: '/concepts',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthorsRoute = AuthorsRouteImport.update({
+  id: '/authors',
+  path: '/authors',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IndexRoute = IndexRouteImport.update({
@@ -57,10 +107,50 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const WorksIndexRoute = WorksIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => WorksRoute,
+} as any)
+const TopicsIndexRoute = TopicsIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => TopicsRoute,
+} as any)
+const SourcesIndexRoute = SourcesIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => SourcesRoute,
+} as any)
+const PublishersIndexRoute = PublishersIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => PublishersRoute,
+} as any)
+const InstitutionsIndexRoute = InstitutionsIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => InstitutionsRoute,
+} as any)
+const FundersIndexRoute = FundersIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => FundersRoute,
+} as any)
+const ConceptsIndexRoute = ConceptsIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => ConceptsRoute,
+} as any)
+const AuthorsIndexRoute = AuthorsIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AuthorsRoute,
+} as any)
 const WorksIdRoute = WorksIdRouteImport.update({
-  id: '/works/$id',
-  path: '/works/$id',
-  getParentRoute: () => rootRouteImport,
+  id: '/$id',
+  path: '/$id',
+  getParentRoute: () => WorksRoute,
 } as any)
 const WikidataIdRoute = WikidataIdRouteImport.update({
   id: '/wikidata/$id',
@@ -68,14 +158,14 @@ const WikidataIdRoute = WikidataIdRouteImport.update({
   getParentRoute: () => rootRouteImport,
 } as any)
 const TopicsIdRoute = TopicsIdRouteImport.update({
-  id: '/topics/$id',
-  path: '/topics/$id',
-  getParentRoute: () => rootRouteImport,
+  id: '/$id',
+  path: '/$id',
+  getParentRoute: () => TopicsRoute,
 } as any)
 const SourcesIdRoute = SourcesIdRouteImport.update({
-  id: '/sources/$id',
-  path: '/sources/$id',
-  getParentRoute: () => rootRouteImport,
+  id: '/$id',
+  path: '/$id',
+  getParentRoute: () => SourcesRoute,
 } as any)
 const RorPathRoute = RorPathRouteImport.update({
   id: '/ror/$path',
@@ -88,9 +178,9 @@ const RegionsIdRoute = RegionsIdRouteImport.update({
   getParentRoute: () => rootRouteImport,
 } as any)
 const PublishersIdRoute = PublishersIdRouteImport.update({
-  id: '/publishers/$id',
-  path: '/publishers/$id',
-  getParentRoute: () => rootRouteImport,
+  id: '/$id',
+  path: '/$id',
+  getParentRoute: () => PublishersRoute,
 } as any)
 const OrcidIdRoute = OrcidIdRouteImport.update({
   id: '/orcid/$id',
@@ -108,14 +198,14 @@ const IssnIdRoute = IssnIdRouteImport.update({
   getParentRoute: () => rootRouteImport,
 } as any)
 const InstitutionsIdRoute = InstitutionsIdRouteImport.update({
-  id: '/institutions/$id',
-  path: '/institutions/$id',
-  getParentRoute: () => rootRouteImport,
+  id: '/$id',
+  path: '/$id',
+  getParentRoute: () => InstitutionsRoute,
 } as any)
 const FundersIdRoute = FundersIdRouteImport.update({
-  id: '/funders/$id',
-  path: '/funders/$id',
-  getParentRoute: () => rootRouteImport,
+  id: '/$id',
+  path: '/$id',
+  getParentRoute: () => FundersRoute,
 } as any)
 const EntitySplatRoute = EntitySplatRouteImport.update({
   id: '/entity/$',
@@ -133,22 +223,29 @@ const ContinentsIdRoute = ContinentsIdRouteImport.update({
   getParentRoute: () => rootRouteImport,
 } as any)
 const ConceptsIdRoute = ConceptsIdRouteImport.update({
-  id: '/concepts/$id',
-  path: '/concepts/$id',
-  getParentRoute: () => rootRouteImport,
+  id: '/$id',
+  path: '/$id',
+  getParentRoute: () => ConceptsRoute,
 } as any)
 const AuthorsIdRoute = AuthorsIdRouteImport.update({
-  id: '/authors/$id',
-  path: '/authors/$id',
-  getParentRoute: () => rootRouteImport,
+  id: '/$id',
+  path: '/$id',
+  getParentRoute: () => AuthorsRoute,
 } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/$entityId': typeof EntityIdRoute
+  '/authors': typeof AuthorsRouteWithChildren
+  '/concepts': typeof ConceptsRouteWithChildren
   '/dashboard': typeof DashboardRoute
+  '/funders': typeof FundersRouteWithChildren
   '/help': typeof HelpRoute
+  '/institutions': typeof InstitutionsRouteWithChildren
+  '/publishers': typeof PublishersRouteWithChildren
   '/search': typeof SearchRoute
+  '/sources': typeof SourcesRouteWithChildren
+  '/topics': typeof TopicsRouteWithChildren
+  '/works': typeof WorksRouteWithChildren
   '/authors/$id': typeof AuthorsIdRoute
   '/concepts/$id': typeof ConceptsIdRoute
   '/continents/$id': typeof ContinentsIdRoute
@@ -166,10 +263,17 @@ export interface FileRoutesByFullPath {
   '/topics/$id': typeof TopicsIdRoute
   '/wikidata/$id': typeof WikidataIdRoute
   '/works/$id': typeof WorksIdRoute
+  '/authors/': typeof AuthorsIndexRoute
+  '/concepts/': typeof ConceptsIndexRoute
+  '/funders/': typeof FundersIndexRoute
+  '/institutions/': typeof InstitutionsIndexRoute
+  '/publishers/': typeof PublishersIndexRoute
+  '/sources/': typeof SourcesIndexRoute
+  '/topics/': typeof TopicsIndexRoute
+  '/works/': typeof WorksIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/$entityId': typeof EntityIdRoute
   '/dashboard': typeof DashboardRoute
   '/help': typeof HelpRoute
   '/search': typeof SearchRoute
@@ -190,14 +294,29 @@ export interface FileRoutesByTo {
   '/topics/$id': typeof TopicsIdRoute
   '/wikidata/$id': typeof WikidataIdRoute
   '/works/$id': typeof WorksIdRoute
+  '/authors': typeof AuthorsIndexRoute
+  '/concepts': typeof ConceptsIndexRoute
+  '/funders': typeof FundersIndexRoute
+  '/institutions': typeof InstitutionsIndexRoute
+  '/publishers': typeof PublishersIndexRoute
+  '/sources': typeof SourcesIndexRoute
+  '/topics': typeof TopicsIndexRoute
+  '/works': typeof WorksIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/$entityId': typeof EntityIdRoute
+  '/authors': typeof AuthorsRouteWithChildren
+  '/concepts': typeof ConceptsRouteWithChildren
   '/dashboard': typeof DashboardRoute
+  '/funders': typeof FundersRouteWithChildren
   '/help': typeof HelpRoute
+  '/institutions': typeof InstitutionsRouteWithChildren
+  '/publishers': typeof PublishersRouteWithChildren
   '/search': typeof SearchRoute
+  '/sources': typeof SourcesRouteWithChildren
+  '/topics': typeof TopicsRouteWithChildren
+  '/works': typeof WorksRouteWithChildren
   '/authors/$id': typeof AuthorsIdRoute
   '/concepts/$id': typeof ConceptsIdRoute
   '/continents/$id': typeof ContinentsIdRoute
@@ -215,15 +334,30 @@ export interface FileRoutesById {
   '/topics/$id': typeof TopicsIdRoute
   '/wikidata/$id': typeof WikidataIdRoute
   '/works/$id': typeof WorksIdRoute
+  '/authors/': typeof AuthorsIndexRoute
+  '/concepts/': typeof ConceptsIndexRoute
+  '/funders/': typeof FundersIndexRoute
+  '/institutions/': typeof InstitutionsIndexRoute
+  '/publishers/': typeof PublishersIndexRoute
+  '/sources/': typeof SourcesIndexRoute
+  '/topics/': typeof TopicsIndexRoute
+  '/works/': typeof WorksIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
-    | '/$entityId'
+    | '/authors'
+    | '/concepts'
     | '/dashboard'
+    | '/funders'
     | '/help'
+    | '/institutions'
+    | '/publishers'
     | '/search'
+    | '/sources'
+    | '/topics'
+    | '/works'
     | '/authors/$id'
     | '/concepts/$id'
     | '/continents/$id'
@@ -241,10 +375,17 @@ export interface FileRouteTypes {
     | '/topics/$id'
     | '/wikidata/$id'
     | '/works/$id'
+    | '/authors/'
+    | '/concepts/'
+    | '/funders/'
+    | '/institutions/'
+    | '/publishers/'
+    | '/sources/'
+    | '/topics/'
+    | '/works/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
-    | '/$entityId'
     | '/dashboard'
     | '/help'
     | '/search'
@@ -265,13 +406,28 @@ export interface FileRouteTypes {
     | '/topics/$id'
     | '/wikidata/$id'
     | '/works/$id'
+    | '/authors'
+    | '/concepts'
+    | '/funders'
+    | '/institutions'
+    | '/publishers'
+    | '/sources'
+    | '/topics'
+    | '/works'
   id:
     | '__root__'
     | '/'
-    | '/$entityId'
+    | '/authors'
+    | '/concepts'
     | '/dashboard'
+    | '/funders'
     | '/help'
+    | '/institutions'
+    | '/publishers'
     | '/search'
+    | '/sources'
+    | '/topics'
+    | '/works'
     | '/authors/$id'
     | '/concepts/$id'
     | '/continents/$id'
@@ -289,40 +445,82 @@ export interface FileRouteTypes {
     | '/topics/$id'
     | '/wikidata/$id'
     | '/works/$id'
+    | '/authors/'
+    | '/concepts/'
+    | '/funders/'
+    | '/institutions/'
+    | '/publishers/'
+    | '/sources/'
+    | '/topics/'
+    | '/works/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  EntityIdRoute: typeof EntityIdRoute
+  AuthorsRoute: typeof AuthorsRouteWithChildren
+  ConceptsRoute: typeof ConceptsRouteWithChildren
   DashboardRoute: typeof DashboardRoute
+  FundersRoute: typeof FundersRouteWithChildren
   HelpRoute: typeof HelpRoute
+  InstitutionsRoute: typeof InstitutionsRouteWithChildren
+  PublishersRoute: typeof PublishersRouteWithChildren
   SearchRoute: typeof SearchRoute
-  AuthorsIdRoute: typeof AuthorsIdRoute
-  ConceptsIdRoute: typeof ConceptsIdRoute
+  SourcesRoute: typeof SourcesRouteWithChildren
+  TopicsRoute: typeof TopicsRouteWithChildren
+  WorksRoute: typeof WorksRouteWithChildren
   ContinentsIdRoute: typeof ContinentsIdRoute
   DoiPathRoute: typeof DoiPathRoute
   EntitySplatRoute: typeof EntitySplatRoute
-  FundersIdRoute: typeof FundersIdRoute
-  InstitutionsIdRoute: typeof InstitutionsIdRoute
   IssnIdRoute: typeof IssnIdRoute
   KeywordsIdRoute: typeof KeywordsIdRoute
   OrcidIdRoute: typeof OrcidIdRoute
-  PublishersIdRoute: typeof PublishersIdRoute
   RegionsIdRoute: typeof RegionsIdRoute
   RorPathRoute: typeof RorPathRoute
-  SourcesIdRoute: typeof SourcesIdRoute
-  TopicsIdRoute: typeof TopicsIdRoute
   WikidataIdRoute: typeof WikidataIdRoute
-  WorksIdRoute: typeof WorksIdRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/works': {
+      id: '/works'
+      path: '/works'
+      fullPath: '/works'
+      preLoaderRoute: typeof WorksRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/topics': {
+      id: '/topics'
+      path: '/topics'
+      fullPath: '/topics'
+      preLoaderRoute: typeof TopicsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/sources': {
+      id: '/sources'
+      path: '/sources'
+      fullPath: '/sources'
+      preLoaderRoute: typeof SourcesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/search': {
       id: '/search'
       path: '/search'
       fullPath: '/search'
       preLoaderRoute: typeof SearchRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/publishers': {
+      id: '/publishers'
+      path: '/publishers'
+      fullPath: '/publishers'
+      preLoaderRoute: typeof PublishersRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/institutions': {
+      id: '/institutions'
+      path: '/institutions'
+      fullPath: '/institutions'
+      preLoaderRoute: typeof InstitutionsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/help': {
@@ -332,6 +530,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof HelpRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/funders': {
+      id: '/funders'
+      path: '/funders'
+      fullPath: '/funders'
+      preLoaderRoute: typeof FundersRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/dashboard': {
       id: '/dashboard'
       path: '/dashboard'
@@ -339,11 +544,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/$entityId': {
-      id: '/$entityId'
-      path: '/$entityId'
-      fullPath: '/$entityId'
-      preLoaderRoute: typeof EntityIdRouteImport
+    '/concepts': {
+      id: '/concepts'
+      path: '/concepts'
+      fullPath: '/concepts'
+      preLoaderRoute: typeof ConceptsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/authors': {
+      id: '/authors'
+      path: '/authors'
+      fullPath: '/authors'
+      preLoaderRoute: typeof AuthorsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/': {
@@ -353,12 +565,68 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/works/': {
+      id: '/works/'
+      path: '/'
+      fullPath: '/works/'
+      preLoaderRoute: typeof WorksIndexRouteImport
+      parentRoute: typeof WorksRoute
+    }
+    '/topics/': {
+      id: '/topics/'
+      path: '/'
+      fullPath: '/topics/'
+      preLoaderRoute: typeof TopicsIndexRouteImport
+      parentRoute: typeof TopicsRoute
+    }
+    '/sources/': {
+      id: '/sources/'
+      path: '/'
+      fullPath: '/sources/'
+      preLoaderRoute: typeof SourcesIndexRouteImport
+      parentRoute: typeof SourcesRoute
+    }
+    '/publishers/': {
+      id: '/publishers/'
+      path: '/'
+      fullPath: '/publishers/'
+      preLoaderRoute: typeof PublishersIndexRouteImport
+      parentRoute: typeof PublishersRoute
+    }
+    '/institutions/': {
+      id: '/institutions/'
+      path: '/'
+      fullPath: '/institutions/'
+      preLoaderRoute: typeof InstitutionsIndexRouteImport
+      parentRoute: typeof InstitutionsRoute
+    }
+    '/funders/': {
+      id: '/funders/'
+      path: '/'
+      fullPath: '/funders/'
+      preLoaderRoute: typeof FundersIndexRouteImport
+      parentRoute: typeof FundersRoute
+    }
+    '/concepts/': {
+      id: '/concepts/'
+      path: '/'
+      fullPath: '/concepts/'
+      preLoaderRoute: typeof ConceptsIndexRouteImport
+      parentRoute: typeof ConceptsRoute
+    }
+    '/authors/': {
+      id: '/authors/'
+      path: '/'
+      fullPath: '/authors/'
+      preLoaderRoute: typeof AuthorsIndexRouteImport
+      parentRoute: typeof AuthorsRoute
+    }
     '/works/$id': {
       id: '/works/$id'
-      path: '/works/$id'
+      path: '/$id'
       fullPath: '/works/$id'
       preLoaderRoute: typeof WorksIdRouteImport
-      parentRoute: typeof rootRouteImport
+      parentRoute: typeof WorksRoute
     }
     '/wikidata/$id': {
       id: '/wikidata/$id'
@@ -369,17 +637,17 @@ declare module '@tanstack/react-router' {
     }
     '/topics/$id': {
       id: '/topics/$id'
-      path: '/topics/$id'
+      path: '/$id'
       fullPath: '/topics/$id'
       preLoaderRoute: typeof TopicsIdRouteImport
-      parentRoute: typeof rootRouteImport
+      parentRoute: typeof TopicsRoute
     }
     '/sources/$id': {
       id: '/sources/$id'
-      path: '/sources/$id'
+      path: '/$id'
       fullPath: '/sources/$id'
       preLoaderRoute: typeof SourcesIdRouteImport
-      parentRoute: typeof rootRouteImport
+      parentRoute: typeof SourcesRoute
     }
     '/ror/$path': {
       id: '/ror/$path'
@@ -397,10 +665,10 @@ declare module '@tanstack/react-router' {
     }
     '/publishers/$id': {
       id: '/publishers/$id'
-      path: '/publishers/$id'
+      path: '/$id'
       fullPath: '/publishers/$id'
       preLoaderRoute: typeof PublishersIdRouteImport
-      parentRoute: typeof rootRouteImport
+      parentRoute: typeof PublishersRoute
     }
     '/orcid/$id': {
       id: '/orcid/$id'
@@ -425,17 +693,17 @@ declare module '@tanstack/react-router' {
     }
     '/institutions/$id': {
       id: '/institutions/$id'
-      path: '/institutions/$id'
+      path: '/$id'
       fullPath: '/institutions/$id'
       preLoaderRoute: typeof InstitutionsIdRouteImport
-      parentRoute: typeof rootRouteImport
+      parentRoute: typeof InstitutionsRoute
     }
     '/funders/$id': {
       id: '/funders/$id'
-      path: '/funders/$id'
+      path: '/$id'
       fullPath: '/funders/$id'
       preLoaderRoute: typeof FundersIdRouteImport
-      parentRoute: typeof rootRouteImport
+      parentRoute: typeof FundersRoute
     }
     '/entity/$': {
       id: '/entity/$'
@@ -460,44 +728,149 @@ declare module '@tanstack/react-router' {
     }
     '/concepts/$id': {
       id: '/concepts/$id'
-      path: '/concepts/$id'
+      path: '/$id'
       fullPath: '/concepts/$id'
       preLoaderRoute: typeof ConceptsIdRouteImport
-      parentRoute: typeof rootRouteImport
+      parentRoute: typeof ConceptsRoute
     }
     '/authors/$id': {
       id: '/authors/$id'
-      path: '/authors/$id'
+      path: '/$id'
       fullPath: '/authors/$id'
       preLoaderRoute: typeof AuthorsIdRouteImport
-      parentRoute: typeof rootRouteImport
+      parentRoute: typeof AuthorsRoute
     }
   }
 }
 
+interface AuthorsRouteChildren {
+  AuthorsIdRoute: typeof AuthorsIdRoute
+  AuthorsIndexRoute: typeof AuthorsIndexRoute
+}
+
+const AuthorsRouteChildren: AuthorsRouteChildren = {
+  AuthorsIdRoute: AuthorsIdRoute,
+  AuthorsIndexRoute: AuthorsIndexRoute,
+}
+
+const AuthorsRouteWithChildren =
+  AuthorsRoute._addFileChildren(AuthorsRouteChildren)
+
+interface ConceptsRouteChildren {
+  ConceptsIdRoute: typeof ConceptsIdRoute
+  ConceptsIndexRoute: typeof ConceptsIndexRoute
+}
+
+const ConceptsRouteChildren: ConceptsRouteChildren = {
+  ConceptsIdRoute: ConceptsIdRoute,
+  ConceptsIndexRoute: ConceptsIndexRoute,
+}
+
+const ConceptsRouteWithChildren = ConceptsRoute._addFileChildren(
+  ConceptsRouteChildren,
+)
+
+interface FundersRouteChildren {
+  FundersIdRoute: typeof FundersIdRoute
+  FundersIndexRoute: typeof FundersIndexRoute
+}
+
+const FundersRouteChildren: FundersRouteChildren = {
+  FundersIdRoute: FundersIdRoute,
+  FundersIndexRoute: FundersIndexRoute,
+}
+
+const FundersRouteWithChildren =
+  FundersRoute._addFileChildren(FundersRouteChildren)
+
+interface InstitutionsRouteChildren {
+  InstitutionsIdRoute: typeof InstitutionsIdRoute
+  InstitutionsIndexRoute: typeof InstitutionsIndexRoute
+}
+
+const InstitutionsRouteChildren: InstitutionsRouteChildren = {
+  InstitutionsIdRoute: InstitutionsIdRoute,
+  InstitutionsIndexRoute: InstitutionsIndexRoute,
+}
+
+const InstitutionsRouteWithChildren = InstitutionsRoute._addFileChildren(
+  InstitutionsRouteChildren,
+)
+
+interface PublishersRouteChildren {
+  PublishersIdRoute: typeof PublishersIdRoute
+  PublishersIndexRoute: typeof PublishersIndexRoute
+}
+
+const PublishersRouteChildren: PublishersRouteChildren = {
+  PublishersIdRoute: PublishersIdRoute,
+  PublishersIndexRoute: PublishersIndexRoute,
+}
+
+const PublishersRouteWithChildren = PublishersRoute._addFileChildren(
+  PublishersRouteChildren,
+)
+
+interface SourcesRouteChildren {
+  SourcesIdRoute: typeof SourcesIdRoute
+  SourcesIndexRoute: typeof SourcesIndexRoute
+}
+
+const SourcesRouteChildren: SourcesRouteChildren = {
+  SourcesIdRoute: SourcesIdRoute,
+  SourcesIndexRoute: SourcesIndexRoute,
+}
+
+const SourcesRouteWithChildren =
+  SourcesRoute._addFileChildren(SourcesRouteChildren)
+
+interface TopicsRouteChildren {
+  TopicsIdRoute: typeof TopicsIdRoute
+  TopicsIndexRoute: typeof TopicsIndexRoute
+}
+
+const TopicsRouteChildren: TopicsRouteChildren = {
+  TopicsIdRoute: TopicsIdRoute,
+  TopicsIndexRoute: TopicsIndexRoute,
+}
+
+const TopicsRouteWithChildren =
+  TopicsRoute._addFileChildren(TopicsRouteChildren)
+
+interface WorksRouteChildren {
+  WorksIdRoute: typeof WorksIdRoute
+  WorksIndexRoute: typeof WorksIndexRoute
+}
+
+const WorksRouteChildren: WorksRouteChildren = {
+  WorksIdRoute: WorksIdRoute,
+  WorksIndexRoute: WorksIndexRoute,
+}
+
+const WorksRouteWithChildren = WorksRoute._addFileChildren(WorksRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  EntityIdRoute: EntityIdRoute,
+  AuthorsRoute: AuthorsRouteWithChildren,
+  ConceptsRoute: ConceptsRouteWithChildren,
   DashboardRoute: DashboardRoute,
+  FundersRoute: FundersRouteWithChildren,
   HelpRoute: HelpRoute,
+  InstitutionsRoute: InstitutionsRouteWithChildren,
+  PublishersRoute: PublishersRouteWithChildren,
   SearchRoute: SearchRoute,
-  AuthorsIdRoute: AuthorsIdRoute,
-  ConceptsIdRoute: ConceptsIdRoute,
+  SourcesRoute: SourcesRouteWithChildren,
+  TopicsRoute: TopicsRouteWithChildren,
+  WorksRoute: WorksRouteWithChildren,
   ContinentsIdRoute: ContinentsIdRoute,
   DoiPathRoute: DoiPathRoute,
   EntitySplatRoute: EntitySplatRoute,
-  FundersIdRoute: FundersIdRoute,
-  InstitutionsIdRoute: InstitutionsIdRoute,
   IssnIdRoute: IssnIdRoute,
   KeywordsIdRoute: KeywordsIdRoute,
   OrcidIdRoute: OrcidIdRoute,
-  PublishersIdRoute: PublishersIdRoute,
   RegionsIdRoute: RegionsIdRoute,
   RorPathRoute: RorPathRoute,
-  SourcesIdRoute: SourcesIdRoute,
-  TopicsIdRoute: TopicsIdRoute,
   WikidataIdRoute: WikidataIdRoute,
-  WorksIdRoute: WorksIdRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
