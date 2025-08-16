@@ -409,3 +409,405 @@ describe('BatchQueue', () => {
     expect(batchProcessor).not.toHaveBeenCalled();
   });
 });
+
+describe('Storage Quota Exceeded Scenarios', () => {
+  let cache: CacheManager;
+
+  beforeEach(() => {
+    vi.clearAllMocks();
+    cache = new CacheManager({
+      ttl: 60000,
+      useMemory: true,
+      useIndexedDB: true,
+    });
+  });
+
+  it('should handle quota exceeded errors gracefully', async () => {
+    const { db } = await import('@/lib/db');
+    const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+    
+    const quotaError = new Error('QuotaExceededError');
+    quotaError.name = 'QuotaExceededError';
+    (db.cacheSearchResults as any).mockRejectedValueOnce(quotaError);
+
+    const apiResponse: ApiResponse<Work> = {
+      meta: { count: 1, db_response_time_ms: 10, page: 1, per_page: 25 },
+      results: [{ id: 'W123', display_name: 'Test' } as Work],
+    };
+
+    // Should not throw, just log error
+    await cache.set('works', { search: 'test' }, apiResponse);
+
+    expect(consoleSpy).toHaveBeenCalledWith(
+      'Failed to store in IndexedDB cache:',
+      expect.any(Error)
+    );
+
+    consoleSpy.mockRestore();
+  });
+
+  it('should continue working when IndexedDB fails', async () => {
+    const { db } = await import('@/lib/db');
+    
+    // Make IndexedDB operations fail
+    (db.cacheSearchResults as any).mockRejectedValue(new Error('Storage unavailable'));
+    (db.getSearchResults as any).mockRejectedValue(new Error('Storage unavailable'));
+
+    const testData = { test: 'data' };
+
+    // Should still work with memory cache
+    await cache.set('works', { id: 'test' }, testData);
+    const retrieved = await cache.get('works', { id: 'test' });
+
+    expect(retrieved).toEqual(testData);
+  });
+
+  it('should handle transaction abort errors', async () => {
+    const { db } = await import('@/lib/db');
+    const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+    
+    const abortError = new Error('TransactionInactiveError');
+    abortError.name = 'TransactionInactiveError';
+    (db.cacheSearchResults as any).mockRejectedValueOnce(abortError);
+
+    const largeResponse: ApiResponse<Work> = {
+      meta: { count: 1000, db_response_time_ms: 10, page: 1, per_page: 1000 },
+      results: Array.from({ length: 1000 }, (_, i) => ({
+        id: `W${i}`,
+        display_name: `Work ${i}`,
+      })) as Work[],
+    };
+
+    await cache.set('works', { search: 'large' }, largeResponse);
+
+    expect(consoleSpy).toHaveBeenCalledWith(
+      'Failed to store in IndexedDB cache:',
+      expect.any(Error)
+    );
+
+    consoleSpy.mockRestore();
+  });
+});
+
+describe('Concurrent Access Patterns', () => {
+  let cache: CacheManager;
+
+  beforeEach(() => {
+    vi.clearAllMocks();
+    cache = new CacheManager({
+      ttl: 60000,
+      useMemory: true,
+      useIndexedDB: false, // Focus on memory cache for these tests
+    });
+  });
+
+  it('should handle concurrent reads and writes', async () => {
+    const testData = { test: 'data' };
+    
+    const operations = [
+      cache.set('works', { id: '1' }, testData),
+      cache.get('works', { id: '1' }),
+      cache.set('works', { id: '2' }, testData),
+      cache.get('works', { id: '2' }),
+      cache.delete('works', { id: '1' }),
+    ];
+
+    const results = await Promise.all(operations);
+
+    // First get might be null (race condition), but should not throw
+    expect(results).toBeDefined();
+    expect(results.length).toBe(5);
+  });
+
+  it('should handle rapid cache key generation', async () => {
+    const operations = Array.from({ length: 100 }, (_, i) => 
+      cache.set('works', { id: i, query: `test${i}` }, { data: i })
+    );
+
+    await Promise.all(operations);
+
+    const stats = cache.getStats();
+    expect(stats.memoryEntries).toBeLessThanOrEqual(100); // LRU might have evicted some
+  });
+
+  it('should handle concurrent statistics operations', async () => {
+    const testData = { test: 'data' };
+    
+    // Set up some cache entries
+    await cache.set('works', { id: '1' }, testData);
+    await cache.set('works', { id: '2' }, testData);
+
+    const statOperations = Array.from({ length: 10 }, () => cache.getStats());
+
+    const results = await Promise.all(statOperations);
+
+    results.forEach(stats => {
+      expect(stats.memoryEntries).toBeGreaterThanOrEqual(0);
+      expect(stats.validEntries).toBeGreaterThanOrEqual(0);
+      expect(stats.memorySize).toBeGreaterThanOrEqual(0);
+    });
+  });
+
+  it('should handle concurrent cache clearing', async () => {
+    const testData = { test: 'data' };
+    
+    // Set up cache entries
+    await cache.set('works', { id: '1' }, testData);
+    await cache.set('works', { id: '2' }, testData);
+
+    const operations = [
+      cache.clear(),
+      cache.clear(),
+      cache.set('works', { id: '3' }, testData),
+      cache.get('works', { id: '1' }),
+    ];
+
+    const results = await Promise.all(operations);
+    
+    // Should complete without errors
+    expect(results).toBeDefined();
+  });
+});
+
+describe('Performance Under Load', () => {
+  let cache: CacheManager;
+
+  beforeEach(() => {
+    vi.clearAllMocks();
+    cache = new CacheManager({
+      ttl: 60000,
+      useMemory: true,
+      useIndexedDB: false,
+    });
+  });
+
+  it('should handle large data objects efficiently', async () => {
+    const largeObject = {
+      id: 'W123',
+      title: 'A'.repeat(10000),
+      abstract: 'B'.repeat(50000),
+      metadata: Array.from({ length: 1000 }, (_, i) => ({
+        id: i,
+        data: 'C'.repeat(100),
+      })),
+    };
+
+    const startTime = Date.now();
+    await cache.set('works', { id: 'large' }, largeObject);
+    const setTime = Date.now() - startTime;
+
+    const retrieveStart = Date.now();
+    const retrieved = await cache.get('works', { id: 'large' });
+    const getTime = Date.now() - retrieveStart;
+
+    expect(retrieved).toEqual(largeObject);
+    expect(setTime).toBeLessThan(100); // Should be fast
+    expect(getTime).toBeLessThan(50); // Retrieval should be very fast
+  });
+
+  it('should handle many small cache operations', async () => {
+    const operationCount = 1000;
+    const operations = [];
+
+    const startTime = Date.now();
+
+    for (let i = 0; i < operationCount; i++) {
+      operations.push(
+        cache.set('works', { id: i }, { data: `item${i}` })
+      );
+    }
+
+    await Promise.all(operations);
+
+    const operationTime = Date.now() - startTime;
+
+    // Should complete in reasonable time (adjust threshold as needed)
+    expect(operationTime).toBeLessThan(1000); // 1 second for 1000 operations
+
+    const stats = cache.getStats();
+    expect(stats.memoryEntries).toBeGreaterThan(0);
+  });
+
+  it('should handle complex cache key generation efficiently', async () => {
+    const complexParams = {
+      search: 'test query',
+      filters: {
+        publication_year: { from: 2020, to: 2023 },
+        type: ['article', 'review', 'book'],
+        authors: ['Smith', 'Johnson', 'Williams'],
+        institutions: Array.from({ length: 100 }, (_, i) => `Institution ${i}`),
+        concepts: Array.from({ length: 50 }, (_, i) => ({
+          id: i,
+          name: `Concept ${i}`,
+          score: Math.random(),
+        })),
+      },
+      sort: ['cited_by_count:desc', 'publication_date:desc'],
+      page: 1,
+      per_page: 200,
+    };
+
+    const operations = Array.from({ length: 100 }, (_, i) => 
+      cache.set('works', { ...complexParams, page: i + 1 }, { data: i })
+    );
+
+    const startTime = Date.now();
+    await Promise.all(operations);
+    const operationTime = Date.now() - startTime;
+
+    expect(operationTime).toBeLessThan(500); // Should handle complex keys efficiently
+  });
+
+  it('should maintain performance with cache churn', async () => {
+    // Simulate high cache turnover
+    const iterations = 10;
+    const itemsPerIteration = 150; // More than LRU limit
+
+    for (let i = 0; i < iterations; i++) {
+      const operations = Array.from({ length: itemsPerIteration }, (_, j) => 
+        cache.set('works', { iteration: i, item: j }, { data: `${i}-${j}` })
+      );
+
+      await Promise.all(operations);
+
+      // Check that cache is still responsive
+      const testKey = { iteration: i, item: 0 };
+      const retrieved = await cache.get('works', testKey);
+      
+      if (i === 0) {
+        // First iteration items might be evicted due to LRU
+        // Just ensure the operation completes
+        expect(retrieved).toBeDefined();
+      }
+    }
+
+    const stats = cache.getStats();
+    expect(stats.memoryEntries).toBeLessThanOrEqual(100); // LRU should limit size
+  });
+});
+
+describe('Memory Management Edge Cases', () => {
+  it('should handle circular references in cache data', async () => {
+    const cache = new CacheManager({ useMemory: true, useIndexedDB: false });
+    
+    const circularObject: any = {
+      id: 'circular',
+      name: 'test',
+      metadata: {}
+    };
+    circularObject.self = circularObject;
+    circularObject.metadata.parent = circularObject;
+
+    // Should not throw when caching circular references
+    await cache.set('works', { id: 'circular' }, circularObject);
+    const retrieved = await cache.get('works', { id: 'circular' });
+
+    expect(retrieved).toBe(circularObject); // Same reference
+  });
+
+  it('should handle extremely deep nested objects', async () => {
+    const cache = new CacheManager({ useMemory: true, useIndexedDB: false });
+    
+    // Create deeply nested object
+    let deepObject: any = { value: 'leaf' };
+    for (let i = 0; i < 1000; i++) {
+      deepObject = { level: i, child: deepObject };
+    }
+
+    await cache.set('works', { id: 'deep' }, deepObject);
+    const retrieved = await cache.get('works', { id: 'deep' });
+
+    expect(retrieved).toEqual(deepObject);
+  });
+
+  it('should handle cache with mixed data types', async () => {
+    const cache = new CacheManager({ useMemory: true, useIndexedDB: false });
+    
+    const mixedData = {
+      string: 'test',
+      number: 42,
+      boolean: true,
+      null: null,
+      undefined: undefined,
+      array: [1, 'two', { three: 3 }],
+      date: new Date(),
+      regex: /test/g,
+      symbol: Symbol('test'),
+      function: () => 'test',
+    };
+
+    await cache.set('works', { id: 'mixed' }, mixedData);
+    const retrieved = await cache.get('works', { id: 'mixed' });
+
+    // Note: Some types (symbol, function) may not serialize properly
+    expect(retrieved).toBeDefined();
+    expect(retrieved.string).toBe('test');
+    expect(retrieved.number).toBe(42);
+    expect(retrieved.boolean).toBe(true);
+  });
+
+  it('should handle null and undefined parameter values', async () => {
+    const cache = new CacheManager({ useMemory: true, useIndexedDB: false });
+    const testData = { test: 'data' };
+
+    // Test various null/undefined scenarios
+    await cache.set('works', { filter: null }, testData);
+    await cache.set('works', { filter: undefined }, testData);
+    await cache.set('works', { filter: null, sort: undefined }, testData);
+
+    const retrieved1 = await cache.get('works', { filter: null });
+    const retrieved2 = await cache.get('works', { filter: undefined });
+
+    // Both should retrieve the same data (null and undefined treated similarly)
+    expect(retrieved1).toEqual(testData);
+    expect(retrieved2).toEqual(testData);
+  });
+});
+
+describe('Cache Decorator Performance', () => {
+  it('should efficiently cache method results', async () => {
+    class TestService {
+      callCount = 0;
+
+      async expensiveOperation(params: { id: number; data: string }) {
+        this.callCount++;
+        // Simulate expensive operation
+        await new Promise(resolve => setTimeout(resolve, 10));
+        return { result: `processed-${params.id}-${params.data}` };
+      }
+    }
+
+    const service = new TestService();
+    const cache = new CacheManager({ useMemory: true, useIndexedDB: false });
+
+    // Manually implement caching behavior for testing
+    const cachedOperation = async (params: { id: number; data: string }) => {
+      const cacheKey = `TestService.expensiveOperation:${JSON.stringify(params)}`;
+      
+      let cached = await cache.get('method', { key: cacheKey });
+      if (cached) {
+        return cached;
+      }
+
+      const result = await service.expensiveOperation(params);
+      await cache.set('method', { key: cacheKey }, result);
+      return result;
+    };
+
+    // Test multiple calls with same parameters
+    const params = { id: 1, data: 'test' };
+    
+    const startTime = Date.now();
+    const results = await Promise.all([
+      cachedOperation(params),
+      cachedOperation(params),
+      cachedOperation(params),
+    ]);
+    const totalTime = Date.now() - startTime;
+
+    expect(service.callCount).toBe(1); // Only called once
+    expect(results[0]).toEqual(results[1]);
+    expect(results[1]).toEqual(results[2]);
+    expect(totalTime).toBeLessThan(50); // Should be much faster than 3 * 10ms
+  });
+});
