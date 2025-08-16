@@ -2,6 +2,8 @@ import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 import { immer } from 'zustand/middleware/immer';
 
+import type { WorksParams } from '@/lib/openalex/types';
+
 interface SearchFilters {
   dateRange?: {
     from?: string;
@@ -9,6 +11,22 @@ interface SearchFilters {
   };
   publicationType?: string[];
   openAccess?: boolean;
+}
+
+interface QueryRecord {
+  id: string;
+  timestamp: string;
+  query: string;
+  params: WorksParams;
+  results?: {
+    count: number;
+    responseTimeMs: number;
+    firstResult?: {
+      id: string;
+      title: string;
+    };
+  };
+  error?: string;
 }
 
 interface AppState {
@@ -19,6 +37,9 @@ interface AppState {
   searchQuery: string;
   searchFilters: SearchFilters;
   searchHistory: string[];
+  
+  // Query Recording
+  queryHistory: QueryRecord[];
   
   // User preferences
   preferences: {
@@ -35,16 +56,24 @@ interface AppState {
   addToSearchHistory: (query: string) => void;
   clearSearchHistory: () => void;
   updatePreferences: (prefs: Partial<AppState['preferences']>) => void;
+  
+  // Query Recording Actions
+  recordQuery: (query: string, params: WorksParams) => string;
+  updateQueryResults: (queryId: string, results: QueryRecord['results']) => void;
+  updateQueryError: (queryId: string, error: string) => void;
+  clearQueryHistory: () => void;
+  getQueryHistory: () => QueryRecord[];
 }
 
 export const useAppStore = create<AppState>()(
   persist(
-    immer((set) => ({
+    immer((set, get) => ({
       // Initial state
       theme: 'system',
       searchQuery: '',
       searchFilters: {},
       searchHistory: [],
+      queryHistory: [],
       preferences: {
         resultsPerPage: 20,
         defaultView: 'grid',
@@ -94,6 +123,45 @@ export const useAppStore = create<AppState>()(
           if (prefs.defaultView !== undefined) state.preferences.defaultView = prefs.defaultView;
           if (prefs.showAbstracts !== undefined) state.preferences.showAbstracts = prefs.showAbstracts;
         }),
+        
+      // Query Recording Actions
+      recordQuery: (query, params) => {
+        const queryId = `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+        set((state) => {
+          const queryRecord: QueryRecord = {
+            id: queryId,
+            timestamp: new Date().toISOString(),
+            query,
+            params,
+          };
+          // Add to beginning, keep last 50 queries
+          state.queryHistory = [queryRecord, ...state.queryHistory].slice(0, 50);
+        });
+        return queryId;
+      },
+      
+      updateQueryResults: (queryId, results) =>
+        set((state) => {
+          const query = state.queryHistory.find(q => q.id === queryId);
+          if (query) {
+            query.results = results;
+          }
+        }),
+        
+      updateQueryError: (queryId, error) =>
+        set((state) => {
+          const query = state.queryHistory.find(q => q.id === queryId);
+          if (query) {
+            query.error = error;
+          }
+        }),
+        
+      clearQueryHistory: () =>
+        set((state) => {
+          state.queryHistory = [];
+        }),
+        
+      getQueryHistory: () => get().queryHistory,
     })),
     {
       name: 'academic-explorer-storage',
@@ -101,8 +169,11 @@ export const useAppStore = create<AppState>()(
       partialize: (state) => ({
         theme: state.theme,
         searchHistory: state.searchHistory,
+        queryHistory: state.queryHistory,
         preferences: state.preferences,
       }),
     }
   )
 );
+
+export type { QueryRecord };
