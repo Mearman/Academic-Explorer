@@ -4,6 +4,9 @@
  * This hook provides React-based data fetching for OpenAlex entities,
  * supporting loading states, error handling, retry mechanisms, and all entity types.
  * Designed for static export compatibility with browser-only data fetching.
+ * 
+ * SIMPLIFIED VERSION: This is a simplified, working version that replaces the
+ * complex original implementation that had useCallback/setState issues.
  */
 
 'use client';
@@ -28,7 +31,6 @@ import {
   EntityType, 
   detectEntityType, 
   normalizeEntityId, 
-  // validateEntityId, // Currently unused
   EntityDetectionError 
 } from '@/lib/openalex/utils/entity-detection';
 
@@ -113,7 +115,7 @@ const DEFAULT_OPTIONS: Required<UseEntityDataOptions> = {
   enabled: true,
   maxRetries: 3,
   retryDelay: 1000,
-  timeout: 10000, // Reduced to 10 seconds for faster debugging
+  timeout: 10000,
   skipCache: false,
   onSuccess: () => {},
   onError: () => {},
@@ -125,7 +127,6 @@ const DEFAULT_OPTIONS: Required<UseEntityDataOptions> = {
  * Create a user-friendly error from various error types
  */
 function createEntityError(error: unknown, entityId: string): EntityError {
-  // Handle ID validation errors
   if (error instanceof EntityDetectionError) {
     return {
       type: EntityErrorType.INVALID_ID,
@@ -138,7 +139,6 @@ function createEntityError(error: unknown, entityId: string): EntityError {
   if (error instanceof Error) {
     const message = error.message.toLowerCase();
     
-    // Check for 404 errors
     if (message.includes('not found') || message.includes('404')) {
       return {
         type: EntityErrorType.NOT_FOUND,
@@ -148,7 +148,6 @@ function createEntityError(error: unknown, entityId: string): EntityError {
       };
     }
     
-    // Check for network errors
     if (message.includes('fetch') || message.includes('network') || message.includes('connection')) {
       return {
         type: EntityErrorType.NETWORK_ERROR,
@@ -158,7 +157,6 @@ function createEntityError(error: unknown, entityId: string): EntityError {
       };
     }
     
-    // Check for timeout errors
     if (message.includes('timeout') || message.includes('aborted')) {
       return {
         type: EntityErrorType.TIMEOUT,
@@ -168,7 +166,6 @@ function createEntityError(error: unknown, entityId: string): EntityError {
       };
     }
     
-    // Check for rate limiting
     if (message.includes('rate') || message.includes('429') || message.includes('too many')) {
       return {
         type: EntityErrorType.RATE_LIMITED,
@@ -179,7 +176,6 @@ function createEntityError(error: unknown, entityId: string): EntityError {
     }
   }
 
-  // Default unknown error
   return {
     type: EntityErrorType.UNKNOWN,
     message: 'An unexpected error occurred while fetching the entity. Please try again.',
@@ -189,95 +185,73 @@ function createEntityError(error: unknown, entityId: string): EntityError {
 }
 
 /**
- * Fetch entity data with timeout support
+ * Fetch entity data from OpenAlex API
  */
-async function fetchEntityWithTimeout(
+async function fetchEntityData<T extends EntityData = EntityData>(
   entityId: string,
-  entityType: EntityType,
-  timeout: number,
-  skipCache: boolean
-): Promise<EntityData> {
-  try {
-    const normalizedId = normalizeEntityId(entityId, entityType);
-    
-    console.log(`[fetchEntityWithTimeout] Fetching ${entityType}:${normalizedId}, skipCache: ${skipCache}, timeout: ${timeout}ms`);
-    
-    // Create a timeout promise that rejects after the specified timeout
-    const timeoutPromise = new Promise<never>((_, reject) => {
-      setTimeout(() => {
-        reject(new Error(`Request timeout: ${entityType}:${normalizedId} took longer than ${timeout}ms`));
-      }, timeout);
-    });
-    
-    // Create the actual fetch promise
-    const fetchPromise = (async (): Promise<EntityData> => {
-      let result: EntityData;
-    
-    // Route to appropriate client method based on entity type
-    switch (entityType) {
-      case EntityType.WORK:
-        console.log(`[fetchEntityWithTimeout] Calling cachedOpenAlex.work(${normalizedId})`);
-        result = await cachedOpenAlex.work(normalizedId, skipCache);
-        console.log(`[fetchEntityWithTimeout] cachedOpenAlex.work returned:`, !!result);
-        break;
-      case EntityType.AUTHOR:
-        result = await cachedOpenAlex.author(normalizedId, skipCache);
-        break;
-      case EntityType.SOURCE:
-        result = await cachedOpenAlex.source(normalizedId, skipCache);
-        break;
-      case EntityType.INSTITUTION:
-        result = await cachedOpenAlex.institution(normalizedId, skipCache);
-        break;
-      case EntityType.PUBLISHER:
-        result = await cachedOpenAlex.publisher(normalizedId, skipCache);
-        break;
-      case EntityType.FUNDER:
-        result = await cachedOpenAlex.funder(normalizedId, skipCache);
-        break;
-      case EntityType.TOPIC:
-        result = await cachedOpenAlex.topic(normalizedId, skipCache);
-        break;
-      case EntityType.CONCEPT:
-        result = await cachedOpenAlex.concept(normalizedId, skipCache);
-        break;
-      case EntityType.CONTINENT:
-        result = await cachedOpenAlex.request<Continent>(`/continents/${normalizedId}`);
-        break;
-      case EntityType.KEYWORD:
-        result = await cachedOpenAlex.request<Keyword>(`/keywords/${normalizedId}`);
-        break;
-      case EntityType.REGION:
-        result = await cachedOpenAlex.request<Region>(`/regions/${normalizedId}`);
-        break;
-      default:
-        throw new Error(`Unsupported entity type: ${entityType}`);
-    }
-    
-    if (!result) {
-      throw new Error(`Entity ${entityType}:${normalizedId} returned null or undefined`);
-    }
-    
-    console.log(`[fetchEntityWithTimeout] Successfully fetched ${entityType}:${normalizedId}:`, result.display_name || result.id);
-    
-    return result;
-    })();
-
-    // Race the fetch promise against the timeout promise
-    const result = await Promise.race([fetchPromise, timeoutPromise]);
-    
-    return result;
-  } catch (error) {
-    console.error(`[fetchEntityWithTimeout] Error fetching ${entityType}:${entityId}:`, error);
-    throw error;
+  entityType?: EntityType,
+  skipCache: boolean = false
+): Promise<T> {
+  // Determine entity type
+  let detectedType: EntityType;
+  if (entityType) {
+    detectedType = entityType;
+  } else {
+    detectedType = detectEntityType(entityId);
   }
-}
 
-/**
- * Calculate exponential backoff delay
- */
-function calculateRetryDelay(retryCount: number, baseDelay: number): number {
-  return Math.min(baseDelay * Math.pow(2, retryCount), 30000); // Max 30 seconds
+  const normalizedId = normalizeEntityId(entityId, detectedType);
+  
+  console.log(`[fetchEntityData] Fetching ${detectedType}:${normalizedId}, skipCache: ${skipCache}`);
+  
+  let result: EntityData;
+  
+  // Route to appropriate client method based on entity type
+  switch (detectedType) {
+    case EntityType.WORK:
+      result = await cachedOpenAlex.work(normalizedId, skipCache);
+      break;
+    case EntityType.AUTHOR:
+      result = await cachedOpenAlex.author(normalizedId, skipCache);
+      break;
+    case EntityType.SOURCE:
+      result = await cachedOpenAlex.source(normalizedId, skipCache);
+      break;
+    case EntityType.INSTITUTION:
+      result = await cachedOpenAlex.institution(normalizedId, skipCache);
+      break;
+    case EntityType.PUBLISHER:
+      result = await cachedOpenAlex.publisher(normalizedId, skipCache);
+      break;
+    case EntityType.FUNDER:
+      result = await cachedOpenAlex.funder(normalizedId, skipCache);
+      break;
+    case EntityType.TOPIC:
+      result = await cachedOpenAlex.topic(normalizedId, skipCache);
+      break;
+    case EntityType.CONCEPT:
+      result = await cachedOpenAlex.concept(normalizedId, skipCache);
+      break;
+    case EntityType.CONTINENT:
+      result = await cachedOpenAlex.request<Continent>(`/continents/${normalizedId}`);
+      break;
+    case EntityType.KEYWORD:
+      result = await cachedOpenAlex.request<Keyword>(`/keywords/${normalizedId}`);
+      break;
+    case EntityType.REGION:
+      result = await cachedOpenAlex.request<Region>(`/regions/${normalizedId}`);
+      break;
+    default:
+      throw new Error(`Unsupported entity type: ${detectedType}`);
+  }
+  
+  if (!result) {
+    throw new Error(`Entity ${detectedType}:${normalizedId} returned null or undefined`);
+  }
+  
+  console.log(`[fetchEntityData] Successfully fetched ${detectedType}:${normalizedId}:`, result.display_name || result.id);
+  
+  return result as T;
 }
 
 /**
@@ -287,22 +261,6 @@ function calculateRetryDelay(retryCount: number, baseDelay: number): number {
  * @param entityType - Optional explicit entity type (required for numeric IDs)
  * @param options - Configuration options
  * @returns Hook state and control functions
- * 
- * @example
- * ```typescript
- * // Fetch a work by prefixed ID
- * const { data, loading, error, retry } = useEntityData('W2741809807');
- * 
- * // Fetch an author by numeric ID with explicit type
- * const { data, loading, error } = useEntityData('2887492', EntityType.AUTHOR);
- * 
- * // With custom options
- * const { data, loading, error } = useEntityData('W123', undefined, {
- *   maxRetries: 5,
- *   onSuccess: (data) => console.log('Loaded:', data.display_name),
- *   onError: (error) => console.error('Failed:', error.message)
- * });
- * ```
  */
 export function useEntityData<T extends EntityData = EntityData>(
   entityId: string | null | undefined,
@@ -327,26 +285,20 @@ export function useEntityData<T extends EntityData = EntityData>(
     lastFetchTime: null
   });
 
-  // Use refs to store latest options to avoid recreating effect
-  const optionsRef = useRef(opts);
-  optionsRef.current = opts;
-
-  const retryTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const mountedRef = useRef(true);
 
   // Cleanup on unmount
   useEffect(() => {
+    mountedRef.current = true;
     return () => {
       mountedRef.current = false;
-      if (retryTimeoutRef.current) {
-        clearTimeout(retryTimeoutRef.current);
-      }
     };
   }, []);
 
-  // Main fetch function
-  const fetchEntity = useCallback(async (isRetry = false): Promise<void> => {
-    if (!entityId) {
+  // Main fetch effect using the proven working pattern
+  useEffect(() => {
+    if (!opts.enabled || !entityId) {
+      console.log(`[useEntityData] Auto-fetch skipped - enabled: ${opts.enabled}, entityId: ${entityId}`);
       setState(prev => ({
         ...prev,
         data: null,
@@ -357,195 +309,119 @@ export function useEntityData<T extends EntityData = EntityData>(
       return;
     }
 
-    // Clear any existing retry timeout
-    if (retryTimeoutRef.current) {
-      clearTimeout(retryTimeoutRef.current);
-      retryTimeoutRef.current = null;
-    }
-
-    // Validate entity ID and determine type
-    let detectedType: EntityType;
-    try {
-      if (entityType) {
-        detectedType = entityType;
-      } else {
-        detectedType = detectEntityType(entityId);
-      }
-    } catch (error) {
-      const entityError = createEntityError(error, entityId);
-      setState(prev => ({
-        ...prev,
-        loading: false,
-        error: entityError,
-        state: EntityLoadingState.ERROR
-      }));
-      optionsRef.current.onError(entityError);
-      return;
-    }
-
+    console.log(`[useEntityData] Auto-fetch triggered for ${entityId}`);
     setState(prev => ({
       ...prev,
       loading: true,
       error: null,
-      state: isRetry ? EntityLoadingState.RETRYING : EntityLoadingState.LOADING
+      state: EntityLoadingState.LOADING
     }));
 
-    try {
-      console.log(`[useEntityData] Fetching entity: ${entityId} (type: ${detectedType}, retry: ${isRetry})`);
-      
-      // Add timeout debug indicator  
-      const debugEl = document.getElementById('debug-entity-fetch');
-      if (debugEl) {
-        debugEl.style.background = 'blue';
-        debugEl.textContent = `API Call: ${entityId}`;
-      }
-      
-      const data = await fetchEntityWithTimeout(
-        entityId,
-        detectedType,
-        optionsRef.current.timeout,
-        optionsRef.current.skipCache
-      );
-
-      if (!mountedRef.current) {
-        console.log(`[useEntityData] Component unmounted, skipping state update for ${entityId}`);
-        return;
-      }
-
-      console.log(`[useEntityData] Successfully fetched data for ${entityId}:`, data);
-
-      setState(prev => ({
-        ...prev,
-        data: data as T,
-        loading: false,
-        error: null,
-        state: EntityLoadingState.SUCCESS,
-        retryCount: 0,
-        lastFetchTime: Date.now()
-      }));
-
-      // Add success debug indicator
-      const successDebugEl = document.getElementById('debug-entity-fetch');
-      if (successDebugEl) {
-        successDebugEl.style.background = 'green';
-        successDebugEl.textContent = `Success: ${entityId}`;
-        setTimeout(() => {
-          successDebugEl.remove();
-        }, 3000);
-      }
-
-      optionsRef.current.onSuccess(data);
-    } catch (error) {
-      if (!mountedRef.current) {
-        console.log(`[useEntityData] Component unmounted, skipping error state update for ${entityId}`);
-        return;
-      }
-
-      console.error(`[useEntityData] Error fetching entity ${entityId}:`, error);
-      
-      // Add error debug indicator
-      const debugEl = document.getElementById('debug-entity-fetch');
-      if (debugEl) {
-        debugEl.style.background = 'orange';
-        debugEl.textContent = `Error: ${error instanceof Error ? error.message : 'Unknown error'}`;
-      }
-      
-      const entityError = createEntityError(error, entityId);
-      
-      setState(prev => {
-        const newRetryCount = isRetry ? prev.retryCount + 1 : 1;
+    // Use the proven working async pattern
+    (async () => {
+      try {
+        console.log(`[useEntityData] Calling fetchEntityData for ${entityId}`);
         
-        console.log(`[useEntityData] Setting error state. Retry count: ${newRetryCount}, Max retries: ${optionsRef.current.maxRetries}`);
-        
-        // Schedule retry if retryable
-        if (entityError.retryable && newRetryCount < optionsRef.current.maxRetries) {
-          const delay = calculateRetryDelay(newRetryCount, optionsRef.current.retryDelay);
-          
-          console.log(`[useEntityData] Scheduling retry ${newRetryCount + 1}/${optionsRef.current.maxRetries} in ${delay}ms for ${entityId}`);
-          
-          retryTimeoutRef.current = setTimeout(() => {
-            if (mountedRef.current) {
-              console.log(`[useEntityData] Executing retry ${newRetryCount + 1} for ${entityId}`);
-              fetchEntity(true);
-            }
-          }, delay);
-        } else {
-          console.log(`[useEntityData] No retry: retryable=${entityError.retryable}, retryCount=${newRetryCount}, maxRetries=${optionsRef.current.maxRetries}`);
+        const data = await fetchEntityData<T>(entityId, entityType, opts.skipCache);
+
+        if (!mountedRef.current) {
+          console.log(`[useEntityData] Component unmounted, skipping state update for ${entityId}`);
+          return;
         }
+
+        console.log(`[useEntityData] Successfully fetched data for ${entityId}:`, data);
+
+        setState(prev => ({
+          ...prev,
+          data,
+          loading: false,
+          error: null,
+          state: EntityLoadingState.SUCCESS,
+          retryCount: 0,
+          lastFetchTime: Date.now()
+        }));
+
+        opts.onSuccess(data);
+      } catch (error) {
+        if (!mountedRef.current) {
+          console.log(`[useEntityData] Component unmounted, skipping error state for ${entityId}`);
+          return;
+        }
+
+        console.error(`[useEntityData] Error fetching entity ${entityId}:`, error);
         
-        return {
+        const entityError = createEntityError(error, entityId);
+        
+        setState(prev => ({
           ...prev,
           loading: false,
           error: entityError,
           state: EntityLoadingState.ERROR,
-          retryCount: newRetryCount
-        };
-      });
+          retryCount: 1
+        }));
 
-      optionsRef.current.onError(entityError);
-    }
-  }, [entityId, entityType]); // Removed state.retryCount from dependencies
-
-  // Auto-fetch effect
-  useEffect(() => {
-    if (opts.enabled && entityId) {
-      console.log(`[useEntityData] Auto-fetch effect triggered for ${entityId}, enabled: ${opts.enabled}`);
-      // Add a visible debug indicator
-      const debugEl = document.getElementById('debug-entity-fetch');
-      if (!debugEl) {
-        const el = document.createElement('div');
-        el.id = 'debug-entity-fetch';
-        el.style.cssText = 'position:fixed;top:10px;right:10px;background:red;color:white;padding:10px;z-index:9999;font-size:12px;';
-        el.textContent = `Fetching: ${entityId}`;
-        document.body.appendChild(el);
-      } else {
-        debugEl.textContent = `Fetching: ${entityId}`;
+        opts.onError(entityError);
       }
-      fetchEntity();
-    } else {
-      console.log(`[useEntityData] Auto-fetch skipped - enabled: ${opts.enabled}, entityId: ${entityId}`);
-    }
-  }, [entityId, entityType, opts.enabled, fetchEntity]);
-
-  // Window focus refetch
-  useEffect(() => {
-    if (!opts.refetchOnWindowFocus || !entityId) return;
-
-    const handleFocus = () => {
-      const now = Date.now();
-      const lastFetch = state.lastFetchTime;
-      
-      if (lastFetch && (now - lastFetch) > opts.staleTime) {
-        fetchEntity();
-      }
-    };
-
-    window.addEventListener('focus', handleFocus);
-    return () => window.removeEventListener('focus', handleFocus);
-  }, [opts.refetchOnWindowFocus, opts.staleTime, entityId, state.lastFetchTime, fetchEntity]);
+    })();
+  }, [entityId, entityType, opts.enabled, opts.skipCache]);
 
   // Control functions
   const refetch = useCallback(async (): Promise<void> => {
+    if (!entityId) return;
+    
     setState(prev => ({ ...prev, retryCount: 0 }));
-    await fetchEntity(false);
-  }, [fetchEntity]);
+    
+    // Trigger refetch by updating a dependency
+    const data = await fetchEntityData<T>(entityId, entityType, true); // Force skip cache
+    
+    if (mountedRef.current) {
+      setState(prev => ({
+        ...prev,
+        data,
+        loading: false,
+        error: null,
+        state: EntityLoadingState.SUCCESS,
+        lastFetchTime: Date.now()
+      }));
+    }
+  }, [entityId, entityType]);
 
   const retry = useCallback(async (): Promise<void> => {
     console.log(`[useEntityData] Manual retry requested for ${entityId}`);
-    if (state.error?.retryable || state.error) {
-      setState(prev => ({ ...prev, retryCount: 0 })); // Reset retry count for manual retries
-      await fetchEntity(true);
+    if (entityId && (state.error?.retryable || state.error)) {
+      setState(prev => ({ ...prev, retryCount: 0, loading: true, error: null }));
+      
+      try {
+        const data = await fetchEntityData<T>(entityId, entityType, opts.skipCache);
+        
+        if (mountedRef.current) {
+          setState(prev => ({
+            ...prev,
+            data,
+            loading: false,
+            error: null,
+            state: EntityLoadingState.SUCCESS,
+            lastFetchTime: Date.now()
+          }));
+        }
+      } catch (error) {
+        if (mountedRef.current) {
+          const entityError = createEntityError(error, entityId);
+          setState(prev => ({
+            ...prev,
+            loading: false,
+            error: entityError,
+            state: EntityLoadingState.ERROR,
+            retryCount: prev.retryCount + 1
+          }));
+        }
+      }
     } else {
       console.log(`[useEntityData] Retry not available - no retryable error`);
     }
-  }, [fetchEntity, entityId, state.error]);
+  }, [entityId, entityType, state.error, opts.skipCache]);
 
   const reset = useCallback((): void => {
-    if (retryTimeoutRef.current) {
-      clearTimeout(retryTimeoutRef.current);
-      retryTimeoutRef.current = null;
-    }
-    
     setState({
       data: null,
       loading: false,
@@ -672,88 +548,4 @@ export function useRegionData(
   options?: Partial<UseEntityDataOptions>
 ) {
   return useEntityData<Region>(regionId, EntityType.REGION, options);
-}
-
-/**
- * Hook for batch fetching multiple entities of the same type
- */
-export function useBatchEntityData<T extends EntityData = EntityData>(
-  entityIds: string[],
-  entityType: EntityType,
-  options: Partial<UseEntityDataOptions> = {}
-): {
-  data: Record<string, T>;
-  loading: boolean;
-  errors: Record<string, EntityError>;
-  completed: number;
-  total: number;
-  refetchAll: () => Promise<void>;
-} {
-  const [batchState, setBatchState] = useState({
-    data: {} as Record<string, T>,
-    loading: false,
-    errors: {} as Record<string, EntityError>,
-    completed: 0,
-    total: entityIds.length
-  });
-
-  const fetchBatch = useCallback(async () => {
-    if (entityIds.length === 0) return;
-
-    setBatchState(prev => ({
-      ...prev,
-      loading: true,
-      completed: 0,
-      total: entityIds.length,
-      errors: {}
-    }));
-
-    const results: Record<string, T> = {};
-    const errors: Record<string, EntityError> = {};
-    let completed = 0;
-
-    await Promise.allSettled(
-      entityIds.map(async (id) => {
-        try {
-          const data = await fetchEntityWithTimeout(
-            id,
-            entityType,
-            options.timeout || DEFAULT_OPTIONS.timeout,
-            options.skipCache || false
-          );
-          results[id] = data as T;
-        } catch (error) {
-          errors[id] = createEntityError(error, id);
-        } finally {
-          completed++;
-          setBatchState(prev => ({
-            ...prev,
-            completed,
-            data: { ...prev.data, ...results },
-            errors: { ...prev.errors, ...errors }
-          }));
-        }
-      })
-    );
-
-    setBatchState(prev => ({
-      ...prev,
-      loading: false
-    }));
-  }, [entityIds, entityType, options.timeout, options.skipCache]);
-
-  useEffect(() => {
-    if (options.enabled !== false) {
-      fetchBatch();
-    }
-  }, [fetchBatch, options.enabled]);
-
-  const refetchAll = useCallback(async () => {
-    await fetchBatch();
-  }, [fetchBatch]);
-
-  return {
-    ...batchState,
-    refetchAll
-  };
 }
