@@ -4,6 +4,7 @@ import { z } from 'zod';
 
 import { AdvancedSearchForm, type AdvancedSearchFormData } from '@/components/molecules/advanced-search-form';
 import { SearchResults } from '@/components/organisms/search-results';
+import { SearchHistory } from '@/components/organisms/search-history';
 // import { SavedSearches } from '@/components/molecules/saved-searches'; // Removed - component not implemented
 import type { WorksParams } from '@/lib/openalex/types';
 
@@ -188,6 +189,8 @@ function SearchPage() {
           </div> */}
           
           <div className={styles.searchMainContent}>
+            <SearchHistory />
+            
             <AdvancedSearchForm
               onSearch={handleSearch}
               initialData={hasSearchParams ? getFormDataFromParams(searchParams) : undefined}

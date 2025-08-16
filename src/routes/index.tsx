@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from '@tanstack/react-router';
 
-import { SearchBar, SearchHistory, StorageManager } from '@/components';
+import { StorageManager } from '@/components';
 
 import * as styles from '../app/page.css';
 
@@ -12,9 +12,6 @@ function HomePage() {
         <p className={styles.description}>
           Explore academic research and literature with powerful tools
         </p>
-        
-        <SearchBar />
-        <SearchHistory />
         
         <div className={styles.grid}>
           <div className={styles.card}>
