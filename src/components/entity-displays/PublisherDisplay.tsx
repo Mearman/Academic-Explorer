@@ -1,4 +1,5 @@
 import { Stack, Text, Paper } from '@mantine/core';
+
 import type { Publisher } from '@/lib/openalex/types';
 
 interface PublisherDisplayProps {

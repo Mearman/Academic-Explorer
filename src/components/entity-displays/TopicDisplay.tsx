@@ -1,4 +1,5 @@
 import { Stack, Text, Paper } from '@mantine/core';
+
 import type { Topic } from '@/lib/openalex/types';
 
 interface TopicDisplayProps {

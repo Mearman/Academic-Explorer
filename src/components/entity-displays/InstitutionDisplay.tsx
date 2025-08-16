@@ -1,4 +1,5 @@
 import { Stack, Text, Paper } from '@mantine/core';
+
 import type { Institution } from '@/lib/openalex/types';
 
 interface InstitutionDisplayProps {
