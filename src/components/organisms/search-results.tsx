@@ -56,7 +56,7 @@ export function SearchResults({ searchParams, onParamsChange }: SearchResultsPro
   return (
     <div className={styles.container}>
       {/* Search Metadata */}
-      {state.meta && (
+      {state.meta && typeof state.meta.count === 'number' && (
         <SearchMetadata
           count={state.meta.count}
           responseTimeMs={state.meta.db_response_time_ms}
@@ -82,7 +82,7 @@ export function SearchResults({ searchParams, onParamsChange }: SearchResultsPro
       )}
 
       {/* Pagination */}
-      {state.meta && (
+      {state.meta && typeof state.meta.count === 'number' && (
         <PaginationControls
           currentPage={state.currentPage}
           totalCount={state.meta.count}

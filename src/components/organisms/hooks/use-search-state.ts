@@ -39,11 +39,13 @@ export function useSearchState() {
       
       const responseTime = Date.now() - startTime;
       
-      // Record successful query results
+      // API response received successfully
+      
+      // Record successful query results with null checking
       updateQueryResults(queryId, {
-        count: response.meta.count,
-        responseTimeMs: response.meta.db_response_time_ms || responseTime,
-        firstResult: response.results.length > 0 ? {
+        count: response.meta?.count ?? 0,
+        responseTimeMs: response.meta?.db_response_time_ms ?? responseTime,
+        firstResult: response.results?.length > 0 ? {
           id: response.results[0].id,
           title: response.results[0].title || 'Untitled',
         } : undefined,
@@ -51,8 +53,8 @@ export function useSearchState() {
       
       setState(prev => ({
         ...prev,
-        results: response.results,
-        meta: response.meta,
+        results: response.results || [],
+        meta: response.meta || null,
         groupBy: response.group_by,
         loading: false,
         currentPage: params.page || 1,
