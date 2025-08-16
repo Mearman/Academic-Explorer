@@ -13,7 +13,7 @@ import { Link, useLocation } from '@tanstack/react-router';
 import { BuildInfo } from '../atoms/build-info';
 
 const navigationItems = [
-  { icon: IconSearch, label: 'Search', href: '/' },
+  { icon: IconSearch, label: 'Query', href: '/query' },
   { icon: IconBook, label: 'Works', href: '/works' },
   { icon: IconUsers, label: 'Authors', href: '/authors' },
   { icon: IconBuilding, label: 'Institutions', href: '/institutions' },

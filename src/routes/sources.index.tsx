@@ -63,7 +63,7 @@ function SourcesOverviewPage() {
                 </Text>
               </div>
             </Group>
-            <Link to="/search">
+            <Link to="/query">
               <Button leftSection={<IconSearch size={16} />} variant="light">
                 Find More Sources
               </Button>
@@ -122,7 +122,7 @@ function SourcesOverviewPage() {
             <Text mb="md">
               You haven't visited any publication sources yet. Start exploring by searching for journals or browsing through work pages.
             </Text>
-            <Link to="/search">
+            <Link to="/query">
               <Button size="sm">Start Exploring</Button>
             </Link>
           </Alert>

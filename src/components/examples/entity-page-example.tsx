@@ -61,7 +61,7 @@ function EntityPageContent({ entity }: { entity: OpenAlexEntity }) {
   // Example breadcrumbs
   const breadcrumbs = [
     { label: 'Home', href: '/' },
-    { label: 'Search', href: '/search' },
+    { label: 'Query', href: '/query' },
     { label: entity.display_name },
   ];
 

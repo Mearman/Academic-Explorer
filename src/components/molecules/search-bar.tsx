@@ -94,7 +94,7 @@ export function SearchBar({
       addToSearchHistory(localQuery);
       
       router.navigate({
-        to: '/search',
+        to: '/query',
         search: { q: localQuery.trim() }
       });
     }

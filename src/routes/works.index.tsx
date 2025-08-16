@@ -61,7 +61,7 @@ function WorksOverviewPage() {
                 </Text>
               </div>
             </Group>
-            <Link to="/search">
+            <Link to="/query">
               <Button leftSection={<IconSearch size={16} />} variant="light">
                 Find More Works
               </Button>
@@ -120,7 +120,7 @@ function WorksOverviewPage() {
             <Text mb="md">
               You haven't visited any academic works yet. Start exploring by searching for papers or browsing through author and institution pages.
             </Text>
-            <Link to="/search">
+            <Link to="/query">
               <Button size="sm">Start Exploring</Button>
             </Link>
           </Alert>

@@ -62,7 +62,7 @@ function AuthorsOverviewPage() {
                 </Text>
               </div>
             </Group>
-            <Link to="/search">
+            <Link to="/query">
               <Button leftSection={<IconSearch size={16} />} variant="light">
                 Find More Authors
               </Button>
@@ -135,7 +135,7 @@ function AuthorsOverviewPage() {
             <Text mb="md">
               You haven't visited any author pages yet. Start exploring by searching for authors or browsing through works and institutions.
             </Text>
-            <Link to="/search">
+            <Link to="/query">
               <Button size="sm">Start Exploring</Button>
             </Link>
           </Alert>)

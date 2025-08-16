@@ -42,7 +42,7 @@ type SearchParams = z.infer<typeof searchSchema>;
 
 function SearchPage() {
   const navigate = useNavigate();
-  const searchParams = useSearch({ from: '/search' });
+  const searchParams = useSearch({ from: '/query' });
   const [currentParams, setCurrentParams] = useState<WorksParams>({});
 
   // Convert URL search params to AdvancedSearchFormData
@@ -146,7 +146,7 @@ function SearchPage() {
 
     // Update URL
     navigate({
-      to: '/search',
+      to: '/query',
       search: urlParams,
       replace: true,
     });
@@ -209,7 +209,7 @@ function SearchPage() {
   );
 }
 
-export const Route = createFileRoute('/search')({
+export const Route = createFileRoute('/query')({
   component: SearchPage,
   validateSearch: searchSchema,
 });

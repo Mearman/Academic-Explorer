@@ -12,7 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as WorksRouteImport } from './routes/works'
 import { Route as TopicsRouteImport } from './routes/topics'
 import { Route as SourcesRouteImport } from './routes/sources'
-import { Route as SearchRouteImport } from './routes/search'
+import { Route as QueryRouteImport } from './routes/query'
 import { Route as PublishersRouteImport } from './routes/publishers'
 import { Route as InstitutionsRouteImport } from './routes/institutions'
 import { Route as HelpRouteImport } from './routes/help'
@@ -65,9 +65,9 @@ const SourcesRoute = SourcesRouteImport.update({
   path: '/sources',
   getParentRoute: () => rootRouteImport,
 } as any)
-const SearchRoute = SearchRouteImport.update({
-  id: '/search',
-  path: '/search',
+const QueryRoute = QueryRouteImport.update({
+  id: '/query',
+  path: '/query',
   getParentRoute: () => rootRouteImport,
 } as any)
 const PublishersRoute = PublishersRouteImport.update({
@@ -261,7 +261,7 @@ export interface FileRoutesByFullPath {
   '/help': typeof HelpRoute
   '/institutions': typeof InstitutionsRouteWithChildren
   '/publishers': typeof PublishersRouteWithChildren
-  '/search': typeof SearchRoute
+  '/query': typeof QueryRoute
   '/sources': typeof SourcesRouteWithChildren
   '/topics': typeof TopicsRouteWithChildren
   '/works': typeof WorksRouteWithChildren
@@ -298,7 +298,7 @@ export interface FileRoutesByTo {
   '/$bareId': typeof BareIdRoute
   '/dashboard': typeof DashboardRoute
   '/help': typeof HelpRoute
-  '/search': typeof SearchRoute
+  '/query': typeof QueryRoute
   '/authors/$id': typeof AuthorsIdRoute
   '/concepts/$id': typeof ConceptsIdRoute
   '/continents/$id': typeof ContinentsIdRoute
@@ -338,7 +338,7 @@ export interface FileRoutesById {
   '/help': typeof HelpRoute
   '/institutions': typeof InstitutionsRouteWithChildren
   '/publishers': typeof PublishersRouteWithChildren
-  '/search': typeof SearchRoute
+  '/query': typeof QueryRoute
   '/sources': typeof SourcesRouteWithChildren
   '/topics': typeof TopicsRouteWithChildren
   '/works': typeof WorksRouteWithChildren
@@ -382,7 +382,7 @@ export interface FileRouteTypes {
     | '/help'
     | '/institutions'
     | '/publishers'
-    | '/search'
+    | '/query'
     | '/sources'
     | '/topics'
     | '/works'
@@ -419,7 +419,7 @@ export interface FileRouteTypes {
     | '/$bareId'
     | '/dashboard'
     | '/help'
-    | '/search'
+    | '/query'
     | '/authors/$id'
     | '/concepts/$id'
     | '/continents/$id'
@@ -458,7 +458,7 @@ export interface FileRouteTypes {
     | '/help'
     | '/institutions'
     | '/publishers'
-    | '/search'
+    | '/query'
     | '/sources'
     | '/topics'
     | '/works'
@@ -501,7 +501,7 @@ export interface RootRouteChildren {
   HelpRoute: typeof HelpRoute
   InstitutionsRoute: typeof InstitutionsRouteWithChildren
   PublishersRoute: typeof PublishersRouteWithChildren
-  SearchRoute: typeof SearchRoute
+  QueryRoute: typeof QueryRoute
   SourcesRoute: typeof SourcesRouteWithChildren
   TopicsRoute: typeof TopicsRouteWithChildren
   WorksRoute: typeof WorksRouteWithChildren
@@ -541,11 +541,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SourcesRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/search': {
-      id: '/search'
-      path: '/search'
-      fullPath: '/search'
-      preLoaderRoute: typeof SearchRouteImport
+    '/query': {
+      id: '/query'
+      path: '/query'
+      fullPath: '/query'
+      preLoaderRoute: typeof QueryRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/publishers': {
@@ -919,7 +919,7 @@ const rootRouteChildren: RootRouteChildren = {
   HelpRoute: HelpRoute,
   InstitutionsRoute: InstitutionsRouteWithChildren,
   PublishersRoute: PublishersRouteWithChildren,
-  SearchRoute: SearchRoute,
+  QueryRoute: QueryRoute,
   SourcesRoute: SourcesRouteWithChildren,
   TopicsRoute: TopicsRouteWithChildren,
   WorksRoute: WorksRouteWithChildren,

@@ -60,7 +60,7 @@ function PublishersOverviewPage() {
                 </Text>
               </div>
             </Group>
-            <Link to="/search">
+            <Link to="/query">
               <Button leftSection={<IconSearch size={16} />} variant="light">
                 Find More Publishers
               </Button>
@@ -119,7 +119,7 @@ function PublishersOverviewPage() {
             <Text mb="md">
               You haven't visited any publisher pages yet. Start exploring by searching for publishers or browsing through works and source pages.
             </Text>
-            <Link to="/search">
+            <Link to="/query">
               <Button size="sm">Start Exploring</Button>
             </Link>
           </Alert>

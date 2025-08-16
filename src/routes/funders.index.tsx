@@ -60,7 +60,7 @@ function FundersOverviewPage() {
                 </Text>
               </div>
             </Group>
-            <Link to="/search">
+            <Link to="/query">
               <Button leftSection={<IconSearch size={16} />} variant="light">
                 Find More Funders
               </Button>
@@ -119,7 +119,7 @@ function FundersOverviewPage() {
             <Text mb="md">
               You haven't visited any funder pages yet. Start exploring by searching for funding agencies or browsing through works and author pages.
             </Text>
-            <Link to="/search">
+            <Link to="/query">
               <Button size="sm">Start Exploring</Button>
             </Link>
           </Alert>
