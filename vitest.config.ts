@@ -86,6 +86,7 @@ export default defineConfig({
           include: ['**/*.unit.test.{js,ts,jsx,tsx}'],
           exclude: ['node_modules/**', 'dist/**', '**/*.skip.*'],
           environment: 'jsdom',
+          setupFiles: ['./src/test/setup.ts', './src/test/jest-dom-setup.ts'],
           
           // CRITICAL: Ultra-conservative thread settings for unit tests
           pool: 'threads',
@@ -132,6 +133,7 @@ export default defineConfig({
           include: ['**/*.component.test.{js,ts,jsx,tsx}'],
           exclude: ['node_modules/**', 'dist/**', '**/*.skip.*'],
           environment: 'jsdom',
+          setupFiles: ['./src/test/setup.ts', './src/test/jest-dom-setup.ts'],
           
           // CRITICAL: Single thread for component tests (DOM intensive)
           pool: 'threads',

@@ -1,5 +1,6 @@
 import { afterAll, afterEach, beforeAll, vi } from 'vitest';
 import { setupServer } from 'msw/node';
+import { cleanup } from '@testing-library/react';
 import { handlers } from './mocks/handlers';
 
 // CRITICAL: Global references for cleanup tracking
@@ -23,10 +24,13 @@ const forceGC = () => {
 // CRITICAL: Enhanced cleanup function
 const performCleanup = async () => {
   try {
-    // 1. Clear all mocks
+    // 1. Clean up React Testing Library DOM
+    cleanup();
+    
+    // 2. Clear all mocks
     vi.clearAllMocks();
     
-    // 2. Clear mock database stores
+    // 3. Clear mock database stores
     try {
       const { mockDb } = await import('./mocks/database');
       mockDb.clearAllStores();
@@ -206,6 +210,9 @@ if (process.env.NODE_ENV !== 'production' && process.env.CI !== 'true') {
     }
   });
 }
+
+// CRITICAL: Increase max listeners to prevent memory leak warnings
+process.setMaxListeners(50);
 
 // CRITICAL: Unhandled rejection/exception handling
 const unhandledRejections = new Set();
