@@ -92,18 +92,40 @@ export function AuthorDisplay({ entity: author }: AuthorDisplayProps) {
   const externalLinks = getAuthorExternalLinks(author);
 
   return (
-    <Tabs defaultValue="overview" keepMounted={false}>
-      <Tabs.List grow mb="xl">
-        <Tabs.Tab value="overview" leftSection={<IconUser size={16} />}>
-          Overview
-        </Tabs.Tab>
-        <Tabs.Tab value="works" leftSection={<IconBook size={16} />}>
-          Works
-        </Tabs.Tab>
-        <Tabs.Tab value="raw-data" leftSection={<IconCode size={16} />}>
-          Raw Data
-        </Tabs.Tab>
-      </Tabs.List>
+    <Stack gap="xl">
+      {/* Author Header */}
+      <Paper p="xl" withBorder radius="md" bg="gradient-to-r">
+        <Group justify="space-between" align="flex-start">
+          <div style={{ flex: 1 }}>
+            <Title order={1} size="2rem" mb="sm">
+              {author.display_name}
+            </Title>
+            <Group gap="md">
+              <Badge variant="light" size="lg">
+                Author
+              </Badge>
+              {author.orcid && (
+                <Badge variant="outline" color="green" size="md">
+                  ORCID Verified
+                </Badge>
+              )}
+            </Group>
+          </div>
+        </Group>
+      </Paper>
+
+      <Tabs defaultValue="overview" keepMounted={false}>
+        <Tabs.List grow mb="xl">
+          <Tabs.Tab value="overview" leftSection={<IconUser size={16} />}>
+            Overview
+          </Tabs.Tab>
+          <Tabs.Tab value="works" leftSection={<IconBook size={16} />}>
+            Works
+          </Tabs.Tab>
+          <Tabs.Tab value="raw-data" leftSection={<IconCode size={16} />}>
+            Raw Data
+          </Tabs.Tab>
+        </Tabs.List>
 
       <Tabs.Panel value="overview">
         <Stack gap="xl">
@@ -508,6 +530,7 @@ export function AuthorDisplay({ entity: author }: AuthorDisplayProps) {
           showDownload={true}
         />
       </Tabs.Panel>
-    </Tabs>
+      </Tabs>
+    </Stack>
   );
 }
