@@ -6,15 +6,18 @@ import type {
   EntityGraphVertex,
   EntityGraphEdge,
   EntityVisitEvent,
+  EntityEncounterEvent,
   RelationshipDiscoveryEvent,
   GraphFilterOptions,
   GraphLayoutConfig,
   GraphStatistics,
   GraphTraversalResult,
   EntityType,
+  EntityEncounter,
 } from '@/types/entity-graph';
 import {
   EdgeType,
+  EncounterType,
   DEFAULT_MAX_VERTICES,
   DEFAULT_MIN_EDGE_WEIGHT,
   DEFAULT_MAX_HOPS,
@@ -37,6 +40,7 @@ interface EntityGraphState {
   
   // Actions - Graph management
   visitEntity: (event: EntityVisitEvent) => void;
+  recordEntityEncounter: (event: EntityEncounterEvent) => void;
   addRelationship: (event: RelationshipDiscoveryEvent) => void;
   removeVertex: (vertexId: string) => void;
   removeEdge: (edgeId: string) => void;
@@ -128,6 +132,21 @@ export const useEntityGraphStore = create<EntityGraphState>()(
             existingVertex.visitCount += 1;
             existingVertex.metadata.url = event.metadata?.url as string;
             
+            // Add visit encounter
+            const visitEncounter: EntityEncounter = {
+              type: EncounterType.DIRECT_VISIT,
+              timestamp: event.timestamp,
+              context: {
+                sourceEntityId: event.source === 'link' ? event.metadata?.sourceEntityId as string : undefined,
+                additionalInfo: event.metadata,
+              },
+            };
+            existingVertex.encounters.push(visitEncounter);
+            
+            // Update encounter stats
+            existingVertex.encounterStats.totalEncounters += 1;
+            existingVertex.encounterStats.lastEncounter = event.timestamp;
+            
             // Update display name if we have better data
             if (event.displayName && 
                 !event.displayName.includes('loading') && 
@@ -136,6 +155,15 @@ export const useEntityGraphStore = create<EntityGraphState>()(
             }
           } else {
             // Create new vertex
+            const visitEncounter: EntityEncounter = {
+              type: EncounterType.DIRECT_VISIT,
+              timestamp: event.timestamp,
+              context: {
+                sourceEntityId: event.source === 'link' ? event.metadata?.sourceEntityId as string : undefined,
+                additionalInfo: event.metadata,
+              },
+            };
+            
             const newVertex: EntityGraphVertex = {
               id: event.entityId,
               entityType: event.entityType,
@@ -144,6 +172,13 @@ export const useEntityGraphStore = create<EntityGraphState>()(
               firstSeen: event.timestamp,
               lastVisited: event.timestamp,
               visitCount: 1,
+              encounters: [visitEncounter],
+              encounterStats: {
+                totalEncounters: 1,
+                searchResultCount: 0,
+                relatedEntityCount: 0,
+                lastEncounter: event.timestamp,
+              },
               metadata: {
                 url: event.metadata?.url as string,
                 ...event.metadata,
@@ -166,6 +201,75 @@ export const useEntityGraphStore = create<EntityGraphState>()(
           state.graph.metadata.lastUpdated = event.timestamp;
           state.graph.metadata.totalVisits += 1;
           state.graph.metadata.uniqueEntitiesVisited = state.graph.directlyVisitedVertices.size;
+        }),
+      
+      recordEntityEncounter: (event: EntityEncounterEvent) =>
+        set((state) => {
+          const existingVertex = state.graph.vertices.get(event.entityId);
+          
+          const encounter: EntityEncounter = {
+            type: event.encounterType,
+            timestamp: event.timestamp,
+            context: event.context,
+          };
+          
+          if (existingVertex) {
+            // Update existing vertex with new encounter
+            existingVertex.encounters.push(encounter);
+            existingVertex.encounterStats.totalEncounters += 1;
+            existingVertex.encounterStats.lastEncounter = event.timestamp;
+            
+            // Update specific encounter type counts and timestamps
+            if (event.encounterType === EncounterType.SEARCH_RESULT) {
+              existingVertex.encounterStats.searchResultCount += 1;
+              if (!existingVertex.encounterStats.firstSearchResult) {
+                existingVertex.encounterStats.firstSearchResult = event.timestamp;
+              }
+            } else if (event.encounterType === EncounterType.RELATED_ENTITY) {
+              existingVertex.encounterStats.relatedEntityCount += 1;
+              if (!existingVertex.encounterStats.firstRelatedEntity) {
+                existingVertex.encounterStats.firstRelatedEntity = event.timestamp;
+              }
+            }
+            
+            // Update display name if we have better data
+            if (event.displayName && 
+                !event.displayName.includes('loading') && 
+                !event.displayName.includes('Loading')) {
+              existingVertex.displayName = event.displayName;
+            }
+          } else {
+            // Create new vertex for encountered entity
+            const newVertex: EntityGraphVertex = {
+              id: event.entityId,
+              entityType: event.entityType,
+              displayName: event.displayName,
+              directlyVisited: false,
+              firstSeen: event.timestamp,
+              visitCount: 0,
+              encounters: [encounter],
+              encounterStats: {
+                totalEncounters: 1,
+                searchResultCount: event.encounterType === EncounterType.SEARCH_RESULT ? 1 : 0,
+                relatedEntityCount: event.encounterType === EncounterType.RELATED_ENTITY ? 1 : 0,
+                lastEncounter: event.timestamp,
+                firstSearchResult: event.encounterType === EncounterType.SEARCH_RESULT ? event.timestamp : undefined,
+                firstRelatedEntity: event.encounterType === EncounterType.RELATED_ENTITY ? event.timestamp : undefined,
+              },
+              metadata: event.metadata || {},
+            };
+            
+            state.graph.vertices.set(event.entityId, newVertex);
+            
+            // Update indices
+            if (!state.graph.verticesByType.has(event.entityType)) {
+              state.graph.verticesByType.set(event.entityType, new Set());
+            }
+            state.graph.verticesByType.get(event.entityType)!.add(event.entityId);
+          }
+          
+          // Update metadata
+          state.graph.metadata.lastUpdated = event.timestamp;
         }),
       
       addRelationship: (event: RelationshipDiscoveryEvent) =>
@@ -195,6 +299,16 @@ export const useEntityGraphStore = create<EntityGraphState>()(
             
             // Now we can safely mutate - create the discovered vertex
             
+            const discoveryEncounter: EntityEncounter = {
+              type: EncounterType.RELATIONSHIP_DISCOVERY,
+              timestamp: event.timestamp,
+              context: {
+                sourceEntityId: event.sourceEntityId,
+                relationshipType: event.relationshipType,
+                additionalInfo: event.metadata,
+              },
+            };
+            
             const discoveredVertex: EntityGraphVertex = {
               id: event.targetEntityId,
               entityType: targetEntityType,
@@ -202,6 +316,13 @@ export const useEntityGraphStore = create<EntityGraphState>()(
               directlyVisited: false,
               firstSeen: event.timestamp,
               visitCount: 0,
+              encounters: [discoveryEncounter],
+              encounterStats: {
+                totalEncounters: 1,
+                searchResultCount: 0,
+                relatedEntityCount: 0,
+                lastEncounter: event.timestamp,
+              },
               metadata: event.metadata || {},
             };
             

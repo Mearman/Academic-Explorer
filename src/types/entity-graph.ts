@@ -52,7 +52,53 @@ export enum EdgeType {
 }
 
 /**
- * Vertex (node) in the entity graph representing a visited entity
+ * Entity encounter types for tracking different ways entities are discovered
+ */
+export enum EncounterType {
+  /** Entity was directly visited by clicking on its page */
+  DIRECT_VISIT = 'direct_visit',
+  
+  /** Entity appeared in search results */
+  SEARCH_RESULT = 'search_result',
+  
+  /** Entity appeared as a related entity (co-author, citation, etc.) */
+  RELATED_ENTITY = 'related_entity',
+  
+  /** Entity was discovered through relationships (discovered entities) */
+  RELATIONSHIP_DISCOVERY = 'relationship_discovery'
+}
+
+/**
+ * Record of an entity encounter
+ */
+export interface EntityEncounter {
+  /** Type of encounter */
+  type: EncounterType;
+  
+  /** When the encounter occurred */
+  timestamp: string;
+  
+  /** Context of the encounter */
+  context: {
+    /** Source page/entity where this was encountered */
+    sourceEntityId?: string;
+    
+    /** Search query if from search results */
+    searchQuery?: string;
+    
+    /** Relationship type if discovered through relationships */
+    relationshipType?: EdgeType;
+    
+    /** Position in search results or related entities list */
+    position?: number;
+    
+    /** Additional context information */
+    additionalInfo?: Record<string, unknown>;
+  };
+}
+
+/**
+ * Vertex (node) in the entity graph representing an encountered entity
  */
 export interface EntityGraphVertex {
   /** Unique identifier (OpenAlex ID) */
@@ -75,6 +121,30 @@ export interface EntityGraphVertex {
   
   /** Number of times directly visited */
   visitCount: number;
+  
+  /** All encounters with this entity (visits, search results, related entities) */
+  encounters: EntityEncounter[];
+  
+  /** Derived stats from encounters */
+  encounterStats: {
+    /** Total number of times encountered (all types) */
+    totalEncounters: number;
+    
+    /** Number of times seen in search results */
+    searchResultCount: number;
+    
+    /** Number of times seen as related entity */
+    relatedEntityCount: number;
+    
+    /** Most recent encounter (any type) */
+    lastEncounter?: string;
+    
+    /** First time seen in search results */
+    firstSearchResult?: string;
+    
+    /** First time seen as related entity */
+    firstRelatedEntity?: string;
+  };
   
   /** Additional metadata about the entity */
   metadata: {
@@ -303,7 +373,7 @@ export interface GraphFilterOptions {
 }
 
 /**
- * Entity visit event for tracking
+ * Entity visit event for tracking direct visits
  */
 export interface EntityVisitEvent {
   /** Entity ID */
@@ -320,6 +390,47 @@ export interface EntityVisitEvent {
   
   /** Source of the visit (direct navigation, link click, etc.) */
   source: 'direct' | 'link' | 'search' | 'related';
+  
+  /** Additional metadata */
+  metadata?: Record<string, unknown>;
+}
+
+/**
+ * Entity encounter event for tracking non-visit encounters
+ */
+export interface EntityEncounterEvent {
+  /** Entity ID */
+  entityId: string;
+  
+  /** Entity type */
+  entityType: EntityType;
+  
+  /** Entity display name */
+  displayName: string;
+  
+  /** Encounter type */
+  encounterType: EncounterType;
+  
+  /** Encounter timestamp */
+  timestamp: string;
+  
+  /** Context of the encounter */
+  context: {
+    /** Source entity where this was encountered */
+    sourceEntityId?: string;
+    
+    /** Search query if from search results */
+    searchQuery?: string;
+    
+    /** Relationship type if discovered through relationships */
+    relationshipType?: EdgeType;
+    
+    /** Position in list */
+    position?: number;
+    
+    /** Additional context */
+    additionalInfo?: Record<string, unknown>;
+  };
   
   /** Additional metadata */
   metadata?: Record<string, unknown>;
