@@ -1,16 +1,14 @@
 'use client';
 
 import { useNavigate } from '@tanstack/react-router';
-import { useEffect } from 'react';
 
 import { GroupByResults } from '@/components/molecules/group-by-results/GroupByResults';
 import { PaginationControls } from '@/components/molecules/pagination-controls/PaginationControls';
 import { SearchMetadata } from '@/components/molecules/search-metadata/SearchMetadata';
 import { SearchResultItem } from '@/components/molecules/search-result-item/SearchResultItem';
 import { LoadingState, ErrorState, EmptyState } from '@/components/molecules/search-states/SearchStates';
-import type { Work, WorksParams } from '@/lib/openalex/types';
-
-import { useSearchState } from './hooks/use-search-state';
+import type { Work, WorksParams, ApiResponse } from '@/lib/openalex/types';
+import { useWorks } from '@/lib/react-query';
 import * as styles from './search-results.css';
 
 
@@ -22,13 +20,10 @@ interface SearchResultsProps {
 
 export function SearchResults({ searchParams, onParamsChange }: SearchResultsProps) {
   const navigate = useNavigate();
-  const { state, performSearch } = useSearchState();
-
-  useEffect(() => {
-    if (searchParams.search || searchParams.filter) {
-      performSearch(searchParams);
-    }
-  }, [searchParams, performSearch]);
+  const worksQuery = useWorks(searchParams);
+  
+  // Type assertion to help TypeScript understand the data structure
+  const data = worksQuery.data as ApiResponse<Work> | undefined;
 
   const handlePageChange = (page: number) => {
     const newParams = { ...searchParams, page };
@@ -41,37 +36,41 @@ export function SearchResults({ searchParams, onParamsChange }: SearchResultsPro
   };
 
   // Handle different states
-  if (state.loading && state.results.length === 0) {
+  if (worksQuery.isLoading && (!data?.results || data.results.length === 0)) {
     return <LoadingState />;
   }
 
-  if (state.error) {
-    return <ErrorState error={state.error} onRetry={() => performSearch(searchParams)} />;
+  if (worksQuery.isError) {
+    const errorMessage = worksQuery.error instanceof Error ? worksQuery.error.message : 'Search failed';
+    return <ErrorState error={errorMessage} onRetry={() => worksQuery.refetch()} />;
   }
 
-  if (!state.meta && state.results.length === 0) {
+  if (!data?.meta && (!data?.results || data.results.length === 0)) {
     return <EmptyState />;
   }
+
+  const results = data?.results || [];
+  const meta = data?.meta;
+  const groupBy = data?.group_by;
 
   return (
     <div className={styles.container}>
       {/* Search Metadata */}
-      {state.meta && typeof state.meta.count === 'number' && (
+      {meta && typeof meta.count === 'number' && (
         <SearchMetadata
-          count={state.meta.count}
-          responseTimeMs={state.meta.db_response_time_ms}
-          loading={state.loading}
+          count={meta.count}
+          responseTimeMs={meta.db_response_time_ms}
+          loading={worksQuery.isFetching}
         />
       )}
 
       {/* Group By Results */}
-      <GroupByResults groupBy={state.groupBy} />
-
+      <GroupByResults groupBy={groupBy} />
 
       {/* Search Results */}
-      {state.results.length > 0 && (
+      {results.length > 0 && (
         <div className={styles.results}>
-          {state.results.map((work) => (
+          {results.map((work) => (
             <SearchResultItem
               key={work.id}
               work={work}
@@ -82,17 +81,17 @@ export function SearchResults({ searchParams, onParamsChange }: SearchResultsPro
       )}
 
       {/* Pagination */}
-      {state.meta && typeof state.meta.count === 'number' && (
+      {meta && typeof meta.count === 'number' && (
         <PaginationControls
-          currentPage={state.currentPage}
-          totalCount={state.meta.count}
-          perPage={state.meta.per_page || 25}
+          currentPage={searchParams.page || 1}
+          totalCount={meta.count}
+          perPage={meta.per_page || 25}
           onPageChange={handlePageChange}
         />
       )}
 
       {/* No Results */}
-      {state.meta && state.meta.count === 0 && (
+      {meta && meta.count === 0 && (
         <EmptyState hasSearched />
       )}
     </div>
