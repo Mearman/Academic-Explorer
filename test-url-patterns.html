@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test URL Patterns for Academic Explorer</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; max-width: 800px; margin: 0 auto; }
+        .test-case { margin: 20px 0; padding: 15px; border: 1px solid #ddd; border-radius: 5px; }
+        .url { font-family: monospace; background: #f5f5f5; padding: 5px; word-break: break-all; }
+        .expected { color: #007bff; }
+        .test-link { display: inline-block; margin: 5px 10px 5px 0; padding: 5px 10px; background: #007bff; color: white; text-decoration: none; border-radius: 3px; }
+        .test-link:hover { background: #0056b3; }
+    </style>
+</head>
+<body>
+    <h1>URL Pattern Testing for Academic Explorer</h1>
+    <p>Testing URL patterns based on <a href="https://docs.openalex.org/how-to-use-the-api/get-single-entities" target="_blank">OpenAlex documentation</a></p>
+    <p><strong>Base URL:</strong> <span class="url">http://localhost:3001</span></p>
+    
+    <div class="test-case">
+        <h3>Test Case 1: Authors with full OpenAlex URL</h3>
+        <p><strong>Expected:</strong> <span class="expected">/#/authors/A5017898742</span></p>
+        <p><strong>Test URL:</strong> <span class="url">/#/authors/https://openalex.org/A5017898742</span></p>
+        <a class="test-link" href="http://localhost:3001/#/authors/https://openalex.org/A5017898742" target="_blank">Test Link</a>
+        <a class="test-link" href="http://localhost:3001/#/authors/https%3A%2F%2Fopenalex.org%2FA5017898742" target="_blank">Test Link (URL Encoded)</a>
+    </div>
+
+    <div class="test-case">
+        <h3>Test Case 2: Bare OpenAlex ID (NEW ROUTE)</h3>
+        <p><strong>Expected:</strong> <span class="expected">/#/authors/A5017898742</span></p>
+        <p><strong>Test URL:</strong> <span class="url">/#/A5017898742</span></p>
+        <a class="test-link" href="http://localhost:3001/#/A5017898742" target="_blank">Test Link</a>
+    </div>
+
+    <div class="test-case">
+        <h3>Test Case 3: Full ORCID URL (NEW ROUTE)</h3>
+        <p><strong>Expected:</strong> <span class="expected">/#/authors/0000-0003-1613-5981</span></p>
+        <p><strong>Test URL:</strong> <span class="url">/#/https://orcid.org/0000-0003-1613-5981</span></p>
+        <a class="test-link" href="http://localhost:3001/#/https://orcid.org/0000-0003-1613-5981" target="_blank">Test Link</a>
+        <a class="test-link" href="http://localhost:3001/#/https%3A%2F%2Forcid.org%2F0000-0003-1613-5981" target="_blank">Test Link (URL Encoded)</a>
+    </div>
+
+    <div class="test-case">
+        <h3>Test Case 4: Authors with full ORCID URL</h3>
+        <p><strong>Expected:</strong> <span class="expected">/#/authors/0000-0003-1613-5981</span></p>
+        <p><strong>Test URL:</strong> <span class="url">/#/authors/https://orcid.org/0000-0003-1613-5981</span></p>
+        <a class="test-link" href="http://localhost:3001/#/authors/https://orcid.org/0000-0003-1613-5981" target="_blank">Test Link</a>
+        <a class="test-link" href="http://localhost:3001/#/authors/https%3A%2F%2Forcid.org%2F0000-0003-1613-5981" target="_blank">Test Link (URL Encoded)</a>
+    </div>
+
+    <div class="test-case">
+        <h3>Test Case 5: Authors with bare ORCID</h3>
+        <p><strong>Expected:</strong> <span class="expected">/#/authors/A5017898742</span> (resolved from ORCID)</p>
+        <p><strong>Test URL:</strong> <span class="url">/#/authors/0000-0003-1613-5981</span></p>
+        <a class="test-link" href="http://localhost:3001/#/authors/0000-0003-1613-5981" target="_blank">Test Link</a>
+    </div>
+
+    <div class="test-case">
+        <h3>Test Case 6: ORCID-specific route</h3>
+        <p><strong>Expected:</strong> <span class="expected">/#/authors/0000-0003-1613-5981</span></p>
+        <p><strong>Test URL:</strong> <span class="url">/#/orcid/0000-0003-1613-5981</span></p>
+        <a class="test-link" href="http://localhost:3001/#/orcid/0000-0003-1613-5981" target="_blank">Test Link</a>
+    </div>
+
+    <div class="test-case">
+        <h3>Additional Test: Direct Authors route</h3>
+        <p><strong>Expected:</strong> Author page for A5017898742</p>
+        <p><strong>Test URL:</strong> <span class="url">/#/authors/A5017898742</span></p>
+        <a class="test-link" href="http://localhost:3001/#/authors/A5017898742" target="_blank">Test Link</a>
+    </div>
+
+    <script>
+        // Add click handlers to log which links are clicked
+        document.querySelectorAll('.test-link').forEach(link => {
+            link.addEventListener('click', function() {
+                console.log('Testing URL:', this.href);
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Specific URL Patterns</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; max-width: 1000px; margin: 0 auto; }
+        .test-case { margin: 15px 0; padding: 15px; border: 1px solid #ddd; border-radius: 5px; background: #f9f9f9; }
+        .url { font-family: monospace; background: #fff; padding: 8px; border: 1px solid #ccc; border-radius: 3px; word-break: break-all; margin: 5px 0; }
+        .test-link { display: inline-block; margin: 5px 10px 5px 0; padding: 8px 15px; background: #007bff; color: white; text-decoration: none; border-radius: 5px; font-weight: bold; }
+        .test-link:hover { background: #0056b3; }
+        .expected { color: #28a745; font-weight: bold; }
+        h3 { color: #dc3545; margin-top: 0; }
+    </style>
+</head>
+<body>
+    <h1>Test Specific URL Patterns for Academic Explorer</h1>
+    <p><strong>Expected final destination for ALL patterns:</strong> <span class="expected">/#/authors/A5017898742</span></p>
+    <p><strong>Server:</strong> http://localhost:3001</p>
+    
+    <div class="test-case">
+        <h3>1. /#/authors/https://openalex.org/A5017898742</h3>
+        <div class="url">http://localhost:3001/#/authors/https://openalex.org/A5017898742</div>
+        <a class="test-link" href="http://localhost:3001/#/authors/https://openalex.org/A5017898742" target="_blank">Test Raw</a>
+        <a class="test-link" href="http://localhost:3001/#/authors/https%3A%2F%2Fopenalex.org%2FA5017898742" target="_blank">Test Encoded</a>
+    </div>
+
+    <div class="test-case">
+        <h3>2. /#/A5017898742</h3>
+        <div class="url">http://localhost:3001/#/A5017898742</div>
+        <a class="test-link" href="http://localhost:3001/#/A5017898742" target="_blank">Test Link</a>
+    </div>
+
+    <div class="test-case">
+        <h3>3. /#/https://orcid.org/0000-0003-1613-5981</h3>
+        <div class="url">http://localhost:3001/#/https://orcid.org/0000-0003-1613-5981</div>
+        <a class="test-link" href="http://localhost:3001/#/https://orcid.org/0000-0003-1613-5981" target="_blank">Test Raw</a>
+        <a class="test-link" href="http://localhost:3001/#/https%3A%2F%2Forcid.org%2F0000-0003-1613-5981" target="_blank">Test Encoded</a>
+    </div>
+
+    <div class="test-case">
+        <h3>4. /#/authors/https://orcid.org/0000-0003-1613-5981</h3>
+        <div class="url">http://localhost:3001/#/authors/https://orcid.org/0000-0003-1613-5981</div>
+        <a class="test-link" href="http://localhost:3001/#/authors/https://orcid.org/0000-0003-1613-5981" target="_blank">Test Raw</a>
+        <a class="test-link" href="http://localhost:3001/#/authors/https%3A%2F%2Forcid.org%2F0000-0003-1613-5981" target="_blank">Test Encoded</a>
+    </div>
+
+    <div class="test-case">
+        <h3>5. /#/authors/0000-0003-1613-5981</h3>
+        <div class="url">http://localhost:3001/#/authors/0000-0003-1613-5981</div>
+        <a class="test-link" href="http://localhost:3001/#/authors/0000-0003-1613-5981" target="_blank">Test Link</a>
+    </div>
+
+    <div class="test-case">
+        <h3>Reference: Expected Final Destination</h3>
+        <div class="url">http://localhost:3001/#/authors/A5017898742</div>
+        <a class="test-link" href="http://localhost:3001/#/authors/A5017898742" target="_blank">Direct Link</a>
+    </div>
+
+    <script>
+        // Log clicks and track redirects
+        let testResults = [];
+        
+        document.querySelectorAll('.test-link').forEach((link, index) => {
+            link.addEventListener('click', function(e) {
+                const testUrl = this.href;
+                const testName = this.closest('.test-case').querySelector('h3').textContent;
+                
+                console.log(`\n=== TEST ${index + 1}: ${testName} ===`);
+                console.log('Testing URL:', testUrl);
+                console.log('Expected: http://localhost:3001/#/authors/A5017898742');
+                
+                // Open in new tab and track
+                const newWindow = window.open(testUrl, '_blank');
+                
+                // Check after a delay if possible
+                setTimeout(() => {
+                    try {
+                        if (newWindow && !newWindow.closed) {
+                            console.log('Final URL:', newWindow.location.href);
+                            const success = newWindow.location.href.includes('#/authors/A5017898742');
+                            console.log('Success:', success ? '✅ PASS' : '❌ FAIL');
+                        }
+                    } catch (e) {
+                        console.log('Cannot access final URL due to cross-origin restrictions');
+                    }
+                }, 2000);
+            });
+        });
+    </script>
+</body>
+</html>
