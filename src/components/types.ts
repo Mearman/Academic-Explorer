@@ -1,4 +1,4 @@
-import { ReactNode } from 'react';
+import React, { ReactNode } from 'react';
 
 import type { 
   Work, 
@@ -35,7 +35,7 @@ export type SizeVariant = 'xs' | 'sm' | 'md' | 'lg' | 'xl';
 export type BadgeVariant = 'default' | 'secondary' | 'success' | 'warning' | 'error' | 'info';
 
 // Badge component props
-export interface BadgeProps extends BaseComponentProps {
+export interface BadgeProps extends BaseComponentProps, Omit<React.HTMLAttributes<HTMLSpanElement>, 'className' | 'children'> {
   variant?: BadgeVariant;
   size?: SizeVariant;
   pill?: boolean;
@@ -44,7 +44,7 @@ export interface BadgeProps extends BaseComponentProps {
 }
 
 // Metric display props
-export interface MetricProps extends BaseComponentProps {
+export interface MetricProps extends BaseComponentProps, Omit<React.HTMLAttributes<HTMLDivElement>, 'className' | 'children'> {
   label: string;
   value: number | string;
   format?: 'number' | 'percentage' | 'currency' | 'compact';
@@ -71,7 +71,7 @@ export interface IconProps extends BaseComponentProps {
 }
 
 // Entity badge props
-export interface EntityBadgeProps extends BaseComponentProps {
+export interface EntityBadgeProps extends BaseComponentProps, Omit<React.HTMLAttributes<HTMLSpanElement>, 'className' | 'children'> {
   entityType: EntityType;
   size?: SizeVariant;
   showIcon?: boolean;
@@ -114,7 +114,7 @@ export interface StatusIndicatorProps extends BaseComponentProps {
 }
 
 // Entity header props
-export interface EntityHeaderProps extends BaseComponentProps {
+export interface EntityHeaderProps extends BaseComponentProps, Omit<React.HTMLAttributes<HTMLElement>, 'className' | 'children'> {
   entity: OpenAlexEntity;
   showBreadcrumbs?: boolean;
   showActions?: boolean;
