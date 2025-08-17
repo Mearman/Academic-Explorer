@@ -9,6 +9,7 @@ import { SearchResultItem } from '@/components/molecules/search-result-item/Sear
 import { LoadingState, ErrorState, EmptyState } from '@/components/molecules/search-states/SearchStates';
 import type { Work, WorksParams, ApiResponse } from '@/lib/openalex/types';
 import { useWorks } from '@/lib/react-query';
+
 import * as styles from './search-results.css';
 
 
