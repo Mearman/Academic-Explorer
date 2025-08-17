@@ -301,11 +301,11 @@ export function EntityBrowser({
                             {entity.works_count.toLocaleString()} works
                           </Badge>
                         )}
-                        {('h_index' in entity && entity.h_index !== undefined) ? (
+                        {('h_index' in entity && entity.h_index !== undefined && typeof entity.h_index === 'number') && (
                           <Badge size="xs" variant="light" color="orange">
                             h-index: {entity.h_index}
                           </Badge>
-                        ) : undefined}
+                        )}
                       </Group>
 
                       {/* Additional entity-specific information */}
