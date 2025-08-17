@@ -1,17 +1,17 @@
 'use client';
 
 import { useNavigate } from '@tanstack/react-router';
-import { useEffect } from 'react';
+import { useEffect, useMemo } from 'react';
 
 import { GroupByResults } from '@/components/molecules/group-by-results/GroupByResults';
 import { PaginationControls } from '@/components/molecules/pagination-controls/PaginationControls';
 import { SearchMetadata } from '@/components/molecules/search-metadata/SearchMetadata';
 import { SearchResultItem } from '@/components/molecules/search-result-item/SearchResultItem';
 import { LoadingState, ErrorState, EmptyState } from '@/components/molecules/search-states/SearchStates';
-import type { Work, WorksParams, ApiResponse } from '@/lib/openalex/types';
-import { useWorks } from '@/lib/react-query';
 import { recordSearchResultEncounters } from '@/lib/graph-entity-tracking';
+import type { Work, WorksParams, ApiResponse } from '@/lib/openalex/types';
 import { EntityType } from '@/lib/openalex/utils/entity-detection';
+import { useWorks } from '@/lib/react-query';
 
 import * as styles from './search-results.css';
 
@@ -39,21 +39,7 @@ export function SearchResults({ searchParams, onParamsChange }: SearchResultsPro
     navigate({ to: `/works/${work.id.replace('https://openalex.org/', '')}` });
   };
 
-  // Handle different states
-  if (worksQuery.isLoading && (!data?.results || data.results.length === 0)) {
-    return <LoadingState />;
-  }
-
-  if (worksQuery.isError) {
-    const errorMessage = worksQuery.error instanceof Error ? worksQuery.error.message : 'Search failed';
-    return <ErrorState error={errorMessage} onRetry={() => worksQuery.refetch()} />;
-  }
-
-  if (!data?.meta && (!data?.results || data.results.length === 0)) {
-    return <EmptyState />;
-  }
-
-  const results = data?.results || [];
+  const results = useMemo(() => data?.results || [], [data?.results]);
   const meta = data?.meta;
   const groupBy = data?.group_by;
 
@@ -92,6 +78,20 @@ export function SearchResults({ searchParams, onParamsChange }: SearchResultsPro
       });
     }
   }, [results, searchParams, meta]);
+
+  // Handle different states
+  if (worksQuery.isLoading && (!data?.results || data.results.length === 0)) {
+    return <LoadingState />;
+  }
+
+  if (worksQuery.isError) {
+    const errorMessage = worksQuery.error instanceof Error ? worksQuery.error.message : 'Search failed';
+    return <ErrorState error={errorMessage} onRetry={() => worksQuery.refetch()} />;
+  }
+
+  if (!data?.meta && (!data?.results || data.results.length === 0)) {
+    return <EmptyState />;
+  }
 
   return (
     <div className={styles.container}>
