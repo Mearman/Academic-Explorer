@@ -3,6 +3,7 @@ import { persist, createJSONStorage } from 'zustand/middleware';
 import { immer } from 'zustand/middleware/immer';
 
 import type { WorksParams } from '@/lib/openalex/types';
+import { generateQuerySignature, isPageNavigation } from '@/lib/utils/query-comparison';
 
 interface SearchFilters {
   dateRange?: {
@@ -27,6 +28,12 @@ interface QueryRecord {
     };
   };
   error?: string;
+  
+  // Hierarchical grouping fields
+  parentQueryId?: string;        // Links page navigations to their parent query
+  pageNavigations?: QueryRecord[]; // Array of child page navigation records
+  isPageNavigation?: boolean;    // Flag to identify page navigation vs new query
+  querySignature?: string;       // Unique signature based on core search parameters
 }
 
 interface AppState {
@@ -127,22 +134,72 @@ export const useAppStore = create<AppState>()(
       // Query Recording Actions
       recordQuery: (query, params) => {
         const queryId = `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+        const signature = generateQuerySignature(params);
+        
         set((state) => {
+          // Find the most recent query to check if this is a page navigation
+          const mostRecentQuery = state.queryHistory[0];
+          let parentQuery: QueryRecord | undefined;
+          let isNavigation = false;
+          
+          if (mostRecentQuery && isPageNavigation(params, mostRecentQuery.params)) {
+            isNavigation = true;
+            // If the most recent query is also a page navigation, find its parent
+            parentQuery = mostRecentQuery.parentQueryId 
+              ? state.queryHistory.find(q => q.id === mostRecentQuery.parentQueryId && !q.isPageNavigation)
+              : mostRecentQuery.isPageNavigation 
+                ? undefined 
+                : mostRecentQuery;
+          } else {
+            // Check if there's an existing parent query with the same signature
+            parentQuery = state.queryHistory.find(q => 
+              q.querySignature === signature && !q.isPageNavigation
+            );
+          }
+          
           const queryRecord: QueryRecord = {
             id: queryId,
             timestamp: new Date().toISOString(),
             query,
             params,
+            querySignature: signature,
+            isPageNavigation: isNavigation,
+            parentQueryId: parentQuery?.id,
           };
-          // Add to beginning, keep last 50 queries
-          state.queryHistory = [queryRecord, ...state.queryHistory].slice(0, 50);
+          
+          if (isNavigation && parentQuery) {
+            // This is a page navigation - add to parent's pageNavigations array
+            if (!parentQuery.pageNavigations) {
+              parentQuery.pageNavigations = [];
+            }
+            parentQuery.pageNavigations.unshift(queryRecord);
+            
+            // Don't add page navigations to the main history list
+          } else {
+            // This is a new query - add to main history
+            queryRecord.pageNavigations = [];
+            state.queryHistory = [queryRecord, ...state.queryHistory].slice(0, 50);
+          }
         });
+        
         return queryId;
       },
       
       updateQueryResults: (queryId, results) =>
         set((state) => {
-          const query = state.queryHistory.find(q => q.id === queryId);
+          // Look for query in main history first
+          let query = state.queryHistory.find(q => q.id === queryId);
+          
+          // If not found, look in pageNavigations of each parent query
+          if (!query) {
+            for (const parentQuery of state.queryHistory) {
+              if (parentQuery.pageNavigations) {
+                query = parentQuery.pageNavigations.find(q => q.id === queryId);
+                if (query) break;
+              }
+            }
+          }
+          
           if (query) {
             query.results = results;
           }
@@ -150,7 +207,19 @@ export const useAppStore = create<AppState>()(
         
       updateQueryError: (queryId, error) =>
         set((state) => {
-          const query = state.queryHistory.find(q => q.id === queryId);
+          // Look for query in main history first
+          let query = state.queryHistory.find(q => q.id === queryId);
+          
+          // If not found, look in pageNavigations of each parent query
+          if (!query) {
+            for (const parentQuery of state.queryHistory) {
+              if (parentQuery.pageNavigations) {
+                query = parentQuery.pageNavigations.find(q => q.id === queryId);
+                if (query) break;
+              }
+            }
+          }
+          
           if (query) {
             query.error = error;
           }
