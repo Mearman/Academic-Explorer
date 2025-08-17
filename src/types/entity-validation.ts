@@ -300,7 +300,7 @@ export function isEntityValidationResult(obj: unknown): obj is EntityValidationR
     'entityType' in obj &&
     'isValid' in obj &&
     'issues' in obj &&
-    Array.isArray((obj as any).issues)
+    Array.isArray((obj as Record<string, unknown>).issues)
   );
 }
 
