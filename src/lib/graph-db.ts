@@ -10,6 +10,7 @@
 
 import { openDB, DBSchema, IDBPDatabase } from 'idb';
 
+import type { EntityType } from '@/lib/openalex/utils/entity-detection';
 import type {
   GraphVertex,
   GraphEdge,
@@ -35,7 +36,6 @@ import {
   DEFAULT_CONFIDENCE,
   GRAPH_SCHEMA_VERSION,
 } from '@/types/graph-storage';
-import type { EntityType } from '@/lib/openalex/utils/entity-detection';
 
 // IndexedDB Schema
 interface GraphDB extends DBSchema {

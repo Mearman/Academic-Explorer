@@ -6,7 +6,10 @@
  * with comprehensive graph-based storage.
  */
 
+import type { EntityData } from '@/hooks/use-entity-data';
 import { graphDb } from '@/lib/graph-db';
+import { extractAllRelationships, relationshipsToEvents } from '@/lib/graph-helpers';
+import type { EntityType } from '@/lib/openalex/utils/entity-detection';
 import type {
   EntityVisitEvent,
   EntityEncounterEvent,
@@ -14,9 +17,6 @@ import type {
   QueryExecutionEvent,
 } from '@/types/graph-storage';
 import { EncounterType } from '@/types/graph-storage';
-import type { EntityType } from '@/lib/openalex/utils/entity-detection';
-import type { EntityData } from '@/hooks/use-entity-data';
-import { extractAllRelationships, relationshipsToEvents } from '@/lib/graph-helpers';
 
 /**
  * Initialize the graph database (call on app startup)
@@ -232,9 +232,8 @@ export async function recordEntityPageView(
  */
 async function recordEntityPageRelatedEntities(
   entity: EntityData,
-  entityType: EntityType
+  _entityType: EntityType
 ): Promise<void> {
-  const timestamp = new Date().toISOString();
 
   try {
     // Extract related entities based on entity type

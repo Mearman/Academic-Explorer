@@ -7,9 +7,10 @@
 
 import { useEffect, useCallback } from 'react';
 
-import { useEntityData, type UseEntityDataOptions, type EntityData } from './use-entity-data';
 import { recordEntityPageView, initializeGraphDatabase } from '@/lib/graph-entity-tracking';
 import type { EntityType } from '@/lib/openalex/utils/entity-detection';
+
+import { useEntityData, type UseEntityDataOptions, type EntityData } from './use-entity-data';
 
 /**
  * Hook options with graph tracking configuration

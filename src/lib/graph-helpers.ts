@@ -12,21 +12,17 @@ import type {
   Institution,
   Source,
   Publisher,
-  Funder,
   Topic,
   Concept,
   OpenAlexEntity,
 } from '@/lib/openalex/types/entities';
+import { EntityType } from '@/lib/openalex/utils/entity-detection';
 import type {
   RelationshipDiscoveryEvent,
 } from '@/types/graph-storage';
 import {
   GraphEdgeType,
-  VertexType,
-  generateVertexId,
-  DEFAULT_CONFIDENCE,
 } from '@/types/graph-storage';
-import { EntityType } from '@/lib/openalex/utils/entity-detection';
 
 /**
  * Extracted relationship representing a potential edge in the graph
@@ -39,7 +35,7 @@ export interface ExtractedRelationship {
   targetEntityId: string;
   
   /** Relationship type */
-  relationshipType: GraphGraphEdgeType;
+  relationshipType: GraphEdgeType;
   
   /** Confidence score (0-1) */
   confidence: number;
@@ -433,7 +429,7 @@ export function extractInstitutionRelationships(institution: Institution): Extra
   // Associated institutions (hierarchical relationships)
   if (institution.associated_institutions) {
     institution.associated_institutions.forEach((associated, index) => {
-      let relationshipType: GraphGraphEdgeType;
+      let relationshipType: GraphEdgeType;
       
       switch (associated.relationship) {
         case 'parent':
@@ -876,23 +872,23 @@ export function extractCoOccurrenceRelationships(
 export function isValidRelationship(
   sourceEntityType: EntityType,
   targetEntityType: EntityType,
-  relationshipType: GraphGraphEdgeType
+  relationshipType: GraphEdgeType
 ): boolean {
   const validRelationships: Record<string, EntityType[]> = {
-    [GraphGraphEdgeType.CITES]: [EntityType.WORK],
-    [GraphGraphEdgeType.AUTHORED_BY]: [EntityType.AUTHOR],
-    [GraphGraphEdgeType.AFFILIATED_WITH]: [EntityType.INSTITUTION],
-    [GraphGraphEdgeType.PUBLISHED_IN]: [EntityType.SOURCE],
-    [GraphGraphEdgeType.FUNDED_BY]: [EntityType.FUNDER],
-    [GraphGraphEdgeType.HAS_TOPIC]: [EntityType.TOPIC],
-    [GraphGraphEdgeType.HAS_CONCEPT]: [EntityType.CONCEPT],
-    [GraphGraphEdgeType.HOSTED_BY]: [EntityType.PUBLISHER],
-    [GraphGraphEdgeType.SUBSIDIARY_OF]: [EntityType.PUBLISHER],
-    [GraphGraphEdgeType.PARENT_OF]: [EntityType.INSTITUTION, EntityType.PUBLISHER],
-    [GraphGraphEdgeType.CHILD_OF]: [EntityType.INSTITUTION, EntityType.PUBLISHER],
-    [GraphGraphEdgeType.SUBFIELD_OF]: [EntityType.TOPIC],
-    [GraphGraphEdgeType.FIELD_OF]: [EntityType.TOPIC],
-    [GraphGraphEdgeType.DOMAIN_OF]: [EntityType.TOPIC],
+    [GraphEdgeType.CITES]: [EntityType.WORK],
+    [GraphEdgeType.AUTHORED_BY]: [EntityType.AUTHOR],
+    [GraphEdgeType.AFFILIATED_WITH]: [EntityType.INSTITUTION],
+    [GraphEdgeType.PUBLISHED_IN]: [EntityType.SOURCE],
+    [GraphEdgeType.FUNDED_BY]: [EntityType.FUNDER],
+    [GraphEdgeType.HAS_TOPIC]: [EntityType.TOPIC],
+    [GraphEdgeType.HAS_CONCEPT]: [EntityType.CONCEPT],
+    [GraphEdgeType.HOSTED_BY]: [EntityType.PUBLISHER],
+    [GraphEdgeType.SUBSIDIARY_OF]: [EntityType.PUBLISHER],
+    [GraphEdgeType.PARENT_OF]: [EntityType.INSTITUTION, EntityType.PUBLISHER],
+    [GraphEdgeType.CHILD_OF]: [EntityType.INSTITUTION, EntityType.PUBLISHER],
+    [GraphEdgeType.SUBFIELD_OF]: [EntityType.TOPIC],
+    [GraphEdgeType.FIELD_OF]: [EntityType.TOPIC],
+    [GraphEdgeType.DOMAIN_OF]: [EntityType.TOPIC],
   };
   
   const allowedTargets = validRelationships[relationshipType];
