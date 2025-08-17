@@ -279,9 +279,22 @@ test.describe('Query Page Loading Issues', () => {
     
     // Start performance monitoring
     await page.evaluate(() => {
-      (window as any).performanceData = {
+      interface WindowWithPerformanceData extends Window {
+        performanceData: {
+          startTime: number;
+          initialMemory: number | null;
+        };
+      }
+      
+      interface PerformanceWithMemory extends Performance {
+        memory?: {
+          usedJSHeapSize: number;
+        };
+      }
+      
+      (window as WindowWithPerformanceData).performanceData = {
         startTime: performance.now(),
-        initialMemory: (performance as any).memory ? (performance as any).memory.usedJSHeapSize : null
+        initialMemory: (performance as PerformanceWithMemory).memory ? (performance as PerformanceWithMemory).memory.usedJSHeapSize : null
       };
     });
     
@@ -319,9 +332,22 @@ test.describe('Query Page Loading Issues', () => {
     
     // Get final performance data
     const performanceData = await page.evaluate(() => {
-      const data = (window as any).performanceData;
+      interface WindowWithPerformanceData extends Window {
+        performanceData: {
+          startTime: number;
+          initialMemory: number | null;
+        };
+      }
+      
+      interface PerformanceWithMemory extends Performance {
+        memory?: {
+          usedJSHeapSize: number;
+        };
+      }
+      
+      const data = (window as WindowWithPerformanceData).performanceData;
       const endTime = performance.now();
-      const endMemory = (performance as any).memory ? (performance as any).memory.usedJSHeapSize : null;
+      const endMemory = (performance as PerformanceWithMemory).memory ? (performance as PerformanceWithMemory).memory.usedJSHeapSize : null;
       
       return {
         totalTime: endTime - data.startTime,
