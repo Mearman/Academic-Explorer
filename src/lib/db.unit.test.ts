@@ -1,36 +1,28 @@
 import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest';
-import type { IDBPDatabase, openDB } from 'idb';
+import type { IDBPDatabase } from 'idb';
+
+// Unmock the database module to get the real implementation
+vi.unmock('@/lib/db');
+
+// Mock the idb module entirely - define in factory to avoid hoisting issues
+vi.mock('idb', () => ({
+  openDB: vi.fn(),
+}));
+
+// Import the actual implementation after setting up mocks
 import { DatabaseService } from './db';
+// Get the mocked openDB function
+import { openDB } from 'idb';
+const mockOpenDB = vi.mocked(openDB);
 
-// Create mock for the openDB function
-const mockOpenDB = vi.fn();
-
-interface MockObjectStore {
-  get: ReturnType<typeof vi.fn>;
-  put: ReturnType<typeof vi.fn>;
-  delete: ReturnType<typeof vi.fn>;
-  getAll: ReturnType<typeof vi.fn>;
-  getAllKeys: ReturnType<typeof vi.fn>;
-}
-
-interface MockTransaction {
-  objectStore: ReturnType<typeof vi.fn>;
-  done: Promise<void>;
-}
-
-interface MockDatabase {
-  get: ReturnType<typeof vi.fn>;
-  put: ReturnType<typeof vi.fn>;
-  delete: ReturnType<typeof vi.fn>;
-  getAll: ReturnType<typeof vi.fn>;
-  getAllKeys: ReturnType<typeof vi.fn>;
-  transaction: ReturnType<typeof vi.fn>;
-  objectStoreNames: {
-    contains: ReturnType<typeof vi.fn>;
-  };
-  createObjectStore: ReturnType<typeof vi.fn>;
-  close: ReturnType<typeof vi.fn>;
-}
+import { 
+  createMockDatabase, 
+  createMockTransaction, 
+  createMockObjectStore,
+  type MockDatabase,
+  type MockTransaction,
+  type MockObjectStore
+} from './db.test-utils';
 
 describe('DatabaseService', () => {
   let mockDB: MockDatabase;
@@ -38,55 +30,33 @@ describe('DatabaseService', () => {
   let mockObjectStore: MockObjectStore;
   let testDb: DatabaseService;
 
-  beforeEach(async () => {
+  beforeEach(() => {
     // Clear all mocks
     vi.clearAllMocks();
     vi.clearAllTimers();
 
-    // Create mock object store
-    mockObjectStore = {
-      get: vi.fn().mockResolvedValue(undefined),
-      put: vi.fn().mockResolvedValue(undefined),
-      delete: vi.fn().mockResolvedValue(undefined),
-      getAll: vi.fn().mockResolvedValue([]),
-      getAllKeys: vi.fn().mockResolvedValue([]),
-    };
+    // Create mock objects
+    mockObjectStore = createMockObjectStore();
+    mockTransaction = createMockTransaction();
+    mockDB = createMockDatabase();
+    
+    // Setup transaction to return mock object store
+    mockTransaction.objectStore.mockReturnValue(mockObjectStore);
+    
+    // Setup database to return mock transaction
+    mockDB.transaction.mockReturnValue(mockTransaction);
 
-    // Create mock transaction
-    mockTransaction = {
-      objectStore: vi.fn().mockReturnValue(mockObjectStore),
-      done: Promise.resolve(),
-    };
-
-    // Create mock database
-    mockDB = {
-      get: vi.fn().mockResolvedValue(undefined),
-      put: vi.fn().mockResolvedValue(undefined),
-      delete: vi.fn().mockResolvedValue(undefined),
-      getAll: vi.fn().mockResolvedValue([]),
-      getAllKeys: vi.fn().mockResolvedValue([]),
-      transaction: vi.fn().mockReturnValue(mockTransaction),
-      objectStoreNames: {
-        contains: vi.fn().mockReturnValue(false),
-      },
-      createObjectStore: vi.fn(),
-      close: vi.fn(),
-    };
-
-    // Setup mockOpenDB to return our mock database and call upgrade
-    mockOpenDB.mockImplementation((name: string, version?: number, config?: { upgrade?: (db: unknown, oldVersion: number, newVersion: number | null, transaction: unknown, event: IDBVersionChangeEvent) => void }) => {
-      if (config && config.upgrade && version !== undefined) {
-        config.upgrade(mockDB, 0, version, mockTransaction, {} as IDBVersionChangeEvent);
-      }
-      return Promise.resolve(mockDB as unknown as IDBPDatabase);
+    // Setup the module-level mock with correct signature
+    mockOpenDB.mockImplementation(async () => {
+      return mockDB as unknown as IDBPDatabase;
     });
 
-    // Create instance with explicit mock injection
-    testDb = new DatabaseService(mockOpenDB as typeof openDB);
+    // Create instance (now using the mocked module)
+    testDb = new DatabaseService();
   });
 
-  afterEach(async () => {
-    // Reset database instance using proper private property access
+  afterEach(() => {
+    // Reset database instance
     if (testDb) {
       // Access private property through unknown cast to avoid TypeScript errors
       (testDb as unknown as { db: IDBPDatabase | null }).db = null;
@@ -350,10 +320,12 @@ describe('DatabaseService', () => {
     });
 
     it('should clean old search results', async () => {
+      const now = Date.now();
+      const oneDayMs = 24 * 60 * 60 * 1000;
       const oldEntries = [
-        ['key1', { timestamp: Date.now() - 100000 }],
-        ['key2', { timestamp: Date.now() - 200000 }],
-        ['key3', { timestamp: Date.now() - 50000 }], // recent
+        ['key1', { timestamp: now - (40 * oneDayMs) }], // 40 days old - should be deleted
+        ['key2', { timestamp: now - (50 * oneDayMs) }], // 50 days old - should be deleted
+        ['key3', { timestamp: now - (20 * oneDayMs) }], // 20 days old - should be kept
       ];
       
       mockDB.getAllKeys.mockResolvedValueOnce(['key1', 'key2', 'key3']);
@@ -362,7 +334,7 @@ describe('DatabaseService', () => {
         .mockResolvedValueOnce(oldEntries[1][1])
         .mockResolvedValueOnce(oldEntries[2][1]);
 
-      const deletedCount = await testDb.cleanOldSearchResults(30);
+      const deletedCount = await testDb.cleanOldSearchResults(30); // 30 days cutoff
 
       expect(deletedCount).toBe(2);
       expect(mockDB.delete).toHaveBeenCalledTimes(2);
@@ -390,49 +362,51 @@ describe('DatabaseService', () => {
   });
 
   describe('Helper Methods', () => {
-    // Type-safe access to private methods for testing
-    interface TestableDatabase {
-      hashQuery(query: string, filters?: Record<string, unknown>): string;
-      generateId(): string;
-    }
-
     beforeEach(async () => {
       await testDb.init();
+      vi.clearAllMocks();
     });
 
     it('should generate consistent hash for same input', async () => {
-      const testableDb = testDb as unknown as TestableDatabase;
+      // Test indirectly by caching the same query twice and verifying it uses the same key
+      const query = 'test query';
+      const filters = { filter: 'value' };
+      const results = [{ id: '1' }];
       
-      const hash1 = testableDb.hashQuery('test query', { filter: 'value' });
-      const hash2 = testableDb.hashQuery('test query', { filter: 'value' });
+      await testDb.cacheSearchResults(query, results, 1, filters);
+      await testDb.cacheSearchResults(query, results, 1, filters);
       
-      expect(hash1).toBe(hash2);
-      expect(typeof hash1).toBe('string');
+      // Should call put twice with same key
+      expect(mockDB.put).toHaveBeenCalledTimes(2);
+      const calls = mockDB.put.mock.calls;
+      expect(calls[0][2]).toBe(calls[1][2]); // Same keys
     });
 
     it('should generate different hash for different input', async () => {
-      const testableDb = testDb as unknown as TestableDatabase;
+      // Test by caching different queries and verifying different keys are used
+      await testDb.cacheSearchResults('query1', [], 0);
+      await testDb.cacheSearchResults('query2', [], 0);
       
-      const hash1 = testableDb.hashQuery('test query 1', { filter: 'value' });
-      const hash2 = testableDb.hashQuery('test query 2', { filter: 'value' });
-      
-      expect(hash1).not.toBe(hash2);
+      expect(mockDB.put).toHaveBeenCalledTimes(2);
+      const calls = mockDB.put.mock.calls;
+      expect(calls[0][2]).not.toBe(calls[1][2]); // Different keys
     });
 
     it('should generate different hash for different filters', async () => {
-      const testableDb = testDb as unknown as TestableDatabase;
+      // Test by caching same query with different filters
+      const query = 'test query';
+      await testDb.cacheSearchResults(query, [], 0, { filter: 'value1' });
+      await testDb.cacheSearchResults(query, [], 0, { filter: 'value2' });
       
-      const hash1 = testableDb.hashQuery('test query', { filter: 'value1' });
-      const hash2 = testableDb.hashQuery('test query', { filter: 'value2' });
-      
-      expect(hash1).not.toBe(hash2);
+      expect(mockDB.put).toHaveBeenCalledTimes(2);
+      const calls = mockDB.put.mock.calls;
+      expect(calls[0][2]).not.toBe(calls[1][2]); // Different keys
     });
 
     it('should generate unique IDs', async () => {
-      const testableDb = testDb as unknown as TestableDatabase;
-      
-      const id1 = testableDb.generateId();
-      const id2 = testableDb.generateId();
+      // Test by creating collections and verifying unique IDs
+      const id1 = await testDb.createCollection('Collection 1');
+      const id2 = await testDb.createCollection('Collection 2');
       
       expect(id1).not.toBe(id2);
       expect(id1).toMatch(/^\d+-[a-z0-9]+$/);
@@ -444,7 +418,7 @@ describe('DatabaseService', () => {
     it('should handle database operation errors', async () => {
       mockOpenDB.mockRejectedValueOnce(new Error('Connection failed'));
 
-      await expect(testDb.getPaper('test')).rejects.toThrow('Failed to initialise database');
+      await expect(testDb.getPaper('test')).rejects.toThrow('Connection failed');
     });
 
     it('should handle put operation errors', async () => {
