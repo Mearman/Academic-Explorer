@@ -16,6 +16,7 @@ export function QueryHistory({ onRerunQuery }: QueryHistoryProps) {
   const navigate = useNavigate();
   const { queryHistory, clearQueryHistory } = useAppStore();
   const [expandedQuery, setExpandedQuery] = useState<string | null>(null);
+  const [expandedPageNavs, setExpandedPageNavs] = useState<Set<string>>(new Set());
 
   const handleRerunQuery = (query: QueryRecord) => {
     if (onRerunQuery) {
@@ -73,6 +74,30 @@ export function QueryHistory({ onRerunQuery }: QueryHistoryProps) {
     setExpandedQuery(expandedQuery === queryId ? null : queryId);
   };
 
+  const togglePageNavExpansion = (queryId: string) => {
+    setExpandedPageNavs(prev => {
+      const newSet = new Set(prev);
+      if (newSet.has(queryId)) {
+        newSet.delete(queryId);
+      } else {
+        newSet.add(queryId);
+      }
+      return newSet;
+    });
+  };
+
+  const getPageCount = (query: QueryRecord) => {
+    return (query.pageNavigations?.length || 0) + 1; // +1 for the original query
+  };
+
+  const getPageList = (query: QueryRecord) => {
+    const pages = [query.params.page || 1];
+    if (query.pageNavigations) {
+      pages.push(...query.pageNavigations.map(nav => nav.params.page || 1));
+    }
+    return [...new Set(pages)].sort((a, b) => a - b);
+  };
+
   if (queryHistory.length === 0) {
     return (
       <div className={styles.emptyState}>
@@ -102,12 +127,17 @@ export function QueryHistory({ onRerunQuery }: QueryHistoryProps) {
         {queryHistory.map((query) => {
           const status = getQueryStatus(query);
           const isExpanded = expandedQuery === query.id;
+          const hasPageNavs = query.pageNavigations && query.pageNavigations.length > 0;
+          const isPageNavExpanded = expandedPageNavs.has(query.id);
+          const pageCount = getPageCount(query);
+          const pageList = getPageList(query);
 
           return (
             <div 
               key={query.id} 
               className={`${styles.queryItem} ${styles[status]}`}
             >
+              {/* Main Query Header */}
               <div 
                 className={styles.queryHeader}
                 onClick={() => toggleQueryExpansion(query.id)}
@@ -128,12 +158,29 @@ export function QueryHistory({ onRerunQuery }: QueryHistoryProps) {
                         </span>
                       </>
                     )}
+                    {hasPageNavs && (
+                      <span className={styles.pageCount}>
+                        Pages: {pageList.join(', ')} ({pageCount} total)
+                      </span>
+                    )}
                     {query.error && (
                       <span className={styles.errorIndicator}>Error</span>
                     )}
                   </div>
                 </div>
                 <div className={styles.queryActions}>
+                  {hasPageNavs && (
+                    <button
+                      className={styles.pageNavToggle}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        togglePageNavExpansion(query.id);
+                      }}
+                      type="button"
+                    >
+                      {isPageNavExpanded ? 'Hide' : 'Show'} Pages
+                    </button>
+                  )}
                   <button
                     className={styles.rerunButton}
                     onClick={(e) => {
@@ -150,6 +197,50 @@ export function QueryHistory({ onRerunQuery }: QueryHistoryProps) {
                 </div>
               </div>
 
+              {/* Page Navigations */}
+              {hasPageNavs && isPageNavExpanded && (
+                <div className={styles.pageNavigations}>
+                  {query.pageNavigations!.map((pageNav) => {
+                    const pageStatus = getQueryStatus(pageNav);
+                    return (
+                      <div 
+                        key={pageNav.id}
+                        className={`${styles.pageNavItem} ${styles[pageStatus]}`}
+                      >
+                        <div className={styles.pageNavHeader}>
+                          <div className={styles.pageNavInfo}>
+                            <div className={styles.pageNavText}>
+                              Page {pageNav.params.page || 1}
+                            </div>
+                            <div className={styles.pageNavMeta}>
+                              <span className={styles.timestamp}>
+                                {formatTimestamp(pageNav.timestamp)}
+                              </span>
+                              {pageNav.results && (
+                                <span className={styles.responseTime}>
+                                  {formatDuration(pageNav.results.responseTimeMs)}
+                                </span>
+                              )}
+                              {pageNav.error && (
+                                <span className={styles.errorIndicator}>Error</span>
+                              )}
+                            </div>
+                          </div>
+                          <button
+                            className={styles.rerunButton}
+                            onClick={() => handleRerunQuery(pageNav)}
+                            type="button"
+                          >
+                            Jump to Page
+                          </button>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+
+              {/* Query Details */}
               {isExpanded && (
                 <div className={styles.queryDetails}>
                   {query.error && (
