@@ -274,7 +274,36 @@ export function useEntityData<T extends EntityData = EntityData>(
   /** Reset the hook state */
   reset: () => void;
 } {
-  const opts = useMemo(() => ({ ...DEFAULT_OPTIONS, ...options }), [options]);
+  // Memoize options with stable references to prevent infinite loops
+  const opts = useMemo(() => {
+    const result = { ...DEFAULT_OPTIONS };
+    
+    if (options) {
+      // Copy non-function properties
+      if (options.enabled !== undefined) result.enabled = options.enabled;
+      if (options.maxRetries !== undefined) result.maxRetries = options.maxRetries;
+      if (options.retryDelay !== undefined) result.retryDelay = options.retryDelay;
+      if (options.timeout !== undefined) result.timeout = options.timeout;
+      if (options.skipCache !== undefined) result.skipCache = options.skipCache;
+      if (options.refetchOnWindowFocus !== undefined) result.refetchOnWindowFocus = options.refetchOnWindowFocus;
+      if (options.staleTime !== undefined) result.staleTime = options.staleTime;
+      
+      // Use provided callbacks or defaults (but don't include them in deps)
+      if (options.onSuccess) result.onSuccess = options.onSuccess;
+      if (options.onError) result.onError = options.onError;
+    }
+    
+    return result;
+  }, [
+    options?.enabled,
+    options?.maxRetries,
+    options?.retryDelay,
+    options?.timeout,
+    options?.skipCache,
+    options?.refetchOnWindowFocus,
+    options?.staleTime
+    // Functions excluded from deps to prevent infinite loops
+  ]);
   
   const [state, setState] = useState<UseEntityDataState<T>>({
     data: null,
