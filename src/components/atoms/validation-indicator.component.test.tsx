@@ -74,6 +74,85 @@ const TestWrapper = ({ children }: { children: React.ReactNode }) => {
   );
 };
 
+// Helper functions for test setup
+function setupMockValidationDisabled() {
+  mockValidationStore.validationSettings.enabled = false;
+}
+
+function setupMockIndicatorsDisabled() {
+  mockValidationStore.validationSettings.enabled = true;
+  mockValidationStore.validationSettings.showValidationIndicators = false;
+}
+
+function setupMockEntityTypeNotValidated() {
+  mockValidationStore.validationSettings.enabled = true;
+  mockValidationStore.validationSettings.showValidationIndicators = true;
+  mockValidationStore.validationSettings.validatedEntityTypes = [EntityType.WORK];
+}
+
+function setupMockNoValidationResult() {
+  mockValidationStore.validationSettings.enabled = true;
+  mockValidationStore.validationSettings.showValidationIndicators = true;
+  mockValidationStore.validationSettings.validatedEntityTypes = [EntityType.AUTHOR];
+  mockValidationStore.getValidationResult.mockReturnValue(null);
+}
+
+function setupMockValidEntity() {
+  mockValidationStore.validationSettings.enabled = true;
+  mockValidationStore.validationSettings.showValidationIndicators = true;
+  mockValidationStore.validationSettings.validatedEntityTypes = [EntityType.AUTHOR];
+  mockValidationStore.getValidationResult.mockReturnValue({
+    isValid: true,
+    issueCounts: { errors: 0, warnings: 0, info: 0 },
+    validatedAt: Date.now(),
+  });
+  mockValidationStore.hasValidationIssues.mockReturnValue(false);
+  mockValidationStore.getEntityIssueCount.mockReturnValue(0);
+  mockValidationStore.getEntityHighestSeverity.mockReturnValue(null);
+}
+
+function setupMockEntityWithErrors() {
+  mockValidationStore.validationSettings.enabled = true;
+  mockValidationStore.validationSettings.showValidationIndicators = true;
+  mockValidationStore.validationSettings.validatedEntityTypes = [EntityType.AUTHOR];
+  mockValidationStore.getValidationResult.mockReturnValue({
+    isValid: false,
+    issueCounts: { errors: 2, warnings: 1, info: 0 },
+    validatedAt: Date.now(),
+  });
+  mockValidationStore.hasValidationIssues.mockReturnValue(true);
+  mockValidationStore.getEntityIssueCount.mockReturnValue(3);
+  mockValidationStore.getEntityHighestSeverity.mockReturnValue('error');
+}
+
+function setupMockEntityWithWarnings() {
+  mockValidationStore.validationSettings.enabled = true;
+  mockValidationStore.validationSettings.showValidationIndicators = true;
+  mockValidationStore.validationSettings.validatedEntityTypes = [EntityType.AUTHOR];
+  mockValidationStore.getValidationResult.mockReturnValue({
+    isValid: false,
+    issueCounts: { errors: 0, warnings: 2, info: 0 },
+    validatedAt: Date.now(),
+  });
+  mockValidationStore.hasValidationIssues.mockReturnValue(true);
+  mockValidationStore.getEntityIssueCount.mockReturnValue(2);
+  mockValidationStore.getEntityHighestSeverity.mockReturnValue('warning');
+}
+
+function renderValidationIndicator() {
+  return render(
+    <TestWrapper>
+      <ValidationIndicator entityId="A123" entityType={EntityType.AUTHOR} />
+    </TestWrapper>
+  );
+}
+
+function expectNoValidationIndicator() {
+  expect(screen.queryByRole('tooltip')).not.toBeInTheDocument();
+  expect(screen.queryByTestId('icon-check')).not.toBeInTheDocument();
+  expect(screen.queryByTestId('icon-error')).not.toBeInTheDocument();
+}
+
 describe('ValidationIndicator', () => {
   beforeEach(() => {
     vi.clearAllMocks();
@@ -81,146 +160,52 @@ describe('ValidationIndicator', () => {
 
   describe('Display Logic', () => {
     it('should not render when validation is disabled', () => {
-      mockValidationStore.validationSettings.enabled = false;
-      
-      render(
-        <TestWrapper>
-          <ValidationIndicator entityId="A123" entityType={EntityType.AUTHOR} />
-        </TestWrapper>
-      );
-      
-      // Component should not render - no validation indicators should be present
-      expect(screen.queryByRole('tooltip')).not.toBeInTheDocument();
-      expect(screen.queryByTestId('icon-check')).not.toBeInTheDocument();
-      expect(screen.queryByTestId('icon-error')).not.toBeInTheDocument();
+      setupMockValidationDisabled();
+      renderValidationIndicator();
+      expectNoValidationIndicator();
     });
 
     it('should not render when indicators are disabled', () => {
-      mockValidationStore.validationSettings.enabled = true;
-      mockValidationStore.validationSettings.showValidationIndicators = false;
-      
-      render(
-        <TestWrapper>
-          <ValidationIndicator entityId="A123" entityType={EntityType.AUTHOR} />
-        </TestWrapper>
-      );
-      
-      expect(screen.queryByRole('tooltip')).not.toBeInTheDocument();
-      expect(screen.queryByTestId('icon-check')).not.toBeInTheDocument();
+      setupMockIndicatorsDisabled();
+      renderValidationIndicator();
+      expectNoValidationIndicator();
     });
 
     it('should not render when entity type is not validated', () => {
-      mockValidationStore.validationSettings.enabled = true;
-      mockValidationStore.validationSettings.showValidationIndicators = true;
-      mockValidationStore.validationSettings.validatedEntityTypes = [EntityType.WORK];
-      
-      render(
-        <TestWrapper>
-          <ValidationIndicator entityId="A123" entityType={EntityType.AUTHOR} />
-        </TestWrapper>
-      );
-      
-      expect(screen.queryByRole('tooltip')).not.toBeInTheDocument();
-      expect(screen.queryByTestId('icon-check')).not.toBeInTheDocument();
+      setupMockEntityTypeNotValidated();
+      renderValidationIndicator();
+      expectNoValidationIndicator();
     });
 
     it('should not render when no validation result exists', () => {
-      mockValidationStore.validationSettings.enabled = true;
-      mockValidationStore.validationSettings.showValidationIndicators = true;
-      mockValidationStore.validationSettings.validatedEntityTypes = [EntityType.AUTHOR];
-      mockValidationStore.getValidationResult.mockReturnValue(null);
-      
-      render(
-        <TestWrapper>
-          <ValidationIndicator entityId="A123" entityType={EntityType.AUTHOR} />
-        </TestWrapper>
-      );
-      
-      expect(screen.queryByRole('tooltip')).not.toBeInTheDocument();
-      expect(screen.queryByTestId('icon-check')).not.toBeInTheDocument();
+      setupMockNoValidationResult();
+      renderValidationIndicator();
+      expectNoValidationIndicator();
     });
   });
 
-  describe('Valid Status', () => {
-    beforeEach(() => {
-      mockValidationStore.validationSettings.enabled = true;
-      mockValidationStore.validationSettings.showValidationIndicators = true;
-      mockValidationStore.validationSettings.validatedEntityTypes = [EntityType.AUTHOR];
-      mockValidationStore.getValidationResult.mockReturnValue({
-        isValid: true,
-        issueCounts: { errors: 0, warnings: 0, info: 0 },
-        validatedAt: Date.now(),
-      });
-      mockValidationStore.hasValidationIssues.mockReturnValue(false);
-      mockValidationStore.getEntityIssueCount.mockReturnValue(0);
-      mockValidationStore.getEntityHighestSeverity.mockReturnValue(null);
-    });
-
-    it('should show valid status for entity without issues', () => {
-      render(
-        <TestWrapper>
-          <ValidationIndicator entityId="A123" entityType={EntityType.AUTHOR} />
-        </TestWrapper>
-      );
-      
-      expect(screen.getByTestId('icon-check')).toBeInTheDocument();
-      // The badge shows the checkmark, both in icon and text - use getAllByText for multiple elements
-      expect(screen.getAllByText('✓')).toHaveLength(2);
-    });
+  it('should show valid status for entity without issues', () => {
+    setupMockValidEntity();
+    renderValidationIndicator();
+    
+    expect(screen.getByTestId('icon-check')).toBeInTheDocument();
+    expect(screen.getAllByText('✓')).toHaveLength(2);
   });
 
-  describe('Error Status', () => {
-    beforeEach(() => {
-      mockValidationStore.validationSettings.enabled = true;
-      mockValidationStore.validationSettings.showValidationIndicators = true;
-      mockValidationStore.validationSettings.validatedEntityTypes = [EntityType.AUTHOR];
-      mockValidationStore.getValidationResult.mockReturnValue({
-        isValid: false,
-        issueCounts: { errors: 2, warnings: 1, info: 0 },
-        validatedAt: Date.now(),
-      });
-      mockValidationStore.hasValidationIssues.mockReturnValue(true);
-      mockValidationStore.getEntityIssueCount.mockReturnValue(3);
-      mockValidationStore.getEntityHighestSeverity.mockReturnValue('error');
-    });
-
-    it('should show error status for entity with errors', () => {
-      render(
-        <TestWrapper>
-          <ValidationIndicator entityId="A123" entityType={EntityType.AUTHOR} />
-        </TestWrapper>
-      );
-      
-      expect(screen.getByTestId('icon-error')).toBeInTheDocument();
-      expect(screen.getByText('3')).toBeInTheDocument();
-    });
+  it('should show error status for entity with errors', () => {
+    setupMockEntityWithErrors();
+    renderValidationIndicator();
+    
+    expect(screen.getByTestId('icon-error')).toBeInTheDocument();
+    expect(screen.getByText('3')).toBeInTheDocument();
   });
 
-  describe('Warning Status', () => {
-    beforeEach(() => {
-      mockValidationStore.validationSettings.enabled = true;
-      mockValidationStore.validationSettings.showValidationIndicators = true;
-      mockValidationStore.validationSettings.validatedEntityTypes = [EntityType.AUTHOR];
-      mockValidationStore.getValidationResult.mockReturnValue({
-        isValid: false,
-        issueCounts: { errors: 0, warnings: 2, info: 0 },
-        validatedAt: Date.now(),
-      });
-      mockValidationStore.hasValidationIssues.mockReturnValue(true);
-      mockValidationStore.getEntityIssueCount.mockReturnValue(2);
-      mockValidationStore.getEntityHighestSeverity.mockReturnValue('warning');
-    });
-
-    it('should show warning status for entity with warnings', () => {
-      render(
-        <TestWrapper>
-          <ValidationIndicator entityId="A123" entityType={EntityType.AUTHOR} />
-        </TestWrapper>
-      );
-      
-      expect(screen.getByTestId('icon-warning')).toBeInTheDocument();
-      expect(screen.getByText('2')).toBeInTheDocument();
-    });
+  it('should show warning status for entity with warnings', () => {
+    setupMockEntityWithWarnings();
+    renderValidationIndicator();
+    
+    expect(screen.getByTestId('icon-warning')).toBeInTheDocument();
+    expect(screen.getByText('2')).toBeInTheDocument();
   });
 });
 
