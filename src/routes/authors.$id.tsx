@@ -1,5 +1,5 @@
 import { createFileRoute, useNavigate } from '@tanstack/react-router';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 
 import { EntityErrorBoundary, EntitySkeleton, EntityError, EntityFallback } from '@/components';
 import { AuthorDisplay } from '@/components/entity-displays/AuthorDisplay';
@@ -15,6 +15,9 @@ function AuthorPage() {
   
   // Handle numeric ID redirection to proper prefixed format
   const isRedirecting = useNumericIdRedirect(id, EntityType.AUTHOR);
+  
+  // Memoize navigate function to prevent useEffect loops
+  const stableNavigate = useCallback(navigate, []);
   
   // Process the ID to handle external formats
   useEffect(() => {
@@ -46,14 +49,14 @@ function AuthorPage() {
           // Only redirect if this is an author ID, otherwise redirect to correct entity type
           if (openAlexId.startsWith('A')) {
             console.log('AuthorPage: OpenAlex author URL detected, redirecting to clean URL');
-            navigate({ to: `/authors/${openAlexId}`, replace: true });
+            stableNavigate({ to: `/authors/${openAlexId}`, replace: true });
             return;
           } else {
             // This is not an author ID, redirect to the correct entity type
             const entityType = detectEntityType(openAlexId);
             const endpoint = getEntityEndpoint(entityType);
             console.log(`AuthorPage: Non-author OpenAlex URL detected, redirecting to /${endpoint}/${openAlexId}`);
-            navigate({ to: `/${endpoint}/${openAlexId}`, replace: true });
+            stableNavigate({ to: `/${endpoint}/${openAlexId}`, replace: true });
             return;
           }
         }
@@ -64,14 +67,14 @@ function AuthorPage() {
           const openAlexId = altMatch[1].toUpperCase();
           if (openAlexId.startsWith('A')) {
             console.log('AuthorPage: Alternative OpenAlex author URL detected, redirecting to clean URL');
-            navigate({ to: `/authors/${openAlexId}`, replace: true });
+            stableNavigate({ to: `/authors/${openAlexId}`, replace: true });
             return;
           } else {
             // This is not an author ID, redirect to the correct entity type
             const entityType = detectEntityType(openAlexId);
             const endpoint = getEntityEndpoint(entityType);
             console.log(`AuthorPage: Non-author in authors path detected, redirecting to /${endpoint}/${openAlexId}`);
-            navigate({ to: `/${endpoint}/${openAlexId}`, replace: true });
+            stableNavigate({ to: `/${endpoint}/${openAlexId}`, replace: true });
             return;
           }
         }
@@ -88,14 +91,14 @@ function AuthorPage() {
             const openAlexId = openAlexMatch[1].toUpperCase();
             if (openAlexId.startsWith('A')) {
               console.log(`AuthorPage: HTTPS OpenAlex author URL detected, redirecting to /authors/${openAlexId}`);
-              navigate({ to: `/authors/${openAlexId}`, replace: true });
+              stableNavigate({ to: `/authors/${openAlexId}`, replace: true });
               return;
             } else {
               // This is not an author ID, redirect to the correct entity type
               const entityType = detectEntityType(openAlexId);
               const endpoint = getEntityEndpoint(entityType);
               console.log(`AuthorPage: HTTPS Non-author OpenAlex URL detected, redirecting to /${endpoint}/${openAlexId}`);
-              navigate({ to: `/${endpoint}/${openAlexId}`, replace: true });
+              stableNavigate({ to: `/${endpoint}/${openAlexId}`, replace: true });
               return;
             }
           }
@@ -106,14 +109,14 @@ function AuthorPage() {
             const openAlexId = altOpenAlexMatch[1].toUpperCase();
             if (openAlexId.startsWith('A')) {
               console.log(`AuthorPage: HTTPS Alternative OpenAlex author URL detected, redirecting to /authors/${openAlexId}`);
-              navigate({ to: `/authors/${openAlexId}`, replace: true });
+              stableNavigate({ to: `/authors/${openAlexId}`, replace: true });
               return;
             } else {
               // This is not an author ID, redirect to the correct entity type
               const entityType = detectEntityType(openAlexId);
               const endpoint = getEntityEndpoint(entityType);
               console.log(`AuthorPage: HTTPS Non-author in authors path detected, redirecting to /${endpoint}/${openAlexId}`);
-              navigate({ to: `/${endpoint}/${openAlexId}`, replace: true });
+              stableNavigate({ to: `/${endpoint}/${openAlexId}`, replace: true });
               return;
             }
           }
@@ -125,7 +128,7 @@ function AuthorPage() {
           if (orcidMatch) {
             const orcidId = orcidMatch[1];
             console.log(`AuthorPage: HTTPS ORCID URL detected, redirecting to /authors/${orcidId}`);
-            navigate({ to: `/authors/${orcidId}`, replace: true });
+            stableNavigate({ to: `/authors/${orcidId}`, replace: true });
             return;
           }
         }
@@ -141,7 +144,7 @@ function AuthorPage() {
         if (match) {
           const orcidId = match[1];
           console.log('AuthorPage: ORCID URL detected, redirecting to clean ORCID format');
-          navigate({ to: `/authors/${orcidId}`, replace: true });
+          stableNavigate({ to: `/authors/${orcidId}`, replace: true });
           return;
         }
       }
@@ -163,7 +166,7 @@ function AuthorPage() {
           const entityType = detectEntityType(decodedId);
           const endpoint = getEntityEndpoint(entityType);
           console.log(`AuthorPage: Non-author OpenAlex ID detected, redirecting to /${endpoint}/${decodedId.toUpperCase()}`);
-          navigate({ to: `/${endpoint}/${decodedId.toUpperCase()}`, replace: true });
+          stableNavigate({ to: `/${endpoint}/${decodedId.toUpperCase()}`, replace: true });
           return;
         }
       } else {
@@ -179,7 +182,7 @@ function AuthorPage() {
       setProcessedId(id);
       setIsProcessingId(false);
     }
-  }, [id, navigate]);
+  }, [id, stableNavigate]);
   
   // Use the author data hook with the processed ID
   const { data: author, loading, error, retry } = useAuthorData(
