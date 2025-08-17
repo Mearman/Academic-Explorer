@@ -146,6 +146,28 @@ export const rerunButton = style({
   },
 });
 
+export const pageNavToggle = style({
+  padding: `${entityVars.spacing.xs} ${entityVars.spacing.sm}`,
+  backgroundColor: entityVars.color.muted,
+  color: '#ffffff',
+  border: 'none',
+  borderRadius: entityVars.borderRadius.sm,
+  fontSize: entityVars.fontSize.sm,
+  cursor: 'pointer',
+  fontWeight: '500',
+  
+  ':hover': {
+    backgroundColor: '#6b7280',
+  },
+});
+
+export const pageCount = style({
+  color: entityVars.color.muted,
+  fontWeight: '500',
+  fontSize: entityVars.fontSize.sm,
+  fontFamily: 'monospace',
+});
+
 export const expandIcon = style({
   fontSize: entityVars.fontSize.sm,
   color: entityVars.color.muted,
@@ -247,4 +269,59 @@ globalStyle(`${emptyState} h3`, {
 globalStyle(`${emptyState} p`, {
   margin: 0,
   fontSize: entityVars.fontSize.sm,
+});
+
+// Page Navigation Styles
+export const pageNavigations = style({
+  display: 'flex',
+  flexDirection: 'column',
+  gap: entityVars.spacing.xs,
+  padding: `0 ${entityVars.spacing.md}`,
+  borderTop: `1px solid ${entityVars.color.border}`,
+  backgroundColor: '#f8fafc',
+});
+
+export const pageNavItem = style({
+  border: `1px solid ${entityVars.color.border}`,
+  borderRadius: entityVars.borderRadius.sm,
+  backgroundColor: entityVars.color.background,
+  marginLeft: entityVars.spacing.lg,
+  position: 'relative',
+  
+  '::before': {
+    content: '""',
+    position: 'absolute',
+    left: `-${entityVars.spacing.md}`,
+    top: '50%',
+    width: entityVars.spacing.sm,
+    height: '1px',
+    backgroundColor: entityVars.color.border,
+  },
+});
+
+export const pageNavHeader = style({
+  display: 'flex',
+  justifyContent: 'space-between',
+  alignItems: 'center',
+  padding: entityVars.spacing.sm,
+});
+
+export const pageNavInfo = style({
+  display: 'flex',
+  flexDirection: 'column',
+  gap: entityVars.spacing.xs,
+  flex: 1,
+});
+
+export const pageNavText = style({
+  fontWeight: '500',
+  color: entityVars.color.text,
+  fontSize: entityVars.fontSize.sm,
+});
+
+export const pageNavMeta = style({
+  display: 'flex',
+  gap: entityVars.spacing.sm,
+  fontSize: entityVars.fontSize.xs,
+  color: entityVars.color.muted,
 });
