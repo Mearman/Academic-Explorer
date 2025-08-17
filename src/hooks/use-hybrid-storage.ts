@@ -1,6 +1,5 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 
-import { db } from '@/lib/db';
 import { useAppStore } from '@/stores/app-store';
 
 interface StorageMetrics {
@@ -13,10 +12,15 @@ export function useHybridStorage() {
   const [isInitialised, setIsInitialised] = useState(false);
   const [metrics, setMetrics] = useState<StorageMetrics>({ localStorageSize: 0 });
   const searchHistory = useAppStore((state) => state.searchHistory);
+  
+  // Database reference for this hook instance
+  const dbRef = useRef<typeof import('@/lib/db').db | null>(null);
 
   useEffect(() => {
     const init = async () => {
       try {
+        const { db } = await import('@/lib/db');
+        dbRef.current = db;
         await db.init();
         setIsInitialised(true);
         await updateMetrics();
@@ -46,7 +50,7 @@ export function useHybridStorage() {
     }
 
     // Get IndexedDB usage
-    const estimate = await db.getStorageEstimate();
+    const estimate = dbRef.current ? await dbRef.current.getStorageEstimate() : { usage: 0, quota: 0 };
     
     setMetrics({
       localStorageSize,
@@ -62,10 +66,10 @@ export function useHybridStorage() {
     totalCount: number,
     filters?: Record<string, unknown>
   ) => {
-    if (!isInitialised) return;
+    if (!isInitialised || !dbRef.current) return;
     
     try {
-      await db.cacheSearchResults(query, results, totalCount, filters);
+      await dbRef.current.cacheSearchResults(query, results, totalCount, filters);
       await updateMetrics();
     } catch (error) {
       console.error('Failed to archive search results:', error);
@@ -77,10 +81,10 @@ export function useHybridStorage() {
     query: string,
     filters?: Record<string, unknown>
   ) => {
-    if (!isInitialised) return null;
+    if (!isInitialised || !dbRef.current) return null;
     
     try {
-      return await db.getSearchResults(query, filters);
+      return await dbRef.current.getSearchResults(query, filters);
     } catch (error) {
       console.error('Failed to retrieve cached results:', error);
       return null;
@@ -96,10 +100,10 @@ export function useHybridStorage() {
     year?: number;
     doi?: string;
   }) => {
-    if (!isInitialised) return;
+    if (!isInitialised || !dbRef.current) return;
     
     try {
-      await db.savePaper({
+      await dbRef.current.savePaper({
         ...paper,
         savedAt: Date.now(),
       });
@@ -111,10 +115,10 @@ export function useHybridStorage() {
 
   // Clean up old data
   const cleanupOldData = async (daysOld = 30) => {
-    if (!isInitialised) return;
+    if (!isInitialised || !dbRef.current) return 0;
     
     try {
-      const deleted = await db.cleanOldSearchResults(daysOld);
+      const deleted = await dbRef.current.cleanOldSearchResults(daysOld);
       await updateMetrics();
       return deleted;
     } catch (error) {
@@ -126,14 +130,14 @@ export function useHybridStorage() {
   // Migrate search history to IndexedDB when it gets too large
   useEffect(() => {
     const migrateIfNeeded = async () => {
-      if (!isInitialised || searchHistory.length <= 5) return;
+      if (!isInitialised || !dbRef.current || searchHistory.length <= 5) return;
       
       // Keep only last 5 in localStorage, archive the rest
       const toArchive = searchHistory.slice(5);
       
       for (const query of toArchive) {
         // Archive as empty result set for history tracking
-        await db.cacheSearchResults(query, [], 0);
+        await dbRef.current.cacheSearchResults(query, [], 0);
       }
     };
     
