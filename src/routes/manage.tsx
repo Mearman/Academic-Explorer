@@ -8,6 +8,7 @@
 import { Container, Title, Tabs, Text, Space } from '@mantine/core';
 import { createFileRoute } from '@tanstack/react-router';
 
+import { ThemeToggle } from '@/components/molecules/theme-toggle';
 import { ValidationExport } from '@/components/molecules/validation-export';
 import { ValidationSettings } from '@/components/molecules/validation-settings';
 import { StorageManager } from '@/components/organisms/storage-manager';
@@ -138,6 +139,10 @@ function SettingsTabContent() {
       <Text size="sm" c="dimmed" mb="lg">
         Configure validation preferences and application behavior.
       </Text>
+      
+      <ThemeToggle />
+      
+      <Space h="xl" />
       
       <ValidationSettings />
     </div>
