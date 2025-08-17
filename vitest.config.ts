@@ -176,7 +176,11 @@ export default defineConfig({
 					name: "integration",
 					include: ["**/*.integration.test.{js,ts,jsx,tsx}"],
 					exclude: ["node_modules/**", "dist/**", "**/*.skip.*"],
-					environment: "node",
+					environment: "jsdom",
+					setupFiles: [
+						"./src/test/setup.ts",
+						"./src/test/jest-dom-setup.ts",
+					],
 
 					// CRITICAL: Node environment with single thread
 					pool: "threads",
@@ -219,7 +223,11 @@ export default defineConfig({
 					name: "e2e",
 					include: ["**/*.e2e.test.{js,ts,jsx,tsx}"],
 					exclude: ["node_modules/**", "dist/**", "**/*.skip.*"],
-					environment: "node",
+					environment: "jsdom",
+					setupFiles: [
+						"./src/test/setup.ts",
+						"./src/test/jest-dom-setup.ts",
+					],
 
 					// CRITICAL: Single thread for E2E tests
 					pool: "threads",
