@@ -76,13 +76,20 @@ export const registerCleanupTask = (task: () => void | Promise<void>) => {
 // Start server before all tests with error handling
 beforeAll(async () => {
   try {
-    server.listen({ 
-      onUnhandledRequest: 'warn',
-    });
-    isSetupComplete = true;
+    if (!isSetupComplete) {
+      server.listen({ 
+        onUnhandledRequest: 'warn',
+      });
+      isSetupComplete = true;
+    }
   } catch (error) {
     console.error('Failed to setup MSW server:', error);
-    throw error;
+    if (error instanceof Error && error.message?.includes('already patched')) {
+      console.warn('MSW already patched, continuing...');
+      isSetupComplete = true;
+    } else {
+      throw error;
+    }
   }
 });
 
