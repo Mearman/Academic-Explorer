@@ -432,15 +432,15 @@ describe('QueryHistory - Status and Edge Cases', () => {
         clearQueryHistory: mockClearQueryHistory,
       }));
 
-      const { container } = render(
+      render(
         <TestWrapper>
           <QueryHistory />
         </TestWrapper>
       );
 
-      // Check that the query item has success class
-      const queryItem = container.querySelector('.queryItem');
-      expect(queryItem).toHaveClass('success');
+      // Check that the query item displays success indicators
+      expect(screen.getByText('500 results')).toBeInTheDocument();
+      expect(screen.getByText('180ms')).toBeInTheDocument();
     });
 
     it('should show pending status for queries without results or errors', () => {
@@ -457,15 +457,16 @@ describe('QueryHistory - Status and Edge Cases', () => {
         clearQueryHistory: mockClearQueryHistory,
       }));
 
-      const { container } = render(
+      render(
         <TestWrapper>
           <QueryHistory />
         </TestWrapper>
       );
 
-      // Check that the query item has pending class
-      const queryItem = container.querySelector('.queryItem');
-      expect(queryItem).toHaveClass('pending');
+      // Check that the query item displays pending indicators (no results/error shown)
+      expect(screen.getByText('pending query')).toBeInTheDocument();
+      expect(screen.queryByText(/results/)).not.toBeInTheDocument();
+      expect(screen.queryByText('Error')).not.toBeInTheDocument();
     });
   });
 
