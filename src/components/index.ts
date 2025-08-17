@@ -45,6 +45,11 @@ export {
   SuccessAlert
 } from './atoms/error-message';
 export { BuildInfo } from './atoms/build-info';
+export { 
+  ValidationIndicator,
+  ValidationDot,
+  ValidationSummary
+} from './atoms/validation-indicator';
 
 // Molecules
 export { MetricDisplay } from './molecules/metric-display';
@@ -65,6 +70,8 @@ export { ErrorIcon } from './molecules/error-icon';
 export { ErrorMessageContent } from './molecules/error-message-content';
 export { ErrorActions } from './molecules/error-actions';
 export { ErrorDebugDetails } from './molecules/error-debug-details';
+export { ValidationExport } from './molecules/validation-export';
+export { ValidationSettings } from './molecules/validation-settings';
 
 // Organisms
 export { EntityHeader, EntityHeaderSkeleton } from './organisms/entity-header';
@@ -117,6 +124,9 @@ export { ConceptExternalLinksEnhanced } from './organisms/concept-external-links
 export { SourceMetricsGrid } from './organisms/source-metrics-grid';
 export { SourcePublicationDetails } from './organisms/source-publication-details';
 export { SourceExternalLinks } from './organisms/source-external-links';
+export { EntityBrowser } from './organisms/entity-browser';
+export { ValidationLogViewer } from './organisms/validation-log-viewer';
+export { ValidationDashboard } from './organisms/validation-dashboard';
 
 // Templates
 export { 

@@ -7,6 +7,7 @@ import {
   IconCoin,
   IconTags,
   IconWorld,
+  IconSettings,
 } from '@tabler/icons-react';
 import { Link, useLocation } from '@tanstack/react-router';
 
@@ -21,6 +22,10 @@ const navigationItems = [
   { icon: IconCoin, label: 'Funders', href: '/funders' },
   { icon: IconTags, label: 'Topics', href: '/topics' },
   { icon: IconWorld, label: 'Publishers', href: '/publishers' },
+];
+
+const managementItems = [
+  { icon: IconSettings, label: 'Manage', href: '/manage' },
 ];
 
 interface AppShellNavbarProps {
@@ -71,6 +76,30 @@ export function AppShellNavbar({ onItemClick }: AppShellNavbarProps) {
         <Text size="sm" c="dimmed">
           No recent searches
         </Text>
+      </AppShell.Section>
+
+      <AppShell.Section mt="md">
+        <Text size="xs" tt="uppercase" fw={700} c="dimmed" mb="md">
+          Management
+        </Text>
+        
+        {managementItems.map((item) => {
+          const Icon = item.icon;
+          const active = isActiveRoute(item.href);
+          
+          return (
+            <NavLink
+              key={item.href}
+              component={Link}
+              to={item.href}
+              label={item.label}
+              leftSection={<Icon style={{ width: rem(16), height: rem(16) }} />}
+              active={active}
+              mb="xs"
+              onClick={onItemClick}
+            />
+          );
+        })}
       </AppShell.Section>
 
       <AppShell.Section>
