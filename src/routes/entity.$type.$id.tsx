@@ -10,7 +10,7 @@ import { PublisherDisplay } from '@/components/entity-displays/PublisherDisplay'
 import { SourceDisplay } from '@/components/entity-displays/SourceDisplay';
 import { TopicDisplay } from '@/components/entity-displays/TopicDisplay';
 import { WorkDisplay } from '@/components/entity-displays/WorkDisplay';
-import { useEntityData } from '@/hooks/use-entity-data';
+import { useEntityDataWithTracking } from '@/hooks/use-entity-data-with-tracking';
 import type { EntityData, EntityError as EntityErrorType } from '@/hooks/use-entity-data';
 import { useNumericIdRedirect } from '@/hooks/use-numeric-id-redirect';
 import type { Work, Author, Source, Institution, Funder, Topic, Concept, Publisher } from '@/lib/openalex/types';
@@ -85,10 +85,16 @@ function EntityPage() {
     loading, 
     error, 
     retry 
-  } = useEntityData(id, entityType, {
+  } = useEntityDataWithTracking(id, entityType, {
     enabled: !!id && !isRedirecting && !!entityType,
     refetchOnWindowFocus: true,
     staleTime: 10 * 60 * 1000, // 10 minutes
+    enableTracking: true,
+    visitSource: 'direct',
+    trackingMetadata: {
+      route: '/entity/$type/$id',
+      urlType: type,
+    },
     onError: (error: EntityErrorType) => {
       console.error(`${entityType} fetch error:`, error);
     }
