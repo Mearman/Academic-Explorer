@@ -50,15 +50,20 @@ interface AcademicExplorerDB extends DBSchema {
   };
 }
 
-class DatabaseService {
+export class DatabaseService {
   private db: IDBPDatabase<AcademicExplorerDB> | null = null;
   private readonly DB_NAME = 'academic-explorer';
   private readonly DB_VERSION = 1;
+  private openDBFn: typeof openDB;
+
+  constructor(openDBFn: typeof openDB = openDB) {
+    this.openDBFn = openDBFn;
+  }
 
   async init(): Promise<void> {
     if (this.db) return;
 
-    this.db = await openDB<AcademicExplorerDB>(this.DB_NAME, this.DB_VERSION, {
+    this.db = await this.openDBFn<AcademicExplorerDB>(this.DB_NAME, this.DB_VERSION, {
       upgrade(db) {
         // Create object stores
         if (!db.objectStoreNames.contains('searchResults')) {
