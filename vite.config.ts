@@ -95,8 +95,24 @@ export default defineConfig(({ command }) => ({
     rollupOptions: {
       input: {
         main: path.resolve(__dirname, 'index.html')
+      },
+      output: {
+        manualChunks: {
+          // Vendor libraries
+          'vendor-react': ['react', 'react-dom'],
+          'vendor-tanstack': ['@tanstack/react-router', '@tanstack/react-query'],
+          'vendor-mantine': ['@mantine/core', '@mantine/hooks', '@mantine/vanilla-extract'],
+          'vendor-state': ['zustand', 'immer'],
+          // Utility libraries
+          'vendor-icons': ['@tabler/icons-react'],
+          'vendor-idb': ['idb'],
+          'vendor-zod': ['zod'],
+          'vendor-error': ['react-error-boundary'],
+        }
       }
-    }
+    },
+    // Increase chunk size warning limit to 800kb to reduce noise for vendor chunks
+    chunkSizeWarningLimit: 800,
   },
   server: {
     port: 3000,
