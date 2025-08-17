@@ -24,6 +24,19 @@ interface SearchResultsProps {
 
 export function SearchResults({ searchParams, onParamsChange }: SearchResultsProps) {
   const navigate = useNavigate();
+  
+  // Prevent showing cached results when there are no search parameters
+  const hasSearch = searchParams.search && searchParams.search.trim() !== '';
+  const hasFilter = searchParams.filter && (
+    typeof searchParams.filter === 'string' 
+      ? searchParams.filter.trim() !== ''
+      : Object.keys(searchParams.filter).length > 0
+  );
+  
+  if (!hasSearch && !hasFilter) {
+    return <EmptyState />;
+  }
+  
   const worksQuery = useWorks(searchParams);
   
   // Type assertion to help TypeScript understand the data structure
