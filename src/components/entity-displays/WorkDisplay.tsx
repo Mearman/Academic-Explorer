@@ -23,7 +23,7 @@ export function WorkDisplay({ entity: work }: WorkDisplayProps) {
         console.warn('Failed to validate work:', error);
       });
     }
-  }, [work.id, work, validateEntity, validationSettings]);
+  }, [work.id, validateEntity, validationSettings]);
 
   return (
     <Stack gap="xl">
