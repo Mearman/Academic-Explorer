@@ -15,6 +15,8 @@ export interface LoadingSkeletonProps {
   inline?: boolean;
   className?: string;
   'data-testid'?: string;
+  // Internal prop to allow preset wrapper components to override styles
+  allowPresetOverride?: boolean;
 }
 
 export interface SkeletonGroupProps {
@@ -83,11 +85,15 @@ function buildSkeletonClasses(
 function buildCustomStyles(
   preset?: string,
   width?: string,
-  height?: string | SizeVariant
+  height?: string | SizeVariant,
+  allowPresetOverride?: boolean
 ): React.CSSProperties {
-  if (preset) return {};
-  
   const customStyle: React.CSSProperties = {};
+  
+  // Only allow custom styles with presets if explicitly allowed
+  if (preset && !allowPresetOverride) {
+    return customStyle;
+  }
   
   if (width && !getWidthClass(width)) {
     customStyle.width = width;
@@ -109,11 +115,12 @@ export const LoadingSkeleton = forwardRef<HTMLDivElement, LoadingSkeletonProps>(
     animation = 'wave',
     inline = false,
     className,
+    allowPresetOverride = false,
     'data-testid': testId,
     ...props 
   }, ref) => {
     const cssClasses = buildSkeletonClasses(preset, height, width, shape, animation, inline, className);
-    const customStyle = buildCustomStyles(preset, width, height);
+    const customStyle = buildCustomStyles(preset, width, height, allowPresetOverride);
     const hasCustomStyle = Object.keys(customStyle).length > 0;
 
     return (
@@ -171,26 +178,27 @@ export const SkeletonGroup = forwardRef<HTMLDivElement, SkeletonGroupProps>(
 SkeletonGroup.displayName = 'SkeletonGroup';
 
 // Preset skeleton components for common patterns
-export const TextSkeleton = (props: Omit<LoadingSkeletonProps, 'preset'>) => (
-  <LoadingSkeleton preset="text" {...props} />
+// These allow style overrides since they're convenience wrappers
+export const TextSkeleton = ({ preset: _preset, allowPresetOverride: _allowPresetOverride, ...props }: Omit<LoadingSkeletonProps, 'preset' | 'allowPresetOverride'> & { preset?: never; allowPresetOverride?: never }) => (
+  <LoadingSkeleton {...props} preset="text" allowPresetOverride={true} />
 );
 
-export const TitleSkeleton = (props: Omit<LoadingSkeletonProps, 'preset'>) => (
-  <LoadingSkeleton preset="title" {...props} />
+export const TitleSkeleton = ({ preset: _preset, allowPresetOverride: _allowPresetOverride, ...props }: Omit<LoadingSkeletonProps, 'preset' | 'allowPresetOverride'> & { preset?: never; allowPresetOverride?: never }) => (
+  <LoadingSkeleton {...props} preset="title" allowPresetOverride={true} />
 );
 
-export const ButtonSkeleton = (props: Omit<LoadingSkeletonProps, 'preset'>) => (
-  <LoadingSkeleton preset="button" {...props} />
+export const ButtonSkeleton = ({ preset: _preset, allowPresetOverride: _allowPresetOverride, ...props }: Omit<LoadingSkeletonProps, 'preset' | 'allowPresetOverride'> & { preset?: never; allowPresetOverride?: never }) => (
+  <LoadingSkeleton {...props} preset="button" allowPresetOverride={true} />
 );
 
-export const AvatarSkeleton = (props: Omit<LoadingSkeletonProps, 'preset'>) => (
-  <LoadingSkeleton preset="avatar" {...props} />
+export const AvatarSkeleton = ({ preset: _preset, allowPresetOverride: _allowPresetOverride, ...props }: Omit<LoadingSkeletonProps, 'preset' | 'allowPresetOverride'> & { preset?: never; allowPresetOverride?: never }) => (
+  <LoadingSkeleton {...props} preset="avatar" allowPresetOverride={true} />
 );
 
-export const BadgeSkeleton = (props: Omit<LoadingSkeletonProps, 'preset'>) => (
-  <LoadingSkeleton preset="badge" {...props} />
+export const BadgeSkeleton = ({ preset: _preset, allowPresetOverride: _allowPresetOverride, ...props }: Omit<LoadingSkeletonProps, 'preset' | 'allowPresetOverride'> & { preset?: never; allowPresetOverride?: never }) => (
+  <LoadingSkeleton {...props} preset="badge" allowPresetOverride={true} />
 );
 
-export const CardSkeleton = (props: Omit<LoadingSkeletonProps, 'preset'>) => (
-  <LoadingSkeleton preset="card" {...props} />
+export const CardSkeleton = ({ preset: _preset, allowPresetOverride: _allowPresetOverride, ...props }: Omit<LoadingSkeletonProps, 'preset' | 'allowPresetOverride'> & { preset?: never; allowPresetOverride?: never }) => (
+  <LoadingSkeleton {...props} preset="card" allowPresetOverride={true} />
 );
