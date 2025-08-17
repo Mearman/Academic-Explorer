@@ -47,8 +47,10 @@ async function getDb() {
 export interface CacheOptions {
   ttl?: number; // Time to live in milliseconds
   useMemory?: boolean; // Use in-memory cache
+  useLocalStorage?: boolean; // Use localStorage
   useIndexedDB?: boolean; // Use IndexedDB
   namespace?: string; // Cache namespace
+  localStorageLimit?: number; // Max size for localStorage in bytes
 }
 
 export class CacheManager {
@@ -59,8 +61,10 @@ export class CacheManager {
     this.options = {
       ttl: options.ttl || 24 * 60 * 60 * 1000, // 24 hours default
       useMemory: options.useMemory !== false,
+      useLocalStorage: options.useLocalStorage !== false,
       useIndexedDB: options.useIndexedDB !== false,
       namespace: options.namespace || 'openalex',
+      localStorageLimit: options.localStorageLimit || 5 * 1024 * 1024, // 5MB default
     };
   }
 
@@ -83,11 +87,117 @@ export class CacheManager {
     return Date.now() - entry.timestamp < this.options.ttl;
   }
 
-  // Get from cache
+  // localStorage helpers
+  private getLocalStorageKey(key: string): string {
+    return `${this.options.namespace}:${key}`;
+  }
+
+  private getFromLocalStorage(key: string): CacheEntry | null {
+    if (!this.options.useLocalStorage) return null;
+    
+    try {
+      const lsKey = this.getLocalStorageKey(key);
+      const stored = localStorage.getItem(lsKey);
+      if (!stored) return null;
+      
+      const entry: CacheEntry = JSON.parse(stored);
+      return this.isValid(entry) ? entry : null;
+    } catch (error) {
+      console.warn('localStorage get error:', error);
+      return null;
+    }
+  }
+
+  private setToLocalStorage(key: string, entry: CacheEntry): boolean {
+    if (!this.options.useLocalStorage) return false;
+    
+    try {
+      const lsKey = this.getLocalStorageKey(key);
+      const serialized = JSON.stringify(entry);
+      
+      // Check if this would exceed localStorage limit
+      const currentSize = this.getLocalStorageSize();
+      const newEntrySize = serialized.length + lsKey.length;
+      
+      if (currentSize + newEntrySize > this.options.localStorageLimit) {
+        // Try to make space by removing old entries
+        if (!this.evictOldLocalStorageEntries(newEntrySize)) {
+          return false; // Still no space, store in IndexedDB instead
+        }
+      }
+      
+      localStorage.setItem(lsKey, serialized);
+      return true;
+    } catch (error) {
+      console.warn('localStorage set error:', error);
+      return false;
+    }
+  }
+
+  private getLocalStorageSize(): number {
+    let totalSize = 0;
+    const prefix = `${this.options.namespace}:`;
+    
+    for (let i = 0; i < localStorage.length; i++) {
+      const key = localStorage.key(i);
+      if (key && key.startsWith(prefix)) {
+        const value = localStorage.getItem(key);
+        if (value) {
+          totalSize += key.length + value.length;
+        }
+      }
+    }
+    
+    return totalSize;
+  }
+
+  private evictOldLocalStorageEntries(spaceNeeded: number): boolean {
+    const prefix = `${this.options.namespace}:`;
+    const entries: { key: string; timestamp: number; size: number }[] = [];
+    
+    // Collect all our cache entries with timestamps
+    for (let i = 0; i < localStorage.length; i++) {
+      const key = localStorage.key(i);
+      if (key && key.startsWith(prefix)) {
+        const value = localStorage.getItem(key);
+        if (value) {
+          try {
+            const entry: CacheEntry = JSON.parse(value);
+            entries.push({
+              key,
+              timestamp: entry.timestamp,
+              size: key.length + value.length
+            });
+          } catch {
+            // Invalid entry, remove it
+            localStorage.removeItem(key);
+          }
+        }
+      }
+    }
+    
+    // Sort by timestamp (oldest first)
+    entries.sort((a, b) => a.timestamp - b.timestamp);
+    
+    // Remove entries until we have enough space
+    let freedSpace = 0;
+    for (const entry of entries) {
+      localStorage.removeItem(entry.key);
+      freedSpace += entry.size;
+      
+      if (freedSpace >= spaceNeeded) {
+        return true;
+      }
+    }
+    
+    return freedSpace >= spaceNeeded;
+  }
+
+  // Get from cache using optimal hierarchy: Memory → localStorage → IndexedDB
   async get<T>(endpoint: string, params: Record<string, unknown> = {}): Promise<T | null> {
     const key = this.getCacheKey(endpoint, params);
     
-    // Try memory cache first
+    // 1. Try memory cache first (fastest)
     if (this.options.useMemory) {
       const memoryEntry = this.memoryCache.get(key);
       if (memoryEntry && this.isValid(memoryEntry)) {
@@ -99,19 +209,37 @@ export class CacheManager {
       }
     }
     
-    // Try IndexedDB
+    // 2. Try localStorage (fast, synchronous)
+    if (this.options.useLocalStorage) {
+      const localEntry = this.getFromLocalStorage(key);
+      if (localEntry) {
+        // Also store in memory cache for even faster next access
+        if (this.options.useMemory) {
+          this.memoryCache.set(key, localEntry);
+        }
+        return localEntry.data as T;
+      }
+    }
+    
+    // 3. Try IndexedDB (slower, high capacity)
     if (this.options.useIndexedDB) {
       try {
         const database = await getDb();
         const cached = await database.getSearchResults(key, params, this.options.ttl);
         if (cached && cached.results) {
-          // Also store in memory cache for faster access
+          const entry: CacheEntry = {
+            data: cached,
+            timestamp: cached.timestamp,
+          };
+          
+          // Promote to faster storage layers
           if (this.options.useMemory) {
-            this.memoryCache.set(key, {
-              data: cached,
-              timestamp: cached.timestamp,
-            });
+            this.memoryCache.set(key, entry);
           }
+          if (this.options.useLocalStorage) {
+            this.setToLocalStorage(key, entry);
+          }
+          
           return cached as unknown as T;
         }
       } catch (error) {
@@ -122,7 +250,7 @@ export class CacheManager {
     return null;
   }
 
-  // Set in cache
+  // Set in cache using intelligent storage strategy
   async set<T>(
     endpoint: string,
     params: Record<string, unknown>,
@@ -130,10 +258,11 @@ export class CacheManager {
   ): Promise<void> {
     const key = this.getCacheKey(endpoint, params);
     const timestamp = Date.now();
+    const entry: CacheEntry = { data, timestamp };
     
-    // Store in memory cache
+    // Always store in memory cache (fastest)
     if (this.options.useMemory) {
-      this.memoryCache.set(key, { data, timestamp });
+      this.memoryCache.set(key, entry);
       
       // Implement LRU eviction if cache gets too large
       if (this.memoryCache.size > 100) {
@@ -144,8 +273,14 @@ export class CacheManager {
       }
     }
     
-    // Store in IndexedDB
-    if (this.options.useIndexedDB && isApiResponse(data)) {
+    // Try localStorage first (fast, moderate capacity)
+    let storedInLocalStorage = false;
+    if (this.options.useLocalStorage) {
+      storedInLocalStorage = this.setToLocalStorage(key, entry);
+    }
+    
+    // If localStorage failed/full or disabled, use IndexedDB (high capacity)
+    if (!storedInLocalStorage && this.options.useIndexedDB && isApiResponse(data)) {
       try {
         const database = await getDb();
         await database.cacheSearchResults(
@@ -158,9 +293,16 @@ export class CacheManager {
         console.error('Failed to store in IndexedDB cache:', error);
       }
     }
+    
+    // For non-API response data that couldn't fit in localStorage, try IndexedDB anyway
+    if (!storedInLocalStorage && this.options.useIndexedDB && !isApiResponse(data)) {
+      // For non-API data, we need a different storage approach in IndexedDB
+      // This could be enhanced to handle individual entities, etc.
+      console.debug('Non-API response data too large for localStorage, consider IndexedDB enhancement');
+    }
   }
 
-  // Delete from cache
+  // Delete from cache across all layers
   async delete(endpoint: string, params: Record<string, unknown> = {}): Promise<void> {
     const key = this.getCacheKey(endpoint, params);
     
@@ -169,14 +311,35 @@ export class CacheManager {
       this.memoryCache.delete(key);
     }
     
+    // Remove from localStorage
+    if (this.options.useLocalStorage) {
+      const lsKey = this.getLocalStorageKey(key);
+      localStorage.removeItem(lsKey);
+    }
+    
     // Note: IndexedDB deletion would need to be implemented in db.ts
     // For now, entries will expire based on TTL
   }
 
-  // Clear all cache
+  // Clear all cache across all layers
   async clear(): Promise<void> {
     // Clear memory cache
     this.memoryCache.clear();
+    
+    // Clear localStorage cache
+    if (this.options.useLocalStorage) {
+      const prefix = `${this.options.namespace}:`;
+      const keysToRemove: string[] = [];
+      
+      for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        if (key && key.startsWith(prefix)) {
+          keysToRemove.push(key);
+        }
+      }
+      
+      keysToRemove.forEach(key => localStorage.removeItem(key));
+    }
     
     // Clear IndexedDB cache
     if (this.options.useIndexedDB) {
@@ -189,7 +352,7 @@ export class CacheManager {
     }
   }
 
-  // Get cache statistics
+  // Get cache statistics across all layers
   getStats(): CacheStats {
     let memorySize = 0;
     let memoryEntries = 0;
@@ -204,10 +367,27 @@ export class CacheManager {
       memorySize += JSON.stringify(entry.data).length;
     });
     
+    // Get localStorage stats
+    const localStorageSize = this.getLocalStorageSize();
+    let localStorageEntries = 0;
+    
+    if (this.options.useLocalStorage) {
+      const prefix = `${this.options.namespace}:`;
+      for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        if (key && key.startsWith(prefix)) {
+          localStorageEntries++;
+        }
+      }
+    }
+    
     return {
       memoryEntries,
       validEntries,
       memorySize,
+      localStorageEntries,
+      localStorageSize,
+      localStorageLimit: this.options.localStorageLimit,
       hitRate: this.calculateHitRate(),
     };
   }
@@ -236,11 +416,14 @@ interface CacheEntry {
   timestamp: number;
 }
 
-// Cache statistics
+// Cache statistics across all layers
 interface CacheStats {
   memoryEntries: number;
   validEntries: number;
   memorySize: number;
+  localStorageEntries: number;
+  localStorageSize: number;
+  localStorageLimit: number;
   hitRate: number;
 }
 

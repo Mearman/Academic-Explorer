@@ -62,13 +62,17 @@ export class CacheInterceptor {
   constructor(options: {
     ttl?: number;
     useMemory?: boolean;
+    useLocalStorage?: boolean;
     useIndexedDB?: boolean;
+    localStorageLimit?: number;
     strategies?: Array<{ pattern: RegExp; strategy: CacheStrategy }>;
   } = {}) {
     this.cache = new CacheManager({
       ttl: options.ttl || 60 * 60 * 1000,
       useMemory: options.useMemory !== false,
+      useLocalStorage: options.useLocalStorage !== false,
       useIndexedDB: options.useIndexedDB !== false,
+      localStorageLimit: options.localStorageLimit || 5 * 1024 * 1024, // 5MB default
       namespace: 'openalex-interceptor',
     });
 
@@ -164,7 +168,9 @@ export class CacheInterceptor {
       const tempCache = new CacheManager({
         ttl,
         useMemory: this.cache['options'].useMemory,
+        useLocalStorage: this.cache['options'].useLocalStorage,
         useIndexedDB: this.cache['options'].useIndexedDB,
+        localStorageLimit: this.cache['options'].localStorageLimit,
         namespace: this.cache['options'].namespace,
       });
       await tempCache.set(key, (params as Record<string, unknown>) || {}, data);
