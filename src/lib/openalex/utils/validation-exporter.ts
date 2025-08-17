@@ -159,6 +159,7 @@ function exportAsJson(
         sortDirection: config.sortDirection,
       },
     },
+    data,
   };
 
   if (config.groupByEntityType && 'issuesByType' in data) {
