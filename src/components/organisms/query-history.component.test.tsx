@@ -31,19 +31,19 @@ const TestWrapper = ({ children }: { children: React.ReactNode }) => (
   </div>
 );
 
-// Helper to create a complete mock store
-const createMockStore = (overrides: Partial<ReturnType<typeof useAppStore>> = {}) => ({
+// Helper to create base mock store properties
+const createBaseMockStore = () => ({
   queryHistory: [],
   clearQueryHistory: vi.fn(),
   theme: 'system' as const,
   searchQuery: '',
   searchFilters: {},
   searchHistory: [],
-  preferences: {
-    resultsPerPage: 20,
-    defaultView: 'grid' as const,
-    showAbstracts: true,
-  },
+  preferences: { resultsPerPage: 20, defaultView: 'grid' as const, showAbstracts: true },
+});
+
+// Helper to create mock store methods
+const createMockStoreMethods = () => ({
   setTheme: vi.fn(),
   setSearchQuery: vi.fn(),
   updateSearchFilters: vi.fn(),
@@ -55,11 +55,45 @@ const createMockStore = (overrides: Partial<ReturnType<typeof useAppStore>> = {}
   updateQueryResults: vi.fn(),
   updateQueryError: vi.fn(),
   getQueryHistory: vi.fn(),
+});
+
+// Helper to create a complete mock store
+const createMockStore = (overrides: Partial<ReturnType<typeof useAppStore>> = {}) => ({
+  ...createBaseMockStore(),
+  ...createMockStoreMethods(),
   ...overrides,
 });
 
-describe('QueryHistory', () => {
+// Test data constants
+const createTestQueries = () => ({
+  zeroResults: {
+    id: 'query-1',
+    timestamp: '2024-01-15T10:30:00.000Z',
+    query: 'test search',
+    params: { search: 'test search' },
+    results: { count: 0, responseTimeMs: 150, firstResult: undefined },
+  } as QueryRecord,
+  
+  withResults: {
+    id: 'query-2',
+    timestamp: '2024-01-15T10:35:00.000Z',
+    query: 'machine learning',
+    params: { search: 'machine learning' },
+    results: { count: 15000, responseTimeMs: 250, firstResult: { id: 'W123', title: 'Deep Learning in Practice' } },
+  } as QueryRecord,
+  
+  errorQuery: {
+    id: 'query-error',
+    timestamp: '2024-01-15T10:40:00.000Z',
+    query: 'failing query',
+    params: { search: 'failing query' },
+    error: 'API request failed',
+  } as QueryRecord,
+});
+
+describe('QueryHistory - Basic Display', () => {
   const mockClearQueryHistory = vi.fn();
+  const _testQueries = createTestQueries();
 
   beforeEach(() => {
     vi.clearAllMocks();
@@ -199,6 +233,18 @@ describe('QueryHistory', () => {
       expect(screen.getByText(/15\/01\/2024, 14:30:45/)).toBeInTheDocument();
     });
   });
+});
+
+describe('QueryHistory - Interactions', () => {
+  const mockClearQueryHistory = vi.fn();
+  const _testQueries = createTestQueries();
+
+  beforeEach(() => {
+    vi.clearAllMocks();
+    mockUseAppStore.mockReturnValue(createMockStore({
+      clearQueryHistory: mockClearQueryHistory,
+    }));
+  });
 
   describe('Query Interaction', () => {
     it('should expand query details when clicked', async () => {
@@ -237,7 +283,7 @@ describe('QueryHistory', () => {
         expect(screen.getByText('Results:')).toBeInTheDocument();
         expect(screen.getByText('1,000')).toBeInTheDocument();
         expect(screen.getByText('Response Time:')).toBeInTheDocument();
-        expect(screen.getByText('200ms')).toBeInTheDocument();
+        expect(screen.getAllByText('200ms')).toHaveLength(2); // One in summary, one in details
         expect(screen.getByText('First Result:')).toBeInTheDocument();
         expect(screen.getByText('Test Paper')).toBeInTheDocument();
         expect(screen.getByText('Query Parameters:')).toBeInTheDocument();
@@ -333,6 +379,18 @@ describe('QueryHistory', () => {
 
       expect(mockClearQueryHistory).toHaveBeenCalled();
     });
+  });
+});
+
+describe('QueryHistory - Status and Edge Cases', () => {
+  const mockClearQueryHistory = vi.fn();
+  const _testQueries = createTestQueries();
+
+  beforeEach(() => {
+    vi.clearAllMocks();
+    mockUseAppStore.mockReturnValue(createMockStore({
+      clearQueryHistory: mockClearQueryHistory,
+    }));
   });
 
   describe('Query Status Indicators', () => {

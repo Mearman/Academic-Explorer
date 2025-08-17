@@ -3,7 +3,7 @@
  * Tests React component rendering and error handling behavior
  */
 
-import { render, screen, act } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
@@ -91,47 +91,49 @@ vi.mock('../molecules/error-message-content', () => ({
   ),
 }));
 
-// Mock react-error-boundary
+// Mock react-error-boundary with a proper React Error Boundary simulation
 vi.mock('react-error-boundary', () => ({
   ErrorBoundary: ({ children, FallbackComponent, onError, onReset }: ErrorBoundaryProps) => {
-    const TestErrorBoundary = ({ children }: { children: React.ReactNode }) => {
-      const [hasError, setHasError] = React.useState(false);
-      const [error, setError] = React.useState<Error | null>(null);
-
-      React.useEffect(() => {
-        const handleError = (event: ErrorEvent) => {
-          if (event.error && event.error.message === 'Test error') {
-            setHasError(true);
-            setError(event.error);
-            onError?.(event.error, { componentStack: 'test stack' });
-            event.preventDefault();
-          }
-        };
-
-        window.addEventListener('error', handleError);
-        return () => window.removeEventListener('error', handleError);
-      }, []);
-
-      if (hasError && error) {
-        if (FallbackComponent) {
-          return (
-            <FallbackComponent 
-              error={error}
-              resetErrorBoundary={() => {
-                setHasError(false);
-                setError(null);
-                onReset?.();
-              }}
-            />
-          );
-        }
-        return <div>Error: {error.message}</div>;
+    class MockErrorBoundary extends React.Component<
+      { children: React.ReactNode },
+      { hasError: boolean; error: Error | null }
+    > {
+      constructor(props: { children: React.ReactNode }) {
+        super(props);
+        this.state = { hasError: false, error: null };
       }
 
-      return children;
-    };
+      static getDerivedStateFromError(error: Error) {
+        return { hasError: true, error };
+      }
 
-    return <TestErrorBoundary>{children}</TestErrorBoundary>;
+      componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
+        onError?.(error, errorInfo);
+      }
+
+      resetError = () => {
+        this.setState({ hasError: false, error: null });
+        onReset?.();
+      };
+
+      render() {
+        if (this.state.hasError && this.state.error) {
+          if (FallbackComponent) {
+            return (
+              <FallbackComponent 
+                error={this.state.error}
+                resetErrorBoundary={this.resetError}
+              />
+            );
+          }
+          return <div>Error: {this.state.error.message}</div>;
+        }
+
+        return this.props.children;
+      }
+    }
+
+    return <MockErrorBoundary>{children}</MockErrorBoundary>;
   },
 }));
 
@@ -145,12 +147,7 @@ const _ThrowError = ({ shouldThrow = false, errorMessage = 'Test error' }: { sho
 
 // Component that triggers error via window.error event
 const TriggerError = ({ errorMessage = 'Test error' }: { errorMessage?: string }) => {
-  React.useEffect(() => {
-    const error = new Error(errorMessage);
-    window.dispatchEvent(new ErrorEvent('error', { error }));
-  }, [errorMessage]);
-
-  return <div data-testid="trigger-component">Trigger Component</div>;
+  throw new Error(errorMessage);
 };
 
 describe('EntityError Basic Rendering', () => {
@@ -340,10 +337,7 @@ describe('EntityErrorBoundary Error Handling', () => {
       </EntityErrorBoundary>
     );
 
-    // Wait for error to be triggered
-    await act(async () => {
-      await new Promise(resolve => setTimeout(resolve, 0));
-    });
+    // Error is thrown synchronously during render
 
     expect(screen.getByTestId('error-icon')).toBeInTheDocument();
     expect(screen.getByTestId('error-message-content')).toBeInTheDocument();
@@ -357,9 +351,7 @@ describe('EntityErrorBoundary Error Handling', () => {
       </EntityErrorBoundary>
     );
 
-    await act(async () => {
-      await new Promise(resolve => setTimeout(resolve, 0));
-    });
+    // Error is thrown synchronously during render
 
     const messageContent = screen.getByTestId('error-message-content');
     expect(messageContent).toHaveAttribute('data-entity-type', 'work');
@@ -385,9 +377,7 @@ describe('EntityErrorBoundary Error Logging', () => {
       </EntityErrorBoundary>
     );
 
-    await act(async () => {
-      await new Promise(resolve => setTimeout(resolve, 0));
-    });
+    // Error is thrown synchronously during render
 
     expect(consoleSpy).toHaveBeenCalledWith(
       'Entity page error:',
@@ -428,9 +418,7 @@ describe('EntityErrorBoundary Error Recovery', () => {
     );
 
     // Wait for error
-    await act(async () => {
-      await new Promise(resolve => setTimeout(resolve, 0));
-    });
+    // Error is thrown synchronously during render
 
     expect(screen.getByTestId('error-icon')).toBeInTheDocument();
 
@@ -458,9 +446,7 @@ describe('EntityErrorBoundary Custom Fallback', () => {
       </EntityErrorBoundary>
     );
 
-    await act(async () => {
-      await new Promise(resolve => setTimeout(resolve, 0));
-    });
+    // Error is thrown synchronously during render
 
     expect(screen.getByTestId('custom-fallback')).toBeInTheDocument();
     expect(screen.getByText('Custom Error: Custom fallback test')).toBeInTheDocument();
@@ -484,9 +470,7 @@ describe('EntityErrorBoundary Custom Fallback', () => {
       </EntityErrorBoundary>
     );
 
-    await act(async () => {
-      await new Promise(resolve => setTimeout(resolve, 0));
-    });
+    // Error is thrown synchronously during render
 
     expect(screen.getByTestId('custom-fallback')).toBeInTheDocument();
     expect(screen.getByText('Entity: institution - I555666777')).toBeInTheDocument();
@@ -501,9 +485,7 @@ describe('EntityErrorBoundary Error Information Persistence', () => {
       </EntityErrorBoundary>
     );
 
-    await act(async () => {
-      await new Promise(resolve => setTimeout(resolve, 0));
-    });
+    // Error is thrown synchronously during render
 
     const debugDetails = screen.getByTestId('error-debug-details');
     expect(debugDetails).toHaveTextContent('Component Stack: test stack');
@@ -518,9 +500,7 @@ describe('EntityErrorBoundary Error Information Persistence', () => {
       </EntityErrorBoundary>
     );
 
-    await act(async () => {
-      await new Promise(resolve => setTimeout(resolve, 0));
-    });
+    // Error is thrown synchronously during render
 
     // Error should be shown
     expect(screen.getByTestId('error-debug-details')).toBeInTheDocument();
@@ -542,9 +522,7 @@ describe('EntityErrorBoundary Edge Cases and Accessibility', () => {
       </EntityErrorBoundary>
     );
 
-    await act(async () => {
-      await new Promise(resolve => setTimeout(resolve, 0));
-    });
+    // Error is thrown synchronously during render
 
     const messageContent = screen.getByTestId('error-message-content');
     expect(messageContent).toHaveAttribute('data-entity-type', '');
@@ -560,9 +538,7 @@ describe('EntityErrorBoundary Edge Cases and Accessibility', () => {
       </EntityErrorBoundary>
     );
 
-    await act(async () => {
-      await new Promise(resolve => setTimeout(resolve, 0));
-    });
+    // Error is thrown synchronously during render
 
     // First reset
     await user.click(screen.getByTestId('error-actions'));
@@ -584,9 +560,7 @@ describe('EntityErrorBoundary Edge Cases and Accessibility', () => {
       </EntityErrorBoundary>
     );
 
-    await act(async () => {
-      await new Promise(resolve => setTimeout(resolve, 0));
-    });
+    // Error is thrown synchronously during render
 
     // Error boundary should maintain proper structure
     const retryButton = screen.getByTestId('error-actions');
