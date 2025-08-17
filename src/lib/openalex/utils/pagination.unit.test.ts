@@ -159,7 +159,7 @@ describe('Paginator', () => {
           count: 300,
           db_response_time_ms: 12,
           page: 2,
-          per_page: 100,
+          per_page: 200,
         },
         results: Array(100).fill(null).map((_, i) => ({ id: `W${i + 201}`, display_name: `Work ${i + 201}` })) as Work[],
       };
@@ -183,7 +183,7 @@ describe('Paginator', () => {
         expect.objectContaining({ page: 1, per_page: 200 })
       );
       expect(mockWorks).toHaveBeenCalledWith(
-        expect.objectContaining({ page: 2, per_page: 100 })
+        expect.objectContaining({ page: 2, per_page: 200 })
       );
     });
 

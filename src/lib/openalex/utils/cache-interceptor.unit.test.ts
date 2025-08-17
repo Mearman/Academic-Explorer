@@ -469,7 +469,20 @@ describe('withCache proxy wrapper', () => {
       work: vi.fn(),
       authors: vi.fn(),
       author: vi.fn(),
+      sources: vi.fn(),
+      source: vi.fn(),
+      institutions: vi.fn(),
+      institution: vi.fn(),
+      funders: vi.fn(),
+      funder: vi.fn(),
+      topics: vi.fn(),
+      topic: vi.fn(),
+      concepts: vi.fn(),
+      concept: vi.fn(),
+      publishers: vi.fn(),
+      publisher: vi.fn(),
       worksAutocomplete: vi.fn(),
+      authorsAutocomplete: vi.fn(),
       randomWork: vi.fn(),
       getConfig: vi.fn(),
       updateConfig: vi.fn(),
@@ -668,6 +681,11 @@ describe('withCache proxy wrapper', () => {
     it('should propagate errors from intercepted methods', async () => {
       const error = new Error('API Error');
       mockClient.works.mockRejectedValue(error);
+      
+      // Ensure the interceptor mock doesn't interfere - use a clean interceptor
+      vi.mocked(interceptor.intercept).mockImplementation(async (endpoint, params, requestFn) => {
+        return await requestFn();
+      });
       
       await expect(proxiedClient.works()).rejects.toThrow('API Error');
     });

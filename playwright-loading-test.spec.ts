@@ -1,7 +1,8 @@
-import { test, expect, chromium } from '@playwright/test';
 import { spawn, ChildProcess } from 'child_process';
-import { promisify } from 'util';
 import net from 'net';
+import { promisify } from 'util';
+
+import { test, expect } from '@playwright/test';
 
 // E2E tests to detect and debug the stuck loading issue
 // These tests control their own dev server with dynamic port

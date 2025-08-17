@@ -557,7 +557,7 @@ describe('useAppStore', () => {
       expect(endTime - startTime).toBeLessThan(100); // Should handle updates quickly
       
       const { preferences } = useAppStore.getState();
-      expect(preferences.resultsPerPage).toBe(40); // Last update: 20 + (49 % 5) * 10
+      expect(preferences.resultsPerPage).toBe(60); // Last update: 20 + (49 % 5) * 10 = 20 + 4 * 10 = 60
       expect(preferences.defaultView).toBe('list'); // 49 % 2 === 1
       expect(preferences.showAbstracts).toBe(false); // 49 % 3 !== 0
     });

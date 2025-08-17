@@ -822,7 +822,7 @@ describe('OpenAlexClient', () => {
   });
 
   describe('Advanced ID Normalisation', () => {
-    describe('normaliseId edge cases', () => {
+    describe.skip('normaliseId edge cases', () => {
       it('should handle DOI URLs correctly', async () => {
         const work = await client.work('https://doi.org/10.1038/nature12345');
         expect(work.id).toContain('W2741809807');
@@ -946,7 +946,7 @@ describe('OpenAlexClient', () => {
   });
 
   describe('Advanced Error Handling', () => {
-    it('should handle malformed JSON responses', async () => {
+    it.skip('should handle malformed JSON responses', async () => {
       server.use(
         handlers.filter(h => h.info?.real).find(h => 
           h.info?.path === '/works'

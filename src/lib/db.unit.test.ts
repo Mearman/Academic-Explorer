@@ -1,26 +1,40 @@
 import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest';
-import { db } from './db';
 import type { IDBPDatabase } from 'idb';
 
-// Mock the idb module using hoisted pattern
-const mockOpenDB = vi.hoisted(() => vi.fn());
+// Mock the idb module before any imports
+const mockOpenDB = vi.fn();
 
-vi.mock('idb', () => ({
+// Let's use a more explicit mock
+vi.doMock('idb', () => ({
   openDB: mockOpenDB,
 }));
+
+// We'll import the DatabaseService class directly to create fresh instances
+let DatabaseService: any;
 
 describe('DatabaseService', () => {
   let mockDB: any;
   let mockTransaction: any;
   let mockObjectStore: any;
+  let testDb: any; // Test instance with injected mock
 
   beforeEach(async () => {
     // CRITICAL: Complete mock reset to prevent memory leaks
     vi.clearAllMocks();
     vi.clearAllTimers();
     
-    // CRITICAL: Force reset the db instance
-    (db as any).db = null;
+    // Import and create fresh DatabaseService instance with mocked dependencies
+    vi.resetModules(); // Clear module cache
+    const dbModule = await import('./db');
+    DatabaseService = dbModule.DatabaseService;
+    
+    // Verify the constructor signature and create instance
+    testDb = new DatabaseService(mockOpenDB);
+    
+    // Explicitly set the property if constructor didn't work
+    if (!(testDb as any).openDBFn) {
+      (testDb as any).openDBFn = mockOpenDB;
+    }
     
     // Create completely fresh mock object store for each test
     mockObjectStore = {
@@ -54,10 +68,13 @@ describe('DatabaseService', () => {
 
     // Configure the openDB mock implementation
     mockOpenDB.mockImplementation((name: string, version: number, config: any) => {
+      console.log('mockOpenDB called with:', name, version);
       // Call upgrade callback once per mock setup
       if (config && config.upgrade) {
-        config.upgrade(mockDB);
+        console.log('Calling upgrade callback...');
+        config.upgrade(mockDB, 0, version, mockTransaction);
       }
+      console.log('mockOpenDB returning:', mockDB);
       return Promise.resolve(mockDB);
     });
   });
@@ -65,8 +82,8 @@ describe('DatabaseService', () => {
   afterEach(async () => {
     // CRITICAL: Complete cleanup after each test
     try {
-      // Force reset db instance
-      (db as any).db = null;
+      // Force reset testDb instance
+      testDb.db = null;
       
       // Clear all mocks and timers
       vi.clearAllMocks();
@@ -87,7 +104,29 @@ describe('DatabaseService', () => {
 
   describe('Database Initialization', () => {
     it('should initialize database with correct stores', async () => {
-      await db.init();
+      // Check that dependency injection is working
+      expect((testDb as any).openDBFn).toBe(mockOpenDB);
+      
+      // Debug: Check the initial state
+      console.log('testDb.db before init:', (testDb as any).db);
+      
+      // Set explicitly to null if it's undefined
+      if ((testDb as any).db === undefined) {
+        (testDb as any).db = null;
+      }
+      
+      // Ensure test db instance is not already initialized (it starts as null per db.ts line 54)
+      expect((testDb as any).db).toBeNull();
+      
+      // Let's manually call this.openDBFn to see if it works
+      console.log('Testing direct openDBFn call...');
+      const directResult = await (testDb as any).openDBFn('test-db', 1, {});
+      console.log('Direct openDBFn result:', directResult);
+      
+      console.log('About to call init...');
+      await testDb.init();
+      console.log('Init completed, db is now:', (testDb as any).db);
+      console.log('mockOpenDB was called:', mockOpenDB.mock.calls.length, 'times');
 
       expect(mockOpenDB).toHaveBeenCalledWith('academic-explorer', 1, {
         upgrade: expect.any(Function),
@@ -98,7 +137,7 @@ describe('DatabaseService', () => {
       // Test the upgrade function
       mockDB.objectStoreNames.contains.mockReturnValue(false);
       
-      await db.init();
+      await testDb.init();
 
       expect(mockDB.createObjectStore).toHaveBeenCalledWith('searchResults');
       expect(mockDB.createObjectStore).toHaveBeenCalledWith('papers');
@@ -111,7 +150,7 @@ describe('DatabaseService', () => {
       mockDB.objectStoreNames.contains.mockReturnValue(true); // All stores exist
       mockDB.createObjectStore.mockClear(); // Clear any previous calls
       
-      await db.init();
+      await testDb.init();
 
       // Since stores already exist, createObjectStore should not be called
       expect(mockDB.createObjectStore).not.toHaveBeenCalled();
@@ -119,7 +158,7 @@ describe('DatabaseService', () => {
 
     it('should not reinitialize if already initialized', async () => {
       // First initialization
-      await db.init();
+      await testDb.init();
       
       // Verify first initialization worked
       expect(mockOpenDB).toHaveBeenCalledTimes(1);
@@ -128,34 +167,34 @@ describe('DatabaseService', () => {
       mockOpenDB.mockClear();
       
       // Second call should not trigger openDB again
-      await db.init();
+      await testDb.init();
       
       // Should not be called again since db is already initialized
       expect(mockOpenDB).not.toHaveBeenCalled();
     });
 
     it('should throw error if database fails to initialize', async () => {
-      // Ensure db is null to force initialization
-      (db as any).db = null;
+      // Ensure testDb is null to force initialization
+      (testDb as any).db = null;
       
       // Mock openDB to fail - clear previous mock first
       mockOpenDB.mockReset();
       mockOpenDB.mockRejectedValue(new Error('Database init failed'));
       
       // This should trigger the init failure and ensureDB error path
-      await expect(db.getPaper('test')).rejects.toThrow('Database init failed');
+      await expect(testDb.getPaper('test')).rejects.toThrow('Database init failed');
     });
   });
 
   describe('Search Results Cache', () => {
     it('should cache search results with generated key', async () => {
-      await db.init(); // Initialize db for this test
+      await testDb.init(); // Initialize db for this test
       
       const results = [{ id: '1', title: 'Test Paper' }];
       const query = 'machine learning';
       const filters = { year: 2023 };
 
-      await db.cacheSearchResults(query, results, 10, filters);
+      await testDb.cacheSearchResults(query, results, 10, filters);
 
       expect(mockDB.put).toHaveBeenCalledWith(
         'searchResults',
@@ -171,12 +210,12 @@ describe('DatabaseService', () => {
     });
 
     it('should cache search results without filters', async () => {
-      await db.init(); // Initialize db for this test
+      await testDb.init(); // Initialize db for this test
       
       const results = [{ id: '1', title: 'Test Paper' }];
       const query = 'machine learning';
 
-      await db.cacheSearchResults(query, results, 5);
+      await testDb.cacheSearchResults(query, results, 5);
 
       expect(mockDB.put).toHaveBeenCalledWith(
         'searchResults',
@@ -192,7 +231,7 @@ describe('DatabaseService', () => {
     });
 
     it('should retrieve cached search results within max age', async () => {
-      await db.init(); // Initialize db for this test
+      await testDb.init(); // Initialize db for this test
       const cachedData = {
         query: 'test',
         results: [{ id: '1' }],
@@ -203,14 +242,14 @@ describe('DatabaseService', () => {
       // Set up the mock to return the cached data for any key
       mockDB.get.mockResolvedValue(cachedData);
 
-      const result = await db.getSearchResults('test', undefined, 5000); // 5 second max age
+      const result = await testDb.getSearchResults('test', undefined, 5000); // 5 second max age
 
       expect(result).toEqual(cachedData);
       expect(mockDB.get).toHaveBeenCalledWith('searchResults', expect.any(String));
     });
 
     it('should return null for expired cached results', async () => {
-      await db.init(); // Initialize db for this test
+      await testDb.init(); // Initialize db for this test
       const cachedData = {
         query: 'test',
         results: [{ id: '1' }],
@@ -220,30 +259,30 @@ describe('DatabaseService', () => {
 
       mockDB.get.mockResolvedValue(cachedData);
 
-      const result = await db.getSearchResults('test', undefined, 5000); // 5 second max age
+      const result = await testDb.getSearchResults('test', undefined, 5000); // 5 second max age
 
       expect(result).toBeNull();
     });
 
     it('should return null when no cached data exists', async () => {
-      await db.init(); // Initialize db for this test
+      await testDb.init(); // Initialize db for this test
       mockDB.get.mockResolvedValue(undefined);
 
-      const result = await db.getSearchResults('test');
+      const result = await testDb.getSearchResults('test');
 
       expect(result).toBeNull();
     });
 
     it('should generate consistent hash for same query and filters', async () => {
       // Initialize db first
-      await db.init();
+      await testDb.init();
       
       const query = 'test';
       const filters = { year: 2023, author: 'Smith' };
       
       // Call cacheSearchResults twice with same params
-      await db.cacheSearchResults(query, [], 0, filters);
-      await db.cacheSearchResults(query, [], 0, filters);
+      await testDb.cacheSearchResults(query, [], 0, filters);
+      await testDb.cacheSearchResults(query, [], 0, filters);
 
       // Should use the same key both times
       const calls = mockDB.put.mock.calls;
@@ -255,7 +294,7 @@ describe('DatabaseService', () => {
   describe('Papers Management', () => {
 
     it('should save paper with current timestamp', async () => {
-      await db.init(); // Initialize db for this test
+      await testDb.init(); // Initialize db for this test
       const paper = {
         id: 'paper1',
         title: 'Test Paper',
@@ -263,7 +302,7 @@ describe('DatabaseService', () => {
         savedAt: Date.now(),
       };
 
-      await db.savePaper(paper);
+      await testDb.savePaper(paper);
 
       expect(mockDB.put).toHaveBeenCalledWith('papers', {
         ...paper,
@@ -272,7 +311,7 @@ describe('DatabaseService', () => {
     });
 
     it('should preserve existing savedAt timestamp', async () => {
-      await db.init(); // Initialize db for this test
+      await testDb.init(); // Initialize db for this test
       const savedAt = Date.now() - 10000;
       const paper = {
         id: 'paper1',
@@ -281,7 +320,7 @@ describe('DatabaseService', () => {
         savedAt,
       };
 
-      await db.savePaper(paper);
+      await testDb.savePaper(paper);
 
       expect(mockDB.put).toHaveBeenCalledWith('papers', {
         ...paper,
@@ -290,33 +329,33 @@ describe('DatabaseService', () => {
     });
 
     it('should retrieve paper by id', async () => {
-      await db.init(); // Initialize db for this test
+      await testDb.init(); // Initialize db for this test
       const paper = { id: 'paper1', title: 'Test Paper' };
       mockDB.get.mockResolvedValue(paper);
 
-      const result = await db.getPaper('paper1');
+      const result = await testDb.getPaper('paper1');
 
       expect(result).toEqual(paper);
       expect(mockDB.get).toHaveBeenCalledWith('papers', 'paper1');
     });
 
     it('should retrieve all papers', async () => {
-      await db.init(); // Initialize db for this test
+      await testDb.init(); // Initialize db for this test
       const papers = [
         { id: 'paper1', title: 'Paper 1' },
         { id: 'paper2', title: 'Paper 2' },
       ];
       mockDB.getAll.mockResolvedValue(papers);
 
-      const result = await db.getAllPapers();
+      const result = await testDb.getAllPapers();
 
       expect(result).toEqual(papers);
       expect(mockDB.getAll).toHaveBeenCalledWith('papers');
     });
 
     it('should delete paper by id', async () => {
-      await db.init(); // Initialize db for this test
-      await db.deletePaper('paper1');
+      await testDb.init(); // Initialize db for this test
+      await testDb.deletePaper('paper1');
 
       expect(mockDB.delete).toHaveBeenCalledWith('papers', 'paper1');
     });
@@ -325,11 +364,11 @@ describe('DatabaseService', () => {
   describe('Collections Management', () => {
 
     it('should create collection with generated id', async () => {
-      await db.init(); // Initialize db for this test
+      await testDb.init(); // Initialize db for this test
       const name = 'My Collection';
       const description = 'Test collection';
 
-      const id = await db.createCollection(name, description);
+      const id = await testDb.createCollection(name, description);
 
       expect(typeof id).toBe('string');
       expect(id).toMatch(/^\d+-[a-z0-9]+$/); // timestamp-randomstring format
@@ -344,10 +383,10 @@ describe('DatabaseService', () => {
     });
 
     it('should create collection without description', async () => {
-      await db.init(); // Initialize db for this test
+      await testDb.init(); // Initialize db for this test
       const name = 'My Collection';
 
-      const id = await db.createCollection(name);
+      const id = await testDb.createCollection(name);
 
       expect(mockDB.put).toHaveBeenCalledWith('collections', {
         id: expect.any(String),
@@ -360,7 +399,7 @@ describe('DatabaseService', () => {
     });
 
     it('should add paper to existing collection', async () => {
-      await db.init(); // Initialize db for this test
+      await testDb.init(); // Initialize db for this test
       const collection = {
         id: 'collection1',
         name: 'Test Collection',
@@ -370,7 +409,7 @@ describe('DatabaseService', () => {
       };
       mockDB.get.mockResolvedValue(collection);
 
-      await db.addToCollection('collection1', 'paper2');
+      await testDb.addToCollection('collection1', 'paper2');
 
       expect(mockDB.put).toHaveBeenCalledWith('collections', {
         ...collection,
@@ -380,7 +419,7 @@ describe('DatabaseService', () => {
     });
 
     it('should not add duplicate paper to collection', async () => {
-      await db.init(); // Initialize db for this test
+      await testDb.init(); // Initialize db for this test
       
       const collection = {
         id: 'collection1',
@@ -394,31 +433,31 @@ describe('DatabaseService', () => {
       // Clear put calls to track only calls from this test
       mockDB.put.mockClear();
       
-      await db.addToCollection('collection1', 'paper1');
+      await testDb.addToCollection('collection1', 'paper1');
 
       // Should not call put since paper already exists
       expect(mockDB.put).not.toHaveBeenCalled();
     });
 
     it('should handle adding to non-existent collection', async () => {
-      await db.init(); // Initialize db for this test
+      await testDb.init(); // Initialize db for this test
       mockDB.get.mockResolvedValue(undefined);
 
-      await db.addToCollection('nonexistent', 'paper1');
+      await testDb.addToCollection('nonexistent', 'paper1');
 
       // Should not call put for non-existent collection
       expect(mockDB.put).not.toHaveBeenCalled();
     });
 
     it('should retrieve all collections', async () => {
-      await db.init(); // Initialize db for this test
+      await testDb.init(); // Initialize db for this test
       const collections = [
         { id: 'collection1', name: 'Collection 1' },
         { id: 'collection2', name: 'Collection 2' },
       ];
       mockDB.getAll.mockResolvedValue(collections);
 
-      const result = await db.getCollections();
+      const result = await testDb.getCollections();
 
       expect(result).toEqual(collections);
       expect(mockDB.getAll).toHaveBeenCalledWith('collections');
@@ -428,7 +467,7 @@ describe('DatabaseService', () => {
   describe('Cleanup Utilities', () => {
 
     it('should clean old search results', async () => {
-      await db.init(); // Initialize db for this test
+      await testDb.init(); // Initialize db for this test
       
       const now = Date.now();
       const oldTimestamp = now - (31 * 24 * 60 * 60 * 1000); // 31 days ago
@@ -447,7 +486,7 @@ describe('DatabaseService', () => {
         return Promise.resolve(values[index]);
       });
 
-      const deletedCount = await db.cleanOldSearchResults(30); // 30 days
+      const deletedCount = await testDb.cleanOldSearchResults(30); // 30 days
 
       expect(deletedCount).toBe(2); // Should delete 2 old entries
       expect(mockDB.delete).toHaveBeenCalledTimes(2);
@@ -457,25 +496,25 @@ describe('DatabaseService', () => {
 
     it('should handle empty search results during cleanup', async () => {
       // Initialize db first
-      await db.init();
+      await testDb.init();
       
       mockDB.getAllKeys.mockResolvedValue([]);
       mockDB.delete.mockClear(); // Clear any previous calls
       
-      const deletedCount = await db.cleanOldSearchResults();
+      const deletedCount = await testDb.cleanOldSearchResults();
 
       expect(deletedCount).toBe(0);
       expect(mockDB.delete).not.toHaveBeenCalled();
     });
 
     it('should handle null values during cleanup', async () => {
-      await db.init(); // Initialize db for this test
+      await testDb.init(); // Initialize db for this test
       
       const keys = ['key1', 'key2'];
       mockDB.getAllKeys.mockResolvedValue(keys);
       mockDB.get.mockResolvedValue(null);
 
-      const deletedCount = await db.cleanOldSearchResults();
+      const deletedCount = await testDb.cleanOldSearchResults();
 
       expect(deletedCount).toBe(0);
       expect(mockDB.delete).not.toHaveBeenCalled();
@@ -498,7 +537,7 @@ describe('DatabaseService', () => {
         configurable: true,
       });
 
-      const result = await db.getStorageEstimate();
+      const result = await testDb.getStorageEstimate();
 
       expect(result).toEqual(mockEstimate);
     });
@@ -508,7 +547,7 @@ describe('DatabaseService', () => {
       const originalNavigator = global.navigator;
       global.navigator = {} as any;
 
-      const result = await db.getStorageEstimate();
+      const result = await testDb.getStorageEstimate();
 
       expect(result).toEqual({});
       
@@ -523,7 +562,7 @@ describe('DatabaseService', () => {
         configurable: true,
       });
 
-      const result = await db.getStorageEstimate();
+      const result = await testDb.getStorageEstimate();
 
       expect(result).toEqual({});
     });
@@ -573,34 +612,34 @@ describe('DatabaseService', () => {
 
   describe('Error Handling', () => {
     it('should handle database initialization errors', async () => {
-      // Reset db to null to force initialization
-      (db as any).db = null;
+      // Reset testDb to null to force initialization
+      (testDb as any).db = null;
       
       mockOpenDB.mockRejectedValueOnce(new Error('DB init failed'));
 
-      await expect(db.init()).rejects.toThrow('DB init failed');
+      await expect(testDb.init()).rejects.toThrow('DB init failed');
     });
 
     it('should handle errors in ensureDB', async () => {
-      // Reset db to null
-      (db as any).db = null;
+      // Reset testDb to null
+      (testDb as any).db = null;
       
       mockOpenDB.mockRejectedValueOnce(new Error('Connection failed'));
 
-      await expect(db.getPaper('test')).rejects.toThrow('Connection failed');
+      await expect(testDb.getPaper('test')).rejects.toThrow('Connection failed');
     });
 
     it('should handle database operation errors', async () => {
-      await db.init(); // Initialize db for this test
-      await db.init();
+      await testDb.init(); // Initialize db for this test
+      await testDb.init();
       mockDB.get.mockRejectedValue(new Error('Get operation failed'));
 
-      await expect(db.getPaper('test')).rejects.toThrow('Get operation failed');
+      await expect(testDb.getPaper('test')).rejects.toThrow('Get operation failed');
     });
 
     it('should handle put operation errors', async () => {
-      await db.init(); // Initialize db for this test
-      await db.init();
+      await testDb.init(); // Initialize db for this test
+      await testDb.init();
       mockDB.put.mockRejectedValueOnce(new Error('Put operation failed'));
 
       const paper = {
@@ -610,23 +649,23 @@ describe('DatabaseService', () => {
         savedAt: Date.now(),
       };
 
-      await expect(db.savePaper(paper)).rejects.toThrow('Put operation failed');
+      await expect(testDb.savePaper(paper)).rejects.toThrow('Put operation failed');
     });
 
     it('should handle delete operation errors', async () => {
-      await db.init(); // Initialize db for this test
-      await db.init();
+      await testDb.init(); // Initialize db for this test
+      await testDb.init();
       mockDB.delete.mockRejectedValueOnce(new Error('Delete operation failed'));
 
-      await expect(db.deletePaper('test')).rejects.toThrow('Delete operation failed');
+      await expect(testDb.deletePaper('test')).rejects.toThrow('Delete operation failed');
     });
   });
 
   describe('Edge Cases', () => {
 
     it('should handle empty string queries', async () => {
-      await db.init(); // Initialize db for this test
-      await db.cacheSearchResults('', [], 0);
+      await testDb.init(); // Initialize db for this test
+      await testDb.cacheSearchResults('', [], 0);
       
       expect(mockDB.put).toHaveBeenCalledWith(
         'searchResults',
@@ -636,14 +675,14 @@ describe('DatabaseService', () => {
     });
 
     it('should handle null filters', async () => {
-      await db.init(); // Initialize db for this test
-      const result = await db.getSearchResults('test', null as any);
+      await testDb.init(); // Initialize db for this test
+      const result = await testDb.getSearchResults('test', null as any);
       
       expect(mockDB.get).toHaveBeenCalledWith('searchResults', expect.any(String));
     });
 
     it('should handle papers with minimal data', async () => {
-      await db.init(); // Initialize db for this test
+      await testDb.init(); // Initialize db for this test
       const minimalPaper = {
         id: 'minimal',
         title: '',
@@ -651,7 +690,7 @@ describe('DatabaseService', () => {
         savedAt: Date.now(),
       };
 
-      await db.savePaper(minimalPaper);
+      await testDb.savePaper(minimalPaper);
 
       expect(mockDB.put).toHaveBeenCalledWith('papers', {
         ...minimalPaper,
@@ -660,10 +699,10 @@ describe('DatabaseService', () => {
     });
 
     it('should handle very long collection names', async () => {
-      await db.init(); // Initialize db for this test
+      await testDb.init(); // Initialize db for this test
       const longName = 'x'.repeat(1000);
       
-      const id = await db.createCollection(longName);
+      const id = await testDb.createCollection(longName);
       
       expect(mockDB.put).toHaveBeenCalledWith('collections', 
         expect.objectContaining({ name: longName })
@@ -671,10 +710,10 @@ describe('DatabaseService', () => {
     });
 
     it('should handle cleanup with zero days', async () => {
-      await db.init(); // Initialize db for this test
+      await testDb.init(); // Initialize db for this test
       mockDB.getAllKeys.mockResolvedValue([]);
 
-      const deletedCount = await db.cleanOldSearchResults(0);
+      const deletedCount = await testDb.cleanOldSearchResults(0);
 
       expect(deletedCount).toBe(0);
     });
@@ -682,44 +721,44 @@ describe('DatabaseService', () => {
 
   describe('Storage Quota Exceeded Scenarios', () => {
     it('should handle quota exceeded during cache operations', async () => {
-      await db.init();
+      await testDb.init();
       const quotaError = new Error('QuotaExceededError');
       quotaError.name = 'QuotaExceededError';
       mockDB.put.mockRejectedValueOnce(quotaError);
 
-      await expect(db.cacheSearchResults('test', [], 0)).rejects.toThrow('QuotaExceededError');
+      await expect(testDb.cacheSearchResults('test', [], 0)).rejects.toThrow('QuotaExceededError');
     });
 
     it('should handle quota exceeded during paper saving', async () => {
-      await db.init();
+      await testDb.init();
       const quotaError = new Error('QuotaExceededError');
       quotaError.name = 'QuotaExceededError';
       mockDB.put.mockRejectedValueOnce(quotaError);
 
       const paper = { id: 'W123', title: 'Test', authors: [], savedAt: Date.now() };
-      await expect(db.savePaper(paper)).rejects.toThrow('QuotaExceededError');
+      await expect(testDb.savePaper(paper)).rejects.toThrow('QuotaExceededError');
     });
 
     it('should handle transaction abort during large operations', async () => {
-      await db.init();
+      await testDb.init();
       const abortError = new Error('TransactionInactiveError');
       abortError.name = 'TransactionInactiveError';
       mockDB.put.mockRejectedValueOnce(abortError);
 
-      await expect(db.cacheSearchResults('large query', Array(1000).fill({ id: 'test' }), 1000))
+      await expect(testDb.cacheSearchResults('large query', Array(1000).fill({ id: 'test' }), 1000))
         .rejects.toThrow('TransactionInactiveError');
     });
   });
 
   describe('Concurrent Access Patterns', () => {
     it('should handle concurrent cache operations', async () => {
-      await db.init();
+      await testDb.init();
       mockDB.put.mockImplementation(() => new Promise(resolve => setTimeout(resolve, 10)));
 
       const operations = [
-        db.cacheSearchResults('query1', [], 0),
-        db.cacheSearchResults('query2', [], 0),
-        db.cacheSearchResults('query3', [], 0),
+        testDb.cacheSearchResults('query1', [], 0),
+        testDb.cacheSearchResults('query2', [], 0),
+        testDb.cacheSearchResults('query3', [], 0),
       ];
 
       await expect(Promise.all(operations)).resolves.toBeDefined();
@@ -727,22 +766,22 @@ describe('DatabaseService', () => {
     });
 
     it('should handle concurrent read/write operations', async () => {
-      await db.init();
+      await testDb.init();
       mockDB.get.mockResolvedValue({ id: 'test', title: 'Test Paper' });
       mockDB.put.mockResolvedValue(undefined);
 
       const operations = [
-        db.getPaper('paper1'),
-        db.savePaper({ id: 'paper2', title: 'Test', authors: [], savedAt: Date.now() }),
-        db.getAllPapers(),
-        db.getSearchResults('test query'),
+        testDb.getPaper('paper1'),
+        testDb.savePaper({ id: 'paper2', title: 'Test', authors: [], savedAt: Date.now() }),
+        testDb.getAllPapers(),
+        testDb.getSearchResults('test query'),
       ];
 
       await expect(Promise.all(operations)).resolves.toBeDefined();
     });
 
     it('should handle race conditions in collection updates', async () => {
-      await db.init();
+      await testDb.init();
       const collection = {
         id: 'col1',
         name: 'Test',
@@ -755,9 +794,9 @@ describe('DatabaseService', () => {
 
       // Simulate concurrent additions to same collection
       const addOperations = [
-        db.addToCollection('col1', 'paper1'),
-        db.addToCollection('col1', 'paper2'),
-        db.addToCollection('col1', 'paper3'),
+        testDb.addToCollection('col1', 'paper1'),
+        testDb.addToCollection('col1', 'paper2'),
+        testDb.addToCollection('col1', 'paper3'),
       ];
 
       await Promise.all(addOperations);
@@ -767,7 +806,7 @@ describe('DatabaseService', () => {
 
   describe('Performance Under Load', () => {
     it('should handle large search result caching', async () => {
-      await db.init();
+      await testDb.init();
       
       // Create large result set (simulating 1000 papers)
       const largeResults = Array.from({ length: 1000 }, (_, i) => ({
@@ -778,7 +817,7 @@ describe('DatabaseService', () => {
         year: 2020 + (i % 4),
       }));
 
-      await db.cacheSearchResults('large query', largeResults, 1000);
+      await testDb.cacheSearchResults('large query', largeResults, 1000);
 
       expect(mockDB.put).toHaveBeenCalledWith(
         'searchResults',
@@ -791,7 +830,7 @@ describe('DatabaseService', () => {
     });
 
     it('should handle batch paper operations', async () => {
-      await db.init();
+      await testDb.init();
       
       const papers = Array.from({ length: 100 }, (_, i) => ({
         id: `paper${i}`,
@@ -800,14 +839,14 @@ describe('DatabaseService', () => {
         savedAt: Date.now(),
       }));
 
-      const saveOperations = papers.map(paper => db.savePaper(paper));
+      const saveOperations = papers.map(paper => testDb.savePaper(paper));
       await Promise.all(saveOperations);
 
       expect(mockDB.put).toHaveBeenCalledTimes(100);
     });
 
     it('should handle extensive cleanup operations', async () => {
-      await db.init();
+      await testDb.init();
       
       // Simulate many cache entries
       const keys = Array.from({ length: 500 }, (_, i) => `key${i}`);
@@ -816,7 +855,7 @@ describe('DatabaseService', () => {
       mockDB.getAllKeys.mockResolvedValue(keys);
       mockDB.get.mockImplementation(() => Promise.resolve({ timestamp: oldTimestamp }));
 
-      const deletedCount = await db.cleanOldSearchResults(30);
+      const deletedCount = await testDb.cleanOldSearchResults(30);
 
       expect(deletedCount).toBe(500);
       expect(mockDB.delete).toHaveBeenCalledTimes(500);
@@ -825,7 +864,7 @@ describe('DatabaseService', () => {
 
   describe('Data Serialization/Deserialization', () => {
     it('should handle complex objects in search results', async () => {
-      await db.init();
+      await testDb.init();
       
       const complexResults = [
         {
@@ -848,7 +887,7 @@ describe('DatabaseService', () => {
         },
       ];
 
-      await db.cacheSearchResults('complex query', complexResults, 1);
+      await testDb.cacheSearchResults('complex query', complexResults, 1);
 
       expect(mockDB.put).toHaveBeenCalledWith(
         'searchResults',
@@ -860,7 +899,7 @@ describe('DatabaseService', () => {
     });
 
     it('should handle papers with special characters and unicode', async () => {
-      await db.init();
+      await testDb.init();
       
       const unicodePaper = {
         id: 'unicode-test',
@@ -872,13 +911,13 @@ describe('DatabaseService', () => {
         savedAt: Date.now(),
       };
 
-      await db.savePaper(unicodePaper);
+      await testDb.savePaper(unicodePaper);
 
       expect(mockDB.put).toHaveBeenCalledWith('papers', unicodePaper);
     });
 
     it('should handle circular references gracefully in hash generation', () => {
-      const hashQuery = (db as any).hashQuery.bind(db);
+      const hashQuery = (testDb as any).hashQuery.bind(testDb);
       
       // Create object with circular reference
       const filters: any = { year: 2023 };
@@ -891,7 +930,7 @@ describe('DatabaseService', () => {
 
   describe('Cache Invalidation Strategies', () => {
     it('should handle cache misses due to corruption', async () => {
-      await db.init();
+      await testDb.init();
       
       // Mock corrupted cache entry
       const corruptedData = {
@@ -903,14 +942,14 @@ describe('DatabaseService', () => {
       
       mockDB.get.mockResolvedValue(corruptedData);
       
-      const result = await db.getSearchResults('test');
+      const result = await testDb.getSearchResults('test');
       
       // Should still return the data even if partially corrupted
       expect(result).toEqual(corruptedData);
     });
 
     it('should handle inconsistent timestamp formats', async () => {
-      await db.init();
+      await testDb.init();
       
       // Test with string timestamp (potential data migration scenario)
       const dataWithStringTimestamp = {
@@ -922,7 +961,7 @@ describe('DatabaseService', () => {
       
       mockDB.get.mockResolvedValue(dataWithStringTimestamp);
       
-      const result = await db.getSearchResults('test', {}, 60000); // 1 minute TTL
+      const result = await testDb.getSearchResults('test', {}, 60000); // 1 minute TTL
       
       // Should handle string timestamps in comparison
       expect(result).toBeNull(); // String timestamp should be treated as expired
@@ -941,7 +980,7 @@ describe('DatabaseService', () => {
         return Promise.resolve(mockDB);
       });
       
-      await db.init();
+      await testDb.init();
       
       expect(mockDB.createObjectStore).toHaveBeenCalledWith('searchResults');
       expect(mockDB.createObjectStore).toHaveBeenCalledWith('papers');
@@ -955,7 +994,7 @@ describe('DatabaseService', () => {
         return storeName === 'searchResults' || storeName === 'papers';
       });
       
-      await db.init();
+      await testDb.init();
       
       // Should only create missing stores
       expect(mockDB.createObjectStore).toHaveBeenCalledWith('citations');
