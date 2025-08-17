@@ -1,60 +1,62 @@
 import { style } from '@vanilla-extract/css';
 
+import { entityVars } from '../components/design-tokens.css';
+
 export const page = style({
   minHeight: '100vh',
-  backgroundColor: '#f9fafb',
+  backgroundColor: entityVars.color.background,
 });
 
 export const main = style({
   maxWidth: '1200px',
   margin: '0 auto',
-  padding: '2rem 1rem',
+  padding: `${entityVars.spacing['4xl']} ${entityVars.spacing.xl}`,
 });
 
 export const title = style({
-  fontSize: '2.25rem',
-  fontWeight: 'bold',
+  fontSize: entityVars.fontSize['3xl'],
+  fontWeight: entityVars.fontWeight.bold,
   textAlign: 'center',
-  marginBottom: '1rem',
-  color: '#1f2937',
+  marginBottom: entityVars.spacing.xl,
+  color: entityVars.color.text,
 });
 
 export const description = style({
-  fontSize: '1.125rem',
+  fontSize: entityVars.fontSize.lg,
   textAlign: 'center',
-  marginBottom: '2rem',
-  color: '#6b7280',
+  marginBottom: entityVars.spacing['4xl'],
+  color: entityVars.color.muted,
 });
 
 export const grid = style({
   display: 'grid',
   gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
-  gap: '1.5rem',
-  marginTop: '2rem',
+  gap: entityVars.spacing['3xl'],
+  marginTop: entityVars.spacing['4xl'],
 });
 
 export const card = style({
-  backgroundColor: 'white',
-  padding: '1.5rem',
-  borderRadius: '0.5rem',
-  boxShadow: '0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06)',
+  backgroundColor: entityVars.color.cardBackground,
+  padding: entityVars.spacing['3xl'],
+  borderRadius: entityVars.borderRadius.lg,
+  boxShadow: entityVars.shadow.md,
 });
 
 // Search page specific styles
 export const searchPageHeader = style({
   textAlign: 'center',
-  marginBottom: '2rem',
+  marginBottom: entityVars.spacing['4xl'],
 });
 
 export const searchInterface = style({
   display: 'grid',
   gridTemplateColumns: '1fr',
-  gap: '2rem',
+  gap: entityVars.spacing['4xl'],
   alignItems: 'start',
   '@media': {
     'screen and (max-width: 1024px)': {
       gridTemplateColumns: '1fr',
-      gap: '1.5rem',
+      gap: entityVars.spacing['3xl'],
     },
   },
 });
@@ -62,12 +64,12 @@ export const searchInterface = style({
 export const searchInterfaceWithSidebar = style({
   display: 'grid',
   gridTemplateColumns: '300px 1fr',
-  gap: '2rem',
+  gap: entityVars.spacing['4xl'],
   alignItems: 'start',
   '@media': {
     'screen and (max-width: 1024px)': {
       gridTemplateColumns: '1fr',
-      gap: '1.5rem',
+      gap: entityVars.spacing['3xl'],
     },
   },
 });
@@ -75,7 +77,7 @@ export const searchInterfaceWithSidebar = style({
 export const searchSidebar = style({
   display: 'flex',
   flexDirection: 'column',
-  gap: '1rem',
+  gap: entityVars.spacing.xl,
   '@media': {
     'screen and (max-width: 1024px)': {
       order: 2,
@@ -86,7 +88,7 @@ export const searchSidebar = style({
 export const searchMainContent = style({
   display: 'flex',
   flexDirection: 'column',
-  gap: '2rem',
+  gap: entityVars.spacing['4xl'],
   minWidth: 0, // Allow flex shrinking
   '@media': {
     'screen and (max-width: 1024px)': {
