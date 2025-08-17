@@ -34,15 +34,15 @@ export const queryCount = style({
 export const clearButton = style({
   padding: `${entityVars.spacing.xs} ${entityVars.spacing.sm}`,
   backgroundColor: entityVars.color.error,
-  color: '#ffffff',
+  color: entityVars.color.cardBackground,
   border: 'none',
   borderRadius: entityVars.borderRadius.sm,
   fontSize: entityVars.fontSize.sm,
   cursor: 'pointer',
-  fontWeight: '500',
+  fontWeight: entityVars.fontWeight.medium,
   
   ':hover': {
-    backgroundColor: '#dc2626',
+    opacity: '0.9',
   },
 });
 
@@ -82,7 +82,7 @@ export const queryHeader = style({
   cursor: 'pointer',
   
   ':hover': {
-    backgroundColor: '#f9fafb',
+    backgroundColor: entityVars.color.borderHover,
   },
 });
 
@@ -94,7 +94,7 @@ export const queryInfo = style({
 });
 
 export const queryText = style({
-  fontWeight: '600',
+  fontWeight: entityVars.fontWeight.semibold,
   color: entityVars.color.text,
   fontSize: entityVars.fontSize.base,
 });
@@ -112,7 +112,7 @@ export const timestamp = style({
 
 export const resultCount = style({
   color: entityVars.color.success,
-  fontWeight: '500',
+  fontWeight: entityVars.fontWeight.medium,
 });
 
 export const responseTime = style({
@@ -122,7 +122,7 @@ export const responseTime = style({
 
 export const errorIndicator = style({
   color: entityVars.color.error,
-  fontWeight: '500',
+  fontWeight: entityVars.fontWeight.medium,
 });
 
 export const queryActions = style({
@@ -134,36 +134,36 @@ export const queryActions = style({
 export const rerunButton = style({
   padding: `${entityVars.spacing.xs} ${entityVars.spacing.sm}`,
   backgroundColor: entityVars.color.work,
-  color: '#ffffff',
+  color: entityVars.color.cardBackground,
   border: 'none',
   borderRadius: entityVars.borderRadius.sm,
   fontSize: entityVars.fontSize.sm,
   cursor: 'pointer',
-  fontWeight: '500',
+  fontWeight: entityVars.fontWeight.medium,
   
   ':hover': {
-    backgroundColor: '#2563eb',
+    backgroundColor: entityVars.color.workDark,
   },
 });
 
 export const pageNavToggle = style({
   padding: `${entityVars.spacing.xs} ${entityVars.spacing.sm}`,
   backgroundColor: entityVars.color.muted,
-  color: '#ffffff',
+  color: entityVars.color.cardBackground,
   border: 'none',
   borderRadius: entityVars.borderRadius.sm,
   fontSize: entityVars.fontSize.sm,
   cursor: 'pointer',
-  fontWeight: '500',
+  fontWeight: entityVars.fontWeight.medium,
   
   ':hover': {
-    backgroundColor: '#6b7280',
+    opacity: '0.8',
   },
 });
 
 export const pageCount = style({
   color: entityVars.color.muted,
-  fontWeight: '500',
+  fontWeight: entityVars.fontWeight.medium,
   fontSize: entityVars.fontSize.sm,
   fontFamily: 'monospace',
 });
@@ -171,7 +171,7 @@ export const pageCount = style({
 export const expandIcon = style({
   fontSize: entityVars.fontSize.sm,
   color: entityVars.color.muted,
-  transition: 'transform 0.2s ease',
+  transition: `transform ${entityVars.transition.normal}`,
   userSelect: 'none',
 });
 
@@ -181,7 +181,7 @@ export const expanded = style({
 
 export const queryDetails = style({
   padding: entityVars.spacing.md,
-  backgroundColor: '#f9fafb',
+  backgroundColor: entityVars.color.borderHover,
   borderTop: `1px solid ${entityVars.color.border}`,
   display: 'flex',
   flexDirection: 'column',
@@ -226,7 +226,7 @@ export const resultLink = style({
   textAlign: 'left',
   
   ':hover': {
-    color: '#2563eb',
+    color: entityVars.color.workDark,
   },
 });
 
@@ -245,7 +245,7 @@ export const paramsJson = style({
   fontFamily: 'monospace',
   overflow: 'auto',
   maxHeight: '200px',
-  lineHeight: '1.4',
+  lineHeight: entityVars.lineHeight.normal,
 });
 
 export const emptyState = style({
@@ -278,7 +278,7 @@ export const pageNavigations = style({
   gap: entityVars.spacing.xs,
   padding: `0 ${entityVars.spacing.md}`,
   borderTop: `1px solid ${entityVars.color.border}`,
-  backgroundColor: '#f8fafc',
+  backgroundColor: entityVars.color.borderHover,
 });
 
 export const pageNavItem = style({
@@ -314,7 +314,7 @@ export const pageNavInfo = style({
 });
 
 export const pageNavText = style({
-  fontWeight: '500',
+  fontWeight: entityVars.fontWeight.medium,
   color: entityVars.color.text,
   fontSize: entityVars.fontSize.sm,
 });

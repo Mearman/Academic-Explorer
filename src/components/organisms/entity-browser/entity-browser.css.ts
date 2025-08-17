@@ -19,8 +19,8 @@ export const resultItem = style({
 });
 
 export const filterSection = style({
-  backgroundColor: '#f8f9fa',
-  border: '1px solid #e9ecef',
+  backgroundColor: entityVars.color.cardBackground,
+  border: `1px solid ${entityVars.color.border}`,
   borderRadius: entityVars.borderRadius.md,
   padding: entityVars.spacing.lg,
 });
@@ -33,8 +33,8 @@ export const filterRow = style({
 });
 
 export const searchSection = style({
-  backgroundColor: '#f8f9fa',
-  border: '1px solid #f1f3f4',
+  backgroundColor: entityVars.color.cardBackground,
+  border: `1px solid ${entityVars.color.border}`,
   borderRadius: entityVars.borderRadius.sm,
   padding: entityVars.spacing.md,
 });
@@ -48,8 +48,8 @@ export const metricsGrid = style({
 
 export const entityMetric = style({
   fontSize: entityVars.fontSize.xs,
-  color: '#6c757d',
-  fontWeight: 500,
+  color: entityVars.color.muted,
+  fontWeight: entityVars.fontWeight.medium,
 });
 
 export const paginationContainer = style({
@@ -57,13 +57,13 @@ export const paginationContainer = style({
   justifyContent: 'center',
   marginTop: entityVars.spacing.xl,
   padding: entityVars.spacing.lg,
-  borderTop: '1px solid #e9ecef',
+  borderTop: `1px solid ${entityVars.color.border}`,
 });
 
 export const emptyState = style({
   textAlign: 'center',
   padding: entityVars.spacing['4xl'],
-  color: '#6c757d',
+  color: entityVars.color.muted,
 });
 
 export const loadingState = style({
@@ -75,10 +75,10 @@ export const loadingState = style({
 export const errorState = style({
   textAlign: 'center',
   padding: entityVars.spacing['4xl'],
-  backgroundColor: '#fff5f5',
-  border: '1px solid #fed7d7',
+  backgroundColor: entityVars.color.errorBackground,
+  border: `1px solid ${entityVars.color.error}`,
   borderRadius: entityVars.borderRadius.md,
-  color: '#c53030',
+  color: entityVars.color.error,
 });
 
 export const sortControls = style({
@@ -90,15 +90,15 @@ export const sortControls = style({
 
 export const activeFiltersContainer = style({
   padding: entityVars.spacing.md,
-  backgroundColor: '#ebf8ff',
+  backgroundColor: entityVars.color.infoBackground,
   borderRadius: entityVars.borderRadius.sm,
-  border: '1px solid #bee3f8',
+  border: `1px solid ${entityVars.color.border}`,
 });
 
 export const filterBadge = style({
   fontSize: entityVars.fontSize.xs,
   
   ':hover': {
-    backgroundColor: '#d6f5ff',
+    backgroundColor: entityVars.color.infoBackground,
   },
 });
