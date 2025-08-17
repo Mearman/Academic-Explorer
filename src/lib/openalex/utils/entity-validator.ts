@@ -295,7 +295,7 @@ function detectExtraFields(
         description: `Field was not recognized by schema`,
         timestamp: new Date().toISOString(),
         entityDisplayName,
-        actualValue: truncateValue((originalData as any)[key]),
+        actualValue: truncateValue((originalData as Record<string, unknown>)[key]),
       });
     }
   }
@@ -325,13 +325,25 @@ function calculateBatchSummary(results: EntityValidationResult[]) {
     [ValidationSeverity.INFO]: 0,
   };
   
-  // Count issues by entity type
-  const issuesByEntityType: Record<EntityType, number> = {} as any;
+  // Count issues by entity type - initialize with all entity types to ensure complete Record
+  const issuesByEntityType: Record<EntityType, number> = {
+    [EntityType.WORK]: 0,
+    [EntityType.AUTHOR]: 0,
+    [EntityType.SOURCE]: 0,
+    [EntityType.INSTITUTION]: 0,
+    [EntityType.PUBLISHER]: 0,
+    [EntityType.FUNDER]: 0,
+    [EntityType.TOPIC]: 0,
+    [EntityType.CONCEPT]: 0,
+    [EntityType.KEYWORD]: 0,
+    [EntityType.CONTINENT]: 0,
+    [EntityType.REGION]: 0,
+  };
   
   for (const issue of allIssues) {
     issuesByType[issue.issueType]++;
     issuesBySeverity[issue.severity]++;
-    issuesByEntityType[issue.entityType] = (issuesByEntityType[issue.entityType] || 0) + 1;
+    issuesByEntityType[issue.entityType]++;
   }
   
   return {
@@ -349,11 +361,11 @@ function calculateBatchSummary(results: EntityValidationResult[]) {
 /**
  * Get nested value from object using path array
  */
-function getNestedValue(obj: any, path: (string | number)[]): unknown {
+function getNestedValue(obj: unknown, path: (string | number)[]): unknown {
   let current = obj;
   for (const key of path) {
     if (current && typeof current === 'object' && key in current) {
-      current = current[key];
+      current = (current as Record<string | number, unknown>)[key];
     } else {
       return undefined;
     }
@@ -376,9 +388,10 @@ function truncateValue(value: unknown, maxLength = 100): unknown {
   if (typeof value === 'object' && value !== null) {
     const keys = Object.keys(value);
     if (keys.length > 5) {
-      const truncated: any = {};
+      const truncated: Record<string, unknown> = {};
+      const valueAsRecord = value as Record<string, unknown>;
       for (let i = 0; i < 5; i++) {
-        truncated[keys[i]] = (value as any)[keys[i]];
+        truncated[keys[i]] = valueAsRecord[keys[i]];
       }
       truncated['...'] = `${keys.length - 5} more properties`;
       return truncated;
