@@ -442,8 +442,7 @@ describe('DatabaseService', () => {
 
   describe('Error Handling', () => {
     it('should handle database operation errors', async () => {
-      const mockFn = mockOpenDB as ReturnType<typeof vi.fn>;
-      mockFn.mockRejectedValueOnce(new Error('Connection failed'));
+      mockOpenDB.mockRejectedValueOnce(new Error('Connection failed'));
 
       await expect(testDb.getPaper('test')).rejects.toThrow('Failed to initialise database');
     });
