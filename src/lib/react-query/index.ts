@@ -6,4 +6,5 @@
 
 export * from './hooks';
 export * from './hybrid-cache-adapter';
-export { ReactQueryProvider, queryClient } from './provider';
+export { ReactQueryProvider } from './provider';
+export { queryClient } from './client';
