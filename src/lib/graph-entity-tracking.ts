@@ -9,6 +9,7 @@
 import type { EntityData } from '@/hooks/use-entity-data';
 import { graphDb } from '@/lib/graph-db';
 import { extractAllRelationships, relationshipsToEvents } from '@/lib/graph-helpers';
+import type { Work, Author, Authorship, Affiliation, Topic } from '@/lib/openalex/types/entities';
 import type { EntityType } from '@/lib/openalex/utils/entity-detection';
 import type {
   EntityVisitEvent,
@@ -246,11 +247,11 @@ async function recordEntityPageRelatedEntities(
 
     // Handle Work entities
     if ('authorships' in entity) {
-      const work = entity as any; // EntityData type assertion
+      const work = entity as Work;
       
       // Authors
       if (work.authorships) {
-        work.authorships.forEach((authorship: any) => {
+        work.authorships.forEach((authorship: Authorship) => {
           relatedEntities.push({
             id: authorship.author.id,
             entityType: 'A' as EntityType,
@@ -259,7 +260,7 @@ async function recordEntityPageRelatedEntities(
           });
 
           // Institutions
-          authorship.institutions?.forEach((institution: any) => {
+          authorship.institutions?.forEach((institution: Authorship['institutions'][0]) => {
             relatedEntities.push({
               id: institution.id,
               entityType: 'I' as EntityType,
@@ -282,7 +283,7 @@ async function recordEntityPageRelatedEntities(
 
       // Topics
       if (work.topics) {
-        work.topics.forEach((topic: any) => {
+        work.topics.forEach((topic: Topic) => {
           relatedEntities.push({
             id: topic.id,
             entityType: 'T' as EntityType,
@@ -307,11 +308,11 @@ async function recordEntityPageRelatedEntities(
 
     // Handle Author entities
     if ('affiliations' in entity && !('authorships' in entity)) {
-      const author = entity as any;
+      const author = entity as Author;
       
       // Affiliations
       if (author.affiliations) {
-        author.affiliations.forEach((affiliation: any) => {
+        author.affiliations.forEach((affiliation: Affiliation) => {
           relatedEntities.push({
             id: affiliation.institution.id,
             entityType: 'I' as EntityType,
@@ -323,7 +324,7 @@ async function recordEntityPageRelatedEntities(
 
       // Topics
       if (author.topics) {
-        author.topics.forEach((topic: any) => {
+        author.topics.forEach((topic: Topic) => {
           relatedEntities.push({
             id: topic.id,
             entityType: 'T' as EntityType,
