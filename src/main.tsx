@@ -6,6 +6,7 @@ import { createRoot } from 'react-dom/client';
 import App from './App';
 import { mantineTheme } from './lib/mantine-theme';
 import { ReactQueryProvider } from './lib/react-query/provider';
+import { ThemeProvider } from './providers/theme-provider';
 
 // Enable Immer Map/Set support for entity graph store
 enableMapSet();
@@ -16,9 +17,9 @@ import '@mantine/core/styles.css';
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <ReactQueryProvider>
-      <MantineProvider theme={mantineTheme}>
+      <ThemeProvider>
         <App />
-      </MantineProvider>
+      </ThemeProvider>
     </ReactQueryProvider>
   </StrictMode>,
 );
