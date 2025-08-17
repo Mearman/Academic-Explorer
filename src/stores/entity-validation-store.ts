@@ -343,7 +343,7 @@ export const useEntityValidationStore = create<EntityValidationState>()(
         };
         
         // Entity type issue counts
-        const entityTypeIssueCounts: Record<EntityType, { errorCount: number; warningCount: number; totalCount: number }> = {} as any;
+        const entityTypeIssueCounts: Partial<Record<EntityType, { errorCount: number; warningCount: number; totalCount: number }>> = {};
         
         for (const issue of allIssues) {
           issueTypeCounts[issue.issueType]++;
@@ -352,11 +352,14 @@ export const useEntityValidationStore = create<EntityValidationState>()(
             entityTypeIssueCounts[issue.entityType] = { errorCount: 0, warningCount: 0, totalCount: 0 };
           }
           
-          entityTypeIssueCounts[issue.entityType].totalCount++;
-          if (issue.severity === ValidationSeverity.ERROR) {
-            entityTypeIssueCounts[issue.entityType].errorCount++;
-          } else if (issue.severity === ValidationSeverity.WARNING) {
-            entityTypeIssueCounts[issue.entityType].warningCount++;
+          const entityTypeCount = entityTypeIssueCounts[issue.entityType];
+          if (entityTypeCount) {
+            entityTypeCount.totalCount++;
+            if (issue.severity === ValidationSeverity.ERROR) {
+              entityTypeCount.errorCount++;
+            } else if (issue.severity === ValidationSeverity.WARNING) {
+              entityTypeCount.warningCount++;
+            }
           }
         }
         
