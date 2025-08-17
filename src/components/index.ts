@@ -72,6 +72,7 @@ export { ErrorActions } from './molecules/error-actions';
 export { ErrorDebugDetails } from './molecules/error-debug-details';
 export { ValidationExport } from './molecules/validation-export';
 export { ValidationSettings } from './molecules/validation-settings';
+export { ThemeToggle } from './molecules/theme-toggle';
 
 // Organisms
 export { EntityHeader, EntityHeaderSkeleton } from './organisms/entity-header';
