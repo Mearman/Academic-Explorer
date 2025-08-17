@@ -46,8 +46,12 @@ describe('DatabaseService', () => {
     // Setup database to return mock transaction
     mockDB.transaction.mockReturnValue(mockTransaction);
 
-    // Setup the module-level mock with correct signature
-    mockOpenDB.mockImplementation(async () => {
+    // Setup the module-level mock with correct signature including upgrade handling
+    mockOpenDB.mockImplementation(async (name: string, version?: number, config?: any) => {
+      // Call the upgrade function if provided
+      if (config && config.upgrade && version !== undefined) {
+        config.upgrade(mockDB, 0, version, mockTransaction, {} as IDBVersionChangeEvent);
+      }
       return mockDB as unknown as IDBPDatabase;
     });
 
