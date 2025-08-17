@@ -11,6 +11,7 @@ import { render, screen } from '@testing-library/react';
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 
 import { EntityType } from '@/lib/openalex/utils/entity-detection';
+
 import { ValidationIndicator, ValidationDot, ValidationSummary } from './validation-indicator';
 
 // Mock the validation store
