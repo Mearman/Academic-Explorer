@@ -20,7 +20,8 @@ import {
 import { createFileRoute, Link } from '@tanstack/react-router';
 import { useMemo } from 'react';
 
-import { EntityLink } from '@/components';
+import { EntityLink, EntityBrowser } from '@/components';
+import { EntityType } from '@/lib/openalex/utils/entity-detection';
 import { useEntityGraphStore } from '@/stores/entity-graph-store';
 
 function WorksOverviewPage() {
@@ -199,6 +200,14 @@ function WorksOverviewPage() {
             )}
           </>
         )}
+
+        {/* Browse All Works */}
+        <EntityBrowser
+          entityType={EntityType.WORK}
+          title="Browse All Works"
+          description="Explore academic papers, articles, and research publications"
+          placeholder="Search for works by title, DOI, or content..."
+        />
       </Stack>
     </div>
   );

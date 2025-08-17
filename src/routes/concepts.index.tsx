@@ -20,7 +20,8 @@ import {
 import { createFileRoute, Link } from '@tanstack/react-router';
 import { useMemo } from 'react';
 
-import { EntityLink } from '@/components';
+import { EntityLink, EntityBrowser } from '@/components';
+import { EntityType } from '@/lib/openalex/utils/entity-detection';
 import { useEntityGraphStore } from '@/stores/entity-graph-store';
 
 function ConceptsOverviewPage() {
@@ -29,7 +30,7 @@ function ConceptsOverviewPage() {
   // Get all concept entities the user has visited
   const browsedConcepts = useMemo(() => {
     const conceptVertices = Array.from(graph.vertices.values())
-      .filter(vertex => vertex.entityType === 'concept')
+      .filter(vertex => vertex.entityType === EntityType.CONCEPT)
       .sort((a, b) => {
         // Sort by last visited, then by visit count
         if (a.lastVisited && b.lastVisited) {
@@ -268,6 +269,14 @@ function ConceptsOverviewPage() {
             )}
           </>
         )}
+
+        {/* Browse All Concepts */}
+        <EntityBrowser
+          entityType={EntityType.CONCEPT}
+          title="Browse All Concepts"
+          description="Explore research concepts and legacy knowledge areas"
+          placeholder="Search for concepts by name or level..."
+        />
       </Stack>
     </div>
   )

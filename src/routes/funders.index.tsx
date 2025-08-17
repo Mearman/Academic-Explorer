@@ -20,7 +20,8 @@ import {
 import { createFileRoute, Link } from '@tanstack/react-router';
 import { useMemo } from 'react';
 
-import { EntityLink } from '@/components';
+import { EntityLink, EntityBrowser } from '@/components';
+import { EntityType } from '@/lib/openalex/utils/entity-detection';
 import { useEntityGraphStore } from '@/stores/entity-graph-store';
 
 function FundersOverviewPage() {
@@ -29,7 +30,7 @@ function FundersOverviewPage() {
   // Get all funder entities the user has visited
   const browsedFunders = useMemo(() => {
     const funderVertices = Array.from(graph.vertices.values())
-      .filter(vertex => vertex.entityType === 'funder')
+      .filter(vertex => vertex.entityType === EntityType.FUNDER)
       .sort((a, b) => {
         if (a.lastVisited && b.lastVisited) {
           return new Date(b.lastVisited).getTime() - new Date(a.lastVisited).getTime();
@@ -188,6 +189,14 @@ function FundersOverviewPage() {
             )}
           </>
         )}
+
+        {/* Browse All Funders */}
+        <EntityBrowser
+          entityType={EntityType.FUNDER}
+          title="Browse All Funders"
+          description="Explore research funding organisations and agencies"
+          placeholder="Search for funders by name, country, or focus area..."
+        />
       </Stack>
     </div>
   );

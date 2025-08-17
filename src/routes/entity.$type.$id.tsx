@@ -10,8 +10,8 @@ import { PublisherDisplay } from '@/components/entity-displays/PublisherDisplay'
 import { SourceDisplay } from '@/components/entity-displays/SourceDisplay';
 import { TopicDisplay } from '@/components/entity-displays/TopicDisplay';
 import { WorkDisplay } from '@/components/entity-displays/WorkDisplay';
-import { useEntityDataWithTracking } from '@/hooks/use-entity-data-with-tracking';
 import type { EntityData, EntityError as EntityErrorType } from '@/hooks/use-entity-data';
+import { useEntityDataWithTracking } from '@/hooks/use-entity-data-with-tracking';
 import { useNumericIdRedirect } from '@/hooks/use-numeric-id-redirect';
 import type { Work, Author, Source, Institution, Funder, Topic, Concept, Publisher } from '@/lib/openalex/types';
 import { EntityType } from '@/lib/openalex/utils/entity-detection';

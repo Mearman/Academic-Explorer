@@ -23,7 +23,8 @@ import {
 import { createFileRoute, Link } from '@tanstack/react-router';
 import { useMemo } from 'react';
 
-import { EntityLink } from '@/components';
+import { EntityLink, EntityBrowser } from '@/components';
+import { EntityType } from '@/lib/openalex/utils/entity-detection';
 import { useEntityGraphStore } from '@/stores/entity-graph-store';
 
 function SourcesOverviewPage() {
@@ -338,6 +339,14 @@ function SourcesOverviewPage() {
             </Grid.Col>
           </Grid>
         </Card>
+
+        {/* Browse All Sources */}
+        <EntityBrowser
+          entityType={EntityType.SOURCE}
+          title="Browse All Sources"
+          description="Explore journals, conferences, and other publication venues"
+          placeholder="Search for sources by name, ISSN, or type..."
+        />
 
         {/* Search Hint */}
         <Card withBorder radius="md" p="lg" bg="blue.0">

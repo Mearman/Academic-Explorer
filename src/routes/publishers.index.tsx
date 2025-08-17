@@ -20,7 +20,8 @@ import {
 import { createFileRoute, Link } from '@tanstack/react-router';
 import { useMemo } from 'react';
 
-import { EntityLink } from '@/components';
+import { EntityLink, EntityBrowser } from '@/components';
+import { EntityType } from '@/lib/openalex/utils/entity-detection';
 import { useEntityGraphStore } from '@/stores/entity-graph-store';
 
 function PublishersOverviewPage() {
@@ -188,6 +189,14 @@ function PublishersOverviewPage() {
             )}
           </>
         )}
+
+        {/* Browse All Publishers */}
+        <EntityBrowser
+          entityType={EntityType.PUBLISHER}
+          title="Browse All Publishers"
+          description="Explore academic and commercial publishers"
+          placeholder="Search for publishers by name or country..."
+        />
       </Stack>
     </div>
   );

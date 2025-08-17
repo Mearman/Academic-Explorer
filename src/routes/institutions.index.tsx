@@ -20,7 +20,8 @@ import {
 import { createFileRoute, Link } from '@tanstack/react-router';
 import { useMemo } from 'react';
 
-import { EntityLink } from '@/components';
+import { EntityLink, EntityBrowser } from '@/components';
+import { EntityType } from '@/lib/openalex/utils/entity-detection';
 import { useEntityGraphStore } from '@/stores/entity-graph-store';
 
 function InstitutionsOverviewPage() {
@@ -199,6 +200,14 @@ function InstitutionsOverviewPage() {
             )}
           </>
         )}
+
+        {/* Browse All Institutions */}
+        <EntityBrowser
+          entityType={EntityType.INSTITUTION}
+          title="Browse All Institutions"
+          description="Explore academic institutions from around the world"
+          placeholder="Search for institutions by name, country, or type..."
+        />
       </Stack>
     </div>
   );

@@ -14,6 +14,7 @@ import { Route as TopicsRouteImport } from './routes/topics'
 import { Route as SourcesRouteImport } from './routes/sources'
 import { Route as QueryRouteImport } from './routes/query'
 import { Route as PublishersRouteImport } from './routes/publishers'
+import { Route as ManageRouteImport } from './routes/manage'
 import { Route as InstitutionsRouteImport } from './routes/institutions'
 import { Route as HelpRouteImport } from './routes/help'
 import { Route as FundersRouteImport } from './routes/funders'
@@ -73,6 +74,11 @@ const QueryRoute = QueryRouteImport.update({
 const PublishersRoute = PublishersRouteImport.update({
   id: '/publishers',
   path: '/publishers',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ManageRoute = ManageRouteImport.update({
+  id: '/manage',
+  path: '/manage',
   getParentRoute: () => rootRouteImport,
 } as any)
 const InstitutionsRoute = InstitutionsRouteImport.update({
@@ -260,6 +266,7 @@ export interface FileRoutesByFullPath {
   '/funders': typeof FundersRouteWithChildren
   '/help': typeof HelpRoute
   '/institutions': typeof InstitutionsRouteWithChildren
+  '/manage': typeof ManageRoute
   '/publishers': typeof PublishersRouteWithChildren
   '/query': typeof QueryRoute
   '/sources': typeof SourcesRouteWithChildren
@@ -298,6 +305,7 @@ export interface FileRoutesByTo {
   '/$bareId': typeof BareIdRoute
   '/dashboard': typeof DashboardRoute
   '/help': typeof HelpRoute
+  '/manage': typeof ManageRoute
   '/query': typeof QueryRoute
   '/authors/$id': typeof AuthorsIdRoute
   '/concepts/$id': typeof ConceptsIdRoute
@@ -337,6 +345,7 @@ export interface FileRoutesById {
   '/funders': typeof FundersRouteWithChildren
   '/help': typeof HelpRoute
   '/institutions': typeof InstitutionsRouteWithChildren
+  '/manage': typeof ManageRoute
   '/publishers': typeof PublishersRouteWithChildren
   '/query': typeof QueryRoute
   '/sources': typeof SourcesRouteWithChildren
@@ -381,6 +390,7 @@ export interface FileRouteTypes {
     | '/funders'
     | '/help'
     | '/institutions'
+    | '/manage'
     | '/publishers'
     | '/query'
     | '/sources'
@@ -419,6 +429,7 @@ export interface FileRouteTypes {
     | '/$bareId'
     | '/dashboard'
     | '/help'
+    | '/manage'
     | '/query'
     | '/authors/$id'
     | '/concepts/$id'
@@ -457,6 +468,7 @@ export interface FileRouteTypes {
     | '/funders'
     | '/help'
     | '/institutions'
+    | '/manage'
     | '/publishers'
     | '/query'
     | '/sources'
@@ -500,6 +512,7 @@ export interface RootRouteChildren {
   FundersRoute: typeof FundersRouteWithChildren
   HelpRoute: typeof HelpRoute
   InstitutionsRoute: typeof InstitutionsRouteWithChildren
+  ManageRoute: typeof ManageRoute
   PublishersRoute: typeof PublishersRouteWithChildren
   QueryRoute: typeof QueryRoute
   SourcesRoute: typeof SourcesRouteWithChildren
@@ -553,6 +566,13 @@ declare module '@tanstack/react-router' {
       path: '/publishers'
       fullPath: '/publishers'
       preLoaderRoute: typeof PublishersRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/manage': {
+      id: '/manage'
+      path: '/manage'
+      fullPath: '/manage'
+      preLoaderRoute: typeof ManageRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/institutions': {
@@ -918,6 +938,7 @@ const rootRouteChildren: RootRouteChildren = {
   FundersRoute: FundersRouteWithChildren,
   HelpRoute: HelpRoute,
   InstitutionsRoute: InstitutionsRouteWithChildren,
+  ManageRoute: ManageRoute,
   PublishersRoute: PublishersRouteWithChildren,
   QueryRoute: QueryRoute,
   SourcesRoute: SourcesRouteWithChildren,

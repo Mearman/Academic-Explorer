@@ -20,7 +20,8 @@ import {
 import { createFileRoute, Link } from '@tanstack/react-router';
 import { useMemo } from 'react';
 
-import { EntityLink } from '@/components';
+import { EntityLink, EntityBrowser } from '@/components';
+import { EntityType } from '@/lib/openalex/utils/entity-detection';
 import { useEntityGraphStore } from '@/stores/entity-graph-store';
 
 function AuthorsOverviewPage() {
@@ -29,7 +30,7 @@ function AuthorsOverviewPage() {
   // Get all author entities the user has visited
   const browsedAuthors = useMemo(() => {
     const authorVertices = Array.from(graph.vertices.values())
-      .filter(vertex => vertex.entityType === 'author')
+      .filter(vertex => vertex.entityType === EntityType.AUTHOR)
       .sort((a, b) => {
         // Sort by last visited, then by visit count
         if (a.lastVisited && b.lastVisited) {
@@ -268,6 +269,14 @@ function AuthorsOverviewPage() {
             )}
           </>
         )}
+
+        {/* Browse All Authors */}
+        <EntityBrowser
+          entityType={EntityType.AUTHOR}
+          title="Browse All Authors"
+          description="Explore authors from the OpenAlex database"
+          placeholder="Search for authors by name, ORCID, or institution..."
+        />
       </Stack>
     </div>
   )
