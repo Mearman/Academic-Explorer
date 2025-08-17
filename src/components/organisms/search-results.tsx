@@ -1,6 +1,7 @@
 'use client';
 
 import { useNavigate } from '@tanstack/react-router';
+import { useEffect } from 'react';
 
 import { GroupByResults } from '@/components/molecules/group-by-results/GroupByResults';
 import { PaginationControls } from '@/components/molecules/pagination-controls/PaginationControls';
@@ -9,6 +10,8 @@ import { SearchResultItem } from '@/components/molecules/search-result-item/Sear
 import { LoadingState, ErrorState, EmptyState } from '@/components/molecules/search-states/SearchStates';
 import type { Work, WorksParams, ApiResponse } from '@/lib/openalex/types';
 import { useWorks } from '@/lib/react-query';
+import { recordSearchResultEncounters } from '@/lib/graph-entity-tracking';
+import { EntityType } from '@/lib/openalex/utils/entity-detection';
 
 import * as styles from './search-results.css';
 
@@ -53,6 +56,42 @@ export function SearchResults({ searchParams, onParamsChange }: SearchResultsPro
   const results = data?.results || [];
   const meta = data?.meta;
   const groupBy = data?.group_by;
+
+  // Track search results in graph database
+  useEffect(() => {
+    if (results.length > 0 && searchParams.search) {
+      const searchResults = results.map(work => ({
+        id: work.id,
+        entityType: EntityType.WORK,
+        displayName: work.display_name,
+      }));
+
+      const queryFilters = {
+        filter: searchParams.filter,
+        sort: searchParams.sort,
+        per_page: searchParams.per_page,
+        sample: searchParams.sample,
+        group_by: searchParams.group_by,
+        from_publication_date: searchParams.from_publication_date,
+        to_publication_date: searchParams.to_publication_date,
+      };
+
+      const queryExecutionMetadata = {
+        totalResults: meta?.count || 0,
+        pageNumber: searchParams.page || 1,
+        perPage: meta?.per_page || searchParams.per_page || 25,
+      };
+
+      recordSearchResultEncounters(
+        searchResults,
+        searchParams.search,
+        queryFilters,
+        queryExecutionMetadata
+      ).catch(error => {
+        console.error('[SearchResults] Failed to record search results:', error);
+      });
+    }
+  }, [results, searchParams, meta]);
 
   return (
     <div className={styles.container}>
