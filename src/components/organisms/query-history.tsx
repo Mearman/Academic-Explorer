@@ -86,7 +86,7 @@ export function QueryHistory({ onRerunQuery }: QueryHistoryProps) {
     });
   };
 
-  const getPageCount = (query: QueryRecord) => {
+  const getOccurrenceCount = (query: QueryRecord) => {
     return (query.pageNavigations?.length || 0) + 1; // +1 for the original query
   };
 
@@ -96,6 +96,29 @@ export function QueryHistory({ onRerunQuery }: QueryHistoryProps) {
       pages.push(...query.pageNavigations.map(nav => nav.params.page || 1));
     }
     return [...new Set(pages)].sort((a, b) => a - b);
+  };
+
+  const getOccurrenceTypes = (query: QueryRecord) => {
+    const types = { pages: new Set<number>(), reruns: 0 };
+    
+    // Add original query
+    types.pages.add(query.params.page || 1);
+    
+    if (query.pageNavigations) {
+      query.pageNavigations.forEach(nav => {
+        if (nav.isPageNavigation) {
+          types.pages.add(nav.params.page || 1);
+        } else {
+          types.reruns++;
+        }
+      });
+    }
+    
+    return {
+      pageCount: types.pages.size,
+      rerunCount: types.reruns,
+      pages: Array.from(types.pages).sort((a, b) => a - b)
+    };
   };
 
   if (queryHistory.length === 0) {
@@ -127,10 +150,10 @@ export function QueryHistory({ onRerunQuery }: QueryHistoryProps) {
         {queryHistory.map((query) => {
           const status = getQueryStatus(query);
           const isExpanded = expandedQuery === query.id;
-          const hasPageNavs = query.pageNavigations && query.pageNavigations.length > 0;
-          const isPageNavExpanded = expandedPageNavs.has(query.id);
-          const pageCount = getPageCount(query);
-          const pageList = getPageList(query);
+          const hasOccurrences = query.pageNavigations && query.pageNavigations.length > 0;
+          const isOccurrencesExpanded = expandedPageNavs.has(query.id);
+          const occurrenceCount = getOccurrenceCount(query);
+          const occurrenceTypes = getOccurrenceTypes(query);
 
           return (
             <div 
@@ -158,9 +181,11 @@ export function QueryHistory({ onRerunQuery }: QueryHistoryProps) {
                         </span>
                       </>
                     )}
-                    {hasPageNavs && (
+                    {hasOccurrences && (
                       <span className={styles.pageCount}>
-                        Pages: {pageList.join(', ')} ({pageCount} total)
+                        {occurrenceTypes.pageCount > 1 && `Pages: ${occurrenceTypes.pages.join(', ')}`}
+                        {occurrenceTypes.rerunCount > 0 && ` • ${occurrenceTypes.rerunCount} reruns`}
+                        {occurrenceTypes.pageCount === 1 && occurrenceTypes.rerunCount === 0 && `${occurrenceCount} occurrences`}
                       </span>
                     )}
                     {query.error && (
@@ -169,7 +194,7 @@ export function QueryHistory({ onRerunQuery }: QueryHistoryProps) {
                   </div>
                 </div>
                 <div className={styles.queryActions}>
-                  {hasPageNavs && (
+                  {hasOccurrences && (
                     <button
                       className={styles.pageNavToggle}
                       onClick={(e) => {
@@ -178,7 +203,7 @@ export function QueryHistory({ onRerunQuery }: QueryHistoryProps) {
                       }}
                       type="button"
                     >
-                      {isPageNavExpanded ? 'Hide' : 'Show'} Pages
+                      {isOccurrencesExpanded ? 'Hide' : 'Show'} Occurrences
                     </button>
                   )}
                   <button
@@ -197,8 +222,8 @@ export function QueryHistory({ onRerunQuery }: QueryHistoryProps) {
                 </div>
               </div>
 
-              {/* Page Navigations */}
-              {hasPageNavs && isPageNavExpanded && (
+              {/* Query Occurrences */}
+              {hasOccurrences && isOccurrencesExpanded && (
                 <div className={styles.pageNavigations}>
                   {query.pageNavigations!.map((pageNav) => {
                     const pageStatus = getQueryStatus(pageNav);
@@ -210,7 +235,10 @@ export function QueryHistory({ onRerunQuery }: QueryHistoryProps) {
                         <div className={styles.pageNavHeader}>
                           <div className={styles.pageNavInfo}>
                             <div className={styles.pageNavText}>
-                              Page {pageNav.params.page || 1}
+                              {pageNav.isPageNavigation 
+                                ? `Page ${pageNav.params.page || 1}`
+                                : `Rerun (${formatTimestamp(pageNav.timestamp)})`
+                              }
                             </div>
                             <div className={styles.pageNavMeta}>
                               <span className={styles.timestamp}>
@@ -231,7 +259,7 @@ export function QueryHistory({ onRerunQuery }: QueryHistoryProps) {
                             onClick={() => handleRerunQuery(pageNav)}
                             type="button"
                           >
-                            Jump to Page
+                            {pageNav.isPageNavigation ? 'Jump to Page' : 'Rerun Query'}
                           </button>
                         </div>
                       </div>
