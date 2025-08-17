@@ -137,23 +137,22 @@ export const useAppStore = create<AppState>()(
         const signature = generateQuerySignature(params);
         
         set((state) => {
-          // Find the most recent query to check if this is a page navigation
-          const mostRecentQuery = state.queryHistory[0];
-          let parentQuery: QueryRecord | undefined;
-          let isNavigation = false;
+          // Always check for existing parent query with the same signature first
+          let parentQuery = state.queryHistory.find(q => 
+            q.querySignature === signature && !q.isPageNavigation
+          );
           
-          if (mostRecentQuery && isPageNavigation(params, mostRecentQuery.params)) {
-            isNavigation = true;
-            // If the most recent query is also a page navigation, find its parent
-            parentQuery = mostRecentQuery.parentQueryId 
-              ? state.queryHistory.find(q => q.id === mostRecentQuery.parentQueryId && !q.isPageNavigation)
-              : mostRecentQuery.isPageNavigation 
-                ? undefined 
-                : mostRecentQuery;
-          } else {
-            // Check if there's an existing parent query with the same signature
-            parentQuery = state.queryHistory.find(q => 
-              q.querySignature === signature && !q.isPageNavigation
+          // Determine if this is a navigation vs a new occurrence of the same query
+          let isNavigation = false;
+          if (parentQuery) {
+            // Check if this is a page navigation from any recent query with same signature
+            const recentSimilarQueries = [
+              parentQuery,
+              ...(parentQuery.pageNavigations || [])
+            ].slice(0, 5); // Check last 5 queries of this type
+            
+            isNavigation = recentSimilarQueries.some(recentQuery => 
+              isPageNavigation(params, recentQuery.params)
             );
           }
           
@@ -167,16 +166,25 @@ export const useAppStore = create<AppState>()(
             parentQueryId: parentQuery?.id,
           };
           
-          if (isNavigation && parentQuery) {
-            // This is a page navigation - add to parent's pageNavigations array
-            if (!parentQuery.pageNavigations) {
-              parentQuery.pageNavigations = [];
+          if (parentQuery) {
+            if (isNavigation) {
+              // This is a page navigation - add to parent's pageNavigations array
+              if (!parentQuery.pageNavigations) {
+                parentQuery.pageNavigations = [];
+              }
+              parentQuery.pageNavigations.unshift(queryRecord);
+              // Don't add page navigations to the main history list
+            } else {
+              // This is a new occurrence of the same base query (e.g., rerun)
+              // Add to pageNavigations as a grouped occurrence
+              if (!parentQuery.pageNavigations) {
+                parentQuery.pageNavigations = [];
+              }
+              parentQuery.pageNavigations.unshift(queryRecord);
+              // Don't add to main history list to avoid duplication
             }
-            parentQuery.pageNavigations.unshift(queryRecord);
-            
-            // Don't add page navigations to the main history list
           } else {
-            // This is a new query - add to main history
+            // This is a completely new query - create new parent entry
             queryRecord.pageNavigations = [];
             state.queryHistory = [queryRecord, ...state.queryHistory].slice(0, 50);
           }
