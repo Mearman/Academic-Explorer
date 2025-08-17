@@ -9,6 +9,7 @@ import { useEffect, useState } from 'react';
 
 import { mantineTheme } from '@/lib/mantine-theme';
 import { useAppStore } from '@/stores/app-store';
+import { lightTheme, darkTheme } from '@/components/design-tokens.css';
 
 interface ThemeProviderProps {
   children: React.ReactNode;
@@ -61,6 +62,12 @@ export function ThemeProvider({ children }: ThemeProviderProps) {
         setColorScheme(systemColorScheme);
     }
   }, [theme, systemColorScheme]);
+
+  // Apply theme class to document
+  useEffect(() => {
+    const themeClass = colorScheme === 'dark' ? darkTheme : lightTheme;
+    document.documentElement.className = themeClass;
+  }, [colorScheme]);
 
   return (
     <MantineProvider
