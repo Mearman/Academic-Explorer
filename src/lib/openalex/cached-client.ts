@@ -10,6 +10,7 @@ import { CacheInterceptor, withCache } from './utils/cache-interceptor';
 const cacheInterceptor = new CacheInterceptor({
   ttl: 60 * 60 * 1000, // 1 hour default
   useMemory: true,
+  useLocalStorage: true, // Enable localStorage for optimal performance
   useIndexedDB: true,
   strategies: [
     // Add custom strategy for works by year (cache for longer)
@@ -66,6 +67,7 @@ export function createCachedClient(config?: {
     const interceptor = new CacheInterceptor({
       ttl: config?.cacheTTL || 60 * 60 * 1000,
       useMemory: config?.useMemoryCache !== false,
+      useLocalStorage: true, // Enable localStorage by default
       useIndexedDB: config?.useIndexedDB !== false,
     });
 

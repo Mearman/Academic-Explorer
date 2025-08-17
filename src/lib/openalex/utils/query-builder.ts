@@ -37,7 +37,9 @@ export class QueryBuilder {
 
   not(filter: string | QueryBuilder): this {
     const notFilter = filter instanceof QueryBuilder ? filter.build() : filter;
-    return this.and(`!(${notFilter})`);
+    // If the filter is already wrapped in parentheses, don't add extra ones
+    const isAlreadyWrapped = notFilter.startsWith('(') && notFilter.endsWith(')');
+    return this.and(isAlreadyWrapped ? `!${notFilter}` : `!(${notFilter})`);
   }
 
   // Grouping
@@ -45,8 +47,8 @@ export class QueryBuilder {
     const groupBuilder = new QueryBuilder();
     groupBuilder.isInGroup = true;
     callback(groupBuilder);
-    this.filters.push(`(${groupBuilder.currentGroup.join(',')})`);
-    return this;
+    const groupString = `(${groupBuilder.currentGroup.join(',')})`;
+    return this.and(groupString);
   }
 
   // Common filters
@@ -165,8 +167,14 @@ export class QueryBuilder {
       }
       // Create OR groups for each chunk
       const groupBuilder = new QueryBuilder();
-      chunks.forEach(chunk => {
-        groupBuilder.or(new QueryBuilder().in(field, chunk));
+      chunks.forEach((chunk, index) => {
+        if (index === 0) {
+          // First chunk uses and()
+          groupBuilder.and(new QueryBuilder().in(field, chunk));
+        } else {
+          // Subsequent chunks use or()
+          groupBuilder.or(new QueryBuilder().in(field, chunk));
+        }
       });
       return this.and(groupBuilder);
     }

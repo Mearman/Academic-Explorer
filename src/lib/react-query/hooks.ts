@@ -9,7 +9,7 @@ import { useQuery, useMutation, useQueryClient, UseQueryOptions, UseMutationOpti
 import React, { useCallback } from 'react';
 
 import { cachedOpenAlex } from '@/lib/openalex';
-import type { WorksParams, AuthorsParams, SourcesParams, InstitutionsParams, FundersParams, TopicsParams, ApiResponse, Work, Author, Source, Institution, Funder, Topic, Publisher, Concept, Continent, Keyword, Region } from '@/lib/openalex/types';
+import type { WorksParams, AuthorsParams, SourcesParams, InstitutionsParams, FundersParams, TopicsParams, ApiResponse, Work, Author, Source, Institution, Funder, Topic, Publisher, Concept } from '@/lib/openalex/types';
 import { useAppStore } from '@/stores/app-store';
 
 import { createEntityQuery, invalidateEntityQueries, prefetchRelatedData } from './hybrid-cache-adapter';
@@ -235,8 +235,6 @@ export function useEntityMutation<TData = unknown, TVariables = unknown>(
   mutationFn: (variables: TVariables) => Promise<TData>,
   options?: UseMutationOptions<TData, Error, TVariables>
 ) {
-  const queryClient = useQueryClient();
-
   return useMutation({
     mutationFn,
     ...options,
