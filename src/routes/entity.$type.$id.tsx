@@ -1,5 +1,5 @@
 import { createFileRoute } from '@tanstack/react-router';
-import React from 'react';
+import React, { useMemo } from 'react';
 
 import { EntityPageWithGraph, EntityErrorBoundary, EntitySkeleton, EntityError, EntityFallback } from '@/components';
 import { AuthorDisplay } from '@/components/entity-displays/AuthorDisplay';
@@ -80,6 +80,12 @@ function EntityPage() {
   // Handle numeric ID redirection to proper prefixed format
   const isRedirecting = useNumericIdRedirect(id, entityType);
   
+  // Memoize tracking metadata to prevent unnecessary re-renders
+  const trackingMetadata = useMemo(() => ({
+    route: '/entity/$type/$id',
+    urlType: type,
+  }), [type]);
+  
   const { 
     data: entity, 
     loading, 
@@ -91,10 +97,7 @@ function EntityPage() {
     staleTime: 10 * 60 * 1000, // 10 minutes
     enableTracking: true,
     visitSource: 'direct',
-    trackingMetadata: {
-      route: '/entity/$type/$id',
-      urlType: type,
-    },
+    trackingMetadata,
     onError: (error: EntityErrorType) => {
       console.error(`${entityType} fetch error:`, error);
     }
