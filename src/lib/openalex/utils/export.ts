@@ -3,7 +3,7 @@
  * Supports BibTeX, RIS, and CSV export formats
  */
 
-import type { Work, Author, Source, Institution } from '../types';
+import type { Work, Author } from '../types';
 
 /**
  * Export works to BibTeX format

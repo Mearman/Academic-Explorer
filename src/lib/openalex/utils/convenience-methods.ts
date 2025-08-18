@@ -4,7 +4,7 @@
  */
 
 import type { OpenAlexClient } from '../client';
-import type { Work, Author, Source, Institution, Topic, ApiResponse } from '../types';
+import type { Work, Author, Topic, Source } from '../types';
 
 import { QueryBuilder } from './query-builder';
 
@@ -315,7 +315,11 @@ export class OpenAlexConvenience {
     }
     
     if (options.isOa !== undefined) {
-      options.isOa ? qb.isTrue('is_oa') : qb.isFalse('is_oa');
+      if (options.isOa) {
+        qb.isTrue('is_oa');
+      } else {
+        qb.isFalse('is_oa');
+      }
     }
 
     const response = await this.client.works({

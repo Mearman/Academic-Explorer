@@ -240,7 +240,7 @@ export class TopicHierarchyNavigation {
     timeWindow = 2
   ): Promise<Topic[]> {
     const currentYear = new Date().getFullYear();
-    const startYear = currentYear - timeWindow;
+    const _startYear = currentYear - timeWindow;
 
     const filter = `${level}.id:${id}`;
     
