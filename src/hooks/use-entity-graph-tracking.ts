@@ -17,6 +17,16 @@ import type {
 import { EdgeType } from '@/types/entity-graph';
 import { EntityType } from '@/lib/openalex/utils/entity-detection';
 
+/**
+ * Clean OpenAlex ID by removing URL prefix
+ */
+function cleanOpenAlexId(id: string): string {
+  if (id.startsWith('https://openalex.org/')) {
+    return id.replace('https://openalex.org/', '');
+  }
+  return id;
+}
+
 interface UseEntityGraphTrackingProps {
   /** Whether to automatically track entity visits */
   autoTrack?: boolean;
@@ -73,14 +83,15 @@ export function useEntityGraphTracking({
     // Author relationships
     work.authorships?.forEach(authorship => {
       if (authorship.author.id) {
+        const cleanAuthorId = cleanOpenAlexId(authorship.author.id);
         const event: RelationshipDiscoveryEvent = {
           sourceEntityId: work.id,
-          targetEntityId: authorship.author.id,
+          targetEntityId: cleanAuthorId,
           relationshipType: EdgeType.AUTHORED_BY,
           timestamp,
           source: 'openalex',
           metadata: {
-            targetEntityType: 'author' as EntityType,
+            targetEntityType: EntityType.AUTHOR,
             targetDisplayName: authorship.author.display_name,
             context: `Author position: ${authorship.author_position}`,
             confidence: authorship.is_corresponding ? 1.0 : 0.8,
@@ -91,14 +102,15 @@ export function useEntityGraphTracking({
         // Institution relationships through authorship
         authorship.institutions?.forEach(institution => {
           if (institution.id) {
+            const cleanInstitutionId = cleanOpenAlexId(institution.id);
             const institutionEvent: RelationshipDiscoveryEvent = {
-              sourceEntityId: authorship.author.id,
-              targetEntityId: institution.id,
+              sourceEntityId: cleanAuthorId,
+              targetEntityId: cleanInstitutionId,
               relationshipType: EdgeType.AFFILIATED_WITH,
               timestamp,
               source: 'openalex',
               metadata: {
-                targetEntityType: 'institution' as EntityType,
+                targetEntityType: EntityType.INSTITUTION,
                 targetDisplayName: institution.display_name,
                 context: `Affiliation during work: ${work.display_name}`,
               },
@@ -111,14 +123,15 @@ export function useEntityGraphTracking({
 
     // Source/journal relationship
     if (work.primary_location?.source?.id) {
+      const cleanSourceId = cleanOpenAlexId(work.primary_location.source.id);
       const event: RelationshipDiscoveryEvent = {
         sourceEntityId: work.id,
-        targetEntityId: work.primary_location.source.id,
+        targetEntityId: cleanSourceId,
         relationshipType: EdgeType.PUBLISHED_IN,
         timestamp,
         source: 'openalex',
         metadata: {
-          targetEntityType: 'source' as EntityType,
+          targetEntityType: EntityType.SOURCE,
           targetDisplayName: work.primary_location.source.display_name,
           context: `Published in ${work.publication_year}`,
         },
@@ -129,14 +142,15 @@ export function useEntityGraphTracking({
     // Topic relationships
     work.topics?.forEach(topic => {
       if (topic.id) {
+        const cleanTopicId = cleanOpenAlexId(topic.id);
         const event: RelationshipDiscoveryEvent = {
           sourceEntityId: work.id,
-          targetEntityId: topic.id,
+          targetEntityId: cleanTopicId,
           relationshipType: EdgeType.RELATED_TO_TOPIC,
           timestamp,
           source: 'openalex',
           metadata: {
-            targetEntityType: 'topic' as EntityType,
+            targetEntityType: EntityType.TOPIC,
             targetDisplayName: topic.display_name,
             context: 'Work topic classification',
           },
@@ -148,14 +162,15 @@ export function useEntityGraphTracking({
     // Concept relationships (legacy)
     work.concepts?.forEach(concept => {
       if (concept.id) {
+        const cleanConceptId = cleanOpenAlexId(concept.id);
         const event: RelationshipDiscoveryEvent = {
           sourceEntityId: work.id,
-          targetEntityId: concept.id,
+          targetEntityId: cleanConceptId,
           relationshipType: EdgeType.HAS_CONCEPT,
           timestamp,
           source: 'openalex',
           metadata: {
-            targetEntityType: 'concept' as EntityType,
+            targetEntityType: EntityType.CONCEPT,
             targetDisplayName: concept.display_name,
             context: `Concept level ${concept.level}, score: ${concept.score}`,
             confidence: concept.score,
@@ -168,14 +183,15 @@ export function useEntityGraphTracking({
     // Funding relationships
     work.grants?.forEach(grant => {
       if (grant.funder) {
+        const cleanFunderId = cleanOpenAlexId(grant.funder);
         const event: RelationshipDiscoveryEvent = {
           sourceEntityId: work.id,
-          targetEntityId: grant.funder,
+          targetEntityId: cleanFunderId,
           relationshipType: EdgeType.FUNDED_BY,
           timestamp,
           source: 'openalex',
           metadata: {
-            targetEntityType: 'funder' as EntityType,
+            targetEntityType: EntityType.FUNDER,
             targetDisplayName: grant.funder_display_name || 'Unknown Funder',
             context: `Grant: ${grant.award_id}`,
           },
@@ -186,14 +202,15 @@ export function useEntityGraphTracking({
 
     // Citation relationships (if referenced works are available)
     work.referenced_works?.slice(0, 20).forEach(referencedWorkId => {
+      const cleanWorkId = cleanOpenAlexId(referencedWorkId);
       const event: RelationshipDiscoveryEvent = {
         sourceEntityId: work.id,
-        targetEntityId: referencedWorkId,
+        targetEntityId: cleanWorkId,
         relationshipType: EdgeType.CITES,
         timestamp,
         source: 'openalex',
         metadata: {
-          targetEntityType: 'work' as EntityType,
+          targetEntityType: EntityType.WORK,
           targetDisplayName: 'Referenced Work', // Would need to fetch actual title
           context: 'Citation reference',
         },
@@ -206,19 +223,23 @@ export function useEntityGraphTracking({
    * Extract relationships from Author entity
    */
   const extractAuthorRelationships = useCallback((author: Author) => {
+    console.log(`[EntityGraphTracking] 🔍 Extracting author relationships for ${author.display_name} (${author.id})`);
+    console.log(`[EntityGraphTracking] Author has ${author.affiliations?.length || 0} affiliations, ${author.last_known_institutions?.length || 0} last known institutions, ${author.topics?.length || 0} topics`);
     const timestamp = new Date().toISOString();
 
     // Institution affiliations
     author.affiliations?.forEach(affiliation => {
       if (affiliation.institution.id) {
+        const cleanInstitutionId = cleanOpenAlexId(affiliation.institution.id);
+        console.log(`[EntityGraphTracking] Creating affiliation relationship: ${author.id} → ${cleanInstitutionId} (${affiliation.institution.display_name})`);
         const event: RelationshipDiscoveryEvent = {
           sourceEntityId: author.id,
-          targetEntityId: affiliation.institution.id,
+          targetEntityId: cleanInstitutionId,
           relationshipType: EdgeType.AFFILIATED_WITH,
           timestamp,
           source: 'openalex',
           metadata: {
-            targetEntityType: 'institution' as EntityType,
+            targetEntityType: EntityType.INSTITUTION,
             targetDisplayName: affiliation.institution.display_name,
             context: `Years: ${affiliation.years?.join(', ')}`,
           },
@@ -230,14 +251,16 @@ export function useEntityGraphTracking({
     // Last known institutions
     author.last_known_institutions?.forEach(institution => {
       if (institution.id) {
+        const cleanInstitutionId = cleanOpenAlexId(institution.id);
+        console.log(`[EntityGraphTracking] Creating last known institution relationship: ${author.id} → ${cleanInstitutionId} (${institution.display_name})`);
         const event: RelationshipDiscoveryEvent = {
           sourceEntityId: author.id,
-          targetEntityId: institution.id,
+          targetEntityId: cleanInstitutionId,
           relationshipType: EdgeType.AFFILIATED_WITH,
           timestamp,
           source: 'openalex',
           metadata: {
-            targetEntityType: 'institution' as EntityType,
+            targetEntityType: EntityType.INSTITUTION,
             targetDisplayName: institution.display_name,
             context: 'Most recent affiliation',
           },
@@ -249,14 +272,16 @@ export function useEntityGraphTracking({
     // Topic relationships
     author.topics?.forEach(topic => {
       if (topic.id) {
+        const cleanTopicId = cleanOpenAlexId(topic.id);
+        console.log(`[EntityGraphTracking] Creating topic relationship: ${author.id} → ${cleanTopicId} (${topic.display_name})`);
         const event: RelationshipDiscoveryEvent = {
           sourceEntityId: author.id,
-          targetEntityId: topic.id,
+          targetEntityId: cleanTopicId,
           relationshipType: EdgeType.RELATED_TO_TOPIC,
           timestamp,
           source: 'openalex',
           metadata: {
-            targetEntityType: 'topic' as EntityType,
+            targetEntityType: EntityType.TOPIC,
             targetDisplayName: topic.display_name,
             context: 'Author research area',
           },
@@ -275,6 +300,7 @@ export function useEntityGraphTracking({
     // Associated institutions (parent/child relationships)
     institution.associated_institutions?.forEach(associated => {
       if (associated.id) {
+        const cleanAssociatedId = cleanOpenAlexId(associated.id);
         const relationshipType = associated.relationship === 'parent' 
           ? EdgeType.PART_OF 
           : associated.relationship === 'child'
@@ -283,12 +309,12 @@ export function useEntityGraphTracking({
 
         const event: RelationshipDiscoveryEvent = {
           sourceEntityId: institution.id,
-          targetEntityId: associated.id,
+          targetEntityId: cleanAssociatedId,
           relationshipType,
           timestamp,
           source: 'openalex',
           metadata: {
-            targetEntityType: 'institution' as EntityType,
+            targetEntityType: EntityType.INSTITUTION,
             targetDisplayName: associated.display_name,
             context: `Relationship: ${associated.relationship}`,
           },
@@ -306,14 +332,15 @@ export function useEntityGraphTracking({
     // Topic relationships
     institution.topics?.forEach(topic => {
       if (topic.id) {
+        const cleanTopicId = cleanOpenAlexId(topic.id);
         const event: RelationshipDiscoveryEvent = {
           sourceEntityId: institution.id,
-          targetEntityId: topic.id,
+          targetEntityId: cleanTopicId,
           relationshipType: EdgeType.RELATED_TO_TOPIC,
           timestamp,
           source: 'openalex',
           metadata: {
-            targetEntityType: 'topic' as EntityType,
+            targetEntityType: EntityType.TOPIC,
             targetDisplayName: topic.display_name,
             context: 'Institutional research focus',
           },
@@ -331,14 +358,15 @@ export function useEntityGraphTracking({
 
     // Host organization relationship
     if (source.host_organization && source.host_organization_name) {
+      const cleanHostId = cleanOpenAlexId(source.host_organization);
       const event: RelationshipDiscoveryEvent = {
         sourceEntityId: source.id,
-        targetEntityId: source.host_organization,
+        targetEntityId: cleanHostId,
         relationshipType: EdgeType.PART_OF,
         timestamp,
         source: 'openalex',
         metadata: {
-          targetEntityType: 'publisher' as EntityType,
+          targetEntityType: EntityType.PUBLISHER,
           targetDisplayName: source.host_organization_name,
           context: 'Publisher relationship',
         },
@@ -349,14 +377,15 @@ export function useEntityGraphTracking({
     // Topic relationships
     source.topics?.forEach(topic => {
       if (topic.id) {
+        const cleanTopicId = cleanOpenAlexId(topic.id);
         const event: RelationshipDiscoveryEvent = {
           sourceEntityId: source.id,
-          targetEntityId: topic.id,
+          targetEntityId: cleanTopicId,
           relationshipType: EdgeType.RELATED_TO_TOPIC,
           timestamp,
           source: 'openalex',
           metadata: {
-            targetEntityType: 'topic' as EntityType,
+            targetEntityType: EntityType.TOPIC,
             targetDisplayName: topic.display_name,
             context: 'Journal subject area',
           },
@@ -372,18 +401,19 @@ export function useEntityGraphTracking({
   const extractEntityRelationships = useCallback((entity: unknown, entityType: EntityType) => {
     if (!extractRelationships) return;
 
+    console.log(`[EntityGraphTracking] Extracting relationships for ${entityType} entity`);
     try {
       switch (entityType) {
-        case 'work':
+        case EntityType.WORK:
           extractWorkRelationships(entity as Work);
           break;
-        case 'author':
+        case EntityType.AUTHOR:
           extractAuthorRelationships(entity as Author);
           break;
-        case 'institution':
+        case EntityType.INSTITUTION:
           extractInstitutionRelationships(entity as Institution);
           break;
-        case 'source':
+        case EntityType.SOURCE:
           extractSourceRelationships(entity as Source);
           break;
         // Add more cases as needed for Publisher, Funder, etc.
@@ -394,14 +424,15 @@ export function useEntityGraphTracking({
             const timestamp = new Date().toISOString();
             basicEntity.topics.forEach(topic => {
               if (topic.id && basicEntity.id) {
+                const cleanTopicId = cleanOpenAlexId(topic.id);
                 const event: RelationshipDiscoveryEvent = {
                   sourceEntityId: basicEntity.id,
-                  targetEntityId: topic.id,
+                  targetEntityId: cleanTopicId,
                   relationshipType: EdgeType.RELATED_TO_TOPIC,
                   timestamp,
                   source: 'openalex',
                   metadata: {
-                    targetEntityType: 'topic' as EntityType,
+                    targetEntityType: EntityType.TOPIC,
                     targetDisplayName: topic.display_name,
                     context: 'Topic relationship',
                   },
@@ -434,15 +465,17 @@ export function useEntityGraphTracking({
     // Persist authors
     work.authorships?.forEach(authorship => {
       if (authorship.author.id && authorship.author.display_name) {
+        const cleanAuthorId = cleanOpenAlexId(authorship.author.id);
         promises.push(
-          saveEntityToSimpleStorage(authorship.author.id, EntityType.AUTHOR, authorship.author.display_name, false)
+          saveEntityToSimpleStorage(cleanAuthorId, EntityType.AUTHOR, authorship.author.display_name, false)
         );
 
         // Persist institutions through authorship
         authorship.institutions?.forEach(institution => {
           if (institution.id && institution.display_name) {
+            const cleanInstitutionId = cleanOpenAlexId(institution.id);
             promises.push(
-              saveEntityToSimpleStorage(institution.id, EntityType.INSTITUTION, institution.display_name, false)
+              saveEntityToSimpleStorage(cleanInstitutionId, EntityType.INSTITUTION, institution.display_name, false)
             );
           }
         });
@@ -451,16 +484,18 @@ export function useEntityGraphTracking({
 
     // Persist publication source
     if (work.primary_location?.source?.id && work.primary_location.source.display_name) {
+      const cleanSourceId = cleanOpenAlexId(work.primary_location.source.id);
       promises.push(
-        saveEntityToSimpleStorage(work.primary_location.source.id, EntityType.SOURCE, work.primary_location.source.display_name, false)
+        saveEntityToSimpleStorage(cleanSourceId, EntityType.SOURCE, work.primary_location.source.display_name, false)
       );
     }
 
     // Persist topics
     work.topics?.forEach(topic => {
       if (topic.id && topic.display_name) {
+        const cleanTopicId = cleanOpenAlexId(topic.id);
         promises.push(
-          saveEntityToSimpleStorage(topic.id, EntityType.TOPIC, topic.display_name, false)
+          saveEntityToSimpleStorage(cleanTopicId, EntityType.TOPIC, topic.display_name, false)
         );
       }
     });
@@ -468,8 +503,9 @@ export function useEntityGraphTracking({
     // Persist concepts (legacy)
     work.concepts?.forEach(concept => {
       if (concept.id && concept.display_name) {
+        const cleanConceptId = cleanOpenAlexId(concept.id);
         promises.push(
-          saveEntityToSimpleStorage(concept.id, EntityType.CONCEPT, concept.display_name, false)
+          saveEntityToSimpleStorage(cleanConceptId, EntityType.CONCEPT, concept.display_name, false)
         );
       }
     });
@@ -477,8 +513,9 @@ export function useEntityGraphTracking({
     // Persist funders
     work.grants?.forEach(grant => {
       if (grant.funder && grant.funder_display_name) {
+        const cleanFunderId = cleanOpenAlexId(grant.funder);
         promises.push(
-          saveEntityToSimpleStorage(grant.funder, EntityType.FUNDER, grant.funder_display_name, false)
+          saveEntityToSimpleStorage(cleanFunderId, EntityType.FUNDER, grant.funder_display_name, false)
         );
       }
     });
@@ -497,8 +534,9 @@ export function useEntityGraphTracking({
     // Persist affiliated institutions
     author.affiliations?.forEach(affiliation => {
       if (affiliation.institution.id && affiliation.institution.display_name) {
+        const cleanInstitutionId = cleanOpenAlexId(affiliation.institution.id);
         promises.push(
-          saveEntityToSimpleStorage(affiliation.institution.id, EntityType.INSTITUTION, affiliation.institution.display_name, false)
+          saveEntityToSimpleStorage(cleanInstitutionId, EntityType.INSTITUTION, affiliation.institution.display_name, false)
         );
       }
     });
@@ -506,8 +544,9 @@ export function useEntityGraphTracking({
     // Persist last known institutions
     author.last_known_institutions?.forEach(institution => {
       if (institution.id && institution.display_name) {
+        const cleanInstitutionId = cleanOpenAlexId(institution.id);
         promises.push(
-          saveEntityToSimpleStorage(institution.id, EntityType.INSTITUTION, institution.display_name, false)
+          saveEntityToSimpleStorage(cleanInstitutionId, EntityType.INSTITUTION, institution.display_name, false)
         );
       }
     });
@@ -515,8 +554,9 @@ export function useEntityGraphTracking({
     // Persist research topics
     author.topics?.forEach(topic => {
       if (topic.id && topic.display_name) {
+        const cleanTopicId = cleanOpenAlexId(topic.id);
         promises.push(
-          saveEntityToSimpleStorage(topic.id, EntityType.TOPIC, topic.display_name, false)
+          saveEntityToSimpleStorage(cleanTopicId, EntityType.TOPIC, topic.display_name, false)
         );
       }
     });
@@ -535,8 +575,9 @@ export function useEntityGraphTracking({
     // Persist associated institutions
     institution.associated_institutions?.forEach(associated => {
       if (associated.id && associated.display_name) {
+        const cleanAssociatedId = cleanOpenAlexId(associated.id);
         promises.push(
-          saveEntityToSimpleStorage(associated.id, EntityType.INSTITUTION, associated.display_name, false)
+          saveEntityToSimpleStorage(cleanAssociatedId, EntityType.INSTITUTION, associated.display_name, false)
         );
       }
     });
@@ -544,8 +585,9 @@ export function useEntityGraphTracking({
     // Persist research topics
     institution.topics?.forEach(topic => {
       if (topic.id && topic.display_name) {
+        const cleanTopicId = cleanOpenAlexId(topic.id);
         promises.push(
-          saveEntityToSimpleStorage(topic.id, EntityType.TOPIC, topic.display_name, false)
+          saveEntityToSimpleStorage(cleanTopicId, EntityType.TOPIC, topic.display_name, false)
         );
       }
     });
@@ -563,16 +605,18 @@ export function useEntityGraphTracking({
 
     // Persist host organization (publisher)
     if (source.host_organization && source.host_organization_name) {
+      const cleanHostId = cleanOpenAlexId(source.host_organization);
       promises.push(
-        saveEntityToSimpleStorage(source.host_organization, EntityType.PUBLISHER, source.host_organization_name, false)
+        saveEntityToSimpleStorage(cleanHostId, EntityType.PUBLISHER, source.host_organization_name, false)
       );
     }
 
     // Persist subject areas (topics)
     source.topics?.forEach(topic => {
       if (topic.id && topic.display_name) {
+        const cleanTopicId = cleanOpenAlexId(topic.id);
         promises.push(
-          saveEntityToSimpleStorage(topic.id, EntityType.TOPIC, topic.display_name, false)
+          saveEntityToSimpleStorage(cleanTopicId, EntityType.TOPIC, topic.display_name, false)
         );
       }
     });
@@ -607,8 +651,9 @@ export function useEntityGraphTracking({
             const promises: Promise<void>[] = [];
             basicEntity.topics.forEach(topic => {
               if (topic.id && topic.display_name) {
+                const cleanTopicId = cleanOpenAlexId(topic.id);
                 promises.push(
-                  saveEntityToSimpleStorage(topic.id, EntityType.TOPIC, topic.display_name, false)
+                  saveEntityToSimpleStorage(cleanTopicId, EntityType.TOPIC, topic.display_name, false)
                 );
               }
             });
@@ -633,6 +678,7 @@ export function useEntityGraphTracking({
     entityType: EntityType,
     entityId: string
   ) => {
+    console.log(`[EntityGraphTracking] 🎯 trackEntityData called for ${entityType}:${entityId}`);
     const basicEntity = entity as { 
       id: string; 
       display_name: string;
@@ -649,10 +695,13 @@ export function useEntityGraphTracking({
     });
 
     // Extract relationships (in-memory graph)
+    console.log(`[EntityGraphTracking] 🔗 About to extract relationships for ${entityType}:${entityId}`);
     extractEntityRelationships(entity, entityType);
 
     // Persist related entities to simple storage
+    console.log(`[EntityGraphTracking] 💾 About to persist related entities for ${entityType}:${entityId}`);
     await persistRelatedEntities(entity, entityType);
+    console.log(`[EntityGraphTracking] ✅ Completed tracking for ${entityType}:${entityId}`);
   }, [trackEntityVisit, extractEntityRelationships, persistRelatedEntities]);
 
   /**
