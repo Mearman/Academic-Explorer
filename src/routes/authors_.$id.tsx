@@ -68,7 +68,9 @@ function AuthorPage() {
   useEffect(() => {
     if (author && id && !isRedirecting) {
       console.log('[AuthorPage] Tracking author data:', author.display_name);
-      trackEntityData(author, EntityType.AUTHOR, id);
+      trackEntityData(author, EntityType.AUTHOR, id).catch(error => {
+        console.error('[AuthorPage] Failed to track entity data:', error);
+      });
     }
   }, [author, id, isRedirecting, trackEntityData]);
   
