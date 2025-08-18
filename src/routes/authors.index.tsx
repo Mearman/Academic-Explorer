@@ -49,7 +49,7 @@ function AuthorsOverviewPage() {
   const relatedEntityAuthors = browsedAuthors.filter(vertex => vertex.encounterStats?.relatedEntityCount > 0);
   
   return (
-    <div className="container mx-auto px-4 py-8">
+    <div style={{ padding: '1rem', height: '100%', overflow: 'auto' }}>
       <Stack gap="xl">
         {/* Header */}
         <Card withBorder radius="md" p="xl">
@@ -279,7 +279,7 @@ function AuthorsOverviewPage() {
         />
       </Stack>
     </div>
-  )
+  );
 }
 
 export const Route = createFileRoute('/authors/')({

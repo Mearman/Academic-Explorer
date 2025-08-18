@@ -100,27 +100,31 @@ export const mockWork: Work = {
     id: 'https://openalex.org/T10555',
     display_name: 'Quantum Computing',
     subfield: {
-      id: 'https://openalex.org/subfield/1',
+      id: 1,
       display_name: 'Computer Science',
     },
     field: {
-      id: 'https://openalex.org/field/1',
+      id: 1,
       display_name: 'Physical Sciences',
     },
     domain: {
-      id: 'https://openalex.org/domain/1',
+      id: 1,
       display_name: 'Science',
     },
-    keywords: ['quantum', 'computing'],
-    siblings: [],
-    works_count: 10000,
-    cited_by_count: 500000,
-    ids: {},
-    works_api_url: 'https://api.openalex.org/works?filter=topics.id:T10555',
-    updated_date: '2024-01-01',
-    created_date: '2024-01-01',
+    score: 0.95,
   },
-  topics: [],
+  topics: [
+    {
+      id: 'https://openalex.org/T10555',
+      display_name: 'Quantum Computing',
+      score: 0.95,
+    },
+    {
+      id: 'https://openalex.org/T10123',
+      display_name: 'Machine Learning',
+      score: 0.89,
+    }
+  ],
   keywords: [],
   concepts: [],
   mesh: [],

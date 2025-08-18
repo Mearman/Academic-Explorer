@@ -90,13 +90,6 @@ export function QueryHistory({ onRerunQuery }: QueryHistoryProps) {
     return (query.pageNavigations?.length || 0) + 1; // +1 for the original query
   };
 
-  const getPageList = (query: QueryRecord) => {
-    const pages = [query.params.page || 1];
-    if (query.pageNavigations) {
-      pages.push(...query.pageNavigations.map(nav => nav.params.page || 1));
-    }
-    return [...new Set(pages)].sort((a, b) => a - b);
-  };
 
   const getOccurrenceTypes = (query: QueryRecord) => {
     const types = { pages: new Set<number>(), reruns: 0 };

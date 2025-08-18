@@ -33,10 +33,7 @@ export function SearchResults({ searchParams, onParamsChange }: SearchResultsPro
       : Object.keys(searchParams.filter).length > 0
   );
   
-  if (!hasSearch && !hasFilter) {
-    return <EmptyState />;
-  }
-  
+  // Always call hooks unconditionally
   const worksQuery = useWorks(searchParams);
   
   // Type assertion to help TypeScript understand the data structure
@@ -91,6 +88,11 @@ export function SearchResults({ searchParams, onParamsChange }: SearchResultsPro
       });
     }
   }, [results, searchParams, meta]);
+  
+  // Early return after all hooks have been called
+  if (!hasSearch && !hasFilter) {
+    return <EmptyState />;
+  }
 
   // Handle different states
   if (worksQuery.isLoading && (!data?.results || data.results.length === 0)) {

@@ -1,7 +1,11 @@
 import { createFileRoute } from '@tanstack/react-router';
 import React, { useMemo } from 'react';
 
-import { EntityPageWithGraph, EntityErrorBoundary, EntitySkeleton, EntityError, EntityFallback } from '@/components';
+import { TwoPaneLayout, EntityErrorBoundary, EntitySkeleton, EntityError, EntityFallback } from '@/components';
+import { GraphSection } from '@/components/organisms/graph-section/GraphSection';
+import { useEntityGraphStats } from '@/hooks/use-entity-graph-stats';
+import { useEntityGraphTracking } from '@/hooks/use-entity-graph-tracking';
+import { useEntityGraphStore } from '@/stores/entity-graph-store';
 import { AuthorDisplay } from '@/components/entity-displays/AuthorDisplay';
 import { ConceptDisplay } from '@/components/entity-displays/ConceptDisplay';
 import { FunderDisplay } from '@/components/entity-displays/FunderDisplay';
@@ -51,24 +55,73 @@ const URL_TO_ENTITY_TYPE: Record<string, EntityType> = {
 function GenericEntityDisplay({ entity, entityType }: { entity: EntityData; entityType: EntityType }) {
   const DisplayComponent = ENTITY_DISPLAY_COMPONENTS[entityType];
   
+  // Graph-related hooks
+  const { trackEntityData } = useEntityGraphTracking({
+    autoTrack: true,
+    extractRelationships: true,
+  });
+
+  const { graph, isGraphVisible } = useEntityGraphStore();
+  const graphStats = useEntityGraphStats(entity?.id);
+
+  // Track entity data when entity loads
+  React.useEffect(() => {
+    if (entity && entityType && entity.id && entity.display_name) {
+      trackEntityData(entity, entityType, entity.id);
+    }
+  }, [entity, entityType, trackEntityData]);
+
+  const handleVertexClick = (vertex: any) => {
+    // Navigate to the clicked entity
+    // This would typically use the router to navigate
+    console.log('Vertex clicked:', vertex);
+  };
+
+  // Create the graph pane content
+  const graphPane = (
+    <GraphSection
+      isVisible={isGraphVisible}
+      graphHeight={400}
+      graphStats={graphStats}
+      totalVisits={graph.metadata.totalVisits}
+      onVertexClick={handleVertexClick}
+    />
+  );
+
   if (!DisplayComponent) {
+    // Fallback display with two-pane layout
+    const dataPane = (
+      <div style={{ padding: '20px' }}>
+        <h1>{entity.display_name}</h1>
+        <p>Entity type: {entityType}</p>
+        <p>ID: {entity.id}</p>
+        <pre style={{ fontSize: '12px', background: '#f5f5f5', padding: '10px', borderRadius: '4px' }}>
+          {JSON.stringify(entity, null, 2)}
+        </pre>
+      </div>
+    );
+
     return (
-      <EntityPageWithGraph entity={entity}>
-        <div style={{ padding: '20px' }}>
-          <h1>{entity.display_name}</h1>
-          <p>Entity type: {entityType}</p>
-          <p>ID: {entity.id}</p>
-          <pre style={{ fontSize: '12px', background: '#f5f5f5', padding: '10px', borderRadius: '4px' }}>
-            {JSON.stringify(entity, null, 2)}
-          </pre>
-        </div>
-      </EntityPageWithGraph>
+      <TwoPaneLayout
+        leftPane={dataPane}
+        rightPane={graphPane}
+        stateKey={`entity-${entityType}-${entity.id}`}
+        leftTitle={`${entityType} Details`}
+        rightTitle="Related Entities"
+        showHeaders={true}
+        mobileTabLabels={{ left: 'Details', right: 'Graph' }}
+      />
     );
   }
   
-  // TypeScript needs help understanding that entity matches the component's expected type
-  // This is safe because we've already determined the entityType and verified the component exists
-  return <DisplayComponent entity={entity as Work & Author & Source & Institution & Funder & Topic & Concept & Publisher} />;
+  // Render the specific entity component with two-pane layout
+  const entityDisplayProps = {
+    entity: entity as Work & Author & Source & Institution & Funder & Topic & Concept & Publisher,
+    useTwoPaneLayout: true,
+    graphPane,
+  };
+
+  return <DisplayComponent {...entityDisplayProps} />;
 }
 
 function EntityPage() {

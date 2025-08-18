@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 
 import type { WorksParams } from '@/lib/openalex/types';
 
@@ -42,6 +42,7 @@ export interface AdvancedSearchFormData {
 interface UseAdvancedSearchFormProps {
   initialData?: Partial<AdvancedSearchFormData>;
   onSearch: (params: WorksParams) => void;
+  onParamsChange?: (params: WorksParams) => void;
 }
 
 const defaultFormData: AdvancedSearchFormData = {
@@ -53,7 +54,7 @@ const defaultFormData: AdvancedSearchFormData = {
   perPage: 25,
 };
 
-export function useAdvancedSearchForm({ initialData, onSearch }: UseAdvancedSearchFormProps) {
+export function useAdvancedSearchForm({ initialData, onSearch, onParamsChange }: UseAdvancedSearchFormProps) {
   const [formData, setFormData] = useState<AdvancedSearchFormData>({
     ...defaultFormData,
     ...initialData,
@@ -68,7 +69,7 @@ export function useAdvancedSearchForm({ initialData, onSearch }: UseAdvancedSear
     setFormData(prev => ({ ...prev, [field]: value }));
   };
 
-  const buildSearchParams = (): WorksParams => {
+  const buildSearchParams = useCallback((): WorksParams => {
     const params: WorksParams = {};
 
     // Build search query
@@ -175,7 +176,15 @@ export function useAdvancedSearchForm({ initialData, onSearch }: UseAdvancedSear
     }
 
     return params;
-  };
+  }, [formData]);
+
+  // Effect to call onParamsChange when formData changes for live preview
+  useEffect(() => {
+    if (onParamsChange) {
+      const params = buildSearchParams();
+      onParamsChange(params);
+    }
+  }, [formData, onParamsChange, buildSearchParams]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();

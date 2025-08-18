@@ -138,7 +138,7 @@ export const useAppStore = create<AppState>()(
         
         set((state) => {
           // Always check for existing parent query with the same signature first
-          let parentQuery = state.queryHistory.find(q => 
+          const parentQuery = state.queryHistory.find(q => 
             q.querySignature === signature && !q.isPageNavigation
           );
           

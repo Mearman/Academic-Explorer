@@ -27,7 +27,7 @@ const NavigationParamsSchema = z.object({
   sort: z.string().optional(),
 }).strict();
 
-const WorksParamsSchema = CoreSearchParamsSchema.merge(NavigationParamsSchema).merge(
+const _WorksParamsSchema = CoreSearchParamsSchema.merge(NavigationParamsSchema).merge(
   z.object({
     // Additional WorksParams that aren't core search or navigation
     cursor: z.string().optional(),

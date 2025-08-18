@@ -2,11 +2,11 @@ import { createFileRoute, useNavigate, useSearch } from '@tanstack/react-router'
 import { useState, useEffect, useCallback } from 'react';
 import { z } from 'zod';
 
-import { AdvancedSearchForm, type AdvancedSearchFormData } from '@/components/molecules/advanced-search-form';
-import { QueryHistory } from '@/components/organisms/query-history';
-import { SearchHistory } from '@/components/organisms/search-history';
+import { TwoPaneLayout } from '@/components/templates/two-pane-layout';
+import { QueryBuilder } from '@/components/organisms/query-builder';
+import { QueryPreview } from '@/components/organisms/query-preview';
 import { SearchResults } from '@/components/organisms/search-results';
-// import { SavedSearches } from '@/components/molecules/saved-searches'; // Removed - component not implemented
+import { type AdvancedSearchFormData } from '@/components/molecules/advanced-search-form';
 import type { WorksParams } from '@/lib/openalex/types';
 
 import * as styles from '../app/page.css';
@@ -45,6 +45,8 @@ function SearchPage() {
   const navigate = useNavigate();
   const searchParams = useSearch({ from: '/query' });
   const [currentParams, setCurrentParams] = useState<WorksParams>({});
+  const [previewParams, setPreviewParams] = useState<WorksParams>({});
+  const [showResults, setShowResults] = useState(false);
 
   // Convert URL search params to WorksParams
   const convertUrlParamsToWorksParams = useCallback((params: SearchParams): WorksParams => {
@@ -236,6 +238,7 @@ function SearchPage() {
 
   const handleSearch = (worksParams: WorksParams) => {
     setCurrentParams(worksParams);
+    setShowResults(true);
     updateUrlParams(worksParams);
   };
 
@@ -244,9 +247,8 @@ function SearchPage() {
     updateUrlParams(worksParams);
   };
 
-  const _handleLoadSavedSearch = (worksParams: WorksParams) => {
-    setCurrentParams(worksParams);
-    updateUrlParams(worksParams);
+  const handlePreviewParamsChange = (worksParams: WorksParams) => {
+    setPreviewParams(worksParams);
   };
 
   // Initialize from URL params on load
@@ -257,6 +259,8 @@ function SearchPage() {
     if (hasSearchParams) {
       const worksParams = convertUrlParamsToWorksParams(searchParams);
       setCurrentParams(worksParams);
+      setPreviewParams(worksParams);
+      setShowResults(true);
     }
   }, [hasSearchParams, searchParams, convertUrlParamsToWorksParams]);
 
@@ -264,38 +268,53 @@ function SearchPage() {
     <div className={styles.page}>
       <main className={styles.main}>
         <div className={styles.searchPageHeader}>
-          <h1 className={styles.title}>Advanced Academic Search</h1>
+          <h1 className={styles.title}>Advanced Query Builder</h1>
           <p className={styles.description}>
-            Search millions of academic works with powerful filters and analysis tools
+            Build powerful OpenAlex queries with live preview and advanced filtering
           </p>
         </div>
 
-        <div className={styles.searchInterface}>
-          {/* <div className={styles.searchSidebar}>
-            <SavedSearches
-              currentParams={currentParams}
-              onLoadSearch={handleLoadSavedSearch}
-            />
-          </div> */}
-          
-          <div className={styles.searchMainContent}>
-            <SearchHistory />
-            
-            <AdvancedSearchForm
-              onSearch={handleSearch}
+        <TwoPaneLayout
+          leftPane={
+            <QueryBuilder
               initialData={hasSearchParams ? getFormDataFromParams(searchParams) : undefined}
+              onSearch={handleSearch}
+              onParamsChange={handlePreviewParamsChange}
+              showHelp={true}
             />
-
-            <div className={styles.searchResultsSection}>
-              <SearchResults
-                searchParams={currentParams}
-                onParamsChange={handleParamsChange}
+          }
+          rightPane={
+            <>
+              <QueryPreview
+                searchParams={previewParams}
+                showResults={true}
+                maxResults={3}
               />
-            </div>
-
-            <QueryHistory onRerunQuery={handleSearch} />
-          </div>
-        </div>
+              {showResults && (
+                <div style={{ marginTop: '2rem', borderTop: '1px solid var(--mantine-color-gray-3)', paddingTop: '1rem' }}>
+                  <SearchResults
+                    searchParams={currentParams}
+                    onParamsChange={handleParamsChange}
+                  />
+                </div>
+              )}
+            </>
+          }
+          defaultSplit={70}
+          minPaneSize={400}
+          leftCollapsible={true}
+          rightCollapsible={true}
+          persistState={true}
+          stateKey="query-builder-layout"
+          leftTitle="Query Builder"
+          rightTitle="Live Preview"
+          showHeaders={true}
+          showMobileTabs={true}
+          mobileTabLabels={{
+            left: "Query Builder",
+            right: "Preview & Results"
+          }}
+        />
       </main>
     </div>
   );

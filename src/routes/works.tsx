@@ -1,7 +1,56 @@
 import { createFileRoute, Outlet } from '@tanstack/react-router';
+import { TwoPaneLayout, EntityGraphVisualization } from '@/components';
+import { useEntityGraphStore } from '@/stores/entity-graph-store';
+import { useMemo } from 'react';
+import { Text } from '@mantine/core';
 
 function WorksLayout() {
-  return <Outlet />;
+  const { graph } = useEntityGraphStore();
+  
+  // Filter graph to show work-related vertices and their connections
+  const worksGraphData = useMemo(() => {
+    const workVertices = Array.from(graph.vertices.values())
+      .filter(vertex => vertex.entityType === 'work');
+    
+    const workIds = new Set(workVertices.map(v => v.id));
+    const relevantEdges = Array.from(graph.edges.values())
+      .filter(edge => workIds.has(edge.sourceId) || workIds.has(edge.targetId));
+    
+    // Include connected vertices (authors, institutions, etc.)
+    const connectedVertexIds = new Set<string>();
+    relevantEdges.forEach(edge => {
+      connectedVertexIds.add(edge.sourceId);
+      connectedVertexIds.add(edge.targetId);
+    });
+    
+    const allRelevantVertices = Array.from(graph.vertices.values())
+      .filter(vertex => connectedVertexIds.has(vertex.id));
+    
+    return {
+      vertices: allRelevantVertices,
+      edges: relevantEdges,
+      hasData: allRelevantVertices.length > 0
+    };
+  }, [graph]);
+  
+  const rightPane = worksGraphData.hasData ? (
+    <EntityGraphVisualization />
+  ) : (
+    <div style={{ padding: '2rem', textAlign: 'center' }}>
+      <Text c="dimmed">No works data to visualise yet. Start exploring works to see connections here.</Text>
+    </div>
+  );
+  
+  return (
+    <TwoPaneLayout
+      leftPane={<Outlet />}
+      rightPane={rightPane}
+      stateKey="works-layout"
+      defaultSplit={65}
+      mobileTabLabels={{ left: 'Works', right: 'Graph' }}
+      showHeaders={false}
+    />
+  );
 }
 
 export const Route = createFileRoute('/works')({

@@ -21,9 +21,10 @@ export type { AdvancedSearchFormData };
 interface AdvancedSearchFormProps {
   onSearch: (params: WorksParams) => void;
   initialData?: Partial<AdvancedSearchFormData>;
+  onParamsChange?: (params: WorksParams) => void;
 }
 
-export function AdvancedSearchForm({ onSearch, initialData }: AdvancedSearchFormProps) {
+export function AdvancedSearchForm({ onSearch, initialData, onParamsChange }: AdvancedSearchFormProps) {
   const {
     formData,
     isCollapsed,
@@ -31,7 +32,7 @@ export function AdvancedSearchForm({ onSearch, initialData }: AdvancedSearchForm
     updateField,
     handleSubmit,
     handleReset,
-  } = useAdvancedSearchForm({ initialData, onSearch });
+  } = useAdvancedSearchForm({ initialData, onSearch, onParamsChange });
 
   return (
     <form onSubmit={handleSubmit} className={styles.form}>

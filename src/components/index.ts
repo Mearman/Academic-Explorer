@@ -67,6 +67,7 @@ export { EntityBreadcrumbs } from './molecules/entity-breadcrumbs';
 export { EntitySectionHeader } from './molecules/entity-section-header';
 export { FloatingActions } from './molecules/floating-actions';
 export { ErrorIcon } from './molecules/error-icon';
+export { PaneDivider } from './molecules/pane-divider';
 export { ErrorMessageContent } from './molecules/error-message-content';
 export { ErrorActions } from './molecules/error-actions';
 export { ErrorDebugDetails } from './molecules/error-debug-details';
@@ -128,6 +129,8 @@ export { SourceExternalLinks } from './organisms/source-external-links';
 export { EntityBrowser } from './organisms/entity-browser';
 export { ValidationLogViewer } from './organisms/validation-log-viewer';
 export { ValidationDashboard } from './organisms/validation-dashboard';
+export { QueryBuilder } from './organisms/query-builder';
+export { QueryPreview } from './organisms/query-preview';
 
 // Templates
 export { 
@@ -138,6 +141,7 @@ export {
   EntityPageErrorTemplate
 } from './templates/entity-page-template';
 export { EntityPageWithGraph } from './templates/entity-page-with-graph';
+export { TwoPaneLayout } from './templates/two-pane-layout';
 export { default as EntityErrorBoundary } from './templates/error-boundary';
 export { AppShellLayout } from './templates/app-shell-layout';
 

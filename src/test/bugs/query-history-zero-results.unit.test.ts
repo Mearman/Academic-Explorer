@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { renderHook, act, waitFor } from '@testing-library/react';
+import { renderHook, waitFor, act } from '@testing-library/react';
 
 import { cachedOpenAlex } from '@/lib/openalex';
 import type { ApiResponse, Work } from '@/lib/openalex/types';
