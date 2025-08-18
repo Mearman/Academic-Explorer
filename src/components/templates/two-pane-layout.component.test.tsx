@@ -609,8 +609,8 @@ describe('TwoPaneLayout Component', () => {
 
       const divider = screen.getByRole('separator');
       
-      // Mock getBoundingClientRect to return null (edge case)
-      vi.spyOn(container, 'getBoundingClientRect').mockReturnValue(null as any);
+      // Mock getBoundingClientRect to return null (edge case)  
+      vi.spyOn(container, 'getBoundingClientRect').mockReturnValue(null as unknown as DOMRect);
 
       expect(() => {
         fireEvent.mouseDown(divider, { button: 0 });
