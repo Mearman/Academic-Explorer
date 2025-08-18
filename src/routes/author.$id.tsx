@@ -2,11 +2,11 @@ import { createFileRoute, useNavigate } from '@tanstack/react-router';
 import { useEffect, useState, useCallback } from 'react';
 
 import { EntityErrorBoundary, EntitySkeleton, EntityError, EntityFallback, EntityGraphVisualization } from '@/components';
+import { buildEntityPath } from '@/components/atoms/utils/entity-link-utils';
 import { AuthorDisplay } from '@/components/entity-displays/AuthorDisplay';
 import { useAuthorData } from '@/hooks/use-entity-data';
 import { useNumericIdRedirect } from '@/hooks/use-numeric-id-redirect';
 import { EntityType, detectIdType, decodeExternalId, ExternalIdType, detectEntityType } from '@/lib/openalex/utils/entity-detection';
-import { buildEntityPath } from '@/components/atoms/utils/entity-link-utils';
 
 function AuthorPage() {
   const { id } = Route.useParams();
@@ -18,7 +18,7 @@ function AuthorPage() {
   const isRedirecting = useNumericIdRedirect(id, EntityType.AUTHOR);
   
   // Memoize navigate function to prevent useEffect loops
-  const stableNavigate = useCallback(navigate, []);
+  const stableNavigate = useCallback(navigate, [navigate]);
   
   // Process the ID to handle external formats
   useEffect(() => {

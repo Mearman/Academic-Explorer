@@ -19,6 +19,7 @@ import { useNumericIdRedirect } from '@/hooks/use-numeric-id-redirect';
 import type { Work, Author, Source, Institution, Funder, Topic, Concept, Publisher } from '@/lib/openalex/types';
 import { EntityType } from '@/lib/openalex/utils/entity-detection';
 import { useEntityGraphStore } from '@/stores/entity-graph-store';
+import type { EntityGraphVertex } from '@/types/entity-graph';
 
 // Entity-specific display components
 
@@ -71,7 +72,7 @@ function GenericEntityDisplay({ entity, entityType }: { entity: EntityData; enti
     }
   }, [entity, entityType, trackEntityData]);
 
-  const handleVertexClick = (vertex: any) => {
+  const handleVertexClick = (vertex: EntityGraphVertex) => {
     // Navigate to the clicked entity
     // This would typically use the router to navigate
     console.log('Vertex clicked:', vertex);

@@ -17,7 +17,7 @@ function AuthorPage() {
   const isRedirecting = useNumericIdRedirect(id, EntityType.AUTHOR);
   
   // Memoize navigate function to prevent useEffect loops
-  const stableNavigate = useCallback(navigate, []);
+  const stableNavigate = useCallback(navigate, [navigate]);
   
   // Process the ID to handle external formats
   useEffect(() => {
