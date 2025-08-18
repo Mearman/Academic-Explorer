@@ -1,12 +1,12 @@
 import { createFileRoute, useNavigate, notFound } from '@tanstack/react-router';
 import { useEffect } from 'react';
 
+import { buildEntityPath } from '@/components/atoms/utils/entity-link-utils';
 import { 
   detectEntityType,
   parseExternalId,
   decodeExternalId
 } from '@/lib/openalex/utils/entity-detection';
-import { buildEntityPath } from '@/components/atoms/utils/entity-link-utils';
 
 function HttpsUrlRedirect() {
   const { _splat } = Route.useParams();

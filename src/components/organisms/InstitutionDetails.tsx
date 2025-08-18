@@ -19,7 +19,7 @@ export function InstitutionDetails({ institution }: InstitutionDetailsProps) {
         
         <Grid>
           <Grid.Col span={{ base: 12, md: 6 }}>
-            <Paper p="md" withBorder radius="sm" bg="gray.0">
+            <Paper p="md" withBorder radius="sm" >
               <Text size="xs" tt="uppercase" fw={600} c="dimmed" mb="xs">
                 Institution Type
               </Text>
@@ -37,7 +37,7 @@ export function InstitutionDetails({ institution }: InstitutionDetailsProps) {
           
           {institution.country_code && (
             <Grid.Col span={{ base: 12, md: 6 }}>
-              <Paper p="md" withBorder radius="sm" bg="gray.0">
+              <Paper p="md" withBorder radius="sm" >
                 <Text size="xs" tt="uppercase" fw={600} c="dimmed" mb="xs">
                   Country Code
                 </Text>
@@ -50,7 +50,7 @@ export function InstitutionDetails({ institution }: InstitutionDetailsProps) {
           
           {institution.ror && (
             <Grid.Col span={{ base: 12, md: 6 }}>
-              <Paper p="md" withBorder radius="sm" bg="gray.0">
+              <Paper p="md" withBorder radius="sm" >
                 <Text size="xs" tt="uppercase" fw={600} c="dimmed" mb="xs">
                   ROR Identifier
                 </Text>
@@ -63,7 +63,7 @@ export function InstitutionDetails({ institution }: InstitutionDetailsProps) {
           
           {institution.type_id && (
             <Grid.Col span={{ base: 12, md: 6 }}>
-              <Paper p="md" withBorder radius="sm" bg="gray.0">
+              <Paper p="md" withBorder radius="sm" >
                 <Text size="xs" tt="uppercase" fw={600} c="dimmed" mb="xs">
                   Type ID
                 </Text>
@@ -87,7 +87,7 @@ export function InstitutionDetails({ institution }: InstitutionDetailsProps) {
           <Grid>
             {institution.geo.city && (
               <Grid.Col span={{ base: 12, md: 6 }}>
-                <Paper p="md" withBorder radius="sm" bg="blue.0">
+                <Paper p="md" withBorder radius="sm" >
                   <Text size="xs" tt="uppercase" fw={600} c="dimmed" mb="xs">
                     City
                   </Text>
@@ -100,7 +100,7 @@ export function InstitutionDetails({ institution }: InstitutionDetailsProps) {
             
             {institution.geo.region && (
               <Grid.Col span={{ base: 12, md: 6 }}>
-                <Paper p="md" withBorder radius="sm" bg="blue.0">
+                <Paper p="md" withBorder radius="sm" >
                   <Text size="xs" tt="uppercase" fw={600} c="dimmed" mb="xs">
                     Region
                   </Text>
@@ -113,7 +113,7 @@ export function InstitutionDetails({ institution }: InstitutionDetailsProps) {
             
             {institution.geo.country && (
               <Grid.Col span={{ base: 12, md: 6 }}>
-                <Paper p="md" withBorder radius="sm" bg="blue.0">
+                <Paper p="md" withBorder radius="sm" >
                   <Text size="xs" tt="uppercase" fw={600} c="dimmed" mb="xs">
                     Country
                   </Text>
@@ -126,7 +126,7 @@ export function InstitutionDetails({ institution }: InstitutionDetailsProps) {
             
             {institution.geo.latitude && institution.geo.longitude && (
               <Grid.Col span={{ base: 12, md: 6 }}>
-                <Paper p="md" withBorder radius="sm" bg="blue.0">
+                <Paper p="md" withBorder radius="sm" >
                   <Text size="xs" tt="uppercase" fw={600} c="dimmed" mb="xs">
                     Coordinates
                   </Text>
@@ -139,7 +139,7 @@ export function InstitutionDetails({ institution }: InstitutionDetailsProps) {
             
             {institution.geo.geonames_city_id && (
               <Grid.Col span={{ base: 12, md: 6 }}>
-                <Paper p="md" withBorder radius="sm" bg="blue.0">
+                <Paper p="md" withBorder radius="sm" >
                   <Text size="xs" tt="uppercase" fw={600} c="dimmed" mb="xs">
                     GeoNames City ID
                   </Text>
@@ -204,7 +204,7 @@ export function InstitutionDetails({ institution }: InstitutionDetailsProps) {
         
         <Grid>
           <Grid.Col span={{ base: 12, md: 6 }}>
-            <Paper p="md" withBorder radius="sm" bg="gray.0">
+            <Paper p="md" withBorder radius="sm" >
               <Text size="xs" tt="uppercase" fw={600} c="dimmed" mb="xs">
                 Created Date
               </Text>
@@ -215,7 +215,7 @@ export function InstitutionDetails({ institution }: InstitutionDetailsProps) {
           </Grid.Col>
           
           <Grid.Col span={{ base: 12, md: 6 }}>
-            <Paper p="md" withBorder radius="sm" bg="gray.0">
+            <Paper p="md" withBorder radius="sm" >
               <Text size="xs" tt="uppercase" fw={600} c="dimmed" mb="xs">
                 Updated Date
               </Text>

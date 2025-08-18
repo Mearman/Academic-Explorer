@@ -21,7 +21,7 @@ export function ConceptMetadata({ concept }: ConceptMetadataProps) {
       
       <Grid>
         <Grid.Col span={{ base: 12, md: 6 }}>
-          <Paper p="md" withBorder radius="sm" bg="gray.0">
+          <Paper p="md" withBorder radius="sm" >
             <Text size="xs" tt="uppercase" fw={600} c="dimmed" mb="xs">
               Concept ID
             </Text>
@@ -32,7 +32,7 @@ export function ConceptMetadata({ concept }: ConceptMetadataProps) {
         </Grid.Col>
         
         <Grid.Col span={{ base: 12, md: 6 }}>
-          <Paper p="md" withBorder radius="sm" bg="gray.0">
+          <Paper p="md" withBorder radius="sm" >
             <Text size="xs" tt="uppercase" fw={600} c="dimmed" mb="xs">
               Hierarchy Level
             </Text>
@@ -44,7 +44,7 @@ export function ConceptMetadata({ concept }: ConceptMetadataProps) {
 
         {concept.updated_date && (
           <Grid.Col span={{ base: 12, md: 6 }}>
-            <Paper p="md" withBorder radius="sm" bg="gray.0">
+            <Paper p="md" withBorder radius="sm" >
               <Group gap="xs" mb="xs">
                 <IconCalendar size={14} />
                 <Text size="xs" tt="uppercase" fw={600} c="dimmed">
@@ -60,7 +60,7 @@ export function ConceptMetadata({ concept }: ConceptMetadataProps) {
 
         {concept.score && (
           <Grid.Col span={{ base: 12, md: 6 }}>
-            <Paper p="md" withBorder radius="sm" bg="gray.0">
+            <Paper p="md" withBorder radius="sm" >
               <Text size="xs" tt="uppercase" fw={600} c="dimmed" mb="xs">
                 Concept Score
               </Text>
@@ -74,7 +74,7 @@ export function ConceptMetadata({ concept }: ConceptMetadataProps) {
         {/* External IDs */}
         {concept.ids?.wikidata && (
           <Grid.Col span={{ base: 12, md: 6 }}>
-            <Paper p="md" withBorder radius="sm" bg="gray.0">
+            <Paper p="md" withBorder radius="sm" >
               <Text size="xs" tt="uppercase" fw={600} c="dimmed" mb="xs">
                 Wikidata ID
               </Text>
@@ -94,7 +94,7 @@ export function ConceptMetadata({ concept }: ConceptMetadataProps) {
 
         {concept.ids?.wikipedia && (
           <Grid.Col span={{ base: 12, md: 6 }}>
-            <Paper p="md" withBorder radius="sm" bg="gray.0">
+            <Paper p="md" withBorder radius="sm" >
               <Text size="xs" tt="uppercase" fw={600} c="dimmed" mb="xs">
                 Wikipedia URL
               </Text>

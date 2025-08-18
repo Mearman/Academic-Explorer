@@ -18,7 +18,7 @@ export function WorkPublicationDetails({ work }: WorkPublicationDetailsProps) {
       <Grid>
         {work.primary_location?.source && (
           <Grid.Col span={{ base: 12, md: 6 }}>
-            <Paper p="md" withBorder radius="sm" bg="gray.0">
+            <Paper p="md" withBorder radius="sm" >
               <Text size="xs" tt="uppercase" fw={600} c="dimmed" mb="xs">
                 Source Journal
               </Text>
@@ -31,7 +31,7 @@ export function WorkPublicationDetails({ work }: WorkPublicationDetailsProps) {
         
         {work.publication_date && (
           <Grid.Col span={{ base: 12, md: 6 }}>
-            <Paper p="md" withBorder radius="sm" bg="gray.0">
+            <Paper p="md" withBorder radius="sm" >
               <Text size="xs" tt="uppercase" fw={600} c="dimmed" mb="xs">
                 Publication Date
               </Text>
@@ -44,7 +44,7 @@ export function WorkPublicationDetails({ work }: WorkPublicationDetailsProps) {
         
         {work.ids.doi && (
           <Grid.Col span={{ base: 12, md: 6 }}>
-            <Paper p="md" withBorder radius="sm" bg="gray.0">
+            <Paper p="md" withBorder radius="sm" >
               <Text size="xs" tt="uppercase" fw={600} c="dimmed" mb="xs">
                 Digital Object Identifier
               </Text>
@@ -64,7 +64,7 @@ export function WorkPublicationDetails({ work }: WorkPublicationDetailsProps) {
         
         {work.language && (
           <Grid.Col span={{ base: 12, md: 6 }}>
-            <Paper p="md" withBorder radius="sm" bg="gray.0">
+            <Paper p="md" withBorder radius="sm" >
               <Text size="xs" tt="uppercase" fw={600} c="dimmed" mb="xs">
                 Language
               </Text>

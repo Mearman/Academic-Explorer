@@ -44,7 +44,7 @@ export const EntityPageTemplate = forwardRef<HTMLDivElement, EntityPageTemplateP
           )}
 
           {/* Main content area */}
-          <div style={{ gridColumn: sidebar ? '1' : 'span 1' }}>
+          <div className={sidebar ? styles.mainContentWithSidebar : styles.mainContentFull}>
             {/* Entity Header */}
             <div className={styles.headerWrapper}>
               <Suspense fallback={<EntityHeaderSkeleton />}>
@@ -84,7 +84,7 @@ EntityPageTemplate.displayName = 'EntityPageTemplate';
 const renderSectionContent = (loading: boolean, children: React.ReactNode) => {
   if (loading) {
     return (
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+      <div className={styles.loadingSection}>
         <LoadingSkeleton preset="title" width="60%" />
         <LoadingSkeleton preset="text" width="100%" />
         <LoadingSkeleton preset="text" width="80%" />
@@ -171,9 +171,9 @@ export const EmptyState = ({
 }) => (
   <div className={styles.emptyState}>
     <Icon name={icon} size="xl" aria-hidden="true" />
-    <h3 style={{ margin: 0, fontSize: '18px', fontWeight: '600' }}>{title}</h3>
+    <h3 className={styles.emptyStateTitle}>{title}</h3>
     {description && (
-      <p style={{ margin: 0, color: 'inherit' }}>{description}</p>
+      <p className={styles.emptyStateDescription}>{description}</p>
     )}
     {action && action}
   </div>
@@ -190,7 +190,7 @@ export const EntityPageLoadingTemplate = () => (
       <div className={styles.mainContent}>
         <div className={styles.section}>
           <LoadingSkeleton preset="title" width="40%" />
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', marginTop: '24px' }}>
+          <div className={styles.loadingContent}>
             <LoadingSkeleton preset="text" width="100%" />
             <LoadingSkeleton preset="text" width="85%" />
             <LoadingSkeleton preset="text" width="70%" />
@@ -225,7 +225,7 @@ export const EntityPageErrorTemplate = ({
     <div className={`${styles.pageWrapper} ${styles.layoutVariants.centered}`}>
       <div className={styles.errorContainer}>
         <Icon name="error" size="xl" aria-hidden="true" />
-        <h1 style={{ margin: 0, fontSize: '24px', fontWeight: '600' }}>
+        <h1 className={styles.errorTitle}>
           Unable to Load Entity
         </h1>
         <ErrorMessage

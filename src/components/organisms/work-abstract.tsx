@@ -45,7 +45,7 @@ export function WorkAbstract({ work }: WorkAbstractProps) {
   }
 
   return (
-    <Card withBorder radius="md" p="xl" bg="blue.0">
+    <Card withBorder radius="md" p="xl" >
       <Group mb="lg">
         <IconFileText size={20} />
         <Title order={2} size="lg">Abstract</Title>

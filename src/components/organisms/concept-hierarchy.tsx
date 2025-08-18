@@ -29,7 +29,7 @@ export function ConceptHierarchy({ concept }: ConceptHierarchyProps) {
       
       <Stack gap="md">
         {concept.ancestors.slice(0, 10).map((ancestor) => (
-          <Paper key={ancestor.id} p="md" withBorder radius="sm" bg="gray.0">
+          <Paper key={ancestor.id} p="md" withBorder radius="sm">
             <Group justify="space-between">
               <Stack gap="xs">
                 <Group gap="xs">

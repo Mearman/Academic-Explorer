@@ -95,7 +95,7 @@ function renderBadgeItem(item: NormalizedItem, showScores: boolean) {
  */
 function renderDetailedItem(item: NormalizedItem, showScores: boolean) {
   return (
-    <Paper key={item.id} p="sm" withBorder radius="sm" bg="gray.0">
+    <Paper key={item.id} p="sm" withBorder radius="sm" >
       <Group justify="space-between">
         <Group gap="sm">
           <Badge

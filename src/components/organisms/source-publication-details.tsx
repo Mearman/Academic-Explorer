@@ -33,7 +33,7 @@ export function SourcePublicationDetails({ source }: SourcePublicationDetailsPro
         <Grid>
           {source.type && (
             <Grid.Col span={{ base: 12, md: 6 }}>
-              <Paper p="md" withBorder radius="sm" bg="gray.0">
+              <Paper p="md" withBorder radius="sm" >
                 <Text size="xs" tt="uppercase" fw={600} c="dimmed" mb="xs">
                   Publication Type
                 </Text>
@@ -46,7 +46,7 @@ export function SourcePublicationDetails({ source }: SourcePublicationDetailsPro
           
           {source.issn_l && (
             <Grid.Col span={{ base: 12, md: 6 }}>
-              <Paper p="md" withBorder radius="sm" bg="gray.0">
+              <Paper p="md" withBorder radius="sm" >
                 <Text size="xs" tt="uppercase" fw={600} c="dimmed" mb="xs">
                   ISSN-L
                 </Text>
@@ -59,7 +59,7 @@ export function SourcePublicationDetails({ source }: SourcePublicationDetailsPro
           
           {source.issn && source.issn.length > 0 && (
             <Grid.Col span={12}>
-              <Paper p="md" withBorder radius="sm" bg="gray.0">
+              <Paper p="md" withBorder radius="sm" >
                 <Text size="xs" tt="uppercase" fw={600} c="dimmed" mb="xs">
                   All ISSN Numbers
                 </Text>
@@ -85,7 +85,7 @@ export function SourcePublicationDetails({ source }: SourcePublicationDetailsPro
           </Group>
           
           <Stack gap="md">
-            <Paper p="md" withBorder radius="sm" bg="blue.0">
+            <Paper p="md" withBorder radius="sm" >
               <Group justify="space-between">
                 <Stack gap="xs">
                   <EntityLink
@@ -117,7 +117,7 @@ export function SourcePublicationDetails({ source }: SourcePublicationDetailsPro
             </Paper>
             
             {source.host_organization_lineage && source.host_organization_lineage.length > 1 && (
-              <Paper p="sm" withBorder radius="sm" bg="gray.0">
+              <Paper p="sm" withBorder radius="sm" >
                 <Text size="xs" tt="uppercase" fw={600} c="dimmed" mb="xs">
                   Organization Hierarchy
                 </Text>
@@ -198,7 +198,7 @@ export function SourcePublicationDetails({ source }: SourcePublicationDetailsPro
           <Grid>
             {source.summary_stats.h_index && (
               <Grid.Col span={{ base: 12, md: 4 }}>
-                <Paper p="md" withBorder radius="sm" bg="grape.0">
+                <Paper p="md" withBorder radius="sm" >
                   <Text size="xs" tt="uppercase" fw={600} c="dimmed" mb="xs">
                     h-index
                   </Text>
@@ -214,7 +214,7 @@ export function SourcePublicationDetails({ source }: SourcePublicationDetailsPro
             
             {source.summary_stats.i10_index && (
               <Grid.Col span={{ base: 12, md: 4 }}>
-                <Paper p="md" withBorder radius="sm" bg="orange.0">
+                <Paper p="md" withBorder radius="sm" >
                   <Text size="xs" tt="uppercase" fw={600} c="dimmed" mb="xs">
                     i10-index
                   </Text>
@@ -230,7 +230,7 @@ export function SourcePublicationDetails({ source }: SourcePublicationDetailsPro
             
             {source.summary_stats['2yr_mean_citedness'] && (
               <Grid.Col span={{ base: 12, md: 4 }}>
-                <Paper p="md" withBorder radius="sm" bg="cyan.0">
+                <Paper p="md" withBorder radius="sm" >
                   <Text size="xs" tt="uppercase" fw={600} c="dimmed" mb="xs">
                     2-Year Mean Citedness
                   </Text>
@@ -257,7 +257,7 @@ export function SourcePublicationDetails({ source }: SourcePublicationDetailsPro
         <Grid>
           {source.works_api_url && (
             <Grid.Col span={{ base: 12, md: 4 }}>
-              <Paper p="md" withBorder radius="sm" bg="gray.0">
+              <Paper p="md" withBorder radius="sm" >
                 <Text size="xs" tt="uppercase" fw={600} c="dimmed" mb="xs">
                   Total Works
                 </Text>
@@ -278,7 +278,7 @@ export function SourcePublicationDetails({ source }: SourcePublicationDetailsPro
           )}
           
           <Grid.Col span={{ base: 12, md: 4 }}>
-            <Paper p="md" withBorder radius="sm" bg="gray.0">
+            <Paper p="md" withBorder radius="sm" >
               <Text size="xs" tt="uppercase" fw={600} c="dimmed" mb="xs">
                 Last Updated
               </Text>
@@ -289,7 +289,7 @@ export function SourcePublicationDetails({ source }: SourcePublicationDetailsPro
           </Grid.Col>
           
           <Grid.Col span={{ base: 12, md: 4 }}>
-            <Paper p="md" withBorder radius="sm" bg="gray.0">
+            <Paper p="md" withBorder radius="sm" >
               <Text size="xs" tt="uppercase" fw={600} c="dimmed" mb="xs">
                 First Indexed
               </Text>

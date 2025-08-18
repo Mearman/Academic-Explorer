@@ -1,5 +1,4 @@
 import { createFileRoute } from '@tanstack/react-router';
-import { useEffect } from 'react';
 
 import { EntityErrorBoundary, EntitySkeleton, EntityError, EntityFallback, EntityGraphVisualization } from '@/components';
 import { WorkDisplay } from '@/components/entity-displays/WorkDisplay';

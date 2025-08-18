@@ -30,7 +30,7 @@ export function ConceptRelatedConcepts({ concept }: ConceptRelatedConceptsProps)
       <Grid>
         {concept.related_concepts.slice(0, 8).map((related) => (
           <Grid.Col key={related.id} span={{ base: 12, sm: 6, md: 4 }}>
-            <Paper p="md" withBorder radius="sm" bg="blue.0">
+            <Paper p="md" withBorder radius="sm" >
               <Stack gap="xs">
                 <Group gap="xs">
                   <Badge variant="light" color="teal" size="xs">

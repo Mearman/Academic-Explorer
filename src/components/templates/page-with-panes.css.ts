@@ -1,7 +1,5 @@
 import { style } from '@vanilla-extract/css';
 
-import { entityVars } from '../design-tokens.css';
-
 export const pageContainer = style({
   display: 'flex',
   flexDirection: 'column',
@@ -11,9 +9,8 @@ export const pageContainer = style({
 
 export const pageHeader = style({
   flexShrink: 0,
-  backgroundColor: entityVars.color.cardBackground,
-  borderBottom: `1px solid ${entityVars.color.border}`,
-  padding: entityVars.spacing.lg,
+  borderBottom: '1px solid var(--mantine-color-default-border)',
+  padding: 'var(--mantine-spacing-lg)',
   position: 'relative',
   zIndex: 10,
 });
@@ -22,69 +19,67 @@ export const headerContent = style({
   display: 'flex',
   justifyContent: 'space-between',
   alignItems: 'flex-start',
-  gap: entityVars.spacing.lg,
+  gap: 'var(--mantine-spacing-lg)',
   maxWidth: '1400px',
   margin: '0 auto',
 });
 
 export const headerMain = style({
   flex: 1,
-  minWidth: 0, // Allow flex shrinking
+  minWidth: 0,
 });
 
 export const headerActions = style({
   flexShrink: 0,
   display: 'flex',
   alignItems: 'center',
-  gap: entityVars.spacing.md,
+  gap: 'var(--mantine-spacing-md)',
 });
 
 export const paneControls = style({
   display: 'flex',
   alignItems: 'center',
-  gap: entityVars.spacing.sm,
+  gap: 'var(--mantine-spacing-sm)',
   
   '@media': {
     'screen and (max-width: 1024px)': {
-      display: 'none', // Hide on mobile where panes become tabs
+      display: 'none',
     },
   },
 });
 
 export const paneToggleButton = style({
-  padding: `${entityVars.spacing.sm} ${entityVars.spacing.md}`,
+  padding: 'var(--mantine-spacing-sm) var(--mantine-spacing-md)',
   backgroundColor: 'transparent',
-  border: `1px solid ${entityVars.color.border}`,
-  borderRadius: entityVars.borderRadius.md,
+  border: '1px solid var(--mantine-color-default-border)',
+  borderRadius: 'var(--mantine-radius-md)',
   cursor: 'pointer',
   display: 'flex',
   alignItems: 'center',
-  gap: entityVars.spacing.sm,
-  fontSize: entityVars.fontSize.sm,
-  color: entityVars.color.text,
-  transition: `all ${entityVars.transition.fast}`,
+  gap: 'var(--mantine-spacing-sm)',
+  fontSize: 'var(--mantine-font-size-sm)',
+  transition: 'all 200ms',
   
   ':hover': {
-    backgroundColor: entityVars.color.background,
-    borderColor: entityVars.color.accent,
+    backgroundColor: 'var(--mantine-color-gray-0)',
   },
   
   ':focus-visible': {
-    outline: `2px solid ${entityVars.color.accent}`,
+    outline: '2px solid var(--mantine-color-blue-6)',
     outlineOffset: '2px',
   },
   
   selectors: {
     '&[data-active="true"]': {
-      backgroundColor: entityVars.color.accent,
+      backgroundColor: 'var(--mantine-color-blue-6)',
       color: 'white',
-      borderColor: entityVars.color.accent,
+      borderColor: 'var(--mantine-color-blue-6)',
     },
   },
 });
 
 export const panesContainer = style({
   flex: 1,
-  minHeight: 0, // Allow flex shrinking
+  minHeight: 0,
   overflow: 'hidden',
 });

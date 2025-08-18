@@ -31,7 +31,7 @@ export function ConceptInternationalNames({ concept }: ConceptInternationalNames
       <Grid>
         {Object.entries(internationalNames).slice(0, 12).map(([lang, name]) => (
           <Grid.Col key={lang} span={{ base: 12, sm: 6, md: 4 }}>
-            <Paper p="md" withBorder radius="sm" bg="orange.0">
+            <Paper p="md" withBorder radius="sm" >
               <Text size="xs" tt="uppercase" fw={600} c="dimmed" mb="xs">
                 {lang.toUpperCase()}
               </Text>

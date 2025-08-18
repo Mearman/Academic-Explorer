@@ -20,7 +20,7 @@ export function ConceptDetails({ concept }: ConceptDetailsProps) {
         
         <Grid>
           <Grid.Col span={{ base: 12, md: 6 }}>
-            <Paper p="md" withBorder radius="sm" bg="gray.0">
+            <Paper p="md" withBorder radius="sm" >
               <Text size="xs" tt="uppercase" fw={600} c="dimmed" mb="xs">
                 Level
               </Text>
@@ -32,7 +32,7 @@ export function ConceptDetails({ concept }: ConceptDetailsProps) {
           
           {concept.wikidata && (
             <Grid.Col span={{ base: 12, md: 6 }}>
-              <Paper p="md" withBorder radius="sm" bg="gray.0">
+              <Paper p="md" withBorder radius="sm" >
                 <Text size="xs" tt="uppercase" fw={600} c="dimmed" mb="xs">
                   Wikidata ID
                 </Text>
@@ -69,7 +69,7 @@ export function ConceptDetails({ concept }: ConceptDetailsProps) {
           
           <Stack gap="md">
             {concept.ancestors.slice(0, 10).map((ancestor) => (
-              <Paper key={ancestor.id} p="md" withBorder radius="sm" bg="gray.0">
+              <Paper key={ancestor.id} p="md" withBorder radius="sm" >
                 <Group justify="space-between">
                   <Stack gap="xs">
                     <Group gap="xs">
@@ -119,7 +119,7 @@ export function ConceptDetails({ concept }: ConceptDetailsProps) {
         
         <Grid>
           <Grid.Col span={{ base: 12, md: 6 }}>
-            <Paper p="md" withBorder radius="sm" bg="gray.0">
+            <Paper p="md" withBorder radius="sm" >
               <Text size="xs" tt="uppercase" fw={600} c="dimmed" mb="xs">
                 Created Date
               </Text>
@@ -130,7 +130,7 @@ export function ConceptDetails({ concept }: ConceptDetailsProps) {
           </Grid.Col>
           
           <Grid.Col span={{ base: 12, md: 6 }}>
-            <Paper p="md" withBorder radius="sm" bg="gray.0">
+            <Paper p="md" withBorder radius="sm" >
               <Text size="xs" tt="uppercase" fw={600} c="dimmed" mb="xs">
                 Updated Date
               </Text>

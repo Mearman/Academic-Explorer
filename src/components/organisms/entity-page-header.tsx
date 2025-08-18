@@ -1,4 +1,3 @@
-import { IconBookmarks, IconExternalLink } from '@tabler/icons-react';
 import React from 'react';
 
 import type { ExternalIds } from '@/lib/openalex/types/entities';
@@ -6,8 +5,6 @@ import type { EntityType } from '@/lib/openalex/utils/entity-detection';
 
 import { Badge } from '../atoms/badge';
 import { Icon } from '../atoms/icon';
-import { StatusIndicator } from '../atoms/status-indicator';
-import { getEntityColour } from '../design-tokens.utils';
 import { ExternalLinksGroup } from '../molecules/external-links-group';
 
 import * as styles from './entity-page-header.css';

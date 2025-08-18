@@ -1,5 +1,5 @@
 import { Stack, Title, Text, Paper, Group, Button } from '@mantine/core';
-import { IconPlus, IconSearch, IconBook } from '@tabler/icons-react';
+import { IconSearch, IconBook } from '@tabler/icons-react';
 import { useNavigate } from '@tanstack/react-router';
 import React from 'react';
 

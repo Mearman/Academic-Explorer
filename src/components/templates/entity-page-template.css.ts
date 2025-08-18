@@ -155,6 +155,46 @@ export const emptyState = style({
   padding: entityVars.spacing.xl,
 });
 
+export const emptyStateTitle = style({
+  margin: 0,
+  fontSize: entityVars.fontSize.lg,
+  fontWeight: entityVars.fontWeight.semibold,
+  color: entityVars.color.text,
+});
+
+export const emptyStateDescription = style({
+  margin: 0,
+  color: 'inherit',
+});
+
+export const mainContentWithSidebar = style({
+  gridColumn: '1',
+});
+
+export const mainContentFull = style({
+  gridColumn: 'span 1',
+});
+
+export const loadingSection = style({
+  display: 'flex',
+  flexDirection: 'column',
+  gap: entityVars.spacing.lg,
+});
+
+export const loadingContent = style({
+  display: 'flex',
+  flexDirection: 'column',
+  gap: entityVars.spacing.lg,
+  marginTop: entityVars.spacing['2xl'],
+});
+
+export const errorTitle = style({
+  margin: 0,
+  fontSize: entityVars.fontSize['2xl'],
+  fontWeight: entityVars.fontWeight.semibold,
+  color: entityVars.color.text,
+});
+
 export const metricGrid = style({
   display: 'grid',
   gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',

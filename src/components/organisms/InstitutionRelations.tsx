@@ -20,7 +20,7 @@ export function InstitutionRelations({ institution }: InstitutionRelationsProps)
           
           <Stack gap="sm">
             {institution.associated_institutions.map((assocInst, index) => (
-              <Paper key={index} p="md" withBorder radius="sm" bg="orange.0">
+              <Paper key={index} p="md" withBorder radius="sm" >
                 <Group justify="space-between" align="flex-start">
                   <Stack gap="xs" style={{ flex: 1 }}>
                     <Text size="sm" fw={500}>

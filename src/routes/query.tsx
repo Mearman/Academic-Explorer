@@ -291,7 +291,7 @@ function SearchPage() {
                 maxResults={3}
               />
               {showResults && (
-                <div style={{ marginTop: '2rem', borderTop: '1px solid var(--mantine-color-gray-3)', paddingTop: '1rem' }}>
+                <div className={styles.resultsWithDivider}>
                   <SearchResults
                     searchParams={currentParams}
                     onParamsChange={handleParamsChange}

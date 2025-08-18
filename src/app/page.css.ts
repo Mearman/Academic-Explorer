@@ -100,3 +100,9 @@ export const searchMainContent = style({
 export const searchResultsSection = style({
   minHeight: '400px',
 });
+
+export const resultsWithDivider = style({
+  marginTop: entityVars.spacing['4xl'],
+  borderTop: `1px solid ${entityVars.color.border}`,
+  paddingTop: entityVars.spacing.xl,
+});

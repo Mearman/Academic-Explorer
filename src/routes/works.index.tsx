@@ -75,7 +75,7 @@ function WorksOverviewPage() {
           <Grid.Col span={{ base: 12, md: 4 }}>
             <Paper p="lg" withBorder radius="md">
               <Stack gap="xs" align="center">
-                <IconEye size={32} style={{ color: 'var(--mantine-color-blue-6)' }} />
+                <IconEye size={32} color="blue" />
                 <Text size="xl" fw={700} c="blue">
                   {directlyVisitedWorks.length}
                 </Text>
@@ -89,7 +89,7 @@ function WorksOverviewPage() {
           <Grid.Col span={{ base: 12, md: 4 }}>
             <Paper p="lg" withBorder radius="md">
               <Stack gap="xs" align="center">
-                <IconBook size={32} style={{ color: 'var(--mantine-color-green-6)' }} />
+                <IconBook size={32} color="green" />
                 <Text size="xl" fw={700} c="green">
                   {discoveredWorks.length}
                 </Text>
@@ -103,7 +103,7 @@ function WorksOverviewPage() {
           <Grid.Col span={{ base: 12, md: 4 }}>
             <Paper p="lg" withBorder radius="md">
               <Stack gap="xs" align="center">
-                <IconClock size={32} style={{ color: 'var(--mantine-color-violet-6)' }} />
+                <IconClock size={32} color="violet" />
                 <Text size="xl" fw={700} c="violet">
                   {browsedWorks.reduce((sum, vertex) => sum + vertex.visitCount, 0)}
                 </Text>

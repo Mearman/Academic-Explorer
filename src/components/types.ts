@@ -60,6 +60,7 @@ export interface ExternalLinkProps extends BaseComponentProps {
   children?: ReactNode;
   showIcon?: boolean;
   external?: boolean;
+  style?: React.CSSProperties;
 }
 
 // Icon props

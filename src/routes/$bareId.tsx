@@ -1,6 +1,7 @@
 import { createFileRoute, useNavigate, notFound } from '@tanstack/react-router';
 import { useEffect } from 'react';
 
+import { buildEntityPath } from '@/components/atoms/utils/entity-link-utils';
 import { 
   detectIdType,
   detectEntityType,
@@ -8,7 +9,6 @@ import {
   decodeExternalId,
   ExternalIdType
 } from '@/lib/openalex/utils/entity-detection';
-import { buildEntityPath } from '@/components/atoms/utils/entity-link-utils';
 
 // Helper functions to reduce complexity
 function handleHttpsUrls(decodedId: string, navigate: ReturnType<typeof useNavigate>): boolean {

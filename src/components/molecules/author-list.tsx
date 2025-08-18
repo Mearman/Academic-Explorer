@@ -125,7 +125,7 @@ function renderCompactAuthor(authorship: Authorship, index: number, totalDisplay
 // Render detailed variant author item
 function renderDetailedAuthor(authorship: Authorship, showInstitutions: boolean, showPositions: boolean) {
   return (
-    <Paper key={authorship.author.id} p="md" withBorder radius="sm" bg="gray.0">
+    <Paper key={authorship.author.id} p="md" withBorder radius="sm" >
       <Stack gap="xs">
         <Group gap="sm">
           <IconUser size={16} />

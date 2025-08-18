@@ -1,5 +1,5 @@
 import { IconEye, IconEyeOff, IconChartBar, IconLayoutSidebar } from '@tabler/icons-react';
-import React, { useRef, useImperativeHandle, forwardRef } from 'react';
+import React from 'react';
 
 import * as styles from './page-with-panes.css';
 import { TwoPaneLayout } from './two-pane-layout';

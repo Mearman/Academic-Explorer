@@ -64,7 +64,7 @@ export function AbstractTab({
         </Paper>
 
         {/* Show inverted index details */}
-        <Paper withBorder bg="gray.50" p="sm">
+        <Paper withBorder p="sm">
           <Group gap="xs" mb="xs">
             <IconCode size={16} />
             <Text size="sm" fw={500}>Inverted Index Structure</Text>
