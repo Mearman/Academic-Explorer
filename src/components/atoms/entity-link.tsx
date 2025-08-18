@@ -27,7 +27,7 @@ function renderFallback(entityId: string, displayName: string, size: string, wei
 }
 
 export function EntityLink({ entityId, displayName, entityType, size = 'sm', weight, color, underline = true, className, fallbackToExternal = true }: EntityLinkProps) {
-  const detectedType = detectEntityType(entityId, entityType);
+  const detectedType = entityType || detectEntityType(entityId);
   
   if (!detectedType) {
     return renderFallback(entityId, displayName, size, weight, color, underline, className, fallbackToExternal);
