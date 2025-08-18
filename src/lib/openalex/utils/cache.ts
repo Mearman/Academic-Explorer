@@ -5,43 +5,65 @@
 
 import type { ApiResponse } from '../types';
 
-// Lazy import db to avoid initialization issues in tests
-let db: unknown = null;
-// Type guard for database object
-function isDbObject(obj: unknown): obj is {
+// Database interface type for better type safety
+interface DbInterface {
   cacheSearchResults: (key: string, results: unknown[], count: number, params: Record<string, unknown>) => Promise<void>;
   getSearchResults: (key: string, params: Record<string, unknown>, ttl: number) => Promise<{ results: unknown[]; timestamp: number } | null>;
-  cleanOldSearchResults: (ageInMs: number) => Promise<void>;
-} {
-  return (
-    typeof obj === 'object' &&
-    obj !== null &&
-    'cacheSearchResults' in obj &&
-    'getSearchResults' in obj &&
-    'cleanOldSearchResults' in obj
-  );
+  cleanOldSearchResults: (ageInMs: number) => Promise<number>;
 }
 
-async function getDb() {
-  if (!db) {
+// Mock database for test environments
+const mockDb: DbInterface = {
+  cacheSearchResults: () => Promise.resolve(),
+  getSearchResults: () => Promise.resolve(null),
+  cleanOldSearchResults: () => Promise.resolve(0),
+};
+
+// Cached database instance to prevent multiple imports
+let dbInstance: DbInterface | null = null;
+let dbPromise: Promise<DbInterface> | null = null;
+
+// Stable database getter that prevents race conditions
+async function getDb(): Promise<DbInterface> {
+  // Return cached instance if available
+  if (dbInstance) {
+    return dbInstance;
+  }
+
+  // Return existing promise if one is in progress
+  if (dbPromise) {
+    return dbPromise;
+  }
+
+  // Create new promise for database initialization
+  dbPromise = (async () => {
     try {
       const dbModule = await import('@/lib/db');
-      db = dbModule.db;
+      
+      // Type guard to ensure the imported db has the expected interface
+      if (
+        dbModule.db &&
+        typeof dbModule.db === 'object' &&
+        'cacheSearchResults' in dbModule.db &&
+        'getSearchResults' in dbModule.db &&
+        'cleanOldSearchResults' in dbModule.db
+      ) {
+        dbInstance = dbModule.db as DbInterface;
+        return dbInstance;
+      } else {
+        console.warn('Imported database does not have expected interface, using mock');
+        dbInstance = mockDb;
+        return mockDb;
+      }
     } catch (error) {
-      // In test environment, db might not be available
-      console.warn('Database not available:', error);
-      db = {
-        cacheSearchResults: () => Promise.resolve(),
-        getSearchResults: () => Promise.resolve(null),
-        cleanOldSearchResults: () => Promise.resolve(),
-      };
+      // In test environment or when db is unavailable, use mock
+      console.warn('Database not available, using mock:', error);
+      dbInstance = mockDb;
+      return mockDb;
     }
-  }
-  return isDbObject(db) ? db : {
-    cacheSearchResults: () => Promise.resolve(),
-    getSearchResults: () => Promise.resolve(null),
-    cleanOldSearchResults: () => Promise.resolve(),
-  };
+  })();
+
+  return dbPromise;
 }
 
 export interface CacheOptions {
@@ -66,6 +88,10 @@ export class CacheManager {
       namespace: options.namespace || 'openalex',
       localStorageLimit: options.localStorageLimit || 5 * 1024 * 1024, // 5MB default
     };
+  }
+
+  getOptions(): Required<CacheOptions> {
+    return this.options;
   }
 
   // Generate cache key from endpoint and params
