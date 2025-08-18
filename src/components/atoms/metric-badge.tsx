@@ -1,12 +1,26 @@
-'use client';
-
+import { Badge, Group } from '@mantine/core';
 import { forwardRef } from 'react';
 
 import type { SizeVariant } from '../types';
 
-import * as styles from './metric-badge.css';
-import { renderIcon, renderLabel, renderTrendIcon, buildMetricClasses } from './utils/metric-render-utils';
-import { formatMetricValue, TREND_ICONS } from './utils/metric-utils';
+// Simple metric value formatter
+function formatMetricValue(value: number | string, format: 'number' | 'percentage' | 'currency' | 'compact'): string {
+  if (typeof value === 'string') return value;
+  
+  switch (format) {
+    case 'percentage':
+      return `${value}%`;
+    case 'currency':
+      return `$${value.toLocaleString()}`;
+    case 'compact':
+      if (value >= 1e9) return `${(value / 1e9).toFixed(1)}B`;
+      if (value >= 1e6) return `${(value / 1e6).toFixed(1)}M`;
+      if (value >= 1e3) return `${(value / 1e3).toFixed(1)}K`;
+      return value.toString();
+    default:
+      return value.toLocaleString();
+  }
+}
 
 export interface MetricBadgeProps {
   value: number | string;
@@ -22,19 +36,47 @@ export interface MetricBadgeProps {
   'data-testid'?: string;
 }
 
-export const MetricBadge = forwardRef<HTMLSpanElement, MetricBadgeProps>(
+const VARIANT_COLORS = {
+  default: 'gray',
+  primary: 'blue',
+  success: 'green',
+  warning: 'yellow',
+  error: 'red',
+  muted: 'gray',
+} as const;
+
+const TREND_SYMBOLS = {
+  up: '↗',
+  down: '↘',
+  neutral: '→',
+} as const;
+
+export const MetricBadge = forwardRef<HTMLDivElement, MetricBadgeProps>(
   ({ value, label, format = 'number', trend, variant = 'default', size = 'md', icon, className, compact = false, inline = true, 'data-testid': testId, ...props }, ref) => {
     const formattedValue = formatMetricValue(value, format);
-    const classes = buildMetricClasses(size, variant, compact, inline, className);
-    const trendIcon = trend ? TREND_ICONS[trend] : null;
+    const color = VARIANT_COLORS[variant];
+    const trendSymbol = trend ? TREND_SYMBOLS[trend] : null;
 
     return (
-      <span ref={ref} className={classes} data-testid={testId} role="status" aria-label={label ? `${label}: ${formattedValue}` : `Value: ${formattedValue}`} {...props}>
-        {renderIcon(icon, compact)}
-        <span className={styles.valueStyle}>{formattedValue}</span>
-        {renderLabel(label)}
-        {renderTrendIcon(trendIcon, trend)}
-      </span>
+      <Group gap="xs" style={{ display: inline ? 'inline-flex' : 'flex' }} {...props}>
+        <Badge
+          ref={ref}
+          color={color}
+          variant="light"
+          size={size}
+          className={className}
+          data-testid={testId}
+        >
+          {icon && icon}
+          {formattedValue}
+          {trendSymbol && ` ${trendSymbol}`}
+        </Badge>
+        {label && !compact && (
+          <span style={{ fontSize: '0.875rem', color: 'var(--mantine-color-dimmed)' }}>
+            {label}
+          </span>
+        )}
+      </Group>
     );
   }
 );

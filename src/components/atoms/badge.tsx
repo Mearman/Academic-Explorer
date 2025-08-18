@@ -1,48 +1,11 @@
-'use client';
-
+import { Badge as MantineBadge, ActionIcon } from '@mantine/core';
+import { IconX } from '@tabler/icons-react';
 import { forwardRef } from 'react';
 
 import { BadgeProps } from '../types';
 
-import * as styles from './badge.css';
-
-function buildBadgeClasses(
-  variant: keyof typeof styles.variantStyles, 
-  size: keyof typeof styles.sizeVariants, 
-  pill: boolean, 
-  removable: boolean, 
-  className?: string
-) {
-  return [
-    styles.base,
-    styles.sizeVariants[size],
-    styles.variantStyles[variant],
-    pill && styles.pillStyle,
-    removable && styles.removableStyle,
-    className,
-  ].filter(Boolean).join(' ');
-}
-
-function RemoveButton({ onRemove }: { onRemove: () => void }) {
-  const handleClick = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    onRemove();
-  };
-
-  return (
-    <button
-      type="button"
-      className={styles.removeButton}
-      onClick={handleClick}
-      aria-label="Remove"
-      tabIndex={0}
-    >
-      ×
-    </button>
-  );
-}
-
-export const Badge = forwardRef<HTMLSpanElement, BadgeProps>(
+// Simple wrapper around Mantine Badge that maps our props to Mantine props
+export const Badge = forwardRef<HTMLDivElement, BadgeProps>(
   function Badge({ 
     children, 
     variant = 'default', 
@@ -54,19 +17,45 @@ export const Badge = forwardRef<HTMLSpanElement, BadgeProps>(
     'data-testid': testId,
     ...props 
   }, ref) {
-    const baseClasses = buildBadgeClasses(variant, size, pill, removable, className);
+    // Map our variants to Mantine variants
+    const mantineVariant = variant === 'default' ? 'filled' : 
+                          variant === 'secondary' ? 'light' : 
+                          variant;
+    
+    // Map our sizes to Mantine sizes  
+    const mantineSize = size === 'xs' ? 'xs' :
+                       size === 'sm' ? 'sm' :
+                       size === 'md' ? 'md' :
+                       size === 'lg' ? 'lg' :
+                       size === 'xl' ? 'xl' : 'md';
 
     return (
-      <span
+      <MantineBadge
         ref={ref}
-        className={baseClasses}
+        variant={mantineVariant}
+        size={mantineSize}
+        radius={pill ? 'xl' : 'sm'}
+        className={className}
         data-testid={testId}
-        role="status"
         {...props}
       >
         {children}
-        {removable && onRemove && <RemoveButton onRemove={onRemove} />}
-      </span>
+        {removable && onRemove && (
+          <ActionIcon
+            size="xs"
+            variant="transparent"
+            color="inherit"
+            aria-label="Remove"
+            style={{ marginLeft: 4 }}
+            onClick={(e) => {
+              e.stopPropagation();
+              onRemove();
+            }}
+          >
+            <IconX size={12} />
+          </ActionIcon>
+        )}
+      </MantineBadge>
     );
   }
 );

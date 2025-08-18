@@ -1,10 +1,7 @@
-'use client';
-
+import { Skeleton, Stack } from '@mantine/core';
 import { forwardRef } from 'react';
 
 import type { SizeVariant } from '../types';
-
-import * as styles from './loading-skeleton.css';
 
 export interface LoadingSkeletonProps {
   width?: 'xs' | 'sm' | 'md' | 'lg' | 'xl' | '2xl' | '3xl' | 'full' | string;
@@ -15,7 +12,6 @@ export interface LoadingSkeletonProps {
   inline?: boolean;
   className?: string;
   'data-testid'?: string;
-  // Internal prop to allow preset wrapper components to override styles
   allowPresetOverride?: boolean;
 }
 
@@ -26,85 +22,34 @@ export interface SkeletonGroupProps {
   'data-testid'?: string;
 }
 
-/**
- * Get width CSS class for given width value
- */
-function getWidthClass(widthProp?: string): string {
-  if (!widthProp) return '';
-  
-  if (widthProp in styles.widthVariants) {
-    return styles.widthVariants[widthProp as keyof typeof styles.widthVariants];
-  }
-  
-  return '';
-}
+const WIDTH_MAP = {
+  xs: '4rem',
+  sm: '8rem', 
+  md: '12rem',
+  lg: '16rem',
+  xl: '20rem',
+  '2xl': '24rem',
+  '3xl': '32rem',
+  full: '100%',
+} as const;
 
-/**
- * Get height CSS class for given height value
- */
-function getHeightClass(heightProp: string): string {
-  if (heightProp in styles.sizeVariants) {
-    return styles.sizeVariants[heightProp as SizeVariant];
-  }
-  
-  return '';
-}
+const HEIGHT_MAP = {
+  xs: '1rem',
+  sm: '1.25rem',
+  md: '1.5rem', 
+  lg: '2rem',
+  xl: '2.5rem',
+} as const;
 
-/**
- * Build CSS classes for skeleton
- */
-function buildSkeletonClasses(
-  preset?: string,
-  height?: string,
-  width?: string,
-  shape?: string,
-  animation?: string,
-  inline?: boolean,
-  className?: string
-): string {
-  const classes = [styles.base];
-  
-  if (preset) {
-    classes.push(styles.presetVariants[preset as keyof typeof styles.presetVariants]);
-  } else {
-    if (height) classes.push(getHeightClass(height));
-    if (width) classes.push(getWidthClass(width));
-    if (shape) classes.push(styles.shapeVariants[shape as keyof typeof styles.shapeVariants]);
-  }
-  
-  if (animation) classes.push(styles.animationVariants[animation as keyof typeof styles.animationVariants]);
-  classes.push(inline ? styles.inlineStyle : styles.blockStyle);
-  if (className) classes.push(className);
-  
-  return classes.filter(Boolean).join(' ');
-}
-
-/**
- * Build custom inline styles for skeleton
- */
-function buildCustomStyles(
-  preset?: string,
-  width?: string,
-  height?: string | SizeVariant,
-  allowPresetOverride?: boolean
-): React.CSSProperties {
-  const customStyle: React.CSSProperties = {};
-  
-  // Only allow custom styles with presets if explicitly allowed
-  if (preset && !allowPresetOverride) {
-    return customStyle;
-  }
-  
-  if (width && !getWidthClass(width)) {
-    customStyle.width = width;
-  }
-  
-  if (typeof height === 'string' && !getHeightClass(height)) {
-    customStyle.height = height;
-  }
-  
-  return customStyle;
-}
+const PRESET_DIMENSIONS = {
+  text: { height: '1rem', width: '100%' },
+  title: { height: '2rem', width: '60%' },
+  subtitle: { height: '1.5rem', width: '40%' },
+  button: { height: '2.25rem', width: '6rem' },
+  avatar: { height: '2.5rem', width: '2.5rem' },
+  badge: { height: '1.25rem', width: '4rem' },
+  card: { height: '8rem', width: '100%' },
+} as const;
 
 export const LoadingSkeleton = forwardRef<HTMLDivElement, LoadingSkeletonProps>(
   ({ 
@@ -115,21 +60,39 @@ export const LoadingSkeleton = forwardRef<HTMLDivElement, LoadingSkeletonProps>(
     animation = 'wave',
     inline = false,
     className,
-    allowPresetOverride = false,
     'data-testid': testId,
     ...props 
   }, ref) => {
-    const cssClasses = buildSkeletonClasses(preset, height, width, shape, animation, inline, className);
-    const customStyle = buildCustomStyles(preset, width, height, allowPresetOverride);
-    const hasCustomStyle = Object.keys(customStyle).length > 0;
+    let finalWidth = width;
+    let finalHeight = height;
+    
+    // Apply preset dimensions if preset is specified
+    if (preset && PRESET_DIMENSIONS[preset]) {
+      const presetDims = PRESET_DIMENSIONS[preset];
+      finalWidth = finalWidth || presetDims.width;
+      finalHeight = finalHeight || presetDims.height;
+    }
+    
+    // Map our width values to CSS values
+    if (finalWidth && typeof finalWidth === 'string' && finalWidth in WIDTH_MAP) {
+      finalWidth = WIDTH_MAP[finalWidth as keyof typeof WIDTH_MAP];
+    }
+    
+    // Map our height values to CSS values
+    if (finalHeight && typeof finalHeight === 'string' && finalHeight in HEIGHT_MAP) {
+      finalHeight = HEIGHT_MAP[finalHeight as keyof typeof HEIGHT_MAP];
+    }
 
     return (
-      <div
+      <Skeleton
         ref={ref}
-        className={cssClasses}
-        style={hasCustomStyle ? customStyle : undefined}
+        width={finalWidth}
+        height={finalHeight}
+        radius={shape === 'circle' ? 'xl' : shape === 'pill' ? 'xl' : 'sm'}
+        animate={animation !== 'none'}
+        className={className}
         data-testid={testId}
-        aria-hidden="true"
+        style={{ display: inline ? 'inline-block' : 'block' }}
         {...props}
       />
     );
@@ -137,19 +100,6 @@ export const LoadingSkeleton = forwardRef<HTMLDivElement, LoadingSkeletonProps>(
 );
 
 LoadingSkeleton.displayName = 'LoadingSkeleton';
-
-/**
- * Render default skeleton lines
- */
-function renderDefaultLines(lines: number) {
-  return Array.from({ length: lines }, (_, index) => (
-    <LoadingSkeleton
-      key={index}
-      preset="text"
-      width={index === lines - 1 ? '75%' : 'full'}
-    />
-  ));
-}
 
 export const SkeletonGroup = forwardRef<HTMLDivElement, SkeletonGroupProps>(
   ({ 
@@ -159,18 +109,22 @@ export const SkeletonGroup = forwardRef<HTMLDivElement, SkeletonGroupProps>(
     'data-testid': testId,
     ...props 
   }, ref) => {
-    const cssClasses = [styles.groupStyle, className].filter(Boolean).join(' ');
-
     return (
-      <div
+      <Stack 
         ref={ref}
-        className={cssClasses}
+        gap="xs"
+        className={className}
         data-testid={testId}
-        aria-hidden="true"
         {...props}
       >
-        {children || renderDefaultLines(lines)}
-      </div>
+        {children || Array.from({ length: lines }, (_, index) => (
+          <LoadingSkeleton
+            key={index}
+            preset="text"
+            width={index === lines - 1 ? '75%' : 'full'}
+          />
+        ))}
+      </Stack>
     );
   }
 );
@@ -178,27 +132,26 @@ export const SkeletonGroup = forwardRef<HTMLDivElement, SkeletonGroupProps>(
 SkeletonGroup.displayName = 'SkeletonGroup';
 
 // Preset skeleton components for common patterns
-// These allow style overrides since they're convenience wrappers
-export const TextSkeleton = ({ preset: _preset, allowPresetOverride: _allowPresetOverride, ...props }: Omit<LoadingSkeletonProps, 'preset' | 'allowPresetOverride'> & { preset?: never; allowPresetOverride?: never }) => (
-  <LoadingSkeleton {...props} preset="text" allowPresetOverride={true} />
+export const TextSkeleton = (props: Omit<LoadingSkeletonProps, 'preset'>) => (
+  <LoadingSkeleton {...props} preset="text" />
 );
 
-export const TitleSkeleton = ({ preset: _preset, allowPresetOverride: _allowPresetOverride, ...props }: Omit<LoadingSkeletonProps, 'preset' | 'allowPresetOverride'> & { preset?: never; allowPresetOverride?: never }) => (
-  <LoadingSkeleton {...props} preset="title" allowPresetOverride={true} />
+export const TitleSkeleton = (props: Omit<LoadingSkeletonProps, 'preset'>) => (
+  <LoadingSkeleton {...props} preset="title" />
 );
 
-export const ButtonSkeleton = ({ preset: _preset, allowPresetOverride: _allowPresetOverride, ...props }: Omit<LoadingSkeletonProps, 'preset' | 'allowPresetOverride'> & { preset?: never; allowPresetOverride?: never }) => (
-  <LoadingSkeleton {...props} preset="button" allowPresetOverride={true} />
+export const ButtonSkeleton = (props: Omit<LoadingSkeletonProps, 'preset'>) => (
+  <LoadingSkeleton {...props} preset="button" />
 );
 
-export const AvatarSkeleton = ({ preset: _preset, allowPresetOverride: _allowPresetOverride, ...props }: Omit<LoadingSkeletonProps, 'preset' | 'allowPresetOverride'> & { preset?: never; allowPresetOverride?: never }) => (
-  <LoadingSkeleton {...props} preset="avatar" allowPresetOverride={true} />
+export const AvatarSkeleton = (props: Omit<LoadingSkeletonProps, 'preset'>) => (
+  <LoadingSkeleton {...props} preset="avatar" />
 );
 
-export const BadgeSkeleton = ({ preset: _preset, allowPresetOverride: _allowPresetOverride, ...props }: Omit<LoadingSkeletonProps, 'preset' | 'allowPresetOverride'> & { preset?: never; allowPresetOverride?: never }) => (
-  <LoadingSkeleton {...props} preset="badge" allowPresetOverride={true} />
+export const BadgeSkeleton = (props: Omit<LoadingSkeletonProps, 'preset'>) => (
+  <LoadingSkeleton {...props} preset="badge" />
 );
 
-export const CardSkeleton = ({ preset: _preset, allowPresetOverride: _allowPresetOverride, ...props }: Omit<LoadingSkeletonProps, 'preset' | 'allowPresetOverride'> & { preset?: never; allowPresetOverride?: never }) => (
-  <LoadingSkeleton {...props} preset="card" allowPresetOverride={true} />
+export const CardSkeleton = (props: Omit<LoadingSkeletonProps, 'preset'>) => (
+  <LoadingSkeleton {...props} preset="card" />
 );

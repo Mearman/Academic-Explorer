@@ -1,11 +1,8 @@
-'use client';
-
+import { Badge } from '@mantine/core';
 import { forwardRef } from 'react';
 
 import { EntityBadgeProps, SizeVariant } from '../types';
 
-import { Badge } from './badge';
-import * as styles from './badge.css';
 import { Icon } from './icon';
 
 const ENTITY_LABELS = {
@@ -36,12 +33,20 @@ const ENTITY_ICONS = {
   region: 'map',
 } as const;
 
-function buildEntityClasses(entityType: keyof typeof styles.entityTypeVariants, className?: string) {
-  return [
-    styles.entityTypeVariants[entityType],
-    className,
-  ].filter(Boolean).join(' ');
-}
+// Simple color mapping for entity types using Mantine colors
+const ENTITY_COLORS = {
+  work: 'blue',
+  author: 'green', 
+  source: 'orange',
+  institution: 'grape',
+  publisher: 'red',
+  funder: 'cyan',
+  topic: 'orange',
+  concept: 'lime',
+  keyword: 'pink',
+  continent: 'indigo',
+  region: 'teal',
+} as const;
 
 function EntityIcon({ entityType, size, showIcon }: { 
   entityType: keyof typeof ENTITY_ICONS; 
@@ -58,7 +63,7 @@ function EntityIcon({ entityType, size, showIcon }: {
   );
 }
 
-export const EntityBadge = forwardRef<HTMLSpanElement, EntityBadgeProps>(
+export const EntityBadge = forwardRef<HTMLDivElement, EntityBadgeProps>(
   function EntityBadge({ 
     entityType, 
     size = 'md', 
@@ -68,15 +73,16 @@ export const EntityBadge = forwardRef<HTMLSpanElement, EntityBadgeProps>(
     ...props 
   }, ref) {
     const label = ENTITY_LABELS[entityType];
-    const entityClasses = buildEntityClasses(entityType, className);
+    const color = ENTITY_COLORS[entityType];
 
     return (
       <Badge
         ref={ref}
         size={size}
-        className={entityClasses}
+        color={color}
+        variant="light"
+        className={className}
         data-testid={testId}
-        aria-label={`${label} entity type`}
         {...props}
       >
         <EntityIcon entityType={entityType} size={size} showIcon={showIcon} />

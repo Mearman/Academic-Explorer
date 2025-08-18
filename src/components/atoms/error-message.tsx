@@ -1,15 +1,9 @@
-'use client';
-
-import React, { forwardRef, useState } from 'react';
+import { Alert, Button, Group, Stack } from '@mantine/core';
+import { forwardRef, useState } from 'react';
 
 import type { SizeVariant } from '../types';
 
-import * as styles from './error-message.css';
-import { Icon } from './icon';
-import { renderTitle, renderDetails, renderActions, renderDismissButton } from './utils/error-render-utils';
-import { SEVERITY_ICONS, mapSizeToVariant, getAriaAttributes } from './utils/error-utils';
-
-export interface ErrorMessageProps extends Omit<React.HTMLAttributes<HTMLDivElement>, 'className'> {
+export interface ErrorMessageProps extends Omit<React.HTMLAttributes<HTMLDivElement>, 'title'> {
   title?: string;
   message: string;
   details?: string;
@@ -24,44 +18,60 @@ export interface ErrorMessageProps extends Omit<React.HTMLAttributes<HTMLDivElem
   'data-testid'?: string;
 }
 
-const buildClassNames = (
-  severity: 'error' | 'warning' | 'info' | 'success',
-  sizeVariant: SizeVariant, 
-  compact: boolean,
-  inline: boolean, 
-  dismissible: boolean,
-  className?: string
-) => {
-  const classes = [styles.base, styles.severityVariants[severity], styles.sizeVariants[sizeVariant]];
-  if (compact) classes.push(styles.compactStyle);
-  if (inline) classes.push(styles.inlineStyle);
-  if (dismissible) classes.push(styles.dismissibleStyle);
-  if (className) classes.push(className);
-  return classes.join(' ');
-};
+const SEVERITY_COLORS = {
+  error: 'red',
+  warning: 'yellow', 
+  info: 'blue',
+  success: 'green',
+} as const;
 
 export const ErrorMessage = forwardRef<HTMLDivElement, ErrorMessageProps>(
-  ({ title, message, details, severity = 'error', size = 'md', dismissible = false, compact = false, inline = false, actions, onDismiss, className, 'data-testid': testId, ...props }, ref) => {
+  ({ title, message, details, severity = 'error', dismissible = false, compact = false, actions, onDismiss, className, 'data-testid': testId, ...props }, ref) => {
     const [isVisible, setIsVisible] = useState(true);
 
     if (!isVisible) return null;
 
-    const handleDismiss = () => { setIsVisible(false); onDismiss?.(); };
-    const sizeVariant = mapSizeToVariant(size);
-    const { role, ariaLive } = getAriaAttributes(severity);
-    const classes = buildClassNames(severity, sizeVariant, compact, inline, dismissible, className);
+    const handleDismiss = () => { 
+      setIsVisible(false); 
+      onDismiss?.(); 
+    };
+
+    const color = SEVERITY_COLORS[severity];
 
     return (
-      <div ref={ref} className={classes} data-testid={testId} role={role} aria-live={ariaLive} {...props}>
-        <Icon name={SEVERITY_ICONS[severity] || 'info'} size={size} className={styles.iconStyle} aria-hidden="true" />
-        <div className={styles.contentStyle}>
-          {renderTitle(title, compact)}
-          <div className={styles.messageStyle}>{message}</div>
-          {renderDetails(details, compact)}
-          {renderActions(actions, compact)}
-        </div>
-        {renderDismissButton(dismissible, handleDismiss)}
-      </div>
+      <Alert
+        ref={ref}
+        color={color}
+        title={title}
+        withCloseButton={dismissible}
+        onClose={handleDismiss}
+        className={className}
+        data-testid={testId}
+        {...props}
+      >
+        <Stack gap={compact ? 'xs' : 'sm'}>
+          <div>{message}</div>
+          {details && (
+            <div style={{ fontSize: '0.875rem', opacity: 0.8 }}>
+              {details}
+            </div>
+          )}
+          {actions && actions.length > 0 && (
+            <Group gap="xs">
+              {actions.map((action, index) => (
+                <Button
+                  key={index}
+                  size="xs"
+                  variant={action.variant === 'primary' ? 'filled' : 'outline'}
+                  onClick={action.onClick}
+                >
+                  {action.label}
+                </Button>
+              ))}
+            </Group>
+          )}
+        </Stack>
+      </Alert>
     );
   }
 );
