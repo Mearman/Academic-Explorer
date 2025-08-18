@@ -23,10 +23,20 @@ import {
   DEFAULT_MAX_HOPS,
   generateEdgeId
 } from '@/types/entity-graph';
+import { 
+  loadEntityGraphFromSimpleStorage, 
+  getSimpleGraphMetadata, 
+  saveEntityToSimpleStorage, 
+  saveEdgeToSimpleStorage 
+} from '@/lib/simple-graph-sync';
 
 interface EntityGraphState {
   // Core graph data
   graph: EntityGraph;
+  
+  // Loading state
+  isHydrated: boolean;
+  isLoading: boolean;
   
   // UI state
   selectedVertexId: string | null;
@@ -39,9 +49,10 @@ interface EntityGraphState {
   isFullscreen: boolean;
   
   // Actions - Graph management
-  visitEntity: (event: EntityVisitEvent) => void;
+  hydrateFromIndexedDB: () => Promise<void>;
+  visitEntity: (event: EntityVisitEvent) => Promise<void>;
   recordEntityEncounter: (event: EntityEncounterEvent) => void;
-  addRelationship: (event: RelationshipDiscoveryEvent) => void;
+  addRelationship: (event: RelationshipDiscoveryEvent) => Promise<void>;
   removeVertex: (vertexId: string) => void;
   removeEdge: (edgeId: string) => void;
   clearGraph: () => void;
@@ -113,6 +124,8 @@ export const useEntityGraphStore = create<EntityGraphState>()(
   immer((set, get) => ({
       // Initial state
       graph: createEmptyGraph(),
+      isHydrated: false,
+      isLoading: false,
       selectedVertexId: null,
       hoveredVertexId: null,
       filterOptions: defaultFilterOptions,
@@ -121,7 +134,49 @@ export const useEntityGraphStore = create<EntityGraphState>()(
       isFullscreen: false,
       
       // Actions - Graph management
-      visitEntity: (event: EntityVisitEvent) =>
+      hydrateFromIndexedDB: async () => {
+        set((state) => {
+          state.isLoading = true;
+        });
+        
+        try {
+          const {
+            vertices,
+            edges,
+            edgesBySource,
+            edgesByTarget,
+            verticesByType,
+            directlyVisitedVertices,
+          } = await loadEntityGraphFromSimpleStorage();
+          
+          const metadata = await getSimpleGraphMetadata();
+          
+          set((state) => {
+            state.graph = {
+              vertices,
+              edges,
+              edgesBySource,
+              edgesByTarget,
+              verticesByType,
+              directlyVisitedVertices,
+              metadata,
+            };
+            state.isHydrated = true;
+            state.isLoading = false;
+          });
+          
+          console.log(`[EntityGraphStore] Hydrated from simple storage: ${vertices.size} vertices, ${edges.size} edges`);
+        } catch (error) {
+          console.error('[EntityGraphStore] Failed to hydrate from simple storage:', error);
+          set((state) => {
+            state.isLoading = false;
+            state.isHydrated = true; // Mark as hydrated even on error to prevent retry loops
+          });
+        }
+      },
+      
+      visitEntity: async (event: EntityVisitEvent) => {
+        // First update the in-memory store
         set((state) => {
           const existingVertex = state.graph.vertices.get(event.entityId);
           
@@ -201,9 +256,23 @@ export const useEntityGraphStore = create<EntityGraphState>()(
           state.graph.metadata.lastUpdated = event.timestamp;
           state.graph.metadata.totalVisits += 1;
           state.graph.metadata.uniqueEntitiesVisited = state.graph.directlyVisitedVertices.size;
-        }),
+        });
+        
+        // Then persist to simple storage (only ID, displayName)
+        try {
+          await saveEntityToSimpleStorage(
+            event.entityId, 
+            event.entityType, 
+            event.displayName, 
+            true // Mark as visited
+          );
+        } catch (error) {
+          console.warn('[EntityGraphStore] Failed to persist entity visit to simple storage:', error);
+        }
+      },
       
-      recordEntityEncounter: (event: EntityEncounterEvent) =>
+      recordEntityEncounter: async (event: EntityEncounterEvent) => {
+        // First update the in-memory store
         set((state) => {
           const existingVertex = state.graph.vertices.get(event.entityId);
           
@@ -270,9 +339,23 @@ export const useEntityGraphStore = create<EntityGraphState>()(
           
           // Update metadata
           state.graph.metadata.lastUpdated = event.timestamp;
-        }),
+        });
+        
+        // Then persist to simple storage (only ID, displayName if it's a new entity)
+        try {
+          await saveEntityToSimpleStorage(
+            event.entityId,
+            event.entityType,
+            event.displayName,
+            false // Not a direct visit, just encountered
+          );
+        } catch (error) {
+          console.warn('[EntityGraphStore] Failed to persist entity encounter to simple storage:', error);
+        }
+      },
       
-      addRelationship: (event: RelationshipDiscoveryEvent) =>
+      addRelationship: async (event: RelationshipDiscoveryEvent) => {
+        // First update the in-memory store
         set((state) => {
           const edgeId = generateEdgeId(event.sourceEntityId, event.targetEntityId, event.relationshipType);
           
@@ -366,7 +449,34 @@ export const useEntityGraphStore = create<EntityGraphState>()(
           
           // Update metadata
           state.graph.metadata.lastUpdated = event.timestamp;
-        }),
+        });
+        
+        // Then persist to simple storage (only edge data)
+        try {
+          const edgeId = generateEdgeId(event.sourceEntityId, event.targetEntityId, event.relationshipType);
+          
+          // First save the target entity if it was just discovered
+          const targetVertex = get().graph.vertices.get(event.targetEntityId);
+          if (targetVertex) {
+            await saveEntityToSimpleStorage(
+              targetVertex.id,
+              targetVertex.entityType,
+              targetVertex.displayName,
+              false // Not visited, just discovered
+            );
+          }
+          
+          // Save the edge
+          await saveEdgeToSimpleStorage(
+            event.sourceEntityId,
+            event.targetEntityId,
+            event.relationshipType,
+            edgeId
+          );
+        } catch (error) {
+          console.warn('[EntityGraphStore] Failed to persist relationship to simple storage:', error);
+        }
+      },
       
       removeVertex: (vertexId: string) =>
         set((state) => {
