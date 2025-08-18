@@ -4,9 +4,9 @@ import { useEffect } from 'react';
 import { 
   detectEntityType,
   parseExternalId,
-  decodeExternalId,
-  getEntityEndpoint
+  decodeExternalId
 } from '@/lib/openalex/utils/entity-detection';
+import { buildEntityPath } from '@/components/atoms/utils/entity-link-utils';
 
 function HttpsUrlRedirect() {
   const { _splat } = Route.useParams();
@@ -37,9 +37,9 @@ function HttpsUrlRedirect() {
         if (openAlexMatch) {
           const openAlexId = openAlexMatch[1].toUpperCase();
           const entityType = detectEntityType(openAlexId);
-          const endpoint = getEntityEndpoint(entityType);
-          console.log(`HttpsUrlRedirect: OpenAlex URL detected, redirecting to /${endpoint}/${openAlexId}`);
-          navigate({ to: `/${endpoint}/${openAlexId}`, replace: true });
+          const entityPath = buildEntityPath(entityType, openAlexId);
+          console.log(`HttpsUrlRedirect: OpenAlex URL detected, redirecting to ${entityPath}`);
+          navigate({ to: entityPath, replace: true });
           return;
         }
         
@@ -48,9 +48,9 @@ function HttpsUrlRedirect() {
         if (altOpenAlexMatch) {
           const openAlexId = altOpenAlexMatch[2].toUpperCase();
           const entityType = detectEntityType(openAlexId);
-          const endpoint = getEntityEndpoint(entityType);
-          console.log(`HttpsUrlRedirect: Alternative OpenAlex URL detected, redirecting to /${endpoint}/${openAlexId}`);
-          navigate({ to: `/${endpoint}/${openAlexId}`, replace: true });
+          const entityPath = buildEntityPath(entityType, openAlexId);
+          console.log(`HttpsUrlRedirect: Alternative OpenAlex URL detected, redirecting to ${entityPath}`);
+          navigate({ to: entityPath, replace: true });
           return;
         }
       }
@@ -96,8 +96,8 @@ function HttpsUrlRedirect() {
           console.log(`HttpsUrlRedirect: Wikidata URL detected, using parseExternalId to determine entity type`);
           const externalIdResult = parseExternalId(wikidataId);
           if (externalIdResult.possibleEntityTypes && externalIdResult.possibleEntityTypes.length >= 1) {
-            const endpoint = getEntityEndpoint(externalIdResult.possibleEntityTypes[0]);
-            navigate({ to: `/${endpoint}/${wikidataId}`, replace: true });
+            const entityPath = buildEntityPath(externalIdResult.possibleEntityTypes[0], wikidataId);
+            navigate({ to: entityPath, replace: true });
             return;
           }
         }

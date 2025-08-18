@@ -6,9 +6,9 @@ import {
   detectEntityType,
   parseExternalId,
   decodeExternalId,
-  getEntityEndpoint,
   ExternalIdType
 } from '@/lib/openalex/utils/entity-detection';
+import { buildEntityPath } from '@/components/atoms/utils/entity-link-utils';
 
 // Helper functions to reduce complexity
 function handleHttpsUrls(decodedId: string, navigate: ReturnType<typeof useNavigate>): boolean {
@@ -53,9 +53,9 @@ function handleOpenAlexUrls(decodedId: string, navigate: ReturnType<typeof useNa
   if (openAlexMatch) {
     const openAlexId = openAlexMatch[1].toUpperCase();
     const entityType = detectEntityType(openAlexId);
-    const endpoint = getEntityEndpoint(entityType);
-    console.log(`BareIdRedirect: OpenAlex URL detected, redirecting to /${endpoint}/${openAlexId}`);
-    navigate({ to: `/${endpoint}/${openAlexId}`, replace: true });
+    const entityPath = buildEntityPath(entityType, openAlexId);
+    console.log(`BareIdRedirect: OpenAlex URL detected, redirecting to ${entityPath}`);
+    navigate({ to: entityPath, replace: true });
     return true;
   }
   
@@ -64,9 +64,9 @@ function handleOpenAlexUrls(decodedId: string, navigate: ReturnType<typeof useNa
   if (altOpenAlexMatch) {
     const openAlexId = altOpenAlexMatch[2].toUpperCase();
     const entityType = detectEntityType(openAlexId);
-    const endpoint = getEntityEndpoint(entityType);
-    console.log(`BareIdRedirect: Alternative OpenAlex URL detected, redirecting to /${endpoint}/${openAlexId}`);
-    navigate({ to: `/${endpoint}/${openAlexId}`, replace: true });
+    const entityPath = buildEntityPath(entityType, openAlexId);
+    console.log(`BareIdRedirect: Alternative OpenAlex URL detected, redirecting to ${entityPath}`);
+    navigate({ to: entityPath, replace: true });
     return true;
   }
   
@@ -78,7 +78,7 @@ function handleOrcidUrls(decodedId: string, navigate: ReturnType<typeof useNavig
   if (orcidMatch) {
     const orcidId = orcidMatch[1];
     console.log(`BareIdRedirect: ORCID URL detected, redirecting to /authors/${orcidId}`);
-    navigate({ to: `/authors/${orcidId}`, replace: true });
+    navigate({ to: `/author/${orcidId}`, replace: true });
     return true;
   }
   return false;
@@ -89,7 +89,7 @@ function handleDoiUrls(decodedId: string, navigate: ReturnType<typeof useNavigat
   if (doiMatch) {
     const doiId = doiMatch[1];
     console.log(`BareIdRedirect: DOI URL detected, redirecting to /works/${encodeURIComponent(doiId)}`);
-    navigate({ to: `/works/${encodeURIComponent(doiId)}`, replace: true });
+    navigate({ to: `/work/${encodeURIComponent(doiId)}`, replace: true });
     return true;
   }
   return false;
@@ -113,11 +113,11 @@ function handleWikidataUrls(decodedId: string, navigate: ReturnType<typeof useNa
     console.log(`BareIdRedirect: Wikidata URL detected, using parseExternalId to determine entity type`);
     const externalIdResult = parseExternalId(wikidataId);
     if (externalIdResult.possibleEntityTypes && externalIdResult.possibleEntityTypes.length >= 1) {
-      const endpoint = getEntityEndpoint(externalIdResult.possibleEntityTypes[0]);
+      const entityPath = buildEntityPath(externalIdResult.possibleEntityTypes[0], wikidataId);
       if (externalIdResult.possibleEntityTypes.length > 1) {
-        console.log(`BareIdRedirect: Multiple possible entity types for Wikidata, defaulting to ${endpoint}`);
+        console.log(`BareIdRedirect: Multiple possible entity types for Wikidata, defaulting to ${entityPath}`);
       }
-      navigate({ to: `/${endpoint}/${wikidataId}`, replace: true });
+      navigate({ to: entityPath, replace: true });
       return true;
     }
   }
@@ -129,9 +129,9 @@ function handleExternalIds(decodedId: string, navigate: ReturnType<typeof useNav
   
   if (idType === ExternalIdType.OPENALEX) {
     const entityType = detectEntityType(decodedId);
-    const endpoint = getEntityEndpoint(entityType);
     const normalizedId = decodedId.toUpperCase();
-    navigate({ to: `/${endpoint}/${normalizedId}`, replace: true });
+    const entityPath = buildEntityPath(entityType, normalizedId);
+    navigate({ to: entityPath, replace: true });
     return true;
   }
   
@@ -148,9 +148,9 @@ function handleExternalIds(decodedId: string, navigate: ReturnType<typeof useNav
   // For other external IDs, parse and redirect appropriately
   const externalIdResult = parseExternalId(decodedId);
   if (externalIdResult.possibleEntityTypes && externalIdResult.possibleEntityTypes.length === 1) {
-    const endpoint = getEntityEndpoint(externalIdResult.possibleEntityTypes[0]);
-    console.log(`BareIdRedirect: External ID detected, redirecting to /${endpoint}/${encodeURIComponent(decodedId)}`);
-    navigate({ to: `/${endpoint}/${encodeURIComponent(decodedId)}`, replace: true });
+    const entityPath = buildEntityPath(externalIdResult.possibleEntityTypes[0], encodeURIComponent(decodedId));
+    console.log(`BareIdRedirect: External ID detected, redirecting to ${entityPath}`);
+    navigate({ to: entityPath, replace: true });
     return true;
   }
   
@@ -199,10 +199,10 @@ function BareIdRedirect() {
       // Handle bare OpenAlex IDs (e.g. /#/A5017898742)
       if (/^[WASIPFTCKRN]\d{7,10}$/i.test(decodedId)) {
         const entityType = detectEntityType(decodedId);
-        const endpoint = getEntityEndpoint(entityType);
         const normalizedId = decodedId.toUpperCase();
-        console.log(`BareIdRedirect: Bare OpenAlex ID detected, redirecting to /${endpoint}/${normalizedId}`);
-        navigate({ to: `/${endpoint}/${normalizedId}`, replace: true });
+        const entityPath = buildEntityPath(entityType, normalizedId);
+        console.log(`BareIdRedirect: Bare OpenAlex ID detected, redirecting to ${entityPath}`);
+        navigate({ to: entityPath, replace: true });
         return;
       }
       

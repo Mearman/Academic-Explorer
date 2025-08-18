@@ -18,7 +18,7 @@ export default defineConfig(({ command }) => ({
         if (command === 'build') {
           try {
             generateBuildInfoFile();
-            console.log('✓ Generated build info for deployment');
+            console.log('[OK] Generated build info for deployment');
           } catch (error) {
             console.warn('Failed to generate build info:', error);
           }
@@ -48,7 +48,7 @@ export default defineConfig(({ command }) => ({
       writeBundle() {
         try {
           copyFileSync('dist/index.html', 'dist/404.html');
-          console.log('✓ Copied dist/index.html to dist/404.html for GitHub Pages SPA routing');
+          console.log('[OK] Copied dist/index.html to dist/404.html for GitHub Pages SPA routing');
         } catch (error) {
           console.warn('Failed to copy index.html to 404.html:', error);
         }

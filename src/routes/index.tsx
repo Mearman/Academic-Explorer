@@ -1,5 +1,3 @@
-import React, { useState } from 'react';
-import { createFileRoute, Link } from '@tanstack/react-router';
 import { 
   IconSearch, 
   IconNetwork, 
@@ -12,6 +10,8 @@ import {
   IconMap,
   IconSchool
 } from '@tabler/icons-react';
+import { createFileRoute, Link } from '@tanstack/react-router';
+import React, { useState } from 'react';
 
 import { TwoPaneLayout, StorageManager } from '@/components';
 import { getEntityColour } from '@/components/design-tokens.utils';

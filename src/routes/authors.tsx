@@ -1,9 +1,10 @@
-import { createFileRoute, Outlet } from '@tanstack/react-router';
-import { TwoPaneLayout, EntityGraphVisualization } from '@/components';
-import { useEntityGraphStore } from '@/stores/entity-graph-store';
-import { useMemo } from 'react';
 import { Text } from '@mantine/core';
+import { createFileRoute } from '@tanstack/react-router';
+import { useMemo } from 'react';
+
+import { PageWithPanes, AuthorsOverview, EntityGraphVisualization, EntityPageHeader } from '@/components';
 import { EntityType } from '@/lib/openalex/utils/entity-detection';
+import { useEntityGraphStore } from '@/stores/entity-graph-store';
 
 function AuthorsLayout() {
   const { graph } = useEntityGraphStore();
@@ -41,15 +42,34 @@ function AuthorsLayout() {
       <Text c="dimmed">No authors data to visualise yet. Start exploring authors to see their collaboration networks here.</Text>
     </div>
   );
+
+  const authorCount = authorsGraphData.vertices.filter(v => v.entityType === EntityType.AUTHOR).length;
+  const subtitle = authorCount > 0 
+    ? `${authorCount.toLocaleString()} authors in exploration graph`
+    : 'Author collection and exploration';
+
+  const headerContent = (
+    <EntityPageHeader
+      title="Authors"
+      subtitle={subtitle}
+      entityType={EntityType.AUTHOR}
+      entityId="authors-overview"
+    />
+  );
   
   return (
-    <TwoPaneLayout
-      leftPane={<Outlet />}
+    <PageWithPanes
+      headerContent={headerContent}
+      leftPane={
+        <AuthorsOverview />
+      }
       rightPane={rightPane}
-      stateKey="authors-layout"
-      defaultSplit={65}
-      mobileTabLabels={{ left: 'Authors', right: 'Network' }}
-      showHeaders={false}
+      twoPaneLayoutProps={{
+        stateKey: "authors-layout",
+        defaultSplit: 65,
+        mobileTabLabels: { left: 'Authors', right: 'Network' },
+      }}
+      paneControlLabels={{ left: 'Authors Overview', right: 'Network View' }}
     />
   );
 }

@@ -279,7 +279,7 @@ function SourcesOverviewPage() {
           <Grid>
             <Grid.Col span={{ base: 12, md: 4 }}>
               <Paper p="md" withBorder radius="sm" bg="blue.0">
-                <Text fw={500} mb="xs">📚 Academic Journals</Text>
+                <Text fw={500} mb="xs">[LIBRARY] Academic Journals</Text>
                 <Text size="sm" c="dimmed">
                   Peer-reviewed scholarly journals across all disciplines
                 </Text>
@@ -287,7 +287,7 @@ function SourcesOverviewPage() {
             </Grid.Col>
             <Grid.Col span={{ base: 12, md: 4 }}>
               <Paper p="md" withBorder radius="sm" bg="green.0">
-                <Text fw={500} mb="xs">🎪 Conference Proceedings</Text>
+                <Text fw={500} mb="xs">[CONFERENCE] Conference Proceedings</Text>
                 <Text size="sm" c="dimmed">
                   Academic conferences, symposiums, and workshop proceedings
                 </Text>
@@ -295,7 +295,7 @@ function SourcesOverviewPage() {
             </Grid.Col>
             <Grid.Col span={{ base: 12, md: 4 }}>
               <Paper p="md" withBorder radius="sm" bg="violet.0">
-                <Text fw={500} mb="xs">📖 Book Series</Text>
+                <Text fw={500} mb="xs">[PUBLICATION] Book Series</Text>
                 <Text size="sm" c="dimmed">
                   Academic book publishers and monograph series
                 </Text>
@@ -303,7 +303,7 @@ function SourcesOverviewPage() {
             </Grid.Col>
             <Grid.Col span={{ base: 12, md: 4 }}>
               <Paper p="md" withBorder radius="sm" bg="orange.0">
-                <Text fw={500} mb="xs">🌐 Preprint Servers</Text>
+                <Text fw={500} mb="xs">[GLOBAL] Preprint Servers</Text>
                 <Text size="sm" c="dimmed">
                   arXiv, bioRxiv, medRxiv, and other preprint repositories
                 </Text>
@@ -311,7 +311,7 @@ function SourcesOverviewPage() {
             </Grid.Col>
             <Grid.Col span={{ base: 12, md: 4 }}>
               <Paper p="md" withBorder radius="sm" bg="red.0">
-                <Text fw={500} mb="xs">📰 Trade Publications</Text>
+                <Text fw={500} mb="xs">[NEWS] Trade Publications</Text>
                 <Text size="sm" c="dimmed">
                   Industry magazines and professional publications
                 </Text>
@@ -319,7 +319,7 @@ function SourcesOverviewPage() {
             </Grid.Col>
             <Grid.Col span={{ base: 12, md: 4 }}>
               <Paper p="md" withBorder radius="sm" bg="teal.0">
-                <Text fw={500} mb="xs">🏛️ Institutional Repos</Text>
+                <Text fw={500} mb="xs">[INSTITUTION] Institutional Repos</Text>
                 <Text size="sm" c="dimmed">
                   University repositories and institutional collections
                 </Text>
@@ -335,13 +335,13 @@ function SourcesOverviewPage() {
             <Grid.Col span={{ base: 12, md: 6 }}>
               <Stack gap="md">
                 <div>
-                  <Text fw={500} mb="xs">🔍 Search by Name or ISSN</Text>
+                  <Text fw={500} mb="xs">[SEARCH] Search by Name or ISSN</Text>
                   <Text size="sm" c="dimmed">
                     Find journals and conferences by name, ISSN, or subject area
                   </Text>
                 </div>
                 <div>
-                  <Text fw={500} mb="xs">📈 Compare Impact</Text>
+                  <Text fw={500} mb="xs">[CHART] Compare Impact</Text>
                   <Text size="sm" c="dimmed">
                     Analyze citation metrics, h-index, and publication trends
                   </Text>
@@ -351,13 +351,13 @@ function SourcesOverviewPage() {
             <Grid.Col span={{ base: 12, md: 6 }}>
               <Stack gap="md">
                 <div>
-                  <Text fw={500} mb="xs">🏷️ Browse by Field</Text>
+                  <Text fw={500} mb="xs">[TAG] Browse by Field</Text>
                   <Text size="sm" c="dimmed">
                     Discover top venues in specific research areas and disciplines
                   </Text>
                 </div>
                 <div>
-                  <Text fw={500} mb="xs">🔓 Open Access Analysis</Text>
+                  <Text fw={500} mb="xs">[OPEN] Open Access Analysis</Text>
                   <Text size="sm" c="dimmed">
                     Find open access journals and track publishing accessibility
                   </Text>

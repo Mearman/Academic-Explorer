@@ -1,8 +1,10 @@
-import { createFileRoute, Outlet } from '@tanstack/react-router';
-import { TwoPaneLayout, EntityGraphVisualization } from '@/components';
-import { useEntityGraphStore } from '@/stores/entity-graph-store';
-import { useMemo } from 'react';
 import { Text } from '@mantine/core';
+import { createFileRoute } from '@tanstack/react-router';
+import { useMemo } from 'react';
+
+import { PageWithPanes, WorksOverview, EntityGraphVisualization, EntityPageHeader } from '@/components';
+import { EntityType } from '@/lib/openalex/utils/entity-detection';
+import { useEntityGraphStore } from '@/stores/entity-graph-store';
 
 function WorksLayout() {
   const { graph } = useEntityGraphStore();
@@ -10,7 +12,7 @@ function WorksLayout() {
   // Filter graph to show work-related vertices and their connections
   const worksGraphData = useMemo(() => {
     const workVertices = Array.from(graph.vertices.values())
-      .filter(vertex => vertex.entityType === 'work');
+      .filter(vertex => vertex.entityType === EntityType.WORK);
     
     const workIds = new Set(workVertices.map(v => v.id));
     const relevantEdges = Array.from(graph.edges.values())
@@ -40,15 +42,29 @@ function WorksLayout() {
       <Text c="dimmed">No works data to visualise yet. Start exploring works to see connections here.</Text>
     </div>
   );
+
+  const headerContent = (
+    <EntityPageHeader
+      title="Works"
+      subtitle="Academic papers, articles, and publications"
+      entityType={EntityType.WORK}
+      entityId="works-overview"
+    />
+  );
   
   return (
-    <TwoPaneLayout
-      leftPane={<Outlet />}
+    <PageWithPanes
+      headerContent={headerContent}
+      leftPane={
+        <WorksOverview />
+      }
       rightPane={rightPane}
-      stateKey="works-layout"
-      defaultSplit={65}
-      mobileTabLabels={{ left: 'Works', right: 'Graph' }}
-      showHeaders={false}
+      twoPaneLayoutProps={{
+        stateKey: "works-layout",
+        defaultSplit: 65,
+        mobileTabLabels: { left: 'Works', right: 'Graph' },
+      }}
+      paneControlLabels={{ left: 'Works Overview', right: 'Graph View' }}
     />
   );
 }

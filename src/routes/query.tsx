@@ -2,11 +2,11 @@ import { createFileRoute, useNavigate, useSearch } from '@tanstack/react-router'
 import { useState, useEffect, useCallback } from 'react';
 import { z } from 'zod';
 
-import { TwoPaneLayout } from '@/components/templates/two-pane-layout';
+import { type AdvancedSearchFormData } from '@/components/molecules/advanced-search-form';
 import { QueryBuilder } from '@/components/organisms/query-builder';
 import { QueryPreview } from '@/components/organisms/query-preview';
 import { SearchResults } from '@/components/organisms/search-results';
-import { type AdvancedSearchFormData } from '@/components/molecules/advanced-search-form';
+import { TwoPaneLayout } from '@/components/templates/two-pane-layout';
 import type { WorksParams } from '@/lib/openalex/types';
 
 import * as styles from '../app/page.css';
