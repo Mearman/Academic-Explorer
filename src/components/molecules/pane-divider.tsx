@@ -99,29 +99,29 @@ export function PaneDivider({
     >
       <div className={styles.dividerHandle} />
       
-      {/* Left collapse button */}
-      {leftCollapsible && !leftCollapsed && (
+      {/* Left panel button - collapse when expanded, expand when collapsed */}
+      {leftCollapsible && (
         <button
           className={`${styles.collapseButton} ${styles.collapseButtonVariants.left}`}
           onClick={handleCollapseLeft}
-          aria-label="Collapse left panel"
-          title="Collapse left panel (Cmd+[)"
+          aria-label={leftCollapsed ? "Expand left panel" : "Collapse left panel"}
+          title={leftCollapsed ? "Expand left panel (Cmd+[)" : "Collapse left panel (Cmd+[)"}
           type="button"
         >
-          <IconChevronLeft size={12} />
+          {leftCollapsed ? <IconChevronRight size={12} /> : <IconChevronLeft size={12} />}
         </button>
       )}
       
-      {/* Right collapse button */}
-      {rightCollapsible && !rightCollapsed && (
+      {/* Right panel button - collapse when expanded, expand when collapsed */}
+      {rightCollapsible && (
         <button
           className={`${styles.collapseButton} ${styles.collapseButtonVariants.right}`}
           onClick={handleCollapseRight}
-          aria-label="Collapse right panel"
-          title="Collapse right panel (Cmd+])"
+          aria-label={rightCollapsed ? "Expand right panel" : "Collapse right panel"}
+          title={rightCollapsed ? "Expand right panel (Cmd+])" : "Collapse right panel (Cmd+])"}
           type="button"
         >
-          <IconChevronRight size={12} />
+          {rightCollapsed ? <IconChevronLeft size={12} /> : <IconChevronRight size={12} />}
         </button>
       )}
     </div>
