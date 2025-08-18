@@ -24,12 +24,6 @@ import { Route as AuthorsRouteImport } from './routes/authors'
 import { Route as BareIdRouteImport } from './routes/$bareId'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as WorksIndexRouteImport } from './routes/works.index'
-import { Route as TopicsIndexRouteImport } from './routes/topics.index'
-import { Route as SourcesIndexRouteImport } from './routes/sources.index'
-import { Route as PublishersIndexRouteImport } from './routes/publishers.index'
-import { Route as InstitutionsIndexRouteImport } from './routes/institutions.index'
-import { Route as FundersIndexRouteImport } from './routes/funders.index'
-import { Route as ConceptsIndexRouteImport } from './routes/concepts.index'
 import { Route as AuthorsIndexRouteImport } from './routes/authors.index'
 import { Route as WorksIdRouteImport } from './routes/works.$id'
 import { Route as WikidataIdRouteImport } from './routes/wikidata.$id'
@@ -125,36 +119,6 @@ const WorksIndexRoute = WorksIndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => WorksRoute,
-} as any)
-const TopicsIndexRoute = TopicsIndexRouteImport.update({
-  id: '/',
-  path: '/',
-  getParentRoute: () => TopicsRoute,
-} as any)
-const SourcesIndexRoute = SourcesIndexRouteImport.update({
-  id: '/',
-  path: '/',
-  getParentRoute: () => SourcesRoute,
-} as any)
-const PublishersIndexRoute = PublishersIndexRouteImport.update({
-  id: '/',
-  path: '/',
-  getParentRoute: () => PublishersRoute,
-} as any)
-const InstitutionsIndexRoute = InstitutionsIndexRouteImport.update({
-  id: '/',
-  path: '/',
-  getParentRoute: () => InstitutionsRoute,
-} as any)
-const FundersIndexRoute = FundersIndexRouteImport.update({
-  id: '/',
-  path: '/',
-  getParentRoute: () => FundersRoute,
-} as any)
-const ConceptsIndexRoute = ConceptsIndexRouteImport.update({
-  id: '/',
-  path: '/',
-  getParentRoute: () => ConceptsRoute,
 } as any)
 const AuthorsIndexRoute = AuthorsIndexRouteImport.update({
   id: '/',
@@ -291,22 +255,22 @@ export interface FileRoutesByFullPath {
   '/wikidata/$id': typeof WikidataIdRoute
   '/works/$id': typeof WorksIdRoute
   '/authors/': typeof AuthorsIndexRoute
-  '/concepts/': typeof ConceptsIndexRoute
-  '/funders/': typeof FundersIndexRoute
-  '/institutions/': typeof InstitutionsIndexRoute
-  '/publishers/': typeof PublishersIndexRoute
-  '/sources/': typeof SourcesIndexRoute
-  '/topics/': typeof TopicsIndexRoute
   '/works/': typeof WorksIndexRoute
   '/entity/$type/$id': typeof EntityTypeIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/$bareId': typeof BareIdRoute
+  '/concepts': typeof ConceptsRouteWithChildren
   '/dashboard': typeof DashboardRoute
+  '/funders': typeof FundersRouteWithChildren
   '/help': typeof HelpRoute
+  '/institutions': typeof InstitutionsRouteWithChildren
   '/manage': typeof ManageRoute
+  '/publishers': typeof PublishersRouteWithChildren
   '/query': typeof QueryRoute
+  '/sources': typeof SourcesRouteWithChildren
+  '/topics': typeof TopicsRouteWithChildren
   '/authors/$id': typeof AuthorsIdRoute
   '/concepts/$id': typeof ConceptsIdRoute
   '/continents/$id': typeof ContinentsIdRoute
@@ -326,12 +290,6 @@ export interface FileRoutesByTo {
   '/wikidata/$id': typeof WikidataIdRoute
   '/works/$id': typeof WorksIdRoute
   '/authors': typeof AuthorsIndexRoute
-  '/concepts': typeof ConceptsIndexRoute
-  '/funders': typeof FundersIndexRoute
-  '/institutions': typeof InstitutionsIndexRoute
-  '/publishers': typeof PublishersIndexRoute
-  '/sources': typeof SourcesIndexRoute
-  '/topics': typeof TopicsIndexRoute
   '/works': typeof WorksIndexRoute
   '/entity/$type/$id': typeof EntityTypeIdRoute
 }
@@ -370,12 +328,6 @@ export interface FileRoutesById {
   '/wikidata/$id': typeof WikidataIdRoute
   '/works/$id': typeof WorksIdRoute
   '/authors/': typeof AuthorsIndexRoute
-  '/concepts/': typeof ConceptsIndexRoute
-  '/funders/': typeof FundersIndexRoute
-  '/institutions/': typeof InstitutionsIndexRoute
-  '/publishers/': typeof PublishersIndexRoute
-  '/sources/': typeof SourcesIndexRoute
-  '/topics/': typeof TopicsIndexRoute
   '/works/': typeof WorksIndexRoute
   '/entity/$type/$id': typeof EntityTypeIdRoute
 }
@@ -415,22 +367,22 @@ export interface FileRouteTypes {
     | '/wikidata/$id'
     | '/works/$id'
     | '/authors/'
-    | '/concepts/'
-    | '/funders/'
-    | '/institutions/'
-    | '/publishers/'
-    | '/sources/'
-    | '/topics/'
     | '/works/'
     | '/entity/$type/$id'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/$bareId'
+    | '/concepts'
     | '/dashboard'
+    | '/funders'
     | '/help'
+    | '/institutions'
     | '/manage'
+    | '/publishers'
     | '/query'
+    | '/sources'
+    | '/topics'
     | '/authors/$id'
     | '/concepts/$id'
     | '/continents/$id'
@@ -450,12 +402,6 @@ export interface FileRouteTypes {
     | '/wikidata/$id'
     | '/works/$id'
     | '/authors'
-    | '/concepts'
-    | '/funders'
-    | '/institutions'
-    | '/publishers'
-    | '/sources'
-    | '/topics'
     | '/works'
     | '/entity/$type/$id'
   id:
@@ -493,12 +439,6 @@ export interface FileRouteTypes {
     | '/wikidata/$id'
     | '/works/$id'
     | '/authors/'
-    | '/concepts/'
-    | '/funders/'
-    | '/institutions/'
-    | '/publishers/'
-    | '/sources/'
-    | '/topics/'
     | '/works/'
     | '/entity/$type/$id'
   fileRoutesById: FileRoutesById
@@ -637,48 +577,6 @@ declare module '@tanstack/react-router' {
       fullPath: '/works/'
       preLoaderRoute: typeof WorksIndexRouteImport
       parentRoute: typeof WorksRoute
-    }
-    '/topics/': {
-      id: '/topics/'
-      path: '/'
-      fullPath: '/topics/'
-      preLoaderRoute: typeof TopicsIndexRouteImport
-      parentRoute: typeof TopicsRoute
-    }
-    '/sources/': {
-      id: '/sources/'
-      path: '/'
-      fullPath: '/sources/'
-      preLoaderRoute: typeof SourcesIndexRouteImport
-      parentRoute: typeof SourcesRoute
-    }
-    '/publishers/': {
-      id: '/publishers/'
-      path: '/'
-      fullPath: '/publishers/'
-      preLoaderRoute: typeof PublishersIndexRouteImport
-      parentRoute: typeof PublishersRoute
-    }
-    '/institutions/': {
-      id: '/institutions/'
-      path: '/'
-      fullPath: '/institutions/'
-      preLoaderRoute: typeof InstitutionsIndexRouteImport
-      parentRoute: typeof InstitutionsRoute
-    }
-    '/funders/': {
-      id: '/funders/'
-      path: '/'
-      fullPath: '/funders/'
-      preLoaderRoute: typeof FundersIndexRouteImport
-      parentRoute: typeof FundersRoute
-    }
-    '/concepts/': {
-      id: '/concepts/'
-      path: '/'
-      fullPath: '/concepts/'
-      preLoaderRoute: typeof ConceptsIndexRouteImport
-      parentRoute: typeof ConceptsRoute
     }
     '/authors/': {
       id: '/authors/'
@@ -838,12 +736,10 @@ const AuthorsRouteWithChildren =
 
 interface ConceptsRouteChildren {
   ConceptsIdRoute: typeof ConceptsIdRoute
-  ConceptsIndexRoute: typeof ConceptsIndexRoute
 }
 
 const ConceptsRouteChildren: ConceptsRouteChildren = {
   ConceptsIdRoute: ConceptsIdRoute,
-  ConceptsIndexRoute: ConceptsIndexRoute,
 }
 
 const ConceptsRouteWithChildren = ConceptsRoute._addFileChildren(
@@ -852,12 +748,10 @@ const ConceptsRouteWithChildren = ConceptsRoute._addFileChildren(
 
 interface FundersRouteChildren {
   FundersIdRoute: typeof FundersIdRoute
-  FundersIndexRoute: typeof FundersIndexRoute
 }
 
 const FundersRouteChildren: FundersRouteChildren = {
   FundersIdRoute: FundersIdRoute,
-  FundersIndexRoute: FundersIndexRoute,
 }
 
 const FundersRouteWithChildren =
@@ -865,12 +759,10 @@ const FundersRouteWithChildren =
 
 interface InstitutionsRouteChildren {
   InstitutionsIdRoute: typeof InstitutionsIdRoute
-  InstitutionsIndexRoute: typeof InstitutionsIndexRoute
 }
 
 const InstitutionsRouteChildren: InstitutionsRouteChildren = {
   InstitutionsIdRoute: InstitutionsIdRoute,
-  InstitutionsIndexRoute: InstitutionsIndexRoute,
 }
 
 const InstitutionsRouteWithChildren = InstitutionsRoute._addFileChildren(
@@ -879,12 +771,10 @@ const InstitutionsRouteWithChildren = InstitutionsRoute._addFileChildren(
 
 interface PublishersRouteChildren {
   PublishersIdRoute: typeof PublishersIdRoute
-  PublishersIndexRoute: typeof PublishersIndexRoute
 }
 
 const PublishersRouteChildren: PublishersRouteChildren = {
   PublishersIdRoute: PublishersIdRoute,
-  PublishersIndexRoute: PublishersIndexRoute,
 }
 
 const PublishersRouteWithChildren = PublishersRoute._addFileChildren(
@@ -893,12 +783,10 @@ const PublishersRouteWithChildren = PublishersRoute._addFileChildren(
 
 interface SourcesRouteChildren {
   SourcesIdRoute: typeof SourcesIdRoute
-  SourcesIndexRoute: typeof SourcesIndexRoute
 }
 
 const SourcesRouteChildren: SourcesRouteChildren = {
   SourcesIdRoute: SourcesIdRoute,
-  SourcesIndexRoute: SourcesIndexRoute,
 }
 
 const SourcesRouteWithChildren =
@@ -906,12 +794,10 @@ const SourcesRouteWithChildren =
 
 interface TopicsRouteChildren {
   TopicsIdRoute: typeof TopicsIdRoute
-  TopicsIndexRoute: typeof TopicsIndexRoute
 }
 
 const TopicsRouteChildren: TopicsRouteChildren = {
   TopicsIdRoute: TopicsIdRoute,
-  TopicsIndexRoute: TopicsIndexRoute,
 }
 
 const TopicsRouteWithChildren =
