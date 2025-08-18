@@ -46,7 +46,6 @@ export default defineConfig({
 		maxConcurrency: 1, // Absolute limit: 1 test at a time
 		maxWorkers: 1, // Only 1 worker process
 		minWorkers: 1, // Minimum 1 worker
-		// workerMemoryLimit: "6GB", // Increased memory limit per worker
 		fileParallelism: false, // Disable file-level parallelism
 
 		// CRITICAL: Extended timeouts for serial execution
@@ -69,10 +68,9 @@ export default defineConfig({
 
 		// CRITICAL: Disable file watching and force test completion
 		watch: false,
-		// run: true,
 
 		// CRITICAL: Minimal reporter configuration for stability
-		// reporter: process.env.CI === "true" ? ["dot"] : ["default"],
+		reporter: process.env.CI === "true" ? ["dot"] : ["basic"],
 
 		// CRITICAL: Optimized project configuration
 		projects: [
@@ -93,7 +91,10 @@ export default defineConfig({
 					poolOptions: {
 						threads: {
 							singleThread: true,
+							maxThreads: 1,
+							minThreads: 1,
 							isolate: true,
+							useAtomics: false,
 						},
 					},
 
@@ -105,22 +106,23 @@ export default defineConfig({
 						hooks: "stack",
 					},
 					maxConcurrency: 1,
-					// workerMemoryLimit: '6GB',
-					// fileParallelism: false,
+					maxWorkers: 1,
+					minWorkers: 1,
+					fileParallelism: false,
 
 					// CRITICAL: Extended timeouts for serial execution
 					testTimeout: process.env.CI === "true" ? 90000 : 60000,
 					hookTimeout: 30000,
-					// teardownTimeout: 30000,
+					teardownTimeout: 30000,
 
 					// CRITICAL: Coverage disabled
-					// coverage: { enabled: false },
+					coverage: { enabled: false },
 
 					// CRITICAL: Memory monitoring
 					logHeapUsage: process.env.CI !== "true",
 
 					// CRITICAL: Minimal reporter for unit tests
-					// reporter: 'dot',
+					reporter: "dot",
 				},
 			},
 			{
@@ -140,10 +142,10 @@ export default defineConfig({
 					poolOptions: {
 						threads: {
 							singleThread: true,
-							// maxThreads: 1,
-							// minThreads: 1,
+							maxThreads: 1,
+							minThreads: 1,
 							isolate: true,
-							// useAtomics: false,
+							useAtomics: false,
 						},
 					},
 
@@ -155,19 +157,20 @@ export default defineConfig({
 						hooks: "stack",
 					},
 					maxConcurrency: 1,
-					// workerMemoryLimit: "6GB",
-					// fileParallelism: false,
+					maxWorkers: 1,
+					minWorkers: 1,
+					fileParallelism: false,
 
 					// CRITICAL: Extended timeouts for DOM operations and serial mode
 					testTimeout: process.env.CI === "true" ? 120000 : 90000,
 					hookTimeout: 40000,
-					// teardownTimeout: 40000,
+					teardownTimeout: 40000,
 
 					// CRITICAL: Coverage disabled
-					// coverage: { enabled: false },
+					coverage: { enabled: false },
 
 					// CRITICAL: Minimal reporter
-					// reporter: "dot",
+					reporter: "dot",
 				},
 			},
 			{
@@ -187,10 +190,10 @@ export default defineConfig({
 					poolOptions: {
 						threads: {
 							singleThread: true,
-							// maxThreads: 1,
-							// minThreads: 1,
+							maxThreads: 1,
+							minThreads: 1,
 							isolate: true,
-							// useAtomics: false,
+							useAtomics: false,
 						},
 					},
 
@@ -202,19 +205,20 @@ export default defineConfig({
 						hooks: "stack",
 					},
 					maxConcurrency: 1,
-					// workerMemoryLimit: "6GB",
-					// fileParallelism: false,
+					maxWorkers: 1,
+					minWorkers: 1,
+					fileParallelism: false,
 
 					// CRITICAL: Extended timeouts for API calls and serial mode
 					testTimeout: process.env.CI === "true" ? 180000 : 120000,
 					hookTimeout: 60000,
-					// teardownTimeout: 60000,
+					teardownTimeout: 60000,
 
 					// CRITICAL: Coverage disabled
-					// coverage: { enabled: false },
+					coverage: { enabled: false },
 
 					// CRITICAL: Minimal reporter
-					// reporter: "dot",
+					reporter: "dot",
 				},
 			},
 			{
@@ -234,10 +238,10 @@ export default defineConfig({
 					poolOptions: {
 						threads: {
 							singleThread: true,
-							// maxThreads: 1,
-							// minThreads: 1,
+							maxThreads: 1,
+							minThreads: 1,
 							isolate: true,
-							// useAtomics: false,
+							useAtomics: false,
 						},
 					},
 
@@ -249,19 +253,20 @@ export default defineConfig({
 						hooks: "stack",
 					},
 					maxConcurrency: 1,
-					// workerMemoryLimit: "6GB",
-					// fileParallelism: false,
+					maxWorkers: 1,
+					minWorkers: 1,
+					fileParallelism: false,
 
 					// CRITICAL: Very long timeouts for E2E and serial mode
 					testTimeout: process.env.CI === "true" ? 300000 : 240000,
 					hookTimeout: 120000,
-					// teardownTimeout: 120000,
+					teardownTimeout: 120000,
 
 					// CRITICAL: Coverage disabled
-					// coverage: { enabled: false },
+					coverage: { enabled: false },
 
 					// CRITICAL: Minimal reporter
-					// reporter: "dot",
+					reporter: "dot",
 				},
 			},
 		],
