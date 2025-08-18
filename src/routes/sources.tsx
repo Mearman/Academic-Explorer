@@ -1,30 +1,3 @@
-import { createFileRoute } from '@tanstack/react-router';
-
-import { TwoPaneLayout } from '@/components/templates/two-pane-layout';
-import { EntityGraphVisualization } from '@/components/organisms/entity-graph-visualization';
-
-function SourcesLayout() {
-  return (
-    <TwoPaneLayout
-      leftPane={<SourcesOverviewPage />}
-      rightPane={
-        <EntityGraphVisualization
-          height={600}
-          showControls={true}
-          showLegend={true}
-        />
-      }
-      stateKey="sources-layout"
-      leftTitle="Sources"
-      rightTitle="Sources Graph"
-      showHeaders={true}
-      mobileTabLabels={{ left: 'Sources', right: 'Graph' }}
-      defaultSplit={65}
-    />
-  );
-}
-
-// Import the content from sources.index.tsx
 import { 
   Card, 
   Text, 
@@ -47,12 +20,36 @@ import {
   IconWorldWww,
   IconAward
 } from '@tabler/icons-react';
+import { createFileRoute } from '@tanstack/react-router';
 import { Link } from '@tanstack/react-router';
 import { useMemo } from 'react';
 
 import { EntityLink, EntityBrowser } from '@/components';
+import { EntityGraphVisualization } from '@/components/organisms/entity-graph-visualization';
+import { TwoPaneLayout } from '@/components/templates/two-pane-layout';
 import { EntityType } from '@/lib/openalex/utils/entity-detection';
 import { useEntityGraphStore } from '@/stores/entity-graph-store';
+
+function SourcesLayout() {
+  return (
+    <TwoPaneLayout
+      leftPane={<SourcesOverviewPage />}
+      rightPane={
+        <EntityGraphVisualization
+          height={600}
+          showControls={true}
+          showLegend={true}
+        />
+      }
+      stateKey="sources-layout"
+      leftTitle="Sources"
+      rightTitle="Sources Graph"
+      showHeaders={true}
+      mobileTabLabels={{ left: 'Sources', right: 'Graph' }}
+      defaultSplit={65}
+    />
+  );
+}
 
 function SourcesOverviewPage() {
   const { graph } = useEntityGraphStore();
@@ -104,7 +101,7 @@ function SourcesOverviewPage() {
           <Grid.Col span={{ base: 12, md: 4 }}>
             <Paper p="lg" withBorder radius="md">
               <Stack gap="xs" align="center">
-                <IconEye size={32} style={{ color: 'var(--mantine-color-blue-6)' }} />
+                <IconEye size={32} color="blue" />
                 <Text size="xl" fw={700} c="blue">
                   {directlyVisitedSources.length}
                 </Text>
@@ -118,7 +115,7 @@ function SourcesOverviewPage() {
           <Grid.Col span={{ base: 12, md: 4 }}>
             <Paper p="lg" withBorder radius="md">
               <Stack gap="xs" align="center">
-                <IconBooks size={32} style={{ color: 'var(--mantine-color-green-6)' }} />
+                <IconBooks size={32} color="green" />
                 <Text size="xl" fw={700} c="green">
                   {discoveredSources.length}
                 </Text>
@@ -132,7 +129,7 @@ function SourcesOverviewPage() {
           <Grid.Col span={{ base: 12, md: 4 }}>
             <Paper p="lg" withBorder radius="md">
               <Stack gap="xs" align="center">
-                <IconClock size={32} style={{ color: 'var(--mantine-color-violet-6)' }} />
+                <IconClock size={32} color="violet" />
                 <Text size="xl" fw={700} c="violet">
                   {browsedSources.reduce((sum, vertex) => sum + vertex.visitCount, 0)}
                 </Text>
@@ -225,7 +222,7 @@ function SourcesOverviewPage() {
           <Grid.Col span={{ base: 12, md: 6, lg: 3 }}>
             <Paper p="lg" withBorder radius="md" h="100%">
               <Stack gap="md" align="center" h="100%" justify="center">
-                <IconChartBar size={48} style={{ color: 'var(--mantine-color-blue-6)' }} />
+                <IconChartBar size={48} color="blue" />
                 <Title order={3} ta="center">Impact Metrics</Title>
                 <Text size="sm" c="dimmed" ta="center">
                   Journal impact factors, h-index, and citation distributions
@@ -237,7 +234,7 @@ function SourcesOverviewPage() {
           <Grid.Col span={{ base: 12, md: 6, lg: 3 }}>
             <Paper p="lg" withBorder radius="md" h="100%">
               <Stack gap="md" align="center" h="100%" justify="center">
-                <IconWorldWww size={48} style={{ color: 'var(--mantine-color-green-6)' }} />
+                <IconWorldWww size={48} color="green" />
                 <Title order={3} ta="center">Open Access</Title>
                 <Text size="sm" c="dimmed" ta="center">
                   Track open access policies and publication accessibility
@@ -249,7 +246,7 @@ function SourcesOverviewPage() {
           <Grid.Col span={{ base: 12, md: 6, lg: 3 }}>
             <Paper p="lg" withBorder radius="md" h="100%">
               <Stack gap="md" align="center" h="100%" justify="center">
-                <IconAward size={48} style={{ color: 'var(--mantine-color-violet-6)' }} />
+                <IconAward size={48} color="violet" />
                 <Title order={3} ta="center">Prestige Rankings</Title>
                 <Text size="sm" c="dimmed" ta="center">
                   Compare journal rankings and venue reputation across fields

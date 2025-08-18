@@ -1,7 +1,31 @@
+import { 
+  Card, 
+  Text, 
+  Title, 
+  Grid, 
+  Stack, 
+  Paper,
+  Group,
+  Badge,
+  Button,
+  Alert
+} from '@mantine/core';
+import { 
+  IconBrain, 
+  IconClock, 
+  IconEye,
+  IconInfoCircle,
+  IconSearch
+} from '@tabler/icons-react';
 import { createFileRoute } from '@tanstack/react-router';
+import { Link } from '@tanstack/react-router';
+import { useMemo } from 'react';
 
-import { TwoPaneLayout } from '@/components/templates/two-pane-layout';
+import { EntityLink, EntityBrowser } from '@/components';
 import { EntityGraphVisualization } from '@/components/organisms/entity-graph-visualization';
+import { TwoPaneLayout } from '@/components/templates/two-pane-layout';
+import { EntityType } from '@/lib/openalex/utils/entity-detection';
+import { useEntityGraphStore } from '@/stores/entity-graph-store';
 
 function ConceptsLayout() {
   return (
@@ -24,32 +48,6 @@ function ConceptsLayout() {
   );
 }
 
-// Import the content from concepts.index.tsx
-import { 
-  Card, 
-  Text, 
-  Title, 
-  Grid, 
-  Stack, 
-  Paper,
-  Group,
-  Badge,
-  Button,
-  Alert
-} from '@mantine/core';
-import { 
-  IconBrain, 
-  IconClock, 
-  IconEye,
-  IconInfoCircle,
-  IconSearch
-} from '@tabler/icons-react';
-import { Link } from '@tanstack/react-router';
-import { useMemo } from 'react';
-
-import { EntityLink, EntityBrowser } from '@/components';
-import { EntityType } from '@/lib/openalex/utils/entity-detection';
-import { useEntityGraphStore } from '@/stores/entity-graph-store';
 
 function ConceptsOverviewPage() {
   const { graph } = useEntityGraphStore();
@@ -103,7 +101,7 @@ function ConceptsOverviewPage() {
           <Grid.Col span={{ base: 12, md: 3 }}>
             <Paper p="lg" withBorder radius="md">
               <Stack gap="xs" align="center">
-                <IconEye size={32} style={{ color: 'var(--mantine-color-blue-6)' }} />
+                <IconEye size={32} color="blue" />
                 <Text size="xl" fw={700} c="blue">
                   {directlyVisitedConcepts.length}
                 </Text>
@@ -117,7 +115,7 @@ function ConceptsOverviewPage() {
           <Grid.Col span={{ base: 12, md: 3 }}>
             <Paper p="lg" withBorder radius="md">
               <Stack gap="xs" align="center">
-                <IconSearch size={32} style={{ color: 'var(--mantine-color-green-6)' }} />
+                <IconSearch size={32} color="green" />
                 <Text size="xl" fw={700} c="green">
                   {searchResultConcepts.length}
                 </Text>
@@ -131,7 +129,7 @@ function ConceptsOverviewPage() {
           <Grid.Col span={{ base: 12, md: 3 }}>
             <Paper p="lg" withBorder radius="md">
               <Stack gap="xs" align="center">
-                <IconBrain size={32} style={{ color: 'var(--mantine-color-orange-6)' }} />
+                <IconBrain size={32} color="orange" />
                 <Text size="xl" fw={700} c="orange">
                   {relatedEntityConcepts.length}
                 </Text>
@@ -145,7 +143,7 @@ function ConceptsOverviewPage() {
           <Grid.Col span={{ base: 12, md: 3 }}>
             <Paper p="lg" withBorder radius="md">
               <Stack gap="xs" align="center">
-                <IconClock size={32} style={{ color: 'var(--mantine-color-violet-6)' }} />
+                <IconClock size={32} color="violet" />
                 <Text size="xl" fw={700} c="violet">
                   {browsedConcepts.reduce((sum, vertex) => sum + (vertex.encounterStats?.totalEncounters || vertex.visitCount), 0)}
                 </Text>
