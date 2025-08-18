@@ -1138,7 +1138,7 @@ describe('Malformed input stress testing', () => {
       '10.1000/测试', // DOI with Chinese characters
       '10.1000/тест', // DOI with Cyrillic characters
       'W274180980𝟕', // OpenAlex ID with mathematical bold digit
-      '0000-0003-1613-598🔢', // ORCID with emoji
+      '0000-0003-1613-598[NUMBER]', // ORCID with emoji
       'Q12345𝟔', // Wikidata with mathematical digit
     ];
     

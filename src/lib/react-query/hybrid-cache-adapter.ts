@@ -2,7 +2,7 @@
  * Hybrid Cache Adapter - Bridges React Query with existing sophisticated cache system
  * 
  * This adapter allows React Query to leverage our existing:
- * - Multi-tier caching (Memory → IndexedDB → localStorage → API)
+ * - Multi-tier caching (Memory -> IndexedDB -> localStorage -> API)
  * - Entity-specific TTL strategies
  * - Publication year-based cache optimization
  * - Request deduplication

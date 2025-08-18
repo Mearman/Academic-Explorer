@@ -193,7 +193,7 @@ export class CacheManager {
     return freedSpace >= spaceNeeded;
   }
 
-  // Get from cache using optimal hierarchy: Memory → localStorage → IndexedDB
+  // Get from cache using optimal hierarchy: Memory -> localStorage -> IndexedDB
   async get<T>(endpoint: string, params: Record<string, unknown> = {}): Promise<T | null> {
     const key = this.getCacheKey(endpoint, params);
     

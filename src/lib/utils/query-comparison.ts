@@ -209,15 +209,15 @@ export function describeQueryChange(
       const previousNav = getNavigationParams(previousParams);
       
       if (currentNav.page !== previousNav.page) {
-        changes.push(`Page ${previousNav.page || 1} → ${currentNav.page || 1}`);
+        changes.push(`Page ${previousNav.page || 1} -> ${currentNav.page || 1}`);
       }
       
       if (currentNav.per_page !== previousNav.per_page) {
-        changes.push(`Per page ${previousNav.per_page || 25} → ${currentNav.per_page || 25}`);
+        changes.push(`Per page ${previousNav.per_page || 25} -> ${currentNav.per_page || 25}`);
       }
       
       if (currentNav.sort !== previousNav.sort) {
-        changes.push(`Sort: ${previousNav.sort || 'default'} → ${currentNav.sort || 'default'}`);
+        changes.push(`Sort: ${previousNav.sort || 'default'} -> ${currentNav.sort || 'default'}`);
       }
       
       return changes.join(', ');

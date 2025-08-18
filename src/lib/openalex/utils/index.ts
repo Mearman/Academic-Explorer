@@ -3,3 +3,7 @@ export * from './pagination';
 export * from './transformers';
 export * from './cache';
 export * from './entity-detection';
+export * from './convenience-methods';
+export * from './export';
+export * from './citation-network';
+export * from './topic-hierarchy';

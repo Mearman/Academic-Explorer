@@ -5,11 +5,11 @@
  * - Mock setTimeout/clearTimeout for instant timeout test execution (eliminates 3+ second waits)
  * - Mock retry delays to execute immediately instead of real exponential backoff delays  
  * - Use MSW handlers that return errors instantly without delays
- * - Overall test performance: ~13.85s → ~1.13s (88% improvement)
+ * - Overall test performance: ~13.85s -> ~1.13s (88% improvement)
  * 
  * Key optimizations applied to:
- * - Timeout tests: 3000ms+ → <3ms each
- * - Network error tests with retries: 3000ms+ → ~30ms each  
+ * - Timeout tests: 3000ms+ -> <3ms each
+ * - Network error tests with retries: 3000ms+ -> ~30ms each  
  * - Rate limit retry tests: instant execution with mocked delays
  */
 

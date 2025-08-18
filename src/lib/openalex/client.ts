@@ -36,17 +36,61 @@ import type {
   ErrorResponse,
 } from './types';
 
+/**
+ * Configuration options for the OpenAlex API client
+ */
 export interface OpenAlexConfig {
+  /** Base URL for the OpenAlex API (default: https://api.openalex.org) */
   apiUrl?: string;
+  /** Email address for the polite pool (recommended for better rate limits) */
   mailto?: string;
+  /** API key for premium access (optional) */
   apiKey?: string;
+  /** Maximum number of retry attempts for failed requests (default: 3) */
   maxRetries?: number;
+  /** Base delay in milliseconds between retries (default: 1000) */
   retryDelay?: number;
+  /** Request timeout in milliseconds (default: 30000) */
   timeout?: number;
+  /** User agent string for API requests */
   userAgent?: string;
-  polite?: boolean; // Use polite pool (slower but more reliable)
+  /** Use polite pool for better reliability (default: true) */
+  polite?: boolean;
 }
 
+/**
+ * OpenAlex API Client
+ * 
+ * A comprehensive TypeScript client for the OpenAlex API that provides access to
+ * scholarly data including works, authors, sources, institutions, and more.
+ * 
+ * @example
+ * ```typescript
+ * // Basic usage
+ * const client = new OpenAlexClient({
+ *   mailto: 'your-email@example.com', // Join the polite pool
+ *   apiKey: 'your-api-key' // Optional premium access
+ * });
+ * 
+ * // Get a single work
+ * const work = await client.work('W2741809807');
+ * 
+ * // Search for works
+ * const results = await client.works({
+ *   search: 'machine learning',
+ *   filter: 'publication_year:2023',
+ *   sort: 'cited_by_count:desc',
+ *   per_page: 25
+ * });
+ * 
+ * // Group works by open access status
+ * const grouped = await client.worksGroupBy({
+ *   group_by: 'is_oa'
+ * });
+ * ```
+ * 
+ * @see https://docs.openalex.org/
+ */
 export class OpenAlexClient {
   private config: Required<OpenAlexConfig>;
   private abortControllers: Map<string, AbortController> = new Map();
@@ -441,6 +485,13 @@ export class OpenAlexClient {
   }
 
   // Batch operations
+  /**
+   * Fetch multiple works by their IDs in a single request
+   * @param ids Array of work IDs (OpenAlex IDs, DOIs, PMIDs, etc.)
+   * @returns Array of Work objects
+   * @example
+   * const works = await client.worksBatch(['W2741809807', '10.1038/nature12373']);
+   */
   public async worksBatch(ids: string[]): Promise<Work[]> {
     if (ids.length === 0) {
       return [];
@@ -451,6 +502,11 @@ export class OpenAlexClient {
     return response.results;
   }
 
+  /**
+   * Fetch multiple authors by their IDs in a single request
+   * @param ids Array of author IDs (OpenAlex IDs or ORCIDs)
+   * @returns Array of Author objects
+   */
   public async authorsBatch(ids: string[]): Promise<Author[]> {
     if (ids.length === 0) {
       return [];
@@ -458,6 +514,96 @@ export class OpenAlexClient {
     const normalizedIds = ids.map(id => this.normaliseId(id));
     const filter = `openalex_id:${normalizedIds.join('|')}`;
     const response = await this.authors({ filter, per_page: ids.length });
+    return response.results;
+  }
+
+  /**
+   * Fetch multiple sources by their IDs in a single request
+   * @param ids Array of source IDs (OpenAlex IDs or ISSNs)
+   * @returns Array of Source objects
+   */
+  public async sourcesBatch(ids: string[]): Promise<Source[]> {
+    if (ids.length === 0) {
+      return [];
+    }
+    const normalizedIds = ids.map(id => this.normaliseId(id));
+    const filter = `openalex_id:${normalizedIds.join('|')}`;
+    const response = await this.sources({ filter, per_page: ids.length });
+    return response.results;
+  }
+
+  /**
+   * Fetch multiple institutions by their IDs in a single request
+   * @param ids Array of institution IDs (OpenAlex IDs or ROR IDs)
+   * @returns Array of Institution objects
+   */
+  public async institutionsBatch(ids: string[]): Promise<Institution[]> {
+    if (ids.length === 0) {
+      return [];
+    }
+    const normalizedIds = ids.map(id => this.normaliseId(id));
+    const filter = `openalex_id:${normalizedIds.join('|')}`;
+    const response = await this.institutions({ filter, per_page: ids.length });
+    return response.results;
+  }
+
+  /**
+   * Fetch multiple publishers by their IDs in a single request
+   * @param ids Array of publisher IDs
+   * @returns Array of Publisher objects
+   */
+  public async publishersBatch(ids: string[]): Promise<Publisher[]> {
+    if (ids.length === 0) {
+      return [];
+    }
+    const normalizedIds = ids.map(id => this.normaliseId(id));
+    const filter = `openalex_id:${normalizedIds.join('|')}`;
+    const response = await this.publishers({ filter, per_page: ids.length });
+    return response.results;
+  }
+
+  /**
+   * Fetch multiple funders by their IDs in a single request
+   * @param ids Array of funder IDs
+   * @returns Array of Funder objects
+   */
+  public async fundersBatch(ids: string[]): Promise<Funder[]> {
+    if (ids.length === 0) {
+      return [];
+    }
+    const normalizedIds = ids.map(id => this.normaliseId(id));
+    const filter = `openalex_id:${normalizedIds.join('|')}`;
+    const response = await this.funders({ filter, per_page: ids.length });
+    return response.results;
+  }
+
+  /**
+   * Fetch multiple topics by their IDs in a single request
+   * @param ids Array of topic IDs
+   * @returns Array of Topic objects
+   */
+  public async topicsBatch(ids: string[]): Promise<Topic[]> {
+    if (ids.length === 0) {
+      return [];
+    }
+    const normalizedIds = ids.map(id => this.normaliseId(id));
+    const filter = `openalex_id:${normalizedIds.join('|')}`;
+    const response = await this.topics({ filter, per_page: ids.length });
+    return response.results;
+  }
+
+  /**
+   * Fetch multiple concepts by their IDs in a single request
+   * @param ids Array of concept IDs (OpenAlex IDs or Wikidata IDs)
+   * @returns Array of Concept objects
+   */
+  public async conceptsBatch(ids: string[]): Promise<Concept[]> {
+    if (ids.length === 0) {
+      return [];
+    }
+    const normalizedIds = ids.map(id => this.normaliseId(id));
+    const filter = `openalex_id:${normalizedIds.join('|')}`;
+    const response = await this.concepts({ filter, per_page: ids.length });
     return response.results;
   }
 
