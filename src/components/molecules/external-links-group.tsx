@@ -1,14 +1,12 @@
-'use client';
-
+import { Group, Stack, Text, Badge, SimpleGrid, Card } from '@mantine/core';
 import { forwardRef } from 'react';
+
 
 import type { ExternalIds } from '@/lib/openalex/types';
 
 import { ExternalLink } from '../atoms/external-link';
 import { Icon } from '../atoms/icon';
 import type { ExternalLinksGroupProps, ExternalLinkProps } from '../types';
-
-import * as styles from './external-links-group.css';
 
 interface ProcessedLink {
   type: ExternalLinkProps['type'];
@@ -77,15 +75,20 @@ function renderEmptyState(
   props: React.HTMLAttributes<HTMLDivElement>
 ) {
   return (
-    <div
+    <Card
       ref={ref}
-      className={`${styles.emptyState} ${className || ''}`}
+      className={className}
       data-testid={testId}
+      withBorder
+      style={{ borderStyle: 'dashed' }}
+      p="xl"
       {...props}
     >
-      <Icon name="info" size="sm" aria-hidden="true" />
-      <span>No external links available</span>
-    </div>
+      <Group justify="center" gap="sm">
+        <Icon name="info" size="sm" aria-hidden="true" />
+        <Text size="sm" c="dimmed" fs="italic">No external links available</Text>
+      </Group>
+    </Card>
   );
 }
 
@@ -102,26 +105,35 @@ function renderGroupedLayout(
   const groupedLinks = groupLinksByCategory(processedLinks);
   
   return (
-    <div
+    <Stack
       ref={ref}
-      className={`${styles.groupContainer} ${className || ''}`}
+      className={className}
       data-testid={testId}
+      gap="md"
       {...props}
     >
       {Object.entries(groupedLinks).map(([category, links]) => (
-        <div key={category} className={styles.typeGroupStyle}>
-          <h4 className={styles.typeHeaderStyle}>
-            {category.charAt(0).toUpperCase() + category.slice(1)}
-            <span className={styles.countBadge}>
+        <Stack key={category} gap="sm">
+          <Group gap="sm">
+            <Text size="sm" fw="600" c="dimmed" tt="uppercase" style={{ letterSpacing: '0.05em' }}>
+              {category.charAt(0).toUpperCase() + category.slice(1)}
+            </Text>
+            <Badge size="xs" color="blue" circle>
               {links.length}
-            </span>
-          </h4>
-          <div className={`${styles.base} ${styles.layoutVariants[layout]}`}>
-            {links.map((link, index) => renderLinkItem(link, index, showLabels))}
-          </div>
-        </div>
+            </Badge>
+          </Group>
+          {layout === 'grid' ? (
+            <SimpleGrid cols={{ base: 1, sm: 2, md: 3 }} spacing="md">
+              {links.map((link, index) => renderLinkItem(link, index, showLabels))}
+            </SimpleGrid>
+          ) : (
+            <Stack gap="sm">
+              {links.map((link, index) => renderLinkItem(link, index, showLabels))}
+            </Stack>
+          )}
+        </Stack>
       ))}
-    </div>
+    </Stack>
   );
 }
 
@@ -135,21 +147,18 @@ function renderHorizontalLayout(
   testId: string | undefined,
   props: React.HTMLAttributes<HTMLDivElement>
 ) {
-  const baseClasses = [
-    styles.base,
-    styles.layoutVariants[layout],
-    className,
-  ].filter(Boolean).join(' ');
-
   return (
-    <div
+    <Group
       ref={ref}
-      className={baseClasses}
+      className={className}
       data-testid={testId}
+      gap="md"
+      align="center"
+      wrap="wrap"
       {...props}
     >
       {processedLinks.map((link, index) => renderLinkItem(link, index, showLabels))}
-    </div>
+    </Group>
   );
 }
 
@@ -217,9 +226,12 @@ function renderLinkItem(link: ProcessedLink, index: number, showLabels: boolean)
       key={`${link.type}-${index}`}
       href={link.href}
       type={link.type}
-      className={`${styles.linkItem} ${!showLabels ? styles.linkItemCompact : ''}`}
       showIcon={true}
       external={true}
+      style={{
+        padding: showLabels ? undefined : 'var(--mantine-spacing-xs) var(--mantine-spacing-sm)',
+        fontSize: showLabels ? undefined : 'var(--mantine-font-size-sm)',
+      }}
     >
       {showLabels ? link.label : undefined}
     </ExternalLink>

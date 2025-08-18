@@ -1,15 +1,9 @@
-'use client';
-
+import { Card, Group, Stack, Text, Badge, Skeleton } from '@mantine/core';
 import React, { forwardRef } from 'react';
 
-import { mapSizeVariant } from '@/lib/metric-formatting';
 import type { MetricFormat, TrendDirection } from '@/lib/metric-formatting';
 
 import type { SizeVariant } from '../types';
-
-import { LoadingState } from './metric-display/loading-state';
-import { MetricContent } from './metric-display/metric-content';
-import * as styles from './metric-display.css';
 
 export interface MetricDisplayProps extends Omit<React.HTMLAttributes<HTMLDivElement>, 'className'> {
   label: string;
@@ -33,43 +27,36 @@ export interface MetricDisplayProps extends Omit<React.HTMLAttributes<HTMLDivEle
   'data-testid'?: string;
 }
 
-// Handle interaction events
-function createEventHandlers(clickable: boolean, onClick?: () => void) {
-  const handleClick = () => {
-    if (clickable && onClick) {
-      onClick();
-    }
-  };
-
-  const handleKeyDown = (event: React.KeyboardEvent) => {
-    if (clickable && (event.key === 'Enter' || event.key === ' ')) {
-      event.preventDefault();
-      onClick?.();
-    }
-  };
-
-  return { handleClick, handleKeyDown };
+// Simple metric value formatter
+function formatMetricValue(value: number | string, format: MetricFormat): string {
+  if (typeof value === 'string') return value;
+  
+  switch (format) {
+    case 'percentage':
+      return `${value}%`;
+    case 'currency':
+      return `$${value.toLocaleString()}`;
+    case 'compact':
+      if (value >= 1e9) return `${(value / 1e9).toFixed(1)}B`;
+      if (value >= 1e6) return `${(value / 1e6).toFixed(1)}M`;
+      if (value >= 1e3) return `${(value / 1e3).toFixed(1)}K`;
+      return value.toString();
+    default:
+      return value.toLocaleString();
+  }
 }
 
-// Build CSS classes
-function buildCssClasses(
-  layout: 'horizontal' | 'vertical' | 'compact',
-  size: SizeVariant,
-  variant: 'default' | 'highlighted' | 'muted',
-  clickable: boolean,
-  loading: boolean,
-  className?: string
-): string {
-  return [
-    styles.base,
-    styles.layoutVariants[layout],
-    styles.sizeVariants[mapSizeVariant(size)],
-    styles.variantStyles[variant],
-    clickable && styles.clickableStyle,
-    loading && styles.loadingStyle,
-    className,
-  ].filter(Boolean).join(' ');
-}
+const TREND_SYMBOLS = {
+  up: '↗',
+  down: '↘',
+  neutral: '→',
+} as const;
+
+const VARIANT_COLORS = {
+  default: 'gray',
+  highlighted: 'blue',
+  muted: 'gray',
+} as const;
 
 export const MetricDisplay = forwardRef<HTMLDivElement, MetricDisplayProps>(
   ({ 
@@ -90,47 +77,112 @@ export const MetricDisplay = forwardRef<HTMLDivElement, MetricDisplayProps>(
     'data-testid': testId,
     ...props 
   }, ref) => {
-    const { handleClick, handleKeyDown } = createEventHandlers(clickable, onClick);
-    const baseClasses = buildCssClasses(layout, size, variant, clickable, loading, className);
+    const formattedValue = formatMetricValue(value, format);
+    const trendSymbol = trend ? TREND_SYMBOLS[trend.direction] : null;
+    const color = VARIANT_COLORS[variant];
 
     if (loading) {
       return (
-        <LoadingState
+        <Card
           ref={ref}
-          icon={icon}
-          layout={layout}
-          description={description}
-          className={baseClasses}
+          className={className}
           data-testid={testId}
+          withBorder
+          padding={size}
           {...props}
-        />
+        >
+          <Stack gap="xs">
+            <Skeleton height="1rem" width="60%" />
+            <Skeleton height="2rem" width="80%" />
+            {description && <Skeleton height="0.875rem" width="100%" />}
+          </Stack>
+        </Card>
       );
     }
 
+    const CardComponent = clickable ? Card : Card;
+    const cardProps = clickable ? {
+      onClick,
+      style: { cursor: 'pointer' },
+      onKeyDown: (e: React.KeyboardEvent) => {
+        if ((e.key === 'Enter' || e.key === ' ') && onClick) {
+          e.preventDefault();
+          onClick();
+        }
+      },
+      tabIndex: 0,
+      role: 'button',
+      'aria-label': `${label}: ${formattedValue}`,
+    } : {};
+
     return (
-      <div
+      <CardComponent
         ref={ref}
-        className={baseClasses}
-        onClick={handleClick}
-        onKeyDown={handleKeyDown}
-        tabIndex={clickable ? 0 : undefined}
-        role={clickable ? 'button' : undefined}
-        aria-label={clickable ? `${label}: ${value}` : undefined}
+        className={className}
         data-testid={testId}
+        withBorder
+        padding={size}
+        style={{
+          backgroundColor: variant === 'highlighted' ? 'var(--mantine-color-blue-0)' : undefined,
+          opacity: variant === 'muted' ? 0.8 : undefined,
+          ...cardProps.style,
+        }}
+        {...cardProps}
         {...props}
       >
-        <MetricContent
-          label={label}
-          value={value}
-          format={format}
-          icon={icon}
-          layout={layout}
-          size={size}
-          description={description}
-          trend={trend}
-          accessories={accessories}
-        />
-      </div>
+        {layout === 'vertical' ? (
+          <Stack align="center" gap="xs">
+            {icon && <Text size="lg">{icon}</Text>}
+            <Text size="sm" c="dimmed" ta="center">{label}</Text>
+            <Group gap="xs" justify="center">
+              <Text size="xl" fw="bold" c={color}>
+                {formattedValue}
+              </Text>
+              {trend && (
+                <Badge size="sm" color={trend.direction === 'up' ? 'green' : trend.direction === 'down' ? 'red' : 'gray'}>
+                  {trendSymbol} {trend.value && formatMetricValue(trend.value, format)}
+                </Badge>
+              )}
+            </Group>
+            {description && <Text size="xs" c="dimmed" ta="center">{description}</Text>}
+            {accessories}
+          </Stack>
+        ) : layout === 'compact' ? (
+          <Group gap="xs" justify="space-between">
+            <Group gap="xs">
+              {icon && <Text size="sm">{icon}</Text>}
+              <Text size="sm" c="dimmed">{label}</Text>
+            </Group>
+            <Group gap="xs">
+              <Text size="md" fw="bold" c={color}>{formattedValue}</Text>
+              {trend && <Text size="xs">{trendSymbol}</Text>}
+            </Group>
+          </Group>
+        ) : (
+          <Stack gap="xs">
+            <Group justify="space-between" align="flex-start">
+              <Group gap="sm">
+                {icon && <Text size="lg">{icon}</Text>}
+                <Stack gap="xs">
+                  <Text size="sm" c="dimmed">{label}</Text>
+                  <Group gap="xs">
+                    <Text size="xl" fw="bold" c={color}>
+                      {formattedValue}
+                    </Text>
+                    {trend && (
+                      <Badge size="sm" color={trend.direction === 'up' ? 'green' : trend.direction === 'down' ? 'red' : 'gray'}>
+                        {trendSymbol} {trend.value && formatMetricValue(trend.value, format)}
+                      </Badge>
+                    )}
+                  </Group>
+                </Stack>
+              </Group>
+              {accessories}
+            </Group>
+            {description && <Text size="xs" c="dimmed">{description}</Text>}
+          </Stack>
+        )}
+      </CardComponent>
     );
   }
 );

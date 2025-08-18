@@ -1,6 +1,6 @@
-import { Icon } from '../atoms/icon';
+import { Group, Title } from '@mantine/core';
 
-import * as styles from './entity-section-header.css';
+import { Icon } from '../atoms/icon';
 
 interface EntitySectionHeaderProps {
   title: string;
@@ -10,16 +10,18 @@ interface EntitySectionHeaderProps {
 
 export function EntitySectionHeader({ title, icon, actions }: EntitySectionHeaderProps) {
   return (
-    <div className={styles.sectionHeader}>
-      <h2 className={styles.sectionTitle}>
-        {icon && <Icon name={icon} size="md" aria-hidden="true" />}
-        {title}
-      </h2>
+    <Group justify="space-between" align="center" mb="md">
+      <Title order={2} size="h3">
+        <Group gap="sm" align="center">
+          {icon && <Icon name={icon} size="md" aria-hidden="true" />}
+          {title}
+        </Group>
+      </Title>
       {actions && (
-        <div className={styles.sectionActions}>
+        <Group gap="sm">
           {actions}
-        </div>
+        </Group>
       )}
-    </div>
+    </Group>
   );
 }

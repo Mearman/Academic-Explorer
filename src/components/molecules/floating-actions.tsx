@@ -1,8 +1,7 @@
+import { ActionIcon, Affix, Transition } from '@mantine/core';
 import { useState, useEffect } from 'react';
 
 import { Icon } from '../atoms/icon';
-
-import * as styles from './floating-actions.css';
 
 export function FloatingActions() {
   const [showBackToTop, setShowBackToTop] = useState(false);
@@ -22,17 +21,22 @@ export function FloatingActions() {
   };
 
   return (
-    <div className={styles.floatingActions}>
-      {showBackToTop && (
-        <button
-          className={styles.backToTop}
-          onClick={scrollToTop}
-          aria-label="Back to top"
-          title="Back to top"
-        >
-          <Icon name="up" size="md" aria-hidden="true" />
-        </button>
-      )}
-    </div>
+    <Affix position={{ bottom: 20, right: 20 }}>
+      <Transition transition="slide-up" mounted={showBackToTop}>
+        {(transitionStyles) => (
+          <ActionIcon
+            style={transitionStyles}
+            onClick={scrollToTop}
+            aria-label="Back to top"
+            title="Back to top"
+            size="lg"
+            color="blue"
+            variant="filled"
+          >
+            <Icon name="up" size="md" aria-hidden="true" />
+          </ActionIcon>
+        )}
+      </Transition>
+    </Affix>
   );
 }

@@ -1,5 +1,4 @@
-'use client';
-
+import { Stack, Text, Button, Group, TextInput, Box } from '@mantine/core';
 import { useRouter } from '@tanstack/react-router';
 import { useState } from 'react';
 
@@ -7,7 +6,6 @@ import { useAppStore } from '@/stores/app-store';
 
 import { AutocompleteSearch } from './autocomplete-search';
 import type { AutocompleteSuggestion } from './autocomplete-search';
-import * as styles from './search-bar.css';
 
 interface SearchBarProps {
   showAutocomplete?: boolean;
@@ -40,18 +38,21 @@ function renderAutocompleteVariant(
   className?: string
 ) {
   return (
-    <div className={`${styles.container} ${className || ''}`}>
-      <AutocompleteSearch
-        placeholder="Search authors, works, institutions..."
-        onSelect={onSelect}
-        className={styles.autocomplete}
-        showEntityBadges={true}
-        maxSuggestions={6}
-      />
-      <div className={styles.searchHint}>
-        Try searching for authors, papers, institutions, or topics
-      </div>
-    </div>
+    <Box maw={600} mx="auto" mb="xl" className={className}>
+      <Stack align="center" gap="md">
+        <Box style={{ width: '100%' }}>
+          <AutocompleteSearch
+            placeholder="Search authors, works, institutions..."
+            onSelect={onSelect}
+            showEntityBadges={true}
+            maxSuggestions={6}
+          />
+        </Box>
+        <Text size="sm" c="dimmed" ta="center" fs="italic">
+          Try searching for authors, papers, institutions, or topics
+        </Text>
+      </Stack>
+    </Box>
   );
 }
 
@@ -63,19 +64,28 @@ function renderTraditionalForm(
   className?: string
 ) {
   return (
-    <form onSubmit={onSubmit} className={`${styles.form} ${className || ''}`}>
-      <input
-        type="text"
-        value={localQuery}
-        onChange={(e) => setLocalQuery(e.target.value)}
-        placeholder="Search academic literature"
-        className={styles.input}
-        aria-label="Search"
-      />
-      <button type="submit" className={styles.button}>
-        Search
-      </button>
-    </form>
+    <Box maw={600} mx="auto" mb="xl" className={className}>
+      <form onSubmit={onSubmit}>
+        <Group gap="md" style={{ flexDirection: 'row', '@media (max-width: 640px)': { flexDirection: 'column' } }}>
+          <TextInput
+            flex={1}
+            value={localQuery}
+            onChange={(e) => setLocalQuery(e.target.value)}
+            placeholder="Search academic literature"
+            aria-label="Search"
+            size="lg"
+          />
+          <Button 
+            type="submit" 
+            size="lg" 
+            color="blue"
+            style={{ whiteSpace: 'nowrap' }}
+          >
+            Search
+          </Button>
+        </Group>
+      </form>
+    </Box>
   );
 }
 
