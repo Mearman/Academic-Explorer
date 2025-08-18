@@ -4,6 +4,7 @@
  */
 
 import { CacheManager } from './cache';
+import { RequestManager } from './request-manager';
 // import { db } from '@/lib/db'; // Currently unused
 
 export interface CacheStrategy {
@@ -51,6 +52,7 @@ export const defaultStrategies: Record<string, CacheStrategy> = {
 
 export class CacheInterceptor {
   private cache: CacheManager;
+  private requestManager: RequestManager;
   private strategies: Map<RegExp, CacheStrategy> = new Map();
   private stats = {
     hits: 0,
@@ -66,6 +68,11 @@ export class CacheInterceptor {
     useIndexedDB?: boolean;
     localStorageLimit?: number;
     strategies?: Array<{ pattern: RegExp; strategy: CacheStrategy }>;
+    enableRequestDeduplication?: boolean;
+    requestDeduplicationOptions?: {
+      maxConcurrentRequests?: number;
+      requestTimeout?: number;
+    };
   } = {}) {
     this.cache = new CacheManager({
       ttl: options.ttl || 60 * 60 * 1000,
@@ -74,6 +81,13 @@ export class CacheInterceptor {
       useIndexedDB: options.useIndexedDB !== false,
       localStorageLimit: options.localStorageLimit || 5 * 1024 * 1024, // 5MB default
       namespace: 'openalex-interceptor',
+    });
+
+    // Initialize request manager for deduplication
+    this.requestManager = new RequestManager({
+      maxConcurrentRequests: options.requestDeduplicationOptions?.maxConcurrentRequests || 50,
+      requestTimeout: options.requestDeduplicationOptions?.requestTimeout || 30000,
+      enableMetrics: true,
     });
 
     // Set up default strategies
@@ -100,8 +114,11 @@ export class CacheInterceptor {
   }
 
   // Get the appropriate strategy for an endpoint
+  // Check strategies in reverse order so custom strategies override defaults
   private getStrategy(endpoint: string): CacheStrategy | null {
-    for (const [pattern, strategy] of this.strategies) {
+    const strategies = Array.from(this.strategies.entries());
+    for (let i = strategies.length - 1; i >= 0; i--) {
+      const [pattern, strategy] = strategies[i];
       if (pattern.test(endpoint)) {
         return strategy;
       }
@@ -109,7 +126,7 @@ export class CacheInterceptor {
     return null;
   }
 
-  // Intercept a request and add caching
+  // Intercept a request and add caching with request deduplication
   async intercept<T>(
     endpoint: string,
     params: unknown,
@@ -117,44 +134,48 @@ export class CacheInterceptor {
   ): Promise<T> {
     const strategy = this.getStrategy(endpoint);
     
-    // If no strategy or shouldn't cache, just execute the request
+    // If no strategy or shouldn't cache, just execute the request without deduplication
     if (!strategy || !strategy.shouldCache(endpoint, params)) {
       this.stats.skipped++;
+      // Don't use deduplication for non-cacheable requests (e.g., random endpoints)
       return requestFn();
     }
 
     const cacheKey = strategy.getCacheKey(endpoint, params);
     
-    try {
-      // Try to get from cache
-      const cached = await this.cache.get<T>(
-        cacheKey,
-        (params as Record<string, unknown>) || {}
-      );
-      
-      if (cached !== null) {
-        this.stats.hits++;
-        console.debug(`Cache hit: ${cacheKey}`);
-        return cached;
+    // Use request deduplication for the entire cache check + fetch operation
+    return this.requestManager.deduplicate(cacheKey, async () => {
+      try {
+        // Try to get from cache
+        const cached = await this.cache.get<T>(
+          cacheKey,
+          (params as Record<string, unknown>) || {}
+        );
+        
+        if (cached !== null) {
+          this.stats.hits++;
+          console.debug(`Cache hit: ${cacheKey}`);
+          return cached;
+        }
+      } catch (error) {
+        console.error('Cache read error:', error);
+        this.stats.errors++;
       }
-    } catch (error) {
-      console.error('Cache read error:', error);
-      this.stats.errors++;
-    }
 
-    // Cache miss - make the request
-    this.stats.misses++;
-    const result = await requestFn();
-    
-    // Store in cache
-    try {
-      await this.storeInCache(cacheKey, params, result, strategy.getCacheTTL(endpoint, params));
-    } catch (error) {
-      console.error('Cache write error:', error);
-      this.stats.errors++;
-    }
-    
-    return result;
+      // Cache miss - make the request
+      this.stats.misses++;
+      const result = await requestFn();
+      
+      // Store in cache
+      try {
+        await this.storeInCache(cacheKey, params, result, strategy.getCacheTTL(endpoint, params));
+      } catch (error) {
+        console.error('Cache write error:', error);
+        this.stats.errors++;
+      }
+      
+      return result;
+    });
   }
 
   // Store result in cache
@@ -196,13 +217,15 @@ export class CacheInterceptor {
     }
   }
 
-  // Get cache statistics
+  // Get cache statistics including request deduplication metrics
   getStats() {
     const cacheStats = this.cache.getStats();
+    const requestStats = this.requestManager.getStats();
     return {
       ...this.stats,
       hitRate: this.stats.hits / (this.stats.hits + this.stats.misses) || 0,
       cache: cacheStats,
+      deduplication: requestStats,
     };
   }
 
@@ -214,12 +237,31 @@ export class CacheInterceptor {
       skipped: 0,
       errors: 0,
     };
+    this.requestManager.clear(); // This also resets request manager stats
   }
 
-  // Clear all cache
+  // Clear all cache and request deduplication state
   async clear() {
     await this.cache.clear();
     this.resetStats();
+  }
+
+  // Get detailed request deduplication information (for debugging)
+  getDeduplicationInfo() {
+    return {
+      stats: this.requestManager.getStats(),
+      activeRequests: this.requestManager.getActiveRequestsInfo(),
+    };
+  }
+
+  // Cancel all pending requests
+  cancelAllRequests() {
+    this.requestManager.cancelAll();
+  }
+
+  // Clean up stale requests
+  cleanupStaleRequests(maxAgeMs?: number) {
+    return this.requestManager.cleanupStaleRequests(maxAgeMs);
   }
 }
 
