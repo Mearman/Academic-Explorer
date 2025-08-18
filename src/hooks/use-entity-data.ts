@@ -301,7 +301,8 @@ export function useEntityData<T extends EntityData = EntityData>(
     options?.timeout,
     options?.skipCache,
     options?.refetchOnWindowFocus,
-    options?.staleTime
+    options?.staleTime,
+    options
     // Functions excluded from deps to prevent infinite loops
   ]);
   
