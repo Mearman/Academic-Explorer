@@ -1,6 +1,12 @@
 import { create } from 'zustand';
 import { immer } from 'zustand/middleware/immer';
 
+import { 
+  loadEntityGraphFromSimpleStorage, 
+  getSimpleGraphMetadata, 
+  saveEntityToSimpleStorage, 
+  saveEdgeToSimpleStorage 
+} from '@/lib/entity-graph-sync';
 import type {
   EntityGraph,
   EntityGraphVertex,
@@ -23,12 +29,6 @@ import {
   DEFAULT_MAX_HOPS,
   generateEdgeId
 } from '@/types/entity-graph';
-import { 
-  loadEntityGraphFromSimpleStorage, 
-  getSimpleGraphMetadata, 
-  saveEntityToSimpleStorage, 
-  saveEdgeToSimpleStorage 
-} from '@/lib/entity-graph-sync';
 
 interface EntityGraphState {
   // Core graph data

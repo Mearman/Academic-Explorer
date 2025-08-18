@@ -6,9 +6,10 @@
  */
 
 import { openDB, DBSchema, IDBPDatabase } from 'idb';
-import type { SimpleGraph, SimpleEntity, SimpleEdge } from '@/types/entity-graph-storage';
+
 import type { EntityType } from '@/lib/openalex/utils/entity-detection';
 import type { EdgeType } from '@/types/entity-graph';
+import type { SimpleGraph, SimpleEntity, SimpleEdge } from '@/types/entity-graph-storage';
 
 // IndexedDB schema for entity graph storage
 interface EntityGraphDB extends DBSchema {

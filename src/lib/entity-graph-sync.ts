@@ -6,14 +6,14 @@
  */
 
 import type { EntityType } from '@/lib/openalex/utils/entity-detection';
-import type { SimpleGraph, SimpleEntity, SimpleEdge } from '@/types/entity-graph-storage';
 import type {
-  EntityGraph,
   EntityGraphVertex,
   EntityGraphEdge,
   EntityEncounter,
 } from '@/types/entity-graph';
 import { EdgeType, EncounterType } from '@/types/entity-graph';
+import type { SimpleEntity, SimpleEdge } from '@/types/entity-graph-storage';
+
 import { entityGraphStorage } from './entity-graph-storage';
 
 /**

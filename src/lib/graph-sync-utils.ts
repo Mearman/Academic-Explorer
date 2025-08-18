@@ -7,17 +7,16 @@
 
 import type { EntityType } from '@/lib/openalex/utils/entity-detection';
 import type {
-  GraphVertex,
-  GraphEdge,
-} from '@/types/graph-storage';
-import { VertexType, GraphEdgeType } from '@/types/graph-storage';
-import type {
-  EntityGraph,
   EntityGraphVertex,
   EntityGraphEdge,
   EntityEncounter,
 } from '@/types/entity-graph';
 import { EdgeType, EncounterType } from '@/types/entity-graph';
+import type {
+  GraphVertex,
+  GraphEdge,
+} from '@/types/graph-storage';
+import { VertexType, GraphEdgeType } from '@/types/graph-storage';
 
 /**
  * Convert GraphVertex (IndexedDB) to EntityGraphVertex (Zustand store)
