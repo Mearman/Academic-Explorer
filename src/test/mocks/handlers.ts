@@ -21,6 +21,36 @@ export const handlers = [
     const url = new URL(request.url);
     const perPage = url.searchParams.get('per_page');
     const filter = url.searchParams.get('filter');
+    const groupBy = url.searchParams.get('group_by');
+    
+    // Handle group_by requests
+    if (groupBy) {
+      return HttpResponse.json({
+        meta: {
+          count: 3,
+          db_response_time_ms: 25,
+          page: 1,
+          per_page: parseInt(perPage || '25'),
+        },
+        group_by: [
+          {
+            key: '2023',
+            key_display_name: '2023',
+            count: 1500,
+          },
+          {
+            key: '2022',
+            key_display_name: '2022',
+            count: 1200,
+          },
+          {
+            key: '2021',
+            key_display_name: '2021',
+            count: 800,
+          },
+        ],
+      });
+    }
     
     // Handle specific test cases
     if (filter === 'from_publication_date:1800-01-01,to_publication_date:1800-12-31') {
@@ -78,6 +108,39 @@ export const handlers = [
 
   http.get(`${API_BASE}/works/random`, () => {
     return HttpResponse.json(mockWork);
+  }),
+  
+  // Work ngrams endpoint for individual works
+  http.get(`${API_BASE}/works/:id/ngrams`, ({ params, request }) => {
+    const { id } = params;
+    const url = new URL(request.url);
+    const returnType = url.searchParams.get('return_type');
+    
+    // Return error for invalid parameters
+    if (returnType === 'invalid') {
+      return HttpResponse.json(
+        {
+          error: 'Invalid',
+          message: 'Invalid return_type parameter',
+        },
+        { status: 400 }
+      );
+    }
+    
+    return HttpResponse.json([
+      {
+        ngram: 'machine learning',
+        ngram_count: 15,
+        ngram_tokens: 2,
+        term_frequency: 0.045,
+      },
+      {
+        ngram: 'neural networks',
+        ngram_count: 12,
+        ngram_tokens: 2,
+        term_frequency: 0.036,
+      },
+    ]);
   }),
 
   // Work ngrams endpoint

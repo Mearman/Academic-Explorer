@@ -15,6 +15,7 @@
 
 // @ts-nocheck
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
+import { http } from 'msw';
 import { OpenAlexClient, OpenAlexError } from './client';
 import { server } from '@/test/setup';
 import { errorHandlers, handlers } from '@/test/mocks/handlers';
@@ -960,11 +961,9 @@ describe('OpenAlexClient', () => {
 
     it('should handle empty response bodies', async () => {
       server.use(
-        handlers.filter(h => h.info?.real).find(h => 
-          h.info?.path === '/works'
-        )?.respondWith((req) => 
-          new Response('', { status: 200 })
-        ) || handlers[0]
+        http.get('https://api.openalex.org/works', () => {
+          return new Response('', { status: 200 });
+        })
       );
 
       await expect(client.works()).rejects.toThrow();
