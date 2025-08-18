@@ -387,7 +387,7 @@ export function useEntityData<T extends EntityData = EntityData>(
           loading: false,
           error: entityError,
           state: EntityLoadingState.ERROR,
-          retryCount: 1
+          retryCount: 0  // Start at 0 - this represents retry attempts, not total attempts
         }));
 
         opts.onError(entityError);
