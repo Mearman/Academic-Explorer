@@ -191,7 +191,7 @@ export function TwoPaneLayout({
         </div>
 
         {/* Divider - only visible on desktop */}
-        {!leftPaneCollapsed && !rightPaneCollapsed && (
+        <div className={styles.dividerContainer}>
           <PaneDivider
             onDrag={handleDrag}
             onDragStart={startDragging}
@@ -204,7 +204,7 @@ export function TwoPaneLayout({
             rightCollapsible={rightCollapsible}
             containerRef={containerRef}
           />
-        )}
+        </div>
 
         {/* Right pane */}
         <div
