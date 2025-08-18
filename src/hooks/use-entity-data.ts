@@ -294,6 +294,8 @@ export function useEntityData<T extends EntityData = EntityData>(
     }
     
     return result;
+    // Options object and function properties excluded from deps to prevent infinite loops
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     options?.enabled,
     options?.maxRetries,
@@ -301,9 +303,7 @@ export function useEntityData<T extends EntityData = EntityData>(
     options?.timeout,
     options?.skipCache,
     options?.refetchOnWindowFocus,
-    options?.staleTime,
-    options
-    // Functions excluded from deps to prevent infinite loops
+    options?.staleTime
   ]);
   
   const [state, setState] = useState<UseEntityDataState<T>>({
@@ -325,7 +325,7 @@ export function useEntityData<T extends EntityData = EntityData>(
     };
   }, []);
 
-  // Main fetch effect using the proven working pattern
+  // Main fetch effect using stable primitive dependencies
   useEffect(() => {
     if (!opts.enabled || !entityId) {
       console.log(`[useEntityData] Auto-fetch skipped - enabled: ${opts.enabled}, entityId: ${entityId}`);
@@ -393,7 +393,16 @@ export function useEntityData<T extends EntityData = EntityData>(
         opts.onError(entityError);
       }
     })();
-  }, [entityId, entityType, opts]);
+    // Intentionally excluded opts from dependencies to prevent infinite loops
+    // The opts object is memoized but can still cause re-renders if included
+    // onSuccess and onError callbacks are handled via the stable memoized opts reference
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [
+    entityId, 
+    entityType, 
+    opts.enabled, 
+    opts.skipCache
+  ]);
 
   // Control functions
   const refetch = useCallback(async (): Promise<void> => {
