@@ -1,6 +1,7 @@
 import { useLocation } from '@tanstack/react-router';
 import { useEffect, useCallback } from 'react';
 
+import { saveEntityToSimpleStorage } from '@/lib/entity-graph-sync';
 import type { 
   Work, 
   Author, 
@@ -8,14 +9,13 @@ import type {
   Source, 
   Topic
 } from '@/lib/openalex/types';
-import { saveEntityToSimpleStorage } from '@/lib/entity-graph-sync';
+import { EntityType } from '@/lib/openalex/utils/entity-detection';
 import { useEntityGraphStore } from '@/stores/entity-graph-store';
 import type {
   EntityVisitEvent,
   RelationshipDiscoveryEvent,
 } from '@/types/entity-graph';
 import { EdgeType } from '@/types/entity-graph';
-import { EntityType } from '@/lib/openalex/utils/entity-detection';
 
 /**
  * Clean OpenAlex ID by removing URL prefix
