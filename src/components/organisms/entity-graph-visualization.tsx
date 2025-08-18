@@ -2,6 +2,7 @@ import React, { useState, useMemo, useCallback } from 'react';
 
 import { Icon, LoadingSkeleton } from '@/components';
 import { useEntityGraphStore } from '@/stores/entity-graph-store';
+import { useGraphKeyboardShortcuts } from '@/hooks/use-graph-keyboard-shortcuts';
 import type { 
   EntityGraphVertex, 
   EntityGraphEdge, 
@@ -17,7 +18,14 @@ import { createForceSimulation, createCircularLayout } from './graph-layout/forc
 import { GraphLegend } from './graph-legend/GraphLegend';
 import { GraphSVG } from './graph-svg/GraphSVG';
 import { GraphTooltip } from './graph-tooltip/GraphTooltip';
+import { GraphSearch } from './graph-search/GraphSearch';
 import { useGraphInteractions } from './hooks/use-graph-interactions';
+import { 
+  exportGraphAsPNG, 
+  exportGraphAsSVG, 
+  generateExportFilename, 
+  getOptimalExportDimensions 
+} from './graph-utils/graph-export';
 
 // Utility functions for entity graph calculations
 function getEntityColor(entityType: EntityType): string {
@@ -103,6 +111,8 @@ export function EntityGraphVisualization({
   onVertexHover,
 }: EntityGraphVisualizationProps) {
   const [isSimulating, setIsSimulating] = useState(false);
+  const [showSearch, setShowSearch] = useState(false);
+  const [, setHighlightedVertices] = useState<string[]>([]);
   
   const {
     selectedVertexId,
@@ -173,6 +183,71 @@ export function EntityGraphVisualization({
     setIsSimulating(!isSimulating);
   }, [isSimulating]);
 
+  // Handle export functions
+  const handleExportPNG = useCallback(async () => {
+    if (!svgRef.current) return;
+    
+    try {
+      const dimensions = getOptimalExportDimensions(svgRef.current);
+      const filename = generateExportFilename('graph', 'png');
+      
+      await exportGraphAsPNG(svgRef.current, {
+        filename,
+        ...dimensions,
+        backgroundColor: '#ffffff',
+        scale: 2,
+      });
+    } catch (error) {
+      console.error('Failed to export PNG:', error);
+      // Could show a toast notification here
+    }
+  }, [svgRef]);
+
+  const handleExportSVG = useCallback(() => {
+    if (!svgRef.current) return;
+    
+    try {
+      const dimensions = getOptimalExportDimensions(svgRef.current);
+      const filename = generateExportFilename('graph', 'svg');
+      
+      exportGraphAsSVG(svgRef.current, {
+        filename,
+        ...dimensions,
+      });
+    } catch (error) {
+      console.error('Failed to export SVG:', error);
+      // Could show a toast notification here
+    }
+  }, [svgRef]);
+
+  // Handle search functionality
+  const handleToggleSearch = useCallback(() => {
+    setShowSearch(prev => !prev);
+    if (showSearch) {
+      setHighlightedVertices([]);
+    }
+  }, [showSearch]);
+
+  const handleSearchVertexSelect = useCallback((vertex: EntityGraphVertex | null) => {
+    if (vertex) {
+      selectVertex(vertex.id);
+      onVertexClick?.(vertex);
+    }
+  }, [selectVertex, onVertexClick]);
+
+  const handleHighlightVertices = useCallback((vertexIds: string[]) => {
+    setHighlightedVertices(vertexIds);
+  }, []);
+
+  const handleEscapeKey = useCallback(() => {
+    if (showSearch) {
+      setShowSearch(false);
+      setHighlightedVertices([]);
+    } else if (isFullscreen) {
+      toggleFullscreen();
+    }
+  }, [showSearch, isFullscreen, toggleFullscreen]);
+
   // Get connected edges for highlighting
   const connectedEdges = useMemo(() => {
     return calculateConnectedEdges(selectedVertexId, filteredEdges);
@@ -185,20 +260,57 @@ export function EntityGraphVisualization({
     [layoutConfig.sizeByVisitCount]
   );
 
+  // Setup keyboard shortcuts
+  useGraphKeyboardShortcuts({
+    onToggleFullscreen: toggleFullscreen,
+    onExportPNG: handleExportPNG,
+    onExportSVG: handleExportSVG,
+    onToggleSearch: handleToggleSearch,
+    onZoomIn: handleZoomIn,
+    onZoomOut: handleZoomOut,
+    onZoomReset: handleZoomReset,
+    onEscape: handleEscapeKey,
+  });
+
   if (filteredVertices.length === 0) {
     return <EmptyGraphState isFullscreen={isFullscreen} className={className} />;
   }
 
   return (
-    <div className={`${styles.container} ${isFullscreen ? styles.fullscreenContainer : ''} ${className || ''}`}>
+    <div 
+      className={`${styles.container} ${isFullscreen ? styles.fullscreenContainer : ''} ${className || ''}`}
+      role="application"
+      aria-label="Interactive entity graph visualization"
+      aria-describedby="graph-description"
+    >
+      {/* Screen reader description */}
+      <div id="graph-description" className="sr-only">
+        Graph showing {filteredVertices.length} entities and {filteredEdges.length} relationships. 
+        Use keyboard shortcuts: F11 for fullscreen, Cmd+E to export, Cmd+F to search.
+      </div>
+
       {/* Controls */}
       {showControls && (
         <GraphControls
           isFullscreen={isFullscreen}
           onToggleFullscreen={toggleFullscreen}
           onRegenerateLayout={handleRegenerateLayout}
+          onExportPNG={handleExportPNG}
+          onExportSVG={handleExportSVG}
+          onToggleSearch={handleToggleSearch}
+          showSearch={showSearch}
         />
       )}
+
+      {/* Search overlay */}
+      <GraphSearch
+        vertices={filteredVertices}
+        onVertexSelect={handleSearchVertexSelect}
+        selectedVertexId={selectedVertexId}
+        isVisible={showSearch}
+        onClose={handleToggleSearch}
+        onHighlightVertices={handleHighlightVertices}
+      />
 
       {/* Main SVG */}
       <GraphSVG
@@ -228,6 +340,8 @@ export function EntityGraphVisualization({
         onZoomIn={handleZoomIn}
         onZoomOut={handleZoomOut}
         onZoomReset={handleZoomReset}
+        zoom={zoom}
+        showZoomLevel={true}
       />
 
       {/* Legend */}

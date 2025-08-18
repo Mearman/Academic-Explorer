@@ -9,7 +9,7 @@
 import type { EntityData } from '@/hooks/use-entity-data';
 import { graphDb } from '@/lib/graph-db';
 import { extractAllRelationships, relationshipsToEvents } from '@/lib/graph-helpers';
-import type { Work, Author, Authorship, Affiliation, Topic } from '@/lib/openalex/types/entities';
+import type { Work, Author, Authorship, Affiliation, Topic, DehydratedTopic } from '@/lib/openalex/types/entities';
 import type { EntityType } from '@/lib/openalex/utils/entity-detection';
 import type {
   EntityVisitEvent,
@@ -283,7 +283,7 @@ async function recordEntityPageRelatedEntities(
 
       // Topics
       if (work.topics) {
-        work.topics.forEach((topic: Topic) => {
+        work.topics.forEach((topic: DehydratedTopic) => {
           relatedEntities.push({
             id: topic.id,
             entityType: 'T' as EntityType,

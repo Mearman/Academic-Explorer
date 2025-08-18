@@ -290,3 +290,216 @@ export const minimapViewport = style({
   stroke: entityVars.color.work,
   strokeWidth: '1px',
 });
+
+// New styles for enhanced features
+
+// Active control button state
+export const controlButtonActive = style({
+  backgroundColor: entityVars.color.work,
+  borderColor: entityVars.color.work,
+  color: entityVars.color.background,
+});
+
+// Export group styling
+export const exportGroup = style({
+  display: 'flex',
+  gap: entityVars.spacing.xs,
+  borderLeft: `1px solid ${entityVars.color.border}`,
+  paddingLeft: entityVars.spacing.xs,
+  marginLeft: entityVars.spacing.xs,
+});
+
+// Zoom level display
+export const zoomLevel = style({
+  padding: `${entityVars.spacing.xs} ${entityVars.spacing.sm}`,
+  fontSize: '11px',
+  color: entityVars.color.muted,
+  display: 'flex',
+  alignItems: 'center',
+  minWidth: '40px',
+  justifyContent: 'center',
+  backgroundColor: entityVars.color.cardBackground,
+  borderRadius: entityVars.spacing.xs,
+});
+
+// Search overlay styles
+export const searchOverlay = style({
+  position: 'fixed',
+  top: 0,
+  left: 0,
+  right: 0,
+  bottom: 0,
+  backgroundColor: 'rgba(0, 0, 0, 0.5)',
+  zIndex: 1000,
+  display: 'flex',
+  alignItems: 'flex-start',
+  justifyContent: 'center',
+  padding: entityVars.spacing.lg,
+  paddingTop: '10vh',
+});
+
+export const searchContainer = style({
+  backgroundColor: entityVars.color.background,
+  border: `1px solid ${entityVars.color.border}`,
+  borderRadius: entityVars.spacing.md,
+  boxShadow: '0 10px 25px rgba(0,0,0,0.25)',
+  width: '100%',
+  maxWidth: '600px',
+  maxHeight: '70vh',
+  display: 'flex',
+  flexDirection: 'column',
+  overflow: 'hidden',
+});
+
+export const searchInputContainer = style({
+  display: 'flex',
+  alignItems: 'center',
+  padding: entityVars.spacing.md,
+  borderBottom: `1px solid ${entityVars.color.border}`,
+  gap: entityVars.spacing.sm,
+});
+
+export const searchIcon = style({
+  color: entityVars.color.muted,
+  flexShrink: 0,
+});
+
+export const searchInput = style({
+  flex: 1,
+  border: 'none',
+  outline: 'none',
+  fontSize: '16px',
+  backgroundColor: 'transparent',
+  color: entityVars.color.text,
+  '::placeholder': {
+    color: entityVars.color.muted,
+  },
+});
+
+export const searchCloseButton = style({
+  padding: entityVars.spacing.xs,
+  border: 'none',
+  backgroundColor: 'transparent',
+  cursor: 'pointer',
+  borderRadius: entityVars.spacing.xs,
+  color: entityVars.color.muted,
+  transition: 'all 0.2s ease',
+  selectors: {
+    '&:hover': {
+      backgroundColor: entityVars.color.cardBackground,
+      color: entityVars.color.text,
+    },
+  },
+});
+
+export const searchResults = style({
+  flex: 1,
+  overflow: 'auto',
+  maxHeight: '50vh',
+});
+
+export const searchResultsHeader = style({
+  padding: entityVars.spacing.sm,
+  paddingBottom: entityVars.spacing.xs,
+  fontSize: '12px',
+  color: entityVars.color.muted,
+  borderBottom: `1px solid ${entityVars.color.border}`,
+});
+
+export const searchResult = style({
+  padding: entityVars.spacing.sm,
+  cursor: 'pointer',
+  borderBottom: `1px solid ${entityVars.color.border}`,
+  transition: 'all 0.2s ease',
+  selectors: {
+    '&:last-child': {
+      borderBottom: 'none',
+    },
+    '&:hover': {
+      backgroundColor: entityVars.color.cardBackground,
+    },
+  },
+});
+
+export const searchResultSelected = style({
+  backgroundColor: entityVars.color.cardBackground,
+});
+
+export const searchResultActive = style({
+  backgroundColor: entityVars.color.work,
+  color: entityVars.color.background,
+});
+
+export const searchResultHeader = style({
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'space-between',
+  marginBottom: entityVars.spacing.xs,
+});
+
+export const searchResultInfo = style({
+  display: 'flex',
+  alignItems: 'center',
+  gap: entityVars.spacing.xs,
+});
+
+export const searchResultIcon = style({
+  color: entityVars.color.muted,
+  flexShrink: 0,
+});
+
+export const searchResultName = style({
+  fontWeight: '500',
+  fontSize: '14px',
+});
+
+export const searchResultType = style({
+  fontSize: '12px',
+  fontWeight: '600',
+  textTransform: 'uppercase',
+  letterSpacing: '0.5px',
+});
+
+export const searchResultMeta = style({
+  display: 'flex',
+  gap: entityVars.spacing.xs,
+  flexWrap: 'wrap',
+});
+
+export const searchResultBadge = style({
+  fontSize: '11px',
+  padding: `2px ${entityVars.spacing.xs}`,
+  backgroundColor: entityVars.color.cardBackground,
+  border: `1px solid ${entityVars.color.border}`,
+  borderRadius: entityVars.spacing.xs,
+  color: entityVars.color.muted,
+});
+
+export const searchNoResults = style({
+  display: 'flex',
+  flexDirection: 'column',
+  alignItems: 'center',
+  justifyContent: 'center',
+  padding: entityVars.spacing.xl,
+  color: entityVars.color.muted,
+  textAlign: 'center',
+});
+
+export const searchHint = style({
+  fontSize: '12px',
+  color: entityVars.color.muted,
+  marginTop: entityVars.spacing.xs,
+});
+
+// Screen reader only styles
+globalStyle('.sr-only', {
+  position: 'absolute',
+  width: '1px',
+  height: '1px',
+  padding: 0,
+  margin: '-1px',
+  overflow: 'hidden',
+  clip: 'rect(0, 0, 0, 0)',
+  whiteSpace: 'nowrap',
+  border: 0,
+});
