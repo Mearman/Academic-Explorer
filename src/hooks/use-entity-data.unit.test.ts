@@ -224,6 +224,14 @@ describe('useEntityData Hook', () => {
   });
 
   describe('Retry Mechanism', () => {
+    beforeEach(() => {
+      vi.useFakeTimers();
+    });
+
+    afterEach(() => {
+      vi.useRealTimers();
+    });
+
     it('should auto-retry retryable errors', async () => {
       mockCachedOpenAlex.work
         .mockRejectedValueOnce(new Error('Network connection failed'))
@@ -471,6 +479,14 @@ describe('useEntityData Hook', () => {
   });
 
   describe('Window Focus Refetch', () => {
+    beforeEach(() => {
+      vi.useFakeTimers();
+    });
+
+    afterEach(() => {
+      vi.useRealTimers();
+    });
+
     it('should refetch on window focus when enabled and data is stale', async () => {
       mockCachedOpenAlex.work.mockResolvedValue(mockWork);
 
