@@ -4,6 +4,7 @@ import { useEffect, useRef } from 'react';
 import { EntityErrorBoundary, EntitySkeleton, EntityError, EntityFallback, EntityGraphVisualization } from '@/components';
 import { AuthorDisplay } from '@/components/entity-displays/AuthorDisplay';
 import { useAuthorData } from '@/hooks/use-entity-data';
+import { useEntityGraphTracking } from '@/hooks/use-entity-graph-tracking';
 import { useNumericIdRedirect } from '@/hooks/use-numeric-id-redirect';
 import { EntityType } from '@/lib/openalex/utils/entity-detection';
 
@@ -15,6 +16,12 @@ function AuthorPage() {
   
   // Handle numeric ID redirection to proper prefixed format
   const isRedirecting = useNumericIdRedirect(id, EntityType.AUTHOR);
+  
+  // Entity graph tracking
+  const { trackEntityData } = useEntityGraphTracking({
+    autoTrack: true,
+    extractRelationships: true,
+  });
   
   // Use the author data hook directly with the ID (no complex processing)
   const { data: author, loading, error, retry } = useAuthorData(
@@ -56,6 +63,14 @@ function AuthorPage() {
       }
     };
   }, [loading, id, isRedirecting, error, retry]);
+  
+  // Track entity data when author loads
+  useEffect(() => {
+    if (author && id && !isRedirecting) {
+      console.log('[AuthorPage] Tracking author data:', author.display_name);
+      trackEntityData(author, EntityType.AUTHOR, id);
+    }
+  }, [author, id, isRedirecting, trackEntityData]);
   
   console.log('[AuthorPage] State:', { 
     id,
