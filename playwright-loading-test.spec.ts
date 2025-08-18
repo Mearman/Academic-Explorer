@@ -42,7 +42,7 @@ async function startDevServer(port: number): Promise<ChildProcess> {
     devProcess.stdout.on('data', (data) => {
       output += data.toString();
       if (output.includes('ready in')) {
-        console.log(`✅ Dev server started on port ${port}`);
+        console.log(`[OK] Dev server started on port ${port}`);
         resolve(devProcess);
       }
     });
@@ -72,7 +72,7 @@ test.describe('Query Page Loading Issues', () => {
     const port = await findAvailablePort(3000);
     baseURL = `http://localhost:${port}`;
     
-    console.log(`🚀 Starting dev server on port ${port}...`);
+    console.log(`[ROCKET] Starting dev server on port ${port}...`);
     devServer = await startDevServer(port);
     
     // Wait a bit more for server to be fully ready
@@ -82,7 +82,7 @@ test.describe('Query Page Loading Issues', () => {
   test.afterAll(async () => {
     // Clean up dev server
     if (devServer) {
-      console.log('🛑 Stopping dev server...');
+      console.log('[STOP] Stopping dev server...');
       devServer.kill('SIGTERM');
       
       // Wait for graceful shutdown
@@ -104,7 +104,7 @@ test.describe('Query Page Loading Issues', () => {
   });
 
   test('should not get stuck loading on query page', async ({ page }) => {
-    console.log('🧪 Testing query page loading...');
+    console.log('[TEST] Testing query page loading...');
     
     // Navigate to query page
     await page.goto(`${baseURL}/query`);
@@ -118,9 +118,9 @@ test.describe('Query Page Loading Issues', () => {
     // Wait for loading to complete (max 15 seconds)
     try {
       await expect(loadingElements).toHaveCount(0, { timeout: 15000 });
-      console.log('✅ Page loaded successfully');
+      console.log('[OK] Page loaded successfully');
     } catch (error) {
-      console.log('❌ Page appears to be stuck loading');
+      console.log('[ERROR] Page appears to be stuck loading');
       
       // Debug information
       const loadingCount = await loadingElements.count();
@@ -128,18 +128,18 @@ test.describe('Query Page Loading Issues', () => {
       
       // Take screenshot for debugging
       await page.screenshot({ path: 'debug-stuck-loading.png', fullPage: true });
-      console.log('📸 Screenshot saved as debug-stuck-loading.png');
+      console.log('[CAMERA] Screenshot saved as debug-stuck-loading.png');
       
       throw error;
     }
     
     // Verify page is interactive
     await expect(page.locator('body')).toBeVisible();
-    console.log('✅ Page is interactive');
+    console.log('[OK] Page is interactive');
   });
 
   test('should handle search queries without hanging', async ({ page }) => {
-    console.log('🧪 Testing search functionality...');
+    console.log('[TEST] Testing search functionality...');
     
     await page.goto(`${baseURL}/query`);
     await page.waitForLoadState('networkidle');
@@ -148,7 +148,7 @@ test.describe('Query Page Loading Issues', () => {
     const searchInput = page.locator('input[type="text"]').first();
     
     if (await searchInput.isVisible()) {
-      console.log('📝 Found search input, testing search...');
+      console.log('[MEMO] Found search input, testing search...');
       
       // Perform search
       await searchInput.fill('machine learning');
@@ -165,10 +165,10 @@ test.describe('Query Page Loading Issues', () => {
         const loadingElements = await page.locator('[data-testid*="loading"], .loading, text=/loading/i').count();
         const elapsedTime = Date.now() - startTime;
         
-        console.log(`⏱️  ${elapsedTime}ms: ${loadingElements} loading elements visible`);
+        console.log(`[TIMER]  ${elapsedTime}ms: ${loadingElements} loading elements visible`);
         
         if (loadingElements === 0) {
-          console.log('✅ Search completed successfully');
+          console.log('[OK] Search completed successfully');
           break;
         }
         
@@ -179,7 +179,7 @@ test.describe('Query Page Loading Issues', () => {
       }
       
       if (isStuck) {
-        console.log('❌ Search appears to be stuck');
+        console.log('[ERROR] Search appears to be stuck');
         await page.screenshot({ path: 'debug-search-stuck.png', fullPage: true });
         
         // Get network requests for debugging
@@ -193,17 +193,17 @@ test.describe('Query Page Loading Issues', () => {
           }));
         });
         
-        console.log('🌐 Network requests:', responses.slice(-5)); // Last 5 requests
+        console.log('[GLOBE] Network requests:', responses.slice(-5)); // Last 5 requests
         
         throw new Error('Search functionality appears to be stuck loading');
       }
     } else {
-      console.log('ℹ️  No search input found, checking page state...');
+      console.log('[INFO]  No search input found, checking page state...');
     }
   });
 
   test('should detect zero results bug in query history', async ({ page }) => {
-    console.log('🧪 Testing for zero results bug...');
+    console.log('[TEST] Testing for zero results bug...');
     
     // Enable console logging to catch our debug logs
     const consoleLogs: string[] = [];
@@ -232,16 +232,16 @@ test.describe('Query Page Loading Issues', () => {
       }
     });
     
-    console.log('📊 Query history entries:', queryHistory?.length || 0);
+    console.log('[CHART] Query history entries:', queryHistory?.length || 0);
     
     if (queryHistory && queryHistory.length > 0) {
       const latestQuery = queryHistory[0];
-      console.log('📈 Latest query results:', latestQuery.results);
+      console.log('[CHART_UP] Latest query results:', latestQuery.results);
       
       // Check for the zero results bug
       if (latestQuery.results) {
         const { count, responseTimeMs } = latestQuery.results;
-        console.log(`🔍 Query: "${latestQuery.query}" → Count: ${count}, Response time: ${responseTimeMs}ms`);
+        console.log(`[SEARCH] Query: "${latestQuery.query}" -> Count: ${count}, Response time: ${responseTimeMs}ms`);
         
         // Look for our debug console logs
         const relevantLogs = consoleLogs.filter(log => 
@@ -251,29 +251,29 @@ test.describe('Query Page Loading Issues', () => {
         );
         
         if (relevantLogs.length > 0) {
-          console.log('🐛 Debug logs found:');
+          console.log('[BUG] Debug logs found:');
           relevantLogs.forEach(log => console.log(`   ${log}`));
         }
         
         // If count is 0 but we have a real search query, this might be the bug
         if (count === 0 && latestQuery.query && latestQuery.query.trim() !== '') {
-          console.log('🐛 POTENTIAL ZERO RESULTS BUG DETECTED!');
+          console.log('[BUG] POTENTIAL ZERO RESULTS BUG DETECTED!');
           console.log(`   Query: "${latestQuery.query}" shows 0 results`);
           console.log('   This might be the bug where API returns count but query history shows 0');
           
           // Take screenshot for evidence
           await page.screenshot({ path: 'debug-zero-results-bug.png', fullPage: true });
         } else if (count > 0) {
-          console.log('✅ Query results count appears correct');
+          console.log('[OK] Query results count appears correct');
         }
       }
     } else {
-      console.log('ℹ️  No query history found');
+      console.log('[INFO]  No query history found');
     }
   });
 
   test('should monitor page performance and memory usage', async ({ page }) => {
-    console.log('🧪 Testing page performance...');
+    console.log('[TEST] Testing page performance...');
     
     await page.goto(`${baseURL}/query`);
     
@@ -307,7 +307,7 @@ test.describe('Query Page Loading Issues', () => {
       const testQueries = ['AI', 'machine learning', 'neural networks', 'deep learning'];
       
       for (const query of testQueries) {
-        console.log(`🔍 Testing query: "${query}"`);
+        console.log(`[SEARCH] Testing query: "${query}"`);
         
         await searchInput.fill(query);
         await searchInput.press('Enter');
@@ -324,7 +324,7 @@ test.describe('Query Page Loading Issues', () => {
         });
         
         if (!isResponsive) {
-          console.log(`❌ Page became unresponsive during query: "${query}"`);
+          console.log(`[ERROR] Page became unresponsive during query: "${query}"`);
           await page.screenshot({ path: `debug-unresponsive-${query.replace(/\s+/g, '-')}.png` });
         }
       }
@@ -356,7 +356,7 @@ test.describe('Query Page Loading Issues', () => {
       };
     });
     
-    console.log('📊 Performance metrics:');
+    console.log('[CHART] Performance metrics:');
     console.log(`   Total test time: ${performanceData.totalTime.toFixed(2)}ms`);
     if (performanceData.memoryIncrease !== null) {
       console.log(`   Memory increase: ${(performanceData.memoryIncrease / 1024 / 1024).toFixed(2)}MB`);
@@ -364,16 +364,16 @@ test.describe('Query Page Loading Issues', () => {
     
     // Check for performance issues
     if (performanceData.totalTime > 30000) { // 30 seconds
-      console.log('⚠️  Test took longer than expected - possible performance issue');
+      console.log('[WARNING]  Test took longer than expected - possible performance issue');
     }
     
     if (performanceData.memoryIncrease && performanceData.memoryIncrease > 50 * 1024 * 1024) { // 50MB
-      console.log('⚠️  Significant memory increase detected - possible memory leak');
+      console.log('[WARNING]  Significant memory increase detected - possible memory leak');
     }
   });
 
   test('should test navigation and routing performance', async ({ page }) => {
-    console.log('🧪 Testing navigation performance...');
+    console.log('[TEST] Testing navigation performance...');
     
     const navigationTimes: number[] = [];
     
@@ -395,25 +395,25 @@ test.describe('Query Page Loading Issues', () => {
         const loadTime = Date.now() - startTime;
         navigationTimes.push(loadTime);
         
-        console.log(`✅ ${route} loaded in ${loadTime}ms`);
+        console.log(`[OK] ${route} loaded in ${loadTime}ms`);
         
         if (loadTime > 8000) {
-          console.log(`⚠️  Slow loading detected for ${route}`);
+          console.log(`[WARNING]  Slow loading detected for ${route}`);
           await page.screenshot({ path: `debug-slow-${route.split('/').pop() || 'root'}.png` });
         }
         
       } catch (error) {
-        console.log(`❌ Failed to load ${route}: ${error}`);
+        console.log(`[ERROR] Failed to load ${route}: ${error}`);
         await page.screenshot({ path: `debug-failed-${route.split('/').pop() || 'root'}.png` });
         throw error;
       }
     }
     
     const averageLoadTime = navigationTimes.reduce((a, b) => a + b, 0) / navigationTimes.length;
-    console.log(`📊 Average navigation time: ${averageLoadTime.toFixed(2)}ms`);
+    console.log(`[CHART] Average navigation time: ${averageLoadTime.toFixed(2)}ms`);
     
     if (averageLoadTime > 5000) {
-      console.log('⚠️  Overall navigation performance is slow');
+      console.log('[WARNING]  Overall navigation performance is slow');
     }
   });
 });

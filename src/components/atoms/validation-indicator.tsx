@@ -173,7 +173,7 @@ export function ValidationIndicator({
       size={size}
       leftSection={statusIcon}
     >
-      {hasIssues ? issueCount : '✓'}
+      {hasIssues ? issueCount : '[CHECK]'}
     </Badge>
   );
 

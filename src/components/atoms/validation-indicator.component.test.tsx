@@ -34,9 +34,9 @@ vi.mock('@/stores/entity-validation-store', () => ({
 
 // Mock icons
 vi.mock('@tabler/icons-react', () => ({
-  IconCheck: () => <div data-testid="icon-check">✓</div>,
-  IconAlertTriangle: () => <div data-testid="icon-warning">⚠</div>,
-  IconX: () => <div data-testid="icon-error">✗</div>,
+  IconCheck: () => <div data-testid="icon-check">[CHECK]</div>,
+  IconAlertTriangle: () => <div data-testid="icon-warning">[WARNING]</div>,
+  IconX: () => <div data-testid="icon-error">[ERROR]</div>,
   IconInfoCircle: () => <div data-testid="icon-info">ℹ</div>,
 }));
 
@@ -189,7 +189,7 @@ describe('ValidationIndicator', () => {
     renderValidationIndicator();
     
     expect(screen.getByTestId('icon-check')).toBeInTheDocument();
-    expect(screen.getAllByText('✓')).toHaveLength(2);
+    expect(screen.getAllByText('[CHECK]')).toHaveLength(2);
   });
 
   it('should show error status for entity with errors', () => {

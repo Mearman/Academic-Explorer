@@ -138,6 +138,12 @@ export default tseslint.config(
       '@typescript-eslint/no-explicit-any': 'warn',
       'no-prototype-builtins': 'warn',
       'no-useless-catch': 'warn',
+      
+      // Prevent use of emojis in code
+      'no-restricted-syntax': ['error', {
+        selector: 'Literal[value=/\\p{Emoji}/u]',
+        message: 'Emojis are not allowed in code'
+      }],
 
       // ===========================================
       // ATOMIC DESIGN ENFORCEMENT RULES

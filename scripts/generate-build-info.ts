@@ -123,7 +123,7 @@ export default buildInfo;
   const outputPath = join(__dirname, '../src/lib/build-info.ts');
   writeFileSync(outputPath, tsContent, 'utf8');
   
-  console.log('✓ Generated build info:', {
+  console.log('[OK] Generated build info:', {
     commit: buildInfo.git.short,
     buildTime: buildInfo.buildTimestamp,
     branch: buildInfo.git.branch,
@@ -142,10 +142,10 @@ function isError(error: unknown): error is Error {
 if (import.meta.url === `file://${process.argv[1]}`) {
   try {
     generateBuildInfoFile();
-    console.log('✓ Build info generated successfully');
+    console.log('[OK] Build info generated successfully');
   } catch (error) {
     const errorMessage = isError(error) ? error.message : 'Unknown error occurred';
-    console.error('✗ Failed to generate build info:', errorMessage);
+    console.error('[ERROR] Failed to generate build info:', errorMessage);
     process.exit(1);
   }
 }

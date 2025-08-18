@@ -1,6 +1,6 @@
 import { formatNumber } from '@/lib/openalex/utils/transformers';
 
-export const TREND_ICONS = { up: '↗', down: '↘', neutral: '→' } as const;
+export const TREND_ICONS = { up: '^', down: 'v', neutral: '->' } as const;
 
 export function formatMetricValue(value: number | string, format: string): string {
   if (typeof value === 'string') return value;
