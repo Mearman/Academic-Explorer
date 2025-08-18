@@ -30,39 +30,39 @@ export enum VertexType {
  * Based on comprehensive analysis of OpenAlex entity types and their relationships
  */
 export enum GraphEdgeType {
-  // Citation relationships (Works ↔ Works)
+  // Citation relationships (Works <-> Works)
   CITES = 'cites',
   CITED_BY = 'cited_by',
   REFERENCES = 'references',
   REFERENCED_BY = 'referenced_by',
   RELATED_TO = 'related_to',
   
-  // Authorship relationships (Authors ↔ Works)
+  // Authorship relationships (Authors <-> Works)
   AUTHORED = 'authored',
   AUTHORED_BY = 'authored_by',
   
-  // Institutional relationships (Authors/Works ↔ Institutions)
+  // Institutional relationships (Authors/Works <-> Institutions)
   AFFILIATED_WITH = 'affiliated_with',
   EMPLOYS = 'employs',
   ASSOCIATED_WITH = 'associated_with',
   
-  // Publication relationships (Works ↔ Sources)
+  // Publication relationships (Works <-> Sources)
   PUBLISHED_IN = 'published_in',
   PUBLISHES = 'publishes',
   HOSTED_BY = 'hosted_by',
   HOSTS = 'hosts',
   
-  // Publisher relationships (Sources ↔ Publishers)
+  // Publisher relationships (Sources <-> Publishers)
   PUBLISHED_BY = 'published_by',
   PUBLISHER_OF = 'publisher_of',
   
-  // Funding relationships (Works/Authors ↔ Funders)
+  // Funding relationships (Works/Authors <-> Funders)
   FUNDED_BY = 'funded_by',
   FUNDS = 'funds',
   GRANTED_TO = 'granted_to',
   RECEIVED_GRANT_FROM = 'received_grant_from',
   
-  // Topic/Concept relationships (Works/Authors ↔ Topics/Concepts)
+  // Topic/Concept relationships (Works/Authors <-> Topics/Concepts)
   HAS_TOPIC = 'has_topic',
   TOPIC_OF = 'topic_of',
   HAS_CONCEPT = 'has_concept',
@@ -70,7 +70,7 @@ export enum GraphEdgeType {
   PRIMARY_TOPIC = 'primary_topic',
   PRIMARY_TOPIC_OF = 'primary_topic_of',
   
-  // Hierarchical relationships (Topics ↔ Subfields ↔ Fields ↔ Domains)
+  // Hierarchical relationships (Topics <-> Subfields <-> Fields <-> Domains)
   HAS_SUBFIELD = 'has_subfield',
   SUBFIELD_OF = 'subfield_of',
   HAS_FIELD = 'has_field',
@@ -78,28 +78,28 @@ export enum GraphEdgeType {
   HAS_DOMAIN = 'has_domain',
   DOMAIN_OF = 'domain_of',
   
-  // Geographic relationships (Institutions ↔ Geographic entities)
+  // Geographic relationships (Institutions <-> Geographic entities)
   LOCATED_IN = 'located_in',
   LOCATION_OF = 'location_of',
   
-  // Institutional hierarchy (Institutions ↔ Institutions)
+  // Institutional hierarchy (Institutions <-> Institutions)
   PARENT_OF = 'parent_of',
   CHILD_OF = 'child_of',
   PART_OF = 'part_of',
   HAS_PART = 'has_part',
   
-  // Publisher hierarchy (Publishers ↔ Publishers)
+  // Publisher hierarchy (Publishers <-> Publishers)
   PARENT_PUBLISHER = 'parent_publisher',
   SUBSIDIARY_OF = 'subsidiary_of',
   
-  // Concept relationships (Concepts ↔ Concepts) - legacy system
+  // Concept relationships (Concepts <-> Concepts) - legacy system
   ANCESTOR_OF = 'ancestor_of',
   DESCENDANT_OF = 'descendant_of',
   SIBLING_OF = 'sibling_of',
   
   // Query-related relationships (synthetic)
-  QUERY_RESULT = 'query_result',        // Query execution → Entity (result)
-  QUERY_INSTANCE = 'query_instance',    // Query parameters → Query execution
+  QUERY_RESULT = 'query_result',        // Query execution -> Entity (result)
+  QUERY_INSTANCE = 'query_instance',    // Query parameters -> Query execution
   
   // Co-occurrence relationships (derived)
   CO_AUTHORED_WITH = 'co_authored_with',
