@@ -62,7 +62,7 @@ describe('HTTPS URL Routing E2E Workflows', () => {
 
   describe('Complete User Workflows', () => {
     describe('Author Lookup Workflow', () => {
-      it('should handle complete workflow: numeric ID → HTTPS URL → canonical page', async () => {
+      it('should handle complete workflow: numeric ID -> HTTPS URL -> canonical page', async () => {
         const workflow = [
           'http://localhost:3001/#/authors/5017898742',
           'http://localhost:3001/#/authors/https:/openalex.org/A5017898742', 
@@ -154,7 +154,7 @@ describe('HTTPS URL Routing E2E Workflows', () => {
     });
 
     describe('Error Recovery Workflow', () => {
-      it('should handle malformed URL → correction → success workflow', async () => {
+      it('should handle malformed URL -> correction -> success workflow', async () => {
         const errorRecoveryWorkflow = [
           'http://localhost:3001/#/https:/invalid.domain.com/A5017898742', // Invalid domain
           'http://localhost:3001/#/https:/openalex.org/A5017898742', // Corrected URL
@@ -180,7 +180,7 @@ describe('HTTPS URL Routing E2E Workflows', () => {
         expect(navigationEvents[1].url).toContain('A5017898742');
       });
 
-      it('should handle incomplete URL → complete URL workflow', async () => {
+      it('should handle incomplete URL -> complete URL workflow', async () => {
         const incompleteWorkflow = [
           'http://localhost:3001/#/5017898742', // Just numeric - should work
           'http://localhost:3001/#/A5017898742', // Prefixed - should work  

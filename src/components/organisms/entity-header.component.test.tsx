@@ -286,12 +286,12 @@ describe('EntityHeader Title, Subtitle and ID Display', () => {
     expect(title).toHaveTextContent('Unknown Entity');
   });
 
-  it('should render author subtitle with institution', () => {
+  it('should render author subtitle with works count', () => {
     const entity = createMockAuthor();
     render(<EntityHeader entity={entity} />);
     
     const subtitle = screen.getByRole('heading', { level: 2 });
-    expect(subtitle).toHaveTextContent('University of Example (US)');
+    expect(subtitle).toHaveTextContent('100 works published');
   });
 
   it('should render work subtitle with publication year', () => {
@@ -307,22 +307,28 @@ describe('EntityHeader Title, Subtitle and ID Display', () => {
     render(<EntityHeader entity={entity} />);
     
     const subtitle = screen.getByRole('heading', { level: 2 });
-    expect(subtitle).toHaveTextContent('Education • US');
+    expect(subtitle).toHaveTextContent('Education | US');
   });
 
-  it('should render source subtitle with host organization', () => {
+  it('should render source subtitle with type and works count', () => {
     const entity = createMockSource();
     render(<EntityHeader entity={entity} />);
     
     const subtitle = screen.getByRole('heading', { level: 2 });
-    expect(subtitle).toHaveTextContent('Example Publisher • US');
+    expect(subtitle).toHaveTextContent('Journal | 1,000 works');
   });
 
-  it('should not render subtitle when no relevant data', () => {
-    const entity = createMockAuthor({ last_known_institutions: [] });
+  it('should render fallback subtitle when no core metrics available', () => {
+    const entity = createMockAuthor({ 
+      last_known_institutions: [], 
+      works_count: 0, 
+      cited_by_count: 0, 
+      summary_stats: undefined 
+    });
     render(<EntityHeader entity={entity} />);
     
-    expect(screen.queryByRole('heading', { level: 2 })).not.toBeInTheDocument();
+    const subtitle = screen.getByRole('heading', { level: 2 });
+    expect(subtitle).toHaveTextContent('Author');
   });
 
   it('should display entity ID', () => {
@@ -572,7 +578,7 @@ describe('EntityHeader Accessibility and Props Forwarding', () => {
     const subtitle = screen.getByRole('heading', { level: 2 });
     
     expect(mainTitle).toHaveTextContent('Dr. Jane Smith');
-    expect(subtitle).toHaveTextContent('University of Example (US)');
+    expect(subtitle).toHaveTextContent('100 works published');
   });
 
   it('should have aria-hidden on decorative icons', () => {

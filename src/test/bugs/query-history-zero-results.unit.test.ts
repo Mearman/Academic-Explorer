@@ -84,7 +84,7 @@ describe('Bug Reproduction: Query History Zero Results', () => {
     
     if (recordedQuery.results?.count === 0) {
       // This is the bug - we got a count of 0 despite API returning 12543
-      console.error('🐛 BUG CONFIRMED: Query History shows 0 results despite API returning', realWorldApiResponse.meta.count);
+      console.error('[BUG] BUG CONFIRMED: Query History shows 0 results despite API returning', realWorldApiResponse.meta.count);
       
       // Let's investigate what went wrong
       expect(realWorldApiResponse.meta.count).toBe(12543); // API definitely has the count
@@ -92,7 +92,7 @@ describe('Bug Reproduction: Query History Zero Results', () => {
     } else {
       // If this passes, the bug has been fixed
       expect(recordedQuery.results?.count).toBe(12543);
-      console.log('✅ Bug appears to be fixed - count is correctly recorded');
+      console.log('[OK] Bug appears to be fixed - count is correctly recorded');
     }
   });
 
@@ -169,7 +169,7 @@ describe('Bug Reproduction: Query History Zero Results', () => {
     // The bug would make all actualCount values be 0
     const allZero = recordedCounts.every(r => r.actual === 0);
     if (allZero) {
-      console.error('🐛 BUG CONFIRMED: All queries show 0 results in history');
+      console.error('[BUG] BUG CONFIRMED: All queries show 0 results in history');
       console.error('Expected counts:', recordedCounts.map(r => r.expected));
       expect(allZero).toBe(false); // This should fail, confirming the bug
     } else {

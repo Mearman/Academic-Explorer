@@ -20,7 +20,7 @@ describe('E2E: Query Page Stuck Loading Issue', () => {
       // Note: This test is designed to be run manually with Playwright or browser automation
       
       console.log(`
-🧪 MANUAL E2E TEST INSTRUCTIONS:
+[TEST] MANUAL E2E TEST INSTRUCTIONS:
 ================================
 
 1. Start the development server:
@@ -31,11 +31,11 @@ describe('E2E: Query Page Stuck Loading Issue', () => {
 3. Navigate to query page: ${BASE_URL}/query
 
 4. Check for the following symptoms of stuck loading:
-   ❌ Infinite loading spinner
-   ❌ Page never resolves to content
-   ❌ Network requests hanging indefinitely
-   ❌ JavaScript errors in console
-   ❌ Memory usage climbing continuously
+   [ERROR] Infinite loading spinner
+   [ERROR] Page never resolves to content
+   [ERROR] Network requests hanging indefinitely
+   [ERROR] JavaScript errors in console
+   [ERROR] Memory usage climbing continuously
 
 5. Test scenarios:
    a) Basic query page load
@@ -52,11 +52,11 @@ describe('E2E: Query Page Stuck Loading Issue', () => {
    - React DevTools: Check component states
 
 EXPECTED BEHAVIOR:
-✅ Page loads within 3-5 seconds
-✅ Loading states resolve to content or error
-✅ No infinite spinners
-✅ No JavaScript errors
-✅ Memory usage remains stable
+[OK] Page loads within 3-5 seconds
+[OK] Loading states resolve to content or error
+[OK] No infinite spinners
+[OK] No JavaScript errors
+[OK] Memory usage remains stable
       `);
 
       // For automated testing, we'll just verify the test structure is valid
@@ -68,18 +68,18 @@ EXPECTED BEHAVIOR:
   describe('Specific Loading Issues Investigation', () => {
     it('should provide debugging checklist for stuck loading', async () => {
       console.log(`
-🔍 DEBUGGING CHECKLIST FOR STUCK LOADING:
+[DEBUG] DEBUGGING CHECKLIST FOR STUCK LOADING:
 ==========================================
 
 1. CHECK NETWORK REQUESTS:
-   - Open DevTools → Network tab
+   - Open DevTools -> Network tab
    - Look for requests to OpenAlex API that are pending/hanging
    - Check if requests return with proper responses
    - Verify request URLs are correctly formatted
 
 2. CHECK QUERY HISTORY COMPONENT:
    - Navigate to query page
-   - Open React DevTools → Components
+   - Open React DevTools -> Components
    - Find QueryHistory component
    - Check props and state:
      * queryHistory array length
@@ -94,7 +94,7 @@ EXPECTED BEHAVIOR:
      * error: should be null or contain error message
 
 4. CHECK APP STORE STATE:
-   - Open React DevTools → Components → AppStore
+   - Open React DevTools -> Components -> AppStore
    - Verify queryHistory state:
      * Should be array of QueryRecord objects
      * Each record should have proper structure
@@ -108,7 +108,7 @@ EXPECTED BEHAVIOR:
      * State management
 
 6. CHECK PERFORMANCE:
-   - Open DevTools → Performance tab
+   - Open DevTools -> Performance tab
    - Record during page load
    - Look for:
      * Long-running JavaScript tasks
@@ -116,12 +116,12 @@ EXPECTED BEHAVIOR:
      * Memory leaks
 
 7. COMMON STUCK LOADING CAUSES:
-   ❌ API request never resolves
-   ❌ Component waiting for state that never updates
-   ❌ Infinite re-render loop
-   ❌ Promise never resolving/rejecting
-   ❌ Router navigation issues
-   ❌ Query cache issues
+   [ERROR] API request never resolves
+   [ERROR] Component waiting for state that never updates
+   [ERROR] Infinite re-render loop
+   [ERROR] Promise never resolving/rejecting
+   [ERROR] Router navigation issues
+   [ERROR] Query cache issues
 
 8. TESTING STEPS:
    a) Load ${BASE_URL}/query
@@ -165,7 +165,7 @@ EXPECTED BEHAVIOR:
       ];
 
       console.log(`
-🧪 MANUAL TEST CASES FOR QUERY PAGE LOADING:
+[TEST] MANUAL TEST CASES FOR QUERY PAGE LOADING:
 ============================================
 
 Please test each of these URLs manually:
@@ -180,13 +180,13 @@ ${index + 1}. ${testCase.name}:
       });
 
       console.log(`
-⏱️  TIMING GUIDELINES:
+[TIMING] TIMING GUIDELINES:
 - Initial page load: < 3 seconds
 - Search results: < 5 seconds  
 - Error states: < 2 seconds
 - Navigation: < 1 second
 
-🚨 REPORT AS STUCK IF:
+[WARNING] REPORT AS STUCK IF:
 - Loading spinner visible > 10 seconds
 - No response to user interactions
 - Network requests pending > 15 seconds
@@ -200,7 +200,7 @@ ${index + 1}. ${testCase.name}:
   describe('Query History Related Loading Issues', () => {
     it('should test query history integration', async () => {
       console.log(`
-📊 QUERY HISTORY SPECIFIC TESTS:
+[CHART] QUERY HISTORY SPECIFIC TESTS:
 ================================
 
 1. FRESH SESSION TEST:
@@ -213,7 +213,7 @@ ${index + 1}. ${testCase.name}:
 2. POPULATED HISTORY TEST:
    - Perform several searches
    - Check query history in localStorage:
-     * Open DevTools → Application → Local Storage
+     * Open DevTools -> Application -> Local Storage
      * Look for 'academic-explorer-storage'
      * Verify queryHistory array structure
 
@@ -319,7 +319,7 @@ test('check query history bug', async ({ page }) => {
     
     // This is where we'd detect the bug
     if (latestQuery.results && latestQuery.results.count === 0) {
-      console.log('🐛 ZERO RESULTS BUG DETECTED!');
+      console.log('[BUG] ZERO RESULTS BUG DETECTED!');
     }
   }
 });
