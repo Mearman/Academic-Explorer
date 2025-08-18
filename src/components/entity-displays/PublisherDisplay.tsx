@@ -1,7 +1,10 @@
 import { Stack, Text, Paper } from '@mantine/core';
+import { useEffect } from 'react';
 
-import { TwoPaneLayout } from '@/components';
+import { PageWithPanes, EntityPageHeader, StatusIndicator } from '@/components';
 import type { Publisher } from '@/lib/openalex/types';
+import { EntityType } from '@/lib/openalex/utils/entity-detection';
+import { useEntityValidationStore } from '@/stores/entity-validation-store';
 
 interface PublisherDisplayProps {
   entity: Publisher;
@@ -10,12 +13,67 @@ interface PublisherDisplayProps {
 }
 
 export function PublisherDisplay({ entity: publisher, useTwoPaneLayout = false, graphPane }: PublisherDisplayProps) {
+  const { validationSettings, validateEntity } = useEntityValidationStore();
+
+  // Auto-validate on load if enabled
+  useEffect(() => {
+    if (validationSettings.enabled && 
+        validationSettings.autoValidateOnLoad &&
+        validationSettings.validatedEntityTypes.includes(EntityType.PUBLISHER)) {
+      
+      validateEntity(publisher.id, EntityType.PUBLISHER, publisher, publisher.display_name).catch((error) => {
+        console.warn('Failed to validate publisher:', error);
+      });
+    }
+  }, [publisher.id, validateEntity, validationSettings]);
+
+  // Extract header information
+  const getSubtitle = () => {
+    const parts = [];
+    if (publisher.hierarchy_level !== undefined) {
+      parts.push(`Level ${publisher.hierarchy_level}`);
+    }
+    if (publisher.country_codes && publisher.country_codes.length > 0) {
+      parts.push(publisher.country_codes.join(', '));
+    }
+    return parts.join(' | ');
+  };
+
+  const getMetadata = () => {
+    const metadata = [];
+    
+    if (publisher.updated_date) {
+      metadata.push({
+        label: 'Last Updated',
+        value: new Date(publisher.updated_date).toLocaleDateString('en-GB'),
+      });
+    }
+
+    if (publisher.created_date) {
+      metadata.push({
+        label: 'Added to OpenAlex',
+        value: new Date(publisher.created_date).toLocaleDateString('en-GB'),
+      });
+    }
+    
+    return metadata;
+  };
+
+  // Create header content
+  const headerContent = (
+    <EntityPageHeader
+      entityType={EntityType.PUBLISHER}
+      title={publisher.display_name}
+      entityId={publisher.id}
+      subtitle={getSubtitle()}
+      externalIds={publisher.ids}
+      metadata={getMetadata()}
+    />
+  );
+
   const publisherContent = (
     <Stack gap="xl">
       <Paper p="xl" withBorder>
-        <Text size="xl" fw={700} mb="md">
-          {publisher.display_name}
-        </Text>
         <Text c="dimmed" mb="xs">
           Publisher ID: {publisher.id}
         </Text>
@@ -44,18 +102,24 @@ export function PublisherDisplay({ entity: publisher, useTwoPaneLayout = false, 
 
   if (useTwoPaneLayout && graphPane) {
     return (
-      <TwoPaneLayout
+      <PageWithPanes
+        headerContent={headerContent}
         leftPane={publisherContent}
         rightPane={graphPane}
-        stateKey={`publisher-${publisher.id}`}
-        leftTitle={publisher.display_name}
-        rightTitle="Related Entities"
-        showHeaders={true}
-        mobileTabLabels={{ left: 'Publisher', right: 'Graph' }}
-        defaultSplit={65}
+        twoPaneLayoutProps={{
+          stateKey: `publisher-${publisher.id}`,
+          defaultSplit: 65,
+          mobileTabLabels: { left: 'Publisher', right: 'Graph' },
+        }}
+        paneControlLabels={{ left: 'Publisher Data', right: 'Graph View' }}
       />
     );
   }
 
-  return publisherContent;
+  return (
+    <>
+      {headerContent}
+      {publisherContent}
+    </>
+  );
 }

@@ -1,7 +1,10 @@
 import { Stack, Text, Paper } from '@mantine/core';
+import { useEffect } from 'react';
 
-import { TwoPaneLayout } from '@/components';
+import { PageWithPanes, EntityPageHeader, StatusIndicator } from '@/components';
 import type { Topic } from '@/lib/openalex/types';
+import { EntityType } from '@/lib/openalex/utils/entity-detection';
+import { useEntityValidationStore } from '@/stores/entity-validation-store';
 
 interface TopicDisplayProps {
   entity: Topic;
@@ -10,12 +13,67 @@ interface TopicDisplayProps {
 }
 
 export function TopicDisplay({ entity: topic, useTwoPaneLayout = false, graphPane }: TopicDisplayProps) {
+  const { validationSettings, validateEntity } = useEntityValidationStore();
+
+  // Auto-validate on load if enabled
+  useEffect(() => {
+    if (validationSettings.enabled && 
+        validationSettings.autoValidateOnLoad &&
+        validationSettings.validatedEntityTypes.includes(EntityType.TOPIC)) {
+      
+      validateEntity(topic.id, EntityType.TOPIC, topic, topic.display_name).catch((error) => {
+        console.warn('Failed to validate topic:', error);
+      });
+    }
+  }, [topic.id, validateEntity, validationSettings]);
+
+  // Extract header information
+  const getSubtitle = () => {
+    const parts = [];
+    if (topic.field) {
+      parts.push(topic.field.display_name);
+    }
+    if (topic.subfield) {
+      parts.push(topic.subfield.display_name);
+    }
+    return parts.join(' | ');
+  };
+
+  const getMetadata = () => {
+    const metadata = [];
+    
+    if (topic.updated_date) {
+      metadata.push({
+        label: 'Last Updated',
+        value: new Date(topic.updated_date).toLocaleDateString('en-GB'),
+      });
+    }
+
+    if (topic.created_date) {
+      metadata.push({
+        label: 'Added to OpenAlex',
+        value: new Date(topic.created_date).toLocaleDateString('en-GB'),
+      });
+    }
+    
+    return metadata;
+  };
+
+  // Create header content
+  const headerContent = (
+    <EntityPageHeader
+      entityType={EntityType.TOPIC}
+      title={topic.display_name}
+      entityId={topic.id}
+      subtitle={getSubtitle()}
+      externalIds={topic.ids}
+      metadata={getMetadata()}
+    />
+  );
+
   const topicContent = (
     <Stack gap="xl">
       <Paper p="xl" withBorder>
-        <Text size="xl" fw={700} mb="md">
-          {topic.display_name}
-        </Text>
         <Text c="dimmed" mb="xs">
           Topic ID: {topic.id}
         </Text>
@@ -46,18 +104,24 @@ export function TopicDisplay({ entity: topic, useTwoPaneLayout = false, graphPan
 
   if (useTwoPaneLayout && graphPane) {
     return (
-      <TwoPaneLayout
+      <PageWithPanes
+        headerContent={headerContent}
         leftPane={topicContent}
         rightPane={graphPane}
-        stateKey={`topic-${topic.id}`}
-        leftTitle={topic.display_name}
-        rightTitle="Related Entities"
-        showHeaders={true}
-        mobileTabLabels={{ left: 'Topic', right: 'Graph' }}
-        defaultSplit={65}
+        twoPaneLayoutProps={{
+          stateKey: `topic-${topic.id}`,
+          defaultSplit: 65,
+          mobileTabLabels: { left: 'Topic', right: 'Graph' },
+        }}
+        paneControlLabels={{ left: 'Topic Data', right: 'Graph View' }}
       />
     );
   }
 
-  return topicContent;
+  return (
+    <>
+      {headerContent}
+      {topicContent}
+    </>
+  );
 }

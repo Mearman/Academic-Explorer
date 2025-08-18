@@ -26,9 +26,13 @@ import {
   IconId,
   IconBook
 } from '@tabler/icons-react';
+import { useEffect } from 'react';
 
-import { RawDataView, EntityLink, WorksTimeline, TwoPaneLayout } from '@/components';
+import { RawDataView, EntityLink, WorksTimeline, PageWithPanes, EntityPageHeader, useShouldRenderTwoPaneLayout } from '@/components';
+import { ValidationIndicator } from '@/components/atoms/validation-indicator';
 import type { Author } from '@/lib/openalex/types';
+import { EntityType } from '@/lib/openalex/utils/entity-detection';
+import { useEntityValidationStore } from '@/stores/entity-validation-store';
 
 // Helper function to get external links for an author
 function getAuthorExternalLinks(author: Author) {
@@ -91,30 +95,149 @@ interface AuthorDisplayProps {
 }
 
 export function AuthorDisplay({ entity: author, useTwoPaneLayout = false, graphPane }: AuthorDisplayProps) {
+  const { validationSettings, validateEntity } = useEntityValidationStore();
+  const shouldRenderTwoPaneLayout = useShouldRenderTwoPaneLayout();
   const externalLinks = getAuthorExternalLinks(author);
 
+  // Auto-validate on load if enabled
+  useEffect(() => {
+    if (validationSettings.enabled && 
+        validationSettings.autoValidateOnLoad &&
+        validationSettings.validatedEntityTypes.includes(EntityType.AUTHOR)) {
+      
+      validateEntity(author.id, EntityType.AUTHOR, author, author.display_name).catch((error) => {
+        console.warn('Failed to validate author:', error);
+      });
+    }
+  }, [author.id, validateEntity, validationSettings]);
+
+  // Extract header information - show core author data
+  const getSubtitle = () => {
+    if (author.works_count && author.works_count > 0) {
+      return `${author.works_count.toLocaleString()} works published`;
+    }
+    if (author.cited_by_count && author.cited_by_count > 0) {
+      return `${author.cited_by_count.toLocaleString()} total citations`;
+    }
+    if (author.summary_stats?.h_index) {
+      return `h-index: ${author.summary_stats.h_index}`;
+    }
+    return 'Author';
+  };
+
+  const getStatusInfo = () => {
+    const status = [];
+    
+    if (author.orcid) {
+      status.push(
+        <Badge key="orcid-verified" variant="outline" color="green" size="sm">
+          ORCID Verified
+        </Badge>
+      );
+    }
+    
+    return status;
+  };
+
+  const getMetadata = () => {
+    const metadata = [];
+    
+    if (author.updated_date) {
+      metadata.push({
+        label: 'Last Updated',
+        value: new Date(author.updated_date).toLocaleDateString('en-GB'),
+      });
+    }
+    
+    if (author.created_date) {
+      metadata.push({
+        label: 'Created',
+        value: new Date(author.created_date).toLocaleDateString('en-GB'),
+      });
+    }
+    
+    return metadata;
+  };
+
+  const headerContent = (
+    <div>
+      <EntityPageHeader
+        entityType={EntityType.AUTHOR}
+        title={author.display_name}
+        entityId={author.id}
+        subtitle={getSubtitle()}
+        alternativeNames={author.display_name_alternatives}
+        externalIds={author.ids}
+        statusInfo={getStatusInfo()}
+        metadata={getMetadata()}
+        quickActions={
+          <ValidationIndicator
+            entityId={author.id}
+            entityType={EntityType.AUTHOR}
+            showManageLink
+          />
+        }
+      />
+      
+      {/* Core author metrics - always visible */}
+      <div style={{ padding: '1rem 1.5rem', borderTop: '1px solid #e9ecef' }}>
+        <Grid>
+          <Grid.Col span={{ base: 12, sm: 6, md: 3 }}>
+            <Paper p="md" radius="md" withBorder>
+              <Stack gap="xs" align="center">
+                <Text size="lg" fw={700} c="blue">
+                  {(author.works_count ?? 0).toLocaleString()}
+                </Text>
+                <Text size="xs" c="dimmed" ta="center">
+                  Works Published
+                </Text>
+              </Stack>
+            </Paper>
+          </Grid.Col>
+          <Grid.Col span={{ base: 12, sm: 6, md: 3 }}>
+            <Paper p="md" radius="md" withBorder>
+              <Stack gap="xs" align="center">
+                <Text size="lg" fw={700} c="blue">
+                  {(author.cited_by_count ?? 0).toLocaleString()}
+                </Text>
+                <Text size="xs" c="dimmed" ta="center">
+                  Total Citations
+                </Text>
+              </Stack>
+            </Paper>
+          </Grid.Col>
+          <Grid.Col span={{ base: 12, sm: 6, md: 3 }}>
+            <Paper p="md" radius="md" withBorder>
+              <Stack gap="xs" align="center">
+                <Text size="lg" fw={700} c="blue">
+                  {author.summary_stats?.h_index ?? 0}
+                </Text>
+                <Text size="xs" c="dimmed" ta="center">
+                  h-index
+                </Text>
+              </Stack>
+            </Paper>
+          </Grid.Col>
+          <Grid.Col span={{ base: 12, sm: 6, md: 3 }}>
+            <Paper p="md" radius="md" withBorder>
+              <Stack gap="xs" align="center">
+                <Text size="lg" fw={700} c="blue">
+                  {author.summary_stats?.i10_index ?? 0}
+                </Text>
+                <Text size="xs" c="dimmed" ta="center">
+                  i10-index
+                </Text>
+              </Stack>
+            </Paper>
+          </Grid.Col>
+        </Grid>
+      </div>
+    </div>
+  );
+
   const authorContent = (
-    <Stack gap="xl">
-      {/* Author Header */}
-      <Paper p="xl" withBorder radius="md" bg="gradient-to-r">
-        <Group justify="space-between" align="flex-start">
-          <div style={{ flex: 1 }}>
-            <Title order={1} size="2rem" mb="sm">
-              {author.display_name}
-            </Title>
-            <Group gap="md">
-              <Badge variant="light" size="lg">
-                Author
-              </Badge>
-              {author.orcid && (
-                <Badge variant="outline" color="green" size="md">
-                  ORCID Verified
-                </Badge>
-              )}
-            </Group>
-          </div>
-        </Group>
-      </Paper>
+    <div className="container mx-auto px-4 py-8">
+      <Stack gap="xl">
 
       <Tabs defaultValue="overview" keepMounted={false}>
         <Tabs.List grow mb="xl">
@@ -131,58 +254,6 @@ export function AuthorDisplay({ entity: author, useTwoPaneLayout = false, graphP
 
       <Tabs.Panel value="overview">
         <Stack gap="xl">
-          {/* Enhanced Key Metrics */}
-          <Grid>
-            <Grid.Col span={{ base: 12, sm: 6, md: 3 }}>
-              <Paper p="lg" radius="md" withBorder>
-                <Stack gap="xs" align="center">
-                  <Text size="xl" fw={700} c="blue">
-                    {(author.works_count ?? 0).toLocaleString()}
-                  </Text>
-                  <Text size="sm" c="dimmed" ta="center">
-                    Works Published
-                  </Text>
-                </Stack>
-              </Paper>
-            </Grid.Col>
-            <Grid.Col span={{ base: 12, sm: 6, md: 3 }}>
-              <Paper p="lg" radius="md" withBorder>
-                <Stack gap="xs" align="center">
-                  <Text size="xl" fw={700} c="blue">
-                    {(author.cited_by_count ?? 0).toLocaleString()}
-                  </Text>
-                  <Text size="sm" c="dimmed" ta="center">
-                    Total Citations
-                  </Text>
-                </Stack>
-              </Paper>
-            </Grid.Col>
-            <Grid.Col span={{ base: 12, sm: 6, md: 3 }}>
-              <Paper p="lg" radius="md" withBorder>
-                <Stack gap="xs" align="center">
-                  <Text size="xl" fw={700} c="grape">
-                    {author.summary_stats?.h_index ?? 0}
-                  </Text>
-                  <Text size="sm" c="dimmed" ta="center">
-                    h-index
-                  </Text>
-                </Stack>
-              </Paper>
-            </Grid.Col>
-            <Grid.Col span={{ base: 12, sm: 6, md: 3 }}>
-              <Paper p="lg" radius="md" withBorder>
-                <Stack gap="xs" align="center">
-                  <Text size="xl" fw={700} c="orange">
-                    {author.summary_stats?.i10_index ?? 0}
-                  </Text>
-                  <Text size="sm" c="dimmed" ta="center">
-                    i10-index
-                  </Text>
-                </Stack>
-              </Paper>
-            </Grid.Col>
-          </Grid>
-
           {/* Enhanced Research Metrics */}
           <Card withBorder radius="md" p="xl">
             <Group mb="lg">
@@ -533,21 +604,34 @@ export function AuthorDisplay({ entity: author, useTwoPaneLayout = false, graphP
         />
       </Tabs.Panel>
       </Tabs>
-    </Stack>
+      </Stack>
+    </div>
   );
 
-  if (useTwoPaneLayout && graphPane) {
+  // Only render two-pane layout if requested AND we're not already inside a TwoPaneLayout
+  if (useTwoPaneLayout && graphPane && shouldRenderTwoPaneLayout) {
     return (
-      <TwoPaneLayout
+      <PageWithPanes
+        headerContent={headerContent}
         leftPane={authorContent}
         rightPane={graphPane}
-        stateKey={`author-${author.id}`}
-        leftTitle={author.display_name}
-        rightTitle="Related Entities"
-        showHeaders={true}
-        mobileTabLabels={{ left: 'Author', right: 'Graph' }}
-        defaultSplit={65}
+        twoPaneLayoutProps={{
+          stateKey: `author-${author.id}`,
+          defaultSplit: 65,
+          mobileTabLabels: { left: 'Author', right: 'Graph' },
+        }}
+        paneControlLabels={{ left: 'Author Data', right: 'Graph View' }}
       />
+    );
+  }
+  
+  // If we're inside a parent TwoPaneLayout, just render the header and content together
+  if (useTwoPaneLayout && !shouldRenderTwoPaneLayout) {
+    return (
+      <div>
+        {headerContent}
+        {authorContent}
+      </div>
     );
   }
 

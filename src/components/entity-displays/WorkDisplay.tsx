@@ -2,12 +2,12 @@ import { Stack, Text, Paper, Group, Title, Card, Badge, Grid } from '@mantine/co
 import { IconUsers, IconTag } from '@tabler/icons-react';
 import { useEffect } from 'react';
 
+import { EntityLink, PageWithPanes, EntityPageHeader, StatusIndicator, useShouldRenderTwoPaneLayout } from '@/components';
 import { ValidationIndicator } from '@/components/atoms/validation-indicator';
-import { WorkMetricsGrid } from '@/components/organisms/work-metrics-grid';
 import { WorkAbstract } from '@/components/organisms/work-abstract';
-import { WorkPublicationDetails } from '@/components/organisms/work-publication-details';
 import { WorkExternalLinks } from '@/components/organisms/work-external-links';
-import { EntityLink, TwoPaneLayout } from '@/components';
+import { WorkMetricsGrid } from '@/components/organisms/work-metrics-grid';
+import { WorkPublicationDetails } from '@/components/organisms/work-publication-details';
 import type { Work } from '@/lib/openalex/types';
 import { EntityType } from '@/lib/openalex/utils/entity-detection';
 import { useEntityValidationStore } from '@/stores/entity-validation-store';
@@ -20,6 +20,7 @@ interface WorkDisplayProps {
 
 export function WorkDisplay({ entity: work, useTwoPaneLayout = false, graphPane }: WorkDisplayProps) {
   const { validationSettings, validateEntity } = useEntityValidationStore();
+  const shouldRenderTwoPaneLayout = useShouldRenderTwoPaneLayout();
 
   // Auto-validate on load if enabled
   useEffect(() => {
@@ -33,31 +34,81 @@ export function WorkDisplay({ entity: work, useTwoPaneLayout = false, graphPane 
     }
   }, [work.id, validateEntity, validationSettings]);
 
+  // Extract header information
+  const getSubtitle = () => {
+    if (work.publication_year) {
+      return `Published ${work.publication_year}`;
+    }
+    return '';
+  };
+
+  const getStatusInfo = () => {
+    const status = [];
+    
+    if (work.open_access) {
+      status.push(
+        <StatusIndicator
+          key="oa-status"
+          status={work.open_access.is_oa ? 'active' : 'inactive'}
+          showLabel={true}
+          size="sm"
+        />
+      );
+    }
+    
+    return status;
+  };
+
+  const getMetadata = () => {
+    const metadata = [];
+    
+    if (work.updated_date) {
+      metadata.push({
+        label: 'Last Updated',
+        value: new Date(work.updated_date).toLocaleDateString('en-GB'),
+      });
+    }
+    
+    if (work.created_date) {
+      metadata.push({
+        label: 'Created',
+        value: new Date(work.created_date).toLocaleDateString('en-GB'),
+      });
+    }
+    
+    return metadata;
+  };
+
+  const headerContent = (
+    <div>
+      <EntityPageHeader
+        entityType={EntityType.WORK}
+        title={work.display_name}
+        entityId={work.id}
+        subtitle={getSubtitle()}
+        alternativeNames={undefined}
+        externalIds={work.ids}
+        statusInfo={getStatusInfo()}
+        metadata={getMetadata()}
+        quickActions={
+          <ValidationIndicator
+            entityId={work.id}
+            entityType={EntityType.WORK}
+            showManageLink
+          />
+        }
+      />
+      
+      {/* Core work information - always visible */}
+      <div style={{ padding: '1rem 1.5rem', borderTop: '1px solid #e9ecef' }}>
+        <WorkMetricsGrid work={work} />
+      </div>
+    </div>
+  );
+
   const workContent = (
     <div className="container mx-auto px-4 py-8">
       <Stack gap="xl">
-        {/* Header */}
-        <Paper p="xl" withBorder>
-          <Group justify="space-between" align="start" mb="md">
-            <div style={{ flex: 1 }}>
-              <Title order={1} mb="sm">
-                {work.display_name}
-              </Title>
-              <Text c="dimmed" size="sm">
-                Work ID: {work.id}
-              </Text>
-            </div>
-            <ValidationIndicator
-              entityId={work.id}
-              entityType={EntityType.WORK}
-              showManageLink
-            />
-          </Group>
-        </Paper>
-
-        {/* Metrics Grid */}
-        <WorkMetricsGrid work={work} />
-
         {/* Abstract */}
         <WorkAbstract work={work} />
 
@@ -134,18 +185,16 @@ export function WorkDisplay({ entity: work, useTwoPaneLayout = false, graphPane 
                   size="sm"
                   weight={600}
                 />
-                {work.primary_topic.score && (
-                  <Badge size="xs" variant="light" color="blue" ml="xs">
-                    Score: {work.primary_topic.score.toFixed(2)}
-                  </Badge>
-                )}
+                <Text size="xs" c="dimmed" mt="xs">
+                  Score: {work.primary_topic.score?.toFixed(3)}
+                </Text>
               </Paper>
             )}
-
+            
             {work.topics && work.topics.length > 0 && (
               <div>
                 <Text size="sm" fw={600} mb="xs">Topics</Text>
-                <Group gap="xs" mb="md">
+                <Group gap="xs" mb="lg">
                   {work.topics.slice(0, 8).map((topic) => (
                     <EntityLink
                       key={topic.id}
@@ -184,18 +233,30 @@ export function WorkDisplay({ entity: work, useTwoPaneLayout = false, graphPane 
     </div>
   );
 
-  if (useTwoPaneLayout && graphPane) {
+  // Only render two-pane layout if requested AND we're not already inside a TwoPaneLayout
+  if (useTwoPaneLayout && graphPane && shouldRenderTwoPaneLayout) {
     return (
-      <TwoPaneLayout
+      <PageWithPanes
+        headerContent={headerContent}
         leftPane={workContent}
         rightPane={graphPane}
-        stateKey={`work-${work.id}`}
-        leftTitle={work.display_name}
-        rightTitle="Related Entities"
-        showHeaders={true}
-        mobileTabLabels={{ left: 'Work', right: 'Graph' }}
-        defaultSplit={65}
+        twoPaneLayoutProps={{
+          stateKey: `work-${work.id}`,
+          defaultSplit: 65,
+          mobileTabLabels: { left: 'Work', right: 'Graph' },
+        }}
+        paneControlLabels={{ left: 'Work Data', right: 'Graph View' }}
       />
+    );
+  }
+  
+  // If we're inside a parent TwoPaneLayout, just render the header and content together
+  if (useTwoPaneLayout && !shouldRenderTwoPaneLayout) {
+    return (
+      <div>
+        {headerContent}
+        {workContent}
+      </div>
     );
   }
 

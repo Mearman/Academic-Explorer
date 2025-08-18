@@ -1,7 +1,10 @@
 import { Stack, Text, Paper } from '@mantine/core';
+import { useEffect } from 'react';
 
-import { TwoPaneLayout } from '@/components';
+import { PageWithPanes, EntityPageHeader, StatusIndicator } from '@/components';
 import type { Concept } from '@/lib/openalex/types';
+import { EntityType } from '@/lib/openalex/utils/entity-detection';
+import { useEntityValidationStore } from '@/stores/entity-validation-store';
 
 interface ConceptDisplayProps {
   entity: Concept;
@@ -10,12 +13,64 @@ interface ConceptDisplayProps {
 }
 
 export function ConceptDisplay({ entity: concept, useTwoPaneLayout = false, graphPane }: ConceptDisplayProps) {
+  const { validationSettings, validateEntity } = useEntityValidationStore();
+
+  // Auto-validate on load if enabled
+  useEffect(() => {
+    if (validationSettings.enabled && 
+        validationSettings.autoValidateOnLoad &&
+        validationSettings.validatedEntityTypes.includes(EntityType.CONCEPT)) {
+      
+      validateEntity(concept.id, EntityType.CONCEPT, concept, concept.display_name).catch((error) => {
+        console.warn('Failed to validate concept:', error);
+      });
+    }
+  }, [concept.id, validateEntity, validationSettings]);
+
+  // Extract header information
+  const getSubtitle = () => {
+    const parts = [];
+    if (concept.level !== undefined) {
+      parts.push(`Level ${concept.level}`);
+    }
+    return parts.join(' | ');
+  };
+
+  const getMetadata = () => {
+    const metadata = [];
+    
+    if (concept.updated_date) {
+      metadata.push({
+        label: 'Last Updated',
+        value: new Date(concept.updated_date).toLocaleDateString('en-GB'),
+      });
+    }
+
+    if (concept.created_date) {
+      metadata.push({
+        label: 'Added to OpenAlex',
+        value: new Date(concept.created_date).toLocaleDateString('en-GB'),
+      });
+    }
+    
+    return metadata;
+  };
+
+  // Create header content
+  const headerContent = (
+    <EntityPageHeader
+      entityType={EntityType.CONCEPT}
+      title={concept.display_name}
+      entityId={concept.id}
+      subtitle={getSubtitle()}
+      externalIds={concept.ids}
+      metadata={getMetadata()}
+    />
+  );
+
   const conceptContent = (
     <Stack gap="xl">
       <Paper p="xl" withBorder>
-        <Text size="xl" fw={700} mb="md">
-          {concept.display_name}
-        </Text>
         <Text c="dimmed" mb="xs">
           Concept ID: {concept.id}
         </Text>
@@ -44,18 +99,24 @@ export function ConceptDisplay({ entity: concept, useTwoPaneLayout = false, grap
 
   if (useTwoPaneLayout && graphPane) {
     return (
-      <TwoPaneLayout
+      <PageWithPanes
+        headerContent={headerContent}
         leftPane={conceptContent}
         rightPane={graphPane}
-        stateKey={`concept-${concept.id}`}
-        leftTitle={concept.display_name}
-        rightTitle="Related Entities"
-        showHeaders={true}
-        mobileTabLabels={{ left: 'Concept', right: 'Graph' }}
-        defaultSplit={65}
+        twoPaneLayoutProps={{
+          stateKey: `concept-${concept.id}`,
+          defaultSplit: 65,
+          mobileTabLabels: { left: 'Concept', right: 'Graph' },
+        }}
+        paneControlLabels={{ left: 'Concept Data', right: 'Graph View' }}
       />
     );
   }
 
-  return conceptContent;
+  return (
+    <>
+      {headerContent}
+      {conceptContent}
+    </>
+  );
 }
