@@ -1,37 +1,37 @@
-import { EntityType, parseEntityIdentifier } from '@/lib/openalex/utils/entity-detection';
+// Simple utility functions for entity links (simplified from complex utils)
 
-const PATH_MAP: Record<EntityType, string> = {
-  [EntityType.WORK]: 'works',
-  [EntityType.AUTHOR]: 'authors', 
-  [EntityType.SOURCE]: 'sources',
-  [EntityType.INSTITUTION]: 'institutions',
-  [EntityType.CONCEPT]: 'concepts',
-  [EntityType.TOPIC]: 'topics',
-  [EntityType.PUBLISHER]: 'publishers',
-  [EntityType.FUNDER]: 'funders',
-  [EntityType.KEYWORD]: 'keywords',
-  [EntityType.CONTINENT]: 'continents',
-  [EntityType.REGION]: 'regions',
-} as const;
-
-export function detectEntityType(entityId: string, providedType?: EntityType): EntityType | null {
-  if (providedType) return providedType;
-  try { 
-    return parseEntityIdentifier(entityId).type; 
-  } catch { 
-    return null; 
-  }
+export function getEntityUrl(entityId: string): string {
+  return entityId.startsWith('http') ? entityId : `/${entityId}`;
 }
 
-export function buildEntityPath(detectedType: EntityType, entityId: string): string {
-  const cleanId = entityId.replace('https://openalex.org/', '');
-  const pathSegment = PATH_MAP[detectedType];
-  if (!pathSegment) {
-    throw new Error(`No path mapping found for entity type: ${detectedType}`);
-  }
-  return `/${pathSegment}/${cleanId}`;
+export function getEntityDisplayName(entityId: string, displayName?: string): string {
+  return displayName || entityId;
 }
 
-export function buildExternalUrl(entityId: string): string {
+export function buildEntityLinkProps(entityId: string, displayName?: string) {
+  return {
+    to: getEntityUrl(entityId),
+    children: getEntityDisplayName(entityId, displayName),
+  };
+}
+
+export function detectEntityType(entityId: string): string | null {
+  if (entityId.startsWith('W')) return 'works';
+  if (entityId.startsWith('A')) return 'authors';
+  if (entityId.startsWith('S')) return 'sources';
+  if (entityId.startsWith('I')) return 'institutions';
+  if (entityId.startsWith('P')) return 'publishers';
+  if (entityId.startsWith('F')) return 'funders';
+  if (entityId.startsWith('T')) return 'topics';
+  if (entityId.startsWith('C')) return 'concepts';
+  return null;
+}
+
+export function buildEntityPath(entityId: string, entityType?: string): string {
+  const type = entityType || detectEntityType(entityId);
+  return type ? `/${type}/${entityId}` : `/${entityId}`;
+}
+
+export function buildExternalUrl(entityId: string, _?: unknown): string {
   return entityId.startsWith('http') ? entityId : `https://openalex.org/${entityId}`;
 }
