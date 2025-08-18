@@ -20,9 +20,9 @@ const mockLocalStorage = {
 };
 
 // Mock the simple graph storage
-vi.mock('@/lib/simple-graph-storage', () => {
+vi.mock('@/lib/entity-graph-storage', () => {
   return {
-    simpleGraphStorage: {
+    entityGraphStorage: {
       load: vi.fn(() => ({
         entities: {},
         edges: {},
@@ -96,15 +96,15 @@ describe('Entity History Persistence', () => {
     expect(result.current.graph.directlyVisitedVertices.has('A123456789')).toBe(true);
     
     // Should persist minimal data to simple storage
-    const { simpleGraphStorage } = await import('@/lib/simple-graph-storage');
-    expect(simpleGraphStorage.upsertEntity).toHaveBeenCalledWith('A123456789', 'author', 'Test Author');
-    expect(simpleGraphStorage.markEntityVisited).toHaveBeenCalledWith('A123456789');
+    const { entityGraphStorage } = await import('@/lib/entity-graph-storage');
+    expect(entityGraphStorage.upsertEntity).toHaveBeenCalledWith('A123456789', 'author', 'Test Author');
+    expect(entityGraphStorage.markEntityVisited).toHaveBeenCalledWith('A123456789');
   });
 
   it('should load existing entities from simple storage', async () => {
     // Mock existing data in simple storage
-    const { simpleGraphStorage } = await import('@/lib/simple-graph-storage');
-    (simpleGraphStorage.load as any).mockResolvedValue({
+    const { entityGraphStorage } = await import('@/lib/entity-graph-storage');
+    (entityGraphStorage.load as any).mockResolvedValue({
       entities: {
         'A987654321': {
           id: 'A987654321',
@@ -140,8 +140,8 @@ describe('Entity History Persistence', () => {
 
   it('should handle hydration errors gracefully', async () => {
     const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
-    const { simpleGraphStorage } = await import('@/lib/simple-graph-storage');
-    (simpleGraphStorage.load as any).mockRejectedValue(new Error('Storage error'));
+    const { entityGraphStorage } = await import('@/lib/entity-graph-storage');
+    (entityGraphStorage.load as any).mockRejectedValue(new Error('Storage error'));
     
     const { result } = renderHook(() => useEntityGraphStore());
     
@@ -159,8 +159,8 @@ describe('Entity History Persistence', () => {
 
   it('should handle entity visit persistence errors gracefully', async () => {
     const consoleWarnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
-    const { simpleGraphStorage } = await import('@/lib/simple-graph-storage');
-    (simpleGraphStorage.upsertEntity as any).mockRejectedValue(new Error('Persistence error'));
+    const { entityGraphStorage } = await import('@/lib/entity-graph-storage');
+    (entityGraphStorage.upsertEntity as any).mockRejectedValue(new Error('Persistence error'));
     
     const { result } = renderHook(() => useEntityGraphStore());
     

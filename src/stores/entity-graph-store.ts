@@ -28,7 +28,7 @@ import {
   getSimpleGraphMetadata, 
   saveEntityToSimpleStorage, 
   saveEdgeToSimpleStorage 
-} from '@/lib/simple-graph-sync';
+} from '@/lib/entity-graph-sync';
 
 interface EntityGraphState {
   // Core graph data
