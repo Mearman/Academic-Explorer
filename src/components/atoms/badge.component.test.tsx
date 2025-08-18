@@ -48,10 +48,10 @@ describe('Badge Basic Rendering', () => {
   });
 
   it('should forward ref correctly', () => {
-    const ref = React.createRef<HTMLSpanElement>();
+    const ref = React.createRef<HTMLDivElement>();
     render(<Badge ref={ref}>Test</Badge>);
     
-    expect(ref.current).toBeInstanceOf(HTMLSpanElement);
+    expect(ref.current).toBeInstanceOf(HTMLDivElement);
   });
 });
 

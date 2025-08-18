@@ -60,10 +60,10 @@ describe('EntityBadge Basic Rendering', () => {
   });
 
   it('should forward ref correctly', () => {
-    const ref = React.createRef<HTMLSpanElement>();
+    const ref = React.createRef<HTMLDivElement>();
     render(<EntityBadge entityType="author" ref={ref} />);
     
-    expect(ref.current).toBeInstanceOf(HTMLSpanElement);
+    expect(ref.current).toBeInstanceOf(HTMLDivElement);
   });
 });
 
