@@ -8,13 +8,15 @@
  * 4. Graph visualization should show related entities
  */
 
-import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { render, screen, waitFor } from '@testing-library/react';
 import { renderHook, act } from '@testing-library/react';
+import { describe, it, expect, beforeEach, vi } from 'vitest';
+
 import type { Author } from '@/lib/openalex/types';
 import { EntityType } from '@/lib/openalex/utils/entity-detection';
-import { EdgeType } from '@/types/entity-graph';
 import { useEntityGraphStore } from '@/stores/entity-graph-store';
+import { EdgeType } from '@/types/entity-graph';
+
 import { EntityGraphVisualization } from './entity-graph-visualization';
 
 // Mock the graph interaction hooks
@@ -162,7 +164,7 @@ describe('Entity Graph Visualization - Real Browser Scenario (TDD)', () => {
     const filteredVertices = storeResult.current.getFilteredVertices();
     const filteredEdges = storeResult.current.getFilteredEdges();
     
-    console.log('🔍 Graph state before rendering visualization:');
+    console.log('DEBUG: Graph state before rendering visualization:');
     console.log('Vertices:', filteredVertices.map(v => `${v.entityType}:${v.id}:${v.displayName}`));
     console.log('Edges:', filteredEdges.map(e => `${e.edgeType}:${e.sourceId}→${e.targetId}`));
 

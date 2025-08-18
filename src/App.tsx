@@ -1,10 +1,11 @@
 import { IconAlertTriangle } from '@tabler/icons-react';
 import { createRouter, RouterProvider, createHashHistory } from '@tanstack/react-router';
-import { ErrorBoundary } from 'react-error-boundary';
 import { useEffect } from 'react';
+import { ErrorBoundary } from 'react-error-boundary';
+
+import { useEntityGraphStore } from '@/stores/entity-graph-store';
 
 import { routeTree } from './routeTree.gen';
-import { useEntityGraphStore } from '@/stores/entity-graph-store';
 
 // Create a new router instance with hash routing for GitHub Pages
 const router = createRouter({ 
@@ -45,7 +46,7 @@ function ErrorFallback({ error, resetErrorBoundary }: { error: Error; resetError
 }
 
 function App() {
-  const { hydrateFromIndexedDB, isHydrated } = useEntityGraphStore();
+  const { hydrateFromIndexedDB } = useEntityGraphStore();
 
   // Initialize the entity graph store on app startup
   useEffect(() => {
