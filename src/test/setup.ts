@@ -2,6 +2,10 @@ import { afterAll, afterEach, beforeAll, vi } from 'vitest';
 import { setupServer } from 'msw/node';
 import { cleanup } from '@testing-library/react';
 import { handlers } from './mocks/handlers';
+import { enableMapSet } from 'immer';
+
+// CRITICAL: Enable Immer MapSet plugin for Map/Set support in Zustand store
+enableMapSet();
 
 // CRITICAL: Global references for cleanup tracking
 let cleanupTasks: (() => void | Promise<void>)[] = [];
