@@ -30,6 +30,13 @@ export function useEntityGraphTracking({
   const location = useLocation();
   const { visitEntity, addRelationship } = useEntityGraphStore();
 
+  // Wrapper for async addRelationship with error handling
+  const addRelationshipSafe = useCallback((event: RelationshipDiscoveryEvent): void => {
+    addRelationship(event).catch(error => {
+      console.warn('[EntityGraphTracking] Failed to add relationship:', error);
+    });
+  }, [addRelationship]);
+
   /**
    * Track an entity visit event
    */
@@ -51,7 +58,9 @@ export function useEntityGraphTracking({
       },
     };
 
-    visitEntity(event);
+    visitEntity(event).catch(error => {
+      console.error('[EntityGraphTracking] Failed to record entity visit:', error);
+    });
   }, [visitEntity]);
 
   /**
@@ -76,7 +85,7 @@ export function useEntityGraphTracking({
             confidence: authorship.is_corresponding ? 1.0 : 0.8,
           },
         };
-        addRelationship(event);
+        addRelationshipSafe(event);
 
         // Institution relationships through authorship
         authorship.institutions?.forEach(institution => {
@@ -131,7 +140,7 @@ export function useEntityGraphTracking({
             context: 'Work topic classification',
           },
         };
-        addRelationship(event);
+        addRelationshipSafe(event);
       }
     });
 
@@ -151,7 +160,7 @@ export function useEntityGraphTracking({
             confidence: concept.score,
           },
         };
-        addRelationship(event);
+        addRelationshipSafe(event);
       }
     });
 
@@ -170,7 +179,7 @@ export function useEntityGraphTracking({
             context: `Grant: ${grant.award_id}`,
           },
         };
-        addRelationship(event);
+        addRelationshipSafe(event);
       }
     });
 
@@ -190,7 +199,7 @@ export function useEntityGraphTracking({
       };
       addRelationship(event);
     });
-  }, [addRelationship]);
+  }, [addRelationshipSafe]);
 
   /**
    * Extract relationships from Author entity
@@ -213,7 +222,7 @@ export function useEntityGraphTracking({
             context: `Years: ${affiliation.years?.join(', ')}`,
           },
         };
-        addRelationship(event);
+        addRelationshipSafe(event);
       }
     });
 
@@ -232,7 +241,7 @@ export function useEntityGraphTracking({
             context: 'Most recent affiliation',
           },
         };
-        addRelationship(event);
+        addRelationshipSafe(event);
       }
     });
 
@@ -251,10 +260,10 @@ export function useEntityGraphTracking({
             context: 'Author research area',
           },
         };
-        addRelationship(event);
+        addRelationshipSafe(event);
       }
     });
-  }, [addRelationship]);
+  }, [addRelationshipSafe]);
 
   /**
    * Extract relationships from Institution entity
@@ -283,7 +292,7 @@ export function useEntityGraphTracking({
             context: `Relationship: ${associated.relationship}`,
           },
         };
-        addRelationship(event);
+        addRelationshipSafe(event);
       }
     });
 
@@ -308,10 +317,10 @@ export function useEntityGraphTracking({
             context: 'Institutional research focus',
           },
         };
-        addRelationship(event);
+        addRelationshipSafe(event);
       }
     });
-  }, [addRelationship]);
+  }, [addRelationshipSafe]);
 
   /**
    * Extract relationships from Source entity
@@ -351,10 +360,10 @@ export function useEntityGraphTracking({
             context: 'Journal subject area',
           },
         };
-        addRelationship(event);
+        addRelationshipSafe(event);
       }
     });
-  }, [addRelationship]);
+  }, [addRelationshipSafe]);
 
   /**
    * Extract relationships from any entity
@@ -396,7 +405,7 @@ export function useEntityGraphTracking({
                     context: 'Topic relationship',
                   },
                 };
-                addRelationship(event);
+                addRelationshipSafe(event);
               }
             });
           }
@@ -412,7 +421,7 @@ export function useEntityGraphTracking({
     extractAuthorRelationships,
     extractInstitutionRelationships,
     extractSourceRelationships,
-    addRelationship,
+    addRelationshipSafe,
   ]);
 
   /**
