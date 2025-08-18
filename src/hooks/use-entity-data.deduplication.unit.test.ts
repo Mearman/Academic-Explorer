@@ -5,9 +5,8 @@
 
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { renderHook, waitFor, act } from '@testing-library/react';
-import { useEntityData, EntityType, EntityLoadingState } from './use-entity-data';
 
-// Mock the cached OpenAlex client
+// Mock the cached OpenAlex client with factory function
 vi.mock('@/lib/openalex', () => ({
   cachedOpenAlex: {
     work: vi.fn(),
@@ -45,6 +44,12 @@ vi.mock('@/lib/openalex/utils/entity-detection', () => ({
   },
 }));
 
+import { useEntityData, EntityType, EntityLoadingState } from './use-entity-data';
+import { cachedOpenAlex } from '@/lib/openalex';
+import type { Work, Author } from '@/lib/openalex/types';
+
+const mockCachedOpenAlex = vi.mocked(cachedOpenAlex);
+
 describe('useEntityData with Request Deduplication', () => {
   beforeEach(() => {
     vi.clearAllMocks();
@@ -61,11 +66,11 @@ describe('useEntityData with Request Deduplication', () => {
         title: 'Test Work',
         cited_by_count: 100,
         display_name: 'Test Work'
-      };
+      } as Work;
 
       // Create a controlled promise to simulate async behavior
-      let resolveWork: (value: any) => void;
-      const workPromise = new Promise((resolve) => {
+      let resolveWork: (value: Work) => void;
+      const workPromise = new Promise<Work>((resolve) => {
         resolveWork = resolve;
       });
 
@@ -91,7 +96,7 @@ describe('useEntityData with Request Deduplication', () => {
 
       // Resolve the work promise
       act(() => {
-        resolveWork!(workData);
+        resolveWork(workData);
       });
 
       // Wait for all hooks to complete
@@ -116,13 +121,13 @@ describe('useEntityData with Request Deduplication', () => {
         id: 'W123456789',
         title: 'Test Work',
         display_name: 'Test Work'
-      };
+      } as Work;
 
       const authorData = {
         id: 'A987654321',
         display_name: 'Test Author',
         works_count: 50
-      };
+      } as Author;
 
       mockCachedOpenAlex.work.mockResolvedValue(workData);
       mockCachedOpenAlex.author.mockResolvedValue(authorData);
@@ -156,7 +161,7 @@ describe('useEntityData with Request Deduplication', () => {
 
       // Create a controlled promise to simulate error
       let rejectWork: (error: Error) => void;
-      const workPromise = new Promise((_, reject) => {
+      const workPromise = new Promise<Work>((_, reject) => {
         rejectWork = reject;
       });
 
@@ -173,7 +178,7 @@ describe('useEntityData with Request Deduplication', () => {
 
       // Reject the work promise
       act(() => {
-        rejectWork!(error);
+        rejectWork(error);
       });
 
       // Wait for all hooks to complete
@@ -199,13 +204,13 @@ describe('useEntityData with Request Deduplication', () => {
         id: 'W123456789',
         title: 'Test Work Version 1',
         display_name: 'Test Work Version 1'
-      };
+      } as Work;
 
       const workData2 = {
         id: 'W123456789',
         title: 'Test Work Version 2',
         display_name: 'Test Work Version 2'
-      };
+      } as Work;
 
       mockCachedOpenAlex.work
         .mockResolvedValueOnce(workData1)
@@ -246,13 +251,13 @@ describe('useEntityData with Request Deduplication', () => {
         id: 'W123456789',
         title: 'Initial Work',
         display_name: 'Initial Work'
-      };
+      } as Work;
 
       const refetchedData = {
         id: 'W123456789',
         title: 'Refetched Work',
         display_name: 'Refetched Work'
-      };
+      } as Work;
 
       mockCachedOpenAlex.work
         .mockResolvedValueOnce(initialData)
@@ -304,7 +309,7 @@ describe('useEntityData with Request Deduplication', () => {
         id: 'W123456789',
         title: 'Retry Success',
         display_name: 'Retry Success'
-      };
+      } as Work;
 
       mockCachedOpenAlex.work
         .mockRejectedValueOnce(error)
@@ -356,13 +361,13 @@ describe('useEntityData with Request Deduplication', () => {
         id: 'W123456789',
         title: 'Cached Work',
         display_name: 'Cached Work'
-      };
+      } as Work;
 
       const freshData = {
         id: 'W123456789',
         title: 'Fresh Work',
         display_name: 'Fresh Work'
-      };
+      } as Work;
 
       mockCachedOpenAlex.work
         .mockResolvedValueOnce(cachedData)  // Normal request
@@ -394,7 +399,7 @@ describe('useEntityData with Request Deduplication', () => {
         id: 'W123456789',
         title: 'Test Work',
         display_name: 'Test Work'
-      };
+      } as Work;
 
       mockCachedOpenAlex.work.mockResolvedValue(workData);
 
@@ -429,11 +434,11 @@ describe('useEntityData with Request Deduplication', () => {
         id: 'W123456789',
         title: 'Test Work',
         display_name: 'Test Work'
-      };
+      } as Work;
 
       // Create a controlled promise
-      let resolveWork: (value: any) => void;
-      const workPromise = new Promise((resolve) => {
+      let resolveWork: (value: Work) => void;
+      const workPromise = new Promise<Work>((resolve) => {
         resolveWork = resolve;
       });
 
@@ -457,7 +462,7 @@ describe('useEntityData with Request Deduplication', () => {
 
       // Resolve the promise
       act(() => {
-        resolveWork!(workData);
+        resolveWork(workData);
       });
 
       // Wait for remaining hook to complete
@@ -479,11 +484,11 @@ describe('useEntityData with Request Deduplication', () => {
         id: 'W123456789',
         title: 'Shared Work',
         display_name: 'Shared Work'
-      };
+      } as Work;
 
       // Create controlled promise to ensure concurrency
-      let resolveWork: (value: any) => void;
-      const workPromise = new Promise((resolve) => {
+      let resolveWork: (value: Work) => void;
+      const workPromise = new Promise<Work>((resolve) => {
         resolveWork = resolve;
       });
 
@@ -509,7 +514,7 @@ describe('useEntityData with Request Deduplication', () => {
 
       // Resolve the promise
       act(() => {
-        resolveWork!(workData);
+        resolveWork(workData);
       });
 
       // Wait for both to complete
@@ -533,7 +538,7 @@ describe('useEntityData with Request Deduplication', () => {
         id: 'W123456789',
         title: 'Popular Work',
         display_name: 'Popular Work'
-      };
+      } as Work;
 
       mockCachedOpenAlex.work.mockResolvedValue(workData);
 
@@ -562,7 +567,7 @@ describe('useEntityData with Request Deduplication', () => {
         id: 'W123456789',
         title: 'Cleanup Test Work',
         display_name: 'Cleanup Test Work'
-      };
+      } as Work;
 
       mockCachedOpenAlex.work.mockResolvedValue(workData);
 

@@ -56,7 +56,7 @@ describe('useEntityData Basic Deduplication', () => {
 
   it('should demonstrate that deduplication happens at cache level', async () => {
     // Import after mocks are set up
-    const { useEntityData, EntityType } = await import('./use-entity-data');
+    const { useEntityData } = await import('./use-entity-data');
 
     const workData = {
       id: 'W123456789',
@@ -69,11 +69,11 @@ describe('useEntityData Basic Deduplication', () => {
 
     // Render multiple hooks for the same entity
     const { result: result1 } = renderHook(() =>
-      useEntityData('W123456789', mockEntityType.WORK)
+      useEntityData('W123456789', mockEntityType.WORK as any)
     );
 
     const { result: result2 } = renderHook(() =>
-      useEntityData('W123456789', mockEntityType.WORK)
+      useEntityData('W123456789', mockEntityType.WORK as any)
     );
 
     // Wait for both to complete
@@ -97,7 +97,7 @@ describe('useEntityData Basic Deduplication', () => {
   });
 
   it('should handle different entities independently', async () => {
-    const { useEntityData, EntityType } = await import('./use-entity-data');
+    const { useEntityData } = await import('./use-entity-data');
 
     const workData = { id: 'W123', title: 'Work', display_name: 'Work' };
     const authorData = { id: 'A456', display_name: 'Author', works_count: 10 };
@@ -107,11 +107,11 @@ describe('useEntityData Basic Deduplication', () => {
 
     // Different entities should not be deduplicated
     const { result: workResult } = renderHook(() =>
-      useEntityData('W123', mockEntityType.WORK)
+      useEntityData('W123', mockEntityType.WORK as any)
     );
 
     const { result: authorResult } = renderHook(() =>
-      useEntityData('A456', mockEntityType.AUTHOR)
+      useEntityData('A456', mockEntityType.AUTHOR as any)
     );
 
     await waitFor(() => {
@@ -128,7 +128,7 @@ describe('useEntityData Basic Deduplication', () => {
   });
 
   it('should verify that the cache interceptor provides deduplication', async () => {
-    const { useEntityData, EntityType } = await import('./use-entity-data');
+    const { useEntityData } = await import('./use-entity-data');
 
     const workData = {
       id: 'W999',
@@ -146,7 +146,7 @@ describe('useEntityData Basic Deduplication', () => {
 
     // Start multiple hooks at the same time
     const promises = Array.from({ length: 5 }, () =>
-      renderHook(() => useEntityData('W999', mockEntityType.WORK))
+      renderHook(() => useEntityData('W999', mockEntityType.WORK as any))
     );
 
     // Resolve after all hooks are started

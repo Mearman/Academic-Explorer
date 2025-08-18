@@ -35,6 +35,9 @@ import {
   EntityDetectionError 
 } from '@/lib/openalex/utils/entity-detection';
 
+// Re-export EntityType for use in tests and other modules
+export { EntityType } from '@/lib/openalex/utils/entity-detection';
+
 /**
  * Union type for all possible entity data types
  */
