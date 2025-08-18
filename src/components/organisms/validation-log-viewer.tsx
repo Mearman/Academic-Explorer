@@ -350,7 +350,7 @@ function ValidationLogDetails({ logEntry }: ValidationLogDetailsProps) {
                       {result.entityDisplayName || result.entityId}
                     </Text>
                     <Text size="sm" c="dimmed">
-                      {result.entityType} • {result.issues.length} issues
+                      {result.entityType} | {result.issues.length} issues
                     </Text>
                   </div>
                   

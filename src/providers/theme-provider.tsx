@@ -7,9 +7,9 @@
 import { MantineProvider } from '@mantine/core';
 import { useEffect, useState } from 'react';
 
+import { lightTheme, darkTheme } from '@/components/design-tokens.css';
 import { mantineTheme } from '@/lib/mantine-theme';
 import { useAppStore } from '@/stores/app-store';
-import { lightTheme, darkTheme } from '@/components/design-tokens.css';
 
 interface ThemeProviderProps {
   children: React.ReactNode;

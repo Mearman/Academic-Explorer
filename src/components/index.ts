@@ -131,6 +131,9 @@ export { ValidationLogViewer } from './organisms/validation-log-viewer';
 export { ValidationDashboard } from './organisms/validation-dashboard';
 export { QueryBuilder } from './organisms/query-builder';
 export { QueryPreview } from './organisms/query-preview';
+export { EntityPageHeader } from './organisms/entity-page-header';
+export { WorksOverview } from './organisms/works-overview';
+export { AuthorsOverview } from './organisms/authors-overview';
 
 // Templates
 export { 
@@ -142,6 +145,7 @@ export {
 } from './templates/entity-page-template';
 export { EntityPageWithGraph } from './templates/entity-page-with-graph';
 export { TwoPaneLayout } from './templates/two-pane-layout';
+export { PageWithPanes } from './templates/page-with-panes';
 export { default as EntityErrorBoundary } from './templates/error-boundary';
 export { AppShellLayout } from './templates/app-shell-layout';
 
@@ -194,3 +198,10 @@ export {
   getEntityColour, 
   getOpenAccessColour 
 } from './design-tokens.utils';
+
+// Context providers
+export { 
+  LayoutProvider, 
+  useLayoutContext, 
+  useShouldRenderTwoPaneLayout 
+} from '../contexts/layout-context';

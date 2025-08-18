@@ -1,6 +1,6 @@
-import { useState } from 'react';
 import { Stack, Card, Text, Group, Button, Alert, Anchor } from '@mantine/core';
 import { IconInfoCircle, IconBook, IconSearch, IconRefresh } from '@tabler/icons-react';
+import { useState } from 'react';
 
 import { AdvancedSearchForm, type AdvancedSearchFormData } from '@/components/molecules/advanced-search-form';
 import { QueryHistory } from '@/components/organisms/query-history';
@@ -80,23 +80,23 @@ export function QueryBuilder({
                 <strong>Search operators:</strong>
               </Text>
               <Text size="xs" c="dimmed" ml="md">
-                • <code>AND</code>, <code>OR</code>, <code>NOT</code> - Boolean operators<br/>
-                • <code>"exact phrase"</code> - Exact phrase matching<br/>
-                • <code>title.search:machine learning</code> - Field-specific search<br/>
-                • <code>abstract.search:"deep learning"</code> - Field + exact phrase
+                | <code>AND</code>, <code>OR</code>, <code>NOT</code> - Boolean operators<br/>
+                | <code>"exact phrase"</code> - Exact phrase matching<br/>
+                | <code>title.search:machine learning</code> - Field-specific search<br/>
+                | <code>abstract.search:"deep learning"</code> - Field + exact phrase
               </Text>
               
               <Text size="sm" mt="xs">
                 <strong>Wildcards:</strong>
               </Text>
               <Text size="xs" c="dimmed" ml="md">
-                • <code>*</code> - Multiple characters (e.g., <code>climat*</code>)<br/>
-                • <code>?</code> - Single character (e.g., <code>wom?n</code>)
+                | <code>*</code> - Multiple characters (e.g., <code>climat*</code>)<br/>
+                | <code>?</code> - Single character (e.g., <code>wom?n</code>)
               </Text>
               
               <Text size="sm" mt="xs">
                 <Anchor href="https://docs.openalex.org/how-to-use-the-api/get-lists-of-entities/search-entities" target="_blank" size="xs">
-                  View full OpenAlex search documentation →
+                  View full OpenAlex search documentation
                 </Anchor>
               </Text>
             </Stack>
@@ -147,11 +147,11 @@ export function QueryBuilder({
                 <strong>Pro tips for better results:</strong>
               </Text>
               <Text size="xs" c="dimmed">
-                • Use specific terms for more relevant results<br/>
-                • Combine filters to narrow down your search<br/>
-                • Try different publication year ranges<br/>
-                • Use open access filters for freely available papers<br/>
-                • Sort by citation count for influential papers
+                | Use specific terms for more relevant results<br/>
+                | Combine filters to narrow down your search<br/>
+                | Try different publication year ranges<br/>
+                | Use open access filters for freely available papers<br/>
+                | Sort by citation count for influential papers
               </Text>
             </Stack>
           </Alert>

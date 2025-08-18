@@ -293,7 +293,7 @@ function AuthorSpecificSections({ entity }: { entity: any }) {
                 </span>
               )}
               {affiliation.institution.country_code && (
-                <span> • {affiliation.institution.country_code}</span>
+                <span> | {affiliation.institution.country_code}</span>
               )}
             </p>
             <p style={{ margin: '4px 0 0 0', fontSize: '12px', color: '#9ca3af' }}>

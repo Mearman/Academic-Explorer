@@ -87,10 +87,15 @@ export const EntityHeader = forwardRef<HTMLElement, EntityHeaderProps>(
     // const entityColour = getEntityColour(entityType); // Removed - not used after removing style prop
 
     const getSubtitle = (): string => {
-      // Author subtitle
-      if (hasLastKnownInstitutions(entity) && entity.last_known_institutions?.[0]) {
-        const inst = entity.last_known_institutions[0];
-        return `${inst.display_name}${inst.country_code ? ` (${inst.country_code})` : ''}`;
+      // Author subtitle - show core author data
+      if (hasLastKnownInstitutions(entity)) {
+        if ('works_count' in entity && entity.works_count) {
+          return `${entity.works_count.toLocaleString()} works published`;
+        }
+        if ('cited_by_count' in entity && entity.cited_by_count) {
+          return `${entity.cited_by_count.toLocaleString()} total citations`;
+        }
+        return 'Author';
       }
       
       // Work subtitle
@@ -103,15 +108,18 @@ export const EntityHeader = forwardRef<HTMLElement, EntityHeaderProps>(
         const parts = [];
         if (entity.type) parts.push(entity.type.charAt(0).toUpperCase() + entity.type.slice(1));
         if (entity.country_code) parts.push(entity.country_code);
-        return parts.join(' • ');
+        return parts.join(' | ');
       }
       
-      // Source subtitle
+      // Source subtitle - show core source data
       if (hasHostOrganization(entity)) {
         const parts = [];
-        if (entity.host_organization_name) parts.push(entity.host_organization_name);
+        if (hasType(entity) && entity.type) parts.push(entity.type.charAt(0).toUpperCase() + entity.type.slice(1));
         if (hasCountryCode(entity) && entity.country_code) parts.push(entity.country_code);
-        return parts.join(' • ');
+        if (parts.length === 0 && 'works_count' in entity && entity.works_count) {
+          return `${entity.works_count.toLocaleString()} works published`;
+        }
+        return parts.join(' | ') || 'Source';
       }
       
       return '';

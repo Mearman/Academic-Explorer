@@ -1,13 +1,13 @@
 'use client';
 
-import { useState, useEffect, useMemo } from 'react';
 import { Code, Text, Badge, Card, Group, Stack, Divider, Alert, ScrollArea } from '@mantine/core';
 import { IconInfoCircle, IconAlertTriangle, IconCheck, IconEye } from '@tabler/icons-react';
+import { useState, useEffect, useMemo } from 'react';
 
+import { LoadingSkeleton } from '@/components/atoms/loading-skeleton';
+import { SearchResultItem } from '@/components/molecules/search-result-item/SearchResultItem';
 import type { WorksParams, Work, ApiResponse } from '@/lib/openalex/types';
 import { useWorks } from '@/lib/react-query';
-import { SearchResultItem } from '@/components/molecules/search-result-item/SearchResultItem';
-import { LoadingSkeleton } from '@/components/atoms/loading-skeleton';
 
 import * as styles from './query-preview.css';
 

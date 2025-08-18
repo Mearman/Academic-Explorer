@@ -1,5 +1,6 @@
 import { AppShell, NavLink, Text, rem } from '@mantine/core';
 import {
+  IconDashboard,
   IconSearch,
   IconUsers,
   IconBook,
@@ -14,6 +15,7 @@ import { Link, useLocation } from '@tanstack/react-router';
 import { BuildInfo } from '../atoms/build-info';
 
 const navigationItems = [
+  { icon: IconDashboard, label: 'Dashboard', href: '/dashboard' },
   { icon: IconSearch, label: 'Query', href: '/query' },
   { icon: IconBook, label: 'Works', href: '/works' },
   { icon: IconUsers, label: 'Authors', href: '/authors' },

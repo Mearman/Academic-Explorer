@@ -177,7 +177,7 @@ export function QueryHistory({ onRerunQuery }: QueryHistoryProps) {
                     {hasOccurrences && (
                       <span className={styles.pageCount}>
                         {occurrenceTypes.pageCount > 1 && `Pages: ${occurrenceTypes.pages.join(', ')}`}
-                        {occurrenceTypes.rerunCount > 0 && ` • ${occurrenceTypes.rerunCount} reruns`}
+                        {occurrenceTypes.rerunCount > 0 && ` | ${occurrenceTypes.rerunCount} reruns`}
                         {occurrenceTypes.pageCount === 1 && occurrenceTypes.rerunCount === 0 && `${occurrenceCount} occurrences`}
                       </span>
                     )}
@@ -210,7 +210,7 @@ export function QueryHistory({ onRerunQuery }: QueryHistoryProps) {
                     Rerun
                   </button>
                   <span className={`${styles.expandIcon} ${isExpanded ? styles.expanded : ''}`}>
-                    ▼
+                    [EXPAND]
                   </span>
                 </div>
               </div>

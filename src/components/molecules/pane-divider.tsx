@@ -1,5 +1,5 @@
-import React, { useEffect, useRef } from 'react';
 import { IconChevronLeft, IconChevronRight } from '@tabler/icons-react';
+import React, { useEffect, useRef } from 'react';
 
 import * as styles from '../templates/two-pane-layout.css';
 

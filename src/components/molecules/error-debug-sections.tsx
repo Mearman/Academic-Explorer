@@ -41,10 +41,10 @@ export function SystemInfoSection({ systemInfo }: SystemInfoSectionProps) {
         <div>
           <span className="font-medium">Storage Support:</span>
           <span className={systemInfo.localStorage ? 'text-green-600' : 'text-red-600'}>
-            {' '}localStorage: {systemInfo.localStorage ? '✓' : '✗'}
+            {' '}localStorage: {systemInfo.localStorage ? 'YES' : 'NO'}
           </span>
           <span className={systemInfo.indexedDB ? 'text-green-600' : 'text-red-600'}>
-            {' '}IndexedDB: {systemInfo.indexedDB ? '✓' : '✗'}
+            {' '}IndexedDB: {systemInfo.indexedDB ? 'YES' : 'NO'}
           </span>
         </div>
       </div>

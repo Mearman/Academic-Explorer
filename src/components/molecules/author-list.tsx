@@ -68,7 +68,7 @@ function renderInstitution(institution: Authorship['institutions'][0], index: nu
         </Badge>
       )}
       {index < totalCount - 1 && (
-        <Text size="xs" c="dimmed">•</Text>
+        <Text size="xs" c="dimmed">|</Text>
       )}
     </React.Fragment>
   );

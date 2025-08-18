@@ -1,6 +1,7 @@
-import React, { useRef, useState } from 'react';
 import { IconLayoutSidebar, IconChartBar } from '@tabler/icons-react';
+import React, { useRef, useState, useEffect } from 'react';
 
+import { LayoutProvider } from '@/contexts/layout-context';
 import { usePaneLayout } from '@/hooks/use-pane-layout';
 
 import { PaneDivider } from '../molecules/pane-divider';
@@ -45,6 +46,10 @@ interface TwoPaneLayoutProps {
     left: string;
     right: string;
   };
+  /** Callback when pane state changes */
+  onPaneStateChange?: (leftCollapsed: boolean, rightCollapsed: boolean) => void;
+  /** Callback to provide toggle functions to parent */
+  onToggleFunctionsReady?: (toggleLeft: () => void, toggleRight: () => void) => void;
 }
 
 export function TwoPaneLayout({
@@ -65,6 +70,8 @@ export function TwoPaneLayout({
   showHeaders = false,
   showMobileTabs = true,
   mobileTabLabels = { left: 'Data', right: 'Graph' },
+  onPaneStateChange,
+  onToggleFunctionsReady,
 }: TwoPaneLayoutProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const [activeMobileTab, setActiveMobileTab] = useState<'left' | 'right'>('left');
@@ -88,6 +95,20 @@ export function TwoPaneLayout({
     leftCollapsible,
     rightCollapsible,
   });
+
+  // Provide toggle functions to parent component
+  useEffect(() => {
+    if (onToggleFunctionsReady) {
+      onToggleFunctionsReady(toggleLeftPane, toggleRightPane);
+    }
+  }, [onToggleFunctionsReady, toggleLeftPane, toggleRightPane]);
+
+  // Notify parent of state changes
+  useEffect(() => {
+    if (onPaneStateChange) {
+      onPaneStateChange(isLeftCollapsed, isRightCollapsed);
+    }
+  }, [onPaneStateChange, isLeftCollapsed, isRightCollapsed]);
 
   // Use prop values initially, then state takes over
   const leftPaneCollapsed = isLeftCollapsed;
@@ -128,7 +149,8 @@ export function TwoPaneLayout({
   };
 
   return (
-    <div className={styles.container} ref={containerRef}>
+    <LayoutProvider isInTwoPaneLayout={true}>
+      <div className={styles.container} ref={containerRef}>
       {/* Mobile tabs - only visible on mobile */}
       {showMobileTabs && (
         <div className={styles.mobileTabContainer}>
@@ -259,6 +281,7 @@ export function TwoPaneLayout({
           }}
         />
       )}
-    </div>
+      </div>
+    </LayoutProvider>
   );
 }

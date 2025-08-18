@@ -1,8 +1,8 @@
 import React, { useState, useMemo, useCallback } from 'react';
 
 import { Icon, LoadingSkeleton } from '@/components';
-import { useEntityGraphStore } from '@/stores/entity-graph-store';
 import { useGraphKeyboardShortcuts } from '@/hooks/use-graph-keyboard-shortcuts';
+import { useEntityGraphStore } from '@/stores/entity-graph-store';
 import type { 
   EntityGraphVertex, 
   EntityGraphEdge, 
@@ -16,16 +16,16 @@ import { ZoomControls } from './graph-controls/ZoomControls';
 import { GraphInfoPanel } from './graph-info/GraphInfoPanel';
 import { createForceSimulation, createCircularLayout } from './graph-layout/force-simulation';
 import { GraphLegend } from './graph-legend/GraphLegend';
+import { GraphSearch } from './graph-search/GraphSearch';
 import { GraphSVG } from './graph-svg/GraphSVG';
 import { GraphTooltip } from './graph-tooltip/GraphTooltip';
-import { GraphSearch } from './graph-search/GraphSearch';
-import { useGraphInteractions } from './hooks/use-graph-interactions';
 import { 
   exportGraphAsPNG, 
   exportGraphAsSVG, 
   generateExportFilename, 
   getOptimalExportDimensions 
 } from './graph-utils/graph-export';
+import { useGraphInteractions } from './hooks/use-graph-interactions';
 
 // Utility functions for entity graph calculations
 function getEntityColor(entityType: EntityType): string {

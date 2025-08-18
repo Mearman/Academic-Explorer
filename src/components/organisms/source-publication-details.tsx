@@ -5,7 +5,8 @@ import {
   IconId, 
   IconTags,
   IconChartLine,
-  IconCalendar 
+  IconCalendar,
+  IconArrowRight 
 } from '@tabler/icons-react';
 import React from 'react';
 
@@ -127,7 +128,7 @@ export function SourcePublicationDetails({ source }: SourcePublicationDetailsPro
                         {orgId}
                       </Text>
                       {index < source.host_organization_lineage!.length - 1 && (
-                        <Text size="xs" c="dimmed">→</Text>
+                        <IconArrowRight size={16} />
                       )}
                     </React.Fragment>
                   ))}

@@ -1,6 +1,8 @@
 import React, { useState, useCallback, useEffect, useRef } from 'react';
+
 import { Icon } from '@/components';
 import type { EntityGraphVertex, EntityType } from '@/types/entity-graph';
+
 import * as styles from '../entity-graph-visualization.css';
 
 interface GraphSearchProps {
