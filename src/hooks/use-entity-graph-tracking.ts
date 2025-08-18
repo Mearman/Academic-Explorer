@@ -8,13 +8,14 @@ import type {
   Source, 
   Topic
 } from '@/lib/openalex/types';
+import { saveEntityToSimpleStorage } from '@/lib/entity-graph-sync';
 import { useEntityGraphStore } from '@/stores/entity-graph-store';
 import type {
   EntityVisitEvent,
   RelationshipDiscoveryEvent,
-  EntityType,
 } from '@/types/entity-graph';
 import { EdgeType } from '@/types/entity-graph';
+import { EntityType } from '@/lib/openalex/utils/entity-detection';
 
 interface UseEntityGraphTrackingProps {
   /** Whether to automatically track entity visits */
@@ -425,9 +426,209 @@ export function useEntityGraphTracking({
   ]);
 
   /**
+   * Extract and persist related entities from Work entity to simple storage
+   */
+  const persistWorkRelatedEntities = useCallback(async (work: Work) => {
+    const promises: Promise<void>[] = [];
+
+    // Persist authors
+    work.authorships?.forEach(authorship => {
+      if (authorship.author.id && authorship.author.display_name) {
+        promises.push(
+          saveEntityToSimpleStorage(authorship.author.id, EntityType.AUTHOR, authorship.author.display_name, false)
+        );
+
+        // Persist institutions through authorship
+        authorship.institutions?.forEach(institution => {
+          if (institution.id && institution.display_name) {
+            promises.push(
+              saveEntityToSimpleStorage(institution.id, EntityType.INSTITUTION, institution.display_name, false)
+            );
+          }
+        });
+      }
+    });
+
+    // Persist publication source
+    if (work.primary_location?.source?.id && work.primary_location.source.display_name) {
+      promises.push(
+        saveEntityToSimpleStorage(work.primary_location.source.id, EntityType.SOURCE, work.primary_location.source.display_name, false)
+      );
+    }
+
+    // Persist topics
+    work.topics?.forEach(topic => {
+      if (topic.id && topic.display_name) {
+        promises.push(
+          saveEntityToSimpleStorage(topic.id, EntityType.TOPIC, topic.display_name, false)
+        );
+      }
+    });
+
+    // Persist concepts (legacy)
+    work.concepts?.forEach(concept => {
+      if (concept.id && concept.display_name) {
+        promises.push(
+          saveEntityToSimpleStorage(concept.id, EntityType.CONCEPT, concept.display_name, false)
+        );
+      }
+    });
+
+    // Persist funders
+    work.grants?.forEach(grant => {
+      if (grant.funder && grant.funder_display_name) {
+        promises.push(
+          saveEntityToSimpleStorage(grant.funder, EntityType.FUNDER, grant.funder_display_name, false)
+        );
+      }
+    });
+
+    // Wait for all entities to be persisted
+    await Promise.all(promises);
+    console.log(`[EntityGraphTracking] Persisted ${promises.length} related entities from work ${work.id}`);
+  }, []);
+
+  /**
+   * Extract and persist related entities from Author entity to simple storage
+   */
+  const persistAuthorRelatedEntities = useCallback(async (author: Author) => {
+    const promises: Promise<void>[] = [];
+
+    // Persist affiliated institutions
+    author.affiliations?.forEach(affiliation => {
+      if (affiliation.institution.id && affiliation.institution.display_name) {
+        promises.push(
+          saveEntityToSimpleStorage(affiliation.institution.id, EntityType.INSTITUTION, affiliation.institution.display_name, false)
+        );
+      }
+    });
+
+    // Persist last known institutions
+    author.last_known_institutions?.forEach(institution => {
+      if (institution.id && institution.display_name) {
+        promises.push(
+          saveEntityToSimpleStorage(institution.id, EntityType.INSTITUTION, institution.display_name, false)
+        );
+      }
+    });
+
+    // Persist research topics
+    author.topics?.forEach(topic => {
+      if (topic.id && topic.display_name) {
+        promises.push(
+          saveEntityToSimpleStorage(topic.id, EntityType.TOPIC, topic.display_name, false)
+        );
+      }
+    });
+
+    // Wait for all entities to be persisted
+    await Promise.all(promises);
+    console.log(`[EntityGraphTracking] Persisted ${promises.length} related entities from author ${author.id}`);
+  }, []);
+
+  /**
+   * Extract and persist related entities from Institution entity to simple storage
+   */
+  const persistInstitutionRelatedEntities = useCallback(async (institution: Institution) => {
+    const promises: Promise<void>[] = [];
+
+    // Persist associated institutions
+    institution.associated_institutions?.forEach(associated => {
+      if (associated.id && associated.display_name) {
+        promises.push(
+          saveEntityToSimpleStorage(associated.id, EntityType.INSTITUTION, associated.display_name, false)
+        );
+      }
+    });
+
+    // Persist research topics
+    institution.topics?.forEach(topic => {
+      if (topic.id && topic.display_name) {
+        promises.push(
+          saveEntityToSimpleStorage(topic.id, EntityType.TOPIC, topic.display_name, false)
+        );
+      }
+    });
+
+    // Wait for all entities to be persisted
+    await Promise.all(promises);
+    console.log(`[EntityGraphTracking] Persisted ${promises.length} related entities from institution ${institution.id}`);
+  }, []);
+
+  /**
+   * Extract and persist related entities from Source entity to simple storage
+   */
+  const persistSourceRelatedEntities = useCallback(async (source: Source) => {
+    const promises: Promise<void>[] = [];
+
+    // Persist host organization (publisher)
+    if (source.host_organization && source.host_organization_name) {
+      promises.push(
+        saveEntityToSimpleStorage(source.host_organization, EntityType.PUBLISHER, source.host_organization_name, false)
+      );
+    }
+
+    // Persist subject areas (topics)
+    source.topics?.forEach(topic => {
+      if (topic.id && topic.display_name) {
+        promises.push(
+          saveEntityToSimpleStorage(topic.id, EntityType.TOPIC, topic.display_name, false)
+        );
+      }
+    });
+
+    // Wait for all entities to be persisted
+    await Promise.all(promises);
+    console.log(`[EntityGraphTracking] Persisted ${promises.length} related entities from source ${source.id}`);
+  }, []);
+
+  /**
+   * Persist related entities based on entity type
+   */
+  const persistRelatedEntities = useCallback(async (entity: unknown, entityType: EntityType) => {
+    try {
+      switch (entityType) {
+        case EntityType.WORK:
+          await persistWorkRelatedEntities(entity as Work);
+          break;
+        case EntityType.AUTHOR:
+          await persistAuthorRelatedEntities(entity as Author);
+          break;
+        case EntityType.INSTITUTION:
+          await persistInstitutionRelatedEntities(entity as Institution);
+          break;
+        case EntityType.SOURCE:
+          await persistSourceRelatedEntities(entity as Source);
+          break;
+        // For other entity types, we could add basic topic persistence
+        default: {
+          const basicEntity = entity as { id?: string; topics?: Topic[] };
+          if (basicEntity.topics) {
+            const promises: Promise<void>[] = [];
+            basicEntity.topics.forEach(topic => {
+              if (topic.id && topic.display_name) {
+                promises.push(
+                  saveEntityToSimpleStorage(topic.id, EntityType.TOPIC, topic.display_name, false)
+                );
+              }
+            });
+            await Promise.all(promises);
+            if (promises.length > 0) {
+              console.log(`[EntityGraphTracking] Persisted ${promises.length} topic entities from ${entityType} entity`);
+            }
+          }
+          break;
+        }
+      }
+    } catch (error) {
+      console.warn('[EntityGraphTracking] Error persisting related entities:', error);
+    }
+  }, [persistWorkRelatedEntities, persistAuthorRelatedEntities, persistInstitutionRelatedEntities, persistSourceRelatedEntities]);
+
+  /**
    * Track entity data when it becomes available
    */
-  const trackEntityData = useCallback((
+  const trackEntityData = useCallback(async (
     entity: unknown,
     entityType: EntityType,
     entityId: string
@@ -447,9 +648,12 @@ export function useEntityGraphTracking({
       worksCount: basicEntity.works_count,
     });
 
-    // Extract relationships
+    // Extract relationships (in-memory graph)
     extractEntityRelationships(entity, entityType);
-  }, [trackEntityVisit, extractEntityRelationships]);
+
+    // Persist related entities to simple storage
+    await persistRelatedEntities(entity, entityType);
+  }, [trackEntityVisit, extractEntityRelationships, persistRelatedEntities]);
 
   /**
    * Auto-track entity visits based on current route
