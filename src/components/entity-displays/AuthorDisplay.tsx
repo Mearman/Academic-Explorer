@@ -27,7 +27,7 @@ import {
   IconBook
 } from '@tabler/icons-react';
 
-import { RawDataView, EntityLink, WorksTimeline } from '@/components';
+import { RawDataView, EntityLink, WorksTimeline, TwoPaneLayout } from '@/components';
 import type { Author } from '@/lib/openalex/types';
 
 // Helper function to get external links for an author
@@ -86,12 +86,14 @@ function getExternalLinkColor(type: string) {
 
 interface AuthorDisplayProps {
   entity: Author;
+  useTwoPaneLayout?: boolean;
+  graphPane?: React.ReactNode;
 }
 
-export function AuthorDisplay({ entity: author }: AuthorDisplayProps) {
+export function AuthorDisplay({ entity: author, useTwoPaneLayout = false, graphPane }: AuthorDisplayProps) {
   const externalLinks = getAuthorExternalLinks(author);
 
-  return (
+  const authorContent = (
     <Stack gap="xl">
       {/* Author Header */}
       <Paper p="xl" withBorder radius="md" bg="gradient-to-r">
@@ -533,4 +535,21 @@ export function AuthorDisplay({ entity: author }: AuthorDisplayProps) {
       </Tabs>
     </Stack>
   );
+
+  if (useTwoPaneLayout && graphPane) {
+    return (
+      <TwoPaneLayout
+        leftPane={authorContent}
+        rightPane={graphPane}
+        stateKey={`author-${author.id}`}
+        leftTitle={author.display_name}
+        rightTitle="Related Entities"
+        showHeaders={true}
+        mobileTabLabels={{ left: 'Author', right: 'Graph' }}
+        defaultSplit={65}
+      />
+    );
+  }
+
+  return authorContent;
 }

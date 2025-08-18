@@ -298,9 +298,11 @@ export function extractAllKeywords(work: Work): string[] {
     }
   });
   
-  // Add topic keywords
-  work.topics?.forEach(topic => {
-    topic.keywords?.forEach(kw => keywords.add(kw));
+  // Add topic keywords (only available on full Topic entities, not DehydratedTopic)
+  work.topics?.forEach((topic) => {
+    if ('keywords' in topic && Array.isArray(topic.keywords)) {
+      (topic.keywords as string[]).forEach((kw: string) => keywords.add(kw));
+    }
   });
   
   // Add concept names (if using legacy concepts)

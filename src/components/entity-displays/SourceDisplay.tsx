@@ -1,13 +1,16 @@
 import { Stack, Text, Paper } from '@mantine/core';
 
+import { TwoPaneLayout } from '@/components';
 import type { Source } from '@/lib/openalex/types';
 
 interface SourceDisplayProps {
   entity: Source;
+  useTwoPaneLayout?: boolean;
+  graphPane?: React.ReactNode;
 }
 
-export function SourceDisplay({ entity: source }: SourceDisplayProps) {
-  return (
+export function SourceDisplay({ entity: source, useTwoPaneLayout = false, graphPane }: SourceDisplayProps) {
+  const sourceContent = (
     <Stack gap="xl">
       <Paper p="xl" withBorder>
         <Text size="xl" fw={700} mb="md">
@@ -33,4 +36,21 @@ export function SourceDisplay({ entity: source }: SourceDisplayProps) {
       </Paper>
     </Stack>
   );
+
+  if (useTwoPaneLayout && graphPane) {
+    return (
+      <TwoPaneLayout
+        leftPane={sourceContent}
+        rightPane={graphPane}
+        stateKey={`source-${source.id}`}
+        leftTitle={source.display_name}
+        rightTitle="Related Entities"
+        showHeaders={true}
+        mobileTabLabels={{ left: 'Source', right: 'Graph' }}
+        defaultSplit={65}
+      />
+    );
+  }
+
+  return sourceContent;
 }

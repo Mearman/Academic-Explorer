@@ -1,13 +1,16 @@
 import { Stack, Text, Paper } from '@mantine/core';
 
+import { TwoPaneLayout } from '@/components';
 import type { Topic } from '@/lib/openalex/types';
 
 interface TopicDisplayProps {
   entity: Topic;
+  useTwoPaneLayout?: boolean;
+  graphPane?: React.ReactNode;
 }
 
-export function TopicDisplay({ entity: topic }: TopicDisplayProps) {
-  return (
+export function TopicDisplay({ entity: topic, useTwoPaneLayout = false, graphPane }: TopicDisplayProps) {
+  const topicContent = (
     <Stack gap="xl">
       <Paper p="xl" withBorder>
         <Text size="xl" fw={700} mb="md">
@@ -40,4 +43,21 @@ export function TopicDisplay({ entity: topic }: TopicDisplayProps) {
       </Paper>
     </Stack>
   );
+
+  if (useTwoPaneLayout && graphPane) {
+    return (
+      <TwoPaneLayout
+        leftPane={topicContent}
+        rightPane={graphPane}
+        stateKey={`topic-${topic.id}`}
+        leftTitle={topic.display_name}
+        rightTitle="Related Entities"
+        showHeaders={true}
+        mobileTabLabels={{ left: 'Topic', right: 'Graph' }}
+        defaultSplit={65}
+      />
+    );
+  }
+
+  return topicContent;
 }

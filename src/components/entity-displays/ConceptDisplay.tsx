@@ -1,13 +1,16 @@
 import { Stack, Text, Paper } from '@mantine/core';
 
+import { TwoPaneLayout } from '@/components';
 import type { Concept } from '@/lib/openalex/types';
 
 interface ConceptDisplayProps {
   entity: Concept;
+  useTwoPaneLayout?: boolean;
+  graphPane?: React.ReactNode;
 }
 
-export function ConceptDisplay({ entity: concept }: ConceptDisplayProps) {
-  return (
+export function ConceptDisplay({ entity: concept, useTwoPaneLayout = false, graphPane }: ConceptDisplayProps) {
+  const conceptContent = (
     <Stack gap="xl">
       <Paper p="xl" withBorder>
         <Text size="xl" fw={700} mb="md">
@@ -38,4 +41,21 @@ export function ConceptDisplay({ entity: concept }: ConceptDisplayProps) {
       </Paper>
     </Stack>
   );
+
+  if (useTwoPaneLayout && graphPane) {
+    return (
+      <TwoPaneLayout
+        leftPane={conceptContent}
+        rightPane={graphPane}
+        stateKey={`concept-${concept.id}`}
+        leftTitle={concept.display_name}
+        rightTitle="Related Entities"
+        showHeaders={true}
+        mobileTabLabels={{ left: 'Concept', right: 'Graph' }}
+        defaultSplit={65}
+      />
+    );
+  }
+
+  return conceptContent;
 }

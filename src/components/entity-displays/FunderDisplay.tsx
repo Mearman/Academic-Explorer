@@ -1,13 +1,16 @@
 import { Stack, Text, Paper } from '@mantine/core';
 
+import { TwoPaneLayout } from '@/components';
 import type { Funder } from '@/lib/openalex/types';
 
 interface FunderDisplayProps {
   entity: Funder;
+  useTwoPaneLayout?: boolean;
+  graphPane?: React.ReactNode;
 }
 
-export function FunderDisplay({ entity: funder }: FunderDisplayProps) {
-  return (
+export function FunderDisplay({ entity: funder, useTwoPaneLayout = false, graphPane }: FunderDisplayProps) {
+  const funderContent = (
     <Stack gap="xl">
       <Paper p="xl" withBorder>
         <Text size="xl" fw={700} mb="md">
@@ -38,4 +41,21 @@ export function FunderDisplay({ entity: funder }: FunderDisplayProps) {
       </Paper>
     </Stack>
   );
+
+  if (useTwoPaneLayout && graphPane) {
+    return (
+      <TwoPaneLayout
+        leftPane={funderContent}
+        rightPane={graphPane}
+        stateKey={`funder-${funder.id}`}
+        leftTitle={funder.display_name}
+        rightTitle="Related Entities"
+        showHeaders={true}
+        mobileTabLabels={{ left: 'Funder', right: 'Graph' }}
+        defaultSplit={65}
+      />
+    );
+  }
+
+  return funderContent;
 }

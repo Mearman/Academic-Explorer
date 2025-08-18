@@ -1,13 +1,16 @@
 import { Stack, Text, Paper } from '@mantine/core';
 
+import { TwoPaneLayout } from '@/components';
 import type { Publisher } from '@/lib/openalex/types';
 
 interface PublisherDisplayProps {
   entity: Publisher;
+  useTwoPaneLayout?: boolean;
+  graphPane?: React.ReactNode;
 }
 
-export function PublisherDisplay({ entity: publisher }: PublisherDisplayProps) {
-  return (
+export function PublisherDisplay({ entity: publisher, useTwoPaneLayout = false, graphPane }: PublisherDisplayProps) {
+  const publisherContent = (
     <Stack gap="xl">
       <Paper p="xl" withBorder>
         <Text size="xl" fw={700} mb="md">
@@ -38,4 +41,21 @@ export function PublisherDisplay({ entity: publisher }: PublisherDisplayProps) {
       </Paper>
     </Stack>
   );
+
+  if (useTwoPaneLayout && graphPane) {
+    return (
+      <TwoPaneLayout
+        leftPane={publisherContent}
+        rightPane={graphPane}
+        stateKey={`publisher-${publisher.id}`}
+        leftTitle={publisher.display_name}
+        rightTitle="Related Entities"
+        showHeaders={true}
+        mobileTabLabels={{ left: 'Publisher', right: 'Graph' }}
+        defaultSplit={65}
+      />
+    );
+  }
+
+  return publisherContent;
 }

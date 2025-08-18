@@ -100,10 +100,10 @@ export interface Work {
   };
   is_retracted: boolean;
   is_paratext: boolean;
-  primary_topic?: Topic;
-  topics?: Topic[];
+  primary_topic?: DehydratedTopic;
+  topics?: DehydratedTopic[];
   keywords?: Keyword[];
-  concepts?: Concept[];
+  concepts?: DehydratedConcept[];
   mesh?: MeshTerm[];
   locations_count: number;
   locations?: Location[];
@@ -436,6 +436,33 @@ export interface Role {
   role: 'funder' | 'institution' | 'publisher';
   id: string;
   works_count: number;
+}
+
+// Dehydrated types for entities when embedded in works
+export interface DehydratedTopic {
+  id: string;
+  display_name: string;
+  score: number;
+  subfield?: {
+    id: number;
+    display_name: string;
+  };
+  field?: {
+    id: number;
+    display_name: string;
+  };
+  domain?: {
+    id: number;
+    display_name: string;
+  };
+}
+
+export interface DehydratedConcept {
+  id: string;
+  wikidata?: string;
+  display_name: string;
+  level: number;
+  score: number;
 }
 
 // Type guards
