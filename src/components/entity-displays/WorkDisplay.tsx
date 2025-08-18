@@ -32,7 +32,7 @@ export function WorkDisplay({ entity: work, useTwoPaneLayout = false, graphPane 
         console.warn('Failed to validate work:', error);
       });
     }
-  }, [work.id, validateEntity, validationSettings]);
+  }, [work, validateEntity, validationSettings]);
 
   // Extract header information
   const getSubtitle = () => {
@@ -125,7 +125,7 @@ export function WorkDisplay({ entity: work, useTwoPaneLayout = false, graphPane 
             <Grid>
               {work.authorships.slice(0, 12).map((authorship, index) => (
                 <Grid.Col key={index} span={{ base: 12, md: 6 }}>
-                  <Paper p="md" withBorder radius="sm" bg="gray.0">
+                  <Paper p="md" withBorder radius="sm" >
                     <Stack gap="xs">
                       {authorship.author?.id ? (
                         <EntityLink
@@ -175,7 +175,7 @@ export function WorkDisplay({ entity: work, useTwoPaneLayout = false, graphPane 
             </Group>
             
             {work.primary_topic && (
-              <Paper p="md" withBorder radius="sm" bg="blue.0" mb="md">
+              <Paper p="md" withBorder radius="sm"  mb="md">
                 <Text size="xs" tt="uppercase" fw={600} c="dimmed" mb="xs">
                   Primary Topic
                 </Text>

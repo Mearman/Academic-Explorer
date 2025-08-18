@@ -25,7 +25,7 @@ export function SourceDisplay({ entity: source, useTwoPaneLayout = false, graphP
         console.warn('Failed to validate source:', error);
       });
     }
-  }, [source.id, validateEntity, validationSettings]);
+  }, [source, validateEntity, validationSettings]);
 
   // Extract header information - show core source data
   const getSubtitle = () => {

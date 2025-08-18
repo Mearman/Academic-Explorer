@@ -1,7 +1,7 @@
 import { Stack, Text, Paper } from '@mantine/core';
 import { useEffect } from 'react';
 
-import { PageWithPanes, EntityPageHeader, StatusIndicator } from '@/components';
+import { PageWithPanes, EntityPageHeader } from '@/components';
 import type { Topic } from '@/lib/openalex/types';
 import { EntityType } from '@/lib/openalex/utils/entity-detection';
 import { useEntityValidationStore } from '@/stores/entity-validation-store';
@@ -25,7 +25,7 @@ export function TopicDisplay({ entity: topic, useTwoPaneLayout = false, graphPan
         console.warn('Failed to validate topic:', error);
       });
     }
-  }, [topic.id, validateEntity, validationSettings]);
+  }, [topic, validateEntity, validationSettings]);
 
   // Extract header information
   const getSubtitle = () => {

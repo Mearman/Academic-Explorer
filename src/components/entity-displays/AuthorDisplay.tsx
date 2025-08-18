@@ -109,7 +109,7 @@ export function AuthorDisplay({ entity: author, useTwoPaneLayout = false, graphP
         console.warn('Failed to validate author:', error);
       });
     }
-  }, [author.id, validateEntity, validationSettings]);
+  }, [author, validateEntity, validationSettings]);
 
   // Extract header information - show core author data
   const getSubtitle = () => {
@@ -263,7 +263,7 @@ export function AuthorDisplay({ entity: author, useTwoPaneLayout = false, graphP
             
             <Grid>
               <Grid.Col span={{ base: 12, md: 4 }}>
-                <Paper p="md" withBorder radius="sm" bg="gray.0">
+                <Paper p="md" withBorder radius="sm" >
                   <Text size="xs" tt="uppercase" fw={600} c="dimmed" mb="xs">
                     2-Year Mean Citedness
                   </Text>
@@ -277,7 +277,7 @@ export function AuthorDisplay({ entity: author, useTwoPaneLayout = false, graphP
               </Grid.Col>
               
               <Grid.Col span={{ base: 12, md: 4 }}>
-                <Paper p="md" withBorder radius="sm" bg="gray.0">
+                <Paper p="md" withBorder radius="sm" >
                   <Text size="xs" tt="uppercase" fw={600} c="dimmed" mb="xs">
                     h-index
                   </Text>
@@ -291,7 +291,7 @@ export function AuthorDisplay({ entity: author, useTwoPaneLayout = false, graphP
               </Grid.Col>
               
               <Grid.Col span={{ base: 12, md: 4 }}>
-                <Paper p="md" withBorder radius="sm" bg="gray.0">
+                <Paper p="md" withBorder radius="sm" >
                   <Text size="xs" tt="uppercase" fw={600} c="dimmed" mb="xs">
                     i10-index
                   </Text>
@@ -316,7 +316,7 @@ export function AuthorDisplay({ entity: author, useTwoPaneLayout = false, graphP
               
               <Stack gap="md">
                 {author.affiliations.map((affiliation, index) => (
-                  <Paper key={index} p="md" withBorder radius="sm" bg="blue.0">
+                  <Paper key={index} p="md" withBorder radius="sm" >
                     <Group justify="space-between" align="flex-start">
                       <div style={{ flex: 1 }}>
                         <div style={{ marginBottom: '8px' }}>
@@ -442,7 +442,7 @@ export function AuthorDisplay({ entity: author, useTwoPaneLayout = false, graphP
                 <Title order={2} size="lg">Publication Activity by Year</Title>
               </Group>
               
-              <Paper p="md" withBorder radius="sm" bg="gray.0">
+              <Paper p="md" withBorder radius="sm" >
                 <Text size="sm" c="dimmed" mb="md">
                   Recent publication activity (last 10 years shown)
                 </Text>
@@ -483,7 +483,7 @@ export function AuthorDisplay({ entity: author, useTwoPaneLayout = false, graphP
             
             <Grid>
               <Grid.Col span={{ base: 12, md: 6 }}>
-                <Paper p="md" withBorder radius="sm" bg="gray.0">
+                <Paper p="md" withBorder radius="sm" >
                   <Text size="xs" tt="uppercase" fw={600} c="dimmed" mb="xs">
                     OpenAlex ID
                   </Text>
@@ -495,7 +495,7 @@ export function AuthorDisplay({ entity: author, useTwoPaneLayout = false, graphP
               
               {author.orcid && (
                 <Grid.Col span={{ base: 12, md: 6 }}>
-                  <Paper p="md" withBorder radius="sm" bg="gray.0">
+                  <Paper p="md" withBorder radius="sm" >
                     <Text size="xs" tt="uppercase" fw={600} c="dimmed" mb="xs">
                       ORCID iD
                     </Text>
@@ -514,7 +514,7 @@ export function AuthorDisplay({ entity: author, useTwoPaneLayout = false, graphP
               )}
               
               <Grid.Col span={{ base: 12, md: 6 }}>
-                <Paper p="md" withBorder radius="sm" bg="gray.0">
+                <Paper p="md" withBorder radius="sm" >
                   <Text size="xs" tt="uppercase" fw={600} c="dimmed" mb="xs">
                     Created Date
                   </Text>
@@ -525,7 +525,7 @@ export function AuthorDisplay({ entity: author, useTwoPaneLayout = false, graphP
               </Grid.Col>
               
               <Grid.Col span={{ base: 12, md: 6 }}>
-                <Paper p="md" withBorder radius="sm" bg="gray.0">
+                <Paper p="md" withBorder radius="sm" >
                   <Text size="xs" tt="uppercase" fw={600} c="dimmed" mb="xs">
                     Last Updated
                   </Text>

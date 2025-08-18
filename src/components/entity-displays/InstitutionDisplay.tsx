@@ -1,7 +1,7 @@
 import { Stack, Text, Paper } from '@mantine/core';
 import { useEffect } from 'react';
 
-import { PageWithPanes, EntityPageHeader, StatusIndicator, TwoPaneLayout } from '@/components';
+import { PageWithPanes, EntityPageHeader, StatusIndicator } from '@/components';
 import type { Institution } from '@/lib/openalex/types';
 import { EntityType } from '@/lib/openalex/utils/entity-detection';
 import { useEntityValidationStore } from '@/stores/entity-validation-store';
