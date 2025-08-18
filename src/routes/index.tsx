@@ -365,7 +365,7 @@ function WelcomePane() {
           gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', 
           gap: '12px' 
         }}>
-          <Link to="/authors/$id" params={{ id: "A1234567890" }} style={{ 
+          <Link to="/authors/$id" params={{ id: "A5017898742" }} style={{ 
             display: 'flex', 
             alignItems: 'center', 
             gap: '8px', 
