@@ -118,6 +118,8 @@ export function EntityGraphVisualization({
     selectedVertexId,
     hoveredVertexId,
     isFullscreen,
+    isHydrated,
+    isLoading,
     layoutConfig,
     getFilteredVertices,
     getFilteredEdges,
@@ -141,8 +143,22 @@ export function EntityGraphVisualization({
     hideTooltip,
   } = useGraphInteractions();
 
-  const filteredVertices = useMemo(() => getFilteredVertices(), [getFilteredVertices]);
-  const filteredEdges = useMemo(() => getFilteredEdges(), [getFilteredEdges]);
+  const filteredVertices = useMemo(() => {
+    const vertices = getFilteredVertices();
+    console.log(`[EntityGraphVisualization] Found ${vertices.length} filtered vertices`);
+    if (vertices.length > 0) {
+      console.log(`[EntityGraphVisualization] Vertex types: ${vertices.map(v => `${v.entityType}:${v.directlyVisited ? 'visited' : 'discovered'}`).join(', ')}`);
+    }
+    return vertices;
+  }, [getFilteredVertices]);
+  const filteredEdges = useMemo(() => {
+    const edges = getFilteredEdges();
+    console.log(`[EntityGraphVisualization] Found ${edges.length} filtered edges`);
+    if (edges.length > 0) {
+      console.log(`[EntityGraphVisualization] Edge types: ${edges.map(e => `${e.edgeType}:${e.sourceId}→${e.targetId}`).join(', ')}`);
+    }
+    return edges;
+  }, [getFilteredEdges]);
 
   const positionedVertices = useMemo(() => {
     return generatePositionedVertices(
@@ -271,6 +287,15 @@ export function EntityGraphVisualization({
     onZoomReset: handleZoomReset,
     onEscape: handleEscapeKey,
   });
+
+  // Show loading state if still hydrating from IndexedDB
+  if (!isHydrated || isLoading) {
+    return (
+      <div className={`${styles.container} ${isFullscreen ? styles.fullscreenContainer : ''} ${className || ''}`}>
+        <LoadingSkeleton height="100%" />
+      </div>
+    );
+  }
 
   if (filteredVertices.length === 0) {
     return <EmptyGraphState isFullscreen={isFullscreen} className={className} />;
