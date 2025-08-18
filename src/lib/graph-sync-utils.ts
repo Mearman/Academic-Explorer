@@ -32,8 +32,8 @@ export function graphVertexToEntityVertex(graphVertex: GraphVertex): EntityGraph
     const context = encounter.context || {};
     
     // Convert relationshipType if it exists
-    const convertedContext: any = { ...context };
-    if (context.relationshipType) {
+    const convertedContext: Record<string, unknown> = { ...context };
+    if (context.relationshipType && typeof context.relationshipType === 'string') {
       // Convert GraphEdgeType to EdgeType
       convertedContext.relationshipType = convertGraphEdgeTypeToEdgeType(context.relationshipType as GraphEdgeType);
     }

@@ -641,7 +641,7 @@ export function useEntityData<T extends EntityData = EntityData>(
     } else {
       console.log(`[useEntityData] Retry not available - no retryable error`);
     }
-  }, [entityId, entityType, state.error, state.retryCount, opts.skipCache]);
+  }, [entityId, entityType, state.error, state.retryCount, opts.skipCache, opts.timeout]);
 
   const reset = useCallback((): void => {
     // Clear any pending retry timer

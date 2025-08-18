@@ -2,6 +2,8 @@ export * from './query-builder';
 export * from './pagination';
 export * from './transformers';
 export * from './cache';
+export * from './cache-interceptor';
+export * from './request-manager';
 export * from './entity-detection';
 export * from './convenience-methods';
 export * from './export';

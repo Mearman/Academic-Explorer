@@ -217,7 +217,7 @@ export function useEntityGraphTracking({
       };
       addRelationship(event);
     });
-  }, [addRelationshipSafe]);
+  }, [addRelationshipSafe, addRelationship]);
 
   /**
    * Extract relationships from Author entity
@@ -393,7 +393,7 @@ export function useEntityGraphTracking({
         addRelationshipSafe(event);
       }
     });
-  }, [addRelationshipSafe]);
+  }, [addRelationshipSafe, addRelationship]);
 
   /**
    * Extract relationships from any entity

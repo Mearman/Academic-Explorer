@@ -34,6 +34,7 @@ export {
 } from './cached-client';
 export { CachedOpenAlexClient, cachedOpenAlex } from './client-with-cache';
 export { CacheInterceptor, withCache } from './utils/cache-interceptor';
+export { RequestManager } from './utils/request-manager';
 export { query, filters, combineFilters } from './utils/query-builder';
 export { paginate, Paginator, BatchProcessor } from './utils/pagination';
 export { 
