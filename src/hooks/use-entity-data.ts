@@ -12,6 +12,7 @@
 'use client';
 
 import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
+import type React from 'react';
 
 import { cachedOpenAlex } from '@/lib/openalex';
 import type { 
@@ -90,6 +91,8 @@ export interface UseEntityDataState<T = EntityData> {
 export interface UseEntityDataOptions {
   /** Whether to fetch immediately on mount */
   enabled?: boolean;
+  /** Whether to automatically retry on retryable errors */
+  retryOnError?: boolean;
   /** Maximum number of retry attempts */
   maxRetries?: number;
   /** Base delay between retries in ms */
@@ -113,6 +116,7 @@ export interface UseEntityDataOptions {
  */
 const DEFAULT_OPTIONS: Required<UseEntityDataOptions> = {
   enabled: true,
+  retryOnError: false, // Disabled by default to avoid unexpected behavior
   maxRetries: 3,
   retryDelay: 1000,
   timeout: 10000,
@@ -255,6 +259,131 @@ async function fetchEntityData<T extends EntityData = EntityData>(
 }
 
 /**
+ * Create a timeout promise that rejects after the specified time
+ */
+function createTimeoutPromise(timeoutMs: number): Promise<never> {
+  return new Promise((_, reject) => {
+    setTimeout(() => {
+      reject(new Error(`Request timeout after ${timeoutMs}ms`));
+    }, timeoutMs);
+  });
+}
+
+/**
+ * Fetch entity data with timeout support
+ */
+async function fetchEntityDataWithTimeout<T extends EntityData = EntityData>(
+  entityId: string,
+  entityType?: EntityType,
+  skipCache: boolean = false,
+  timeoutMs?: number
+): Promise<T> {
+  if (timeoutMs && timeoutMs > 0) {
+    // Race the fetch against the timeout
+    return Promise.race([
+      fetchEntityData<T>(entityId, entityType, skipCache),
+      createTimeoutPromise(timeoutMs)
+    ]);
+  } else {
+    // No timeout, use regular fetch
+    return fetchEntityData<T>(entityId, entityType, skipCache);
+  }
+}
+
+/**
+ * Schedule an automatic retry if conditions are met
+ */
+function scheduleAutoRetryIfNeeded<T extends EntityData>(
+  error: EntityError,
+  entityId: string,
+  entityType: EntityType | undefined,
+  opts: Required<UseEntityDataOptions>,
+  currentRetryCount: number,
+  mountedRef: React.MutableRefObject<boolean>,
+  retryTimerRef: React.MutableRefObject<NodeJS.Timeout | null>,
+  setState: React.Dispatch<React.SetStateAction<UseEntityDataState<T>>>
+): void {
+  // Check if auto-retry should be attempted
+  if (!opts.retryOnError || !error.retryable || currentRetryCount >= opts.maxRetries) {
+    console.log(`[scheduleAutoRetryIfNeeded] Skipping auto-retry - retryOnError: ${opts.retryOnError}, retryable: ${error.retryable}, retryCount: ${currentRetryCount}, maxRetries: ${opts.maxRetries}`);
+    return;
+  }
+
+  console.log(`[scheduleAutoRetryIfNeeded] Scheduling retry ${currentRetryCount + 1}/${opts.maxRetries} in ${opts.retryDelay}ms for ${entityId}`);
+
+  // Clear any existing retry timer
+  if (retryTimerRef.current) {
+    clearTimeout(retryTimerRef.current);
+    retryTimerRef.current = null;
+  }
+
+  // Schedule the retry
+  retryTimerRef.current = setTimeout(async () => {
+    if (!mountedRef.current) {
+      console.log(`[scheduleAutoRetryIfNeeded] Component unmounted, skipping retry for ${entityId}`);
+      return;
+    }
+
+    const newRetryCount = currentRetryCount + 1;
+    console.log(`[scheduleAutoRetryIfNeeded] Executing retry ${newRetryCount}/${opts.maxRetries} for ${entityId}`);
+
+    // Update state to indicate retrying
+    setState(prev => ({
+      ...prev,
+      loading: true,
+      error: null,
+      state: EntityLoadingState.RETRYING,
+      retryCount: newRetryCount
+    }));
+
+    try {
+      const data = await fetchEntityDataWithTimeout<T>(entityId, entityType, opts.skipCache, opts.timeout);
+
+      if (!mountedRef.current) {
+        console.log(`[scheduleAutoRetryIfNeeded] Component unmounted during retry, skipping state update for ${entityId}`);
+        return;
+      }
+
+      console.log(`[scheduleAutoRetryIfNeeded] Retry ${newRetryCount} succeeded for ${entityId}`);
+
+      setState(prev => ({
+        ...prev,
+        data,
+        loading: false,
+        error: null,
+        state: EntityLoadingState.SUCCESS,
+        retryCount: 0, // Reset on success
+        lastFetchTime: Date.now()
+      }));
+
+      opts.onSuccess(data);
+    } catch (retryError) {
+      if (!mountedRef.current) {
+        console.log(`[scheduleAutoRetryIfNeeded] Component unmounted during retry error, skipping state update for ${entityId}`);
+        return;
+      }
+
+      console.error(`[scheduleAutoRetryIfNeeded] Retry ${newRetryCount} failed for ${entityId}:`, retryError);
+
+      const retryEntityError = createEntityError(retryError, entityId);
+
+      setState(prev => ({
+        ...prev,
+        loading: false,
+        error: retryEntityError,
+        state: EntityLoadingState.ERROR,
+        retryCount: newRetryCount
+      }));
+
+      opts.onError(retryEntityError);
+
+      // Schedule another retry if we haven't hit the limit
+      scheduleAutoRetryIfNeeded(retryEntityError, entityId, entityType, opts, newRetryCount, mountedRef, retryTimerRef, setState);
+    }
+  }, opts.retryDelay);
+}
+
+/**
  * React hook for fetching OpenAlex entity data client-side
  * 
  * @param entityId - The entity ID (with or without prefix)
@@ -281,6 +410,7 @@ export function useEntityData<T extends EntityData = EntityData>(
     if (options) {
       // Copy non-function properties
       if (options.enabled !== undefined) result.enabled = options.enabled;
+      if (options.retryOnError !== undefined) result.retryOnError = options.retryOnError;
       if (options.maxRetries !== undefined) result.maxRetries = options.maxRetries;
       if (options.retryDelay !== undefined) result.retryDelay = options.retryDelay;
       if (options.timeout !== undefined) result.timeout = options.timeout;
@@ -298,6 +428,7 @@ export function useEntityData<T extends EntityData = EntityData>(
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     options?.enabled,
+    options?.retryOnError,
     options?.maxRetries,
     options?.retryDelay,
     options?.timeout,
@@ -316,12 +447,18 @@ export function useEntityData<T extends EntityData = EntityData>(
   });
 
   const mountedRef = useRef(true);
+  const retryTimerRef = useRef<NodeJS.Timeout | null>(null);
 
   // Cleanup on unmount
   useEffect(() => {
     mountedRef.current = true;
     return () => {
       mountedRef.current = false;
+      // Clear any pending retry timer
+      if (retryTimerRef.current) {
+        clearTimeout(retryTimerRef.current);
+        retryTimerRef.current = null;
+      }
     };
   }, []);
 
@@ -350,9 +487,9 @@ export function useEntityData<T extends EntityData = EntityData>(
     // Use the proven working async pattern
     (async () => {
       try {
-        console.log(`[useEntityData] Calling fetchEntityData for ${entityId}`);
+        console.log(`[useEntityData] Calling fetchEntityDataWithTimeout for ${entityId}`);
         
-        const data = await fetchEntityData<T>(entityId, entityType, opts.skipCache);
+        const data = await fetchEntityDataWithTimeout<T>(entityId, entityType, opts.skipCache, opts.timeout);
 
         if (!mountedRef.current) {
           console.log(`[useEntityData] Component unmounted, skipping state update for ${entityId}`);
@@ -391,6 +528,9 @@ export function useEntityData<T extends EntityData = EntityData>(
         }));
 
         opts.onError(entityError);
+
+        // Auto-retry logic - schedule retry if conditions are met
+        scheduleAutoRetryIfNeeded(entityError, entityId, entityType, opts, 0, mountedRef, retryTimerRef, setState);
       }
     })();
     // Intentionally excluded opts from dependencies to prevent infinite loops
@@ -408,30 +548,69 @@ export function useEntityData<T extends EntityData = EntityData>(
   const refetch = useCallback(async (): Promise<void> => {
     if (!entityId) return;
     
-    setState(prev => ({ ...prev, retryCount: 0 }));
-    
-    // Trigger refetch by updating a dependency
-    const data = await fetchEntityData<T>(entityId, entityType, true); // Force skip cache
-    
-    if (mountedRef.current) {
-      setState(prev => ({
-        ...prev,
-        data,
-        loading: false,
-        error: null,
-        state: EntityLoadingState.SUCCESS,
-        lastFetchTime: Date.now()
-      }));
+    // Clear any pending retry timer
+    if (retryTimerRef.current) {
+      clearTimeout(retryTimerRef.current);
+      retryTimerRef.current = null;
     }
-  }, [entityId, entityType]);
+    
+    setState(prev => ({ 
+      ...prev, 
+      loading: true,
+      error: null,
+      state: EntityLoadingState.LOADING,
+      retryCount: 0 
+    }));
+    
+    try {
+      const data = await fetchEntityDataWithTimeout<T>(entityId, entityType, true, opts.timeout); // Force skip cache with timeout
+      
+      if (mountedRef.current) {
+        setState(prev => ({
+          ...prev,
+          data,
+          loading: false,
+          error: null,
+          state: EntityLoadingState.SUCCESS,
+          retryCount: 0, // Reset on success
+          lastFetchTime: Date.now()
+        }));
+      }
+    } catch (error) {
+      if (mountedRef.current) {
+        const entityError = createEntityError(error, entityId);
+        setState(prev => ({
+          ...prev,
+          loading: false,
+          error: entityError,
+          state: EntityLoadingState.ERROR,
+          retryCount: 0 // Start at 0 for new fetch attempt
+        }));
+      }
+    }
+  }, [entityId, entityType, opts.timeout]);
 
   const retry = useCallback(async (): Promise<void> => {
     console.log(`[useEntityData] Manual retry requested for ${entityId}`);
     if (entityId && (state.error?.retryable || state.error)) {
-      setState(prev => ({ ...prev, retryCount: 0, loading: true, error: null }));
+      // Clear any pending retry timer
+      if (retryTimerRef.current) {
+        clearTimeout(retryTimerRef.current);
+        retryTimerRef.current = null;
+      }
+      
+      const nextRetryCount = state.retryCount + 1;
+      
+      setState(prev => ({ 
+        ...prev, 
+        retryCount: nextRetryCount,
+        loading: true, 
+        error: null,
+        state: EntityLoadingState.RETRYING
+      }));
       
       try {
-        const data = await fetchEntityData<T>(entityId, entityType, opts.skipCache);
+        const data = await fetchEntityDataWithTimeout<T>(entityId, entityType, opts.skipCache, opts.timeout);
         
         if (mountedRef.current) {
           setState(prev => ({
@@ -440,6 +619,7 @@ export function useEntityData<T extends EntityData = EntityData>(
             loading: false,
             error: null,
             state: EntityLoadingState.SUCCESS,
+            retryCount: 0, // Reset on success
             lastFetchTime: Date.now()
           }));
         }
@@ -451,16 +631,22 @@ export function useEntityData<T extends EntityData = EntityData>(
             loading: false,
             error: entityError,
             state: EntityLoadingState.ERROR,
-            retryCount: prev.retryCount + 1
+            retryCount: nextRetryCount // Keep the retry count that was attempted
           }));
         }
       }
     } else {
       console.log(`[useEntityData] Retry not available - no retryable error`);
     }
-  }, [entityId, entityType, state.error, opts.skipCache]);
+  }, [entityId, entityType, state.error, state.retryCount, opts.skipCache]);
 
   const reset = useCallback((): void => {
+    // Clear any pending retry timer
+    if (retryTimerRef.current) {
+      clearTimeout(retryTimerRef.current);
+      retryTimerRef.current = null;
+    }
+    
     setState({
       data: null,
       loading: false,
