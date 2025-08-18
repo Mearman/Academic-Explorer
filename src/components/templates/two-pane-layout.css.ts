@@ -49,6 +49,14 @@ export const collapsedPane = style({
   borderWidth: 0,
 });
 
+export const dividerContainer = style({
+  '@media': {
+    'screen and (max-width: 1024px)': {
+      display: 'none',
+    },
+  },
+});
+
 export const divider = style({
   width: '8px',
   background: entityVars.color.border,
@@ -63,12 +71,6 @@ export const divider = style({
   
   ':hover': {
     backgroundColor: entityVars.color.accent,
-  },
-  
-  '@media': {
-    'screen and (max-width: 1024px)': {
-      display: 'none',
-    },
   },
 });
 
@@ -131,10 +133,10 @@ export const collapseButton = style({
 
 export const collapseButtonVariants = styleVariants({
   left: {
-    left: '-10px',
+    left: '-30px',
   },
   right: {
-    right: '-10px',
+    right: '-30px',
   },
 });
 
