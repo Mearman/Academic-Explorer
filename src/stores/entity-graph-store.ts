@@ -165,7 +165,7 @@ export const useEntityGraphStore = create<EntityGraphState>()(
             state.isLoading = false;
           });
           
-          console.log(`[EntityGraphStore] Hydrated from simple storage: ${vertices.size} vertices, ${edges.size} edges`);
+          console.log(`[EntityGraphStore] Hydrated from simple storage: ${vertices.size} vertices, ${edges.size} edges, ${directlyVisitedVertices.size} visited`);
         } catch (error) {
           console.error('[EntityGraphStore] Failed to hydrate from simple storage:', error);
           set((state) => {
@@ -176,6 +176,7 @@ export const useEntityGraphStore = create<EntityGraphState>()(
       },
       
       visitEntity: async (event: EntityVisitEvent) => {
+        console.log(`[EntityGraphStore] Visiting entity ${event.entityId} (${event.displayName})`);
         // First update the in-memory store
         set((state) => {
           const existingVertex = state.graph.vertices.get(event.entityId);
@@ -256,6 +257,9 @@ export const useEntityGraphStore = create<EntityGraphState>()(
           state.graph.metadata.lastUpdated = event.timestamp;
           state.graph.metadata.totalVisits += 1;
           state.graph.metadata.uniqueEntitiesVisited = state.graph.directlyVisitedVertices.size;
+          
+          console.log(`[EntityGraphStore] After visiting entity - Total vertices: ${state.graph.vertices.size}, Total edges: ${state.graph.edges.size}`);
+          console.log(`[EntityGraphStore] Visited vertices: ${state.graph.directlyVisitedVertices.size}`);
         });
         
         // Then persist to simple storage (only ID, displayName)
@@ -355,6 +359,7 @@ export const useEntityGraphStore = create<EntityGraphState>()(
       },
       
       addRelationship: async (event: RelationshipDiscoveryEvent) => {
+        console.log(`[EntityGraphStore] Adding relationship: ${event.sourceEntityId} → ${event.targetEntityId} (${event.relationshipType})`);
         // First update the in-memory store
         set((state) => {
           const edgeId = generateEdgeId(event.sourceEntityId, event.targetEntityId, event.relationshipType);
@@ -381,6 +386,7 @@ export const useEntityGraphStore = create<EntityGraphState>()(
             }
             
             // Now we can safely mutate - create the discovered vertex
+            console.log(`[EntityGraphStore] Creating new discovered vertex: ${event.targetEntityId} (${targetDisplayName})`);
             
             const discoveryEncounter: EntityEncounter = {
               type: EncounterType.RELATIONSHIP_DISCOVERY,
@@ -449,6 +455,10 @@ export const useEntityGraphStore = create<EntityGraphState>()(
           
           // Update metadata
           state.graph.metadata.lastUpdated = event.timestamp;
+          
+          // Debug log final graph state
+          console.log(`[EntityGraphStore] After adding relationship - Total vertices: ${state.graph.vertices.size}, Total edges: ${state.graph.edges.size}`);
+          console.log(`[EntityGraphStore] Edge added: ${edgeId} (${event.sourceEntityId} → ${event.targetEntityId})`);
         });
         
         // Then persist to simple storage (only edge data)
