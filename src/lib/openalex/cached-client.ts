@@ -113,6 +113,22 @@ export async function warmupCache() {
   console.log('Cache warmup complete');
 }
 
+// Export cache warming functionality
+export { 
+  cacheWarmingService,
+  prefetchEntity,
+  warmCache as warmCacheEntities,
+  warmRelatedEntities,
+  getCacheWarmingStats,
+  setCacheWarmingConfig,
+  CacheWarmingStrategy,
+  type CacheWarmingConfig,
+  type PrefetchOptions,
+  type WarmCacheOptions,
+  type CacheWarmingResult,
+  type CacheWarmingStats,
+} from './cache-warming';
+
 // Usage examples
 export const examples = {
   // Basic usage - automatically cached
