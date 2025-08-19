@@ -8,6 +8,141 @@ import { PaneDivider } from '../molecules/pane-divider';
 
 import * as styles from './two-pane-layout.css';
 
+/**
+ * Mobile tabs component
+ */
+function MobileTabs({ config }: { config: MobileTabConfig }) {
+  return (
+    <div className={styles.mobileTabContainer}>
+      <button
+        className={`${styles.mobileTab} ${config.activeTab === 'left' ? styles.activeMobileTab : ''}`}
+        onClick={() => config.onTabClick('left')}
+        type="button"
+      >
+        <IconLayoutSidebar size={16} style={{ marginRight: '8px' }} />
+        {config.labels.left}
+      </button>
+      <button
+        className={`${styles.mobileTab} ${config.activeTab === 'right' ? styles.activeMobileTab : ''}`}
+        onClick={() => config.onTabClick('right')}
+        type="button"
+      >
+        <IconChartBar size={16} style={{ marginRight: '8px' }} />
+        {config.labels.right}
+      </button>
+    </div>
+  );
+}
+
+/**
+ * Individual pane element component
+ */
+function PaneElement({ 
+  config, 
+  minPaneSize, 
+  showHeaders, 
+  showMobileTabs, 
+  activeMobileTab 
+}: {
+  config: PaneConfig;
+  minPaneSize: number;
+  showHeaders: boolean;
+  showMobileTabs: boolean;
+  activeMobileTab: 'left' | 'right';
+}) {
+  const handleClick = () => {
+    if (config.collapsed) {
+      config.onExpand();
+    }
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (config.collapsed && (e.key === 'Enter' || e.key === ' ')) {
+      e.preventDefault();
+      config.onExpand();
+    }
+  };
+
+  const isHiddenOnMobile = showMobileTabs && activeMobileTab !== config.type;
+  const ariaLabel = config.collapsed 
+    ? `Expand ${config.type} panel (Cmd+${config.type === 'left' ? '[' : ']'})` 
+    : config.title || `${config.type} panel content`;
+
+  return (
+    <div
+      className={`${styles.pane} ${styles.paneVariants[config.type]} ${config.collapsed ? styles.collapsedPane : ''} ${isHiddenOnMobile ? styles.hiddenOnMobile : ''}`}
+      style={{
+        width: `${config.widthPercent}%`,
+        minWidth: config.collapsed ? 0 : minPaneSize,
+      }}
+      onClick={handleClick}
+      role={config.collapsed ? 'button' : 'region'}
+      tabIndex={config.collapsed ? 0 : undefined}
+      aria-label={ariaLabel}
+      aria-expanded={!config.collapsed}
+      onKeyDown={config.collapsed ? handleKeyDown : undefined}
+    >
+      {showHeaders && config.title && (
+        <PaneHeader 
+          title={config.title}
+          icon={config.tabIcon}
+          actions={config.actions}
+        />
+      )}
+      <div className={styles.paneContent}>
+        {config.content}
+      </div>
+    </div>
+  );
+}
+
+/**
+ * Pane header component
+ */
+function PaneHeader({ 
+  title, 
+  icon: Icon, 
+  actions 
+}: {
+  title: string;
+  icon: React.ComponentType<{ size?: number | string }>;
+  actions?: React.ReactNode;
+}) {
+  return (
+    <div className={styles.paneHeader}>
+      <h2 className={styles.paneTitle}>
+        <Icon size={20} />
+        {title}
+      </h2>
+      {actions && (
+        <div className={styles.paneActions}>
+          {actions}
+        </div>
+      )}
+    </div>
+  );
+}
+
+/**
+ * Drag overlay component for visual feedback
+ */
+function DragOverlay() {
+  return (
+    <div
+      style={{
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        cursor: 'col-resize',
+        zIndex: 9999,
+        pointerEvents: 'none',
+      }}
+    />
+  );
+}
+
 interface TwoPaneLayoutProps {
   /** Content for the left pane */
   leftPane: React.ReactNode;
@@ -52,6 +187,87 @@ interface TwoPaneLayoutProps {
   onToggleFunctionsReady?: (toggleLeft: () => void, toggleRight: () => void) => void;
 }
 
+type PaneType = 'left' | 'right';
+
+interface PaneConfig {
+  type: PaneType;
+  collapsed: boolean;
+  title?: string;
+  actions?: React.ReactNode;
+  content: React.ReactNode;
+  collapsible: boolean;
+  widthPercent: number;
+  onExpand: () => void;
+  tabIcon: React.ComponentType<{ size?: number | string; style?: React.CSSProperties }>;
+}
+
+interface MobileTabConfig {
+  labels: { left: string; right: string };
+  activeTab: 'left' | 'right';
+  onTabClick: (tab: 'left' | 'right') => void;
+}
+
+/**
+ * Calculate pane width percentages based on collapsed states
+ */
+function calculatePaneWidths(
+  leftWidth: number,
+  rightWidth: number,
+  leftCollapsed: boolean,
+  rightCollapsed: boolean
+): { left: number; right: number } {
+  if (leftCollapsed) return { left: 0, right: 100 };
+  if (rightCollapsed) return { left: 100, right: 0 };
+  return { left: leftWidth, right: rightWidth };
+}
+
+/**
+ * Create pane configuration objects
+ */
+function createPaneConfigs(
+  props: TwoPaneLayoutProps,
+  state: {
+    leftCollapsed: boolean;
+    rightCollapsed: boolean;
+    leftWidth: number;
+    rightWidth: number;
+    toggleLeftPane: () => void;
+    toggleRightPane: () => void;
+  }
+): { left: PaneConfig; right: PaneConfig } {
+  const { left: leftWidth, right: rightWidth } = calculatePaneWidths(
+    state.leftWidth,
+    state.rightWidth,
+    state.leftCollapsed,
+    state.rightCollapsed
+  );
+
+  return {
+    left: {
+      type: 'left',
+      collapsed: state.leftCollapsed,
+      title: props.leftTitle,
+      actions: props.leftActions,
+      content: props.leftPane,
+      collapsible: props.leftCollapsible ?? true,
+      widthPercent: leftWidth,
+      onExpand: state.toggleLeftPane,
+      tabIcon: IconLayoutSidebar,
+    },
+    right: {
+      type: 'right',
+      collapsed: state.rightCollapsed,
+      title: props.rightTitle,
+      actions: props.rightActions,
+      content: props.rightPane,
+      collapsible: props.rightCollapsible ?? true,
+      widthPercent: rightWidth,
+      onExpand: state.toggleRightPane,
+      tabIcon: IconChartBar,
+    },
+  };
+}
+
 export function TwoPaneLayout({
   leftPane,
   rightPane,
@@ -76,18 +292,7 @@ export function TwoPaneLayout({
   const containerRef = useRef<HTMLDivElement>(null);
   const [activeMobileTab, setActiveMobileTab] = useState<'left' | 'right'>('left');
 
-  const {
-    leftWidth,
-    rightWidth,
-    leftCollapsed: isLeftCollapsed,
-    rightCollapsed: isRightCollapsed,
-    isDragging,
-    toggleLeftPane,
-    toggleRightPane,
-    handleDrag,
-    startDragging,
-    stopDragging,
-  } = usePaneLayout({
+  const paneLayoutState = usePaneLayout({
     defaultSplit,
     minPaneSize,
     persistState,
@@ -96,191 +301,75 @@ export function TwoPaneLayout({
     rightCollapsible,
   });
 
+  const {
+    leftCollapsed: isLeftCollapsed,
+    rightCollapsed: isRightCollapsed,
+    toggleLeftPane,
+    toggleRightPane,
+  } = paneLayoutState;
+
   // Provide toggle functions to parent component
   useEffect(() => {
-    if (onToggleFunctionsReady) {
-      onToggleFunctionsReady(toggleLeftPane, toggleRightPane);
-    }
+    onToggleFunctionsReady?.(toggleLeftPane, toggleRightPane);
   }, [onToggleFunctionsReady, toggleLeftPane, toggleRightPane]);
 
   // Notify parent of state changes
   useEffect(() => {
-    if (onPaneStateChange) {
-      onPaneStateChange(isLeftCollapsed, isRightCollapsed);
-    }
+    onPaneStateChange?.(isLeftCollapsed, isRightCollapsed);
   }, [onPaneStateChange, isLeftCollapsed, isRightCollapsed]);
 
-  // Use prop values initially, then state takes over
-  const leftPaneCollapsed = isLeftCollapsed;
-  const rightPaneCollapsed = isRightCollapsed;
+  const paneConfigs = createPaneConfigs(
+    { leftPane, rightPane, leftTitle, rightTitle, leftActions, rightActions, leftCollapsible, rightCollapsible },
+    paneLayoutState
+  );
 
-  // Calculate actual widths for CSS
-  const getLeftWidth = () => {
-    if (leftPaneCollapsed) return 0;
-    if (rightPaneCollapsed) return 100;
-    return leftWidth;
-  };
-
-  const getRightWidth = () => {
-    if (rightPaneCollapsed) return 0;
-    if (leftPaneCollapsed) return 100;
-    return rightWidth;
-  };
-
-  const leftWidthPercent = getLeftWidth();
-  const rightWidthPercent = getRightWidth();
-
-  // Mobile tab handlers
-  const handleMobileTabClick = (tab: 'left' | 'right') => {
-    setActiveMobileTab(tab);
-  };
-
-  // Expand pane handlers (for when clicking on collapsed pane area)
-  const handleExpandLeft = () => {
-    if (leftPaneCollapsed) {
-      toggleLeftPane();
-    }
-  };
-
-  const handleExpandRight = () => {
-    if (rightPaneCollapsed) {
-      toggleRightPane();
-    }
+  const mobileTabConfig: MobileTabConfig = {
+    labels: mobileTabLabels,
+    activeTab: activeMobileTab,
+    onTabClick: setActiveMobileTab,
   };
 
   return (
     <LayoutProvider isInTwoPaneLayout={true}>
       <div className={styles.container} ref={containerRef}>
-      {/* Mobile tabs - only visible on mobile */}
-      {showMobileTabs && (
-        <div className={styles.mobileTabContainer}>
-          <button
-            className={`${styles.mobileTab} ${activeMobileTab === 'left' ? styles.activeMobileTab : ''}`}
-            onClick={() => handleMobileTabClick('left')}
-            type="button"
-          >
-            <IconLayoutSidebar size={16} style={{ marginRight: '8px' }} />
-            {mobileTabLabels.left}
-          </button>
-          <button
-            className={`${styles.mobileTab} ${activeMobileTab === 'right' ? styles.activeMobileTab : ''}`}
-            onClick={() => handleMobileTabClick('right')}
-            type="button"
-          >
-            <IconChartBar size={16} style={{ marginRight: '8px' }} />
-            {mobileTabLabels.right}
-          </button>
-        </div>
-      )}
+        {showMobileTabs && (
+          <MobileTabs config={mobileTabConfig} />
+        )}
 
-      {/* Desktop layout */}
-      <div className={styles.desktopLayout}>
-        {/* Left pane */}
-        <div
-          className={`${styles.pane} ${styles.paneVariants.left} ${leftPaneCollapsed ? styles.collapsedPane : ''} ${showMobileTabs && activeMobileTab !== 'left' ? styles.hiddenOnMobile : ''}`}
-          style={{
-            width: `${leftWidthPercent}%`,
-            minWidth: leftPaneCollapsed ? 0 : minPaneSize,
-          }}
-          onClick={handleExpandLeft}
-          role={leftPaneCollapsed ? 'button' : 'region'}
-          tabIndex={leftPaneCollapsed ? 0 : undefined}
-          aria-label={leftPaneCollapsed ? 'Expand left panel (Cmd+[)' : leftTitle || 'Left panel content'}
-          aria-expanded={!leftPaneCollapsed}
-          onKeyDown={leftPaneCollapsed ? (e) => {
-            if (e.key === 'Enter' || e.key === ' ') {
-              e.preventDefault();
-              handleExpandLeft();
-            }
-          } : undefined}
-        >
-          {showHeaders && leftTitle && (
-            <div className={styles.paneHeader}>
-              <h2 className={styles.paneTitle}>
-                <IconLayoutSidebar size={20} />
-                {leftTitle}
-              </h2>
-              {leftActions && (
-                <div className={styles.paneActions}>
-                  {leftActions}
-                </div>
-              )}
-            </div>
-          )}
-          <div className={styles.paneContent}>
-            {leftPane}
+        <div className={styles.desktopLayout}>
+          <PaneElement
+            config={paneConfigs.left}
+            minPaneSize={minPaneSize}
+            showHeaders={showHeaders}
+            showMobileTabs={showMobileTabs}
+            activeMobileTab={activeMobileTab}
+          />
+
+          <div className={styles.dividerContainer}>
+            <PaneDivider
+              onDrag={paneLayoutState.handleDrag}
+              onDragStart={paneLayoutState.startDragging}
+              onDragEnd={paneLayoutState.stopDragging}
+              onCollapseLeft={leftCollapsible ? toggleLeftPane : undefined}
+              onCollapseRight={rightCollapsible ? toggleRightPane : undefined}
+              leftCollapsed={isLeftCollapsed}
+              rightCollapsed={isRightCollapsed}
+              leftCollapsible={leftCollapsible}
+              rightCollapsible={rightCollapsible}
+              containerRef={containerRef}
+            />
           </div>
-        </div>
 
-        {/* Divider - only visible on desktop */}
-        <div className={styles.dividerContainer}>
-          <PaneDivider
-            onDrag={handleDrag}
-            onDragStart={startDragging}
-            onDragEnd={stopDragging}
-            onCollapseLeft={leftCollapsible ? toggleLeftPane : undefined}
-            onCollapseRight={rightCollapsible ? toggleRightPane : undefined}
-            leftCollapsed={leftPaneCollapsed}
-            rightCollapsed={rightPaneCollapsed}
-            leftCollapsible={leftCollapsible}
-            rightCollapsible={rightCollapsible}
-            containerRef={containerRef}
+          <PaneElement
+            config={paneConfigs.right}
+            minPaneSize={minPaneSize}
+            showHeaders={showHeaders}
+            showMobileTabs={showMobileTabs}
+            activeMobileTab={activeMobileTab}
           />
         </div>
 
-        {/* Right pane */}
-        <div
-          className={`${styles.pane} ${styles.paneVariants.right} ${rightPaneCollapsed ? styles.collapsedPane : ''} ${showMobileTabs && activeMobileTab !== 'right' ? styles.hiddenOnMobile : ''}`}
-          style={{
-            width: `${rightWidthPercent}%`,
-            minWidth: rightPaneCollapsed ? 0 : minPaneSize,
-          }}
-          onClick={handleExpandRight}
-          role={rightPaneCollapsed ? 'button' : 'region'}
-          tabIndex={rightPaneCollapsed ? 0 : undefined}
-          aria-label={rightPaneCollapsed ? 'Expand right panel (Cmd+])' : rightTitle || 'Right panel content'}
-          aria-expanded={!rightPaneCollapsed}
-          onKeyDown={rightPaneCollapsed ? (e) => {
-            if (e.key === 'Enter' || e.key === ' ') {
-              e.preventDefault();
-              handleExpandRight();
-            }
-          } : undefined}
-        >
-          {showHeaders && rightTitle && (
-            <div className={styles.paneHeader}>
-              <h2 className={styles.paneTitle}>
-                <IconChartBar size={20} />
-                {rightTitle}
-              </h2>
-              {rightActions && (
-                <div className={styles.paneActions}>
-                  {rightActions}
-                </div>
-              )}
-            </div>
-          )}
-          <div className={styles.paneContent}>
-            {rightPane}
-          </div>
-        </div>
-      </div>
-
-      {/* Visual feedback for dragging */}
-      {isDragging && (
-        <div
-          style={{
-            position: 'fixed',
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-            cursor: 'col-resize',
-            zIndex: 9999,
-            pointerEvents: 'none',
-          }}
-        />
-      )}
+        {paneLayoutState.isDragging && <DragOverlay />}
       </div>
     </LayoutProvider>
   );
