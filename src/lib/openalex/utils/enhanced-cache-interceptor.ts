@@ -10,8 +10,8 @@
  */
 
 import { CacheManager } from './cache';
-import { RequestManager } from './request-manager';
 import type { CacheStrategy } from './cache-interceptor';
+import { RequestManager } from './request-manager';
 
 export interface EnhancedCacheOptions {
   ttl?: number;

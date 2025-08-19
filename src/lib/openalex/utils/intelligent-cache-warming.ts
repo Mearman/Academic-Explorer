@@ -10,8 +10,8 @@
  */
 
 import { CacheManager } from './cache';
-import { RequestManager } from './request-manager';
 import { enhancedCacheInterceptor, type CacheAnalytics } from './enhanced-cache-interceptor';
+import { RequestManager } from './request-manager';
 
 export interface WarmingStrategy {
   name: string;
