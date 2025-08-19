@@ -215,7 +215,7 @@ export function createForceSimulation(
     edgeMap.get(edge.targetId)!.push(edge);
   });
 
-  let actualIterations = iterations;
+  const actualIterations = iterations;
   let lastEnergyChange = Infinity;
   let stableIterations = 0;
 
