@@ -63,21 +63,20 @@ vi.mock('@/components/organisms/search-history', () => ({
 // Mock query validation utilities
 const mockQueryValidation = {
   isValid: true,
-  errors: [],
-  warnings: [],
-  suggestions: [],
-  complexity: 'simple',
+  errors: [] as { type: string; message: string; position?: number }[],
+  warnings: [] as { type: string; message: string; position?: number }[],
+  suggestions: [] as { type: string; message: string }[],
+  complexity: 'simple' as 'simple' | 'complex' | 'advanced',
   estimatedResults: 1500,
   hasSpecialOperators: false,
-  fieldTargets: [],
+  fieldTargets: [] as { field: string; coverage: number }[],
 };
 
-vi.mock('@/lib/openalex/utils/query-validator', () => ({
-  validateQuery: vi.fn(() => mockQueryValidation),
-  getQueryComplexity: vi.fn(() => 'simple'),
-  getEstimatedResultCount: vi.fn(() => 1500),
-  parseQueryFields: vi.fn(() => []),
-}));
+// Mock query validation utilities - replacing non-existent module
+const mockValidateQuery = vi.fn(() => mockQueryValidation);
+const mockGetQueryComplexity = vi.fn(() => 'simple');
+const mockGetEstimatedResultCount = vi.fn(() => 1500);
+const mockParseQueryFields = vi.fn(() => [] as { field: string; coverage: number }[]);
 
 describe('Enhanced QueryBuilder Component', () => {
   const mockOnParamsChange = vi.fn();
@@ -103,10 +102,9 @@ describe('Enhanced QueryBuilder Component', () => {
     });
 
     it('should show query complexity indicator', async () => {
-      const { validateQuery } = await import('@/lib/openalex/utils/query-validator');
-      (validateQuery as ReturnType<typeof vi.fn>).mockReturnValue({
+      mockValidateQuery.mockReturnValue({
         ...mockQueryValidation,
-        complexity: 'complex',
+        complexity: 'complex' as const,
         hasSpecialOperators: true,
       });
 
@@ -123,8 +121,7 @@ describe('Enhanced QueryBuilder Component', () => {
     });
 
     it('should display estimated result count with confidence indicator', async () => {
-      const { getEstimatedResultCount } = await import('@/lib/openalex/utils/query-validator');
-      (getEstimatedResultCount as ReturnType<typeof vi.fn>).mockReturnValue(25000);
+      mockGetEstimatedResultCount.mockReturnValue(25000);
 
       render(
         <QueryBuilder
@@ -139,8 +136,7 @@ describe('Enhanced QueryBuilder Component', () => {
     });
 
     it('should highlight query syntax errors with specific feedback', async () => {
-      const { validateQuery } = await import('@/lib/openalex/utils/query-validator');
-      (validateQuery as ReturnType<typeof vi.fn>).mockReturnValue({
+      mockValidateQuery.mockReturnValue({
         ...mockQueryValidation,
         isValid: false,
         errors: [
@@ -164,8 +160,7 @@ describe('Enhanced QueryBuilder Component', () => {
     });
 
     it('should show query optimization suggestions', async () => {
-      const { validateQuery } = await import('@/lib/openalex/utils/query-validator');
-      (validateQuery as ReturnType<typeof vi.fn>).mockReturnValue({
+      mockValidateQuery.mockReturnValue({
         ...mockQueryValidation,
         suggestions: [
           { type: 'optimization', message: 'Consider using title.search for better relevance' },
@@ -317,8 +312,7 @@ describe('Enhanced QueryBuilder Component', () => {
     });
 
     it('should show query field coverage visualization', async () => {
-      const { parseQueryFields } = await import('@/lib/openalex/utils/query-validator');
-      (parseQueryFields as ReturnType<typeof vi.fn>).mockReturnValue([
+      mockParseQueryFields.mockReturnValue([
         { field: 'title', coverage: 0.8 },
         { field: 'abstract', coverage: 0.6 },
         { field: 'publication_year', coverage: 1.0 },
@@ -343,7 +337,7 @@ describe('Enhanced QueryBuilder Component', () => {
       const user = userEvent.setup();
 
       const initialData = {
-        basicSearch: 'machine learning',
+        query: 'machine learning',
       };
 
       render(

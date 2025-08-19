@@ -714,7 +714,25 @@ describe('Cache Integration Edge Cases', () => {
           id: 'W123',
           title: 'Test Work',
           display_name: 'Test Work Display',
+          ids: { openalex: 'W123' },
+          open_access: {
+            is_oa: false,
+            oa_status: 'closed' as const,
+            any_repository_has_fulltext: false,
+          },
           authorships: [],
+          countries_distinct_count: 0,
+          institutions_distinct_count: 0,
+          has_fulltext: false,
+          cited_by_count: 0,
+          is_retracted: false,
+          is_paratext: false,
+          locations_count: 0,
+          referenced_works_count: 0,
+          cited_by_api_url: 'https://api.openalex.org/works/W123/cited_by',
+          counts_by_year: [],
+          updated_date: '2024-01-01',
+          created_date: '2024-01-01',
           publication_year: 2024,
         } as Work],
       };
@@ -747,8 +765,15 @@ describe('Cache Integration Edge Cases', () => {
         id: 'W123',
         title: 'Complex Work',
         display_name: 'Complex Work Display',
+        ids: { openalex: 'W123' },
+        open_access: {
+          is_oa: true,
+          oa_status: 'gold' as const,
+          any_repository_has_fulltext: true,
+        },
         authorships: [
           {
+            author_position: 'first' as const,
             author: {
               id: 'A456',
               display_name: 'Author Name',
@@ -761,16 +786,38 @@ describe('Cache Integration Edge Cases', () => {
                 country_code: 'US',
               },
             ],
+            countries: ['US'],
+            is_corresponding: true,
+            raw_author_name: 'Author Name',
+            raw_affiliation_strings: ['Institution Name'],
+            affiliations: [
+              {
+                raw_affiliation_string: 'Institution Name',
+                institution_ids: ['I789'],
+              },
+            ],
           },
         ],
+        countries_distinct_count: 1,
+        institutions_distinct_count: 1,
+        has_fulltext: true,
+        cited_by_count: 10,
+        is_retracted: false,
+        is_paratext: false,
+        locations_count: 1,
+        referenced_works_count: 5,
+        cited_by_api_url: 'https://api.openalex.org/works/W123/cited_by',
+        counts_by_year: [],
+        updated_date: '2024-01-01',
+        created_date: '2024-01-01',
         publication_year: 2024,
       };
 
       await cache.set('/works', { id: 'W123' }, workWithAuthors);
-      const retrieved = await cache.get('/works', { id: 'W123' });
+      const retrieved = await cache.get<Work>('/works', { id: 'W123' });
 
       expect(retrieved).toEqual(workWithAuthors);
-      expect(retrieved?.authorships[0].author.id).toBe('A456');
+      expect(retrieved?.authorships?.[0]?.author?.id).toBe('A456');
     });
   });
 
