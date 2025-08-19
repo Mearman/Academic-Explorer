@@ -6,6 +6,7 @@ import { render, renderHook, act, waitFor } from '@testing-library/react';
 import type { ReactNode } from 'react';
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 
+import { useNetworkContext, useNetworkContextOptional } from '@/hooks/use-network-context';
 import type { 
   NetworkRetryPolicy,
   BackgroundSyncConfig,
@@ -13,7 +14,7 @@ import type {
   QueuedRequest 
 } from '@/types/network';
 
-import { NetworkProvider, useNetworkContext, useNetworkContextOptional } from './network-provider';
+import { NetworkProvider } from './network-provider';
 
 // Mock network status hook
 const mockNetworkStatus = {

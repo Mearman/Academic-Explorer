@@ -6,13 +6,10 @@
  */
 
 import React, { 
-  createContext, 
-  useContext, 
   useCallback, 
   useEffect, 
   useReducer,
-  useRef,
-  type ReactNode 
+  useRef
 } from 'react';
 
 import { useNetworkStatus } from '@/hooks/use-network-status';
@@ -23,87 +20,29 @@ import {
 } from '@/types/network';
 import type {
   NetworkContext,
-  NetworkContextState,
-  NetworkConditionPolicies,
-  BackgroundSyncConfig,
   QueuedRequest,
-  RequestQueueStatus,
   NetworkRetryPolicy,
+  NetworkEventType,
   NetworkEvent,
-  NetworkEventType
+  NetworkConditionPolicies,
+  BackgroundSyncConfig
 } from '@/types/network';
 
-/**
- * Storage keys for persistence
- */
-const STORAGE_KEYS = {
-  RETRY_POLICIES: 'network-retry-policies',
-  SYNC_CONFIG: 'network-sync-config',
-  NETWORK_EVENTS: 'network-events',
-} as const;
+import { NetworkProviderContext } from './network-provider.context';
+import type {
+  NetworkProviderState,
+  NetworkProviderAction,
+  NetworkProviderProps
+} from './network-provider.types';
+import {
+  STORAGE_KEYS,
+  MAX_EVENT_HISTORY,
+  loadPersistedData,
+  saveDataToStorage
+} from './network-provider.utils';
 
-/**
- * Maximum events to keep in history
- */
-const MAX_EVENT_HISTORY = 100;
 
-/**
- * Network context state
- */
-interface NetworkProviderState extends NetworkContextState {
-  /** Event history for debugging and analytics */
-  eventHistory: NetworkEvent[];
-  /** Connection test status */
-  connectivityTestInProgress: boolean;
-  /** Last connectivity test result */
-  lastConnectivityTest: {
-    timestamp: number;
-    success: boolean;
-    latency?: number;
-  } | null;
-}
 
-/**
- * Network context actions for reducer
- */
-type NetworkProviderAction =
-  | { type: 'SET_INITIALISED'; payload: boolean }
-  | { type: 'UPDATE_RETRY_POLICIES'; payload: Partial<NetworkConditionPolicies> }
-  | { type: 'UPDATE_SYNC_CONFIG'; payload: Partial<BackgroundSyncConfig> }
-  | { type: 'ADD_EVENT'; payload: NetworkEvent }
-  | { type: 'SET_CONNECTIVITY_TEST_IN_PROGRESS'; payload: boolean }
-  | { type: 'SET_CONNECTIVITY_TEST_RESULT'; payload: { success: boolean; latency?: number } }
-  | { type: 'UPDATE_QUEUE_STATUS'; payload: RequestQueueStatus };
-
-/**
- * Load persisted data from localStorage with fallback
- */
-function loadPersistedData<T>(key: string, defaultValue: T): T {
-  try {
-    const stored = localStorage.getItem(key);
-    if (stored) {
-      const parsed = JSON.parse(stored);
-      // Validate that parsed data has the expected shape
-      if (typeof parsed === 'object' && parsed !== null) {
-        return { ...defaultValue, ...parsed };
-      }
-    }
-  } catch (error) {
-    console.warn(`Failed to load persisted data for ${key}:`, error);
-  }
-  return defaultValue;
-}
-
-/**
- * Save data to localStorage with error handling
- */
-function saveDataToStorage<T>(key: string, data: T): void {
-  try {
-    localStorage.setItem(key, JSON.stringify(data));
-  } catch (error) {
-    console.warn(`Failed to save data to localStorage for ${key}:`, error);
-  }
-}
 
 /**
  * Initial state for the network provider
@@ -235,25 +174,7 @@ function networkProviderReducer(
   }
 }
 
-/**
- * Network provider context
- */
-const NetworkProviderContext = createContext<NetworkContext | null>(null);
 
-/**
- * Network provider props
- */
-interface NetworkProviderProps {
-  children: ReactNode;
-  /** Initial retry policies (for testing/customization) */
-  initialRetryPolicies?: Partial<NetworkConditionPolicies>;
-  /** Initial sync configuration (for testing/customization) */
-  initialSyncConfig?: Partial<BackgroundSyncConfig>;
-  /** Test connectivity endpoint URL */
-  connectivityTestUrl?: string;
-  /** Whether to enable debug logging */
-  debug?: boolean;
-}
 
 /**
  * Network provider component
@@ -588,22 +509,3 @@ export function NetworkProvider({
   );
 }
 
-/**
- * Hook to use network context
- */
-export function useNetworkContext(): NetworkContext {
-  const context = useContext(NetworkProviderContext);
-  
-  if (!context) {
-    throw new Error('useNetworkContext must be used within a NetworkProvider');
-  }
-  
-  return context;
-}
-
-/**
- * Hook to get network context safely with optional fallback
- */
-export function useNetworkContextOptional(): NetworkContext | null {
-  return useContext(NetworkProviderContext);
-}

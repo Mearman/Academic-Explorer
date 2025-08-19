@@ -1,25 +1,11 @@
-import React, { createContext, useContext, ReactNode } from 'react';
+import React, { useContext } from 'react';
 
-interface LayoutContextValue {
-  /** Whether we're currently inside a TwoPaneLayout */
-  isInTwoPaneLayout: boolean;
-  /** The current layout level (0 = root, 1 = first level, etc.) */
-  layoutLevel: number;
-}
+import { LayoutContext } from './layout-context.context';
+import type { LayoutContextValue, LayoutProviderProps } from './layout-context.types';
 
-const LayoutContext = createContext<LayoutContextValue>({
-  isInTwoPaneLayout: false,
-  layoutLevel: 0,
-});
-
-export function useLayoutContext(): LayoutContextValue {
+// Internal hook for use within this file only
+function useLayoutContextInternal(): LayoutContextValue {
   return useContext(LayoutContext);
-}
-
-interface LayoutProviderProps {
-  children: ReactNode;
-  isInTwoPaneLayout?: boolean;
-  layoutLevel?: number;
 }
 
 /**
@@ -30,7 +16,7 @@ export function LayoutProvider({
   isInTwoPaneLayout = false, 
   layoutLevel = 0 
 }: LayoutProviderProps) {
-  const parentContext = useLayoutContext();
+  const parentContext = useLayoutContextInternal();
   
   const contextValue: LayoutContextValue = {
     isInTwoPaneLayout: isInTwoPaneLayout || parentContext.isInTwoPaneLayout,
@@ -44,11 +30,3 @@ export function LayoutProvider({
   );
 }
 
-/**
- * Hook to determine if a component should render its own TwoPaneLayout
- * Returns false if we're already inside a TwoPaneLayout (prevents nesting)
- */
-export function useShouldRenderTwoPaneLayout(): boolean {
-  const { isInTwoPaneLayout } = useLayoutContext();
-  return !isInTwoPaneLayout;
-}
