@@ -2,6 +2,7 @@ import { useLocation } from '@tanstack/react-router';
 import { useEffect, useCallback } from 'react';
 
 import { saveEntityToSimpleStorage } from '@/lib/entity-graph-sync';
+import { universalEntityPersistence } from '@/lib/universal-entity-persistence';
 import type { 
   Work, 
   Author, 
@@ -704,9 +705,9 @@ export function useEntityGraphTracking({
       works_count?: number;
     };
 
-    console.log(`[EntityGraphTracking] 🎯 Proceeding with tracking for hydrated store`);
+    console.log(`[EntityGraphTracking] 🎯 Proceeding with universal persistence for hydrated store`);
 
-    // Track the visit
+    // Track the visit (in-memory for graph visualization)
     console.log(`[EntityGraphTracking] 👤 Tracking entity visit`);
     trackEntityVisit(entityId, entityType, basicEntity.display_name, {
       citedByCount: basicEntity.cited_by_count,
@@ -718,11 +719,12 @@ export function useEntityGraphTracking({
     console.log(`[EntityGraphTracking] 🔗 About to extract relationships for ${entityType}:${entityId}`);
     extractEntityRelationships(entity, entityType);
 
-    // Persist related entities to simple storage
-    console.log(`[EntityGraphTracking] 💾 About to persist related entities for ${entityType}:${entityId}`);
-    await persistRelatedEntities(entity, entityType);
-    console.log(`[EntityGraphTracking] ✅ Completed tracking for ${entityType}:${entityId}`);
-  }, [trackEntityVisit, extractEntityRelationships, persistRelatedEntities, isHydrated]);
+    // ENHANCED: Use Universal Entity Persistence for comprehensive storage
+    console.log(`[EntityGraphTracking] 🌍 Starting universal entity persistence`);
+    await universalEntityPersistence.persistEntityNavigation(entity, entityType, entityId);
+    
+    console.log(`[EntityGraphTracking] ✅ Completed enhanced tracking for ${entityType}:${entityId}`);
+  }, [trackEntityVisit, extractEntityRelationships, isHydrated]);
 
   /**
    * Auto-track entity visits based on current route
