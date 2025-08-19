@@ -12,7 +12,15 @@ import type { QueuedRequest, RequestQueueStatus } from '@/types/network';
 const mockNetworkStatus = {
   isOnline: true,
   isOffline: false,
+  connectionType: 'unknown' as const,
+  effectiveConnectionType: 'unknown' as const,
   connectionQuality: 'fast' as const,
+  isSlowConnection: false,
+  downlink: 10,
+  rtt: 50,
+  saveData: false,
+  lastOnlineTime: Date.now(),
+  offlineDuration: 0,
 };
 
 vi.mock('./use-network-status', () => ({
@@ -324,7 +332,10 @@ describe('useOfflineQueue', () => {
       });
 
       await act(async () => {
-        await result.current.processQueue();
+        const processPromise = result.current.processQueue();
+        // Advance timers to handle retry delays
+        await vi.advanceTimersByTimeAsync(1000);
+        await processPromise;
       });
 
       expect(fetch).toHaveBeenCalledTimes(3); // Initial + 2 retries
@@ -354,7 +365,10 @@ describe('useOfflineQueue', () => {
       });
 
       await act(async () => {
-        await result.current.processQueue();
+        const processPromise = result.current.processQueue();
+        // Advance timers to handle retry delays
+        await vi.advanceTimersByTimeAsync(1000);
+        await processPromise;
       });
 
       expect(fetch).toHaveBeenCalledTimes(2); // Initial + 1 retry

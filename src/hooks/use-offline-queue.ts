@@ -16,11 +16,6 @@ import { useNetworkStatus } from './use-network-status';
  */
 const QUEUE_STORAGE_KEY = 'offline-request-queue';
 
-/**
- * Default batch size for processing requests
- */
-const DEFAULT_BATCH_SIZE = 10;
-
 
 /**
  * Load persisted queue from localStorage
@@ -226,109 +221,127 @@ export function useOfflineQueue() {
    * Cancel a queued request
    */
   const cancelRequest = useCallback((requestId: string): boolean => {
-    const initialLength = queue.length;
+    const currentQueue = queue;
+    const requestExists = currentQueue.some(req => req.id === requestId);
+    
+    if (!requestExists) {
+      console.log(`[useOfflineQueue] Request ${requestId} not found in queue`);
+      return false;
+    }
     
     setQueue(prev => prev.filter(req => req.id !== requestId));
     
-    const wasCancelled = queue.length < initialLength;
-    if (wasCancelled) {
-      console.log(`[useOfflineQueue] Cancelled request ${requestId}`);
-    }
-    
-    return wasCancelled;
-  }, [queue.length]);
+    console.log(`[useOfflineQueue] Cancelled request ${requestId}`);
+    return true;
+  }, [queue]);
 
   /**
    * Clear entire queue
    */
   const clearQueue = useCallback(() => {
-    const clearedCount = queue.length;
-    setQueue([]);
-    console.log(`[useOfflineQueue] Cleared ${clearedCount} requests from queue`);
-  }, [queue.length]);
+    setQueue(prev => {
+      const clearedCount = prev.length;
+      console.log(`[useOfflineQueue] Cleared ${clearedCount} requests from queue`);
+      return [];
+    });
+  }, []);
 
   /**
    * Process queue when online
    */
   const processQueue = useCallback(async (): Promise<void> => {
-    if (!networkStatus.isOnline || processingRef.current || queue.length === 0) {
+    if (!networkStatus.isOnline || processingRef.current) {
+      return;
+    }
+
+    // Get current queue length for early return
+    const currentQueueLength = queue.length;
+    if (currentQueueLength === 0) {
       return;
     }
 
     processingRef.current = true;
     setQueueStatus(prev => ({ ...prev, isProcessing: true }));
     
-    console.log(`[useOfflineQueue] Processing ${queue.length} queued requests`);
+    console.log(`[useOfflineQueue] Processing ${currentQueueLength} queued requests`);
 
     try {
-      // Process in batches to avoid overwhelming the network
-      const batchSize = DEFAULT_BATCH_SIZE;
+      // Get snapshot of queue to process
       const requestsToProcess = [...queue];
       
-      for (let i = 0; i < requestsToProcess.length; i += batchSize) {
+      // Process each request individually with proper retry logic
+      for (const request of requestsToProcess) {
         if (!mountedRef.current || !networkStatus.isOnline) {
           break;
         }
         
-        const batch = requestsToProcess.slice(i, i + batchSize);
+        let currentRequest = request;
+        let attemptCount = 0;
+        const maxRetries = currentRequest.maxRetries;
         
-        await Promise.all(
-          batch.map(async (request) => {
-            try {
-              const result = await executeQueuedRequest(request);
-              
-              // Remove from queue
-              setQueue(prev => prev.filter(req => req.id !== request.id));
-              
-              // Update stats
-              setQueueStatus(prev => ({
-                ...prev,
-                lastSuccessfulRequest: Date.now(),
-                totalProcessed: prev.totalProcessed + 1,
-              }));
-              
-              // Call resolve callback
-              if (request.resolve) {
-                request.resolve(result);
-              }
-              
-              console.log(`[useOfflineQueue] Successfully processed request ${request.id}`);
-            } catch (error) {
-              console.error(`[useOfflineQueue] Failed to process request ${request.id}:`, error);
-              
-              // Increment retry count
+        // Loop for initial attempt + retries
+        while (attemptCount <= maxRetries) {
+          try {
+            const result = await executeQueuedRequest(currentRequest);
+            
+            // Success: Remove from queue and update stats
+            setQueue(prev => prev.filter(req => req.id !== currentRequest.id));
+            
+            setQueueStatus(prev => ({
+              ...prev,
+              lastSuccessfulRequest: Date.now(),
+              totalProcessed: prev.totalProcessed + 1,
+            }));
+            
+            // Call resolve callback
+            if (currentRequest.resolve) {
+              currentRequest.resolve(result);
+            }
+            
+            console.log(`[useOfflineQueue] Successfully processed request ${currentRequest.id}`);
+            break; // Success, exit retry loop
+            
+          } catch (error) {
+            console.error(`[useOfflineQueue] Failed to process request ${currentRequest.id} (attempt ${attemptCount + 1}):`, error);
+            
+            attemptCount++;
+            
+            if (attemptCount <= maxRetries) {
+              // Update retry count in queue
               const updatedRequest = {
-                ...request,
-                retryCount: request.retryCount + 1,
+                ...currentRequest,
+                retryCount: attemptCount,
               };
               
-              if (updatedRequest.retryCount < updatedRequest.maxRetries) {
-                // Keep in queue for retry
-                setQueue(prev => 
-                  prev.map(req => req.id === request.id ? updatedRequest : req)
-                );
-              } else {
-                // Remove from queue and mark as failed
-                setQueue(prev => prev.filter(req => req.id !== request.id));
-                
-                setQueueStatus(prev => ({
-                  ...prev,
-                  totalFailed: prev.totalFailed + 1,
-                }));
-                
-                // Call reject callback
-                if (request.reject) {
-                  request.reject(error instanceof Error ? error : new Error(String(error)));
-                }
+              setQueue(prev => 
+                prev.map(req => req.id === currentRequest.id ? updatedRequest : req)
+              );
+              
+              currentRequest = updatedRequest;
+              
+              // Add small delay before retry
+              await new Promise(resolve => setTimeout(resolve, 100));
+            } else {
+              // Max retries exceeded: Remove from queue and mark as failed
+              setQueue(prev => prev.filter(req => req.id !== currentRequest.id));
+              
+              setQueueStatus(prev => ({
+                ...prev,
+                totalFailed: prev.totalFailed + 1,
+              }));
+              
+              // Call reject callback
+              if (currentRequest.reject) {
+                currentRequest.reject(error instanceof Error ? error : new Error(String(error)));
               }
+              
+              break; // Exit the retry loop
             }
-          })
-        );
-        
-        // Small delay between batches to prevent overwhelming
-        if (i + batchSize < requestsToProcess.length) {
-          await new Promise(resolve => setTimeout(resolve, 100));
+          }
         }
+        
+        // Small delay between requests to prevent overwhelming
+        await new Promise(resolve => setTimeout(resolve, 50));
       }
     } finally {
       processingRef.current = false;
