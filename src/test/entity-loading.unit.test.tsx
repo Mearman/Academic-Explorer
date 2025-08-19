@@ -10,6 +10,7 @@ import { render, screen, waitFor, cleanup } from '@testing-library/react';
 import React from 'react';
 import { useEntityData } from '@/hooks/use-entity-data';
 import { EntityLoadingState } from '@/hooks/use-entity-data';
+import { EntityType } from '@/lib/openalex/utils/entity-detection';
 
 // Mock the useEntityData hook
 vi.mock('@/hooks/use-entity-data', () => ({
@@ -144,10 +145,10 @@ describe('Entity Loading Unit Tests', () => {
 
     it('should handle different entity types', () => {
       const testCases = [
-        { entityId: 'W2741809807', entityType: 'work', title: 'Test Work' },
-        { entityId: 'A5000000001', entityType: 'author', title: 'Test Author' },
-        { entityId: 'I86987016', entityType: 'institution', title: 'Test Institution' },
-        { entityId: 'S137773608', entityType: 'source', title: 'Test Source' }
+        { entityId: 'W2741809807', entityType: EntityType.WORK, title: 'Test Work' },
+        { entityId: 'A5000000001', entityType: EntityType.AUTHOR, title: 'Test Author' },
+        { entityId: 'I86987016', entityType: EntityType.INSTITUTION, title: 'Test Institution' },
+        { entityId: 'S137773608', entityType: EntityType.SOURCE, title: 'Test Source' }
       ];
 
       testCases.forEach(({ entityId, entityType, title }) => {

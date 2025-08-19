@@ -7,7 +7,8 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { renderHook, act } from '@testing-library/react';
 import { useEntityGraphStore } from '@/stores/entity-graph-store';
-import type { EntityVisitEvent, EntityType } from '@/types/entity-graph';
+import type { EntityVisitEvent } from '@/types/entity-graph';
+import { EntityType } from '@/lib/openalex/utils/entity-detection';
 import { EncounterType } from '@/types/entity-graph';
 
 // Mock localStorage

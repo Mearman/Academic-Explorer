@@ -68,10 +68,13 @@ export const handlers = [
 
     if (perPage) {
       const perPageNum = parseInt(perPage);
-      // Generate array of the requested size
-      const results = Array.from({ length: perPageNum }, (_, i) => ({
-        ...mockWork,
+      // PERFORMANCE: Use minimal mock data instead of full objects
+      const results = Array(perPageNum).fill(null).map((_, i) => ({
         id: `https://openalex.org/W${2741809807 + i}`,
+        display_name: `Test Work ${i + 1}`,
+        publication_year: 2023,
+        cited_by_count: 100,
+        // Skip heavy fields like authorships, concepts, etc.
       }));
       
       return HttpResponse.json({
