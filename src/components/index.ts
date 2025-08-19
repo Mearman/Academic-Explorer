@@ -19,6 +19,9 @@ export { ContentFiltersList } from './atoms/content-filters-list';
 export { EntityInputsList } from './atoms/entity-inputs-list';
 export { MetricLabel } from './atoms/metric-label';
 export { TrendIndicator } from './atoms/trend-indicator';
+export { ComparisonRankIndicator } from './atoms/comparison-rank-indicator';
+export { ComparisonDiffIndicator } from './atoms/comparison-diff-indicator';
+export { ComparisonMetricValue } from './atoms/comparison-metric-value';
 export { AutocompleteInput } from './atoms/autocomplete-input';
 export { SuggestionsList } from './atoms/suggestions-list';
 export { SuggestionContent } from './atoms/suggestion-content';
@@ -27,6 +30,9 @@ export { WorkAuthors } from './atoms/work-authors';
 export { WorkVenue } from './atoms/work-venue';
 export { WorkConcepts } from './atoms/work-concepts';
 export { WorkLinks } from './atoms/work-links';
+export { AnnotationMarker } from './atoms/annotation-marker';
+export { UserCursor } from './atoms/user-cursor';
+export { UserSelection } from './atoms/user-selection';
 export { 
   LoadingSkeleton,
   SkeletonGroup,
@@ -74,6 +80,13 @@ export { ErrorDebugDetails } from './molecules/error-debug-details';
 export { ValidationExport } from './molecules/validation-export';
 export { ValidationSettings } from './molecules/validation-settings';
 export { ThemeToggle } from './molecules/theme-toggle';
+export { ComparisonMetricsGrid } from './molecules/comparison-metrics-grid';
+export { ComparisonSummary } from './molecules/comparison-summary';
+export { ComparisonTimeline } from './molecules/comparison-timeline';
+export { AnnotationCreator } from './molecules/annotation-creator';
+export { AnnotationPanel } from './molecules/annotation-panel';
+export { PresenceIndicator } from './molecules/presence-indicator';
+export { ShareSessionModal } from './molecules/share-session-modal';
 
 // Organisms
 export { EntityHeader, EntityHeaderSkeleton } from './organisms/entity-header';
@@ -134,6 +147,9 @@ export { QueryPreview } from './organisms/query-preview';
 export { EntityPageHeader } from './organisms/entity-page-header';
 export { WorksOverview } from './organisms/works-overview';
 export { AuthorsOverview } from './organisms/authors-overview';
+export { AnnotationOverlay } from './organisms/annotation-overlay';
+export { CollaborationOverlay } from './organisms/collaboration-overlay';
+export { PresenceList } from './organisms/presence-list';
 
 // Templates
 export { 
