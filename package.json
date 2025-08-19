@@ -14,7 +14,6 @@
     "verify:quick": "pnpm run typecheck && pnpm run build && pnpm run lint",
     "test": "timeout 300s pnpm test:safe",
     "test:ui": "NODE_OPTIONS='--max-old-space-size=8192 --expose-gc --max-semi-space-size=128' vitest --ui --no-coverage --silent",
-    
     "test:coverage": "NODE_OPTIONS='--max-old-space-size=8192 --expose-gc' vitest run --coverage --silent",
     "test:coverage:all": "pnpm test:coverage:unit && pnpm test:coverage:component && pnpm test:coverage:integration && pnpm test:coverage:e2e:vitest && pnpm coverage:merge",
     "test:coverage:unit": "NODE_OPTIONS='--max-old-space-size=8192 --expose-gc' vitest run --project unit --coverage --silent --reporter=dot",
@@ -40,15 +39,12 @@
     "test:e2e:search-results": "NODE_OPTIONS='--max-old-space-size=8192 --expose-gc --max-semi-space-size=128' vitest run --project e2e src/test/search-results.e2e.test.ts --no-coverage --silent",
     "test:e2e:search-all": "NODE_OPTIONS='--max-old-space-size=8192 --expose-gc --max-semi-space-size=128' vitest run --project e2e src/test/search*.e2e.test.ts --no-coverage --silent",
     "test:e2e:all": "./scripts/run-e2e-tests.sh",
-    
     "test:e2e:playwright": "PLAYWRIGHT_COVERAGE=1 playwright test",
     "test:e2e:playwright:coverage": "PLAYWRIGHT_COVERAGE=1 playwright test --reporter=html",
-    
     "coverage:merge": "tsx scripts/merge-coverage.ts",
     "coverage:report": "echo 'Coverage reports available at coverage/merged/html/index.html (after running tests with coverage)'",
     "coverage:report:text": "echo 'Coverage text reports are shown during test execution with --coverage flag'",
     "coverage:clean": "rm -rf coverage/",
-    
     "coverage:full": "pnpm coverage:clean && pnpm test:coverage:all && pnpm coverage:report",
     "coverage:unit-only": "pnpm test:coverage:unit && c8 report --reporter=html --reports-dir=coverage/unit",
     "coverage:component-only": "pnpm test:coverage:component && c8 report --reporter=html --reports-dir=coverage/component",
@@ -64,6 +60,8 @@
     "@tanstack/react-router": "^1.91.3",
     "@types/d3": "^7.4.3",
     "@vanilla-extract/css": "^1.17.4",
+    "@vanilla-extract/recipes": "^0.5.7",
+    "clsx": "^2.1.1",
     "d3": "^7.9.0",
     "framer-motion": "^12.23.12",
     "idb": "^8.0.3",
