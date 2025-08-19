@@ -145,6 +145,23 @@ export default tseslint.config(
         message: 'Emojis are not allowed in code'
       }],
 
+      // Enforce destructuring object arguments when function has multiple parameters
+      'prefer-destructuring': ['error', {
+        VariableDeclarator: {
+          array: false,
+          object: true
+        },
+        AssignmentExpression: {
+          array: false,
+          object: false  // Don't enforce for assignments, only declarations
+        }
+      }, {
+        enforceForRenamedProperties: false
+      }],
+
+      // Enforce object destructuring - error if more than 1 parameter
+      'max-params': ['error', { max: 1 }],
+
       // ===========================================
       // ATOMIC DESIGN ENFORCEMENT RULES
       // ===========================================
@@ -237,11 +254,26 @@ export default tseslint.config(
         ]
       }],
 
-      // Prevent named default exports for better tree shaking (except routes)
+      // Prevent default exports for better tree shaking and explicit imports
       'import/prefer-default-export': 'off',
-      'import/no-default-export': 'off', // Allow for route components
+      'import/no-default-export': 'error', // Disallow default exports by default
     },
   } satisfies TSESLint.FlatConfig.Config,
+
+  // Override for files that require default exports for functionality
+  {
+    files: [
+      'vite.config.ts',
+      'vitest.config.ts', 
+      'eslint.config.ts',
+      'tailwind.config.ts',
+      '*.config.{js,ts,mjs,cjs}',
+      'src/routeTree.gen.ts', // TanStack Router generated file
+    ],
+    rules: {
+      'import/no-default-export': 'off', // Config files typically require default exports
+    }
+  },
   
   // Atomic Design specific overrides by component level
   {

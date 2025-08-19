@@ -49,14 +49,49 @@ export default defineConfig({
 		fileParallelism: false, // Disable file-level parallelism
 
 		// CRITICAL: Extended timeouts for serial execution
-		testTimeout: 60000, // 60 seconds max per test (increased for serial mode)
-		hookTimeout: 20000, // 20 seconds for hooks
-		teardownTimeout: 20000, // 20 seconds for teardown
+		testTimeout: 30000, // 30 seconds max per test (reduced for faster execution)
+		hookTimeout: 10000, // 10 seconds for hooks
+		teardownTimeout: 10000, // 10 seconds for teardown
 
-		// CRITICAL: Disable coverage globally to prevent inspector/memory crashes
+		// Coverage configuration for all test types
 		coverage: {
-			enabled: false,
+			enabled: false, // Disabled by default, enabled via CLI flags
 			provider: "v8",
+			reporter: ["text", "json", "html", "lcov", "clover"],
+			reportsDirectory: "coverage",
+			include: [
+				"src/**/*.{ts,tsx}",
+				"!src/**/*.d.ts",
+				"!src/**/*.test.{ts,tsx}",
+				"!src/**/*.spec.{ts,tsx}",
+				"!src/test/**",
+				"!src/vite-env.d.ts",
+				"!src/routeTree.gen.ts"
+			],
+			exclude: [
+				"node_modules/**",
+				"dist/**",
+				"coverage/**",
+				"src/test/**",
+				"**/*.test.{ts,tsx}",
+				"**/*.spec.{ts,tsx}",
+				"**/*.d.ts",
+				"src/routeTree.gen.ts",
+				"src/vite-env.d.ts",
+				"src/debug-mantine-vars.js"
+			],
+			thresholds: {
+				global: {
+					branches: 70,
+					functions: 70,
+					lines: 70,
+					statements: 70
+				}
+			},
+			skipFull: false,
+			clean: true,
+			cleanOnRerun: true,
+			all: true
 		},
 
 		// CRITICAL: Force garbage collection and cleanup
@@ -70,7 +105,7 @@ export default defineConfig({
 		watch: false,
 
 		// CRITICAL: Minimal reporter configuration for stability
-		reporter: process.env.CI === "true" ? ["dot"] : ["basic"],
+		reporter: process.env.CI === "true" ? ["dot"] : ["default"],
 
 		// CRITICAL: Optimized project configuration
 		projects: [
@@ -111,12 +146,15 @@ export default defineConfig({
 					fileParallelism: true, // Allow file-level parallelism
 
 					// PERFORMANCE: Reduced timeouts due to parallelism
-					testTimeout: process.env.CI === "true" ? 45000 : 30000,
-					hookTimeout: 30000,
-					teardownTimeout: 30000,
+					testTimeout: process.env.CI === "true" ? 20000 : 15000,
+					hookTimeout: 10000,
+					teardownTimeout: 10000,
 
-					// CRITICAL: Coverage disabled
-					coverage: { enabled: false },
+					// Coverage for unit tests
+					coverage: {
+						enabled: false, // Controlled by CLI flags
+						reportsDirectory: "coverage/unit"
+					},
 
 					// CRITICAL: Memory monitoring
 					logHeapUsage: process.env.CI !== "true",
@@ -162,12 +200,15 @@ export default defineConfig({
 					fileParallelism: false,
 
 					// CRITICAL: Extended timeouts for DOM operations and serial mode
-					testTimeout: process.env.CI === "true" ? 120000 : 90000,
-					hookTimeout: 40000,
-					teardownTimeout: 40000,
+					testTimeout: process.env.CI === "true" ? 45000 : 30000,
+					hookTimeout: 15000,
+					teardownTimeout: 15000,
 
-					// CRITICAL: Coverage disabled
-					coverage: { enabled: false },
+					// Coverage for component tests
+					coverage: {
+						enabled: false, // Controlled by CLI flags
+						reportsDirectory: "coverage/component"
+					},
 
 					// CRITICAL: Minimal reporter
 					reporter: "dot",
@@ -214,8 +255,11 @@ export default defineConfig({
 					hookTimeout: 60000,
 					teardownTimeout: 60000,
 
-					// CRITICAL: Coverage disabled
-					coverage: { enabled: false },
+					// Coverage for integration tests
+					coverage: {
+						enabled: false, // Controlled by CLI flags
+						reportsDirectory: "coverage/integration"
+					},
 
 					// CRITICAL: Minimal reporter
 					reporter: "dot",
@@ -262,8 +306,11 @@ export default defineConfig({
 					hookTimeout: 120000,
 					teardownTimeout: 120000,
 
-					// CRITICAL: Coverage disabled
-					coverage: { enabled: false },
+					// Coverage for e2e tests
+					coverage: {
+						enabled: false, // Controlled by CLI flags
+						reportsDirectory: "coverage/e2e"
+					},
 
 					// CRITICAL: Minimal reporter
 					reporter: "dot",
