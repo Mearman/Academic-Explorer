@@ -9,7 +9,25 @@ import { useState, useEffect } from 'react';
 
 import { useSessionSharing } from '@/hooks/use-session-sharing';
 import { useCollaborationStore } from '@/stores/collaboration-store';
-import type { CollaborationUser } from '@/types/collaboration';
+import type { CollaborationUser, UserPermissions } from '@/types/collaboration';
+
+/**
+ * Session info interface for display
+ */
+interface SessionDisplayInfo {
+  title: string;
+  description?: string;
+}
+
+/**
+ * Session info response interface
+ */
+interface SessionInfoResponse {
+  session: SessionDisplayInfo;
+  permissions: UserPermissions;
+  expiresAt: number;
+  isValid: boolean;
+}
 
 /**
  * User info form for anonymous users
@@ -138,8 +156,8 @@ const SessionInfo = ({
   permissions, 
   expiresAt 
 }: { 
-  session: any;
-  permissions: any;
+  session: SessionDisplayInfo;
+  permissions: UserPermissions;
   expiresAt: number;
 }) => (
   <motion.div
@@ -265,7 +283,7 @@ function JoinSessionPage() {
     error: sharingError 
   } = useSessionSharing();
 
-  const [sessionInfo, setSessionInfo] = useState<any>(null);
+  const [sessionInfo, setSessionInfo] = useState<SessionInfoResponse | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isJoining, setIsJoining] = useState(false);
   const [error, setError] = useState<string | null>(null);
