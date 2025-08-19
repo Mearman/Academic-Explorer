@@ -14,7 +14,6 @@ import {
   TitleSkeleton,
   ButtonSkeleton,
   AvatarSkeleton,
-  BadgeSkeleton,
   CardSkeleton,
 } from './loading-skeleton';
 

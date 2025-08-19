@@ -11,12 +11,6 @@ import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest';
 import {
   LoadingSkeleton,
   SkeletonGroup,
-  TextSkeleton,
-  TitleSkeleton,
-  ButtonSkeleton,
-  AvatarSkeleton,
-  BadgeSkeleton,
-  CardSkeleton,
 } from './loading-skeleton';
 
 // Mock timer functions for testing transitions

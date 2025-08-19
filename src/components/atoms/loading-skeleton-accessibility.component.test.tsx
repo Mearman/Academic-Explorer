@@ -15,7 +15,6 @@ import {
   ButtonSkeleton,
   AvatarSkeleton,
   BadgeSkeleton,
-  CardSkeleton,
 } from './loading-skeleton';
 
 describe('WCAG 2.1 AA Compliance: LoadingSkeleton Accessibility', () => {

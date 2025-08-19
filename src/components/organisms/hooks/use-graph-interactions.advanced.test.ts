@@ -10,9 +10,6 @@ import { EncounterType } from '@/types/entity-graph';
 
 import { 
   useAdvancedGraphInteractions,
-  GraphInteractionMode,
-  SelectionBox,
-  DragState,
   WheelZoomConfig
 } from './use-graph-interactions-advanced';
 
