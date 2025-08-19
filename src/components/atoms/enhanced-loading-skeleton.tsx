@@ -1,7 +1,8 @@
 import { Skeleton, Stack, Progress, Text, Box } from '@mantine/core';
-import { forwardRef, useEffect, useState, useCallback } from 'react';
+import { forwardRef, useEffect, useState } from 'react';
 
 import type { SizeVariant } from '../types';
+
 import * as styles from './enhanced-loading-skeleton.css';
 
 export interface EnhancedLoadingSkeletonProps {
@@ -291,7 +292,7 @@ export const EnhancedLoadingSkeleton = forwardRef<HTMLDivElement, EnhancedLoadin
 
     // Determine ARIA attributes based on semantic role
     const getAriaAttributes = () => {
-      const baseAttrs: Record<string, any> = {
+      const baseAttrs: Record<string, string | number | boolean | undefined> = {
         'data-testid': testId,
       };
 
@@ -382,7 +383,7 @@ export const EnhancedSkeletonGroup = forwardRef<HTMLDivElement, EnhancedSkeleton
     liveRegion = false,
     ...props
   }, ref) => {
-    const [currentPhase, setCurrentPhase] = useState(0);
+    const [_currentPhase, setCurrentPhase] = useState(0);
     const [announceText, setAnnounceText] = useState(announcement || '');
 
     // Handle loading phases
@@ -485,7 +486,7 @@ export const ProgressAwareSkeleton = ({
     if (phases.length === 0) return;
 
     let totalDuration = 0;
-    let currentDuration = 0;
+    const _currentDuration = 0;
 
     phases.forEach(phase => {
       totalDuration += phase.duration;

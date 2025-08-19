@@ -367,7 +367,7 @@ export const successState = style({
   borderColor: entityVars.color.success,
   
   '::before': {
-    content: '"✓"',
+    content: '"✓"', // eslint-disable-line no-restricted-syntax
     position: 'absolute',
     top: '50%',
     left: '50%',

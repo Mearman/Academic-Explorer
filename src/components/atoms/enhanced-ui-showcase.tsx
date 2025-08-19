@@ -1,10 +1,10 @@
 import { Box, Text, Group, Stack } from '@mantine/core';
 import { useState } from 'react';
 
-import { EnhancedLoadingSkeleton, EnhancedSkeletonGroup, ProgressAwareSkeleton } from './enhanced-loading-skeleton';
 import { AccessibleLoadingState, useAccessibleLoading } from './accessible-loading-state';
-import { MobileResponsiveWrapper, TouchOptimizedButton, useResponsiveBreakpoint } from './mobile-responsive-wrapper';
+import { EnhancedSkeletonGroup, ProgressAwareSkeleton } from './enhanced-loading-skeleton';
 import { FocusManagement } from './focus-management';
+import { MobileResponsiveWrapper, TouchOptimizedButton, useResponsiveBreakpoint } from './mobile-responsive-wrapper';
 import { VisualFeedback, FeedbackButton, ProgressFeedback, MicroInteraction } from './visual-feedback';
 
 /**
@@ -14,7 +14,7 @@ import { VisualFeedback, FeedbackButton, ProgressFeedback, MicroInteraction } fr
 export const EnhancedUIShowcase = () => {
   const [currentDemo, setCurrentDemo] = useState<'loading' | 'accessibility' | 'mobile' | 'focus' | 'feedback'>('loading');
   const [progress, setProgress] = useState(0);
-  const { isMobile, isTablet, isDesktop } = useResponsiveBreakpoint();
+  const { isMobile, isTablet } = useResponsiveBreakpoint();
   const loadingManager = useAccessibleLoading();
 
   // Demo functions

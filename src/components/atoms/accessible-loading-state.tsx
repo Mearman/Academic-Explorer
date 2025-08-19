@@ -1,8 +1,8 @@
 import { Box, Text, VisuallyHidden } from '@mantine/core';
 import { useEffect, useState, useCallback, useRef } from 'react';
 
-import { EnhancedLoadingSkeleton } from './enhanced-loading-skeleton';
 import * as styles from './accessible-loading-state.css';
+import { EnhancedLoadingSkeleton } from './enhanced-loading-skeleton';
 
 export interface AccessibleLoadingStateProps {
   isLoading: boolean;
@@ -310,7 +310,7 @@ export const AccessibleLoadingState = ({
   onError,
   reducedMotion = false,
   highContrast = false,
-  verboseAnnouncements = false,
+  verboseAnnouncements: _verboseAnnouncements = false,
   keyboardNavigable = true,
 }: AccessibleLoadingStateProps) => {
   const [currentPhase, setCurrentPhase] = useState(0);
@@ -322,12 +322,12 @@ export const AccessibleLoadingState = ({
   useEffect(() => {
     if (isLoading && loadingPhases && loadingPhases.length > 0) {
       let phaseIndex = 0;
-      let accumulatedTime = 0;
+      let _accumulatedTime = 0;
 
       const progressPhase = () => {
         if (phaseIndex < loadingPhases.length) {
           setCurrentPhase(phaseIndex);
-          accumulatedTime += loadingPhases[phaseIndex].duration;
+          _accumulatedTime += loadingPhases[phaseIndex].duration;
           
           const timer = setTimeout(() => {
             phaseIndex++;
@@ -449,7 +449,7 @@ export const AccessibleLoadingState = ({
               progress={progress}
               phases={loadingPhases}
               currentPhase={currentPhase}
-              verboseMode={verboseAnnouncements}
+              verboseMode={_verboseAnnouncements}
             />
           )}
 
@@ -487,7 +487,7 @@ export const AccessibleLoadingState = ({
 // Convenience hook for managing loading states
 export const useAccessibleLoading = ({
   announceStateChanges = true,
-  verboseAnnouncements = false,
+  verboseAnnouncements: _verboseAnnouncements = false,
 }: {
   announceStateChanges?: boolean;
   verboseAnnouncements?: boolean;
