@@ -4,7 +4,6 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 
 import type { CitationNetwork, CitationNode, CitationEdge, CoauthorNetwork, CoauthorNode, CoauthorEdge } from './citation-network';
-
 import {
   validateCitationNetwork,
   exportCitationNetworkToJSON,
