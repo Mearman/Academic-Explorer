@@ -144,6 +144,75 @@ export function useHybridStorage() {
     migrateIfNeeded();
   }, [searchHistory, isInitialised]);
 
+  // Standard storage interface methods
+  const getItem = async (key: string): Promise<string | null> => {
+    try {
+      // Try localStorage first (primary storage)
+      const localValue = localStorage.getItem(key);
+      if (localValue !== null) {
+        return localValue;
+      }
+      
+      // Fallback to IndexedDB if not found in localStorage
+      if (isInitialised && dbRef.current) {
+        try {
+          return await dbRef.current.getKeyValue(key);
+        } catch (error) {
+          console.warn('Failed to get item from IndexedDB:', error);
+        }
+      }
+      
+      return null;
+    } catch (error) {
+      console.error('Error getting item from storage:', error);
+      return null;
+    }
+  };
+
+  const setItem = async (key: string, value: string): Promise<void> => {
+    try {
+      // Save to localStorage (primary storage)
+      localStorage.setItem(key, value);
+      
+      // Also save to IndexedDB for persistence
+      if (isInitialised && dbRef.current) {
+        try {
+          await dbRef.current.setKeyValue(key, value);
+        } catch (error) {
+          console.warn('Failed to save item to IndexedDB:', error);
+        }
+      }
+      
+      // Update metrics after successful operation
+      await updateMetrics();
+    } catch (error) {
+      console.error('Error setting item in storage:', error);
+      throw error;
+    }
+  };
+
+  const removeItem = async (key: string): Promise<void> => {
+    try {
+      // Remove from localStorage
+      localStorage.removeItem(key);
+      
+      // Remove from IndexedDB
+      if (isInitialised && dbRef.current) {
+        try {
+          await dbRef.current.deleteKeyValue(key);
+        } catch (error) {
+          console.warn('Failed to remove item from IndexedDB:', error);
+        }
+      }
+      
+      // Update metrics after successful operation
+      await updateMetrics();
+    } catch (error) {
+      console.error('Error removing item from storage:', error);
+      throw error;
+    }
+  };
+
   return {
     isInitialised,
     metrics,
@@ -152,5 +221,8 @@ export function useHybridStorage() {
     savePaperOffline,
     cleanupOldData,
     updateMetrics,
+    getItem,
+    setItem,
+    removeItem,
   };
 }

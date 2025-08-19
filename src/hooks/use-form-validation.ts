@@ -12,6 +12,10 @@ import { RealTimeValidator } from '@/lib/validation/real-time-validator';
 import type {
   ValidationIssue,
 } from '@/types/entity-validation';
+import {
+  ValidationIssueType,
+  ValidationSeverity,
+} from '@/types/entity-validation';
 
 // Field validation configuration
 interface FieldValidationConfig {
@@ -268,8 +272,8 @@ export function useFormValidation(
               id: 'validation-error',
               entityId: 'form',
               entityType: config.entityType,
-              issueType: 'TYPE_MISMATCH' as any,
-              severity: 'ERROR' as any,
+              issueType: ValidationIssueType.TYPE_MISMATCH,
+              severity: ValidationSeverity.ERROR,
               fieldPath: fieldName,
               description: `Validation failed: ${error instanceof Error ? error.message : String(error)}`,
               timestamp: new Date().toISOString(),

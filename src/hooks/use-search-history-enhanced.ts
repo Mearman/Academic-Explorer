@@ -3,14 +3,15 @@
  * Provides intelligent history tracking, personalized suggestions, and advanced search patterns
  */
 
-import { useCallback } from 'react';
+import { useCallback, useMemo } from 'react';
+
 import { useHybridStorage } from '@/hooks/use-hybrid-storage';
 
 // Types for enhanced search history
 export interface SearchEntry {
   id: string;
   query: string;
-  filters: Record<string, any>;
+  filters: Record<string, unknown>;
   timestamp: Date;
   resultCount: number;
   clickedResults: string[];
@@ -173,8 +174,13 @@ class EnhancedSearchHistoryManager {
   }
 
   async clearHistory(): Promise<void> {
-    await this.storage.removeItem('search_history');
-    await this.storage.removeItem('search_patterns');
+    try {
+      await this.storage.removeItem('search_history');
+      await this.storage.removeItem('search_patterns');
+    } catch (error) {
+      console.error('Failed to clear search history:', error);
+      throw error;
+    }
   }
 
   async removeSearchEntry(entryId: string): Promise<void> {
@@ -233,14 +239,14 @@ class EnhancedSearchHistoryManager {
         await this.saveHistory(validEntries);
         await this.rebuildPatterns();
       }
-    } catch (error) {
+    } catch {
       throw new Error('Invalid history data format');
     }
   }
 
   // Private methods
   private generateEntryId(): string {
-    return `search_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+    return `search_${Date.now()}_${Math.random().toString(36).substring(2, 11)}`;
   }
 
   private getCurrentSessionId(): string {
@@ -260,17 +266,27 @@ class EnhancedSearchHistoryManager {
       
       const parsed = JSON.parse(data);
       // Convert timestamp strings back to Date objects
-      return parsed.map((entry: any) => ({
-        ...entry,
-        timestamp: new Date(entry.timestamp),
-      }));
+      return parsed.map((entry: unknown) => {
+        if (!this.validateSearchEntry(entry)) {
+          throw new Error('Invalid search entry format');
+        }
+        return {
+          ...entry,
+          timestamp: new Date(entry.timestamp),
+        };
+      });
     } catch {
       return [];
     }
   }
 
   private async saveHistory(history: SearchEntry[]): Promise<void> {
-    await this.storage.setItem('search_history', JSON.stringify(history));
+    try {
+      await this.storage.setItem('search_history', JSON.stringify(history));
+    } catch (error) {
+      console.error('Failed to save search history:', error);
+      throw error;
+    }
   }
 
   private async trimHistorySize(): Promise<void> {
@@ -305,7 +321,12 @@ class EnhancedSearchHistoryManager {
     const updatedPatterns = patterns.filter(p => p.pattern !== entry.query);
     updatedPatterns.push(pattern);
     
-    await this.storage.setItem('search_patterns', JSON.stringify(updatedPatterns));
+    try {
+      await this.storage.setItem('search_patterns', JSON.stringify(updatedPatterns));
+    } catch (error) {
+      console.error('Failed to update search patterns:', error);
+      throw error;
+    }
   }
 
   private async getSearchPatterns(): Promise<SearchPattern[]> {
@@ -315,10 +336,15 @@ class EnhancedSearchHistoryManager {
       
       const parsed = JSON.parse(data);
       // Convert lastUsed strings back to Date objects
-      return parsed.map((pattern: any) => ({
-        ...pattern,
-        lastUsed: new Date(pattern.lastUsed),
-      }));
+      return parsed.map((pattern: unknown) => {
+        if (!this.validateSearchPattern(pattern)) {
+          throw new Error('Invalid search pattern format');
+        }
+        return {
+          ...pattern,
+          lastUsed: new Date(pattern.lastUsed),
+        };
+      });
     } catch {
       return [];
     }
@@ -406,13 +432,13 @@ class EnhancedSearchHistoryManager {
     return 'night';
   }
 
-  private extractTopDomains(history: SearchEntry[]): string[] {
+  private extractTopDomains(_history: SearchEntry[]): string[] {
     // Mock implementation - extract domains from query patterns
     const domains = ['computer science', 'biology', 'physics', 'mathematics'];
     return domains.slice(0, 5);
   }
 
-  private generateImprovementSuggestions(history: SearchEntry[], patterns: SearchPattern[]): string[] {
+  private generateImprovementSuggestions(history: SearchEntry[], _patterns: SearchPattern[]): string[] {
     const suggestions: string[] = [];
     
     if (history.length > 0) {
@@ -430,19 +456,39 @@ class EnhancedSearchHistoryManager {
     return suggestions;
   }
 
-  private validateSearchEntry = (entry: any): entry is SearchEntry => {
-    return entry && 
-           typeof entry.id === 'string' &&
-           typeof entry.query === 'string' &&
-           typeof entry.timestamp !== 'undefined';
+  private validateSearchEntry = (entry: unknown): entry is SearchEntry => {
+    return entry !== null &&
+           typeof entry === 'object' &&
+           'id' in entry &&
+           'query' in entry &&
+           'timestamp' in entry &&
+           typeof (entry as SearchEntry).id === 'string' &&
+           typeof (entry as SearchEntry).query === 'string' &&
+           (entry as SearchEntry).timestamp !== undefined;
+  };
+
+  private validateSearchPattern = (pattern: unknown): pattern is SearchPattern => {
+    return pattern !== null &&
+           typeof pattern === 'object' &&
+           'pattern' in pattern &&
+           'frequency' in pattern &&
+           'lastUsed' in pattern &&
+           typeof (pattern as SearchPattern).pattern === 'string' &&
+           typeof (pattern as SearchPattern).frequency === 'number' &&
+           (pattern as SearchPattern).lastUsed !== undefined;
   };
 
   private async rebuildPatterns(): Promise<void> {
-    const history = await this.loadHistory();
-    await this.storage.removeItem('search_patterns');
-    
-    for (const entry of history) {
-      await this.updatePatterns(entry);
+    try {
+      const history = await this.loadHistory();
+      await this.storage.removeItem('search_patterns');
+      
+      for (const entry of history) {
+        await this.updatePatterns(entry);
+      }
+    } catch (error) {
+      console.error('Failed to rebuild search patterns:', error);
+      throw error;
     }
   }
 }
@@ -450,7 +496,7 @@ class EnhancedSearchHistoryManager {
 // Hook for using enhanced search history
 export function useEnhancedSearchHistory() {
   const storage = useHybridStorage();
-  const manager = new EnhancedSearchHistoryManager(storage);
+  const manager = useMemo(() => new EnhancedSearchHistoryManager(storage), [storage]);
   
   const saveSearch = useCallback((entry: Partial<SearchEntry>) => {
     return manager.saveSearchEntry(entry);

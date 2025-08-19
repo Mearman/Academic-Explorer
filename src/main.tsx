@@ -2,7 +2,7 @@ import { enableMapSet } from 'immer';
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 
-import App from './App';
+import { App } from './App';
 import { ReactQueryProvider } from './lib/react-query/provider';
 import { ThemeProvider } from './providers/theme-provider';
 

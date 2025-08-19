@@ -9,7 +9,6 @@ import type {
   QueuedRequest, 
   RequestQueueStatus,
   NetworkRetryPolicy,
-  RetryStrategy,
 } from '@/types/network';
 
 import { useNetworkStatus } from './use-network-status';
@@ -93,7 +92,7 @@ export interface SyncStrategy {
  */
 const QUEUE_STORAGE_KEY = 'intelligent-offline-queue';
 const CONFLICTS_STORAGE_KEY = 'offline-queue-conflicts';
-const SYNC_STATE_STORAGE_KEY = 'sync-state';
+const _SYNC_STATE_STORAGE_KEY = 'sync-state';
 
 /**
  * Default sync strategies for different network conditions
@@ -381,6 +380,21 @@ export function useIntelligentOfflineQueue() {
   const processingRef = useRef(false);
   const mountedRef = useRef(true);
 
+  /**
+   * Get current sync strategy based on network conditions
+   */
+  const getCurrentSyncStrategy = useCallback((status: typeof networkStatus): SyncStrategy => {
+    if (!status.isOnline) {
+      return SYNC_STRATEGIES.offline;
+    }
+    
+    if (status.isSlowConnection || status.connectionQuality === 'slow') {
+      return SYNC_STRATEGIES.slow;
+    }
+    
+    return SYNC_STRATEGIES.fast;
+  }, []);
+
   // Load persisted data on mount
   useEffect(() => {
     const { queue: persistedQueue, conflicts: persistedConflicts } = loadPersistedData();
@@ -422,7 +436,7 @@ export function useIntelligentOfflineQueue() {
       dataIntegrityScore: Math.round(dataIntegrityScore),
       conflictResolutionsPending: unresolvedConflicts,
     }));
-  }, [queue, conflicts, networkStatus]);
+  }, [queue, conflicts, networkStatus, getCurrentSyncStrategy]);
 
   // Persist changes
   useEffect(() => {
@@ -430,82 +444,62 @@ export function useIntelligentOfflineQueue() {
   }, [queue, conflicts]);
 
   /**
-   * Get current sync strategy based on network conditions
-   */
-  const getCurrentSyncStrategy = useCallback((status: typeof networkStatus): SyncStrategy => {
-    if (!status.isOnline) {
-      return SYNC_STRATEGIES.offline;
-    }
-    
-    if (status.isSlowConnection || status.connectionQuality === 'slow') {
-      return SYNC_STRATEGIES.slow;
-    }
-    
-    return SYNC_STRATEGIES.fast;
-  }, []);
-
-  /**
    * Execute a request with conflict detection
    */
   const executeRequestWithConflictDetection = useCallback(async (
     request: IntelligentQueuedRequest
   ): Promise<{ success: boolean; conflict?: RequestConflict; result?: unknown }> => {
-    try {
-      const fetchOptions: RequestInit = {
-        method: request.method,
-        headers: request.headers,
+    const fetchOptions: RequestInit = {
+      method: request.method,
+      headers: request.headers,
+    };
+
+    // Add conditional headers for conflict detection
+    if (request.etag) {
+      fetchOptions.headers = {
+        ...fetchOptions.headers,
+        'If-Match': request.etag,
       };
-
-      // Add conditional headers for conflict detection
-      if (request.etag) {
-        fetchOptions.headers = {
-          ...fetchOptions.headers,
-          'If-Match': request.etag,
-        };
-      }
-
-      if (request.lastModified) {
-        fetchOptions.headers = {
-          ...fetchOptions.headers,
-          'If-Unmodified-Since': new Date(request.lastModified).toUTCString(),
-        };
-      }
-
-      // Add body for non-GET requests
-      if (request.body && request.method !== 'GET' && request.method !== 'HEAD') {
-        if (typeof request.body === 'object') {
-          fetchOptions.body = JSON.stringify(request.body);
-          fetchOptions.headers = {
-            ...fetchOptions.headers,
-            'Content-Type': 'application/json',
-          };
-        } else {
-          fetchOptions.body = String(request.body);
-        }
-      }
-
-      const response = await fetch(request.url, fetchOptions);
-      
-      // Check for conflicts
-      const conflict = detectConflict(request, response);
-      if (conflict) {
-        return { success: false, conflict };
-      }
-
-      if (!response.ok) {
-        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-      }
-
-      const contentType = response.headers.get('content-type');
-      const result = contentType && contentType.includes('application/json')
-        ? await response.json()
-        : await response.text();
-
-      return { success: true, result };
-      
-    } catch (error) {
-      throw error;
     }
+
+    if (request.lastModified) {
+      fetchOptions.headers = {
+        ...fetchOptions.headers,
+        'If-Unmodified-Since': new Date(request.lastModified).toUTCString(),
+      };
+    }
+
+    // Add body for non-GET requests
+    if (request.body && request.method !== 'GET' && request.method !== 'HEAD') {
+      if (typeof request.body === 'object') {
+        fetchOptions.body = JSON.stringify(request.body);
+        fetchOptions.headers = {
+          ...fetchOptions.headers,
+          'Content-Type': 'application/json',
+        };
+      } else {
+        fetchOptions.body = String(request.body);
+      }
+    }
+
+    const response = await fetch(request.url, fetchOptions);
+    
+    // Check for conflicts
+    const conflict = detectConflict(request, response);
+    if (conflict) {
+      return { success: false, conflict };
+    }
+
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+    }
+
+    const contentType = response.headers.get('content-type');
+    const result = contentType && contentType.includes('application/json')
+      ? await response.json()
+      : await response.text();
+
+    return { success: true, result };
   }, []);
 
   /**

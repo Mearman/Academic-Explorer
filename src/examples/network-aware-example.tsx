@@ -4,9 +4,10 @@
 
 import React, { useState } from 'react';
 
-import { NetworkProvider, useNetworkContext } from '@/contexts/network-provider';
+import { NetworkProvider } from '@/contexts/network-provider';
 import { useEntityData } from '@/hooks/use-entity-data-enhanced';
 import type { RequestPriority } from '@/hooks/use-entity-data-enhanced';
+import { useNetworkContext } from '@/hooks/use-network-context';
 import { useNetworkStatus } from '@/hooks/use-network-status';
 
 /**
@@ -370,4 +371,3 @@ export function NetworkAwareExample() {
   );
 }
 
-export default NetworkAwareExample;

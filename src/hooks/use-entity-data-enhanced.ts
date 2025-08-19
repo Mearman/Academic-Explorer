@@ -12,7 +12,7 @@
 import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 // import type React from 'react'; // Unused import
 
-import { useNetworkContext } from '@/contexts/network-provider';
+import { useNetworkContext } from '@/hooks/use-network-context';
 import { cachedOpenAlex } from '@/lib/openalex';
 import type { 
   Work, 
