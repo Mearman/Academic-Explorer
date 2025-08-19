@@ -86,32 +86,32 @@ export default defineConfig({
 						"./src/test/jest-dom-setup.ts",
 					],
 
-					// CRITICAL: Ultra-conservative thread settings for unit tests
+					// PERFORMANCE: Optimized thread settings for unit tests (safe parallelism)
 					pool: "threads",
 					poolOptions: {
 						threads: {
-							singleThread: true,
-							maxThreads: 1,
+							singleThread: false,
+							maxThreads: 2, // Limited parallelism for unit tests
 							minThreads: 1,
 							isolate: true,
 							useAtomics: false,
 						},
 					},
 
-					// CRITICAL: Full serial execution for unit tests
+					// PERFORMANCE: Controlled concurrency for unit tests
 					isolate: true,
 					sequence: {
-						concurrent: false,
+						concurrent: true, // Allow concurrent unit tests
 						shuffle: false,
 						hooks: "stack",
 					},
-					maxConcurrency: 1,
-					maxWorkers: 1,
+					maxConcurrency: 2, // Limit to 2 concurrent unit tests
+					maxWorkers: 2,
 					minWorkers: 1,
-					fileParallelism: false,
+					fileParallelism: true, // Allow file-level parallelism
 
-					// CRITICAL: Extended timeouts for serial execution
-					testTimeout: process.env.CI === "true" ? 90000 : 60000,
+					// PERFORMANCE: Reduced timeouts due to parallelism
+					testTimeout: process.env.CI === "true" ? 45000 : 30000,
 					hookTimeout: 30000,
 					teardownTimeout: 30000,
 
