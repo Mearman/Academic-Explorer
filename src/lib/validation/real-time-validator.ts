@@ -1042,7 +1042,7 @@ function validateNestedStructures(
 
   // Validate authorships array for works
   if (entityType === EntityType.WORK && 'authorships' in entityObj) {
-    const authorships = entityObj.authorships;
+    const {authorships} = entityObj;
     
     if (Array.isArray(authorships)) {
       authorships.forEach((authorship, index) => {
