@@ -2,7 +2,6 @@ import { useLocation } from '@tanstack/react-router';
 import { useEffect, useCallback } from 'react';
 
 import { saveEntityToSimpleStorage } from '@/lib/entity-graph-sync';
-import { universalEntityPersistence } from '@/lib/universal-entity-persistence';
 import type { 
   Work, 
   Author, 
@@ -11,6 +10,7 @@ import type {
   Topic
 } from '@/lib/openalex/types';
 import { EntityType } from '@/lib/openalex/utils/entity-detection';
+import { universalEntityPersistence } from '@/lib/universal-entity-persistence';
 import { useEntityGraphStore } from '@/stores/entity-graph-store';
 import type {
   EntityVisitEvent,

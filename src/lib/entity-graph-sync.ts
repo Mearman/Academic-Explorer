@@ -128,7 +128,10 @@ function convertSimpleEdgeToEntityEdge(simpleEdge: SimpleEdge, discoveredFromDir
     id: simpleEdge.id,
     sourceId: simpleEdge.sourceId,
     targetId: simpleEdge.targetId,
+    source: simpleEdge.sourceId,
+    target: simpleEdge.targetId,
     edgeType: simpleEdge.edgeType,
+    type: simpleEdge.edgeType,
     weight: 0.5, // Default weight
     discoveredFromDirectVisit,
     discoveredAt: now, // We don't have the original timestamp, use current

@@ -70,11 +70,15 @@ export function graphVertexToEntityVertex(graphVertex: GraphVertex): EntityGraph
  * Convert GraphEdge (IndexedDB) to EntityGraphEdge (Zustand store)
  */
 export function graphEdgeToEntityEdge(graphEdge: GraphEdge): EntityGraphEdge {
+  const edgeType = convertGraphEdgeTypeToEdgeType(graphEdge.edgeType);
   return {
     id: graphEdge.id,
     sourceId: graphEdge.sourceId,
     targetId: graphEdge.targetId,
-    edgeType: convertGraphEdgeTypeToEdgeType(graphEdge.edgeType),
+    source: graphEdge.sourceId,
+    target: graphEdge.targetId,
+    edgeType: edgeType,
+    type: edgeType,
     weight: graphEdge.weight,
     discoveredFromDirectVisit: graphEdge.discoveredFromDirectVisit,
     discoveredAt: graphEdge.discoveredAt,

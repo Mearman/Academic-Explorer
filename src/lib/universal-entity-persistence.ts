@@ -8,8 +8,6 @@
  * 4. Performs selective OpenAlex queries for missing display names
  */
 
-import { EntityType } from '@/lib/openalex/utils/entity-detection';
-import { EdgeType } from '@/types/entity-graph';
 import type { 
   Work, 
   Author, 
@@ -20,6 +18,8 @@ import type {
   Funder,
   Concept
 } from '@/lib/openalex/types';
+import { EntityType } from '@/lib/openalex/utils/entity-detection';
+import { EdgeType } from '@/types/entity-graph';
 
 import { entityGraphStorage } from './entity-graph-storage';
 import { saveEntityToSimpleStorage, saveEdgeToSimpleStorage } from './entity-graph-sync';
