@@ -1,13 +1,13 @@
 /**
  * @vitest-environment jsdom
  */
-import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest';
 
+import { EntityType } from '@/lib/openalex/utils/entity-detection';
 import type { EntityGraphVertex, EntityGraphEdge } from '@/types/entity-graph';
 import { EdgeType } from '@/types/entity-graph';
-import { EntityType } from '@/lib/openalex/utils/entity-detection';
 
 import { EntityGraphVisualization } from './entity-graph-visualization';
 

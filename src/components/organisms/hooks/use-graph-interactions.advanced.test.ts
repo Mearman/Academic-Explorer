@@ -1,12 +1,12 @@
 /**
  * @vitest-environment jsdom
  */
-import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { renderHook, act } from '@testing-library/react';
+import { describe, it, expect, beforeEach, vi } from 'vitest';
 
+import { EntityType } from '@/lib/openalex/utils/entity-detection';
 import type { EntityGraphVertex } from '@/types/entity-graph';
 import { EncounterType } from '@/types/entity-graph';
-import { EntityType } from '@/lib/openalex/utils/entity-detection';
 
 import { 
   useAdvancedGraphInteractions,

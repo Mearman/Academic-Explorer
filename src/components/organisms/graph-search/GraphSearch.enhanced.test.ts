@@ -3,8 +3,8 @@
  */
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 
-import type { EntityGraphVertex } from '@/types/entity-graph';
 import { EntityType } from '@/lib/openalex/utils/entity-detection';
+import type { EntityGraphVertex } from '@/types/entity-graph';
 
 import {
   FuzzySearchEngine,
