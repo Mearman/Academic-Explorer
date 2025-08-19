@@ -456,7 +456,11 @@ export type WebSocketMessageType =
   | 'operation-apply'
   | 'session-update'
   | 'error'
-  | 'heartbeat';
+  | 'heartbeat'
+  | 'sync-response'
+  | 'sync-request'
+  | 'conflict-resolution'
+  | 'enhanced-presence';
 
 /**
  * WebSocket message structure

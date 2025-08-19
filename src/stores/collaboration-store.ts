@@ -112,7 +112,8 @@ export const useCollaborationStore = create<CollaborationState & CollaborationAc
         const webSocketService: WebSocketService = createMockWebSocketService();
         
         // Debounced presence update function
-        const debouncedPresenceUpdate = debounce((presence: Partial<UserPresence>) => {
+        const debouncedPresenceUpdate = debounce((...args: unknown[]) => {
+          const presence = args[0] as Partial<UserPresence>;
           const _state = get();
           if (_state.currentSession && _state.currentUser && webSocketService.isConnected()) {
             const message: WebSocketMessage = {

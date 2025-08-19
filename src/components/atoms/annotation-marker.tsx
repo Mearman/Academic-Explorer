@@ -107,6 +107,141 @@ function getAnnotationColours(type: AnnotationType): {
 
 
 /**
+ * Render preview header with type, author, and close button
+ */
+function renderPreviewHeader(
+  annotation: Annotation,
+  colours: { background: string; border: string; text: string },
+  onClose: () => void
+): React.ReactNode {
+  return (
+    <div
+      style={{
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        marginBottom: '8px',
+        paddingBottom: '6px',
+        borderBottom: `1px solid ${colours.border}20`,
+      }}
+    >
+      <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+        <span
+          style={{
+            backgroundColor: colours.background,
+            color: colours.text,
+            padding: '2px 6px',
+            borderRadius: '4px',
+            fontSize: '11px',
+            fontWeight: '600',
+            textTransform: 'capitalize',
+          }}
+        >
+          {annotation.type}
+        </span>
+        <span style={{ fontSize: '12px', color: '#666' }}>
+          by {annotation.author.name}
+        </span>
+      </div>
+      <button
+        onClick={onClose}
+        style={{
+          background: 'none',
+          border: 'none',
+          cursor: 'pointer',
+          padding: '4px',
+          borderRadius: '4px',
+          color: '#999',
+          fontSize: '14px',
+          lineHeight: 1,
+        }}
+        aria-label="Close preview"
+      >
+        ×
+      </button>
+    </div>
+  );
+}
+
+/**
+ * Render preview content with annotation text
+ */
+function renderPreviewContent(content: string): React.ReactNode {
+  return (
+    <div
+      style={{
+        fontSize: '14px',
+        lineHeight: '1.4',
+        color: '#333',
+        marginBottom: '8px',
+        maxHeight: '120px',
+        overflowY: 'auto',
+      }}
+    >
+      {content}
+    </div>
+  );
+}
+
+/**
+ * Render preview tags
+ */
+function renderPreviewTags(
+  tags: string[],
+  colours: { background: string; border: string; text: string }
+): React.ReactNode {
+  if (!tags || tags.length === 0) return null;
+
+  return (
+    <div
+      style={{
+        display: 'flex',
+        flexWrap: 'wrap',
+        gap: '4px',
+        marginTop: '8px',
+      }}
+    >
+      {tags.map((tag) => (
+        <span
+          key={tag}
+          style={{
+            fontSize: '11px',
+            padding: '2px 6px',
+            backgroundColor: `${colours.border}15`,
+            color: colours.text,
+            borderRadius: '12px',
+            border: `1px solid ${colours.border}30`,
+          }}
+        >
+          {tag}
+        </span>
+      ))}
+    </div>
+  );
+}
+
+/**
+ * Render arrow pointing to the annotation marker
+ */
+function renderPreviewArrow(borderColor: string): React.ReactNode {
+  return (
+    <div
+      style={{
+        position: 'absolute',
+        top: '-8px',
+        left: '50%',
+        transform: 'translateX(-50%)',
+        width: 0,
+        height: 0,
+        borderLeft: '8px solid transparent',
+        borderRight: '8px solid transparent',
+        borderBottom: `8px solid ${borderColor}`,
+      }}
+    />
+  );
+}
+
+/**
  * Preview tooltip component
  */
 const AnnotationPreview = memo<{
@@ -117,7 +252,7 @@ const AnnotationPreview = memo<{
   
   const header = renderPreviewHeader(annotation, colours, onClose);
   const content = renderPreviewContent(annotation.content);
-  const tags = renderPreviewTags(annotation.tags || [], colours);
+  const tags = renderPreviewTags(annotation.tags, colours);
   const arrow = renderPreviewArrow(colours.border);
   
   return (

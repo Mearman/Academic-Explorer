@@ -229,7 +229,7 @@ function renderDiffElement(
   return (
     <ComparisonDiffIndicator
       difference={diffData.difference}
-      type={differenceType}
+      type={differenceType || 'absolute'}
       direction={diffData.direction}
       size={size}
     />
