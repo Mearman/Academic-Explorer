@@ -45,20 +45,53 @@ export interface AnnotationMarkerProps {
 }
 
 /**
+ * Size configuration for annotation markers
+ */
+const MARKER_SIZE_CONFIG = {
+  sm: { size: 16, padding: 4, iconSize: 12 },
+  md: { size: 20, padding: 6, iconSize: 14 },
+  lg: { size: 24, padding: 8, iconSize: 16 },
+} as const;
+
+/**
+ * Configuration for annotation types
+ */
+const ANNOTATION_CONFIG = {
+  highlight: { 
+    icon: IconHighlight,
+    colours: { background: '#FEF3C7', border: '#F59E0B', text: '#92400E' },
+  },
+  note: { 
+    icon: IconNote,
+    colours: { background: '#DBEAFE', border: '#3B82F6', text: '#1D4ED8' },
+  },
+  bookmark: { 
+    icon: IconBookmark,
+    colours: { background: '#D1FAE5', border: '#10B981', text: '#047857' },
+  },
+  question: { 
+    icon: IconQuestionMark,
+    colours: { background: '#FDE68A', border: '#F59E0B', text: '#92400E' },
+  },
+  todo: { 
+    icon: IconChecklist,
+    colours: { background: '#E0E7FF', border: '#6366F1', text: '#4338CA' },
+  },
+  warning: { 
+    icon: IconAlertTriangle,
+    colours: { background: '#FEE2E2', border: '#EF4444', text: '#DC2626' },
+  },
+  reference: { 
+    icon: IconExternalLink,
+    colours: { background: '#F3E8FF', border: '#8B5CF6', text: '#6D28D9' },
+  },
+} as const;
+
+/**
  * Get icon for annotation type
  */
 function getAnnotationIcon(type: AnnotationType): React.ComponentType<{ size?: number | string }> {
-  const iconMap: Record<AnnotationType, React.ComponentType<{ size?: number | string }>> = {
-    highlight: IconHighlight,
-    note: IconNote,
-    bookmark: IconBookmark,
-    question: IconQuestionMark,
-    todo: IconChecklist,
-    warning: IconAlertTriangle,
-    reference: IconExternalLink,
-  };
-  
-  return iconMap[type] || IconNote;
+  return ANNOTATION_CONFIG[type]?.icon ?? IconNote;
 }
 
 /**
@@ -69,18 +102,9 @@ function getAnnotationColours(type: AnnotationType): {
   border: string;
   text: string;
 } {
-  const colourMap: Record<AnnotationType, { background: string; border: string; text: string }> = {
-    highlight: { background: '#FEF3C7', border: '#F59E0B', text: '#92400E' },
-    note: { background: '#DBEAFE', border: '#3B82F6', text: '#1D4ED8' },
-    bookmark: { background: '#D1FAE5', border: '#10B981', text: '#047857' },
-    question: { background: '#FDE68A', border: '#F59E0B', text: '#92400E' },
-    todo: { background: '#E0E7FF', border: '#6366F1', text: '#4338CA' },
-    warning: { background: '#FEE2E2', border: '#EF4444', text: '#DC2626' },
-    reference: { background: '#F3E8FF', border: '#8B5CF6', text: '#6D28D9' },
-  };
-  
-  return colourMap[type];
+  return ANNOTATION_CONFIG[type]?.colours ?? ANNOTATION_CONFIG.note.colours;
 }
+
 
 /**
  * Preview tooltip component
@@ -90,6 +114,11 @@ const AnnotationPreview = memo<{
   onClose: () => void;
 }>(({ annotation, onClose }) => {
   const colours = getAnnotationColours(annotation.type);
+  
+  const header = renderPreviewHeader(annotation, colours, onClose);
+  const content = renderPreviewContent(annotation.content);
+  const tags = renderPreviewTags(annotation.tags || [], colours);
+  const arrow = renderPreviewArrow(colours.border);
   
   return (
     <motion.div
@@ -114,110 +143,73 @@ const AnnotationPreview = memo<{
       }}
       onClick={(e: React.MouseEvent) => e.stopPropagation()}
     >
-      {/* Preview header */}
-      <div style={{
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        marginBottom: '8px',
-      }}>
-        <div style={{
-          display: 'flex',
-          alignItems: 'center',
-          gap: '6px',
-        }}>
-          <span style={{
-            fontSize: '11px',
-            fontWeight: '600',
-            color: colours.text,
-            textTransform: 'uppercase',
-            letterSpacing: '0.5px',
-          }}>
-            {annotation.type}
-          </span>
-          <span style={{
-            fontSize: '10px',
-            color: '#6B7280',
-          }}>
-            by {annotation.author.name}
-          </span>
-        </div>
-        <button
-          onClick={onClose}
-          style={{
-            background: 'none',
-            border: 'none',
-            color: '#6B7280',
-            cursor: 'pointer',
-            fontSize: '16px',
-            padding: '2px',
-          }}
-        >
-          ×
-        </button>
-      </div>
-      
-      {/* Preview content */}
-      <div style={{
-        fontSize: '13px',
-        color: '#374151',
-        lineHeight: 1.4,
-        marginBottom: '8px',
-      }}>
-        {annotation.content}
-      </div>
-      
-      {/* Tags */}
-      {annotation.tags.length > 0 && (
-        <div style={{
-          display: 'flex',
-          flexWrap: 'wrap',
-          gap: '4px',
-          marginTop: '8px',
-        }}>
-          {annotation.tags.slice(0, 3).map(tag => (
-            <span
-              key={tag}
-              style={{
-                fontSize: '10px',
-                backgroundColor: colours.background,
-                color: colours.text,
-                padding: '2px 6px',
-                borderRadius: '10px',
-                fontWeight: '500',
-              }}
-            >
-              {tag}
-            </span>
-          ))}
-          {annotation.tags.length > 3 && (
-            <span style={{
-              fontSize: '10px',
-              color: '#6B7280',
-            }}>
-              +{annotation.tags.length - 3}
-            </span>
-          )}
-        </div>
-      )}
-      
-      {/* Arrow pointer */}
-      <div style={{
-        position: 'absolute',
-        top: '-6px',
-        left: '50%',
-        transform: 'translateX(-50%)',
-        width: 0,
-        height: 0,
-        borderLeft: '6px solid transparent',
-        borderRight: '6px solid transparent',
-        borderBottom: `6px solid ${colours.border}`,
-      }} />
+      {header}
+      {content}
+      {tags}
+      {arrow}
     </motion.div>
   );
 });
 
 AnnotationPreview.displayName = 'AnnotationPreview';
+
+/**
+ * Create mouse interaction handlers
+ */
+function createMouseHandlers(
+  interactive: boolean,
+  setIsHovered: (hovered: boolean) => void,
+  setShowTooltip: (show: boolean) => void,
+  onMouseEnter?: (annotation: Annotation) => void,
+  onMouseLeave?: (annotation: Annotation) => void,
+  annotation?: Annotation
+) {
+  const handleMouseEnter = () => {
+    if (!interactive) return;
+    setIsHovered(true);
+    onMouseEnter?.(annotation!);
+    setTimeout(() => setShowTooltip(true), 500);
+  };
+
+  const handleMouseLeave = () => {
+    if (!interactive) return;
+    setIsHovered(false);
+    setShowTooltip(false);
+    onMouseLeave?.(annotation!);
+  };
+
+  return { handleMouseEnter, handleMouseLeave };
+}
+
+/**
+ * Render pulse animation for new annotations
+ */
+function renderPulseAnimation(
+  annotation: Annotation,
+  config: { size: number; padding: number; iconSize: number },
+  colours: { background: string; border: string; text: string }
+): React.ReactNode {
+  if (annotation.createdAt <= Date.now() - 5000) return null;
+  
+  return (
+    <motion.div
+      initial={{ scale: 1, opacity: 0.6 }}
+      animate={{ scale: 2, opacity: 0 }}
+      transition={{ duration: 1, repeat: 2 }}
+      style={{
+        position: 'absolute',
+        top: '50%',
+        left: '50%',
+        transform: 'translate(-50%, -50%)',
+        width: config.size,
+        height: config.size,
+        backgroundColor: colours.border,
+        borderRadius: '50%',
+        zIndex: -1,
+      }}
+    />
+  );
+}
 
 /**
  * Annotation marker component
@@ -241,34 +233,21 @@ export const AnnotationMarker = memo<AnnotationMarkerProps>(({
   const Icon = getAnnotationIcon(annotation.type);
   const colours = getAnnotationColours(annotation.type);
   
-  // Size configurations
-  const sizeConfig = {
-    sm: { size: 16, padding: 4, iconSize: 12 },
-    md: { size: 20, padding: 6, iconSize: 14 },
-    lg: { size: 24, padding: 8, iconSize: 16 },
-  };
-  
-  const config = sizeConfig[size];
+  const config = MARKER_SIZE_CONFIG[size];
   
   const handleClick = (e: React.MouseEvent) => {
     e.stopPropagation();
     onClick?.(annotation);
   };
   
-  const handleMouseEnter = () => {
-    if (!interactive) return;
-    setIsHovered(true);
-    onMouseEnter?.(annotation);
-    // Show tooltip after delay
-    setTimeout(() => setShowTooltip(true), 500);
-  };
-  
-  const handleMouseLeave = () => {
-    if (!interactive) return;
-    setIsHovered(false);
-    setShowTooltip(false);
-    onMouseLeave?.(annotation);
-  };
+  const { handleMouseEnter, handleMouseLeave } = createMouseHandlers(
+    interactive,
+    setIsHovered,
+    setShowTooltip,
+    onMouseEnter,
+    onMouseLeave,
+    annotation
+  );
   
   return (
     <div
@@ -333,24 +312,7 @@ export const AnnotationMarker = memo<AnnotationMarkerProps>(({
       </AnimatePresence>
       
       {/* Pulse animation for new annotations */}
-      {annotation.createdAt > Date.now() - 5000 && (
-        <motion.div
-          initial={{ scale: 1, opacity: 0.6 }}
-          animate={{ scale: 2, opacity: 0 }}
-          transition={{ duration: 1, repeat: 2 }}
-          style={{
-            position: 'absolute',
-            top: '50%',
-            left: '50%',
-            transform: 'translate(-50%, -50%)',
-            width: config.size,
-            height: config.size,
-            backgroundColor: colours.border,
-            borderRadius: '50%',
-            zIndex: -1,
-          }}
-        />
-      )}
+      {renderPulseAnimation(annotation, config, colours)}
     </div>
   );
 });

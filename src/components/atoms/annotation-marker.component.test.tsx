@@ -14,9 +14,9 @@ import { AnnotationMarker } from './annotation-marker';
 // Mock framer-motion
 vi.mock('framer-motion', () => ({
   motion: {
-    div: ({ children, ...props }: any) => <div {...props}>{children}</div>,
+    div: ({ children, ...props }: React.HTMLAttributes<HTMLDivElement> & { children?: React.ReactNode }) => <div {...props}>{children}</div>,
   },
-  AnimatePresence: ({ children }: any) => <div>{children}</div>,
+  AnimatePresence: ({ children }: { children?: React.ReactNode }) => <div>{children}</div>,
 }));
 
 // Mock data
@@ -56,6 +56,7 @@ describe('AnnotationMarker', () => {
   const defaultProps = {
     annotation: mockAnnotation,
     position: { x: 100, y: 200 },
+    'data-testid': 'annotation-marker',
   };
 
   beforeEach(() => {
@@ -301,7 +302,7 @@ describe('AnnotationMarker', () => {
     it('should handle unknown annotation types gracefully', () => {
       const annotationWithUnknownType = {
         ...mockAnnotation,
-        type: 'unknown' as any,
+        type: 'unknown' as 'note', // Type assertion to satisfy TypeScript while testing edge case
       };
       
       render(<AnnotationMarker {...defaultProps} annotation={annotationWithUnknownType} />);
