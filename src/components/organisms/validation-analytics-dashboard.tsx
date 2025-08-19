@@ -5,7 +5,6 @@
  * including data visualization, trend analysis, and user interactions.
  */
 
-import React, { useState, useMemo, useCallback } from 'react';
 import {
   Grid,
   Card,
@@ -46,6 +45,7 @@ import {
   IconFilter,
   IconClearAll,
 } from '@tabler/icons-react';
+import React, { useState, useMemo, useCallback } from 'react';
 import { LineChart, Line, BarChart, Bar, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, ResponsiveContainer, Legend } from 'recharts';
 
 import { EntityType } from '@/lib/openalex/utils/entity-detection';

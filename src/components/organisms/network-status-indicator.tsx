@@ -4,8 +4,9 @@
  */
 
 import React, { useState, useEffect } from 'react';
-import { useNetworkStatus } from '@/hooks/use-network-status';
+
 import { useIntelligentOfflineQueue } from '@/hooks/use-intelligent-offline-queue';
+import { useNetworkStatus } from '@/hooks/use-network-status';
 
 interface NetworkStatusIndicatorProps {
   position?: 'top' | 'bottom';

@@ -4,8 +4,9 @@
  */
 
 import React, { useState, useEffect } from 'react';
-import { useOfflineFirstData } from '@/lib/offline-first-data';
+
 import { useIntelligentOfflineQueue } from '@/hooks/use-intelligent-offline-queue';
+import { useOfflineFirstData } from '@/lib/offline-first-data';
 import { useServiceWorker } from '@/lib/service-worker';
 
 interface OfflineManagerProps {
