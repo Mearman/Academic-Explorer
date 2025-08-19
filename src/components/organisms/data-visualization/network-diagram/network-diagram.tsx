@@ -126,7 +126,7 @@ export function NetworkDiagram({
   onNodeClick,
   onNodeHover,
   onEdgeClick,
-  onClusterSelect
+  onClusterSelect: _onClusterSelect
 }: NetworkDiagramProps) {
   
   // ============================================================================

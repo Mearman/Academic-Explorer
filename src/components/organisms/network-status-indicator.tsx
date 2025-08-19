@@ -23,7 +23,7 @@ function getConnectionDisplay(quality: string, isOnline: boolean) {
   if (!isOnline) {
     return {
       color: 'bg-red-500',
-      icon: '🔴',
+      icon: 'OFF',
       text: 'Offline',
       description: 'No internet connection',
     };
@@ -33,35 +33,35 @@ function getConnectionDisplay(quality: string, isOnline: boolean) {
     case 'fast':
       return {
         color: 'bg-green-500',
-        icon: '🟢',
+        icon: 'FAST',
         text: 'Excellent',
         description: 'Fast, reliable connection',
       };
     case 'moderate':
       return {
         color: 'bg-yellow-500',
-        icon: '🟡',
+        icon: 'GOOD',
         text: 'Good',
         description: 'Stable connection',
       };
     case 'slow':
       return {
         color: 'bg-orange-500',
-        icon: '🟠',
+        icon: 'SLOW',
         text: 'Slow',
         description: 'Limited bandwidth',
       };
     case 'verySlow':
       return {
         color: 'bg-red-400',
-        icon: '🔴',
+        icon: 'OFF',
         text: 'Very Slow',
         description: 'Poor connection quality',
       };
     default:
       return {
         color: 'bg-gray-500',
-        icon: '⚪',
+        icon: 'UNK',
         text: 'Unknown',
         description: 'Connection quality unknown',
       };
@@ -71,7 +71,7 @@ function getConnectionDisplay(quality: string, isOnline: boolean) {
 /**
  * Format file size for display
  */
-function formatBytes(bytes: number): string {
+function _formatBytes(bytes: number): string {
   if (bytes === 0) return '0 B';
   const k = 1024;
   const sizes = ['B', 'KB', 'MB', 'GB'];
@@ -364,4 +364,3 @@ export function NetworkStatusIndicator({
   );
 }
 
-export default NetworkStatusIndicator;

@@ -394,7 +394,7 @@ export function OfflineManager({
           }`}>
             <div className="flex items-center space-x-2">
               <span className="text-2xl">
-                {dataManager.networkStatus.isOnline ? '🟢' : '🔴'}
+                {dataManager.networkStatus.isOnline ? 'ONLINE' : 'OFFLINE'}
               </span>
               <div>
                 <h3 className={`font-semibold ${
@@ -487,4 +487,3 @@ export function OfflineManager({
   );
 }
 
-export default OfflineManager;

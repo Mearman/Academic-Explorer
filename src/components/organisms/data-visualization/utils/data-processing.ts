@@ -5,7 +5,7 @@
  * for academic data visualization components.
  */
 
-import type { Work, Author, Institution, Topic, Concept } from '@/lib/openalex/types';
+import type { Work } from '@/lib/openalex/types';
 
 import type {
   TimelineDataPoint,
@@ -291,12 +291,11 @@ export function calculateCollaborationNetwork(works: Work[]): {
 export function applyNetworkClustering(
   nodes: NetworkNode[],
   edges: NetworkEdge[],
-  algorithm: 'modularity' | 'louvain' = 'modularity'
+  _algorithm: 'modularity' | 'louvain' = 'modularity'
 ): NetworkNode[] {
   // Basic modularity-based clustering implementation
   // For production, consider using dedicated graph libraries like igraph-js
   
-  const nodeMap = new Map(nodes.map(n => [n.id, n]));
   const adjacencyList = new Map<string, Set<string>>();
   
   // Build adjacency list
@@ -830,7 +829,7 @@ export function calculateTrends(data: { date: Date; value: number }[]): TrendAna
   const sumYY = y.reduce((sum, yi) => sum + yi * yi, 0);
   
   const slope = (n * sumXY - sumX * sumY) / (n * sumXX - sumX * sumX);
-  const intercept = (sumY - slope * sumX) / n;
+  const _intercept = (sumY - slope * sumX) / n;
   
   // Calculate correlation coefficient
   const numerator = n * sumXY - sumX * sumY;

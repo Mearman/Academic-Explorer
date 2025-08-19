@@ -14,8 +14,7 @@ import type {
   TimelineChartProps, 
   TimelineDataPoint, 
   TimelineSeries,
-  AxisConfig,
-  TimelineInteractionConfig 
+  AxisConfig
 } from '../types';
 
 import * as styles from './timeline-chart.css';
