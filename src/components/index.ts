@@ -108,6 +108,35 @@ export {
   EntityGraphVisualization,
   EntityGraphVisualizationSkeleton 
 } from './organisms/entity-graph-visualization';
+export {
+  UniversalGraphContainer,
+  UniversalGraphContainerSkeleton
+} from './organisms/graph-container/UniversalGraphContainer';
+export { GraphToolbar } from './organisms/graph-container/GraphToolbar';
+export { GraphStatusBar } from './organisms/graph-container/GraphStatusBar';
+export { EngineTransition } from './organisms/graph-container/EngineTransition';
+export { GraphEngineSelector } from './organisms/graph-container/GraphEngineSelector';
+export { EngineCapabilityBadges } from './organisms/graph-container/EngineCapabilityBadges';
+export { EnginePerformanceIndicator } from './organisms/graph-container/EnginePerformanceIndicator';
+export { EngineRecommendationTooltip } from './organisms/graph-container/EngineRecommendationTooltip';
+export { EngineComparisonModal } from './organisms/graph-container/EngineComparisonModal';
+export { EngineConfigPanel } from './organisms/graph-container/EngineConfigPanel';
+export { CustomSVGConfig, defaultCustomSVGConfig, svgConfigPresets } from './organisms/graph-container/config/CustomSVGConfig';
+export { CustomWebGLConfig, defaultCustomWebGLConfig, webglConfigPresets } from './organisms/graph-container/config/WebGLConfig';
+export {
+  TextInput,
+  NumberInput,
+  Select,
+  Checkbox,
+  Switch,
+  ColorPicker,
+  RangeSlider,
+  FormSection,
+  ValidationUtils,
+  type ValidationResult,
+  type SelectOption,
+  type FormControlProps,
+} from './organisms/graph-container/config/ConfigFormControls';
 export { EntityGraphActions } from './organisms/entity-graph-actions';
 export { WorkMetricsGrid } from './organisms/work-metrics-grid';
 export { WorkPublicationDetails } from './organisms/work-publication-details';
