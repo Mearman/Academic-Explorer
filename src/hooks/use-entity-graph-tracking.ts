@@ -226,6 +226,7 @@ export function useEntityGraphTracking({
    */
   const extractAuthorRelationships = useCallback((author: Author) => {
     console.log(`[EntityGraphTracking] 🔍 Extracting author relationships for ${author.display_name} (${author.id})`);
+    console.log(`[EntityGraphTracking] 📝 RAW AUTHOR DATA STRUCTURE:`, JSON.stringify(author, null, 2));
     console.log(`[EntityGraphTracking] Author has ${author.affiliations?.length || 0} affiliations, ${author.last_known_institutions?.length || 0} last known institutions, ${author.topics?.length || 0} topics`);
     const timestamp = new Date().toISOString();
 
@@ -401,15 +402,22 @@ export function useEntityGraphTracking({
    * Extract relationships from any entity
    */
   const extractEntityRelationships = useCallback((entity: unknown, entityType: EntityType) => {
-    if (!extractRelationships) return;
+    if (!extractRelationships) {
+      console.log(`[EntityGraphTracking] ❌ Relationship extraction disabled via extractRelationships flag`);
+      return;
+    }
 
-    console.log(`[EntityGraphTracking] Extracting relationships for ${entityType} entity`);
+    console.log(`[EntityGraphTracking] 🔗 Extracting relationships for ${entityType} entity`);
+    console.log(`[EntityGraphTracking] 🔗 Entity data available:`, !!entity);
+    
     try {
       switch (entityType) {
         case EntityType.WORK:
+          console.log(`[EntityGraphTracking] 📄 Calling extractWorkRelationships`);
           extractWorkRelationships(entity as Work);
           break;
         case EntityType.AUTHOR:
+          console.log(`[EntityGraphTracking] 👤 Calling extractAuthorRelationships`);
           extractAuthorRelationships(entity as Author);
           break;
         case EntityType.INSTITUTION:
@@ -722,7 +730,7 @@ export function useEntityGraphTracking({
   useEffect(() => {
     if (!autoTrack) return;
 
-    const pathname = location.pathname;
+    const {pathname} = location;
     
     // Parse entity routes
     const entityRoutePatterns = [
