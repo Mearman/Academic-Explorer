@@ -69,6 +69,49 @@ function getBadgeVariant(direction: ComparisonDiffIndicatorProps['direction']): 
 }
 
 /**
+ * Format value based on type
+ */
+function formatValueByType(
+  absValue: number,
+  type: ComparisonDiffIndicatorProps['type'],
+  decimalPlaces: number
+): string {
+  switch (type) {
+    case 'percentage':
+      return `${absValue.toFixed(decimalPlaces)}%`;
+    case 'ratio':
+      return `${absValue.toFixed(decimalPlaces)}×`;
+    case 'absolute':
+    default:
+      return absValue.toLocaleString(undefined, {
+        maximumFractionDigits: decimalPlaces
+      });
+  }
+}
+
+/**
+ * Format value in compact notation
+ */
+function formatCompactValue(absValue: number): string {
+  if (absValue >= 1000000) {
+    return `${(absValue / 1000000).toFixed(1)}M`;
+  }
+  if (absValue >= 1000) {
+    return `${(absValue / 1000).toFixed(1)}K`;
+  }
+  return absValue.toString();
+}
+
+/**
+ * Add sign prefix to formatted value
+ */
+function addSignPrefix(difference: number, formattedValue: string): string {
+  if (difference > 0) return `+${formattedValue}`;
+  if (difference < 0) return `-${formattedValue}`;
+  return formattedValue;
+}
+
+/**
  * Format the difference value based on type and options
  */
 function formatDifference(
@@ -78,43 +121,16 @@ function formatDifference(
   decimalPlaces: number = 1
 ): string {
   const absValue = Math.abs(difference);
+  
   let formattedValue: string;
   
-  switch (type) {
-    case 'percentage':
-      formattedValue = `${absValue.toFixed(decimalPlaces)}%`;
-      break;
-      
-    case 'ratio':
-      formattedValue = `${absValue.toFixed(decimalPlaces)}×`;
-      break;
-      
-    case 'absolute':
-    default:
-      if (format === 'compact' && absValue >= 1000) {
-        if (absValue >= 1000000) {
-          formattedValue = `${(absValue / 1000000).toFixed(1)}M`;
-        } else if (absValue >= 1000) {
-          formattedValue = `${(absValue / 1000).toFixed(1)}K`;
-        } else {
-          formattedValue = absValue.toString();
-        }
-      } else {
-        formattedValue = absValue.toLocaleString(undefined, {
-          maximumFractionDigits: decimalPlaces
-        });
-      }
-      break;
+  if (type === 'absolute' && format === 'compact' && absValue >= 1000) {
+    formattedValue = formatCompactValue(absValue);
+  } else {
+    formattedValue = formatValueByType(absValue, type, decimalPlaces);
   }
   
-  // Add sign prefix
-  if (difference > 0) {
-    return `+${formattedValue}`;
-  } else if (difference < 0) {
-    return `-${formattedValue}`;
-  } else {
-    return formattedValue;
-  }
+  return addSignPrefix(difference, formattedValue);
 }
 
 /**

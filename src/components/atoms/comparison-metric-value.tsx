@@ -56,51 +56,54 @@ function calculateDifference(
     return { difference: 0, direction: 'equal' };
   }
   
-  let difference: number;
   const direction = metricValue > comparisonValue ? 'higher' : 'lower';
-  
-  switch (type) {
-    case 'percentage':
-      difference = ((metricValue - comparisonValue) / comparisonValue) * 100;
-      break;
-    case 'ratio':
-      difference = metricValue / comparisonValue;
-      break;
-    case 'absolute':
-    default:
-      difference = metricValue - comparisonValue;
-      break;
-  }
+  const difference = calculateDifferenceValue(metricValue, comparisonValue, type);
   
   return { difference, direction };
 }
 
 /**
+ * Calculate the numerical difference based on type
+ */
+function calculateDifferenceValue(
+  metricValue: number,
+  comparisonValue: number,
+  type: 'absolute' | 'percentage' | 'ratio'
+): number {
+  switch (type) {
+    case 'percentage':
+      return ((metricValue - comparisonValue) / comparisonValue) * 100;
+    case 'ratio':
+      return metricValue / comparisonValue;
+    case 'absolute':
+    default:
+      return metricValue - comparisonValue;
+  }
+}
+
+/**
+ * Size configuration mapping
+ */
+const SIZE_CONFIG = {
+  xs: { text: 'xs', value: 'sm' },
+  sm: { text: 'sm', value: 'md' },
+  md: { text: 'md', value: 'lg' },
+  lg: { text: 'lg', value: 'xl' },
+  xl: { text: 'xl', value: 'xl' },
+} as const;
+
+/**
  * Get text size based on size variant
  */
 function getTextSize(size: SizeVariant): string {
-  switch (size) {
-    case 'xs': return 'xs';
-    case 'sm': return 'sm';
-    case 'md': return 'md';
-    case 'lg': return 'lg';
-    case 'xl': return 'xl';
-    default: return 'md';
-  }
+  return SIZE_CONFIG[size]?.text ?? SIZE_CONFIG.md.text;
 }
 
 /**
  * Get value text size (larger than regular text)
  */
 function getValueTextSize(size: SizeVariant): string {
-  switch (size) {
-    case 'xs': return 'sm';
-    case 'sm': return 'md';
-    case 'md': return 'lg';
-    case 'lg': return 'xl';
-    case 'xl': return 'xl';
-    default: return 'lg';
-  }
+  return SIZE_CONFIG[size]?.value ?? SIZE_CONFIG.md.value;
 }
 
 /**
@@ -115,23 +118,27 @@ function getAriaLabel(
   comparisonValue?: number,
   differenceType?: ComparisonMetricValueProps['differenceType']
 ): string {
-  let ariaLabel = '';
+  const parts: string[] = [];
   
+  // Base value
   if (label) {
-    ariaLabel += `${label}: `;
+    parts.push(`${label}: ${metric.formatted}`);
+  } else {
+    parts.push(metric.formatted);
   }
   
-  ariaLabel += metric.formatted;
-  
+  // Rank information
   if (showRank && totalEntities) {
-    ariaLabel += `, ranked ${metric.rank} out of ${totalEntities}`;
+    let rankText = `ranked ${metric.rank} out of ${totalEntities}`;
     if (metric.isHighest) {
-      ariaLabel += ' (highest)';
+      rankText += ' (highest)';
     } else if (metric.isLowest) {
-      ariaLabel += ' (lowest)';
+      rankText += ' (lowest)';
     }
+    parts.push(rankText);
   }
   
+  // Difference information
   if (showDifference && comparisonValue !== undefined) {
     const { difference, direction } = calculateDifference(
       metric.value,
@@ -142,11 +149,141 @@ function getAriaLabel(
     if (direction !== 'equal') {
       const absValue = Math.abs(difference);
       const suffix = differenceType === 'percentage' ? '%' : differenceType === 'ratio' ? ' times' : '';
-      ariaLabel += `, ${absValue}${suffix} ${direction}`;
+      parts.push(`${absValue}${suffix} ${direction}`);
     }
   }
   
-  return ariaLabel;
+  return parts.join(', ');
+}
+
+/**
+ * Render value element with emphasis styling
+ */
+function renderValueElement(
+  metric: MetricComparison,
+  shouldEmphasize: boolean,
+  valueTextSize: string,
+  testId?: string
+) {
+  return (
+    <Text
+      size={valueTextSize}
+      fw={shouldEmphasize ? 'bold' : 'normal'}
+      c={shouldEmphasize ? (metric.isHighest ? 'green' : 'orange') : undefined}
+      data-testid={`${testId || 'metric'}-value`}
+    >
+      {metric.formatted}
+    </Text>
+  );
+}
+
+/**
+ * Render label element
+ */
+function renderLabelElement(label: string | undefined, textSize: string, layout: string) {
+  if (!label) return null;
+  
+  return (
+    <Text
+      size={textSize}
+      c="dimmed"
+      fw={layout === 'compact' ? 'normal' : 'normal'}
+    >
+      {label}
+    </Text>
+  );
+}
+
+/**
+ * Render rank element if conditions are met
+ */
+function renderRankElement(
+  showRank: boolean,
+  totalEntities: number | undefined,
+  metric: MetricComparison,
+  showPercentile: boolean,
+  size: SizeVariant
+) {
+  if (!showRank || !totalEntities) return null;
+  
+  return (
+    <ComparisonRankIndicator
+      rank={metric.rank}
+      totalEntities={totalEntities}
+      percentile={showPercentile ? metric.percentile : undefined}
+      size={size}
+    />
+  );
+}
+
+/**
+ * Render difference element if data exists
+ */
+function renderDiffElement(
+  diffData: { difference: number; direction: 'higher' | 'lower' | 'equal' } | null,
+  differenceType: ComparisonMetricValueProps['differenceType'],
+  size: SizeVariant
+) {
+  if (!diffData) return null;
+  
+  return (
+    <ComparisonDiffIndicator
+      difference={diffData.difference}
+      type={differenceType}
+      direction={diffData.direction}
+      size={size}
+    />
+  );
+}
+
+/**
+ * Compose layout based on layout type
+ */
+function composeLayout(
+  layout: ComparisonMetricValueProps['layout'],
+  labelElement: React.ReactNode,
+  valueElement: React.ReactNode,
+  rankElement: React.ReactNode,
+  diffElement: React.ReactNode
+): React.ReactNode {
+  switch (layout) {
+    case 'vertical':
+      return (
+        <Stack gap="xs" align="center">
+          {labelElement}
+          {valueElement}
+          <Group gap="xs">
+            {rankElement}
+            {diffElement}
+          </Group>
+        </Stack>
+      );
+      
+    case 'compact':
+      return (
+        <Group gap="xs" wrap="nowrap">
+          {valueElement}
+          {labelElement}
+          {rankElement}
+          {diffElement}
+        </Group>
+      );
+      
+    case 'horizontal':
+    default:
+      return (
+        <Group gap="md" justify="space-between" wrap="nowrap">
+          <Box>
+            {labelElement}
+            {valueElement}
+          </Box>
+          <Group gap="xs">
+            {rankElement}
+            {diffElement}
+          </Group>
+        </Group>
+      );
+  }
 }
 
 export const ComparisonMetricValue = forwardRef<
@@ -184,98 +321,18 @@ export const ComparisonMetricValue = forwardRef<
   );
   
   // Calculate difference if needed
-  let diffData: { difference: number; direction: 'higher' | 'lower' | 'equal' } | null = null;
-  if (showDifference && comparisonValue !== undefined) {
-    diffData = calculateDifference(metric.value, comparisonValue, differenceType);
-  }
+  const diffData = showDifference && comparisonValue !== undefined
+    ? calculateDifference(metric.value, comparisonValue, differenceType)
+    : null;
   
-  // Render main value
-  const valueElement = (
-    <Text
-      size={valueTextSize}
-      fw={shouldEmphasize ? 'bold' : 'normal'}
-      c={shouldEmphasize ? (metric.isHighest ? 'green' : 'orange') : undefined}
-      data-testid={`${testId || 'metric'}-value`}
-    >
-      {metric.formatted}
-    </Text>
-  );
-  
-  // Render rank indicator
-  const rankElement = showRank && totalEntities ? (
-    <ComparisonRankIndicator
-      rank={metric.rank}
-      totalEntities={totalEntities}
-      percentile={showPercentile ? metric.percentile : undefined}
-      size={size}
-    />
-  ) : null;
-  
-  // Render difference indicator
-  const diffElement = diffData ? (
-    <ComparisonDiffIndicator
-      difference={diffData.difference}
-      type={differenceType}
-      direction={diffData.direction}
-      size={size}
-    />
-  ) : null;
-  
-  // Render label
-  const labelElement = label ? (
-    <Text
-      size={textSize}
-      c="dimmed"
-      fw={layout === 'compact' ? 'normal' : 'normal'}
-    >
-      {label}
-    </Text>
-  ) : null;
+  // Render elements
+  const valueElement = renderValueElement(metric, shouldEmphasize, valueTextSize, testId);
+  const labelElement = renderLabelElement(label, textSize, layout);
+  const rankElement = renderRankElement(showRank, totalEntities, metric, showPercentile, size);
+  const diffElement = renderDiffElement(diffData, differenceType, size);
   
   // Compose layout
-  let content: React.ReactNode;
-  
-  switch (layout) {
-    case 'vertical':
-      content = (
-        <Stack gap="xs" align="center">
-          {labelElement}
-          {valueElement}
-          <Group gap="xs">
-            {rankElement}
-            {diffElement}
-          </Group>
-        </Stack>
-      );
-      break;
-      
-    case 'compact':
-      content = (
-        <Group gap="xs" wrap="nowrap">
-          {valueElement}
-          {labelElement}
-          {rankElement}
-          {diffElement}
-        </Group>
-      );
-      break;
-      
-    case 'horizontal':
-    default:
-      content = (
-        <Group gap="md" justify="space-between" wrap="nowrap">
-          <Box>
-            {labelElement}
-            {valueElement}
-          </Box>
-          <Group gap="xs">
-            {rankElement}
-            {diffElement}
-          </Group>
-        </Group>
-      );
-      break;
-  }
+  const content = composeLayout(layout, labelElement, valueElement, rankElement, diffElement);
   
   // Wrap in button if clickable
   if (onClick) {
