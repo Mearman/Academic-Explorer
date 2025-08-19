@@ -39,7 +39,9 @@ export function useEntityGraphTracking({
   extractRelationships = true,
 }: UseEntityGraphTrackingProps = {}) {
   const location = useLocation();
-  const { visitEntity, addRelationship } = useEntityGraphStore();
+  const { visitEntity, addRelationship, isHydrated } = useEntityGraphStore();
+  
+  console.log('[EntityGraphTracking] Hook initialized - store hydrated:', isHydrated);
 
   // Wrapper for async addRelationship with error handling
   const addRelationshipSafe = useCallback((event: RelationshipDiscoveryEvent): void => {
@@ -679,6 +681,13 @@ export function useEntityGraphTracking({
     entityId: string
   ) => {
     console.log(`[EntityGraphTracking] 🎯 trackEntityData called for ${entityType}:${entityId}`);
+    console.log(`[EntityGraphTracking] 🎯 Store hydration status: ${isHydrated}`);
+    
+    if (!isHydrated) {
+      console.warn(`[EntityGraphTracking] ⚠️ Store not hydrated yet, skipping entity tracking for ${entityType}:${entityId}`);
+      return;
+    }
+    
     const basicEntity = entity as { 
       id: string; 
       display_name: string;
@@ -687,7 +696,10 @@ export function useEntityGraphTracking({
       works_count?: number;
     };
 
+    console.log(`[EntityGraphTracking] 🎯 Proceeding with tracking for hydrated store`);
+
     // Track the visit
+    console.log(`[EntityGraphTracking] 👤 Tracking entity visit`);
     trackEntityVisit(entityId, entityType, basicEntity.display_name, {
       citedByCount: basicEntity.cited_by_count,
       publicationYear: basicEntity.publication_year,
@@ -702,7 +714,7 @@ export function useEntityGraphTracking({
     console.log(`[EntityGraphTracking] 💾 About to persist related entities for ${entityType}:${entityId}`);
     await persistRelatedEntities(entity, entityType);
     console.log(`[EntityGraphTracking] ✅ Completed tracking for ${entityType}:${entityId}`);
-  }, [trackEntityVisit, extractEntityRelationships, persistRelatedEntities]);
+  }, [trackEntityVisit, extractEntityRelationships, persistRelatedEntities, isHydrated]);
 
   /**
    * Auto-track entity visits based on current route

@@ -7,26 +7,37 @@ import { useAuthorData } from '@/hooks/use-entity-data';
 import { useEntityGraphTracking } from '@/hooks/use-entity-graph-tracking';
 import { useNumericIdRedirect } from '@/hooks/use-numeric-id-redirect';
 import { EntityType } from '@/lib/openalex/utils/entity-detection';
+import { useEntityGraphStore } from '@/stores/entity-graph-store';
 
 function AuthorPage() {
   const { id } = Route.useParams();
   const loadingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const { isHydrated } = useEntityGraphStore();
   
-  console.log('[AuthorPage] Component render with id:', id);
+  console.log('[AuthorPage] Rendering author page for ID:', id);
   
   // Handle numeric ID redirection to proper prefixed format
-  const isRedirecting = useNumericIdRedirect(id, EntityType.AUTHOR);
+  let isRedirecting = false;
+  try {
+    isRedirecting = useNumericIdRedirect(id, EntityType.AUTHOR);
+  } catch (error) {
+    console.error('[AuthorPage] Error in numeric ID redirect hook:', error);
+    isRedirecting = false;
+  }
   
   // Entity graph tracking
-  const { trackEntityData } = useEntityGraphTracking({
+  const graphTracking = useEntityGraphTracking({
     autoTrack: true,
     extractRelationships: true,
   });
   
+  const trackEntityData = graphTracking.trackEntityData;
+  
   // Use the author data hook directly with the ID (no complex processing)
-  const { data: author, loading, error, retry } = useAuthorData(
-    id && !isRedirecting ? id : null
-  );
+  const authorIdToPass = id && !isRedirecting ? id : null;
+  const { data: author, loading, error, retry } = useAuthorData(authorIdToPass);
+  
+  console.log('[AuthorPage] Loading state:', { loading, hasAuthor: !!author, hasError: !!error });
   
   // Add timeout protection to prevent infinite loading
   useEffect(() => {
@@ -64,23 +75,16 @@ function AuthorPage() {
     };
   }, [loading, id, isRedirecting, error, retry]);
   
-  // Track entity data when author loads
+  // Track entity data when author loads AND store is hydrated
   useEffect(() => {
-    if (author && id && !isRedirecting) {
-      console.log('[AuthorPage] Tracking author data:', author.display_name);
+    if (author && id && !isRedirecting && isHydrated) {
+      console.log('[AuthorPage] Tracking author entity:', author.display_name);
       trackEntityData(author, EntityType.AUTHOR, id).catch(error => {
         console.error('[AuthorPage] Failed to track entity data:', error);
       });
     }
-  }, [author, id, isRedirecting, trackEntityData]);
+  }, [author, id, isRedirecting, trackEntityData, isHydrated]);
   
-  console.log('[AuthorPage] State:', { 
-    id,
-    isRedirecting, 
-    loading, 
-    hasAuthor: !!author,
-    hasError: !!error
-  });
 
   // Show loading state for redirection
   if (isRedirecting) {

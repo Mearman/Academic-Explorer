@@ -121,6 +121,8 @@ export function EntityGraphVisualization({
     isHydrated,
     isLoading,
     layoutConfig,
+    graph,
+    filterOptions,
     getFilteredVertices,
     getFilteredEdges,
     selectVertex,
@@ -150,7 +152,7 @@ export function EntityGraphVisualization({
       console.log(`[EntityGraphVisualization] Vertex types: ${vertices.map(v => `${v.entityType}:${v.directlyVisited ? 'visited' : 'discovered'}`).join(', ')}`);
     }
     return vertices;
-  }, [getFilteredVertices]);
+  }, [graph.vertices, filterOptions, getFilteredVertices]);
   const filteredEdges = useMemo(() => {
     const edges = getFilteredEdges();
     console.log(`[EntityGraphVisualization] Found ${edges.length} filtered edges`);
@@ -158,7 +160,7 @@ export function EntityGraphVisualization({
       console.log(`[EntityGraphVisualization] Edge types: ${edges.map(e => `${e.edgeType}:${e.sourceId}→${e.targetId}`).join(', ')}`);
     }
     return edges;
-  }, [getFilteredEdges]);
+  }, [graph.edges, filterOptions, getFilteredEdges]);
 
   const positionedVertices = useMemo(() => {
     return generatePositionedVertices(
