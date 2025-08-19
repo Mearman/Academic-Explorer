@@ -4,10 +4,12 @@
  */
 
 import React from 'react';
-import { db } from './db';
+
 import { useIntelligentOfflineQueue } from '@/hooks/use-intelligent-offline-queue';
-import { useNetworkStatus } from '@/hooks/use-network-status';
 import type { IntelligentQueuedRequest } from '@/hooks/use-intelligent-offline-queue';
+import { useNetworkStatus } from '@/hooks/use-network-status';
+
+import { db } from './db';
 
 /**
  * Data freshness levels

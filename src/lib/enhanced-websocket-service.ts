@@ -3,8 +3,9 @@
  * Builds upon the base WebSocket service with advanced reliability features
  */
 
-import { WebSocketService, type WebSocketConfig } from './websocket-service';
 import type { WebSocketMessage, Operation } from '@/types/collaboration';
+
+import { WebSocketService, type WebSocketConfig } from './websocket-service';
 
 /**
  * Enhanced configuration options for improved reliability
