@@ -9,7 +9,7 @@ import { db } from '@/lib/db';
 
 import type { AdvancedSearchFormData } from './use-advanced-search-form';
 
-interface StoredSearchFilters extends AdvancedSearchFormData {
+export interface StoredSearchFilters extends AdvancedSearchFormData {
   savedAt: number;
   version: number;
 }

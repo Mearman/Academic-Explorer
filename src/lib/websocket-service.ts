@@ -672,7 +672,7 @@ export class WebSocketService {
   /**
    * Emit event to handlers
    */
-  private emit(event: string, data?: unknown): void {
+  protected emit(event: string, data?: unknown): void {
     const handlers = this.eventHandlers.get(event) || [];
     for (const handler of handlers) {
       try {
