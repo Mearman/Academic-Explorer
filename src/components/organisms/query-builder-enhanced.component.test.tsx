@@ -7,8 +7,9 @@ import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 
-import { QueryBuilder } from './query-builder';
 import type { WorksParams } from '@/lib/openalex/types';
+
+import { QueryBuilder } from './query-builder';
 
 // Mock dependencies
 vi.mock('@/hooks/use-advanced-search-form', () => ({

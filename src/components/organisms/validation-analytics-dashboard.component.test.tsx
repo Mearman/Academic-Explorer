@@ -5,10 +5,10 @@
  * including data visualization, trend analysis, and user interactions.
  */
 
-import { describe, test, expect, beforeEach, vi } from 'vitest';
+import { MantineProvider } from '@mantine/core';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { MantineProvider } from '@mantine/core';
+import { describe, test, expect, beforeEach, vi } from 'vitest';
 
 // Custom render function with MantineProvider
 function renderWithProviders(component: React.ReactElement) {
