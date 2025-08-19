@@ -56,12 +56,15 @@ function generateTestEdges(vertices: EntityGraphVertex[], density = 0.1): Entity
           id: `edge-${i}-${j}`,
           sourceId: vertexIds[i],
           targetId: vertexIds[j],
+          source: vertexIds[i],
+          target: vertexIds[j],
           edgeType: EdgeType.CITES,
+          type: EdgeType.CITES,
           weight: Math.random() * 0.5 + 0.5,
           discoveredFromDirectVisit: true,
           discoveredAt: new Date().toISOString(),
           metadata: {
-            source: 'openalex',
+            source: 'openalex' as const,
             confidence: Math.random(),
           },
         });

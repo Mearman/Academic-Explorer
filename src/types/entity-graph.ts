@@ -187,8 +187,17 @@ export interface EntityGraphEdge {
   /** Target vertex ID */
   targetId: string;
   
+  /** Source vertex ID (compatibility with IGraphEdge) */
+  source: string;
+  
+  /** Target vertex ID (compatibility with IGraphEdge) */
+  target: string;
+  
   /** Type of relationship */
   edgeType: EdgeType;
+  
+  /** Type of relationship (compatibility alias) */
+  type: EdgeType;
   
   /** Weight/strength of the relationship (0-1) */
   weight: number;
