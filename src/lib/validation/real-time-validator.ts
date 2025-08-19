@@ -5,10 +5,8 @@
  * and comprehensive error formatting for accessibility.
  */
 
-import { z } from 'zod';
-
+// Removed unused imports: z, entitySchemas
 import { EntityType } from '@/lib/openalex/utils/entity-detection';
-import { entitySchemas } from '@/lib/openalex/schemas/entities.schema';
 import type {
   ValidationIssue,
   EntityValidationResult,
@@ -330,21 +328,23 @@ function validateFieldFormat(
       }
       break;
 
-    case 'email':
+    case 'email': {
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
       if (!emailRegex.test(value)) {
         isValid = false;
         description = 'Please enter a valid email address';
       }
       break;
+    }
 
-    case 'openalex_id':
+    case 'openalex_id': {
       const openAlexRegex = /^[WASIPFTCKRN]\d{7,10}$/;
       if (!openAlexRegex.test(value)) {
         isValid = false;
         description = 'OpenAlex ID should start with a letter (W, A, S, etc.) followed by 7-10 digits';
       }
       break;
+    }
 
     case 'date':
     case 'iso_date':
@@ -690,7 +690,7 @@ export function formatValidationErrors(
 ): string {
   if (errors.length === 0) return '';
 
-  let formattedErrors = errors.map(error => {
+  const formattedErrors = errors.map(error => {
     let message = error.description;
 
     // Make technical errors more user-friendly

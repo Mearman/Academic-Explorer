@@ -13,8 +13,6 @@ import type {
 } from '@/types/entity-validation';
 import {
   ValidationIssueType,
-  ValidationSeverity,
-  generateValidationIssueId,
 } from '@/types/entity-validation';
 
 // Configuration interfaces
@@ -264,7 +262,7 @@ export class ExportValidator {
     for (let i = 0; i < chunks; i++) {
       const chunkStart = i * chunkSize;
       const chunkEnd = Math.min(chunkStart + chunkSize, data.length);
-      const chunk = data.slice(chunkStart, chunkEnd);
+      const _chunk = data.slice(chunkStart, chunkEnd);
       
       // Process chunk (would actually write to stream)
       await new Promise(resolve => setTimeout(resolve, 10)); // Simulate processing
@@ -309,7 +307,7 @@ export async function validateFileFormat(
   data: string,
   format: string
 ): Promise<FileFormatValidationResult> {
-  const issues: Array<{
+  const _issues: Array<{
     issueType: ValidationIssueType;
     description: string;
     line?: number;
@@ -430,7 +428,7 @@ async function validateCsvFormat(data: string): Promise<FileFormatValidationResu
 /**
  * Validate XLSX format (placeholder)
  */
-async function validateXlsxFormat(data: string): Promise<FileFormatValidationResult> {
+async function validateXlsxFormat(_data: string): Promise<FileFormatValidationResult> {
   // In a real implementation, would parse XLSX binary data
   return {
     isValid: true,
@@ -667,7 +665,7 @@ export async function checkDataConsistency(data: unknown[]): Promise<DataConsist
  */
 export async function repairCorruptedData(
   data: unknown,
-  entityType: EntityType
+  _entityType: EntityType
 ): Promise<DataRepairResult> {
   if (typeof data !== 'object' || data === null) {
     return {
@@ -788,7 +786,7 @@ export async function sanitizeExportData(
 ): Promise<EntityValidationResult[]> {
   return data.map(result => {
     const sanitizedIssues = result.issues.map(issue => {
-      let sanitizedIssue = { ...issue };
+      const sanitizedIssue = { ...issue };
 
       // Remove sensitive values
       if (options.removeSensitiveFields && 

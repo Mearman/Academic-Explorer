@@ -7,13 +7,7 @@
 
 import { EntityType } from '@/lib/openalex/utils/entity-detection';
 import type {
-  EntityValidationResult,
   ValidationIssue,
-} from '@/types/entity-validation';
-import {
-  ValidationIssueType,
-  ValidationSeverity,
-  generateValidationIssueId,
 } from '@/types/entity-validation';
 
 // Configuration interfaces
@@ -198,7 +192,7 @@ export class CacheConsistencyValidator {
  */
 export async function validateCacheConsistency(
   entityId: string,
-  entityType: EntityType
+  _entityType: EntityType
 ): Promise<CacheConsistencyResult> {
   // Mock implementation - in real app would check actual cache layers
   const layers = [
@@ -234,9 +228,9 @@ export async function validateCacheConsistency(
 /**
  * Detect stale data across cache layers
  */
-export async function detectStaleData(entityId: string): Promise<StaleDataResult> {
+export async function detectStaleData(_entityId: string): Promise<StaleDataResult> {
   // Mock implementation
-  const now = Date.now();
+  const _now = Date.now();
   const dataAge = 400000; // 6+ minutes old
   const ttl = 300000; // 5 minute TTL
 
@@ -252,7 +246,7 @@ export async function detectStaleData(entityId: string): Promise<StaleDataResult
 /**
  * Validate cache integrity
  */
-export async function validateCacheIntegrity(entityId: string): Promise<CacheIntegrityResult> {
+export async function validateCacheIntegrity(_entityId: string): Promise<CacheIntegrityResult> {
   // Mock implementation
   return {
     isValid: false,
@@ -267,7 +261,7 @@ export async function validateCacheIntegrity(entityId: string): Promise<CacheInt
 /**
  * Check cross-layer consistency
  */
-export async function checkCrossLayerConsistency(entityId: string): Promise<CrossLayerConsistencyResult> {
+export async function checkCrossLayerConsistency(_entityId: string): Promise<CrossLayerConsistencyResult> {
   // Mock implementation - faster layers should have newer data
   return {
     hierarchyValid: true,
@@ -281,7 +275,7 @@ export async function checkCrossLayerConsistency(entityId: string): Promise<Cros
 /**
  * Detect cache corruption
  */
-export async function detectCacheCorruption(entityId: string): Promise<CacheCorruptionResult> {
+export async function detectCacheCorruption(_entityId: string): Promise<CacheCorruptionResult> {
   // Mock implementation
   return {
     isCorrupted: true,
@@ -346,7 +340,7 @@ export async function repairCacheInconsistency(
 /**
  * Validate cache metadata
  */
-export async function validateCacheMetadata(entityId: string): Promise<CacheMetadataValidationResult> {
+export async function validateCacheMetadata(_entityId: string): Promise<CacheMetadataValidationResult> {
   // Mock implementation
   return {
     isValid: false,
@@ -408,7 +402,7 @@ export async function analyzeCachePerformance(data: {
 /**
  * Helper function to generate checksum
  */
-function generateChecksum(data: unknown): string {
+function _generateChecksum(data: unknown): string {
   const jsonString = JSON.stringify(data);
   let hash = 0;
   for (let i = 0; i < jsonString.length; i++) {
@@ -422,7 +416,7 @@ function generateChecksum(data: unknown): string {
 /**
  * Helper function to detect data corruption
  */
-function isDataCorrupted(data: unknown): { corrupted: boolean; types: string[] } {
+function _isDataCorrupted(data: unknown): { corrupted: boolean; types: string[] } {
   const types: string[] = [];
 
   if (data === null) {
@@ -457,7 +451,7 @@ function isDataCorrupted(data: unknown): { corrupted: boolean; types: string[] }
 /**
  * Helper function to compare data across layers
  */
-function compareLayerData(data1: unknown, data2: unknown): Array<{ field: string; value1: unknown; value2: unknown }> {
+function _compareLayerData(data1: unknown, data2: unknown): Array<{ field: string; value1: unknown; value2: unknown }> {
   const differences: Array<{ field: string; value1: unknown; value2: unknown }> = [];
 
   if (typeof data1 === 'object' && typeof data2 === 'object' && data1 !== null && data2 !== null) {
@@ -489,7 +483,7 @@ function compareLayerData(data1: unknown, data2: unknown): Array<{ field: string
 /**
  * Helper function to determine most recent data
  */
-function getMostRecentData(layerData: Array<{ layer: string; data: unknown; timestamp: number }>): {
+function _getMostRecentData(layerData: Array<{ layer: string; data: unknown; timestamp: number }>): {
   layer: string;
   data: unknown;
   timestamp: number;
@@ -502,7 +496,7 @@ function getMostRecentData(layerData: Array<{ layer: string; data: unknown; time
 /**
  * Helper function to validate cache hierarchy
  */
-function validateCacheHierarchy(layerData: Array<{ layer: string; timestamp: number }>): {
+function _validateCacheHierarchy(layerData: Array<{ layer: string; timestamp: number }>): {
   valid: boolean;
   inverted: boolean;
 } {
