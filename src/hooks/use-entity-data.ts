@@ -199,64 +199,106 @@ async function fetchEntityData<T extends EntityData = EntityData>(
   entityType?: EntityType,
   skipCache: boolean = false
 ): Promise<T> {
+  console.log(`[fetchEntityData] ========== FETCH ENTITY DATA ==========`);
+  console.log(`[fetchEntityData] Input entityId: "${entityId}", entityType: ${entityType}, skipCache: ${skipCache}`);
+  
   // Determine entity type
   let detectedType: EntityType;
   if (entityType) {
     detectedType = entityType;
+    console.log(`[fetchEntityData] Using provided entity type: ${detectedType}`);
   } else {
-    detectedType = detectEntityType(entityId);
+    try {
+      detectedType = detectEntityType(entityId);
+      console.log(`[fetchEntityData] Detected entity type: ${detectedType}`);
+    } catch (error) {
+      console.error(`[fetchEntityData] Failed to detect entity type for "${entityId}":`, error);
+      throw error;
+    }
   }
 
   const normalizedId = normalizeEntityId(entityId, detectedType);
-  
-  console.log(`[fetchEntityData] Fetching ${detectedType}:${normalizedId}, skipCache: ${skipCache}`);
+  console.log(`[fetchEntityData] Normalized ID: ${normalizedId}`);
+  console.log(`[fetchEntityData] Will fetch ${detectedType} with ID ${normalizedId}, skipCache: ${skipCache}`);
   
   let result: EntityData;
   
   // Route to appropriate client method based on entity type
-  switch (detectedType) {
-    case EntityType.WORK:
-      result = await cachedOpenAlex.work(normalizedId, skipCache);
-      break;
-    case EntityType.AUTHOR:
-      result = await cachedOpenAlex.author(normalizedId, skipCache);
-      break;
-    case EntityType.SOURCE:
-      result = await cachedOpenAlex.source(normalizedId, skipCache);
-      break;
-    case EntityType.INSTITUTION:
-      result = await cachedOpenAlex.institution(normalizedId, skipCache);
-      break;
-    case EntityType.PUBLISHER:
-      result = await cachedOpenAlex.publisher(normalizedId, skipCache);
-      break;
-    case EntityType.FUNDER:
-      result = await cachedOpenAlex.funder(normalizedId, skipCache);
-      break;
-    case EntityType.TOPIC:
-      result = await cachedOpenAlex.topic(normalizedId, skipCache);
-      break;
-    case EntityType.CONCEPT:
-      result = await cachedOpenAlex.concept(normalizedId, skipCache);
-      break;
-    case EntityType.CONTINENT:
-      result = await cachedOpenAlex.request<Continent>(`/continents/${normalizedId}`);
-      break;
-    case EntityType.KEYWORD:
-      result = await cachedOpenAlex.request<Keyword>(`/keywords/${normalizedId}`);
-      break;
-    case EntityType.REGION:
-      result = await cachedOpenAlex.request<Region>(`/regions/${normalizedId}`);
-      break;
-    default:
-      throw new Error(`Unsupported entity type: ${detectedType}`);
+  console.log(`[fetchEntityData] About to call cachedOpenAlex.${detectedType.toLowerCase()}("${normalizedId}", ${skipCache})`);
+  
+  try {
+    switch (detectedType) {
+      case EntityType.WORK:
+        console.log(`[fetchEntityData] Calling cachedOpenAlex.work`);
+        result = await cachedOpenAlex.work(normalizedId, skipCache);
+        break;
+      case EntityType.AUTHOR:
+        console.log(`[fetchEntityData] Calling cachedOpenAlex.author`);
+        result = await cachedOpenAlex.author(normalizedId, skipCache);
+        break;
+      case EntityType.SOURCE:
+        console.log(`[fetchEntityData] Calling cachedOpenAlex.source`);
+        result = await cachedOpenAlex.source(normalizedId, skipCache);
+        break;
+      case EntityType.INSTITUTION:
+        console.log(`[fetchEntityData] Calling cachedOpenAlex.institution`);
+        result = await cachedOpenAlex.institution(normalizedId, skipCache);
+        break;
+      case EntityType.PUBLISHER:
+        console.log(`[fetchEntityData] Calling cachedOpenAlex.publisher`);
+        result = await cachedOpenAlex.publisher(normalizedId, skipCache);
+        break;
+      case EntityType.FUNDER:
+        console.log(`[fetchEntityData] Calling cachedOpenAlex.funder`);
+        result = await cachedOpenAlex.funder(normalizedId, skipCache);
+        break;
+      case EntityType.TOPIC:
+        console.log(`[fetchEntityData] Calling cachedOpenAlex.topic`);
+        result = await cachedOpenAlex.topic(normalizedId, skipCache);
+        break;
+      case EntityType.CONCEPT:
+        console.log(`[fetchEntityData] Calling cachedOpenAlex.concept`);
+        result = await cachedOpenAlex.concept(normalizedId, skipCache);
+        break;
+      case EntityType.CONTINENT:
+        console.log(`[fetchEntityData] Calling cachedOpenAlex.request for continent`);
+        result = await cachedOpenAlex.request<Continent>(`/continents/${normalizedId}`);
+        break;
+      case EntityType.KEYWORD:
+        console.log(`[fetchEntityData] Calling cachedOpenAlex.request for keyword`);
+        result = await cachedOpenAlex.request<Keyword>(`/keywords/${normalizedId}`);
+        break;
+      case EntityType.REGION:
+        console.log(`[fetchEntityData] Calling cachedOpenAlex.request for region`);
+        result = await cachedOpenAlex.request<Region>(`/regions/${normalizedId}`);
+        break;
+      default:
+        console.error(`[fetchEntityData] Unsupported entity type: ${detectedType}`);
+        throw new Error(`Unsupported entity type: ${detectedType}`);
+    }
+    
+    console.log(`[fetchEntityData] API call completed successfully`);
+  } catch (apiError) {
+    console.error(`[fetchEntityData] API call failed:`, apiError);
+    throw apiError;
   }
   
+  console.log(`[fetchEntityData] API result type:`, typeof result);
+  console.log(`[fetchEntityData] API result:`, result);
+  
   if (!result) {
+    console.error(`[fetchEntityData] Entity ${detectedType}:${normalizedId} returned null or undefined`);
     throw new Error(`Entity ${detectedType}:${normalizedId} returned null or undefined`);
   }
   
-  console.log(`[fetchEntityData] Successfully fetched ${detectedType}:${normalizedId}:`, result.display_name || result.id);
+  console.log(`[fetchEntityData] Successfully fetched ${detectedType}:${normalizedId}`);
+  console.log(`[fetchEntityData] Result summary:`, {
+    id: result.id,
+    display_name: result.display_name,
+    entityType: detectedType,
+    works_count: (result as any).works_count,
+    cited_by_count: (result as any).cited_by_count
+  });
   
   return result as T;
 }
@@ -406,6 +448,11 @@ export function useEntityData<T extends EntityData = EntityData>(
   /** Reset the hook state */
   reset: () => void;
 } {
+  console.log('[useEntityData] Hook initialized with:', {
+    entityId,
+    entityType,
+    hasOptions: !!options
+  });
   // Memoize options with stable references to prevent infinite loops
   const opts = useMemo(() => {
     const result = { ...DEFAULT_OPTIONS };
@@ -685,7 +732,15 @@ export function useAuthorData(
   authorId: string | null | undefined,
   options?: Partial<UseEntityDataOptions>
 ) {
-  return useEntityData<Author>(authorId, EntityType.AUTHOR, options);
+  console.log('[useAuthorData] Called with:', { authorId, hasOptions: !!options });
+  const result = useEntityData<Author>(authorId, EntityType.AUTHOR, options);
+  console.log('[useAuthorData] Result:', {
+    loading: result.loading,
+    hasData: !!result.data,
+    hasError: !!result.error,
+    state: result.state
+  });
+  return result;
 }
 
 /**
