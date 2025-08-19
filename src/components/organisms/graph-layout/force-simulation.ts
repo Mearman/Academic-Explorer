@@ -1,5 +1,11 @@
 import type { EntityGraphVertex, EntityGraphEdge } from '@/types/entity-graph';
 
+import { 
+  initializeEnhancedLayoutSystem,
+  createEnhancedCircularLayout,
+  CircularStrategy
+} from './force-simulation-enhanced';
+
 export interface PositionedVertex extends EntityGraphVertex {
   x: number;
   y: number;
@@ -148,6 +154,19 @@ function updatePositions(
 }
 
 export function createCircularLayout(
+  vertices: EntityGraphVertex[],
+  width: number,
+  height: number
+): PositionedVertex[] {
+  // Keep original synchronous implementation for backward compatibility
+  // Enhanced version available as createEnhancedCircularLayout
+  return createOriginalCircularLayout(vertices, width, height);
+}
+
+/**
+ * Original circular layout implementation (kept for fallback)
+ */
+function createOriginalCircularLayout(
   vertices: EntityGraphVertex[],
   width: number,
   height: number

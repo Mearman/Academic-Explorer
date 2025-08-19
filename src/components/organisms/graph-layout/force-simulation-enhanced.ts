@@ -1,9 +1,26 @@
 /**
  * Enhanced force simulation with performance optimizations for large graphs
  * Includes web worker support, hierarchical layouts, and adaptive algorithms
+ * Now integrated with the generic layout engine system.
  */
 
 import type { EntityGraphVertex, EntityGraphEdge } from '@/types/entity-graph';
+
+import { AlgorithmCategory, ComplexityRating, createAlgorithmMetadata, algorithmRegistry } from '../graph-core/layout/algorithm-registry';
+import { CircularLayout, CircularStrategy, NodeOrdering, type CircularConfig } from '../graph-core/layout/algorithms/circular';
+import { ForceDirectedLayout, type ForceDirectedConfig } from '../graph-core/layout/algorithms/force-directed';
+import { 
+  layoutEngine,
+  LayoutVertex,
+  LayoutEdge,
+  type LayoutConfig,
+  type LayoutResult,
+  type Position,
+  type PositionWithVelocity
+} from '../graph-core/layout/layout-engine';
+
+// Re-export for backward compatibility
+export { CircularStrategy };
 
 export interface PositionedVertex extends EntityGraphVertex {
   x: number;
@@ -680,3 +697,344 @@ function reduceCrossings(
 
 // Re-export original functions for backwards compatibility
 export { createCircularLayout } from './force-simulation';
+
+/**
+ * Enhanced Layout Integration System
+ * Bridges the generic layout engine with entity graph types
+ */
+
+/**
+ * Convert entity graph vertices to layout vertices
+ */
+function convertToLayoutVertices(vertices: EntityGraphVertex[]): LayoutVertex<EntityGraphVertex>[] {
+  return vertices.map(vertex => ({
+    id: vertex.id,
+    position: vertex.position,
+    data: vertex
+  }));
+}
+
+/**
+ * Convert entity graph edges to layout edges
+ */
+function convertToLayoutEdges(edges: EntityGraphEdge[]): LayoutEdge<EntityGraphEdge>[] {
+  return edges.map(edge => ({
+    id: edge.id,
+    sourceId: edge.sourceId,
+    targetId: edge.targetId,
+    weight: edge.weight,
+    data: edge
+  }));
+}
+
+/**
+ * Convert layout result back to positioned vertices
+ */
+function convertFromLayoutResult(
+  result: LayoutResult<EntityGraphVertex>,
+  vertices: EntityGraphVertex[]
+): PositionedVertex[] {
+  return vertices.map(vertex => {
+    const position = result.positions.get(vertex.id);
+    return {
+      ...vertex,
+      x: position?.x || 0,
+      y: position?.y || 0,
+      vx: position?.vx || 0,
+      vy: position?.vy || 0,
+    };
+  });
+}
+
+/**
+ * Initialize the enhanced layout system with all algorithms
+ */
+export function initializeEnhancedLayoutSystem(): void {
+  // Register force-directed algorithm
+  const forceDirected = new ForceDirectedLayout<EntityGraphVertex, EntityGraphEdge>();
+  const forceDirectedMetadata = createAlgorithmMetadata({
+    displayName: 'Force-Directed (Enhanced)',
+    description: 'Advanced physics-based layout with optimizations for large graphs',
+    category: AlgorithmCategory.FORCE_DIRECTED,
+    performance: {
+      timeComplexity: ComplexityRating.HIGH,
+      spaceComplexity: ComplexityRating.MEDIUM,
+      maxVertices: 5000,
+      supportsIncremental: true,
+      isDeterministic: false,
+    },
+    features: {
+      supportsWeights: true,
+      supportsConstraints: true,
+      supportsClustering: true,
+      supportsAnimation: true,
+      supportsDirected: true,
+    },
+    author: 'Academic Explorer Team',
+    version: '2.0.0',
+  });
+
+  algorithmRegistry.register(forceDirected, forceDirectedMetadata, ['force', 'physics', 'spring']);
+  layoutEngine.registerAlgorithm(forceDirected);
+
+  // Register circular algorithm
+  const circular = new CircularLayout<EntityGraphVertex, EntityGraphEdge>();
+  const circularMetadata = createAlgorithmMetadata({
+    displayName: 'Circular (Enhanced)',
+    description: 'Advanced circular layouts with clustering and hierarchy support',
+    category: AlgorithmCategory.CIRCULAR,
+    performance: {
+      timeComplexity: ComplexityRating.LOW,
+      spaceComplexity: ComplexityRating.LOW,
+      maxVertices: 10000,
+      supportsIncremental: false,
+      isDeterministic: true,
+    },
+    features: {
+      supportsWeights: false,
+      supportsConstraints: true,
+      supportsClustering: true,
+      supportsAnimation: true,
+      supportsDirected: false,
+    },
+    author: 'Academic Explorer Team',
+    version: '2.0.0',
+  });
+
+  algorithmRegistry.register(circular, circularMetadata, ['circle', 'ring', 'radial']);
+  layoutEngine.registerAlgorithm(circular);
+
+  console.log('Enhanced layout system initialized with algorithms:', 
+    algorithmRegistry.list().map(a => a.name).join(', '));
+}
+
+/**
+ * Enhanced force simulation using the generic layout engine
+ */
+export async function createEnhancedForceSimulation(
+  vertices: EntityGraphVertex[],
+  edges: EntityGraphEdge[],
+  config: OptimizedSimulationConfig
+): Promise<PositionedVertex[]> {
+  // Initialize layout system if needed
+  if (algorithmRegistry.list().length === 0) {
+    initializeEnhancedLayoutSystem();
+  }
+
+  const layoutVertices = convertToLayoutVertices(vertices);
+  const layoutEdges = convertToLayoutEdges(edges);
+
+  // Convert OptimizedSimulationConfig to ForceDirectedConfig
+  const forceConfig: ForceDirectedConfig = {
+    dimensions: {
+      width: config.width,
+      height: config.height,
+    },
+    maxIterations: config.iterations,
+    repulsionStrength: config.repulsionStrength,
+    attractionStrength: config.attractionStrength,
+    damping: config.damping,
+    useExistingPositions: true,
+    animated: false,
+    // Enhanced parameters
+    convergenceThreshold: config.adaptiveIterations ? 0.01 : 0,
+    cooling: 0.02,
+    initialTemperature: 100,
+    minDistance: 30,
+    maxForce: 100,
+    useEdgeWeights: true,
+    edgeLengthMultiplier: 1.0,
+    separateComponents: config.enableClustering || false,
+    centralGravity: 0.01,
+    generateFrames: false,
+  };
+
+  try {
+    const result = await layoutEngine.computeLayout(
+      'force-directed',
+      layoutVertices,
+      layoutEdges,
+      forceConfig,
+      {
+        useCache: true,
+        cacheKey: `enhanced-force-${vertices.length}-${edges.length}`,
+      }
+    );
+
+    return convertFromLayoutResult(result, vertices);
+  } catch (error) {
+    console.warn('Enhanced layout failed, falling back to original algorithm:', error);
+    return createForceSimulation(vertices, edges, config);
+  }
+}
+
+/**
+ * Enhanced circular layout using the generic layout engine
+ */
+export async function createEnhancedCircularLayout(
+  vertices: EntityGraphVertex[],
+  edges: EntityGraphEdge[],
+  config: {
+    width: number;
+    height: number;
+    strategy?: CircularStrategy;
+    ordering?: NodeOrdering;
+    radius?: number;
+    animated?: boolean;
+  }
+): Promise<PositionedVertex[]> {
+  // Initialize layout system if needed
+  if (algorithmRegistry.list().length === 0) {
+    initializeEnhancedLayoutSystem();
+  }
+
+  const layoutVertices = convertToLayoutVertices(vertices);
+  const layoutEdges = convertToLayoutEdges(edges);
+
+  const circularConfig: CircularConfig = {
+    dimensions: {
+      width: config.width,
+      height: config.height,
+    },
+    strategy: config.strategy || CircularStrategy.SIMPLE,
+    ordering: config.ordering || NodeOrdering.ORIGINAL,
+    radius: config.radius,
+    animated: config.animated || false,
+    useExistingPositions: false,
+  };
+
+  try {
+    const result = await layoutEngine.computeLayout(
+      'circular',
+      layoutVertices,
+      layoutEdges,
+      circularConfig,
+      {
+        useCache: true,
+        cacheKey: `enhanced-circular-${vertices.length}-${config.strategy}`,
+      }
+    );
+
+    return convertFromLayoutResult(result, vertices);
+  } catch (error) {
+    console.warn('Enhanced circular layout failed, falling back to original algorithm:', error);
+    // Fallback to original implementation
+    const positioned = vertices.map((vertex, index) => {
+      const angle = (index / vertices.length) * 2 * Math.PI;
+      const radius = (config.radius || Math.min(config.width, config.height) * 0.3);
+      const centerX = config.width / 2;
+      const centerY = config.height / 2;
+      
+      return {
+        ...vertex,
+        x: centerX + Math.cos(angle) * radius,
+        y: centerY + Math.sin(angle) * radius,
+      };
+    });
+    return positioned;
+  }
+}
+
+/**
+ * Get layout algorithm recommendations for a graph
+ */
+export function getLayoutRecommendations(
+  vertices: EntityGraphVertex[],
+  edges: EntityGraphEdge[],
+  requirements?: {
+    needsAnimation?: boolean;
+    needsClustering?: boolean;
+    maxComplexity?: ComplexityRating;
+  }
+) {
+  // Initialize layout system if needed
+  if (algorithmRegistry.list().length === 0) {
+    initializeEnhancedLayoutSystem();
+  }
+
+  return algorithmRegistry.getRecommendations({
+    vertexCount: vertices.length,
+    edgeCount: edges.length,
+    needsWeights: true,
+    needsAnimation: requirements?.needsAnimation,
+    needsClustering: requirements?.needsClustering,
+    maxComplexity: requirements?.maxComplexity,
+  });
+}
+
+/**
+ * Get algorithm performance statistics
+ */
+export function getAlgorithmStats() {
+  return algorithmRegistry.getStats();
+}
+
+/**
+ * Clear layout cache
+ */
+export function clearLayoutCache(pattern?: RegExp) {
+  layoutEngine.clearCache(pattern);
+}
+
+/**
+ * Smart layout selection based on graph characteristics
+ */
+export async function createSmartLayout(
+  vertices: EntityGraphVertex[],
+  edges: EntityGraphEdge[],
+  config: {
+    width: number;
+    height: number;
+    animated?: boolean;
+    performanceBudget?: number;
+  }
+): Promise<{
+  positions: PositionedVertex[];
+  algorithm: string;
+  metadata: any;
+}> {
+  const recommendations = getLayoutRecommendations(vertices, edges, {
+    needsAnimation: config.animated,
+    maxComplexity: vertices.length > 1000 ? ComplexityRating.MEDIUM : ComplexityRating.HIGH,
+  });
+
+  if (recommendations.length === 0) {
+    throw new Error('No suitable layout algorithms found');
+  }
+
+  const bestAlgorithm = recommendations[0];
+  console.log(`Selected layout algorithm: ${bestAlgorithm.displayName} (score: ${bestAlgorithm.score})`);
+  console.log('Reasoning:', bestAlgorithm.reasoning.join(', '));
+
+  let positions: PositionedVertex[];
+  
+  if (bestAlgorithm.name === 'force-directed') {
+    const optimizedConfig = optimizeForLargeGraphs(vertices, edges, {
+      width: config.width,
+      height: config.height,
+      performanceBudget: config.performanceBudget,
+    });
+    positions = await createEnhancedForceSimulation(vertices, edges, optimizedConfig);
+  } else if (bestAlgorithm.name === 'circular') {
+    positions = await createEnhancedCircularLayout(vertices, edges, {
+      width: config.width,
+      height: config.height,
+      animated: config.animated,
+    });
+  } else {
+    // Fallback to force-directed
+    const optimizedConfig = optimizeForLargeGraphs(vertices, edges, config);
+    positions = await createEnhancedForceSimulation(vertices, edges, optimizedConfig);
+  }
+
+  return {
+    positions,
+    algorithm: bestAlgorithm.displayName,
+    metadata: {
+      score: bestAlgorithm.score,
+      reasoning: bestAlgorithm.reasoning,
+      vertexCount: vertices.length,
+      edgeCount: edges.length,
+    },
+  };
+}
