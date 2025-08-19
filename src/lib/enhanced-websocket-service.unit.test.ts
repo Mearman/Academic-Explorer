@@ -181,7 +181,7 @@ describe('EnhancedWebSocketService', () => {
     it('should allow first occurrence of a message', async () => {
       const message: WebSocketMessage = {
         id: 'test-message-1',
-        type: 'operation',
+        type: 'operation-apply',
         payload: { test: true },
         timestamp: Date.now(),
         sessionId: 'test-session',
@@ -198,7 +198,7 @@ describe('EnhancedWebSocketService', () => {
     it('should reject duplicate messages when deduplication enabled', async () => {
       const message: WebSocketMessage = {
         id: 'test-message-duplicate',
-        type: 'operation',
+        type: 'operation-apply',
         payload: { test: true },
         timestamp: Date.now(),
         sessionId: 'test-session',
@@ -387,7 +387,7 @@ describe('EnhancedWebSocketService', () => {
     it('should handle send failures gracefully', async () => {
       const message: WebSocketMessage = {
         id: 'test-message',
-        type: 'operation',
+        type: 'operation-apply',
         payload: { test: true },
         timestamp: Date.now(),
         sessionId: 'test-session',
@@ -425,7 +425,7 @@ describe('EnhancedWebSocketService', () => {
 
       const message: WebSocketMessage = {
         id: 'test-message',
-        type: 'operation',
+        type: 'operation-apply',
         payload: { large: 'data'.repeat(1000) },
         timestamp: Date.now(),
         sessionId: 'test-session',

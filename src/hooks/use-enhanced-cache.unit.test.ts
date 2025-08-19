@@ -20,7 +20,8 @@ import {
   useCacheHealth,
   type CacheControlsOptions 
 } from './use-enhanced-cache';
-import type { CacheAnalytics, WarmingResult } from '@/lib/openalex/utils/enhanced-cache-interceptor';
+import type { CacheAnalytics } from '@/lib/openalex/utils/enhanced-cache-interceptor';
+import type { WarmingResult } from '@/lib/openalex/utils/intelligent-cache-warming';
 
 // Mock the cache interceptor and warming service
 const mockEnhancedCacheInterceptor = {
@@ -106,8 +107,9 @@ describe('useEnhancedCache', () => {
         },
         memoryPressure: 0.6,
         requestDeduplication: {
+          totalRequests: 200,
+          deduplicatedRequests: 30,
           deduplicationRate: 0.15,
-          duplicatesSaved: 30,
         },
       });
 
@@ -128,7 +130,7 @@ describe('useEnhancedCache', () => {
         storageUtilization: {
           memory: { used: 50, limit: 100 },
           localStorage: { used: 2000, limit: 5000 },
-          indexedDB: { used: 1500, limit: 10000 },
+          indexedDB: { used: 1500, quota: 10000 },
         },
       });
 
@@ -163,12 +165,12 @@ describe('useEnhancedCache', () => {
     it('should warm cache with frequency strategy', async () => {
       const mockWarmingResult: WarmingResult = {
         strategy: 'frequency',
-        entitiesWarmed: 25,
         startTime: Date.now(),
         endTime: Date.now() + 1000,
-        duration: 1000,
+        itemsWarmed: 25,
+        itemsFailed: 0,
+        cacheHitImprovement: 0.05,
         errors: [],
-        success: true,
       };
 
       mockIntelligentCacheWarmingService.warmByFrequency.mockResolvedValue(mockWarmingResult);
@@ -187,12 +189,12 @@ describe('useEnhancedCache', () => {
     it('should warm cache with dependencies strategy', async () => {
       const mockWarmingResult: WarmingResult = {
         strategy: 'dependencies',
-        entitiesWarmed: 15,
         startTime: Date.now(),
         endTime: Date.now() + 800,
-        duration: 800,
+        itemsWarmed: 15,
+        itemsFailed: 0,
+        cacheHitImprovement: 0.03,
         errors: [],
-        success: true,
       };
 
       mockIntelligentCacheWarmingService.warmByDependencies.mockResolvedValue(mockWarmingResult);
@@ -211,12 +213,12 @@ describe('useEnhancedCache', () => {
     it('should warm cache with predictive strategy', async () => {
       const mockWarmingResult: WarmingResult = {
         strategy: 'predictive',
-        entitiesWarmed: 30,
         startTime: Date.now(),
         endTime: Date.now() + 1200,
-        duration: 1200,
+        itemsWarmed: 30,
+        itemsFailed: 0,
+        cacheHitImprovement: 0.08,
         errors: [],
-        success: true,
       };
 
       mockIntelligentCacheWarmingService.warmPredictively.mockResolvedValue(mockWarmingResult);
@@ -513,7 +515,7 @@ describe('useCacheHealth', () => {
       storageUtilization: {
         memory: { used: 30, limit: 100 },
         localStorage: { used: 1000, limit: 5000 },
-        indexedDB: { used: 500, limit: 10000 },
+        indexedDB: { used: 500, quota: 10000 },
       },
       performance: {
         cacheHits: 800,
@@ -574,7 +576,7 @@ describe('useCacheHealth', () => {
       storageUtilization: {
         memory: { used: 95, limit: 100 },
         localStorage: { used: 4500, limit: 5000 },
-        indexedDB: { used: 1000, limit: 10000 },
+        indexedDB: { used: 1000, quota: 10000 },
       },
     });
 
@@ -622,7 +624,7 @@ describe('useCacheHealth', () => {
       storageUtilization: {
         memory: { used: 95, limit: 100 },
         localStorage: { used: 4800, limit: 5000 },
-        indexedDB: { used: 1000, limit: 10000 },
+        indexedDB: { used: 1000, quota: 10000 },
       },
       performance: {
         cacheHits: 50,
@@ -653,11 +655,12 @@ describe('useCacheHealth', () => {
 function createMockAnalytics(overrides: Partial<CacheAnalytics> = {}): CacheAnalytics {
   return {
     hitRate: 0.7,
+    averageResponseTime: 125,
     memoryPressure: 0.5,
     storageUtilization: {
       memory: { used: 50, limit: 100 },
       localStorage: { used: 2000, limit: 5000 },
-      indexedDB: { used: 1000, limit: 10000 },
+      indexedDB: { used: 1000, quota: 10000 },
     },
     performance: {
       cacheHits: 700,
@@ -667,9 +670,11 @@ function createMockAnalytics(overrides: Partial<CacheAnalytics> = {}): CacheAnal
       averageMissTime: 200,
     },
     requestDeduplication: {
+      totalRequests: 1000,
+      deduplicatedRequests: 100,
       deduplicationRate: 0.1,
-      duplicatesSaved: 100,
     },
+    entityTypes: {},
     ...overrides,
   };
 }

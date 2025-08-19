@@ -24,7 +24,7 @@ import {
   ValidationSeverity, 
   DEFAULT_VALIDATION_SETTINGS 
 } from '@/types/entity-validation';
-import type { EntityType } from '@/lib/openalex/utils/entity-detection';
+import { EntityType } from '@/lib/openalex/utils/entity-detection';
 
 // Mock the validator module
 vi.mock('@/lib/openalex/utils/entity-validator', () => ({
@@ -73,10 +73,12 @@ describe('EntityValidationStore', () => {
       // Add results with specific issue types
       const result1: EntityValidationResult = {
         entityId: 'W123',
-        entityType: 'W' as EntityType,
+        entityType: EntityType.WORK,
         entityDisplayName: 'Test Work',
         isValid: false,
         validatedAt: new Date().toISOString(),
+        issueCounts: { errors: 3, warnings: 0, info: 0 },
+        validationDurationMs: 150,
         issues: [
           createMockIssue('W123', ValidationIssueType.MISSING_FIELD),
           createMockIssue('W123', ValidationIssueType.MISSING_FIELD),
@@ -123,10 +125,12 @@ describe('EntityValidationStore', () => {
       // Add results for different entity types
       const workResult: EntityValidationResult = {
         entityId: 'W123',
-        entityType: 'W' as EntityType,
+        entityType: EntityType.WORK,
         entityDisplayName: 'Test Work',
         isValid: false,
         validatedAt: new Date().toISOString(),
+        issueCounts: { errors: 1, warnings: 1, info: 0 },
+        validationDurationMs: 200,
         issues: [
           createMockIssue('W123', ValidationIssueType.MISSING_FIELD, ValidationSeverity.ERROR),
           createMockIssue('W123', ValidationIssueType.TYPE_MISMATCH, ValidationSeverity.WARNING),
@@ -135,10 +139,12 @@ describe('EntityValidationStore', () => {
 
       const authorResult: EntityValidationResult = {
         entityId: 'A456',
-        entityType: 'A' as EntityType,
+        entityType: EntityType.AUTHOR,
         entityDisplayName: 'Test Author',
         isValid: false,
         validatedAt: new Date().toISOString(),
+        issueCounts: { errors: 1, warnings: 0, info: 0 },
+        validationDurationMs: 100,
         issues: [
           createMockIssue('A456', ValidationIssueType.INVALID_FORMAT, ValidationSeverity.ERROR),
         ],
@@ -151,13 +157,13 @@ describe('EntityValidationStore', () => {
 
       expect(statistics.problematicEntityTypes).toEqual([
         {
-          entityType: 'W',
+          entityType: 'work',
           errorCount: 1,
           warningCount: 1,
           totalCount: 2,
         },
         {
-          entityType: 'A',
+          entityType: 'author',
           errorCount: 1,
           warningCount: 0,
           totalCount: 1,
@@ -171,19 +177,23 @@ describe('EntityValidationStore', () => {
       const now = new Date();
       const result1: EntityValidationResult = {
         entityId: 'W123',
-        entityType: 'W' as EntityType,
+        entityType: EntityType.WORK,
         entityDisplayName: 'Recent Work',
         isValid: false,
         validatedAt: new Date(now.getTime() - 1000).toISOString(), // 1 second ago
+        issueCounts: { errors: 1, warnings: 0, info: 0 },
+        validationDurationMs: 120,
         issues: [createMockIssue('W123', ValidationIssueType.MISSING_FIELD, ValidationSeverity.ERROR)],
       };
 
       const result2: EntityValidationResult = {
         entityId: 'A456',
-        entityType: 'A' as EntityType,
+        entityType: EntityType.AUTHOR,
         entityDisplayName: 'Older Author',
         isValid: true,
         validatedAt: new Date(now.getTime() - 5000).toISOString(), // 5 seconds ago
+        issueCounts: { errors: 0, warnings: 0, info: 0 },
+        validationDurationMs: 90,
         issues: [],
       };
 
@@ -195,13 +205,13 @@ describe('EntityValidationStore', () => {
       expect(statistics.recentActivity).toHaveLength(2);
       expect(statistics.recentActivity[0]).toMatchObject({
         entityId: 'W123',
-        entityType: 'W',
+        entityType: 'work',
         issueCount: 1,
         severity: ValidationSeverity.ERROR,
       });
       expect(statistics.recentActivity[1]).toMatchObject({
         entityId: 'A456',
-        entityType: 'A',
+        entityType: 'author',
         issueCount: 0,
         severity: ValidationSeverity.INFO,
       });
@@ -305,10 +315,12 @@ describe('EntityValidationStore', () => {
       
       const mockResult: EntityValidationResult = {
         entityId: 'W123',
-        entityType: 'W' as EntityType,
+        entityType: EntityType.WORK,
         entityDisplayName: 'Test Work',
         isValid: true,
         validatedAt: new Date().toISOString(),
+        issueCounts: { errors: 0, warnings: 0, info: 0 },
+        validationDurationMs: 80,
         issues: [],
       };
 
@@ -346,13 +358,20 @@ describe('EntityValidationStore', () => {
 
       const mockBatchResult: BatchValidationResult = {
         batchId: 'batch-123',
-        totalEntities: 2,
-        validEntities: 1,
-        invalidEntities: 1,
-        totalIssues: 2,
         startedAt: new Date().toISOString(),
         completedAt: new Date().toISOString(),
+        durationMs: 500,
         results: createMockValidationResults().slice(0, 2),
+        summary: {
+          totalEntities: 2,
+          validEntities: 1,
+          entitiesWithErrors: 1,
+          entitiesWithWarnings: 0,
+          totalIssues: 3,
+          issuesByType: { missing_field: 2, extra_field: 0, type_mismatch: 1, invalid_format: 0, value_out_of_range: 0 },
+          issuesBySeverity: { error: 3, warning: 0, info: 0 },
+          issuesByEntityType: { work: 2, author: 1, source: 0, institution: 0, publisher: 0, funder: 0, topic: 0, concept: 0, keyword: 0, continent: 0, region: 0 }
+        },
       };
 
       (validateEntitiesBatch as any).mockResolvedValue(mockBatchResult);
@@ -376,16 +395,23 @@ describe('EntityValidationStore', () => {
       
       const mockBatchResult: BatchValidationResult = {
         batchId: 'batch-123',
-        totalEntities: 1,
-        validEntities: 0,
-        invalidEntities: 1,
-        totalIssues: 2,
         startedAt: new Date().toISOString(),
         completedAt: new Date().toISOString(),
+        durationMs: 300,
         results: [createMockValidationResults()[0]],
+        summary: {
+          totalEntities: 1,
+          validEntities: 0,
+          entitiesWithErrors: 1,
+          entitiesWithWarnings: 0,
+          totalIssues: 2,
+          issuesByType: { missing_field: 1, extra_field: 0, type_mismatch: 1, invalid_format: 0, value_out_of_range: 0 },
+          issuesBySeverity: { error: 2, warning: 0, info: 0 },
+          issuesByEntityType: { work: 2, author: 0, source: 0, institution: 0, publisher: 0, funder: 0, topic: 0, concept: 0, keyword: 0, continent: 0, region: 0 }
+        },
       };
 
-      store.addLogEntry(mockBatchResult, { source: 'automated' });
+      store.addLogEntry(mockBatchResult, { source: 'automatic' });
 
       expect(store.validationLogs).toHaveLength(1);
       expect(store.validationLogs[0]).toMatchObject({
@@ -407,13 +433,20 @@ describe('EntityValidationStore', () => {
       for (let i = 0; i < 5; i++) {
         const mockBatchResult: BatchValidationResult = {
           batchId: `batch-${i}`,
-          totalEntities: 1,
-          validEntities: 1,
-          invalidEntities: 0,
-          totalIssues: 0,
           startedAt: new Date().toISOString(),
           completedAt: new Date().toISOString(),
+          durationMs: 100,
           results: [],
+          summary: {
+            totalEntities: 1,
+            validEntities: 1,
+            entitiesWithErrors: 0,
+            entitiesWithWarnings: 0,
+            totalIssues: 0,
+            issuesByType: { missing_field: 0, extra_field: 0, type_mismatch: 0, invalid_format: 0, value_out_of_range: 0 },
+            issuesBySeverity: { error: 0, warning: 0, info: 0 },
+            issuesByEntityType: { work: 0, author: 0, source: 0, institution: 0, publisher: 0, funder: 0, topic: 0, concept: 0, keyword: 0, continent: 0, region: 0 }
+          },
         };
         store.addLogEntry(mockBatchResult);
       }
@@ -429,13 +462,20 @@ describe('EntityValidationStore', () => {
       
       const mockBatchResult: BatchValidationResult = {
         batchId: 'batch-123',
-        totalEntities: 1,
-        validEntities: 1,
-        invalidEntities: 0,
-        totalIssues: 0,
         startedAt: new Date().toISOString(),
         completedAt: new Date().toISOString(),
+        durationMs: 200,
         results: [],
+        summary: {
+          totalEntities: 1,
+          validEntities: 1,
+          entitiesWithErrors: 0,
+          entitiesWithWarnings: 0,
+          totalIssues: 0,
+          issuesByType: { missing_field: 0, extra_field: 0, type_mismatch: 0, invalid_format: 0, value_out_of_range: 0 },
+          issuesBySeverity: { error: 0, warning: 0, info: 0 },
+          issuesByEntityType: { work: 0, author: 0, source: 0, institution: 0, publisher: 0, funder: 0, topic: 0, concept: 0, keyword: 0, continent: 0, region: 0 }
+        },
       };
 
       store.addLogEntry(mockBatchResult);
@@ -470,7 +510,7 @@ describe('EntityValidationStore', () => {
       const filteredIssues = store.getValidationIssues(filter);
 
       expect(filteredIssues).toHaveLength(2); // Only issues from W entity
-      expect(filteredIssues.every(issue => issue.entityType === 'W')).toBe(true);
+      expect(filteredIssues.every(issue => issue.entityType === 'work')).toBe(true);
     });
 
     it('should filter validation issues by severity', () => {
@@ -478,10 +518,12 @@ describe('EntityValidationStore', () => {
       
       const result: EntityValidationResult = {
         entityId: 'W123',
-        entityType: 'W' as EntityType,
+        entityType: EntityType.WORK,
         entityDisplayName: 'Test Work',
         isValid: false,
         validatedAt: new Date().toISOString(),
+        issueCounts: { errors: 1, warnings: 1, info: 1 },
+        validationDurationMs: 180,
         issues: [
           createMockIssue('W123', ValidationIssueType.MISSING_FIELD, ValidationSeverity.ERROR),
           createMockIssue('W123', ValidationIssueType.TYPE_MISMATCH, ValidationSeverity.WARNING),
@@ -508,10 +550,12 @@ describe('EntityValidationStore', () => {
       
       const result: EntityValidationResult = {
         entityId: 'W123',
-        entityType: 'W' as EntityType,
+        entityType: EntityType.WORK,
         entityDisplayName: 'Special Test Work',
         isValid: false,
         validatedAt: new Date().toISOString(),
+        issueCounts: { errors: 1, warnings: 1, info: 0 },
+        validationDurationMs: 160,
         issues: [
           createMockIssue('W123', ValidationIssueType.MISSING_FIELD, ValidationSeverity.ERROR, 'missing title field'),
           createMockIssue('W123', ValidationIssueType.TYPE_MISMATCH, ValidationSeverity.WARNING, 'invalid author format'),
@@ -542,10 +586,12 @@ describe('EntityValidationStore', () => {
 
       const result: EntityValidationResult = {
         entityId: 'W123',
-        entityType: 'W' as EntityType,
+        entityType: EntityType.WORK,
         entityDisplayName: 'Test Work',
         isValid: false,
         validatedAt: new Date().toISOString(),
+        issueCounts: { errors: 25, warnings: 0, info: 0 },
+        validationDurationMs: 300,
         issues,
       };
 
@@ -594,10 +640,12 @@ describe('EntityValidationStore', () => {
       
       const result: EntityValidationResult = {
         entityId: 'W123',
-        entityType: 'W' as EntityType,
+        entityType: EntityType.WORK,
         entityDisplayName: 'Test Work',
         isValid: false,
         validatedAt: new Date().toISOString(),
+        issueCounts: { errors: 1, warnings: 1, info: 1 },
+        validationDurationMs: 140,
         issues: [
           createMockIssue('W123', ValidationIssueType.MISSING_FIELD, ValidationSeverity.WARNING),
           createMockIssue('W123', ValidationIssueType.TYPE_MISMATCH, ValidationSeverity.ERROR),
@@ -619,10 +667,12 @@ function createMockValidationResults(): EntityValidationResult[] {
   return [
     {
       entityId: 'W123456789',
-      entityType: 'W' as EntityType,
+      entityType: EntityType.WORK,
       entityDisplayName: 'Test Work 1',
       isValid: false,
       validatedAt: new Date().toISOString(),
+      issueCounts: { errors: 2, warnings: 0, info: 0 },
+      validationDurationMs: 120,
       issues: [
         createMockIssue('W123456789', ValidationIssueType.MISSING_FIELD),
         createMockIssue('W123456789', ValidationIssueType.TYPE_MISMATCH),
@@ -630,20 +680,24 @@ function createMockValidationResults(): EntityValidationResult[] {
     },
     {
       entityId: 'A987654321',
-      entityType: 'A' as EntityType,
+      entityType: EntityType.AUTHOR,
       entityDisplayName: 'Test Author 1',
       isValid: false,
       validatedAt: new Date().toISOString(),
+      issueCounts: { errors: 1, warnings: 0, info: 0 },
+      validationDurationMs: 90,
       issues: [
         createMockIssue('A987654321', ValidationIssueType.MISSING_FIELD),
       ],
     },
     {
       entityId: 'S555666777',
-      entityType: 'S' as EntityType,
+      entityType: EntityType.SOURCE,
       entityDisplayName: 'Test Source 1',
       isValid: true,
       validatedAt: new Date().toISOString(),
+      issueCounts: { errors: 0, warnings: 0, info: 0 },
+      validationDurationMs: 60,
       issues: [],
     },
   ];
@@ -655,9 +709,22 @@ function createMockIssue(
   severity: ValidationSeverity = ValidationSeverity.ERROR,
   description?: string
 ): ValidationIssue {
+  const entityPrefix = entityId.charAt(0);
+  const entityTypeMap: Record<string, EntityType> = {
+    'W': EntityType.WORK,
+    'A': EntityType.AUTHOR,
+    'S': EntityType.SOURCE,
+    'I': EntityType.INSTITUTION,
+    'P': EntityType.PUBLISHER,
+    'F': EntityType.FUNDER,
+    'T': EntityType.TOPIC,
+    'C': EntityType.CONCEPT,
+  };
+  
   return {
+    id: `issue_${entityId}_${issueType}_${Date.now()}`,
     entityId,
-    entityType: entityId.charAt(0) as EntityType,
+    entityType: entityTypeMap[entityPrefix] || EntityType.WORK,
     entityDisplayName: `Mock Entity ${entityId}`,
     issueType,
     severity,
