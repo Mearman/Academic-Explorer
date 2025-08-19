@@ -4,13 +4,15 @@
  */
 
 import { useState, useEffect, useCallback, useRef } from 'react';
-import { useNetworkStatus } from './use-network-status';
+
 import type { 
   QueuedRequest, 
   RequestQueueStatus,
   NetworkRetryPolicy,
   RetryStrategy,
 } from '@/types/network';
+
+import { useNetworkStatus } from './use-network-status';
 
 /**
  * Conflict resolution strategies
