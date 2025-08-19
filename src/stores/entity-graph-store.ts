@@ -1,6 +1,11 @@
 import { create } from 'zustand';
+import { persist, createJSONStorage } from 'zustand/middleware';
 import { immer } from 'zustand/middleware/immer';
 
+import type { 
+  GraphEngineType, 
+  GraphEngineSettings 
+} from '@/components/organisms/graph-engines';
 import { 
   loadEntityGraphFromSimpleStorage, 
   getSimpleGraphMetadata, 
@@ -48,6 +53,15 @@ interface EntityGraphState {
   isGraphVisible: boolean;
   isFullscreen: boolean;
   
+  // Engine state
+  preferredEngine: GraphEngineType;
+  engineSettings: Partial<GraphEngineSettings>;
+  enginePreferences: {
+    rememberPerSession: boolean;
+    autoOptimiseForSize: boolean;
+    showPerformanceWarnings: boolean;
+  };
+  
   // Actions - Graph management
   hydrateFromIndexedDB: () => Promise<void>;
   visitEntity: (event: EntityVisitEvent) => Promise<void>;
@@ -69,6 +83,12 @@ interface EntityGraphState {
   // Actions - View state
   toggleGraphVisibility: () => void;
   toggleFullscreen: () => void;
+  
+  // Actions - Engine management
+  setPreferredEngine: (engine: GraphEngineType) => void;
+  updateEngineSettings: (settings: Partial<GraphEngineSettings>) => void;
+  updateEnginePreferences: (preferences: Record<string, unknown>) => void;
+  getRecommendedEngine: () => GraphEngineType;
   
   // Computed data
   getFilteredVertices: () => EntityGraphVertex[];
@@ -120,18 +140,31 @@ const defaultLayoutConfig: GraphLayoutConfig = {
   minEdgeWeight: DEFAULT_MIN_EDGE_WEIGHT,
 };
 
+// Default engine preferences
+const defaultEnginePreferences = {
+  rememberPerSession: true,
+  autoOptimiseForSize: true,
+  showPerformanceWarnings: true,
+};
+
 export const useEntityGraphStore = create<EntityGraphState>()(
-  immer((set, get) => ({
-      // Initial state
-      graph: createEmptyGraph(),
-      isHydrated: false,
-      isLoading: false,
-      selectedVertexId: null,
-      hoveredVertexId: null,
-      filterOptions: defaultFilterOptions,
-      layoutConfig: defaultLayoutConfig,
-      isGraphVisible: false,
-      isFullscreen: false,
+  persist(
+    immer((set, get) => ({
+        // Initial state
+        graph: createEmptyGraph(),
+        isHydrated: false,
+        isLoading: false,
+        selectedVertexId: null,
+        hoveredVertexId: null,
+        filterOptions: defaultFilterOptions,
+        layoutConfig: defaultLayoutConfig,
+        isGraphVisible: false,
+        isFullscreen: false,
+        
+        // Engine state
+        preferredEngine: 'canvas-2d' as GraphEngineType,
+        engineSettings: {},
+        enginePreferences: defaultEnginePreferences,
       
       // Actions - Graph management
       hydrateFromIndexedDB: async () => {
@@ -429,7 +462,10 @@ export const useEntityGraphStore = create<EntityGraphState>()(
             id: edgeId,
             sourceId: event.sourceEntityId,
             targetId: event.targetEntityId,
+            source: event.sourceEntityId,
+            target: event.targetEntityId,
             edgeType: event.relationshipType,
+            type: event.relationshipType,
             weight: 0.5, // Default weight, could be computed based on relationship strength
             discoveredFromDirectVisit: state.graph.directlyVisitedVertices.has(event.sourceEntityId),
             discoveredAt: event.timestamp,
@@ -600,6 +636,54 @@ export const useEntityGraphStore = create<EntityGraphState>()(
         set((state) => {
           state.isFullscreen = !state.isFullscreen;
         }),
+      
+      // Actions - Engine management
+      setPreferredEngine: (engine: GraphEngineType) =>
+        set((state) => {
+          state.preferredEngine = engine;
+        }),
+        
+      updateEngineSettings: (settings: Partial<GraphEngineSettings>) =>
+        set((state) => {
+          state.engineSettings = { ...state.engineSettings, ...settings };
+        }),
+        
+      updateEnginePreferences: (preferences) =>
+        set((state) => {
+          state.enginePreferences = { ...state.enginePreferences, ...preferences };
+        }),
+        
+      getRecommendedEngine: (): GraphEngineType => {
+        const state = get();
+        const { graph, enginePreferences, preferredEngine } = state;
+        
+        // If auto-optimisation is disabled, return preferred
+        if (!enginePreferences.autoOptimiseForSize) {
+          return preferredEngine;
+        }
+        
+        // Recommend based on graph size
+        const vertexCount = graph.vertices.size;
+        const edgeCount = graph.edges.size;
+        
+        // Large graphs -> WebGL for performance
+        if (vertexCount > 5000 || edgeCount > 10000) {
+          return 'webgl';
+        }
+        
+        // Medium graphs -> Canvas 2D for balance
+        if (vertexCount > 1000 || edgeCount > 2000) {
+          return 'canvas-2d';
+        }
+        
+        // Small graphs -> SVG for quality or D3 for interactivity
+        if (vertexCount > 100) {
+          return 'd3-force';
+        }
+        
+        // Very small graphs -> SVG for scalability
+        return 'svg';
+      },
       
       // Computed data
       getFilteredVertices: () => {
@@ -898,5 +982,19 @@ export const useEntityGraphStore = create<EntityGraphState>()(
         
         return outgoing + incoming;
       },
-    }))
+    })),
+    {
+      name: 'academic-explorer-entity-graph',
+      storage: createJSONStorage(() => localStorage),
+      // Only persist engine-related settings and preferences
+      partialize: (state) => ({
+        preferredEngine: state.preferredEngine,
+        engineSettings: state.engineSettings,
+        enginePreferences: state.enginePreferences,
+        filterOptions: state.filterOptions,
+        layoutConfig: state.layoutConfig,
+        isGraphVisible: state.isGraphVisible,
+      }),
+    }
+  )
 );
