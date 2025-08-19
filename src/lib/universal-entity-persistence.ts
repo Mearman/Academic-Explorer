@@ -24,6 +24,7 @@ import type {
 import { entityGraphStorage } from './entity-graph-storage';
 import { saveEntityToSimpleStorage, saveEdgeToSimpleStorage } from './entity-graph-sync';
 import { cachedClient } from './openalex/cached-client';
+import type { ApiResponse } from './openalex/types';
 
 /**
  * Entity reference that may need display name hydration
@@ -116,6 +117,12 @@ export class UniversalEntityPersistence {
           rel.edgeType,
           edgeId
         );
+      }
+
+      // 7. ENHANCED: For authors, also fetch and persist their works
+      if (entityType === EntityType.AUTHOR) {
+        console.log(`[UniversalPersistence] 📚 Fetching and persisting author works for ${entityId}`);
+        await this.fetchAndPersistAuthorWorks(entityId);
       }
 
       console.log(`[UniversalPersistence] ✅ Completed persistence for ${entityType}:${entityId}`);
@@ -476,6 +483,94 @@ export class UniversalEntityPersistence {
   private extractConceptRelationships(concept: Concept): ExtractedRelationship[] {
     // TODO: Implement based on Concept structure (ancestor relationships)
     return [];
+  }
+
+  /**
+   * Fetch and persist author's works with their relationships
+   */
+  private async fetchAndPersistAuthorWorks(authorId: string): Promise<void> {
+    try {
+      const cleanAuthorId = this.cleanOpenAlexId(authorId);
+      
+      // Fetch author's works (recent ones first, limited for performance)
+      const response = await cachedClient.works({
+        filter: `author.id:${cleanAuthorId}`,
+        sort: 'publication_date:desc',
+        per_page: 10, // Limit to recent 10 works to avoid overwhelming the system
+        select: ['id', 'display_name', 'publication_year', 'cited_by_count', 'authorships', 'primary_location', 'topics', 'concepts', 'grants']
+      }) as ApiResponse<Work>;
+
+      if (!response.results || response.results.length === 0) {
+        console.log(`[UniversalPersistence] 📚 No works found for author ${cleanAuthorId}`);
+        return;
+      }
+
+      console.log(`[UniversalPersistence] 📚 Found ${response.results.length} works for author ${cleanAuthorId}`);
+
+      // Process each work
+      for (const work of response.results) {
+        // 1. Persist the work entity
+        const cleanWorkId = this.cleanOpenAlexId(work.id);
+        await saveEntityToSimpleStorage(
+          cleanWorkId,
+          EntityType.WORK,
+          work.display_name,
+          false // Not directly visited
+        );
+
+        // 2. Create AUTHORED relationship
+        const authoredEdgeId = this.generateEdgeId(cleanWorkId, cleanAuthorId, EdgeType.AUTHORED_BY);
+        await saveEdgeToSimpleStorage(
+          cleanWorkId,
+          cleanAuthorId,
+          EdgeType.AUTHORED_BY,
+          authoredEdgeId
+        );
+
+        // 3. Extract and persist work relationships
+        const workRelationships = this.extractWorkRelationships(work);
+        
+        // 4. Persist related entities from work
+        const workRelatedEntities = new Map<string, EntityReference>();
+        workRelationships.forEach(rel => {
+          if (!workRelatedEntities.has(rel.targetId)) {
+            workRelatedEntities.set(rel.targetId, rel.targetEntity);
+          }
+        });
+
+        // 5. Hydrate missing display names for work-related entities
+        await this.hydrateEntityDisplayNames(workRelatedEntities);
+
+        // 6. Persist work-related entities
+        for (const [entityId, entityRef] of workRelatedEntities) {
+          if (entityRef.displayName) {
+            await saveEntityToSimpleStorage(
+              entityId,
+              entityRef.entityType,
+              entityRef.displayName,
+              false
+            );
+          }
+        }
+
+        // 7. Persist work relationships
+        for (const rel of workRelationships) {
+          const edgeId = this.generateEdgeId(rel.sourceId, rel.targetId, rel.edgeType);
+          await saveEdgeToSimpleStorage(
+            rel.sourceId,
+            rel.targetId,
+            rel.edgeType,
+            edgeId
+          );
+        }
+      }
+
+      console.log(`[UniversalPersistence] 📚 Successfully persisted ${response.results.length} works and their relationships for author ${cleanAuthorId}`);
+
+    } catch (error) {
+      console.warn(`[UniversalPersistence] ⚠️ Failed to fetch/persist author works:`, error);
+      // Don't throw - this is an enhancement, not critical functionality
+    }
   }
 
   /**
