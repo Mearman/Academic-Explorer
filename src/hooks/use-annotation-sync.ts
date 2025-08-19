@@ -344,34 +344,9 @@ export function useAnnotationSync(): UseAnnotationSyncReturn {
    * Override store methods to include real-time sync
    */
   useEffect(() => {
-    const originalCreateAnnotation = createAnnotation;
-    const originalUpdateAnnotation = updateAnnotation;
-    const originalDeleteAnnotation = deleteAnnotation;
-    
-    // Wrap store methods to send sync operations
-    const wrappedCreateAnnotation = async (annotation: Omit<Annotation, 'id' | 'createdAt' | 'modifiedAt'>) => {
-      const annotationId = await originalCreateAnnotation(annotation);
-      const fullAnnotation = annotations.get(annotationId);
-      
-      if (fullAnnotation) {
-        await sendAnnotationCreate(fullAnnotation);
-      }
-      
-      return annotationId;
-    };
-    
-    const wrappedUpdateAnnotation = async (id: string, updates: Partial<Annotation>) => {
-      await originalUpdateAnnotation(id, updates);
-      await sendAnnotationUpdate(id, updates);
-    };
-    
-    const wrappedDeleteAnnotation = async (id: string) => {
-      await originalDeleteAnnotation(id);
-      await sendAnnotationDelete(id);
-    };
-    
     // Note: In a real implementation, we would properly override the store methods
     // This is a simplified approach for demonstration
+    // The wrapped functions would be used to replace the store methods
     
   }, [
     annotations,

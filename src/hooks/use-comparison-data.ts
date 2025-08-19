@@ -472,7 +472,10 @@ export function useComparisonAnalysis(entities: ComparisonEntity[]) {
       
       for (const metricKey of optionalMetricKeys) {
         const values = comparisonMetrics
-          .map(m => (m.metrics as any)[metricKey]?.value)
+          .map(m => {
+            const metrics = m.metrics as Record<string, MetricComparison | undefined>;
+            return metrics[metricKey]?.value;
+          })
           .filter((val): val is number => typeof val === 'number');
         
         if (values.length > 1) {
@@ -488,7 +491,10 @@ export function useComparisonAnalysis(entities: ComparisonEntity[]) {
       
       // Add optional metrics
       for (const metricKey of optionalMetricKeys) {
-        const topEntity = comparisonMetrics.find(m => (m.metrics as any)[metricKey]?.rank === 1);
+        const topEntity = comparisonMetrics.find(m => {
+          const metrics = m.metrics as Record<string, MetricComparison | undefined>;
+          return metrics[metricKey]?.rank === 1;
+        });
         if (topEntity) {
           topPerformers[metricKey] = topEntity.entityId;
         }
