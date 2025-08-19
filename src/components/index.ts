@@ -96,9 +96,8 @@ export { SearchResults } from './organisms/search-results';
 export { QueryHistory } from './organisms/query-history';
 export { StorageManager } from './organisms/storage-manager';
 export { 
-  Chart,
   NetworkVisualization,
-  MetricsPanel
+  Chart
 } from './organisms/data-visualization';
 export { 
   EntityPageSkeleton, 
@@ -197,6 +196,7 @@ export type {
   SkeletonProps,
   EntityLoadingProps,
 } from './types';
+
 
 // Entity Display Components
 export { AuthorDisplay } from './entity-displays/AuthorDisplay';
