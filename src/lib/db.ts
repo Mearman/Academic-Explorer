@@ -1,7 +1,7 @@
 import { openDB, DBSchema, IDBPDatabase } from 'idb';
 
 // Define the database schema
-interface AcademicExplorerDB extends DBSchema {
+export interface AcademicExplorerDB extends DBSchema {
   searchResults: {
     key: string; // query hash
     value: {
@@ -52,12 +52,20 @@ interface AcademicExplorerDB extends DBSchema {
     key: string; // filter key (e.g., 'default', 'saved-search-1')
     value: Record<string, unknown>; // Flexible object to store any filter data
   };
+  keyValue: {
+    key: string; // arbitrary key for key-value storage
+    value: {
+      key: string;
+      value: string;
+      timestamp: number;
+    };
+  };
 }
 
 export class DatabaseService {
   private db: IDBPDatabase<AcademicExplorerDB> | null = null;
   private readonly DB_NAME = 'academic-explorer';
-  private readonly DB_VERSION = 1;
+  private readonly DB_VERSION = 2;
   private openDBFn: typeof openDB;
 
   constructor(openDBFn: typeof openDB = openDB) {
@@ -88,6 +96,10 @@ export class DatabaseService {
 
         if (!db.objectStoreNames.contains('searchFilters')) {
           db.createObjectStore('searchFilters');
+        }
+
+        if (!db.objectStoreNames.contains('keyValue')) {
+          db.createObjectStore('keyValue');
         }
       },
     });
@@ -275,7 +287,7 @@ export class DatabaseService {
     const db = await this.ensureDB();
     
     // Clear all object stores
-    const stores = ['searchResults', 'papers', 'citations', 'collections', 'searchFilters'] as const;
+    const stores = ['searchResults', 'papers', 'citations', 'collections', 'searchFilters', 'keyValue'] as const;
     
     for (const storeName of stores) {
       try {
@@ -298,6 +310,27 @@ export class DatabaseService {
       };
     }
     return {};
+  }
+
+  // Key-Value storage methods for hybrid storage interface
+  async getKeyValue(key: string): Promise<string | null> {
+    const db = await this.ensureDB();
+    const result = await db.get('keyValue', key);
+    return result?.value ?? null;
+  }
+
+  async setKeyValue(key: string, value: string): Promise<void> {
+    const db = await this.ensureDB();
+    await db.put('keyValue', {
+      key,
+      value,
+      timestamp: Date.now(),
+    }, key);
+  }
+
+  async deleteKeyValue(key: string): Promise<void> {
+    const db = await this.ensureDB();
+    await db.delete('keyValue', key);
   }
 
   // Helper methods

@@ -450,7 +450,7 @@ export class IntelligentCacheWarmingService {
     return accessFrequency * (1 + frequency.accessCount / 100);
   }
 
-  private updateDependencyGraph(entityId: string, entityType: string): void {
+  private updateDependencyGraph(entityId: string, _entityType: string): void {
     if (!this.dependencyGraph[entityId]) {
       this.dependencyGraph[entityId] = {
         dependencies: [],
@@ -482,7 +482,6 @@ export class IntelligentCacheWarmingService {
     this.frequencyTracker.forEach((frequency) => {
       if (frequency.averageAccessInterval > 0) {
         const timeSinceLastAccess = now - frequency.lastAccessed;
-        const expectedNextAccess = frequency.lastAccessed + frequency.averageAccessInterval;
         
         // Simple prediction: if we're approaching expected next access time
         if (timeSinceLastAccess >= frequency.averageAccessInterval * 0.8) {

@@ -1,18 +1,14 @@
 /**
  * @vitest-environment node
  */
-import { describe, it, expect, beforeEach } from 'vitest';
+import { describe, it, expect } from 'vitest';
 
 import type { CitationNetwork, CitationNode, CitationEdge, CoauthorNetwork, CoauthorNode, CoauthorEdge } from './citation-network';
 import {
-  validateCitationNetwork,
-  exportCitationNetworkToJSON,
-  exportCitationNetworkToCSV,
   exportCitationNetworkToGraphML,
   exportCitationNetworkToBibTeX,
   exportCitationNetworkToRIS,
   getExportFilename,
-  NetworkExportResult,
 } from './citation-network-export';
 
 // Mock test data
@@ -545,12 +541,13 @@ describe('Citation Network Export - Enhanced Formats', () => {
 
   describe('Export Validation and Error Handling', () => {
     it('should validate network before exporting', () => {
-      const invalidNetwork = {
+      // Create an invalid network with empty node ID to test validation
+      const invalidNetwork: CitationNetwork = {
         nodes: [{ id: '', title: 'Invalid', year: 2020, citedByCount: 0, depth: 0 }],
         edges: [],
       };
 
-      const result = exportCitationNetworkToGraphML(invalidNetwork as any);
+      const result = exportCitationNetworkToGraphML(invalidNetwork);
 
       expect(result.success).toBe(false);
       expect(result.error).toContain('validation failed');

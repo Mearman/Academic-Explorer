@@ -13,6 +13,17 @@ import { CacheManager } from './cache';
 import type { CacheStrategy } from './cache-interceptor';
 import { RequestManager } from './request-manager';
 
+// Local interface for cache statistics to avoid dependency on internal types
+interface CacheStatsData {
+  memoryEntries: number;
+  validEntries: number;
+  memorySize: number;
+  localStorageEntries: number;
+  localStorageSize: number;
+  localStorageLimit: number;
+  hitRate: number;
+}
+
 export interface EnhancedCacheOptions {
   ttl?: number;
   useMemory?: boolean;
@@ -245,7 +256,7 @@ export class EnhancedCacheInterceptor {
         try {
           const strategy = this.getStrategy(endpoint);
           if (strategy && strategy.shouldCache(endpoint, params)) {
-            const cacheKey = strategy.getCacheKey(endpoint, params);
+            const _cacheKey = strategy.getCacheKey(endpoint, params);
             
             // Check if already cached
             const existing = await this.cache.get(endpoint, params as Record<string, unknown>);
@@ -418,7 +429,7 @@ export class EnhancedCacheInterceptor {
       pattern: /^\/works\/W\d+$/,
       strategy: 'dependency-based',
       dependencies: ['authors', 'sources', 'institutions'],
-      customLogic: (key, data) => {
+      customLogic: (_key, _data) => {
         // Implement custom logic for work invalidation
         return true;
       },
@@ -432,11 +443,17 @@ export class EnhancedCacheInterceptor {
       prefetchTargets: (key, data) => {
         const targets: string[] = [];
         if (typeof data === 'object' && data !== null) {
-          const work = data as any;
-          if (work.authorships) {
-            work.authorships.forEach((authorship: any) => {
-              if (authorship.author?.id) {
-                targets.push(`/authors/${authorship.author.id}`);
+          const work = data as Record<string, unknown>;
+          if (work.authorships && Array.isArray(work.authorships)) {
+            (work.authorships as Array<Record<string, unknown>>).forEach((authorship: Record<string, unknown>) => {
+              if (authorship.author && 
+                  typeof authorship.author === 'object' && 
+                  authorship.author !== null &&
+                  'id' in authorship.author) {
+                const authorId = (authorship.author as Record<string, unknown>).id;
+                if (typeof authorId === 'string') {
+                  targets.push(`/authors/${authorId}`);
+                }
               }
             });
           }
@@ -526,7 +543,7 @@ export class EnhancedCacheInterceptor {
   }
 
   private extractEntityType(endpoint: string): string {
-    const match = endpoint.match(/^\/([^\/]+)/);
+    const match = endpoint.match(/^\/([^/]+)/);
     return match ? match[1] : 'unknown';
   }
 
@@ -559,7 +576,7 @@ export class EnhancedCacheInterceptor {
     }
   }
 
-  private async processInvalidationRules(endpoint: string, params: unknown, data: unknown): Promise<void> {
+  private async processInvalidationRules(endpoint: string, _params: unknown, _data: unknown): Promise<void> {
     for (const rule of this.invalidationRules) {
       if (rule.pattern.test(endpoint)) {
         await this.applyInvalidationRule(rule);
@@ -600,8 +617,8 @@ export class EnhancedCacheInterceptor {
     });
   }
 
-  private calculateMemoryPressure(stats: any): number {
-    const memoryUsage = stats.memorySize || 0;
+  private calculateMemoryPressure(stats: CacheStatsData): number {
+    const memoryUsage = stats.memorySize;
     const memoryLimit = 100 * 1024 * 1024; // 100MB estimate
     return memoryUsage / memoryLimit;
   }

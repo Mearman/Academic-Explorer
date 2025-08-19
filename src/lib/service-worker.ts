@@ -3,7 +3,7 @@
  * Handles PWA installation, background sync, and offline capabilities
  */
 
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 
 /**
  * PWA install prompt event interface
@@ -384,7 +384,7 @@ class ServiceWorkerManager {
   getPWAInstallStatus(): PWAInstallStatus {
     const canInstall = !!this.installPrompt;
     const isInstalled = window.matchMedia('(display-mode: standalone)').matches ||
-                       (window.navigator as any).standalone ||
+                       (window.navigator as unknown as { standalone?: boolean }).standalone ||
                        document.referrer.includes('android-app://');
     
     const platform = this.detectPlatform();
@@ -541,4 +541,3 @@ export function useServiceWorker() {
   };
 }
 
-export default serviceWorkerManager;

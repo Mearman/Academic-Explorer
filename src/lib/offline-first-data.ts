@@ -8,8 +8,10 @@ import React from 'react';
 import { useIntelligentOfflineQueue } from '@/hooks/use-intelligent-offline-queue';
 import type { IntelligentQueuedRequest } from '@/hooks/use-intelligent-offline-queue';
 import { useNetworkStatus } from '@/hooks/use-network-status';
+import type { Work, ApiResponse } from '@/lib/openalex/types';
 
 import { db } from './db';
+import type { AcademicExplorerDB } from './db';
 
 /**
  * Data freshness levels
@@ -143,10 +145,11 @@ export class OfflineFirstData {
         
         // Cache the result
         if (networkData.data) {
+          const apiResponse = networkData.data as ApiResponse<Work>;
           await db.cacheSearchResults(
             query,
-            (networkData.data as any).results || [],
-            (networkData.data as any).meta?.count || 0,
+            apiResponse.results || [],
+            apiResponse.meta?.count || 0,
             filters
           );
         }
@@ -173,10 +176,11 @@ export class OfflineFirstData {
         );
 
         if (networkData.data) {
+          const apiResponse = networkData.data as ApiResponse<Work>;
           await db.cacheSearchResults(
             query,
-            (networkData.data as any).results || [],
-            (networkData.data as any).meta?.count || 0,
+            apiResponse.results || [],
+            apiResponse.meta?.count || 0,
             filters
           );
         }
@@ -193,10 +197,11 @@ export class OfflineFirstData {
           );
 
           if (networkData.data) {
+            const apiResponse = networkData.data as ApiResponse<Work>;
             await db.cacheSearchResults(
               query,
-              (networkData.data as any).results || [],
-              (networkData.data as any).meta?.count || 0,
+              apiResponse.results || [],
+              apiResponse.meta?.count || 0,
               filters
             );
           }
@@ -235,10 +240,11 @@ export class OfflineFirstData {
             { timeout, priority: 1, persistent: false, background: true }
           ).then(networkData => {
             if (networkData.data) {
+              const apiResponse = networkData.data as ApiResponse<Work>;
               db.cacheSearchResults(
                 query,
-                (networkData.data as any).results || [],
-                (networkData.data as any).meta?.count || 0,
+                apiResponse.results || [],
+                apiResponse.meta?.count || 0,
                 filters
               );
             }
@@ -255,10 +261,11 @@ export class OfflineFirstData {
       );
 
       if (networkData.data) {
+        const apiResponse = networkData.data as ApiResponse<Work>;
         await db.cacheSearchResults(
           query,
-          (networkData.data as any).results || [],
-          (networkData.data as any).meta?.count || 0,
+          apiResponse.results || [],
+          apiResponse.meta?.count || 0,
           filters
         );
       }
@@ -333,7 +340,7 @@ export class OfflineFirstData {
   async getPaper(
     id: string,
     options: DataAccessOptions = {}
-  ): Promise<DataResponse<any>> {
+  ): Promise<DataResponse<unknown | null>> {
     const {
       strategy = 'cache-first',
       timeout = 5000,
@@ -347,7 +354,7 @@ export class OfflineFirstData {
 
       if (strategy === 'cache-only' || (strategy === 'cache-first' && cached)) {
         return {
-          data: cached,
+          data: cached || null,
           error: null,
           freshness: cached ? 'fresh' : 'unknown',
           fromCache: true,
@@ -363,7 +370,9 @@ export class OfflineFirstData {
 
       // Update cache if we got data
       if (networkData.data) {
-        await db.savePaper(networkData.data as any);
+        // Convert network data to local paper format if needed
+        const paperData = this.convertToPaperFormat(networkData.data);
+        await db.savePaper(paperData);
       }
 
       return networkData;
@@ -390,6 +399,27 @@ export class OfflineFirstData {
   }
 
   /**
+   * Convert network data to local paper format
+   */
+  private convertToPaperFormat(data: unknown): AcademicExplorerDB['papers']['value'] {
+    // Handle the case where data might be a Work or unknown format
+    const workData = data as Work;
+    
+    return {
+      id: workData.id || '',
+      title: workData.display_name || workData.title || '',
+      authors: Array.isArray(workData.authorships) 
+        ? workData.authorships.map(authorship => authorship.author?.display_name || '').filter(Boolean)
+        : [],
+      abstract: workData.abstract_inverted_index ? 'Abstract available' : undefined,
+      year: workData.publication_year,
+      doi: workData.doi,
+      citations: workData.cited_by_count,
+      savedAt: Date.now(),
+    };
+  }
+
+  /**
    * Fetch data from network with intelligent queueing
    */
   private async fetchFromNetwork(
@@ -402,10 +432,10 @@ export class OfflineFirstData {
     } = {}
   ): Promise<DataResponse<unknown>> {
     const {
-      timeout = 10000,
+      timeout: _timeout = 10000,
       priority = 5,
       persistent = false,
-      background = false,
+      background: _background = false,
     } = options;
 
     // If offline or no queue manager, throw error
@@ -536,4 +566,3 @@ export function useOfflineFirstData() {
   };
 }
 
-export default offlineFirstData;

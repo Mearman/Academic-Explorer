@@ -341,7 +341,7 @@ function validateFieldFormat(
       const openAlexRegex = /^[WASIPFTCKRN]\d{7,10}$/;
       if (!openAlexRegex.test(value)) {
         isValid = false;
-        description = 'OpenAlex ID should start with a letter (W, A, S, etc.) followed by 7-10 digits';
+        description = 'OpenAlex ID format is incorrect - should start with a letter (W, A, S, etc.) followed by 7-10 digits';
       }
       break;
     }
@@ -427,9 +427,86 @@ async function validateFieldSchema(
   schemaName: string,
   entityType: EntityType
 ): Promise<ValidationIssue[]> {
-  // This would validate against specific schemas like authorship, location, etc.
-  // For now, return empty array
-  return [];
+  const issues: ValidationIssue[] = [];
+  
+  if (typeof value !== 'object' || value === null) {
+    return issues;
+  }
+
+  const entityId = 'schema';
+  
+  switch (schemaName) {
+    case 'authorship': {
+      const authorship = value as Record<string, unknown>;
+      
+      // Validate author field
+      if (!authorship.author || typeof authorship.author !== 'object') {
+        issues.push({
+          id: generateValidationIssueId(entityId, `${fieldPath}.author`, ValidationIssueType.MISSING_FIELD),
+          entityId,
+          entityType,
+          issueType: ValidationIssueType.MISSING_FIELD,
+          severity: ValidationSeverity.ERROR,
+          fieldPath: `${fieldPath}.author`,
+          description: 'Author information is required',
+          timestamp: new Date().toISOString(),
+        });
+      } else {
+        const author = authorship.author as Record<string, unknown>;
+        
+        // Check author ID
+        if (!author.id || typeof author.id !== 'string') {
+          issues.push({
+            id: generateValidationIssueId(entityId, `${fieldPath}.author.id`, ValidationIssueType.MISSING_FIELD),
+            entityId,
+            entityType,
+            issueType: ValidationIssueType.MISSING_FIELD,
+            severity: ValidationSeverity.ERROR,
+            fieldPath: `${fieldPath}.author.id`,
+            description: 'Author ID is required',
+            timestamp: new Date().toISOString(),
+          });
+        }
+        
+        // Check author display_name
+        if (!author.display_name || typeof author.display_name !== 'string') {
+          issues.push({
+            id: generateValidationIssueId(entityId, `${fieldPath}.author.display_name`, ValidationIssueType.MISSING_FIELD),
+            entityId,
+            entityType,
+            issueType: ValidationIssueType.MISSING_FIELD,
+            severity: ValidationSeverity.ERROR,
+            fieldPath: `${fieldPath}.author.display_name`,
+            description: 'Author name is required',
+            timestamp: new Date().toISOString(),
+          });
+        }
+      }
+      
+      // Validate institutions field
+      if (authorship.institutions && !Array.isArray(authorship.institutions)) {
+        issues.push({
+          id: generateValidationIssueId(entityId, `${fieldPath}.institutions`, ValidationIssueType.TYPE_MISMATCH),
+          entityId,
+          entityType,
+          issueType: ValidationIssueType.TYPE_MISMATCH,
+          severity: ValidationSeverity.ERROR,
+          fieldPath: `${fieldPath}.institutions`,
+          expectedType: 'array',
+          actualType: typeof authorship.institutions,
+          description: 'Institutions must be an array',
+          timestamp: new Date().toISOString(),
+        });
+      }
+      break;
+    }
+    
+    default:
+      // Unknown schema, skip validation
+      break;
+  }
+  
+  return issues;
 }
 
 /**
@@ -513,6 +590,28 @@ export async function validateEntityIntegrity(
     });
   }
 
+  // Check for institutional lineage circular references
+  if (entityType === EntityType.INSTITUTION && typeof entityData === 'object' && entityData !== null) {
+    const institution = entityData as Record<string, unknown>;
+    if ('lineage' in institution && Array.isArray(institution.lineage)) {
+      const lineage = institution.lineage as string[];
+      const institutionId = String(institution.id || '');
+      
+      if (lineage.includes(institutionId)) {
+        issues.push({
+          id: generateValidationIssueId(entityId, 'lineage', ValidationIssueType.TYPE_MISMATCH),
+          entityId,
+          entityType,
+          issueType: ValidationIssueType.TYPE_MISMATCH,
+          severity: ValidationSeverity.ERROR,
+          fieldPath: 'lineage',
+          description: 'Institution lineage contains circular reference - institution cannot be in its own lineage',
+          timestamp: new Date().toISOString(),
+        });
+      }
+    }
+  }
+
   // Validate basic structure
   if (typeof entityData !== 'object') {
     issues.push({
@@ -558,6 +657,10 @@ export async function validateEntityIntegrity(
         timestamp: new Date().toISOString(),
       });
     }
+
+    // Validate deeply nested structures
+    const nestedIssues = validateNestedStructures(entityObj, entityType, entityId);
+    issues.push(...nestedIssues);
   }
 
   const issueCounts = {
@@ -618,6 +721,36 @@ export async function checkCrossFieldConsistency(
     }
   }
 
+  // Check source-type consistency for works
+  if (entityType === EntityType.WORK && 'primary_location' in entity && 'type' in entity) {
+    checkedFields.push('primary_location', 'type');
+    
+    const primaryLocation = entity.primary_location as Record<string, unknown> | null;
+    const workType = entity.type;
+    
+    if (primaryLocation && typeof primaryLocation === 'object' && 'source' in primaryLocation) {
+      const source = primaryLocation.source as Record<string, unknown> | null;
+      
+      if (source && typeof source === 'object' && 'type' in source) {
+        const sourceType = source.type;
+        
+        // Check for logical inconsistencies
+        if (sourceType === 'journal' && workType === 'book-chapter') {
+          issues.push({
+            id: generateValidationIssueId(entityId, 'source_type_consistency', ValidationIssueType.TYPE_MISMATCH),
+            entityId,
+            entityType,
+            issueType: ValidationIssueType.TYPE_MISMATCH,
+            severity: ValidationSeverity.WARNING,
+            fieldPath: 'primary_location.source.type,type',
+            description: `Work type "${workType}" is inconsistent with source type "${sourceType}"`,
+            timestamp: new Date().toISOString(),
+          });
+        }
+      }
+    }
+  }
+
   return {
     isValid: issues.length === 0,
     issues,
@@ -657,6 +790,24 @@ export async function detectSchemaViolations(
         severity: ValidationSeverity.WARNING,
         fieldPath: field,
         description: `Field '${field}' is deprecated and should not be used`,
+        timestamp: new Date().toISOString(),
+      });
+    }
+  }
+
+  // Check for unexpected extra fields
+  const allowedFields = getAllowedFieldsForEntityType(entityType);
+  for (const field of Object.keys(entity)) {
+    if (!allowedFields.includes(field) && !deprecatedFieldNames.includes(field)) {
+      extraFields.push(field);
+      issues.push({
+        id: generateValidationIssueId(entityId, field, ValidationIssueType.EXTRA_FIELD),
+        entityId,
+        entityType,
+        issueType: ValidationIssueType.EXTRA_FIELD,
+        severity: ValidationSeverity.WARNING,
+        fieldPath: field,
+        description: `Unexpected field '${field}' found in ${entityType} entity`,
         timestamp: new Date().toISOString(),
       });
     }
@@ -715,9 +866,50 @@ export function formatValidationErrors(
   });
 
   // Group errors if requested
-  if (options.groupByField || options.groupByType) {
-    // Implementation would group errors by field or type
-    // For now, just join with line breaks
+  if (options.groupByField) {
+    const grouped = new Map<string, string[]>();
+    
+    formattedErrors.forEach((message, index) => {
+      const error = errors[index];
+      const fieldName = getFieldDisplayName(error.fieldPath);
+      
+      if (!grouped.has(fieldName)) {
+        grouped.set(fieldName, []);
+      }
+      grouped.get(fieldName)!.push(message.replace(`${fieldName}: `, ''));
+    });
+    
+    const groupedMessages: string[] = [];
+    for (const [fieldName, messages] of grouped) {
+      if (messages.length === 1) {
+        groupedMessages.push(`${fieldName}: ${messages[0]}`);
+      } else {
+        groupedMessages.push(`${fieldName}: ${messages.join(', ')}`);
+      }
+    }
+    
+    return groupedMessages.join('\n');
+  }
+
+  if (options.groupByType) {
+    const grouped = new Map<ValidationIssueType, string[]>();
+    
+    formattedErrors.forEach((message, index) => {
+      const error = errors[index];
+      
+      if (!grouped.has(error.issueType)) {
+        grouped.set(error.issueType, []);
+      }
+      grouped.get(error.issueType)!.push(message);
+    });
+    
+    const groupedMessages: string[] = [];
+    for (const [type, messages] of grouped) {
+      const typeHeader = getIssueTypeDisplayName(type);
+      groupedMessages.push(`${typeHeader}:\n${messages.map(m => `  • ${m}`).join('\n')}`);
+    }
+    
+    return groupedMessages.join('\n\n');
   }
 
   return formattedErrors.join('\n');
@@ -799,13 +991,140 @@ function getDeprecatedFieldsForEntityType(entityType: EntityType): string[] {
   }
 }
 
+function getAllowedFieldsForEntityType(entityType: EntityType): string[] {
+  switch (entityType) {
+    case EntityType.WORK:
+      return [
+        'id', 'display_name', 'title', 'authorships', 'publication_year', 'publication_date',
+        'type', 'open_access', 'cited_by_count', 'biblio', 'is_retracted', 'is_paratext',
+        'primary_location', 'locations', 'best_oa_location', 'sustainable_development_goals',
+        'grants', 'datasets', 'versions', 'related_works', 'abstract_inverted_index',
+        'cited_by_api_url', 'counts_by_year', 'updated_date', 'created_date', 'topics',
+        'keywords', 'language', 'countries_distinct_count', 'institutions_distinct_count',
+        'corresponding_author_ids', 'corresponding_institution_ids'
+      ];
+    case EntityType.AUTHOR:
+      return [
+        'id', 'display_name', 'display_name_alternatives', 'works_count', 'cited_by_count',
+        'summary_stats', 'ids', 'affiliations', 'last_known_institution', 'works_api_url',
+        'updated_date', 'created_date', 'counts_by_year'
+      ];
+    case EntityType.INSTITUTION:
+      return [
+        'id', 'display_name', 'display_name_alternatives', 'display_name_acronyms',
+        'country_code', 'type', 'homepage_url', 'image_url', 'image_thumbnail_url',
+        'works_count', 'cited_by_count', 'summary_stats', 'ids', 'geo', 'international',
+        'associated_institutions', 'repositories', 'lineage', 'works_api_url',
+        'updated_date', 'created_date', 'counts_by_year'
+      ];
+    case EntityType.SOURCE:
+      return [
+        'id', 'display_name', 'display_name_alternatives', 'issn_l', 'issn', 'is_oa',
+        'is_in_doaj', 'host_organization', 'host_organization_name', 'host_organization_lineage',
+        'works_count', 'cited_by_count', 'summary_stats', 'x_concepts', 'counts_by_year',
+        'works_api_url', 'updated_date', 'created_date', 'apc_prices', 'apc_usd',
+        'country_code', 'societies', 'abbreviation', 'type', 'homepage_url'
+      ];
+    default:
+      return [
+        'id', 'display_name', 'works_count', 'cited_by_count', 'counts_by_year',
+        'works_api_url', 'updated_date', 'created_date'
+      ];
+  }
+}
+
+function validateNestedStructures(
+  entityObj: Record<string, unknown>,
+  entityType: EntityType,
+  entityId: string
+): ValidationIssue[] {
+  const issues: ValidationIssue[] = [];
+
+  // Validate authorships array for works
+  if (entityType === EntityType.WORK && 'authorships' in entityObj) {
+    const authorships = entityObj.authorships;
+    
+    if (Array.isArray(authorships)) {
+      authorships.forEach((authorship, index) => {
+        if (typeof authorship === 'object' && authorship !== null) {
+          const auth = authorship as Record<string, unknown>;
+          
+          // Check author field
+          if ('author' in auth) {
+            if (typeof auth.author !== 'object' || auth.author === null) {
+              issues.push({
+                id: generateValidationIssueId(entityId, `authorships.${index}.author`, ValidationIssueType.TYPE_MISMATCH),
+                entityId,
+                entityType,
+                issueType: ValidationIssueType.TYPE_MISMATCH,
+                severity: ValidationSeverity.ERROR,
+                fieldPath: `authorships.${index}.author`,
+                description: 'Author must be an object',
+                timestamp: new Date().toISOString(),
+              });
+            } else {
+              const author = auth.author as Record<string, unknown>;
+              
+              // Check for null/undefined ID
+              if (!author.id || author.id === null) {
+                issues.push({
+                  id: generateValidationIssueId(entityId, `authorships.${index}.author.id`, ValidationIssueType.MISSING_FIELD),
+                  entityId,
+                  entityType,
+                  issueType: ValidationIssueType.MISSING_FIELD,
+                  severity: ValidationSeverity.ERROR,
+                  fieldPath: `authorships.${index}.author.id`,
+                  description: 'Author ID cannot be null',
+                  timestamp: new Date().toISOString(),
+                });
+              }
+              
+              // Check for undefined display_name
+              if (author.display_name === undefined) {
+                issues.push({
+                  id: generateValidationIssueId(entityId, `authorships.${index}.author.display_name`, ValidationIssueType.MISSING_FIELD),
+                  entityId,
+                  entityType,
+                  issueType: ValidationIssueType.MISSING_FIELD,
+                  severity: ValidationSeverity.ERROR,
+                  fieldPath: `authorships.${index}.author.display_name`,
+                  description: 'Author display name is required',
+                  timestamp: new Date().toISOString(),
+                });
+              }
+            }
+          }
+          
+          // Check institutions field type
+          if ('institutions' in auth && typeof auth.institutions === 'string') {
+            issues.push({
+              id: generateValidationIssueId(entityId, `authorships.${index}.institutions`, ValidationIssueType.TYPE_MISMATCH),
+              entityId,
+              entityType,
+              issueType: ValidationIssueType.TYPE_MISMATCH,
+              severity: ValidationSeverity.ERROR,
+              fieldPath: `authorships.${index}.institutions`,
+              expectedType: 'array',
+              actualType: 'string',
+              description: 'Institutions must be an array, not a string',
+              timestamp: new Date().toISOString(),
+            });
+          }
+        }
+      });
+    }
+  }
+
+  return issues;
+}
+
 function makeUserFriendly(error: ValidationIssue): string {
   switch (error.issueType) {
     case ValidationIssueType.MISSING_FIELD:
       return `Please provide a ${getFieldDisplayName(error.fieldPath).toLowerCase()}`;
     case ValidationIssueType.TYPE_MISMATCH:
       if (error.expectedType === 'string matching /^A\\\\d{7,10}$/' || error.fieldPath.includes('id')) {
-        return 'ID format is incorrect - should start with "A" followed by numbers';
+        return 'Author ID format is incorrect - should start with "A" followed by numbers';
       }
       return `Wrong data type - expected ${error.expectedType}, got ${error.actualType}`;
     case ValidationIssueType.INVALID_FORMAT:
@@ -825,7 +1144,29 @@ function getFieldDisplayName(fieldPath: string): string {
     'homepage_url': 'Homepage URL',
   };
   
+  // Group author-related fields under "Author Information"
+  if (fieldPath.includes('author')) {
+    return 'Author Information';
+  }
+  
   return displayNames[fieldPath] || fieldPath.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+}
+
+function getIssueTypeDisplayName(issueType: ValidationIssueType): string {
+  switch (issueType) {
+    case ValidationIssueType.MISSING_FIELD:
+      return 'Missing Fields';
+    case ValidationIssueType.TYPE_MISMATCH:
+      return 'Type Mismatches';
+    case ValidationIssueType.INVALID_FORMAT:
+      return 'Format Issues';
+    case ValidationIssueType.VALUE_OUT_OF_RANGE:
+      return 'Value Range Issues';
+    case ValidationIssueType.EXTRA_FIELD:
+      return 'Extra Fields';
+    default:
+      return 'Other Issues';
+  }
 }
 
 function getFixSuggestion(error: ValidationIssue): string {
