@@ -9,6 +9,7 @@ import React from 'react';
 import { describe, it, expect, vi, beforeEach, afterEach, type MockedFunction } from 'vitest';
 
 import type { AdvancedSearchFormData } from '@/hooks/use-advanced-search-form';
+import type { SavedSearchFilters } from '@/hooks/use-persistent-search-filters';
 
 import { AdvancedSearchForm } from './advanced-search-form';
 
@@ -21,8 +22,8 @@ const mockClearError = vi.fn();
 const mockUsePersistentSearchFilters = vi.hoisted(() => ({
   isLoading: false,
   isInitialized: true,
-  savedFilters: null as any,
-  error: null as any,
+  savedFilters: null as SavedSearchFilters | null,
+  error: null as string | null,
   saveFilters: mockSaveFilters,
   loadFilters: mockLoadFilters,
   clearFilters: mockClearFilters,
@@ -38,10 +39,10 @@ vi.mock('@/hooks/use-persistent-search-filters', () => ({
 const mockAdvancedSearchFormHook: {
   formData: AdvancedSearchFormData;
   isCollapsed: boolean;
-  setIsCollapsed: MockedFunction<any>;
-  updateField: MockedFunction<any>;
-  handleSubmit: MockedFunction<any>;
-  handleReset: MockedFunction<any>;
+  setIsCollapsed: MockedFunction<(collapsed: boolean) => void>;
+  updateField: MockedFunction<(field: string, value: unknown) => void>;
+  handleSubmit: MockedFunction<(event: React.FormEvent) => void>;
+  handleReset: MockedFunction<() => void>;
 } = {
   formData: {
     query: '',
@@ -63,8 +64,16 @@ vi.mock('@/hooks/use-advanced-search-form', () => ({
 }));
 
 // Mock all the advanced search sections
+interface MockSectionProps {
+  formData: AdvancedSearchFormData;
+  updateField: (field: string, value: unknown) => void;
+  isCollapsed?: boolean;
+  setIsCollapsed?: (collapsed: boolean) => void;
+  onReset?: () => void;
+}
+
 vi.mock('./advanced-search', () => ({
-  BasicSearchSection: ({ formData, updateField, isCollapsed, setIsCollapsed }: any) => (
+  BasicSearchSection: ({ formData, updateField, isCollapsed, setIsCollapsed }: MockSectionProps) => (
     <div data-testid="basic-search-section">
       <button 
         onClick={() => setIsCollapsed(!isCollapsed)}
@@ -80,7 +89,7 @@ vi.mock('./advanced-search', () => ({
       />
     </div>
   ),
-  DateFiltersSection: ({ formData, updateField }: any) => (
+  DateFiltersSection: ({ formData, updateField }: MockSectionProps) => (
     <div data-testid="date-filters-section">
       <input
         data-testid="from-date"
@@ -96,7 +105,7 @@ vi.mock('./advanced-search', () => ({
       />
     </div>
   ),
-  ContentFiltersSection: ({ formData, updateField }: any) => (
+  ContentFiltersSection: ({ formData, updateField }: MockSectionProps) => (
     <div data-testid="content-filters-section">
       <label>
         <input
@@ -109,7 +118,7 @@ vi.mock('./advanced-search', () => ({
       </label>
     </div>
   ),
-  CitationFiltersSection: ({ formData, updateField }: any) => (
+  CitationFiltersSection: ({ formData, updateField }: MockSectionProps) => (
     <div data-testid="citation-filters-section">
       <input
         data-testid="citation-min"
@@ -120,7 +129,7 @@ vi.mock('./advanced-search', () => ({
       />
     </div>
   ),
-  EntityFiltersSection: ({ formData, updateField }: any) => (
+  EntityFiltersSection: ({ formData, updateField }: MockSectionProps) => (
     <div data-testid="entity-filters-section">
       <input
         data-testid="author-id"
@@ -130,7 +139,7 @@ vi.mock('./advanced-search', () => ({
       />
     </div>
   ),
-  ResultsOptionsSection: ({ formData, updateField, onReset }: any) => (
+  ResultsOptionsSection: ({ formData, updateField, onReset }: MockSectionProps) => (
     <div data-testid="results-options-section">
       <select
         data-testid="sort-select"
@@ -383,7 +392,7 @@ describe('AdvancedSearchForm with Persistent Filters', () => {
       mockUsePersistentSearchFilters.savedFilters = {
         invalidField: 'corrupt data',
         // Missing required fields
-      } as any;
+      } as SavedSearchFilters;
       
       render(<AdvancedSearchForm onSearch={mockOnSearch} />);
       
@@ -399,7 +408,7 @@ describe('AdvancedSearchForm with Persistent Filters', () => {
         query: 'test',
         savedAt: Date.now(),
         version: 1,
-      } as any;
+      } as SavedSearchFilters;
       
       render(<AdvancedSearchForm onSearch={mockOnSearch} />);
       
@@ -422,7 +431,7 @@ describe('AdvancedSearchForm with Persistent Filters', () => {
         query: 'test',
         savedAt,
         version: 1,
-      } as any;
+      } as SavedSearchFilters;
       
       render(<AdvancedSearchForm onSearch={mockOnSearch} />);
       

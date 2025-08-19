@@ -176,7 +176,8 @@ describe('NetworkDiagram - Basic Rendering', () => {
     const props = createDefaultProps({ nodes: [], edges: [] });
     render(<NetworkDiagram {...props} />);
     
-    expect(screen.getByText(/no data/i)).toBeInTheDocument();
+    expect(screen.getByText(/no network data available/i)).toBeInTheDocument();
+    expect(screen.getByText(/add nodes and edges to display the network diagram/i)).toBeInTheDocument();
   });
 });
 
