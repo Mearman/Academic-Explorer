@@ -463,7 +463,7 @@ describe('AnnotationPanel', () => {
         
         expect(annotationItem).toHaveStyle({
           border: '2px solid rgb(59, 130, 246)',
-        } as ReturnType<typeof useCollaborationStore>);
+        });
       }
     });
   });
@@ -572,7 +572,7 @@ describe('AnnotationPanel', () => {
       await waitFor(() => {
         expect(mockDeleteAnnotation).toHaveBeenCalledWith('annotation-1');
         expect(onAnnotationDelete).toHaveBeenCalledWith('annotation-1');
-      } as ReturnType<typeof useCollaborationStore>);
+      });
     });
 
     it('should handle deletion errors', async () => {
@@ -595,7 +595,7 @@ describe('AnnotationPanel', () => {
       
       await waitFor(() => {
         expect(consoleSpy).toHaveBeenCalledWith('Failed to delete annotation:', expect.any(Error));
-      } as ReturnType<typeof useCollaborationStore>);
+      });
       
       consoleSpy.mockRestore();
     });

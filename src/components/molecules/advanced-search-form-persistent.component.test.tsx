@@ -9,7 +9,7 @@ import React from 'react';
 import { describe, it, expect, vi, beforeEach, afterEach, type MockedFunction } from 'vitest';
 
 import type { AdvancedSearchFormData } from '@/hooks/use-advanced-search-form';
-import type { SavedSearchFilters } from '@/hooks/use-persistent-search-filters';
+import type { StoredSearchFilters } from '@/hooks/use-persistent-search-filters';
 
 import { AdvancedSearchForm } from './advanced-search-form';
 
@@ -22,7 +22,7 @@ const mockClearError = vi.fn();
 const mockUsePersistentSearchFilters = vi.hoisted(() => ({
   isLoading: false,
   isInitialized: true,
-  savedFilters: null as SavedSearchFilters | null,
+  savedFilters: null as StoredSearchFilters | null,
   error: null as string | null,
   saveFilters: mockSaveFilters,
   loadFilters: mockLoadFilters,
@@ -76,7 +76,7 @@ vi.mock('./advanced-search', () => ({
   BasicSearchSection: ({ formData, updateField, isCollapsed, setIsCollapsed }: MockSectionProps) => (
     <div data-testid="basic-search-section">
       <button 
-        onClick={() => setIsCollapsed(!isCollapsed)}
+        onClick={() => setIsCollapsed?.(!isCollapsed)}
         data-testid="toggle-advanced"
       >
         {isCollapsed ? 'Show Advanced' : 'Hide Advanced'}
@@ -392,7 +392,7 @@ describe('AdvancedSearchForm with Persistent Filters', () => {
       mockUsePersistentSearchFilters.savedFilters = {
         invalidField: 'corrupt data',
         // Missing required fields
-      } as SavedSearchFilters;
+      } as unknown as StoredSearchFilters;
       
       render(<AdvancedSearchForm onSearch={mockOnSearch} />);
       
@@ -408,7 +408,7 @@ describe('AdvancedSearchForm with Persistent Filters', () => {
         query: 'test',
         savedAt: Date.now(),
         version: 1,
-      } as SavedSearchFilters;
+      } as StoredSearchFilters;
       
       render(<AdvancedSearchForm onSearch={mockOnSearch} />);
       
@@ -431,7 +431,7 @@ describe('AdvancedSearchForm with Persistent Filters', () => {
         query: 'test',
         savedAt,
         version: 1,
-      } as SavedSearchFilters;
+      } as StoredSearchFilters;
       
       render(<AdvancedSearchForm onSearch={mockOnSearch} />);
       

@@ -8,6 +8,7 @@ import userEvent from '@testing-library/user-event';
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 
 import { useCollaborationStore } from '@/stores/collaboration-store';
+import { EntityType } from '@/lib/openalex/utils/entity-detection';
 import type { 
   Annotation, 
   CollaborationUser, 
@@ -62,7 +63,7 @@ const mockTarget: AnnotationTarget = {
   id: 'A123456789',
   url: '/authors/A123456789',
   title: 'Test Author',
-  context: { entityType: 'author' },
+  context: { entityType: EntityType.AUTHOR },
 };
 
 // Mock annotations
@@ -75,7 +76,7 @@ const mockAnnotations = new Map<string, Annotation>([
       id: 'A123456789',
       url: '/authors/A123456789',
       title: 'Test Author',
-      context: { entityType: 'author' },
+      context: { entityType: EntityType.AUTHOR },
     },
     content: 'This is a test note annotation',
     author: {
@@ -101,7 +102,7 @@ const mockAnnotations = new Map<string, Annotation>([
       id: 'A123456789',
       url: '/authors/A123456789',
       title: 'Test Author',
-      context: { entityType: 'author' },
+      context: { entityType: EntityType.AUTHOR },
     },
     content: 'Highlighted content',
     author: {
@@ -127,7 +128,7 @@ const mockAnnotations = new Map<string, Annotation>([
       id: 'W987654321',
       url: '/works/W987654321',
       title: 'Different Work',
-      context: { entityType: 'work' },
+      context: { entityType: EntityType.WORK },
     },
     content: 'Question about methodology',
     author: {

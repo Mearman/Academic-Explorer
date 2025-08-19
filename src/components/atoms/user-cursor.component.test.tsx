@@ -22,7 +22,7 @@ interface MockMotionDivProps extends React.HTMLAttributes<HTMLDivElement> {
 
 vi.mock('framer-motion', () => ({
   motion: {
-    div: React.forwardRef<HTMLDivElement, MockMotionDivProps>(({ children, style, _initial, _animate, _transition, ...props }, ref) => (
+    div: React.forwardRef<HTMLDivElement, MockMotionDivProps>(({ children, style, ...props }, ref) => (
       <div ref={ref} style={style} {...props}>
         {children}
       </div>
