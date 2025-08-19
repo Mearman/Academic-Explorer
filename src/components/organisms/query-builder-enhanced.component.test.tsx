@@ -3,11 +3,9 @@
  * Tests query validation, visual indicators, and real-time feedback
  */
 
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-
-import type { WorksParams } from '@/lib/openalex/types';
 
 import { QueryBuilder } from './query-builder';
 
@@ -75,7 +73,6 @@ const mockQueryValidation = {
 
 // Mock query validation utilities - replacing non-existent module
 const mockValidateQuery = vi.fn(() => mockQueryValidation);
-const mockGetQueryComplexity = vi.fn(() => 'simple');
 const mockGetEstimatedResultCount = vi.fn(() => 1500);
 const mockParseQueryFields = vi.fn(() => [] as { field: string; coverage: number }[]);
 
@@ -203,7 +200,6 @@ describe('Enhanced QueryBuilder Component', () => {
   describe('Interactive Query Building', () => {
     it('should provide clickable field suggestions', async () => {
       const user = userEvent.setup();
-
       render(
         <QueryBuilder
           onParamsChange={mockOnParamsChange}
@@ -226,7 +222,6 @@ describe('Enhanced QueryBuilder Component', () => {
 
     it('should show operator suggestions based on context', async () => {
       const user = userEvent.setup();
-
       render(
         <QueryBuilder
           onParamsChange={mockOnParamsChange}
@@ -248,7 +243,6 @@ describe('Enhanced QueryBuilder Component', () => {
 
     it('should provide query template shortcuts', async () => {
       const user = userEvent.setup();
-
       render(
         <QueryBuilder
           onParamsChange={mockOnParamsChange}
@@ -275,7 +269,6 @@ describe('Enhanced QueryBuilder Component', () => {
 
     it('should show query history with quick apply', async () => {
       const user = userEvent.setup();
-
       render(
         <QueryBuilder
           onParamsChange={mockOnParamsChange}
@@ -336,7 +329,6 @@ describe('Enhanced QueryBuilder Component', () => {
 
     it('should provide query diff visualization for modifications', async () => {
       const user = userEvent.setup();
-
       const initialData = {
         query: 'machine learning',
       };
@@ -422,6 +414,7 @@ describe('Enhanced QueryBuilder Component', () => {
     });
 
     it('should provide haptic feedback for query actions on mobile', async () => {
+      const user = userEvent.setup();
       // Mock mobile environment with haptic support
       const mockNavigator = {
         ...navigator,
@@ -431,8 +424,6 @@ describe('Enhanced QueryBuilder Component', () => {
         value: mockNavigator,
         writable: true,
       });
-
-      const user = userEvent.setup();
 
       render(
         <QueryBuilder
@@ -454,7 +445,6 @@ describe('Enhanced QueryBuilder Component', () => {
   describe('Accessibility and Usability', () => {
     it('should provide screen reader announcements for query changes', async () => {
       const user = userEvent.setup();
-
       render(
         <QueryBuilder
           onParamsChange={mockOnParamsChange}
@@ -478,7 +468,6 @@ describe('Enhanced QueryBuilder Component', () => {
 
     it('should support keyboard navigation for all query building features', async () => {
       const user = userEvent.setup();
-
       render(
         <QueryBuilder
           onParamsChange={mockOnParamsChange}
@@ -584,8 +573,8 @@ describe('Enhanced QueryBuilder Component', () => {
     });
 
     it('should monitor query validation performance', async () => {
-      const performanceSpy = vi.spyOn(performance, 'mark');
       const user = userEvent.setup();
+      const performanceSpy = vi.spyOn(performance, 'mark');
 
       render(
         <QueryBuilder

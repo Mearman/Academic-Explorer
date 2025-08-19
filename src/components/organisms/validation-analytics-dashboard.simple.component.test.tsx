@@ -5,10 +5,10 @@
 
 import { MantineProvider } from '@mantine/core';
 import { render, screen } from '@testing-library/react';
-import { describe, test, expect, vi } from 'vitest';
+import { describe, test, expect } from 'vitest';
 
 import { EntityType } from '@/lib/openalex/utils/entity-detection';
-import { ValidationIssueType, ValidationSeverity } from '@/types/entity-validation';
+import { ValidationIssueType } from '@/types/entity-validation';
 
 // Create a simple test to verify the components can be imported and compiled
 describe('ValidationAnalyticsDashboard - TypeScript Compilation', () => {

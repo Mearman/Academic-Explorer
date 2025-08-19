@@ -19,29 +19,21 @@ import {
   Center,
   Alert,
   NumberFormatter,
-  Progress,
-  Tooltip,
   ActionIcon,
   MultiSelect,
   Switch,
   Divider,
-  Paper,
   ThemeIcon,
 } from '@mantine/core';
 import { DatePickerInput, type DatesRangeValue } from '@mantine/dates';
 import {
   IconChartLine,
-  IconChartPie,
   IconChartBar,
   IconDownload,
   IconRefresh,
   IconAlertTriangle,
   IconCheck,
   IconX,
-  IconInfoCircle as IconInfo,
-  IconTrendingUp,
-  IconTrendingDown,
-  IconMinus,
   IconFilter,
   IconClearAll,
 } from '@tabler/icons-react';
@@ -51,9 +43,7 @@ import { LineChart, Line, BarChart, Bar, PieChart, Pie, Cell, XAxis, YAxis, Cart
 import { EntityType } from '@/lib/openalex/utils/entity-detection';
 import { useEntityValidationStore } from '@/stores/entity-validation-store';
 import type {
-  ValidationStatistics,
   ValidationExportConfig,
-  ValidationFilter,
 } from '@/types/entity-validation';
 import {
   ValidationIssueType,
@@ -67,8 +57,6 @@ export function ValidationAnalyticsDashboard() {
   const {
     getValidationStatistics,
     getValidationSummary,
-    updateFilter,
-    resetFilter,
   } = useEntityValidationStore();
 
   const [isRefreshing, setIsRefreshing] = useState(false);
@@ -660,7 +648,7 @@ export function ExportValidationReport() {
 
       await exportValidationData(config);
       setExportMessage({ type: 'success', text: 'Export completed successfully' });
-    } catch (error) {
+    } catch {
       setExportMessage({ 
         type: 'error', 
         text: 'Export failed. Please try again.' 

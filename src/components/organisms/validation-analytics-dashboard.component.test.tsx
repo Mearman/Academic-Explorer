@@ -6,7 +6,7 @@
  */
 
 import { MantineProvider } from '@mantine/core';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, test, expect, beforeEach, vi } from 'vitest';
 
@@ -22,9 +22,6 @@ function renderWithProviders(component: React.ReactElement) {
 import { EntityType } from '@/lib/openalex/utils/entity-detection';
 import type {
   ValidationStatistics,
-  ValidationLogEntry,
-  BatchValidationResult,
-  EntityValidationResult,
 } from '@/types/entity-validation';
 import {
   ValidationIssueType,
