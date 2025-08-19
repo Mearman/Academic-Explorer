@@ -459,6 +459,11 @@ function EnhancedErrorFallback({
 /**
  * Enhanced error boundary with intelligent recovery
  */
+/**
+ * Export ErrorBoundary for backward compatibility
+ */
+export { ErrorBoundary } from 'react-error-boundary';
+
 export function EnhancedErrorBoundary({
   children,
   entityType,
