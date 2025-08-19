@@ -1,7 +1,9 @@
 import { Box, Text, Group, Stack } from '@mantine/core';
 import { useState } from 'react';
 
-import { AccessibleLoadingState, useAccessibleLoading } from './accessible-loading-state';
+import { useAccessibleLoading } from '@/hooks/use-accessible-loading';
+
+import { AccessibleLoadingState } from './accessible-loading-state';
 import { EnhancedSkeletonGroup, ProgressAwareSkeleton } from './enhanced-loading-skeleton';
 import { FocusManagement } from './focus-management';
 import { MobileResponsiveWrapper, TouchOptimizedButton, useResponsiveBreakpoint } from './mobile-responsive-wrapper';

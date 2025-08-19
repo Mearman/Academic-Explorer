@@ -35,4 +35,3 @@ export function BuildInfo({ className = '', showFullInfo = false }: BuildInfoPro
   );
 }
 
-export default BuildInfo;

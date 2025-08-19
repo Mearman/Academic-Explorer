@@ -61,7 +61,7 @@ interface ToastNotification {
  */
 function useRippleEffect(
   enabled: boolean,
-  color: string = 'rgba(255, 255, 255, 0.3)',
+  _color: string = 'rgba(255, 255, 255, 0.3)',
   duration: number = 600
 ) {
   const [ripples, setRipples] = useState<RippleEffect[]>([]);

@@ -24,6 +24,7 @@ export interface MobileResponsiveWrapperProps {
   
   // Viewport adaptation
   adaptToOrientation?: boolean;
+  _adaptToOrientation?: boolean;
   adaptToSafeArea?: boolean;
   adaptToNotch?: boolean;
   
@@ -169,7 +170,7 @@ function useTouchGestures(
         const deltaY = touch.clientY - touchStartRef.current.y;
         const deltaTime = Date.now() - touchStartRef.current.time;
         const distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
-        const velocity = distance / deltaTime;
+        const _velocity = distance / deltaTime;
 
         // Simple tap detection
         if (distance < 10 && deltaTime < 300) {
@@ -239,7 +240,7 @@ export const MobileResponsiveWrapper = ({
   touchFeedback = true,
   enableGPUAcceleration = true,
   reducedMotionFallback = true,
-  adaptToOrientation = true,
+  _adaptToOrientation = true,
   adaptToSafeArea = true,
   adaptToNotch = true,
   onBreakpointChange,

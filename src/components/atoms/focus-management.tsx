@@ -40,27 +40,10 @@ interface FocusableElement extends HTMLElement {
 }
 
 /**
- * Hook to manage focus within a container
+ * Get all focusable elements within a container
  */
-function useFocusManagement({
-  trapFocus = false,
-  restoreFocus = false,
-  autoFocus = false,
-  onFocusEnter,
-  onFocusLeave,
-}: {
-  trapFocus?: boolean;
-  restoreFocus?: boolean;
-  autoFocus?: boolean;
-  onFocusEnter?: (element: HTMLElement) => void;
-  onFocusLeave?: (element: HTMLElement) => void;
-}) {
-  const containerRef = useRef<HTMLDivElement>(null);
-  const previouslyFocusedElement = useRef<HTMLElement | null>(null);
-  const [currentFocusIndex, setCurrentFocusIndex] = useState(-1);
-
-  // Get all focusable elements within the container
-  const getFocusableElements = useCallback((): FocusableElement[] => {
+function useFocusableElements(containerRef: React.RefObject<HTMLDivElement | null>) {
+  return useCallback((): FocusableElement[] => {
     if (!containerRef.current) return [];
 
     const selectors = [
@@ -96,9 +79,18 @@ function useFocusManagement({
         !element.hasAttribute('inert')
       );
     });
-  }, []);
+  }, [containerRef]);
+}
 
-  // Focus the first focusable element
+/**
+ * Focus navigation functions
+ */
+function useFocusNavigation(
+  getFocusableElements: () => FocusableElement[],
+  currentFocusIndex: number,
+  setCurrentFocusIndex: (index: number) => void,
+  onFocusEnter?: (element: HTMLElement) => void
+) {
   const focusFirst = useCallback(() => {
     const focusableElements = getFocusableElements();
     if (focusableElements.length > 0) {
@@ -106,9 +98,8 @@ function useFocusManagement({
       setCurrentFocusIndex(0);
       onFocusEnter?.(focusableElements[0]);
     }
-  }, [getFocusableElements, onFocusEnter]);
+  }, [getFocusableElements, setCurrentFocusIndex, onFocusEnter]);
 
-  // Focus the last focusable element
   const focusLast = useCallback(() => {
     const focusableElements = getFocusableElements();
     if (focusableElements.length > 0) {
@@ -117,9 +108,8 @@ function useFocusManagement({
       setCurrentFocusIndex(lastIndex);
       onFocusEnter?.(focusableElements[lastIndex]);
     }
-  }, [getFocusableElements, onFocusEnter]);
+  }, [getFocusableElements, setCurrentFocusIndex, onFocusEnter]);
 
-  // Move focus to next element
   const focusNext = useCallback(() => {
     const focusableElements = getFocusableElements();
     if (focusableElements.length === 0) return;
@@ -128,9 +118,8 @@ function useFocusManagement({
     focusableElements[nextIndex].focus();
     setCurrentFocusIndex(nextIndex);
     onFocusEnter?.(focusableElements[nextIndex]);
-  }, [currentFocusIndex, getFocusableElements, onFocusEnter]);
+  }, [currentFocusIndex, getFocusableElements, setCurrentFocusIndex, onFocusEnter]);
 
-  // Move focus to previous element
   const focusPrevious = useCallback(() => {
     const focusableElements = getFocusableElements();
     if (focusableElements.length === 0) return;
@@ -141,10 +130,20 @@ function useFocusManagement({
     focusableElements[prevIndex].focus();
     setCurrentFocusIndex(prevIndex);
     onFocusEnter?.(focusableElements[prevIndex]);
-  }, [currentFocusIndex, getFocusableElements, onFocusEnter]);
+  }, [currentFocusIndex, getFocusableElements, setCurrentFocusIndex, onFocusEnter]);
 
-  // Handle Tab key press for focus trapping
-  const handleTabKey = useCallback((event: KeyboardEvent) => {
+  return { focusFirst, focusLast, focusNext, focusPrevious };
+}
+
+/**
+ * Focus trap functionality for Tab key handling
+ */
+function useFocusTrap(
+  trapFocus: boolean,
+  getFocusableElements: () => FocusableElement[],
+  setCurrentFocusIndex: (index: number) => void
+) {
+  return useCallback((event: KeyboardEvent) => {
     if (!trapFocus) return;
 
     const focusableElements = getFocusableElements();
@@ -168,9 +167,20 @@ function useFocusManagement({
         setCurrentFocusIndex(0);
       }
     }
-  }, [trapFocus, getFocusableElements]);
+  }, [trapFocus, getFocusableElements, setCurrentFocusIndex]);
+}
 
-  // Set up focus management
+/**
+ * Focus restoration effect
+ */
+function useFocusRestoration(
+  restoreFocus: boolean,
+  autoFocus: boolean,
+  containerRef: React.RefObject<HTMLDivElement | null>,
+  focusFirst: () => void
+) {
+  const previouslyFocusedElement = useRef<HTMLElement | null>(null);
+
   useEffect(() => {
     if (!containerRef.current) return;
 
@@ -190,14 +200,42 @@ function useFocusManagement({
         previouslyFocusedElement.current.focus();
       }
     };
-  }, [restoreFocus, autoFocus, focusFirst]);
+  }, [restoreFocus, autoFocus, containerRef, focusFirst]);
+}
+
+/**
+ * Hook to manage focus within a container
+ */
+function useFocusManagement({
+  trapFocus = false,
+  restoreFocus = false,
+  autoFocus = false,
+  onFocusEnter,
+  _onFocusLeave,
+}: {
+  trapFocus?: boolean;
+  restoreFocus?: boolean;
+  autoFocus?: boolean;
+  onFocusEnter?: (element: HTMLElement) => void;
+  _onFocusLeave?: (element: HTMLElement) => void;
+}) {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [currentFocusIndex, setCurrentFocusIndex] = useState(-1);
+
+  const getFocusableElements = useFocusableElements(containerRef);
+  const navigation = useFocusNavigation(
+    getFocusableElements,
+    currentFocusIndex,
+    setCurrentFocusIndex,
+    onFocusEnter
+  );
+  const handleTabKey = useFocusTrap(trapFocus, getFocusableElements, setCurrentFocusIndex);
+
+  useFocusRestoration(restoreFocus, autoFocus, containerRef, navigation.focusFirst);
 
   return {
     containerRef,
-    focusFirst,
-    focusLast,
-    focusNext,
-    focusPrevious,
+    ...navigation,
     handleTabKey,
     currentFocusIndex,
     getFocusableElements,
@@ -519,7 +557,7 @@ export const FocusManagement = ({
         setAnnounceText(`Focused: ${label}`);
       }
     },
-    onFocusLeave: (element) => {
+    _onFocusLeave: (element) => {
       setFocusedElement(null);
       onFocusLeave?.(element);
     },
