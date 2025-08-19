@@ -4,6 +4,47 @@ import { forwardRef } from 'react';
 
 import { BadgeProps } from '../types';
 
+// Mapping configuration objects to reduce complexity
+const VARIANT_MAP = {
+  default: 'filled',
+  secondary: 'light',
+} as const;
+
+const SIZE_MAP = {
+  xs: 'xs',
+  sm: 'sm', 
+  md: 'md',
+  lg: 'lg',
+  xl: 'xl',
+} as const;
+
+// Helper function to map variants
+const getMantineVariant = (variant: string) => {
+  return VARIANT_MAP[variant as keyof typeof VARIANT_MAP] || variant;
+};
+
+// Helper function to map sizes
+const getMantineSize = (size: string) => {
+  return SIZE_MAP[size as keyof typeof SIZE_MAP] || 'md';
+};
+
+// Helper component for remove button
+const RemoveButton = ({ onRemove }: { onRemove: () => void }) => (
+  <ActionIcon
+    size="xs"
+    variant="transparent"
+    color="inherit"
+    aria-label="Remove"
+    style={{ marginLeft: 4 }}
+    onClick={(e) => {
+      e.stopPropagation();
+      onRemove();
+    }}
+  >
+    <IconX size={12} />
+  </ActionIcon>
+);
+
 // Simple wrapper around Mantine Badge that maps our props to Mantine props
 export const Badge = forwardRef<HTMLDivElement, BadgeProps>(
   function Badge({ 
@@ -17,17 +58,8 @@ export const Badge = forwardRef<HTMLDivElement, BadgeProps>(
     'data-testid': testId,
     ...props 
   }, ref) {
-    // Map our variants to Mantine variants
-    const mantineVariant = variant === 'default' ? 'filled' : 
-                          variant === 'secondary' ? 'light' : 
-                          variant;
-    
-    // Map our sizes to Mantine sizes  
-    const mantineSize = size === 'xs' ? 'xs' :
-                       size === 'sm' ? 'sm' :
-                       size === 'md' ? 'md' :
-                       size === 'lg' ? 'lg' :
-                       size === 'xl' ? 'xl' : 'md';
+    const mantineVariant = getMantineVariant(variant);
+    const mantineSize = getMantineSize(size);
 
     return (
       <MantineBadge
@@ -40,21 +72,7 @@ export const Badge = forwardRef<HTMLDivElement, BadgeProps>(
         {...props}
       >
         {children}
-        {removable && onRemove && (
-          <ActionIcon
-            size="xs"
-            variant="transparent"
-            color="inherit"
-            aria-label="Remove"
-            style={{ marginLeft: 4 }}
-            onClick={(e) => {
-              e.stopPropagation();
-              onRemove();
-            }}
-          >
-            <IconX size={12} />
-          </ActionIcon>
-        )}
+        {removable && onRemove && <RemoveButton onRemove={onRemove} />}
       </MantineBadge>
     );
   }

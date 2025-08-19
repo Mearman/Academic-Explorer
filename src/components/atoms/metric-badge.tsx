@@ -3,23 +3,25 @@ import { forwardRef } from 'react';
 
 import type { SizeVariant } from '../types';
 
+// Format handlers for different metric types
+const FORMAT_HANDLERS = {
+  percentage: (value: number) => `${value}%`,
+  currency: (value: number) => `$${value.toLocaleString()}`,
+  compact: (value: number) => {
+    if (value >= 1e9) return `${(value / 1e9).toFixed(1)}B`;
+    if (value >= 1e6) return `${(value / 1e6).toFixed(1)}M`;
+    if (value >= 1e3) return `${(value / 1e3).toFixed(1)}K`;
+    return value.toString();
+  },
+  number: (value: number) => value.toLocaleString(),
+} as const;
+
 // Simple metric value formatter
 function formatMetricValue(value: number | string, format: 'number' | 'percentage' | 'currency' | 'compact'): string {
   if (typeof value === 'string') return value;
   
-  switch (format) {
-    case 'percentage':
-      return `${value}%`;
-    case 'currency':
-      return `$${value.toLocaleString()}`;
-    case 'compact':
-      if (value >= 1e9) return `${(value / 1e9).toFixed(1)}B`;
-      if (value >= 1e6) return `${(value / 1e6).toFixed(1)}M`;
-      if (value >= 1e3) return `${(value / 1e3).toFixed(1)}K`;
-      return value.toString();
-    default:
-      return value.toLocaleString();
-  }
+  const handler = FORMAT_HANDLERS[format];
+  return handler ? handler(value) : value.toLocaleString();
 }
 
 export interface MetricBadgeProps {
@@ -51,11 +53,57 @@ const TREND_SYMBOLS = {
   neutral: '→',
 } as const;
 
+/**
+ * Render badge content with optional icon and trend
+ */
+function renderBadgeContent(
+  icon: React.ReactNode,
+  formattedValue: string,
+  trendSymbol: string | null
+): React.ReactNode {
+  return (
+    <>
+      {icon && icon}
+      {formattedValue}
+      {trendSymbol && ` ${trendSymbol}`}
+    </>
+  );
+}
+
+/**
+ * Render label if conditions are met
+ */
+function renderLabel(label: string | undefined, compact: boolean): React.ReactNode {
+  if (!label || compact) return null;
+  
+  return (
+    <span style={{ fontSize: '0.875rem', color: 'var(--mantine-color-dimmed)' }}>
+      {label}
+    </span>
+  );
+}
+
 export const MetricBadge = forwardRef<HTMLDivElement, MetricBadgeProps>(
-  ({ value, label, format = 'number', trend, variant = 'default', size = 'md', icon, className, compact = false, inline = true, 'data-testid': testId, ...props }, ref) => {
+  ({ 
+    value, 
+    label, 
+    format = 'number', 
+    trend, 
+    variant = 'default', 
+    size = 'md', 
+    icon, 
+    className, 
+    compact = false, 
+    inline = true, 
+    'data-testid': testId, 
+    ...props 
+  }, ref) => {
     const formattedValue = formatMetricValue(value, format);
     const color = VARIANT_COLORS[variant];
     const trendSymbol = trend ? TREND_SYMBOLS[trend] : null;
+    
+    const badgeContent = renderBadgeContent(icon, formattedValue, trendSymbol);
+    const labelElement = renderLabel(label, compact);
 
     return (
       <Group gap="xs" style={{ display: inline ? 'inline-flex' : 'flex' }} {...props}>
@@ -67,15 +115,9 @@ export const MetricBadge = forwardRef<HTMLDivElement, MetricBadgeProps>(
           className={className}
           data-testid={testId}
         >
-          {icon && icon}
-          {formattedValue}
-          {trendSymbol && ` ${trendSymbol}`}
+          {badgeContent}
         </Badge>
-        {label && !compact && (
-          <span style={{ fontSize: '0.875rem', color: 'var(--mantine-color-dimmed)' }}>
-            {label}
-          </span>
-        )}
+        {labelElement}
       </Group>
     );
   }

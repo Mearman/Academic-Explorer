@@ -51,6 +51,48 @@ const PRESET_DIMENSIONS = {
   card: { height: '8rem', width: '100%' },
 } as const;
 
+/**
+ * Apply preset dimensions to width and height
+ */
+function applyPresetDimensions(
+  width: string | undefined,
+  height: string | SizeVariant,
+  preset: LoadingSkeletonProps['preset']
+): { width: string | undefined; height: string | SizeVariant } {
+  if (!preset || !PRESET_DIMENSIONS[preset]) {
+    return { width, height };
+  }
+  
+  const presetDims = PRESET_DIMENSIONS[preset];
+  return {
+    width: width || presetDims.width,
+    height: height || presetDims.height,
+  };
+}
+
+/**
+ * Map dimension value to CSS value using appropriate map
+ */
+function mapDimensionValue(value: string | undefined, map: Record<string, string>): string | undefined {
+  if (!value || typeof value !== 'string' || !(value in map)) {
+    return value;
+  }
+  return map[value as keyof typeof map];
+}
+
+/**
+ * Get border radius based on shape
+ */
+function getShapeRadius(shape: LoadingSkeletonProps['shape']): string {
+  switch (shape) {
+    case 'circle':
+    case 'pill':
+      return 'xl';
+    default:
+      return 'sm';
+  }
+}
+
 export const LoadingSkeleton = forwardRef<HTMLDivElement, LoadingSkeletonProps>(
   ({ 
     width,
@@ -63,32 +105,19 @@ export const LoadingSkeleton = forwardRef<HTMLDivElement, LoadingSkeletonProps>(
     'data-testid': testId,
     ...props 
   }, ref) => {
-    let finalWidth = width;
-    let finalHeight = height;
-    
     // Apply preset dimensions if preset is specified
-    if (preset && PRESET_DIMENSIONS[preset]) {
-      const presetDims = PRESET_DIMENSIONS[preset];
-      finalWidth = finalWidth || presetDims.width;
-      finalHeight = finalHeight || presetDims.height;
-    }
+    const { width: finalWidth, height: finalHeight } = applyPresetDimensions(width, height, preset);
     
-    // Map our width values to CSS values
-    if (finalWidth && typeof finalWidth === 'string' && finalWidth in WIDTH_MAP) {
-      finalWidth = WIDTH_MAP[finalWidth as keyof typeof WIDTH_MAP];
-    }
-    
-    // Map our height values to CSS values
-    if (finalHeight && typeof finalHeight === 'string' && finalHeight in HEIGHT_MAP) {
-      finalHeight = HEIGHT_MAP[finalHeight as keyof typeof HEIGHT_MAP];
-    }
+    // Map dimension values to CSS values
+    const mappedWidth = mapDimensionValue(finalWidth, WIDTH_MAP);
+    const mappedHeight = mapDimensionValue(finalHeight as string, HEIGHT_MAP);
 
     return (
       <Skeleton
         ref={ref}
-        width={finalWidth}
-        height={finalHeight}
-        radius={shape === 'circle' ? 'xl' : shape === 'pill' ? 'xl' : 'sm'}
+        width={mappedWidth}
+        height={mappedHeight}
+        radius={getShapeRadius(shape)}
         animate={animation !== 'none'}
         className={className}
         data-testid={testId}
