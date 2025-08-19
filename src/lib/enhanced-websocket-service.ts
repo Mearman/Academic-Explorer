@@ -269,6 +269,20 @@ export class EnhancedWebSocketService extends WebSocketService {
   }
 
   /**
+   * Handle network offline event
+   */
+  handleNetworkOffline(): void {
+    this.emit('network-offline');
+  }
+
+  /**
+   * Handle network online event  
+   */
+  handleNetworkOnline(): void {
+    this.emit('network-online');
+  }
+
+  /**
    * Clean shutdown with proper cleanup
    */
   disconnect(): void {
@@ -650,7 +664,7 @@ export function createNetworkAwareEnhancedWebSocketService(
     });
 
     window.addEventListener('offline', () => {
-      service.emit('network-offline');
+      service.handleNetworkOffline();
     });
   }
 

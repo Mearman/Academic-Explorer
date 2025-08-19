@@ -363,17 +363,31 @@ export const useEntityValidationStore = create<EntityValidationState>()(
           }
         }
         
+        // Calculate common issue types for reuse
+        const commonIssueTypes = Object.entries(issueTypeCounts)
+          .map(([type, count]) => ({
+            issueType: type as ValidationIssueType,
+            count,
+            percentage: allIssues.length > 0 ? (count / allIssues.length) * 100 : 0,
+          }))
+          .sort((a, b) => b.count - a.count);
+
+        // Calculate derived metrics
+        const entitiesWithoutIssues = allResults.filter(r => r.issues.length === 0).length;
+        const averageIssuesPerEntity = allResults.length > 0 ? allIssues.length / allResults.length : 0;
+        const validationSuccessRate = allResults.length > 0 ? (entitiesWithoutIssues / allResults.length) * 100 : 0;
+        const mostCommonIssueType = commonIssueTypes.length > 0 
+          ? commonIssueTypes[0].issueType 
+          : ValidationIssueType.MISSING_FIELD; // Default fallback
+
         const statistics: ValidationStatistics = {
           totalValidationRuns: state.validationLogs.length,
           totalEntitiesValidated: allResults.length,
           totalIssuesFound: allIssues.length,
-          commonIssueTypes: Object.entries(issueTypeCounts)
-            .map(([type, count]) => ({
-              issueType: type as ValidationIssueType,
-              count,
-              percentage: allIssues.length > 0 ? (count / allIssues.length) * 100 : 0,
-            }))
-            .sort((a, b) => b.count - a.count),
+          averageIssuesPerEntity,
+          validationSuccessRate,
+          mostCommonIssueType,
+          commonIssueTypes,
           problematicEntityTypes: Object.entries(entityTypeIssueCounts)
             .map(([type, counts]) => ({
               entityType: type as EntityType,

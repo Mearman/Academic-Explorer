@@ -10,7 +10,7 @@
 
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { enhancedCacheInterceptor, type CacheAnalytics } from '@/lib/openalex/utils/enhanced-cache-interceptor';
-import { intelligentCacheWarmingService } from '@/lib/openalex/utils/intelligent-cache-warming';
+import { intelligentCacheWarmingService, type WarmingResult } from '@/lib/openalex/utils/intelligent-cache-warming';
 
 export interface CacheControlsOptions {
   enableAutoWarming?: boolean;
@@ -34,7 +34,7 @@ export interface CacheControls {
   };
   actions: {
     clearCache: () => Promise<void>;
-    warmCache: (strategy: 'frequency' | 'dependencies' | 'predictive') => Promise<void>;
+    warmCache: (strategy: 'frequency' | 'dependencies' | 'predictive') => Promise<WarmingResult>;
     startWarming: () => void;
     stopWarming: () => void;
     handleMemoryPressure: () => Promise<void>;
