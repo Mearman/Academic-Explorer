@@ -508,16 +508,19 @@ export function EnhancedErrorBoundary({
     }
   }, [networkStatus.isOnline, retryAttempts, isRetrying, enableNetworkRecovery, maxRetryAttempts, autoRetryDelay]);
 
-  const attemptRecovery = useCallback(async (strategy: RecoveryStrategy) => {
+  const attemptRecovery = useCallback(async (strategy?: RecoveryStrategy) => {
     if (isRetrying || retryAttempts.length >= maxRetryAttempts) {
       return;
     }
+
+    // Use suggested strategy from classified error if none provided
+    const recoveryStrategy = strategy || classifiedErrorRef.current?.suggestedStrategy || 'retry';
 
     setIsRetrying(true);
     const timestamp = Date.now();
 
     try {
-      switch (strategy) {
+      switch (recoveryStrategy) {
         case 'retry':
           // Simple retry - let the error boundary reset
           await new Promise(resolve => setTimeout(resolve, 500));
@@ -538,7 +541,7 @@ export function EnhancedErrorBoundary({
 
       // Record successful attempt
       const attempt: RecoveryAttempt = {
-        strategy,
+        strategy: recoveryStrategy,
         timestamp,
         success: true,
       };
@@ -546,7 +549,7 @@ export function EnhancedErrorBoundary({
       setRetryAttempts(prev => [...prev, attempt]);
       
       if (onRecovery) {
-        onRecovery(strategy, true);
+        onRecovery(recoveryStrategy, true);
       }
 
       // Reset the error boundary
@@ -555,7 +558,7 @@ export function EnhancedErrorBoundary({
     } catch (recoveryError) {
       // Record failed attempt
       const attempt: RecoveryAttempt = {
-        strategy,
+        strategy: recoveryStrategy,
         timestamp,
         success: false,
         error: recoveryError instanceof Error ? recoveryError : new Error(String(recoveryError)),
@@ -564,7 +567,7 @@ export function EnhancedErrorBoundary({
       setRetryAttempts(prev => [...prev, attempt]);
       
       if (onRecovery) {
-        onRecovery(strategy, false);
+        onRecovery(recoveryStrategy, false);
       }
     } finally {
       setIsRetrying(false);

@@ -24,12 +24,12 @@ import {
   Tooltip,
   ActionIcon,
   MultiSelect,
-  DatePickerInput,
   Switch,
   Divider,
   Paper,
   ThemeIcon,
 } from '@mantine/core';
+import { DatePickerInput, type DatesRangeValue } from '@mantine/dates';
 import {
   IconChartLine,
   IconChartPie,
@@ -39,7 +39,7 @@ import {
   IconAlertTriangle,
   IconCheck,
   IconX,
-  IconInfo,
+  IconInfoCircle as IconInfo,
   IconTrendingUp,
   IconTrendingDown,
   IconMinus,
@@ -302,7 +302,8 @@ export function IssueTypeDistribution({
               cy="50%"
               outerRadius={80}
               dataKey="value"
-              label={({ name, percentage }) => `${name}: ${percentage.toFixed(1)}%`}
+              // Custom label rendering handled by tooltip instead
+              label={false}
             >
               {chartData.map((entry, index) => (
                 <Cell 
@@ -315,8 +316,8 @@ export function IssueTypeDistribution({
               ))}
             </Pie>
             <RechartsTooltip 
-              formatter={(value, name, props) => [
-                `${value} issues (${props.payload.percentage.toFixed(1)}%)`,
+              formatter={(value: number, name: string) => [
+                `${value} issues`,
                 name
               ]}
             />
@@ -427,14 +428,16 @@ export function ValidationTrendsChart({
   onMetricChange?: (metric: 'issuesFound' | 'entitiesValidated' | 'validationRuns') => void;
   onDateRangeChange?: (range: { start: string; end: string }) => void;
 }) {
-  const [dateRange, setDateRange] = useState<[Date | null, Date | null]>([null, null]);
+  const [dateRange, setDateRange] = useState<DatesRangeValue>([null, null]);
 
-  const handleDateRangeChange = useCallback((dates: [Date | null, Date | null]) => {
+  const handleDateRangeChange = useCallback((dates: DatesRangeValue) => {
     setDateRange(dates);
     if (dates[0] && dates[1] && onDateRangeChange) {
+      const startDate = typeof dates[0] === 'string' ? new Date(dates[0]) : dates[0];
+      const endDate = typeof dates[1] === 'string' ? new Date(dates[1]) : dates[1];
       onDateRangeChange({
-        start: dates[0].toISOString().split('T')[0],
-        end: dates[1].toISOString().split('T')[0],
+        start: startDate.toISOString().split('T')[0],
+        end: endDate.toISOString().split('T')[0],
       });
     }
   }, [onDateRangeChange]);
@@ -517,7 +520,7 @@ export function ValidationFilters() {
   const [entityTypes, setEntityTypes] = useState<string[]>([]);
   const [issueTypes, setIssueTypes] = useState<string[]>([]);
   const [severities, setSeverities] = useState<string[]>([]);
-  const [dateRange, setDateRange] = useState<[Date | null, Date | null]>([null, null]);
+  const [dateRange, setDateRange] = useState<DatesRangeValue>([null, null]);
 
   const handleEntityTypesChange = useCallback((values: string[]) => {
     setEntityTypes(values);
@@ -534,13 +537,15 @@ export function ValidationFilters() {
     updateFilter({ severities: values as ValidationSeverity[] });
   }, [updateFilter]);
 
-  const handleDateRangeChange = useCallback((dates: [Date | null, Date | null]) => {
+  const handleDateRangeChange = useCallback((dates: DatesRangeValue) => {
     setDateRange(dates);
     if (dates[0] && dates[1]) {
+      const startDate = typeof dates[0] === 'string' ? new Date(dates[0]) : dates[0];
+      const endDate = typeof dates[1] === 'string' ? new Date(dates[1]) : dates[1];
       updateFilter({
         dateRange: {
-          from: dates[0].toISOString(),
-          to: dates[1].toISOString(),
+          from: startDate.toISOString(),
+          to: endDate.toISOString(),
         },
       });
     }
@@ -780,7 +785,6 @@ export function ValidationPerformanceMetrics({
               <Alert
                 key={issue}
                 color="orange"
-                size="xs"
                 data-testid={`performance-warning-${issue}`}
               >
                 Performance issue detected: {issue}
