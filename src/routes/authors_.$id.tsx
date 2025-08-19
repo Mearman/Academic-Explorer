@@ -12,9 +12,12 @@ import { useEntityGraphStore } from '@/stores/entity-graph-store';
 function AuthorPage() {
   const { id } = Route.useParams();
   const loadingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
-  const { isHydrated } = useEntityGraphStore();
   
-  console.log('[AuthorPage] Rendering author page for ID:', id);
+  console.log('[AuthorPage] TESTING WITHOUT COMPLEX HOOKS - ID:', id);
+  
+  // Re-enabling useEntityGraphStore to test if this causes the 'logs' error
+  const { isHydrated } = useEntityGraphStore();
+  // const isHydrated = true; // Mock for now
   
   // Handle numeric ID redirection to proper prefixed format
   let isRedirecting = false;
@@ -25,13 +28,13 @@ function AuthorPage() {
     isRedirecting = false;
   }
   
-  // Entity graph tracking
+  // Re-enabling useEntityGraphTracking to test if this causes the 'logs' error
   const graphTracking = useEntityGraphTracking({
     autoTrack: true,
     extractRelationships: true,
   });
-  
-  const trackEntityData = graphTracking.trackEntityData;
+  const {trackEntityData} = graphTracking;
+  // const trackEntityData = null; // Mock for now
   
   // Use the author data hook directly with the ID (no complex processing)
   const authorIdToPass = id && !isRedirecting ? id : null;
@@ -75,15 +78,33 @@ function AuthorPage() {
     };
   }, [loading, id, isRedirecting, error, retry]);
   
+  // Re-enabling entity tracking useEffect to test if this causes the 'logs' error
   // Track entity data when author loads AND store is hydrated
   useEffect(() => {
-    if (author && id && !isRedirecting && isHydrated) {
-      console.log('[AuthorPage] Tracking author entity:', author.display_name);
-      trackEntityData(author, EntityType.AUTHOR, id).catch(error => {
-        console.error('[AuthorPage] Failed to track entity data:', error);
+    console.log('[AuthorPage] 🔍 Entity tracking status check:', {
+      hasAuthor: !!author,
+      authorName: author?.display_name,
+      hasId: !!id,
+      actualId: id,
+      isRedirecting,
+      isHydrated,
+      hasTrackEntityData: !!trackEntityData
+    });
+    
+    if (author && !isRedirecting && isHydrated && trackEntityData) {
+      console.log('[AuthorPage] ✅ All conditions met - calling trackEntityData');
+      trackEntityData(author, EntityType.AUTHOR, author.id).catch((trackingError: unknown) => {
+        console.error('[AuthorPage] Entity tracking failed:', trackingError);
+      });
+    } else {
+      console.log('[AuthorPage] ❌ Conditions not met for tracking:', {
+        hasAuthor: !!author,
+        notRedirecting: !isRedirecting,
+        storeHydrated: isHydrated,
+        hasTracker: !!trackEntityData
       });
     }
-  }, [author, id, isRedirecting, trackEntityData, isHydrated]);
+  }, [author, id, isRedirecting, isHydrated, trackEntityData]);
   
 
   // Show loading state for redirection
@@ -121,13 +142,15 @@ function AuthorPage() {
     );
   }
 
-  // Show author data
+  // Show author data with full functionality
   if (author) {
-    console.log('[AuthorPage] Rendering author data:', author.display_name);
+    console.log('[AuthorPage] Rendering full author page with data:', author.display_name);
+    
+    // Full author page with AuthorDisplay and EntityGraphVisualization
     return (
       <EntityErrorBoundary entityType="author" entityId={id}>
-        <AuthorDisplay 
-          entity={author} 
+        <AuthorDisplay
+          entity={author}
           useTwoPaneLayout={true}
           graphPane={<EntityGraphVisualization />}
         />
