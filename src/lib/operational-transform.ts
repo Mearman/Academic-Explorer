@@ -12,7 +12,7 @@ import type { Operation } from '@/types/collaboration';
 export function transformOperation(
   operation: Operation,
   otherOperation: Operation,
-  priority: 'left' | 'right' = 'left'
+  _priority: 'left' | 'right' = 'left'
 ): Operation {
   // If operations are from the same user, no transformation needed
   if (operation.userId === otherOperation.userId) {
@@ -22,13 +22,13 @@ export function transformOperation(
   // Transform based on operation types
   switch (operation.type) {
     case 'insert':
-      return transformInsert(operation, otherOperation, priority);
+      return transformInsert(operation, otherOperation, _priority);
     case 'delete':
-      return transformDelete(operation, otherOperation, priority);
+      return transformDelete(operation, otherOperation, _priority);
     case 'retain':
-      return transformRetain(operation, otherOperation, priority);
+      return transformRetain(operation, otherOperation, _priority);
     case 'format':
-      return transformFormat(operation, otherOperation, priority);
+      return transformFormat(operation, otherOperation, _priority);
     default:
       return operation;
   }
@@ -40,14 +40,14 @@ export function transformOperation(
 function transformInsert(
   insertOp: Operation,
   otherOp: Operation,
-  priority: 'left' | 'right'
+  _priority: 'left' | 'right'
 ): Operation {
   switch (otherOp.type) {
     case 'insert': {
       // Two inserts at the same position
       if (insertOp.position === otherOp.position) {
         // Use priority to determine order
-        if (priority === 'left') {
+        if (_priority === 'left') {
           // Keep original position
           return insertOp;
         } else {
@@ -114,7 +114,7 @@ function transformInsert(
 function transformDelete(
   deleteOp: Operation,
   otherOp: Operation,
-  priority: 'left' | 'right'
+  _priority: 'left' | 'right'
 ): Operation {
   const deleteStart = deleteOp.position;
   const deleteEnd = deleteStart + (deleteOp.length || 0);
@@ -216,7 +216,7 @@ function transformDelete(
 function transformRetain(
   retainOp: Operation,
   otherOp: Operation,
-  priority: 'left' | 'right'
+  _priority: 'left' | 'right'
 ): Operation {
   // Retain operations preserve their length regardless of other operations
   // They might need position adjustments based on inserts/deletes before them
@@ -271,10 +271,10 @@ function transformRetain(
 function transformFormat(
   formatOp: Operation,
   otherOp: Operation,
-  priority: 'left' | 'right'
+  _priority: 'left' | 'right'
 ): Operation {
   // Format operations are similar to retain operations in terms of positioning
-  return transformRetain(formatOp, otherOp, priority);
+  return transformRetain(formatOp, otherOp, _priority);
 }
 
 /**

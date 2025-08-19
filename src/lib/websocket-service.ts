@@ -3,7 +3,6 @@
  * Handles connection management, message queuing, and automatic reconnection
  */
 
-import { useNetworkStatus } from '@/hooks/use-network-status';
 import type { WebSocketMessage, WebSocketMessageType } from '@/types/collaboration';
 
 /**
@@ -65,7 +64,7 @@ export type ConnectionState = 'connecting' | 'connected' | 'disconnecting' | 'di
 /**
  * Event handler type
  */
-type EventHandler = (data?: any) => void;
+type EventHandler = (data?: unknown) => void;
 
 /**
  * Queued message with retry information
@@ -305,7 +304,7 @@ export class WebSocketService {
    * Add one-time event listener
    */
   once(event: string, handler: EventHandler): void {
-    const onceHandler = (data?: any) => {
+    const onceHandler = (data?: unknown) => {
       handler(data);
       this.off(event, onceHandler);
     };
@@ -459,14 +458,20 @@ export class WebSocketService {
    * Handle message acknowledgment
    */
   private handleAcknowledgment(message: WebSocketMessage): void {
-    const payload = message.payload as any;
-    const messageId = payload?.messageId;
+    // Type guard to check if payload has messageId property
+    const isAckPayload = (payload: unknown): payload is { messageId: string } => {
+      return typeof payload === 'object' && payload !== null && 'messageId' in payload;
+    };
     
-    if (messageId && this.pendingAcks.has(messageId)) {
-      const pending = this.pendingAcks.get(messageId)!;
-      clearTimeout(pending.timeout);
-      pending.resolve(true);
-      this.pendingAcks.delete(messageId);
+    if (isAckPayload(message.payload)) {
+      const messageId = message.payload.messageId;
+      
+      if (messageId && this.pendingAcks.has(messageId)) {
+        const pending = this.pendingAcks.get(messageId)!;
+        clearTimeout(pending.timeout);
+        pending.resolve(true);
+        this.pendingAcks.delete(messageId);
+      }
     }
   }
 
@@ -667,7 +672,7 @@ export class WebSocketService {
   /**
    * Emit event to handlers
    */
-  private emit(event: string, data?: any): void {
+  private emit(event: string, data?: unknown): void {
     const handlers = this.eventHandlers.get(event) || [];
     for (const handler of handlers) {
       try {
@@ -709,24 +714,13 @@ export function createWebSocketService(config: WebSocketConfig): WebSocketServic
 
 /**
  * Create a WebSocket service with network awareness
+ * Note: Network monitoring should be handled at the component level using React hooks
  */
 export function createNetworkAwareWebSocketService(config: WebSocketConfig): WebSocketService {
   const service = new WebSocketService(config);
   
-  // Monitor network status and handle accordingly
-  const networkStatus = useNetworkStatus();
-  
-  // Auto-disconnect on network loss
-  if (networkStatus.isOffline && service.isConnected()) {
-    service.disconnect();
-  }
-  
-  // Auto-reconnect on network recovery
-  if (networkStatus.isOnline && !service.isConnected() && config.autoReconnect) {
-    service.connect().catch(error => {
-      console.error('Failed to reconnect on network recovery:', error);
-    });
-  }
+  // Network status monitoring should be implemented at the component level
+  // using the useNetworkStatus hook to properly integrate with React lifecycle
   
   return service;
 }
