@@ -1,0 +1,1733 @@
+
+> academic-explorer@0.1.0 lint /Users/joe.mearman/Documents/Research/PhD/Academic Explorer
+> eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0
+
+
+/Users/joe.mearman/Documents/Research/PhD/Academic Explorer/playwright-loading-test.spec.ts
+   34:40  error  Arrow function has too many parameters (2). Maximum allowed is 1  max-params
+  412:59  error  Arrow function has too many parameters (2). Maximum allowed is 1  max-params
+
+/Users/joe.mearman/Documents/Research/PhD/Academic Explorer/scripts/generate-build-info.ts
+  72:9  error  Use object destructuring  prefer-destructuring
+
+/Users/joe.mearman/Documents/Research/PhD/Academic Explorer/scripts/merge-coverage.ts
+  19:32  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  20:25  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  21:29  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Users/joe.mearman/Documents/Research/PhD/Academic Explorer/src/components/atoms/accessible-loading-state.tsx
+  115:70  error    Arrow function has too many parameters (2). Maximum allowed is 1  max-params
+  144:48  error    Arrow function has too many parameters (2). Maximum allowed is 1  max-params
+  209:26  warning  Arrow function has too many lines (75). Maximum allowed is 50     max-lines-per-function
+  245:53  error    Arrow function has too many parameters (2). Maximum allowed is 1  max-params
+  275:53  error    Arrow function has too many parameters (2). Maximum allowed is 1  max-params
+  292:39  warning  Arrow function has too many lines (165). Maximum allowed is 50    max-lines-per-function
+  292:39  warning  Arrow function has a complexity of 23. Maximum allowed is 10      complexity
+
+/Users/joe.mearman/Documents/Research/PhD/Academic Explorer/src/components/atoms/autocomplete-input.tsx
+  36:11  error  Arrow function has too many parameters (2). Maximum allowed is 1  max-params
+
+/Users/joe.mearman/Documents/Research/PhD/Academic Explorer/src/components/atoms/badge.tsx
+  50:3  error  Function 'Badge' has too many parameters (2). Maximum allowed is 1  max-params
+
+/Users/joe.mearman/Documents/Research/PhD/Academic Explorer/src/components/atoms/basic-search-controls.tsx
+  5:16  error  Function has too many parameters (2). Maximum allowed is 1  max-params
+
+/Users/joe.mearman/Documents/Research/PhD/Academic Explorer/src/components/atoms/comparison-diff-indicator.component.test.tsx
+  16:37  warning  Arrow function has too many lines (297). Maximum allowed is 50  max-lines-per-function
+
+/Users/joe.mearman/Documents/Research/PhD/Academic Explorer/src/components/atoms/comparison-diff-indicator.tsx
+   74:1  error    Function 'formatValueByType' has too many parameters (3). Maximum allowed is 1  max-params
+  108:1  error    Function 'addSignPrefix' has too many parameters (2). Maximum allowed is 1      max-params
+  117:1  error    Function 'formatDifference' has too many parameters (4). Maximum allowed is 1   max-params
+  139:1  error    Function 'getAriaLabel' has too many parameters (5). Maximum allowed is 1       max-params
+  175:3  warning  Arrow function has too many lines (62). Maximum allowed is 50                   max-lines-per-function
+  188:9  error    Arrow function has too many parameters (2). Maximum allowed is 1                max-params
+
+/Users/joe.mearman/Documents/Research/PhD/Academic Explorer/src/components/atoms/comparison-metric-value.component.test.tsx
+   46:35  warning  Arrow function has too many lines (314). Maximum allowed is 50  max-lines-per-function
+  142:34  warning  Arrow function has too many lines (59). Maximum allowed is 50   max-lines-per-function
+
+/Users/joe.mearman/Documents/Research/PhD/Academic Explorer/src/components/atoms/comparison-metric-value.tsx
+   50:1  error    Function 'calculateDifference' has too many parameters (3). Maximum allowed is 1       max-params
+   68:1  error    Function 'calculateDifferenceValue' has too many parameters (3). Maximum allowed is 1  max-params
+  112:1  error    Function 'getAriaLabel' has too many parameters (7). Maximum allowed is 1              max-params
+  112:1  warning  Function 'getAriaLabel' has a complexity of 12. Maximum allowed is 10                  complexity
+  162:1  error    Function 'renderValueElement' has too many parameters (4). Maximum allowed is 1        max-params
+  183:1  error    Function 'renderLabelElement' has too many parameters (3). Maximum allowed is 1        max-params
+  200:1  error    Function 'renderRankElement' has too many parameters (5). Maximum allowed is 1         max-params
+  222:1  error    Function 'renderDiffElement' has too many parameters (3). Maximum allowed is 1         max-params
+  242:1  error    Function 'composeLayout' has too many parameters (5). Maximum allowed is 1             max-params
+  292:3  warning  Arrow function has too many lines (68). Maximum allowed is 50                          max-lines-per-function
+  292:3  warning  Arrow function has a complexity of 13. Maximum allowed is 10                           complexity
+  308:9  error    Arrow function has too many parameters (2). Maximum allowed is 1                       max-params
+
+/Users/joe.mearman/Documents/Research/PhD/Academic Explorer/src/components/atoms/comparison-rank-indicator.component.test.tsx
+  16:37  warning  Arrow function has too many lines (158). Maximum allowed is 50  max-lines-per-function
+
+/Users/joe.mearman/Documents/Research/PhD/Academic Explorer/src/components/atoms/comparison-rank-indicator.tsx
+   33:1  error    Function 'getRankColor' has too many parameters (2). Maximum allowed is 1    max-params
+   42:1  error    Function 'getRankVariant' has too many parameters (2). Maximum allowed is 1  max-params
+   78:1  error    Function 'getAriaLabel' has too many parameters (3). Maximum allowed is 1    max-params
+   97:3  warning  Arrow function has too many lines (51). Maximum allowed is 50                max-lines-per-function
+  107:9  error    Arrow function has too many parameters (2). Maximum allowed is 1             max-params
+
+/Users/joe.mearman/Documents/Research/PhD/Academic Explorer/src/components/atoms/content-filters-list.tsx
+  6:16  error  Function has too many parameters (2). Maximum allowed is 1  max-params
+
+/Users/joe.mearman/Documents/Research/PhD/Academic Explorer/src/components/atoms/enhanced-loading-skeleton.tsx
+  130:1   error    Function 'applyPresetDimensions' has too many parameters (3). Maximum allowed is 1  max-params
+  149:1   error    Function 'mapDimensionValue' has too many parameters (2). Maximum allowed is 1      max-params
+  176:1   error    Function 'getEffectiveAnimation' has too many parameters (3). Maximum allowed is 1  max-params
+  230:3   warning  Arrow function has too many lines (119). Maximum allowed is 50                      max-lines-per-function
+  230:3   warning  Arrow function has a complexity of 17. Maximum allowed is 10                        complexity
+  251:11  error    Arrow function has too many parameters (2). Maximum allowed is 1                    max-params
+  372:3   warning  Arrow function has too many lines (65). Maximum allowed is 50                       max-lines-per-function
+  372:3   warning  Arrow function has a complexity of 11. Maximum allowed is 10                        complexity
+  385:11  error    Arrow function has too many parameters (2). Maximum allowed is 1                    max-params
+  429:65  error    Arrow function has too many parameters (2). Maximum allowed is 1                    max-params
+
+/Users/joe.mearman/Documents/Research/PhD/Academic Explorer/src/components/atoms/enhanced-ui-showcase.tsx
+   16:35  warning  Arrow function has too many lines (431). Maximum allowed is 50    max-lines-per-function
+   16:35  warning  Arrow function has a complexity of 16. Maximum allowed is 10      complexity
+   44:23  warning  Arrow function has too many lines (79). Maximum allowed is 50     max-lines-per-function
+  131:29  warning  Arrow function has too many lines (65). Maximum allowed is 50     max-lines-per-function
+  138:48  error    Arrow function has too many parameters (2). Maximum allowed is 1  max-params
+  284:47  error    Arrow function has too many parameters (2). Maximum allowed is 1  max-params
+  309:24  warning  Arrow function has too many lines (71). Maximum allowed is 50     max-lines-per-function
+
+/Users/joe.mearman/Documents/Research/PhD/Academic Explorer/src/components/atoms/entity-badge.component.test.tsx
+   16:151  error  Arrow function has too many parameters (2). Maximum allowed is 1  max-params
+  335:45   error  Arrow function has too many parameters (2). Maximum allowed is 1  max-params
+  352:45   error  Arrow function has too many parameters (2). Maximum allowed is 1  max-params
+
+/Users/joe.mearman/Documents/Research/PhD/Academic Explorer/src/components/atoms/entity-badge.tsx
+  67:3  error  Function 'EntityBadge' has too many parameters (2). Maximum allowed is 1  max-params
+
+/Users/joe.mearman/Documents/Research/PhD/Academic Explorer/src/components/atoms/entity-inputs-list.tsx
+  11:16  error  Function has too many parameters (2). Maximum allowed is 1  max-params
+
+/Users/joe.mearman/Documents/Research/PhD/Academic Explorer/src/components/atoms/entity-link.tsx
+  21:1  error  Function 'renderFallback' has too many parameters (8). Maximum allowed is 1  max-params
+
+/Users/joe.mearman/Documents/Research/PhD/Academic Explorer/src/components/atoms/error-message.component.test.tsx
+  34:3   error  Method 'renderTitle' has too many parameters (2). Maximum allowed is 1          max-params
+  36:3   error  Method 'renderDetails' has too many parameters (2). Maximum allowed is 1        max-params
+  38:3   error  Method 'renderActions' has too many parameters (2). Maximum allowed is 1        max-params
+  41:38  error  Arrow function has too many parameters (2). Maximum allowed is 1                max-params
+  53:3   error  Method 'renderDismissButton' has too many parameters (2). Maximum allowed is 1  max-params
+
+/Users/joe.mearman/Documents/Research/PhD/Academic Explorer/src/components/atoms/error-message.tsx
+  29:160  error  Arrow function has too many parameters (2). Maximum allowed is 1  max-params
+  61:44   error  Arrow function has too many parameters (2). Maximum allowed is 1  max-params
+  83:16   error  Arrow function has too many parameters (2). Maximum allowed is 1  max-params
+  88:16   error  Arrow function has too many parameters (2). Maximum allowed is 1  max-params
+  93:16   error  Arrow function has too many parameters (2). Maximum allowed is 1  max-params
+  98:16   error  Arrow function has too many parameters (2). Maximum allowed is 1  max-params
+
+/Users/joe.mearman/Documents/Research/PhD/Academic Explorer/src/components/atoms/external-link.tsx
+   31:62  error  Arrow function has too many parameters (2). Maximum allowed is 1               max-params
+   55:57  error  Arrow function has too many parameters (2). Maximum allowed is 1               max-params
+   75:1   error  Function 'buildLinkClasses' has too many parameters (2). Maximum allowed is 1  max-params
+   86:1   error  Function 'renderIcon' has too many parameters (2). Maximum allowed is 1        max-params
+  121:11  error  Arrow function has too many parameters (2). Maximum allowed is 1               max-params
+
+/Users/joe.mearman/Documents/Research/PhD/Academic Explorer/src/components/atoms/focus-management.tsx
+   34:26  error    Function has too many parameters (2). Maximum allowed is 1                                                                                     max-params
+   88:1   error    Function 'useFocusNavigation' has too many parameters (4). Maximum allowed is 1                                                                max-params
+  141:1   error    Function 'useFocusTrap' has too many parameters (3). Maximum allowed is 1                                                                      max-params
+  176:1   error    Function 'useFocusRestoration' has too many parameters (4). Maximum allowed is 1                                                               max-params
+  248:1   warning  Function 'useKeyboardNavigation' has too many lines (65). Maximum allowed is 50                                                                max-lines-per-function
+  263:26  error    Function has too many parameters (2). Maximum allowed is 1                                                                                     max-params
+  269:37  warning  Arrow function has a complexity of 14. Maximum allowed is 10                                                                                   complexity
+  328:1   error    Function 'handleGridNavigation' has too many parameters (3). Maximum allowed is 1                                                              max-params
+  372:1   error    Function 'handleListNavigation' has too many parameters (3). Maximum allowed is 1                                                              max-params
+  391:1   error    Function 'handleTabsNavigation' has too many parameters (3). Maximum allowed is 1                                                              max-params
+  410:1   error    Function 'handleMenuNavigation' has too many parameters (3). Maximum allowed is 1                                                              max-params
+  429:1   error    Function 'handleDefaultNavigation' has too many parameters (3). Maximum allowed is 1                                                           max-params
+  509:30  error    Arrow function has too many parameters (2). Maximum allowed is 1                                                                               max-params
+  520:32  warning  Arrow function has too many lines (131). Maximum allowed is 50                                                                                 max-lines-per-function
+  520:32  warning  Arrow function has a complexity of 20. Maximum allowed is 10                                                                                   complexity
+  627:6   warning  React Hook useEffect has missing dependencies: 'focusManagement' and 'keyboardNavigation'. Either include them or remove the dependency array  react-hooks/exhaustive-deps
+  678:14  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components                 react-refresh/only-export-components
+
+/Users/joe.mearman/Documents/Research/PhD/Academic Explorer/src/components/atoms/icon.tsx
+  172:1   error  Function 'buildIconClasses' has too many parameters (3). Maximum allowed is 1  max-params
+  190:11  error  Arrow function has too many parameters (2). Maximum allowed is 1               max-params
+
+/Users/joe.mearman/Documents/Research/PhD/Academic Explorer/src/components/atoms/loading-skeleton-accessibility.component.test.tsx
+   20:67  warning  Arrow function has too many lines (360). Maximum allowed is 50  max-lines-per-function
+   26:40  warning  Arrow function has too many lines (105). Maximum allowed is 50  max-lines-per-function
+  160:37  warning  Arrow function has too many lines (60). Maximum allowed is 50   max-lines-per-function
+  246:43  warning  Arrow function has too many lines (68). Maximum allowed is 50   max-lines-per-function
+
+/Users/joe.mearman/Documents/Research/PhD/Academic Explorer/src/components/atoms/loading-skeleton-responsive.component.test.tsx
+   21:54  error    Arrow function has too many parameters (2). Maximum allowed is 1                   max-params
+   37:58  error    Arrow function has too many parameters (2). Maximum allowed is 1                   max-params
+   53:61  warning  Arrow function has too many lines (166). Maximum allowed is 50                     max-lines-per-function
+   60:47  warning  Arrow function has too many lines (60). Maximum allowed is 50                      max-lines-per-function
+  264:65  warning  Arrow function has too many lines (222). Maximum allowed is 50                     max-lines-per-function
+  265:7   error    'user' is assigned a value but never used. Allowed unused vars must match /^_/u    @typescript-eslint/no-unused-vars
+  273:36  warning  Arrow function has too many lines (57). Maximum allowed is 50                      max-lines-per-function
+  312:13  error    'parent' is assigned a value but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+  477:48  warning  Unexpected any. Specify a different type                                           @typescript-eslint/no-explicit-any
+
+/Users/joe.mearman/Documents/Research/PhD/Academic Explorer/src/components/atoms/loading-skeleton-transitions.component.test.tsx
+   26:26  warning  Arrow function has too many lines (56). Maximum allowed is 50   max-lines-per-function
+   89:65  warning  Arrow function has too many lines (346). Maximum allowed is 50  max-lines-per-function
+  100:46  warning  Arrow function has too many lines (53). Maximum allowed is 50   max-lines-per-function
+  177:48  warning  Arrow function has too many lines (61). Maximum allowed is 50   max-lines-per-function
+  260:47  warning  Arrow function has too many lines (91). Maximum allowed is 50   max-lines-per-function
+  381:41  warning  Arrow function has too many lines (68). Maximum allowed is 50   max-lines-per-function
+  469:43  warning  Arrow function has too many lines (64). Maximum allowed is 50   max-lines-per-function
+
+/Users/joe.mearman/Documents/Research/PhD/Academic Explorer/src/components/atoms/loading-skeleton.tsx
+   57:1   error  Function 'applyPresetDimensions' has too many parameters (3). Maximum allowed is 1  max-params
+   76:1   error  Function 'mapDimensionValue' has too many parameters (2). Maximum allowed is 1      max-params
+  107:11  error  Arrow function has too many parameters (2). Maximum allowed is 1                    max-params
+  140:11  error  Arrow function has too many parameters (2). Maximum allowed is 1                    max-params
+  149:63  error  Arrow function has too many parameters (2). Maximum allowed is 1                    max-params
+
+/Users/joe.mearman/Documents/Research/PhD/Academic Explorer/src/components/atoms/metric-badge.tsx
+   20:1   error  Function 'formatMetricValue' has too many parameters (2). Maximum allowed is 1   max-params
+   59:1   error  Function 'renderBadgeContent' has too many parameters (3). Maximum allowed is 1  max-params
+   76:1   error  Function 'renderLabel' has too many parameters (2). Maximum allowed is 1         max-params
+  100:11  error  Arrow function has too many parameters (2). Maximum allowed is 1                 max-params
+
+/Users/joe.mearman/Documents/Research/PhD/Academic Explorer/src/components/atoms/mobile-responsive-wrapper.tsx
+   55:1   error    Function 'useViewportInfo' has too many parameters (2). Maximum allowed is 1                                                    max-params
+   55:1   warning  Function 'useViewportInfo' has too many lines (67). Maximum allowed is 50                                                       max-lines-per-function
+  141:1   error    Function 'useTouchGestures' has too many parameters (3). Maximum allowed is 1                                                   max-params
+  141:1   warning  Function 'useTouchGestures' has too many lines (51). Maximum allowed is 50                                                      max-lines-per-function
+  172:15  error    'velocity' is assigned a value but never used. Allowed unused vars must match /^_/u                                             @typescript-eslint/no-unused-vars
+  230:40  warning  Arrow function has too many lines (77). Maximum allowed is 50                                                                   max-lines-per-function
+  230:40  warning  Arrow function has a complexity of 27. Maximum allowed is 10                                                                    complexity
+  242:3   error    'adaptToOrientation' is assigned a value but never used. Allowed unused args must match /^_/u                                   @typescript-eslint/no-unused-vars
+  323:14  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+  326:3   error    Arrow function has too many parameters (2). Maximum allowed is 1                                                                max-params
+  344:37  warning  Arrow function has too many lines (65). Maximum allowed is 50                                                                   max-lines-per-function
+  359:18  warning  Unexpected any. Specify a different type                                                                                        @typescript-eslint/no-explicit-any
+  422:14  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+  422:32  warning  Arrow function has too many lines (52). Maximum allowed is 50                                                                   max-lines-per-function
+  428:3   error    Arrow function has too many parameters (5). Maximum allowed is 1                                                                max-params
+
+/Users/joe.mearman/Documents/Research/PhD/Academic Explorer/src/components/atoms/status-indicator.tsx
+  18:112  error  Arrow function has too many parameters (2). Maximum allowed is 1  max-params
+
+/Users/joe.mearman/Documents/Research/PhD/Academic Explorer/src/components/atoms/suggestions-list.tsx
+  22:11  error  Arrow function has too many parameters (2). Maximum allowed is 1  max-params
+
+/Users/joe.mearman/Documents/Research/PhD/Academic Explorer/src/components/atoms/utils/entity-link-utils.ts
+   7:8  error  Function 'getEntityDisplayName' has too many parameters (2). Maximum allowed is 1  max-params
+  11:8  error  Function 'buildEntityLinkProps' has too many parameters (2). Maximum allowed is 1  max-params
+  30:8  error  Function 'buildEntityPath' has too many parameters (2). Maximum allowed is 1       max-params
+  35:8  error  Function 'buildExternalUrl' has too many parameters (2). Maximum allowed is 1      max-params
+
+/Users/joe.mearman/Documents/Research/PhD/Academic Explorer/src/components/atoms/validation-indicator.tsx
+   53:1  error  Function 'createStatusIcon' has too many parameters (3). Maximum allowed is 1            max-params
+   72:1  error  Function 'createStatusText' has too many parameters (3). Maximum allowed is 1            max-params
+   89:1  error  Function 'createTooltipContent' has too many parameters (4). Maximum allowed is 1        max-params
+  115:1  error  Function 'useValidationIndicatorData' has too many parameters (2). Maximum allowed is 1  max-params
+  246:1  error  Function 'calculateValidationSummary' has too many parameters (2). Maximum allowed is 1  max-params
+
+/Users/joe.mearman/Documents/Research/PhD/Academic Explorer/src/components/atoms/visual-feedback.tsx
+   62:1   error    Function 'useRippleEffect' has too many parameters (3). Maximum allowed is 1    max-params
+  110:5   error    Arrow function has too many parameters (3). Maximum allowed is 1                max-params
+  141:1   warning  Function 'useInteractionStates' has too many lines (65). Maximum allowed is 50  max-lines-per-function
+  364:31  warning  Arrow function has too many lines (129). Maximum allowed is 50                  max-lines-per-function
+  364:31  warning  Arrow function has a complexity of 42. Maximum allowed is 10                    complexity
+  512:31  warning  Arrow function has too many lines (75). Maximum allowed is 50                   max-lines-per-function
+  512:31  warning  Arrow function has a complexity of 13. Maximum allowed is 10                    complexity
+  537:18  warning  Unexpected any. Specify a different type                                        @typescript-eslint/no-explicit-any
+  639:33  warning  Arrow function has too many lines (58). Maximum allowed is 50                   max-lines-per-function
+
+/Users/joe.mearman/Documents/Research/PhD/Academic Explorer/src/components/entity-displays/AuthorDisplay.component.test.tsx
+  241:5  error  Method 'get' has too many parameters (2). Maximum allowed is 1  max-params
+
+/Users/joe.mearman/Documents/Research/PhD/Academic Explorer/src/components/entity-displays/AuthorDisplay.tsx
+  318:63  error  Arrow function has too many parameters (2). Maximum allowed is 1  max-params
+  362:74  error  Arrow function has too many parameters (2). Maximum allowed is 1  max-params
+  428:69  error  Arrow function has too many parameters (2). Maximum allowed is 1  max-params
+  452:34  error  Arrow function has too many parameters (2). Maximum allowed is 1  max-params
+  548:48  error  Arrow function has too many parameters (2). Maximum allowed is 1  max-params
+
+/Users/joe.mearman/Documents/Research/PhD/Academic Explorer/src/components/entity-displays/WorkDisplay.tsx
+  126:70  error  Arrow function has too many parameters (2). Maximum allowed is 1  max-params
+
+/Users/joe.mearman/Documents/Research/PhD/Academic Explorer/src/components/molecules/accessible-validation-field.tsx
+  132:24  error    Function has too many parameters (2). Maximum allowed is 1                                                        max-params
+  141:8   warning  Function 'AccessibleValidationField' has too many lines (329). Maximum allowed is 90                              max-lines-per-function
+  163:10  error    'focused' is assigned a value but never used. Allowed unused vars must match /^_/u                                @typescript-eslint/no-unused-vars
+  174:6   warning  React Hook useEffect has a missing dependency: 'validateField'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+  253:46  error    Arrow function has too many parameters (2). Maximum allowed is 1                                                  max-params
+  319:23  warning  Arrow function has too many lines (138). Maximum allowed is 90                                                    max-lines-per-function
+  319:23  warning  Arrow function has a complexity of 25. Maximum allowed is 12                                                      complexity
+  533:48  error    Arrow function has too many parameters (2). Maximum allowed is 1                                                  max-params
+  558:50  error    Arrow function has too many parameters (2). Maximum allowed is 1                                                  max-params
+  586:64  error    Arrow function has too many parameters (2). Maximum allowed is 1                                                  max-params
+  617:1   warning  Function 'getFieldType' has a complexity of 14. Maximum allowed is 12                                             complexity
+
+/Users/joe.mearman/Documents/Research/PhD/Academic Explorer/src/components/molecules/advanced-search-form-persistent.component.test.tsx
+   43:31  error    Function has too many parameters (2). Maximum allowed is 1                       max-params
+   69:16  error    Function has too many parameters (2). Maximum allowed is 1                       max-params
+  161:56  warning  Arrow function has too many lines (304). Maximum allowed is 90                   max-lines-per-function
+  195:39  warning  Arrow function has too many lines (118). Maximum allowed is 90                   max-lines-per-function
+  239:13  error    'user' is assigned a value but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+  488:13  error    'user' is assigned a value but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+
+/Users/joe.mearman/Documents/Research/PhD/Academic Explorer/src/components/molecules/advanced-search/basic-search-section.tsx
+  11:16  error  Function has too many parameters (2). Maximum allowed is 1  max-params
+
+/Users/joe.mearman/Documents/Research/PhD/Academic Explorer/src/components/molecules/advanced-search/citation-filters-section.tsx
+  7:16  error  Function has too many parameters (2). Maximum allowed is 1  max-params
+
+/Users/joe.mearman/Documents/Research/PhD/Academic Explorer/src/components/molecules/advanced-search/content-filters-section.tsx
+  8:16  error  Function has too many parameters (2). Maximum allowed is 1  max-params
+
+/Users/joe.mearman/Documents/Research/PhD/Academic Explorer/src/components/molecules/advanced-search/date-filters-section.tsx
+  7:16  error  Function has too many parameters (2). Maximum allowed is 1  max-params
+
+/Users/joe.mearman/Documents/Research/PhD/Academic Explorer/src/components/molecules/advanced-search/entity-filters-section.tsx
+  8:16  error  Function has too many parameters (2). Maximum allowed is 1  max-params
+
+/Users/joe.mearman/Documents/Research/PhD/Academic Explorer/src/components/molecules/advanced-search/results-options-section.tsx
+  10:16  error  Function has too many parameters (2). Maximum allowed is 1  max-params
+
+/Users/joe.mearman/Documents/Research/PhD/Academic Explorer/src/components/molecules/author-list.tsx
+   27:1   error  Function 'renderAuthorBadges' has too many parameters (2). Maximum allowed is 1    max-params
+   56:1   error  Function 'renderInstitution' has too many parameters (3). Maximum allowed is 1     max-params
+   78:1   error  Function 'renderInstitutions' has too many parameters (2). Maximum allowed is 1    max-params
+   87:59  error  Arrow function has too many parameters (2). Maximum allowed is 1                   max-params
+  109:1   error  Function 'renderCompactAuthor' has too many parameters (3). Maximum allowed is 1   max-params
+  126:1   error  Function 'renderDetailedAuthor' has too many parameters (3). Maximum allowed is 1  max-params
+  149:1   error  Function 'renderHiddenCount' has too many parameters (3). Maximum allowed is 1     max-params
+  172:55  error  Arrow function has too many parameters (2). Maximum allowed is 1                   max-params
+
+/Users/joe.mearman/Documents/Research/PhD/Academic Explorer/src/components/molecules/autocomplete-handlers.tsx
+  5:8  error  Function 'useAutocompleteHandlers' has too many parameters (6). Maximum allowed is 1  max-params
+
+/Users/joe.mearman/Documents/Research/PhD/Academic Explorer/src/components/molecules/autocomplete-search.tsx
+  99:48  error  Arrow function has too many parameters (2). Maximum allowed is 1  max-params
+
+/Users/joe.mearman/Documents/Research/PhD/Academic Explorer/src/components/molecules/autocomplete-search/utils.ts
+  39:8  error  Function 'createClickOutsideHandler' has too many parameters (4). Maximum allowed is 1  max-params
+
+/Users/joe.mearman/Documents/Research/PhD/Academic Explorer/src/components/molecules/comparison-metrics-grid.component.test.tsx
+  148:35  warning  Arrow function has too many lines (257). Maximum allowed is 90  max-lines-per-function
+
+/Users/joe.mearman/Documents/Research/PhD/Academic Explorer/src/components/molecules/comparison-metrics-grid.tsx
+   54:19  error    Function has too many parameters (2). Maximum allowed is 1                        max-params
+   64:1   error    Function 'getMetricDefinition' has too many parameters (2). Maximum allowed is 1  max-params
+  133:42  error    Arrow function has too many parameters (2). Maximum allowed is 1                  max-params
+  149:1   error    Function 'sortMetrics' has too many parameters (3). Maximum allowed is 1          max-params
+  156:35  error    Arrow function has too many parameters (2). Maximum allowed is 1                  max-params
+  173:8   warning  Function 'ComparisonMetricsGrid' has too many lines (225). Maximum allowed is 90  max-lines-per-function
+  173:8   warning  Function 'ComparisonMetricsGrid' has a complexity of 14. Maximum allowed is 12    complexity
+  235:9   error    Use object destructuring                                                          prefer-destructuring
+
+/Users/joe.mearman/Documents/Research/PhD/Academic Explorer/src/components/molecules/comparison-summary.component.test.tsx
+  109:31  warning  Arrow function has too many lines (214). Maximum allowed is 90  max-lines-per-function
+
+/Users/joe.mearman/Documents/Research/PhD/Academic Explorer/src/components/molecules/comparison-summary.tsx
+   50:25  error    Function has too many parameters (2). Maximum allowed is 1                     max-params
+   88:1   error    Function 'formatEntityType' has too many parameters (2). Maximum allowed is 1  max-params
+   88:1   warning  Function 'formatEntityType' has a complexity of 13. Maximum allowed is 12      complexity
+  142:85  warning  Arrow function has too many lines (213). Maximum allowed is 90                 max-lines-per-function
+  142:85  warning  Arrow function has a complexity of 13. Maximum allowed is 12                   complexity
+  154:9   error    Arrow function has too many parameters (2). Maximum allowed is 1               max-params
+  332:50  error    Arrow function has too many parameters (2). Maximum allowed is 1               max-params
+
+/Users/joe.mearman/Documents/Research/PhD/Academic Explorer/src/components/molecules/comparison-timeline.component.test.tsx
+   16:7   error    'createMockEntity' is assigned a value but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+   64:69  warning  Unexpected any. Specify a different type                                                     @typescript-eslint/no-explicit-any
+   69:26  warning  Unexpected any. Specify a different type                                                     @typescript-eslint/no-explicit-any
+   69:46  error    Arrow function has too many parameters (2). Maximum allowed is 1                             max-params
+   72:42  warning  Unexpected any. Specify a different type                                                     @typescript-eslint/no-explicit-any
+   72:67  error    Arrow function has too many parameters (2). Maximum allowed is 1                             max-params
+   89:32  warning  Arrow function has too many lines (382). Maximum allowed is 90                               max-lines-per-function
+  517:59  error    Arrow function has too many parameters (2). Maximum allowed is 1                             max-params
+  520:58  error    Arrow function has too many parameters (2). Maximum allowed is 1                             max-params
+
+/Users/joe.mearman/Documents/Research/PhD/Academic Explorer/src/components/molecules/comparison-timeline.tsx
+   44:29  warning  Unexpected any. Specify a different type                                           @typescript-eslint/no-explicit-any
+   90:18  error    Function has too many parameters (2). Maximum allowed is 1                         max-params
+   92:18  error    Function has too many parameters (2). Maximum allowed is 1                         max-params
+   98:14  error    Function has too many parameters (2). Maximum allowed is 1                         max-params
+  144:1   error    Function 'generateSeriesColour' has too many parameters (2). Maximum allowed is 1  max-params
+  167:1   error    Function 'processTimelineData' has too many parameters (2). Maximum allowed is 1   max-params
+  175:26  error    Arrow function has too many parameters (2). Maximum allowed is 1                   max-params
+  183:8   warning  Function 'ComparisonTimeline' has too many lines (262). Maximum allowed is 90      max-lines-per-function
+  183:8   warning  Function 'ComparisonTimeline' has a complexity of 24. Maximum allowed is 12        complexity
+  401:50  error    Arrow function has too many parameters (2). Maximum allowed is 1                   max-params
+  404:62  error    Arrow function has too many parameters (2). Maximum allowed is 1                   max-params
+  432:55  error    'index' is defined but never used. Allowed unused args must match /^_/u            @typescript-eslint/no-unused-vars
+  432:62  error    Arrow function has too many parameters (2). Maximum allowed is 1                   max-params
+
+/Users/joe.mearman/Documents/Research/PhD/Academic Explorer/src/components/molecules/concept-list.tsx
+   32:1  error  Function 'normalizeItems' has too many parameters (2). Maximum allowed is 1         max-params
+   67:1  error  Function 'renderBadgeItem' has too many parameters (2). Maximum allowed is 1        max-params
+   96:1  error  Function 'renderDetailedItem' has too many parameters (2). Maximum allowed is 1     max-params
+  142:1  error  Function 'renderBadgesVariant' has too many parameters (3). Maximum allowed is 1    max-params
+  158:1  error  Function 'renderDetailedVariant' has too many parameters (4). Maximum allowed is 1  max-params
+
+/Users/joe.mearman/Documents/Research/PhD/Academic Explorer/src/components/molecules/entity-breadcrumbs.tsx
+  20:41  error  Arrow function has too many parameters (2). Maximum allowed is 1  max-params
+
+/Users/joe.mearman/Documents/Research/PhD/Academic Explorer/src/components/molecules/error-debug-details.tsx
+  65:1  error  Function 'generateErrorReport' has too many parameters (3). Maximum allowed is 1  max-params
+
+/Users/joe.mearman/Documents/Research/PhD/Academic Explorer/src/components/molecules/external-links-group.tsx
+   47:35  error  Arrow function has too many parameters (2). Maximum allowed is 1                     max-params
+   71:1   error  Function 'renderEmptyState' has too many parameters (4). Maximum allowed is 1        max-params
+   96:1   error  Function 'renderGroupedLayout' has too many parameters (7). Maximum allowed is 1     max-params
+  127:40  error  Arrow function has too many parameters (2). Maximum allowed is 1                     max-params
+  131:40  error  Arrow function has too many parameters (2). Maximum allowed is 1                     max-params
+  141:1   error  Function 'renderHorizontalLayout' has too many parameters (7). Maximum allowed is 1  max-params
+  160:41  error  Arrow function has too many parameters (2). Maximum allowed is 1                     max-params
+  173:11  error  Arrow function has too many parameters (2). Maximum allowed is 1                     max-params
+  213:38  error  Arrow function has too many parameters (2). Maximum allowed is 1                     max-params
+  214:11  error  Use object destructuring                                                             prefer-destructuring
+  223:1   error  Function 'renderLinkItem' has too many parameters (3). Maximum allowed is 1          max-params
+
+/Users/joe.mearman/Documents/Research/PhD/Academic Explorer/src/components/molecules/group-by-results/GroupByResults.tsx
+  18:37  error  Arrow function has too many parameters (2). Maximum allowed is 1  max-params
+
+/Users/joe.mearman/Documents/Research/PhD/Academic Explorer/src/components/molecules/metric-display.component.test.tsx
+  49:150  error  Arrow function has too many parameters (2). Maximum allowed is 1  max-params
+
+/Users/joe.mearman/Documents/Research/PhD/Academic Explorer/src/components/molecules/metric-display.tsx
+  31:1   error    Function 'formatMetricValue' has too many parameters (2). Maximum allowed is 1  max-params
+  62:3   warning  Arrow function has too many lines (123). Maximum allowed is 90                  max-lines-per-function
+  62:3   warning  Arrow function has a complexity of 30. Maximum allowed is 12                    complexity
+  79:11  error    Arrow function has too many parameters (2). Maximum allowed is 1                max-params
+
+/Users/joe.mearman/Documents/Research/PhD/Academic Explorer/src/components/molecules/mobile-search-experience.component.test.tsx
+   11:60  warning  Unexpected any. Specify a different type                                          @typescript-eslint/no-explicit-any
+   22:52  warning  Unexpected any. Specify a different type                                          @typescript-eslint/no-explicit-any
+   31:49  warning  Unexpected any. Specify a different type                                          @typescript-eslint/no-explicit-any
+   33:28  warning  Unexpected any. Specify a different type                                          @typescript-eslint/no-explicit-any
+   33:48  error    Arrow function has too many parameters (2). Maximum allowed is 1                  max-params
+   44:44  warning  Unexpected any. Specify a different type                                          @typescript-eslint/no-explicit-any
+   45:12  warning  Unexpected any. Specify a different type                                          @typescript-eslint/no-explicit-any
+   50:32  warning  Arrow function has too many lines (181). Maximum allowed is 90                    max-lines-per-function
+   52:3   error    'onFilterChange' is defined but never used. Allowed unused args must match /^_/u  @typescript-eslint/no-unused-vars
+  218:47  error    Arrow function has too many parameters (2). Maximum allowed is 1                  max-params
+  256:38  warning  Arrow function has too many lines (599). Maximum allowed is 90                    max-lines-per-function
+  361:13  error    'user' is assigned a value but never used. Allowed unused vars must match /^_/u   @typescript-eslint/no-unused-vars
+  420:13  error    'user' is assigned a value but never used. Allowed unused vars must match /^_/u   @typescript-eslint/no-unused-vars
+  948:64  error    Arrow function has too many parameters (2). Maximum allowed is 1                  max-params
+
+/Users/joe.mearman/Documents/Research/PhD/Academic Explorer/src/components/molecules/pane-divider.component.test.tsx
+  8:35  warning  Arrow function has too many lines (426). Maximum allowed is 90  max-lines-per-function
+
+/Users/joe.mearman/Documents/Research/PhD/Academic Explorer/src/components/molecules/pane-divider.tsx
+   4:25  warning  Unexpected path "../templates/two-pane-layout.css" imported in restricted zone. Molecules cannot import from higher-level components. This violates Atomic Design principles  import/no-restricted-paths
+   7:11  error    Function has too many parameters (2). Maximum allowed is 1                                                                                                                    max-params
+  19:8   warning  Function 'PaneDivider' has too many lines (99). Maximum allowed is 90                                                                                                         max-lines-per-function
+
+/Users/joe.mearman/Documents/Research/PhD/Academic Explorer/src/components/molecules/search-bar.tsx
+  36:1  error  Function 'renderAutocompleteVariant' has too many parameters (2). Maximum allowed is 1  max-params
+  60:1  error  Function 'renderTraditionalForm' has too many parameters (4). Maximum allowed is 1      max-params
+
+/Users/joe.mearman/Documents/Research/PhD/Academic Explorer/src/components/molecules/topbar-search.tsx
+  22:1  error  Function 'renderSearchOption' has too many parameters (2). Maximum allowed is 1  max-params
+
+/Users/joe.mearman/Documents/Research/PhD/Academic Explorer/src/components/molecules/validation-export.tsx
+   93:1    error  Function 'downloadFile' has too many parameters (3). Maximum allowed is 1            max-params
+  119:1    error  Function 'getEstimatedIssueCount' has too many parameters (2). Maximum allowed is 1  max-params
+  169:96   error  Async arrow function has too many parameters (2). Maximum allowed is 1               max-params
+  259:19   error  Function has too many parameters (2). Maximum allowed is 1                           max-params
+  321:19   error  Function has too many parameters (2). Maximum allowed is 1                           max-params
+  423:111  error  Arrow function has too many parameters (2). Maximum allowed is 1                     max-params
+  430:129  error  Arrow function has too many parameters (2). Maximum allowed is 1                     max-params
+
+/Users/joe.mearman/Documents/Research/PhD/Academic Explorer/src/components/molecules/validation-settings.tsx
+   58:20   error  Function has too many parameters (2). Maximum allowed is 1        max-params
+  101:20   error  Function has too many parameters (2). Maximum allowed is 1        max-params
+  145:20   error  Function has too many parameters (2). Maximum allowed is 1        max-params
+  177:20   error  Function has too many parameters (2). Maximum allowed is 1        max-params
+  270:118  error  Arrow function has too many parameters (2). Maximum allowed is 1  max-params
+
+/Users/joe.mearman/Documents/Research/PhD/Academic Explorer/src/components/organisms/ConceptExternalLinks.tsx
+  72:42  error  Arrow function has too many parameters (2). Maximum allowed is 1  max-params
+
+/Users/joe.mearman/Documents/Research/PhD/Academic Explorer/src/components/organisms/InstitutionDetails.tsx
+  171:76  error  Arrow function has too many parameters (2). Maximum allowed is 1  max-params
+  186:75  error  Arrow function has too many parameters (2). Maximum allowed is 1  max-params
+
+/Users/joe.mearman/Documents/Research/PhD/Academic Explorer/src/components/organisms/InstitutionExternalLinks.tsx
+  87:42  error  Arrow function has too many parameters (2). Maximum allowed is 1  max-params
+
+/Users/joe.mearman/Documents/Research/PhD/Academic Explorer/src/components/organisms/InstitutionRelations.tsx
+  22:73  error  Arrow function has too many parameters (2). Maximum allowed is 1  max-params
+  61:57  error  Arrow function has too many parameters (2). Maximum allowed is 1  max-params
+
+/Users/joe.mearman/Documents/Research/PhD/Academic Explorer/src/components/organisms/WorksTimeline.tsx
+   55:1   error  Function 'groupWorksByYear' has too many parameters (2). Maximum allowed is 1  max-params
+   70:52  error  Arrow function has too many parameters (2). Maximum allowed is 1               max-params
+   72:18  error  Arrow function has too many parameters (2). Maximum allowed is 1               max-params
+  134:43  error  Arrow function has too many parameters (2). Maximum allowed is 1               max-params
+
+/Users/joe.mearman/Documents/Research/PhD/Academic Explorer/src/components/organisms/authors-overview.tsx
+  22:18  error  Arrow function has too many parameters (2). Maximum allowed is 1  max-params
+
+/Users/joe.mearman/Documents/Research/PhD/Academic Explorer/src/components/organisms/concept-external-links-enhanced.tsx
+  83:42  error  Arrow function has too many parameters (2). Maximum allowed is 1  max-params
+
+/Users/joe.mearman/Documents/Research/PhD/Academic Explorer/src/components/organisms/data-visualization.tsx
+   10:1   error  Function 'calculateScales' has too many parameters (3). Maximum allowed is 1  max-params
+   17:15  error  Function has too many parameters (2). Maximum allowed is 1                    max-params
+   26:55  error  Arrow function has too many parameters (2). Maximum allowed is 1              max-params
+   34:1   error  Function 'renderBarChart' has too many parameters (5). Maximum allowed is 1   max-params
+   43:34  error  Arrow function has too many parameters (2). Maximum allowed is 1              max-params
+   67:1   error  Function 'renderLineChart' has too many parameters (6). Maximum allowed is 1  max-params
+   69:11  error  Function has too many parameters (2). Maximum allowed is 1                    max-params
+   75:42  error  Arrow function has too many parameters (2). Maximum allowed is 1              max-params
+   84:25  error  Arrow function has too many parameters (2). Maximum allowed is 1              max-params
+   96:34  error  Arrow function has too many parameters (2). Maximum allowed is 1              max-params
+  121:1   error  Function 'renderGrid' has too many parameters (3). Maximum allowed is 1       max-params
+  144:1   error  Function 'renderAxes' has too many parameters (3). Maximum allowed is 1       max-params
+  166:41  error  Arrow function has too many parameters (2). Maximum allowed is 1              max-params
+  272:36  error  Arrow function has too many parameters (2). Maximum allowed is 1              max-params
+  294:34  error  Arrow function has too many parameters (2). Maximum allowed is 1              max-params
+  370:56  error  Arrow function has too many parameters (2). Maximum allowed is 1              max-params
+  394:38  error  Arrow function has too many parameters (2). Maximum allowed is 1              max-params
+
+/Users/joe.mearman/Documents/Research/PhD/Academic Explorer/src/components/organisms/data-visualization/network-diagram/index.ts
+  2:8  error  Do not alias `default` as `default`. Just export `default` itself instead  import/no-default-export
+
+/Users/joe.mearman/Documents/Research/PhD/Academic Explorer/src/components/organisms/data-visualization/network-diagram/network-diagram.component.test.tsx
+  126:7   error  'mockUser' is assigned a value but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+  211:54  error  Arrow function has too many parameters (2). Maximum allowed is 1                     max-params
+  219:54  error  Arrow function has too many parameters (2). Maximum allowed is 1                     max-params
+
+/Users/joe.mearman/Documents/Research/PhD/Academic Explorer/src/components/organisms/data-visualization/network-diagram/network-diagram.tsx
+   53:1   error    Function 'createSimulation' has too many parameters (5). Maximum allowed is 1             max-params
+   61:47  warning  Unexpected any. Specify a different type                                                  @typescript-eslint/no-explicit-any
+   64:54  warning  Unexpected any. Specify a different type                                                  @typescript-eslint/no-explicit-any
+   77:1   error    Function 'getNodeColor' has too many parameters (2). Maximum allowed is 1                 max-params
+   77:42  error    'clustering' is defined but never used. Allowed unused args must match /^_/u              @typescript-eslint/no-unused-vars
+  111:8   warning  Function 'NetworkDiagram' has too many lines (271). Maximum allowed is 270                max-lines-per-function
+  129:3   error    'onClusterSelect' is defined but never used. Allowed unused args must match /^_/u         @typescript-eslint/no-unused-vars
+  139:10  error    'selectedNodes' is assigned a value but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+  174:59  error    'event' is defined but never used. Allowed unused args must match /^_/u                   @typescript-eslint/no-unused-vars
+  174:78  error    Arrow function has too many parameters (2). Maximum allowed is 1                          max-params
+  198:5   error    Arrow function has too many parameters (2). Maximum allowed is 1                          max-params
+  277:35  error    Arrow function has too many parameters (2). Maximum allowed is 1                          max-params
+  282:34  error    Arrow function has too many parameters (2). Maximum allowed is 1                          max-params
+  286:33  error    Arrow function has too many parameters (2). Maximum allowed is 1                          max-params
+  297:33  error    Arrow function has too many parameters (2). Maximum allowed is 1                          max-params
+  298:38  error    Arrow function has too many parameters (2). Maximum allowed is 1                          max-params
+  311:46  error    Arrow function has too many parameters (2). Maximum allowed is 1                          max-params
+  458:8   error    Prefer named exports                                                                      import/no-default-export
+
+/Users/joe.mearman/Documents/Research/PhD/Academic Explorer/src/components/organisms/data-visualization/timeline-chart/index.ts
+  8:8  error  Do not alias `default` as `default`. Just export `default` itself instead  import/no-default-export
+
+/Users/joe.mearman/Documents/Research/PhD/Academic Explorer/src/components/organisms/data-visualization/timeline-chart/timeline-chart.component.test.tsx
+  140:7   error  'mockUser' is assigned a value but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+  645:62  error  Arrow function has too many parameters (2). Maximum allowed is 1                     max-params
+
+/Users/joe.mearman/Documents/Research/PhD/Academic Explorer/src/components/organisms/data-visualization/timeline-chart/timeline-chart.tsx
+   56:1   error    Function 'calculateDimensions' has too many parameters (4). Maximum allowed is 1                                                                 max-params
+   93:1   error    Function 'getValueDomain' has too many parameters (2). Maximum allowed is 1                                                                      max-params
+  119:1   error    Function 'createScales' has too many parameters (4). Maximum allowed is 1                                                                        max-params
+  147:1   error    Function 'getSeriesColor' has too many parameters (2). Maximum allowed is 1                                                                      max-params
+  161:1   error    Function 'formatTooltipContent' has too many parameters (2). Maximum allowed is 1                                                                max-params
+  178:8   warning  Function 'TimelineChart' has too many lines (396). Maximum allowed is 270                                                                        max-lines-per-function
+  195:3   error    'exportConfig' is defined but never used. Allowed unused args must match /^_/u                                                                   @typescript-eslint/no-unused-vars
+  205:10  error    'selectedRange' is assigned a value but never used. Allowed unused vars must match /^_/u                                                         @typescript-eslint/no-unused-vars
+  233:5   error    'event' is defined but never used. Allowed unused args must match /^_/u                                                                          @typescript-eslint/no-unused-vars
+  234:5   error    Arrow function has too many parameters (3). Maximum allowed is 1                                                                                 max-params
+  244:5   error    Arrow function has too many parameters (3). Maximum allowed is 1                                                                                 max-params
+  274:13  warning  Arrow function has a complexity of 33. Maximum allowed is 30                                                                                     complexity
+  316:45  error    Arrow function has too many parameters (2). Maximum allowed is 1                                                                                 max-params
+  323:22  error    Arrow function has too many parameters (2). Maximum allowed is 1                                                                                 max-params
+  340:13  error    Method 'onClick' has too many parameters (2). Maximum allowed is 1                                                                               max-params
+  341:13  error    Method 'onHover' has too many parameters (2). Maximum allowed is 1                                                                               max-params
+  349:13  error    Method 'onClick' has too many parameters (2). Maximum allowed is 1                                                                               max-params
+  350:13  error    Method 'onHover' has too many parameters (2). Maximum allowed is 1                                                                               max-params
+  363:47  error    Function has too many parameters (2). Maximum allowed is 1                                                                                       max-params
+  381:47  error    Function has too many parameters (2). Maximum allowed is 1                                                                                       max-params
+  423:6   warning  React Hook useEffect has missing dependencies: 'height', 'renderScatterSeries', and 'width'. Either include them or remove the dependency array  react-hooks/exhaustive-deps
+  429:3   error    Function 'renderLineSeries' has too many parameters (5). Maximum allowed is 1                                                                    max-params
+  449:3   error    Function 'renderAreaSeries' has too many parameters (6). Maximum allowed is 1                                                                    max-params
+  472:3   error    Function 'renderBarSeries' has too many parameters (6). Maximum allowed is 1                                                                     max-params
+  495:3   error    Function 'renderScatterSeries' has too many parameters (6). Maximum allowed is 1                                                                 max-params
+  502:16  error    Function has too many parameters (2). Maximum allowed is 1                                                                                       max-params
+  503:16  error    Function has too many parameters (2). Maximum allowed is 1                                                                                       max-params
+  517:31  error    Arrow function has too many parameters (2). Maximum allowed is 1                                                                                 max-params
+  518:36  error    Arrow function has too many parameters (2). Maximum allowed is 1                                                                                 max-params
+  522:3   error    Function 'addBrushInteraction' has too many parameters (4). Maximum allowed is 1                                                                 max-params
+  547:3   error    Function 'addZoomPanInteraction' has too many parameters (4). Maximum allowed is 1                                                               max-params
+  551:5   error    'dimensions' is defined but never used. Allowed unused args must match /^_/u                                                                     @typescript-eslint/no-unused-vars
+  567:30  warning  Unexpected any. Specify a different type                                                                                                         @typescript-eslint/no-explicit-any
+  571:30  warning  Unexpected any. Specify a different type                                                                                                         @typescript-eslint/no-explicit-any
+  669:8   error    Prefer named exports                                                                                                                             import/no-default-export
+
+/Users/joe.mearman/Documents/Research/PhD/Academic Explorer/src/components/organisms/data-visualization/types.ts
+  129:18  error  Function has too many parameters (2). Maximum allowed is 1  max-params
+  130:18  error  Function has too many parameters (2). Maximum allowed is 1  max-params
+  131:19  error  Function has too many parameters (2). Maximum allowed is 1  max-params
+  210:13  error  Function has too many parameters (2). Maximum allowed is 1  max-params
+
+/Users/joe.mearman/Documents/Research/PhD/Academic Explorer/src/components/organisms/data-visualization/utils/data-processing.ts
+    8:21  error  'Author' is defined but never used. Allowed unused vars must match /^_/u               @typescript-eslint/no-unused-vars
+    8:29  error  'Institution' is defined but never used. Allowed unused vars must match /^_/u          @typescript-eslint/no-unused-vars
+    8:42  error  'Topic' is defined but never used. Allowed unused vars must match /^_/u                @typescript-eslint/no-unused-vars
+    8:49  error  'Concept' is defined but never used. Allowed unused vars must match /^_/u              @typescript-eslint/no-unused-vars
+   71:8   error  Function 'transformWorksToTimeline' has too many parameters (2). Maximum allowed is 1  max-params
+   93:40  error  Arrow function has too many parameters (2). Maximum allowed is 1                       max-params
+  101:46  error  Arrow function has too many parameters (2). Maximum allowed is 1                       max-params
+  104:46  error  Arrow function has too many parameters (2). Maximum allowed is 1                       max-params
+  124:35  error  Arrow function has too many parameters (2). Maximum allowed is 1                       max-params
+  130:8   error  Function 'aggregateByYear' has too many parameters (2). Maximum allowed is 1           max-params
+  148:37  error  Arrow function has too many parameters (2). Maximum allowed is 1                       max-params
+  153:40  error  Arrow function has too many parameters (2). Maximum allowed is 1                       max-params
+  156:40  error  Arrow function has too many parameters (2). Maximum allowed is 1                       max-params
+  168:40  error  Arrow function has too many parameters (2). Maximum allowed is 1                       max-params
+  182:37  error  Arrow function has too many parameters (2). Maximum allowed is 1                       max-params
+  271:47  error  Arrow function has too many parameters (2). Maximum allowed is 1                       max-params
+  291:8   error  Function 'applyNetworkClustering' has too many parameters (3). Maximum allowed is 1    max-params
+  294:3   error  'algorithm' is assigned a value but never used. Allowed unused args must match /^_/u   @typescript-eslint/no-unused-vars
+  299:9   error  'nodeMap' is assigned a value but never used. Allowed unused vars must match /^_/u     @typescript-eslint/no-unused-vars
+  316:51  error  Arrow function has too many parameters (2). Maximum allowed is 1                       max-params
+  361:8   error  Function 'generateHeatmapData' has too many parameters (4). Maximum allowed is 1       max-params
+  410:42  error  Arrow function has too many parameters (2). Maximum allowed is 1                       max-params
+  413:42  error  Arrow function has too many parameters (2). Maximum allowed is 1                       max-params
+  417:9   error  Unexpected lexical declaration in case block                                           no-case-declarations
+  417:72  error  Arrow function has too many parameters (2). Maximum allowed is 1                       max-params
+  443:1   error  Function 'extractDimensionValues' has too many parameters (2). Maximum allowed is 1    max-params
+  470:54  error  Arrow function has too many parameters (2). Maximum allowed is 1                       max-params
+  494:8   error  Function 'prepareSankeyData' has too many parameters (3). Maximum allowed is 1         max-params
+  551:35  error  Arrow function has too many parameters (2). Maximum allowed is 1                       max-params
+  590:1   error  Function 'extractFlowValues' has too many parameters (2). Maximum allowed is 1         max-params
+  639:40  error  Arrow function has too many parameters (2). Maximum allowed is 1                       max-params
+  641:38  error  Arrow function has too many parameters (2). Maximum allowed is 1                       max-params
+  665:43  error  Arrow function has too many parameters (2). Maximum allowed is 1                       max-params
+  682:43  error  Arrow function has too many parameters (2). Maximum allowed is 1                       max-params
+  685:43  error  Arrow function has too many parameters (2). Maximum allowed is 1                       max-params
+  725:8   error  Function 'detectOutliers' has too many parameters (3). Maximum allowed is 1            max-params
+  747:31  error  Arrow function has too many parameters (2). Maximum allowed is 1                       max-params
+  755:31  error  Arrow function has too many parameters (2). Maximum allowed is 1                       max-params
+  762:11  error  Use object destructuring                                                               prefer-destructuring
+  766:31  error  Arrow function has too many parameters (2). Maximum allowed is 1                       max-params
+  775:44  error  Arrow function has too many parameters (2). Maximum allowed is 1                       max-params
+  789:8   error  Function 'groupByCategory' has too many parameters (2). Maximum allowed is 1           max-params
+  793:37  error  Arrow function has too many parameters (2). Maximum allowed is 1                       max-params
+  818:44  error  Arrow function has too many parameters (2). Maximum allowed is 1                       max-params
+  826:32  error  Arrow function has too many parameters (2). Maximum allowed is 1                       max-params
+  827:32  error  Arrow function has too many parameters (2). Maximum allowed is 1                       max-params
+  828:39  error  Arrow function has too many parameters (3). Maximum allowed is 1                       max-params
+  829:36  error  Arrow function has too many parameters (2). Maximum allowed is 1                       max-params
+  830:36  error  Arrow function has too many parameters (2). Maximum allowed is 1                       max-params
+  833:9   error  'intercept' is assigned a value but never used. Allowed unused vars must match /^_/u   @typescript-eslint/no-unused-vars
+
+/Users/joe.mearman/Documents/Research/PhD/Academic Explorer/src/components/organisms/entity-browser/EntityFilters.tsx
+  239:17  error  Function has too many parameters (2). Maximum allowed is 1        max-params
+  280:17  error  Function has too many parameters (2). Maximum allowed is 1        max-params
+  309:17  error  Function has too many parameters (2). Maximum allowed is 1        max-params
+  367:66  error  Arrow function has too many parameters (2). Maximum allowed is 1  max-params
+
+/Users/joe.mearman/Documents/Research/PhD/Academic Explorer/src/components/organisms/entity-browser/ResultsSection.tsx
+  88:59  error  Arrow function has too many parameters (2). Maximum allowed is 1  max-params
+
+/Users/joe.mearman/Documents/Research/PhD/Academic Explorer/src/components/organisms/entity-error.tsx
+   48:1   error  Function 'generateInvalidIdError' has too many parameters (3). Maximum allowed is 1  max-params
+   58:1   error  Function 'generateNotFoundError' has too many parameters (3). Maximum allowed is 1   max-params
+   94:1   error  Function 'generateGenericError' has too many parameters (3). Maximum allowed is 1    max-params
+  123:1   error  Function 'getErrorDetails' has too many parameters (3). Maximum allowed is 1         max-params
+  282:39  error  Arrow function has too many parameters (2). Maximum allowed is 1                     max-params
+  291:35  error  Arrow function has too many parameters (2). Maximum allowed is 1                     max-params
+  301:63  error  Arrow function has too many parameters (2). Maximum allowed is 1                     max-params
+  309:45  error  Arrow function has too many parameters (2). Maximum allowed is 1                     max-params
+
+/Users/joe.mearman/Documents/Research/PhD/Academic Explorer/src/components/organisms/entity-graph-visualization.integration.enhanced.test.tsx
+  207:61  warning  Arrow function has too many lines (402). Maximum allowed is 270   max-lines-per-function
+  223:65  error    Arrow function has too many parameters (2). Maximum allowed is 1  max-params
+  229:61  error    Arrow function has too many parameters (2). Maximum allowed is 1  max-params
+  260:42  error    A `require()` style import is forbidden                           @typescript-eslint/no-require-imports
+  277:51  error    A `require()` style import is forbidden                           @typescript-eslint/no-require-imports
+  293:48  error    A `require()` style import is forbidden                           @typescript-eslint/no-require-imports
+  317:48  error    A `require()` style import is forbidden                           @typescript-eslint/no-require-imports
+  350:48  error    A `require()` style import is forbidden                           @typescript-eslint/no-require-imports
+  373:45  error    A `require()` style import is forbidden                           @typescript-eslint/no-require-imports
+  394:45  error    A `require()` style import is forbidden                           @typescript-eslint/no-require-imports
+  407:45  error    A `require()` style import is forbidden                           @typescript-eslint/no-require-imports
+  431:45  error    A `require()` style import is forbidden                           @typescript-eslint/no-require-imports
+  486:44  error    A `require()` style import is forbidden                           @typescript-eslint/no-require-imports
+  489:56  error    Arrow function has too many parameters (2). Maximum allowed is 1  max-params
+  520:42  error    A `require()` style import is forbidden                           @typescript-eslint/no-require-imports
+  540:36  error    A `require()` style import is forbidden                           @typescript-eslint/no-require-imports
+  556:36  error    A `require()` style import is forbidden                           @typescript-eslint/no-require-imports
+  585:36  error    A `require()` style import is forbidden                           @typescript-eslint/no-require-imports
+  646:36  error    A `require()` style import is forbidden                           @typescript-eslint/no-require-imports
+  697:45  error    A `require()` style import is forbidden                           @typescript-eslint/no-require-imports
+
+/Users/joe.mearman/Documents/Research/PhD/Academic Explorer/src/components/organisms/entity-graph-visualization.integration.test.tsx
+  127:15  error  Use object destructuring  prefer-destructuring
+
+/Users/joe.mearman/Documents/Research/PhD/Academic Explorer/src/components/organisms/entity-graph-visualization.tsx
+   35:1   error  Function 'calculateVertexRadius' has too many parameters (2). Maximum allowed is 1       max-params
+   51:1   error  Function 'generatePositionedVertices' has too many parameters (6). Maximum allowed is 1  max-params
+   71:1   error  Function 'calculateConnectedEdges' has too many parameters (2). Maximum allowed is 1     max-params
+  175:94  error  Arrow function has too many parameters (2). Maximum allowed is 1                         max-params
+  181:99  error  Arrow function has too many parameters (2). Maximum allowed is 1                         max-params
+
+/Users/joe.mearman/Documents/Research/PhD/Academic Explorer/src/components/organisms/entity-header.tsx
+   85:11  error  Arrow function has too many parameters (2). Maximum allowed is 1  max-params
+  268:41  error  Arrow function has too many parameters (2). Maximum allowed is 1  max-params
+
+/Users/joe.mearman/Documents/Research/PhD/Academic Explorer/src/components/organisms/entity-page-header.tsx
+   75:40  error  Arrow function has too many parameters (2). Maximum allowed is 1  max-params
+  126:41  error  Arrow function has too many parameters (2). Maximum allowed is 1  max-params
+
+/Users/joe.mearman/Documents/Research/PhD/Academic Explorer/src/components/organisms/entity-page-skeleton.tsx
+  96:47  error  Arrow function has too many parameters (2). Maximum allowed is 1  max-params
+
+/Users/joe.mearman/Documents/Research/PhD/Academic Explorer/src/components/organisms/graph-layout/force-simulation-enhanced.ts
+   58:3   error    Constructor has too many parameters (7). Maximum allowed is 1                                       max-params
+  117:3   error    Method 'queryRange' has too many parameters (3). Maximum allowed is 1                               max-params
+  123:3   error    Method 'queryRangeRecursive' has too many parameters (4). Maximum allowed is 1                      max-params
+  154:8   error    Function 'createForceSimulation' has too many parameters (3). Maximum allowed is 1                  max-params
+  180:79  error    Arrow function has too many parameters (2). Maximum allowed is 1                                    max-params
+  278:8   error    Async function 'createForceSimulationWithWorker' has too many parameters (3). Maximum allowed is 1  max-params
+  283:40  error    Arrow function has too many parameters (2). Maximum allowed is 1                                    max-params
+  331:8   error    Function 'createHierarchicalLayout' has too many parameters (3). Maximum allowed is 1               max-params
+  345:39  warning  Unexpected any. Specify a different type                                                            @typescript-eslint/no-explicit-any
+  357:41  error    Arrow function has too many parameters (2). Maximum allowed is 1                                    max-params
+  364:43  error    Arrow function has too many parameters (2). Maximum allowed is 1                                    max-params
+  428:8   error    Function 'optimizeForLargeGraphs' has too many parameters (3). Maximum allowed is 1                 max-params
+  444:9   error    'complexityScore' is assigned a value but never used. Allowed unused vars must match /^_/u          @typescript-eslint/no-unused-vars
+  497:8   error    Function 'calculateLayoutBounds' has too many parameters (2). Maximum allowed is 1                  max-params
+  545:1   error    Function 'applyRepulsionForcesWithQuadTree' has too many parameters (4). Maximum allowed is 1       max-params
+  577:1   error    Function 'applyRepulsionForces' has too many parameters (2). Maximum allowed is 1                   max-params
+  599:1   error    Function 'applyAttractionForcesOptimized' has too many parameters (4). Maximum allowed is 1         max-params
+  603:3   error    'edgeMap' is defined but never used. Allowed unused args must match /^_/u                           @typescript-eslint/no-unused-vars
+  629:1   error    Function 'applyCenteringForce' has too many parameters (4). Maximum allowed is 1                    max-params
+  644:1   error    Function 'updatePositionsWithBounds' has too many parameters (4). Maximum allowed is 1              max-params
+  670:1   error    Function 'reduceCrossings' has too many parameters (3). Maximum allowed is 1                        max-params
+  672:3   error    'edges' is defined but never used. Allowed unused args must match /^_/u                             @typescript-eslint/no-unused-vars
+  673:3   error    'config' is defined but never used. Allowed unused args must match /^_/u                            @typescript-eslint/no-unused-vars
+
+/Users/joe.mearman/Documents/Research/PhD/Academic Explorer/src/components/organisms/graph-layout/force-simulation.ts
+   19:8   error  Function 'createForceSimulation' has too many parameters (3). Maximum allowed is 1  max-params
+   39:79  error  Arrow function has too many parameters (2). Maximum allowed is 1                    max-params
+   82:1   error  Function 'applyRepulsionForces' has too many parameters (2). Maximum allowed is 1   max-params
+  104:1   error  Function 'applyAttractionForces' has too many parameters (3). Maximum allowed is 1  max-params
+  130:1   error  Function 'updatePositions' has too many parameters (4). Maximum allowed is 1        max-params
+  150:8   error  Function 'createCircularLayout' has too many parameters (3). Maximum allowed is 1   max-params
+  159:39  error  Arrow function has too many parameters (2). Maximum allowed is 1                    max-params
+
+/Users/joe.mearman/Documents/Research/PhD/Academic Explorer/src/components/organisms/graph-search/GraphSearch.enhanced.test.ts
+   12:3   error  'SearchResultWithScore' is defined but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+   13:3   error  'GraphSearchOptions' is defined but never used. Allowed unused vars must match /^_/u     @typescript-eslint/no-unused-vars
+  397:64  error  Arrow function has too many parameters (2). Maximum allowed is 1                         max-params
+
+/Users/joe.mearman/Documents/Research/PhD/Academic Explorer/src/components/organisms/graph-search/GraphSearch.tsx
+   23:1   error  Function 'searchVertices' has too many parameters (2). Maximum allowed is 1  max-params
+   64:30  error  Arrow function has too many parameters (2). Maximum allowed is 1             max-params
+  205:46  error  Arrow function has too many parameters (2). Maximum allowed is 1             max-params
+
+/Users/joe.mearman/Documents/Research/PhD/Academic Explorer/src/components/organisms/graph-search/graph-search-enhanced.ts
+   43:14  error    Function has too many parameters (2). Maximum allowed is 1                                   max-params
+   64:3   error    Constructor has too many parameters (2). Maximum allowed is 1                                max-params
+   73:3   error    Method 'searchWithTfIdf' has too many parameters (2). Maximum allowed is 1                   max-params
+  109:3   error    Method 'getSuggestions' has too many parameters (2). Maximum allowed is 1                    max-params
+  120:20  error    Arrow function has too many parameters (2). Maximum allowed is 1                             max-params
+  169:3   error    Method 'calculateTfIdfScore' has too many parameters (2). Maximum allowed is 1               max-params
+  193:3   error    Method 'getTermFrequency' has too many parameters (2). Maximum allowed is 1                  max-params
+  210:3   error    Method 'determineMatchType' has too many parameters (3). Maximum allowed is 1                max-params
+  222:3   error    Method 'isMetadataMatch' has too many parameters (2). Maximum allowed is 1                   max-params
+  230:3   error    Method 'getMatchedFields' has too many parameters (2). Maximum allowed is 1                  max-params
+  253:3   error    Method 'sortResults' has too many parameters (2). Maximum allowed is 1                       max-params
+  256:36  error    Arrow function has too many parameters (2). Maximum allowed is 1                             max-params
+  258:36  error    Arrow function has too many parameters (2). Maximum allowed is 1                             max-params
+  260:36  error    Arrow function has too many parameters (2). Maximum allowed is 1                             max-params
+  262:36  error    Arrow function has too many parameters (2). Maximum allowed is 1                             max-params
+  269:36  error    Arrow function has too many parameters (2). Maximum allowed is 1                             max-params
+  273:3   error    Method 'updateIndexForVertex' has too many parameters (2). Maximum allowed is 1              max-params
+  331:3   error    Method 'cacheResults' has too many parameters (2). Maximum allowed is 1                      max-params
+  390:8   error    Function 'fuzzySearch' has too many parameters (3). Maximum allowed is 1                     max-params
+  474:8   error    Function 'filterByEntityType' has too many parameters (2). Maximum allowed is 1              max-params
+  478:8   error    Function 'filterByVisitStatus' has too many parameters (2). Maximum allowed is 1             max-params
+  485:8   error    Function 'filterByCitationRange' has too many parameters (2). Maximum allowed is 1           max-params
+  493:8   error    Function 'filterByDate' has too many parameters (2). Maximum allowed is 1                    max-params
+  506:8   error    Function 'sortSearchResults' has too many parameters (2). Maximum allowed is 1               max-params
+  509:34  error    Arrow function has too many parameters (2). Maximum allowed is 1                             max-params
+  511:34  error    Arrow function has too many parameters (2). Maximum allowed is 1                             max-params
+  513:34  error    Arrow function has too many parameters (2). Maximum allowed is 1                             max-params
+  515:34  error    Arrow function has too many parameters (2). Maximum allowed is 1                             max-params
+  522:34  error    Arrow function has too many parameters (2). Maximum allowed is 1                             max-params
+  529:8   error    Function 'highlightSearchTerm' has too many parameters (3). Maximum allowed is 1             max-params
+  539:8   error    Function 'createAdvancedGraphSearch' has too many parameters (2). Maximum allowed is 1       max-params
+  543:11  error    Function has too many parameters (2). Maximum allowed is 1                                   max-params
+  544:22  error    Function has too many parameters (2). Maximum allowed is 1                                   max-params
+  555:78  error    Arrow function has too many parameters (2). Maximum allowed is 1                             max-params
+  576:5   error    Method 'searchWithFilters' has too many parameters (2). Maximum allowed is 1                 max-params
+  596:1   error    Function 'getFieldValue' has too many parameters (2). Maximum allowed is 1                   max-params
+  599:16  warning  Unexpected any. Specify a different type                                                     @typescript-eslint/no-explicit-any
+  605:21  warning  Unexpected any. Specify a different type                                                     @typescript-eslint/no-explicit-any
+  608:1   error    Function 'calculateLevenshteinSimilarity' has too many parameters (2). Maximum allowed is 1  max-params
+  635:1   error    Function 'createHighlights' has too many parameters (3). Maximum allowed is 1                max-params
+  652:1   error    Function 'applyFiltersOnly' has too many parameters (2). Maximum allowed is 1                max-params
+
+/Users/joe.mearman/Documents/Research/PhD/Academic Explorer/src/components/organisms/graph-svg/GraphSVG.tsx
+   62:18  error  Function has too many parameters (2). Maximum allowed is 1  max-params
+   63:23  error  Function has too many parameters (2). Maximum allowed is 1  max-params
+  154:18  error  Function has too many parameters (2). Maximum allowed is 1  max-params
+  155:23  error  Function has too many parameters (2). Maximum allowed is 1  max-params
+
+/Users/joe.mearman/Documents/Research/PhD/Academic Explorer/src/components/organisms/graph-svg/graph-virtualization.ts
+   85:8   error  Function 'getVisibleVertices' has too many parameters (2). Maximum allowed is 1       max-params
+  100:8   error  Function 'getVisibleEdges' has too many parameters (3). Maximum allowed is 1          max-params
+  121:8   error  Function 'createLevelOfDetail' has too many parameters (2). Maximum allowed is 1      max-params
+  144:29  error  Arrow function has too many parameters (2). Maximum allowed is 1                      max-params
+  178:8   error  Function 'optimizeVertexRendering' has too many parameters (2). Maximum allowed is 1  max-params
+  219:30  error  Arrow function has too many parameters (2). Maximum allowed is 1                      max-params
+  226:8   error  Function 'createSpatialIndex' has too many parameters (2). Maximum allowed is 1       max-params
+  237:53  error  Arrow function has too many parameters (2). Maximum allowed is 1                      max-params
+  331:8   error  Function 'updateVirtualization' has too many parameters (5). Maximum allowed is 1     max-params
+  423:3   error  Method 'updateData' has too many parameters (2). Maximum allowed is 1                 max-params
+  501:52  error  Arrow function has too many parameters (2). Maximum allowed is 1                      max-params
+  564:70  error  Arrow function has too many parameters (2). Maximum allowed is 1                      max-params
+
+/Users/joe.mearman/Documents/Research/PhD/Academic Explorer/src/components/organisms/graph-utils/graph-export.ts
+   16:8   error  Async function 'exportGraphAsPNG' has too many parameters (2). Maximum allowed is 1      max-params
+   66:42  error  Arrow function has too many parameters (2). Maximum allowed is 1                         max-params
+  104:8   error  Function 'exportGraphAsSVG' has too many parameters (2). Maximum allowed is 1            max-params
+  150:1   error  Function 'downloadBlob' has too many parameters (2). Maximum allowed is 1                max-params
+  235:8   error  Function 'generateExportFilename' has too many parameters (2). Maximum allowed is 1      max-params
+  243:8   error  Function 'getOptimalExportDimensions' has too many parameters (2). Maximum allowed is 1  max-params
+
+/Users/joe.mearman/Documents/Research/PhD/Academic Explorer/src/components/organisms/hooks/use-data-formatting.ts
+   8:1   error  Function 'jsonReplacer' has too many parameters (2). Maximum allowed is 1       max-params
+  50:8   error  Function 'useDataFormatting' has too many parameters (2). Maximum allowed is 1  max-params
+  53:63  error  Arrow function has too many parameters (2). Maximum allowed is 1                max-params
+
+/Users/joe.mearman/Documents/Research/PhD/Academic Explorer/src/components/organisms/hooks/use-graph-interactions-advanced.ts
+   80:28   error    Function has too many parameters (2). Maximum allowed is 1                                max-params
+   83:22   error    Function has too many parameters (2). Maximum allowed is 1                                max-params
+   89:8    warning  Function 'useAdvancedGraphInteractions' has too many lines (454). Maximum allowed is 270  max-lines-per-function
+  260:64   error    Arrow function has too many parameters (2). Maximum allowed is 1                          max-params
+  273:65   error    Arrow function has too many parameters (2). Maximum allowed is 1                          max-params
+  315:97   error    Arrow function has too many parameters (2). Maximum allowed is 1                          max-params
+  439:43   error    Arrow function has too many parameters (2). Maximum allowed is 1                          max-params
+  440:43   error    Arrow function has too many parameters (2). Maximum allowed is 1                          max-params
+  503:129  error    Arrow function has too many parameters (2). Maximum allowed is 1                          max-params
+  565:85   error    Arrow function has too many parameters (3). Maximum allowed is 1                          max-params
+
+/Users/joe.mearman/Documents/Research/PhD/Academic Explorer/src/components/organisms/hooks/use-graph-interactions.advanced.test.ts
+   41:1   error    Function 'createMockMouseEvent' has too many parameters (2). Maximum allowed is 1  max-params
+  198:42  warning  Arrow function has too many lines (336). Maximum allowed is 270                    max-lines-per-function
+  261:64  warning  Unexpected any. Specify a different type                                           @typescript-eslint/no-explicit-any
+  281:64  warning  Unexpected any. Specify a different type                                           @typescript-eslint/no-explicit-any
+  311:64  warning  Unexpected any. Specify a different type                                           @typescript-eslint/no-explicit-any
+  400:67  error    Arrow function has too many parameters (2). Maximum allowed is 1                   max-params
+  609:64  warning  Unexpected any. Specify a different type                                           @typescript-eslint/no-explicit-any
+
+/Users/joe.mearman/Documents/Research/PhD/Academic Explorer/src/components/organisms/hooks/use-graph-interactions.ts
+  68:85  error  Arrow function has too many parameters (3). Maximum allowed is 1  max-params
+
+/Users/joe.mearman/Documents/Research/PhD/Academic Explorer/src/components/organisms/hooks/use-raw-data-actions.ts
+   6:19  error  Function has too many parameters (4). Maximum allowed is 1        max-params
+  27:5   error  Arrow function has too many parameters (4). Maximum allowed is 1  max-params
+
+/Users/joe.mearman/Documents/Research/PhD/Academic Explorer/src/components/organisms/network-status-indicator.tsx
+   22:1   error  Function 'getConnectionDisplay' has too many parameters (2). Maximum allowed is 1  max-params
+  233:58  error  Arrow function has too many parameters (2). Maximum allowed is 1                   max-params
+
+/Users/joe.mearman/Documents/Research/PhD/Academic Explorer/src/components/organisms/offline-manager.tsx
+  122:22  error    Function has too many parameters (2). Maximum allowed is 1                                                       max-params
+  138:42  error    Arrow function has too many parameters (2). Maximum allowed is 1                                                 max-params
+  348:48  warning  Unexpected any. Specify a different type                                                                         @typescript-eslint/no-explicit-any
+  367:6   warning  React Hook useEffect has a missing dependency: 'queueManager'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+  440:49  error    Arrow function has too many parameters (2). Maximum allowed is 1                                                 max-params
+
+/Users/joe.mearman/Documents/Research/PhD/Academic Explorer/src/components/organisms/query-builder-enhanced.component.test.tsx
+   79:45  warning  Arrow function has too many lines (395). Maximum allowed is 270  max-lines-per-function
+  562:18  warning  Unexpected any. Specify a different type                         @typescript-eslint/no-explicit-any
+
+/Users/joe.mearman/Documents/Research/PhD/Academic Explorer/src/components/organisms/query-history.tsx
+  113:50  error  Arrow function has too many parameters (2). Maximum allowed is 1  max-params
+
+/Users/joe.mearman/Documents/Research/PhD/Academic Explorer/src/components/organisms/query-preview.tsx
+   23:8   warning  Function 'QueryPreview' has a complexity of 32. Maximum allowed is 30  complexity
+  149:52  error    Arrow function has too many parameters (2). Maximum allowed is 1       max-params
+  236:68  error    Arrow function has too many parameters (2). Maximum allowed is 1       max-params
+
+/Users/joe.mearman/Documents/Research/PhD/Academic Explorer/src/components/organisms/raw-data-view.tsx
+  60:1   error  Function 'createActionHandlers' has too many parameters (7). Maximum allowed is 1  max-params
+  65:19  error  Function has too many parameters (4). Maximum allowed is 1                         max-params
+
+/Users/joe.mearman/Documents/Research/PhD/Academic Explorer/src/components/organisms/search-history.tsx
+  27:43  error  Arrow function has too many parameters (2). Maximum allowed is 1  max-params
+
+/Users/joe.mearman/Documents/Research/PhD/Academic Explorer/src/components/organisms/source-external-links.tsx
+  95:42  error  Arrow function has too many parameters (2). Maximum allowed is 1  max-params
+
+/Users/joe.mearman/Documents/Research/PhD/Academic Explorer/src/components/organisms/source-publication-details.tsx
+  125:72  error  Arrow function has too many parameters (2). Maximum allowed is 1  max-params
+  154:70  error  Arrow function has too many parameters (2). Maximum allowed is 1  max-params
+
+/Users/joe.mearman/Documents/Research/PhD/Academic Explorer/src/components/organisms/validation-analytics-dashboard.tsx
+  226:32  error  Arrow function has too many parameters (2). Maximum allowed is 1  max-params
+  269:44  error  Arrow function has too many parameters (2). Maximum allowed is 1  max-params
+  296:45  error  Arrow function has too many parameters (2). Maximum allowed is 1  max-params
+  307:56  error  Arrow function has too many parameters (2). Maximum allowed is 1  max-params
+  333:34  error  Arrow function has too many parameters (2). Maximum allowed is 1  max-params
+  790:47  error  Arrow function has too many parameters (2). Maximum allowed is 1  max-params
+  824:52  error  Arrow function has too many parameters (2). Maximum allowed is 1  max-params
+
+/Users/joe.mearman/Documents/Research/PhD/Academic Explorer/src/components/organisms/validation-dashboard.tsx
+  255:74  error  Arrow function has too many parameters (2). Maximum allowed is 1  max-params
+
+/Users/joe.mearman/Documents/Research/PhD/Academic Explorer/src/components/organisms/work-external-links.tsx
+   60:1   error  Function 'renderWorkLinkCard' has too many parameters (2). Maximum allowed is 1  max-params
+  109:42  error  Arrow function has too many parameters (2). Maximum allowed is 1                 max-params
+
+/Users/joe.mearman/Documents/Research/PhD/Academic Explorer/src/components/organisms/works-overview.tsx
+  22:18  error  Arrow function has too many parameters (2). Maximum allowed is 1  max-params
+
+/Users/joe.mearman/Documents/Research/PhD/Academic Explorer/src/components/templates/enhanced-error-boundary.tsx
+   78:13  error    Function has too many parameters (2). Maximum allowed is 1                        max-params
+   79:16  error    Function has too many parameters (2). Maximum allowed is 1                        max-params
+  105:1   error    Function 'classifyError' has too many parameters (2). Maximum allowed is 1        max-params
+  105:1   warning  Function 'classifyError' has too many lines (147). Maximum allowed is 60          max-lines-per-function
+  105:1   warning  Function 'classifyError' has a complexity of 46. Maximum allowed is 16            complexity
+  273:1   warning  Function 'EnhancedErrorFallback' has too many lines (173). Maximum allowed is 60  max-lines-per-function
+  273:1   warning  Function 'EnhancedErrorFallback' has a complexity of 17. Maximum allowed is 16    complexity
+  420:51  error    Arrow function has too many parameters (2). Maximum allowed is 1                  max-params
+  462:8   warning  Function 'EnhancedErrorBoundary' has too many lines (163). Maximum allowed is 60  max-lines-per-function
+  618:35  error    Arrow function has too many parameters (2). Maximum allowed is 1                  max-params
+
+/Users/joe.mearman/Documents/Research/PhD/Academic Explorer/src/components/templates/entity-page-template.tsx
+   28:11  error  Arrow function has too many parameters (2). Maximum allowed is 1  max-params
+   84:76  error  Arrow function has too many parameters (2). Maximum allowed is 1  max-params
+  121:9   error  Arrow function has too many parameters (2). Maximum allowed is 1  max-params
+
+/Users/joe.mearman/Documents/Research/PhD/Academic Explorer/src/components/templates/error-boundary.component.test.tsx
+   39:13  error  Function has too many parameters (2). Maximum allowed is 1                    max-params
+  111:7   error  Method 'componentDidCatch' has too many parameters (2). Maximum allowed is 1  max-params
+
+/Users/joe.mearman/Documents/Research/PhD/Academic Explorer/src/components/templates/error-boundary.tsx
+  87:35  error  Arrow function has too many parameters (2). Maximum allowed is 1  max-params
+
+/Users/joe.mearman/Documents/Research/PhD/Academic Explorer/src/components/templates/hooks/use-graph-actions.ts
+  13:13  error  Use object destructuring  prefer-destructuring
+
+/Users/joe.mearman/Documents/Research/PhD/Academic Explorer/src/components/templates/page-with-panes.tsx
+  28:8    warning  Function 'PageWithPanes' has too many lines (103). Maximum allowed is 60  max-lines-per-function
+  46:106  error    Arrow function has too many parameters (2). Maximum allowed is 1          max-params
+  52:101  error    Arrow function has too many parameters (2). Maximum allowed is 1          max-params
+
+/Users/joe.mearman/Documents/Research/PhD/Academic Explorer/src/components/templates/two-pane-layout.component.test.tsx
+   14:5   error    Method 'setItem' has too many parameters (2). Maximum allowed is 1  max-params
+   37:37  warning  Arrow function has too many lines (449). Maximum allowed is 60      max-lines-per-function
+  130:45  warning  Arrow function has too many lines (77). Maximum allowed is 60       max-lines-per-function
+  238:41  warning  Arrow function has too many lines (63). Maximum allowed is 60       max-lines-per-function
+
+/Users/joe.mearman/Documents/Research/PhD/Academic Explorer/src/components/templates/two-pane-layout.tsx
+  185:23  error    Function has too many parameters (2). Maximum allowed is 1                        max-params
+  187:28  error    Function has too many parameters (2). Maximum allowed is 1                        max-params
+  213:1   error    Function 'calculatePaneWidths' has too many parameters (4). Maximum allowed is 1  max-params
+  227:1   error    Function 'createPaneConfigs' has too many parameters (2). Maximum allowed is 1    max-params
+  271:8   warning  Function 'TwoPaneLayout' has too many lines (93). Maximum allowed is 60           max-lines-per-function
+
+/Users/joe.mearman/Documents/Research/PhD/Academic Explorer/src/components/types.ts
+  364:13  error  Function has too many parameters (2). Maximum allowed is 1  max-params
+
+/Users/joe.mearman/Documents/Research/PhD/Academic Explorer/src/components/utils/entity-fetcher.tsx
+  106:1  error  Async function 'fetchFromApi' has too many parameters (2). Maximum allowed is 1  max-params
+  138:8  error  Function 'useEntityData' has too many parameters (2). Maximum allowed is 1       max-params
+
+/Users/joe.mearman/Documents/Research/PhD/Academic Explorer/src/contexts/network-provider.tsx
+  105:1   error  Function 'networkProviderReducer' has too many parameters (2). Maximum allowed is 1  max-params
+  198:70  error  Arrow function has too many parameters (2). Maximum allowed is 1                     max-params
+  207:73  error  Arrow function has too many parameters (2). Maximum allowed is 1                     max-params
+
+/Users/joe.mearman/Documents/Research/PhD/Academic Explorer/src/contexts/network-provider.unit.test.tsx
+  159:13  error  Use object destructuring                                          prefer-destructuring
+  652:61  error  Arrow function has too many parameters (2). Maximum allowed is 1  max-params
+
+/Users/joe.mearman/Documents/Research/PhD/Academic Explorer/src/contexts/network-provider.utils.ts
+  18:8  error  Function 'loadPersistedData' has too many parameters (2). Maximum allowed is 1  max-params
+  37:8  error  Function 'saveDataToStorage' has too many parameters (2). Maximum allowed is 1  max-params
+
+/Users/joe.mearman/Documents/Research/PhD/Academic Explorer/src/hooks/use-adaptive-retry.ts
+   55:1   error  Function 'getNetworkAdaptationFactor' has too many parameters (2). Maximum allowed is 1  max-params
+  143:82  error  Arrow function has too many parameters (2). Maximum allowed is 1                         max-params
+
+/Users/joe.mearman/Documents/Research/PhD/Academic Explorer/src/hooks/use-advanced-search-form.ts
+  68:5  error  Arrow function has too many parameters (2). Maximum allowed is 1  max-params
+
+/Users/joe.mearman/Documents/Research/PhD/Academic Explorer/src/hooks/use-author-works.ts
+  37:8    error  Function 'useAuthorWorks' has too many parameters (2). Maximum allowed is 1  max-params
+  59:100  error  Arrow function has too many parameters (2). Maximum allowed is 1             max-params
+  71:69   error  Arrow function has too many parameters (2). Maximum allowed is 1             max-params
+  85:20   error  Async arrow function has too many parameters (2). Maximum allowed is 1       max-params
+
+/Users/joe.mearman/Documents/Research/PhD/Academic Explorer/src/hooks/use-autocomplete-search.component.test.tsx
+  243:13  error  Use object destructuring  prefer-destructuring
+  555:13  error  Use object destructuring  prefer-destructuring
+
+/Users/joe.mearman/Documents/Research/PhD/Academic Explorer/src/hooks/use-autocomplete-search.ts
+   49:31  error  Arrow function has too many parameters (2). Maximum allowed is 1  max-params
+  118:22  error  Arrow function has too many parameters (2). Maximum allowed is 1  max-params
+
+/Users/joe.mearman/Documents/Research/PhD/Academic Explorer/src/hooks/use-comparison-data.ts
+  129:1   error  Function 'extractEntityMetrics' has too many parameters (2). Maximum allowed is 1  max-params
+  208:1   error  Function 'calculateRanking' has too many parameters (2). Maximum allowed is 1      max-params
+  214:51  error  Arrow function has too many parameters (2). Maximum allowed is 1                   max-params
+  229:1   error  Function 'formatMetricValue' has too many parameters (2). Maximum allowed is 1     max-params
+  247:42  error  Arrow function has too many parameters (2). Maximum allowed is 1                   max-params
+  250:40  error  Arrow function has too many parameters (2). Maximum allowed is 1                   max-params
+  269:1   error  Function 'generateInsights' has too many parameters (3). Maximum allowed is 1      max-params
+  277:59  error  Arrow function has too many parameters (2). Maximum allowed is 1                   max-params
+  459:58  error  Arrow function has too many parameters (2). Maximum allowed is 1                   max-params
+  461:58  error  Arrow function has too many parameters (2). Maximum allowed is 1                   max-params
+
+/Users/joe.mearman/Documents/Research/PhD/Academic Explorer/src/hooks/use-enhanced-cache.ts
+   43:24  error  Function has too many parameters (2). Maximum allowed is 1        max-params
+  181:80  error  Arrow function has too many parameters (2). Maximum allowed is 1  max-params
+  278:16  error  Function has too many parameters (2). Maximum allowed is 1        max-params
+  279:18  error  Function has too many parameters (3). Maximum allowed is 1        max-params
+  281:74  error  Arrow function has too many parameters (2). Maximum allowed is 1  max-params
+  285:90  error  Arrow function has too many parameters (3). Maximum allowed is 1  max-params
+
+/Users/joe.mearman/Documents/Research/PhD/Academic Explorer/src/hooks/use-entity-data-enhanced.ts
+  193:1   error  Function 'createEntityError' has too many parameters (3). Maximum allowed is 1      max-params
+  268:1   error  Async function 'fetchEntityData' has too many parameters (3). Maximum allowed is 1  max-params
+  338:8   error  Function 'useEntityData' has too many parameters (3). Maximum allowed is 1          max-params
+  432:17  error  Async arrow function has too many parameters (3). Maximum allowed is 1              max-params
+  464:20  error  Arrow function has too many parameters (3). Maximum allowed is 1                    max-params
+
+/Users/joe.mearman/Documents/Research/PhD/Academic Explorer/src/hooks/use-entity-data-with-tracking.ts
+   32:8  error  Function 'useEntityDataWithTracking' has too many parameters (3). Maximum allowed is 1       max-params
+   94:8  error  Function 'useWorkDataWithTracking' has too many parameters (2). Maximum allowed is 1         max-params
+  101:8  error  Function 'useAuthorDataWithTracking' has too many parameters (2). Maximum allowed is 1       max-params
+  108:8  error  Function 'useSourceDataWithTracking' has too many parameters (2). Maximum allowed is 1       max-params
+  115:8  error  Function 'useInstitutionDataWithTracking' has too many parameters (2). Maximum allowed is 1  max-params
+  122:8  error  Function 'usePublisherDataWithTracking' has too many parameters (2). Maximum allowed is 1    max-params
+  129:8  error  Function 'useFunderDataWithTracking' has too many parameters (2). Maximum allowed is 1       max-params
+  136:8  error  Function 'useTopicDataWithTracking' has too many parameters (2). Maximum allowed is 1        max-params
+  143:8  error  Function 'useConceptDataWithTracking' has too many parameters (2). Maximum allowed is 1      max-params
+  150:8  error  Function 'useContinentDataWithTracking' has too many parameters (2). Maximum allowed is 1    max-params
+  157:8  error  Function 'useKeywordDataWithTracking' has too many parameters (2). Maximum allowed is 1      max-params
+  164:8  error  Function 'useRegionDataWithTracking' has too many parameters (2). Maximum allowed is 1       max-params
+
+/Users/joe.mearman/Documents/Research/PhD/Academic Explorer/src/hooks/use-entity-data.ts
+  136:1   error  Function 'createEntityError' has too many parameters (2). Maximum allowed is 1                 max-params
+  197:1   error  Async function 'fetchEntityData' has too many parameters (3). Maximum allowed is 1             max-params
+  268:34  error  Arrow function has too many parameters (2). Maximum allowed is 1                               max-params
+  278:1   error  Async function 'fetchEntityDataWithTimeout' has too many parameters (4). Maximum allowed is 1  max-params
+  299:1   error  Function 'scheduleAutoRetryIfNeeded' has too many parameters (8). Maximum allowed is 1         max-params
+  397:8   error  Function 'useEntityData' has too many parameters (3). Maximum allowed is 1                     max-params
+  674:8   error  Function 'useWorkData' has too many parameters (2). Maximum allowed is 1                       max-params
+  684:8   error  Function 'useAuthorData' has too many parameters (2). Maximum allowed is 1                     max-params
+  694:8   error  Function 'useSourceData' has too many parameters (2). Maximum allowed is 1                     max-params
+  704:8   error  Function 'useInstitutionData' has too many parameters (2). Maximum allowed is 1                max-params
+  714:8   error  Function 'usePublisherData' has too many parameters (2). Maximum allowed is 1                  max-params
+  724:8   error  Function 'useFunderData' has too many parameters (2). Maximum allowed is 1                     max-params
+  734:8   error  Function 'useTopicData' has too many parameters (2). Maximum allowed is 1                      max-params
+  744:8   error  Function 'useConceptData' has too many parameters (2). Maximum allowed is 1                    max-params
+  754:8   error  Function 'useContinentData' has too many parameters (2). Maximum allowed is 1                  max-params
+  764:8   error  Function 'useKeywordData' has too many parameters (2). Maximum allowed is 1                    max-params
+  774:8   error  Function 'useRegionData' has too many parameters (2). Maximum allowed is 1                     max-params
+
+/Users/joe.mearman/Documents/Research/PhD/Academic Explorer/src/hooks/use-entity-graph-tracking.ts
+   59:5   error  Arrow function has too many parameters (4). Maximum allowed is 1        max-params
+  401:92  error  Arrow function has too many parameters (2). Maximum allowed is 1        max-params
+  632:94  error  Async arrow function has too many parameters (2). Maximum allowed is 1  max-params
+  680:5   error  Async arrow function has too many parameters (3). Maximum allowed is 1  max-params
+  713:11  error  Use object destructuring                                                prefer-destructuring
+
+/Users/joe.mearman/Documents/Research/PhD/Academic Explorer/src/hooks/use-form-validation.ts
+   74:18  error  Function has too many parameters (2). Maximum allowed is 1                      max-params
+  122:8   error  Function 'useFormValidation' has too many parameters (2). Maximum allowed is 1  max-params
+  170:73  error  Arrow function has too many parameters (2). Maximum allowed is 1                max-params
+  470:59  error  Arrow function has too many parameters (2). Maximum allowed is 1                max-params
+
+/Users/joe.mearman/Documents/Research/PhD/Academic Explorer/src/hooks/use-hybrid-storage.ts
+   68:5   error  Async arrow function has too many parameters (4). Maximum allowed is 1  max-params
+   83:5   error  Async arrow function has too many parameters (2). Maximum allowed is 1  max-params
+  172:69  error  Async arrow function has too many parameters (2). Maximum allowed is 1  max-params
+
+/Users/joe.mearman/Documents/Research/PhD/Academic Explorer/src/hooks/use-intelligent-offline-queue.ts
+  157:1   error  Function 'detectConflict' has too many parameters (2). Maximum allowed is 1         max-params
+  198:1   error  Async function 'resolveConflict' has too many parameters (2). Maximum allowed is 1  max-params
+  248:1   error  Function 'createRequestBatches' has too many parameters (2). Maximum allowed is 1   max-params
+  256:52  error  Arrow function has too many parameters (2). Maximum allowed is 1                    max-params
+  346:1   error  Function 'savePersistedData' has too many parameters (2). Maximum allowed is 1      max-params
+  435:54  error  Arrow function has too many parameters (2). Maximum allowed is 1                    max-params
+  542:41  error  Arrow function has too many parameters (2). Maximum allowed is 1                    max-params
+  554:37  error  Arrow function has too many parameters (2). Maximum allowed is 1                    max-params
+  572:11  error  Arrow function has too many parameters (2). Maximum allowed is 1                    max-params
+
+/Users/joe.mearman/Documents/Research/PhD/Academic Explorer/src/hooks/use-network-status.ts
+   67:1   error  Function 'assessConnectionQuality' has too many parameters (3). Maximum allowed is 1  max-params
+  153:11  error  Use object destructuring                                                              prefer-destructuring
+  154:11  error  Use object destructuring                                                              prefer-destructuring
+
+/Users/joe.mearman/Documents/Research/PhD/Academic Explorer/src/hooks/use-numeric-id-redirect.ts
+  24:8  error  Function 'useNumericIdRedirect' has too many parameters (2). Maximum allowed is 1  max-params
+
+/Users/joe.mearman/Documents/Research/PhD/Academic Explorer/src/hooks/use-offline-queue.ts
+  206:37  error  Arrow function has too many parameters (2). Maximum allowed is 1  max-params
+  280:15  error  Use object destructuring                                          prefer-destructuring
+
+/Users/joe.mearman/Documents/Research/PhD/Academic Explorer/src/hooks/use-pane-layout.ts
+   24:17  error  Function has too many parameters (2). Maximum allowed is 1        max-params
+   28:15  error  Function has too many parameters (2). Maximum allowed is 1        max-params
+  128:80  error  Arrow function has too many parameters (2). Maximum allowed is 1  max-params
+  170:76  error  Arrow function has too many parameters (2). Maximum allowed is 1  max-params
+
+/Users/joe.mearman/Documents/Research/PhD/Academic Explorer/src/hooks/use-persistent-search-filters.ts
+   22:16   error  Function has too many parameters (2). Maximum allowed is 1              max-params
+   77:3    error  Async method 'save' has too many parameters (2). Maximum allowed is 1   max-params
+  150:106  error  Async arrow function has too many parameters (2). Maximum allowed is 1  max-params
+
+/Users/joe.mearman/Documents/Research/PhD/Academic Explorer/src/hooks/use-prefetch-entity.ts
+   31:13  error  Function has too many parameters (3). Maximum allowed is 1              max-params
+   77:20  error  Async arrow function has too many parameters (3). Maximum allowed is 1  max-params
+  182:13  error  Function has too many parameters (2). Maximum allowed is 1              max-params
+  288:20  error  Function has too many parameters (2). Maximum allowed is 1              max-params
+  320:20  error  Async arrow function has too many parameters (2). Maximum allowed is 1  max-params
+
+/Users/joe.mearman/Documents/Research/PhD/Academic Explorer/src/hooks/use-search-history-enhanced.ts
+   94:47  error  Arrow function has too many parameters (2). Maximum allowed is 1                                  max-params
+  109:3   error  Async method 'generatePersonalizedSuggestions' has too many parameters (2). Maximum allowed is 1  max-params
+  133:20  error  Arrow function has too many parameters (2). Maximum allowed is 1                                  max-params
+  143:76  error  Arrow function has too many parameters (2). Maximum allowed is 1                                  max-params
+  192:3   error  Async method 'updateSearchRating' has too many parameters (2). Maximum allowed is 1               max-params
+  202:3   error  Async method 'tagSearchEntry' has too many parameters (2). Maximum allowed is 1                   max-params
+  355:54  error  Arrow function has too many parameters (2). Maximum allowed is 1                                  max-params
+  372:58  error  Arrow function has too many parameters (2). Maximum allowed is 1                                  max-params
+  390:56  error  Arrow function has too many parameters (2). Maximum allowed is 1                                  max-params
+  405:3   error  Async method 'getDomainBasedSuggestions' has too many parameters (2). Maximum allowed is 1        max-params
+  413:61  error  Arrow function has too many parameters (2). Maximum allowed is 1                                  max-params
+  441:3   error  Method 'generateImprovementSuggestions' has too many parameters (2). Maximum allowed is 1         max-params
+  450:51  error  Arrow function has too many parameters (2). Maximum allowed is 1                                  max-params
+  517:78  error  Arrow function has too many parameters (2). Maximum allowed is 1                                  max-params
+  533:68  error  Arrow function has too many parameters (2). Maximum allowed is 1                                  max-params
+  537:67  error  Arrow function has too many parameters (2). Maximum allowed is 1                                  max-params
+
+/Users/joe.mearman/Documents/Research/PhD/Academic Explorer/src/hooks/use-topbar-search.ts
+  37:25  error  Arrow function has too many parameters (3). Maximum allowed is 1  max-params
+  92:22  error  Arrow function has too many parameters (2). Maximum allowed is 1  max-params
+
+/Users/joe.mearman/Documents/Research/PhD/Academic Explorer/src/hooks/use-warm-cache.ts
+   35:14  error  Function has too many parameters (2). Maximum allowed is 1              max-params
+   87:34  error  Async arrow function has too many parameters (2). Maximum allowed is 1  max-params
+  126:9   error  Method 'onError' has too many parameters (2). Maximum allowed is 1      max-params
+  201:9   error  Method 'onError' has too many parameters (2). Maximum allowed is 1      max-params
+  249:20  error  Function has too many parameters (2). Maximum allowed is 1              max-params
+  313:45  error  Arrow function has too many parameters (2). Maximum allowed is 1        max-params
+  354:11  error  Arrow function has too many parameters (2). Maximum allowed is 1        max-params
+  418:21  error  Function has too many parameters (3). Maximum allowed is 1              max-params
+  453:11  error  Arrow function has too many parameters (3). Maximum allowed is 1        max-params
+  488:20  error  Arrow function has too many parameters (2). Maximum allowed is 1        max-params
+  490:73  error  Arrow function has too many parameters (2). Maximum allowed is 1        max-params
+
+/Users/joe.mearman/Documents/Research/PhD/Academic Explorer/src/lib/data/entity-fetchers.ts
+   49:3   error  Constructor has too many parameters (7). Maximum allowed is 1                            max-params
+  136:1   error  Function 'parseAndValidateId' has too many parameters (3). Maximum allowed is 1          max-params
+  198:1   error  Function 'handleApiError' has too many parameters (3). Maximum allowed is 1              max-params
+  280:1   error  Async function 'fetchEntityWithRetry' has too many parameters (4). Maximum allowed is 1  max-params
+  318:1   error  Function 'createEntityFetcher' has too many parameters (2). Maximum allowed is 1         max-params
+  322:10  error  Async function 'fetchEntity' has too many parameters (2). Maximum allowed is 1           max-params
+  475:8   error  Async function 'fetchAnyEntity' has too many parameters (2). Maximum allowed is 1        max-params
+  537:8   error  Async function 'fetchEntitiesBatch' has too many parameters (3). Maximum allowed is 1    max-params
+  539:12  error  Function has too many parameters (2). Maximum allowed is 1                               max-params
+  576:8   error  Async function 'checkEntityExists' has too many parameters (3). Maximum allowed is 1     max-params
+  602:8   error  Async function 'preloadEntities' has too many parameters (2). Maximum allowed is 1       max-params
+
+/Users/joe.mearman/Documents/Research/PhD/Academic Explorer/src/lib/data/entity-service.ts
+  100:1  error  Function 'createServiceError' has too many parameters (3). Maximum allowed is 1          max-params
+  187:1  error  Function 'validateAndNormalizeId' has too many parameters (2). Maximum allowed is 1      max-params
+  233:1  error  Async function 'executeEntityFetch' has too many parameters (4). Maximum allowed is 1    max-params
+  261:1  error  Async function 'fetchEntity' has too many parameters (3). Maximum allowed is 1           max-params
+  328:8  error  Async function 'fetchWork' has too many parameters (2). Maximum allowed is 1             max-params
+  338:8  error  Async function 'fetchAuthor' has too many parameters (2). Maximum allowed is 1           max-params
+  348:8  error  Async function 'fetchSource' has too many parameters (2). Maximum allowed is 1           max-params
+  358:8  error  Async function 'fetchInstitution' has too many parameters (2). Maximum allowed is 1      max-params
+  368:8  error  Async function 'fetchPublisher' has too many parameters (2). Maximum allowed is 1        max-params
+  378:8  error  Async function 'fetchFunder' has too many parameters (2). Maximum allowed is 1           max-params
+  388:8  error  Async function 'fetchTopic' has too many parameters (2). Maximum allowed is 1            max-params
+  398:8  error  Async function 'fetchAnyEntity' has too many parameters (2). Maximum allowed is 1        max-params
+  408:8  error  Async function 'fetchEntitiesBatch' has too many parameters (3). Maximum allowed is 1    max-params
+  446:8  error  Async function 'fetchEntityWithRetry' has too many parameters (3). Maximum allowed is 1  max-params
+  484:8  error  Function 'validateEntityIdFormat' has too many parameters (2). Maximum allowed is 1      max-params
+  512:8  error  Async function 'checkEntityExists' has too many parameters (3). Maximum allowed is 1     max-params
+
+/Users/joe.mearman/Documents/Research/PhD/Academic Explorer/src/lib/db.test-utils.ts
+  69:8   error  Function 'createMockOpenDB' has too many parameters (2). Maximum allowed is 1  max-params
+  74:17  error  Function has too many parameters (5). Maximum allowed is 1                     max-params
+  79:5   error  Arrow function has too many parameters (3). Maximum allowed is 1               max-params
+
+/Users/joe.mearman/Documents/Research/PhD/Academic Explorer/src/lib/db.ts
+  119:3   error  Async method 'cacheSearchResults' has too many parameters (4). Maximum allowed is 1  max-params
+  137:3   error  Async method 'getSearchResults' has too many parameters (3). Maximum allowed is 1    max-params
+  177:3   error  Async method 'createCollection' has too many parameters (2). Maximum allowed is 1    max-params
+  194:3   error  Async method 'addToCollection' has too many parameters (2). Maximum allowed is 1     max-params
+  213:3   error  Async method 'saveSearchFilters' has too many parameters (2). Maximum allowed is 1   max-params
+  235:31  error  Arrow function has too many parameters (2). Maximum allowed is 1                     max-params
+  274:15  error  Use object destructuring                                                             prefer-destructuring
+  322:3   error  Async method 'setKeyValue' has too many parameters (2). Maximum allowed is 1         max-params
+  337:3   error  Method 'hashQuery' has too many parameters (2). Maximum allowed is 1                 max-params
+
+/Users/joe.mearman/Documents/Research/PhD/Academic Explorer/src/lib/entity-encounter-tracking.ts
+   15:8   error  Function 'recordSearchResultEncounters' has too many parameters (2). Maximum allowed is 1            max-params
+   26:41  error  Arrow function has too many parameters (2). Maximum allowed is 1                                     max-params
+   46:8   error  Function 'recordRelatedEntityEncounters' has too many parameters (3). Maximum allowed is 1           max-params
+   58:43  error  Arrow function has too many parameters (2). Maximum allowed is 1                                     max-params
+   81:8   error  Function 'recordCoAuthorEncounters' has too many parameters (2). Maximum allowed is 1                max-params
+   99:8   error  Function 'recordCitationEncounters' has too many parameters (2). Maximum allowed is 1                max-params
+  117:8   error  Function 'recordInstitutionAffiliationEncounters' has too many parameters (2). Maximum allowed is 1  max-params
+  135:8   error  Function 'recordTopicEncounters' has too many parameters (3). Maximum allowed is 1                   max-params
+  154:8   error  Function 'recordPublicationVenueEncounters' has too many parameters (2). Maximum allowed is 1        max-params
+  172:8   error  Function 'recordEntityPageEncounters' has too many parameters (2). Maximum allowed is 1              max-params
+
+/Users/joe.mearman/Documents/Research/PhD/Academic Explorer/src/lib/entity-graph-storage.ts
+  159:3  error  Async method 'upsertEntity' has too many parameters (3). Maximum allowed is 1  max-params
+  220:3  error  Async method 'addEdge' has too many parameters (4). Maximum allowed is 1       max-params
+
+/Users/joe.mearman/Documents/Research/PhD/Academic Explorer/src/lib/entity-graph-sync.ts
+   89:1  error  Function 'convertSimpleEntityToVertex' has too many parameters (2). Maximum allowed is 1      max-params
+  124:1  error  Function 'convertSimpleEdgeToEntityEdge' has too many parameters (2). Maximum allowed is 1    max-params
+  144:8  error  Async function 'saveEntityToSimpleStorage' has too many parameters (4). Maximum allowed is 1  max-params
+  165:8  error  Async function 'saveEdgeToSimpleStorage' has too many parameters (4). Maximum allowed is 1    max-params
+
+/Users/joe.mearman/Documents/Research/PhD/Academic Explorer/src/lib/graph-db.ts
+  698:3  error  Async method 'addToIndex' has too many parameters (3). Maximum allowed is 1       max-params
+  709:3  error  Async method 'removeFromIndex' has too many parameters (3). Maximum allowed is 1  max-params
+
+/Users/joe.mearman/Documents/Research/PhD/Academic Explorer/src/lib/graph-entity-tracking.ts
+   32:8   error  Async function 'recordEntityVisit' has too many parameters (5). Maximum allowed is 1                 max-params
+   64:8   error  Async function 'recordSearchResultEncounters' has too many parameters (4). Maximum allowed is 1      max-params
+  137:8   error  Async function 'recordRelatedEntityEncounters' has too many parameters (3). Maximum allowed is 1     max-params
+  179:8   error  Async function 'recordEntityRelationships' has too many parameters (2). Maximum allowed is 1         max-params
+  203:8   error  Async function 'recordEntityPageView' has too many parameters (4). Maximum allowed is 1              max-params
+  234:1   error  Async function 'recordEntityPageRelatedEntities' has too many parameters (2). Maximum allowed is 1   max-params
+  339:67  error  Arrow function has too many parameters (2). Maximum allowed is 1                                     max-params
+  417:42  error  Arrow function has too many parameters (2). Maximum allowed is 1                                     max-params
+  431:8   error  Function 'recordCoAuthorEncounters' has too many parameters (2). Maximum allowed is 1                max-params
+  446:8   error  Function 'recordCitationEncounters' has too many parameters (2). Maximum allowed is 1                max-params
+  461:8   error  Function 'recordInstitutionAffiliationEncounters' has too many parameters (2). Maximum allowed is 1  max-params
+  476:8   error  Function 'recordTopicEncounters' has too many parameters (3). Maximum allowed is 1                   max-params
+  492:8   error  Function 'recordPublicationVenueEncounters' has too many parameters (2). Maximum allowed is 1        max-params
+  510:8   error  Async function 'recordEntityPageEncounters' has too many parameters (2). Maximum allowed is 1        max-params
+
+/Users/joe.mearman/Documents/Research/PhD/Academic Explorer/src/lib/graph-helpers.ts
+   99:61  error  Arrow function has too many parameters (2). Maximum allowed is 1                               max-params
+  119:55  error  Arrow function has too many parameters (2). Maximum allowed is 1                               max-params
+  139:50  error  Arrow function has too many parameters (2). Maximum allowed is 1                               max-params
+  166:64  error  Arrow function has too many parameters (2). Maximum allowed is 1                               max-params
+  195:11  error  Use object destructuring                                                                       prefer-destructuring
+  221:46  error  Arrow function has too many parameters (2). Maximum allowed is 1                               max-params
+  248:40  error  Arrow function has too many parameters (2). Maximum allowed is 1                               max-params
+  288:40  error  Arrow function has too many parameters (2). Maximum allowed is 1                               max-params
+  310:44  error  Arrow function has too many parameters (2). Maximum allowed is 1                               max-params
+  344:54  error  Arrow function has too many parameters (2). Maximum allowed is 1                               max-params
+  373:65  error  Arrow function has too many parameters (2). Maximum allowed is 1                               max-params
+  401:42  error  Arrow function has too many parameters (2). Maximum allowed is 1                               max-params
+  431:69  error  Arrow function has too many parameters (2). Maximum allowed is 1                               max-params
+  475:47  error  Arrow function has too many parameters (2). Maximum allowed is 1                               max-params
+  526:42  error  Arrow function has too many parameters (2). Maximum allowed is 1                               max-params
+  576:49  error  Arrow function has too many parameters (2). Maximum allowed is 1                               max-params
+  655:45  error  Arrow function has too many parameters (2). Maximum allowed is 1                               max-params
+  685:49  error  Arrow function has too many parameters (2). Maximum allowed is 1                               max-params
+  708:55  error  Arrow function has too many parameters (2). Maximum allowed is 1                               max-params
+  773:8   error  Function 'relationshipsToEvents' has too many parameters (2). Maximum allowed is 1             max-params
+  797:8   error  Function 'batchExtractRelationships' has too many parameters (2). Maximum allowed is 1         max-params
+  814:8   error  Function 'extractCoOccurrenceRelationships' has too many parameters (2). Maximum allowed is 1  max-params
+  837:46  error  Arrow function has too many parameters (2). Maximum allowed is 1                               max-params
+  872:8   error  Function 'isValidRelationship' has too many parameters (3). Maximum allowed is 1               max-params
+  901:8   error  Function 'getEntityDisplayName' has too many parameters (2). Maximum allowed is 1              max-params
+
+/Users/joe.mearman/Documents/Research/PhD/Academic Explorer/src/lib/metric-formatting.ts
+  11:8  error  Function 'formatMetricValue' has too many parameters (2). Maximum allowed is 1  max-params
+
+/Users/joe.mearman/Documents/Research/PhD/Academic Explorer/src/lib/offline-first-data.ts
+   71:1   error  Function 'getDataFreshness' has too many parameters (2). Maximum allowed is 1      max-params
+   99:3   error  Method 'setContext' has too many parameters (2). Maximum allowed is 1              max-params
+  110:3   error  Async method 'getSearchResults' has too many parameters (3). Maximum allowed is 1  max-params
+  289:3   error  Async method 'savePaper' has too many parameters (2). Maximum allowed is 1         max-params
+  340:3   error  Async method 'getPaper' has too many parameters (2). Maximum allowed is 1          max-params
+  425:3   error  Async method 'fetchFromNetwork' has too many parameters (2). Maximum allowed is 1  max-params
+  446:42  error  Arrow function has too many parameters (2). Maximum allowed is 1                   max-params
+  476:3   error  Method 'buildSearchUrl' has too many parameters (2). Maximum allowed is 1          max-params
+
+/Users/joe.mearman/Documents/Research/PhD/Academic Explorer/src/lib/openalex/cache-warming.ts
+   91:13  error  Function has too many parameters (2). Maximum allowed is 1                              max-params
+  162:3   error  Async method 'prefetchEntity' has too many parameters (3). Maximum allowed is 1         max-params
+  269:3   error  Async method 'warmCache' has too many parameters (2). Maximum allowed is 1              max-params
+  350:3   error  Async method 'warmRelatedEntities' has too many parameters (3). Maximum allowed is 1    max-params
+  425:3   error  Method 'queueRelatedEntities' has too many parameters (2). Maximum allowed is 1         max-params
+  449:3   error  Method 'extractRelatedEntityIds' has too many parameters (2). Maximum allowed is 1      max-params
+  580:40  error  Arrow function has too many parameters (2). Maximum allowed is 1                        max-params
+  713:8   error  Async function 'prefetchEntity' has too many parameters (3). Maximum allowed is 1       max-params
+  721:8   error  Async function 'warmCache' has too many parameters (2). Maximum allowed is 1            max-params
+  728:8   error  Async function 'warmRelatedEntities' has too many parameters (3). Maximum allowed is 1  max-params
+
+/Users/joe.mearman/Documents/Research/PhD/Academic Explorer/src/lib/openalex/cached-client.ts
+   24:9  error  Method 'shouldCache' has too many parameters (2). Maximum allowed is 1              max-params
+   32:9  error  Method 'getCacheTTL' has too many parameters (2). Maximum allowed is 1              max-params
+   47:9  error  Method 'getCacheKey' has too many parameters (2). Maximum allowed is 1              max-params
+   64:9  error  Method 'shouldCache' has too many parameters (2). Maximum allowed is 1              max-params
+   72:9  error  Method 'getCacheTTL' has too many parameters (2). Maximum allowed is 1              max-params
+   87:9  error  Method 'getCacheKey' has too many parameters (2). Maximum allowed is 1              max-params
+   96:5  error  Method 'get' has too many parameters (3). Maximum allowed is 1                      max-params
+  125:1  error  Function 'getEndpointFromMethod' has too many parameters (2). Maximum allowed is 1  max-params
+  153:1  error  Function 'getParamsFromArgs' has too many parameters (2). Maximum allowed is 1      max-params
+
+/Users/joe.mearman/Documents/Research/PhD/Academic Explorer/src/lib/openalex/client-with-cache.ts
+   46:3  error  Async method 'cachedRequest' has too many parameters (4). Maximum allowed is 1  max-params
+  122:3  error  Async method 'works' has too many parameters (2). Maximum allowed is 1          max-params
+  131:3  error  Async method 'work' has too many parameters (2). Maximum allowed is 1           max-params
+  141:3  error  Async method 'authors' has too many parameters (2). Maximum allowed is 1        max-params
+  150:3  error  Async method 'author' has too many parameters (2). Maximum allowed is 1         max-params
+  160:3  error  Async method 'sources' has too many parameters (2). Maximum allowed is 1        max-params
+  169:3  error  Async method 'source' has too many parameters (2). Maximum allowed is 1         max-params
+  179:3  error  Async method 'institutions' has too many parameters (2). Maximum allowed is 1   max-params
+  188:3  error  Async method 'institution' has too many parameters (2). Maximum allowed is 1    max-params
+  198:3  error  Async method 'publishers' has too many parameters (2). Maximum allowed is 1     max-params
+  207:3  error  Async method 'publisher' has too many parameters (2). Maximum allowed is 1      max-params
+  217:3  error  Async method 'funders' has too many parameters (2). Maximum allowed is 1        max-params
+  226:3  error  Async method 'funder' has too many parameters (2). Maximum allowed is 1         max-params
+  236:3  error  Async method 'topics' has too many parameters (2). Maximum allowed is 1         max-params
+  245:3  error  Async method 'topic' has too many parameters (2). Maximum allowed is 1          max-params
+  255:3  error  Async method 'concepts' has too many parameters (2). Maximum allowed is 1       max-params
+  264:3  error  Async method 'concept' has too many parameters (2). Maximum allowed is 1        max-params
+
+/Users/joe.mearman/Documents/Research/PhD/Academic Explorer/src/lib/openalex/client.ts
+  112:3   error  Async method 'request' has too many parameters (3). Maximum allowed is 1               max-params
+  193:3   error  Method 'buildUrl' has too many parameters (2). Maximum allowed is 1                    max-params
+  246:53  error  Arrow function has too many parameters (2). Maximum allowed is 1                       max-params
+  273:3   error  Async method 'workNgrams' has too many parameters (2). Maximum allowed is 1            max-params
+  684:3   error  Async method 'handleEntityRedirect' has too many parameters (2). Maximum allowed is 1  max-params
+  753:3   error  Constructor has too many parameters (3). Maximum allowed is 1                          max-params
+
+/Users/joe.mearman/Documents/Research/PhD/Academic Explorer/src/lib/openalex/examples.ts
+   89:7   error  Method 'onProgress' has too many parameters (2). Maximum allowed is 1                   max-params
+  114:58  error  Async arrow function has too many parameters (2). Maximum allowed is 1                  max-params
+  211:18  error  Arrow function has too many parameters (2). Maximum allowed is 1                        max-params
+  234:8   error  Async function 'trackResearchTrends' has too many parameters (2). Maximum allowed is 1  max-params
+
+/Users/joe.mearman/Documents/Research/PhD/Academic Explorer/src/lib/openalex/utils/cache-interceptor.ts
+   11:16  error  Function has too many parameters (2). Maximum allowed is 1                          max-params
+   12:16  error  Function has too many parameters (2). Maximum allowed is 1                          max-params
+   13:16  error  Function has too many parameters (2). Maximum allowed is 1                          max-params
+   22:5   error  Method 'getCacheKey' has too many parameters (2). Maximum allowed is 1              max-params
+   27:5   error  Method 'shouldCache' has too many parameters (2). Maximum allowed is 1              max-params
+   35:5   error  Method 'getCacheKey' has too many parameters (2). Maximum allowed is 1              max-params
+   42:5   error  Method 'getCacheKey' has too many parameters (2). Maximum allowed is 1              max-params
+  130:3   error  Async method 'intercept' has too many parameters (3). Maximum allowed is 1          max-params
+  182:3   error  Async method 'storeInCache' has too many parameters (4). Maximum allowed is 1       max-params
+  269:8   error  Function 'withCache' has too many parameters (2). Maximum allowed is 1              max-params
+  274:5   error  Method 'get' has too many parameters (3). Maximum allowed is 1                      max-params
+  303:1   error  Function 'getEndpointFromMethod' has too many parameters (2). Maximum allowed is 1  max-params
+  332:1   error  Function 'getParamsFromArgs' has too many parameters (2). Maximum allowed is 1      max-params
+
+/Users/joe.mearman/Documents/Research/PhD/Academic Explorer/src/lib/openalex/utils/cache.ts
+   10:23  error  Function has too many parameters (4). Maximum allowed is 1                    max-params
+   11:21  error  Function has too many parameters (3). Maximum allowed is 1                    max-params
+   98:3   error  Method 'getCacheKey' has too many parameters (2). Maximum allowed is 1        max-params
+  103:26  error  Arrow function has too many parameters (2). Maximum allowed is 1              max-params
+  137:3   error  Method 'setToLocalStorage' has too many parameters (2). Maximum allowed is 1  max-params
+  206:25  error  Arrow function has too many parameters (2). Maximum allowed is 1              max-params
+  223:3   error  Async method 'get' has too many parameters (2). Maximum allowed is 1          max-params
+  280:3   error  Async method 'set' has too many parameters (3). Maximum allowed is 1          max-params
+  332:3   error  Async method 'delete' has too many parameters (2). Maximum allowed is 1       max-params
+  470:10  error  Function has too many parameters (3). Maximum allowed is 1                    max-params
+  507:3   error  Async method 'deduplicate' has too many parameters (2). Maximum allowed is 1  max-params
+  536:3   error  Constructor has too many parameters (3). Maximum allowed is 1                 max-params
+  543:42  error  Arrow function has too many parameters (2). Maximum allowed is 1              max-params
+  567:28  error  Arrow function has too many parameters (2). Maximum allowed is 1              max-params
+
+/Users/joe.mearman/Documents/Research/PhD/Academic Explorer/src/lib/openalex/utils/citation-network-export.enhanced.test.ts
+  558:52  error  Arrow function has too many parameters (2). Maximum allowed is 1  max-params
+  563:51  error  Arrow function has too many parameters (2). Maximum allowed is 1  max-params
+  582:51  error  Arrow function has too many parameters (2). Maximum allowed is 1  max-params
+
+/Users/joe.mearman/Documents/Research/PhD/Academic Explorer/src/lib/openalex/utils/citation-network-export.ts
+   172:8   error  Function 'getExportFilename' has too many parameters (3). Maximum allowed is 1               max-params
+   198:1   error  Function 'truncateNetwork' has too many parameters (2). Maximum allowed is 1                 max-params
+   209:54  error  Arrow function has too many parameters (2). Maximum allowed is 1                             max-params
+   299:8   error  Function 'exportCitationNetworkToJSON' has too many parameters (2). Maximum allowed is 1     max-params
+   397:8   error  Function 'exportCitationNetworkToCSV' has too many parameters (2). Maximum allowed is 1      max-params
+   600:8   error  Function 'exportCitationNetworkToGraphML' has too many parameters (2). Maximum allowed is 1  max-params
+   759:8   error  Function 'exportCitationNetworkToBibTeX' has too many parameters (2). Maximum allowed is 1   max-params
+   814:13  error  Use object destructuring                                                                     prefer-destructuring
+   851:15  error  Use object destructuring                                                                     prefer-destructuring
+   920:8   error  Function 'exportCitationNetworkToRIS' has too many parameters (2). Maximum allowed is 1      max-params
+   973:13  error  Use object destructuring                                                                     prefer-destructuring
+  1024:15  error  Use object destructuring                                                                     prefer-destructuring
+  1132:8   error  Function 'exportCitationNetworkToSVG' has too many parameters (3). Maximum allowed is 1      max-params
+  1146:8   error  Function 'exportCitationNetworkToPNG' has too many parameters (3). Maximum allowed is 1      max-params
+
+/Users/joe.mearman/Documents/Research/PhD/Academic Explorer/src/lib/openalex/utils/citation-network.ts
+   62:3   error  Async method 'getCitationChain' has too many parameters (3). Maximum allowed is 1    max-params
+   99:3   error  Async method 'traverseCitations' has too many parameters (7). Maximum allowed is 1   max-params
+  214:3   error  Async method 'getCoauthorNetwork' has too many parameters (2). Maximum allowed is 1  max-params
+  248:3   error  Async method 'traverseCoauthors' has too many parameters (6). Maximum allowed is 1   max-params
+  332:3   error  Async method 'getRelatedWorks' has too many parameters (2). Maximum allowed is 1     max-params
+  408:68  error  Arrow function has too many parameters (2). Maximum allowed is 1                     max-params
+  410:54  error  Arrow function has too many parameters (2). Maximum allowed is 1                     max-params
+
+/Users/joe.mearman/Documents/Research/PhD/Academic Explorer/src/lib/openalex/utils/convenience-methods.ts
+   24:3  error  Async method 'getHighlyCitedWorks' has too many parameters (2). Maximum allowed is 1            max-params
+   54:3  error  Async method 'getOpenAccessWorks' has too many parameters (2). Maximum allowed is 1             max-params
+   77:3  error  Async method 'getRecentWorksFromInstitution' has too many parameters (2). Maximum allowed is 1  max-params
+  105:3  error  Async method 'getAuthorCollaborators' has too many parameters (2). Maximum allowed is 1         max-params
+  138:3  error  Async method 'getTrendingTopics' has too many parameters (2). Maximum allowed is 1              max-params
+  179:3  error  Async method 'getInstitutionTopResearchers' has too many parameters (2). Maximum allowed is 1   max-params
+  199:3  error  Async method 'getWorksByLanguage' has too many parameters (2). Maximum allowed is 1             max-params
+  253:3  error  Async method 'getSourcesByPublisher' has too many parameters (2). Maximum allowed is 1          max-params
+  273:3  error  Async method 'getFundedWorks' has too many parameters (2). Maximum allowed is 1                 max-params
+  302:3  error  Async method 'searchWorksByKeywords' has too many parameters (2). Maximum allowed is 1          max-params
+
+/Users/joe.mearman/Documents/Research/PhD/Academic Explorer/src/lib/openalex/utils/enhanced-cache-interceptor.ts
+   73:17  error  Function has too many parameters (2). Maximum allowed is 1                                  max-params
+   78:20  error  Function has too many parameters (2). Maximum allowed is 1                                  max-params
+  146:3   error  Async method 'intercept' has too many parameters (3). Maximum allowed is 1                  max-params
+  236:3   error  Async method 'warmCache' has too many parameters (2). Maximum allowed is 1                  max-params
+  241:20  error  Function has too many parameters (2). Maximum allowed is 1                                  max-params
+  343:54  error  Arrow function has too many parameters (2). Maximum allowed is 1                            max-params
+  410:7   error  Method 'getCacheKey' has too many parameters (2). Maximum allowed is 1                      max-params
+  415:7   error  Method 'shouldCache' has too many parameters (2). Maximum allowed is 1                      max-params
+  422:7   error  Method 'getCacheKey' has too many parameters (2). Maximum allowed is 1                      max-params
+  432:7   error  Method 'customLogic' has too many parameters (2). Maximum allowed is 1                      max-params
+  443:7   error  Method 'prefetchTargets' has too many parameters (2). Maximum allowed is 1                  max-params
+  479:3   error  Method 'generateCacheKey' has too many parameters (2). Maximum allowed is 1                 max-params
+  488:3   error  Method 'startPerformanceTracking' has too many parameters (2). Maximum allowed is 1         max-params
+  495:3   error  Method 'updatePerformanceTracking' has too many parameters (2). Maximum allowed is 1        max-params
+  528:3   error  Method 'updateEntityMetrics' has too many parameters (3). Maximum allowed is 1              max-params
+  558:3   error  Async method 'triggerPredictivePrefetch' has too many parameters (3). Maximum allowed is 1  max-params
+  579:3   error  Async method 'processInvalidationRules' has too many parameters (3). Maximum allowed is 1   max-params
+  613:33  error  Arrow function has too many parameters (2). Maximum allowed is 1                            max-params
+
+/Users/joe.mearman/Documents/Research/PhD/Academic Explorer/src/lib/openalex/utils/entity-detection.ts
+   156:3   error  Constructor has too many parameters (2). Maximum allowed is 1                              max-params
+   415:8   error  Function 'validateExternalId' has too many parameters (2). Maximum allowed is 1            max-params
+   617:8   error  Function 'normalizeEntityId' has too many parameters (2). Maximum allowed is 1             max-params
+   670:8   error  Function 'validateEntityId' has too many parameters (2). Maximum allowed is 1              max-params
+   732:8   error  Function 'generateEntityUrl' has too many parameters (2). Maximum allowed is 1             max-params
+   752:8   error  Function 'parseEntityIdentifier' has too many parameters (2). Maximum allowed is 1         max-params
+   922:30  error  Arrow function has too many parameters (2). Maximum allowed is 1                           max-params
+  1015:8   error  Function 'entitySupportsExternalIdType' has too many parameters (2). Maximum allowed is 1  max-params
+
+/Users/joe.mearman/Documents/Research/PhD/Academic Explorer/src/lib/openalex/utils/entity-validator.ts
+   27:8  error  Async function 'validateEntityData' has too many parameters (4). Maximum allowed is 1           max-params
+  176:1  error  Function 'convertZodErrorToValidationIssues' has too many parameters (4). Maximum allowed is 1  max-params
+  193:1  error  Function 'convertZodIssueToValidationIssue' has too many parameters (4). Maximum allowed is 1   max-params
+  267:1  error  Function 'detectExtraFields' has too many parameters (5). Maximum allowed is 1                  max-params
+  364:1  error  Function 'getNestedValue' has too many parameters (2). Maximum allowed is 1                     max-params
+  379:1  error  Function 'truncateValue' has too many parameters (2). Maximum allowed is 1                      max-params
+  407:8  error  Function 'quickValidateEntity' has too many parameters (2). Maximum allowed is 1                max-params
+  422:8  error  Function 'getEntityIssuesCount' has too many parameters (2). Maximum allowed is 1               max-params
+
+/Users/joe.mearman/Documents/Research/PhD/Academic Explorer/src/lib/openalex/utils/export.ts
+  179:8   error  Function 'exportToCSV' has too many parameters (2). Maximum allowed is 1     max-params
+  224:25  error  Arrow function has too many parameters (3). Maximum allowed is 1             max-params
+  330:1   error  Function 'getNestedValue' has too many parameters (2). Maximum allowed is 1  max-params
+
+/Users/joe.mearman/Documents/Research/PhD/Academic Explorer/src/lib/openalex/utils/intelligent-cache-warming.ts
+  117:3   error  Method 'trackEntityAccess' has too many parameters (2). Maximum allowed is 1      max-params
+  148:3   error  Method 'addDependency' has too many parameters (3). Maximum allowed is 1          max-params
+  360:3   error  Method 'updateStrategy' has too many parameters (2). Maximum allowed is 1         max-params
+  417:24  error  Arrow function has too many parameters (2). Maximum allowed is 1                  max-params
+  453:3   error  Method 'updateDependencyGraph' has too many parameters (2). Maximum allowed is 1  max-params
+  467:20  error  Arrow function has too many parameters (2). Maximum allowed is 1                  max-params
+  473:28  error  Arrow function has too many parameters (2). Maximum allowed is 1                  max-params
+  502:20  error  Arrow function has too many parameters (2). Maximum allowed is 1                  max-params
+  506:3   error  Async method 'warmEntity' has too many parameters (2). Maximum allowed is 1       max-params
+
+/Users/joe.mearman/Documents/Research/PhD/Academic Explorer/src/lib/openalex/utils/pagination.ts
+   13:12  error  Function has too many parameters (2). Maximum allowed is 1             max-params
+   14:16  error  Function has too many parameters (2). Maximum allowed is 1             max-params
+   24:3   error  Constructor has too many parameters (5). Maximum allowed is 1          max-params
+  186:15  error  Function has too many parameters (2). Maximum allowed is 1             max-params
+  198:15  error  Function has too many parameters (2). Maximum allowed is 1             max-params
+  227:3   error  Constructor has too many parameters (2). Maximum allowed is 1          max-params
+  234:8   error  Function 'paginate' has too many parameters (5). Maximum allowed is 1  max-params
+  251:3   error  Constructor has too many parameters (2). Maximum allowed is 1          max-params
+
+/Users/joe.mearman/Documents/Research/PhD/Academic Explorer/src/lib/openalex/utils/query-builder.ts
+   55:3   error  Method 'equals' has too many parameters (2). Maximum allowed is 1                max-params
+   59:3   error  Method 'notEquals' has too many parameters (2). Maximum allowed is 1             max-params
+   63:3   error  Method 'greaterThan' has too many parameters (2). Maximum allowed is 1           max-params
+   67:3   error  Method 'lessThan' has too many parameters (2). Maximum allowed is 1              max-params
+   71:3   error  Method 'between' has too many parameters (3). Maximum allowed is 1               max-params
+   75:3   error  Method 'in' has too many parameters (2). Maximum allowed is 1                    max-params
+   79:3   error  Method 'contains' has too many parameters (2). Maximum allowed is 1              max-params
+   83:3   error  Method 'containsNoStem' has too many parameters (2). Maximum allowed is 1        max-params
+   93:3   error  Method 'booleanSearch' has too many parameters (2). Maximum allowed is 1         max-params
+   98:3   error  Method 'exactPhrase' has too many parameters (2). Maximum allowed is 1           max-params
+  102:3   error  Method 'startsWith' has too many parameters (2). Maximum allowed is 1            max-params
+  107:3   error  Method 'dateEquals' has too many parameters (2). Maximum allowed is 1            max-params
+  112:3   error  Method 'dateRange' has too many parameters (3). Maximum allowed is 1             max-params
+  118:3   error  Method 'dateAfter' has too many parameters (2). Maximum allowed is 1             max-params
+  123:3   error  Method 'dateBefore' has too many parameters (2). Maximum allowed is 1            max-params
+  147:3   error  Method 'includeUnknown' has too many parameters (2). Maximum allowed is 1        max-params
+  156:3   error  Method 'betweenExclusive' has too many parameters (3). Maximum allowed is 1      max-params
+  161:3   error  Method 'inWithLimit' has too many parameters (3). Maximum allowed is 1           max-params
+  170:37  error  Arrow function has too many parameters (2). Maximum allowed is 1                 max-params
+  223:5   error  Method 'byYearRange' has too many parameters (2). Maximum allowed is 1           max-params
+  245:5   error  Method 'byCitationCount' has too many parameters (2). Maximum allowed is 1       max-params
+  272:5   error  Method 'publicationDateRange' has too many parameters (2). Maximum allowed is 1  max-params
+  287:5   error  Method 'byWorksCount' has too many parameters (2). Maximum allowed is 1          max-params
+  290:5   error  Method 'byCitationCount' has too many parameters (2). Maximum allowed is 1       max-params
+  293:5   error  Method 'byHIndex' has too many parameters (2). Maximum allowed is 1              max-params
+  311:5   error  Method 'apcRange' has too many parameters (2). Maximum allowed is 1              max-params
+  326:5   error  Method 'byWorksCount' has too many parameters (2). Maximum allowed is 1          max-params
+
+/Users/joe.mearman/Documents/Research/PhD/Academic Explorer/src/lib/openalex/utils/request-manager.ts
+   97:3   error  Async method 'deduplicate' has too many parameters (2). Maximum allowed is 1         max-params
+  145:3   error  Async method 'executeWithCleanup' has too many parameters (3). Maximum allowed is 1  max-params
+  189:38  error  Arrow function has too many parameters (2). Maximum allowed is 1                     max-params
+  267:11  error  Use object destructuring                                                             prefer-destructuring
+  268:11  error  Use object destructuring                                                             prefer-destructuring
+  269:11  error  Use object destructuring                                                             prefer-destructuring
+  270:11  error  Use object destructuring                                                             prefer-destructuring
+  335:3   error  Static method 'createEntityKey' has too many parameters (3). Maximum allowed is 1    max-params
+  342:28  error  Arrow function has too many parameters (2). Maximum allowed is 1                     max-params
+  356:3   error  Static method 'createSearchKey' has too many parameters (2). Maximum allowed is 1    max-params
+  360:26  error  Arrow function has too many parameters (2). Maximum allowed is 1                     max-params
+
+/Users/joe.mearman/Documents/Research/PhD/Academic Explorer/src/lib/openalex/utils/topic-hierarchy.ts
+  126:3   error  Async method 'getTopicSiblings' has too many parameters (2). Maximum allowed is 1      max-params
+  150:3   error  Async method 'getTopicsInDomain' has too many parameters (2). Maximum allowed is 1     max-params
+  167:3   error  Async method 'getTopicsInField' has too many parameters (2). Maximum allowed is 1      max-params
+  184:3   error  Async method 'getTopicsInSubfield' has too many parameters (2). Maximum allowed is 1   max-params
+  201:3   error  Async method 'getWorksInDomain' has too many parameters (2). Maximum allowed is 1      max-params
+  237:3   error  Async method 'getTrendingTopics' has too many parameters (3). Maximum allowed is 1     max-params
+  265:34  error  Arrow function has too many parameters (2). Maximum allowed is 1                       max-params
+  359:3   error  Async method 'findTopicsByKeywords' has too many parameters (2). Maximum allowed is 1  max-params
+
+/Users/joe.mearman/Documents/Research/PhD/Academic Explorer/src/lib/openalex/utils/transformers.ts
+  112:8   error  Function 'formatCitation' has too many parameters (2). Maximum allowed is 1   max-params
+  317:8   error  Function 'groupWorksBy' has too many parameters (3). Maximum allowed is 1     max-params
+  360:49  error  Arrow function has too many parameters (2). Maximum allowed is 1              max-params
+  397:13  error  Use object destructuring                                                      prefer-destructuring
+  436:8   error  Function 'entitiesToCSV' has too many parameters (3). Maximum allowed is 1    max-params
+  466:8   error  Function 'continentsToCSV' has too many parameters (2). Maximum allowed is 1  max-params
+  483:8   error  Function 'regionsToCSV' has too many parameters (2). Maximum allowed is 1     max-params
+  539:8   error  Function 'formatNumber' has too many parameters (2). Maximum allowed is 1     max-params
+
+/Users/joe.mearman/Documents/Research/PhD/Academic Explorer/src/lib/openalex/utils/validation-exporter.ts
+   52:8   error  Async function 'exportValidationData' has too many parameters (3). Maximum allowed is 1  max-params
+   80:1   error  Function 'sortIssues' has too many parameters (2). Maximum allowed is 1                  max-params
+   83:22  error  Arrow function has too many parameters (2). Maximum allowed is 1                         max-params
+  115:1   error  Function 'groupByEntityType' has too many parameters (2). Maximum allowed is 1           max-params
+  119:55  error  Arrow function has too many parameters (2). Maximum allowed is 1                         max-params
+  128:58  error  Arrow function has too many parameters (2). Maximum allowed is 1                         max-params
+  143:1   error  Function 'exportAsJson' has too many parameters (2). Maximum allowed is 1                max-params
+  190:1   error  Function 'exportAsCsv' has too many parameters (2). Maximum allowed is 1                 max-params
+  240:1   error  Function 'exportAsMarkdown' has too many parameters (2). Maximum allowed is 1            max-params
+  282:1   error  Function 'formatIssuesAsMarkdown' has too many parameters (2). Maximum allowed is 1      max-params
+  377:8   error  Function 'generateExportFilename' has too many parameters (2). Maximum allowed is 1      max-params
+
+/Users/joe.mearman/Documents/Research/PhD/Academic Explorer/src/lib/react-query/hooks.ts
+   20:8  error  Function 'useWorks' has too many parameters (2). Maximum allowed is 1           max-params
+   78:8  error  Function 'useAuthors' has too many parameters (2). Maximum allowed is 1         max-params
+   91:8  error  Function 'useSources' has too many parameters (2). Maximum allowed is 1         max-params
+  104:8  error  Function 'useInstitutions' has too many parameters (2). Maximum allowed is 1    max-params
+  117:8  error  Function 'useFunders' has too many parameters (2). Maximum allowed is 1         max-params
+  130:8  error  Function 'useTopics' has too many parameters (2). Maximum allowed is 1          max-params
+  234:8  error  Function 'useEntityMutation' has too many parameters (2). Maximum allowed is 1  max-params
+  242:5  error  Method 'onSuccess' has too many parameters (3). Maximum allowed is 1            max-params
+  253:8  error  Function 'useWork' has too many parameters (2). Maximum allowed is 1            max-params
+  266:8  error  Function 'useAuthor' has too many parameters (2). Maximum allowed is 1          max-params
+  279:8  error  Function 'useSource' has too many parameters (2). Maximum allowed is 1          max-params
+  292:8  error  Function 'useInstitution' has too many parameters (2). Maximum allowed is 1     max-params
+  305:8  error  Function 'usePublisher' has too many parameters (2). Maximum allowed is 1       max-params
+  318:8  error  Function 'useFunder' has too many parameters (2). Maximum allowed is 1          max-params
+  331:8  error  Function 'useTopic' has too many parameters (2). Maximum allowed is 1           max-params
+  344:8  error  Function 'useConcept' has too many parameters (2). Maximum allowed is 1         max-params
+  360:8  error  Function 'useEntity' has too many parameters (3). Maximum allowed is 1          max-params
+
+/Users/joe.mearman/Documents/Research/PhD/Academic Explorer/src/lib/react-query/hybrid-cache-adapter.ts
+   31:8   error  Function 'createQueryKey' has too many parameters (2). Maximum allowed is 1           max-params
+   35:24  error  Arrow function has too many parameters (2). Maximum allowed is 1                      max-params
+   82:8   error  Function 'getCacheTime' has too many parameters (2). Maximum allowed is 1             max-params
+  126:8   error  Function 'getStaleTime' has too many parameters (2). Maximum allowed is 1             max-params
+  139:9   error  Method 'retry' has too many parameters (2). Maximum allowed is 1                      max-params
+  177:8   error  Function 'createEntityQuery' has too many parameters (2). Maximum allowed is 1        max-params
+  203:8   error  Function 'invalidateEntityQueries' has too many parameters (2). Maximum allowed is 1  max-params
+  213:8   error  Function 'prefetchRelatedData' has too many parameters (3). Maximum allowed is 1      max-params
+
+/Users/joe.mearman/Documents/Research/PhD/Academic Explorer/src/lib/service-worker.ts
+  152:11  error  Use object destructuring                                                        prefer-destructuring
+  228:3   error  Method 'addEventListener' has too many parameters (2). Maximum allowed is 1     max-params
+  237:3   error  Method 'removeEventListener' has too many parameters (2). Maximum allowed is 1  max-params
+  254:42  error  Arrow function has too many parameters (2). Maximum allowed is 1                max-params
+  265:13  error  Use object destructuring                                                        prefer-destructuring
+
+/Users/joe.mearman/Documents/Research/PhD/Academic Explorer/src/lib/utils/query-comparison.ts
+   86:8  error  Function 'compareQueries' has too many parameters (2). Maximum allowed is 1       max-params
+  118:8  error  Function 'isPageNavigation' has too many parameters (2). Maximum allowed is 1     max-params
+  125:8  error  Function 'isOnlyPageChange' has too many parameters (2). Maximum allowed is 1     max-params
+  191:8  error  Function 'describeQueryChange' has too many parameters (2). Maximum allowed is 1  max-params
+
+/Users/joe.mearman/Documents/Research/PhD/Academic Explorer/src/lib/validation/cache-consistency-validator.ts
+   17:12  error  Function has too many parameters (2). Maximum allowed is 1                                   max-params
+   19:16  error  Function has too many parameters (2). Maximum allowed is 1                                   max-params
+  193:8   error  Async function 'validateCacheConsistency' has too many parameters (2). Maximum allowed is 1  max-params
+  291:8   error  Async function 'repairCacheInconsistency' has too many parameters (2). Maximum allowed is 1  max-params
+  454:1   error  Function '_compareLayerData' has too many parameters (2). Maximum allowed is 1               max-params
+  491:43  error  Arrow function has too many parameters (2). Maximum allowed is 1                             max-params
+
+/Users/joe.mearman/Documents/Research/PhD/Academic Explorer/src/lib/validation/import-export-validator.ts
+  166:3   error  Async method 'validateFile' has too many parameters (2). Maximum allowed is 1               max-params
+  204:3   error  Async method 'verifyCompleteness' has too many parameters (2). Maximum allowed is 1         max-params
+  237:3   error  Async method 'verifyChecksum' has too many parameters (2). Maximum allowed is 1             max-params
+  252:3   error  Async method 'streamExport' has too many parameters (3). Maximum allowed is 1               max-params
+  257:11  error  Use object destructuring                                                                    prefer-destructuring
+  306:8   error  Async function 'validateFileFormat' has too many parameters (2). Maximum allowed is 1       max-params
+  444:8   error  Async function 'validateImportSchema' has too many parameters (2). Maximum allowed is 1     max-params
+  507:8   error  Async function 'validateImportData' has too many parameters (2). Maximum allowed is 1       max-params
+  550:8   error  Async function 'detectCorruption' has too many parameters (2). Maximum allowed is 1         max-params
+  633:19  error  Use object destructuring                                                                    prefer-destructuring
+  666:8   error  Async function 'repairCorruptedData' has too many parameters (2). Maximum allowed is 1      max-params
+  751:8   error  Async function 'validateExportIntegrity' has too many parameters (2). Maximum allowed is 1  max-params
+  778:8   error  Async function 'sanitizeExportData' has too many parameters (2). Maximum allowed is 1       max-params
+
+/Users/joe.mearman/Documents/Research/PhD/Academic Explorer/src/lib/validation/real-time-validator.ts
+    84:29  error  Function has too many parameters (2). Maximum allowed is 1                                     max-params
+   100:33  error  Function has too many parameters (2). Maximum allowed is 1                                     max-params
+   114:3   error  Method 'validateField' has too many parameters (3). Maximum allowed is 1                       max-params
+   159:3   error  Async method 'performValidation' has too many parameters (3). Maximum allowed is 1             max-params
+   180:75  error  Arrow function has too many parameters (2). Maximum allowed is 1                               max-params
+   219:3   error  Async method 'validateFieldInternal' has too many parameters (3). Maximum allowed is 1         max-params
+   282:1   error  Function 'validateFieldType' has too many parameters (4). Maximum allowed is 1                 max-params
+   312:1   error  Function 'validateFieldFormat' has too many parameters (4). Maximum allowed is 1               max-params
+   381:1   error  Function 'validateFieldRange' has too many parameters (5). Maximum allowed is 1                max-params
+   424:1   error  Async function 'validateFieldSchema' has too many parameters (4). Maximum allowed is 1         max-params
+   515:8   error  Async function 'validateField' has too many parameters (3). Maximum allowed is 1               max-params
+   527:8   error  Async function 'validateEntityIntegrity' has too many parameters (2). Maximum allowed is 1     max-params
+   686:8   error  Async function 'checkCrossFieldConsistency' has too many parameters (2). Maximum allowed is 1  max-params
+   764:8   error  Async function 'detectSchemaViolations' has too many parameters (2). Maximum allowed is 1      max-params
+   838:8   error  Function 'formatValidationErrors' has too many parameters (2). Maximum allowed is 1            max-params
+   872:46  error  Arrow function has too many parameters (2). Maximum allowed is 1                               max-params
+   897:46  error  Arrow function has too many parameters (2). Maximum allowed is 1                               max-params
+   921:8   error  Function 'createAccessibleErrorMessage' has too many parameters (2). Maximum allowed is 1      max-params
+   952:1   error  Function 'hasCircularReferences' has too many parameters (2). Maximum allowed is 1             max-params
+  1036:1   error  Function 'validateNestedStructures' has too many parameters (3). Maximum allowed is 1          max-params
+  1045:11  error  Use object destructuring                                                                       prefer-destructuring
+  1048:47  error  Arrow function has too many parameters (2). Maximum allowed is 1                               max-params
+
+/Users/joe.mearman/Documents/Research/PhD/Academic Explorer/src/routes/$bareId.tsx
+   14:1  error  Function 'handleHttpsUrls' has too many parameters (2). Maximum allowed is 1     max-params
+   51:1  error  Function 'handleOpenAlexUrls' has too many parameters (2). Maximum allowed is 1  max-params
+   76:1  error  Function 'handleOrcidUrls' has too many parameters (2). Maximum allowed is 1     max-params
+   87:1  error  Function 'handleDoiUrls' has too many parameters (2). Maximum allowed is 1       max-params
+   98:1  error  Function 'handleRorUrls' has too many parameters (2). Maximum allowed is 1       max-params
+  109:1  error  Function 'handleWikidataUrls' has too many parameters (2). Maximum allowed is 1  max-params
+  127:1  error  Function 'handleExternalIds' has too many parameters (2). Maximum allowed is 1   max-params
+
+/Users/joe.mearman/Documents/Research/PhD/Academic Explorer/src/routes/authors.index.tsx
+   34:20  error  Arrow function has too many parameters (2). Maximum allowed is 1  max-params
+  123:56  error  Arrow function has too many parameters (2). Maximum allowed is 1  max-params
+
+/Users/joe.mearman/Documents/Research/PhD/Academic Explorer/src/routes/concepts.tsx
+   59:20  error  Arrow function has too many parameters (2). Maximum allowed is 1  max-params
+  148:57  error  Arrow function has too many parameters (2). Maximum allowed is 1  max-params
+
+/Users/joe.mearman/Documents/Research/PhD/Academic Explorer/src/routes/continents.$id.tsx
+  354:50  error  Arrow function has too many parameters (2). Maximum allowed is 1  max-params
+
+/Users/joe.mearman/Documents/Research/PhD/Academic Explorer/src/routes/dashboard.tsx
+  147:22  error  Arrow function has too many parameters (2). Maximum allowed is 1  max-params
+  152:22  error  Arrow function has too many parameters (2). Maximum allowed is 1  max-params
+  214:48  error  Arrow function has too many parameters (2). Maximum allowed is 1  max-params
+
+/Users/joe.mearman/Documents/Research/PhD/Academic Explorer/src/routes/funders.tsx
+   58:20  error  Arrow function has too many parameters (2). Maximum allowed is 1  max-params
+  131:56  error  Arrow function has too many parameters (2). Maximum allowed is 1  max-params
+
+/Users/joe.mearman/Documents/Research/PhD/Academic Explorer/src/routes/index.tsx
+  24:100  error  Arrow function has too many parameters (5). Maximum allowed is 1  max-params
+
+/Users/joe.mearman/Documents/Research/PhD/Academic Explorer/src/routes/institutions.tsx
+   59:20  error  Arrow function has too many parameters (2). Maximum allowed is 1  max-params
+  133:61  error  Arrow function has too many parameters (2). Maximum allowed is 1  max-params
+
+/Users/joe.mearman/Documents/Research/PhD/Academic Explorer/src/routes/keywords.$id.tsx
+  378:50  error  Arrow function has too many parameters (2). Maximum allowed is 1  max-params
+
+/Users/joe.mearman/Documents/Research/PhD/Academic Explorer/src/routes/publishers.tsx
+   58:20  error  Arrow function has too many parameters (2). Maximum allowed is 1  max-params
+  131:59  error  Arrow function has too many parameters (2). Maximum allowed is 1  max-params
+
+/Users/joe.mearman/Documents/Research/PhD/Academic Explorer/src/routes/regions.$id.tsx
+  445:50  error  Arrow function has too many parameters (2). Maximum allowed is 1  max-params
+
+/Users/joe.mearman/Documents/Research/PhD/Academic Explorer/src/routes/sources.tsx
+   61:20  error  Arrow function has too many parameters (2). Maximum allowed is 1  max-params
+  134:56  error  Arrow function has too many parameters (2). Maximum allowed is 1  max-params
+
+/Users/joe.mearman/Documents/Research/PhD/Academic Explorer/src/routes/topics.tsx
+   58:20  error  Arrow function has too many parameters (2). Maximum allowed is 1  max-params
+  131:55  error  Arrow function has too many parameters (2). Maximum allowed is 1  max-params
+
+/Users/joe.mearman/Documents/Research/PhD/Academic Explorer/src/routes/works.index.tsx
+   34:20  error  Arrow function has too many parameters (2). Maximum allowed is 1  max-params
+  108:54  error  Arrow function has too many parameters (2). Maximum allowed is 1  max-params
+
+/Users/joe.mearman/Documents/Research/PhD/Academic Explorer/src/stores/app-store.ts
+   68:16  error  Function has too many parameters (2). Maximum allowed is 1                     max-params
+   69:23  error  Function has too many parameters (2). Maximum allowed is 1                     max-params
+   70:21  error  Function has too many parameters (2). Maximum allowed is 1                     max-params
+   77:22  error  Arrow function has too many parameters (2). Maximum allowed is 1               max-params
+  135:7   error  Method 'recordQuery' has too many parameters (2). Maximum allowed is 1         max-params
+  196:7   error  Method 'updateQueryResults' has too many parameters (2). Maximum allowed is 1  max-params
+  216:7   error  Method 'updateQueryError' has too many parameters (2). Maximum allowed is 1    max-params
+
+/Users/joe.mearman/Documents/Research/PhD/Academic Explorer/src/stores/comparison-store.ts
+   49:14  error  Function has too many parameters (2). Maximum allowed is 1               max-params
+   59:17  error  Function has too many parameters (2). Maximum allowed is 1               max-params
+   94:22  error  Arrow function has too many parameters (2). Maximum allowed is 1         max-params
+  103:7   error  Method 'addEntity' has too many parameters (2). Maximum allowed is 1     max-params
+  192:7   error  Method 'canAddEntity' has too many parameters (2). Maximum allowed is 1  max-params
+
+/Users/joe.mearman/Documents/Research/PhD/Academic Explorer/src/stores/entity-graph-store.ts
+   77:21  error  Function has too many parameters (2). Maximum allowed is 1                   max-params
+   78:17  error  Function has too many parameters (2). Maximum allowed is 1                   max-params
+   82:12  error  Function has too many parameters (3). Maximum allowed is 1                   max-params
+  124:20  error  Arrow function has too many parameters (2). Maximum allowed is 1             max-params
+  731:32  error  Arrow function has too many parameters (2). Maximum allowed is 1             max-params
+  742:24  error  Arrow function has too many parameters (2). Maximum allowed is 1             max-params
+  753:24  error  Arrow function has too many parameters (2). Maximum allowed is 1             max-params
+  775:7   error  Method 'findShortestPath' has too many parameters (2). Maximum allowed is 1  max-params
+  845:7   error  Method 'getNeighbors' has too many parameters (2). Maximum allowed is 1      max-params
+  886:7   error  Method 'hasEdge' has too many parameters (3). Maximum allowed is 1           max-params
+
+/Users/joe.mearman/Documents/Research/PhD/Academic Explorer/src/stores/entity-validation-store.ts
+   46:19  error  Function has too many parameters (4). Maximum allowed is 1                       max-params
+   52:16  error  Function has too many parameters (2). Maximum allowed is 1                       max-params
+  104:22  error  Arrow function has too many parameters (2). Maximum allowed is 1                 max-params
+  116:7   error  Async method 'validateEntity' has too many parameters (4). Maximum allowed is 1  max-params
+  190:7   error  Method 'addLogEntry' has too many parameters (2). Maximum allowed is 1           max-params
+  373:24  error  Arrow function has too many parameters (2). Maximum allowed is 1                 max-params
+  396:26  error  Arrow function has too many parameters (2). Maximum allowed is 1                 max-params
+  399:26  error  Arrow function has too many parameters (2). Maximum allowed is 1                 max-params
+  407:73  error  Arrow function has too many parameters (2). Maximum allowed is 1                 max-params
+
+/Users/joe.mearman/Documents/Research/PhD/Academic Explorer/src/types/entity-graph.ts
+  490:8  error  Function 'generateEdgeId' has too many parameters (3). Maximum allowed is 1  max-params
+
+/Users/joe.mearman/Documents/Research/PhD/Academic Explorer/src/types/entity-validation.ts
+  344:8  error  Function 'generateValidationIssueId' has too many parameters (3). Maximum allowed is 1  max-params
+
+/Users/joe.mearman/Documents/Research/PhD/Academic Explorer/src/types/graph-storage.ts
+  621:8  error  Function 'generateVertexId' has too many parameters (2). Maximum allowed is 1           max-params
+  625:8  error  Function 'generateEdgeId' has too many parameters (3). Maximum allowed is 1             max-params
+  629:8  error  Function 'generateQueryParametersId' has too many parameters (2). Maximum allowed is 1  max-params
+  644:8  error  Function 'generateQueryExecutionId' has too many parameters (2). Maximum allowed is 1   max-params
+  698:8  error  Function 'calculateEdgeWeight' has too many parameters (2). Maximum allowed is 1        max-params
+
+✖ 1284 problems (1155 errors, 129 warnings)
+  29 errors and 0 warnings potentially fixable with the `--fix` option.
+
+ ELIFECYCLE  Command failed with exit code 1.
