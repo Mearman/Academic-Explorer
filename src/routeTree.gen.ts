@@ -34,6 +34,7 @@ import { Route as RorPathRouteImport } from './routes/ror.$path'
 import { Route as RegionsIdRouteImport } from './routes/regions.$id'
 import { Route as OrcidIdRouteImport } from './routes/orcid.$id'
 import { Route as KeywordsIdRouteImport } from './routes/keywords.$id'
+import { Route as JoinTokenRouteImport } from './routes/join/$token'
 import { Route as IssnIdRouteImport } from './routes/issn.$id'
 import { Route as InstitutionsIdRouteImport } from './routes/institutions_.$id'
 import { Route as InstitutionIdRouteImport } from './routes/institution.$id'
@@ -170,6 +171,11 @@ const KeywordsIdRoute = KeywordsIdRouteImport.update({
   path: '/keywords/$id',
   getParentRoute: () => rootRouteImport,
 } as any)
+const JoinTokenRoute = JoinTokenRouteImport.update({
+  id: '/join/$token',
+  path: '/join/$token',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IssnIdRoute = IssnIdRouteImport.update({
   id: '/issn/$id',
   path: '/issn/$id',
@@ -245,6 +251,7 @@ export interface FileRoutesByFullPath {
   '/institution/$id': typeof InstitutionIdRoute
   '/institutions/$id': typeof InstitutionsIdRoute
   '/issn/$id': typeof IssnIdRoute
+  '/join/$token': typeof JoinTokenRoute
   '/keywords/$id': typeof KeywordsIdRoute
   '/orcid/$id': typeof OrcidIdRoute
   '/regions/$id': typeof RegionsIdRoute
@@ -280,6 +287,7 @@ export interface FileRoutesByTo {
   '/institution/$id': typeof InstitutionIdRoute
   '/institutions/$id': typeof InstitutionsIdRoute
   '/issn/$id': typeof IssnIdRoute
+  '/join/$token': typeof JoinTokenRoute
   '/keywords/$id': typeof KeywordsIdRoute
   '/orcid/$id': typeof OrcidIdRoute
   '/regions/$id': typeof RegionsIdRoute
@@ -318,6 +326,7 @@ export interface FileRoutesById {
   '/institution/$id': typeof InstitutionIdRoute
   '/institutions_/$id': typeof InstitutionsIdRoute
   '/issn/$id': typeof IssnIdRoute
+  '/join/$token': typeof JoinTokenRoute
   '/keywords/$id': typeof KeywordsIdRoute
   '/orcid/$id': typeof OrcidIdRoute
   '/regions/$id': typeof RegionsIdRoute
@@ -357,6 +366,7 @@ export interface FileRouteTypes {
     | '/institution/$id'
     | '/institutions/$id'
     | '/issn/$id'
+    | '/join/$token'
     | '/keywords/$id'
     | '/orcid/$id'
     | '/regions/$id'
@@ -392,6 +402,7 @@ export interface FileRouteTypes {
     | '/institution/$id'
     | '/institutions/$id'
     | '/issn/$id'
+    | '/join/$token'
     | '/keywords/$id'
     | '/orcid/$id'
     | '/regions/$id'
@@ -429,6 +440,7 @@ export interface FileRouteTypes {
     | '/institution/$id'
     | '/institutions_/$id'
     | '/issn/$id'
+    | '/join/$token'
     | '/keywords/$id'
     | '/orcid/$id'
     | '/regions/$id'
@@ -467,6 +479,7 @@ export interface RootRouteChildren {
   InstitutionIdRoute: typeof InstitutionIdRoute
   InstitutionsIdRoute: typeof InstitutionsIdRoute
   IssnIdRoute: typeof IssnIdRoute
+  JoinTokenRoute: typeof JoinTokenRoute
   KeywordsIdRoute: typeof KeywordsIdRoute
   OrcidIdRoute: typeof OrcidIdRoute
   RegionsIdRoute: typeof RegionsIdRoute
@@ -656,6 +669,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof KeywordsIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/join/$token': {
+      id: '/join/$token'
+      path: '/join/$token'
+      fullPath: '/join/$token'
+      preLoaderRoute: typeof JoinTokenRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/issn/$id': {
       id: '/issn/$id'
       path: '/issn/$id'
@@ -774,6 +794,7 @@ const rootRouteChildren: RootRouteChildren = {
   InstitutionIdRoute: InstitutionIdRoute,
   InstitutionsIdRoute: InstitutionsIdRoute,
   IssnIdRoute: IssnIdRoute,
+  JoinTokenRoute: JoinTokenRoute,
   KeywordsIdRoute: KeywordsIdRoute,
   OrcidIdRoute: OrcidIdRoute,
   RegionsIdRoute: RegionsIdRoute,
