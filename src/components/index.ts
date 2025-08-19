@@ -30,9 +30,6 @@ export { WorkAuthors } from './atoms/work-authors';
 export { WorkVenue } from './atoms/work-venue';
 export { WorkConcepts } from './atoms/work-concepts';
 export { WorkLinks } from './atoms/work-links';
-export { AnnotationMarker } from './atoms/annotation-marker';
-export { UserCursor } from './atoms/user-cursor';
-export { UserSelection } from './atoms/user-selection';
 export { 
   LoadingSkeleton,
   SkeletonGroup,
@@ -83,10 +80,6 @@ export { ThemeToggle } from './molecules/theme-toggle';
 export { ComparisonMetricsGrid } from './molecules/comparison-metrics-grid';
 export { ComparisonSummary } from './molecules/comparison-summary';
 export { ComparisonTimeline } from './molecules/comparison-timeline';
-export { AnnotationCreator } from './molecules/annotation-creator';
-export { AnnotationPanel } from './molecules/annotation-panel';
-export { PresenceIndicator } from './molecules/presence-indicator';
-export { ShareSessionModal } from './molecules/share-session-modal';
 
 // Organisms
 export { EntityHeader, EntityHeaderSkeleton } from './organisms/entity-header';
@@ -146,9 +139,6 @@ export { QueryPreview } from './organisms/query-preview';
 export { EntityPageHeader } from './organisms/entity-page-header';
 export { WorksOverview } from './organisms/works-overview';
 export { AuthorsOverview } from './organisms/authors-overview';
-export { AnnotationOverlay } from './organisms/annotation-overlay';
-export { CollaborationOverlay } from './organisms/collaboration-overlay';
-export { PresenceList } from './organisms/presence-list';
 
 // Templates
 export { 
@@ -161,7 +151,7 @@ export {
 export { EntityPageWithGraph } from './templates/entity-page-with-graph';
 export { TwoPaneLayout } from './templates/two-pane-layout';
 export { PageWithPanes } from './templates/page-with-panes';
-export { default as EntityErrorBoundary } from './templates/error-boundary';
+export { EntityErrorBoundary } from './templates/error-boundary';
 export { AppShellLayout } from './templates/app-shell-layout';
 
 // Examples & Testing Components
@@ -216,8 +206,5 @@ export {
 } from './design-tokens.utils';
 
 // Context providers
-export { 
-  LayoutProvider, 
-  useLayoutContext, 
-  useShouldRenderTwoPaneLayout 
-} from '../contexts/layout-context';
+export { LayoutProvider } from '../contexts/layout-context';
+export { useLayoutContext, useShouldRenderTwoPaneLayout } from '../hooks/use-layout-context';
