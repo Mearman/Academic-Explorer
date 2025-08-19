@@ -27,6 +27,9 @@ import {
 } from './graph-utils/graph-export';
 import { useGraphInteractions } from './hooks/use-graph-interactions';
 
+// Import new decoupled graph system
+import { OpenAlexEntityGraph } from './openalex-entity-graph';
+
 // Utility functions for entity graph calculations
 function getEntityColor(entityType: EntityType): string {
   return (styles.entityColors as Record<string, string>)[entityType] || styles.entityColors.work;

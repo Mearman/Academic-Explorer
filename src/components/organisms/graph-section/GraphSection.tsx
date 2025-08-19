@@ -5,8 +5,15 @@ import { GraphEmptyState } from '@/components/molecules/graph-empty-state/GraphE
 import { GraphStatsDisplay } from '@/components/molecules/graph-stats-display/GraphStatsDisplay';
 import type { EntityGraphVertex } from '@/types/entity-graph';
 
+
 import { EntitySection } from '../../templates/entity-page-template';
 import { EntityGraphVisualization, EntityGraphVisualizationSkeleton } from '../entity-graph-visualization';
+import { 
+  useGraphEngine, 
+  CompactGraphEngineSettings,
+  GraphEngineProvider,
+  TransitionOverlay,
+} from '../graph-engines';
 
 interface GraphSectionProps {
   isVisible: boolean;
@@ -19,42 +26,90 @@ interface GraphSectionProps {
   };
   totalVisits: number;
   onVertexClick: (vertex: EntityGraphVertex) => void;
+  /** Whether to show engine selector in actions */
+  showEngineSelector?: boolean;
+  /** Whether to show transition overlay during engine switches */
+  showTransitionOverlay?: boolean;
 }
 
-export function GraphSection({
+// Internal component that uses graph engine hooks
+function GraphSectionInternal({
   isVisible,
   graphHeight,
   graphStats,
   totalVisits,
   onVertexClick,
+  showEngineSelector = true,
+  showTransitionOverlay = true,
 }: GraphSectionProps) {
+  const {
+    currentEngine,
+    isTransitioning,
+    transitionProgress,
+    availableEngines,
+  } = useGraphEngine();
+
   if (!isVisible) return null;
 
   // Show graph with data
   if (graphStats.totalVertices > 0) {
     return (
-      <EntitySection
-        title="Related Entities"
-        icon="graph"
-        actions={
-          <GraphStatsDisplay
-            directlyVisited={graphStats.directlyVisited}
-            totalEdges={graphStats.totalEdges}
-            hasCurrentEntity={graphStats.hasCurrentEntity}
+      <>
+        {/* Transition overlay during engine switches */}
+        {showTransitionOverlay && isTransitioning && (
+          <TransitionOverlay
+            isTransitioning={isTransitioning}
+            progress={transitionProgress}
+            fromEngine={currentEngine}
+            toEngine={currentEngine} // Will be updated during transition
+            options={{
+              duration: 500,
+              preservePositions: true,
+              preserveSelection: true,
+              preserveViewport: true,
+            }}
+            engineDisplayNames={{
+              'svg': 'SVG',
+              'canvas-2d': 'Canvas',
+              'webgl': 'WebGL',
+              'cytoscape': 'Cytoscape.js',
+              'd3-force': 'D3.js Force',
+              'vis-network': 'vis-network'
+            }}
           />
-        }
-      >
-        <div style={{ marginBottom: '16px' }}>
-          <EntityGraphVisualization
-            height={graphHeight}
-            onVertexClick={onVertexClick}
-            showControls={true}
-            showLegend={true}
-          />
-        </div>
+        )}
         
-        <GraphDescription />
-      </EntitySection>
+        <EntitySection
+          title="Related Entities"
+          icon="graph"
+          actions={
+            <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+              {/* Engine selector */}
+              {showEngineSelector && availableEngines.length > 1 && (
+                <CompactGraphEngineSettings />
+              )}
+              
+              {/* Graph statistics */}
+              <GraphStatsDisplay
+                directlyVisited={graphStats.directlyVisited}
+                totalEdges={graphStats.totalEdges}
+                hasCurrentEntity={graphStats.hasCurrentEntity}
+              />
+            </div>
+          }
+        >
+          <div style={{ marginBottom: '16px' }}>
+            <EntityGraphVisualization
+              height={graphHeight}
+              onVertexClick={onVertexClick}
+              showControls={true}
+              showLegend={true}
+            />
+          </div>
+          
+          <GraphDescription />
+        </EntitySection>
+      </>
     );
   }
 
@@ -79,5 +134,15 @@ export function GraphSection({
     >
       <GraphEmptyState />
     </EntitySection>
+  );
+}
+
+// Main export component
+export function GraphSection(props: GraphSectionProps) {
+  // Wrap in GraphEngineProvider to ensure engine context is available
+  return (
+    <GraphEngineProvider preloadDefault>
+      <GraphSectionInternal {...props} />
+    </GraphEngineProvider>
   );
 }
