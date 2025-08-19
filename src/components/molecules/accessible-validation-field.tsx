@@ -21,7 +21,7 @@ import {
   ActionIcon,
   Loader,
   Box,
-  Badge,
+  Badge as _Badge,
   Transition,
   Paper,
   Button,
@@ -46,7 +46,7 @@ import type {
 import {
   ValidationIssueType,
   ValidationSeverity,
-  getValidationSeverityColor,
+  getValidationSeverityColor as _getValidationSeverityColor,
 } from '@/types/entity-validation';
 
 // Field configuration interfaces
@@ -160,7 +160,7 @@ export function AccessibleValidationField({
   });
 
   const [showPassword, setShowPassword] = useState(false);
-  const [focused, setFocused] = useState(false);
+  const [_focused, setFocused] = useState(false);
   const [touched, setTouched] = useState(false);
   
   const validatorRef = useRef(validator || new RealTimeValidator());

@@ -4,7 +4,7 @@
  */
 
 import { MantineProvider } from '@mantine/core';
-import { render, screen, fireEvent, within } from '@testing-library/react';
+import { render, screen, fireEvent } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 
 import { EntityType } from '@/lib/openalex/utils/entity-detection';

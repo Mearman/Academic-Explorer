@@ -19,8 +19,7 @@ import {
 import { 
   IconDownload,
   IconSettings,
-  IconEye,
-  IconEyeOff,
+  IconEyeOff as _IconEyeOff,
   IconTrendingUp
 } from '@tabler/icons-react';
 import { useState, useMemo, useCallback } from 'react';

@@ -9,12 +9,11 @@ import {
   Group, 
   Stack, 
   Text, 
-  Center, 
   Box,
   Alert,
-  Skeleton
+  Skeleton as _Skeleton
 } from '@mantine/core';
-import { useState, useMemo } from 'react';
+import { useState as _useState, useMemo as _useMemo } from 'react';
 
 import { 
   ComparisonMetricValue,
