@@ -8,7 +8,6 @@ import { persist, createJSONStorage } from 'zustand/middleware';
 import { subscribeWithSelector } from 'zustand/middleware';
 import { immer } from 'zustand/middleware/immer';
 
-import { useCollaborationStore } from './collaboration-store';
 import { EnhancedWebSocketService, createEnhancedWebSocketService } from '@/lib/enhanced-websocket-service';
 import { OperationalTransform } from '@/lib/operational-transform';
 import type {
@@ -21,7 +20,68 @@ import type {
   Operation,
   UserPresence,
   WebSocketMessage,
+  AnnotationTarget,
 } from '@/types/collaboration';
+
+import { useCollaborationStore } from './collaboration-store';
+
+/**
+ * Additional types for enhanced collaboration features
+ */
+interface NetworkQualityData {
+  latency?: number;
+  stability?: number;
+  packetLoss?: number;
+  timestamp: number;
+}
+
+interface HealthCheckFailureData {
+  consecutiveFailures: number;
+  lastFailure: number;
+  error?: string;
+}
+
+interface EnhancedConnectionFailureData {
+  error: string;
+  timestamp: number;
+  reconnectAttempt?: number;
+}
+
+interface CommentThread {
+  id: string;
+  title?: string;
+  annotationId?: string;
+  target: AnnotationTarget;
+  comments: Comment[];
+  participants: string[];
+  status: 'open' | 'resolved' | 'closed';
+  createdAt: number;
+  lastActivity: number;
+}
+
+interface SyncResponsePayload {
+  type: 'full' | 'incremental';
+  session?: CollaborationSession;
+  annotations?: Array<[string, Annotation]>;
+  commentThreads?: Array<[string, CommentThread]>;
+  updates?: IncrementalUpdate[];
+}
+
+interface IncrementalUpdate {
+  type: 'annotation' | 'comment' | 'session';
+  operation: 'create' | 'update' | 'delete';
+  data: {
+    id: string;
+    [key: string]: unknown;
+  };
+}
+
+interface ConflictResolutionPayload {
+  entityType: 'annotation' | 'comment' | 'session';
+  entityId: string;
+  resolvedData?: Record<string, unknown>;
+  conflictReason?: string;
+}
 
 /**
  * Enhanced collaboration state with reliability features
@@ -109,13 +169,13 @@ export const useEnhancedCollaborationStore = create<
         const enhancedOtEngine = new OperationalTransform();
         
         // Recovery mechanisms
-        let recoveryTimer: NodeJS.Timeout | null = null;
+        const _recoveryTimer: NodeJS.Timeout | null = null;
         let syncTimer: NodeJS.Timeout | null = null;
         let heartbeatTimer: NodeJS.Timeout | null = null;
         let presenceTimer: NodeJS.Timeout | null = null;
         
         // Performance monitoring
-        let performanceMonitor = {
+        const performanceMonitor = {
           messageCount: 0,
           errorCount: 0,
           latencySum: 0,
@@ -150,8 +210,11 @@ export const useEnhancedCollaborationStore = create<
           if (!enhancedWebSocketService) return;
 
           // Network quality monitoring
-          enhancedWebSocketService.on('network-quality-changed', (quality) => {
-            handleNetworkQualityChange(quality);
+          enhancedWebSocketService.on('network-quality-changed', (quality: unknown) => {
+            // Type guard for network quality data
+            if (quality && typeof quality === 'object' && 'timestamp' in quality) {
+              handleNetworkQualityChange(quality as NetworkQualityData);
+            }
           });
 
           // Circuit breaker events
@@ -170,8 +233,11 @@ export const useEnhancedCollaborationStore = create<
           });
 
           // Health check events
-          enhancedWebSocketService.on('health-check-failure', (data) => {
-            handleHealthCheckFailure(data);
+          enhancedWebSocketService.on('health-check-failure', (data: unknown) => {
+            // Type guard for health check failure data
+            if (data && typeof data === 'object' && 'consecutiveFailures' in data && 'lastFailure' in data) {
+              handleHealthCheckFailure(data as HealthCheckFailureData);
+            }
           });
 
           // Sync recovery events
@@ -190,8 +256,11 @@ export const useEnhancedCollaborationStore = create<
           });
 
           // Enhanced connection events
-          enhancedWebSocketService.on('enhanced-connection-failure', (data) => {
-            handleEnhancedConnectionFailure(data);
+          enhancedWebSocketService.on('enhanced-connection-failure', (data: unknown) => {
+            // Type guard for enhanced connection failure data
+            if (data && typeof data === 'object' && 'error' in data && 'timestamp' in data) {
+              handleEnhancedConnectionFailure(data as EnhancedConnectionFailureData);
+            }
           });
 
           // Regular WebSocket events with proper typing
@@ -209,7 +278,7 @@ export const useEnhancedCollaborationStore = create<
         /**
          * Handle network quality changes
          */
-        const handleNetworkQualityChange = (quality: any) => {
+        const handleNetworkQualityChange = (quality: NetworkQualityData) => {
           set(state => {
             // Update connection quality based on network metrics
             const latency = quality.latency || 0;
@@ -236,7 +305,7 @@ export const useEnhancedCollaborationStore = create<
         /**
          * Handle health check failures
          */
-        const handleHealthCheckFailure = (data: any) => {
+        const handleHealthCheckFailure = (data: HealthCheckFailureData) => {
           set(state => {
             state.networkMetrics.reconnectCount++;
             state.networkMetrics.lastReconnect = Date.now();
@@ -257,7 +326,7 @@ export const useEnhancedCollaborationStore = create<
         /**
          * Handle enhanced connection failures
          */
-        const handleEnhancedConnectionFailure = (data: any) => {
+        const handleEnhancedConnectionFailure = (data: EnhancedConnectionFailureData) => {
           set(state => {
             state.error = `Connection failed: ${data.error}`;
             state.recoveryAttempts++;
@@ -277,7 +346,7 @@ export const useEnhancedCollaborationStore = create<
          * Handle incoming WebSocket messages with enhanced processing
          */
         const handleIncomingMessage = (message: WebSocketMessage) => {
-          const state = get();
+          const _state = get();
           
           // Update performance metrics
           performanceMonitor.messageCount++;
@@ -313,7 +382,7 @@ export const useEnhancedCollaborationStore = create<
          */
         const handleSyncResponse = (message: WebSocketMessage) => {
           set(state => {
-            const payload = message.payload as any;
+            const payload = message.payload as SyncResponsePayload;
             
             if (payload.type === 'full') {
               // Full state sync
@@ -328,11 +397,14 @@ export const useEnhancedCollaborationStore = create<
               }
             } else if (payload.type === 'incremental') {
               // Incremental updates
-              payload.updates?.forEach((update: any) => {
+              payload.updates?.forEach((update: IncrementalUpdate) => {
                 switch (update.type) {
                   case 'annotation':
                     if (update.operation === 'create' || update.operation === 'update') {
-                      state.annotations.set(update.data.id, update.data);
+                      // Type guard to ensure we have a valid annotation
+                      if (update.data && typeof update.data === 'object' && 'id' in update.data) {
+                        state.annotations.set(update.data.id, update.data as unknown as Annotation);
+                      }
                     } else if (update.operation === 'delete') {
                       state.annotations.delete(update.data.id);
                     }
@@ -352,7 +424,7 @@ export const useEnhancedCollaborationStore = create<
          * Handle conflict resolution messages
          */
         const handleConflictResolution = (message: WebSocketMessage) => {
-          const payload = message.payload as any;
+          const payload = message.payload as ConflictResolutionPayload;
           
           set(state => {
             if (state.conflictResolution === 'automatic') {
@@ -360,7 +432,9 @@ export const useEnhancedCollaborationStore = create<
               if (payload.resolvedData) {
                 switch (payload.entityType) {
                   case 'annotation':
-                    state.annotations.set(payload.entityId, payload.resolvedData);
+                    if (payload.resolvedData && typeof payload.resolvedData === 'object') {
+                      state.annotations.set(payload.entityId, payload.resolvedData as unknown as Annotation);
+                    }
                     break;
                   case 'comment':
                     // Update comment in thread
@@ -423,9 +497,14 @@ export const useEnhancedCollaborationStore = create<
         /**
          * Handle WebSocket errors with enhanced processing
          */
-        const handleWebSocketError = (error: any) => {
+        const handleWebSocketError = (error: Error | string | unknown) => {
           set(state => {
-            state.error = `WebSocket error: ${error}`;
+            const errorMessage = error instanceof Error 
+              ? error.message 
+              : typeof error === 'string' 
+                ? error 
+                : 'Unknown error';
+            state.error = `WebSocket error: ${errorMessage}`;
             state.connectionStatus = 'error';
             
             performanceMonitor.errorCount++;
@@ -614,7 +693,7 @@ export const useEnhancedCollaborationStore = create<
               const metrics = enhancedWebSocketService.getHealthMetrics();
               return metrics.circuitBreakerState === 'closed' && 
                      metrics.networkQuality.stability > 0.5;
-            } catch (error) {
+            } catch {
               return false;
             }
           },
