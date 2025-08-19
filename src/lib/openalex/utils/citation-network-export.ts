@@ -4,6 +4,7 @@
  */
 
 import type { CitationNetwork, CitationNode, CitationEdge, CoauthorNetwork, CoauthorNode, CoauthorEdge } from './citation-network';
+import { reconstructAbstract } from './transformers';
 
 // Export format types
 export type ExportFormat = 'json' | 'csv' | 'graphml' | 'bibtex' | 'ris' | 'svg' | 'png';
@@ -597,42 +598,535 @@ function escapeCSVField(value: string): string {
 }
 
 export function exportCitationNetworkToGraphML(
-  _network: CitationNetwork | CoauthorNetwork,
-  _options: Partial<ExportOptions> = {}
+  network: CitationNetwork | CoauthorNetwork,
+  options: Partial<ExportOptions> = {}
 ): NetworkExportResult {
-  // TODO: Implement GraphML export
-  return {
-    success: false,
+  const opts: ExportOptions = {
+    includeMetadata: true,
+    includeAbstracts: false,
+    maxNodes: 0,
     format: 'graphml',
-    filename: '',
-    error: 'GraphML export not yet implemented',
+    compress: false,
+    ...options,
   };
+
+  try {
+    // Validate network first
+    const validation = validateCitationNetwork(network);
+    if (!validation.isValid) {
+      return {
+        success: false,
+        format: 'graphml',
+        filename: '',
+        error: `Network validation failed: ${validation.errors.join(', ')}`,
+      };
+    }
+
+    // Truncate if necessary
+    const { network: processedNetwork, truncated, originalCount } = truncateNetwork(network, opts.maxNodes || 0);
+
+    // Determine network type
+    const isCoauthor = isCoauthorNetwork(processedNetwork);
+
+    // Start building GraphML content
+    let graphmlContent = '<?xml version="1.0" encoding="UTF-8"?>\n';
+    graphmlContent += '<graphml xmlns="http://graphml.graphdrawing.org/xmlns"\n';
+    graphmlContent += '         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"\n';
+    graphmlContent += '         xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns\n';
+    graphmlContent += '         http://graphml.graphdrawing.org/xmlns/1.0/graphml.xsd">\n';
+
+    // Define keys (attributes)
+    if (isCoauthor) {
+      graphmlContent += '  <key id="name" for="node" attr.name="name" attr.type="string"/>\n';
+      graphmlContent += '  <key id="worksCount" for="node" attr.name="worksCount" attr.type="int"/>\n';
+      graphmlContent += '  <key id="citedByCount" for="node" attr.name="citedByCount" attr.type="int"/>\n';
+      graphmlContent += '  <key id="orcid" for="node" attr.name="orcid" attr.type="string"/>\n';
+      graphmlContent += '  <key id="hIndex" for="node" attr.name="hIndex" attr.type="int"/>\n';
+      graphmlContent += '  <key id="institutions" for="node" attr.name="institutions" attr.type="string"/>\n';
+      graphmlContent += '  <key id="weight" for="edge" attr.name="weight" attr.type="double"/>\n';
+      graphmlContent += '  <key id="sharedWorks" for="edge" attr.name="sharedWorks" attr.type="string"/>\n';
+    } else {
+      graphmlContent += '  <key id="title" for="node" attr.name="title" attr.type="string"/>\n';
+      graphmlContent += '  <key id="year" for="node" attr.name="year" attr.type="int"/>\n';
+      graphmlContent += '  <key id="citedByCount" for="node" attr.name="citedByCount" attr.type="int"/>\n';
+      graphmlContent += '  <key id="depth" for="node" attr.name="depth" attr.type="int"/>\n';
+      graphmlContent += '  <key id="doi" for="node" attr.name="doi" attr.type="string"/>\n';
+      graphmlContent += '  <key id="authors" for="node" attr.name="authors" attr.type="string"/>\n';
+      graphmlContent += '  <key id="journal" for="node" attr.name="journal" attr.type="string"/>\n';
+      graphmlContent += '  <key id="openAccess" for="node" attr.name="openAccess" attr.type="boolean"/>\n';
+      graphmlContent += '  <key id="type" for="edge" attr.name="type" attr.type="string"/>\n';
+    }
+
+    // Start graph
+    const graphId = isCoauthor ? 'CoauthorNetwork' : 'CitationNetwork';
+    graphmlContent += `  <graph id="${graphId}" edgedefault="directed">\n`;
+
+    // Add nodes
+    for (const node of processedNetwork.nodes) {
+      graphmlContent += `    <node id="${escapeXmlAttribute(node.id)}">\n`;
+
+      if (isCoauthor) {
+        const coauthorNode = node as CoauthorNode;
+        graphmlContent += `      <data key="name">${escapeXmlContent(coauthorNode.name)}</data>\n`;
+        graphmlContent += `      <data key="worksCount">${coauthorNode.worksCount}</data>\n`;
+        graphmlContent += `      <data key="citedByCount">${coauthorNode.citedByCount}</data>\n`;
+        if (coauthorNode.author?.orcid) {
+          graphmlContent += `      <data key="orcid">${escapeXmlContent(coauthorNode.author.orcid)}</data>\n`;
+        }
+        if (coauthorNode.author?.summary_stats?.h_index) {
+          graphmlContent += `      <data key="hIndex">${coauthorNode.author.summary_stats.h_index}</data>\n`;
+        }
+        const institutions = coauthorNode.author?.last_known_institutions?.map(i => i.display_name).join('; ') || '';
+        if (institutions) {
+          graphmlContent += `      <data key="institutions">${escapeXmlContent(institutions)}</data>\n`;
+        }
+      } else {
+        const citationNode = node as CitationNode;
+        graphmlContent += `      <data key="title">${escapeXmlContent(citationNode.title)}</data>\n`;
+        if (citationNode.year) {
+          graphmlContent += `      <data key="year">${citationNode.year}</data>\n`;
+        }
+        graphmlContent += `      <data key="citedByCount">${citationNode.citedByCount}</data>\n`;
+        graphmlContent += `      <data key="depth">${citationNode.depth}</data>\n`;
+        if (citationNode.work?.doi) {
+          graphmlContent += `      <data key="doi">${escapeXmlContent(citationNode.work.doi)}</data>\n`;
+        }
+        const authors = citationNode.work?.authorships?.map(a => a.author.display_name).join('; ') || '';
+        if (authors) {
+          graphmlContent += `      <data key="authors">${escapeXmlContent(authors)}</data>\n`;
+        }
+        const journal = citationNode.work?.primary_location?.source?.display_name || '';
+        if (journal) {
+          graphmlContent += `      <data key="journal">${escapeXmlContent(journal)}</data>\n`;
+        }
+        const isOA = citationNode.work?.open_access?.is_oa || false;
+        graphmlContent += `      <data key="openAccess">${isOA}</data>\n`;
+      }
+
+      graphmlContent += '    </node>\n';
+    }
+
+    // Add edges
+    for (const edge of processedNetwork.edges) {
+      graphmlContent += `    <edge source="${escapeXmlAttribute(edge.source)}" target="${escapeXmlAttribute(edge.target)}">\n`;
+
+      if (isCoauthor) {
+        const coauthorEdge = edge as CoauthorEdge;
+        graphmlContent += `      <data key="weight">${coauthorEdge.weight}</data>\n`;
+        const sharedWorks = coauthorEdge.works.join('; ');
+        graphmlContent += `      <data key="sharedWorks">${escapeXmlContent(sharedWorks)}</data>\n`;
+      } else {
+        const citationEdge = edge as CitationEdge;
+        graphmlContent += `      <data key="type">${escapeXmlContent(citationEdge.type)}</data>\n`;
+      }
+
+      graphmlContent += '    </edge>\n';
+    }
+
+    // Close graph and graphml
+    graphmlContent += '  </graph>\n';
+    graphmlContent += '</graphml>\n';
+
+    const filename = getExportFilename('graphml', opts.filenamePrefix, opts.customDate);
+
+    return {
+      success: true,
+      format: 'graphml',
+      filename,
+      data: graphmlContent,
+      size: new Blob([graphmlContent]).size,
+      metadata: {
+        nodeCount: processedNetwork.nodes.length,
+        edgeCount: processedNetwork.edges.length,
+        exportedAt: new Date().toISOString(),
+        ...(truncated && {
+          truncated: true,
+          originalNodeCount: originalCount,
+        }),
+      },
+    };
+
+  } catch (error) {
+    return {
+      success: false,
+      format: 'graphml',
+      filename: '',
+      error: `Export failed: ${error instanceof Error ? error.message : 'Unknown error'}`,
+    };
+  }
 }
 
 export function exportCitationNetworkToBibTeX(
-  _network: CitationNetwork | CoauthorNetwork,
-  _options: Partial<ExportOptions> = {}
+  network: CitationNetwork | CoauthorNetwork,
+  options: Partial<ExportOptions> = {}
 ): NetworkExportResult {
-  // TODO: Implement BibTeX export
-  return {
-    success: false,
+  const opts: ExportOptions = {
+    includeMetadata: true,
+    includeAbstracts: false,
+    maxNodes: 0,
     format: 'bibtex',
-    filename: '',
-    error: 'BibTeX export not yet implemented',
+    compress: false,
+    ...options,
   };
+
+  try {
+    // Validate network first
+    const validation = validateCitationNetwork(network);
+    if (!validation.isValid) {
+      return {
+        success: false,
+        format: 'bibtex',
+        filename: '',
+        error: `Network validation failed: ${validation.errors.join(', ')}`,
+      };
+    }
+
+    // Truncate if necessary
+    const { network: processedNetwork, truncated, originalCount } = truncateNetwork(network, opts.maxNodes || 0);
+
+    // BibTeX is only applicable to citation networks (works), not coauthor networks
+    const isCoauthor = isCoauthorNetwork(processedNetwork);
+    if (isCoauthor) {
+      return {
+        success: true,
+        format: 'bibtex',
+        filename: getExportFilename('bibtex', opts.filenamePrefix, opts.customDate),
+        data: '% Coauthor networks do not contain bibliographic entries\n% Export as JSON or GraphML for coauthor network data\n',
+        size: 0,
+        metadata: {
+          nodeCount: 0,
+          edgeCount: 0,
+          exportedAt: new Date().toISOString(),
+        },
+      };
+    }
+
+    const citationNodes = processedNetwork.nodes as CitationNode[];
+    let bibtexContent = '% BibTeX export of citation network\n';
+    bibtexContent += `% Generated on ${new Date().toISOString()}\n`;
+    bibtexContent += `% Contains ${citationNodes.length} entries\n\n`;
+
+    let exportedCount = 0;
+
+    for (const node of citationNodes) {
+      if (!node.work) continue; // Skip nodes without work data
+
+      const work = node.work;
+      const year = work.publication_year || node.year;
+      const authors = work.authorships?.map(a => a.author.display_name).filter(Boolean) || [];
+      
+      // Generate BibTeX key (FirstAuthorSurname + Year + FirstWordOfTitle)
+      const firstAuthor = authors[0] || 'Unknown';
+      const surname = firstAuthor.split(' ').pop() || 'Unknown';
+      const firstWord = (work.title || 'Untitled').replace(/[^\w\s]/g, '').split(' ')[0] || 'Work';
+      const bibtexKey = `${surname}${year}${firstWord}`.replace(/[^\w]/g, '');
+
+      // Determine entry type
+      const entryType = work.type === 'book' ? 'book' : 
+                       work.type === 'book-chapter' ? 'inbook' :
+                       work.type === 'proceedings-article' ? 'inproceedings' :
+                       'article';
+
+      bibtexContent += `@${entryType}{${bibtexKey},\n`;
+      bibtexContent += `  title={${escapeBibTeXValue(work.title || 'Untitled')}},\n`;
+
+      // Authors
+      if (authors.length > 0) {
+        const authorString = authors.map(name => formatBibTeXAuthor(name)).join(' and ');
+        bibtexContent += `  author={${authorString}},\n`;
+      }
+
+      // Year
+      if (year) {
+        bibtexContent += `  year={${year}},\n`;
+      }
+
+      // DOI
+      if (work.doi) {
+        bibtexContent += `  doi={${escapeBibTeXValue(work.doi)}},\n`;
+      }
+
+      // Journal/Source information
+      if (work.primary_location?.source) {
+        const source = work.primary_location.source;
+        if (entryType === 'article') {
+          bibtexContent += `  journal={${escapeBibTeXValue(source.display_name)}},\n`;
+        } else if (entryType === 'inproceedings') {
+          bibtexContent += `  booktitle={${escapeBibTeXValue(source.display_name)}},\n`;
+        }
+
+        // ISSN
+        if (source.issn_l) {
+          bibtexContent += `  issn={${source.issn_l}},\n`;
+        }
+      }
+
+      // URL
+      if (work.primary_location?.landing_page_url) {
+        bibtexContent += `  url={${work.primary_location.landing_page_url}},\n`;
+      }
+
+      // Publication date
+      if (work.publication_date) {
+        bibtexContent += `  date={${work.publication_date}},\n`;
+      }
+
+      // Open access information
+      if (work.open_access?.is_oa) {
+        bibtexContent += `  note={Open Access},\n`;
+      }
+
+      // Citation count as note
+      if (opts.includeMetadata && node.citedByCount > 0) {
+        bibtexContent += `  note={Cited by ${node.citedByCount} works},\n`;
+      }
+
+      // Remove trailing comma and close entry
+      bibtexContent = bibtexContent.replace(/,\n$/, '\n');
+      bibtexContent += '}\n\n';
+      
+      exportedCount++;
+    }
+
+    const filename = getExportFilename('bibtex', opts.filenamePrefix, opts.customDate);
+
+    return {
+      success: true,
+      format: 'bibtex',
+      filename,
+      data: bibtexContent,
+      size: new Blob([bibtexContent]).size,
+      metadata: {
+        nodeCount: exportedCount,
+        edgeCount: 0, // BibTeX doesn't represent edges
+        exportedAt: new Date().toISOString(),
+        ...(truncated && {
+          truncated: true,
+          originalNodeCount: originalCount,
+        }),
+      },
+    };
+
+  } catch (error) {
+    return {
+      success: false,
+      format: 'bibtex',
+      filename: '',
+      error: `Export failed: ${error instanceof Error ? error.message : 'Unknown error'}`,
+    };
+  }
 }
 
 export function exportCitationNetworkToRIS(
-  _network: CitationNetwork | CoauthorNetwork,
-  _options: Partial<ExportOptions> = {}
+  network: CitationNetwork | CoauthorNetwork,
+  options: Partial<ExportOptions> = {}
 ): NetworkExportResult {
-  // TODO: Implement RIS export
-  return {
-    success: false,
+  const opts: ExportOptions = {
+    includeMetadata: true,
+    includeAbstracts: false,
+    maxNodes: 0,
     format: 'ris',
-    filename: '',
-    error: 'RIS export not yet implemented',
+    compress: false,
+    ...options,
   };
+
+  try {
+    // Validate network first
+    const validation = validateCitationNetwork(network);
+    if (!validation.isValid) {
+      return {
+        success: false,
+        format: 'ris',
+        filename: '',
+        error: `Network validation failed: ${validation.errors.join(', ')}`,
+      };
+    }
+
+    // Truncate if necessary
+    const { network: processedNetwork, truncated, originalCount } = truncateNetwork(network, opts.maxNodes || 0);
+
+    // RIS is only applicable to citation networks (works), not coauthor networks
+    const isCoauthor = isCoauthorNetwork(processedNetwork);
+    if (isCoauthor) {
+      return {
+        success: true,
+        format: 'ris',
+        filename: getExportFilename('ris', opts.filenamePrefix, opts.customDate),
+        data: 'TY  - GEN\nTI  - Coauthor networks do not contain bibliographic entries\nN1  - Export as JSON or GraphML for coauthor network data\nER  -\n\n',
+        size: 0,
+        metadata: {
+          nodeCount: 0,
+          edgeCount: 0,
+          exportedAt: new Date().toISOString(),
+        },
+      };
+    }
+
+    const citationNodes = processedNetwork.nodes as CitationNode[];
+    let risContent = '';
+
+    let exportedCount = 0;
+
+    for (const node of citationNodes) {
+      if (!node.work) continue; // Skip nodes without work data
+
+      const work = node.work;
+      const year = work.publication_year || node.year;
+      const authors = work.authorships?.map(a => a.author.display_name).filter(Boolean) || [];
+
+      // Determine RIS type
+      let risType = 'JOUR'; // Journal article (default)
+      switch (work.type) {
+        case 'book':
+          risType = 'BOOK';
+          break;
+        case 'book-chapter':
+          risType = 'CHAP';
+          break;
+        case 'proceedings-article':
+          risType = 'CONF';
+          break;
+        case 'dissertation':
+          risType = 'THES';
+          break;
+        case 'report':
+          risType = 'RPRT';
+          break;
+        default:
+          risType = 'JOUR';
+      }
+
+      // Start RIS entry
+      risContent += `TY  - ${risType}\n`;
+
+      // Title
+      risContent += `TI  - ${work.title}\n`;
+
+      // Authors (Last, First format)
+      for (const author of authors) {
+        const formattedAuthor = formatRISAuthor(author);
+        risContent += `AU  - ${formattedAuthor}\n`;
+      }
+
+      // Year
+      if (year) {
+        risContent += `PY  - ${year}\n`;
+      }
+
+      // Publication date
+      if (work.publication_date) {
+        const date = work.publication_date.replace(/-/g, '/');
+        risContent += `DA  - ${date}\n`;
+      }
+
+      // Journal/Source
+      if (work.primary_location?.source) {
+        const source = work.primary_location.source;
+        if (risType === 'JOUR') {
+          risContent += `JO  - ${source.display_name}\n`;
+          risContent += `JF  - ${source.display_name}\n`;
+        } else if (risType === 'CONF') {
+          risContent += `BT  - ${source.display_name}\n`;
+        } else if (risType === 'CHAP') {
+          risContent += `BT  - ${source.display_name}\n`;
+        }
+
+        // ISSN
+        if (source.issn_l) {
+          risContent += `SN  - ${source.issn_l}\n`;
+        }
+      }
+
+      // DOI
+      if (work.doi) {
+        risContent += `DO  - ${work.doi}\n`;
+      }
+
+      // URL
+      if (work.primary_location?.landing_page_url) {
+        risContent += `UR  - ${work.primary_location.landing_page_url}\n`;
+      }
+
+      // Abstract (if available and requested)
+      const abstract = reconstructAbstract(work.abstract_inverted_index);
+      if (opts.includeAbstracts && abstract) {
+        // Split long abstracts into multiple lines for RIS format
+        const abstractLines = abstract.match(/.{1,255}/g) || [abstract];
+        for (const line of abstractLines) {
+          risContent += `AB  - ${line}\n`;
+        }
+      }
+
+      // Keywords/Concepts
+      if (work.concepts && work.concepts.length > 0) {
+        const keywords = work.concepts
+          .filter(c => c.score > 0.3) // Only include concepts with decent confidence
+          .map(c => c.display_name)
+          .slice(0, 10) // Limit to top 10 concepts
+          .join('; ');
+        
+        if (keywords) {
+          risContent += `KW  - ${keywords}\n`;
+        }
+      }
+
+      // Notes
+      const notes: string[] = [];
+      
+      if (work.open_access?.is_oa) {
+        notes.push('Open Access');
+      }
+      
+      if (opts.includeMetadata && node.citedByCount > 0) {
+        notes.push(`Cited by ${node.citedByCount} works`);
+      }
+      
+      if (opts.includeMetadata && node.depth > 0) {
+        notes.push(`Citation depth: ${node.depth}`);
+      }
+
+      for (const note of notes) {
+        risContent += `N1  - ${note}\n`;
+      }
+
+      // Language (if available)
+      if (work.language) {
+        risContent += `LA  - ${work.language}\n`;
+      }
+
+      // End of record
+      risContent += 'ER  -\n\n';
+      
+      exportedCount++;
+    }
+
+    const filename = getExportFilename('ris', opts.filenamePrefix, opts.customDate);
+
+    return {
+      success: true,
+      format: 'ris',
+      filename,
+      data: risContent,
+      size: new Blob([risContent]).size,
+      metadata: {
+        nodeCount: exportedCount,
+        edgeCount: 0, // RIS doesn't represent edges
+        exportedAt: new Date().toISOString(),
+        ...(truncated && {
+          truncated: true,
+          originalNodeCount: originalCount,
+        }),
+      },
+    };
+
+  } catch (error) {
+    return {
+      success: false,
+      format: 'ris',
+      filename: '',
+      error: `Export failed: ${error instanceof Error ? error.message : 'Unknown error'}`,
+    };
+  }
 }
 
 export function exportCitationNetworkToSVG(
@@ -661,4 +1155,73 @@ export function exportCitationNetworkToPNG(
     filename: '',
     error: 'PNG export not yet implemented',
   };
+}
+
+// Helper functions for XML/HTML escaping and formatting
+
+/**
+ * Escape special characters for XML attributes
+ */
+function escapeXmlAttribute(value: string): string {
+  return value
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&apos;');
+}
+
+/**
+ * Escape special characters for XML content
+ */
+function escapeXmlContent(value: string): string {
+  return value
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;');
+}
+
+/**
+ * Escape special characters for BibTeX values
+ */
+function escapeBibTeXValue(value: string): string {
+  return value
+    .replace(/\\/g, '\\textbackslash{}')
+    .replace(/&/g, '\\&')
+    .replace(/#/g, '\\#')
+    .replace(/\$/g, '\\$')
+    .replace(/%/g, '\\%')
+    .replace(/\^/g, '\\textasciicircum{}')
+    .replace(/_/g, '\\_')
+    .replace(/\{/g, '\\{')
+    .replace(/\}/g, '\\}')
+    .replace(/~/g, '\\textasciitilde{}')
+    .replace(/á/g, '\\\'{a}')
+    .replace(/é/g, '\\\'{e}')
+    .replace(/í/g, '\\\'{i}')
+    .replace(/ó/g, '\\\'{o}')
+    .replace(/ú/g, '\\\'{u}')
+    .replace(/ñ/g, '\\~{n}')
+    .replace(/ç/g, '\\c{c}');
+}
+
+/**
+ * Format author name for BibTeX (handle special characters)
+ */
+function formatBibTeXAuthor(name: string): string {
+  return escapeBibTeXValue(name);
+}
+
+/**
+ * Format author name for RIS (Last, First format)
+ */
+function formatRISAuthor(name: string): string {
+  const parts = name.trim().split(/\s+/);
+  if (parts.length < 2) {
+    return name; // Return as-is if only one name part
+  }
+  
+  const lastName = parts.pop()!;
+  const firstNames = parts.join(' ');
+  return `${lastName}, ${firstNames}`;
 }
