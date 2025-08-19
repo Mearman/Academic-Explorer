@@ -48,6 +48,10 @@ interface AcademicExplorerDB extends DBSchema {
       updatedAt: number;
     };
   };
+  searchFilters: {
+    key: string; // filter key (e.g., 'default', 'saved-search-1')
+    value: Record<string, unknown>; // Flexible object to store any filter data
+  };
 }
 
 export class DatabaseService {
@@ -80,6 +84,10 @@ export class DatabaseService {
 
         if (!db.objectStoreNames.contains('collections')) {
           db.createObjectStore('collections');
+        }
+
+        if (!db.objectStoreNames.contains('searchFilters')) {
+          db.createObjectStore('searchFilters');
         }
       },
     });
@@ -189,6 +197,38 @@ export class DatabaseService {
     return db.getAll('collections');
   }
 
+  // Search Filters Management
+  async saveSearchFilters(key: string, filters: Record<string, unknown>): Promise<void> {
+    const db = await this.ensureDB();
+    await db.put('searchFilters', filters, key);
+  }
+
+  async getSearchFilters(key: string): Promise<Record<string, unknown> | null> {
+    const db = await this.ensureDB();
+    const result = await db.get('searchFilters', key);
+    return result || null;
+  }
+
+  async deleteSearchFilters(key: string): Promise<void> {
+    const db = await this.ensureDB();
+    await db.delete('searchFilters', key);
+  }
+
+  async getAllSearchFilters(): Promise<Record<string, Record<string, unknown>>> {
+    const db = await this.ensureDB();
+    const keys = await db.getAllKeys('searchFilters');
+    const values = await db.getAll('searchFilters');
+    
+    const result: Record<string, Record<string, unknown>> = {};
+    keys.forEach((key, index) => {
+      if (typeof key === 'string' && values[index]) {
+        result[key] = values[index];
+      }
+    });
+    
+    return result;
+  }
+
   // Cleanup utilities
   async cleanOldSearchResults(daysOld = 30): Promise<number> {
     const db = await this.ensureDB();
@@ -206,6 +246,47 @@ export class DatabaseService {
     }
     
     return deleted;
+  }
+
+  async cleanOldSearchFilters(daysOld = 90): Promise<number> {
+    const db = await this.ensureDB();
+    const cutoff = Date.now() - (daysOld * 24 * 60 * 60 * 1000);
+    let deleted = 0;
+
+    const keys = await db.getAllKeys('searchFilters');
+    
+    for (const key of keys) {
+      const value = await db.get('searchFilters', key);
+      if (value && typeof value === 'object' && value !== null) {
+        const filters = value as Record<string, unknown>;
+        const savedAt = filters.savedAt;
+        
+        if (typeof savedAt === 'number' && savedAt < cutoff) {
+          await db.delete('searchFilters', key);
+          deleted++;
+        }
+      }
+    }
+    
+    return deleted;
+  }
+
+  async clearAllStores(): Promise<void> {
+    const db = await this.ensureDB();
+    
+    // Clear all object stores
+    const stores = ['searchResults', 'papers', 'citations', 'collections', 'searchFilters'] as const;
+    
+    for (const storeName of stores) {
+      try {
+        const keys = await db.getAllKeys(storeName);
+        for (const key of keys) {
+          await db.delete(storeName, key);
+        }
+      } catch (error) {
+        console.error(`Failed to clear store ${storeName}:`, error);
+      }
+    }
   }
 
   async getStorageEstimate(): Promise<{ usage?: number; quota?: number }> {
