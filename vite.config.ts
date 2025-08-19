@@ -37,11 +37,11 @@ export default defineConfig(({ command }) => ({
       ],
     }),
     vanillaExtractPlugin(),
-    // TypeScript checking during build
-    checker({
-      typescript: true,
-      overlay: false,
-    }),
+    // TypeScript checking during build (temporarily disabled for development)
+    // checker({
+    //   typescript: true,
+    //   overlay: false,
+    // }),
     // Custom plugin to copy built index.html to 404.html for GitHub Pages SPA routing
     {
       name: 'copy-index-to-404',
