@@ -55,7 +55,9 @@ import {
   IconTrophy,
   IconLeaf,
   IconRepeat,
-  IconMedal
+  IconMedal,
+  IconClock,
+  IconChartLine
 } from '@tabler/icons-react';
 import { forwardRef } from 'react';
 
@@ -135,6 +137,14 @@ const iconMap = {
   green: IconLeaf,
   hybrid: IconRepeat,
   bronze: IconMedal,
+  
+  // Comparison insights
+  trophy: IconTrophy,
+  'alert-triangle': IconAlertTriangle,
+  'trending-up': IconTrendingUp,
+  'chart-line': IconChartLine,
+  clock: IconClock,
+  'info-circle': IconInfoCircle,
 };
 
 /**
