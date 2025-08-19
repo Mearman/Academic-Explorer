@@ -3,9 +3,9 @@
  * Shows user status, connection quality, and activity with rich animations
  */
 
+import { Tooltip } from '@mantine/core';
 import { motion, AnimatePresence } from 'framer-motion';
 import { memo, useMemo, useState, useEffect } from 'react';
-import { Tooltip } from '@mantine/core';
 
 import type { CollaborationUser, UserPresence } from '@/types/collaboration';
 

@@ -5,7 +5,6 @@
  * and comprehensive user feedback following WCAG guidelines.
  */
 
-import React, { useCallback, useEffect, useId, useState, useRef } from 'react';
 import {
   TextInput,
   NumberInput,
@@ -27,6 +26,7 @@ import {
   Paper,
   Button,
 } from '@mantine/core';
+import { useDebouncedValue } from '@mantine/hooks';
 import {
   IconCheck,
   IconX,
@@ -36,7 +36,7 @@ import {
   IconEye,
   IconEyeOff,
 } from '@tabler/icons-react';
-import { useDebouncedValue } from '@mantine/hooks';
+import React, { useCallback, useEffect, useId, useState, useRef } from 'react';
 
 import { EntityType } from '@/lib/openalex/utils/entity-detection';
 import { RealTimeValidator } from '@/lib/validation/real-time-validator';
