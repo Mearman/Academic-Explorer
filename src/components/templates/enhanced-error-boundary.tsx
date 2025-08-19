@@ -296,14 +296,14 @@ function EnhancedErrorFallback({
 
   const getCategoryIcon = (category: ErrorCategory) => {
     switch (category) {
-      case 'network': return '🌐';
-      case 'storage': return '💾';
-      case 'api': return '🔌';
-      case 'security': return '🔒';
-      case 'resource': return '📦';
-      case 'memory': return '🧠';
-      case 'rendering': return '🎨';
-      default: return '⚠️';
+      case 'network': return 'NET';
+      case 'storage': return 'STO';
+      case 'api': return 'API';
+      case 'security': return 'SEC';
+      case 'resource': return 'RES';
+      case 'memory': return 'MEM';
+      case 'rendering': return 'UI';
+      default: return 'ERR';
     }
   };
 
@@ -342,7 +342,7 @@ function EnhancedErrorFallback({
         {!networkStatus.isOnline && (
           <div className="mb-6 p-3 bg-red-50 border border-red-200 rounded-lg">
             <div className="flex items-center text-red-700">
-              <span className="mr-2">🔴</span>
+              <span className="mr-2 text-red-500 font-bold">OFFLINE</span>
               <span className="text-sm">
                 You're currently offline. Some features may not work properly.
               </span>
@@ -354,7 +354,7 @@ function EnhancedErrorFallback({
         {queueStatus.pendingRequests > 0 && (
           <div className="mb-6 p-3 bg-blue-50 border border-blue-200 rounded-lg">
             <div className="flex items-center text-blue-700">
-              <span className="mr-2">⏳</span>
+              <span className="mr-2 text-blue-500 font-bold">QUEUED</span>
               <span className="text-sm">
                 {queueStatus.pendingRequests} requests queued for when connection returns
               </span>
@@ -426,7 +426,7 @@ function EnhancedErrorFallback({
                 >
                   <div className="flex justify-between">
                     <span>{attempt.strategy}</span>
-                    <span>{attempt.success ? '✓' : '✗'}</span>
+                    <span>{attempt.success ? 'OK' : 'FAIL'}</span>
                   </div>
                   <div className="text-gray-500">
                     {new Date(attempt.timestamp).toLocaleTimeString()}
@@ -467,7 +467,7 @@ export function EnhancedErrorBoundary({
   maxRetryAttempts = 3,
   autoRetryDelay = 1000,
   enableNetworkRecovery = true,
-  enableStorageRecovery = true,
+  enableStorageRecovery: _enableStorageRecovery = true,
   onError,
   onRecovery,
   fallbackComponent: CustomFallback = EnhancedErrorFallback,
@@ -489,24 +489,6 @@ export function EnhancedErrorBoundary({
       classifiedErrorRef.current = null;
     };
   }, []);
-
-  // Auto-retry for network errors when connection is restored
-  useEffect(() => {
-    if (
-      enableNetworkRecovery &&
-      networkStatus.isOnline &&
-      classifiedErrorRef.current?.category === 'network' &&
-      retryAttempts.length > 0 &&
-      !isRetrying
-    ) {
-      const lastAttempt = retryAttempts[retryAttempts.length - 1];
-      if (!lastAttempt.success && retryAttempts.length < maxRetryAttempts) {
-        setTimeout(() => {
-          attemptRecovery('retry');
-        }, autoRetryDelay);
-      }
-    }
-  }, [networkStatus.isOnline, retryAttempts, isRetrying, enableNetworkRecovery, maxRetryAttempts, autoRetryDelay]);
 
   const attemptRecovery = useCallback(async (strategy?: RecoveryStrategy) => {
     if (isRetrying || retryAttempts.length >= maxRetryAttempts) {
@@ -573,6 +555,24 @@ export function EnhancedErrorBoundary({
       setIsRetrying(false);
     }
   }, [isRetrying, retryAttempts.length, maxRetryAttempts, onRecovery]);
+
+  // Auto-retry for network errors when connection is restored
+  useEffect(() => {
+    if (
+      enableNetworkRecovery &&
+      networkStatus.isOnline &&
+      classifiedErrorRef.current?.category === 'network' &&
+      retryAttempts.length > 0 &&
+      !isRetrying
+    ) {
+      const lastAttempt = retryAttempts[retryAttempts.length - 1];
+      if (!lastAttempt.success && retryAttempts.length < maxRetryAttempts) {
+        setTimeout(() => {
+          attemptRecovery('retry');
+        }, autoRetryDelay);
+      }
+    }
+  }, [networkStatus.isOnline, retryAttempts, isRetrying, enableNetworkRecovery, maxRetryAttempts, autoRetryDelay, attemptRecovery]);
 
   const handleReport = useCallback(() => {
     if (classifiedErrorRef.current) {
@@ -662,4 +662,3 @@ export function EnhancedErrorBoundary({
   );
 }
 
-export default EnhancedErrorBoundary;
