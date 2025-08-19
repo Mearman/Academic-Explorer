@@ -247,6 +247,12 @@ export interface ValidationStatistics {
   totalEntitiesValidated: number;
   /** Total issues found */
   totalIssuesFound: number;
+  /** Average issues per entity */
+  averageIssuesPerEntity: number;
+  /** Validation success rate (entities without issues / total entities) */
+  validationSuccessRate: number;
+  /** Most common issue type */
+  mostCommonIssueType: ValidationIssueType;
   /** Most common issue types */
   commonIssueTypes: Array<{
     issueType: ValidationIssueType;
