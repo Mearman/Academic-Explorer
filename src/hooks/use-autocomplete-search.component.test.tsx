@@ -240,7 +240,7 @@ describe('useAutocompleteSearch Hook', () => {
       });
 
       // Results should be sorted by cited_by_count/works_count descending
-      const suggestions = result.current.suggestions;
+      const {suggestions} = result.current;
       expect(suggestions[0].id).toBe('https://openalex.org/I123456789'); // Highest works_count (5000)
       expect(suggestions[1].id).toBe('https://openalex.org/S123456789'); // Next highest works_count (1000)
     });
@@ -552,7 +552,7 @@ describe('useAutocompleteSearch Hook', () => {
         expect(result.current.suggestions.length).toBeGreaterThan(0);
       });
 
-      const suggestions = result.current.suggestions;
+      const {suggestions} = result.current;
       const workSuggestion = suggestions.find(s => s.id.includes('/W'));
       const authorSuggestion = suggestions.find(s => s.id.includes('/A'));
       const sourceSuggestion = suggestions.find(s => s.id.includes('/S'));

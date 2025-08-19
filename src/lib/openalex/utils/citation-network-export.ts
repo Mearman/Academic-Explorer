@@ -811,7 +811,7 @@ export function exportCitationNetworkToBibTeX(
     for (const node of citationNodes) {
       if (!node.work) continue; // Skip nodes without work data
 
-      const work = node.work;
+      const {work} = node;
       const year = work.publication_year || node.year;
       const authors = work.authorships?.map(a => a.author.display_name).filter(Boolean) || [];
       
@@ -848,7 +848,7 @@ export function exportCitationNetworkToBibTeX(
 
       // Journal/Source information
       if (work.primary_location?.source) {
-        const source = work.primary_location.source;
+        const {source} = work.primary_location;
         if (entryType === 'article') {
           bibtexContent += `  journal={${escapeBibTeXValue(source.display_name)}},\n`;
         } else if (entryType === 'inproceedings') {
@@ -970,7 +970,7 @@ export function exportCitationNetworkToRIS(
     for (const node of citationNodes) {
       if (!node.work) continue; // Skip nodes without work data
 
-      const work = node.work;
+      const {work} = node;
       const year = work.publication_year || node.year;
       const authors = work.authorships?.map(a => a.author.display_name).filter(Boolean) || [];
 
@@ -1021,7 +1021,7 @@ export function exportCitationNetworkToRIS(
 
       // Journal/Source
       if (work.primary_location?.source) {
-        const source = work.primary_location.source;
+        const {source} = work.primary_location;
         if (risType === 'JOUR') {
           risContent += `JO  - ${source.display_name}\n`;
           risContent += `JF  - ${source.display_name}\n`;

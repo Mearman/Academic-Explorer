@@ -277,7 +277,7 @@ export function useOfflineQueue() {
         
         let currentRequest = request;
         let attemptCount = 0;
-        const maxRetries = currentRequest.maxRetries;
+        const {maxRetries} = currentRequest;
         
         // Loop for initial attempt + retries
         while (attemptCount <= maxRetries) {

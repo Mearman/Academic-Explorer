@@ -150,8 +150,8 @@ export function useNetworkStatus(): NetworkStatus {
     const currentTime = getCurrentTime();
 
     setNetworkStatus(prevStatus => {
-      let lastOnlineTime = prevStatus.lastOnlineTime;
-      let offlineDuration = prevStatus.offlineDuration;
+      let {lastOnlineTime} = prevStatus;
+      let {offlineDuration} = prevStatus;
 
       // Update timing information
       if (isOnline && !prevStatus.isOnline) {

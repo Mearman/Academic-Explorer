@@ -69,7 +69,7 @@ function getBuildInfo(): BuildInfo {
   const git = getGitCommitHash();
   const buildTimestamp = new Date().toISOString();
   const nodeVersion = process.version;
-  const platform = process.platform;
+  const {platform} = process;
   
   return {
     git,

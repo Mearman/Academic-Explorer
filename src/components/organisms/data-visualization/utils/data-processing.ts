@@ -758,7 +758,7 @@ export function detectOutliers(
       }
     });
   } else if (method === 'modified_zscore') {
-    const median = calculateStatistics(data).median;
+    const {median} = calculateStatistics(data);
     const mad = calculateStatistics(data.map(val => Math.abs(val - median))).median;
     const modifiedThreshold = 0.6745; // Standard threshold for modified z-score
     

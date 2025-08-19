@@ -149,7 +149,7 @@ class ServiceWorkerManager {
       };
     }
 
-    const registration = this.registration;
+    const {registration} = this;
     const isRegistered = !!registration;
     const isInstalling = !!registration?.installing;
     const isWaiting = !!registration?.waiting;
@@ -262,7 +262,7 @@ class ServiceWorkerManager {
         }
       };
 
-      const controller = navigator.serviceWorker.controller;
+      const {controller} = navigator.serviceWorker;
       if (!controller) {
         reject(new Error('Service worker controller became unavailable'));
         return;

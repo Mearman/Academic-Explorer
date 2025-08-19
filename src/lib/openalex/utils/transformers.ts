@@ -394,7 +394,7 @@ export function buildCoAuthorshipNetwork(works: Work[]): CoAuthorshipNetwork {
     
     // Update author nodes
     work.authorships.forEach(authorship => {
-      const author = authorship.author;
+      const {author} = authorship;
       if (!authorMap.has(author.id)) {
         authorMap.set(author.id, {
           name: author.display_name,

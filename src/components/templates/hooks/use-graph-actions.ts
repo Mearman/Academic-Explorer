@@ -10,7 +10,7 @@ export function useGraphActions() {
       window.location.href = vertex.metadata.url;
     } else {
       // Construct URL from entity ID and type
-      const entityType = vertex.entityType;
+      const {entityType} = vertex;
       const endpoint = getEntityEndpointFromType(entityType);
       window.location.href = `/${endpoint}/${encodeURIComponent(vertex.id)}`;
     }

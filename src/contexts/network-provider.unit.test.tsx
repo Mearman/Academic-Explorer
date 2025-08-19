@@ -156,7 +156,7 @@ describe('NetworkProvider', () => {
         wrapper: TestWrapper,
       });
 
-      const syncConfig = result.current.syncConfig;
+      const {syncConfig} = result.current;
       expect(syncConfig.enabled).toBe(true);
       expect(syncConfig.syncInterval).toBeGreaterThan(0);
       expect(syncConfig.syncOnConnect).toBe(true);

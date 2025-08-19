@@ -254,7 +254,7 @@ export class ExportValidator {
     config: ValidationExportConfig,
     streamOptions: { chunkSize: number }
   ): Promise<StreamingExportResult> {
-    const chunkSize = streamOptions.chunkSize;
+    const {chunkSize} = streamOptions;
     const chunks = Math.ceil(data.length / chunkSize);
     const startTime = Date.now();
 
@@ -630,7 +630,7 @@ export async function checkDataConsistency(data: unknown[]): Promise<DataConsist
       if ('authorships' in obj && Array.isArray(obj.authorships)) {
         for (const authorship of obj.authorships) {
           if (typeof authorship === 'object' && authorship !== null && 'institutions' in authorship) {
-            const institutions = (authorship as Record<string, unknown>).institutions;
+            const {institutions} = (authorship as Record<string, unknown>);
             if (Array.isArray(institutions)) {
               for (const institution of institutions) {
                 if (typeof institution === 'object' && institution !== null && 'id' in institution) {

@@ -124,7 +124,7 @@ describe('Entity Graph Visualization - Real Browser Scenario (TDD)', () => {
     await act(async () => {
       // Institution affiliation relationship
       if (realAuthorData.affiliations?.[0]?.institution) {
-        const institution = realAuthorData.affiliations[0].institution;
+        const {institution} = realAuthorData.affiliations[0];
         await storeResult.current.addRelationship({
           sourceEntityId: realAuthorData.id,
           targetEntityId: institution.id,

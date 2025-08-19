@@ -264,10 +264,10 @@ export class RequestManager {
    */
   getStats(): RequestManagerStats {
     const activeRequests = this.activeRequests.size;
-    const totalRequests = this.stats.totalRequests;
-    const deduplicatedRequests = this.stats.deduplicatedRequests;
-    const completedRequests = this.stats.completedRequests;
-    const failedRequests = this.stats.failedRequests;
+    const {totalRequests} = this.stats;
+    const {deduplicatedRequests} = this.stats;
+    const {completedRequests} = this.stats;
+    const {failedRequests} = this.stats;
     
     const averageRequestDuration = this.options.enableMetrics && completedRequests > 0
       ? this.stats.totalDuration / completedRequests

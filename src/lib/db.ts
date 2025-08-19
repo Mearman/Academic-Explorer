@@ -271,7 +271,7 @@ export class DatabaseService {
       const value = await db.get('searchFilters', key);
       if (value && typeof value === 'object' && value !== null) {
         const filters = value as Record<string, unknown>;
-        const savedAt = filters.savedAt;
+        const {savedAt} = filters;
         
         if (typeof savedAt === 'number' && savedAt < cutoff) {
           await db.delete('searchFilters', key);

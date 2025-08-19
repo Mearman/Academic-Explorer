@@ -192,7 +192,7 @@ export function extractWorkRelationships(work: Work): ExtractedRelationship[] {
 
   // Publication source relationship
   if (work.primary_location?.source) {
-    const source = work.primary_location.source;
+    const {source} = work.primary_location;
     relationships.push({
       sourceEntityId: workId,
       targetEntityId: source.id,

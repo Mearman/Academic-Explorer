@@ -232,7 +232,7 @@ export function ComparisonMetricsGrid({
     );
   }
   
-  const entityType = metrics[0].entityType;
+  const {entityType} = metrics[0];
   const metricKeys = getMetricKeys(metrics);
   const sortedMetrics = sortMetrics(metrics, sortBy, sortOrder);
   

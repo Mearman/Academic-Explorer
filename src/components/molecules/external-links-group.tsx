@@ -211,7 +211,7 @@ function getCategoryForLinkType(linkType: string): string {
 
 function groupLinksByCategory(links: ProcessedLink[]): Record<string, ProcessedLink[]> {
   return links.reduce((groups, link) => {
-    const category = link.category;
+    const {category} = link;
     if (!groups[category]) {
       groups[category] = [];
     }
