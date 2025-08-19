@@ -3,7 +3,9 @@
  */
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 
-import type { EntityGraphVertex, EntityGraphEdge, EdgeType } from '@/types/entity-graph';
+import type { EntityGraphVertex, EntityGraphEdge } from '@/types/entity-graph';
+import { EdgeType } from '@/types/entity-graph';
+import { EntityType } from '@/lib/openalex/utils/entity-detection';
 
 import {
   GraphVirtualizer,
@@ -24,7 +26,7 @@ function createMockVertices(count: number): Array<EntityGraphVertex & { x: numbe
   return Array.from({ length: count }, (_, i) => ({
     id: `vertex-${i}`,
     displayName: `Vertex ${i}`,
-    entityType: 'work' as const,
+    entityType: EntityType.WORK,
     directlyVisited: i % 3 === 0,
     firstSeen: new Date(Date.now() - Math.random() * 86400000).toISOString(),
     visitCount: Math.floor(Math.random() * 10),
