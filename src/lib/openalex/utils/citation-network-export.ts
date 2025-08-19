@@ -597,8 +597,8 @@ function escapeCSVField(value: string): string {
 }
 
 export function exportCitationNetworkToGraphML(
-  network: CitationNetwork | CoauthorNetwork,
-  options: Partial<ExportOptions> = {}
+  _network: CitationNetwork | CoauthorNetwork,
+  _options: Partial<ExportOptions> = {}
 ): NetworkExportResult {
   // TODO: Implement GraphML export
   return {
@@ -610,8 +610,8 @@ export function exportCitationNetworkToGraphML(
 }
 
 export function exportCitationNetworkToBibTeX(
-  network: CitationNetwork | CoauthorNetwork,
-  options: Partial<ExportOptions> = {}
+  _network: CitationNetwork | CoauthorNetwork,
+  _options: Partial<ExportOptions> = {}
 ): NetworkExportResult {
   // TODO: Implement BibTeX export
   return {
@@ -623,8 +623,8 @@ export function exportCitationNetworkToBibTeX(
 }
 
 export function exportCitationNetworkToRIS(
-  network: CitationNetwork | CoauthorNetwork,
-  options: Partial<ExportOptions> = {}
+  _network: CitationNetwork | CoauthorNetwork,
+  _options: Partial<ExportOptions> = {}
 ): NetworkExportResult {
   // TODO: Implement RIS export
   return {
@@ -636,9 +636,9 @@ export function exportCitationNetworkToRIS(
 }
 
 export function exportCitationNetworkToSVG(
-  network: CitationNetwork | CoauthorNetwork,
-  svgElement: SVGElement,
-  options: Partial<ExportOptions> = {}
+  _network: CitationNetwork | CoauthorNetwork,
+  _svgElement: SVGElement,
+  _options: Partial<ExportOptions> = {}
 ): NetworkExportResult {
   // TODO: Implement SVG export
   return {
@@ -650,9 +650,9 @@ export function exportCitationNetworkToSVG(
 }
 
 export function exportCitationNetworkToPNG(
-  network: CitationNetwork | CoauthorNetwork,
-  svgElement: SVGElement,
-  options: Partial<ExportOptions> = {}
+  _network: CitationNetwork | CoauthorNetwork,
+  _svgElement: SVGElement,
+  _options: Partial<ExportOptions> = {}
 ): NetworkExportResult {
   // TODO: Implement PNG export
   return {
