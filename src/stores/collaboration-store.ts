@@ -8,7 +8,6 @@ import { persist, createJSONStorage } from 'zustand/middleware';
 import { subscribeWithSelector } from 'zustand/middleware';
 import { immer } from 'zustand/middleware/immer';
 
-import { useNetworkStatus } from '@/hooks/use-network-status';
 import { OperationalTransform } from '@/lib/operational-transform';
 import type {
   CollaborationState,
@@ -17,12 +16,10 @@ import type {
   CollaborationSession,
   Annotation,
   Comment,
-  CommentThread,
   Operation,
   UserPresence,
   SessionRecording,
   WebSocketMessage,
-  PermissionLevel,
   UserPermissions,
 } from '@/types/collaboration';
 import { PERMISSION_LEVELS, DEFAULT_SESSION_SETTINGS } from '@/types/collaboration';
@@ -90,7 +87,7 @@ function validateComment(comment: Partial<Comment>): boolean {
 /**
  * Debounce function for presence updates
  */
-function debounce<T extends (...args: any[]) => void>(
+function debounce<T extends (...args: unknown[]) => void>(
   func: T,
   wait: number
 ): (...args: Parameters<T>) => void {
@@ -116,17 +113,17 @@ export const useCollaborationStore = create<CollaborationState & CollaborationAc
         
         // Debounced presence update function
         const debouncedPresenceUpdate = debounce((presence: Partial<UserPresence>) => {
-          const state = get();
-          if (state.currentSession && state.currentUser && webSocketService.isConnected()) {
+          const _state = get();
+          if (_state.currentSession && _state.currentUser && webSocketService.isConnected()) {
             const message: WebSocketMessage = {
               type: 'user-presence',
               payload: {
                 ...presence,
-                userId: state.currentUser.id,
+                userId: _state.currentUser.id,
                 lastActivity: Date.now(),
               },
               timestamp: Date.now(),
-              sessionId: state.currentSession.id,
+              sessionId: _state.currentSession.id,
               id: generateId(),
             };
             
@@ -162,7 +159,7 @@ export const useCollaborationStore = create<CollaborationState & CollaborationAc
 
         // Handle incoming WebSocket messages
         const handleIncomingMessage = (message: WebSocketMessage) => {
-          const state = get();
+          const _state = get();
           
           switch (message.type) {
             case 'join-session':
@@ -200,7 +197,12 @@ export const useCollaborationStore = create<CollaborationState & CollaborationAc
               break;
             case 'error':
               set(state => {
-                state.error = (message.payload as any)?.message || 'Unknown error';
+                // Type guard to safely extract error message
+                const isErrorPayload = (payload: unknown): payload is { message: string } => {
+                  return typeof payload === 'object' && payload !== null && 'message' in payload;
+                };
+                
+                state.error = isErrorPayload(message.payload) ? message.payload.message : 'Unknown error';
               });
               break;
           }
@@ -209,19 +211,27 @@ export const useCollaborationStore = create<CollaborationState & CollaborationAc
         // Message handlers
         const handleUserJoined = (message: WebSocketMessage) => {
           set(state => {
-            const payload = message.payload as any;
-            if (payload.user && state.currentSession) {
-              state.currentSession.participants.set(payload.user.id, payload.user);
+            // Type guard to check if payload has user property
+            const isUserJoinPayload = (payload: unknown): payload is { user: CollaborationUser } => {
+              return typeof payload === 'object' && payload !== null && 'user' in payload;
+            };
+            
+            if (isUserJoinPayload(message.payload) && state.currentSession) {
+              state.currentSession.participants.set(message.payload.user.id, message.payload.user);
             }
           });
         };
 
         const handleUserLeft = (message: WebSocketMessage) => {
           set(state => {
-            const payload = message.payload as any;
-            if (payload.userId && state.currentSession) {
-              state.currentSession.participants.delete(payload.userId);
-              state.userPresence.delete(payload.userId);
+            // Type guard to check if payload has userId property
+            const isUserLeftPayload = (payload: unknown): payload is { userId: string } => {
+              return typeof payload === 'object' && payload !== null && 'userId' in payload;
+            };
+            
+            if (isUserLeftPayload(message.payload) && state.currentSession) {
+              state.currentSession.participants.delete(message.payload.userId);
+              state.userPresence.delete(message.payload.userId);
             }
           });
         };
@@ -377,20 +387,20 @@ export const useCollaborationStore = create<CollaborationState & CollaborationAc
         };
 
         const handleOperationApplied = (message: WebSocketMessage) => {
-          const operation = message.payload as Operation;
-          const state = get();
+          const _operation = message.payload as Operation;
+          const _state = get();
           
-          if (operation.userId !== state.currentUser?.id) {
+          if (_operation.userId !== _state.currentUser?.id) {
             // Apply remote operation using operational transformation
-            otEngine.applyRemoteOperation(operation);
+            otEngine.applyRemoteOperation(_operation);
             
-            set(state => {
+            set(_stateUpdate => {
               // Update document state if needed
               // This would depend on the specific document model
             });
           } else {
             // Acknowledge our own operation
-            otEngine.acknowledgeOperation(operation.id);
+            otEngine.acknowledgeOperation(_operation.id);
           }
         };
 
@@ -904,7 +914,7 @@ export const useCollaborationStore = create<CollaborationState & CollaborationAc
             }
           },
 
-          applyOperation(operation: Operation) {
+          applyOperation(_operation: Operation) {
             // This is handled by the operational transformation engine
             // and the WebSocket message handler
           },
