@@ -1,3 +1,4 @@
+ 
 /**
  * Graph Engine Management System
  * 
@@ -161,6 +162,68 @@ export {
 } from './transitions.css';
 
 // ============================================================================
+// Engine Implementations
+// ============================================================================
+
+// Engine implementations are dynamically imported to enable code splitting
+// Static imports are available in createEngineByType function
+
+export type {
+  ICanvasConfig,
+  ID3ForceConfig,
+  ICytoscapeConfig,
+  IWebGLConfig,
+} from './types';
+
+// ============================================================================
+// Engine Registry and Factory Functions
+// ============================================================================
+
+/**
+ * Create an engine instance by type
+ */
+export async function createEngineByType(
+  engineType: GraphEngineType
+): Promise<any> {
+  switch (engineType) {
+    case 'canvas-2d': {
+      const { createCanvasEngine } = await import('./canvas');
+      return createCanvasEngine();
+    }
+    case 'd3-force': {
+      const { createD3ForceEngine } = await import('./d3-force');
+      return createD3ForceEngine();
+    }
+    case 'cytoscape': {
+      const { createCytoscapeEngine } = await import('./cytoscape');
+      return createCytoscapeEngine();
+    }
+    case 'webgl': {
+      const { createWebGLEngine } = await import('./webgl');
+      return createWebGLEngine();
+    }
+    case 'svg':
+    case 'vis-network':
+    default:
+      throw new Error(`Engine ${engineType} is not yet implemented`);
+  }
+}
+
+/**
+ * Get all available engine types
+ */
+export function getAvailableEngineTypes(): GraphEngineType[] {
+  return ['canvas-2d', 'd3-force', 'cytoscape', 'webgl'];
+}
+
+/**
+ * Check if an engine type is implemented
+ */
+export function isEngineImplemented(engineType: GraphEngineType): boolean {
+  return getAvailableEngineTypes().includes(engineType);
+}
+
+// ============================================================================
 // Utility Functions and Constants
 // ============================================================================
 
@@ -178,26 +241,28 @@ export const ENGINE_DISPLAY_NAMES: Record<GraphEngineType, string> = {
 
 /**
  * Recommended engines for different use cases
+ * Updated to prioritize implemented engines
  */
 export const ENGINE_RECOMMENDATIONS = {
-  SMALL_GRAPHS: ['svg', 'd3-force'] as GraphEngineType[],
+  SMALL_GRAPHS: ['d3-force', 'canvas-2d'] as GraphEngineType[],
   MEDIUM_GRAPHS: ['canvas-2d', 'cytoscape'] as GraphEngineType[],
   LARGE_GRAPHS: ['webgl', 'canvas-2d'] as GraphEngineType[],
-  INTERACTIVE: ['d3-force', 'cytoscape', 'vis-network'] as GraphEngineType[],
+  INTERACTIVE: ['d3-force', 'cytoscape'] as GraphEngineType[],
   ANALYTICAL: ['cytoscape', 'canvas-2d'] as GraphEngineType[],
-  PRESENTATION: ['svg', 'd3-force'] as GraphEngineType[],
+  PRESENTATION: ['d3-force', 'canvas-2d'] as GraphEngineType[],
   HIGH_PERFORMANCE: ['webgl', 'canvas-2d'] as GraphEngineType[],
-  EXPORT_QUALITY: ['svg', 'canvas-2d'] as GraphEngineType[],
+  EXPORT_QUALITY: ['canvas-2d', 'd3-force'] as GraphEngineType[],
 } as const;
 
 /**
  * Performance categories for engine selection
+ * Updated to reflect implemented engines
  */
 export const PERFORMANCE_CATEGORIES = {
-  MEMORY_EFFICIENT: ['canvas-2d', 'svg'] as GraphEngineType[],
+  MEMORY_EFFICIENT: ['canvas-2d', 'd3-force'] as GraphEngineType[],
   CPU_EFFICIENT: ['webgl'] as GraphEngineType[],
   BALANCED: ['canvas-2d', 'd3-force'] as GraphEngineType[],
-  FEATURE_RICH: ['cytoscape', 'vis-network'] as GraphEngineType[],
+  FEATURE_RICH: ['cytoscape'] as GraphEngineType[],
 } as const;
 
 // ============================================================================
