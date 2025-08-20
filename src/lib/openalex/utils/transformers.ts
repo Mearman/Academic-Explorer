@@ -109,8 +109,32 @@ export interface CitationOptions {
   maxAuthors?: number;
 }
 
-export function formatCitation(work: Work, options: CitationOptions = {}): string {
-  const { style = 'apa', includeUrl = false, includeDoi = false } = options;
+export interface FormatCitationParams {
+  work: Work;
+  options?: CitationOptions;
+}
+
+export function formatCitation(params: FormatCitationParams): string;
+// Legacy overload for backwards compatibility
+export function formatCitation(work: Work, options?: CitationOptions): string;
+export function formatCitation(
+  paramsOrWork: FormatCitationParams | Work,
+  options?: CitationOptions
+): string {
+  let work: Work;
+  let citationOptions: CitationOptions;
+
+  if ('work' in paramsOrWork) {
+    // New parameter object style
+    work = paramsOrWork.work;
+    citationOptions = paramsOrWork.options || {};
+  } else {
+    // Legacy overload
+    work = paramsOrWork;
+    citationOptions = options || {};
+  }
+
+  const { style = 'apa', includeUrl = false, includeDoi = false } = citationOptions;
   const authors = extractAuthorNames(work);
   const year = work.publication_year || 'n.d.';
   const title = work.display_name || 'Untitled';
@@ -313,22 +337,51 @@ export function extractAllKeywords(work: Work): string[] {
   return Array.from(keywords);
 }
 
+export interface GroupWorksByParams<K extends keyof Work> {
+  works: Work[];
+  key: K;
+  groupTransform?: (value: Work[K]) => string;
+}
+
 // Group works by various criteria
+export function groupWorksBy<K extends keyof Work>(params: GroupWorksByParams<K>): Record<string, Work[]>;
+// Legacy overload for backwards compatibility
 export function groupWorksBy<K extends keyof Work>(
   works: Work[],
   key: K,
   groupTransform?: (value: Work[K]) => string
+): Record<string, Work[]>;
+export function groupWorksBy<K extends keyof Work>(
+  paramsOrWorks: GroupWorksByParams<K> | Work[],
+  key?: K,
+  groupTransform?: (value: Work[K]) => string
 ): Record<string, Work[]> {
+  let works: Work[];
+  let groupKey: K;
+  let transform: ((value: Work[K]) => string) | undefined;
+
+  if (Array.isArray(paramsOrWorks)) {
+    // Legacy overload
+    works = paramsOrWorks;
+    groupKey = key!;
+    transform = groupTransform;
+  } else {
+    // New parameter object style
+    works = paramsOrWorks.works;
+    groupKey = paramsOrWorks.key;
+    transform = paramsOrWorks.groupTransform;
+  }
+
   const groups: Record<string, Work[]> = {};
   
   works.forEach(work => {
-    const value = work[key];
-    const groupKey = groupTransform ? groupTransform(value) : String(value);
+    const value = work[groupKey];
+    const resultGroupKey = transform ? transform(value) : String(value);
     
-    if (!groups[groupKey]) {
-      groups[groupKey] = [];
+    if (!groups[resultGroupKey]) {
+      groups[resultGroupKey] = [];
     }
-    groups[groupKey].push(work);
+    groups[resultGroupKey].push(work);
   });
   
   return groups;
@@ -432,18 +485,47 @@ export function buildCoAuthorshipNetwork(works: Work[]): CoAuthorshipNetwork {
   return { nodes, edges };
 }
 
+export interface EntitiesToCSVParams<T extends Record<string, unknown>> {
+  entities: T[];
+  fields?: (keyof T)[];
+  delimiter?: string;
+}
+
 // Export utility to convert entities to CSV/TSV
+export function entitiesToCSV<T extends Record<string, unknown>>(params: EntitiesToCSVParams<T>): string;
+// Legacy overload for backwards compatibility
 export function entitiesToCSV<T extends Record<string, unknown>>(
   entities: T[],
   fields?: (keyof T)[],
+  delimiter?: string
+): string;
+export function entitiesToCSV<T extends Record<string, unknown>>(
+  paramsOrEntities: EntitiesToCSVParams<T> | T[],
+  fields?: (keyof T)[],
   delimiter = ','
 ): string {
+  let entities: T[];
+  let entityFields: (keyof T)[] | undefined;
+  let entityDelimiter: string;
+
+  if (Array.isArray(paramsOrEntities)) {
+    // Legacy overload
+    entities = paramsOrEntities;
+    entityFields = fields;
+    entityDelimiter = delimiter;
+  } else {
+    // New parameter object style
+    entities = paramsOrEntities.entities;
+    entityFields = paramsOrEntities.fields;
+    entityDelimiter = paramsOrEntities.delimiter || ',';
+  }
+
   if (entities.length === 0) return '';
   
-  const keys = fields || (Object.keys(entities[0]) as (keyof T)[]);
+  const keys = entityFields || (Object.keys(entities[0]) as (keyof T)[]);
   
   // Header row - simple format without quotes
-  const header = keys.map(key => String(key)).join(delimiter);
+  const header = keys.map(key => String(key)).join(entityDelimiter);
   
   // Data rows
   const rows = entities.map(entity => {
@@ -452,18 +534,42 @@ export function entitiesToCSV<T extends Record<string, unknown>>(
       if (value === null || value === undefined) return '';
       if (typeof value === 'object') return JSON.stringify(value);
       // Only quote if contains delimiter or quotes
-      if (typeof value === 'string' && (value.includes(delimiter) || value.includes('"') || value.includes('\n'))) {
+      if (typeof value === 'string' && (value.includes(entityDelimiter) || value.includes('"') || value.includes('\n'))) {
         return `"${value.replace(/"/g, '""')}"`;
       }
       return String(value);
-    }).join(delimiter);
+    }).join(entityDelimiter);
   });
   
   return [header, ...rows].join('\n');
 }
 
+export interface ContinentsToCSVParams {
+  continents: Continent[];
+  delimiter?: string;
+}
+
 // Export continents to CSV format
-export function continentsToCSV(continents: Continent[], delimiter = ','): string {
+export function continentsToCSV(params: ContinentsToCSVParams): string;
+// Legacy overload for backwards compatibility
+export function continentsToCSV(continents: Continent[], delimiter?: string): string;
+export function continentsToCSV(
+  paramsOrContinents: ContinentsToCSVParams | Continent[],
+  delimiter = ','
+): string {
+  let continents: Continent[];
+  let csvDelimiter: string;
+
+  if (Array.isArray(paramsOrContinents)) {
+    // Legacy overload
+    continents = paramsOrContinents;
+    csvDelimiter = delimiter;
+  } else {
+    // New parameter object style
+    continents = paramsOrContinents.continents;
+    csvDelimiter = paramsOrContinents.delimiter || ',';
+  }
+
   if (continents.length === 0) return '';
   
   const fields: (keyof Continent)[] = [
@@ -476,11 +582,35 @@ export function continentsToCSV(continents: Continent[], delimiter = ','): strin
   
   // Convert to records for CSV export
   const records = continents.map(continent => ({ ...continent }));
-  return entitiesToCSV(records, fields, delimiter);
+  return entitiesToCSV({ entities: records, fields, delimiter: csvDelimiter });
+}
+
+export interface RegionsToCSVParams {
+  regions: Region[];
+  delimiter?: string;
 }
 
 // Export regions to CSV format
-export function regionsToCSV(regions: Region[], delimiter = ','): string {
+export function regionsToCSV(params: RegionsToCSVParams): string;
+// Legacy overload for backwards compatibility
+export function regionsToCSV(regions: Region[], delimiter?: string): string;
+export function regionsToCSV(
+  paramsOrRegions: RegionsToCSVParams | Region[],
+  delimiter = ','
+): string {
+  let regions: Region[];
+  let csvDelimiter: string;
+
+  if (Array.isArray(paramsOrRegions)) {
+    // Legacy overload
+    regions = paramsOrRegions;
+    csvDelimiter = delimiter;
+  } else {
+    // New parameter object style
+    regions = paramsOrRegions.regions;
+    csvDelimiter = paramsOrRegions.delimiter || ',';
+  }
+
   if (regions.length === 0) return '';
   
   const fields: (keyof Region)[] = [
@@ -494,7 +624,7 @@ export function regionsToCSV(regions: Region[], delimiter = ','): string {
   
   // Convert to records for CSV export
   const records = regions.map(region => ({ ...region }));
-  return entitiesToCSV(records, fields, delimiter);
+  return entitiesToCSV({ entities: records, fields, delimiter: csvDelimiter });
 }
 
 // Extract continent name from entity
@@ -533,24 +663,47 @@ export function deduplicateEntities<T extends { id: string }>(entities: T[]): T[
   });
 }
 
+export interface FormatNumberOptions {
+  format?: 'number' | 'percentage' | 'currency' | 'compact';
+  locale?: string;
+  currency?: string;
+  maximumFractionDigits?: number;
+}
+
+export interface FormatNumberParams {
+  value: number | string;
+  options?: FormatNumberOptions;
+}
+
 /**
  * Format numbers with locale-appropriate thousands separators and abbreviations
  */
+export function formatNumber(params: FormatNumberParams): string;
+// Legacy overload for backwards compatibility
+export function formatNumber(value: number | string, options?: FormatNumberOptions): string;
 export function formatNumber(
-  value: number | string,
-  options: {
-    format?: 'number' | 'percentage' | 'currency' | 'compact';
-    locale?: string;
-    currency?: string;
-    maximumFractionDigits?: number;
-  } = {}
+  paramsOrValue: FormatNumberParams | number | string,
+  options?: FormatNumberOptions
 ): string {
+  let value: number | string;
+  let formatOptions: FormatNumberOptions;
+
+  if (typeof paramsOrValue === 'object' && 'value' in paramsOrValue) {
+    // New parameter object style
+    value = paramsOrValue.value;
+    formatOptions = paramsOrValue.options || {};
+  } else {
+    // Legacy overload
+    value = paramsOrValue;
+    formatOptions = options || {};
+  }
+
   const {
     format = 'number',
     locale = 'en-US',
     currency = 'USD',
     maximumFractionDigits = format === 'percentage' ? 1 : 0,
-  } = options;
+  } = formatOptions;
 
   const numValue = typeof value === 'string' ? parseFloat(value) : value;
   

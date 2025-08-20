@@ -96,14 +96,14 @@ export function extractWorkRelationships(work: Work): ExtractedRelationship[] {
 
   // Citation relationships
   if (work.referenced_works) {
-    work.referenced_works.forEach((referencedWorkId, index) => {
+    work.referenced_works.forEach((referencedWorkId, _index) => {
       relationships.push({
         sourceEntityId: workId,
         targetEntityId: referencedWorkId,
         relationshipType: GraphEdgeType.CITES,
         confidence: 0.9,
         properties: {
-          position: index + 1,
+          position: _index + 1,
           context: 'Referenced work',
         },
         targetEntityMetadata: {
@@ -116,14 +116,14 @@ export function extractWorkRelationships(work: Work): ExtractedRelationship[] {
 
   // Related works (similar/related papers)
   if (work.related_works) {
-    work.related_works.forEach((relatedWorkId, index) => {
+    work.related_works.forEach((relatedWorkId, _index) => {
       relationships.push({
         sourceEntityId: workId,
         targetEntityId: relatedWorkId,
         relationshipType: GraphEdgeType.RELATED_TO,
         confidence: 0.6,
         properties: {
-          position: index + 1,
+          position: _index + 1,
           context: 'Related work',
         },
         targetEntityMetadata: {
@@ -136,7 +136,7 @@ export function extractWorkRelationships(work: Work): ExtractedRelationship[] {
 
   // Authorship relationships
   if (work.authorships) {
-    work.authorships.forEach((authorship, index) => {
+    work.authorships.forEach((authorship, _index) => {
       const authorId = authorship.author.id;
       
       relationships.push({
@@ -145,13 +145,13 @@ export function extractWorkRelationships(work: Work): ExtractedRelationship[] {
         relationshipType: GraphEdgeType.AUTHORED_BY,
         confidence: 0.95,
         properties: {
-          position: index + 1,
+          position: _index + 1,
           authorshipInfo: {
             authorPosition: authorship.author_position,
             isCorresponding: authorship.is_corresponding,
             rawAuthorName: authorship.raw_author_name,
           },
-          context: `Author ${index + 1}`,
+          context: `Author ${_index + 1}`,
         },
         targetEntityMetadata: {
           entityType: 'A' as EntityType,
@@ -218,7 +218,7 @@ export function extractWorkRelationships(work: Work): ExtractedRelationship[] {
 
   // Additional publication locations
   if (work.locations) {
-    work.locations.forEach((location, index) => {
+    work.locations.forEach((location, _index) => {
       if (location.source && location.source.id !== work.primary_location?.source?.id) {
         relationships.push({
           sourceEntityId: workId,
@@ -226,7 +226,7 @@ export function extractWorkRelationships(work: Work): ExtractedRelationship[] {
           relationshipType: GraphEdgeType.PUBLISHED_IN,
           confidence: 0.7,
           properties: {
-            position: index + 1,
+            position: _index + 1,
             context: 'Alternative publication location',
           },
           targetEntityMetadata: {
@@ -245,14 +245,14 @@ export function extractWorkRelationships(work: Work): ExtractedRelationship[] {
 
   // Funding relationships
   if (work.grants) {
-    work.grants.forEach((grant, index) => {
+    work.grants.forEach((grant, _index) => {
       relationships.push({
         sourceEntityId: workId,
         targetEntityId: grant.funder,
         relationshipType: GraphEdgeType.FUNDED_BY,
         confidence: 0.85,
         properties: {
-          position: index + 1,
+          position: _index + 1,
           context: `Grant: ${grant.award_id || 'Unknown award'}`,
           additionalProperties: {
             awardId: grant.award_id,
@@ -285,7 +285,7 @@ export function extractWorkRelationships(work: Work): ExtractedRelationship[] {
   }
 
   if (work.topics) {
-    work.topics.forEach((topic, index) => {
+    work.topics.forEach((topic, _index) => {
       if (topic.id !== work.primary_topic?.id) {
         relationships.push({
           sourceEntityId: workId,
@@ -293,7 +293,7 @@ export function extractWorkRelationships(work: Work): ExtractedRelationship[] {
           relationshipType: GraphEdgeType.HAS_TOPIC,
           confidence: 0.7,
           properties: {
-            position: index + 1,
+            position: _index + 1,
             context: 'Additional topic',
           },
           targetEntityMetadata: {
@@ -307,14 +307,14 @@ export function extractWorkRelationships(work: Work): ExtractedRelationship[] {
 
   // Concept relationships (legacy)
   if (work.concepts) {
-    work.concepts.forEach((concept, index) => {
+    work.concepts.forEach((concept, _index) => {
       relationships.push({
         sourceEntityId: workId,
         targetEntityId: concept.id,
         relationshipType: GraphEdgeType.HAS_CONCEPT,
         confidence: concept.score || 0.5,
         properties: {
-          position: index + 1,
+          position: _index + 1,
           context: `Concept (score: ${concept.score})`,
           additionalProperties: {
             score: concept.score,
@@ -341,14 +341,14 @@ export function extractAuthorRelationships(author: Author): ExtractedRelationshi
 
   // Current affiliations
   if (author.affiliations) {
-    author.affiliations.forEach((affiliation, index) => {
+    author.affiliations.forEach((affiliation, _index) => {
       relationships.push({
         sourceEntityId: authorId,
         targetEntityId: affiliation.institution.id,
         relationshipType: GraphEdgeType.AFFILIATED_WITH,
         confidence: 0.8,
         properties: {
-          position: index + 1,
+          position: _index + 1,
           affiliationInfo: {
             years: affiliation.years,
             isCurrent: affiliation.years.includes(new Date().getFullYear()),
@@ -370,14 +370,14 @@ export function extractAuthorRelationships(author: Author): ExtractedRelationshi
 
   // Last known institutions
   if (author.last_known_institutions) {
-    author.last_known_institutions.forEach((institution, index) => {
+    author.last_known_institutions.forEach((institution, _index) => {
       relationships.push({
         sourceEntityId: authorId,
         targetEntityId: institution.id,
         relationshipType: GraphEdgeType.AFFILIATED_WITH,
         confidence: 0.7,
         properties: {
-          position: index + 1,
+          position: _index + 1,
           affiliationInfo: {
             isCurrent: true,
           },
@@ -398,14 +398,14 @@ export function extractAuthorRelationships(author: Author): ExtractedRelationshi
 
   // Topic relationships
   if (author.topics) {
-    author.topics.forEach((topic, index) => {
+    author.topics.forEach((topic, _index) => {
       relationships.push({
         sourceEntityId: authorId,
         targetEntityId: topic.id,
         relationshipType: GraphEdgeType.HAS_TOPIC,
         confidence: 0.6,
         properties: {
-          position: index + 1,
+          position: _index + 1,
           context: `Author research topic`,
         },
         targetEntityMetadata: {
@@ -428,7 +428,7 @@ export function extractInstitutionRelationships(institution: Institution): Extra
 
   // Associated institutions (hierarchical relationships)
   if (institution.associated_institutions) {
-    institution.associated_institutions.forEach((associated, index) => {
+    institution.associated_institutions.forEach((associated, _index) => {
       let relationshipType: GraphEdgeType;
       
       switch (associated.relationship) {
@@ -451,7 +451,7 @@ export function extractInstitutionRelationships(institution: Institution): Extra
         relationshipType,
         confidence: 0.8,
         properties: {
-          position: index + 1,
+          position: _index + 1,
           context: `${associated.relationship} institution`,
           additionalProperties: {
             relationshipType: associated.relationship,
@@ -472,14 +472,14 @@ export function extractInstitutionRelationships(institution: Institution): Extra
 
   // Topic relationships
   if (institution.topics) {
-    institution.topics.forEach((topic, index) => {
+    institution.topics.forEach((topic, _index) => {
       relationships.push({
         sourceEntityId: institutionId,
         targetEntityId: topic.id,
         relationshipType: GraphEdgeType.HAS_TOPIC,
         confidence: 0.6,
         properties: {
-          position: index + 1,
+          position: _index + 1,
           context: `Institution research focus`,
         },
         targetEntityMetadata: {
@@ -523,14 +523,14 @@ export function extractSourceRelationships(source: Source): ExtractedRelationshi
 
   // Topic relationships
   if (source.topics) {
-    source.topics.forEach((topic, index) => {
+    source.topics.forEach((topic, _index) => {
       relationships.push({
         sourceEntityId: sourceId,
         targetEntityId: topic.id,
         relationshipType: GraphEdgeType.HAS_TOPIC,
         confidence: 0.6,
         properties: {
-          position: index + 1,
+          position: _index + 1,
           context: `Source subject area`,
         },
         targetEntityMetadata: {
@@ -573,14 +573,14 @@ export function extractPublisherRelationships(publisher: Publisher): ExtractedRe
 
   // Sources published by this publisher
   if (publisher.sources) {
-    publisher.sources.forEach((sourceId, index) => {
+    publisher.sources.forEach((sourceId, _index) => {
       relationships.push({
         sourceEntityId: publisherId,
         targetEntityId: sourceId,
         relationshipType: GraphEdgeType.PUBLISHER_OF,
         confidence: 0.8,
         properties: {
-          position: index + 1,
+          position: _index + 1,
           context: 'Published source',
         },
         targetEntityMetadata: {
@@ -652,14 +652,14 @@ export function extractTopicRelationships(topic: Topic): ExtractedRelationship[]
 
   // Sibling topics
   if (topic.siblings) {
-    topic.siblings.forEach((sibling, index) => {
+    topic.siblings.forEach((sibling, _index) => {
       relationships.push({
         sourceEntityId: topicId,
         targetEntityId: sibling.id,
         relationshipType: GraphEdgeType.SIBLING_OF,
         confidence: 0.7,
         properties: {
-          position: index + 1,
+          position: _index + 1,
           context: `Sibling topic: ${sibling.display_name}`,
         },
         targetEntityMetadata: {
@@ -682,14 +682,14 @@ export function extractConceptRelationships(concept: Concept): ExtractedRelation
 
   // Ancestor relationships
   if (concept.ancestors) {
-    concept.ancestors.forEach((ancestor, index) => {
+    concept.ancestors.forEach((ancestor, _index) => {
       relationships.push({
         sourceEntityId: conceptId,
         targetEntityId: ancestor.id,
         relationshipType: GraphEdgeType.DESCENDANT_OF,
         confidence: 0.8,
         properties: {
-          position: index + 1,
+          position: _index + 1,
           context: `Ancestor concept (level ${ancestor.level})`,
           additionalProperties: {
             ancestorLevel: ancestor.level,
@@ -705,14 +705,14 @@ export function extractConceptRelationships(concept: Concept): ExtractedRelation
 
   // Related concepts
   if (concept.related_concepts) {
-    concept.related_concepts.forEach((related, index) => {
+    concept.related_concepts.forEach((related, _index) => {
       relationships.push({
         sourceEntityId: conceptId,
         targetEntityId: related.id,
         relationshipType: GraphEdgeType.RELATED_TO,
         confidence: related.score || 0.6,
         properties: {
-          position: index + 1,
+          position: _index + 1,
           context: `Related concept (score: ${related.score})`,
           additionalProperties: {
             score: related.score,

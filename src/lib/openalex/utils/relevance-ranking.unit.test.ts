@@ -314,7 +314,7 @@ export class RelevanceRankingSystem {
       }
     }
     
-    const scoredResults = items.map((item, index): RankedResult<T> => {
+    const scoredResults = items.map((item, _index): RankedResult<T> => {
       const scoreBreakdown: RelevanceScoreFactors = {
         textRelevance: this.calculateTextRelevance(options.query, item),
         citationScore: this.calculateCitationScore(item),
@@ -343,7 +343,7 @@ export class RelevanceRankingSystem {
         item,
         relevanceScore,
         scoreBreakdown,
-        ranking: index + 1, // Will be updated after sorting
+        ranking: _index + 1, // Will be updated after sorting
         confidence,
       };
     });
@@ -352,8 +352,8 @@ export class RelevanceRankingSystem {
     const rankedResults = scoredResults.sort((a, b) => b.relevanceScore - a.relevanceScore);
     
     // Update rankings
-    rankedResults.forEach((result, index) => {
-      result.ranking = index + 1;
+    rankedResults.forEach((result, _index) => {
+      result.ranking = _index + 1;
     });
     
     return rankedResults;

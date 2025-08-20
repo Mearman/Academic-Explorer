@@ -99,7 +99,7 @@ export async function getAllWorksForAuthor(authorId: string) {
 
 // Example 5: Process results in batches
 export async function processCitationNetwork(topicId: string) {
-  const paginator = paginate<Work>({
+  const paginator = paginate({
     client: openAlex,
     endpoint: '/works',
     method: 'works',
@@ -107,7 +107,7 @@ export async function processCitationNetwork(topicId: string) {
       filter: `topics.id:${topicId}`,
       per_page: 200,
     },
-  });
+  );
 
   const network = { nodes: [] as unknown[], edges: [] as unknown[] };
 

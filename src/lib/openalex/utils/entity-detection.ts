@@ -398,28 +398,51 @@ export function parseExternalId(id: string): ExternalIdParseResult {
   };
 }
 
+export interface ValidateExternalIdParams {
+  id: string;
+  type: ExternalIdType;
+}
+
 /**
  * Validate external ID format for specific ID type
  * 
- * @param id - The ID to validate
- * @param type - The expected external ID type
+ * @param params - Validation parameters
  * @returns True if ID matches the expected format
  * 
  * @example
  * ```typescript
- * validateExternalId('10.7717/peerj.4375', ExternalIdType.DOI) // true
- * validateExternalId('invalid-doi', ExternalIdType.DOI) // false
- * validateExternalId('0000-0003-1613-5981', ExternalIdType.ORCID) // true
+ * validateExternalId({ id: '10.7717/peerj.4375', type: ExternalIdType.DOI }) // true
+ * validateExternalId({ id: 'invalid-doi', type: ExternalIdType.DOI }) // false
+ * validateExternalId({ id: '0000-0003-1613-5981', type: ExternalIdType.ORCID }) // true
  * ```
  */
-export function validateExternalId(id: string, type: ExternalIdType): boolean {
+export function validateExternalId(params: ValidateExternalIdParams): boolean;
+// Legacy overload for backwards compatibility
+export function validateExternalId(id: string, type: ExternalIdType): boolean;
+export function validateExternalId(
+  paramsOrId: ValidateExternalIdParams | string, 
+  type?: ExternalIdType
+): boolean {
+  let id: string;
+  let idType: ExternalIdType;
+
+  if (typeof paramsOrId === 'string') {
+    // Legacy overload
+    id = paramsOrId;
+    idType = type!;
+  } else {
+    // New parameter object style
+    id = paramsOrId.id;
+    idType = paramsOrId.type;
+  }
+
   if (!id || typeof id !== 'string') {
     return false;
   }
 
   try {
     const parsed = parseExternalId(id);
-    return parsed.idType === type;
+    return parsed.idType === idType;
   } catch {
     return false;
   }
@@ -598,23 +621,46 @@ export function parseOpenAlexUrl(url: string): EntityParseResult {
   };
 }
 
+export interface NormalizeEntityIdParams {
+  input: string;
+  type?: EntityType;
+}
+
 /**
  * Normalize various ID formats to standard OpenAlex ID format
  * 
- * @param input - The input ID/URL in various formats
- * @param type - Optional explicit entity type for numeric IDs
+ * @param params - Normalization parameters
  * @returns The normalized OpenAlex ID with prefix
  * @throws EntityDetectionError if normalization fails
  * 
  * @example
  * ```typescript
- * normalizeEntityId('W2741809807') // 'W2741809807'
- * normalizeEntityId('https://openalex.org/A2887492') // 'A2887492'  
- * normalizeEntityId('2741809807', EntityType.WORK) // 'W2741809807'
- * normalizeEntityId('2741809807') // throws - requires type parameter
+ * normalizeEntityId({ input: 'W2741809807' }) // 'W2741809807'
+ * normalizeEntityId({ input: 'https://openalex.org/A2887492' }) // 'A2887492'  
+ * normalizeEntityId({ input: '2741809807', type: EntityType.WORK }) // 'W2741809807'
+ * normalizeEntityId({ input: '2741809807' }) // throws - requires type parameter
  * ```
  */
-export function normalizeEntityId(input: string, type?: EntityType): string {
+export function normalizeEntityId(params: NormalizeEntityIdParams): string;
+// Legacy overload for backwards compatibility
+export function normalizeEntityId(input: string, type?: EntityType): string;
+export function normalizeEntityId(
+  paramsOrInput: NormalizeEntityIdParams | string,
+  type?: EntityType
+): string {
+  let input: string;
+  let entityType: EntityType | undefined;
+
+  if (typeof paramsOrInput === 'string') {
+    // Legacy overload
+    input = paramsOrInput;
+    entityType = type;
+  } else {
+    // New parameter object style
+    input = paramsOrInput.input;
+    entityType = paramsOrInput.type;
+  }
+
   if (!input || typeof input !== 'string') {
     throw new EntityDetectionError('Input must be a non-empty string', input);
   }
@@ -634,16 +680,16 @@ export function normalizeEntityId(input: string, type?: EntityType): string {
 
   // Check if it's a numeric ID
   if (ID_PATTERNS.NUMERIC_ID.test(trimmedInput)) {
-    if (!type) {
+    if (!entityType) {
       throw new EntityDetectionError(
         'Entity type must be specified for numeric IDs',
         trimmedInput
       );
     }
     
-    const prefix = TYPE_TO_PREFIX[type];
+    const prefix = TYPE_TO_PREFIX[entityType];
     if (!prefix) {
-      throw new EntityDetectionError(`Unknown entity type: ${type}`, trimmedInput);
+      throw new EntityDetectionError(`Unknown entity type: ${entityType}`, trimmedInput);
     }
     
     return `${prefix}${trimmedInput}`;
@@ -652,22 +698,45 @@ export function normalizeEntityId(input: string, type?: EntityType): string {
   throw new EntityDetectionError(`Cannot normalize input: ${trimmedInput}`, trimmedInput);
 }
 
+export interface ValidateEntityIdParams {
+  id: string;
+  expectedType?: EntityType;
+}
+
 /**
  * Validate an OpenAlex ID format and optionally check entity type
  * 
- * @param id - The ID to validate
- * @param expectedType - Optional expected entity type
+ * @param params - Validation parameters
  * @returns True if valid, false otherwise
  * 
  * @example
  * ```typescript
- * validateEntityId('W2741809807') // true
- * validateEntityId('W2741809807', EntityType.WORK) // true
- * validateEntityId('W2741809807', EntityType.AUTHOR) // false
- * validateEntityId('invalid') // false
+ * validateEntityId({ id: 'W2741809807' }) // true
+ * validateEntityId({ id: 'W2741809807', expectedType: EntityType.WORK }) // true
+ * validateEntityId({ id: 'W2741809807', expectedType: EntityType.AUTHOR }) // false
+ * validateEntityId({ id: 'invalid' }) // false
  * ```
  */
-export function validateEntityId(id: string, expectedType?: EntityType): boolean {
+export function validateEntityId(params: ValidateEntityIdParams): boolean;
+// Legacy overload for backwards compatibility
+export function validateEntityId(id: string, expectedType?: EntityType): boolean;
+export function validateEntityId(
+  paramsOrId: ValidateEntityIdParams | string,
+  expectedType?: EntityType
+): boolean {
+  let id: string;
+  let expectedEntityType: EntityType | undefined;
+
+  if (typeof paramsOrId === 'string') {
+    // Legacy overload
+    id = paramsOrId;
+    expectedEntityType = expectedType;
+  } else {
+    // New parameter object style
+    id = paramsOrId.id;
+    expectedEntityType = paramsOrId.expectedType;
+  }
+
   try {
     if (!id || typeof id !== 'string') {
       return false;
@@ -681,9 +750,9 @@ export function validateEntityId(id: string, expectedType?: EntityType): boolean
     }
 
     // If expected type is specified, validate it matches
-    if (expectedType) {
+    if (expectedEntityType) {
       const actualType = detectEntityType(trimmedId);
-      return actualType === expectedType;
+      return actualType === expectedEntityType;
     }
 
     return true;
@@ -715,41 +784,87 @@ export function getEntityEndpoint(type: EntityType): string {
   return endpoint;
 }
 
+export interface GenerateEntityUrlParams {
+  id: string;
+  type?: EntityType;
+}
+
 /**
  * Generate the full OpenAlex URL for an entity ID
  * 
- * @param id - The OpenAlex ID (with or without prefix)
- * @param type - Optional entity type for numeric IDs
+ * @param params - URL generation parameters
  * @returns The full OpenAlex URL
  * @throws EntityDetectionError if ID cannot be normalized
  * 
  * @example
  * ```typescript
- * generateEntityUrl('W2741809807') // 'https://openalex.org/W2741809807'
- * generateEntityUrl('2741809807', EntityType.WORK) // 'https://openalex.org/W2741809807'
+ * generateEntityUrl({ id: 'W2741809807' }) // 'https://openalex.org/W2741809807'
+ * generateEntityUrl({ id: '2741809807', type: EntityType.WORK }) // 'https://openalex.org/W2741809807'
  * ```
  */
-export function generateEntityUrl(id: string, type?: EntityType): string {
-  const normalizedId = normalizeEntityId(id, type);
+export function generateEntityUrl(params: GenerateEntityUrlParams): string;
+// Legacy overload for backwards compatibility
+export function generateEntityUrl(id: string, type?: EntityType): string;
+export function generateEntityUrl(
+  paramsOrId: GenerateEntityUrlParams | string,
+  type?: EntityType
+): string {
+  let id: string;
+  let entityType: EntityType | undefined;
+
+  if (typeof paramsOrId === 'string') {
+    // Legacy overload
+    id = paramsOrId;
+    entityType = type;
+  } else {
+    // New parameter object style
+    id = paramsOrId.id;
+    entityType = paramsOrId.type;
+  }
+
+  const normalizedId = normalizeEntityId({ input: id, type: entityType });
   return `${OPENALEX_BASE_URL}/${normalizedId}`;
+}
+
+export interface ParseEntityIdentifierParams {
+  input: string;
+  fallbackType?: EntityType;
 }
 
 /**
  * Parse any OpenAlex identifier (ID or URL) into structured information
  * 
- * @param input - The input ID or URL
- * @param fallbackType - Optional fallback type for numeric IDs
+ * @param params - Parsing parameters
  * @returns Parsed entity information
  * @throws EntityDetectionError if parsing fails
  * 
  * @example
  * ```typescript
- * parseEntityIdentifier('W2741809807')
- * parseEntityIdentifier('https://openalex.org/A2887492')
- * parseEntityIdentifier('2741809807', EntityType.WORK)
+ * parseEntityIdentifier({ input: 'W2741809807' })
+ * parseEntityIdentifier({ input: 'https://openalex.org/A2887492' })
+ * parseEntityIdentifier({ input: '2741809807', fallbackType: EntityType.WORK })
  * ```
  */
-export function parseEntityIdentifier(input: string, fallbackType?: EntityType): EntityParseResult {
+export function parseEntityIdentifier(params: ParseEntityIdentifierParams): EntityParseResult;
+// Legacy overload for backwards compatibility
+export function parseEntityIdentifier(input: string, fallbackType?: EntityType): EntityParseResult;
+export function parseEntityIdentifier(
+  paramsOrInput: ParseEntityIdentifierParams | string,
+  fallbackType?: EntityType
+): EntityParseResult {
+  let input: string;
+  let entityFallbackType: EntityType | undefined;
+
+  if (typeof paramsOrInput === 'string') {
+    // Legacy overload
+    input = paramsOrInput;
+    entityFallbackType = fallbackType;
+  } else {
+    // New parameter object style
+    input = paramsOrInput.input;
+    entityFallbackType = paramsOrInput.fallbackType;
+  }
+
   if (!input || typeof input !== 'string') {
     throw new EntityDetectionError('Input must be a non-empty string', input);
   }
@@ -778,12 +893,12 @@ export function parseEntityIdentifier(input: string, fallbackType?: EntityType):
   }
 
   // Try parsing as numeric ID with fallback type
-  if (ID_PATTERNS.NUMERIC_ID.test(trimmedInput) && fallbackType) {
-    const prefix = TYPE_TO_PREFIX[fallbackType];
+  if (ID_PATTERNS.NUMERIC_ID.test(trimmedInput) && entityFallbackType) {
+    const prefix = TYPE_TO_PREFIX[entityFallbackType];
     const id = `${prefix}${trimmedInput}`;
 
     return {
-      type: fallbackType,
+      type: entityFallbackType,
       id,
       numericId: trimmedInput,
       prefix,
@@ -999,22 +1114,45 @@ export function getSupportedExternalIdTypes(entityType: EntityType): ExternalIdT
   return ENTITY_EXTERNAL_ID_MAPPINGS[entityType] || [];
 }
 
+export interface EntitySupportsExternalIdTypeParams {
+  entityType: EntityType;
+  idType: ExternalIdType;
+}
+
 /**
  * Check if an entity type supports a specific external ID type
  * 
- * @param entityType - The entity type
- * @param idType - The external ID type
+ * @param params - Check parameters
  * @returns True if the entity type supports the external ID type
  * 
  * @example
  * ```typescript
- * entitySupportsExternalIdType(EntityType.WORK, ExternalIdType.DOI) // true
- * entitySupportsExternalIdType(EntityType.WORK, ExternalIdType.ORCID) // false
+ * entitySupportsExternalIdType({ entityType: EntityType.WORK, idType: ExternalIdType.DOI }) // true
+ * entitySupportsExternalIdType({ entityType: EntityType.WORK, idType: ExternalIdType.ORCID }) // false
  * ```
  */
-export function entitySupportsExternalIdType(entityType: EntityType, idType: ExternalIdType): boolean {
+export function entitySupportsExternalIdType(params: EntitySupportsExternalIdTypeParams): boolean;
+// Legacy overload for backwards compatibility
+export function entitySupportsExternalIdType(entityType: EntityType, idType: ExternalIdType): boolean;
+export function entitySupportsExternalIdType(
+  paramsOrEntityType: EntitySupportsExternalIdTypeParams | EntityType,
+  idType?: ExternalIdType
+): boolean {
+  let entityType: EntityType;
+  let externalIdType: ExternalIdType;
+
+  if (typeof paramsOrEntityType === 'string') {
+    // Legacy overload
+    entityType = paramsOrEntityType;
+    externalIdType = idType!;
+  } else {
+    // New parameter object style
+    entityType = paramsOrEntityType.entityType;
+    externalIdType = paramsOrEntityType.idType;
+  }
+
   const supportedTypes = ENTITY_EXTERNAL_ID_MAPPINGS[entityType];
-  return supportedTypes ? supportedTypes.includes(idType) : false;
+  return supportedTypes ? supportedTypes.includes(externalIdType) : false;
 }
 
 /**

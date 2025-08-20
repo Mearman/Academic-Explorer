@@ -68,13 +68,13 @@ describe('OpenAlex Utils Index Exports', () => {
         authors: vi.fn(),
       };
       
-      const paginator = new Paginator(
-        mockClient as any,
-        'works',
-        'works' as any,
-        {},
-        {}
-      );
+      const paginator = new Paginator({
+        client: mockClient as any,
+        endpoint: 'works',
+        method: 'works' as any,
+        params: {},
+        options: {}
+      });
       
       expect(paginator).toBeDefined();
       expect(typeof paginator.all).toBe('function');

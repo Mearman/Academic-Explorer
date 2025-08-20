@@ -221,7 +221,7 @@ describe('CacheInterceptor with Request Deduplication', () => {
             strategy: {
               shouldCache: () => true,
               getCacheTTL: () => 7 * 24 * 60 * 60 * 1000, // 7 days
-              getCacheKey: (endpoint) => `long-term:${endpoint}`,
+              getCacheKey: ({ endpoint }) => `long-term:${endpoint}`,
             },
           },
           {
@@ -229,7 +229,7 @@ describe('CacheInterceptor with Request Deduplication', () => {
             strategy: {
               shouldCache: () => true,
               getCacheTTL: () => 60 * 60 * 1000, // 1 hour
-              getCacheKey: (endpoint, params) => `short-term:${endpoint}:${JSON.stringify(params)}`,
+              getCacheKey: ({ endpoint, params }) => `short-term:${endpoint}:${JSON.stringify(params)}`,
             },
           },
         ],

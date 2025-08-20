@@ -156,7 +156,7 @@ export class EnhancedCacheInterceptor {
     this.updateEntityMetrics(endpoint, 'request');
 
     // Check if we should cache this request
-    if (!strategy || !strategy.shouldCache(endpoint, params)) {
+    if (!strategy || !strategy.shouldCache({ endpoint, params })) {
       this.updateAnalytics('skipped');
       return requestFn();
     }
@@ -255,8 +255,8 @@ export class EnhancedCacheInterceptor {
       const batchPromises = batch.map(async ({ endpoint, params }) => {
         try {
           const strategy = this.getStrategy(endpoint);
-          if (strategy && strategy.shouldCache(endpoint, params)) {
-            const _cacheKey = strategy.getCacheKey(endpoint, params);
+          if (strategy && strategy.shouldCache({ endpoint, params })) {
+            const _cacheKey = strategy.getCacheKey({ endpoint, params });
             
             // Check if already cached
             const existing = await this.cache.get(endpoint, params as Record<string, unknown>);
@@ -407,19 +407,19 @@ export class EnhancedCacheInterceptor {
     this.strategies.set(/^\/(works|authors|sources|institutions|publishers|funders|topics|concepts)\/[A-Z]\d+$/, {
       shouldCache: () => true,
       getCacheTTL: () => 7 * 24 * 60 * 60 * 1000, // 7 days
-      getCacheKey: (endpoint, params) => `entity:${endpoint}:${JSON.stringify(params || {})}`,
+      getCacheKey: ({ endpoint, params }) => `entity:${endpoint}:${JSON.stringify(params || {})}`,
     });
 
     // Search results strategy
     this.strategies.set(/^\/(works|authors|sources|institutions|publishers|funders|topics|concepts)$/, {
-      shouldCache: (endpoint, params) => {
+      shouldCache: ({ params }) => {
         const p = (params as Record<string, unknown>) || {};
         if (p.sort?.toString().includes('date:desc')) return false;
         if (p.sample !== undefined) return false;
         return true;
       },
       getCacheTTL: () => 60 * 60 * 1000, // 1 hour
-      getCacheKey: (endpoint, params) => `search:${endpoint}:${JSON.stringify(params || {})}`,
+      getCacheKey: ({ endpoint, params }) => `search:${endpoint}:${JSON.stringify(params || {})}`,
     });
   }
 
@@ -478,7 +478,7 @@ export class EnhancedCacheInterceptor {
 
   private generateCacheKey(endpoint: string, params: unknown): string {
     const strategy = this.getStrategy(endpoint);
-    return strategy ? strategy.getCacheKey(endpoint, params) : `default:${endpoint}:${JSON.stringify(params)}`;
+    return strategy ? strategy.getCacheKey({ endpoint, params }) : `default:${endpoint}:${JSON.stringify(params)}`;
   }
 
   private generateTrackingId(): string {

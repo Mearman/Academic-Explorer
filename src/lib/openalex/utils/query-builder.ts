@@ -167,8 +167,8 @@ export class QueryBuilder {
       }
       // Create OR groups for each chunk
       const groupBuilder = new QueryBuilder();
-      chunks.forEach((chunk, index) => {
-        if (index === 0) {
+      chunks.forEach((chunk, _index) => {
+        if (_index === 0) {
           // First chunk uses and()
           groupBuilder.and(new QueryBuilder().in(field, chunk));
         } else {

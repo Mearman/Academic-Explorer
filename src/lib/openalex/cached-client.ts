@@ -21,7 +21,7 @@ const enhancedCacheInterceptor = new EnhancedCacheInterceptor({
     {
       pattern: /^\/works$/,
       strategy: {
-        shouldCache: (endpoint, params) => {
+        shouldCache: ({ endpoint: _endpoint, params }) => {
           const p = params as Record<string, unknown>;
           // Cache works filtered by year for longer
           if (p.filter?.toString().includes('publication_year')) {
@@ -29,7 +29,7 @@ const enhancedCacheInterceptor = new EnhancedCacheInterceptor({
           }
           return true;
         },
-        getCacheTTL: (endpoint, params) => {
+        getCacheTTL: ({ endpoint: _endpoint, params }) => {
           const p = params as Record<string, unknown>;
           // Older years can be cached longer
           if (p.filter?.toString().includes('publication_year')) {
@@ -44,7 +44,7 @@ const enhancedCacheInterceptor = new EnhancedCacheInterceptor({
           }
           return 60 * 60 * 1000; // 1 hour for current year
         },
-        getCacheKey: (endpoint, params) => `works:${JSON.stringify(params)}`,
+        getCacheKey: ({ endpoint: _endpoint, params }) => `works:${JSON.stringify(params)}`,
       },
     },
   ],
@@ -61,7 +61,7 @@ const fallbackCacheInterceptor = new CacheInterceptor({
     {
       pattern: /^\/works$/,
       strategy: {
-        shouldCache: (endpoint, params) => {
+        shouldCache: ({ endpoint: _endpoint, params }) => {
           const p = params as Record<string, unknown>;
           // Cache works filtered by year for longer
           if (p.filter?.toString().includes('publication_year')) {
@@ -69,7 +69,7 @@ const fallbackCacheInterceptor = new CacheInterceptor({
           }
           return true;
         },
-        getCacheTTL: (endpoint, params) => {
+        getCacheTTL: ({ endpoint: _endpoint, params }) => {
           const p = params as Record<string, unknown>;
           // Older years can be cached longer
           if (p.filter?.toString().includes('publication_year')) {
@@ -84,7 +84,7 @@ const fallbackCacheInterceptor = new CacheInterceptor({
           }
           return 60 * 60 * 1000; // 1 hour for current year
         },
-        getCacheKey: (endpoint, params) => `works:${JSON.stringify(params)}`,
+        getCacheKey: ({ endpoint: _endpoint, params }) => `works:${JSON.stringify(params)}`,
       },
     },
   ],
@@ -121,8 +121,32 @@ function createEnhancedCachedClient<T extends object>(client: T): T {
   });
 }
 
+interface GetEndpointParams {
+  method: string;
+  args: unknown[];
+}
+
 // Helper functions (copied from cache-interceptor.ts for consistency)
-function getEndpointFromMethod(method: string, args: unknown[]): string | null {
+function getEndpointFromMethod(params: GetEndpointParams): string | null;
+// Legacy overload for backwards compatibility
+function getEndpointFromMethod(method: string, args: unknown[]): string | null;
+function getEndpointFromMethod(
+  paramsOrMethod: GetEndpointParams | string,
+  args?: unknown[]
+): string | null {
+  let method: string;
+  let methodArgs: unknown[];
+
+  if (typeof paramsOrMethod === 'string') {
+    // Legacy overload
+    method = paramsOrMethod;
+    methodArgs = args!;
+  } else {
+    // New parameter object style
+    method = paramsOrMethod.method;
+    methodArgs = paramsOrMethod.args;
+  }
+
   const methodMap: Record<string, (args: unknown[]) => string> = {
     works: () => '/works',
     work: (args) => `/works/${args[0]}`,
@@ -147,18 +171,37 @@ function getEndpointFromMethod(method: string, args: unknown[]): string | null {
   };
   
   const mapper = methodMap[method];
-  return mapper ? mapper(args) : null;
+  return mapper ? mapper(methodArgs) : null;
 }
 
-function getParamsFromArgs(method: string, args: unknown[]): unknown {
+function getParamsFromArgs(params: GetEndpointParams): unknown;
+// Legacy overload for backwards compatibility
+function getParamsFromArgs(method: string, args: unknown[]): unknown;
+function getParamsFromArgs(
+  paramsOrMethod: GetEndpointParams | string,
+  args?: unknown[]
+): unknown {
+  let method: string;
+  let methodArgs: unknown[];
+
+  if (typeof paramsOrMethod === 'string') {
+    // Legacy overload
+    method = paramsOrMethod;
+    methodArgs = args!;
+  } else {
+    // New parameter object style
+    method = paramsOrMethod.method;
+    methodArgs = paramsOrMethod.args;
+  }
+
   // For list methods, first arg is params
   if (['works', 'authors', 'sources', 'institutions', 'publishers', 'funders', 'topics', 'concepts'].includes(method)) {
-    return args[0] || {};
+    return methodArgs[0] || {};
   }
   
   // For autocomplete methods
   if (method.includes('Autocomplete')) {
-    return args[0] || {};
+    return methodArgs[0] || {};
   }
   
   // For single entity fetches, no params

@@ -404,17 +404,17 @@ describe('CacheInterceptor', () => {
   describe('Default Strategies', () => {
     describe('entity strategy', () => {
       it('should always cache entities', () => {
-        expect(defaultStrategies.entity.shouldCache('/works/W123', {})).toBe(true);
+        expect(defaultStrategies.entity.shouldCache({ endpoint: '/works/W123', params: {} })).toBe(true);
       });
 
       it('should use 7-day TTL for entities', () => {
-        const ttl = defaultStrategies.entity.getCacheTTL('/works/W123', {});
+        const ttl = defaultStrategies.entity.getCacheTTL({ endpoint: '/works/W123', params: {} });
         expect(ttl).toBe(7 * 24 * 60 * 60 * 1000);
       });
 
       it('should generate consistent cache keys', () => {
-        const key1 = defaultStrategies.entity.getCacheKey('/works/W123', {});
-        const key2 = defaultStrategies.entity.getCacheKey('/works/W123', {});
+        const key1 = defaultStrategies.entity.getCacheKey({ endpoint: '/works/W123', params: {} });
+        const key2 = defaultStrategies.entity.getCacheKey({ endpoint: '/works/W123', params: {} });
         expect(key1).toBe(key2);
         expect(key1).toBe('entity:/works/W123:{}');
       });
@@ -422,37 +422,37 @@ describe('CacheInterceptor', () => {
 
     describe('search strategy', () => {
       it('should cache most search requests', () => {
-        expect(defaultStrategies.search.shouldCache('/works', { search: 'test' })).toBe(true);
+        expect(defaultStrategies.search.shouldCache({ endpoint: '/works', params: { search: 'test' } })).toBe(true);
       });
 
       it('should not cache recent date sorts', () => {
-        expect(defaultStrategies.search.shouldCache('/works', { sort: 'publication_date:desc' })).toBe(false);
+        expect(defaultStrategies.search.shouldCache({ endpoint: '/works', params: { sort: 'publication_date:desc' } })).toBe(false);
       });
 
       it('should not cache sample requests', () => {
-        expect(defaultStrategies.search.shouldCache('/works', { sample: 10 })).toBe(false);
+        expect(defaultStrategies.search.shouldCache({ endpoint: '/works', params: { sample: 10 } })).toBe(false);
       });
 
       it('should use 1-hour TTL for searches', () => {
-        const ttl = defaultStrategies.search.getCacheTTL('/works', {});
+        const ttl = defaultStrategies.search.getCacheTTL({ endpoint: '/works', params: {} });
         expect(ttl).toBe(60 * 60 * 1000);
       });
     });
 
     describe('autocomplete strategy', () => {
       it('should always cache autocomplete', () => {
-        expect(defaultStrategies.autocomplete.shouldCache('/autocomplete/works', {})).toBe(true);
+        expect(defaultStrategies.autocomplete.shouldCache({ endpoint: '/autocomplete/works', params: {} })).toBe(true);
       });
 
       it('should use 24-hour TTL for autocomplete', () => {
-        const ttl = defaultStrategies.autocomplete.getCacheTTL('/autocomplete/works', {});
+        const ttl = defaultStrategies.autocomplete.getCacheTTL({ endpoint: '/autocomplete/works', params: {} });
         expect(ttl).toBe(24 * 60 * 60 * 1000);
       });
     });
 
     describe('random strategy', () => {
       it('should never cache random requests', () => {
-        expect(defaultStrategies.random.shouldCache('/works/random', {})).toBe(false);
+        expect(defaultStrategies.random.shouldCache({ endpoint: '/works/random', params: {} })).toBe(false);
       });
     });
   });

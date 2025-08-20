@@ -26,7 +26,11 @@ describe('Paginator', () => {
 
   describe('Constructor and basic setup', () => {
     it('should initialize with default options', () => {
-      const paginator = new Paginator(mockClient, '/works', 'works');
+      const paginator = new Paginator({
+        client: mockClient,
+        endpoint: '/works',
+        method: 'works'
+      });
       
       expect(paginator).toBeInstanceOf(Paginator);
     });
@@ -38,7 +42,13 @@ describe('Paginator', () => {
         useCursor: false,
       };
       
-      const paginator = new Paginator(mockClient, '/works', 'works', {}, options);
+      const paginator = new Paginator({
+        client: mockClient,
+        endpoint: '/works',
+        method: 'works',
+        params: {},
+        options: options
+      });
       expect(paginator).toBeInstanceOf(Paginator);
     });
   });
@@ -70,7 +80,11 @@ describe('Paginator', () => {
         .mockResolvedValueOnce(mockResponse1)
         .mockResolvedValueOnce(mockResponse2);
 
-      const paginator = new Paginator<Work>(mockClient, '/works', 'works');
+      const paginator = new Paginator<Work>({
+        client: mockClient,
+        endpoint: '/works',
+        method: 'works'
+      });
       const results = await paginator.all();
       
       expect(results).toHaveLength(400);
@@ -94,7 +108,13 @@ describe('Paginator', () => {
 
       mockWorks.mockResolvedValue(mockResponse);
 
-      const paginator = new Paginator<Work>(mockClient, '/works', 'works', {}, { maxResults: 150 });
+      const paginator = new Paginator<Work>({
+        client: mockClient,
+        endpoint: '/works',
+        method: 'works',
+        params: {},
+        options: { maxResults: 150 }
+      });
       const results = await paginator.all();
 
       // The actual implementation limits to 150 results when maxResults: 150
@@ -119,13 +139,13 @@ describe('Paginator', () => {
       const onPage = vi.fn();
       const onProgress = vi.fn();
 
-      const paginator = new Paginator<Work>(
-        mockClient,
-        '/works',
-        'works',
-        {},
-        { onPage, onProgress }
-      );
+      const paginator = new Paginator<Work>({
+        client: mockClient,
+        endpoint: '/works',
+        method: 'works',
+        params: {},
+        options: { onPage, onProgress }
+      });
 
       await paginator.all();
 
@@ -136,7 +156,11 @@ describe('Paginator', () => {
     it('should handle cursor pagination errors', async () => {
       mockWorks.mockRejectedValueOnce(new Error('API Error'));
 
-      const paginator = new Paginator<Work>(mockClient, '/works', 'works');
+      const paginator = new Paginator<Work>({
+        client: mockClient,
+        endpoint: '/works',
+        method: 'works'
+      });
 
       await expect(paginator.all()).rejects.toThrow(PaginationError);
     });
@@ -168,13 +192,13 @@ describe('Paginator', () => {
         .mockResolvedValueOnce(mockResponse1)
         .mockResolvedValueOnce(mockResponse2);
 
-      const paginator = new Paginator<Work>(
-        mockClient,
-        '/works',
-        'works',
-        {},
-        { useCursor: false }
-      );
+      const paginator = new Paginator<Work>({
+        client: mockClient,
+        endpoint: '/works',
+        method: 'works',
+        params: {},
+        options: { useCursor: false }
+      });
 
       const results = await paginator.all();
 
@@ -190,13 +214,13 @@ describe('Paginator', () => {
     it('should handle page pagination errors', async () => {
       mockWorks.mockRejectedValueOnce(new Error('API Error'));
 
-      const paginator = new Paginator<Work>(
-        mockClient,
-        '/works',
-        'works',
-        {},
-        { useCursor: false }
-      );
+      const paginator = new Paginator<Work>({
+        client: mockClient,
+        endpoint: '/works',
+        method: 'works',
+        params: {},
+        options: { useCursor: false }
+      });
 
       await expect(paginator.all()).rejects.toThrow(PaginationError);
     });
@@ -217,7 +241,11 @@ describe('Paginator', () => {
 
       mockWorks.mockResolvedValue(mockResponse);
 
-      const paginator = new Paginator<Work>(mockClient, '/works', 'works');
+      const paginator = new Paginator<Work>({
+        client: mockClient,
+        endpoint: '/works',
+        method: 'works'
+      });
       const results = await paginator.take(50);
 
       expect(results).toHaveLength(50);
@@ -238,7 +266,11 @@ describe('Paginator', () => {
 
       mockWorks.mockResolvedValue(mockResponse);
 
-      const paginator = new Paginator<Work>(mockClient, '/works', 'works');
+      const paginator = new Paginator<Work>({
+        client: mockClient,
+        endpoint: '/works',
+        method: 'works'
+      });
       const results = await paginator.take(100);
 
       expect(results).toHaveLength(30);
@@ -263,7 +295,11 @@ describe('Paginator', () => {
 
       mockWorks.mockResolvedValue(mockResponse);
 
-      const paginator = new Paginator<Work>(mockClient, '/works', 'works');
+      const paginator = new Paginator<Work>({
+        client: mockClient,
+        endpoint: '/works',
+        method: 'works'
+      });
       const results: Work[] = [];
 
       for await (const item of paginator.stream()) {
@@ -294,7 +330,11 @@ describe('Paginator', () => {
 
       mockWorks.mockResolvedValue(mockResponse);
 
-      const paginator = new Paginator<Work>(mockClient, '/works', 'works');
+      const paginator = new Paginator<Work>({
+        client: mockClient,
+        endpoint: '/works',
+        method: 'works'
+      });
       const batches: Work[][] = [];
 
       await paginator.processBatches((batch, batchNumber) => {
@@ -324,7 +364,11 @@ describe('Paginator', () => {
 
       mockWorks.mockResolvedValue(mockResponse);
 
-      const paginator = new Paginator<Work>(mockClient, '/works', 'works');
+      const paginator = new Paginator<Work>({
+        client: mockClient,
+        endpoint: '/works',
+        method: 'works'
+      });
       const items: string[] = [];
 
       await paginator.processItems((item, index) => {
@@ -369,7 +413,11 @@ describe('Paginator', () => {
         .mockResolvedValueOnce(mockResponse1)
         .mockResolvedValueOnce(mockResponse2);
 
-      const paginator = new Paginator<Work>(mockClient, '/works', 'works');
+      const paginator = new Paginator<Work>({
+        client: mockClient,
+        endpoint: '/works',
+        method: 'works'
+      });
       const pages = await paginator.pages();
       
       expect(pages).toHaveLength(2);
@@ -398,7 +446,11 @@ describe('Paginator', () => {
       // Only mock the first response since we're limiting to 1 page
       mockWorks.mockResolvedValueOnce(mockResponse1);
 
-      const paginator = new Paginator<Work>(mockClient, '/works', 'works');
+      const paginator = new Paginator<Work>({
+        client: mockClient,
+        endpoint: '/works',
+        method: 'works'
+      });
       const pages = await paginator.pages(1);
 
       expect(pages).toHaveLength(1);
@@ -423,7 +475,11 @@ describe('Paginator', () => {
 
       mockWorks.mockResolvedValueOnce(mockResponse);
 
-      const paginator = new Paginator<Work>(mockClient, '/works', 'works');
+      const paginator = new Paginator<Work>({
+        client: mockClient,
+        endpoint: '/works',
+        method: 'works'
+      });
       const results = await paginator.all();
 
       expect(results).toHaveLength(0);
@@ -444,13 +500,23 @@ describe('PaginationError', () => {
 
 describe('paginate helper function', () => {
   it('should create a Paginator instance', () => {
-    const paginator = paginate<Work>(mockClient, '/works', 'works');
+    const paginator = paginate<Work>({
+      client: mockClient,
+      endpoint: '/works',
+      method: 'works'
+    });
     expect(paginator).toBeInstanceOf(Paginator);
   });
 
   it('should pass through options', () => {
     const options = { maxResults: 100 };
-    const paginator = paginate<Work>(mockClient, '/works', 'works', {}, options);
+    const paginator = paginate<Work>({
+      client: mockClient,
+      endpoint: '/works',
+      method: 'works',
+      params: {},
+      options
+    });
     expect(paginator).toBeInstanceOf(Paginator);
   });
 });

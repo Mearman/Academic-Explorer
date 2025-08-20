@@ -232,9 +232,9 @@ export class DatabaseService {
     const values = await db.getAll('searchFilters');
     
     const result: Record<string, Record<string, unknown>> = {};
-    keys.forEach((key, index) => {
-      if (typeof key === 'string' && values[index]) {
-        result[key] = values[index];
+    keys.forEach((key, _index) => {
+      if (typeof key === 'string' && values[_index]) {
+        result[key] = values[_index];
       }
     });
     

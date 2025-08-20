@@ -329,7 +329,7 @@ export class GraphDatabaseService {
 
   // High-level entity tracking methods
   async recordEntityVisit(event: EntityVisitEvent): Promise<GraphVertex> {
-    const vertexId = generateVertexId(VertexType.ENTITY, event.entityId);
+    const vertexId = generateVertexId({ type: VertexType.ENTITY, identifier: event.entityId });
     const existingVertex = await this.getVertex(vertexId);
     
     const encounter: VertexEncounter = {
@@ -413,7 +413,7 @@ export class GraphDatabaseService {
   }
 
   async recordEntityEncounter(event: EntityEncounterEvent): Promise<GraphVertex> {
-    const vertexId = generateVertexId(VertexType.ENTITY, event.entityId);
+    const vertexId = generateVertexId({ type: VertexType.ENTITY, identifier: event.entityId });
     const existingVertex = await this.getVertex(vertexId);
     
     const encounter: VertexEncounter = {
@@ -481,7 +481,7 @@ export class GraphDatabaseService {
   }
 
   async addRelationship(event: RelationshipDiscoveryEvent): Promise<GraphEdge | null> {
-    const edgeId = generateEdgeId(event.sourceEntityId, event.targetEntityId, event.relationshipType);
+    const edgeId = generateEdgeId({ sourceId: event.sourceEntityId, targetId: event.targetEntityId, edgeType: event.relationshipType });
     
     // Check if edge already exists
     const existingEdge = await this.getEdge(edgeId);
@@ -494,8 +494,8 @@ export class GraphDatabaseService {
     }
     
     // Ensure both vertices exist
-    const sourceVertex = await this.getVertex(generateVertexId(VertexType.ENTITY, event.sourceEntityId));
-    const targetVertex = await this.getVertex(generateVertexId(VertexType.ENTITY, event.targetEntityId));
+    const sourceVertex = await this.getVertex(generateVertexId({ type: VertexType.ENTITY, identifier: event.sourceEntityId }));
+    const targetVertex = await this.getVertex(generateVertexId({ type: VertexType.ENTITY, identifier: event.targetEntityId }));
     
     if (!sourceVertex) {
       // This shouldn't happen in normal flow
@@ -527,11 +527,14 @@ export class GraphDatabaseService {
       sourceId: event.sourceEntityId,
       targetId: event.targetEntityId,
       edgeType: event.relationshipType,
-      weight: calculateEdgeWeight(event.relationshipType, {
-        source: event.source,
-        confidence: DEFAULT_CONFIDENCE,
-        ...event.metadata,
-      } as GraphEdge['properties']),
+      weight: calculateEdgeWeight({ 
+        edgeType: event.relationshipType, 
+        properties: {
+          source: event.source,
+          confidence: DEFAULT_CONFIDENCE,
+          ...event.metadata,
+        } as GraphEdge['properties']
+      }),
       discoveredFromDirectVisit: sourceVertex.directlyVisited,
       discoveredAt: event.timestamp,
       confirmationCount: 1,
@@ -548,7 +551,7 @@ export class GraphDatabaseService {
   }
 
   async recordQueryParameters(event: QueryParametersEvent): Promise<GraphVertex> {
-    const vertexId = generateQueryParametersId(event.queryString, event.queryFilters);
+    const vertexId = generateQueryParametersId({ queryString: event.queryString, queryFilters: event.queryFilters });
     const existingVertex = await this.getVertex(vertexId);
     
     if (existingVertex) {
@@ -597,7 +600,7 @@ export class GraphDatabaseService {
   }
 
   async recordQueryExecution(event: QueryExecutionEvent): Promise<{ queryVertex: GraphVertex; executionVertex: GraphVertex; resultEdges: GraphEdge[] }> {
-    const executionId = generateQueryExecutionId(event.queryParametersId, event.timestamp);
+    const executionId = generateQueryExecutionId({ queryParametersId: event.queryParametersId, timestamp: event.timestamp });
     
     // Create query execution vertex
     const executionVertex: GraphVertex = {
@@ -636,7 +639,7 @@ export class GraphDatabaseService {
     
     // Create edge from query parameters to execution
     const queryInstanceEdge: GraphEdge = {
-      id: generateEdgeId(event.queryParametersId, executionId, GraphEdgeType.QUERY_INSTANCE),
+      id: generateEdgeId({ sourceId: event.queryParametersId, targetId: executionId, edgeType: GraphEdgeType.QUERY_INSTANCE }),
       sourceId: event.queryParametersId,
       targetId: executionId,
       edgeType: GraphEdgeType.QUERY_INSTANCE,
@@ -657,7 +660,7 @@ export class GraphDatabaseService {
     for (let i = 0; i < event.resultEntityIds.length; i++) {
       const entityId = event.resultEntityIds[i];
       const resultEdge: GraphEdge = {
-        id: generateEdgeId(executionId, entityId, GraphEdgeType.QUERY_RESULT),
+        id: generateEdgeId({ sourceId: executionId, targetId: entityId, edgeType: GraphEdgeType.QUERY_RESULT }),
         sourceId: executionId,
         targetId: entityId,
         edgeType: GraphEdgeType.QUERY_RESULT,

@@ -23,7 +23,7 @@ export function recordSearchResultEncounters(
   const { recordEntityEncounter } = useEntityGraphStore.getState();
   const timestamp = new Date().toISOString();
 
-  searchResults.forEach((entity, index) => {
+  searchResults.forEach((entity, _index) => {
     const event: EntityEncounterEvent = {
       entityId: entity.id,
       entityType: entity.entityType,
@@ -32,7 +32,7 @@ export function recordSearchResultEncounters(
       timestamp,
       context: {
         searchQuery,
-        position: index + 1,
+        position: _index + 1,
       },
     };
 
@@ -55,7 +55,7 @@ export function recordRelatedEntityEncounters(
   const { recordEntityEncounter } = useEntityGraphStore.getState();
   const timestamp = new Date().toISOString();
 
-  relatedEntities.forEach((entity, index) => {
+  relatedEntities.forEach((entity, _index) => {
     const event: EntityEncounterEvent = {
       entityId: entity.id,
       entityType: entity.entityType,
@@ -64,7 +64,7 @@ export function recordRelatedEntityEncounters(
       timestamp,
       context: {
         sourceEntityId,
-        position: index + 1,
+        position: _index + 1,
         additionalInfo: {
           relationshipContext, // e.g., "co-authors", "cited works", "institutional affiliations"
         },

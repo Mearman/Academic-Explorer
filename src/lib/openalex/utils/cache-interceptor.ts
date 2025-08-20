@@ -7,10 +7,15 @@ import { CacheManager } from './cache';
 import { RequestManager } from './request-manager';
 // import { db } from '@/lib/db'; // Currently unused
 
+export interface CacheStrategyParams {
+  endpoint: string;
+  params: unknown;
+}
+
 export interface CacheStrategy {
-  shouldCache: (endpoint: string, params: unknown) => boolean;
-  getCacheTTL: (endpoint: string, params: unknown) => number;
-  getCacheKey: (endpoint: string, params: unknown) => string;
+  shouldCache: (params: CacheStrategyParams) => boolean;
+  getCacheTTL: (params: CacheStrategyParams) => number;
+  getCacheKey: (params: CacheStrategyParams) => string;
 }
 
 // Default caching strategies for different endpoint types
@@ -19,12 +24,12 @@ export const defaultStrategies: Record<string, CacheStrategy> = {
   entity: {
     shouldCache: () => true,
     getCacheTTL: () => 7 * 24 * 60 * 60 * 1000, // 7 days
-    getCacheKey: (endpoint, params) => `entity:${endpoint}:${JSON.stringify(params || {})}`,
+    getCacheKey: ({ endpoint, params }) => `entity:${endpoint}:${JSON.stringify(params || {})}`,
   },
   
   // Search results - cache for shorter period
   search: {
-    shouldCache: (endpoint, params) => {
+    shouldCache: ({ params }) => {
       // Don't cache if sorting by recent or if it's a very specific query
       const p = (params as Record<string, unknown>) || {};
       if (p.sort?.toString().includes('date:desc')) return false;
@@ -32,14 +37,14 @@ export const defaultStrategies: Record<string, CacheStrategy> = {
       return true;
     },
     getCacheTTL: () => 60 * 60 * 1000, // 1 hour
-    getCacheKey: (endpoint, params) => `search:${endpoint}:${JSON.stringify(params || {})}`,
+    getCacheKey: ({ endpoint, params }) => `search:${endpoint}:${JSON.stringify(params || {})}`,
   },
   
   // Autocomplete - cache for medium period
   autocomplete: {
     shouldCache: () => true,
     getCacheTTL: () => 24 * 60 * 60 * 1000, // 24 hours
-    getCacheKey: (endpoint, params) => `autocomplete:${endpoint}:${JSON.stringify(params || {})}`,
+    getCacheKey: ({ endpoint, params }) => `autocomplete:${endpoint}:${JSON.stringify(params || {})}`,
   },
   
   // Random endpoints - never cache
@@ -49,6 +54,13 @@ export const defaultStrategies: Record<string, CacheStrategy> = {
     getCacheKey: () => '',
   },
 };
+
+interface StoreInCacheParams<T> {
+  key: string;
+  params: unknown;
+  data: T;
+  ttl: number;
+}
 
 export class CacheInterceptor {
   private cache: CacheManager;
@@ -133,15 +145,16 @@ export class CacheInterceptor {
     requestFn: () => Promise<T>
   ): Promise<T> {
     const strategy = this.getStrategy(endpoint);
+    const strategyParams: CacheStrategyParams = { endpoint, params };
     
     // If no strategy or shouldn't cache, just execute the request without deduplication
-    if (!strategy || !strategy.shouldCache(endpoint, params)) {
+    if (!strategy || !strategy.shouldCache(strategyParams)) {
       this.stats.skipped++;
       // Don't use deduplication for non-cacheable requests (e.g., random endpoints)
       return requestFn();
     }
 
-    const cacheKey = strategy.getCacheKey(endpoint, params);
+    const cacheKey = strategy.getCacheKey(strategyParams);
     
     // Use request deduplication for the entire cache check + fetch operation
     return this.requestManager.deduplicate(cacheKey, async () => {
@@ -168,7 +181,7 @@ export class CacheInterceptor {
       
       // Store in cache
       try {
-        await this.storeInCache(cacheKey, params, result, strategy.getCacheTTL(endpoint, params));
+        await this.storeInCache(cacheKey, params, result, strategy.getCacheTTL(strategyParams));
       } catch (error) {
         console.error('Cache write error:', error);
         this.stats.errors++;
@@ -179,28 +192,53 @@ export class CacheInterceptor {
   }
 
   // Store result in cache
+  private async storeInCache<T>(params: StoreInCacheParams<T>): Promise<void>;
+  // Legacy overload for backwards compatibility
   private async storeInCache<T>(
     key: string,
     params: unknown,
     data: T,
     _ttl: number
+  ): Promise<void>;
+  private async storeInCache<T>(
+    keyOrParams: string | StoreInCacheParams<T>,
+    params?: unknown,
+    data?: T,
+    _ttl?: number
   ): Promise<void> {
+    let key: string;
+    let storeParams: unknown;
+    let storeData: T;
+
+    if (typeof keyOrParams === 'string') {
+      // Legacy overload
+      key = keyOrParams;
+      storeParams = params;
+      storeData = data!;
+    } else {
+      // New parameter object style
+      key = keyOrParams.key;
+      storeParams = keyOrParams.params;
+      storeData = keyOrParams.data;
+    }
+
     // Always use the main cache, but the CacheManager should handle TTL internally
     // For testing purposes, we want to use the mocked cache
-    await this.cache.set(key, (params as Record<string, unknown>) || {}, data);
+    await this.cache.set(key, (storeParams as Record<string, unknown>) || {}, storeData);
   }
 
   // Warmup cache with common requests
   async warmup(requests: Array<{ endpoint: string; params: unknown; data: unknown }>) {
     for (const { endpoint, params, data } of requests) {
       const strategy = this.getStrategy(endpoint);
-      if (strategy && strategy.shouldCache(endpoint, params)) {
-        const cacheKey = strategy.getCacheKey(endpoint, params);
+      const strategyParams: CacheStrategyParams = { endpoint, params };
+      if (strategy && strategy.shouldCache(strategyParams)) {
+        const cacheKey = strategy.getCacheKey(strategyParams);
         await this.storeInCache(
           cacheKey,
           params,
           data,
-          strategy.getCacheTTL(endpoint, params)
+          strategy.getCacheTTL(strategyParams)
         );
       }
     }
@@ -277,13 +315,15 @@ export function withCache<T extends object>(
       // Only intercept functions that correspond to API methods
       if (typeof original === 'function' && prop !== 'constructor') {
         // Check if this method should be intercepted
-        const endpoint = getEndpointFromMethod(prop as string, []);
+        const endpointParams = { method: prop as string, args: [] };
+        const endpoint = getEndpointFromMethod(endpointParams);
         
         if (endpoint) {
           // This is an API method, wrap it for caching
           return async function (...args: unknown[]) {
-            const actualEndpoint = getEndpointFromMethod(prop as string, args);
-            const params = getParamsFromArgs(prop as string, args);
+            const actualEndpointParams = { method: prop as string, args };
+            const actualEndpoint = getEndpointFromMethod(actualEndpointParams);
+            const params = getParamsFromArgs(actualEndpointParams);
             return interceptor.intercept(
               actualEndpoint || endpoint,
               params,
@@ -299,8 +339,14 @@ export function withCache<T extends object>(
   });
 }
 
+interface GetEndpointParams {
+  method: string;
+  args: unknown[];
+}
+
 // Helper to map method names to endpoints
-function getEndpointFromMethod(method: string, args: unknown[]): string | null {
+function getEndpointFromMethod(params: GetEndpointParams): string | null {
+  const { method, args } = params;
   const methodMap: Record<string, (args: unknown[]) => string> = {
     works: () => '/works',
     work: (args) => `/works/${args[0]}`,
@@ -329,7 +375,8 @@ function getEndpointFromMethod(method: string, args: unknown[]): string | null {
 }
 
 // Helper to extract params from method arguments
-function getParamsFromArgs(method: string, args: unknown[]): unknown {
+function getParamsFromArgs(params: GetEndpointParams): unknown {
+  const { method, args } = params;
   // For list methods, first arg is params
   if (['works', 'authors', 'sources', 'institutions', 'publishers', 'funders', 'topics', 'concepts'].includes(method)) {
     return args[0] || {};

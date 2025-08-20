@@ -36,15 +36,18 @@ export function useWorks(
   React.useEffect(() => {
     if (query.isSuccess && query.data) {
       const queryText = params.search || 'Advanced Query';
-      const queryId = recordQuery(queryText, params);
+      const queryId = recordQuery({ query: queryText, params });
       
-      updateQueryResults(queryId, {
-        count: query.data.meta?.count ?? query.data.results?.length ?? 0,
-        responseTimeMs: query.data.meta?.db_response_time_ms ?? 0,
-        firstResult: query.data.results?.length > 0 ? {
-          id: query.data.results[0].id,
-          title: query.data.results[0].title || 'Untitled',
-        } : undefined,
+      updateQueryResults({
+        queryId,
+        results: {
+          count: query.data.meta?.count ?? query.data.results?.length ?? 0,
+          responseTimeMs: query.data.meta?.db_response_time_ms ?? 0,
+          firstResult: query.data.results?.length > 0 ? {
+            id: query.data.results[0].id,
+            title: query.data.results[0].title || 'Untitled',
+          } : undefined,
+        },
       });
 
       // Prefetch related data
@@ -53,10 +56,10 @@ export function useWorks(
     
     if (query.isError) {
       const queryText = params.search || 'Advanced Query';
-      const queryId = recordQuery(queryText, params);
+      const queryId = recordQuery({ query: queryText, params });
       const errorMessage = query.error instanceof Error ? query.error.message : 'Search failed';
       
-      updateQueryError(queryId, errorMessage);
+      updateQueryError({ queryId, error: errorMessage });
     }
   }, [query.isSuccess, query.isError, query.data, query.error, params, recordQuery, updateQueryResults, updateQueryError, queryClient]);
 

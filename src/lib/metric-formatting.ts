@@ -5,13 +5,37 @@ import { formatNumber } from '@/lib/openalex/utils/transformers';
 export type MetricFormat = 'number' | 'percentage' | 'currency' | 'compact';
 export type TrendDirection = 'up' | 'down' | 'neutral';
 
+export interface FormatMetricValueParams {
+  value: number | string;
+  format: MetricFormat;
+}
+
 /**
  * Format a value based on the specified format type
  */
-export function formatMetricValue(value: number | string, format: MetricFormat): string {
+export function formatMetricValue(params: FormatMetricValueParams): string;
+// Legacy overload for backwards compatibility
+export function formatMetricValue(value: number | string, format: MetricFormat): string;
+export function formatMetricValue(
+  paramsOrValue: FormatMetricValueParams | number | string,
+  format?: MetricFormat
+): string {
+  let value: number | string;
+  let metricFormat: MetricFormat;
+
+  if (typeof paramsOrValue === 'object' && 'value' in paramsOrValue) {
+    // New parameter object style
+    value = paramsOrValue.value;
+    metricFormat = paramsOrValue.format;
+  } else {
+    // Legacy overload
+    value = paramsOrValue;
+    metricFormat = format!;
+  }
+
   if (typeof value === 'string') return value;
   
-  switch (format) {
+  switch (metricFormat) {
     case 'percentage':
       return `${value.toFixed(1)}%`;
     case 'currency':
@@ -20,7 +44,7 @@ export function formatMetricValue(value: number | string, format: MetricFormat):
         currency: 'GBP' 
       }).format(value);
     case 'compact':
-      return formatNumber(value);
+      return formatNumber({ value });
     case 'number':
     default:
       return value.toLocaleString('en-GB');

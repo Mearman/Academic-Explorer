@@ -110,7 +110,7 @@ export class UniversalEntityPersistence {
       // 6. Persist all relationships (edges)
       console.log(`[UniversalPersistence] 🔗 Persisting ${relationships.length} relationships`);
       for (const rel of relationships) {
-        const edgeId = this.generateEdgeId(rel.sourceId, rel.targetId, rel.edgeType);
+        const edgeId = this.generateEdgeId({ sourceId: rel.sourceId, targetId: rel.targetId, edgeType: rel.edgeType });
         await saveEdgeToSimpleStorage(
           rel.sourceId,
           rel.targetId,
@@ -165,13 +165,14 @@ export class UniversalEntityPersistence {
         case EntityType.CONCEPT:
           relationships.push(...this.extractConceptRelationships(entity as Concept));
           break;
-        default:
+        default: {
           // For other entity types, try to extract basic topic relationships
           const basicEntity = entity as { id?: string; topics?: Topic[] };
           if (basicEntity.topics && basicEntity.id) {
             relationships.push(...this.extractBasicTopicRelationships(basicEntity.id, basicEntity.topics));
           }
           break;
+        }
       }
     } catch (error) {
       console.warn(`[UniversalPersistence] Error extracting relationships for ${entityType}:`, error);
@@ -465,22 +466,22 @@ export class UniversalEntityPersistence {
   }
 
   // Placeholder implementations for other entity types
-  private extractPublisherRelationships(publisher: Publisher): ExtractedRelationship[] {
+  private extractPublisherRelationships(_publisher: Publisher): ExtractedRelationship[] {
     // TODO: Implement based on Publisher structure
     return [];
   }
 
-  private extractFunderRelationships(funder: Funder): ExtractedRelationship[] {
+  private extractFunderRelationships(_funder: Funder): ExtractedRelationship[] {
     // TODO: Implement based on Funder structure
     return [];
   }
 
-  private extractTopicRelationships(topic: Topic): ExtractedRelationship[] {
+  private extractTopicRelationships(_topic: Topic): ExtractedRelationship[] {
     // TODO: Implement based on Topic structure (field, subfield, domain relationships)
     return [];
   }
 
-  private extractConceptRelationships(concept: Concept): ExtractedRelationship[] {
+  private extractConceptRelationships(_concept: Concept): ExtractedRelationship[] {
     // TODO: Implement based on Concept structure (ancestor relationships)
     return [];
   }
@@ -519,7 +520,7 @@ export class UniversalEntityPersistence {
         );
 
         // 2. Create AUTHORED relationship
-        const authoredEdgeId = this.generateEdgeId(cleanWorkId, cleanAuthorId, EdgeType.AUTHORED_BY);
+        const authoredEdgeId = this.generateEdgeId({ sourceId: cleanWorkId, targetId: cleanAuthorId, edgeType: EdgeType.AUTHORED_BY });
         await saveEdgeToSimpleStorage(
           cleanWorkId,
           cleanAuthorId,
@@ -555,7 +556,7 @@ export class UniversalEntityPersistence {
 
         // 7. Persist work relationships
         for (const rel of workRelationships) {
-          const edgeId = this.generateEdgeId(rel.sourceId, rel.targetId, rel.edgeType);
+          const edgeId = this.generateEdgeId({ sourceId: rel.sourceId, targetId: rel.targetId, edgeType: rel.edgeType });
           await saveEdgeToSimpleStorage(
             rel.sourceId,
             rel.targetId,
@@ -634,41 +635,83 @@ export class UniversalEntityPersistence {
   /**
    * Perform selective OpenAlex query to get display names only
    */
-  private async performSelectiveQuery(entityType: EntityType, filter: string) {
-    const endpoint = this.getEndpointForEntityType(entityType);
-    if (!endpoint) return null;
-
+  private async performSelectiveQuery(entityType: EntityType, filter: string): Promise<ApiResponse<{ id: string; display_name: string }> | null> {
     try {
       // Use select parameter to get only id and display_name
-      const response = await (cachedClient as any)[endpoint]({
-        filter,
-        select: 'id,display_name',
-        'per-page': 200, // Batch process multiple entities
-      });
-      
-      return response;
+      switch (entityType) {
+        case EntityType.WORK: {
+          const response = await cachedClient.works({
+            filter,
+            select: ['id', 'display_name'],
+            per_page: 200,
+          });
+          return response;
+        }
+        case EntityType.AUTHOR: {
+          const response = await cachedClient.authors({
+            filter,
+            select: ['id', 'display_name'],
+            per_page: 200,
+          });
+          return response;
+        }
+        case EntityType.INSTITUTION: {
+          const response = await cachedClient.institutions({
+            filter,
+            select: ['id', 'display_name'],
+            per_page: 200,
+          });
+          return response;
+        }
+        case EntityType.SOURCE: {
+          const response = await cachedClient.sources({
+            filter,
+            select: ['id', 'display_name'],
+            per_page: 200,
+          });
+          return response;
+        }
+        case EntityType.PUBLISHER: {
+          const response = await cachedClient.publishers({
+            filter,
+            select: ['id', 'display_name'],
+            per_page: 200,
+          });
+          return response;
+        }
+        case EntityType.FUNDER: {
+          const response = await cachedClient.funders({
+            filter,
+            select: ['id', 'display_name'],
+            per_page: 200,
+          });
+          return response;
+        }
+        case EntityType.TOPIC: {
+          const response = await cachedClient.topics({
+            filter,
+            select: ['id', 'display_name'],
+            per_page: 200,
+          });
+          return response;
+        }
+        case EntityType.CONCEPT: {
+          const response = await cachedClient.concepts({
+            filter,
+            select: ['id', 'display_name'],
+            per_page: 200,
+          });
+          return response;
+        }
+        default:
+          return null;
+      }
     } catch (error) {
       console.warn(`[UniversalPersistence] Query failed for ${entityType}:`, error);
       return null;
     }
   }
 
-  /**
-   * Get API endpoint method name for entity type
-   */
-  private getEndpointForEntityType(entityType: EntityType): string | null {
-    switch (entityType) {
-      case EntityType.WORK: return 'works';
-      case EntityType.AUTHOR: return 'authors';
-      case EntityType.INSTITUTION: return 'institutions';
-      case EntityType.SOURCE: return 'sources';
-      case EntityType.PUBLISHER: return 'publishers';
-      case EntityType.FUNDER: return 'funders';
-      case EntityType.TOPIC: return 'topics';
-      case EntityType.CONCEPT: return 'concepts';
-      default: return null;
-    }
-  }
 
   /**
    * Clean OpenAlex ID by removing URL prefix
@@ -683,7 +726,7 @@ export class UniversalEntityPersistence {
   /**
    * Generate unique edge ID
    */
-  private generateEdgeId(sourceId: string, targetId: string, edgeType: EdgeType): string {
+  private generateEdgeId({ sourceId, targetId, edgeType }: { sourceId: string; targetId: string; edgeType: EdgeType }): string {
     return `${this.cleanOpenAlexId(sourceId)}-${edgeType}-${this.cleanOpenAlexId(targetId)}`;
   }
 }

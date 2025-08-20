@@ -112,18 +112,63 @@ export function compareQueries(
   return 'same';
 }
 
+export interface PageNavigationParams {
+  currentParams: WorksParams;
+  previousParams: WorksParams;
+}
+
 /**
  * Check if two queries represent the same search with different pagination
  */
-export function isPageNavigation(currentParams: WorksParams, previousParams: WorksParams): boolean {
-  return compareQueries(currentParams, previousParams) === 'navigation';
+export function isPageNavigation(params: PageNavigationParams): boolean;
+// Legacy overload for backwards compatibility
+export function isPageNavigation(currentParams: WorksParams, previousParams: WorksParams): boolean;
+export function isPageNavigation(
+  paramsOrCurrent: PageNavigationParams | WorksParams,
+  previousParams?: WorksParams
+): boolean {
+  let currentParams: WorksParams;
+  let prevParams: WorksParams;
+
+  if (previousParams === undefined) {
+    // New parameter object style
+    const params = paramsOrCurrent as PageNavigationParams;
+    currentParams = params.currentParams;
+    prevParams = params.previousParams;
+  } else {
+    // Legacy overload
+    currentParams = paramsOrCurrent as WorksParams;
+    prevParams = previousParams;
+  }
+
+  return compareQueries(currentParams, prevParams) === 'navigation';
 }
 
 /**
  * Check if a parameter change is only a page change (not per_page or sort)
  */
-export function isOnlyPageChange(currentParams: WorksParams, previousParams: WorksParams): boolean {
-  const comparison = compareQueries(currentParams, previousParams);
+export function isOnlyPageChange(params: PageNavigationParams): boolean;
+// Legacy overload for backwards compatibility  
+export function isOnlyPageChange(currentParams: WorksParams, previousParams: WorksParams): boolean;
+export function isOnlyPageChange(
+  paramsOrCurrent: PageNavigationParams | WorksParams,
+  previousParams?: WorksParams
+): boolean {
+  let currentParams: WorksParams;
+  let prevParams: WorksParams;
+
+  if (previousParams === undefined) {
+    // New parameter object style
+    const params = paramsOrCurrent as PageNavigationParams;
+    currentParams = params.currentParams;
+    prevParams = params.previousParams;
+  } else {
+    // Legacy overload
+    currentParams = paramsOrCurrent as WorksParams;
+    prevParams = previousParams;
+  }
+
+  const comparison = compareQueries(currentParams, prevParams);
   
   if (comparison !== 'navigation') {
     return false;
@@ -131,7 +176,7 @@ export function isOnlyPageChange(currentParams: WorksParams, previousParams: Wor
   
   // Extract navigation params using Zod for type safety
   const currentNav = getNavigationParams(currentParams);
-  const previousNav = getNavigationParams(previousParams);
+  const previousNav = getNavigationParams(prevParams);
   
   // Check if only the page parameter changed
   const pageChanged = currentNav.page !== previousNav.page;
