@@ -3,10 +3,12 @@
  * Tests React component rendering and behavior in isolation
  */
 
-import { render, screen, fireEvent } from '@testing-library/react';
+import { screen, fireEvent } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
+
+import { renderWithProviders } from '@/test/utils/test-providers';
 
 import { SearchBar } from './search-bar';
 
@@ -74,7 +76,7 @@ describe('SearchBar Autocomplete Variant', () => {
   });
 
   it('should render autocomplete search by default', () => {
-    render(<SearchBar />);
+    renderWithProviders(<SearchBar />);
     
     const autocompleteSearch = screen.getByTestId('autocomplete-search');
     expect(autocompleteSearch).toBeInTheDocument();
@@ -84,13 +86,13 @@ describe('SearchBar Autocomplete Variant', () => {
   });
 
   it('should render search hint', () => {
-    render(<SearchBar />);
+    renderWithProviders(<SearchBar />);
     
     expect(screen.getByText('Try searching for authors, papers, institutions, or topics')).toBeInTheDocument();
   });
 
   it('should apply custom className to container', () => {
-    render(<SearchBar className="custom-search-bar" />);
+    renderWithProviders(<SearchBar className="custom-search-bar" />);
     
     const container = screen.getByTestId('autocomplete-search').parentElement;
     expect(container).toHaveClass('custom-search-bar');
@@ -98,7 +100,7 @@ describe('SearchBar Autocomplete Variant', () => {
 
   it('should handle autocomplete selection correctly', async () => {
     const user = userEvent.setup();
-    render(<SearchBar />);
+    renderWithProviders(<SearchBar />);
     
     const autocompleteInput = screen.getByTestId('autocomplete-input');
     
@@ -111,7 +113,7 @@ describe('SearchBar Autocomplete Variant', () => {
   });
 
   it('should pass correct props to AutocompleteSearch', () => {
-    render(<SearchBar />);
+    renderWithProviders(<SearchBar />);
     
     expect(MockAutocompleteSearch).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -132,7 +134,7 @@ describe('SearchBar Traditional Form Variant', () => {
   });
 
   it('should render traditional form when showAutocomplete is false', () => {
-    render(<SearchBar showAutocomplete={false} />);
+    renderWithProviders(<SearchBar showAutocomplete={false} />);
     
     const form = document.querySelector('form');
     const input = screen.getByRole('textbox');
@@ -147,7 +149,7 @@ describe('SearchBar Traditional Form Variant', () => {
 
   it('should handle input changes in traditional form', async () => {
     const user = userEvent.setup();
-    render(<SearchBar showAutocomplete={false} />);
+    renderWithProviders(<SearchBar showAutocomplete={false} />);
     
     const input = screen.getByRole('textbox');
     
@@ -158,7 +160,7 @@ describe('SearchBar Traditional Form Variant', () => {
 
   it('should handle form submission', async () => {
     const user = userEvent.setup();
-    render(<SearchBar showAutocomplete={false} />);
+    renderWithProviders(<SearchBar showAutocomplete={false} />);
     
     const input = screen.getByRole('textbox');
     const button = screen.getByRole('button', { name: 'Search' });
@@ -169,14 +171,14 @@ describe('SearchBar Traditional Form Variant', () => {
     expect(mockSetSearchQuery).toHaveBeenCalledWith('artificial intelligence');
     expect(mockAddToSearchHistory).toHaveBeenCalledWith('artificial intelligence');
     expect(mockNavigate).toHaveBeenCalledWith({
-      to: '/search',
+      to: '/query',
       search: { q: 'artificial intelligence' }
     });
   });
 
   it('should handle form submission on Enter key', async () => {
     const user = userEvent.setup();
-    render(<SearchBar showAutocomplete={false} />);
+    renderWithProviders(<SearchBar showAutocomplete={false} />);
     
     const input = screen.getByRole('textbox');
     
@@ -186,14 +188,14 @@ describe('SearchBar Traditional Form Variant', () => {
     expect(mockSetSearchQuery).toHaveBeenCalledWith('neural networks');
     expect(mockAddToSearchHistory).toHaveBeenCalledWith('neural networks');
     expect(mockNavigate).toHaveBeenCalledWith({
-      to: '/search',
+      to: '/query',
       search: { q: 'neural networks' }
     });
   });
 
   it('should not submit empty query', async () => {
     const user = userEvent.setup();
-    render(<SearchBar showAutocomplete={false} />);
+    renderWithProviders(<SearchBar showAutocomplete={false} />);
     
     const button = screen.getByRole('button', { name: 'Search' });
     
@@ -206,7 +208,7 @@ describe('SearchBar Traditional Form Variant', () => {
 
   it('should trim whitespace from query', async () => {
     const user = userEvent.setup();
-    render(<SearchBar showAutocomplete={false} />);
+    renderWithProviders(<SearchBar showAutocomplete={false} />);
     
     const input = screen.getByRole('textbox');
     const button = screen.getByRole('button', { name: 'Search' });
@@ -215,13 +217,13 @@ describe('SearchBar Traditional Form Variant', () => {
     await user.click(button);
     
     expect(mockNavigate).toHaveBeenCalledWith({
-      to: '/search',
+      to: '/query',
       search: { q: 'machine learning' }
     });
   });
 
   it('should apply custom className to form', () => {
-    render(<SearchBar showAutocomplete={false} className="custom-form" />);
+    renderWithProviders(<SearchBar showAutocomplete={false} className="custom-form" />);
     
     const form = document.querySelector('form');
     expect(form).toHaveClass('custom-form');
@@ -262,7 +264,7 @@ describe('SearchBar Entity Route Mapping', () => {
         </button>
       ));
 
-      render(<SearchBar />);
+      renderWithProviders(<SearchBar />);
       
       const suggestionButton = screen.getByTestId('mock-suggestion');
       await user.click(suggestionButton);
@@ -289,7 +291,7 @@ describe('SearchBar Entity Route Mapping', () => {
       </button>
     ));
 
-    render(<SearchBar />);
+    renderWithProviders(<SearchBar />);
     
     const suggestionButton = screen.getByTestId('mock-suggestion');
     await user.click(suggestionButton);
@@ -306,7 +308,7 @@ describe('SearchBar Accessibility', () => {
   });
 
   it('should have accessible form elements in traditional mode', () => {
-    render(<SearchBar showAutocomplete={false} />);
+    renderWithProviders(<SearchBar showAutocomplete={false} />);
     
     const input = screen.getByRole('textbox');
     const button = screen.getByRole('button', { name: 'Search' });
@@ -316,7 +318,7 @@ describe('SearchBar Accessibility', () => {
   });
 
   it('should have proper form structure', () => {
-    render(<SearchBar showAutocomplete={false} />);
+    renderWithProviders(<SearchBar showAutocomplete={false} />);
     
     const form = document.querySelector('form');
     const input = screen.getByRole('textbox');
@@ -360,7 +362,7 @@ describe('SearchBar Component Switching', () => {
       </div>
     ));
 
-    const { rerender } = render(<SearchBar showAutocomplete={true} />);
+    const { rerender } = renderWithProviders(<SearchBar showAutocomplete={true} />);
     
     expect(screen.getByTestId('autocomplete-search')).toBeInTheDocument();
     expect(document.querySelector('form')).not.toBeInTheDocument();
@@ -393,7 +395,7 @@ describe('SearchBar Error Handling', () => {
       </button>
     ));
 
-    render(<SearchBar />);
+    renderWithProviders(<SearchBar />);
     
     const suggestionButton = screen.getByTestId('mock-suggestion');
     
@@ -401,7 +403,7 @@ describe('SearchBar Error Handling', () => {
   });
 
   it('should handle submission prevention gracefully', () => {
-    render(<SearchBar showAutocomplete={false} />);
+    renderWithProviders(<SearchBar showAutocomplete={false} />);
     
     const form = document.querySelector('form');
     
@@ -419,7 +421,7 @@ describe('SearchBar State Integration', () => {
   });
 
   it('should integrate with app store for search functionality', () => {
-    render(<SearchBar showAutocomplete={false} />);
+    renderWithProviders(<SearchBar showAutocomplete={false} />);
     
     // Verify that the component uses the store hooks
     expect(mockSetSearchQuery).toBeDefined();
@@ -427,7 +429,7 @@ describe('SearchBar State Integration', () => {
   });
 
   it('should integrate with router for navigation', () => {
-    render(<SearchBar />);
+    renderWithProviders(<SearchBar />);
     
     // Verify that the component uses the router hook
     expect(mockNavigate).toBeDefined();
