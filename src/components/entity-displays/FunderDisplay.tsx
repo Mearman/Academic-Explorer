@@ -21,7 +21,12 @@ export function FunderDisplay({ entity: funder, useTwoPaneLayout = false, graphP
         validationSettings.autoValidateOnLoad &&
         validationSettings.validatedEntityTypes.includes(EntityType.FUNDER)) {
       
-      validateEntity(funder.id, EntityType.FUNDER, funder, funder.display_name).catch((error) => {
+      validateEntity({
+        entityId: funder.id,
+        entityType: EntityType.FUNDER,
+        entityData: funder,
+        entityDisplayName: funder.display_name
+      }).catch((error) => {
         console.warn('Failed to validate funder:', error);
       });
     }

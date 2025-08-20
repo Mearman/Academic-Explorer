@@ -21,7 +21,12 @@ export function TopicDisplay({ entity: topic, useTwoPaneLayout = false, graphPan
         validationSettings.autoValidateOnLoad &&
         validationSettings.validatedEntityTypes.includes(EntityType.TOPIC)) {
       
-      validateEntity(topic.id, EntityType.TOPIC, topic, topic.display_name).catch((error) => {
+      validateEntity({
+        entityId: topic.id,
+        entityType: EntityType.TOPIC,
+        entityData: topic,
+        entityDisplayName: topic.display_name
+      }).catch((error) => {
         console.warn('Failed to validate topic:', error);
       });
     }

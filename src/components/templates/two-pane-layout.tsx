@@ -347,7 +347,7 @@ export function TwoPaneLayout({
 
           <div className={styles.dividerContainer}>
             <PaneDivider
-              onDrag={paneLayoutState.handleDrag}
+              onDrag={(clientX, containerRect) => paneLayoutState.handleDrag({ clientX, containerRect })}
               onDragStart={paneLayoutState.startDragging}
               onDragEnd={paneLayoutState.stopDragging}
               onCollapseLeft={leftCollapsible ? toggleLeftPane : undefined}

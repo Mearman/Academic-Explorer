@@ -16,16 +16,17 @@ import * as styles from './entity-page-template.css.ts';
 
 
 export const EntityPageTemplate = forwardRef<HTMLDivElement, EntityPageTemplateProps>(
-  ({ 
-    entity,
-    breadcrumbs,
-    sidebar,
-    actions,
-    children,
-    className,
-    'data-testid': testId,
-    ...props 
-  }, ref) => {
+  (props, ref) => {
+    const { 
+      entity,
+      breadcrumbs,
+      sidebar,
+      actions,
+      children,
+      className,
+      'data-testid': testId,
+      ...restProps 
+    } = props;
     const layoutClass = sidebar ? styles.layoutVariants.withSidebar : styles.layoutVariants.default;
 
     return (
@@ -33,7 +34,7 @@ export const EntityPageTemplate = forwardRef<HTMLDivElement, EntityPageTemplateP
         ref={ref}
         className={styles.container}
         data-testid={testId}
-        {...props}
+        {...restProps}
       >
         <div className={`${styles.pageWrapper} ${layoutClass} ${className || ''}`}>
           {/* Breadcrumbs */}

@@ -105,7 +105,12 @@ export function AuthorDisplay({ entity: author, useTwoPaneLayout = false, graphP
         validationSettings.autoValidateOnLoad &&
         validationSettings.validatedEntityTypes.includes(EntityType.AUTHOR)) {
       
-      validateEntity(author.id, EntityType.AUTHOR, author, author.display_name).catch((error) => {
+      validateEntity({
+        entityId: author.id,
+        entityType: EntityType.AUTHOR,
+        entityData: author,
+        entityDisplayName: author.display_name
+      }).catch((error) => {
         console.warn('Failed to validate author:', error);
       });
     }

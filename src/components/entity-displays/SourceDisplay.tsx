@@ -21,7 +21,12 @@ export function SourceDisplay({ entity: source, useTwoPaneLayout = false, graphP
         validationSettings.autoValidateOnLoad &&
         validationSettings.validatedEntityTypes.includes(EntityType.SOURCE)) {
       
-      validateEntity(source.id, EntityType.SOURCE, source, source.display_name).catch((error) => {
+      validateEntity({
+        entityId: source.id,
+        entityType: EntityType.SOURCE,
+        entityData: source,
+        entityDisplayName: source.display_name
+      }).catch((error) => {
         console.warn('Failed to validate source:', error);
       });
     }

@@ -23,7 +23,14 @@ export function InstitutionDisplay({ entity: institution, useTwoPaneLayout = fal
 
   // Validate entity on mount and when entity changes
   useEffect(() => {
-    validateEntity(institution.id, EntityType.INSTITUTION, institution, institution.display_name);
+    validateEntity({
+      entityId: institution.id,
+      entityType: EntityType.INSTITUTION,
+      entityData: institution,
+      entityDisplayName: institution.display_name
+    }).catch((error) => {
+      console.warn('Failed to validate institution:', error);
+    });
   }, [institution.id, institution, validateEntity]);
 
   // Get validation state

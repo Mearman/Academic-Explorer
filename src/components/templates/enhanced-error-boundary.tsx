@@ -100,160 +100,229 @@ export interface EnhancedErrorFallbackProps {
 }
 
 /**
- * Classify error based on type, message, and context
+ * Check if error is network-related
  */
-function classifyError(error: Error, errorInfo?: React.ErrorInfo): ClassifiedError {
+function isNetworkError(error: Error): boolean {
   const message = error.message.toLowerCase();
-  const stack = error.stack?.toLowerCase() || '';
-  const componentStack = errorInfo?.componentStack?.toLowerCase() || '';
-
-  // Network errors
-  if (
+  return (
     message.includes('failed to fetch') ||
     message.includes('network error') ||
     message.includes('connection') ||
-    error.name === 'TypeError' && message.includes('fetch')
-  ) {
-    return {
-      originalError: error,
-      category: 'network',
-      severity: 'medium',
-      suggestedStrategy: 'retry',
-      userMessage: 'Connection issue detected. We\'ll try to reconnect automatically.',
-      technicalMessage: 'Network request failed. Check connectivity and retry.',
-      actionable: true,
-      retryable: true,
-      reportable: false,
-    };
-  }
+    (error.name === 'TypeError' && message.includes('fetch'))
+  );
+}
 
-  // Storage errors
-  if (
+/**
+ * Check if error is storage-related
+ */
+function isStorageError(error: Error): boolean {
+  const message = error.message.toLowerCase();
+  return (
     message.includes('quota') ||
     message.includes('storage') ||
     error.name === 'QuotaExceededError' ||
     message.includes('indexeddb')
-  ) {
-    return {
-      originalError: error,
-      category: 'storage',
-      severity: 'high',
-      suggestedStrategy: 'fallback',
-      userMessage: 'Storage space is full. Some features may be limited.',
-      technicalMessage: 'Storage quota exceeded. Clear cache or use alternative storage.',
-      actionable: true,
-      retryable: false,
-      reportable: true,
-    };
-  }
+  );
+}
 
-  // API errors
-  if (
+/**
+ * Check if error is API-related
+ */
+function isApiError(error: Error): boolean {
+  const message = error.message.toLowerCase();
+  return (
     message.includes('400') || message.includes('401') || 
     message.includes('403') || message.includes('404') ||
     message.includes('429') || message.includes('500') ||
     message.includes('503')
-  ) {
-    const isServerError = message.includes('500') || message.includes('503');
-    const isRateLimit = message.includes('429');
-    
-    return {
-      originalError: error,
-      category: 'api',
-      severity: isServerError ? 'high' : 'medium',
-      suggestedStrategy: isRateLimit ? 'retry' : isServerError ? 'retry' : 'report',
-      userMessage: isRateLimit 
-        ? 'Request limit reached. Please wait a moment before trying again.'
-        : isServerError 
-        ? 'Service temporarily unavailable. We\'ll retry automatically.'
-        : 'Request failed. Please check your input and try again.',
-      technicalMessage: `API error: ${error.message}`,
-      actionable: true,
-      retryable: isServerError || isRateLimit,
-      reportable: !isRateLimit,
-    };
-  }
+  );
+}
 
-  // Security errors
-  if (
+/**
+ * Check if error is security-related
+ */
+function isSecurityError(error: Error): boolean {
+  const message = error.message.toLowerCase();
+  return (
     message.includes('content security policy') ||
     message.includes('csp') ||
     message.includes('script-src') ||
     message.includes('refused to load')
-  ) {
-    return {
-      originalError: error,
-      category: 'security',
-      severity: 'high',
-      suggestedStrategy: 'report',
-      userMessage: 'Security policy prevented this action. Please contact support.',
-      technicalMessage: 'Content Security Policy violation detected.',
-      actionable: false,
-      retryable: false,
-      reportable: true,
-    };
-  }
+  );
+}
 
-  // Resource loading errors
-  if (
+/**
+ * Check if error is resource loading-related
+ */
+function isResourceError(error: Error): boolean {
+  const message = error.message.toLowerCase();
+  return (
     message.includes('loading css chunk failed') ||
     message.includes('loading chunk') ||
     message.includes('import()') ||
     message.includes('dynamic import')
-  ) {
-    return {
-      originalError: error,
-      category: 'resource',
-      severity: 'medium',
-      suggestedStrategy: 'refresh',
-      userMessage: 'Failed to load application resources. Refreshing the page may help.',
-      technicalMessage: 'Dynamic import or chunk loading failed.',
-      actionable: true,
-      retryable: true,
-      reportable: false,
-    };
-  }
+  );
+}
 
-  // Memory errors
-  if (
+/**
+ * Check if error is memory-related
+ */
+function isMemoryError(error: Error): boolean {
+  const message = error.message.toLowerCase();
+  return (
     message.includes('maximum call stack') ||
     message.includes('out of memory') ||
-    message.includes('range error') && message.includes('array length')
-  ) {
-    return {
-      originalError: error,
-      category: 'memory',
-      severity: 'critical',
-      suggestedStrategy: 'refresh',
-      userMessage: 'The application is using too much memory. Please refresh the page.',
-      technicalMessage: 'Memory limit exceeded. Refresh required.',
-      actionable: true,
-      retryable: false,
-      reportable: true,
-    };
-  }
+    (message.includes('range error') && message.includes('array length'))
+  );
+}
 
-  // React rendering errors
-  if (
+/**
+ * Check if error is React rendering-related
+ */
+function isRenderingError(error: Error, errorInfo?: React.ErrorInfo): boolean {
+  const message = error.message.toLowerCase();
+  const stack = error.stack?.toLowerCase() || '';
+  const componentStack = errorInfo?.componentStack?.toLowerCase() || '';
+  
+  return (
     componentStack.includes('react') ||
     stack.includes('react') ||
     message.includes('render') ||
     error.name === 'Invariant Violation'
-  ) {
-    return {
-      originalError: error,
-      category: 'rendering',
-      severity: 'medium',
-      suggestedStrategy: 'retry',
-      userMessage: 'Display error occurred. We\'ll try to recover automatically.',
-      technicalMessage: 'React rendering error detected.',
-      actionable: true,
-      retryable: true,
-      reportable: true,
-    };
-  }
+  );
+}
 
-  // Unknown/generic errors
+/**
+ * Create classified error for network errors
+ */
+function createNetworkError(error: Error): ClassifiedError {
+  return {
+    originalError: error,
+    category: 'network',
+    severity: 'medium',
+    suggestedStrategy: 'retry',
+    userMessage: 'Connection issue detected. We\'ll try to reconnect automatically.',
+    technicalMessage: 'Network request failed. Check connectivity and retry.',
+    actionable: true,
+    retryable: true,
+    reportable: false,
+  };
+}
+
+/**
+ * Create classified error for storage errors
+ */
+function createStorageError(error: Error): ClassifiedError {
+  return {
+    originalError: error,
+    category: 'storage',
+    severity: 'high',
+    suggestedStrategy: 'fallback',
+    userMessage: 'Storage space is full. Some features may be limited.',
+    technicalMessage: 'Storage quota exceeded. Clear cache or use alternative storage.',
+    actionable: true,
+    retryable: false,
+    reportable: true,
+  };
+}
+
+/**
+ * Create classified error for API errors
+ */
+function createApiError(error: Error): ClassifiedError {
+  const message = error.message.toLowerCase();
+  const isServerError = message.includes('500') || message.includes('503');
+  const isRateLimit = message.includes('429');
+  
+  return {
+    originalError: error,
+    category: 'api',
+    severity: isServerError ? 'high' : 'medium',
+    suggestedStrategy: isRateLimit ? 'retry' : isServerError ? 'retry' : 'report',
+    userMessage: isRateLimit 
+      ? 'Request limit reached. Please wait a moment before trying again.'
+      : isServerError 
+      ? 'Service temporarily unavailable. We\'ll retry automatically.'
+      : 'Request failed. Please check your input and try again.',
+    technicalMessage: `API error: ${error.message}`,
+    actionable: true,
+    retryable: isServerError || isRateLimit,
+    reportable: !isRateLimit,
+  };
+}
+
+/**
+ * Create classified error for security errors
+ */
+function createSecurityError(error: Error): ClassifiedError {
+  return {
+    originalError: error,
+    category: 'security',
+    severity: 'high',
+    suggestedStrategy: 'report',
+    userMessage: 'Security policy prevented this action. Please contact support.',
+    technicalMessage: 'Content Security Policy violation detected.',
+    actionable: false,
+    retryable: false,
+    reportable: true,
+  };
+}
+
+/**
+ * Create classified error for resource errors
+ */
+function createResourceError(error: Error): ClassifiedError {
+  return {
+    originalError: error,
+    category: 'resource',
+    severity: 'medium',
+    suggestedStrategy: 'refresh',
+    userMessage: 'Failed to load application resources. Refreshing the page may help.',
+    technicalMessage: 'Dynamic import or chunk loading failed.',
+    actionable: true,
+    retryable: true,
+    reportable: false,
+  };
+}
+
+/**
+ * Create classified error for memory errors
+ */
+function createMemoryError(error: Error): ClassifiedError {
+  return {
+    originalError: error,
+    category: 'memory',
+    severity: 'critical',
+    suggestedStrategy: 'refresh',
+    userMessage: 'The application is using too much memory. Please refresh the page.',
+    technicalMessage: 'Memory limit exceeded. Refresh required.',
+    actionable: true,
+    retryable: false,
+    reportable: true,
+  };
+}
+
+/**
+ * Create classified error for rendering errors
+ */
+function createRenderingError(error: Error): ClassifiedError {
+  return {
+    originalError: error,
+    category: 'rendering',
+    severity: 'medium',
+    suggestedStrategy: 'retry',
+    userMessage: 'Display error occurred. We\'ll try to recover automatically.',
+    technicalMessage: 'React rendering error detected.',
+    actionable: true,
+    retryable: true,
+    reportable: true,
+  };
+}
+
+/**
+ * Create classified error for unknown errors
+ */
+function createUnknownError(error: Error): ClassifiedError {
   return {
     originalError: error,
     category: 'unknown',
@@ -265,6 +334,41 @@ function classifyError(error: Error, errorInfo?: React.ErrorInfo): ClassifiedErr
     retryable: true,
     reportable: true,
   };
+}
+
+/**
+ * Classify error based on type, message, and context
+ */
+function classifyError(error: Error, errorInfo?: React.ErrorInfo): ClassifiedError {
+  if (isNetworkError(error)) {
+    return createNetworkError(error);
+  }
+  
+  if (isStorageError(error)) {
+    return createStorageError(error);
+  }
+  
+  if (isApiError(error)) {
+    return createApiError(error);
+  }
+  
+  if (isSecurityError(error)) {
+    return createSecurityError(error);
+  }
+  
+  if (isResourceError(error)) {
+    return createResourceError(error);
+  }
+  
+  if (isMemoryError(error)) {
+    return createMemoryError(error);
+  }
+  
+  if (isRenderingError(error, errorInfo)) {
+    return createRenderingError(error);
+  }
+  
+  return createUnknownError(error);
 }
 
 /**

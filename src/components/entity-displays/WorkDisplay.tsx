@@ -28,7 +28,12 @@ export function WorkDisplay({ entity: work, useTwoPaneLayout = false, graphPane 
         validationSettings.autoValidateOnLoad &&
         validationSettings.validatedEntityTypes.includes(EntityType.WORK)) {
       
-      validateEntity(work.id, EntityType.WORK, work, work.display_name).catch((error) => {
+      validateEntity({
+        entityId: work.id,
+        entityType: EntityType.WORK,
+        entityData: work,
+        entityDisplayName: work.display_name
+      }).catch((error) => {
         console.warn('Failed to validate work:', error);
       });
     }

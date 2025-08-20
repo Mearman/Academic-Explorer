@@ -21,7 +21,12 @@ export function ConceptDisplay({ entity: concept, useTwoPaneLayout = false, grap
         validationSettings.autoValidateOnLoad &&
         validationSettings.validatedEntityTypes.includes(EntityType.CONCEPT)) {
       
-      validateEntity(concept.id, EntityType.CONCEPT, concept, concept.display_name).catch((error) => {
+      validateEntity({
+        entityId: concept.id,
+        entityType: EntityType.CONCEPT,
+        entityData: concept,
+        entityDisplayName: concept.display_name
+      }).catch((error) => {
         console.warn('Failed to validate concept:', error);
       });
     }

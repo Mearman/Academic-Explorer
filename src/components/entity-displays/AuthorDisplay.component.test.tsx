@@ -238,6 +238,7 @@ vi.mock('@tabler/icons-react', async (importOriginal) => {
   
   // Create mocks for all possible icons by intercepting property access
   return new Proxy(actual, {
+     
     get(target, prop) {
       if (typeof prop === 'string' && prop.startsWith('Icon')) {
         return target[prop as keyof typeof target] || createMockIcon(prop);

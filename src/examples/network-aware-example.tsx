@@ -107,12 +107,16 @@ function EntityFetchExample() {
     refetch, 
     retry, 
     reset 
-  } = useEntityData(entityId, undefined, {
-    networkAware,
-    priority,
-    backgroundSync: true,
-    adaptiveCaching: true,
-    retryOnError: true,
+  } = useEntityData({
+    entityId,
+    entityType: undefined,
+    options: {
+      networkAware,
+      priority,
+      backgroundSync: true,
+      adaptiveCaching: true,
+      retryOnError: true,
+    }
   });
 
   return (

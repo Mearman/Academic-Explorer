@@ -21,7 +21,12 @@ export function PublisherDisplay({ entity: publisher, useTwoPaneLayout = false, 
         validationSettings.autoValidateOnLoad &&
         validationSettings.validatedEntityTypes.includes(EntityType.PUBLISHER)) {
       
-      validateEntity(publisher.id, EntityType.PUBLISHER, publisher, publisher.display_name).catch((error) => {
+      validateEntity({
+        entityId: publisher.id,
+        entityType: EntityType.PUBLISHER,
+        entityData: publisher,
+        entityDisplayName: publisher.display_name
+      }).catch((error) => {
         console.warn('Failed to validate publisher:', error);
       });
     }
