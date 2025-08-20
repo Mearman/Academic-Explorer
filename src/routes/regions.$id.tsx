@@ -31,7 +31,7 @@ import {
   EntityPageTemplate,
   EntityErrorBoundary
 } from '@/components';
-import { useRegionData } from '@/hooks/use-entity-data';
+import { useRegionData, EntityError as EntityErrorType } from '@/hooks/use-entity-data';
 import { useNumericIdRedirect } from '@/hooks/use-numeric-id-redirect';
 import type { Region } from '@/lib/openalex/types';
 import { EntityType } from '@/lib/openalex/utils/entity-detection';
@@ -516,12 +516,15 @@ function RegionPage() {
     loading, 
     error, 
     retry 
-  } = useRegionData(id, {
-    enabled: !!id && !isRedirecting,
-    refetchOnWindowFocus: true,
-    staleTime: 10 * 60 * 1000, // 10 minutes
-    onError: (error) => {
-      console.error('Region fetch error:', error);
+  } = useRegionData({
+    regionId: id,
+    options: {
+      enabled: !!id && !isRedirecting,
+      refetchOnWindowFocus: true,
+      staleTime: 10 * 60 * 1000, // 10 minutes
+      onError: (error: EntityErrorType) => {
+        console.error('Region fetch error:', error);
+      }
     }
   });
 

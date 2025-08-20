@@ -29,7 +29,7 @@ import {
   EntityPageTemplate,
   EntityErrorBoundary
 } from '@/components';
-import { useContinentData } from '@/hooks/use-entity-data';
+import { useContinentData, EntityError as EntityErrorType } from '@/hooks/use-entity-data';
 import { useNumericIdRedirect } from '@/hooks/use-numeric-id-redirect';
 import type { Continent } from '@/lib/openalex/types';
 import { EntityType } from '@/lib/openalex/utils/entity-detection';
@@ -425,12 +425,15 @@ function ContinentPage() {
     loading, 
     error, 
     retry 
-  } = useContinentData(id, {
-    enabled: !!id && !isRedirecting,
-    refetchOnWindowFocus: true,
-    staleTime: 10 * 60 * 1000, // 10 minutes
-    onError: (error) => {
-      console.error('Continent fetch error:', error);
+  } = useContinentData({
+    continentId: id,
+    options: {
+      enabled: !!id && !isRedirecting,
+      refetchOnWindowFocus: true,
+      staleTime: 10 * 60 * 1000, // 10 minutes
+      onError: (error: EntityErrorType) => {
+        console.error('Continent fetch error:', error);
+      }
     }
   });
 

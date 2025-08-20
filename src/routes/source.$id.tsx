@@ -2,7 +2,7 @@ import { createFileRoute } from '@tanstack/react-router';
 
 import { EntityErrorBoundary, EntitySkeleton, EntityError, EntityFallback, EntityGraphVisualization } from '@/components';
 import { SourceDisplay } from '@/components/entity-displays/SourceDisplay';
-import { useSourceData } from '@/hooks/use-entity-data';
+import { useSourceData, EntityError as EntityErrorType } from '@/hooks/use-entity-data';
 import { useNumericIdRedirect } from '@/hooks/use-numeric-id-redirect';
 import { EntityType } from '@/lib/openalex/utils/entity-detection';
 
@@ -17,12 +17,15 @@ function SourcePage() {
     loading, 
     error, 
     retry 
-  } = useSourceData(id, {
-    enabled: !!id && !isRedirecting,
-    refetchOnWindowFocus: true,
-    staleTime: 10 * 60 * 1000, // 10 minutes
-    onError: (error) => {
-      console.error(`Source fetch error:`, error);
+  } = useSourceData({
+    sourceId: id,
+    options: {
+      enabled: !!id && !isRedirecting,
+      refetchOnWindowFocus: true,
+      staleTime: 10 * 60 * 1000, // 10 minutes
+      onError: (error: EntityErrorType) => {
+        console.error(`Source fetch error:`, error);
+      }
     }
   });
 

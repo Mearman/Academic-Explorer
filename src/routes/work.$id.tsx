@@ -2,7 +2,7 @@ import { createFileRoute } from '@tanstack/react-router';
 
 import { EntityErrorBoundary, EntitySkeleton, EntityError, EntityFallback, EntityGraphVisualization } from '@/components';
 import { WorkDisplay } from '@/components/entity-displays/WorkDisplay';
-import { useWorkData } from '@/hooks/use-entity-data';
+import { useWorkData, EntityError as EntityErrorType } from '@/hooks/use-entity-data';
 import { useNumericIdRedirect } from '@/hooks/use-numeric-id-redirect';
 import { EntityType } from '@/lib/openalex/utils/entity-detection';
 
@@ -17,12 +17,15 @@ function WorkPage() {
     loading, 
     error, 
     retry 
-  } = useWorkData(id, {
-    enabled: !!id && !isRedirecting,
-    refetchOnWindowFocus: true,
-    staleTime: 10 * 60 * 1000, // 10 minutes
-    onError: (error) => {
-      console.error(`Work fetch error:`, error);
+  } = useWorkData({
+    workId: id,
+    options: {
+      enabled: !!id && !isRedirecting,
+      refetchOnWindowFocus: true,
+      staleTime: 10 * 60 * 1000, // 10 minutes
+      onError: (error: EntityErrorType) => {
+        console.error(`Work fetch error:`, error);
+      }
     }
   });
 

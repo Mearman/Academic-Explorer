@@ -30,7 +30,7 @@ import {
   EntityPageTemplate,
   EntityErrorBoundary
 } from '@/components';
-import { useKeywordData } from '@/hooks/use-entity-data';
+import { useKeywordData, EntityError as EntityErrorType } from '@/hooks/use-entity-data';
 import { useNumericIdRedirect } from '@/hooks/use-numeric-id-redirect';
 import type { Keyword } from '@/lib/openalex/types';
 import { EntityType } from '@/lib/openalex/utils/entity-detection';
@@ -449,12 +449,15 @@ function KeywordPage() {
     loading, 
     error, 
     retry 
-  } = useKeywordData(id, {
-    enabled: !!id && !isRedirecting,
-    refetchOnWindowFocus: true,
-    staleTime: 10 * 60 * 1000, // 10 minutes
-    onError: (error) => {
-      console.error('Keyword fetch error:', error);
+  } = useKeywordData({
+    keywordId: id,
+    options: {
+      enabled: !!id && !isRedirecting,
+      refetchOnWindowFocus: true,
+      staleTime: 10 * 60 * 1000, // 10 minutes
+      onError: (error: EntityErrorType) => {
+        console.error('Keyword fetch error:', error);
+      }
     }
   });
 

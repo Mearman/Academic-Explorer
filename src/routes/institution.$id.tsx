@@ -2,7 +2,7 @@ import { createFileRoute } from '@tanstack/react-router';
 
 import { EntityErrorBoundary, EntitySkeleton, EntityError, EntityFallback, EntityGraphVisualization } from '@/components';
 import { InstitutionDisplay } from '@/components/entity-displays/InstitutionDisplay';
-import { useInstitutionData } from '@/hooks/use-entity-data';
+import { useInstitutionData, EntityError as EntityErrorType } from '@/hooks/use-entity-data';
 import { useNumericIdRedirect } from '@/hooks/use-numeric-id-redirect';
 import { EntityType } from '@/lib/openalex/utils/entity-detection';
 
@@ -17,12 +17,15 @@ function InstitutionPage() {
     loading, 
     error, 
     retry 
-  } = useInstitutionData(id, {
-    enabled: !!id && !isRedirecting,
-    refetchOnWindowFocus: true,
-    staleTime: 10 * 60 * 1000, // 10 minutes
-    onError: (error) => {
-      console.error(`Institution fetch error:`, error);
+  } = useInstitutionData({
+    institutionId: id,
+    options: {
+      enabled: !!id && !isRedirecting,
+      refetchOnWindowFocus: true,
+      staleTime: 10 * 60 * 1000, // 10 minutes
+      onError: (error: EntityErrorType) => {
+        console.error(`Institution fetch error:`, error);
+      }
     }
   });
 

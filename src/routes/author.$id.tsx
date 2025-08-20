@@ -186,9 +186,9 @@ function AuthorPage() {
   }, [id, stableNavigate]);
   
   // Use the author data hook with the processed ID
-  const { data: author, loading, error, retry } = useAuthorData(
-    processedId && !isRedirecting && !isProcessingId ? processedId : null
-  );
+  const { data: author, loading, error, retry } = useAuthorData({
+    authorId: processedId && !isRedirecting && !isProcessingId ? processedId : null
+  });
 
   // Show loading state for redirection or ID processing
   if (isRedirecting || isProcessingId) {
