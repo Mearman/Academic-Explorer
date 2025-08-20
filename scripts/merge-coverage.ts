@@ -13,12 +13,29 @@ import { join } from 'path';
  * - E2E tests (Playwright)
  */
 
+interface CoverageStatement {
+	start: { line: number; column: number };
+	end: { line: number; column: number };
+}
+
+interface CoverageFunction {
+	name: string;
+	line: number;
+	loc: { start: { line: number; column: number }; end: { line: number; column: number } };
+}
+
+interface CoverageBranch {
+	line: number;
+	type: string;
+	locations: Array<{ start: { line: number; column: number }; end: { line: number; column: number } }>;
+}
+
 interface CoverageData {
 	[filePath: string]: {
 		path: string;
-		statementMap: Record<string, any>;
-		fnMap: Record<string, any>;
-		branchMap: Record<string, any>;
+		statementMap: Record<string, CoverageStatement>;
+		fnMap: Record<string, CoverageFunction>;
+		branchMap: Record<string, CoverageBranch>;
 		s: Record<string, number>;
 		f: Record<string, number>;
 		b: Record<string, number>;
