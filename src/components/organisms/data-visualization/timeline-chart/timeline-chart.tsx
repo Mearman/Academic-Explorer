@@ -192,7 +192,7 @@ export function TimelineChart({
   onPointClick,
   onPointHover,
   onRangeSelect,
-  exportConfig
+  exportConfig: _exportConfig
 }: TimelineChartProps) {
   
   // ============================================================================
@@ -202,7 +202,7 @@ export function TimelineChart({
   const svgRef = useRef<SVGSVGElement>(null);
   const tooltipRef = useRef<HTMLDivElement>(null);
   const [tooltip, setTooltip] = useState<TooltipData | null>(null);
-  const [selectedRange, setSelectedRange] = useState<[Date, Date] | null>(null);
+  const [_selectedRange, _setSelectedRange] = useState<[Date, Date] | null>(null);
   
   // ============================================================================
   // Memoized Values
@@ -230,7 +230,7 @@ export function TimelineChart({
   const handlePointClick = useCallback((
     point: TimelineDataPoint, 
     series: TimelineSeries, 
-    event: MouseEvent
+    _event: MouseEvent
   ) => {
     if (onPointClick) {
       onPointClick(point, series);
@@ -261,7 +261,7 @@ export function TimelineChart({
   }, [onPointHover]);
   
   const handleRangeSelect = useCallback((range: [Date, Date]) => {
-    setSelectedRange(range);
+    _setSelectedRange(range);
     if (onRangeSelect) {
       onRangeSelect(range[0], range[1]);
     }
@@ -420,7 +420,8 @@ export function TimelineChart({
       addZoomPanInteraction(svg, chartGroup, scales, dimensions);
     }
     
-  }, [validSeries, scales, dimensions, xAxis, yAxis, interactive, interactions, handlePointClick, handlePointHover, handleRangeSelect]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [validSeries, scales, dimensions, xAxis, yAxis, interactive, interactions, handlePointClick, handlePointHover, handleRangeSelect, width, height, styleConfig]);
   
   // ============================================================================
   // Render Functions for Different Series Types
@@ -548,7 +549,7 @@ export function TimelineChart({
     svg: d3.Selection<SVGSVGElement, unknown, null, undefined>,
     chartGroup: d3.Selection<SVGGElement, unknown, null, undefined>,
     scales: D3Scales,
-    dimensions: ChartDimensions
+    _dimensions: ChartDimensions
   ) {
     const zoom = d3.zoom()
       .scaleExtent([0.5, 10])
@@ -564,11 +565,11 @@ export function TimelineChart({
         const yAxisSelection = chartGroup.select(`.${styles.yAxis}`);
         
         if (!xAxisSelection.empty()) {
-          (xAxisSelection as any).call(d3.axisBottom(newXScale));
+          (xAxisSelection as unknown as d3.Selection<SVGGElement, unknown, null, undefined>).call(d3.axisBottom(newXScale));
         }
         
         if (!yAxisSelection.empty()) {
-          (yAxisSelection as any).call(d3.axisLeft(newYScale));
+          (yAxisSelection as unknown as d3.Selection<SVGGElement, unknown, null, undefined>).call(d3.axisLeft(newYScale));
         }
         
         // Update series elements (simplified - in production, would update all series)
@@ -665,5 +666,3 @@ export function TimelineChart({
 // ============================================================================
 // Export
 // ============================================================================
-
-export default TimelineChart;

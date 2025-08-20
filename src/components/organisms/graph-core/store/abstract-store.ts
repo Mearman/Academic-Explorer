@@ -118,7 +118,7 @@ export interface GraphStoreState<TVertex extends GraphVertex, TEdge extends Grap
 /**
  * Graph statistics interface
  */
-export interface GraphStatistics<TVertex extends GraphVertex, TEdge extends GraphEdge> {
+export interface GraphStatistics<TVertex extends GraphVertex, _TEdge extends GraphEdge> {
   /** Total vertices */
   totalVertices: number;
   

@@ -3,7 +3,7 @@ import {
   IconMaximize, 
   IconMinimize, 
   IconRefresh, 
-  IconDownload, 
+  IconDownload as _IconDownload, 
   IconFileTypePng, 
   IconFileTypeSvg, 
   IconSearch, 

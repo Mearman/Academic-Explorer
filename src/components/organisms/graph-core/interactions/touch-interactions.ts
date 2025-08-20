@@ -664,13 +664,13 @@ export class TapInteractionStrategy<TElement extends GraphElement = GraphElement
     return InteractionResults.handled();
   }
 
-  onTouchCancel(event: TouchInteractionEvent<TElement>): InteractionResult {
+  onTouchCancel(_event: TouchInteractionEvent<TElement>): InteractionResult {
     this.clearLongPressTimeout();
     this.gestureState = null;
     return InteractionResults.handled();
   }
 
-  private isDoubleTap(currentTime: number, position: GraphPosition): boolean {
+  private isDoubleTap(currentTime: number, _position: GraphPosition): boolean {
     if (this.tapCount === 0 || !this.gestureState) return false;
 
     const timeDiff = currentTime - this.lastTapTime;

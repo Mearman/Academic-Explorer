@@ -6,7 +6,7 @@
  */
 
 import * as d3 from 'd3';
-import React, { useEffect, useRef, useMemo, useCallback, useState } from 'react';
+import React, { useRef, useMemo, useCallback, useState, useEffect } from 'react';
 
 import { Icon } from '@/components';
 
@@ -58,10 +58,10 @@ function createSimulation(
   layoutConfig?: NetworkLayoutConfig
 ): d3.Simulation<D3SimulationNode, D3SimulationLink> {
   const simulation = d3.forceSimulation(nodes)
-    .force('link', d3.forceLink(links).id((d: any) => d.id).distance(50))
+    .force('link', d3.forceLink(links).id((d) => (d as D3SimulationNode).id).distance(50))
     .force('charge', d3.forceManyBody().strength(-300))
     .force('center', d3.forceCenter(width / 2, height / 2))
-    .force('collision', d3.forceCollide().radius((d: any) => (d.size || 5) + 2));
+    .force('collision', d3.forceCollide().radius((d) => ((d as D3SimulationNode).size || 5) + 2));
 
   // Apply layout-specific configurations
   if (layoutConfig?.algorithm === 'hierarchical') {
@@ -74,7 +74,7 @@ function createSimulation(
 /**
  * Get node color based on type and clustering
  */
-function getNodeColor(node: NetworkNode, clustering?: ClusterConfig): string {
+function getNodeColor(node: NetworkNode, _clustering?: ClusterConfig): string {
   if (node.color) return node.color;
   
   // Color by cluster if available
@@ -136,7 +136,7 @@ export function NetworkDiagram({
   const svgRef = useRef<SVGSVGElement>(null);
   const tooltipRef = useRef<HTMLDivElement>(null);
   const [tooltip, setTooltip] = useState<TooltipData | null>(null);
-  const [selectedNodes, setSelectedNodes] = useState<Set<string>>(new Set());
+  const [_selectedNodes, setSelectedNodes] = useState<Set<string>>(new Set());
   
   // ============================================================================
   // Memoized Values
@@ -171,7 +171,7 @@ export function NetworkDiagram({
   // Event Handlers
   // ============================================================================
   
-  const handleNodeClick = useCallback((node: NetworkNode, event: MouseEvent) => {
+  const handleNodeClick = useCallback((node: NetworkNode, _event: MouseEvent) => {
     if (interactions?.selection) {
       setSelectedNodes(prev => {
         const newSet = new Set(prev);
@@ -454,5 +454,3 @@ export function NetworkDiagram({
 // ============================================================================
 // Export
 // ============================================================================
-
-export default NetworkDiagram;

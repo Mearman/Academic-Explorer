@@ -137,10 +137,10 @@ function createDefaultProps(overrides: Partial<TimelineChartProps> = {}): Timeli
 // ============================================================================
 
 describe('TimelineChart - Basic Rendering', () => {
-  let mockUser: ReturnType<typeof userEvent.setup>;
+  let _mockUser: ReturnType<typeof userEvent.setup>;
 
   beforeEach(() => {
-    mockUser = userEvent.setup();
+    _mockUser = userEvent.setup();
     vi.clearAllMocks();
   });
 

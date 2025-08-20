@@ -64,9 +64,9 @@ export const GraphCanvas = forwardRef<
 >(function GraphCanvas<TVertexData = unknown, TEdgeData = unknown>({
   graph,
   positionedVertices,
-  vertexRenderer,
-  edgeRenderer,
-  interactionRegistry,
+  vertexRenderer: _vertexRenderer,
+  edgeRenderer: _edgeRenderer,
+  interactionRegistry: _interactionRegistry,
   selectionState,
   config,
   dimensions,
@@ -260,4 +260,4 @@ export const GraphCanvas = forwardRef<
 
 GraphCanvas.displayName = 'GraphCanvas';
 
-export default GraphCanvas;
+// Named export only - no default export

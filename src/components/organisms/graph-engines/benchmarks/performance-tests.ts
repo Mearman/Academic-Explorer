@@ -18,11 +18,11 @@
 
 import type {
   IGraph,
-  IDimensions
+  IDimensions as _IDimensions
 } from '../../graph-core/interfaces';
 import { 
   createTestGraph,
-  createMockEngine,
+  createMockEngine as _createMockEngine,
   measureEnginePerformance,
   MemoryLeakDetector,
   type TestGraphConfig,
@@ -387,7 +387,7 @@ export class GraphEngineBenchmarkRunner {
    */
   private async measureInteractionPerformance(
     engine: IGraphEngine,
-    graph: IGraph
+    _graph: IGraph
   ): Promise<InteractionMetrics> {
     const measurements: number[] = [];
     

@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { create } from 'zustand';
 
-import { useEngineCapabilities } from './hooks/useEngineCapabilities';
+import { useEngineCapabilities as _useEngineCapabilities } from './hooks/useEngineCapabilities';
 import { useGraphEngine } from './hooks/useGraphEngine';
 import type { GraphEngineType } from './provider';
 
@@ -272,7 +272,7 @@ export function usePerformanceMonitor() {
         metrics.memoryUsage.estimatedMB <= thresholds.maxMemoryMB &&
         metrics.rendering.vertexRenderTime + metrics.rendering.edgeRenderTime <= thresholds.maxRenderTime
       );
-    }, [performanceStore.metrics, performanceStore.thresholds]),
+    }, [performanceStore]),
   };
 }
 
@@ -310,7 +310,7 @@ export function PerformanceMonitor({
     getAverageMetrics,
   } = usePerformanceMonitor();
   
-  const { switchToOptimalEngine, getRecommendedEngine } = useGraphEngine();
+  const { switchToOptimalEngine, getRecommendedEngine: _getRecommendedEngine } = useGraphEngine();
   const [showOptimizationSuggestion, setShowOptimizationSuggestion] = useState(false);
   
   // Auto-start monitoring

@@ -17,13 +17,13 @@ import { useEntityGraphStore } from '@/stores/entity-graph-store';
 import type {
   EntityGraphVertex,
   EntityGraphEdge,
-  EntityGraph,
+  EntityGraph as _EntityGraph,
   GraphLayoutConfig,
-  GraphFilterOptions,
-  GraphStatistics as EntityGraphStatistics,
-  GraphTraversalResult as EntityGraphTraversalResult,
-  EntityType,
-  EdgeType,
+  GraphFilterOptions as _GraphFilterOptions,
+  GraphStatistics as _EntityGraphStatistics,
+  GraphTraversalResult as _EntityGraphTraversalResult,
+  EntityType as _EntityType,
+  EdgeType as _EdgeType,
 } from '@/types/entity-graph';
 
 import type {
@@ -306,12 +306,12 @@ export class EntityGraphAdapter implements GraphDataStore<AdaptedVertex, Adapted
     return state.graph.edges.has(id);
   }
   
-  setVertex(vertex: AdaptedVertex): void {
+  setVertex(_vertex: AdaptedVertex): void {
     // Note: EntityGraphStore doesn't have direct setVertex, but this would be the interface
     console.warn('EntityGraphAdapter: setVertex not implemented in underlying store');
   }
   
-  setEdge(edge: AdaptedEdge): void {
+  setEdge(_edge: AdaptedEdge): void {
     // Note: EntityGraphStore doesn't have direct setEdge, but this would be the interface
     console.warn('EntityGraphAdapter: setEdge not implemented in underlying store');
   }
@@ -401,7 +401,7 @@ export class EntityGraphAdapter implements GraphDataStore<AdaptedVertex, Adapted
   }
   
   getNeighbors(vertexId: string, hops = 1): AdaptedVertex[] {
-    const neighbors = useEntityGraphStore.getState().getNeighbors(vertexId, hops);
+    const neighbors = useEntityGraphStore.getState().getNeighbors({ vertexId, hops });
     return neighbors.map(v => this.adaptVertex(v));
   }
   
@@ -410,7 +410,7 @@ export class EntityGraphAdapter implements GraphDataStore<AdaptedVertex, Adapted
   }
   
   findShortestPath(sourceId: string, targetId: string): GraphTraversalResult<AdaptedVertex, AdaptedEdge> | null {
-    const result = useEntityGraphStore.getState().findShortestPath(sourceId, targetId);
+    const result = useEntityGraphStore.getState().findShortestPath({ sourceId, targetId });
     if (!result) return null;
     
     // Map the result to generic types

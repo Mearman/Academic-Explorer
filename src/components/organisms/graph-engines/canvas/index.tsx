@@ -117,7 +117,7 @@ ctx.scale(ratio, ratio);
   async initialise(
     container: HTMLElement,
     dimensions: IDimensions,
-    config?: IEngineConfig
+    _config?: IEngineConfig
   ): Promise<void> {
     this.container = container;
     this.dimensions = dimensions;
@@ -133,8 +133,8 @@ ctx.scale(ratio, ratio);
   }
   
   async loadGraph(
-    graph: IGraph<TVertexData, TEdgeData>,
-    config?: IGraphConfig<TVertexData, TEdgeData>
+    _graph: IGraph<TVertexData, TEdgeData>,
+    _config?: IGraphConfig<TVertexData, TEdgeData>
   ): Promise<void> {
     // Real implementation would:
     // 1. Clear canvas
@@ -147,8 +147,8 @@ ctx.scale(ratio, ratio);
   }
   
   async updateGraph(
-    graph: IGraph<TVertexData, TEdgeData>,
-    animate = true
+    _graph: IGraph<TVertexData, TEdgeData>,
+    _animate = true
   ): Promise<void> {
     // Real implementation would:
     // 1. Compare new graph with current state
@@ -168,8 +168,8 @@ ctx.scale(ratio, ratio);
   }
   
   async export(
-    format: 'png' | 'svg' | 'json' | 'pdf',
-    options?: Record<string, unknown>
+    _format: 'png' | 'svg' | 'json' | 'pdf',
+    _options?: Record<string, unknown>
   ): Promise<string | Blob> {
     // Real implementation would:
     // For PNG: use canvas.toDataURL() or canvas.toBlob()
@@ -183,13 +183,13 @@ ctx.scale(ratio, ratio);
   }
   
   setPositions(
-    positions: ReadonlyArray<IPositionedVertex<TVertexData>>,
-    animate = true
+    _positions: ReadonlyArray<IPositionedVertex<TVertexData>>,
+    _animate = true
   ): void {
     // Real implementation would update and re-render with new positions
   }
   
-  fitToView(padding = 50, animate = true): void {
+  fitToView(_padding = 50, _animate = true): void {
     // Real implementation would:
     // 1. Calculate graph bounding box
     // 2. Compute scale and translation
@@ -299,7 +299,7 @@ const CanvasPreview: React.FC<{
       });
       
       // Draw nodes
-      nodes.forEach((node, i) => {
+      nodes.forEach((node, _i) => {
         // Node shadow for depth
         ctx.fillStyle = 'rgba(0, 0, 0, 0.1)';
         ctx.beginPath();
@@ -328,7 +328,7 @@ const CanvasPreview: React.FC<{
       // Canvas-specific features demo
       
       // Precise pixel manipulation demo
-      const imageData = ctx.getImageData(10, 10, 1, 1);
+      const _imageData = ctx.getImageData(10, 10, 1, 1);
       ctx.fillStyle = '#e53e3e';
       ctx.fillRect(10, 160, 2, 2);
       
@@ -546,7 +546,7 @@ const CanvasPreview: React.FC<{
  * Create a new Canvas engine instance.
  */
 export function createCanvasEngine<TVertexData = unknown, TEdgeData = unknown>(
-  config?: ICanvasConfig
+  _config?: ICanvasConfig
 ): CanvasEngine<TVertexData, TEdgeData> {
   return new CanvasEngine<TVertexData, TEdgeData>();
 }
@@ -648,5 +648,5 @@ export function checkCanvasSupport(): {
 }
 
 // Export the engine and utilities
-export default CanvasEngine;
+// Named export only - no default export
 export type { ICanvasConfig };

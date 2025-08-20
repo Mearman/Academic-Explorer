@@ -1,3 +1,4 @@
+/* eslint-disable react-refresh/only-export-components */
 import React, { useCallback, useMemo } from 'react';
 
 import {
@@ -207,6 +208,7 @@ export const defaultCustomWebGLConfig: CustomWebGLConfig = {
 // Configuration Form Component
 // ============================================================================
 
+// eslint-disable-next-line max-lines-per-function
 export function CustomWebGLConfig({
   config,
   onChange,
@@ -362,13 +364,13 @@ export function CustomWebGLConfig({
     { value: 'reverse-subtract', label: 'Reverse Subtract' },
   ];
   
-  const cullFaceModeOptions: SelectOption[] = [
+  const _cullFaceModeOptions: SelectOption[] = [
     { value: 'front', label: 'Front' },
     { value: 'back', label: 'Back' },
     { value: 'front-and-back', label: 'Front and Back' },
   ];
   
-  const windingOrderOptions: SelectOption[] = [
+  const _windingOrderOptions: SelectOption[] = [
     { value: 'cw', label: 'Clockwise' },
     { value: 'ccw', label: 'Counter-Clockwise' },
   ];

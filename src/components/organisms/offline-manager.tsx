@@ -15,6 +15,14 @@ interface OfflineManagerProps {
   autoManageConflicts?: boolean;
 }
 
+interface SyncStatusItem {
+  id: string;
+  operation: string;
+  status: 'pending' | 'syncing' | 'success' | 'error';
+  timestamp: number;
+  error?: string;
+}
+
 /**
  * Format bytes for display
  */
@@ -345,12 +353,21 @@ export function OfflineManager({
   const dataManager = useOfflineFirstData();
   const queueManager = useIntelligentOfflineQueue();
   const serviceWorker = useServiceWorker();
-  const [syncStatus, setSyncStatus] = useState<any[]>([]);
+  const [syncStatus, setSyncStatus] = useState<SyncStatusItem[]>([]);
 
   // Load sync status
   useEffect(() => {
     if (isOpen) {
-      dataManager.getSyncStatus().then(setSyncStatus);
+      dataManager.getSyncStatus().then(statuses => {
+        // Convert SyncStatus[] to SyncStatusItem[]
+        const statusItems: SyncStatusItem[] = statuses.map(status => ({
+          id: status.id,
+          operation: status.pendingChanges ? 'sync' : 'idle',
+          status: status.pendingChanges ? 'pending' : 'success',
+          timestamp: status.lastSynced,
+        }));
+        setSyncStatus(statusItems);
+      });
     }
   }, [isOpen, dataManager]);
 
@@ -364,7 +381,7 @@ export function OfflineManager({
         }
       });
     }
-  }, [queueManager.conflicts, autoManageConflicts]);
+  }, [queueManager.conflicts, autoManageConflicts, queueManager]);
 
   if (!isOpen) return null;
 
@@ -442,9 +459,9 @@ export function OfflineManager({
                     <span className="font-medium">{status.id}</span>
                     <div className="flex items-center space-x-2">
                       <span className="text-gray-600">
-                        Last sync: {new Date(status.lastSynced).toLocaleTimeString()}
+                        Last sync: {new Date(status.timestamp).toLocaleTimeString()}
                       </span>
-                      {status.pendingChanges && (
+                      {status.status === 'pending' && (
                         <span className="bg-yellow-100 text-yellow-700 px-2 py-1 rounded text-xs">
                           Pending
                         </span>

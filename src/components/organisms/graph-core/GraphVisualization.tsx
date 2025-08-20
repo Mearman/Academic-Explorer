@@ -26,7 +26,9 @@ import type {
   ISelectionState,
   IGraphConfig,
   IGraph,
-  IDimensions
+  IDimensions,
+  IVertexRenderer,
+  IEdgeRenderer
 } from './interfaces';
 
 
@@ -249,58 +251,62 @@ export function GraphVisualization<TVertexData = unknown, TEdgeData = unknown>({
   // Lifecycle Management
   // ============================================================================
   
-  // Lifecycle hook will be called after renderer validation
-  const graphLifecycle = selectedVertexRenderer && selectedEdgeRenderer ? useGraphLifecycle({
+  // Lifecycle hook - always called but no-op when renderers not available
+  // Use fallback renderers to avoid null issues
+  const fallbackVertexRenderer = selectedVertexRenderer || ({} as IVertexRenderer);
+  const fallbackEdgeRenderer = selectedEdgeRenderer || ({} as IEdgeRenderer);
+  
+  const graphLifecycle = useGraphLifecycle({
     dataStore,
     layoutAlgorithm,
     selectionState,
     config,
     dimensions,
-    vertexRenderer: selectedVertexRenderer,
-    edgeRenderer: selectedEdgeRenderer,
+    vertexRenderer: fallbackVertexRenderer,
+    edgeRenderer: fallbackEdgeRenderer,
     canvasRef,
     onGraphLoaded,
     onLayoutComplete,
     onRenderingError,
-  }) : null;
+  });
   
   // ============================================================================
   // State Resolution
   // ============================================================================
   
-  const isLoading = externalLoading ?? graphLifecycle?.isLoading ?? false;
-  const error = externalError ?? graphLifecycle?.error ?? null;
+  const isLoading = externalLoading ?? graphLifecycle.isLoading ?? false;
+  const error = externalError ?? graphLifecycle.error ?? null;
   
   // ============================================================================
   // Initial Graph Loading
   // ============================================================================
   
   useEffect(() => {
-    if (graphLifecycle) {
+    if (selectedVertexRenderer && selectedEdgeRenderer) {
       if (initialGraph) {
         graphLifecycle.loadGraph(initialGraph);
       } else {
         graphLifecycle.loadGraph();
       }
     }
-  }, [initialGraph, graphLifecycle]);
+  }, [initialGraph, graphLifecycle, selectedVertexRenderer, selectedEdgeRenderer]);
   
   // ============================================================================
   // Export Handlers
   // ============================================================================
   
   const handleExportPNG = useCallback(async () => {
-    if (!graphLifecycle) return;
+    if (!selectedVertexRenderer || !selectedEdgeRenderer) return;
     try {
       const dataUrl = await graphLifecycle.exportAsPNG();
       onExportComplete?.(dataUrl, 'png');
     } catch (exportError) {
       onRenderingError?.(exportError as Error);
     }
-  }, [graphLifecycle, onExportComplete, onRenderingError]);
+  }, [graphLifecycle, onExportComplete, onRenderingError, selectedVertexRenderer, selectedEdgeRenderer]);
   
   const handleExportSVG = useCallback(async () => {
-    if (!graphLifecycle) {
+    if (!selectedVertexRenderer || !selectedEdgeRenderer) {
       return;
     }
     
@@ -310,31 +316,31 @@ export function GraphVisualization<TVertexData = unknown, TEdgeData = unknown>({
     } catch (exportError) {
       onRenderingError?.(exportError as Error);
     }
-  }, [graphLifecycle, onExportComplete, onRenderingError]);
+  }, [graphLifecycle, onExportComplete, onRenderingError, selectedVertexRenderer, selectedEdgeRenderer]);
   
   // ============================================================================
   // Configuration Updates
   // ============================================================================
   
   useEffect(() => {
-    if (graphLifecycle && !isLoading && !error && graphLifecycle.graph && graphLifecycle.positionedVertices.length > 0) {
+    if (selectedVertexRenderer && selectedEdgeRenderer && !isLoading && !error && graphLifecycle.graph && graphLifecycle.positionedVertices.length > 0) {
       graphLifecycle.updateLayout();
     }
-  }, [config, isLoading, error, graphLifecycle]);
+  }, [config, isLoading, error, graphLifecycle, selectedVertexRenderer, selectedEdgeRenderer]);
   
   // ============================================================================
   // Retry Handler
   // ============================================================================
   
   const handleRetry = useCallback(() => {
-    if (graphLifecycle) {
+    if (selectedVertexRenderer && selectedEdgeRenderer) {
       if (initialGraph) {
         graphLifecycle.loadGraph(initialGraph);
       } else {
         graphLifecycle.loadGraph();
       }
     }
-  }, [initialGraph, graphLifecycle]);
+  }, [initialGraph, graphLifecycle, selectedVertexRenderer, selectedEdgeRenderer]);
   
   // ============================================================================
   // Render
@@ -416,8 +422,8 @@ export function GraphVisualization<TVertexData = unknown, TEdgeData = unknown>({
       >
         <GraphCanvas
           ref={canvasRef}
-          graph={graphLifecycle?.graph}
-          positionedVertices={graphLifecycle?.positionedVertices || []}
+          graph={graphLifecycle.graph}
+          positionedVertices={graphLifecycle.positionedVertices || []}
           vertexRenderer={vertexRenderer}
           edgeRenderer={edgeRenderer}
           interactionRegistry={interactionRegistry}
@@ -429,8 +435,8 @@ export function GraphVisualization<TVertexData = unknown, TEdgeData = unknown>({
         {enableExport && (
           <GraphSVGRenderer
             ref={svgRendererRef}
-            graph={graphLifecycle?.graph}
-            positionedVertices={graphLifecycle?.positionedVertices || []}
+            graph={graphLifecycle.graph}
+            positionedVertices={graphLifecycle.positionedVertices || []}
             vertexRenderer={vertexRenderer}
             edgeRenderer={edgeRenderer}
             config={config}
@@ -489,4 +495,4 @@ export function GraphVisualization<TVertexData = unknown, TEdgeData = unknown>({
 
 GraphVisualization.displayName = 'GraphVisualization';
 
-export default GraphVisualization;
+// Named export only - no default export

@@ -207,7 +207,7 @@ describe('Enhanced Force Simulation Performance Tests', () => {
 
       // Simulate worker completion
       setTimeout(() => {
-        const positionedVertices = vertices.map((vertex, index) => ({
+        const positionedVertices = vertices.map((vertex, _index) => ({
           ...vertex,
           x: Math.random() * config.width,
           y: Math.random() * config.height,
@@ -303,8 +303,8 @@ describe('Enhanced Force Simulation Performance Tests', () => {
 
     it('should handle horizontal hierarchical layout', () => {
       const vertices = generateTestVertices(30);
-      vertices.forEach((vertex, index) => {
-        (vertex.metadata as any).depth = Math.floor(index / 6); // 5 levels
+      vertices.forEach((vertex, _index) => {
+        (vertex.metadata as any).depth = Math.floor(_index / 6); // 5 levels
       });
       
       const edges = generateTestEdges(vertices, 0.1);

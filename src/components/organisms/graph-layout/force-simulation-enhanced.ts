@@ -13,10 +13,10 @@ import {
   layoutEngine,
   LayoutVertex,
   LayoutEdge,
-  type LayoutConfig,
+  type LayoutConfig as _LayoutConfig,
   type LayoutResult,
-  type Position,
-  type PositionWithVelocity
+  type Position as _Position,
+  type PositionWithVelocity as _PositionWithVelocity
 } from '../graph-core/layout/layout-engine';
 
 // Re-export for backward compatibility
@@ -194,7 +194,7 @@ export function createForceSimulation(
   const startTime = performance.now();
 
   // Initialize positions
-  const positionedVertices: PositionedVertex[] = vertices.map((vertex, index) => {
+  const positionedVertices: PositionedVertex[] = vertices.map((vertex, _index) => {
     if (vertex.position) {
       return {
         ...vertex,
@@ -206,9 +206,9 @@ export function createForceSimulation(
     }
 
     // Use improved initial positioning for better convergence
-    const angle = (index / vertices.length) * 2 * Math.PI;
+    const angle = (_index / vertices.length) * 2 * Math.PI;
     const radius = Math.min(width, height) * 0.3;
-    const spiralFactor = Math.sqrt(index / vertices.length);
+    const spiralFactor = Math.sqrt(_index / vertices.length);
     
     return {
       ...vertex,
@@ -378,7 +378,7 @@ export function createHierarchicalLayout(
     const remainingSpace = availableSpace - totalSpacing;
     const startOffset = remainingSpace / 2;
 
-    levelVertices.forEach((vertex, index) => {
+    levelVertices.forEach((vertex, _index) => {
       let x: number, y: number;
 
       if (direction === 'vertical') {
@@ -388,14 +388,14 @@ export function createHierarchicalLayout(
 
         switch (alignMethod) {
           case 'left':
-            levelX = startOffset + index * (nodeSpacing + remainingSpace / levelSize);
+            levelX = startOffset + _index * (nodeSpacing + remainingSpace / levelSize);
             break;
           case 'right':
-            levelX = width - startOffset - index * (nodeSpacing + remainingSpace / levelSize);
+            levelX = width - startOffset - _index * (nodeSpacing + remainingSpace / levelSize);
             break;
           case 'center':
           default:
-            levelX = startOffset + index * (nodeSpacing + remainingSpace / levelSize);
+            levelX = startOffset + _index * (nodeSpacing + remainingSpace / levelSize);
             break;
         }
 
@@ -408,14 +408,14 @@ export function createHierarchicalLayout(
 
         switch (alignMethod) {
           case 'left': // Top for horizontal
-            levelY = startOffset + index * (nodeSpacing + remainingSpace / levelSize);
+            levelY = startOffset + _index * (nodeSpacing + remainingSpace / levelSize);
             break;
           case 'right': // Bottom for horizontal
-            levelY = height - startOffset - index * (nodeSpacing + remainingSpace / levelSize);
+            levelY = height - startOffset - _index * (nodeSpacing + remainingSpace / levelSize);
             break;
           case 'center':
           default:
-            levelY = startOffset + index * (nodeSpacing + remainingSpace / levelSize);
+            levelY = startOffset + _index * (nodeSpacing + remainingSpace / levelSize);
             break;
         }
 
@@ -458,7 +458,7 @@ export function optimizeForLargeGraphs(
   const density = edgeCount / (nodeCount * (nodeCount - 1) / 2);
 
   // Calculate complexity score
-  const complexityScore = nodeCount * 0.5 + edgeCount * 0.3 + density * 100;
+  const _complexityScore = nodeCount * 0.5 + edgeCount * 0.3 + density * 100;
 
   // Adaptive configuration based on graph size and complexity
   let iterations: number;
@@ -617,7 +617,7 @@ function applyAttractionForcesOptimized(
   vertices: PositionedVertex[],
   edges: EntityGraphEdge[],
   strength: number,
-  edgeMap: Map<string, EntityGraphEdge[]>
+  _edgeMap: Map<string, EntityGraphEdge[]>
 ): void {
   const vertexMap = new Map<string, PositionedVertex>();
   vertices.forEach(vertex => vertexMap.set(vertex.id, vertex));
@@ -686,8 +686,8 @@ function updatePositionsWithBounds(
 
 function reduceCrossings(
   vertices: PositionedVertex[],
-  edges: EntityGraphEdge[],
-  config: HierarchicalLayoutConfig
+  _edges: EntityGraphEdge[],
+  _config: HierarchicalLayoutConfig
 ): PositionedVertex[] {
   // Implement crossing reduction algorithm (simplified version)
   // This would typically use techniques like the barycenter method
@@ -919,8 +919,8 @@ export async function createEnhancedCircularLayout(
   } catch (error) {
     console.warn('Enhanced circular layout failed, falling back to original algorithm:', error);
     // Fallback to original implementation
-    const positioned = vertices.map((vertex, index) => {
-      const angle = (index / vertices.length) * 2 * Math.PI;
+    const positioned = vertices.map((vertex, _index) => {
+      const angle = (_index / vertices.length) * 2 * Math.PI;
       const radius = (config.radius || Math.min(config.width, config.height) * 0.3);
       const centerX = config.width / 2;
       const centerY = config.height / 2;

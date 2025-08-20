@@ -10,8 +10,7 @@ import React, { useCallback, useMemo } from 'react';
 
 import type { 
   EntityGraphVertex, 
-  EntityGraphEdge, 
-  EntityType 
+  EntityGraphEdge
 } from '@/types/entity-graph';
 
 import { useGraphEngine } from './graph-engines/hooks/useGraphEngine';
@@ -43,14 +42,14 @@ export const OpenAlexEntityGraph: React.FC<OpenAlexEntityGraphProps> = ({
   height = 600,
   onVertexClick,
   onEdgeClick,
-  selectedVertexId,
-  engineType = 'svg',
+  selectedVertexId: _selectedVertexId,
+  engineType: _engineType = 'svg',
   className
 }) => {
   const { engineInstance, isLoading, error } = useGraphEngine();
 
   // Convert OpenAlex entities to graph engine format
-  const graphData = useMemo(() => {
+  const _graphData = useMemo(() => {
     const graphVertices = vertices.map(vertex => ({
       id: vertex.id,
       label: vertex.displayName || vertex.id,
@@ -74,13 +73,13 @@ export const OpenAlexEntityGraph: React.FC<OpenAlexEntityGraphProps> = ({
     };
   }, [vertices, edges]);
 
-  const handleVertexClick = useCallback((vertex: unknown) => {
+  const _handleVertexClick = useCallback((vertex: unknown) => {
     if (onVertexClick && vertex && typeof vertex === 'object' && 'data' in vertex) {
       onVertexClick(vertex.data as EntityGraphVertex);
     }
   }, [onVertexClick]);
 
-  const handleEdgeClick = useCallback((edge: unknown) => {
+  const _handleEdgeClick = useCallback((edge: unknown) => {
     if (onEdgeClick && edge && typeof edge === 'object' && 'data' in edge) {
       onEdgeClick(edge.data as EntityGraphEdge);
     }
@@ -127,4 +126,4 @@ export const OpenAlexEntityGraph: React.FC<OpenAlexEntityGraphProps> = ({
   );
 };
 
-export default OpenAlexEntityGraph;
+// Named export only - no default export

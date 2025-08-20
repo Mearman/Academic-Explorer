@@ -20,7 +20,7 @@ import ReactDOM from 'react-dom/client';
 import { getEntityColour } from '@/components/design-tokens.utils';
 import type { 
   EntityGraphVertex,
-  EntityGraphEdge,
+  EntityGraphEdge as _EntityGraphEdge,
   EntityType 
 } from '@/types/entity-graph';
 
@@ -32,14 +32,14 @@ import type {
   IEdge,
   IPosition,
   IDimensions,
-  IPositionedVertex,
+  IPositionedVertex as _IPositionedVertex,
 } from '../../interfaces';
 import type {
   IGraphEngine,
   IEngineConfig,
   IEngineState,
   IEngineEventHandlers,
-  IEngineEvent,
+  IEngineEvent as _IEngineEvent,
 } from '../types';
 
 // Import capabilities and adapters
@@ -48,10 +48,10 @@ import {
   LayoutBridge,
   CoordinateTransform,
   convertGraphToEntityFormat,
-  convertEntityFormatToGraph,
+  convertEntityFormatToGraph as _convertEntityFormatToGraph,
   convertToSimulationConfig,
-  convertPositionedVertexToInterface,
-  convertInterfaceToPositionedVertex,
+  convertPositionedVertexToInterface as _convertPositionedVertexToInterface,
+  convertInterfaceToPositionedVertex as _convertInterfaceToPositionedVertex,
   extractLayoutParameters,
 } from './adapter';
 import { CUSTOM_SVG_CAPABILITIES } from './capabilities';
@@ -160,6 +160,7 @@ export class CustomSVGEngine<TVertexData = unknown, TEdgeData = unknown>
   private dimensions: IDimensions = { width: 800, height: 600 };
   private config: IEngineConfig = {
     layout: { dimensions: this.dimensions },
+    layoutParameters: { dimensions: this.dimensions },
     activeLayoutId: 'force-directed',
   };
   
@@ -272,8 +273,8 @@ export class CustomSVGEngine<TVertexData = unknown, TEdgeData = unknown>
     this.config = { ...this.config, ...config };
     
     // Update coordinate transform if needed
-    if (config.layout?.dimensions) {
-      this.dimensions = config.layout.dimensions;
+    if (config.layoutParameters?.dimensions) {
+      this.dimensions = config.layoutParameters.dimensions as IDimensions;
       this.coordinateTransform?.update(this.zoom, this.pan);
     }
     
@@ -378,7 +379,7 @@ export class CustomSVGEngine<TVertexData = unknown, TEdgeData = unknown>
     this.dimensions = dimensions;
     this.config = {
       ...this.config,
-      layout: { ...this.config.layout, dimensions },
+      layoutParameters: { ...this.config.layoutParameters, dimensions },
     };
     this.coordinateTransform?.update(this.zoom, this.pan);
     this.render();
@@ -438,7 +439,7 @@ export class CustomSVGEngine<TVertexData = unknown, TEdgeData = unknown>
   async setLayout(
     layoutId: string,
     layoutConfig?: Record<string, unknown>,
-    animated?: boolean
+    _animated?: boolean
   ): Promise<void> {
     if (!this.currentGraph) {
       throw new Error('No graph loaded');
@@ -466,13 +467,14 @@ export class CustomSVGEngine<TVertexData = unknown, TEdgeData = unknown>
     
     try {
       switch (layoutId) {
-        case 'force-directed':
+        case 'force-directed': {
           const simConfig = convertToSimulationConfig(this.config, this.dimensions);
           positionedVertices = await LayoutBridge.executeForceDirected(vertices, edges, {
             ...simConfig,
             ...params,
           });
           break;
+        }
           
         case 'circular':
           positionedVertices = await LayoutBridge.executeCircular(
@@ -851,12 +853,12 @@ export class CustomSVGEngine<TVertexData = unknown, TEdgeData = unknown>
     }
   }
   
-  private handleMouseDown(event: React.MouseEvent): void {
+  private handleMouseDown(_event: React.MouseEvent): void {
     // Handle pan start, etc.
     // TODO: Implement pan/zoom interactions
   }
   
-  private handleMouseMove(event: React.MouseEvent): void {
+  private handleMouseMove(_event: React.MouseEvent): void {
     // Handle pan, hover, etc.
     // TODO: Implement mouse interactions
   }
@@ -867,7 +869,7 @@ export class CustomSVGEngine<TVertexData = unknown, TEdgeData = unknown>
   }
   
   // Export helper methods
-  private exportAsJSON(options: any): string {
+  private exportAsJSON(options: { includeMetadata?: boolean }): string {
     const data = {
       graph: this.currentGraph,
       positions: Array.from(this.positionMap.entries()),
@@ -882,14 +884,14 @@ export class CustomSVGEngine<TVertexData = unknown, TEdgeData = unknown>
     return JSON.stringify(data, null, 2);
   }
   
-  private async exportAsSVG(options: any): Promise<string> {
+  private async exportAsSVG(_options: Record<string, unknown>): Promise<string> {
     // TODO: Implement SVG export
     throw new Error('SVG export not yet implemented');
   }
   
   private async exportAsImage(
-    format: 'png' | 'jpeg' | 'webp',
-    options: any
+    _format: 'png' | 'jpeg' | 'webp',
+    _options: Record<string, unknown>
   ): Promise<string> {
     // TODO: Implement image export via SVG to Canvas conversion
     throw new Error('Image export not yet implemented');

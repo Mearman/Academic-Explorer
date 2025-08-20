@@ -491,7 +491,7 @@ export class MockGraphEngine<TVertexData = any, TEdgeData = any>
   }
   
   private generateMockPositions(graph: IGraph<TVertexData, TEdgeData>): IPositionedVertex<TVertexData>[] {
-    return graph.vertices.map((vertex, index) => ({
+    return graph.vertices.map((vertex, _index) => ({
       ...vertex,
       position: {
         x: Math.random() * (this._dimensions.width - 40) + 20,
@@ -601,7 +601,7 @@ export async function measureEnginePerformance(
   
   // Measure rendering time (proxy: time for positions to be available)
   const renderStart = performance.now();
-  const positions = engine.getPositions();
+  const _positions = engine.getPositions();
   metrics.renderingTime = performance.now() - renderStart;
   
   // Measure interaction latency

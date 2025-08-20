@@ -9,8 +9,8 @@ import type { EntityGraphVertex } from '@/types/entity-graph';
 import {
   FuzzySearchEngine,
   AdvancedSearchFilters,
-  SearchResultWithScore,
-  GraphSearchOptions,
+  SearchResultWithScore as _SearchResultWithScore,
+  GraphSearchOptions as _GraphSearchOptions,
   createAdvancedGraphSearch,
   fuzzySearch,
   filterByEntityType,

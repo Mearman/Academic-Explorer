@@ -1,9 +1,9 @@
 import type { EntityGraphVertex, EntityGraphEdge } from '@/types/entity-graph';
 
 import { 
-  initializeEnhancedLayoutSystem,
-  createEnhancedCircularLayout,
-  CircularStrategy
+  initializeEnhancedLayoutSystem as _initializeEnhancedLayoutSystem,
+  createEnhancedCircularLayout as _createEnhancedCircularLayout,
+  CircularStrategy as _CircularStrategy
 } from './force-simulation-enhanced';
 
 export interface PositionedVertex extends EntityGraphVertex {

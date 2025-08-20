@@ -99,7 +99,7 @@ const ENGINE_OPTIONS: EngineOption[] = [
     type: 'canvas-2d',
     displayName: 'Canvas 2D',
     description: 'Lightweight 2D rendering with broad compatibility',
-    icon: '🎨',
+    icon: 'CANVAS',
     isImplemented: true,
     isComingSoon: false,
   },
@@ -107,7 +107,7 @@ const ENGINE_OPTIONS: EngineOption[] = [
     type: 'svg',
     displayName: 'SVG',
     description: 'Vector-based rendering with infinite zoom capability',
-    icon: '📐',
+    icon: 'SVG',
     isImplemented: true,
     isComingSoon: false,
   },
@@ -115,7 +115,7 @@ const ENGINE_OPTIONS: EngineOption[] = [
     type: 'webgl',
     displayName: 'WebGL',
     description: 'Hardware-accelerated rendering for large graphs',
-    icon: '⚡',
+    icon: 'GPU',
     isImplemented: false,
     isComingSoon: true,
   },
@@ -123,7 +123,7 @@ const ENGINE_OPTIONS: EngineOption[] = [
     type: 'd3-force',
     displayName: 'D3.js Force',
     description: 'Physics-based simulations with custom layouts',
-    icon: '🔬',
+    icon: 'D3',
     isImplemented: true,
     isComingSoon: false,
   },
@@ -131,7 +131,7 @@ const ENGINE_OPTIONS: EngineOption[] = [
     type: 'cytoscape',
     displayName: 'Cytoscape.js',
     description: 'Feature-rich network analysis and interaction',
-    icon: '🕸️',
+    icon: 'CYTO',
     isImplemented: false,
     isComingSoon: true,
   },
@@ -139,7 +139,7 @@ const ENGINE_OPTIONS: EngineOption[] = [
     type: 'vis-network',
     displayName: 'vis-network',
     description: 'Interactive network visualization library',
-    icon: '🌐',
+    icon: 'VIS',
     isImplemented: false,
     isComingSoon: true,
   },
@@ -424,4 +424,4 @@ export function GraphEngineSelector({
 
 GraphEngineSelector.displayName = 'GraphEngineSelector';
 
-export default GraphEngineSelector;
+// Named export only - no default export

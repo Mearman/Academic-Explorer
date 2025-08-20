@@ -183,7 +183,7 @@ export class GraphEngineErrorBoundary extends Component<
     };
   }
   
-  static getDerivedStateFromError(error: Error): Partial<GraphEngineErrorBoundaryState> {
+  static getDerivedStateFromError(_error: Error): Partial<GraphEngineErrorBoundaryState> {
     return {
       hasError: true,
     };
@@ -318,19 +318,19 @@ function DefaultErrorFallback({
   const getErrorIcon = (errorType: GraphEngineErrorType): string => {
     switch (errorType) {
       case GraphEngineErrorType.MEMORY_ERROR:
-        return '🧠';
+        return 'MEM';
       case GraphEngineErrorType.PERFORMANCE_ERROR:
-        return '⚡';
+        return 'PERF';
       case GraphEngineErrorType.COMPATIBILITY_ERROR:
-        return '🔧';
+        return 'COMPAT';
       case GraphEngineErrorType.RENDERING_ERROR:
-        return '🎨';
+        return 'RENDER';
       case GraphEngineErrorType.DATA_LOADING_ERROR:
-        return '📊';
+        return 'DATA';
       case GraphEngineErrorType.INITIALIZATION_ERROR:
-        return '⚙️';
+        return 'INIT';
       default:
-        return '❌';
+        return 'ERROR';
     }
   };
   

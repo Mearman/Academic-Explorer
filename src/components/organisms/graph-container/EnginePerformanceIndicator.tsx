@@ -139,8 +139,8 @@ function usePerformanceMonitoring(
   const getMemoryUsage = useCallback((): number => {
     // Modern browsers support performance.memory
     if ('memory' in performance) {
-      const {memory} = (performance as any);
-      return memory.usedJSHeapSize || 0;
+      const { memory } = performance as Performance & { memory?: { usedJSHeapSize: number } };
+      return memory?.usedJSHeapSize || 0;
     }
     
     // Fallback estimation based on DOM elements and canvas
@@ -167,7 +167,7 @@ function usePerformanceMonitoring(
     
     for (const contextType of contexts) {
       try {
-        const context = canvas.getContext(contextType as any) as WebGLRenderingContext | null;
+        const context = canvas.getContext(contextType as 'webgl' | 'webgl2' | 'experimental-webgl') as WebGLRenderingContext | null;
         if (context) {
           const debugInfo = context.getExtension('WEBGL_debug_renderer_info');
           if (debugInfo) {
@@ -267,13 +267,31 @@ export function EnginePerformanceIndicator({
   const { getCapabilities } = useEngineCapabilities();
   
   const activeEngine = engineType || currentEngine;
-  const capabilities = getCapabilities(activeEngine);
+  const _capabilities = getCapabilities(activeEngine);
   
   const { metrics, history, status, isMonitoring } = usePerformanceMonitoring(
     activeEngine,
     updateInterval
   );
   
+  // ============================================================================
+  // Average Calculations (must be calculated before any early returns)
+  // ============================================================================
+  
+  const averageMetrics = React.useMemo(() => {
+    if (history.frameRates.length === 0) return null;
+    
+    const avgFPS = history.frameRates.reduce((a, b) => a + b, 0) / history.frameRates.length;
+    const avgMemory = history.memoryUsages.reduce((a, b) => a + b, 0) / history.memoryUsages.length;
+    const avgRenderTime = history.renderTimes.reduce((a, b) => a + b, 0) / history.renderTimes.length;
+    
+    return {
+      avgFPS: Math.round(avgFPS),
+      avgMemory,
+      avgRenderTime: Math.round(avgRenderTime * 100) / 100,
+    };
+  }, [history]);
+
   // ============================================================================
   // Auto-hide Logic
   // ============================================================================
@@ -300,11 +318,11 @@ export function EnginePerformanceIndicator({
   
   const getStatusIcon = (status: PerformanceStatus): string => {
     switch (status) {
-      case 'excellent': return '🌟';
-      case 'good': return '✅';
-      case 'moderate': return '⚠️';
-      case 'poor': return '🔴';
-      default: return '❓';
+      case 'excellent': return 'STAR';
+      case 'good': return 'GOOD';
+      case 'moderate': return 'WARN';
+      case 'poor': return 'POOR';
+      default: return 'UNKNOWN';
     }
   };
   
@@ -317,24 +335,6 @@ export function EnginePerformanceIndicator({
       default: return 'Unknown';
     }
   };
-  
-  // ============================================================================
-  // Average Calculations
-  // ============================================================================
-  
-  const averageMetrics = React.useMemo(() => {
-    if (history.frameRates.length === 0) return null;
-    
-    const avgFPS = history.frameRates.reduce((a, b) => a + b, 0) / history.frameRates.length;
-    const avgMemory = history.memoryUsages.reduce((a, b) => a + b, 0) / history.memoryUsages.length;
-    const avgRenderTime = history.renderTimes.reduce((a, b) => a + b, 0) / history.renderTimes.length;
-    
-    return {
-      avgFPS: Math.round(avgFPS),
-      avgMemory,
-      avgRenderTime: Math.round(avgRenderTime * 100) / 100,
-    };
-  }, [history]);
   
   // ============================================================================
   // Render
@@ -429,7 +429,7 @@ export function EnginePerformanceIndicator({
           {/* GPU Status */}
           <div className={performanceMetric}>
             <div className={metricValue} data-testid={`${testId}-gpu`}>
-              {metrics.gpuAccelerated ? '🚀' : '🐌'}
+              {metrics.gpuAccelerated ? 'FAST' : 'SLOW'}
             </div>
             <div className={metricLabel}>
               {metrics.gpuAccelerated ? 'GPU Enabled' : 'Software Only'}
@@ -466,4 +466,4 @@ export function EnginePerformanceIndicator({
 
 EnginePerformanceIndicator.displayName = 'EnginePerformanceIndicator';
 
-export default EnginePerformanceIndicator;
+// Named export only - no default export

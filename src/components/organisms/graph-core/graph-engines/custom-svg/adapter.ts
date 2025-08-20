@@ -11,11 +11,9 @@ import React from 'react';
 import type { 
   EntityGraphVertex, 
   EntityGraphEdge, 
-  EntityType 
+  EntityType,
+  EdgeType
 } from '@/types/entity-graph';
-
-import type { EdgeType } from '../../../../../types/entity-graph';
-
 // Existing component imports
 import type { 
   PositionedVertex,
@@ -32,7 +30,7 @@ import type {
   IPosition,
   IDimensions,
   IPositionedVertex,
-  IGraphConfig,
+  IGraphConfig as _IGraphConfig,
 } from '../../interfaces';
 import type { IEngineConfig, IEngineEvent, IEngineEventHandlers } from '../types';
 
@@ -43,38 +41,57 @@ import type { IEngineConfig, IEngineEvent, IEngineEventHandlers } from '../types
 /**
  * Convert generic IVertex to EntityGraphVertex (existing format)
  */
+// eslint-disable-next-line complexity
 export function convertVertexToEntity<TData = unknown>(
   vertex: IVertex<TData>
 ): EntityGraphVertex {
   // Extract entity-specific properties from metadata or data
-  const data = vertex.data as any;
-  const metadata = vertex.metadata || {};
+  const data = (vertex.data as any) || {};
+  const metadata = (vertex.metadata as any) || {};
   
   return {
     id: vertex.id,
     entityType: (metadata.entityType || data?.entityType || 'work') as EntityType,
     displayName: vertex.label || data?.displayName || vertex.id,
-    directlyVisited: data?.directlyVisited || metadata.directlyVisited || false,
-    firstSeen: data?.firstSeen || metadata.firstSeen || new Date().toISOString(),
-    lastVisited: data?.lastVisited || metadata.lastVisited,
-    visitCount: data?.visitCount || metadata.visitCount || 0,
-    encounters: data?.encounters || metadata.encounters || [],
-    encounterStats: data?.encounterStats || metadata.encounterStats || {
+    directlyVisited: Boolean(data?.directlyVisited || metadata.directlyVisited),
+    firstSeen: String(data?.firstSeen || metadata.firstSeen || new Date().toISOString()),
+    lastVisited: data?.lastVisited || metadata.lastVisited || undefined,
+    visitCount: Number(data?.visitCount || metadata.visitCount || 0),
+    encounters: Array.isArray(data?.encounters) ? data.encounters : 
+                Array.isArray(metadata.encounters) ? metadata.encounters : [],
+    encounterStats: (data?.encounterStats || metadata.encounterStats) ? {
+      totalEncounters: Number((data?.encounterStats || metadata.encounterStats)?.totalEncounters || 0),
+      searchResultCount: Number((data?.encounterStats || metadata.encounterStats)?.searchResultCount || 0),
+      relatedEntityCount: Number((data?.encounterStats || metadata.encounterStats)?.relatedEntityCount || 0),
+    } : {
       totalEncounters: 0,
       searchResultCount: 0,
       relatedEntityCount: 0,
     },
     metadata: {
-      url: data?.url || metadata.url,
-      publicationYear: data?.publicationYear || metadata.publicationYear,
-      citedByCount: data?.citedByCount || metadata.citedByCount,
-      isOpenAccess: data?.isOpenAccess || metadata.isOpenAccess,
-      countryCode: data?.countryCode || metadata.countryCode,
-      summary: data?.summary || metadata.summary,
+      url: data?.url || metadata.url || undefined,
+      publicationYear: data?.publicationYear ? Number(data.publicationYear) : 
+                      metadata.publicationYear ? Number(metadata.publicationYear) : undefined,
+      citedByCount: data?.citedByCount ? Number(data.citedByCount) : 
+                   metadata.citedByCount ? Number(metadata.citedByCount) : undefined,
+      isOpenAccess: data?.isOpenAccess !== undefined ? Boolean(data.isOpenAccess) : 
+                   metadata.isOpenAccess !== undefined ? Boolean(metadata.isOpenAccess) : undefined,
+      countryCode: data?.countryCode ? String(data.countryCode) : 
+                  metadata.countryCode ? String(metadata.countryCode) : undefined,
+      summary: data?.summary ? String(data.summary) : 
+              metadata.summary ? String(metadata.summary) : undefined,
     },
     position: (metadata.position || data?.position) ? {
-      x: Number((metadata.position as any)?.x || (data?.position as any)?.x || 0),
-      y: Number((metadata.position as any)?.y || (data?.position as any)?.y || 0),
+      x: Number(
+        (metadata.position as { x?: number })?.x ||
+        (data?.position as { x?: number })?.x ||
+        0
+      ),
+      y: Number(
+        (metadata.position as { y?: number })?.y ||
+        (data?.position as { y?: number })?.y ||
+        0
+      ),
     } : undefined,
   };
 }
@@ -110,8 +127,8 @@ export function convertEntityToVertex(
 export function convertEdgeToEntity<TData = unknown>(
   edge: IEdge<TData>
 ): EntityGraphEdge {
-  const data = edge.data as any;
-  const metadata = edge.metadata || {};
+  const data = (edge.data as any) || {};
+  const metadata = (edge.metadata as any) || {};
   
   return {
     id: edge.id,
@@ -121,9 +138,9 @@ export function convertEdgeToEntity<TData = unknown>(
     target: edge.targetId, // Compatibility field
     edgeType: (data?.edgeType || metadata.edgeType || 'related') as EdgeType,
     type: (data?.edgeType || metadata.edgeType || 'related') as EdgeType, // Compatibility field
-    weight: edge.weight || data?.weight || metadata.weight || 1,
-    discoveredFromDirectVisit: data?.discoveredFromDirectVisit || metadata.discoveredFromDirectVisit || false,
-    discoveredAt: data?.discoveredAt || metadata.discoveredAt || new Date().toISOString(),
+    weight: Number(edge.weight || data?.weight || metadata.weight || 1),
+    discoveredFromDirectVisit: Boolean(data?.discoveredFromDirectVisit || metadata.discoveredFromDirectVisit),
+    discoveredAt: String(data?.discoveredAt || metadata.discoveredAt || new Date().toISOString()),
     metadata: {
       source: (data?.source || metadata.source || 'inferred') as 'openalex' | 'inferred' | 'user',
       confidence: data?.confidence || metadata.confidence,
@@ -316,7 +333,7 @@ export class EventBridge<TVertexData = unknown, TEdgeData = unknown> {
     );
     
     const genericVertex = convertEntityToVertex(vertex);
-    this.eventHandlers.onVertexClick(genericVertex as any, engineEvent);
+    this.eventHandlers.onVertexClick(genericVertex as IVertex<any>, engineEvent);
   };
   
   /**
@@ -338,7 +355,7 @@ export class EventBridge<TVertexData = unknown, TEdgeData = unknown> {
     );
     
     const genericEdge = convertEntityToEdge(edge);
-    this.eventHandlers.onEdgeClick(genericEdge as any, engineEvent);
+    this.eventHandlers.onEdgeClick(genericEdge as IEdge<any>, engineEvent);
   };
   
   /**
@@ -360,7 +377,7 @@ export class EventBridge<TVertexData = unknown, TEdgeData = unknown> {
     );
     
     const genericVertex = vertex ? convertEntityToVertex(vertex) : undefined;
-    this.eventHandlers.onVertexHover(genericVertex as any, engineEvent);
+    this.eventHandlers.onVertexHover(genericVertex as IVertex<any> | undefined, engineEvent);
   };
   
   /**
@@ -436,7 +453,7 @@ export class LayoutBridge {
     vertices: EntityGraphVertex[],
     width: number,
     height: number,
-    options: Record<string, unknown> = {}
+    _options: Record<string, unknown> = {}
   ): Promise<PositionedVertex[]> {
     return new Promise((resolve) => {
       const result = createCircularLayout(vertices, width, height);

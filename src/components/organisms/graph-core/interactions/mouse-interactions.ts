@@ -9,8 +9,7 @@ import {
   InteractionResult,
   InteractionResults,
   GraphElement,
-  GraphPosition,
-  InteractionResultType
+  GraphPosition
 } from './interaction-handlers';
 
 // Configuration interfaces
@@ -479,7 +478,7 @@ export class SelectInteractionStrategy<TElement extends GraphElement = GraphElem
     this.callbacks.onSelectionChange?.(Array.from(this.state.selectedElements), event);
   }
 
-  private handleRectangleSelection(start: GraphPosition, end: GraphPosition, event: MouseInteractionEvent<TElement>): void {
+  private handleRectangleSelection(start: GraphPosition, end: GraphPosition, _event: MouseInteractionEvent<TElement>): void {
     // This would need to be implemented by the consumer with knowledge of element positions
     // For now, we just notify that rectangle selection occurred
     const bounds = {

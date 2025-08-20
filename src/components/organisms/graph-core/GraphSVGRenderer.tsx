@@ -5,7 +5,7 @@
  * This is a simplified implementation that focuses on compilation compatibility.
  */
 
-import React, { useRef, useEffect, useCallback, forwardRef, useImperativeHandle } from 'react';
+import React, { useRef, useCallback, forwardRef, useImperativeHandle } from 'react';
 
 import type {
   IGraph,
@@ -68,9 +68,9 @@ export const GraphSVGRenderer = forwardRef<
 >(function GraphSVGRenderer<TVertexData = unknown, TEdgeData = unknown>({
   graph,
   positionedVertices,
-  vertexRenderer,
-  edgeRenderer,
-  config,
+  vertexRenderer: _vertexRenderer,
+  edgeRenderer: _edgeRenderer,
+  config: _config,
   dimensions,
   className,
   style,
@@ -207,4 +207,4 @@ export const GraphSVGRenderer = forwardRef<
 
 GraphSVGRenderer.displayName = 'GraphSVGRenderer';
 
-export default GraphSVGRenderer;
+// Named export only - no default export

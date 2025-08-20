@@ -8,8 +8,8 @@ import {
   transitionDescription,
   progressContainer,
   progressBar,
-  transitionDurationVar,
-  transitionProgressVar,
+  transitionDurationVar as _transitionDurationVar,
+  transitionProgressVar as _transitionProgressVar,
   accessibleTransition,
   responsiveTransitionContent,
   darkModeOverrides,
@@ -162,7 +162,7 @@ export function TransitionOverlay({
     return null;
   }
   
-  const duration = options.duration || 500;
+  const _duration = options.duration || 500;
   const { title, description } = getTransitionMessage(fromEngine, toEngine, progress, customMessage);
   
   // Determine opacity based on animation phase
@@ -260,7 +260,7 @@ export function TransitionOverlay({
 
 export function ReducedMotionTransitionOverlay({
   isTransitioning,
-  fromEngine,
+  fromEngine: _fromEngine,
   toEngine,
   engineDisplayNames = DEFAULT_ENGINE_DISPLAY_NAMES,
 }: {
@@ -322,9 +322,9 @@ export function useTransitionAnimation(
       setProgress(0);
       
       // Simulate transition phases
-      const duration = options.duration || 500;
+      const _duration = options.duration || 500;
       const steps = 20;
-      const stepDuration = duration / steps;
+      const stepDuration = _duration / steps;
       
       let currentStep = 0;
       const interval = setInterval(() => {

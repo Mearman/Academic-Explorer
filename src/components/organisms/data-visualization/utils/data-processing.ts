@@ -411,11 +411,12 @@ export function generateHeatmapData(
       case 'collaboration_count':
         value = works.reduce((sum, work) => sum + (work.authorships?.length || 0), 0);
         break;
-      case 'h_index':
+      case 'h_index': {
         // Simplified h-index calculation for this context
         const citations = works.map(w => w.cited_by_count).sort((a, b) => b - a);
         value = calculateHIndex(citations);
         break;
+      }
       default:
         value = works.length;
     }
@@ -743,18 +744,18 @@ export function detectOutliers(
     const lowerBound = stats.q1 - threshold * stats.iqr;
     const upperBound = stats.q3 + threshold * stats.iqr;
     
-    data.forEach((val, index) => {
+    data.forEach((val, _index) => {
       if (val < lowerBound || val > upperBound) {
-        outlierIndices.add(index);
+        outlierIndices.add(_index);
       }
     });
   } else if (method === 'zscore') {
     const stats = calculateStatistics(data);
     
-    data.forEach((val, index) => {
+    data.forEach((val, _index) => {
       const zScore = Math.abs((val - stats.mean) / stats.stdDev);
       if (zScore > threshold) {
-        outlierIndices.add(index);
+        outlierIndices.add(_index);
       }
     });
   } else if (method === 'modified_zscore') {
@@ -762,10 +763,10 @@ export function detectOutliers(
     const mad = calculateStatistics(data.map(val => Math.abs(val - median))).median;
     const modifiedThreshold = 0.6745; // Standard threshold for modified z-score
     
-    data.forEach((val, index) => {
+    data.forEach((val, _index) => {
       const modifiedZScore = modifiedThreshold * (val - median) / mad;
       if (Math.abs(modifiedZScore) > threshold) {
-        outlierIndices.add(index);
+        outlierIndices.add(_index);
       }
     });
   }

@@ -6,9 +6,9 @@
 import {
   InteractionHandler,
   InteractionHandlerConfig,
-  KeyboardInteractionStrategy,
+  KeyboardInteractionStrategy as _KeyboardInteractionStrategy,
   KeyboardInteractionEvent,
-  InteractionResult,
+  InteractionResult as _InteractionResult,
   InteractionResults,
   GraphElement,
   GraphPosition
@@ -538,11 +538,11 @@ export class AccessibilityInteractionManager<TElement extends GraphElement = Gra
     this.callbacks.onFocusChange?.(element, previous);
   }
 
-  private handleNavigationFocus(element: TElement, event: KeyboardInteractionEvent): void {
+  private handleNavigationFocus(element: TElement, _event: KeyboardInteractionEvent): void {
     this.setFocusedElement(element);
   }
 
-  private handleNavigationSelect(element: TElement, event: KeyboardInteractionEvent): void {
+  private handleNavigationSelect(element: TElement, _event: KeyboardInteractionEvent): void {
     const newSelection = this.state.selectedElements.includes(element.id)
       ? this.state.selectedElements.filter(id => id !== element.id)
       : [...this.state.selectedElements, element.id];
@@ -550,7 +550,7 @@ export class AccessibilityInteractionManager<TElement extends GraphElement = Gra
     this.handleSelectionChange(newSelection, null as unknown as any);
   }
 
-  private handleNavigationActivate(element: TElement, event: KeyboardInteractionEvent): void {
+  private handleNavigationActivate(element: TElement, _event: KeyboardInteractionEvent): void {
     const description = this.getElementDescription(element);
     this.announce({
       message: `Activated: ${description}`,
@@ -560,11 +560,11 @@ export class AccessibilityInteractionManager<TElement extends GraphElement = Gra
     this.callbacks.onNavigationCommand?.('activate', element);
   }
 
-  private handleNavigationCommand(action: any, event: KeyboardInteractionEvent): void {
+  private handleNavigationCommand(action: any, _event: KeyboardInteractionEvent): void {
     this.callbacks.onNavigationCommand?.(action.type, action.element);
   }
 
-  private handleMouseHover(element: TElement, event: any): void {
+  private handleMouseHover(element: TElement, _event: any): void {
     if (this.config.announceChanges && this.state.screenReaderEnabled) {
       const description = this.getElementDescription(element);
       this.announce({
@@ -579,7 +579,7 @@ export class AccessibilityInteractionManager<TElement extends GraphElement = Gra
     // Optional: announce hover end
   }
 
-  private handleTouchTap(state: any, event: any): void {
+  private handleTouchTap(state: any, _event: any): void {
     if (state.element) {
       this.setFocusedElement(state.element);
     }
@@ -591,7 +591,7 @@ export class AccessibilityInteractionManager<TElement extends GraphElement = Gra
     }
   }
 
-  private handleSelectionChange(selectedElements: readonly string[], event?: any): void {
+  private handleSelectionChange(selectedElements: readonly string[], _event?: any): void {
     this.state = { ...this.state, selectedElements };
     this.keyboardManager.setContext(this.state);
 
@@ -740,12 +740,12 @@ export class AccessibilityInteractionManager<TElement extends GraphElement = Gra
     return description;
   }
 
-  private getElementPosition(element: TElement): GraphPosition | null {
+  private getElementPosition(_element: TElement): GraphPosition | null {
     // This would be implemented by the consumer with actual element positioning
     return null;
   }
 
-  private isElementVisible(element: TElement): boolean {
+  private isElementVisible(_element: TElement): boolean {
     // This would be implemented by the consumer with actual visibility logic
     return true;
   }

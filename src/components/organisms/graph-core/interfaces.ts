@@ -429,7 +429,7 @@ export interface IKeyboardEvent {
  * @template TVertexData - The type of data stored in vertices
  * @template TEdgeData - The type of data stored in edges
  */
-export interface ISelectionState<TVertexData = unknown, TEdgeData = unknown> {
+export interface ISelectionState<_TVertexData = unknown, _TEdgeData = unknown> {
   /** Currently selected vertices */
   readonly selectedVertices: ReadonlySet<string>;
   
@@ -623,7 +623,7 @@ export interface IInteractionConfig {
  * @template TVertexData - The type of data stored in vertices
  * @template TEdgeData - The type of data stored in edges
  */
-export interface IGraphConfig<TVertexData = unknown, TEdgeData = unknown> {
+export interface IGraphConfig<_TVertexData = unknown, _TEdgeData = unknown> {
   /** Layout algorithm configuration */
   readonly layout: ILayoutConfig;
   

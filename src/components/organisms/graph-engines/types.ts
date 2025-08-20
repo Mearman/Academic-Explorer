@@ -11,9 +11,9 @@
 
 import type {
   IGraph,
-  IVertex,
-  IEdge,
-  IPosition,
+  IVertex as _IVertex,
+  IEdge as _IEdge,
+  IPosition as _IPosition,
   IDimensions,
   IGraphConfig,
   IPositionedVertex

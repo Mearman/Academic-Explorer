@@ -54,63 +54,63 @@ const CAPABILITY_CONFIGS: CapabilityConfig[] = [
   {
     key: 'animations',
     label: 'Animations',
-    icon: '🎬',
+    icon: 'ANIM',
     getValue: (caps) => caps.features.animations,
     tooltip: 'Supports real-time animations and transitions',
   },
   {
     key: 'zoomPan',
     label: 'Zoom & Pan',
-    icon: '🔍',
+    icon: 'ZOOM',
     getValue: (caps) => caps.features.zoomPan,
     tooltip: 'Supports interactive zooming and panning',
   },
   {
     key: 'vertexDragging',
     label: 'Dragging',
-    icon: '👆',
+    icon: 'DRAG',
     getValue: (caps) => caps.features.vertexDragging,
     tooltip: 'Supports vertex dragging interactions',
   },
   {
     key: 'clustering',
     label: 'Clustering',
-    icon: '🔗',
+    icon: 'CLSTR',
     getValue: (caps) => caps.features.clustering,
     tooltip: 'Supports node clustering and grouping',
   },
   {
     key: 'customVertexShapes',
     label: 'Custom Shapes',
-    icon: '🎨',
+    icon: 'SHAPE',
     getValue: (caps) => caps.features.customVertexShapes,
     tooltip: 'Supports custom vertex shapes and styling',
   },
   {
     key: 'edgeLabels',
     label: 'Edge Labels',
-    icon: '🏷️',
+    icon: 'LABEL',
     getValue: (caps) => caps.features.edgeLabels,
     tooltip: 'Supports labels on edges',
   },
   {
     key: 'levelOfDetail',
     label: 'LOD',
-    icon: '📊',
+    icon: 'LOD',
     getValue: (caps) => caps.features.levelOfDetail,
     tooltip: 'Level-of-detail rendering for performance',
   },
   {
     key: 'hardwareAcceleration',
     label: 'GPU',
-    icon: '⚡',
+    icon: 'GPU',
     getValue: (caps) => caps.performance.hardwareAccelerated,
     tooltip: 'Hardware acceleration support',
   },
   {
     key: 'memoryEfficiency',
     label: 'Memory',
-    icon: '🧠',
+    icon: 'MEM',
     getValue: (caps) => caps.performance.memoryEfficiency,
     getIntensity: (value) => {
       const rating = value as number;
@@ -123,7 +123,7 @@ const CAPABILITY_CONFIGS: CapabilityConfig[] = [
   {
     key: 'renderingSpeed',
     label: 'Speed',
-    icon: '🚀',
+    icon: 'SPEED',
     getValue: (caps) => caps.performance.renderingSpeed,
     getIntensity: (value) => {
       const rating = value as number;
@@ -139,28 +139,28 @@ const EXPORT_CONFIGS: CapabilityConfig[] = [
   {
     key: 'png',
     label: 'PNG',
-    icon: '🖼️',
+    icon: 'PNG',
     getValue: (caps) => caps.features.export.png,
     tooltip: 'PNG image export support',
   },
   {
     key: 'svg',
     label: 'SVG',
-    icon: '📐',
+    icon: 'SVG',
     getValue: (caps) => caps.features.export.svg,
     tooltip: 'SVG vector export support',
   },
   {
     key: 'pdf',
     label: 'PDF',
-    icon: '📄',
+    icon: 'PDF',
     getValue: (caps) => caps.features.export.pdf,
     tooltip: 'PDF document export support',
   },
   {
     key: 'json',
     label: 'JSON',
-    icon: '📋',
+    icon: 'JSON',
     getValue: (caps) => caps.features.export.json,
     tooltip: 'JSON data export support',
   },
@@ -265,16 +265,16 @@ export function EngineCapabilityBadges({
     
     if (avgRating >= 4) {
       status = 'Excellent';
-      emoji = '🌟';
+      emoji = 'STAR';
     } else if (avgRating >= 3) {
       status = 'Good';
-      emoji = '✅';
+      emoji = 'GOOD';
     } else if (avgRating >= 2) {
       status = 'Average';
-      emoji = '⚠️';
+      emoji = 'WARN';
     } else {
       status = 'Limited';
-      emoji = '🐌';
+      emoji = 'SLOW';
     }
     
     return { status, emoji, avgRating };
@@ -294,7 +294,7 @@ export function EngineCapabilityBadges({
           className={capabilityBadge({ supported: false })}
           title="No capabilities available"
         >
-          <span className={badgeIcon}>❌</span>
+          <span className={badgeIcon}>NO</span>
           <span>No features</span>
         </div>
       </div>
@@ -332,7 +332,7 @@ export function EngineCapabilityBadges({
           data-testid={`${testId}-more-indicator`}
         >
           <span className={badgeIcon} aria-hidden="true">
-            ➕
+            PLUS
           </span>
           <span>
             +{CAPABILITY_CONFIGS.length + EXPORT_CONFIGS.length - maxBadges} more
@@ -349,4 +349,4 @@ export function EngineCapabilityBadges({
 
 EngineCapabilityBadges.displayName = 'EngineCapabilityBadges';
 
-export default EngineCapabilityBadges;
+// Named export only - no default export

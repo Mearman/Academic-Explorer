@@ -69,12 +69,12 @@ const ENGINE_DISPLAY_NAMES: Record<GraphEngineType, string> = {
 };
 
 const ENGINE_ICONS: Record<GraphEngineType, string> = {
-  'canvas-2d': '🎨',
-  'svg': '📐',
-  'webgl': '⚡',
-  'd3-force': '🔬',
-  'cytoscape': '🕸️',
-  'vis-network': '🌐',
+  'canvas-2d': 'CANVAS',
+  'svg': 'SVG',
+  'webgl': 'GPU',
+  'd3-force': 'D3',
+  'cytoscape': 'CYTO',
+  'vis-network': 'VIS',
 };
 
 // ============================================================================
@@ -86,7 +86,7 @@ export function EngineRecommendationTooltip({
   onEngineSelect,
   onClose,
   graphSize,
-  position = 'bottom',
+  position: _position = 'bottom',
   className,
   'data-testid': testId = 'engine-recommendation-tooltip',
 }: EngineRecommendationTooltipProps): React.JSX.Element {
@@ -169,10 +169,10 @@ export function EngineRecommendationTooltip({
   // Render Helpers
   // ============================================================================
   
-  const renderRecommendation = (recommendation: EngineRecommendation, index: number) => {
+  const renderRecommendation = (recommendation: EngineRecommendation, _index: number) => {
     const { engineType, score, reasons, limitations } = recommendation;
     const displayName = ENGINE_DISPLAY_NAMES[engineType] || engineType;
-    const icon = ENGINE_ICONS[engineType] || '❓';
+    const icon = ENGINE_ICONS[engineType] || 'UNKNOWN';
     
     const primaryReason = reasons[0] || 'Good general performance';
     const hasLimitations = limitations.length > 0;
@@ -325,4 +325,4 @@ export function EngineRecommendationTooltip({
 
 EngineRecommendationTooltip.displayName = 'EngineRecommendationTooltip';
 
-export default EngineRecommendationTooltip;
+// Named export only - no default export

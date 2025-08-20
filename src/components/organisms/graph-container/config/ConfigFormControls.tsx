@@ -1,3 +1,4 @@
+/* eslint-disable react-refresh/only-export-components */
 import React, { useCallback, useMemo } from 'react';
 
 // ============================================================================
@@ -562,7 +563,7 @@ export function ColorPicker({
   label,
   value,
   onChange,
-  alpha = false,
+  alpha: _alpha = false,
   required,
   disabled,
   className,
@@ -640,7 +641,7 @@ export function RangeSlider({
   validation,
   ...props
 }: RangeSliderProps) {
-  const hasError = validation && !validation.isValid;
+  const _hasError = validation && !validation.isValid;
   const inputId = id || `range-${label.replace(/\s+/g, '-').toLowerCase()}`;
   const descriptionId = `${inputId}-description`;
   

@@ -261,4 +261,4 @@ export function GraphEngineDemo() {
 // }
 
 // Export for use in examples
-export default GraphEngineDemo;
+// Named export only - no default export

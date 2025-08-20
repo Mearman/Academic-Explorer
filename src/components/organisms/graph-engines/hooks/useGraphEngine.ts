@@ -1,11 +1,12 @@
+ 
 import { useCallback, useContext, useMemo } from 'react';
 
 import type { IGraphVisualizationEngine, IGraph, IGraphConfig } from '../../graph-core/interfaces';
 import type {
-  GraphEngineContext,
+  GraphEngineContext as _GraphEngineContext,
   GraphEngineType,
   GraphEngineTransitionOptions,
-  GraphEngineCapabilities,
+  GraphEngineCapabilities as _GraphEngineCapabilities,
   GraphEngineSettings,
 } from '../provider';
 import { GraphEngineContext as Context } from '../provider';

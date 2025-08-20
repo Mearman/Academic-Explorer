@@ -217,7 +217,7 @@ export function GraphEngineSettings({
     settings,
     updateSettings,
     resetSettings,
-    availableEngines,
+    availableEngines: _availableEngines,
     currentEngine,
   } = useGraphEngine();
   
@@ -540,7 +540,7 @@ export function GraphEngineSettings({
 // ============================================================================
 
 export function CompactGraphEngineSettings() {
-  const { currentEngine, availableEngines, switchEngine } = useGraphEngine();
+  const { currentEngine, availableEngines: _availableEngines, switchEngine } = useGraphEngine();
   const { getAllCapabilities } = useEngineCapabilities();
   
   const engineOptions = useMemo(() => {

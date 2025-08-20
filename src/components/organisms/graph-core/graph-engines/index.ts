@@ -346,10 +346,13 @@ export function createOptimizedEngineConfig(
       animated: enableAnimations,
       animationDuration: prioritizePerformance ? 500 : 1000,
     },
-    styling: {
-      backgroundColor: '#ffffff',
+    layoutParameters: {
+      dimensions,
+      animated: enableAnimations,
+      animationDuration: prioritizePerformance ? 500 : 1000,
     },
-    interaction: {
+    engineOptions: {
+      backgroundColor: '#ffffff',
       enablePan: true,
       enableZoom: true,
       enableVertexSelection: true,
@@ -357,8 +360,6 @@ export function createOptimizedEngineConfig(
       enableMultiSelection: true,
       enableVertexDragging: !prioritizePerformance,
       zoomLimits: { min: 0.1, max: 5.0 },
-    },
-    performance: {
       maxVertices: prioritizeQuality ? 5000 : 2000,
       maxEdges: prioritizeQuality ? 10000 : 5000,
       enableLOD: vertexCount > 500,

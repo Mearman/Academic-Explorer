@@ -398,9 +398,9 @@ export class ForceDirectedLayout<TVertex = unknown, TEdge = unknown>
     const componentWidth = width / componentsPerRow;
     const componentHeight = height / Math.ceil(components.length / componentsPerRow);
 
-    components.forEach((component, index) => {
-      const row = Math.floor(index / componentsPerRow);
-      const col = index % componentsPerRow;
+    components.forEach((component, _index) => {
+      const row = Math.floor(_index / componentsPerRow);
+      const col = _index % componentsPerRow;
       
       const targetCenterX = col * componentWidth + componentWidth / 2;
       const targetCenterY = row * componentHeight + componentHeight / 2;

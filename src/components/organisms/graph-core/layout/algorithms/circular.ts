@@ -13,7 +13,7 @@ import {
   LayoutEdge,
   LayoutResult,
   PositionWithVelocity,
-  LayoutUtils,
+  LayoutUtils as _LayoutUtils,
 } from '../layout-engine';
 
 /**
@@ -233,10 +233,10 @@ export class CircularLayout<TVertex = unknown, TEdge = unknown>
       ? totalAngle / orderedVertices.length
       : totalAngle / (orderedVertices.length + config.angularPadding! * orderedVertices.length);
 
-    orderedVertices.forEach((vertex, index) => {
-      let angle = config.startAngle! + index * angleStep;
+    orderedVertices.forEach((vertex, _index) => {
+      let angle = config.startAngle! + _index * angleStep;
       if (!config.clockwise!) {
-        angle = config.startAngle! - index * angleStep;
+        angle = config.startAngle! - _index * angleStep;
       }
 
       const x = centerX + Math.cos(angle) * config.radius!;
@@ -276,10 +276,10 @@ export class CircularLayout<TVertex = unknown, TEdge = unknown>
       const orderedVertices = this.orderVertices(levelVertices, edges, config);
       const angleStep = (2 * Math.PI) / orderedVertices.length;
 
-      orderedVertices.forEach((vertex, index) => {
-        let angle = config.startAngle! + index * angleStep;
+      orderedVertices.forEach((vertex, _index) => {
+        let angle = config.startAngle! + _index * angleStep;
         if (!config.clockwise!) {
-          angle = config.startAngle! - index * angleStep;
+          angle = config.startAngle! - _index * angleStep;
         }
 
         const x = centerX + Math.cos(angle) * constrainedRadius;
@@ -327,10 +327,10 @@ export class CircularLayout<TVertex = unknown, TEdge = unknown>
       const orderedVertices = this.orderVertices(cluster, edges, config);
       const angleStep = (2 * Math.PI) / orderedVertices.length;
 
-      orderedVertices.forEach((vertex, index) => {
-        let angle = index * angleStep;
+      orderedVertices.forEach((vertex, _index) => {
+        let angle = _index * angleStep;
         if (!config.clockwise!) {
-          angle = -index * angleStep;
+          angle = -_index * angleStep;
         }
 
         const x = clusterCenterX + Math.cos(angle) * clusterRadius;
@@ -361,9 +361,9 @@ export class CircularLayout<TVertex = unknown, TEdge = unknown>
     const angleStep = totalAngle / orderedVertices.length;
     const radiusStep = (config.radius! - config.minRadius!) / orderedVertices.length;
 
-    orderedVertices.forEach((vertex, index) => {
-      const angle = config.startAngle! + index * angleStep;
-      const radius = config.minRadius! + index * radiusStep + 
+    orderedVertices.forEach((vertex, _index) => {
+      const angle = config.startAngle! + _index * angleStep;
+      const radius = config.minRadius! + _index * radiusStep + 
                     Math.sin(angle * config.spiralTightness!) * 20;
 
       const x = centerX + Math.cos(angle) * radius;
@@ -397,7 +397,7 @@ export class CircularLayout<TVertex = unknown, TEdge = unknown>
           return nameA.localeCompare(nameB);
         });
 
-      case NodeOrdering.DEGREE:
+      case NodeOrdering.DEGREE: {
         const degrees = new Map<string, number>();
         vertices.forEach(vertex => degrees.set(vertex.id, 0));
         
@@ -409,6 +409,7 @@ export class CircularLayout<TVertex = unknown, TEdge = unknown>
         return verticesCopy.sort((a, b) => 
           (degrees.get(b.id) || 0) - (degrees.get(a.id) || 0)
         );
+      }
 
       case NodeOrdering.WEIGHT:
         return verticesCopy.sort((a, b) => {
@@ -420,13 +421,14 @@ export class CircularLayout<TVertex = unknown, TEdge = unknown>
       case NodeOrdering.OPTIMIZE_CROSSINGS:
         return this.optimizeCrossingOrder(verticesCopy, edges);
 
-      case NodeOrdering.RANDOM:
+      case NodeOrdering.RANDOM: {
         const randomized = [...verticesCopy];
         for (let i = randomized.length - 1; i > 0; i--) {
           const j = Math.floor(Math.random() * (i + 1));
           [randomized[i], randomized[j]] = [randomized[j], randomized[i]];
         }
         return randomized;
+      }
 
       default:
         return verticesCopy;

@@ -74,7 +74,7 @@ export interface LayoutConfig {
 /**
  * Layout algorithm result
  */
-export interface LayoutResult<TVertex = unknown> {
+export interface LayoutResult<_TVertex = unknown> {
   /** Positioned vertices */
   positions: Map<string, PositionWithVelocity>;
   /** Layout metadata */
@@ -164,7 +164,7 @@ export abstract class LayoutAlgorithm<
     const centerX = width / 2;
     const centerY = height / 2;
 
-    vertices.forEach((vertex, index) => {
+    vertices.forEach((vertex, _index) => {
       let position: PositionWithVelocity;
 
       // Use constraint if exists
@@ -183,7 +183,7 @@ export abstract class LayoutAlgorithm<
       }
       // Default circular initialization
       else {
-        const angle = (index / vertices.length) * 2 * Math.PI;
+        const angle = (_index / vertices.length) * 2 * Math.PI;
         const radius = Math.min(width, height) * 0.2;
         position = {
           x: centerX + Math.cos(angle) * radius,

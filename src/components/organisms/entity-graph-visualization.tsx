@@ -26,9 +26,8 @@ import {
   getOptimalExportDimensions 
 } from './graph-utils/graph-export';
 import { useGraphInteractions } from './hooks/use-graph-interactions';
-
 // Import new decoupled graph system
-import { OpenAlexEntityGraph } from './openalex-entity-graph';
+import { OpenAlexEntityGraph as _OpenAlexEntityGraph } from './openalex-entity-graph';
 
 // Utility functions for entity graph calculations
 function getEntityColor(entityType: EntityType): string {
@@ -124,8 +123,8 @@ export function EntityGraphVisualization({
     isHydrated,
     isLoading,
     layoutConfig,
-    graph,
-    filterOptions,
+    graph: _graph,
+    filterOptions: _filterOptions,
     getFilteredVertices,
     getFilteredEdges,
     selectVertex,
@@ -155,7 +154,7 @@ export function EntityGraphVisualization({
       console.log(`[EntityGraphVisualization] Vertex types: ${vertices.map(v => `${v.entityType}:${v.directlyVisited ? 'visited' : 'discovered'}`).join(', ')}`);
     }
     return vertices;
-  }, [graph.vertices, filterOptions, getFilteredVertices]);
+  }, [getFilteredVertices]);
   const filteredEdges = useMemo(() => {
     const edges = getFilteredEdges();
     console.log(`[EntityGraphVisualization] Found ${edges.length} filtered edges`);
@@ -163,7 +162,7 @@ export function EntityGraphVisualization({
       console.log(`[EntityGraphVisualization] Edge types: ${edges.map(e => `${e.edgeType}:${e.sourceId}→${e.targetId}`).join(', ')}`);
     }
     return edges;
-  }, [graph.edges, filterOptions, getFilteredEdges]);
+  }, [getFilteredEdges]);
 
   const positionedVertices = useMemo(() => {
     return generatePositionedVertices(

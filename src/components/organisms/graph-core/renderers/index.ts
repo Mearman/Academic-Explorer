@@ -86,13 +86,6 @@ export type {
 
 // Import functions and types for use in examples
 import {
-  createVertexRenderer,
-  ColourStrategy,
-  DefaultVertexStrategy,
-  CompositeVertexStrategy,
-  VertexData,
-} from './vertex-renderer';
-import {
   createEdgeRenderer,
   EdgeColourStrategy,
   DefaultEdgeStrategy,
@@ -100,6 +93,13 @@ import {
   EdgeData,
 } from './edge-renderer';
 import { getRendererRegistry } from './renderer-registry';
+import {
+  createVertexRenderer,
+  ColourStrategy,
+  DefaultVertexStrategy,
+  CompositeVertexStrategy,
+  VertexData,
+} from './vertex-renderer';
 
 // Example: Creating a basic renderer with default strategies
 export const createBasicGraphRenderer = <TMetadata = Record<string, unknown>>() => {

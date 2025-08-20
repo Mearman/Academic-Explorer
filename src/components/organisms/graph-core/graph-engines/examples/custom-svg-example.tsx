@@ -16,6 +16,7 @@ import {
   getPerformanceRecommendations,
   type IGraphEngine,
   type IEngineEvent,
+  type IEngineState,
 } from '../index';
 
 // ============================================================================
@@ -97,8 +98,8 @@ function EngineControls({
   onFitToViewport,
   onClearSelection,
 }: EngineControlsProps) {
-  const [metrics, setMetrics] = useState<any>(null);
-  const [debugInfo, setDebugInfo] = useState<any>(null);
+  const [metrics, setMetrics] = useState<IEngineState['metrics'] | null>(null);
+  const [debugInfo, setDebugInfo] = useState<Record<string, unknown> | null>(null);
   
   // Update metrics periodically
   useEffect(() => {
@@ -334,7 +335,7 @@ export function CustomSVGExample({
           onVertexClick: (vertex: any, event: IEngineEvent) => {
             console.log('Vertex clicked:', vertex.label, event.modifiers);
           },
-          onVertexHover: (vertex: any, event: IEngineEvent) => {
+          onVertexHover: (_vertex: any, _event: IEngineEvent) => {
             // Optional: Show tooltip or highlight
           },
           onSelectionChange: (vertices: ReadonlySet<string>, edges: ReadonlySet<string>) => {
@@ -350,7 +351,7 @@ export function CustomSVGExample({
           onLayoutComplete: (layoutId: string, positions: any) => {
             console.log('Layout completed:', layoutId, positions.size, 'positions');
           },
-          onPerformanceUpdate: (metrics: any) => {
+          onPerformanceUpdate: (_metrics: any) => {
             // Performance metrics are handled by the control panel
           },
           onError: (error: Error, context?: string) => {
@@ -388,7 +389,8 @@ export function CustomSVGExample({
         engine.dispose();
       }
     };
-  }, [nodeCount, edgeCount, width, height]); // Re-initialize when props change
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [nodeCount, edgeCount, width, height, showRecommendations]); // Re-initialize when props change
   
   // ============================================================================
   // Event Handlers
@@ -409,7 +411,7 @@ export function CustomSVGExample({
     if (!engine) return;
     
     try {
-      const result = await engine.export(format as any, {
+      const result = await engine.export(format as 'png' | 'svg' | 'jpeg' | 'webp' | 'json', {
         scale: format === 'png' ? 2.0 : 1.0,
         backgroundColor: '#ffffff',
         includeLabels: true,
@@ -601,4 +603,3 @@ export function CustomSVGExample({
   );
 }
 
-export default CustomSVGExample;

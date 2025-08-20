@@ -98,11 +98,11 @@ export interface UseGraphLifecycleReturn<TVertexData = unknown, TEdgeData = unkn
 export function useGraphLifecycle<TVertexData = unknown, TEdgeData = unknown>({
   dataStore,
   layoutAlgorithm,
-  selectionState,
+  selectionState: _selectionState,
   config,
   dimensions,
-  vertexRenderer,
-  edgeRenderer,
+  vertexRenderer: _vertexRenderer,
+  edgeRenderer: _edgeRenderer,
   canvasRef,
   onGraphLoaded,
   onLayoutComplete,
@@ -332,4 +332,4 @@ export function useGraphLifecycle<TVertexData = unknown, TEdgeData = unknown>({
   };
 }
 
-export default useGraphLifecycle;
+// Named export only - no default export

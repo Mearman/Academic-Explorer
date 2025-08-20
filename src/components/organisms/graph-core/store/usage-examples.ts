@@ -123,7 +123,7 @@ export function reactiveExample() {
   // Subscribe to specific event types
   const unsubscribeSelection = store.subscribeToEvent(
     GraphStoreEventType.SELECTION_CHANGED,
-    (event) => {
+    (_event) => {
       const vertex = store.getSelectedVertex();
       console.log(`Selection changed to: ${vertex?.displayName || 'none'}`);
       
@@ -134,7 +134,7 @@ export function reactiveExample() {
   
   const unsubscribeFilters = store.subscribeToEvent(
     GraphStoreEventType.FILTERS_CHANGED,
-    (event) => {
+    (_event) => {
       console.log('Filters changed, updating visualization...');
       
       // Re-render graph with new filtered data
@@ -222,7 +222,7 @@ export async function lifecycleExample() {
 }
 
 // Mock UI update functions for the examples
-function updateSelectionUI(vertex: GraphVertex | undefined) {
+function updateSelectionUI(_vertex: GraphVertex | undefined) {
   // Update selection indicators in UI
   console.log('UI: Selection updated');
 }
@@ -254,40 +254,40 @@ export class SimpleGraphAdapter implements GraphDataStore<GraphVertex, GraphEdge
   // This shows how any data source could be adapted to the generic interface
   getFilteredVertices(): GraphVertex[] { throw new Error('Not implemented'); }
   getFilteredEdges(): GraphEdge[] { throw new Error('Not implemented'); }
-  getVertex(id: string): GraphVertex | undefined { throw new Error('Not implemented'); }
-  getEdge(id: string): GraphEdge | undefined { throw new Error('Not implemented'); }
-  hasVertex(id: string): boolean { throw new Error('Not implemented'); }
-  hasEdge(id: string): boolean { throw new Error('Not implemented'); }
-  setVertex(vertex: GraphVertex): void { throw new Error('Not implemented'); }
-  setEdge(edge: GraphEdge): void { throw new Error('Not implemented'); }
-  removeVertex(id: string): void { throw new Error('Not implemented'); }
-  removeEdge(id: string): void { throw new Error('Not implemented'); }
+  getVertex(_id: string): GraphVertex | undefined { throw new Error('Not implemented'); }
+  getEdge(_id: string): GraphEdge | undefined { throw new Error('Not implemented'); }
+  hasVertex(_id: string): boolean { throw new Error('Not implemented'); }
+  hasEdge(_id: string): boolean { throw new Error('Not implemented'); }
+  setVertex(_vertex: GraphVertex): void { throw new Error('Not implemented'); }
+  setEdge(_edge: GraphEdge): void { throw new Error('Not implemented'); }
+  removeVertex(_id: string): void { throw new Error('Not implemented'); }
+  removeEdge(_id: string): void { throw new Error('Not implemented'); }
   clearAll(): void { throw new Error('Not implemented'); }
   getSelectedVertex(): GraphVertex | undefined { throw new Error('Not implemented'); }
-  selectVertex(id: string | null): void { throw new Error('Not implemented'); }
+  selectVertex(_id: string | null): void { throw new Error('Not implemented'); }
   getHoveredVertex(): GraphVertex | undefined { throw new Error('Not implemented'); }
-  hoverVertex(id: string | null): void { throw new Error('Not implemented'); }
+  hoverVertex(_id: string | null): void { throw new Error('Not implemented'); }
   getActiveFilters(): any[] { throw new Error('Not implemented'); }
-  addFilter(filter: any): void { throw new Error('Not implemented'); }
-  removeFilter(filterName: string): void { throw new Error('Not implemented'); }
+  addFilter(_filter: any): void { throw new Error('Not implemented'); }
+  removeFilter(_filterName: string): void { throw new Error('Not implemented'); }
   clearFilters(): void { throw new Error('Not implemented'); }
-  filterVertices(predicate: any): GraphVertex[] { throw new Error('Not implemented'); }
-  filterEdges(predicate: any): GraphEdge[] { throw new Error('Not implemented'); }
-  getNeighbors(vertexId: string, hops?: number): GraphVertex[] { throw new Error('Not implemented'); }
-  getVertexDegree(vertexId: string): number { throw new Error('Not implemented'); }
-  findShortestPath(sourceId: string, targetId: string): any { throw new Error('Not implemented'); }
+  filterVertices(_predicate: any): GraphVertex[] { throw new Error('Not implemented'); }
+  filterEdges(_predicate: any): GraphEdge[] { throw new Error('Not implemented'); }
+  getNeighbors(_vertexId: string, _hops?: number): GraphVertex[] { throw new Error('Not implemented'); }
+  getVertexDegree(_vertexId: string): number { throw new Error('Not implemented'); }
+  findShortestPath(_sourceId: string, _targetId: string): any { throw new Error('Not implemented'); }
   getStatistics(): any { throw new Error('Not implemented'); }
   getLayoutOptions(): any { throw new Error('Not implemented'); }
-  setLayoutOptions(options: any): void { throw new Error('Not implemented'); }
+  setLayoutOptions(_options: any): void { throw new Error('Not implemented'); }
   isVisible(): boolean { throw new Error('Not implemented'); }
-  setVisible(visible: boolean): void { throw new Error('Not implemented'); }
+  setVisible(_visible: boolean): void { throw new Error('Not implemented'); }
   isFullscreen(): boolean { throw new Error('Not implemented'); }
-  setFullscreen(fullscreen: boolean): void { throw new Error('Not implemented'); }
+  setFullscreen(_fullscreen: boolean): void { throw new Error('Not implemented'); }
   isLoading(): boolean { throw new Error('Not implemented'); }
   isHydrated(): boolean { throw new Error('Not implemented'); }
-  subscribe(listener: any): () => void { throw new Error('Not implemented'); }
-  subscribeToEvent(eventType: any, listener: any): () => void { throw new Error('Not implemented'); }
-  emit(event: any): void { throw new Error('Not implemented'); }
+  subscribe(_listener: any): () => void { throw new Error('Not implemented'); }
+  subscribeToEvent(_eventType: any, _listener: any): () => void { throw new Error('Not implemented'); }
+  emit(_event: any): void { throw new Error('Not implemented'); }
   async initialize(): Promise<void> { throw new Error('Not implemented'); }
   dispose(): void { throw new Error('Not implemented'); }
 }

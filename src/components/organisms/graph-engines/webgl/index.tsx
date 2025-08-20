@@ -123,7 +123,7 @@ const fragmentShader = gl.createShader(gl.FRAGMENT_SHADER);
   async initialise(
     container: HTMLElement,
     dimensions: IDimensions,
-    config?: IEngineConfig
+    _config?: IEngineConfig
   ): Promise<void> {
     this.container = container;
     this.dimensions = dimensions;
@@ -140,8 +140,8 @@ const fragmentShader = gl.createShader(gl.FRAGMENT_SHADER);
   }
   
   async loadGraph(
-    graph: IGraph<TVertexData, TEdgeData>,
-    config?: IGraphConfig<TVertexData, TEdgeData>
+    _graph: IGraph<TVertexData, TEdgeData>,
+    _config?: IGraphConfig<TVertexData, TEdgeData>
   ): Promise<void> {
     // Real implementation would:
     // 1. Convert graph data to GPU-friendly format
@@ -155,8 +155,8 @@ const fragmentShader = gl.createShader(gl.FRAGMENT_SHADER);
   }
   
   async updateGraph(
-    graph: IGraph<TVertexData, TEdgeData>,
-    animate = true
+    _graph: IGraph<TVertexData, TEdgeData>,
+    _animate = true
   ): Promise<void> {
     // Real implementation would:
     // 1. Update GPU buffers with new data
@@ -176,8 +176,8 @@ const fragmentShader = gl.createShader(gl.FRAGMENT_SHADER);
   }
   
   async export(
-    format: 'png' | 'svg' | 'json' | 'pdf',
-    options?: Record<string, unknown>
+    _format: 'png' | 'svg' | 'json' | 'pdf',
+    _options?: Record<string, unknown>
   ): Promise<string | Blob> {
     // Real implementation would:
     // For PNG: read pixels from WebGL canvas
@@ -191,13 +191,13 @@ const fragmentShader = gl.createShader(gl.FRAGMENT_SHADER);
   }
   
   setPositions(
-    positions: ReadonlyArray<IPositionedVertex<TVertexData>>,
-    animate = true
+    _positions: ReadonlyArray<IPositionedVertex<TVertexData>>,
+    _animate = true
   ): void {
     // Real implementation would update GPU vertex buffers
   }
   
-  fitToView(padding = 50, animate = true): void {
+  fitToView(_padding = 50, _animate = true): void {
     // Real implementation would update camera/projection matrix
   }
   
@@ -246,7 +246,7 @@ const WebGLPreview: React.FC<{
     const nodeCount = 50; // Scaled down for preview
     const centerX = 150;
     const centerY = 100;
-    const radius = 80;
+    const _radius = 80;
     
     return Array.from({ length: nodeCount }, (_, i) => {
       const angle = (i / nodeCount) * Math.PI * 2;
@@ -573,7 +573,7 @@ const WebGLPreview: React.FC<{
  * Create a new WebGL engine instance.
  */
 export function createWebGLEngine<TVertexData = unknown, TEdgeData = unknown>(
-  config?: IWebGLConfig
+  _config?: IWebGLConfig
 ): WebGLEngine<TVertexData, TEdgeData> {
   return new WebGLEngine<TVertexData, TEdgeData>();
 }
@@ -639,5 +639,5 @@ export function checkWebGLSupport(): {
 }
 
 // Export the engine and utilities
-export default WebGLEngine;
+// Named export only - no default export
 export type { IWebGLConfig };

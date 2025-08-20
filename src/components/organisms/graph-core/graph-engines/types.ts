@@ -12,9 +12,7 @@ import type {
   IEdge,
   IPosition,
   IDimensions,
-  ILayoutConfig,
-  IGraphConfig,
-  IPositionedVertex
+  IGraphConfig
 } from '../interfaces';
 
 // ============================================================================

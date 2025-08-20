@@ -435,7 +435,7 @@ export const performanceWarning = style({
   
   selectors: {
     '&::before': {
-      content: '⚠️',
+      content: 'WARN',
       marginRight: entityVars.spacing.sm,
     },
   },

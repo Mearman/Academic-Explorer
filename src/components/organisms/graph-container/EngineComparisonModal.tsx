@@ -33,7 +33,7 @@ import {
   tabletResponsive,
 } from './components.css';
 import { EngineCapabilityBadges } from './EngineCapabilityBadges';
-import { EnginePerformanceIndicator } from './EnginePerformanceIndicator';
+import { EnginePerformanceIndicator as _EnginePerformanceIndicator } from './EnginePerformanceIndicator';
 
 
 // ============================================================================
@@ -84,12 +84,12 @@ interface ComparisonData {
 // ============================================================================
 
 const ENGINE_DISPLAY_CONFIG = {
-  'canvas-2d': { name: 'Canvas 2D', icon: '🎨' },
-  'svg': { name: 'SVG', icon: '📐' },
-  'webgl': { name: 'WebGL', icon: '⚡' },
-  'd3-force': { name: 'D3.js Force', icon: '🔬' },
-  'cytoscape': { name: 'Cytoscape.js', icon: '🕸️' },
-  'vis-network': { name: 'vis-network', icon: '🌐' },
+  'canvas-2d': { name: 'Canvas 2D', icon: 'CANVAS' },
+  'svg': { name: 'SVG', icon: 'SVG' },
+  'webgl': { name: 'WebGL', icon: 'GPU' },
+  'd3-force': { name: 'D3.js Force', icon: 'D3' },
+  'cytoscape': { name: 'Cytoscape.js', icon: 'CYTO' },
+  'vis-network': { name: 'vis-network', icon: 'VIS' },
 } as const;
 
 const IMPLEMENTATION_STATUS = {
@@ -152,7 +152,7 @@ export function EngineComparisonModal({
           engineType,
           capabilities,
           displayName: config?.name || engineType,
-          icon: config?.icon || '❓',
+          icon: config?.icon || 'UNKNOWN',
           isImplemented: IMPLEMENTATION_STATUS[engineType] ?? false,
           isRecommended: recommendation?.meetsAllRequirements ?? false,
           suitabilityScore: recommendation?.score ?? suitability?.performanceScore ?? 0,
@@ -220,7 +220,7 @@ export function EngineComparisonModal({
     if (typeof value === 'boolean') {
       return (
         <span style={{ color: value ? '#10b981' : '#ef4444' }}>
-          {value ? '✓' : '✗'}
+          {value ? 'YES' : 'NO'}
         </span>
       );
     }
@@ -513,4 +513,4 @@ export function EngineComparisonModal({
 
 EngineComparisonModal.displayName = 'EngineComparisonModal';
 
-export default EngineComparisonModal;
+// Named export only - no default export

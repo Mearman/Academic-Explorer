@@ -1,18 +1,18 @@
-import React, { createContext, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, { createContext, useCallback as _useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 import { immer } from 'zustand/middleware/immer';
 
 import type {
-  IGraphVisualizationEngine,
-  ILayoutAlgorithm,
-  IRendererRegistry,
-  ILayoutRegistry,
-  IInteractionRegistry,
+  IGraphVisualizationEngine as _IGraphVisualizationEngine,
+  ILayoutAlgorithm as _ILayoutAlgorithm,
+  IRendererRegistry as _IRendererRegistry,
+  ILayoutRegistry as _ILayoutRegistry,
+  IInteractionRegistry as _IInteractionRegistry,
   IGraphConfig,
   IGraph,
-  IVertex,
-  IEdge,
+  IVertex as _IVertex,
+  IEdge as _IEdge,
 } from '../graph-core/interfaces';
 
 import type {
@@ -258,7 +258,7 @@ const DEFAULT_ENGINE_CAPABILITIES: Record<GraphEngineType, GraphEngineCapabiliti
 // ============================================================================
 
 const DEFAULT_SETTINGS: GraphEngineSettings = {
-  selectedEngine: 'canvas-2d',
+  selectedEngine: 'd3-force', // Start with D3 Force as it's fully implemented and interactive
   engineConfigs: {
     'canvas-2d': {},
     'svg': {},
@@ -300,7 +300,7 @@ const useGraphEngineStore = create<GraphEngineState & GraphEngineActions>()(
     immer((set, get) => ({
       // Initial state
       availableEngines: new Map(Object.entries(DEFAULT_ENGINE_CAPABILITIES) as Array<[GraphEngineType, GraphEngineCapabilities]>),
-      currentEngine: 'canvas-2d',
+      currentEngine: 'd3-force', // Start with D3 Force as it's fully implemented
       engineInstances: new Map(),
       currentGraph: null,
       isTransitioning: false,
@@ -488,16 +488,20 @@ const useGraphEngineStore = create<GraphEngineState & GraphEngineActions>()(
         });
         
         try {
-          // This would be where we dynamically import and instantiate the engine
-          // For now, we'll simulate the loading process
-          await new Promise(resolve => setTimeout(resolve, 100));
+          // Import the createEngineByType function to actually instantiate engines
+          const { createEngineByType } = await import('./index');
           
-          // In a real implementation, this would create the actual engine instance:
-          // const engineInstance = await createEngineInstance(engineType);
+          // Check if this engine type is implemented
+          const availableTypes = ['canvas-2d', 'd3-force', 'cytoscape', 'webgl'];
+          if (!availableTypes.includes(engineType)) {
+            throw new Error(`Engine type ${engineType} is not yet implemented`);
+          }
+          
+          // Create the actual engine instance
+          const engineInstance = await createEngineByType(engineType);
           
           set((draft) => {
-            // draft.engineInstances.set(engineType, engineInstance);
-            draft.engineInstances.set(engineType, null); // Placeholder
+            draft.engineInstances.set(engineType, engineInstance);
             draft.engineLoadingStates.set(engineType, 'loaded');
           });
           

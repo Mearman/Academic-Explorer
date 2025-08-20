@@ -174,12 +174,12 @@ export const useEngineSettings = create<EngineSettingsStore>()(
       
       updateSetting: (key, value) =>
         set((state) => {
-          state.settings[key] = value as any;
+          (state.settings[key] as EngineSettings[typeof key]) = value;
         }),
       
       updateNestedSetting: (key, nestedKey, value) =>
         set((state) => {
-          (state.settings[key] as any)[nestedKey] = value;
+          ((state.settings[key] as EngineSettings[typeof key]) as Record<string, unknown>)[nestedKey as string] = value;
         }),
       
       resetSettings: () =>
@@ -292,7 +292,7 @@ export const useEngineSettings = create<EngineSettingsStore>()(
           // Migration from version 0 to 1
           return {
             ...DEFAULT_SETTINGS,
-            ...(persistedState as any),
+            ...(persistedState as Partial<EngineSettings>),
           };
         }
         return persistedState as EngineSettingsStore;
@@ -330,7 +330,7 @@ export function useNestedSetting<
   key: K,
   nestedKey: NK
 ): [EngineSettings[K][NK], (value: EngineSettings[K][NK]) => void] {
-  const setting = useEngineSettings((state) => (state.settings[key] as any)[nestedKey]);
+  const setting = useEngineSettings((state) => ((state.settings[key] as EngineSettings[typeof key]) as Record<string, unknown>)[nestedKey as string] as EngineSettings[K][NK]);
   const updateNestedSetting = useEngineSettings((state) => state.updateNestedSetting);
   
   return [setting, (value) => updateNestedSetting(key, nestedKey, value)];
@@ -346,8 +346,10 @@ export function usePerformanceSettings() {
   
   return {
     settings: performanceSettings,
-    updateSetting: (key: keyof EngineSettings['performance'], value: any) =>
-      updateNestedSetting('performance', key, value),
+    updateSetting: <K extends keyof EngineSettings['performance']>(
+      key: K,
+      value: EngineSettings['performance'][K]
+    ) => updateNestedSetting('performance', key, value),
     isOptimized: isOptimized(),
   };
 }
@@ -361,8 +363,10 @@ export function useUISettings() {
   
   return {
     settings: uiSettings,
-    updateSetting: (key: keyof EngineSettings['ui'], value: any) =>
-      updateNestedSetting('ui', key, value),
+    updateSetting: <K extends keyof EngineSettings['ui']>(
+      key: K,
+      value: EngineSettings['ui'][K]
+    ) => updateNestedSetting('ui', key, value),
   };
 }
 
@@ -375,7 +379,9 @@ export function useExportSettings() {
   
   return {
     settings: exportSettings,
-    updateSetting: (key: keyof EngineSettings['export'], value: any) =>
-      updateNestedSetting('export', key, value),
+    updateSetting: <K extends keyof EngineSettings['export']>(
+      key: K,
+      value: EngineSettings['export'][K]
+    ) => updateNestedSetting('export', key, value),
   };
 }

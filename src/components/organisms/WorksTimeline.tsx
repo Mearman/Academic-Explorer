@@ -455,7 +455,7 @@ export function WorksTimeline({ authorId, authorName }: WorksTimelineProps) {
     loadMore,
     refetch,
     updateOptions
-  } = useAuthorWorks(authorId, options);
+  } = useAuthorWorks({ authorId, options });
 
   // Group works by year
   const worksByYear = useMemo((): YearGroup[] => {

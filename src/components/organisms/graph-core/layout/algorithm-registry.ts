@@ -5,7 +5,7 @@
  * automatic registration, categorization, and algorithm discovery.
  */
 
-import type { LayoutAlgorithm, LayoutConfig, LayoutEngine } from './layout-engine';
+import type { LayoutAlgorithm, LayoutConfig as _LayoutConfig, LayoutEngine } from './layout-engine';
 
 /**
  * Algorithm category for grouping similar algorithms

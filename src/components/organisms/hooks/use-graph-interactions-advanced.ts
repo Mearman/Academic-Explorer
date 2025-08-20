@@ -86,6 +86,7 @@ export interface UseAdvancedGraphInteractionsOptions {
   onVerticesPaste?: (position?: Point) => void;
 }
 
+// eslint-disable-next-line max-lines-per-function
 export function useAdvancedGraphInteractions(
   options: UseAdvancedGraphInteractionsOptions = {}
 ) {

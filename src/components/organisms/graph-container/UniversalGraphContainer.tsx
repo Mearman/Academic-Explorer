@@ -272,8 +272,8 @@ export function UniversalGraphContainer({
     isHydrated,
     isLoading,
     layoutConfig,
-    graph,
-    filterOptions,
+    graph: _graph,
+    filterOptions: _filterOptions,
     getFilteredVertices,
     getFilteredEdges,
     selectVertex,
@@ -284,11 +284,11 @@ export function UniversalGraphContainer({
   // Container state
   const [isSimulating, setIsSimulating] = useState(false);
   const [showSearch, setShowSearch] = useState(false);
-  const [highlightedVertices, setHighlightedVertices] = useState<string[]>([]);
+  const [_highlightedVertices, _setHighlightedVertices] = useState<string[]>([]);
   const [performanceMetrics, setPerformanceMetrics] = useState<GraphEnginePerformanceMetrics | null>(null);
   
   // Engine management
-  const filteredVertices = useMemo(() => getFilteredVertices(), [graph.vertices, filterOptions, getFilteredVertices]);
+  const filteredVertices = useMemo(() => getFilteredVertices(), [getFilteredVertices]);
   const [currentEngineId, setCurrentEngineId] = useState<string>(() => {
     return defaultEngine || getDefaultEngine(filteredVertices.length);
   });
@@ -327,7 +327,7 @@ export function UniversalGraphContainer({
   } = useGraphInteractions();
 
   // Filtered data
-  const filteredEdges = useMemo(() => getFilteredEdges(), [graph.edges, filterOptions, getFilteredEdges]);
+  const filteredEdges = useMemo(() => getFilteredEdges(), [getFilteredEdges]);
   
   // Positioned vertices based on current engine capabilities
   const positionedVertices = useMemo(() => {
@@ -402,7 +402,7 @@ export function UniversalGraphContainer({
           edgeCount: filteredEdges.length,
           fps: Math.round(fps),
           lastUpdate: now,
-          memoryUsage: (performance as any).memory?.usedJSHeapSize
+          memoryUsage: (performance as Performance & { memory?: { usedJSHeapSize: number } }).memory?.usedJSHeapSize
         };
         
         setPerformanceMetrics(metrics);
@@ -499,7 +499,7 @@ export function UniversalGraphContainer({
     
     setShowSearch(prev => !prev);
     if (showSearch) {
-      setHighlightedVertices([]);
+      _setHighlightedVertices([]);
     }
   }, [showSearch, currentEngine]);
 
@@ -511,14 +511,14 @@ export function UniversalGraphContainer({
   }, [selectVertex, onVertexClick]);
 
   const handleHighlightVertices = useCallback((vertexIds: string[]) => {
-    setHighlightedVertices(vertexIds);
+    _setHighlightedVertices(vertexIds);
   }, []);
 
   // Keyboard shortcuts
   const handleEscapeKey = useCallback(() => {
     if (showSearch) {
       setShowSearch(false);
-      setHighlightedVertices([]);
+      _setHighlightedVertices([]);
     } else if (isFullscreen) {
       toggleFullscreen();
     }

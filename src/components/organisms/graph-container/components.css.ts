@@ -5,7 +5,7 @@
  * Uses Vanilla Extract with design tokens for consistency and responsive design.
  */
 
-import { style, styleVariants, createVar } from '@vanilla-extract/css';
+import { style, styleVariants as _styleVariants, createVar } from '@vanilla-extract/css';
 import { recipe } from '@vanilla-extract/recipes';
 
 import { entityVars } from '../../design-tokens.css';
