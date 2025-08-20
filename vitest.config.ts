@@ -22,24 +22,21 @@ export default defineConfig({
 		setupFiles: ["./src/test/setup.ts", "./src/test/jest-dom-setup.ts"],
 		environment: "jsdom",
 
-		// CRITICAL: Force serial execution - no parallelism at all
-		pool: "threads",
+		// CRITICAL: Optimized for fast serial execution
+		pool: "forks",
 		poolOptions: {
-			threads: {
-				singleThread: true, // Single thread execution to prevent memory leaks
-				maxThreads: 1, // Absolute maximum: 1 thread
-				minThreads: 1, // Minimum threads: 1
-				isolate: true, // Strict thread isolation
-				useAtomics: false, // Disable atomics to prevent worker communication issues
+			forks: {
+				singleFork: true, // Single fork for absolute memory control
+				isolate: true, // Strict process isolation
 			},
 		},
 
-		// CRITICAL: Fully serial execution mode
+		// CRITICAL: Fully serial execution mode for memory efficiency
 		isolate: true,
 		sequence: {
 			concurrent: false, // No concurrent execution
 			shuffle: false, // Deterministic test order
-			hooks: "stack", // Stack hooks to prevent memory leaks
+			hooks: "stack", // Stack hooks for proper cleanup
 		},
 
 		// CRITICAL: Absolute serial execution
@@ -48,10 +45,10 @@ export default defineConfig({
 		minWorkers: 1, // Minimum 1 worker
 		fileParallelism: false, // Disable file-level parallelism
 
-		// CRITICAL: Extended timeouts for serial execution
-		testTimeout: 30000, // 30 seconds max per test (reduced for faster execution)
-		hookTimeout: 10000, // 10 seconds for hooks
-		teardownTimeout: 10000, // 10 seconds for teardown
+		// CRITICAL: Aggressive timeouts for fast execution
+		testTimeout: 10000, // 10 seconds max per test (reduced for speed)
+		hookTimeout: 5000, // 5 seconds for hooks
+		teardownTimeout: 5000, // 5 seconds for teardown
 
 		// Coverage configuration for all test types
 		coverage: {
@@ -121,34 +118,31 @@ export default defineConfig({
 						"./src/test/jest-dom-setup.ts",
 					],
 
-					// PERFORMANCE: Optimized thread settings for unit tests (safe parallelism)
-					pool: "threads",
+					// PERFORMANCE: Serial execution for unit tests (memory optimized)
+					pool: "forks",
 					poolOptions: {
-						threads: {
-							singleThread: false,
-							maxThreads: 2, // Limited parallelism for unit tests
-							minThreads: 1,
+						forks: {
+							singleFork: true, // Single fork for memory control
 							isolate: true,
-							useAtomics: false,
 						},
 					},
 
-					// PERFORMANCE: Controlled concurrency for unit tests
+					// PERFORMANCE: Serial unit test execution
 					isolate: true,
 					sequence: {
-						concurrent: true, // Allow concurrent unit tests
+						concurrent: false, // No concurrency for stability
 						shuffle: false,
 						hooks: "stack",
 					},
-					maxConcurrency: 2, // Limit to 2 concurrent unit tests
-					maxWorkers: 2,
+					maxConcurrency: 1, // Single test at a time
+					maxWorkers: 1,
 					minWorkers: 1,
-					fileParallelism: true, // Allow file-level parallelism
+					fileParallelism: false, // No file parallelism
 
-					// PERFORMANCE: Reduced timeouts due to parallelism
-					testTimeout: process.env.CI === "true" ? 20000 : 15000,
-					hookTimeout: 10000,
-					teardownTimeout: 10000,
+					// PERFORMANCE: Fast timeouts for unit tests
+					testTimeout: 8000, // 8 seconds for unit tests
+					hookTimeout: 3000, // 3 seconds for hooks
+					teardownTimeout: 3000, // 3 seconds for teardown
 
 					// Coverage for unit tests
 					coverage: {
@@ -175,19 +169,16 @@ export default defineConfig({
 						"./src/test/jest-dom-setup.ts",
 					],
 
-					// CRITICAL: Single thread for component tests (DOM intensive)
-					pool: "threads",
+					// CRITICAL: Optimized execution for component tests (DOM intensive)
+					pool: "forks",
 					poolOptions: {
-						threads: {
-							singleThread: true,
-							maxThreads: 1,
-							minThreads: 1,
+						forks: {
+							singleFork: true,
 							isolate: true,
-							useAtomics: false,
 						},
 					},
 
-					// CRITICAL: Full serial execution for component tests
+					// CRITICAL: Serial execution for component tests
 					isolate: true,
 					sequence: {
 						concurrent: false,
@@ -199,10 +190,10 @@ export default defineConfig({
 					minWorkers: 1,
 					fileParallelism: false,
 
-					// CRITICAL: Extended timeouts for DOM operations and serial mode
-					testTimeout: process.env.CI === "true" ? 45000 : 30000,
-					hookTimeout: 15000,
-					teardownTimeout: 15000,
+					// CRITICAL: Optimized timeouts for DOM operations
+					testTimeout: 12000, // 12 seconds for component tests
+					hookTimeout: 5000, // 5 seconds for hooks
+					teardownTimeout: 5000, // 5 seconds for teardown
 
 					// Coverage for component tests
 					coverage: {

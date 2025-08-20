@@ -103,6 +103,9 @@ export default defineConfig(({ command }) => ({
           'vendor-tanstack': ['@tanstack/react-router', '@tanstack/react-query'],
           'vendor-mantine': ['@mantine/core', '@mantine/hooks', '@mantine/vanilla-extract'],
           'vendor-state': ['zustand', 'immer'],
+          // Graph rendering libraries
+          'vendor-d3': ['d3'],
+          'vendor-cytoscape': ['cytoscape', 'cytoscape-cose-bilkent', 'cytoscape-dagre'],
           // Utility libraries
           'vendor-icons': ['@tabler/icons-react'],
           'vendor-idb': ['idb'],

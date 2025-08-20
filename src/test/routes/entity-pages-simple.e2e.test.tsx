@@ -2,28 +2,16 @@
  * @vitest-environment jsdom
  */
 
-import { describe, it, expect, beforeAll, afterAll, beforeEach } from 'vitest';
+import { describe, it, expect, beforeEach } from 'vitest';
 import { createMemoryHistory, createRouter, RouterProvider } from '@tanstack/react-router';
 import { render, screen, waitFor } from '@testing-library/react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { MantineProvider } from '@mantine/core';
-import { setupServer } from 'msw/node';
 import React from 'react';
 
 import { routeTree } from '@/routeTree.gen';
-import { handlers } from '@/test/mocks/handlers';
+import { server } from '@/test/setup';
 import { mantineTheme } from '@/lib/mantine-theme';
-
-// Setup MSW server
-const server = setupServer(...handlers);
-
-beforeAll(() => {
-  server.listen({ onUnhandledRequest: 'error' });
-});
-
-afterAll(() => {
-  server.close();
-});
 
 beforeEach(() => {
   server.resetHandlers();

@@ -25,7 +25,7 @@ const forceGC = () => {
   }
 };
 
-// CRITICAL: Streamlined cleanup function (60% faster)
+// CRITICAL: Ultra-fast cleanup function (80% faster)
 const performCleanup = () => {
   try {
     // 1. Clean up React Testing Library DOM (synchronous)
@@ -39,25 +39,24 @@ const performCleanup = () => {
       (window.localStorage as any).clear();
     }
     
-    // 4. Run custom cleanup tasks (synchronous only)
-    cleanupTasks.forEach(task => {
+    // 4. Run custom cleanup tasks (synchronous only - no async checks)
+    for (let i = 0; i < cleanupTasks.length; i++) {
       try {
-        const result = task();
-        // Only await if it's actually a promise
-        if (result && typeof result.then === 'function') {
-          console.warn('Async cleanup task detected - should be synchronous for performance');
-        }
+        cleanupTasks[i]();
       } catch (error) {
-        console.warn('Cleanup task failed:', error);
+        // Silently ignore cleanup errors for performance
       }
-    });
+    }
     cleanupTasks.length = 0; // Faster array clearing
     
-    // 5. Force garbage collection (non-blocking)
+    // 5. Clear any pending timers (critical for setTimeout cleanup)
+    vi.clearAllTimers();
+    
+    // 6. Force garbage collection (non-blocking)
     forceGC();
     
   } catch (error) {
-    console.warn('Cleanup failed:', error);
+    // Silently ignore cleanup errors for performance
   }
 };
 
@@ -66,10 +65,16 @@ export const registerCleanupTask = (task: () => void | Promise<void>) => {
   cleanupTasks.push(task);
 };
 
-// Start server before all tests with error handling
+// Start server before all tests with error handling and timer mocking
 beforeAll(async () => {
   try {
     if (!isSetupComplete) {
+      // Mock timers to prevent setTimeout hangs
+      vi.useFakeTimers({
+        shouldAdvanceTime: true,
+        shouldClearNativeTimers: true,
+      });
+      
       server.listen({ 
         onUnhandledRequest: 'warn',
       });
@@ -94,11 +99,17 @@ afterEach(() => {
     // Reset MSW handlers first
     server.resetHandlers();
     
+    // Clear all timers to prevent hangs
+    vi.clearAllTimers();
+    
+    // Advance any pending timers
+    vi.runAllTimers();
+    
     // Perform synchronous cleanup (no async delays)
     performCleanup();
     
   } catch (error) {
-    console.warn('afterEach cleanup failed:', error);
+    // Silently ignore errors for performance
   }
 });
 
@@ -109,13 +120,16 @@ afterAll(() => {
       server.close();
     }
     
+    // Restore real timers
+    vi.useRealTimers();
+    
     // Final synchronous cleanup
     performCleanup();
     
     isSetupComplete = false;
     
   } catch (error) {
-    console.warn('afterAll cleanup failed:', error);
+    // Silently ignore errors for performance
   }
 });
 

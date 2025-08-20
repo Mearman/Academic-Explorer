@@ -4,29 +4,11 @@
  */
 
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import { createRouter, createRootRoute, createMemoryHistory, RouterProvider } from '@tanstack/react-router';
+import { screen, fireEvent, waitFor } from '@testing-library/react';
 
 import { EntityErrorBoundary, EntityError } from '@/components/templates/error-boundary';
 import type { EntityErrorProps } from '@/components/templates/error-boundary';
-
-// Test wrapper component
-function TestWrapper({ children }: { children: React.ReactNode }) {
-  const rootRoute = createRootRoute({
-    component: () => children as React.ReactElement,
-  });
-
-  const history = createMemoryHistory({
-    initialEntries: ['/'],
-  });
-
-  const router = createRouter({
-    routeTree: rootRoute,
-    history,
-  });
-
-  return <RouterProvider router={router} />;
-}
+import { renderWithProviders, TEST_PROVIDER_CONFIGS } from '@/test/utils/test-providers';
 
 // Mock the child components
 vi.mock('@/components/molecules/error-actions', () => ({
@@ -111,15 +93,14 @@ describe('EntityError Component', () => {
     it('should detect 404 not found errors', () => {
       const error = new Error('404 - Entity not found');
       
-      render(
-        <TestWrapper>
-          <EntityError 
-            error={error} 
-            resetErrorBoundary={mockResetErrorBoundary}
-            entityType="works"
-            entityId="W123456789"
-          />
-        </TestWrapper>
+      renderWithProviders(
+        <EntityError 
+          error={error} 
+          resetErrorBoundary={mockResetErrorBoundary}
+          entityType="works"
+          entityId="W123456789"
+        />,
+        { providerOptions: TEST_PROVIDER_CONFIGS.basic }
       );
 
       expect(screen.getByTestId('is-not-found')).toHaveTextContent('true');
@@ -131,13 +112,12 @@ describe('EntityError Component', () => {
     it('should detect network errors', () => {
       const error = new Error('Failed to fetch from network');
       
-      render(
-        <TestWrapper>
-          <EntityError 
-            error={error} 
-            resetErrorBoundary={mockResetErrorBoundary}
-          />
-        </TestWrapper>
+      renderWithProviders(
+        <EntityError 
+          error={error} 
+          resetErrorBoundary={mockResetErrorBoundary}
+        />,
+        { providerOptions: TEST_PROVIDER_CONFIGS.basic }
       );
 
       expect(screen.getByTestId('is-not-found')).toHaveTextContent('false');
@@ -147,13 +127,12 @@ describe('EntityError Component', () => {
     it('should handle generic errors', () => {
       const error = new Error('Something went wrong');
       
-      render(
-        <TestWrapper>
-          <EntityError 
-            error={error} 
-            resetErrorBoundary={mockResetErrorBoundary}
-          />
-        </TestWrapper>
+      renderWithProviders(
+        <EntityError 
+          error={error} 
+          resetErrorBoundary={mockResetErrorBoundary}
+        />,
+        { providerOptions: TEST_PROVIDER_CONFIGS.basic }
       );
 
       expect(screen.getByTestId('is-not-found')).toHaveTextContent('false');
@@ -170,14 +149,13 @@ describe('EntityError Component', () => {
         componentStack: '\n    in TestComponent\n    in ErrorBoundary',
       };
 
-      render(
-        <TestWrapper>
-          <EntityError 
-            error={error} 
-            resetErrorBoundary={mockResetErrorBoundary}
-            errorInfo={errorInfo}
-          />
-        </TestWrapper>
+      renderWithProviders(
+        <EntityError 
+          error={error} 
+          resetErrorBoundary={mockResetErrorBoundary}
+          errorInfo={errorInfo}
+        />,
+        { providerOptions: TEST_PROVIDER_CONFIGS.basic }
       );
 
       expect(screen.getByTestId('error-message')).toHaveTextContent('Test error message');
@@ -188,13 +166,12 @@ describe('EntityError Component', () => {
     it('should enable production debug details', () => {
       const error = new Error('Production error');
       
-      render(
-        <TestWrapper>
-          <EntityError 
-            error={error} 
-            resetErrorBoundary={mockResetErrorBoundary}
-          />
-        </TestWrapper>
+      renderWithProviders(
+        <EntityError 
+          error={error} 
+          resetErrorBoundary={mockResetErrorBoundary}
+        />,
+        { providerOptions: TEST_PROVIDER_CONFIGS.basic }
       );
 
       expect(screen.getByTestId('show-in-production')).toHaveTextContent('true');
@@ -206,13 +183,12 @@ describe('EntityError Component', () => {
     it('should call resetErrorBoundary when retry button is clicked', () => {
       const error = new Error('Test error');
       
-      render(
-        <TestWrapper>
-          <EntityError 
-            error={error} 
-            resetErrorBoundary={mockResetErrorBoundary}
-          />
-        </TestWrapper>
+      renderWithProviders(
+        <EntityError 
+          error={error} 
+          resetErrorBoundary={mockResetErrorBoundary}
+        />,
+        { providerOptions: TEST_PROVIDER_CONFIGS.basic }
       );
 
       const retryButton = screen.getByTestId('retry-button');
@@ -224,13 +200,12 @@ describe('EntityError Component', () => {
     it('should render all action buttons', () => {
       const error = new Error('Test error');
       
-      render(
-        <TestWrapper>
-          <EntityError 
-            error={error} 
-            resetErrorBoundary={mockResetErrorBoundary}
-          />
-        </TestWrapper>
+      renderWithProviders(
+        <EntityError 
+          error={error} 
+          resetErrorBoundary={mockResetErrorBoundary}
+        />,
+        { providerOptions: TEST_PROVIDER_CONFIGS.basic }
       );
 
       expect(screen.getByTestId('retry-button')).toBeInTheDocument();
@@ -243,13 +218,12 @@ describe('EntityError Component', () => {
     it('should show correct icon for not found errors', () => {
       const error = new Error('404 not found');
       
-      render(
-        <TestWrapper>
-          <EntityError 
-            error={error} 
-            resetErrorBoundary={mockResetErrorBoundary}
-          />
-        </TestWrapper>
+      renderWithProviders(
+        <EntityError 
+          error={error} 
+          resetErrorBoundary={mockResetErrorBoundary}
+        />,
+        { providerOptions: TEST_PROVIDER_CONFIGS.basic }
       );
 
       const icon = screen.getByTestId('error-icon');
@@ -259,13 +233,12 @@ describe('EntityError Component', () => {
     it('should show correct icon for other errors', () => {
       const error = new Error('General error');
       
-      render(
-        <TestWrapper>
-          <EntityError 
-            error={error} 
-            resetErrorBoundary={mockResetErrorBoundary}
-          />
-        </TestWrapper>
+      renderWithProviders(
+        <EntityError 
+          error={error} 
+          resetErrorBoundary={mockResetErrorBoundary}
+        />,
+        { providerOptions: TEST_PROVIDER_CONFIGS.basic }
       );
 
       const icon = screen.getByTestId('error-icon');
@@ -288,12 +261,11 @@ describe('EntityErrorBoundary Component', () => {
 
   describe('Error Catching', () => {
     it('should catch and display errors from child components', async () => {
-      render(
-        <TestWrapper>
-          <EntityErrorBoundary entityType="works" entityId="W123">
-            <ThrowingComponent shouldThrow={true} errorMessage="Component crashed" />
-          </EntityErrorBoundary>
-        </TestWrapper>
+      renderWithProviders(
+        <EntityErrorBoundary entityType="works" entityId="W123">
+          <ThrowingComponent shouldThrow={true} errorMessage="Component crashed" />
+        </EntityErrorBoundary>,
+        { providerOptions: TEST_PROVIDER_CONFIGS.basic }
       );
 
       await waitFor(() => {
@@ -306,12 +278,11 @@ describe('EntityErrorBoundary Component', () => {
     });
 
     it('should render children when no errors occur', () => {
-      render(
-        <TestWrapper>
-          <EntityErrorBoundary>
-            <ThrowingComponent shouldThrow={false} />
-          </EntityErrorBoundary>
-        </TestWrapper>
+      renderWithProviders(
+        <EntityErrorBoundary>
+          <ThrowingComponent shouldThrow={false} />
+        </EntityErrorBoundary>,
+        { providerOptions: TEST_PROVIDER_CONFIGS.basic }
       );
 
       expect(screen.getByTestId('working-component')).toBeInTheDocument();
@@ -321,12 +292,11 @@ describe('EntityErrorBoundary Component', () => {
 
   describe('Error Logging', () => {
     it('should log comprehensive error information', async () => {
-      render(
-        <TestWrapper>
-          <EntityErrorBoundary entityType="authors" entityId="A123456">
-            <ThrowingComponent shouldThrow={true} errorMessage="Detailed error" />
-          </EntityErrorBoundary>
-        </TestWrapper>
+      renderWithProviders(
+        <EntityErrorBoundary entityType="authors" entityId="A123456">
+          <ThrowingComponent shouldThrow={true} errorMessage="Detailed error" />
+        </EntityErrorBoundary>,
+        { providerOptions: TEST_PROVIDER_CONFIGS.basic }
       );
 
       await waitFor(() => {
@@ -357,12 +327,11 @@ describe('EntityErrorBoundary Component', () => {
     });
 
     it('should include errorInfo in logs', async () => {
-      render(
-        <TestWrapper>
-          <EntityErrorBoundary>
-            <ThrowingComponent shouldThrow={true} />
-          </EntityErrorBoundary>
-        </TestWrapper>
+      renderWithProviders(
+        <EntityErrorBoundary>
+          <ThrowingComponent shouldThrow={true} />
+        </EntityErrorBoundary>,
+        { providerOptions: TEST_PROVIDER_CONFIGS.basic }
       );
 
       await waitFor(() => {
@@ -380,12 +349,11 @@ describe('EntityErrorBoundary Component', () => {
 
   describe('Error Recovery', () => {
     it('should reset error state when boundary is reset', async () => {
-      const { rerender } = render(
-        <TestWrapper>
-          <EntityErrorBoundary>
-            <ThrowingComponent shouldThrow={true} />
-          </EntityErrorBoundary>
-        </TestWrapper>
+      const { rerender } = renderWithProviders(
+        <EntityErrorBoundary>
+          <ThrowingComponent shouldThrow={true} />
+        </EntityErrorBoundary>,
+        { providerOptions: TEST_PROVIDER_CONFIGS.basic }
       );
 
       // Wait for error to be caught
@@ -395,11 +363,9 @@ describe('EntityErrorBoundary Component', () => {
 
       // Simulate reset by rerendering with working component
       rerender(
-        <TestWrapper>
-          <EntityErrorBoundary>
-            <ThrowingComponent shouldThrow={false} />
-          </EntityErrorBoundary>
-        </TestWrapper>
+        <EntityErrorBoundary>
+          <ThrowingComponent shouldThrow={false} />
+        </EntityErrorBoundary>
       );
 
       expect(screen.getByTestId('working-component')).toBeInTheDocument();
@@ -409,14 +375,14 @@ describe('EntityErrorBoundary Component', () => {
       let shouldThrow = true;
       
       const TestWrapperComponent = () => (
-        <TestWrapper>
-          <EntityErrorBoundary>
-            <ThrowingComponent shouldThrow={shouldThrow} />
-          </EntityErrorBoundary>
-        </TestWrapper>
+        <EntityErrorBoundary>
+          <ThrowingComponent shouldThrow={shouldThrow} />
+        </EntityErrorBoundary>
       );
 
-      const { rerender } = render(<TestWrapperComponent />);
+      const { rerender } = renderWithProviders(<TestWrapperComponent />, {
+        providerOptions: TEST_PROVIDER_CONFIGS.basic
+      });
 
       // Wait for error to be caught
       await waitFor(() => {
@@ -447,12 +413,11 @@ describe('EntityErrorBoundary Component', () => {
         </div>
       );
 
-      render(
-        <TestWrapper>
-          <EntityErrorBoundary fallback={CustomFallback}>
-            <ThrowingComponent shouldThrow={true} errorMessage="Custom error" />
-          </EntityErrorBoundary>
-        </TestWrapper>
+      renderWithProviders(
+        <EntityErrorBoundary fallback={CustomFallback}>
+          <ThrowingComponent shouldThrow={true} errorMessage="Custom error" />
+        </EntityErrorBoundary>,
+        { providerOptions: TEST_PROVIDER_CONFIGS.basic }
       );
 
       await waitFor(() => {
@@ -466,12 +431,11 @@ describe('EntityErrorBoundary Component', () => {
 
   describe('Edge Cases', () => {
     it('should handle errors without entity information', async () => {
-      render(
-        <TestWrapper>
-          <EntityErrorBoundary>
-            <ThrowingComponent shouldThrow={true} />
-          </EntityErrorBoundary>
-        </TestWrapper>
+      renderWithProviders(
+        <EntityErrorBoundary>
+          <ThrowingComponent shouldThrow={true} />
+        </EntityErrorBoundary>,
+        { providerOptions: TEST_PROVIDER_CONFIGS.basic }
       );
 
       await waitFor(() => {
@@ -483,12 +447,11 @@ describe('EntityErrorBoundary Component', () => {
     });
 
     it('should handle multiple consecutive errors', async () => {
-      const { rerender } = render(
-        <TestWrapper>
-          <EntityErrorBoundary>
-            <ThrowingComponent shouldThrow={true} errorMessage="First error" />
-          </EntityErrorBoundary>
-        </TestWrapper>
+      const { rerender } = renderWithProviders(
+        <EntityErrorBoundary>
+          <ThrowingComponent shouldThrow={true} errorMessage="First error" />
+        </EntityErrorBoundary>,
+        { providerOptions: TEST_PROVIDER_CONFIGS.basic }
       );
 
       await waitFor(() => {
@@ -496,11 +459,9 @@ describe('EntityErrorBoundary Component', () => {
       });
 
       rerender(
-        <TestWrapper>
-          <EntityErrorBoundary>
-            <ThrowingComponent shouldThrow={true} errorMessage="Second error" />
-          </EntityErrorBoundary>
-        </TestWrapper>
+        <EntityErrorBoundary>
+          <ThrowingComponent shouldThrow={true} errorMessage="Second error" />
+        </EntityErrorBoundary>
       );
 
       await waitFor(() => {
@@ -509,12 +470,11 @@ describe('EntityErrorBoundary Component', () => {
     });
 
     it('should handle errors with no message', async () => {
-      render(
-        <TestWrapper>
-          <EntityErrorBoundary>
-            <ThrowingComponent shouldThrow={true} errorMessage="" />
-          </EntityErrorBoundary>
-        </TestWrapper>
+      renderWithProviders(
+        <EntityErrorBoundary>
+          <ThrowingComponent shouldThrow={true} errorMessage="" />
+        </EntityErrorBoundary>,
+        { providerOptions: TEST_PROVIDER_CONFIGS.basic }
       );
 
       await waitFor(() => {
@@ -534,23 +494,20 @@ describe('EntityErrorBoundary Component', () => {
         return <div data-testid="counting-component">Render count: {renderCount}</div>;
       };
 
-      const { rerender } = render(
-        <TestWrapper>
-          <EntityErrorBoundary entityType="test">
-            <CountingComponent />
-          </EntityErrorBoundary>
-        </TestWrapper>
+      const { rerender } = renderWithProviders(
+        <EntityErrorBoundary entityType="test">
+          <CountingComponent />
+        </EntityErrorBoundary>,
+        { providerOptions: TEST_PROVIDER_CONFIGS.basic }
       );
 
       expect(renderCount).toBe(1);
 
       // Rerender with same props - should not re-render children
       rerender(
-        <TestWrapper>
-          <EntityErrorBoundary entityType="test">
-            <CountingComponent />
-          </EntityErrorBoundary>
-        </TestWrapper>
+        <EntityErrorBoundary entityType="test">
+          <CountingComponent />
+        </EntityErrorBoundary>
       );
 
       expect(renderCount).toBe(1);

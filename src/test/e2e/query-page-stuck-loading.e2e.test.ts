@@ -4,7 +4,7 @@ describe('E2E: Query Page Stuck Loading Issue', () => {
   // These tests are designed to run against a live development server
   // Run with: pnpm dev (in one terminal) && pnpm test:e2e (in another)
   
-  const BASE_URL = 'http://localhost:3001';
+  const BASE_URL = 'http://localhost:3000';
   
   beforeEach(() => {
     // Reset any global state before each test
@@ -60,7 +60,7 @@ EXPECTED BEHAVIOR:
       `);
 
       // For automated testing, we'll just verify the test structure is valid
-      expect(BASE_URL).toBe('http://localhost:3001');
+      expect(BASE_URL).toBe('http://localhost:3000');
       expect(true).toBe(true); // Test passes - manual testing required
     });
   });
@@ -171,9 +171,9 @@ EXPECTED BEHAVIOR:
 Please test each of these URLs manually:
       `);
 
-      testCases.forEach((testCase, index) => {
+      testCases.forEach((testCase, _index) => {
         console.log(`
-${index + 1}. ${testCase.name}:
+${_index + 1}. ${testCase.name}:
    URL: ${testCase.url}
    Expected: ${testCase.expectedBehavior}
         `);
@@ -327,7 +327,7 @@ test('check query history bug', async ({ page }) => {
 
       console.log(playwrightScript);
 
-      expect(playwrightScript).toContain('${BASE_URL}');
+      expect(playwrightScript).toContain(BASE_URL);
     });
   });
 });

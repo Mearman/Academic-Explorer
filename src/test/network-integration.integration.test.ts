@@ -158,9 +158,9 @@ class NetworkConditionMock {
   }
 
   removeListener(listener: () => void) {
-    const index = this.listeners.indexOf(listener);
-    if (index > -1) {
-      this.listeners.splice(index, 1);
+    const _index = this.listeners.indexOf(listener);
+    if (_index > -1) {
+      this.listeners.splice(_index, 1);
     }
   }
 
@@ -384,10 +384,14 @@ describe('Network Integration Tests', () => {
       });
 
       const { result: fastResult } = renderHook(() => 
-        useEntityData('W2741809807', EntityType.WORK, {
-          networkAware: true,
-          adaptiveCaching: true,
-          includeNetworkInfo: true,
+        useEntityData({
+          entityId: 'W2741809807',
+          entityType: EntityType.WORK,
+          options: {
+            networkAware: true,
+            adaptiveCaching: true,
+            includeNetworkInfo: true,
+          }
         }), 
         { wrapper }
       );
@@ -409,10 +413,14 @@ describe('Network Integration Tests', () => {
       });
 
       const { result: slowResult } = renderHook(() => 
-        useEntityData('A5023888391', EntityType.AUTHOR, {
-          networkAware: true,
-          adaptiveCaching: true,
-          includeNetworkInfo: true,
+        useEntityData({
+          entityId: 'A5023888391',
+          entityType: EntityType.AUTHOR,
+          options: {
+            networkAware: true,
+            adaptiveCaching: true,
+            includeNetworkInfo: true,
+          }
         }), 
         { wrapper }
       );
@@ -435,10 +443,14 @@ describe('Network Integration Tests', () => {
       networkMock.setNetworkCondition({ isOnline: false });
 
       const { result } = renderHook(() => 
-        useEntityData('W2741809807', EntityType.WORK, {
-          networkAware: true,
-          backgroundSync: true,
-          priority: 'high',
+        useEntityData({
+          entityId: 'W2741809807',
+          entityType: EntityType.WORK,
+          options: {
+            networkAware: true,
+            backgroundSync: true,
+            priority: 'high',
+          }
         }), 
         { wrapper }
       );
@@ -484,9 +496,13 @@ describe('Network Integration Tests', () => {
       });
 
       const { result } = renderHook(() => 
-        useEntityData('W2741809807', EntityType.WORK, {
-          networkAware: true,
-          retryOnError: true,
+        useEntityData({
+          entityId: 'W2741809807',
+          entityType: EntityType.WORK,
+          options: {
+            networkAware: true,
+            retryOnError: true,
+          }
         }), 
         { wrapper }
       );
@@ -686,17 +702,26 @@ describe('Network Integration Tests', () => {
       
       // Create multiple concurrent hooks requesting same entity
       const { result: hook1 } = renderHook(() => 
-        useEntityData('W2741809807', EntityType.WORK), 
+        useEntityData({
+          entityId: 'W2741809807',
+          entityType: EntityType.WORK
+        }), 
         { wrapper }
       );
       
       const { result: hook2 } = renderHook(() => 
-        useEntityData('W2741809807', EntityType.WORK), 
+        useEntityData({
+          entityId: 'W2741809807',
+          entityType: EntityType.WORK
+        }), 
         { wrapper }
       );
       
       const { result: hook3 } = renderHook(() => 
-        useEntityData('W2741809807', EntityType.WORK), 
+        useEntityData({
+          entityId: 'W2741809807',
+          entityType: EntityType.WORK
+        }), 
         { wrapper }
       );
 
@@ -733,12 +758,20 @@ describe('Network Integration Tests', () => {
 
       // Create concurrent requests during network issues
       const { result: hook1 } = renderHook(() => 
-        useEntityData('W2741809807', EntityType.WORK, { networkAware: true }), 
+        useEntityData({
+          entityId: 'W2741809807',
+          entityType: EntityType.WORK,
+          options: { networkAware: true }
+        }), 
         { wrapper }
       );
       
       const { result: hook2 } = renderHook(() => 
-        useEntityData('W2741809807', EntityType.WORK, { networkAware: true }), 
+        useEntityData({
+          entityId: 'W2741809807',
+          entityType: EntityType.WORK,
+          options: { networkAware: true }
+        }), 
         { wrapper }
       );
 
@@ -765,7 +798,10 @@ describe('Network Integration Tests', () => {
       );
       
       const { result: entityData } = renderHook(() => 
-        useEntityData('W2741809807', EntityType.WORK), 
+        useEntityData({
+          entityId: 'W2741809807',
+          entityType: EntityType.WORK
+        }), 
         { wrapper }
       );
 
@@ -797,8 +833,12 @@ describe('Network Integration Tests', () => {
       
       const { result } = renderHook(() => {
         const networkContext = useNetworkContext();
-        const entityData = useEntityData('W2741809807', EntityType.WORK, {
-          networkAware: true,
+        const entityData = useEntityData({
+          entityId: 'W2741809807',
+          entityType: EntityType.WORK,
+          options: {
+            networkAware: true,
+          }
         });
         
         return { networkContext, entityData };
@@ -847,7 +887,10 @@ describe('Network Integration Tests', () => {
       });
 
       const hooks = entityIds.slice(0, 10).map(id => 
-        renderHook(() => useEntityData(id, EntityType.WORK), { wrapper })
+        renderHook(() => useEntityData({
+          entityId: id,
+          entityType: EntityType.WORK
+        }), { wrapper })
       );
 
       // Wait for all to load
@@ -858,8 +901,8 @@ describe('Network Integration Tests', () => {
       );
 
       // Verify all loaded successfully
-      hooks.forEach(({ result }, index) => {
-        expect(result.current.data?.id).toBe(`https://openalex.org/${entityIds[index]}`);
+      hooks.forEach(({ result }, _index) => {
+        expect(result.current.data?.id).toBe(`https://openalex.org/${entityIds[_index]}`);
         expect(result.current.error).toBeNull();
       });
     });
@@ -875,8 +918,12 @@ describe('Network Integration Tests', () => {
       );
 
       const { result, unmount } = renderHook(() => 
-        useEntityData('W2741809807', EntityType.WORK, {
-          networkAware: true,
+        useEntityData({
+          entityId: 'W2741809807',
+          entityType: EntityType.WORK,
+          options: {
+            networkAware: true,
+          }
         }), 
         { wrapper }
       );
@@ -925,7 +972,10 @@ describe('Network Integration Tests', () => {
       const hooks = Array.from({ length: 10 }, () => 
         renderHook(() => ({
           networkContext: useNetworkContext(),
-          entityData: useEntityData('W2741809807', EntityType.WORK),
+          entityData: useEntityData({
+            entityId: 'W2741809807',
+            entityType: EntityType.WORK
+          }),
         }), { wrapper })
       );
 
@@ -954,9 +1004,13 @@ describe('Network Integration Tests', () => {
       });
 
       const { result } = renderHook(() => 
-        useEntityData('W2741809807', EntityType.WORK, {
-          networkAware: true,
-          adaptiveCaching: true,
+        useEntityData({
+          entityId: 'W2741809807',
+          entityType: EntityType.WORK,
+          options: {
+            networkAware: true,
+            adaptiveCaching: true,
+          }
         }), 
         { wrapper }
       );

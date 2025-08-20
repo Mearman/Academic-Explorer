@@ -208,19 +208,19 @@ describe('Bug Reproduction: Query History Zero Results', () => {
     // Check what was actually passed to updateQueryResults
     expect(updateQueryResultsSpy).toHaveBeenCalled();
     const callArgs = updateQueryResultsSpy.mock.calls[0];
-    const [queryId, resultsData] = callArgs;
+    const [params] = callArgs; // Extract the parameters object
 
     console.log('updateQueryResults called with:');
-    console.log('  queryId:', queryId);
-    console.log('  resultsData:', JSON.stringify(resultsData, null, 2));
+    console.log('  params:', JSON.stringify(params, null, 2));
     
     // This will help us understand if the problem is in:
     // 1. The API response itself
     // 2. The count extraction (response.meta?.count ?? 0)
     // 3. The store update logic
     
-    expect(resultsData).toBeDefined();
-    expect(resultsData!.count).toBe(9876);
+    expect(params).toBeDefined();
+    expect(params.results).toBeDefined();
+    expect(params.results?.count).toBe(9876);
   });
 
   it('INVESTIGATION: Check if cache is interfering with meta data', async () => {

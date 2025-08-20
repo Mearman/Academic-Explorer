@@ -1,63 +1,18 @@
 import { createMemoryHistory, createRouter, RouterProvider } from '@tanstack/react-router';
 import { render, screen, waitFor } from '@testing-library/react';
 import { http, HttpResponse } from 'msw';
-import { setupServer } from 'msw/node';
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
 
 import { routeTree } from '@/routeTree.gen';
-
-// Mock successful OpenAlex API response
-const mockWorksResponse = {
-  results: [
-    {
-      id: 'https://openalex.org/W2741809807',
-      title: 'Test Work Title',
-      publication_year: 2023,
-      authorships: [
-        {
-          author: {
-            id: 'https://openalex.org/A5017898742',
-            display_name: 'Joseph Mearman'
-          }
-        }
-      ],
-      cited_by_count: 42,
-      is_oa: true,
-      primary_location: {
-        source: {
-          id: 'https://openalex.org/S123456789',
-          display_name: 'Test Journal'
-        }
-      }
-    }
-  ],
-  meta: {
-    count: 1,
-    db_response_time_ms: 50,
-    page: 1,
-    per_page: 25
-  },
-  group_by: []
-};
-
-// Setup MSW server for API mocking
-const server = setupServer(
-  http.get('https://api.openalex.org/works', () => {
-    return HttpResponse.json(mockWorksResponse);
-  })
-);
+import { server } from '@/test/setup';
+import { mockWorksResponse } from '@/test/mocks/data';
 
 describe('Query Route Integration Tests', () => {
   let router: ReturnType<typeof createRouter>;
 
   beforeEach(() => {
-    server.listen();
-    vi.clearAllMocks();
-  });
-
-  afterEach(() => {
     server.resetHandlers();
-    server.close();
+    vi.clearAllMocks();
   });
 
   const renderWithRouter = (path: string) => {
@@ -75,8 +30,8 @@ describe('Query Route Integration Tests', () => {
       expect(screen.getByText('Test Work Title')).toBeInTheDocument();
     }, { timeout: 5000 });
     
-    // Verify the search metadata shows correct results
-    expect(screen.getByText(/1 result/i)).toBeInTheDocument();
+    // Verify the search metadata shows correct results (shared mock returns 100 results)
+    expect(screen.getByText(/100 result/i)).toBeInTheDocument();
   });
 
   it('should handle navigation to complex query URLs', async () => {

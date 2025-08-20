@@ -161,7 +161,7 @@ describe('E2E: Author Page Rendering', () => {
         () => {
           // Look for author name or other identifying content
           const authorName = screen.queryByText(/Joseph Mearman/i);
-          const authorId = screen.queryByText(/A5017898742/i);
+          const authorId = screen.queryAllByText(/A5017898742/i)[0];
           const loadingIndicators = screen.queryAllByText(/loading/i);
           
           // Should show author content and not have excessive loading indicators
@@ -197,8 +197,8 @@ describe('E2E: Author Page Rendering', () => {
       expect(authorElement).toBeVisible();
       
       // Check for metrics or other expected author data
-      const metricsOrStats = screen.queryByText(/works|citations|cited/i) || 
-                            screen.queryByText(/\d+/); // Look for numeric data
+      const metricsOrStats = screen.queryAllByText(/works|citations|cited/i)[0] || 
+                            screen.queryAllByText(/\d+/)[0]; // Look for numeric data
       if (metricsOrStats) {
         expect(metricsOrStats).toBeInTheDocument();
       }
@@ -219,7 +219,7 @@ describe('E2E: Author Page Rendering', () => {
         () => {
           // Should eventually show author data or be in a non-loading state
           const hasAuthorData = screen.queryByText(/Joseph Mearman/i) || 
-                               screen.queryByText(/A5017898742/i);
+                               screen.queryAllByText(/A5017898742/i)[0];
           const loadingElements = screen.queryAllByText(/loading/i);
           
           // Should either show data or not be stuck in loading
@@ -378,7 +378,7 @@ describe('E2E: Author Page Rendering', () => {
       await waitFor(
         () => {
           const authorContent = screen.queryByText(/Joseph Mearman/i) ||
-                               screen.queryByText(/A5017898742/i);
+                               screen.queryAllByText(/A5017898742/i)[0];
           expect(authorContent).toBeInTheDocument();
         },
         { timeout: 5000 }

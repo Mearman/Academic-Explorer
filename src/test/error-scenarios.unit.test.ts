@@ -4,6 +4,8 @@
  */
 
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
+import { server } from './setup';
+import { http, HttpResponse } from 'msw';
 
 // Mock network status for testing
 const mockNetworkStatus = {
@@ -19,10 +21,6 @@ const mockNetworkStatus = {
   lastOnlineTime: Date.now(),
   offlineDuration: 0,
 };
-
-// Mock fetch for testing network errors
-const mockFetch = vi.fn();
-global.fetch = mockFetch;
 
 describe('Error Scenarios - Network Failures', () => {
   beforeEach(() => {
@@ -40,10 +38,15 @@ describe('Error Scenarios - Network Failures', () => {
 
   describe('Network Error Types', () => {
     it('should handle DNS resolution failures', async () => {
-      mockFetch.mockRejectedValueOnce(new TypeError('Failed to fetch'));
+      // Use MSW to simulate network failure
+      server.use(
+        http.get('https://api.openalex.org/test-dns-failure', () => {
+          return HttpResponse.error();
+        })
+      );
       
       try {
-        await fetch('https://api.openalex.org/works');
+        await fetch('https://api.openalex.org/test-dns-failure');
         expect.fail('Should have thrown an error');
       } catch (error) {
         expect(error).toBeInstanceOf(TypeError);
@@ -53,12 +56,16 @@ describe('Error Scenarios - Network Failures', () => {
 
     it('should handle connection timeout errors', async () => {
       const controller = new AbortController();
-      setTimeout(() => controller.abort(), 100);
+      controller.abort(); // Immediately abort for testing
       
-      mockFetch.mockRejectedValueOnce(new DOMException('AbortError', 'AbortError'));
+      server.use(
+        http.get('https://api.openalex.org/test-timeout', () => {
+          return HttpResponse.error();
+        })
+      );
       
       try {
-        await fetch('https://api.openalex.org/works', {
+        await fetch('https://api.openalex.org/test-timeout', {
           signal: controller.signal,
         });
         expect.fail('Should have thrown an error');
@@ -355,8 +362,7 @@ describe('Error Recovery Mechanisms', () => {
         });
       });
 
-      // Simulate retry logic
-      let lastError: Error | null = null;
+      // Simulate retry logic without real delays
       let success = false;
       
       for (let i = 0; i < 3; i++) {
@@ -367,8 +373,7 @@ describe('Error Recovery Mechanisms', () => {
             break;
           }
         } catch (error) {
-          lastError = error as Error;
-          // Exponential backoff delay would go here
+          // No actual delay - just continue to next attempt
         }
       }
 
