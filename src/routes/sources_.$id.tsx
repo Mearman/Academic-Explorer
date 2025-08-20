@@ -21,9 +21,9 @@ function SourcePage() {
   });
   
   // Use the source data hook
-  const { data: source, loading, error, retry } = useSourceData(
-    !isRedirecting ? id : null
-  );
+  const { data: source, loading, error, retry } = useSourceData({
+    sourceId: !isRedirecting ? id : null
+  });
 
   // Track entity data when source loads
   useEffect(() => {

@@ -21,9 +21,9 @@ function WorkPage() {
   });
   
   // Use the work data hook
-  const { data: work, loading, error, retry } = useWorkData(
-    !isRedirecting ? id : null
-  );
+  const { data: work, loading, error, retry } = useWorkData({
+    workId: !isRedirecting ? id : null
+  });
 
   // Track entity data when work loads
   useEffect(() => {

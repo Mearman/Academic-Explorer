@@ -21,9 +21,9 @@ function InstitutionPage() {
   });
   
   // Use the institution data hook
-  const { data: institution, loading, error, retry } = useInstitutionData(
-    !isRedirecting ? id : null
-  );
+  const { data: institution, loading, error, retry } = useInstitutionData({
+    institutionId: !isRedirecting ? id : null
+  });
 
   // Track entity data when institution loads
   useEffect(() => {
