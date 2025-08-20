@@ -26,16 +26,19 @@ export async function initializeGraphDatabase(): Promise<void> {
   await graphDb.init();
 }
 
+interface RecordEntityVisitOptions {
+  entityId: string;
+  entityType: EntityType;
+  displayName: string;
+  source?: 'direct' | 'link' | 'search' | 'related';
+  metadata?: Record<string, unknown>;
+}
+
 /**
  * Record a direct entity visit (when user navigates to entity page)
  */
-export async function recordEntityVisit(
-  entityId: string,
-  entityType: EntityType,
-  displayName: string,
-  source: 'direct' | 'link' | 'search' | 'related' = 'direct',
-  metadata?: Record<string, unknown>
-): Promise<void> {
+export async function recordEntityVisit(options: RecordEntityVisitOptions): Promise<void> {
+  const { entityId, entityType, displayName, source = 'direct', metadata } = options;
   const timestamp = new Date().toISOString();
   
   const event: EntityVisitEvent = {
@@ -208,13 +211,13 @@ export async function recordEntityPageView(
 ): Promise<void> {
   try {
     // 1. Record the direct visit
-    await recordEntityVisit(
-      entity.id,
-      entityType,
-      entity.display_name,
-      source,
-      metadata
-    );
+    await recordEntityVisit({
+      entityId: entity.id,
+      entityType: entityType,
+      displayName: entity.display_name,
+      source: source,
+      metadata: metadata,
+    });
 
     // 2. Extract and record all relationships from the entity data
     await recordEntityRelationships(entity);

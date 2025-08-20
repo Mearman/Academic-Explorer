@@ -54,13 +54,13 @@ export async function validateEntityData(
       issues.push(...zodIssues);
     } else {
       // Check for extra fields that weren't caught by passthrough
-      const extraFieldIssues = detectExtraFields(
-        entityData,
-        result.data,
-        entityId,
-        entityType,
-        entityDisplayName
-      );
+      const extraFieldIssues = detectExtraFields({
+        originalData: entityData,
+        validatedData: result.data,
+        entityId: entityId,
+        entityType: entityType,
+        entityDisplayName: entityDisplayName,
+      });
       issues.push(...extraFieldIssues);
     }
     
@@ -89,7 +89,7 @@ export async function validateEntityData(
     
     // Create a validation issue for the validation error itself
     const validationErrorIssue: ValidationIssue = {
-      id: generateValidationIssueId(entityId, '_validation', ValidationIssueType.TYPE_MISMATCH),
+      id: generateValidationIssueId({ entityId, fieldPath: '_validation', issueType: ValidationIssueType.TYPE_MISMATCH }),
       entityId,
       entityType,
       issueType: ValidationIssueType.TYPE_MISMATCH,
@@ -246,7 +246,7 @@ function convertZodIssueToValidationIssue(
   }
   
   return {
-    id: generateValidationIssueId(entityId, fieldPath, issueType),
+    id: generateValidationIssueId({ entityId, fieldPath, issueType }),
     entityId,
     entityType,
     issueType,
@@ -261,16 +261,19 @@ function convertZodIssueToValidationIssue(
   };
 }
 
+interface DetectExtraFieldsOptions {
+  originalData: unknown;
+  validatedData: unknown;
+  entityId: string;
+  entityType: EntityType;
+  entityDisplayName?: string;
+}
+
 /**
  * Detect extra fields that passed through Zod validation
  */
-function detectExtraFields(
-  originalData: unknown,
-  validatedData: unknown,
-  entityId: string,
-  entityType: EntityType,
-  entityDisplayName?: string
-): ValidationIssue[] {
+function detectExtraFields(options: DetectExtraFieldsOptions): ValidationIssue[] {
+  const { originalData, validatedData, entityId, entityType, entityDisplayName } = options;
   const issues: ValidationIssue[] = [];
   
   if (!originalData || typeof originalData !== 'object' || !validatedData || typeof validatedData !== 'object') {
@@ -286,7 +289,7 @@ function detectExtraFields(
   for (const key of originalKeys) {
     if (!validatedKeys.has(key)) {
       issues.push({
-        id: generateValidationIssueId(entityId, key, ValidationIssueType.EXTRA_FIELD),
+        id: generateValidationIssueId({ entityId, fieldPath: key, issueType: ValidationIssueType.EXTRA_FIELD }),
         entityId,
         entityType,
         issueType: ValidationIssueType.EXTRA_FIELD,

@@ -66,7 +66,14 @@ export function createMockObjectStore(): MockObjectStore {
   };
 }
 
-export function createMockOpenDB(mockDB: MockDatabase, mockTransaction: MockTransaction): typeof openDB {
+interface CreateMockOpenDBOptions {
+  mockDB: MockDatabase;
+  mockTransaction: MockTransaction;
+}
+
+export function createMockOpenDB(options: CreateMockOpenDBOptions): typeof openDB {
+  const { mockDB, mockTransaction } = options;
+  
   return vi.fn().mockImplementation((
     name: string, 
     version?: number, 

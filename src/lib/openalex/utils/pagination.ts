@@ -14,6 +14,14 @@ export interface PaginationOptions {
   onProgress?: (current: number, total: number) => void;
 }
 
+interface PaginatorConstructorOptions {
+  client: OpenAlexClient;
+  endpoint: string;
+  method: keyof OpenAlexClient;
+  params?: BaseParams;
+  options?: PaginationOptions;
+}
+
 export class Paginator<T> {
   private client: OpenAlexClient;
   private endpoint: string;
@@ -21,13 +29,8 @@ export class Paginator<T> {
   private baseParams: BaseParams;
   private options: PaginationOptions;
 
-  constructor(
-    client: OpenAlexClient,
-    endpoint: string,
-    method: keyof OpenAlexClient,
-    params: BaseParams = {},
-    options: PaginationOptions = {}
-  ) {
+  constructor(constructorOptions: PaginatorConstructorOptions) {
+    const { client, endpoint, method, params = {}, options = {} } = constructorOptions;
     this.client = client;
     this.endpoint = endpoint;
     this.method = method;
@@ -230,15 +233,23 @@ export class PaginationError extends Error {
   }
 }
 
+interface PaginateOptions {
+  client: OpenAlexClient;
+  endpoint: string;
+  method: keyof OpenAlexClient;
+  params?: BaseParams;
+  options?: PaginationOptions;
+}
+
 // Helper function to create a paginator
-export function paginate<T>(
-  client: OpenAlexClient,
-  endpoint: string,
-  method: keyof OpenAlexClient,
-  params: BaseParams = {},
-  options: PaginationOptions = {}
-): Paginator<T> {
-  return new Paginator<T>(client, endpoint, method, params, options);
+export function paginate<T>(paginateOptions: PaginateOptions): Paginator<T> {
+  return new Paginator<T>({
+    client: paginateOptions.client,
+    endpoint: paginateOptions.endpoint,
+    method: paginateOptions.method,
+    params: paginateOptions.params,
+    options: paginateOptions.options,
+  });
 }
 
 // Batch processor for handling large result sets efficiently

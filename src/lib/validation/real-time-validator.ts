@@ -134,7 +134,7 @@ export class RealTimeValidator {
           resolve({
             isValid: false,
             issues: [{
-              id: generateValidationIssueId('validation', fieldPath, ValidationIssueType.TYPE_MISMATCH),
+              id: generateValidationIssueId({ entityId: 'validation', fieldPath, issueType: ValidationIssueType.TYPE_MISMATCH }),
               entityId: 'validation',
               entityType: options?.entityType || EntityType.WORK,
               issueType: ValidationIssueType.TYPE_MISMATCH,
@@ -196,7 +196,7 @@ export class RealTimeValidator {
         return {
           isValid: false,
           issues: [{
-            id: generateValidationIssueId('timeout', fieldPath, ValidationIssueType.TYPE_MISMATCH),
+            id: generateValidationIssueId({ entityId: 'timeout', fieldPath, issueType: ValidationIssueType.TYPE_MISMATCH }),
             entityId: 'timeout',
             entityType: options?.entityType || EntityType.WORK,
             issueType: ValidationIssueType.TYPE_MISMATCH,
@@ -227,7 +227,7 @@ export class RealTimeValidator {
     // Check required fields
     if (options?.required && (value === undefined || value === null || value === '')) {
       issues.push({
-        id: generateValidationIssueId('required', fieldPath, ValidationIssueType.MISSING_FIELD),
+        id: generateValidationIssueId({ entityId: 'required', fieldPath, issueType: ValidationIssueType.MISSING_FIELD }),
         entityId: 'required',
         entityType,
         issueType: ValidationIssueType.MISSING_FIELD,
@@ -257,7 +257,13 @@ export class RealTimeValidator {
 
     // Range validation
     if (options?.min !== undefined || options?.max !== undefined) {
-      const rangeIssue = validateFieldRange(fieldPath, value, entityType, options.min, options.max);
+      const rangeIssue = validateFieldRange({
+        fieldPath: fieldPath,
+        value: value,
+        entityType: entityType,
+        min: options.min,
+        max: options.max
+      });
       if (rangeIssue) issues.push(rangeIssue);
     }
 
@@ -289,7 +295,7 @@ function validateFieldType(
   
   if (actualType !== expectedType) {
     return {
-      id: generateValidationIssueId('type', fieldPath, ValidationIssueType.TYPE_MISMATCH),
+      id: generateValidationIssueId({ entityId: 'type', fieldPath, issueType: ValidationIssueType.TYPE_MISMATCH }),
       entityId: 'type',
       entityType,
       issueType: ValidationIssueType.TYPE_MISMATCH,
@@ -360,7 +366,7 @@ function validateFieldFormat(
 
   if (!isValid) {
     return {
-      id: generateValidationIssueId('format', fieldPath, ValidationIssueType.INVALID_FORMAT),
+      id: generateValidationIssueId({ entityId: 'format', fieldPath, issueType: ValidationIssueType.INVALID_FORMAT }),
       entityId: 'format',
       entityType,
       issueType: ValidationIssueType.INVALID_FORMAT,
@@ -375,21 +381,24 @@ function validateFieldFormat(
   return null;
 }
 
+interface ValidateFieldRangeOptions {
+  fieldPath: string;
+  value: unknown;
+  entityType: EntityType;
+  min?: number;
+  max?: number;
+}
+
 /**
  * Validate field range
  */
-function validateFieldRange(
-  fieldPath: string,
-  value: unknown,
-  entityType: EntityType,
-  min?: number,
-  max?: number
-): ValidationIssue | null {
+function validateFieldRange(options: ValidateFieldRangeOptions): ValidationIssue | null {
+  const { fieldPath, value, entityType, min, max } = options;
   if (typeof value !== 'number') return null;
 
   if (min !== undefined && value < min) {
     return {
-      id: generateValidationIssueId('range', fieldPath, ValidationIssueType.VALUE_OUT_OF_RANGE),
+      id: generateValidationIssueId({ entityId: 'range', fieldPath, issueType: ValidationIssueType.VALUE_OUT_OF_RANGE }),
       entityId: 'range',
       entityType,
       issueType: ValidationIssueType.VALUE_OUT_OF_RANGE,
@@ -403,7 +412,7 @@ function validateFieldRange(
 
   if (max !== undefined && value > max) {
     return {
-      id: generateValidationIssueId('range', fieldPath, ValidationIssueType.VALUE_OUT_OF_RANGE),
+      id: generateValidationIssueId({ entityId: 'range', fieldPath, issueType: ValidationIssueType.VALUE_OUT_OF_RANGE }),
       entityId: 'range',
       entityType,
       issueType: ValidationIssueType.VALUE_OUT_OF_RANGE,
@@ -442,7 +451,7 @@ async function validateFieldSchema(
       // Validate author field
       if (!authorship.author || typeof authorship.author !== 'object') {
         issues.push({
-          id: generateValidationIssueId(entityId, `${fieldPath}.author`, ValidationIssueType.MISSING_FIELD),
+          id: generateValidationIssueId({ entityId, fieldPath: `${fieldPath}.author`, issueType: ValidationIssueType.MISSING_FIELD }),
           entityId,
           entityType,
           issueType: ValidationIssueType.MISSING_FIELD,
@@ -457,7 +466,7 @@ async function validateFieldSchema(
         // Check author ID
         if (!author.id || typeof author.id !== 'string') {
           issues.push({
-            id: generateValidationIssueId(entityId, `${fieldPath}.author.id`, ValidationIssueType.MISSING_FIELD),
+            id: generateValidationIssueId({ entityId, fieldPath: `${fieldPath}.author.id`, issueType: ValidationIssueType.MISSING_FIELD }),
             entityId,
             entityType,
             issueType: ValidationIssueType.MISSING_FIELD,
@@ -471,7 +480,7 @@ async function validateFieldSchema(
         // Check author display_name
         if (!author.display_name || typeof author.display_name !== 'string') {
           issues.push({
-            id: generateValidationIssueId(entityId, `${fieldPath}.author.display_name`, ValidationIssueType.MISSING_FIELD),
+            id: generateValidationIssueId({ entityId, fieldPath: `${fieldPath}.author.display_name`, issueType: ValidationIssueType.MISSING_FIELD }),
             entityId,
             entityType,
             issueType: ValidationIssueType.MISSING_FIELD,
@@ -486,7 +495,7 @@ async function validateFieldSchema(
       // Validate institutions field
       if (authorship.institutions && !Array.isArray(authorship.institutions)) {
         issues.push({
-          id: generateValidationIssueId(entityId, `${fieldPath}.institutions`, ValidationIssueType.TYPE_MISMATCH),
+          id: generateValidationIssueId({ entityId, fieldPath: `${fieldPath}.institutions`, issueType: ValidationIssueType.TYPE_MISMATCH }),
           entityId,
           entityType,
           issueType: ValidationIssueType.TYPE_MISMATCH,
@@ -540,7 +549,7 @@ export async function validateEntityIntegrity(
       entityType,
       isValid: false,
       issues: [{
-        id: generateValidationIssueId(entityId, '_entity', ValidationIssueType.TYPE_MISMATCH),
+        id: generateValidationIssueId({ entityId, fieldPath: '_entity', issueType: ValidationIssueType.TYPE_MISMATCH }),
         entityId,
         entityType,
         issueType: ValidationIssueType.TYPE_MISMATCH,
@@ -561,7 +570,7 @@ export async function validateEntityIntegrity(
       entityType,
       isValid: false,
       issues: [{
-        id: generateValidationIssueId(entityId, '_entity', ValidationIssueType.MISSING_FIELD),
+        id: generateValidationIssueId({ entityId, fieldPath: '_entity', issueType: ValidationIssueType.MISSING_FIELD }),
         entityId,
         entityType,
         issueType: ValidationIssueType.MISSING_FIELD,
@@ -579,7 +588,7 @@ export async function validateEntityIntegrity(
   // Handle circular references
   if (hasCircularReferences(entityData)) {
     issues.push({
-      id: generateValidationIssueId(entityId, '_structure', ValidationIssueType.TYPE_MISMATCH),
+      id: generateValidationIssueId({ entityId, fieldPath: '_structure', issueType: ValidationIssueType.TYPE_MISMATCH }),
       entityId,
       entityType,
       issueType: ValidationIssueType.TYPE_MISMATCH,
@@ -599,7 +608,7 @@ export async function validateEntityIntegrity(
       
       if (lineage.includes(institutionId)) {
         issues.push({
-          id: generateValidationIssueId(entityId, 'lineage', ValidationIssueType.TYPE_MISMATCH),
+          id: generateValidationIssueId({ entityId, fieldPath: 'lineage', issueType: ValidationIssueType.TYPE_MISMATCH }),
           entityId,
           entityType,
           issueType: ValidationIssueType.TYPE_MISMATCH,
@@ -615,7 +624,7 @@ export async function validateEntityIntegrity(
   // Validate basic structure
   if (typeof entityData !== 'object') {
     issues.push({
-      id: generateValidationIssueId(entityId, '_type', ValidationIssueType.TYPE_MISMATCH),
+      id: generateValidationIssueId({ entityId, fieldPath: '_type', issueType: ValidationIssueType.TYPE_MISMATCH }),
       entityId,
       entityType,
       issueType: ValidationIssueType.TYPE_MISMATCH,
@@ -632,7 +641,7 @@ export async function validateEntityIntegrity(
     for (const field of requiredFields) {
       if (!(field in entityObj) || entityObj[field] === undefined || entityObj[field] === null) {
         issues.push({
-          id: generateValidationIssueId(entityId, field, ValidationIssueType.MISSING_FIELD),
+          id: generateValidationIssueId({ entityId, fieldPath: field, issueType: ValidationIssueType.MISSING_FIELD }),
           entityId,
           entityType,
           issueType: ValidationIssueType.MISSING_FIELD,
@@ -647,7 +656,7 @@ export async function validateEntityIntegrity(
     // Check for empty display_name
     if ('display_name' in entityObj && typeof entityObj.display_name === 'string' && entityObj.display_name.trim() === '') {
       issues.push({
-        id: generateValidationIssueId(entityId, 'display_name', ValidationIssueType.INVALID_FORMAT),
+        id: generateValidationIssueId({ entityId, fieldPath: 'display_name', issueType: ValidationIssueType.INVALID_FORMAT }),
         entityId,
         entityType,
         issueType: ValidationIssueType.INVALID_FORMAT,
@@ -708,7 +717,7 @@ export async function checkCrossFieldConsistency(
       const dateYear = new Date(date).getFullYear();
       if (!isNaN(dateYear) && year !== dateYear) {
         issues.push({
-          id: generateValidationIssueId(entityId, 'publication_consistency', ValidationIssueType.TYPE_MISMATCH),
+          id: generateValidationIssueId({ entityId, fieldPath: 'publication_consistency', issueType: ValidationIssueType.TYPE_MISMATCH }),
           entityId,
           entityType,
           issueType: ValidationIssueType.TYPE_MISMATCH,
@@ -737,7 +746,7 @@ export async function checkCrossFieldConsistency(
         // Check for logical inconsistencies
         if (sourceType === 'journal' && workType === 'book-chapter') {
           issues.push({
-            id: generateValidationIssueId(entityId, 'source_type_consistency', ValidationIssueType.TYPE_MISMATCH),
+            id: generateValidationIssueId({ entityId, fieldPath: 'source_type_consistency', issueType: ValidationIssueType.TYPE_MISMATCH }),
             entityId,
             entityType,
             issueType: ValidationIssueType.TYPE_MISMATCH,
@@ -783,7 +792,7 @@ export async function detectSchemaViolations(
     if (field in entity) {
       deprecatedFields.push(field);
       issues.push({
-        id: generateValidationIssueId(entityId, field, ValidationIssueType.EXTRA_FIELD),
+        id: generateValidationIssueId({ entityId, fieldPath: field, issueType: ValidationIssueType.EXTRA_FIELD }),
         entityId,
         entityType,
         issueType: ValidationIssueType.EXTRA_FIELD,
@@ -801,7 +810,7 @@ export async function detectSchemaViolations(
     if (!allowedFields.includes(field) && !deprecatedFieldNames.includes(field)) {
       extraFields.push(field);
       issues.push({
-        id: generateValidationIssueId(entityId, field, ValidationIssueType.EXTRA_FIELD),
+        id: generateValidationIssueId({ entityId, fieldPath: field, issueType: ValidationIssueType.EXTRA_FIELD }),
         entityId,
         entityType,
         issueType: ValidationIssueType.EXTRA_FIELD,
@@ -817,7 +826,7 @@ export async function detectSchemaViolations(
   for (const [field, value] of Object.entries(entity)) {
     if (Array.isArray(value) && value.length > 100) { // Reasonable limit
       issues.push({
-        id: generateValidationIssueId(entityId, field, ValidationIssueType.VALUE_OUT_OF_RANGE),
+        id: generateValidationIssueId({ entityId, fieldPath: field, issueType: ValidationIssueType.VALUE_OUT_OF_RANGE }),
         entityId,
         entityType,
         issueType: ValidationIssueType.VALUE_OUT_OF_RANGE,
@@ -869,8 +878,8 @@ export function formatValidationErrors(
   if (options.groupByField) {
     const grouped = new Map<string, string[]>();
     
-    formattedErrors.forEach((message, index) => {
-      const error = errors[index];
+    formattedErrors.forEach((message, _index) => {
+      const error = errors[_index];
       const fieldName = getFieldDisplayName(error.fieldPath);
       
       if (!grouped.has(fieldName)) {
@@ -894,8 +903,8 @@ export function formatValidationErrors(
   if (options.groupByType) {
     const grouped = new Map<ValidationIssueType, string[]>();
     
-    formattedErrors.forEach((message, index) => {
-      const error = errors[index];
+    formattedErrors.forEach((message, _index) => {
+      const error = errors[_index];
       
       if (!grouped.has(error.issueType)) {
         grouped.set(error.issueType, []);
@@ -1045,7 +1054,7 @@ function validateNestedStructures(
     const {authorships} = entityObj;
     
     if (Array.isArray(authorships)) {
-      authorships.forEach((authorship, index) => {
+      authorships.forEach((authorship, _index) => {
         if (typeof authorship === 'object' && authorship !== null) {
           const auth = authorship as Record<string, unknown>;
           
@@ -1053,12 +1062,12 @@ function validateNestedStructures(
           if ('author' in auth) {
             if (typeof auth.author !== 'object' || auth.author === null) {
               issues.push({
-                id: generateValidationIssueId(entityId, `authorships.${index}.author`, ValidationIssueType.TYPE_MISMATCH),
+                id: generateValidationIssueId({ entityId, fieldPath: `authorships.${_index}.author`, issueType: ValidationIssueType.TYPE_MISMATCH }),
                 entityId,
                 entityType,
                 issueType: ValidationIssueType.TYPE_MISMATCH,
                 severity: ValidationSeverity.ERROR,
-                fieldPath: `authorships.${index}.author`,
+                fieldPath: `authorships.${_index}.author`,
                 description: 'Author must be an object',
                 timestamp: new Date().toISOString(),
               });
@@ -1068,12 +1077,12 @@ function validateNestedStructures(
               // Check for null/undefined ID
               if (!author.id || author.id === null) {
                 issues.push({
-                  id: generateValidationIssueId(entityId, `authorships.${index}.author.id`, ValidationIssueType.MISSING_FIELD),
+                  id: generateValidationIssueId({ entityId, fieldPath: `authorships.${_index}.author.id`, issueType: ValidationIssueType.MISSING_FIELD }),
                   entityId,
                   entityType,
                   issueType: ValidationIssueType.MISSING_FIELD,
                   severity: ValidationSeverity.ERROR,
-                  fieldPath: `authorships.${index}.author.id`,
+                  fieldPath: `authorships.${_index}.author.id`,
                   description: 'Author ID cannot be null',
                   timestamp: new Date().toISOString(),
                 });
@@ -1082,12 +1091,12 @@ function validateNestedStructures(
               // Check for undefined display_name
               if (author.display_name === undefined) {
                 issues.push({
-                  id: generateValidationIssueId(entityId, `authorships.${index}.author.display_name`, ValidationIssueType.MISSING_FIELD),
+                  id: generateValidationIssueId({ entityId, fieldPath: `authorships.${_index}.author.display_name`, issueType: ValidationIssueType.MISSING_FIELD }),
                   entityId,
                   entityType,
                   issueType: ValidationIssueType.MISSING_FIELD,
                   severity: ValidationSeverity.ERROR,
-                  fieldPath: `authorships.${index}.author.display_name`,
+                  fieldPath: `authorships.${_index}.author.display_name`,
                   description: 'Author display name is required',
                   timestamp: new Date().toISOString(),
                 });
@@ -1098,12 +1107,12 @@ function validateNestedStructures(
           // Check institutions field type
           if ('institutions' in auth && typeof auth.institutions === 'string') {
             issues.push({
-              id: generateValidationIssueId(entityId, `authorships.${index}.institutions`, ValidationIssueType.TYPE_MISMATCH),
+              id: generateValidationIssueId({ entityId, fieldPath: `authorships.${_index}.institutions`, issueType: ValidationIssueType.TYPE_MISMATCH }),
               entityId,
               entityType,
               issueType: ValidationIssueType.TYPE_MISMATCH,
               severity: ValidationSeverity.ERROR,
-              fieldPath: `authorships.${index}.institutions`,
+              fieldPath: `authorships.${_index}.institutions`,
               expectedType: 'array',
               actualType: 'string',
               description: 'Institutions must be an array, not a string',

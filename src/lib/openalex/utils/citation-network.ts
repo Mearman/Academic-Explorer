@@ -45,6 +45,25 @@ export interface CoauthorNetwork {
   edges: CoauthorEdge[];
 }
 
+interface TraverseCitationsOptions {
+  workId: string;
+  maxDepth: number;
+  direction: 'forward' | 'backward' | 'both';
+  nodes: Map<string, CitationNode>;
+  edges: CitationEdge[];
+  visited: Set<string>;
+  currentDepth: number;
+}
+
+interface TraverseCoauthorsOptions {
+  authorId: string;
+  maxDepth: number;
+  nodes: Map<string, CoauthorNode>;
+  edges: Map<string, CoauthorEdge>;
+  visited: Set<string>;
+  currentDepth: number;
+}
+
 /**
  * Citation network analysis utilities
  */
@@ -80,15 +99,15 @@ export class CitationNetworkAnalysis {
     });
 
     // Traverse the citation network
-    await this.traverseCitations(
-      rootWork.id,
-      depth,
-      direction,
-      nodes,
-      edges,
-      visited,
-      0
-    );
+    await this.traverseCitations({
+      workId: rootWork.id,
+      maxDepth: depth,
+      direction: direction,
+      nodes: nodes,
+      edges: edges,
+      visited: visited,
+      currentDepth: 0,
+    });
 
     return {
       nodes: Array.from(nodes.values()),
@@ -96,15 +115,8 @@ export class CitationNetworkAnalysis {
     };
   }
 
-  private async traverseCitations(
-    workId: string,
-    maxDepth: number,
-    direction: 'forward' | 'backward' | 'both',
-    nodes: Map<string, CitationNode>,
-    edges: CitationEdge[],
-    visited: Set<string>,
-    currentDepth: number
-  ): Promise<void> {
+  private async traverseCitations(options: TraverseCitationsOptions): Promise<void> {
+    const { workId, maxDepth, direction, nodes, edges, visited, currentDepth } = options;
     if (currentDepth >= maxDepth || visited.has(workId)) {
       return;
     }
@@ -141,15 +153,15 @@ export class CitationNetworkAnalysis {
 
             // Recursively traverse
             if (currentDepth + 1 < maxDepth) {
-              await this.traverseCitations(
-                refWork.id,
-                maxDepth,
-                direction,
-                nodes,
-                edges,
-                visited,
-                currentDepth + 1
-              );
+              await this.traverseCitations({
+                workId: refWork.id,
+                maxDepth: maxDepth,
+                direction: direction,
+                nodes: nodes,
+                edges: edges,
+                visited: visited,
+                currentDepth: currentDepth + 1,
+              });
             }
           }
         }
@@ -187,15 +199,15 @@ export class CitationNetworkAnalysis {
 
           // Recursively traverse
           if (currentDepth + 1 < maxDepth) {
-            await this.traverseCitations(
-              citingWork.id,
-              maxDepth,
-              direction,
-              nodes,
-              edges,
-              visited,
-              currentDepth + 1
-            );
+            await this.traverseCitations({
+              workId: citingWork.id,
+              maxDepth: maxDepth,
+              direction: direction,
+              nodes: nodes,
+              edges: edges,
+              visited: visited,
+              currentDepth: currentDepth + 1,
+            });
           }
         }
       } catch (error) {
@@ -230,14 +242,14 @@ export class CitationNetworkAnalysis {
     });
 
     // Traverse the co-author network
-    await this.traverseCoauthors(
-      rootAuthor.id,
-      depth,
-      nodes,
-      edges,
-      visited,
-      0
-    );
+    await this.traverseCoauthors({
+      authorId: rootAuthor.id,
+      maxDepth: depth,
+      nodes: nodes,
+      edges: edges,
+      visited: visited,
+      currentDepth: 0,
+    });
 
     return {
       nodes: Array.from(nodes.values()),
@@ -245,14 +257,8 @@ export class CitationNetworkAnalysis {
     };
   }
 
-  private async traverseCoauthors(
-    authorId: string,
-    maxDepth: number,
-    nodes: Map<string, CoauthorNode>,
-    edges: Map<string, CoauthorEdge>,
-    visited: Set<string>,
-    currentDepth: number
-  ): Promise<void> {
+  private async traverseCoauthors(options: TraverseCoauthorsOptions): Promise<void> {
+    const { authorId, maxDepth, nodes, edges, visited, currentDepth } = options;
     if (currentDepth >= maxDepth || visited.has(authorId)) {
       return;
     }
@@ -310,14 +316,14 @@ export class CitationNetworkAnalysis {
 
       // Recursively traverse
       if (currentDepth + 1 < maxDepth) {
-        await this.traverseCoauthors(
-          coauthor.id,
-          maxDepth,
-          nodes,
-          edges,
-          visited,
-          currentDepth + 1
-        );
+        await this.traverseCoauthors({
+          authorId: coauthor.id,
+          maxDepth: maxDepth,
+          nodes: nodes,
+          edges: edges,
+          visited: visited,
+          currentDepth: currentDepth + 1,
+        });
       }
     }
   }

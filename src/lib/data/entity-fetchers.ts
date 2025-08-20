@@ -43,20 +43,38 @@ export enum EntityFetchErrorType {
 }
 
 /**
+ * Options for creating EntityFetchError
+ */
+export interface EntityFetchErrorOptions {
+  message: string;
+  type: EntityFetchErrorType;
+  entityType?: EntityType;
+  entityId?: string;
+  statusCode?: number;
+  retryable?: boolean;
+  cause?: Error;
+}
+
+/**
  * Enhanced error class for entity fetching operations
  */
 export class EntityFetchError extends Error {
-  constructor(
-    message: string,
-    public readonly type: EntityFetchErrorType,
-    public readonly entityType?: EntityType,
-    public readonly entityId?: string,
-    public readonly statusCode?: number,
-    public readonly retryable: boolean = false,
-    public readonly cause?: Error
-  ) {
-    super(message);
+  public readonly type: EntityFetchErrorType;
+  public readonly entityType?: EntityType;
+  public readonly entityId?: string;
+  public readonly statusCode?: number;
+  public readonly retryable: boolean;
+  public readonly cause?: Error;
+
+  constructor(options: EntityFetchErrorOptions) {
+    super(options.message);
     this.name = 'EntityFetchError';
+    this.type = options.type;
+    this.entityType = options.entityType;
+    this.entityId = options.entityId;
+    this.statusCode = options.statusCode;
+    this.retryable = options.retryable ?? false;
+    this.cause = options.cause;
   }
 
   /**
@@ -139,12 +157,12 @@ function parseAndValidateId(
   config: Required<EntityFetchConfig>
 ): EntityParseResult {
   if (!id || typeof id !== 'string' || id.trim() === '') {
-    throw new EntityFetchError(
-      'Entity ID cannot be empty',
-      EntityFetchErrorType.INVALID_ID,
-      expectedType,
-      id
-    );
+    throw new EntityFetchError({
+      message: 'Entity ID cannot be empty',
+      type: EntityFetchErrorType.INVALID_ID,
+      entityType: expectedType,
+      entityId: id,
+    });
   }
 
   const trimmedId = id.trim();
@@ -155,22 +173,22 @@ function parseAndValidateId(
     
     // Validate that it matches the expected type
     if (parsed.type !== expectedType) {
-      throw new EntityFetchError(
-        `ID ${trimmedId} is for ${parsed.type} but expected ${expectedType}`,
-        EntityFetchErrorType.INVALID_ID,
-        expectedType,
-        trimmedId
-      );
+      throw new EntityFetchError({
+        message: `ID ${trimmedId} is for ${parsed.type} but expected ${expectedType}`,
+        type: EntityFetchErrorType.INVALID_ID,
+        entityType: expectedType,
+        entityId: trimmedId,
+      });
     }
 
     // Additional validation if enabled
     if (config.validateId && !validateEntityId(parsed.id, expectedType)) {
-      throw new EntityFetchError(
-        `Invalid ${expectedType} ID format: ${trimmedId}`,
-        EntityFetchErrorType.INVALID_ID,
-        expectedType,
-        trimmedId
-      );
+      throw new EntityFetchError({
+        message: `Invalid ${expectedType} ID format: ${trimmedId}`,
+        type: EntityFetchErrorType.INVALID_ID,
+        entityType: expectedType,
+        entityId: trimmedId,
+      });
     }
 
     return parsed;
@@ -180,15 +198,15 @@ function parseAndValidateId(
     }
 
     // Handle parsing errors from entity detection utilities
-    throw new EntityFetchError(
-      `Invalid ${expectedType} ID: ${error instanceof Error ? error.message : 'Unknown format error'}`,
-      EntityFetchErrorType.INVALID_ID,
-      expectedType,
-      trimmedId,
-      undefined,
-      false,
-      error instanceof Error ? error : undefined
-    );
+    throw new EntityFetchError({
+      message: `Invalid ${expectedType} ID: ${error instanceof Error ? error.message : 'Unknown format error'}`,
+      type: EntityFetchErrorType.INVALID_ID,
+      entityType: expectedType,
+      entityId: trimmedId,
+      statusCode: undefined,
+      retryable: false,
+      cause: error instanceof Error ? error : undefined,
+    });
   }
 }
 
@@ -224,54 +242,54 @@ function handleApiError(
         retryable = error.statusCode >= 500;
     }
 
-    return new EntityFetchError(
-      error.message,
-      type,
-      entityType,
-      entityId,
-      error.statusCode,
-      retryable,
-      error
-    );
+    return new EntityFetchError({
+      message: error.message,
+      type: type,
+      entityType: entityType,
+      entityId: entityId,
+      statusCode: error.statusCode,
+      retryable: retryable,
+      cause: error,
+    });
   }
 
   if (error instanceof Error) {
     // Check for network errors
     if (error.message.includes('fetch') || error.message.includes('network')) {
-      return new EntityFetchError(
-        'Network error: ' + error.message,
-        EntityFetchErrorType.NETWORK_ERROR,
-        entityType,
-        entityId,
-        undefined,
-        true,
-        error
-      );
+      return new EntityFetchError({
+        message: 'Network error: ' + error.message,
+        type: EntityFetchErrorType.NETWORK_ERROR,
+        entityType: entityType,
+        entityId: entityId,
+        statusCode: undefined,
+        retryable: true,
+        cause: error,
+      });
     }
 
     // Check for timeout errors
     if (error.message.includes('timeout') || error.message.includes('aborted')) {
-      return new EntityFetchError(
-        'Request timeout: ' + error.message,
-        EntityFetchErrorType.TIMEOUT,
-        entityType,
-        entityId,
-        undefined,
-        true,
-        error
-      );
+      return new EntityFetchError({
+        message: 'Request timeout: ' + error.message,
+        type: EntityFetchErrorType.TIMEOUT,
+        entityType: entityType,
+        entityId: entityId,
+        statusCode: undefined,
+        retryable: true,
+        cause: error,
+      });
     }
   }
 
-  return new EntityFetchError(
-    `Unknown error: ${error instanceof Error ? error.message : String(error)}`,
-    EntityFetchErrorType.UNKNOWN,
-    entityType,
-    entityId,
-    undefined,
-    false,
-    error instanceof Error ? error : undefined
-  );
+  return new EntityFetchError({
+    message: `Unknown error: ${error instanceof Error ? error.message : String(error)}`,
+    type: EntityFetchErrorType.UNKNOWN,
+    entityType: entityType,
+    entityId: entityId,
+    statusCode: undefined,
+    retryable: false,
+    cause: error instanceof Error ? error : undefined,
+  });
 }
 
 /**
@@ -304,12 +322,12 @@ async function fetchEntityWithRetry<T>(
   }
 
   // This should never be reached, but just in case
-  throw lastError || new EntityFetchError(
-    'Max retries exceeded',
-    EntityFetchErrorType.UNKNOWN,
-    entityType,
-    entityId
-  );
+  throw lastError || new EntityFetchError({
+    message: 'Max retries exceeded',
+    type: EntityFetchErrorType.UNKNOWN,
+    entityType: entityType,
+    entityId: entityId,
+  });
 }
 
 /**
@@ -507,27 +525,27 @@ export async function fetchAnyEntity(
       case EntityType.REGION:
         return await fetchRegion(id, finalConfig);
       default:
-        throw new EntityFetchError(
-          `Unknown entity type: ${parsedId.type}`,
-          EntityFetchErrorType.INVALID_ID,
-          undefined,
-          id
-        );
+        throw new EntityFetchError({
+          message: `Unknown entity type: ${parsedId.type}`,
+          type: EntityFetchErrorType.INVALID_ID,
+          entityType: undefined,
+          entityId: id,
+        });
     }
   } catch (error) {
     if (error instanceof EntityFetchError) {
       throw error;
     }
 
-    throw new EntityFetchError(
-      `Failed to parse entity ID: ${error instanceof Error ? error.message : 'Unknown error'}`,
-      EntityFetchErrorType.INVALID_ID,
-      undefined,
-      id,
-      undefined,
-      false,
-      error instanceof Error ? error : undefined
-    );
+    throw new EntityFetchError({
+      message: `Failed to parse entity ID: ${error instanceof Error ? error.message : 'Unknown error'}`,
+      type: EntityFetchErrorType.INVALID_ID,
+      entityType: undefined,
+      entityId: id,
+      statusCode: undefined,
+      retryable: false,
+      cause: error instanceof Error ? error : undefined,
+    });
   }
 }
 
@@ -550,15 +568,15 @@ export async function fetchEntitiesBatch<T>(
       try {
         return await fetchFn(id, fetchConfig);
       } catch (error) {
-        return error instanceof EntityFetchError ? error : new EntityFetchError(
-          `Batch fetch failed: ${error instanceof Error ? error.message : String(error)}`,
-          EntityFetchErrorType.UNKNOWN,
-          undefined,
-          id,
-          undefined,
-          false,
-          error instanceof Error ? error : undefined
-        );
+        return error instanceof EntityFetchError ? error : new EntityFetchError({
+          message: `Batch fetch failed: ${error instanceof Error ? error.message : String(error)}`,
+          type: EntityFetchErrorType.UNKNOWN,
+          entityType: undefined,
+          entityId: id,
+          statusCode: undefined,
+          retryable: false,
+          cause: error instanceof Error ? error : undefined,
+        });
       }
     });
 
@@ -642,10 +660,10 @@ export function getEntityFetcher<K extends EntityType>(
 ): EntityFetchers[K] {
   const fetcher = entityFetchers[entityType];
   if (!fetcher) {
-    throw new EntityFetchError(
-      `No fetcher available for entity type: ${entityType}`,
-      EntityFetchErrorType.INVALID_ID
-    );
+    throw new EntityFetchError({
+      message: `No fetcher available for entity type: ${entityType}`,
+      type: EntityFetchErrorType.INVALID_ID,
+    });
   }
   return fetcher;
 }
