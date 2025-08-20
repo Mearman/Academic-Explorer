@@ -20,13 +20,7 @@ function AuthorPage() {
   // const isHydrated = true; // Mock for now
   
   // Handle numeric ID redirection to proper prefixed format
-  let isRedirecting = false;
-  try {
-    isRedirecting = useNumericIdRedirect(id, EntityType.AUTHOR);
-  } catch (error) {
-    console.error('[AuthorPage] Error in numeric ID redirect hook:', error);
-    isRedirecting = false;
-  }
+  const isRedirecting = useNumericIdRedirect(id, EntityType.AUTHOR);
   
   // Re-enabling useEntityGraphTracking to test if this causes the 'logs' error
   const graphTracking = useEntityGraphTracking({
@@ -38,7 +32,9 @@ function AuthorPage() {
   
   // Use the author data hook directly with the ID (no complex processing)
   const authorIdToPass = id && !isRedirecting ? id : null;
-  const { data: author, loading, error, retry } = useAuthorData(authorIdToPass);
+  const { data: author, loading, error, retry } = useAuthorData({
+    authorId: authorIdToPass
+  });
   
   console.log('[AuthorPage] Loading state:', { loading, hasAuthor: !!author, hasError: !!error });
   
@@ -81,7 +77,7 @@ function AuthorPage() {
   // Re-enabling entity tracking useEffect to test if this causes the 'logs' error
   // Track entity data when author loads AND store is hydrated
   useEffect(() => {
-    console.log('[AuthorPage] 🔍 Entity tracking status check:', {
+    console.log('[AuthorPage] Entity tracking status check:', {
       hasAuthor: !!author,
       authorName: author?.display_name,
       hasId: !!id,
@@ -92,12 +88,12 @@ function AuthorPage() {
     });
     
     if (author && !isRedirecting && isHydrated && trackEntityData) {
-      console.log('[AuthorPage] ✅ All conditions met - calling trackEntityData');
+      console.log('[AuthorPage] All conditions met - calling trackEntityData');
       trackEntityData(author, EntityType.AUTHOR, author.id).catch((trackingError: unknown) => {
         console.error('[AuthorPage] Entity tracking failed:', trackingError);
       });
     } else {
-      console.log('[AuthorPage] ❌ Conditions not met for tracking:', {
+      console.log('[AuthorPage] Conditions not met for tracking:', {
         hasAuthor: !!author,
         notRedirecting: !isRedirecting,
         storeHydrated: isHydrated,
