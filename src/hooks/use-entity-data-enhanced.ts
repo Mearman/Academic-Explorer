@@ -332,14 +332,20 @@ async function fetchEntityData<T extends EntityData = EntityData>(
   return result as T;
 }
 
+interface UseEntityDataParams<_T extends EntityData = EntityData> {
+  entityId: string | null | undefined;
+  entityType?: EntityType;
+  options?: Partial<UseEntityDataOptions>;
+}
+
 /**
  * Enhanced React hook for fetching OpenAlex entity data with network awareness
  */
-export function useEntityData<T extends EntityData = EntityData>(
-  entityId: string | null | undefined,
-  entityType?: EntityType,
-  options: Partial<UseEntityDataOptions> = {}
-): UseEntityDataState<T> & {
+export function useEntityData<T extends EntityData = EntityData>({
+  entityId,
+  entityType,
+  options = {}
+}: UseEntityDataParams<T>): UseEntityDataState<T> & {
   /** Manually trigger a refetch */
   refetch: () => Promise<void>;
   /** Retry the last failed request */

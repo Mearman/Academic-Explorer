@@ -31,30 +31,30 @@ vi.mock('./icon', () => ({
 
 // Mock utility functions to focus on component behavior
 vi.mock('./utils/error-render-utils', () => ({
-  renderTitle: (title?: string, compact?: boolean) => 
-    title ? <div data-testid="error-title" className={compact ? 'compact' : ''}>{title}</div> : null,
-  renderDetails: (details?: string, compact?: boolean) => 
-    details ? <div data-testid="error-details" className={compact ? 'compact' : ''}>{details}</div> : null,
-  renderActions: (actions?: Array<{ label: string; onClick: () => void; variant?: 'primary' | 'secondary' }>, compact?: boolean) => 
-    actions ? (
-      <div data-testid="error-actions" className={compact ? 'compact' : ''}>
-        {actions.map((action, index) => (
-          <button 
-            key={index} 
-            onClick={action.onClick}
-            data-testid={`action-${action.label.toLowerCase().replace(/\s+/g, '-')}`}
-            className={action.variant || 'primary'}
-          >
-            {action.label}
-          </button>
-        ))}
+  renderTitle: (config: { title?: string; compact?: boolean }) => 
+    config.title ? <div data-testid="error-title" className={config.compact ? 'compact' : ''}>{config.title}</div> : null,
+  renderDetails: (config: { details?: string; compact?: boolean }) => 
+    config.details ? <div data-testid="error-details" className={config.compact ? 'compact' : ''}>{config.details}</div> : null,
+  renderActions: (config: { actions?: Array<{ label: string; onClick: () => void; variant?: 'primary' | 'secondary' }>; compact?: boolean }) => 
+    config.actions ? (
+      <div data-testid="error-actions" className={config.compact ? 'compact' : ''}>
+        {config.actions.map((action, index) => (
+            <button 
+              key={index} 
+              onClick={action.onClick}
+              data-testid={`action-${action.label.toLowerCase().replace(/\s+/g, '-')}`}
+              className={action.variant || 'primary'}
+            >
+              {action.label}
+            </button>
+          ))}
       </div>
     ) : null,
-  renderDismissButton: (dismissible?: boolean, onDismiss?: () => void) => 
-    dismissible ? (
+  renderDismissButton: (config: { dismissible?: boolean; onDismiss?: () => void }) => 
+    config.dismissible ? (
       <button 
         data-testid="dismiss-button" 
-        onClick={onDismiss}
+        onClick={config.onDismiss}
         aria-label="Dismiss"
       >
         ×

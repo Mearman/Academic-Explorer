@@ -282,7 +282,7 @@ class EnhancedSearchHistoryManager {
 
   private async saveHistory(history: SearchEntry[]): Promise<void> {
     try {
-      await this.storage.setItem('search_history', JSON.stringify(history));
+      await this.storage.setItem({ key: 'search_history', value: JSON.stringify(history) });
     } catch (error) {
       console.error('Failed to save search history:', error);
       throw error;
@@ -322,7 +322,7 @@ class EnhancedSearchHistoryManager {
     updatedPatterns.push(pattern);
     
     try {
-      await this.storage.setItem('search_patterns', JSON.stringify(updatedPatterns));
+      await this.storage.setItem({ key: 'search_patterns', value: JSON.stringify(updatedPatterns) });
     } catch (error) {
       console.error('Failed to update search patterns:', error);
       throw error;

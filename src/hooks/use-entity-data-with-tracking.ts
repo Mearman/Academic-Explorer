@@ -70,9 +70,13 @@ export function useEntityDataWithTracking<T extends EntityData = EntityData>(
   }, [originalOnSuccess, enableTracking, entityType, visitSource, trackingMetadata]);
 
   // Use the base hook with enhanced onSuccess
-  const result = useEntityData<T>(entityId, entityType, {
-    ...dataOptions,
-    onSuccess: onSuccessWithTracking,
+  const result = useEntityData<T>({
+    entityId,
+    entityType,
+    options: {
+      ...dataOptions,
+      onSuccess: onSuccessWithTracking,
+    }
   });
 
   // Initialize graph database on first load

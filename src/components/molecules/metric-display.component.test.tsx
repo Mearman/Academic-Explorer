@@ -46,20 +46,23 @@ vi.mock('@/lib/metric-formatting', () => ({
 
 // Mock child components
 vi.mock('./metric-display/loading-state', () => ({
-  LoadingState: React.forwardRef<HTMLDivElement, LoadingStateProps>(({ icon, layout, description, className, 'data-testid': testId, ...props }, ref) => (
-    <div 
-      ref={ref}
-      className={className}
-      data-testid={testId}
-      data-loading="true"
-      data-icon={icon}
-      data-layout={layout}
-      data-description={description}
-      {...props}
-    >
-      Loading...
-    </div>
-  )),
+  LoadingState: React.forwardRef<HTMLDivElement, LoadingStateProps>((loadingProps, ref) => {
+    const { icon, layout, description, className, 'data-testid': testId, ...props } = loadingProps;
+    return (
+      <div 
+        ref={ref}
+        className={className}
+        data-testid={testId}
+        data-loading="true"
+        data-icon={icon}
+        data-layout={layout}
+        data-description={description}
+        {...props}
+      >
+        Loading...
+      </div>
+    );
+  }),
 }));
 
 vi.mock('./metric-display/metric-content', () => ({

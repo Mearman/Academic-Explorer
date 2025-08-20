@@ -4,6 +4,12 @@ import { useEffect, useState, useCallback, useRef } from 'react';
 import * as styles from './accessible-loading-state.css';
 import { EnhancedLoadingSkeleton } from './enhanced-loading-skeleton';
 
+export interface LoadingPhase {
+  label: string;
+  description: string;
+  duration: number;
+}
+
 export interface AccessibleLoadingStateProps {
   isLoading: boolean;
   children: React.ReactNode;
@@ -18,11 +24,7 @@ export interface AccessibleLoadingStateProps {
   // Progress tracking
   progress?: number;
   estimatedDuration?: number;
-  loadingPhases?: Array<{
-    label: string;
-    description: string;
-    duration: number;
-  }>;
+  loadingPhases?: LoadingPhase[];
   
   // Error handling
   error?: Error | string | null;
@@ -112,7 +114,12 @@ const ProgressAnnouncer = ({
   const [lastAnnounced, setLastAnnounced] = useState<number>(-1);
   const [announcements, setAnnouncements] = useState<string[]>([]);
 
-  const shouldAnnounce = useCallback((current: number, last: number) => {
+  interface ShouldAnnounceParams {
+    current: number;
+    last: number;
+  }
+
+  const shouldAnnounce = useCallback(({ current, last }: ShouldAnnounceParams) => {
     // Announce at 0%, 25%, 50%, 75%, and 100%
     const milestones = [0, 25, 50, 75, 100];
     return milestones.some(milestone => 
@@ -121,7 +128,7 @@ const ProgressAnnouncer = ({
   }, []);
 
   useEffect(() => {
-    if (shouldAnnounce(progress, lastAnnounced)) {
+    if (shouldAnnounce({ current: progress, last: lastAnnounced })) {
       const roundedProgress = Math.round(progress / 25) * 25;
       let announcement = `${roundedProgress}% complete`;
       
@@ -287,38 +294,11 @@ const SkeletonRenderer = ({
 };
 
 /**
- * Main accessible loading state component
+ * Custom hook for managing loading phases
  */
-export const AccessibleLoadingState = ({
-  isLoading,
-  children,
-  loadingLabel = 'Loading content',
-  loadedLabel = 'Content loaded successfully',
-  errorLabel = 'Failed to load content',
-  progressDescription,
-  announceStateChanges = true,
-  progress,
-  estimatedDuration,
-  loadingPhases,
-  error,
-  onRetry,
-  retryLabel = 'Try again',
-  skeletonType = 'text',
-  skeletonLines = 3,
-  customSkeleton,
-  onLoadingComplete,
-  onError,
-  reducedMotion = false,
-  highContrast = false,
-  verboseAnnouncements: _verboseAnnouncements = false,
-  keyboardNavigable = true,
-}: AccessibleLoadingStateProps) => {
+function useLoadingPhases(isLoading: boolean, loadingPhases?: LoadingPhase[]) {
   const [currentPhase, setCurrentPhase] = useState(0);
-  const [hasAnnounced, setHasAnnounced] = useState(false);
-  const [loadingStartTime] = useState(() => Date.now());
-  const containerRef = useRef<HTMLDivElement>(null);
 
-  // Handle loading phase progression
   useEffect(() => {
     if (isLoading && loadingPhases && loadingPhases.length > 0) {
       let phaseIndex = 0;
@@ -346,6 +326,41 @@ export const AccessibleLoadingState = ({
       };
     }
   }, [isLoading, loadingPhases]);
+
+  return currentPhase;
+}
+
+/**
+ * Main accessible loading state component
+ */
+export const AccessibleLoadingState = ({
+  isLoading,
+  children,
+  loadingLabel = 'Loading content',
+  loadedLabel = 'Content loaded successfully',
+  errorLabel = 'Failed to load content',
+  progressDescription,
+  announceStateChanges = true,
+  progress,
+  estimatedDuration,
+  loadingPhases,
+  error,
+  onRetry,
+  retryLabel = 'Try again',
+  skeletonType = 'text',
+  skeletonLines = 3,
+  customSkeleton,
+  onLoadingComplete,
+  onError,
+  reducedMotion = false,
+  highContrast = false,
+  verboseAnnouncements: _verboseAnnouncements = false,
+  keyboardNavigable = true,
+}: AccessibleLoadingStateProps) => {
+  const currentPhase = useLoadingPhases(isLoading, loadingPhases);
+  const [hasAnnounced, setHasAnnounced] = useState(false);
+  const [loadingStartTime] = useState(() => Date.now());
+  const containerRef = useRef<HTMLDivElement>(null);
 
   // Handle state change announcements
   useEffect(() => {

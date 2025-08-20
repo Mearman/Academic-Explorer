@@ -521,13 +521,9 @@ describe('useEntityData with Network Awareness', () => {
       mockNetworkStatus.isOnline = false;
       
       const { result: _result } = renderHook(
-        () => useEntityData({ 
-          entityId: 'W1234567890', 
-          entityType: undefined, 
-          options: { 
-            // networkAware: true, // TODO: Implement network-aware functionality
-            // backgroundSync: false, // TODO: Implement background sync functionality
-          }
+        () => useEntityData('W1234567890', undefined, { 
+          // networkAware: true, // TODO: Implement network-aware functionality
+          // backgroundSync: false, // TODO: Implement background sync functionality
         }),
         { wrapper: NetworkTestWrapper }
       );
@@ -555,13 +551,9 @@ describe('useEntityData with Network Awareness', () => {
       });
 
       const { result: _result } = renderHook(
-        () => useEntityData({ 
-          entityId: 'W1234567890', 
-          entityType: undefined, 
-          options: { 
-            // networkAware: true, // TODO: Implement network-aware functionality
-            // adaptiveCaching: true, // TODO: Implement adaptive caching functionality
-          }
+        () => useEntityData('W1234567890', undefined, { 
+          // networkAware: true, // TODO: Implement network-aware functionality
+          // adaptiveCaching: true, // TODO: Implement adaptive caching functionality
         }),
         { wrapper: NetworkTestWrapper }
       );
@@ -584,14 +576,10 @@ describe('useEntityData with Network Awareness', () => {
       });
 
       const { result: _result } = renderHook(
-        () => useEntityData({ 
-          entityId: 'W1234567890', 
-          entityType: undefined, 
-          options: { 
-            // networkAware: true, // TODO: Implement network-aware functionality
-            // adaptiveCaching: true, // TODO: Implement adaptive caching functionality
-            skipCache: true
-          }
+        () => useEntityData('W1234567890', undefined, { 
+          // networkAware: true, // TODO: Implement network-aware functionality
+          // adaptiveCaching: true, // TODO: Implement adaptive caching functionality
+          skipCache: true,
         }),
         { wrapper: NetworkTestWrapper }
       );

@@ -28,7 +28,13 @@ export interface MetricDisplayProps extends Omit<React.HTMLAttributes<HTMLDivEle
 }
 
 // Simple metric value formatter
-function formatMetricValue(value: number | string, format: MetricFormat): string {
+interface FormatMetricValueParams {
+  value: number | string;
+  format: MetricFormat;
+}
+
+function formatMetricValue(params: FormatMetricValueParams): string {
+  const { value, format } = params;
   if (typeof value === 'string') return value;
   
   switch (format) {
@@ -59,25 +65,26 @@ const VARIANT_COLORS = {
 } as const;
 
 export const MetricDisplay = forwardRef<HTMLDivElement, MetricDisplayProps>(
-  ({ 
-    label,
-    value,
-    description,
-    icon,
-    format = 'number',
-    layout = 'horizontal',
-    size = 'md',
-    variant = 'default',
-    trend,
-    loading = false,
-    clickable = false,
-    onClick,
-    accessories,
-    className,
-    'data-testid': testId,
-    ...props 
-  }, ref) => {
-    const formattedValue = formatMetricValue(value, format);
+  (props, ref) => {
+    const { 
+      label,
+      value,
+      description,
+      icon,
+      format = 'number',
+      layout = 'horizontal',
+      size = 'md',
+      variant = 'default',
+      trend,
+      loading = false,
+      clickable = false,
+      onClick,
+      accessories,
+      className,
+      'data-testid': testId,
+      ...restProps 
+    } = props;
+    const formattedValue = formatMetricValue({ value, format });
     const trendSymbol = trend ? TREND_SYMBOLS[trend.direction] : null;
     const color = VARIANT_COLORS[variant];
 
@@ -89,7 +96,7 @@ export const MetricDisplay = forwardRef<HTMLDivElement, MetricDisplayProps>(
           data-testid={testId}
           withBorder
           padding={size}
-          {...props}
+          {...restProps}
         >
           <Stack gap="xs">
             <Skeleton height="1rem" width="60%" />
@@ -128,7 +135,7 @@ export const MetricDisplay = forwardRef<HTMLDivElement, MetricDisplayProps>(
           ...cardProps.style,
         }}
         {...cardProps}
-        {...props}
+        {...restProps}
       >
         {layout === 'vertical' ? (
           <Stack align="center" gap="xs">
@@ -140,7 +147,7 @@ export const MetricDisplay = forwardRef<HTMLDivElement, MetricDisplayProps>(
               </Text>
               {trend && (
                 <Badge size="sm" color={trend.direction === 'up' ? 'green' : trend.direction === 'down' ? 'red' : 'gray'}>
-                  {trendSymbol} {trend.value && formatMetricValue(trend.value, format)}
+                  {trendSymbol} {trend.value && formatMetricValue({ value: trend.value, format })}
                 </Badge>
               )}
             </Group>
@@ -171,7 +178,7 @@ export const MetricDisplay = forwardRef<HTMLDivElement, MetricDisplayProps>(
                     </Text>
                     {trend && (
                       <Badge size="sm" color={trend.direction === 'up' ? 'green' : trend.direction === 'down' ? 'red' : 'gray'}>
-                        {trendSymbol} {trend.value && formatMetricValue(trend.value, format)}
+                        {trendSymbol} {trend.value && formatMetricValue({ value: trend.value, format })}
                       </Badge>
                     )}
                   </Group>

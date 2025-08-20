@@ -203,7 +203,7 @@ describe('usePaneLayout Hook', () => {
       const { result } = renderHook(() => usePaneLayout());
 
       act(() => {
-        result.current.setPaneSizes(70, 30);
+        result.current.setPaneSizes({ leftPercent: 70, rightPercent: 30 });
       });
 
       expect(result.current.leftWidth).toBe(70);
@@ -216,7 +216,7 @@ describe('usePaneLayout Hook', () => {
       const { result } = renderHook(() => usePaneLayout());
 
       act(() => {
-        result.current.setPaneSizes(80, 30); // Sum = 110
+        result.current.setPaneSizes({ leftPercent: 80, rightPercent: 30 }); // Sum = 110
       });
 
       // Should normalize to maintain proportion but sum to 100
@@ -228,14 +228,14 @@ describe('usePaneLayout Hook', () => {
       const { result } = renderHook(() => usePaneLayout());
 
       act(() => {
-        result.current.setPaneSizes(5, 95); // Too small left pane
+        result.current.setPaneSizes({ leftPercent: 5, rightPercent: 95 }); // Too small left pane
       });
 
       expect(result.current.leftWidth).toBe(10); // Clamped to minimum 10%
       expect(result.current.rightWidth).toBe(90); // Adjusted accordingly
 
       act(() => {
-        result.current.setPaneSizes(95, 5); // Too small right pane
+        result.current.setPaneSizes({ leftPercent: 95, rightPercent: 5 }); // Too small right pane
       });
 
       expect(result.current.leftWidth).toBe(90); // Clamped to maximum 90%
@@ -279,7 +279,7 @@ describe('usePaneLayout Hook', () => {
 
       // Drag to 70% position (clientX = 700)
       act(() => {
-        result.current.handleDrag(700, mockRect);
+        result.current.handleDrag({ clientX: 700, containerRect: mockRect });
       });
 
       expect(result.current.leftWidth).toBe(70);
@@ -306,7 +306,7 @@ describe('usePaneLayout Hook', () => {
       // Try to drag to extreme left (clientX = 100)
       // Min pane size is 300px, so minimum percentage is 30%
       act(() => {
-        result.current.handleDrag(100, mockRect);
+        result.current.handleDrag({ clientX: 100, containerRect: mockRect });
       });
 
       expect(result.current.leftWidth).toBeGreaterThanOrEqual(30);
@@ -314,7 +314,7 @@ describe('usePaneLayout Hook', () => {
       // Try to drag to extreme right (clientX = 900)
       // Right pane should also respect minimum
       act(() => {
-        result.current.handleDrag(900, mockRect);
+        result.current.handleDrag({ clientX: 900, containerRect: mockRect });
       });
 
       expect(result.current.rightWidth).toBeGreaterThanOrEqual(30);
@@ -327,7 +327,7 @@ describe('usePaneLayout Hook', () => {
 
       // Change the layout
       act(() => {
-        result.current.setPaneSizes(80, 20);
+        result.current.setPaneSizes({ leftPercent: 80, rightPercent: 20 });
         result.current.toggleLeftPane();
         result.current.startDragging();
       });
@@ -384,7 +384,7 @@ describe('usePaneLayout Hook', () => {
 
       // Change the layout
       act(() => {
-        result.current.setPaneSizes(80, 20);
+        result.current.setPaneSizes({ leftPercent: 80, rightPercent: 20 });
         result.current.toggleLeftPane();
       });
 
@@ -485,7 +485,7 @@ describe('usePaneLayout Hook', () => {
       act(() => {
         result.current.toggleLeftPane();
         result.current.toggleRightPane();
-        result.current.setPaneSizes(70, 30);
+        result.current.setPaneSizes({ leftPercent: 70, rightPercent: 30 });
       });
 
       // Should not persist immediately
@@ -597,7 +597,7 @@ describe('usePaneLayout Hook', () => {
 
       expect(() => {
         act(() => {
-          result.current.handleDrag(500, mockRect);
+          result.current.handleDrag({ clientX: 500, containerRect: mockRect });
         });
       }).not.toThrow();
     });
@@ -618,7 +618,7 @@ describe('usePaneLayout Hook', () => {
       };
 
       act(() => {
-        result.current.handleDrag(7000, mockRect); // 70% position
+        result.current.handleDrag({ clientX: 7000, containerRect: mockRect }); // 70% position
       });
 
       expect(result.current.leftWidth).toBe(70);
@@ -642,7 +642,7 @@ describe('usePaneLayout Hook', () => {
 
       expect(() => {
         act(() => {
-          result.current.handleDrag(-50, mockRect); // Negative clientX
+          result.current.handleDrag({ clientX: -50, containerRect: mockRect }); // Negative clientX
         });
       }).not.toThrow();
 

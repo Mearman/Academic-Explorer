@@ -38,11 +38,11 @@ describe('TDD: Retry Count Fix', () => {
     });
 
     const { result } = renderHook(() => 
-      useEntityData({ entityId: 'W2741809807', entityType: EntityType.WORK, options: {
+      useEntityData('W2741809807', EntityType.WORK, {
         retryOnError: true,
         maxRetries: 2,
         retryDelay: 50,
-      } })
+      })
     );
 
     // Wait for initial error
@@ -64,11 +64,11 @@ describe('TDD: Retry Count Fix', () => {
     });
 
     const { result } = renderHook(() => 
-      useEntityData({ entityId: 'W2741809807', entityType: EntityType.WORK, options: {
+      useEntityData('W2741809807', EntityType.WORK, {
         retryOnError: true,
         maxRetries: 2,
         retryDelay: 50,
-      } })
+      })
     );
 
     // Wait for initial error
@@ -108,10 +108,10 @@ describe('TDD: Retry Count Fix', () => {
     });
 
     const { result } = renderHook(() => 
-      useEntityData({ entityId: 'W2741809807', entityType: EntityType.WORK, options: {
+      useEntityData('W2741809807', EntityType.WORK, {
         retryOnError: true,
         retryDelay: 50,
-      } })
+      })
     );
 
     // Wait for initial error

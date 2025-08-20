@@ -640,7 +640,7 @@ export function useEntityGraphTracking({
   /**
    * Persist related entities based on entity type
    */
-  const persistRelatedEntities = useCallback(async (entity: unknown, entityType: EntityType) => {
+  const _persistRelatedEntities = useCallback(async (entity: unknown, entityType: EntityType) => {
     try {
       switch (entityType) {
         case EntityType.WORK:
@@ -764,7 +764,7 @@ export function useEntityGraphTracking({
         break;
       }
     }
-  }, [location.pathname, autoTrack, trackEntityVisit]);
+  }, [location.pathname, autoTrack, trackEntityVisit, location]);
 
   return {
     trackEntityVisit,

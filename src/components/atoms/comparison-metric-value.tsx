@@ -47,17 +47,23 @@ export interface ComparisonMetricValueProps {
 /**
  * Calculate difference between metric value and comparison value
  */
-function calculateDifference(
-  metricValue: number,
-  comparisonValue: number,
-  type: 'absolute' | 'percentage' | 'ratio'
-): { difference: number; direction: 'higher' | 'lower' | 'equal' } {
+interface CalculateDifferenceParams {
+  metricValue: number;
+  comparisonValue: number;
+  type: 'absolute' | 'percentage' | 'ratio';
+}
+
+function calculateDifference({
+  metricValue,
+  comparisonValue,
+  type
+}: CalculateDifferenceParams): { difference: number; direction: 'higher' | 'lower' | 'equal' } {
   if (metricValue === comparisonValue) {
     return { difference: 0, direction: 'equal' };
   }
   
   const direction = metricValue > comparisonValue ? 'higher' : 'lower';
-  const difference = calculateDifferenceValue(metricValue, comparisonValue, type);
+  const difference = calculateDifferenceValue({ metricValue, comparisonValue, type });
   
   return { difference, direction };
 }
@@ -65,11 +71,17 @@ function calculateDifference(
 /**
  * Calculate the numerical difference based on type
  */
-function calculateDifferenceValue(
-  metricValue: number,
-  comparisonValue: number,
-  type: 'absolute' | 'percentage' | 'ratio'
-): number {
+interface CalculateDifferenceValueParams {
+  metricValue: number;
+  comparisonValue: number;
+  type: 'absolute' | 'percentage' | 'ratio';
+}
+
+function calculateDifferenceValue({
+  metricValue,
+  comparisonValue,
+  type
+}: CalculateDifferenceValueParams): number {
   switch (type) {
     case 'percentage':
       return ((metricValue - comparisonValue) / comparisonValue) * 100;
@@ -109,15 +121,25 @@ function getValueTextSize(size: SizeVariant): string {
 /**
  * Generate accessible label for the metric value
  */
-function getAriaLabel(
-  metric: MetricComparison,
-  label?: string,
-  showRank?: boolean,
-  totalEntities?: number,
-  showDifference?: boolean,
-  comparisonValue?: number,
-  differenceType?: ComparisonMetricValueProps['differenceType']
-): string {
+interface GetAriaLabelParams {
+  metric: MetricComparison;
+  label?: string;
+  showRank?: boolean;
+  totalEntities?: number;
+  showDifference?: boolean;
+  comparisonValue?: number;
+  differenceType?: ComparisonMetricValueProps['differenceType'];
+}
+
+function getAriaLabel({
+  metric,
+  label,
+  showRank,
+  totalEntities,
+  showDifference,
+  comparisonValue,
+  differenceType
+}: GetAriaLabelParams): string {
   const parts: string[] = [];
   
   // Base value
@@ -140,11 +162,11 @@ function getAriaLabel(
   
   // Difference information
   if (showDifference && comparisonValue !== undefined) {
-    const { difference, direction } = calculateDifference(
-      metric.value,
+    const { difference, direction } = calculateDifference({
+      metricValue: metric.value,
       comparisonValue,
-      differenceType || 'absolute'
-    );
+      type: differenceType || 'absolute'
+    });
     
     if (direction !== 'equal') {
       const absValue = Math.abs(difference);
@@ -159,12 +181,19 @@ function getAriaLabel(
 /**
  * Render value element with emphasis styling
  */
-function renderValueElement(
-  metric: MetricComparison,
-  shouldEmphasize: boolean,
-  valueTextSize: string,
-  testId?: string
-) {
+interface RenderValueElementParams {
+  metric: MetricComparison;
+  shouldEmphasize: boolean;
+  valueTextSize: string;
+  testId?: string;
+}
+
+function renderValueElement({
+  metric,
+  shouldEmphasize,
+  valueTextSize,
+  testId
+}: RenderValueElementParams) {
   return (
     <Text
       size={valueTextSize}
@@ -180,7 +209,13 @@ function renderValueElement(
 /**
  * Render label element
  */
-function renderLabelElement(label: string | undefined, textSize: string, layout: string) {
+interface RenderLabelElementParams {
+  label: string | undefined;
+  textSize: string;
+  layout: string;
+}
+
+function renderLabelElement({ label, textSize, layout }: RenderLabelElementParams) {
   if (!label) return null;
   
   return (
@@ -197,13 +232,21 @@ function renderLabelElement(label: string | undefined, textSize: string, layout:
 /**
  * Render rank element if conditions are met
  */
-function renderRankElement(
-  showRank: boolean,
-  totalEntities: number | undefined,
-  metric: MetricComparison,
-  showPercentile: boolean,
-  size: SizeVariant
-) {
+interface RenderRankElementParams {
+  showRank: boolean;
+  totalEntities: number | undefined;
+  metric: MetricComparison;
+  showPercentile: boolean;
+  size: SizeVariant;
+}
+
+function renderRankElement({
+  showRank,
+  totalEntities,
+  metric,
+  showPercentile,
+  size
+}: RenderRankElementParams) {
   if (!showRank || !totalEntities) return null;
   
   return (
@@ -219,11 +262,17 @@ function renderRankElement(
 /**
  * Render difference element if data exists
  */
-function renderDiffElement(
-  diffData: { difference: number; direction: 'higher' | 'lower' | 'equal' } | null,
-  differenceType: ComparisonMetricValueProps['differenceType'],
-  size: SizeVariant
-) {
+interface RenderDiffElementParams {
+  diffData: { difference: number; direction: 'higher' | 'lower' | 'equal' } | null;
+  differenceType: ComparisonMetricValueProps['differenceType'];
+  size: SizeVariant;
+}
+
+function renderDiffElement({
+  diffData,
+  differenceType,
+  size
+}: RenderDiffElementParams) {
   if (!diffData) return null;
   
   return (
@@ -239,13 +288,21 @@ function renderDiffElement(
 /**
  * Compose layout based on layout type
  */
-function composeLayout(
-  layout: ComparisonMetricValueProps['layout'],
-  labelElement: React.ReactNode,
-  valueElement: React.ReactNode,
-  rankElement: React.ReactNode,
-  diffElement: React.ReactNode
-): React.ReactNode {
+interface ComposeLayoutParams {
+  layout: ComparisonMetricValueProps['layout'];
+  labelElement: React.ReactNode;
+  valueElement: React.ReactNode;
+  rankElement: React.ReactNode;
+  diffElement: React.ReactNode;
+}
+
+function composeLayout({
+  layout,
+  labelElement,
+  valueElement,
+  rankElement,
+  diffElement
+}: ComposeLayoutParams): React.ReactNode {
   switch (layout) {
     case 'vertical':
       return (
@@ -310,7 +367,7 @@ export const ComparisonMetricValue = forwardRef<
   const valueTextSize = getValueTextSize(size);
   const shouldEmphasize = emphasizeExtreme && (metric.isHighest || metric.isLowest);
   
-  const ariaLabel = getAriaLabel(
+  const ariaLabel = getAriaLabel({
     metric,
     label,
     showRank,
@@ -318,21 +375,21 @@ export const ComparisonMetricValue = forwardRef<
     showDifference,
     comparisonValue,
     differenceType
-  );
+  });
   
   // Calculate difference if needed
   const diffData = showDifference && comparisonValue !== undefined
-    ? calculateDifference(metric.value, comparisonValue, differenceType)
+    ? calculateDifference({ metricValue: metric.value, comparisonValue, type: differenceType })
     : null;
   
   // Render elements
-  const valueElement = renderValueElement(metric, shouldEmphasize, valueTextSize, testId);
-  const labelElement = renderLabelElement(label, textSize, layout);
-  const rankElement = renderRankElement(showRank, totalEntities, metric, showPercentile, size);
-  const diffElement = renderDiffElement(diffData, differenceType, size);
+  const valueElement = renderValueElement({ metric, shouldEmphasize, valueTextSize, testId });
+  const labelElement = renderLabelElement({ label, textSize, layout });
+  const rankElement = renderRankElement({ showRank, totalEntities, metric, showPercentile, size });
+  const diffElement = renderDiffElement({ diffData, differenceType, size });
   
   // Compose layout
-  const content = composeLayout(layout, labelElement, valueElement, rankElement, diffElement);
+  const content = composeLayout({ layout, labelElement, valueElement, rankElement, diffElement });
   
   // Wrap in button if clickable
   if (onClick) {

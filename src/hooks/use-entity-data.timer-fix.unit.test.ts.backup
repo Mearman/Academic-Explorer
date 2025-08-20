@@ -38,10 +38,10 @@ describe('TDD: Timer Management Fix', () => {
     });
 
     const { result } = renderHook(() => 
-      useEntityData({ entityId: 'W2741809807', entityType: EntityType.WORK, options: {
+      useEntityData('W2741809807', EntityType.WORK, {
         retryOnError: true,
         retryDelay: 1000,
-      } })
+      })
     );
 
     // Initial state should be loading
@@ -89,9 +89,9 @@ describe('TDD: Timer Management Fix', () => {
     );
 
     const { result } = renderHook(() => 
-      useEntityData({ entityId: 'W2741809807', entityType: EntityType.WORK, options: {
+      useEntityData('W2741809807', EntityType.WORK, {
         timeout: 2000,
-      } })
+      })
     );
 
     // Initial state should be loading
@@ -120,10 +120,10 @@ describe('TDD: Timer Management Fix', () => {
     const clearTimeoutSpy = vi.spyOn(global, 'clearTimeout');
     
     const { unmount } = renderHook(() => 
-      useEntityData({ entityId: 'W2741809807', entityType: EntityType.WORK, options: {
+      useEntityData('W2741809807', EntityType.WORK, {
         retryOnError: true,
         retryDelay: 1000,
-      } })
+      })
     );
 
     // Wait for initial error which should trigger auto-retry timer
@@ -151,11 +151,11 @@ describe('TDD: Timer Management Fix', () => {
     const setTimeoutSpy = vi.spyOn(global, 'setTimeout');
 
     const { result } = renderHook(() => 
-      useEntityData({ entityId: 'W2741809807', entityType: EntityType.WORK, options: {
+      useEntityData('W2741809807', EntityType.WORK, {
         retryOnError: true,
         retryDelay: 1000,
         maxRetries: 2,
-      } })
+      })
     );
 
     // Wait for initial error
@@ -180,10 +180,10 @@ describe('TDD: Timer Management Fix', () => {
     const setTimeoutSpy = vi.spyOn(global, 'setTimeout');
 
     const { result } = renderHook(() => 
-      useEntityData({ entityId: 'W2741809807', entityType: EntityType.WORK, options: {
+      useEntityData('W2741809807', EntityType.WORK, {
         retryOnError: false, // Disabled
         retryDelay: 1000,
-      } })
+      })
     );
 
     // Wait for initial error

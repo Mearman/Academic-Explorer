@@ -26,7 +26,8 @@ const SEVERITY_COLORS = {
 } as const;
 
 export const ErrorMessage = forwardRef<HTMLDivElement, ErrorMessageProps>(
-  ({ title, message, details, severity = 'error', dismissible = false, compact = false, actions, onDismiss, className, 'data-testid': testId, ...props }, ref) => {
+  (props, ref) => {
+    const { title, message, details, severity = 'error', dismissible = false, compact = false, actions, onDismiss, className, 'data-testid': testId, ...restProps } = props;
     const [isVisible, setIsVisible] = useState(true);
 
     if (!isVisible) return null;
@@ -47,7 +48,7 @@ export const ErrorMessage = forwardRef<HTMLDivElement, ErrorMessageProps>(
         onClose={handleDismiss}
         className={className}
         data-testid={testId}
-        {...props}
+        {...restProps}
       >
         <Stack gap={compact ? 'xs' : 'sm'}>
           <div>{message}</div>

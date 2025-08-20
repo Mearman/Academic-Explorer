@@ -59,13 +59,20 @@ export function useHybridStorage() {
     });
   };
 
+  interface ArchiveSearchResultsParams {
+    query: string;
+    results: unknown[];
+    totalCount: number;
+    filters?: Record<string, unknown>;
+  }
+
   // Archive old search results to IndexedDB
-  const archiveSearchResults = async (
-    query: string,
-    results: unknown[],
-    totalCount: number,
-    filters?: Record<string, unknown>
-  ) => {
+  const archiveSearchResults = async ({
+    query,
+    results,
+    totalCount,
+    filters
+  }: ArchiveSearchResultsParams) => {
     if (!isInitialised || !dbRef.current) return;
     
     try {
@@ -76,11 +83,16 @@ export function useHybridStorage() {
     }
   };
 
+  interface GetCachedSearchResultsParams {
+    query: string;
+    filters?: Record<string, unknown>;
+  }
+
   // Retrieve cached search results
-  const getCachedSearchResults = async (
-    query: string,
-    filters?: Record<string, unknown>
-  ) => {
+  const getCachedSearchResults = async ({
+    query,
+    filters
+  }: GetCachedSearchResultsParams) => {
     if (!isInitialised || !dbRef.current) return null;
     
     try {
@@ -169,7 +181,12 @@ export function useHybridStorage() {
     }
   };
 
-  const setItem = async (key: string, value: string): Promise<void> => {
+  interface SetItemParams {
+    key: string;
+    value: string;
+  }
+
+  const setItem = async ({ key, value }: SetItemParams): Promise<void> => {
     try {
       // Save to localStorage (primary storage)
       localStorage.setItem(key, value);

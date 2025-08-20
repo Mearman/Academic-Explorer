@@ -48,11 +48,14 @@ const ENTITY_COLORS = {
   region: 'teal',
 } as const;
 
-function EntityIcon({ entityType, size, showIcon }: { 
+interface EntityIconProps {
   entityType: keyof typeof ENTITY_ICONS; 
   size: SizeVariant; 
   showIcon: boolean; 
-}) {
+}
+
+function EntityIcon(props: EntityIconProps) {
+  const { entityType, size, showIcon } = props;
   if (!showIcon) return null;
   return (
     <Icon 
@@ -64,14 +67,15 @@ function EntityIcon({ entityType, size, showIcon }: {
 }
 
 export const EntityBadge = forwardRef<HTMLDivElement, EntityBadgeProps>(
-  function EntityBadge({ 
-    entityType, 
-    size = 'md', 
-    showIcon = true, 
-    className, 
-    'data-testid': testId,
-    ...props 
-  }, ref) {
+  function EntityBadge(props, ref) {
+    const { 
+      entityType, 
+      size = 'md', 
+      showIcon = true, 
+      className, 
+      'data-testid': testId,
+      ...restProps 
+    } = props;
     const label = ENTITY_LABELS[entityType];
     const color = ENTITY_COLORS[entityType];
 
@@ -83,7 +87,7 @@ export const EntityBadge = forwardRef<HTMLDivElement, EntityBadgeProps>(
         variant="light"
         className={className}
         data-testid={testId}
-        {...props}
+        {...restProps}
       >
         <EntityIcon entityType={entityType} size={size} showIcon={showIcon} />
         {label}

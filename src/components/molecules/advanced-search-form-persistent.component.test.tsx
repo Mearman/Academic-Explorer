@@ -40,7 +40,7 @@ const mockAdvancedSearchFormHook: {
   formData: AdvancedSearchFormData;
   isCollapsed: boolean;
   setIsCollapsed: MockedFunction<(collapsed: boolean) => void>;
-  updateField: MockedFunction<(field: string, value: unknown) => void>;
+  updateField: MockedFunction<(params: { field: string; value: unknown }) => void>;
   handleSubmit: MockedFunction<(event: React.FormEvent) => void>;
   handleReset: MockedFunction<() => void>;
 } = {
@@ -66,7 +66,7 @@ vi.mock('@/hooks/use-advanced-search-form', () => ({
 // Mock all the advanced search sections
 interface MockSectionProps {
   formData: AdvancedSearchFormData;
-  updateField: (field: string, value: unknown) => void;
+  updateField: (params: { field: string; value: unknown }) => void;
   isCollapsed?: boolean;
   setIsCollapsed?: (collapsed: boolean) => void;
   onReset?: () => void;
@@ -84,7 +84,7 @@ vi.mock('./advanced-search', () => ({
       <input
         data-testid="query-input"
         value={formData.query}
-        onChange={(e) => updateField('query', e.target.value)}
+        onChange={(e) => updateField({ field: 'query', value: e.target.value })}
         placeholder="Search query"
       />
     </div>
@@ -95,13 +95,13 @@ vi.mock('./advanced-search', () => ({
         data-testid="from-date"
         type="date"
         value={formData.fromPublicationDate || ''}
-        onChange={(e) => updateField('fromPublicationDate', e.target.value)}
+        onChange={(e) => updateField({ field: 'fromPublicationDate', value: e.target.value })}
       />
       <input
         data-testid="to-date"
         type="date"
         value={formData.toPublicationDate || ''}
-        onChange={(e) => updateField('toPublicationDate', e.target.value)}
+        onChange={(e) => updateField({ field: 'toPublicationDate', value: e.target.value })}
       />
     </div>
   ),
@@ -112,7 +112,7 @@ vi.mock('./advanced-search', () => ({
           data-testid="open-access-checkbox"
           type="checkbox"
           checked={formData.isOpenAccess || false}
-          onChange={(e) => updateField('isOpenAccess', e.target.checked)}
+          onChange={(e) => updateField({ field: 'isOpenAccess', value: e.target.checked })}
         />
         Open Access
       </label>
@@ -124,7 +124,7 @@ vi.mock('./advanced-search', () => ({
         data-testid="citation-min"
         type="number"
         value={formData.citationCountMin || ''}
-        onChange={(e) => updateField('citationCountMin', parseInt(e.target.value) || undefined)}
+        onChange={(e) => updateField({ field: 'citationCountMin', value: parseInt(e.target.value) || undefined })}
         placeholder="Min citations"
       />
     </div>
@@ -134,7 +134,7 @@ vi.mock('./advanced-search', () => ({
       <input
         data-testid="author-id"
         value={formData.authorId || ''}
-        onChange={(e) => updateField('authorId', e.target.value)}
+        onChange={(e) => updateField({ field: 'authorId', value: e.target.value })}
         placeholder="Author ID"
       />
     </div>
@@ -144,7 +144,7 @@ vi.mock('./advanced-search', () => ({
       <select
         data-testid="sort-select"
         value={formData.sortBy}
-        onChange={(e) => updateField('sortBy', e.target.value)}
+        onChange={(e) => updateField({ field: 'sortBy', value: e.target.value })}
       >
         <option value="relevance_score">Relevance</option>
         <option value="cited_by_count">Citations</option>
@@ -236,7 +236,7 @@ describe('AdvancedSearchForm with Persistent Filters', () => {
     });
 
     it('should show loading state during save operation', async () => {
-      const user = userEvent.setup();
+      const _user = userEvent.setup();
       mockAdvancedSearchFormHook.isCollapsed = false;
       mockUsePersistentSearchFilters.isLoading = true;
       
@@ -281,7 +281,7 @@ describe('AdvancedSearchForm with Persistent Filters', () => {
 
       // Should update form fields with loaded data
       Object.entries(savedFilterData).forEach(([key, value]) => {
-        expect(mockAdvancedSearchFormHook.updateField).toHaveBeenCalledWith(key, value);
+        expect(mockAdvancedSearchFormHook.updateField).toHaveBeenCalledWith({ field: key, value });
       });
     });
 
@@ -336,7 +336,7 @@ describe('AdvancedSearchForm with Persistent Filters', () => {
       
       // Should auto-populate form fields on mount
       Object.entries(savedFilterData).forEach(([key, value]) => {
-        expect(mockAdvancedSearchFormHook.updateField).toHaveBeenCalledWith(key, value);
+        expect(mockAdvancedSearchFormHook.updateField).toHaveBeenCalledWith({ field: key, value });
       });
     });
 
@@ -485,7 +485,7 @@ describe('AdvancedSearchForm with Persistent Filters', () => {
     });
 
     it('should preserve form submission functionality', async () => {
-      const user = userEvent.setup();
+      const _user = userEvent.setup();
       mockAdvancedSearchFormHook.isCollapsed = false;
       
       render(<AdvancedSearchForm onSearch={mockOnSearch} />);
@@ -517,7 +517,7 @@ describe('AdvancedSearchForm with Persistent Filters', () => {
       const queryInput = screen.getByTestId('query-input');
       await user.type(queryInput, 'test query');
       
-      expect(mockAdvancedSearchFormHook.updateField).toHaveBeenCalledWith('query', expect.any(String));
+      expect(mockAdvancedSearchFormHook.updateField).toHaveBeenCalledWith({ field: 'query', value: expect.any(String) });
     });
   });
 

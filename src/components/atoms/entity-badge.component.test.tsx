@@ -13,19 +13,23 @@ import { EntityBadge } from './entity-badge';
 
 // Mock Badge component to focus on EntityBadge logic
 vi.mock('./badge', () => ({
-  Badge: React.forwardRef<HTMLSpanElement, BadgeProps>(({ children, className, size, 'data-testid': testId, 'aria-label': ariaLabel, ...props }, ref) => (
-    <span 
-      ref={ref}
-      className={className}
-      data-testid={testId}
-      data-size={size}
-      aria-label={ariaLabel}
-      role="status"
-      {...props}
-    >
-      {children}
-    </span>
-  )),
+   
+  Badge: React.forwardRef<HTMLSpanElement, BadgeProps>((badgeProps, ref) => {
+    const { children, className, size, 'data-testid': testId, 'aria-label': ariaLabel, ...props } = badgeProps;
+    return (
+      <span 
+        ref={ref}
+        className={className}
+        data-testid={testId}
+        data-size={size}
+        aria-label={ariaLabel}
+        role="status"
+        {...props}
+      >
+        {children}
+      </span>
+    );
+  }),
 }));
 
 // Mock Icon component to avoid CSS/style dependencies
@@ -332,7 +336,8 @@ describe('EntityBadge Label Consistency', () => {
   it('should have consistent label formatting across all entity types', () => {
     const entityTypes = ['work', 'author', 'source', 'institution', 'publisher', 'funder', 'topic', 'concept', 'keyword', 'continent', 'region'] as const;
     
-    entityTypes.forEach((entityType, index) => {
+    entityTypes.forEach(entityType => {
+      const index = entityTypes.indexOf(entityType);
       render(<EntityBadge entityType={entityType} data-testid={`entity-badge-${index}`} />);
       
       const badge = screen.getByTestId(`entity-badge-${index}`);
@@ -349,7 +354,8 @@ describe('EntityBadge Icon Mapping Consistency', () => {
     const entityTypes = ['work', 'author', 'source', 'institution', 'publisher'] as const;
     const iconNames = new Set<string>();
     
-    entityTypes.forEach((entityType, index) => {
+    entityTypes.forEach(entityType => {
+      const index = entityTypes.indexOf(entityType);
       render(<EntityBadge entityType={entityType} data-testid={`entity-badge-${index}`} />);
       
       const icon = screen.getByTestId('entity-icon');

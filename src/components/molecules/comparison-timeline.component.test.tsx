@@ -13,7 +13,7 @@ import type { ComparisonEntity } from '@/stores/comparison-store';
 import { ComparisonTimeline } from './comparison-timeline';
 
 // Mock data utilities
-const createMockEntity = (overrides: Partial<ComparisonEntity> = {}): ComparisonEntity => ({
+const _createMockEntity = (overrides: Partial<ComparisonEntity> = {}): ComparisonEntity => ({
   id: 'test-entity-1',
   type: EntityType.AUTHOR,
   addedAt: Date.now(),
@@ -59,29 +59,55 @@ const Wrapper = ({ children }: { children: React.ReactNode }) => (
   <MantineProvider>{children}</MantineProvider>
 );
 
+interface MockTimelinePoint {
+  year: number;
+  value: number;
+  label: string;
+  metadata?: Record<string, unknown>;
+}
+
+interface MockTimelineSeries {
+  entityId: string;
+  entityName: string;
+  dataPoints: MockTimelinePoint[];
+}
+
+interface MockD3TimelineChartProps {
+  data: MockTimelineSeries[];
+  onPointHover?: (point: MockTimelinePoint, series: MockTimelineSeries) => void;
+  onPointClick?: (point: MockTimelinePoint, series: MockTimelineSeries) => void;
+  [key: string]: unknown;
+}
+
 // Mock the D3 timeline chart since it requires DOM manipulation
 vi.mock('@/components/atoms/d3-timeline-chart', () => ({
-  D3TimelineChart: ({ data, onPointHover, onPointClick, ...props }: any) => (
+  D3TimelineChart: ({ data, onPointHover, onPointClick, ...props }: MockD3TimelineChartProps) => (
     <div 
       data-testid="d3-timeline-chart" 
       {...props}
     >
-      {data.map((series: any, index: number) => (
-        <div key={series.entityId} data-testid={`timeline-series-${index}`}>
-          <div data-testid="series-name">{series.entityName}</div>
-          {series.dataPoints.map((point: any, pointIndex: number) => (
-            <div 
-              key={`${series.entityId}-${point.year}-${pointIndex}`}
-              data-testid={`data-point-${series.entityId}-${point.year}`}
-              onClick={() => onPointClick?.(point, series)}
-              onMouseEnter={() => onPointHover?.(point, series)}
-              style={{ cursor: 'pointer' }}
-            >
-              {point.year}: {point.value}
-            </div>
-          ))}
-        </div>
-      ))}
+      {data.map((series: MockTimelineSeries) => {
+        const index = data.indexOf(series);
+        return (
+          <div key={series.entityId} data-testid={`timeline-series-${index}`}>
+            <div data-testid="series-name">{series.entityName}</div>
+            {series.dataPoints.map((point: MockTimelinePoint) => {
+              const pointIndex = series.dataPoints.indexOf(point);
+              return (
+                <div 
+                  key={`${series.entityId}-${point.year}-${pointIndex}`}
+                  data-testid={`data-point-${series.entityId}-${point.year}`}
+                  onClick={() => onPointClick?.(point, series)}
+                  onMouseEnter={() => onPointHover?.(point, series)}
+                  style={{ cursor: 'pointer' }}
+                >
+                  {point.year}: {point.value}
+                </div>
+              );
+            })}
+          </div>
+        );
+      })}
     </div>
   )
 }));
@@ -514,15 +540,22 @@ describe('ComparisonTimeline', () => {
     });
 
     it('should handle very large datasets', () => {
-      const largeData = Array.from({ length: 10 }, (_, i) => ({
-        entityId: `entity-${i}`,
-        entityName: `Entity ${i}`,
-        dataPoints: Array.from({ length: 20 }, (_, year) => ({
-          year: 2000 + year,
-          value: Math.random() * 100,
-          label: `Value: ${Math.random() * 100}`
-        }))
-      }));
+      const largeData = [];
+      for (let i = 0; i < 10; i++) {
+        const dataPoints = [];
+        for (let yearIndex = 0; yearIndex < 20; yearIndex++) {
+          dataPoints.push({
+            year: 2000 + yearIndex,
+            value: Math.random() * 100,
+            label: `Value: ${Math.random() * 100}`
+          });
+        }
+        largeData.push({
+          entityId: `entity-${i}`,
+          entityName: `Entity ${i}`,
+          dataPoints
+        });
+      }
       
       render(
         <ComparisonTimeline 

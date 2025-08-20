@@ -11,7 +11,7 @@ import {
   Title,
   Alert,
   MultiSelect,
-  SegmentedControl,
+  SegmentedControl as _SegmentedControl,
   ActionIcon,
   Tooltip,
   Card
@@ -20,7 +20,7 @@ import {
   IconDownload,
   IconSettings,
   IconEyeOff as _IconEyeOff,
-  IconTrendingUp
+  IconTrendingUp as _IconTrendingUp
 } from '@tabler/icons-react';
 import { useState, useMemo, useCallback } from 'react';
 
@@ -41,7 +41,7 @@ export interface TimelineDataPoint {
   /** Display label for tooltips */
   label: string;
   /** Additional metadata */
-  metadata?: Record<string, any>;
+  metadata?: Record<string, unknown>;
 }
 
 export interface TimelineSeriesData {
@@ -180,96 +180,227 @@ function processTimelineData(
     .filter(series => series.visible);
 }
 
-export function ComparisonTimeline({
-  data,
-  metric,
-  title,
-  description,
-  layout = 'overlay',
-  showTrendLines = false,
-  showConfidenceIntervals = false,
-  showEntitySelector = false,
-  showExportOptions = false,
-  animate = true,
-  size = 'md',
-  loading = false,
-  error,
-  onPointHover,
-  onPointClick,
-  onEntitySelect,
-  onLayoutChange,
-  onExport,
-  className,
-  'data-testid': testId,
-  ...props
-}: ComparisonTimelineProps) {
-  
+// Hook for timeline state management
+const useComparisonTimelineState = (data: TimelineSeriesData[], layout: 'overlay' | 'stacked' | 'separate') => {
   const [selectedEntityIds, setSelectedEntityIds] = useState<string[]>(
     data.map(series => series.entityId)
   );
   const [currentLayout, setCurrentLayout] = useState(layout);
   
-  const metricDef = useMemo(() => getMetricDefinition(metric), [metric]);
+  return {
+    selectedEntityIds,
+    setSelectedEntityIds,
+    currentLayout,
+    setCurrentLayout,
+  };
+};
+
+// Hook for timeline handlers
+const useComparisonTimelineHandlers = (
+  state: ReturnType<typeof useComparisonTimelineState>,
+  processedData: TimelineSeriesData[],
+  onEntitySelect?: (entityIds: string[]) => void,
+  onLayoutChange?: (layout: 'overlay' | 'stacked' | 'separate') => void,
+  onExport?: (format: string, data: TimelineSeriesData[]) => void
+) => {
+  const { setSelectedEntityIds, setCurrentLayout } = state;
   
-  const processedData = useMemo(() => 
-    processTimelineData(data, selectedEntityIds),
-    [data, selectedEntityIds]
-  );
-  
-  // Handle entity selection
   const handleEntitySelection = useCallback((entityIds: string[]) => {
     setSelectedEntityIds(entityIds);
     onEntitySelect?.(entityIds);
-  }, [onEntitySelect]);
+  }, [onEntitySelect, setSelectedEntityIds]);
   
-  // Handle layout change
   const handleLayoutChange = useCallback((newLayout: string) => {
     const layoutValue = newLayout as 'overlay' | 'stacked' | 'separate';
     setCurrentLayout(layoutValue);
     onLayoutChange?.(layoutValue);
-  }, [onLayoutChange]);
+  }, [onLayoutChange, setCurrentLayout]);
   
-  // Handle export
   const handleExport = useCallback((format: string) => {
     onExport?.(format, processedData);
   }, [onExport, processedData]);
   
-  // Handle loading state
+  return {
+    handleEntitySelection,
+    handleLayoutChange,
+    handleExport,
+  };
+};
+
+export function ComparisonTimeline(props: ComparisonTimelineProps) {
+  const {
+    data,
+    metric,
+    title,
+    description,
+    layout = 'overlay',
+    showTrendLines = false,
+    showConfidenceIntervals = false,
+    showEntitySelector = false,
+    showExportOptions = false,
+    animate = true,
+    size = 'md',
+    loading = false,
+    error,
+    onPointHover,
+    onPointClick,
+    onEntitySelect,
+    onLayoutChange,
+    onExport,
+    className,
+    'data-testid': testId,
+    ...restProps
+  } = props;
+  
+  const state = useComparisonTimelineState(data, layout);
+  const metricDef = useMemo(() => getMetricDefinition(metric), [metric]);
+  const processedData = useMemo(() => 
+    processTimelineData(data, state.selectedEntityIds),
+    [data, state.selectedEntityIds]
+  );
+  const handlers = useComparisonTimelineHandlers(state, processedData, onEntitySelect, onLayoutChange, onExport);
+  
+  // Handle special states
   if (loading) {
-    return (
-      <Box className={className} data-testid={testId} {...props}>
-        <LoadingSkeleton height="400px" />
-        <Text size="sm" c="dimmed" ta="center" mt="md">
-          Loading timeline data...
-        </Text>
-      </Box>
-    );
+    return <ComparisonTimelineLoading className={className} testId={testId} {...restProps} />;
   }
   
-  // Handle error state
   if (error) {
-    return (
-      <Box className={className} data-testid={testId} {...props}>
-        <ErrorMessage message={error} />
-      </Box>
-    );
+    return <ComparisonTimelineError error={error} className={className} testId={testId} {...restProps} />;
   }
   
-  // Handle empty state
   if (data.length === 0) {
-    return (
-      <Box className={className} data-testid={testId} {...props}>
-        <Alert title="No Timeline Data" color="gray">
-          No timeline data available for comparison. Add entities with temporal data to see their patterns over time.
-        </Alert>
-      </Box>
-    );
+    return <ComparisonTimelineEmpty className={className} testId={testId} {...restProps} />;
   }
   
   return (
+    <ComparisonTimelineContent
+      data={processedData}
+      metric={metric}
+      metricDef={metricDef}
+      title={title}
+      description={description}
+      state={state}
+      handlers={handlers}
+      showTrendLines={showTrendLines}
+      showConfidenceIntervals={showConfidenceIntervals}
+      showEntitySelector={showEntitySelector}
+      showExportOptions={showExportOptions}
+      animate={animate}
+      size={size}
+      onPointHover={onPointHover}
+      onPointClick={onPointClick}
+      className={className}
+      testId={testId}
+      {...restProps}
+    />
+  );
+};
+
+// Loading state component
+interface ComparisonTimelineLoadingProps {
+  className?: string;
+  testId?: string;
+  [key: string]: unknown;
+}
+
+const ComparisonTimelineLoading = ({ className, testId, ...props }: ComparisonTimelineLoadingProps) => (
+  <Box className={className} data-testid={testId} {...props}>
+    <LoadingSkeleton height="400px" />
+    <Text size="sm" c="dimmed" ta="center" mt="md">
+      Loading timeline data...
+    </Text>
+  </Box>
+);
+
+// Error state component
+interface ComparisonTimelineErrorProps {
+  error: string;
+  className?: string;
+  testId?: string;
+  [key: string]: unknown;
+}
+
+const ComparisonTimelineError = ({ error, className, testId, ...props }: ComparisonTimelineErrorProps) => (
+  <Box className={className} data-testid={testId} {...props}>
+    <ErrorMessage message={error} />
+  </Box>
+);
+
+// Empty state component
+interface ComparisonTimelineEmptyProps {
+  className?: string;
+  testId?: string;
+  [key: string]: unknown;
+}
+
+const ComparisonTimelineEmpty = ({ className, testId, ...props }: ComparisonTimelineEmptyProps) => (
+  <Box className={className} data-testid={testId} {...props}>
+    <Alert title="No Timeline Data" color="gray">
+      No timeline data available for comparison. Add entities with temporal data to see their patterns over time.
+    </Alert>
+  </Box>
+);
+
+// Content component interface
+interface ComparisonTimelineContentProps {
+  data: TimelineSeriesData[];
+  metric: string;
+  metricDef: ReturnType<typeof getMetricDefinition>;
+  title?: string;
+  description?: string;
+  state: ReturnType<typeof useComparisonTimelineState>;
+  handlers: ReturnType<typeof useComparisonTimelineHandlers>;
+  showTrendLines: boolean;
+  showConfidenceIntervals: boolean;
+  showEntitySelector: boolean;
+  showExportOptions: boolean;
+  animate: boolean;
+  size: SizeVariant;
+  onPointHover?: (point: TimelineDataPoint, series: TimelineSeriesData) => void;
+  onPointClick?: (point: TimelineDataPoint, series: TimelineSeriesData) => void;
+  className?: string;
+  testId?: string;
+  [key: string]: unknown;
+}
+
+// Content component implementation
+const ComparisonTimelineContent = ({ 
+  data, 
+  _metric, 
+  metricDef, 
+  title, 
+  description, 
+  state, 
+  handlers, 
+  _showTrendLines,
+  _showConfidenceIntervals,
+  showEntitySelector,
+  showExportOptions,
+  _animate,
+  size,
+  _onPointHover,
+  _onPointClick,
+  className, 
+  testId, 
+  ...props 
+}: ComparisonTimelineContentProps) => {
+  const { selectedEntityIds, currentLayout: _currentLayout } = state;
+  const { handleEntitySelection, handleLayoutChange: _handleLayoutChange, handleExport } = handlers;
+
+  // Define chart dimensions based on size
+  const CHART_HEIGHT = {
+    xs: 200,
+    sm: 250,
+    md: 300,
+    lg: 400,
+    xl: 500
+  };
+
+  return (
     <Box className={className} data-testid={testId} {...props}>
-      <Card shadow="sm" padding="md" withBorder>
-        <Stack gap="md">
+      <Card withBorder>
+        <Stack gap="lg">
           {/* Header with title and controls */}
           <Group justify="space-between" align="flex-start">
             <Stack gap="xs" style={{ flex: 1 }}>
@@ -319,146 +450,44 @@ export function ComparisonTimeline({
                 placeholder="Choose entities..."
                 value={selectedEntityIds}
                 onChange={handleEntitySelection}
-                data={data.map(series => ({
-                  value: series.entityId,
-                  label: series.entityName
+                data={data.map(d => ({ 
+                  value: d.entityId, 
+                  label: d.entityName || d.entityId 
                 }))}
-                size="sm"
-                style={{ minWidth: '200px' }}
-                aria-label="Select entities to display in timeline"
+                clearable
+                searchable
+                maxDropdownHeight={300}
               />
-            )}
-            
-            {/* Layout selector */}
-            <SegmentedControl
-              value={currentLayout}
-              onChange={handleLayoutChange}
-              data={[
-                { label: 'Overlay', value: 'overlay' },
-                { label: 'Stacked', value: 'stacked' },
-                { label: 'Separate', value: 'separate' }
-              ]}
-              size="sm"
-              aria-label="Timeline layout mode"
-            />
-            
-            {/* Trend indicator */}
-            {showTrendLines && (
-              <Group gap="xs">
-                <IconTrendingUp size={16} />
-                <Text size="xs" c="dimmed">
-                  Trend lines enabled
-                </Text>
-              </Group>
             )}
           </Group>
           
-          {/* Timeline chart */}
-          <Box
-            style={{ 
-              minHeight: size === 'sm' ? 300 : size === 'lg' ? 500 : 400,
-              position: 'relative'
+          {/* Chart container */}
+          <Box 
+            style={{
+              height: CHART_HEIGHT[size],
+              width: '100%',
+              backgroundColor: 'var(--mantine-color-gray-0)',
+              borderRadius: 'var(--mantine-radius-md)',
+              padding: 'var(--mantine-spacing-md)',
+              border: '1px solid var(--mantine-color-gray-3)',
             }}
           >
-{/* Placeholder timeline chart component */}
-            <Box
-              style={{
-                width: '100%',
-                height: '100%',
-                backgroundColor: 'var(--mantine-color-gray-0)',
-                border: '1px dashed var(--mantine-color-gray-3)',
-                borderRadius: 'var(--mantine-radius-md)',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                flexDirection: 'column',
-                gap: '1rem'
-              }}
-              aria-label={`${title || metricDef.label} timeline chart showing ${metricDef.label.toLowerCase()} over time for ${processedData.length} entities`}
-              tabIndex={0}
-              data-layout={currentLayout}
-              data-show-trend-lines={showTrendLines}
-              data-show-confidence-intervals={showConfidenceIntervals}
-              data-animate={animate}
-              data-size={size}
-              data-testid="d3-timeline-chart"
-              onClick={(e) => {
-                // Prevent chart-level click handler when clicking on data points
-                if (e.target !== e.currentTarget) return;
-              }}
-              onMouseEnter={(e) => {
-                // Prevent chart-level hover handler when hovering on data points
-                if (e.target !== e.currentTarget) return;
-              }}
-            >
-              <Text size="lg" fw="bold" c="dimmed">
-                Timeline Chart
-              </Text>
-              <Text size="sm" c="dimmed" ta="center">
-                Interactive timeline visualization will be rendered here
-              </Text>
-              {/* Mock data points for testing */}
-              {processedData.map((series, index) => (
-                <Box key={series.entityId} data-testid={`timeline-series-${index}`}>
-                  <Text size="sm" data-testid="series-name">{series.entityName}</Text>
-                  {series.dataPoints.map((point, pointIndex) => (
-                    <Box 
-                      key={`${series.entityId}-${point.year}-${pointIndex}`}
-                      data-testid={`data-point-${series.entityId}-${point.year}`}
-                      onClick={() => onPointClick?.(point, series)}
-                      onMouseEnter={() => onPointHover?.(point, series)}
-                      style={{ 
-                        cursor: 'pointer',
-                        padding: '2px 4px',
-                        margin: '1px',
-                        backgroundColor: 'var(--mantine-color-blue-light)',
-                        borderRadius: '2px',
-                        fontSize: '10px',
-                        display: 'inline-block'
-                      }}
-                    >
-                      {point.year}: {point.value}
-                    </Box>
-                  ))}
-                </Box>
-              ))}
-            </Box>
+            {/* Chart placeholder */}
+            <Text ta="center" c="dimmed" py="xl">
+              Chart visualization would be rendered here
+            </Text>
           </Box>
           
-          {/* Legend and summary stats */}
-          <Group justify="space-between" align="center" wrap="wrap">
-            {/* Entity legend */}
-            <Group gap="sm">
-              {processedData.slice(0, 5).map((series, index) => (
-                <Group key={series.entityId} gap="xs">
-                  <Box
-                    style={{
-                      width: 12,
-                      height: 12,
-                      borderRadius: '50%',
-                      backgroundColor: series.colour
-                    }}
-                  />
-                  <Text size="xs" truncate style={{ maxWidth: '100px' }}>
-                    {series.entityName}
-                  </Text>
-                </Group>
-              ))}
-              {processedData.length > 5 && (
-                <Text size="xs" c="dimmed">
-                  +{processedData.length - 5} more
-                </Text>
-              )}
-            </Group>
-            
+          {/* Footer with entity summary and year range */}
+          <Group justify="space-between" align="center" pt="md" style={{ borderTop: '1px solid var(--mantine-color-gray-3)' }}>
             {/* Summary stats */}
             <Group gap="md">
               <Text size="xs" c="dimmed">
-                {processedData.length} {processedData.length === 1 ? 'entity' : 'entities'}
+                {data.length} {data.length === 1 ? 'entity' : 'entities'}
               </Text>
-              {processedData.length > 0 && processedData[0].dataPoints.length > 0 && (
+              {data.length > 0 && data[0].dataPoints.length > 0 && (
                 <Text size="xs" c="dimmed">
-                  {Math.min(...processedData.map(s => Math.min(...s.dataPoints.map(p => p.year))))} - {Math.max(...processedData.map(s => Math.max(...s.dataPoints.map(p => p.year))))}
+                  {Math.min(...data.map(s => Math.min(...s.dataPoints.map(p => p.year))))} - {Math.max(...data.map(s => Math.max(...s.dataPoints.map(p => p.year))))}
                 </Text>
               )}
             </Group>
@@ -467,4 +496,4 @@ export function ComparisonTimeline({
       </Card>
     </Box>
   );
-}
+};

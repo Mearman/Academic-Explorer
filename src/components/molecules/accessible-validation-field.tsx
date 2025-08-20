@@ -17,7 +17,6 @@ import {
   Group,
   Stack,
   Alert,
-  Tooltip,
   ActionIcon,
   Loader,
   Box,
@@ -61,6 +60,8 @@ interface BaseFieldConfig {
   validateOnBlur?: boolean;
   validateOnChange?: boolean;
   showValidationStatus?: boolean;
+  showValidationIcon?: boolean;
+  showValidationSummary?: boolean;
   ariaDescribedBy?: string;
 }
 
@@ -138,15 +139,8 @@ interface AccessibleValidationFieldProps {
 /**
  * Main accessible validation field component
  */
-export function AccessibleValidationField({
-  config,
-  value,
-  onChange,
-  onValidationChange,
-  validator,
-  className,
-  'data-testid': testId,
-}: AccessibleValidationFieldProps) {
+// Hook for field state
+const useAccessibleValidationFieldState = (config: FieldConfig, validator?: RealTimeValidator) => {
   const fieldId = useId();
   const errorId = `${fieldId}-error`;
   const helpId = `${fieldId}-help`;
@@ -164,16 +158,25 @@ export function AccessibleValidationField({
   const [touched, setTouched] = useState(false);
   
   const validatorRef = useRef(validator || new RealTimeValidator());
-  const [debouncedValue] = useDebouncedValue(value, 300);
+  
+  return {
+    fieldId, errorId, helpId, statusId,
+    validationState, setValidationState,
+    showPassword, setShowPassword,
+    focused: _focused, setFocused,
+    touched, setTouched,
+    validatorRef,
+  };
+};
 
-  // Real-time validation effect
-  useEffect(() => {
-    if (!config.validateOnChange || !touched) return;
-    
-    validateField(debouncedValue);
-  }, [debouncedValue, config.validateOnChange, touched]);
-
-  // Validation function
+// Hook for validation logic
+const useAccessibleValidationFieldValidation = (
+  config: FieldConfig, 
+  fieldState: ReturnType<typeof useAccessibleValidationFieldState>,
+  onValidationChange?: (isValid: boolean, issues: ValidationIssue[]) => void
+) => {
+  const { validatorRef, setValidationState, touched: _touched } = fieldState;
+  
   const validateField = useCallback(async (fieldValue: unknown) => {
     if (!validatorRef.current) return;
 
@@ -215,13 +218,25 @@ export function AccessibleValidationField({
         lastValidated: Date.now(),
       });
     }
-  }, [config, onValidationChange]);
+  }, [config, onValidationChange, validatorRef, setValidationState]);
+  
+  return { validateField };
+};
 
-  // Event handlers
+// Hook for event handlers
+const useAccessibleValidationFieldHandlers = (
+  config: FieldConfig,
+  fieldState: ReturnType<typeof useAccessibleValidationFieldState>,
+  onChange: (value: unknown) => void,
+  value: unknown,
+  validateField: (fieldValue: unknown) => Promise<void>
+) => {
+  const { setFocused, setTouched, touched } = fieldState;
+  
   const handleChange = useCallback((newValue: unknown) => {
     onChange(newValue);
     if (!touched) setTouched(true);
-  }, [onChange, touched]);
+  }, [onChange, touched, setTouched]);
 
   const handleBlur = useCallback(() => {
     setFocused(false);
@@ -229,295 +244,414 @@ export function AccessibleValidationField({
     if (config.validateOnBlur) {
       validateField(value);
     }
-  }, [config.validateOnBlur, value, validateField]);
+  }, [config.validateOnBlur, value, validateField, setFocused, setTouched]);
 
   const handleFocus = useCallback(() => {
     setFocused(true);
-  }, []);
+  }, [setFocused]);
+  
+  return { handleChange, handleBlur, handleFocus };
+};
 
-  // Get error message with accessibility
+export function AccessibleValidationField({
+  config,
+  value,
+  onChange,
+  onValidationChange,
+  validator,
+  className,
+  'data-testid': testId,
+}: AccessibleValidationFieldProps) {
+  const fieldState = useAccessibleValidationFieldState(config, validator);
+  const [debouncedValue] = useDebouncedValue(value, 300);
+  
+  const validation = useAccessibleValidationFieldValidation(config, fieldState, onValidationChange);
+  const handlers = useAccessibleValidationFieldHandlers(config, fieldState, onChange, value, validation.validateField);
+  
+  // Real-time validation effect
+  useEffect(() => {
+    if (!config.validateOnChange || !fieldState.touched) return;
+    
+    validation.validateField(debouncedValue);
+  }, [debouncedValue, config.validateOnChange, fieldState.touched, validation]);
+  
+  const fieldHelpers = useAccessibleValidationFieldHelpers(config, fieldState);
+  
+  return (
+    <AccessibleValidationFieldLayout
+      config={config}
+      value={value}
+      fieldState={fieldState}
+      handlers={handlers}
+      fieldHelpers={fieldHelpers}
+      className={className}
+      testId={testId}
+    />
+  );
+}
+
+// Hook for field helper functions
+
+// Hook for field helper functions
+const useAccessibleValidationFieldHelpers = (
+  config: FieldConfig,
+  fieldState: ReturnType<typeof useAccessibleValidationFieldState>
+) => {
+  const { validationState } = fieldState;
+  
   const getErrorMessage = useCallback(() => {
     if (!validationState.issues.length) return null;
-
-    const primaryIssue = validationState.issues[0];
-    const additionalIssues = validationState.issues.slice(1);
-
-    return (
-      <Stack gap="xs">
-        <Group gap="xs">
-          <IconX size={14} color="red" />
-          <Text size="sm" c="red" id={errorId}>
-            {primaryIssue.description}
-          </Text>
-        </Group>
-        {additionalIssues.map((issue, index) => (
-          <Text key={index} size="xs" c="dimmed" pl="lg">
-            • {issue.description}
-          </Text>
-        ))}
-      </Stack>
-    );
-  }, [validationState.issues, errorId]);
-
-  // Get validation status indicator
-  const getValidationStatus = () => {
-    if (!config.showValidationStatus) return null;
-    if (!touched && validationState.isValid === null) return null;
-
-    return (
-      <Group gap={4} id={statusId}>
-        {validationState.isValidating && <Loader size="xs" />}
-        {!validationState.isValidating && validationState.isValid === true && (
-          <Group gap="xs">
-            <IconCheck size={14} color="green" />
-            <Text size="xs" c="green">Valid</Text>
-          </Group>
-        )}
-        {!validationState.isValidating && validationState.isValid === false && (
-          <Group gap="xs">
-            <IconX size={14} color="red" />
-            <Text size="xs" c="red">
-              {validationState.issues.length} issue{validationState.issues.length !== 1 ? 's' : ''}
-            </Text>
-          </Group>
-        )}
-      </Group>
-    );
-  };
-
-  // Get ARIA attributes
-  const getAriaAttributes = () => {
-    const describedBy = [];
     
-    if (config.description || config.helpText) describedBy.push(helpId);
-    if (validationState.issues.length > 0) describedBy.push(errorId);
-    if (config.showValidationStatus) describedBy.push(statusId);
-    if (config.ariaDescribedBy) describedBy.push(config.ariaDescribedBy);
-
-    return {
-      'aria-describedby': describedBy.length > 0 ? describedBy.join(' ') : undefined,
-      'aria-invalid': validationState.isValid === false,
-      'aria-required': config.required,
-    };
+    const errorIssues = validationState.issues.filter(issue => 
+      issue.severity === ValidationSeverity.ERROR
+    );
+    
+    if (!errorIssues.length) return null;
+    
+    return errorIssues.map(issue => issue.description).join('. ');
+  }, [validationState.issues]);
+  
+  const getWarningMessage = useCallback(() => {
+    if (!validationState.issues.length) return null;
+    
+    const warningIssues = validationState.issues.filter(issue => 
+      issue.severity === ValidationSeverity.WARNING
+    );
+    
+    if (!warningIssues.length) return null;
+    
+    return warningIssues.map(issue => issue.description).join('. ');
+  }, [validationState.issues]);
+  
+  const getValidationIcon = useCallback(() => {
+    if (validationState.isValidating) {
+      return <Loader size="xs" />;
+    }
+    
+    if (validationState.isValid === true) {
+      return <IconCheck size={16} style={{ color: 'var(--mantine-color-green-6)' }} />;
+    }
+    
+    if (validationState.isValid === false) {
+      return <IconX size={16} style={{ color: 'var(--mantine-color-red-6)' }} />;
+    }
+    
+    return null;
+  }, [validationState]);
+  
+  const getValidationStatus = useCallback(() => {
+    if (validationState.isValidating) return 'Validating...';
+    if (validationState.isValid === true) return 'Valid';
+    if (validationState.isValid === false) return 'Invalid';
+    return '';
+  }, [validationState]);
+  
+  return {
+    getErrorMessage,
+    getWarningMessage,
+    getValidationIcon,
+    getValidationStatus,
   };
+};
 
-  // Common field props
+// Layout component interface
+interface AccessibleValidationFieldLayoutProps {
+  config: FieldConfig;
+  value: unknown;
+  fieldState: ReturnType<typeof useAccessibleValidationFieldState>;
+  handlers: ReturnType<typeof useAccessibleValidationFieldHandlers>;
+  fieldHelpers: ReturnType<typeof useAccessibleValidationFieldHelpers>;
+  className?: string;
+  testId?: string;
+}
+
+// Main layout component
+const AccessibleValidationFieldLayout = ({
+  config,
+  value,
+  fieldState,
+  handlers,
+  fieldHelpers,
+  className,
+  testId,
+}: AccessibleValidationFieldLayoutProps) => {
+  const { fieldId: _fieldId, errorId: _errorId, helpId: _helpId, statusId: _statusId, validationState: _validationState, showPassword: _showPassword, setShowPassword: _setShowPassword } = fieldState;
+  const errorMessage = fieldHelpers.getErrorMessage();
+  const warningMessage = fieldHelpers.getWarningMessage();
+  
+  return (
+    <Stack gap="xs" className={className} data-testid={testId}>
+      <AccessibleValidationFieldInput
+        config={config}
+        value={value}
+        fieldState={fieldState}
+        handlers={handlers}
+        fieldHelpers={fieldHelpers}
+      />
+      
+      <AccessibleValidationFieldFeedback
+        config={config}
+        fieldState={fieldState}
+        fieldHelpers={fieldHelpers}
+        errorMessage={errorMessage}
+        warningMessage={warningMessage}
+      />
+    </Stack>
+  );
+};
+
+// Input component
+interface AccessibleValidationFieldInputProps {
+  config: FieldConfig;
+  value: unknown;
+  fieldState: ReturnType<typeof useAccessibleValidationFieldState>;
+  handlers: ReturnType<typeof useAccessibleValidationFieldHandlers>;
+  fieldHelpers: ReturnType<typeof useAccessibleValidationFieldHelpers>;
+}
+
+// eslint-disable-next-line complexity
+const AccessibleValidationFieldInput = ({
+  config,
+  value,
+  fieldState,
+  handlers,
+  fieldHelpers,
+}: AccessibleValidationFieldInputProps) => {
+  const { fieldId, errorId, helpId, statusId, validationState, showPassword, setShowPassword } = fieldState;
+  const errorMessage = fieldHelpers.getErrorMessage();
+  
   const commonProps = {
     id: fieldId,
     label: config.label,
-    placeholder: config.placeholder,
+    description: config.description,
+    required: config.required,
     disabled: config.disabled,
-    error: validationState.issues.length > 0,
-    onBlur: handleBlur,
-    onFocus: handleFocus,
+    placeholder: config.placeholder,
+    onChange: handlers.handleChange,
+    onBlur: handlers.handleBlur,
+    onFocus: handlers.handleFocus,
+    error: errorMessage,
+    'aria-describedby': [config.description ? helpId : '', errorMessage ? errorId : '', statusId].filter(Boolean).join(' '),
+    'aria-invalid': validationState.isValid === false,
+    rightSection: config.showValidationIcon ? fieldHelpers.getValidationIcon() : undefined,
   };
-
-  // Get additional HTML attributes for accessibility
-  const ariaProps = getAriaAttributes();
-
-  // Render field based on type
-  const renderField = () => {
-    switch (config.type) {
-      case 'text':
-      case 'email':
-      case 'url':
-        return (
-          <TextInput
-            {...commonProps}
-            {...ariaProps}
-            type={config.type}
-            value={String(value || '')}
-            onChange={(event) => handleChange(event.currentTarget.value)}
-            minLength={(config as TextFieldConfig).minLength}
-            maxLength={(config as TextFieldConfig).maxLength}
-            rightSection={getValidationStatus()}
-            data-testid={testId}
-          />
-        );
-
-      case 'password':
-        return (
-          <TextInput
-            {...commonProps}
-            {...ariaProps}
-            type={showPassword ? 'text' : 'password'}
-            value={String(value || '')}
-            onChange={(event) => handleChange(event.currentTarget.value)}
-            rightSection={
-              <Group gap="xs">
-                <ActionIcon
-                  variant="subtle"
-                  onClick={() => setShowPassword(!showPassword)}
-                  aria-label={showPassword ? 'Hide password' : 'Show password'}
-                >
-                  {showPassword ? <IconEyeOff size={14} /> : <IconEye size={14} />}
-                </ActionIcon>
-                {getValidationStatus()}
-              </Group>
-            }
-            data-testid={testId}
-          />
-        );
-
-      case 'number':
-        return (
-          <NumberInput
-            {...commonProps}
-            {...ariaProps}
-            value={typeof value === 'number' ? value : undefined}
-            onChange={(val) => handleChange(val)}
-            min={(config as NumberFieldConfig).min}
-            max={(config as NumberFieldConfig).max}
-            step={(config as NumberFieldConfig).step}
-            rightSection={getValidationStatus()}
-            data-testid={testId}
-          />
-        );
-
-      case 'textarea':
-        return (
-          <Textarea
-            {...commonProps}
-            {...ariaProps}
-            value={String(value || '')}
-            onChange={(event) => handleChange(event.currentTarget.value)}
-            rows={(config as TextareaFieldConfig).rows}
-            minRows={(config as TextareaFieldConfig).minRows}
-            maxRows={(config as TextareaFieldConfig).maxRows}
-            autosize={(config as TextareaFieldConfig).autosize}
-            data-testid={testId}
-          />
-        );
-
-      case 'select':
-        return (
-          <Select
-            {...commonProps}
-            {...ariaProps}
-            data={(config as SelectFieldConfig).options}
-            value={String(value || '')}
-            onChange={(val) => handleChange(val)}
-            searchable={(config as SelectFieldConfig).searchable}
-            clearable={(config as SelectFieldConfig).clearable}
-            rightSection={getValidationStatus()}
-            data-testid={testId}
-          />
-        );
-
-      case 'multiselect':
-        return (
-          <MultiSelect
-            {...commonProps}
-            {...ariaProps}
-            data={(config as SelectFieldConfig).options}
-            value={Array.isArray(value) ? value.map(String) : []}
-            onChange={(val) => handleChange(val)}
-            searchable={(config as SelectFieldConfig).searchable}
-            clearable={(config as SelectFieldConfig).clearable}
-            maxValues={(config as SelectFieldConfig).maxValues}
-            rightSection={getValidationStatus()}
-            data-testid={testId}
-          />
-        );
-
-      case 'checkbox':
-        return (
-          <Checkbox
-            {...commonProps}
-            {...ariaProps}
-            checked={Boolean(value)}
-            onChange={(event) => handleChange(event.currentTarget.checked)}
-            size={(config as BooleanFieldConfig).size}
-            data-testid={testId}
-          />
-        );
-
-      case 'switch':
-        return (
-          <Switch
-            {...commonProps}
-            {...ariaProps}
-            checked={Boolean(value)}
-            onChange={(event) => handleChange(event.currentTarget.checked)}
-            size={(config as BooleanFieldConfig).size}
-            data-testid={testId}
-          />
-        );
-
-      case 'date':
-        return (
-          <TextInput
-            {...commonProps}
-            {...ariaProps}
-            type="date"
-            value={value instanceof Date ? value.toISOString().split('T')[0] : String(value || '')}
-            onChange={(event) => handleChange(new Date(event.currentTarget.value))}
-            min={(config as DateFieldConfig).minDate?.toISOString().split('T')[0]}
-            max={(config as DateFieldConfig).maxDate?.toISOString().split('T')[0]}
-            rightSection={getValidationStatus()}
-            data-testid={testId}
-          />
-        );
-
-      default:
-        return null;
-    }
-  };
-
-  return (
-    <Box className={className}>
-      <Stack gap="xs">
-        {/* Field with label and validation status */}
-        <Group justify="space-between" align="flex-start">
-          <Box style={{ flex: 1 }}>
-            {renderField()}
-          </Box>
-          {config.helpText && (
-            <Tooltip label={config.helpText} multiline maw={300}>
-              <ActionIcon variant="subtle" size="sm">
-                <IconHelp size={14} />
-              </ActionIcon>
-            </Tooltip>
-          )}
-        </Group>
-
-        {/* Description */}
-        {(config.description || config.helpText) && (
-          <Text size="xs" c="dimmed" id={helpId}>
-            {config.description}
-          </Text>
-        )}
-
-        {/* Error messages */}
-        <Transition mounted={validationState.issues.length > 0} transition="fade">
-          {(styles) => (
-            <div style={styles}>
-              <Alert
-                color="red"
-                variant="light"
-                p="sm"
-                role="alert"
-                aria-live="polite"
+  
+  // Render appropriate input type
+  switch (config.type) {
+    case 'text':
+    case 'email':
+    case 'url':
+      return <TextInput {...commonProps} value={value as string || ''} type={config.type} />;
+      
+    case 'password':
+      return (
+        <TextInput
+          {...commonProps}
+          value={value as string || ''}
+          type={showPassword ? 'text' : 'password'}
+          rightSection={
+            <Group gap={4}>
+              <ActionIcon
+                variant="subtle"
+                onClick={() => setShowPassword(!showPassword)}
+                aria-label={showPassword ? 'Hide password' : 'Show password'}
               >
-                {getErrorMessage()}
-              </Alert>
-            </div>
+                {showPassword ? <IconEyeOff size={16} /> : <IconEye size={16} />}
+              </ActionIcon>
+              {config.showValidationIcon && fieldHelpers.getValidationIcon()}
+            </Group>
+          }
+        />
+      );
+      
+    case 'number':
+      return (
+        <NumberInput
+          {...commonProps}
+          value={value as number || undefined}
+          min={getFieldMin(config)}
+          max={getFieldMax(config)}
+          step={config.step}
+          decimalScale={config.precision}
+        />
+      );
+      
+    case 'textarea':
+      return (
+        <Textarea
+          {...commonProps}
+          value={value as string || ''}
+          rows={config.rows || 3}
+          autosize={config.autosize}
+          minRows={config.minRows}
+          maxRows={config.maxRows}
+        />
+      );
+      
+    case 'select':
+      return (
+        <Select
+          {...commonProps}
+          value={value as string || ''}
+          data={config.options || []}
+          searchable={config.searchable}
+          clearable={config.clearable}
+        />
+      );
+      
+    case 'multiselect':
+      return (
+        <MultiSelect
+          {...commonProps}
+          value={value as string[] || []}
+          data={config.options || []}
+          searchable={config.searchable}
+          clearable={config.clearable}
+        />
+      );
+      
+    case 'checkbox':
+      return (
+        <Checkbox
+          id={fieldId}
+          label={config.label}
+          description={config.description}
+          required={config.required}
+          disabled={config.disabled}
+          checked={Boolean(value)}
+          onChange={(event) => handlers.handleChange(event.currentTarget.checked)}
+          onBlur={handlers.handleBlur}
+          onFocus={handlers.handleFocus}
+          error={errorMessage}
+          aria-describedby={[config.description ? helpId : '', errorMessage ? errorId : ''].filter(Boolean).join(' ')}
+          aria-invalid={validationState.isValid === false}
+        />
+      );
+      
+    case 'switch':
+      return (
+        <Switch
+          id={fieldId}
+          label={config.label}
+          description={config.description}
+          required={config.required}
+          disabled={config.disabled}
+          checked={Boolean(value)}
+          onChange={(event) => handlers.handleChange(event.currentTarget.checked)}
+          onBlur={handlers.handleBlur}
+          onFocus={handlers.handleFocus}
+          error={errorMessage}
+          aria-describedby={[config.description ? helpId : '', errorMessage ? errorId : ''].filter(Boolean).join(' ')}
+          aria-invalid={validationState.isValid === false}
+        />
+      );
+      
+    default:
+      return <TextInput {...commonProps} value={value as string || ''} />;
+  }
+};
+
+// Feedback component
+interface AccessibleValidationFieldFeedbackProps {
+  config: FieldConfig;
+  fieldState: ReturnType<typeof useAccessibleValidationFieldState>;
+  fieldHelpers: ReturnType<typeof useAccessibleValidationFieldHelpers>;
+  errorMessage: string | null;
+  warningMessage: string | null;
+}
+
+const AccessibleValidationFieldFeedback = ({
+  config,
+  fieldState,
+  fieldHelpers,
+  errorMessage,
+  warningMessage,
+}: AccessibleValidationFieldFeedbackProps) => {
+  const { errorId, helpId, statusId, validationState } = fieldState;
+  
+  return (
+    <>
+      {/* Validation status for screen readers */}
+      <div
+        id={statusId}
+        className="sr-only"
+        aria-live="polite"
+        aria-atomic="true"
+      >
+        {fieldHelpers.getValidationStatus()}
+      </div>
+      
+      {/* Error message */}
+      {errorMessage && (
+        <Transition mounted={Boolean(errorMessage)} transition="fade" duration={200}>
+          {(styles) => (
+            <Alert
+              id={errorId}
+              icon={<IconAlertTriangle size={16} />}
+              color="red"
+              variant="light"
+              style={styles}
+            >
+              {errorMessage}
+            </Alert>
           )}
         </Transition>
-
-        {/* Validation suggestions */}
-        {touched && validationState.issues.length > 0 && (
-          <ValidationSuggestions issues={validationState.issues} />
-        )}
-      </Stack>
-    </Box>
+      )}
+      
+      {/* Warning message */}
+      {warningMessage && !errorMessage && (
+        <Transition mounted={Boolean(warningMessage)} transition="fade" duration={200}>
+          {(styles) => (
+            <Alert
+              icon={<IconInfoCircle size={16} />}
+              color="yellow"
+              variant="light"
+              style={styles}
+            >
+              {warningMessage}
+            </Alert>
+          )}
+        </Transition>
+      )}
+      
+      {/* Validation issues summary */}
+      {config.showValidationSummary && validationState.issues.length > 0 && (
+        <Paper p="xs" withBorder>
+          <Text size="sm" fw={500} mb={4}>Validation Issues:</Text>
+          <Stack gap={2}>
+            {validationState.issues.map((issue, index) => (
+              <Group key={index} gap={6}>
+                <_Badge
+                  size="xs"
+                  color={_getValidationSeverityColor(issue.severity)}
+                  variant="light"
+                >
+                  {issue.severity}
+                </_Badge>
+                <Text size="xs">{issue.description}</Text>
+              </Group>
+            ))}
+          </Stack>
+        </Paper>
+      )}
+      
+      {/* Help text */}
+      {config.helpText && (
+        <Group gap={4}>
+          <IconHelp size={14} style={{ color: 'var(--mantine-color-gray-6)' }} />
+          <Text id={helpId} size="xs" c="dimmed">
+            {config.helpText}
+          </Text>
+        </Group>
+      )}
+    </>
   );
-}
+};
 
 /**
  * Validation suggestions component
  */
-function ValidationSuggestions({ issues }: { issues: ValidationIssue[] }) {
+function _ValidationSuggestions({ issues }: { issues: ValidationIssue[] }) {
   const suggestions = issues
     .map(issue => getValidationSuggestion(issue))
     .filter(Boolean);

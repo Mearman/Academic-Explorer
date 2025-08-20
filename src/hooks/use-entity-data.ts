@@ -130,10 +130,15 @@ const DEFAULT_OPTIONS: Required<UseEntityDataOptions> = {
   staleTime: 5 * 60 * 1000 // 5 minutes
 };
 
+interface CreateEntityErrorParams {
+  error: unknown;
+  entityId: string;
+}
+
 /**
  * Create a user-friendly error from various error types
  */
-function createEntityError(error: unknown, entityId: string): EntityError {
+function createEntityError({ error, entityId }: CreateEntityErrorParams): EntityError {
   if (error instanceof EntityDetectionError) {
     return {
       type: EntityErrorType.INVALID_ID,
@@ -191,14 +196,20 @@ function createEntityError(error: unknown, entityId: string): EntityError {
   };
 }
 
+interface FetchEntityDataParams {
+  entityId: string;
+  entityType?: EntityType;
+  skipCache?: boolean;
+}
+
 /**
  * Fetch entity data from OpenAlex API
  */
-async function fetchEntityData<T extends EntityData = EntityData>(
-  entityId: string,
-  entityType?: EntityType,
-  skipCache: boolean = false
-): Promise<T> {
+async function fetchEntityData<T extends EntityData = EntityData>({
+  entityId,
+  entityType,
+  skipCache = false
+}: FetchEntityDataParams): Promise<T> {
   console.log(`[fetchEntityData] ========== FETCH ENTITY DATA ==========`);
   console.log(`[fetchEntityData] Input entityId: "${entityId}", entityType: ${entityType}, skipCache: ${skipCache}`);
   
@@ -296,8 +307,8 @@ async function fetchEntityData<T extends EntityData = EntityData>(
     id: result.id,
     display_name: result.display_name,
     entityType: detectedType,
-    works_count: (result as any).works_count,
-    cited_by_count: (result as any).cited_by_count
+    works_count: 'works_count' in result ? (result as any).works_count : undefined,
+    cited_by_count: 'cited_by_count' in result ? (result as any).cited_by_count : undefined
   });
   
   return result as T;
@@ -307,47 +318,65 @@ async function fetchEntityData<T extends EntityData = EntityData>(
  * Create a timeout promise that rejects after the specified time
  */
 function createTimeoutPromise(timeoutMs: number): Promise<never> {
-  return new Promise((_, reject) => {
+  return new Promise((_, reject) => {  
     setTimeout(() => {
       reject(new Error(`Request timeout after ${timeoutMs}ms`));
     }, timeoutMs);
   });
 }
 
+interface FetchEntityDataWithTimeoutParams {
+  entityId: string;
+  entityType?: EntityType;
+  skipCache?: boolean;
+  timeoutMs?: number;
+}
+
 /**
  * Fetch entity data with timeout support
  */
-async function fetchEntityDataWithTimeout<T extends EntityData = EntityData>(
-  entityId: string,
-  entityType?: EntityType,
-  skipCache: boolean = false,
-  timeoutMs?: number
-): Promise<T> {
+async function fetchEntityDataWithTimeout<T extends EntityData = EntityData>({
+  entityId,
+  entityType,
+  skipCache = false,
+  timeoutMs
+}: FetchEntityDataWithTimeoutParams): Promise<T> {
   if (timeoutMs && timeoutMs > 0) {
     // Race the fetch against the timeout
     return Promise.race([
-      fetchEntityData<T>(entityId, entityType, skipCache),
+      fetchEntityData<T>({ entityId, entityType, skipCache }),
       createTimeoutPromise(timeoutMs)
     ]);
   } else {
     // No timeout, use regular fetch
-    return fetchEntityData<T>(entityId, entityType, skipCache);
+    return fetchEntityData<T>({ entityId, entityType, skipCache });
   }
 }
 
 /**
  * Schedule an automatic retry if conditions are met
  */
-function scheduleAutoRetryIfNeeded<T extends EntityData>(
-  error: EntityError,
-  entityId: string,
-  entityType: EntityType | undefined,
-  opts: Required<UseEntityDataOptions>,
-  currentRetryCount: number,
-  mountedRef: React.MutableRefObject<boolean>,
-  retryTimerRef: React.MutableRefObject<NodeJS.Timeout | null>,
-  setState: React.Dispatch<React.SetStateAction<UseEntityDataState<T>>>
-): void {
+interface ScheduleAutoRetryParams<T extends EntityData> {
+  error: EntityError;
+  entityId: string;
+  entityType: EntityType | undefined;
+  opts: Required<UseEntityDataOptions>;
+  currentRetryCount: number;
+  mountedRef: React.MutableRefObject<boolean>;
+  retryTimerRef: React.MutableRefObject<NodeJS.Timeout | null>;
+  setState: React.Dispatch<React.SetStateAction<UseEntityDataState<T>>>;
+}
+
+function scheduleAutoRetryIfNeeded<T extends EntityData>({
+  error,
+  entityId,
+  entityType,
+  opts,
+  currentRetryCount,
+  mountedRef,
+  retryTimerRef,
+  setState
+}: ScheduleAutoRetryParams<T>): void {
   // Check if auto-retry should be attempted
   if (!opts.retryOnError || !error.retryable || currentRetryCount >= opts.maxRetries) {
     console.log(`[scheduleAutoRetryIfNeeded] Skipping auto-retry - retryOnError: ${opts.retryOnError}, retryable: ${error.retryable}, retryCount: ${currentRetryCount}, maxRetries: ${opts.maxRetries}`);
@@ -382,7 +411,7 @@ function scheduleAutoRetryIfNeeded<T extends EntityData>(
     }));
 
     try {
-      const data = await fetchEntityDataWithTimeout<T>(entityId, entityType, opts.skipCache, opts.timeout);
+      const data = await fetchEntityDataWithTimeout<T>({ entityId, entityType, skipCache: opts.skipCache, timeoutMs: opts.timeout });
 
       if (!mountedRef.current) {
         console.log(`[scheduleAutoRetryIfNeeded] Component unmounted during retry, skipping state update for ${entityId}`);
@@ -410,7 +439,7 @@ function scheduleAutoRetryIfNeeded<T extends EntityData>(
 
       console.error(`[scheduleAutoRetryIfNeeded] Retry ${newRetryCount} failed for ${entityId}:`, retryError);
 
-      const retryEntityError = createEntityError(retryError, entityId);
+      const retryEntityError = createEntityError({ error: retryError, entityId });
 
       setState(prev => ({
         ...prev,
@@ -423,24 +452,37 @@ function scheduleAutoRetryIfNeeded<T extends EntityData>(
       opts.onError(retryEntityError);
 
       // Schedule another retry if we haven't hit the limit
-      scheduleAutoRetryIfNeeded(retryEntityError, entityId, entityType, opts, newRetryCount, mountedRef, retryTimerRef, setState);
+      scheduleAutoRetryIfNeeded({
+        error: retryEntityError,
+        entityId,
+        entityType,
+        opts,
+        currentRetryCount: newRetryCount,
+        mountedRef,
+        retryTimerRef,
+        setState
+      });
     }
   }, opts.retryDelay);
+}
+
+interface UseEntityDataParams<_T extends EntityData = EntityData> {
+  entityId: string | null | undefined;
+  entityType?: EntityType;
+  options?: Partial<UseEntityDataOptions>;
 }
 
 /**
  * React hook for fetching OpenAlex entity data client-side
  * 
- * @param entityId - The entity ID (with or without prefix)
- * @param entityType - Optional explicit entity type (required for numeric IDs)
- * @param options - Configuration options
+ * @param params - Object containing entityId, entityType, and options
  * @returns Hook state and control functions
  */
-export function useEntityData<T extends EntityData = EntityData>(
-  entityId: string | null | undefined,
-  entityType?: EntityType,
-  options: Partial<UseEntityDataOptions> = {}
-): UseEntityDataState<T> & {
+export function useEntityData<T extends EntityData = EntityData>({
+  entityId,
+  entityType,
+  options = {}
+}: UseEntityDataParams<T>): UseEntityDataState<T> & {
   /** Manually trigger a refetch */
   refetch: () => Promise<void>;
   /** Retry the last failed request */
@@ -539,7 +581,7 @@ export function useEntityData<T extends EntityData = EntityData>(
       try {
         console.log(`[useEntityData] Calling fetchEntityDataWithTimeout for ${entityId}`);
         
-        const data = await fetchEntityDataWithTimeout<T>(entityId, entityType, opts.skipCache, opts.timeout);
+        const data = await fetchEntityDataWithTimeout<T>({ entityId, entityType, skipCache: opts.skipCache, timeoutMs: opts.timeout });
 
         if (!mountedRef.current) {
           console.log(`[useEntityData] Component unmounted, skipping state update for ${entityId}`);
@@ -567,7 +609,7 @@ export function useEntityData<T extends EntityData = EntityData>(
 
         console.error(`[useEntityData] Error fetching entity ${entityId}:`, error);
         
-        const entityError = createEntityError(error, entityId);
+        const entityError = createEntityError({ error, entityId });
         
         setState(prev => ({
           ...prev,
@@ -580,7 +622,16 @@ export function useEntityData<T extends EntityData = EntityData>(
         opts.onError(entityError);
 
         // Auto-retry logic - schedule retry if conditions are met
-        scheduleAutoRetryIfNeeded(entityError, entityId, entityType, opts, 0, mountedRef, retryTimerRef, setState);
+        scheduleAutoRetryIfNeeded({
+          error: entityError,
+          entityId,
+          entityType,
+          opts,
+          currentRetryCount: 0,
+          mountedRef,
+          retryTimerRef,
+          setState
+        });
       }
     })();
     // Intentionally excluded opts from dependencies to prevent infinite loops
@@ -613,7 +664,7 @@ export function useEntityData<T extends EntityData = EntityData>(
     }));
     
     try {
-      const data = await fetchEntityDataWithTimeout<T>(entityId, entityType, true, opts.timeout); // Force skip cache with timeout
+      const data = await fetchEntityDataWithTimeout<T>({ entityId, entityType, skipCache: true, timeoutMs: opts.timeout }); // Force skip cache with timeout
       
       if (mountedRef.current) {
         setState(prev => ({
@@ -628,7 +679,7 @@ export function useEntityData<T extends EntityData = EntityData>(
       }
     } catch (error) {
       if (mountedRef.current) {
-        const entityError = createEntityError(error, entityId);
+        const entityError = createEntityError({ error, entityId });
         setState(prev => ({
           ...prev,
           loading: false,
@@ -660,7 +711,7 @@ export function useEntityData<T extends EntityData = EntityData>(
       }));
       
       try {
-        const data = await fetchEntityDataWithTimeout<T>(entityId, entityType, opts.skipCache, opts.timeout);
+        const data = await fetchEntityDataWithTimeout<T>({ entityId, entityType, skipCache: opts.skipCache, timeoutMs: opts.timeout });
         
         if (mountedRef.current) {
           setState(prev => ({
@@ -675,7 +726,7 @@ export function useEntityData<T extends EntityData = EntityData>(
         }
       } catch (error) {
         if (mountedRef.current) {
-          const entityError = createEntityError(error, entityId);
+          const entityError = createEntityError({ error, entityId });
           setState(prev => ({
             ...prev,
             loading: false,
@@ -718,22 +769,26 @@ export function useEntityData<T extends EntityData = EntityData>(
 /**
  * Specialized hook for fetching works
  */
-export function useWorkData(
-  workId: string | null | undefined,
-  options?: Partial<UseEntityDataOptions>
-) {
-  return useEntityData<Work>(workId, EntityType.WORK, options);
+interface UseWorkDataParams {
+  workId: string | null | undefined;
+  options?: Partial<UseEntityDataOptions>;
+}
+
+export function useWorkData({ workId, options }: UseWorkDataParams) {
+  return useEntityData<Work>({ entityId: workId, entityType: EntityType.WORK, options });
 }
 
 /**
  * Specialized hook for fetching authors
  */
-export function useAuthorData(
-  authorId: string | null | undefined,
-  options?: Partial<UseEntityDataOptions>
-) {
+interface UseAuthorDataParams {
+  authorId: string | null | undefined;
+  options?: Partial<UseEntityDataOptions>;
+}
+
+export function useAuthorData({ authorId, options }: UseAuthorDataParams) {
   console.log('[useAuthorData] Called with:', { authorId, hasOptions: !!options });
-  const result = useEntityData<Author>(authorId, EntityType.AUTHOR, options);
+  const result = useEntityData<Author>({ entityId: authorId, entityType: EntityType.AUTHOR, options });
   console.log('[useAuthorData] Result:', {
     loading: result.loading,
     hasData: !!result.data,
@@ -746,89 +801,107 @@ export function useAuthorData(
 /**
  * Specialized hook for fetching sources
  */
-export function useSourceData(
-  sourceId: string | null | undefined,
-  options?: Partial<UseEntityDataOptions>
-) {
-  return useEntityData<Source>(sourceId, EntityType.SOURCE, options);
+interface UseSourceDataParams {
+  sourceId: string | null | undefined;
+  options?: Partial<UseEntityDataOptions>;
+}
+
+export function useSourceData({ sourceId, options }: UseSourceDataParams) {
+  return useEntityData<Source>({ entityId: sourceId, entityType: EntityType.SOURCE, options });
 }
 
 /**
  * Specialized hook for fetching institutions
  */
-export function useInstitutionData(
-  institutionId: string | null | undefined,
-  options?: Partial<UseEntityDataOptions>
-) {
-  return useEntityData<Institution>(institutionId, EntityType.INSTITUTION, options);
+interface UseInstitutionDataParams {
+  institutionId: string | null | undefined;
+  options?: Partial<UseEntityDataOptions>;
+}
+
+export function useInstitutionData({ institutionId, options }: UseInstitutionDataParams) {
+  return useEntityData<Institution>({ entityId: institutionId, entityType: EntityType.INSTITUTION, options });
 }
 
 /**
  * Specialized hook for fetching publishers
  */
-export function usePublisherData(
-  publisherId: string | null | undefined,
-  options?: Partial<UseEntityDataOptions>
-) {
-  return useEntityData<Publisher>(publisherId, EntityType.PUBLISHER, options);
+interface UsePublisherDataParams {
+  publisherId: string | null | undefined;
+  options?: Partial<UseEntityDataOptions>;
+}
+
+export function usePublisherData({ publisherId, options }: UsePublisherDataParams) {
+  return useEntityData<Publisher>({ entityId: publisherId, entityType: EntityType.PUBLISHER, options });
 }
 
 /**
  * Specialized hook for fetching funders
  */
-export function useFunderData(
-  funderId: string | null | undefined,
-  options?: Partial<UseEntityDataOptions>
-) {
-  return useEntityData<Funder>(funderId, EntityType.FUNDER, options);
+interface UseFunderDataParams {
+  funderId: string | null | undefined;
+  options?: Partial<UseEntityDataOptions>;
+}
+
+export function useFunderData({ funderId, options }: UseFunderDataParams) {
+  return useEntityData<Funder>({ entityId: funderId, entityType: EntityType.FUNDER, options });
 }
 
 /**
  * Specialized hook for fetching topics
  */
-export function useTopicData(
-  topicId: string | null | undefined,
-  options?: Partial<UseEntityDataOptions>
-) {
-  return useEntityData<Topic>(topicId, EntityType.TOPIC, options);
+interface UseTopicDataParams {
+  topicId: string | null | undefined;
+  options?: Partial<UseEntityDataOptions>;
+}
+
+export function useTopicData({ topicId, options }: UseTopicDataParams) {
+  return useEntityData<Topic>({ entityId: topicId, entityType: EntityType.TOPIC, options });
 }
 
 /**
  * Specialized hook for fetching concepts
  */
-export function useConceptData(
-  conceptId: string | null | undefined,
-  options?: Partial<UseEntityDataOptions>
-) {
-  return useEntityData<Concept>(conceptId, EntityType.CONCEPT, options);
+interface UseConceptDataParams {
+  conceptId: string | null | undefined;
+  options?: Partial<UseEntityDataOptions>;
+}
+
+export function useConceptData({ conceptId, options }: UseConceptDataParams) {
+  return useEntityData<Concept>({ entityId: conceptId, entityType: EntityType.CONCEPT, options });
 }
 
 /**
  * Specialized hook for fetching continents
  */
-export function useContinentData(
-  continentId: string | null | undefined,
-  options?: Partial<UseEntityDataOptions>
-) {
-  return useEntityData<Continent>(continentId, EntityType.CONTINENT, options);
+interface UseContinentDataParams {
+  continentId: string | null | undefined;
+  options?: Partial<UseEntityDataOptions>;
+}
+
+export function useContinentData({ continentId, options }: UseContinentDataParams) {
+  return useEntityData<Continent>({ entityId: continentId, entityType: EntityType.CONTINENT, options });
 }
 
 /**
  * Specialized hook for fetching keywords
  */
-export function useKeywordData(
-  keywordId: string | null | undefined,
-  options?: Partial<UseEntityDataOptions>
-) {
-  return useEntityData<Keyword>(keywordId, EntityType.KEYWORD, options);
+interface UseKeywordDataParams {
+  keywordId: string | null | undefined;
+  options?: Partial<UseEntityDataOptions>;
+}
+
+export function useKeywordData({ keywordId, options }: UseKeywordDataParams) {
+  return useEntityData<Keyword>({ entityId: keywordId, entityType: EntityType.KEYWORD, options });
 }
 
 /**
  * Specialized hook for fetching regions
  */
-export function useRegionData(
-  regionId: string | null | undefined,
-  options?: Partial<UseEntityDataOptions>
-) {
-  return useEntityData<Region>(regionId, EntityType.REGION, options);
+interface UseRegionDataParams {
+  regionId: string | null | undefined;
+  options?: Partial<UseEntityDataOptions>;
+}
+
+export function useRegionData({ regionId, options }: UseRegionDataParams) {
+  return useEntityData<Region>({ entityId: regionId, entityType: EntityType.REGION, options });
 }

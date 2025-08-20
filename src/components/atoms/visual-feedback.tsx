@@ -361,41 +361,19 @@ const ProgressBar = ({
 /**
  * Main visual feedback component
  */
-export const VisualFeedback = ({
-  children,
-  className,
-  'data-testid': testId,
-  enableRipple = true,
-  enableHover = true,
-  enableFocus = true,
-  enablePress = true,
-  enableSuccess = true,
-  enableError = true,
-  enableLoading = true,
-  rippleColor = 'rgba(255, 255, 255, 0.3)',
-  rippleDuration = 600,
-  hoverElevation = true,
-  pressScale = 0.98,
-  isSuccess = false,
-  isError = false,
-  isLoading = false,
-  isDisabled = false,
-  successMessage,
-  errorMessage,
-  loadingMessage,
-  onInteractionStart,
-  onInteractionEnd,
-  onSuccess,
-  onError,
-}: VisualFeedbackProps) => {
-  const rippleEffect = useRippleEffect(enableRipple, rippleColor, rippleDuration);
-  const { toasts, addToast, removeToast } = useToastNotifications();
-  const interactionStates = useInteractionStates({
-    onInteractionStart,
-    onInteractionEnd,
-  });
-
-  // Handle state changes
+// Hook for state effects
+const useVisualFeedbackEffects = (
+  isSuccess: boolean,
+  isError: boolean,
+  enableSuccess: boolean,
+  enableError: boolean,
+  successMessage?: string,
+  errorMessage?: string,
+  onSuccess?: () => void,
+  onError?: (error: string) => void
+) => {
+  const { addToast } = useToastNotifications();
+  
   useEffect(() => {
     if (isSuccess && enableSuccess && successMessage) {
       addToast('success', successMessage);
@@ -409,9 +387,36 @@ export const VisualFeedback = ({
       onError?.(errorMessage);
     }
   }, [isError, enableError, errorMessage, addToast, onError]);
+};
 
-  // Build CSS classes
-  const cssClasses = [
+// Function to build CSS classes
+const buildFeedbackClasses = (
+  interactionStates: ReturnType<typeof useInteractionStates>,
+  props: {
+    enableHover: boolean;
+    enableFocus: boolean;
+    enablePress: boolean;
+    hoverElevation: boolean;
+    isLoading: boolean;
+    isSuccess: boolean;
+    isError: boolean;
+    isDisabled: boolean;
+    className?: string;
+  }
+) => {
+  const {
+    enableHover,
+    enableFocus,
+    enablePress,
+    hoverElevation,
+    isLoading,
+    isSuccess,
+    isError,
+    isDisabled,
+    className,
+  } = props;
+  
+  return [
     styles.feedbackContainer,
     enableHover && interactionStates.isHovered ? styles.hovered : '',
     enableFocus && interactionStates.isFocused ? styles.focused : '',
@@ -423,20 +428,109 @@ export const VisualFeedback = ({
     isDisabled ? styles.disabled : '',
     className,
   ].filter(Boolean).join(' ');
+};
 
-  // Interaction handlers
-  const handleClick = (event: React.MouseEvent) => {
+// Function to get interaction state
+const getInteractionState = (
+  isLoading: boolean,
+  isSuccess: boolean,
+  isError: boolean,
+  isDisabled: boolean
+) => {
+  if (isLoading) return 'loading';
+  if (isSuccess) return 'success';
+  if (isError) return 'error';
+  if (isDisabled) return 'disabled';
+  return 'default';
+};
+
+// Function to create click handler
+const createClickHandler = (
+  isDisabled: boolean,
+  enableRipple: boolean,
+  rippleEffect: ReturnType<typeof useRippleEffect>
+) => {
+  return (event: React.MouseEvent) => {
     if (isDisabled) return;
     
     if (enableRipple) {
       rippleEffect.createRipple(event);
     }
   };
+};
 
+// eslint-disable-next-line complexity
+export const VisualFeedback = (props: VisualFeedbackProps) => {
+  const {
+    children,
+    className,
+    'data-testid': testId,
+    enableRipple = true,
+    enableHover = true,
+    enableFocus = true,
+    enablePress = true,
+    enableSuccess = true,
+    enableError = true,
+    enableLoading = true,
+    rippleColor = 'rgba(255, 255, 255, 0.3)',
+    rippleDuration = 600,
+    hoverElevation = true,
+    pressScale = 0.98,
+    isSuccess = false,
+    isError = false,
+    isLoading = false,
+    isDisabled = false,
+    successMessage,
+    errorMessage,
+    loadingMessage,
+    onInteractionStart,
+    onInteractionEnd,
+    onSuccess,
+    onError,
+  } = props;
+  
+  const rippleEffect = useRippleEffect(enableRipple, rippleColor, rippleDuration);
+  const { toasts, removeToast } = useToastNotifications();
+  const interactionStates = useInteractionStates({
+    onInteractionStart,
+    onInteractionEnd,
+  });
+  
+  // Handle state effects
+  useVisualFeedbackEffects(
+    isSuccess,
+    isError,
+    enableSuccess,
+    enableError,
+    successMessage,
+    errorMessage,
+    onSuccess,
+    onError
+  );
+  
+  // Build CSS classes
+  const cssClasses = buildFeedbackClasses(interactionStates, {
+    enableHover,
+    enableFocus,
+    enablePress,
+    hoverElevation,
+    isLoading,
+    isSuccess,
+    isError,
+    isDisabled,
+    className,
+  });
+  
+  // Create click handler
+  const handleClick = createClickHandler(isDisabled, enableRipple, rippleEffect);
+  
   const combinedHandlers = {
     ...interactionStates.handlers,
     onClick: handleClick,
   };
+  
+  const interactionState = getInteractionState(isLoading, isSuccess, isError, isDisabled);
+  const transform = enablePress && interactionStates.isPressed ? `scale(${pressScale})` : undefined;
 
   return (
     <>
@@ -444,18 +538,8 @@ export const VisualFeedback = ({
         ref={rippleEffect.containerRef}
         className={cssClasses}
         data-testid={testId}
-        data-interaction-state={
-          isLoading ? 'loading' :
-          isSuccess ? 'success' :
-          isError ? 'error' :
-          isDisabled ? 'disabled' :
-          'default'
-        }
-        style={{
-          transform: enablePress && interactionStates.isPressed 
-            ? `scale(${pressScale})` 
-            : undefined,
-        }}
+        data-interaction-state={interactionState}
+        style={{ transform }}
         {...combinedHandlers}
       >
         {children}
@@ -534,8 +618,7 @@ export const FeedbackButton = ({
   loadingMessage?: string;
   onClick?: () => void;
   disabled?: boolean;
-  [key: string]: any;
-}) => {
+} & React.ButtonHTMLAttributes<HTMLButtonElement>) => {
   const [internalLoading, setInternalLoading] = useState(false);
 
   const handleClick = async () => {

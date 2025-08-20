@@ -18,27 +18,27 @@ import {
 } from './loading-skeleton';
 
 // Mock viewport utilities for responsive testing
-const mockViewport = (width: number, height: number) => {
+const mockViewport = (dimensions: { width: number; height: number }) => {
   Object.defineProperty(window, 'innerWidth', {
     writable: true,
     configurable: true,
-    value: width,
+    value: dimensions.width,
   });
   Object.defineProperty(window, 'innerHeight', {
     writable: true,
     configurable: true,
-    value: height,
+    value: dimensions.height,
   });
   
   // Trigger resize event
   fireEvent(window, new Event('resize'));
 };
 
-const mockMediaQuery = (query: string, matches: boolean) => {
+const mockMediaQuery = (config: { query: string; matches: boolean }) => {
   Object.defineProperty(window, 'matchMedia', {
     writable: true,
     value: vi.fn().mockImplementation(q => ({
-      matches: q === query ? matches : false,
+      matches: q === config.query ? config.matches : false,
       media: q,
       onchange: null,
       addListener: vi.fn(),
@@ -54,13 +54,13 @@ describe('Responsive Design: LoadingSkeleton Adaptability', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     // Reset to desktop viewport
-    mockViewport(1024, 768);
+    mockViewport({ width: 1024, height: 768 });
   });
 
   describe('Viewport Breakpoint Adaptations', () => {
     it('should adapt to mobile viewport (< 768px)', () => {
-      mockViewport(375, 667); // iPhone SE
-      mockMediaQuery('(max-width: 767px)', true);
+      mockViewport({ width: 375, height: 667 }); // iPhone SE
+      mockMediaQuery({ query: '(max-width: 767px)', matches: true });
       
       render(
         <div className="responsive-container">
@@ -77,8 +77,8 @@ describe('Responsive Design: LoadingSkeleton Adaptability', () => {
     });
 
     it('should adapt to tablet viewport (768px - 1024px)', () => {
-      mockViewport(768, 1024); // iPad
-      mockMediaQuery('(min-width: 768px) and (max-width: 1023px)', true);
+      mockViewport({ width: 768, height: 1024 }); // iPad
+      mockMediaQuery({ query: '(min-width: 768px) and (max-width: 1023px)', matches: true });
       
       render(
         <div>
@@ -91,8 +91,8 @@ describe('Responsive Design: LoadingSkeleton Adaptability', () => {
     });
 
     it('should adapt to desktop viewport (>= 1024px)', () => {
-      mockViewport(1440, 900); // Desktop
-      mockMediaQuery('(min-width: 1024px)', true);
+      mockViewport({ width: 1440, height: 900 }); // Desktop
+      mockMediaQuery({ query: '(min-width: 1024px)', matches: true });
       
       render(
         <div>
@@ -106,8 +106,8 @@ describe('Responsive Design: LoadingSkeleton Adaptability', () => {
     });
 
     it('should handle very small screens (< 320px)', () => {
-      mockViewport(280, 653); // Very small mobile
-      mockMediaQuery('(max-width: 319px)', true);
+      mockViewport({ width: 280, height: 653 }); // Very small mobile
+      mockMediaQuery({ query: '(max-width: 319px)', matches: true });
       
       render(
         <div>
@@ -120,8 +120,8 @@ describe('Responsive Design: LoadingSkeleton Adaptability', () => {
     });
 
     it('should handle ultra-wide screens (> 1920px)', () => {
-      mockViewport(2560, 1440); // 4K monitor
-      mockMediaQuery('(min-width: 1920px)', true);
+      mockViewport({ width: 2560, height: 1440 }); // 4K monitor
+      mockMediaQuery({ query: '(min-width: 1920px)', matches: true });
       
       render(
         <div>
@@ -136,8 +136,8 @@ describe('Responsive Design: LoadingSkeleton Adaptability', () => {
 
   describe('Device Orientation Handling', () => {
     it('should adapt to portrait orientation', () => {
-      mockViewport(375, 812); // iPhone X portrait
-      mockMediaQuery('(orientation: portrait)', true);
+      mockViewport({ width: 375, height: 812 }); // iPhone X portrait
+      mockMediaQuery({ query: '(orientation: portrait)', matches: true });
       
       render(
         <div>
@@ -154,8 +154,8 @@ describe('Responsive Design: LoadingSkeleton Adaptability', () => {
     });
 
     it('should adapt to landscape orientation', () => {
-      mockViewport(812, 375); // iPhone X landscape
-      mockMediaQuery('(orientation: landscape)', true);
+      mockViewport({ width: 812, height: 375 }); // iPhone X landscape
+      mockMediaQuery({ query: '(orientation: landscape)', matches: true });
       
       render(
         <div>
@@ -247,7 +247,7 @@ describe('Responsive Design: LoadingSkeleton Adaptability', () => {
     });
 
     it('should handle system font scaling', () => {
-      mockMediaQuery('(prefers-reduced-data: reduce)', true);
+      mockMediaQuery({ query: '(prefers-reduced-data: reduce)', matches: true });
       
       render(
         <div>
@@ -262,11 +262,11 @@ describe('Responsive Design: LoadingSkeleton Adaptability', () => {
 });
 
 describe('Mobile Touch Interactions: LoadingSkeleton Behavior', () => {
-  let user: ReturnType<typeof userEvent.setup>;
+  let _user: ReturnType<typeof userEvent.setup>;
 
   beforeEach(() => {
-    user = userEvent.setup();
-    mockViewport(375, 667); // Mobile viewport
+    _user = userEvent.setup();
+    mockViewport({ width: 375, height: 667 }); // Mobile viewport
     vi.clearAllMocks();
   });
 
@@ -309,7 +309,7 @@ describe('Mobile Touch Interactions: LoadingSkeleton Behavior', () => {
       );
       
       const skeleton = screen.getByTestId('touch-skeleton');
-      const parent = screen.getByTestId('touch-parent');
+      const _parent = screen.getByTestId('touch-parent');
       
       fireEvent.touchStart(skeleton, {
         touches: [{ clientX: 50, clientY: 50 }],
@@ -352,7 +352,7 @@ describe('Mobile Touch Interactions: LoadingSkeleton Behavior', () => {
 
   describe('Mobile Performance Optimization', () => {
     it('should use efficient animations for mobile devices', () => {
-      mockMediaQuery('(hover: none) and (pointer: coarse)', true);
+      mockMediaQuery({ query: '(hover: none) and (pointer: coarse)', matches: true });
       
       render(
         <div>
@@ -384,7 +384,7 @@ describe('Mobile Touch Interactions: LoadingSkeleton Behavior', () => {
     });
 
     it('should handle network-conscious loading patterns', () => {
-      mockMediaQuery('(prefers-reduced-data: reduce)', true);
+      mockMediaQuery({ query: '(prefers-reduced-data: reduce)', matches: true });
       
       render(
         <div>
@@ -474,7 +474,7 @@ describe('Mobile Touch Interactions: LoadingSkeleton Behavior', () => {
     it('should gracefully degrade animations on unsupported devices', () => {
       // Mock old browser without animation support
       const originalAnimate = Element.prototype.animate;
-      Element.prototype.animate = undefined as any;
+      (Element.prototype as { animate?: typeof Element.prototype.animate }).animate = undefined;
       
       render(
         <div>
@@ -490,7 +490,7 @@ describe('Mobile Touch Interactions: LoadingSkeleton Behavior', () => {
     });
 
     it('should provide fallback for reduced motion preferences', () => {
-      mockMediaQuery('(prefers-reduced-motion: reduce)', true);
+      mockMediaQuery({ query: '(prefers-reduced-motion: reduce)', matches: true });
       
       render(
         <div>
@@ -517,7 +517,7 @@ describe('Mobile Touch Interactions: LoadingSkeleton Behavior', () => {
       expect(skeletonGroup.children).toHaveLength(5);
       
       // Switch to mobile viewport
-      mockViewport(320, 568);
+      mockViewport({ width: 320, height: 568 });
       
       rerender(
         <div>
@@ -531,7 +531,7 @@ describe('Mobile Touch Interactions: LoadingSkeleton Behavior', () => {
 
     it('should show appropriate skeletons for mobile vs desktop layouts', () => {
       // Desktop layout
-      mockViewport(1024, 768);
+      mockViewport({ width: 1024, height: 768 });
       
       const { rerender } = render(
         <div className="desktop-layout">
@@ -548,7 +548,7 @@ describe('Mobile Touch Interactions: LoadingSkeleton Behavior', () => {
       expect(screen.getByTestId('desktop-content-skeletons')).toBeInTheDocument();
       
       // Mobile layout
-      mockViewport(375, 667);
+      mockViewport({ width: 375, height: 667 });
       
       rerender(
         <div className="mobile-layout">

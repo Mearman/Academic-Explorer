@@ -34,10 +34,15 @@ export interface AuthorWorksActions {
   updateOptions: (options: Partial<AuthorWorksOptions>) => void;
 }
 
-export function useAuthorWorks(
-  authorId: string,
-  options: AuthorWorksOptions = {}
-): AuthorWorksState & AuthorWorksActions {
+interface UseAuthorWorksParams {
+  authorId: string;
+  options?: AuthorWorksOptions;
+}
+
+export function useAuthorWorks({
+  authorId,
+  options = {}
+}: UseAuthorWorksParams): AuthorWorksState & AuthorWorksActions {
   const {
     enabled = true,
     sortBy = 'publication_date',
@@ -56,7 +61,12 @@ export function useAuthorWorks(
 
   const [currentOptions, setCurrentOptions] = useState(options);
 
-  const buildFilter = useCallback((authorId: string, yearRange?: { start?: number; end?: number }) => {
+  interface BuildFilterParams {
+    authorId: string;
+    yearRange?: { start?: number; end?: number };
+  }
+
+  const buildFilter = useCallback(({ authorId, yearRange }: BuildFilterParams) => {
     let filter = `author.id:${authorId}`;
     
     if (yearRange?.start || yearRange?.end) {
@@ -68,7 +78,12 @@ export function useAuthorWorks(
     return filter;
   }, []);
 
-  const buildSort = useCallback((sortBy: string, sortOrder: string) => {
+  interface BuildSortParams {
+    sortBy: string;
+    sortOrder: string;
+  }
+
+  const buildSort = useCallback(({ sortBy, sortOrder }: BuildSortParams) => {
     const sortMap: Record<string, string> = {
       'publication_date': 'publication_date',
       'cited_by_count': 'cited_by_count',
@@ -79,10 +94,15 @@ export function useAuthorWorks(
     return `${sortField}:${sortOrder}`;
   }, []);
 
-  const fetchWorks = useCallback(async (
+  interface FetchWorksParams {
+    isLoadMore?: boolean;
+    customOffset?: number;
+  }
+
+  const fetchWorks = useCallback(async ({
     isLoadMore = false,
-    customOffset?: number
-  ): Promise<void> => {
+    customOffset
+  }: FetchWorksParams = {}): Promise<void> => {
     if (!enabled || !authorId) return;
 
     setState(prev => ({
@@ -93,8 +113,8 @@ export function useAuthorWorks(
     }));
 
     try {
-      const filter = buildFilter(authorId, currentOptions.yearRange);
-      const sort = buildSort(currentOptions.sortBy || sortBy, currentOptions.sortOrder || sortOrder);
+      const filter = buildFilter({ authorId, yearRange: currentOptions.yearRange });
+      const sort = buildSort({ sortBy: currentOptions.sortBy || sortBy, sortOrder: currentOptions.sortOrder || sortOrder });
       const currentOffset = customOffset !== undefined ? customOffset : (isLoadMore ? state.works.length : 0);
 
       const response: ApiResponse<Work> = await cachedOpenAlex.works({
@@ -126,12 +146,12 @@ export function useAuthorWorks(
 
   const loadMore = useCallback(async (): Promise<void> => {
     if (state.hasNextPage && !state.isLoadingMore) {
-      await fetchWorks(true);
+      await fetchWorks({ isLoadMore: true });
     }
   }, [state.hasNextPage, state.isLoadingMore, fetchWorks]);
 
   const refetch = useCallback(async (): Promise<void> => {
-    await fetchWorks(false, 0);
+    await fetchWorks({ isLoadMore: false, customOffset: 0 });
   }, [fetchWorks]);
 
   const updateOptions = useCallback((newOptions: Partial<AuthorWorksOptions>) => {
@@ -141,7 +161,7 @@ export function useAuthorWorks(
   // Initial fetch and refetch when options change
   useEffect(() => {
     if (enabled && authorId) {
-      fetchWorks(false, 0);
+      fetchWorks({ isLoadMore: false, customOffset: 0 });
     }
   }, [enabled, authorId, currentOptions, fetchWorks]);
 

@@ -49,10 +49,15 @@ function isRetryableError(error: Error): boolean {
   return true;
 }
 
+interface NetworkAdaptationParams {
+  quality: ConnectionQuality;
+  rtt: number;
+}
+
 /**
  * Calculate network adaptation factor based on connection quality
  */
-function getNetworkAdaptationFactor(quality: ConnectionQuality, rtt: number): number {
+function getNetworkAdaptationFactor({ quality, rtt }: NetworkAdaptationParams): number {
   switch (quality) {
     case 'fast': 
       return rtt < 50 ? 0.5 : 0.8; // Reduce delays for very fast connections
@@ -121,10 +126,10 @@ export function useAdaptiveRetry(policy: NetworkRetryPolicy) {
     
     // Apply network adaptation if enabled
     if (adaptToNetwork && strategy !== 'none') {
-      const adaptationFactor = getNetworkAdaptationFactor(
-        networkStatus.connectionQuality, 
-        networkStatus.rtt
-      );
+      const adaptationFactor = getNetworkAdaptationFactor({
+        quality: networkStatus.connectionQuality, 
+        rtt: networkStatus.rtt
+      });
       delay *= adaptationFactor;
       
       // Additional RTT-based adjustment
@@ -254,10 +259,10 @@ export function useAdaptiveRetry(policy: NetworkRetryPolicy) {
     let timeout = policy.requestTimeout;
     
     if (policy.adaptToNetwork) {
-      const adaptationFactor = getNetworkAdaptationFactor(
-        networkStatus.connectionQuality,
-        networkStatus.rtt
-      );
+      const adaptationFactor = getNetworkAdaptationFactor({
+        quality: networkStatus.connectionQuality,
+        rtt: networkStatus.rtt
+      });
       timeout *= adaptationFactor;
       
       // Additional timeout for high RTT connections

@@ -71,11 +71,14 @@ function getBadgeVariant(direction: ComparisonDiffIndicatorProps['direction']): 
 /**
  * Format value based on type
  */
-function formatValueByType(
-  absValue: number,
-  type: ComparisonDiffIndicatorProps['type'],
-  decimalPlaces: number
-): string {
+interface FormatValueByTypeParams {
+  absValue: number;
+  type: ComparisonDiffIndicatorProps['type'];
+  decimalPlaces: number;
+}
+
+function formatValueByType(params: FormatValueByTypeParams): string {
+  const { absValue, type, decimalPlaces } = params;
   switch (type) {
     case 'percentage':
       return `${absValue.toFixed(decimalPlaces)}%`;
@@ -105,7 +108,13 @@ function formatCompactValue(absValue: number): string {
 /**
  * Add sign prefix to formatted value
  */
-function addSignPrefix(difference: number, formattedValue: string): string {
+interface AddSignPrefixParams {
+  difference: number;
+  formattedValue: string;
+}
+
+function addSignPrefix(params: AddSignPrefixParams): string {
+  const { difference, formattedValue } = params;
   if (difference > 0) return `+${formattedValue}`;
   if (difference < 0) return `-${formattedValue}`;
   return formattedValue;
@@ -114,12 +123,15 @@ function addSignPrefix(difference: number, formattedValue: string): string {
 /**
  * Format the difference value based on type and options
  */
-function formatDifference(
-  difference: number,
-  type: ComparisonDiffIndicatorProps['type'],
-  format: ComparisonDiffIndicatorProps['format'] = 'standard',
-  decimalPlaces: number = 1
-): string {
+interface FormatDifferenceParams {
+  difference: number;
+  type: ComparisonDiffIndicatorProps['type'];
+  format?: ComparisonDiffIndicatorProps['format'];
+  decimalPlaces?: number;
+}
+
+function formatDifference(params: FormatDifferenceParams): string {
+  const { difference, type, format = 'standard', decimalPlaces = 1 } = params;
   const absValue = Math.abs(difference);
   
   let formattedValue: string;
@@ -127,22 +139,25 @@ function formatDifference(
   if (type === 'absolute' && format === 'compact' && absValue >= 1000) {
     formattedValue = formatCompactValue(absValue);
   } else {
-    formattedValue = formatValueByType(absValue, type, decimalPlaces);
+    formattedValue = formatValueByType({ absValue, type, decimalPlaces });
   }
   
-  return addSignPrefix(difference, formattedValue);
+  return addSignPrefix({ difference, formattedValue });
 }
 
 /**
  * Generate accessible label for the difference indicator
  */
-function getAriaLabel(
-  difference: number,
-  type: ComparisonDiffIndicatorProps['type'],
-  direction: ComparisonDiffIndicatorProps['direction'],
-  contextLabel?: string,
-  comparedTo?: string
-): string {
+interface GetAriaLabelParams {
+  difference: number;
+  type: ComparisonDiffIndicatorProps['type'];
+  direction: ComparisonDiffIndicatorProps['direction'];
+  contextLabel?: string;
+  comparedTo?: string;
+}
+
+function getAriaLabel(params: GetAriaLabelParams): string {
+  const { difference, type, direction, contextLabel, comparedTo } = params;
   const absValue = Math.abs(difference);
   let label = '';
   
@@ -172,25 +187,26 @@ function getAriaLabel(
 export const ComparisonDiffIndicator = forwardRef<
   HTMLDivElement | HTMLButtonElement,
   ComparisonDiffIndicatorProps
->(({ 
-  difference,
-  type,
-  direction,
-  format = 'standard',
-  decimalPlaces = 1,
-  size = 'md',
-  contextLabel,
-  comparedTo,
-  onClick,
-  className,
-  'data-testid': testId,
-  ...props 
-}, ref) => {
+>((props, ref) => {
+  const { 
+    difference,
+    type,
+    direction,
+    format = 'standard',
+    decimalPlaces = 1,
+    size = 'md',
+    contextLabel,
+    comparedTo,
+    onClick,
+    className,
+    'data-testid': testId,
+    ...restProps 
+  } = props;
   const iconName = getDirectionIcon(direction);
   const color = getDirectionColor(direction);
   const variant = getBadgeVariant(direction);
-  const formattedDifference = formatDifference(difference, type, format, decimalPlaces);
-  const ariaLabel = getAriaLabel(difference, type, direction, contextLabel, comparedTo);
+  const formattedDifference = formatDifference({ difference, type, format, decimalPlaces });
+  const ariaLabel = getAriaLabel({ difference, type, direction, contextLabel, comparedTo });
   
   // Render content
   const content = (
@@ -204,7 +220,7 @@ export const ComparisonDiffIndicator = forwardRef<
         data-direction={direction}
         aria-label={ariaLabel}
         leftSection={<Icon name={iconName} size="xs" />}
-        {...props}
+        {...restProps}
       >
         {formattedDifference}
       </Badge>

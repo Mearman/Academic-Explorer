@@ -191,12 +191,12 @@ describe('useHybridStorage', () => {
       mockDb.cacheSearchResults.mockClear();
 
       await act(async () => {
-        await result.current.archiveSearchResults(
-          'test query',
-          mockResults,
-          100,
-          { filter: 'test' }
-        );
+        await result.current.archiveSearchResults({
+          query: 'test query',
+          results: mockResults,
+          totalCount: 100,
+          filters: { filter: 'test' }
+        });
       });
 
       expect(mockDb.cacheSearchResults).toHaveBeenCalledWith(
@@ -213,7 +213,7 @@ describe('useHybridStorage', () => {
       const { result } = renderHook(() => useHybridStorage());
 
       await act(async () => {
-        await result.current.archiveSearchResults('test', [], 0);
+        await result.current.archiveSearchResults({ query: 'test', results: [], totalCount: 0 });
       });
 
       expect(mockDb.cacheSearchResults).not.toHaveBeenCalled();
@@ -232,7 +232,7 @@ describe('useHybridStorage', () => {
 
       // Attempt to archive - this should not throw but should handle error gracefully
       await act(async () => {
-        await result.current.archiveSearchResults('test', [], 0);
+        await result.current.archiveSearchResults({ query: 'test', results: [], totalCount: 0 });
       });
 
       // Verify the mock was called (which means the error was handled)
@@ -253,10 +253,10 @@ describe('useHybridStorage', () => {
 
       let cachedResults;
       await act(async () => {
-        cachedResults = await result.current.getCachedSearchResults(
-          'test query',
-          { filter: 'test' }
-        );
+        cachedResults = await result.current.getCachedSearchResults({
+          query: 'test query',
+          filters: { filter: 'test' }
+        });
       });
 
       expect(mockDb.getSearchResults).toHaveBeenCalledWith(
@@ -273,7 +273,7 @@ describe('useHybridStorage', () => {
 
       let cachedResults;
       await act(async () => {
-        cachedResults = await result.current.getCachedSearchResults('test');
+        cachedResults = await result.current.getCachedSearchResults({ query: 'test' });
       });
 
       expect(cachedResults).toBeNull();
@@ -293,7 +293,7 @@ describe('useHybridStorage', () => {
 
       let cachedResults;
       await act(async () => {
-        cachedResults = await result.current.getCachedSearchResults('test');
+        cachedResults = await result.current.getCachedSearchResults({ query: 'test' });
       });
 
       // The function should handle errors gracefully and return null
@@ -570,7 +570,7 @@ describe('useHybridStorage', () => {
       mockDb.cacheSearchResults.mockRejectedValueOnce(quotaError);
 
       await act(async () => {
-        await result.current.archiveSearchResults('test', [], 0);
+        await result.current.archiveSearchResults({ query: 'test', results: [], totalCount: 0 });
       });
 
       // Wait for error to be logged
@@ -645,9 +645,9 @@ describe('useHybridStorage', () => {
       );
 
       const operations = [
-        result.current.archiveSearchResults('query1', [], 0),
-        result.current.archiveSearchResults('query2', [], 0),
-        result.current.archiveSearchResults('query3', [], 0),
+        result.current.archiveSearchResults({ query: 'query1', results: [], totalCount: 0 }),
+        result.current.archiveSearchResults({ query: 'query2', results: [], totalCount: 0 }),
+        result.current.archiveSearchResults({ query: 'query3', results: [], totalCount: 0 }),
       ];
 
       await act(async () => {
@@ -667,8 +667,8 @@ describe('useHybridStorage', () => {
       mockDb.getSearchResults.mockResolvedValue({ results: [], totalCount: 0 });
 
       const operations = [
-        result.current.getCachedSearchResults('query1'),
-        result.current.archiveSearchResults('query2', [], 0),
+        result.current.getCachedSearchResults({ query: 'query1' }),
+        result.current.archiveSearchResults({ query: 'query2', results: [], totalCount: 0 }),
         result.current.savePaperOffline({ id: 'W1', title: 'Test', authors: [] }),
         result.current.cleanupOldData(7),
       ];
@@ -801,7 +801,7 @@ describe('useHybridStorage', () => {
       }));
 
       await act(async () => {
-        await result.current.archiveSearchResults('large query', largeResults, 1000);
+        await result.current.archiveSearchResults({ query: 'large query', results: largeResults, totalCount: 1000 });
       });
 
       expect(mockDb.cacheSearchResults).toHaveBeenCalledWith(
@@ -900,7 +900,7 @@ describe('useHybridStorage', () => {
 
       // Start async operation
       const archivePromise = act(async () => {
-        await result.current.archiveSearchResults('test', [], 0);
+        await result.current.archiveSearchResults({ query: 'test', results: [], totalCount: 0 });
       });
 
       // Unmount component during operation

@@ -7,8 +7,29 @@ import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 
+interface MockSearchResult {
+  title: string;
+  id?: string;
+  [key: string]: unknown;
+}
+
+interface MockAutocompleteSearchProps {
+  onSearch?: (query: string) => void;
+  placeholder?: string;
+}
+
+interface MockAdvancedFiltersProps {
+  isOpen: boolean;
+  onToggle: () => void;
+}
+
+interface MockSearchResultsProps {
+  results?: MockSearchResult[];
+  layout?: string;
+}
+
 // Mock React components for testing
-const MockAutocompleteSearch = ({ onSearch, placeholder }: any) => (
+const MockAutocompleteSearch = ({ onSearch, placeholder }: MockAutocompleteSearchProps) => (
   <div data-testid="mobile-autocomplete">
     <input
       data-testid="mobile-search-input"
@@ -19,7 +40,7 @@ const MockAutocompleteSearch = ({ onSearch, placeholder }: any) => (
   </div>
 );
 
-const MockAdvancedFilters = ({ isOpen, onToggle }: any) => (
+const MockAdvancedFilters = ({ isOpen, onToggle }: MockAdvancedFiltersProps) => (
   <div data-testid="mobile-filters" style={{ display: isOpen ? 'block' : 'none' }}>
     <button data-testid="filter-toggle" onClick={onToggle}>
       Toggle Filters
@@ -28,9 +49,9 @@ const MockAdvancedFilters = ({ isOpen, onToggle }: any) => (
   </div>
 );
 
-const MockSearchResults = ({ results, layout }: any) => (
+const MockSearchResults = ({ results, layout }: MockSearchResultsProps) => (
   <div data-testid="mobile-results" data-layout={layout}>
-    {results?.map((result: any, index: number) => (
+    {results?.map((result: MockSearchResult, index: number) => (
       <div key={index} data-testid={`result-${index}`}>
         {result.title}
       </div>
@@ -41,15 +62,15 @@ const MockSearchResults = ({ results, layout }: any) => (
 // Mock mobile search experience component
 interface MobileSearchExperienceProps {
   onSearch: (query: string) => void;
-  onFilterChange: (filters: Record<string, any>) => void;
-  results: any[];
+  onFilterChange: (filters: Record<string, unknown>) => void;
+  results: MockSearchResult[];
   isLoading: boolean;
   viewport: 'mobile' | 'tablet' | 'desktop';
 }
 
 const MobileSearchExperience = ({
   onSearch,
-  onFilterChange,
+  onFilterChange: _onFilterChange,
   results,
   isLoading,
   viewport,
@@ -358,7 +379,7 @@ describe('Mobile Search Experience', () => {
 
   describe('Touch Interactions', () => {
     it('should handle swipe gestures to show/hide filters', async () => {
-      const user = userEvent.setup();
+      const _user = userEvent.setup();
       
       render(
         <MobileSearchExperience
@@ -417,7 +438,7 @@ describe('Mobile Search Experience', () => {
     });
 
     it('should handle long press gestures for context menus', async () => {
-      const user = userEvent.setup();
+      const _user = userEvent.setup();
       
       render(
         <MobileSearchExperience

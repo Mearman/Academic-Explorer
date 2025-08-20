@@ -18,14 +18,24 @@ interface PaneLayoutConfig {
   rightCollapsible?: boolean;
 }
 
+interface SetPaneSizesParams {
+  leftPercent: number;
+  rightPercent: number;
+}
+
+interface HandleDragParams {
+  clientX: number;
+  containerRect: DOMRect;
+}
+
 interface PaneLayoutActions {
   toggleLeftPane: () => void;
   toggleRightPane: () => void;
-  setPaneSizes: (leftPercent: number, rightPercent: number) => void;
+  setPaneSizes: (params: SetPaneSizesParams) => void;
   resetLayout: () => void;
   startDragging: () => void;
   stopDragging: () => void;
-  handleDrag: (clientX: number, containerRect: DOMRect) => void;
+  handleDrag: (params: HandleDragParams) => void;
 }
 
 type UsePaneLayoutReturn = PaneLayoutState & PaneLayoutActions;
@@ -125,7 +135,7 @@ export function usePaneLayout({
     }));
   }, [rightCollapsible]);
 
-  const setPaneSizes = useCallback((leftPercent: number, rightPercent: number) => {
+  const setPaneSizes = useCallback(({ leftPercent, rightPercent }: SetPaneSizesParams) => {
     // Ensure percentages add up to 100 and respect minimums
     const total = leftPercent + rightPercent;
     if (total !== 100) {
@@ -167,7 +177,7 @@ export function usePaneLayout({
     setLocalState((prev) => ({ ...prev, isDragging: false }));
   }, []);
 
-  const handleDrag = useCallback((clientX: number, containerRect: DOMRect) => {
+  const handleDrag = useCallback(({ clientX, containerRect }: HandleDragParams) => {
     const containerWidth = containerRect.width;
     const minWidthPercent = (minPaneSize / containerWidth) * 100;
     const maxLeftPercent = 100 - minWidthPercent;

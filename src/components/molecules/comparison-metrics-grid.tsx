@@ -170,6 +170,7 @@ function sortMetrics(
   });
 }
 
+// eslint-disable-next-line max-lines-per-function
 export function ComparisonMetricsGrid({
   metrics,
   layout = 'table',

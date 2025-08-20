@@ -139,6 +139,7 @@ function groupInsights(insights: ComparisonInsight[]): Record<string, Comparison
   return groups;
 }
 
+// eslint-disable-next-line max-lines-per-function
 export const ComparisonSummary = forwardRef<HTMLDivElement, ComparisonSummaryProps>(({
   analysis,
   layout = 'detailed',

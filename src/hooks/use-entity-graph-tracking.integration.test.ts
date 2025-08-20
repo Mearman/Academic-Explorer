@@ -135,9 +135,9 @@ describe('Entity Graph Tracking Hook - Real Author Page Scenario (TDD)', () => {
     expect(storeResult.current.hasVertex('T10522')).toBe(true); // Botany topic
 
     // Assert: Verify relationships were created
-    expect(storeResult.current.hasEdge(mockAuthor.id, 'I1286329397', EdgeType.AFFILIATED_WITH)).toBe(true);
-    expect(storeResult.current.hasEdge(mockAuthor.id, 'T10075', EdgeType.RELATED_TO_TOPIC)).toBe(true);
-    expect(storeResult.current.hasEdge(mockAuthor.id, 'T10522', EdgeType.RELATED_TO_TOPIC)).toBe(true);
+    expect(storeResult.current.hasEdge({ sourceId: mockAuthor.id, targetId: 'I1286329397', edgeType: EdgeType.AFFILIATED_WITH })).toBe(true);
+    expect(storeResult.current.hasEdge({ sourceId: mockAuthor.id, targetId: 'T10075', edgeType: EdgeType.RELATED_TO_TOPIC })).toBe(true);
+    expect(storeResult.current.hasEdge({ sourceId: mockAuthor.id, targetId: 'T10522', edgeType: EdgeType.RELATED_TO_TOPIC })).toBe(true);
 
     // Assert: Verify graph statistics
     const stats = storeResult.current.getGraphStatistics();

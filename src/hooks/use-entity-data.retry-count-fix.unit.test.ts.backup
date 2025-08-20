@@ -34,10 +34,10 @@ describe('TDD: Retry Count Semantics Fix', () => {
     });
 
     const { result } = renderHook(() => 
-      useEntityData({ entityId: 'W2741809807', entityType: EntityType.WORK, options: {
+      useEntityData('W2741809807', EntityType.WORK, {
         retryOnError: true,
         maxRetries: 2,
-      } })
+      })
     );
 
     // Wait for initial error
@@ -63,9 +63,9 @@ describe('TDD: Retry Count Semantics Fix', () => {
     });
 
     const { result } = renderHook(() => 
-      useEntityData({ entityId: 'W2741809807', entityType: EntityType.WORK, options: {
+      useEntityData('W2741809807', EntityType.WORK, {
         retryOnError: false, // Disable auto-retry to test manual retry
-      } })
+      })
     );
 
     // Wait for initial error

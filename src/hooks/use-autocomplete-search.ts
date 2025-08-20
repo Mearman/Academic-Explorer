@@ -42,11 +42,16 @@ export function useAutocompleteSearch({
   
   const debounceRef = useRef<NodeJS.Timeout | null>(null);
 
+  interface ProcessResponseParams {
+    response: PromiseSettledResult<{ results: unknown[] }>;
+    entityType: string;
+  }
+
   // Process response from autocomplete API
-  const processResponse = useCallback((
-    response: PromiseSettledResult<{ results: unknown[] }>, 
-    entityType: string
-  ): AutocompleteSuggestion[] => {
+  const processResponse = useCallback(({
+    response,
+    entityType
+  }: ProcessResponseParams): AutocompleteSuggestion[] => {
     if (response.status !== 'fulfilled' || !response.value?.results) {
       return [];
     }
@@ -107,10 +112,10 @@ export function useAutocompleteSearch({
       
       // Combine all results
       allSuggestions.push(
-        ...processResponse(worksResponse, 'work'),
-        ...processResponse(authorsResponse, 'author'),
-        ...processResponse(sourcesResponse, 'source'),
-        ...processResponse(institutionsResponse, 'institution')
+        ...processResponse({ response: worksResponse, entityType: 'work' }),
+        ...processResponse({ response: authorsResponse, entityType: 'author' }),
+        ...processResponse({ response: sourcesResponse, entityType: 'source' }),
+        ...processResponse({ response: institutionsResponse, entityType: 'institution' })
       );
 
       // Sort by relevance (cited_by_count or works_count) and limit

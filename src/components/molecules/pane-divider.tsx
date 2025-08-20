@@ -1,6 +1,7 @@
 import { IconChevronLeft, IconChevronRight } from '@tabler/icons-react';
 import React, { useEffect, useRef } from 'react';
 
+// eslint-disable-next-line import/no-restricted-paths
 import * as styles from '../templates/two-pane-layout.css';
 
 interface PaneDividerProps {

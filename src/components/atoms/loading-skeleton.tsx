@@ -54,11 +54,14 @@ const PRESET_DIMENSIONS = {
 /**
  * Apply preset dimensions to width and height
  */
-function applyPresetDimensions(
-  width: string | undefined,
-  height: string | SizeVariant,
-  preset: LoadingSkeletonProps['preset']
-): { width: string | undefined; height: string | SizeVariant } {
+interface ApplyPresetDimensionsParams {
+  width: string | undefined;
+  height: string | SizeVariant;
+  preset: LoadingSkeletonProps['preset'];
+}
+
+function applyPresetDimensions(params: ApplyPresetDimensionsParams): { width: string | undefined; height: string | SizeVariant } {
+  const { width, height, preset } = params;
   if (!preset || !PRESET_DIMENSIONS[preset]) {
     return { width, height };
   }
@@ -73,7 +76,13 @@ function applyPresetDimensions(
 /**
  * Map dimension value to CSS value using appropriate map
  */
-function mapDimensionValue(value: string | undefined, map: Record<string, string>): string | undefined {
+interface MapDimensionValueParams {
+  value: string | undefined;
+  map: Record<string, string>;
+}
+
+function mapDimensionValue(params: MapDimensionValueParams): string | undefined {
+  const { value, map } = params;
   if (!value || typeof value !== 'string' || !(value in map)) {
     return value;
   }
@@ -94,23 +103,24 @@ function getShapeRadius(shape: LoadingSkeletonProps['shape']): string {
 }
 
 export const LoadingSkeleton = forwardRef<HTMLDivElement, LoadingSkeletonProps>(
-  ({ 
-    width,
-    height = 'md',
-    shape = 'rectangle',
-    preset,
-    animation = 'wave',
-    inline = false,
-    className,
-    'data-testid': testId,
-    ...props 
-  }, ref) => {
+  (props, ref) => {
+    const { 
+      width,
+      height = 'md',
+      shape = 'rectangle',
+      preset,
+      animation = 'wave',
+      inline = false,
+      className,
+      'data-testid': testId,
+      ...restProps 
+    } = props;
     // Apply preset dimensions if preset is specified
-    const { width: finalWidth, height: finalHeight } = applyPresetDimensions(width, height, preset);
+    const { width: finalWidth, height: finalHeight } = applyPresetDimensions({ width, height, preset });
     
     // Map dimension values to CSS values
-    const mappedWidth = mapDimensionValue(finalWidth, WIDTH_MAP);
-    const mappedHeight = mapDimensionValue(finalHeight as string, HEIGHT_MAP);
+    const mappedWidth = mapDimensionValue({ value: finalWidth, map: WIDTH_MAP });
+    const mappedHeight = mapDimensionValue({ value: finalHeight as string, map: HEIGHT_MAP });
 
     return (
       <Skeleton
@@ -122,7 +132,7 @@ export const LoadingSkeleton = forwardRef<HTMLDivElement, LoadingSkeletonProps>(
         className={className}
         data-testid={testId}
         style={{ display: inline ? 'inline-block' : 'block' }}
-        {...props}
+        {...restProps}
       />
     );
   }
@@ -131,20 +141,21 @@ export const LoadingSkeleton = forwardRef<HTMLDivElement, LoadingSkeletonProps>(
 LoadingSkeleton.displayName = 'LoadingSkeleton';
 
 export const SkeletonGroup = forwardRef<HTMLDivElement, SkeletonGroupProps>(
-  ({ 
-    lines = 3, 
-    children, 
-    className,
-    'data-testid': testId,
-    ...props 
-  }, ref) => {
+  (props, ref) => {
+    const { 
+      lines = 3, 
+      children, 
+      className,
+      'data-testid': testId,
+      ...restProps 
+    } = props;
     return (
       <Stack 
         ref={ref}
         gap="xs"
         className={className}
         data-testid={testId}
-        {...props}
+        {...restProps}
       >
         {children || Array.from({ length: lines }, (_, index) => (
           <LoadingSkeleton
