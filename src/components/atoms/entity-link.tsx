@@ -18,7 +18,20 @@ interface EntityLinkProps {
   fallbackToExternal?: boolean;
 }
 
-function renderFallback(entityId: string, displayName: string, size: string, weight?: number, color?: string, underline?: boolean, className?: string, fallbackToExternal?: boolean) {
+interface FallbackOptions {
+  entityId: string;
+  displayName: string;
+  size: string;
+  weight?: number;
+  color?: string;
+  underline?: boolean;
+  className?: string;
+  fallbackToExternal?: boolean;
+}
+
+function renderFallback(options: FallbackOptions) {
+  const { entityId, displayName, size, weight, color, underline, className, fallbackToExternal } = options;
+  
   if (!fallbackToExternal) {
     return <Text size={size} fw={weight} c={color || 'dimmed'} className={className}>{displayName}</Text>;
   }
@@ -30,7 +43,16 @@ export function EntityLink({ entityId, displayName, entityType, size = 'sm', wei
   const detectedType = entityType || detectEntityType(entityId);
   
   if (!detectedType) {
-    return renderFallback(entityId, displayName, size, weight, color, underline, className, fallbackToExternal);
+    return renderFallback({
+      entityId,
+      displayName,
+      size,
+      weight,
+      color,
+      underline,
+      className,
+      fallbackToExternal,
+    });
   }
 
   const internalPath = buildEntityPath(detectedType, entityId);
