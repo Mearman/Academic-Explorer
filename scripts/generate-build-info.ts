@@ -116,7 +116,7 @@ export interface BuildInfo {
 
 export const buildInfo: BuildInfo = ${JSON.stringify(buildInfo, null, 2)};
 
-export default buildInfo;
+// Named export is preferred over default export
 `;
 
   // Write to src directory
