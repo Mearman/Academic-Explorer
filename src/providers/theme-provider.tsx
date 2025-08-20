@@ -115,7 +115,7 @@ function SafeThemeProviderContent({ children }: ThemeProviderProps) {
 /**
  * Fallback provider for when MantineProvider fails to initialize
  */
-function FallbackThemeProvider({ children }: ThemeProviderProps) {
+function _FallbackThemeProvider({ children }: ThemeProviderProps) {
   console.warn('[ThemeProvider] Using fallback provider due to initialization error');
   
   return (

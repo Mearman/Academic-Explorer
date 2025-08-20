@@ -618,15 +618,31 @@ export interface QueryExecutionEvent {
 /**
  * Utility functions for ID generation
  */
-export function generateVertexId(type: VertexType, identifier: string): string {
+interface GenerateVertexIdParams {
+  type: VertexType;
+  identifier: string;
+}
+
+interface GenerateEdgeIdParams {
+  sourceId: string;
+  targetId: string;
+  edgeType: GraphEdgeType;
+}
+
+interface GenerateQueryParametersIdParams {
+  queryString: string;
+  queryFilters?: Record<string, unknown>;
+}
+
+export function generateVertexId({ type, identifier }: GenerateVertexIdParams): string {
   return `${type}:${identifier}`;
 }
 
-export function generateEdgeId(sourceId: string, targetId: string, edgeType: GraphEdgeType): string {
+export function generateEdgeId({ sourceId, targetId, edgeType }: GenerateEdgeIdParams): string {
   return `${sourceId}_${edgeType}_${targetId}`;
 }
 
-export function generateQueryParametersId(queryString: string, queryFilters?: Record<string, unknown>): string {
+export function generateQueryParametersId({ queryString, queryFilters }: GenerateQueryParametersIdParams): string {
   const filtersStr = queryFilters ? JSON.stringify(queryFilters) : '';
   const combined = `${queryString}|${filtersStr}`;
   
@@ -638,11 +654,16 @@ export function generateQueryParametersId(queryString: string, queryFilters?: Re
     hash = hash & hash; // Convert to 32-bit integer
   }
   
-  return generateVertexId(VertexType.QUERY_PARAMETERS, hash.toString());
+  return generateVertexId({ type: VertexType.QUERY_PARAMETERS, identifier: hash.toString() });
 }
 
-export function generateQueryExecutionId(queryParametersId: string, timestamp: string): string {
-  return generateVertexId(VertexType.QUERY_EXECUTION, `${queryParametersId}_${timestamp}`);
+interface GenerateQueryExecutionIdParams {
+  queryParametersId: string;
+  timestamp: string;
+}
+
+export function generateQueryExecutionId({ queryParametersId, timestamp }: GenerateQueryExecutionIdParams): string {
+  return generateVertexId({ type: VertexType.QUERY_EXECUTION, identifier: `${queryParametersId}_${timestamp}` });
 }
 
 /**
@@ -695,7 +716,12 @@ export const DEFAULT_MAX_HOPS = 2;
 /**
  * Edge weight calculation helpers
  */
-export function calculateEdgeWeight(edgeType: GraphEdgeType, properties: GraphEdge['properties']): number {
+interface CalculateEdgeWeightParams {
+  edgeType: GraphEdgeType;
+  properties: GraphEdge['properties'];
+}
+
+export function calculateEdgeWeight({ edgeType, properties }: CalculateEdgeWeightParams): number {
   // Different edge types have different baseline weights
   const baseWeights: Partial<Record<GraphEdgeType, number>> = {
     [GraphEdgeType.CITES]: 0.8,

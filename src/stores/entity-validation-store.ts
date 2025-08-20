@@ -27,6 +27,25 @@ import {
   DEFAULT_VALIDATION_SETTINGS,
 } from '@/types/entity-validation';
 
+interface ValidateEntityParams {
+  entityId: string;
+  entityType: EntityType;
+  entityData: unknown;
+  entityDisplayName?: string;
+}
+
+interface ValidateBatchEntity {
+  id: string;
+  type: EntityType;
+  data: unknown;
+  displayName?: string;
+}
+
+interface AddLogEntryParams {
+  batchResult: BatchValidationResult;
+  metadata?: Partial<ValidationLogEntry['metadata']>;
+}
+
 interface EntityValidationState {
   // Core validation data
   validationResults: Map<string, EntityValidationResult>;
@@ -43,13 +62,13 @@ interface EntityValidationState {
   statisticsCacheTime: number | null;
   
   // Actions - Validation operations
-  validateEntity: (entityId: string, entityType: EntityType, entityData: unknown, entityDisplayName?: string) => Promise<EntityValidationResult>;
-  validateBatch: (entities: Array<{ id: string; type: EntityType; data: unknown; displayName?: string }>) => Promise<BatchValidationResult>;
+  validateEntity: (params: ValidateEntityParams) => Promise<EntityValidationResult>;
+  validateBatch: (entities: ValidateBatchEntity[]) => Promise<BatchValidationResult>;
   clearValidationResult: (entityId: string) => void;
   clearAllValidationResults: () => void;
   
   // Actions - Log management
-  addLogEntry: (batchResult: BatchValidationResult, metadata?: Partial<ValidationLogEntry['metadata']>) => void;
+  addLogEntry: (params: AddLogEntryParams) => void;
   removeLogEntry: (logEntryId: string) => void;
   clearValidationLogs: () => void;
   selectLogEntry: (logEntryId: string | null) => void;
@@ -113,7 +132,7 @@ export const useEntityValidationStore = create<EntityValidationState>()(
       statisticsCacheTime: null,
       
       // Validation operations
-      validateEntity: async (entityId, entityType, entityData, entityDisplayName) => {
+      validateEntity: async ({ entityId, entityType, entityData, entityDisplayName }) => {
         const { validateEntityData } = await import('@/lib/openalex/utils/entity-validator');
         
         set((state) => {
@@ -187,7 +206,7 @@ export const useEntityValidationStore = create<EntityValidationState>()(
         }),
       
       // Log management
-      addLogEntry: (batchResult, metadata = {}) =>
+      addLogEntry: ({ batchResult, metadata = {} }) =>
         set((state) => {
           const logEntry: ValidationLogEntry = {
             id: `log_${batchResult.batchId}`,

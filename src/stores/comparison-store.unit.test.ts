@@ -245,7 +245,7 @@ describe('useComparisonStore', () => {
       const { result } = renderHook(() => useComparisonStore());
       
       act(() => {
-        result.current.addEntity(mockAuthor1, EntityType.AUTHOR);
+        result.current.addEntity({ entity: mockAuthor1, type: EntityType.AUTHOR });
       });
 
       expect(result.current.entities).toHaveLength(1);
@@ -263,8 +263,8 @@ describe('useComparisonStore', () => {
       const { result } = renderHook(() => useComparisonStore());
       
       act(() => {
-        result.current.addEntity(mockAuthor1, EntityType.AUTHOR);
-        result.current.addEntity(mockAuthor2, EntityType.AUTHOR);
+        result.current.addEntity({ entity: mockAuthor1, type: EntityType.AUTHOR });
+        result.current.addEntity({ entity: mockAuthor2, type: EntityType.AUTHOR });
       });
 
       expect(result.current.entities).toHaveLength(2);
@@ -276,8 +276,8 @@ describe('useComparisonStore', () => {
       const { result } = renderHook(() => useComparisonStore());
       
       act(() => {
-        result.current.addEntity(mockAuthor1, EntityType.AUTHOR);
-        result.current.addEntity(mockWork1, EntityType.WORK);
+        result.current.addEntity({ entity: mockAuthor1, type: EntityType.AUTHOR });
+        result.current.addEntity({ entity: mockWork1, type: EntityType.WORK });
       });
 
       expect(result.current.entities).toHaveLength(1);
@@ -288,8 +288,8 @@ describe('useComparisonStore', () => {
       const { result } = renderHook(() => useComparisonStore());
       
       act(() => {
-        result.current.addEntity(mockAuthor1, EntityType.AUTHOR);
-        result.current.addEntity(mockAuthor1, EntityType.AUTHOR);
+        result.current.addEntity({ entity: mockAuthor1, type: EntityType.AUTHOR });
+        result.current.addEntity({ entity: mockAuthor1, type: EntityType.AUTHOR });
       });
 
       expect(result.current.entities).toHaveLength(1);
@@ -300,14 +300,14 @@ describe('useComparisonStore', () => {
       
       // Add 5 entities (max)
       act(() => {
-        result.current.addEntity(mockAuthor1, EntityType.AUTHOR);
+        result.current.addEntity({ entity: mockAuthor1, type: EntityType.AUTHOR });
         for (let i = 2; i <= 5; i++) {
           const mockAuthor = {
             ...mockAuthor1,
             id: `https://openalex.org/A${i}`,
             display_name: `Author ${i}`
           };
-          result.current.addEntity(mockAuthor, EntityType.AUTHOR);
+          result.current.addEntity({ entity: mockAuthor, type: EntityType.AUTHOR });
         }
       });
 
@@ -320,7 +320,7 @@ describe('useComparisonStore', () => {
           id: 'https://openalex.org/A6',
           display_name: 'Extra Author'
         };
-        result.current.addEntity(extraAuthor, EntityType.AUTHOR);
+        result.current.addEntity({ entity: extraAuthor, type: EntityType.AUTHOR });
       });
 
       expect(result.current.entities).toHaveLength(5);
@@ -330,8 +330,8 @@ describe('useComparisonStore', () => {
       const { result } = renderHook(() => useComparisonStore());
       
       act(() => {
-        result.current.addEntity(mockAuthor1, EntityType.AUTHOR);
-        result.current.addEntity(mockAuthor2, EntityType.AUTHOR);
+        result.current.addEntity({ entity: mockAuthor1, type: EntityType.AUTHOR });
+        result.current.addEntity({ entity: mockAuthor2, type: EntityType.AUTHOR });
       });
 
       expect(result.current.entities).toHaveLength(2);
@@ -348,7 +348,7 @@ describe('useComparisonStore', () => {
       const { result } = renderHook(() => useComparisonStore());
       
       act(() => {
-        result.current.addEntity(mockAuthor1, EntityType.AUTHOR);
+        result.current.addEntity({ entity: mockAuthor1, type: EntityType.AUTHOR });
       });
 
       expect(result.current.comparisonType).toBe(EntityType.AUTHOR);
@@ -366,12 +366,12 @@ describe('useComparisonStore', () => {
       const { result } = renderHook(() => useComparisonStore());
       
       act(() => {
-        result.current.addEntity(mockAuthor1, EntityType.AUTHOR);
+        result.current.addEntity({ entity: mockAuthor1, type: EntityType.AUTHOR });
       });
       expect(result.current.isComparing).toBe(false);
 
       act(() => {
-        result.current.addEntity(mockAuthor2, EntityType.AUTHOR);
+        result.current.addEntity({ entity: mockAuthor2, type: EntityType.AUTHOR });
       });
       expect(result.current.isComparing).toBe(true);
 
@@ -417,21 +417,21 @@ describe('useComparisonStore', () => {
       const { result } = renderHook(() => useComparisonStore());
       
       // Initially can add any entity
-      expect(result.current.canAddEntity(mockAuthor1, EntityType.AUTHOR)).toBe(true);
-      expect(result.current.canAddEntity(mockWork1, EntityType.WORK)).toBe(true);
+      expect(result.current.canAddEntity({ entity: mockAuthor1, type: EntityType.AUTHOR })).toBe(true);
+      expect(result.current.canAddEntity({ entity: mockWork1, type: EntityType.WORK })).toBe(true);
 
       act(() => {
-        result.current.addEntity(mockAuthor1, EntityType.AUTHOR);
+        result.current.addEntity({ entity: mockAuthor1, type: EntityType.AUTHOR });
       });
 
       // Can add same type
-      expect(result.current.canAddEntity(mockAuthor2, EntityType.AUTHOR)).toBe(true);
+      expect(result.current.canAddEntity({ entity: mockAuthor2, type: EntityType.AUTHOR })).toBe(true);
       
       // Cannot add different type
-      expect(result.current.canAddEntity(mockWork1, EntityType.WORK)).toBe(false);
+      expect(result.current.canAddEntity({ entity: mockWork1, type: EntityType.WORK })).toBe(false);
       
       // Cannot add duplicate
-      expect(result.current.canAddEntity(mockAuthor1, EntityType.AUTHOR)).toBe(false);
+      expect(result.current.canAddEntity({ entity: mockAuthor1, type: EntityType.AUTHOR })).toBe(false);
     });
 
     it('should check if entity is in comparison', () => {
@@ -440,7 +440,7 @@ describe('useComparisonStore', () => {
       expect(result.current.hasEntity('A123456789')).toBe(false);
 
       act(() => {
-        result.current.addEntity(mockAuthor1, EntityType.AUTHOR);
+        result.current.addEntity({ entity: mockAuthor1, type: EntityType.AUTHOR });
       });
 
       expect(result.current.hasEntity('A123456789')).toBe(true);
@@ -451,8 +451,8 @@ describe('useComparisonStore', () => {
       const { result } = renderHook(() => useComparisonStore());
       
       act(() => {
-        result.current.addEntity(mockAuthor1, EntityType.AUTHOR);
-        result.current.addEntity(mockAuthor2, EntityType.AUTHOR);
+        result.current.addEntity({ entity: mockAuthor1, type: EntityType.AUTHOR });
+        result.current.addEntity({ entity: mockAuthor2, type: EntityType.AUTHOR });
       });
 
       const authors = result.current.getEntitiesByType(EntityType.AUTHOR);
@@ -468,8 +468,8 @@ describe('useComparisonStore', () => {
       const { result } = renderHook(() => useComparisonStore());
       
       act(() => {
-        result.current.addEntity(mockAuthor1, EntityType.AUTHOR);
-        result.current.addEntity(mockAuthor2, EntityType.AUTHOR);
+        result.current.addEntity({ entity: mockAuthor1, type: EntityType.AUTHOR });
+        result.current.addEntity({ entity: mockAuthor2, type: EntityType.AUTHOR });
         result.current.setActiveView('metrics');
       });
 
@@ -492,7 +492,7 @@ describe('useComparisonStore', () => {
       let result1 = renderHook(() => useComparisonStore()).result;
       
       act(() => {
-        result1.current.addEntity(mockAuthor1, EntityType.AUTHOR);
+        result1.current.addEntity({ entity: mockAuthor1, type: EntityType.AUTHOR });
       });
 
       // Simulate component re-render by creating new hook instance
@@ -514,7 +514,7 @@ describe('useComparisonStore', () => {
 
       act(() => {
         // @ts-expect-error - Testing invalid entity type
-        result.current.addEntity(invalidEntity, EntityType.AUTHOR);
+        result.current.addEntity({ entity: invalidEntity, type: EntityType.AUTHOR });
       });
 
       expect(result.current.entities).toHaveLength(0);
@@ -529,7 +529,7 @@ describe('useComparisonStore', () => {
       };
 
       act(() => {
-        result.current.addEntity(entityWithBadId, EntityType.AUTHOR);
+        result.current.addEntity({ entity: entityWithBadId, type: EntityType.AUTHOR });
       });
 
       // Should still add but with cleaned ID

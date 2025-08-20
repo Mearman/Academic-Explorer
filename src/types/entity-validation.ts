@@ -341,11 +341,17 @@ export const DEFAULT_VALIDATION_SETTINGS: ValidationSettings = {
 /**
  * Generate a unique ID for validation issues
  */
-export function generateValidationIssueId(
-  entityId: string,
-  fieldPath: string,
-  issueType: ValidationIssueType
-): string {
+interface GenerateValidationIssueIdParams {
+  entityId: string;
+  fieldPath: string;
+  issueType: ValidationIssueType;
+}
+
+export function generateValidationIssueId({
+  entityId,
+  fieldPath,
+  issueType
+}: GenerateValidationIssueIdParams): string {
   return `${entityId}_${fieldPath}_${issueType}_${Date.now()}`;
 }
 

@@ -328,7 +328,7 @@ describe('EntityValidationStore', () => {
 
       expect(store.isValidating).toBe(false);
 
-      const resultPromise = store.validateEntity('W123', 'W' as EntityType, { test: 'data' });
+      const resultPromise = store.validateEntity({ entityId: 'W123', entityType: 'W' as EntityType, entityData: { test: 'data' } });
 
       expect(store.isValidating).toBe(true);
 
@@ -346,7 +346,7 @@ describe('EntityValidationStore', () => {
       (validateEntityData as any).mockRejectedValue(new Error('Validation failed'));
 
       await expect(
-        store.validateEntity('W123', 'W' as EntityType, { test: 'data' })
+        store.validateEntity({ entityId: 'W123', entityType: 'W' as EntityType, entityData: { test: 'data' } })
       ).rejects.toThrow('Validation failed');
 
       expect(store.isValidating).toBe(false);
@@ -411,7 +411,7 @@ describe('EntityValidationStore', () => {
         },
       };
 
-      store.addLogEntry(mockBatchResult, { source: 'automatic' });
+      store.addLogEntry({ batchResult: mockBatchResult, metadata: { source: 'automatic' } });
 
       expect(store.validationLogs).toHaveLength(1);
       expect(store.validationLogs[0]).toMatchObject({
@@ -448,7 +448,7 @@ describe('EntityValidationStore', () => {
             issuesByEntityType: { work: 0, author: 0, source: 0, institution: 0, publisher: 0, funder: 0, topic: 0, concept: 0, keyword: 0, continent: 0, region: 0 }
           },
         };
-        store.addLogEntry(mockBatchResult);
+        store.addLogEntry({ batchResult: mockBatchResult });
       }
 
       expect(store.validationLogs).toHaveLength(3);
@@ -478,7 +478,7 @@ describe('EntityValidationStore', () => {
         },
       };
 
-      store.addLogEntry(mockBatchResult);
+      store.addLogEntry({ batchResult: mockBatchResult });
       store.selectLogEntry('log_batch-123');
 
       expect(store.selectedLogEntry).toBe('log_batch-123');

@@ -496,7 +496,13 @@ export function isEntityGraphEdge(obj: unknown): obj is EntityGraphEdge {
 /**
  * Utility functions for edge ID generation
  */
-export function generateEdgeId(sourceId: string, targetId: string, edgeType: EdgeType): string {
+interface GenerateEdgeIdParams {
+  sourceId: string;
+  targetId: string;
+  edgeType: EdgeType;
+}
+
+export function generateEdgeId({ sourceId, targetId, edgeType }: GenerateEdgeIdParams): string {
   return `${sourceId}_${edgeType}_${targetId}`;
 }
 

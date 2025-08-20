@@ -32,6 +32,16 @@ export interface ComparisonEntity {
 /**
  * Comparison store state interface
  */
+interface AddEntityParams {
+  entity: EntityData;
+  type: EntityType;
+}
+
+interface CanAddEntityParams {
+  entity: EntityData;
+  type: EntityType;
+}
+
 export interface ComparisonState {
   /** Array of entities being compared */
   entities: ComparisonEntity[];
@@ -46,7 +56,7 @@ export interface ComparisonState {
 
   // Actions
   /** Add an entity to the comparison */
-  addEntity: (entity: EntityData, type: EntityType) => void;
+  addEntity: (params: AddEntityParams) => void;
   /** Remove an entity from comparison by ID */
   removeEntity: (entityId: string) => void;
   /** Clear all entities from comparison */
@@ -56,7 +66,7 @@ export interface ComparisonState {
   
   // Utility functions
   /** Check if an entity can be added to comparison */
-  canAddEntity: (entity: EntityData, type: EntityType) => boolean;
+  canAddEntity: (params: CanAddEntityParams) => boolean;
   /** Check if entity is already in comparison */
   hasEntity: (entityId: string) => boolean;
   /** Get entities of specific type */
@@ -100,7 +110,7 @@ export const useComparisonStore = create<ComparisonState>()(
       maxEntities: 5,
 
       // Actions
-      addEntity: (entity, type) => {
+      addEntity: ({ entity, type }) => {
         const state = get();
         
         // Validate entity
@@ -116,7 +126,7 @@ export const useComparisonStore = create<ComparisonState>()(
         }
 
         // Check if can add entity
-        if (!state.canAddEntity(entity, type)) {
+        if (!state.canAddEntity({ entity, type })) {
           console.warn('[ComparisonStore] Cannot add entity:', {
             entity: entityId,
             type,
@@ -189,7 +199,7 @@ export const useComparisonStore = create<ComparisonState>()(
       },
 
       // Utility functions
-      canAddEntity: (entity, type) => {
+      canAddEntity: ({ entity, type }) => {
         const state = get();
         
         // Check if at max capacity

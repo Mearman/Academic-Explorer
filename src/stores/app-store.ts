@@ -36,6 +36,21 @@ interface QueryRecord {
   querySignature?: string;       // Unique signature based on core search parameters
 }
 
+interface RecordQueryParams {
+  query: string;
+  params: WorksParams;
+}
+
+interface UpdateQueryResultsParams {
+  queryId: string;
+  results: QueryRecord['results'];
+}
+
+interface UpdateQueryErrorParams {
+  queryId: string;
+  error: string;
+}
+
 interface AppState {
   // Theme
   theme: 'light' | 'dark' | 'system';
@@ -65,9 +80,9 @@ interface AppState {
   updatePreferences: (prefs: Partial<AppState['preferences']>) => void;
   
   // Query Recording Actions
-  recordQuery: (query: string, params: WorksParams) => string;
-  updateQueryResults: (queryId: string, results: QueryRecord['results']) => void;
-  updateQueryError: (queryId: string, error: string) => void;
+  recordQuery: (params: RecordQueryParams) => string;
+  updateQueryResults: (params: UpdateQueryResultsParams) => void;
+  updateQueryError: (params: UpdateQueryErrorParams) => void;
   clearQueryHistory: () => void;
   getQueryHistory: () => QueryRecord[];
 }
@@ -132,7 +147,7 @@ export const useAppStore = create<AppState>()(
         }),
         
       // Query Recording Actions
-      recordQuery: (query, params) => {
+      recordQuery: ({ query, params }) => {
         const queryId = `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
         const signature = generateQuerySignature(params);
         
@@ -193,7 +208,7 @@ export const useAppStore = create<AppState>()(
         return queryId;
       },
       
-      updateQueryResults: (queryId, results) =>
+      updateQueryResults: ({ queryId, results }) =>
         set((state) => {
           // Look for query in main history first
           let query = state.queryHistory.find(q => q.id === queryId);
@@ -213,7 +228,7 @@ export const useAppStore = create<AppState>()(
           }
         }),
         
-      updateQueryError: (queryId, error) =>
+      updateQueryError: ({ queryId, error }) =>
         set((state) => {
           // Look for query in main history first
           let query = state.queryHistory.find(q => q.id === queryId);

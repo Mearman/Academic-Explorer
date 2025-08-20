@@ -156,8 +156,8 @@ describe('Entity Graph Store - Related Entity Persistence (TDD)', () => {
     expect(topicVertex?.directlyVisited).toBe(false);
 
     // Assert: Edges should exist
-    expect(result.current.hasEdge(mockAuthor.id, 'I123456789', EdgeType.AFFILIATED_WITH)).toBe(true);
-    expect(result.current.hasEdge(mockAuthor.id, 'T12345', EdgeType.RELATED_TO_TOPIC)).toBe(true);
+    expect(result.current.hasEdge({ sourceId: mockAuthor.id, targetId: 'I123456789', edgeType: EdgeType.AFFILIATED_WITH })).toBe(true);
+    expect(result.current.hasEdge({ sourceId: mockAuthor.id, targetId: 'T12345', edgeType: EdgeType.RELATED_TO_TOPIC })).toBe(true);
 
     // Assert: Graph statistics should reflect the relationships
     const stats = result.current.getGraphStatistics();

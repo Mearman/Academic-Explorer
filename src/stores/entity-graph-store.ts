@@ -35,6 +35,22 @@ import {
   generateEdgeId
 } from '@/types/entity-graph';
 
+interface FindShortestPathParams {
+  sourceId: string;
+  targetId: string;
+}
+
+interface GetNeighborsParams {
+  vertexId: string;
+  hops?: number;
+}
+
+interface HasEdgeParams {
+  sourceId: string;
+  targetId: string;
+  edgeType: EdgeType;
+}
+
 interface EntityGraphState {
   // Core graph data
   graph: EntityGraph;
@@ -94,12 +110,12 @@ interface EntityGraphState {
   getFilteredVertices: () => EntityGraphVertex[];
   getFilteredEdges: () => EntityGraphEdge[];
   getGraphStatistics: () => GraphStatistics;
-  findShortestPath: (sourceId: string, targetId: string) => GraphTraversalResult | null;
-  getNeighbors: (vertexId: string, hops?: number) => EntityGraphVertex[];
+  findShortestPath: (params: FindShortestPathParams) => GraphTraversalResult | null;
+  getNeighbors: (params: GetNeighborsParams) => EntityGraphVertex[];
   
   // Utility functions
   hasVertex: (entityId: string) => boolean;
-  hasEdge: (sourceId: string, targetId: string, edgeType: EdgeType) => boolean;
+  hasEdge: (params: HasEdgeParams) => boolean;
   getVertexDegree: (vertexId: string) => number;
 }
 
@@ -395,7 +411,7 @@ export const useEntityGraphStore = create<EntityGraphState>()(
         console.log(`[EntityGraphStore] Adding relationship: ${event.sourceEntityId} → ${event.targetEntityId} (${event.relationshipType})`);
         // First update the in-memory store
         set((state) => {
-          const edgeId = generateEdgeId(event.sourceEntityId, event.targetEntityId, event.relationshipType);
+          const edgeId = generateEdgeId({ sourceId: event.sourceEntityId, targetId: event.targetEntityId, edgeType: event.relationshipType });
           
           // Early exit conditions - check before starting any mutations
           // Don't add duplicate edges
@@ -499,7 +515,7 @@ export const useEntityGraphStore = create<EntityGraphState>()(
         
         // Then persist to simple storage (only edge data)
         try {
-          const edgeId = generateEdgeId(event.sourceEntityId, event.targetEntityId, event.relationshipType);
+          const edgeId = generateEdgeId({ sourceId: event.sourceEntityId, targetId: event.targetEntityId, edgeType: event.relationshipType });
           
           // First save the target entity if it was just discovered
           const targetVertex = get().graph.vertices.get(event.targetEntityId);
@@ -856,7 +872,7 @@ export const useEntityGraphStore = create<EntityGraphState>()(
         };
       },
       
-      findShortestPath: (sourceId: string, targetId: string) => {
+      findShortestPath: ({ sourceId, targetId }) => {
         const state = get();
         const { graph } = state;
         
@@ -926,7 +942,7 @@ export const useEntityGraphStore = create<EntityGraphState>()(
         return null;
       },
       
-      getNeighbors: (vertexId: string, hops = 1) => {
+      getNeighbors: ({ vertexId, hops = 1 }) => {
         const state = get();
         const { graph } = state;
         
@@ -967,9 +983,9 @@ export const useEntityGraphStore = create<EntityGraphState>()(
         return state.graph.vertices.has(entityId);
       },
       
-      hasEdge: (sourceId: string, targetId: string, edgeType: EdgeType) => {
+      hasEdge: ({ sourceId, targetId, edgeType }) => {
         const state = get();
-        const edgeId = generateEdgeId(sourceId, targetId, edgeType);
+        const edgeId = generateEdgeId({ sourceId, targetId, edgeType });
         return state.graph.edges.has(edgeId);
       },
       
