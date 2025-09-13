@@ -1,0 +1,243 @@
+/**
+ * Main graph navigation component
+ * Provider-agnostic graph visualization with XYFlow implementation
+ */
+
+import React, { useEffect, useRef, useState, useCallback } from 'react';
+import {
+  ReactFlow,
+  ReactFlowProvider,
+  useReactFlow,
+  useNodesState,
+  useEdgesState,
+  Controls,
+  MiniMap,
+  Background,
+  Panel,
+  type Node as XYNode,
+  type Edge as XYEdge,
+} from '@xyflow/react';
+import { useNavigate } from '@tanstack/react-router';
+
+import { useGraphStore } from '@/stores/graph-store';
+import { useLayoutStore } from '@/stores/layout-store';
+import { createGraphProvider } from '@/lib/graph/provider-factory';
+import { XYFlowProvider } from '@/lib/graph/providers/xyflow/xyflow-provider';
+import { nodeTypes } from '@/lib/graph/providers/xyflow/custom-nodes';
+import type { GraphNode } from '@/lib/graph/types';
+
+import '@xyflow/react/dist/style.css';
+
+interface GraphNavigationProps {
+  className?: string;
+}
+
+// Inner component that uses ReactFlow hooks
+const GraphNavigationInner: React.FC<GraphNavigationProps> = ({ className }) => {
+  const navigate = useNavigate();
+  const reactFlowInstance = useReactFlow();
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  // Store state
+  const {
+    provider,
+    setProvider,
+    nodes: storeNodes,
+    edges: storeEdges,
+    isLoading,
+    error,
+  } = useGraphStore();
+
+  const { graphProvider, setPreviewEntity } = useLayoutStore();
+
+  // XYFlow state - synced with store
+  const [nodes, setNodes, onNodesChange] = useNodesState([]);
+  const [edges, setEdges, onEdgesChange] = useEdgesState([]);
+
+  // Provider instance ref
+  const providerRef = useRef<XYFlowProvider | null>(null);
+
+  // Initialize provider
+  useEffect(() => {
+    if (!containerRef.current) return;
+
+    const graphProvider = createGraphProvider('xyflow') as XYFlowProvider;
+    providerRef.current = graphProvider;
+
+    // Set up navigation events
+    graphProvider.setEvents({
+      onNodeClick: (node: GraphNode) => {
+        // Navigate to entity page
+        const entityType = node.type + 's'; // pluralize
+        navigate({ to: `/${entityType}/${node.entityId}` });
+      },
+
+      onNodeDoubleClick: (node: GraphNode) => {
+        // TODO: Expand node functionality
+        console.log('Double clicked node:', node);
+      },
+
+      onNodeHover: (node: GraphNode | null) => {
+        // Update preview in sidebar
+        setPreviewEntity(node?.entityId || null);
+      },
+    });
+
+    // Initialize with container
+    graphProvider.initialize(containerRef.current);
+
+    // Set ReactFlow instance
+    graphProvider.setReactFlowInstance(reactFlowInstance);
+
+    // Update store
+    setProvider(graphProvider);
+
+    return () => {
+      graphProvider.destroy();
+    };
+  }, [reactFlowInstance, navigate, setProvider, setPreviewEntity]);
+
+  // Sync store data with XYFlow
+  useEffect(() => {
+    if (providerRef.current && (storeNodes.size > 0 || storeEdges.size > 0)) {
+      const { nodes: xyNodes, edges: xyEdges } = providerRef.current.getXYFlowData();
+      setNodes(xyNodes);
+      setEdges(xyEdges);
+    }
+  }, [storeNodes, storeEdges, setNodes, setEdges]);
+
+  // Handle node clicks
+  const onNodeClick = useCallback((event: React.MouseEvent, node: XYNode) => {
+    if (providerRef.current) {
+      providerRef.current.handleNodeClick(event, node);
+    }
+  }, []);
+
+  // Handle node double clicks
+  const onNodeDoubleClick = useCallback((event: React.MouseEvent, node: XYNode) => {
+    if (providerRef.current) {
+      providerRef.current.handleNodeDoubleClick(event, node);
+    }
+  }, []);
+
+  // Handle node mouse enter
+  const onNodeMouseEnter = useCallback((event: React.MouseEvent, node: XYNode) => {
+    if (providerRef.current) {
+      providerRef.current.handleNodeHover(event, node);
+    }
+  }, []);
+
+  // Handle node mouse leave
+  const onNodeMouseLeave = useCallback((event: React.MouseEvent) => {
+    if (providerRef.current) {
+      providerRef.current.handleNodeHover(event, null);
+    }
+  }, []);
+
+  // Loading state
+  if (isLoading) {
+    return (
+      <div className={className} style={{
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        height: '100%',
+        background: '#f8f9fa'
+      }}>
+        <div>Loading graph...</div>
+      </div>
+    );
+  }
+
+  // Error state
+  if (error) {
+    return (
+      <div className={className} style={{
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        height: '100%',
+        background: '#f8f9fa',
+        color: '#e74c3c'
+      }}>
+        <div>Error loading graph: {error}</div>
+      </div>
+    );
+  }
+
+  return (
+    <div ref={containerRef} className={className} style={{ width: '100%', height: '100%' }}>
+      <ReactFlow
+        nodes={nodes}
+        edges={edges}
+        onNodesChange={onNodesChange}
+        onEdgesChange={onEdgesChange}
+        onNodeClick={onNodeClick}
+        onNodeDoubleClick={onNodeDoubleClick}
+        onNodeMouseEnter={onNodeMouseEnter}
+        onNodeMouseLeave={onNodeMouseLeave}
+        nodeTypes={nodeTypes}
+        fitView
+        fitViewOptions={{ padding: 0.1 }}
+        attributionPosition="bottom-left"
+      >
+        <Controls />
+        <MiniMap
+          nodeColor={(node) => {
+            switch (node.data?.entityType) {
+              case 'work': return '#e74c3c';
+              case 'author': return '#3498db';
+              case 'source': return '#2ecc71';
+              case 'institution': return '#f39c12';
+              default: return '#95a5a6';
+            }
+          }}
+          nodeStrokeWidth={3}
+          zoomable
+          pannable
+        />
+        <Background variant="dots" gap={12} size={1} />
+
+        <Panel position="top-left">
+          <div style={{
+            background: 'rgba(255, 255, 255, 0.9)',
+            padding: '8px 12px',
+            borderRadius: '6px',
+            fontSize: '12px',
+            fontWeight: 'bold'
+          }}>
+            Academic Explorer Graph
+          </div>
+        </Panel>
+
+        {nodes.length === 0 && (
+          <Panel position="center">
+            <div style={{
+              background: 'rgba(255, 255, 255, 0.9)',
+              padding: '20px',
+              borderRadius: '8px',
+              textAlign: 'center',
+              fontSize: '14px',
+              color: '#666'
+            }}>
+              <div style={{ marginBottom: '8px', fontSize: '24px' }}>🔍</div>
+              <div>No entities to display</div>
+              <div style={{ fontSize: '12px', marginTop: '4px' }}>
+                Search for entities or navigate to an entity page to see the graph
+              </div>
+            </div>
+          </Panel>
+        )}
+      </ReactFlow>
+    </div>
+  );
+};
+
+// Main component wrapped in ReactFlowProvider
+export const GraphNavigation: React.FC<GraphNavigationProps> = (props) => {
+  return (
+    <ReactFlowProvider>
+      <GraphNavigationInner {...props} />
+    </ReactFlowProvider>
+  );
+};
