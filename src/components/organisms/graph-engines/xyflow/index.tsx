@@ -1500,6 +1500,413 @@ const AnimatedNodeWrapper: React.FC<{
   );
 };
 
+// ============================================================================
+// Advanced Filtering and Search System
+// ============================================================================
+
+interface FilterCriteria {
+  entityTypes: string[];
+  yearRange: { min: number; max: number } | null;
+  citationRange: { min: number; max: number } | null;
+  searchTerm: string;
+  openAccessOnly: boolean;
+  connectedOnly: boolean;
+}
+
+interface SearchResult {
+  nodeId: string;
+  relevanceScore: number;
+  matchType: 'exact' | 'partial' | 'fuzzy';
+  matchedField: 'label' | 'abstract' | 'author' | 'keyword';
+}
+
+const defaultFilterCriteria: FilterCriteria = {
+  entityTypes: [],
+  yearRange: null,
+  citationRange: null,
+  searchTerm: '',
+  openAccessOnly: false,
+  connectedOnly: false,
+};
+
+// Advanced filtering and search utilities
+const FilteringUtils = {
+  // Main filtering function
+  filterNodes: (nodes: Node[], edges: Edge[], criteria: FilterCriteria): Node[] => {
+    return nodes.filter(node => {
+      const data = node.data as EntityNodeData;
+
+      // Entity type filter
+      if (criteria.entityTypes.length > 0 && !criteria.entityTypes.includes(data.entityType)) {
+        return false;
+      }
+
+      // Year range filter
+      if (criteria.yearRange && 'publication_year' in data) {
+        const year = (data as any).publication_year;
+        if (year < criteria.yearRange.min || year > criteria.yearRange.max) {
+          return false;
+        }
+      }
+
+      // Citation range filter
+      if (criteria.citationRange && 'cited_by_count' in data) {
+        const citations = (data as any).cited_by_count || 0;
+        if (citations < criteria.citationRange.min || citations > criteria.citationRange.max) {
+          return false;
+        }
+      }
+
+      // Open access filter
+      if (criteria.openAccessOnly && 'openAccessStatus' in data) {
+        const openAccess = (data as any).openAccessStatus;
+        if (!openAccess || openAccess === 'closed') {
+          return false;
+        }
+      }
+
+      // Connected nodes only filter
+      if (criteria.connectedOnly) {
+        const hasConnections = edges.some(edge =>
+          edge.source === node.id || edge.target === node.id
+        );
+        if (!hasConnections) {
+          return false;
+        }
+      }
+
+      // Search term filter
+      if (criteria.searchTerm) {
+        const searchResult = FilteringUtils.searchNode(node, criteria.searchTerm);
+        if (searchResult.relevanceScore === 0) {
+          return false;
+        }
+      }
+
+      return true;
+    });
+  },
+
+  // Advanced search function with fuzzy matching
+  searchNode: (node: Node, searchTerm: string): SearchResult => {
+    const data = node.data as EntityNodeData;
+    const normalizedTerm = searchTerm.toLowerCase().trim();
+
+    if (!normalizedTerm) {
+      return { nodeId: node.id, relevanceScore: 0, matchType: 'exact', matchedField: 'label' };
+    }
+
+    let bestMatch: SearchResult = {
+      nodeId: node.id,
+      relevanceScore: 0,
+      matchType: 'exact',
+      matchedField: 'label'
+    };
+
+    // Search in label (highest priority)
+    const labelScore = FilteringUtils.calculateTextRelevance(data.label, normalizedTerm);
+    if (labelScore > bestMatch.relevanceScore) {
+      bestMatch = {
+        nodeId: node.id,
+        relevanceScore: labelScore,
+        matchType: labelScore === 1 ? 'exact' : labelScore > 0.7 ? 'partial' : 'fuzzy',
+        matchedField: 'label'
+      };
+    }
+
+    // Search in abstract (medium priority)
+    if ('abstract' in data && (data as any).abstract) {
+      const abstractScore = FilteringUtils.calculateTextRelevance((data as any).abstract, normalizedTerm) * 0.8;
+      if (abstractScore > bestMatch.relevanceScore) {
+        bestMatch = {
+          nodeId: node.id,
+          relevanceScore: abstractScore,
+          matchType: abstractScore === 0.8 ? 'exact' : abstractScore > 0.56 ? 'partial' : 'fuzzy',
+          matchedField: 'abstract'
+        };
+      }
+    }
+
+    // Search in authors (medium priority)
+    if ('authors' in data && Array.isArray((data as any).authors)) {
+      const authorsText = (data as any).authors.join(' ').toLowerCase();
+      const authorScore = FilteringUtils.calculateTextRelevance(authorsText, normalizedTerm) * 0.7;
+      if (authorScore > bestMatch.relevanceScore) {
+        bestMatch = {
+          nodeId: node.id,
+          relevanceScore: authorScore,
+          matchType: authorScore === 0.7 ? 'exact' : authorScore > 0.49 ? 'partial' : 'fuzzy',
+          matchedField: 'author'
+        };
+      }
+    }
+
+    // Search in keywords (lower priority)
+    if ('keywords' in data && Array.isArray((data as any).keywords)) {
+      const keywordsText = (data as any).keywords.join(' ').toLowerCase();
+      const keywordScore = FilteringUtils.calculateTextRelevance(keywordsText, normalizedTerm) * 0.6;
+      if (keywordScore > bestMatch.relevanceScore) {
+        bestMatch = {
+          nodeId: node.id,
+          relevanceScore: keywordScore,
+          matchType: keywordScore === 0.6 ? 'exact' : keywordScore > 0.42 ? 'partial' : 'fuzzy',
+          matchedField: 'keyword'
+        };
+      }
+    }
+
+    return bestMatch;
+  },
+
+  // Calculate text relevance score using multiple techniques
+  calculateTextRelevance: (text: string, searchTerm: string): number => {
+    if (!text || !searchTerm) return 0;
+
+    const normalizedText = text.toLowerCase();
+    const normalizedTerm = searchTerm.toLowerCase();
+
+    // Exact match (highest score)
+    if (normalizedText === normalizedTerm) return 1;
+
+    // Exact phrase match
+    if (normalizedText.includes(normalizedTerm)) return 0.9;
+
+    // Word boundary match
+    const wordBoundaryRegex = new RegExp(`\\b${normalizedTerm}\\b`);
+    if (wordBoundaryRegex.test(normalizedText)) return 0.8;
+
+    // Fuzzy matching using Levenshtein distance
+    const words = normalizedText.split(/\s+/);
+    let maxFuzzyScore = 0;
+
+    for (const word of words) {
+      const distance = FilteringUtils.levenshteinDistance(word, normalizedTerm);
+      const maxLength = Math.max(word.length, normalizedTerm.length);
+      const similarity = 1 - (distance / maxLength);
+
+      if (similarity > 0.7) { // Threshold for fuzzy match
+        maxFuzzyScore = Math.max(maxFuzzyScore, similarity * 0.6);
+      }
+    }
+
+    // Partial word matching
+    const partialMatches = words.filter(word =>
+      word.includes(normalizedTerm) || normalizedTerm.includes(word)
+    );
+    if (partialMatches.length > 0) {
+      const partialScore = (partialMatches.length / words.length) * 0.5;
+      maxFuzzyScore = Math.max(maxFuzzyScore, partialScore);
+    }
+
+    return maxFuzzyScore;
+  },
+
+  // Levenshtein distance calculation for fuzzy matching
+  levenshteinDistance: (str1: string, str2: string): number => {
+    const matrix: number[][] = [];
+
+    for (let i = 0; i <= str2.length; i++) {
+      matrix[i] = [i];
+    }
+
+    for (let j = 0; j <= str1.length; j++) {
+      matrix[0][j] = j;
+    }
+
+    for (let i = 1; i <= str2.length; i++) {
+      for (let j = 1; j <= str1.length; j++) {
+        if (str2.charAt(i - 1) === str1.charAt(j - 1)) {
+          matrix[i][j] = matrix[i - 1][j - 1];
+        } else {
+          matrix[i][j] = Math.min(
+            matrix[i - 1][j - 1] + 1, // substitution
+            matrix[i][j - 1] + 1,     // insertion
+            matrix[i - 1][j] + 1      // deletion
+          );
+        }
+      }
+    }
+
+    return matrix[str2.length][str1.length];
+  },
+
+  // Filter edges based on filtered nodes
+  filterEdges: (edges: Edge[], filteredNodes: Node[]): Edge[] => {
+    const nodeIds = new Set(filteredNodes.map(node => node.id));
+    return edges.filter(edge =>
+      nodeIds.has(edge.source) && nodeIds.has(edge.target)
+    );
+  },
+
+  // Highlight nodes based on search results
+  highlightSearchResults: (nodes: Node[], searchResults: SearchResult[]): Node[] => {
+    const resultMap = new Map(
+      searchResults.map(result => [result.nodeId, result])
+    );
+
+    return nodes.map(node => {
+      const searchResult = resultMap.get(node.id);
+      if (!searchResult || searchResult.relevanceScore === 0) {
+        return node;
+      }
+
+      // Apply highlight styling based on match quality
+      const highlightIntensity = searchResult.relevanceScore;
+      const highlightColor = searchResult.matchType === 'exact' ? '#fbbf24' :
+                           searchResult.matchType === 'partial' ? '#f59e0b' : '#f97316';
+
+      return {
+        ...node,
+        style: {
+          ...node.style,
+          boxShadow: `0 0 ${Math.round(highlightIntensity * 20)}px ${highlightColor}80`,
+          border: `2px solid ${highlightColor}`,
+          zIndex: 1000 + Math.round(highlightIntensity * 100),
+        },
+        data: {
+          ...node.data,
+          searchResult,
+        },
+      };
+    });
+  },
+};
+
+// Advanced Filter Panel Component
+const AdvancedFilterPanel: React.FC<{
+  criteria: FilterCriteria;
+  onCriteriaChange: (criteria: FilterCriteria) => void;
+  availableEntityTypes: string[];
+  nodeCount: number;
+  filteredCount: number;
+}> = ({ criteria, onCriteriaChange, availableEntityTypes, nodeCount, filteredCount }) => {
+  const [isExpanded, setIsExpanded] = React.useState(false);
+
+  return (
+    <Panel position="top-left">
+      <div style={{
+        background: 'rgba(255, 255, 255, 0.95)',
+        padding: '12px',
+        borderRadius: '8px',
+        fontSize: '12px',
+        minWidth: isExpanded ? '280px' : '200px',
+        maxHeight: isExpanded ? '400px' : 'auto',
+        boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)',
+        transition: 'all 0.3s ease',
+      }}>
+        <div
+          style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            marginBottom: isExpanded ? '12px' : '0',
+            cursor: 'pointer',
+            fontWeight: '600',
+            color: '#374151'
+          }}
+          onClick={() => setIsExpanded(!isExpanded)}
+        >
+          <span>🔍 Advanced Filters</span>
+          <span style={{ fontSize: '10px' }}>
+            {isExpanded ? '▼' : '▶'} {filteredCount}/{nodeCount}
+          </span>
+        </div>
+
+        {isExpanded && (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+            {/* Search Input */}
+            <div>
+              <label style={{ fontWeight: '600', display: 'block', marginBottom: '4px' }}>
+                Search Term
+              </label>
+              <input
+                type="text"
+                value={criteria.searchTerm}
+                onChange={(e) => onCriteriaChange({ ...criteria, searchTerm: e.target.value })}
+                placeholder="Search nodes..."
+                style={{
+                  width: '100%',
+                  padding: '6px 8px',
+                  border: '1px solid #d1d5db',
+                  borderRadius: '4px',
+                  fontSize: '11px',
+                }}
+              />
+            </div>
+
+            {/* Entity Types */}
+            <div>
+              <label style={{ fontWeight: '600', display: 'block', marginBottom: '4px' }}>
+                Entity Types
+              </label>
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px' }}>
+                {availableEntityTypes.map(type => (
+                  <button
+                    key={type}
+                    onClick={() => {
+                      const newTypes = criteria.entityTypes.includes(type)
+                        ? criteria.entityTypes.filter(t => t !== type)
+                        : [...criteria.entityTypes, type];
+                      onCriteriaChange({ ...criteria, entityTypes: newTypes });
+                    }}
+                    style={{
+                      padding: '3px 6px',
+                      border: criteria.entityTypes.includes(type) ? '2px solid #3b82f6' : '1px solid #d1d5db',
+                      background: criteria.entityTypes.includes(type) ? '#eff6ff' : 'white',
+                      borderRadius: '4px',
+                      fontSize: '10px',
+                      cursor: 'pointer',
+                      textTransform: 'capitalize',
+                    }}
+                  >
+                    {type}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Filter Toggles */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+              <label style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                <input
+                  type="checkbox"
+                  checked={criteria.openAccessOnly}
+                  onChange={(e) => onCriteriaChange({ ...criteria, openAccessOnly: e.target.checked })}
+                />
+                <span>Open Access Only</span>
+              </label>
+              <label style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                <input
+                  type="checkbox"
+                  checked={criteria.connectedOnly}
+                  onChange={(e) => onCriteriaChange({ ...criteria, connectedOnly: e.target.checked })}
+                />
+                <span>Connected Nodes Only</span>
+              </label>
+            </div>
+
+            {/* Clear Filters */}
+            <button
+              onClick={() => onCriteriaChange(defaultFilterCriteria)}
+              style={{
+                padding: '6px 12px',
+                background: '#f3f4f6',
+                border: '1px solid #d1d5db',
+                borderRadius: '4px',
+                fontSize: '11px',
+                cursor: 'pointer',
+                marginTop: '8px',
+              }}
+            >
+              Clear All Filters
+            </button>
+          </div>
+        )}
+      </div>
+    </Panel>
+  );
+};
+
 // Helper function to calculate cluster bounds
 const calculateClusterBounds = (nodes: Node[]) => {
   if (nodes.length === 0) return null;
@@ -2537,10 +2944,47 @@ import '@xyflow/react/dist/style.css';
         await rfInstance.setCenter(centerX, centerY, { zoom: targetZoom, duration: 800 });
       }, [rfInstance]);
 
-      // Sync nodes and edges with engine, applying performance optimizations
+      // Advanced filtering and search system
+      const [filterCriteria, setFilterCriteria] = useState<FilterCriteria>(defaultFilterCriteria);
+      const [searchResults, setSearchResults] = useState<SearchResult[]>([]);
+
+      // Extract available entity types from nodes
+      const availableEntityTypes = React.useMemo(() => {
+        const types = new Set<string>();
+        engine.nodes.forEach(node => {
+          const data = node.data as EntityNodeData;
+          if (data.entityType) {
+            types.add(data.entityType);
+          }
+        });
+        return Array.from(types).sort();
+      }, [engine.nodes]);
+
+      // Apply filtering and search
+      const filteredNodes = React.useMemo(() => {
+        let processedNodes = FilteringUtils.filterNodes(engine.nodes, engine.edges, filterCriteria);
+
+        // Apply search highlighting if there's a search term
+        if (filterCriteria.searchTerm) {
+          const results = processedNodes.map(node => FilteringUtils.searchNode(node, filterCriteria.searchTerm))
+                                      .filter(result => result.relevanceScore > 0);
+          setSearchResults(results);
+          processedNodes = FilteringUtils.highlightSearchResults(processedNodes, results);
+        } else {
+          setSearchResults([]);
+        }
+
+        return processedNodes;
+      }, [engine.nodes, engine.edges, filterCriteria]);
+
+      const filteredEdges = React.useMemo(() => {
+        return FilteringUtils.filterEdges(engine.edges, filteredNodes);
+      }, [engine.edges, filteredNodes]);
+
+      // Sync nodes and edges with engine, applying filtering and performance optimizations
       useEffect(() => {
-        let optimizedNodes = engine.nodes;
-        let optimizedEdges = engine.edges;
+        let optimizedNodes = filteredNodes;
+        let optimizedEdges = filteredEdges;
 
         // Level of Detail: Switch to compact nodes for large graphs or low zoom
         if (shouldShowCompactNodes && optimizedNodes.length > 0) {
@@ -2569,7 +3013,7 @@ import '@xyflow/react/dist/style.css';
 
         setNodes(optimizedNodes);
         setEdges(optimizedEdges);
-      }, [engine.nodes, engine.edges, setNodes, setEdges, shouldShowCompactNodes]);
+      }, [filteredNodes, filteredEdges, setNodes, setEdges, shouldShowCompactNodes]);
 
       const config = engine.config.xyflowOptions || {};
 
@@ -2640,6 +3084,15 @@ import '@xyflow/react/dist/style.css';
                 color={config.background.color}
               />
             )}
+
+            {/* Advanced Filter Panel */}
+            <AdvancedFilterPanel
+              criteria={filterCriteria}
+              onCriteriaChange={setFilterCriteria}
+              availableEntityTypes={availableEntityTypes}
+              nodeCount={engine.nodes.length}
+              filteredCount={filteredNodes.length}
+            />
 
             {/* Advanced Clustering Visualization */}
             {shouldShowClusters && clusters.map((cluster) => (
