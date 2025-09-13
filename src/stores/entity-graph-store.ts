@@ -2,10 +2,13 @@ import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 import { immer } from 'zustand/middleware/immer';
 
-import type { 
-  GraphEngineType, 
-  GraphEngineSettings 
-} from '@/components/organisms/graph-engines';
+// SIMPLIFIED: Using simple local types instead of complex graph-engines imports
+type GraphEngineType = 'cytoscape' | 'xyflow' | 'vis';
+type GraphEngineSettings = {
+  performance: 'low' | 'medium' | 'high';
+  layout: string;
+  physics: boolean;
+};
 import { 
   loadEntityGraphFromSimpleStorage, 
   getSimpleGraphMetadata, 
@@ -106,9 +109,8 @@ interface EntityGraphState {
   updateEnginePreferences: (preferences: Record<string, unknown>) => void;
   getRecommendedEngine: () => GraphEngineType;
   
-  // Computed data
-  getFilteredVertices: () => EntityGraphVertex[];
-  getFilteredEdges: () => EntityGraphEdge[];
+  // REMOVED: Computed functions that create new arrays - these cause infinite loops
+  // Use direct selectors instead: useEntityGraphStore((state) => state.graph.vertices)
   getGraphStatistics: () => GraphStatistics;
   findShortestPath: (params: FindShortestPathParams) => GraphTraversalResult | null;
   getNeighbors: (params: GetNeighborsParams) => EntityGraphVertex[];
@@ -218,6 +220,10 @@ export const useEntityGraphStore = create<EntityGraphState>()(
           set((state) => {
             state.isLoading = false;
             state.isHydrated = true; // Mark as hydrated even on error to prevent retry loops
+            // Initialize empty graph structure to avoid undefined errors
+            if (!state.graph.vertices) {
+              state.graph = createEmptyGraph();
+            }
           });
         }
       },
@@ -724,105 +730,11 @@ export const useEntityGraphStore = create<EntityGraphState>()(
         return 'svg';
       },
       
-      // Computed data
-      getFilteredVertices: () => {
-        const state = get();
-        const { filterOptions, graph } = state;
-        
-        let vertices = Array.from(graph.vertices.values());
-        
-        // Filter by entity types
-        if (filterOptions.entityTypes && filterOptions.entityTypes.length > 0) {
-          vertices = vertices.filter(v => filterOptions.entityTypes!.includes(v.entityType));
-        }
-        
-        // Filter by direct visits only
-        if (filterOptions.directlyVisitedOnly) {
-          vertices = vertices.filter(v => v.directlyVisited);
-        }
-        
-        // Filter by minimum visit count
-        if (filterOptions.minVisitCount && filterOptions.minVisitCount > 0) {
-          vertices = vertices.filter(v => v.visitCount >= filterOptions.minVisitCount!);
-        }
-        
-        // Filter by minimum citation count
-        if (filterOptions.minCitationCount && filterOptions.minCitationCount > 0) {
-          vertices = vertices.filter(v => 
-            !v.metadata.citedByCount || v.metadata.citedByCount >= filterOptions.minCitationCount!
-          );
-        }
-        
-        // Filter by date range
-        if (filterOptions.dateRange) {
-          const fromDate = new Date(filterOptions.dateRange.from);
-          const toDate = new Date(filterOptions.dateRange.to);
-          
-          vertices = vertices.filter(v => {
-            const vertexDate = new Date(v.lastVisited || v.firstSeen);
-            return vertexDate >= fromDate && vertexDate <= toDate;
-          });
-        }
-        
-        // Filter by hops from visited entities
-        if (filterOptions.maxHopsFromVisited !== undefined && filterOptions.maxHopsFromVisited >= 0) {
-          const directlyVisited = vertices.filter(v => v.directlyVisited);
-          const reachableVertices = new Set<string>();
-          
-          // Add directly visited vertices
-          directlyVisited.forEach(v => reachableVertices.add(v.id));
-          
-          // BFS to find vertices within specified hops
-          const queue: Array<{ vertexId: string; distance: number }> = 
-            directlyVisited.map(v => ({ vertexId: v.id, distance: 0 }));
-          
-          while (queue.length > 0) {
-            const { vertexId, distance } = queue.shift()!;
-            
-            if (distance >= filterOptions.maxHopsFromVisited!) continue;
-            
-            const outgoingEdges = graph.edgesBySource.get(vertexId) || new Set();
-            const incomingEdges = graph.edgesByTarget.get(vertexId) || new Set();
-            
-            for (const edgeId of [...outgoingEdges, ...incomingEdges]) {
-              const edge = graph.edges.get(edgeId);
-              if (!edge) continue;
-              
-              const neighborId = edge.sourceId === vertexId ? edge.targetId : edge.sourceId;
-              
-              if (!reachableVertices.has(neighborId)) {
-                reachableVertices.add(neighborId);
-                queue.push({ vertexId: neighborId, distance: distance + 1 });
-              }
-            }
-          }
-          
-          vertices = vertices.filter(v => reachableVertices.has(v.id));
-        }
-        
-        return vertices;
-      },
+      // REMOVED: getFilteredVertices() - caused infinite loops
+      // Use direct selectors instead: useEntityGraphStore((state) => state.graph.vertices)
       
-      getFilteredEdges: () => {
-        const state = get();
-        const { filterOptions, graph } = state;
-        const filteredVertices = state.getFilteredVertices();
-        const filteredVertexIds = new Set(filteredVertices.map(v => v.id));
-        
-        let edges = Array.from(graph.edges.values());
-        
-        // Only include edges between filtered vertices
-        edges = edges.filter(e => 
-          filteredVertexIds.has(e.sourceId) && filteredVertexIds.has(e.targetId)
-        );
-        
-        // Filter by edge types
-        if (filterOptions.edgeTypes && filterOptions.edgeTypes.length > 0) {
-          edges = edges.filter(e => filterOptions.edgeTypes!.includes(e.edgeType));
-        }
-        
-        return edges;
-      },
+      // REMOVED: getFilteredEdges() - caused infinite loops
+      // Use direct selectors instead: useEntityGraphStore((state) => state.graph.edges)
       
       getGraphStatistics: () => {
         const state = get();
