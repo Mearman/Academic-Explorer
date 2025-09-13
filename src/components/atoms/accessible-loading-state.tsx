@@ -231,8 +231,8 @@ const SkeletonRenderer = ({
   }
 
   const commonProps = {
-    respectMotionPreference: reducedMotion,
-    highContrast,
+    ...(reducedMotion !== undefined && { respectMotionPreference: reducedMotion }),
+    ...(highContrast !== undefined && { highContrast }),
     semanticRole: 'status' as const,
   };
 
@@ -304,20 +304,22 @@ function useLoadingPhases(isLoading: boolean, loadingPhases?: LoadingPhase[]) {
       let phaseIndex = 0;
       let _accumulatedTime = 0;
 
-      const progressPhase = () => {
-        if (phaseIndex < loadingPhases.length) {
+      const progressPhase = (): NodeJS.Timeout | null => {
+        if (loadingPhases && phaseIndex < loadingPhases.length) {
           setCurrentPhase(phaseIndex);
           _accumulatedTime += loadingPhases[phaseIndex].duration;
-          
+          const phaseDuration = loadingPhases[phaseIndex].duration;
+
           const timer = setTimeout(() => {
             phaseIndex++;
-            if (phaseIndex < loadingPhases.length) {
+            if (loadingPhases && phaseIndex < loadingPhases.length) {
               progressPhase();
             }
-          }, loadingPhases[phaseIndex].duration);
+          }, phaseDuration);
 
           return timer;
         }
+        return null;
       };
 
       const timer = progressPhase();
@@ -415,8 +417,8 @@ export const AccessibleLoadingState = ({
       <Box ref={containerRef} className={styles.container}>
         <ErrorState
           error={error}
-          onRetry={onRetry}
-          retryLabel={retryLabel}
+          {...(onRetry && { onRetry })}
+          {...(retryLabel !== undefined && { retryLabel })}
           keyboardNavigable={keyboardNavigable}
         />
         {announceStateChanges && (
@@ -462,7 +464,7 @@ export const AccessibleLoadingState = ({
           {progress !== undefined && (
             <ProgressAnnouncer
               progress={progress}
-              phases={loadingPhases}
+              {...(loadingPhases && { phases: loadingPhases })}
               currentPhase={currentPhase}
               verboseMode={_verboseAnnouncements}
             />
