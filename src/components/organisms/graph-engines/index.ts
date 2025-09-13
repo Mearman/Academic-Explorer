@@ -170,16 +170,8 @@ export {
 // Static imports are available in createEngineByType function
 
 export type {
-  ICanvasConfig,
-  ID3ForceConfig,
-  ICytoscapeConfig,
-  IWebGLConfig,
   IXyflowConfig,
 } from './types';
-
-export type {
-  IVisNetworkConfig,
-} from './vis-network';
 
 // ============================================================================
 // Engine Registry and Factory Functions
@@ -192,38 +184,18 @@ export async function createEngineByType(
   engineType: GraphEngineType
 ): Promise<any> {
   switch (engineType) {
-    case 'canvas-2d': {
-      const { createCanvasEngine } = await import('./canvas');
-      return createCanvasEngine();
-    }
-    case 'd3-force': {
-      const { createD3ForceEngine } = await import('./d3-force');
-      return createD3ForceEngine();
-    }
-    case 'cytoscape': {
-      const { createCytoscapeEngine } = await import('./cytoscape');
-      return createCytoscapeEngine();
-    }
-    case 'webgl': {
-      const { createWebGLEngine } = await import('./webgl');
-      return createWebGLEngine();
-    }
     case 'xyflow': {
       const { createXyflowEngine } = await import('./xyflow');
       return createXyflowEngine();
     }
-    case 'vis-network': {
-      const { createVisNetworkEngine } = await import('./vis-network');
-      return createVisNetworkEngine();
-    }
     case 'svg':
       throw new Error(
-        `SVG engine is not implemented. Available engines: canvas-2d, webgl, d3-force, cytoscape, vis-network, xyflow. ` +
-        `Consider using 'canvas-2d' or 'xyflow' for similar functionality.`
+        `SVG engine is not implemented. Available engines: xyflow. ` +
+        `Consider using 'xyflow' for comprehensive graph functionality.`
       );
     default:
       throw new Error(
-        `Engine '${engineType}' is not implemented. Available engines: canvas-2d, webgl, d3-force, cytoscape, vis-network, xyflow.`
+        `Engine '${engineType}' is not implemented. Available engines: xyflow.`
       );
   }
 }
@@ -232,7 +204,7 @@ export async function createEngineByType(
  * Get all available engine types
  */
 export function getAvailableEngineTypes(): GraphEngineType[] {
-  return ['canvas-2d', 'd3-force', 'cytoscape', 'webgl', 'xyflow', 'vis-network'];
+  return ['xyflow', 'svg'];
 }
 
 /**
@@ -250,39 +222,34 @@ export function isEngineImplemented(engineType: GraphEngineType): boolean {
  * Default engine display names for UI purposes
  */
 export const ENGINE_DISPLAY_NAMES: Record<GraphEngineType, string> = {
-  'canvas-2d': 'Canvas 2D',
   'svg': 'SVG Renderer',
-  'webgl': 'WebGL Accelerated',
-  'd3-force': 'D3 Force Simulation',
-  'cytoscape': 'Cytoscape.js',
-  'vis-network': 'vis-network',
   'xyflow': 'xyflow (React Flow)',
 };
 
 /**
  * Recommended engines for different use cases
- * Updated to prioritize implemented engines
+ * Currently only xyflow is implemented, but infrastructure supports future engines
  */
 export const ENGINE_RECOMMENDATIONS = {
-  SMALL_GRAPHS: ['xyflow', 'd3-force', 'vis-network'] as GraphEngineType[],
-  MEDIUM_GRAPHS: ['xyflow', 'vis-network', 'cytoscape'] as GraphEngineType[],
-  LARGE_GRAPHS: ['webgl', 'xyflow', 'canvas-2d'] as GraphEngineType[],
-  INTERACTIVE: ['xyflow', 'vis-network', 'd3-force'] as GraphEngineType[],
-  ANALYTICAL: ['cytoscape', 'vis-network', 'xyflow'] as GraphEngineType[],
-  PRESENTATION: ['xyflow', 'd3-force', 'vis-network'] as GraphEngineType[],
-  HIGH_PERFORMANCE: ['webgl', 'xyflow', 'canvas-2d'] as GraphEngineType[],
-  EXPORT_QUALITY: ['xyflow', 'canvas-2d', 'd3-force'] as GraphEngineType[],
+  SMALL_GRAPHS: ['xyflow'] as GraphEngineType[],
+  MEDIUM_GRAPHS: ['xyflow'] as GraphEngineType[],
+  LARGE_GRAPHS: ['xyflow'] as GraphEngineType[],
+  INTERACTIVE: ['xyflow'] as GraphEngineType[],
+  ANALYTICAL: ['xyflow'] as GraphEngineType[],
+  PRESENTATION: ['xyflow'] as GraphEngineType[],
+  HIGH_PERFORMANCE: ['xyflow'] as GraphEngineType[],
+  EXPORT_QUALITY: ['xyflow'] as GraphEngineType[],
 } as const;
 
 /**
  * Performance categories for engine selection
- * Updated to reflect implemented engines
+ * Currently only xyflow is implemented, but infrastructure supports future engines
  */
 export const PERFORMANCE_CATEGORIES = {
-  MEMORY_EFFICIENT: ['xyflow', 'canvas-2d', 'd3-force'] as GraphEngineType[],
-  CPU_EFFICIENT: ['webgl', 'xyflow'] as GraphEngineType[],
-  BALANCED: ['xyflow', 'vis-network', 'd3-force'] as GraphEngineType[],
-  FEATURE_RICH: ['cytoscape', 'vis-network', 'xyflow'] as GraphEngineType[],
+  MEMORY_EFFICIENT: ['xyflow'] as GraphEngineType[],
+  CPU_EFFICIENT: ['xyflow'] as GraphEngineType[],
+  BALANCED: ['xyflow'] as GraphEngineType[],
+  FEATURE_RICH: ['xyflow'] as GraphEngineType[],
 } as const;
 
 // ============================================================================

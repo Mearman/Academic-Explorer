@@ -1,12 +1,13 @@
 /**
  * Graph Engine Types and Interfaces
- * 
+ *
  * Defines standardised interfaces for pluggable graph rendering engines.
- * Each engine provides a different rendering strategy optimised for specific use cases:
- * - Cytoscape.js: Feature-rich network analysis and interaction
- * - D3.js Force: Physics-based simulations and custom layouts
- * - WebGL: High-performance rendering for large graphs
- * - Canvas: Lightweight 2D rendering with good browser compatibility
+ * Currently supports:
+ * - xyflow (React Flow): Modern React-based flow diagrams and interactive graphs
+ * - svg: SVG-based rendering (placeholder for future implementation)
+ *
+ * The infrastructure supports easy addition of new engines while maintaining
+ * the same interface for seamless switching between implementations.
  */
 
 import type {
@@ -266,72 +267,6 @@ export interface IGraphEngine<TVertexData = unknown, TEdgeData = unknown> {
 // ============================================================================
 
 /**
- * Cytoscape.js specific configuration options.
- */
-export interface ICytoscapeConfig extends IEngineConfig {
-  readonly cytoscapeOptions?: {
-    readonly layout?: {
-      readonly name: string;
-      readonly [key: string]: unknown;
-    };
-    readonly style?: Array<{
-      readonly selector: string;
-      readonly style: Record<string, unknown>;
-    }>;
-    readonly userZoomingEnabled?: boolean;
-    readonly userPanningEnabled?: boolean;
-    readonly boxSelectionEnabled?: boolean;
-  };
-}
-
-/**
- * D3.js Force Simulation specific configuration options.
- */
-export interface ID3ForceConfig extends IEngineConfig {
-  readonly forceOptions?: {
-    readonly linkDistance?: number;
-    readonly linkStrength?: number;
-    readonly chargeStrength?: number;
-    readonly centerStrength?: number;
-    readonly collideRadius?: number;
-    readonly alpha?: number;
-    readonly alphaDecay?: number;
-    readonly velocityDecay?: number;
-  };
-}
-
-/**
- * WebGL specific configuration options.
- */
-export interface IWebGLConfig extends IEngineConfig {
-  readonly webglOptions?: {
-    readonly antialias?: boolean;
-    readonly preserveDrawingBuffer?: boolean;
-    readonly powerPreference?: 'default' | 'high-performance' | 'low-power';
-    readonly shaderPrecision?: 'lowp' | 'mediump' | 'highp';
-    readonly instancedRendering?: boolean;
-    readonly levelOfDetail?: {
-      readonly enabled: boolean;
-      readonly thresholds: ReadonlyArray<number>;
-    };
-  };
-}
-
-/**
- * HTML5 Canvas specific configuration options.
- */
-export interface ICanvasConfig extends IEngineConfig {
-  readonly canvasOptions?: {
-    readonly contextType?: '2d';
-    readonly imageSmoothingEnabled?: boolean;
-    readonly imageSmoothingQuality?: 'low' | 'medium' | 'high';
-    readonly lineDashSupport?: boolean;
-    readonly textBaseline?: CanvasTextBaseline;
-    readonly textAlign?: CanvasTextAlign;
-  };
-}
-
-/**
  * xyflow (React Flow) specific configuration options.
  */
 export interface IXyflowConfig extends IEngineConfig {
@@ -421,12 +356,7 @@ export interface IGraphEngineRegistry<TVertexData = unknown, TEdgeData = unknown
  * Available graph engine types
  */
 export type GraphEngineType =
-  | 'canvas-2d'      // HTML5 Canvas 2D rendering
-  | 'svg'            // SVG-based rendering
-  | 'webgl'          // WebGL high-performance rendering
-  | 'd3-force'       // D3.js force simulation
-  | 'cytoscape'      // Cytoscape.js
-  | 'vis-network'    // vis-network
+  | 'svg'            // SVG-based rendering (placeholder)
   | 'xyflow';        // xyflow (React Flow) - modern React-based flow diagrams
 
 /**

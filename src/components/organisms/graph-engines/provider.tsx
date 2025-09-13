@@ -46,43 +46,10 @@ export type {
 // ============================================================================
 
 const DEFAULT_ENGINE_CAPABILITIES: Record<GraphEngineType, GraphEngineCapabilities> = {
-  'canvas-2d': {
-    type: 'canvas-2d',
-    displayName: 'Canvas 2D',
-    description: 'HTML5 Canvas with 2D rendering context - balanced performance and features',
-    performance: {
-      maxVertices: 5000,
-      maxEdges: 10000,
-      hardwareAccelerated: false,
-      memoryEfficiency: 4,
-      renderingSpeed: 4,
-    },
-    features: {
-      animations: true,
-      zoomPan: true,
-      vertexDragging: true,
-      edgeSelection: true,
-      multiSelection: true,
-      customVertexShapes: true,
-      curvedEdges: true,
-      edgeLabels: true,
-      clustering: false,
-      levelOfDetail: true,
-      export: {
-        png: true,
-        svg: false,
-        pdf: false,
-        json: true,
-      },
-    },
-    supportedLayouts: ['force-directed', 'circular', 'hierarchical', 'grid'],
-    supportedRenderingModes: ['immediate'],
-  },
-  
   'svg': {
     type: 'svg',
     displayName: 'SVG',
-    description: 'Scalable Vector Graphics - perfect for high-quality exports and small graphs',
+    description: 'Scalable Vector Graphics - perfect for high-quality exports and small graphs (placeholder)',
     performance: {
       maxVertices: 1000,
       maxEdges: 2000,
@@ -110,146 +77,6 @@ const DEFAULT_ENGINE_CAPABILITIES: Record<GraphEngineType, GraphEngineCapabiliti
     },
     supportedLayouts: ['force-directed', 'circular', 'hierarchical'],
     supportedRenderingModes: ['retained'],
-  },
-  
-  'webgl': {
-    type: 'webgl',
-    displayName: 'WebGL',
-    description: 'Hardware-accelerated rendering for massive graphs with high performance',
-    performance: {
-      maxVertices: 100000,
-      maxEdges: 500000,
-      hardwareAccelerated: true,
-      memoryEfficiency: 3,
-      renderingSpeed: 5,
-    },
-    features: {
-      animations: true,
-      zoomPan: true,
-      vertexDragging: true,
-      edgeSelection: false,
-      multiSelection: true,
-      customVertexShapes: false,
-      curvedEdges: false,
-      edgeLabels: false,
-      clustering: true,
-      levelOfDetail: true,
-      export: {
-        png: true,
-        svg: false,
-        pdf: false,
-        json: true,
-      },
-    },
-    supportedLayouts: ['force-directed', 'circular'],
-    supportedRenderingModes: ['immediate'],
-  },
-  
-  'd3-force': {
-    type: 'd3-force',
-    displayName: 'D3 Force',
-    description: 'D3.js force simulation with physics-based layouts and smooth animations',
-    performance: {
-      maxVertices: 2000,
-      maxEdges: 5000,
-      hardwareAccelerated: false,
-      memoryEfficiency: 3,
-      renderingSpeed: 3,
-    },
-    features: {
-      animations: true,
-      zoomPan: true,
-      vertexDragging: true,
-      edgeSelection: true,
-      multiSelection: true,
-      customVertexShapes: true,
-      curvedEdges: true,
-      edgeLabels: true,
-      clustering: false,
-      levelOfDetail: false,
-      export: {
-        png: true,
-        svg: true,
-        pdf: false,
-        json: true,
-      },
-    },
-    supportedLayouts: ['force-directed', 'radial'],
-    supportedRenderingModes: ['hybrid'],
-  },
-  
-  'cytoscape': {
-    type: 'cytoscape',
-    displayName: 'Cytoscape.js',
-    description: 'Professional graph analysis and visualisation with extensive layout algorithms',
-    performance: {
-      maxVertices: 10000,
-      maxEdges: 20000,
-      hardwareAccelerated: false,
-      memoryEfficiency: 4,
-      renderingSpeed: 3,
-    },
-    features: {
-      animations: true,
-      zoomPan: true,
-      vertexDragging: true,
-      edgeSelection: true,
-      multiSelection: true,
-      customVertexShapes: true,
-      curvedEdges: true,
-      edgeLabels: true,
-      clustering: true,
-      levelOfDetail: false,
-      export: {
-        png: true,
-        svg: false,
-        pdf: false,
-        json: true,
-      },
-    },
-    supportedLayouts: [
-      'force-directed',
-      'circular',
-      'hierarchical',
-      'grid',
-      'breadthfirst',
-      'cose',
-      'dagre',
-    ],
-    supportedRenderingModes: ['retained'],
-  },
-  
-  'vis-network': {
-    type: 'vis-network',
-    displayName: 'vis-network',
-    description: 'Interactive network visualisation with built-in physics and clustering',
-    performance: {
-      maxVertices: 3000,
-      maxEdges: 8000,
-      hardwareAccelerated: false,
-      memoryEfficiency: 3,
-      renderingSpeed: 3,
-    },
-    features: {
-      animations: true,
-      zoomPan: true,
-      vertexDragging: true,
-      edgeSelection: true,
-      multiSelection: true,
-      customVertexShapes: true,
-      curvedEdges: true,
-      edgeLabels: true,
-      clustering: true,
-      levelOfDetail: false,
-      export: {
-        png: true,
-        svg: false,
-        pdf: false,
-        json: true,
-      },
-    },
-    supportedLayouts: ['force-directed', 'hierarchical'],
-    supportedRenderingModes: ['hybrid'],
   },
 
   'xyflow': {
@@ -293,12 +120,7 @@ const DEFAULT_ENGINE_CAPABILITIES: Record<GraphEngineType, GraphEngineCapabiliti
 const DEFAULT_SETTINGS: GraphEngineSettings = {
   selectedEngine: 'xyflow', // Start with xyflow as the modern React-based default
   engineConfigs: {
-    'canvas-2d': {},
     'svg': {},
-    'webgl': {},
-    'd3-force': {},
-    'cytoscape': {},
-    'vis-network': {},
     'xyflow': {},
   },
   transitionSettings: {
@@ -316,7 +138,7 @@ const DEFAULT_SETTINGS: GraphEngineSettings = {
   performanceSettings: {
     autoOptimise: true,
     autoOptimiseThreshold: 5000,
-    largeGraphEngine: 'webgl',
+    largeGraphEngine: 'xyflow',
   },
   userPreferences: {
     rememberPerGraph: true,
