@@ -60,6 +60,7 @@ const DEFAULT_ENGINE_DISPLAY_NAMES: Record<GraphEngineType, string> = {
   'd3-force': 'D3 Force Simulation',
   'cytoscape': 'Cytoscape.js',
   'vis-network': 'vis-network',
+  'xyflow': 'xyflow (React Flow)',
 };
 
 // ============================================================================
