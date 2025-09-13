@@ -33,10 +33,10 @@ function renderFallback(options: FallbackOptions) {
   const { entityId, displayName, size, weight, color, underline, className, fallbackToExternal } = options;
   
   if (!fallbackToExternal) {
-    return <Text size={size} fw={weight} c={color || 'dimmed'} className={className}>{displayName}</Text>;
+    return <Text size={size} {...(weight !== undefined && { fw: weight })} c={color || 'dimmed'} {...(className && { className })}>{displayName}</Text>;
   }
   const href = buildExternalUrl(entityId);
-  return <Anchor href={href} target="_blank" rel="noopener noreferrer" size={size} fw={weight} c={color} td={underline ? 'underline' : 'none'} className={className}>{displayName}</Anchor>;
+  return <Anchor href={href} target="_blank" rel="noopener noreferrer" size={size} {...(weight !== undefined && { fw: weight })} {...(color && { c: color })} td={underline ? 'underline' : 'none'} {...(className && { className })}>{displayName}</Anchor>;
 }
 
 export function EntityLink({ entityId, displayName, entityType, size = 'sm', weight, color, underline = true, className, fallbackToExternal = true }: EntityLinkProps) {
@@ -47,14 +47,14 @@ export function EntityLink({ entityId, displayName, entityType, size = 'sm', wei
       entityId,
       displayName,
       size,
-      weight,
-      color,
+      ...(weight !== undefined && { weight }),
+      ...(color && { color }),
       underline,
-      className,
+      ...(className && { className }),
       fallbackToExternal,
     });
   }
 
   const internalPath = buildEntityPath(detectedType, entityId);
-  return <Anchor component={Link} to={internalPath} size={size} fw={weight} c={color} td={underline ? 'underline' : 'none'} className={className}>{displayName}</Anchor>;
+  return <Anchor component={Link} to={internalPath} size={size} {...(weight !== undefined && { fw: weight })} {...(color && { c: color })} td={underline ? 'underline' : 'none'} {...(className && { className })}>{displayName}</Anchor>;
 }

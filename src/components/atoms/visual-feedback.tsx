@@ -492,8 +492,8 @@ export const VisualFeedback = (props: VisualFeedbackProps) => {
   const rippleEffect = useRippleEffect(enableRipple, rippleColor, rippleDuration);
   const { toasts, removeToast } = useToastNotifications();
   const interactionStates = useInteractionStates({
-    onInteractionStart,
-    onInteractionEnd,
+    ...(onInteractionStart !== undefined && { onInteractionStart }),
+    ...(onInteractionEnd !== undefined && { onInteractionEnd }),
   });
   
   // Handle state effects
@@ -518,7 +518,7 @@ export const VisualFeedback = (props: VisualFeedbackProps) => {
     isSuccess,
     isError,
     isDisabled,
-    className,
+    ...(className !== undefined && { className }),
   });
   
   // Create click handler
@@ -557,19 +557,19 @@ export const VisualFeedback = (props: VisualFeedbackProps) => {
         {/* State overlays */}
         {isLoading && enableLoading && (
           <div className={styles.overlay}>
-            <LoadingIndicator message={loadingMessage} />
+            <LoadingIndicator {...(loadingMessage !== undefined && { message: loadingMessage })} />
           </div>
         )}
 
         {isSuccess && enableSuccess && (
           <div className={styles.overlay}>
-            <SuccessIndicator message={successMessage} />
+            <SuccessIndicator {...(successMessage !== undefined && { message: successMessage })} />
           </div>
         )}
 
         {isError && enableError && (
           <div className={styles.overlay}>
-            <ErrorIndicator message={errorMessage} />
+            <ErrorIndicator {...(errorMessage !== undefined && { message: errorMessage })} />
           </div>
         )}
       </Box>
@@ -743,6 +743,8 @@ export const MicroInteraction = ({
 
       return () => clearTimeout(timer);
     }
+
+    return undefined;
   }, [trigger, duration, delay]);
 
   // Helper function to get animation style safely

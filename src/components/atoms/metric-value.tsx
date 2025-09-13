@@ -32,8 +32,8 @@ export function MetricValue({
       {trend && (
         <TrendIndicator
           direction={trend.direction}
-          value={trend.value}
-          label={trend.label}
+          {...(trend.value !== undefined && { value: trend.value })}
+          {...(trend.label !== undefined && { label: trend.label })}
           className={trendClassName}
         />
       )}

@@ -1,9 +1,10 @@
 import { Alert, Button, Group, Stack } from '@mantine/core';
+import type { DefaultMantineColor } from '@mantine/core';
 import { forwardRef, useState } from 'react';
 
 import type { SizeVariant } from '../types';
 
-export interface ErrorMessageProps extends Omit<React.HTMLAttributes<HTMLDivElement>, 'title'> {
+export interface ErrorMessageProps {
   title?: string;
   message: string;
   details?: string;
@@ -15,19 +16,20 @@ export interface ErrorMessageProps extends Omit<React.HTMLAttributes<HTMLDivElem
   actions?: Array<{ label: string; onClick: () => void; variant?: 'primary' | 'secondary' }>;
   onDismiss?: () => void;
   className?: string;
+  id?: string;
   'data-testid'?: string;
 }
 
-const SEVERITY_COLORS = {
+const SEVERITY_COLORS: Record<NonNullable<ErrorMessageProps['severity']>, DefaultMantineColor> = {
   error: 'red',
-  warning: 'yellow', 
+  warning: 'yellow',
   info: 'blue',
   success: 'green',
 } as const;
 
 export const ErrorMessage = forwardRef<HTMLDivElement, ErrorMessageProps>(
   (props, ref) => {
-    const { title, message, details, severity = 'error', dismissible = false, compact = false, actions, onDismiss, className, 'data-testid': testId, ...restProps } = props;
+    const { title, message, details, severity = 'error', dismissible = false, compact = false, inline, actions, onDismiss, className, id, 'data-testid': testId, size } = props;
     const [isVisible, setIsVisible] = useState(true);
 
     if (!isVisible) return null;
@@ -42,13 +44,13 @@ export const ErrorMessage = forwardRef<HTMLDivElement, ErrorMessageProps>(
     return (
       <Alert
         ref={ref}
-        color={color}
-        title={title}
+        {...(color && { color })}
+        {...(title && { title })}
         withCloseButton={dismissible}
         onClose={handleDismiss}
-        className={className}
-        data-testid={testId}
-        {...restProps}
+        {...(className && { className })}
+        {...(id && { id })}
+        {...(testId && { 'data-testid': testId })}
       >
         <Stack gap={compact ? 'xs' : 'sm'}>
           <div>{message}</div>

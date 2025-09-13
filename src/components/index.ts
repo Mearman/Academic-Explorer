@@ -104,10 +104,11 @@ export {
   EntityFallback
 } from './organisms/entity-error';
 export { WorksTimeline } from './organisms/WorksTimeline';
-export { 
+export {
   EntityGraphVisualization,
-  EntityGraphVisualizationSkeleton 
+  EntityGraphVisualizationSkeleton
 } from './organisms/entity-graph-visualization';
+export { OpenAlexEntityGraph } from './organisms/openalex-entity-graph';
 export {
   UniversalGraphContainer,
   UniversalGraphContainerSkeleton

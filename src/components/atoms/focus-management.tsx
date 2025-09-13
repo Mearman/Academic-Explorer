@@ -94,9 +94,12 @@ function useFocusNavigation(
   const focusFirst = useCallback(() => {
     const focusableElements = getFocusableElements();
     if (focusableElements.length > 0) {
-      focusableElements[0].focus();
-      setCurrentFocusIndex(0);
-      onFocusEnter?.(focusableElements[0]);
+      const firstElement = focusableElements[0];
+      if (firstElement) {
+        firstElement.focus();
+        setCurrentFocusIndex(0);
+        onFocusEnter?.(firstElement);
+      }
     }
   }, [getFocusableElements, setCurrentFocusIndex, onFocusEnter]);
 
@@ -104,9 +107,12 @@ function useFocusNavigation(
     const focusableElements = getFocusableElements();
     if (focusableElements.length > 0) {
       const lastIndex = focusableElements.length - 1;
-      focusableElements[lastIndex].focus();
-      setCurrentFocusIndex(lastIndex);
-      onFocusEnter?.(focusableElements[lastIndex]);
+      const lastElement = focusableElements[lastIndex];
+      if (lastElement) {
+        lastElement.focus();
+        setCurrentFocusIndex(lastIndex);
+        onFocusEnter?.(lastElement);
+      }
     }
   }, [getFocusableElements, setCurrentFocusIndex, onFocusEnter]);
 
@@ -115,21 +121,27 @@ function useFocusNavigation(
     if (focusableElements.length === 0) return;
 
     const nextIndex = (currentFocusIndex + 1) % focusableElements.length;
-    focusableElements[nextIndex].focus();
-    setCurrentFocusIndex(nextIndex);
-    onFocusEnter?.(focusableElements[nextIndex]);
+    const nextElement = focusableElements[nextIndex];
+    if (nextElement) {
+      nextElement.focus();
+      setCurrentFocusIndex(nextIndex);
+      onFocusEnter?.(nextElement);
+    }
   }, [currentFocusIndex, getFocusableElements, setCurrentFocusIndex, onFocusEnter]);
 
   const focusPrevious = useCallback(() => {
     const focusableElements = getFocusableElements();
     if (focusableElements.length === 0) return;
 
-    const prevIndex = currentFocusIndex === 0 
-      ? focusableElements.length - 1 
+    const prevIndex = currentFocusIndex === 0
+      ? focusableElements.length - 1
       : currentFocusIndex - 1;
-    focusableElements[prevIndex].focus();
-    setCurrentFocusIndex(prevIndex);
-    onFocusEnter?.(focusableElements[prevIndex]);
+    const prevElement = focusableElements[prevIndex];
+    if (prevElement) {
+      prevElement.focus();
+      setCurrentFocusIndex(prevIndex);
+      onFocusEnter?.(prevElement);
+    }
   }, [currentFocusIndex, getFocusableElements, setCurrentFocusIndex, onFocusEnter]);
 
   return { focusFirst, focusLast, focusNext, focusPrevious };
@@ -154,14 +166,14 @@ function useFocusTrap(
 
     if (event.shiftKey) {
       // Shift + Tab (backward)
-      if (document.activeElement === firstElement) {
+      if (document.activeElement === firstElement && lastElement) {
         event.preventDefault();
         lastElement.focus();
         setCurrentFocusIndex(focusableElements.length - 1);
       }
     } else {
       // Tab (forward)
-      if (document.activeElement === lastElement) {
+      if (document.activeElement === lastElement && firstElement) {
         event.preventDefault();
         firstElement.focus();
         setCurrentFocusIndex(0);
@@ -362,8 +374,11 @@ function handleGridNavigation(
   }
 
   if (newIndex !== currentIndex) {
-    elements[newIndex].focus();
-    return true;
+    const targetElement = elements[newIndex];
+    if (targetElement) {
+      targetElement.focus();
+      return true;
+    }
   }
 
   return false;
@@ -568,8 +583,8 @@ export const FocusManagement = ({
     gridColumns,
     enableArrowNavigation,
     enableEscapeKey,
-    onKeyboardNavigation,
-    onEscape,
+    ...(onKeyboardNavigation && { onKeyboardNavigation }),
+    ...(onEscape && { onEscape }),
     focusNext: focusManagement.focusNext,
     focusPrevious: focusManagement.focusPrevious,
     getFocusableElements: focusManagement.getFocusableElements,

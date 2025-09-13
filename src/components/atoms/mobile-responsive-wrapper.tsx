@@ -57,6 +57,8 @@ function useTouchGestures(
 
     const handleTouchStart = (event: TouchEvent) => {
       const touch = event.touches[0];
+      if (!touch) return;
+
       touchStartRef.current = {
         x: touch.clientX,
         y: touch.clientY,
@@ -69,6 +71,8 @@ function useTouchGestures(
     const handleTouchEnd = (event: TouchEvent) => {
       if (touchStartRef.current) {
         const touch = event.changedTouches[0];
+        if (!touch) return;
+
         const deltaX = touch.clientX - touchStartRef.current.x;
         const deltaY = touch.clientY - touchStartRef.current.y;
         const deltaTime = Date.now() - touchStartRef.current.time;
@@ -141,7 +145,7 @@ const buildResponsiveClasses = (
     reducedMotionFallback: boolean;
     adaptToSafeArea: boolean;
     adaptToNotch: boolean;
-    className?: string;
+    className?: string | undefined;
   }
 ) => {
   const {
@@ -204,12 +208,13 @@ const useScrollBounceEffect = (
     if (preventScrollBounce && breakpoint === 'mobile') {
       document.body.style.overscrollBehavior = 'none';
       document.documentElement.style.overscrollBehavior = 'none';
-      
+
       return () => {
         document.body.style.overscrollBehavior = '';
         document.documentElement.style.overscrollBehavior = '';
       };
     }
+    return undefined;
   }, [preventScrollBounce, breakpoint]);
 };
 
