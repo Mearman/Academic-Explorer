@@ -1,9 +1,8 @@
 import { createFileRoute } from '@tanstack/react-router';
 import React, { useMemo } from 'react';
 
-import { TwoPaneLayout, EntityErrorBoundary, EntitySkeleton, EntityError, EntityFallback, EntityGraphActions } from '@/components';
+import { TwoPaneLayout, EntityErrorBoundary, EntitySkeleton, EntityError, EntityFallback, EntityGraphActions, OpenAlexEntityGraph } from '@/components';
 import { AuthorDisplay } from '@/components/entity-displays/AuthorDisplay';
-import { EntityGraphVisualization } from '@/components/organisms/entity-graph-visualization';
 import type { EntityData, EntityError as EntityErrorType } from '@/hooks/use-entity-data';
 import { useEntityData } from '@/hooks/use-entity-data';
 import { useEntityGraphStats } from '@/hooks/use-entity-graph-stats';
@@ -15,9 +14,12 @@ import { useEntityGraphStore } from '@/stores/entity-graph-store';
 import type { EntityGraphVertex } from '@/types/entity-graph';
 
 function AuthorPageContent({ entity }: { entity: EntityData }) {
-  // Get graph tracking and stats 
+  // Get graph tracking and stats
   const graphStats = useEntityGraphStats();
   const { trackEntityData } = useEntityGraphTracking();
+
+  // Get graph data from the entity graph store
+  const { graph } = useEntityGraphStore();
 
   // Track this entity visit
   React.useEffect(() => {
@@ -49,10 +51,10 @@ function AuthorPageContent({ entity }: { entity: EntityData }) {
 
       {/* Interactive Graph Visualization */}
       {graphStats && graphStats.totalVertices > 0 ? (
-        <EntityGraphVisualization
+        <OpenAlexEntityGraph
+          vertices={Array.from(graph.vertices.values())}
+          edges={Array.from(graph.edges.values())}
           height={400}
-          showControls={true}
-          showLegend={true}
           onVertexClick={(vertex: EntityGraphVertex) => {
             // Navigate to clicked entity
             window.location.hash = `#/${vertex.entityType}s/${vertex.id}`;

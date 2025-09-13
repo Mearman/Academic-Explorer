@@ -472,7 +472,7 @@ function RegionDisplay({ region }: { region: Region }) {
                             '&:hover': {
                               transform: 'translateY(-2px)',
                               boxShadow: theme.shadows.md,
-                              borderColor: theme.colors[getColor()][5],
+                              ...(theme.colors[getColor()]?.[5] && { borderColor: theme.colors[getColor()]?.[5] }),
                             },
                           })}
                         >

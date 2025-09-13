@@ -50,24 +50,28 @@ function handleHttpsUrls(decodedId: string, navigate: ReturnType<typeof useNavig
 
 function handleOpenAlexUrls(decodedId: string, navigate: ReturnType<typeof useNavigate>): boolean {
   const openAlexMatch = decodedId.match(/openalex\.org\/([WASIPFTCKRN]\d{7,10})/i);
-  if (openAlexMatch) {
+  if (openAlexMatch && openAlexMatch[1]) {
     const openAlexId = openAlexMatch[1].toUpperCase();
     const entityType = detectEntityType(openAlexId);
-    const entityPath = buildEntityPath(entityType, openAlexId);
-    console.log(`BareIdRedirect: OpenAlex URL detected, redirecting to ${entityPath}`);
-    navigate({ to: entityPath, replace: true });
-    return true;
+    if (entityType) {
+      const entityPath = buildEntityPath(entityType, openAlexId);
+      console.log(`BareIdRedirect: OpenAlex URL detected, redirecting to ${entityPath}`);
+      navigate({ to: entityPath, replace: true });
+      return true;
+    }
   }
   
   // Handle alternative OpenAlex URL patterns like https://openalex.org/authors/A5017898742
   const altOpenAlexMatch = decodedId.match(/openalex\.org\/([a-z]+)\/([WASIPFTCKRN]\d{7,10})/i);
-  if (altOpenAlexMatch) {
+  if (altOpenAlexMatch && altOpenAlexMatch[2]) {
     const openAlexId = altOpenAlexMatch[2].toUpperCase();
     const entityType = detectEntityType(openAlexId);
-    const entityPath = buildEntityPath(entityType, openAlexId);
-    console.log(`BareIdRedirect: Alternative OpenAlex URL detected, redirecting to ${entityPath}`);
-    navigate({ to: entityPath, replace: true });
-    return true;
+    if (entityType) {
+      const entityPath = buildEntityPath(entityType, openAlexId);
+      console.log(`BareIdRedirect: Alternative OpenAlex URL detected, redirecting to ${entityPath}`);
+      navigate({ to: entityPath, replace: true });
+      return true;
+    }
   }
   
   return false;
@@ -86,7 +90,7 @@ function handleOrcidUrls(decodedId: string, navigate: ReturnType<typeof useNavig
 
 function handleDoiUrls(decodedId: string, navigate: ReturnType<typeof useNavigate>): boolean {
   const doiMatch = decodedId.match(/doi\.org\/(10\.[0-9]{4,}\/[^\s]+)/i);
-  if (doiMatch) {
+  if (doiMatch && doiMatch[1]) {
     const doiId = doiMatch[1];
     console.log(`BareIdRedirect: DOI URL detected, redirecting to /works/${encodeURIComponent(doiId)}`);
     navigate({ to: `/work/${encodeURIComponent(doiId)}`, replace: true });
@@ -108,17 +112,20 @@ function handleRorUrls(decodedId: string, navigate: ReturnType<typeof useNavigat
 
 function handleWikidataUrls(decodedId: string, navigate: ReturnType<typeof useNavigate>): boolean {
   const wikidataMatch = decodedId.match(/wikidata\.org\/wiki\/(Q[0-9]+)/i);
-  if (wikidataMatch) {
+  if (wikidataMatch && wikidataMatch[1]) {
     const wikidataId = wikidataMatch[1];
     console.log(`BareIdRedirect: Wikidata URL detected, using parseExternalId to determine entity type`);
     const externalIdResult = parseExternalId(wikidataId);
     if (externalIdResult.possibleEntityTypes && externalIdResult.possibleEntityTypes.length >= 1) {
-      const entityPath = buildEntityPath(externalIdResult.possibleEntityTypes[0], wikidataId);
-      if (externalIdResult.possibleEntityTypes.length > 1) {
-        console.log(`BareIdRedirect: Multiple possible entity types for Wikidata, defaulting to ${entityPath}`);
+      const firstEntityType = externalIdResult.possibleEntityTypes[0];
+      if (firstEntityType) {
+        const entityPath = buildEntityPath(firstEntityType, wikidataId);
+        if (externalIdResult.possibleEntityTypes.length > 1) {
+          console.log(`BareIdRedirect: Multiple possible entity types for Wikidata, defaulting to ${entityPath}`);
+        }
+        navigate({ to: entityPath, replace: true });
+        return true;
       }
-      navigate({ to: entityPath, replace: true });
-      return true;
     }
   }
   return false;
@@ -148,10 +155,13 @@ function handleExternalIds(decodedId: string, navigate: ReturnType<typeof useNav
   // For other external IDs, parse and redirect appropriately
   const externalIdResult = parseExternalId(decodedId);
   if (externalIdResult.possibleEntityTypes && externalIdResult.possibleEntityTypes.length === 1) {
-    const entityPath = buildEntityPath(externalIdResult.possibleEntityTypes[0], encodeURIComponent(decodedId));
-    console.log(`BareIdRedirect: External ID detected, redirecting to ${entityPath}`);
-    navigate({ to: entityPath, replace: true });
-    return true;
+    const firstEntityType = externalIdResult.possibleEntityTypes[0];
+    if (firstEntityType) {
+      const entityPath = buildEntityPath(firstEntityType, encodeURIComponent(decodedId));
+      console.log(`BareIdRedirect: External ID detected, redirecting to ${entityPath}`);
+      navigate({ to: entityPath, replace: true });
+      return true;
+    }
   }
   
   return false;

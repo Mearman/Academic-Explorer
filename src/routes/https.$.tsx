@@ -34,7 +34,7 @@ function HttpsUrlRedirect() {
       // Handle OpenAlex URLs
       if (decodedId.includes('openalex.org/')) {
         const openAlexMatch = decodedId.match(/openalex\.org\/([WASIPFTCKRN]\d{7,10})/i);
-        if (openAlexMatch) {
+        if (openAlexMatch && openAlexMatch[1]) {
           const openAlexId = openAlexMatch[1].toUpperCase();
           const entityType = detectEntityType(openAlexId);
           const entityPath = buildEntityPath(entityType, openAlexId);
@@ -42,10 +42,10 @@ function HttpsUrlRedirect() {
           navigate({ to: entityPath, replace: true });
           return;
         }
-        
+
         // Handle alternative OpenAlex URL patterns like https://openalex.org/authors/A5017898742
         const altOpenAlexMatch = decodedId.match(/openalex\.org\/([a-z]+)\/([WASIPFTCKRN]\d{7,10})/i);
-        if (altOpenAlexMatch) {
+        if (altOpenAlexMatch && altOpenAlexMatch[2]) {
           const openAlexId = altOpenAlexMatch[2].toUpperCase();
           const entityType = detectEntityType(openAlexId);
           const entityPath = buildEntityPath(entityType, openAlexId);
@@ -58,7 +58,7 @@ function HttpsUrlRedirect() {
       // Handle ORCID URLs
       if (decodedId.includes('orcid.org/')) {
         const orcidMatch = decodedId.match(/orcid\.org\/(\d{4}-\d{4}-\d{4}-\d{3}[\dX])/i);
-        if (orcidMatch) {
+        if (orcidMatch && orcidMatch[1]) {
           const orcidId = orcidMatch[1];
           console.log(`HttpsUrlRedirect: ORCID URL detected, redirecting to /authors/${orcidId}`);
           navigate({ to: `/authors/${orcidId}`, replace: true });
@@ -69,7 +69,7 @@ function HttpsUrlRedirect() {
       // Handle DOI URLs
       if (decodedId.includes('doi.org/')) {
         const doiMatch = decodedId.match(/doi\.org\/(10\.[0-9]{4,}\/[^\s]+)/i);
-        if (doiMatch) {
+        if (doiMatch && doiMatch[1]) {
           const doiId = doiMatch[1];
           console.log(`HttpsUrlRedirect: DOI URL detected, redirecting to /works/${encodeURIComponent(doiId)}`);
           navigate({ to: `/works/${encodeURIComponent(doiId)}`, replace: true });
@@ -77,10 +77,10 @@ function HttpsUrlRedirect() {
         }
       }
       
-      // Handle ROR URLs  
+      // Handle ROR URLs
       if (decodedId.includes('ror.org/')) {
         const rorMatch = decodedId.match(/ror\.org\/(0[0-9a-z]{6}[0-9]{2})/i);
-        if (rorMatch) {
+        if (rorMatch && rorMatch[1]) {
           const rorId = rorMatch[1];
           console.log(`HttpsUrlRedirect: ROR URL detected, redirecting to /institutions/${rorId}`);
           navigate({ to: `/institutions/${rorId}`, replace: true });
@@ -91,14 +91,17 @@ function HttpsUrlRedirect() {
       // Handle Wikidata URLs
       if (decodedId.includes('wikidata.org/')) {
         const wikidataMatch = decodedId.match(/wikidata\.org\/wiki\/(Q[0-9]+)/i);
-        if (wikidataMatch) {
+        if (wikidataMatch && wikidataMatch[1]) {
           const wikidataId = wikidataMatch[1];
           console.log(`HttpsUrlRedirect: Wikidata URL detected, using parseExternalId to determine entity type`);
           const externalIdResult = parseExternalId(wikidataId);
           if (externalIdResult.possibleEntityTypes && externalIdResult.possibleEntityTypes.length >= 1) {
-            const entityPath = buildEntityPath(externalIdResult.possibleEntityTypes[0], wikidataId);
-            navigate({ to: entityPath, replace: true });
-            return;
+            const firstEntityType = externalIdResult.possibleEntityTypes[0];
+            if (firstEntityType) {
+              const entityPath = buildEntityPath(firstEntityType, wikidataId);
+              navigate({ to: entityPath, replace: true });
+              return;
+            }
           }
         }
       }

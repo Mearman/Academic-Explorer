@@ -135,16 +135,16 @@ function SearchPage() {
       query: params.q || '',
       searchField: (params.field as 'all' | 'title' | 'abstract' | 'fulltext') || 'all',
       searchMode: (params.mode as 'basic' | 'boolean' | 'exact' | 'no_stem') || 'basic',
-      fromPublicationDate: params.from_date,
-      toPublicationDate: params.to_date,
-      publicationYear: params.year,
-      isOpenAccess: params.is_oa,
-      hasFulltext: params.has_fulltext,
-      hasDoi: params.has_doi,
-      hasAbstract: params.has_abstract,
-      isRetracted: params.not_retracted ? false : undefined,
-      citationCountMin: params.min_citations,
-      citationCountMax: params.max_citations,
+      ...(params.from_date && { fromPublicationDate: params.from_date }),
+      ...(params.to_date && { toPublicationDate: params.to_date }),
+      ...(params.year !== undefined && { publicationYear: params.year }),
+      ...(params.is_oa !== undefined && { isOpenAccess: params.is_oa }),
+      ...(params.has_fulltext !== undefined && { hasFulltext: params.has_fulltext }),
+      ...(params.has_doi !== undefined && { hasDoi: params.has_doi }),
+      ...(params.has_abstract !== undefined && { hasAbstract: params.has_abstract }),
+      ...(params.not_retracted !== undefined && { isRetracted: !params.not_retracted }),
+      ...(params.min_citations !== undefined && { citationCountMin: params.min_citations }),
+      ...(params.max_citations !== undefined && { citationCountMax: params.max_citations }),
       // Note: Other fields like authorId, etc. are not part of AdvancedSearchFormData interface
     };
   };
@@ -180,7 +180,9 @@ function SearchPage() {
             urlParams.not_retracted = value === 'false';
             break;
           case 'publication_year':
-            urlParams.year = parseInt(value);
+            if (value) {
+              urlParams.year = parseInt(value);
+            }
             break;
           case 'authorships.author.id':
             urlParams.author_id = value;
@@ -277,7 +279,7 @@ function SearchPage() {
         <TwoPaneLayout
           leftPane={
             <QueryBuilder
-              initialData={hasSearchParams ? getFormDataFromParams(searchParams) : undefined}
+              {...(hasSearchParams && { initialData: getFormDataFromParams(searchParams) })}
               onSearch={handleSearch}
               onParamsChange={handlePreviewParamsChange}
               showHelp={true}
