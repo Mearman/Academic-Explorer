@@ -176,6 +176,10 @@ export type {
   IXyflowConfig,
 } from './types';
 
+export type {
+  IVisNetworkConfig,
+} from './vis-network';
+
 // ============================================================================
 // Engine Registry and Factory Functions
 // ============================================================================
@@ -207,8 +211,11 @@ export async function createEngineByType(
       const { createXyflowEngine } = await import('./xyflow');
       return createXyflowEngine();
     }
+    case 'vis-network': {
+      const { createVisNetworkEngine } = await import('./vis-network');
+      return createVisNetworkEngine();
+    }
     case 'svg':
-    case 'vis-network':
     default:
       throw new Error(`Engine ${engineType} is not yet implemented`);
   }
@@ -218,7 +225,7 @@ export async function createEngineByType(
  * Get all available engine types
  */
 export function getAvailableEngineTypes(): GraphEngineType[] {
-  return ['canvas-2d', 'd3-force', 'cytoscape', 'webgl', 'xyflow'];
+  return ['canvas-2d', 'd3-force', 'cytoscape', 'webgl', 'xyflow', 'vis-network'];
 }
 
 /**
@@ -250,12 +257,12 @@ export const ENGINE_DISPLAY_NAMES: Record<GraphEngineType, string> = {
  * Updated to prioritize implemented engines
  */
 export const ENGINE_RECOMMENDATIONS = {
-  SMALL_GRAPHS: ['xyflow', 'd3-force', 'canvas-2d'] as GraphEngineType[],
-  MEDIUM_GRAPHS: ['xyflow', 'canvas-2d', 'cytoscape'] as GraphEngineType[],
+  SMALL_GRAPHS: ['xyflow', 'd3-force', 'vis-network'] as GraphEngineType[],
+  MEDIUM_GRAPHS: ['xyflow', 'vis-network', 'cytoscape'] as GraphEngineType[],
   LARGE_GRAPHS: ['webgl', 'xyflow', 'canvas-2d'] as GraphEngineType[],
-  INTERACTIVE: ['xyflow', 'd3-force', 'cytoscape'] as GraphEngineType[],
-  ANALYTICAL: ['cytoscape', 'xyflow', 'canvas-2d'] as GraphEngineType[],
-  PRESENTATION: ['xyflow', 'd3-force', 'canvas-2d'] as GraphEngineType[],
+  INTERACTIVE: ['xyflow', 'vis-network', 'd3-force'] as GraphEngineType[],
+  ANALYTICAL: ['cytoscape', 'vis-network', 'xyflow'] as GraphEngineType[],
+  PRESENTATION: ['xyflow', 'd3-force', 'vis-network'] as GraphEngineType[],
   HIGH_PERFORMANCE: ['webgl', 'xyflow', 'canvas-2d'] as GraphEngineType[],
   EXPORT_QUALITY: ['xyflow', 'canvas-2d', 'd3-force'] as GraphEngineType[],
 } as const;
@@ -267,8 +274,8 @@ export const ENGINE_RECOMMENDATIONS = {
 export const PERFORMANCE_CATEGORIES = {
   MEMORY_EFFICIENT: ['xyflow', 'canvas-2d', 'd3-force'] as GraphEngineType[],
   CPU_EFFICIENT: ['webgl', 'xyflow'] as GraphEngineType[],
-  BALANCED: ['xyflow', 'canvas-2d', 'd3-force'] as GraphEngineType[],
-  FEATURE_RICH: ['cytoscape', 'xyflow'] as GraphEngineType[],
+  BALANCED: ['xyflow', 'vis-network', 'd3-force'] as GraphEngineType[],
+  FEATURE_RICH: ['cytoscape', 'vis-network', 'xyflow'] as GraphEngineType[],
 } as const;
 
 // ============================================================================
