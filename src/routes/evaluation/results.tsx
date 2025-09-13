@@ -8,6 +8,12 @@ import React, { useState, useMemo, useEffect } from 'react'
 import { compareAcademicExplorerResults, DEFAULT_MATCHING_CONFIG } from '@/lib/evaluation/comparison-engine'
 import { searchBasedOnSTARDataset, calculateSearchCoverage, DEFAULT_SEARCH_CONFIG } from '@/lib/evaluation/openalex-search-service'
 import type { STARDataset, ComparisonResults as ComparisonResultsType, WorkReference, ComparisonProgress } from '@/lib/evaluation/types'
+import {
+  PerformanceComparisonChart,
+  PrecisionRecallScatterPlot,
+  ConfusionMatrixHeatmap,
+  DatasetStatisticsOverview
+} from '@/components/evaluation/MetaAnalysisCharts'
 
 export const Route = createFileRoute('/evaluation/results')({
   component: ComparisonResults,
@@ -32,11 +38,35 @@ interface ComparisonRun {
   error?: string
 }
 
+interface LegacyResult {
+  id: string
+  datasetName: string
+  runDate: Date
+  status: string
+  metrics: {
+    precision: number
+    recall: number
+    f1Score: number
+    truePositives: number
+    falsePositives: number
+    falseNegatives: number
+    totalFound: number
+    totalGroundTruth: number
+    additionalPapersFound: number
+  }
+  searchCriteria: {
+    query: string
+    entityTypes: string[]
+  }
+  executionTime: number
+}
+
 function ComparisonResults() {
   const [starDatasets, setStarDatasets] = useState<STARDataset[]>([])
   const [comparisonRuns, setComparisonRuns] = useState<ComparisonRun[]>([])
   const [isRunningComparison, setIsRunningComparison] = useState(false)
-  const [selectedDatasetId, setSelectedDatasetId] = useState<string | null>(null)
+  const [_selectedDatasetId, setSelectedDatasetId] = useState<string | null>(null)
+  const [activeVisualizationTab, setActiveVisualizationTab] = useState<'performance' | 'scatter' | 'heatmap' | 'overview'>('performance')
 
   // Load STAR datasets from localStorage on component mount
   useEffect(() => {
@@ -197,15 +227,25 @@ function ComparisonResults() {
       avgRecall: metricsArray.reduce((sum, m) => sum + m.recall, 0) / metricsArray.length,
       avgF1Score: metricsArray.reduce((sum, m) => sum + m.f1Score, 0) / metricsArray.length,
       totalAdditionalPapers: metricsArray.reduce((sum, m) => sum + m.additionalPapersFound, 0),
-      avgExecutionTime: completed.reduce((sum, r) => sum + ((r as any).executionTime || 0), 0) / totalResults
+      avgExecutionTime: completed.reduce((sum, r) => {
+        const execTime = 'executionTime' in r ? r.executionTime : 0
+        return sum + (execTime || 0)
+      }, 0) / totalResults
     }
   }, [displayResults])
+
+  // Extract completed comparison results for visualizations
+  const completedComparisonResults = useMemo(() => {
+    return comparisonRuns
+      .filter(run => run.status === 'completed' && run.comparisonResults)
+      .map(run => run.comparisonResults!)
+  }, [comparisonRuns])
 
   const formatPercent = (value: number) => `${(value * 100).toFixed(1)}%`
   const formatTime = (ms: number) => `${(ms / 1000).toFixed(1)}s`
 
   // Helper to get metrics from either ComparisonRun or legacy format
-  const getResultMetrics = (result: ComparisonRun | any) => {
+  const getResultMetrics = (result: ComparisonRun | LegacyResult) => {
     if ('comparisonResults' in result && result.comparisonResults) {
       const comp = result.comparisonResults
       return {
@@ -456,7 +496,7 @@ function ComparisonResults() {
                       </p>
                       <p style={{ fontSize: '12px', color: '#9ca3af' }}>
                         Completed on {result.runDate.toLocaleDateString()} •
-                        {formatTime((result as any).executionTime || 0)} • {(result as any).apiCalls || 'N/A'} API calls
+                        {formatTime(('executionTime' in result ? result.executionTime : 0) || 0)} • {'apiCalls' in result ? (result as LegacyResult & { apiCalls?: string }).apiCalls || 'N/A' : 'N/A'} API calls
                       </p>
                     </div>
 
@@ -587,6 +627,88 @@ function ComparisonResults() {
               })}
             </div>
           </div>
+
+          {/* Meta-Analysis Visualizations */}
+          {completedComparisonResults.length > 0 && (
+            <div style={{
+              backgroundColor: 'white',
+              borderRadius: '12px',
+              border: '1px solid #e5e7eb',
+              marginTop: '32px',
+              overflow: 'hidden'
+            }}>
+              <div style={{
+                padding: '20px',
+                borderBottom: '1px solid #e5e7eb',
+                backgroundColor: '#f9fafb'
+              }}>
+                <h2 style={{ fontSize: '18px', fontWeight: '600', color: '#1f2937', marginBottom: '8px' }}>
+                  Meta-Analysis Visualizations
+                </h2>
+                <p style={{ fontSize: '14px', color: '#6b7280', margin: 0 }}>
+                  Advanced charts and statistical visualizations for thesis presentation
+                </p>
+              </div>
+
+              {/* Visualization Tabs */}
+              <div style={{
+                display: 'flex',
+                borderBottom: '1px solid #e5e7eb',
+                backgroundColor: '#fafbfc'
+              }}>
+                {[
+                  { key: 'performance', label: 'Performance Comparison' },
+                  { key: 'scatter', label: 'Precision-Recall Plot' },
+                  { key: 'heatmap', label: 'Confusion Matrix' },
+                  { key: 'overview', label: 'Statistical Overview' }
+                ].map((tab) => (
+                  <button
+                    key={tab.key}
+                    onClick={() => setActiveVisualizationTab(tab.key as 'performance' | 'scatter' | 'heatmap' | 'overview')}
+                    style={{
+                      padding: '12px 20px',
+                      border: 'none',
+                      backgroundColor: activeVisualizationTab === tab.key ? 'white' : 'transparent',
+                      color: activeVisualizationTab === tab.key ? '#3b82f6' : '#6b7280',
+                      fontWeight: activeVisualizationTab === tab.key ? '600' : '400',
+                      fontSize: '14px',
+                      cursor: 'pointer',
+                      borderBottom: activeVisualizationTab === tab.key ? '2px solid #3b82f6' : 'none',
+                      transition: 'all 0.2s'
+                    }}
+                    onMouseEnter={(e) => {
+                      if (activeVisualizationTab !== tab.key) {
+                        e.currentTarget.style.backgroundColor = '#f3f4f6'
+                      }
+                    }}
+                    onMouseLeave={(e) => {
+                      if (activeVisualizationTab !== tab.key) {
+                        e.currentTarget.style.backgroundColor = 'transparent'
+                      }
+                    }}
+                  >
+                    {tab.label}
+                  </button>
+                ))}
+              </div>
+
+              {/* Visualization Content */}
+              <div style={{ padding: '24px' }}>
+                {activeVisualizationTab === 'performance' && (
+                  <PerformanceComparisonChart comparisonResults={completedComparisonResults} />
+                )}
+                {activeVisualizationTab === 'scatter' && (
+                  <PrecisionRecallScatterPlot comparisonResults={completedComparisonResults} />
+                )}
+                {activeVisualizationTab === 'heatmap' && (
+                  <ConfusionMatrixHeatmap comparisonResults={completedComparisonResults} />
+                )}
+                {activeVisualizationTab === 'overview' && (
+                  <DatasetStatisticsOverview comparisonResults={completedComparisonResults} />
+                )}
+              </div>
+            </div>
+          )}
 
           {/* Thesis Integration Notes */}
           <div style={{

@@ -6,7 +6,7 @@
 import { createFileRoute } from '@tanstack/react-router'
 import React, { useState } from 'react'
 import { parseSTARFile, createSTARDatasetFromParseResult, DEFAULT_COLUMN_MAPPINGS } from '@/lib/evaluation/file-parser'
-import type { STARDataset, WorkReference, SearchCriteria } from '@/lib/evaluation/types'
+import type { STARDataset } from '@/lib/evaluation/types'
 
 export const Route = createFileRoute('/evaluation/datasets')({
   component: DatasetsManagement,
