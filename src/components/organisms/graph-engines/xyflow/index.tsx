@@ -473,6 +473,19 @@ import '@xyflow/react/dist/style.css';
       throw new Error('Engine not initialised');
     }
 
+    // Validate input graph
+    if (!graph || !Array.isArray(graph.vertices) || !Array.isArray(graph.edges)) {
+      throw new Error('Invalid graph structure: missing vertices or edges arrays');
+    }
+
+    // Handle empty graph gracefully
+    if (graph.vertices.length === 0) {
+      this.nodes = [];
+      this.edges = [];
+      this._status = { ...this._status, isRendering: false };
+      return;
+    }
+
     try {
       this._status = { ...this._status, isRendering: true };
 
@@ -516,28 +529,34 @@ import '@xyflow/react/dist/style.css';
         } as Edge;
       });
 
-      // Apply layout algorithm based on configuration
+      // Apply layout algorithm based on configuration with error handling
       const layoutAlgorithm = this.config.layout?.algorithm || 'force';
       const layoutDirection = this.config.layout?.direction || 'TB';
 
-      switch (layoutAlgorithm) {
-        case 'dagre':
-          this.nodes = this.applyDagreLayout(tempNodes, tempEdges, layoutDirection);
-          break;
-        case 'force':
-          this.nodes = this.applyForceLayout(tempNodes, tempEdges);
-          break;
-        case 'hierarchical':
-          // Use dagre for hierarchical layout
-          this.nodes = this.applyDagreLayout(tempNodes, tempEdges, layoutDirection);
-          break;
-        case 'manual':
-          // For manual layout, use a simple grid arrangement
-          this.nodes = this.applyGridLayout(tempNodes);
-          break;
-        default:
-          // Fallback to force layout
-          this.nodes = this.applyForceLayout(tempNodes, tempEdges);
+      try {
+        switch (layoutAlgorithm) {
+          case 'dagre':
+            this.nodes = this.applyDagreLayout(tempNodes, tempEdges, layoutDirection);
+            break;
+          case 'force':
+            this.nodes = this.applyForceLayout(tempNodes, tempEdges);
+            break;
+          case 'hierarchical':
+            // Use dagre for hierarchical layout
+            this.nodes = this.applyDagreLayout(tempNodes, tempEdges, layoutDirection);
+            break;
+          case 'manual':
+            // For manual layout, use a simple grid arrangement
+            this.nodes = this.applyGridLayout(tempNodes);
+            break;
+          default:
+            // Fallback to force layout
+            this.nodes = this.applyForceLayout(tempNodes, tempEdges);
+        }
+      } catch (layoutError) {
+        // Fallback to simple grid layout if any layout algorithm fails
+        console.warn(`Layout algorithm '${layoutAlgorithm}' failed, falling back to grid layout:`, layoutError);
+        this.nodes = this.applyGridLayout(tempNodes);
       }
 
       // Convert graph edges to xyflow edges with enhanced styling
@@ -765,8 +784,8 @@ import '@xyflow/react/dist/style.css';
         algorithm: 'force',
         direction: 'TB',
         spacing: {
-          node: [100, 80],
-          rank: 80,
+          node: [120, 90], // Slightly more spacing for better readability
+          rank: 100, // Increased rank spacing for clearer hierarchy
         },
       },
     };
@@ -779,11 +798,15 @@ import '@xyflow/react/dist/style.css';
   private applyDagreLayout(nodes: Node[], edges: Edge[], direction: 'TB' | 'BT' | 'LR' | 'RL' = 'TB'): Node[] {
     const g = new dagre.graphlib.Graph();
 
+    // Use spacing configuration if available
+    const nodeSpacing = this.config.layout?.spacing?.node || [120, 90];
+    const rankSpacing = this.config.layout?.spacing?.rank || 100;
+
     g.setDefaultEdgeLabel(() => ({}));
     g.setGraph({
       rankdir: direction,
-      nodesep: 80,
-      ranksep: 120,
+      nodesep: nodeSpacing[0],
+      ranksep: rankSpacing,
       marginx: 20,
       marginy: 20,
     });
@@ -933,8 +956,9 @@ import '@xyflow/react/dist/style.css';
 
   private applyGridLayout(nodes: Node[]): Node[] {
     const cols = Math.ceil(Math.sqrt(nodes.length));
-    const nodeWidth = 120;
-    const nodeHeight = 80;
+    const nodeSpacing = this.config.layout?.spacing?.node || [120, 90];
+    const nodeWidth = nodeSpacing[0];
+    const nodeHeight = nodeSpacing[1];
     const startX = (this.dimensions.width - (cols * nodeWidth)) / 2;
     const startY = 50;
 
