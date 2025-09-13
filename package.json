@@ -51,6 +51,7 @@
     "coverage:integration-only": "pnpm test:coverage:integration && c8 report --reporter=html --reports-dir=coverage/integration"
   },
   "dependencies": {
+    "@dagrejs/dagre": "^1.1.5",
     "@mantine/core": "^8.2.4",
     "@mantine/dates": "^8.2.5",
     "@mantine/hooks": "^8.2.4",

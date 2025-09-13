@@ -42,6 +42,7 @@ import {
 import '@xyflow/react/dist/style.css';
 
 import { getEntityColour, getOpenAccessColour } from '../../../design-tokens.utils';
+import dagre from '@dagrejs/dagre';
 
 import type {
   IGraph,
@@ -386,7 +387,6 @@ import '@xyflow/react/dist/style.css';
   private _status: IEngineStatus = {
     isInitialised: false,
     isRendering: false,
-    lastError: undefined,
   };
 
   get status(): IEngineStatus {
@@ -424,7 +424,6 @@ import '@xyflow/react/dist/style.css';
       this._status = {
         isInitialised: true,
         isRendering: false,
-        lastError: undefined,
       };
 
     } catch (error) {
@@ -449,8 +448,9 @@ import '@xyflow/react/dist/style.css';
       this._status = { ...this._status, isRendering: true };
 
       // Convert graph vertices to xyflow nodes with enhanced data
-      this.nodes = graph.vertices.map((vertex, index) => {
-        const position = this.calculateNodePosition(vertex, index, graph.vertices.length);
+      let tempNodes = graph.vertices.map((vertex, index) => {
+        // Start with a default position - will be updated by layout algorithm
+        const position = { x: 0, y: 0 };
         const entityType = this.getVertexType(vertex);
         const vertexData = vertex.data || {};
 
@@ -466,19 +466,57 @@ import '@xyflow/react/dist/style.css';
             entityType,
             originalVertex: vertex,
             // Extract additional metadata for enhanced display
-            citationCount: vertexData.cited_by_count || vertexData.citation_count,
-            publicationYear: vertexData.publication_year || vertexData.published_year,
-            openAccessStatus: vertexData.open_access?.oa_type || vertexData.oa_type,
+            citationCount: ('cited_by_count' in vertexData ? vertexData.cited_by_count : null) ||
+                          ('citation_count' in vertexData ? vertexData.citation_count : null) || 0,
+            publicationYear: ('publication_year' in vertexData ? vertexData.publication_year : null) ||
+                            ('published_year' in vertexData ? vertexData.published_year : null),
+            openAccessStatus: ('open_access' in vertexData && vertexData.open_access && typeof vertexData.open_access === 'object' && 'oa_type' in vertexData.open_access ? vertexData.open_access.oa_type : null) ||
+                             ('oa_type' in vertexData ? vertexData.oa_type : null),
             isSelected: false,
           } as EntityNodeData,
         } as Node;
       });
 
+      // Convert graph edges to xyflow edges with enhanced styling (needed for layout algorithms)
+      const tempEdges = graph.edges.map((edge) => {
+        return {
+          id: `${edge.sourceId}-${edge.targetId}`,
+          source: edge.sourceId,
+          target: edge.targetId,
+          type: 'smoothstep',
+        } as Edge;
+      });
+
+      // Apply layout algorithm based on configuration
+      const layoutAlgorithm = this.config.layout?.algorithm || 'force';
+      const layoutDirection = this.config.layout?.direction || 'TB';
+
+      switch (layoutAlgorithm) {
+        case 'dagre':
+          this.nodes = this.applyDagreLayout(tempNodes, tempEdges, layoutDirection);
+          break;
+        case 'force':
+          this.nodes = this.applyForceLayout(tempNodes, tempEdges);
+          break;
+        case 'hierarchical':
+          // Use dagre for hierarchical layout
+          this.nodes = this.applyDagreLayout(tempNodes, tempEdges, layoutDirection);
+          break;
+        case 'manual':
+          // For manual layout, use a simple grid arrangement
+          this.nodes = this.applyGridLayout(tempNodes);
+          break;
+        default:
+          // Fallback to force layout
+          this.nodes = this.applyForceLayout(tempNodes, tempEdges);
+      }
+
       // Convert graph edges to xyflow edges with enhanced styling
       this.edges = graph.edges.map((edge) => {
         const edgeData = edge.data || {};
-        const weight = edgeData.weight || 1;
-        const relationshipType = edgeData.type || 'default';
+        const rawWeight = ('weight' in edgeData ? edgeData.weight : null);
+        const weight = typeof rawWeight === 'number' ? rawWeight : 1;
+        const relationshipType = ('type' in edgeData ? edgeData.type : null) || 'default';
 
         // Determine edge appearance based on relationship strength and type
         const strokeWidth = Math.max(1, Math.min(6, weight * 2));
@@ -570,7 +608,7 @@ import '@xyflow/react/dist/style.css';
     return this.nodes.map(node => ({
       id: node.id,
       position: { x: node.position.x, y: node.position.y },
-      data: node.data.originalVertex?.data,
+      data: node.data.originalVertex && 'data' in node.data.originalVertex ? node.data.originalVertex.data : undefined,
     }));
   }
 
@@ -608,7 +646,6 @@ import '@xyflow/react/dist/style.css';
     this._status = {
       isInitialised: false,
       isRendering: false,
-      lastError: undefined,
     };
   }
 
@@ -626,7 +663,7 @@ import '@xyflow/react/dist/style.css';
         },
         nodeTypes,
         background: {
-          variant: 'dots',
+          variant: BackgroundVariant.Dots,
           gap: 20,
           size: 1,
           color: '#e2e8f0',
@@ -665,22 +702,186 @@ import '@xyflow/react/dist/style.css';
     };
   }
 
-  private calculateNodePosition(vertex: any, index: number, totalVertices: number): { x: number; y: number } {
-    // Simple circular layout for now
-    const radius = Math.min(this.dimensions.width, this.dimensions.height) * 0.3;
-    const centerX = this.dimensions.width / 2;
-    const centerY = this.dimensions.height / 2;
+  // ============================================================================
+  // Layout Algorithms
+  // ============================================================================
 
-    if (totalVertices === 1) {
-      return { x: centerX, y: centerY };
+  private applyDagreLayout(nodes: Node[], edges: Edge[], direction: 'TB' | 'BT' | 'LR' | 'RL' = 'TB'): Node[] {
+    const g = new dagre.graphlib.Graph();
+
+    g.setDefaultEdgeLabel(() => ({}));
+    g.setGraph({
+      rankdir: direction,
+      nodesep: 80,
+      ranksep: 120,
+      marginx: 20,
+      marginy: 20,
+    });
+
+    // Add nodes to dagre graph
+    nodes.forEach((node) => {
+      g.setNode(node.id, {
+        width: node.data.entityType === 'work' ? 120 : 100,
+        height: node.data.entityType === 'work' ? 80 : 60,
+      });
+    });
+
+    // Add edges to dagre graph
+    edges.forEach((edge) => {
+      g.setEdge(edge.source, edge.target);
+    });
+
+    // Calculate layout
+    dagre.layout(g);
+
+    // Apply calculated positions to nodes
+    return nodes.map((node) => {
+      const nodeWithPosition = g.node(node.id);
+      return {
+        ...node,
+        position: {
+          x: nodeWithPosition.x - nodeWithPosition.width / 2,
+          y: nodeWithPosition.y - nodeWithPosition.height / 2,
+        },
+      };
+    });
+  }
+
+  private applyForceLayout(nodes: Node[], edges: Edge[]): Node[] {
+    // Simple force-directed layout simulation
+    const iterations = 100;
+    const k = Math.sqrt((this.dimensions.width * this.dimensions.height) / nodes.length);
+    const positions = new Map(nodes.map(node => [node.id, { ...node.position }]));
+
+    for (let iter = 0; iter < iterations; iter++) {
+      const forces = new Map<string, { x: number; y: number }>();
+
+      // Initialize forces
+      nodes.forEach(node => {
+        forces.set(node.id, { x: 0, y: 0 });
+      });
+
+      // Repulsive forces between all pairs of nodes
+      for (let i = 0; i < nodes.length; i++) {
+        for (let j = i + 1; j < nodes.length; j++) {
+          const node1 = nodes[i];
+          const node2 = nodes[j];
+          if (!node1 || !node2) continue;
+
+          const pos1 = positions.get(node1.id);
+          const pos2 = positions.get(node2.id);
+          if (!pos1 || !pos2) continue;
+
+          const dx = pos1.x - pos2.x;
+          const dy = pos1.y - pos2.y;
+          const distance = Math.sqrt(dx * dx + dy * dy) || 1;
+
+          const force = k * k / distance;
+          const fx = force * dx / distance;
+          const fy = force * dy / distance;
+
+          const force1 = forces.get(node1.id);
+          const force2 = forces.get(node2.id);
+          if (!force1 || !force2) continue;
+
+          force1.x += fx;
+          force1.y += fy;
+          force2.x -= fx;
+          force2.y -= fy;
+        }
+      }
+
+      // Attractive forces along edges
+      edges.forEach(edge => {
+        const pos1 = positions.get(edge.source);
+        const pos2 = positions.get(edge.target);
+        if (!pos1 || !pos2) return;
+
+        const dx = pos2.x - pos1.x;
+        const dy = pos2.y - pos1.y;
+        const distance = Math.sqrt(dx * dx + dy * dy) || 1;
+
+        const force = distance * distance / k;
+        const fx = force * dx / distance;
+        const fy = force * dy / distance;
+
+        const force1 = forces.get(edge.source);
+        const force2 = forces.get(edge.target);
+        if (!force1 || !force2) return;
+
+        force1.x += fx;
+        force1.y += fy;
+        force2.x -= fx;
+        force2.y -= fy;
+      });
+
+      // Apply forces with cooling
+      const temperature = 0.9 ** iter;
+      forces.forEach((force, nodeId) => {
+        const pos = positions.get(nodeId);
+        if (!pos) return;
+
+        const displacement = Math.sqrt(force.x * force.x + force.y * force.y) || 1;
+        const limitedDisplacement = Math.min(displacement, temperature * k);
+
+        pos.x += (force.x / displacement) * limitedDisplacement;
+        pos.y += (force.y / displacement) * limitedDisplacement;
+
+        // Keep nodes within bounds
+        pos.x = Math.max(50, Math.min(this.dimensions.width - 50, pos.x));
+        pos.y = Math.max(50, Math.min(this.dimensions.height - 50, pos.y));
+      });
     }
 
-    const angle = (index / totalVertices) * Math.PI * 2;
-    const x = centerX + Math.cos(angle) * radius;
-    const y = centerY + Math.sin(angle) * radius;
-
-    return { x, y };
+    // Apply calculated positions to nodes
+    return nodes.map(node => ({
+      ...node,
+      position: positions.get(node.id) || { x: 0, y: 0 },
+    }));
   }
+
+  private applyCircularLayout(nodes: Node[]): Node[] {
+    const centerX = this.dimensions.width / 2;
+    const centerY = this.dimensions.height / 2;
+    const radius = Math.min(this.dimensions.width, this.dimensions.height) * 0.3;
+
+    return nodes.map((node, index) => {
+      if (nodes.length === 1) {
+        return { ...node, position: { x: centerX, y: centerY } };
+      }
+
+      const angle = (index / nodes.length) * Math.PI * 2;
+      return {
+        ...node,
+        position: {
+          x: centerX + Math.cos(angle) * radius,
+          y: centerY + Math.sin(angle) * radius,
+        },
+      };
+    });
+  }
+
+  private applyGridLayout(nodes: Node[]): Node[] {
+    const cols = Math.ceil(Math.sqrt(nodes.length));
+    const nodeWidth = 120;
+    const nodeHeight = 80;
+    const startX = (this.dimensions.width - (cols * nodeWidth)) / 2;
+    const startY = 50;
+
+    return nodes.map((node, index) => {
+      const row = Math.floor(index / cols);
+      const col = index % cols;
+
+      return {
+        ...node,
+        position: {
+          x: startX + col * nodeWidth,
+          y: startY + row * nodeHeight,
+        },
+      };
+    });
+  }
+
 
   private getVertexLabel(vertex: any): string {
     if (vertex.data?.display_name) return vertex.data.display_name;
@@ -947,7 +1148,7 @@ const XyflowPreview: React.FC<{
             minZoom={0.5}
             maxZoom={1.5}
           >
-            <Background variant="dots" gap={20} size={1} color="#e2e8f0" />
+            <Background variant={BackgroundVariant.Dots} gap={20} size={1} color="#e2e8f0" />
             <Controls showInteractive={false} />
             <MiniMap
               nodeColor="#4299e1"
