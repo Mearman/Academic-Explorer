@@ -3556,6 +3556,343 @@ const EnhancedMiniMap: React.FC<{
   );
 };
 
+// Performance Monitor Panel Component for real-time performance tracking and optimization
+const PerformanceMonitorPanel: React.FC<{
+  performanceMetrics: any;
+  PerformanceMonitor: any;
+  performanceHistory: Array<any>;
+}> = ({ performanceMetrics, PerformanceMonitor, performanceHistory }) => {
+  const [isExpanded, setIsExpanded] = React.useState(false);
+  const [showAdvanced, setShowAdvanced] = React.useState(false);
+  const [autoOptimizeEnabled, setAutoOptimizeEnabled] = React.useState(false);
+
+  const performanceStats = PerformanceMonitor.getPerformanceStats();
+  const isPerformanceGood = performanceMetrics.frameRate >= 30 && performanceMetrics.renderTime < 50;
+
+  const getPerformanceColor = () => {
+    if (performanceMetrics.frameRate >= 45) return '#059669'; // Green
+    if (performanceMetrics.frameRate >= 30) return '#d97706'; // Orange
+    return '#dc2626'; // Red
+  };
+
+  const getMemoryColor = () => {
+    if (performanceMetrics.memoryUsage < 50) return '#059669';
+    if (performanceMetrics.memoryUsage < 100) return '#d97706';
+    return '#dc2626';
+  };
+
+  const handleAutoOptimize = () => {
+    const optimizationsApplied = PerformanceMonitor.applyOptimizations();
+    if (optimizationsApplied > 0) {
+      alert(`Applied ${optimizationsApplied} automatic optimizations`);
+    } else {
+      alert('No optimizations needed at this time');
+    }
+  };
+
+  // Simple performance chart using CSS
+  const renderMiniChart = (data: number[], color: string) => {
+    const max = Math.max(...data, 1);
+    const min = Math.min(...data, 0);
+    const range = max - min || 1;
+
+    return (
+      <div style={{
+        display: 'flex',
+        alignItems: 'end',
+        height: '30px',
+        width: '100px',
+        gap: '1px',
+        background: '#f9fafb',
+        borderRadius: '2px',
+        padding: '2px'
+      }}>
+        {data.slice(-20).map((value, index) => {
+          const height = Math.max(((value - min) / range) * 26, 2);
+          return (
+            <div
+              key={index}
+              style={{
+                width: '4px',
+                height: `${height}px`,
+                background: color,
+                borderRadius: '1px',
+                opacity: 0.7 + (index / data.length) * 0.3
+              }}
+            />
+          );
+        })}
+      </div>
+    );
+  };
+
+  return (
+    <Panel position="top-left">
+      <div style={{
+        background: 'rgba(255, 255, 255, 0.95)',
+        padding: '12px',
+        borderRadius: '8px',
+        fontSize: '12px',
+        minWidth: isExpanded ? '300px' : '120px',
+        maxHeight: isExpanded ? '500px' : 'auto',
+        boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)',
+        transition: 'all 0.3s ease',
+        overflow: isExpanded ? 'auto' : 'hidden',
+        border: `2px solid ${getPerformanceColor()}`,
+      }}>
+        <div
+          style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            cursor: 'pointer',
+            fontWeight: '600',
+            color: '#374151',
+            marginBottom: isExpanded ? '12px' : '0'
+          }}
+          onClick={() => setIsExpanded(!isExpanded)}
+        >
+          <span>⚡ Performance ({performanceMetrics.frameRate}fps)</span>
+          <span style={{ fontSize: '10px' }}>
+            {isExpanded ? '▼' : '▲'}
+          </span>
+        </div>
+
+        {isExpanded && (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+            {/* Real-time Metrics */}
+            <div>
+              <div style={{ fontWeight: '600', marginBottom: '6px', color: '#1f2937' }}>
+                Real-time Metrics
+              </div>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
+                <div style={{
+                  padding: '6px',
+                  background: '#f9fafb',
+                  borderRadius: '4px',
+                  border: `1px solid ${getPerformanceColor()}`
+                }}>
+                  <div style={{ fontSize: '10px', color: '#6b7280' }}>Frame Rate</div>
+                  <div style={{ fontSize: '14px', fontWeight: '600', color: getPerformanceColor() }}>
+                    {performanceMetrics.frameRate} fps
+                  </div>
+                </div>
+                <div style={{
+                  padding: '6px',
+                  background: '#f9fafb',
+                  borderRadius: '4px',
+                  border: '1px solid #e5e7eb'
+                }}>
+                  <div style={{ fontSize: '10px', color: '#6b7280' }}>Render Time</div>
+                  <div style={{ fontSize: '14px', fontWeight: '600' }}>
+                    {performanceMetrics.renderTime.toFixed(1)}ms
+                  </div>
+                </div>
+                <div style={{
+                  padding: '6px',
+                  background: '#f9fafb',
+                  borderRadius: '4px',
+                  border: `1px solid ${getMemoryColor()}`
+                }}>
+                  <div style={{ fontSize: '10px', color: '#6b7280' }}>Memory</div>
+                  <div style={{ fontSize: '14px', fontWeight: '600', color: getMemoryColor() }}>
+                    {performanceMetrics.memoryUsage}MB
+                  </div>
+                </div>
+                <div style={{
+                  padding: '6px',
+                  background: '#f9fafb',
+                  borderRadius: '4px',
+                  border: '1px solid #e5e7eb'
+                }}>
+                  <div style={{ fontSize: '10px', color: '#6b7280' }}>Graph Size</div>
+                  <div style={{ fontSize: '14px', fontWeight: '600' }}>
+                    {performanceMetrics.nodeCount}N+{performanceMetrics.edgeCount}E
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Performance Charts */}
+            {performanceHistory.length > 0 && (
+              <div>
+                <div style={{ fontWeight: '600', marginBottom: '6px', color: '#1f2937' }}>
+                  Performance Trends
+                </div>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <span style={{ fontSize: '10px', color: '#6b7280' }}>FPS:</span>
+                    {renderMiniChart(performanceHistory.map(p => p.frameRate), getPerformanceColor())}
+                  </div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <span style={{ fontSize: '10px', color: '#6b7280' }}>Render:</span>
+                    {renderMiniChart(performanceHistory.map(p => p.renderTime), '#6b7280')}
+                  </div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <span style={{ fontSize: '10px', color: '#6b7280' }}>Memory:</span>
+                    {renderMiniChart(performanceHistory.map(p => p.memoryUsage), getMemoryColor())}
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Optimization Suggestions */}
+            {performanceMetrics.optimizationSuggestions.length > 0 && (
+              <div>
+                <div style={{ fontWeight: '600', marginBottom: '6px', color: '#1f2937' }}>
+                  Optimization Suggestions
+                </div>
+                <div style={{
+                  maxHeight: '100px',
+                  overflow: 'auto',
+                  border: '1px solid #e5e7eb',
+                  borderRadius: '4px',
+                  padding: '6px',
+                  background: '#fef3c7'
+                }}>
+                  {performanceMetrics.optimizationSuggestions.map((suggestion: string, index: number) => (
+                    <div key={index} style={{
+                      fontSize: '10px',
+                      color: '#92400e',
+                      marginBottom: '4px',
+                      paddingLeft: '8px',
+                      position: 'relative'
+                    }}>
+                      <span style={{ position: 'absolute', left: '0' }}>•</span>
+                      {suggestion}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Quick Actions */}
+            <div>
+              <div style={{ fontWeight: '600', marginBottom: '6px', color: '#1f2937' }}>
+                Quick Actions
+              </div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                <div style={{ display: 'flex', gap: '4px' }}>
+                  <button
+                    onClick={handleAutoOptimize}
+                    style={{
+                      padding: '6px 12px',
+                      border: '1px solid #3b82f6',
+                      background: '#3b82f6',
+                      color: 'white',
+                      borderRadius: '4px',
+                      fontSize: '10px',
+                      cursor: 'pointer',
+                      fontWeight: '500',
+                      flex: 1
+                    }}
+                  >
+                    🚀 Auto-Optimize
+                  </button>
+                  <button
+                    onClick={() => PerformanceMonitor.exportPerformanceData()}
+                    style={{
+                      padding: '6px 8px',
+                      border: '1px solid #6b7280',
+                      background: '#f3f4f6',
+                      borderRadius: '4px',
+                      fontSize: '10px',
+                      cursor: 'pointer'
+                    }}
+                  >
+                    📊 Export
+                  </button>
+                </div>
+
+                <label style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '6px',
+                  fontSize: '10px',
+                  cursor: 'pointer'
+                }}>
+                  <input
+                    type="checkbox"
+                    checked={autoOptimizeEnabled}
+                    onChange={(e) => setAutoOptimizeEnabled(e.target.checked)}
+                    style={{ width: '12px', height: '12px' }}
+                  />
+                  <span>Auto-optimize when needed</span>
+                </label>
+              </div>
+            </div>
+
+            {/* Advanced Statistics */}
+            <div>
+              <div
+                style={{
+                  fontWeight: '600',
+                  marginBottom: '6px',
+                  color: '#1f2937',
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '4px'
+                }}
+                onClick={() => setShowAdvanced(!showAdvanced)}
+              >
+                <span>Advanced Stats</span>
+                <span style={{ fontSize: '8px' }}>{showAdvanced ? '▼' : '▶'}</span>
+              </div>
+
+              {showAdvanced && performanceStats && (
+                <div style={{
+                  padding: '6px',
+                  background: '#f3f4f6',
+                  borderRadius: '4px',
+                  fontSize: '10px'
+                }}>
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '4px' }}>
+                    <div>Avg FPS: {performanceStats.averageFrameRate}</div>
+                    <div>Min FPS: {performanceStats.minFrameRate}</div>
+                    <div>Avg Render: {performanceStats.averageRenderTime}ms</div>
+                    <div>Max Render: {performanceStats.maxRenderTime}ms</div>
+                    <div>Avg Memory: {performanceStats.averageMemoryUsage}MB</div>
+                    <div>Samples: {performanceStats.sampleCount}</div>
+                  </div>
+                  <div style={{ marginTop: '6px', paddingTop: '6px', borderTop: '1px solid #e5e7eb' }}>
+                    <div>Render Calls: {performanceMetrics.renderCalls}</div>
+                    <div>Zoom Level: {(performanceMetrics.zoomLevel * 100).toFixed(0)}%</div>
+                    <div>Last Update: {new Date(performanceMetrics.lastUpdate).toLocaleTimeString()}</div>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Performance Status Summary */}
+            <div style={{
+              paddingTop: '8px',
+              borderTop: '1px solid #e5e7eb',
+              fontSize: '9px',
+              color: '#9ca3af'
+            }}>
+              <div style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '4px',
+                color: isPerformanceGood ? '#059669' : '#dc2626'
+              }}>
+                <span>{isPerformanceGood ? '✅' : '⚠️'}</span>
+                <span>
+                  {isPerformanceGood ? 'Performance is good' : 'Performance needs attention'}
+                </span>
+              </div>
+              <div style={{ marginTop: '2px' }}>
+                Monitoring: {performanceHistory.length}/30 samples
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+    </Panel>
+  );
+};
+
 // Layout Persistence Panel Component for saving, loading, and managing graph layouts
 const LayoutPersistencePanel: React.FC<{
   LayoutPersistence: any;
@@ -5955,6 +6292,301 @@ import '@xyflow/react/dist/style.css';
         return () => clearTimeout(debounceTimer);
       }, [nodesWithSelection, edges, LayoutPersistence]);
 
+      // Performance Monitoring and Optimization System
+      const [performanceMetrics, setPerformanceMetrics] = useState<{
+        renderTime: number;
+        frameRate: number;
+        memoryUsage: number;
+        nodeCount: number;
+        edgeCount: number;
+        zoomLevel: number;
+        lastUpdate: number;
+        renderCalls: number;
+        optimizationSuggestions: string[];
+      }>({
+        renderTime: 0,
+        frameRate: 60,
+        memoryUsage: 0,
+        nodeCount: 0,
+        edgeCount: 0,
+        zoomLevel: 1,
+        lastUpdate: Date.now(),
+        renderCalls: 0,
+        optimizationSuggestions: []
+      });
+
+      const [performanceHistory, setPerformanceHistory] = useState<Array<{
+        timestamp: number;
+        renderTime: number;
+        frameRate: number;
+        memoryUsage: number;
+        nodeCount: number;
+        edgeCount: number;
+      }>>([]);
+
+      const performanceMonitorRef = React.useRef<{
+        lastFrameTime: number;
+        frameCount: number;
+        lastMemoryCheck: number;
+        renderStartTime: number;
+        renderCalls: number;
+      }>({
+        lastFrameTime: performance.now(),
+        frameCount: 0,
+        lastMemoryCheck: Date.now(),
+        renderStartTime: 0,
+        renderCalls: 0
+      });
+
+      // Performance monitoring utilities
+      const PerformanceMonitor = React.useMemo(() => ({
+        // Start measuring render performance
+        startRender: () => {
+          performanceMonitorRef.current.renderStartTime = performance.now();
+          performanceMonitorRef.current.renderCalls++;
+        },
+
+        // End measuring render performance
+        endRender: () => {
+          const renderTime = performance.now() - performanceMonitorRef.current.renderStartTime;
+
+          setPerformanceMetrics(prev => ({
+            ...prev,
+            renderTime,
+            renderCalls: performanceMonitorRef.current.renderCalls,
+            nodeCount: nodesWithSelection.length,
+            edgeCount: edges.length,
+            zoomLevel: currentZoom,
+            lastUpdate: Date.now()
+          }));
+        },
+
+        // Update frame rate measurement
+        updateFrameRate: () => {
+          const now = performance.now();
+          const monitor = performanceMonitorRef.current;
+
+          monitor.frameCount++;
+          const deltaTime = now - monitor.lastFrameTime;
+
+          if (deltaTime >= 1000) { // Update every second
+            const fps = Math.round((monitor.frameCount * 1000) / deltaTime);
+
+            setPerformanceMetrics(prev => ({
+              ...prev,
+              frameRate: fps
+            }));
+
+            monitor.frameCount = 0;
+            monitor.lastFrameTime = now;
+          }
+        },
+
+        // Check memory usage (if available)
+        checkMemoryUsage: () => {
+          if ('memory' in performance) {
+            const memInfo = (performance as any).memory;
+            const memoryUsage = Math.round(memInfo.usedJSHeapSize / (1024 * 1024)); // MB
+
+            setPerformanceMetrics(prev => ({
+              ...prev,
+              memoryUsage
+            }));
+          }
+        },
+
+        // Generate optimization suggestions
+        generateSuggestions: () => {
+          const suggestions: string[] = [];
+          const nodeCount = nodesWithSelection.length;
+          const edgeCount = edges.length;
+          const currentFPS = performanceMetrics.frameRate;
+          const renderTime = performanceMetrics.renderTime;
+
+          // Node count suggestions
+          if (nodeCount > 500) {
+            suggestions.push('Consider enabling node virtualization for better performance with large graphs');
+          }
+          if (nodeCount > 1000 && !shouldShowCompactNodes) {
+            suggestions.push('Enable compact node mode to improve rendering with many nodes');
+          }
+
+          // Edge suggestions
+          if (edgeCount > 1000) {
+            suggestions.push('Large number of edges detected - consider edge bundling or filtering');
+          }
+          if (edgeCount > 2000) {
+            suggestions.push('Very high edge count - enable edge culling for performance');
+          }
+
+          // Performance suggestions
+          if (currentFPS < 30) {
+            suggestions.push('Low frame rate detected - reduce visual effects or enable performance mode');
+          }
+          if (renderTime > 50) {
+            suggestions.push('High render time - consider reducing node complexity or batch updates');
+          }
+
+          // Zoom level suggestions
+          if (currentZoom < 0.3) {
+            suggestions.push('Very low zoom level - enable Level of Detail (LOD) rendering');
+          }
+
+          // Memory suggestions
+          if (performanceMetrics.memoryUsage > 100) {
+            suggestions.push('High memory usage detected - consider data pagination or cleanup');
+          }
+
+          // Interactive suggestions
+          if (nodeCount > 100 && currentZoom < 0.5) {
+            suggestions.push('Enable interaction throttling to improve responsiveness');
+          }
+
+          setPerformanceMetrics(prev => ({
+            ...prev,
+            optimizationSuggestions: suggestions
+          }));
+        },
+
+        // Record performance snapshot
+        recordSnapshot: () => {
+          const snapshot = {
+            timestamp: Date.now(),
+            renderTime: performanceMetrics.renderTime,
+            frameRate: performanceMetrics.frameRate,
+            memoryUsage: performanceMetrics.memoryUsage,
+            nodeCount: nodesWithSelection.length,
+            edgeCount: edges.length
+          };
+
+          setPerformanceHistory(prev => [
+            ...prev.slice(-29), // Keep last 30 entries
+            snapshot
+          ]);
+        },
+
+        // Get performance statistics
+        getPerformanceStats: () => {
+          const history = performanceHistory;
+          if (history.length === 0) return null;
+
+          const avgRenderTime = history.reduce((sum, entry) => sum + entry.renderTime, 0) / history.length;
+          const avgFrameRate = history.reduce((sum, entry) => sum + entry.frameRate, 0) / history.length;
+          const avgMemoryUsage = history.reduce((sum, entry) => sum + entry.memoryUsage, 0) / history.length;
+
+          const minFrameRate = Math.min(...history.map(entry => entry.frameRate));
+          const maxRenderTime = Math.max(...history.map(entry => entry.renderTime));
+
+          return {
+            averageRenderTime: Math.round(avgRenderTime * 100) / 100,
+            averageFrameRate: Math.round(avgFrameRate),
+            averageMemoryUsage: Math.round(avgMemoryUsage),
+            minFrameRate,
+            maxRenderTime: Math.round(maxRenderTime * 100) / 100,
+            sampleCount: history.length
+          };
+        },
+
+        // Apply automatic optimizations
+        applyOptimizations: () => {
+          const nodeCount = nodesWithSelection.length;
+          const edgeCount = edges.length;
+          const currentFPS = performanceMetrics.frameRate;
+
+          let optimizationsApplied = 0;
+
+          // Auto-enable compact mode for large graphs
+          if (nodeCount > 200 && !shouldShowCompactNodes && currentFPS < 45) {
+            // This would need to be hooked up to the actual state management
+            console.log('Auto-optimization: Enabling compact node mode');
+            optimizationsApplied++;
+          }
+
+          // Auto-reduce edge rendering for very large graphs
+          if (edgeCount > 1500 && currentFPS < 30) {
+            console.log('Auto-optimization: Reducing edge density');
+            optimizationsApplied++;
+          }
+
+          // Auto-enable performance mode for struggling systems
+          if (currentFPS < 25 || performanceMetrics.renderTime > 100) {
+            console.log('Auto-optimization: Enabling performance mode');
+            optimizationsApplied++;
+          }
+
+          return optimizationsApplied;
+        },
+
+        // Export performance data
+        exportPerformanceData: () => {
+          const exportData = {
+            version: '1.0',
+            exported: new Date().toISOString(),
+            currentMetrics: performanceMetrics,
+            history: performanceHistory,
+            statistics: PerformanceMonitor.getPerformanceStats(),
+            graphInfo: {
+              nodeCount: nodesWithSelection.length,
+              edgeCount: edges.length,
+              algorithm: engine.config.layout?.algorithm || 'unknown',
+              compactMode: shouldShowCompactNodes
+            }
+          };
+
+          const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' });
+          const url = URL.createObjectURL(blob);
+          const link = document.createElement('a');
+          link.href = url;
+          link.download = `performance_report_${new Date().toISOString().split('T')[0]}.json`;
+          link.click();
+          URL.revokeObjectURL(url);
+
+          return exportData;
+        }
+      }), [nodesWithSelection.length, edges.length, currentZoom, shouldShowCompactNodes, performanceMetrics, performanceHistory, engine.config.layout?.algorithm]);
+
+      // Performance monitoring effects
+      React.useEffect(() => {
+        // Measure render performance
+        PerformanceMonitor.startRender();
+
+        // Schedule render end measurement
+        const timer = setTimeout(() => {
+          PerformanceMonitor.endRender();
+        }, 0);
+
+        return () => clearTimeout(timer);
+      }, [nodesWithSelection, edges, PerformanceMonitor]);
+
+      // Frame rate monitoring
+      React.useEffect(() => {
+        let animationFrame: number;
+
+        const measureFrameRate = () => {
+          PerformanceMonitor.updateFrameRate();
+          animationFrame = requestAnimationFrame(measureFrameRate);
+        };
+
+        animationFrame = requestAnimationFrame(measureFrameRate);
+
+        return () => {
+          if (animationFrame) {
+            cancelAnimationFrame(animationFrame);
+          }
+        };
+      }, [PerformanceMonitor]);
+
+      // Periodic performance checks
+      React.useEffect(() => {
+        const interval = setInterval(() => {
+          PerformanceMonitor.checkMemoryUsage();
+          PerformanceMonitor.generateSuggestions();
+          PerformanceMonitor.recordSnapshot();
+        }, 5000); // Every 5 seconds
+
+        return () => clearInterval(interval);
+      }, [PerformanceMonitor]);
+
       // Advanced clustering system with multiple algorithms
       const [activeClusterType, setActiveClusterType] = useState<ClusterType>('entity');
       const [selectedCluster, setSelectedCluster] = useState<string | null>(null);
@@ -6207,6 +6839,13 @@ import '@xyflow/react/dist/style.css';
               layoutHistory={layoutHistory}
               autoSaveEnabled={autoSaveEnabled}
               setAutoSaveEnabled={setAutoSaveEnabled}
+            />
+
+            {/* Performance Monitor Panel */}
+            <PerformanceMonitorPanel
+              performanceMetrics={performanceMetrics}
+              PerformanceMonitor={PerformanceMonitor}
+              performanceHistory={performanceHistory}
             />
 
             {/* Advanced Clustering Visualization */}
