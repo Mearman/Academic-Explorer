@@ -509,11 +509,18 @@ export function generateEdgeId({ sourceId, targetId, edgeType }: GenerateEdgeIdP
 export function parseEdgeId(edgeId: string): { sourceId: string; targetId: string; edgeType: EdgeType } | null {
   const parts = edgeId.split('_');
   if (parts.length !== 3) return null;
-  
+
+  // Type guards to ensure parts exist
+  const sourceId = parts[0];
+  const edgeType = parts[1];
+  const targetId = parts[2];
+
+  if (!sourceId || !edgeType || !targetId) return null;
+
   return {
-    sourceId: parts[0],
-    targetId: parts[2],
-    edgeType: parts[1] as EdgeType
+    sourceId,
+    targetId,
+    edgeType: edgeType as EdgeType
   };
 }
 

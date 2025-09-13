@@ -3,6 +3,7 @@ import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 
 import { App } from './App';
+import { GraphEngineProvider } from './components/organisms/graph-engines';
 import { ReactQueryProvider } from './lib/react-query/provider';
 import { ThemeProvider } from './providers/theme-provider';
 
@@ -16,7 +17,9 @@ createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <ReactQueryProvider>
       <ThemeProvider>
-        <App />
+        <GraphEngineProvider preloadDefault>
+          <App />
+        </GraphEngineProvider>
       </ThemeProvider>
     </ReactQueryProvider>
   </StrictMode>,
