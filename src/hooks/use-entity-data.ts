@@ -210,106 +210,66 @@ async function fetchEntityData<T extends EntityData = EntityData>({
   entityType,
   skipCache = false
 }: FetchEntityDataParams): Promise<T> {
-  console.log(`[fetchEntityData] ========== FETCH ENTITY DATA ==========`);
-  console.log(`[fetchEntityData] Input entityId: "${entityId}", entityType: ${entityType}, skipCache: ${skipCache}`);
-  
   // Determine entity type
   let detectedType: EntityType;
   if (entityType) {
     detectedType = entityType;
-    console.log(`[fetchEntityData] Using provided entity type: ${detectedType}`);
   } else {
     try {
       detectedType = detectEntityType(entityId);
-      console.log(`[fetchEntityData] Detected entity type: ${detectedType}`);
     } catch (error) {
-      console.error(`[fetchEntityData] Failed to detect entity type for "${entityId}":`, error);
       throw error;
     }
   }
 
   const normalizedId = normalizeEntityId(entityId, detectedType);
-  console.log(`[fetchEntityData] Normalized ID: ${normalizedId}`);
-  console.log(`[fetchEntityData] Will fetch ${detectedType} with ID ${normalizedId}, skipCache: ${skipCache}`);
-  
   let result: EntityData;
-  
-  // Route to appropriate client method based on entity type
-  console.log(`[fetchEntityData] About to call cachedOpenAlex.${detectedType.toLowerCase()}("${normalizedId}", ${skipCache})`);
   
   try {
     switch (detectedType) {
       case EntityType.WORK:
-        console.log(`[fetchEntityData] Calling cachedOpenAlex.work`);
         result = await cachedOpenAlex.work(normalizedId, skipCache);
         break;
       case EntityType.AUTHOR:
-        console.log(`[fetchEntityData] Calling cachedOpenAlex.author`);
         result = await cachedOpenAlex.author(normalizedId, skipCache);
         break;
       case EntityType.SOURCE:
-        console.log(`[fetchEntityData] Calling cachedOpenAlex.source`);
         result = await cachedOpenAlex.source(normalizedId, skipCache);
         break;
       case EntityType.INSTITUTION:
-        console.log(`[fetchEntityData] Calling cachedOpenAlex.institution`);
         result = await cachedOpenAlex.institution(normalizedId, skipCache);
         break;
       case EntityType.PUBLISHER:
-        console.log(`[fetchEntityData] Calling cachedOpenAlex.publisher`);
         result = await cachedOpenAlex.publisher(normalizedId, skipCache);
         break;
       case EntityType.FUNDER:
-        console.log(`[fetchEntityData] Calling cachedOpenAlex.funder`);
         result = await cachedOpenAlex.funder(normalizedId, skipCache);
         break;
       case EntityType.TOPIC:
-        console.log(`[fetchEntityData] Calling cachedOpenAlex.topic`);
         result = await cachedOpenAlex.topic(normalizedId, skipCache);
         break;
       case EntityType.CONCEPT:
-        console.log(`[fetchEntityData] Calling cachedOpenAlex.concept`);
         result = await cachedOpenAlex.concept(normalizedId, skipCache);
         break;
       case EntityType.CONTINENT:
-        console.log(`[fetchEntityData] Calling cachedOpenAlex.request for continent`);
         result = await cachedOpenAlex.request<Continent>(`/continents/${normalizedId}`);
         break;
       case EntityType.KEYWORD:
-        console.log(`[fetchEntityData] Calling cachedOpenAlex.request for keyword`);
         result = await cachedOpenAlex.request<Keyword>(`/keywords/${normalizedId}`);
         break;
       case EntityType.REGION:
-        console.log(`[fetchEntityData] Calling cachedOpenAlex.request for region`);
         result = await cachedOpenAlex.request<Region>(`/regions/${normalizedId}`);
         break;
       default:
-        console.error(`[fetchEntityData] Unsupported entity type: ${detectedType}`);
         throw new Error(`Unsupported entity type: ${detectedType}`);
     }
-    
-    console.log(`[fetchEntityData] API call completed successfully`);
   } catch (apiError) {
-    console.error(`[fetchEntityData] API call failed:`, apiError);
     throw apiError;
   }
   
-  console.log(`[fetchEntityData] API result type:`, typeof result);
-  console.log(`[fetchEntityData] API result:`, result);
-  
   if (!result) {
-    console.error(`[fetchEntityData] Entity ${detectedType}:${normalizedId} returned null or undefined`);
     throw new Error(`Entity ${detectedType}:${normalizedId} returned null or undefined`);
   }
-  
-  console.log(`[fetchEntityData] Successfully fetched ${detectedType}:${normalizedId}`);
-  console.log(`[fetchEntityData] Result summary:`, {
-    id: result.id,
-    display_name: result.display_name,
-    entityType: detectedType,
-    works_count: 'works_count' in result ? (result as any).works_count : undefined,
-    cited_by_count: 'cited_by_count' in result ? (result as any).cited_by_count : undefined
-  });
   
   return result as T;
 }
@@ -379,11 +339,8 @@ function scheduleAutoRetryIfNeeded<T extends EntityData>({
 }: ScheduleAutoRetryParams<T>): void {
   // Check if auto-retry should be attempted
   if (!opts.retryOnError || !error.retryable || currentRetryCount >= opts.maxRetries) {
-    console.log(`[scheduleAutoRetryIfNeeded] Skipping auto-retry - retryOnError: ${opts.retryOnError}, retryable: ${error.retryable}, retryCount: ${currentRetryCount}, maxRetries: ${opts.maxRetries}`);
     return;
   }
-
-  console.log(`[scheduleAutoRetryIfNeeded] Scheduling retry ${currentRetryCount + 1}/${opts.maxRetries} in ${opts.retryDelay}ms for ${entityId}`);
 
   // Clear any existing retry timer
   if (retryTimerRef.current) {
@@ -394,12 +351,10 @@ function scheduleAutoRetryIfNeeded<T extends EntityData>({
   // Schedule the retry
   retryTimerRef.current = setTimeout(async () => {
     if (!mountedRef.current) {
-      console.log(`[scheduleAutoRetryIfNeeded] Component unmounted, skipping retry for ${entityId}`);
       return;
     }
 
     const newRetryCount = currentRetryCount + 1;
-    console.log(`[scheduleAutoRetryIfNeeded] Executing retry ${newRetryCount}/${opts.maxRetries} for ${entityId}`);
 
     // Update state to indicate retrying
     setState(prev => ({
@@ -414,11 +369,8 @@ function scheduleAutoRetryIfNeeded<T extends EntityData>({
       const data = await fetchEntityDataWithTimeout<T>({ entityId, entityType, skipCache: opts.skipCache, timeoutMs: opts.timeout });
 
       if (!mountedRef.current) {
-        console.log(`[scheduleAutoRetryIfNeeded] Component unmounted during retry, skipping state update for ${entityId}`);
         return;
       }
-
-      console.log(`[scheduleAutoRetryIfNeeded] Retry ${newRetryCount} succeeded for ${entityId}`);
 
       setState(prev => ({
         ...prev,
@@ -433,11 +385,8 @@ function scheduleAutoRetryIfNeeded<T extends EntityData>({
       opts.onSuccess(data);
     } catch (retryError) {
       if (!mountedRef.current) {
-        console.log(`[scheduleAutoRetryIfNeeded] Component unmounted during retry error, skipping state update for ${entityId}`);
         return;
       }
-
-      console.error(`[scheduleAutoRetryIfNeeded] Retry ${newRetryCount} failed for ${entityId}:`, retryError);
 
       const retryEntityError = createEntityError({ error: retryError, entityId });
 
@@ -490,11 +439,6 @@ export function useEntityData<T extends EntityData = EntityData>({
   /** Reset the hook state */
   reset: () => void;
 } {
-  console.log('[useEntityData] Hook initialized with:', {
-    entityId,
-    entityType,
-    hasOptions: !!options
-  });
   // Memoize options with stable references to prevent infinite loops
   const opts = useMemo(() => {
     const result = { ...DEFAULT_OPTIONS };
@@ -557,7 +501,6 @@ export function useEntityData<T extends EntityData = EntityData>({
   // Main fetch effect using stable primitive dependencies
   useEffect(() => {
     if (!opts.enabled || !entityId) {
-      console.log(`[useEntityData] Auto-fetch skipped - enabled: ${opts.enabled}, entityId: ${entityId}`);
       setState(prev => ({
         ...prev,
         data: null,
@@ -568,7 +511,6 @@ export function useEntityData<T extends EntityData = EntityData>({
       return;
     }
 
-    console.log(`[useEntityData] Auto-fetch triggered for ${entityId}`);
     setState(prev => ({
       ...prev,
       loading: true,
@@ -579,16 +521,11 @@ export function useEntityData<T extends EntityData = EntityData>({
     // Use the proven working async pattern
     (async () => {
       try {
-        console.log(`[useEntityData] Calling fetchEntityDataWithTimeout for ${entityId}`);
-        
         const data = await fetchEntityDataWithTimeout<T>({ entityId, entityType, skipCache: opts.skipCache, timeoutMs: opts.timeout });
 
         if (!mountedRef.current) {
-          console.log(`[useEntityData] Component unmounted, skipping state update for ${entityId}`);
           return;
         }
-
-        console.log(`[useEntityData] Successfully fetched data for ${entityId}:`, data);
 
         setState(prev => ({
           ...prev,
@@ -603,12 +540,9 @@ export function useEntityData<T extends EntityData = EntityData>({
         opts.onSuccess(data);
       } catch (error) {
         if (!mountedRef.current) {
-          console.log(`[useEntityData] Component unmounted, skipping error state for ${entityId}`);
           return;
         }
 
-        console.error(`[useEntityData] Error fetching entity ${entityId}:`, error);
-        
         const entityError = createEntityError({ error, entityId });
         
         setState(prev => ({
@@ -692,7 +626,6 @@ export function useEntityData<T extends EntityData = EntityData>({
   }, [entityId, entityType, opts.timeout]);
 
   const retry = useCallback(async (): Promise<void> => {
-    console.log(`[useEntityData] Manual retry requested for ${entityId}`);
     if (entityId && (state.error?.retryable || state.error)) {
       // Clear any pending retry timer
       if (retryTimerRef.current) {
@@ -736,8 +669,6 @@ export function useEntityData<T extends EntityData = EntityData>({
           }));
         }
       }
-    } else {
-      console.log(`[useEntityData] Retry not available - no retryable error`);
     }
   }, [entityId, entityType, state.error, state.retryCount, opts.skipCache, opts.timeout]);
 
@@ -787,15 +718,7 @@ interface UseAuthorDataParams {
 }
 
 export function useAuthorData({ authorId, options }: UseAuthorDataParams) {
-  console.log('[useAuthorData] Called with:', { authorId, hasOptions: !!options });
-  const result = useEntityData<Author>({ entityId: authorId, entityType: EntityType.AUTHOR, options });
-  console.log('[useAuthorData] Result:', {
-    loading: result.loading,
-    hasData: !!result.data,
-    hasError: !!result.error,
-    state: result.state
-  });
-  return result;
+  return useEntityData<Author>({ entityId: authorId, entityType: EntityType.AUTHOR, options });
 }
 
 /**

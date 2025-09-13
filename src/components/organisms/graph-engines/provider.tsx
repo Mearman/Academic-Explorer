@@ -421,7 +421,7 @@ const useGraphEngineStore = create<GraphEngineState & GraphEngineActions>()(
           if (vertexCount > state.settings.performanceSettings.autoOptimiseThreshold) {
             const {largeGraphEngine} = state.settings.performanceSettings;
             if (state.currentEngine !== largeGraphEngine) {
-              console.log(`Auto-optimising: switching to ${largeGraphEngine} for large graph (${vertexCount} vertices)`);
+              // Auto-optimising for large graph - debug log removed
               await get().switchEngine(largeGraphEngine);
             }
           }
@@ -573,7 +573,7 @@ export function GraphEngineProvider({
     }
     
     return merged;
-  }, [customEngines, storeState.availableEngines]);
+  }, [customEngines]);
   
   // Update available engines when custom engines change
   useEffect(() => {

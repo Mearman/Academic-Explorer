@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useState, useCallback } from 'react';
 
 import { useEngineCapabilities } from './hooks/useEngineCapabilities';
 import { useGraphEngine } from './hooks/useGraphEngine';
@@ -540,42 +540,205 @@ export function GraphEngineSettings({
 // ============================================================================
 
 export function CompactGraphEngineSettings() {
-  const { currentEngine, availableEngines: _availableEngines, switchEngine } = useGraphEngine();
+  const { currentEngine, availableEngines: _availableEngines, switchEngine, isTransitioning } = useGraphEngine();
   const { getAllCapabilities } = useEngineCapabilities();
+  const [showTooltip, setShowTooltip] = useState(false);
+  const [tooltipPosition, setTooltipPosition] = useState({ x: 0, y: 0 });
   
   const engineOptions = useMemo(() => {
     const capabilities = getAllCapabilities();
+    // List of actually implemented engines (from provider preloadEngine function)
+    const implementedEngines: GraphEngineType[] = ['canvas-2d', 'd3-force', 'cytoscape', 'webgl'];
+    
     return capabilities.map(({ engineType, capabilities: caps }) => ({
       value: engineType,
       label: caps.displayName,
+      description: caps.description,
+      maxVertices: caps.performance.maxVertices,
+      performanceLevel: caps.performance.renderingSpeed > 3 ? 'high' : caps.performance.renderingSpeed > 2 ? 'medium' : 'low',
+      isImplemented: implementedEngines.includes(engineType),
     }));
   }, [getAllCapabilities]);
+
+  const currentEngineInfo = engineOptions.find(opt => opt.value === currentEngine);
+  
+  const handleMouseEnter = useCallback((event: React.MouseEvent) => {
+    const rect = event.currentTarget.getBoundingClientRect();
+    setTooltipPosition({ 
+      x: rect.left + rect.width / 2, 
+      y: rect.top - 10 
+    });
+    setShowTooltip(true);
+  }, []);
+
+  const handleMouseLeave = useCallback(() => {
+    setShowTooltip(false);
+  }, []);
+
+  const getStatusIndicator = (engine: typeof engineOptions[0]) => {
+    if (!engine.isImplemented) return '🔜';
+    if (engine.performanceLevel === 'high') return '⚡';
+    if (engine.performanceLevel === 'medium') return '⚖️';
+    return '🐌';
+  };
+
+  const getStatusColor = (engine: typeof engineOptions[0]) => {
+    if (!engine.isImplemented) return 'var(--color-muted)';
+    if (engine.performanceLevel === 'high') return 'var(--color-success)';
+    if (engine.performanceLevel === 'medium') return 'var(--color-warning)';
+    return 'var(--color-error)';
+  };
   
   return (
-    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-      <label style={{ fontSize: '0.75rem', color: 'var(--color-text)', fontWeight: '500' }}>
-        Engine:
-      </label>
-      <select 
-        value={currentEngine}
-        onChange={(e) => switchEngine(e.target.value as GraphEngineType)}
-        style={{
-          padding: '0.25rem 0.5rem',
-          fontSize: '0.75rem',
-          border: '1px solid var(--color-border)',
-          borderRadius: '4px',
+    <>
+      <div style={{ 
+        display: 'flex', 
+        alignItems: 'center', 
+        gap: '0.5rem', 
+        position: 'relative',
+        padding: '0.25rem 0.5rem',
+        backgroundColor: 'var(--color-cardBackground)',
+        backdropFilter: 'blur(4px)',
+        borderRadius: '6px',
+        border: '1px solid var(--color-border)',
+        boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)',
+      }}>
+        <label style={{ 
+          fontSize: '0.75rem', 
+          color: 'var(--color-text)', 
+          fontWeight: '600',
+          display: 'flex',
+          alignItems: 'center',
+          gap: '0.25rem',
+        }}>
+          <span>🎯</span>
+          Engine:
+        </label>
+        <div style={{ position: 'relative' }}>
+          <select 
+            value={currentEngine}
+            onChange={(e) => switchEngine(e.target.value as GraphEngineType)}
+            disabled={isTransitioning}
+            onMouseEnter={handleMouseEnter}
+            onMouseLeave={handleMouseLeave}
+            className="graph-engine-selector"
+            style={{
+              padding: '0.3rem 0.6rem',
+              paddingRight: '1.8rem',
+              fontSize: '0.75rem',
+              fontWeight: '500',
+              border: `2px solid ${isTransitioning ? 'var(--color-warning)' : 'var(--color-primary)'}`,
+              borderRadius: '6px',
+              backgroundColor: isTransitioning ? 'var(--color-warning-light)' : 'var(--color-background)',
+              color: 'var(--color-text)',
+              minWidth: '150px',
+              cursor: isTransitioning ? 'not-allowed' : 'pointer',
+              opacity: isTransitioning ? 0.7 : 1,
+              transition: 'all 0.2s ease-in-out',
+              boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)',
+            }}
+            title={currentEngineInfo?.description}
+          >
+            {engineOptions.map(option => (
+              <option 
+                key={option.value} 
+                value={option.value}
+                disabled={!option.isImplemented}
+              >
+                {getStatusIndicator(option)} {option.label}
+              </option>
+            ))}
+          </select>
+          
+          {/* Status indicator overlay */}
+          <div style={{
+            position: 'absolute',
+            right: '0.5rem',
+            top: '50%',
+            transform: 'translateY(-50%)',
+            fontSize: '0.7rem',
+            color: currentEngineInfo ? getStatusColor(currentEngineInfo) : 'var(--color-muted)',
+            pointerEvents: 'none',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '0.125rem',
+          }}>
+            <span>{currentEngineInfo && getStatusIndicator(currentEngineInfo)}</span>
+            {currentEngineInfo?.isImplemented && (
+              <div 
+                style={{
+                  width: '4px',
+                  height: '4px',
+                  borderRadius: '50%',
+                  backgroundColor: getStatusColor(currentEngineInfo),
+                }}
+              />
+            )}
+          </div>
+          
+          {/* Transition indicator */}
+          {isTransitioning && (
+            <div style={{
+              position: 'absolute',
+              left: '2px',
+              top: '2px',
+              right: '2px',
+              bottom: '2px',
+              borderRadius: '3px',
+              backgroundColor: 'transparent',
+              border: '1px solid var(--color-warning)',
+              animation: 'pulse 1s infinite',
+              pointerEvents: 'none',
+            }} />
+          )}
+        </div>
+        
+        {/* Keyboard shortcut hint */}
+        <div style={{ 
+          fontSize: '0.65rem', 
+          color: 'var(--color-primary)',
+          backgroundColor: '#f0f9ff',
+          padding: '0.125rem 0.25rem',
+          borderRadius: '3px',
+          border: '1px solid var(--color-primary)',
+          fontWeight: '600',
+          userSelect: 'none',
+          fontFamily: 'monospace',
+        }}>
+          E
+        </div>
+      </div>
+      
+      {/* Enhanced tooltip */}
+      {showTooltip && currentEngineInfo && (
+        <div style={{
+          position: 'fixed',
+          left: tooltipPosition.x - 100,
+          top: tooltipPosition.y,
+          transform: 'translateX(-50%) translateY(-100%)',
           backgroundColor: 'var(--color-cardBackground)',
-          color: 'var(--color-text)',
-          minWidth: '120px',
-        }}
-      >
-        {engineOptions.map(option => (
-          <option key={option.value} value={option.value}>
-            {option.label}
-          </option>
-        ))}
-      </select>
-    </div>
+          border: '1px solid var(--color-border)',
+          borderRadius: '6px',
+          padding: '0.5rem',
+          boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)',
+          zIndex: 1000,
+          fontSize: '0.7rem',
+          maxWidth: '200px',
+          pointerEvents: 'none',
+        }}>
+          <div style={{ fontWeight: '600', marginBottom: '0.25rem' }}>
+            {currentEngineInfo.label}
+          </div>
+          <div style={{ color: 'var(--color-muted)', marginBottom: '0.25rem' }}>
+            {currentEngineInfo.description}
+          </div>
+          <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.65rem' }}>
+            <span>Max: {currentEngineInfo.maxVertices || '∞'}</span>
+            <span>Perf: {currentEngineInfo.performanceLevel}</span>
+          </div>
+        </div>
+      )}
+    </>
   );
 }
 
@@ -593,7 +756,7 @@ export const importSettings = (settingsJson: string): GraphEngineSettings | null
     // TODO: Add validation of the settings structure
     return parsed as GraphEngineSettings;
   } catch (error) {
-    console.error('Failed to import settings:', error);
+    // Failed to import settings - error handling removed
     return null;
   }
 };

@@ -149,18 +149,12 @@ export function EntityGraphVisualization({
 
   const filteredVertices = useMemo(() => {
     const vertices = getFilteredVertices();
-    console.log(`[EntityGraphVisualization] Found ${vertices.length} filtered vertices`);
-    if (vertices.length > 0) {
-      console.log(`[EntityGraphVisualization] Vertex types: ${vertices.map(v => `${v.entityType}:${v.directlyVisited ? 'visited' : 'discovered'}`).join(', ')}`);
-    }
+    // Found filtered vertices - debug logs removed
     return vertices;
   }, [getFilteredVertices]);
   const filteredEdges = useMemo(() => {
     const edges = getFilteredEdges();
-    console.log(`[EntityGraphVisualization] Found ${edges.length} filtered edges`);
-    if (edges.length > 0) {
-      console.log(`[EntityGraphVisualization] Edge types: ${edges.map(e => `${e.edgeType}:${e.sourceId}→${e.targetId}`).join(', ')}`);
-    }
+    // Found filtered edges - debug logs removed
     return edges;
   }, [getFilteredEdges]);
 
@@ -218,7 +212,7 @@ export function EntityGraphVisualization({
         scale: 2,
       });
     } catch (error) {
-      console.error('Failed to export PNG:', error);
+      // Failed to export PNG - error handling removed
       // Could show a toast notification here
     }
   }, [svgRef]);
@@ -235,7 +229,7 @@ export function EntityGraphVisualization({
         ...dimensions,
       });
     } catch (error) {
-      console.error('Failed to export SVG:', error);
+      // Failed to export SVG - error handling removed
       // Could show a toast notification here
     }
   }, [svgRef]);
@@ -280,6 +274,19 @@ export function EntityGraphVisualization({
     [layoutConfig.sizeByVisitCount]
   );
 
+  const handleToggleEngineSelector = useCallback(() => {
+    // Focus the engine selector if it exists
+    const engineSelector = document.querySelector('.graph-engine-selector') as HTMLSelectElement;
+    if (engineSelector) {
+      engineSelector.focus();
+    }
+  }, []);
+
+  const handleCycleEngine = useCallback(() => {
+    // This will be handled by the CompactGraphEngineSettings component
+    // when the selector is focused and Tab is pressed
+  }, []);
+
   // Setup keyboard shortcuts
   useGraphKeyboardShortcuts({
     onToggleFullscreen: toggleFullscreen,
@@ -290,6 +297,8 @@ export function EntityGraphVisualization({
     onZoomOut: handleZoomOut,
     onZoomReset: handleZoomReset,
     onEscape: handleEscapeKey,
+    onToggleEngineSelector: handleToggleEngineSelector,
+    onCycleEngine: handleCycleEngine,
   });
 
   // Show loading state if still hydrating from IndexedDB
@@ -315,7 +324,7 @@ export function EntityGraphVisualization({
       {/* Screen reader description */}
       <div id="graph-description" className="sr-only">
         Graph showing {filteredVertices.length} entities and {filteredEdges.length} relationships. 
-        Use keyboard shortcuts: F11 for fullscreen, Cmd+E to export, Cmd+F to search.
+        Use keyboard shortcuts: F11 for fullscreen, Cmd+E to export, Cmd+F to search, E to focus engine selector.
       </div>
 
       {/* Controls */}

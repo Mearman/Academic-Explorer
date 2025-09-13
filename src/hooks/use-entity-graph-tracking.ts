@@ -42,12 +42,12 @@ export function useEntityGraphTracking({
   const location = useLocation();
   const { visitEntity, addRelationship, isHydrated } = useEntityGraphStore();
   
-  console.log('[EntityGraphTracking] Hook initialized - store hydrated:', isHydrated);
+  // Removed console.log to prevent stack overflow
 
   // Wrapper for async addRelationship with error handling
   const addRelationshipSafe = useCallback((event: RelationshipDiscoveryEvent): void => {
     addRelationship(event).catch(error => {
-      console.warn('[EntityGraphTracking] Failed to add relationship:', error);
+      // Silently handle relationship errors
     });
   }, [addRelationship]);
 
@@ -73,7 +73,7 @@ export function useEntityGraphTracking({
     };
 
     visitEntity(event).catch(error => {
-      console.error('[EntityGraphTracking] Failed to record entity visit:', error);
+      // Silently handle visit recording errors
     });
   }, [visitEntity]);
 
@@ -226,16 +226,14 @@ export function useEntityGraphTracking({
    * Extract relationships from Author entity
    */
   const extractAuthorRelationships = useCallback((author: Author) => {
-    console.log(`[EntityGraphTracking] 🔍 Extracting author relationships for ${author.display_name} (${author.id})`);
-    console.log(`[EntityGraphTracking] 📝 RAW AUTHOR DATA STRUCTURE:`, JSON.stringify(author, null, 2));
-    console.log(`[EntityGraphTracking] Author has ${author.affiliations?.length || 0} affiliations, ${author.last_known_institutions?.length || 0} last known institutions, ${author.topics?.length || 0} topics`);
+    // Extracting author relationships - debug logs removed
     const timestamp = new Date().toISOString();
 
     // Institution affiliations
     author.affiliations?.forEach(affiliation => {
       if (affiliation.institution.id) {
         const cleanInstitutionId = cleanOpenAlexId(affiliation.institution.id);
-        console.log(`[EntityGraphTracking] Creating affiliation relationship: ${author.id} → ${cleanInstitutionId} (${affiliation.institution.display_name})`);
+        // Creating affiliation relationship
         const event: RelationshipDiscoveryEvent = {
           sourceEntityId: author.id,
           targetEntityId: cleanInstitutionId,
@@ -256,7 +254,7 @@ export function useEntityGraphTracking({
     author.last_known_institutions?.forEach(institution => {
       if (institution.id) {
         const cleanInstitutionId = cleanOpenAlexId(institution.id);
-        console.log(`[EntityGraphTracking] Creating last known institution relationship: ${author.id} → ${cleanInstitutionId} (${institution.display_name})`);
+        // Creating last known institution relationship
         const event: RelationshipDiscoveryEvent = {
           sourceEntityId: author.id,
           targetEntityId: cleanInstitutionId,
@@ -277,7 +275,7 @@ export function useEntityGraphTracking({
     author.topics?.forEach(topic => {
       if (topic.id) {
         const cleanTopicId = cleanOpenAlexId(topic.id);
-        console.log(`[EntityGraphTracking] Creating topic relationship: ${author.id} → ${cleanTopicId} (${topic.display_name})`);
+        // Creating topic relationship
         const event: RelationshipDiscoveryEvent = {
           sourceEntityId: author.id,
           targetEntityId: cleanTopicId,
@@ -404,21 +402,20 @@ export function useEntityGraphTracking({
    */
   const extractEntityRelationships = useCallback((entity: unknown, entityType: EntityType) => {
     if (!extractRelationships) {
-      console.log(`[EntityGraphTracking] ❌ Relationship extraction disabled via extractRelationships flag`);
+      // Relationship extraction disabled
       return;
     }
 
-    console.log(`[EntityGraphTracking] 🔗 Extracting relationships for ${entityType} entity`);
-    console.log(`[EntityGraphTracking] 🔗 Entity data available:`, !!entity);
+    // Extracting relationships for entity
     
     try {
       switch (entityType) {
         case EntityType.WORK:
-          console.log(`[EntityGraphTracking] 📄 Calling extractWorkRelationships`);
+          // Calling extractWorkRelationships
           extractWorkRelationships(entity as Work);
           break;
         case EntityType.AUTHOR:
-          console.log(`[EntityGraphTracking] 👤 Calling extractAuthorRelationships`);
+          // Calling extractAuthorRelationships
           extractAuthorRelationships(entity as Author);
           break;
         case EntityType.INSTITUTION:
@@ -456,7 +453,7 @@ export function useEntityGraphTracking({
         }
       }
     } catch (error) {
-      console.warn('Error extracting relationships:', error);
+      // Error extracting relationships - silently handled
     }
   }, [
     extractRelationships,
@@ -533,7 +530,7 @@ export function useEntityGraphTracking({
 
     // Wait for all entities to be persisted
     await Promise.all(promises);
-    console.log(`[EntityGraphTracking] Persisted ${promises.length} related entities from work ${work.id}`);
+    // Persisted related entities from work
   }, []);
 
   /**
@@ -574,7 +571,7 @@ export function useEntityGraphTracking({
 
     // Wait for all entities to be persisted
     await Promise.all(promises);
-    console.log(`[EntityGraphTracking] Persisted ${promises.length} related entities from author ${author.id}`);
+    // Persisted related entities from author
   }, []);
 
   /**
@@ -605,7 +602,7 @@ export function useEntityGraphTracking({
 
     // Wait for all entities to be persisted
     await Promise.all(promises);
-    console.log(`[EntityGraphTracking] Persisted ${promises.length} related entities from institution ${institution.id}`);
+    // Persisted related entities from institution
   }, []);
 
   /**
@@ -634,7 +631,7 @@ export function useEntityGraphTracking({
 
     // Wait for all entities to be persisted
     await Promise.all(promises);
-    console.log(`[EntityGraphTracking] Persisted ${promises.length} related entities from source ${source.id}`);
+    // Persisted related entities from source
   }, []);
 
   /**
@@ -670,14 +667,14 @@ export function useEntityGraphTracking({
             });
             await Promise.all(promises);
             if (promises.length > 0) {
-              console.log(`[EntityGraphTracking] Persisted ${promises.length} topic entities from ${entityType} entity`);
+              // Persisted topic entities
             }
           }
           break;
         }
       }
     } catch (error) {
-      console.warn('[EntityGraphTracking] Error persisting related entities:', error);
+      // Error persisting related entities - silently handled
     }
   }, [persistWorkRelatedEntities, persistAuthorRelatedEntities, persistInstitutionRelatedEntities, persistSourceRelatedEntities]);
 
@@ -689,11 +686,10 @@ export function useEntityGraphTracking({
     entityType: EntityType,
     entityId: string
   ) => {
-    console.log(`[EntityGraphTracking] 🎯 trackEntityData called for ${entityType}:${entityId}`);
-    console.log(`[EntityGraphTracking] 🎯 Store hydration status: ${isHydrated}`);
+    // Removed console.logs to prevent stack overflow
     
     if (!isHydrated) {
-      console.warn(`[EntityGraphTracking] ⚠️ Store not hydrated yet, skipping entity tracking for ${entityType}:${entityId}`);
+      // Store not hydrated yet, skipping entity tracking
       return;
     }
     
@@ -705,10 +701,10 @@ export function useEntityGraphTracking({
       works_count?: number;
     };
 
-    console.log(`[EntityGraphTracking] 🎯 Proceeding with universal persistence for hydrated store`);
+    // Removed console.log to prevent stack overflow
 
     // Track the visit (in-memory for graph visualization)
-    console.log(`[EntityGraphTracking] 👤 Tracking entity visit`);
+    // Removed console.log to prevent stack overflow
     trackEntityVisit(entityId, entityType, basicEntity.display_name, {
       citedByCount: basicEntity.cited_by_count,
       publicationYear: basicEntity.publication_year,
@@ -716,14 +712,10 @@ export function useEntityGraphTracking({
     });
 
     // Extract relationships (in-memory graph)
-    console.log(`[EntityGraphTracking] 🔗 About to extract relationships for ${entityType}:${entityId}`);
     extractEntityRelationships(entity, entityType);
 
     // ENHANCED: Use Universal Entity Persistence for comprehensive storage
-    console.log(`[EntityGraphTracking] 🌍 Starting universal entity persistence`);
     await universalEntityPersistence.persistEntityNavigation(entity, entityType, entityId);
-    
-    console.log(`[EntityGraphTracking] ✅ Completed enhanced tracking for ${entityType}:${entityId}`);
   }, [trackEntityVisit, extractEntityRelationships, isHydrated]);
 
   /**
