@@ -154,6 +154,18 @@ const fragmentShader = gl.createShader(gl.FRAGMENT_SHADER);
   private viewOffsetX = 0.0;
   private viewOffsetY = 0.0;
 
+  // Interaction state
+  private isDragging = false;
+  private lastMouseX = 0;
+  private lastMouseY = 0;
+  private lastTouchDistance = 0;
+
+  // Animation state for graph updates
+  private oldVertices: Float32Array | null = null;
+  private isTransitioning = false;
+  private transitionStartTime = 0;
+  private transitionDuration = 800; // 800ms
+
   // Performance monitoring
   private frameCount = 0;
   private lastFpsUpdate = 0;
@@ -271,6 +283,7 @@ const fragmentShader = gl.createShader(gl.FRAGMENT_SHADER);
       this.canvas.style.width = `${dimensions.width}px`;
       this.canvas.style.height = `${dimensions.height}px`;
       this.canvas.style.display = 'block';
+      this.canvas.style.cursor = 'grab';
 
       // Try WebGL 2.0 first, fallback to WebGL 1.0
       this.gl = this.canvas.getContext('webgl2', {
@@ -368,15 +381,23 @@ const fragmentShader = gl.createShader(gl.FRAGMENT_SHADER);
       throw new Error('Engine not initialized');
     }
 
-    // Process new graph data
-    this.processGraphData(graph);
+    if (animate && this.vertices.length > 0) {
+      // Store current vertices for smooth transition
+      this.oldVertices = new Float32Array(this.vertices);
 
-    // Update GPU buffers
-    this.uploadVertexData();
-    this.uploadIndexData();
+      // Process new graph data
+      this.processGraphData(graph);
 
-    if (animate) {
-      // TODO: Implement smooth transitions
+      // Start transition animation
+      this.isTransitioning = true;
+      this.transitionStartTime = performance.now();
+
+      // The actual buffer updates will happen during animation in render loop
+    } else {
+      // No animation - update immediately
+      this.processGraphData(graph);
+      this.uploadVertexData();
+      this.uploadIndexData();
     }
   }
 
@@ -527,6 +548,19 @@ const fragmentShader = gl.createShader(gl.FRAGMENT_SHADER);
       this.animationId = null;
     }
 
+    // Remove event listeners
+    if (this.canvas) {
+      this.canvas.removeEventListener('wheel', this.handleMouseWheel.bind(this));
+      this.canvas.removeEventListener('mousedown', this.handleMouseDown.bind(this));
+      this.canvas.removeEventListener('mousemove', this.handleMouseMove.bind(this));
+      this.canvas.removeEventListener('mouseup', this.handleMouseUp.bind(this));
+      this.canvas.removeEventListener('mouseleave', this.handleMouseUp.bind(this));
+      this.canvas.removeEventListener('touchstart', this.handleTouchStart.bind(this));
+      this.canvas.removeEventListener('touchmove', this.handleTouchMove.bind(this));
+      this.canvas.removeEventListener('touchend', this.handleTouchEnd.bind(this));
+      this.canvas.removeEventListener('dblclick', this.handleDoubleClick.bind(this));
+    }
+
     // Clean up WebGL resources
     this.cleanupWebGLResources();
 
@@ -539,6 +573,7 @@ const fragmentShader = gl.createShader(gl.FRAGMENT_SHADER);
     this.canvas = null;
     this.gl = null;
     this.container = null;
+    this.isDragging = false;
     this._status.isInitialised = false;
     this._status.isRendering = false;
   }
@@ -824,6 +859,11 @@ const fragmentShader = gl.createShader(gl.FRAGMENT_SHADER);
   private render(time: number): void {
     if (!this.gl || !this.shaderProgram) return;
 
+    // Handle transition animation
+    if (this.isTransitioning && this.oldVertices) {
+      this.updateTransitionAnimation(time);
+    }
+
     // Clear the canvas
     this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
 
@@ -964,7 +1004,149 @@ const fragmentShader = gl.createShader(gl.FRAGMENT_SHADER);
   private setupEventListeners(): void {
     if (!this.canvas) return;
 
-    // TODO: Add mouse/touch event listeners for interaction
+    // Mouse wheel for zooming
+    this.canvas.addEventListener('wheel', this.handleMouseWheel.bind(this), { passive: false });
+
+    // Mouse events for panning and node interaction
+    this.canvas.addEventListener('mousedown', this.handleMouseDown.bind(this));
+    this.canvas.addEventListener('mousemove', this.handleMouseMove.bind(this));
+    this.canvas.addEventListener('mouseup', this.handleMouseUp.bind(this));
+    this.canvas.addEventListener('mouseleave', this.handleMouseUp.bind(this));
+
+    // Touch events for mobile support
+    this.canvas.addEventListener('touchstart', this.handleTouchStart.bind(this), { passive: false });
+    this.canvas.addEventListener('touchmove', this.handleTouchMove.bind(this), { passive: false });
+    this.canvas.addEventListener('touchend', this.handleTouchEnd.bind(this));
+
+    // Double-click for fit to view
+    this.canvas.addEventListener('dblclick', this.handleDoubleClick.bind(this));
+
+    // Context menu prevention
+    this.canvas.addEventListener('contextmenu', (e) => e.preventDefault());
+  }
+
+  // ============================================================================
+  // Event Handlers for Interaction
+  // ============================================================================
+
+  private handleMouseWheel(event: WheelEvent): void {
+    event.preventDefault();
+
+    // Calculate zoom factor
+    const zoomFactor = event.deltaY < 0 ? 1.1 : 0.9;
+    const newScale = this.viewScale * zoomFactor;
+
+    // Clamp zoom level
+    this.viewScale = Math.max(0.1, Math.min(5.0, newScale));
+
+    // Update view matrix
+    this.updateViewMatrix();
+  }
+
+  private handleMouseDown(event: MouseEvent): void {
+    this.isDragging = true;
+    this.lastMouseX = event.clientX;
+    this.lastMouseY = event.clientY;
+
+    if (this.canvas) {
+      this.canvas.style.cursor = 'grabbing';
+    }
+  }
+
+  private handleMouseMove(event: MouseEvent): void {
+    if (!this.isDragging) return;
+
+    const deltaX = event.clientX - this.lastMouseX;
+    const deltaY = event.clientY - this.lastMouseY;
+
+    // Convert screen space movement to world space
+    const worldDeltaX = deltaX / (this.viewScale * (this.dimensions?.width || 800) / 2);
+    const worldDeltaY = -deltaY / (this.viewScale * (this.dimensions?.height || 600) / 2);
+
+    this.viewOffsetX += worldDeltaX;
+    this.viewOffsetY += worldDeltaY;
+
+    this.lastMouseX = event.clientX;
+    this.lastMouseY = event.clientY;
+
+    // Update view matrix
+    this.updateViewMatrix();
+  }
+
+  private handleMouseUp(): void {
+    this.isDragging = false;
+
+    if (this.canvas) {
+      this.canvas.style.cursor = 'grab';
+    }
+  }
+
+  private handleTouchStart(event: TouchEvent): void {
+    event.preventDefault();
+
+    if (event.touches.length === 1) {
+      // Single touch - start panning
+      this.isDragging = true;
+      this.lastMouseX = event.touches[0].clientX;
+      this.lastMouseY = event.touches[0].clientY;
+    } else if (event.touches.length === 2) {
+      // Two fingers - start zooming
+      this.isDragging = false;
+      const touch1 = event.touches[0];
+      const touch2 = event.touches[1];
+      this.lastTouchDistance = Math.sqrt(
+        Math.pow(touch2.clientX - touch1.clientX, 2) +
+        Math.pow(touch2.clientY - touch1.clientY, 2)
+      );
+    }
+  }
+
+  private handleTouchMove(event: TouchEvent): void {
+    event.preventDefault();
+
+    if (event.touches.length === 1 && this.isDragging) {
+      // Single touch - panning
+      const deltaX = event.touches[0].clientX - this.lastMouseX;
+      const deltaY = event.touches[0].clientY - this.lastMouseY;
+
+      const worldDeltaX = deltaX / (this.viewScale * (this.dimensions?.width || 800) / 2);
+      const worldDeltaY = -deltaY / (this.viewScale * (this.dimensions?.height || 600) / 2);
+
+      this.viewOffsetX += worldDeltaX;
+      this.viewOffsetY += worldDeltaY;
+
+      this.lastMouseX = event.touches[0].clientX;
+      this.lastMouseY = event.touches[0].clientY;
+
+      this.updateViewMatrix();
+    } else if (event.touches.length === 2) {
+      // Two fingers - zooming
+      const touch1 = event.touches[0];
+      const touch2 = event.touches[1];
+      const currentDistance = Math.sqrt(
+        Math.pow(touch2.clientX - touch1.clientX, 2) +
+        Math.pow(touch2.clientY - touch1.clientY, 2)
+      );
+
+      if (this.lastTouchDistance > 0) {
+        const zoomFactor = currentDistance / this.lastTouchDistance;
+        const newScale = this.viewScale * zoomFactor;
+        this.viewScale = Math.max(0.1, Math.min(5.0, newScale));
+        this.updateViewMatrix();
+      }
+
+      this.lastTouchDistance = currentDistance;
+    }
+  }
+
+  private handleTouchEnd(): void {
+    this.isDragging = false;
+    this.lastTouchDistance = 0;
+  }
+
+  private handleDoubleClick(): void {
+    // Double-click to fit to view
+    this.fitToView(50, true);
   }
 
   private cleanupWebGLResources(): void {
@@ -1059,6 +1241,61 @@ const fragmentShader = gl.createShader(gl.FRAGMENT_SHADER);
       case 'f': return 'funder';
       case 'p': return 'publisher';
       default: return 'unknown';
+    }
+  }
+
+  /**
+   * Update transition animation for graph updates
+   */
+  private updateTransitionAnimation(time: number): void {
+    if (!this.oldVertices || !this.isTransitioning) return;
+
+    const elapsed = time - this.transitionStartTime;
+    const progress = Math.min(elapsed / this.transitionDuration, 1);
+
+    // Use ease-out cubic for smooth transition
+    const easeProgress = 1 - Math.pow(1 - progress, 3);
+
+    // Interpolate between old and new vertex positions
+    const stride = 7; // [x, y, r, g, b, size, opacity]
+    const minLength = Math.min(this.oldVertices.length, this.vertices.length);
+
+    for (let i = 0; i < minLength; i += stride) {
+      // Interpolate position (x, y)
+      const oldX = this.oldVertices[i];
+      const oldY = this.oldVertices[i + 1];
+      const newX = this.vertices[i];
+      const newY = this.vertices[i + 1];
+
+      this.vertices[i] = oldX + (newX - oldX) * easeProgress;
+      this.vertices[i + 1] = oldY + (newY - oldY) * easeProgress;
+
+      // Optionally interpolate colors
+      if (i + 4 < minLength) {
+        const oldR = this.oldVertices[i + 2];
+        const oldG = this.oldVertices[i + 3];
+        const oldB = this.oldVertices[i + 4];
+        const newR = this.vertices[i + 2];
+        const newG = this.vertices[i + 3];
+        const newB = this.vertices[i + 4];
+
+        this.vertices[i + 2] = oldR + (newR - oldR) * easeProgress;
+        this.vertices[i + 3] = oldG + (newG - oldG) * easeProgress;
+        this.vertices[i + 4] = oldB + (newB - oldB) * easeProgress;
+      }
+    }
+
+    // Update GPU buffer with interpolated data
+    this.uploadVertexData();
+
+    // Check if transition is complete
+    if (progress >= 1) {
+      this.isTransitioning = false;
+      this.oldVertices = null;
+
+      // Ensure final positions are exact
+      this.uploadVertexData();
+      this.uploadIndexData();
     }
   }
 
