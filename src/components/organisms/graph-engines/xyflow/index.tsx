@@ -188,9 +188,13 @@ const EntityNode: React.FC<{ data: EntityNodeData; selected?: boolean }> = ({ da
   const labelStyle: React.CSSProperties = {
     fontSize: '13px',
     fontWeight: '600',
-    lineHeight: '1.2',
-    marginBottom: '4px',
+    lineHeight: '1.3',
+    marginBottom: '6px',
     textShadow: '0 1px 2px rgba(0, 0, 0, 0.3)',
+    maxWidth: '140px',
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
+    whiteSpace: 'nowrap',
   };
 
   const typeStyle: React.CSSProperties = {
@@ -199,15 +203,33 @@ const EntityNode: React.FC<{ data: EntityNodeData; selected?: boolean }> = ({ da
     textTransform: 'uppercase',
     letterSpacing: '0.5px',
     fontWeight: '500',
+    marginBottom: '4px',
+    padding: '2px 6px',
+    backgroundColor: 'rgba(255, 255, 255, 0.15)',
+    borderRadius: '10px',
+    display: 'inline-block',
   };
 
   const metadataStyle: React.CSSProperties = {
     fontSize: '9px',
-    opacity: 0.8,
-    marginTop: '2px',
+    opacity: 0.9,
+    marginTop: '4px',
     display: 'flex',
     justifyContent: 'space-between',
     alignItems: 'center',
+    gap: '4px',
+    flexWrap: 'wrap',
+  };
+
+  const metadataItemStyle: React.CSSProperties = {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '2px',
+    padding: '1px 4px',
+    backgroundColor: 'rgba(255, 255, 255, 0.15)',
+    borderRadius: '6px',
+    fontSize: '8px',
+    fontWeight: '500',
   };
 
   // Generate accessible description
@@ -251,26 +273,45 @@ const EntityNode: React.FC<{ data: EntityNodeData; selected?: boolean }> = ({ da
         {data.entityType}
       </div>
 
-      {/* Additional metadata for works */}
+      {/* Enhanced metadata display for works */}
       {data.entityType === 'work' && (data.citationCount || data.publicationYear || data.openAccessStatus) && (
         <div style={metadataStyle}>
           {data.publicationYear && (
-            <span style={{ fontSize: '8px' }}>{data.publicationYear}</span>
+            <span style={metadataItemStyle}>
+              📅 {data.publicationYear}
+            </span>
           )}
           {data.citationCount !== undefined && (
-            <span style={{ fontSize: '8px' }}>📄 {data.citationCount}</span>
+            <span style={metadataItemStyle}>
+              📊 {data.citationCount > 999 ? `${(data.citationCount / 1000).toFixed(1)}k` : data.citationCount}
+            </span>
           )}
           {data.openAccessStatus && (
-            <div
-              style={{
-                width: '8px',
-                height: '8px',
-                borderRadius: '50%',
-                backgroundColor: getOpenAccessColour(data.openAccessStatus),
-                border: '1px solid white',
-              }}
-              title={`Open Access: ${data.openAccessStatus}`}
-            />
+            <span style={{ ...metadataItemStyle, gap: '3px' }}>
+              <div
+                style={{
+                  width: '6px',
+                  height: '6px',
+                  borderRadius: '50%',
+                  backgroundColor: getOpenAccessColour(data.openAccessStatus),
+                  border: '1px solid white',
+                  flexShrink: 0,
+                }}
+                title={`Open Access: ${data.openAccessStatus}`}
+              />
+              OA
+            </span>
+          )}
+        </div>
+      )}
+
+      {/* Metadata for other entity types */}
+      {data.entityType !== 'work' && (data.citationCount || data.publicationYear) && (
+        <div style={metadataStyle}>
+          {data.citationCount !== undefined && (
+            <span style={metadataItemStyle}>
+              🔗 {data.citationCount > 999 ? `${(data.citationCount / 1000).toFixed(1)}k` : data.citationCount}
+            </span>
           )}
         </div>
       )}
@@ -292,28 +333,41 @@ const EntityNode: React.FC<{ data: EntityNodeData; selected?: boolean }> = ({ da
 // Compact node for dense graphs
 const CompactEntityNode: React.FC<{ data: EntityNodeData; selected?: boolean }> = ({ data, selected }) => {
   const entityColor = getEntityColour(data.entityType);
+  const [isHovered, setIsHovered] = useState(false);
 
   // Generate accessible description for compact node
   const getCompactNodeDescription = (): string => {
-    return `${data.entityType} node: ${data.label}`;
+    let description = `${data.entityType}: ${data.label}`;
+    if (data.citationCount !== undefined) description += ` (${data.citationCount} citations)`;
+    return description;
+  };
+
+  const compactStyle: React.CSSProperties = {
+    background: `linear-gradient(135deg, ${entityColor}, ${entityColor}dd)`,
+    color: 'white',
+    padding: '6px 10px',
+    borderRadius: '8px',
+    border: selected ? `2px solid ${entityColor}` : '1px solid rgba(255, 255, 255, 0.2)',
+    minWidth: '70px',
+    maxWidth: '120px',
+    textAlign: 'center',
+    fontSize: '11px',
+    fontWeight: '600',
+    boxShadow: isHovered
+      ? `0 4px 12px ${entityColor}40, 0 2px 6px rgba(0, 0, 0, 0.15)`
+      : '0 2px 6px rgba(0, 0, 0, 0.15)',
+    cursor: 'pointer',
+    transition: 'all 0.15s ease',
+    transform: isHovered ? 'scale(1.05)' : 'scale(1)',
+    position: 'relative',
+    overflow: 'hidden',
   };
 
   return (
     <div
-      style={{
-        background: entityColor,
-        color: 'white',
-        padding: '6px 10px',
-        borderRadius: '8px',
-        border: selected ? `2px solid ${entityColor}` : '1px solid rgba(255, 255, 255, 0.2)',
-        minWidth: '60px',
-        textAlign: 'center',
-        fontSize: '11px',
-        fontWeight: '600',
-        boxShadow: '0 2px 6px rgba(0, 0, 0, 0.15)',
-        cursor: 'pointer',
-        transition: 'all 0.15s ease',
-      }}
+      style={compactStyle}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
       role="button"
       tabIndex={selected ? 0 : -1}
       aria-label={getCompactNodeDescription()}
@@ -325,9 +379,32 @@ const CompactEntityNode: React.FC<{ data: EntityNodeData; selected?: boolean }> 
         style={{ background: entityColor, border: '1px solid white', width: '6px', height: '6px' }}
       />
 
-      <div style={{ fontSize: '11px', fontWeight: '600' }}>
-        {data.label.length > 15 ? `${data.label.substring(0, 15)}...` : data.label}
+      <div
+        style={{
+          fontSize: '11px',
+          fontWeight: '600',
+          lineHeight: '1.2',
+          overflow: 'hidden',
+          textOverflow: 'ellipsis',
+          whiteSpace: 'nowrap',
+          textShadow: '0 1px 1px rgba(0, 0, 0, 0.3)',
+        }}
+        title={data.label}
+      >
+        {data.label}
       </div>
+
+      {/* Compact metadata indicator */}
+      {(data.citationCount !== undefined && data.citationCount > 0) && (
+        <div style={{
+          fontSize: '8px',
+          opacity: 0.8,
+          marginTop: '2px',
+          fontWeight: '500',
+        }}>
+          {data.citationCount > 99 ? '99+' : data.citationCount}
+        </div>
+      )}
 
       <Handle
         type="source"
@@ -566,27 +643,46 @@ import '@xyflow/react/dist/style.css';
         const weight = typeof rawWeight === 'number' ? rawWeight : 1;
         const relationshipType = ('type' in edgeData ? edgeData.type : null) || 'default';
 
-        // Determine edge appearance based on relationship strength and type
-        const strokeWidth = Math.max(1, Math.min(6, weight * 2));
+        // Enhanced edge appearance based on relationship strength and type
+        const strokeWidth = Math.max(1.5, Math.min(4, weight * 3));
         const isStrong = weight > 0.7;
+        const isMedium = weight > 0.4;
+
+        // Sophisticated color scheme based on strength
+        const getEdgeColor = (strength: number): string => {
+          if (strength > 0.8) return '#059669'; // Strong - green
+          if (strength > 0.6) return '#3b82f6'; // Medium-strong - blue
+          if (strength > 0.3) return '#f59e0b'; // Medium - amber
+          return '#94a3b8'; // Weak - gray
+        };
+
+        const edgeColor = getEdgeColor(weight);
+        const opacity = Math.max(0.4, Math.min(0.9, 0.4 + (weight * 0.5)));
+
+        // Determine edge type based on relationship
+        const edgeType = relationshipType === 'citation' ? 'smoothstep' :
+                        relationshipType === 'collaboration' ? 'straight' : 'smoothstep';
 
         return {
           id: `${edge.sourceId}-${edge.targetId}`,
           source: edge.sourceId,
           target: edge.targetId,
-          type: 'smoothstep',
+          type: edgeType,
           animated: isStrong,
           style: {
-            stroke: isStrong ? '#4f46e5' : '#94a3b8',
+            stroke: edgeColor,
             strokeWidth,
-            strokeDasharray: relationshipType === 'indirect' ? '5,5' : undefined,
-            opacity: 0.6 + (weight * 0.4),
+            strokeDasharray: relationshipType === 'indirect' ? '8,4' :
+                           relationshipType === 'potential' ? '4,4' : undefined,
+            opacity,
+            strokeLinecap: 'round',
+            transition: 'all 0.2s ease-in-out',
           },
           markerEnd: {
-            type: 'arrow',
-            color: isStrong ? '#4f46e5' : '#94a3b8',
-            width: 20,
-            height: 20,
+            type: 'arrowclosed',
+            color: edgeColor,
+            width: Math.max(16, strokeWidth * 4),
+            height: Math.max(16, strokeWidth * 4),
           },
           data: {
             originalEdge: edge,
@@ -752,11 +848,29 @@ import '@xyflow/react/dist/style.css';
           showFitView: true,
           showInteractive: true,
           position: 'bottom-left',
+          orientation: 'vertical',
+          style: {
+            background: 'rgba(255, 255, 255, 0.95)',
+            border: '1px solid rgba(0, 0, 0, 0.1)',
+            borderRadius: '8px',
+            padding: '4px',
+            boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
+          },
         },
         miniMap: {
           position: 'bottom-right',
-          maskColor: 'rgba(255, 255, 255, 0.7)',
+          maskColor: 'rgba(255, 255, 255, 0.8)',
           ariaLabel: 'Graph minimap for navigation overview',
+          nodeColor: (node: Node) => {
+            const data = node.data as EntityNodeData;
+            return getEntityColour(data.entityType);
+          },
+          nodeStrokeColor: (node: Node) => {
+            return node.selected ? '#1f2937' : 'rgba(255, 255, 255, 0.8)';
+          },
+          nodeClassName: (node: Node) => {
+            return node.selected ? 'selected-minimap-node' : 'minimap-node';
+          },
         },
         nodes: {
           focusable: true,
@@ -1227,6 +1341,8 @@ import '@xyflow/react/dist/style.css';
                 showFitView={config.controls.showFitView}
                 showInteractive={config.controls.showInteractive}
                 position={config.controls.position}
+                orientation={config.controls.orientation}
+                style={config.controls.style}
               />
             )}
 
