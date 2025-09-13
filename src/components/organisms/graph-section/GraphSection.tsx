@@ -1,19 +1,15 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 
 import { GraphDescription } from '@/components/molecules/graph-description/GraphDescription';
 import { GraphEmptyState } from '@/components/molecules/graph-empty-state/GraphEmptyState';
 import { GraphStatsDisplay } from '@/components/molecules/graph-stats-display/GraphStatsDisplay';
 import type { EntityGraphVertex } from '@/types/entity-graph';
+import { useEntityGraphStore } from '@/stores/entity-graph-store';
 
 
 import { EntitySection } from '../../templates/entity-page-template';
-import { EntityGraphVisualization, EntityGraphVisualizationSkeleton } from '../entity-graph-visualization';
-import { 
-  useGraphEngine, 
-  CompactGraphEngineSettings,
-  GraphEngineProvider,
-  TransitionOverlay,
-} from '../graph-engines';
+import { OpenAlexEntityGraph } from '../openalex-entity-graph';
+import { LoadingSkeleton } from '@/components';
 
 interface GraphSectionProps {
   isVisible: boolean;
@@ -32,85 +28,96 @@ interface GraphSectionProps {
   showTransitionOverlay?: boolean;
 }
 
-// Internal component that uses graph engine hooks
+// Using store methods directly with proper memoization to prevent infinite loops
+
+// EXACTLY MATCHING TEST APP: Direct vertices access with useMemo like test app
+function SimpleGraphDisplay({
+  width,
+  height,
+  onVertexClick,
+}: {
+  width: number;
+  height: number;
+  onVertexClick: (vertex: EntityGraphVertex) => void;
+}) {
+  // Match test app pattern: vertices from hook, then useMemo for XYFlow transformation
+  const rawVerticesMap = useEntityGraphStore((state) => state.graph.vertices);
+  const rawEdgesMap = useEntityGraphStore((state) => state.graph.edges);
+
+  // Convert to simple array format like test app (no filtering, just conversion)
+  const vertices = useMemo(() => {
+    return Array.from(rawVerticesMap.values());
+  }, [rawVerticesMap]);
+
+  const edges = useMemo(() => {
+    return Array.from(rawEdgesMap.values());
+  }, [rawEdgesMap]);
+
+  console.log('SimpleGraphDisplay:', { vertices: vertices.length, edges: edges.length });
+
+  // TEMPORARY: Just show data without XYFlow to test if data is stable
+  return (
+    <div style={{ width, height, padding: '20px', backgroundColor: '#f0f0f0', borderRadius: '8px' }}>
+      <h3>Graph Data (XYFlow Disabled for Testing)</h3>
+      <p><strong>Vertices:</strong> {vertices.length}</p>
+      <p><strong>Edges:</strong> {edges.length}</p>
+      {vertices.length > 0 && (
+        <div>
+          <h4>Sample Vertices:</h4>
+          <ul>
+            {vertices.slice(0, 5).map(v => (
+              <li key={v.id}>{v.displayName} ({v.entityType})</li>
+            ))}
+          </ul>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// Internal component using our new OpenAlexEntityGraph directly
 function GraphSectionInternal({
   isVisible,
   graphHeight,
   graphStats,
   totalVisits,
   onVertexClick,
-  showEngineSelector = true,
-  showTransitionOverlay = true,
+  showEngineSelector = false, // Engine selector disabled for now
+  showTransitionOverlay = false, // Transition overlay disabled for now
 }: GraphSectionProps) {
-  const {
-    currentEngine,
-    isTransitioning,
-    transitionProgress,
-    availableEngines,
-  } = useGraphEngine();
+  // Silence unused parameter warnings
+  void showEngineSelector;
+  void showTransitionOverlay;
 
   if (!isVisible) return null;
 
   // Show graph with data
   if (graphStats.totalVertices > 0) {
     return (
-      <>
-        {/* Transition overlay during engine switches */}
-        {showTransitionOverlay && isTransitioning && (
-          <TransitionOverlay
-            isTransitioning={isTransitioning}
-            progress={transitionProgress}
-            fromEngine={currentEngine}
-            toEngine={currentEngine} // Will be updated during transition
-            options={{
-              duration: 500,
-              preservePositions: true,
-              preserveSelection: true,
-              preserveViewport: true,
-            }}
-            engineDisplayNames={{
-              'svg': 'SVG',
-              'canvas-2d': 'Canvas',
-              'webgl': 'WebGL',
-              'cytoscape': 'Cytoscape.js',
-              'd3-force': 'D3.js Force',
-              'vis-network': 'vis-network',
-              'xyflow': 'xyflow (React Flow)'
-            }}
-          />
-        )}
-        
-        <EntitySection
-          title="Related Entities"
-          icon="graph"
-          actions={
-            <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-              {/* Engine selector */}
-              {showEngineSelector && (
-                <CompactGraphEngineSettings />
-              )}
-              
-              {/* Graph statistics */}
-              <GraphStatsDisplay
-                directlyVisited={graphStats.directlyVisited}
-                totalEdges={graphStats.totalEdges}
-                hasCurrentEntity={graphStats.hasCurrentEntity}
-              />
-            </div>
-          }
-        >
-          <div style={{ marginBottom: '16px' }}>
-            <EntityGraphVisualization
-              height={graphHeight}
-              onVertexClick={onVertexClick}
-              showControls={true}
-              showLegend={true}
+      <EntitySection
+        title="Related Entities"
+        icon="graph"
+        actions={
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+            {/* Graph statistics */}
+            <GraphStatsDisplay
+              directlyVisited={graphStats.directlyVisited}
+              totalEdges={graphStats.totalEdges}
+              hasCurrentEntity={graphStats.hasCurrentEntity}
             />
           </div>
-          
-          <GraphDescription />
-        </EntitySection>
-      </>
+        }
+      >
+        <div style={{ marginBottom: '16px' }}>
+          <SimpleGraphDisplay
+            width={800}
+            height={graphHeight}
+            onVertexClick={onVertexClick}
+          />
+        </div>
+
+        <GraphDescription />
+      </EntitySection>
     );
   }
 
@@ -122,7 +129,9 @@ function GraphSectionInternal({
         icon="graph"
         loading={true}
       >
-        <EntityGraphVisualizationSkeleton height={graphHeight} />
+        <div style={{ height: graphHeight, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <LoadingSkeleton height="100%" />
+        </div>
       </EntitySection>
     );
   }
@@ -132,26 +141,14 @@ function GraphSectionInternal({
     <EntitySection
       title="Related Entities"
       icon="graph"
-      actions={
-        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-          {/* Engine selector - also show in empty state */}
-          {showEngineSelector && (
-            <CompactGraphEngineSettings />
-          )}
-        </div>
-      }
     >
       <GraphEmptyState />
     </EntitySection>
   );
 }
 
-// Main export component
+// Main export component - NO MORE GraphEngineProvider wrapper
 export function GraphSection(props: GraphSectionProps) {
-  // Wrap in GraphEngineProvider to ensure engine context is available
-  return (
-    <GraphEngineProvider preloadDefault>
-      <GraphSectionInternal {...props} />
-    </GraphEngineProvider>
-  );
+  // Direct rendering without complex engine wrapper to avoid infinite loops
+  return <GraphSectionInternal {...props} />;
 }
