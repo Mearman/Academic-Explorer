@@ -719,6 +719,264 @@ const EdgeTooltip: React.FC<{
 };
 
 // ============================================================================
+// Context Menu Components
+// ============================================================================
+
+interface ContextMenuAction {
+  label: string;
+  icon: string;
+  action: () => void;
+  disabled?: boolean;
+  divider?: boolean;
+}
+
+const ContextMenu: React.FC<{
+  position: { x: number; y: number };
+  visible: boolean;
+  actions: ContextMenuAction[];
+  onClose: () => void;
+}> = ({ position, visible, actions, onClose }) => {
+  const menuRef = React.useRef<HTMLDivElement>(null);
+
+  // Close menu when clicking outside
+  React.useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+        onClose();
+      }
+    };
+
+    if (visible) {
+      document.addEventListener('mousedown', handleClickOutside);
+      return () => document.removeEventListener('mousedown', handleClickOutside);
+    }
+  }, [visible, onClose]);
+
+  // Close menu on escape key
+  React.useEffect(() => {
+    const handleEscapeKey = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        onClose();
+      }
+    };
+
+    if (visible) {
+      document.addEventListener('keydown', handleEscapeKey);
+      return () => document.removeEventListener('keydown', handleEscapeKey);
+    }
+  }, [visible, onClose]);
+
+  if (!visible) return null;
+
+  return (
+    <div
+      ref={menuRef}
+      style={{
+        position: 'fixed',
+        left: position.x,
+        top: position.y,
+        background: 'white',
+        border: '1px solid #e5e7eb',
+        borderRadius: '8px',
+        boxShadow: '0 10px 25px rgba(0, 0, 0, 0.15)',
+        zIndex: 1001,
+        minWidth: '160px',
+        overflow: 'hidden',
+        backdropFilter: 'blur(8px)',
+      }}
+    >
+      {actions.map((action, index) => (
+        <React.Fragment key={index}>
+          {action.divider && (
+            <div style={{
+              height: '1px',
+              background: '#e5e7eb',
+              margin: '4px 0',
+            }} />
+          )}
+          <button
+            onClick={() => {
+              if (!action.disabled) {
+                action.action();
+                onClose();
+              }
+            }}
+            disabled={action.disabled}
+            style={{
+              width: '100%',
+              padding: '8px 12px',
+              border: 'none',
+              background: 'transparent',
+              textAlign: 'left',
+              fontSize: '13px',
+              cursor: action.disabled ? 'not-allowed' : 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px',
+              color: action.disabled ? '#9ca3af' : '#374151',
+              ':hover': {
+                background: action.disabled ? 'transparent' : '#f3f4f6',
+              },
+            }}
+            onMouseEnter={(e) => {
+              if (!action.disabled) {
+                e.currentTarget.style.background = '#f3f4f6';
+              }
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.background = 'transparent';
+            }}
+          >
+            <span style={{ fontSize: '14px' }}>{action.icon}</span>
+            <span>{action.label}</span>
+          </button>
+        </React.Fragment>
+      ))}
+    </div>
+  );
+};
+
+const NodeContextMenu: React.FC<{
+  node: Node;
+  position: { x: number; y: number };
+  visible: boolean;
+  onClose: () => void;
+  rfInstance: ReactFlowInstance | null;
+}> = ({ node, position, visible, onClose, rfInstance }) => {
+  const data = node.data as EntityNodeData;
+
+  const actions: ContextMenuAction[] = [
+    {
+      label: 'Focus on Node',
+      icon: '🎯',
+      action: () => {
+        if (rfInstance) {
+          rfInstance.fitView({
+            nodes: [node],
+            padding: 0.8,
+            duration: 500,
+          });
+        }
+      },
+    },
+    {
+      label: 'Select Connected',
+      icon: '🔗',
+      action: () => {
+        // TODO: Implement select connected nodes functionality
+        console.log('Select connected nodes for:', node.id);
+      },
+    },
+    {
+      label: 'Hide Node',
+      icon: '👁️‍🗨️',
+      action: () => {
+        // TODO: Implement hide node functionality
+        console.log('Hide node:', node.id);
+      },
+    },
+    {
+      label: 'Copy Node ID',
+      icon: '📋',
+      action: () => {
+        navigator.clipboard.writeText(node.id).catch(() => {
+          console.warn('Failed to copy to clipboard');
+        });
+      },
+    },
+    { label: '', icon: '', action: () => {}, divider: true },
+    {
+      label: 'View Details',
+      icon: '📊',
+      action: () => {
+        // TODO: Implement view details functionality
+        console.log('View details for:', data);
+      },
+    },
+    {
+      label: 'Export Data',
+      icon: '💾',
+      action: () => {
+        // TODO: Implement export node data functionality
+        console.log('Export node data:', data);
+      },
+    },
+  ];
+
+  return (
+    <ContextMenu
+      position={position}
+      visible={visible}
+      actions={actions}
+      onClose={onClose}
+    />
+  );
+};
+
+const EdgeContextMenu: React.FC<{
+  edge: Edge;
+  position: { x: number; y: number };
+  visible: boolean;
+  onClose: () => void;
+}> = ({ edge, position, visible, onClose }) => {
+  const edgeData = edge.data || {};
+
+  const actions: ContextMenuAction[] = [
+    {
+      label: 'Highlight Path',
+      icon: '✨',
+      action: () => {
+        // TODO: Implement highlight path functionality
+        console.log('Highlight path for edge:', edge.id);
+      },
+    },
+    {
+      label: 'Hide Edge',
+      icon: '👁️‍🗨️',
+      action: () => {
+        // TODO: Implement hide edge functionality
+        console.log('Hide edge:', edge.id);
+      },
+    },
+    {
+      label: 'Copy Edge ID',
+      icon: '📋',
+      action: () => {
+        navigator.clipboard.writeText(edge.id).catch(() => {
+          console.warn('Failed to copy to clipboard');
+        });
+      },
+    },
+    { label: '', icon: '', action: () => {}, divider: true },
+    {
+      label: 'View Relationship',
+      icon: '🔍',
+      action: () => {
+        // TODO: Implement view relationship functionality
+        console.log('View relationship details:', edgeData);
+      },
+    },
+    {
+      label: 'Export Edge Data',
+      icon: '💾',
+      action: () => {
+        // TODO: Implement export edge data functionality
+        console.log('Export edge data:', edgeData);
+      },
+    },
+  ];
+
+  return (
+    <ContextMenu
+      position={position}
+      visible={visible}
+      actions={actions}
+      onClose={onClose}
+    />
+  );
+};
+
+// ============================================================================
 // Node Clustering Components
 // ============================================================================
 
@@ -1524,6 +1782,19 @@ import '@xyflow/react/dist/style.css';
         visible: boolean;
       }>({ edge: null, position: { x: 0, y: 0 }, visible: false });
 
+      // Context menu state management
+      const [nodeContextMenu, setNodeContextMenu] = useState<{
+        node: Node | null;
+        position: { x: number; y: number };
+        visible: boolean;
+      }>({ node: null, position: { x: 0, y: 0 }, visible: false });
+
+      const [edgeContextMenu, setEdgeContextMenu] = useState<{
+        edge: Edge | null;
+        position: { x: number; y: number };
+        visible: boolean;
+      }>({ edge: null, position: { x: 0, y: 0 }, visible: false });
+
       const onConnect = useCallback(
         (params: Connection) => setEdges((eds) => addEdge(params, eds)),
         [setEdges]
@@ -1577,6 +1848,37 @@ import '@xyflow/react/dist/style.css';
           });
         }
       }, [rfInstance]);
+
+      // Context menu handlers
+      const onNodeContextMenu = useCallback((event: React.MouseEvent, node: Node) => {
+        event.preventDefault();
+        setNodeContextMenu({
+          node,
+          position: { x: event.clientX, y: event.clientY },
+          visible: true,
+        });
+        // Hide tooltips when context menu appears
+        setNodeTooltip(prev => ({ ...prev, visible: false }));
+      }, []);
+
+      const onEdgeContextMenu = useCallback((event: React.MouseEvent, edge: Edge) => {
+        event.preventDefault();
+        setEdgeContextMenu({
+          edge,
+          position: { x: event.clientX, y: event.clientY },
+          visible: true,
+        });
+        // Hide tooltips when context menu appears
+        setEdgeTooltip(prev => ({ ...prev, visible: false }));
+      }, []);
+
+      const closeNodeContextMenu = useCallback(() => {
+        setNodeContextMenu(prev => ({ ...prev, visible: false }));
+      }, []);
+
+      const closeEdgeContextMenu = useCallback(() => {
+        setEdgeContextMenu(prev => ({ ...prev, visible: false }));
+      }, []);
 
       // Keyboard navigation handler
       const handleKeyDown = useCallback((event: React.KeyboardEvent) => {
@@ -1772,8 +2074,10 @@ import '@xyflow/react/dist/style.css';
             onNodeMouseLeave={onNodeMouseLeave}
             onNodeMouseMove={onNodeMouseMove}
             onNodeDoubleClick={onNodeDoubleClick}
+            onNodeContextMenu={onNodeContextMenu}
             onEdgeMouseEnter={onEdgeMouseEnter}
             onEdgeMouseLeave={onEdgeMouseLeave}
+            onEdgeContextMenu={onEdgeContextMenu}
             nodeTypes={config.nodeTypes || nodeTypes}
             edgeTypes={config.edgeTypes || edgeTypes}
             fitView={config.fitView}
@@ -1886,6 +2190,21 @@ import '@xyflow/react/dist/style.css';
             edge={edgeTooltip.edge}
             position={edgeTooltip.position}
             visible={edgeTooltip.visible}
+          />
+
+          {/* Interactive Context Menus */}
+          <NodeContextMenu
+            node={nodeContextMenu.node}
+            position={nodeContextMenu.position}
+            visible={nodeContextMenu.visible}
+            onClose={closeNodeContextMenu}
+            rfInstance={rfInstance}
+          />
+          <EdgeContextMenu
+            edge={edgeContextMenu.edge}
+            position={edgeContextMenu.position}
+            visible={edgeContextMenu.visible}
+            onClose={closeEdgeContextMenu}
           />
         </div>
       );
