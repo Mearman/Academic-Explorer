@@ -6,6 +6,7 @@
 import { createFileRoute } from '@tanstack/react-router'
 import React, { useState, useMemo, useEffect } from 'react'
 import { compareAcademicExplorerResults, DEFAULT_MATCHING_CONFIG } from '@/lib/evaluation/comparison-engine'
+import { searchBasedOnSTARDataset, calculateSearchCoverage, DEFAULT_SEARCH_CONFIG } from '@/lib/evaluation/openalex-search-service'
 import type { STARDataset, ComparisonResults as ComparisonResultsType, WorkReference, ComparisonProgress } from '@/lib/evaluation/types'
 
 export const Route = createFileRoute('/evaluation/results')({
@@ -63,37 +64,21 @@ function ComparisonResults() {
     }
   }, [])
 
-  // Mock Academic Explorer search function (replace with real implementation)
-  const performAcademicExplorerSearch = async (query: string): Promise<WorkReference[]> => {
-    // TODO: Replace with actual Academic Explorer search using OpenAlex client
-    // This would typically involve:
-    // 1. Using the OpenAlex client to search for works
-    // 2. Converting OpenAlex Work entities to WorkReference format
-    // 3. Applying filters and search criteria
+  // Real Academic Explorer search function using OpenAlex API
+  const performAcademicExplorerSearch = async (dataset: STARDataset): Promise<WorkReference[]> => {
+    try {
+      // Use the optimized search based on the STAR dataset criteria
+      const results = await searchBasedOnSTARDataset(dataset, DEFAULT_SEARCH_CONFIG)
 
-    // For now, return mock data that matches the search query
-    const mockResults: WorkReference[] = [
-      {
-        title: `Advanced ${query} techniques in modern research`,
-        authors: ['John Smith', 'Jane Doe'],
-        doi: '10.1234/example.001',
-        publicationYear: 2023,
-        source: 'Nature',
-        openalexId: 'W1234567890'
-      },
-      {
-        title: `A comprehensive study of ${query} applications`,
-        authors: ['Alice Johnson', 'Bob Wilson'],
-        publicationYear: 2022,
-        source: 'Science',
-        openalexId: 'W2345678901'
-      },
-      // Add more mock results based on query
-    ]
+      // Calculate and log search coverage for debugging
+      const coverage = calculateSearchCoverage(results, dataset)
+      console.log('Search coverage analysis:', coverage)
 
-    // Simulate API delay
-    await new Promise(resolve => setTimeout(resolve, 2000))
-    return mockResults
+      return results
+    } catch (error) {
+      console.error('Academic Explorer search failed:', error)
+      throw error
+    }
   }
 
   // Run comparison for a specific dataset
@@ -115,7 +100,7 @@ function ComparisonResults() {
       const startTime = performance.now()
 
       // Step 1: Perform Academic Explorer search
-      const academicExplorerResults = await performAcademicExplorerSearch(dataset.reviewTopic)
+      const academicExplorerResults = await performAcademicExplorerSearch(dataset)
 
       // Step 2: Run comparison with progress tracking
       const comparisonResults = await compareAcademicExplorerResults(
