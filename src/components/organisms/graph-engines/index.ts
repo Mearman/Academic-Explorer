@@ -469,3 +469,20 @@ export function disableDebugMode() {
 export function isDebugMode(): boolean {
   return typeof window !== 'undefined' && Boolean(window.__GRAPH_ENGINE_DEBUG__);
 }
+
+// ============================================================================
+// Debug Utilities
+// ============================================================================
+
+export type {
+  GraphEngineDebugFlags,
+  PerformanceMemory,
+} from './types/debug';
+
+export {
+  getDebugFlags,
+  setGraphEngineDebug,
+  setCanvasEngineDebug,
+  isAnyDebugModeEnabled,
+  getMemoryUsageMB,
+} from './types/debug';
