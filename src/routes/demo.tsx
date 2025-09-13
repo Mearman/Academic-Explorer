@@ -1,5 +1,8 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { useQuery } from '@tanstack/react-query'
+import { Title, Text, Card, Group, Badge, Loader, Alert, Stack } from '@mantine/core'
+import { IconAlertCircle } from '@tabler/icons-react'
+import { pageTitle, pageDescription } from '../styles/layout.css'
 
 // Example API function (using JSONPlaceholder for demo)
 const fetchPosts = async () => {
@@ -10,6 +13,13 @@ const fetchPosts = async () => {
   return response.json()
 }
 
+interface Post {
+  id: number
+  title: string
+  body: string
+  userId: number
+}
+
 function QueryDemo() {
   const { data, isLoading, error } = useQuery({
     queryKey: ['posts'],
@@ -17,29 +27,59 @@ function QueryDemo() {
   })
 
   if (isLoading) {
-    return <div className="p-4">Loading posts...</div>
+    return (
+      <Group justify="center" py="xl">
+        <Loader size="lg" />
+        <Text>Loading posts...</Text>
+      </Group>
+    )
   }
 
   if (error) {
-    return <div className="p-4 text-red-600">Error: {error.message}</div>
+    return (
+      <Alert variant="light" color="red" title="Error loading posts" icon={<IconAlertCircle />}>
+        {error.message}
+      </Alert>
+    )
   }
 
   return (
-    <div className="p-4">
-      <h3 className="text-xl font-bold mb-4">TanStack Query Demo</h3>
-      <p className="mb-4">
-        This demonstrates TanStack Query fetching data from JSONPlaceholder API.
-        Open the React Query devtools to see query status and caching.
-      </p>
-      <div className="space-y-4">
-        {data?.map((post: any) => (
-          <div key={post.id} className="border p-4 rounded">
-            <h4 className="font-semibold">{post.title}</h4>
-            <p className="text-gray-600 mt-2">{post.body}</p>
-          </div>
-        ))}
+    <Stack gap="md">
+      <div>
+        <Title order={1} className={pageTitle}>
+          TanStack Query Demo
+        </Title>
+        <Text className={pageDescription}>
+          This demonstrates TanStack Query fetching data from JSONPlaceholder API.
+          Open the React Query devtools to see query status and caching behavior.
+        </Text>
       </div>
-    </div>
+
+      <Stack gap="md">
+        {data?.map((post: Post) => (
+          <Card key={post.id} shadow="sm" padding="lg" radius="md" withBorder>
+            <Group justify="space-between" mb="xs">
+              <Text fw={500} size="lg">
+                {post.title}
+              </Text>
+              <Badge color="blue" variant="light">
+                Post #{post.id}
+              </Badge>
+            </Group>
+
+            <Text size="sm" c="dimmed">
+              {post.body}
+            </Text>
+
+            <Group mt="md">
+              <Badge size="xs" variant="outline">
+                User {post.userId}
+              </Badge>
+            </Group>
+          </Card>
+        ))}
+      </Stack>
+    </Stack>
   )
 }
 
