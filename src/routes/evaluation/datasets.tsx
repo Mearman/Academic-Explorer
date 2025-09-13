@@ -5,47 +5,14 @@
 
 import { createFileRoute } from '@tanstack/react-router'
 import React, { useState } from 'react'
+import { parseSTARFile, createSTARDatasetFromParseResult, DEFAULT_COLUMN_MAPPINGS } from '@/lib/evaluation/file-parser'
+import type { STARDataset, WorkReference, SearchCriteria } from '@/lib/evaluation/types'
 
 export const Route = createFileRoute('/evaluation/datasets')({
   component: DatasetsManagement,
 })
 
-interface STARDataset {
-  id: string
-  name: string
-  uploadDate: Date
-  reviewTopic: string
-  originalPaperCount: number
-  includedPapers: WorkReference[]
-  excludedPapers: WorkReference[]
-  searchStrategy: SearchCriteria
-  metadata: {
-    description?: string
-    methodology: string
-    dateRange?: string
-    originalSource?: string
-  }
-}
-
-interface WorkReference {
-  title: string
-  authors: string[]
-  doi?: string
-  openalexId?: string
-  publicationYear: number
-  source: string
-}
-
-interface SearchCriteria {
-  keywords: string[]
-  databases: string[]
-  dateRange?: {
-    start: number
-    end: number
-  }
-  inclusionCriteria: string[]
-  exclusionCriteria: string[]
-}
+// Types are imported from @/lib/evaluation/types
 
 function DatasetsManagement() {
   const [datasets, setDatasets] = useState<STARDataset[]>([])
@@ -68,43 +35,35 @@ function DatasetsManagement() {
     setUploadProgress(0)
 
     try {
-      // Simulate upload progress
-      const progressInterval = setInterval(() => {
-        setUploadProgress(prev => {
-          if (prev >= 90) {
-            clearInterval(progressInterval)
-            return 90
-          }
-          return prev + 10
-        })
-      }, 200)
+      // Show initial progress
+      setUploadProgress(10)
 
-      // Simulate file processing
-      await new Promise(resolve => setTimeout(resolve, 2000))
+      // Parse file using actual file parser
+      setUploadProgress(30)
+      const parseResult = await parseSTARFile(uploadFile, DEFAULT_COLUMN_MAPPINGS)
 
-      // Parse file (placeholder logic)
-      const newDataset: STARDataset = {
-        id: `dataset_${Date.now()}`,
-        name: uploadFile.name.replace(/\.[^/.]+$/, ''),
-        uploadDate: new Date(),
-        reviewTopic: 'Extracted from file', // TODO: Parse from file
-        originalPaperCount: Math.floor(Math.random() * 200) + 50,
-        includedPapers: [], // TODO: Parse from file
-        excludedPapers: [], // TODO: Parse from file
-        searchStrategy: {
-          keywords: [], // TODO: Parse from file
-          databases: [],
-          inclusionCriteria: [],
-          exclusionCriteria: []
-        },
-        metadata: {
-          description: 'Uploaded from file',
-          methodology: 'STAR',
-          originalSource: uploadFile.name
+      // Check for parsing errors
+      if (parseResult.metadata.errors.length > 0) {
+        console.warn('File parsing warnings:', parseResult.metadata.errors)
+
+        // Show error details to user for critical errors
+        const criticalErrors = parseResult.metadata.errors.filter(error =>
+          error.includes('Excel parsing not yet implemented') ||
+          error.includes('Failed to parse')
+        )
+
+        if (criticalErrors.length > 0) {
+          alert(`Upload failed: ${criticalErrors.join(', ')}\n\nSupported formats: CSV, JSON`)
+          throw new Error('File parsing failed')
         }
       }
 
-      clearInterval(progressInterval)
+      setUploadProgress(70)
+
+      // Create dataset from parse result
+      const reviewTopic = prompt('Enter the review topic for this dataset:') || 'Systematic Literature Review'
+      const newDataset = createSTARDatasetFromParseResult(uploadFile, parseResult, reviewTopic)
+
       setUploadProgress(100)
 
       // Add to datasets
@@ -258,14 +217,14 @@ function DatasetsManagement() {
                 </div>
               </div>
 
-              {dataset.metadata.description && (
+              {dataset.metadata?.description && (
                 <p style={{
                   fontSize: '13px',
                   color: '#6b7280',
                   marginBottom: '16px',
                   lineHeight: '1.4'
                 }}>
-                  {dataset.metadata.description}
+                  {dataset.metadata?.description}
                 </p>
               )}
 
