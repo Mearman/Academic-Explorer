@@ -128,14 +128,14 @@ function getMetricDisplayName(metric: string): string {
  */
 function groupInsights(insights: ComparisonInsight[]): Record<string, ComparisonInsight[]> {
   const groups: Record<string, ComparisonInsight[]> = {};
-  
+
   insights.forEach(insight => {
     if (!groups[insight.type]) {
       groups[insight.type] = [];
     }
-    groups[insight.type].push(insight);
+    groups[insight.type]?.push(insight);
   });
-  
+
   return groups;
 }
 
@@ -157,7 +157,7 @@ export const ComparisonSummary = forwardRef<HTMLDivElement, ComparisonSummaryPro
   // Handle loading state
   if (loading) {
     return (
-      <Card ref={ref} className={className} data-testid={testId} {...props}>
+      <Card ref={ref} {...(className !== undefined && { className })} {...(testId !== undefined && { 'data-testid': testId })} {...props}>
         <LoadingSkeleton height="150" />
         <Text size="sm" c="dimmed" ta="center" mt="md">
           Loading summary...
@@ -169,7 +169,7 @@ export const ComparisonSummary = forwardRef<HTMLDivElement, ComparisonSummaryPro
   // Handle error state
   if (error) {
     return (
-      <Card ref={ref} className={className} data-testid={testId} {...props}>
+      <Card ref={ref} {...(className !== undefined && { className })} {...(testId !== undefined && { 'data-testid': testId })} {...props}>
         <ErrorMessage message={error} />
       </Card>
     );
@@ -178,7 +178,7 @@ export const ComparisonSummary = forwardRef<HTMLDivElement, ComparisonSummaryPro
   // Handle empty state
   if (!analysis) {
     return (
-      <Card ref={ref} className={className} data-testid={testId} {...props}>
+      <Card ref={ref} {...(className !== undefined && { className })} {...(testId !== undefined && { 'data-testid': testId })} {...props}>
         <Alert title="No Analysis Available" color="gray">
           No comparison data available. Add entities to generate analysis.
         </Alert>
@@ -192,7 +192,7 @@ export const ComparisonSummary = forwardRef<HTMLDivElement, ComparisonSummaryPro
   // Render compact layout
   if (layout === 'compact') {
     return (
-      <Card ref={ref} className={className} data-testid={testId} padding="sm" {...props}>
+      <Card ref={ref} {...(className !== undefined && { className })} {...(testId !== undefined && { 'data-testid': testId })} padding="sm" {...props}>
         <Group justify="space-between" wrap="nowrap">
           <div>
             <Text size={size} fw="bold">
@@ -225,10 +225,10 @@ export const ComparisonSummary = forwardRef<HTMLDivElement, ComparisonSummaryPro
   
   // Render detailed layout
   return (
-    <Card 
-      ref={ref} 
-      className={className} 
-      data-testid={testId} 
+    <Card
+      ref={ref}
+      {...(className !== undefined && { className })}
+      {...(testId !== undefined && { 'data-testid': testId })}
       aria-label="Comparison summary"
       {...props}
     >

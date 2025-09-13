@@ -8,7 +8,7 @@ export function getSuggestionUrl(suggestion: AutocompleteSuggestion): string {
   // If suggestion.id is a URL, extract just the ID part
   if (entityId.includes('openalex.org/')) {
     const match = entityId.match(/openalex\.org\/([WASIPFTCKRN]\d{7,10})/i);
-    if (match) {
+    if (match && match[1]) {
       entityId = match[1];
     }
   }

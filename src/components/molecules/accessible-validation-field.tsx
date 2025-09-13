@@ -184,11 +184,11 @@ const useAccessibleValidationFieldValidation = (
 
     try {
       const result = await validatorRef.current.validateField(`${config.label}`, fieldValue, {
-        required: config.required,
+        ...(config.required !== undefined && { required: config.required }),
         type: getFieldType(config) as 'string' | 'number' | 'boolean' | 'array' | 'object',
-        format: getFieldFormat(config) as 'url' | 'email' | 'openalex_id' | 'date' | 'iso_date' | undefined,
-        min: getFieldMin(config),
-        max: getFieldMax(config),
+        ...(getFieldFormat(config) !== undefined && { format: getFieldFormat(config) as 'url' | 'email' | 'openalex_id' | 'date' | 'iso_date' }),
+        ...(getFieldMin(config) !== undefined && { min: getFieldMin(config) }),
+        ...(getFieldMax(config) !== undefined && { max: getFieldMax(config) }),
         entityType: config.entityType,
       });
 
@@ -284,8 +284,8 @@ export function AccessibleValidationField({
       fieldState={fieldState}
       handlers={handlers}
       fieldHelpers={fieldHelpers}
-      className={className}
-      testId={testId}
+      {...(className !== undefined && { className })}
+      {...(testId !== undefined && { testId })}
     />
   );
 }
@@ -380,7 +380,7 @@ const AccessibleValidationFieldLayout = ({
   const warningMessage = fieldHelpers.getWarningMessage();
   
   return (
-    <Stack gap="xs" className={className} data-testid={testId}>
+    <Stack gap="xs" {...(className !== undefined && { className })} {...(testId !== undefined && { 'data-testid': testId })}>
       <AccessibleValidationFieldInput
         config={config}
         value={value}
@@ -388,7 +388,7 @@ const AccessibleValidationFieldLayout = ({
         handlers={handlers}
         fieldHelpers={fieldHelpers}
       />
-      
+
       <AccessibleValidationFieldFeedback
         config={config}
         fieldState={fieldState}
@@ -423,17 +423,17 @@ const AccessibleValidationFieldInput = ({
   const commonProps = {
     id: fieldId,
     label: config.label,
-    description: config.description,
-    required: config.required,
-    disabled: config.disabled,
-    placeholder: config.placeholder,
+    ...(config.description !== undefined && { description: config.description }),
+    ...(config.required !== undefined && { required: config.required }),
+    ...(config.disabled !== undefined && { disabled: config.disabled }),
+    ...(config.placeholder !== undefined && { placeholder: config.placeholder }),
     onChange: handlers.handleChange,
     onBlur: handlers.handleBlur,
     onFocus: handlers.handleFocus,
-    error: errorMessage,
+    ...(errorMessage !== null && { error: errorMessage }),
     'aria-describedby': [config.description ? helpId : '', errorMessage ? errorId : '', statusId].filter(Boolean).join(' '),
     'aria-invalid': validationState.isValid === false,
-    rightSection: config.showValidationIcon ? fieldHelpers.getValidationIcon() : undefined,
+    ...(config.showValidationIcon && fieldHelpers.getValidationIcon() !== null && { rightSection: fieldHelpers.getValidationIcon() }),
   };
   
   // Render appropriate input type
@@ -469,10 +469,10 @@ const AccessibleValidationFieldInput = ({
         <NumberInput
           {...commonProps}
           value={value as number || undefined}
-          min={getFieldMin(config)}
-          max={getFieldMax(config)}
-          step={config.step}
-          decimalScale={config.precision}
+          {...(getFieldMin(config) !== undefined && { min: getFieldMin(config) })}
+          {...(getFieldMax(config) !== undefined && { max: getFieldMax(config) })}
+          {...(config.step !== undefined && { step: config.step })}
+          {...(config.precision !== undefined && { decimalScale: config.precision })}
         />
       );
       
@@ -482,9 +482,9 @@ const AccessibleValidationFieldInput = ({
           {...commonProps}
           value={value as string || ''}
           rows={config.rows || 3}
-          autosize={config.autosize}
-          minRows={config.minRows}
-          maxRows={config.maxRows}
+          {...(config.autosize !== undefined && { autosize: config.autosize })}
+          {...(config.minRows !== undefined && { minRows: config.minRows })}
+          {...(config.maxRows !== undefined && { maxRows: config.maxRows })}
         />
       );
       
@@ -494,8 +494,8 @@ const AccessibleValidationFieldInput = ({
           {...commonProps}
           value={value as string || ''}
           data={config.options || []}
-          searchable={config.searchable}
-          clearable={config.clearable}
+          {...(config.searchable !== undefined && { searchable: config.searchable })}
+          {...(config.clearable !== undefined && { clearable: config.clearable })}
         />
       );
       
@@ -505,8 +505,8 @@ const AccessibleValidationFieldInput = ({
           {...commonProps}
           value={value as string[] || []}
           data={config.options || []}
-          searchable={config.searchable}
-          clearable={config.clearable}
+          {...(config.searchable !== undefined && { searchable: config.searchable })}
+          {...(config.clearable !== undefined && { clearable: config.clearable })}
         />
       );
       
@@ -515,14 +515,14 @@ const AccessibleValidationFieldInput = ({
         <Checkbox
           id={fieldId}
           label={config.label}
-          description={config.description}
-          required={config.required}
-          disabled={config.disabled}
+          {...(config.description !== undefined && { description: config.description })}
+          {...(config.required !== undefined && { required: config.required })}
+          {...(config.disabled !== undefined && { disabled: config.disabled })}
           checked={Boolean(value)}
           onChange={(event) => handlers.handleChange(event.currentTarget.checked)}
           onBlur={handlers.handleBlur}
           onFocus={handlers.handleFocus}
-          error={errorMessage}
+          {...(errorMessage !== null && { error: errorMessage })}
           aria-describedby={[config.description ? helpId : '', errorMessage ? errorId : ''].filter(Boolean).join(' ')}
           aria-invalid={validationState.isValid === false}
         />
@@ -533,14 +533,14 @@ const AccessibleValidationFieldInput = ({
         <Switch
           id={fieldId}
           label={config.label}
-          description={config.description}
-          required={config.required}
-          disabled={config.disabled}
+          {...(config.description !== undefined && { description: config.description })}
+          {...(config.required !== undefined && { required: config.required })}
+          {...(config.disabled !== undefined && { disabled: config.disabled })}
           checked={Boolean(value)}
           onChange={(event) => handlers.handleChange(event.currentTarget.checked)}
           onBlur={handlers.handleBlur}
           onFocus={handlers.handleFocus}
-          error={errorMessage}
+          {...(errorMessage !== null && { error: errorMessage })}
           aria-describedby={[config.description ? helpId : '', errorMessage ? errorId : ''].filter(Boolean).join(' ')}
           aria-invalid={validationState.isValid === false}
         />

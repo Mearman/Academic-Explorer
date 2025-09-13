@@ -21,15 +21,15 @@ export function ResultsOptionsSection({ formData, updateField, onReset }: Result
         <h3 className={styles.groupTitle}>Results Options</h3>
         <div className={styles.groupContent}>
           <SortSelector
-            sortBy={formData.sortBy}
-            sortOrder={formData.sortOrder}
+            {...(formData.sortBy !== undefined && { sortBy: formData.sortBy })}
+            {...(formData.sortOrder !== undefined && { sortOrder: formData.sortOrder })}
             onSortByChange={(value) => updateField('sortBy', value)}
             onSortOrderChange={(value) => updateField('sortOrder', value)}
           />
           <ResultsSettings
-            perPage={formData.perPage}
-            sample={formData.sample}
-            groupBy={formData.groupBy}
+            {...(formData.perPage !== undefined && { perPage: formData.perPage })}
+            {...(formData.sample !== undefined && { sample: formData.sample })}
+            {...(formData.groupBy !== undefined && { groupBy: formData.groupBy })}
             onPerPageChange={(value) => updateField('perPage', value)}
             onSampleChange={(value) => updateField('sample', value)}
             onGroupByChange={(value) => updateField('groupBy', value)}

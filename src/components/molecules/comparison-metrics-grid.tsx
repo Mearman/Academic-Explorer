@@ -193,7 +193,7 @@ export function ComparisonMetricsGrid({
   // Handle loading state
   if (loading) {
     return (
-      <Box className={className} data-testid={testId} {...props}>
+      <Box {...(className !== undefined && { className })} {...(testId !== undefined && { 'data-testid': testId })} {...props}>
         <LoadingSkeleton height="200" />
         <Text size="sm" c="dimmed" ta="center" mt="md">
           Loading comparison metrics...
@@ -205,7 +205,7 @@ export function ComparisonMetricsGrid({
   // Handle error state
   if (error) {
     return (
-      <Box className={className} data-testid={testId} {...props}>
+      <Box {...(className !== undefined && { className })} {...(testId !== undefined && { 'data-testid': testId })} {...props}>
         <ErrorMessage message={error} />
       </Box>
     );
@@ -214,7 +214,7 @@ export function ComparisonMetricsGrid({
   // Handle empty state
   if (metrics.length === 0) {
     return (
-      <Box className={className} data-testid={testId} {...props}>
+      <Box {...(className !== undefined && { className })} {...(testId !== undefined && { 'data-testid': testId })} {...props}>
         <Alert title="No Metrics Available" color="gray">
           No metrics to compare. Add entities to the comparison to see their metrics.
         </Alert>
@@ -225,7 +225,7 @@ export function ComparisonMetricsGrid({
   // Handle single entity state
   if (metrics.length === 1) {
     return (
-      <Box className={className} data-testid={testId} {...props}>
+      <Box {...(className !== undefined && { className })} {...(testId !== undefined && { 'data-testid': testId })} {...props}>
         <Alert title="Single Entity" color="blue">
           Add more entities to compare their metrics side by side.
         </Alert>
@@ -233,14 +233,22 @@ export function ComparisonMetricsGrid({
     );
   }
   
-  const {entityType} = metrics[0];
+  const entityType = metrics[0]?.entityType;
+  if (!entityType) {
+    return (
+      <Box {...(className !== undefined && { className })} {...(testId !== undefined && { 'data-testid': testId })} {...props}>
+        <ErrorMessage message="Invalid metrics data: missing entity type" />
+      </Box>
+    );
+  }
+
   const metricKeys = getMetricKeys(metrics);
   const sortedMetrics = sortMetrics(metrics, sortBy, sortOrder);
   
   // Render table layout
   if (layout === 'table') {
     return (
-      <Box className={className} data-testid={testId} {...props}>
+      <Box {...(className !== undefined && { className })} {...(testId !== undefined && { 'data-testid': testId })} {...props}>
         <Table 
           highlightOnHover
           aria-label={`Comparison metrics for ${metrics.length} ${entityType.toLowerCase()}s`}
@@ -310,7 +318,7 @@ export function ComparisonMetricsGrid({
   // Render cards layout
   if (layout === 'cards') {
     return (
-      <Box className={className} data-testid={testId} {...props}>
+      <Box {...(className !== undefined && { className })} {...(testId !== undefined && { 'data-testid': testId })} {...props}>
         <Group gap="md" align="stretch">
           {sortedMetrics.map(metric => (
             <Card 
@@ -367,7 +375,7 @@ export function ComparisonMetricsGrid({
   
   // Render compact layout
   return (
-    <Box className={className} data-testid={testId} {...props}>
+    <Box {...(className !== undefined && { className })} {...(testId !== undefined && { 'data-testid': testId })} {...props}>
       <Stack gap="xs">
         {sortedMetrics.map(metric => (
           <Group 

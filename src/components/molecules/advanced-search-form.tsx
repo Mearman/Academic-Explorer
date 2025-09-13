@@ -32,7 +32,11 @@ export function AdvancedSearchForm({ onSearch, initialData, onParamsChange }: Ad
     updateField,
     handleSubmit,
     handleReset,
-  } = useAdvancedSearchForm({ initialData, onSearch, onParamsChange });
+  } = useAdvancedSearchForm({
+    ...(initialData !== undefined && { initialData }),
+    onSearch,
+    ...(onParamsChange !== undefined && { onParamsChange })
+  });
 
   return (
     <form onSubmit={handleSubmit} className={styles.form}>

@@ -16,8 +16,10 @@ export function useAutocompleteHandlers(
     if (e.key === 'Enter' && selectedIndex >= 0) {
       e.preventDefault();
       const suggestion = suggestions[selectedIndex];
-      handleSuggestionSelect(suggestion);
-      onSelect?.(suggestion);
+      if (suggestion) {
+        handleSuggestionSelect(suggestion);
+        onSelect?.(suggestion);
+      }
     }
     
     if (e.key === 'Escape') {
