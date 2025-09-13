@@ -147,16 +147,29 @@ export function EntityGraphVisualization({
     hideTooltip,
   } = useGraphInteractions();
 
+  // FIXED: Use stable selectors instead of functions that create new arrays
+  const rawVerticesMap = useEntityGraphStore((state) => state.graph.vertices);
+  const rawEdgesMap = useEntityGraphStore((state) => state.graph.edges);
+  const filterOptions = useEntityGraphStore((state) => state.filterOptions);
+
   const filteredVertices = useMemo(() => {
-    const vertices = getFilteredVertices();
-    // Found filtered vertices - debug logs removed
+    const vertices = Array.from(rawVerticesMap.values());
+
+    // Apply basic filtering without complex dependencies
+    if (filterOptions.directlyVisitedOnly) {
+      return vertices.filter(v => v.directlyVisited);
+    }
+
+    if (filterOptions.entityTypes && filterOptions.entityTypes.length > 0) {
+      return vertices.filter(v => filterOptions.entityTypes!.includes(v.entityType));
+    }
+
     return vertices;
-  }, [getFilteredVertices]);
+  }, [rawVerticesMap, filterOptions.directlyVisitedOnly, filterOptions.entityTypes]);
+
   const filteredEdges = useMemo(() => {
-    const edges = getFilteredEdges();
-    // Found filtered edges - debug logs removed
-    return edges;
-  }, [getFilteredEdges]);
+    return Array.from(rawEdgesMap.values());
+  }, [rawEdgesMap]);
 
   const positionedVertices = useMemo(() => {
     return generatePositionedVertices(
