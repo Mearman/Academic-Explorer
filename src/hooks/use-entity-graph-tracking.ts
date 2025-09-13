@@ -743,7 +743,7 @@ export function useEntityGraphTracking({
 
     for (const { pattern, type } of entityRoutePatterns) {
       const match = pathname.match(pattern);
-      if (match) {
+      if (match && match[1]) {
         const entityId = decodeURIComponent(match[1]);
         
         // For now, just track the visit with basic info

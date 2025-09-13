@@ -99,23 +99,35 @@ function convertSimpleEntityToVertex(entity: SimpleEntity, isDirectlyVisited: bo
     });
   }
   
-  return {
+  const vertex: EntityGraphVertex = {
     id: entity.id,
     entityType: entity.entityType,
     displayName: entity.displayName,
     directlyVisited: isDirectlyVisited,
     firstSeen: now,
-    lastVisited: isDirectlyVisited ? now : undefined,
     visitCount: isDirectlyVisited ? 1 : 0,
     encounters,
-    encounterStats: {
-      totalEncounters: encounters.length,
-      searchResultCount: 0,
-      relatedEntityCount: 0,
-      lastEncounter: encounters.length > 0 ? now : undefined,
-    },
+    encounterStats: (() => {
+      const stats: EntityGraphVertex['encounterStats'] = {
+        totalEncounters: encounters.length,
+        searchResultCount: 0,
+        relatedEntityCount: 0,
+      };
+
+      if (encounters.length > 0) {
+        stats.lastEncounter = now;
+      }
+
+      return stats;
+    })(),
     metadata: {},
   };
+
+  if (isDirectlyVisited) {
+    vertex.lastVisited = now;
+  }
+
+  return vertex;
 }
 
 /**
