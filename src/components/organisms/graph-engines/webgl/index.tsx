@@ -149,6 +149,11 @@ const fragmentShader = gl.createShader(gl.FRAGMENT_SHADER);
   private projectionMatrix: Float32Array = new Float32Array(16);
   private mvpMatrix: Float32Array = new Float32Array(16);
 
+  // View parameters for zoom and pan
+  private viewScale = 1.0;
+  private viewOffsetX = 0.0;
+  private viewOffsetY = 0.0;
+
   // Performance monitoring
   private frameCount = 0;
   private lastFpsUpdate = 0;
@@ -436,10 +441,52 @@ const fragmentShader = gl.createShader(gl.FRAGMENT_SHADER);
   }
 
   fitToView(padding = 50, animate = true): void {
-    // Calculate bounding box and update view matrix
-    // TODO: Implement view fitting logic
+    if (!this.vertices || this.vertexCount === 0) {
+      return;
+    }
+
+    // Calculate bounding box from vertex positions
+    let minX = Infinity, maxX = -Infinity;
+    let minY = Infinity, maxY = -Infinity;
+
+    // Vertex data is structured as [x, y, r, g, b, size, opacity] per vertex
+    const stride = 7;
+    for (let i = 0; i < this.vertexCount; i++) {
+      const x = this.vertices[i * stride];
+      const y = this.vertices[i * stride + 1];
+
+      minX = Math.min(minX, x);
+      maxX = Math.max(maxX, x);
+      minY = Math.min(minY, y);
+      maxY = Math.max(maxY, y);
+    }
+
+    // Calculate center and scale
+    const centerX = (minX + maxX) / 2;
+    const centerY = (minY + maxY) / 2;
+    const rangeX = maxX - minX;
+    const rangeY = maxY - minY;
+
+    // Add padding (convert padding pixels to normalized coordinates)
+    const paddingX = padding / (this.dimensions?.width || 800) * 2;
+    const paddingY = padding / (this.dimensions?.height || 600) * 2;
+
+    const paddedRangeX = rangeX + paddingX;
+    const paddedRangeY = rangeY + paddingY;
+
+    // Calculate scale to fit the graph within the viewport
+    const scale = Math.min(2 / paddedRangeX, 2 / paddedRangeY);
+
+    // Update view parameters
+    this.viewScale = Math.max(0.1, Math.min(5.0, scale));
+    this.viewOffsetX = -centerX * this.viewScale;
+    this.viewOffsetY = -centerY * this.viewScale;
+
     if (animate) {
-      // Animate camera transition
+      // For now, apply immediately - could add smooth transition later
+      this.updateViewMatrix();
+    } else {
+      this.updateViewMatrix();
     }
   }
 
@@ -620,16 +667,34 @@ const fragmentShader = gl.createShader(gl.FRAGMENT_SHADER);
     for (let i = 0; i < graph.vertices.length; i++) {
       const vertex = graph.vertices[i];
 
-      // Position (x, y)
-      const x = Math.random() * 2 - 1; // TODO: Use actual positions
-      const y = Math.random() * 2 - 1;
+      // Position (x, y) - use actual positions if available
+      let x: number, y: number;
+
+      if ('position' in vertex && vertex.position) {
+        // Use position from IPositionedVertex
+        x = this.normalizePosition(vertex.position.x, 'x');
+        y = this.normalizePosition(vertex.position.y, 'y');
+      } else if (vertex.metadata?.position) {
+        // Use position from metadata
+        const metadataPos = vertex.metadata.position as { x?: number; y?: number };
+        x = this.normalizePosition(metadataPos.x ?? Math.random() * 800, 'x');
+        y = this.normalizePosition(metadataPos.y ?? Math.random() * 600, 'y');
+      } else {
+        // Fall back to random positioning in normalized space
+        x = Math.random() * 2 - 1;
+        y = Math.random() * 2 - 1;
+      }
+
       vertexData.push(x, y);
 
-      // Color (r, g, b)
-      vertexData.push(0.5, 0.7, 1.0); // TODO: Use entity colors
+      // Color (r, g, b) - use entity-aware colors
+      const color = this.getVertexColor(vertex);
+      vertexData.push(color.r, color.g, color.b);
 
-      // Size
-      vertexData.push(0.05);
+      // Size - base size with optional scaling from metadata
+      const baseSize = 0.05;
+      const sizeMultiplier = (vertex.metadata?.weight as number) || 1;
+      vertexData.push(baseSize * Math.max(0.5, Math.min(3, sizeMultiplier)));
 
       // Opacity
       vertexData.push(1.0);
@@ -706,7 +771,7 @@ const fragmentShader = gl.createShader(gl.FRAGMENT_SHADER);
     this.gl.uniformMatrix4fv(this.uniforms.u_mvpMatrix, false, this.mvpMatrix);
     this.gl.uniform2f(this.uniforms.u_resolution, this.canvas!.width, this.canvas!.height);
     this.gl.uniform1f(this.uniforms.u_pixelRatio, window.devicePixelRatio);
-    this.gl.uniform1f(this.uniforms.u_zoomLevel, 1.0); // TODO: Implement zoom
+    this.gl.uniform1f(this.uniforms.u_zoomLevel, this.viewScale || 1.0);
     this.gl.uniform1f(this.uniforms.u_time, time * 0.001);
   }
 
@@ -851,7 +916,65 @@ const fragmentShader = gl.createShader(gl.FRAGMENT_SHADER);
       this.instanceBuffer = null;
     }
   }
-  
+
+  // ============================================================================
+  // Helper Methods
+  // ============================================================================
+
+  /**
+   * Normalize position from graph coordinates to WebGL normalized device coordinates (-1 to 1)
+   */
+  private normalizePosition(coord: number, axis: 'x' | 'y'): number {
+    // Assume graph coordinates are in a reasonable range (0-1000)
+    // Map to -1 to 1 range for WebGL
+    const maxCoord = axis === 'x' ? 1000 : 800; // Typical aspect ratio
+    return (coord / maxCoord) * 2 - 1;
+  }
+
+  /**
+   * Get entity-aware color for a vertex
+   */
+  private getVertexColor(vertex: IGraph<TVertexData, TEdgeData>['vertices'][0]): { r: number; g: number; b: number } {
+    // Color based on metadata type or vertex ID prefix (OpenAlex entity type)
+    const type = vertex.metadata?.type as string || this.detectEntityType(vertex.id);
+
+    switch (type) {
+      case 'author':
+        return { r: 0.31, g: 0.76, b: 0.97 }; // #4FC3F7 - Light Blue
+      case 'work':
+        return { r: 0.51, g: 0.78, b: 0.52 }; // #81C784 - Light Green
+      case 'institution':
+        return { r: 1.0, g: 0.72, b: 0.30 };  // #FFB74D - Orange
+      case 'topic':
+        return { r: 0.94, g: 0.38, b: 0.57 }; // #F06292 - Pink
+      case 'source':
+        return { r: 0.58, g: 0.46, b: 0.80 }; // #9575CD - Purple
+      case 'funder':
+        return { r: 0.26, g: 0.65, b: 0.96 }; // #42A5F5 - Blue
+      case 'publisher':
+        return { r: 0.67, g: 0.16, b: 0.16 }; // #AB2929 - Red
+      default:
+        return { r: 0.56, g: 0.64, b: 0.68 }; // #90A4AE - Blue Grey
+    }
+  }
+
+  /**
+   * Detect entity type from OpenAlex ID prefix
+   */
+  private detectEntityType(id: string): string {
+    const prefix = id.charAt(0).toLowerCase();
+    switch (prefix) {
+      case 'a': return 'author';
+      case 'w': return 'work';
+      case 'i': return 'institution';
+      case 't': return 'topic';
+      case 's': return 'source';
+      case 'f': return 'funder';
+      case 'p': return 'publisher';
+      default: return 'unknown';
+    }
+  }
+
   destroy(): void {
     // Real implementation would:
     // 1. Delete WebGL resources (buffers, textures, shaders)
