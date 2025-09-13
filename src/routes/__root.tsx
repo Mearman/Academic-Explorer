@@ -38,6 +38,9 @@ function RootLayout() {
                   <Link to="/search" className={navLink}>
                     Search Demo
                   </Link>
+                  <Link to="/graph" className={navLink}>
+                    Graph Demo
+                  </Link>
                 </nav>
 
                 <ActionIcon
