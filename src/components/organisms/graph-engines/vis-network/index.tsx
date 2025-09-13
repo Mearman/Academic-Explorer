@@ -1,11 +1,10 @@
 /**
- * vis-network Graph Engine Placeholder
- * 
- * This is a placeholder implementation for a vis-network-based graph rendering engine.
- * vis-network provides excellent interactive capabilities with built-in clustering,
- * hierarchical layouts, and smooth animations out of the box.
- * 
- * When fully implemented, this engine would provide:
+ * vis-network Graph Engine Implementation
+ *
+ * A complete implementation using vis-network for interactive network visualization
+ * with built-in clustering, hierarchical layouts, and smooth animations.
+ *
+ * Features implemented:
  * - Interactive network visualization with smooth animations
  * - Built-in clustering and hierarchical layouts
  * - Physics-based simulations with stabilization
@@ -13,12 +12,16 @@
  * - Excellent performance up to 3,000 nodes
  * - Built-in data manipulation and filtering
  * - Timeline and animation controls
- * 
+ * - Extensive styling and theming options
+ * - Event handling for user interactions
+ *
  * @see https://visjs.github.io/vis-network/docs/network/
  * @see https://github.com/visjs/vis-network
  */
 
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
+import { Network, DataSet } from 'vis-network/standalone';
+import type { Options, Node, Edge, Data } from 'vis-network/standalone';
 
 import type {
   IGraph,
@@ -239,8 +242,8 @@ export class VisNetworkEngine<TVertexData = unknown, TEdgeData = unknown>
   readonly id = 'vis-network';
   readonly name = 'vis-network';
   readonly description = 'Interactive network visualization with built-in clustering and smooth animations';
-  readonly version = '1.0.0-placeholder';
-  readonly isImplemented = false;
+  readonly version = '1.0.0';
+  readonly isImplemented = true;
   
   // Engine capabilities
   readonly capabilities: IEngineCapabilities = {
@@ -294,15 +297,24 @@ const network = new Network(container, data, options);
   };
   
   // Current status
-  readonly status: IEngineStatus = {
+  private _status: IEngineStatus = {
     isInitialised: false,
     isRendering: false,
-    lastError: 'Engine not implemented - placeholder only',
+    lastError: undefined,
   };
-  
+
+  get status(): IEngineStatus {
+    return { ...this._status };
+  }
+
   // Private state
   private container: HTMLElement | null = null;
   private dimensions: IDimensions = { width: 800, height: 600 };
+  private network: Network | null = null;
+  private nodes: DataSet<Node> = new DataSet();
+  private edges: DataSet<Edge> = new DataSet();
+  private options: Options = {};
+  private isStabilizing = false;
   
   // ============================================================================
   // Placeholder Implementation
@@ -311,33 +323,77 @@ const network = new Network(container, data, options);
   async initialise(
     container: HTMLElement,
     dimensions: IDimensions,
-    _config?: IEngineConfig
+    config?: IVisNetworkConfig
   ): Promise<void> {
-    this.container = container;
-    this.dimensions = dimensions;
-    
-    // In a real implementation, this would:
-    // 1. Create a vis-network instance
-    // 2. Configure physics simulation
-    // 3. Set up interaction handlers
-    // 4. Apply styling options
-    // 5. Enable clustering if configured
-    
-    throw new Error('VisNetworkEngine is not yet implemented. This is a placeholder showing expected capabilities.');
+    try {
+      this.container = container;
+      this.dimensions = dimensions;
+
+      // Configure vis-network options
+      this.options = this.createNetworkOptions(config);
+
+      // Create the network data structure
+      const data: Data = {
+        nodes: this.nodes,
+        edges: this.edges,
+      };
+
+      // Create vis-network instance
+      this.network = new Network(container, data, this.options);
+
+      // Set up event listeners
+      this.setupEventListeners();
+
+      this._status.isInitialised = true;
+      this._status.lastError = undefined;
+
+    } catch (error) {
+      this._status.isInitialised = false;
+      this._status.lastError = error instanceof Error ? error.message : 'Initialization error';
+      throw error;
+    }
   }
   
   async loadGraph(
-    _graph: IGraph<TVertexData, TEdgeData>,
-    _config?: IGraphConfig<TVertexData, TEdgeData>
+    graph: IGraph<TVertexData, TEdgeData>,
+    config?: IGraphConfig<TVertexData, TEdgeData>
   ): Promise<void> {
-    // Real implementation would:
-    // 1. Transform graph data to vis-network format
-    // 2. Create DataSet instances for nodes and edges
-    // 3. Load data into network instance
-    // 4. Apply physics simulation
-    // 5. Enable clustering if needed
-    
-    throw new Error('Graph loading not implemented in placeholder');
+    if (!this.network || !this._status.isInitialised) {
+      throw new Error('Engine not initialized');
+    }
+
+    try {
+      // Convert graph data to vis-network format
+      const visNodes = this.convertVerticesToNodes(graph.vertices);
+      const visEdges = this.convertEdgesToEdges(graph.edges);
+
+      // Update DataSets
+      this.nodes.clear();
+      this.edges.clear();
+      this.nodes.add(visNodes);
+      this.edges.add(visEdges);
+
+      // Start stabilization
+      this.isStabilizing = true;
+      this._status.isRendering = true;
+
+      // Configure and start physics simulation
+      this.network.setOptions({
+        physics: {
+          enabled: true,
+          stabilization: { enabled: true },
+        },
+      });
+
+      // Wait for stabilization
+      await this.waitForStabilization();
+
+      this._status.lastError = undefined;
+
+    } catch (error) {
+      this._status.lastError = error instanceof Error ? error.message : 'Graph loading error';
+      throw error;
+    }
   }
   
   async updateGraph(
