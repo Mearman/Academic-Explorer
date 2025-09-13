@@ -750,13 +750,135 @@ export const exportSettings = (settings: GraphEngineSettings): string => {
   return JSON.stringify(settings, null, 2);
 };
 
+/**
+ * Validates a GraphEngineSettings object structure
+ */
+const validateSettings = (obj: unknown): obj is GraphEngineSettings => {
+  if (!obj || typeof obj !== 'object') {
+    return false;
+  }
+
+  const settings = obj as any;
+
+  // Validate selectedEngine
+  const validEngines: GraphEngineType[] = [
+    'canvas-2d', 'svg', 'webgl', 'd3-force', 'cytoscape', 'vis-network', 'xyflow'
+  ];
+  if (!validEngines.includes(settings.selectedEngine)) {
+    return false;
+  }
+
+  // Validate engineConfigs
+  if (!settings.engineConfigs || typeof settings.engineConfigs !== 'object') {
+    return false;
+  }
+
+  // Validate transitionSettings
+  if (!settings.transitionSettings || typeof settings.transitionSettings !== 'object') {
+    return false;
+  }
+
+  const transition = settings.transitionSettings;
+  if (transition.duration !== undefined && (typeof transition.duration !== 'number' || transition.duration < 0)) {
+    return false;
+  }
+
+  if (transition.easing !== undefined) {
+    const validEasings = ['ease-in-out', 'ease-in', 'ease-out', 'linear'];
+    if (!validEasings.includes(transition.easing)) {
+      return false;
+    }
+  }
+
+  if (transition.preservePositions !== undefined && typeof transition.preservePositions !== 'boolean') {
+    return false;
+  }
+
+  if (transition.preserveSelection !== undefined && typeof transition.preserveSelection !== 'boolean') {
+    return false;
+  }
+
+  if (transition.preserveViewport !== undefined && typeof transition.preserveViewport !== 'boolean') {
+    return false;
+  }
+
+  if (transition.effects !== undefined) {
+    const effects = transition.effects;
+    if (typeof effects !== 'object') {
+      return false;
+    }
+
+    if (effects.fadeOut !== undefined && typeof effects.fadeOut !== 'boolean') {
+      return false;
+    }
+
+    if (effects.fadeIn !== undefined && typeof effects.fadeIn !== 'boolean') {
+      return false;
+    }
+
+    if (effects.scale !== undefined && typeof effects.scale !== 'boolean') {
+      return false;
+    }
+
+    if (effects.slide !== undefined) {
+      const validSlides = ['left', 'right', 'up', 'down'];
+      if (!validSlides.includes(effects.slide)) {
+        return false;
+      }
+    }
+  }
+
+  // Validate performanceSettings
+  if (!settings.performanceSettings || typeof settings.performanceSettings !== 'object') {
+    return false;
+  }
+
+  const performance = settings.performanceSettings;
+  if (typeof performance.autoOptimise !== 'boolean') {
+    return false;
+  }
+
+  if (typeof performance.autoOptimiseThreshold !== 'number' || performance.autoOptimiseThreshold < 0) {
+    return false;
+  }
+
+  if (!validEngines.includes(performance.largeGraphEngine)) {
+    return false;
+  }
+
+  // Validate userPreferences
+  if (!settings.userPreferences || typeof settings.userPreferences !== 'object') {
+    return false;
+  }
+
+  const prefs = settings.userPreferences;
+  if (typeof prefs.rememberPerGraph !== 'boolean') {
+    return false;
+  }
+
+  if (typeof prefs.showTransitions !== 'boolean') {
+    return false;
+  }
+
+  if (typeof prefs.showPerformanceWarnings !== 'boolean') {
+    return false;
+  }
+
+  return true;
+};
+
 export const importSettings = (settingsJson: string): GraphEngineSettings | null => {
   try {
     const parsed = JSON.parse(settingsJson);
-    // TODO: Add validation of the settings structure
-    return parsed as GraphEngineSettings;
+
+    if (!validateSettings(parsed)) {
+      console.warn('Invalid settings structure detected during import');
+      return null;
+    }
+
+    return parsed;
   } catch (error) {
-    // Failed to import settings - error handling removed
+    console.warn('Failed to parse settings JSON:', error);
     return null;
   }
 };
