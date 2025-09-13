@@ -90,6 +90,7 @@ const ENGINE_DISPLAY_CONFIG = {
   'd3-force': { name: 'D3.js Force', icon: 'D3' },
   'cytoscape': { name: 'Cytoscape.js', icon: 'CYTO' },
   'vis-network': { name: 'vis-network', icon: 'VIS' },
+  'xyflow': { name: 'xyflow (React Flow)', icon: 'XY' },
 } as const;
 
 const IMPLEMENTATION_STATUS = {
@@ -99,6 +100,7 @@ const IMPLEMENTATION_STATUS = {
   'd3-force': true,
   'cytoscape': false,
   'vis-network': false,
+  'xyflow': true,
 } as const;
 
 // ============================================================================
