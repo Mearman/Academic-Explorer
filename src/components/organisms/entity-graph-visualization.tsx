@@ -311,7 +311,11 @@ export function EntityGraphVisualization({
   }
 
   if (filteredVertices.length === 0) {
-    return <EmptyGraphState isFullscreen={isFullscreen} className={className} />;
+    const emptyStateProps: { isFullscreen: boolean; className?: string } = { isFullscreen };
+    if (className) {
+      emptyStateProps.className = className;
+    }
+    return <EmptyGraphState {...emptyStateProps} />;
   }
 
   return (

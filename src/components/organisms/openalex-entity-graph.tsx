@@ -1,19 +1,32 @@
 /**
  * OpenAlex Entity Graph Component
- * 
- * A React component for visualizing OpenAlex entity relationships using the new graph engine system.
- * This component serves as a bridge between the legacy entity graph visualization and the new
- * modular graph engine architecture.
+ *
+ * A React component for visualizing OpenAlex entity relationships using xyflow (React Flow).
+ * This provides modern React-based graph visualization with interactive features.
  */
 
 import React, { useCallback, useMemo } from 'react';
+import {
+  ReactFlow,
+  Background,
+  Controls,
+  MiniMap,
+  useNodesState,
+  useEdgesState,
+  Node,
+  Edge,
+  ReactFlowProvider,
+  BackgroundVariant,
+  Position,
+} from '@xyflow/react';
+import '@xyflow/react/dist/style.css';
 
-import type { 
-  EntityGraphVertex, 
+import type {
+  EntityGraphVertex,
   EntityGraphEdge
 } from '@/types/entity-graph';
+import { getEntityColour } from '@/components/design-tokens.utils';
 
-import { useGraphEngine } from './graph-engines/hooks/useGraphEngine';
 import type { GraphEngineType } from './graph-engines/types';
 
 export interface OpenAlexEntityGraphProps {
@@ -30,99 +43,130 @@ export interface OpenAlexEntityGraphProps {
 
 /**
  * OpenAlex Entity Graph Component
- * 
- * This component provides a modern interface for rendering entity graphs using
- * the new graph engine system while maintaining compatibility with existing
- * entity graph data structures.
+ *
+ * This component provides modern React Flow visualization for entity graphs.
  */
-export const OpenAlexEntityGraph: React.FC<OpenAlexEntityGraphProps> = ({
+const OpenAlexEntityGraphInner: React.FC<OpenAlexEntityGraphProps> = ({
   vertices = [],
   edges = [],
   width = 800,
   height = 600,
   onVertexClick,
-  onEdgeClick,
+  onEdgeClick: _onEdgeClick,
   selectedVertexId: _selectedVertexId,
-  engineType: _engineType = 'svg',
+  engineType: _engineType = 'xyflow',
   className
 }) => {
-  const { engineInstance, isLoading, error } = useGraphEngine();
-
-  // Convert OpenAlex entities to graph engine format
-  const _graphData = useMemo(() => {
-    const graphVertices = vertices.map(vertex => ({
+  // Convert vertices to React Flow nodes
+  const initialNodes: Node[] = useMemo(() => {
+    return vertices.map((vertex, index) => ({
       id: vertex.id,
-      label: vertex.displayName || vertex.id,
-      data: vertex,
-      x: vertex.position?.x || 0,
-      y: vertex.position?.y || 0,
-      metadata: vertex.metadata
+      position: {
+        x: vertex.position?.x || Math.random() * 400 + 50,
+        y: vertex.position?.y || Math.random() * 400 + 50,
+      },
+      data: {
+        label: vertex.displayName || vertex.id,
+        vertex,
+      },
+      style: {
+        backgroundColor: getEntityColour(vertex.entityType),
+        color: 'white',
+        border: '2px solid #333',
+        borderRadius: '8px',
+        fontSize: '12px',
+        padding: '8px',
+        minWidth: '120px',
+        textAlign: 'center',
+      },
+      type: 'default',
+      sourcePosition: Position.Right,
+      targetPosition: Position.Left,
     }));
+  }, [vertices]);
 
-    const graphEdges = edges.map(edge => ({
+  // Convert edges to React Flow edges
+  const initialEdges: Edge[] = useMemo(() => {
+    return edges.map((edge) => ({
       id: `${edge.sourceId}-${edge.targetId}`,
-      sourceId: edge.sourceId,
-      targetId: edge.targetId,
+      source: edge.sourceId,
+      target: edge.targetId,
       label: edge.type || '',
-      data: edge
+      style: {
+        stroke: '#666',
+        strokeWidth: 2,
+      },
+      labelStyle: {
+        fontSize: '10px',
+        fill: '#666',
+      },
+      type: 'smoothstep',
     }));
+  }, [edges]);
 
-    return {
-      vertices: graphVertices,
-      edges: graphEdges
-    };
-  }, [vertices, edges]);
+  const [nodes, , onNodesChange] = useNodesState(initialNodes);
+  const [flowEdges, , onEdgesChange] = useEdgesState(initialEdges);
 
-  const _handleVertexClick = useCallback((vertex: unknown) => {
-    if (onVertexClick && vertex && typeof vertex === 'object' && 'data' in vertex) {
-      onVertexClick(vertex.data as EntityGraphVertex);
+  const onNodeClick = useCallback((event: React.MouseEvent, node: Node) => {
+    if (onVertexClick && node.data?.vertex) {
+      onVertexClick(node.data.vertex);
     }
   }, [onVertexClick]);
 
-  const _handleEdgeClick = useCallback((edge: unknown) => {
-    if (onEdgeClick && edge && typeof edge === 'object' && 'data' in edge) {
-      onEdgeClick(edge.data as EntityGraphEdge);
-    }
-  }, [onEdgeClick]);
-
-  if (isLoading) {
+  if (vertices.length === 0) {
     return (
-      <div 
+      <div
         className={className}
-        style={{ width, height, display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+        style={{
+          width,
+          height,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          border: '1px solid #333',
+          borderRadius: '8px',
+          backgroundColor: '#1a1a1a',
+          color: '#666'
+        }}
       >
-        Loading graph engine...
+        No graph data available
       </div>
     );
   }
 
-  if (error || !engineInstance) {
-    return (
-      <div 
-        className={className}
-        style={{ width, height, display: 'flex', alignItems: 'center', justifyContent: 'center' }}
-      >
-        Error loading graph engine: {error?.message || 'Unknown error'}
-      </div>
-    );
-  }
-
-  // Render using the selected graph engine
-  // Note: This implementation needs to be updated to properly integrate with the graph engine
-  // For now, return a placeholder that doesn't cause TypeScript errors
   return (
     <div className={className} style={{ width, height }}>
-      <div style={{ 
-        display: 'flex', 
-        alignItems: 'center', 
-        justifyContent: 'center', 
-        height: '100%',
-        color: '#666',
-        fontSize: '14px'
-      }}>
-        Graph visualization (engine integration pending)
-      </div>
+      <ReactFlow
+        nodes={nodes}
+        edges={flowEdges}
+        onNodesChange={onNodesChange}
+        onEdgesChange={onEdgesChange}
+        onNodeClick={onNodeClick}
+        fitView
+        fitViewOptions={{ padding: 0.2 }}
+        attributionPosition="top-right"
+      >
+        <Background variant={BackgroundVariant.Dots} gap={20} size={1} />
+        <Controls />
+        <MiniMap
+          style={{
+            height: 120,
+            backgroundColor: '#1a1a1a',
+            border: '1px solid #333'
+          }}
+          zoomable
+          pannable
+        />
+      </ReactFlow>
     </div>
+  );
+};
+
+export const OpenAlexEntityGraph: React.FC<OpenAlexEntityGraphProps> = (props) => {
+  return (
+    <ReactFlowProvider>
+      <OpenAlexEntityGraphInner {...props} />
+    </ReactFlowProvider>
   );
 };
 

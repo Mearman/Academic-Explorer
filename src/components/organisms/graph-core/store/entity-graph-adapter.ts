@@ -169,15 +169,31 @@ export class EntityGraphAdapter implements GraphDataStore<AdaptedVertex, Adapted
    * Map GraphLayoutOptions to GraphLayoutConfig
    */
   private mapToLayoutConfig(options: Partial<GraphLayoutOptions>): Partial<GraphLayoutConfig> {
-    return {
-      algorithm: options.algorithm,
-      maxVertices: options.maxVertices,
-      minEdgeWeight: options.minEdgeWeight,
-      separateVisitedEntities: options.separateVisitedEntities as boolean,
-      clusterByEntityType: options.clusterByEntityType as boolean,
-      sizeByVisitCount: options.sizeByVisitCount as boolean,
-      weightEdgesByStrength: options.weightEdgesByStrength as boolean,
-    };
+    const result: Partial<GraphLayoutConfig> = {};
+
+    if (options.algorithm !== undefined) {
+      result.algorithm = options.algorithm;
+    }
+    if (options.maxVertices !== undefined) {
+      result.maxVertices = options.maxVertices;
+    }
+    if (options.minEdgeWeight !== undefined) {
+      result.minEdgeWeight = options.minEdgeWeight;
+    }
+    if (options.separateVisitedEntities !== undefined && typeof options.separateVisitedEntities === 'boolean') {
+      result.separateVisitedEntities = options.separateVisitedEntities;
+    }
+    if (options.clusterByEntityType !== undefined && typeof options.clusterByEntityType === 'boolean') {
+      result.clusterByEntityType = options.clusterByEntityType;
+    }
+    if (options.sizeByVisitCount !== undefined && typeof options.sizeByVisitCount === 'boolean') {
+      result.sizeByVisitCount = options.sizeByVisitCount;
+    }
+    if (options.weightEdgesByStrength !== undefined && typeof options.weightEdgesByStrength === 'boolean') {
+      result.weightEdgesByStrength = options.weightEdgesByStrength;
+    }
+
+    return result;
   }
   
   /**
@@ -417,8 +433,13 @@ export class EntityGraphAdapter implements GraphDataStore<AdaptedVertex, Adapted
     const edges: AdaptedEdge[] = [];
     for (let i = 0; i < result.path.length - 1; i++) {
       const state = useEntityGraphStore.getState();
-      const sourceVertexId = result.path[i].id;
-      const targetVertexId = result.path[i + 1].id;
+      const sourceVertex = result.path[i];
+      const targetVertex = result.path[i + 1];
+
+      if (!sourceVertex || !targetVertex) continue;
+
+      const sourceVertexId = sourceVertex.id;
+      const targetVertexId = targetVertex.id;
       
       // Find edge between consecutive vertices in path
       const outgoingEdges = state.graph.edgesBySource.get(sourceVertexId) || new Set();
@@ -551,7 +572,7 @@ export class EntityGraphAdapter implements GraphDataStore<AdaptedVertex, Adapted
     // Clean up subscriptions
     if (this.unsubscribeStore) {
       this.unsubscribeStore();
-      this.unsubscribeStore = undefined;
+      delete this.unsubscribeStore;
     }
     
     // Clear event listeners
