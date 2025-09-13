@@ -52,17 +52,13 @@ export class OpenAlexBaseClient {
       rateLimit: {
         requestsPerSecond: 10, // Conservative default
         requestsPerDay: 100000, // OpenAlex limit
+        ...config.rateLimit,
       },
       timeout: 30000, // 30 seconds
       retries: 3,
       retryDelay: 1000, // 1 second
       ...config,
-      rateLimit: {
-        requestsPerSecond: 10,
-        requestsPerDay: 100000,
-        ...config.rateLimit,
-      },
-    };
+    } as Required<OpenAlexClientConfig>;
 
     // Initialize rate limiting state
     this.rateLimitState = {
