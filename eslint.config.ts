@@ -131,19 +131,52 @@ export default tseslint.config(
       ],
       
       // Existing migration rules
-      '@typescript-eslint/no-unused-vars': ['error', { 
+      '@typescript-eslint/no-unused-vars': ['error', {
         argsIgnorePattern: '^_',
-        varsIgnorePattern: '^_'
+        varsIgnorePattern: '^_',
+        ignoreRestSiblings: true
       }],
-      '@typescript-eslint/no-explicit-any': 'warn',
+      '@typescript-eslint/no-explicit-any': 'error',
       'no-prototype-builtins': 'warn',
       'no-useless-catch': 'warn',
-      
-      // Prevent use of emojis in code - more specific pattern to avoid false positives
-      'no-restricted-syntax': ['error', {
-        selector: 'Literal[value=/[\\u{1F600}-\\u{1F64F}\\u{1F300}-\\u{1F5FF}\\u{1F680}-\\u{1F6FF}\\u{1F1E0}-\\u{1F1FF}\\u{2600}-\\u{26FF}\\u{2700}-\\u{27BF}]/u]',
-        message: 'Emojis are not allowed in code'
+
+      // Type coercion prevention rules
+      'no-implicit-coercion': ['error', {
+        boolean: true,
+        number: true,
+        string: true,
+        disallowTemplateShorthand: false
       }],
+      '@typescript-eslint/prefer-as-const': 'error',
+      '@typescript-eslint/no-unnecessary-type-assertion': 'error',
+      '@typescript-eslint/prefer-nullish-coalescing': 'error',
+      '@typescript-eslint/prefer-optional-chain': 'error',
+      '@typescript-eslint/strict-boolean-expressions': ['error', {
+        allowString: false,
+        allowNumber: false,
+        allowNullableObject: false,
+        allowNullableBoolean: false,
+        allowNullableString: false,
+        allowNullableNumber: false,
+        allowAny: false
+      }],
+
+      // Enforce proper usage of _ prefixed variables
+      '@typescript-eslint/no-unused-vars': ['error', {
+        argsIgnorePattern: '^_',
+        varsIgnorePattern: '^_',
+        ignoreRestSiblings: true
+      }],
+      'no-restricted-syntax': ['error',
+        {
+          selector: 'Literal[value=/[\\u{1F600}-\\u{1F64F}\\u{1F300}-\\u{1F5FF}\\u{1F680}-\\u{1F6FF}\\u{1F1E0}-\\u{1F1FF}\\u{2600}-\\u{26FF}\\u{2700}-\\u{27BF}]/u]',
+          message: 'Emojis are not allowed in code'
+        },
+        {
+          selector: 'Identifier[name=/^_/]:not(FunctionDeclaration > Identifier.id):not(VariableDeclarator > Identifier.id):not(Property > Identifier.key):not(ImportSpecifier > Identifier.imported):not(ImportSpecifier > Identifier.local):not(AssignmentPattern > Identifier.left):not(FunctionExpression > Identifier.id):not(ArrowFunctionExpression > Identifier.id):not(RestElement > Identifier.argument):not(ArrayPattern > Identifier):not(ObjectPattern > Property > Identifier.value)',
+          message: 'Variables prefixed with _ indicate they are unused, but this variable is being used. Either use the variable without the _ prefix or remove the variable if it is truly unused.'
+        }
+      ],
 
       // Enforce destructuring object arguments when function has multiple parameters
       'prefer-destructuring': ['error', {
@@ -318,7 +351,9 @@ export default tseslint.config(
       'complexity': 'off', // Test files can be complex
       'max-lines-per-function': 'off', // Test functions can be long
       'max-params': 'off', // Test functions may need many parameters
-      '@typescript-eslint/no-explicit-any': 'off', // Tests often need any for mocking
+      '@typescript-eslint/no-explicit-any': 'warn', // Tests often need any for mocking, but warn to encourage better typing
+      '@typescript-eslint/strict-boolean-expressions': 'off', // Tests may use truthy/falsy checks
+      'no-implicit-coercion': 'off', // Tests may use coercion for brevity
     }
   },
 
