@@ -415,6 +415,208 @@ const CompactEntityNode: React.FC<{ data: EntityNodeData; selected?: boolean }> 
   );
 };
 
+// ============================================================================
+// Custom Edge Components
+// ============================================================================
+
+const CitationEdge: React.FC<{ id: string; sourceX: number; sourceY: number; targetX: number; targetY: number; data?: any; style?: React.CSSProperties }> = ({
+  id,
+  sourceX,
+  sourceY,
+  targetX,
+  targetY,
+  data,
+  style,
+}) => {
+  const edgePath = `M${sourceX},${sourceY} C${sourceX},${targetY} ${targetX},${sourceY} ${targetX},${targetY}`;
+
+  return (
+    <g>
+      <path
+        id={id}
+        d={edgePath}
+        fill="none"
+        stroke={style?.stroke || '#3b82f6'}
+        strokeWidth={style?.strokeWidth || 2}
+        strokeDasharray={style?.strokeDasharray}
+        opacity={style?.opacity || 0.7}
+        markerEnd="url(#citation-marker)"
+      />
+      {/* Citation count label */}
+      {data?.citationCount && (
+        <text
+          x={(sourceX + targetX) / 2}
+          y={(sourceY + targetY) / 2 - 5}
+          fill="#4b5563"
+          fontSize="10"
+          textAnchor="middle"
+          className="citation-label"
+        >
+          {data.citationCount}
+        </text>
+      )}
+    </g>
+  );
+};
+
+const CollaborationEdge: React.FC<{ id: string; sourceX: number; sourceY: number; targetX: number; targetY: number; data?: any; style?: React.CSSProperties }> = ({
+  id,
+  sourceX,
+  sourceY,
+  targetX,
+  targetY,
+  data,
+  style,
+}) => {
+  const edgePath = `M${sourceX},${sourceY} L${targetX},${targetY}`;
+
+  return (
+    <g>
+      <path
+        id={id}
+        d={edgePath}
+        fill="none"
+        stroke={style?.stroke || '#059669'}
+        strokeWidth={style?.strokeWidth || 3}
+        opacity={style?.opacity || 0.8}
+        strokeLinecap="round"
+      />
+      {/* Collaboration strength indicator */}
+      {data?.strength && data.strength > 0.5 && (
+        <circle
+          cx={(sourceX + targetX) / 2}
+          cy={(sourceY + targetY) / 2}
+          r="4"
+          fill={style?.stroke || '#059669'}
+          opacity="0.8"
+        />
+      )}
+    </g>
+  );
+};
+
+const InfluenceEdge: React.FC<{ id: string; sourceX: number; sourceY: number; targetX: number; targetY: number; data?: any; style?: React.CSSProperties }> = ({
+  id,
+  sourceX,
+  sourceY,
+  targetX,
+  targetY,
+  data,
+  style,
+}) => {
+  const midX = (sourceX + targetX) / 2;
+  const midY = (sourceY + targetY) / 2;
+  const controlX = midX + (targetY - sourceY) * 0.1;
+  const controlY = midY - (targetX - sourceX) * 0.1;
+
+  const edgePath = `M${sourceX},${sourceY} Q${controlX},${controlY} ${targetX},${targetY}`;
+
+  return (
+    <g>
+      <defs>
+        <linearGradient id={`influence-gradient-${id}`} x1="0%" y1="0%" x2="100%" y2="0%">
+          <stop offset="0%" stopColor={style?.stroke || '#f59e0b'} stopOpacity="0.8" />
+          <stop offset="100%" stopColor={style?.stroke || '#f59e0b'} stopOpacity="0.3" />
+        </linearGradient>
+      </defs>
+      <path
+        id={id}
+        d={edgePath}
+        fill="none"
+        stroke={`url(#influence-gradient-${id})`}
+        strokeWidth={style?.strokeWidth || 2.5}
+        opacity={style?.opacity || 0.7}
+        markerEnd="url(#influence-marker)"
+      />
+      {/* Influence strength indicator */}
+      {data?.influenceScore && (
+        <text
+          x={controlX}
+          y={controlY - 8}
+          fill="#92400e"
+          fontSize="9"
+          textAnchor="middle"
+          fontWeight="600"
+        >
+          {Math.round(data.influenceScore * 100)}%
+        </text>
+      )}
+    </g>
+  );
+};
+
+// Custom edge type definitions
+const edgeTypes: EdgeTypes = {
+  citation: CitationEdge,
+  collaboration: CollaborationEdge,
+  influence: InfluenceEdge,
+};
+
+// ============================================================================
+// Node Clustering Components
+// ============================================================================
+
+const EntityCluster: React.FC<{
+  entityType: string;
+  nodes: Node[];
+  bounds: { minX: number; minY: number; maxX: number; maxY: number };
+}> = ({ entityType, nodes, bounds }) => {
+  const entityColor = getEntityColour(entityType);
+  const padding = 20;
+
+  return (
+    <div
+      style={{
+        position: 'absolute',
+        left: bounds.minX - padding,
+        top: bounds.minY - padding,
+        width: bounds.maxX - bounds.minX + (padding * 2),
+        height: bounds.maxY - bounds.minY + (padding * 2),
+        backgroundColor: `${entityColor}10`,
+        border: `2px dashed ${entityColor}40`,
+        borderRadius: '12px',
+        pointerEvents: 'none',
+        zIndex: -1,
+      }}
+    >
+      <div
+        style={{
+          position: 'absolute',
+          top: '8px',
+          left: '12px',
+          fontSize: '12px',
+          fontWeight: '600',
+          color: entityColor,
+          textTransform: 'capitalize',
+          background: 'rgba(255, 255, 255, 0.9)',
+          padding: '2px 8px',
+          borderRadius: '6px',
+          border: `1px solid ${entityColor}40`,
+        }}
+      >
+        {entityType}s ({nodes.length})
+      </div>
+    </div>
+  );
+};
+
+// Helper function to calculate cluster bounds
+const calculateClusterBounds = (nodes: Node[]) => {
+  if (nodes.length === 0) return null;
+
+  const positions = nodes.map(node => ({
+    x: node.position.x,
+    y: node.position.y,
+  }));
+
+  return {
+    minX: Math.min(...positions.map(p => p.x)) - 50,
+    minY: Math.min(...positions.map(p => p.y)) - 30,
+    maxX: Math.max(...positions.map(p => p.x)) + 150,
+    maxY: Math.max(...positions.map(p => p.y)) + 90,
+  };
+};
+
 const nodeTypes: NodeTypes = {
   entity: EntityNode,
   compact: CompactEntityNode,
@@ -659,15 +861,33 @@ import '@xyflow/react/dist/style.css';
         const edgeColor = getEdgeColor(weight);
         const opacity = Math.max(0.4, Math.min(0.9, 0.4 + (weight * 0.5)));
 
-        // Determine edge type based on relationship
-        const edgeType = relationshipType === 'citation' ? 'smoothstep' :
-                        relationshipType === 'collaboration' ? 'straight' : 'smoothstep';
+        // Determine custom edge type based on relationship
+        const getCustomEdgeType = (type: string): string => {
+          switch (type) {
+            case 'citation':
+            case 'cites':
+            case 'cited_by':
+              return 'citation';
+            case 'collaboration':
+            case 'coauthor':
+            case 'co-author':
+              return 'collaboration';
+            case 'influence':
+            case 'influenced_by':
+            case 'references':
+              return 'influence';
+            default:
+              return 'smoothstep'; // Fallback to default xyflow edge type
+          }
+        };
+
+        const customEdgeType = getCustomEdgeType(relationshipType);
 
         return {
           id: `${edge.sourceId}-${edge.targetId}`,
           source: edge.sourceId,
           target: edge.targetId,
-          type: edgeType,
+          type: customEdgeType,
           animated: isStrong,
           style: {
             stroke: edgeColor,
@@ -837,6 +1057,7 @@ import '@xyflow/react/dist/style.css';
           duration: 300,
         },
         nodeTypes,
+        edgeTypes,
         background: {
           variant: BackgroundVariant.Dots,
           gap: 20,
@@ -1239,6 +1460,24 @@ import '@xyflow/react/dist/style.css';
         setCurrentZoom(viewport.zoom);
       }, []);
 
+      // Clustering logic - group nodes by entity type for visual organization
+      const shouldShowClusters = currentZoom < 0.8 && nodes.length > 10 && nodes.length < 100;
+      const entityClusters = React.useMemo(() => {
+        if (!shouldShowClusters) return {};
+
+        const clusters: Record<string, Node[]> = {};
+        nodes.forEach(node => {
+          const entityType = (node.data as EntityNodeData)?.entityType || 'unknown';
+          if (!clusters[entityType]) clusters[entityType] = [];
+          clusters[entityType].push(node);
+        });
+
+        // Only show clusters with 3 or more nodes
+        return Object.fromEntries(
+          Object.entries(clusters).filter(([, nodeList]) => nodeList.length >= 3)
+        );
+      }, [nodes, shouldShowClusters]);
+
       // Sync nodes and edges with engine, applying performance optimizations
       useEffect(() => {
         let optimizedNodes = engine.nodes;
@@ -1308,7 +1547,7 @@ import '@xyflow/react/dist/style.css';
             onInit={onInit}
             onViewportChange={onViewportChange}
             nodeTypes={config.nodeTypes || nodeTypes}
-            edgeTypes={config.edgeTypes}
+            edgeTypes={config.edgeTypes || edgeTypes}
             fitView={config.fitView}
             fitViewOptions={config.fitViewOptions}
             nodesDraggable={config.interaction?.nodesDraggable}
@@ -1334,6 +1573,20 @@ import '@xyflow/react/dist/style.css';
                 color={config.background.color}
               />
             )}
+
+            {/* Entity Clustering Visualization */}
+            {shouldShowClusters && Object.entries(entityClusters).map(([entityType, clusterNodes]) => {
+              const bounds = calculateClusterBounds(clusterNodes);
+              return bounds ? (
+                <Panel key={`cluster-${entityType}`} position="top-left">
+                  <EntityCluster
+                    entityType={entityType}
+                    nodes={clusterNodes}
+                    bounds={bounds}
+                  />
+                </Panel>
+              ) : null;
+            })}
 
             {config.controls && (
               <Controls
@@ -1638,4 +1891,4 @@ export function getDefaultXyflowConfig(): IXyflowConfig {
 }
 
 // Export the utilities (XyflowEngine is already exported as a class declaration)
-export { nodeTypes };
+export { nodeTypes, edgeTypes };
