@@ -7,10 +7,13 @@ import React, { useEffect, useState } from 'react'
 import { useGraphStore } from '@/stores/graph-store'
 import { useGraphData } from '@/hooks/use-graph-data'
 import { GraphNavigationSimple } from './GraphNavigationSimple'
+import { RealGraphVisualization } from '@/components/organisms/RealGraphVisualization'
+import { GraphSessionManager } from '@/components/organisms/GraphSessionManager'
 
 export const GraphWithRealAPI: React.FC = () => {
   const [testEntityId, setTestEntityId] = useState('W2741809807') // Known OpenAlex work ID
   const [isLoadingTest, setIsLoadingTest] = useState(false)
+  const [showSessionManager, setShowSessionManager] = useState(false)
   const { loadEntity, search, expandNode } = useGraphData()
   const { nodes, edges, isLoading, error } = useGraphStore()
 
@@ -100,6 +103,21 @@ export const GraphWithRealAPI: React.FC = () => {
           Test Search
         </button>
 
+        <button
+          onClick={() => setShowSessionManager(true)}
+          style={{
+            padding: '6px 12px',
+            background: '#8b5cf6',
+            color: 'white',
+            border: 'none',
+            borderRadius: '4px',
+            fontSize: '13px',
+            cursor: 'pointer'
+          }}
+        >
+          Sessions
+        </button>
+
         <div style={{ marginLeft: 'auto', fontSize: '13px', color: '#6b7280' }}>
           Nodes: {nodes.size} | Edges: {edges.size}
         </div>
@@ -148,8 +166,14 @@ export const GraphWithRealAPI: React.FC = () => {
 
       {/* Graph */}
       <div style={{ flex: 1, position: 'relative' }}>
-        <GraphNavigationSimple />
+        <RealGraphVisualization />
       </div>
+
+      {/* Session Manager */}
+      <GraphSessionManager
+        isOpen={showSessionManager}
+        onClose={() => setShowSessionManager(false)}
+      />
     </div>
   )
 }
