@@ -212,7 +212,7 @@ describe('HTTPS URL Routing Utils - Unit Tests', () => {
       urlPatterns.forEach(({ url, expectedId, expectedType }) => {
         // Test basic pattern extraction
         const basicMatch = url.match(/openalex\.org\/([WASIPFTCKRN]\d{7,10})/i);
-        if (basicMatch) {
+        if (basicMatch && basicMatch[1]) {
           const extractedId = basicMatch[1].toUpperCase();
           expect(extractedId).toBe(expectedId);
           expect(detectEntityType(extractedId)).toBe(expectedType);
@@ -220,7 +220,7 @@ describe('HTTPS URL Routing Utils - Unit Tests', () => {
 
         // Test alternative pattern extraction  
         const altMatch = url.match(/openalex\.org\/[a-z]+\/([WASIPFTCKRN]\d{7,10})/i);
-        if (altMatch) {
+        if (altMatch && altMatch[1]) {
           const extractedId = altMatch[1].toUpperCase();
           expect(extractedId).toBe(expectedId);
           expect(detectEntityType(extractedId)).toBe(expectedType);
@@ -238,7 +238,7 @@ describe('HTTPS URL Routing Utils - Unit Tests', () => {
       orcidUrls.forEach(url => {
         const match = url.match(/orcid\.org\/(\d{4}-\d{4}-\d{4}-\d{3}[\dX])/i);
         expect(match).toBeTruthy();
-        if (match) {
+        if (match && match[1]) {
           const orcidId = match[1];
           expect(detectIdType(orcidId)).toBe(ExternalIdType.ORCID);
         }
@@ -263,7 +263,7 @@ describe('HTTPS URL Routing Utils - Unit Tests', () => {
         // Both original and transformed should be handled
         if (transformed.includes('openalex.org/')) {
           const match = transformed.match(/openalex\.org\/([WASIPFTCKRN]\d{7,10})/i);
-          if (match) {
+          if (match && match[1]) {
             expect(match[1].toUpperCase()).toBe(expectedId);
           }
         }

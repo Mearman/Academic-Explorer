@@ -118,7 +118,7 @@ class TestPerformanceMonitor {
       recommendations.push('Review memory-intensive tests for cleanup issues');
     }
     
-    if (stats.slowestTests.length > 0 && stats.slowestTests[0].duration > 5000) {
+    if (stats.slowestTests.length > 0 && stats.slowestTests[0]?.duration && stats.slowestTests[0].duration > 5000) {
       recommendations.push('Optimize or skip the slowest tests during development');
     }
     

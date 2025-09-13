@@ -66,7 +66,7 @@ describe('HTTPS URL Routing Components', () => {
       const openAlexMatch = reconstructedUrl.match(/openalex\.org\/([WASIPFTCKRN]\d{7,10})/i);
       
       expect(openAlexMatch).toBeTruthy();
-      if (openAlexMatch) {
+      if (openAlexMatch && openAlexMatch[1]) {
         const openAlexId = openAlexMatch[1].toUpperCase();
         expect(openAlexId).toBe('A5017898742');
       }
@@ -101,7 +101,7 @@ describe('HTTPS URL Routing Components', () => {
       }
       
       expect(openAlexMatch).toBeTruthy();
-      if (openAlexMatch) {
+      if (openAlexMatch && openAlexMatch[1]) {
         const openAlexId = openAlexMatch[1].toUpperCase();
         expect(openAlexId).toBe('A5017898742');
       }
@@ -141,7 +141,7 @@ describe('HTTPS URL Routing Components', () => {
       
       const openAlexMatch = decodedId.match(/openalex\.org\/([WASIPFTCKRN]\d{7,10})/i);
       expect(openAlexMatch).toBeTruthy();
-      if (openAlexMatch) {
+      if (openAlexMatch && openAlexMatch[1]) {
         const openAlexId = openAlexMatch[1].toUpperCase();
         expect(openAlexId).toBe('A5017898742');
       }
@@ -156,7 +156,7 @@ describe('HTTPS URL Routing Components', () => {
       
       const openAlexMatch = decodedId.match(/openalex\.org\/([WASIPFTCKRN]\d{7,10})/i);
       expect(openAlexMatch).toBeTruthy();
-      if (openAlexMatch) {
+      if (openAlexMatch && openAlexMatch[1]) {
         const openAlexId = openAlexMatch[1].toUpperCase();
         expect(openAlexId).toBe('A5017898742');
       }
@@ -189,7 +189,7 @@ describe('HTTPS URL Routing Components', () => {
       }
       
       expect(openAlexMatch).toBeTruthy();
-      if (openAlexMatch) {
+      if (openAlexMatch && openAlexMatch[1]) {
         const openAlexId = openAlexMatch[1].toUpperCase();
         expect(openAlexId).toBe('A5017898742');
       }
@@ -220,7 +220,7 @@ describe('HTTPS URL Routing Components', () => {
       
       const openAlexMatch = bareId.match(/openalex\.org\/([WASIPFTCKRN]\d{7,10})/i);
       expect(openAlexMatch).toBeTruthy();
-      if (openAlexMatch) {
+      if (openAlexMatch && openAlexMatch[1]) {
         const openAlexId = openAlexMatch[1].toUpperCase();
         expect(openAlexId).toBe('A5017898742');
       }
@@ -272,7 +272,7 @@ describe('HTTPS URL Routing Components', () => {
         }
         
         expect(match).toBeTruthy();
-        if (match) {
+        if (match && match[1]) {
           const extractedId = match[1].toUpperCase();
           expect(extractedId).toBe(expectedId.toUpperCase());
         }

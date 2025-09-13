@@ -50,7 +50,7 @@ export const TestProviders: React.FC<{
     const testRouter = router || createTestRouter(initialRoute);
     return (
       <ReactQueryProvider>
-        <MantineProvider theme={theme || undefined} forceColorScheme={colorScheme}>
+        <MantineProvider {...(theme !== null && { theme })} forceColorScheme={colorScheme}>
           <RouterProvider router={testRouter} />
         </MantineProvider>
       </ReactQueryProvider>
@@ -60,7 +60,7 @@ export const TestProviders: React.FC<{
   // For non-router tests, wrap children with full provider stack
   return (
     <ReactQueryProvider>
-      <MantineProvider theme={theme || undefined} forceColorScheme={colorScheme}>
+      <MantineProvider {...(theme !== null && { theme })} forceColorScheme={colorScheme}>
         {children}
       </MantineProvider>
     </ReactQueryProvider>

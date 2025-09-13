@@ -27,13 +27,13 @@ const navigationEvents: Array<{ url: string; timestamp: number }> = [];
 // Helper function to simulate navigation
 function simulateNavigation(url: string) {
   mockLocation.href = url;
-  mockLocation.hash = url.includes('#') ? url.split('#')[1] : '';
+  mockLocation.hash = url.includes('#') ? (url.split('#')[1] || '') : '';
   navigationEvents.push({ url, timestamp: Date.now() });
 }
 
 // Helper function to extract hash route
 function getHashRoute(url: string): string {
-  return url.includes('#/') ? url.split('#/')[1] : '';
+  return url.includes('#/') ? (url.split('#/')[1] || '') : '';
 }
 
 describe('HTTPS URL Routing E2E Workflows', () => {
@@ -163,7 +163,10 @@ describe('HTTPS URL Routing E2E Workflows', () => {
         let hasError = false;
         
         try {
-          simulateNavigation(errorRecoveryWorkflow[0]);
+          const firstUrl = errorRecoveryWorkflow[0];
+          if (firstUrl) {
+            simulateNavigation(firstUrl);
+          }
           // This test simulates navigation - no actual error expected in simulation
           hasError = false;
         } catch (error) {
@@ -175,9 +178,12 @@ describe('HTTPS URL Routing E2E Workflows', () => {
         expect(hasError).toBe(false);
         
         // Corrected URL should work
-        simulateNavigation(errorRecoveryWorkflow[1]);
+        const secondUrl = errorRecoveryWorkflow[1];
+        if (secondUrl) {
+          simulateNavigation(secondUrl);
+        }
         expect(navigationEvents.length).toBe(2); // Both navigation attempts
-        expect(navigationEvents[1].url).toContain('A5017898742');
+        expect(navigationEvents[1]?.url).toContain('A5017898742');
       });
 
       it('should handle incomplete URL -> complete URL workflow', async () => {
@@ -223,9 +229,10 @@ describe('HTTPS URL Routing E2E Workflows', () => {
         expect(navigationEvents.length).toBe(4);
         
         // All events should be close in time
-        const timeDeltas = navigationEvents.slice(1).map((event, index) => 
-          event.timestamp - navigationEvents[index].timestamp
-        );
+        const timeDeltas = navigationEvents.slice(1).map((event, index) => {
+          const previousEvent = navigationEvents[index];
+          return previousEvent ? event.timestamp - previousEvent.timestamp : 0;
+        });
         expect(timeDeltas.every(delta => delta < 50)).toBe(true);
       });
     });
@@ -355,16 +362,16 @@ describe('HTTPS URL Routing E2E Workflows', () => {
 
       // Should be able to analyze navigation patterns
       const patterns = navigationEvents.map(event => ({
-        route: getHashRoute(event.url),
-        timestamp: event.timestamp,
+        route: event?.url ? getHashRoute(event.url) : '',
+        timestamp: event?.timestamp || 0,
       }));
 
       expect(patterns.length).toBe(2);
-      expect(patterns[0].route).toBe('A5017898742');
-      expect(patterns[1].route).toBe('authors/A5017898742');
-      
+      expect(patterns[0]?.route).toBe('A5017898742');
+      expect(patterns[1]?.route).toBe('authors/A5017898742');
+
       // Timestamps should be sequential (or equal if too fast)
-      expect(patterns[1].timestamp).toBeGreaterThanOrEqual(patterns[0].timestamp);
+      expect(patterns[1]?.timestamp).toBeGreaterThanOrEqual(patterns[0]?.timestamp || 0);
     });
   });
 

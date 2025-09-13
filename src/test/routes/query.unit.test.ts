@@ -254,11 +254,6 @@ describe('convertUrlParamsToWorksParams', () => {
   it('should ignore undefined/null values', () => {
     const params: SearchParams = {
       q: 'test',
-      sort: undefined,
-      order: undefined,
-      is_oa: undefined,
-      year: undefined,
-      author_id: undefined
     };
     
     const result = convertUrlParamsToWorksParams(params);

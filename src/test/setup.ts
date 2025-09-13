@@ -42,7 +42,10 @@ const performCleanup = () => {
     // 4. Run custom cleanup tasks (synchronous only - no async checks)
     for (let i = 0; i < cleanupTasks.length; i++) {
       try {
-        cleanupTasks[i]();
+        const task = cleanupTasks[i];
+        if (task && typeof task === 'function') {
+          task();
+        }
       } catch (error) {
         // Silently ignore cleanup errors for performance
       }

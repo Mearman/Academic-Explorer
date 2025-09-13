@@ -59,13 +59,13 @@ export class DatabaseTestHelpers {
       id: paper.id || `test-paper-${Date.now()}`,
       title: paper.title || 'Test Paper Title',
       authors: paper.authors || ['Test Author'],
-      abstract: paper.abstract,
+      ...(paper.abstract !== undefined && { abstract: paper.abstract }),
       year: paper.year || 2024,
-      doi: paper.doi,
+      ...(paper.doi !== undefined && { doi: paper.doi }),
       citations: paper.citations || 0,
       savedAt: paper.savedAt || Date.now(),
-      tags: paper.tags,
-      notes: paper.notes,
+      ...(paper.tags !== undefined && { tags: paper.tags }),
+      ...(paper.notes !== undefined && { notes: paper.notes }),
     };
 
     await mockDb.savePaper(testPaper);

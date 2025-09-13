@@ -75,23 +75,23 @@ describe('Bug Reproduction: Query History Zero Results', () => {
 
     // DEBUG: Log the actual values to understand what's happening
     console.log('API Response Count:', realWorldApiResponse.meta.count);
-    console.log('Recorded Query Count:', recordedQuery.results?.count);
+    console.log('Recorded Query Count:', recordedQuery?.results?.count);
     console.log('Full Recorded Query:', JSON.stringify(recordedQuery, null, 2));
 
     // The bug would manifest here:
     // Expected: recordedQuery.results.count should be 12543
     // Actual (bug): recordedQuery.results.count is 0
     
-    if (recordedQuery.results?.count === 0) {
+    if (recordedQuery?.results?.count === 0) {
       // This is the bug - we got a count of 0 despite API returning 12543
       console.error('[BUG] BUG CONFIRMED: Query History shows 0 results despite API returning', realWorldApiResponse.meta.count);
       
       // Let's investigate what went wrong
       expect(realWorldApiResponse.meta.count).toBe(12543); // API definitely has the count
-      expect(recordedQuery.results?.count).toBe(12543); // But this will fail due to the bug
+      expect(recordedQuery?.results?.count).toBe(12543); // But this will fail due to the bug
     } else {
       // If this passes, the bug has been fixed
-      expect(recordedQuery.results?.count).toBe(12543);
+      expect(recordedQuery?.results?.count).toBe(12543);
       console.log('[OK] Bug appears to be fixed - count is correctly recorded');
     }
   });
@@ -154,7 +154,7 @@ describe('Bug Reproduction: Query History Zero Results', () => {
 
     // Check each query - the bug would make all of them show 0 results
     const recordedCounts = queryHistory.map((q, index) => {
-      const expectedCount = queries[queries.length - 1 - index].apiCount; // Reverse order (most recent first)
+      const expectedCount = queries[queries.length - 1 - index]?.apiCount || 0; // Reverse order (most recent first)
       const actualCount = q.results?.count ?? -1;
       
       console.log(`Query "${q.query}": Expected ${expectedCount}, Got ${actualCount}`);
@@ -208,7 +208,8 @@ describe('Bug Reproduction: Query History Zero Results', () => {
     // Check what was actually passed to updateQueryResults
     expect(updateQueryResultsSpy).toHaveBeenCalled();
     const callArgs = updateQueryResultsSpy.mock.calls[0];
-    const [params] = callArgs; // Extract the parameters object
+    expect(callArgs).toBeDefined();
+    const [params] = callArgs!; // Extract the parameters object
 
     console.log('updateQueryResults called with:');
     console.log('  params:', JSON.stringify(params, null, 2));
@@ -260,9 +261,9 @@ describe('Bug Reproduction: Query History Zero Results', () => {
 
     // If the cache is corrupting data, this will reveal it
     console.log('Original API count:', originalApiResponse.meta.count);
-    console.log('Recorded query count:', recordedQuery.results?.count);
-    
-    expect(recordedQuery.results?.count).toBe(5555);
+    console.log('Recorded query count:', recordedQuery?.results?.count);
+
+    expect(recordedQuery?.results?.count).toBe(5555);
   });
 
   it('WORKAROUND: Test if using results.length could fix the issue', async () => {
@@ -296,10 +297,10 @@ describe('Bug Reproduction: Query History Zero Results', () => {
     // A potential fix would be to use results.length when count is unavailable
     console.log('API meta.count:', apiResponse.meta.count);
     console.log('API results.length:', apiResponse.results.length);
-    console.log('Recorded count:', recordedQuery.results?.count);
+    console.log('Recorded count:', recordedQuery?.results?.count);
 
-    // This demonstrates that even when API returns results, 
+    // This demonstrates that even when API returns results,
     // the count should use results.length as fallback when meta.count is undefined
-    expect(recordedQuery.results?.count).toBe(25); // Fixed behavior - uses results.length as fallback
+    expect(recordedQuery?.results?.count).toBe(25); // Fixed behavior - uses results.length as fallback
   });
 });
