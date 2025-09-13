@@ -713,18 +713,323 @@ export class GraphDataService {
   }
 
   private async expandSource(sourceId: string, options: { limit: number }): Promise<{ nodes: GraphNode[]; edges: GraphEdge[] }> {
-    // TODO: Implement source expansion (recent papers)
-    return { nodes: [], edges: [] };
+    const nodes: GraphNode[] = [];
+    const edges: GraphEdge[] = [];
+
+    try {
+      // Fetch recent works published in this source
+      const worksQuery = await openAlex.works.getWorks({
+        filter: { primary_location: { source: sourceId } },
+        per_page: Math.min(options.limit, 10),
+        sort: 'publication_year:desc'
+      });
+
+      worksQuery.results.forEach((work) => {
+        // Add work node
+        const workNode: GraphNode = {
+          id: work.id,
+          type: 'works' as EntityType,
+          label: work.display_name || 'Untitled Work',
+          entityId: work.id,
+          position: { x: Math.random() * 400 - 200, y: Math.random() * 300 - 150 },
+          externalIds: work.doi ? [{
+            type: 'doi',
+            value: work.doi,
+            url: `https://doi.org/${work.doi}`,
+          }] : [],
+          metadata: {
+            year: work.publication_year,
+            citationCount: work.cited_by_count,
+            openAccess: work.open_access?.is_oa,
+          },
+        };
+        nodes.push(workNode);
+
+        // Add published-in edge
+        edges.push({
+          id: `${work.id}-published-in-${sourceId}`,
+          source: work.id,
+          target: sourceId,
+          type: 'published_in' as RelationType,
+          label: 'published in',
+        });
+
+        // Add some key authors from recent works to show editorial connections
+        if (nodes.length <= 5 && work.authorships) { // Only for first few works
+          const keyAuthorship = work.authorships[0]; // Get first/corresponding author
+          if (keyAuthorship) {
+            const authorNode: GraphNode = {
+              id: keyAuthorship.author.id,
+              type: 'authors' as EntityType,
+              label: keyAuthorship.author.display_name || 'Unknown Author',
+              entityId: keyAuthorship.author.id,
+              position: { x: Math.random() * 200 - 100, y: Math.random() * 200 - 100 },
+              externalIds: keyAuthorship.author.orcid ? [{
+                type: 'orcid',
+                value: keyAuthorship.author.orcid,
+                url: `https://orcid.org/${keyAuthorship.author.orcid}`,
+              }] : [],
+              metadata: {
+                worksCount: keyAuthorship.author.works_count,
+                citationCount: keyAuthorship.author.cited_by_count,
+              },
+            };
+
+            // Only add author if not already present
+            if (!nodes.some(n => n.id === authorNode.id)) {
+              nodes.push(authorNode);
+
+              // Add authorship edge
+              edges.push({
+                id: `${keyAuthorship.author.id}-authored-${work.id}`,
+                source: keyAuthorship.author.id,
+                target: work.id,
+                type: 'authored' as RelationType,
+                label: 'authored',
+              });
+            }
+          }
+        }
+      });
+
+    } catch (error) {
+      console.error(`Failed to expand source ${sourceId}:`, error);
+    }
+
+    return { nodes, edges };
   }
 
   private async expandInstitution(institutionId: string, options: { limit: number }): Promise<{ nodes: GraphNode[]; edges: GraphEdge[] }> {
-    // TODO: Implement institution expansion (affiliated authors, recent works)
-    return { nodes: [], edges: [] };
+    const nodes: GraphNode[] = [];
+    const edges: GraphEdge[] = [];
+
+    try {
+      // Fetch authors affiliated with this institution
+      const authorsQuery = await openAlex.authors.getAuthors({
+        filter: { last_known_institution: institutionId },
+        per_page: Math.min(options.limit, 8),
+        sort: 'works_count:desc' // Get most productive authors
+      });
+
+      authorsQuery.results.forEach((author) => {
+        // Add author node
+        const authorNode: GraphNode = {
+          id: author.id,
+          type: 'authors' as EntityType,
+          label: author.display_name || 'Unknown Author',
+          entityId: author.id,
+          position: { x: Math.random() * 400 - 200, y: Math.random() * 300 - 150 },
+          externalIds: author.orcid ? [{
+            type: 'orcid',
+            value: author.orcid,
+            url: `https://orcid.org/${author.orcid}`,
+          }] : [],
+          metadata: {
+            worksCount: author.works_count,
+            citationCount: author.cited_by_count,
+          },
+        };
+        nodes.push(authorNode);
+
+        // Add affiliation edge
+        edges.push({
+          id: `${author.id}-affiliated-${institutionId}`,
+          source: author.id,
+          target: institutionId,
+          type: 'affiliated' as RelationType,
+          label: 'affiliated with',
+        });
+      });
+
+      // Also fetch recent works from this institution
+      const worksQuery = await openAlex.works.getWorks({
+        filter: { institutions: institutionId },
+        per_page: Math.min(options.limit, 6),
+        sort: 'publication_year:desc'
+      });
+
+      worksQuery.results.forEach((work) => {
+        // Add work node
+        const workNode: GraphNode = {
+          id: work.id,
+          type: 'works' as EntityType,
+          label: work.display_name || 'Untitled Work',
+          entityId: work.id,
+          position: { x: Math.random() * 300 - 150, y: Math.random() * 300 - 150 },
+          externalIds: work.doi ? [{
+            type: 'doi',
+            value: work.doi,
+            url: `https://doi.org/${work.doi}`,
+          }] : [],
+          metadata: {
+            year: work.publication_year,
+            citationCount: work.cited_by_count,
+            openAccess: work.open_access?.is_oa,
+          },
+        };
+
+        // Only add work if not already present
+        if (!nodes.some(n => n.id === workNode.id)) {
+          nodes.push(workNode);
+
+          // Connect work to authors from the same institution (if they're in the graph)
+          if (work.authorships) {
+            work.authorships.forEach((authorship) => {
+              // Check if this author is already in our nodes from the institution
+              const existingAuthor = nodes.find(n => n.id === authorship.author.id);
+              if (existingAuthor) {
+                edges.push({
+                  id: `${authorship.author.id}-authored-${work.id}`,
+                  source: authorship.author.id,
+                  target: work.id,
+                  type: 'authored' as RelationType,
+                  label: 'authored',
+                });
+              }
+            });
+          }
+        }
+      });
+
+    } catch (error) {
+      console.error(`Failed to expand institution ${institutionId}:`, error);
+    }
+
+    return { nodes, edges };
   }
 
-  private transformSearchResults(results: any): { nodes: GraphNode[]; edges: GraphEdge[] } {
-    // TODO: Implement search results transformation
-    return { nodes: [], edges: [] };
+  private transformSearchResults(results: {
+    works: Work[];
+    authors: Author[];
+    sources: Source[];
+    institutions: InstitutionEntity[];
+    topics?: any[];
+    publishers?: any[];
+    funders?: any[];
+  }): { nodes: GraphNode[]; edges: GraphEdge[] } {
+    const nodes: GraphNode[] = [];
+    const edges: GraphEdge[] = [];
+
+    // Transform works
+    results.works.forEach((work) => {
+      const workNode: GraphNode = {
+        id: work.id,
+        type: 'works' as EntityType,
+        label: work.display_name || 'Untitled Work',
+        entityId: work.id,
+        position: { x: Math.random() * 600 - 300, y: Math.random() * 400 - 200 },
+        externalIds: work.doi ? [{
+          type: 'doi',
+          value: work.doi,
+          url: `https://doi.org/${work.doi}`,
+        }] : [],
+        metadata: {
+          year: work.publication_year,
+          citationCount: work.cited_by_count,
+          openAccess: work.open_access?.is_oa,
+        },
+      };
+      nodes.push(workNode);
+    });
+
+    // Transform authors
+    results.authors.forEach((author) => {
+      const authorNode: GraphNode = {
+        id: author.id,
+        type: 'authors' as EntityType,
+        label: author.display_name || 'Unknown Author',
+        entityId: author.id,
+        position: { x: Math.random() * 600 - 300, y: Math.random() * 400 - 200 },
+        externalIds: author.orcid ? [{
+          type: 'orcid',
+          value: author.orcid,
+          url: `https://orcid.org/${author.orcid}`,
+        }] : [],
+        metadata: {
+          worksCount: author.works_count,
+          citationCount: author.cited_by_count,
+        },
+      };
+      nodes.push(authorNode);
+    });
+
+    // Transform sources
+    results.sources.forEach((source) => {
+      const sourceNode: GraphNode = {
+        id: source.id,
+        type: 'sources' as EntityType,
+        label: source.display_name || 'Unknown Source',
+        entityId: source.id,
+        position: { x: Math.random() * 600 - 300, y: Math.random() * 400 - 200 },
+        externalIds: source.issn_l ? [{
+          type: 'issn_l',
+          value: source.issn_l,
+          url: `https://portal.issn.org/resource/ISSN/${source.issn_l}`,
+        }] : [],
+        metadata: {
+          worksCount: source.works_count,
+          citedByCount: source.cited_by_count,
+        },
+      };
+      nodes.push(sourceNode);
+    });
+
+    // Transform institutions
+    results.institutions.forEach((institution) => {
+      const institutionNode: GraphNode = {
+        id: institution.id,
+        type: 'institutions' as EntityType,
+        label: institution.display_name || 'Unknown Institution',
+        entityId: institution.id,
+        position: { x: Math.random() * 600 - 300, y: Math.random() * 400 - 200 },
+        externalIds: institution.ror ? [{
+          type: 'ror',
+          value: institution.ror,
+          url: `https://ror.org/${institution.ror}`,
+        }] : [],
+        metadata: {
+          worksCount: institution.works_count,
+          citedByCount: institution.cited_by_count,
+        },
+      };
+      nodes.push(institutionNode);
+    });
+
+    // Create some basic connections for search results
+    // Connect works to their first authors if both are in results
+    results.works.forEach((work) => {
+      if (work.authorships && work.authorships.length > 0) {
+        const firstAuthorship = work.authorships[0];
+        const authorInResults = results.authors.find(a => a.id === firstAuthorship.author.id);
+
+        if (authorInResults) {
+          edges.push({
+            id: `${firstAuthorship.author.id}-authored-${work.id}`,
+            source: firstAuthorship.author.id,
+            target: work.id,
+            type: 'authored' as RelationType,
+            label: 'authored',
+          });
+        }
+      }
+
+      // Connect works to their sources if both are in results
+      if (work.primary_location?.source) {
+        const sourceInResults = results.sources.find(s => s.id === work.primary_location.source.id);
+
+        if (sourceInResults) {
+          edges.push({
+            id: `${work.id}-published-in-${work.primary_location.source.id}`,
+            source: work.id,
+            target: work.primary_location.source.id,
+            type: 'published_in' as RelationType,
+            label: 'published in',
+          });
+        }
+      }
+    });
+
+    return { nodes, edges };
   }
 
   private determineLayout(nodeCount: number, edgeCount: number) {

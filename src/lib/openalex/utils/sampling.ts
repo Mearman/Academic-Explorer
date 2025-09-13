@@ -394,7 +394,7 @@ export class SamplingApi {
    */
   private shuffleArray<T>(array: T[], seed?: number): void {
     // Simple seeded random number generator (not cryptographically secure)
-    let random = seed ? this.seededRandom(seed) : Math.random;
+    const random = seed ? this.seededRandom(seed) : Math.random;
 
     for (let i = array.length - 1; i > 0; i--) {
       const j = Math.floor(random() * (i + 1));
