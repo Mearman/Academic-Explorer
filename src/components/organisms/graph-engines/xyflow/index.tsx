@@ -842,7 +842,11 @@ const NodeContextMenu: React.FC<{
   visible: boolean;
   onClose: () => void;
   rfInstance: ReactFlowInstance | null;
-}> = ({ node, position, visible, onClose, rfInstance }) => {
+  nodes: Node[];
+  edges: Edge[];
+  setNodes: React.Dispatch<React.SetStateAction<Node[]>>;
+  setEdges: React.Dispatch<React.SetStateAction<Edge[]>>;
+}> = ({ node, position, visible, onClose, rfInstance, nodes, edges, setNodes, setEdges }) => {
   const data = node.data as EntityNodeData;
 
   const actions: ContextMenuAction[] = [
@@ -863,16 +867,41 @@ const NodeContextMenu: React.FC<{
       label: 'Select Connected',
       icon: '🔗',
       action: () => {
-        // TODO: Implement select connected nodes functionality
-        console.log('Select connected nodes for:', node.id);
+        // Find all nodes connected to the current node
+        const connectedNodeIds = new Set<string>();
+
+        // Find edges where current node is source or target
+        edges.forEach(edge => {
+          if (edge.source === node.id) {
+            connectedNodeIds.add(edge.target);
+          } else if (edge.target === node.id) {
+            connectedNodeIds.add(edge.source);
+          }
+        });
+
+        // Select the current node and all connected nodes
+        setNodes(prevNodes =>
+          prevNodes.map(n => ({
+            ...n,
+            selected: n.id === node.id || connectedNodeIds.has(n.id)
+          }))
+        );
+
+        onClose();
       },
     },
     {
       label: 'Hide Node',
       icon: '👁️‍🗨️',
       action: () => {
-        // TODO: Implement hide node functionality
-        console.log('Hide node:', node.id);
+        // Hide the node by setting its hidden property
+        setNodes(prevNodes =>
+          prevNodes.map(n =>
+            n.id === node.id ? { ...n, hidden: true } : n
+          )
+        );
+
+        onClose();
       },
     },
     {
@@ -889,16 +918,71 @@ const NodeContextMenu: React.FC<{
       label: 'View Details',
       icon: '📊',
       action: () => {
-        // TODO: Implement view details functionality
-        console.log('View details for:', data);
+        // Create and show a modal or panel with node details
+        const details = {
+          id: node.id,
+          type: node.type,
+          position: node.position,
+          data: data,
+          metadata: {
+            entityType: data.entityType,
+            label: data.label,
+            description: data.description,
+            count: data.count,
+            year: data.year,
+            citationCount: data.citationCount,
+            url: data.url
+          }
+        };
+
+        // For now, show in console with formatted output
+        console.group(`📊 Node Details: ${data.label || node.id}`);
+        console.table(details.metadata);
+        console.log('Full data:', details);
+        console.groupEnd();
+
+        // In a full implementation, this would show a modal/sidebar
+        alert(`Node Details:\n\nID: ${node.id}\nType: ${data.entityType}\nLabel: ${data.label || 'N/A'}\nPosition: (${Math.round(node.position.x)}, ${Math.round(node.position.y)})`);
+
+        onClose();
       },
     },
     {
       label: 'Export Data',
       icon: '💾',
       action: () => {
-        // TODO: Implement export node data functionality
-        console.log('Export node data:', data);
+        // Export node data as JSON
+        const exportData = {
+          id: node.id,
+          type: node.type,
+          position: node.position,
+          data: data,
+          metadata: {
+            entityType: data.entityType,
+            label: data.label,
+            description: data.description,
+            count: data.count,
+            year: data.year,
+            citationCount: data.citationCount,
+            url: data.url,
+            exportTimestamp: new Date().toISOString()
+          }
+        };
+
+        // Create downloadable JSON file
+        const dataStr = JSON.stringify(exportData, null, 2);
+        const dataBlob = new Blob([dataStr], { type: 'application/json' });
+        const url = URL.createObjectURL(dataBlob);
+
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `node-${node.id.replace(/[^a-zA-Z0-9]/g, '_')}-${Date.now()}.json`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+
+        onClose();
       },
     },
   ];
@@ -918,7 +1002,11 @@ const EdgeContextMenu: React.FC<{
   position: { x: number; y: number };
   visible: boolean;
   onClose: () => void;
-}> = ({ edge, position, visible, onClose }) => {
+  nodes: Node[];
+  edges: Edge[];
+  setNodes: React.Dispatch<React.SetStateAction<Node[]>>;
+  setEdges: React.Dispatch<React.SetStateAction<Edge[]>>;
+}> = ({ edge, position, visible, onClose, nodes, edges, setNodes, setEdges }) => {
   const edgeData = edge.data || {};
 
   const actions: ContextMenuAction[] = [
@@ -926,16 +1014,55 @@ const EdgeContextMenu: React.FC<{
       label: 'Highlight Path',
       icon: '✨',
       action: () => {
-        // TODO: Implement highlight path functionality
-        console.log('Highlight path for edge:', edge.id);
+        // Highlight the edge and its connected nodes
+        const sourceNode = edge.source;
+        const targetNode = edge.target;
+
+        // Update nodes to highlight connected ones
+        setNodes(prevNodes =>
+          prevNodes.map(n => ({
+            ...n,
+            selected: n.id === sourceNode || n.id === targetNode,
+            style: {
+              ...n.style,
+              ...(n.id === sourceNode || n.id === targetNode
+                ? { border: '3px solid #ff6b6b', boxShadow: '0 0 10px rgba(255, 107, 107, 0.5)' }
+                : {}
+              )
+            }
+          }))
+        );
+
+        // Update edges to highlight the selected one
+        setEdges(prevEdges =>
+          prevEdges.map(e => ({
+            ...e,
+            selected: e.id === edge.id,
+            style: {
+              ...e.style,
+              ...(e.id === edge.id
+                ? { stroke: '#ff6b6b', strokeWidth: 3, animation: 'flow 1s ease-in-out infinite' }
+                : {}
+              )
+            }
+          }))
+        );
+
+        onClose();
       },
     },
     {
       label: 'Hide Edge',
       icon: '👁️‍🗨️',
       action: () => {
-        // TODO: Implement hide edge functionality
-        console.log('Hide edge:', edge.id);
+        // Hide the edge by setting its hidden property
+        setEdges(prevEdges =>
+          prevEdges.map(e =>
+            e.id === edge.id ? { ...e, hidden: true } : e
+          )
+        );
+
+        onClose();
       },
     },
     {
@@ -952,16 +1079,98 @@ const EdgeContextMenu: React.FC<{
       label: 'View Relationship',
       icon: '🔍',
       action: () => {
-        // TODO: Implement view relationship functionality
-        console.log('View relationship details:', edgeData);
+        // Show detailed relationship information
+        const sourceNode = nodes.find(n => n.id === edge.source);
+        const targetNode = nodes.find(n => n.id === edge.target);
+
+        const relationshipDetails = {
+          edgeId: edge.id,
+          type: edge.type || 'default',
+          source: {
+            id: edge.source,
+            label: sourceNode?.data?.label || edge.source,
+            entityType: sourceNode?.data?.entityType || 'unknown'
+          },
+          target: {
+            id: edge.target,
+            label: targetNode?.data?.label || edge.target,
+            entityType: targetNode?.data?.entityType || 'unknown'
+          },
+          relationship: {
+            type: edgeData.relationshipType || 'connection',
+            strength: edgeData.weight || edgeData.strength || 1,
+            direction: edgeData.directed ? 'directed' : 'undirected',
+            metadata: edgeData
+          }
+        };
+
+        // Show relationship details in console
+        console.group(`🔍 Edge Relationship: ${relationshipDetails.source.label} → ${relationshipDetails.target.label}`);
+        console.table(relationshipDetails);
+        console.groupEnd();
+
+        // Show relationship in alert for now
+        alert(`Relationship Details:\n\nFrom: ${relationshipDetails.source.label} (${relationshipDetails.source.entityType})\nTo: ${relationshipDetails.target.label} (${relationshipDetails.target.entityType})\nType: ${relationshipDetails.relationship.type}\nStrength: ${relationshipDetails.relationship.strength}`);
+
+        onClose();
       },
     },
     {
       label: 'Export Edge Data',
       icon: '💾',
       action: () => {
-        // TODO: Implement export edge data functionality
-        console.log('Export edge data:', edgeData);
+        // Export edge data as JSON including relationship information
+        const sourceNode = nodes.find(n => n.id === edge.source);
+        const targetNode = nodes.find(n => n.id === edge.target);
+
+        const exportData = {
+          edge: {
+            id: edge.id,
+            type: edge.type || 'default',
+            source: edge.source,
+            target: edge.target,
+            data: edgeData,
+            style: edge.style
+          },
+          relationship: {
+            type: edgeData.relationshipType || 'connection',
+            strength: edgeData.weight || edgeData.strength || 1,
+            direction: edgeData.directed ? 'directed' : 'undirected'
+          },
+          connectedNodes: {
+            source: {
+              id: edge.source,
+              label: sourceNode?.data?.label || edge.source,
+              entityType: sourceNode?.data?.entityType || 'unknown',
+              position: sourceNode?.position
+            },
+            target: {
+              id: edge.target,
+              label: targetNode?.data?.label || edge.target,
+              entityType: targetNode?.data?.entityType || 'unknown',
+              position: targetNode?.position
+            }
+          },
+          metadata: {
+            exportTimestamp: new Date().toISOString(),
+            exportSource: 'Academic Explorer - Xyflow Engine'
+          }
+        };
+
+        // Create downloadable JSON file
+        const dataStr = JSON.stringify(exportData, null, 2);
+        const dataBlob = new Blob([dataStr], { type: 'application/json' });
+        const url = URL.createObjectURL(dataBlob);
+
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `edge-${edge.id.replace(/[^a-zA-Z0-9]/g, '_')}-${Date.now()}.json`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+
+        onClose();
       },
     },
   ];
@@ -7036,12 +7245,20 @@ import '@xyflow/react/dist/style.css';
             visible={nodeContextMenu.visible}
             onClose={closeNodeContextMenu}
             rfInstance={rfInstance}
+            nodes={nodes}
+            edges={edges}
+            setNodes={setNodes}
+            setEdges={setEdges}
           />
           <EdgeContextMenu
             edge={edgeContextMenu.edge}
             position={edgeContextMenu.position}
             visible={edgeContextMenu.visible}
             onClose={closeEdgeContextMenu}
+            nodes={nodes}
+            edges={edges}
+            setNodes={setNodes}
+            setEdges={setEdges}
           />
         </div>
       );
