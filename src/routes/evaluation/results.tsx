@@ -14,6 +14,8 @@ import {
   ConfusionMatrixHeatmap,
   DatasetStatisticsOverview
 } from '@/components/evaluation/MetaAnalysisCharts'
+import { MissingPaperDetection } from '@/components/evaluation/MissingPaperDetection'
+import type { MissingPaperDetectionResults } from '@/lib/evaluation/missing-paper-detection'
 
 export const Route = createFileRoute('/evaluation/results')({
   component: ComparisonResults,
@@ -67,6 +69,8 @@ function ComparisonResults() {
   const [isRunningComparison, setIsRunningComparison] = useState(false)
   const [_selectedDatasetId, setSelectedDatasetId] = useState<string | null>(null)
   const [activeVisualizationTab, setActiveVisualizationTab] = useState<'performance' | 'scatter' | 'heatmap' | 'overview'>('performance')
+  const [_missingPaperResults, setMissingPaperResults] = useState<{ [datasetId: string]: MissingPaperDetectionResults }>({})
+  const [selectedDatasetForMissingPapers, setSelectedDatasetForMissingPapers] = useState<string | null>(null)
 
   // Load STAR datasets from localStorage on component mount
   useEffect(() => {
@@ -705,6 +709,94 @@ function ComparisonResults() {
                 )}
                 {activeVisualizationTab === 'overview' && (
                   <DatasetStatisticsOverview comparisonResults={completedComparisonResults} />
+                )}
+              </div>
+            </div>
+          )}
+
+          {/* Missing Paper Detection */}
+          {starDatasets.length > 0 && (
+            <div style={{
+              backgroundColor: 'white',
+              borderRadius: '12px',
+              border: '1px solid #e5e7eb',
+              marginTop: '32px',
+              overflow: 'hidden'
+            }}>
+              <div style={{
+                padding: '20px',
+                borderBottom: '1px solid #e5e7eb',
+                backgroundColor: '#f9fafb'
+              }}>
+                <h2 style={{ fontSize: '18px', fontWeight: '600', color: '#1f2937', marginBottom: '8px' }}>
+                  Missing Paper Detection
+                </h2>
+                <p style={{ fontSize: '14px', color: '#6b7280', margin: 0 }}>
+                  Identify potentially relevant papers that systematic reviews may have missed
+                </p>
+              </div>
+
+              <div style={{ padding: '24px' }}>
+                {/* Dataset Selection */}
+                <div style={{ marginBottom: '24px' }}>
+                  <label style={{
+                    fontSize: '14px',
+                    fontWeight: '500',
+                    color: '#374151',
+                    display: 'block',
+                    marginBottom: '8px'
+                  }}>
+                    Select Dataset for Missing Paper Analysis:
+                  </label>
+                  <select
+                    value={selectedDatasetForMissingPapers || ''}
+                    onChange={(e) => setSelectedDatasetForMissingPapers(e.target.value || null)}
+                    style={{
+                      padding: '8px 12px',
+                      borderRadius: '6px',
+                      border: '1px solid #d1d5db',
+                      fontSize: '14px',
+                      backgroundColor: 'white',
+                      minWidth: '300px'
+                    }}
+                  >
+                    <option value="">Choose a dataset...</option>
+                    {starDatasets.map((dataset) => (
+                      <option key={dataset.id} value={dataset.id}>
+                        {dataset.name} ({dataset.originalPaperCount} papers)
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                {/* Missing Paper Detection Component */}
+                {selectedDatasetForMissingPapers && (
+                  <MissingPaperDetection
+                    dataset={starDatasets.find(d => d.id === selectedDatasetForMissingPapers)!}
+                    onDetectionComplete={(results) => {
+                      setMissingPaperResults(prev => ({
+                        ...prev,
+                        [selectedDatasetForMissingPapers]: results
+                      }))
+                    }}
+                  />
+                )}
+
+                {!selectedDatasetForMissingPapers && (
+                  <div style={{
+                    textAlign: 'center',
+                    padding: '48px 24px',
+                    backgroundColor: '#f9fafb',
+                    borderRadius: '8px'
+                  }}>
+                    <div style={{ fontSize: '48px', marginBottom: '16px', opacity: 0.3 }}>🔍</div>
+                    <h3 style={{ fontSize: '18px', fontWeight: '600', color: '#374151', marginBottom: '8px' }}>
+                      Select a Dataset
+                    </h3>
+                    <p style={{ fontSize: '14px', color: '#6b7280', margin: 0 }}>
+                      Choose a STAR dataset above to begin missing paper detection analysis
+                    </p>
+                  </div>
                 )}
               </div>
             </div>
