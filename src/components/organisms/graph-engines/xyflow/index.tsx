@@ -2497,6 +2497,719 @@ const GraphMetricsPanel: React.FC<{
   );
 };
 
+// ============================================================================
+// Export Functionality and Data Export Tools
+// ============================================================================
+
+interface ExportOptions {
+  format: 'png' | 'svg' | 'jpeg' | 'webp';
+  quality: number;
+  scale: number;
+  backgroundColor: string;
+  includeBackground: boolean;
+  width?: number;
+  height?: number;
+}
+
+interface GraphDataExportOptions {
+  format: 'json' | 'csv' | 'graphml' | 'gexf' | 'cytoscape';
+  includeMetadata: boolean;
+  includePositions: boolean;
+  includeFiltered: boolean;
+}
+
+const defaultExportOptions: ExportOptions = {
+  format: 'png',
+  quality: 1.0,
+  scale: 2,
+  backgroundColor: '#ffffff',
+  includeBackground: true,
+};
+
+const defaultDataExportOptions: GraphDataExportOptions = {
+  format: 'json',
+  includeMetadata: true,
+  includePositions: true,
+  includeFiltered: false,
+};
+
+// Export utilities
+const ExportUtils = {
+  // Export graph as image using html-to-image
+  exportAsImage: async (
+    reactFlowInstance: ReactFlowInstance,
+    options: ExportOptions = defaultExportOptions
+  ): Promise<string> => {
+    const { toPng, toJpeg, toSvg } = await import('html-to-image');
+
+    // Get the ReactFlow viewport element
+    const viewport = document.querySelector('.react-flow__viewport') as HTMLElement;
+    if (!viewport) {
+      throw new Error('ReactFlow viewport not found');
+    }
+
+    // Prepare export options
+    const exportConfig = {
+      quality: options.quality,
+      pixelRatio: options.scale,
+      backgroundColor: options.includeBackground ? options.backgroundColor : 'transparent',
+      width: options.width,
+      height: options.height,
+      style: {
+        transform: 'none',
+      },
+    };
+
+    // Export based on format
+    switch (options.format) {
+      case 'png':
+        return await toPng(viewport, exportConfig);
+      case 'jpeg':
+        return await toJpeg(viewport, exportConfig);
+      case 'svg':
+        return await toSvg(viewport, exportConfig);
+      case 'webp':
+        // Use toPng and convert to WebP (simplified approach)
+        const pngDataUrl = await toPng(viewport, exportConfig);
+        return ExportUtils.convertToWebP(pngDataUrl);
+      default:
+        throw new Error(`Unsupported export format: ${options.format}`);
+    }
+  },
+
+  // Convert PNG data URL to WebP (simplified approach)
+  convertToWebP: (pngDataUrl: string): Promise<string> => {
+    return new Promise((resolve, reject) => {
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
+      const img = new Image();
+
+      img.onload = () => {
+        canvas.width = img.width;
+        canvas.height = img.height;
+        ctx?.drawImage(img, 0, 0);
+
+        try {
+          const webpDataUrl = canvas.toDataURL('image/webp', 0.9);
+          resolve(webpDataUrl);
+        } catch (error) {
+          reject(error);
+        }
+      };
+
+      img.onerror = reject;
+      img.src = pngDataUrl;
+    });
+  },
+
+  // Download data URL as file
+  downloadDataUrl: (dataUrl: string, filename: string): void => {
+    const link = document.createElement('a');
+    link.download = filename;
+    link.href = dataUrl;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  },
+
+  // Export graph data in various formats
+  exportGraphData: (
+    nodes: Node[],
+    edges: Edge[],
+    options: GraphDataExportOptions = defaultDataExportOptions
+  ): string => {
+    switch (options.format) {
+      case 'json':
+        return ExportUtils.exportAsJSON(nodes, edges, options);
+      case 'csv':
+        return ExportUtils.exportAsCSV(nodes, edges, options);
+      case 'graphml':
+        return ExportUtils.exportAsGraphML(nodes, edges, options);
+      case 'gexf':
+        return ExportUtils.exportAsGEXF(nodes, edges, options);
+      case 'cytoscape':
+        return ExportUtils.exportAsCytoscape(nodes, edges, options);
+      default:
+        throw new Error(`Unsupported data export format: ${options.format}`);
+    }
+  },
+
+  // Export as JSON
+  exportAsJSON: (nodes: Node[], edges: Edge[], options: GraphDataExportOptions): string => {
+    const exportData: any = {
+      metadata: {
+        exportedAt: new Date().toISOString(),
+        nodeCount: nodes.length,
+        edgeCount: edges.length,
+        format: 'xyflow-json',
+        version: '1.0'
+      },
+      nodes: nodes.map(node => {
+        const exportNode: any = {
+          id: node.id,
+          type: node.type,
+          data: options.includeMetadata ? node.data : { label: node.data.label }
+        };
+
+        if (options.includePositions) {
+          exportNode.position = node.position;
+        }
+
+        return exportNode;
+      }),
+      edges: edges.map(edge => ({
+        id: edge.id,
+        source: edge.source,
+        target: edge.target,
+        type: edge.type,
+        data: options.includeMetadata ? edge.data : {}
+      }))
+    };
+
+    return JSON.stringify(exportData, null, 2);
+  },
+
+  // Export as CSV (nodes and edges separately)
+  exportAsCSV: (nodes: Node[], edges: Edge[], options: GraphDataExportOptions): string => {
+    const nodeHeaders = ['id', 'type', 'label'];
+    if (options.includePositions) {
+      nodeHeaders.push('x', 'y');
+    }
+    if (options.includeMetadata) {
+      nodeHeaders.push('entityType', 'citationCount', 'publicationYear');
+    }
+
+    const edgeHeaders = ['id', 'source', 'target', 'type'];
+    if (options.includeMetadata) {
+      edgeHeaders.push('weight', 'relationshipType');
+    }
+
+    // Nodes CSV
+    const nodeRows = nodes.map(node => {
+      const row = [
+        node.id,
+        node.type || '',
+        `"${(node.data as any).label || ''}"`,
+      ];
+
+      if (options.includePositions) {
+        row.push(node.position.x.toString(), node.position.y.toString());
+      }
+
+      if (options.includeMetadata) {
+        const data = node.data as any;
+        row.push(
+          data.entityType || '',
+          (data.cited_by_count || '').toString(),
+          (data.publication_year || '').toString()
+        );
+      }
+
+      return row.join(',');
+    });
+
+    // Edges CSV
+    const edgeRows = edges.map(edge => {
+      const row = [
+        edge.id,
+        edge.source,
+        edge.target,
+        edge.type || ''
+      ];
+
+      if (options.includeMetadata) {
+        const data = edge.data as any;
+        row.push(
+          (data.weight || '').toString(),
+          data.relationshipType || ''
+        );
+      }
+
+      return row.join(',');
+    });
+
+    return `# Nodes\n${nodeHeaders.join(',')}\n${nodeRows.join('\n')}\n\n# Edges\n${edgeHeaders.join(',')}\n${edgeRows.join('\n')}`;
+  },
+
+  // Export as GraphML (XML format for graph data)
+  exportAsGraphML: (nodes: Node[], edges: Edge[], options: GraphDataExportOptions): string => {
+    let graphml = `<?xml version="1.0" encoding="UTF-8"?>
+<graphml xmlns="http://graphml.graphdrawing.org/xmlns"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns
+         http://graphml.graphdrawing.org/xmlns/1.0/graphml.xsd">
+
+  <key id="label" for="node" attr.name="label" attr.type="string"/>
+  <key id="entityType" for="node" attr.name="entityType" attr.type="string"/>`;
+
+    if (options.includePositions) {
+      graphml += `
+  <key id="x" for="node" attr.name="x" attr.type="double"/>
+  <key id="y" for="node" attr.name="y" attr.type="double"/>`;
+    }
+
+    if (options.includeMetadata) {
+      graphml += `
+  <key id="citationCount" for="node" attr.name="citationCount" attr.type="int"/>
+  <key id="publicationYear" for="node" attr.name="publicationYear" attr.type="int"/>
+  <key id="weight" for="edge" attr.name="weight" attr.type="double"/>`;
+    }
+
+    graphml += `
+
+  <graph id="G" edgedefault="undirected">`;
+
+    // Add nodes
+    nodes.forEach(node => {
+      const data = node.data as any;
+      graphml += `
+    <node id="${node.id}">
+      <data key="label">${ExportUtils.escapeXml(data.label || '')}</data>
+      <data key="entityType">${data.entityType || ''}</data>`;
+
+      if (options.includePositions) {
+        graphml += `
+      <data key="x">${node.position.x}</data>
+      <data key="y">${node.position.y}</data>`;
+      }
+
+      if (options.includeMetadata) {
+        graphml += `
+      <data key="citationCount">${data.cited_by_count || 0}</data>
+      <data key="publicationYear">${data.publication_year || 0}</data>`;
+      }
+
+      graphml += `
+    </node>`;
+    });
+
+    // Add edges
+    edges.forEach(edge => {
+      const data = edge.data as any;
+      graphml += `
+    <edge id="${edge.id}" source="${edge.source}" target="${edge.target}">`;
+
+      if (options.includeMetadata && data.weight) {
+        graphml += `
+      <data key="weight">${data.weight}</data>`;
+      }
+
+      graphml += `
+    </edge>`;
+    });
+
+    graphml += `
+  </graph>
+</graphml>`;
+
+    return graphml;
+  },
+
+  // Export as GEXF (Graph Exchange XML Format)
+  exportAsGEXF: (nodes: Node[], edges: Edge[], options: GraphDataExportOptions): string => {
+    let gexf = `<?xml version="1.0" encoding="UTF-8"?>
+<gexf xmlns="http://www.gexf.net/1.2draft" version="1.2">
+  <meta lastmodifieddate="${new Date().toISOString().split('T')[0]}">
+    <creator>Academic Explorer</creator>
+    <description>Graph exported from Academic Explorer</description>
+  </meta>
+
+  <graph mode="static" defaultedgetype="undirected">
+    <attributes class="node">
+      <attribute id="0" title="label" type="string"/>
+      <attribute id="1" title="entityType" type="string"/>`;
+
+    if (options.includeMetadata) {
+      gexf += `
+      <attribute id="2" title="citationCount" type="integer"/>
+      <attribute id="3" title="publicationYear" type="integer"/>`;
+    }
+
+    gexf += `
+    </attributes>
+
+    <nodes>`;
+
+    // Add nodes
+    nodes.forEach(node => {
+      const data = node.data as any;
+      gexf += `
+      <node id="${node.id}" label="${ExportUtils.escapeXml(data.label || '')}">`;
+
+      if (options.includePositions) {
+        gexf += `
+        <viz:position x="${node.position.x}" y="${node.position.y}"/>`;
+      }
+
+      gexf += `
+        <attvalues>
+          <attvalue for="0" value="${ExportUtils.escapeXml(data.label || '')}"/>
+          <attvalue for="1" value="${data.entityType || ''}"/>`;
+
+      if (options.includeMetadata) {
+        gexf += `
+          <attvalue for="2" value="${data.cited_by_count || 0}"/>
+          <attvalue for="3" value="${data.publication_year || 0}"/>`;
+      }
+
+      gexf += `
+        </attvalues>
+      </node>`;
+    });
+
+    gexf += `
+    </nodes>
+
+    <edges>`;
+
+    // Add edges
+    edges.forEach((edge, index) => {
+      gexf += `
+      <edge id="${index}" source="${edge.source}" target="${edge.target}"/>`;
+    });
+
+    gexf += `
+    </edges>
+  </graph>
+</gexf>`;
+
+    return gexf;
+  },
+
+  // Export as Cytoscape.js format
+  exportAsCytoscape: (nodes: Node[], edges: Edge[], options: GraphDataExportOptions): string => {
+    const cytoscapeData = {
+      elements: {
+        nodes: nodes.map(node => {
+          const data = node.data as any;
+          const element: any = {
+            data: {
+              id: node.id,
+              label: data.label || '',
+              entityType: data.entityType || ''
+            }
+          };
+
+          if (options.includePositions) {
+            element.position = {
+              x: node.position.x,
+              y: node.position.y
+            };
+          }
+
+          if (options.includeMetadata) {
+            element.data.citationCount = data.cited_by_count || 0;
+            element.data.publicationYear = data.publication_year || 0;
+          }
+
+          return element;
+        }),
+        edges: edges.map(edge => {
+          const data = edge.data as any;
+          const element: any = {
+            data: {
+              id: edge.id,
+              source: edge.source,
+              target: edge.target
+            }
+          };
+
+          if (options.includeMetadata && data.weight) {
+            element.data.weight = data.weight;
+          }
+
+          return element;
+        })
+      }
+    };
+
+    return JSON.stringify(cytoscapeData, null, 2);
+  },
+
+  // Utility function to escape XML characters
+  escapeXml: (text: string): string => {
+    return text
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&apos;');
+  },
+
+  // Generate filename with timestamp
+  generateFilename: (prefix: string, extension: string): string => {
+    const timestamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, -5);
+    return `${prefix}-${timestamp}.${extension}`;
+  }
+};
+
+// Export Panel Component
+const ExportPanel: React.FC<{
+  reactFlowInstance: ReactFlowInstance | null;
+  nodes: Node[];
+  edges: Edge[];
+}> = ({ reactFlowInstance, nodes, edges }) => {
+  const [isExpanded, setIsExpanded] = React.useState(false);
+  const [imageOptions, setImageOptions] = React.useState<ExportOptions>(defaultExportOptions);
+  const [dataOptions, setDataOptions] = React.useState<GraphDataExportOptions>(defaultDataExportOptions);
+  const [isExporting, setIsExporting] = React.useState(false);
+
+  const handleImageExport = async () => {
+    if (!reactFlowInstance) {
+      alert('Graph not ready for export');
+      return;
+    }
+
+    setIsExporting(true);
+    try {
+      const dataUrl = await ExportUtils.exportAsImage(reactFlowInstance, imageOptions);
+      const filename = ExportUtils.generateFilename('graph', imageOptions.format);
+      ExportUtils.downloadDataUrl(dataUrl, filename);
+    } catch (error) {
+      console.error('Export failed:', error);
+      alert('Export failed. Please try again.');
+    } finally {
+      setIsExporting(false);
+    }
+  };
+
+  const handleDataExport = () => {
+    setIsExporting(true);
+    try {
+      const data = ExportUtils.exportGraphData(nodes, edges, dataOptions);
+      const extension = dataOptions.format === 'graphml' || dataOptions.format === 'gexf' ? 'xml' : dataOptions.format;
+      const filename = ExportUtils.generateFilename('graph-data', extension);
+
+      const blob = new Blob([data], { type: 'text/plain' });
+      const url = URL.createObjectURL(blob);
+      ExportUtils.downloadDataUrl(url, filename);
+      URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error('Data export failed:', error);
+      alert('Data export failed. Please try again.');
+    } finally {
+      setIsExporting(false);
+    }
+  };
+
+  return (
+    <Panel position="bottom-right">
+      <div style={{
+        background: 'rgba(255, 255, 255, 0.95)',
+        padding: '12px',
+        borderRadius: '8px',
+        fontSize: '12px',
+        minWidth: isExpanded ? '280px' : '120px',
+        maxHeight: isExpanded ? '400px' : 'auto',
+        boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)',
+        transition: 'all 0.3s ease',
+        overflow: isExpanded ? 'auto' : 'hidden',
+      }}>
+        <div
+          style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            cursor: 'pointer',
+            fontWeight: '600',
+            color: '#374151',
+            marginBottom: isExpanded ? '12px' : '0'
+          }}
+          onClick={() => setIsExpanded(!isExpanded)}
+        >
+          <span>💾 Export</span>
+          <span style={{ fontSize: '10px' }}>
+            {isExpanded ? '▼' : '▲'}
+          </span>
+        </div>
+
+        {isExpanded && (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+            {/* Image Export Section */}
+            <div>
+              <div style={{ fontWeight: '600', marginBottom: '6px', color: '#1f2937' }}>
+                Export Image
+              </div>
+
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                <div>
+                  <label style={{ display: 'block', marginBottom: '2px', fontSize: '10px' }}>Format:</label>
+                  <select
+                    value={imageOptions.format}
+                    onChange={(e) => setImageOptions({
+                      ...imageOptions,
+                      format: e.target.value as ExportOptions['format']
+                    })}
+                    style={{
+                      width: '100%',
+                      padding: '4px',
+                      border: '1px solid #d1d5db',
+                      borderRadius: '4px',
+                      fontSize: '11px'
+                    }}
+                  >
+                    <option value="png">PNG</option>
+                    <option value="jpeg">JPEG</option>
+                    <option value="svg">SVG</option>
+                    <option value="webp">WebP</option>
+                  </select>
+                </div>
+
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '6px' }}>
+                  <div>
+                    <label style={{ display: 'block', marginBottom: '2px', fontSize: '10px' }}>Scale:</label>
+                    <select
+                      value={imageOptions.scale}
+                      onChange={(e) => setImageOptions({
+                        ...imageOptions,
+                        scale: parseFloat(e.target.value)
+                      })}
+                      style={{
+                        width: '100%',
+                        padding: '4px',
+                        border: '1px solid #d1d5db',
+                        borderRadius: '4px',
+                        fontSize: '11px'
+                      }}
+                    >
+                      <option value={1}>1x</option>
+                      <option value={2}>2x</option>
+                      <option value={3}>3x</option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <label style={{ display: 'block', marginBottom: '2px', fontSize: '10px' }}>Quality:</label>
+                    <select
+                      value={imageOptions.quality}
+                      onChange={(e) => setImageOptions({
+                        ...imageOptions,
+                        quality: parseFloat(e.target.value)
+                      })}
+                      style={{
+                        width: '100%',
+                        padding: '4px',
+                        border: '1px solid #d1d5db',
+                        borderRadius: '4px',
+                        fontSize: '11px'
+                      }}
+                    >
+                      <option value={0.7}>Low (70%)</option>
+                      <option value={0.9}>High (90%)</option>
+                      <option value={1.0}>Max (100%)</option>
+                    </select>
+                  </div>
+                </div>
+
+                <button
+                  onClick={handleImageExport}
+                  disabled={isExporting || !reactFlowInstance}
+                  style={{
+                    padding: '6px 12px',
+                    background: isExporting ? '#9ca3af' : '#3b82f6',
+                    color: 'white',
+                    border: 'none',
+                    borderRadius: '4px',
+                    fontSize: '11px',
+                    cursor: isExporting ? 'not-allowed' : 'pointer',
+                    fontWeight: '500'
+                  }}
+                >
+                  {isExporting ? '📤 Exporting...' : '📷 Export Image'}
+                </button>
+              </div>
+            </div>
+
+            {/* Data Export Section */}
+            <div>
+              <div style={{ fontWeight: '600', marginBottom: '6px', color: '#1f2937' }}>
+                Export Data
+              </div>
+
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                <div>
+                  <label style={{ display: 'block', marginBottom: '2px', fontSize: '10px' }}>Format:</label>
+                  <select
+                    value={dataOptions.format}
+                    onChange={(e) => setDataOptions({
+                      ...dataOptions,
+                      format: e.target.value as GraphDataExportOptions['format']
+                    })}
+                    style={{
+                      width: '100%',
+                      padding: '4px',
+                      border: '1px solid #d1d5db',
+                      borderRadius: '4px',
+                      fontSize: '11px'
+                    }}
+                  >
+                    <option value="json">JSON</option>
+                    <option value="csv">CSV</option>
+                    <option value="graphml">GraphML</option>
+                    <option value="gexf">GEXF</option>
+                    <option value="cytoscape">Cytoscape.js</option>
+                  </select>
+                </div>
+
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                  <label style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '10px' }}>
+                    <input
+                      type="checkbox"
+                      checked={dataOptions.includeMetadata}
+                      onChange={(e) => setDataOptions({
+                        ...dataOptions,
+                        includeMetadata: e.target.checked
+                      })}
+                    />
+                    Include Metadata
+                  </label>
+                  <label style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '10px' }}>
+                    <input
+                      type="checkbox"
+                      checked={dataOptions.includePositions}
+                      onChange={(e) => setDataOptions({
+                        ...dataOptions,
+                        includePositions: e.target.checked
+                      })}
+                    />
+                    Include Positions
+                  </label>
+                </div>
+
+                <button
+                  onClick={handleDataExport}
+                  disabled={isExporting}
+                  style={{
+                    padding: '6px 12px',
+                    background: isExporting ? '#9ca3af' : '#059669',
+                    color: 'white',
+                    border: 'none',
+                    borderRadius: '4px',
+                    fontSize: '11px',
+                    cursor: isExporting ? 'not-allowed' : 'pointer',
+                    fontWeight: '500'
+                  }}
+                >
+                  {isExporting ? '📤 Exporting...' : '📄 Export Data'}
+                </button>
+              </div>
+            </div>
+
+            <div style={{
+              paddingTop: '8px',
+              borderTop: '1px solid #e5e7eb',
+              fontSize: '10px',
+              color: '#9ca3af'
+            }}>
+              {nodes.length} nodes, {edges.length} edges ready for export
+            </div>
+          </div>
+        )}
+      </div>
+    </Panel>
+  );
+};
+
 // Helper function to calculate cluster bounds
 const calculateClusterBounds = (nodes: Node[]) => {
   if (nodes.length === 0) return null;
@@ -3686,6 +4399,13 @@ import '@xyflow/react/dist/style.css';
 
             {/* Graph Metrics and Analysis Panel */}
             <GraphMetricsPanel
+              nodes={filteredNodes}
+              edges={filteredEdges}
+            />
+
+            {/* Export Panel */}
+            <ExportPanel
+              reactFlowInstance={rfInstance}
               nodes={filteredNodes}
               edges={filteredEdges}
             />
