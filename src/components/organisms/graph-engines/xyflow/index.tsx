@@ -977,31 +977,285 @@ const EdgeContextMenu: React.FC<{
 };
 
 // ============================================================================
-// Node Clustering Components
+// Advanced Node Clustering Components
 // ============================================================================
 
-const EntityCluster: React.FC<{
-  entityType: string;
+export type ClusterType = 'entity' | 'spatial' | 'citation' | 'year' | 'collaboration';
+
+interface Cluster {
+  id: string;
+  type: ClusterType;
+  label: string;
   nodes: Node[];
+  color: string;
   bounds: { minX: number; minY: number; maxX: number; maxY: number };
-}> = ({ entityType, nodes, bounds }) => {
-  const entityColor = getEntityColour(entityType);
+  metadata?: {
+    averageCitations?: number;
+    yearRange?: { start: number; end: number };
+    density?: number;
+    centrality?: number;
+  };
+}
+
+// Advanced clustering algorithms
+const ClusteringAlgorithms = {
+  // Entity-based clustering (existing)
+  entityClustering: (nodes: Node[]): Cluster[] => {
+    const entityGroups: Record<string, Node[]> = {};
+
+    nodes.forEach(node => {
+      const entityType = (node.data as EntityNodeData)?.entityType || 'unknown';
+      if (!entityGroups[entityType]) entityGroups[entityType] = [];
+      entityGroups[entityType].push(node);
+    });
+
+    return Object.entries(entityGroups)
+      .filter(([, nodeList]) => nodeList.length >= 3)
+      .map(([entityType, clusterNodes]) => {
+        const bounds = calculateClusterBounds(clusterNodes);
+        return bounds ? {
+          id: `entity-${entityType}`,
+          type: 'entity' as ClusterType,
+          label: `${entityType}s`,
+          nodes: clusterNodes,
+          color: getEntityColour(entityType),
+          bounds,
+        } : null;
+      })
+      .filter((cluster): cluster is Cluster => cluster !== null);
+  },
+
+  // Spatial clustering using distance-based algorithm
+  spatialClustering: (nodes: Node[], maxDistance = 200, minNodes = 3): Cluster[] => {
+    const clusters: Cluster[] = [];
+    const visited = new Set<string>();
+
+    nodes.forEach(node => {
+      if (visited.has(node.id)) return;
+
+      const cluster: Node[] = [node];
+      visited.add(node.id);
+
+      // Find nearby nodes using BFS
+      const queue = [node];
+      while (queue.length > 0) {
+        const current = queue.shift()!;
+
+        nodes.forEach(other => {
+          if (visited.has(other.id)) return;
+
+          const distance = Math.sqrt(
+            Math.pow(current.position.x - other.position.x, 2) +
+            Math.pow(current.position.y - other.position.y, 2)
+          );
+
+          if (distance <= maxDistance) {
+            cluster.push(other);
+            visited.add(other.id);
+            queue.push(other);
+          }
+        });
+      }
+
+      if (cluster.length >= minNodes) {
+        const bounds = calculateClusterBounds(cluster);
+        if (bounds) {
+          // Calculate cluster density
+          const area = (bounds.maxX - bounds.minX) * (bounds.maxY - bounds.minY);
+          const density = cluster.length / (area / 10000); // nodes per 100x100 area
+
+          clusters.push({
+            id: `spatial-${clusters.length}`,
+            type: 'spatial',
+            label: `Spatial Group ${clusters.length + 1}`,
+            nodes: cluster,
+            color: '#8b5cf6', // purple for spatial clusters
+            bounds,
+            metadata: { density },
+          });
+        }
+      }
+    });
+
+    return clusters;
+  },
+
+  // Citation-based clustering
+  citationClustering: (nodes: Node[], edges: Edge[]): Cluster[] => {
+    // Group nodes by citation ranges
+    const citationRanges = [
+      { min: 0, max: 10, label: 'Low Citations', color: '#fbbf24' },
+      { min: 11, max: 100, label: 'Medium Citations', color: '#f97316' },
+      { min: 101, max: 1000, label: 'High Citations', color: '#dc2626' },
+      { min: 1001, max: Infinity, label: 'Very High Citations', color: '#991b1b' },
+    ];
+
+    const clusters: Cluster[] = [];
+
+    citationRanges.forEach((range, index) => {
+      const clusterNodes = nodes.filter(node => {
+        const citations = ('cited_by_count' in (node.data as any) ? (node.data as any).cited_by_count : 0) || 0;
+        return citations >= range.min && citations <= range.max;
+      });
+
+      if (clusterNodes.length >= 3) {
+        const bounds = calculateClusterBounds(clusterNodes);
+        if (bounds) {
+          const avgCitations = clusterNodes.reduce((sum, node) => {
+            const citations = ('cited_by_count' in (node.data as any) ? (node.data as any).cited_by_count : 0) || 0;
+            return sum + citations;
+          }, 0) / clusterNodes.length;
+
+          clusters.push({
+            id: `citation-${index}`,
+            type: 'citation',
+            label: range.label,
+            nodes: clusterNodes,
+            color: range.color,
+            bounds,
+            metadata: { averageCitations: Math.round(avgCitations) },
+          });
+        }
+      }
+    });
+
+    return clusters;
+  },
+
+  // Year-based clustering
+  yearClustering: (nodes: Node[]): Cluster[] => {
+    const yearGroups: Record<string, Node[]> = {};
+
+    nodes.forEach(node => {
+      const year = ('publication_year' in (node.data as any) ? (node.data as any).publication_year : null) || 'unknown';
+      const decade = year !== 'unknown' ? Math.floor(year / 10) * 10 : 'unknown';
+      const decadeKey = decade !== 'unknown' ? `${decade}s` : 'Unknown Period';
+
+      if (!yearGroups[decadeKey]) yearGroups[decadeKey] = [];
+      yearGroups[decadeKey].push(node);
+    });
+
+    return Object.entries(yearGroups)
+      .filter(([, nodeList]) => nodeList.length >= 3)
+      .map(([decade, clusterNodes]) => {
+        const bounds = calculateClusterBounds(clusterNodes);
+        if (!bounds) return null;
+
+        const years = clusterNodes
+          .map(node => ('publication_year' in (node.data as any) ? (node.data as any).publication_year : null))
+          .filter((year): year is number => typeof year === 'number');
+
+        const yearRange = years.length > 0 ? {
+          start: Math.min(...years),
+          end: Math.max(...years)
+        } : undefined;
+
+        return {
+          id: `year-${decade}`,
+          type: 'year' as ClusterType,
+          label: decade,
+          nodes: clusterNodes,
+          color: '#10b981', // green for year clusters
+          bounds,
+          metadata: { yearRange },
+        };
+      })
+      .filter((cluster): cluster is Cluster => cluster !== null);
+  },
+
+  // Collaboration clustering (based on common authors/connections)
+  collaborationClustering: (nodes: Node[], edges: Edge[]): Cluster[] => {
+    // Build adjacency list for connected components
+    const adjacencyList = new Map<string, Set<string>>();
+
+    nodes.forEach(node => {
+      adjacencyList.set(node.id, new Set());
+    });
+
+    edges.forEach(edge => {
+      adjacencyList.get(edge.source)?.add(edge.target);
+      adjacencyList.get(edge.target)?.add(edge.source);
+    });
+
+    const clusters: Cluster[] = [];
+    const visited = new Set<string>();
+
+    // Find connected components using DFS
+    const findConnectedComponent = (startId: string): Node[] => {
+      const component: Node[] = [];
+      const stack = [startId];
+
+      while (stack.length > 0) {
+        const nodeId = stack.pop()!;
+        if (visited.has(nodeId)) continue;
+
+        visited.add(nodeId);
+        const node = nodes.find(n => n.id === nodeId);
+        if (node) component.push(node);
+
+        const neighbors = adjacencyList.get(nodeId) || new Set();
+        neighbors.forEach(neighborId => {
+          if (!visited.has(neighborId)) {
+            stack.push(neighborId);
+          }
+        });
+      }
+
+      return component;
+    };
+
+    nodes.forEach(node => {
+      if (!visited.has(node.id)) {
+        const component = findConnectedComponent(node.id);
+
+        if (component.length >= 3) {
+          const bounds = calculateClusterBounds(component);
+          if (bounds) {
+            clusters.push({
+              id: `collab-${clusters.length}`,
+              type: 'collaboration',
+              label: `Collaboration Network ${clusters.length + 1}`,
+              nodes: component,
+              color: '#3b82f6', // blue for collaboration clusters
+              bounds,
+            });
+          }
+        }
+      }
+    });
+
+    return clusters;
+  },
+};
+
+const ClusterVisualization: React.FC<{
+  cluster: Cluster;
+  isActive: boolean;
+  onClick?: () => void;
+}> = ({ cluster, isActive, onClick }) => {
   const padding = 20;
+  const [isHovered, setIsHovered] = React.useState(false);
 
   return (
     <div
       style={{
         position: 'absolute',
-        left: bounds.minX - padding,
-        top: bounds.minY - padding,
-        width: bounds.maxX - bounds.minX + (padding * 2),
-        height: bounds.maxY - bounds.minY + (padding * 2),
-        backgroundColor: `${entityColor}10`,
-        border: `2px dashed ${entityColor}40`,
+        left: cluster.bounds.minX - padding,
+        top: cluster.bounds.minY - padding,
+        width: cluster.bounds.maxX - cluster.bounds.minX + (padding * 2),
+        height: cluster.bounds.maxY - cluster.bounds.minY + (padding * 2),
+        backgroundColor: isActive ? `${cluster.color}20` : `${cluster.color}10`,
+        border: `2px ${isActive ? 'solid' : 'dashed'} ${cluster.color}${isActive ? '80' : '40'}`,
         borderRadius: '12px',
-        pointerEvents: 'none',
-        zIndex: -1,
+        pointerEvents: onClick ? 'auto' : 'none',
+        zIndex: isActive ? 1 : -1,
+        cursor: onClick ? 'pointer' : 'default',
+        transition: 'all 0.3s ease',
+        boxShadow: isActive ? `0 4px 12px ${cluster.color}30` : 'none',
       }}
+      onClick={onClick}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
     >
       <div
         style={{
@@ -1010,15 +1264,28 @@ const EntityCluster: React.FC<{
           left: '12px',
           fontSize: '12px',
           fontWeight: '600',
-          color: entityColor,
-          textTransform: 'capitalize',
-          background: 'rgba(255, 255, 255, 0.9)',
-          padding: '2px 8px',
-          borderRadius: '6px',
-          border: `1px solid ${entityColor}40`,
+          color: cluster.color,
+          background: 'rgba(255, 255, 255, 0.95)',
+          padding: '4px 10px',
+          borderRadius: '8px',
+          border: `1px solid ${cluster.color}60`,
+          boxShadow: isHovered ? '0 2px 8px rgba(0, 0, 0, 0.1)' : 'none',
+          transition: 'all 0.2s ease',
         }}
       >
-        {entityType}s ({nodes.length})
+        <div style={{ fontWeight: '700' }}>{cluster.label}</div>
+        <div style={{ fontSize: '10px', opacity: 0.8, marginTop: '2px' }}>
+          {cluster.nodes.length} nodes
+          {cluster.metadata?.averageCitations && (
+            <> • {cluster.metadata.averageCitations} avg citations</>
+          )}
+          {cluster.metadata?.yearRange && (
+            <> • {cluster.metadata.yearRange.start}-{cluster.metadata.yearRange.end}</>
+          )}
+          {cluster.metadata?.density && (
+            <> • density: {cluster.metadata.density.toFixed(2)}</>
+          )}
+        </div>
       </div>
     </div>
   );
@@ -1984,23 +2251,30 @@ import '@xyflow/react/dist/style.css';
         setCurrentZoom(viewport.zoom);
       }, []);
 
-      // Clustering logic - group nodes by entity type for visual organization
-      const shouldShowClusters = currentZoom < 0.8 && nodes.length > 10 && nodes.length < 100;
-      const entityClusters = React.useMemo(() => {
-        if (!shouldShowClusters) return {};
+      // Advanced clustering system with multiple algorithms
+      const [activeClusterType, setActiveClusterType] = useState<ClusterType>('entity');
+      const [selectedCluster, setSelectedCluster] = useState<string | null>(null);
 
-        const clusters: Record<string, Node[]> = {};
-        nodes.forEach(node => {
-          const entityType = (node.data as EntityNodeData)?.entityType || 'unknown';
-          if (!clusters[entityType]) clusters[entityType] = [];
-          clusters[entityType].push(node);
-        });
+      const shouldShowClusters = currentZoom < 0.8 && nodes.length > 5 && nodes.length < 200;
 
-        // Only show clusters with 3 or more nodes
-        return Object.fromEntries(
-          Object.entries(clusters).filter(([, nodeList]) => nodeList.length >= 3)
-        );
-      }, [nodes, shouldShowClusters]);
+      const clusters = React.useMemo(() => {
+        if (!shouldShowClusters) return [];
+
+        switch (activeClusterType) {
+          case 'entity':
+            return ClusteringAlgorithms.entityClustering(nodes);
+          case 'spatial':
+            return ClusteringAlgorithms.spatialClustering(nodes, 200, 3);
+          case 'citation':
+            return ClusteringAlgorithms.citationClustering(nodes, edges);
+          case 'year':
+            return ClusteringAlgorithms.yearClustering(nodes);
+          case 'collaboration':
+            return ClusteringAlgorithms.collaborationClustering(nodes, edges);
+          default:
+            return ClusteringAlgorithms.entityClustering(nodes);
+        }
+      }, [nodes, edges, shouldShowClusters, activeClusterType]);
 
       // Sync nodes and edges with engine, applying performance optimizations
       useEffect(() => {
@@ -2106,19 +2380,76 @@ import '@xyflow/react/dist/style.css';
               />
             )}
 
-            {/* Entity Clustering Visualization */}
-            {shouldShowClusters && Object.entries(entityClusters).map(([entityType, clusterNodes]) => {
-              const bounds = calculateClusterBounds(clusterNodes);
-              return bounds ? (
-                <Panel key={`cluster-${entityType}`} position="top-left">
-                  <EntityCluster
-                    entityType={entityType}
-                    nodes={clusterNodes}
-                    bounds={bounds}
-                  />
-                </Panel>
-              ) : null;
-            })}
+            {/* Advanced Clustering Visualization */}
+            {shouldShowClusters && clusters.map((cluster) => (
+              <Panel key={cluster.id} position="top-left">
+                <ClusterVisualization
+                  cluster={cluster}
+                  isActive={selectedCluster === cluster.id}
+                  onClick={() => setSelectedCluster(
+                    selectedCluster === cluster.id ? null : cluster.id
+                  )}
+                />
+              </Panel>
+            ))}
+
+            {/* Clustering Algorithm Selector */}
+            {shouldShowClusters && clusters.length > 0 && (
+              <Panel position="top-right">
+                <div style={{
+                  background: 'rgba(255, 255, 255, 0.95)',
+                  padding: '10px',
+                  borderRadius: '8px',
+                  fontSize: '12px',
+                  minWidth: '200px',
+                  boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)',
+                }}>
+                  <div style={{ fontWeight: '600', marginBottom: '8px', color: '#374151' }}>
+                    Clustering Algorithm
+                  </div>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                    {[
+                      { type: 'entity' as ClusterType, label: 'Entity Type', icon: '🏷️' },
+                      { type: 'spatial' as ClusterType, label: 'Spatial Distance', icon: '📍' },
+                      { type: 'citation' as ClusterType, label: 'Citation Count', icon: '📊' },
+                      { type: 'year' as ClusterType, label: 'Publication Year', icon: '📅' },
+                      { type: 'collaboration' as ClusterType, label: 'Collaboration', icon: '🤝' },
+                    ].map(({ type, label, icon }) => (
+                      <button
+                        key={type}
+                        onClick={() => setActiveClusterType(type)}
+                        style={{
+                          padding: '6px 10px',
+                          border: activeClusterType === type ? '2px solid #3b82f6' : '1px solid #e5e7eb',
+                          background: activeClusterType === type ? '#eff6ff' : 'white',
+                          borderRadius: '6px',
+                          fontSize: '11px',
+                          cursor: 'pointer',
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '6px',
+                          textAlign: 'left',
+                          color: activeClusterType === type ? '#1d4ed8' : '#6b7280',
+                          fontWeight: activeClusterType === type ? '600' : '400',
+                        }}
+                      >
+                        <span>{icon}</span>
+                        <span>{label}</span>
+                      </button>
+                    ))}
+                  </div>
+                  <div style={{
+                    marginTop: '8px',
+                    paddingTop: '8px',
+                    borderTop: '1px solid #e5e7eb',
+                    fontSize: '10px',
+                    color: '#9ca3af'
+                  }}>
+                    Found {clusters.length} clusters
+                  </div>
+                </div>
+              </Panel>
+            )}
 
             {config.controls && (
               <Controls
