@@ -2,10 +2,24 @@ import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import { createRouter, RouterProvider, createHashHistory } from '@tanstack/react-router'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import './index.css'
+import { MantineProvider, createTheme } from '@mantine/core'
+import { Notifications } from '@mantine/notifications'
+
+// Import Mantine core styles
+import '@mantine/core/styles.css'
+import '@mantine/notifications/styles.css'
 
 // Import the generated route tree
 import { routeTree } from './routeTree.gen'
+
+// Create Mantine theme
+const theme = createTheme({
+  /** Your theme configuration */
+  colorScheme: 'auto', // Enable automatic dark/light mode
+  primaryColor: 'blue',
+  fontFamily: 'Inter, system-ui, Avenir, Helvetica, Arial, sans-serif',
+  defaultRadius: 'md',
+})
 
 // Create a new query client for data fetching
 const queryClient = new QueryClient({
@@ -32,8 +46,11 @@ declare module '@tanstack/react-router' {
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <QueryClientProvider client={queryClient}>
-      <RouterProvider router={router} />
-    </QueryClientProvider>
+    <MantineProvider theme={theme}>
+      <Notifications />
+      <QueryClientProvider client={queryClient}>
+        <RouterProvider router={router} />
+      </QueryClientProvider>
+    </MantineProvider>
   </StrictMode>,
 )
