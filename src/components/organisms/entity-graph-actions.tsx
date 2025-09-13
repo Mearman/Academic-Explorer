@@ -27,12 +27,12 @@ export function EntityGraphActions({
   const enhancedActions = useMemo(() => {
     const actions = [originalActions];
     
-    if (showGraph && graphStats.totalVertices > 0) {
+    if (showGraph && graphStats?.totalVertices > 0) {
       actions.push(
         <GraphToggleButton
           key="toggle-graph"
           isVisible={isGraphVisible}
-          entityCount={graphStats.totalVertices}
+          entityCount={graphStats?.totalVertices || 0}
           onToggle={onToggleGraph}
         />
       );
@@ -42,7 +42,7 @@ export function EntityGraphActions({
   }, [
     originalActions,
     showGraph,
-    graphStats.totalVertices,
+    graphStats?.totalVertices,
     isGraphVisible,
     onToggleGraph,
   ]);

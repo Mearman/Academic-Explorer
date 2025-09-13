@@ -85,7 +85,7 @@ function GraphSectionInternal({
           actions={
             <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
               {/* Engine selector */}
-              {showEngineSelector && availableEngines.length > 1 && (
+              {showEngineSelector && (
                 <CompactGraphEngineSettings />
               )}
               
@@ -131,6 +131,14 @@ function GraphSectionInternal({
     <EntitySection
       title="Related Entities"
       icon="graph"
+      actions={
+        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+          {/* Engine selector - also show in empty state */}
+          {showEngineSelector && (
+            <CompactGraphEngineSettings />
+          )}
+        </div>
+      }
     >
       <GraphEmptyState />
     </EntitySection>
