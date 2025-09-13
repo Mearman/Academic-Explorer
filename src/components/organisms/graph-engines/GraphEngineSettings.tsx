@@ -548,7 +548,7 @@ export function CompactGraphEngineSettings() {
   const engineOptions = useMemo(() => {
     const capabilities = getAllCapabilities();
     // List of actually implemented engines (from provider preloadEngine function)
-    const implementedEngines: GraphEngineType[] = ['canvas-2d', 'd3-force', 'cytoscape', 'webgl'];
+    const implementedEngines: GraphEngineType[] = ['canvas-2d', 'd3-force', 'cytoscape', 'webgl', 'xyflow', 'vis-network'];
     
     return capabilities.map(({ engineType, capabilities: caps }) => ({
       value: engineType,

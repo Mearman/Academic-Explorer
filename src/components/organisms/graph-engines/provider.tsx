@@ -526,7 +526,7 @@ const useGraphEngineStore = create<GraphEngineState & GraphEngineActions>()(
           const { createEngineByType } = await import('./index');
           
           // Check if this engine type is implemented
-          const availableTypes = ['canvas-2d', 'd3-force', 'cytoscape', 'webgl', 'xyflow'];
+          const availableTypes = ['canvas-2d', 'd3-force', 'cytoscape', 'webgl', 'xyflow', 'vis-network'];
           if (!availableTypes.includes(engineType)) {
             throw new Error(`Engine type ${engineType} is not yet implemented`);
           }

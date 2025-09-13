@@ -216,8 +216,14 @@ export async function createEngineByType(
       return createVisNetworkEngine();
     }
     case 'svg':
+      throw new Error(
+        `SVG engine is not implemented. Available engines: canvas-2d, webgl, d3-force, cytoscape, vis-network, xyflow. ` +
+        `Consider using 'canvas-2d' or 'xyflow' for similar functionality.`
+      );
     default:
-      throw new Error(`Engine ${engineType} is not yet implemented`);
+      throw new Error(
+        `Engine '${engineType}' is not implemented. Available engines: canvas-2d, webgl, d3-force, cytoscape, vis-network, xyflow.`
+      );
   }
 }
 

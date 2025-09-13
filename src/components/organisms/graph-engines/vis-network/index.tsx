@@ -317,7 +317,7 @@ const network = new Network(container, data, options);
   private isStabilizing = false;
   
   // ============================================================================
-  // Placeholder Implementation
+  // Implementation
   // ============================================================================
   
   async initialise(

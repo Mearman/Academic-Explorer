@@ -124,13 +124,13 @@ export function classifyEngineError(
 
 function getAlternativeEngines(currentEngine: GraphEngineType): GraphEngineType[] {
   const alternatives: Record<GraphEngineType, GraphEngineType[]> = {
-    'webgl': ['xyflow', 'canvas-2d', 'svg', 'd3-force'],
-    'canvas-2d': ['xyflow', 'svg', 'd3-force', 'cytoscape'],
-    'svg': ['xyflow', 'canvas-2d', 'd3-force'],
-    'd3-force': ['xyflow', 'canvas-2d', 'svg'],
-    'cytoscape': ['xyflow', 'canvas-2d', 'vis-network'],
-    'vis-network': ['xyflow', 'cytoscape', 'canvas-2d'],
-    'xyflow': ['d3-force', 'canvas-2d', 'svg'],
+    'webgl': ['xyflow', 'canvas-2d', 'd3-force', 'cytoscape'],
+    'canvas-2d': ['xyflow', 'd3-force', 'cytoscape', 'vis-network'],
+    'svg': ['xyflow', 'canvas-2d', 'd3-force', 'cytoscape'],
+    'd3-force': ['xyflow', 'canvas-2d', 'cytoscape', 'vis-network'],
+    'cytoscape': ['xyflow', 'canvas-2d', 'vis-network', 'd3-force'],
+    'vis-network': ['xyflow', 'cytoscape', 'canvas-2d', 'd3-force'],
+    'xyflow': ['d3-force', 'canvas-2d', 'cytoscape', 'vis-network'],
   };
   
   return alternatives[currentEngine] || ['canvas-2d'];
@@ -491,15 +491,43 @@ export function useGraphEngineErrorHandler() {
       return false;
     }
   };
-  
+
+  const classifyError = (error: string): string => {
+    const errorLower = error.toLowerCase();
+
+    if (errorLower.includes('webgl') || errorLower.includes('hardware acceleration') || errorLower.includes('gpu')) {
+      return 'hardware';
+    }
+    if (errorLower.includes('memory') || errorLower.includes('heap') || errorLower.includes('allocation')) {
+      return 'memory';
+    }
+    if (errorLower.includes('network') || errorLower.includes('fetch') || errorLower.includes('connection')) {
+      return 'network';
+    }
+    if (errorLower.includes('permission') || errorLower.includes('security') || errorLower.includes('cors')) {
+      return 'security';
+    }
+    if (errorLower.includes('not implemented') || errorLower.includes('not supported')) {
+      return 'unsupported';
+    }
+    if (errorLower.includes('timeout') || errorLower.includes('slow')) {
+      return 'performance';
+    }
+    if (errorLower.includes('initialization') || errorLower.includes('initialise') || errorLower.includes('setup')) {
+      return 'initialization';
+    }
+
+    return 'unknown';
+  };
+
   const getErrorSummary = () => {
     const errorCount = Object.values(engineErrors).filter(error => error !== null).length;
     const errorsByType: Record<string, number> = {};
     
     Object.values(engineErrors).forEach(error => {
       if (error) {
-        // This would need proper error classification
-        const type = 'unknown'; // Placeholder
+        // Classify error based on common patterns
+        const type = classifyError(error);
         errorsByType[type] = (errorsByType[type] || 0) + 1;
       }
     });
