@@ -83,19 +83,19 @@ export class XYFlowProvider implements GraphProvider {
   // Get color for entity type
   private getEntityColor(entityType: EntityType): string {
     switch (entityType) {
-      case 'work':
+      case 'works':
         return '#e74c3c';
-      case 'author':
+      case 'authors':
         return '#3498db';
-      case 'source':
+      case 'sources':
         return '#2ecc71';
-      case 'institution':
+      case 'institutions':
         return '#f39c12';
-      case 'topic':
+      case 'topics':
         return '#9b59b6';
-      case 'publisher':
+      case 'publishers':
         return '#1abc9c';
-      case 'funder':
+      case 'funders':
         return '#e67e22';
       default:
         return '#95a5a6';
@@ -298,16 +298,16 @@ export class XYFlowProvider implements GraphProvider {
     nodes.forEach(node => {
       let level = 0;
       switch (node.type) {
-        case 'author':
+        case 'authors':
           level = 0;
           break;
-        case 'work':
+        case 'works':
           level = 1;
           break;
-        case 'source':
+        case 'sources':
           level = 2;
           break;
-        case 'institution':
+        case 'institutions':
           level = 3;
           break;
         default:

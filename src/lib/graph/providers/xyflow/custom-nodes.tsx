@@ -158,10 +158,10 @@ export const CustomNode: React.FC<CustomNodeProps> = ({ data, selected }) => {
       {data.metadata && (
         <div style={{ fontSize: '8px', opacity: 0.6, marginTop: '2px' }}>
           {data.metadata.year && (
-            <span style={{ marginRight: '4px' }}>📅 {String(data.metadata.year)}</span>
+            <span style={{ marginRight: '4px' }}>📅 {data.metadata.year as React.ReactNode}</span>
           )}
           {data.metadata.citationCount && (
-            <span style={{ marginRight: '4px' }}>📊 {String(data.metadata.citationCount)}</span>
+            <span style={{ marginRight: '4px' }}>📊 {data.metadata.citationCount as React.ReactNode}</span>
           )}
           {data.metadata.openAccess && (
             <span>🔓</span>
@@ -190,13 +190,13 @@ export const WorkNode: React.FC<CustomNodeProps> = ({ data, selected }) => {
 
       {data.metadata?.year && (
         <div style={{ fontSize: '9px', opacity: 0.8 }}>
-          {String(data.metadata.year)}
+          {data.metadata.year as React.ReactNode}
         </div>
       )}
 
       {data.metadata?.citationCount && (
         <div style={{ fontSize: '8px', opacity: 0.7 }}>
-          {String(data.metadata.citationCount)} citations
+          {data.metadata.citationCount as React.ReactNode} citations
         </div>
       )}
     </div>
