@@ -98,6 +98,17 @@ interface PerformanceOptions {
   };
 }
 
+interface ForceDirectedOptions {
+  enabled: boolean;
+  iterations: number;
+  repulsion: number;
+  attraction: number;
+  damping: number;
+  centerForce: number;
+  minDistance: number;
+  maxDistance: number;
+}
+
 interface ViewportBounds {
   minX: number;
   maxX: number;
@@ -200,6 +211,20 @@ export class CanvasEngine<TVertexData = unknown, TEdgeData = unknown>
   private lastFrameTime = 0;
   private frameCount = 0;
   private fps = 60;
+
+  // Force-directed layout
+  private forceOptions: ForceDirectedOptions = {
+    enabled: false,
+    iterations: 100,
+    repulsion: 100,
+    attraction: 0.01,
+    damping: 0.9,
+    centerForce: 0.1,
+    minDistance: 30,
+    maxDistance: 200,
+  };
+  private nodeVelocities: Map<string, { vx: number; vy: number }> = new Map();
+  private layoutAnimationId: number | null = null;
 
   // ============================================================================
   // Public API Implementation
@@ -400,6 +425,8 @@ export class CanvasEngine<TVertexData = unknown, TEdgeData = unknown>
       this.animationId = null;
     }
 
+    this.stopForceSimulation();
+
     if (this.canvas && this.container) {
       this.container.removeChild(this.canvas);
     }
@@ -410,6 +437,7 @@ export class CanvasEngine<TVertexData = unknown, TEdgeData = unknown>
     this.currentGraph = null;
     this.renderedNodes = [];
     this.renderedEdges = [];
+    this.nodeVelocities.clear();
 
     this._status = {
       isInitialised: false,
@@ -1017,7 +1045,7 @@ export class CanvasEngine<TVertexData = unknown, TEdgeData = unknown>
 
     // Background
     this.ctx.fillStyle = 'rgba(0, 0, 0, 0.8)';
-    this.ctx.fillRect(10, 10, 200, 120);
+    this.ctx.fillRect(10, 10, 200, 135);
 
     // Text
     this.ctx.fillStyle = '#ffffff';
@@ -1033,6 +1061,7 @@ export class CanvasEngine<TVertexData = unknown, TEdgeData = unknown>
       `Scale: ${stats.scale.toFixed(2)}`,
       `Culling: ${this.performance.enableViewportCulling ? 'ON' : 'OFF'}`,
       `LOD: ${this.performance.enableLevelOfDetail ? 'ON' : 'OFF'}`,
+      `Forces: ${this.forceOptions.enabled ? 'ON' : 'OFF'}`,
       `Memory: ${this.getMemoryUsage()}MB`,
     ];
 
@@ -1068,6 +1097,170 @@ export class CanvasEngine<TVertexData = unknown, TEdgeData = unknown>
   setPerformanceOptions(options: Partial<PerformanceOptions>): void {
     this.performance = { ...this.performance, ...options };
     this.needsRedraw = true;
+  }
+
+  // Force-directed layout methods
+  enableForceDirectedLayout(options?: Partial<ForceDirectedOptions>): void {
+    this.forceOptions = { ...this.forceOptions, enabled: true, ...options };
+    this.initializeForces();
+    this.startForceSimulation();
+  }
+
+  disableForceDirectedLayout(): void {
+    this.forceOptions.enabled = false;
+    this.stopForceSimulation();
+  }
+
+  setForceOptions(options: Partial<ForceDirectedOptions>): void {
+    this.forceOptions = { ...this.forceOptions, ...options };
+  }
+
+  private initializeForces(): void {
+    // Initialize velocities for all nodes
+    this.nodeVelocities.clear();
+    this.renderedNodes.forEach(node => {
+      this.nodeVelocities.set(node.id, { vx: 0, vy: 0 });
+    });
+  }
+
+  private startForceSimulation(): void {
+    if (this.layoutAnimationId) {
+      cancelAnimationFrame(this.layoutAnimationId);
+    }
+
+    let iteration = 0;
+    const simulate = () => {
+      if (!this.forceOptions.enabled || iteration >= this.forceOptions.iterations) {
+        return;
+      }
+
+      this.applyForces();
+      this.updateNodePositions();
+      this.needsRedraw = true;
+
+      iteration++;
+      this.layoutAnimationId = requestAnimationFrame(simulate);
+    };
+
+    this.layoutAnimationId = requestAnimationFrame(simulate);
+  }
+
+  private stopForceSimulation(): void {
+    if (this.layoutAnimationId) {
+      cancelAnimationFrame(this.layoutAnimationId);
+      this.layoutAnimationId = null;
+    }
+  }
+
+  private applyForces(): void {
+    const centerX = this.dimensions.width / 2;
+    const centerY = this.dimensions.height / 2;
+
+    // Reset forces
+    this.nodeVelocities.forEach(velocity => {
+      velocity.vx = 0;
+      velocity.vy = 0;
+    });
+
+    // Apply repulsion forces between all node pairs
+    for (let i = 0; i < this.renderedNodes.length; i++) {
+      const nodeA = this.renderedNodes[i];
+      const velocityA = this.nodeVelocities.get(nodeA.id)!;
+
+      // Center force - attract nodes toward center
+      const centerDx = centerX - nodeA.x;
+      const centerDy = centerY - nodeA.y;
+      const centerDistance = Math.sqrt(centerDx * centerDx + centerDy * centerDy);
+      if (centerDistance > 0) {
+        velocityA.vx += (centerDx / centerDistance) * this.forceOptions.centerForce;
+        velocityA.vy += (centerDy / centerDistance) * this.forceOptions.centerForce;
+      }
+
+      // Repulsion forces with other nodes
+      for (let j = i + 1; j < this.renderedNodes.length; j++) {
+        const nodeB = this.renderedNodes[j];
+        const velocityB = this.nodeVelocities.get(nodeB.id)!;
+
+        const dx = nodeA.x - nodeB.x;
+        const dy = nodeA.y - nodeB.y;
+        const distance = Math.sqrt(dx * dx + dy * dy);
+
+        if (distance > 0 && distance < this.forceOptions.maxDistance) {
+          // Coulomb's law-like repulsion
+          const force = this.forceOptions.repulsion / (distance * distance);
+          const fx = (dx / distance) * force;
+          const fy = (dy / distance) * force;
+
+          velocityA.vx += fx;
+          velocityA.vy += fy;
+          velocityB.vx -= fx;
+          velocityB.vy -= fy;
+        }
+      }
+    }
+
+    // Apply attraction forces along edges
+    this.renderedEdges.forEach(edge => {
+      const sourceNode = this.renderedNodes.find(n => n.id === edge.id.split('-')[0]);
+      const targetNode = this.renderedNodes.find(n => n.id === edge.id.split('-')[1]);
+
+      if (sourceNode && targetNode) {
+        const sourceVelocity = this.nodeVelocities.get(sourceNode.id)!;
+        const targetVelocity = this.nodeVelocities.get(targetNode.id)!;
+
+        const dx = targetNode.x - sourceNode.x;
+        const dy = targetNode.y - sourceNode.y;
+        const distance = Math.sqrt(dx * dx + dy * dy);
+
+        if (distance > this.forceOptions.minDistance) {
+          // Hooke's law-like attraction
+          const force = this.forceOptions.attraction * (distance - this.forceOptions.minDistance);
+          const fx = (dx / distance) * force;
+          const fy = (dy / distance) * force;
+
+          sourceVelocity.vx += fx;
+          sourceVelocity.vy += fy;
+          targetVelocity.vx -= fx;
+          targetVelocity.vy -= fy;
+        }
+      }
+    });
+  }
+
+  private updateNodePositions(): void {
+    this.renderedNodes.forEach(node => {
+      const velocity = this.nodeVelocities.get(node.id)!;
+
+      // Apply damping
+      velocity.vx *= this.forceOptions.damping;
+      velocity.vy *= this.forceOptions.damping;
+
+      // Update position
+      node.x += velocity.vx;
+      node.y += velocity.vy;
+
+      // Keep nodes within reasonable bounds
+      const margin = 50;
+      node.x = Math.max(margin, Math.min(this.dimensions.width - margin, node.x));
+      node.y = Math.max(margin, Math.min(this.dimensions.height - margin, node.y));
+    });
+
+    // Update edge positions
+    this.updateEdgePositions();
+  }
+
+  private updateEdgePositions(): void {
+    this.renderedEdges.forEach(edge => {
+      const sourceNode = this.renderedNodes.find(n => n.id === edge.id.split('-')[0]);
+      const targetNode = this.renderedNodes.find(n => n.id === edge.id.split('-')[1]);
+
+      if (sourceNode && targetNode) {
+        edge.sourceX = sourceNode.x;
+        edge.sourceY = sourceNode.y;
+        edge.targetX = targetNode.x;
+        edge.targetY = targetNode.y;
+      }
+    });
   }
 
   // ============================================================================
