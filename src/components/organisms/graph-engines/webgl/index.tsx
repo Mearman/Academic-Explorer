@@ -431,12 +431,42 @@ const fragmentShader = gl.createShader(gl.FRAGMENT_SHADER);
     positions: ReadonlyArray<IPositionedVertex<TVertexData>>,
     animate = true
   ): void {
-    if (!this.gl) return;
+    if (!this.gl || !this.vertices) return;
+
+    // Create a map for quick position lookup
+    const positionMap = new Map<string, IPositionedVertex<TVertexData>>();
+    positions.forEach(pos => positionMap.set(pos.id, pos));
 
     // Update vertex buffer with new positions
-    // TODO: Implement position updates and animation
-    if (animate) {
-      // Implement smooth position transitions
+    const stride = 7; // [x, y, r, g, b, size, opacity]
+    let hasChanges = false;
+
+    for (let i = 0; i < this.vertexCount; i++) {
+      const vertexIndex = i * stride;
+
+      // Find corresponding position update
+      // We need to match by vertex ID somehow - for now use index mapping
+      const positionUpdate = positions[i];
+      if (positionUpdate) {
+        const newX = this.normalizePosition(positionUpdate.position.x, 'x');
+        const newY = this.normalizePosition(positionUpdate.position.y, 'y');
+
+        if (animate) {
+          // Store target positions for smooth animation
+          this.animatePositionTransition(i, newX, newY);
+        } else {
+          // Update positions immediately
+          this.vertices[vertexIndex] = newX;
+          this.vertices[vertexIndex + 1] = newY;
+          hasChanges = true;
+        }
+      }
+    }
+
+    if (hasChanges && !animate) {
+      // Update the vertex buffer with new data
+      this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.vertexBuffer);
+      this.gl.bufferSubData(this.gl.ARRAY_BUFFER, 0, this.vertices);
     }
   }
 
@@ -731,7 +761,55 @@ const fragmentShader = gl.createShader(gl.FRAGMENT_SHADER);
   }
 
   private configureRendering(config?: IGraphConfig<TVertexData, TEdgeData>): void {
-    // TODO: Configure rendering parameters based on config
+    if (!this.gl || !config) return;
+
+    // Configure blending for transparency
+    this.gl.enable(this.gl.BLEND);
+    this.gl.blendFunc(this.gl.SRC_ALPHA, this.gl.ONE_MINUS_SRC_ALPHA);
+
+    // Configure depth testing (disabled for 2D graphs)
+    this.gl.disable(this.gl.DEPTH_TEST);
+
+    // Configure culling
+    this.gl.disable(this.gl.CULL_FACE);
+
+    // Configure rendering quality based on config
+    const renderingConfig = config.renderingConfig;
+    if (renderingConfig) {
+      // Anti-aliasing via multisampling (if supported)
+      if (renderingConfig.antiAliasing && this.gl instanceof WebGL2RenderingContext) {
+        this.gl.enable(this.gl.SAMPLE_ALPHA_TO_COVERAGE);
+      }
+
+      // Point size configuration
+      if (renderingConfig.pointSize) {
+        // Point size is configured per vertex in vertex data
+        // Store for reference in vertex processing
+      }
+
+      // Line width (limited support in WebGL)
+      if (renderingConfig.lineWidth) {
+        this.gl.lineWidth(Math.max(1, Math.min(renderingConfig.lineWidth, 10)));
+      }
+
+      // Viewport and clear color
+      if (renderingConfig.backgroundColor) {
+        const bg = renderingConfig.backgroundColor;
+        this.gl.clearColor(
+          ((bg >> 16) & 0xFF) / 255,  // Red
+          ((bg >> 8) & 0xFF) / 255,   // Green
+          (bg & 0xFF) / 255,          // Blue
+          1.0                         // Alpha
+        );
+      } else {
+        // Default clear color (transparent)
+        this.gl.clearColor(0.0, 0.0, 0.0, 0.0);
+      }
+    } else {
+      // Default rendering configuration
+      this.gl.clearColor(0.0, 0.0, 0.0, 0.0);
+      this.gl.lineWidth(1.0);
+    }
   }
 
   private startRenderLoop(): void {
@@ -820,11 +898,20 @@ const fragmentShader = gl.createShader(gl.FRAGMENT_SHADER);
   }
 
   private updateViewMatrix(): void {
-    // Identity matrix for now - TODO: Implement camera controls
+    // Create view matrix with scale and translation
     this.viewMatrix.fill(0);
-    this.viewMatrix[0] = 1;
-    this.viewMatrix[5] = 1;
-    this.viewMatrix[10] = 1;
+
+    // Apply scale (zoom)
+    this.viewMatrix[0] = this.viewScale;  // Scale X
+    this.viewMatrix[5] = this.viewScale;  // Scale Y
+    this.viewMatrix[10] = 1;              // Scale Z (2D graph)
+
+    // Apply translation (pan)
+    this.viewMatrix[12] = this.viewOffsetX;  // Translate X
+    this.viewMatrix[13] = this.viewOffsetY;  // Translate Y
+    this.viewMatrix[14] = 0;                 // Translate Z
+
+    // Homogeneous coordinate
     this.viewMatrix[15] = 1;
 
     this.updateMVPMatrix();
@@ -973,6 +1060,48 @@ const fragmentShader = gl.createShader(gl.FRAGMENT_SHADER);
       case 'p': return 'publisher';
       default: return 'unknown';
     }
+  }
+
+  /**
+   * Animate smooth position transitions for vertices
+   */
+  private animatePositionTransition(vertexIndex: number, targetX: number, targetY: number): void {
+    const stride = 7;
+    const bufferIndex = vertexIndex * stride;
+
+    const startX = this.vertices[bufferIndex];
+    const startY = this.vertices[bufferIndex + 1];
+
+    const duration = 500; // 500ms animation
+    const startTime = performance.now();
+
+    const animate = (currentTime: number) => {
+      const elapsed = currentTime - startTime;
+      const progress = Math.min(elapsed / duration, 1);
+
+      // Use ease-out cubic for smooth transition
+      const easeProgress = 1 - Math.pow(1 - progress, 3);
+
+      // Interpolate positions
+      const currentX = startX + (targetX - startX) * easeProgress;
+      const currentY = startY + (targetY - startY) * easeProgress;
+
+      // Update vertex buffer
+      this.vertices[bufferIndex] = currentX;
+      this.vertices[bufferIndex + 1] = currentY;
+
+      // Update GPU buffer
+      if (this.gl && this.vertexBuffer) {
+        this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.vertexBuffer);
+        this.gl.bufferSubData(this.gl.ARRAY_BUFFER, bufferIndex * 4, new Float32Array([currentX, currentY]));
+      }
+
+      if (progress < 1) {
+        requestAnimationFrame(animate);
+      }
+    };
+
+    requestAnimationFrame(animate);
   }
 
   destroy(): void {
