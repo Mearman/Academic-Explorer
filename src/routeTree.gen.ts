@@ -24,7 +24,7 @@ import { Route as AuthorsRouteImport } from './routes/authors'
 import { Route as BareIdRouteImport } from './routes/$bareId'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as WorksIndexRouteImport } from './routes/works.index'
-import { Route as AuthorsIndexRouteImport } from './routes/authors.index'
+import { Route as AuthorsIndexRouteImport } from './routes/authors/index'
 import { Route as WorksIdRouteImport } from './routes/works_.$id'
 import { Route as WorkIdRouteImport } from './routes/work.$id'
 import { Route as WikidataIdRouteImport } from './routes/wikidata.$id'
@@ -38,12 +38,9 @@ import { Route as IssnIdRouteImport } from './routes/issn.$id'
 import { Route as InstitutionsIdRouteImport } from './routes/institutions_.$id'
 import { Route as InstitutionIdRouteImport } from './routes/institution.$id'
 import { Route as HttpsSplatRouteImport } from './routes/https.$'
-import { Route as EntitySplatRouteImport } from './routes/entity.$'
 import { Route as DoiPathRouteImport } from './routes/doi.$path'
 import { Route as ContinentsIdRouteImport } from './routes/continents.$id'
-import { Route as AuthorsIdRouteImport } from './routes/authors_.$id'
-import { Route as AuthorIdRouteImport } from './routes/author.$id'
-import { Route as EntityTypeIdRouteImport } from './routes/entity.$type.$id'
+import { Route as AuthorsIdRouteImport } from './routes/authors/$id'
 
 const WorksRoute = WorksRouteImport.update({
   id: '/works',
@@ -190,11 +187,6 @@ const HttpsSplatRoute = HttpsSplatRouteImport.update({
   path: '/https/$',
   getParentRoute: () => rootRouteImport,
 } as any)
-const EntitySplatRoute = EntitySplatRouteImport.update({
-  id: '/entity/$',
-  path: '/entity/$',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const DoiPathRoute = DoiPathRouteImport.update({
   id: '/doi/$path',
   path: '/doi/$path',
@@ -206,19 +198,9 @@ const ContinentsIdRoute = ContinentsIdRouteImport.update({
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthorsIdRoute = AuthorsIdRouteImport.update({
-  id: '/authors_/$id',
-  path: '/authors/$id',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AuthorIdRoute = AuthorIdRouteImport.update({
-  id: '/author/$id',
-  path: '/author/$id',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const EntityTypeIdRoute = EntityTypeIdRouteImport.update({
-  id: '/entity/$type/$id',
-  path: '/entity/$type/$id',
-  getParentRoute: () => rootRouteImport,
+  id: '/$id',
+  path: '/$id',
+  getParentRoute: () => AuthorsRoute,
 } as any)
 
 export interface FileRoutesByFullPath {
@@ -236,11 +218,9 @@ export interface FileRoutesByFullPath {
   '/sources': typeof SourcesRoute
   '/topics': typeof TopicsRoute
   '/works': typeof WorksRouteWithChildren
-  '/author/$id': typeof AuthorIdRoute
   '/authors/$id': typeof AuthorsIdRoute
   '/continents/$id': typeof ContinentsIdRoute
   '/doi/$path': typeof DoiPathRoute
-  '/entity/$': typeof EntitySplatRoute
   '/https/$': typeof HttpsSplatRoute
   '/institution/$id': typeof InstitutionIdRoute
   '/institutions/$id': typeof InstitutionsIdRoute
@@ -256,7 +236,6 @@ export interface FileRoutesByFullPath {
   '/works/$id': typeof WorksIdRoute
   '/authors/': typeof AuthorsIndexRoute
   '/works/': typeof WorksIndexRoute
-  '/entity/$type/$id': typeof EntityTypeIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -271,11 +250,9 @@ export interface FileRoutesByTo {
   '/query': typeof QueryRoute
   '/sources': typeof SourcesRoute
   '/topics': typeof TopicsRoute
-  '/author/$id': typeof AuthorIdRoute
   '/authors/$id': typeof AuthorsIdRoute
   '/continents/$id': typeof ContinentsIdRoute
   '/doi/$path': typeof DoiPathRoute
-  '/entity/$': typeof EntitySplatRoute
   '/https/$': typeof HttpsSplatRoute
   '/institution/$id': typeof InstitutionIdRoute
   '/institutions/$id': typeof InstitutionsIdRoute
@@ -291,7 +268,6 @@ export interface FileRoutesByTo {
   '/works/$id': typeof WorksIdRoute
   '/authors': typeof AuthorsIndexRoute
   '/works': typeof WorksIndexRoute
-  '/entity/$type/$id': typeof EntityTypeIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -309,11 +285,9 @@ export interface FileRoutesById {
   '/sources': typeof SourcesRoute
   '/topics': typeof TopicsRoute
   '/works': typeof WorksRouteWithChildren
-  '/author/$id': typeof AuthorIdRoute
-  '/authors_/$id': typeof AuthorsIdRoute
+  '/authors/$id': typeof AuthorsIdRoute
   '/continents/$id': typeof ContinentsIdRoute
   '/doi/$path': typeof DoiPathRoute
-  '/entity/$': typeof EntitySplatRoute
   '/https/$': typeof HttpsSplatRoute
   '/institution/$id': typeof InstitutionIdRoute
   '/institutions_/$id': typeof InstitutionsIdRoute
@@ -329,7 +303,6 @@ export interface FileRoutesById {
   '/works_/$id': typeof WorksIdRoute
   '/authors/': typeof AuthorsIndexRoute
   '/works/': typeof WorksIndexRoute
-  '/entity/$type/$id': typeof EntityTypeIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -348,11 +321,9 @@ export interface FileRouteTypes {
     | '/sources'
     | '/topics'
     | '/works'
-    | '/author/$id'
     | '/authors/$id'
     | '/continents/$id'
     | '/doi/$path'
-    | '/entity/$'
     | '/https/$'
     | '/institution/$id'
     | '/institutions/$id'
@@ -368,7 +339,6 @@ export interface FileRouteTypes {
     | '/works/$id'
     | '/authors/'
     | '/works/'
-    | '/entity/$type/$id'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -383,11 +353,9 @@ export interface FileRouteTypes {
     | '/query'
     | '/sources'
     | '/topics'
-    | '/author/$id'
     | '/authors/$id'
     | '/continents/$id'
     | '/doi/$path'
-    | '/entity/$'
     | '/https/$'
     | '/institution/$id'
     | '/institutions/$id'
@@ -403,7 +371,6 @@ export interface FileRouteTypes {
     | '/works/$id'
     | '/authors'
     | '/works'
-    | '/entity/$type/$id'
   id:
     | '__root__'
     | '/'
@@ -420,11 +387,9 @@ export interface FileRouteTypes {
     | '/sources'
     | '/topics'
     | '/works'
-    | '/author/$id'
-    | '/authors_/$id'
+    | '/authors/$id'
     | '/continents/$id'
     | '/doi/$path'
-    | '/entity/$'
     | '/https/$'
     | '/institution/$id'
     | '/institutions_/$id'
@@ -440,7 +405,6 @@ export interface FileRouteTypes {
     | '/works_/$id'
     | '/authors/'
     | '/works/'
-    | '/entity/$type/$id'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -458,11 +422,8 @@ export interface RootRouteChildren {
   SourcesRoute: typeof SourcesRoute
   TopicsRoute: typeof TopicsRoute
   WorksRoute: typeof WorksRouteWithChildren
-  AuthorIdRoute: typeof AuthorIdRoute
-  AuthorsIdRoute: typeof AuthorsIdRoute
   ContinentsIdRoute: typeof ContinentsIdRoute
   DoiPathRoute: typeof DoiPathRoute
-  EntitySplatRoute: typeof EntitySplatRoute
   HttpsSplatRoute: typeof HttpsSplatRoute
   InstitutionIdRoute: typeof InstitutionIdRoute
   InstitutionsIdRoute: typeof InstitutionsIdRoute
@@ -476,7 +437,6 @@ export interface RootRouteChildren {
   WikidataIdRoute: typeof WikidataIdRoute
   WorkIdRoute: typeof WorkIdRoute
   WorksIdRoute: typeof WorksIdRoute
-  EntityTypeIdRoute: typeof EntityTypeIdRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -684,13 +644,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof HttpsSplatRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/entity/$': {
-      id: '/entity/$'
-      path: '/entity/$'
-      fullPath: '/entity/$'
-      preLoaderRoute: typeof EntitySplatRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/doi/$path': {
       id: '/doi/$path'
       path: '/doi/$path'
@@ -705,35 +658,23 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ContinentsIdRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/authors_/$id': {
-      id: '/authors_/$id'
-      path: '/authors/$id'
+    '/authors/$id': {
+      id: '/authors/$id'
+      path: '/$id'
       fullPath: '/authors/$id'
       preLoaderRoute: typeof AuthorsIdRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/author/$id': {
-      id: '/author/$id'
-      path: '/author/$id'
-      fullPath: '/author/$id'
-      preLoaderRoute: typeof AuthorIdRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/entity/$type/$id': {
-      id: '/entity/$type/$id'
-      path: '/entity/$type/$id'
-      fullPath: '/entity/$type/$id'
-      preLoaderRoute: typeof EntityTypeIdRouteImport
-      parentRoute: typeof rootRouteImport
+      parentRoute: typeof AuthorsRoute
     }
   }
 }
 
 interface AuthorsRouteChildren {
+  AuthorsIdRoute: typeof AuthorsIdRoute
   AuthorsIndexRoute: typeof AuthorsIndexRoute
 }
 
 const AuthorsRouteChildren: AuthorsRouteChildren = {
+  AuthorsIdRoute: AuthorsIdRoute,
   AuthorsIndexRoute: AuthorsIndexRoute,
 }
 
@@ -765,11 +706,8 @@ const rootRouteChildren: RootRouteChildren = {
   SourcesRoute: SourcesRoute,
   TopicsRoute: TopicsRoute,
   WorksRoute: WorksRouteWithChildren,
-  AuthorIdRoute: AuthorIdRoute,
-  AuthorsIdRoute: AuthorsIdRoute,
   ContinentsIdRoute: ContinentsIdRoute,
   DoiPathRoute: DoiPathRoute,
-  EntitySplatRoute: EntitySplatRoute,
   HttpsSplatRoute: HttpsSplatRoute,
   InstitutionIdRoute: InstitutionIdRoute,
   InstitutionsIdRoute: InstitutionsIdRoute,
@@ -783,7 +721,6 @@ const rootRouteChildren: RootRouteChildren = {
   WikidataIdRoute: WikidataIdRoute,
   WorkIdRoute: WorkIdRoute,
   WorksIdRoute: WorksIdRoute,
-  EntityTypeIdRoute: EntityTypeIdRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
