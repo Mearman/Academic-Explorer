@@ -211,7 +211,10 @@ export class OpenAlexClient {
     if (params && typeof params === 'object') {
       Object.entries(params as Record<string, unknown>).forEach(([key, value]) => {
         if (value !== undefined && value !== null && value !== '') {
-          if (typeof value === 'object') {
+          if (Array.isArray(value)) {
+            // Handle arrays specially - join with commas for OpenAlex API
+            url.searchParams.set(key, value.join(','));
+          } else if (typeof value === 'object') {
             url.searchParams.set(key, JSON.stringify(value));
           } else {
             url.searchParams.set(key, String(value));
