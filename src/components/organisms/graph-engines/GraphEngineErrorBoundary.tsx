@@ -124,12 +124,13 @@ export function classifyEngineError(
 
 function getAlternativeEngines(currentEngine: GraphEngineType): GraphEngineType[] {
   const alternatives: Record<GraphEngineType, GraphEngineType[]> = {
-    'webgl': ['canvas-2d', 'svg', 'd3-force'],
-    'canvas-2d': ['svg', 'd3-force', 'cytoscape'],
-    'svg': ['canvas-2d', 'd3-force'],
-    'd3-force': ['canvas-2d', 'svg'],
-    'cytoscape': ['canvas-2d', 'vis-network'],
-    'vis-network': ['cytoscape', 'canvas-2d'],
+    'webgl': ['xyflow', 'canvas-2d', 'svg', 'd3-force'],
+    'canvas-2d': ['xyflow', 'svg', 'd3-force', 'cytoscape'],
+    'svg': ['xyflow', 'canvas-2d', 'd3-force'],
+    'd3-force': ['xyflow', 'canvas-2d', 'svg'],
+    'cytoscape': ['xyflow', 'canvas-2d', 'vis-network'],
+    'vis-network': ['xyflow', 'cytoscape', 'canvas-2d'],
+    'xyflow': ['d3-force', 'canvas-2d', 'svg'],
   };
   
   return alternatives[currentEngine] || ['canvas-2d'];
