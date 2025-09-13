@@ -103,7 +103,7 @@ const mockWork1: Work = {
     doi: 'https://doi.org/10.1000/182',
   },
   language: 'en',
-  primary_location: undefined,
+  // primary_location omitted (optional)
   type: 'article',
   type_crossref: 'journal-article',
   indexed_in: ['crossref'],
@@ -118,8 +118,7 @@ const mockWork1: Work = {
   institutions_distinct_count: 2,
   corresponding_author_ids: [],
   corresponding_institution_ids: [],
-  apc_list: undefined,
-  apc_paid: undefined,
+  // apc_list and apc_paid omitted (optional)
   fwci: 1.2,
   has_fulltext: true,
   cited_by_count: 45,
@@ -135,14 +134,14 @@ const mockWork1: Work = {
   },
   is_retracted: false,
   is_paratext: false,
-  primary_topic: undefined,
+  // primary_topic omitted (optional)
   topics: [],
   keywords: [],
   concepts: [],
   mesh: [],
   locations: [],
   locations_count: 0,
-  best_oa_location: undefined,
+  // best_oa_location omitted (optional)
   sustainable_development_goals: [],
   grants: [],
   abstract_inverted_index: {},
@@ -167,14 +166,14 @@ const mockWork2: Work = {
     doi: 'https://doi.org/10.1000/183',
   },
   language: 'en',
-  primary_location: undefined,
+  // primary_location omitted (optional)
   type: 'article',
   type_crossref: 'journal-article',
   indexed_in: ['crossref'],
   open_access: {
     is_oa: false,
     oa_status: 'closed',
-    oa_url: undefined,
+    // oa_url omitted (optional)
     any_repository_has_fulltext: false
   },
   authorships: [],
@@ -182,8 +181,7 @@ const mockWork2: Work = {
   institutions_distinct_count: 3,
   corresponding_author_ids: [],
   corresponding_institution_ids: [],
-  apc_list: undefined,
-  apc_paid: undefined,
+  // apc_list and apc_paid omitted (optional)
   fwci: 0.8,
   has_fulltext: false,
   cited_by_count: 28,
@@ -199,14 +197,14 @@ const mockWork2: Work = {
   },
   is_retracted: false,
   is_paratext: false,
-  primary_topic: undefined,
+  // primary_topic omitted (optional)
   topics: [],
   keywords: [],
   concepts: [],
   mesh: [],
   locations: [],
   locations_count: 0,
-  best_oa_location: undefined,
+  // best_oa_location omitted (optional)
   sustainable_development_goals: [],
   grants: [],
   abstract_inverted_index: {},
@@ -341,7 +339,7 @@ describe('useComparisonStore', () => {
       });
 
       expect(result.current.entities).toHaveLength(1);
-      expect(result.current.entities[0].id).toBe('A987654321');
+      expect(result.current.entities[0]?.id).toBe('A987654321');
     });
 
     it('should clear comparison type when last entity is removed', () => {
@@ -457,8 +455,8 @@ describe('useComparisonStore', () => {
 
       const authors = result.current.getEntitiesByType(EntityType.AUTHOR);
       expect(authors).toHaveLength(2);
-      expect(authors[0].data).toEqual(mockAuthor1);
-      expect(authors[1].data).toEqual(mockAuthor2);
+      expect(authors[0]?.data).toEqual(mockAuthor1);
+      expect(authors[1]?.data).toEqual(mockAuthor2);
 
       const works = result.current.getEntitiesByType(EntityType.WORK);
       expect(works).toHaveLength(0);
@@ -499,7 +497,7 @@ describe('useComparisonStore', () => {
       let result2 = renderHook(() => useComparisonStore()).result;
       
       expect(result2.current.entities).toHaveLength(1);
-      expect(result2.current.entities[0].data).toEqual(mockAuthor1);
+      expect(result2.current.entities[0]?.data).toEqual(mockAuthor1);
     });
   });
 

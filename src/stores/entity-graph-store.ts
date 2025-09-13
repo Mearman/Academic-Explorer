@@ -137,8 +137,6 @@ const createEmptyGraph = (): EntityGraph => ({
 
 // Default filter options
 const defaultFilterOptions: GraphFilterOptions = {
-  entityTypes: undefined, // Show all by default
-  edgeTypes: undefined, // Show all by default
   directlyVisitedOnly: false,
   maxHopsFromVisited: DEFAULT_MAX_HOPS,
   minVisitCount: 0,
@@ -238,13 +236,18 @@ export const useEntityGraphStore = create<EntityGraphState>()(
             existingVertex.metadata.url = event.metadata?.url as string;
             
             // Add visit encounter
+            const context: EntityEncounter['context'] = {};
+            if (event.source === 'link' && event.metadata?.sourceEntityId) {
+              context.sourceEntityId = event.metadata.sourceEntityId as string;
+            }
+            if (event.metadata) {
+              context.additionalInfo = event.metadata;
+            }
+
             const visitEncounter: EntityEncounter = {
               type: EncounterType.DIRECT_VISIT,
               timestamp: event.timestamp,
-              context: {
-                sourceEntityId: event.source === 'link' ? event.metadata?.sourceEntityId as string : undefined,
-                additionalInfo: event.metadata,
-              },
+              context,
             };
             existingVertex.encounters.push(visitEncounter);
             
@@ -260,13 +263,18 @@ export const useEntityGraphStore = create<EntityGraphState>()(
             }
           } else {
             // Create new vertex
+            const context: EntityEncounter['context'] = {};
+            if (event.source === 'link' && event.metadata?.sourceEntityId) {
+              context.sourceEntityId = event.metadata.sourceEntityId as string;
+            }
+            if (event.metadata) {
+              context.additionalInfo = event.metadata;
+            }
+
             const visitEncounter: EntityEncounter = {
               type: EncounterType.DIRECT_VISIT,
               timestamp: event.timestamp,
-              context: {
-                sourceEntityId: event.source === 'link' ? event.metadata?.sourceEntityId as string : undefined,
-                additionalInfo: event.metadata,
-              },
+              context,
             };
             
             const newVertex: EntityGraphVertex = {
@@ -370,14 +378,25 @@ export const useEntityGraphStore = create<EntityGraphState>()(
               firstSeen: event.timestamp,
               visitCount: 0,
               encounters: [encounter],
-              encounterStats: {
-                totalEncounters: 1,
-                searchResultCount: event.encounterType === EncounterType.SEARCH_RESULT ? 1 : 0,
-                relatedEntityCount: event.encounterType === EncounterType.RELATED_ENTITY ? 1 : 0,
-                lastEncounter: event.timestamp,
-                firstSearchResult: event.encounterType === EncounterType.SEARCH_RESULT ? event.timestamp : undefined,
-                firstRelatedEntity: event.encounterType === EncounterType.RELATED_ENTITY ? event.timestamp : undefined,
-              },
+              encounterStats: (() => {
+                const stats: EntityGraphVertex['encounterStats'] = {
+                  totalEncounters: 1,
+                  searchResultCount: event.encounterType === EncounterType.SEARCH_RESULT ? 1 : 0,
+                  relatedEntityCount: event.encounterType === EncounterType.RELATED_ENTITY ? 1 : 0,
+                };
+
+                if (event.timestamp) {
+                  stats.lastEncounter = event.timestamp;
+                }
+                if (event.encounterType === EncounterType.SEARCH_RESULT) {
+                  stats.firstSearchResult = event.timestamp;
+                }
+                if (event.encounterType === EncounterType.RELATED_ENTITY) {
+                  stats.firstRelatedEntity = event.timestamp;
+                }
+
+                return stats;
+              })(),
               metadata: event.metadata || {},
             };
             
@@ -437,14 +456,18 @@ export const useEntityGraphStore = create<EntityGraphState>()(
             // Now we can safely mutate - create the discovered vertex
             console.log(`[EntityGraphStore] Creating new discovered vertex: ${event.targetEntityId} (${targetDisplayName})`);
             
+            const context: EntityEncounter['context'] = {
+              sourceEntityId: event.sourceEntityId,
+              relationshipType: event.relationshipType,
+            };
+            if (event.metadata) {
+              context.additionalInfo = event.metadata;
+            }
+
             const discoveryEncounter: EntityEncounter = {
               type: EncounterType.RELATIONSHIP_DISCOVERY,
               timestamp: event.timestamp,
-              context: {
-                sourceEntityId: event.sourceEntityId,
-                relationshipType: event.relationshipType,
-                additionalInfo: event.metadata,
-              },
+              context,
             };
             
             const discoveredVertex: EntityGraphVertex = {
@@ -633,13 +656,13 @@ export const useEntityGraphStore = create<EntityGraphState>()(
       
       resetFilters: () =>
         set((state) => {
-          state.filterOptions.entityTypes = defaultFilterOptions.entityTypes;
-          state.filterOptions.edgeTypes = defaultFilterOptions.edgeTypes;
-          state.filterOptions.directlyVisitedOnly = defaultFilterOptions.directlyVisitedOnly;
-          state.filterOptions.maxHopsFromVisited = defaultFilterOptions.maxHopsFromVisited;
-          state.filterOptions.minVisitCount = defaultFilterOptions.minVisitCount;
-          state.filterOptions.minCitationCount = defaultFilterOptions.minCitationCount;
-          state.filterOptions.dateRange = defaultFilterOptions.dateRange;
+          delete state.filterOptions.entityTypes;
+          delete state.filterOptions.edgeTypes;
+          delete state.filterOptions.dateRange;
+          state.filterOptions.directlyVisitedOnly = false;
+          state.filterOptions.maxHopsFromVisited = DEFAULT_MAX_HOPS;
+          state.filterOptions.minVisitCount = 0;
+          state.filterOptions.minCitationCount = 0;
         }),
       
       // Actions - View state
@@ -682,19 +705,19 @@ export const useEntityGraphStore = create<EntityGraphState>()(
         const vertexCount = graph.vertices.size;
         const edgeCount = graph.edges.size;
         
-        // Large graphs -> WebGL for performance
+        // Large graphs -> XYFlow for performance
         if (vertexCount > 5000 || edgeCount > 10000) {
-          return 'webgl';
+          return 'xyflow';
         }
-        
-        // Medium graphs -> Canvas 2D for balance
+
+        // Medium graphs -> XYFlow for balance
         if (vertexCount > 1000 || edgeCount > 2000) {
-          return 'canvas-2d';
+          return 'xyflow';
         }
-        
-        // Small graphs -> SVG for quality or D3 for interactivity
+
+        // Small graphs -> XYFlow for interactivity
         if (vertexCount > 100) {
-          return 'd3-force';
+          return 'xyflow';
         }
         
         // Very small graphs -> SVG for scalability
@@ -896,7 +919,9 @@ export const useEntityGraphStore = create<EntityGraphState>()(
             for (let i = 0; i < current.path.length - 1; i++) {
               const sourceVertexId = current.path[i];
               const targetVertexId = current.path[i + 1];
-              
+
+              if (!sourceVertexId || !targetVertexId) continue;
+
               // Find the edge between these vertices
               const outgoingEdges = graph.edgesBySource.get(sourceVertexId) || new Set();
               for (const edgeId of outgoingEdges) {
@@ -908,8 +933,13 @@ export const useEntityGraphStore = create<EntityGraphState>()(
               }
             }
             
+            const targetVertex = pathVertices[pathVertices.length - 1];
+            if (!targetVertex) {
+              return null;
+            }
+
             return {
-              vertex: pathVertices[pathVertices.length - 1],
+              vertex: targetVertex,
               path: pathVertices,
               distance: current.distance,
               pathWeight: current.totalWeight,

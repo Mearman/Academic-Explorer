@@ -178,7 +178,7 @@ export const useAppStore = create<AppState>()(
             params,
             querySignature: signature,
             isPageNavigation: isNavigation,
-            parentQueryId: parentQuery?.id,
+            ...(parentQuery?.id && { parentQueryId: parentQuery.id }),
           };
           
           if (parentQuery) {
@@ -224,7 +224,11 @@ export const useAppStore = create<AppState>()(
           }
           
           if (query) {
-            query.results = results;
+            if (results !== undefined) {
+              query.results = results;
+            } else {
+              delete query.results;
+            }
           }
         }),
         

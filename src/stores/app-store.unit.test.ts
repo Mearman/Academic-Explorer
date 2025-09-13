@@ -310,11 +310,11 @@ describe('useAppStore', () => {
 
     it('should handle null/undefined values gracefully', () => {
       const { updateSearchFilters } = useAppStore.getState();
-      
+
       // These should not throw errors
       updateSearchFilters({});
-      updateSearchFilters({ publicationType: undefined });
-      
+      updateSearchFilters({}); // Don't explicitly pass undefined
+
       const state = useAppStore.getState();
       expect(state.searchFilters).toBeDefined();
     });

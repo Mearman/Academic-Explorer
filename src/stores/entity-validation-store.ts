@@ -107,13 +107,7 @@ interface EntityValidationState {
 
 // Default filter options
 const defaultFilter: ValidationFilter = {
-  entityTypes: undefined,
-  issueTypes: undefined,
-  severities: undefined,
-  entityIds: undefined,
-  fieldPaths: undefined,
-  dateRange: undefined,
-  searchText: undefined,
+  // Optional properties omitted - they default to undefined
   limit: 100,
   offset: 0,
 };
@@ -395,8 +389,8 @@ export const useEntityValidationStore = create<EntityValidationState>()(
         const entitiesWithoutIssues = allResults.filter(r => r.issues.length === 0).length;
         const averageIssuesPerEntity = allResults.length > 0 ? allIssues.length / allResults.length : 0;
         const validationSuccessRate = allResults.length > 0 ? (entitiesWithoutIssues / allResults.length) * 100 : 0;
-        const mostCommonIssueType = commonIssueTypes.length > 0 
-          ? commonIssueTypes[0].issueType 
+        const mostCommonIssueType = commonIssueTypes.length > 0 && commonIssueTypes[0]
+          ? commonIssueTypes[0].issueType
           : ValidationIssueType.MISSING_FIELD; // Default fallback
 
         const statistics: ValidationStatistics = {

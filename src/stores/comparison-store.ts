@@ -81,7 +81,7 @@ function extractEntityId(entity: EntityData): string {
   
   // Extract just the ID part from full URLs
   const idMatch = entity.id.match(/([AWSIPTFC]\d+)$/);
-  return idMatch ? idMatch[1] : entity.id;
+  return (idMatch && idMatch[1]) ? idMatch[1] : entity.id;
 }
 
 /**
