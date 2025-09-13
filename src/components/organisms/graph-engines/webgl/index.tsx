@@ -123,6 +123,19 @@ const fragmentShader = gl.createShader(gl.FRAGMENT_SHADER);
   private gl: WebGLRenderingContext | WebGL2RenderingContext | null = null;
   private isWebGL2 = false;
 
+  // Bound event handlers for proper cleanup
+  private boundHandlers = {
+    mouseWheel: this.handleMouseWheel.bind(this),
+    mouseDown: this.handleMouseDown.bind(this),
+    mouseMove: this.handleMouseMove.bind(this),
+    mouseUp: this.handleMouseUp.bind(this),
+    touchStart: this.handleTouchStart.bind(this),
+    touchMove: this.handleTouchMove.bind(this),
+    touchEnd: this.handleTouchEnd.bind(this),
+    doubleClick: this.handleDoubleClick.bind(this),
+    contextMenu: (e: Event) => e.preventDefault(),
+  };
+
   // Shader programs
   private vertexShader: WebGLShader | null = null;
   private fragmentShader: WebGLShader | null = null;
@@ -610,15 +623,16 @@ const fragmentShader = gl.createShader(gl.FRAGMENT_SHADER);
 
     // Remove event listeners
     if (this.canvas) {
-      this.canvas.removeEventListener('wheel', this.handleMouseWheel.bind(this));
-      this.canvas.removeEventListener('mousedown', this.handleMouseDown.bind(this));
-      this.canvas.removeEventListener('mousemove', this.handleMouseMove.bind(this));
-      this.canvas.removeEventListener('mouseup', this.handleMouseUp.bind(this));
-      this.canvas.removeEventListener('mouseleave', this.handleMouseUp.bind(this));
-      this.canvas.removeEventListener('touchstart', this.handleTouchStart.bind(this));
-      this.canvas.removeEventListener('touchmove', this.handleTouchMove.bind(this));
-      this.canvas.removeEventListener('touchend', this.handleTouchEnd.bind(this));
-      this.canvas.removeEventListener('dblclick', this.handleDoubleClick.bind(this));
+      this.canvas.removeEventListener('wheel', this.boundHandlers.mouseWheel);
+      this.canvas.removeEventListener('mousedown', this.boundHandlers.mouseDown);
+      this.canvas.removeEventListener('mousemove', this.boundHandlers.mouseMove);
+      this.canvas.removeEventListener('mouseup', this.boundHandlers.mouseUp);
+      this.canvas.removeEventListener('mouseleave', this.boundHandlers.mouseUp);
+      this.canvas.removeEventListener('touchstart', this.boundHandlers.touchStart);
+      this.canvas.removeEventListener('touchmove', this.boundHandlers.touchMove);
+      this.canvas.removeEventListener('touchend', this.boundHandlers.touchEnd);
+      this.canvas.removeEventListener('dblclick', this.boundHandlers.doubleClick);
+      this.canvas.removeEventListener('contextmenu', this.boundHandlers.contextMenu);
     }
 
     // Clean up WebGL resources
@@ -1065,24 +1079,24 @@ const fragmentShader = gl.createShader(gl.FRAGMENT_SHADER);
     if (!this.canvas) return;
 
     // Mouse wheel for zooming
-    this.canvas.addEventListener('wheel', this.handleMouseWheel.bind(this), { passive: false });
+    this.canvas.addEventListener('wheel', this.boundHandlers.mouseWheel, { passive: false });
 
     // Mouse events for panning and node interaction
-    this.canvas.addEventListener('mousedown', this.handleMouseDown.bind(this));
-    this.canvas.addEventListener('mousemove', this.handleMouseMove.bind(this));
-    this.canvas.addEventListener('mouseup', this.handleMouseUp.bind(this));
-    this.canvas.addEventListener('mouseleave', this.handleMouseUp.bind(this));
+    this.canvas.addEventListener('mousedown', this.boundHandlers.mouseDown);
+    this.canvas.addEventListener('mousemove', this.boundHandlers.mouseMove);
+    this.canvas.addEventListener('mouseup', this.boundHandlers.mouseUp);
+    this.canvas.addEventListener('mouseleave', this.boundHandlers.mouseUp);
 
     // Touch events for mobile support
-    this.canvas.addEventListener('touchstart', this.handleTouchStart.bind(this), { passive: false });
-    this.canvas.addEventListener('touchmove', this.handleTouchMove.bind(this), { passive: false });
-    this.canvas.addEventListener('touchend', this.handleTouchEnd.bind(this));
+    this.canvas.addEventListener('touchstart', this.boundHandlers.touchStart, { passive: false });
+    this.canvas.addEventListener('touchmove', this.boundHandlers.touchMove, { passive: false });
+    this.canvas.addEventListener('touchend', this.boundHandlers.touchEnd);
 
     // Double-click for fit to view
-    this.canvas.addEventListener('dblclick', this.handleDoubleClick.bind(this));
+    this.canvas.addEventListener('dblclick', this.boundHandlers.doubleClick);
 
     // Context menu prevention
-    this.canvas.addEventListener('contextmenu', (e) => e.preventDefault());
+    this.canvas.addEventListener('contextmenu', this.boundHandlers.contextMenu);
   }
 
   // ============================================================================
