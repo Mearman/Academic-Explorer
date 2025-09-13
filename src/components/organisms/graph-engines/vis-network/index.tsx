@@ -397,57 +397,340 @@ const network = new Network(container, data, options);
   }
   
   async updateGraph(
-    _graph: IGraph<TVertexData, TEdgeData>,
-    _animate = true
+    graph: IGraph<TVertexData, TEdgeData>,
+    animate = true
   ): Promise<void> {
-    // Real implementation would:
-    // 1. Update node and edge DataSets
-    // 2. Handle clustering updates
-    // 3. Optionally animate changes
-    // 4. Stabilize physics simulation
-    
-    throw new Error('Graph updates not implemented in placeholder');
+    if (!this.network || !this._status.isInitialised) {
+      throw new Error('Engine not initialized');
+    }
+
+    try {
+      // Convert graph data to vis-network format
+      const visNodes = this.convertVerticesToNodes(graph.vertices);
+      const visEdges = this.convertEdgesToEdges(graph.edges);
+
+      // Update DataSets with new data
+      this.nodes.clear();
+      this.edges.clear();
+      this.nodes.add(visNodes);
+      this.edges.add(visEdges);
+
+      if (animate) {
+        // Enable physics for smooth transitions
+        this.network.setOptions({
+          physics: {
+            enabled: true,
+            stabilization: { enabled: true },
+          },
+        });
+
+        this.isStabilizing = true;
+        await this.waitForStabilization();
+      }
+
+      this._status.lastError = undefined;
+    } catch (error) {
+      this._status.lastError = error instanceof Error ? error.message : 'Graph update error';
+      throw error;
+    }
   }
   
   resize(dimensions: IDimensions): void {
     this.dimensions = dimensions;
-    // Real implementation would call network.setSize()
+    if (this.network && this.container) {
+      this.network.setSize(dimensions.width + 'px', dimensions.height + 'px');
+      this.network.redraw();
+    }
   }
   
   async export(
-    _format: 'png' | 'svg' | 'json' | 'pdf',
-    _options?: Record<string, unknown>
+    format: 'png' | 'svg' | 'json' | 'pdf',
+    options?: Record<string, unknown>
   ): Promise<string | Blob> {
-    // Real implementation would:
-    // For PNG: use canvas.toBlob()
-    // For JSON: export network data
-    throw new Error('Export not implemented in placeholder');
+    if (!this.network) {
+      throw new Error('Network not initialized');
+    }
+
+    switch (format) {
+      case 'png': {
+        const canvas = this.network.getCanvas();
+        return new Promise((resolve, reject) => {
+          canvas.toBlob((blob) => {
+            if (blob) {
+              resolve(blob);
+            } else {
+              reject(new Error('Failed to export PNG'));
+            }
+          }, 'image/png', options?.quality as number);
+        });
+      }
+
+      case 'json': {
+        const exportData = {
+          nodes: this.nodes.get(),
+          edges: this.edges.get(),
+          options: this.options,
+        };
+        return JSON.stringify(exportData, null, 2);
+      }
+
+      default:
+        throw new Error(`Export format ${format} not supported by vis-network engine`);
+    }
   }
   
   getPositions(): ReadonlyArray<IPositionedVertex<TVertexData>> {
-    // Real implementation would call network.getPositions()
-    return [];
+    if (!this.network) return [];
+
+    try {
+      const positions = this.network.getPositions();
+      return Object.entries(positions).map(([id, pos]) => ({
+        id,
+        position: { x: pos.x || 0, y: pos.y || 0 },
+        data: undefined as TVertexData, // No data available from vis-network
+      }));
+    } catch {
+      return [];
+    }
   }
   
   setPositions(
-    _positions: ReadonlyArray<IPositionedVertex<TVertexData>>,
-    _animate = true
+    positions: ReadonlyArray<IPositionedVertex<TVertexData>>,
+    animate = true
   ): void {
-    // Real implementation would update node positions in DataSet
+    if (!this.network) return;
+
+    // Update node positions in the DataSet
+    const nodeUpdates = positions.map(pos => ({
+      id: pos.id,
+      x: pos.position.x,
+      y: pos.position.y,
+    }));
+
+    this.nodes.update(nodeUpdates);
+
+    if (!animate) {
+      // Disable physics temporarily for immediate positioning
+      this.network.setOptions({
+        physics: { enabled: false },
+      });
+
+      // Re-enable physics after a short delay
+      setTimeout(() => {
+        this.network?.setOptions({
+          physics: { enabled: true },
+        });
+      }, 100);
+    }
   }
   
-  fitToView(_padding = 50, _animate = true): void {
-    // Real implementation would call network.fit()
+  fitToView(padding = 50, animate = true): void {
+    if (!this.network) return;
+
+    this.network.fit({
+      animation: {
+        duration: animate ? 1000 : 0,
+        easingFunction: 'easeInOutQuart',
+      },
+      nodes: this.nodes.getIds(),
+    });
   }
   
   destroy(): void {
-    // Real implementation would:
-    // 1. Destroy network instance
-    // 2. Clean up event listeners
-    // 3. Clear DataSets
+    // Destroy network instance
+    if (this.network) {
+      this.network.destroy();
+      this.network = null;
+    }
+
+    // Clear DataSets
+    this.nodes.clear();
+    this.edges.clear();
+
+    // Reset state
     this.container = null;
+    this._status.isInitialised = false;
+    this._status.isRendering = false;
   }
-  
+
+  // ============================================================================
+  // Private Helper Methods
+  // ============================================================================
+
+  private createNetworkOptions(config?: IVisNetworkConfig): Options {
+    const baseOptions: Options = {
+      physics: {
+        enabled: true,
+        stabilization: {
+          enabled: true,
+          iterations: 100,
+          updateInterval: 25,
+        },
+        barnesHut: {
+          gravitationalConstant: -2000,
+          centralGravity: 0.3,
+          springLength: 95,
+          springConstant: 0.04,
+          damping: 0.09,
+        },
+      },
+      interaction: {
+        dragNodes: true,
+        dragView: true,
+        hideEdgesOnDrag: false,
+        hideNodesOnDrag: false,
+        hover: true,
+        hoverConnectedEdges: true,
+        selectConnectedEdges: true,
+        zoomView: true,
+      },
+      nodes: {
+        shape: 'dot',
+        size: 10,
+        font: {
+          size: 12,
+          color: '#343434',
+        },
+        borderWidth: 2,
+        shadow: true,
+      },
+      edges: {
+        width: 1,
+        shadow: true,
+        smooth: {
+          type: 'continuous',
+        },
+      },
+    };
+
+    // Merge with user configuration
+    if (config?.visOptions) {
+      return this.mergeDeep(baseOptions, config.visOptions);
+    }
+
+    return baseOptions;
+  }
+
+  private convertVerticesToNodes(vertices: IGraph['vertices']): Node[] {
+    return vertices.map((vertex) => ({
+      id: vertex.id,
+      label: vertex.id.substring(0, 10), // Short label for readability
+      title: `ID: ${vertex.id}`, // Tooltip
+      color: {
+        background: this.getVertexColor(vertex),
+        border: '#2B7CE9',
+      },
+      mass: 1,
+    }));
+  }
+
+  private convertEdgesToEdges(edges: IGraph['edges']): Edge[] {
+    return edges.map((edge) => ({
+      id: `${edge.sourceId}-${edge.targetId}`,
+      from: edge.sourceId,
+      to: edge.targetId,
+      color: {
+        color: '#848484',
+        highlight: '#2B7CE9',
+      },
+    }));
+  }
+
+  private getVertexColor(vertex: IGraph['vertices'][0]): string {
+    // Simple color mapping based on vertex ID prefix (entity type)
+    const idPrefix = vertex.id.charAt(0);
+    const colorMap: Record<string, string> = {
+      'W': '#FF6B6B', // Works - red
+      'A': '#4ECDC4', // Authors - teal
+      'S': '#45B7D1', // Sources - blue
+      'I': '#96CEB4', // Institutions - green
+      'P': '#FFEAA7', // Publishers - yellow
+      'F': '#DDA0DD', // Funders - plum
+      'T': '#FFB347', // Topics - orange
+      'C': '#87CEEB', // Concepts - light blue
+    };
+    return colorMap[idPrefix] || '#B0B0B0'; // Default gray
+  }
+
+  private setupEventListeners(): void {
+    if (!this.network) return;
+
+    // Stabilization events
+    this.network.on('stabilizationProgress', (params) => {
+      // Could emit progress updates here
+    });
+
+    this.network.on('stabilized', () => {
+      this.isStabilizing = false;
+      this._status.isRendering = false;
+    });
+
+    // Interaction events
+    this.network.on('selectNode', (params) => {
+      // Handle node selection
+    });
+
+    this.network.on('selectEdge', (params) => {
+      // Handle edge selection
+    });
+
+    // Error handling
+    this.network.on('error', (error) => {
+      this._status.lastError = error;
+    });
+  }
+
+  private async waitForStabilization(): Promise<void> {
+    return new Promise((resolve) => {
+      if (!this.network) {
+        resolve();
+        return;
+      }
+
+      if (!this.isStabilizing) {
+        resolve();
+        return;
+      }
+
+      const onStabilized = () => {
+        this.network?.off('stabilized', onStabilized);
+        resolve();
+      };
+
+      this.network.on('stabilized', onStabilized);
+
+      // Timeout after 10 seconds
+      setTimeout(() => {
+        this.network?.off('stabilized', onStabilized);
+        this.isStabilizing = false;
+        this._status.isRendering = false;
+        resolve();
+      }, 10000);
+    });
+  }
+
+  private mergeDeep(target: any, source: any): any {
+    const output = { ...target };
+    if (this.isObject(target) && this.isObject(source)) {
+      Object.keys(source).forEach(key => {
+        if (this.isObject(source[key])) {
+          if (!(key in target)) {
+            Object.assign(output, { [key]: source[key] });
+          } else {
+            output[key] = this.mergeDeep(target[key], source[key]);
+          }
+        } else {
+          Object.assign(output, { [key]: source[key] });
+        }
+      });
+    }
+    return output;
+  }
+
+  private isObject(item: any): boolean {
+    return item && typeof item === 'object' && !Array.isArray(item);
+  }
+
   // ============================================================================
   // Preview Component
   // ============================================================================
