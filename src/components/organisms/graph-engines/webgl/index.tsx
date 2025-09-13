@@ -1401,14 +1401,6 @@ const fragmentShader = gl.createShader(gl.FRAGMENT_SHADER);
     requestAnimationFrame(animate);
   }
 
-  destroy(): void {
-    // Real implementation would:
-    // 1. Delete WebGL resources (buffers, textures, shaders)
-    // 2. Lose WebGL context
-    // 3. Remove canvas element
-    this.container = null;
-    this.gl = null;
-  }
   
   // ============================================================================
   // Preview Component
