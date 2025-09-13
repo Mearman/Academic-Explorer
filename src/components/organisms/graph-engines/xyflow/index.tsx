@@ -1907,6 +1907,596 @@ const AdvancedFilterPanel: React.FC<{
   );
 };
 
+// ============================================================================
+// Graph Metrics and Analysis Tools
+// ============================================================================
+
+interface GraphMetrics {
+  nodeCount: number;
+  edgeCount: number;
+  density: number;
+  averageDegree: number;
+  maxDegree: number;
+  minDegree: number;
+  connectedComponents: number;
+  averageClustering: number;
+  diameterEstimate: number;
+  centralityStats: {
+    topByDegree: Array<{ nodeId: string; degree: number; label: string }>;
+    topByBetweenness: Array<{ nodeId: string; betweenness: number; label: string }>;
+    topByCloseness: Array<{ nodeId: string; closeness: number; label: string }>;
+  };
+  citationStats?: {
+    totalCitations: number;
+    averageCitations: number;
+    maxCitations: number;
+    h_index: number;
+    topCited: Array<{ nodeId: string; citations: number; label: string }>;
+  };
+  temporalStats?: {
+    yearRange: { min: number; max: number };
+    publicationsPerYear: Record<number, number>;
+    citationsOverTime: Record<number, number>;
+  };
+}
+
+interface NetworkAnalysisResult {
+  nodeId: string;
+  label: string;
+  metrics: {
+    degree: number;
+    betweennessCentrality: number;
+    closenessCentrality: number;
+    clusteringCoefficient: number;
+    pageRank: number;
+  };
+}
+
+// Graph analysis utilities
+const GraphAnalysisUtils = {
+  // Calculate comprehensive graph metrics
+  calculateGraphMetrics: (nodes: Node[], edges: Edge[]): GraphMetrics => {
+    const nodeCount = nodes.length;
+    const edgeCount = edges.length;
+
+    if (nodeCount === 0) {
+      return {
+        nodeCount: 0,
+        edgeCount: 0,
+        density: 0,
+        averageDegree: 0,
+        maxDegree: 0,
+        minDegree: 0,
+        connectedComponents: 0,
+        averageClustering: 0,
+        diameterEstimate: 0,
+        centralityStats: {
+          topByDegree: [],
+          topByBetweenness: [],
+          topByCloseness: []
+        }
+      };
+    }
+
+    // Build adjacency map
+    const adjacencyMap = new Map<string, Set<string>>();
+    const degreeMap = new Map<string, number>();
+
+    nodes.forEach(node => {
+      adjacencyMap.set(node.id, new Set());
+      degreeMap.set(node.id, 0);
+    });
+
+    edges.forEach(edge => {
+      adjacencyMap.get(edge.source)?.add(edge.target);
+      adjacencyMap.get(edge.target)?.add(edge.source);
+      degreeMap.set(edge.source, (degreeMap.get(edge.source) || 0) + 1);
+      degreeMap.set(edge.target, (degreeMap.get(edge.target) || 0) + 1);
+    });
+
+    // Basic metrics
+    const degrees = Array.from(degreeMap.values());
+    const maxDegree = Math.max(...degrees, 0);
+    const minDegree = Math.min(...degrees, 0);
+    const averageDegree = degrees.reduce((sum, deg) => sum + deg, 0) / nodeCount;
+    const density = nodeCount > 1 ? (2 * edgeCount) / (nodeCount * (nodeCount - 1)) : 0;
+
+    // Connected components
+    const connectedComponents = GraphAnalysisUtils.countConnectedComponents(nodes, adjacencyMap);
+
+    // Centrality calculations
+    const centralityStats = GraphAnalysisUtils.calculateCentralityMetrics(nodes, adjacencyMap);
+
+    // Clustering coefficient
+    const averageClustering = GraphAnalysisUtils.calculateAverageClustering(nodes, adjacencyMap);
+
+    // Diameter estimate (for large graphs, use sampling)
+    const diameterEstimate = GraphAnalysisUtils.estimateDiameter(nodes, adjacencyMap);
+
+    // Citation statistics (if available)
+    const citationStats = GraphAnalysisUtils.calculateCitationStats(nodes);
+
+    // Temporal statistics (if available)
+    const temporalStats = GraphAnalysisUtils.calculateTemporalStats(nodes);
+
+    return {
+      nodeCount,
+      edgeCount,
+      density,
+      averageDegree,
+      maxDegree,
+      minDegree,
+      connectedComponents,
+      averageClustering,
+      diameterEstimate,
+      centralityStats,
+      citationStats,
+      temporalStats
+    };
+  },
+
+  // Count connected components using DFS
+  countConnectedComponents: (nodes: Node[], adjacencyMap: Map<string, Set<string>>): number => {
+    const visited = new Set<string>();
+    let components = 0;
+
+    const dfs = (nodeId: string) => {
+      visited.add(nodeId);
+      const neighbors = adjacencyMap.get(nodeId) || new Set();
+      neighbors.forEach(neighbor => {
+        if (!visited.has(neighbor)) {
+          dfs(neighbor);
+        }
+      });
+    };
+
+    nodes.forEach(node => {
+      if (!visited.has(node.id)) {
+        dfs(node.id);
+        components++;
+      }
+    });
+
+    return components;
+  },
+
+  // Calculate centrality metrics
+  calculateCentralityMetrics: (nodes: Node[], adjacencyMap: Map<string, Set<string>>) => {
+    // Degree centrality
+    const degreeResults = nodes.map(node => ({
+      nodeId: node.id,
+      degree: adjacencyMap.get(node.id)?.size || 0,
+      label: (node.data as EntityNodeData).label
+    })).sort((a, b) => b.degree - a.degree).slice(0, 5);
+
+    // Simplified betweenness centrality (approximation for performance)
+    const betweennessResults = GraphAnalysisUtils.calculateApproximateBetweenness(nodes, adjacencyMap);
+
+    // Closeness centrality (approximation)
+    const closenessResults = GraphAnalysisUtils.calculateApproximateCloseness(nodes, adjacencyMap);
+
+    return {
+      topByDegree: degreeResults,
+      topByBetweenness: betweennessResults,
+      topByCloseness: closenessResults
+    };
+  },
+
+  // Approximate betweenness centrality for large graphs
+  calculateApproximateBetweenness: (nodes: Node[], adjacencyMap: Map<string, Set<string>>) => {
+    const betweenness = new Map<string, number>();
+    nodes.forEach(node => betweenness.set(node.id, 0));
+
+    // Sample a subset of nodes for efficiency
+    const sampleSize = Math.min(nodes.length, 100);
+    const sampleNodes = nodes.slice(0, sampleSize);
+
+    sampleNodes.forEach(source => {
+      const distances = new Map<string, number>();
+      const predecessors = new Map<string, string[]>();
+      const visited = new Set<string>();
+      const queue = [source.id];
+
+      distances.set(source.id, 0);
+      visited.add(source.id);
+
+      // BFS to find shortest paths
+      while (queue.length > 0) {
+        const current = queue.shift()!;
+        const neighbors = adjacencyMap.get(current) || new Set();
+
+        neighbors.forEach(neighbor => {
+          if (!visited.has(neighbor)) {
+            visited.add(neighbor);
+            distances.set(neighbor, (distances.get(current) || 0) + 1);
+            predecessors.set(neighbor, [current]);
+            queue.push(neighbor);
+          } else if (distances.get(neighbor) === (distances.get(current) || 0) + 1) {
+            const preds = predecessors.get(neighbor) || [];
+            preds.push(current);
+            predecessors.set(neighbor, preds);
+          }
+        });
+      }
+
+      // Update betweenness scores
+      nodes.forEach(target => {
+        if (target.id !== source.id) {
+          GraphAnalysisUtils.updateBetweennessScores(source.id, target.id, predecessors, betweenness);
+        }
+      });
+    });
+
+    return nodes.map(node => ({
+      nodeId: node.id,
+      betweenness: betweenness.get(node.id) || 0,
+      label: (node.data as EntityNodeData).label
+    })).sort((a, b) => b.betweenness - a.betweenness).slice(0, 5);
+  },
+
+  updateBetweennessScores: (source: string, target: string, predecessors: Map<string, string[]>, betweenness: Map<string, number>) => {
+    // Simplified betweenness calculation
+    const preds = predecessors.get(target);
+    if (preds && preds.length > 0) {
+      preds.forEach(pred => {
+        if (pred !== source) {
+          betweenness.set(pred, (betweenness.get(pred) || 0) + 1);
+        }
+      });
+    }
+  },
+
+  // Approximate closeness centrality
+  calculateApproximateCloseness: (nodes: Node[], adjacencyMap: Map<string, Set<string>>) => {
+    const closeness = nodes.map(node => {
+      const distances = GraphAnalysisUtils.calculateDistancesFromNode(node.id, adjacencyMap, Math.min(nodes.length, 50));
+      const totalDistance = Array.from(distances.values()).reduce((sum, dist) => sum + dist, 0);
+      const reachableNodes = distances.size;
+
+      const closenessValue = reachableNodes > 1 ? (reachableNodes - 1) / totalDistance : 0;
+
+      return {
+        nodeId: node.id,
+        closeness: closenessValue,
+        label: (node.data as EntityNodeData).label
+      };
+    }).sort((a, b) => b.closeness - a.closeness).slice(0, 5);
+
+    return closeness;
+  },
+
+  calculateDistancesFromNode: (startId: string, adjacencyMap: Map<string, Set<string>>, maxDistance: number): Map<string, number> => {
+    const distances = new Map<string, number>();
+    const queue = [{ id: startId, dist: 0 }];
+    distances.set(startId, 0);
+
+    while (queue.length > 0) {
+      const { id: current, dist } = queue.shift()!;
+
+      if (dist >= maxDistance) continue;
+
+      const neighbors = adjacencyMap.get(current) || new Set();
+      neighbors.forEach(neighbor => {
+        if (!distances.has(neighbor)) {
+          distances.set(neighbor, dist + 1);
+          queue.push({ id: neighbor, dist: dist + 1 });
+        }
+      });
+    }
+
+    return distances;
+  },
+
+  // Calculate average clustering coefficient
+  calculateAverageClustering: (nodes: Node[], adjacencyMap: Map<string, Set<string>>): number => {
+    let totalClustering = 0;
+    let validNodes = 0;
+
+    nodes.forEach(node => {
+      const neighbors = adjacencyMap.get(node.id) || new Set();
+      const degree = neighbors.size;
+
+      if (degree < 2) return; // Need at least 2 neighbors for clustering
+
+      let triangles = 0;
+      const neighborsArray = Array.from(neighbors);
+
+      // Count triangles
+      for (let i = 0; i < neighborsArray.length; i++) {
+        for (let j = i + 1; j < neighborsArray.length; j++) {
+          const neighbor1 = neighborsArray[i];
+          const neighbor2 = neighborsArray[j];
+
+          if (adjacencyMap.get(neighbor1)?.has(neighbor2)) {
+            triangles++;
+          }
+        }
+      }
+
+      const possibleTriangles = (degree * (degree - 1)) / 2;
+      const clusteringCoeff = possibleTriangles > 0 ? triangles / possibleTriangles : 0;
+
+      totalClustering += clusteringCoeff;
+      validNodes++;
+    });
+
+    return validNodes > 0 ? totalClustering / validNodes : 0;
+  },
+
+  // Estimate network diameter
+  estimateDiameter: (nodes: Node[], adjacencyMap: Map<string, Set<string>>): number => {
+    if (nodes.length === 0) return 0;
+
+    let maxDistance = 0;
+    const sampleSize = Math.min(nodes.length, 20); // Sample for efficiency
+
+    for (let i = 0; i < sampleSize; i++) {
+      const startNode = nodes[i];
+      const distances = GraphAnalysisUtils.calculateDistancesFromNode(startNode.id, adjacencyMap, nodes.length);
+      const maxDistFromNode = Math.max(...Array.from(distances.values()));
+      maxDistance = Math.max(maxDistance, maxDistFromNode);
+    }
+
+    return maxDistance;
+  },
+
+  // Calculate citation statistics
+  calculateCitationStats: (nodes: Node[]) => {
+    const citationNodes = nodes.filter(node => 'cited_by_count' in node.data);
+
+    if (citationNodes.length === 0) return undefined;
+
+    const citations = citationNodes.map(node => (node.data as any).cited_by_count || 0);
+    const totalCitations = citations.reduce((sum, cit) => sum + cit, 0);
+    const averageCitations = totalCitations / citations.length;
+    const maxCitations = Math.max(...citations);
+
+    // Calculate h-index
+    const sortedCitations = citations.sort((a, b) => b - a);
+    let h_index = 0;
+    for (let i = 0; i < sortedCitations.length; i++) {
+      if (sortedCitations[i] >= i + 1) {
+        h_index = i + 1;
+      } else {
+        break;
+      }
+    }
+
+    // Top cited papers
+    const topCited = citationNodes
+      .map(node => ({
+        nodeId: node.id,
+        citations: (node.data as any).cited_by_count || 0,
+        label: (node.data as EntityNodeData).label
+      }))
+      .sort((a, b) => b.citations - a.citations)
+      .slice(0, 5);
+
+    return {
+      totalCitations,
+      averageCitations,
+      maxCitations,
+      h_index,
+      topCited
+    };
+  },
+
+  // Calculate temporal statistics
+  calculateTemporalStats: (nodes: Node[]) => {
+    const temporalNodes = nodes.filter(node => 'publication_year' in node.data);
+
+    if (temporalNodes.length === 0) return undefined;
+
+    const years = temporalNodes.map(node => (node.data as any).publication_year).filter(year => year);
+    if (years.length === 0) return undefined;
+
+    const minYear = Math.min(...years);
+    const maxYear = Math.max(...years);
+
+    // Publications per year
+    const publicationsPerYear: Record<number, number> = {};
+    const citationsOverTime: Record<number, number> = {};
+
+    temporalNodes.forEach(node => {
+      const year = (node.data as any).publication_year;
+      const citations = (node.data as any).cited_by_count || 0;
+
+      publicationsPerYear[year] = (publicationsPerYear[year] || 0) + 1;
+      citationsOverTime[year] = (citationsOverTime[year] || 0) + citations;
+    });
+
+    return {
+      yearRange: { min: minYear, max: maxYear },
+      publicationsPerYear,
+      citationsOverTime
+    };
+  }
+};
+
+// Graph Metrics Panel Component
+const GraphMetricsPanel: React.FC<{
+  nodes: Node[];
+  edges: Edge[];
+}> = ({ nodes, edges }) => {
+  const [isExpanded, setIsExpanded] = React.useState(false);
+  const [metrics, setMetrics] = React.useState<GraphMetrics | null>(null);
+  const [isCalculating, setIsCalculating] = React.useState(false);
+
+  // Calculate metrics when expanded
+  React.useEffect(() => {
+    if (isExpanded && !metrics && !isCalculating) {
+      setIsCalculating(true);
+
+      // Use setTimeout to avoid blocking UI
+      setTimeout(() => {
+        const calculatedMetrics = GraphAnalysisUtils.calculateGraphMetrics(nodes, edges);
+        setMetrics(calculatedMetrics);
+        setIsCalculating(false);
+      }, 100);
+    }
+  }, [isExpanded, metrics, isCalculating, nodes, edges]);
+
+  // Reset metrics when nodes/edges change significantly
+  React.useEffect(() => {
+    setMetrics(null);
+  }, [nodes.length, edges.length]);
+
+  return (
+    <Panel position="bottom-left">
+      <div style={{
+        background: 'rgba(255, 255, 255, 0.95)',
+        padding: '12px',
+        borderRadius: '8px',
+        fontSize: '12px',
+        minWidth: isExpanded ? '320px' : '180px',
+        maxHeight: isExpanded ? '500px' : 'auto',
+        boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)',
+        transition: 'all 0.3s ease',
+        overflow: isExpanded ? 'auto' : 'hidden',
+      }}>
+        <div
+          style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            cursor: 'pointer',
+            fontWeight: '600',
+            color: '#374151',
+            marginBottom: isExpanded ? '12px' : '0'
+          }}
+          onClick={() => setIsExpanded(!isExpanded)}
+        >
+          <span>📊 Graph Analytics</span>
+          <span style={{ fontSize: '10px' }}>
+            {isExpanded ? '▲' : '▼'}
+          </span>
+        </div>
+
+        {isExpanded && (
+          <div>
+            {isCalculating ? (
+              <div style={{
+                textAlign: 'center',
+                padding: '20px',
+                color: '#6b7280'
+              }}>
+                <div style={{ marginBottom: '8px' }}>🔄 Calculating metrics...</div>
+                <div style={{ fontSize: '10px' }}>Analyzing {nodes.length} nodes and {edges.length} edges</div>
+              </div>
+            ) : metrics ? (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                {/* Basic Network Stats */}
+                <div>
+                  <div style={{ fontWeight: '600', marginBottom: '6px', color: '#1f2937' }}>
+                    Network Overview
+                  </div>
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px', fontSize: '11px' }}>
+                    <div>Nodes: <strong>{metrics.nodeCount}</strong></div>
+                    <div>Edges: <strong>{metrics.edgeCount}</strong></div>
+                    <div>Density: <strong>{(metrics.density * 100).toFixed(1)}%</strong></div>
+                    <div>Components: <strong>{metrics.connectedComponents}</strong></div>
+                    <div>Avg Degree: <strong>{metrics.averageDegree.toFixed(1)}</strong></div>
+                    <div>Diameter: <strong>{metrics.diameterEstimate}</strong></div>
+                  </div>
+                </div>
+
+                {/* Centrality Stats */}
+                <div>
+                  <div style={{ fontWeight: '600', marginBottom: '6px', color: '#1f2937' }}>
+                    Top Influential Nodes
+                  </div>
+                  <div style={{ fontSize: '10px' }}>
+                    <div style={{ marginBottom: '4px', fontWeight: '500' }}>By Degree:</div>
+                    {metrics.centralityStats.topByDegree.slice(0, 3).map((node, i) => (
+                      <div key={node.nodeId} style={{ marginLeft: '8px', marginBottom: '2px' }}>
+                        {i + 1}. {node.label.substring(0, 30)}... ({node.degree})
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Citation Stats */}
+                {metrics.citationStats && (
+                  <div>
+                    <div style={{ fontWeight: '600', marginBottom: '6px', color: '#1f2937' }}>
+                      Citation Analysis
+                    </div>
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px', fontSize: '11px' }}>
+                      <div>Total: <strong>{metrics.citationStats.totalCitations.toLocaleString()}</strong></div>
+                      <div>Average: <strong>{Math.round(metrics.citationStats.averageCitations)}</strong></div>
+                      <div>Max: <strong>{metrics.citationStats.maxCitations.toLocaleString()}</strong></div>
+                      <div>H-index: <strong>{metrics.citationStats.h_index}</strong></div>
+                    </div>
+                    <div style={{ fontSize: '10px', marginTop: '6px' }}>
+                      <div style={{ fontWeight: '500', marginBottom: '4px' }}>Most Cited:</div>
+                      {metrics.citationStats.topCited.slice(0, 2).map((paper, i) => (
+                        <div key={paper.nodeId} style={{ marginLeft: '8px', marginBottom: '2px' }}>
+                          {i + 1}. {paper.label.substring(0, 25)}... ({paper.citations.toLocaleString()})
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Temporal Stats */}
+                {metrics.temporalStats && (
+                  <div>
+                    <div style={{ fontWeight: '600', marginBottom: '6px', color: '#1f2937' }}>
+                      Temporal Analysis
+                    </div>
+                    <div style={{ fontSize: '11px' }}>
+                      <div>Years: <strong>{metrics.temporalStats.yearRange.min} - {metrics.temporalStats.yearRange.max}</strong></div>
+                      <div>Span: <strong>{metrics.temporalStats.yearRange.max - metrics.temporalStats.yearRange.min + 1} years</strong></div>
+                    </div>
+                  </div>
+                )}
+
+                {/* Clustering */}
+                <div>
+                  <div style={{ fontWeight: '600', marginBottom: '6px', color: '#1f2937' }}>
+                    Network Structure
+                  </div>
+                  <div style={{ fontSize: '11px' }}>
+                    <div>Clustering Coeff: <strong>{(metrics.averageClustering * 100).toFixed(1)}%</strong></div>
+                    <div>Degree Range: <strong>{metrics.minDegree} - {metrics.maxDegree}</strong></div>
+                  </div>
+                </div>
+
+                {/* Refresh Button */}
+                <button
+                  onClick={() => {
+                    setMetrics(null);
+                    setIsExpanded(true); // This will trigger recalculation
+                  }}
+                  style={{
+                    padding: '6px 12px',
+                    background: '#f3f4f6',
+                    border: '1px solid #d1d5db',
+                    borderRadius: '4px',
+                    fontSize: '10px',
+                    cursor: 'pointer',
+                    marginTop: '8px',
+                  }}
+                >
+                  🔄 Recalculate Metrics
+                </button>
+              </div>
+            ) : (
+              <div style={{
+                textAlign: 'center',
+                padding: '20px',
+                color: '#6b7280'
+              }}>
+                Click to calculate graph metrics
+              </div>
+            )}
+          </div>
+        )}
+      </div>
+    </Panel>
+  );
+};
+
 // Helper function to calculate cluster bounds
 const calculateClusterBounds = (nodes: Node[]) => {
   if (nodes.length === 0) return null;
@@ -3092,6 +3682,12 @@ import '@xyflow/react/dist/style.css';
               availableEntityTypes={availableEntityTypes}
               nodeCount={engine.nodes.length}
               filteredCount={filteredNodes.length}
+            />
+
+            {/* Graph Metrics and Analysis Panel */}
+            <GraphMetricsPanel
+              nodes={filteredNodes}
+              edges={filteredEdges}
             />
 
             {/* Advanced Clustering Visualization */}
