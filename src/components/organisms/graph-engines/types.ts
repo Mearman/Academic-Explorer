@@ -158,7 +158,7 @@ export interface IGraphEngine<TVertexData = unknown, TEdgeData = unknown> {
   /** Current engine status */
   readonly status: IEngineStatus;
   
-  /** Whether this engine is implemented or a placeholder */
+  /** Whether this engine is fully implemented */
   readonly isImplemented: boolean;
   
   /**
@@ -250,8 +250,8 @@ export interface IGraphEngine<TVertexData = unknown, TEdgeData = unknown> {
   destroy(): void;
   
   /**
-   * Get a preview/mockup of what this engine would look like when implemented.
-   * This is primarily for placeholder engines to show expected features.
+   * Get a preview/demo component showing the engine's capabilities.
+   * This is useful for development, testing, and demonstration purposes.
    * 
    * @returns React component showing engine preview
    */

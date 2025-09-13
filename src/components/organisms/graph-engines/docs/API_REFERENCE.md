@@ -47,7 +47,7 @@ interface IGraphEngine<TVertexData = unknown, TEdgeData = unknown> {
   fitToView(padding?: number, animate?: boolean): void;
   export(format: 'png' | 'svg' | 'json' | 'pdf', options?: Record<string, unknown>): Promise<string | Blob>;
   
-  // Optional preview component for placeholder engines
+  // Optional preview component for development/demo purposes
   getPreviewComponent?(): React.ComponentType<{
     dimensions: IDimensions;
     sampleData?: IGraph<TVertexData, TEdgeData>;
@@ -65,7 +65,7 @@ const engine = createCytoscapeEngine();
 
 // Check if engine is implemented
 if (!engine.isImplemented) {
-  console.warn('Engine is placeholder only');
+  console.warn('Engine is not yet implemented');
   return;
 }
 
