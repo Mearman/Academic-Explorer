@@ -24,10 +24,16 @@ export function useGraphData() {
     depth?: number;
     limit?: number;
   }) => {
+    const store = useGraphStore.getState();
+    store.setLoading(true);
+
     try {
       await service.current.expandNode(nodeId, options);
     } catch (err) {
       console.error('Failed to expand node:', err);
+      store.setError(err instanceof Error ? err.message : 'Failed to expand node');
+    } finally {
+      store.setLoading(false);
     }
   }, []);
 

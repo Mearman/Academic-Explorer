@@ -4,7 +4,8 @@
  */
 
 // Import OpenAlex EntityType to ensure consistency
-export type { EntityType } from '@/lib/openalex/types'
+import type { EntityType as OpenAlexEntityType } from '@/lib/openalex/types'
+export type EntityType = OpenAlexEntityType
 
 export enum RelationType {
   AUTHORED = 'authored',
