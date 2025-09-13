@@ -112,8 +112,8 @@ export const MetricBadge = forwardRef<HTMLDivElement, MetricBadgeProps>(
           color={color}
           variant="light"
           size={size}
-          className={className}
-          data-testid={testId}
+          {...(className !== undefined && { className })}
+          {...(testId !== undefined && { 'data-testid': testId })}
         >
           {badgeContent}
         </Badge>

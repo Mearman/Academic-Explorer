@@ -48,16 +48,17 @@ const RemoveButton = ({ onRemove }: { onRemove: () => void }) => (
 // Simple wrapper around Mantine Badge that maps our props to Mantine props
 export const Badge = forwardRef<HTMLDivElement, BadgeProps>(
   (props, ref) => {
-    const { 
-      children, 
-      variant = 'default', 
-      size = 'md', 
-      pill = false, 
-      removable = false, 
-      onRemove, 
-      className, 
+    const {
+      children,
+      variant = 'default',
+      size = 'md',
+      pill = false,
+      removable = false,
+      onRemove,
+      className,
       'data-testid': testId,
-      ...restProps 
+      color,
+      ...restProps
     } = props;
     const mantineVariant = getMantineVariant(variant);
     const mantineSize = getMantineSize(size);
@@ -68,8 +69,9 @@ export const Badge = forwardRef<HTMLDivElement, BadgeProps>(
         variant={mantineVariant}
         size={mantineSize}
         radius={pill ? 'xl' : 'sm'}
-        className={className}
-        data-testid={testId}
+        {...(className !== undefined && { className })}
+        {...(testId !== undefined && { 'data-testid': testId })}
+        {...(color !== undefined && { color })}
         {...restProps}
       >
         {children}
