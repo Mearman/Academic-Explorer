@@ -177,7 +177,8 @@ export class GraphDataService {
     const edges: GraphEdge[] = [];
 
     // Determine entity type
-    const entityType = this.detector.detectEntityType(entity.id) as EntityType;
+    const detection = this.detector.detectEntityIdentifier(entity.id);
+    const entityType = detection.entityType as EntityType;
 
     // Create main entity node
     const mainNode = this.createNodeFromEntity(entity, entityType);

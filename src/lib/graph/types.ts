@@ -3,19 +3,8 @@
  * Provider-agnostic definitions that work with any graph visualization library
  */
 
-// Generic graph types - no library-specific imports
-export enum EntityType {
-  WORK = 'work',
-  AUTHOR = 'author',
-  SOURCE = 'source',
-  INSTITUTION = 'institution',
-  CONCEPT = 'concept',
-  PUBLISHER = 'publisher',
-  FUNDER = 'funder',
-  TOPIC = 'topic',
-  KEYWORD = 'keyword',
-  GEO = 'geo'
-}
+// Import OpenAlex EntityType to ensure consistency
+export type { EntityType } from '@/lib/openalex/types'
 
 export enum RelationType {
   AUTHORED = 'authored',

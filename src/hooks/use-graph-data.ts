@@ -34,7 +34,7 @@ export function useGraphData() {
   const search = useCallback(async (query: string, options?: Partial<SearchOptions>) => {
     const searchOptions: SearchOptions = {
       query,
-      entityTypes: options?.entityTypes || ['work', 'author', 'source', 'institution'],
+      entityTypes: options?.entityTypes || ['works', 'authors', 'sources', 'institutions'],
       includeExternalIds: options?.includeExternalIds ?? true,
       preferExternalIdResults: options?.preferExternalIdResults ?? false,
       limit: options?.limit || 20,

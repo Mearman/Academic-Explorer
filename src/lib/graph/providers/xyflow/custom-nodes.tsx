@@ -40,21 +40,21 @@ const baseNodeStyle: React.CSSProperties = {
 // Entity-specific colors
 const getEntityColor = (entityType: EntityType): string => {
   switch (entityType) {
-    case 'work':
+    case 'works':
       return '#e74c3c';
-    case 'author':
+    case 'authors':
       return '#3498db';
-    case 'source':
+    case 'sources':
       return '#2ecc71';
-    case 'institution':
+    case 'institutions':
       return '#f39c12';
-    case 'topic':
+    case 'topics':
       return '#9b59b6';
-    case 'publisher':
+    case 'publishers':
       return '#1abc9c';
-    case 'funder':
+    case 'funders':
       return '#e67e22';
-    case 'keyword':
+    case 'keywords':
       return '#34495e';
     case 'geo':
       return '#16a085';
@@ -66,21 +66,21 @@ const getEntityColor = (entityType: EntityType): string => {
 // Get entity type label
 const getEntityTypeLabel = (entityType: EntityType): string => {
   switch (entityType) {
-    case 'work':
+    case 'works':
       return 'Work';
-    case 'author':
+    case 'authors':
       return 'Author';
-    case 'source':
+    case 'sources':
       return 'Source';
-    case 'institution':
+    case 'institutions':
       return 'Institution';
-    case 'topic':
+    case 'topics':
       return 'Topic';
-    case 'publisher':
+    case 'publishers':
       return 'Publisher';
-    case 'funder':
+    case 'funders':
       return 'Funder';
-    case 'keyword':
+    case 'keywords':
       return 'Keyword';
     case 'geo':
       return 'Location';
