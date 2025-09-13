@@ -3210,6 +3210,335 @@ const ExportPanel: React.FC<{
   );
 };
 
+// Selection Panel Component for enhanced node selection and bulk operations
+const SelectionPanel: React.FC<{
+  selectedNodes: Set<string>;
+  selectionMode: 'single' | 'multi' | 'box';
+  setSelectionMode: (mode: 'single' | 'multi' | 'box') => void;
+  SelectionUtils: any;
+  BulkOperations: any;
+  nodes: Node[];
+  availableEntityTypes: string[];
+}> = ({
+  selectedNodes,
+  selectionMode,
+  setSelectionMode,
+  SelectionUtils,
+  BulkOperations,
+  nodes,
+  availableEntityTypes
+}) => {
+  const [isExpanded, setIsExpanded] = React.useState(false);
+  const [arrangementPattern, setArrangementPattern] = React.useState<'line' | 'circle' | 'grid'>('grid');
+  const selectionStats = SelectionUtils.getSelectionStats();
+
+  return (
+    <Panel position="bottom-left">
+      <div style={{
+        background: 'rgba(255, 255, 255, 0.95)',
+        padding: '12px',
+        borderRadius: '8px',
+        fontSize: '12px',
+        minWidth: isExpanded ? '300px' : '140px',
+        maxHeight: isExpanded ? '450px' : 'auto',
+        boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)',
+        transition: 'all 0.3s ease',
+        overflow: isExpanded ? 'auto' : 'hidden',
+      }}>
+        <div
+          style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            cursor: 'pointer',
+            fontWeight: '600',
+            color: '#374151',
+            marginBottom: isExpanded ? '12px' : '0'
+          }}
+          onClick={() => setIsExpanded(!isExpanded)}
+        >
+          <span>🎯 Selection ({selectedNodes.size})</span>
+          <span style={{ fontSize: '10px' }}>
+            {isExpanded ? '▼' : '▲'}
+          </span>
+        </div>
+
+        {isExpanded && (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+            {/* Selection Mode */}
+            <div>
+              <div style={{ fontWeight: '600', marginBottom: '6px', color: '#1f2937' }}>
+                Selection Mode
+              </div>
+              <div style={{ display: 'flex', gap: '4px' }}>
+                {[
+                  { mode: 'single' as const, label: 'Single', icon: '👆' },
+                  { mode: 'multi' as const, label: 'Multi', icon: '👆👆' },
+                  { mode: 'box' as const, label: 'Box', icon: '⬜' }
+                ].map(({ mode, label, icon }) => (
+                  <button
+                    key={mode}
+                    onClick={() => setSelectionMode(mode)}
+                    style={{
+                      padding: '4px 8px',
+                      border: selectionMode === mode ? '2px solid #3b82f6' : '1px solid #e5e7eb',
+                      background: selectionMode === mode ? '#eff6ff' : 'white',
+                      borderRadius: '4px',
+                      fontSize: '10px',
+                      cursor: 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '4px',
+                      flex: 1,
+                      justifyContent: 'center'
+                    }}
+                  >
+                    <span>{icon}</span>
+                    <span>{label}</span>
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Quick Selection Tools */}
+            <div>
+              <div style={{ fontWeight: '600', marginBottom: '6px', color: '#1f2937' }}>
+                Quick Select
+              </div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                <div style={{ display: 'flex', gap: '4px' }}>
+                  <button
+                    onClick={SelectionUtils.selectAll}
+                    style={{
+                      padding: '4px 8px',
+                      border: '1px solid #e5e7eb',
+                      background: 'white',
+                      borderRadius: '4px',
+                      fontSize: '10px',
+                      cursor: 'pointer',
+                      flex: 1
+                    }}
+                  >
+                    All
+                  </button>
+                  <button
+                    onClick={SelectionUtils.selectNone}
+                    style={{
+                      padding: '4px 8px',
+                      border: '1px solid #e5e7eb',
+                      background: 'white',
+                      borderRadius: '4px',
+                      fontSize: '10px',
+                      cursor: 'pointer',
+                      flex: 1
+                    }}
+                  >
+                    None
+                  </button>
+                </div>
+
+                {/* Select by Type */}
+                <div>
+                  <label style={{ display: 'block', marginBottom: '2px', fontSize: '10px' }}>By Type:</label>
+                  <select
+                    onChange={(e) => e.target.value && SelectionUtils.selectByType(e.target.value)}
+                    style={{
+                      width: '100%',
+                      padding: '4px',
+                      border: '1px solid #d1d5db',
+                      borderRadius: '4px',
+                      fontSize: '10px'
+                    }}
+                  >
+                    <option value="">Select type...</option>
+                    {availableEntityTypes.map(type => (
+                      <option key={type} value={type}>{type}</option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+            </div>
+
+            {/* Selection Stats */}
+            {selectedNodes.size > 0 && (
+              <div>
+                <div style={{ fontWeight: '600', marginBottom: '6px', color: '#1f2937' }}>
+                  Selection Info
+                </div>
+                <div style={{ fontSize: '10px', color: '#6b7280' }}>
+                  <div>Nodes: {selectionStats.nodeCount}</div>
+                  <div>Connected Edges: {selectionStats.connectedEdges}</div>
+                  <div>Total Edges: {selectionStats.totalEdges}</div>
+                  {Object.keys(selectionStats.entityTypes).length > 0 && (
+                    <div style={{ marginTop: '4px' }}>
+                      Types: {Object.entries(selectionStats.entityTypes)
+                        .map(([type, count]) => `${type}(${count})`)
+                        .join(', ')}
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+
+            {/* Bulk Operations */}
+            {selectedNodes.size > 0 && (
+              <div>
+                <div style={{ fontWeight: '600', marginBottom: '6px', color: '#1f2937' }}>
+                  Bulk Actions
+                </div>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                  <div style={{ display: 'flex', gap: '4px' }}>
+                    <button
+                      onClick={BulkOperations.hideSelected}
+                      style={{
+                        padding: '4px 8px',
+                        border: '1px solid #e5e7eb',
+                        background: '#f3f4f6',
+                        borderRadius: '4px',
+                        fontSize: '10px',
+                        cursor: 'pointer',
+                        flex: 1
+                      }}
+                    >
+                      Hide
+                    </button>
+                    <button
+                      onClick={BulkOperations.showSelected}
+                      style={{
+                        padding: '4px 8px',
+                        border: '1px solid #e5e7eb',
+                        background: '#f3f4f6',
+                        borderRadius: '4px',
+                        fontSize: '10px',
+                        cursor: 'pointer',
+                        flex: 1
+                      }}
+                    >
+                      Show
+                    </button>
+                  </div>
+
+                  <div style={{ display: 'flex', gap: '4px' }}>
+                    <button
+                      onClick={BulkOperations.lockSelected}
+                      style={{
+                        padding: '4px 8px',
+                        border: '1px solid #e5e7eb',
+                        background: '#f3f4f6',
+                        borderRadius: '4px',
+                        fontSize: '10px',
+                        cursor: 'pointer',
+                        flex: 1
+                      }}
+                    >
+                      Lock
+                    </button>
+                    <button
+                      onClick={BulkOperations.unlockSelected}
+                      style={{
+                        padding: '4px 8px',
+                        border: '1px solid #e5e7eb',
+                        background: '#f3f4f6',
+                        borderRadius: '4px',
+                        fontSize: '10px',
+                        cursor: 'pointer',
+                        flex: 1
+                      }}
+                    >
+                      Unlock
+                    </button>
+                  </div>
+
+                  {selectedNodes.size >= 2 && (
+                    <>
+                      <div>
+                        <label style={{ display: 'block', marginBottom: '2px', fontSize: '10px' }}>Arrange:</label>
+                        <div style={{ display: 'flex', gap: '4px' }}>
+                          <select
+                            value={arrangementPattern}
+                            onChange={(e) => setArrangementPattern(e.target.value as any)}
+                            style={{
+                              flex: 1,
+                              padding: '4px',
+                              border: '1px solid #d1d5db',
+                              borderRadius: '4px',
+                              fontSize: '10px'
+                            }}
+                          >
+                            <option value="grid">Grid</option>
+                            <option value="line">Line</option>
+                            <option value="circle">Circle</option>
+                          </select>
+                          <button
+                            onClick={() => BulkOperations.arrangeSelected(arrangementPattern)}
+                            style={{
+                              padding: '4px 8px',
+                              border: '1px solid #3b82f6',
+                              background: '#3b82f6',
+                              color: 'white',
+                              borderRadius: '4px',
+                              fontSize: '10px',
+                              cursor: 'pointer'
+                            }}
+                          >
+                            Apply
+                          </button>
+                        </div>
+                      </div>
+
+                      <button
+                        onClick={() => BulkOperations.groupSelected()}
+                        style={{
+                          padding: '6px 12px',
+                          border: '1px solid #059669',
+                          background: '#059669',
+                          color: 'white',
+                          borderRadius: '4px',
+                          fontSize: '10px',
+                          cursor: 'pointer',
+                          fontWeight: '500'
+                        }}
+                      >
+                        🏷️ Group Selected
+                      </button>
+                    </>
+                  )}
+
+                  <button
+                    onClick={BulkOperations.deleteSelected}
+                    style={{
+                      padding: '6px 12px',
+                      border: '1px solid #dc2626',
+                      background: '#dc2626',
+                      color: 'white',
+                      borderRadius: '4px',
+                      fontSize: '10px',
+                      cursor: 'pointer',
+                      fontWeight: '500'
+                    }}
+                  >
+                    🗑️ Delete Selected
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {/* Keyboard shortcuts info */}
+            <div style={{
+              paddingTop: '8px',
+              borderTop: '1px solid #e5e7eb',
+              fontSize: '9px',
+              color: '#9ca3af'
+            }}>
+              Ctrl+Click: multi-select • Shift+Click: range select
+            </div>
+          </div>
+        )}
+      </div>
+    </Panel>
+  );
+};
+
 // Helper function to calculate cluster bounds
 const calculateClusterBounds = (nodes: Node[]) => {
   if (nodes.length === 0) return null;
@@ -4177,6 +4506,273 @@ import '@xyflow/react/dist/style.css';
         setCurrentZoom(viewport.zoom);
       }, []);
 
+      // Enhanced Node Selection and Multi-Selection System
+      const [selectedNodes, setSelectedNodes] = useState<Set<string>>(new Set());
+      const [selectionMode, setSelectionMode] = useState<'single' | 'multi' | 'box'>('single');
+      const [selectionBoxActive, setSelectionBoxActive] = useState(false);
+      const [lastSelectedNode, setLastSelectedNode] = useState<string | null>(null);
+
+      // Selection utilities
+      const SelectionUtils = React.useMemo(() => ({
+        selectNode: (nodeId: string, multi: boolean = false) => {
+          if (multi) {
+            setSelectedNodes(prev => {
+              const newSelection = new Set(prev);
+              if (newSelection.has(nodeId)) {
+                newSelection.delete(nodeId);
+              } else {
+                newSelection.add(nodeId);
+              }
+              return newSelection;
+            });
+          } else {
+            setSelectedNodes(new Set([nodeId]));
+          }
+          setLastSelectedNode(nodeId);
+        },
+
+        selectRange: (fromNodeId: string, toNodeId: string) => {
+          const sortedNodes = [...nodes].sort((a, b) => a.position.y - b.position.y || a.position.x - b.position.x);
+          const fromIndex = sortedNodes.findIndex(n => n.id === fromNodeId);
+          const toIndex = sortedNodes.findIndex(n => n.id === toNodeId);
+
+          if (fromIndex === -1 || toIndex === -1) return;
+
+          const start = Math.min(fromIndex, toIndex);
+          const end = Math.max(fromIndex, toIndex);
+
+          setSelectedNodes(new Set(sortedNodes.slice(start, end + 1).map(n => n.id)));
+        },
+
+        selectAll: () => {
+          setSelectedNodes(new Set(nodes.map(n => n.id)));
+        },
+
+        selectNone: () => {
+          setSelectedNodes(new Set());
+          setLastSelectedNode(null);
+        },
+
+        selectByType: (entityType: string) => {
+          const typeNodes = nodes
+            .filter(node => (node.data as EntityNodeData).entityType === entityType)
+            .map(n => n.id);
+          setSelectedNodes(new Set(typeNodes));
+        },
+
+        selectByProperty: (property: string, value: unknown) => {
+          const matchingNodes = nodes
+            .filter(node => {
+              const data = node.data as EntityNodeData;
+              return (data as any)[property] === value;
+            })
+            .map(n => n.id);
+          setSelectedNodes(new Set(matchingNodes));
+        },
+
+        selectConnected: (nodeId: string, includeOriginal: boolean = true) => {
+          const connectedIds = new Set<string>();
+          if (includeOriginal) connectedIds.add(nodeId);
+
+          edges.forEach(edge => {
+            if (edge.source === nodeId) connectedIds.add(edge.target);
+            if (edge.target === nodeId) connectedIds.add(edge.source);
+          });
+
+          setSelectedNodes(connectedIds);
+        },
+
+        selectNeighborhood: (nodeId: string, depth: number = 1) => {
+          const neighborhoodIds = new Set<string>([nodeId]);
+          let currentLevel = new Set([nodeId]);
+
+          for (let i = 0; i < depth; i++) {
+            const nextLevel = new Set<string>();
+
+            currentLevel.forEach(id => {
+              edges.forEach(edge => {
+                if (edge.source === id && !neighborhoodIds.has(edge.target)) {
+                  nextLevel.add(edge.target);
+                  neighborhoodIds.add(edge.target);
+                }
+                if (edge.target === id && !neighborhoodIds.has(edge.source)) {
+                  nextLevel.add(edge.source);
+                  neighborhoodIds.add(edge.source);
+                }
+              });
+            });
+
+            currentLevel = nextLevel;
+            if (currentLevel.size === 0) break;
+          }
+
+          setSelectedNodes(neighborhoodIds);
+        },
+
+        getSelectionStats: () => {
+          const selectedNodeObjects = nodes.filter(n => selectedNodes.has(n.id));
+          const entityTypes = selectedNodeObjects.reduce((acc, node) => {
+            const type = (node.data as EntityNodeData).entityType || 'unknown';
+            acc[type] = (acc[type] || 0) + 1;
+            return acc;
+          }, {} as Record<string, number>);
+
+          const connectedEdges = edges.filter(edge =>
+            selectedNodes.has(edge.source) && selectedNodes.has(edge.target)
+          );
+
+          return {
+            nodeCount: selectedNodes.size,
+            entityTypes,
+            connectedEdges: connectedEdges.length,
+            totalEdges: edges.filter(edge =>
+              selectedNodes.has(edge.source) || selectedNodes.has(edge.target)
+            ).length
+          };
+        }
+      }), [nodes, edges]);
+
+      // Bulk operations on selected nodes
+      const BulkOperations = React.useMemo(() => ({
+        deleteSelected: () => {
+          setNodes(prev => prev.filter(n => !selectedNodes.has(n.id)));
+          setEdges(prev => prev.filter(e =>
+            !selectedNodes.has(e.source) && !selectedNodes.has(e.target)
+          ));
+          setSelectedNodes(new Set());
+        },
+
+        hideSelected: () => {
+          setNodes(prev => prev.map(n =>
+            selectedNodes.has(n.id)
+              ? { ...n, hidden: true }
+              : n
+          ));
+        },
+
+        showSelected: () => {
+          setNodes(prev => prev.map(n =>
+            selectedNodes.has(n.id)
+              ? { ...n, hidden: false }
+              : n
+          ));
+        },
+
+        lockSelected: () => {
+          setNodes(prev => prev.map(n =>
+            selectedNodes.has(n.id)
+              ? { ...n, draggable: false }
+              : n
+          ));
+        },
+
+        unlockSelected: () => {
+          setNodes(prev => prev.map(n =>
+            selectedNodes.has(n.id)
+              ? { ...n, draggable: true }
+              : n
+          ));
+        },
+
+        groupSelected: (color: string = '#3b82f6') => {
+          const selectedNodeObjects = nodes.filter(n => selectedNodes.has(n.id));
+          if (selectedNodeObjects.length < 2) return;
+
+          const minX = Math.min(...selectedNodeObjects.map(n => n.position.x));
+          const minY = Math.min(...selectedNodeObjects.map(n => n.position.y));
+          const maxX = Math.max(...selectedNodeObjects.map(n => n.position.x + (n.width || 100)));
+          const maxY = Math.max(...selectedNodeObjects.map(n => n.position.y + (n.height || 50)));
+
+          const groupNode = {
+            id: `group-${Date.now()}`,
+            type: 'group',
+            position: { x: minX - 10, y: minY - 30 },
+            style: {
+              width: maxX - minX + 20,
+              height: maxY - minY + 40,
+              background: `${color}10`,
+              border: `2px dashed ${color}`,
+              borderRadius: '8px',
+              zIndex: -1
+            },
+            data: { label: `Group (${selectedNodes.size} nodes)` }
+          };
+
+          setNodes(prev => [...prev, groupNode]);
+        },
+
+        arrangeSelected: (pattern: 'line' | 'circle' | 'grid') => {
+          const selectedNodeObjects = nodes.filter(n => selectedNodes.has(n.id));
+          if (selectedNodeObjects.length < 2) return;
+
+          const centerX = selectedNodeObjects.reduce((sum, n) => sum + n.position.x, 0) / selectedNodeObjects.length;
+          const centerY = selectedNodeObjects.reduce((sum, n) => sum + n.position.y, 0) / selectedNodeObjects.length;
+
+          let newPositions: { x: number; y: number }[] = [];
+
+          switch (pattern) {
+            case 'line':
+              newPositions = selectedNodeObjects.map((_, i) => ({
+                x: centerX - (selectedNodeObjects.length - 1) * 50 + i * 100,
+                y: centerY
+              }));
+              break;
+            case 'circle':
+              const radius = Math.max(100, selectedNodeObjects.length * 20);
+              newPositions = selectedNodeObjects.map((_, i) => {
+                const angle = (i / selectedNodeObjects.length) * 2 * Math.PI;
+                return {
+                  x: centerX + radius * Math.cos(angle),
+                  y: centerY + radius * Math.sin(angle)
+                };
+              });
+              break;
+            case 'grid':
+              const cols = Math.ceil(Math.sqrt(selectedNodeObjects.length));
+              newPositions = selectedNodeObjects.map((_, i) => ({
+                x: centerX + (i % cols) * 120 - ((cols - 1) * 120) / 2,
+                y: centerY + Math.floor(i / cols) * 80 - (Math.ceil(selectedNodeObjects.length / cols) - 1) * 40
+              }));
+              break;
+          }
+
+          setNodes(prev => prev.map(n => {
+            const selectedIndex = selectedNodeObjects.findIndex(sn => sn.id === n.id);
+            if (selectedIndex >= 0) {
+              return { ...n, position: newPositions[selectedIndex] };
+            }
+            return n;
+          }));
+        }
+      }), [nodes, selectedNodes, setNodes, setEdges]);
+
+      // Enhanced node click handler with selection modes
+      const onNodeClick = useCallback((event: React.MouseEvent, node: Node) => {
+        event.stopPropagation();
+
+        const isCtrlClick = event.ctrlKey || event.metaKey;
+        const isShiftClick = event.shiftKey;
+
+        if (isShiftClick && lastSelectedNode && selectionMode !== 'single') {
+          // Range selection
+          SelectionUtils.selectRange(lastSelectedNode, node.id);
+        } else if (isCtrlClick && selectionMode !== 'single') {
+          // Multi-selection toggle
+          SelectionUtils.selectNode(node.id, true);
+        } else {
+          // Single selection
+          SelectionUtils.selectNode(node.id, false);
+        }
+      }, [lastSelectedNode, selectionMode, nodes, edges]);
+
+      // Update nodes with selection state
+      const nodesWithSelection = React.useMemo(() => {
+        return nodes.map(node => ({
+          ...node,
+          selected: selectedNodes.has(node.id)
+        }));
+      }, [nodes, selectedNodes]);
+
       // Advanced clustering system with multiple algorithms
       const [activeClusterType, setActiveClusterType] = useState<ClusterType>('entity');
       const [selectedCluster, setSelectedCluster] = useState<string | null>(null);
@@ -4345,12 +4941,13 @@ import '@xyflow/react/dist/style.css';
           </div>
 
           <ReactFlow
-            nodes={nodes}
+            nodes={nodesWithSelection}
             edges={edges}
             onNodesChange={onNodesChange}
             onEdgesChange={onEdgesChange}
             onConnect={onConnect}
             onInit={onInit}
+            onNodeClick={onNodeClick}
             onViewportChange={onViewportChange}
             onNodeMouseEnter={onNodeMouseEnter}
             onNodeMouseLeave={onNodeMouseLeave}
@@ -4408,6 +5005,17 @@ import '@xyflow/react/dist/style.css';
               reactFlowInstance={rfInstance}
               nodes={filteredNodes}
               edges={filteredEdges}
+            />
+
+            {/* Selection Panel */}
+            <SelectionPanel
+              selectedNodes={selectedNodes}
+              selectionMode={selectionMode}
+              setSelectionMode={setSelectionMode}
+              SelectionUtils={SelectionUtils}
+              BulkOperations={BulkOperations}
+              nodes={filteredNodes}
+              availableEntityTypes={availableEntityTypes}
             />
 
             {/* Advanced Clustering Visualization */}
