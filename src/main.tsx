@@ -3,7 +3,6 @@ import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 
 import { App } from './App';
-import { GraphEngineProvider } from './components/organisms/graph-engines';
 import { ReactQueryProvider } from './lib/react-query/provider';
 import { ThemeProvider } from './providers/theme-provider';
 
@@ -13,14 +12,14 @@ enableMapSet();
 // Mantine styles
 import '@mantine/core/styles.css';
 
-createRoot(document.getElementById('root')!).render(
-  <StrictMode>
-    <ReactQueryProvider>
-      <ThemeProvider>
-        <GraphEngineProvider preloadDefault>
-          <App />
-        </GraphEngineProvider>
-      </ThemeProvider>
-    </ReactQueryProvider>
-  </StrictMode>,
+// XYFlow React styles
+import '@xyflow/react/dist/style.css';
+
+const root = createRoot(document.getElementById('root')!);
+root.render(
+  <ReactQueryProvider>
+    <ThemeProvider>
+      <App />
+    </ThemeProvider>
+  </ReactQueryProvider>
 );
