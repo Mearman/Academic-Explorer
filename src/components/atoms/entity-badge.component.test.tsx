@@ -327,7 +327,7 @@ describe('EntityBadge Error Handling', () => {
 
   it('should handle undefined props gracefully', () => {
     expect(() => {
-      render(<EntityBadge entityType="work" className={undefined} />);
+      render(<EntityBadge entityType="work" />);
     }).not.toThrow();
   });
 });

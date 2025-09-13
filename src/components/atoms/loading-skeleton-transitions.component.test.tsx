@@ -55,6 +55,8 @@ const LoadingStateTest = ({
 
       return () => clearInterval(interval);
     }
+    // Explicit return for non-loading state
+    return undefined;
   }, [state, loadingDuration]);
 
   if (state === 'loading') {

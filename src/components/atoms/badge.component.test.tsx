@@ -319,7 +319,7 @@ describe('Badge Error Handling', () => {
 
   it('should handle undefined onRemove gracefully', () => {
     expect(() => {
-      render(<Badge removable onRemove={undefined}>Test</Badge>);
+      render(<Badge removable>Test</Badge>);
     }).not.toThrow();
     
     const badge = screen.getByRole('status');

@@ -129,8 +129,8 @@ export const LoadingSkeleton = forwardRef<HTMLDivElement, LoadingSkeletonProps>(
         height={mappedHeight}
         radius={getShapeRadius(shape)}
         animate={animation !== 'none'}
-        className={className}
-        data-testid={testId}
+        {...(className && { className })}
+        {...(testId && { 'data-testid': testId })}
         style={{ display: inline ? 'inline-block' : 'block' }}
         {...restProps}
       />
@@ -150,11 +150,11 @@ export const SkeletonGroup = forwardRef<HTMLDivElement, SkeletonGroupProps>(
       ...restProps 
     } = props;
     return (
-      <Stack 
+      <Stack
         ref={ref}
         gap="xs"
-        className={className}
-        data-testid={testId}
+        {...(className && { className })}
+        {...(testId && { 'data-testid': testId })}
         {...restProps}
       >
         {children || Array.from({ length: lines }, (_, index) => (

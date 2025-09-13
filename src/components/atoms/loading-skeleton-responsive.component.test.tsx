@@ -474,7 +474,8 @@ describe('Mobile Touch Interactions: LoadingSkeleton Behavior', () => {
     it('should gracefully degrade animations on unsupported devices', () => {
       // Mock old browser without animation support
       const originalAnimate = Element.prototype.animate;
-      (Element.prototype as { animate?: typeof Element.prototype.animate }).animate = undefined;
+      // Use delete to properly remove the property instead of setting to undefined
+      delete (Element.prototype as any).animate;
       
       render(
         <div>

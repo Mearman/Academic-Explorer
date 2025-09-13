@@ -357,14 +357,16 @@ describe('Skeleton Props Inheritance', () => {
 
 describe('LoadingSkeleton Error Handling', () => {
   it('should handle invalid width gracefully', () => {
+    const invalidWidth = undefined;
     expect(() => {
-      render(<LoadingSkeleton width={undefined} data-testid="skeleton" />);
+      render(<LoadingSkeleton {...(invalidWidth !== undefined && { width: invalidWidth })} data-testid="skeleton" />);
     }).not.toThrow();
   });
 
   it('should handle invalid height gracefully', () => {
+    const invalidHeight = undefined;
     expect(() => {
-      render(<LoadingSkeleton height={undefined} data-testid="skeleton" />);
+      render(<LoadingSkeleton {...(invalidHeight !== undefined && { height: invalidHeight })} data-testid="skeleton" />);
     }).not.toThrow();
   });
 
