@@ -553,6 +553,172 @@ const edgeTypes: EdgeTypes = {
 };
 
 // ============================================================================
+// Interactive Tooltip Components
+// ============================================================================
+
+const NodeTooltip: React.FC<{
+  node: Node;
+  position: { x: number; y: number };
+  visible: boolean;
+}> = ({ node, position, visible }) => {
+  if (!visible) return null;
+
+  const data = node.data as EntityNodeData;
+  const entityColor = getEntityColour(data.entityType);
+
+  return (
+    <div
+      style={{
+        position: 'fixed',
+        left: position.x + 10,
+        top: position.y - 10,
+        background: 'rgba(255, 255, 255, 0.98)',
+        border: `2px solid ${entityColor}`,
+        borderRadius: '8px',
+        padding: '12px',
+        minWidth: '200px',
+        maxWidth: '350px',
+        fontSize: '13px',
+        boxShadow: '0 4px 20px rgba(0, 0, 0, 0.15)',
+        zIndex: 1000,
+        pointerEvents: 'none',
+        backdropFilter: 'blur(4px)',
+      }}
+    >
+      <div style={{
+        fontWeight: '600',
+        marginBottom: '8px',
+        color: entityColor,
+        display: 'flex',
+        alignItems: 'center',
+        gap: '6px'
+      }}>
+        <div style={{
+          width: '12px',
+          height: '12px',
+          borderRadius: '50%',
+          background: entityColor,
+        }} />
+        {data.entityType.charAt(0).toUpperCase() + data.entityType.slice(1)}
+      </div>
+
+      <div style={{
+        fontWeight: '600',
+        marginBottom: '6px',
+        fontSize: '14px',
+        lineHeight: '1.3',
+        color: '#1f2937'
+      }}>
+        {data.label}
+      </div>
+
+      {/* Metadata display */}
+      <div style={{ fontSize: '12px', color: '#6b7280', lineHeight: '1.4' }}>
+        {data.publicationYear && (
+          <div style={{ marginBottom: '3px' }}>
+            📅 Published: {data.publicationYear}
+          </div>
+        )}
+        {data.citationCount !== undefined && (
+          <div style={{ marginBottom: '3px' }}>
+            📊 Citations: {data.citationCount.toLocaleString()}
+          </div>
+        )}
+        {data.openAccessStatus && (
+          <div style={{
+            marginBottom: '3px',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '4px'
+          }}>
+            <div style={{
+              width: '8px',
+              height: '8px',
+              borderRadius: '50%',
+              background: getOpenAccessColour(data.openAccessStatus),
+            }} />
+            Open Access: {data.openAccessStatus}
+          </div>
+        )}
+      </div>
+
+      {/* Additional actions */}
+      <div style={{
+        marginTop: '8px',
+        paddingTop: '8px',
+        borderTop: '1px solid #e5e7eb',
+        fontSize: '11px',
+        color: '#9ca3af'
+      }}>
+        Click to select • Double-click to focus
+      </div>
+    </div>
+  );
+};
+
+const EdgeTooltip: React.FC<{
+  edge: Edge;
+  position: { x: number; y: number };
+  visible: boolean;
+}> = ({ edge, position, visible }) => {
+  if (!visible) return null;
+
+  const edgeData = edge.data || {};
+  const weight = edgeData.weight || 1;
+  const relationshipType = edgeData.relationshipType || 'connection';
+
+  const getRelationshipColor = (type: string): string => {
+    switch (type) {
+      case 'citation': return '#3b82f6';
+      case 'collaboration': return '#059669';
+      case 'influence': return '#f59e0b';
+      default: return '#6b7280';
+    }
+  };
+
+  const relationshipColor = getRelationshipColor(relationshipType);
+
+  return (
+    <div
+      style={{
+        position: 'fixed',
+        left: position.x + 10,
+        top: position.y - 10,
+        background: 'rgba(255, 255, 255, 0.98)',
+        border: `2px solid ${relationshipColor}`,
+        borderRadius: '8px',
+        padding: '10px',
+        minWidth: '180px',
+        fontSize: '12px',
+        boxShadow: '0 4px 20px rgba(0, 0, 0, 0.15)',
+        zIndex: 1000,
+        pointerEvents: 'none',
+        backdropFilter: 'blur(4px)',
+      }}
+    >
+      <div style={{
+        fontWeight: '600',
+        marginBottom: '6px',
+        color: relationshipColor,
+        textTransform: 'capitalize'
+      }}>
+        {relationshipType} Relationship
+      </div>
+
+      <div style={{ color: '#6b7280', lineHeight: '1.4' }}>
+        <div>Strength: {Math.round(weight * 100)}%</div>
+        {edgeData.citationCount && (
+          <div>Citations: {edgeData.citationCount}</div>
+        )}
+        {edgeData.influenceScore && (
+          <div>Influence: {Math.round(edgeData.influenceScore * 100)}%</div>
+        )}
+      </div>
+    </div>
+  );
+};
+
+// ============================================================================
 // Node Clustering Components
 // ============================================================================
 
@@ -1345,6 +1511,19 @@ import '@xyflow/react/dist/style.css';
       const [edges, setEdges, onEdgesChange] = useEdgesState(engine.edges);
       const [rfInstance, setRfInstance] = useState<ReactFlowInstance | null>(null);
 
+      // Tooltip state management
+      const [nodeTooltip, setNodeTooltip] = useState<{
+        node: Node | null;
+        position: { x: number; y: number };
+        visible: boolean;
+      }>({ node: null, position: { x: 0, y: 0 }, visible: false });
+
+      const [edgeTooltip, setEdgeTooltip] = useState<{
+        edge: Edge | null;
+        position: { x: number; y: number };
+        visible: boolean;
+      }>({ edge: null, position: { x: 0, y: 0 }, visible: false });
+
       const onConnect = useCallback(
         (params: Connection) => setEdges((eds) => addEdge(params, eds)),
         [setEdges]
@@ -1355,6 +1534,49 @@ import '@xyflow/react/dist/style.css';
         engine.reactFlowInstance = instance;
         onReady?.(instance);
       }, [onReady]);
+
+      // Interactive tooltip handlers
+      const onNodeMouseEnter = useCallback((event: React.MouseEvent, node: Node) => {
+        setNodeTooltip({
+          node,
+          position: { x: event.clientX, y: event.clientY },
+          visible: true,
+        });
+      }, []);
+
+      const onNodeMouseLeave = useCallback(() => {
+        setNodeTooltip(prev => ({ ...prev, visible: false }));
+      }, []);
+
+      const onNodeMouseMove = useCallback((event: React.MouseEvent, node: Node) => {
+        setNodeTooltip(prev => ({
+          ...prev,
+          position: { x: event.clientX, y: event.clientY },
+        }));
+      }, []);
+
+      const onEdgeMouseEnter = useCallback((event: React.MouseEvent, edge: Edge) => {
+        setEdgeTooltip({
+          edge,
+          position: { x: event.clientX, y: event.clientY },
+          visible: true,
+        });
+      }, []);
+
+      const onEdgeMouseLeave = useCallback(() => {
+        setEdgeTooltip(prev => ({ ...prev, visible: false }));
+      }, []);
+
+      const onNodeDoubleClick = useCallback((event: React.MouseEvent, node: Node) => {
+        if (rfInstance) {
+          // Focus on the double-clicked node
+          rfInstance.fitView({
+            nodes: [node],
+            padding: 0.8,
+            duration: 500,
+          });
+        }
+      }, [rfInstance]);
 
       // Keyboard navigation handler
       const handleKeyDown = useCallback((event: React.KeyboardEvent) => {
@@ -1546,6 +1768,12 @@ import '@xyflow/react/dist/style.css';
             onConnect={onConnect}
             onInit={onInit}
             onViewportChange={onViewportChange}
+            onNodeMouseEnter={onNodeMouseEnter}
+            onNodeMouseLeave={onNodeMouseLeave}
+            onNodeMouseMove={onNodeMouseMove}
+            onNodeDoubleClick={onNodeDoubleClick}
+            onEdgeMouseEnter={onEdgeMouseEnter}
+            onEdgeMouseLeave={onEdgeMouseLeave}
             nodeTypes={config.nodeTypes || nodeTypes}
             edgeTypes={config.edgeTypes || edgeTypes}
             fitView={config.fitView}
@@ -1647,6 +1875,18 @@ import '@xyflow/react/dist/style.css';
               </Panel>
             )}
           </ReactFlow>
+
+          {/* Interactive Tooltips */}
+          <NodeTooltip
+            node={nodeTooltip.node}
+            position={nodeTooltip.position}
+            visible={nodeTooltip.visible}
+          />
+          <EdgeTooltip
+            edge={edgeTooltip.edge}
+            position={edgeTooltip.position}
+            visible={edgeTooltip.visible}
+          />
         </div>
       );
     };
