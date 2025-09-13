@@ -17,19 +17,14 @@ import type { EntityGraphVertex } from '@/types/entity-graph';
 function AuthorPageContent({ entity }: { entity: EntityData }) {
   // Get graph tracking and stats 
   const graphStats = useEntityGraphStats();
-  const { addEntity } = useEntityGraphTracking();
-  
+  const { trackEntityData } = useEntityGraphTracking();
+
   // Track this entity visit
   React.useEffect(() => {
     if (entity) {
-      addEntity(entity.id, entity.display_name, EntityType.AUTHOR, {
-        citedByCount: (entity as Author).cited_by_count,
-        worksCount: (entity as Author).works_count,
-        hIndex: (entity as Author).h_index,
-        i10Index: (entity as Author).i10_index,
-      });
+      trackEntityData(entity, EntityType.AUTHOR, entity.id);
     }
-  }, [entity, addEntity]);
+  }, [entity, trackEntityData]);
 
   // Create a functional graph visualization with real author data and graph component
   const graphPane = (
