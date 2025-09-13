@@ -276,7 +276,7 @@ const DEFAULT_ENGINE_CAPABILITIES: Record<GraphEngineType, GraphEngineCapabiliti
       levelOfDetail: true,
       export: {
         png: true,
-        svg: false,
+        svg: true,
         pdf: false,
         json: true,
       },

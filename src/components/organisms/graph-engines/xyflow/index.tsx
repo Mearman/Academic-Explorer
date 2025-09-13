@@ -38,11 +38,15 @@ import {
   Position,
   BackgroundVariant,
   Handle,
+  getNodesBounds,
+  getViewportForBounds,
+  useReactFlow,
 } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
 
 import { getEntityColour, getOpenAccessColour } from '../../../design-tokens.utils';
 import dagre from '@dagrejs/dagre';
+import { toPng, toSvg } from 'html-to-image';
 
 import type {
   IGraph,
@@ -592,13 +596,44 @@ import '@xyflow/react/dist/style.css';
         nodes: this.nodes,
         edges: this.edges,
         viewport: this.reactFlowInstance?.getViewport(),
-      });
+      }, null, 2);
     }
 
-    if (format === 'png' && this.reactFlowInstance) {
-      const dataUrl = await this.reactFlowInstance.getViewport();
-      // Convert viewport to image - this would need additional implementation
-      throw new Error('PNG export not yet implemented for xyflow engine');
+    if ((format === 'png' || format === 'svg') && this.container && this.reactFlowInstance) {
+      try {
+        // Find the React Flow viewport element
+        const viewportElement = this.container.querySelector('.react-flow__viewport');
+        if (!viewportElement) {
+          throw new Error('React Flow viewport element not found');
+        }
+
+        // Configure export options
+        const exportOptions = {
+          backgroundColor: options?.backgroundColor ? String(options.backgroundColor) : '#ffffff',
+          width: options?.width ? Number(options.width) : this.dimensions.width,
+          height: options?.height ? Number(options.height) : this.dimensions.height,
+          style: {
+            transform: 'none',
+          },
+          filter: (node: Element) => {
+            // Exclude certain elements that shouldn't be in the export
+            if (node.classList?.contains('react-flow__controls') ||
+                node.classList?.contains('react-flow__minimap') ||
+                node.classList?.contains('react-flow__attribution')) {
+              return false;
+            }
+            return true;
+          },
+        };
+
+        if (format === 'png') {
+          return await toPng(viewportElement as HTMLElement, exportOptions);
+        } else if (format === 'svg') {
+          return await toSvg(viewportElement as HTMLElement, exportOptions);
+        }
+      } catch (error) {
+        throw new Error(`Failed to export ${format}: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      }
     }
 
     throw new Error(`Export format ${format} not supported by xyflow engine`);

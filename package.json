@@ -70,6 +70,7 @@
     "cytoscape-dagre": "^2.5.0",
     "d3": "^7.9.0",
     "framer-motion": "^12.23.12",
+    "html-to-image": "^1.11.13",
     "idb": "^8.0.3",
     "immer": "^10.1.1",
     "react": "19.1.1",
