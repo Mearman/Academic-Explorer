@@ -12,11 +12,14 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as SearchRouteImport } from './routes/search'
 import { Route as GraphRouteImport } from './routes/graph'
 import { Route as ExploreRouteImport } from './routes/explore'
+import { Route as EvaluationRouteImport } from './routes/evaluation'
 import { Route as DemoRouteImport } from './routes/demo'
 import { Route as ApiTestRouteImport } from './routes/api-test'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as ExternalIdRouteImport } from './routes/$externalId'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as EvaluationResultsRouteImport } from './routes/evaluation/results'
+import { Route as EvaluationDatasetsRouteImport } from './routes/evaluation/datasets'
 import { Route as WorksDoiDoiRouteImport } from './routes/works/doi.$doi'
 import { Route as SourcesIssnIssnRouteImport } from './routes/sources/issn.$issn'
 import { Route as InstitutionsRorRorRouteImport } from './routes/institutions/ror.$ror'
@@ -35,6 +38,11 @@ const GraphRoute = GraphRouteImport.update({
 const ExploreRoute = ExploreRouteImport.update({
   id: '/explore',
   path: '/explore',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const EvaluationRoute = EvaluationRouteImport.update({
+  id: '/evaluation',
+  path: '/evaluation',
   getParentRoute: () => rootRouteImport,
 } as any)
 const DemoRoute = DemoRouteImport.update({
@@ -61,6 +69,16 @@ const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
+} as any)
+const EvaluationResultsRoute = EvaluationResultsRouteImport.update({
+  id: '/results',
+  path: '/results',
+  getParentRoute: () => EvaluationRoute,
+} as any)
+const EvaluationDatasetsRoute = EvaluationDatasetsRouteImport.update({
+  id: '/datasets',
+  path: '/datasets',
+  getParentRoute: () => EvaluationRoute,
 } as any)
 const WorksDoiDoiRoute = WorksDoiDoiRouteImport.update({
   id: '/works/doi/$doi',
@@ -89,9 +107,12 @@ export interface FileRoutesByFullPath {
   '/about': typeof AboutRoute
   '/api-test': typeof ApiTestRoute
   '/demo': typeof DemoRoute
+  '/evaluation': typeof EvaluationRouteWithChildren
   '/explore': typeof ExploreRoute
   '/graph': typeof GraphRoute
   '/search': typeof SearchRoute
+  '/evaluation/datasets': typeof EvaluationDatasetsRoute
+  '/evaluation/results': typeof EvaluationResultsRoute
   '/authors/orcid/$orcid': typeof AuthorsOrcidOrcidRoute
   '/institutions/ror/$ror': typeof InstitutionsRorRorRoute
   '/sources/issn/$issn': typeof SourcesIssnIssnRoute
@@ -103,9 +124,12 @@ export interface FileRoutesByTo {
   '/about': typeof AboutRoute
   '/api-test': typeof ApiTestRoute
   '/demo': typeof DemoRoute
+  '/evaluation': typeof EvaluationRouteWithChildren
   '/explore': typeof ExploreRoute
   '/graph': typeof GraphRoute
   '/search': typeof SearchRoute
+  '/evaluation/datasets': typeof EvaluationDatasetsRoute
+  '/evaluation/results': typeof EvaluationResultsRoute
   '/authors/orcid/$orcid': typeof AuthorsOrcidOrcidRoute
   '/institutions/ror/$ror': typeof InstitutionsRorRorRoute
   '/sources/issn/$issn': typeof SourcesIssnIssnRoute
@@ -118,9 +142,12 @@ export interface FileRoutesById {
   '/about': typeof AboutRoute
   '/api-test': typeof ApiTestRoute
   '/demo': typeof DemoRoute
+  '/evaluation': typeof EvaluationRouteWithChildren
   '/explore': typeof ExploreRoute
   '/graph': typeof GraphRoute
   '/search': typeof SearchRoute
+  '/evaluation/datasets': typeof EvaluationDatasetsRoute
+  '/evaluation/results': typeof EvaluationResultsRoute
   '/authors/orcid/$orcid': typeof AuthorsOrcidOrcidRoute
   '/institutions/ror/$ror': typeof InstitutionsRorRorRoute
   '/sources/issn/$issn': typeof SourcesIssnIssnRoute
@@ -134,9 +161,12 @@ export interface FileRouteTypes {
     | '/about'
     | '/api-test'
     | '/demo'
+    | '/evaluation'
     | '/explore'
     | '/graph'
     | '/search'
+    | '/evaluation/datasets'
+    | '/evaluation/results'
     | '/authors/orcid/$orcid'
     | '/institutions/ror/$ror'
     | '/sources/issn/$issn'
@@ -148,9 +178,12 @@ export interface FileRouteTypes {
     | '/about'
     | '/api-test'
     | '/demo'
+    | '/evaluation'
     | '/explore'
     | '/graph'
     | '/search'
+    | '/evaluation/datasets'
+    | '/evaluation/results'
     | '/authors/orcid/$orcid'
     | '/institutions/ror/$ror'
     | '/sources/issn/$issn'
@@ -162,9 +195,12 @@ export interface FileRouteTypes {
     | '/about'
     | '/api-test'
     | '/demo'
+    | '/evaluation'
     | '/explore'
     | '/graph'
     | '/search'
+    | '/evaluation/datasets'
+    | '/evaluation/results'
     | '/authors/orcid/$orcid'
     | '/institutions/ror/$ror'
     | '/sources/issn/$issn'
@@ -177,6 +213,7 @@ export interface RootRouteChildren {
   AboutRoute: typeof AboutRoute
   ApiTestRoute: typeof ApiTestRoute
   DemoRoute: typeof DemoRoute
+  EvaluationRoute: typeof EvaluationRouteWithChildren
   ExploreRoute: typeof ExploreRoute
   GraphRoute: typeof GraphRoute
   SearchRoute: typeof SearchRoute
@@ -207,6 +244,13 @@ declare module '@tanstack/react-router' {
       path: '/explore'
       fullPath: '/explore'
       preLoaderRoute: typeof ExploreRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/evaluation': {
+      id: '/evaluation'
+      path: '/evaluation'
+      fullPath: '/evaluation'
+      preLoaderRoute: typeof EvaluationRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/demo': {
@@ -244,6 +288,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/evaluation/results': {
+      id: '/evaluation/results'
+      path: '/results'
+      fullPath: '/evaluation/results'
+      preLoaderRoute: typeof EvaluationResultsRouteImport
+      parentRoute: typeof EvaluationRoute
+    }
+    '/evaluation/datasets': {
+      id: '/evaluation/datasets'
+      path: '/datasets'
+      fullPath: '/evaluation/datasets'
+      preLoaderRoute: typeof EvaluationDatasetsRouteImport
+      parentRoute: typeof EvaluationRoute
+    }
     '/works/doi/$doi': {
       id: '/works/doi/$doi'
       path: '/works/doi/$doi'
@@ -275,12 +333,27 @@ declare module '@tanstack/react-router' {
   }
 }
 
+interface EvaluationRouteChildren {
+  EvaluationDatasetsRoute: typeof EvaluationDatasetsRoute
+  EvaluationResultsRoute: typeof EvaluationResultsRoute
+}
+
+const EvaluationRouteChildren: EvaluationRouteChildren = {
+  EvaluationDatasetsRoute: EvaluationDatasetsRoute,
+  EvaluationResultsRoute: EvaluationResultsRoute,
+}
+
+const EvaluationRouteWithChildren = EvaluationRoute._addFileChildren(
+  EvaluationRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   ExternalIdRoute: ExternalIdRoute,
   AboutRoute: AboutRoute,
   ApiTestRoute: ApiTestRoute,
   DemoRoute: DemoRoute,
+  EvaluationRoute: EvaluationRouteWithChildren,
   ExploreRoute: ExploreRoute,
   GraphRoute: GraphRoute,
   SearchRoute: SearchRoute,
