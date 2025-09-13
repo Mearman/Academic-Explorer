@@ -74,7 +74,8 @@ function GraphSectionInternal({
               'webgl': 'WebGL',
               'cytoscape': 'Cytoscape.js',
               'd3-force': 'D3.js Force',
-              'vis-network': 'vis-network'
+              'vis-network': 'vis-network',
+              'xyflow': 'xyflow (React Flow)'
             }}
           />
         )}

@@ -66,6 +66,7 @@ const ENGINE_DISPLAY_NAMES: Record<GraphEngineType, string> = {
   'd3-force': 'D3.js Force',
   'cytoscape': 'Cytoscape.js',
   'vis-network': 'vis-network',
+  'xyflow': 'xyflow (React Flow)',
 };
 
 const ENGINE_ICONS: Record<GraphEngineType, string> = {
@@ -75,6 +76,7 @@ const ENGINE_ICONS: Record<GraphEngineType, string> = {
   'd3-force': 'D3',
   'cytoscape': 'CYTO',
   'vis-network': 'VIS',
+  'xyflow': 'XY',
 };
 
 // ============================================================================
