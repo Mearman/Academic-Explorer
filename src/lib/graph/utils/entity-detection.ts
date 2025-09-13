@@ -61,34 +61,34 @@ export class EntityDetector {
 
     switch (firstChar) {
       case 'W':
-        entityType = EntityType.WORK;
+        entityType = 'works';
         break;
       case 'A':
-        entityType = EntityType.AUTHOR;
+        entityType = 'authors';
         break;
       case 'S':
-        entityType = EntityType.SOURCE;
+        entityType = 'sources';
         break;
       case 'I':
-        entityType = EntityType.INSTITUTION;
+        entityType = 'institutions';
         break;
       case 'T':
-        entityType = EntityType.TOPIC;
+        entityType = 'topics';
         break;
       case 'C':
-        entityType = EntityType.CONCEPT; // Legacy, being phased out
+        entityType = 'concepts'; // Legacy, being phased out
         break;
       case 'P':
-        entityType = EntityType.PUBLISHER;
+        entityType = 'publishers';
         break;
       case 'F':
-        entityType = EntityType.FUNDER;
+        entityType = 'funders';
         break;
       case 'K':
-        entityType = EntityType.KEYWORD;
+        entityType = 'keywords';
         break;
       case 'G':
-        entityType = EntityType.GEO;
+        entityType = 'geo';
         break;
       default:
         entityType = null;
@@ -109,7 +109,7 @@ export class EntityDetector {
     // DOI patterns
     if (this.isDOI(input)) {
       return {
-        entityType: EntityType.WORK,
+        entityType: 'works',
         idType: 'doi',
         normalizedId: this.normalizeDOI(input),
         originalInput: input,
@@ -119,7 +119,7 @@ export class EntityDetector {
     // ORCID patterns
     if (this.isORCID(input)) {
       return {
-        entityType: EntityType.AUTHOR,
+        entityType: 'authors',
         idType: 'orcid',
         normalizedId: this.normalizeORCID(input),
         originalInput: input,
@@ -129,7 +129,7 @@ export class EntityDetector {
     // ISSN-L patterns
     if (this.isISSN(input)) {
       return {
-        entityType: EntityType.SOURCE,
+        entityType: 'sources',
         idType: 'issn_l',
         normalizedId: this.normalizeISSN(input),
         originalInput: input,
@@ -139,7 +139,7 @@ export class EntityDetector {
     // ROR patterns
     if (this.isROR(input)) {
       return {
-        entityType: EntityType.INSTITUTION,
+        entityType: 'institutions',
         idType: 'ror',
         normalizedId: this.normalizeROR(input),
         originalInput: input,
@@ -149,7 +149,7 @@ export class EntityDetector {
     // Wikidata patterns (concepts/publishers)
     if (this.isWikidata(input)) {
       return {
-        entityType: EntityType.CONCEPT, // Default, could be publisher
+        entityType: 'concepts', // Default, could be publisher
         idType: 'wikidata',
         normalizedId: this.normalizeWikidata(input),
         originalInput: input,
