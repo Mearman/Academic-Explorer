@@ -12,6 +12,7 @@
 
 // Import types needed for constants
 import type { GraphEngineType, GraphEngineSettings } from './types';
+import { setGraphEngineDebug } from './types/debug';
 
 // ============================================================================
 // Core Provider and Context
@@ -450,25 +451,21 @@ export function validateSettings(settings: unknown): settings is GraphEngineSett
  * Enable debug mode for additional logging
  */
 export function enableDebugMode() {
-  if (typeof window !== 'undefined') {
-    (window as any).__GRAPH_ENGINE_DEBUG__ = true;
-    console.log('Graph engine debug mode enabled');
-  }
+  setGraphEngineDebug(true);
+  console.log('Graph engine debug mode enabled');
 }
 
 /**
  * Disable debug mode
  */
 export function disableDebugMode() {
-  if (typeof window !== 'undefined') {
-    (window as any).__GRAPH_ENGINE_DEBUG__ = false;
-    console.log('Graph engine debug mode disabled');
-  }
+  setGraphEngineDebug(false);
+  console.log('Graph engine debug mode disabled');
 }
 
 /**
  * Check if debug mode is enabled
  */
 export function isDebugMode(): boolean {
-  return typeof window !== 'undefined' && !!(window as any).__GRAPH_ENGINE_DEBUG__;
+  return typeof window !== 'undefined' && Boolean(window.__GRAPH_ENGINE_DEBUG__);
 }

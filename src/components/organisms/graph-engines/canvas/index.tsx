@@ -25,6 +25,7 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 
 import { getEntityColour, getOpenAccessColour } from '../../../design-tokens.utils';
+import { setCanvasEngineDebug, getMemoryUsageMB } from '../types/debug';
 
 import type {
   IGraph,
@@ -1033,7 +1034,7 @@ export class CanvasEngine<TVertexData = unknown, TEdgeData = unknown>
   }
 
   private isDebugMode(): boolean {
-    return typeof window !== 'undefined' && !!(window as any).__CANVAS_ENGINE_DEBUG__;
+    return typeof window !== 'undefined' && Boolean(window.__CANVAS_ENGINE_DEBUG__);
   }
 
   private drawPerformanceOverlay(): void {
@@ -1073,25 +1074,18 @@ export class CanvasEngine<TVertexData = unknown, TEdgeData = unknown>
   }
 
   private getMemoryUsage(): number {
-    if (typeof window !== 'undefined' && (window.performance as any)?.memory) {
-      return Math.round((window.performance as any).memory.usedJSHeapSize / 1024 / 1024);
-    }
-    return 0;
+    return getMemoryUsageMB() ?? 0;
   }
 
   // Performance configuration methods
   enableDebugMode(): void {
-    if (typeof window !== 'undefined') {
-      (window as any).__CANVAS_ENGINE_DEBUG__ = true;
-      this.needsRedraw = true;
-    }
+    setCanvasEngineDebug(true);
+    this.needsRedraw = true;
   }
 
   disableDebugMode(): void {
-    if (typeof window !== 'undefined') {
-      (window as any).__CANVAS_ENGINE_DEBUG__ = false;
-      this.needsRedraw = true;
-    }
+    setCanvasEngineDebug(false);
+    this.needsRedraw = true;
   }
 
   setPerformanceOptions(options: Partial<PerformanceOptions>): void {
