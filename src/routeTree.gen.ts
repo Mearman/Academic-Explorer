@@ -13,7 +13,12 @@ import { Route as SearchRouteImport } from './routes/search'
 import { Route as GraphRouteImport } from './routes/graph'
 import { Route as DemoRouteImport } from './routes/demo'
 import { Route as AboutRouteImport } from './routes/about'
+import { Route as ExternalIdRouteImport } from './routes/$externalId'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as WorksDoiDoiRouteImport } from './routes/works/doi.$doi'
+import { Route as SourcesIssnIssnRouteImport } from './routes/sources/issn.$issn'
+import { Route as InstitutionsRorRorRouteImport } from './routes/institutions/ror.$ror'
+import { Route as AuthorsOrcidOrcidRouteImport } from './routes/authors/orcid.$orcid'
 
 const SearchRoute = SearchRouteImport.update({
   id: '/search',
@@ -35,48 +40,124 @@ const AboutRoute = AboutRouteImport.update({
   path: '/about',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ExternalIdRoute = ExternalIdRouteImport.update({
+  id: '/$externalId',
+  path: '/$externalId',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const WorksDoiDoiRoute = WorksDoiDoiRouteImport.update({
+  id: '/works/doi/$doi',
+  path: '/works/doi/$doi',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SourcesIssnIssnRoute = SourcesIssnIssnRouteImport.update({
+  id: '/sources/issn/$issn',
+  path: '/sources/issn/$issn',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const InstitutionsRorRorRoute = InstitutionsRorRorRouteImport.update({
+  id: '/institutions/ror/$ror',
+  path: '/institutions/ror/$ror',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthorsOrcidOrcidRoute = AuthorsOrcidOrcidRouteImport.update({
+  id: '/authors/orcid/$orcid',
+  path: '/authors/orcid/$orcid',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/$externalId': typeof ExternalIdRoute
   '/about': typeof AboutRoute
   '/demo': typeof DemoRoute
   '/graph': typeof GraphRoute
   '/search': typeof SearchRoute
+  '/authors/orcid/$orcid': typeof AuthorsOrcidOrcidRoute
+  '/institutions/ror/$ror': typeof InstitutionsRorRorRoute
+  '/sources/issn/$issn': typeof SourcesIssnIssnRoute
+  '/works/doi/$doi': typeof WorksDoiDoiRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/$externalId': typeof ExternalIdRoute
   '/about': typeof AboutRoute
   '/demo': typeof DemoRoute
   '/graph': typeof GraphRoute
   '/search': typeof SearchRoute
+  '/authors/orcid/$orcid': typeof AuthorsOrcidOrcidRoute
+  '/institutions/ror/$ror': typeof InstitutionsRorRorRoute
+  '/sources/issn/$issn': typeof SourcesIssnIssnRoute
+  '/works/doi/$doi': typeof WorksDoiDoiRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/$externalId': typeof ExternalIdRoute
   '/about': typeof AboutRoute
   '/demo': typeof DemoRoute
   '/graph': typeof GraphRoute
   '/search': typeof SearchRoute
+  '/authors/orcid/$orcid': typeof AuthorsOrcidOrcidRoute
+  '/institutions/ror/$ror': typeof InstitutionsRorRorRoute
+  '/sources/issn/$issn': typeof SourcesIssnIssnRoute
+  '/works/doi/$doi': typeof WorksDoiDoiRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/about' | '/demo' | '/graph' | '/search'
+  fullPaths:
+    | '/'
+    | '/$externalId'
+    | '/about'
+    | '/demo'
+    | '/graph'
+    | '/search'
+    | '/authors/orcid/$orcid'
+    | '/institutions/ror/$ror'
+    | '/sources/issn/$issn'
+    | '/works/doi/$doi'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/about' | '/demo' | '/graph' | '/search'
-  id: '__root__' | '/' | '/about' | '/demo' | '/graph' | '/search'
+  to:
+    | '/'
+    | '/$externalId'
+    | '/about'
+    | '/demo'
+    | '/graph'
+    | '/search'
+    | '/authors/orcid/$orcid'
+    | '/institutions/ror/$ror'
+    | '/sources/issn/$issn'
+    | '/works/doi/$doi'
+  id:
+    | '__root__'
+    | '/'
+    | '/$externalId'
+    | '/about'
+    | '/demo'
+    | '/graph'
+    | '/search'
+    | '/authors/orcid/$orcid'
+    | '/institutions/ror/$ror'
+    | '/sources/issn/$issn'
+    | '/works/doi/$doi'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  ExternalIdRoute: typeof ExternalIdRoute
   AboutRoute: typeof AboutRoute
   DemoRoute: typeof DemoRoute
   GraphRoute: typeof GraphRoute
   SearchRoute: typeof SearchRoute
+  AuthorsOrcidOrcidRoute: typeof AuthorsOrcidOrcidRoute
+  InstitutionsRorRorRoute: typeof InstitutionsRorRorRoute
+  SourcesIssnIssnRoute: typeof SourcesIssnIssnRoute
+  WorksDoiDoiRoute: typeof WorksDoiDoiRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -109,6 +190,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AboutRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/$externalId': {
+      id: '/$externalId'
+      path: '/$externalId'
+      fullPath: '/$externalId'
+      preLoaderRoute: typeof ExternalIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -116,15 +204,48 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/works/doi/$doi': {
+      id: '/works/doi/$doi'
+      path: '/works/doi/$doi'
+      fullPath: '/works/doi/$doi'
+      preLoaderRoute: typeof WorksDoiDoiRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/sources/issn/$issn': {
+      id: '/sources/issn/$issn'
+      path: '/sources/issn/$issn'
+      fullPath: '/sources/issn/$issn'
+      preLoaderRoute: typeof SourcesIssnIssnRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/institutions/ror/$ror': {
+      id: '/institutions/ror/$ror'
+      path: '/institutions/ror/$ror'
+      fullPath: '/institutions/ror/$ror'
+      preLoaderRoute: typeof InstitutionsRorRorRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/authors/orcid/$orcid': {
+      id: '/authors/orcid/$orcid'
+      path: '/authors/orcid/$orcid'
+      fullPath: '/authors/orcid/$orcid'
+      preLoaderRoute: typeof AuthorsOrcidOrcidRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  ExternalIdRoute: ExternalIdRoute,
   AboutRoute: AboutRoute,
   DemoRoute: DemoRoute,
   GraphRoute: GraphRoute,
   SearchRoute: SearchRoute,
+  AuthorsOrcidOrcidRoute: AuthorsOrcidOrcidRoute,
+  InstitutionsRorRorRoute: InstitutionsRorRorRoute,
+  SourcesIssnIssnRoute: SourcesIssnIssnRoute,
+  WorksDoiDoiRoute: WorksDoiDoiRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
