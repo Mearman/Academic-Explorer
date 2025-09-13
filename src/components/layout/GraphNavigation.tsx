@@ -13,6 +13,7 @@ import {
   Controls,
   MiniMap,
   Background,
+  BackgroundVariant,
   Panel,
   type Node as XYNode,
   type Edge as XYEdge,
@@ -51,8 +52,8 @@ const GraphNavigationInner: React.FC<GraphNavigationProps> = ({ className }) => 
   const { graphProvider, setPreviewEntity } = useLayoutStore();
 
   // XYFlow state - synced with store
-  const [nodes, setNodes, onNodesChange] = useNodesState([]);
-  const [edges, setEdges, onEdgesChange] = useEdgesState([]);
+  const [nodes, setNodes, onNodesChange] = useNodesState<XYNode>([]);
+  const [edges, setEdges, onEdgesChange] = useEdgesState<XYEdge>([]);
 
   // Provider instance ref
   const providerRef = useRef<XYFlowProvider | null>(null);
@@ -196,7 +197,7 @@ const GraphNavigationInner: React.FC<GraphNavigationProps> = ({ className }) => 
           zoomable
           pannable
         />
-        <Background variant="dots" gap={12} size={1} />
+        <Background variant={BackgroundVariant.Dots} gap={12} size={1} />
 
         <Panel position="top-left">
           <div style={{
@@ -211,7 +212,7 @@ const GraphNavigationInner: React.FC<GraphNavigationProps> = ({ className }) => 
         </Panel>
 
         {nodes.length === 0 && (
-          <Panel position="center">
+          <Panel position="top-right">
             <div style={{
               background: 'rgba(255, 255, 255, 0.9)',
               padding: '20px',

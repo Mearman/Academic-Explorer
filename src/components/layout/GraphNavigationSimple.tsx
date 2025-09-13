@@ -12,6 +12,7 @@ import {
   Controls,
   MiniMap,
   Background,
+  BackgroundVariant,
   addEdge,
   type Node,
   type Edge,
@@ -102,7 +103,7 @@ const GraphNavigationInner: React.FC = () => {
           zoomable
           pannable
         />
-        <Background variant="dots" gap={12} size={1} />
+        <Background variant={BackgroundVariant.Dots} gap={12} size={1} />
       </ReactFlow>
     </div>
   );
