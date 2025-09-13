@@ -210,11 +210,27 @@ const EntityNode: React.FC<{ data: EntityNodeData; selected?: boolean }> = ({ da
     alignItems: 'center',
   };
 
+  // Generate accessible description
+  const getNodeDescription = (): string => {
+    let description = `${data.entityType} node: ${data.label}`;
+    if (data.entityType === 'work') {
+      if (data.publicationYear) description += `, published in ${data.publicationYear}`;
+      if (data.citationCount !== undefined) description += `, ${data.citationCount} citations`;
+      if (data.openAccessStatus) description += `, ${data.openAccessStatus} access`;
+    }
+    return description;
+  };
+
   return (
     <div
       style={nodeStyle}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
+      role="button"
+      tabIndex={selected ? 0 : -1}
+      aria-label={getNodeDescription()}
+      aria-selected={selected}
+      aria-describedby={`node-details-${data.originalVertex?.id || 'unknown'}`}
     >
       <Handle
         type="target"
@@ -277,6 +293,11 @@ const EntityNode: React.FC<{ data: EntityNodeData; selected?: boolean }> = ({ da
 const CompactEntityNode: React.FC<{ data: EntityNodeData; selected?: boolean }> = ({ data, selected }) => {
   const entityColor = getEntityColour(data.entityType);
 
+  // Generate accessible description for compact node
+  const getCompactNodeDescription = (): string => {
+    return `${data.entityType} node: ${data.label}`;
+  };
+
   return (
     <div
       style={{
@@ -293,6 +314,10 @@ const CompactEntityNode: React.FC<{ data: EntityNodeData; selected?: boolean }> 
         cursor: 'pointer',
         transition: 'all 0.15s ease',
       }}
+      role="button"
+      tabIndex={selected ? 0 : -1}
+      aria-label={getCompactNodeDescription()}
+      aria-selected={selected}
     >
       <Handle
         type="target"
@@ -712,6 +737,16 @@ import '@xyflow/react/dist/style.css';
         miniMap: {
           position: 'bottom-right',
           maskColor: 'rgba(255, 255, 255, 0.7)',
+          ariaLabel: 'Graph minimap for navigation overview',
+        },
+        nodes: {
+          focusable: true,
+          defaultSize: { width: 100, height: 60 },
+          selectionColor: '#3b82f6',
+        },
+        edges: {
+          focusable: true,
+          selectionColor: '#3b82f6',
         },
         interaction: {
           nodesDraggable: true,
@@ -962,16 +997,170 @@ import '@xyflow/react/dist/style.css';
         onReady?.(instance);
       }, [onReady]);
 
-      // Sync nodes and edges with engine
+      // Keyboard navigation handler
+      const handleKeyDown = useCallback((event: React.KeyboardEvent) => {
+        if (!rfInstance) return;
+
+        // Focus management and navigation
+        const selectedNodes = nodes.filter(node => node.selected);
+        const selectedNode = selectedNodes[0];
+
+        switch (event.key) {
+          case 'Escape':
+            // Clear selection
+            setNodes(nodes => nodes.map(node => ({ ...node, selected: false })));
+            setEdges(edges => edges.map(edge => ({ ...edge, selected: false })));
+            event.preventDefault();
+            break;
+
+          case 'Tab':
+            // Focus next/previous node
+            if (nodes.length > 0) {
+              event.preventDefault();
+              const currentIndex = selectedNode ? nodes.findIndex(n => n.id === selectedNode.id) : -1;
+              const nextIndex = event.shiftKey
+                ? (currentIndex - 1 + nodes.length) % nodes.length
+                : (currentIndex + 1) % nodes.length;
+
+              setNodes(nodes => nodes.map((node, index) => ({
+                ...node,
+                selected: index === nextIndex
+              })));
+            }
+            break;
+
+          case 'Enter':
+          case ' ':
+            // Activate/select focused node
+            if (selectedNode) {
+              event.preventDefault();
+              // Could trigger node details or other actions
+            }
+            break;
+
+          case 'ArrowUp':
+          case 'ArrowDown':
+          case 'ArrowLeft':
+          case 'ArrowRight':
+            // Pan the viewport or move selected node
+            if (selectedNode && !event.shiftKey) {
+              event.preventDefault();
+              const step = 20;
+              const deltaX = event.key === 'ArrowLeft' ? -step : event.key === 'ArrowRight' ? step : 0;
+              const deltaY = event.key === 'ArrowUp' ? -step : event.key === 'ArrowDown' ? step : 0;
+
+              setNodes(nodes => nodes.map(node =>
+                node.id === selectedNode.id
+                  ? { ...node, position: { x: node.position.x + deltaX, y: node.position.y + deltaY } }
+                  : node
+              ));
+            } else if (event.shiftKey) {
+              // Pan the viewport
+              event.preventDefault();
+              const panStep = 50;
+              const deltaX = event.key === 'ArrowLeft' ? panStep : event.key === 'ArrowRight' ? -panStep : 0;
+              const deltaY = event.key === 'ArrowUp' ? panStep : event.key === 'ArrowDown' ? -panStep : 0;
+
+              const viewport = rfInstance.getViewport();
+              rfInstance.setViewport({
+                x: viewport.x + deltaX,
+                y: viewport.y + deltaY,
+                zoom: viewport.zoom
+              });
+            }
+            break;
+
+          case '+':
+          case '=':
+            // Zoom in
+            event.preventDefault();
+            rfInstance.zoomIn();
+            break;
+
+          case '-':
+            // Zoom out
+            event.preventDefault();
+            rfInstance.zoomOut();
+            break;
+
+          case '0':
+            // Fit view
+            event.preventDefault();
+            rfInstance.fitView();
+            break;
+        }
+      }, [rfInstance, nodes, setNodes, setEdges]);
+
+      // Performance optimization - Level of Detail based on zoom
+      const [currentZoom, setCurrentZoom] = useState(1);
+      const shouldShowCompactNodes = currentZoom < 0.5 || nodes.length > 100;
+      const shouldShowEdgeLabels = currentZoom > 0.8 && nodes.length < 200;
+
+      // Viewport change handler for performance optimization
+      const onViewportChange = useCallback((viewport: { x: number; y: number; zoom: number }) => {
+        setCurrentZoom(viewport.zoom);
+      }, []);
+
+      // Sync nodes and edges with engine, applying performance optimizations
       useEffect(() => {
-        setNodes(engine.nodes);
-        setEdges(engine.edges);
-      }, [engine.nodes, engine.edges, setNodes, setEdges]);
+        let optimizedNodes = engine.nodes;
+        let optimizedEdges = engine.edges;
+
+        // Level of Detail: Switch to compact nodes for large graphs or low zoom
+        if (shouldShowCompactNodes && optimizedNodes.length > 0) {
+          optimizedNodes = optimizedNodes.map(node => ({
+            ...node,
+            type: 'compact'
+          }));
+        }
+
+        // Cull edges for very large graphs
+        if (optimizedEdges.length > 500) {
+          // Keep only the most important edges (those with higher weights or involving selected nodes)
+          const selectedNodeIds = new Set(optimizedNodes.filter(n => n.selected).map(n => n.id));
+          optimizedEdges = optimizedEdges
+            .filter(edge => {
+              // Keep edges connected to selected nodes
+              if (selectedNodeIds.has(edge.source) || selectedNodeIds.has(edge.target)) {
+                return true;
+              }
+              // Keep edges with high weight (assuming weight is in edge data)
+              const weight = edge.data?.weight || 0;
+              return typeof weight === 'number' && weight > 0.5;
+            })
+            .slice(0, 300); // Limit to 300 edges maximum
+        }
+
+        setNodes(optimizedNodes);
+        setEdges(optimizedEdges);
+      }, [engine.nodes, engine.edges, setNodes, setEdges, shouldShowCompactNodes]);
 
       const config = engine.config.xyflowOptions || {};
 
       return (
-        <div style={{ width, height }}>
+        <div
+          style={{ width, height }}
+          onKeyDown={handleKeyDown}
+          tabIndex={0}
+          role="application"
+          aria-label="Interactive graph visualization"
+          aria-describedby="graph-instructions"
+        >
+          {/* Screen reader instructions */}
+          <div
+            id="graph-instructions"
+            style={{
+              position: 'absolute',
+              left: '-10000px',
+              width: '1px',
+              height: '1px',
+              overflow: 'hidden'
+            }}
+          >
+            Use Tab to navigate between nodes, Arrow keys to move selected nodes or pan (with Shift),
+            + and - to zoom, 0 to fit view, Escape to clear selection, Enter or Space to activate nodes.
+          </div>
+
           <ReactFlow
             nodes={nodes}
             edges={edges}
@@ -979,6 +1168,7 @@ import '@xyflow/react/dist/style.css';
             onEdgesChange={onEdgesChange}
             onConnect={onConnect}
             onInit={onInit}
+            onViewportChange={onViewportChange}
             nodeTypes={config.nodeTypes || nodeTypes}
             edgeTypes={config.edgeTypes}
             fitView={config.fitView}
@@ -994,6 +1184,7 @@ import '@xyflow/react/dist/style.css';
             zoomOnPinch={config.interaction?.zoomOnPinch}
             zoomOnDoubleClick={config.interaction?.zoomOnDoubleClick}
             preventScrolling={config.interaction?.preventScrolling}
+            aria-label="Graph visualization"
           >
             {config.background && (
               <Background
@@ -1041,6 +1232,27 @@ import '@xyflow/react/dist/style.css';
                 xyflow (React Flow)
               </div>
             </Panel>
+
+            {/* Performance Status Panel */}
+            {(nodes.length > 50 || edges.length > 100) && (
+              <Panel position="top-right">
+                <div
+                  style={{
+                    background: shouldShowCompactNodes ? 'rgba(255, 165, 0, 0.9)' : 'rgba(34, 197, 94, 0.9)',
+                    color: 'white',
+                    padding: '6px 10px',
+                    borderRadius: '4px',
+                    fontSize: '11px',
+                    fontWeight: '600',
+                    boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)',
+                  }}
+                  title={`Performance mode: ${shouldShowCompactNodes ? 'Compact view for better performance' : 'Full detail view'}`}
+                >
+                  {shouldShowCompactNodes ? '⚡ Optimized' : '🔍 Detailed'}
+                  ({nodes.length}N, {edges.length}E)
+                </div>
+              </Panel>
+            )}
           </ReactFlow>
         </div>
       );
