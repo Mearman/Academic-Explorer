@@ -7,12 +7,25 @@ import React from 'react';
 import { Handle, Position } from '@xyflow/react';
 import type { EntityType, ExternalIdentifier } from '../../types';
 
+// Helper function for safe metadata access
+const renderMetadataValue = (value: unknown): React.ReactNode => {
+  if (typeof value === 'number' || typeof value === 'string') {
+    return value;
+  }
+  return null;
+};
+
 interface NodeData {
   label: string;
   entityId: string;
   entityType: EntityType;
   externalIds: ExternalIdentifier[];
-  metadata?: Record<string, unknown>;
+  metadata?: {
+    year?: number;
+    citationCount?: number;
+    openAccess?: boolean;
+    [key: string]: unknown;
+  };
 }
 
 interface CustomNodeProps {
@@ -158,10 +171,10 @@ export const CustomNode: React.FC<CustomNodeProps> = ({ data, selected }) => {
       {data.metadata && (
         <div style={{ fontSize: '8px', opacity: 0.6, marginTop: '2px' }}>
           {data.metadata.year && (
-            <span style={{ marginRight: '4px' }}>📅 {data.metadata.year as React.ReactNode}</span>
+            <span style={{ marginRight: '4px' }}>📅 {data.metadata.year}</span>
           )}
           {data.metadata.citationCount && (
-            <span style={{ marginRight: '4px' }}>📊 {data.metadata.citationCount as React.ReactNode}</span>
+            <span style={{ marginRight: '4px' }}>📊 {data.metadata.citationCount}</span>
           )}
           {data.metadata.openAccess && (
             <span>🔓</span>
@@ -190,13 +203,13 @@ export const WorkNode: React.FC<CustomNodeProps> = ({ data, selected }) => {
 
       {data.metadata?.year && (
         <div style={{ fontSize: '9px', opacity: 0.8 }}>
-          {data.metadata.year as React.ReactNode}
+          {data.metadata.year}
         </div>
       )}
 
       {data.metadata?.citationCount && (
         <div style={{ fontSize: '8px', opacity: 0.7 }}>
-          {data.metadata.citationCount as React.ReactNode} citations
+          {data.metadata.citationCount} citations
         </div>
       )}
     </div>
