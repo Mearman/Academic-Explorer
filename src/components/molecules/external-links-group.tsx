@@ -163,13 +163,14 @@ function renderHorizontalLayout(
 }
 
 export const ExternalLinksGroup = forwardRef<HTMLDivElement, ExternalLinksGroupProps>(
-  ({ 
+  ({
     externalIds,
+    entityType,
     layout = 'horizontal',
     showLabels = true,
     className,
     'data-testid': testId,
-    ...props 
+    ...props
   }, ref) => {
     const processedLinks = processExternalIds(externalIds);
 
