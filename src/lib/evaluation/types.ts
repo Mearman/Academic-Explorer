@@ -13,6 +13,8 @@ export interface WorkReference {
   openalexId?: string;
   publicationYear?: number;
   source: string;
+  citedByCount?: number;
+  abstract?: string;
 }
 
 /**

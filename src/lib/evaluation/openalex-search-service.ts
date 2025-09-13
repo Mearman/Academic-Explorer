@@ -52,7 +52,9 @@ export function convertWorkToReference(work: Work): WorkReference {
     doi: work.doi || work.ids?.doi,
     openalexId: work.id,
     publicationYear: work.publication_year,
-    source
+    source,
+    citedByCount: work.cited_by_count,
+    abstract: work.abstract_inverted_index ? 'Abstract available' : undefined
   };
 }
 
