@@ -3556,6 +3556,500 @@ const EnhancedMiniMap: React.FC<{
   );
 };
 
+// Layout Persistence Panel Component for saving, loading, and managing graph layouts
+const LayoutPersistencePanel: React.FC<{
+  LayoutPersistence: any;
+  savedLayouts: Record<string, any>;
+  layoutHistory: Array<any>;
+  autoSaveEnabled: boolean;
+  setAutoSaveEnabled: (enabled: boolean) => void;
+}> = ({
+  LayoutPersistence,
+  savedLayouts,
+  layoutHistory,
+  autoSaveEnabled,
+  setAutoSaveEnabled
+}) => {
+  const [isExpanded, setIsExpanded] = React.useState(false);
+  const [saveDialogOpen, setSaveDialogOpen] = React.useState(false);
+  const [newLayoutName, setNewLayoutName] = React.useState('');
+  const [newLayoutDescription, setNewLayoutDescription] = React.useState('');
+  const [isProcessing, setIsProcessing] = React.useState(false);
+  const fileInputRef = React.useRef<HTMLInputElement>(null);
+
+  const layoutStats = LayoutPersistence.getLayoutStats();
+  const sortedLayouts = Object.values(savedLayouts).sort((a, b) => b.timestamp - a.timestamp);
+
+  const handleSaveLayout = async () => {
+    if (!newLayoutName.trim()) return;
+
+    setIsProcessing(true);
+    try {
+      const layoutId = LayoutPersistence.saveLayout(newLayoutName.trim(), newLayoutDescription.trim());
+      if (layoutId) {
+        setNewLayoutName('');
+        setNewLayoutDescription('');
+        setSaveDialogOpen(false);
+      }
+    } catch (error) {
+      console.error('Failed to save layout:', error);
+      alert('Failed to save layout. Please try again.');
+    } finally {
+      setIsProcessing(false);
+    }
+  };
+
+  const handleLoadLayout = async (layoutId: string) => {
+    setIsProcessing(true);
+    try {
+      const success = await LayoutPersistence.loadLayout(layoutId);
+      if (!success) {
+        alert('Failed to load layout. Please try again.');
+      }
+    } catch (error) {
+      console.error('Failed to load layout:', error);
+      alert('Failed to load layout. Please try again.');
+    } finally {
+      setIsProcessing(false);
+    }
+  };
+
+  const handleDeleteLayout = (layoutId: string) => {
+    if (confirm('Are you sure you want to delete this layout?')) {
+      LayoutPersistence.deleteLayout(layoutId);
+    }
+  };
+
+  const handleImportLayout = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      setIsProcessing(true);
+      LayoutPersistence.importLayout(file).then((layoutId: string | null) => {
+        if (layoutId) {
+          alert('Layout imported successfully!');
+        } else {
+          alert('Failed to import layout. Please check the file format.');
+        }
+        setIsProcessing(false);
+      });
+    }
+    // Reset file input
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
+  };
+
+  const formatTimestamp = (timestamp: number) => {
+    return new Date(timestamp).toLocaleString();
+  };
+
+  const formatTimeAgo = (timestamp: number) => {
+    const diff = Date.now() - timestamp;
+    const minutes = Math.floor(diff / 60000);
+    const hours = Math.floor(diff / 3600000);
+    const days = Math.floor(diff / 86400000);
+
+    if (minutes < 1) return 'Just now';
+    if (minutes < 60) return `${minutes}m ago`;
+    if (hours < 24) return `${hours}h ago`;
+    return `${days}d ago`;
+  };
+
+  return (
+    <Panel position="top-right">
+      <div style={{
+        background: 'rgba(255, 255, 255, 0.95)',
+        padding: '12px',
+        borderRadius: '8px',
+        fontSize: '12px',
+        minWidth: isExpanded ? '320px' : '140px',
+        maxHeight: isExpanded ? '500px' : 'auto',
+        boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)',
+        transition: 'all 0.3s ease',
+        overflow: isExpanded ? 'auto' : 'hidden',
+      }}>
+        <div
+          style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            cursor: 'pointer',
+            fontWeight: '600',
+            color: '#374151',
+            marginBottom: isExpanded ? '12px' : '0'
+          }}
+          onClick={() => setIsExpanded(!isExpanded)}
+        >
+          <span>💾 Layouts ({layoutStats.totalLayouts})</span>
+          <span style={{ fontSize: '10px' }}>
+            {isExpanded ? '▼' : '▲'}
+          </span>
+        </div>
+
+        {isExpanded && (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+            {/* Quick Actions */}
+            <div>
+              <div style={{ fontWeight: '600', marginBottom: '6px', color: '#1f2937' }}>
+                Quick Actions
+              </div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                <div style={{ display: 'flex', gap: '4px' }}>
+                  <button
+                    onClick={() => setSaveDialogOpen(true)}
+                    disabled={isProcessing}
+                    style={{
+                      padding: '6px 12px',
+                      border: '1px solid #059669',
+                      background: '#059669',
+                      color: 'white',
+                      borderRadius: '4px',
+                      fontSize: '10px',
+                      cursor: isProcessing ? 'not-allowed' : 'pointer',
+                      fontWeight: '500',
+                      flex: 1
+                    }}
+                  >
+                    💾 Save Layout
+                  </button>
+                  {layoutHistory.length > 0 && (
+                    <button
+                      onClick={() => LayoutPersistence.undo()}
+                      disabled={isProcessing}
+                      style={{
+                        padding: '6px 8px',
+                        border: '1px solid #6b7280',
+                        background: '#f3f4f6',
+                        borderRadius: '4px',
+                        fontSize: '10px',
+                        cursor: isProcessing ? 'not-allowed' : 'pointer'
+                      }}
+                    >
+                      ↶ Undo
+                    </button>
+                  )}
+                </div>
+
+                <div style={{ display: 'flex', gap: '4px' }}>
+                  <button
+                    onClick={() => fileInputRef.current?.click()}
+                    disabled={isProcessing}
+                    style={{
+                      padding: '4px 8px',
+                      border: '1px solid #e5e7eb',
+                      background: 'white',
+                      borderRadius: '4px',
+                      fontSize: '10px',
+                      cursor: isProcessing ? 'not-allowed' : 'pointer',
+                      flex: 1
+                    }}
+                  >
+                    📁 Import
+                  </button>
+                  <button
+                    onClick={() => LayoutPersistence.exportLayout()}
+                    disabled={isProcessing}
+                    style={{
+                      padding: '4px 8px',
+                      border: '1px solid #e5e7eb',
+                      background: 'white',
+                      borderRadius: '4px',
+                      fontSize: '10px',
+                      cursor: isProcessing ? 'not-allowed' : 'pointer',
+                      flex: 1
+                    }}
+                  >
+                    📤 Export
+                  </button>
+                  <button
+                    onClick={() => LayoutPersistence.restoreAutoSave()}
+                    disabled={isProcessing}
+                    style={{
+                      padding: '4px 8px',
+                      border: '1px solid #e5e7eb',
+                      background: 'white',
+                      borderRadius: '4px',
+                      fontSize: '10px',
+                      cursor: isProcessing ? 'not-allowed' : 'pointer',
+                      flex: 1
+                    }}
+                  >
+                    🔄 Restore
+                  </button>
+                </div>
+
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept=".json"
+                  onChange={handleImportLayout}
+                  style={{ display: 'none' }}
+                />
+              </div>
+            </div>
+
+            {/* Auto-save Toggle */}
+            <div>
+              <div style={{ fontWeight: '600', marginBottom: '6px', color: '#1f2937' }}>
+                Settings
+              </div>
+              <label style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '6px',
+                fontSize: '10px',
+                cursor: 'pointer'
+              }}>
+                <input
+                  type="checkbox"
+                  checked={autoSaveEnabled}
+                  onChange={(e) => setAutoSaveEnabled(e.target.checked)}
+                  style={{ width: '12px', height: '12px' }}
+                />
+                <span>Auto-save every 30s</span>
+              </label>
+            </div>
+
+            {/* Saved Layouts */}
+            <div>
+              <div style={{ fontWeight: '600', marginBottom: '6px', color: '#1f2937' }}>
+                Saved Layouts
+              </div>
+              <div style={{
+                maxHeight: '200px',
+                overflow: 'auto',
+                border: '1px solid #e5e7eb',
+                borderRadius: '4px',
+                padding: '4px'
+              }}>
+                {sortedLayouts.length === 0 ? (
+                  <div style={{
+                    padding: '12px',
+                    textAlign: 'center',
+                    color: '#9ca3af',
+                    fontSize: '10px'
+                  }}>
+                    No saved layouts yet
+                  </div>
+                ) : (
+                  sortedLayouts.map((layout) => (
+                    <div
+                      key={layout.id}
+                      style={{
+                        padding: '6px',
+                        border: '1px solid #f3f4f6',
+                        borderRadius: '3px',
+                        marginBottom: '4px',
+                        background: 'white'
+                      }}
+                    >
+                      <div style={{
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        alignItems: 'center',
+                        marginBottom: '4px'
+                      }}>
+                        <div style={{
+                          fontWeight: '600',
+                          fontSize: '10px',
+                          color: '#1f2937',
+                          flex: 1,
+                          overflow: 'hidden',
+                          textOverflow: 'ellipsis',
+                          whiteSpace: 'nowrap'
+                        }}>
+                          {layout.name}
+                        </div>
+                        <div style={{ display: 'flex', gap: '2px' }}>
+                          <button
+                            onClick={() => handleLoadLayout(layout.id)}
+                            disabled={isProcessing}
+                            style={{
+                              padding: '2px 4px',
+                              border: '1px solid #3b82f6',
+                              background: '#3b82f6',
+                              color: 'white',
+                              borderRadius: '2px',
+                              fontSize: '8px',
+                              cursor: isProcessing ? 'not-allowed' : 'pointer'
+                            }}
+                          >
+                            Load
+                          </button>
+                          <button
+                            onClick={() => LayoutPersistence.exportLayout(layout.id)}
+                            disabled={isProcessing}
+                            style={{
+                              padding: '2px 4px',
+                              border: '1px solid #6b7280',
+                              background: '#f3f4f6',
+                              borderRadius: '2px',
+                              fontSize: '8px',
+                              cursor: isProcessing ? 'not-allowed' : 'pointer'
+                            }}
+                          >
+                            📤
+                          </button>
+                          <button
+                            onClick={() => handleDeleteLayout(layout.id)}
+                            disabled={isProcessing}
+                            style={{
+                              padding: '2px 4px',
+                              border: '1px solid #dc2626',
+                              background: '#dc2626',
+                              color: 'white',
+                              borderRadius: '2px',
+                              fontSize: '8px',
+                              cursor: isProcessing ? 'not-allowed' : 'pointer'
+                            }}
+                          >
+                            ✕
+                          </button>
+                        </div>
+                      </div>
+
+                      <div style={{ fontSize: '8px', color: '#6b7280' }}>
+                        <div>
+                          {layout.metadata.nodeCount} nodes, {layout.metadata.edgeCount} edges
+                        </div>
+                        <div>
+                          {layout.metadata.algorithm} • {formatTimeAgo(layout.timestamp)}
+                        </div>
+                        {layout.metadata.description && (
+                          <div style={{ fontStyle: 'italic', marginTop: '2px' }}>
+                            {layout.metadata.description}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  ))
+                )}
+              </div>
+            </div>
+
+            {/* Layout Statistics */}
+            <div style={{
+              paddingTop: '8px',
+              borderTop: '1px solid #e5e7eb',
+              fontSize: '9px',
+              color: '#9ca3af'
+            }}>
+              <div>History: {layoutHistory.length}/10 entries</div>
+              <div>Auto-save: {autoSaveEnabled ? 'Enabled' : 'Disabled'}</div>
+              {layoutStats.totalLayouts > 0 && (
+                <div>
+                  Algorithms: {layoutStats.algorithms.join(', ')}
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* Save Layout Dialog */}
+      {saveDialogOpen && (
+        <div style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          background: 'rgba(0, 0, 0, 0.5)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          zIndex: 1000
+        }}>
+          <div style={{
+            background: 'white',
+            padding: '20px',
+            borderRadius: '8px',
+            boxShadow: '0 4px 16px rgba(0, 0, 0, 0.2)',
+            width: '300px'
+          }}>
+            <h3 style={{ margin: '0 0 16px 0', fontSize: '16px', fontWeight: '600' }}>
+              Save Layout
+            </h3>
+
+            <div style={{ marginBottom: '12px' }}>
+              <label style={{ display: 'block', marginBottom: '4px', fontSize: '12px', fontWeight: '500' }}>
+                Layout Name *
+              </label>
+              <input
+                type="text"
+                value={newLayoutName}
+                onChange={(e) => setNewLayoutName(e.target.value)}
+                placeholder="Enter layout name..."
+                style={{
+                  width: '100%',
+                  padding: '6px',
+                  border: '1px solid #d1d5db',
+                  borderRadius: '4px',
+                  fontSize: '12px'
+                }}
+                autoFocus
+              />
+            </div>
+
+            <div style={{ marginBottom: '16px' }}>
+              <label style={{ display: 'block', marginBottom: '4px', fontSize: '12px', fontWeight: '500' }}>
+                Description (Optional)
+              </label>
+              <textarea
+                value={newLayoutDescription}
+                onChange={(e) => setNewLayoutDescription(e.target.value)}
+                placeholder="Describe this layout..."
+                rows={3}
+                style={{
+                  width: '100%',
+                  padding: '6px',
+                  border: '1px solid #d1d5db',
+                  borderRadius: '4px',
+                  fontSize: '12px',
+                  resize: 'vertical'
+                }}
+              />
+            </div>
+
+            <div style={{ display: 'flex', gap: '8px', justifyContent: 'flex-end' }}>
+              <button
+                onClick={() => setSaveDialogOpen(false)}
+                disabled={isProcessing}
+                style={{
+                  padding: '6px 12px',
+                  border: '1px solid #e5e7eb',
+                  background: 'white',
+                  borderRadius: '4px',
+                  fontSize: '12px',
+                  cursor: isProcessing ? 'not-allowed' : 'pointer'
+                }}
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleSaveLayout}
+                disabled={isProcessing || !newLayoutName.trim()}
+                style={{
+                  padding: '6px 12px',
+                  border: '1px solid #059669',
+                  background: isProcessing || !newLayoutName.trim() ? '#9ca3af' : '#059669',
+                  color: 'white',
+                  borderRadius: '4px',
+                  fontSize: '12px',
+                  cursor: isProcessing || !newLayoutName.trim() ? 'not-allowed' : 'pointer',
+                  fontWeight: '500'
+                }}
+              >
+                {isProcessing ? 'Saving...' : 'Save Layout'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </Panel>
+  );
+};
+
 // Selection Panel Component for enhanced node selection and bulk operations
 const SelectionPanel: React.FC<{
   selectedNodes: Set<string>;
@@ -5119,6 +5613,348 @@ import '@xyflow/react/dist/style.css';
         }));
       }, [nodes, selectedNodes]);
 
+      // Graph Layout Persistence and State Management System
+      const [savedLayouts, setSavedLayouts] = useState<Record<string, {
+        id: string;
+        name: string;
+        timestamp: number;
+        layout: {
+          nodes: Node[];
+          edges: Edge[];
+          viewport: { x: number; y: number; zoom: number };
+        };
+        metadata: {
+          nodeCount: number;
+          edgeCount: number;
+          algorithm: string;
+          description?: string;
+        };
+      }>>({});
+
+      const [autoSaveEnabled, setAutoSaveEnabled] = useState(true);
+      const [layoutHistory, setLayoutHistory] = useState<Array<{
+        id: string;
+        timestamp: number;
+        action: string;
+        snapshot: { nodes: Node[]; edges: Edge[]; viewport: any };
+      }>>([]);
+
+      // Layout persistence utilities
+      const LayoutPersistence = React.useMemo(() => ({
+        // Save current layout
+        saveLayout: (name: string, description?: string) => {
+          if (!rfInstance) return null;
+
+          const layoutId = `layout_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+          const viewport = rfInstance.getViewport();
+
+          const layoutData = {
+            id: layoutId,
+            name,
+            timestamp: Date.now(),
+            layout: {
+              nodes: [...nodesWithSelection],
+              edges: [...edges],
+              viewport
+            },
+            metadata: {
+              nodeCount: nodesWithSelection.length,
+              edgeCount: edges.length,
+              algorithm: engine.config.layout?.algorithm || 'unknown',
+              description
+            }
+          };
+
+          setSavedLayouts(prev => ({
+            ...prev,
+            [layoutId]: layoutData
+          }));
+
+          // Save to localStorage for persistence across sessions
+          try {
+            const allLayouts = JSON.parse(localStorage.getItem('xyflow_saved_layouts') || '{}');
+            allLayouts[layoutId] = layoutData;
+            localStorage.setItem('xyflow_saved_layouts', JSON.stringify(allLayouts));
+          } catch (error) {
+            console.warn('Failed to save layout to localStorage:', error);
+          }
+
+          return layoutId;
+        },
+
+        // Load a saved layout
+        loadLayout: async (layoutId: string) => {
+          let layoutData = savedLayouts[layoutId];
+
+          // Try loading from localStorage if not in memory
+          if (!layoutData) {
+            try {
+              const allLayouts = JSON.parse(localStorage.getItem('xyflow_saved_layouts') || '{}');
+              layoutData = allLayouts[layoutId];
+            } catch (error) {
+              console.warn('Failed to load layout from localStorage:', error);
+              return false;
+            }
+          }
+
+          if (!layoutData || !rfInstance) return false;
+
+          try {
+            // Create history entry before applying layout
+            const currentSnapshot = {
+              nodes: [...nodesWithSelection],
+              edges: [...edges],
+              viewport: rfInstance.getViewport()
+            };
+
+            setLayoutHistory(prev => [
+              ...prev.slice(-9), // Keep last 10 entries
+              {
+                id: `history_${Date.now()}`,
+                timestamp: Date.now(),
+                action: `Applied layout: ${layoutData.name}`,
+                snapshot: currentSnapshot
+              }
+            ]);
+
+            // Apply the layout with smooth transitions
+            setNodes(layoutData.layout.nodes);
+            setEdges(layoutData.layout.edges);
+
+            // Animate viewport change
+            await new Promise(resolve => setTimeout(resolve, 100));
+            rfInstance.setViewport(layoutData.layout.viewport, { duration: 800 });
+
+            return true;
+          } catch (error) {
+            console.error('Failed to apply layout:', error);
+            return false;
+          }
+        },
+
+        // Delete a saved layout
+        deleteLayout: (layoutId: string) => {
+          setSavedLayouts(prev => {
+            const updated = { ...prev };
+            delete updated[layoutId];
+            return updated;
+          });
+
+          // Remove from localStorage
+          try {
+            const allLayouts = JSON.parse(localStorage.getItem('xyflow_saved_layouts') || '{}');
+            delete allLayouts[layoutId];
+            localStorage.setItem('xyflow_saved_layouts', JSON.stringify(allLayouts));
+          } catch (error) {
+            console.warn('Failed to remove layout from localStorage:', error);
+          }
+        },
+
+        // Auto-save current layout
+        autoSave: () => {
+          if (!autoSaveEnabled || !rfInstance) return;
+
+          const autoSaveId = 'autosave_current';
+          const viewport = rfInstance.getViewport();
+
+          const autoSaveData = {
+            id: autoSaveId,
+            name: 'Auto-saved',
+            timestamp: Date.now(),
+            layout: {
+              nodes: [...nodesWithSelection],
+              edges: [...edges],
+              viewport
+            },
+            metadata: {
+              nodeCount: nodesWithSelection.length,
+              edgeCount: edges.length,
+              algorithm: engine.config.layout?.algorithm || 'auto',
+              description: 'Automatically saved layout'
+            }
+          };
+
+          try {
+            localStorage.setItem('xyflow_autosave', JSON.stringify(autoSaveData));
+          } catch (error) {
+            console.warn('Auto-save failed:', error);
+          }
+        },
+
+        // Restore auto-saved layout
+        restoreAutoSave: async () => {
+          try {
+            const autoSaveData = JSON.parse(localStorage.getItem('xyflow_autosave') || 'null');
+            if (autoSaveData && rfInstance) {
+              setNodes(autoSaveData.layout.nodes);
+              setEdges(autoSaveData.layout.edges);
+              await new Promise(resolve => setTimeout(resolve, 100));
+              rfInstance.setViewport(autoSaveData.layout.viewport, { duration: 600 });
+              return true;
+            }
+          } catch (error) {
+            console.warn('Failed to restore auto-save:', error);
+          }
+          return false;
+        },
+
+        // Create layout snapshot for history
+        createSnapshot: (action: string) => {
+          if (!rfInstance) return;
+
+          const snapshot = {
+            id: `snapshot_${Date.now()}`,
+            timestamp: Date.now(),
+            action,
+            snapshot: {
+              nodes: [...nodesWithSelection],
+              edges: [...edges],
+              viewport: rfInstance.getViewport()
+            }
+          };
+
+          setLayoutHistory(prev => [
+            ...prev.slice(-9), // Keep last 10 entries
+            snapshot
+          ]);
+        },
+
+        // Undo to previous layout state
+        undo: async () => {
+          if (layoutHistory.length === 0 || !rfInstance) return false;
+
+          const previousState = layoutHistory[layoutHistory.length - 1];
+          setLayoutHistory(prev => prev.slice(0, -1));
+
+          try {
+            setNodes(previousState.snapshot.nodes);
+            setEdges(previousState.snapshot.edges);
+            await new Promise(resolve => setTimeout(resolve, 100));
+            rfInstance.setViewport(previousState.snapshot.viewport, { duration: 500 });
+            return true;
+          } catch (error) {
+            console.error('Undo failed:', error);
+            return false;
+          }
+        },
+
+        // Export layout as JSON
+        exportLayout: (layoutId?: string) => {
+          const layoutData = layoutId ? savedLayouts[layoutId] : {
+            id: `export_${Date.now()}`,
+            name: 'Current Layout',
+            timestamp: Date.now(),
+            layout: {
+              nodes: [...nodesWithSelection],
+              edges: [...edges],
+              viewport: rfInstance?.getViewport() || { x: 0, y: 0, zoom: 1 }
+            },
+            metadata: {
+              nodeCount: nodesWithSelection.length,
+              edgeCount: edges.length,
+              algorithm: engine.config.layout?.algorithm || 'current'
+            }
+          };
+
+          if (!layoutData) return null;
+
+          const exportData = {
+            version: '1.0',
+            exported: new Date().toISOString(),
+            layout: layoutData
+          };
+
+          const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' });
+          const url = URL.createObjectURL(blob);
+          const link = document.createElement('a');
+          link.href = url;
+          link.download = `${layoutData.name.replace(/[^a-z0-9]/gi, '_').toLowerCase()}_layout.json`;
+          link.click();
+          URL.revokeObjectURL(url);
+
+          return exportData;
+        },
+
+        // Import layout from JSON
+        importLayout: async (file: File) => {
+          try {
+            const text = await file.text();
+            const importData = JSON.parse(text);
+
+            if (importData.version && importData.layout) {
+              const layoutData = importData.layout;
+              const importId = `import_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+
+              const finalLayoutData = {
+                ...layoutData,
+                id: importId,
+                name: `${layoutData.name} (Imported)`,
+                timestamp: Date.now()
+              };
+
+              setSavedLayouts(prev => ({
+                ...prev,
+                [importId]: finalLayoutData
+              }));
+
+              return importId;
+            }
+          } catch (error) {
+            console.error('Import failed:', error);
+          }
+          return null;
+        },
+
+        // Get layout statistics
+        getLayoutStats: () => {
+          const layouts = Object.values(savedLayouts);
+          return {
+            totalLayouts: layouts.length,
+            totalNodes: layouts.reduce((sum, layout) => sum + layout.metadata.nodeCount, 0),
+            totalEdges: layouts.reduce((sum, layout) => sum + layout.metadata.edgeCount, 0),
+            algorithms: [...new Set(layouts.map(layout => layout.metadata.algorithm))],
+            oldestLayout: layouts.length > 0 ? Math.min(...layouts.map(layout => layout.timestamp)) : null,
+            newestLayout: layouts.length > 0 ? Math.max(...layouts.map(layout => layout.timestamp)) : null,
+            historyEntries: layoutHistory.length
+          };
+        }
+      }), [nodesWithSelection, edges, rfInstance, savedLayouts, autoSaveEnabled, layoutHistory, engine.config.layout?.algorithm, setNodes, setEdges]);
+
+      // Load saved layouts from localStorage on mount
+      React.useEffect(() => {
+        try {
+          const stored = localStorage.getItem('xyflow_saved_layouts');
+          if (stored) {
+            const layouts = JSON.parse(stored);
+            setSavedLayouts(layouts);
+          }
+        } catch (error) {
+          console.warn('Failed to load saved layouts:', error);
+        }
+      }, []);
+
+      // Auto-save periodically when enabled
+      React.useEffect(() => {
+        if (!autoSaveEnabled) return;
+
+        const autoSaveInterval = setInterval(() => {
+          LayoutPersistence.autoSave();
+        }, 30000); // Auto-save every 30 seconds
+
+        return () => clearInterval(autoSaveInterval);
+      }, [autoSaveEnabled, LayoutPersistence]);
+
+      // Create snapshot on significant changes
+      React.useEffect(() => {
+        const debounceTimer = setTimeout(() => {
+          if (nodesWithSelection.length > 0) {
+            LayoutPersistence.createSnapshot('Layout changed');
+          }
+        }, 2000);
+
+        return () => clearTimeout(debounceTimer);
+      }, [nodesWithSelection, edges, LayoutPersistence]);
+
       // Advanced clustering system with multiple algorithms
       const [activeClusterType, setActiveClusterType] = useState<ClusterType>('entity');
       const [selectedCluster, setSelectedCluster] = useState<string | null>(null);
@@ -5362,6 +6198,15 @@ import '@xyflow/react/dist/style.css';
               BulkOperations={BulkOperations}
               nodes={filteredNodes}
               availableEntityTypes={availableEntityTypes}
+            />
+
+            {/* Layout Persistence Panel */}
+            <LayoutPersistencePanel
+              LayoutPersistence={LayoutPersistence}
+              savedLayouts={savedLayouts}
+              layoutHistory={layoutHistory}
+              autoSaveEnabled={autoSaveEnabled}
+              setAutoSaveEnabled={setAutoSaveEnabled}
             />
 
             {/* Advanced Clustering Visualization */}
