@@ -305,19 +305,22 @@ function useLoadingPhases(isLoading: boolean, loadingPhases?: LoadingPhase[]) {
       let _accumulatedTime = 0;
 
       const progressPhase = (): NodeJS.Timeout | null => {
-        if (loadingPhases && phaseIndex < loadingPhases.length) {
+        if (loadingPhases && phaseIndex < loadingPhases.length && loadingPhases[phaseIndex]) {
           setCurrentPhase(phaseIndex);
-          _accumulatedTime += loadingPhases[phaseIndex].duration;
-          const phaseDuration = loadingPhases[phaseIndex].duration;
+          const currentPhaseData = loadingPhases[phaseIndex];
+          if (currentPhaseData) {
+            _accumulatedTime += currentPhaseData.duration;
+            const phaseDuration = currentPhaseData.duration;
 
-          const timer = setTimeout(() => {
-            phaseIndex++;
-            if (loadingPhases && phaseIndex < loadingPhases.length) {
-              progressPhase();
-            }
-          }, phaseDuration);
+            const timer = setTimeout(() => {
+              phaseIndex++;
+              if (loadingPhases && phaseIndex < loadingPhases.length) {
+                progressPhase();
+              }
+            }, phaseDuration);
 
-          return timer;
+            return timer;
+          }
         }
         return null;
       };
@@ -327,6 +330,7 @@ function useLoadingPhases(isLoading: boolean, loadingPhases?: LoadingPhase[]) {
         if (timer) clearTimeout(timer);
       };
     }
+    return undefined;
   }, [isLoading, loadingPhases]);
 
   return currentPhase;
@@ -404,7 +408,7 @@ export const AccessibleLoadingState = ({
       info += `, approximately ${remaining} seconds remaining`;
     }
     
-    if (loadingPhases && currentPhase < loadingPhases.length) {
+    if (loadingPhases && currentPhase < loadingPhases.length && loadingPhases[currentPhase]) {
       info += `. Currently: ${loadingPhases[currentPhase].label}`;
     }
     

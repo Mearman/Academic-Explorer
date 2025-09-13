@@ -208,7 +208,7 @@ const ProgressIndicator = ({
   }, [value, estimatedDuration]);
 
   return (
-    <Box className={className}>
+    <Box {...(className && { className })}>
       <Progress
         value={value ?? 0}
         aria-label={label || 'Loading progress'}
@@ -288,6 +288,7 @@ export const EnhancedLoadingSkeleton = forwardRef<HTMLDivElement, EnhancedLoadin
 
         return () => clearInterval(interval);
       }
+      return undefined;
     }, [withProgress, progressValue, onProgressChange, onAnimationComplete]);
 
     // Determine ARIA attributes based on semantic role
@@ -338,8 +339,8 @@ export const EnhancedLoadingSkeleton = forwardRef<HTMLDivElement, EnhancedLoadin
         {withProgress && (
           <ProgressIndicator
             value={internalProgress}
-            label={progressLabel}
-            estimatedDuration={estimatedDuration}
+            {...(progressLabel && { label: progressLabel })}
+            {...(estimatedDuration !== undefined && { estimatedDuration })}
             className={styles.progressContainer}
           />
         )}
@@ -391,16 +392,20 @@ export const EnhancedSkeletonGroup = forwardRef<HTMLDivElement, EnhancedSkeleton
       if (loadingPhases && loadingPhases.length > 0) {
         let phaseIndex = 0;
         const cyclePhases = () => {
-          if (phaseIndex < loadingPhases.length) {
-            setAnnounceText(loadingPhases[phaseIndex].label);
-            setCurrentPhase(phaseIndex);
-            
-            setTimeout(() => {
-              phaseIndex++;
-              if (phaseIndex < loadingPhases.length) {
-                cyclePhases();
-              }
-            }, loadingPhases[phaseIndex].duration);
+          if (loadingPhases && phaseIndex < loadingPhases.length && loadingPhases[phaseIndex]) {
+            const currentPhaseData = loadingPhases[phaseIndex];
+            if (currentPhaseData) {
+              setAnnounceText(currentPhaseData.label);
+              setCurrentPhase(phaseIndex);
+              const phaseDuration = currentPhaseData.duration;
+
+              setTimeout(() => {
+                phaseIndex++;
+                if (loadingPhases && phaseIndex < loadingPhases.length) {
+                  cyclePhases();
+                }
+              }, phaseDuration);
+            }
           }
         };
         
@@ -432,8 +437,8 @@ export const EnhancedSkeletonGroup = forwardRef<HTMLDivElement, EnhancedSkeleton
               preset="text"
               width={index === lines - 1 ? '75%' : 'full'}
               withProgress={withProgress && index === 0}
-              progressValue={progressValue}
-              data-stagger-delay={staggerAnimation ? index * animationDelay : undefined}
+              {...(progressValue !== undefined && { progressValue })}
+              {...(staggerAnimation && { 'data-stagger-delay': index * animationDelay })}
               respectMotionPreference
             />
           ))}
@@ -483,7 +488,7 @@ export const ProgressAwareSkeleton = ({
   const [progress, setProgress] = useState(0);
 
   useEffect(() => {
-    if (phases.length === 0) return;
+    if (!phases || phases.length === 0) return;
 
     let totalDuration = 0;
     const _currentDuration = 0;
@@ -499,10 +504,13 @@ export const ProgressAwareSkeleton = ({
         // Update current phase
         let accumulatedDuration = 0;
         for (let i = 0; i < phases.length; i++) {
-          accumulatedDuration += phases[i].duration;
-          if ((newProgress / 100) * totalDuration <= accumulatedDuration) {
-            setCurrentPhase(i);
-            break;
+          const phase = phases[i];
+          if (phase) {
+            accumulatedDuration += phase.duration;
+            if ((newProgress / 100) * totalDuration <= accumulatedDuration) {
+              setCurrentPhase(i);
+              break;
+            }
           }
         }
 
