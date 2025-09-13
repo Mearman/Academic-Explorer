@@ -152,8 +152,8 @@ interface GetAriaLabelParams {
   difference: number;
   type: ComparisonDiffIndicatorProps['type'];
   direction: ComparisonDiffIndicatorProps['direction'];
-  contextLabel?: string;
-  comparedTo?: string;
+  contextLabel?: string | undefined;
+  comparedTo?: string | undefined;
 }
 
 function getAriaLabel(params: GetAriaLabelParams): string {
@@ -215,8 +215,8 @@ export const ComparisonDiffIndicator = forwardRef<
         color={color}
         variant={variant}
         size={size}
-        className={className}
-        data-testid={testId}
+        {...(className !== undefined && { className })}
+        {...(testId !== undefined && { 'data-testid': testId })}
         data-direction={direction}
         aria-label={ariaLabel}
         leftSection={<Icon name={iconName} size="xs" />}

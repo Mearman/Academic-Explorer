@@ -115,8 +115,8 @@ export const ComparisonRankIndicator = forwardRef<
       color={color}
       variant={variant}
       size={size}
-      className={className}
-      data-testid={testId}
+      {...(className !== undefined && { className })}
+      {...(testId !== undefined && { 'data-testid': testId })}
       data-rank={rank}
       aria-label={ariaLabel}
       {...props}

@@ -123,11 +123,11 @@ function getValueTextSize(size: SizeVariant): string {
  */
 interface GetAriaLabelParams {
   metric: MetricComparison;
-  label?: string;
+  label?: string | undefined;
   showRank?: boolean;
-  totalEntities?: number;
+  totalEntities?: number | undefined;
   showDifference?: boolean;
-  comparisonValue?: number;
+  comparisonValue?: number | undefined;
   differenceType?: ComparisonMetricValueProps['differenceType'];
 }
 
@@ -185,7 +185,7 @@ interface RenderValueElementParams {
   metric: MetricComparison;
   shouldEmphasize: boolean;
   valueTextSize: string;
-  testId?: string;
+  testId?: string | undefined;
 }
 
 function renderValueElement({
@@ -198,7 +198,7 @@ function renderValueElement({
     <Text
       size={valueTextSize}
       fw={shouldEmphasize ? 'bold' : 'normal'}
-      c={shouldEmphasize ? (metric.isHighest ? 'green' : 'orange') : undefined}
+      {...(shouldEmphasize && { c: metric.isHighest ? 'green' : 'orange' })}
       data-testid={`${testId || 'metric'}-value`}
     >
       {metric.formatted}
@@ -253,7 +253,7 @@ function renderRankElement({
     <ComparisonRankIndicator
       rank={metric.rank}
       totalEntities={totalEntities}
-      percentile={showPercentile ? metric.percentile : undefined}
+      {...(showPercentile && metric.percentile !== undefined && { percentile: metric.percentile })}
       size={size}
     />
   );
@@ -397,14 +397,14 @@ export const ComparisonMetricValue = forwardRef<
       <UnstyledButton
         ref={ref as React.Ref<HTMLButtonElement>}
         onClick={onClick}
-        className={className}
+        {...(className !== undefined && { className })}
         aria-label={`Click to view details for ${ariaLabel}`}
-        style={{ 
+        style={{
           borderRadius: 'var(--mantine-radius-sm)',
           padding: 'var(--mantine-spacing-xs)',
           width: '100%'
         }}
-        data-testid={testId}
+        {...(testId !== undefined && { 'data-testid': testId })}
         {...props}
       >
         {content}
@@ -415,9 +415,9 @@ export const ComparisonMetricValue = forwardRef<
   return (
     <Box
       ref={ref as React.Ref<HTMLDivElement>}
-      className={className}
+      {...(className !== undefined && { className })}
       aria-label={ariaLabel}
-      data-testid={testId}
+      {...(testId !== undefined && { 'data-testid': testId })}
       {...props}
     >
       {content}
