@@ -331,6 +331,35 @@ export interface ICanvasConfig extends IEngineConfig {
   };
 }
 
+/**
+ * xyflow (React Flow) specific configuration options.
+ */
+export interface IXyflowConfig extends IEngineConfig {
+  readonly xyflowOptions?: {
+    readonly fitView?: boolean;
+    readonly nodesDraggable?: boolean;
+    readonly nodesConnectable?: boolean;
+    readonly elementsSelectable?: boolean;
+    readonly showBackground?: boolean;
+    readonly showControls?: boolean;
+    readonly showMiniMap?: boolean;
+    readonly backgroundVariant?: 'lines' | 'dots' | 'cross';
+    readonly minZoom?: number;
+    readonly maxZoom?: number;
+    readonly defaultViewport?: {
+      readonly x: number;
+      readonly y: number;
+      readonly zoom: number;
+    };
+  };
+  readonly layout?: {
+    readonly algorithm?: 'dagre' | 'force' | 'hierarchical' | 'manual';
+    readonly direction?: 'TB' | 'BT' | 'LR' | 'RL';
+    readonly nodeSpacing?: [number, number];
+    readonly rankSpacing?: number;
+  };
+}
+
 // ============================================================================
 // Engine Registry Interface
 // ============================================================================
@@ -391,13 +420,14 @@ export interface IGraphEngineRegistry<TVertexData = unknown, TEdgeData = unknown
 /**
  * Available graph engine types
  */
-export type GraphEngineType = 
-  | 'canvas-2d'      // HTML5 Canvas 2D rendering (default)
+export type GraphEngineType =
+  | 'canvas-2d'      // HTML5 Canvas 2D rendering
   | 'svg'            // SVG-based rendering
   | 'webgl'          // WebGL high-performance rendering
   | 'd3-force'       // D3.js force simulation
   | 'cytoscape'      // Cytoscape.js
-  | 'vis-network';   // vis-network
+  | 'vis-network'    // vis-network
+  | 'xyflow';        // xyflow (React Flow) - modern React-based flow diagrams
 
 /**
  * Graph engine capabilities

@@ -173,6 +173,7 @@ export type {
   ID3ForceConfig,
   ICytoscapeConfig,
   IWebGLConfig,
+  IXyflowConfig,
 } from './types';
 
 // ============================================================================
@@ -202,6 +203,10 @@ export async function createEngineByType(
       const { createWebGLEngine } = await import('./webgl');
       return createWebGLEngine();
     }
+    case 'xyflow': {
+      const { createXyflowEngine } = await import('./xyflow');
+      return createXyflowEngine();
+    }
     case 'svg':
     case 'vis-network':
     default:
@@ -213,7 +218,7 @@ export async function createEngineByType(
  * Get all available engine types
  */
 export function getAvailableEngineTypes(): GraphEngineType[] {
-  return ['canvas-2d', 'd3-force', 'cytoscape', 'webgl'];
+  return ['canvas-2d', 'd3-force', 'cytoscape', 'webgl', 'xyflow'];
 }
 
 /**
@@ -237,6 +242,7 @@ export const ENGINE_DISPLAY_NAMES: Record<GraphEngineType, string> = {
   'd3-force': 'D3 Force Simulation',
   'cytoscape': 'Cytoscape.js',
   'vis-network': 'vis-network',
+  'xyflow': 'xyflow (React Flow)',
 };
 
 /**
@@ -244,14 +250,14 @@ export const ENGINE_DISPLAY_NAMES: Record<GraphEngineType, string> = {
  * Updated to prioritize implemented engines
  */
 export const ENGINE_RECOMMENDATIONS = {
-  SMALL_GRAPHS: ['d3-force', 'canvas-2d'] as GraphEngineType[],
-  MEDIUM_GRAPHS: ['canvas-2d', 'cytoscape'] as GraphEngineType[],
-  LARGE_GRAPHS: ['webgl', 'canvas-2d'] as GraphEngineType[],
-  INTERACTIVE: ['d3-force', 'cytoscape'] as GraphEngineType[],
-  ANALYTICAL: ['cytoscape', 'canvas-2d'] as GraphEngineType[],
-  PRESENTATION: ['d3-force', 'canvas-2d'] as GraphEngineType[],
-  HIGH_PERFORMANCE: ['webgl', 'canvas-2d'] as GraphEngineType[],
-  EXPORT_QUALITY: ['canvas-2d', 'd3-force'] as GraphEngineType[],
+  SMALL_GRAPHS: ['xyflow', 'd3-force', 'canvas-2d'] as GraphEngineType[],
+  MEDIUM_GRAPHS: ['xyflow', 'canvas-2d', 'cytoscape'] as GraphEngineType[],
+  LARGE_GRAPHS: ['webgl', 'xyflow', 'canvas-2d'] as GraphEngineType[],
+  INTERACTIVE: ['xyflow', 'd3-force', 'cytoscape'] as GraphEngineType[],
+  ANALYTICAL: ['cytoscape', 'xyflow', 'canvas-2d'] as GraphEngineType[],
+  PRESENTATION: ['xyflow', 'd3-force', 'canvas-2d'] as GraphEngineType[],
+  HIGH_PERFORMANCE: ['webgl', 'xyflow', 'canvas-2d'] as GraphEngineType[],
+  EXPORT_QUALITY: ['xyflow', 'canvas-2d', 'd3-force'] as GraphEngineType[],
 } as const;
 
 /**
@@ -259,10 +265,10 @@ export const ENGINE_RECOMMENDATIONS = {
  * Updated to reflect implemented engines
  */
 export const PERFORMANCE_CATEGORIES = {
-  MEMORY_EFFICIENT: ['canvas-2d', 'd3-force'] as GraphEngineType[],
-  CPU_EFFICIENT: ['webgl'] as GraphEngineType[],
-  BALANCED: ['canvas-2d', 'd3-force'] as GraphEngineType[],
-  FEATURE_RICH: ['cytoscape'] as GraphEngineType[],
+  MEMORY_EFFICIENT: ['xyflow', 'canvas-2d', 'd3-force'] as GraphEngineType[],
+  CPU_EFFICIENT: ['webgl', 'xyflow'] as GraphEngineType[],
+  BALANCED: ['xyflow', 'canvas-2d', 'd3-force'] as GraphEngineType[],
+  FEATURE_RICH: ['cytoscape', 'xyflow'] as GraphEngineType[],
 } as const;
 
 // ============================================================================

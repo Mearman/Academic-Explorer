@@ -251,6 +251,39 @@ const DEFAULT_ENGINE_CAPABILITIES: Record<GraphEngineType, GraphEngineCapabiliti
     supportedLayouts: ['force-directed', 'hierarchical'],
     supportedRenderingModes: ['hybrid'],
   },
+
+  'xyflow': {
+    type: 'xyflow',
+    displayName: 'xyflow (React Flow)',
+    description: 'Modern React-based flow diagram library with excellent performance and built-in features',
+    performance: {
+      maxVertices: 5000,
+      maxEdges: 10000,
+      hardwareAccelerated: false,
+      memoryEfficiency: 4,
+      renderingSpeed: 4,
+    },
+    features: {
+      animations: true,
+      zoomPan: true,
+      vertexDragging: true,
+      edgeSelection: true,
+      multiSelection: true,
+      customVertexShapes: true,
+      curvedEdges: true,
+      edgeLabels: true,
+      clustering: false,
+      levelOfDetail: true,
+      export: {
+        png: true,
+        svg: false,
+        pdf: false,
+        json: true,
+      },
+    },
+    supportedLayouts: ['force-directed', 'hierarchical', 'manual'],
+    supportedRenderingModes: ['immediate'],
+  },
 };
 
 // ============================================================================
@@ -258,7 +291,7 @@ const DEFAULT_ENGINE_CAPABILITIES: Record<GraphEngineType, GraphEngineCapabiliti
 // ============================================================================
 
 const DEFAULT_SETTINGS: GraphEngineSettings = {
-  selectedEngine: 'd3-force', // Start with D3 Force as it's fully implemented and interactive
+  selectedEngine: 'xyflow', // Start with xyflow as the modern React-based default
   engineConfigs: {
     'canvas-2d': {},
     'svg': {},
@@ -266,6 +299,7 @@ const DEFAULT_SETTINGS: GraphEngineSettings = {
     'd3-force': {},
     'cytoscape': {},
     'vis-network': {},
+    'xyflow': {},
   },
   transitionSettings: {
     duration: 500,
@@ -300,7 +334,7 @@ const useGraphEngineStore = create<GraphEngineState & GraphEngineActions>()(
     immer((set, get) => ({
       // Initial state
       availableEngines: new Map(Object.entries(DEFAULT_ENGINE_CAPABILITIES) as Array<[GraphEngineType, GraphEngineCapabilities]>),
-      currentEngine: 'd3-force', // Start with D3 Force as it's fully implemented
+      currentEngine: 'xyflow', // Start with xyflow as the modern React-based default
       engineInstances: new Map(),
       currentGraph: null,
       isTransitioning: false,
@@ -492,7 +526,7 @@ const useGraphEngineStore = create<GraphEngineState & GraphEngineActions>()(
           const { createEngineByType } = await import('./index');
           
           // Check if this engine type is implemented
-          const availableTypes = ['canvas-2d', 'd3-force', 'cytoscape', 'webgl'];
+          const availableTypes = ['canvas-2d', 'd3-force', 'cytoscape', 'webgl', 'xyflow'];
           if (!availableTypes.includes(engineType)) {
             throw new Error(`Engine type ${engineType} is not yet implemented`);
           }
