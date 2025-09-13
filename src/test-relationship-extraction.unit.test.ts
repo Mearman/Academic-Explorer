@@ -15,7 +15,6 @@ const mockUseEntityGraphStore = vi.fn();
 // Real author data from OpenAlex API
 const realAuthorData: Author = {
   id: "https://openalex.org/A5017898742",
-  orcid: undefined,
   display_name: "Joseph Mearman",
   display_name_alternatives: [
     "Joseph Mearman",

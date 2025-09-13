@@ -420,7 +420,8 @@ export function GraphEngineProvider({
   
   // Merge custom engines with defaults (avoid infinite loop by not depending on storeState.availableEngines)
   const mergedEngines = useMemo(() => {
-    const merged = new Map(DEFAULT_ENGINE_CAPABILITIES);
+    // Convert the DEFAULT_ENGINE_CAPABILITIES object to Map entries format
+    const merged = new Map(Object.entries(DEFAULT_ENGINE_CAPABILITIES) as Array<[GraphEngineType, GraphEngineCapabilities]>);
 
     for (const [engineType, capabilities] of Object.entries(customEngines)) {
       if (capabilities) {
