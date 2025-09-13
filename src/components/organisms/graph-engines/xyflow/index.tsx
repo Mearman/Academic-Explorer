@@ -3210,6 +3210,352 @@ const ExportPanel: React.FC<{
   );
 };
 
+// Enhanced MiniMap Component with custom styling and navigation
+const EnhancedMiniMap: React.FC<{
+  rfInstance: ReactFlowInstance | null;
+  nodes: Node[];
+  edges: Edge[];
+  selectedNodes: Set<string>;
+  currentZoom: number;
+  config: any;
+}> = ({ rfInstance, nodes, edges, selectedNodes, currentZoom, config }) => {
+  const [minimapMode, setMinimapMode] = React.useState<'standard' | 'heatmap' | 'cluster' | 'selection'>('standard');
+  const [showMinimapControls, setShowMinimapControls] = React.useState(false);
+  const [minimapZoom, setMinimapZoom] = React.useState(0.1);
+  const [showEdgesOnMinimap, setShowEdgesOnMinimap] = React.useState(false);
+
+  // Enhanced node color function based on mode
+  const getEnhancedNodeColor = React.useCallback((node: Node) => {
+    const isSelected = selectedNodes.has(node.id);
+    const entityData = node.data as EntityNodeData;
+
+    switch (minimapMode) {
+      case 'selection':
+        return isSelected ? '#3b82f6' : '#e5e7eb';
+
+      case 'heatmap':
+        // Color based on citation count
+        const citationCount = entityData.citationCount || 0;
+        if (citationCount === 0) return '#f3f4f6';
+        if (citationCount < 10) return '#fef3c7';
+        if (citationCount < 50) return '#fed7aa';
+        if (citationCount < 100) return '#fca5a5';
+        return '#dc2626';
+
+      case 'cluster':
+        // Color based on entity type
+        const entityType = entityData.entityType;
+        const colorMap: Record<string, string> = {
+          'work': '#3b82f6',
+          'author': '#059669',
+          'source': '#dc2626',
+          'institution': '#7c3aed',
+          'concept': '#ea580c',
+          'publisher': '#0891b2',
+          'funder': '#be123c'
+        };
+        return colorMap[entityType] || '#6b7280';
+
+      default:
+        return isSelected ? '#1d4ed8' : (entityData.entityType === 'work' ? '#3b82f6' : '#6b7280');
+    }
+  }, [minimapMode, selectedNodes]);
+
+  // Custom node stroke color
+  const getNodeStrokeColor = React.useCallback((node: Node) => {
+    const isSelected = selectedNodes.has(node.id);
+    return isSelected ? '#1e40af' : 'transparent';
+  }, [selectedNodes]);
+
+  // Navigation utilities for minimap
+  const MinimapUtils = {
+    focusOnSelection: () => {
+      if (!rfInstance || selectedNodes.size === 0) return;
+
+      const selectedNodeObjects = nodes.filter(n => selectedNodes.has(n.id));
+      if (selectedNodeObjects.length === 0) return;
+
+      const bounds = {
+        minX: Math.min(...selectedNodeObjects.map(n => n.position.x)),
+        minY: Math.min(...selectedNodeObjects.map(n => n.position.y)),
+        maxX: Math.max(...selectedNodeObjects.map(n => n.position.x + (n.width || 100))),
+        maxY: Math.max(...selectedNodeObjects.map(n => n.position.y + (n.height || 50)))
+      };
+
+      const centerX = (bounds.minX + bounds.maxX) / 2;
+      const centerY = (bounds.minY + bounds.maxY) / 2;
+      const width = bounds.maxX - bounds.minX;
+      const height = bounds.maxY - bounds.minY;
+
+      // Calculate zoom to fit selection with padding
+      const padding = 100;
+      const container = rfInstance.getViewport();
+      const zoomX = (window.innerWidth - padding) / width;
+      const zoomY = (window.innerHeight - padding) / height;
+      const zoom = Math.min(zoomX, zoomY, 2); // Max zoom 2x
+
+      rfInstance.setCenter(centerX, centerY, { zoom });
+    },
+
+    resetView: () => {
+      if (!rfInstance) return;
+      rfInstance.fitView({ padding: 0.1, maxZoom: 1.5 });
+    },
+
+    zoomToArea: (x: number, y: number, width: number, height: number) => {
+      if (!rfInstance) return;
+
+      const centerX = x + width / 2;
+      const centerY = y + height / 2;
+      const padding = 50;
+
+      const zoomX = (window.innerWidth - padding) / width;
+      const zoomY = (window.innerHeight - padding) / height;
+      const zoom = Math.min(zoomX, zoomY, 3);
+
+      rfInstance.setCenter(centerX, centerY, { zoom });
+    },
+
+    panToNode: (nodeId: string) => {
+      if (!rfInstance) return;
+
+      const node = nodes.find(n => n.id === nodeId);
+      if (!node) return;
+
+      rfInstance.setCenter(node.position.x, node.position.y, { zoom: Math.max(currentZoom, 1) });
+    }
+  };
+
+  return (
+    <div style={{ position: 'relative' }}>
+      <MiniMap
+        nodeColor={getEnhancedNodeColor}
+        nodeStrokeColor={getNodeStrokeColor}
+        nodeClassName={(node) => `enhanced-minimap-node ${minimapMode}-mode`}
+        maskColor={config.maskColor || 'rgba(0, 0, 0, 0.2)'}
+        position={config.position || 'bottom-right'}
+        ariaLabel="Enhanced graph minimap with navigation tools"
+        zoomable={true}
+        pannable={true}
+        onClick={(event, position) => {
+          // Custom click handler for minimap navigation
+          if (rfInstance) {
+            rfInstance.setCenter(position.x, position.y);
+          }
+        }}
+      />
+
+      {/* Minimap Controls Overlay */}
+      <div
+        style={{
+          position: 'absolute',
+          top: 0,
+          right: 0,
+          background: 'rgba(255, 255, 255, 0.95)',
+          borderRadius: '6px',
+          padding: showMinimapControls ? '8px' : '4px',
+          fontSize: '10px',
+          boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)',
+          cursor: 'pointer',
+          transition: 'all 0.3s ease',
+          maxWidth: showMinimapControls ? '180px' : '30px',
+          overflow: 'hidden'
+        }}
+        onClick={() => setShowMinimapControls(!showMinimapControls)}
+      >
+        <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+          <span>{showMinimapControls ? '🗺️' : '⚙️'}</span>
+          {showMinimapControls && <span style={{ fontWeight: '600' }}>Minimap</span>}
+        </div>
+
+        {showMinimapControls && (
+          <div style={{
+            marginTop: '8px',
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '6px'
+          }}>
+            {/* View Mode Selector */}
+            <div>
+              <div style={{ fontWeight: '600', marginBottom: '4px', color: '#374151' }}>
+                View Mode
+              </div>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '2px' }}>
+                {[
+                  { mode: 'standard' as const, label: 'Standard', icon: '⚪' },
+                  { mode: 'heatmap' as const, label: 'Citations', icon: '🔥' },
+                  { mode: 'cluster' as const, label: 'Type', icon: '🏷️' },
+                  { mode: 'selection' as const, label: 'Selected', icon: '🎯' }
+                ].map(({ mode, label, icon }) => (
+                  <button
+                    key={mode}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setMinimapMode(mode);
+                    }}
+                    style={{
+                      padding: '3px 6px',
+                      border: minimapMode === mode ? '2px solid #3b82f6' : '1px solid #e5e7eb',
+                      background: minimapMode === mode ? '#eff6ff' : 'white',
+                      borderRadius: '3px',
+                      fontSize: '9px',
+                      cursor: 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '2px',
+                      justifyContent: 'center'
+                    }}
+                  >
+                    <span>{icon}</span>
+                    <span>{label}</span>
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Navigation Tools */}
+            <div>
+              <div style={{ fontWeight: '600', marginBottom: '4px', color: '#374151' }}>
+                Navigation
+              </div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    MinimapUtils.resetView();
+                  }}
+                  style={{
+                    padding: '3px 6px',
+                    border: '1px solid #e5e7eb',
+                    background: 'white',
+                    borderRadius: '3px',
+                    fontSize: '9px',
+                    cursor: 'pointer'
+                  }}
+                >
+                  🏠 Fit All
+                </button>
+                {selectedNodes.size > 0 && (
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      MinimapUtils.focusOnSelection();
+                    }}
+                    style={{
+                      padding: '3px 6px',
+                      border: '1px solid #e5e7eb',
+                      background: 'white',
+                      borderRadius: '3px',
+                      fontSize: '9px',
+                      cursor: 'pointer'
+                    }}
+                  >
+                    🎯 Focus Selected
+                  </button>
+                )}
+              </div>
+            </div>
+
+            {/* Options */}
+            <div>
+              <div style={{ fontWeight: '600', marginBottom: '4px', color: '#374151' }}>
+                Options
+              </div>
+              <label style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '4px',
+                fontSize: '9px',
+                cursor: 'pointer'
+              }}>
+                <input
+                  type="checkbox"
+                  checked={showEdgesOnMinimap}
+                  onChange={(e) => {
+                    e.stopPropagation();
+                    setShowEdgesOnMinimap(e.target.checked);
+                  }}
+                  style={{ width: '12px', height: '12px' }}
+                />
+                Show Edges
+              </label>
+            </div>
+
+            {/* Minimap Stats */}
+            <div style={{
+              paddingTop: '6px',
+              borderTop: '1px solid #e5e7eb',
+              fontSize: '8px',
+              color: '#9ca3af'
+            }}>
+              <div>Zoom: {(currentZoom * 100).toFixed(0)}%</div>
+              <div>Nodes: {nodes.length}</div>
+              {selectedNodes.size > 0 && (
+                <div>Selected: {selectedNodes.size}</div>
+              )}
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* Mode Legend */}
+      {minimapMode === 'heatmap' && (
+        <div style={{
+          position: 'absolute',
+          bottom: 0,
+          left: 0,
+          background: 'rgba(255, 255, 255, 0.95)',
+          padding: '4px 8px',
+          borderRadius: '4px',
+          fontSize: '8px',
+          boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)'
+        }}>
+          <div style={{ fontWeight: '600', marginBottom: '2px' }}>Citations</div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+            <span style={{ width: '8px', height: '8px', background: '#f3f4f6', borderRadius: '50%' }}></span>
+            <span>0</span>
+            <span style={{ width: '8px', height: '8px', background: '#fef3c7', borderRadius: '50%' }}></span>
+            <span>10+</span>
+            <span style={{ width: '8px', height: '8px', background: '#fed7aa', borderRadius: '50%' }}></span>
+            <span>50+</span>
+            <span style={{ width: '8px', height: '8px', background: '#dc2626', borderRadius: '50%' }}></span>
+            <span>100+</span>
+          </div>
+        </div>
+      )}
+
+      {minimapMode === 'cluster' && (
+        <div style={{
+          position: 'absolute',
+          bottom: 0,
+          left: 0,
+          background: 'rgba(255, 255, 255, 0.95)',
+          padding: '4px 8px',
+          borderRadius: '4px',
+          fontSize: '8px',
+          boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
+          maxWidth: '140px'
+        }}>
+          <div style={{ fontWeight: '600', marginBottom: '2px' }}>Entity Types</div>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '2px' }}>
+            {[
+              { type: 'work', color: '#3b82f6', label: 'Works' },
+              { type: 'author', color: '#059669', label: 'Authors' },
+              { type: 'source', color: '#dc2626', label: 'Sources' },
+              { type: 'institution', color: '#7c3aed', label: 'Institutions' }
+            ].map(({ type, color, label }) => (
+              <div key={type} style={{ display: 'flex', alignItems: 'center', gap: '2px' }}>
+                <span style={{ width: '6px', height: '6px', background: color, borderRadius: '50%' }}></span>
+                <span>{label}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
+
 // Selection Panel Component for enhanced node selection and bulk operations
 const SelectionPanel: React.FC<{
   selectedNodes: Set<string>;
@@ -5107,13 +5453,13 @@ import '@xyflow/react/dist/style.css';
             )}
 
             {config.miniMap && (
-              <MiniMap
-                nodeColor={config.miniMap.nodeColor}
-                nodeStrokeColor={config.miniMap.nodeStrokeColor}
-                nodeClassName={config.miniMap.nodeClassName}
-                maskColor={config.miniMap.maskColor}
-                position={config.miniMap.position}
-                ariaLabel={config.miniMap.ariaLabel}
+              <EnhancedMiniMap
+                rfInstance={rfInstance}
+                nodes={nodesWithSelection}
+                edges={edges}
+                selectedNodes={selectedNodes}
+                currentZoom={currentZoom}
+                config={config.miniMap}
               />
             )}
 
