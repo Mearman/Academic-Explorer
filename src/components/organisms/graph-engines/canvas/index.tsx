@@ -87,6 +87,24 @@ interface InteractionState {
   hoveredNodeId: string | null;
 }
 
+interface PerformanceOptions {
+  enableViewportCulling: boolean;
+  enableLevelOfDetail: boolean;
+  cullingMargin: number;
+  lodThresholds: {
+    hideLabels: number;
+    simplifyNodes: number;
+    hideEdges: number;
+  };
+}
+
+interface ViewportBounds {
+  minX: number;
+  maxX: number;
+  minY: number;
+  maxY: number;
+}
+
 export class CanvasEngine<TVertexData = unknown, TEdgeData = unknown>
   implements IGraphEngine<TVertexData, TEdgeData> {
 
@@ -167,6 +185,21 @@ export class CanvasEngine<TVertexData = unknown, TEdgeData = unknown>
   // Animation
   private animationId: number | null = null;
   private needsRedraw = false;
+
+  // Performance optimizations
+  private performance: PerformanceOptions = {
+    enableViewportCulling: true,
+    enableLevelOfDetail: true,
+    cullingMargin: 100, // Extra margin around viewport for culling
+    lodThresholds: {
+      hideLabels: 0.3,      // Hide labels when scale < 0.3
+      simplifyNodes: 0.2,   // Simplify nodes when scale < 0.2
+      hideEdges: 0.1,       // Hide edges when scale < 0.1
+    },
+  };
+  private lastFrameTime = 0;
+  private frameCount = 0;
+  private fps = 60;
 
   // ============================================================================
   // Public API Implementation
@@ -382,6 +415,81 @@ export class CanvasEngine<TVertexData = unknown, TEdgeData = unknown>
       isInitialised: false,
       isRendering: false,
       lastError: undefined,
+    };
+  }
+
+  // ============================================================================
+  // Performance Optimization Methods
+  // ============================================================================
+
+  private calculateViewportBounds(): ViewportBounds {
+    const margin = this.performance.cullingMargin;
+    return {
+      minX: (-this.transform.translateX - margin) / this.transform.scale,
+      maxX: (-this.transform.translateX + this.dimensions.width + margin) / this.transform.scale,
+      minY: (-this.transform.translateY - margin) / this.transform.scale,
+      maxY: (-this.transform.translateY + this.dimensions.height + margin) / this.transform.scale,
+    };
+  }
+
+  private isNodeVisible(node: RenderedNode, bounds: ViewportBounds): boolean {
+    const radius = node.radius;
+    return (
+      node.x + radius >= bounds.minX &&
+      node.x - radius <= bounds.maxX &&
+      node.y + radius >= bounds.minY &&
+      node.y - radius <= bounds.maxY
+    );
+  }
+
+  private isEdgeVisible(edge: RenderedEdge, bounds: ViewportBounds): boolean {
+    // Check if at least one endpoint is visible or edge crosses viewport
+    const sourceVisible =
+      edge.sourceX >= bounds.minX && edge.sourceX <= bounds.maxX &&
+      edge.sourceY >= bounds.minY && edge.sourceY <= bounds.maxY;
+
+    const targetVisible =
+      edge.targetX >= bounds.minX && edge.targetX <= bounds.maxX &&
+      edge.targetY >= bounds.minY && edge.targetY <= bounds.maxY;
+
+    if (sourceVisible || targetVisible) return true;
+
+    // Check if edge crosses viewport (basic line-rectangle intersection)
+    return this.lineIntersectsRect(
+      edge.sourceX, edge.sourceY, edge.targetX, edge.targetY,
+      bounds.minX, bounds.minY, bounds.maxX, bounds.maxY
+    );
+  }
+
+  private lineIntersectsRect(
+    x1: number, y1: number, x2: number, y2: number,
+    rectX1: number, rectY1: number, rectX2: number, rectY2: number
+  ): boolean {
+    // Simple AABB line intersection check
+    const minX = Math.min(x1, x2);
+    const maxX = Math.max(x1, x2);
+    const minY = Math.min(y1, y2);
+    const maxY = Math.max(y1, y2);
+
+    return !(maxX < rectX1 || minX > rectX2 || maxY < rectY1 || minY > rectY2);
+  }
+
+  private updatePerformanceMetrics(): void {
+    const now = performance.now();
+    if (this.lastFrameTime > 0) {
+      const deltaTime = now - this.lastFrameTime;
+      this.fps = Math.round(1000 / deltaTime);
+      this.frameCount++;
+    }
+    this.lastFrameTime = now;
+  }
+
+  getPerformanceStats(): { fps: number; nodeCount: number; edgeCount: number; scale: number } {
+    return {
+      fps: this.fps,
+      nodeCount: this.renderedNodes.length,
+      edgeCount: this.renderedEdges.length,
+      scale: this.transform.scale,
     };
   }
 
@@ -658,6 +766,9 @@ export class CanvasEngine<TVertexData = unknown, TEdgeData = unknown>
   private draw(): void {
     if (!this.ctx || !this.canvas) return;
 
+    // Update performance metrics
+    this.updatePerformanceMetrics();
+
     // Clear canvas
     this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
 
@@ -668,72 +779,152 @@ export class CanvasEngine<TVertexData = unknown, TEdgeData = unknown>
     this.ctx.translate(this.transform.translateX, this.transform.translateY);
     this.ctx.scale(this.transform.scale, this.transform.scale);
 
-    // Draw edges first (behind nodes)
-    this.drawEdges();
+    // Calculate viewport bounds for culling
+    const viewportBounds = this.performance.enableViewportCulling
+      ? this.calculateViewportBounds()
+      : null;
+
+    // Determine level of detail based on scale
+    const scale = this.transform.scale;
+    const shouldHideLabels = this.performance.enableLevelOfDetail &&
+      scale < this.performance.lodThresholds.hideLabels;
+    const shouldSimplifyNodes = this.performance.enableLevelOfDetail &&
+      scale < this.performance.lodThresholds.simplifyNodes;
+    const shouldHideEdges = this.performance.enableLevelOfDetail &&
+      scale < this.performance.lodThresholds.hideEdges;
+
+    // Draw edges first (behind nodes) if not hidden by LOD
+    if (!shouldHideEdges) {
+      this.drawEdges(viewportBounds);
+    }
 
     // Draw nodes
-    this.drawNodes();
+    this.drawNodes(viewportBounds, shouldHideLabels, shouldSimplifyNodes);
 
     // Restore context state
     this.ctx.restore();
+
+    // Draw performance overlay in debug mode
+    if (this.isDebugMode()) {
+      this.drawPerformanceOverlay();
+    }
   }
 
-  private drawEdges(): void {
+  private drawEdges(viewportBounds: ViewportBounds | null): void {
     if (!this.ctx) return;
 
-    this.renderedEdges.forEach(edge => {
-      this.ctx!.strokeStyle = edge.color;
-      this.ctx!.lineWidth = edge.width;
-      this.ctx!.beginPath();
-      this.ctx!.moveTo(edge.sourceX, edge.sourceY);
-      this.ctx!.lineTo(edge.targetX, edge.targetY);
-      this.ctx!.stroke();
-    });
+    // Set edge drawing style once
+    this.ctx.lineWidth = 1;
+    this.ctx.strokeStyle = '#cbd5e0';
+
+    // Use batching for better performance
+    this.ctx.beginPath();
+
+    let drawnEdgeCount = 0;
+    for (const edge of this.renderedEdges) {
+      // Skip if viewport culling is enabled and edge is not visible
+      if (viewportBounds && !this.isEdgeVisible(edge, viewportBounds)) {
+        continue;
+      }
+
+      // Set individual edge properties only when needed
+      if (this.ctx.strokeStyle !== edge.color) {
+        this.ctx.stroke(); // Draw previous batch
+        this.ctx.beginPath();
+        this.ctx.strokeStyle = edge.color;
+      }
+      if (this.ctx.lineWidth !== edge.width) {
+        this.ctx.stroke(); // Draw previous batch
+        this.ctx.beginPath();
+        this.ctx.lineWidth = edge.width;
+      }
+
+      this.ctx.moveTo(edge.sourceX, edge.sourceY);
+      this.ctx.lineTo(edge.targetX, edge.targetY);
+      drawnEdgeCount++;
+    }
+
+    // Draw final batch
+    this.ctx.stroke();
   }
 
-  private drawNodes(): void {
+  private drawNodes(
+    viewportBounds: ViewportBounds | null,
+    hideLabels: boolean,
+    simplifyNodes: boolean
+  ): void {
     if (!this.ctx) return;
 
-    this.renderedNodes.forEach(node => {
-      // Draw node shadow if selected or hovered
-      if (node.isSelected || node.isHovered) {
-        this.ctx!.fillStyle = 'rgba(0, 0, 0, 0.2)';
-        this.ctx!.beginPath();
-        this.ctx!.arc(node.x + 2, node.y + 2, node.radius, 0, Math.PI * 2);
-        this.ctx!.fill();
+    let drawnNodeCount = 0;
+
+    for (const node of this.renderedNodes) {
+      // Skip if viewport culling is enabled and node is not visible
+      if (viewportBounds && !this.isNodeVisible(node, viewportBounds)) {
+        continue;
+      }
+
+      const nodeRadius = simplifyNodes ? Math.max(2, node.radius * 0.5) : node.radius;
+
+      // Draw node shadow if selected or hovered (only in high quality mode)
+      if (!simplifyNodes && (node.isSelected || node.isHovered)) {
+        this.ctx.fillStyle = 'rgba(0, 0, 0, 0.2)';
+        this.ctx.beginPath();
+        this.ctx.arc(node.x + 2, node.y + 2, nodeRadius, 0, Math.PI * 2);
+        this.ctx.fill();
       }
 
       // Draw node body
-      this.ctx!.fillStyle = node.color;
-      this.ctx!.beginPath();
-      this.ctx!.arc(node.x, node.y, node.radius, 0, Math.PI * 2);
-      this.ctx!.fill();
+      this.ctx.fillStyle = node.color;
+      this.ctx.beginPath();
+      this.ctx.arc(node.x, node.y, nodeRadius, 0, Math.PI * 2);
+      this.ctx.fill();
 
-      // Draw node border
-      if (node.isSelected) {
-        this.ctx!.strokeStyle = '#ffffff';
-        this.ctx!.lineWidth = 4;
-        this.ctx!.stroke();
-        this.ctx!.strokeStyle = '#3182ce';
-        this.ctx!.lineWidth = 2;
-        this.ctx!.stroke();
-      } else if (node.isHovered) {
-        this.ctx!.strokeStyle = '#ffffff';
-        this.ctx!.lineWidth = 3;
-        this.ctx!.stroke();
+      // Draw node border (simplified in LOD mode)
+      if (!simplifyNodes) {
+        if (node.isSelected) {
+          this.ctx.strokeStyle = '#ffffff';
+          this.ctx.lineWidth = 4;
+          this.ctx.stroke();
+          this.ctx.strokeStyle = '#3182ce';
+          this.ctx.lineWidth = 2;
+          this.ctx.stroke();
+        } else if (node.isHovered) {
+          this.ctx.strokeStyle = '#ffffff';
+          this.ctx.lineWidth = 3;
+          this.ctx.stroke();
+        } else {
+          this.ctx.strokeStyle = 'rgba(255, 255, 255, 0.8)';
+          this.ctx.lineWidth = 2;
+          this.ctx.stroke();
+        }
       } else {
-        this.ctx!.strokeStyle = 'rgba(255, 255, 255, 0.8)';
-        this.ctx!.lineWidth = 2;
-        this.ctx!.stroke();
+        // Simplified border for LOD
+        if (node.isSelected) {
+          this.ctx.strokeStyle = '#3182ce';
+          this.ctx.lineWidth = 1;
+          this.ctx.stroke();
+        }
       }
 
-      // Draw node label
-      this.ctx!.fillStyle = '#ffffff';
-      this.ctx!.font = `bold ${Math.max(10, node.radius * 0.6)}px system-ui`;
-      this.ctx!.textAlign = 'center';
-      this.ctx!.textBaseline = 'middle';
-      this.ctx!.fillText(node.label, node.x, node.y);
-    });
+      // Draw node label (skip if hidden by LOD or node too small)
+      if (!hideLabels && nodeRadius > 8) {
+        this.ctx.fillStyle = '#ffffff';
+        const fontSize = Math.max(8, nodeRadius * 0.6);
+        this.ctx.font = `bold ${fontSize}px system-ui`;
+        this.ctx.textAlign = 'center';
+        this.ctx.textBaseline = 'middle';
+
+        // Truncate labels at small scales
+        let displayLabel = node.label;
+        if (simplifyNodes && displayLabel.length > 3) {
+          displayLabel = displayLabel.substring(0, 3);
+        }
+
+        this.ctx.fillText(displayLabel, node.x, node.y);
+      }
+
+      drawnNodeCount++;
+    }
   }
 
   private animateUpdate(): void {
@@ -811,6 +1002,72 @@ export class CanvasEngine<TVertexData = unknown, TEdgeData = unknown>
     };
 
     requestAnimationFrame(animate);
+  }
+
+  private isDebugMode(): boolean {
+    return typeof window !== 'undefined' && !!(window as any).__CANVAS_ENGINE_DEBUG__;
+  }
+
+  private drawPerformanceOverlay(): void {
+    if (!this.ctx) return;
+
+    // Reset transform for overlay
+    this.ctx.save();
+    this.ctx.setTransform(1, 0, 0, 1, 0, 0);
+
+    // Background
+    this.ctx.fillStyle = 'rgba(0, 0, 0, 0.8)';
+    this.ctx.fillRect(10, 10, 200, 120);
+
+    // Text
+    this.ctx.fillStyle = '#ffffff';
+    this.ctx.font = '12px monospace';
+    this.ctx.textAlign = 'left';
+    this.ctx.textBaseline = 'top';
+
+    const stats = this.getPerformanceStats();
+    const lines = [
+      `FPS: ${stats.fps}`,
+      `Nodes: ${stats.nodeCount}`,
+      `Edges: ${stats.edgeCount}`,
+      `Scale: ${stats.scale.toFixed(2)}`,
+      `Culling: ${this.performance.enableViewportCulling ? 'ON' : 'OFF'}`,
+      `LOD: ${this.performance.enableLevelOfDetail ? 'ON' : 'OFF'}`,
+      `Memory: ${this.getMemoryUsage()}MB`,
+    ];
+
+    lines.forEach((line, index) => {
+      this.ctx!.fillText(line, 20, 25 + index * 15);
+    });
+
+    this.ctx.restore();
+  }
+
+  private getMemoryUsage(): number {
+    if (typeof window !== 'undefined' && (window.performance as any)?.memory) {
+      return Math.round((window.performance as any).memory.usedJSHeapSize / 1024 / 1024);
+    }
+    return 0;
+  }
+
+  // Performance configuration methods
+  enableDebugMode(): void {
+    if (typeof window !== 'undefined') {
+      (window as any).__CANVAS_ENGINE_DEBUG__ = true;
+      this.needsRedraw = true;
+    }
+  }
+
+  disableDebugMode(): void {
+    if (typeof window !== 'undefined') {
+      (window as any).__CANVAS_ENGINE_DEBUG__ = false;
+      this.needsRedraw = true;
+    }
+  }
+
+  setPerformanceOptions(options: Partial<PerformanceOptions>): void {
+    this.performance = { ...this.performance, ...options };
+    this.needsRedraw = true;
   }
 
   // ============================================================================
