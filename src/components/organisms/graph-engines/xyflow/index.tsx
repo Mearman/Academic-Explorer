@@ -37,8 +37,11 @@ import {
   Panel,
   Position,
   BackgroundVariant,
+  Handle,
 } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
+
+import { getEntityColour, getOpenAccessColour } from '../../../design-tokens.utils';
 
 import type {
   IGraph,
@@ -141,42 +144,173 @@ export interface IXyflowConfig extends IEngineConfig {
   };
 }
 
-// Custom Node Components
-const EntityNode: React.FC<{ data: { label: string; entityType: string } }> = ({ data }) => {
+// Enhanced Custom Node Components
+interface EntityNodeData {
+  label: string;
+  entityType: string;
+  originalVertex?: any;
+  citationCount?: number;
+  publicationYear?: number;
+  openAccessStatus?: string;
+  isSelected?: boolean;
+}
+
+const EntityNode: React.FC<{ data: EntityNodeData; selected?: boolean }> = ({ data, selected }) => {
+  const entityColor = getEntityColour(data.entityType);
+  const [isHovered, setIsHovered] = useState(false);
+
+  // Enhanced styling based on entity type and state
+  const nodeStyle: React.CSSProperties = {
+    background: `linear-gradient(135deg, ${entityColor}, ${entityColor}dd)`,
+    color: 'white',
+    padding: '12px 16px',
+    borderRadius: '12px',
+    border: selected ? `3px solid ${entityColor}` : '2px solid rgba(255, 255, 255, 0.2)',
+    minWidth: '100px',
+    textAlign: 'center',
+    boxShadow: isHovered
+      ? `0 8px 24px ${entityColor}40, 0 4px 12px rgba(0, 0, 0, 0.15)`
+      : '0 4px 12px rgba(0, 0, 0, 0.15)',
+    cursor: 'pointer',
+    transition: 'all 0.2s ease-in-out',
+    transform: isHovered ? 'translateY(-2px) scale(1.02)' : 'translateY(0) scale(1)',
+    position: 'relative',
+    fontSize: '13px',
+    fontWeight: '600',
+    fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+  };
+
+  const labelStyle: React.CSSProperties = {
+    fontSize: '13px',
+    fontWeight: '600',
+    lineHeight: '1.2',
+    marginBottom: '4px',
+    textShadow: '0 1px 2px rgba(0, 0, 0, 0.3)',
+  };
+
+  const typeStyle: React.CSSProperties = {
+    fontSize: '10px',
+    opacity: 0.9,
+    textTransform: 'uppercase',
+    letterSpacing: '0.5px',
+    fontWeight: '500',
+  };
+
+  const metadataStyle: React.CSSProperties = {
+    fontSize: '9px',
+    opacity: 0.8,
+    marginTop: '2px',
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  };
+
+  return (
+    <div
+      style={nodeStyle}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+    >
+      <Handle
+        type="target"
+        position={Position.Top}
+        style={{
+          background: entityColor,
+          border: '2px solid white',
+          width: '8px',
+          height: '8px',
+        }}
+      />
+
+      <div style={labelStyle}>
+        {data.label}
+      </div>
+
+      <div style={typeStyle}>
+        {data.entityType}
+      </div>
+
+      {/* Additional metadata for works */}
+      {data.entityType === 'work' && (data.citationCount || data.publicationYear || data.openAccessStatus) && (
+        <div style={metadataStyle}>
+          {data.publicationYear && (
+            <span style={{ fontSize: '8px' }}>{data.publicationYear}</span>
+          )}
+          {data.citationCount !== undefined && (
+            <span style={{ fontSize: '8px' }}>📄 {data.citationCount}</span>
+          )}
+          {data.openAccessStatus && (
+            <div
+              style={{
+                width: '8px',
+                height: '8px',
+                borderRadius: '50%',
+                backgroundColor: getOpenAccessColour(data.openAccessStatus),
+                border: '1px solid white',
+              }}
+              title={`Open Access: ${data.openAccessStatus}`}
+            />
+          )}
+        </div>
+      )}
+
+      <Handle
+        type="source"
+        position={Position.Bottom}
+        style={{
+          background: entityColor,
+          border: '2px solid white',
+          width: '8px',
+          height: '8px',
+        }}
+      />
+    </div>
+  );
+};
+
+// Compact node for dense graphs
+const CompactEntityNode: React.FC<{ data: EntityNodeData; selected?: boolean }> = ({ data, selected }) => {
+  const entityColor = getEntityColour(data.entityType);
+
   return (
     <div
       style={{
-        padding: '8px 12px',
-        borderRadius: '6px',
-        background: data.entityType === 'author' ? '#4299e1' :
-                   data.entityType === 'work' ? '#48bb78' :
-                   data.entityType === 'institution' ? '#ed8936' : '#9f7aea',
+        background: entityColor,
         color: 'white',
-        fontSize: '12px',
-        fontWeight: '500',
-        border: '2px solid transparent',
-        minWidth: '80px',
+        padding: '6px 10px',
+        borderRadius: '8px',
+        border: selected ? `2px solid ${entityColor}` : '1px solid rgba(255, 255, 255, 0.2)',
+        minWidth: '60px',
         textAlign: 'center',
-        boxShadow: '0 2px 8px rgba(0, 0, 0, 0.15)',
+        fontSize: '11px',
+        fontWeight: '600',
+        boxShadow: '0 2px 6px rgba(0, 0, 0, 0.15)',
+        cursor: 'pointer',
+        transition: 'all 0.15s ease',
       }}
     >
-      {data.label}
-      <div
-        style={{
-          fontSize: '10px',
-          opacity: 0.8,
-          marginTop: '2px',
-          textTransform: 'uppercase',
-        }}
-      >
-        {data.entityType}
+      <Handle
+        type="target"
+        position={Position.Top}
+        style={{ background: entityColor, border: '1px solid white', width: '6px', height: '6px' }}
+      />
+
+      <div style={{ fontSize: '11px', fontWeight: '600' }}>
+        {data.label.length > 15 ? `${data.label.substring(0, 15)}...` : data.label}
       </div>
+
+      <Handle
+        type="source"
+        position={Position.Bottom}
+        style={{ background: entityColor, border: '1px solid white', width: '6px', height: '6px' }}
+      />
     </div>
   );
 };
 
 const nodeTypes: NodeTypes = {
   entity: EntityNode,
+  compact: CompactEntityNode,
 };
 
 // ============================================================================
@@ -314,37 +448,67 @@ import '@xyflow/react/dist/style.css';
     try {
       this._status = { ...this._status, isRendering: true };
 
-      // Convert graph vertices to xyflow nodes
+      // Convert graph vertices to xyflow nodes with enhanced data
       this.nodes = graph.vertices.map((vertex, index) => {
         const position = this.calculateNodePosition(vertex, index, graph.vertices.length);
+        const entityType = this.getVertexType(vertex);
+        const vertexData = vertex.data || {};
+
+        // Determine node type based on graph density
+        const nodeType = graph.vertices.length > 50 ? 'compact' : 'entity';
 
         return {
           id: vertex.id,
-          type: 'entity',
+          type: nodeType,
           position,
           data: {
             label: this.getVertexLabel(vertex),
-            entityType: this.getVertexType(vertex),
+            entityType,
             originalVertex: vertex,
-          },
+            // Extract additional metadata for enhanced display
+            citationCount: vertexData.cited_by_count || vertexData.citation_count,
+            publicationYear: vertexData.publication_year || vertexData.published_year,
+            openAccessStatus: vertexData.open_access?.oa_type || vertexData.oa_type,
+            isSelected: false,
+          } as EntityNodeData,
         } as Node;
       });
 
-      // Convert graph edges to xyflow edges
-      this.edges = graph.edges.map((edge) => ({
-        id: `${edge.sourceId}-${edge.targetId}`,
-        source: edge.sourceId,
-        target: edge.targetId,
-        type: 'smoothstep',
-        animated: false,
-        style: {
-          stroke: '#94a3b8',
-          strokeWidth: 2,
-        },
-        data: {
-          originalEdge: edge,
-        },
-      } as Edge));
+      // Convert graph edges to xyflow edges with enhanced styling
+      this.edges = graph.edges.map((edge) => {
+        const edgeData = edge.data || {};
+        const weight = edgeData.weight || 1;
+        const relationshipType = edgeData.type || 'default';
+
+        // Determine edge appearance based on relationship strength and type
+        const strokeWidth = Math.max(1, Math.min(6, weight * 2));
+        const isStrong = weight > 0.7;
+
+        return {
+          id: `${edge.sourceId}-${edge.targetId}`,
+          source: edge.sourceId,
+          target: edge.targetId,
+          type: 'smoothstep',
+          animated: isStrong,
+          style: {
+            stroke: isStrong ? '#4f46e5' : '#94a3b8',
+            strokeWidth,
+            strokeDasharray: relationshipType === 'indirect' ? '5,5' : undefined,
+            opacity: 0.6 + (weight * 0.4),
+          },
+          markerEnd: {
+            type: 'arrow',
+            color: isStrong ? '#4f46e5' : '#94a3b8',
+            width: 20,
+            height: 20,
+          },
+          data: {
+            originalEdge: edge,
+            weight,
+            relationshipType,
+          },
+        } as Edge;
+      });
 
       this._status = { ...this._status, isRendering: false };
 
