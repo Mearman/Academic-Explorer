@@ -4,28 +4,20 @@
  */
 
 import { createFileRoute } from '@tanstack/react-router'
-import React, { useState, useMemo } from 'react'
+import React, { useState, useMemo, useEffect } from 'react'
+import { compareAcademicExplorerResults, DEFAULT_MATCHING_CONFIG } from '@/lib/evaluation/comparison-engine'
+import type { STARDataset, ComparisonResults as ComparisonResultsType, WorkReference, ComparisonProgress } from '@/lib/evaluation/types'
 
 export const Route = createFileRoute('/evaluation/results')({
   component: ComparisonResults,
 })
 
-interface ComparisonResult {
+interface ComparisonRun {
   id: string
   datasetName: string
   runDate: Date
-  status: 'completed' | 'running' | 'failed'
-  metrics: {
-    precision: number
-    recall: number
-    f1Score: number
-    truePositives: number
-    falsePositives: number
-    falseNegatives: number
-    totalFound: number
-    totalGroundTruth: number
-    additionalPapersFound: number
-  }
+  status: 'completed' | 'running' | 'failed' | 'ready'
+  comparisonResults?: ComparisonResultsType
   searchCriteria: {
     query: string
     entityTypes: string[]
@@ -34,15 +26,148 @@ interface ComparisonResult {
       end: number
     }
   }
-  executionTime: number // milliseconds
-  apiCalls: number
+  executionTime?: number // milliseconds
+  progress?: ComparisonProgress
+  error?: string
 }
 
 function ComparisonResults() {
-  // Mock data for demonstration
-  const [results] = useState<ComparisonResult[]>([
+  const [starDatasets, setStarDatasets] = useState<STARDataset[]>([])
+  const [comparisonRuns, setComparisonRuns] = useState<ComparisonRun[]>([])
+  const [isRunningComparison, setIsRunningComparison] = useState(false)
+  const [selectedDatasetId, setSelectedDatasetId] = useState<string | null>(null)
+
+  // Load STAR datasets from localStorage on component mount
+  useEffect(() => {
+    try {
+      const savedDatasets = localStorage.getItem('star-datasets')
+      if (savedDatasets) {
+        const datasets: STARDataset[] = JSON.parse(savedDatasets)
+        setStarDatasets(datasets)
+
+        // Initialize comparison runs for each dataset
+        const runs: ComparisonRun[] = datasets.map(dataset => ({
+          id: `run_${dataset.id}`,
+          datasetName: dataset.name,
+          runDate: new Date(),
+          status: 'ready',
+          searchCriteria: {
+            query: dataset.reviewTopic,
+            entityTypes: ['works']
+          }
+        }))
+        setComparisonRuns(runs)
+      }
+    } catch (error) {
+      console.error('Failed to load STAR datasets:', error)
+    }
+  }, [])
+
+  // Mock Academic Explorer search function (replace with real implementation)
+  const performAcademicExplorerSearch = async (query: string): Promise<WorkReference[]> => {
+    // TODO: Replace with actual Academic Explorer search using OpenAlex client
+    // This would typically involve:
+    // 1. Using the OpenAlex client to search for works
+    // 2. Converting OpenAlex Work entities to WorkReference format
+    // 3. Applying filters and search criteria
+
+    // For now, return mock data that matches the search query
+    const mockResults: WorkReference[] = [
+      {
+        title: `Advanced ${query} techniques in modern research`,
+        authors: ['John Smith', 'Jane Doe'],
+        doi: '10.1234/example.001',
+        publicationYear: 2023,
+        source: 'Nature',
+        openalexId: 'W1234567890'
+      },
+      {
+        title: `A comprehensive study of ${query} applications`,
+        authors: ['Alice Johnson', 'Bob Wilson'],
+        publicationYear: 2022,
+        source: 'Science',
+        openalexId: 'W2345678901'
+      },
+      // Add more mock results based on query
+    ]
+
+    // Simulate API delay
+    await new Promise(resolve => setTimeout(resolve, 2000))
+    return mockResults
+  }
+
+  // Run comparison for a specific dataset
+  const runComparison = async (datasetId: string) => {
+    const dataset = starDatasets.find(d => d.id === datasetId)
+    if (!dataset) return
+
+    setIsRunningComparison(true)
+    setSelectedDatasetId(datasetId)
+
+    // Update run status
+    setComparisonRuns(prev => prev.map(run =>
+      run.id === `run_${datasetId}`
+        ? { ...run, status: 'running' as const, runDate: new Date() }
+        : run
+    ))
+
+    try {
+      const startTime = performance.now()
+
+      // Step 1: Perform Academic Explorer search
+      const academicExplorerResults = await performAcademicExplorerSearch(dataset.reviewTopic)
+
+      // Step 2: Run comparison with progress tracking
+      const comparisonResults = await compareAcademicExplorerResults(
+        academicExplorerResults,
+        dataset,
+        DEFAULT_MATCHING_CONFIG,
+        (progress) => {
+          setComparisonRuns(prev => prev.map(run =>
+            run.id === `run_${datasetId}`
+              ? { ...run, progress }
+              : run
+          ))
+        }
+      )
+
+      const executionTime = performance.now() - startTime
+
+      // Update with completed results
+      setComparisonRuns(prev => prev.map(run =>
+        run.id === `run_${datasetId}`
+          ? {
+              ...run,
+              status: 'completed' as const,
+              comparisonResults,
+              executionTime,
+              progress: undefined
+            }
+          : run
+      ))
+
+    } catch (error) {
+      console.error('Comparison failed:', error)
+      setComparisonRuns(prev => prev.map(run =>
+        run.id === `run_${datasetId}`
+          ? {
+              ...run,
+              status: 'failed' as const,
+              error: error instanceof Error ? error.message : 'Unknown error',
+              progress: undefined
+            }
+          : run
+      ))
+    } finally {
+      setIsRunningComparison(false)
+      setSelectedDatasetId(null)
+    }
+  }
+
+  // Mock data for demonstration when no real datasets exist
+  const mockResults = useMemo(() => [
     {
-      id: 'comparison_1',
+      id: 'mock_comparison_1',
       datasetName: 'Machine Learning Systematic Review',
       runDate: new Date('2025-01-10'),
       status: 'completed',
@@ -61,52 +186,59 @@ function ComparisonResults() {
         query: 'machine learning systematic review',
         entityTypes: ['works', 'authors']
       },
-      executionTime: 45000,
-      apiCalls: 67
-    },
-    {
-      id: 'comparison_2',
-      datasetName: 'Cultural Heritage Digital Preservation',
-      runDate: new Date('2025-01-12'),
-      status: 'completed',
-      metrics: {
-        precision: 0.91,
-        recall: 0.85,
-        f1Score: 0.88,
-        truePositives: 89,
-        falsePositives: 9,
-        falseNegatives: 16,
-        totalFound: 98,
-        totalGroundTruth: 105,
-        additionalPapersFound: 18
-      },
-      searchCriteria: {
-        query: 'digital preservation cultural heritage',
-        entityTypes: ['works'],
-        dateRange: { start: 2015, end: 2023 }
-      },
-      executionTime: 32000,
-      apiCalls: 43
+      executionTime: 45000
     }
-  ])
+  ], [])
+
+  // Use real comparison runs if available, otherwise show mock data
+  const displayResults = useMemo(() => {
+    return comparisonRuns.length > 0 ? comparisonRuns : mockResults
+  }, [comparisonRuns, mockResults])
 
   const averageMetrics = useMemo(() => {
-    if (results.length === 0) return null
+    if (displayResults.length === 0) return null
 
-    const completed = results.filter(r => r.status === 'completed')
+    const completed = displayResults.filter(r => r.status === 'completed')
     const totalResults = completed.length
 
+    if (totalResults === 0) return null
+
+    const metricsArray = completed.map(r => getResultMetrics(r)).filter(m => m !== null)
+
+    if (metricsArray.length === 0) return null
+
     return {
-      avgPrecision: completed.reduce((sum, r) => sum + r.metrics.precision, 0) / totalResults,
-      avgRecall: completed.reduce((sum, r) => sum + r.metrics.recall, 0) / totalResults,
-      avgF1Score: completed.reduce((sum, r) => sum + r.metrics.f1Score, 0) / totalResults,
-      totalAdditionalPapers: completed.reduce((sum, r) => sum + r.metrics.additionalPapersFound, 0),
-      avgExecutionTime: completed.reduce((sum, r) => sum + r.executionTime, 0) / totalResults
+      avgPrecision: metricsArray.reduce((sum, m) => sum + m.precision, 0) / metricsArray.length,
+      avgRecall: metricsArray.reduce((sum, m) => sum + m.recall, 0) / metricsArray.length,
+      avgF1Score: metricsArray.reduce((sum, m) => sum + m.f1Score, 0) / metricsArray.length,
+      totalAdditionalPapers: metricsArray.reduce((sum, m) => sum + m.additionalPapersFound, 0),
+      avgExecutionTime: completed.reduce((sum, r) => sum + ((r as any).executionTime || 0), 0) / totalResults
     }
-  }, [results])
+  }, [displayResults])
 
   const formatPercent = (value: number) => `${(value * 100).toFixed(1)}%`
   const formatTime = (ms: number) => `${(ms / 1000).toFixed(1)}s`
+
+  // Helper to get metrics from either ComparisonRun or legacy format
+  const getResultMetrics = (result: ComparisonRun | any) => {
+    if ('comparisonResults' in result && result.comparisonResults) {
+      const comp = result.comparisonResults
+      return {
+        precision: comp.precision,
+        recall: comp.recall,
+        f1Score: comp.f1Score,
+        truePositives: comp.truePositives.length,
+        falsePositives: comp.falsePositives.length,
+        falseNegatives: comp.falseNegatives.length,
+        totalFound: comp.academicExplorerResults.length,
+        totalGroundTruth: comp.dataset.includedPapers.length,
+        additionalPapersFound: comp.additionalPapersFound.length
+      }
+    } else if ('metrics' in result) {
+      return result.metrics
+    }
+    return null
+  }
 
   return (
     <div style={{ padding: '24px', maxWidth: '1400px', margin: '0 auto' }}>
@@ -120,7 +252,75 @@ function ComparisonResults() {
         </p>
       </div>
 
-      {results.length === 0 ? (
+      {/* Run Comparison Controls */}
+      {starDatasets.length > 0 && (
+        <div style={{
+          backgroundColor: 'white',
+          borderRadius: '12px',
+          border: '1px solid #e5e7eb',
+          padding: '24px',
+          marginBottom: '32px'
+        }}>
+          <h2 style={{ fontSize: '20px', fontWeight: '600', color: '#1f2937', marginBottom: '16px' }}>
+            Available STAR Datasets
+          </h2>
+          <div style={{ display: 'grid', gap: '12px' }}>
+            {starDatasets.map((dataset) => {
+              const run = comparisonRuns.find(r => r.id === `run_${dataset.id}`)
+              const isRunning = run?.status === 'running'
+              const isCompleted = run?.status === 'completed'
+
+              return (
+                <div
+                  key={dataset.id}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    padding: '16px',
+                    backgroundColor: '#f9fafb',
+                    borderRadius: '8px',
+                    border: '1px solid #e5e7eb'
+                  }}
+                >
+                  <div>
+                    <h3 style={{ fontSize: '16px', fontWeight: '500', color: '#1f2937', marginBottom: '4px' }}>
+                      {dataset.name}
+                    </h3>
+                    <p style={{ fontSize: '14px', color: '#6b7280' }}>
+                      {dataset.originalPaperCount} papers • {dataset.reviewTopic}
+                    </p>
+                    {run?.progress && (
+                      <div style={{ fontSize: '12px', color: '#3b82f6', marginTop: '4px' }}>
+                        {run.progress.message} ({run.progress.progress}%)
+                      </div>
+                    )}
+                  </div>
+                  <button
+                    onClick={() => runComparison(dataset.id)}
+                    disabled={isRunningComparison || isRunning}
+                    style={{
+                      padding: '8px 16px',
+                      backgroundColor: isCompleted ? '#10b981' : (isRunning ? '#f59e0b' : '#3b82f6'),
+                      color: 'white',
+                      border: 'none',
+                      borderRadius: '6px',
+                      fontSize: '14px',
+                      fontWeight: '500',
+                      cursor: isRunningComparison || isRunning ? 'not-allowed' : 'pointer',
+                      opacity: isRunningComparison || isRunning ? 0.6 : 1
+                    }}
+                  >
+                    {isCompleted ? 'Re-run' : (isRunning ? 'Running...' : 'Run Comparison')}
+                  </button>
+                </div>
+              )
+            })}
+          </div>
+        </div>
+      )}
+
+      {displayResults.length === 0 ? (
         <div style={{
           backgroundColor: '#f9fafb',
           borderRadius: '12px',
@@ -133,7 +333,10 @@ function ComparisonResults() {
             No comparison results available
           </h3>
           <p style={{ fontSize: '14px', color: '#6b7280', marginBottom: '24px' }}>
-            Run comparisons against STAR datasets to see detailed performance metrics here
+            {starDatasets.length === 0
+              ? 'Upload STAR datasets first, then run comparisons to see detailed performance metrics here'
+              : 'Run comparisons against uploaded STAR datasets to see detailed performance metrics here'
+            }
           </p>
         </div>
       ) : (
@@ -241,12 +444,16 @@ function ComparisonResults() {
             </div>
 
             <div style={{ overflow: 'auto' }}>
-              {results.map((result, index) => (
+              {displayResults.map((result, index) => {
+                const metrics = getResultMetrics(result)
+                if (!metrics) return null
+
+                return (
                 <div
                   key={result.id}
                   style={{
                     padding: '20px',
-                    borderBottom: index < results.length - 1 ? '1px solid #f3f4f6' : 'none'
+                    borderBottom: index < displayResults.length - 1 ? '1px solid #f3f4f6' : 'none'
                   }}
                 >
                   <div style={{
@@ -264,7 +471,7 @@ function ComparisonResults() {
                       </p>
                       <p style={{ fontSize: '12px', color: '#9ca3af' }}>
                         Completed on {result.runDate.toLocaleDateString()} •
-                        {formatTime(result.executionTime)} • {result.apiCalls} API calls
+                        {formatTime((result as any).executionTime || 0)} • {(result as any).apiCalls || 'N/A'} API calls
                       </p>
                     </div>
 
@@ -289,49 +496,49 @@ function ComparisonResults() {
                   }}>
                     <div style={{ textAlign: 'center' }}>
                       <div style={{ fontSize: '20px', fontWeight: 'bold', color: '#3b82f6' }}>
-                        {formatPercent(result.metrics.precision)}
+                        {formatPercent(metrics.precision)}
                       </div>
                       <div style={{ fontSize: '12px', color: '#6b7280' }}>Precision</div>
                     </div>
 
                     <div style={{ textAlign: 'center' }}>
                       <div style={{ fontSize: '20px', fontWeight: 'bold', color: '#10b981' }}>
-                        {formatPercent(result.metrics.recall)}
+                        {formatPercent(metrics.recall)}
                       </div>
                       <div style={{ fontSize: '12px', color: '#6b7280' }}>Recall</div>
                     </div>
 
                     <div style={{ textAlign: 'center' }}>
                       <div style={{ fontSize: '20px', fontWeight: 'bold', color: '#8b5cf6' }}>
-                        {formatPercent(result.metrics.f1Score)}
+                        {formatPercent(metrics.f1Score)}
                       </div>
                       <div style={{ fontSize: '12px', color: '#6b7280' }}>F1-Score</div>
                     </div>
 
                     <div style={{ textAlign: 'center' }}>
                       <div style={{ fontSize: '20px', fontWeight: 'bold', color: '#059669' }}>
-                        {result.metrics.truePositives}
+                        {metrics.truePositives}
                       </div>
                       <div style={{ fontSize: '12px', color: '#6b7280' }}>True Positives</div>
                     </div>
 
                     <div style={{ textAlign: 'center' }}>
                       <div style={{ fontSize: '20px', fontWeight: 'bold', color: '#dc2626' }}>
-                        {result.metrics.falsePositives}
+                        {metrics.falsePositives}
                       </div>
                       <div style={{ fontSize: '12px', color: '#6b7280' }}>False Positives</div>
                     </div>
 
                     <div style={{ textAlign: 'center' }}>
                       <div style={{ fontSize: '20px', fontWeight: 'bold', color: '#b45309' }}>
-                        {result.metrics.falseNegatives}
+                        {metrics.falseNegatives}
                       </div>
                       <div style={{ fontSize: '12px', color: '#6b7280' }}>False Negatives</div>
                     </div>
 
                     <div style={{ textAlign: 'center' }}>
                       <div style={{ fontSize: '20px', fontWeight: 'bold', color: '#f59e0b' }}>
-                        +{result.metrics.additionalPapersFound}
+                        +{metrics.additionalPapersFound}
                       </div>
                       <div style={{ fontSize: '12px', color: '#6b7280' }}>Additional Found</div>
                     </div>
@@ -387,11 +594,12 @@ function ComparisonResults() {
                       }}
                       onClick={() => console.log('View additional papers for:', result.id)}
                     >
-                      View Additional Papers ({result.metrics.additionalPapersFound})
+                      View Additional Papers ({metrics.additionalPapersFound})
                     </button>
                   </div>
                 </div>
-              ))}
+                )
+              })}
             </div>
           </div>
 
