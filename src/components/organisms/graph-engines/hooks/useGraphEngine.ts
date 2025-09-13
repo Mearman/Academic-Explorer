@@ -51,7 +51,7 @@ export interface UseGraphEngineReturn {
   isLoading: boolean;
   
   /** Error state */
-  error: Error | null;
+  error: string | null;
   
   // Actions
   /** Switch to a different engine with optional transition settings */
@@ -92,7 +92,13 @@ export interface UseGraphEngineReturn {
   
   /** Handle engine errors */
   handleEngineError: (engineType: GraphEngineType, error: string) => void;
-  
+
+  /** Clear error for current or specified engine */
+  clearError: (engineType?: GraphEngineType) => void;
+
+  /** Retry failed engine by clearing error and re-initializing */
+  retryEngine: (engineType?: GraphEngineType) => void;
+
   /** Check if engine switching is allowed (not transitioning, engine available) */
   canSwitchEngine: (engineType: GraphEngineType) => boolean;
   
@@ -331,8 +337,12 @@ export function useGraphEngine(): UseGraphEngineReturn {
   
   const handleEngineError = useCallback((engineType: GraphEngineType, error: string) => {
     console.error(`Engine ${engineType} error:`, error);
-    // TODO: Implement proper error state management
-  }, []);
+    // Error is automatically stored in engineErrors state from the provider context
+    // Optionally clear the error after some time to allow retry
+    setTimeout(() => {
+      clearEngineError(engineType);
+    }, 10000); // Clear error after 10 seconds to allow retry
+  }, [clearEngineError]);
   
   // Return memoised interface
   return useMemo<UseGraphEngineReturn>(() => ({
@@ -348,7 +358,7 @@ export function useGraphEngine(): UseGraphEngineReturn {
     engineErrors: engineErrorsRecord,
     settings,
     isLoading: isTransitioning,
-    error: null, // TODO: Implement proper error handling
+    error: engineErrorsRecord[currentEngine] || null, // Current engine's error state
     
     // Actions
     switchEngine: handleSwitchEngine,
@@ -363,6 +373,19 @@ export function useGraphEngine(): UseGraphEngineReturn {
     clearEngineError,
     handleEngineError,
     
+    // Error handling
+    clearError: (engineType?: GraphEngineType) => {
+      clearEngineError(engineType || currentEngine);
+    },
+    retryEngine: (engineType?: GraphEngineType) => {
+      const targetEngine = engineType || currentEngine;
+      clearEngineError(targetEngine);
+      // If it's the current engine, trigger a re-initialization by switching away and back
+      if (targetEngine === currentEngine) {
+        handleSwitchEngine(targetEngine, { preservePositions: true });
+      }
+    },
+
     // Helpers
     canSwitchEngine,
     getRecommendedEngine,

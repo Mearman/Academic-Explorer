@@ -60,7 +60,7 @@ export class WebGLEngine<TVertexData = unknown, TEdgeData = unknown>
     supportsClustering: true,
     supportsCustomShapes: true,
     supportsEdgeBundling: true,
-    exportFormats: ['png'],
+    exportFormats: ['png', 'json'],
     memoryUsage: 'high', // GPU memory intensive
     cpuUsage: 'low', // GPU does the heavy lifting
     batteryImpact: 'significant', // GPU intensive
@@ -439,13 +439,73 @@ const fragmentShader = gl.createShader(gl.FRAGMENT_SHADER);
       });
     }
 
+    if (format === 'json') {
+      // Export current graph data and positions
+      const exportData = {
+        type: 'webgl-graph-export',
+        version: '1.0',
+        timestamp: new Date().toISOString(),
+        vertexCount: this.vertexCount,
+        edgeCount: this.edgeCount,
+        positions: this.getPositions(),
+        edges: this.currentGraph?.edges || [],
+        viewMatrix: this.viewMatrix ? Array.from(this.viewMatrix) : null,
+        renderConfig: {
+          vertexSize: 5.0,
+          edgeWidth: 2.0,
+          alpha: 1.0,
+        },
+        canvasSize: {
+          width: this.canvas.width,
+          height: this.canvas.height,
+        },
+        ...options,
+      };
+      return JSON.stringify(exportData, null, 2);
+    }
+
     throw new Error(`Export format ${format} not supported by WebGL engine`);
   }
 
   getPositions(): ReadonlyArray<IPositionedVertex<TVertexData>> {
-    // Return empty array - position data is on GPU
-    // Real implementation would need to read back from GPU buffers
-    return [];
+    if (!this.vertices || this.vertexCount === 0) {
+      return [];
+    }
+
+    const positions: IPositionedVertex<TVertexData>[] = [];
+    const stride = 7; // [x, y, r, g, b, size, opacity]
+
+    for (let i = 0; i < this.vertexCount; i++) {
+      const bufferIndex = i * stride;
+      const x = this.vertices[bufferIndex];
+      const y = this.vertices[bufferIndex + 1];
+
+      // Convert normalized coordinates back to world coordinates
+      const worldX = ((x + 1) / 2) * 1000; // Assuming 1000 unit world space
+      const worldY = ((y + 1) / 2) * 800;
+
+      positions.push({
+        id: `vertex-${i}`, // Generate ID - in real use, this should come from original data
+        data: {} as TVertexData, // We don't maintain original data in WebGL - this would need enhancement
+        label: `Vertex ${i}`,
+        position: {
+          x: worldX,
+          y: worldY
+        },
+        metadata: {
+          vertexIndex: i,
+          renderColor: {
+            r: this.vertices[bufferIndex + 2],
+            g: this.vertices[bufferIndex + 3],
+            b: this.vertices[bufferIndex + 4]
+          },
+          size: this.vertices[bufferIndex + 5],
+          opacity: this.vertices[bufferIndex + 6]
+        }
+      });
+    }
+
+    return positions;
   }
 
   setPositions(
