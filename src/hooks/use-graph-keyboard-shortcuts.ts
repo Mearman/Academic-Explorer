@@ -9,6 +9,8 @@ export interface GraphKeyboardShortcuts {
   onZoomOut?: () => void;
   onZoomReset?: () => void;
   onEscape?: () => void;
+  onCycleEngine?: () => void;
+  onToggleEngineSelector?: () => void;
 }
 
 /**
@@ -40,7 +42,7 @@ export function useGraphKeyboardShortcuts(shortcuts: GraphKeyboardShortcuts) {
       return;
     }
 
-    // Zoom shortcuts (without modifiers for +, -, 0)
+    // Zoom and engine shortcuts (without modifiers for +, -, 0, e, tab)
     if (!event.metaKey && !event.ctrlKey && !event.altKey && !event.shiftKey) {
       switch (event.key) {
         case '+':
@@ -56,6 +58,20 @@ export function useGraphKeyboardShortcuts(shortcuts: GraphKeyboardShortcuts) {
           event.preventDefault();
           shortcuts.onZoomReset?.();
           return;
+        case 'e':
+        case 'E':
+          event.preventDefault();
+          shortcuts.onToggleEngineSelector?.();
+          announceToScreenReader('Toggling engine selector');
+          return;
+        case 'Tab':
+          if (document.activeElement?.tagName === 'SELECT' && 
+              document.activeElement?.className?.includes('graph-engine')) {
+            // Allow natural tab navigation through engine selector
+            shortcuts.onCycleEngine?.();
+            return;
+          }
+          break;
       }
     }
 
@@ -138,6 +154,8 @@ export function getKeyboardShortcutLabels() {
     zoomOut: '-',
     zoomReset: '0',
     escape: 'Escape',
+    toggleEngineSelector: 'E',
+    cycleEngine: 'Tab (in engine selector)',
     modifierKey: modKey,
   };
 }
