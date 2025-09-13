@@ -35,6 +35,9 @@ function RootLayout() {
                   <Link to="/demo" className={navLink}>
                     Query Demo
                   </Link>
+                  <Link to="/search" className={navLink}>
+                    Search Demo
+                  </Link>
                 </nav>
 
                 <ActionIcon
