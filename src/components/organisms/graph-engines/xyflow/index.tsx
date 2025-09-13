@@ -1291,6 +1291,215 @@ const ClusterVisualization: React.FC<{
   );
 };
 
+// ============================================================================
+// Animation and Transition System
+// ============================================================================
+
+interface AnimationConfig {
+  duration: number;
+  easing: 'linear' | 'ease' | 'ease-in' | 'ease-out' | 'ease-in-out';
+  delay?: number;
+}
+
+const defaultAnimationConfig: AnimationConfig = {
+  duration: 800,
+  easing: 'ease-in-out',
+  delay: 0,
+};
+
+// Animation utility functions
+const AnimationUtils = {
+  // Animate node positions with smooth transitions
+  animateNodePositions: (
+    nodes: Node[],
+    targetPositions: Record<string, { x: number; y: number }>,
+    config: AnimationConfig = defaultAnimationConfig
+  ): Promise<Node[]> => {
+    return new Promise((resolve) => {
+      const startTime = Date.now();
+      const initialPositions = nodes.reduce((acc, node) => {
+        acc[node.id] = { ...node.position };
+        return acc;
+      }, {} as Record<string, { x: number; y: number }>);
+
+      const animate = () => {
+        const elapsed = Date.now() - startTime;
+        const progress = Math.min(elapsed / config.duration, 1);
+
+        // Apply easing function
+        const easedProgress = AnimationUtils.easeFunction(progress, config.easing);
+
+        const animatedNodes = nodes.map(node => {
+          const startPos = initialPositions[node.id];
+          const targetPos = targetPositions[node.id];
+
+          if (!startPos || !targetPos) return node;
+
+          return {
+            ...node,
+            position: {
+              x: startPos.x + (targetPos.x - startPos.x) * easedProgress,
+              y: startPos.y + (targetPos.y - startPos.y) * easedProgress,
+            },
+          };
+        });
+
+        if (progress >= 1) {
+          resolve(animatedNodes);
+        } else {
+          requestAnimationFrame(animate);
+        }
+      };
+
+      setTimeout(() => {
+        requestAnimationFrame(animate);
+      }, config.delay || 0);
+    });
+  },
+
+  // Easing functions
+  easeFunction: (t: number, type: AnimationConfig['easing']): number => {
+    switch (type) {
+      case 'linear':
+        return t;
+      case 'ease-in':
+        return t * t;
+      case 'ease-out':
+        return 1 - (1 - t) * (1 - t);
+      case 'ease-in-out':
+        return t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2;
+      case 'ease':
+      default:
+        return 1 - Math.cos((t * Math.PI) / 2);
+    }
+  },
+
+  // Staggered animation for multiple elements
+  staggeredAnimation: async (
+    items: any[],
+    animationFn: (item: any, index: number) => Promise<void>,
+    staggerDelay: number = 50
+  ): Promise<void> => {
+    const promises = items.map((item, index) =>
+      new Promise<void>((resolve) => {
+        setTimeout(async () => {
+          await animationFn(item, index);
+          resolve();
+        }, index * staggerDelay);
+      })
+    );
+
+    await Promise.all(promises);
+  },
+
+  // Smooth zoom transition
+  animateZoom: (
+    reactFlowInstance: ReactFlowInstance,
+    targetZoom: number,
+    config: AnimationConfig = defaultAnimationConfig
+  ): Promise<void> => {
+    return new Promise((resolve) => {
+      const currentZoom = reactFlowInstance.getZoom();
+      const startTime = Date.now();
+
+      const animate = () => {
+        const elapsed = Date.now() - startTime;
+        const progress = Math.min(elapsed / config.duration, 1);
+        const easedProgress = AnimationUtils.easeFunction(progress, config.easing);
+
+        const newZoom = currentZoom + (targetZoom - currentZoom) * easedProgress;
+        reactFlowInstance.zoomTo(newZoom, { duration: 0 });
+
+        if (progress >= 1) {
+          resolve();
+        } else {
+          requestAnimationFrame(animate);
+        }
+      };
+
+      requestAnimationFrame(animate);
+    });
+  },
+};
+
+// Transition-aware layout change hook
+const useAnimatedLayoutChange = (
+  reactFlowInstance: ReactFlowInstance | null,
+  animationConfig: AnimationConfig = defaultAnimationConfig
+) => {
+  const [isAnimating, setIsAnimating] = React.useState(false);
+
+  const animateLayoutChange = React.useCallback(async (
+    newNodes: Node[],
+    layoutType: string,
+    onComplete?: () => void
+  ) => {
+    if (!reactFlowInstance || isAnimating) return;
+
+    setIsAnimating(true);
+
+    try {
+      // Create target position mapping
+      const targetPositions = newNodes.reduce((acc, node) => {
+        acc[node.id] = { ...node.position };
+        return acc;
+      }, {} as Record<string, { x: number; y: number }>);
+
+      // Get current nodes for animation
+      const currentNodes = reactFlowInstance.getNodes();
+
+      // Animate to new positions
+      await AnimationUtils.animateNodePositions(
+        currentNodes,
+        targetPositions,
+        animationConfig
+      );
+
+      // Final update with exact positions
+      reactFlowInstance.setNodes(newNodes);
+
+      onComplete?.();
+    } catch (error) {
+      console.warn('Layout animation failed:', error);
+      // Fallback to immediate update
+      reactFlowInstance.setNodes(newNodes);
+    } finally {
+      setIsAnimating(false);
+    }
+  }, [reactFlowInstance, isAnimating, animationConfig]);
+
+  return { animateLayoutChange, isAnimating };
+};
+
+// Node appearance animation component
+const AnimatedNodeWrapper: React.FC<{
+  children: React.ReactNode;
+  nodeId: string;
+  animationDelay?: number;
+}> = ({ children, nodeId, animationDelay = 0 }) => {
+  const [isVisible, setIsVisible] = React.useState(false);
+
+  React.useEffect(() => {
+    const timer = setTimeout(() => {
+      setIsVisible(true);
+    }, animationDelay);
+
+    return () => clearTimeout(timer);
+  }, [animationDelay]);
+
+  return (
+    <div
+      style={{
+        opacity: isVisible ? 1 : 0,
+        transform: isVisible ? 'scale(1)' : 'scale(0.8)',
+        transition: 'opacity 0.4s ease-out, transform 0.4s ease-out',
+      }}
+    >
+      {children}
+    </div>
+  );
+};
+
 // Helper function to calculate cluster bounds
 const calculateClusterBounds = (nodes: Node[]) => {
   if (nodes.length === 0) return null;
@@ -2036,6 +2245,13 @@ import '@xyflow/react/dist/style.css';
       const [edges, setEdges, onEdgesChange] = useEdgesState(engine.edges);
       const [rfInstance, setRfInstance] = useState<ReactFlowInstance | null>(null);
 
+      // Animation system integration
+      const { animateLayoutChange, isAnimating } = useAnimatedLayoutChange(rfInstance, {
+        duration: 1000,
+        easing: 'ease-in-out',
+      });
+      const [layoutTransitionActive, setLayoutTransitionActive] = useState(false);
+
       // Tooltip state management
       const [nodeTooltip, setNodeTooltip] = useState<{
         node: Node | null;
@@ -2276,6 +2492,51 @@ import '@xyflow/react/dist/style.css';
         }
       }, [nodes, edges, shouldShowClusters, activeClusterType]);
 
+      // Animated cluster type change handler
+      const handleClusterTypeChange = useCallback(async (newType: ClusterType) => {
+        if (newType === activeClusterType || isAnimating) return;
+
+        setLayoutTransitionActive(true);
+
+        // Animate zoom out slightly during transition
+        if (rfInstance) {
+          const currentZoom = rfInstance.getZoom();
+          await AnimationUtils.animateZoom(rfInstance, currentZoom * 0.9, { duration: 300, easing: 'ease-out' });
+        }
+
+        // Change cluster type
+        setActiveClusterType(newType);
+
+        // Small delay for visual feedback
+        await new Promise(resolve => setTimeout(resolve, 200));
+
+        // Animate zoom back in
+        if (rfInstance) {
+          const currentZoom = rfInstance.getZoom();
+          await AnimationUtils.animateZoom(rfInstance, currentZoom / 0.9, { duration: 400, easing: 'ease-in' });
+        }
+
+        setLayoutTransitionActive(false);
+      }, [activeClusterType, isAnimating, rfInstance]);
+
+      // Enhanced focus function with smooth animation
+      const animatedFocusOnCluster = useCallback(async (cluster: Cluster) => {
+        if (!rfInstance) return;
+
+        // Calculate cluster center
+        const centerX = (cluster.bounds.minX + cluster.bounds.maxX) / 2;
+        const centerY = (cluster.bounds.minY + cluster.bounds.maxY) / 2;
+
+        // Calculate appropriate zoom level
+        const clusterWidth = cluster.bounds.maxX - cluster.bounds.minX;
+        const clusterHeight = cluster.bounds.maxY - cluster.bounds.minY;
+        const maxDimension = Math.max(clusterWidth, clusterHeight);
+        const targetZoom = Math.min(1.5, Math.max(0.5, 800 / maxDimension));
+
+        // Animate to cluster with smooth transition
+        await rfInstance.setCenter(centerX, centerY, { zoom: targetZoom, duration: 800 });
+      }, [rfInstance]);
+
       // Sync nodes and edges with engine, applying performance optimizations
       useEffect(() => {
         let optimizedNodes = engine.nodes;
@@ -2386,9 +2647,14 @@ import '@xyflow/react/dist/style.css';
                 <ClusterVisualization
                   cluster={cluster}
                   isActive={selectedCluster === cluster.id}
-                  onClick={() => setSelectedCluster(
-                    selectedCluster === cluster.id ? null : cluster.id
-                  )}
+                  onClick={() => {
+                    if (selectedCluster === cluster.id) {
+                      setSelectedCluster(null);
+                    } else {
+                      setSelectedCluster(cluster.id);
+                      animatedFocusOnCluster(cluster);
+                    }
+                  }}
                 />
               </Panel>
             ))}
@@ -2417,7 +2683,8 @@ import '@xyflow/react/dist/style.css';
                     ].map(({ type, label, icon }) => (
                       <button
                         key={type}
-                        onClick={() => setActiveClusterType(type)}
+                        onClick={() => handleClusterTypeChange(type)}
+                        disabled={isAnimating || layoutTransitionActive}
                         style={{
                           padding: '6px 10px',
                           border: activeClusterType === type ? '2px solid #3b82f6' : '1px solid #e5e7eb',
@@ -2506,6 +2773,38 @@ import '@xyflow/react/dist/style.css';
                 >
                   {shouldShowCompactNodes ? '⚡ Optimized' : '🔍 Detailed'}
                   ({nodes.length}N, {edges.length}E)
+                </div>
+              </Panel>
+            )}
+
+            {/* Animation Status Indicator */}
+            {(isAnimating || layoutTransitionActive) && (
+              <Panel position="bottom-right">
+                <div
+                  style={{
+                    background: 'rgba(59, 130, 246, 0.9)',
+                    color: 'white',
+                    padding: '8px 12px',
+                    borderRadius: '6px',
+                    fontSize: '12px',
+                    fontWeight: '600',
+                    boxShadow: '0 2px 8px rgba(0, 0, 0, 0.15)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '6px',
+                    animation: 'pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                  }}
+                >
+                  <div style={{
+                    width: '8px',
+                    height: '8px',
+                    borderRadius: '50%',
+                    background: 'white',
+                    animation: 'spin 1s linear infinite',
+                  }} />
+                  <span>
+                    {layoutTransitionActive ? '🔄 Transition' : '📐 Layout Animation'}
+                  </span>
                 </div>
               </Panel>
             )}
