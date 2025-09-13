@@ -4,7 +4,6 @@
  */
 
 import { openAlex } from '@/lib/openalex';
-import type { SearchWorksOptions } from '@/lib/openalex/entities/works';
 import type { WorkReference, STARDataset } from './types';
 import { convertWorkToReference } from './openalex-search-service';
 
@@ -158,7 +157,7 @@ async function performTemporalGapAnalysis(
   const searchEnd = yearRange.end + (config.temporalWindowYears || 2);
 
   const searchQuery = keywords.slice(0, 5).join(' OR '); // Limit to top 5 keywords
-  const searchOptions: SearchWorksOptions = {
+  const worksParams = {
     search: searchQuery,
     filter: {
       from_publication_date: `${searchStart}-01-01`,
@@ -167,11 +166,11 @@ async function performTemporalGapAnalysis(
     },
     select: ['id', 'title', 'display_name', 'authorships', 'publication_year', 'doi', 'ids', 'primary_location', 'best_oa_location', 'cited_by_count', 'abstract_inverted_index'],
     per_page: config.maxPapersPerMethod || 50,
-    sort: 'cited_by_count:desc'
+    sort: 'cited_by_count'
   };
 
   try {
-    const response = await openAlex.works(searchOptions);
+    const response = await openAlex.works.getWorks(worksParams);
     const works = response.results || [];
 
     onProgress?.({
@@ -234,14 +233,14 @@ async function performCitationNetworkAnalysis(
 
     try {
       // Find papers that cite this paper
-      const citingPapersResponse = await openAlex.works({
+      const citingPapersResponse = await openAlex.works.getWorks({
         filter: {
           cites: paper.openalexId,
           cited_by_count: `>${config.minimumCitationThreshold || 5}`
         },
         select: ['id', 'title', 'display_name', 'authorships', 'publication_year', 'doi', 'ids', 'primary_location', 'best_oa_location', 'cited_by_count', 'abstract_inverted_index'],
         per_page: Math.min(20, (config.maxPapersPerMethod || 50) / samplePapers.length),
-        sort: 'cited_by_count:desc'
+        sort: 'cited_by_count'
       });
 
       const citingWorks = citingPapersResponse.results || [];
@@ -304,7 +303,7 @@ async function performAuthorNetworkAnalysis(
   const keywordQuery = keywords.slice(0, 3).join(' OR ');
 
   try {
-    const searchOptions: SearchWorksOptions = {
+    const response = await openAlex.works.getWorks({
       search: `(author:${authorQuery}) AND (${keywordQuery})`,
       filter: {
         from_publication_date: `${yearRange.start - 1}-01-01`,
@@ -313,10 +312,8 @@ async function performAuthorNetworkAnalysis(
       },
       select: ['id', 'title', 'display_name', 'authorships', 'publication_year', 'doi', 'ids', 'primary_location', 'best_oa_location', 'cited_by_count', 'abstract_inverted_index'],
       per_page: config.maxPapersPerMethod || 50,
-      sort: 'cited_by_count:desc'
-    };
-
-    const response = await openAlex.works(searchOptions);
+      sort: 'cited_by_count'
+    });
     const works = response.results || [];
 
     candidates.push(...works.map(convertWorkToReference));
@@ -371,7 +368,7 @@ async function performKeywordExpansionAnalysis(
 
     try {
       const searchQuery = termPair.join(' OR ');
-      const searchOptions: SearchWorksOptions = {
+      const response = await openAlex.works.getWorks({
         search: searchQuery,
         filter: {
           from_publication_date: `${yearRange.start}-01-01`,
@@ -380,10 +377,8 @@ async function performKeywordExpansionAnalysis(
         },
         select: ['id', 'title', 'display_name', 'authorships', 'publication_year', 'doi', 'ids', 'primary_location', 'best_oa_location', 'cited_by_count', 'abstract_inverted_index'],
         per_page: Math.min(10, (config.maxPapersPerMethod || 50) / (expandedTerms.length / 2)),
-        sort: 'cited_by_count:desc'
-      };
-
-      const response = await openAlex.works(searchOptions);
+        sort: 'cited_by_count'
+      });
       const works = response.results || [];
       candidates.push(...works.map(convertWorkToReference));
 
