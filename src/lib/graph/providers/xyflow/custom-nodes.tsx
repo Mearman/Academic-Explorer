@@ -141,49 +141,49 @@ export const CustomNode: React.FC<CustomNodeProps> = ({ data, selected }) => {
 				type="target"
 				position={Position.Top}
 				id="top"
-				style={{ background: '#555', width: '8px', height: '8px' }}
+				style={{ background: "#555", width: "8px", height: "8px" }}
 			/>
 			<Handle
 				type="target"
 				position={Position.Right}
 				id="right"
-				style={{ background: '#555', width: '8px', height: '8px' }}
+				style={{ background: "#555", width: "8px", height: "8px" }}
 			/>
 			<Handle
 				type="target"
 				position={Position.Bottom}
 				id="bottom"
-				style={{ background: '#555', width: '8px', height: '8px' }}
+				style={{ background: "#555", width: "8px", height: "8px" }}
 			/>
 			<Handle
 				type="target"
 				position={Position.Left}
 				id="left"
-				style={{ background: '#555', width: '8px', height: '8px' }}
+				style={{ background: "#555", width: "8px", height: "8px" }}
 			/>
 			<Handle
 				type="source"
 				position={Position.Top}
 				id="top-source"
-				style={{ background: '#555', width: '8px', height: '8px' }}
+				style={{ background: "#555", width: "8px", height: "8px" }}
 			/>
 			<Handle
 				type="source"
 				position={Position.Right}
 				id="right-source"
-				style={{ background: '#555', width: '8px', height: '8px' }}
+				style={{ background: "#555", width: "8px", height: "8px" }}
 			/>
 			<Handle
 				type="source"
 				position={Position.Bottom}
 				id="bottom-source"
-				style={{ background: '#555', width: '8px', height: '8px' }}
+				style={{ background: "#555", width: "8px", height: "8px" }}
 			/>
 			<Handle
 				type="source"
 				position={Position.Left}
 				id="left-source"
-				style={{ background: '#555', width: '8px', height: '8px' }}
+				style={{ background: "#555", width: "8px", height: "8px" }}
 			/>
 
 			{/* Node content */}
@@ -262,14 +262,14 @@ export const WorkNode: React.FC<CustomNodeProps> = ({ data, selected }) => {
 	return (
 		<div style={nodeStyle}>
 			{/* Connection handles - XYFlow automatically positions at node edges */}
-			<Handle type="target" position={Position.Top} id="top" style={{ background: '#555', width: '8px', height: '8px' }} />
-			<Handle type="target" position={Position.Right} id="right" style={{ background: '#555', width: '8px', height: '8px' }} />
-			<Handle type="target" position={Position.Bottom} id="bottom" style={{ background: '#555', width: '8px', height: '8px' }} />
-			<Handle type="target" position={Position.Left} id="left" style={{ background: '#555', width: '8px', height: '8px' }} />
-			<Handle type="source" position={Position.Top} id="top-source" style={{ background: '#555', width: '8px', height: '8px' }} />
-			<Handle type="source" position={Position.Right} id="right-source" style={{ background: '#555', width: '8px', height: '8px' }} />
-			<Handle type="source" position={Position.Bottom} id="bottom-source" style={{ background: '#555', width: '8px', height: '8px' }} />
-			<Handle type="source" position={Position.Left} id="left-source" style={{ background: '#555', width: '8px', height: '8px' }} />
+			<Handle type="target" position={Position.Top} id="top" style={{ background: "#555", width: "8px", height: "8px" }} />
+			<Handle type="target" position={Position.Right} id="right" style={{ background: "#555", width: "8px", height: "8px" }} />
+			<Handle type="target" position={Position.Bottom} id="bottom" style={{ background: "#555", width: "8px", height: "8px" }} />
+			<Handle type="target" position={Position.Left} id="left" style={{ background: "#555", width: "8px", height: "8px" }} />
+			<Handle type="source" position={Position.Top} id="top-source" style={{ background: "#555", width: "8px", height: "8px" }} />
+			<Handle type="source" position={Position.Right} id="right-source" style={{ background: "#555", width: "8px", height: "8px" }} />
+			<Handle type="source" position={Position.Bottom} id="bottom-source" style={{ background: "#555", width: "8px", height: "8px" }} />
+			<Handle type="source" position={Position.Left} id="left-source" style={{ background: "#555", width: "8px", height: "8px" }} />
 
 			<div style={{ marginBottom: "4px", display: "flex", alignItems: "center", gap: "4px" }}>
 				{data.isPinned && <IconPin size={12} style={{ color: "#ffc107" }} />}
@@ -309,14 +309,14 @@ export const AuthorNode: React.FC<CustomNodeProps> = ({ data, selected }) => {
 	return (
 		<div style={nodeStyle}>
 			{/* Connection handles - XYFlow automatically positions at node edges */}
-			<Handle type="target" position={Position.Top} id="top" style={{ background: '#555', width: '8px', height: '8px' }} />
-			<Handle type="target" position={Position.Right} id="right" style={{ background: '#555', width: '8px', height: '8px' }} />
-			<Handle type="target" position={Position.Bottom} id="bottom" style={{ background: '#555', width: '8px', height: '8px' }} />
-			<Handle type="target" position={Position.Left} id="left" style={{ background: '#555', width: '8px', height: '8px' }} />
-			<Handle type="source" position={Position.Top} id="top-source" style={{ background: '#555', width: '8px', height: '8px' }} />
-			<Handle type="source" position={Position.Right} id="right-source" style={{ background: '#555', width: '8px', height: '8px' }} />
-			<Handle type="source" position={Position.Bottom} id="bottom-source" style={{ background: '#555', width: '8px', height: '8px' }} />
-			<Handle type="source" position={Position.Left} id="left-source" style={{ background: '#555', width: '8px', height: '8px' }} />
+			<Handle type="target" position={Position.Top} id="top" style={{ background: "#555", width: "8px", height: "8px" }} />
+			<Handle type="target" position={Position.Right} id="right" style={{ background: "#555", width: "8px", height: "8px" }} />
+			<Handle type="target" position={Position.Bottom} id="bottom" style={{ background: "#555", width: "8px", height: "8px" }} />
+			<Handle type="target" position={Position.Left} id="left" style={{ background: "#555", width: "8px", height: "8px" }} />
+			<Handle type="source" position={Position.Top} id="top-source" style={{ background: "#555", width: "8px", height: "8px" }} />
+			<Handle type="source" position={Position.Right} id="right-source" style={{ background: "#555", width: "8px", height: "8px" }} />
+			<Handle type="source" position={Position.Bottom} id="bottom-source" style={{ background: "#555", width: "8px", height: "8px" }} />
+			<Handle type="source" position={Position.Left} id="left-source" style={{ background: "#555", width: "8px", height: "8px" }} />
 
 			<div style={{ marginBottom: "4px", display: "flex", alignItems: "center", gap: "4px" }}>
 				{data.isPinned && <IconPin size={12} style={{ color: "#ffc107" }} />}
@@ -350,14 +350,14 @@ export const SourceNode: React.FC<CustomNodeProps> = ({ data, selected }) => {
 	return (
 		<div style={nodeStyle}>
 			{/* Connection handles - XYFlow automatically positions at node edges */}
-			<Handle type="target" position={Position.Top} id="top" style={{ background: '#555', width: '8px', height: '8px' }} />
-			<Handle type="target" position={Position.Right} id="right" style={{ background: '#555', width: '8px', height: '8px' }} />
-			<Handle type="target" position={Position.Bottom} id="bottom" style={{ background: '#555', width: '8px', height: '8px' }} />
-			<Handle type="target" position={Position.Left} id="left" style={{ background: '#555', width: '8px', height: '8px' }} />
-			<Handle type="source" position={Position.Top} id="top-source" style={{ background: '#555', width: '8px', height: '8px' }} />
-			<Handle type="source" position={Position.Right} id="right-source" style={{ background: '#555', width: '8px', height: '8px' }} />
-			<Handle type="source" position={Position.Bottom} id="bottom-source" style={{ background: '#555', width: '8px', height: '8px' }} />
-			<Handle type="source" position={Position.Left} id="left-source" style={{ background: '#555', width: '8px', height: '8px' }} />
+			<Handle type="target" position={Position.Top} id="top" style={{ background: "#555", width: "8px", height: "8px" }} />
+			<Handle type="target" position={Position.Right} id="right" style={{ background: "#555", width: "8px", height: "8px" }} />
+			<Handle type="target" position={Position.Bottom} id="bottom" style={{ background: "#555", width: "8px", height: "8px" }} />
+			<Handle type="target" position={Position.Left} id="left" style={{ background: "#555", width: "8px", height: "8px" }} />
+			<Handle type="source" position={Position.Top} id="top-source" style={{ background: "#555", width: "8px", height: "8px" }} />
+			<Handle type="source" position={Position.Right} id="right-source" style={{ background: "#555", width: "8px", height: "8px" }} />
+			<Handle type="source" position={Position.Bottom} id="bottom-source" style={{ background: "#555", width: "8px", height: "8px" }} />
+			<Handle type="source" position={Position.Left} id="left-source" style={{ background: "#555", width: "8px", height: "8px" }} />
 
 			<div style={{ marginBottom: "4px", display: "flex", alignItems: "center", gap: "4px" }}>
 				{data.isPinned && <IconPin size={12} style={{ color: "#ffc107" }} />}
@@ -391,14 +391,14 @@ export const InstitutionNode: React.FC<CustomNodeProps> = ({ data, selected }) =
 	return (
 		<div style={nodeStyle}>
 			{/* Connection handles - XYFlow automatically positions at node edges */}
-			<Handle type="target" position={Position.Top} id="top" style={{ background: '#555', width: '8px', height: '8px' }} />
-			<Handle type="target" position={Position.Right} id="right" style={{ background: '#555', width: '8px', height: '8px' }} />
-			<Handle type="target" position={Position.Bottom} id="bottom" style={{ background: '#555', width: '8px', height: '8px' }} />
-			<Handle type="target" position={Position.Left} id="left" style={{ background: '#555', width: '8px', height: '8px' }} />
-			<Handle type="source" position={Position.Top} id="top-source" style={{ background: '#555', width: '8px', height: '8px' }} />
-			<Handle type="source" position={Position.Right} id="right-source" style={{ background: '#555', width: '8px', height: '8px' }} />
-			<Handle type="source" position={Position.Bottom} id="bottom-source" style={{ background: '#555', width: '8px', height: '8px' }} />
-			<Handle type="source" position={Position.Left} id="left-source" style={{ background: '#555', width: '8px', height: '8px' }} />
+			<Handle type="target" position={Position.Top} id="top" style={{ background: "#555", width: "8px", height: "8px" }} />
+			<Handle type="target" position={Position.Right} id="right" style={{ background: "#555", width: "8px", height: "8px" }} />
+			<Handle type="target" position={Position.Bottom} id="bottom" style={{ background: "#555", width: "8px", height: "8px" }} />
+			<Handle type="target" position={Position.Left} id="left" style={{ background: "#555", width: "8px", height: "8px" }} />
+			<Handle type="source" position={Position.Top} id="top-source" style={{ background: "#555", width: "8px", height: "8px" }} />
+			<Handle type="source" position={Position.Right} id="right-source" style={{ background: "#555", width: "8px", height: "8px" }} />
+			<Handle type="source" position={Position.Bottom} id="bottom-source" style={{ background: "#555", width: "8px", height: "8px" }} />
+			<Handle type="source" position={Position.Left} id="left-source" style={{ background: "#555", width: "8px", height: "8px" }} />
 
 			<div style={{ marginBottom: "4px", display: "flex", alignItems: "center", gap: "4px" }}>
 				{data.isPinned && <IconPin size={12} style={{ color: "#ffc107" }} />}

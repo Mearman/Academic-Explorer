@@ -108,7 +108,7 @@ export class XYFlowProvider implements GraphProvider {
 
 		if (hasChanges) {
 			this.reactFlowInstance.setEdges(updatedEdges);
-			logger.info("graph", 'DynamicFloatingEdge: Recalculated handles after layout change (legacy fallback)');
+			logger.info("graph", "DynamicFloatingEdge: Recalculated handles after layout change (legacy fallback)");
 		}
 	}
 
@@ -150,7 +150,7 @@ export class XYFlowProvider implements GraphProvider {
 		}
 
 		if (!sourceNode || !targetNode) {
-			logger.info("graph", 'DynamicFloatingEdge: Missing nodes for edge calculation (legacy fallback)', { sourceId, targetId });
+			logger.info("graph", "DynamicFloatingEdge: Missing nodes for edge calculation (legacy fallback)", { sourceId, targetId });
 			return { sourceHandle: "right-source", targetHandle: "left" };
 		}
 

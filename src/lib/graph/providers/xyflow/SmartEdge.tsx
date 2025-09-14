@@ -17,13 +17,13 @@ import {
 // Helper function to calculate arrow rotation based on target position
 function getArrowRotation(targetPosition: any): number {
 	switch (targetPosition) {
-		case 'top':
+		case "top":
 			return 90;  // Point down into top of node
-		case 'right':
+		case "right":
 			return 180; // Point left into right of node
-		case 'bottom':
+		case "bottom":
 			return 270; // Point up into bottom of node
-		case 'left':
+		case "left":
 			return 0;   // Point right into left of node
 		default:
 			return 0;
