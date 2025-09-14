@@ -141,7 +141,6 @@ export class WorksApi {
   ): Promise<OpenAlexResponse<Work>> {
     const filters: WorksFilters = {
       'authorships.author.id': authorId,
-      ...params.filter,
     };
 
     return this.getWorks({ ...params, filter: this.buildFilterString(filters) });
@@ -167,8 +166,7 @@ export class WorksApi {
     params: WorksQueryParams = {}
   ): Promise<OpenAlexResponse<Work>> {
     const filters: WorksFilters = {
-      'authorships.institutions.id': institutionId,
-      ...params.filter,
+      'authorships.institution.id': institutionId,
     };
 
     return this.getWorks({ ...params, filter: this.buildFilterString(filters) });
@@ -195,7 +193,6 @@ export class WorksApi {
   ): Promise<OpenAlexResponse<Work>> {
     const filters: WorksFilters = {
       'primary_location.source.id': sourceId,
-      ...params.filter,
     };
 
     return this.getWorks({ ...params, filter: this.buildFilterString(filters) });
@@ -222,7 +219,6 @@ export class WorksApi {
   ): Promise<OpenAlexResponse<Work>> {
     const filters: WorksFilters = {
       'referenced_works': workId,
-      ...params.filter,
     };
 
     return this.getWorks({ ...params, filter: this.buildFilterString(filters) });
@@ -509,7 +505,6 @@ export class WorksApi {
   ): Promise<OpenAlexResponse<Work>> {
     const filters: WorksFilters = {
       'publication_year': `${startYear}-${endYear}`,
-      ...params.filter,
     };
 
     return this.getWorks({ ...params, filter: this.buildFilterString(filters) });
@@ -532,7 +527,6 @@ export class WorksApi {
   async getOpenAccessWorks(params: WorksQueryParams = {}): Promise<OpenAlexResponse<Work>> {
     const filters: WorksFilters = {
       'is_oa': true,
-      ...params.filter,
     };
 
     return this.getWorks({ ...params, filter: this.buildFilterString(filters) });
@@ -558,7 +552,6 @@ export class WorksApi {
   ): Promise<OpenAlexResponse<Work>> {
     const filters: WorksFilters = {
       'cited_by_count': `>${minCitations}`,
-      ...params.filter,
     };
 
     return this.getWorks({ ...params, filter: this.buildFilterString(filters), sort: 'cited_by_count' });
