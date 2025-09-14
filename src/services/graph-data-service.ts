@@ -107,11 +107,28 @@ export class GraphDataService {
 			);
 
 			if (existingNode) {
-				// Node already exists with full data, just select it and potentially expand
+				// Node already exists with full data, select it and always try to expand further
 				store.selectNode(existingNode.id);
 
-				// Try to expand if not already expanded
-				if (!this.cache.expandedNodes.has(existingNode.id)) {
+				logger.info("graph", "Existing node clicked - expanding incrementally", {
+					nodeId: existingNode.id,
+					entityId,
+					isAlreadyExpanded: this.cache.expandedNodes.has(existingNode.id)
+				}, "GraphDataService");
+
+				// Always attempt expansion when clicking on a node
+				// If already expanded once, force re-expansion with more depth/connections
+				const isAlreadyExpanded = this.cache.expandedNodes.has(existingNode.id);
+
+				if (isAlreadyExpanded) {
+					// Re-expand with deeper connections and more entities
+					await this.expandNode(existingNode.id, {
+						limit: 20, // More entities on subsequent clicks
+						depth: 2,  // Deeper exploration
+						force: true // Force re-expansion
+					});
+				} else {
+					// First expansion - moderate scope
 					await this.expandNode(existingNode.id, {
 						limit: 10,
 						depth: 1
@@ -165,16 +182,21 @@ export class GraphDataService {
 
 	/**
    * Expand a node to show related entities
+   * This method performs incremental expansion without setting global loading state
    */
 	async expandNode(nodeId: string, options: ExpansionOptions = {}): Promise<void> {
 		const { force = false } = options;
 
 		// Check if already expanded (unless forced)
 		if (!force && this.cache.expandedNodes.has(nodeId)) {
+			logger.info("graph", "Node already expanded, skipping expansion", { nodeId }, "GraphDataService");
 			return;
 		}
 
 		const store = useGraphStore.getState();
+
+		// DON'T set loading state for incremental expansions to avoid showing "Loading graph..."
+		// Individual expansions should be seamless and not disrupt the existing graph
 
 		try {
 			// Get the node to expand
@@ -189,6 +211,16 @@ export class GraphDataService {
 				}, "GraphDataService");
 				return;
 			}
+
+			// Log expansion attempt
+			logger.info("graph", "Expanding node", {
+				nodeId,
+				entityType: node.type,
+				force,
+				limit: options.limit,
+				depth: options.depth,
+				wasAlreadyExpanded: this.cache.expandedNodes.has(nodeId)
+			}, "GraphDataService");
 
 			// Create entity instance using the factory
 			const entity = EntityFactory.create(node.type, rateLimitedOpenAlex);
