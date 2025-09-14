@@ -33,6 +33,43 @@ export default defineConfig({
   define: {
     __DEV__: JSON.stringify(true),
   },
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          // Core React and routing
+          'vendor-react': ['react', 'react-dom'],
+          'vendor-router': ['@tanstack/react-router'],
+
+          // TanStack suite
+          'vendor-tanstack': [
+            '@tanstack/react-query',
+            '@tanstack/react-table',
+            '@tanstack/react-query-devtools',
+            '@tanstack/router-devtools'
+          ],
+
+          // Mantine UI suite
+          'vendor-mantine': [
+            '@mantine/core',
+            '@mantine/hooks',
+            '@mantine/notifications',
+            '@mantine/dates',
+            '@mantine/spotlight'
+          ],
+
+          // Graph visualization (route-specific)
+          'vendor-xyflow': ['@xyflow/react'],
+
+          // Icons and utilities
+          'vendor-icons': ['@tabler/icons-react'],
+          'vendor-utils': ['lodash-es', 'date-fns', 'zod', 'zustand']
+        }
+      }
+    },
+    // Increase chunk size warning threshold since we're now splitting properly
+    chunkSizeWarningLimit: 800
+  },
   test: {
     globals: true,
     environment: 'jsdom',
