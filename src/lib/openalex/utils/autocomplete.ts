@@ -147,7 +147,7 @@ export class AutocompleteApi {
             ...this.formatFiltersForEntityType(filters, type),
           };
 
-          const response = await this.client.get<{ results: AutocompleteResult[] }>(endpoint, params);
+          const response = await this.client.get<{ results: AutocompleteResult[] }>(endpoint, params as any);
           return response.results.map(result => ({
             ...result,
             entity_type: this.mapEntityTypeToSingular(type),
@@ -200,7 +200,7 @@ export class AutocompleteApi {
         const endpoint = `autocomplete/${entityType}`;
         const response = await this.client.get<{ results: AutocompleteResult[] }>(endpoint, {
           q: trimmedQuery,
-        });
+        } as any);
 
         return response.results.map(result => ({
           ...result,
@@ -229,6 +229,8 @@ export class AutocompleteApi {
       'concepts': 'concept',
       'publishers': 'publisher',
       'funders': 'funder',
+      'keywords': 'keyword',
+      'geo': 'geo',
     };
 
     return mapping[entityType] || 'work';
