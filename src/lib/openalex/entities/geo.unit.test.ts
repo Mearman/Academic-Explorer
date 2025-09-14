@@ -646,7 +646,7 @@ describe("GeoApi", () => {
 			await geoApi.getEmergingResearchRegions();
 
 			expect(mockClient.getResponse).toHaveBeenCalledWith("geo", {
-				filter: `works_count:>50,from_created_date:${currentYear - 5}-01-01`,
+				filter: `works_count:>50,from_created_date:${String(currentYear - 5)}-01-01`,
 				sort: "works_count",
 			});
 		});
@@ -671,7 +671,7 @@ describe("GeoApi", () => {
 			expect(mockClient.getResponse).toHaveBeenCalledWith("geo", {
 				per_page: 15,
 				sort: "works_count",
-				filter: `works_count:>50,from_created_date:${currentYear - 5}-01-01`,
+				filter: `works_count:>50,from_created_date:${String(currentYear - 5)}-01-01`,
 			});
 		});
 	});

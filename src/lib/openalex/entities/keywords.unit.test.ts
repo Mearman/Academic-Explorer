@@ -523,7 +523,7 @@ describe("KeywordsApi", () => {
 			await keywordsApi.getTrendingKeywords(2020);
 
 			expect(mockClient.getResponse).toHaveBeenCalledWith("keywords", {
-				filter: `from_created_date:2020-01-01,to_created_date:${currentYear}-12-31,works_count:>10`,
+				filter: `from_created_date:2020-01-01,to_created_date:${String(currentYear)}-12-31,works_count:>10`,
 				sort: "works_count",
 			});
 		});
