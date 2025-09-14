@@ -3,7 +3,7 @@
  * Basic XYFlow integration without full API integration
  */
 
-import React, { useCallback, useEffect } from 'react';
+import React, { useCallback } from 'react';
 import {
   ReactFlow,
   ReactFlowProvider,
@@ -70,7 +70,7 @@ const initialEdges: Edge[] = [
 ];
 
 const GraphNavigationInner: React.FC = () => {
-  const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
+  const [nodes, _setNodes, onNodesChange] = useNodesState(initialNodes);
   const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
 
   const onConnect: OnConnect = useCallback(

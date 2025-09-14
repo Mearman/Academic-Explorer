@@ -16,9 +16,7 @@ import {
   type Node,
   type Edge,
   type OnConnect,
-  type NodeMouseHandler,
   type OnNodesChange,
-  type OnEdgesChange,
 } from '@xyflow/react'
 import { useGraphStore } from '@/stores/graph-store'
 import { useGraphData } from '@/hooks/use-graph-data'

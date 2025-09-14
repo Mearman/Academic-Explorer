@@ -43,7 +43,7 @@ export const NodeContextMenu: React.FC<NodeContextMenuProps> = ({
   }, [node, onViewDetails, onClose])
 
   const handleCopyUrl = useCallback(async () => {
-    const entityTypeMap = {
+    const _entityTypeMap = {
       'works': 'works',
       'authors': 'authors',
       'sources': 'sources',

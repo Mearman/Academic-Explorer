@@ -3,10 +3,9 @@
  * Test component for API integration
  */
 
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import { useGraphStore } from '@/stores/graph-store'
 import { useGraphData } from '@/hooks/use-graph-data'
-import { GraphNavigationSimple } from './GraphNavigationSimple'
 import { RealGraphVisualization } from '@/components/organisms/RealGraphVisualization'
 import { GraphSessionManager } from '@/components/organisms/GraphSessionManager'
 
@@ -14,7 +13,7 @@ export const GraphWithRealAPI: React.FC = () => {
   const [testEntityId, setTestEntityId] = useState('W2741809807') // Known OpenAlex work ID
   const [isLoadingTest, setIsLoadingTest] = useState(false)
   const [showSessionManager, setShowSessionManager] = useState(false)
-  const { loadEntity, search, expandNode } = useGraphData()
+  const { loadEntity, search, expandNode: _expandNode } = useGraphData()
   const { nodes, edges, isLoading, error } = useGraphStore()
 
   const handleLoadTestEntity = async () => {

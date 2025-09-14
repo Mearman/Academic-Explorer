@@ -3,7 +3,7 @@
  * Provider-agnostic graph visualization with XYFlow implementation
  */
 
-import React, { useEffect, useRef, useState, useCallback } from 'react';
+import React, { useEffect, useRef, useCallback } from 'react';
 import {
   ReactFlow,
   ReactFlowProvider,
@@ -41,7 +41,7 @@ const GraphNavigationInner: React.FC<GraphNavigationProps> = ({ className }) => 
 
   // Store state
   const {
-    provider,
+    provider: _provider,
     setProvider,
     nodes: storeNodes,
     edges: storeEdges,
@@ -49,7 +49,7 @@ const GraphNavigationInner: React.FC<GraphNavigationProps> = ({ className }) => 
     error,
   } = useGraphStore();
 
-  const { graphProvider, setPreviewEntity } = useLayoutStore();
+  const { graphProvider: _graphProvider, setPreviewEntity } = useLayoutStore();
 
   // XYFlow state - synced with store
   const [nodes, setNodes, onNodesChange] = useNodesState<XYNode>([]);
