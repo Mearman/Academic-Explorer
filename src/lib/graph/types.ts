@@ -59,7 +59,7 @@ export interface GraphEdge {
 }
 
 export interface GraphLayout {
-  type: 'force' | 'hierarchical' | 'circular' | 'grid' | 'force-deterministic';
+  type: 'force' | 'hierarchical' | 'circular' | 'grid' | 'force-deterministic' | 'd3-force';
   options?: {
     iterations?: number;
     strength?: number;
@@ -67,6 +67,15 @@ export interface GraphLayout {
     center?: { x: number; y: number };
     preventOverlap?: boolean;
     seed?: number; // For deterministic layouts
+    // D3-force specific options
+    linkDistance?: number;
+    linkStrength?: number;
+    chargeStrength?: number;
+    centerStrength?: number;
+    collisionRadius?: number;
+    velocityDecay?: number;
+    alpha?: number;
+    alphaDecay?: number;
   };
 }
 
