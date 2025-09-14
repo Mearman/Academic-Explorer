@@ -202,7 +202,7 @@ export class OpenAlexBaseClient {
       await this.enforceRateLimit();
 
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), this.config.timeout);
+      const timeoutId = setTimeout(() => { controller.abort(); }, this.config.timeout);
 
       const response = await fetch(url, {
         ...options,

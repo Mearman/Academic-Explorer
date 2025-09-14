@@ -64,7 +64,7 @@ export function CacheManagement() {
   };
 
   const formatSize = (bytes: number): string => {
-    if (bytes < 1024) return `${bytes} B`;
+    if (bytes < 1024) return `${bytes.toString()} B`;
     if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
     return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
   };
@@ -72,10 +72,10 @@ export function CacheManagement() {
   const formatAge = (ms: number): string => {
     const hours = Math.floor(ms / (1000 * 60 * 60));
     const days = Math.floor(hours / 24);
-    if (days > 0) return `${days}d ${hours % 24}h`;
-    if (hours > 0) return `${hours}h`;
+    if (days > 0) return `${days.toString()}d ${(hours % 24).toString()}h`;
+    if (hours > 0) return `${hours.toString()}h`;
     const minutes = Math.floor(ms / (1000 * 60));
-    return `${minutes}m`;
+    return `${minutes.toString()}m`;
   };
 
   const handleClearCache = async () => {

@@ -55,7 +55,7 @@ class ApplicationLogger {
     }
 
     // Notify listeners
-    this.listeners.forEach(listener => listener([...this.logs]));
+    this.listeners.forEach(listener => { listener([...this.logs]); });
 
     // Also log to console if enabled
     if (this.config.enableConsoleOutput) {
@@ -93,7 +93,7 @@ class ApplicationLogger {
 
   clear() {
     this.logs = [];
-    this.listeners.forEach(listener => listener([]));
+    this.listeners.forEach(listener => { listener([]); });
   }
 
   updateConfig(newConfig: Partial<LoggerConfig>) {
@@ -197,10 +197,10 @@ export const useLogger = (componentName: string) => {
   }, [componentName]);
 
   return {
-    debug: (message: string, data?: any) => logger.debug('ui', message, data, componentName),
-    info: (message: string, data?: any) => logger.info('ui', message, data, componentName),
-    warn: (message: string, data?: any) => logger.warn('ui', message, data, componentName),
-    error: (message: string, data?: any) => logger.error('ui', message, data, componentName),
+    debug: (message: string, data?: any) => { logger.debug('ui', message, data, componentName); },
+    info: (message: string, data?: any) => { logger.info('ui', message, data, componentName); },
+    warn: (message: string, data?: any) => { logger.warn('ui', message, data, componentName); },
+    error: (message: string, data?: any) => { logger.error('ui', message, data, componentName); },
   };
 };
 

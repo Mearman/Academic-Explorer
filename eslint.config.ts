@@ -6,7 +6,7 @@ import tseslint from 'typescript-eslint';
 
 export default tseslint.config([
   {
-    ignores: ['dist/**/*', 'node_modules/**/*', 'coverage/**/*', 'routeTree.gen.ts', 'vite.config.ts', '.nx/**/*', 'eslint.config.ts'],
+    ignores: ['dist/**/*', 'node_modules/**/*', 'coverage/**/*', 'routeTree.gen.ts', 'vite.config.ts', 'vite.config.old.ts', 'vitest.workspace.ts', 'src/test/setup.ts', '.nx/**/*', 'eslint.config.ts'],
   },
   // Allow console usage in specific files where it's necessary
   {
