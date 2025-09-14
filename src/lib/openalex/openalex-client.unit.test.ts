@@ -12,6 +12,8 @@ import { InstitutionsApi } from './entities/institutions';
 import { TopicsApi } from './entities/topics';
 import { PublishersApi } from './entities/publishers';
 import { FundersApi } from './entities/funders';
+import { KeywordsApi } from './entities/keywords';
+import { GeoApi } from './entities/geo';
 import { AutocompleteApi } from './utils/autocomplete';
 import { createWorksQuery, createAuthorsQuery } from './utils/query-builder';
 import type {
@@ -22,6 +24,8 @@ import type {
   Topic,
   Publisher,
   Funder,
+  Keyword,
+  Geo,
   OpenAlexEntity,
   AutocompleteResult,
   EntityType,
@@ -36,6 +40,8 @@ vi.mock('./entities/institutions');
 vi.mock('./entities/topics');
 vi.mock('./entities/publishers');
 vi.mock('./entities/funders');
+vi.mock('./entities/keywords');
+vi.mock('./entities/geo');
 vi.mock('./utils/autocomplete');
 vi.mock('./utils/query-builder');
 
@@ -49,6 +55,8 @@ describe('OpenAlexClient', () => {
   let mockTopicsApi: vi.Mocked<TopicsApi>;
   let mockPublishersApi: vi.Mocked<PublishersApi>;
   let mockFundersApi: vi.Mocked<FundersApi>;
+  let mockKeywordsApi: vi.Mocked<KeywordsApi>;
+  let mockGeoApi: vi.Mocked<GeoApi>;
   let mockAutocompleteApi: vi.Mocked<AutocompleteApi>;
 
   beforeEach(() => {
@@ -96,22 +104,34 @@ describe('OpenAlexClient', () => {
     } as unknown as vi.Mocked<InstitutionsApi>;
 
     mockTopicsApi = {
-      getTopic: vi.fn(),
-      getTopics: vi.fn(),
-      streamTopics: vi.fn(),
+      get: vi.fn(),
+      getMultiple: vi.fn(),
+      stream: vi.fn(),
     } as unknown as vi.Mocked<TopicsApi>;
 
     mockPublishersApi = {
-      getPublisher: vi.fn(),
-      getPublishers: vi.fn(),
-      streamPublishers: vi.fn(),
+      get: vi.fn(),
+      getMultiple: vi.fn(),
+      stream: vi.fn(),
     } as unknown as vi.Mocked<PublishersApi>;
 
     mockFundersApi = {
-      getFunder: vi.fn(),
-      getFunders: vi.fn(),
-      streamFunders: vi.fn(),
+      get: vi.fn(),
+      getMultiple: vi.fn(),
+      stream: vi.fn(),
     } as unknown as vi.Mocked<FundersApi>;
+
+    mockKeywordsApi = {
+      getKeyword: vi.fn(),
+      getKeywords: vi.fn(),
+      streamKeywords: vi.fn(),
+    } as unknown as vi.Mocked<KeywordsApi>;
+
+    mockGeoApi = {
+      getGeo: vi.fn(),
+      getGeos: vi.fn(),
+      streamGeos: vi.fn(),
+    } as unknown as vi.Mocked<GeoApi>;
 
     mockAutocompleteApi = {
       autocomplete: vi.fn(),
@@ -125,6 +145,8 @@ describe('OpenAlexClient', () => {
     (TopicsApi as unknown as Mock).mockImplementation(() => mockTopicsApi);
     (PublishersApi as unknown as Mock).mockImplementation(() => mockPublishersApi);
     (FundersApi as unknown as Mock).mockImplementation(() => mockFundersApi);
+    (KeywordsApi as unknown as Mock).mockImplementation(() => mockKeywordsApi);
+    (GeoApi as unknown as Mock).mockImplementation(() => mockGeoApi);
     (AutocompleteApi as unknown as Mock).mockImplementation(() => mockAutocompleteApi);
 
     // Mock query builder functions
@@ -239,11 +261,11 @@ describe('OpenAlexClient', () => {
         works_count: 1000,
       };
 
-      mockTopicsApi.getTopic.mockResolvedValue(mockTopic as Topic);
+      mockTopicsApi.get.mockResolvedValue(mockTopic as Topic);
 
       const result = await client.getEntity('T12345');
 
-      expect(mockTopicsApi.getTopic).toHaveBeenCalledWith('T12345');
+      expect(mockTopicsApi.get).toHaveBeenCalledWith('T12345');
       expect(result).toEqual(mockTopic);
     });
 
@@ -254,11 +276,11 @@ describe('OpenAlexClient', () => {
         works_count: 200,
       };
 
-      mockPublishersApi.getPublisher.mockResolvedValue(mockPublisher as Publisher);
+      mockPublishersApi.get.mockResolvedValue(mockPublisher as Publisher);
 
       const result = await client.getEntity('P54321');
 
-      expect(mockPublishersApi.getPublisher).toHaveBeenCalledWith('P54321');
+      expect(mockPublishersApi.get).toHaveBeenCalledWith('P54321');
       expect(result).toEqual(mockPublisher);
     });
 
@@ -269,11 +291,11 @@ describe('OpenAlexClient', () => {
         works_count: 300,
       };
 
-      mockFundersApi.getFunder.mockResolvedValue(mockFunder as Funder);
+      mockFundersApi.get.mockResolvedValue(mockFunder as Funder);
 
       const result = await client.getEntity('F98765');
 
-      expect(mockFundersApi.getFunder).toHaveBeenCalledWith('F98765');
+      expect(mockFundersApi.get).toHaveBeenCalledWith('F98765');
       expect(result).toEqual(mockFunder);
     });
 
@@ -332,17 +354,17 @@ describe('OpenAlexClient', () => {
         meta: { count: 1, db_response_time_ms: 10, page: 1, per_page: 25 },
       });
 
-      mockTopicsApi.getTopics.mockResolvedValue({
+      mockTopicsApi.getMultiple.mockResolvedValue({
         results: [],
         meta: { count: 0, db_response_time_ms: 5, page: 1, per_page: 25 },
       });
 
-      mockPublishersApi.getPublishers.mockResolvedValue({
+      mockPublishersApi.getMultiple.mockResolvedValue({
         results: [],
         meta: { count: 0, db_response_time_ms: 5, page: 1, per_page: 25 },
       });
 
-      mockFundersApi.getFunders.mockResolvedValue({
+      mockFundersApi.getMultiple.mockResolvedValue({
         results: [],
         meta: { count: 0, db_response_time_ms: 5, page: 1, per_page: 25 },
       });
@@ -357,6 +379,8 @@ describe('OpenAlexClient', () => {
         topics: [],
         publishers: [],
         funders: [],
+        keywords: [],
+        geo: [],
       });
 
       const expectedParams = {
@@ -411,15 +435,15 @@ describe('OpenAlexClient', () => {
         results: [],
         meta: { count: 0, db_response_time_ms: 5, page: 1, per_page: 25 },
       });
-      mockTopicsApi.getTopics.mockResolvedValue({
+      mockTopicsApi.getMultiple.mockResolvedValue({
         results: [],
         meta: { count: 0, db_response_time_ms: 5, page: 1, per_page: 25 },
       });
-      mockPublishersApi.getPublishers.mockResolvedValue({
+      mockPublishersApi.getMultiple.mockResolvedValue({
         results: [],
         meta: { count: 0, db_response_time_ms: 5, page: 1, per_page: 25 },
       });
-      mockFundersApi.getFunders.mockResolvedValue({
+      mockFundersApi.getMultiple.mockResolvedValue({
         results: [],
         meta: { count: 0, db_response_time_ms: 5, page: 1, per_page: 25 },
       });

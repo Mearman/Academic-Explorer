@@ -143,7 +143,9 @@ export class WorksApi {
       'authorships.author.id': authorId,
     };
 
-    return this.getWorks({ ...params, filter: this.buildFilterString(filters) });
+    // Merge with existing filters if present
+    const mergedFilter = this.mergeFilters(filters, params.filter);
+    return this.getWorks({ ...params, filter: mergedFilter });
   }
 
   /**
@@ -169,7 +171,9 @@ export class WorksApi {
       'authorships.institution.id': institutionId,
     };
 
-    return this.getWorks({ ...params, filter: this.buildFilterString(filters) });
+    // Merge with existing filters if present
+    const mergedFilter = this.mergeFilters(filters, params.filter);
+    return this.getWorks({ ...params, filter: mergedFilter });
   }
 
   /**
@@ -195,7 +199,9 @@ export class WorksApi {
       'primary_location.source.id': sourceId,
     };
 
-    return this.getWorks({ ...params, filter: this.buildFilterString(filters) });
+    // Merge with existing filters if present
+    const mergedFilter = this.mergeFilters(filters, params.filter);
+    return this.getWorks({ ...params, filter: mergedFilter });
   }
 
   /**
@@ -221,7 +227,9 @@ export class WorksApi {
       'referenced_works': workId,
     };
 
-    return this.getWorks({ ...params, filter: this.buildFilterString(filters) });
+    // Merge with existing filters if present
+    const mergedFilter = this.mergeFilters(filters, params.filter);
+    return this.getWorks({ ...params, filter: mergedFilter });
   }
 
   /**
@@ -448,6 +456,34 @@ export class WorksApi {
   }
 
   /**
+   * Merge new filters with existing filters, handling both string and object formats
+   *
+   * @param newFilters - New filters to add
+   * @param existingFilters - Existing filters (can be string or object)
+   * @returns Merged filter string
+   *
+   * @private
+   */
+  private mergeFilters(newFilters: WorksFilters, existingFilters?: string | WorksFilters): string {
+    // Start with new filters
+    const mergedFilters: WorksFilters = { ...newFilters };
+
+    // Merge with existing filters if present
+    if (existingFilters) {
+      if (typeof existingFilters === 'string') {
+        // If existing filters are a string, append them to the new filter string
+        const newFilterString = this.buildFilterString(newFilters);
+        return `${newFilterString},${existingFilters}`;
+      } else {
+        // If existing filters are an object, merge them
+        Object.assign(mergedFilters, existingFilters, newFilters); // New filters override existing ones
+      }
+    }
+
+    return this.buildFilterString(mergedFilters);
+  }
+
+  /**
    * Get works statistics and aggregations
    *
    * @param params - Query parameters for filtering
@@ -507,7 +543,9 @@ export class WorksApi {
       'publication_year': `${startYear}-${endYear}`,
     };
 
-    return this.getWorks({ ...params, filter: this.buildFilterString(filters) });
+    // Merge with existing filters if present
+    const mergedFilter = this.mergeFilters(filters, params.filter);
+    return this.getWorks({ ...params, filter: mergedFilter });
   }
 
   /**
@@ -529,7 +567,9 @@ export class WorksApi {
       'is_oa': true,
     };
 
-    return this.getWorks({ ...params, filter: this.buildFilterString(filters) });
+    // Merge with existing filters if present
+    const mergedFilter = this.mergeFilters(filters, params.filter);
+    return this.getWorks({ ...params, filter: mergedFilter });
   }
 
   /**
@@ -554,7 +594,9 @@ export class WorksApi {
       'cited_by_count': `>${minCitations}`,
     };
 
-    return this.getWorks({ ...params, filter: this.buildFilterString(filters), sort: 'cited_by_count' });
+    // Merge with existing filters if present
+    const mergedFilter = this.mergeFilters(filters, params.filter);
+    return this.getWorks({ ...params, filter: mergedFilter, sort: 'cited_by_count' });
   }
 }
 
