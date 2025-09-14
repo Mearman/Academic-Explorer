@@ -73,6 +73,10 @@ export default tseslint.config([
       // Temporarily relax unnecessary conditions - too many to fix in this session
       '@typescript-eslint/no-unnecessary-condition': 'warn',
 
+      // Style preferences
+      'quotes': ['error', 'double', { 'allowTemplateLiterals': true, 'avoidEscape': true }],
+      'indent': ['error', 'tab', { 'SwitchCase': 1 }],
+
       // Custom rules
       'custom/no-emoji': 'error',
     },
