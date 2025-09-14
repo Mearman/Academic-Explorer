@@ -317,10 +317,13 @@ const GraphNavigationInner: React.FC<GraphNavigationProps> = ({ className, style
 
 			// Restart layout simulation when new nodes are added to include them in positioning
 			if (newNodeIds.size > 0) {
-				restartLayout(); // Full restart to include new nodes in D3 simulation
-				logger.info("graph", "Restarting layout due to new nodes", {
-					newNodeCount: newNodeIds.size
-				}, "GraphNavigation");
+				// Add a small delay to ensure React state updates are complete
+				setTimeout(() => {
+					restartLayout(); // Full restart to include new nodes in D3 simulation
+					logger.info("graph", "Restarting layout due to new nodes", {
+						newNodeCount: newNodeIds.size
+					}, "GraphNavigation");
+				}, 50); // 50ms delay to allow React state to settle
 			}
 		}
 
