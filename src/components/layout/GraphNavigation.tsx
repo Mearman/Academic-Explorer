@@ -19,7 +19,7 @@ import {
 	type Edge,
 	type NodeChange,
 } from "@xyflow/react";
-import { useNavigate, useBlocker } from "@tanstack/react-router";
+import { useNavigate } from "@tanstack/react-router";
 import { IconSearch } from "@tabler/icons-react";
 
 import { useGraphStore } from "@/stores/graph-store";
@@ -46,21 +46,6 @@ const GraphNavigationInner: React.FC<GraphNavigationProps> = ({ className, style
 	const reactFlowInstance = useReactFlow();
 	const containerRef = useRef<HTMLDivElement>(null);
 
-	// Flag to track graph-initiated navigation (to prevent router from handling it)
-	const [isGraphNavigation, setIsGraphNavigation] = React.useState(false);
-
-	// Block navigation when it's triggered by graph interactions (not user navigation)
-	useBlocker({
-		shouldBlockFn: () => {
-			// Block navigation if it was initiated by a graph click
-			// This prevents the router from handling URL changes we make for bookmarking
-			if (isGraphNavigation) {
-				setIsGraphNavigation(false); // Reset the flag
-				return true; // Block the navigation
-			}
-			return false; // Allow normal navigation
-		}
-	});
 
 	// Store state
 	const {
@@ -71,6 +56,10 @@ const GraphNavigationInner: React.FC<GraphNavigationProps> = ({ className, style
 		currentLayout,
 		isLoading,
 		error,
+		getVisibleNodes,
+		getVisibleEdges,
+		visibleEntityTypes,
+		visibleEdgeTypes,
 	} = useGraphStore();
 
 	const { graphProvider: _graphProvider, setPreviewEntity } = useLayoutStore();
@@ -161,12 +150,9 @@ const GraphNavigationInner: React.FC<GraphNavigationProps> = ({ className, style
 				// Extract clean OpenAlex ID from potential URL
 				const cleanId = EntityDetector.extractOpenAlexId(node.entityId);
 
-				// Set flag to indicate this is a graph-initiated navigation
-				setIsGraphNavigation(true);
-
 				// Update URL to hash-based route structure for bookmarking
 				const newHashPath = `#/${node.type}/${cleanId}`;
-				window.history.pushState({ graphSelection: true }, "", newHashPath);
+				window.location.replace(newHashPath);
 
 				// Update selection in store
 				const store = useGraphStore.getState();
@@ -175,7 +161,7 @@ const GraphNavigationInner: React.FC<GraphNavigationProps> = ({ className, style
 				// Update preview in sidebar
 				setPreviewEntity(node.entityId);
 
-				logger.info("ui", "Node clicked - Hash URL updated with navigation blocking", {
+				logger.info("ui", "Node clicked - Hash URL updated directly", {
 					nodeId: node.id,
 					entityId: node.entityId,
 					entityType: node.type,
@@ -216,26 +202,38 @@ const GraphNavigationInner: React.FC<GraphNavigationProps> = ({ className, style
 		};
 	}, [reactFlowInstance, navigate, setProvider, setPreviewEntity]);
 
-	// Sync store data with XYFlow
+	// Sync store data with XYFlow (applying visibility filters)
 	useEffect(() => {
-		logger.info("graph", "Store data sync effect triggered", {
-			storeNodeCount: storeNodes.size,
-			storeEdgeCount: storeEdges.size,
+		const visibleNodes = getVisibleNodes();
+		const visibleEdges = getVisibleEdges();
+
+		logger.info("graph", "Store data sync effect triggered with visibility filters", {
+			totalNodeCount: storeNodes.size,
+			totalEdgeCount: storeEdges.size,
+			visibleNodeCount: visibleNodes.length,
+			visibleEdgeCount: visibleEdges.length,
 			hasProvider: !!providerRef.current
 		}, "GraphNavigation");
 
-		if (providerRef.current && (storeNodes.size > 0 || storeEdges.size > 0)) {
+		if (providerRef.current) {
+			// Set the visible nodes and edges to the provider
+			providerRef.current.setNodes(visibleNodes);
+			providerRef.current.setEdges(visibleEdges);
+
+			// Get XYFlow formatted data
 			const { nodes: xyNodes, edges: xyEdges } = providerRef.current.getXYFlowData();
-			logger.info("graph", "Setting XYFlow data", {
+
+			logger.info("graph", "Setting filtered XYFlow data", {
 				xyNodeCount: xyNodes.length,
 				xyEdgeCount: xyEdges.length,
 				nodeIds: xyNodes.map(n => n.id),
-				nodePositions: xyNodes.map(n => ({ id: n.id, position: n.position }))
+				visibleTypes: Array.from(visibleEntityTypes)
 			}, "GraphNavigation");
+
 			setNodes(xyNodes);
 			setEdges(xyEdges);
 		}
-	}, [storeNodes, storeEdges, setNodes, setEdges]);
+	}, [storeNodes, storeEdges, visibleEntityTypes, visibleEdgeTypes, getVisibleNodes, getVisibleEdges, setNodes, setEdges]);
 
 	// URL state synchronization - read selected entity from hash on mount
 	useEffect(() => {
