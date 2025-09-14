@@ -128,7 +128,7 @@ export const logger = new ApplicationLogger();
 // Convenience functions for common logging patterns
 export const logApiRequest = (url: string, method: string, status?: number, responseTime?: number) => {
 	const level = status && status >= 400 ? "error" : status && status >= 300 ? "warn" : "info";
-	logger.log(level, "api", `${method} ${url}${status ? ` - ${status}` : ""}`, {
+	logger.log(level, "api", `${method} ${url}${status ? ` - ${String(status)}` : ""}`, {
 		url,
 		method,
 		status,
@@ -162,7 +162,7 @@ export const logUIInteraction = (component: string, action: string, data?: unkno
 };
 
 export const logStorageOperation = (operation: "read" | "write" | "delete", key: string, size?: number) => {
-	logger.debug("storage", `Storage ${operation}: ${key}${size ? ` (${size} bytes)` : ""}`, {
+	logger.debug("storage", `Storage ${operation}: ${key}${size ? ` (${String(size)} bytes)` : ""}`, {
 		operation,
 		key,
 		size

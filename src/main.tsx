@@ -172,7 +172,7 @@ const queryClient = new QueryClient({
 })
 
 // Enable hybrid persistence with localStorage + IndexedDB for optimal performance
-persistQueryClient({
+void persistQueryClient({
 	queryClient,
 	persister: createHybridPersister("academic-explorer-cache"),
 	maxAge: CACHE_CONFIG.maxAge, // 7 days

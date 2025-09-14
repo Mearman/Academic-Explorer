@@ -298,7 +298,7 @@ export function useLayout(
 				// Fit view after forced stop if enabled
 				if (fitViewAfterLayout) {
 					setTimeout(() => {
-						fitView({ padding: 0.1, duration: 800 });
+						void fitView({ padding: 0.1, duration: 800 });
 						logger.info(
 							"graph",
 							"Auto-fitted view after simulation timeout",
@@ -399,7 +399,7 @@ export function useLayout(
 			// Auto-fit view after layout stabilizes if enabled
 			if (fitViewAfterLayout) {
 				setTimeout(() => {
-					fitView({ padding: 0.1, duration: 800 });
+					void fitView({ padding: 0.1, duration: 800 });
 					logger.info(
 						"graph",
 						"Auto-fitted view after simulation completion",
