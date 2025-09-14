@@ -521,7 +521,7 @@ export class GraphDataService {
         filter: { 'authorships.author.id': authorId },
         per_page: Math.min(options.limit, 8),
         sort: 'publication_year:desc'
-      });
+      } as any);
 
       worksQuery.results.forEach((work) => {
         // Add work node
@@ -622,7 +622,7 @@ export class GraphDataService {
           filter: { 'referenced_works': workId },
           per_page: Math.min(options.limit, 5), // Limit citations to avoid clutter
           sort: 'cited_by_count:desc'
-        });
+        } as any);
 
         citationsQuery.results.forEach((citingWork) => {
           // Add citing work node
@@ -719,10 +719,10 @@ export class GraphDataService {
     try {
       // Fetch recent works published in this source
       const worksQuery = await openAlex.works.getWorks({
-        filter: { primary_location: { source: sourceId } },
+        filter: { 'primary_location.source.id': sourceId },
         per_page: Math.min(options.limit, 10),
         sort: 'publication_year:desc'
-      });
+      } as any);
 
       worksQuery.results.forEach((work) => {
         // Add work node
@@ -770,8 +770,8 @@ export class GraphDataService {
                 url: `https://orcid.org/${keyAuthorship.author.orcid}`,
               }] : [],
               metadata: {
-                worksCount: keyAuthorship.author.works_count,
-                citationCount: keyAuthorship.author.cited_by_count,
+                // Note: works_count and cited_by_count not available on authorship.author
+                // These would need to be fetched separately from the full author entity
               },
             };
 
@@ -806,10 +806,10 @@ export class GraphDataService {
     try {
       // Fetch authors affiliated with this institution
       const authorsQuery = await openAlex.authors.getAuthors({
-        filter: { last_known_institution: institutionId },
+        filter: { 'last_known_institution.id': institutionId },
         per_page: Math.min(options.limit, 8),
         sort: 'works_count:desc' // Get most productive authors
-      });
+      } as any);
 
       authorsQuery.results.forEach((author) => {
         // Add author node
@@ -843,10 +843,10 @@ export class GraphDataService {
 
       // Also fetch recent works from this institution
       const worksQuery = await openAlex.works.getWorks({
-        filter: { institutions: institutionId },
+        filter: { 'authorships.institution.id': institutionId },
         per_page: Math.min(options.limit, 6),
         sort: 'publication_year:desc'
-      });
+      } as any);
 
       worksQuery.results.forEach((work) => {
         // Add work node
@@ -1015,13 +1015,13 @@ export class GraphDataService {
 
       // Connect works to their sources if both are in results
       if (work.primary_location?.source) {
-        const sourceInResults = results.sources.find(s => s.id === work.primary_location.source.id);
+        const sourceInResults = results.sources.find(s => s.id === work.primary_location?.source?.id);
 
         if (sourceInResults) {
           edges.push({
-            id: `${work.id}-published-in-${work.primary_location.source.id}`,
+            id: `${work.id}-published-in-${work.primary_location?.source?.id}`,
             source: work.id,
-            target: work.primary_location.source.id,
+            target: work.primary_location?.source?.id || '',
             type: 'published_in' as RelationType,
             label: 'published in',
           });
