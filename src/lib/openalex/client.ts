@@ -32,6 +32,10 @@ export class OpenAlexApiError extends Error {
   ) {
     super(message);
     this.name = 'OpenAlexApiError';
+    this.message = message; // Explicitly set message to ensure it's available
+
+    // Set the prototype explicitly to maintain instanceof checks
+    Object.setPrototypeOf(this, OpenAlexApiError.prototype);
   }
 }
 
@@ -39,6 +43,10 @@ export class OpenAlexRateLimitError extends OpenAlexApiError {
   constructor(message: string, public retryAfter?: number) {
     super(message, 429);
     this.name = 'OpenAlexRateLimitError';
+    this.message = message; // Explicitly set message to ensure it's available
+
+    // Set the prototype explicitly to maintain instanceof checks
+    Object.setPrototypeOf(this, OpenAlexRateLimitError.prototype);
   }
 }
 
