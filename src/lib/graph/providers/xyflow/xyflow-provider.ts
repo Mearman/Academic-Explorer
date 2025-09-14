@@ -181,6 +181,9 @@ export class XYFlowProvider implements GraphProvider {
       case 'force':
         this.applyForceLayout(nodes);
         break;
+      case 'force-deterministic':
+        this.applyDeterministicForceLayout(nodes, layout.options);
+        break;
       case 'hierarchical':
         this.applyHierarchicalLayout(nodes);
         break;
@@ -280,6 +283,162 @@ export class XYFlowProvider implements GraphProvider {
         y: centerY + Math.sin(angle) * radius + (Math.random() - 0.5) * 100,
       };
     });
+  }
+
+  private applyDeterministicForceLayout(nodes: GraphNode[], options?: GraphLayout['options']): void {
+    const {
+      iterations = 300,
+      strength = 100,
+      distance = 150,
+      center = { x: 400, y: 300 },
+      preventOverlap = true,
+      seed = 42
+    } = options || {};
+
+    if (nodes.length === 0) return;
+
+    // Seeded random number generator for deterministic behavior
+    let seedValue = seed;
+    const seededRandom = () => {
+      seedValue = (seedValue * 9301 + 49297) % 233280;
+      return seedValue / 233280;
+    };
+
+    // Initialize positions deterministically
+    nodes.forEach((node, index) => {
+      const angle = (index / nodes.length) * 2 * Math.PI;
+      const radius = Math.sqrt(nodes.length) * 30;
+
+      node.position = {
+        x: center.x + Math.cos(angle) * radius + (seededRandom() - 0.5) * 50,
+        y: center.y + Math.sin(angle) * radius + (seededRandom() - 0.5) * 50,
+      };
+    });
+
+    // Get edges for this layout calculation
+    const edges = Array.from(this.edges.values());
+
+    // Create adjacency map for connected nodes
+    const adjacencyMap = new Map<string, string[]>();
+    edges.forEach(edge => {
+      if (!adjacencyMap.has(edge.source)) adjacencyMap.set(edge.source, []);
+      if (!adjacencyMap.has(edge.target)) adjacencyMap.set(edge.target, []);
+      adjacencyMap.get(edge.source)!.push(edge.target);
+      adjacencyMap.get(edge.target)!.push(edge.source);
+    });
+
+    // Simulation loop
+    for (let iteration = 0; iteration < iterations; iteration++) {
+      const forces = new Map<string, { x: number; y: number }>();
+
+      // Initialize forces
+      nodes.forEach(node => {
+        forces.set(node.id, { x: 0, y: 0 });
+      });
+
+      // Repulsion forces (all nodes repel each other)
+      for (let i = 0; i < nodes.length; i++) {
+        for (let j = i + 1; j < nodes.length; j++) {
+          const node1 = nodes[i];
+          const node2 = nodes[j];
+
+          const dx = node2.position.x - node1.position.x;
+          const dy = node2.position.y - node1.position.y;
+          const dist = Math.sqrt(dx * dx + dy * dy) || 0.1; // Avoid division by zero
+
+          if (dist < distance * 2) {
+            const force = (strength * strength) / (dist * dist);
+            const fx = (dx / dist) * force;
+            const fy = (dy / dist) * force;
+
+            const force1 = forces.get(node1.id)!;
+            const force2 = forces.get(node2.id)!;
+
+            force1.x -= fx;
+            force1.y -= fy;
+            force2.x += fx;
+            force2.y += fy;
+          }
+        }
+      }
+
+      // Attraction forces (connected nodes attract each other)
+      edges.forEach(edge => {
+        const sourceNode = nodes.find(n => n.id === edge.source);
+        const targetNode = nodes.find(n => n.id === edge.target);
+
+        if (sourceNode && targetNode) {
+          const dx = targetNode.position.x - sourceNode.position.x;
+          const dy = targetNode.position.y - sourceNode.position.y;
+          const dist = Math.sqrt(dx * dx + dy * dy) || 0.1;
+
+          const force = (dist * dist) / (distance * strength);
+          const fx = (dx / dist) * force * 0.1;
+          const fy = (dy / dist) * force * 0.1;
+
+          const sourceForce = forces.get(sourceNode.id)!;
+          const targetForce = forces.get(targetNode.id)!;
+
+          sourceForce.x += fx;
+          sourceForce.y += fy;
+          targetForce.x -= fx;
+          targetForce.y -= fy;
+        }
+      });
+
+      // Centering force (pull towards center)
+      nodes.forEach(node => {
+        const force = forces.get(node.id)!;
+        force.x += (center.x - node.position.x) * 0.01;
+        force.y += (center.y - node.position.y) * 0.01;
+      });
+
+      // Apply forces with cooling factor
+      const cooling = Math.max(0.01, 1 - (iteration / iterations));
+      const maxForce = 10;
+
+      nodes.forEach(node => {
+        const force = forces.get(node.id)!;
+
+        // Limit force magnitude
+        const forceMagnitude = Math.sqrt(force.x * force.x + force.y * force.y);
+        if (forceMagnitude > maxForce) {
+          force.x = (force.x / forceMagnitude) * maxForce;
+          force.y = (force.y / forceMagnitude) * maxForce;
+        }
+
+        // Apply force with cooling
+        node.position.x += force.x * cooling;
+        node.position.y += force.y * cooling;
+      });
+
+      // Overlap prevention (if enabled)
+      if (preventOverlap) {
+        const minDistance = 120; // Minimum distance between node centers
+
+        for (let i = 0; i < nodes.length; i++) {
+          for (let j = i + 1; j < nodes.length; j++) {
+            const node1 = nodes[i];
+            const node2 = nodes[j];
+
+            const dx = node2.position.x - node1.position.x;
+            const dy = node2.position.y - node1.position.y;
+            const dist = Math.sqrt(dx * dx + dy * dy);
+
+            if (dist < minDistance && dist > 0) {
+              const overlap = minDistance - dist;
+              const moveX = (dx / dist) * (overlap / 2);
+              const moveY = (dy / dist) * (overlap / 2);
+
+              node1.position.x -= moveX;
+              node1.position.y -= moveY;
+              node2.position.x += moveX;
+              node2.position.y += moveY;
+            }
+          }
+        }
+      }
+    }
   }
 
   private applyHierarchicalLayout(nodes: GraphNode[]): void {

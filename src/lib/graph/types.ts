@@ -59,8 +59,15 @@ export interface GraphEdge {
 }
 
 export interface GraphLayout {
-  type: 'force' | 'hierarchical' | 'circular' | 'grid';
-  options?: Record<string, unknown>;
+  type: 'force' | 'hierarchical' | 'circular' | 'grid' | 'force-deterministic';
+  options?: {
+    iterations?: number;
+    strength?: number;
+    distance?: number;
+    center?: { x: number; y: number };
+    preventOverlap?: boolean;
+    seed?: number; // For deterministic layouts
+  };
 }
 
 export interface GraphEvents {

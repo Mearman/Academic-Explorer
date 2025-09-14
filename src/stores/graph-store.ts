@@ -9,6 +9,7 @@ import type {
   GraphEdge,
   GraphProvider,
   ProviderType,
+  GraphLayout,
 } from '@/lib/graph/types';
 
 interface GraphState {
@@ -25,6 +26,9 @@ interface GraphState {
   provider: GraphProvider | null;
   providerType: ProviderType;
 
+  // Layout state
+  currentLayout: GraphLayout;
+
   // Loading states
   isLoading: boolean;
   error: string | null;
@@ -32,6 +36,10 @@ interface GraphState {
   // Actions (work with any provider)
   setProvider: (provider: GraphProvider) => void;
   setProviderType: (type: ProviderType) => void;
+
+  // Layout management
+  setLayout: (layout: GraphLayout) => void;
+  applyCurrentLayout: () => void;
 
   // Node management
   addNode: (node: GraphNode) => void;
@@ -78,6 +86,16 @@ export const useGraphStore = create<GraphState>((set, get) => ({
   selectedNodes: new Set(),
   provider: null,
   providerType: 'xyflow',
+  currentLayout: {
+    type: 'force-deterministic',
+    options: {
+      iterations: 300,
+      strength: 100,
+      distance: 150,
+      preventOverlap: true,
+      seed: 42
+    }
+  },
   isLoading: false,
   error: null,
 
@@ -93,6 +111,18 @@ export const useGraphStore = create<GraphState>((set, get) => ({
   },
 
   setProviderType: (type) => set({ providerType: type }),
+
+  // Layout management
+  setLayout: (layout) => {
+    set({ currentLayout: layout });
+    const state = get();
+    state.provider?.applyLayout(layout);
+  },
+
+  applyCurrentLayout: () => {
+    const state = get();
+    state.provider?.applyLayout(state.currentLayout);
+  },
 
   // Node management
   addNode: (node) => {
