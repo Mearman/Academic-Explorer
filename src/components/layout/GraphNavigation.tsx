@@ -26,6 +26,7 @@ import { createGraphProvider } from '@/lib/graph/provider-factory';
 import { XYFlowProvider } from '@/lib/graph/providers/xyflow/xyflow-provider';
 import { nodeTypes } from '@/lib/graph/providers/xyflow/node-types';
 import type { GraphNode } from '@/lib/graph/types';
+import { EntityDetector } from '@/lib/graph/utils/entity-detection';
 
 import '@xyflow/react/dist/style.css';
 
@@ -69,8 +70,10 @@ const GraphNavigationInner: React.FC<GraphNavigationProps> = ({ className, style
     // Set up navigation events
     graphProvider.setEvents({
       onNodeClick: (node: GraphNode) => {
+        // Extract clean OpenAlex ID from potential URL
+        const cleanId = EntityDetector.extractOpenAlexId(node.entityId);
         // Navigate to entity page using the new route structure
-        navigate({ to: `/${node.type}/${node.entityId}` });
+        navigate({ to: `/${node.type}/${cleanId}` });
       },
 
       onNodeDoubleClick: (node: GraphNode) => {
