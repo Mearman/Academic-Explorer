@@ -87,13 +87,18 @@ export const useGraphStore = create<GraphState>((set, get) => ({
   provider: null,
   providerType: 'xyflow',
   currentLayout: {
-    type: 'force-deterministic',
+    type: 'd3-force',
     options: {
+      seed: 42,
       iterations: 300,
-      strength: 100,
-      distance: 150,
-      preventOverlap: true,
-      seed: 42
+      linkDistance: 150,
+      linkStrength: 1,
+      chargeStrength: -300,
+      centerStrength: 0.1,
+      collisionRadius: 60,
+      velocityDecay: 0.4,
+      alpha: 1,
+      alphaDecay: 0.0228
     }
   },
   isLoading: false,
