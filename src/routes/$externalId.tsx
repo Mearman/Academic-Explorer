@@ -2,13 +2,6 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router"
 import { useEffect, useMemo } from "react"
 import {
 	IconSearch,
-	IconCalendar,
-	IconChartBar,
-	IconLockOpen,
-	IconFile,
-	IconUser,
-	IconBook,
-	IconBuilding
 } from "@tabler/icons-react"
 import { EntityDetector } from "@/lib/graph/utils/entity-detection"
 import { useGraphData } from "@/hooks/use-graph-data"

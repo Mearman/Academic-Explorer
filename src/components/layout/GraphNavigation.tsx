@@ -16,7 +16,6 @@ import {
 	BackgroundVariant,
 	Panel,
 	type Node as XYNode,
-	type Edge as XYEdge,
 } from "@xyflow/react";
 import { useNavigate } from "@tanstack/react-router";
 import { IconSearch } from "@tabler/icons-react";

@@ -33,8 +33,6 @@ function RootLayout() {
 
 	// Get the appropriate icon based on the CURRENT state
 	const getThemeIcon = () => {
-		const systemTheme = getSystemTheme()
-
 		if (colorScheme === "auto") {
 			// Auto mode - show desktop icon to represent auto/system preference
 			return <IconDeviceDesktop size={18} />

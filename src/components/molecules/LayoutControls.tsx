@@ -3,8 +3,8 @@
  */
 
 import React from "react";
-import { Button, Popover, Stack, Text, NumberInput, Switch } from "@mantine/core";
-import { IconLayout, IconLayoutGrid, IconLayoutDistributeHorizontal, IconCircle, IconNetwork } from "@tabler/icons-react";
+import { Button, Popover, Stack, Text } from "@mantine/core";
+import { IconLayout, IconNetwork } from "@tabler/icons-react";
 import { useGraphStore } from "@/stores/graph-store";
 import type { GraphLayout } from "@/lib/graph/types";
 
@@ -26,7 +26,7 @@ export const LayoutControls: React.FC = () => {
 		setLayoutOptions(currentLayout.options || {});
 	}, [currentLayout]);
 
-	const handleLayoutChange = (type: GraphLayout["type"]) => {
+	const handleLayoutChange = (_type: GraphLayout["type"]) => {
 		// Always use D3 force layout with empty options (hook will use fixed parameters)
 		const newLayout: GraphLayout = {
 			type: "d3-force",
@@ -36,7 +36,7 @@ export const LayoutControls: React.FC = () => {
 		setLayout(newLayout);
 	};
 
-	const handleOptionChange = (key: string, value: unknown) => {
+	const _handleOptionChange = (key: string, value: unknown) => {
 		const newOptions = { ...layoutOptions_, [key]: value };
 		setLayoutOptions(newOptions);
 

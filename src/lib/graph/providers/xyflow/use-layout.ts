@@ -44,7 +44,8 @@ export function useLayout(
 	options: UseLayoutOptions = {},
 ) {
 	const { enabled = true, onLayoutChange, fitViewAfterLayout = true } = options;
-	const { getNodes, getEdges, setNodes, fitView } = useReactFlow();
+	const { getNodes, getEdges, setNodes, fitView, getViewport } = useReactFlow();
+	const containerRef = useRef<HTMLElement | null>(null);
 	const simulationRef = useRef<Simulation<D3Node, D3Link> | null>(null);
 	const isRunningRef = useRef(false);
 	const timeoutRef = useRef<number | null>(null);
@@ -118,7 +119,7 @@ export function useLayout(
 		const linkDistance = 300; // Reduced distance between linked nodes
 		const linkStrength = 0.3; // Increased strength to pull connected nodes closer
 		const chargeStrength = -2000; // Reduced repulsion for closer spacing
-		const centerStrength = 0.01; // Increased centering to bring nodes together
+		const centerStrength = 0.003; // Minimal centering to reduce movement during simulation
 		const collisionRadius = 150; // Reduced collision zones for closer packing
 		const collisionStrength = 2.0; // Reduced collision strength to allow closer spacing
 		const velocityDecay = 0.1; // Very low decay for maximum movement
@@ -228,6 +229,20 @@ export function useLayout(
 			"useLayout",
 		);
 
+		// Get current viewport information for stable centering
+		const viewport = getViewport();
+
+		// Use viewport center if available, otherwise default to container center
+		const centerX = 400; // Keep stable center for determinism
+		const centerY = 300; // Keep stable center for determinism
+
+		logger.info("graph", "Using center coordinates for force simulation", {
+			centerX,
+			centerY,
+			viewport: { x: viewport.x, y: viewport.y, zoom: viewport.zoom },
+			reason: "Using fixed center for deterministic layout"
+		}, "useLayout");
+
 		// Configure forces
 		simulationRef.current
 			.force(
@@ -238,7 +253,7 @@ export function useLayout(
 					.strength(linkStrength),
 			)
 			.force("charge", forceManyBody<D3Node>().strength(chargeStrength))
-			.force("center", forceCenter<D3Node>(400, 300).strength(centerStrength))
+			.force("center", forceCenter<D3Node>(centerX, centerY).strength(centerStrength))
 			.force(
 				"collision",
 				forceCollide<D3Node>()
@@ -380,7 +395,7 @@ export function useLayout(
 				}, 100);
 			}
 		});
-	}, [layout, onLayoutChange, stopLayout, fitView, fitViewAfterLayout]);
+	}, [layout, onLayoutChange, stopLayout, fitView, fitViewAfterLayout, getViewport]);
 
 	// Main layout application function - D3 force only
 	const applyLayout = useCallback(() => {
