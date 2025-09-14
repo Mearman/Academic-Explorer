@@ -8,7 +8,7 @@ export interface LogEntry {
   level: LogLevel;
   category: LogCategory;
   message: string;
-  data?: any;
+  data?: unknown;
   component?: string;
   stack?: string;
 }
@@ -27,10 +27,10 @@ class ApplicationLogger {
   private config: LoggerConfig = {
     maxLogs: 1000,
     enableConsoleOutput: true, // Set to false to disable browser console output
-    enableDebugLogs: import.meta.env?.DEV ?? false, // Only debug logs in development
+    enableDebugLogs: false, // Set to true manually for development debugging
   };
 
-  log(level: LogLevel, category: LogCategory, message: string, data?: any, component?: string) {
+  log(level: LogLevel, category: LogCategory, message: string, data?: unknown, component?: string) {
     // Skip debug logs if disabled
     if (level === 'debug' && !this.config.enableDebugLogs) {
       return;
@@ -64,19 +64,19 @@ class ApplicationLogger {
     }
   }
 
-  debug(category: LogCategory, message: string, data?: any, component?: string) {
+  debug(category: LogCategory, message: string, data?: unknown, component?: string) {
     this.log('debug', category, message, data, component);
   }
 
-  info(category: LogCategory, message: string, data?: any, component?: string) {
+  info(category: LogCategory, message: string, data?: unknown, component?: string) {
     this.log('info', category, message, data, component);
   }
 
-  warn(category: LogCategory, message: string, data?: any, component?: string) {
+  warn(category: LogCategory, message: string, data?: unknown, component?: string) {
     this.log('warn', category, message, data, component);
   }
 
-  error(category: LogCategory, message: string, data?: any, component?: string) {
+  error(category: LogCategory, message: string, data?: unknown, component?: string) {
     this.log('error', category, message, data, component);
   }
 
@@ -153,11 +153,11 @@ export const logGraphOperation = (operation: string, nodeCount?: number, edgeCou
   });
 };
 
-export const logRouteChange = (from: string, to: string, params?: Record<string, any>) => {
+export const logRouteChange = (from: string, to: string, params?: Record<string, unknown>) => {
   logger.info('routing', `Route change: ${from} → ${to}`, { from, to, params });
 };
 
-export const logUIInteraction = (component: string, action: string, data?: any) => {
+export const logUIInteraction = (component: string, action: string, data?: unknown) => {
   logger.debug('ui', `${component}: ${action}`, data, component);
 };
 
@@ -197,10 +197,10 @@ export const useLogger = (componentName: string) => {
   }, [componentName]);
 
   return {
-    debug: (message: string, data?: any) => { logger.debug('ui', message, data, componentName); },
-    info: (message: string, data?: any) => { logger.info('ui', message, data, componentName); },
-    warn: (message: string, data?: any) => { logger.warn('ui', message, data, componentName); },
-    error: (message: string, data?: any) => { logger.error('ui', message, data, componentName); },
+    debug: (message: string, data?: unknown) => { logger.debug('ui', message, data, componentName); },
+    info: (message: string, data?: unknown) => { logger.info('ui', message, data, componentName); },
+    warn: (message: string, data?: unknown) => { logger.warn('ui', message, data, componentName); },
+    error: (message: string, data?: unknown) => { logger.error('ui', message, data, componentName); },
   };
 };
 
