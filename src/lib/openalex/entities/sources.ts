@@ -69,10 +69,11 @@ export class SourcesApi {
       'default.search': query,
     };
 
+    const { filter: _, ...paramsWithoutFilter } = params;
     return this.getSources(this.buildFilterParams({
-      ...params,
+      ...paramsWithoutFilter,
       filter: searchFilters,
-    }));
+    } as any));
   }
 
   /**
@@ -94,11 +95,12 @@ export class SourcesApi {
       'publisher': publisher,
     };
 
+    const { filter: _, ...paramsWithoutFilter } = params;
     return this.getSources(this.buildFilterParams({
-      ...params,
+      ...paramsWithoutFilter,
       filter: filters,
       sort: params.sort || 'works_count:desc',
-    }));
+    } as any));
   }
 
   /**
@@ -119,11 +121,12 @@ export class SourcesApi {
       'is_oa': true,
     };
 
+    const { filter: _, ...paramsWithoutFilter } = params;
     return this.getSources(this.buildFilterParams({
-      ...params,
+      ...paramsWithoutFilter,
       filter: filters,
       sort: params.sort || 'works_count:desc',
-    }));
+    } as any));
   }
 
   /**
@@ -149,11 +152,12 @@ export class SourcesApi {
       'country_code': countryCode,
     };
 
+    const { filter: _, ...paramsWithoutFilter } = params;
     return this.getSources(this.buildFilterParams({
-      ...params,
+      ...paramsWithoutFilter,
       filter: filters,
       sort: params.sort || 'works_count:desc',
-    }));
+    } as any));
   }
 
   /**
@@ -250,7 +254,7 @@ export class SourcesApi {
       params.seed = seed;
     }
 
-    return this.getSources(this.buildFilterParams(params));
+    return this.getSources(this.buildFilterParams(params as any));
   }
 
   /**
