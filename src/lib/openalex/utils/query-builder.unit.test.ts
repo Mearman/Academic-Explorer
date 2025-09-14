@@ -682,7 +682,7 @@ describe('escapeFilterValue', () => {
   });
 
   it('should handle strings with only quotes', () => {
-    expect(escapeFilterValue('"')).toBe('"\""');
+    expect(escapeFilterValue('"')).toBe('"\\\""'); // Single quote becomes: quote + backslash + quote + quote
     expect(escapeFilterValue('""')).toBe('"\\"\\""'); // Double quotes become: quote + escaped-quote + escaped-quote + quote
   });
 
