@@ -124,12 +124,13 @@ export class KeywordsApi {
     minWorksCount: number,
     params: KeywordsQueryParams = {}
   ): Promise<OpenAlexResponse<Keyword>> {
+    const filters: KeywordsFilters = {
+      'works_count': `>=${minWorksCount}`,
+    };
+
     return this.getKeywords({
       ...params,
-      filter: {
-        ...params.filter,
-        'works_count': `>=${minWorksCount}`,
-      },
+      filter: buildFilterString(filters),
     });
   }
 
@@ -257,14 +258,15 @@ export class KeywordsApi {
     toYear: number = new Date().getFullYear(),
     params: KeywordsQueryParams = {}
   ): Promise<OpenAlexResponse<Keyword>> {
+    const filters: KeywordsFilters = {
+      'from_created_date': `${fromYear}-01-01`,
+      'to_created_date': `${toYear}-12-31`,
+      'works_count': '>10', // Filter out very rare keywords
+    };
+
     return this.getKeywords({
       ...params,
-      filter: {
-        ...params.filter,
-        'from_created_date': `${fromYear}-01-01`,
-        'to_created_date': `${toYear}-12-31`,
-        'works_count': '>10', // Filter out very rare keywords
-      },
+      filter: buildFilterString(filters),
       sort: 'works_count',
     });
   }
@@ -284,12 +286,13 @@ export class KeywordsApi {
    * ```
    */
   async getHighlyCitedKeywords(params: KeywordsQueryParams = {}): Promise<OpenAlexResponse<Keyword>> {
+    const filters: KeywordsFilters = {
+      'cited_by_count': '>1000',
+    };
+
     return this.getKeywords({
       ...params,
-      filter: {
-        ...params.filter,
-        'cited_by_count': '>1000',
-      },
+      filter: buildFilterString(filters),
       sort: 'cited_by_count',
     });
   }
