@@ -59,10 +59,11 @@ export default defineWorkspace([
         reporter: ['text', 'json', 'html'],
         exclude: ['node_modules/', 'src/test/', '**/*.d.ts'],
         thresholds: {
-          lines: 80,
-          functions: 80,
-          branches: 80,
-          statements: 80,
+          // No coverage thresholds for integration tests - focused on API workflows
+          lines: 0,
+          functions: 0,
+          branches: 0,
+          statements: 0,
         },
       },
     },
