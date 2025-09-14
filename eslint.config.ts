@@ -6,13 +6,26 @@ import tseslint from 'typescript-eslint';
 
 export default tseslint.config([
   {
-    ignores: ['dist/**/*', 'node_modules/**/*', 'coverage/**/*', 'routeTree.gen.ts', 'vite.config.ts'],
+    ignores: ['dist/**/*', 'node_modules/**/*', 'coverage/**/*', 'routeTree.gen.ts', 'vite.config.ts', '.nx/**/*', 'eslint.config.ts'],
+  },
+  // Allow console usage in specific files where it's necessary
+  {
+    files: [
+      'src/components/devtools/*.tsx',
+      'src/lib/logger.ts',
+      'src/**/*.test.ts',
+      'src/**/*.test.tsx',
+      'src/**/*.integration.test.ts',
+    ],
+    rules: {
+      'no-console': 'off',
+    },
   },
   {
     files: ['**/*.{ts,tsx}'],
     extends: [
       js.configs.recommended,
-      ...tseslint.configs.recommended,
+      ...tseslint.configs.strictTypeChecked,
     ],
     plugins: {
       'react-hooks': reactHooks,
@@ -34,6 +47,19 @@ export default tseslint.config([
           ignoreRestSiblings: true,
         },
       ],
+
+      // Additional strict rules beyond strictTypeChecked
+      // Prevent type assertions (prefer type guards)
+      '@typescript-eslint/consistent-type-assertions': [
+        'error',
+        { assertionStyle: 'never' }
+      ],
+
+      // Prevent non-null assertions
+      '@typescript-eslint/no-non-null-assertion': 'error',
+
+      // Disallow direct console usage - use logger instead
+      'no-console': 'error',
     },
     languageOptions: {
       ecmaVersion: 2020,
@@ -45,6 +71,8 @@ export default tseslint.config([
         },
         ecmaVersion: 'latest',
         sourceType: 'module',
+        projectService: true,
+        tsconfigRootDir: import.meta.dirname,
       },
     },
   },
