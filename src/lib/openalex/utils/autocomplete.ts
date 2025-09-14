@@ -104,7 +104,7 @@ export class AutocompleteApi {
 
     return this.executeWithDebounce(cacheKey, async () => {
       const promises = types.map(type =>
-        this.performAutocomplete(query, type).catch(() => [] as AutocompleteResult[])
+        this.performAutocomplete(query, type).catch((): AutocompleteResult[] => [])
       );
 
       const results = await Promise.all(promises);
@@ -143,18 +143,18 @@ export class AutocompleteApi {
       const promises = entityTypes.map(async type => {
         try {
           const endpoint = `${type}/autocomplete`;
-          const params = {
+          const params: QueryParams & { q: string } = {
             q: query.trim(),
             ...this.formatFiltersForEntityType(filters, type),
           };
 
-          const response = await this.client.get<{ results: AutocompleteResult[] }>(endpoint, params as QueryParams & { q: string });
+          const response = await this.client.get<{ results: AutocompleteResult[] }>(endpoint, params);
           return response.results.map(result => ({
             ...result,
             entity_type: this.mapEntityTypeToSingular(type),
           }));
         } catch {
-          return [] as AutocompleteResult[];
+          return [] satisfies AutocompleteResult[];
         }
       });
 

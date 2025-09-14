@@ -29,7 +29,7 @@ export function createGraphProvider(type: ProviderType): GraphProvider {
       // return new CytoscapeProvider();
 
     default:
-      throw new Error(`Unknown provider type: ${type}`);
+      throw new Error(`Unknown provider type: ${String(type)}`);
   }
 }
 
