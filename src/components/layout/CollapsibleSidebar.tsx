@@ -5,6 +5,7 @@
 
 import React from 'react'
 import { useLayoutStore } from '@/stores/layout-store'
+import { useThemeColors } from '@/hooks/use-theme-colors'
 import { IconPin, IconPinFilled, IconChevronLeft, IconChevronRight } from '@tabler/icons-react'
 
 interface CollapsibleSidebarProps {
@@ -34,6 +35,7 @@ export const CollapsibleSidebar: React.FC<CollapsibleSidebarProps> = ({
     pinLeftSidebar,
     pinRightSidebar,
   } = useLayoutStore()
+  const { colors } = useThemeColors()
 
   const isOpen = side === 'left' ? leftSidebarOpen : rightSidebarOpen
   const isPinned = side === 'left' ? leftSidebarPinned : rightSidebarPinned
@@ -46,9 +48,9 @@ export const CollapsibleSidebar: React.FC<CollapsibleSidebarProps> = ({
   const sidebarStyle: React.CSSProperties = {
     position: 'relative',
     height: '100%',
-    backgroundColor: '#ffffff',
-    borderRight: side === 'left' ? '1px solid #e5e7eb' : undefined,
-    borderLeft: side === 'right' ? '1px solid #e5e7eb' : undefined,
+    backgroundColor: colors.background.primary,
+    borderRight: side === 'left' ? `1px solid ${colors.border.primary}` : undefined,
+    borderLeft: side === 'right' ? `1px solid ${colors.border.primary}` : undefined,
     transition: 'width 200ms ease-in-out',
     width: isOpen ? `${minWidth}px` : '48px',
     minWidth: isOpen ? `${minWidth}px` : '48px',
@@ -63,8 +65,8 @@ export const CollapsibleSidebar: React.FC<CollapsibleSidebarProps> = ({
     alignItems: 'center',
     justifyContent: 'space-between',
     padding: isOpen ? '12px 16px' : '12px 8px',
-    borderBottom: '1px solid #e5e7eb',
-    backgroundColor: '#f9fafb',
+    borderBottom: `1px solid ${colors.border.primary}`,
+    backgroundColor: colors.background.secondary,
     minHeight: '48px',
   }
 
@@ -88,7 +90,7 @@ export const CollapsibleSidebar: React.FC<CollapsibleSidebarProps> = ({
               margin: 0,
               fontSize: '14px',
               fontWeight: 600,
-              color: '#374151'
+              color: colors.text.primary
             }}>
               {title}
             </h3>
@@ -102,7 +104,7 @@ export const CollapsibleSidebar: React.FC<CollapsibleSidebarProps> = ({
                   cursor: 'pointer',
                   padding: '4px',
                   borderRadius: '4px',
-                  color: isPinned ? '#3b82f6' : '#6b7280',
+                  color: isPinned ? colors.primary : colors.text.secondary,
                   display: 'flex',
                   alignItems: 'center',
                 }}
@@ -122,7 +124,7 @@ export const CollapsibleSidebar: React.FC<CollapsibleSidebarProps> = ({
             cursor: 'pointer',
             padding: '4px',
             borderRadius: '4px',
-            color: '#6b7280',
+            color: colors.text.secondary,
             display: 'flex',
             alignItems: 'center',
             marginLeft: isOpen ? '0' : 'auto',

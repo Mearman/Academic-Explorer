@@ -6,6 +6,7 @@
 import React, { useState } from 'react'
 import { CollapsibleSidebar } from './CollapsibleSidebar'
 import { useGraphData } from '@/hooks/use-graph-data'
+import { useThemeColors } from '@/hooks/use-theme-colors'
 import type { EntityType } from '@/lib/openalex/types'
 import { IconSearch, IconFilter, IconGraph } from '@tabler/icons-react'
 
@@ -15,6 +16,7 @@ export const LeftSidebar: React.FC = () => {
     'works', 'authors', 'sources', 'institutions'
   ])
   const { search, isLoading, clearGraph } = useGraphData()
+  const { colors, getEntityColor } = useThemeColors()
 
   const handleSearch = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -43,12 +45,12 @@ export const LeftSidebar: React.FC = () => {
   }
 
   const entityTypeOptions: { type: EntityType; label: string; color: string; icon: string }[] = [
-    { type: 'works', label: 'Works', color: '#e74c3c', icon: '📄' },
-    { type: 'authors', label: 'Authors', color: '#3498db', icon: '👤' },
-    { type: 'sources', label: 'Sources', color: '#2ecc71', icon: '📚' },
-    { type: 'institutions', label: 'Institutions', color: '#f39c12', icon: '🏛️' },
-    { type: 'topics', label: 'Topics', color: '#9b59b6', icon: '🏷️' },
-    { type: 'publishers', label: 'Publishers', color: '#1abc9c', icon: '🏢' },
+    { type: 'works', label: 'Works', color: getEntityColor('works'), icon: '📄' },
+    { type: 'authors', label: 'Authors', color: getEntityColor('authors'), icon: '👤' },
+    { type: 'sources', label: 'Sources', color: getEntityColor('sources'), icon: '📚' },
+    { type: 'institutions', label: 'Institutions', color: getEntityColor('institutions'), icon: '🏛️' },
+    { type: 'topics', label: 'Topics', color: getEntityColor('topics'), icon: '🏷️' },
+    { type: 'publishers', label: 'Publishers', color: getEntityColor('publishers'), icon: '🏢' },
   ]
 
   return (
@@ -64,7 +66,7 @@ export const LeftSidebar: React.FC = () => {
             marginBottom: '8px',
             fontSize: '13px',
             fontWeight: 600,
-            color: '#374151'
+            color: colors.text.primary
           }}>
             <IconSearch size={16} />
             Search Academic Entities
@@ -79,11 +81,13 @@ export const LeftSidebar: React.FC = () => {
               style={{
                 width: '100%',
                 padding: '8px 12px',
-                border: '1px solid #d1d5db',
+                border: `1px solid ${colors.border.primary}`,
                 borderRadius: '6px',
                 fontSize: '14px',
                 outline: 'none',
                 boxSizing: 'border-box',
+                backgroundColor: colors.background.primary,
+                color: colors.text.primary,
               }}
               disabled={isLoading}
             />
@@ -92,8 +96,8 @@ export const LeftSidebar: React.FC = () => {
               disabled={!searchQuery.trim() || isLoading}
               style={{
                 padding: '8px 16px',
-                backgroundColor: isLoading ? '#9ca3af' : '#3b82f6',
-                color: 'white',
+                backgroundColor: isLoading ? colors.text.tertiary : colors.primary,
+                color: colors.text.inverse,
                 border: 'none',
                 borderRadius: '6px',
                 fontSize: '14px',
@@ -115,7 +119,7 @@ export const LeftSidebar: React.FC = () => {
             marginBottom: '12px',
             fontSize: '13px',
             fontWeight: 600,
-            color: '#374151'
+            color: colors.text.primary
           }}>
             <IconFilter size={16} />
             Entity Types
@@ -132,7 +136,7 @@ export const LeftSidebar: React.FC = () => {
                   cursor: 'pointer',
                   padding: '6px',
                   borderRadius: '4px',
-                  backgroundColor: selectedEntityTypes.includes(option.type) ? '#f3f4f6' : 'transparent',
+                  backgroundColor: selectedEntityTypes.includes(option.type) ? colors.background.tertiary : 'transparent',
                   transition: 'background-color 0.2s',
                 }}
               >
@@ -143,7 +147,7 @@ export const LeftSidebar: React.FC = () => {
                   style={{ margin: 0 }}
                 />
                 <span style={{ fontSize: '16px' }}>{option.icon}</span>
-                <span style={{ fontSize: '14px', color: '#374151' }}>{option.label}</span>
+                <span style={{ fontSize: '14px', color: colors.text.primary }}>{option.label}</span>
                 <span
                   style={{
                     width: '12px',
@@ -167,7 +171,7 @@ export const LeftSidebar: React.FC = () => {
             marginBottom: '8px',
             fontSize: '13px',
             fontWeight: 600,
-            color: '#374151'
+            color: colors.text.primary
           }}>
             <IconGraph size={16} />
             Graph Actions
@@ -178,8 +182,8 @@ export const LeftSidebar: React.FC = () => {
             style={{
               width: '100%',
               padding: '8px 16px',
-              backgroundColor: '#ef4444',
-              color: 'white',
+              backgroundColor: colors.error,
+              color: colors.text.inverse,
               border: 'none',
               borderRadius: '6px',
               fontSize: '14px',
@@ -194,10 +198,10 @@ export const LeftSidebar: React.FC = () => {
         {/* Instructions */}
         <div style={{
           padding: '12px',
-          backgroundColor: '#f9fafb',
+          backgroundColor: colors.background.secondary,
           borderRadius: '6px',
           fontSize: '12px',
-          color: '#6b7280',
+          color: colors.text.secondary,
           lineHeight: '1.4',
         }}>
           <strong>Tips:</strong>
