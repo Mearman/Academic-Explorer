@@ -21,6 +21,7 @@ interface SearchFilters {
 interface MockWork {
   id: string;
   title: string;
+  display_name: string;
   authors: string[];
   publication_year: number;
   cited_by_count: number;
@@ -36,6 +37,7 @@ const generateMockData = (query: string): MockWork[] => {
     {
       id: '1',
       title: `Advanced Research on ${query}: A Computational Approach`,
+      display_name: `Advanced Research on ${query}: A Computational Approach`,
       authors: ['Dr. Sarah Johnson', 'Prof. Michael Chen'],
       publication_year: 2023,
       cited_by_count: 47,
@@ -45,6 +47,7 @@ const generateMockData = (query: string): MockWork[] => {
     {
       id: '2',
       title: `Machine Learning Applications in ${query} Studies`,
+      display_name: `Machine Learning Applications in ${query} Studies`,
       authors: ['Dr. Emily Rodriguez', 'Prof. David Kim', 'Dr. Lisa Wang'],
       publication_year: 2022,
       cited_by_count: 89,
@@ -54,6 +57,7 @@ const generateMockData = (query: string): MockWork[] => {
     {
       id: '3',
       title: `The Future of ${query}: Trends and Predictions`,
+      display_name: `The Future of ${query}: Trends and Predictions`,
       authors: ['Prof. Robert Taylor'],
       publication_year: 2024,
       cited_by_count: 23,

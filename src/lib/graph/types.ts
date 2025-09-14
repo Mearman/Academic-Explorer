@@ -67,6 +67,7 @@ export interface GraphLayout {
     center?: { x: number; y: number };
     preventOverlap?: boolean;
     seed?: number; // For deterministic layouts
+    forceReLayout?: boolean; // Force complete re-layout of all nodes
     // D3-force specific options
     linkDistance?: number;
     linkStrength?: number;
