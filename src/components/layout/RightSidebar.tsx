@@ -211,7 +211,8 @@ export const RightSidebar: React.FC = () => {
                         {key.charAt(0).toUpperCase() + key.slice(1).replace(/([A-Z])/g, ' $1')}:
                       </span>
                       <span style={{ color: '#111827', fontWeight: 600, textAlign: 'right' }}>
-                        {typeof value === 'boolean' ? (value ? 'Yes' : 'No') : String(value)}
+                        {typeof value === 'boolean' ? (value ? 'Yes' : 'No') :
+                         typeof value === 'object' && value !== null ? JSON.stringify(value) : String(value)}
                       </span>
                     </div>
                   )
