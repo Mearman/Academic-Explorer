@@ -93,7 +93,7 @@ export const LeftSidebar: React.FC = () => {
 		toggleEdgeTypeVisibility(edgeType)
 	}
 
-	const handleShowAllCachedToggle = async () => {
+	const handleShowAllCachedToggle = () => {
 		const newValue = !showAllCachedNodes
 		setShowAllCachedNodes(newValue)
 

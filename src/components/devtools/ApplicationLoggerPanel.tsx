@@ -355,8 +355,6 @@ export function ApplicationLoggerPanel() {
 																return JSON.stringify(log.data, null, 2);
 															} catch {
 																// Handle non-serializable data safely
-																if (log.data === null) return "null";
-																if (log.data === undefined) return "undefined";
 																if (typeof log.data === "string") return log.data;
 																if (typeof log.data === "number") return log.data.toString();
 																if (typeof log.data === "boolean") return log.data.toString();

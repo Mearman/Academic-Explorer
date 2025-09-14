@@ -56,8 +56,8 @@ export class AuthorEntity extends AbstractEntity<Author> {
    * Check if author entity is dehydrated (missing key fields)
    */
 	protected isDehydrated(author: Author): boolean {
-		// An author is dehydrated if it's missing works_count or cited_by_count
-		return author.works_count === undefined || author.cited_by_count === undefined;
+		// Author entities are never considered dehydrated as all fields are always present
+		return false;
 	}
 
 	/**
@@ -167,7 +167,7 @@ export class AuthorEntity extends AbstractEntity<Author> {
 		return {
 			worksCount: author.works_count,
 			citationCount: author.cited_by_count,
-			affiliations: author.affiliations?.map(a => a.institution.display_name) || [],
+			affiliations: author.affiliations.map(a => a.institution.display_name),
 			lastKnownInstitutions: author.last_known_institutions?.map(i => i.display_name) || [],
 		};
 	}

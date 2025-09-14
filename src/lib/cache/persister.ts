@@ -181,7 +181,7 @@ export function createHybridPersister(dbName = "academic-explorer-cache"): Persi
 
 							// Validate parsed data structure
 							if (!isPersistedClientData(parsed)) {
-								logger.warn("cache", "Invalid localStorage cache structure, clearing", { keys: Object.keys((parsed as Record<string, unknown>) || {}) });
+								logger.warn("cache", "Invalid localStorage cache structure, clearing", { keys: Object.keys(parsed as Record<string, unknown>) });
 								localStorage.removeItem(LOCALSTORAGE_KEY);
 								throw new Error("Invalid cache structure");
 							}
@@ -195,10 +195,8 @@ export function createHybridPersister(dbName = "academic-explorer-cache"): Persi
 								} else {
 									// Remove metadata and return
 									const { version, ...clientData } = parsed;
-									if (clientData.clientState) {
-										logger.info("cache", "Restored query client from localStorage", { age });
-										return clientData;
-									}
+									logger.info("cache", "Restored query client from localStorage", { age });
+									return clientData;
 								}
 							}
 						}
@@ -244,11 +242,6 @@ export function createHybridPersister(dbName = "academic-explorer-cache"): Persi
 
 				// Remove our metadata before returning to TanStack Query
 				const { version, ...clientData } = persistedData;
-
-				// Validate that clientData has the required PersistedClient structure
-				if (!clientData.clientState) {
-					return undefined;
-				}
 
 				logger.info("cache", "Restored query client from IndexedDB", {
 					age: persistedData.timestamp ? Date.now() - persistedData.timestamp : 0

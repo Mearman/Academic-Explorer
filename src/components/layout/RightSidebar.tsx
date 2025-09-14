@@ -227,7 +227,7 @@ export const RightSidebar: React.FC = () => {
 													if (typeof value === "boolean") {
 														return value ? "Yes" : "No";
 													}
-													if (typeof value === "object" && value !== null) {
+													if (typeof value === "object") {
 														if (Array.isArray(value)) {
 															return value.join(", ");
 														}
