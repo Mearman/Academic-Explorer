@@ -70,10 +70,11 @@ export class SourcesApi {
     };
 
     const { filter: _, ...paramsWithoutFilter } = params;
-    return this.getSources(this.buildFilterParams({
+    const queryParams = this.buildFilterParams({
       ...paramsWithoutFilter,
       filter: searchFilters,
-    } as any));
+    });
+    return this.client.getResponse<Source>('sources', queryParams);
   }
 
   /**
@@ -96,11 +97,12 @@ export class SourcesApi {
     };
 
     const { filter: _, ...paramsWithoutFilter } = params;
-    return this.getSources(this.buildFilterParams({
+    const queryParams = this.buildFilterParams({
       ...paramsWithoutFilter,
       filter: filters,
       sort: params.sort || 'works_count:desc',
-    } as any));
+    });
+    return this.client.getResponse<Source>('sources', queryParams);
   }
 
   /**
@@ -122,11 +124,12 @@ export class SourcesApi {
     };
 
     const { filter: _, ...paramsWithoutFilter } = params;
-    return this.getSources(this.buildFilterParams({
+    const queryParams = this.buildFilterParams({
       ...paramsWithoutFilter,
       filter: filters,
       sort: params.sort || 'works_count:desc',
-    } as any));
+    });
+    return this.client.getResponse<Source>('sources', queryParams);
   }
 
   /**
@@ -153,11 +156,12 @@ export class SourcesApi {
     };
 
     const { filter: _, ...paramsWithoutFilter } = params;
-    return this.getSources(this.buildFilterParams({
+    const queryParams = this.buildFilterParams({
       ...paramsWithoutFilter,
       filter: filters,
       sort: params.sort || 'works_count:desc',
-    } as any));
+    });
+    return this.client.getResponse<Source>('sources', queryParams);
   }
 
   /**
@@ -254,7 +258,8 @@ export class SourcesApi {
       params.seed = seed;
     }
 
-    return this.getSources(this.buildFilterParams(params as any));
+    const queryParams = this.buildFilterParams(params);
+    return this.client.getResponse<Source>('sources', queryParams);
   }
 
   /**
