@@ -80,9 +80,9 @@ export class WorksApi {
   async getWorks(params: WorksQueryParams = {}): Promise<OpenAlexResponse<Work>> {
     const queryParams: QueryParams = { ...params };
 
-    // Convert filters object to filter string
+    // Convert filters object to filter string, if it's not already a string
     if (params.filter) {
-      queryParams.filter = this.buildFilterString(params.filter);
+      queryParams.filter = typeof params.filter === 'string' ? params.filter : this.buildFilterString(params.filter as WorksFilters);
     }
 
     return this.client.getResponse<Work>('works', queryParams);
@@ -266,7 +266,7 @@ export class WorksApi {
     };
 
     const response = await this.getWorks({
-      filter: filters,
+      filter: this.buildFilterString(filters),
       select: options.select,
       per_page: referencesToFetch.length,
     });
@@ -312,7 +312,7 @@ export class WorksApi {
     };
 
     const response = await this.getWorks({
-      filter: filters,
+      filter: this.buildFilterString(filters),
       select: options.select,
       per_page: relatedToFetch.length,
     });
@@ -351,7 +351,7 @@ export class WorksApi {
 
     // Convert filters if provided
     if (params.filter) {
-      queryParams.filter = this.buildFilterString(params.filter);
+      queryParams.filter = typeof params.filter === 'string' ? params.filter : this.buildFilterString(params.filter as WorksFilters);
     }
 
     const response = await this.client.getResponse<Work>('works', queryParams);
@@ -388,7 +388,7 @@ export class WorksApi {
 
     // Convert filters if provided
     if (params.filter) {
-      queryParams.filter = this.buildFilterString(params.filter);
+      queryParams.filter = typeof params.filter === 'string' ? params.filter : this.buildFilterString(params.filter as WorksFilters);
     }
 
     yield* this.client.stream<Work>('works', queryParams, queryParams.per_page);
@@ -416,7 +416,7 @@ export class WorksApi {
 
     // Convert filters if provided
     if (params.filter) {
-      queryParams.filter = this.buildFilterString(params.filter);
+      queryParams.filter = typeof params.filter === 'string' ? params.filter : this.buildFilterString(params.filter as WorksFilters);
     }
 
     return this.client.getAll<Work>('works', queryParams, maxResults);
@@ -480,7 +480,7 @@ export class WorksApi {
 
     // Convert filters if provided
     if (params.filter) {
-      queryParams.filter = this.buildFilterString(params.filter);
+      queryParams.filter = typeof params.filter === 'string' ? params.filter : this.buildFilterString(params.filter as WorksFilters);
     }
 
     return this.client.getResponse<Work>('works', queryParams);
