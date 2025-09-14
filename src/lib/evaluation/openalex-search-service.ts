@@ -93,15 +93,15 @@ export function extractSearchCriteriaFromDataset(dataset: STARDataset): {
 		const dateFilter: Record<string, string> = {};
 
 		if (dataset.searchStrategy.dateRange?.start) {
-			dateFilter["publication_year"] = `>${dataset.searchStrategy.dateRange.start.getFullYear() - 1}`;
+			dateFilter["publication_year"] = `>${String(dataset.searchStrategy.dateRange.start.getFullYear() - 1)}`;
 		}
 
 		if (dataset.searchStrategy.dateRange?.end) {
 			const endYear = dataset.searchStrategy.dateRange.end.getFullYear();
 			const startFilter = dateFilter["publication_year"] || "";
 			dateFilter["publication_year"] = startFilter ?
-				`${startFilter},<${endYear + 1}` :
-				`<${endYear + 1}`;
+				`${startFilter},<${String(endYear + 1)}` :
+				`<${String(endYear + 1)}`;
 		}
 
 		filters.filters = dateFilter;
@@ -130,11 +130,11 @@ export async function performAcademicExplorerSearch(
 			const yearFilters: string[] = [];
 
 			if (config.yearRange.start) {
-				yearFilters.push(`>${config.yearRange.start - 1}`);
+				yearFilters.push(`>${String(config.yearRange.start - 1)}`);
 			}
 
 			if (config.yearRange.end) {
-				yearFilters.push(`<${config.yearRange.end + 1}`);
+				yearFilters.push(`<${String(config.yearRange.end + 1)}`);
 			}
 
 			if (yearFilters.length > 0) {
@@ -144,7 +144,7 @@ export async function performAcademicExplorerSearch(
 
 		// Apply citation filter if specified
 		if (config.minimumCitations && config.minimumCitations > 0) {
-			(searchOptions.filters as Record<string, string>)["cited_by_count"] = `>${config.minimumCitations - 1}`;
+			(searchOptions.filters as Record<string, string>)["cited_by_count"] = `>${String(config.minimumCitations - 1)}`;
 		}
 
 		// Filter out preprints if not desired
@@ -160,7 +160,7 @@ export async function performAcademicExplorerSearch(
 		// Perform the search
 		const response = await openAlex.works.searchWorks(query, searchOptions);
 
-		logger.info("api", `OpenAlex search returned ${response.results.length} results (${response.meta.count} total available)`, {
+		logger.info("api", `OpenAlex search returned ${String(response.results.length)} results (${String(response.meta.count)} total available)`, {
 			resultCount: response.results.length,
 			totalAvailable: response.meta.count
 		}, "OpenAlexSearchService");

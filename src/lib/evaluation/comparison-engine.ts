@@ -374,12 +374,12 @@ export function compareAcademicExplorerResults(
 /**
  * Batch comparison function for multiple STAR datasets
  */
-export async function batchCompareResults(
+export function batchCompareResults(
 	academicExplorerResults: WorkReference[],
 	starDatasets: STARDataset[],
 	config: MatchingConfig = DEFAULT_MATCHING_CONFIG,
 	onProgress?: (datasetIndex: number, progress: ComparisonProgress) => void
-): Promise<ComparisonResults[]> {
+): ComparisonResults[] {
 	const results: ComparisonResults[] = [];
 
 	for (let i = 0; i < starDatasets.length; i++) {
