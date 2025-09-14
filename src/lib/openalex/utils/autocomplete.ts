@@ -9,7 +9,7 @@ import { logger } from '@/lib/logger';
 
 interface DebouncedPromiseCache {
   [key: string]: {
-    promise: Promise<AutocompleteResult[]>;
+    promise: Promise<unknown>;
     timestamp: number;
   };
 }

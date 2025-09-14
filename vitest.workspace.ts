@@ -1,9 +1,15 @@
 /// <reference types="vitest" />
 import { defineWorkspace } from 'vitest/config'
+import path from 'path'
 
 export default defineWorkspace([
   // Unit tests - pure logic, utilities, data transformations
   {
+    resolve: {
+      alias: {
+        '@': path.resolve(__dirname, './src'),
+      },
+    },
     test: {
       name: 'unit',
       include: ['src/**/*.unit.test.ts'],
