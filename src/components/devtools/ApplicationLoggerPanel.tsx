@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Text, Stack, Group, Badge, Button, Divider, ScrollArea, Code, Paper, Tabs, TextInput, MultiSelect, ActionIcon } from '@mantine/core';
-import { IconTrash, IconSearch, IconFilter, IconDownload, IconBug, IconInfoCircle, IconAlertTriangle, IconX } from '@tabler/icons-react';
+import { Text, Stack, Group, Badge, Button, Divider, ScrollArea, Code, Paper, Tabs, TextInput, MultiSelect, ActionIcon, Tooltip } from '@mantine/core';
+import { IconTrash, IconSearch, IconFilter, IconDownload, IconBug, IconInfoCircle, IconAlertTriangle, IconX, IconCopy } from '@tabler/icons-react';
 import { logger, type LogLevel, type LogCategory, type LogEntry } from '@/lib/logger';
 
 
@@ -93,6 +93,37 @@ export function ApplicationLoggerPanel() {
     error: logs.filter(l => l.level === 'error').length,
   };
 
+  const formatLogEntry = (log: LogEntry) => {
+    const timestamp = `${log.timestamp.toLocaleTimeString()}.${log.timestamp.getMilliseconds().toString().padStart(3, '0')}`;
+    const level = log.level.toUpperCase();
+    const category = log.category;
+    const component = log.component ? ` [${log.component}]` : '';
+    const data = log.data ? `\nData: ${JSON.stringify(log.data, null, 2)}` : '';
+    const stack = log.stack ? `\nStack: ${log.stack}` : '';
+
+    return `[${timestamp}] ${level} (${category})${component}: ${log.message}${data}${stack}`;
+  };
+
+  const copyAllLogs = async () => {
+    try {
+      const allLogsText = filteredLogs.map(formatLogEntry).join('\n\n');
+      await navigator.clipboard.writeText(allLogsText);
+      logger.info('ui', 'Copied all filtered logs to clipboard', { count: filteredLogs.length }, 'ApplicationLoggerPanel');
+    } catch (error) {
+      logger.error('ui', 'Failed to copy logs to clipboard', { error }, 'ApplicationLoggerPanel');
+    }
+  };
+
+  const copyLogEntry = async (log: LogEntry) => {
+    try {
+      const logText = formatLogEntry(log);
+      await navigator.clipboard.writeText(logText);
+      logger.debug('ui', 'Copied log entry to clipboard', { id: log.id }, 'ApplicationLoggerPanel');
+    } catch (error) {
+      logger.error('ui', 'Failed to copy log entry to clipboard', { error }, 'ApplicationLoggerPanel');
+    }
+  };
+
   return (
     <>
       <style>
@@ -118,6 +149,18 @@ export function ApplicationLoggerPanel() {
           <Text size="xl" fw={600}>Application Logger</Text>
           <Group gap="xs">
             <Badge color="blue" variant="light">{logStats.total} total</Badge>
+            <Tooltip label="Copy all filtered logs to clipboard" withArrow>
+              <Button
+                size="xs"
+                variant="light"
+                color="green"
+                leftSection={<IconCopy size={14} />}
+                onClick={copyAllLogs}
+                disabled={filteredLogs.length === 0}
+              >
+                Copy All
+              </Button>
+            </Tooltip>
             <Button
               size="xs"
               variant="light"
@@ -266,28 +309,41 @@ export function ApplicationLoggerPanel() {
                 ) : (
                   filteredLogs.map((log) => (
                     <Paper key={log.id} p="sm" withBorder style={{ fontSize: '12px' }}>
-                      <Group gap="xs" mb="xs" wrap="nowrap">
-                        <Badge
-                          color={getLevelColor(log.level)}
-                          variant="light"
-                          size="xs"
-                          leftSection={getLevelIcon(log.level)}
-                        >
-                          {log.level.toUpperCase()}
-                        </Badge>
-                        <Badge
-                          color={getCategoryBadgeColor(log.category)}
-                          variant="outline"
-                          size="xs"
-                        >
-                          {log.category}
-                        </Badge>
-                        <Text size="xs" c="dimmed">
-                          {log.timestamp.toLocaleTimeString()}.{log.timestamp.getMilliseconds().toString().padStart(3, '0')}
-                        </Text>
-                        {log.component && (
-                          <Code c="dimmed">{log.component}</Code>
-                        )}
+                      <Group gap="xs" mb="xs" wrap="nowrap" justify="space-between">
+                        <Group gap="xs" wrap="nowrap" style={{ flex: 1, minWidth: 0 }}>
+                          <Badge
+                            color={getLevelColor(log.level)}
+                            variant="light"
+                            size="xs"
+                            leftSection={getLevelIcon(log.level)}
+                          >
+                            {log.level.toUpperCase()}
+                          </Badge>
+                          <Badge
+                            color={getCategoryBadgeColor(log.category)}
+                            variant="outline"
+                            size="xs"
+                          >
+                            {log.category}
+                          </Badge>
+                          <Text size="xs" c="dimmed">
+                            {log.timestamp.toLocaleTimeString()}.{log.timestamp.getMilliseconds().toString().padStart(3, '0')}
+                          </Text>
+                          {log.component && (
+                            <Code c="dimmed">{log.component}</Code>
+                          )}
+                        </Group>
+                        <Tooltip label="Copy this log entry to clipboard" withArrow>
+                          <ActionIcon
+                            size="sm"
+                            variant="subtle"
+                            color="gray"
+                            onClick={() => copyLogEntry(log)}
+                            style={{ flexShrink: 0 }}
+                          >
+                            <IconCopy size={12} />
+                          </ActionIcon>
+                        </Tooltip>
                       </Group>
                       <Text size="sm" mb={log.data ? 'xs' : 0}>
                         {log.message}
