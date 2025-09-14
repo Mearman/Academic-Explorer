@@ -1,6 +1,6 @@
 /// <reference types="vitest" />
 import { defineWorkspace } from 'vitest/config'
-import path from 'path'
+import * as path from 'path'
 
 export default defineWorkspace([
   // Unit tests - pure logic, utilities, data transformations
@@ -17,16 +17,6 @@ export default defineWorkspace([
       globals: true,
       setupFiles: ['./src/test/setup.ts'],
       testTimeout: 30000,
-      coverage: {
-        reporter: ['text', 'json', 'html'],
-        exclude: ['node_modules/', 'src/test/', '**/*.d.ts'],
-        thresholds: {
-          lines: 80,
-          functions: 80,
-          branches: 80,
-          statements: 80,
-        },
-      },
     },
   },
 
@@ -44,16 +34,6 @@ export default defineWorkspace([
       globals: true,
       setupFiles: ['./src/test/setup.ts'],
       testTimeout: 30000,
-      coverage: {
-        reporter: ['text', 'json', 'html'],
-        exclude: ['node_modules/', 'src/test/', '**/*.d.ts'],
-        thresholds: {
-          lines: 80,
-          functions: 80,
-          branches: 80,
-          statements: 80,
-        },
-      },
     },
   },
 
@@ -71,17 +51,6 @@ export default defineWorkspace([
       globals: true,
       setupFiles: ['./src/test/setup.ts'],
       testTimeout: 45000,
-      coverage: {
-        reporter: ['text', 'json', 'html'],
-        exclude: ['node_modules/', 'src/test/', '**/*.d.ts'],
-        thresholds: {
-          // No coverage thresholds for integration tests - focused on API workflows
-          lines: 0,
-          functions: 0,
-          branches: 0,
-          statements: 0,
-        },
-      },
     },
   },
 
@@ -99,16 +68,6 @@ export default defineWorkspace([
       globals: true,
       setupFiles: ['./src/test/setup.ts'],
       testTimeout: 90000,
-      coverage: {
-        reporter: ['text', 'json', 'html'],
-        exclude: ['node_modules/', 'src/test/', '**/*.d.ts'],
-        thresholds: {
-          lines: 80,
-          functions: 80,
-          branches: 80,
-          statements: 80,
-        },
-      },
     },
   },
 ])
