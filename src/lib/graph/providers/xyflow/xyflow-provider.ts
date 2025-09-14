@@ -64,9 +64,12 @@ export class XYFlowProvider implements GraphProvider {
       id: edge.id,
       source: edge.source,
       target: edge.target,
-      type: 'default',
+      type: 'floating', // Use floating edge for automatic routing
       label: edge.label,
-      data: edge.metadata,
+      data: {
+        label: edge.label,
+        ...edge.metadata
+      },
       style: {
         stroke: this.getEdgeColor(edge.type),
         strokeWidth: edge.weight ? Math.max(1, edge.weight * 3) : 1,

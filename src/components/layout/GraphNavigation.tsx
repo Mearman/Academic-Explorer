@@ -26,6 +26,7 @@ import { useLayoutStore } from '@/stores/layout-store';
 import { createGraphProvider } from '@/lib/graph/provider-factory';
 import { XYFlowProvider } from '@/lib/graph/providers/xyflow/xyflow-provider';
 import { nodeTypes } from '@/lib/graph/providers/xyflow/node-types';
+import { edgeTypes } from '@/lib/graph/providers/xyflow/edge-types';
 import { useLayout } from '@/lib/graph/providers/xyflow/use-layout';
 import type { GraphNode } from '@/lib/graph/types';
 import { EntityDetector } from '@/lib/graph/utils/entity-detection';
@@ -222,6 +223,7 @@ const GraphNavigationInner: React.FC<GraphNavigationProps> = ({ className, style
         onNodeMouseEnter={onNodeMouseEnter}
         onNodeMouseLeave={onNodeMouseLeave}
         nodeTypes={nodeTypes}
+        edgeTypes={edgeTypes}
         fitView
         fitViewOptions={{ padding: 0.1 }}
         attributionPosition="bottom-left"
