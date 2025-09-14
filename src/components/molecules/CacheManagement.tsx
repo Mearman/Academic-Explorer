@@ -194,11 +194,11 @@ export function CacheManagement() {
 						</div>
 						<div>
 							<Badge
-								color={cacheStats?.exists ? (cacheStats?.isExpired ? "yellow" : "green") : "gray"}
+								color={cacheStats?.exists ? (cacheStats.isExpired ? "yellow" : "green") : "gray"}
 								variant="light"
 							>
 								{cacheStats?.exists
-									? (cacheStats?.isExpired ? "Expired" : "Active")
+									? (cacheStats.isExpired ? "Expired" : "Active")
 									: "Empty"
 								}
 							</Badge>

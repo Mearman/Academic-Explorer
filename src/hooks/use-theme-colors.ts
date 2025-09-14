@@ -4,7 +4,6 @@
  */
 
 import { useMantineColorScheme, useMantineTheme } from "@mantine/core";
-import type { EntityType } from "@/lib/graph/types";
 
 export function useThemeColors() {
 	const theme = useMantineTheme();
@@ -19,7 +18,7 @@ export function useThemeColors() {
 
 	// Base color utilities
 	const getColor = (color: string, shade: number = 5) => {
-		return theme.colors[color]?.[shade] || color;
+		return theme.colors[color][shade] || color;
 	};
 
 	// Semantic colors that adapt to light/dark mode
@@ -49,21 +48,21 @@ export function useThemeColors() {
 
 		// Semantic colors
 		primary: theme.colors.blue[5],
-		success: theme.colors.green?.[5] || "#10b981",
-		warning: theme.colors.yellow?.[5] || "#f59e0b",
-		error: theme.colors.red?.[5] || "#ef4444",
+		success: theme.colors.green[5] || "#10b981",
+		warning: theme.colors.yellow[5] || "#f59e0b",
+		error: theme.colors.red[5] || "#ef4444",
 		info: theme.colors.blue[5],
 
 		// Academic entity colors
 		entity: {
 			work: theme.colors.blue[5],
-			author: theme.colors.author?.[5] || "#10b981",
-			source: theme.colors.source?.[5] || "#8b5cf6",
-			institution: theme.colors.institution?.[5] || "#f59e0b",
-			concept: theme.colors.red?.[5] || "#ef4444",
-			topic: theme.colors.red?.[5] || "#ef4444",
-			publisher: theme.colors.cyan?.[5] || "#06b6d4",
-			funder: theme.colors.pink?.[5] || "#ec4899",
+			author: theme.colors.author[5] || "#10b981",
+			source: theme.colors.source[5] || "#8b5cf6",
+			institution: theme.colors.institution[5] || "#f59e0b",
+			concept: theme.colors.red[5] || "#ef4444",
+			topic: theme.colors.red[5] || "#ef4444",
+			publisher: theme.colors.cyan[5] || "#06b6d4",
+			funder: theme.colors.pink[5] || "#ec4899",
 		},
 	};
 
@@ -76,7 +75,7 @@ export function useThemeColors() {
 	};
 
 	// Entity color utilities
-	const getEntityColor = (entityType: EntityType | string): string => {
+	const getEntityColor = (entityType: string): string => {
 		const normalizedType = entityType.toLowerCase();
 
 		if (isValidEntityColorKey(normalizedType)) {
@@ -86,7 +85,7 @@ export function useThemeColors() {
 		return colors.primary;
 	};
 
-	const getEntityColorShade = (entityType: EntityType | string, shade: number = 5): string => {
+	const getEntityColorShade = (entityType: string, shade: number = 5): string => {
 		const normalizedType = entityType.toLowerCase();
 
 		const colorMap: Record<string, string> = {

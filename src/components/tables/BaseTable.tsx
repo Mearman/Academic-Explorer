@@ -41,7 +41,7 @@ export function BaseTable<T>({
 	});
 
 	const table = useReactTable({
-		data: data || [],
+		data,
 		columns,
 		getCoreRowModel: getCoreRowModel(),
 		getSortedRowModel: getSortedRowModel(),

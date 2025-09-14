@@ -70,5 +70,5 @@ export type EntityType = keyof typeof ENTITY_CACHE_TIMES;
  * Get cache configuration for a specific entity type
  */
 export function getCacheConfig(entityType: EntityType) {
-	return ENTITY_CACHE_TIMES[entityType] || ENTITY_CACHE_TIMES.search;
+	return ENTITY_CACHE_TIMES[entityType];
 }
