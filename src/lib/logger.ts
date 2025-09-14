@@ -1,5 +1,129 @@
-// Re-export the logger from the devtools component for easy importing
-export { logger, type LogLevel, type LogCategory, type LogEntry } from '../components/devtools/ApplicationLoggerPanel';
+// Logger types
+export type LogLevel = 'debug' | 'info' | 'warn' | 'error';
+export type LogCategory = 'api' | 'cache' | 'graph' | 'routing' | 'ui' | 'auth' | 'storage' | 'search' | 'general';
+
+export interface LogEntry {
+  id: string;
+  timestamp: Date;
+  level: LogLevel;
+  category: LogCategory;
+  message: string;
+  data?: any;
+  component?: string;
+  stack?: string;
+}
+
+// Logger configuration
+interface LoggerConfig {
+  maxLogs: number;
+  enableConsoleOutput: boolean;
+  enableDebugLogs: boolean;
+}
+
+// Application Logger class
+class ApplicationLogger {
+  private logs: LogEntry[] = [];
+  private listeners: ((logs: LogEntry[]) => void)[] = [];
+  private config: LoggerConfig = {
+    maxLogs: 1000,
+    enableConsoleOutput: true, // Set to false to disable browser console output
+    enableDebugLogs: import.meta.env.DEV, // Only debug logs in development
+  };
+
+  log(level: LogLevel, category: LogCategory, message: string, data?: any, component?: string) {
+    // Skip debug logs if disabled
+    if (level === 'debug' && !this.config.enableDebugLogs) {
+      return;
+    }
+
+    const entry: LogEntry = {
+      id: Math.random().toString(36).substring(7),
+      timestamp: new Date(),
+      level,
+      category,
+      message,
+      data,
+      component,
+      stack: level === 'error' ? new Error().stack : undefined,
+    };
+
+    this.logs.unshift(entry);
+
+    // Keep only recent logs
+    if (this.logs.length > this.config.maxLogs) {
+      this.logs = this.logs.slice(0, this.config.maxLogs);
+    }
+
+    // Notify listeners
+    this.listeners.forEach(listener => listener([...this.logs]));
+
+    // Also log to console if enabled
+    if (this.config.enableConsoleOutput) {
+      const consoleMethod = level === 'debug' ? 'debug' : level === 'info' ? 'info' : level === 'warn' ? 'warn' : 'error';
+      console[consoleMethod](`[${category}] ${message}`, data || '');
+    }
+  }
+
+  debug(category: LogCategory, message: string, data?: any, component?: string) {
+    this.log('debug', category, message, data, component);
+  }
+
+  info(category: LogCategory, message: string, data?: any, component?: string) {
+    this.log('info', category, message, data, component);
+  }
+
+  warn(category: LogCategory, message: string, data?: any, component?: string) {
+    this.log('warn', category, message, data, component);
+  }
+
+  error(category: LogCategory, message: string, data?: any, component?: string) {
+    this.log('error', category, message, data, component);
+  }
+
+  subscribe(listener: (logs: LogEntry[]) => void) {
+    this.listeners.push(listener);
+    return () => {
+      this.listeners = this.listeners.filter(l => l !== listener);
+    };
+  }
+
+  getLogs() {
+    return [...this.logs];
+  }
+
+  clear() {
+    this.logs = [];
+    this.listeners.forEach(listener => listener([]));
+  }
+
+  updateConfig(newConfig: Partial<LoggerConfig>) {
+    this.config = { ...this.config, ...newConfig };
+  }
+
+  exportLogs() {
+    const data = JSON.stringify(this.logs, null, 2);
+    const blob = new Blob([data], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `academic-explorer-logs-${new Date().toISOString().split('T')[0]}.json`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  }
+
+  configure(config: Partial<LoggerConfig>) {
+    this.config = { ...this.config, ...config };
+  }
+
+  getConfig() {
+    return { ...this.config };
+  }
+}
+
+// Create and export the global logger instance
+export const logger = new ApplicationLogger();
 
 // Convenience functions for common logging patterns
 export const logApiRequest = (url: string, method: string, status?: number, responseTime?: number) => {

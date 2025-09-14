@@ -1,152 +1,41 @@
 import React, { useState, useEffect } from 'react';
-import { Box, Text, Stack, Group, Badge, Button, Divider, ScrollArea, Code, Paper, Tabs, TextInput, Select, ActionIcon } from '@mantine/core';
-import { IconRefresh, IconTrash, IconSearch, IconFilter, IconDownload, IconBug, IconInfoCircle, IconAlertTriangle, IconX } from '@tabler/icons-react';
+import { Text, Stack, Group, Badge, Button, Divider, ScrollArea, Code, Paper, Tabs, TextInput, MultiSelect, ActionIcon } from '@mantine/core';
+import { IconTrash, IconSearch, IconFilter, IconDownload, IconBug, IconInfoCircle, IconAlertTriangle, IconX } from '@tabler/icons-react';
+import { logger, type LogLevel, type LogCategory, type LogEntry } from '@/lib/logger';
 
-export type LogLevel = 'debug' | 'info' | 'warn' | 'error';
-export type LogCategory = 'api' | 'cache' | 'graph' | 'routing' | 'ui' | 'auth' | 'storage' | 'general';
-
-export interface LogEntry {
-  id: string;
-  timestamp: Date;
-  level: LogLevel;
-  category: LogCategory;
-  message: string;
-  data?: any;
-  component?: string;
-  stack?: string;
-}
-
-// Logger configuration
-interface LoggerConfig {
-  maxLogs: number;
-  enableConsoleOutput: boolean;
-  enableDebugLogs: boolean;
-}
-
-// Global logger instance that can be imported and used throughout the app
-class ApplicationLogger {
-  private logs: LogEntry[] = [];
-  private listeners: ((logs: LogEntry[]) => void)[] = [];
-  private config: LoggerConfig = {
-    maxLogs: 1000,
-    enableConsoleOutput: true, // Set to false to disable browser console output
-    enableDebugLogs: import.meta.env.DEV, // Only debug logs in development
-  };
-
-  log(level: LogLevel, category: LogCategory, message: string, data?: any, component?: string) {
-    // Skip debug logs if disabled
-    if (level === 'debug' && !this.config.enableDebugLogs) {
-      return;
-    }
-
-    const entry: LogEntry = {
-      id: Math.random().toString(36).substring(7),
-      timestamp: new Date(),
-      level,
-      category,
-      message,
-      data,
-      component,
-      stack: level === 'error' ? new Error().stack : undefined,
-    };
-
-    this.logs.unshift(entry);
-
-    // Keep only recent logs
-    if (this.logs.length > this.config.maxLogs) {
-      this.logs = this.logs.slice(0, this.config.maxLogs);
-    }
-
-    // Notify listeners
-    this.listeners.forEach(listener => listener([...this.logs]));
-
-    // Also log to console if enabled
-    if (this.config.enableConsoleOutput) {
-      const consoleMethod = level === 'debug' ? 'debug' : level === 'info' ? 'info' : level === 'warn' ? 'warn' : 'error';
-      console[consoleMethod](`[${category}] ${message}`, data || '');
-    }
-  }
-
-  debug(category: LogCategory, message: string, data?: any, component?: string) {
-    this.log('debug', category, message, data, component);
-  }
-
-  info(category: LogCategory, message: string, data?: any, component?: string) {
-    this.log('info', category, message, data, component);
-  }
-
-  warn(category: LogCategory, message: string, data?: any, component?: string) {
-    this.log('warn', category, message, data, component);
-  }
-
-  error(category: LogCategory, message: string, data?: any, component?: string) {
-    this.log('error', category, message, data, component);
-  }
-
-  subscribe(listener: (logs: LogEntry[]) => void) {
-    this.listeners.push(listener);
-    return () => {
-      this.listeners = this.listeners.filter(l => l !== listener);
-    };
-  }
-
-  getLogs() {
-    return [...this.logs];
-  }
-
-  clear() {
-    this.logs = [];
-    this.listeners.forEach(listener => listener([]));
-  }
-
-  exportLogs() {
-    const data = JSON.stringify(this.logs, null, 2);
-    const blob = new Blob([data], { type: 'application/json' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `academic-explorer-logs-${new Date().toISOString().split('T')[0]}.json`;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
-  }
-
-  configure(config: Partial<LoggerConfig>) {
-    this.config = { ...this.config, ...config };
-  }
-
-  getConfig() {
-    return { ...this.config };
-  }
-}
-
-// Export singleton instance
-export const logger = new ApplicationLogger();
 
 export function ApplicationLoggerPanel() {
   const [logs, setLogs] = useState<LogEntry[]>([]);
   const [filteredLogs, setFilteredLogs] = useState<LogEntry[]>([]);
-  const [selectedLevel, setSelectedLevel] = useState<LogLevel | 'all'>('all');
-  const [selectedCategory, setSelectedCategory] = useState<LogCategory | 'all'>('all');
+  const [selectedLevels, setSelectedLevels] = useState<LogLevel[]>([]);
+  const [selectedCategories, setSelectedCategories] = useState<LogCategory[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [activeTab, setActiveTab] = useState('logs');
 
   useEffect(() => {
     const unsubscribe = logger.subscribe(setLogs);
     setLogs(logger.getLogs());
+
+    // Add some test log entries to verify filtering works
+    if (logger.getLogs().length === 0) {
+      logger.info('general', 'ApplicationLoggerPanel initialized', { component: 'devtools' }, 'ApplicationLoggerPanel');
+      logger.debug('ui', 'Filter test log entry', { testData: 'filtering' }, 'ApplicationLoggerPanel');
+      logger.warn('cache', 'Sample warning for filter testing', { level: 'warn' });
+      logger.error('api', 'Sample error for filter testing', { status: 500 });
+    }
+
     return unsubscribe;
   }, []);
 
   useEffect(() => {
     let filtered = logs;
 
-    if (selectedLevel !== 'all') {
-      filtered = filtered.filter(log => log.level === selectedLevel);
+    if (selectedLevels.length > 0) {
+      filtered = filtered.filter(log => selectedLevels.includes(log.level));
     }
 
-    if (selectedCategory !== 'all') {
-      filtered = filtered.filter(log => log.category === selectedCategory);
+    if (selectedCategories.length > 0) {
+      filtered = filtered.filter(log => selectedCategories.includes(log.category));
     }
 
     if (searchQuery) {
@@ -159,7 +48,7 @@ export function ApplicationLoggerPanel() {
     }
 
     setFilteredLogs(filtered);
-  }, [logs, selectedLevel, selectedCategory, searchQuery]);
+  }, [logs, selectedLevels, selectedCategories, searchQuery]);
 
   const getLevelColor = (level: LogLevel) => {
     switch (level) {
@@ -190,6 +79,7 @@ export function ApplicationLoggerPanel() {
       'ui': 'pink',
       'auth': 'red',
       'storage': 'teal',
+      'search': 'cyan',
       'general': 'gray',
     };
     return colors[category] || 'gray';
@@ -204,8 +94,25 @@ export function ApplicationLoggerPanel() {
   };
 
   return (
-    <ScrollArea h={500} p="md">
-      <Stack gap="md">
+    <>
+      <style>
+        {`
+          [data-mantine-dropdown-portal="true"] {
+            z-index: 2147483647 !important;
+          }
+          .mantine-Select-dropdown,
+          .mantine-MultiSelect-dropdown,
+          [data-floating-ui-portal] {
+            z-index: 2147483647 !important;
+          }
+          /* Target dropdown containers directly */
+          div[data-mantine-stop-propagation] {
+            z-index: 2147483647 !important;
+          }
+        `}
+      </style>
+      <ScrollArea h={500} p="md">
+        <Stack gap="md">
         {/* Header */}
         <Group justify="space-between">
           <Text size="xl" fw={600}>Application Logger</Text>
@@ -215,7 +122,9 @@ export function ApplicationLoggerPanel() {
               size="xs"
               variant="light"
               leftSection={<IconDownload size={14} />}
-              onClick={() => logger.exportLogs()}
+              onClick={() => {
+                logger.exportLogs();
+              }}
             >
               Export
             </Button>
@@ -224,7 +133,9 @@ export function ApplicationLoggerPanel() {
               variant="light"
               color="red"
               leftSection={<IconTrash size={14} />}
-              onClick={() => logger.clear()}
+              onClick={() => {
+                logger.clear();
+              }}
             >
               Clear
             </Button>
@@ -233,7 +144,9 @@ export function ApplicationLoggerPanel() {
 
         <Divider />
 
-        <Tabs value={activeTab} onChange={setActiveTab}>
+        <Tabs value={activeTab} onChange={(value) => {
+          setActiveTab(value || 'logs');
+        }}>
           <Tabs.List>
             <Tabs.Tab value="logs" leftSection={<IconInfoCircle size={14} />}>
               Live Logs ({filteredLogs.length})
@@ -246,41 +159,69 @@ export function ApplicationLoggerPanel() {
           <Tabs.Panel value="logs" pt="md">
             <Stack gap="md">
               {/* Filters */}
-              <Group gap="md">
+              <div style={{
+                display: 'grid',
+                gridTemplateColumns: '1fr auto auto',
+                gap: '12px',
+                alignItems: 'center',
+                width: '100%'
+              }}>
                 <TextInput
                   placeholder="Search logs..."
                   value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.currentTarget.value)}
+                  onChange={(e) => {
+                    setSearchQuery(e.currentTarget.value);
+                  }}
                   leftSection={<IconSearch size={16} />}
-                  style={{ flex: 1 }}
                   rightSection={
                     searchQuery ? (
-                      <ActionIcon size="sm" variant="transparent" onClick={() => setSearchQuery('')}>
+                      <ActionIcon size="sm" variant="transparent" onClick={() => {
+                        setSearchQuery('');
+                      }}>
                         <IconX size={12} />
                       </ActionIcon>
                     ) : null
                   }
                 />
-                <Select
-                  placeholder="Level"
-                  value={selectedLevel}
-                  onChange={(value) => setSelectedLevel((value as LogLevel) || 'all')}
+                <MultiSelect
+                  placeholder="Filter by Level"
+                  value={selectedLevels}
+                  onChange={(values) => {
+                    const validLevels = values.filter((value): value is LogLevel =>
+                      ['debug', 'info', 'warn', 'error'].includes(value)
+                    );
+                    setSelectedLevels(validLevels);
+                  }}
                   data={[
-                    { value: 'all', label: 'All Levels' },
                     { value: 'debug', label: 'Debug' },
                     { value: 'info', label: 'Info' },
                     { value: 'warn', label: 'Warning' },
                     { value: 'error', label: 'Error' },
                   ]}
                   leftSection={<IconFilter size={16} />}
-                  style={{ width: 140 }}
+                  styles={{
+                    root: {
+                      width: 'auto',
+                      minWidth: '160px'
+                    },
+                    input: {
+                      minHeight: '36px',
+                      height: '36px'
+                    },
+                    pill: {
+                      gap: '4px',
+                      flexWrap: 'nowrap'
+                    }
+                  }}
+                  clearable
+                  hidePickedOptions
+                  searchable
                 />
-                <Select
-                  placeholder="Category"
-                  value={selectedCategory}
-                  onChange={(value) => setSelectedCategory((value as LogCategory) || 'all')}
+                <MultiSelect
+                  placeholder="Filter by Category"
+                  value={selectedCategories}
+                  onChange={setSelectedCategories}
                   data={[
-                    { value: 'all', label: 'All Categories' },
                     { value: 'api', label: 'API' },
                     { value: 'cache', label: 'Cache' },
                     { value: 'graph', label: 'Graph' },
@@ -288,11 +229,28 @@ export function ApplicationLoggerPanel() {
                     { value: 'ui', label: 'UI' },
                     { value: 'auth', label: 'Auth' },
                     { value: 'storage', label: 'Storage' },
+                    { value: 'search', label: 'Search' },
                     { value: 'general', label: 'General' },
                   ]}
-                  style={{ width: 140 }}
+                  styles={{
+                    root: {
+                      width: 'auto',
+                      minWidth: '180px'
+                    },
+                    input: {
+                      minHeight: '36px',
+                      height: '36px'
+                    },
+                    pillsContainer: {
+                      gap: '4px',
+                      flexWrap: 'nowrap'
+                    }
+                  }}
+                  clearable
+                  hidePickedOptions
+                  searchable
                 />
-              </Group>
+              </div>
 
               {/* Log Entries */}
               <Stack gap="xs" style={{ maxHeight: 400, overflow: 'auto' }}>
@@ -323,19 +281,19 @@ export function ApplicationLoggerPanel() {
                           {log.timestamp.toLocaleTimeString()}.{log.timestamp.getMilliseconds().toString().padStart(3, '0')}
                         </Text>
                         {log.component && (
-                          <Code size="xs" c="dimmed">{log.component}</Code>
+                          <Code c="dimmed">{log.component}</Code>
                         )}
                       </Group>
                       <Text size="sm" mb={log.data ? 'xs' : 0}>
                         {log.message}
                       </Text>
                       {log.data && (
-                        <Code block size="xs" c="dimmed">
+                        <Code block c="dimmed">
                           {JSON.stringify(log.data, null, 2)}
                         </Code>
                       )}
                       {log.stack && (
-                        <Code block size="xs" c="red" mt="xs">
+                        <Code block c="red" mt="xs">
                           {log.stack}
                         </Code>
                       )}
@@ -391,7 +349,8 @@ export function ApplicationLoggerPanel() {
             </Stack>
           </Tabs.Panel>
         </Tabs>
-      </Stack>
-    </ScrollArea>
+        </Stack>
+      </ScrollArea>
+    </>
   );
 }
