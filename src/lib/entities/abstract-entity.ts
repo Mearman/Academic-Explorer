@@ -235,9 +235,8 @@ export abstract class AbstractEntity<TEntity extends OpenAlexEntity> {
    */
   public async fetchMinimal(entityId: string): Promise<TEntity> {
     try {
-      const fields = this.getMinimalFields();
-      const entity = await this.client.getEntity(entityId, { select: fields });
-      if (!this.validate(entity)) {
+      const entity = await this.client.getEntity(entityId);
+      if (!this.validateEntityType(entity)) {
         throw new Error(`Invalid entity returned for ${entityId}`);
       }
       return entity;
@@ -250,7 +249,7 @@ export abstract class AbstractEntity<TEntity extends OpenAlexEntity> {
       );
       // Fallback to full entity fetch
       const fullEntity = await this.client.getEntity(entityId);
-      if (!this.validate(fullEntity)) {
+      if (!this.validateEntityType(fullEntity)) {
         throw new Error(`Invalid full entity returned for ${entityId}`);
       }
       return fullEntity;
@@ -263,9 +262,8 @@ export abstract class AbstractEntity<TEntity extends OpenAlexEntity> {
    */
   public async fetchWithMetadata(entityId: string): Promise<TEntity> {
     try {
-      const fields = this.getMetadataFields();
-      const entity = await this.client.getEntity(entityId, { select: fields });
-      if (!this.validate(entity)) {
+      const entity = await this.client.getEntity(entityId);
+      if (!this.validateEntityType(entity)) {
         throw new Error(`Invalid entity returned for ${entityId}`);
       }
       return entity;
@@ -278,7 +276,7 @@ export abstract class AbstractEntity<TEntity extends OpenAlexEntity> {
       );
       // Fallback to full entity fetch
       const fullEntity = await this.client.getEntity(entityId);
-      if (!this.validate(fullEntity)) {
+      if (!this.validateEntityType(fullEntity)) {
         throw new Error(`Invalid full entity returned for ${entityId}`);
       }
       return fullEntity;
@@ -291,9 +289,8 @@ export abstract class AbstractEntity<TEntity extends OpenAlexEntity> {
    */
   public async fetchForExpansion(entityId: string): Promise<TEntity> {
     try {
-      const fields = this.getExpansionFields();
-      const entity = await this.client.getEntity(entityId, { select: fields });
-      if (!this.validate(entity)) {
+      const entity = await this.client.getEntity(entityId);
+      if (!this.validateEntityType(entity)) {
         throw new Error(`Invalid entity returned for ${entityId}`);
       }
       return entity;
@@ -306,7 +303,7 @@ export abstract class AbstractEntity<TEntity extends OpenAlexEntity> {
       );
       // Fallback to full entity fetch
       const fullEntity = await this.client.getEntity(entityId);
-      if (!this.validate(fullEntity)) {
+      if (!this.validateEntityType(fullEntity)) {
         throw new Error(`Invalid full entity returned for ${entityId}`);
       }
       return fullEntity;
@@ -320,9 +317,8 @@ export abstract class AbstractEntity<TEntity extends OpenAlexEntity> {
    */
   public async fetchForFullExpansion(entityId: string): Promise<TEntity> {
     try {
-      const fields = this.getCombinedExpansionFields();
-      const entity = await this.client.getEntity(entityId, { select: fields });
-      if (!this.validate(entity)) {
+      const entity = await this.client.getEntity(entityId);
+      if (!this.validateEntityType(entity)) {
         throw new Error(`Invalid entity returned for ${entityId}`);
       }
       return entity;
@@ -335,7 +331,7 @@ export abstract class AbstractEntity<TEntity extends OpenAlexEntity> {
       );
       // Fallback to full entity fetch
       const fullEntity = await this.client.getEntity(entityId);
-      if (!this.validate(fullEntity)) {
+      if (!this.validateEntityType(fullEntity)) {
         throw new Error(`Invalid full entity returned for ${entityId}`);
       }
       return fullEntity;
@@ -353,7 +349,7 @@ export abstract class AbstractEntity<TEntity extends OpenAlexEntity> {
 
     try {
       const fullEntity = await this.client.getEntity(entity.id);
-      if (!this.validate(fullEntity)) {
+      if (!this.validateEntityType(fullEntity)) {
         throw new Error(`Invalid hydrated entity returned for ${entity.id}`);
       }
       return fullEntity;
@@ -443,8 +439,16 @@ export abstract class AbstractEntity<TEntity extends OpenAlexEntity> {
    * Validate entity data
    * Can be overridden for entity-specific validation
    */
-  public validate(entity: TEntity): boolean {
+  public validate(entity: OpenAlexEntity): boolean {
     return Boolean(entity?.id && entity?.display_name);
+  }
+
+  /**
+   * Type guard to validate and narrow entity type
+   * Returns true if entity is valid TEntity, false otherwise
+   */
+  protected validateEntityType(entity: OpenAlexEntity): entity is TEntity {
+    return this.validate(entity);
   }
 
   /**
