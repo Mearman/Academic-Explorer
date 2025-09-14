@@ -1,87 +1,143 @@
 import { createFileRoute } from '@tanstack/react-router'
-import { Title, Text, Stack, Card, SimpleGrid, ThemeIcon, Group } from '@mantine/core'
-import { IconRouter, IconDatabase, IconPalette, IconBrandReact } from '@tabler/icons-react'
-import { pageTitle, pageDescription } from '../styles/layout.css'
+import { Title, Text, Stack, Card, Button, Group, TextInput, Anchor } from '@mantine/core'
+import { IconSearch, IconGraph, IconBrandReact, IconDatabase } from '@tabler/icons-react'
+import { useState } from 'react'
+import { useGraphData } from '@/hooks/use-graph-data'
+import { pageTitle } from '../styles/layout.css'
 
 function HomePage() {
-  const features = [
-    {
-      icon: IconBrandReact,
-      title: 'React 19',
-      description: 'Built with the latest React 19 with modern hooks and concurrent features.',
-      color: 'blue',
-    },
-    {
-      icon: IconRouter,
-      title: 'TanStack Router',
-      description: 'Type-safe file-based routing with hash-based navigation for GitHub Pages.',
-      color: 'green',
-    },
-    {
-      icon: IconDatabase,
-      title: 'TanStack Query',
-      description: 'Powerful data fetching with caching, background updates, and devtools.',
-      color: 'violet',
-    },
-    {
-      icon: IconPalette,
-      title: 'Mantine + Vanilla Extract',
-      description: 'Modern UI components with type-safe CSS-in-JS styling system.',
-      color: 'orange',
-    },
-  ]
+  const [searchQuery, setSearchQuery] = useState('')
+  const { search, isLoading } = useGraphData()
+
+  const handleSearch = async (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!searchQuery.trim()) return
+
+    try {
+      await search(searchQuery, {
+        entityTypes: ['works', 'authors', 'sources', 'institutions'],
+        limit: 15,
+      })
+    } catch (error) {
+      console.error('Search failed:', error)
+    }
+  }
+
+  const handleExampleSearch = async (query: string) => {
+    setSearchQuery(query)
+    try {
+      await search(query, {
+        entityTypes: ['works', 'authors', 'sources', 'institutions'],
+        limit: 15,
+      })
+    } catch (error) {
+      console.error('Search failed:', error)
+    }
+  }
 
   return (
-    <Stack gap="xl">
-      <div>
-        <Title order={1} className={pageTitle}>
-          Welcome to Academic Explorer!
-        </Title>
-        <Text className={pageDescription}>
-          A modern React application for academic literature exploration. Built with cutting-edge
-          technologies and designed for optimal performance and developer experience.
-        </Text>
-      </div>
+    <Card
+      shadow="xl"
+      padding="xl"
+      radius="lg"
+      withBorder
+      style={{
+        backgroundColor: 'rgba(255, 255, 255, 0.95)',
+        backdropFilter: 'blur(10px)',
+        maxWidth: '600px',
+      }}
+    >
+      <Stack gap="lg" align="center">
+        <Group>
+          <IconGraph size={40} color="var(--mantine-color-blue-6)" />
+          <Title order={1} className={pageTitle} ta="center">
+            Academic Explorer
+          </Title>
+        </Group>
 
-      <SimpleGrid cols={{ base: 1, sm: 2 }} spacing="md">
-        {features.map((feature) => (
-          <Card key={feature.title} shadow="sm" padding="lg" radius="md" withBorder>
-            <Group mb="md">
-              <ThemeIcon size={40} radius="md" variant="light" color={feature.color}>
-                <feature.icon size={24} />
-              </ThemeIcon>
-              <Text fw={500} size="lg">
-                {feature.title}
-              </Text>
+        <Text ta="center" size="lg" c="dimmed" style={{ lineHeight: 1.5 }}>
+          Explore academic literature through interactive knowledge graphs.
+          Search for papers, authors, journals, and institutions to see their connections.
+        </Text>
+
+        {/* Quick Search */}
+        <form onSubmit={handleSearch} style={{ width: '100%' }}>
+          <Stack gap="md">
+            <TextInput
+              size="lg"
+              placeholder="Search papers, authors, DOIs, ORCIDs..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              leftSection={<IconSearch size={20} />}
+              disabled={isLoading}
+            />
+            <Button
+              type="submit"
+              size="lg"
+              loading={isLoading}
+              disabled={!searchQuery.trim()}
+              fullWidth
+            >
+              Search & Visualize
+            </Button>
+          </Stack>
+        </form>
+
+        {/* Example Searches */}
+        <Card padding="md" radius="md" withBorder style={{ width: '100%' }}>
+          <Text size="sm" fw={500} mb="xs">Try these examples:</Text>
+          <Stack gap="xs">
+            <Group gap="xs" wrap="wrap">
+              <Anchor
+                size="sm"
+                onClick={() => handleExampleSearch('machine learning')}
+                style={{ cursor: 'pointer' }}
+              >
+                machine learning
+              </Anchor>
+              <Text size="sm" c="dimmed">•</Text>
+              <Anchor
+                size="sm"
+                onClick={() => handleExampleSearch('climate change')}
+                style={{ cursor: 'pointer' }}
+              >
+                climate change
+              </Anchor>
+              <Text size="sm" c="dimmed">•</Text>
+              <Anchor
+                size="sm"
+                onClick={() => handleExampleSearch('0000-0003-1613-5981')}
+                style={{ cursor: 'pointer' }}
+              >
+                ORCID example
+              </Anchor>
             </Group>
+          </Stack>
+        </Card>
 
-            <Text size="sm" c="dimmed" style={{ lineHeight: 1.5 }}>
-              {feature.description}
-            </Text>
-          </Card>
-        ))}
-      </SimpleGrid>
+        {/* Features */}
+        <Stack gap="sm" align="center" style={{ width: '100%' }}>
+          <Group gap="lg" justify="center">
+            <Group gap="xs">
+              <IconBrandReact size={16} color="var(--mantine-color-blue-6)" />
+              <Text size="xs" c="dimmed">React 19</Text>
+            </Group>
+            <Group gap="xs">
+              <IconDatabase size={16} color="var(--mantine-color-green-6)" />
+              <Text size="xs" c="dimmed">OpenAlex API</Text>
+            </Group>
+            <Group gap="xs">
+              <IconGraph size={16} color="var(--mantine-color-violet-6)" />
+              <Text size="xs" c="dimmed">XYFlow</Text>
+            </Group>
+          </Group>
 
-      <Card shadow="sm" padding="lg" radius="md" withBorder>
-        <Title order={3} mb="md">
-          Getting Started
-        </Title>
-        <Text size="sm" c="dimmed" style={{ lineHeight: 1.6 }}>
-          Navigate using the links in the header to explore the different features:
-        </Text>
-        <Stack gap="xs" mt="md">
-          <Text size="sm">
-            • <strong>Query Demo</strong> - See TanStack Query in action with real API calls
-          </Text>
-          <Text size="sm">
-            • <strong>About</strong> - Learn more about this project and its architecture
-          </Text>
-          <Text size="sm">
-            • Toggle the theme using the moon/sun icon in the top right
+          <Text size="xs" ta="center" c="dimmed" style={{ lineHeight: 1.4 }}>
+            Use the sidebar to search and filter • Click nodes to navigate • Double-click to expand relationships
           </Text>
         </Stack>
-      </Card>
-    </Stack>
+      </Stack>
+    </Card>
   )
 }
 
