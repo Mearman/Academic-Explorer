@@ -1,30 +1,30 @@
-import { createFileRoute } from '@tanstack/react-router';
-import { useEffect } from 'react';
-import { useGraphData } from '@/hooks/use-graph-data';
-import { logError } from '@/lib/logger';
+import { createFileRoute } from "@tanstack/react-router";
+import { useEffect } from "react";
+import { useGraphData } from "@/hooks/use-graph-data";
+import { logError } from "@/lib/logger";
 
-export const Route = createFileRoute('/works/$workId')({
-  component: WorkRoute,
+export const Route = createFileRoute("/works/$workId")({
+	component: WorkRoute,
 });
 
 function WorkRoute() {
-  const { workId } = Route.useParams();
-  const { loadEntity } = useGraphData();
+	const { workId } = Route.useParams();
+	const { loadEntity } = useGraphData();
 
-  useEffect(() => {
-    const loadWork = async () => {
-      try {
-        // Load work entity into the graph
-        await loadEntity(workId);
-      } catch (error) {
-        logError('Failed to load work', error, 'WorkRoute', 'routing');
-      }
-    };
+	useEffect(() => {
+		const loadWork = async () => {
+			try {
+				// Load work entity into the graph
+				await loadEntity(workId);
+			} catch (error) {
+				logError("Failed to load work", error, "WorkRoute", "routing");
+			}
+		};
 
-    void loadWork();
-  }, [workId, loadEntity]);
+		void loadWork();
+	}, [workId, loadEntity]);
 
-  // Return null - the graph is visible from MainLayout
-  // The route content is just for triggering the data load
-  return null;
+	// Return null - the graph is visible from MainLayout
+	// The route content is just for triggering the data load
+	return null;
 }

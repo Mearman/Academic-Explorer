@@ -3,9 +3,9 @@
  * Simple Zustand store without Immer to avoid React 19 infinite loops
  */
 
-import { create } from 'zustand';
-import { persist, createJSONStorage } from 'zustand/middleware';
-import type { ProviderType } from '@/lib/graph/types';
+import { create } from "zustand";
+import { persist, createJSONStorage } from "zustand/middleware";
+import type { ProviderType } from "@/lib/graph/types";
 
 interface LayoutState {
   // Sidebar states
@@ -32,54 +32,54 @@ interface LayoutState {
 }
 
 export const useLayoutStore = create<LayoutState>()(
-  persist(
-    (set) => ({
-      // Initial state
-      leftSidebarOpen: true,
-      leftSidebarPinned: false,
-      rightSidebarOpen: true,
-      rightSidebarPinned: false,
-      graphProvider: 'xyflow',
-      previewEntityId: null,
+	persist(
+		(set) => ({
+			// Initial state
+			leftSidebarOpen: true,
+			leftSidebarPinned: false,
+			rightSidebarOpen: true,
+			rightSidebarPinned: false,
+			graphProvider: "xyflow",
+			previewEntityId: null,
 
-      // Actions
-      toggleLeftSidebar: () =>
-        set((state) => ({
-          leftSidebarOpen: !state.leftSidebarOpen,
-        })),
+			// Actions
+			toggleLeftSidebar: () =>
+				set((state) => ({
+					leftSidebarOpen: !state.leftSidebarOpen,
+				})),
 
-      toggleRightSidebar: () =>
-        set((state) => ({
-          rightSidebarOpen: !state.rightSidebarOpen,
-        })),
+			toggleRightSidebar: () =>
+				set((state) => ({
+					rightSidebarOpen: !state.rightSidebarOpen,
+				})),
 
-      setLeftSidebarOpen: (open) =>
-        set({ leftSidebarOpen: open }),
+			setLeftSidebarOpen: (open) =>
+				set({ leftSidebarOpen: open }),
 
-      setRightSidebarOpen: (open) =>
-        set({ rightSidebarOpen: open }),
+			setRightSidebarOpen: (open) =>
+				set({ rightSidebarOpen: open }),
 
-      pinLeftSidebar: (pinned) =>
-        set({ leftSidebarPinned: pinned }),
+			pinLeftSidebar: (pinned) =>
+				set({ leftSidebarPinned: pinned }),
 
-      pinRightSidebar: (pinned) =>
-        set({ rightSidebarPinned: pinned }),
+			pinRightSidebar: (pinned) =>
+				set({ rightSidebarPinned: pinned }),
 
-      setGraphProvider: (provider) =>
-        set({ graphProvider: provider }),
+			setGraphProvider: (provider) =>
+				set({ graphProvider: provider }),
 
-      setPreviewEntity: (entityId) =>
-        set({ previewEntityId: entityId }),
-    }),
-    {
-      name: 'academic-explorer-layout',
-      storage: createJSONStorage(() => localStorage),
-      // Only persist certain values
-      partialize: (state) => ({
-        leftSidebarPinned: state.leftSidebarPinned,
-        rightSidebarPinned: state.rightSidebarPinned,
-        graphProvider: state.graphProvider,
-      }),
-    }
-  )
+			setPreviewEntity: (entityId) =>
+				set({ previewEntityId: entityId }),
+		}),
+		{
+			name: "academic-explorer-layout",
+			storage: createJSONStorage(() => localStorage),
+			// Only persist certain values
+			partialize: (state) => ({
+				leftSidebarPinned: state.leftSidebarPinned,
+				rightSidebarPinned: state.rightSidebarPinned,
+				graphProvider: state.graphProvider,
+			}),
+		}
+	)
 );

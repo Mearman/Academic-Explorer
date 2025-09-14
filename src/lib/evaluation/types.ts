@@ -101,7 +101,7 @@ export interface MatchingConfig {
  * Progress tracking for long-running comparison operations
  */
 export interface ComparisonProgress {
-  stage: 'searching' | 'matching' | 'calculating' | 'complete';
+  stage: "searching" | "matching" | "calculating" | "complete";
   progress: number; // 0-100
   message: string;
   startTime: Date;

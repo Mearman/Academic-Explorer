@@ -4,18 +4,18 @@
  */
 
 import {
-  CustomNode,
-  WorkNode,
-  AuthorNode,
-  SourceNode,
-  InstitutionNode,
-} from './custom-nodes';
+	CustomNode,
+	WorkNode,
+	AuthorNode,
+	SourceNode,
+	InstitutionNode,
+} from "./custom-nodes";
 
 // Node types registry for XYFlow
 export const nodeTypes = {
-  custom: CustomNode,
-  work: WorkNode,
-  author: AuthorNode,
-  source: SourceNode,
-  institution: InstitutionNode,
+	custom: CustomNode,
+	work: WorkNode,
+	author: AuthorNode,
+	source: SourceNode,
+	institution: InstitutionNode,
 };

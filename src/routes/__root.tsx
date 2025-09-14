@@ -1,178 +1,178 @@
-import { createRootRoute, Link, Outlet } from '@tanstack/react-router'
-import { Group, Text, ActionIcon, useMantineColorScheme, Paper } from '@mantine/core'
-import { IconMoon, IconSun, IconDeviceDesktop } from '@tabler/icons-react'
-import { MainLayout } from '@/components/layout/MainLayout'
-import { useThemeColors } from '@/hooks/use-theme-colors'
-import { themeClass } from '../styles/theme.css'
+import { createRootRoute, Link, Outlet } from "@tanstack/react-router"
+import { Group, Text, ActionIcon, useMantineColorScheme, Paper } from "@mantine/core"
+import { IconMoon, IconSun, IconDeviceDesktop } from "@tabler/icons-react"
+import { MainLayout } from "@/components/layout/MainLayout"
+import { useThemeColors } from "@/hooks/use-theme-colors"
+import { themeClass } from "../styles/theme.css"
 
 function RootLayout() {
-  const { colorScheme, setColorScheme } = useMantineColorScheme()
-  const { colors } = useThemeColors()
+	const { colorScheme, setColorScheme } = useMantineColorScheme()
+	const { colors } = useThemeColors()
 
-  // Get system preference
-  const getSystemTheme = () => {
-    return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
-  }
+	// Get system preference
+	const getSystemTheme = () => {
+		return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light"
+	}
 
-  // Cycle through: auto -> opposite-of-system -> system -> auto (3-state cycle)
-  const cycleColorScheme = () => {
-    const systemTheme = getSystemTheme()
-    const oppositeSystemTheme = systemTheme === 'dark' ? 'light' : 'dark'
+	// Cycle through: auto -> opposite-of-system -> system -> auto (3-state cycle)
+	const cycleColorScheme = () => {
+		const systemTheme = getSystemTheme()
+		const oppositeSystemTheme = systemTheme === "dark" ? "light" : "dark"
 
-    if (colorScheme === 'auto') {
-      // auto -> opposite of system theme
-      setColorScheme(oppositeSystemTheme)
-    } else if (colorScheme === oppositeSystemTheme) {
-      // opposite of system -> system theme
-      setColorScheme(systemTheme)
-    } else {
-      // system theme -> auto
-      setColorScheme('auto')
-    }
-  }
+		if (colorScheme === "auto") {
+			// auto -> opposite of system theme
+			setColorScheme(oppositeSystemTheme)
+		} else if (colorScheme === oppositeSystemTheme) {
+			// opposite of system -> system theme
+			setColorScheme(systemTheme)
+		} else {
+			// system theme -> auto
+			setColorScheme("auto")
+		}
+	}
 
-  // Get the appropriate icon based on the CURRENT state
-  const getThemeIcon = () => {
-    const systemTheme = getSystemTheme()
+	// Get the appropriate icon based on the CURRENT state
+	const getThemeIcon = () => {
+		const systemTheme = getSystemTheme()
 
-    if (colorScheme === 'auto') {
-      // Auto mode - show desktop icon to represent auto/system preference
-      return <IconDeviceDesktop size={18} />
-    } else if (colorScheme === 'dark') {
-      // Dark mode - show moon icon to represent current dark state
-      return <IconMoon size={18} />
-    } else {
-      // Light mode - show sun icon to represent current light state
-      return <IconSun size={18} />
-    }
-  }
+		if (colorScheme === "auto") {
+			// Auto mode - show desktop icon to represent auto/system preference
+			return <IconDeviceDesktop size={18} />
+		} else if (colorScheme === "dark") {
+			// Dark mode - show moon icon to represent current dark state
+			return <IconMoon size={18} />
+		} else {
+			// Light mode - show sun icon to represent current light state
+			return <IconSun size={18} />
+		}
+	}
 
-  // Get aria label for accessibility
-  const getAriaLabel = () => {
-    const systemTheme = getSystemTheme()
-    const oppositeSystemTheme = systemTheme === 'dark' ? 'light' : 'dark'
+	// Get aria label for accessibility
+	const getAriaLabel = () => {
+		const systemTheme = getSystemTheme()
+		const oppositeSystemTheme = systemTheme === "dark" ? "light" : "dark"
 
-    if (colorScheme === 'auto') {
-      return `Current: Auto (${systemTheme}). Click for ${oppositeSystemTheme} mode`
-    } else if (colorScheme === oppositeSystemTheme) {
-      return `Current: ${colorScheme === 'light' ? 'Light' : 'Dark'} mode. Click for ${systemTheme} mode`
-    } else {
-      return `Current: ${colorScheme === 'light' ? 'Light' : 'Dark'} mode. Click for auto mode`
-    }
-  }
+		if (colorScheme === "auto") {
+			return `Current: Auto (${systemTheme}). Click for ${oppositeSystemTheme} mode`
+		} else if (colorScheme === oppositeSystemTheme) {
+			return `Current: ${colorScheme === "light" ? "Light" : "Dark"} mode. Click for ${systemTheme} mode`
+		} else {
+			return `Current: ${colorScheme === "light" ? "Light" : "Dark"} mode. Click for auto mode`
+		}
+	}
 
-  return (
-    <div className={themeClass} style={{ height: '100vh', display: 'flex', flexDirection: 'column' }}>
-      {/* Top Header Bar */}
-      <Paper
-        shadow="sm"
-        style={{
-          zIndex: 1000,
-          padding: '12px 20px',
-          borderRadius: 0,
-          borderBottom: `1px solid ${colors.border.primary}`,
-        }}
-      >
-        <Group justify="space-between" h="100%">
-          <Group>
-            <Text size="xl" fw={600} c="blue">
+	return (
+		<div className={themeClass} style={{ height: "100vh", display: "flex", flexDirection: "column" }}>
+			{/* Top Header Bar */}
+			<Paper
+				shadow="sm"
+				style={{
+					zIndex: 1000,
+					padding: "12px 20px",
+					borderRadius: 0,
+					borderBottom: `1px solid ${colors.border.primary}`,
+				}}
+			>
+				<Group justify="space-between" h="100%">
+					<Group>
+						<Text size="xl" fw={600} c="blue">
               Academic Explorer
-            </Text>
-          </Group>
+						</Text>
+					</Group>
 
-          <Group gap="md">
-            <nav style={{ display: 'flex', gap: '1rem', padding: '0 1rem' }}>
-              <Link
-                to="/"
-                style={{
-                  color: colors.text.primary,
-                  textDecoration: 'none',
-                  padding: '0.5rem 0.75rem',
-                  borderRadius: '6px',
-                  fontSize: '14px',
-                  fontWeight: '500',
-                  transition: 'all 0.2s ease',
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.backgroundColor = colors.background.tertiary;
-                  e.currentTarget.style.color = colors.primary;
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.backgroundColor = 'transparent';
-                  e.currentTarget.style.color = colors.text.primary;
-                }}
-              >
+					<Group gap="md">
+						<nav style={{ display: "flex", gap: "1rem", padding: "0 1rem" }}>
+							<Link
+								to="/"
+								style={{
+									color: colors.text.primary,
+									textDecoration: "none",
+									padding: "0.5rem 0.75rem",
+									borderRadius: "6px",
+									fontSize: "14px",
+									fontWeight: "500",
+									transition: "all 0.2s ease",
+								}}
+								onMouseEnter={(e) => {
+									e.currentTarget.style.backgroundColor = colors.background.tertiary;
+									e.currentTarget.style.color = colors.primary;
+								}}
+								onMouseLeave={(e) => {
+									e.currentTarget.style.backgroundColor = "transparent";
+									e.currentTarget.style.color = colors.text.primary;
+								}}
+							>
                 Home
-              </Link>
-              <Link
-                to="/about"
-                style={{
-                  color: colors.text.primary,
-                  textDecoration: 'none',
-                  padding: '0.5rem 0.75rem',
-                  borderRadius: '6px',
-                  fontSize: '14px',
-                  fontWeight: '500',
-                  transition: 'all 0.2s ease',
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.backgroundColor = colors.background.tertiary;
-                  e.currentTarget.style.color = colors.primary;
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.backgroundColor = 'transparent';
-                  e.currentTarget.style.color = colors.text.primary;
-                }}
-              >
+							</Link>
+							<Link
+								to="/about"
+								style={{
+									color: colors.text.primary,
+									textDecoration: "none",
+									padding: "0.5rem 0.75rem",
+									borderRadius: "6px",
+									fontSize: "14px",
+									fontWeight: "500",
+									transition: "all 0.2s ease",
+								}}
+								onMouseEnter={(e) => {
+									e.currentTarget.style.backgroundColor = colors.background.tertiary;
+									e.currentTarget.style.color = colors.primary;
+								}}
+								onMouseLeave={(e) => {
+									e.currentTarget.style.backgroundColor = "transparent";
+									e.currentTarget.style.color = colors.text.primary;
+								}}
+							>
                 About
-              </Link>
-              <Link
-                to="/evaluation"
-                style={{
-                  color: colors.text.primary,
-                  textDecoration: 'none',
-                  padding: '0.5rem 0.75rem',
-                  borderRadius: '6px',
-                  fontSize: '14px',
-                  fontWeight: '500',
-                  transition: 'all 0.2s ease',
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.backgroundColor = colors.background.tertiary;
-                  e.currentTarget.style.color = colors.primary;
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.backgroundColor = 'transparent';
-                  e.currentTarget.style.color = colors.text.primary;
-                }}
-              >
+							</Link>
+							<Link
+								to="/evaluation"
+								style={{
+									color: colors.text.primary,
+									textDecoration: "none",
+									padding: "0.5rem 0.75rem",
+									borderRadius: "6px",
+									fontSize: "14px",
+									fontWeight: "500",
+									transition: "all 0.2s ease",
+								}}
+								onMouseEnter={(e) => {
+									e.currentTarget.style.backgroundColor = colors.background.tertiary;
+									e.currentTarget.style.color = colors.primary;
+								}}
+								onMouseLeave={(e) => {
+									e.currentTarget.style.backgroundColor = "transparent";
+									e.currentTarget.style.color = colors.text.primary;
+								}}
+							>
                 Evaluation
-              </Link>
-            </nav>
+							</Link>
+						</nav>
 
-            <ActionIcon
-              onClick={cycleColorScheme}
-              variant="outline"
-              size="lg"
-              aria-label={getAriaLabel()}
-            >
-              {getThemeIcon()}
-            </ActionIcon>
-          </Group>
-        </Group>
-      </Paper>
+						<ActionIcon
+							onClick={cycleColorScheme}
+							variant="outline"
+							size="lg"
+							aria-label={getAriaLabel()}
+						>
+							{getThemeIcon()}
+						</ActionIcon>
+					</Group>
+				</Group>
+			</Paper>
 
-      {/* Main Graph Layout with Outlet for Route Content */}
-      <div style={{ flex: 1, position: 'relative', overflow: 'hidden' }}>
-        <MainLayout>
-          <Outlet />
-        </MainLayout>
-      </div>
+			{/* Main Graph Layout with Outlet for Route Content */}
+			<div style={{ flex: 1, position: "relative", overflow: "hidden" }}>
+				<MainLayout>
+					<Outlet />
+				</MainLayout>
+			</div>
 
-    </div>
-  )
+		</div>
+	)
 }
 
 export const Route = createRootRoute({
-  component: RootLayout,
+	component: RootLayout,
 })

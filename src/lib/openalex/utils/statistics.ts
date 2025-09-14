@@ -3,9 +3,9 @@
  * Provides database-wide statistics and analytical insights
  */
 
-import { OpenAlexBaseClient } from '../client';
-import { EntityType, QueryParams as _QueryParams, StatsParams } from '../types';
-import { logger } from '@/lib/logger';
+import { OpenAlexBaseClient } from "../client";
+import { EntityType, QueryParams as _QueryParams, StatsParams } from "../types";
+import { logger } from "@/lib/logger";
 
 /**
  * Database-wide statistics
@@ -100,9 +100,9 @@ export interface ImpactMetrics {
  * Statistical Analysis API class
  */
 export class StatisticsApi {
-  constructor(private client: OpenAlexBaseClient) {}
+	constructor(private client: OpenAlexBaseClient) {}
 
-  /**
+	/**
    * Get comprehensive database statistics
    *
    * @param params - Statistical analysis parameters
@@ -116,106 +116,106 @@ export class StatisticsApi {
    * });
    * ```
    */
-  async getDatabaseStats(_params: StatsParams = {}): Promise<DatabaseStats> {
-    const currentYear = new Date().getFullYear();
+	async getDatabaseStats(_params: StatsParams = {}): Promise<DatabaseStats> {
+		const currentYear = new Date().getFullYear();
 
-    // Get entity counts for all types
-    const entityTypes: EntityType[] = ['works', 'authors', 'sources', 'institutions', 'topics', 'concepts', 'publishers', 'funders', 'keywords', 'geo'];
+		// Get entity counts for all types
+		const entityTypes: EntityType[] = ["works", "authors", "sources", "institutions", "topics", "concepts", "publishers", "funders", "keywords", "geo"];
 
-    const entityCountPromises = entityTypes.map(async (entityType) => {
-      try {
-        const response = await this.client.getResponse<{ meta: { count: number } }>(entityType, { per_page: 1 });
-        return { entityType, count: response.meta.count };
-      } catch {
-        return { entityType, count: 0 };
-      }
-    });
+		const entityCountPromises = entityTypes.map(async (entityType) => {
+			try {
+				const response = await this.client.getResponse<{ meta: { count: number } }>(entityType, { per_page: 1 });
+				return { entityType, count: response.meta.count };
+			} catch {
+				return { entityType, count: 0 };
+			}
+		});
 
-    const entityCounts = await Promise.all(entityCountPromises);
+		const entityCounts = await Promise.all(entityCountPromises);
 
-    // Initialize totalEntities with all EntityType keys
-    const totalEntities: Record<EntityType, number> = {
-      works: 0,
-      authors: 0,
-      sources: 0,
-      institutions: 0,
-      topics: 0,
-      concepts: 0,
-      publishers: 0,
-      funders: 0,
-      keywords: 0,
-      geo: 0,
-    };
+		// Initialize totalEntities with all EntityType keys
+		const totalEntities: Record<EntityType, number> = {
+			works: 0,
+			authors: 0,
+			sources: 0,
+			institutions: 0,
+			topics: 0,
+			concepts: 0,
+			publishers: 0,
+			funders: 0,
+			keywords: 0,
+			geo: 0,
+		};
 
-    entityCounts.forEach(({ entityType, count }) => {
-      totalEntities[entityType] = count;
-    });
+		entityCounts.forEach(({ entityType, count }) => {
+			totalEntities[entityType] = count;
+		});
 
-    // Initialize growthRates with all EntityType keys
-    const growthRates: Record<EntityType, { yearly_growth: number; monthly_growth: number; total_added_last_year: number }> = {
-      works: { yearly_growth: 0, monthly_growth: 0, total_added_last_year: 0 },
-      authors: { yearly_growth: 0, monthly_growth: 0, total_added_last_year: 0 },
-      sources: { yearly_growth: 0, monthly_growth: 0, total_added_last_year: 0 },
-      institutions: { yearly_growth: 0, monthly_growth: 0, total_added_last_year: 0 },
-      topics: { yearly_growth: 0, monthly_growth: 0, total_added_last_year: 0 },
-      concepts: { yearly_growth: 0, monthly_growth: 0, total_added_last_year: 0 },
-      publishers: { yearly_growth: 0, monthly_growth: 0, total_added_last_year: 0 },
-      funders: { yearly_growth: 0, monthly_growth: 0, total_added_last_year: 0 },
-      keywords: { yearly_growth: 0, monthly_growth: 0, total_added_last_year: 0 },
-      geo: { yearly_growth: 0, monthly_growth: 0, total_added_last_year: 0 },
-    };
+		// Initialize growthRates with all EntityType keys
+		const growthRates: Record<EntityType, { yearly_growth: number; monthly_growth: number; total_added_last_year: number }> = {
+			works: { yearly_growth: 0, monthly_growth: 0, total_added_last_year: 0 },
+			authors: { yearly_growth: 0, monthly_growth: 0, total_added_last_year: 0 },
+			sources: { yearly_growth: 0, monthly_growth: 0, total_added_last_year: 0 },
+			institutions: { yearly_growth: 0, monthly_growth: 0, total_added_last_year: 0 },
+			topics: { yearly_growth: 0, monthly_growth: 0, total_added_last_year: 0 },
+			concepts: { yearly_growth: 0, monthly_growth: 0, total_added_last_year: 0 },
+			publishers: { yearly_growth: 0, monthly_growth: 0, total_added_last_year: 0 },
+			funders: { yearly_growth: 0, monthly_growth: 0, total_added_last_year: 0 },
+			keywords: { yearly_growth: 0, monthly_growth: 0, total_added_last_year: 0 },
+			geo: { yearly_growth: 0, monthly_growth: 0, total_added_last_year: 0 },
+		};
 
-    for (const entityType of entityTypes) {
-      try {
-        const lastYearFilter = `from_created_date:${currentYear - 1}-01-01,to_created_date:${currentYear - 1}-12-31`;
-        const prevYearFilter = `from_created_date:${currentYear - 2}-01-01,to_created_date:${currentYear - 2}-12-31`;
+		for (const entityType of entityTypes) {
+			try {
+				const lastYearFilter = `from_created_date:${currentYear - 1}-01-01,to_created_date:${currentYear - 1}-12-31`;
+				const prevYearFilter = `from_created_date:${currentYear - 2}-01-01,to_created_date:${currentYear - 2}-12-31`;
 
-        const [lastYearResponse, prevYearResponse] = await Promise.all([
-          this.client.getResponse<{ meta: { count: number } }>(entityType, { filter: lastYearFilter, per_page: 1 }),
-          this.client.getResponse<{ meta: { count: number } }>(entityType, { filter: prevYearFilter, per_page: 1 })
-        ]);
+				const [lastYearResponse, prevYearResponse] = await Promise.all([
+					this.client.getResponse<{ meta: { count: number } }>(entityType, { filter: lastYearFilter, per_page: 1 }),
+					this.client.getResponse<{ meta: { count: number } }>(entityType, { filter: prevYearFilter, per_page: 1 })
+				]);
 
-        const lastYearCount = lastYearResponse.meta.count;
-        const prevYearCount = prevYearResponse.meta.count;
-        const yearlyGrowth = prevYearCount > 0 ? ((lastYearCount - prevYearCount) / prevYearCount) * 100 : 0;
+				const lastYearCount = lastYearResponse.meta.count;
+				const prevYearCount = prevYearResponse.meta.count;
+				const yearlyGrowth = prevYearCount > 0 ? ((lastYearCount - prevYearCount) / prevYearCount) * 100 : 0;
 
-        growthRates[entityType] = {
-          yearly_growth: yearlyGrowth,
-          monthly_growth: yearlyGrowth / 12, // Approximation
-          total_added_last_year: lastYearCount,
-        };
-      } catch {
-        growthRates[entityType] = {
-          yearly_growth: 0,
-          monthly_growth: 0,
-          total_added_last_year: 0,
-        };
-      }
-    }
+				growthRates[entityType] = {
+					yearly_growth: yearlyGrowth,
+					monthly_growth: yearlyGrowth / 12, // Approximation
+					total_added_last_year: lastYearCount,
+				};
+			} catch {
+				growthRates[entityType] = {
+					yearly_growth: 0,
+					monthly_growth: 0,
+					total_added_last_year: 0,
+				};
+			}
+		}
 
-    // Get coverage metrics
-    const coverageMetrics = await this.getCoverageMetrics();
+		// Get coverage metrics
+		const coverageMetrics = await this.getCoverageMetrics();
 
-    // Get citation metrics
-    const citationMetrics = await this.getCitationMetrics();
+		// Get citation metrics
+		const citationMetrics = await this.getCitationMetrics();
 
-    // Get temporal distribution
-    const temporalDistribution = await this.getTemporalDistribution();
+		// Get temporal distribution
+		const temporalDistribution = await this.getTemporalDistribution();
 
-    // Get geographic distribution (simplified)
-    const geographicDistribution = await this.getGeographicDistribution();
+		// Get geographic distribution (simplified)
+		const geographicDistribution = await this.getGeographicDistribution();
 
-    return {
-      total_entities: totalEntities,
-      growth_rates: growthRates,
-      coverage_metrics: coverageMetrics,
-      citation_metrics: citationMetrics,
-      temporal_distribution: temporalDistribution,
-      geographic_distribution: geographicDistribution,
-    };
-  }
+		return {
+			total_entities: totalEntities,
+			growth_rates: growthRates,
+			coverage_metrics: coverageMetrics,
+			citation_metrics: citationMetrics,
+			temporal_distribution: temporalDistribution,
+			geographic_distribution: geographicDistribution,
+		};
+	}
 
-  /**
+	/**
    * Get detailed analytics for a specific entity type
    *
    * @param entityType - Type of entity to analyze
@@ -229,30 +229,30 @@ export class StatisticsApi {
    * });
    * ```
    */
-  async getEntityAnalytics(
-    entityType: EntityType,
-    _params: StatsParams = {}
-  ): Promise<EntityAnalytics> {
-    // Distribution analysis
-    const distributionAnalysis = await this.getDistributionAnalysis(entityType);
+	async getEntityAnalytics(
+		entityType: EntityType,
+		_params: StatsParams = {}
+	): Promise<EntityAnalytics> {
+		// Distribution analysis
+		const distributionAnalysis = await this.getDistributionAnalysis(entityType);
 
-    // Trend analysis
-    const trendAnalysis = await this.getTrendAnalysis(entityType);
+		// Trend analysis
+		const trendAnalysis = await this.getTrendAnalysis(entityType);
 
-    // Collaboration metrics (for applicable entity types)
-    let collaborationMetrics;
-    if (entityType === 'works' || entityType === 'authors') {
-      collaborationMetrics = await this.getCollaborationMetrics(entityType);
-    }
+		// Collaboration metrics (for applicable entity types)
+		let collaborationMetrics;
+		if (entityType === "works" || entityType === "authors") {
+			collaborationMetrics = await this.getCollaborationMetrics(entityType);
+		}
 
-    return {
-      distribution_analysis: distributionAnalysis,
-      trend_analysis: trendAnalysis,
-      collaboration_metrics: collaborationMetrics,
-    };
-  }
+		return {
+			distribution_analysis: distributionAnalysis,
+			trend_analysis: trendAnalysis,
+			collaboration_metrics: collaborationMetrics,
+		};
+	}
 
-  /**
+	/**
    * Get research impact metrics
    *
    * @param entityType - Type of entity to analyze
@@ -266,27 +266,27 @@ export class StatisticsApi {
    * });
    * ```
    */
-  async getImpactMetrics(
-    entityType: EntityType,
-    _params: StatsParams = {}
-  ): Promise<ImpactMetrics> {
-    // H-index distribution
-    const hIndexDistribution = await this.getHIndexDistribution(entityType);
+	async getImpactMetrics(
+		entityType: EntityType,
+		_params: StatsParams = {}
+	): Promise<ImpactMetrics> {
+		// H-index distribution
+		const hIndexDistribution = await this.getHIndexDistribution(entityType);
 
-    // Field-normalized metrics
-    const fieldNormalizedMetrics = await this.getFieldNormalizedMetrics(entityType);
+		// Field-normalized metrics
+		const fieldNormalizedMetrics = await this.getFieldNormalizedMetrics(entityType);
 
-    // Temporal impact analysis
-    const temporalImpact = await this.getTemporalImpact(entityType);
+		// Temporal impact analysis
+		const temporalImpact = await this.getTemporalImpact(entityType);
 
-    return {
-      h_index_distribution: hIndexDistribution,
-      field_normalized_metrics: fieldNormalizedMetrics,
-      temporal_impact: temporalImpact,
-    };
-  }
+		return {
+			h_index_distribution: hIndexDistribution,
+			field_normalized_metrics: fieldNormalizedMetrics,
+			temporal_impact: temporalImpact,
+		};
+	}
 
-  /**
+	/**
    * Get comparative statistics between entity groups
    *
    * @param entityType - Type of entity to compare
@@ -303,11 +303,11 @@ export class StatisticsApi {
    * );
    * ```
    */
-  async getComparativeStats(
-    entityType: EntityType,
-    groupBy: string,
-    _params: StatsParams = {}
-  ): Promise<{
+	async getComparativeStats(
+		entityType: EntityType,
+		groupBy: string,
+		_params: StatsParams = {}
+	): Promise<{
     groups: Array<{
       group: string;
       group_display_name: string;
@@ -330,24 +330,24 @@ export class StatisticsApi {
       diversity_index: number;
     };
   }> {
-    // Get grouped data
-    const groupedResponse = await this.client.getResponse<{ group_by?: Array<{ key: string; key_display_name?: string; count: number; cited_by_count?: number }> }>(entityType, {
-      group_by: groupBy,
-      per_page: 1,
-    });
+		// Get grouped data
+		const groupedResponse = await this.client.getResponse<{ group_by?: Array<{ key: string; key_display_name?: string; count: number; cited_by_count?: number }> }>(entityType, {
+			group_by: groupBy,
+			per_page: 1,
+		});
 
-    if (!groupedResponse.group_by) {
-      throw new Error(`Grouping not supported for ${entityType} by ${groupBy}`);
-    }
+		if (!groupedResponse.group_by) {
+			throw new Error(`Grouping not supported for ${entityType} by ${groupBy}`);
+		}
 
-    const groups = groupedResponse.group_by.slice(0, 20); // Top 20 groups
-    const totalEntities = groups.reduce((sum: number, group) => sum + group.count, 0);
-    const totalCitations = groups.reduce((sum: number, group) => {
-      const groupAsRecord = group as { cited_by_count?: number };
-      return sum + (groupAsRecord.cited_by_count || 0);
-    }, 0);
+		const groups = groupedResponse.group_by.slice(0, 20); // Top 20 groups
+		const totalEntities = groups.reduce((sum: number, group) => sum + group.count, 0);
+		const totalCitations = groups.reduce((sum: number, group) => {
+			const groupAsRecord = group as { cited_by_count?: number };
+			return sum + (groupAsRecord.cited_by_count || 0);
+		}, 0);
 
-    const groupMetrics: Array<{
+		const groupMetrics: Array<{
       group: string;
       group_display_name: string;
       metrics: {
@@ -364,277 +364,277 @@ export class StatisticsApi {
       };
     }> = [];
 
-    for (let i = 0; i < Math.min(10, groups.length); i++) {
-      const group = groups[i];
+		for (let i = 0; i < Math.min(10, groups.length); i++) {
+			const group = groups[i];
 
-      try {
-        // Get more detailed stats for each group
-        const groupFilter = `${groupBy}:${group.key}`;
-        const groupStats = await this.client.getResponse<{ results: Array<{ cited_by_count?: number }> }>(entityType, {
-          filter: groupFilter,
-          per_page: 100,
-          sort: 'cited_by_count',
-        });
+			try {
+				// Get more detailed stats for each group
+				const groupFilter = `${groupBy}:${group.key}`;
+				const groupStats = await this.client.getResponse<{ results: Array<{ cited_by_count?: number }> }>(entityType, {
+					filter: groupFilter,
+					per_page: 100,
+					sort: "cited_by_count",
+				});
 
-        const citations = groupStats.results.map((item) => (item as { cited_by_count?: number }).cited_by_count || 0);
-        const avgCitations = citations.reduce((sum, c) => sum + c, 0) / citations.length;
-        const medianCitations = citations.sort((a, b) => a - b)[Math.floor(citations.length / 2)] || 0;
+				const citations = groupStats.results.map((item) => (item as { cited_by_count?: number }).cited_by_count || 0);
+				const avgCitations = citations.reduce((sum, c) => sum + c, 0) / citations.length;
+				const medianCitations = citations.sort((a, b) => a - b)[Math.floor(citations.length / 2)] || 0;
 
-        // Simplified growth rate calculation
-        const growthRate = Math.random() * 20 - 10; // Placeholder - would need historical data
+				// Simplified growth rate calculation
+				const growthRate = Math.random() * 20 - 10; // Placeholder - would need historical data
 
-        groupMetrics.push({
-          group: group.key,
-          group_display_name: group.key_display_name || group.key,
-          metrics: {
-            total_count: group.count,
-            avg_citations: avgCitations,
-            median_citations: medianCitations,
-            growth_rate: growthRate,
-            market_share: (group.count / totalEntities) * 100,
-          },
-          rankings: {
-            by_count: i + 1,
-            by_citations: 0, // Will be calculated after sorting
-            by_growth: 0, // Will be calculated after sorting
-          },
-        });
-      } catch (error) {
-        logger.warn('api', `Failed to get detailed stats for group ${group.key}`, { groupKey: group.key, error }, 'StatisticsApi');
-      }
-    }
+				groupMetrics.push({
+					group: group.key,
+					group_display_name: group.key_display_name || group.key,
+					metrics: {
+						total_count: group.count,
+						avg_citations: avgCitations,
+						median_citations: medianCitations,
+						growth_rate: growthRate,
+						market_share: (group.count / totalEntities) * 100,
+					},
+					rankings: {
+						by_count: i + 1,
+						by_citations: 0, // Will be calculated after sorting
+						by_growth: 0, // Will be calculated after sorting
+					},
+				});
+			} catch (error) {
+				logger.warn("api", `Failed to get detailed stats for group ${group.key}`, { groupKey: group.key, error }, "StatisticsApi");
+			}
+		}
 
-    // Calculate rankings
-    const byCitations = [...groupMetrics].sort((a, b) => b.metrics.avg_citations - a.metrics.avg_citations);
-    const byGrowth = [...groupMetrics].sort((a, b) => b.metrics.growth_rate - a.metrics.growth_rate);
+		// Calculate rankings
+		const byCitations = [...groupMetrics].sort((a, b) => b.metrics.avg_citations - a.metrics.avg_citations);
+		const byGrowth = [...groupMetrics].sort((a, b) => b.metrics.growth_rate - a.metrics.growth_rate);
 
-    byCitations.forEach((group, index) => {
-      const originalGroup = groupMetrics.find(g => g.group === group.group);
-      if (originalGroup) originalGroup.rankings.by_citations = index + 1;
-    });
+		byCitations.forEach((group, index) => {
+			const originalGroup = groupMetrics.find(g => g.group === group.group);
+			if (originalGroup) originalGroup.rankings.by_citations = index + 1;
+		});
 
-    byGrowth.forEach((group, index) => {
-      const originalGroup = groupMetrics.find(g => g.group === group.group);
-      if (originalGroup) originalGroup.rankings.by_growth = index + 1;
-    });
+		byGrowth.forEach((group, index) => {
+			const originalGroup = groupMetrics.find(g => g.group === group.group);
+			if (originalGroup) originalGroup.rankings.by_growth = index + 1;
+		});
 
-    // Calculate diversity index (Shannon diversity)
-    const diversityIndex = this.calculateShannonDiversity(groups.map((g) => g.count));
+		// Calculate diversity index (Shannon diversity)
+		const diversityIndex = this.calculateShannonDiversity(groups.map((g) => g.count));
 
-    return {
-      groups: groupMetrics,
-      overall_metrics: {
-        total_entities: totalEntities,
-        total_citations: totalCitations,
-        diversity_index: diversityIndex,
-      },
-    };
-  }
+		return {
+			groups: groupMetrics,
+			overall_metrics: {
+				total_entities: totalEntities,
+				total_citations: totalCitations,
+				diversity_index: diversityIndex,
+			},
+		};
+	}
 
-  /**
+	/**
    * Get coverage metrics (private helper)
    */
-  private async getCoverageMetrics() {
-    try {
-      const [worksWithDoi, worksOpenAccess, authorsWithOrcid, institutionsWithRor] = await Promise.all([
-        this.client.getResponse<{ meta: { count: number } }>('works', { filter: 'has_doi:true', per_page: 1 }),
-        this.client.getResponse<{ meta: { count: number } }>('works', { filter: 'is_oa:true', per_page: 1 }),
-        this.client.getResponse<{ meta: { count: number } }>('authors', { filter: 'has_orcid:true', per_page: 1 }),
-        this.client.getResponse<{ meta: { count: number } }>('institutions', { filter: 'has_ror:true', per_page: 1 }),
-      ]);
+	private async getCoverageMetrics() {
+		try {
+			const [worksWithDoi, worksOpenAccess, authorsWithOrcid, institutionsWithRor] = await Promise.all([
+				this.client.getResponse<{ meta: { count: number } }>("works", { filter: "has_doi:true", per_page: 1 }),
+				this.client.getResponse<{ meta: { count: number } }>("works", { filter: "is_oa:true", per_page: 1 }),
+				this.client.getResponse<{ meta: { count: number } }>("authors", { filter: "has_orcid:true", per_page: 1 }),
+				this.client.getResponse<{ meta: { count: number } }>("institutions", { filter: "has_ror:true", per_page: 1 }),
+			]);
 
-      return {
-        works_with_doi: worksWithDoi.meta.count,
-        works_open_access: worksOpenAccess.meta.count,
-        authors_with_orcid: authorsWithOrcid.meta.count,
-        institutions_with_ror: institutionsWithRor.meta.count,
-      };
-    } catch {
-      return {
-        works_with_doi: 0,
-        works_open_access: 0,
-        authors_with_orcid: 0,
-        institutions_with_ror: 0,
-      };
-    }
-  }
+			return {
+				works_with_doi: worksWithDoi.meta.count,
+				works_open_access: worksOpenAccess.meta.count,
+				authors_with_orcid: authorsWithOrcid.meta.count,
+				institutions_with_ror: institutionsWithRor.meta.count,
+			};
+		} catch {
+			return {
+				works_with_doi: 0,
+				works_open_access: 0,
+				authors_with_orcid: 0,
+				institutions_with_ror: 0,
+			};
+		}
+	}
 
-  /**
+	/**
    * Get citation metrics (private helper)
    */
-  private async getCitationMetrics() {
-    try {
-      const worksResponse = await this.client.getResponse<{ results: Array<{ cited_by_count?: number }> }>('works', {
-        per_page: 100,
-        sort: 'cited_by_count',
-        select: ['cited_by_count']
-      });
+	private async getCitationMetrics() {
+		try {
+			const worksResponse = await this.client.getResponse<{ results: Array<{ cited_by_count?: number }> }>("works", {
+				per_page: 100,
+				sort: "cited_by_count",
+				select: ["cited_by_count"]
+			});
 
-      const citations = worksResponse.results.map((work) => (work as { cited_by_count?: number }).cited_by_count || 0);
-      const totalCitations = citations.reduce((sum, c) => sum + c, 0);
-      const avgCitations = totalCitations / citations.length;
+			const citations = worksResponse.results.map((work) => (work as { cited_by_count?: number }).cited_by_count || 0);
+			const totalCitations = citations.reduce((sum, c) => sum + c, 0);
+			const avgCitations = totalCitations / citations.length;
 
-      // Top 1% threshold (simplified)
-      const topPercentileThreshold = citations[Math.floor(citations.length * 0.01)] || 0;
+			// Top 1% threshold (simplified)
+			const topPercentileThreshold = citations[Math.floor(citations.length * 0.01)] || 0;
 
-      return {
-        total_citations: totalCitations,
-        avg_citations_per_work: avgCitations,
-        top_percentile_threshold: topPercentileThreshold,
-      };
-    } catch {
-      return {
-        total_citations: 0,
-        avg_citations_per_work: 0,
-        top_percentile_threshold: 0,
-      };
-    }
-  }
+			return {
+				total_citations: totalCitations,
+				avg_citations_per_work: avgCitations,
+				top_percentile_threshold: topPercentileThreshold,
+			};
+		} catch {
+			return {
+				total_citations: 0,
+				avg_citations_per_work: 0,
+				top_percentile_threshold: 0,
+			};
+		}
+	}
 
-  /**
+	/**
    * Get temporal distribution (private helper)
    */
-  private async getTemporalDistribution() {
-    try {
-      const yearGrouping = await this.client.getResponse<{ group_by?: Array<{ key: string; count: number }> }>('works', {
-        group_by: 'publication_year',
-        per_page: 1,
-      });
+	private async getTemporalDistribution() {
+		try {
+			const yearGrouping = await this.client.getResponse<{ group_by?: Array<{ key: string; count: number }> }>("works", {
+				group_by: "publication_year",
+				per_page: 1,
+			});
 
-      if (yearGrouping.group_by) {
-        const years = yearGrouping.group_by.map((group) => parseInt(group.key)).filter(y => y > 1900);
-        const yearCounts = yearGrouping.group_by.map((group) => ({ year: parseInt(group.key), count: group.count }));
+			if (yearGrouping.group_by) {
+				const years = yearGrouping.group_by.map((group) => parseInt(group.key)).filter(y => y > 1900);
+				const yearCounts = yearGrouping.group_by.map((group) => ({ year: parseInt(group.key), count: group.count }));
 
-        // Find peak years (top 3 by publication count)
-        const peakYears = yearCounts
-          .filter((yc) => yc.year > 1900)
-          .sort((a, b) => b.count - a.count)
-          .slice(0, 3)
-          .map((yc) => yc.year);
+				// Find peak years (top 3 by publication count)
+				const peakYears = yearCounts
+					.filter((yc) => yc.year > 1900)
+					.sort((a, b) => b.count - a.count)
+					.slice(0, 3)
+					.map((yc) => yc.year);
 
-        return {
-          oldest_work_year: Math.min(...years),
-          newest_work_year: Math.max(...years),
-          peak_publication_years: peakYears,
-        };
-      }
-    } catch {
-      // Fallback
-    }
+				return {
+					oldest_work_year: Math.min(...years),
+					newest_work_year: Math.max(...years),
+					peak_publication_years: peakYears,
+				};
+			}
+		} catch {
+			// Fallback
+		}
 
-    return {
-      oldest_work_year: 1900,
-      newest_work_year: new Date().getFullYear(),
-      peak_publication_years: [2020, 2021, 2022],
-    };
-  }
+		return {
+			oldest_work_year: 1900,
+			newest_work_year: new Date().getFullYear(),
+			peak_publication_years: [2020, 2021, 2022],
+		};
+	}
 
-  /**
+	/**
    * Get geographic distribution (private helper)
    */
-  private async getGeographicDistribution(): Promise<Record<string, number>> {
-    try {
-      const countryGrouping = await this.client.getResponse<{ group_by?: Array<{ key: string; key_display_name?: string; count: number }> }>('institutions', {
-        group_by: 'country_code',
-        per_page: 1,
-      });
+	private async getGeographicDistribution(): Promise<Record<string, number>> {
+		try {
+			const countryGrouping = await this.client.getResponse<{ group_by?: Array<{ key: string; key_display_name?: string; count: number }> }>("institutions", {
+				group_by: "country_code",
+				per_page: 1,
+			});
 
-      if (countryGrouping.group_by) {
-        const distribution: Record<string, number> = {};
-        countryGrouping.group_by.slice(0, 20).forEach((group) => {
-          distribution[group.key_display_name || group.key] = group.count;
-        });
-        return distribution;
-      }
-    } catch {
-      // Fallback
-    }
+			if (countryGrouping.group_by) {
+				const distribution: Record<string, number> = {};
+				countryGrouping.group_by.slice(0, 20).forEach((group) => {
+					distribution[group.key_display_name || group.key] = group.count;
+				});
+				return distribution;
+			}
+		} catch {
+			// Fallback
+		}
 
-    return {
-      'United States': 50000,
-      'China': 40000,
-      'United Kingdom': 25000,
-      'Germany': 20000,
-      'Other': 100000,
-    };
-  }
+		return {
+			"United States": 50000,
+			"China": 40000,
+			"United Kingdom": 25000,
+			"Germany": 20000,
+			"Other": 100000,
+		};
+	}
 
-  // Additional private helper methods would go here...
-  private async getDistributionAnalysis(_entityType: EntityType) {
-    // Implementation for distribution analysis
-    return {
-      citation_distribution: {
-        quartiles: [0, 1, 5, 20] as [number, number, number, number],
-        deciles: [0, 0, 1, 1, 2, 3, 5, 8, 15, 30],
-        highly_cited_threshold: 100,
-      },
-      activity_distribution: {
-        very_active: 1000,
-        moderately_active: 5000,
-        low_activity: 20000,
-        inactive: 10000,
-      },
-    };
-  }
+	// Additional private helper methods would go here...
+	private async getDistributionAnalysis(_entityType: EntityType) {
+		// Implementation for distribution analysis
+		return {
+			citation_distribution: {
+				quartiles: [0, 1, 5, 20] as [number, number, number, number],
+				deciles: [0, 0, 1, 1, 2, 3, 5, 8, 15, 30],
+				highly_cited_threshold: 100,
+			},
+			activity_distribution: {
+				very_active: 1000,
+				moderately_active: 5000,
+				low_activity: 20000,
+				inactive: 10000,
+			},
+		};
+	}
 
-  private async getTrendAnalysis(_entityType: EntityType) {
-    // Implementation for trend analysis
-    return {
-      recent_growth: 15.5,
-      publication_trends: [
-        { year: 2020, count: 100000, cumulative_count: 1000000 },
-        { year: 2021, count: 110000, cumulative_count: 1110000 },
-        { year: 2022, count: 120000, cumulative_count: 1230000 },
-      ],
-    };
-  }
+	private async getTrendAnalysis(_entityType: EntityType) {
+		// Implementation for trend analysis
+		return {
+			recent_growth: 15.5,
+			publication_trends: [
+				{ year: 2020, count: 100000, cumulative_count: 1000000 },
+				{ year: 2021, count: 110000, cumulative_count: 1110000 },
+				{ year: 2022, count: 120000, cumulative_count: 1230000 },
+			],
+		};
+	}
 
-  private async getCollaborationMetrics(_entityType: EntityType) {
-    // Implementation for collaboration metrics
-    return {
-      avg_authors_per_work: 3.2,
-      international_collaboration_rate: 0.25,
-      institutional_diversity_index: 0.8,
-    };
-  }
+	private async getCollaborationMetrics(_entityType: EntityType) {
+		// Implementation for collaboration metrics
+		return {
+			avg_authors_per_work: 3.2,
+			international_collaboration_rate: 0.25,
+			institutional_diversity_index: 0.8,
+		};
+	}
 
-  private async getHIndexDistribution(_entityType: EntityType) {
-    // Implementation for H-index distribution
-    return {
-      median_h_index: 15,
-      top_1_percent_threshold: 100,
-      top_10_percent_threshold: 40,
-    };
-  }
+	private async getHIndexDistribution(_entityType: EntityType) {
+		// Implementation for H-index distribution
+		return {
+			median_h_index: 15,
+			top_1_percent_threshold: 100,
+			top_10_percent_threshold: 40,
+		};
+	}
 
-  private async getFieldNormalizedMetrics(_entityType: EntityType) {
-    // Implementation for field-normalized metrics
-    return {
-      avg_field_citation_ratio: 1.2,
-      top_fields_by_impact: [
-        { field: 'Computer Science', avg_citations: 25, total_works: 100000 },
-        { field: 'Medicine', avg_citations: 30, total_works: 150000 },
-      ],
-    };
-  }
+	private async getFieldNormalizedMetrics(_entityType: EntityType) {
+		// Implementation for field-normalized metrics
+		return {
+			avg_field_citation_ratio: 1.2,
+			top_fields_by_impact: [
+				{ field: "Computer Science", avg_citations: 25, total_works: 100000 },
+				{ field: "Medicine", avg_citations: 30, total_works: 150000 },
+			],
+		};
+	}
 
-  private async getTemporalImpact(_entityType: EntityType) {
-    // Implementation for temporal impact
-    return {
-      citation_half_life: 7.2,
-      immediate_impact_rate: 0.15,
-      sustained_impact_rate: 0.35,
-    };
-  }
+	private async getTemporalImpact(_entityType: EntityType) {
+		// Implementation for temporal impact
+		return {
+			citation_half_life: 7.2,
+			immediate_impact_rate: 0.15,
+			sustained_impact_rate: 0.35,
+		};
+	}
 
-  /**
+	/**
    * Calculate Shannon diversity index
    */
-  private calculateShannonDiversity(counts: number[]): number {
-    const total = counts.reduce((sum, count) => sum + count, 0);
-    if (total === 0) return 0;
+	private calculateShannonDiversity(counts: number[]): number {
+		const total = counts.reduce((sum, count) => sum + count, 0);
+		if (total === 0) return 0;
 
-    const proportions = counts.map(count => count / total);
-    return -proportions.reduce((sum, p) => sum + (p > 0 ? p * Math.log(p) : 0), 0);
-  }
+		const proportions = counts.map(count => count / total);
+		return -proportions.reduce((sum, p) => sum + (p > 0 ? p * Math.log(p) : 0), 0);
+	}
 }

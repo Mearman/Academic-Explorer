@@ -3,55 +3,55 @@
  */
 
 export {
-  // Generic entity hook
-  useOpenAlexEntity,
+	// Generic entity hook
+	useOpenAlexEntity,
 
-  // Works hooks
-  useWork,
-  useWorks,
-  useWorkSearch,
-  useSuspenseWork,
+	// Works hooks
+	useWork,
+	useWorks,
+	useWorkSearch,
+	useSuspenseWork,
 
-  // Authors hooks
-  useAuthor,
-  useAuthors,
-  useAuthorSearch,
-  useSuspenseAuthor,
+	// Authors hooks
+	useAuthor,
+	useAuthors,
+	useAuthorSearch,
+	useSuspenseAuthor,
 
-  // Sources hooks
-  useSource,
-  useSources,
-  useSourceSearch,
-  useSuspenseSource,
+	// Sources hooks
+	useSource,
+	useSources,
+	useSourceSearch,
+	useSuspenseSource,
 
-  // Institutions hooks
-  useInstitution,
-  useInstitutions,
-  useInstitutionSearch,
-  useSuspenseInstitution,
+	// Institutions hooks
+	useInstitution,
+	useInstitutions,
+	useInstitutionSearch,
+	useSuspenseInstitution,
 
-  // Topics hooks
-  useTopic,
-  useTopics,
+	// Topics hooks
+	useTopic,
+	useTopics,
 
-  // Publishers hooks
-  usePublisher,
-  usePublishers,
+	// Publishers hooks
+	usePublisher,
+	usePublishers,
 
-  // Funders hooks
-  useFunder,
-  useFunders,
+	// Funders hooks
+	useFunder,
+	useFunders,
 
-  // Keywords hooks
-  useKeyword,
+	// Keywords hooks
+	useKeyword,
 
-  // Geo hooks
-  useGeo,
+	// Geo hooks
+	useGeo,
 
-  // Autocomplete hooks
-  useAutocomplete,
-  useAutocompleteWorks,
-  useAutocompleteAuthors,
-  useAutocompleteSources,
-  useAutocompleteInstitutions,
-} from './use-openalex-query';
+	// Autocomplete hooks
+	useAutocomplete,
+	useAutocompleteWorks,
+	useAutocompleteAuthors,
+	useAutocompleteSources,
+	useAutocompleteInstitutions,
+} from "./use-openalex-query";

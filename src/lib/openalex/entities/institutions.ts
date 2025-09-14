@@ -3,8 +3,8 @@
  * Provides comprehensive methods for querying and retrieving institution data
  */
 
-import { InstitutionEntity, InstitutionsFilters, QueryParams, OpenAlexResponse, Work, Author } from '../types';
-import { OpenAlexBaseClient } from '../client';
+import { InstitutionEntity, InstitutionsFilters, QueryParams, OpenAlexResponse, Work, Author } from "../types";
+import { OpenAlexBaseClient } from "../client";
 
 /**
  * Extended query parameters specific to institutions API
@@ -12,8 +12,8 @@ import { OpenAlexBaseClient } from '../client';
 export interface InstitutionsQueryParams extends QueryParams {
   filter?: string;
   search?: string;
-  sort?: 'cited_by_count' | 'works_count' | 'display_name' | 'created_date' | 'updated_date';
-  group_by?: 'country_code' | 'type' | 'works_count' | 'cited_by_count';
+  sort?: "cited_by_count" | "works_count" | "display_name" | "created_date" | "updated_date";
+  group_by?: "country_code" | "type" | "works_count" | "cited_by_count";
 }
 
 /**
@@ -21,7 +21,7 @@ export interface InstitutionsQueryParams extends QueryParams {
  */
 export interface InstitutionSearchOptions {
   filters?: InstitutionsFilters;
-  sort?: InstitutionsQueryParams['sort'];
+  sort?: InstitutionsQueryParams["sort"];
   page?: number;
   per_page?: number;
   select?: string[];
@@ -31,13 +31,13 @@ export interface InstitutionSearchOptions {
  * Comprehensive Institutions API class providing methods for institution data access
  */
 export class InstitutionsApi {
-  private client: OpenAlexBaseClient;
+	private client: OpenAlexBaseClient;
 
-  constructor(client: OpenAlexBaseClient) {
-    this.client = client;
-  }
+	constructor(client: OpenAlexBaseClient) {
+		this.client = client;
+	}
 
-  /**
+	/**
    * Get a single institution by its OpenAlex ID, ROR ID, or other identifier
    *
    * @param id - Institution ID (OpenAlex ID, ROR ID, etc.)
@@ -52,11 +52,11 @@ export class InstitutionsApi {
    * });
    * ```
    */
-  async getInstitution(id: string, params: QueryParams = {}): Promise<InstitutionEntity> {
-    return this.client.getById<InstitutionEntity>('institutions', id, params);
-  }
+	async getInstitution(id: string, params: QueryParams = {}): Promise<InstitutionEntity> {
+		return this.client.getById<InstitutionEntity>("institutions", id, params);
+	}
 
-  /**
+	/**
    * Get multiple institutions with optional filtering, sorting, and pagination
    *
    * @param params - Optional query parameters including filters
@@ -71,12 +71,12 @@ export class InstitutionsApi {
    * });
    * ```
    */
-  async getInstitutions(params: InstitutionSearchOptions = {}): Promise<OpenAlexResponse<InstitutionEntity>> {
-    const queryParams = this.buildQueryParams(params);
-    return this.client.getResponse<InstitutionEntity>('institutions', queryParams);
-  }
+	async getInstitutions(params: InstitutionSearchOptions = {}): Promise<OpenAlexResponse<InstitutionEntity>> {
+		const queryParams = this.buildQueryParams(params);
+		return this.client.getResponse<InstitutionEntity>("institutions", queryParams);
+	}
 
-  /**
+	/**
    * Search institutions by query string with optional filters
    *
    * @param query - Search query string
@@ -91,18 +91,18 @@ export class InstitutionsApi {
    * });
    * ```
    */
-  async searchInstitutions(
-    query: string,
-    options: InstitutionSearchOptions = {}
-  ): Promise<OpenAlexResponse<InstitutionEntity>> {
-    const params = {
-      ...options,
-      search: query
-    };
-    return this.getInstitutions(params);
-  }
+	async searchInstitutions(
+		query: string,
+		options: InstitutionSearchOptions = {}
+	): Promise<OpenAlexResponse<InstitutionEntity>> {
+		const params = {
+			...options,
+			search: query
+		};
+		return this.getInstitutions(params);
+	}
 
-  /**
+	/**
    * Get institutions by country code
    *
    * @param countryCode - ISO 3166-1 alpha-2 country code (e.g., 'US', 'GB', 'CA')
@@ -117,21 +117,21 @@ export class InstitutionsApi {
    * });
    * ```
    */
-  async getInstitutionsByCountry(
-    countryCode: string,
-    options: InstitutionSearchOptions = {}
-  ): Promise<OpenAlexResponse<InstitutionEntity>> {
-    const params = {
-      ...options,
-      filters: {
-        ...options.filters,
-        'country_code': countryCode
-      }
-    };
-    return this.getInstitutions(params);
-  }
+	async getInstitutionsByCountry(
+		countryCode: string,
+		options: InstitutionSearchOptions = {}
+	): Promise<OpenAlexResponse<InstitutionEntity>> {
+		const params = {
+			...options,
+			filters: {
+				...options.filters,
+				"country_code": countryCode
+			}
+		};
+		return this.getInstitutions(params);
+	}
 
-  /**
+	/**
    * Get institutions by institution type
    *
    * @param type - Institution type (e.g., 'education', 'healthcare', 'company', 'government', etc.)
@@ -146,21 +146,21 @@ export class InstitutionsApi {
    * });
    * ```
    */
-  async getInstitutionsByType(
-    type: string,
-    options: InstitutionSearchOptions = {}
-  ): Promise<OpenAlexResponse<InstitutionEntity>> {
-    const params = {
-      ...options,
-      filters: {
-        ...options.filters,
-        'type': type
-      }
-    };
-    return this.getInstitutions(params);
-  }
+	async getInstitutionsByType(
+		type: string,
+		options: InstitutionSearchOptions = {}
+	): Promise<OpenAlexResponse<InstitutionEntity>> {
+		const params = {
+			...options,
+			filters: {
+				...options.filters,
+				"type": type
+			}
+		};
+		return this.getInstitutions(params);
+	}
 
-  /**
+	/**
    * Get works published by authors affiliated with a specific institution
    *
    * @param institutionId - Institution OpenAlex ID
@@ -176,18 +176,18 @@ export class InstitutionsApi {
    * });
    * ```
    */
-  async getInstitutionWorks(
-    institutionId: string,
-    options: InstitutionSearchOptions = {}
-  ): Promise<OpenAlexResponse<Work>> {
-    const queryParams = {
-      filter: `authorships.institutions.id:${institutionId}`,
-      ...this.buildQueryParams(options)
-    };
-    return this.client.getResponse<Work>('works', queryParams);
-  }
+	async getInstitutionWorks(
+		institutionId: string,
+		options: InstitutionSearchOptions = {}
+	): Promise<OpenAlexResponse<Work>> {
+		const queryParams = {
+			filter: `authorships.institutions.id:${institutionId}`,
+			...this.buildQueryParams(options)
+		};
+		return this.client.getResponse<Work>("works", queryParams);
+	}
 
-  /**
+	/**
    * Get authors affiliated with a specific institution
    *
    * @param institutionId - Institution OpenAlex ID
@@ -202,18 +202,18 @@ export class InstitutionsApi {
    * });
    * ```
    */
-  async getInstitutionAuthors(
-    institutionId: string,
-    options: InstitutionSearchOptions = {}
-  ): Promise<OpenAlexResponse<Author>> {
-    const queryParams = {
-      filter: `last_known_institution.id:${institutionId}`,
-      ...this.buildQueryParams(options)
-    };
-    return this.client.getResponse<Author>('authors', queryParams);
-  }
+	async getInstitutionAuthors(
+		institutionId: string,
+		options: InstitutionSearchOptions = {}
+	): Promise<OpenAlexResponse<Author>> {
+		const queryParams = {
+			filter: `last_known_institution.id:${institutionId}`,
+			...this.buildQueryParams(options)
+		};
+		return this.client.getResponse<Author>("authors", queryParams);
+	}
 
-  /**
+	/**
    * Get institutions associated with a specific institution (parent, child, or related institutions)
    *
    * @param institutionId - Institution OpenAlex ID
@@ -227,21 +227,21 @@ export class InstitutionsApi {
    * });
    * ```
    */
-  async getAssociatedInstitutions(
-    institutionId: string,
-    options: InstitutionSearchOptions = {}
-  ): Promise<OpenAlexResponse<InstitutionEntity>> {
-    const params = {
-      ...options,
-      filters: {
-        ...options.filters,
-        'associated_institutions.id': institutionId
-      }
-    };
-    return this.getInstitutions(params);
-  }
+	async getAssociatedInstitutions(
+		institutionId: string,
+		options: InstitutionSearchOptions = {}
+	): Promise<OpenAlexResponse<InstitutionEntity>> {
+		const params = {
+			...options,
+			filters: {
+				...options.filters,
+				"associated_institutions.id": institutionId
+			}
+		};
+		return this.getInstitutions(params);
+	}
 
-  /**
+	/**
    * Get a random sample of institutions
    *
    * @param count - Number of random institutions to retrieve (max 200)
@@ -255,21 +255,21 @@ export class InstitutionsApi {
    * });
    * ```
    */
-  async getRandomInstitutions(
-    count: number = 10,
-    options: InstitutionSearchOptions = {},
-    seed?: number
-  ): Promise<OpenAlexResponse<InstitutionEntity>> {
-    const params: InstitutionSearchOptions & { sample: number; seed: number } = {
-      ...options,
-      sample: Math.min(count, 200), // OpenAlex limits sample to 200
-      seed: seed !== undefined ? seed : Math.floor(Math.random() * 1000000),
-    };
+	async getRandomInstitutions(
+		count: number = 10,
+		options: InstitutionSearchOptions = {},
+		seed?: number
+	): Promise<OpenAlexResponse<InstitutionEntity>> {
+		const params: InstitutionSearchOptions & { sample: number; seed: number } = {
+			...options,
+			sample: Math.min(count, 200), // OpenAlex limits sample to 200
+			seed: seed !== undefined ? seed : Math.floor(Math.random() * 1000000),
+		};
 
-    return this.getInstitutions(params);
-  }
+		return this.getInstitutions(params);
+	}
 
-  /**
+	/**
    * Get institutions in the Global South
    *
    * @param options - Optional search parameters
@@ -283,20 +283,20 @@ export class InstitutionsApi {
    * });
    * ```
    */
-  async getGlobalSouthInstitutions(
-    options: InstitutionSearchOptions = {}
-  ): Promise<OpenAlexResponse<InstitutionEntity>> {
-    const params = {
-      ...options,
-      filters: {
-        ...options.filters,
-        'is_global_south': true
-      }
-    };
-    return this.getInstitutions(params);
-  }
+	async getGlobalSouthInstitutions(
+		options: InstitutionSearchOptions = {}
+	): Promise<OpenAlexResponse<InstitutionEntity>> {
+		const params = {
+			...options,
+			filters: {
+				...options.filters,
+				"is_global_south": true
+			}
+		};
+		return this.getInstitutions(params);
+	}
 
-  /**
+	/**
    * Get institutions that have ROR IDs
    *
    * @param options - Optional search parameters
@@ -310,20 +310,20 @@ export class InstitutionsApi {
    * });
    * ```
    */
-  async getInstitutionsWithRor(
-    options: InstitutionSearchOptions = {}
-  ): Promise<OpenAlexResponse<InstitutionEntity>> {
-    const params = {
-      ...options,
-      filters: {
-        ...options.filters,
-        'has_ror': true
-      }
-    };
-    return this.getInstitutions(params);
-  }
+	async getInstitutionsWithRor(
+		options: InstitutionSearchOptions = {}
+	): Promise<OpenAlexResponse<InstitutionEntity>> {
+		const params = {
+			...options,
+			filters: {
+				...options.filters,
+				"has_ror": true
+			}
+		};
+		return this.getInstitutions(params);
+	}
 
-  /**
+	/**
    * Get institutions in a specific lineage (hierarchy)
    *
    * @param lineageId - Institution ID in the lineage
@@ -335,21 +335,21 @@ export class InstitutionsApi {
    * const systemInstitutions = await institutionsApi.getInstitutionsByLineage('I33213144');
    * ```
    */
-  async getInstitutionsByLineage(
-    lineageId: string,
-    options: InstitutionSearchOptions = {}
-  ): Promise<OpenAlexResponse<InstitutionEntity>> {
-    const params = {
-      ...options,
-      filters: {
-        ...options.filters,
-        'lineage': lineageId
-      }
-    };
-    return this.getInstitutions(params);
-  }
+	async getInstitutionsByLineage(
+		lineageId: string,
+		options: InstitutionSearchOptions = {}
+	): Promise<OpenAlexResponse<InstitutionEntity>> {
+		const params = {
+			...options,
+			filters: {
+				...options.filters,
+				"lineage": lineageId
+			}
+		};
+		return this.getInstitutions(params);
+	}
 
-  /**
+	/**
    * Stream all institutions matching the criteria (use with caution for large datasets)
    *
    * @param options - Search parameters and filters
@@ -364,14 +364,14 @@ export class InstitutionsApi {
    * }
    * ```
    */
-  async *streamInstitutions(
-    options: InstitutionSearchOptions = {}
-  ): AsyncGenerator<InstitutionEntity[], void, unknown> {
-    const queryParams = this.buildQueryParams(options);
-    yield* this.client.stream<InstitutionEntity>('institutions', queryParams);
-  }
+	async *streamInstitutions(
+		options: InstitutionSearchOptions = {}
+	): AsyncGenerator<InstitutionEntity[], void, unknown> {
+		const queryParams = this.buildQueryParams(options);
+		yield* this.client.stream<InstitutionEntity>("institutions", queryParams);
+	}
 
-  /**
+	/**
    * Get all institutions matching the criteria (use with caution)
    *
    * @param options - Search parameters and filters
@@ -385,46 +385,46 @@ export class InstitutionsApi {
    * }, 500);
    * ```
    */
-  async getAllInstitutions(
-    options: InstitutionSearchOptions = {},
-    maxResults?: number
-  ): Promise<InstitutionEntity[]> {
-    const queryParams = this.buildQueryParams(options);
-    return this.client.getAll<InstitutionEntity>('institutions', queryParams, maxResults);
-  }
+	async getAllInstitutions(
+		options: InstitutionSearchOptions = {},
+		maxResults?: number
+	): Promise<InstitutionEntity[]> {
+		const queryParams = this.buildQueryParams(options);
+		return this.client.getAll<InstitutionEntity>("institutions", queryParams, maxResults);
+	}
 
-  /**
+	/**
    * Build query parameters from institution search options and filters
    *
    * @private
    * @param options - Institution search options
    * @returns Formatted query parameters
    */
-  private buildQueryParams(options: InstitutionSearchOptions = {}): QueryParams {
-    const { filters, sort, page, per_page, select, ...otherOptions } = options;
+	private buildQueryParams(options: InstitutionSearchOptions = {}): QueryParams {
+		const { filters, sort, page, per_page, select, ...otherOptions } = options;
 
-    const queryParams: QueryParams = {
-      ...otherOptions
-    };
+		const queryParams: QueryParams = {
+			...otherOptions
+		};
 
-    // Handle filters
-    if (filters && Object.keys(filters).length > 0) {
-      const filterPairs = Object.entries(filters)
-        .map(([key, value]) => {
-          if (Array.isArray(value)) {
-            return `${key}:${value.join('|')}`;
-          }
-          return `${key}:${String(value)}`;
-        });
-      queryParams.filter = filterPairs.join(',');
-    }
+		// Handle filters
+		if (filters && Object.keys(filters).length > 0) {
+			const filterPairs = Object.entries(filters)
+				.map(([key, value]) => {
+					if (Array.isArray(value)) {
+						return `${key}:${value.join("|")}`;
+					}
+					return `${key}:${String(value)}`;
+				});
+			queryParams.filter = filterPairs.join(",");
+		}
 
-    // Add other parameters
-    if (sort) queryParams.sort = sort;
-    if (page) queryParams.page = page;
-    if (per_page) queryParams.per_page = per_page;
-    if (select) queryParams.select = select;
+		// Add other parameters
+		if (sort) queryParams.sort = sort;
+		if (page) queryParams.page = page;
+		if (per_page) queryParams.per_page = per_page;
+		if (select) queryParams.select = select;
 
-    return queryParams;
-  }
+		return queryParams;
+	}
 }

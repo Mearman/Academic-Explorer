@@ -4,12 +4,12 @@
  */
 
 import {
-  Work,
-  WorksFilters,
-  QueryParams,
-  OpenAlexResponse,
-} from '../types';
-import { OpenAlexBaseClient } from '../client';
+	Work,
+	WorksFilters,
+	QueryParams,
+	OpenAlexResponse,
+} from "../types";
+import { OpenAlexBaseClient } from "../client";
 
 /**
  * Extended query parameters specific to Works API
@@ -22,7 +22,7 @@ export type WorksQueryParams = QueryParams;
  */
 export interface SearchWorksOptions {
   filters?: WorksFilters;
-  sort?: 'relevance_score' | 'cited_by_count' | 'publication_date' | 'created_date';
+  sort?: "relevance_score" | "cited_by_count" | "publication_date" | "created_date";
   page?: number;
   per_page?: number;
   select?: string[];
@@ -41,9 +41,9 @@ export interface RelatedWorksOptions {
  * Works API class providing comprehensive methods for academic paper operations
  */
 export class WorksApi {
-  constructor(private client: OpenAlexBaseClient) {}
+	constructor(private client: OpenAlexBaseClient) {}
 
-  /**
+	/**
    * Get a single work by its OpenAlex ID, DOI, or other identifier
    *
    * @param id - The work ID (OpenAlex ID, DOI, etc.)
@@ -56,11 +56,11 @@ export class WorksApi {
    * const workByDoi = await worksApi.getWork('https://doi.org/10.7717/peerj.4375');
    * ```
    */
-  async getWork(id: string, params: QueryParams = {}): Promise<Work> {
-    return this.client.getById<Work>('works', id, params);
-  }
+	async getWork(id: string, params: QueryParams = {}): Promise<Work> {
+		return this.client.getById<Work>("works", id, params);
+	}
 
-  /**
+	/**
    * Get multiple works with optional filtering and pagination
    *
    * @param params - Query parameters including filters, pagination, and selection
@@ -75,18 +75,18 @@ export class WorksApi {
    * });
    * ```
    */
-  async getWorks(params: WorksQueryParams = {}): Promise<OpenAlexResponse<Work>> {
-    const queryParams: QueryParams = { ...params };
+	async getWorks(params: WorksQueryParams = {}): Promise<OpenAlexResponse<Work>> {
+		const queryParams: QueryParams = { ...params };
 
-    // Convert filters object to filter string, if it's not already a string
-    if (params.filter) {
-      queryParams.filter = typeof params.filter === 'string' ? params.filter : this.buildFilterString(params.filter as WorksFilters);
-    }
+		// Convert filters object to filter string, if it's not already a string
+		if (params.filter) {
+			queryParams.filter = typeof params.filter === "string" ? params.filter : this.buildFilterString(params.filter as WorksFilters);
+		}
 
-    return this.client.getResponse<Work>('works', queryParams);
-  }
+		return this.client.getResponse<Work>("works", queryParams);
+	}
 
-  /**
+	/**
    * Search works by query string with optional filters and sorting
    *
    * @param query - Search query string
@@ -102,23 +102,23 @@ export class WorksApi {
    * });
    * ```
    */
-  async searchWorks(
-    query: string,
-    options: SearchWorksOptions = {}
-  ): Promise<OpenAlexResponse<Work>> {
-    const params: WorksQueryParams = {
-      search: query,
-      sort: options.sort || (query.trim() ? 'relevance_score' : 'publication_date'),
-      page: options.page,
-      per_page: options.per_page,
-      select: options.select,
-      filter: options.filters ? this.buildFilterString(options.filters) : undefined,
-    };
+	async searchWorks(
+		query: string,
+		options: SearchWorksOptions = {}
+	): Promise<OpenAlexResponse<Work>> {
+		const params: WorksQueryParams = {
+			search: query,
+			sort: options.sort || (query.trim() ? "relevance_score" : "publication_date"),
+			page: options.page,
+			per_page: options.per_page,
+			select: options.select,
+			filter: options.filters ? this.buildFilterString(options.filters) : undefined,
+		};
 
-    return this.getWorks(params);
-  }
+		return this.getWorks(params);
+	}
 
-  /**
+	/**
    * Get works by a specific author
    *
    * @param authorId - OpenAlex author ID or ORCID
@@ -133,20 +133,20 @@ export class WorksApi {
    * });
    * ```
    */
-  async getWorksByAuthor(
-    authorId: string,
-    params: WorksQueryParams = {}
-  ): Promise<OpenAlexResponse<Work>> {
-    const filters: WorksFilters = {
-      'authorships.author.id': authorId,
-    };
+	async getWorksByAuthor(
+		authorId: string,
+		params: WorksQueryParams = {}
+	): Promise<OpenAlexResponse<Work>> {
+		const filters: WorksFilters = {
+			"authorships.author.id": authorId,
+		};
 
-    // Merge with existing filters if present
-    const mergedFilter = this.mergeFilters(filters, params.filter);
-    return this.getWorks({ ...params, filter: mergedFilter });
-  }
+		// Merge with existing filters if present
+		const mergedFilter = this.mergeFilters(filters, params.filter);
+		return this.getWorks({ ...params, filter: mergedFilter });
+	}
 
-  /**
+	/**
    * Get works affiliated with a specific institution
    *
    * @param institutionId - OpenAlex institution ID or ROR ID
@@ -161,20 +161,20 @@ export class WorksApi {
    * });
    * ```
    */
-  async getWorksByInstitution(
-    institutionId: string,
-    params: WorksQueryParams = {}
-  ): Promise<OpenAlexResponse<Work>> {
-    const filters: WorksFilters = {
-      'authorships.institutions.id': institutionId,
-    };
+	async getWorksByInstitution(
+		institutionId: string,
+		params: WorksQueryParams = {}
+	): Promise<OpenAlexResponse<Work>> {
+		const filters: WorksFilters = {
+			"authorships.institutions.id": institutionId,
+		};
 
-    // Merge with existing filters if present
-    const mergedFilter = this.mergeFilters(filters, params.filter);
-    return this.getWorks({ ...params, filter: mergedFilter });
-  }
+		// Merge with existing filters if present
+		const mergedFilter = this.mergeFilters(filters, params.filter);
+		return this.getWorks({ ...params, filter: mergedFilter });
+	}
 
-  /**
+	/**
    * Get works published in a specific source (journal, conference, etc.)
    *
    * @param sourceId - OpenAlex source ID or ISSN
@@ -189,20 +189,20 @@ export class WorksApi {
    * });
    * ```
    */
-  async getWorksBySource(
-    sourceId: string,
-    params: WorksQueryParams = {}
-  ): Promise<OpenAlexResponse<Work>> {
-    const filters: WorksFilters = {
-      'primary_location.source.id': sourceId,
-    };
+	async getWorksBySource(
+		sourceId: string,
+		params: WorksQueryParams = {}
+	): Promise<OpenAlexResponse<Work>> {
+		const filters: WorksFilters = {
+			"primary_location.source.id": sourceId,
+		};
 
-    // Merge with existing filters if present
-    const mergedFilter = this.mergeFilters(filters, params.filter);
-    return this.getWorks({ ...params, filter: mergedFilter });
-  }
+		// Merge with existing filters if present
+		const mergedFilter = this.mergeFilters(filters, params.filter);
+		return this.getWorks({ ...params, filter: mergedFilter });
+	}
 
-  /**
+	/**
    * Get works that cite a specific work
    *
    * @param workId - OpenAlex work ID of the cited work
@@ -217,20 +217,20 @@ export class WorksApi {
    * });
    * ```
    */
-  async getCitedWorks(
-    workId: string,
-    params: WorksQueryParams = {}
-  ): Promise<OpenAlexResponse<Work>> {
-    const filters: WorksFilters = {
-      'referenced_works': workId,
-    };
+	async getCitedWorks(
+		workId: string,
+		params: WorksQueryParams = {}
+	): Promise<OpenAlexResponse<Work>> {
+		const filters: WorksFilters = {
+			"referenced_works": workId,
+		};
 
-    // Merge with existing filters if present
-    const mergedFilter = this.mergeFilters(filters, params.filter);
-    return this.getWorks({ ...params, filter: mergedFilter });
-  }
+		// Merge with existing filters if present
+		const mergedFilter = this.mergeFilters(filters, params.filter);
+		return this.getWorks({ ...params, filter: mergedFilter });
+	}
 
-  /**
+	/**
    * Get works referenced by a specific work
    *
    * @param workId - OpenAlex work ID
@@ -245,38 +245,38 @@ export class WorksApi {
    * });
    * ```
    */
-  async getReferencedWorks(
-    workId: string,
-    options: RelatedWorksOptions = {}
-  ): Promise<Work[]> {
-    // First get the work to access its referenced_works array
-    const work = await this.getWork(workId, { select: ['referenced_works'] });
+	async getReferencedWorks(
+		workId: string,
+		options: RelatedWorksOptions = {}
+	): Promise<Work[]> {
+		// First get the work to access its referenced_works array
+		const work = await this.getWork(workId, { select: ["referenced_works"] });
 
-    if (!work.referenced_works || work.referenced_works.length === 0) {
-      return [];
-    }
+		if (!work.referenced_works || work.referenced_works.length === 0) {
+			return [];
+		}
 
-    // Limit the number of references if specified
-    const referencesToFetch = options.limit
-      ? work.referenced_works.slice(0, options.limit)
-      : work.referenced_works;
+		// Limit the number of references if specified
+		const referencesToFetch = options.limit
+			? work.referenced_works.slice(0, options.limit)
+			: work.referenced_works;
 
-    // Build filter to get all referenced works in one request
-    const filters: WorksFilters = {
-      'ids.openalex': referencesToFetch,
-      ...options.filters,
-    };
+		// Build filter to get all referenced works in one request
+		const filters: WorksFilters = {
+			"ids.openalex": referencesToFetch,
+			...options.filters,
+		};
 
-    const response = await this.getWorks({
-      filter: this.buildFilterString(filters),
-      select: options.select,
-      per_page: referencesToFetch.length,
-    });
+		const response = await this.getWorks({
+			filter: this.buildFilterString(filters),
+			select: options.select,
+			per_page: referencesToFetch.length,
+		});
 
-    return response.results;
-  }
+		return response.results;
+	}
 
-  /**
+	/**
    * Get works related to a specific work (using OpenAlex's related works feature)
    *
    * @param workId - OpenAlex work ID
@@ -291,38 +291,38 @@ export class WorksApi {
    * });
    * ```
    */
-  async getRelatedWorks(
-    workId: string,
-    options: RelatedWorksOptions = {}
-  ): Promise<Work[]> {
-    // First get the work to access its related_works array
-    const work = await this.getWork(workId, { select: ['related_works'] });
+	async getRelatedWorks(
+		workId: string,
+		options: RelatedWorksOptions = {}
+	): Promise<Work[]> {
+		// First get the work to access its related_works array
+		const work = await this.getWork(workId, { select: ["related_works"] });
 
-    if (!work.related_works || work.related_works.length === 0) {
-      return [];
-    }
+		if (!work.related_works || work.related_works.length === 0) {
+			return [];
+		}
 
-    // Limit the number of related works if specified
-    const relatedToFetch = options.limit
-      ? work.related_works.slice(0, options.limit)
-      : work.related_works;
+		// Limit the number of related works if specified
+		const relatedToFetch = options.limit
+			? work.related_works.slice(0, options.limit)
+			: work.related_works;
 
-    // Build filter to get all related works in one request
-    const filters: WorksFilters = {
-      'ids.openalex': relatedToFetch,
-      ...options.filters,
-    };
+		// Build filter to get all related works in one request
+		const filters: WorksFilters = {
+			"ids.openalex": relatedToFetch,
+			...options.filters,
+		};
 
-    const response = await this.getWorks({
-      filter: this.buildFilterString(filters),
-      select: options.select,
-      per_page: relatedToFetch.length,
-    });
+		const response = await this.getWorks({
+			filter: this.buildFilterString(filters),
+			select: options.select,
+			per_page: relatedToFetch.length,
+		});
 
-    return response.results;
-  }
+		return response.results;
+	}
 
-  /**
+	/**
    * Get a random sample of works
    *
    * @param count - Number of random works to retrieve (max 10,000)
@@ -337,30 +337,30 @@ export class WorksApi {
    * });
    * ```
    */
-  async getRandomWorks(
-    count: number,
-    params: WorksQueryParams = {}
-  ): Promise<Work[]> {
-    if (count > 10000) {
-      throw new Error('Maximum sample size is 10,000 works');
-    }
+	async getRandomWorks(
+		count: number,
+		params: WorksQueryParams = {}
+	): Promise<Work[]> {
+		if (count > 10000) {
+			throw new Error("Maximum sample size is 10,000 works");
+		}
 
-    const queryParams: QueryParams = {
-      ...params,
-      sample: count,
-      seed: Math.floor(Math.random() * 1000000), // Random seed for reproducibility within session
-    };
+		const queryParams: QueryParams = {
+			...params,
+			sample: count,
+			seed: Math.floor(Math.random() * 1000000), // Random seed for reproducibility within session
+		};
 
-    // Convert filters if provided
-    if (params.filter) {
-      queryParams.filter = typeof params.filter === 'string' ? params.filter : this.buildFilterString(params.filter as WorksFilters);
-    }
+		// Convert filters if provided
+		if (params.filter) {
+			queryParams.filter = typeof params.filter === "string" ? params.filter : this.buildFilterString(params.filter as WorksFilters);
+		}
 
-    const response = await this.client.getResponse<Work>('works', queryParams);
-    return response.results;
-  }
+		const response = await this.client.getResponse<Work>("works", queryParams);
+		return response.results;
+	}
 
-  /**
+	/**
    * Stream all works matching criteria using cursor pagination
    *
    * @param params - Query parameters for filtering
@@ -377,26 +377,26 @@ export class WorksApi {
    * }
    * ```
    */
-  async *streamWorks(
-    params: WorksQueryParams = {},
-    batchSize = 200
-  ): AsyncGenerator<Work[], void, unknown> {
-    const queryParams: QueryParams = { ...params };
+	async *streamWorks(
+		params: WorksQueryParams = {},
+		batchSize = 200
+	): AsyncGenerator<Work[], void, unknown> {
+		const queryParams: QueryParams = { ...params };
 
-    // Only set per_page if not already provided in params
-    if (!queryParams.per_page) {
-      queryParams.per_page = batchSize;
-    }
+		// Only set per_page if not already provided in params
+		if (!queryParams.per_page) {
+			queryParams.per_page = batchSize;
+		}
 
-    // Convert filters if provided
-    if (params.filter) {
-      queryParams.filter = typeof params.filter === 'string' ? params.filter : this.buildFilterString(params.filter as WorksFilters);
-    }
+		// Convert filters if provided
+		if (params.filter) {
+			queryParams.filter = typeof params.filter === "string" ? params.filter : this.buildFilterString(params.filter as WorksFilters);
+		}
 
-    yield* this.client.stream<Work>('works', queryParams, queryParams.per_page);
-  }
+		yield* this.client.stream<Work>("works", queryParams, queryParams.per_page);
+	}
 
-  /**
+	/**
    * Get all works matching criteria (use with caution for large result sets)
    *
    * @param params - Query parameters for filtering
@@ -410,21 +410,21 @@ export class WorksApi {
    * }, 1000);
    * ```
    */
-  async getAllWorks(
-    params: WorksQueryParams = {},
-    maxResults?: number
-  ): Promise<Work[]> {
-    const queryParams: QueryParams = { ...params };
+	async getAllWorks(
+		params: WorksQueryParams = {},
+		maxResults?: number
+	): Promise<Work[]> {
+		const queryParams: QueryParams = { ...params };
 
-    // Convert filters if provided
-    if (params.filter) {
-      queryParams.filter = typeof params.filter === 'string' ? params.filter : this.buildFilterString(params.filter as WorksFilters);
-    }
+		// Convert filters if provided
+		if (params.filter) {
+			queryParams.filter = typeof params.filter === "string" ? params.filter : this.buildFilterString(params.filter as WorksFilters);
+		}
 
-    return this.client.getAll<Work>('works', queryParams, maxResults);
-  }
+		return this.client.getAll<Work>("works", queryParams, maxResults);
+	}
 
-  /**
+	/**
    * Build OpenAlex filter string from filters object
    *
    * @param filters - WorksFilters object
@@ -432,28 +432,28 @@ export class WorksApi {
    *
    * @private
    */
-  private buildFilterString(filters: WorksFilters): string {
-    const filterParts: string[] = [];
+	private buildFilterString(filters: WorksFilters): string {
+		const filterParts: string[] = [];
 
-    Object.entries(filters).forEach(([key, value]) => {
-      if (value !== undefined && value !== null) {
-        if (Array.isArray(value)) {
-          // Handle array values (OR logic)
-          filterParts.push(`${key}:${value.join('|')}`);
-        } else if (typeof value === 'boolean') {
-          // Handle boolean values
-          filterParts.push(`${key}:${value}`);
-        } else {
-          // Handle string/number values
-          filterParts.push(`${key}:${value}`);
-        }
-      }
-    });
+		Object.entries(filters).forEach(([key, value]) => {
+			if (value !== undefined && value !== null) {
+				if (Array.isArray(value)) {
+					// Handle array values (OR logic)
+					filterParts.push(`${key}:${value.join("|")}`);
+				} else if (typeof value === "boolean") {
+					// Handle boolean values
+					filterParts.push(`${key}:${value}`);
+				} else {
+					// Handle string/number values
+					filterParts.push(`${key}:${value}`);
+				}
+			}
+		});
 
-    return filterParts.join(',');
-  }
+		return filterParts.join(",");
+	}
 
-  /**
+	/**
    * Merge new filters with existing filters, handling both string and object formats
    *
    * @param newFilters - New filters to add
@@ -462,26 +462,26 @@ export class WorksApi {
    *
    * @private
    */
-  private mergeFilters(newFilters: WorksFilters, existingFilters?: string | WorksFilters): string {
-    // Start with new filters
-    const mergedFilters: WorksFilters = { ...newFilters };
+	private mergeFilters(newFilters: WorksFilters, existingFilters?: string | WorksFilters): string {
+		// Start with new filters
+		const mergedFilters: WorksFilters = { ...newFilters };
 
-    // Merge with existing filters if present
-    if (existingFilters) {
-      if (typeof existingFilters === 'string') {
-        // If existing filters are a string, append them to the new filter string
-        const newFilterString = this.buildFilterString(newFilters);
-        return `${newFilterString},${existingFilters}`;
-      } else {
-        // If existing filters are an object, merge them
-        Object.assign(mergedFilters, existingFilters, newFilters); // New filters override existing ones
-      }
-    }
+		// Merge with existing filters if present
+		if (existingFilters) {
+			if (typeof existingFilters === "string") {
+				// If existing filters are a string, append them to the new filter string
+				const newFilterString = this.buildFilterString(newFilters);
+				return `${newFilterString},${existingFilters}`;
+			} else {
+				// If existing filters are an object, merge them
+				Object.assign(mergedFilters, existingFilters, newFilters); // New filters override existing ones
+			}
+		}
 
-    return this.buildFilterString(mergedFilters);
-  }
+		return this.buildFilterString(mergedFilters);
+	}
 
-  /**
+	/**
    * Get works statistics and aggregations
    *
    * @param params - Query parameters for filtering
@@ -495,28 +495,28 @@ export class WorksApi {
    * }, 'publication_year');
    * ```
    */
-  async getWorksStats(
-    params: WorksQueryParams = {},
-    groupBy?: string
-  ): Promise<OpenAlexResponse<Work>> {
-    const queryParams: QueryParams = {
-      ...params,
-      per_page: 0, // We only want the aggregation metadata
-    };
+	async getWorksStats(
+		params: WorksQueryParams = {},
+		groupBy?: string
+	): Promise<OpenAlexResponse<Work>> {
+		const queryParams: QueryParams = {
+			...params,
+			per_page: 0, // We only want the aggregation metadata
+		};
 
-    if (groupBy) {
-      queryParams.group_by = groupBy;
-    }
+		if (groupBy) {
+			queryParams.group_by = groupBy;
+		}
 
-    // Convert filters if provided
-    if (params.filter) {
-      queryParams.filter = typeof params.filter === 'string' ? params.filter : this.buildFilterString(params.filter as WorksFilters);
-    }
+		// Convert filters if provided
+		if (params.filter) {
+			queryParams.filter = typeof params.filter === "string" ? params.filter : this.buildFilterString(params.filter as WorksFilters);
+		}
 
-    return this.client.getResponse<Work>('works', queryParams);
-  }
+		return this.client.getResponse<Work>("works", queryParams);
+	}
 
-  /**
+	/**
    * Get works by publication year range
    *
    * @param startYear - Start year (inclusive)
@@ -532,21 +532,21 @@ export class WorksApi {
    * });
    * ```
    */
-  async getWorksByYearRange(
-    startYear: number,
-    endYear: number,
-    params: WorksQueryParams = {}
-  ): Promise<OpenAlexResponse<Work>> {
-    const filters: WorksFilters = {
-      'publication_year': `${startYear}-${endYear}`,
-    };
+	async getWorksByYearRange(
+		startYear: number,
+		endYear: number,
+		params: WorksQueryParams = {}
+	): Promise<OpenAlexResponse<Work>> {
+		const filters: WorksFilters = {
+			"publication_year": `${startYear}-${endYear}`,
+		};
 
-    // Merge with existing filters if present
-    const mergedFilter = this.mergeFilters(filters, params.filter);
-    return this.getWorks({ ...params, filter: mergedFilter });
-  }
+		// Merge with existing filters if present
+		const mergedFilter = this.mergeFilters(filters, params.filter);
+		return this.getWorks({ ...params, filter: mergedFilter });
+	}
 
-  /**
+	/**
    * Get open access works only
    *
    * @param params - Optional query parameters for additional filtering
@@ -560,17 +560,17 @@ export class WorksApi {
    * });
    * ```
    */
-  async getOpenAccessWorks(params: WorksQueryParams = {}): Promise<OpenAlexResponse<Work>> {
-    const filters: WorksFilters = {
-      'is_oa': true,
-    };
+	async getOpenAccessWorks(params: WorksQueryParams = {}): Promise<OpenAlexResponse<Work>> {
+		const filters: WorksFilters = {
+			"is_oa": true,
+		};
 
-    // Merge with existing filters if present
-    const mergedFilter = this.mergeFilters(filters, params.filter);
-    return this.getWorks({ ...params, filter: mergedFilter });
-  }
+		// Merge with existing filters if present
+		const mergedFilter = this.mergeFilters(filters, params.filter);
+		return this.getWorks({ ...params, filter: mergedFilter });
+	}
 
-  /**
+	/**
    * Get highly cited works (top percentile)
    *
    * @param minCitations - Minimum number of citations
@@ -584,18 +584,18 @@ export class WorksApi {
    * });
    * ```
    */
-  async getHighlyCitedWorks(
-    minCitations: number,
-    params: WorksQueryParams = {}
-  ): Promise<OpenAlexResponse<Work>> {
-    const filters: WorksFilters = {
-      'cited_by_count': `>${minCitations}`,
-    };
+	async getHighlyCitedWorks(
+		minCitations: number,
+		params: WorksQueryParams = {}
+	): Promise<OpenAlexResponse<Work>> {
+		const filters: WorksFilters = {
+			"cited_by_count": `>${minCitations}`,
+		};
 
-    // Merge with existing filters if present
-    const mergedFilter = this.mergeFilters(filters, params.filter);
-    return this.getWorks({ ...params, filter: mergedFilter, sort: 'cited_by_count' });
-  }
+		// Merge with existing filters if present
+		const mergedFilter = this.mergeFilters(filters, params.filter);
+		return this.getWorks({ ...params, filter: mergedFilter, sort: "cited_by_count" });
+	}
 }
 
 /**
@@ -603,8 +603,8 @@ export class WorksApi {
  * Import this lazily to avoid circular dependencies
  */
 export function createDefaultWorksApi(): WorksApi {
-  // Using dynamic import for lazy loading and avoiding circular dependencies
-  // eslint-disable-next-line @typescript-eslint/no-require-imports
-  const { defaultClient } = require('../client');
-  return new WorksApi(defaultClient);
+	// Using dynamic import for lazy loading and avoiding circular dependencies
+	// eslint-disable-next-line @typescript-eslint/no-require-imports
+	const { defaultClient } = require("../client");
+	return new WorksApi(defaultClient);
 }

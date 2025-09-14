@@ -3,15 +3,15 @@
  * Simple Zustand store without Immer to avoid React 19 infinite loops
  */
 
-import { create } from 'zustand';
-import { persist, createJSONStorage } from 'zustand/middleware';
+import { create } from "zustand";
+import { persist, createJSONStorage } from "zustand/middleware";
 import type {
-  GraphNode,
-  GraphEdge,
-  GraphProvider,
-  ProviderType,
-  GraphLayout,
-} from '@/lib/graph/types';
+	GraphNode,
+	GraphEdge,
+	GraphProvider,
+	ProviderType,
+	GraphLayout,
+} from "@/lib/graph/types";
 
 interface GraphState {
   // Data (library agnostic)
@@ -79,341 +79,341 @@ interface GraphState {
 }
 
 export const useGraphStore = create<GraphState>()(
-  persist(
-    (set, get) => ({
-  // Initial state
-  nodes: new Map(),
-  edges: new Map(),
-  selectedNodeId: null,
-  hoveredNodeId: null,
-  selectedNodes: new Set(),
-  provider: null,
-  providerType: 'xyflow',
-  currentLayout: {
-    type: 'd3-force',
-    options: {
-      seed: 42,
-      iterations: 300,
-      linkDistance: 220,      // Increased for more spacing between connected nodes
-      linkStrength: 0.7,      // Weaker link forces to allow more collision separation
-      chargeStrength: -600,   // Stronger repulsion for better separation
-      centerStrength: 0.03,   // Even weaker centering for more spread
-      collisionRadius: 100,   // Larger collision radius to prevent overlaps
-      velocityDecay: 0.4,     // Higher decay for faster stabilization
-      alpha: 1,
-      alphaDecay: 0.03,       // Faster decay to reach stability quicker
-      collisionStrength: 0.8  // Strong but not maximum to allow settling
-    }
-  },
-  isLoading: false,
-  error: null,
+	persist(
+		(set, get) => ({
+			// Initial state
+			nodes: new Map(),
+			edges: new Map(),
+			selectedNodeId: null,
+			hoveredNodeId: null,
+			selectedNodes: new Set(),
+			provider: null,
+			providerType: "xyflow",
+			currentLayout: {
+				type: "d3-force",
+				options: {
+					seed: 42,
+					iterations: 300,
+					linkDistance: 220,      // Increased for more spacing between connected nodes
+					linkStrength: 0.7,      // Weaker link forces to allow more collision separation
+					chargeStrength: -600,   // Stronger repulsion for better separation
+					centerStrength: 0.03,   // Even weaker centering for more spread
+					collisionRadius: 100,   // Larger collision radius to prevent overlaps
+					velocityDecay: 0.4,     // Higher decay for faster stabilization
+					alpha: 1,
+					alphaDecay: 0.03,       // Faster decay to reach stability quicker
+					collisionStrength: 0.8  // Strong but not maximum to allow settling
+				}
+			},
+			isLoading: false,
+			error: null,
 
-  // Provider management
-  setProvider: (provider) => {
-    const state = get();
-    // Transfer existing data to new provider
-    provider.setNodes(Array.from(state.nodes.values()));
-    provider.setEdges(Array.from(state.edges.values()));
-    set({ provider });
-  },
+			// Provider management
+			setProvider: (provider) => {
+				const state = get();
+				// Transfer existing data to new provider
+				provider.setNodes(Array.from(state.nodes.values()));
+				provider.setEdges(Array.from(state.edges.values()));
+				set({ provider });
+			},
 
-  setProviderType: (type) => set({ providerType: type }),
+			setProviderType: (type) => set({ providerType: type }),
 
-  // Layout management
-  setLayout: (layout) => {
-    set({ currentLayout: layout });
-    const state = get();
-    state.provider?.applyLayout(layout);
-  },
+			// Layout management
+			setLayout: (layout) => {
+				set({ currentLayout: layout });
+				const state = get();
+				state.provider?.applyLayout(layout);
+			},
 
-  applyCurrentLayout: () => {
-    const state = get();
-    state.provider?.applyLayout(state.currentLayout);
-  },
+			applyCurrentLayout: () => {
+				const state = get();
+				state.provider?.applyLayout(state.currentLayout);
+			},
 
-  // Node management
-  addNode: (node) => {
-    set((state) => {
-      const newNodes = new Map(state.nodes);
-      newNodes.set(node.id, node);
-      state.provider?.addNode(node);
-      return { nodes: newNodes };
-    });
-  },
+			// Node management
+			addNode: (node) => {
+				set((state) => {
+					const newNodes = new Map(state.nodes);
+					newNodes.set(node.id, node);
+					state.provider?.addNode(node);
+					return { nodes: newNodes };
+				});
+			},
 
-  addNodes: (nodes) => {
-    set((state) => {
-      const newNodes = new Map(state.nodes);
-      nodes.forEach(node => {
-        newNodes.set(node.id, node);
-        state.provider?.addNode(node);
-      });
-      return { nodes: newNodes };
-    });
-  },
+			addNodes: (nodes) => {
+				set((state) => {
+					const newNodes = new Map(state.nodes);
+					nodes.forEach(node => {
+						newNodes.set(node.id, node);
+						state.provider?.addNode(node);
+					});
+					return { nodes: newNodes };
+				});
+			},
 
-  removeNode: (nodeId) => {
-    set((state) => {
-      const newNodes = new Map(state.nodes);
-      const newEdges = new Map(state.edges);
+			removeNode: (nodeId) => {
+				set((state) => {
+					const newNodes = new Map(state.nodes);
+					const newEdges = new Map(state.edges);
 
-      // Remove node
-      newNodes.delete(nodeId);
-      state.provider?.removeNode(nodeId);
+					// Remove node
+					newNodes.delete(nodeId);
+					state.provider?.removeNode(nodeId);
 
-      // Remove connected edges
-      Array.from(newEdges.values()).forEach(edge => {
-        if (edge.source === nodeId || edge.target === nodeId) {
-          newEdges.delete(edge.id);
-          state.provider?.removeEdge(edge.id);
-        }
-      });
+					// Remove connected edges
+					Array.from(newEdges.values()).forEach(edge => {
+						if (edge.source === nodeId || edge.target === nodeId) {
+							newEdges.delete(edge.id);
+							state.provider?.removeEdge(edge.id);
+						}
+					});
 
-      // Clear selection if removed
-      const newSelectedNodes = new Set(state.selectedNodes);
-      newSelectedNodes.delete(nodeId);
+					// Clear selection if removed
+					const newSelectedNodes = new Set(state.selectedNodes);
+					newSelectedNodes.delete(nodeId);
 
-      return {
-        nodes: newNodes,
-        edges: newEdges,
-        selectedNodes: newSelectedNodes,
-        selectedNodeId: state.selectedNodeId === nodeId ? null : state.selectedNodeId,
-        hoveredNodeId: state.hoveredNodeId === nodeId ? null : state.hoveredNodeId,
-      };
-    });
-  },
+					return {
+						nodes: newNodes,
+						edges: newEdges,
+						selectedNodes: newSelectedNodes,
+						selectedNodeId: state.selectedNodeId === nodeId ? null : state.selectedNodeId,
+						hoveredNodeId: state.hoveredNodeId === nodeId ? null : state.hoveredNodeId,
+					};
+				});
+			},
 
-  updateNode: (nodeId, updates) => {
-    set((state) => {
-      const newNodes = new Map(state.nodes);
-      const existingNode = newNodes.get(nodeId);
-      if (existingNode) {
-        const updatedNode = { ...existingNode, ...updates };
-        newNodes.set(nodeId, updatedNode);
-        // Note: Provider update would need to be handled by provider
-      }
-      return { nodes: newNodes };
-    });
-  },
+			updateNode: (nodeId, updates) => {
+				set((state) => {
+					const newNodes = new Map(state.nodes);
+					const existingNode = newNodes.get(nodeId);
+					if (existingNode) {
+						const updatedNode = { ...existingNode, ...updates };
+						newNodes.set(nodeId, updatedNode);
+						// Note: Provider update would need to be handled by provider
+					}
+					return { nodes: newNodes };
+				});
+			},
 
-  getNode: (nodeId) => {
-    return get().nodes.get(nodeId);
-  },
+			getNode: (nodeId) => {
+				return get().nodes.get(nodeId);
+			},
 
-  // Edge management
-  addEdge: (edge) => {
-    set((state) => {
-      const newEdges = new Map(state.edges);
-      newEdges.set(edge.id, edge);
-      state.provider?.addEdge(edge);
-      return { edges: newEdges };
-    });
-  },
+			// Edge management
+			addEdge: (edge) => {
+				set((state) => {
+					const newEdges = new Map(state.edges);
+					newEdges.set(edge.id, edge);
+					state.provider?.addEdge(edge);
+					return { edges: newEdges };
+				});
+			},
 
-  addEdges: (edges) => {
-    set((state) => {
-      const newEdges = new Map(state.edges);
-      edges.forEach(edge => {
-        newEdges.set(edge.id, edge);
-        state.provider?.addEdge(edge);
-      });
-      return { edges: newEdges };
-    });
-  },
+			addEdges: (edges) => {
+				set((state) => {
+					const newEdges = new Map(state.edges);
+					edges.forEach(edge => {
+						newEdges.set(edge.id, edge);
+						state.provider?.addEdge(edge);
+					});
+					return { edges: newEdges };
+				});
+			},
 
-  removeEdge: (edgeId) => {
-    set((state) => {
-      const newEdges = new Map(state.edges);
-      newEdges.delete(edgeId);
-      state.provider?.removeEdge(edgeId);
-      return { edges: newEdges };
-    });
-  },
+			removeEdge: (edgeId) => {
+				set((state) => {
+					const newEdges = new Map(state.edges);
+					newEdges.delete(edgeId);
+					state.provider?.removeEdge(edgeId);
+					return { edges: newEdges };
+				});
+			},
 
-  updateEdge: (edgeId, updates) => {
-    set((state) => {
-      const newEdges = new Map(state.edges);
-      const existingEdge = newEdges.get(edgeId);
-      if (existingEdge) {
-        const updatedEdge = { ...existingEdge, ...updates };
-        newEdges.set(edgeId, updatedEdge);
-      }
-      return { edges: newEdges };
-    });
-  },
+			updateEdge: (edgeId, updates) => {
+				set((state) => {
+					const newEdges = new Map(state.edges);
+					const existingEdge = newEdges.get(edgeId);
+					if (existingEdge) {
+						const updatedEdge = { ...existingEdge, ...updates };
+						newEdges.set(edgeId, updatedEdge);
+					}
+					return { edges: newEdges };
+				});
+			},
 
-  getEdge: (edgeId) => {
-    return get().edges.get(edgeId);
-  },
+			getEdge: (edgeId) => {
+				return get().edges.get(edgeId);
+			},
 
-  // Selection
-  selectNode: (nodeId) => set({ selectedNodeId: nodeId }),
+			// Selection
+			selectNode: (nodeId) => set({ selectedNodeId: nodeId }),
 
-  hoverNode: (nodeId) => set({ hoveredNodeId: nodeId }),
+			hoverNode: (nodeId) => set({ hoveredNodeId: nodeId }),
 
-  addToSelection: (nodeId) => {
-    set((state) => {
-      const newSelectedNodes = new Set(state.selectedNodes);
-      newSelectedNodes.add(nodeId);
-      return { selectedNodes: newSelectedNodes };
-    });
-  },
+			addToSelection: (nodeId) => {
+				set((state) => {
+					const newSelectedNodes = new Set(state.selectedNodes);
+					newSelectedNodes.add(nodeId);
+					return { selectedNodes: newSelectedNodes };
+				});
+			},
 
-  removeFromSelection: (nodeId) => {
-    set((state) => {
-      const newSelectedNodes = new Set(state.selectedNodes);
-      newSelectedNodes.delete(nodeId);
-      return { selectedNodes: newSelectedNodes };
-    });
-  },
+			removeFromSelection: (nodeId) => {
+				set((state) => {
+					const newSelectedNodes = new Set(state.selectedNodes);
+					newSelectedNodes.delete(nodeId);
+					return { selectedNodes: newSelectedNodes };
+				});
+			},
 
-  clearSelection: () => set({
-    selectedNodeId: null,
-    selectedNodes: new Set()
-  }),
+			clearSelection: () => set({
+				selectedNodeId: null,
+				selectedNodes: new Set()
+			}),
 
-  // Bulk operations
-  clear: () => {
-    const { provider } = get();
-    provider?.clear();
-    set({
-      nodes: new Map(),
-      edges: new Map(),
-      selectedNodeId: null,
-      hoveredNodeId: null,
-      selectedNodes: new Set(),
-    });
-  },
+			// Bulk operations
+			clear: () => {
+				const { provider } = get();
+				provider?.clear();
+				set({
+					nodes: new Map(),
+					edges: new Map(),
+					selectedNodeId: null,
+					hoveredNodeId: null,
+					selectedNodes: new Set(),
+				});
+			},
 
-  setGraphData: (nodes, edges) => {
-    const { provider } = get();
-    const nodesMap = new Map(nodes.map(node => [node.id, node]));
-    const edgesMap = new Map(edges.map(edge => [edge.id, edge]));
+			setGraphData: (nodes, edges) => {
+				const { provider } = get();
+				const nodesMap = new Map(nodes.map(node => [node.id, node]));
+				const edgesMap = new Map(edges.map(edge => [edge.id, edge]));
 
-    if (provider) {
-      provider.setNodes(nodes);
-      provider.setEdges(edges);
-    }
+				if (provider) {
+					provider.setNodes(nodes);
+					provider.setEdges(edges);
+				}
 
-    set({
-      nodes: nodesMap,
-      edges: edgesMap,
-      selectedNodeId: null,
-      hoveredNodeId: null,
-      selectedNodes: new Set(),
-    });
-  },
+				set({
+					nodes: nodesMap,
+					edges: edgesMap,
+					selectedNodeId: null,
+					hoveredNodeId: null,
+					selectedNodes: new Set(),
+				});
+			},
 
-  // Loading states
-  setLoading: (loading) => set({ isLoading: loading }),
-  setError: (error) => set({ error }),
+			// Loading states
+			setLoading: (loading) => set({ isLoading: loading }),
+			setError: (error) => set({ error }),
 
-  // Graph algorithms (work with generic data)
-  getNeighbors: (nodeId) => {
-    const { edges, nodes } = get();
-    const neighbors: GraphNode[] = [];
+			// Graph algorithms (work with generic data)
+			getNeighbors: (nodeId) => {
+				const { edges, nodes } = get();
+				const neighbors: GraphNode[] = [];
 
-    edges.forEach(edge => {
-      if (edge.source === nodeId) {
-        const neighbor = nodes.get(edge.target);
-        if (neighbor) neighbors.push(neighbor);
-      } else if (edge.target === nodeId) {
-        const neighbor = nodes.get(edge.source);
-        if (neighbor) neighbors.push(neighbor);
-      }
-    });
+				edges.forEach(edge => {
+					if (edge.source === nodeId) {
+						const neighbor = nodes.get(edge.target);
+						if (neighbor) neighbors.push(neighbor);
+					} else if (edge.target === nodeId) {
+						const neighbor = nodes.get(edge.source);
+						if (neighbor) neighbors.push(neighbor);
+					}
+				});
 
-    return neighbors;
-  },
+				return neighbors;
+			},
 
-  getConnectedEdges: (nodeId) => {
-    const { edges } = get();
-    const connectedEdges: GraphEdge[] = [];
+			getConnectedEdges: (nodeId) => {
+				const { edges } = get();
+				const connectedEdges: GraphEdge[] = [];
 
-    edges.forEach(edge => {
-      if (edge.source === nodeId || edge.target === nodeId) {
-        connectedEdges.push(edge);
-      }
-    });
+				edges.forEach(edge => {
+					if (edge.source === nodeId || edge.target === nodeId) {
+						connectedEdges.push(edge);
+					}
+				});
 
-    return connectedEdges;
-  },
+				return connectedEdges;
+			},
 
-  findShortestPath: (sourceId, targetId) => {
-    const { nodes, edges } = get();
+			findShortestPath: (sourceId, targetId) => {
+				const { nodes, edges } = get();
 
-    // Simple BFS implementation
-    const queue: string[] = [sourceId];
-    const visited = new Set<string>([sourceId]);
-    const parent = new Map<string, string>();
+				// Simple BFS implementation
+				const queue: string[] = [sourceId];
+				const visited = new Set<string>([sourceId]);
+				const parent = new Map<string, string>();
 
-    while (queue.length > 0) {
-      const current = queue.shift();
-      if (!current) continue;
+				while (queue.length > 0) {
+					const current = queue.shift();
+					if (!current) continue;
 
-      if (current === targetId) {
-        // Reconstruct path
-        const path: string[] = [];
-        let node: string | undefined = targetId;
-        while (node) {
-          path.unshift(node);
-          node = parent.get(node);
-        }
-        return path;
-      }
+					if (current === targetId) {
+						// Reconstruct path
+						const path: string[] = [];
+						let node: string | undefined = targetId;
+						while (node) {
+							path.unshift(node);
+							node = parent.get(node);
+						}
+						return path;
+					}
 
-      // Check all connected nodes
-      edges.forEach(edge => {
-        let neighbor: string | null = null;
-        if (edge.source === current && !visited.has(edge.target)) {
-          neighbor = edge.target;
-        } else if (edge.target === current && !visited.has(edge.source)) {
-          neighbor = edge.source;
-        }
+					// Check all connected nodes
+					edges.forEach(edge => {
+						let neighbor: string | null = null;
+						if (edge.source === current && !visited.has(edge.target)) {
+							neighbor = edge.target;
+						} else if (edge.target === current && !visited.has(edge.source)) {
+							neighbor = edge.source;
+						}
 
-        if (neighbor && nodes.has(neighbor)) {
-          visited.add(neighbor);
-          parent.set(neighbor, current);
-          queue.push(neighbor);
-        }
-      });
-    }
+						if (neighbor && nodes.has(neighbor)) {
+							visited.add(neighbor);
+							parent.set(neighbor, current);
+							queue.push(neighbor);
+						}
+					});
+				}
 
-    return []; // No path found
-  },
+				return []; // No path found
+			},
 
-  getConnectedComponent: (nodeId) => {
-    const { edges } = get();
-    const visited = new Set<string>();
-    const stack: string[] = [nodeId];
+			getConnectedComponent: (nodeId) => {
+				const { edges } = get();
+				const visited = new Set<string>();
+				const stack: string[] = [nodeId];
 
-    while (stack.length > 0) {
-      const current = stack.pop();
-      if (!current) continue;
-      if (visited.has(current)) continue;
+				while (stack.length > 0) {
+					const current = stack.pop();
+					if (!current) continue;
+					if (visited.has(current)) continue;
 
-      visited.add(current);
+					visited.add(current);
 
-      // Add all connected nodes
-      edges.forEach(edge => {
-        if (edge.source === current && !visited.has(edge.target)) {
-          stack.push(edge.target);
-        } else if (edge.target === current && !visited.has(edge.source)) {
-          stack.push(edge.source);
-        }
-      });
-    }
+					// Add all connected nodes
+					edges.forEach(edge => {
+						if (edge.source === current && !visited.has(edge.target)) {
+							stack.push(edge.target);
+						} else if (edge.target === current && !visited.has(edge.source)) {
+							stack.push(edge.source);
+						}
+					});
+				}
 
-    return visited;
-  },
-}),
-    {
-      name: 'graph-layout-storage',
-      storage: createJSONStorage(() => localStorage),
-      partialize: (state) => ({
-        currentLayout: state.currentLayout,
-        providerType: state.providerType,
-      }),
-    }
-  )
+				return visited;
+			},
+		}),
+		{
+			name: "graph-layout-storage",
+			storage: createJSONStorage(() => localStorage),
+			partialize: (state) => ({
+				currentLayout: state.currentLayout,
+				providerType: state.providerType,
+			}),
+		}
+	)
 );

@@ -65,7 +65,7 @@ export interface Institution {
 }
 
 export interface Authorship {
-  author_position: 'first' | 'middle' | 'last';
+  author_position: "first" | "middle" | "last";
   author: {
     id: OpenAlexId;
     display_name: string;
@@ -234,7 +234,7 @@ export interface Author {
   updated_date: string;
   created_date: string;
   summary_stats: {
-    '2yr_mean_citedness': number;
+    "2yr_mean_citedness": number;
     h_index: number;
     i10_index: number;
   };
@@ -306,7 +306,7 @@ export interface Source {
   updated_date: string;
   created_date: string;
   summary_stats: {
-    '2yr_mean_citedness': number;
+    "2yr_mean_citedness": number;
     h_index: number;
     i10_index: number;
   };
@@ -536,7 +536,7 @@ export interface Funder {
   updated_date: string;
   created_date: string;
   summary_stats: {
-    '2yr_mean_citedness': number;
+    "2yr_mean_citedness": number;
     h_index: number;
     i10_index: number;
   };
@@ -617,7 +617,7 @@ export interface Geo {
  */
 export interface TextAnalysis {
   results: Array<{
-    entity_type: 'topic' | 'concept' | 'keyword';
+    entity_type: "topic" | "concept" | "keyword";
     entity_id: OpenAlexId;
     display_name: string;
     score: number;
@@ -633,197 +633,197 @@ export interface TextAnalysis {
 // Filter and query types
 export interface WorksFilters {
   // Works-specific filters
-  'authorships.author.id'?: string | string[];
-  'authorships.author.orcid'?: string | string[];
-  'authorships.institutions.id'?: string | string[];
-  'authorships.institutions.ror'?: string | string[];
-  'authorships.institutions.country_code'?: string | string[];
-  'authorships.institutions.type'?: string | string[];
-  'best_oa_location.source.id'?: string | string[];
-  'cited_by_count'?: string | number;
-  'concepts.id'?: string | string[];
-  'corresponding_author_ids'?: string | string[];
-  'corresponding_institution_ids'?: string | string[];
-  'default.search'?: string;
-  'display_name.search'?: string;
-  'doi'?: string | string[];
-  'from_created_date'?: string;
-  'from_publication_date'?: string;
-  'from_updated_date'?: string;
-  'fulltext_origin'?: string | string[];
-  'grants.funder'?: string | string[];
-  'has_abstract'?: boolean;
-  'has_doi'?: boolean;
-  'has_fulltext'?: boolean;
-  'has_oa_accepted_or_published_version'?: boolean;
-  'has_oa_submitted_version'?: boolean;
-  'has_references'?: boolean;
-  'host_venue.id'?: string | string[];
-  'host_venue.issn'?: string | string[];
-  'host_venue.lineage'?: string | string[];
-  'host_venue.publisher'?: string | string[];
-  'ids.openalex'?: string | string[];
-  'is_oa'?: boolean;
-  'is_paratext'?: boolean;
-  'is_retracted'?: boolean;
-  'language'?: string | string[];
-  'locations.source.id'?: string | string[];
-  'open_access.is_oa'?: boolean;
-  'primary_location.source.id'?: string | string[];
-  'primary_topic.id'?: string | string[];
-  'publication_date'?: string;
-  'publication_year'?: number | string;
-  'referenced_works'?: string | string[];
-  'repository'?: string | string[];
-  'sustainable_development_goals.id'?: string | string[];
-  'title.search'?: string;
-  'to_created_date'?: string;
-  'to_publication_date'?: string;
-  'to_updated_date'?: string;
-  'topics.id'?: string | string[];
-  'type'?: string | string[];
-  'type_crossref'?: string | string[];
-  'version'?: string | string[];
+  "authorships.author.id"?: string | string[];
+  "authorships.author.orcid"?: string | string[];
+  "authorships.institutions.id"?: string | string[];
+  "authorships.institutions.ror"?: string | string[];
+  "authorships.institutions.country_code"?: string | string[];
+  "authorships.institutions.type"?: string | string[];
+  "best_oa_location.source.id"?: string | string[];
+  "cited_by_count"?: string | number;
+  "concepts.id"?: string | string[];
+  "corresponding_author_ids"?: string | string[];
+  "corresponding_institution_ids"?: string | string[];
+  "default.search"?: string;
+  "display_name.search"?: string;
+  "doi"?: string | string[];
+  "from_created_date"?: string;
+  "from_publication_date"?: string;
+  "from_updated_date"?: string;
+  "fulltext_origin"?: string | string[];
+  "grants.funder"?: string | string[];
+  "has_abstract"?: boolean;
+  "has_doi"?: boolean;
+  "has_fulltext"?: boolean;
+  "has_oa_accepted_or_published_version"?: boolean;
+  "has_oa_submitted_version"?: boolean;
+  "has_references"?: boolean;
+  "host_venue.id"?: string | string[];
+  "host_venue.issn"?: string | string[];
+  "host_venue.lineage"?: string | string[];
+  "host_venue.publisher"?: string | string[];
+  "ids.openalex"?: string | string[];
+  "is_oa"?: boolean;
+  "is_paratext"?: boolean;
+  "is_retracted"?: boolean;
+  "language"?: string | string[];
+  "locations.source.id"?: string | string[];
+  "open_access.is_oa"?: boolean;
+  "primary_location.source.id"?: string | string[];
+  "primary_topic.id"?: string | string[];
+  "publication_date"?: string;
+  "publication_year"?: number | string;
+  "referenced_works"?: string | string[];
+  "repository"?: string | string[];
+  "sustainable_development_goals.id"?: string | string[];
+  "title.search"?: string;
+  "to_created_date"?: string;
+  "to_publication_date"?: string;
+  "to_updated_date"?: string;
+  "topics.id"?: string | string[];
+  "type"?: string | string[];
+  "type_crossref"?: string | string[];
+  "version"?: string | string[];
 }
 
 export interface AuthorsFilters {
-  'affiliations.institution.id'?: string | string[];
-  'affiliations.institution.ror'?: string | string[];
-  'affiliations.institution.country_code'?: string | string[];
-  'cited_by_count'?: string | number;
-  'default.search'?: string;
-  'display_name.search'?: string;
-  'from_created_date'?: string;
-  'from_updated_date'?: string;
-  'has_orcid'?: boolean;
-  'last_known_institution.id'?: string | string[];
-  'last_known_institution.ror'?: string | string[];
-  'last_known_institution.country_code'?: string | string[];
-  'orcid'?: string | string[];
-  'to_created_date'?: string;
-  'to_updated_date'?: string;
-  'topics.id'?: string | string[];
-  'works_count'?: string | number;
-  'x_concepts.id'?: string | string[];
+  "affiliations.institution.id"?: string | string[];
+  "affiliations.institution.ror"?: string | string[];
+  "affiliations.institution.country_code"?: string | string[];
+  "cited_by_count"?: string | number;
+  "default.search"?: string;
+  "display_name.search"?: string;
+  "from_created_date"?: string;
+  "from_updated_date"?: string;
+  "has_orcid"?: boolean;
+  "last_known_institution.id"?: string | string[];
+  "last_known_institution.ror"?: string | string[];
+  "last_known_institution.country_code"?: string | string[];
+  "orcid"?: string | string[];
+  "to_created_date"?: string;
+  "to_updated_date"?: string;
+  "topics.id"?: string | string[];
+  "works_count"?: string | number;
+  "x_concepts.id"?: string | string[];
 }
 
 export interface SourcesFilters {
-  'apc_usd'?: string | number;
-  'cited_by_count'?: string | number;
-  'country_code'?: string | string[];
-  'default.search'?: string;
-  'display_name.search'?: string;
-  'from_created_date'?: string;
-  'from_updated_date'?: string;
-  'has_issn'?: boolean;
-  'host_organization'?: string | string[];
-  'host_organization_lineage'?: string | string[];
-  'ids.issn'?: string | string[];
-  'is_in_doaj'?: boolean;
-  'is_oa'?: boolean;
-  'issn'?: string | string[];
-  'publisher'?: string | string[];
-  'to_created_date'?: string;
-  'to_updated_date'?: string;
-  'topics.id'?: string | string[];
-  'type'?: string | string[];
-  'works_count'?: string | number;
-  'x_concepts.id'?: string | string[];
+  "apc_usd"?: string | number;
+  "cited_by_count"?: string | number;
+  "country_code"?: string | string[];
+  "default.search"?: string;
+  "display_name.search"?: string;
+  "from_created_date"?: string;
+  "from_updated_date"?: string;
+  "has_issn"?: boolean;
+  "host_organization"?: string | string[];
+  "host_organization_lineage"?: string | string[];
+  "ids.issn"?: string | string[];
+  "is_in_doaj"?: boolean;
+  "is_oa"?: boolean;
+  "issn"?: string | string[];
+  "publisher"?: string | string[];
+  "to_created_date"?: string;
+  "to_updated_date"?: string;
+  "topics.id"?: string | string[];
+  "type"?: string | string[];
+  "works_count"?: string | number;
+  "x_concepts.id"?: string | string[];
 }
 
 export interface InstitutionsFilters {
-  'associated_institutions.id'?: string | string[];
-  'cited_by_count'?: string | number;
-  'country_code'?: string | string[];
-  'default.search'?: string;
-  'display_name.search'?: string;
-  'from_created_date'?: string;
-  'from_updated_date'?: string;
-  'has_ror'?: boolean;
-  'is_global_south'?: boolean;
-  'lineage'?: string | string[];
-  'ror'?: string | string[];
-  'to_created_date'?: string;
-  'to_updated_date'?: string;
-  'topics.id'?: string | string[];
-  'type'?: string | string[];
-  'works_count'?: string | number;
-  'x_concepts.id'?: string | string[];
+  "associated_institutions.id"?: string | string[];
+  "cited_by_count"?: string | number;
+  "country_code"?: string | string[];
+  "default.search"?: string;
+  "display_name.search"?: string;
+  "from_created_date"?: string;
+  "from_updated_date"?: string;
+  "has_ror"?: boolean;
+  "is_global_south"?: boolean;
+  "lineage"?: string | string[];
+  "ror"?: string | string[];
+  "to_created_date"?: string;
+  "to_updated_date"?: string;
+  "topics.id"?: string | string[];
+  "type"?: string | string[];
+  "works_count"?: string | number;
+  "x_concepts.id"?: string | string[];
 }
 
 export interface TopicsFilters {
-  'cited_by_count'?: string | number;
-  'default.search'?: string;
-  'display_name.search'?: string;
-  'domain.id'?: string | string[];
-  'field.id'?: string | string[];
-  'from_created_date'?: string;
-  'from_updated_date'?: string;
-  'keywords.search'?: string;
-  'subfield.id'?: string | string[];
-  'to_created_date'?: string;
-  'to_updated_date'?: string;
-  'works_count'?: string | number;
+  "cited_by_count"?: string | number;
+  "default.search"?: string;
+  "display_name.search"?: string;
+  "domain.id"?: string | string[];
+  "field.id"?: string | string[];
+  "from_created_date"?: string;
+  "from_updated_date"?: string;
+  "keywords.search"?: string;
+  "subfield.id"?: string | string[];
+  "to_created_date"?: string;
+  "to_updated_date"?: string;
+  "works_count"?: string | number;
 }
 
 export interface PublishersFilters {
-  'cited_by_count'?: string | number;
-  'country_codes'?: string | string[];
-  'default.search'?: string;
-  'display_name.search'?: string;
-  'from_created_date'?: string;
-  'from_updated_date'?: string;
-  'lineage'?: string | string[];
-  'parent_publisher'?: string | string[];
-  'to_created_date'?: string;
-  'to_updated_date'?: string;
-  'works_count'?: string | number;
+  "cited_by_count"?: string | number;
+  "country_codes"?: string | string[];
+  "default.search"?: string;
+  "display_name.search"?: string;
+  "from_created_date"?: string;
+  "from_updated_date"?: string;
+  "lineage"?: string | string[];
+  "parent_publisher"?: string | string[];
+  "to_created_date"?: string;
+  "to_updated_date"?: string;
+  "works_count"?: string | number;
 }
 
 export interface FundersFilters {
-  'cited_by_count'?: string | number;
-  'country_code'?: string | string[];
-  'default.search'?: string;
-  'display_name.search'?: string;
-  'from_created_date'?: string;
-  'from_updated_date'?: string;
-  'grants_count'?: string | number;
-  'to_created_date'?: string;
-  'to_updated_date'?: string;
-  'topics.id'?: string | string[];
-  'works_count'?: string | number;
+  "cited_by_count"?: string | number;
+  "country_code"?: string | string[];
+  "default.search"?: string;
+  "display_name.search"?: string;
+  "from_created_date"?: string;
+  "from_updated_date"?: string;
+  "grants_count"?: string | number;
+  "to_created_date"?: string;
+  "to_updated_date"?: string;
+  "topics.id"?: string | string[];
+  "works_count"?: string | number;
 }
 
 export interface KeywordsFilters {
-  'cited_by_count'?: string | number;
-  'default.search'?: string;
-  'display_name.search'?: string;
-  'from_created_date'?: string;
-  'from_updated_date'?: string;
-  'to_created_date'?: string;
-  'to_updated_date'?: string;
-  'works_count'?: string | number;
+  "cited_by_count"?: string | number;
+  "default.search"?: string;
+  "display_name.search"?: string;
+  "from_created_date"?: string;
+  "from_updated_date"?: string;
+  "to_created_date"?: string;
+  "to_updated_date"?: string;
+  "works_count"?: string | number;
 }
 
 export interface GeoFilters {
-  'cited_by_count'?: string | number;
-  'continent'?: string | string[];
-  'country_code'?: string | string[];
-  'default.search'?: string;
-  'display_name.search'?: string;
-  'from_created_date'?: string;
-  'from_updated_date'?: string;
-  'iso_code'?: string | string[];
-  'to_created_date'?: string;
-  'to_updated_date'?: string;
-  'works_count'?: string | number;
+  "cited_by_count"?: string | number;
+  "continent"?: string | string[];
+  "country_code"?: string | string[];
+  "default.search"?: string;
+  "display_name.search"?: string;
+  "from_created_date"?: string;
+  "from_updated_date"?: string;
+  "iso_code"?: string | string[];
+  "to_created_date"?: string;
+  "to_updated_date"?: string;
+  "works_count"?: string | number;
 }
 
 // Statistical endpoint parameters
 export interface StatsParams {
   entity_type?: EntityType;
-  timeframe?: 'all' | 'year' | 'month';
-  format?: 'json' | 'csv';
+  timeframe?: "all" | "year" | "month";
+  format?: "json" | "csv";
 }
 
 // Random sampling parameters
@@ -860,7 +860,7 @@ export interface AutocompleteResult {
   hint?: string;
   cited_by_count?: number;
   works_count?: number;
-  entity_type: 'work' | 'author' | 'source' | 'institution' | 'topic' | 'publisher' | 'funder' | 'concept' | 'keyword' | 'geo';
+  entity_type: "work" | "author" | "source" | "institution" | "topic" | "publisher" | "funder" | "concept" | "keyword" | "geo";
   external_id?: string;
   filter_key?: string;
 }
@@ -882,5 +882,5 @@ export interface OpenAlexError {
 
 // Union types for all entities
 export type OpenAlexEntity = Work | Author | Source | InstitutionEntity | Topic | Concept | Publisher | Funder | Keyword | Geo;
-export type EntityType = 'works' | 'authors' | 'sources' | 'institutions' | 'topics' | 'concepts' | 'publishers' | 'funders' | 'keywords' | 'geo';
+export type EntityType = "works" | "authors" | "sources" | "institutions" | "topics" | "concepts" | "publishers" | "funders" | "keywords" | "geo";
 export type EntityFilters = WorksFilters | AuthorsFilters | SourcesFilters | InstitutionsFilters | TopicsFilters | PublishersFilters | FundersFilters | KeywordsFilters | GeoFilters;

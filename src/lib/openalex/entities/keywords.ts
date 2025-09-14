@@ -4,13 +4,13 @@
  */
 
 import {
-  Keyword,
-  KeywordsFilters,
-  QueryParams,
-  OpenAlexResponse,
-} from '../types';
-import { OpenAlexBaseClient } from '../client';
-import { buildFilterString } from '../utils/query-builder';
+	Keyword,
+	KeywordsFilters,
+	QueryParams,
+	OpenAlexResponse,
+} from "../types";
+import { OpenAlexBaseClient } from "../client";
+import { buildFilterString } from "../utils/query-builder";
 
 /**
  * Extended query parameters specific to Keywords API
@@ -23,7 +23,7 @@ export type KeywordsQueryParams = QueryParams;
  */
 export interface SearchKeywordsOptions {
   filters?: KeywordsFilters;
-  sort?: 'relevance_score' | 'cited_by_count' | 'works_count' | 'created_date';
+  sort?: "relevance_score" | "cited_by_count" | "works_count" | "created_date";
   page?: number;
   per_page?: number;
   select?: string[];
@@ -33,9 +33,9 @@ export interface SearchKeywordsOptions {
  * Keywords API class providing methods for keyword operations
  */
 export class KeywordsApi {
-  constructor(private client: OpenAlexBaseClient) {}
+	constructor(private client: OpenAlexBaseClient) {}
 
-  /**
+	/**
    * Get a single keyword by its OpenAlex ID
    *
    * @param id - The keyword ID
@@ -47,11 +47,11 @@ export class KeywordsApi {
    * const keyword = await keywordsApi.getKeyword('K123456789');
    * ```
    */
-  async getKeyword(id: string, params: QueryParams = {}): Promise<Keyword> {
-    return this.client.getById<Keyword>('keywords', id, params);
-  }
+	async getKeyword(id: string, params: QueryParams = {}): Promise<Keyword> {
+		return this.client.getById<Keyword>("keywords", id, params);
+	}
 
-  /**
+	/**
    * Get a list of keywords with optional filtering and pagination
    *
    * @param params - Query parameters for filtering and pagination
@@ -66,11 +66,11 @@ export class KeywordsApi {
    * });
    * ```
    */
-  async getKeywords(params: KeywordsQueryParams = {}): Promise<OpenAlexResponse<Keyword>> {
-    return this.client.getResponse<Keyword>('keywords', params);
-  }
+	async getKeywords(params: KeywordsQueryParams = {}): Promise<OpenAlexResponse<Keyword>> {
+		return this.client.getResponse<Keyword>("keywords", params);
+	}
 
-  /**
+	/**
    * Search for keywords using text search
    *
    * @param query - Search query string
@@ -85,25 +85,25 @@ export class KeywordsApi {
    * });
    * ```
    */
-  async searchKeywords(
-    query: string,
-    options: SearchKeywordsOptions = {}
-  ): Promise<OpenAlexResponse<Keyword>> {
-    const { filters = {}, sort = 'relevance_score', page = 1, per_page = 25, select } = options;
+	async searchKeywords(
+		query: string,
+		options: SearchKeywordsOptions = {}
+	): Promise<OpenAlexResponse<Keyword>> {
+		const { filters = {}, sort = "relevance_score", page = 1, per_page = 25, select } = options;
 
-    const params: KeywordsQueryParams = {
-      search: query,
-      filter: filters ? buildFilterString(filters) : undefined,
-      sort,
-      page,
-      per_page,
-      select,
-    };
+		const params: KeywordsQueryParams = {
+			search: query,
+			filter: filters ? buildFilterString(filters) : undefined,
+			sort,
+			page,
+			per_page,
+			select,
+		};
 
-    return this.getKeywords(params);
-  }
+		return this.getKeywords(params);
+	}
 
-  /**
+	/**
    * Get keywords by minimum works count
    *
    * @param minWorksCount - Minimum number of works for keywords
@@ -118,21 +118,21 @@ export class KeywordsApi {
    * });
    * ```
    */
-  async getKeywordsByWorksCount(
-    minWorksCount: number,
-    params: KeywordsQueryParams = {}
-  ): Promise<OpenAlexResponse<Keyword>> {
-    const filters: KeywordsFilters = {
-      'works_count': `>=${minWorksCount}`,
-    };
+	async getKeywordsByWorksCount(
+		minWorksCount: number,
+		params: KeywordsQueryParams = {}
+	): Promise<OpenAlexResponse<Keyword>> {
+		const filters: KeywordsFilters = {
+			"works_count": `>=${minWorksCount}`,
+		};
 
-    return this.getKeywords({
-      ...params,
-      filter: buildFilterString(filters),
-    });
-  }
+		return this.getKeywords({
+			...params,
+			filter: buildFilterString(filters),
+		});
+	}
 
-  /**
+	/**
    * Get random keywords
    *
    * @param params - Query parameters
@@ -146,14 +146,14 @@ export class KeywordsApi {
    * });
    * ```
    */
-  async getRandomKeywords(params: KeywordsQueryParams = {}): Promise<OpenAlexResponse<Keyword>> {
-    return this.getKeywords({
-      ...params,
-      sort: 'random',
-    });
-  }
+	async getRandomKeywords(params: KeywordsQueryParams = {}): Promise<OpenAlexResponse<Keyword>> {
+		return this.getKeywords({
+			...params,
+			sort: "random",
+		});
+	}
 
-  /**
+	/**
    * Stream all keywords using cursor pagination
    *
    * @param params - Query parameters for filtering
@@ -166,11 +166,11 @@ export class KeywordsApi {
    * }
    * ```
    */
-  async *streamKeywords(params: KeywordsQueryParams = {}): AsyncGenerator<Keyword[], void, unknown> {
-    yield* this.client.stream<Keyword>('keywords', params);
-  }
+	async *streamKeywords(params: KeywordsQueryParams = {}): AsyncGenerator<Keyword[], void, unknown> {
+		yield* this.client.stream<Keyword>("keywords", params);
+	}
 
-  /**
+	/**
    * Get all keywords (use with caution for large datasets)
    *
    * @param params - Query parameters for filtering
@@ -184,14 +184,14 @@ export class KeywordsApi {
    * }, 500);
    * ```
    */
-  async getAllKeywords(
-    params: KeywordsQueryParams = {},
-    maxResults?: number
-  ): Promise<Keyword[]> {
-    return this.client.getAll<Keyword>('keywords', params, maxResults);
-  }
+	async getAllKeywords(
+		params: KeywordsQueryParams = {},
+		maxResults?: number
+	): Promise<Keyword[]> {
+		return this.client.getAll<Keyword>("keywords", params, maxResults);
+	}
 
-  /**
+	/**
    * Get keywords statistics
    *
    * @param params - Query parameters for filtering
@@ -204,38 +204,38 @@ export class KeywordsApi {
    * });
    * ```
    */
-  async getKeywordsStats(params: KeywordsQueryParams = {}): Promise<{
+	async getKeywordsStats(params: KeywordsQueryParams = {}): Promise<{
     count: number;
     total_works: number;
     total_citations: number;
     avg_works_per_keyword: number;
     avg_citations_per_keyword: number;
   }> {
-    const response = await this.getKeywords({
-      ...params,
-      per_page: 1, // We only need the meta information
-    });
+		const response = await this.getKeywords({
+			...params,
+			per_page: 1, // We only need the meta information
+		});
 
-    // For more detailed stats, we might need to aggregate from a sample
-    const sampleSize = Math.min(1000, response.meta.count);
-    const sample = await this.getKeywords({
-      ...params,
-      per_page: sampleSize,
-    });
+		// For more detailed stats, we might need to aggregate from a sample
+		const sampleSize = Math.min(1000, response.meta.count);
+		const sample = await this.getKeywords({
+			...params,
+			per_page: sampleSize,
+		});
 
-    const totalWorks = sample.results.reduce((sum, keyword) => sum + keyword.works_count, 0);
-    const totalCitations = sample.results.reduce((sum, keyword) => sum + keyword.cited_by_count, 0);
+		const totalWorks = sample.results.reduce((sum, keyword) => sum + keyword.works_count, 0);
+		const totalCitations = sample.results.reduce((sum, keyword) => sum + keyword.cited_by_count, 0);
 
-    return {
-      count: response.meta.count,
-      total_works: totalWorks,
-      total_citations: totalCitations,
-      avg_works_per_keyword: totalWorks / sample.results.length,
-      avg_citations_per_keyword: totalCitations / sample.results.length,
-    };
-  }
+		return {
+			count: response.meta.count,
+			total_works: totalWorks,
+			total_citations: totalCitations,
+			avg_works_per_keyword: totalWorks / sample.results.length,
+			avg_citations_per_keyword: totalCitations / sample.results.length,
+		};
+	}
 
-  /**
+	/**
    * Get trending keywords by year range
    *
    * @param fromYear - Start year
@@ -251,25 +251,25 @@ export class KeywordsApi {
    * });
    * ```
    */
-  async getTrendingKeywords(
-    fromYear: number,
-    toYear: number = new Date().getFullYear(),
-    params: KeywordsQueryParams = {}
-  ): Promise<OpenAlexResponse<Keyword>> {
-    const filters: KeywordsFilters = {
-      'from_created_date': `${fromYear}-01-01`,
-      'to_created_date': `${toYear}-12-31`,
-      'works_count': '>10', // Filter out very rare keywords
-    };
+	async getTrendingKeywords(
+		fromYear: number,
+		toYear: number = new Date().getFullYear(),
+		params: KeywordsQueryParams = {}
+	): Promise<OpenAlexResponse<Keyword>> {
+		const filters: KeywordsFilters = {
+			"from_created_date": `${fromYear}-01-01`,
+			"to_created_date": `${toYear}-12-31`,
+			"works_count": ">10", // Filter out very rare keywords
+		};
 
-    return this.getKeywords({
-      ...params,
-      filter: buildFilterString(filters),
-      sort: 'works_count',
-    });
-  }
+		return this.getKeywords({
+			...params,
+			filter: buildFilterString(filters),
+			sort: "works_count",
+		});
+	}
 
-  /**
+	/**
    * Get highly cited keywords
    *
    * @param params - Additional query parameters
@@ -283,15 +283,15 @@ export class KeywordsApi {
    * });
    * ```
    */
-  async getHighlyCitedKeywords(params: KeywordsQueryParams = {}): Promise<OpenAlexResponse<Keyword>> {
-    const filters: KeywordsFilters = {
-      'cited_by_count': '>1000',
-    };
+	async getHighlyCitedKeywords(params: KeywordsQueryParams = {}): Promise<OpenAlexResponse<Keyword>> {
+		const filters: KeywordsFilters = {
+			"cited_by_count": ">1000",
+		};
 
-    return this.getKeywords({
-      ...params,
-      filter: buildFilterString(filters),
-      sort: 'cited_by_count',
-    });
-  }
+		return this.getKeywords({
+			...params,
+			filter: buildFilterString(filters),
+			sort: "cited_by_count",
+		});
+	}
 }

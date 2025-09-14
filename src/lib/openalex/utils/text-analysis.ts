@@ -3,9 +3,9 @@
  * Provides text analysis functionality using the /text endpoint for "aboutness" detection
  */
 
-import { TextAnalysis } from '../types';
-import { OpenAlexBaseClient } from '../client';
-import { logger } from '@/lib/logger';
+import { TextAnalysis } from "../types";
+import { OpenAlexBaseClient } from "../client";
+import { logger } from "@/lib/logger";
 
 /**
  * Text analysis options
@@ -16,7 +16,7 @@ export interface TextAnalysisOptions {
   /** Minimum confidence score (0-1) */
   min_confidence?: number;
   /** Entity types to include in analysis */
-  entity_types?: ('topic' | 'concept' | 'keyword')[];
+  entity_types?: ("topic" | "concept" | "keyword")[];
   /** Include scores in results */
   include_scores?: boolean;
 }
@@ -35,9 +35,9 @@ export interface BatchTextAnalysisOptions extends TextAnalysisOptions {
  * Text Analysis API class providing methods for analyzing text content
  */
 export class TextAnalysisApi {
-  constructor(private client: OpenAlexBaseClient) {}
+	constructor(private client: OpenAlexBaseClient) {}
 
-  /**
+	/**
    * Analyze text content to extract research topics, concepts, and keywords
    *
    * @param text - Text content to analyze
@@ -56,26 +56,26 @@ export class TextAnalysisApi {
    * );
    * ```
    */
-  async analyzeText(text: string, options: TextAnalysisOptions = {}): Promise<TextAnalysis> {
-    const {
-      limit = 20,
-      min_confidence = 0.5,
-      entity_types = ['topic', 'concept', 'keyword'],
-      include_scores = true,
-    } = options;
+	async analyzeText(text: string, options: TextAnalysisOptions = {}): Promise<TextAnalysis> {
+		const {
+			limit = 20,
+			min_confidence = 0.5,
+			entity_types = ["topic", "concept", "keyword"],
+			include_scores = true,
+		} = options;
 
-    const params: Record<string, unknown> = {
-      text: text.trim(),
-      limit,
-      min_confidence,
-      entity_types: entity_types.join(','),
-      include_scores,
-    };
+		const params: Record<string, unknown> = {
+			text: text.trim(),
+			limit,
+			min_confidence,
+			entity_types: entity_types.join(","),
+			include_scores,
+		};
 
-    return this.client.get<TextAnalysis>('text', params);
-  }
+		return this.client.get<TextAnalysis>("text", params);
+	}
 
-  /**
+	/**
    * Analyze multiple texts in batches
    *
    * @param texts - Array of text contents to analyze
@@ -95,45 +95,45 @@ export class TextAnalysisApi {
    * });
    * ```
    */
-  async batchAnalyzeTexts(
-    texts: string[],
-    options: BatchTextAnalysisOptions = {}
-  ): Promise<TextAnalysis[]> {
-    const {
-      batch_size = 5,
-      batch_delay = 200,
-      ...analysisOptions
-    } = options;
+	async batchAnalyzeTexts(
+		texts: string[],
+		options: BatchTextAnalysisOptions = {}
+	): Promise<TextAnalysis[]> {
+		const {
+			batch_size = 5,
+			batch_delay = 200,
+			...analysisOptions
+		} = options;
 
-    const results: TextAnalysis[] = [];
+		const results: TextAnalysis[] = [];
 
-    // Process texts in batches to respect rate limits
-    for (let i = 0; i < texts.length; i += batch_size) {
-      const batch = texts.slice(i, i + batch_size);
+		// Process texts in batches to respect rate limits
+		for (let i = 0; i < texts.length; i += batch_size) {
+			const batch = texts.slice(i, i + batch_size);
 
-      const batchPromises = batch.map(text =>
-        this.analyzeText(text, analysisOptions).catch(error => {
-          logger.warn('api', `Failed to analyze text: ${text.substring(0, 50)}...`, { text: text.substring(0, 100), error }, 'TextAnalysisApi');
-          return null;
-        })
-      );
+			const batchPromises = batch.map(text =>
+				this.analyzeText(text, analysisOptions).catch(error => {
+					logger.warn("api", `Failed to analyze text: ${text.substring(0, 50)}...`, { text: text.substring(0, 100), error }, "TextAnalysisApi");
+					return null;
+				})
+			);
 
-      const batchResults = await Promise.all(batchPromises);
+			const batchResults = await Promise.all(batchPromises);
 
-      // Filter out failed analyses
-      const validResults = batchResults.filter((result): result is TextAnalysis => result !== null);
-      results.push(...validResults);
+			// Filter out failed analyses
+			const validResults = batchResults.filter((result): result is TextAnalysis => result !== null);
+			results.push(...validResults);
 
-      // Add delay between batches if not the last batch
-      if (i + batch_size < texts.length) {
-        await this.sleep(batch_delay);
-      }
-    }
+			// Add delay between batches if not the last batch
+			if (i + batch_size < texts.length) {
+				await this.sleep(batch_delay);
+			}
+		}
 
-    return results;
-  }
+		return results;
+	}
 
-  /**
+	/**
    * Extract top topics from text content
    *
    * @param text - Text content to analyze
@@ -148,27 +148,27 @@ export class TextAnalysisApi {
    * );
    * ```
    */
-  async extractTopics(text: string, limit: number = 10): Promise<Array<{
+	async extractTopics(text: string, limit: number = 10): Promise<Array<{
     id: string;
     display_name: string;
     score: number;
   }>> {
-    const analysis = await this.analyzeText(text, {
-      entity_types: ['topic'],
-      limit,
-      include_scores: true,
-    });
+		const analysis = await this.analyzeText(text, {
+			entity_types: ["topic"],
+			limit,
+			include_scores: true,
+		});
 
-    return analysis.results
-      .filter(result => result.entity_type === 'topic')
-      .map(result => ({
-        id: result.entity_id,
-        display_name: result.display_name,
-        score: result.score,
-      }));
-  }
+		return analysis.results
+			.filter(result => result.entity_type === "topic")
+			.map(result => ({
+				id: result.entity_id,
+				display_name: result.display_name,
+				score: result.score,
+			}));
+	}
 
-  /**
+	/**
    * Extract concepts from text content
    *
    * @param text - Text content to analyze
@@ -183,27 +183,27 @@ export class TextAnalysisApi {
    * );
    * ```
    */
-  async extractConcepts(text: string, limit: number = 10): Promise<Array<{
+	async extractConcepts(text: string, limit: number = 10): Promise<Array<{
     id: string;
     display_name: string;
     score: number;
   }>> {
-    const analysis = await this.analyzeText(text, {
-      entity_types: ['concept'],
-      limit,
-      include_scores: true,
-    });
+		const analysis = await this.analyzeText(text, {
+			entity_types: ["concept"],
+			limit,
+			include_scores: true,
+		});
 
-    return analysis.results
-      .filter(result => result.entity_type === 'concept')
-      .map(result => ({
-        id: result.entity_id,
-        display_name: result.display_name,
-        score: result.score,
-      }));
-  }
+		return analysis.results
+			.filter(result => result.entity_type === "concept")
+			.map(result => ({
+				id: result.entity_id,
+				display_name: result.display_name,
+				score: result.score,
+			}));
+	}
 
-  /**
+	/**
    * Extract keywords from text content
    *
    * @param text - Text content to analyze
@@ -218,27 +218,27 @@ export class TextAnalysisApi {
    * );
    * ```
    */
-  async extractKeywords(text: string, limit: number = 10): Promise<Array<{
+	async extractKeywords(text: string, limit: number = 10): Promise<Array<{
     id: string;
     display_name: string;
     score: number;
   }>> {
-    const analysis = await this.analyzeText(text, {
-      entity_types: ['keyword'],
-      limit,
-      include_scores: true,
-    });
+		const analysis = await this.analyzeText(text, {
+			entity_types: ["keyword"],
+			limit,
+			include_scores: true,
+		});
 
-    return analysis.results
-      .filter(result => result.entity_type === 'keyword')
-      .map(result => ({
-        id: result.entity_id,
-        display_name: result.display_name,
-        score: result.score,
-      }));
-  }
+		return analysis.results
+			.filter(result => result.entity_type === "keyword")
+			.map(result => ({
+				id: result.entity_id,
+				display_name: result.display_name,
+				score: result.score,
+			}));
+	}
 
-  /**
+	/**
    * Get text similarity based on extracted entities
    *
    * @param text1 - First text to compare
@@ -255,11 +255,11 @@ export class TextAnalysisApi {
    * );
    * ```
    */
-  async getTextSimilarity(
-    text1: string,
-    text2: string,
-    options: TextAnalysisOptions = {}
-  ): Promise<{
+	async getTextSimilarity(
+		text1: string,
+		text2: string,
+		options: TextAnalysisOptions = {}
+	): Promise<{
     similarity_score: number;
     common_entities: Array<{
       entity_id: string;
@@ -271,21 +271,21 @@ export class TextAnalysisApi {
     total_entities1: number;
     total_entities2: number;
   }> {
-    const [analysis1, analysis2] = await Promise.all([
-      this.analyzeText(text1, options),
-      this.analyzeText(text2, options),
-    ]);
+		const [analysis1, analysis2] = await Promise.all([
+			this.analyzeText(text1, options),
+			this.analyzeText(text2, options),
+		]);
 
-    // Create maps for quick lookup
-    const entities1 = new Map(
-      analysis1.results.map(r => [r.entity_id, { ...r, score: r.score }])
-    );
-    const entities2 = new Map(
-      analysis2.results.map(r => [r.entity_id, { ...r, score: r.score }])
-    );
+		// Create maps for quick lookup
+		const entities1 = new Map(
+			analysis1.results.map(r => [r.entity_id, { ...r, score: r.score }])
+		);
+		const entities2 = new Map(
+			analysis2.results.map(r => [r.entity_id, { ...r, score: r.score }])
+		);
 
-    // Find common entities
-    const commonEntities: Array<{
+		// Find common entities
+		const commonEntities: Array<{
       entity_id: string;
       display_name: string;
       entity_type: string;
@@ -293,32 +293,32 @@ export class TextAnalysisApi {
       score2: number;
     }> = [];
 
-    for (const [entityId, entity1] of entities1) {
-      const entity2 = entities2.get(entityId);
-      if (entity2) {
-        commonEntities.push({
-          entity_id: entityId,
-          display_name: entity1.display_name,
-          entity_type: entity1.entity_type,
-          score1: entity1.score,
-          score2: entity2.score,
-        });
-      }
-    }
+		for (const [entityId, entity1] of entities1) {
+			const entity2 = entities2.get(entityId);
+			if (entity2) {
+				commonEntities.push({
+					entity_id: entityId,
+					display_name: entity1.display_name,
+					entity_type: entity1.entity_type,
+					score1: entity1.score,
+					score2: entity2.score,
+				});
+			}
+		}
 
-    // Calculate similarity score (Jaccard similarity)
-    const totalUniqueEntities = new Set([...entities1.keys(), ...entities2.keys()]).size;
-    const similarityScore = totalUniqueEntities > 0 ? commonEntities.length / totalUniqueEntities : 0;
+		// Calculate similarity score (Jaccard similarity)
+		const totalUniqueEntities = new Set([...entities1.keys(), ...entities2.keys()]).size;
+		const similarityScore = totalUniqueEntities > 0 ? commonEntities.length / totalUniqueEntities : 0;
 
-    return {
-      similarity_score: similarityScore,
-      common_entities: commonEntities.sort((a, b) => (b.score1 + b.score2) - (a.score1 + a.score2)),
-      total_entities1: analysis1.results.length,
-      total_entities2: analysis2.results.length,
-    };
-  }
+		return {
+			similarity_score: similarityScore,
+			common_entities: commonEntities.sort((a, b) => (b.score1 + b.score2) - (a.score1 + a.score2)),
+			total_entities1: analysis1.results.length,
+			total_entities2: analysis2.results.length,
+		};
+	}
 
-  /**
+	/**
    * Analyze research paper abstract or content
    *
    * @param abstract - Research paper abstract or content
@@ -333,10 +333,10 @@ export class TextAnalysisApi {
    * );
    * ```
    */
-  async analyzeResearchContent(
-    abstract: string,
-    options: TextAnalysisOptions = {}
-  ): Promise<TextAnalysis & {
+	async analyzeResearchContent(
+		abstract: string,
+		options: TextAnalysisOptions = {}
+	): Promise<TextAnalysis & {
     primary_topics: string[];
     research_areas: string[];
     confidence_distribution: {
@@ -345,49 +345,49 @@ export class TextAnalysisApi {
       low: number; // < 0.5
     };
   }> {
-    const analysis = await this.analyzeText(abstract, {
-      ...options,
-      min_confidence: options.min_confidence || 0.4, // Lower threshold for research content
-      limit: options.limit || 25,
-    });
+		const analysis = await this.analyzeText(abstract, {
+			...options,
+			min_confidence: options.min_confidence || 0.4, // Lower threshold for research content
+			limit: options.limit || 25,
+		});
 
-    // Extract primary topics (highest scoring topics)
-    const primaryTopics = analysis.results
-      .filter(r => r.entity_type === 'topic' && r.score > 0.7)
-      .sort((a, b) => b.score - a.score)
-      .slice(0, 5)
-      .map(r => r.display_name);
+		// Extract primary topics (highest scoring topics)
+		const primaryTopics = analysis.results
+			.filter(r => r.entity_type === "topic" && r.score > 0.7)
+			.sort((a, b) => b.score - a.score)
+			.slice(0, 5)
+			.map(r => r.display_name);
 
-    // Extract research areas (combination of topics and high-scoring concepts)
-    const researchAreas = analysis.results
-      .filter(r => (r.entity_type === 'topic' || r.entity_type === 'concept') && r.score > 0.6)
-      .sort((a, b) => b.score - a.score)
-      .slice(0, 8)
-      .map(r => r.display_name);
+		// Extract research areas (combination of topics and high-scoring concepts)
+		const researchAreas = analysis.results
+			.filter(r => (r.entity_type === "topic" || r.entity_type === "concept") && r.score > 0.6)
+			.sort((a, b) => b.score - a.score)
+			.slice(0, 8)
+			.map(r => r.display_name);
 
-    // Calculate confidence distribution
-    const confidenceDistribution = analysis.results.reduce(
-      (acc, result) => {
-        if (result.score > 0.8) acc.high++;
-        else if (result.score > 0.5) acc.medium++;
-        else acc.low++;
-        return acc;
-      },
-      { high: 0, medium: 0, low: 0 }
-    );
+		// Calculate confidence distribution
+		const confidenceDistribution = analysis.results.reduce(
+			(acc, result) => {
+				if (result.score > 0.8) acc.high++;
+				else if (result.score > 0.5) acc.medium++;
+				else acc.low++;
+				return acc;
+			},
+			{ high: 0, medium: 0, low: 0 }
+		);
 
-    return {
-      ...analysis,
-      primary_topics: primaryTopics,
-      research_areas: researchAreas,
-      confidence_distribution: confidenceDistribution,
-    };
-  }
+		return {
+			...analysis,
+			primary_topics: primaryTopics,
+			research_areas: researchAreas,
+			confidence_distribution: confidenceDistribution,
+		};
+	}
 
-  /**
+	/**
    * Sleep utility for batch processing delays
    */
-  private sleep(ms: number): Promise<void> {
-    return new Promise(resolve => setTimeout(resolve, ms));
-  }
+	private sleep(ms: number): Promise<void> {
+		return new Promise(resolve => setTimeout(resolve, ms));
+	}
 }

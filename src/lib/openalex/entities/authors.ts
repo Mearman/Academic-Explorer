@@ -4,39 +4,39 @@
  */
 
 import {
-  Author,
-  AuthorsFilters,
-  QueryParams,
-  OpenAlexResponse,
-  Work,
-  OpenAlexId
-} from '../types';
-import { OpenAlexBaseClient } from '../client';
+	Author,
+	AuthorsFilters,
+	QueryParams,
+	OpenAlexResponse,
+	Work,
+	OpenAlexId
+} from "../types";
+import { OpenAlexBaseClient } from "../client";
 
 /**
  * Extended filters for specific author query methods
  */
 export interface AuthorWorksFilters extends AuthorsFilters {
-  'publication_year'?: number | string;
-  'cited_by_count'?: string | number;
-  'is_oa'?: boolean;
-  'type'?: string | string[];
-  'primary_topic.id'?: string | string[];
+  "publication_year"?: number | string;
+  "cited_by_count"?: string | number;
+  "is_oa"?: boolean;
+  "type"?: string | string[];
+  "primary_topic.id"?: string | string[];
 }
 
 export interface AuthorCollaboratorsFilters {
-  'min_works'?: number;
-  'from_publication_year'?: number;
-  'to_publication_year'?: number;
+  "min_works"?: number;
+  "from_publication_year"?: number;
+  "to_publication_year"?: number;
 }
 
 /**
  * Authors API class providing comprehensive methods for author entity operations
  */
 export class AuthorsApi {
-  constructor(private client: OpenAlexBaseClient) {}
+	constructor(private client: OpenAlexBaseClient) {}
 
-  /**
+	/**
    * Get a single author by ID
    * @param id - Author ID (OpenAlex ID, ORCID, or other supported format)
    * @param params - Query parameters for field selection and additional options
@@ -50,11 +50,11 @@ export class AuthorsApi {
    * });
    * ```
    */
-  async getAuthor(id: string, params: QueryParams = {}): Promise<Author> {
-    return this.client.getById<Author>('authors', id, params);
-  }
+	async getAuthor(id: string, params: QueryParams = {}): Promise<Author> {
+		return this.client.getById<Author>("authors", id, params);
+	}
 
-  /**
+	/**
    * Get multiple authors with optional filtering and pagination
    * @param params - Query parameters including filters, sorting, and pagination
    * @returns Promise resolving to OpenAlexResponse containing authors
@@ -74,11 +74,11 @@ export class AuthorsApi {
    * });
    * ```
    */
-  async getAuthors(params: QueryParams & { filter?: string } = {}): Promise<OpenAlexResponse<Author>> {
-    return this.client.getResponse<Author>('authors', params);
-  }
+	async getAuthors(params: QueryParams & { filter?: string } = {}): Promise<OpenAlexResponse<Author>> {
+		return this.client.getResponse<Author>("authors", params);
+	}
 
-  /**
+	/**
    * Search authors by query string with optional filters
    * @param query - Search query string
    * @param filters - Optional AuthorsFilters for refined searching
@@ -97,36 +97,36 @@ export class AuthorsApi {
    * });
    * ```
    */
-  async searchAuthors(
-    query: string,
-    filters: AuthorsFilters = {},
-    params: QueryParams = {}
-  ): Promise<OpenAlexResponse<Author>> {
-    const filterStrings: string[] = [];
+	async searchAuthors(
+		query: string,
+		filters: AuthorsFilters = {},
+		params: QueryParams = {}
+	): Promise<OpenAlexResponse<Author>> {
+		const filterStrings: string[] = [];
 
-    // Add search query
-    filterStrings.push(`default.search:${encodeURIComponent(query)}`);
+		// Add search query
+		filterStrings.push(`default.search:${encodeURIComponent(query)}`);
 
-    // Convert filters to filter strings
-    Object.entries(filters).forEach(([key, value]) => {
-      if (value !== undefined && value !== null) {
-        if (Array.isArray(value)) {
-          filterStrings.push(`${key}:${value.map(v => encodeURIComponent(String(v))).join('%7C')}`);
-        } else if (typeof value === 'boolean') {
-          filterStrings.push(`${key}:${value.toString()}`);
-        } else {
-          filterStrings.push(`${key}:${encodeURIComponent(String(value))}`);
-        }
-      }
-    });
+		// Convert filters to filter strings
+		Object.entries(filters).forEach(([key, value]) => {
+			if (value !== undefined && value !== null) {
+				if (Array.isArray(value)) {
+					filterStrings.push(`${key}:${value.map(v => encodeURIComponent(String(v))).join("%7C")}`);
+				} else if (typeof value === "boolean") {
+					filterStrings.push(`${key}:${value.toString()}`);
+				} else {
+					filterStrings.push(`${key}:${encodeURIComponent(String(value))}`);
+				}
+			}
+		});
 
-    return this.getAuthors({
-      ...params,
-      filter: filterStrings.join(',')
-    });
-  }
+		return this.getAuthors({
+			...params,
+			filter: filterStrings.join(",")
+		});
+	}
 
-  /**
+	/**
    * Get authors affiliated with a specific institution
    * @param institutionId - Institution ID (OpenAlex ID or ROR)
    * @param params - Additional query parameters
@@ -144,17 +144,17 @@ export class AuthorsApi {
    * });
    * ```
    */
-  async getAuthorsByInstitution(
-    institutionId: string,
-    params: QueryParams = {}
-  ): Promise<OpenAlexResponse<Author>> {
-    return this.getAuthors({
-      ...params,
-      filter: `last_known_institution.id:${encodeURIComponent(institutionId)}`
-    });
-  }
+	async getAuthorsByInstitution(
+		institutionId: string,
+		params: QueryParams = {}
+	): Promise<OpenAlexResponse<Author>> {
+		return this.getAuthors({
+			...params,
+			filter: `last_known_institution.id:${encodeURIComponent(institutionId)}`
+		});
+	}
 
-  /**
+	/**
    * Get authors from a specific country
    * @param countryCode - ISO 2-letter country code
    * @param params - Additional query parameters
@@ -172,17 +172,17 @@ export class AuthorsApi {
    * });
    * ```
    */
-  async getAuthorsByCountry(
-    countryCode: string,
-    params: QueryParams = {}
-  ): Promise<OpenAlexResponse<Author>> {
-    return this.getAuthors({
-      ...params,
-      filter: `last_known_institution.country_code:${countryCode.toUpperCase()}`
-    });
-  }
+	async getAuthorsByCountry(
+		countryCode: string,
+		params: QueryParams = {}
+	): Promise<OpenAlexResponse<Author>> {
+		return this.getAuthors({
+			...params,
+			filter: `last_known_institution.country_code:${countryCode.toUpperCase()}`
+		});
+	}
 
-  /**
+	/**
    * Get works authored by a specific author
    * @param authorId - Author ID
    * @param filters - Optional filters for works
@@ -201,33 +201,33 @@ export class AuthorsApi {
    * });
    * ```
    */
-  async getAuthorWorks(
-    authorId: string,
-    filters: AuthorWorksFilters = {},
-    params: QueryParams = {}
-  ): Promise<OpenAlexResponse<Work>> {
-    const filterStrings: string[] = [`authorships.author.id:${encodeURIComponent(authorId)}`];
+	async getAuthorWorks(
+		authorId: string,
+		filters: AuthorWorksFilters = {},
+		params: QueryParams = {}
+	): Promise<OpenAlexResponse<Work>> {
+		const filterStrings: string[] = [`authorships.author.id:${encodeURIComponent(authorId)}`];
 
-    // Add additional filters
-    Object.entries(filters).forEach(([key, value]) => {
-      if (value !== undefined && value !== null && key !== 'authorships.author.id') {
-        if (Array.isArray(value)) {
-          filterStrings.push(`${key}:${value.map(v => encodeURIComponent(String(v))).join('%7C')}`);
-        } else if (typeof value === 'boolean') {
-          filterStrings.push(`${key}:${value.toString()}`);
-        } else {
-          filterStrings.push(`${key}:${encodeURIComponent(String(value))}`);
-        }
-      }
-    });
+		// Add additional filters
+		Object.entries(filters).forEach(([key, value]) => {
+			if (value !== undefined && value !== null && key !== "authorships.author.id") {
+				if (Array.isArray(value)) {
+					filterStrings.push(`${key}:${value.map(v => encodeURIComponent(String(v))).join("%7C")}`);
+				} else if (typeof value === "boolean") {
+					filterStrings.push(`${key}:${value.toString()}`);
+				} else {
+					filterStrings.push(`${key}:${encodeURIComponent(String(value))}`);
+				}
+			}
+		});
 
-    return this.client.getResponse<Work>('works', {
-      ...params,
-      filter: filterStrings.join(',')
-    });
-  }
+		return this.client.getResponse<Work>("works", {
+			...params,
+			filter: filterStrings.join(",")
+		});
+	}
 
-  /**
+	/**
    * Get research concepts associated with an author
    * @param authorId - Author ID
    * @param params - Additional query parameters
@@ -238,19 +238,19 @@ export class AuthorsApi {
    * const concepts = await authorsApi.getAuthorConcepts('A2208157607');
    * ```
    */
-  async getAuthorConcepts(
-    authorId: string,
-    params: QueryParams = {}
-  ): Promise<Array<{ id: OpenAlexId; display_name: string; score: number; level: number }>> {
-    const author = await this.getAuthor(authorId, {
-      ...params,
-      select: ['x_concepts']
-    });
+	async getAuthorConcepts(
+		authorId: string,
+		params: QueryParams = {}
+	): Promise<Array<{ id: OpenAlexId; display_name: string; score: number; level: number }>> {
+		const author = await this.getAuthor(authorId, {
+			...params,
+			select: ["x_concepts"]
+		});
 
-    return author.x_concepts || [];
-  }
+		return author.x_concepts || [];
+	}
 
-  /**
+	/**
    * Get research topics associated with an author
    * @param authorId - Author ID
    * @param params - Additional query parameters
@@ -261,10 +261,10 @@ export class AuthorsApi {
    * const topics = await authorsApi.getAuthorTopics('A2208157607');
    * ```
    */
-  async getAuthorTopics(
-    authorId: string,
-    params: QueryParams = {}
-  ): Promise<Array<{
+	async getAuthorTopics(
+		authorId: string,
+		params: QueryParams = {}
+	): Promise<Array<{
     id: OpenAlexId;
     display_name: string;
     count: number;
@@ -272,15 +272,15 @@ export class AuthorsApi {
     field?: { id: OpenAlexId; display_name: string };
     domain?: { id: OpenAlexId; display_name: string };
   }>> {
-    const author = await this.getAuthor(authorId, {
-      ...params,
-      select: ['topics']
-    });
+		const author = await this.getAuthor(authorId, {
+			...params,
+			select: ["topics"]
+		});
 
-    return author.topics || [];
-  }
+		return author.topics || [];
+	}
 
-  /**
+	/**
    * Get frequent collaborators of an author
    * @param authorId - Author ID
    * @param filters - Optional filters for collaboration analysis
@@ -298,95 +298,95 @@ export class AuthorsApi {
    * });
    * ```
    */
-  async getAuthorCollaborators(
-    authorId: string,
-    filters: AuthorCollaboratorsFilters = {},
-    params: QueryParams = {}
-  ): Promise<Array<{
+	async getAuthorCollaborators(
+		authorId: string,
+		filters: AuthorCollaboratorsFilters = {},
+		params: QueryParams = {}
+	): Promise<Array<{
     author: Author;
     collaboration_count: number;
     first_collaboration_year?: number;
     last_collaboration_year?: number;
   }>> {
-    // First, get all works by this author to analyze co-authorships
-    const works = await this.getAuthorWorks(authorId, {
-      'publication_year': filters.from_publication_year
-        ? `>=${filters.from_publication_year.toString()}`
-        : undefined,
-    }, {
-      ...params,
-      select: ['authorships', 'publication_year'],
-      per_page: 200 // Get more works for better collaboration analysis
-    });
+		// First, get all works by this author to analyze co-authorships
+		const works = await this.getAuthorWorks(authorId, {
+			"publication_year": filters.from_publication_year
+				? `>=${filters.from_publication_year.toString()}`
+				: undefined,
+		}, {
+			...params,
+			select: ["authorships", "publication_year"],
+			per_page: 200 // Get more works for better collaboration analysis
+		});
 
-    const collaboratorStats = new Map<string, {
+		const collaboratorStats = new Map<string, {
       count: number;
       years: number[];
       author_info?: Author;
     }>();
 
-    // Analyze co-authorships
-    works.results.forEach(work => {
-      const coauthorIds = work.authorships
-        .map(auth => auth.author.id)
-        .filter(id => id !== authorId);
+		// Analyze co-authorships
+		works.results.forEach(work => {
+			const coauthorIds = work.authorships
+				.map(auth => auth.author.id)
+				.filter(id => id !== authorId);
 
-      coauthorIds.forEach(coauthorId => {
-        if (!collaboratorStats.has(coauthorId)) {
-          collaboratorStats.set(coauthorId, {
-            count: 0,
-            years: []
-          });
-        }
+			coauthorIds.forEach(coauthorId => {
+				if (!collaboratorStats.has(coauthorId)) {
+					collaboratorStats.set(coauthorId, {
+						count: 0,
+						years: []
+					});
+				}
 
-        const stats = collaboratorStats.get(coauthorId)!;
-        stats.count++;
-        if (work.publication_year) {
-          stats.years.push(work.publication_year);
-        }
-      });
-    });
+				const stats = collaboratorStats.get(coauthorId)!;
+				stats.count++;
+				if (work.publication_year) {
+					stats.years.push(work.publication_year);
+				}
+			});
+		});
 
-    // Filter by minimum works if specified
-    const minWorks = filters.min_works || 1;
-    const filteredCollaborators = Array.from(collaboratorStats.entries())
-      .filter(([_, stats]) => stats.count >= minWorks)
-      .sort(([_, a], [__, b]) => b.count - a.count);
+		// Filter by minimum works if specified
+		const minWorks = filters.min_works || 1;
+		const filteredCollaborators = Array.from(collaboratorStats.entries())
+			.filter(([_, stats]) => stats.count >= minWorks)
+			.sort(([_, a], [__, b]) => b.count - a.count);
 
-    // Get author details for top collaborators
-    const collaboratorResults = await Promise.allSettled(
-      filteredCollaborators.slice(0, 50).map(async ([collaboratorId, stats]) => {
-        try {
-          const collaboratorAuthor = await this.getAuthor(collaboratorId, {
-            select: ['id', 'display_name', 'works_count', 'cited_by_count']
-          });
+		// Get author details for top collaborators
+		const collaboratorResults = await Promise.allSettled(
+			filteredCollaborators.slice(0, 50).map(async ([collaboratorId, stats]) => {
+				try {
+					const collaboratorAuthor = await this.getAuthor(collaboratorId, {
+						select: ["id", "display_name", "works_count", "cited_by_count"]
+					});
 
-          return {
-            author: collaboratorAuthor,
-            collaboration_count: stats.count,
-            first_collaboration_year: stats.years.length > 0 ? Math.min(...stats.years) : undefined,
-            last_collaboration_year: stats.years.length > 0 ? Math.max(...stats.years) : undefined,
-          };
-        } catch (_error) {
-          // Skip authors that can't be fetched
-          return null;
-        }
-      })
-    );
+					return {
+						author: collaboratorAuthor,
+						collaboration_count: stats.count,
+						first_collaboration_year: stats.years.length > 0 ? Math.min(...stats.years) : undefined,
+						last_collaboration_year: stats.years.length > 0 ? Math.max(...stats.years) : undefined,
+					};
+				} catch (_error) {
+					// Skip authors that can't be fetched
+					return null;
+				}
+			})
+		);
 
-    return collaboratorResults
-      .filter((result): result is PromiseFulfilledResult<{
+		return collaboratorResults
+			.filter((result): result is PromiseFulfilledResult<{
         author: Author;
         collaboration_count: number;
         first_collaboration_year: number | undefined;
         last_collaboration_year: number | undefined;
       }> =>
-        result.status === 'fulfilled' && result.value !== null
-      )
-      .map(result => result.value);
-  }
+				result.status === "fulfilled" && result.value !== null
+			)
+			.map(result => result.value);
+	}
 
-  /**
+	/**
    * Get a random sample of authors
    * @param count - Number of random authors to return (max 200)
    * @param params - Additional query parameters
@@ -403,21 +403,21 @@ export class AuthorsApi {
    * });
    * ```
    */
-  async getRandomAuthors(
-    count: number = 25,
-    params: QueryParams & { filter?: string } = {}
-  ): Promise<OpenAlexResponse<Author>> {
-    // Ensure count is within reasonable bounds
-    const sampleSize = Math.min(Math.max(count, 1), 200);
+	async getRandomAuthors(
+		count: number = 25,
+		params: QueryParams & { filter?: string } = {}
+	): Promise<OpenAlexResponse<Author>> {
+		// Ensure count is within reasonable bounds
+		const sampleSize = Math.min(Math.max(count, 1), 200);
 
-    return this.getAuthors({
-      ...params,
-      sample: sampleSize,
-      seed: Math.floor(Math.random() * 1000000) // Random seed for variety
-    });
-  }
+		return this.getAuthors({
+			...params,
+			sample: sampleSize,
+			seed: Math.floor(Math.random() * 1000000) // Random seed for variety
+		});
+	}
 
-  /**
+	/**
    * Get authors with ORCID identifiers
    * @param params - Additional query parameters
    * @returns Promise resolving to OpenAlexResponse containing authors with ORCIDs
@@ -427,14 +427,14 @@ export class AuthorsApi {
    * const authorsWithOrcid = await authorsApi.getAuthorsWithOrcid();
    * ```
    */
-  async getAuthorsWithOrcid(params: QueryParams = {}): Promise<OpenAlexResponse<Author>> {
-    return this.getAuthors({
-      ...params,
-      filter: 'has_orcid:true'
-    });
-  }
+	async getAuthorsWithOrcid(params: QueryParams = {}): Promise<OpenAlexResponse<Author>> {
+		return this.getAuthors({
+			...params,
+			filter: "has_orcid:true"
+		});
+	}
 
-  /**
+	/**
    * Get most cited authors globally or with filters
    * @param limit - Number of authors to return
    * @param filters - Optional filters to refine search
@@ -452,35 +452,35 @@ export class AuthorsApi {
    * });
    * ```
    */
-  async getMostCitedAuthors(
-    limit: number = 50,
-    filters: AuthorsFilters = {},
-    params: QueryParams = {}
-  ): Promise<OpenAlexResponse<Author>> {
-    const filterStrings: string[] = [];
+	async getMostCitedAuthors(
+		limit: number = 50,
+		filters: AuthorsFilters = {},
+		params: QueryParams = {}
+	): Promise<OpenAlexResponse<Author>> {
+		const filterStrings: string[] = [];
 
-    // Convert filters to filter strings
-    Object.entries(filters).forEach(([key, value]) => {
-      if (value !== undefined && value !== null) {
-        if (Array.isArray(value)) {
-          filterStrings.push(`${key}:${value.map(v => encodeURIComponent(String(v))).join('%7C')}`);
-        } else if (typeof value === 'boolean') {
-          filterStrings.push(`${key}:${value.toString()}`);
-        } else {
-          filterStrings.push(`${key}:${encodeURIComponent(String(value))}`);
-        }
-      }
-    });
+		// Convert filters to filter strings
+		Object.entries(filters).forEach(([key, value]) => {
+			if (value !== undefined && value !== null) {
+				if (Array.isArray(value)) {
+					filterStrings.push(`${key}:${value.map(v => encodeURIComponent(String(v))).join("%7C")}`);
+				} else if (typeof value === "boolean") {
+					filterStrings.push(`${key}:${value.toString()}`);
+				} else {
+					filterStrings.push(`${key}:${encodeURIComponent(String(value))}`);
+				}
+			}
+		});
 
-    return this.getAuthors({
-      ...params,
-      filter: filterStrings.length > 0 ? filterStrings.join(',') : undefined,
-      sort: 'cited_by_count:desc',
-      per_page: Math.min(limit, 200)
-    });
-  }
+		return this.getAuthors({
+			...params,
+			filter: filterStrings.length > 0 ? filterStrings.join(",") : undefined,
+			sort: "cited_by_count:desc",
+			per_page: Math.min(limit, 200)
+		});
+	}
 
-  /**
+	/**
    * Get most productive authors (by works count)
    * @param limit - Number of authors to return
    * @param filters - Optional filters to refine search
@@ -492,35 +492,35 @@ export class AuthorsApi {
    * const productiveAuthors = await authorsApi.getMostProductiveAuthors(100);
    * ```
    */
-  async getMostProductiveAuthors(
-    limit: number = 50,
-    filters: AuthorsFilters = {},
-    params: QueryParams = {}
-  ): Promise<OpenAlexResponse<Author>> {
-    const filterStrings: string[] = [];
+	async getMostProductiveAuthors(
+		limit: number = 50,
+		filters: AuthorsFilters = {},
+		params: QueryParams = {}
+	): Promise<OpenAlexResponse<Author>> {
+		const filterStrings: string[] = [];
 
-    // Convert filters to filter strings
-    Object.entries(filters).forEach(([key, value]) => {
-      if (value !== undefined && value !== null) {
-        if (Array.isArray(value)) {
-          filterStrings.push(`${key}:${value.map(v => encodeURIComponent(String(v))).join('%7C')}`);
-        } else if (typeof value === 'boolean') {
-          filterStrings.push(`${key}:${value.toString()}`);
-        } else {
-          filterStrings.push(`${key}:${encodeURIComponent(String(value))}`);
-        }
-      }
-    });
+		// Convert filters to filter strings
+		Object.entries(filters).forEach(([key, value]) => {
+			if (value !== undefined && value !== null) {
+				if (Array.isArray(value)) {
+					filterStrings.push(`${key}:${value.map(v => encodeURIComponent(String(v))).join("%7C")}`);
+				} else if (typeof value === "boolean") {
+					filterStrings.push(`${key}:${value.toString()}`);
+				} else {
+					filterStrings.push(`${key}:${encodeURIComponent(String(value))}`);
+				}
+			}
+		});
 
-    return this.getAuthors({
-      ...params,
-      filter: filterStrings.length > 0 ? filterStrings.join(',') : undefined,
-      sort: 'works_count:desc',
-      per_page: Math.min(limit, 200)
-    });
-  }
+		return this.getAuthors({
+			...params,
+			filter: filterStrings.length > 0 ? filterStrings.join(",") : undefined,
+			sort: "works_count:desc",
+			per_page: Math.min(limit, 200)
+		});
+	}
 
-  /**
+	/**
    * Stream all authors matching the given criteria
    * Useful for processing large datasets
    * @param params - Query parameters for filtering
@@ -539,10 +539,10 @@ export class AuthorsApi {
    * }
    * ```
    */
-  async *streamAuthors(
-    params: QueryParams & { filter?: string } = {},
-    batchSize: number = 200
-  ): AsyncGenerator<Author[], void, unknown> {
-    yield* this.client.stream<Author>('authors', params, batchSize);
-  }
+	async *streamAuthors(
+		params: QueryParams & { filter?: string } = {},
+		batchSize: number = 200
+	): AsyncGenerator<Author[], void, unknown> {
+		yield* this.client.stream<Author>("authors", params, batchSize);
+	}
 }

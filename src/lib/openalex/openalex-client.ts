@@ -3,43 +3,43 @@
  * Main entry point for all OpenAlex API operations
  */
 
-import { OpenAlexBaseClient, OpenAlexClientConfig } from './client';
-import { WorksApi } from './entities/works';
-import { AuthorsApi } from './entities/authors';
-import { SourcesApi } from './entities/sources';
-import { InstitutionsApi } from './entities/institutions';
-import { TopicsApi } from './entities/topics';
-import { PublishersApi } from './entities/publishers';
-import { FundersApi } from './entities/funders';
-import { KeywordsApi } from './entities/keywords';
-import { GeoApi } from './entities/geo';
-import { AutocompleteApi } from './utils/autocomplete';
-import { TextAnalysisApi } from './utils/text-analysis';
-import { SamplingApi } from './utils/sampling';
-import { GroupingApi } from './utils/grouping';
-import { StatisticsApi } from './utils/statistics';
-import { QueryBuilder, createWorksQuery, createAuthorsQuery } from './utils/query-builder';
-import { logError } from '@/lib/logger';
+import { OpenAlexBaseClient, OpenAlexClientConfig } from "./client";
+import { WorksApi } from "./entities/works";
+import { AuthorsApi } from "./entities/authors";
+import { SourcesApi } from "./entities/sources";
+import { InstitutionsApi } from "./entities/institutions";
+import { TopicsApi } from "./entities/topics";
+import { PublishersApi } from "./entities/publishers";
+import { FundersApi } from "./entities/funders";
+import { KeywordsApi } from "./entities/keywords";
+import { GeoApi } from "./entities/geo";
+import { AutocompleteApi } from "./utils/autocomplete";
+import { TextAnalysisApi } from "./utils/text-analysis";
+import { SamplingApi } from "./utils/sampling";
+import { GroupingApi } from "./utils/grouping";
+import { StatisticsApi } from "./utils/statistics";
+import { QueryBuilder, createWorksQuery, createAuthorsQuery } from "./utils/query-builder";
+import { logError } from "@/lib/logger";
 import type {
-  Work,
-  Author,
-  Source,
-  InstitutionEntity,
-  Topic,
-  Publisher,
-  Funder,
-  Keyword,
-  Geo,
-  EntityType,
-  OpenAlexEntity,
-  AutocompleteResult,
-  OpenAlexResponse,
-  QueryParams,
-  TextAnalysis,
-  SampleParams,
-  GroupParams,
-  StatsParams
-} from './types';
+	Work,
+	Author,
+	Source,
+	InstitutionEntity,
+	Topic,
+	Publisher,
+	Funder,
+	Keyword,
+	Geo,
+	EntityType,
+	OpenAlexEntity,
+	AutocompleteResult,
+	OpenAlexResponse,
+	QueryParams,
+	TextAnalysis,
+	SampleParams,
+	GroupParams,
+	StatsParams
+} from "./types";
 
 export type OpenAlexClientOptions = OpenAlexClientConfig;
 
@@ -65,74 +65,74 @@ export type OpenAlexClientOptions = OpenAlexClientConfig;
  * ```
  */
 export class OpenAlexClient {
-  /** Base HTTP client for all API operations */
-  private readonly baseClient: OpenAlexBaseClient;
+	/** Base HTTP client for all API operations */
+	private readonly baseClient: OpenAlexBaseClient;
 
-  /** Works API - scholarly documents, papers, books, etc. */
-  public readonly works: WorksApi;
+	/** Works API - scholarly documents, papers, books, etc. */
+	public readonly works: WorksApi;
 
-  /** Authors API - researchers and their publications */
-  public readonly authors: AuthorsApi;
+	/** Authors API - researchers and their publications */
+	public readonly authors: AuthorsApi;
 
-  /** Sources API - journals, conferences, repositories */
-  public readonly sources: SourcesApi;
+	/** Sources API - journals, conferences, repositories */
+	public readonly sources: SourcesApi;
 
-  /** Institutions API - universities, companies, research centers */
-  public readonly institutions: InstitutionsApi;
+	/** Institutions API - universities, companies, research centers */
+	public readonly institutions: InstitutionsApi;
 
-  /** Topics API - research topics and subjects (new) */
-  public readonly topics: TopicsApi;
+	/** Topics API - research topics and subjects (new) */
+	public readonly topics: TopicsApi;
 
-  /** Publishers API - academic publishers */
-  public readonly publishers: PublishersApi;
+	/** Publishers API - academic publishers */
+	public readonly publishers: PublishersApi;
 
-  /** Funders API - research funding organizations */
-  public readonly funders: FundersApi;
+	/** Funders API - research funding organizations */
+	public readonly funders: FundersApi;
 
-  /** Keywords API - research keywords and their usage */
-  public readonly keywords: KeywordsApi;
+	/** Keywords API - research keywords and their usage */
+	public readonly keywords: KeywordsApi;
 
-  /** Geo API - geographic regions and continents */
-  public readonly geo: GeoApi;
+	/** Geo API - geographic regions and continents */
+	public readonly geo: GeoApi;
 
-  /** Autocomplete API - search suggestions and cross-entity search */
-  public readonly autocomplete: AutocompleteApi;
+	/** Autocomplete API - search suggestions and cross-entity search */
+	public readonly autocomplete: AutocompleteApi;
 
-  /** Text Analysis API - "aboutness" detection and content analysis */
-  public readonly textAnalysis: TextAnalysisApi;
+	/** Text Analysis API - "aboutness" detection and content analysis */
+	public readonly textAnalysis: TextAnalysisApi;
 
-  /** Sampling API - random sampling and statistical sampling methods */
-  public readonly sampling: SamplingApi;
+	/** Sampling API - random sampling and statistical sampling methods */
+	public readonly sampling: SamplingApi;
 
-  /** Grouping API - advanced grouping and aggregation operations */
-  public readonly grouping: GroupingApi;
+	/** Grouping API - advanced grouping and aggregation operations */
+	public readonly grouping: GroupingApi;
 
-  /** Statistics API - database-wide statistics and analytics */
-  public readonly statistics: StatisticsApi;
+	/** Statistics API - database-wide statistics and analytics */
+	public readonly statistics: StatisticsApi;
 
-  constructor(options: OpenAlexClientOptions = {}) {
-    this.baseClient = new OpenAlexBaseClient(options);
+	constructor(options: OpenAlexClientOptions = {}) {
+		this.baseClient = new OpenAlexBaseClient(options);
 
-    // Initialize all entity APIs
-    this.works = new WorksApi(this.baseClient);
-    this.authors = new AuthorsApi(this.baseClient);
-    this.sources = new SourcesApi(this.baseClient);
-    this.institutions = new InstitutionsApi(this.baseClient);
-    this.topics = new TopicsApi(this.baseClient);
-    this.publishers = new PublishersApi(this.baseClient);
-    this.funders = new FundersApi(this.baseClient);
-    this.keywords = new KeywordsApi(this.baseClient);
-    this.geo = new GeoApi(this.baseClient);
+		// Initialize all entity APIs
+		this.works = new WorksApi(this.baseClient);
+		this.authors = new AuthorsApi(this.baseClient);
+		this.sources = new SourcesApi(this.baseClient);
+		this.institutions = new InstitutionsApi(this.baseClient);
+		this.topics = new TopicsApi(this.baseClient);
+		this.publishers = new PublishersApi(this.baseClient);
+		this.funders = new FundersApi(this.baseClient);
+		this.keywords = new KeywordsApi(this.baseClient);
+		this.geo = new GeoApi(this.baseClient);
 
-    // Initialize utility APIs
-    this.autocomplete = new AutocompleteApi(this.baseClient);
-    this.textAnalysis = new TextAnalysisApi(this.baseClient);
-    this.sampling = new SamplingApi(this.baseClient);
-    this.grouping = new GroupingApi(this.baseClient);
-    this.statistics = new StatisticsApi(this.baseClient);
-  }
+		// Initialize utility APIs
+		this.autocomplete = new AutocompleteApi(this.baseClient);
+		this.textAnalysis = new TextAnalysisApi(this.baseClient);
+		this.sampling = new SamplingApi(this.baseClient);
+		this.grouping = new GroupingApi(this.baseClient);
+		this.statistics = new StatisticsApi(this.baseClient);
+	}
 
-  /**
+	/**
    * Get any entity by OpenAlex ID with automatic type detection
    *
    * @example
@@ -141,34 +141,34 @@ export class OpenAlexClient {
    * const author = await client.getEntity('A5023888391');
    * ```
    */
-  public async getEntity(id: string): Promise<OpenAlexEntity> {
-    const entityType = this.detectEntityType(id);
+	public async getEntity(id: string): Promise<OpenAlexEntity> {
+		const entityType = this.detectEntityType(id);
 
-    switch (entityType) {
-      case 'works':
-        return this.works.getWork(id);
-      case 'authors':
-        return this.authors.getAuthor(id);
-      case 'sources':
-        return this.sources.getSource(id);
-      case 'institutions':
-        return this.institutions.getInstitution(id);
-      case 'topics':
-        return this.topics.get(id);
-      case 'publishers':
-        return this.publishers.get(id);
-      case 'funders':
-        return this.funders.get(id);
-      case 'keywords':
-        return this.keywords.getKeyword(id);
-      case 'geo':
-        return this.geo.getGeo(id);
-      default:
-        throw new Error(`Unable to determine entity type for ID: ${id}`);
-    }
-  }
+		switch (entityType) {
+			case "works":
+				return this.works.getWork(id);
+			case "authors":
+				return this.authors.getAuthor(id);
+			case "sources":
+				return this.sources.getSource(id);
+			case "institutions":
+				return this.institutions.getInstitution(id);
+			case "topics":
+				return this.topics.get(id);
+			case "publishers":
+				return this.publishers.get(id);
+			case "funders":
+				return this.funders.get(id);
+			case "keywords":
+				return this.keywords.getKeyword(id);
+			case "geo":
+				return this.geo.getGeo(id);
+			default:
+				throw new Error(`Unable to determine entity type for ID: ${id}`);
+		}
+	}
 
-  /**
+	/**
    * Search across all entity types
    *
    * @example
@@ -179,14 +179,14 @@ export class OpenAlexClient {
    * });
    * ```
    */
-  public async searchAll(
-    query: string,
-    options: {
+	public async searchAll(
+		query: string,
+		options: {
       entityTypes?: EntityType[];
       limit?: number;
       page?: number;
     } = {}
-  ): Promise<{
+	): Promise<{
     works: Work[];
     authors: Author[];
     sources: Source[];
@@ -197,40 +197,40 @@ export class OpenAlexClient {
     keywords: Keyword[];
     geo: Geo[];
   }> {
-    const { entityTypes = ['works', 'authors', 'sources', 'institutions'], limit = 25, page = 1 } = options;
+		const { entityTypes = ["works", "authors", "sources", "institutions"], limit = 25, page = 1 } = options;
 
-    const searchParams = {
-      'default.search': query,
-      per_page: limit,
-      page,
-    };
+		const searchParams = {
+			"default.search": query,
+			per_page: limit,
+			page,
+		};
 
-    const results = await Promise.allSettled([
-      entityTypes.includes('works') ? this.works.getWorks(searchParams) : Promise.resolve({ results: [] }),
-      entityTypes.includes('authors') ? this.authors.getAuthors(searchParams) : Promise.resolve({ results: [] }),
-      entityTypes.includes('sources') ? this.sources.getSources(searchParams) : Promise.resolve({ results: [] }),
-      entityTypes.includes('institutions') ? this.institutions.getInstitutions(searchParams) : Promise.resolve({ results: [] }),
-      entityTypes.includes('topics') ? this.topics.getMultiple(searchParams) : Promise.resolve({ results: [] }),
-      entityTypes.includes('publishers') ? this.publishers.getMultiple(searchParams) : Promise.resolve({ results: [] }),
-      entityTypes.includes('funders') ? this.funders.getMultiple(searchParams) : Promise.resolve({ results: [] }),
-      entityTypes.includes('keywords') ? this.keywords.getKeywords(searchParams) : Promise.resolve({ results: [] }),
-      entityTypes.includes('geo') ? this.geo.getGeos(searchParams) : Promise.resolve({ results: [] }),
-    ]);
+		const results = await Promise.allSettled([
+			entityTypes.includes("works") ? this.works.getWorks(searchParams) : Promise.resolve({ results: [] }),
+			entityTypes.includes("authors") ? this.authors.getAuthors(searchParams) : Promise.resolve({ results: [] }),
+			entityTypes.includes("sources") ? this.sources.getSources(searchParams) : Promise.resolve({ results: [] }),
+			entityTypes.includes("institutions") ? this.institutions.getInstitutions(searchParams) : Promise.resolve({ results: [] }),
+			entityTypes.includes("topics") ? this.topics.getMultiple(searchParams) : Promise.resolve({ results: [] }),
+			entityTypes.includes("publishers") ? this.publishers.getMultiple(searchParams) : Promise.resolve({ results: [] }),
+			entityTypes.includes("funders") ? this.funders.getMultiple(searchParams) : Promise.resolve({ results: [] }),
+			entityTypes.includes("keywords") ? this.keywords.getKeywords(searchParams) : Promise.resolve({ results: [] }),
+			entityTypes.includes("geo") ? this.geo.getGeos(searchParams) : Promise.resolve({ results: [] }),
+		]);
 
-    return {
-      works: results[0].status === 'fulfilled' ? results[0].value.results : [],
-      authors: results[1].status === 'fulfilled' ? results[1].value.results : [],
-      sources: results[2].status === 'fulfilled' ? results[2].value.results : [],
-      institutions: results[3].status === 'fulfilled' ? results[3].value.results : [],
-      topics: results[4].status === 'fulfilled' ? results[4].value.results : [],
-      publishers: results[5].status === 'fulfilled' ? results[5].value.results : [],
-      funders: results[6].status === 'fulfilled' ? results[6].value.results : [],
-      keywords: results[7].status === 'fulfilled' ? results[7].value.results : [],
-      geo: results[8].status === 'fulfilled' ? results[8].value.results : [],
-    };
-  }
+		return {
+			works: results[0].status === "fulfilled" ? results[0].value.results : [],
+			authors: results[1].status === "fulfilled" ? results[1].value.results : [],
+			sources: results[2].status === "fulfilled" ? results[2].value.results : [],
+			institutions: results[3].status === "fulfilled" ? results[3].value.results : [],
+			topics: results[4].status === "fulfilled" ? results[4].value.results : [],
+			publishers: results[5].status === "fulfilled" ? results[5].value.results : [],
+			funders: results[6].status === "fulfilled" ? results[6].value.results : [],
+			keywords: results[7].status === "fulfilled" ? results[7].value.results : [],
+			geo: results[8].status === "fulfilled" ? results[8].value.results : [],
+		};
+	}
 
-  /**
+	/**
    * Get autocomplete suggestions across entity types
    *
    * @example
@@ -238,25 +238,25 @@ export class OpenAlexClient {
    * const suggestions = await client.getSuggestions('stanford univ');
    * ```
    */
-  public async getSuggestions(query: string, entityType?: EntityType): Promise<AutocompleteResult[]> {
-    return this.autocomplete.autocomplete(query, entityType);
-  }
+	public async getSuggestions(query: string, entityType?: EntityType): Promise<AutocompleteResult[]> {
+		return this.autocomplete.autocomplete(query, entityType);
+	}
 
-  /**
+	/**
    * Create a query builder for works
    */
-  public createWorksQuery(): QueryBuilder {
-    return createWorksQuery();
-  }
+	public createWorksQuery(): QueryBuilder {
+		return createWorksQuery();
+	}
 
-  /**
+	/**
    * Create a query builder for authors
    */
-  public createAuthorsQuery(): QueryBuilder {
-    return createAuthorsQuery();
-  }
+	public createAuthorsQuery(): QueryBuilder {
+		return createAuthorsQuery();
+	}
 
-  /**
+	/**
    * Detect entity type from OpenAlex ID
    *
    * @example
@@ -265,49 +265,49 @@ export class OpenAlexClient {
    * client.detectEntityType('A5023888391') // 'authors'
    * ```
    */
-  public detectEntityType(id: string): EntityType | null {
-    if (!id || typeof id !== 'string') {
-      return null;
-    }
+	public detectEntityType(id: string): EntityType | null {
+		if (!id || typeof id !== "string") {
+			return null;
+		}
 
-    // Remove URL prefix if present
-    const cleanId = id.replace(/^https?:\/\/openalex\.org\//, '');
+		// Remove URL prefix if present
+		const cleanId = id.replace(/^https?:\/\/openalex\.org\//, "");
 
-    // Basic format check - should have letter followed by digits, including K and G (case insensitive)
-    const regexTest = /^[WASITCPFKG]\d+$/i.test(cleanId);
-    if (!regexTest) {
-      return null;
-    }
+		// Basic format check - should have letter followed by digits, including K and G (case insensitive)
+		const regexTest = /^[WASITCPFKG]\d+$/i.test(cleanId);
+		if (!regexTest) {
+			return null;
+		}
 
-    const firstChar = cleanId.charAt(0).toUpperCase();
+		const firstChar = cleanId.charAt(0).toUpperCase();
 
-    switch (firstChar) {
-      case 'W':
-        return 'works';
-      case 'A':
-        return 'authors';
-      case 'S':
-        return 'sources';
-      case 'I':
-        return 'institutions';
-      case 'T':
-        return 'topics';
-      case 'C':
-        return 'concepts'; // Legacy, being phased out
-      case 'P':
-        return 'publishers';
-      case 'F':
-        return 'funders';
-      case 'K':
-        return 'keywords';
-      case 'G':
-        return 'geo';
-      default:
-        return null;
-    }
-  }
+		switch (firstChar) {
+			case "W":
+				return "works";
+			case "A":
+				return "authors";
+			case "S":
+				return "sources";
+			case "I":
+				return "institutions";
+			case "T":
+				return "topics";
+			case "C":
+				return "concepts"; // Legacy, being phased out
+			case "P":
+				return "publishers";
+			case "F":
+				return "funders";
+			case "K":
+				return "keywords";
+			case "G":
+				return "geo";
+			default:
+				return null;
+		}
+	}
 
-  /**
+	/**
    * Check if an ID is a valid OpenAlex ID
    *
    * @example
@@ -316,23 +316,23 @@ export class OpenAlexClient {
    * client.isValidOpenAlexId('invalid') // false
    * ```
    */
-  public isValidOpenAlexId(id: string): boolean {
-    if (!id || typeof id !== 'string') {
-      return false;
-    }
+	public isValidOpenAlexId(id: string): boolean {
+		if (!id || typeof id !== "string") {
+			return false;
+		}
 
-    // Remove URL prefix if present
-    const cleanId = id.replace(/^https?:\/\/openalex\.org\//, '');
+		// Remove URL prefix if present
+		const cleanId = id.replace(/^https?:\/\/openalex\.org\//, "");
 
-    // Check if it matches OpenAlex ID pattern (letter + 8-10 digits)
-    // Based on the test expectations, including new entity types K and G
-    return /^[WASITCPFKG]\d{8,10}$/.test(cleanId);
-  }
+		// Check if it matches OpenAlex ID pattern (letter + 8-10 digits)
+		// Based on the test expectations, including new entity types K and G
+		return /^[WASITCPFKG]\d{8,10}$/.test(cleanId);
+	}
 
-  /**
+	/**
    * Get client statistics and rate limit information
    */
-  public getStats(): {
+	public getStats(): {
     rateLimit: {
       requestsToday: number;
       requestsRemaining: number;
@@ -347,14 +347,14 @@ export class OpenAlexClient {
       publishers?: number;
       funders?: number;
     };
-  } {
-    return {
-      rateLimit: this.baseClient.getRateLimitStatus(),
-      // Entity counts could be added here if needed
-    };
-  }
+    } {
+		return {
+			rateLimit: this.baseClient.getRateLimitStatus(),
+			// Entity counts could be added here if needed
+		};
+	}
 
-  /**
+	/**
    * Update client configuration
    *
    * @example
@@ -365,11 +365,11 @@ export class OpenAlexClient {
    * });
    * ```
    */
-  public updateConfig(config: Partial<OpenAlexClientConfig>): void {
-    this.baseClient.updateConfig(config);
-  }
+	public updateConfig(config: Partial<OpenAlexClientConfig>): void {
+		this.baseClient.updateConfig(config);
+	}
 
-  /**
+	/**
    * Get multiple entities by IDs (mixed types supported)
    *
    * @example
@@ -381,17 +381,17 @@ export class OpenAlexClient {
    * ]);
    * ```
    */
-  public async getEntities(ids: string[]): Promise<OpenAlexEntity[]> {
-    const promises = ids.map(id => this.getEntity(id).catch(error => {
-      logError(`Failed to fetch entity ${id}`, error, 'OpenAlexClient', 'api');
-      return null;
-    }));
+	public async getEntities(ids: string[]): Promise<OpenAlexEntity[]> {
+		const promises = ids.map(id => this.getEntity(id).catch(error => {
+			logError(`Failed to fetch entity ${id}`, error, "OpenAlexClient", "api");
+			return null;
+		}));
 
-    const results = await Promise.all(promises);
-    return results.filter(result => result !== null);
-  }
+		const results = await Promise.all(promises);
+		return results.filter(result => result !== null);
+	}
 
-  /**
+	/**
    * Stream entities from any endpoint
    *
    * @example
@@ -401,44 +401,44 @@ export class OpenAlexClient {
    * }
    * ```
    */
-  public async *stream<T = OpenAlexEntity>(
-    entityType: EntityType,
-    params: QueryParams = {}
-  ): AsyncGenerator<T[], void, unknown> {
-    switch (entityType) {
-      case 'works':
-        yield* this.works.streamWorks(params) as AsyncGenerator<T[], void, unknown>;
-        break;
-      case 'authors':
-        yield* this.authors.streamAuthors(params) as AsyncGenerator<T[], void, unknown>;
-        break;
-      case 'sources':
-        yield* this.sources.streamSources(params as Record<string, unknown>) as AsyncGenerator<T[], void, unknown>;
-        break;
-      case 'institutions':
-        yield* this.institutions.streamInstitutions(params as Record<string, unknown>) as AsyncGenerator<T[], void, unknown>;
-        break;
-      case 'topics':
-        yield* this.topics.stream(params as Record<string, unknown>) as AsyncGenerator<T[], void, unknown>;
-        break;
-      case 'publishers':
-        yield* this.publishers.stream(params as Record<string, unknown>) as AsyncGenerator<T[], void, unknown>;
-        break;
-      case 'funders':
-        yield* this.funders.stream(params as Record<string, unknown>) as AsyncGenerator<T[], void, unknown>;
-        break;
-      case 'keywords':
-        yield* this.keywords.streamKeywords(params) as AsyncGenerator<T[], void, unknown>;
-        break;
-      case 'geo':
-        yield* this.geo.streamGeos(params) as AsyncGenerator<T[], void, unknown>;
-        break;
-      default:
-        throw new Error(`Unsupported entity type: ${entityType}`);
-    }
-  }
+	public async *stream<T = OpenAlexEntity>(
+		entityType: EntityType,
+		params: QueryParams = {}
+	): AsyncGenerator<T[], void, unknown> {
+		switch (entityType) {
+			case "works":
+				yield* this.works.streamWorks(params) as AsyncGenerator<T[], void, unknown>;
+				break;
+			case "authors":
+				yield* this.authors.streamAuthors(params) as AsyncGenerator<T[], void, unknown>;
+				break;
+			case "sources":
+				yield* this.sources.streamSources(params as Record<string, unknown>) as AsyncGenerator<T[], void, unknown>;
+				break;
+			case "institutions":
+				yield* this.institutions.streamInstitutions(params as Record<string, unknown>) as AsyncGenerator<T[], void, unknown>;
+				break;
+			case "topics":
+				yield* this.topics.stream(params as Record<string, unknown>) as AsyncGenerator<T[], void, unknown>;
+				break;
+			case "publishers":
+				yield* this.publishers.stream(params as Record<string, unknown>) as AsyncGenerator<T[], void, unknown>;
+				break;
+			case "funders":
+				yield* this.funders.stream(params as Record<string, unknown>) as AsyncGenerator<T[], void, unknown>;
+				break;
+			case "keywords":
+				yield* this.keywords.streamKeywords(params) as AsyncGenerator<T[], void, unknown>;
+				break;
+			case "geo":
+				yield* this.geo.streamGeos(params) as AsyncGenerator<T[], void, unknown>;
+				break;
+			default:
+				throw new Error(`Unsupported entity type: ${entityType}`);
+		}
+	}
 
-  /**
+	/**
    * Batch process entities with a callback function
    *
    * @example
@@ -454,15 +454,15 @@ export class OpenAlexClient {
    * );
    * ```
    */
-  public async batchProcess<T = OpenAlexEntity>(
-    entityType: EntityType,
-    params: QueryParams,
-    processor: (batch: T[]) => Promise<void> | void
-  ): Promise<void> {
-    for await (const batch of this.stream<T>(entityType, params)) {
-      await processor(batch);
-    }
-  }
+	public async batchProcess<T = OpenAlexEntity>(
+		entityType: EntityType,
+		params: QueryParams,
+		processor: (batch: T[]) => Promise<void> | void
+	): Promise<void> {
+		for await (const batch of this.stream<T>(entityType, params)) {
+			await processor(batch);
+		}
+	}
 }
 
 /**
@@ -478,7 +478,7 @@ export class OpenAlexClient {
  * ```
  */
 export function createOpenAlexClient(options?: OpenAlexClientOptions): OpenAlexClient {
-  return new OpenAlexClient(options);
+	return new OpenAlexClient(options);
 }
 
 /**
@@ -495,43 +495,43 @@ export const openAlex = new OpenAlexClient();
 
 // Re-export commonly used types and utilities
 export type {
-  Work,
-  Author,
-  Source,
-  InstitutionEntity,
-  Topic,
-  Publisher,
-  Funder,
-  Keyword,
-  Geo,
-  EntityType,
-  OpenAlexEntity,
-  AutocompleteResult,
-  OpenAlexResponse,
-  QueryParams,
-  OpenAlexClientConfig,
-  TextAnalysis,
-  SampleParams,
-  GroupParams,
-  StatsParams,
+	Work,
+	Author,
+	Source,
+	InstitutionEntity,
+	Topic,
+	Publisher,
+	Funder,
+	Keyword,
+	Geo,
+	EntityType,
+	OpenAlexEntity,
+	AutocompleteResult,
+	OpenAlexResponse,
+	QueryParams,
+	OpenAlexClientConfig,
+	TextAnalysis,
+	SampleParams,
+	GroupParams,
+	StatsParams,
 };
 
 export {
-  QueryBuilder,
-  createWorksQuery,
-  createAuthorsQuery,
-} from './utils/query-builder';
+	QueryBuilder,
+	createWorksQuery,
+	createAuthorsQuery,
+} from "./utils/query-builder";
 
 export {
-  OpenAlexApiError,
-  OpenAlexRateLimitError
-} from './client';
+	OpenAlexApiError,
+	OpenAlexRateLimitError
+} from "./client";
 
 export {
-  reconstructAbstract,
-  getAbstractStats,
-  hasAbstract,
-  extractKeywords,
-  formatCitation,
-  analyzeReadability,
-} from './utils/transformers';
+	reconstructAbstract,
+	getAbstractStats,
+	hasAbstract,
+	extractKeywords,
+	formatCitation,
+	analyzeReadability,
+} from "./utils/transformers";

@@ -4,13 +4,13 @@
  */
 
 import {
-  Geo,
-  GeoFilters,
-  QueryParams,
-  OpenAlexResponse,
-} from '../types';
-import { OpenAlexBaseClient } from '../client';
-import { buildFilterString } from '../utils/query-builder';
+	Geo,
+	GeoFilters,
+	QueryParams,
+	OpenAlexResponse,
+} from "../types";
+import { OpenAlexBaseClient } from "../client";
+import { buildFilterString } from "../utils/query-builder";
 
 /**
  * Extended query parameters specific to Geo API
@@ -23,7 +23,7 @@ export type GeoQueryParams = QueryParams;
  */
 export interface SearchGeoOptions {
   filters?: GeoFilters;
-  sort?: 'relevance_score' | 'cited_by_count' | 'works_count' | 'created_date';
+  sort?: "relevance_score" | "cited_by_count" | "works_count" | "created_date";
   page?: number;
   per_page?: number;
   select?: string[];
@@ -33,9 +33,9 @@ export interface SearchGeoOptions {
  * Geo API class providing methods for geographic region operations
  */
 export class GeoApi {
-  constructor(private client: OpenAlexBaseClient) {}
+	constructor(private client: OpenAlexBaseClient) {}
 
-  /**
+	/**
    * Get a single geo entity by its OpenAlex ID
    *
    * @param id - The geo ID
@@ -47,11 +47,11 @@ export class GeoApi {
    * const geo = await geoApi.getGeo('G123456789');
    * ```
    */
-  async getGeo(id: string, params: QueryParams = {}): Promise<Geo> {
-    return this.client.getById<Geo>('geo', id, params);
-  }
+	async getGeo(id: string, params: QueryParams = {}): Promise<Geo> {
+		return this.client.getById<Geo>("geo", id, params);
+	}
 
-  /**
+	/**
    * Get a list of geo entities with optional filtering and pagination
    *
    * @param params - Query parameters for filtering and pagination
@@ -66,11 +66,11 @@ export class GeoApi {
    * });
    * ```
    */
-  async getGeos(params: GeoQueryParams = {}): Promise<OpenAlexResponse<Geo>> {
-    return this.client.getResponse<Geo>('geo', params);
-  }
+	async getGeos(params: GeoQueryParams = {}): Promise<OpenAlexResponse<Geo>> {
+		return this.client.getResponse<Geo>("geo", params);
+	}
 
-  /**
+	/**
    * Search for geo entities using text search
    *
    * @param query - Search query string
@@ -85,25 +85,25 @@ export class GeoApi {
    * });
    * ```
    */
-  async searchGeos(
-    query: string,
-    options: SearchGeoOptions = {}
-  ): Promise<OpenAlexResponse<Geo>> {
-    const { filters = {}, sort = 'relevance_score', page = 1, per_page = 25, select } = options;
+	async searchGeos(
+		query: string,
+		options: SearchGeoOptions = {}
+	): Promise<OpenAlexResponse<Geo>> {
+		const { filters = {}, sort = "relevance_score", page = 1, per_page = 25, select } = options;
 
-    const params: GeoQueryParams = {
-      search: query,
-      filter: filters ? buildFilterString(filters) : undefined,
-      sort,
-      page,
-      per_page,
-      select,
-    };
+		const params: GeoQueryParams = {
+			search: query,
+			filter: filters ? buildFilterString(filters) : undefined,
+			sort,
+			page,
+			per_page,
+			select,
+		};
 
-    return this.getGeos(params);
-  }
+		return this.getGeos(params);
+	}
 
-  /**
+	/**
    * Get geo entities by continent
    *
    * @param continent - Continent name
@@ -118,21 +118,21 @@ export class GeoApi {
    * });
    * ```
    */
-  async getGeosByContinent(
-    continent: string,
-    params: GeoQueryParams = {}
-  ): Promise<OpenAlexResponse<Geo>> {
-    const filters: GeoFilters = {
-      'continent': continent,
-    };
+	async getGeosByContinent(
+		continent: string,
+		params: GeoQueryParams = {}
+	): Promise<OpenAlexResponse<Geo>> {
+		const filters: GeoFilters = {
+			"continent": continent,
+		};
 
-    return this.getGeos({
-      ...params,
-      filter: this.buildFilterString(filters),
-    });
-  }
+		return this.getGeos({
+			...params,
+			filter: this.buildFilterString(filters),
+		});
+	}
 
-  /**
+	/**
    * Get geo entities by country code
    *
    * @param countryCode - ISO country code (e.g., 'US', 'GB', 'DE')
@@ -147,21 +147,21 @@ export class GeoApi {
    * });
    * ```
    */
-  async getGeosByCountryCode(
-    countryCode: string,
-    params: GeoQueryParams = {}
-  ): Promise<OpenAlexResponse<Geo>> {
-    const filters: GeoFilters = {
-      'country_code': countryCode,
-    };
+	async getGeosByCountryCode(
+		countryCode: string,
+		params: GeoQueryParams = {}
+	): Promise<OpenAlexResponse<Geo>> {
+		const filters: GeoFilters = {
+			"country_code": countryCode,
+		};
 
-    return this.getGeos({
-      ...params,
-      filter: this.buildFilterString(filters),
-    });
-  }
+		return this.getGeos({
+			...params,
+			filter: this.buildFilterString(filters),
+		});
+	}
 
-  /**
+	/**
    * Get all continents
    *
    * @param params - Additional query parameters
@@ -175,20 +175,20 @@ export class GeoApi {
    * });
    * ```
    */
-  async getContinents(params: GeoQueryParams = {}): Promise<OpenAlexResponse<Geo>> {
-    const filters: GeoFilters = {
-      // Continents typically don't have country codes - exclude items with country codes
-      // Note: OpenAlex may not support negation, so this might need adjustment
-    };
+	async getContinents(params: GeoQueryParams = {}): Promise<OpenAlexResponse<Geo>> {
+		const filters: GeoFilters = {
+			// Continents typically don't have country codes - exclude items with country codes
+			// Note: OpenAlex may not support negation, so this might need adjustment
+		};
 
-    return this.getGeos({
-      ...params,
-      filter: this.buildFilterString(filters),
-      sort: 'works_count',
-    });
-  }
+		return this.getGeos({
+			...params,
+			filter: this.buildFilterString(filters),
+			sort: "works_count",
+		});
+	}
 
-  /**
+	/**
    * Get countries with most research output
    *
    * @param params - Additional query parameters
@@ -202,19 +202,19 @@ export class GeoApi {
    * });
    * ```
    */
-  async getTopResearchCountries(params: GeoQueryParams = {}): Promise<OpenAlexResponse<Geo>> {
-    const filters: GeoFilters = {
-      'works_count': '>1000',
-    };
+	async getTopResearchCountries(params: GeoQueryParams = {}): Promise<OpenAlexResponse<Geo>> {
+		const filters: GeoFilters = {
+			"works_count": ">1000",
+		};
 
-    return this.getGeos({
-      ...params,
-      filter: this.buildFilterString(filters),
-      sort: 'works_count',
-    });
-  }
+		return this.getGeos({
+			...params,
+			filter: this.buildFilterString(filters),
+			sort: "works_count",
+		});
+	}
 
-  /**
+	/**
    * Get random geo entities
    *
    * @param params - Query parameters
@@ -228,14 +228,14 @@ export class GeoApi {
    * });
    * ```
    */
-  async getRandomGeos(params: GeoQueryParams = {}): Promise<OpenAlexResponse<Geo>> {
-    return this.getGeos({
-      ...params,
-      sort: 'random',
-    });
-  }
+	async getRandomGeos(params: GeoQueryParams = {}): Promise<OpenAlexResponse<Geo>> {
+		return this.getGeos({
+			...params,
+			sort: "random",
+		});
+	}
 
-  /**
+	/**
    * Stream all geo entities using cursor pagination
    *
    * @param params - Query parameters for filtering
@@ -248,11 +248,11 @@ export class GeoApi {
    * }
    * ```
    */
-  async *streamGeos(params: GeoQueryParams = {}): AsyncGenerator<Geo[], void, unknown> {
-    yield* this.client.stream<Geo>('geo', params);
-  }
+	async *streamGeos(params: GeoQueryParams = {}): AsyncGenerator<Geo[], void, unknown> {
+		yield* this.client.stream<Geo>("geo", params);
+	}
 
-  /**
+	/**
    * Get all geo entities (use with caution for large datasets)
    *
    * @param params - Query parameters for filtering
@@ -266,14 +266,14 @@ export class GeoApi {
    * }, 100);
    * ```
    */
-  async getAllGeos(
-    params: GeoQueryParams = {},
-    maxResults?: number
-  ): Promise<Geo[]> {
-    return this.client.getAll<Geo>('geo', params, maxResults);
-  }
+	async getAllGeos(
+		params: GeoQueryParams = {},
+		maxResults?: number
+	): Promise<Geo[]> {
+		return this.client.getAll<Geo>("geo", params, maxResults);
+	}
 
-  /**
+	/**
    * Get geo statistics by continent
    *
    * @param params - Query parameters for filtering
@@ -284,7 +284,7 @@ export class GeoApi {
    * const continentStats = await geoApi.getGeoStatsByContinent();
    * ```
    */
-  async getGeoStatsByContinent(params: GeoQueryParams = {}): Promise<{
+	async getGeoStatsByContinent(params: GeoQueryParams = {}): Promise<{
     [continent: string]: {
       count: number;
       total_works: number;
@@ -292,41 +292,41 @@ export class GeoApi {
       avg_works_per_region: number;
     };
   }> {
-    const allGeos = await this.getAllGeos(params, 1000);
-    const statsByContinent: Record<string, {
+		const allGeos = await this.getAllGeos(params, 1000);
+		const statsByContinent: Record<string, {
       count: number;
       total_works: number;
       total_citations: number;
       avg_works_per_region: number;
     }> = {};
 
-    for (const geo of allGeos) {
-      const continent = geo.continent || 'Unknown';
+		for (const geo of allGeos) {
+			const continent = geo.continent || "Unknown";
 
-      if (!statsByContinent[continent]) {
-        statsByContinent[continent] = {
-          count: 0,
-          total_works: 0,
-          total_citations: 0,
-          avg_works_per_region: 0,
-        };
-      }
+			if (!statsByContinent[continent]) {
+				statsByContinent[continent] = {
+					count: 0,
+					total_works: 0,
+					total_citations: 0,
+					avg_works_per_region: 0,
+				};
+			}
 
-      statsByContinent[continent].count += 1;
-      statsByContinent[continent].total_works += geo.works_count;
-      statsByContinent[continent].total_citations += geo.cited_by_count;
-    }
+			statsByContinent[continent].count += 1;
+			statsByContinent[continent].total_works += geo.works_count;
+			statsByContinent[continent].total_citations += geo.cited_by_count;
+		}
 
-    // Calculate averages
-    for (const continent in statsByContinent) {
-      const stats = statsByContinent[continent];
-      stats.avg_works_per_region = stats.total_works / stats.count;
-    }
+		// Calculate averages
+		for (const continent in statsByContinent) {
+			const stats = statsByContinent[continent];
+			stats.avg_works_per_region = stats.total_works / stats.count;
+		}
 
-    return statsByContinent;
-  }
+		return statsByContinent;
+	}
 
-  /**
+	/**
    * Get geo entities with minimum works count
    *
    * @param minWorksCount - Minimum number of works
@@ -341,21 +341,21 @@ export class GeoApi {
    * });
    * ```
    */
-  async getGeosByWorksCount(
-    minWorksCount: number,
-    params: GeoQueryParams = {}
-  ): Promise<OpenAlexResponse<Geo>> {
-    const filters: GeoFilters = {
-      'works_count': `>=${minWorksCount}`,
-    };
+	async getGeosByWorksCount(
+		minWorksCount: number,
+		params: GeoQueryParams = {}
+	): Promise<OpenAlexResponse<Geo>> {
+		const filters: GeoFilters = {
+			"works_count": `>=${minWorksCount}`,
+		};
 
-    return this.getGeos({
-      ...params,
-      filter: this.buildFilterString(filters),
-    });
-  }
+		return this.getGeos({
+			...params,
+			filter: this.buildFilterString(filters),
+		});
+	}
 
-  /**
+	/**
    * Get emerging research regions (regions with growing research output)
    *
    * @param params - Additional query parameters
@@ -369,41 +369,41 @@ export class GeoApi {
    * });
    * ```
    */
-  async getEmergingResearchRegions(params: GeoQueryParams = {}): Promise<OpenAlexResponse<Geo>> {
-    const currentYear = new Date().getFullYear();
+	async getEmergingResearchRegions(params: GeoQueryParams = {}): Promise<OpenAlexResponse<Geo>> {
+		const currentYear = new Date().getFullYear();
 
-    const filters: GeoFilters = {
-      'works_count': '>50',
-      'from_created_date': `${currentYear - 5}-01-01`, // Last 5 years
-    };
+		const filters: GeoFilters = {
+			"works_count": ">50",
+			"from_created_date": `${currentYear - 5}-01-01`, // Last 5 years
+		};
 
-    return this.getGeos({
-      ...params,
-      filter: this.buildFilterString(filters),
-      sort: 'works_count',
-    });
-  }
+		return this.getGeos({
+			...params,
+			filter: this.buildFilterString(filters),
+			sort: "works_count",
+		});
+	}
 
-  /**
+	/**
    * Build filter string from GeoFilters object
    * @private
    */
-  private buildFilterString(filters: GeoFilters): string {
-    const filterParts: string[] = [];
-    Object.entries(filters).forEach(([key, value]) => {
-      if (value !== undefined && value !== null) {
-        if (Array.isArray(value)) {
-          // Handle array values (OR logic)
-          filterParts.push(`${key}:${value.join('|')}`);
-        } else if (typeof value === 'boolean') {
-          // Handle boolean values
-          filterParts.push(`${key}:${value}`);
-        } else {
-          // Handle string/number values
-          filterParts.push(`${key}:${value}`);
-        }
-      }
-    });
-    return filterParts.join(',');
-  }
+	private buildFilterString(filters: GeoFilters): string {
+		const filterParts: string[] = [];
+		Object.entries(filters).forEach(([key, value]) => {
+			if (value !== undefined && value !== null) {
+				if (Array.isArray(value)) {
+					// Handle array values (OR logic)
+					filterParts.push(`${key}:${value.join("|")}`);
+				} else if (typeof value === "boolean") {
+					// Handle boolean values
+					filterParts.push(`${key}:${value}`);
+				} else {
+					// Handle string/number values
+					filterParts.push(`${key}:${value}`);
+				}
+			}
+		});
+		return filterParts.join(",");
+	}
 }

@@ -2,102 +2,102 @@
  * Layout controls for switching graph layouts
  */
 
-import React from 'react';
-import { Button, Popover, Stack, Text, NumberInput, Switch } from '@mantine/core';
-import { IconLayout, IconLayoutGrid, IconLayoutDistributeHorizontal, IconCircle, IconNetwork } from '@tabler/icons-react';
-import { useGraphStore } from '@/stores/graph-store';
-import type { GraphLayout } from '@/lib/graph/types';
+import React from "react";
+import { Button, Popover, Stack, Text, NumberInput, Switch } from "@mantine/core";
+import { IconLayout, IconLayoutGrid, IconLayoutDistributeHorizontal, IconCircle, IconNetwork } from "@tabler/icons-react";
+import { useGraphStore } from "@/stores/graph-store";
+import type { GraphLayout } from "@/lib/graph/types";
 
 const layoutOptions = [
-  {
-    type: 'd3-force' as const,
-    label: 'D3 Force Layout',
-    description: 'Physics-based layout with optimal node separation',
-    icon: IconNetwork,
-  },
+	{
+		type: "d3-force" as const,
+		label: "D3 Force Layout",
+		description: "Physics-based layout with optimal node separation",
+		icon: IconNetwork,
+	},
 ];
 
 export const LayoutControls: React.FC = () => {
-  const { currentLayout, setLayout } = useGraphStore();
-  const [layoutOptions_, setLayoutOptions] = React.useState(currentLayout.options || {});
+	const { currentLayout, setLayout } = useGraphStore();
+	const [layoutOptions_, setLayoutOptions] = React.useState(currentLayout.options || {});
 
-  // Sync local options state with store when currentLayout changes
-  React.useEffect(() => {
-    setLayoutOptions(currentLayout.options || {});
-  }, [currentLayout]);
+	// Sync local options state with store when currentLayout changes
+	React.useEffect(() => {
+		setLayoutOptions(currentLayout.options || {});
+	}, [currentLayout]);
 
-  const handleLayoutChange = (type: GraphLayout['type']) => {
-    // Always use D3 force layout with empty options (hook will use fixed parameters)
-    const newLayout: GraphLayout = {
-      type: 'd3-force',
-      options: {}
-    };
+	const handleLayoutChange = (type: GraphLayout["type"]) => {
+		// Always use D3 force layout with empty options (hook will use fixed parameters)
+		const newLayout: GraphLayout = {
+			type: "d3-force",
+			options: {}
+		};
 
-    setLayout(newLayout);
-  };
+		setLayout(newLayout);
+	};
 
-  const handleOptionChange = (key: string, value: unknown) => {
-    const newOptions = { ...layoutOptions_, [key]: value };
-    setLayoutOptions(newOptions);
+	const handleOptionChange = (key: string, value: unknown) => {
+		const newOptions = { ...layoutOptions_, [key]: value };
+		setLayoutOptions(newOptions);
 
-    if (currentLayout.type === 'force-deterministic') {
-      setLayout({
-        type: 'force-deterministic',
-        options: newOptions
-      });
-    } else if (currentLayout.type === 'd3-force') {
-      setLayout({
-        type: 'd3-force',
-        options: newOptions
-      });
-    }
-  };
+		if (currentLayout.type === "force-deterministic") {
+			setLayout({
+				type: "force-deterministic",
+				options: newOptions
+			});
+		} else if (currentLayout.type === "d3-force") {
+			setLayout({
+				type: "d3-force",
+				options: newOptions
+			});
+		}
+	};
 
-  const currentOption = layoutOptions.find(opt => opt.type === currentLayout.type);
-  const CurrentIcon = currentOption?.icon || IconLayout;
+	const currentOption = layoutOptions.find(opt => opt.type === currentLayout.type);
+	const CurrentIcon = currentOption?.icon || IconLayout;
 
-  return (
-    <Popover position="bottom-start" shadow="md">
-      <Popover.Target>
-        <Button
-          leftSection={<CurrentIcon size={16} />}
-          variant="light"
-          size="sm"
-        >
-          {currentOption?.label || 'Layout'}
-        </Button>
-      </Popover.Target>
+	return (
+		<Popover position="bottom-start" shadow="md">
+			<Popover.Target>
+				<Button
+					leftSection={<CurrentIcon size={16} />}
+					variant="light"
+					size="sm"
+				>
+					{currentOption?.label || "Layout"}
+				</Button>
+			</Popover.Target>
 
-      <Popover.Dropdown>
-        <Stack gap="md" style={{ minWidth: 280 }}>
-          <Text size="sm" fw={500}>Graph Layout</Text>
+			<Popover.Dropdown>
+				<Stack gap="md" style={{ minWidth: 280 }}>
+					<Text size="sm" fw={500}>Graph Layout</Text>
 
-          <Stack gap="xs">
-            {layoutOptions.map(option => {
-              const OptionIcon = option.icon;
-              return (
-                <Button
-                  key={option.type}
-                  variant={currentLayout.type === option.type ? 'filled' : 'subtle'}
-                  leftSection={<OptionIcon size={16} />}
-                  onClick={() => { handleLayoutChange(option.type); }}
-                  size="sm"
-                  justify="flex-start"
-                  fullWidth
-                >
-                  <div>
-                    <Text size="sm">{option.label}</Text>
-                    <Text size="xs" c="dimmed" style={{ fontSize: '11px' }}>
-                      {option.description}
-                    </Text>
-                  </div>
-                </Button>
-              );
-            })}
-          </Stack>
+					<Stack gap="xs">
+						{layoutOptions.map(option => {
+							const OptionIcon = option.icon;
+							return (
+								<Button
+									key={option.type}
+									variant={currentLayout.type === option.type ? "filled" : "subtle"}
+									leftSection={<OptionIcon size={16} />}
+									onClick={() => { handleLayoutChange(option.type); }}
+									size="sm"
+									justify="flex-start"
+									fullWidth
+								>
+									<div>
+										<Text size="sm">{option.label}</Text>
+										<Text size="xs" c="dimmed" style={{ fontSize: "11px" }}>
+											{option.description}
+										</Text>
+									</div>
+								</Button>
+							);
+						})}
+					</Stack>
 
-        </Stack>
-      </Popover.Dropdown>
-    </Popover>
-  );
+				</Stack>
+			</Popover.Dropdown>
+		</Popover>
+	);
 };

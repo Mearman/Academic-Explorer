@@ -4,18 +4,18 @@
  */
 
 // Import OpenAlex EntityType to ensure consistency
-import type { EntityType as OpenAlexEntityType } from '@/lib/openalex/types'
+import type { EntityType as OpenAlexEntityType } from "@/lib/openalex/types"
 export type EntityType = OpenAlexEntityType
 
 export enum RelationType {
-  AUTHORED = 'authored',
-  CITED = 'cited',
-  AFFILIATED = 'affiliated',
-  PUBLISHED_IN = 'published_in',
-  FUNDED_BY = 'funded_by',
-  RELATED_TO = 'related_to',
-  CO_AUTHORED = 'co_authored',
-  REFERENCES = 'references'
+  AUTHORED = "authored",
+  CITED = "cited",
+  AFFILIATED = "affiliated",
+  PUBLISHED_IN = "published_in",
+  FUNDED_BY = "funded_by",
+  RELATED_TO = "related_to",
+  CO_AUTHORED = "co_authored",
+  REFERENCES = "references"
 }
 
 export interface Position {
@@ -24,7 +24,7 @@ export interface Position {
 }
 
 export interface ExternalIdentifier {
-  type: 'doi' | 'orcid' | 'issn_l' | 'ror' | 'wikidata';
+  type: "doi" | "orcid" | "issn_l" | "ror" | "wikidata";
   value: string;
   url: string;
 }
@@ -59,7 +59,7 @@ export interface GraphEdge {
 }
 
 export interface GraphLayout {
-  type: 'force' | 'hierarchical' | 'circular' | 'grid' | 'force-deterministic' | 'd3-force';
+  type: "force" | "hierarchical" | "circular" | "grid" | "force-deterministic" | "d3-force";
   options?: {
     iterations?: number;
     strength?: number;
@@ -145,7 +145,7 @@ export interface GraphProvider {
 export type EntityIdentifier = string; // Can be OpenAlex ID or external ID
 
 // Provider types
-export type ProviderType = 'xyflow' | 'd3' | 'cytoscape';
+export type ProviderType = "xyflow" | "d3" | "cytoscape";
 
 // Search and filtering
 export interface SearchOptions {
