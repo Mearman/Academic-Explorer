@@ -190,9 +190,19 @@ export function useLayout(
     }
 
     // Stop existing simulation
+    logger.info('graph', 'About to stop existing simulation before starting D3 force', {
+      hadSimulation: !!simulationRef.current,
+      currentAlpha: simulationRef.current?.alpha(),
+      timestamp: Date.now()
+    }, 'useLayout');
     stopLayout();
 
     // Extract layout options
+    logger.info('graph', 'Raw layout options from store', {
+      layoutOptions: layout.options,
+      layoutType: layout.type
+    }, 'useLayout');
+
     const {
       seed = 42,
       linkDistance = 220,
@@ -201,9 +211,9 @@ export function useLayout(
       centerStrength = 0.03,
       collisionRadius = 100,
       collisionStrength = 1.0,
-      velocityDecay = 0.2,
+      velocityDecay = 0.4,     // Match store config
       alpha = 1,
-      alphaDecay = 0.015
+      alphaDecay = 0.03        // Match store config
     } = layout.options || {};
 
     logger.info('graph', 'Starting D3 Force simulation', {
@@ -212,7 +222,12 @@ export function useLayout(
       linkDistance,
       chargeStrength,
       collisionRadius,
-      collisionStrength
+      collisionStrength,
+      velocityDecay,
+      alphaDecay,
+      initialAlpha: alpha,
+      calculatedMinSpacing: collisionRadius * 2.2,
+      calculatedBaseRadius: Math.max(200, Math.sqrt(nodes.length) * (collisionRadius * 2.2) / 2)
     }, 'useLayout');
 
     // Create deterministic random source
@@ -223,7 +238,10 @@ export function useLayout(
       // Initialize positions for new nodes (those at origin)
       if (node.position.x === 0 && node.position.y === 0) {
         const angle = (index / nodes.length) * 2 * Math.PI;
-        const radius = Math.min(150 + (index % 3) * 50, 300);
+        // Ensure minimum spacing based on collision radius * 2 for safety
+        const minSpacing = collisionRadius * 2.2;
+        const baseRadius = Math.max(200, Math.sqrt(nodes.length) * minSpacing / 2);
+        const radius = baseRadius + (index % 3) * minSpacing;
         const newPosition = {
           x: Math.cos(angle) * radius + 400,
           y: Math.sin(angle) * radius + 300
@@ -277,12 +295,13 @@ export function useLayout(
         target: edge.target,
       }));
 
-    // Create simulation
+    // Create simulation with safety timeout
     simulationRef.current = forceSimulation<D3Node>(d3Nodes)
       .randomSource(random)
       .velocityDecay(velocityDecay)
       .alpha(alpha)
-      .alphaDecay(alphaDecay);
+      .alphaDecay(alphaDecay)
+      .alphaTarget(0.005); // Lower target for more thorough collision resolution
 
     // Configure forces
     simulationRef.current
@@ -321,6 +340,7 @@ export function useLayout(
     // Set up end handler
     simulationRef.current.on('end', () => {
       logger.info('graph', 'D3 Force simulation completed', {
+        finalAlpha: simulationRef.current?.alpha(),
         samplePositions: d3Nodes.slice(0, 3).map(n => ({
           id: n.id,
           x: Math.round(n.x || 0),
@@ -330,22 +350,16 @@ export function useLayout(
       isRunningRef.current = false;
     });
 
-  }, [layout, getNodes, getEdges, setNodes, onLayoutChange, stopLayout]);
+  }, [layout, onLayoutChange, stopLayout]);
 
   // Main layout application function
   const applyLayout = useCallback(() => {
     if (!enabled || !layout) {
-      console.log('useLayout: Layout application skipped', { enabled, hasLayout: !!layout });
       logger.info('graph', 'Layout application skipped', { enabled, hasLayout: !!layout }, 'useLayout');
       return;
     }
 
     const nodes = getNodes();
-    console.log('useLayout: Layout application started', {
-      layoutType: layout.type,
-      nodeCount: nodes.length,
-      nodeIds: nodes.map(n => n.id)
-    });
     logger.info('graph', 'Layout application started', {
       layoutType: layout.type,
       nodeCount: nodes.length,
@@ -373,14 +387,15 @@ export function useLayout(
         }, 100);
       }
     }
-  }, [enabled, layout, getNodes, applyD3ForceLayout, stopLayout, applyStaticLayout, fitViewAfterLayout, onLayoutChange]);
+  }, [enabled, layout, applyD3ForceLayout, stopLayout, applyStaticLayout, fitViewAfterLayout, onLayoutChange]);
 
   // Apply layout when layout changes
   useEffect(() => {
     logger.info('graph', 'Layout useEffect triggered', {
       enabled,
       layoutType: layout?.type,
-      dependencies: { enabled, layoutType: layout?.type }
+      dependencies: { enabled, layoutType: layout?.type },
+      timestamp: Date.now()
     }, 'useLayout');
 
     if (enabled && layout) {
