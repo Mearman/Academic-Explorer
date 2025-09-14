@@ -108,7 +108,7 @@ export class AuthorEntity extends AbstractEntity<Author> {
 					metadata: {
 						year: work.publication_year,
 						citationCount: work.cited_by_count,
-						openAccess: work.open_access?.is_oa,
+						openAccess: work.open_access.is_oa,
 					},
 				};
 				nodes.push(workNode);
@@ -189,7 +189,7 @@ export class AuthorEntity extends AbstractEntity<Author> {
 	public getSummary(author: Author): string {
 		const name = this.getDisplayName(author);
 		const institution = author.last_known_institutions?.[0]?.display_name;
-		const works = author.works_count ? ` (${author.works_count} works)` : "";
+		const works = author.works_count ? ` (${String(author.works_count)} works)` : "";
 		const institutionText = institution ? ` - ${institution}` : "";
 
 		return `${name}${institutionText}${works}`;

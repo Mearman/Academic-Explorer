@@ -96,9 +96,9 @@ export function useGraphData() {
 		}
 	}, []);
 
-	const loadAllCachedNodes = useCallback(async () => {
+	const loadAllCachedNodes = useCallback(() => {
 		try {
-			await service.current.loadAllCachedNodes();
+			service.current.loadAllCachedNodes();
 		} catch (err) {
 			logError("Failed to load cached nodes in graph data hook", err, "useGraphData", "graph");
 		}

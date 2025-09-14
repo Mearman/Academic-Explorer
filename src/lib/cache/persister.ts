@@ -90,8 +90,8 @@ export function createHybridPersister(dbName = "academic-explorer-cache"): Persi
 			let total = 0;
 			for (const key in localStorage) {
 				if (Object.prototype.hasOwnProperty.call(localStorage, key)) {
-					const value = localStorage[key];
-					if (typeof value === "string") {
+					const value: string | null = localStorage.getItem(key);
+					if (value !== null) {
 						total += (value.length + key.length);
 					}
 				}

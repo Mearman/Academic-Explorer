@@ -100,7 +100,7 @@ export const LeftSidebar: React.FC = () => {
 		if (newValue) {
 			// Load all cached nodes when enabling cache visibility
 			try {
-				await loadAllCachedNodes()
+				loadAllCachedNodes()
 			} catch (error) {
 				logError("Failed to load cached nodes", error, "LeftSidebar", "ui")
 			}
