@@ -250,7 +250,7 @@ export function MissingPaperDetection({ dataset, onDetectionComplete }: MissingP
 
         {currentJob?.results && (
           <button
-            onClick={() => { logger.debug('ui', 'Export detection results clicked', { resultsCount: currentJob.results?.missingPapers.length }, 'MissingPaperDetection'); }}
+            onClick={() => { logger.debug('ui', 'Export detection results clicked', { resultsCount: currentJob.results?.candidateMissingPapers.length }, 'MissingPaperDetection'); }}
             style={{
               padding: '12px 24px',
               backgroundColor: '#10b981',

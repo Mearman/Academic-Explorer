@@ -144,7 +144,7 @@ export function createHybridPersister(dbName = 'academic-explorer-cache'): Persi
                   localStorage.removeItem(LOCALSTORAGE_KEY);
                 } else {
                   // Remove metadata and return
-                  const { timestamp, version, ...clientData } = parsed;
+                  const { version, ...clientData } = parsed;
                   if (clientData.clientState) {
                     logger.info('cache', 'Restored query client from localStorage', { age });
                     return clientData;
@@ -186,7 +186,7 @@ export function createHybridPersister(dbName = 'academic-explorer-cache'): Persi
         }
 
         // Remove our metadata before returning to TanStack Query
-        const { timestamp, version, ...clientData } = persistedData;
+        const { version, ...clientData } = persistedData;
 
         // Validate that clientData has the required PersistedClient structure
         if (!clientData.clientState) {
@@ -296,7 +296,7 @@ export function createIDBPersister(dbName = 'academic-explorer-cache'): Persiste
         }
 
         // Remove our metadata before returning to TanStack Query
-        const { timestamp, version, ...clientData } = persistedData;
+        const { version, ...clientData } = persistedData;
 
         // Validate that clientData has the required PersistedClient structure
         if (!clientData.clientState) {

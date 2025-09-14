@@ -165,7 +165,20 @@ export class GraphDataService {
         limit: options.limit || 20,
       });
 
-      const { nodes, edges } = this.transformSearchResults(results);
+      // Flatten the results object into a single array
+      const flatResults: OpenAlexEntity[] = [
+        ...results.works,
+        ...results.authors,
+        ...results.sources,
+        ...results.institutions,
+        ...results.topics,
+        ...results.publishers,
+        ...results.funders,
+        ...results.keywords,
+        ...results.geo,
+      ];
+
+      const { nodes, edges } = this.transformSearchResults(flatResults);
 
       // Clear existing graph and add search results
       store.clear();

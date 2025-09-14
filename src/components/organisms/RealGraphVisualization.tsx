@@ -15,8 +15,10 @@ import {
   Background,
   BackgroundVariant,
   type Node,
+  type Edge,
   type OnConnect,
   type OnNodesChange,
+  type OnEdgesChange,
 } from '@xyflow/react'
 import { useGraphStore } from '@/stores/graph-store'
 import { useGraphData } from '@/hooks/use-graph-data'
@@ -67,8 +69,8 @@ const RealGraphVisualizationInner: React.FC = () => {
   }, [graphNodes, graphEdges, provider])
 
   // Initialize XYFlow state
-  const [nodes, setNodes, onNodesChange] = useNodesState([])
-  const [edges, setEdges, onEdgesChange] = useEdgesState([])
+  const [nodes, setNodes, onNodesChange] = useNodesState<Node>([])
+  const [edges, setEdges, onEdgesChange] = useEdgesState<Edge>([])
 
   // Track layout type changes to force complete re-layout
   const prevLayoutType = useRef(currentLayout.type)
@@ -151,8 +153,8 @@ const RealGraphVisualizationInner: React.FC = () => {
   )
 
   // Custom onNodesChange to sync position updates back to provider and graph store
-  const handleNodesChange: OnNodesChange = useCallback((changes) => {
-    logger.info('graph', 'handleNodesChange called', { changes: changes.map(c => ({ type: c.type, id: c.id, position: 'position' in c ? c.position : undefined })) }, 'RealGraphVisualization')
+  const handleNodesChange: OnNodesChange<Node> = useCallback((changes) => {
+    logger.info('graph', 'handleNodesChange called', { changes: changes.map(c => ({ type: c.type, id: 'id' in c ? c.id : undefined, position: 'position' in c ? c.position : undefined })) }, 'RealGraphVisualization')
     onNodesChange(changes)
 
     // Update positions in provider for persistence
@@ -220,7 +222,7 @@ const RealGraphVisualizationInner: React.FC = () => {
           y={contextMenu.y}
           onClose={hideContextMenu}
           onViewDetails={(node) => {
-            logger.info('ui', 'View details for node', { nodeId: node.id, entityType: node.entityType }, 'RealGraphVisualization')
+            logger.info('ui', 'View details for node', { nodeId: node.id, entityType: node.type }, 'RealGraphVisualization')
             hideContextMenu()
             // TODO: Show details in right sidebar or navigate to entity page
           }}

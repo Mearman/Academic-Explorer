@@ -176,7 +176,9 @@ export function EntityGraphPanel() {
 
         <Divider />
 
-        <Tabs value={activeTab} onChange={setActiveTab}>
+        <Tabs value={activeTab} onChange={(value) => {
+          setActiveTab(value || 'overview');
+        }}>
           <Tabs.List>
             <Tabs.Tab value="overview" leftSection={<IconInfoCircle size={14} />}>
               Overview
@@ -291,7 +293,7 @@ export function EntityGraphPanel() {
                   <Box mt="sm">
                     <Text size="sm" c="dimmed" mb="xs">Selected Nodes:</Text>
                     {stats.nodes.selected.map(nodeId => (
-                      <Code key={nodeId} size="xs">{nodeId}</Code>
+                      <Code key={nodeId}>{nodeId}</Code>
                     ))}
                   </Box>
                 )}

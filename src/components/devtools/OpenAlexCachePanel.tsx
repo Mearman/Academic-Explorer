@@ -182,7 +182,7 @@ export function OpenAlexCachePanel() {
             </Group>
             <Text size="sm" c="dimmed">Database Names:</Text>
             {stats.indexedDB.databases.map(db => (
-              <Code key={db} size="xs">{db}</Code>
+              <Code key={db}>{db}</Code>
             ))}
           </Stack>
           <Button
@@ -216,7 +216,7 @@ export function OpenAlexCachePanel() {
             </Group>
             <Text size="sm" c="dimmed">Storage Keys:</Text>
             {stats.localStorage.keys.map(key => (
-              <Code key={key} size="xs">{key}</Code>
+              <Code key={key}>{key}</Code>
             ))}
           </Stack>
           <Button
@@ -238,7 +238,7 @@ export function OpenAlexCachePanel() {
             {stats.recentRequests.map((request, index) => (
               <Group key={index} justify="space-between" p="xs" style={{ borderRadius: 4, backgroundColor: 'var(--mantine-color-gray-0)' }}>
                 <Stack gap={2}>
-                  <Code size="xs">{request.url}</Code>
+                  <Code>{request.url}</Code>
                   <Group gap="xs">
                     <Badge size="xs" color={getStatusColor(request.status)} variant="light">
                       {request.status}
