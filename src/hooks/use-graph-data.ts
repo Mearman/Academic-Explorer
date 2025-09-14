@@ -7,7 +7,7 @@ import { useCallback, useRef } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { GraphDataService } from "@/services/graph-data-service";
 import { useGraphStore } from "@/stores/graph-store";
-import { logError } from "@/lib/logger";
+import { logger, logError } from "@/lib/logger";
 import type { SearchOptions } from "@/lib/graph/types";
 
 export function useGraphData() {
@@ -85,6 +85,7 @@ export function useGraphData() {
 			await service.current.expandNode(nodeId, {
 				depth: traversalDepth,
 				limit: 10, // Moderate limit for manual expansion
+				force: true, // Force expansion even if marked as already expanded
 			});
 
 			// Recalculate depths after expansion
