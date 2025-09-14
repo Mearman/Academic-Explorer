@@ -30,7 +30,7 @@ export class XYFlowProvider implements GraphProvider {
 	private events: GraphEvents = {};
 	private reactFlowInstance: ReactFlowInstance | null = null;
 	private mounted = false;
-	private recalculateTimeout: number | null = null;
+	private recalculateTimeout: ReturnType<typeof setTimeout> | null = null;
 
 	// Convert generic GraphNode to XYFlow node
 	private toXYNode(node: GraphNode): XYNode {
