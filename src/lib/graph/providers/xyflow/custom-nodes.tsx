@@ -47,17 +47,18 @@ interface CustomNodeProps {
 const baseNodeStyle: React.CSSProperties = {
 	padding: "8px 12px",
 	borderRadius: "8px",
-	border: "2px solid #333",
+	border: "none",
 	fontSize: "11px",
 	fontWeight: "bold",
 	color: "white",
 	textAlign: "center",
 	minWidth: "120px",
 	maxWidth: "200px",
-	position: "relative",
 	cursor: "pointer",
 	wordWrap: "break-word",
 	lineHeight: "1.2",
+	width: "fit-content",
+	height: "fit-content",
 };
 
 // Entity-specific colors
@@ -123,14 +124,12 @@ export const CustomNode: React.FC<CustomNodeProps> = ({ data, selected }) => {
 	const nodeStyle: React.CSSProperties = {
 		...baseNodeStyle,
 		backgroundColor,
-		borderColor: selected ? "#fff" : "#333",
-		borderWidth: selected ? "3px" : "2px",
 		boxShadow: selected ? "0 0 0 2px rgba(52, 152, 219, 0.5)" : "none",
 	};
 
 	return (
 		<div style={nodeStyle}>
-			{/* Connection handles - all four sides for flexible edge connections */}
+			{/* Connection handles - XYFlow automatically positions at node edges */}
 			<Handle
 				type="target"
 				position={Position.Top}
@@ -244,13 +243,12 @@ export const WorkNode: React.FC<CustomNodeProps> = ({ data, selected }) => {
 	const nodeStyle: React.CSSProperties = {
 		...baseNodeStyle,
 		backgroundColor: "#e74c3c",
-		borderColor: selected ? "#fff" : "#333",
-		borderWidth: selected ? "3px" : "2px",
+		boxShadow: selected ? "0 0 0 2px rgba(52, 152, 219, 0.5)" : "none",
 	};
 
 	return (
 		<div style={nodeStyle}>
-			{/* Connection handles - all four sides */}
+			{/* Connection handles - XYFlow automatically positions at node edges */}
 			<Handle type="target" position={Position.Top} id="top" style={{ background: '#555', width: '8px', height: '8px' }} />
 			<Handle type="target" position={Position.Right} id="right" style={{ background: '#555', width: '8px', height: '8px' }} />
 			<Handle type="target" position={Position.Bottom} id="bottom" style={{ background: '#555', width: '8px', height: '8px' }} />
@@ -284,15 +282,14 @@ export const AuthorNode: React.FC<CustomNodeProps> = ({ data, selected }) => {
 	const nodeStyle: React.CSSProperties = {
 		...baseNodeStyle,
 		backgroundColor: "#3498db",
-		borderColor: selected ? "#fff" : "#333",
-		borderWidth: selected ? "3px" : "2px",
+		boxShadow: selected ? "0 0 0 2px rgba(52, 152, 219, 0.5)" : "none",
 	};
 
 	const orcid = data.externalIds.find(id => id.type === "orcid");
 
 	return (
 		<div style={nodeStyle}>
-			{/* Connection handles - all four sides */}
+			{/* Connection handles - XYFlow automatically positions at node edges */}
 			<Handle type="target" position={Position.Top} id="top" style={{ background: '#555', width: '8px', height: '8px' }} />
 			<Handle type="target" position={Position.Right} id="right" style={{ background: '#555', width: '8px', height: '8px' }} />
 			<Handle type="target" position={Position.Bottom} id="bottom" style={{ background: '#555', width: '8px', height: '8px' }} />
@@ -320,15 +317,14 @@ export const SourceNode: React.FC<CustomNodeProps> = ({ data, selected }) => {
 	const nodeStyle: React.CSSProperties = {
 		...baseNodeStyle,
 		backgroundColor: "#2ecc71",
-		borderColor: selected ? "#fff" : "#333",
-		borderWidth: selected ? "3px" : "2px",
+		boxShadow: selected ? "0 0 0 2px rgba(52, 152, 219, 0.5)" : "none",
 	};
 
 	const issn = data.externalIds.find(id => id.type === "issn_l");
 
 	return (
 		<div style={nodeStyle}>
-			{/* Connection handles - all four sides */}
+			{/* Connection handles - XYFlow automatically positions at node edges */}
 			<Handle type="target" position={Position.Top} id="top" style={{ background: '#555', width: '8px', height: '8px' }} />
 			<Handle type="target" position={Position.Right} id="right" style={{ background: '#555', width: '8px', height: '8px' }} />
 			<Handle type="target" position={Position.Bottom} id="bottom" style={{ background: '#555', width: '8px', height: '8px' }} />
@@ -356,15 +352,14 @@ export const InstitutionNode: React.FC<CustomNodeProps> = ({ data, selected }) =
 	const nodeStyle: React.CSSProperties = {
 		...baseNodeStyle,
 		backgroundColor: "#f39c12",
-		borderColor: selected ? "#fff" : "#333",
-		borderWidth: selected ? "3px" : "2px",
+		boxShadow: selected ? "0 0 0 2px rgba(52, 152, 219, 0.5)" : "none",
 	};
 
 	const ror = data.externalIds.find(id => id.type === "ror");
 
 	return (
 		<div style={nodeStyle}>
-			{/* Connection handles - all four sides */}
+			{/* Connection handles - XYFlow automatically positions at node edges */}
 			<Handle type="target" position={Position.Top} id="top" style={{ background: '#555', width: '8px', height: '8px' }} />
 			<Handle type="target" position={Position.Right} id="right" style={{ background: '#555', width: '8px', height: '8px' }} />
 			<Handle type="target" position={Position.Bottom} id="bottom" style={{ background: '#555', width: '8px', height: '8px' }} />
