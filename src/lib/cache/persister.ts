@@ -89,7 +89,7 @@ export function createHybridPersister(dbName = "academic-explorer-cache"): Persi
 		try {
 			let total = 0;
 			for (const key in localStorage) {
-				if (localStorage.hasOwnProperty(key)) {
+				if (Object.prototype.hasOwnProperty.call(localStorage, key)) {
 					total += (localStorage[key].length + key.length);
 				}
 			}
@@ -141,7 +141,7 @@ export function createHybridPersister(dbName = "academic-explorer-cache"): Persi
 						} catch (error) {
 							logger.warn("cache", "localStorage persistence failed, falling back to IndexedDB", { error });
 							// Clear localStorage item if it was partially written
-							try { localStorage.removeItem(LOCALSTORAGE_KEY); } catch {}
+							try { localStorage.removeItem(LOCALSTORAGE_KEY); } catch { /* Ignore cleanup errors */ }
 						}
 					} else {
 						logger.info("cache", "localStorage full, using IndexedDB for persistence", {
@@ -202,7 +202,7 @@ export function createHybridPersister(dbName = "academic-explorer-cache"): Persi
 					} catch (error) {
 						logger.warn("cache", "localStorage restore failed, trying IndexedDB", { error });
 						// Clear corrupted localStorage item
-						try { localStorage.removeItem(LOCALSTORAGE_KEY); } catch {}
+						try { localStorage.removeItem(LOCALSTORAGE_KEY); } catch { /* Ignore cleanup errors */ }
 					}
 				}
 
@@ -408,7 +408,7 @@ export async function getCacheStats(dbName = "academic-explorer-cache") {
 		const persistedData = data;
 
 		const age = persistedData.timestamp ? Date.now() - persistedData.timestamp : 0;
-		const queryCount = persistedData.clientState?.queries?.length || 0;
+		const queryCount = persistedData.clientState.queries.length || 0;
 
 		// Estimate size (rough approximation)
 		const estimatedSize = new Blob([JSON.stringify(persistedData)]).size;

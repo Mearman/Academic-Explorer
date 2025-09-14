@@ -380,7 +380,7 @@ export abstract class AbstractEntity<TEntity extends OpenAlexEntity> {
   protected async fetchRelatedEntity(entityId: string, preferMetadata: boolean = false): Promise<OpenAlexEntity | null> {
   	try {
   		// Detect the entity type from the ID (validates ID format)
-  		const entityType = detectEntityType(entityId);
+  		detectEntityType(entityId);
 
   		// Fetch the entity directly using the client
   		// The preferMetadata parameter is noted for potential future field selection optimization
@@ -434,7 +434,7 @@ export abstract class AbstractEntity<TEntity extends OpenAlexEntity> {
    * Can be overridden for entity-specific validation
    */
   public validate(entity: OpenAlexEntity): boolean {
-  	return Boolean(entity?.id && entity?.display_name);
+  	return Boolean(entity.id && entity.display_name);
   }
 
   /**
