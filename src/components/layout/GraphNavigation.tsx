@@ -64,10 +64,16 @@ const GraphNavigationInner: React.FC<GraphNavigationProps> = ({ className, style
   // Provider instance ref
   const providerRef = useRef<XYFlowProvider | null>(null);
 
-  // Layout hook integration
+  // Layout hook integration - throttled to reduce log spam
+  const lastLogRef = useRef<number>(0);
   const onLayoutChange = useCallback(() => {
     // Layout positions have changed, re-sync if needed
-    logger.info('graph', 'Layout positions updated', undefined, 'GraphNavigation');
+    const now = Date.now();
+    // Only log every 500ms to reduce spam
+    if (now - lastLogRef.current > 500) {
+      logger.info('graph', 'Layout positions updated', undefined, 'GraphNavigation');
+      lastLogRef.current = now;
+    }
   }, []);
 
   const { isRunning: isLayoutRunning, reheatLayout } = useLayout(
