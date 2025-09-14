@@ -13,9 +13,10 @@ import { OpenAlexBaseClient } from '../client';
 
 /**
  * Extended query parameters specific to Geo API
+ * Note: Uses string filter to maintain compatibility with base QueryParams
  */
 export interface GeoQueryParams extends QueryParams {
-  filter?: GeoFilters;
+  // filter inherited from QueryParams as string
 }
 
 /**
