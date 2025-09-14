@@ -11,7 +11,9 @@ import type {
 	GraphProvider,
 	ProviderType,
 	GraphLayout,
+	EntityType,
 } from "@/lib/graph/types";
+import { RelationType } from "@/lib/graph/types";
 
 interface GraphState {
   // Data (library agnostic)
@@ -33,6 +35,13 @@ interface GraphState {
   // Loading states
   isLoading: boolean;
   error: string | null;
+
+  // Entity type visibility and statistics
+  visibleEntityTypes: Set<EntityType>;
+  lastSearchStats: Map<EntityType, number>;
+
+  // Edge type visibility
+  visibleEdgeTypes: Set<RelationType>;
 
   // Actions (work with any provider)
   setProvider: (provider: GraphProvider) => void;
@@ -71,6 +80,22 @@ interface GraphState {
   setLoading: (loading: boolean) => void;
   setError: (error: string | null) => void;
 
+  // Entity type management
+  toggleEntityTypeVisibility: (entityType: EntityType) => void;
+  setEntityTypeVisibility: (entityType: EntityType, visible: boolean) => void;
+  setAllEntityTypesVisible: (visible: boolean) => void;
+  updateSearchStats: (stats: Map<EntityType, number>) => void;
+  getEntityTypeStats: () => { visible: Map<EntityType, number>; total: Map<EntityType, number>; searchResults: Map<EntityType, number> };
+  getVisibleNodes: () => GraphNode[];
+  getVisibleEdges: () => GraphEdge[];
+
+  // Edge type management
+  toggleEdgeTypeVisibility: (edgeType: RelationType) => void;
+  setEdgeTypeVisibility: (edgeType: RelationType, visible: boolean) => void;
+  setAllEdgeTypesVisible: (visible: boolean) => void;
+  getEdgeTypeStats: () => { visible: Map<RelationType, number>; total: Map<RelationType, number> };
+  getVisibleEdgesByType: () => GraphEdge[];
+
   // Graph queries (provider agnostic)
   getNeighbors: (nodeId: string) => GraphNode[];
   getConnectedEdges: (nodeId: string) => GraphEdge[];
@@ -89,6 +114,9 @@ export const useGraphStore = create<GraphState>()(
 			selectedNodes: new Set(),
 			provider: null,
 			providerType: "xyflow",
+			visibleEntityTypes: new Set(["works", "authors", "sources", "institutions", "topics", "publishers", "funders", "keywords", "geo"]),
+			lastSearchStats: new Map(),
+			visibleEdgeTypes: new Set(["authored", "cited", "affiliated", "published_in", "funded_by", "related_to", "references"] as RelationType[]),
 			currentLayout: {
 				type: "d3-force",
 				options: {
@@ -308,6 +336,141 @@ export const useGraphStore = create<GraphState>()(
 			setLoading: (loading) => set({ isLoading: loading }),
 			setError: (error) => set({ error }),
 
+			// Entity type management
+			toggleEntityTypeVisibility: (entityType) => {
+				set((state) => {
+					const newVisibleTypes = new Set(state.visibleEntityTypes);
+					if (newVisibleTypes.has(entityType)) {
+						newVisibleTypes.delete(entityType);
+					} else {
+						newVisibleTypes.add(entityType);
+					}
+					return { visibleEntityTypes: newVisibleTypes };
+				});
+			},
+
+			setEntityTypeVisibility: (entityType, visible) => {
+				set((state) => {
+					const newVisibleTypes = new Set(state.visibleEntityTypes);
+					if (visible) {
+						newVisibleTypes.add(entityType);
+					} else {
+						newVisibleTypes.delete(entityType);
+					}
+					return { visibleEntityTypes: newVisibleTypes };
+				});
+			},
+
+			setAllEntityTypesVisible: (visible) => {
+				const allTypes: EntityType[] = ["works", "authors", "sources", "institutions", "topics", "publishers", "funders", "keywords", "geo"];
+				set({
+					visibleEntityTypes: visible ? new Set(allTypes) : new Set()
+				});
+			},
+
+			updateSearchStats: (stats) => {
+				set({ lastSearchStats: new Map(stats) });
+			},
+
+			getEntityTypeStats: () => {
+				const { nodes, visibleEntityTypes, lastSearchStats } = get();
+				const total = new Map<EntityType, number>();
+				const visible = new Map<EntityType, number>();
+
+				// Count total and visible nodes by type
+				nodes.forEach(node => {
+					const currentTotal = total.get(node.type) || 0;
+					total.set(node.type, currentTotal + 1);
+
+					if (visibleEntityTypes.has(node.type)) {
+						const currentVisible = visible.get(node.type) || 0;
+						visible.set(node.type, currentVisible + 1);
+					}
+				});
+
+				return {
+					total,
+					visible,
+					searchResults: lastSearchStats
+				};
+			},
+
+			getVisibleNodes: () => {
+				const { nodes, visibleEntityTypes } = get();
+				return Array.from(nodes.values()).filter(node => visibleEntityTypes.has(node.type));
+			},
+
+			getVisibleEdges: () => {
+				const { edges, nodes, visibleEntityTypes, visibleEdgeTypes } = get();
+				return Array.from(edges.values()).filter(edge => {
+					const sourceNode = nodes.get(edge.source);
+					const targetNode = nodes.get(edge.target);
+					return sourceNode && targetNode &&
+						visibleEntityTypes.has(sourceNode.type) &&
+						visibleEntityTypes.has(targetNode.type) &&
+						visibleEdgeTypes.has(edge.type);
+				});
+			},
+
+			// Edge type management
+			toggleEdgeTypeVisibility: (edgeType) => {
+				set((state) => {
+					const newVisibleTypes = new Set(state.visibleEdgeTypes);
+					if (newVisibleTypes.has(edgeType)) {
+						newVisibleTypes.delete(edgeType);
+					} else {
+						newVisibleTypes.add(edgeType);
+					}
+					return { visibleEdgeTypes: newVisibleTypes };
+				});
+			},
+
+			setEdgeTypeVisibility: (edgeType, visible) => {
+				set((state) => {
+					const newVisibleTypes = new Set(state.visibleEdgeTypes);
+					if (visible) {
+						newVisibleTypes.add(edgeType);
+					} else {
+						newVisibleTypes.delete(edgeType);
+					}
+					return { visibleEdgeTypes: newVisibleTypes };
+				});
+			},
+
+			setAllEdgeTypesVisible: (visible) => {
+				const allTypes: RelationType[] = ["authored", "cited", "affiliated", "published_in", "funded_by", "related_to", "references"] as RelationType[];
+				set({
+					visibleEdgeTypes: visible ? new Set(allTypes) : new Set()
+				});
+			},
+
+			getEdgeTypeStats: () => {
+				const { edges, visibleEdgeTypes } = get();
+				const total = new Map<RelationType, number>();
+				const visible = new Map<RelationType, number>();
+
+				// Count total and visible edges by type
+				edges.forEach(edge => {
+					const currentTotal = total.get(edge.type) || 0;
+					total.set(edge.type, currentTotal + 1);
+
+					if (visibleEdgeTypes.has(edge.type)) {
+						const currentVisible = visible.get(edge.type) || 0;
+						visible.set(edge.type, currentVisible + 1);
+					}
+				});
+
+				return {
+					total,
+					visible
+				};
+			},
+
+			getVisibleEdgesByType: () => {
+				const { edges, visibleEdgeTypes } = get();
+				return Array.from(edges.values()).filter(edge => visibleEdgeTypes.has(edge.type));
+			},
+
 			// Graph algorithms (work with generic data)
 			getNeighbors: (nodeId) => {
 				const { edges, nodes } = get();
@@ -413,7 +576,17 @@ export const useGraphStore = create<GraphState>()(
 			partialize: (state) => ({
 				currentLayout: state.currentLayout,
 				providerType: state.providerType,
+				visibleEntityTypes: Array.from(state.visibleEntityTypes),
+				visibleEdgeTypes: Array.from(state.visibleEdgeTypes),
 			}),
+			onRehydrateStorage: () => (state) => {
+				if (state && Array.isArray(state.visibleEntityTypes)) {
+					state.visibleEntityTypes = new Set(state.visibleEntityTypes as EntityType[]);
+				}
+				if (state && Array.isArray(state.visibleEdgeTypes)) {
+					state.visibleEdgeTypes = new Set(state.visibleEdgeTypes as RelationType[]);
+				}
+			},
 		}
 	)
 );
