@@ -112,8 +112,8 @@ describe('QueryBuilder', () => {
     });
 
     it('should ignore null and undefined values', () => {
-      queryBuilder.addFilter('publication_year', null as any);
-      queryBuilder.addFilter('is_oa', undefined as any);
+      queryBuilder.addFilter('publication_year', null as WorksFilters['publication_year']);
+      queryBuilder.addFilter('is_oa', undefined as WorksFilters['is_oa']);
       expect(queryBuilder.build()).toEqual({});
     });
 
@@ -166,7 +166,7 @@ describe('QueryBuilder', () => {
         'is_oa': null,
         'has_doi': undefined,
         'cited_by_count': '100'
-      } as any;
+      } as Partial<WorksFilters>;
 
       queryBuilder.addFilters(filters);
       expect(queryBuilder.build()).toEqual({
@@ -357,8 +357,8 @@ describe('QueryBuilder', () => {
 describe('buildFilterString', () => {
   it('should return empty string for empty filters', () => {
     expect(buildFilterString({})).toBe('');
-    expect(buildFilterString(null as any)).toBe('');
-    expect(buildFilterString(undefined as any)).toBe('');
+    expect(buildFilterString(null as Partial<EntityFilters> | null)).toBe('');
+    expect(buildFilterString(undefined as Partial<EntityFilters> | undefined)).toBe('');
   });
 
   it('should build simple field-value pairs', () => {
@@ -404,7 +404,7 @@ describe('buildFilterString', () => {
       'is_oa': null,
       'has_doi': undefined,
       'cited_by_count': '100'
-    } as any;
+    } as Partial<WorksFilters>;
 
     const result = buildFilterString(filters);
     expect(result).toBe('publication_year:2023,cited_by_count:100');
@@ -443,7 +443,7 @@ describe('buildFilterString', () => {
   it('should handle arrays with null/undefined values', () => {
     const filters = {
       'authorships.author.id': ['A123', null, undefined, 'A456']
-    } as any;
+    } as Partial<WorksFilters>;
 
     const result = buildFilterString(filters);
     expect(result).toBe('authorships.author.id:A123|A456');
@@ -452,8 +452,8 @@ describe('buildFilterString', () => {
 
 describe('buildSortString', () => {
   it('should return empty string for null/undefined input', () => {
-    expect(buildSortString(null as any)).toBe('');
-    expect(buildSortString(undefined as any)).toBe('');
+    expect(buildSortString(null as SortOptions | null)).toBe('');
+    expect(buildSortString(undefined as SortOptions | undefined)).toBe('');
   });
 
   it('should handle single sort option with default ascending direction', () => {
@@ -507,8 +507,8 @@ describe('buildSelectString', () => {
   });
 
   it('should return empty string for null/undefined input', () => {
-    expect(buildSelectString(null as any)).toBe('');
-    expect(buildSelectString(undefined as any)).toBe('');
+    expect(buildSelectString(null as string[] | null)).toBe('');
+    expect(buildSelectString(undefined as string[] | undefined)).toBe('');
   });
 
   it('should join field names with commas', () => {
@@ -532,7 +532,7 @@ describe('buildSelectString', () => {
   });
 
   it('should handle arrays with all empty/invalid fields', () => {
-    const fields = ['', '  ', null, undefined] as any;
+    const fields = ['', '  ', null, undefined] as (string | null | undefined)[];
     expect(buildSelectString(fields)).toBe('');
   });
 });
@@ -565,7 +565,7 @@ describe('validateDateRange', () => {
     expect(result.isValid).toBe(false);
     expect(result.error).toContain('Both from and to dates must be provided');
 
-    result = validateDateRange(null as any, undefined as any);
+    result = validateDateRange(null as string, undefined as string);
     expect(result.isValid).toBe(false);
     expect(result.error).toContain('Both from and to dates must be provided');
   });
@@ -629,14 +629,14 @@ describe('validateDateRange', () => {
 describe('escapeFilterValue', () => {
   it('should return empty string for null/undefined/empty input', () => {
     expect(escapeFilterValue('')).toBe('');
-    expect(escapeFilterValue(null as any)).toBe('');
-    expect(escapeFilterValue(undefined as any)).toBe('');
+    expect(escapeFilterValue(null as unknown as string)).toBe('');
+    expect(escapeFilterValue(undefined as unknown as string)).toBe('');
   });
 
   it('should return non-string input as empty string', () => {
-    expect(escapeFilterValue(123 as any)).toBe('');
-    expect(escapeFilterValue(true as any)).toBe('');
-    expect(escapeFilterValue({} as any)).toBe('');
+    expect(escapeFilterValue(123 as unknown as string)).toBe('');
+    expect(escapeFilterValue(true as unknown as string)).toBe('');
+    expect(escapeFilterValue({} as unknown as string)).toBe('');
   });
 
   it('should trim input strings', () => {
