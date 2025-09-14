@@ -124,12 +124,13 @@ export class GeoApi {
     continent: string,
     params: GeoQueryParams = {}
   ): Promise<OpenAlexResponse<Geo>> {
+    const filters: GeoFilters = {
+      'continent': continent,
+    };
+
     return this.getGeos({
       ...params,
-      filter: {
-        ...params.filter,
-        'continent': continent,
-      },
+      filter: this.buildFilterString(filters),
     });
   }
 
@@ -152,12 +153,13 @@ export class GeoApi {
     countryCode: string,
     params: GeoQueryParams = {}
   ): Promise<OpenAlexResponse<Geo>> {
+    const filters: GeoFilters = {
+      'country_code': countryCode,
+    };
+
     return this.getGeos({
       ...params,
-      filter: {
-        ...params.filter,
-        'country_code': countryCode,
-      },
+      filter: this.buildFilterString(filters),
     });
   }
 
@@ -176,13 +178,14 @@ export class GeoApi {
    * ```
    */
   async getContinents(params: GeoQueryParams = {}): Promise<OpenAlexResponse<Geo>> {
+    const filters: GeoFilters = {
+      // Continents typically don't have country codes - exclude items with country codes
+      // Note: OpenAlex may not support negation, so this might need adjustment
+    };
+
     return this.getGeos({
       ...params,
-      filter: {
-        ...params.filter,
-        // Continents typically don't have country codes
-        'country_code': null,
-      },
+      filter: this.buildFilterString(filters),
       sort: 'works_count',
     });
   }
@@ -202,12 +205,13 @@ export class GeoApi {
    * ```
    */
   async getTopResearchCountries(params: GeoQueryParams = {}): Promise<OpenAlexResponse<Geo>> {
+    const filters: GeoFilters = {
+      'works_count': '>1000',
+    };
+
     return this.getGeos({
       ...params,
-      filter: {
-        ...params.filter,
-        'works_count': '>1000',
-      },
+      filter: this.buildFilterString(filters),
       sort: 'works_count',
     });
   }
@@ -338,12 +342,13 @@ export class GeoApi {
     minWorksCount: number,
     params: GeoQueryParams = {}
   ): Promise<OpenAlexResponse<Geo>> {
+    const filters: GeoFilters = {
+      'works_count': `>=${minWorksCount}`,
+    };
+
     return this.getGeos({
       ...params,
-      filter: {
-        ...params.filter,
-        'works_count': `>=${minWorksCount}`,
-      },
+      filter: this.buildFilterString(filters),
     });
   }
 
@@ -363,14 +368,39 @@ export class GeoApi {
    */
   async getEmergingResearchRegions(params: GeoQueryParams = {}): Promise<OpenAlexResponse<Geo>> {
     const currentYear = new Date().getFullYear();
+
+    const filters: GeoFilters = {
+      'works_count': '>50',
+      'from_created_date': `${currentYear - 5}-01-01`, // Last 5 years
+    };
+
     return this.getGeos({
       ...params,
-      filter: {
-        ...params.filter,
-        'works_count': '>50',
-        'from_created_date': `${currentYear - 5}-01-01`, // Last 5 years
-      },
+      filter: this.buildFilterString(filters),
       sort: 'works_count',
     });
+  }
+
+  /**
+   * Build filter string from GeoFilters object
+   * @private
+   */
+  private buildFilterString(filters: GeoFilters): string {
+    const filterParts: string[] = [];
+    Object.entries(filters).forEach(([key, value]) => {
+      if (value !== undefined && value !== null) {
+        if (Array.isArray(value)) {
+          // Handle array values (OR logic)
+          filterParts.push(`${key}:${value.join('|')}`);
+        } else if (typeof value === 'boolean') {
+          // Handle boolean values
+          filterParts.push(`${key}:${value}`);
+        } else {
+          // Handle string/number values
+          filterParts.push(`${key}:${value}`);
+        }
+      }
+    });
+    return filterParts.join(',');
   }
 }
