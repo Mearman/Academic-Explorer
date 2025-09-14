@@ -387,7 +387,7 @@ function DatasetsManagement() {
 												<div style={{
 													backgroundColor: "#3b82f6",
 													height: "100%",
-													width: `${uploadProgress}%`,
+													width: `${String(uploadProgress)}%`,
 													transition: "width 0.3s ease"
 												}} />
 											</div>

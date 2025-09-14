@@ -39,7 +39,7 @@ export const DEFAULT_SEARCH_CONFIG: AcademicExplorerSearchConfig = {
 export function convertWorkToReference(work: Work): WorkReference {
 	// Extract authors from authorships
 	const authors = work.authorships
-		.map(authorship => authorship.author?.display_name)
+		.map(authorship => authorship.author.display_name)
 		.filter((name): name is string => typeof name === "string" && name.length > 0);
 
 	// Get source name from primary location
@@ -50,7 +50,7 @@ export function convertWorkToReference(work: Work): WorkReference {
 	return {
 		title: work.display_name || work.title || "Untitled",
 		authors,
-		doi: work.doi || work.ids?.doi,
+		doi: work.doi || work.ids.doi,
 		openalexId: work.id,
 		publicationYear: work.publication_year,
 		source,
@@ -89,14 +89,14 @@ export function extractSearchCriteriaFromDataset(dataset: STARDataset): {
 	};
 
 	// Apply date range if available
-	if (dataset.searchStrategy.dateRange?.start || dataset.searchStrategy.dateRange?.end) {
+	if (dataset.searchStrategy.dateRange.start || dataset.searchStrategy.dateRange.end) {
 		const dateFilter: Record<string, string> = {};
 
-		if (dataset.searchStrategy.dateRange?.start) {
+		if (dataset.searchStrategy.dateRange.start) {
 			dateFilter["publication_year"] = `>${String(dataset.searchStrategy.dateRange.start.getFullYear() - 1)}`;
 		}
 
-		if (dataset.searchStrategy.dateRange?.end) {
+		if (dataset.searchStrategy.dateRange.end) {
 			const endYear = dataset.searchStrategy.dateRange.end.getFullYear();
 			const startFilter = dateFilter["publication_year"] || "";
 			dateFilter["publication_year"] = startFilter ?
@@ -192,10 +192,10 @@ export async function searchBasedOnSTARDataset(
 	const mergedConfig: AcademicExplorerSearchConfig = {
 		...config,
 		// Use dataset date range if available, otherwise fall back to config
-		yearRange: (dataset.searchStrategy.dateRange?.start || dataset.searchStrategy.dateRange?.end)
+		yearRange: (dataset.searchStrategy.dateRange.start || dataset.searchStrategy.dateRange.end)
 			? {
-				start: dataset.searchStrategy.dateRange?.start?.getFullYear(),
-				end: dataset.searchStrategy.dateRange?.end?.getFullYear()
+				start: dataset.searchStrategy.dateRange.start?.getFullYear(),
+				end: dataset.searchStrategy.dateRange.end?.getFullYear()
 			}
 			: config.yearRange
 	};

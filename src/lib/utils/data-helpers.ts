@@ -128,11 +128,11 @@ export function formatLargeNumber(num: number | null | undefined): string {
 	if (!num || num === 0) return "0";
 
 	if (num >= 1000000) {
-		return `${String((num / 1000000).toFixed(1))}M`;
+		return `${(num / 1000000).toFixed(1)}M`;
 	}
 
 	if (num >= 1000) {
-		return `${String((num / 1000).toFixed(1))}K`;
+		return `${(num / 1000).toFixed(1)}K`;
 	}
 
 	return num.toString();

@@ -90,8 +90,8 @@ function extractPublicationYearRange(dataset: STARDataset): { start: number; end
 
 	if (includedYears.length === 0) {
 		// Fallback to search strategy date range
-		const searchStart = dataset.searchStrategy.dateRange?.start;
-		const searchEnd = dataset.searchStrategy.dateRange?.end;
+		const searchStart = dataset.searchStrategy.dateRange.start;
+		const searchEnd = dataset.searchStrategy.dateRange.end;
 
 		return {
 			start: searchStart ? searchStart.getFullYear() : new Date().getFullYear() - 10,
@@ -110,7 +110,7 @@ function extractPublicationYearRange(dataset: STARDataset): { start: number; end
  */
 function extractDominantKeywords(dataset: STARDataset): string[] {
 	// Combine search strategy keywords with extracted title keywords
-	const searchKeywords = dataset.searchStrategy.keywords || [];
+	const searchKeywords = dataset.searchStrategy.keywords;
 
 	// Extract frequent words from paper titles (simple approach)
 	const titleWords = dataset.includedPapers
@@ -172,7 +172,7 @@ async function performTemporalGapAnalysis(
 
 	try {
 		const response = await openAlex.works.getWorks(worksParams);
-		const works = response.results || [];
+		const works = response.results;
 
 		onProgress?.({
 			currentMethod: "Temporal Gap Analysis",
@@ -244,7 +244,7 @@ async function performCitationNetworkAnalysis(
 				sort: "cited_by_count"
 			});
 
-			const citingWorks = citingPapersResponse.results || [];
+			const citingWorks = citingPapersResponse.results;
 			candidates.push(...citingWorks.map(convertWorkToReference));
 
 			// Small delay to avoid rate limiting
@@ -315,7 +315,7 @@ async function performAuthorNetworkAnalysis(
 			per_page: config.maxPapersPerMethod || 50,
 			sort: "cited_by_count"
 		});
-		const works = response.results || [];
+		const works = response.results;
 
 		candidates.push(...works.map(convertWorkToReference));
 	} catch (error) {
@@ -380,7 +380,7 @@ async function performKeywordExpansionAnalysis(
 				per_page: Math.min(10, (config.maxPapersPerMethod || 50) / (expandedTerms.length / 2)),
 				sort: "cited_by_count"
 			});
-			const works = response.results || [];
+			const works = response.results;
 			candidates.push(...works.map(convertWorkToReference));
 
 			// Small delay to avoid rate limiting
