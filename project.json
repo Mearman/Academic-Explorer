@@ -1,0 +1,115 @@
+{
+  "name": "academic-explorer",
+  "$schema": "node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "src",
+  "projectType": "application",
+  "targets": {
+    "dev": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "vite",
+        "cwd": "{projectRoot}"
+      }
+    },
+    "build": {
+      "executor": "nx:run-commands",
+      "dependsOn": ["typecheck"],
+      "options": {
+        "commands": [
+          "tsc -b",
+          "vite build"
+        ],
+        "cwd": "{projectRoot}"
+      },
+      "outputs": [
+        "{projectRoot}/dist"
+      ],
+      "cache": true
+    },
+    "typecheck": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "tsc --noEmit",
+        "cwd": "{projectRoot}"
+      },
+      "cache": true
+    },
+    "lint": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "eslint .",
+        "cwd": "{projectRoot}"
+      },
+      "cache": true
+    },
+    "test": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "vitest --coverage",
+        "cwd": "{projectRoot}"
+      },
+      "cache": true
+    },
+    "test:run": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "vitest run --coverage",
+        "cwd": "{projectRoot}"
+      },
+      "cache": true
+    },
+    "test:unit:run": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "vitest run --project=unit --coverage",
+        "cwd": "{projectRoot}"
+      },
+      "cache": true
+    },
+    "verify": {
+      "executor": "nx:run-commands",
+      "dependsOn": ["typecheck", "lint", "build"],
+      "options": {
+        "commands": [
+          "vitest run --project=unit --reporter=verbose",
+          "echo '✅ TypeScript checking passed'",
+          "echo '✅ Linting passed'",
+          "echo '✅ Unit tests passed'",
+          "echo '✅ Build completed successfully'",
+          "echo '🎉 All quality checks passed!'"
+        ],
+        "parallel": false,
+        "cwd": "{projectRoot}"
+      }
+    },
+    "verify:full": {
+      "executor": "nx:run-commands",
+      "dependsOn": ["typecheck", "lint", "test:unit:run", "build"],
+      "options": {
+        "commands": [
+          "echo '✅ TypeScript checking passed'",
+          "echo '✅ Linting passed'",
+          "echo '✅ Unit tests with coverage passed'",
+          "echo '✅ Build completed successfully'",
+          "echo '🎉 All quality checks passed with coverage!'"
+        ],
+        "parallel": false,
+        "cwd": "{projectRoot}"
+      }
+    },
+    "verify:parallel": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          "pnpm typecheck",
+          "pnpm lint",
+          "pnpm test:unit:run"
+        ],
+        "parallel": true,
+        "cwd": "{projectRoot}"
+      },
+      "cache": true
+    }
+  },
+  "tags": ["type:app", "scope:academic-explorer"]
+}
