@@ -18,6 +18,7 @@ import { Route as ApiTestRouteImport } from './routes/api-test'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as ExternalIdRouteImport } from './routes/$externalId'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as ExploreGraphRouteImport } from './routes/explore/graph'
 import { Route as EvaluationResultsRouteImport } from './routes/evaluation/results'
 import { Route as EvaluationDatasetsRouteImport } from './routes/evaluation/datasets'
 import { Route as WorksDoiDoiRouteImport } from './routes/works/doi.$doi'
@@ -70,6 +71,11 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ExploreGraphRoute = ExploreGraphRouteImport.update({
+  id: '/graph',
+  path: '/graph',
+  getParentRoute: () => ExploreRoute,
+} as any)
 const EvaluationResultsRoute = EvaluationResultsRouteImport.update({
   id: '/results',
   path: '/results',
@@ -108,11 +114,12 @@ export interface FileRoutesByFullPath {
   '/api-test': typeof ApiTestRoute
   '/demo': typeof DemoRoute
   '/evaluation': typeof EvaluationRouteWithChildren
-  '/explore': typeof ExploreRoute
+  '/explore': typeof ExploreRouteWithChildren
   '/graph': typeof GraphRoute
   '/search': typeof SearchRoute
   '/evaluation/datasets': typeof EvaluationDatasetsRoute
   '/evaluation/results': typeof EvaluationResultsRoute
+  '/explore/graph': typeof ExploreGraphRoute
   '/authors/orcid/$orcid': typeof AuthorsOrcidOrcidRoute
   '/institutions/ror/$ror': typeof InstitutionsRorRorRoute
   '/sources/issn/$issn': typeof SourcesIssnIssnRoute
@@ -125,11 +132,12 @@ export interface FileRoutesByTo {
   '/api-test': typeof ApiTestRoute
   '/demo': typeof DemoRoute
   '/evaluation': typeof EvaluationRouteWithChildren
-  '/explore': typeof ExploreRoute
+  '/explore': typeof ExploreRouteWithChildren
   '/graph': typeof GraphRoute
   '/search': typeof SearchRoute
   '/evaluation/datasets': typeof EvaluationDatasetsRoute
   '/evaluation/results': typeof EvaluationResultsRoute
+  '/explore/graph': typeof ExploreGraphRoute
   '/authors/orcid/$orcid': typeof AuthorsOrcidOrcidRoute
   '/institutions/ror/$ror': typeof InstitutionsRorRorRoute
   '/sources/issn/$issn': typeof SourcesIssnIssnRoute
@@ -143,11 +151,12 @@ export interface FileRoutesById {
   '/api-test': typeof ApiTestRoute
   '/demo': typeof DemoRoute
   '/evaluation': typeof EvaluationRouteWithChildren
-  '/explore': typeof ExploreRoute
+  '/explore': typeof ExploreRouteWithChildren
   '/graph': typeof GraphRoute
   '/search': typeof SearchRoute
   '/evaluation/datasets': typeof EvaluationDatasetsRoute
   '/evaluation/results': typeof EvaluationResultsRoute
+  '/explore/graph': typeof ExploreGraphRoute
   '/authors/orcid/$orcid': typeof AuthorsOrcidOrcidRoute
   '/institutions/ror/$ror': typeof InstitutionsRorRorRoute
   '/sources/issn/$issn': typeof SourcesIssnIssnRoute
@@ -167,6 +176,7 @@ export interface FileRouteTypes {
     | '/search'
     | '/evaluation/datasets'
     | '/evaluation/results'
+    | '/explore/graph'
     | '/authors/orcid/$orcid'
     | '/institutions/ror/$ror'
     | '/sources/issn/$issn'
@@ -184,6 +194,7 @@ export interface FileRouteTypes {
     | '/search'
     | '/evaluation/datasets'
     | '/evaluation/results'
+    | '/explore/graph'
     | '/authors/orcid/$orcid'
     | '/institutions/ror/$ror'
     | '/sources/issn/$issn'
@@ -201,6 +212,7 @@ export interface FileRouteTypes {
     | '/search'
     | '/evaluation/datasets'
     | '/evaluation/results'
+    | '/explore/graph'
     | '/authors/orcid/$orcid'
     | '/institutions/ror/$ror'
     | '/sources/issn/$issn'
@@ -214,7 +226,7 @@ export interface RootRouteChildren {
   ApiTestRoute: typeof ApiTestRoute
   DemoRoute: typeof DemoRoute
   EvaluationRoute: typeof EvaluationRouteWithChildren
-  ExploreRoute: typeof ExploreRoute
+  ExploreRoute: typeof ExploreRouteWithChildren
   GraphRoute: typeof GraphRoute
   SearchRoute: typeof SearchRoute
   AuthorsOrcidOrcidRoute: typeof AuthorsOrcidOrcidRoute
@@ -288,6 +300,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/explore/graph': {
+      id: '/explore/graph'
+      path: '/graph'
+      fullPath: '/explore/graph'
+      preLoaderRoute: typeof ExploreGraphRouteImport
+      parentRoute: typeof ExploreRoute
+    }
     '/evaluation/results': {
       id: '/evaluation/results'
       path: '/results'
@@ -347,6 +366,17 @@ const EvaluationRouteWithChildren = EvaluationRoute._addFileChildren(
   EvaluationRouteChildren,
 )
 
+interface ExploreRouteChildren {
+  ExploreGraphRoute: typeof ExploreGraphRoute
+}
+
+const ExploreRouteChildren: ExploreRouteChildren = {
+  ExploreGraphRoute: ExploreGraphRoute,
+}
+
+const ExploreRouteWithChildren =
+  ExploreRoute._addFileChildren(ExploreRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   ExternalIdRoute: ExternalIdRoute,
@@ -354,7 +384,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiTestRoute: ApiTestRoute,
   DemoRoute: DemoRoute,
   EvaluationRoute: EvaluationRouteWithChildren,
-  ExploreRoute: ExploreRoute,
+  ExploreRoute: ExploreRouteWithChildren,
   GraphRoute: GraphRoute,
   SearchRoute: SearchRoute,
   AuthorsOrcidOrcidRoute: AuthorsOrcidOrcidRoute,
