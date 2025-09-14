@@ -57,6 +57,7 @@
     "@tanstack/react-router-devtools": "^1.131.42",
     "@tanstack/react-table-devtools": "^8.21.3",
     "@tanstack/router-plugin": "^1.131.43",
+    "@testing-library/jest-dom": "^6.8.0",
     "@types/d3-force": "^3.0.10",
     "@types/d3-random": "^3.0.3",
     "@types/lodash-es": "^4.17.12",
