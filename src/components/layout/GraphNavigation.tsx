@@ -32,9 +32,11 @@ import { XYFlowProvider } from "@/lib/graph/providers/xyflow/xyflow-provider";
 import { nodeTypes } from "@/lib/graph/providers/xyflow/node-types";
 import { edgeTypes } from "@/lib/graph/providers/xyflow/edge-types";
 import { useLayout } from "@/lib/graph/providers/xyflow/use-layout";
-import type { GraphNode } from "@/lib/graph/types";
+import type { GraphNode, EntityType, ExternalIdentifier } from "@/lib/graph/types";
 import { EntityDetector } from "@/lib/graph/utils/entity-detection";
 import { useGraphData } from "@/hooks/use-graph-data";
+import { useContextMenu } from "@/hooks/use-context-menu";
+import { NodeContextMenu } from "@/components/layout/NodeContextMenu";
 import { logger } from "@/lib/logger";
 
 import "@xyflow/react/dist/style.css";
@@ -50,6 +52,7 @@ const GraphNavigationInner: React.FC<GraphNavigationProps> = ({ className, style
 	const reactFlowInstance = useReactFlow();
 	const containerRef = useRef<HTMLDivElement>(null);
 	const { loadEntityIntoGraph, expandNode } = useGraphData();
+	const { contextMenu, showContextMenu, hideContextMenu } = useContextMenu();
 
 
 	// Store state
@@ -482,6 +485,23 @@ const GraphNavigationInner: React.FC<GraphNavigationProps> = ({ className, style
 		}
 	}, []);
 
+	// Handle node right-click for context menu
+	const onNodeContextMenu = useCallback((event: React.MouseEvent, node: XYNode) => {
+		event.preventDefault();
+		if (providerRef.current) {
+			// Convert XYFlow node back to GraphNode for context menu
+			const graphNode: GraphNode = {
+				id: node.id,
+				entityId: node.data.entityId as string,
+				type: node.data.entityType as EntityType,
+				label: node.data.label as string,
+				position: node.position,
+				externalIds: node.data.externalIds as ExternalIdentifier[]
+			};
+			showContextMenu(graphNode, event);
+		}
+	}, [showContextMenu]);
+
 	// Loading state - only show full loading screen if there are no existing nodes
 	// This prevents the loading screen from showing during incremental expansions
 	if (isLoading && storeNodes.size === 0) {
@@ -524,6 +544,7 @@ const GraphNavigationInner: React.FC<GraphNavigationProps> = ({ className, style
 				onNodeClick={onNodeClick}
 				onNodeMouseEnter={onNodeMouseEnter}
 				onNodeMouseLeave={onNodeMouseLeave}
+				onNodeContextMenu={onNodeContextMenu}
 				nodeTypes={nodeTypes}
 				edgeTypes={edgeTypes}
 				elevateEdgesOnSelect={true}
@@ -582,6 +603,20 @@ const GraphNavigationInner: React.FC<GraphNavigationProps> = ({ className, style
 					</Panel>
 				)}
 			</ReactFlow>
+
+			{/* Context menu */}
+			{contextMenu.visible && contextMenu.node && (
+				<NodeContextMenu
+					node={contextMenu.node}
+					x={contextMenu.x}
+					y={contextMenu.y}
+					onClose={hideContextMenu}
+					onViewDetails={(node) => {
+						// Update preview in sidebar when viewing details
+						setPreviewEntity(node.entityId);
+					}}
+				/>
+			)}
 		</div>
 	);
 };

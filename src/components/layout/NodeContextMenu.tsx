@@ -8,7 +8,7 @@ import { useGraphData } from "@/hooks/use-graph-data"
 import { useGraphStore } from "@/stores/graph-store"
 import { logError } from "@/lib/logger"
 import type { GraphNode } from "@/lib/graph/types"
-import { IconExternalLink, IconCopy, IconGitBranch, IconInfoCircle } from "@tabler/icons-react"
+import { IconExternalLink, IconCopy, IconGitBranch, IconInfoCircle, IconPin, IconPinned } from "@tabler/icons-react"
 
 interface NodeContextMenuProps {
   node: GraphNode
@@ -26,15 +26,25 @@ export const NodeContextMenu: React.FC<NodeContextMenuProps> = ({
 	onViewDetails
 }) => {
 	const { expandNode } = useGraphData()
-	const { nodes } = useGraphStore()
+	const { nodes, pinNode, unpinNode, isPinned } = useGraphStore()
 
 	// For now, assume all nodes in store have been expanded
 	const isExpanded = nodes.has(node.id)
+	const isNodePinned = isPinned(node.id)
 
 	const handleExpand = useCallback(async () => {
 		await expandNode(node.id, { limit: 8 })
 		onClose()
 	}, [node.id, expandNode, onClose])
+
+	const handlePin = useCallback(() => {
+		if (isNodePinned) {
+			unpinNode(node.id)
+		} else {
+			pinNode(node.id)
+		}
+		onClose()
+	}, [node.id, isNodePinned, pinNode, unpinNode, onClose])
 
 	const handleViewDetails = useCallback(() => {
 		if (onViewDetails) {
@@ -115,6 +125,12 @@ export const NodeContextMenu: React.FC<NodeContextMenuProps> = ({
 			icon: <IconGitBranch size={14} />,
 			action: handleExpand,
 			disabled: isExpanded
+		},
+		{
+			id: "pin",
+			label: isNodePinned ? "Unpin Node" : "Pin Node",
+			icon: isNodePinned ? <IconPinned size={14} /> : <IconPin size={14} />,
+			action: handlePin
 		},
 		{
 			id: "details",
