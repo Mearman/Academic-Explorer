@@ -156,11 +156,11 @@ export class OpenAlexClient {
       case 'institutions':
         return this.institutions.getInstitution(id);
       case 'topics':
-        return this.topics.getTopic(id);
+        return this.topics.get(id);
       case 'publishers':
-        return this.publishers.getPublisher(id);
+        return this.publishers.get(id);
       case 'funders':
-        return this.funders.getFunder(id);
+        return this.funders.get(id);
       case 'keywords':
         return this.keywords.getKeyword(id);
       case 'geo':
@@ -212,9 +212,9 @@ export class OpenAlexClient {
       entityTypes.includes('authors') ? this.authors.getAuthors(searchParams) : Promise.resolve({ results: [] }),
       entityTypes.includes('sources') ? this.sources.getSources(searchParams) : Promise.resolve({ results: [] }),
       entityTypes.includes('institutions') ? this.institutions.getInstitutions(searchParams) : Promise.resolve({ results: [] }),
-      entityTypes.includes('topics') ? this.topics.getTopics(searchParams) : Promise.resolve({ results: [] }),
-      entityTypes.includes('publishers') ? this.publishers.getPublishers(searchParams) : Promise.resolve({ results: [] }),
-      entityTypes.includes('funders') ? this.funders.getFunders(searchParams) : Promise.resolve({ results: [] }),
+      entityTypes.includes('topics') ? this.topics.getMultiple(searchParams) : Promise.resolve({ results: [] }),
+      entityTypes.includes('publishers') ? this.publishers.getMultiple(searchParams) : Promise.resolve({ results: [] }),
+      entityTypes.includes('funders') ? this.funders.getMultiple(searchParams) : Promise.resolve({ results: [] }),
       entityTypes.includes('keywords') ? this.keywords.getKeywords(searchParams) : Promise.resolve({ results: [] }),
       entityTypes.includes('geo') ? this.geo.getGeos(searchParams) : Promise.resolve({ results: [] }),
     ]);

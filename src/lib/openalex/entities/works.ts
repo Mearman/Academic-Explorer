@@ -561,7 +561,7 @@ export class WorksApi {
       ...params.filter,
     };
 
-    return this.getWorks({ ...params, filter: filters, sort: 'cited_by_count' });
+    return this.getWorks({ ...params, filter: this.buildFilterString(filters), sort: 'cited_by_count' });
   }
 }
 
