@@ -130,15 +130,53 @@ export const CustomNode: React.FC<CustomNodeProps> = ({ data, selected }) => {
 
 	return (
 		<div style={nodeStyle}>
-			{/* Connection handles */}
+			{/* Connection handles - all four sides for flexible edge connections */}
 			<Handle
 				type="target"
 				position={Position.Top}
+				id="top"
+				style={{ background: '#555', width: '8px', height: '8px' }}
+			/>
+			<Handle
+				type="target"
+				position={Position.Right}
+				id="right"
+				style={{ background: '#555', width: '8px', height: '8px' }}
+			/>
+			<Handle
+				type="target"
+				position={Position.Bottom}
+				id="bottom"
+				style={{ background: '#555', width: '8px', height: '8px' }}
+			/>
+			<Handle
+				type="target"
+				position={Position.Left}
+				id="left"
+				style={{ background: '#555', width: '8px', height: '8px' }}
+			/>
+			<Handle
+				type="source"
+				position={Position.Top}
+				id="top-source"
+				style={{ background: '#555', width: '8px', height: '8px' }}
+			/>
+			<Handle
+				type="source"
+				position={Position.Right}
+				id="right-source"
 				style={{ background: '#555', width: '8px', height: '8px' }}
 			/>
 			<Handle
 				type="source"
 				position={Position.Bottom}
+				id="bottom-source"
+				style={{ background: '#555', width: '8px', height: '8px' }}
+			/>
+			<Handle
+				type="source"
+				position={Position.Left}
+				id="left-source"
 				style={{ background: '#555', width: '8px', height: '8px' }}
 			/>
 
@@ -212,8 +250,15 @@ export const WorkNode: React.FC<CustomNodeProps> = ({ data, selected }) => {
 
 	return (
 		<div style={nodeStyle}>
-			<Handle type="target" position={Position.Top} />
-			<Handle type="source" position={Position.Bottom} />
+			{/* Connection handles - all four sides */}
+			<Handle type="target" position={Position.Top} id="top" style={{ background: '#555', width: '8px', height: '8px' }} />
+			<Handle type="target" position={Position.Right} id="right" style={{ background: '#555', width: '8px', height: '8px' }} />
+			<Handle type="target" position={Position.Bottom} id="bottom" style={{ background: '#555', width: '8px', height: '8px' }} />
+			<Handle type="target" position={Position.Left} id="left" style={{ background: '#555', width: '8px', height: '8px' }} />
+			<Handle type="source" position={Position.Top} id="top-source" style={{ background: '#555', width: '8px', height: '8px' }} />
+			<Handle type="source" position={Position.Right} id="right-source" style={{ background: '#555', width: '8px', height: '8px' }} />
+			<Handle type="source" position={Position.Bottom} id="bottom-source" style={{ background: '#555', width: '8px', height: '8px' }} />
+			<Handle type="source" position={Position.Left} id="left-source" style={{ background: '#555', width: '8px', height: '8px' }} />
 
 			<div style={{ marginBottom: "4px", display: "flex", alignItems: "center", gap: "4px" }}>
 				<IconFile size={14} /> {data.label}
@@ -247,8 +292,15 @@ export const AuthorNode: React.FC<CustomNodeProps> = ({ data, selected }) => {
 
 	return (
 		<div style={nodeStyle}>
-			<Handle type="target" position={Position.Top} />
-			<Handle type="source" position={Position.Bottom} />
+			{/* Connection handles - all four sides */}
+			<Handle type="target" position={Position.Top} id="top" style={{ background: '#555', width: '8px', height: '8px' }} />
+			<Handle type="target" position={Position.Right} id="right" style={{ background: '#555', width: '8px', height: '8px' }} />
+			<Handle type="target" position={Position.Bottom} id="bottom" style={{ background: '#555', width: '8px', height: '8px' }} />
+			<Handle type="target" position={Position.Left} id="left" style={{ background: '#555', width: '8px', height: '8px' }} />
+			<Handle type="source" position={Position.Top} id="top-source" style={{ background: '#555', width: '8px', height: '8px' }} />
+			<Handle type="source" position={Position.Right} id="right-source" style={{ background: '#555', width: '8px', height: '8px' }} />
+			<Handle type="source" position={Position.Bottom} id="bottom-source" style={{ background: '#555', width: '8px', height: '8px' }} />
+			<Handle type="source" position={Position.Left} id="left-source" style={{ background: '#555', width: '8px', height: '8px' }} />
 
 			<div style={{ marginBottom: "4px", display: "flex", alignItems: "center", gap: "4px" }}>
 				<IconUser size={14} /> {data.label}
@@ -276,8 +328,15 @@ export const SourceNode: React.FC<CustomNodeProps> = ({ data, selected }) => {
 
 	return (
 		<div style={nodeStyle}>
-			<Handle type="target" position={Position.Top} />
-			<Handle type="source" position={Position.Bottom} />
+			{/* Connection handles - all four sides */}
+			<Handle type="target" position={Position.Top} id="top" style={{ background: '#555', width: '8px', height: '8px' }} />
+			<Handle type="target" position={Position.Right} id="right" style={{ background: '#555', width: '8px', height: '8px' }} />
+			<Handle type="target" position={Position.Bottom} id="bottom" style={{ background: '#555', width: '8px', height: '8px' }} />
+			<Handle type="target" position={Position.Left} id="left" style={{ background: '#555', width: '8px', height: '8px' }} />
+			<Handle type="source" position={Position.Top} id="top-source" style={{ background: '#555', width: '8px', height: '8px' }} />
+			<Handle type="source" position={Position.Right} id="right-source" style={{ background: '#555', width: '8px', height: '8px' }} />
+			<Handle type="source" position={Position.Bottom} id="bottom-source" style={{ background: '#555', width: '8px', height: '8px' }} />
+			<Handle type="source" position={Position.Left} id="left-source" style={{ background: '#555', width: '8px', height: '8px' }} />
 
 			<div style={{ marginBottom: "4px", display: "flex", alignItems: "center", gap: "4px" }}>
 				<IconBook size={14} /> {data.label}
@@ -305,8 +364,15 @@ export const InstitutionNode: React.FC<CustomNodeProps> = ({ data, selected }) =
 
 	return (
 		<div style={nodeStyle}>
-			<Handle type="target" position={Position.Top} />
-			<Handle type="source" position={Position.Bottom} />
+			{/* Connection handles - all four sides */}
+			<Handle type="target" position={Position.Top} id="top" style={{ background: '#555', width: '8px', height: '8px' }} />
+			<Handle type="target" position={Position.Right} id="right" style={{ background: '#555', width: '8px', height: '8px' }} />
+			<Handle type="target" position={Position.Bottom} id="bottom" style={{ background: '#555', width: '8px', height: '8px' }} />
+			<Handle type="target" position={Position.Left} id="left" style={{ background: '#555', width: '8px', height: '8px' }} />
+			<Handle type="source" position={Position.Top} id="top-source" style={{ background: '#555', width: '8px', height: '8px' }} />
+			<Handle type="source" position={Position.Right} id="right-source" style={{ background: '#555', width: '8px', height: '8px' }} />
+			<Handle type="source" position={Position.Bottom} id="bottom-source" style={{ background: '#555', width: '8px', height: '8px' }} />
+			<Handle type="source" position={Position.Left} id="left-source" style={{ background: '#555', width: '8px', height: '8px' }} />
 
 			<div style={{ marginBottom: "4px", display: "flex", alignItems: "center", gap: "4px" }}>
 				<IconBuilding size={14} /> {data.label}
