@@ -5,6 +5,15 @@
 
 import React from 'react';
 import { Handle, Position } from '@xyflow/react';
+import {
+  IconCalendar,
+  IconChartBar,
+  IconLockOpen,
+  IconFile,
+  IconUser,
+  IconBook,
+  IconBuilding
+} from '@tabler/icons-react';
 import type { EntityType, ExternalIdentifier } from '../../types';
 
 // Helper function for safe metadata access
@@ -171,13 +180,19 @@ export const CustomNode: React.FC<CustomNodeProps> = ({ data, selected }) => {
       {data.metadata && (
         <div style={{ fontSize: '8px', opacity: 0.6, marginTop: '2px' }}>
           {data.metadata.year && (
-            <span style={{ marginRight: '4px' }}>📅 {data.metadata.year}</span>
+            <span style={{ marginRight: '4px', display: 'inline-flex', alignItems: 'center', gap: '2px' }}>
+              <IconCalendar size={12} /> {data.metadata.year}
+            </span>
           )}
           {data.metadata.citationCount && (
-            <span style={{ marginRight: '4px' }}>📊 {data.metadata.citationCount}</span>
+            <span style={{ marginRight: '4px', display: 'inline-flex', alignItems: 'center', gap: '2px' }}>
+              <IconChartBar size={12} /> {data.metadata.citationCount}
+            </span>
           )}
           {data.metadata.openAccess && (
-            <span>🔓</span>
+            <span>
+              <IconLockOpen size={12} />
+            </span>
           )}
         </div>
       )}
@@ -199,7 +214,9 @@ export const WorkNode: React.FC<CustomNodeProps> = ({ data, selected }) => {
       <Handle type="target" position={Position.Top} />
       <Handle type="source" position={Position.Bottom} />
 
-      <div style={{ marginBottom: '4px' }}>📄 {data.label}</div>
+      <div style={{ marginBottom: '4px', display: 'flex', alignItems: 'center', gap: '4px' }}>
+        <IconFile size={14} /> {data.label}
+      </div>
 
       {data.metadata?.year && (
         <div style={{ fontSize: '9px', opacity: 0.8 }}>
@@ -232,7 +249,9 @@ export const AuthorNode: React.FC<CustomNodeProps> = ({ data, selected }) => {
       <Handle type="target" position={Position.Top} />
       <Handle type="source" position={Position.Bottom} />
 
-      <div style={{ marginBottom: '4px' }}>👤 {data.label}</div>
+      <div style={{ marginBottom: '4px', display: 'flex', alignItems: 'center', gap: '4px' }}>
+        <IconUser size={14} /> {data.label}
+      </div>
 
       {orcid && (
         <div style={{ fontSize: '8px', opacity: 0.7, fontFamily: 'monospace' }}>
@@ -259,7 +278,9 @@ export const SourceNode: React.FC<CustomNodeProps> = ({ data, selected }) => {
       <Handle type="target" position={Position.Top} />
       <Handle type="source" position={Position.Bottom} />
 
-      <div style={{ marginBottom: '4px' }}>📚 {data.label}</div>
+      <div style={{ marginBottom: '4px', display: 'flex', alignItems: 'center', gap: '4px' }}>
+        <IconBook size={14} /> {data.label}
+      </div>
 
       {issn && (
         <div style={{ fontSize: '8px', opacity: 0.7, fontFamily: 'monospace' }}>
@@ -286,7 +307,9 @@ export const InstitutionNode: React.FC<CustomNodeProps> = ({ data, selected }) =
       <Handle type="target" position={Position.Top} />
       <Handle type="source" position={Position.Bottom} />
 
-      <div style={{ marginBottom: '4px' }}>🏛️ {data.label}</div>
+      <div style={{ marginBottom: '4px', display: 'flex', alignItems: 'center', gap: '4px' }}>
+        <IconBuilding size={14} /> {data.label}
+      </div>
 
       {ror && (
         <div style={{ fontSize: '8px', opacity: 0.7, fontFamily: 'monospace' }}>

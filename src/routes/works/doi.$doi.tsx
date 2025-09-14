@@ -1,5 +1,6 @@
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { useEffect, useMemo } from 'react'
+import { IconFile } from '@tabler/icons-react'
 import { EntityDetector } from '@/lib/graph/utils/entity-detection'
 import { useGraphData } from '@/hooks/use-graph-data'
 import { logError } from '@/lib/logger'
@@ -52,7 +53,8 @@ function DOIWorkRoute() {
       fontSize: '16px'
     }}>
       <div style={{ marginBottom: '20px', fontSize: '18px' }}>
-        📄 Resolving DOI...
+        <IconFile size={18} style={{ display: 'inline', marginRight: '8px' }} />
+        Resolving DOI...
       </div>
       <div style={{ fontFamily: 'monospace', backgroundColor: '#f5f5f5', padding: '10px', borderRadius: '4px' }}>
         {decodeURIComponent(doi)}

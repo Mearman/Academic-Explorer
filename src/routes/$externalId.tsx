@@ -1,5 +1,15 @@
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { useEffect, useMemo } from 'react'
+import {
+  IconSearch,
+  IconCalendar,
+  IconChartBar,
+  IconLockOpen,
+  IconFile,
+  IconUser,
+  IconBook,
+  IconBuilding
+} from '@tabler/icons-react'
 import { EntityDetector } from '@/lib/graph/utils/entity-detection'
 import { useGraphData } from '@/hooks/use-graph-data'
 import { logError } from '@/lib/logger'
@@ -85,7 +95,8 @@ function ExternalIdRoute() {
       fontSize: '16px'
     }}>
       <div style={{ marginBottom: '20px', fontSize: '18px' }}>
-        🔍 Resolving identifier...
+        <IconSearch size={18} style={{ display: 'inline', marginRight: '8px' }} />
+        Resolving identifier...
       </div>
       <div style={{ fontFamily: 'monospace', backgroundColor: '#f5f5f5', padding: '10px', borderRadius: '4px' }}>
         {decodeURIComponent(externalId)}
