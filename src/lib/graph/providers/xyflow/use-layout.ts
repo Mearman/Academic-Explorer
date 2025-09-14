@@ -63,126 +63,21 @@ export function useLayout(
     }
   }, []);
 
-  // Apply static layouts (grid, circular, hierarchical)
-  const applyStaticLayout = useCallback((layoutType: string, nodes: ReturnType<typeof getNodes>, layoutOptions?: Record<string, unknown>) => {
-    if (nodes.length === 0) return;
-
-    logger.info('graph', 'Applying static layout', { type: layoutType, nodeCount: nodes.length }, 'useLayout');
-
-    const updatedNodes = [...nodes];
-
-    switch (layoutType) {
-      case 'grid': {
-        const cols = Math.ceil(Math.sqrt(nodes.length));
-        const spacing = 200;
-        updatedNodes.forEach((node, index) => {
-          const row = Math.floor(index / cols);
-          const col = index % cols;
-          node.position = {
-            x: col * spacing + 100,
-            y: row * spacing + 100,
-          };
-        });
-        break;
-      }
-
-      case 'circular': {
-        const centerX = 400;
-        const centerY = 300;
-        const radius = Math.max(150, nodes.length * 20);
-        updatedNodes.forEach((node, index) => {
-          const angle = (index / nodes.length) * 2 * Math.PI;
-          node.position = {
-            x: centerX + Math.cos(angle) * radius,
-            y: centerY + Math.sin(angle) * radius,
-          };
-        });
-        break;
-      }
-
-      case 'hierarchical': {
-        // Group by entity type for hierarchical layout
-        const levels = new Map<string, Array<typeof nodes[0]>>();
-        updatedNodes.forEach(node => {
-          let level = 0;
-          const entityType = node.data?.entityType || node.type || 'unknown';
-          switch (entityType) {
-            case 'authors':
-              level = 0;
-              break;
-            case 'works':
-              level = 1;
-              break;
-            case 'sources':
-              level = 2;
-              break;
-            case 'institutions':
-              level = 3;
-              break;
-            default:
-              level = 4;
-          }
-
-          const levelKey = level.toString();
-          if (!levels.has(levelKey)) {
-            levels.set(levelKey, []);
-          }
-          levels.get(levelKey)!.push(node);
-        });
-
-        // Position nodes by level
-        levels.forEach((levelNodes, level) => {
-          const y = parseInt(level) * 150 + 100;
-          levelNodes.forEach((node, index) => {
-            node.position = {
-              x: (index - levelNodes.length / 2) * 200 + 400,
-              y,
-            };
-          });
-        });
-        break;
-      }
-
-      case 'force':
-      case 'force-deterministic': {
-        // Simple force layout (non-D3, just circular with jitter)
-        const centerX = 400;
-        const centerY = 300;
-        const radius = 200;
-        const seed = (layoutOptions?.seed as number) || 42;
-
-        let seedValue = seed;
-        const seededRandom = () => {
-          seedValue = (seedValue * 9301 + 49297) % 233280;
-          return seedValue / 233280;
-        };
-
-        updatedNodes.forEach((node, index) => {
-          const angle = (index / nodes.length) * 2 * Math.PI;
-          node.position = {
-            x: centerX + Math.cos(angle) * radius + (seededRandom() - 0.5) * 100,
-            y: centerY + Math.sin(angle) * radius + (seededRandom() - 0.5) * 100,
-          };
-        });
-        break;
-      }
-    }
-
-    setNodes(updatedNodes);
-    onLayoutChange?.();
-
-    logger.info('graph', 'Static layout applied', {
-      type: layoutType,
-      samplePositions: updatedNodes.slice(0, 3).map(n => ({ id: n.id, position: n.position }))
-    }, 'useLayout');
-  }, [setNodes, onLayoutChange]);
 
   // Apply D3 force simulation layout
   const applyD3ForceLayout = useCallback(() => {
-    if (!layout || layout.type !== 'd3-force') return;
+    logger.info('graph', 'applyD3ForceLayout called', {
+      hasLayout: !!layout,
+      enabled: true
+    }, 'useLayout');
 
     const nodes = getNodes();
     const edges = getEdges();
+
+    logger.info('graph', 'applyD3ForceLayout proceeding', {
+      nodeCount: nodes.length,
+      edgeCount: edges.length
+    }, 'useLayout');
 
     if (nodes.length === 0) {
       logger.info('graph', 'No nodes to layout with D3 force', undefined, 'useLayout');
@@ -197,24 +92,19 @@ export function useLayout(
     }, 'useLayout');
     stopLayout();
 
-    // Extract layout options
-    logger.info('graph', 'Raw layout options from store', {
-      layoutOptions: layout.options,
-      layoutType: layout.type
-    }, 'useLayout');
+    // Using fixed D3 force parameters
 
-    const {
-      seed = 42,
-      linkDistance = 220,
-      linkStrength = 0.7,
-      chargeStrength = -600,
-      centerStrength = 0.03,
-      collisionRadius = 100,
-      collisionStrength = 0.8,
-      velocityDecay = 0.4,     // Match store config
-      alpha = 1,
-      alphaDecay = 0.03        // Match store config
-    } = layout.options || {};
+    // Fixed D3 force parameters for optimal node separation
+    const seed = 42;
+    const linkDistance = 400;
+    const linkStrength = 0.7;
+    const chargeStrength = -1200;
+    const centerStrength = 0.03;
+    const collisionRadius = 120;
+    const collisionStrength = 0.9;
+    const velocityDecay = 0.4;
+    const alpha = 1;
+    const alphaDecay = 0.03;
 
     logger.info('graph', 'Starting D3 Force simulation', {
       nodeCount: nodes.length,
@@ -301,7 +191,7 @@ export function useLayout(
       .velocityDecay(velocityDecay)
       .alpha(alpha)
       .alphaDecay(alphaDecay)
-      .alphaTarget(0.005); // Lower target for more thorough collision resolution
+      .alphaTarget(0); // Standard D3 target for proper stopping
 
     // Configure forces
     simulationRef.current
@@ -339,11 +229,11 @@ export function useLayout(
 
       // Log alpha progression every 10 ticks instead of every tick
       if (tickCount % 10 === 0) {
-        const currentAlpha = simulationRef.current?.alpha();
+        const currentAlpha = simulationRef.current?.alpha() ?? 0;
         logger.info('graph', 'D3 Force simulation progress', {
           tick: tickCount,
           alpha: currentAlpha,
-          alphaTarget: 0.005,
+          alphaTarget: 0,
           isRunning: currentAlpha > 0.005
         }, 'useLayout');
       }
@@ -366,7 +256,7 @@ export function useLayout(
 
   }, [layout, onLayoutChange, stopLayout]);
 
-  // Main layout application function
+  // Main layout application function - D3 force only
   const applyLayout = useCallback(() => {
     if (!enabled || !layout) {
       logger.info('graph', 'Layout application skipped', { enabled, hasLayout: !!layout }, 'useLayout');
@@ -386,22 +276,10 @@ export function useLayout(
       return;
     }
 
-    if (layout.type === 'd3-force') {
-      logger.info('graph', 'Applying D3 force layout', { nodeCount: nodes.length }, 'useLayout');
-      applyD3ForceLayout();
-    } else {
-      logger.info('graph', 'Applying static layout', { layoutType: layout.type, nodeCount: nodes.length }, 'useLayout');
-      stopLayout(); // Stop any running simulation
-      applyStaticLayout(layout.type, nodes, layout.options);
-
-      // For static layouts, optionally fit view after a short delay
-      if (fitViewAfterLayout) {
-        timeoutRef.current = window.setTimeout(() => {
-          onLayoutChange?.();
-        }, 100);
-      }
-    }
-  }, [enabled, layout, applyD3ForceLayout, stopLayout, applyStaticLayout, fitViewAfterLayout, onLayoutChange]);
+    // Always apply D3 force layout
+    logger.info('graph', 'Applying D3 force layout', { nodeCount: nodes.length }, 'useLayout');
+    applyD3ForceLayout();
+  }, [enabled, layout, applyD3ForceLayout]);
 
   // Apply layout when layout changes
   useEffect(() => {
