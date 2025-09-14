@@ -96,7 +96,7 @@ const theme = createTheme({
 
 // Import cache configuration and persistence
 import { persistQueryClient } from '@tanstack/react-query-persist-client'
-import { createIDBPersister } from '@/lib/cache/persister'
+import { createHybridPersister } from '@/lib/cache/persister'
 import { CACHE_CONFIG } from '@/config/cache'
 import { calculateRetryDelay, RETRY_CONFIG } from '@/config/rate-limit'
 
@@ -171,10 +171,10 @@ const queryClient = new QueryClient({
   },
 })
 
-// Enable persistence with IndexedDB for offline support
+// Enable hybrid persistence with localStorage + IndexedDB for optimal performance
 persistQueryClient({
   queryClient,
-  persister: createIDBPersister('academic-explorer-cache'),
+  persister: createHybridPersister('academic-explorer-cache'),
   maxAge: CACHE_CONFIG.maxAge, // 7 days
 
   // Dehydrate options - what gets persisted

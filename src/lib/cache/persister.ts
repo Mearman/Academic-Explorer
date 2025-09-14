@@ -15,8 +15,224 @@ const LOCALSTORAGE_MAX_SIZE = 5 * 1024 * 1024; // 5MB conservative limit
 const LOCALSTORAGE_COMPRESSION_THRESHOLD = 50 * 1024; // 50KB - compress larger items
 
 /**
+ * Create a hybrid persister that uses localStorage first, then IndexedDB
+ * Provides optimized multi-tier storage: Memory → localStorage → IndexedDB
+ * localStorage is checked first for speed, then IndexedDB for bulk storage
+ */
+export function createHybridPersister(dbName = 'academic-explorer-cache'): Persister {
+  const dbVersion = 1;
+
+  const openDatabase = async () => {
+    return openDB(dbName, dbVersion, {
+      upgrade(db) {
+        if (!db.objectStoreNames.contains('cache')) {
+          db.createObjectStore('cache');
+        }
+      },
+    });
+  };
+
+  // Check if localStorage is available
+  const isLocalStorageAvailable = (): boolean => {
+    try {
+      const test = '__test__';
+      localStorage.setItem(test, test);
+      localStorage.removeItem(test);
+      return true;
+    } catch {
+      return false;
+    }
+  };
+
+  // Get current localStorage usage
+  const getLocalStorageUsage = (): number => {
+    try {
+      let total = 0;
+      for (const key in localStorage) {
+        if (localStorage.hasOwnProperty(key)) {
+          total += (localStorage[key].length + key.length);
+        }
+      }
+      return total * 2; // UTF-16 characters are 2 bytes
+    } catch {
+      return 0;
+    }
+  };
+
+  // Compress data if over threshold
+  const maybeCompress = (data: string): string => {
+    if (data.length > LOCALSTORAGE_COMPRESSION_THRESHOLD) {
+      // Simple compression placeholder - in production might use LZ-string
+      logger.info('cache', 'Data size over compression threshold, storing uncompressed', {
+        size: data.length,
+        threshold: LOCALSTORAGE_COMPRESSION_THRESHOLD
+      });
+    }
+    return data;
+  };
+
+  return {
+    persistClient: async (client: PersistedClient) => {
+      try {
+        // Add timestamp for cache management
+        const persistedData = {
+          ...client,
+          timestamp: Date.now(),
+          version: '1.0', // For future schema migrations
+        };
+
+        const serializedData = JSON.stringify(persistedData);
+        const dataSize = new Blob([serializedData]).size;
+
+        // Try localStorage first if available and data fits
+        if (isLocalStorageAvailable() && dataSize < LOCALSTORAGE_MAX_SIZE) {
+          const currentUsage = getLocalStorageUsage();
+
+          if (currentUsage + dataSize < LOCALSTORAGE_MAX_SIZE) {
+            try {
+              const compressedData = maybeCompress(serializedData);
+              localStorage.setItem(LOCALSTORAGE_KEY, compressedData);
+              logger.info('cache', 'Persisted query client to localStorage', {
+                size: dataSize,
+                usage: currentUsage + dataSize,
+                limit: LOCALSTORAGE_MAX_SIZE
+              });
+              return;
+            } catch (error) {
+              logger.warn('cache', 'localStorage persistence failed, falling back to IndexedDB', { error });
+              // Clear localStorage item if it was partially written
+              try { localStorage.removeItem(LOCALSTORAGE_KEY); } catch {}
+            }
+          } else {
+            logger.info('cache', 'localStorage full, using IndexedDB for persistence', {
+              currentUsage,
+              dataSize,
+              limit: LOCALSTORAGE_MAX_SIZE
+            });
+          }
+        }
+
+        // Fall back to IndexedDB for larger data or if localStorage failed
+        const db = await openDatabase();
+        const tx = db.transaction('cache', 'readwrite');
+        const store = tx.objectStore('cache');
+        await store.put(persistedData, 'queryClient');
+        await tx.done;
+
+        logger.info('cache', 'Persisted query client to IndexedDB', { size: dataSize });
+
+      } catch (error) {
+        logError('Failed to persist query client', error, 'CachePersister', 'storage');
+        // Don't throw - persistence failure shouldn't break the app
+      }
+    },
+
+    restoreClient: async (): Promise<PersistedClient | undefined> => {
+      try {
+        // First, try localStorage (fast synchronous access)
+        if (isLocalStorageAvailable()) {
+          try {
+            const stored = localStorage.getItem(LOCALSTORAGE_KEY);
+            if (stored) {
+              const parsed = JSON.parse(stored) as PersistedClient & { timestamp?: number; version?: string };
+
+              // Check if cache is expired
+              if (parsed.timestamp) {
+                const age = Date.now() - parsed.timestamp;
+                if (age > CACHE_CONFIG.maxAge) {
+                  logger.info('cache', 'localStorage cache expired, clearing', { age, maxAge: CACHE_CONFIG.maxAge });
+                  localStorage.removeItem(LOCALSTORAGE_KEY);
+                } else {
+                  // Remove metadata and return
+                  const { timestamp, version, ...clientData } = parsed;
+                  if (clientData.clientState) {
+                    logger.info('cache', 'Restored query client from localStorage', { age });
+                    return clientData;
+                  }
+                }
+              }
+            }
+          } catch (error) {
+            logger.warn('cache', 'localStorage restore failed, trying IndexedDB', { error });
+            // Clear corrupted localStorage item
+            try { localStorage.removeItem(LOCALSTORAGE_KEY); } catch {}
+          }
+        }
+
+        // Fall back to IndexedDB
+        const db = await openDatabase();
+        const tx = db.transaction('cache', 'readonly');
+        const store = tx.objectStore('cache');
+        const data = await store.get('queryClient');
+
+        // Type guard for persisted data
+        if (!data || typeof data !== 'object') {
+          return undefined;
+        }
+
+        const persistedData = data as PersistedClient & { timestamp?: number; version?: string };
+
+        // Check if cache is expired (based on maxAge)
+        if (persistedData.timestamp) {
+          const age = Date.now() - persistedData.timestamp;
+          if (age > CACHE_CONFIG.maxAge) {
+            logger.info('cache', 'IndexedDB cache expired, clearing old data', { age, maxAge: CACHE_CONFIG.maxAge });
+            const delTx = db.transaction('cache', 'readwrite');
+            const delStore = delTx.objectStore('cache');
+            await delStore.delete('queryClient');
+            await delTx.done;
+            return undefined;
+          }
+        }
+
+        // Remove our metadata before returning to TanStack Query
+        const { timestamp, version, ...clientData } = persistedData;
+
+        // Validate that clientData has the required PersistedClient structure
+        if (!clientData.clientState) {
+          return undefined;
+        }
+
+        logger.info('cache', 'Restored query client from IndexedDB', {
+          age: persistedData.timestamp ? Date.now() - persistedData.timestamp : 0
+        });
+        return clientData;
+      } catch (error) {
+        logError('Failed to restore query client', error, 'CachePersister', 'storage');
+        return undefined;
+      }
+    },
+
+    removeClient: async () => {
+      try {
+        // Clear localStorage
+        if (isLocalStorageAvailable()) {
+          try {
+            localStorage.removeItem(LOCALSTORAGE_KEY);
+          } catch (error) {
+            logger.warn('cache', 'Failed to remove localStorage item', { error });
+          }
+        }
+
+        // Clear IndexedDB
+        const db = await openDatabase();
+        const tx = db.transaction('cache', 'readwrite');
+        const store = tx.objectStore('cache');
+        await store.delete('queryClient');
+        await tx.done;
+
+        logger.info('cache', 'Removed query client from all storage layers');
+      } catch (error) {
+        logError('Failed to remove persisted client', error, 'CachePersister', 'storage');
+      }
+    },
+  };
+}
+
+/**
  * Create an IndexedDB persister for TanStack Query
  * Uses idb library for simplified IndexedDB access
+ * @deprecated Use createHybridPersister instead for better performance
  */
 export function createIDBPersister(dbName = 'academic-explorer-cache'): Persister {
   const dbVersion = 1;
