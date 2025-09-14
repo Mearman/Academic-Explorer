@@ -18,9 +18,14 @@ import { Route as ApiTestRouteImport } from './routes/api-test'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as ExternalIdRouteImport } from './routes/$externalId'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as WorksWorkIdRouteImport } from './routes/works/$workId'
+import { Route as TopicsTopicIdRouteImport } from './routes/topics/$topicId'
+import { Route as SourcesSourceIdRouteImport } from './routes/sources/$sourceId'
+import { Route as InstitutionsInstitutionIdRouteImport } from './routes/institutions/$institutionId'
 import { Route as ExploreGraphRouteImport } from './routes/explore/graph'
 import { Route as EvaluationResultsRouteImport } from './routes/evaluation/results'
 import { Route as EvaluationDatasetsRouteImport } from './routes/evaluation/datasets'
+import { Route as AuthorsAuthorIdRouteImport } from './routes/authors/$authorId'
 import { Route as WorksDoiDoiRouteImport } from './routes/works/doi.$doi'
 import { Route as SourcesIssnIssnRouteImport } from './routes/sources/issn.$issn'
 import { Route as InstitutionsRorRorRouteImport } from './routes/institutions/ror.$ror'
@@ -71,6 +76,27 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const WorksWorkIdRoute = WorksWorkIdRouteImport.update({
+  id: '/works/$workId',
+  path: '/works/$workId',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TopicsTopicIdRoute = TopicsTopicIdRouteImport.update({
+  id: '/topics/$topicId',
+  path: '/topics/$topicId',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SourcesSourceIdRoute = SourcesSourceIdRouteImport.update({
+  id: '/sources/$sourceId',
+  path: '/sources/$sourceId',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const InstitutionsInstitutionIdRoute =
+  InstitutionsInstitutionIdRouteImport.update({
+    id: '/institutions/$institutionId',
+    path: '/institutions/$institutionId',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const ExploreGraphRoute = ExploreGraphRouteImport.update({
   id: '/graph',
   path: '/graph',
@@ -85,6 +111,11 @@ const EvaluationDatasetsRoute = EvaluationDatasetsRouteImport.update({
   id: '/datasets',
   path: '/datasets',
   getParentRoute: () => EvaluationRoute,
+} as any)
+const AuthorsAuthorIdRoute = AuthorsAuthorIdRouteImport.update({
+  id: '/authors/$authorId',
+  path: '/authors/$authorId',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const WorksDoiDoiRoute = WorksDoiDoiRouteImport.update({
   id: '/works/doi/$doi',
@@ -117,9 +148,14 @@ export interface FileRoutesByFullPath {
   '/explore': typeof ExploreRouteWithChildren
   '/graph': typeof GraphRoute
   '/search': typeof SearchRoute
+  '/authors/$authorId': typeof AuthorsAuthorIdRoute
   '/evaluation/datasets': typeof EvaluationDatasetsRoute
   '/evaluation/results': typeof EvaluationResultsRoute
   '/explore/graph': typeof ExploreGraphRoute
+  '/institutions/$institutionId': typeof InstitutionsInstitutionIdRoute
+  '/sources/$sourceId': typeof SourcesSourceIdRoute
+  '/topics/$topicId': typeof TopicsTopicIdRoute
+  '/works/$workId': typeof WorksWorkIdRoute
   '/authors/orcid/$orcid': typeof AuthorsOrcidOrcidRoute
   '/institutions/ror/$ror': typeof InstitutionsRorRorRoute
   '/sources/issn/$issn': typeof SourcesIssnIssnRoute
@@ -135,9 +171,14 @@ export interface FileRoutesByTo {
   '/explore': typeof ExploreRouteWithChildren
   '/graph': typeof GraphRoute
   '/search': typeof SearchRoute
+  '/authors/$authorId': typeof AuthorsAuthorIdRoute
   '/evaluation/datasets': typeof EvaluationDatasetsRoute
   '/evaluation/results': typeof EvaluationResultsRoute
   '/explore/graph': typeof ExploreGraphRoute
+  '/institutions/$institutionId': typeof InstitutionsInstitutionIdRoute
+  '/sources/$sourceId': typeof SourcesSourceIdRoute
+  '/topics/$topicId': typeof TopicsTopicIdRoute
+  '/works/$workId': typeof WorksWorkIdRoute
   '/authors/orcid/$orcid': typeof AuthorsOrcidOrcidRoute
   '/institutions/ror/$ror': typeof InstitutionsRorRorRoute
   '/sources/issn/$issn': typeof SourcesIssnIssnRoute
@@ -154,9 +195,14 @@ export interface FileRoutesById {
   '/explore': typeof ExploreRouteWithChildren
   '/graph': typeof GraphRoute
   '/search': typeof SearchRoute
+  '/authors/$authorId': typeof AuthorsAuthorIdRoute
   '/evaluation/datasets': typeof EvaluationDatasetsRoute
   '/evaluation/results': typeof EvaluationResultsRoute
   '/explore/graph': typeof ExploreGraphRoute
+  '/institutions/$institutionId': typeof InstitutionsInstitutionIdRoute
+  '/sources/$sourceId': typeof SourcesSourceIdRoute
+  '/topics/$topicId': typeof TopicsTopicIdRoute
+  '/works/$workId': typeof WorksWorkIdRoute
   '/authors/orcid/$orcid': typeof AuthorsOrcidOrcidRoute
   '/institutions/ror/$ror': typeof InstitutionsRorRorRoute
   '/sources/issn/$issn': typeof SourcesIssnIssnRoute
@@ -174,9 +220,14 @@ export interface FileRouteTypes {
     | '/explore'
     | '/graph'
     | '/search'
+    | '/authors/$authorId'
     | '/evaluation/datasets'
     | '/evaluation/results'
     | '/explore/graph'
+    | '/institutions/$institutionId'
+    | '/sources/$sourceId'
+    | '/topics/$topicId'
+    | '/works/$workId'
     | '/authors/orcid/$orcid'
     | '/institutions/ror/$ror'
     | '/sources/issn/$issn'
@@ -192,9 +243,14 @@ export interface FileRouteTypes {
     | '/explore'
     | '/graph'
     | '/search'
+    | '/authors/$authorId'
     | '/evaluation/datasets'
     | '/evaluation/results'
     | '/explore/graph'
+    | '/institutions/$institutionId'
+    | '/sources/$sourceId'
+    | '/topics/$topicId'
+    | '/works/$workId'
     | '/authors/orcid/$orcid'
     | '/institutions/ror/$ror'
     | '/sources/issn/$issn'
@@ -210,9 +266,14 @@ export interface FileRouteTypes {
     | '/explore'
     | '/graph'
     | '/search'
+    | '/authors/$authorId'
     | '/evaluation/datasets'
     | '/evaluation/results'
     | '/explore/graph'
+    | '/institutions/$institutionId'
+    | '/sources/$sourceId'
+    | '/topics/$topicId'
+    | '/works/$workId'
     | '/authors/orcid/$orcid'
     | '/institutions/ror/$ror'
     | '/sources/issn/$issn'
@@ -229,6 +290,11 @@ export interface RootRouteChildren {
   ExploreRoute: typeof ExploreRouteWithChildren
   GraphRoute: typeof GraphRoute
   SearchRoute: typeof SearchRoute
+  AuthorsAuthorIdRoute: typeof AuthorsAuthorIdRoute
+  InstitutionsInstitutionIdRoute: typeof InstitutionsInstitutionIdRoute
+  SourcesSourceIdRoute: typeof SourcesSourceIdRoute
+  TopicsTopicIdRoute: typeof TopicsTopicIdRoute
+  WorksWorkIdRoute: typeof WorksWorkIdRoute
   AuthorsOrcidOrcidRoute: typeof AuthorsOrcidOrcidRoute
   InstitutionsRorRorRoute: typeof InstitutionsRorRorRoute
   SourcesIssnIssnRoute: typeof SourcesIssnIssnRoute
@@ -300,6 +366,34 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/works/$workId': {
+      id: '/works/$workId'
+      path: '/works/$workId'
+      fullPath: '/works/$workId'
+      preLoaderRoute: typeof WorksWorkIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/topics/$topicId': {
+      id: '/topics/$topicId'
+      path: '/topics/$topicId'
+      fullPath: '/topics/$topicId'
+      preLoaderRoute: typeof TopicsTopicIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/sources/$sourceId': {
+      id: '/sources/$sourceId'
+      path: '/sources/$sourceId'
+      fullPath: '/sources/$sourceId'
+      preLoaderRoute: typeof SourcesSourceIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/institutions/$institutionId': {
+      id: '/institutions/$institutionId'
+      path: '/institutions/$institutionId'
+      fullPath: '/institutions/$institutionId'
+      preLoaderRoute: typeof InstitutionsInstitutionIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/explore/graph': {
       id: '/explore/graph'
       path: '/graph'
@@ -320,6 +414,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/evaluation/datasets'
       preLoaderRoute: typeof EvaluationDatasetsRouteImport
       parentRoute: typeof EvaluationRoute
+    }
+    '/authors/$authorId': {
+      id: '/authors/$authorId'
+      path: '/authors/$authorId'
+      fullPath: '/authors/$authorId'
+      preLoaderRoute: typeof AuthorsAuthorIdRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/works/doi/$doi': {
       id: '/works/doi/$doi'
@@ -387,6 +488,11 @@ const rootRouteChildren: RootRouteChildren = {
   ExploreRoute: ExploreRouteWithChildren,
   GraphRoute: GraphRoute,
   SearchRoute: SearchRoute,
+  AuthorsAuthorIdRoute: AuthorsAuthorIdRoute,
+  InstitutionsInstitutionIdRoute: InstitutionsInstitutionIdRoute,
+  SourcesSourceIdRoute: SourcesSourceIdRoute,
+  TopicsTopicIdRoute: TopicsTopicIdRoute,
+  WorksWorkIdRoute: WorksWorkIdRoute,
   AuthorsOrcidOrcidRoute: AuthorsOrcidOrcidRoute,
   InstitutionsRorRorRoute: InstitutionsRorRorRoute,
   SourcesIssnIssnRoute: SourcesIssnIssnRoute,
