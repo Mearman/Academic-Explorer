@@ -16,7 +16,7 @@
       "dependsOn": ["typecheck"],
       "options": {
         "commands": [
-          "tsc -b",
+          "tsc -b tsconfig.app.json",
           "vite build"
         ],
         "cwd": "{projectRoot}"
