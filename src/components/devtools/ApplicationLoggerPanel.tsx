@@ -155,7 +155,7 @@ export function ApplicationLoggerPanel() {
                 variant="light"
                 color="green"
                 leftSection={<IconCopy size={14} />}
-                onClick={copyAllLogs}
+                onClick={() => { void copyAllLogs(); }}
                 disabled={filteredLogs.length === 0}
               >
                 Copy All
@@ -338,7 +338,7 @@ export function ApplicationLoggerPanel() {
                             size="sm"
                             variant="subtle"
                             color="gray"
-                            onClick={() => copyLogEntry(log)}
+                            onClick={() => { void copyLogEntry(log); }}
                             style={{ flexShrink: 0 }}
                           >
                             <IconCopy size={12} />
@@ -348,9 +348,21 @@ export function ApplicationLoggerPanel() {
                       <Text size="sm" mb={log.data ? 'xs' : 0}>
                         {log.message}
                       </Text>
-                      {log.data && (
+                      {log.data !== undefined && log.data !== null && (
                         <Code block c="dimmed">
-                          {JSON.stringify(log.data, null, 2)}
+                          {(() => {
+                            try {
+                              return JSON.stringify(log.data, null, 2);
+                            } catch {
+                              // Handle non-serializable data safely
+                              if (log.data === null) return 'null';
+                              if (log.data === undefined) return 'undefined';
+                              if (typeof log.data === 'string') return log.data;
+                              if (typeof log.data === 'number') return log.data.toString();
+                              if (typeof log.data === 'boolean') return log.data.toString();
+                              return '[Complex Object - cannot display]';
+                            }
+                          })()}
                         </Code>
                       )}
                       {log.stack && (
