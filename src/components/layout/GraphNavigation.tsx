@@ -26,6 +26,7 @@ import { useLayoutStore } from '@/stores/layout-store';
 import { createGraphProvider } from '@/lib/graph/provider-factory';
 import { XYFlowProvider } from '@/lib/graph/providers/xyflow/xyflow-provider';
 import { nodeTypes } from '@/lib/graph/providers/xyflow/node-types';
+import { useLayout } from '@/lib/graph/providers/xyflow/use-layout';
 import type { GraphNode } from '@/lib/graph/types';
 import { EntityDetector } from '@/lib/graph/utils/entity-detection';
 import { logger } from '@/lib/logger';
@@ -49,6 +50,7 @@ const GraphNavigationInner: React.FC<GraphNavigationProps> = ({ className, style
     setProvider,
     nodes: storeNodes,
     edges: storeEdges,
+    currentLayout,
     isLoading,
     error,
   } = useGraphStore();
@@ -61,6 +63,20 @@ const GraphNavigationInner: React.FC<GraphNavigationProps> = ({ className, style
 
   // Provider instance ref
   const providerRef = useRef<XYFlowProvider | null>(null);
+
+  // Layout hook integration
+  const onLayoutChange = useCallback(() => {
+    // Layout positions have changed, re-sync if needed
+    logger.info('graph', 'Layout positions updated', undefined, 'GraphNavigation');
+  }, []);
+
+  const { isRunning: isLayoutRunning, reheatLayout } = useLayout(
+    currentLayout,
+    {
+      enabled: true,
+      onLayoutChange
+    }
+  );
 
   // Initialize provider
   useEffect(() => {
@@ -109,20 +125,20 @@ const GraphNavigationInner: React.FC<GraphNavigationProps> = ({ className, style
 
   // Sync store data with XYFlow
   useEffect(() => {
-    console.log('GraphNavigation: Store data sync effect triggered', {
+    logger.info('graph', 'Store data sync effect triggered', {
       storeNodeCount: storeNodes.size,
       storeEdgeCount: storeEdges.size,
       hasProvider: !!providerRef.current
-    });
+    }, 'GraphNavigation');
 
     if (providerRef.current && (storeNodes.size > 0 || storeEdges.size > 0)) {
       const { nodes: xyNodes, edges: xyEdges } = providerRef.current.getXYFlowData();
-      console.log('GraphNavigation: Setting XYFlow data', {
+      logger.info('graph', 'Setting XYFlow data', {
         xyNodeCount: xyNodes.length,
         xyEdgeCount: xyEdges.length,
         nodeIds: xyNodes.map(n => n.id),
         nodePositions: xyNodes.map(n => ({ id: n.id, position: n.position }))
-      });
+      }, 'GraphNavigation');
       setNodes(xyNodes);
       setEdges(xyEdges);
     }
@@ -137,7 +153,7 @@ const GraphNavigationInner: React.FC<GraphNavigationProps> = ({ className, style
 
   // Handle node double clicks
   const onNodeDoubleClick = useCallback((event: React.MouseEvent, node: XYNode) => {
-    console.log('GraphNavigation: Node double-click', { nodeId: node.id });
+    logger.info('ui', 'Node double-click', { nodeId: node.id }, 'GraphNavigation');
     if (providerRef.current) {
       providerRef.current.handleNodeDoubleClick(event, node);
     }
