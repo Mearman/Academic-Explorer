@@ -28,7 +28,7 @@ export const LeftSidebar: React.FC = () => {
 		"works", "authors", "sources", "institutions"
 	])
 	const { search, isLoading, clearGraph } = useGraphData()
-	const { colors, getEntityColor } = useThemeColors()
+	const { colors } = useThemeColors()
 
 	const handleSearch = async (e: React.FormEvent) => {
 		e.preventDefault()
@@ -56,13 +56,33 @@ export const LeftSidebar: React.FC = () => {
 		clearGraph()
 	}
 
+	// Use the exact same colors as graph nodes for consistency
+	const getGraphNodeColor = (entityType: EntityType): string => {
+		switch (entityType) {
+			case "works":
+				return "#e74c3c";
+			case "authors":
+				return "#3498db";
+			case "sources":
+				return "#2ecc71";
+			case "institutions":
+				return "#f39c12";
+			case "topics":
+				return "#9b59b6";
+			case "publishers":
+				return "#1abc9c";
+			default:
+				return "#95a5a6";
+		}
+	};
+
 	const entityTypeOptions: { type: EntityType; label: string; color: string; icon: React.ReactNode }[] = [
-		{ type: "works", label: "Works", color: getEntityColor("works"), icon: <IconFile size={16} /> },
-		{ type: "authors", label: "Authors", color: getEntityColor("authors"), icon: <IconUser size={16} /> },
-		{ type: "sources", label: "Sources", color: getEntityColor("sources"), icon: <IconBook size={16} /> },
-		{ type: "institutions", label: "Institutions", color: getEntityColor("institutions"), icon: <IconBuilding size={16} /> },
-		{ type: "topics", label: "Topics", color: getEntityColor("topics"), icon: <IconTag size={16} /> },
-		{ type: "publishers", label: "Publishers", color: getEntityColor("publishers"), icon: <IconBuildingStore size={16} /> },
+		{ type: "works", label: "Works", color: getGraphNodeColor("works"), icon: <IconFile size={16} /> },
+		{ type: "authors", label: "Authors", color: getGraphNodeColor("authors"), icon: <IconUser size={16} /> },
+		{ type: "sources", label: "Sources", color: getGraphNodeColor("sources"), icon: <IconBook size={16} /> },
+		{ type: "institutions", label: "Institutions", color: getGraphNodeColor("institutions"), icon: <IconBuilding size={16} /> },
+		{ type: "topics", label: "Topics", color: getGraphNodeColor("topics"), icon: <IconTag size={16} /> },
+		{ type: "publishers", label: "Publishers", color: getGraphNodeColor("publishers"), icon: <IconBuildingStore size={16} /> },
 	]
 
 	return (
