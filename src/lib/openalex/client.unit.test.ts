@@ -514,7 +514,7 @@ describe("OpenAlexBaseClient", () => {
 	describe("Memory and Performance", () => {
 		it("should handle rapid successive requests without memory leaks", async () => {
 			// Make many requests in succession
-			const promises = Array.from({ length: 10 }, (_, i) => client.get(`works${i}`));
+			const promises = Array.from({ length: 10 }, (_, i) => client.get(`works${String(i)}`));
 			const results = await Promise.all(promises);
 
 			expect(results).toHaveLength(10);
@@ -522,7 +522,7 @@ describe("OpenAlexBaseClient", () => {
 		});
 
 		it("should handle very large query parameters efficiently", async () => {
-			const largeSelect = Array.from({ length: 100 }, (_, i) => `field${i}`);
+			const largeSelect = Array.from({ length: 100 }, (_, i) => `field${String(i)}`);
 
 			await client.get("works", { select: largeSelect });
 

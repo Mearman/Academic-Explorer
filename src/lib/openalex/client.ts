@@ -237,7 +237,7 @@ export class OpenAlexBaseClient {
 				}
 
 				throw new OpenAlexRateLimitError(
-					`Rate limit exceeded and max retries reached (${maxRateLimitRetries} attempts)`,
+					`Rate limit exceeded and max retries reached (${String(maxRateLimitRetries)} attempts)`,
 					retryAfterMs || (this.config.retries !== 3 ? this.config.retryDelay : calculateRetryDelay(retryCount, RETRY_CONFIG.rateLimited))
 				);
 			}
@@ -278,7 +278,7 @@ export class OpenAlexBaseClient {
 			}
 
 			throw new OpenAlexApiError(
-				`Network error after ${maxNetworkRetries} attempts: ${error instanceof Error ? error.message : "Unknown error"}`
+				`Network error after ${String(maxNetworkRetries)} attempts: ${error instanceof Error ? error.message : "Unknown error"}`
 			);
 		}
 	}

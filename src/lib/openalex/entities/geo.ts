@@ -346,7 +346,7 @@ export class GeoApi {
 		params: GeoQueryParams = {}
 	): Promise<OpenAlexResponse<Geo>> {
 		const filters: GeoFilters = {
-			"works_count": `>=${minWorksCount}`,
+			"works_count": `>=${String(minWorksCount)}`,
 		};
 
 		return this.getGeos({
