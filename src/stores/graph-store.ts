@@ -1,10 +1,15 @@
 /**
  * Graph store for provider-agnostic graph state management
- * Simple Zustand store without Immer to avoid React 19 infinite loops
+ * Uses Zustand with Immer for immutable state updates that maintain stable references
  */
 
 import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
+import { immer } from "zustand/middleware/immer";
+import { enableMapSet } from "immer";
+
+// Enable Immer MapSet plugin for Map and Set support
+enableMapSet();
 import type {
 	GraphNode,
 	GraphEdge,
@@ -105,7 +110,7 @@ interface GraphState {
 
 export const useGraphStore = create<GraphState>()(
 	persist(
-		(set, get) => ({
+		immer((set, get) => ({
 			// Initial state
 			nodes: new Map(),
 			edges: new Map(),
@@ -161,66 +166,54 @@ export const useGraphStore = create<GraphState>()(
 
 			// Node management
 			addNode: (node) => {
-				set((state) => {
-					const newNodes = new Map(state.nodes);
-					newNodes.set(node.id, node);
-					state.provider?.addNode(node);
-					return { nodes: newNodes };
+				set((draft) => {
+					draft.nodes.set(node.id, node);
+					draft.provider?.addNode(node);
 				});
 			},
 
 			addNodes: (nodes) => {
-				set((state) => {
-					const newNodes = new Map(state.nodes);
+				set((draft) => {
 					nodes.forEach(node => {
-						newNodes.set(node.id, node);
-						state.provider?.addNode(node);
+						draft.nodes.set(node.id, node);
+						draft.provider?.addNode(node);
 					});
-					return { nodes: newNodes };
 				});
 			},
 
 			removeNode: (nodeId) => {
-				set((state) => {
-					const newNodes = new Map(state.nodes);
-					const newEdges = new Map(state.edges);
-
+				set((draft) => {
 					// Remove node
-					newNodes.delete(nodeId);
-					state.provider?.removeNode(nodeId);
+					draft.nodes.delete(nodeId);
+					draft.provider?.removeNode(nodeId);
 
 					// Remove connected edges
-					Array.from(newEdges.values()).forEach(edge => {
+					Array.from(draft.edges.values()).forEach(edge => {
 						if (edge.source === nodeId || edge.target === nodeId) {
-							newEdges.delete(edge.id);
-							state.provider?.removeEdge(edge.id);
+							draft.edges.delete(edge.id);
+							draft.provider?.removeEdge(edge.id);
 						}
 					});
 
 					// Clear selection if removed
-					const newSelectedNodes = new Set(state.selectedNodes);
-					newSelectedNodes.delete(nodeId);
-
-					return {
-						nodes: newNodes,
-						edges: newEdges,
-						selectedNodes: newSelectedNodes,
-						selectedNodeId: state.selectedNodeId === nodeId ? null : state.selectedNodeId,
-						hoveredNodeId: state.hoveredNodeId === nodeId ? null : state.hoveredNodeId,
-					};
+					draft.selectedNodes.delete(nodeId);
+					if (draft.selectedNodeId === nodeId) {
+						draft.selectedNodeId = null;
+					}
+					if (draft.hoveredNodeId === nodeId) {
+						draft.hoveredNodeId = null;
+					}
 				});
 			},
 
 			updateNode: (nodeId, updates) => {
-				set((state) => {
-					const newNodes = new Map(state.nodes);
-					const existingNode = newNodes.get(nodeId);
+				set((draft) => {
+					const existingNode = draft.nodes.get(nodeId);
 					if (existingNode) {
 						const updatedNode = { ...existingNode, ...updates };
-						newNodes.set(nodeId, updatedNode);
+						draft.nodes.set(nodeId, updatedNode);
 						// Note: Provider update would need to be handled by provider
 					}
-					return { nodes: newNodes };
 				});
 			},
 
@@ -230,43 +223,35 @@ export const useGraphStore = create<GraphState>()(
 
 			// Edge management
 			addEdge: (edge) => {
-				set((state) => {
-					const newEdges = new Map(state.edges);
-					newEdges.set(edge.id, edge);
-					state.provider?.addEdge(edge);
-					return { edges: newEdges };
+				set((draft) => {
+					draft.edges.set(edge.id, edge);
+					draft.provider?.addEdge(edge);
 				});
 			},
 
 			addEdges: (edges) => {
-				set((state) => {
-					const newEdges = new Map(state.edges);
+				set((draft) => {
 					edges.forEach(edge => {
-						newEdges.set(edge.id, edge);
-						state.provider?.addEdge(edge);
+						draft.edges.set(edge.id, edge);
+						draft.provider?.addEdge(edge);
 					});
-					return { edges: newEdges };
 				});
 			},
 
 			removeEdge: (edgeId) => {
-				set((state) => {
-					const newEdges = new Map(state.edges);
-					newEdges.delete(edgeId);
-					state.provider?.removeEdge(edgeId);
-					return { edges: newEdges };
+				set((draft) => {
+					draft.edges.delete(edgeId);
+					draft.provider?.removeEdge(edgeId);
 				});
 			},
 
 			updateEdge: (edgeId, updates) => {
-				set((state) => {
-					const newEdges = new Map(state.edges);
-					const existingEdge = newEdges.get(edgeId);
+				set((draft) => {
+					const existingEdge = draft.edges.get(edgeId);
 					if (existingEdge) {
 						const updatedEdge = { ...existingEdge, ...updates };
-						newEdges.set(edgeId, updatedEdge);
+						draft.edges.set(edgeId, updatedEdge);
 					}
-					return { edges: newEdges };
 				});
 			},
 
@@ -280,25 +265,23 @@ export const useGraphStore = create<GraphState>()(
 			hoverNode: (nodeId) => set({ hoveredNodeId: nodeId }),
 
 			addToSelection: (nodeId) => {
-				set((state) => {
-					const newSelectedNodes = new Set(state.selectedNodes);
-					newSelectedNodes.add(nodeId);
-					return { selectedNodes: newSelectedNodes };
+				set((draft) => {
+					draft.selectedNodes.add(nodeId);
 				});
 			},
 
 			removeFromSelection: (nodeId) => {
-				set((state) => {
-					const newSelectedNodes = new Set(state.selectedNodes);
-					newSelectedNodes.delete(nodeId);
-					return { selectedNodes: newSelectedNodes };
+				set((draft) => {
+					draft.selectedNodes.delete(nodeId);
 				});
 			},
 
-			clearSelection: () => set({
-				selectedNodeId: null,
-				selectedNodes: new Set()
-			}),
+			clearSelection: () => {
+				set((draft) => {
+					draft.selectedNodeId = null;
+					draft.selectedNodes.clear();
+				});
+			},
 
 			// Bulk operations
 			clear: () => {
@@ -569,7 +552,7 @@ export const useGraphStore = create<GraphState>()(
 
 				return visited;
 			},
-		}),
+		})),
 		{
 			name: "graph-layout-storage",
 			storage: createJSONStorage(() => localStorage),
