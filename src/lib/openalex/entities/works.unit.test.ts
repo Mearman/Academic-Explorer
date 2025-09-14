@@ -1305,7 +1305,7 @@ describe("WorksApi Unit Tests", () => {
 		it("should handle very large filter objects", async () => {
 			const largeFilters: WorksFilters = {};
 			for (let i = 0; i < 100; i++) {
-				largeFilters[`field_${i}`] = `value_${i}`;
+				largeFilters[`field_${String(i)}`] = `value_${String(i)}`;
 			}
 
 			mockClient.getResponse.mockResolvedValue({

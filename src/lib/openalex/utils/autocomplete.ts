@@ -211,7 +211,7 @@ export class AutocompleteApi {
 				}));
 			} else {
 				// Search across all entity types
-				return this.search(trimmedQuery);
+				return await this.search(trimmedQuery);
 			}
 		} catch (error) {
 			logger.warn("api", `Autocomplete failed for query "${query}"`, { query, error }, "AutocompleteApi");

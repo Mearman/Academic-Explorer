@@ -233,7 +233,7 @@ export class OpenAlexBaseClient {
 						(retryAfterMs || this.config.retryDelay) :
 						calculateRetryDelay(retryCount, RETRY_CONFIG.rateLimited, retryAfterMs);
 					await this.sleep(waitTime);
-					return this.makeRequest(url, options, retryCount + 1);
+					return await this.makeRequest(url, options, retryCount + 1);
 				}
 
 				throw new OpenAlexRateLimitError(
@@ -249,7 +249,7 @@ export class OpenAlexBaseClient {
 						this.config.retryDelay * Math.pow(2, retryCount) :
 						calculateRetryDelay(retryCount, RETRY_CONFIG.server);
 					await this.sleep(waitTime);
-					return this.makeRequest(url, options, retryCount + 1);
+					return await this.makeRequest(url, options, retryCount + 1);
 				}
 			}
 
