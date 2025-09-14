@@ -268,6 +268,7 @@ const GraphNavigationInner: React.FC<GraphNavigationProps> = ({ className, style
 				onNodeMouseLeave={onNodeMouseLeave}
 				nodeTypes={nodeTypes}
 				edgeTypes={edgeTypes}
+				elevateEdgesOnSelect={true}
 				fitView
 				fitViewOptions={{ padding: 0.1 }}
 				attributionPosition="bottom-left"
