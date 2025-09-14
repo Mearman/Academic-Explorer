@@ -162,9 +162,10 @@ export class OpenAlexBaseClient {
 				if (Array.isArray(value)) {
 					// Handle arrays (like select fields)
 					url.searchParams.set(key, value.join(","));
-				} else {
+				} else if (typeof value === "string" || typeof value === "number" || typeof value === "boolean") {
 					url.searchParams.set(key, String(value));
 				}
+				// Ignore other types (objects, functions, etc.)
 			}
 		});
 

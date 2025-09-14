@@ -118,7 +118,7 @@ function parseCSVContent(content: string, config: ParseConfig): RawPaperData[] {
 	} else {
 		// Generate generic headers if no header row
 		const firstRow = lines[0].split(delimiter);
-		headers = firstRow.map((_, index) => `column_${index.toString()}`);
+		headers = firstRow.map((_, index) => `column_${String(index)}`);
 	}
 
 	// Parse data rows
@@ -129,7 +129,7 @@ function parseCSVContent(content: string, config: ParseConfig): RawPaperData[] {
 		const record: RawPaperData = {};
 
 		headers.forEach((header, index) => {
-			if (values[index] !== undefined) {
+			if (index < values.length) {
 				record[header] = values[index];
 			}
 		});
@@ -209,10 +209,18 @@ function convertToWorkReference(rawData: RawPaperData, config: ParseConfig): Wor
 	// Parse publication year
 	let publicationYear: number | undefined;
 	if (yearValue) {
-		const yearNum = typeof yearValue === "number" ? yearValue : parseInt(String(yearValue), 10);
-		if (!isNaN(yearNum) && yearNum > 1800 && yearNum <= new Date().getFullYear() + 5) {
-			publicationYear = yearNum;
+		if (typeof yearValue === "number") {
+			const yearNum = Math.floor(yearValue);
+			if (!isNaN(yearNum) && yearNum > 1800 && yearNum <= new Date().getFullYear() + 5) {
+				publicationYear = yearNum;
+			}
+		} else if (typeof yearValue === "string") {
+			const yearNum = parseInt(yearValue, 10);
+			if (!isNaN(yearNum) && yearNum > 1800 && yearNum <= new Date().getFullYear() + 5) {
+				publicationYear = yearNum;
+			}
 		}
+		// Ignore other types (objects, arrays, etc.)
 	}
 
 	return {
@@ -320,7 +328,7 @@ export async function parseSTARFile(
 		const workRef = convertToWorkReference(rawData, config);
 
 		if (!workRef) {
-			errors.push(`Row ${(index + 1).toString()}: Missing or invalid title`);
+			errors.push(`Row ${String(index + 1)}: Missing or invalid title`);
 			return;
 		}
 
@@ -394,7 +402,7 @@ export function createSTARDatasetFromParseResult(
 			description: `Uploaded from ${file.name} (${parseResult.metadata.detectedFormat.toUpperCase()})`,
 			methodology: "STAR",
 			originalSource: file.name,
-			dateRange: `${parseResult.metadata.totalRecords.toString()} records processed`
+			dateRange: `${String(parseResult.metadata.totalRecords)} records processed`
 		}
 	};
 }
