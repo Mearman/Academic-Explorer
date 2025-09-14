@@ -860,7 +860,7 @@ export interface AutocompleteResult {
   hint?: string;
   cited_by_count?: number;
   works_count?: number;
-  entity_type: 'work' | 'author' | 'source' | 'institution' | 'topic' | 'publisher' | 'funder' | 'concept';
+  entity_type: 'work' | 'author' | 'source' | 'institution' | 'topic' | 'publisher' | 'funder' | 'concept' | 'keyword' | 'geo';
   external_id?: string;
   filter_key?: string;
 }
