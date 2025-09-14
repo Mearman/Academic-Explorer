@@ -15,6 +15,7 @@ import {
   Background,
   BackgroundVariant,
   type Node,
+  type Edge,
   type OnConnect,
   type OnNodesChange,
 } from '@xyflow/react'
@@ -24,6 +25,7 @@ import { useContextMenu } from '@/hooks/use-context-menu'
 import { useThemeColors } from '@/hooks/use-theme-colors'
 import { NodeContextMenu } from '@/components/layout/NodeContextMenu'
 import { XYFlowProvider } from '@/lib/graph/providers/xyflow/xyflow-provider'
+import { useLayout } from '@/lib/graph/providers/xyflow/use-layout'
 import { logger, logError } from '@/lib/logger'
 
 import '@xyflow/react/dist/style.css'
@@ -49,6 +51,17 @@ const RealGraphVisualizationInner: React.FC = () => {
   // Get provider instance
   const provider = useMemo(() => getProviderInstance(), [])
 
+  // Use unified layout hook for all layout types
+  const { isRunning: isLayoutRunning, reheatLayout } = useLayout(
+    currentLayout,
+    {
+      enabled: true,
+      onLayoutChange: () => {
+        // Optional: Notify when layout positions change
+      }
+    }
+  )
+
   // Set ReactFlow instance on the provider
   useEffect(() => {
     if (reactFlowInstance) {
@@ -67,7 +80,7 @@ const RealGraphVisualizationInner: React.FC = () => {
 
   // Initialize XYFlow state
   const [nodes, setNodes, onNodesChange] = useNodesState<Node>([])
-  const [edges, setEdges, onEdgesChange] = useEdgesState([])
+  const [edges, setEdges, onEdgesChange] = useEdgesState<Edge>([])
 
   // Track layout type changes to force complete re-layout
   const prevLayoutType = useRef(currentLayout.type)
@@ -87,14 +100,12 @@ const RealGraphVisualizationInner: React.FC = () => {
         prevLayoutType.current = currentLayout.type
       }
 
-      // Apply the current layout with force re-layout if layout type changed
-      const layoutWithOptions = isLayoutTypeChange ? {
-        ...currentLayout,
-        options: { ...currentLayout.options, forceReLayout: true }
-      } : currentLayout
-
-      logger.info('graph', 'Applying layout', { type: layoutWithOptions.type, options: layoutWithOptions.options }, 'RealGraphVisualization')
-      provider.applyLayout(layoutWithOptions)
+      // All layouts are now managed by the useLayout hook
+      logger.info('graph', 'Layout managed by hook', {
+        type: currentLayout.type,
+        isRunning: isLayoutRunning,
+        isLayoutTypeChange
+      }, 'RealGraphVisualization')
 
       // Get updated data and set state
       const newData = provider.getXYFlowData()
@@ -103,15 +114,15 @@ const RealGraphVisualizationInner: React.FC = () => {
       setNodes(newData.nodes)
       setEdges(newData.edges)
 
-      // Manually fit view after layout is applied and state is set
-      // Use a small delay to ensure state update has completed
+      // Fit view after initial layout setup
+      // The layout hook will handle timing based on layout type
       const currentInstance = reactFlowInstance
       setTimeout(() => {
         if (currentInstance) {
-          logger.info('graph', 'Manual fitView after layout', undefined, 'RealGraphVisualization')
+          logger.info('graph', 'FitView after layout setup', { layoutType: currentLayout.type }, 'RealGraphVisualization')
           void currentInstance.fitView({ padding: 0.2 })
         }
-      }, 50)
+      }, currentLayout.type === 'd3-force' ? 150 : 50)
     } else if (graphEdgeArray.length > 0) {
       // Handle edges-only case
       const newData = provider.getXYFlowData()
@@ -128,10 +139,14 @@ const RealGraphVisualizationInner: React.FC = () => {
     logger.info('ui', 'Double-click: expanding node', { nodeId: node.id }, 'RealGraphVisualization')
     try {
       await expandNode(node.id, { limit: 5 })
+
+      // Reheat layout when new nodes are added (applies to all layout types)
+      logger.info('graph', 'Reheating layout after node expansion', { layoutType: currentLayout.type }, 'RealGraphVisualization')
+      reheatLayout(0.3) // Restart with moderate energy
     } catch (error) {
       logError('Failed to expand node', error, 'RealGraphVisualization', 'graph')
     }
-  }, [expandNode])
+  }, [expandNode, currentLayout.type, reheatLayout])
 
   const onNodeContextMenu = useCallback((event: React.MouseEvent, node: Node) => {
     // Convert XYFlow node back to GraphNode for context menu
