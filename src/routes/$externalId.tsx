@@ -2,6 +2,7 @@ import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { useEffect, useMemo } from 'react'
 import { EntityDetector } from '@/lib/graph/utils/entity-detection'
 import { useGraphData } from '@/hooks/use-graph-data'
+import { logError } from '@/lib/logger'
 
 export const Route = createFileRoute('/$externalId')({
   component: ExternalIdRoute,
@@ -63,7 +64,7 @@ function ExternalIdRoute() {
           throw new Error(`Unable to detect entity type for: ${decodedId}`)
         }
       } catch (error) {
-        console.error('Failed to resolve external ID:', error)
+        logError('Failed to resolve external ID:', error, 'ExternalIdRoute', 'routing')
 
         // Fallback to search
         navigate({

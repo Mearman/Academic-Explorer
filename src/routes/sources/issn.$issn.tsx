@@ -2,6 +2,7 @@ import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { useEffect, useMemo } from 'react'
 import { EntityDetector } from '@/lib/graph/utils/entity-detection'
 import { useGraphData } from '@/hooks/use-graph-data'
+import { logError } from '@/lib/logger'
 
 export const Route = createFileRoute('/sources/issn/$issn')({
   component: ISSNSourceRoute,
@@ -31,7 +32,7 @@ function ISSNSourceRoute() {
           throw new Error(`Invalid ISSN format: ${decodedISSN}`)
         }
       } catch (error) {
-        console.error('Failed to resolve ISSN:', error)
+        logError('Failed to resolve ISSN:', error, 'ISSNSourceRoute', 'routing')
         // Navigate to search with the ISSN as query
         navigate({
           to: '/search',

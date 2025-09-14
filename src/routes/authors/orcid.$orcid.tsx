@@ -2,6 +2,7 @@ import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { useEffect, useMemo } from 'react'
 import { EntityDetector } from '@/lib/graph/utils/entity-detection'
 import { useGraphData } from '@/hooks/use-graph-data'
+import { logError } from '@/lib/logger'
 
 export const Route = createFileRoute('/authors/orcid/$orcid')({
   component: ORCIDAuthorRoute,
@@ -31,7 +32,7 @@ function ORCIDAuthorRoute() {
           throw new Error(`Invalid ORCID format: ${decodedORCID}`)
         }
       } catch (error) {
-        console.error('Failed to resolve ORCID:', error)
+        logError('Failed to resolve ORCID:', error, 'ORCIDAuthorRoute', 'routing')
         // Navigate to search with the ORCID as query
         navigate({
           to: '/search',

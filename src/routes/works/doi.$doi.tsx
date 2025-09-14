@@ -2,6 +2,7 @@ import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { useEffect, useMemo } from 'react'
 import { EntityDetector } from '@/lib/graph/utils/entity-detection'
 import { useGraphData } from '@/hooks/use-graph-data'
+import { logError } from '@/lib/logger'
 
 export const Route = createFileRoute('/works/doi/$doi')({
   component: DOIWorkRoute,
@@ -31,7 +32,7 @@ function DOIWorkRoute() {
           throw new Error(`Invalid DOI format: ${decodedDOI}`)
         }
       } catch (error) {
-        console.error('Failed to resolve DOI:', error)
+        logError('Failed to resolve DOI', error, 'DOIWorkRoute', 'routing');
         // Navigate to search with the DOI as query
         navigate({
           to: '/search',

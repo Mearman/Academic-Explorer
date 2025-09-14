@@ -9,6 +9,7 @@ import { formatPublicationYear } from '../lib/utils/date-helpers'
 import { formatLargeNumber } from '../lib/utils/data-helpers'
 import { pageTitle, pageDescription } from '../styles/layout.css'
 import type { ColumnDef } from '@tanstack/react-table'
+import { logger } from '@/lib/logger'
 
 interface SearchFilters {
   query: string;
@@ -184,7 +185,7 @@ function SearchPage() {
                   columns={columns}
                   searchable={false} // Search is handled by the SearchInterface
                   onRowClick={(work) => {
-                    console.log('Clicked work:', work);
+                    logger.debug('ui', 'Work clicked in search results', { workId: work.id, workTitle: work.display_name }, 'SearchPage');
                     // Could navigate to work detail page
                   }}
                 />

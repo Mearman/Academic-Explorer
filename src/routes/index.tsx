@@ -5,6 +5,7 @@ import { useState } from 'react'
 import { useGraphData } from '@/hooks/use-graph-data'
 import { useThemeColors } from '@/hooks/use-theme-colors'
 import { pageTitle } from '../styles/layout.css'
+import { logError } from '@/lib/logger'
 
 function HomePage() {
   const [searchQuery, setSearchQuery] = useState('')
@@ -21,7 +22,7 @@ function HomePage() {
         limit: 15,
       })
     } catch (error) {
-      console.error('Search failed:', error)
+      logError('Search failed', error, 'HomePage', 'search');
     }
   }
 
@@ -33,7 +34,7 @@ function HomePage() {
         limit: 15,
       })
     } catch (error) {
-      console.error('Search failed:', error)
+      logError('Example search failed', error, 'HomePage', 'search');
     }
   }
 

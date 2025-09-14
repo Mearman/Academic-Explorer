@@ -16,6 +16,7 @@ import {
 } from '@/components/evaluation/MetaAnalysisCharts'
 import { MissingPaperDetection } from '@/components/evaluation/MissingPaperDetection'
 import type { MissingPaperDetectionResults } from '@/lib/evaluation/missing-paper-detection'
+import { logError, logger } from '@/lib/logger'
 
 export const Route = createFileRoute('/evaluation/results')({
   component: ComparisonResults,
@@ -94,7 +95,7 @@ function ComparisonResults() {
         setComparisonRuns(runs)
       }
     } catch (error) {
-      console.error('Failed to load STAR datasets:', error)
+      logError('Failed to load STAR datasets:', error, 'ComparisonResults', 'routing')
     }
   }, [])
 
@@ -106,11 +107,11 @@ function ComparisonResults() {
 
       // Calculate and log search coverage for debugging
       const coverage = calculateSearchCoverage(results, dataset)
-      console.log('Search coverage analysis:', coverage)
+      logger.debug('api', 'Search coverage analysis', { coverage }, 'ComparisonResults');
 
       return results
     } catch (error) {
-      console.error('Academic Explorer search failed:', error)
+      logError('Academic Explorer search failed:', error, 'ComparisonResults', 'routing')
       throw error
     }
   }
@@ -166,7 +167,7 @@ function ComparisonResults() {
       ))
 
     } catch (error) {
-      console.error('Comparison failed:', error)
+      logError('Comparison failed:', error, 'ComparisonResults', 'routing')
       setComparisonRuns(prev => prev.map(run =>
         run.id === `run_${datasetId}`
           ? {
@@ -589,7 +590,7 @@ function ComparisonResults() {
                         fontWeight: '500',
                         cursor: 'pointer'
                       }}
-                      onClick={() => console.log('View detailed breakdown for:', result.id)}
+                      onClick={() => logger.debug('ui', 'View detailed breakdown clicked', { resultId: result.id }, 'ComparisonResults')}
                     >
                       View Breakdown
                     </button>
@@ -605,7 +606,7 @@ function ComparisonResults() {
                         fontWeight: '500',
                         cursor: 'pointer'
                       }}
-                      onClick={() => console.log('Export results for:', result.id)}
+                      onClick={() => logger.debug('ui', 'Export results clicked', { resultId: result.id }, 'ComparisonResults')}
                     >
                       Export Results
                     </button>
@@ -621,7 +622,7 @@ function ComparisonResults() {
                         fontWeight: '500',
                         cursor: 'pointer'
                       }}
-                      onClick={() => console.log('View additional papers for:', result.id)}
+                      onClick={() => logger.debug('ui', 'View additional papers clicked', { resultId: result.id }, 'ComparisonResults')}
                     >
                       View Additional Papers ({metrics.additionalPapersFound})
                     </button>

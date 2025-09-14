@@ -1,6 +1,4 @@
 import { createRootRoute, Link, Outlet } from '@tanstack/react-router'
-import { TanStackRouterDevtools } from '@tanstack/react-router-devtools'
-import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import { Group, Text, ActionIcon, useMantineColorScheme, Paper } from '@mantine/core'
 import { IconMoon, IconSun, IconDeviceDesktop } from '@tabler/icons-react'
 import { MainLayout } from '@/components/layout/MainLayout'
@@ -180,8 +178,6 @@ function RootLayout() {
         </MainLayout>
       </div>
 
-      <TanStackRouterDevtools />
-      <ReactQueryDevtools initialIsOpen={false} />
     </div>
   )
 }

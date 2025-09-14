@@ -1,6 +1,7 @@
 import { createFileRoute } from '@tanstack/react-router';
 import { useEffect } from 'react';
 import { useGraphData } from '@/hooks/use-graph-data';
+import { logError } from '@/lib/logger';
 
 export const Route = createFileRoute('/authors/$authorId')({
   component: AuthorRoute,
@@ -16,7 +17,7 @@ function AuthorRoute() {
         // Load author entity into the graph
         await loadEntity(authorId);
       } catch (error) {
-        console.error('Failed to load author:', error);
+        logError('Failed to load author', error, 'AuthorRoute', 'routing');
       }
     };
 

@@ -1,6 +1,7 @@
 import { createFileRoute } from '@tanstack/react-router';
 import { useEffect } from 'react';
 import { useGraphData } from '@/hooks/use-graph-data';
+import { logError } from '@/lib/logger';
 
 export const Route = createFileRoute('/institutions/$institutionId')({
   component: InstitutionRoute,
@@ -16,7 +17,7 @@ function InstitutionRoute() {
         // Load institution entity into the graph
         await loadEntity(institutionId);
       } catch (error) {
-        console.error('Failed to load institution:', error);
+        logError('Failed to load institution', error, 'InstitutionRoute', 'routing');
       }
     };
 

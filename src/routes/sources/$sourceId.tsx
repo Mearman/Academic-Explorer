@@ -1,6 +1,7 @@
 import { createFileRoute } from '@tanstack/react-router';
 import { useEffect } from 'react';
 import { useGraphData } from '@/hooks/use-graph-data';
+import { logError } from '@/lib/logger';
 
 export const Route = createFileRoute('/sources/$sourceId')({
   component: SourceRoute,
@@ -16,7 +17,7 @@ function SourceRoute() {
         // Load source entity into the graph
         await loadEntity(sourceId);
       } catch (error) {
-        console.error('Failed to load source:', error);
+        logError('Failed to load source:', error, 'SourceRoute', 'routing');
       }
     };
 

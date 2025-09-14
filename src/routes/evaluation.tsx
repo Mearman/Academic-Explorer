@@ -5,6 +5,7 @@
 
 import { createFileRoute } from '@tanstack/react-router'
 import React from 'react'
+import { logger } from '@/lib/logger'
 
 export const Route = createFileRoute('/evaluation')({
   component: EvaluationDashboard,
@@ -69,7 +70,7 @@ function EvaluationDashboard() {
           <button
             onClick={() => {
               // TODO: Navigate to datasets page
-              console.log('Navigate to /evaluation/datasets')
+              logger.debug('ui', 'Navigate to datasets clicked', {}, 'EvaluationDashboard');
             }}
             style={{
               backgroundColor: '#3b82f6',

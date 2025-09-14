@@ -7,6 +7,7 @@ import { createFileRoute } from '@tanstack/react-router'
 import React, { useState } from 'react'
 import { parseSTARFile, createSTARDatasetFromParseResult, DEFAULT_COLUMN_MAPPINGS } from '@/lib/evaluation/file-parser'
 import type { STARDataset } from '@/lib/evaluation/types'
+import { logError, logger } from '@/lib/logger'
 
 export const Route = createFileRoute('/evaluation/datasets')({
   component: DatasetsManagement,
@@ -44,7 +45,7 @@ function DatasetsManagement() {
 
       // Check for parsing errors
       if (parseResult.metadata.errors.length > 0) {
-        console.warn('File parsing warnings:', parseResult.metadata.errors)
+        logger.warn('ui', 'File parsing warnings', { errors: parseResult.metadata.errors }, 'DatasetsManagement')
 
         // Show error details to user for critical errors
         const criticalErrors = parseResult.metadata.errors.filter(error =>
@@ -78,7 +79,7 @@ function DatasetsManagement() {
       }, 1000)
 
     } catch (error) {
-      console.error('Upload failed:', error)
+      logError('Upload failed:', error, 'DatasetsManagement', 'routing')
       setIsUploading(false)
     }
   }
@@ -231,7 +232,7 @@ function DatasetsManagement() {
               <div style={{ display: 'flex', gap: '8px' }}>
                 <button
                   onClick={() => {
-                    console.log('View dataset details:', dataset.id)
+                    logger.debug('ui', 'View dataset details clicked', { datasetId: dataset.id }, 'DatasetsManagement');
                   }}
                   style={{
                     flex: 1,
@@ -249,7 +250,7 @@ function DatasetsManagement() {
                 </button>
                 <button
                   onClick={() => {
-                    console.log('Run comparison with:', dataset.id)
+                    logger.debug('ui', 'Run comparison clicked', { datasetId: dataset.id }, 'DatasetsManagement');
                   }}
                   style={{
                     flex: 1,

@@ -2,6 +2,7 @@ import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { useEffect, useMemo } from 'react'
 import { EntityDetector } from '@/lib/graph/utils/entity-detection'
 import { useGraphData } from '@/hooks/use-graph-data'
+import { logError } from '@/lib/logger'
 
 export const Route = createFileRoute('/institutions/ror/$ror')({
   component: RORInstitutionRoute,
@@ -31,7 +32,7 @@ function RORInstitutionRoute() {
           throw new Error(`Invalid ROR ID format: ${decodedROR}`)
         }
       } catch (error) {
-        console.error('Failed to resolve ROR ID:', error)
+        logError('Failed to resolve ROR ID', error, 'RORInstitutionRoute', 'routing');
         // Navigate to search with the ROR ID as query
         navigate({
           to: '/search',

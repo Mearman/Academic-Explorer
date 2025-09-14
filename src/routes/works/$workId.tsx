@@ -1,6 +1,7 @@
 import { createFileRoute } from '@tanstack/react-router';
 import { useEffect } from 'react';
 import { useGraphData } from '@/hooks/use-graph-data';
+import { logError } from '@/lib/logger';
 
 export const Route = createFileRoute('/works/$workId')({
   component: WorkRoute,
@@ -16,7 +17,7 @@ function WorkRoute() {
         // Load work entity into the graph
         await loadEntity(workId);
       } catch (error) {
-        console.error('Failed to load work:', error);
+        logError('Failed to load work', error, 'WorkRoute', 'routing');
       }
     };
 

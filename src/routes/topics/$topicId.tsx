@@ -1,6 +1,7 @@
 import { createFileRoute } from '@tanstack/react-router';
 import { useEffect } from 'react';
 import { useGraphData } from '@/hooks/use-graph-data';
+import { logError } from '@/lib/logger';
 
 export const Route = createFileRoute('/topics/$topicId')({
   component: TopicRoute,
@@ -16,7 +17,7 @@ function TopicRoute() {
         // Load topic entity into the graph
         await loadEntity(topicId);
       } catch (error) {
-        console.error('Failed to load topic:', error);
+        logError('Failed to load topic:', error, 'TopicRoute', 'routing');
       }
     };
 
