@@ -434,8 +434,9 @@ const GraphNavigationInner: React.FC<GraphNavigationProps> = ({ className, style
 		}
 	}, []);
 
-	// Loading state
-	if (isLoading) {
+	// Loading state - only show full loading screen if there are no existing nodes
+	// This prevents the loading screen from showing during incremental expansions
+	if (isLoading && storeNodes.size === 0) {
 		return (
 			<div className={className} style={{
 				display: "flex",
