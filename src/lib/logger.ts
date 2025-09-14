@@ -45,11 +45,18 @@ export const logStorageOperation = (operation: 'read' | 'write' | 'delete', key:
   });
 };
 
-export const logError = (message: string, error: Error, component?: string, category: LogCategory = 'general') => {
+// Helper function to safely convert unknown error to Error object
+const toError = (error: unknown): Error => {
+  if (error instanceof Error) return error;
+  return new Error(String(error));
+};
+
+export const logError = (message: string, error: unknown, component?: string, category: LogCategory = 'general') => {
+  const errorObj = toError(error);
   logger.error(category, message, {
-    name: error.name,
-    message: error.message,
-    stack: error.stack
+    name: errorObj.name,
+    message: errorObj.message,
+    stack: errorObj.stack
   }, component);
 };
 
@@ -86,5 +93,5 @@ export const setupGlobalErrorHandling = () => {
   });
 
   // Handle React error boundaries (if you set up the logger in an error boundary)
-  console.info('Global error handling initialized');
+  logger.info('general', 'Global error handling initialized', {}, 'setupGlobalErrorHandling');
 };
