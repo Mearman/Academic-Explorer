@@ -30,6 +30,7 @@ export class XYFlowProvider implements GraphProvider {
 	private events: GraphEvents = {};
 	private reactFlowInstance: ReactFlowInstance | null = null;
 	private mounted = false;
+	private recalculateTimeout: number | null = null;
 
 	// Convert generic GraphNode to XYFlow node
 	private toXYNode(node: GraphNode): XYNode {
@@ -61,11 +62,16 @@ export class XYFlowProvider implements GraphProvider {
 
 	// Convert generic GraphEdge to XYFlow edge
 	private toXYEdge(edge: GraphEdge): XYEdge {
+		// Calculate shortest distance handles based on current node positions
+		const { sourceHandle, targetHandle } = this.calculateShortestHandles(edge.source, edge.target);
+
 		return {
 			id: edge.id,
 			source: edge.source,
 			target: edge.target,
-			type: "floating", // Use floating edge for automatic routing
+			sourceHandle,
+			targetHandle,
+			type: "smart", // Use smart edge for automatic handle connection
 			label: edge.label,
 			data: {
 				label: edge.label,
@@ -76,6 +82,125 @@ export class XYFlowProvider implements GraphProvider {
 				strokeWidth: edge.weight ? Math.max(1, edge.weight * 3) : 1,
 			},
 			animated: edge.type === "cited",
+		};
+	}
+
+	// Recalculate all edge handles based on current node positions
+	private recalculateEdgeHandles(): void {
+		if (!this.reactFlowInstance) return;
+
+		const currentEdges = this.reactFlowInstance.getEdges();
+		const updatedEdges = currentEdges.map(edge => {
+			// Recalculate handles for this edge
+			const { sourceHandle, targetHandle } = this.calculateShortestHandles(edge.source, edge.target);
+
+			// Only update if handles have changed
+			if (edge.sourceHandle !== sourceHandle || edge.targetHandle !== targetHandle) {
+				return {
+					...edge,
+					sourceHandle,
+					targetHandle
+				};
+			}
+			return edge;
+		});
+
+		// Update edges if any changed
+		const hasChanges = updatedEdges.some((edge, index) =>
+			edge.sourceHandle !== currentEdges[index].sourceHandle ||
+			edge.targetHandle !== currentEdges[index].targetHandle
+		);
+
+		if (hasChanges) {
+			this.reactFlowInstance.setEdges(updatedEdges);
+			console.log('SmartEdge: Recalculated handles after layout change');
+		}
+	}
+
+	// Throttled version of handle recalculation to avoid excessive calls
+	private scheduleHandleRecalculation(): void {
+		if (this.recalculateTimeout) {
+			clearTimeout(this.recalculateTimeout);
+		}
+
+		this.recalculateTimeout = setTimeout(() => {
+			this.recalculateEdgeHandles();
+			this.recalculateTimeout = null;
+		}, 100); // Debounce by 100ms
+	}
+
+	// Public method that can be called when nodes change position
+	public onNodePositionsChanged(): void {
+		this.scheduleHandleRecalculation();
+	}
+
+	// Calculate the shortest distance between nodes and return optimal handle IDs
+	private calculateShortestHandles(sourceId: string, targetId: string): { sourceHandle: string; targetHandle: string } {
+		// Get current node positions from React Flow instance if available
+		let sourceNode = this.nodes.get(sourceId);
+		let targetNode = this.nodes.get(targetId);
+
+		// Try to get updated positions from React Flow instance
+		if (this.reactFlowInstance) {
+			const currentNodes = this.reactFlowInstance.getNodes();
+			const currentSourceNode = currentNodes.find(n => n.id === sourceId);
+			const currentTargetNode = currentNodes.find(n => n.id === targetId);
+
+			if (currentSourceNode) {
+				sourceNode = { ...sourceNode!, position: currentSourceNode.position };
+			}
+			if (currentTargetNode) {
+				targetNode = { ...targetNode!, position: currentTargetNode.position };
+			}
+		}
+
+		if (!sourceNode || !targetNode) {
+			console.log('SmartEdge: Missing nodes for edge calculation', { sourceId, targetId });
+			return { sourceHandle: "right-source", targetHandle: "left" };
+		}
+
+		// Estimate node dimensions (these should match the actual rendered sizes)
+		const nodeWidth = 160;  // Based on minWidth/maxWidth from custom nodes
+		const nodeHeight = 120; // Estimated height including content
+
+		// Calculate handle positions (center of each side)
+		const sourceHandles = {
+			"top-source": { x: sourceNode.position.x + nodeWidth/2, y: sourceNode.position.y },
+			"right-source": { x: sourceNode.position.x + nodeWidth, y: sourceNode.position.y + nodeHeight/2 },
+			"bottom-source": { x: sourceNode.position.x + nodeWidth/2, y: sourceNode.position.y + nodeHeight },
+			"left-source": { x: sourceNode.position.x, y: sourceNode.position.y + nodeHeight/2 }
+		};
+
+		const targetHandles = {
+			"top": { x: targetNode.position.x + nodeWidth/2, y: targetNode.position.y },
+			"right": { x: targetNode.position.x + nodeWidth, y: targetNode.position.y + nodeHeight/2 },
+			"bottom": { x: targetNode.position.x + nodeWidth/2, y: targetNode.position.y + nodeHeight },
+			"left": { x: targetNode.position.x, y: targetNode.position.y + nodeHeight/2 }
+		};
+
+		// Find the shortest distance combination
+		let shortestDistance = Infinity;
+		let bestSourceHandle = "right-source";
+		let bestTargetHandle = "left";
+
+		Object.entries(sourceHandles).forEach(([sourceHandleId, sourcePos]) => {
+			Object.entries(targetHandles).forEach(([targetHandleId, targetPos]) => {
+				const distance = Math.sqrt(
+					Math.pow(targetPos.x - sourcePos.x, 2) +
+					Math.pow(targetPos.y - sourcePos.y, 2)
+				);
+
+				if (distance < shortestDistance) {
+					shortestDistance = distance;
+					bestSourceHandle = sourceHandleId;
+					bestTargetHandle = targetHandleId;
+				}
+			});
+		});
+
+		return {
+			sourceHandle: bestSourceHandle,
+			targetHandle: bestTargetHandle
 		};
 	}
 
