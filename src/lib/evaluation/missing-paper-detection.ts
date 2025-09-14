@@ -3,7 +3,7 @@
  * Identifies potentially relevant papers that systematic reviews may have missed
  */
 
-import { openAlex } from '@/lib/openalex';
+import { openAlex, buildFilterString } from '@/lib/openalex';
 import type { WorkReference, STARDataset } from './types';
 import { convertWorkToReference } from './openalex-search-service';
 
@@ -159,11 +159,11 @@ async function performTemporalGapAnalysis(
   const searchQuery = keywords.slice(0, 5).join(' OR '); // Limit to top 5 keywords
   const worksParams = {
     search: searchQuery,
-    filter: {
+    filter: buildFilterString({
       from_publication_date: `${searchStart}-01-01`,
       to_publication_date: `${searchEnd}-12-31`,
       cited_by_count: `>${config.minimumCitationThreshold || 5}`
-    },
+    }),
     select: ['id', 'title', 'display_name', 'authorships', 'publication_year', 'doi', 'ids', 'primary_location', 'best_oa_location', 'cited_by_count', 'abstract_inverted_index'],
     per_page: config.maxPapersPerMethod || 50,
     sort: 'cited_by_count'
@@ -234,10 +234,10 @@ async function performCitationNetworkAnalysis(
     try {
       // Find papers that cite this paper
       const citingPapersResponse = await openAlex.works.getWorks({
-        filter: {
+        filter: buildFilterString({
           referenced_works: paper.openalexId,
           cited_by_count: `>${config.minimumCitationThreshold || 5}`
-        },
+        }),
         select: ['id', 'title', 'display_name', 'authorships', 'publication_year', 'doi', 'ids', 'primary_location', 'best_oa_location', 'cited_by_count', 'abstract_inverted_index'],
         per_page: Math.min(20, (config.maxPapersPerMethod || 50) / samplePapers.length),
         sort: 'cited_by_count'
@@ -305,11 +305,11 @@ async function performAuthorNetworkAnalysis(
   try {
     const response = await openAlex.works.getWorks({
       search: `(author:${authorQuery}) AND (${keywordQuery})`,
-      filter: {
+      filter: buildFilterString({
         from_publication_date: `${yearRange.start - 1}-01-01`,
         to_publication_date: `${yearRange.end + 1}-12-31`,
         cited_by_count: `>${config.minimumCitationThreshold || 5}`
-      },
+      }),
       select: ['id', 'title', 'display_name', 'authorships', 'publication_year', 'doi', 'ids', 'primary_location', 'best_oa_location', 'cited_by_count', 'abstract_inverted_index'],
       per_page: config.maxPapersPerMethod || 50,
       sort: 'cited_by_count'
@@ -370,11 +370,11 @@ async function performKeywordExpansionAnalysis(
       const searchQuery = termPair.join(' OR ');
       const response = await openAlex.works.getWorks({
         search: searchQuery,
-        filter: {
+        filter: buildFilterString({
           from_publication_date: `${yearRange.start}-01-01`,
           to_publication_date: `${yearRange.end}-12-31`,
           cited_by_count: `>${config.minimumCitationThreshold || 5}`
-        },
+        }),
         select: ['id', 'title', 'display_name', 'authorships', 'publication_year', 'doi', 'ids', 'primary_location', 'best_oa_location', 'cited_by_count', 'abstract_inverted_index'],
         per_page: Math.min(10, (config.maxPapersPerMethod || 50) / (expandedTerms.length / 2)),
         sort: 'cited_by_count'
