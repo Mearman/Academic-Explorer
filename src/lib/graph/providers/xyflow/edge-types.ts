@@ -2,10 +2,10 @@
  * Edge types configuration for XYFlow React Flow
  */
 
-import FloatingEdge from "./FloatingEdge";
+import SmartEdge from "./SmartEdge";
 
 export const edgeTypes = {
-	floating: FloatingEdge,
+	smart: SmartEdge,
 };
 
 export default edgeTypes;
