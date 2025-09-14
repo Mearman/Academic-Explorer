@@ -16,7 +16,6 @@ import {
   BackgroundVariant,
   Panel,
   type Node as XYNode,
-  type Edge as XYEdge,
 } from '@xyflow/react';
 import { useNavigate } from '@tanstack/react-router';
 
@@ -56,7 +55,7 @@ const GraphNavigationInner: React.FC<GraphNavigationProps> = ({ className, style
 
   // XYFlow state - synced with store
   const [nodes, setNodes, onNodesChange] = useNodesState<XYNode>([]);
-  const [edges, setEdges, onEdgesChange] = useEdgesState<XYEdge>([]);
+  const [edges, setEdges, onEdgesChange] = useEdgesState([]);
 
   // Provider instance ref
   const providerRef = useRef<XYFlowProvider | null>(null);

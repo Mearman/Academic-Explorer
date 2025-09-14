@@ -44,7 +44,7 @@ export function CacheManagement() {
 
   // Load cache statistics on mount
   React.useEffect(() => {
-    loadCacheStats();
+    void loadCacheStats();
   }, []);
 
   const loadCacheStats = async () => {

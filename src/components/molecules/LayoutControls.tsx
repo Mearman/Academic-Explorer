@@ -137,7 +137,7 @@ export const LayoutControls: React.FC = () => {
                   key={option.type}
                   variant={currentLayout.type === option.type ? 'filled' : 'subtle'}
                   leftSection={<OptionIcon size={16} />}
-                  onClick={() => handleLayoutChange(option.type)}
+                  onClick={() => { handleLayoutChange(option.type); }}
                   size="sm"
                   justify="flex-start"
                   fullWidth
@@ -161,7 +161,7 @@ export const LayoutControls: React.FC = () => {
                   label="Iterations"
                   description="Number of simulation iterations"
                   value={typeof layoutOptions_.iterations === 'number' ? layoutOptions_.iterations : 300}
-                  onChange={(value) => handleOptionChange('iterations', value)}
+                  onChange={(value) => { handleOptionChange('iterations', value); }}
                   min={50}
                   max={500}
                   step={50}
@@ -171,7 +171,7 @@ export const LayoutControls: React.FC = () => {
                   label="Strength"
                   description="Force strength"
                   value={typeof layoutOptions_.strength === 'number' ? layoutOptions_.strength : 100}
-                  onChange={(value) => handleOptionChange('strength', value)}
+                  onChange={(value) => { handleOptionChange('strength', value); }}
                   min={50}
                   max={200}
                   step={10}
@@ -181,7 +181,7 @@ export const LayoutControls: React.FC = () => {
                   label="Distance"
                   description="Preferred distance between nodes"
                   value={typeof layoutOptions_.distance === 'number' ? layoutOptions_.distance : 150}
-                  onChange={(value) => handleOptionChange('distance', value)}
+                  onChange={(value) => { handleOptionChange('distance', value); }}
                   min={100}
                   max={300}
                   step={25}
@@ -191,14 +191,14 @@ export const LayoutControls: React.FC = () => {
                   label="Prevent Overlap"
                   description="Ensure nodes don't overlap"
                   checked={typeof layoutOptions_.preventOverlap === 'boolean' ? layoutOptions_.preventOverlap : true}
-                  onChange={(event) => handleOptionChange('preventOverlap', event.currentTarget.checked)}
+                  onChange={(event) => { handleOptionChange('preventOverlap', event.currentTarget.checked); }}
                   size="sm"
                 />
                 <NumberInput
                   label="Seed"
                   description="Random seed for deterministic results"
                   value={typeof layoutOptions_.seed === 'number' ? layoutOptions_.seed : 42}
-                  onChange={(value) => handleOptionChange('seed', value)}
+                  onChange={(value) => { handleOptionChange('seed', value); }}
                   min={1}
                   max={1000}
                   size="xs"
@@ -215,7 +215,7 @@ export const LayoutControls: React.FC = () => {
                   label="Iterations"
                   description="Number of simulation steps"
                   value={typeof layoutOptions_.iterations === 'number' ? layoutOptions_.iterations : 300}
-                  onChange={(value) => handleOptionChange('iterations', value)}
+                  onChange={(value) => { handleOptionChange('iterations', value); }}
                   min={100}
                   max={1000}
                   step={50}
@@ -225,7 +225,7 @@ export const LayoutControls: React.FC = () => {
                   label="Link Distance"
                   description="Target distance between connected nodes"
                   value={typeof layoutOptions_.linkDistance === 'number' ? layoutOptions_.linkDistance : 150}
-                  onChange={(value) => handleOptionChange('linkDistance', value)}
+                  onChange={(value) => { handleOptionChange('linkDistance', value); }}
                   min={50}
                   max={300}
                   step={25}
@@ -235,7 +235,7 @@ export const LayoutControls: React.FC = () => {
                   label="Charge Strength"
                   description="Node repulsion force (negative values repel)"
                   value={typeof layoutOptions_.chargeStrength === 'number' ? layoutOptions_.chargeStrength : -300}
-                  onChange={(value) => handleOptionChange('chargeStrength', value)}
+                  onChange={(value) => { handleOptionChange('chargeStrength', value); }}
                   min={-500}
                   max={-50}
                   step={50}
@@ -245,7 +245,7 @@ export const LayoutControls: React.FC = () => {
                   label="Collision Radius"
                   description="Minimum distance between nodes"
                   value={typeof layoutOptions_.collisionRadius === 'number' ? layoutOptions_.collisionRadius : 60}
-                  onChange={(value) => handleOptionChange('collisionRadius', value)}
+                  onChange={(value) => { handleOptionChange('collisionRadius', value); }}
                   min={30}
                   max={100}
                   step={10}
@@ -255,7 +255,7 @@ export const LayoutControls: React.FC = () => {
                   label="Velocity Decay"
                   description="Friction to slow down nodes (0-1)"
                   value={typeof layoutOptions_.velocityDecay === 'number' ? layoutOptions_.velocityDecay : 0.4}
-                  onChange={(value) => handleOptionChange('velocityDecay', value)}
+                  onChange={(value) => { handleOptionChange('velocityDecay', value); }}
                   min={0.1}
                   max={0.9}
                   step={0.1}
@@ -265,7 +265,7 @@ export const LayoutControls: React.FC = () => {
                   label="Seed"
                   description="Random seed for deterministic results"
                   value={typeof layoutOptions_.seed === 'number' ? layoutOptions_.seed : 42}
-                  onChange={(value) => handleOptionChange('seed', value)}
+                  onChange={(value) => { handleOptionChange('seed', value); }}
                   min={1}
                   max={1000}
                   size="xs"

@@ -29,41 +29,48 @@ interface GraphSession {
 const STORAGE_KEY = 'academic-explorer-sessions'
 const MAX_SESSIONS = 10 // Limit to prevent localStorage bloat
 
+// Helper function for safe property access
+function hasProperty(obj: unknown, prop: string): boolean {
+  return obj !== null && typeof obj === 'object' && Object.prototype.hasOwnProperty.call(obj, prop)
+}
+
+// Helper function for safe property value extraction
+function getProperty(obj: unknown, prop: string): unknown {
+  if (!hasProperty(obj, prop)) return undefined
+  // Safe cast: hasProperty already verified obj is a non-null object with the property
+  return (obj as Record<string, unknown>)[prop]
+}
+
 // Type guard for GraphSession objects
 function isValidGraphSession(obj: unknown): obj is GraphSession {
   if (!obj || typeof obj !== 'object') return false
 
-  // Object.prototype.hasOwnProperty.call for safe property checks
-  const hasProperty = (prop: string): boolean =>
-    Object.prototype.hasOwnProperty.call(obj, prop)
+  // Check required properties exist
+  if (!hasProperty(obj, 'id') || !hasProperty(obj, 'name') || !hasProperty(obj, 'snapshot')) return false
 
-  if (!hasProperty('id') || !hasProperty('name') || !hasProperty('snapshot')) return false
+  // Validate property types
+  const id = getProperty(obj, 'id')
+  const name = getProperty(obj, 'name')
+  if (typeof id !== 'string' || typeof name !== 'string') return false
 
-  const session = obj as Record<string, unknown>
+  // Validate optional date properties
+  const createdAt = getProperty(obj, 'createdAt')
+  const lastModified = getProperty(obj, 'lastModified')
 
-  if (typeof session.id !== 'string' || typeof session.name !== 'string') return false
-
-  const createdAtValid = typeof session.createdAt === 'string' || session.createdAt instanceof Date
-  const lastModifiedValid = typeof session.lastModified === 'string' || session.lastModified instanceof Date
+  const createdAtValid = createdAt === undefined || typeof createdAt === 'string' || createdAt instanceof Date
+  const lastModifiedValid = lastModified === undefined || typeof lastModified === 'string' || lastModified instanceof Date
 
   if (!createdAtValid || !lastModifiedValid) return false
 
-  // Safely check snapshot structure without type assertion
-  const snapshot = session.snapshot
+  // Validate snapshot structure
+  const snapshot = getProperty(obj, 'snapshot')
   if (!snapshot || typeof snapshot !== 'object') return false
 
-  const snapshotHasProperty = (prop: string): boolean =>
-    Object.prototype.hasOwnProperty.call(snapshot, prop)
+  // Check snapshot has required array properties
+  const nodes = getProperty(snapshot, 'nodes')
+  const edges = getProperty(snapshot, 'edges')
 
-  if (!snapshotHasProperty('nodes') || !snapshotHasProperty('edges')) return false
-
-  // Access properties safely using reflection
-  const getProperty = (obj: unknown, prop: string): unknown => {
-    if (!obj || typeof obj !== 'object') return undefined
-    return (obj as Record<string, unknown>)[prop]
-  }
-
-  return Array.isArray(getProperty(snapshot, 'nodes')) && Array.isArray(getProperty(snapshot, 'edges'))
+  return Array.isArray(nodes) && Array.isArray(edges)
 }
 
 export function useGraphPersistence() {

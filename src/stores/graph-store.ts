@@ -111,10 +111,8 @@ export const useGraphStore = create<GraphState>()(
   setProvider: (provider) => {
     const state = get();
     // Transfer existing data to new provider
-    if (provider) {
-      provider.setNodes(Array.from(state.nodes.values()));
-      provider.setEdges(Array.from(state.edges.values()));
-    }
+    provider.setNodes(Array.from(state.nodes.values()));
+    provider.setEdges(Array.from(state.edges.values()));
     set({ provider });
   },
 

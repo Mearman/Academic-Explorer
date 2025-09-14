@@ -15,10 +15,8 @@ import {
   Background,
   BackgroundVariant,
   type Node,
-  type Edge,
   type OnConnect,
   type OnNodesChange,
-  type OnEdgesChange,
 } from '@xyflow/react'
 import { useGraphStore } from '@/stores/graph-store'
 import { useGraphData } from '@/hooks/use-graph-data'
@@ -27,7 +25,6 @@ import { useThemeColors } from '@/hooks/use-theme-colors'
 import { NodeContextMenu } from '@/components/layout/NodeContextMenu'
 import { XYFlowProvider } from '@/lib/graph/providers/xyflow/xyflow-provider'
 import { logger, logError } from '@/lib/logger'
-import type { GraphNode } from '@/lib/graph/types'
 
 import '@xyflow/react/dist/style.css'
 
@@ -70,7 +67,7 @@ const RealGraphVisualizationInner: React.FC = () => {
 
   // Initialize XYFlow state
   const [nodes, setNodes, onNodesChange] = useNodesState<Node>([])
-  const [edges, setEdges, onEdgesChange] = useEdgesState<Edge>([])
+  const [edges, setEdges, onEdgesChange] = useEdgesState([])
 
   // Track layout type changes to force complete re-layout
   const prevLayoutType = useRef(currentLayout.type)
@@ -153,7 +150,7 @@ const RealGraphVisualizationInner: React.FC = () => {
   )
 
   // Custom onNodesChange to sync position updates back to provider and graph store
-  const handleNodesChange: OnNodesChange<Node> = useCallback((changes) => {
+  const handleNodesChange: OnNodesChange = useCallback((changes) => {
     logger.info('graph', 'handleNodesChange called', { changes: changes.map(c => ({ type: c.type, id: 'id' in c ? c.id : undefined, position: 'position' in c ? c.position : undefined })) }, 'RealGraphVisualization')
     onNodesChange(changes)
 

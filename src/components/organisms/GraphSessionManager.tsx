@@ -41,7 +41,7 @@ export const GraphSessionManager: React.FC<GraphSessionManagerProps> = ({
     if (!sessionName.trim()) return
 
     try {
-      const sessionId = saveSession(sessionName.trim(), sessionDescription.trim() || undefined)
+      const _sessionId = saveSession(sessionName.trim(), sessionDescription.trim() || undefined)
       setSessionName('')
       setSessionDescription('')
       setActiveTab('load')
@@ -172,7 +172,7 @@ export const GraphSessionManager: React.FC<GraphSessionManagerProps> = ({
           borderBottom: '1px solid #e5e7eb'
         }}>
           <button
-            onClick={() => setActiveTab('load')}
+            onClick={() => { setActiveTab('load'); }}
             style={{
               flex: 1,
               padding: '12px 16px',
@@ -190,7 +190,7 @@ export const GraphSessionManager: React.FC<GraphSessionManagerProps> = ({
             Load Sessions ({sessions.length})
           </button>
           <button
-            onClick={() => setActiveTab('save')}
+            onClick={() => { setActiveTab('save'); }}
             style={{
               flex: 1,
               padding: '12px 16px',
@@ -254,7 +254,7 @@ export const GraphSessionManager: React.FC<GraphSessionManagerProps> = ({
                           <input
                             type="text"
                             value={editName}
-                            onChange={(e) => setEditName(e.target.value)}
+                            onChange={(e) => { setEditName(e.target.value); }}
                             placeholder="Session name"
                             style={{
                               padding: '6px 8px',
@@ -265,7 +265,7 @@ export const GraphSessionManager: React.FC<GraphSessionManagerProps> = ({
                           />
                           <textarea
                             value={editDescription}
-                            onChange={(e) => setEditDescription(e.target.value)}
+                            onChange={(e) => { setEditDescription(e.target.value); }}
                             placeholder="Description (optional)"
                             rows={2}
                             style={{
@@ -395,7 +395,7 @@ export const GraphSessionManager: React.FC<GraphSessionManagerProps> = ({
                           </div>
 
                           <button
-                            onClick={() => handleLoad(session.id)}
+                            onClick={() => { handleLoad(session.id); }}
                             style={{
                               width: '100%',
                               padding: '8px 12px',
@@ -455,7 +455,7 @@ export const GraphSessionManager: React.FC<GraphSessionManagerProps> = ({
                     <input
                       type="text"
                       value={sessionName}
-                      onChange={(e) => setSessionName(e.target.value)}
+                      onChange={(e) => { setSessionName(e.target.value); }}
                       placeholder="Enter a name for this session"
                       style={{
                         width: '100%',
@@ -481,7 +481,7 @@ export const GraphSessionManager: React.FC<GraphSessionManagerProps> = ({
                     </label>
                     <textarea
                       value={sessionDescription}
-                      onChange={(e) => setSessionDescription(e.target.value)}
+                      onChange={(e) => { setSessionDescription(e.target.value); }}
                       placeholder="Describe what this graph represents"
                       rows={3}
                       style={{

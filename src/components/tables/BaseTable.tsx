@@ -76,7 +76,7 @@ export function BaseTable<T>({
             placeholder={searchPlaceholder}
             leftSection={<IconSearch size={16} />}
             value={globalFilter}
-            onChange={(e) => setGlobalFilter(e.target.value)}
+            onChange={(e) => { setGlobalFilter(e.target.value); }}
             style={{ minWidth: 300 }}
           />
 
@@ -156,7 +156,7 @@ export function BaseTable<T>({
                 style={{
                   cursor: onRowClick ? 'pointer' : 'default',
                 }}
-                onClick={() => handleRowClick(row.original)}
+                onClick={() => { handleRowClick(row.original); }}
               >
                 {row.getVisibleCells().map((cell) => (
                   <Table.Td key={cell.id}>
@@ -182,7 +182,7 @@ export function BaseTable<T>({
 
           <Pagination
             value={table.getState().pagination.pageIndex + 1}
-            onChange={(page) => table.setPageIndex(page - 1)}
+            onChange={(page) => { table.setPageIndex(page - 1); }}
             total={table.getPageCount()}
             size="sm"
             withEdges

@@ -62,7 +62,7 @@ export function CacheManagementPanel() {
 
     // Refresh every 30 seconds
     const interval = setInterval(loadQueryCache, 30000);
-    return () => clearInterval(interval);
+    return () => { clearInterval(interval); };
   }, [queryClient]);
 
   const formatQueryKey = (queryKey: readonly unknown[]): string => {
@@ -76,9 +76,9 @@ export function CacheManagementPanel() {
     const hours = Math.floor(minutes / 60);
     const days = Math.floor(hours / 24);
 
-    if (days > 0) return `${days}d ago`;
-    if (hours > 0) return `${hours}h ago`;
-    if (minutes > 0) return `${minutes}m ago`;
+    if (days > 0) return `${days.toString()}d ago`;
+    if (hours > 0) return `${hours.toString()}h ago`;
+    if (minutes > 0) return `${minutes.toString()}m ago`;
     return 'Just now';
   };
 

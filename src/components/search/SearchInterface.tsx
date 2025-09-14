@@ -77,7 +77,7 @@ export function SearchInterface({
             <Button
               variant="subtle"
               leftSection={<IconFilter size={16} />}
-              onClick={() => setIsAdvancedOpen(!isAdvancedOpen)}
+              onClick={() => { setIsAdvancedOpen(!isAdvancedOpen); }}
               size="sm"
             >
               {isAdvancedOpen ? 'Hide' : 'Show'} Filters
@@ -90,7 +90,7 @@ export function SearchInterface({
             placeholder={placeholder}
             leftSection={<IconSearch size={16} />}
             value={query}
-            onChange={(e) => handleQueryChange(e.target.value)}
+            onChange={(e) => { handleQueryChange(e.target.value); }}
             disabled={isLoading}
             flex={1}
             size="md"
