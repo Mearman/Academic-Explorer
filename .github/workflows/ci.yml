@@ -194,7 +194,7 @@ jobs:
           merge-multiple: true
 
       - name: Upload combined coverage to Codecov
-        uses: codecov/codecov-action@v4
+        uses: codecov/codecov-action@v5
         with:
           directory: coverage-reports/
           fail_ci_if_error: false
