@@ -159,7 +159,7 @@ export function CacheManagement() {
         <Tooltip label="Reload cache statistics">
           <ActionIcon
             variant="light"
-            onClick={loadCacheStats}
+            onClick={() => void loadCacheStats()}
             loading={isLoading}
           >
             <IconRefresh size={16} />
@@ -269,7 +269,7 @@ export function CacheManagement() {
               leftSection={<IconRefresh size={16} />}
               variant="light"
               size="sm"
-              onClick={handleClearExpired}
+              onClick={() => void handleClearExpired()}
               loading={isLoading}
             >
               Clear Expired
@@ -279,7 +279,7 @@ export function CacheManagement() {
               color="red"
               variant="outline"
               size="sm"
-              onClick={handleClearCache}
+              onClick={() => void handleClearCache()}
               loading={isLoading}
             >
               Clear All Cache
