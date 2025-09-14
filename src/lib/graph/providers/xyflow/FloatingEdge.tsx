@@ -59,7 +59,7 @@ function FloatingEdge({
         fill="none"
       />
       {/* Optional edge label */}
-      {data?.label && (
+      {data?.label && typeof data.label === 'string' ? (
         <text
           x={(sourceX + targetX) / 2}
           y={(sourceY + targetY) / 2}
@@ -74,7 +74,7 @@ function FloatingEdge({
         >
           {data.label}
         </text>
-      )}
+      ) : null}
     </g>
   );
 }
