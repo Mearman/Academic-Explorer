@@ -19,6 +19,7 @@ import { randomLcg } from "d3-random";
 
 import type { GraphLayout, EntityType } from "../../types";
 import { logger } from "@/lib/logger";
+import { useGraphStore } from "@/stores/graph-store";
 
 // Extended node interface for D3 simulation
 interface D3Node extends SimulationNodeDatum {
@@ -46,6 +47,7 @@ export function useLayout(
 ) {
 	const { enabled = true, onLayoutChange, fitViewAfterLayout = true, containerDimensions } = options;
 	const { getNodes, getEdges, setNodes, fitView, getViewport, setCenter } = useReactFlow();
+	const pinnedNodeId = useGraphStore((state) => state.pinnedNodeId);
 	const containerRef = useRef<HTMLElement | null>(null);
 	const simulationRef = useRef<Simulation<D3Node, D3Link> | null>(null);
 	const isRunningRef = useRef(false);
@@ -115,14 +117,17 @@ export function useLayout(
 
 		// Using fixed D3 force parameters
 
-		// Fixed D3 force parameters for closer node spacing with reasonable stability timing
+		// Fixed D3 force parameters with adjustments for pinned nodes
 		const seed = 42;
-		const linkDistance = 300; // Reduced distance between linked nodes
-		const linkStrength = 0.3; // Increased strength to pull connected nodes closer
-		const chargeStrength = -2000; // Reduced repulsion for closer spacing
-		const centerStrength = 0.05; // Stronger centering to keep graph anchored at (0,0)
-		const collisionRadius = 150; // Reduced collision zones for closer packing
-		const collisionStrength = 2.0; // Reduced collision strength to allow closer spacing
+		const hasPinnedNode = !!pinnedNodeId;
+
+		// Adjust parameters based on whether we have a pinned node
+		const linkDistance = hasPinnedNode ? 250 : 300; // Shorter links when pinned for tighter clustering
+		const linkStrength = hasPinnedNode ? 0.5 : 0.3; // Stronger links to pull nodes toward pinned center
+		const chargeStrength = hasPinnedNode ? -1500 : -2000; // Less repulsion when pinned to allow closer clustering
+		const centerStrength = hasPinnedNode ? 0.02 : 0.05; // Lower center force since pinned node acts as anchor
+		const collisionRadius = 150; // Keep collision radius consistent
+		const collisionStrength = 2.0; // Keep collision strength consistent
 		const velocityDecay = 0.1; // Very low decay for maximum movement
 		const alpha = 1;
 		const alphaDecay = 0.02; // Faster decay for reasonable simulation time
@@ -134,8 +139,12 @@ export function useLayout(
 			{
 				nodeCount: nodes.length,
 				edgeCount: edges.length,
+				hasPinnedNode,
+				pinnedNodeId,
 				linkDistance,
+				linkStrength,
 				chargeStrength,
+				centerStrength,
 				collisionRadius,
 				collisionStrength,
 				velocityDecay,
@@ -165,23 +174,42 @@ export function useLayout(
 		// Create deterministic random source
 		const random = randomLcg(seed);
 
-		// Convert ReactFlow nodes to D3 nodes - all starting at (0,0) for deterministic force application
+		// Convert ReactFlow nodes to D3 nodes with pinned node support
 		const d3Nodes: D3Node[] = nodes.map((node, index) => {
-			logger.info(
-				"graph",
-				"Initializing node at origin for deterministic forces",
-				{
-					nodeId: node.id,
-					index,
-					startPosition: { x: 0, y: 0 },
-				},
-				"useLayout",
-			);
+			const isPinned = pinnedNodeId === node.id;
+
+			if (isPinned) {
+				logger.info(
+					"graph",
+					"Pinning node at origin (0,0)",
+					{
+						nodeId: node.id,
+						index,
+						position: { x: 0, y: 0 },
+						pinned: true,
+					},
+					"useLayout",
+				);
+			} else {
+				logger.info(
+					"graph",
+					"Initializing node at origin for deterministic forces",
+					{
+						nodeId: node.id,
+						index,
+						startPosition: { x: 0, y: 0 },
+						pinned: false,
+					},
+					"useLayout",
+				);
+			}
 
 			return {
 				id: node.id,
 				x: 0, // All nodes start at origin
 				y: 0, // All nodes start at origin
+				fx: isPinned ? 0 : undefined, // Fix pinned node at x=0
+				fy: isPinned ? 0 : undefined, // Fix pinned node at y=0
 				...node.data,
 			};
 		});
