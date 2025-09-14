@@ -20,7 +20,7 @@ import { detectEntityType } from "./entity-detection";
  * Factory for creating entity instances based on type
  */
 export class EntityFactory {
-	private static readonly entities = new Map<EntityType, new (client: RateLimitedOpenAlexClient, entityData?: OpenAlexEntity) => AbstractEntity<OpenAlexEntity>>();
+	private static readonly entities = new Map<EntityType, new (client: RateLimitedOpenAlexClient, entityData?: any) => AbstractEntity<any>>();
 
 	/**
    * Register entity classes
