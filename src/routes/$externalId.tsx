@@ -47,13 +47,18 @@ function ExternalIdRoute() {
             to: specificRoute,
             replace: true,
           })
-        } else if (detection.entityType) {
-          // This is an OpenAlex ID, load directly
-          await loadEntity(detection.normalizedId)
+        } else if (detection.entityType && detection.idType === 'openalex') {
+          // This is an OpenAlex ID, navigate to specific entity route
+          const entityType = detection.entityType;
+          const entityRoute = `/${entityType}/${detection.normalizedId}`;
+
           navigate({
-            to: '/graph',
+            to: entityRoute,
             replace: true,
-          })
+          });
+        } else if (detection.entityType) {
+          // This is some other external ID, load directly
+          await loadEntity(detection.normalizedId);
         } else {
           throw new Error(`Unable to detect entity type for: ${decodedId}`)
         }
