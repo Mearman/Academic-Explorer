@@ -64,7 +64,7 @@ export class TextAnalysisApi {
       include_scores = true,
     } = options;
 
-    const params = {
+    const params: Record<string, unknown> = {
       text: text.trim(),
       limit,
       min_confidence,
@@ -72,7 +72,7 @@ export class TextAnalysisApi {
       include_scores,
     };
 
-    return this.client.get<TextAnalysis>('text', params as Record<string, unknown>);
+    return this.client.get<TextAnalysis>('text', params);
   }
 
   /**
