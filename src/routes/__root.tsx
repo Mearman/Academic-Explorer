@@ -41,6 +41,9 @@ function RootLayout() {
                   <Link to="/graph" className={navLink}>
                     Graph Demo
                   </Link>
+                  <Link to="/explore/graph" className={navLink}>
+                    Graph Explorer
+                  </Link>
                 </nav>
 
                 <ActionIcon
