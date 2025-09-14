@@ -200,9 +200,10 @@ export class AutocompleteApi {
       if (entityType) {
         // Use specific entity autocomplete endpoint
         const endpoint = `autocomplete/${entityType}`;
-        const response = await this.client.get<{ results: AutocompleteResult[] }>(endpoint, {
+        const queryParams: QueryParams & { q: string } = {
           q: trimmedQuery,
-        } as QueryParams & { q: string });
+        };
+        const response = await this.client.get<{ results: AutocompleteResult[] }>(endpoint, queryParams);
 
         return response.results.map(result => ({
           ...result,
