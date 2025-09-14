@@ -74,6 +74,12 @@ const RealGraphVisualizationInner: React.FC = () => {
     const graphNodeArray = Array.from(graphNodes.values())
     const graphEdgeArray = Array.from(graphEdges.values())
 
+    // Test if this useEffect is running at all
+    console.log('RealGraphVisualization: Graph data changed effect running', {
+      nodeCount: graphNodeArray.length,
+      edgeCount: graphEdgeArray.length
+    })
+
     logger.info('graph', 'Graph data changed in RealGraphVisualization', {
       nodeCount: graphNodeArray.length,
       edgeCount: graphEdgeArray.length,
@@ -157,6 +163,7 @@ const RealGraphVisualizationInner: React.FC = () => {
   }, [])
 
   const onNodeDoubleClick = useCallback(async (event: React.MouseEvent, node: Node) => {
+    console.log('RealGraphVisualization: Node double-click expanding', { nodeId: node.id })
     logger.info('ui', 'Double-click: expanding node', { nodeId: node.id }, 'RealGraphVisualization')
 
     // Track state before expansion
@@ -164,6 +171,7 @@ const RealGraphVisualizationInner: React.FC = () => {
       nodeCount: Array.from(graphNodes.values()).length,
       nodeIds: Array.from(graphNodes.values()).map(n => n.id)
     }
+    console.log('RealGraphVisualization: State before expansion', beforeExpansion)
     logger.info('graph', 'State before node expansion', beforeExpansion, 'RealGraphVisualization')
 
     try {

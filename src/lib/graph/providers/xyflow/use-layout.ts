@@ -335,11 +335,17 @@ export function useLayout(
   // Main layout application function
   const applyLayout = useCallback(() => {
     if (!enabled || !layout) {
+      console.log('useLayout: Layout application skipped', { enabled, hasLayout: !!layout });
       logger.info('graph', 'Layout application skipped', { enabled, hasLayout: !!layout }, 'useLayout');
       return;
     }
 
     const nodes = getNodes();
+    console.log('useLayout: Layout application started', {
+      layoutType: layout.type,
+      nodeCount: nodes.length,
+      nodeIds: nodes.map(n => n.id)
+    });
     logger.info('graph', 'Layout application started', {
       layoutType: layout.type,
       nodeCount: nodes.length,
