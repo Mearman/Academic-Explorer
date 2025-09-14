@@ -13,7 +13,8 @@ import {
 	IconFile,
 	IconUser,
 	IconBook,
-	IconBuilding
+	IconBuilding,
+	IconPin
 } from "@tabler/icons-react";
 import type { EntityType, ExternalIdentifier } from "../../types";
 
@@ -30,6 +31,7 @@ interface NodeData {
   entityId: string;
   entityType: EntityType;
   externalIds: ExternalIdentifier[];
+  isPinned?: boolean;
   metadata?: {
     year?: number;
     citationCount?: number;
@@ -124,7 +126,12 @@ export const CustomNode: React.FC<CustomNodeProps> = ({ data, selected }) => {
 	const nodeStyle: React.CSSProperties = {
 		...baseNodeStyle,
 		backgroundColor,
-		boxShadow: selected ? "0 0 0 2px rgba(52, 152, 219, 0.5)" : "none",
+		boxShadow: selected
+			? "0 0 0 2px rgba(52, 152, 219, 0.5)"
+			: data.isPinned
+				? "0 0 0 3px rgba(255, 193, 7, 0.8), 0 0 15px rgba(255, 193, 7, 0.4)"
+				: "none",
+		border: data.isPinned ? "2px solid #ffc107" : "none",
 	};
 
 	return (
@@ -180,8 +187,9 @@ export const CustomNode: React.FC<CustomNodeProps> = ({ data, selected }) => {
 			/>
 
 			{/* Node content */}
-			<div style={{ marginBottom: "2px" }}>
-				{data.label}
+			<div style={{ marginBottom: "2px", display: "flex", alignItems: "center", gap: "4px" }}>
+				{data.isPinned && <IconPin size={12} style={{ color: "#ffc107" }} />}
+				<span>{data.label}</span>
 			</div>
 
 			{/* Entity type badge */}
@@ -243,7 +251,12 @@ export const WorkNode: React.FC<CustomNodeProps> = ({ data, selected }) => {
 	const nodeStyle: React.CSSProperties = {
 		...baseNodeStyle,
 		backgroundColor: "#e74c3c",
-		boxShadow: selected ? "0 0 0 2px rgba(52, 152, 219, 0.5)" : "none",
+		boxShadow: selected
+			? "0 0 0 2px rgba(52, 152, 219, 0.5)"
+			: data.isPinned
+				? "0 0 0 3px rgba(255, 193, 7, 0.8), 0 0 15px rgba(255, 193, 7, 0.4)"
+				: "none",
+		border: data.isPinned ? "2px solid #ffc107" : "none",
 	};
 
 	return (
@@ -259,6 +272,7 @@ export const WorkNode: React.FC<CustomNodeProps> = ({ data, selected }) => {
 			<Handle type="source" position={Position.Left} id="left-source" style={{ background: '#555', width: '8px', height: '8px' }} />
 
 			<div style={{ marginBottom: "4px", display: "flex", alignItems: "center", gap: "4px" }}>
+				{data.isPinned && <IconPin size={12} style={{ color: "#ffc107" }} />}
 				<IconFile size={14} /> {data.label}
 			</div>
 
@@ -282,7 +296,12 @@ export const AuthorNode: React.FC<CustomNodeProps> = ({ data, selected }) => {
 	const nodeStyle: React.CSSProperties = {
 		...baseNodeStyle,
 		backgroundColor: "#3498db",
-		boxShadow: selected ? "0 0 0 2px rgba(52, 152, 219, 0.5)" : "none",
+		boxShadow: selected
+			? "0 0 0 2px rgba(52, 152, 219, 0.5)"
+			: data.isPinned
+				? "0 0 0 3px rgba(255, 193, 7, 0.8), 0 0 15px rgba(255, 193, 7, 0.4)"
+				: "none",
+		border: data.isPinned ? "2px solid #ffc107" : "none",
 	};
 
 	const orcid = data.externalIds.find(id => id.type === "orcid");
@@ -300,6 +319,7 @@ export const AuthorNode: React.FC<CustomNodeProps> = ({ data, selected }) => {
 			<Handle type="source" position={Position.Left} id="left-source" style={{ background: '#555', width: '8px', height: '8px' }} />
 
 			<div style={{ marginBottom: "4px", display: "flex", alignItems: "center", gap: "4px" }}>
+				{data.isPinned && <IconPin size={12} style={{ color: "#ffc107" }} />}
 				<IconUser size={14} /> {data.label}
 			</div>
 
@@ -317,7 +337,12 @@ export const SourceNode: React.FC<CustomNodeProps> = ({ data, selected }) => {
 	const nodeStyle: React.CSSProperties = {
 		...baseNodeStyle,
 		backgroundColor: "#2ecc71",
-		boxShadow: selected ? "0 0 0 2px rgba(52, 152, 219, 0.5)" : "none",
+		boxShadow: selected
+			? "0 0 0 2px rgba(52, 152, 219, 0.5)"
+			: data.isPinned
+				? "0 0 0 3px rgba(255, 193, 7, 0.8), 0 0 15px rgba(255, 193, 7, 0.4)"
+				: "none",
+		border: data.isPinned ? "2px solid #ffc107" : "none",
 	};
 
 	const issn = data.externalIds.find(id => id.type === "issn_l");
@@ -335,6 +360,7 @@ export const SourceNode: React.FC<CustomNodeProps> = ({ data, selected }) => {
 			<Handle type="source" position={Position.Left} id="left-source" style={{ background: '#555', width: '8px', height: '8px' }} />
 
 			<div style={{ marginBottom: "4px", display: "flex", alignItems: "center", gap: "4px" }}>
+				{data.isPinned && <IconPin size={12} style={{ color: "#ffc107" }} />}
 				<IconBook size={14} /> {data.label}
 			</div>
 
@@ -352,7 +378,12 @@ export const InstitutionNode: React.FC<CustomNodeProps> = ({ data, selected }) =
 	const nodeStyle: React.CSSProperties = {
 		...baseNodeStyle,
 		backgroundColor: "#f39c12",
-		boxShadow: selected ? "0 0 0 2px rgba(52, 152, 219, 0.5)" : "none",
+		boxShadow: selected
+			? "0 0 0 2px rgba(52, 152, 219, 0.5)"
+			: data.isPinned
+				? "0 0 0 3px rgba(255, 193, 7, 0.8), 0 0 15px rgba(255, 193, 7, 0.4)"
+				: "none",
+		border: data.isPinned ? "2px solid #ffc107" : "none",
 	};
 
 	const ror = data.externalIds.find(id => id.type === "ror");
@@ -370,6 +401,7 @@ export const InstitutionNode: React.FC<CustomNodeProps> = ({ data, selected }) =
 			<Handle type="source" position={Position.Left} id="left-source" style={{ background: '#555', width: '8px', height: '8px' }} />
 
 			<div style={{ marginBottom: "4px", display: "flex", alignItems: "center", gap: "4px" }}>
+				{data.isPinned && <IconPin size={12} style={{ color: "#ffc107" }} />}
 				<IconBuilding size={14} /> {data.label}
 			</div>
 
