@@ -4,11 +4,10 @@
  * query parameter building, and response parsing
  */
 
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
 import {
   OpenAlexBaseClient,
   OpenAlexApiError,
-  OpenAlexRateLimitError,
   type OpenAlexClientConfig,
 } from './client';
 import type { OpenAlexResponse } from './types';

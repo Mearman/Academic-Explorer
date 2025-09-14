@@ -4,16 +4,12 @@
  */
 
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { AuthorsApi, AuthorWorksFilters, AuthorCollaboratorsFilters } from './authors';
+import { AuthorsApi, AuthorWorksFilters } from './authors';
 import { OpenAlexBaseClient } from '../client';
 import type {
   Author,
-  AuthorsFilters,
   OpenAlexResponse,
-  Work,
-  Concept,
-  OpenAlexId,
-  QueryParams
+  Work
 } from '../types';
 
 // Mock the base client
