@@ -1259,7 +1259,7 @@ describe('WorksApi Unit Tests', () => {
       mockClient.getResponse.mockRejectedValue(apiError);
 
       await expect(worksApi.getWorks({
-        filter: { 'publication_year': 'invalid_value' } as any
+        filter: { 'publication_year': 'invalid_value' } as Record<string, unknown>
       })).rejects.toThrow('Invalid filter parameter');
     });
 
@@ -1357,8 +1357,9 @@ describe('WorksApi Unit Tests', () => {
     });
 
     it('should handle zero results in streaming', async () => {
-      const mockEmptyGenerator = async function* () {
-        // Generator that yields nothing
+      /* eslint-disable-next-line require-yield */
+      const mockEmptyGenerator = async function* (): AsyncGenerator<Work[], void, unknown> {
+        // Generator that yields nothing - this is intentional for testing empty results
         return;
       };
 
