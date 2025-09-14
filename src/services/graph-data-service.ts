@@ -82,8 +82,17 @@ export class GraphDataService {
         });
       }
 
-      // Apply force layout
-      store.provider?.applyLayout({ type: 'force' });
+      // Apply deterministic force layout
+      store.provider?.applyLayout({
+        type: 'force-deterministic',
+        options: {
+          iterations: 300,
+          strength: 100,
+          distance: 150,
+          preventOverlap: true,
+          seed: 42
+        }
+      });
       store.provider?.fitView();
 
     } catch (error) {
@@ -148,7 +157,16 @@ export class GraphDataService {
       this.cache.expandedNodes.add(nodeId);
 
       // Apply layout update
-      store.provider?.applyLayout({ type: 'force' });
+      store.provider?.applyLayout({
+        type: 'force-deterministic',
+        options: {
+          iterations: 200, // Fewer iterations for expansion updates
+          strength: 100,
+          distance: 150,
+          preventOverlap: true,
+          seed: 42
+        }
+      });
 
     } catch (error) {
       console.error('Failed to expand node:', error);
