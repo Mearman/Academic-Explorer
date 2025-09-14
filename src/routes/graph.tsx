@@ -1,25 +1,49 @@
 import { createFileRoute } from '@tanstack/react-router'
-import { GraphNavigationSimple } from '@/components/layout/GraphNavigationSimple'
+import { Card, Title, Text, Stack, Button } from '@mantine/core'
+import { IconGraph } from '@tabler/icons-react'
+import { useNavigate } from '@tanstack/react-router'
 
 export const Route = createFileRoute('/graph')({
   component: GraphDemo,
 })
 
 function GraphDemo() {
+  const navigate = useNavigate()
+
   return (
-    <div style={{ padding: '20px' }}>
-      <h1>Graph Navigation Demo</h1>
-      <p>Interactive academic entity graph powered by XYFlow</p>
-      <GraphNavigationSimple />
-      <div style={{ marginTop: '20px', fontSize: '14px', color: '#666' }}>
-        <h3>Instructions:</h3>
-        <ul>
-          <li>Click and drag nodes to reposition them</li>
-          <li>Use mouse wheel to zoom in/out</li>
-          <li>Click on nodes to see console output (future: navigate to entity pages)</li>
-          <li>Use the controls in the bottom-left corner</li>
-        </ul>
-      </div>
-    </div>
+    <Card
+      shadow="xl"
+      padding="xl"
+      radius="lg"
+      withBorder
+      style={{
+        backgroundColor: 'rgba(255, 255, 255, 0.95)',
+        backdropFilter: 'blur(10px)',
+        maxWidth: '500px',
+      }}
+    >
+      <Stack gap="lg" align="center">
+        <IconGraph size={60} color="var(--mantine-color-blue-6)" />
+
+        <Title order={1} ta="center">
+          Graph Demo (Legacy)
+        </Title>
+
+        <Text ta="center" size="lg" c="dimmed">
+          This was the old graph demo page. The graph navigation is now the primary UI of the entire application!
+        </Text>
+
+        <Text ta="center" c="dimmed">
+          Try navigating to a specific entity or searching from the sidebar to see the graph in action.
+        </Text>
+
+        <Button
+          onClick={() => navigate({ to: '/' })}
+          size="lg"
+        >
+          Go to Main Graph View
+        </Button>
+      </Stack>
+    </Card>
   )
 }
