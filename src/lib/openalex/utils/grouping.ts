@@ -7,6 +7,18 @@ import { OpenAlexBaseClient } from '../client';
 import { EntityType, QueryParams, GroupParams, OpenAlexResponse as _OpenAlexResponse } from '../types';
 
 /**
+ * Raw group item from OpenAlex API response
+ */
+export interface GroupItem {
+  key: string;
+  key_display_name?: string;
+  count: number;
+  cited_by_count?: number;
+  works_count?: number;
+  h_index?: number;
+}
+
+/**
  * Group result with enhanced metadata
  */
 export interface GroupResult {
@@ -96,18 +108,18 @@ export class GroupingApi {
       per_page: 1, // We only need the grouping results
     };
 
-    const response = await this.client.getResponse<{ group_by?: Array<{ key: string; key_display_name: string; count: number; cited_by_count?: number; works_count?: number; h_index?: number }> }>(entityType, groupParams);
+    const response = await this.client.getResponse<{ group_by?: GroupItem[] }>(entityType, groupParams);
 
     if (!response.group_by) {
       throw new Error(`Grouping not supported for entity type: ${entityType} with field: ${groupBy}`);
     }
 
-    const totalCount = response.group_by.reduce((sum: number, group: any) => sum + group.count, 0);
+    const totalCount = response.group_by.reduce((sum: number, group: GroupItem) => sum + group.count, 0);
     const filteredGroups = response.group_by
-      .filter((group: any) => group.count >= min_count)
+      .filter((group: GroupItem) => group.count >= min_count)
       .slice(0, group_limit);
 
-    const groups: GroupResult[] = filteredGroups.map((group: any) => ({
+    const groups: GroupResult[] = filteredGroups.map((group: GroupItem) => ({
       key: group.key,
       key_display_name: group.key_display_name || group.key,
       count: group.count,
@@ -181,7 +193,17 @@ export class GroupingApi {
       group_limit,
     });
 
-    const trends: any[] = [];
+    const trends: Array<{
+      group: string;
+      group_display_name: string;
+      temporal_data: Array<{
+        year: number;
+        count: number;
+        percentage_of_group: number;
+      }>;
+      total_count: number;
+      growth_rate?: number;
+    }> = [];
 
     // For each major group, get temporal breakdown
     for (const group of mainGroups.groups.slice(0, group_limit)) {
