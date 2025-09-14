@@ -10,7 +10,7 @@ export const Route = createFileRoute("/authors/$authorId")({
 
 function AuthorRoute() {
 	const { authorId } = Route.useParams();
-	const { loadEntity, loadEntityIntoGraph } = useGraphData();
+	const { loadEntity, loadEntityIntoGraph, expandNode } = useGraphData();
 	const { nodes } = useGraphStore();
 
 	useEffect(() => {
@@ -23,6 +23,11 @@ function AuthorRoute() {
 				} else {
 					// If graph is empty, use full loading (clears graph for initial load)
 					await loadEntity(authorId);
+
+					// For initial author page load, automatically expand to show works
+					// This ensures users see a full graph when directly visiting an author URL
+					const authorNodeId = `https://openalex.org/${authorId}`;
+					await expandNode(authorNodeId);
 				}
 			} catch (error) {
 				logError("Failed to load author", error, "AuthorRoute", "routing");
@@ -30,7 +35,7 @@ function AuthorRoute() {
 		};
 
 		void loadAuthor();
-	}, [authorId, loadEntity, loadEntityIntoGraph, nodes.size]);
+	}, [authorId, loadEntity, loadEntityIntoGraph, expandNode, nodes.size]);
 
 	// Return null - the graph is visible from MainLayout
 	// The route content is just for triggering the data load
