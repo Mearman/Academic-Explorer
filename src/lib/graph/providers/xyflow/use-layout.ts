@@ -94,17 +94,17 @@ export function useLayout(
 
     // Using fixed D3 force parameters
 
-    // Fixed D3 force parameters for optimal node separation
+    // Fixed D3 force parameters for optimal node separation - stronger forces to prevent overlap
     const seed = 42;
-    const linkDistance = 400;
-    const linkStrength = 0.7;
-    const chargeStrength = -1200;
-    const centerStrength = 0.03;
-    const collisionRadius = 120;
-    const collisionStrength = 0.9;
-    const velocityDecay = 0.4;
+    const linkDistance = 600; // Increased from 400 for more spacing
+    const linkStrength = 0.5; // Reduced from 0.7 to allow more flexibility
+    const chargeStrength = -2000; // Increased from -1200 for stronger repulsion
+    const centerStrength = 0.01; // Reduced from 0.03 to allow more spreading
+    const collisionRadius = 180; // Increased from 120 for larger collision zones
+    const collisionStrength = 1.2; // Increased from 0.9 for stronger collision avoidance
+    const velocityDecay = 0.3; // Reduced from 0.4 for more movement freedom
     const alpha = 1;
-    const alphaDecay = 0.03;
+    const alphaDecay = 0.02; // Reduced from 0.03 for longer simulation
 
     logger.info('graph', 'Starting D3 Force simulation', {
       nodeCount: nodes.length,
@@ -116,8 +116,8 @@ export function useLayout(
       velocityDecay,
       alphaDecay,
       initialAlpha: alpha,
-      calculatedMinSpacing: collisionRadius * 2.2,
-      calculatedBaseRadius: Math.max(200, Math.sqrt(nodes.length) * (collisionRadius * 2.2) / 2)
+      calculatedMinSpacing: collisionRadius * 2.5,
+      calculatedBaseRadius: Math.max(300, Math.sqrt(nodes.length) * (collisionRadius * 2.5) / 2)
     }, 'useLayout');
 
     // Create deterministic random source
@@ -128,9 +128,9 @@ export function useLayout(
       // Initialize positions for new nodes (those at origin)
       if (node.position.x === 0 && node.position.y === 0) {
         const angle = (index / nodes.length) * 2 * Math.PI;
-        // Ensure minimum spacing based on collision radius * 2 for safety
-        const minSpacing = collisionRadius * 2.2;
-        const baseRadius = Math.max(200, Math.sqrt(nodes.length) * minSpacing / 2);
+        // Ensure minimum spacing based on collision radius * 2.5 for better safety margin
+        const minSpacing = collisionRadius * 2.5;
+        const baseRadius = Math.max(300, Math.sqrt(nodes.length) * minSpacing / 2);
         const radius = baseRadius + (index % 3) * minSpacing;
         const newPosition = {
           x: Math.cos(angle) * radius + 400,
@@ -148,10 +148,10 @@ export function useLayout(
           ...node.data,
         };
       } else {
-        // Keep existing positions with small jitter for stability
+        // Keep existing positions with larger jitter to help separate overlapping nodes
         const nodeHash = node.id.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
-        const jitterX = ((nodeHash % 21) - 10) * 2; // -20 to 20
-        const jitterY = (((nodeHash * 17) % 21) - 10) * 2;
+        const jitterX = ((nodeHash % 41) - 20) * 5; // -100 to 100
+        const jitterY = (((nodeHash * 17) % 41) - 20) * 5;
         const existingPosition = {
           originalX: node.position.x,
           originalY: node.position.y,
