@@ -18,26 +18,26 @@ export function useThemeColors() {
 
   // Semantic colors that adapt to light/dark mode
   const colors = {
-    // Text colors
+    // Text colors - using Mantine CSS variables for better theme integration
     text: {
-      primary: isDark ? theme.colors.gray[0] : theme.colors.gray[9],
+      primary: 'var(--mantine-color-text)',
       secondary: isDark ? theme.colors.gray[3] : theme.colors.gray[6],
       tertiary: isDark ? theme.colors.gray[4] : theme.colors.gray[5],
       inverse: isDark ? theme.colors.gray[9] : theme.colors.gray[0],
     },
 
-    // Background colors
+    // Background colors - using Mantine CSS variables for better theme integration
     background: {
-      primary: isDark ? theme.colors.gray[9] : theme.white,
+      primary: 'var(--mantine-color-body)',
       secondary: isDark ? theme.colors.gray[8] : theme.colors.gray[0],
       tertiary: isDark ? theme.colors.gray[7] : theme.colors.gray[1],
       overlay: isDark ? 'rgba(0, 0, 0, 0.8)' : 'rgba(255, 255, 255, 0.95)',
       blur: isDark ? 'rgba(31, 41, 55, 0.95)' : 'rgba(255, 255, 255, 0.95)',
     },
 
-    // Border colors
+    // Border colors - using Mantine CSS variables for better theme integration
     border: {
-      primary: isDark ? theme.colors.gray[7] : theme.colors.gray[2],
+      primary: 'var(--mantine-color-default-border)',
       secondary: isDark ? theme.colors.gray[6] : theme.colors.gray[3],
     },
 
