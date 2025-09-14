@@ -69,9 +69,8 @@ const GraphNavigationInner: React.FC<GraphNavigationProps> = ({ className, style
     // Set up navigation events
     graphProvider.setEvents({
       onNodeClick: (node: GraphNode) => {
-        // Navigate to entity page
-        const entityType = node.type + 's'; // pluralize
-        navigate({ to: `/${entityType}/${node.entityId}` });
+        // Navigate to entity page using the new route structure
+        navigate({ to: `/${node.type}/${node.entityId}` });
       },
 
       onNodeDoubleClick: (node: GraphNode) => {
