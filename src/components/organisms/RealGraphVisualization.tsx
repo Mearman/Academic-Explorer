@@ -21,26 +21,15 @@ import {
 import { useGraphStore } from '@/stores/graph-store'
 import { useGraphData } from '@/hooks/use-graph-data'
 import { useContextMenu } from '@/hooks/use-context-menu'
+import { useThemeColors } from '@/hooks/use-theme-colors'
 import { NodeContextMenu } from '@/components/layout/NodeContextMenu'
 import type { GraphNode, GraphEdge } from '@/lib/graph/types'
 
 import '@xyflow/react/dist/style.css'
 
-// Map entity types to colors
-const getEntityColor = (entityType: string): string => {
-  switch (entityType) {
-    case 'works': return '#e74c3c'
-    case 'authors': return '#3498db'
-    case 'sources': return '#2ecc71'
-    case 'institutions': return '#f39c12'
-    case 'topics': return '#9b59b6'
-    case 'publishers': return '#1abc9c'
-    default: return '#95a5a6'
-  }
-}
 
 // Convert GraphNode to XYFlow Node
-const convertToXYFlowNode = (graphNode: GraphNode): Node => {
+const convertToXYFlowNode = (graphNode: GraphNode, getEntityColor: (entityType: string) => string): Node => {
   const entityType = graphNode.type || 'works'
   const color = getEntityColor(entityType)
 
@@ -84,11 +73,12 @@ const RealGraphVisualizationInner: React.FC = () => {
   const { nodes: graphNodes, edges: graphEdges } = useGraphStore()
   const { expandNode } = useGraphData()
   const { contextMenu, showContextMenu, hideContextMenu } = useContextMenu()
+  const { getEntityColor, colors } = useThemeColors()
 
   // Convert graph store data to XYFlow format
   const initialNodes = useMemo(() => {
-    return Array.from(graphNodes.values()).map(convertToXYFlowNode)
-  }, [graphNodes])
+    return Array.from(graphNodes.values()).map(node => convertToXYFlowNode(node, getEntityColor))
+  }, [graphNodes, getEntityColor])
 
   const initialEdges = useMemo(() => {
     return Array.from(graphEdges.values()).map(convertToXYFlowEdge)
@@ -99,12 +89,12 @@ const RealGraphVisualizationInner: React.FC = () => {
 
   // Update XYFlow nodes/edges when graph store changes
   useEffect(() => {
-    const newNodes = Array.from(graphNodes.values()).map(convertToXYFlowNode)
+    const newNodes = Array.from(graphNodes.values()).map(node => convertToXYFlowNode(node, getEntityColor))
     const newEdges = Array.from(graphEdges.values()).map(convertToXYFlowEdge)
 
     setNodes(newNodes)
     setEdges(newEdges)
-  }, [graphNodes, graphEdges, setNodes, setEdges])
+  }, [graphNodes, graphEdges, setNodes, setEdges, getEntityColor])
 
   const onNodeClick = useCallback((event: React.MouseEvent, node: Node) => {
     console.log('Node clicked:', node)
@@ -184,19 +174,19 @@ const RealGraphVisualizationInner: React.FC = () => {
         <MiniMap
           nodeColor={(node) => {
             const graphNode = node.data?.graphNode as GraphNode
-            return graphNode ? getEntityColor(graphNode.type || 'works') : '#95a5a6'
+            return graphNode ? getEntityColor(graphNode.type || 'works') : colors.text.tertiary
           }}
           nodeStrokeWidth={3}
           zoomable
           pannable
           position="top-right"
           style={{
-            backgroundColor: 'rgba(255, 255, 255, 0.9)',
-            border: '1px solid #ccc',
+            backgroundColor: colors.background.overlay,
+            border: `1px solid ${colors.border.primary}`,
             borderRadius: '4px'
           }}
         />
-        <Background variant={BackgroundVariant.Dots} gap={16} size={1} color="#e5e5e5" />
+        <Background variant={BackgroundVariant.Dots} gap={16} size={1} color={colors.border.primary} />
       </ReactFlow>
 
       {/* Context Menu */}
@@ -222,7 +212,7 @@ const RealGraphVisualizationInner: React.FC = () => {
           left: '50%',
           transform: 'translate(-50%, -50%)',
           textAlign: 'center',
-          color: '#6b7280',
+          color: colors.text.secondary,
           fontSize: '16px',
           zIndex: 10
         }}>
@@ -240,15 +230,17 @@ const RealGraphVisualizationInner: React.FC = () => {
 }
 
 export const RealGraphVisualization: React.FC = () => {
+  const { colors } = useThemeColors()
+
   return (
     <ReactFlowProvider>
       <div style={{
         width: '100%',
         height: '100%',
-        border: '1px solid #e5e7eb',
+        border: `1px solid ${colors.border.primary}`,
         borderRadius: '8px',
         overflow: 'hidden',
-        backgroundColor: '#fafafa'
+        backgroundColor: colors.background.secondary
       }}>
         <RealGraphVisualizationInner />
       </div>
