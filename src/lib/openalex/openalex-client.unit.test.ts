@@ -24,9 +24,9 @@ import type {
   Topic,
   Publisher,
   Funder,
-  Keyword,
-  Geo,
-  OpenAlexEntity,
+  Keyword as _Keyword,
+  Geo as _Geo,
+  OpenAlexEntity as _OpenAlexEntity,
   AutocompleteResult,
   EntityType,
 } from './types';
@@ -657,7 +657,7 @@ describe('OpenAlexClient', () => {
 
     it('should throw error for unsupported entity type', async () => {
       await expect(async () => {
-        for await (const batch of client.stream('invalid' as EntityType)) {
+        for await (const _batch of client.stream('invalid' as EntityType)) {
           // This should not execute
         }
       }).rejects.toThrow('Unsupported entity type: invalid');

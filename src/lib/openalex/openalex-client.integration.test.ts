@@ -8,7 +8,7 @@
 
 import { describe, it, expect, beforeAll, afterAll, beforeEach, afterEach, vi } from 'vitest';
 import { OpenAlexClient, createOpenAlexClient } from './openalex-client';
-import type { Work, Author, Source, InstitutionEntity, Topic, EntityType } from './types';
+import type { Work, Author as _Author, Source as _Source, InstitutionEntity as _InstitutionEntity, Topic as _Topic, EntityType as _EntityType } from './types';
 
 // Known stable OpenAlex IDs for testing (these should exist in the database)
 const KNOWN_IDS = {
@@ -53,13 +53,13 @@ describe('OpenAlex Client Integration Tests', () => {
       } else {
         isOnline = false;
       }
-    } catch (error) {
+    } catch (_error) {
       console.warn('No internet connection or OpenAlex API unavailable. Skipping integration tests.');
       isOnline = false;
     }
 
     // Always initialize client regardless of connectivity for utility method tests
-    const clientConfig: any = {
+    const clientConfig: Record<string, unknown> = {
       rateLimit: { requestsPerSecond: 1 } // Conservative rate limiting for tests
     };
 
