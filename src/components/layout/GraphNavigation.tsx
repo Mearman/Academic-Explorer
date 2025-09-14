@@ -109,8 +109,20 @@ const GraphNavigationInner: React.FC<GraphNavigationProps> = ({ className, style
 
   // Sync store data with XYFlow
   useEffect(() => {
+    console.log('GraphNavigation: Store data sync effect triggered', {
+      storeNodeCount: storeNodes.size,
+      storeEdgeCount: storeEdges.size,
+      hasProvider: !!providerRef.current
+    });
+
     if (providerRef.current && (storeNodes.size > 0 || storeEdges.size > 0)) {
       const { nodes: xyNodes, edges: xyEdges } = providerRef.current.getXYFlowData();
+      console.log('GraphNavigation: Setting XYFlow data', {
+        xyNodeCount: xyNodes.length,
+        xyEdgeCount: xyEdges.length,
+        nodeIds: xyNodes.map(n => n.id),
+        nodePositions: xyNodes.map(n => ({ id: n.id, position: n.position }))
+      });
       setNodes(xyNodes);
       setEdges(xyEdges);
     }
@@ -125,6 +137,7 @@ const GraphNavigationInner: React.FC<GraphNavigationProps> = ({ className, style
 
   // Handle node double clicks
   const onNodeDoubleClick = useCallback((event: React.MouseEvent, node: XYNode) => {
+    console.log('GraphNavigation: Node double-click', { nodeId: node.id });
     if (providerRef.current) {
       providerRef.current.handleNodeDoubleClick(event, node);
     }
