@@ -10,14 +10,17 @@ import {
 	useReactFlow,
 	useNodesState,
 	useEdgesState,
+	applyNodeChanges,
+	applyEdgeChanges,
 	Controls,
 	MiniMap,
 	Background,
 	BackgroundVariant,
 	Panel,
 	type Node as XYNode,
-	type Edge,
+	type Edge as XYEdge,
 	type NodeChange,
+	type EdgeChange,
 } from "@xyflow/react";
 import { useNavigate } from "@tanstack/react-router";
 import { IconSearch } from "@tabler/icons-react";
@@ -68,7 +71,7 @@ const GraphNavigationInner: React.FC<GraphNavigationProps> = ({ className, style
 
 	// XYFlow state - synced with store
 	const [nodes, setNodes, onNodesChangeOriginal] = useNodesState<XYNode>([]);
-	const [edges, setEdges, onEdgesChange] = useEdgesState([]);
+	const [edges, setEdges, onEdgesChange] = useEdgesState<XYEdge>([]);
 
 	// Wrapped nodes change handler that also triggers handle recalculation
 	const onNodesChange = useCallback((changes: NodeChange[]) => {
@@ -89,6 +92,16 @@ const GraphNavigationInner: React.FC<GraphNavigationProps> = ({ className, style
 
 	// Container dimensions state
 	const [containerDimensions, setContainerDimensions] = React.useState<{ width: number; height: number } | undefined>();
+
+	// Track previous node/edge IDs to detect changes
+	const previousNodeIdsRef = useRef<Set<string>>(new Set());
+	const previousEdgeIdsRef = useRef<Set<string>>(new Set());
+
+	// Flag to prevent handling hashchange events when we programmatically push state
+	const isProgrammaticNavigationRef = useRef(false);
+
+	// Flag to disable layout during incremental updates
+	const _isIncrementalUpdateRef = useRef(false);
 
 	// Layout hook integration - throttled to reduce log spam
 	const lastLogRef = useRef<number>(0);
@@ -154,7 +167,15 @@ const GraphNavigationInner: React.FC<GraphNavigationProps> = ({ className, style
 
 				// Update URL to hash-based route structure for bookmarking
 				const newHashPath = `#/${node.type}/${cleanId}`;
+
+				// Set flag to prevent hashchange handler from firing
+				isProgrammaticNavigationRef.current = true;
 				window.history.pushState(null, "", newHashPath);
+
+				// Reset flag after a brief delay to allow for potential hashchange events
+				setTimeout(() => {
+					isProgrammaticNavigationRef.current = false;
+				}, 10);
 
 				// Update preview in sidebar
 				setPreviewEntity(node.entityId);
@@ -191,37 +212,107 @@ const GraphNavigationInner: React.FC<GraphNavigationProps> = ({ className, style
 		};
 	}, [reactFlowInstance, navigate, setProvider, setPreviewEntity, loadEntityIntoGraph]);
 
-	// Sync store data with XYFlow (applying visibility filters)
+	// Sync store data with XYFlow using incremental updates (applying visibility filters)
 	useEffect(() => {
 		const visibleNodes = getVisibleNodes();
 		const visibleEdges = getVisibleEdges();
 
-		logger.info("graph", "Store data sync effect triggered with visibility filters", {
+		// Get current node and edge IDs
+		const currentNodeIds = new Set(visibleNodes.map(n => n.id));
+		const currentEdgeIds = new Set(visibleEdges.map(e => e.id));
+
+		// Find new nodes and edges
+		const newNodeIds = new Set([...currentNodeIds].filter(id => !previousNodeIdsRef.current.has(id)));
+		const newEdgeIds = new Set([...currentEdgeIds].filter(id => !previousEdgeIdsRef.current.has(id)));
+
+		// Find removed nodes and edges
+		const removedNodeIds = new Set([...previousNodeIdsRef.current].filter(id => !currentNodeIds.has(id)));
+		const removedEdgeIds = new Set([...previousEdgeIdsRef.current].filter(id => !currentEdgeIds.has(id)));
+
+		logger.info("graph", "Store data incremental sync effect triggered", {
 			totalNodeCount: storeNodes.size,
 			totalEdgeCount: storeEdges.size,
 			visibleNodeCount: visibleNodes.length,
 			visibleEdgeCount: visibleEdges.length,
+			newNodes: newNodeIds.size,
+			newEdges: newEdgeIds.size,
+			removedNodes: removedNodeIds.size,
+			removedEdges: removedEdgeIds.size,
 			hasProvider: !!providerRef.current
 		}, "GraphNavigation");
 
-		if (providerRef.current) {
-			// Set the visible nodes and edges to the provider
-			providerRef.current.setNodes(visibleNodes);
-			providerRef.current.setEdges(visibleEdges);
+		if (providerRef.current && (newNodeIds.size > 0 || newEdgeIds.size > 0 || removedNodeIds.size > 0 || removedEdgeIds.size > 0)) {
+			// Special case: If we have no previous nodes, this is initial load - use setNodes/setEdges
+			if (previousNodeIdsRef.current.size === 0 && previousEdgeIdsRef.current.size === 0) {
+				providerRef.current.setNodes(visibleNodes);
+				providerRef.current.setEdges(visibleEdges);
+			} else {
+				// Use incremental provider methods for updates
+				if (newNodeIds.size > 0) {
+					const newNodes = visibleNodes.filter(n => newNodeIds.has(n.id));
+					providerRef.current.addNodes(newNodes);
+				}
 
-			// Get XYFlow formatted data
-			const { nodes: xyNodes, edges: xyEdges } = providerRef.current.getXYFlowData();
+				if (newEdgeIds.size > 0) {
+					const newEdges = visibleEdges.filter(e => newEdgeIds.has(e.id));
+					providerRef.current.addEdges(newEdges);
+				}
 
-			logger.info("graph", "Setting filtered XYFlow data", {
-				xyNodeCount: xyNodes.length,
-				xyEdgeCount: xyEdges.length,
-				nodeIds: xyNodes.map(n => n.id),
-				visibleTypes: Array.from(visibleEntityTypes)
+				if (removedNodeIds.size > 0) {
+					providerRef.current.removeNodes(Array.from(removedNodeIds));
+				}
+
+				if (removedEdgeIds.size > 0) {
+					providerRef.current.removeEdges(Array.from(removedEdgeIds));
+				}
+			}
+
+			// Handle data differently for initial load vs incremental updates
+			if (previousNodeIdsRef.current.size === 0 && previousEdgeIdsRef.current.size === 0) {
+				// Initial load: Get all data and set directly
+				const { nodes: xyNodes, edges: xyEdges } = providerRef.current.getXYFlowData();
+				setNodes(xyNodes);
+				setEdges(xyEdges);
+			} else {
+				// Incremental update: Get only new data and apply changes
+				const { nodes: newXYNodes, edges: newXYEdges } = providerRef.current.getXYFlowDataForNodes(Array.from(newNodeIds));
+
+				// Apply incremental changes using ReactFlow's utilities
+				const nodeChanges: NodeChange[] = [
+					// Add new nodes (get fresh data from provider)
+					...newXYNodes.map((node): NodeChange => ({ type: "add", item: node })),
+					// Remove deleted nodes
+					...Array.from(removedNodeIds).map((id): NodeChange => ({ type: "remove", id }))
+				];
+
+				const edgeChanges: EdgeChange[] = [
+					// Add new edges (get fresh data from provider)
+					...newXYEdges.map((edge): EdgeChange => ({ type: "add", item: edge })),
+					// Remove deleted edges
+					...Array.from(removedEdgeIds).map((id): EdgeChange => ({ type: "remove", id }))
+				];
+
+				// Apply changes to ReactFlow
+				if (nodeChanges.length > 0) {
+					setNodes(prevNodes => applyNodeChanges(nodeChanges, prevNodes));
+				}
+
+				if (edgeChanges.length > 0) {
+					setEdges(prevEdges => applyEdgeChanges(edgeChanges, prevEdges));
+				}
+			}
+
+			logger.info("graph", "Applied incremental XYFlow changes", {
+				addedNodes: Array.from(newNodeIds),
+				addedEdges: Array.from(newEdgeIds),
+				removedNodes: Array.from(removedNodeIds),
+				removedEdges: Array.from(removedEdgeIds)
 			}, "GraphNavigation");
-
-			setNodes(xyNodes);
-			setEdges(xyEdges);
 		}
+
+		// Update refs for next comparison
+		previousNodeIdsRef.current = currentNodeIds;
+		previousEdgeIdsRef.current = currentEdgeIds;
 	}, [storeNodes, storeEdges, visibleEntityTypes, visibleEdgeTypes, getVisibleNodes, getVisibleEdges, setNodes, setEdges]);
 
 	// URL state synchronization - read selected entity from hash on mount
@@ -266,6 +357,11 @@ const GraphNavigationInner: React.FC<GraphNavigationProps> = ({ className, style
 	// Browser history navigation (back/forward button support for hash routing)
 	useEffect(() => {
 		const handleHashChange = () => {
+			// Skip if this is a programmatic navigation to avoid duplicate processing
+			if (isProgrammaticNavigationRef.current) {
+				return;
+			}
+
 			const currentHash = window.location.hash;
 
 			if (currentHash && currentHash !== "#/" && storeNodes.size > 0) {
