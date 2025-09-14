@@ -1,6 +1,6 @@
 /**
  * Author entity implementation
- * Handles author-specific operations like expanding works and collaborations
+ * Handles author-specific operations like expanding works
  */
 
 import { AbstractEntity, type EntityContext, type ExpansionOptions, type ExpansionResult } from "./abstract-entity";
@@ -59,7 +59,7 @@ export class AuthorEntity extends AbstractEntity<Author> {
 	}
 
 	/**
-   * Expand an author to show recent works and collaborations
+   * Expand an author to show recent works
    */
 	async expand(context: EntityContext, options: ExpansionOptions): Promise<ExpansionResult> {
 		const nodes: any[] = [];
@@ -104,49 +104,7 @@ export class AuthorEntity extends AbstractEntity<Author> {
 					"authored"
 				));
 
-				// Add co-authors from the first few works to show collaboration
-				if (nodes.length <= 3 && work.authorships) { // Only for first few works to avoid clutter
-					work.authorships.slice(0, 3).forEach((authorship: any) => {
-						if (authorship.author.id !== context.entityId) { // Skip the main author
-							const coAuthorNode = {
-								id: authorship.author.id,
-								type: "authors" as const,
-								label: authorship.author.display_name || "Unknown Author",
-								entityId: authorship.author.id,
-								position: this.generateRandomPosition(),
-								externalIds: authorship.author.orcid ? [{
-									type: "orcid" as const,
-									value: authorship.author.orcid,
-									url: `https://orcid.org/${authorship.author.orcid}`,
-								}] : [],
-								metadata: {},
-							};
-
-							// Only add if not already present
-							if (!this.hasNode(nodes, coAuthorNode.id)) {
-								nodes.push(coAuthorNode);
-
-								// Add co-authorship edge
-								edges.push(this.createEdge(
-									context.entityId,
-									authorship.author.id,
-									RT.CO_AUTHORED,
-									0.5,
-									"collaborated"
-								));
-
-								// Add co-author to work edge
-								edges.push(this.createEdge(
-									authorship.author.id,
-									work.id,
-									RT.AUTHORED,
-									0.7,
-									"authored"
-								));
-							}
-						}
-					});
-				}
+				// Note: Removed inferred collaboration edges - only show real relationships from data
 			});
 
 		} catch (error) {

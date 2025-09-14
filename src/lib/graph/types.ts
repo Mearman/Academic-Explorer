@@ -14,7 +14,6 @@ export enum RelationType {
   PUBLISHED_IN = "published_in",
   FUNDED_BY = "funded_by",
   RELATED_TO = "related_to",
-  CO_AUTHORED = "co_authored",
   REFERENCES = "references"
 }
 
