@@ -17,8 +17,9 @@ import {
 	Panel,
 	type Node as XYNode,
 	type Edge,
+	type NodeChange,
 } from "@xyflow/react";
-import { useNavigate } from "@tanstack/react-router";
+import { useNavigate, useBlocker } from "@tanstack/react-router";
 import { IconSearch } from "@tabler/icons-react";
 
 import { useGraphStore } from "@/stores/graph-store";
@@ -45,6 +46,22 @@ const GraphNavigationInner: React.FC<GraphNavigationProps> = ({ className, style
 	const reactFlowInstance = useReactFlow();
 	const containerRef = useRef<HTMLDivElement>(null);
 
+	// Flag to track graph-initiated navigation (to prevent router from handling it)
+	const [isGraphNavigation, setIsGraphNavigation] = React.useState(false);
+
+	// Block navigation when it's triggered by graph interactions (not user navigation)
+	useBlocker({
+		shouldBlockFn: () => {
+			// Block navigation if it was initiated by a graph click
+			// This prevents the router from handling URL changes we make for bookmarking
+			if (isGraphNavigation) {
+				setIsGraphNavigation(false); // Reset the flag
+				return true; // Block the navigation
+			}
+			return false; // Allow normal navigation
+		}
+	});
+
 	// Store state
 	const {
 		provider: _provider,
@@ -63,15 +80,13 @@ const GraphNavigationInner: React.FC<GraphNavigationProps> = ({ className, style
 	const [edges, setEdges, onEdgesChange] = useEdgesState<Edge>([]);
 
 	// Wrapped nodes change handler that also triggers handle recalculation
-	const onNodesChange = useCallback((changes: any) => {
+	const onNodesChange = useCallback((changes: NodeChange[]) => {
 		onNodesChangeOriginal(changes);
 
 		// Check if any change involves position updates (drag, layout changes)
-		const hasPositionChange = changes.some((change: any) =>
-			change.type === 'position' ||
-			change.type === 'dragStop' ||
-			(change.type === 'replace' && change.item.position)
-		);
+		const hasPositionChange = changes.some((change: NodeChange) => {
+			return change.type === "position" || change.type === "dimensions";
+		});
 
 		if (hasPositionChange && providerRef.current) {
 			providerRef.current.onNodePositionsChanged();
@@ -146,9 +161,12 @@ const GraphNavigationInner: React.FC<GraphNavigationProps> = ({ className, style
 				// Extract clean OpenAlex ID from potential URL
 				const cleanId = EntityDetector.extractOpenAlexId(node.entityId);
 
-				// Update the entire URL to match the entity route structure
-				const newPath = `/${node.type}/${cleanId}`;
-				window.history.pushState({}, '', newPath);
+				// Set flag to indicate this is a graph-initiated navigation
+				setIsGraphNavigation(true);
+
+				// Update URL to hash-based route structure for bookmarking
+				const newHashPath = `#/${node.type}/${cleanId}`;
+				window.history.pushState({ graphSelection: true }, "", newHashPath);
 
 				// Update selection in store
 				const store = useGraphStore.getState();
@@ -157,11 +175,11 @@ const GraphNavigationInner: React.FC<GraphNavigationProps> = ({ className, style
 				// Update preview in sidebar
 				setPreviewEntity(node.entityId);
 
-				logger.info("ui", "Node clicked - URL updated", {
+				logger.info("ui", "Node clicked - Hash URL updated with navigation blocking", {
 					nodeId: node.id,
 					entityId: node.entityId,
 					entityType: node.type,
-					newPath
+					newHashPath
 				}, "GraphNavigation");
 			},
 
@@ -219,13 +237,14 @@ const GraphNavigationInner: React.FC<GraphNavigationProps> = ({ className, style
 		}
 	}, [storeNodes, storeEdges, setNodes, setEdges]);
 
-	// URL state synchronization - read selected entity from URL path on mount
+	// URL state synchronization - read selected entity from hash on mount
 	useEffect(() => {
-		const currentPath = window.location.pathname;
+		const currentHash = window.location.hash;
 
-		if (currentPath && currentPath !== '/' && storeNodes.size > 0) {
-			// Parse URL path (format: "/entityType/entityId")
-			const pathParts = currentPath.split('/').filter(part => part.length > 0);
+		if (currentHash && currentHash !== "#/" && storeNodes.size > 0) {
+			// Parse hash (format: "#/entityType/entityId")
+			const hashPath = currentHash.substring(1); // Remove the '#'
+			const pathParts = hashPath.split("/").filter(part => part.length > 0);
 
 			if (pathParts.length >= 2) {
 				const [entityType, entityId] = pathParts;
@@ -245,8 +264,8 @@ const GraphNavigationInner: React.FC<GraphNavigationProps> = ({ className, style
 					// Update preview in sidebar
 					setPreviewEntity(matchingNode.entityId);
 
-					logger.info("graph", "Selected entity from URL path", {
-						currentPath,
+					logger.info("graph", "Selected entity from hash URL", {
+						currentHash,
 						entityType,
 						entityId,
 						nodeId: matchingNode.id,
@@ -257,14 +276,15 @@ const GraphNavigationInner: React.FC<GraphNavigationProps> = ({ className, style
 		}
 	}, [storeNodes, setPreviewEntity]);
 
-	// Browser history navigation (back/forward button support)
+	// Browser history navigation (back/forward button support for hash routing)
 	useEffect(() => {
-		const handlePopState = () => {
-			const currentPath = window.location.pathname;
+		const handleHashChange = () => {
+			const currentHash = window.location.hash;
 
-			if (currentPath && currentPath !== '/' && storeNodes.size > 0) {
-				// Parse URL path (format: "/entityType/entityId")
-				const pathParts = currentPath.split('/').filter(part => part.length > 0);
+			if (currentHash && currentHash !== "#/" && storeNodes.size > 0) {
+				// Parse hash (format: "#/entityType/entityId")
+				const hashPath = currentHash.substring(1); // Remove the '#'
+				const pathParts = hashPath.split("/").filter(part => part.length > 0);
 
 				if (pathParts.length >= 2) {
 					const [entityType, entityId] = pathParts;
@@ -284,8 +304,8 @@ const GraphNavigationInner: React.FC<GraphNavigationProps> = ({ className, style
 						// Update preview in sidebar
 						setPreviewEntity(matchingNode.entityId);
 
-						logger.info("graph", "Selected entity from browser history", {
-							currentPath,
+						logger.info("graph", "Selected entity from hash change", {
+							currentHash,
 							entityType,
 							entityId,
 							nodeId: matchingNode.id,
@@ -294,18 +314,18 @@ const GraphNavigationInner: React.FC<GraphNavigationProps> = ({ className, style
 					}
 				}
 			} else {
-				// No entity in path or root path, clear selection
+				// No entity in hash or root hash, clear selection
 				const store = useGraphStore.getState();
 				store.selectNode(null);
 				setPreviewEntity(null);
 			}
 		};
 
-		// Listen for browser back/forward button events
-		window.addEventListener('popstate', handlePopState);
+		// Listen for hash changes (browser back/forward, manual hash changes)
+		window.addEventListener("hashchange", handleHashChange);
 
 		return () => {
-			window.removeEventListener('popstate', handlePopState);
+			window.removeEventListener("hashchange", handleHashChange);
 		};
 	}, [storeNodes, setPreviewEntity]);
 
