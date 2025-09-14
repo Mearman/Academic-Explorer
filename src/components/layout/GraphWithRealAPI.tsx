@@ -7,7 +7,7 @@ import React, { useState } from 'react'
 import { IconLoader, IconX } from '@tabler/icons-react'
 import { useGraphStore } from '@/stores/graph-store'
 import { useGraphData } from '@/hooks/use-graph-data'
-import { RealGraphVisualization } from '@/components/organisms/RealGraphVisualization'
+import { GraphNavigation } from '@/components/layout/GraphNavigation'
 import { GraphSessionManager } from '@/components/organisms/GraphSessionManager'
 import { logError } from '@/lib/logger'
 
@@ -173,7 +173,7 @@ export const GraphWithRealAPI: React.FC = () => {
 
       {/* Graph */}
       <div style={{ flex: 1, position: 'relative' }}>
-        <RealGraphVisualization />
+        <GraphNavigation />
       </div>
 
       {/* Session Manager */}
