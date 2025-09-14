@@ -278,6 +278,54 @@ export class XYFlowProvider implements GraphProvider {
 		// Automatic re-layout on individual edge addition causes cascading effects
 	}
 
+	// Incremental methods for adding multiple nodes without clearing existing data
+	addNodes(nodes: GraphNode[]): void {
+		nodes.forEach(node => this.nodes.set(node.id, node));
+		// Note: updateReactFlow is a no-op, actual updates handled in React component
+	}
+
+	// Incremental methods for adding multiple edges without clearing existing data
+	addEdges(edges: GraphEdge[]): void {
+		edges.forEach(edge => this.edges.set(edge.id, edge));
+		// Note: updateReactFlow is a no-op, actual updates handled in React component
+	}
+
+	// Remove multiple nodes and their connected edges
+	removeNodes(nodeIds: string[]): void {
+		nodeIds.forEach(nodeId => {
+			this.nodes.delete(nodeId);
+			// Also remove connected edges
+			Array.from(this.edges.values()).forEach(edge => {
+				if (edge.source === nodeId || edge.target === nodeId) {
+					this.edges.delete(edge.id);
+				}
+			});
+		});
+	}
+
+	// Remove multiple edges
+	removeEdges(edgeIds: string[]): void {
+		edgeIds.forEach(edgeId => this.edges.delete(edgeId));
+	}
+
+	// Get XYFlow data for specific nodes only
+	getXYFlowDataForNodes(nodeIds: string[]): { nodes: XYNode[]; edges: XYEdge[] } {
+		const requestedNodes = nodeIds
+			.map(id => this.nodes.get(id))
+			.filter((node): node is GraphNode => node !== undefined)
+			.map(node => this.toXYNode(node));
+
+		// Get edges that connect to any of the requested nodes
+		const relevantEdges = Array.from(this.edges.values())
+			.filter(edge => nodeIds.includes(edge.source) || nodeIds.includes(edge.target))
+			.map(edge => this.toXYEdge(edge));
+
+		return {
+			nodes: requestedNodes,
+			edges: relevantEdges
+		};
+	}
+
 	removeNode(nodeId: string): void {
 		this.nodes.delete(nodeId);
 		// Also remove connected edges
