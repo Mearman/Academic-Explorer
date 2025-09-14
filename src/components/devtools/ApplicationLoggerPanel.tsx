@@ -220,7 +220,12 @@ export function ApplicationLoggerPanel() {
                 <MultiSelect
                   placeholder="Filter by Category"
                   value={selectedCategories}
-                  onChange={setSelectedCategories}
+                  onChange={(values) => {
+                    const validCategories = values.filter((value): value is LogCategory =>
+                      ['api', 'cache', 'graph', 'routing', 'ui', 'auth', 'storage', 'search', 'general'].includes(value)
+                    );
+                    setSelectedCategories(validCategories);
+                  }}
                   data={[
                     { value: 'api', label: 'API' },
                     { value: 'cache', label: 'Cache' },
@@ -241,7 +246,7 @@ export function ApplicationLoggerPanel() {
                       minHeight: '36px',
                       height: '36px'
                     },
-                    pillsContainer: {
+                    pill: {
                       gap: '4px',
                       flexWrap: 'nowrap'
                     }
