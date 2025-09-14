@@ -22,6 +22,7 @@ import type {
 } from "../../types";
 
 import { logger } from "@/lib/logger";
+import { useGraphStore } from "@/stores/graph-store";
 
 export class XYFlowProvider implements GraphProvider {
 	private container: HTMLElement | null = null;
@@ -34,6 +35,10 @@ export class XYFlowProvider implements GraphProvider {
 
 	// Convert generic GraphNode to XYFlow node
 	private toXYNode(node: GraphNode): XYNode {
+		// Get pinned node state from store
+		const pinnedNodeId = useGraphStore.getState().pinnedNodeId;
+		const isPinned = pinnedNodeId === node.id;
+
 		return {
 			id: node.id,
 			type: "custom",
@@ -45,6 +50,7 @@ export class XYFlowProvider implements GraphProvider {
 				entityType: node.type,
 				externalIds: node.externalIds,
 				metadata: node.metadata,
+				isPinned, // Add pinned state to node data
 			},
 		};
 	}
