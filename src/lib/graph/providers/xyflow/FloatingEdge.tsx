@@ -33,34 +33,39 @@ function FloatingEdge({
 	const sourceNode = getNode(source);
 	const targetNode = getNode(target);
 
-	// Ensure nodes are measured
+	// Ensure nodes are measured - use stable IDs instead of object references
 	React.useEffect(() => {
 		if (sourceNode && targetNode) {
 			updateNodeInternals(source);
 			updateNodeInternals(target);
 		}
-	}, [sourceNode, targetNode, source, target, updateNodeInternals]);
+	}, [source, target, updateNodeInternals]); // Only depend on stable IDs
 
 	if (!sourceNode || !targetNode) {
 		return null;
 	}
 
-	// Log node dimensions for debugging
-	logger.info("graph", "FloatingEdge source node dimensions", {
-		edgeId: id,
-		nodeId: sourceNode.id,
-		width: sourceNode.width || 'undefined',
-		height: sourceNode.height || 'undefined',
-		measured: sourceNode.measured
-	}, "FloatingEdge");
-
-	logger.info("graph", "FloatingEdge target node dimensions", {
-		edgeId: id,
-		nodeId: targetNode.id,
-		width: targetNode.width || 'undefined',
-		height: targetNode.height || 'undefined',
-		measured: targetNode.measured
-	}, "FloatingEdge");
+	// Log node dimensions for debugging - only when dimensions are undefined
+	React.useEffect(() => {
+		if (!sourceNode.width || !sourceNode.height) {
+			logger.info("graph", "FloatingEdge source node dimensions missing", {
+				edgeId: id,
+				nodeId: sourceNode.id,
+				width: sourceNode.width || 'undefined',
+				height: sourceNode.height || 'undefined',
+				measured: sourceNode.measured
+			}, "FloatingEdge");
+		}
+		if (!targetNode.width || !targetNode.height) {
+			logger.info("graph", "FloatingEdge target node dimensions missing", {
+				edgeId: id,
+				nodeId: targetNode.id,
+				width: targetNode.width || 'undefined',
+				height: targetNode.height || 'undefined',
+				measured: targetNode.measured
+			}, "FloatingEdge");
+		}
+	}, [id, sourceNode.id, sourceNode.width, sourceNode.height, sourceNode.measured, targetNode.id, targetNode.width, targetNode.height, targetNode.measured]);
 
 	// Calculate floating edge positions
 	const { sourceX, sourceY, targetX, targetY } = getFloatingEdgePositions(
