@@ -87,6 +87,11 @@ export default defineWorkspace([
 
   // E2E tests - Full user journeys and critical paths
   {
+    resolve: {
+      alias: {
+        '@': path.resolve(__dirname, './src'),
+      },
+    },
     test: {
       name: 'e2e',
       include: ['src/**/*.e2e.test.ts'],
