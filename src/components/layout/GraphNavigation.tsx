@@ -70,8 +70,8 @@ const GraphNavigationInner: React.FC<GraphNavigationProps> = ({ className, style
 	const { graphProvider: _graphProvider, setPreviewEntity } = useLayoutStore();
 
 	// XYFlow state - synced with store
-	const [nodes, setNodes, onNodesChangeOriginal] = useNodesState<XYNode>([]);
-	const [edges, setEdges, onEdgesChange] = useEdgesState<XYEdge>([]);
+	const [nodes, setNodes, onNodesChangeOriginal] = useNodesState([]);
+	const [edges, setEdges, onEdgesChange] = useEdgesState([]);
 
 	// Wrapped nodes change handler that also triggers handle recalculation
 	const onNodesChange = useCallback((changes: NodeChange[]) => {
@@ -180,14 +180,19 @@ const GraphNavigationInner: React.FC<GraphNavigationProps> = ({ className, style
 				// Update preview in sidebar
 				setPreviewEntity(node.entityId);
 
+				// Pin the selected node at origin (0,0) for layout
+				const store = useGraphStore.getState();
+				store.setPinnedNode(node.id);
+
 				// Load the entity into the graph (this will handle selection and expansion)
 				void loadEntityIntoGraph(node.entityId);
 
-				logger.info("ui", "Node clicked - Loading entity into graph", {
+				logger.info("ui", "Node clicked - Loading entity into graph and pinning", {
 					nodeId: node.id,
 					entityId: node.entityId,
 					entityType: node.type,
-					newHashPath
+					newHashPath,
+					pinned: true
 				}, "GraphNavigation");
 			},
 
@@ -335,9 +340,10 @@ const GraphNavigationInner: React.FC<GraphNavigationProps> = ({ className, style
 				});
 
 				if (matchingNode) {
-					// Update selection in store
+					// Update selection in store and pin the node
 					const store = useGraphStore.getState();
 					store.selectNode(matchingNode.id);
+					store.setPinnedNode(matchingNode.id);
 
 					// Update preview in sidebar
 					setPreviewEntity(matchingNode.entityId);
@@ -380,9 +386,10 @@ const GraphNavigationInner: React.FC<GraphNavigationProps> = ({ className, style
 					});
 
 					if (matchingNode) {
-						// Update selection in store
+						// Update selection in store and pin the node
 						const store = useGraphStore.getState();
 						store.selectNode(matchingNode.id);
+						store.setPinnedNode(matchingNode.id);
 
 						// Update preview in sidebar
 						setPreviewEntity(matchingNode.entityId);
@@ -397,9 +404,10 @@ const GraphNavigationInner: React.FC<GraphNavigationProps> = ({ className, style
 					}
 				}
 			} else {
-				// No entity in hash or root hash, clear selection
+				// No entity in hash or root hash, clear selection and pinned node
 				const store = useGraphStore.getState();
 				store.selectNode(null);
+				store.clearPinnedNode();
 				setPreviewEntity(null);
 			}
 		};
