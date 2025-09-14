@@ -85,7 +85,7 @@ export class RateLimitedOpenAlexClient {
       );
 
       const batchResults = await Promise.all(batchPromises);
-      results.push(...batchResults.filter(result => result !== null) as OpenAlexEntity[]);
+      results.push(...batchResults.filter(result => result !== null));
     }
 
     return results;

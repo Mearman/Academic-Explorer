@@ -118,7 +118,7 @@ export class OpenAlexBaseClient {
     if (this.rateLimitState.requestsToday >= this.config.rateLimit.requestsPerDay) {
       const resetTime = new Date(this.rateLimitState.dailyResetTime);
       throw new OpenAlexRateLimitError(
-        `Daily request limit of ${this.config.rateLimit.requestsPerDay} exceeded. Resets at ${resetTime.toISOString()}`,
+        `Daily request limit of ${this.config.rateLimit.requestsPerDay.toString()} exceeded. Resets at ${resetTime.toISOString()}`,
         this.rateLimitState.dailyResetTime - now
       );
     }
@@ -177,13 +177,13 @@ export class OpenAlexBaseClient {
     try {
       const errorData: OpenAlexError = await response.json();
       return new OpenAlexApiError(
-        errorData.message || errorData.error || `HTTP ${response.status}`,
+        errorData.message || errorData.error || `HTTP ${response.status.toString()}`,
         response.status,
         response
       );
     } catch {
       return new OpenAlexApiError(
-        `HTTP ${response.status} ${response.statusText}`,
+        `HTTP ${response.status.toString()} ${response.statusText}`,
         response.status,
         response
       );
@@ -245,7 +245,7 @@ export class OpenAlexBaseClient {
       return response;
     } catch (error) {
       if (error instanceof DOMException && error.name === 'AbortError') {
-        throw new OpenAlexApiError(`Request timeout after ${this.config.timeout}ms`);
+        throw new OpenAlexApiError(`Request timeout after ${this.config.timeout.toString()}ms`);
       }
 
       if (error instanceof OpenAlexApiError) {

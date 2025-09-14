@@ -388,7 +388,7 @@ export class OpenAlexClient {
     }));
 
     const results = await Promise.all(promises);
-    return results.filter(result => result !== null) as OpenAlexEntity[];
+    return results.filter(result => result !== null);
   }
 
   /**

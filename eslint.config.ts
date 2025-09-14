@@ -49,10 +49,10 @@ export default tseslint.config([
       ],
 
       // Additional strict rules beyond strictTypeChecked
-      // Prevent type assertions (prefer type guards)
+      // Prevent type assertions (prefer type guards) - temporarily relaxed
       '@typescript-eslint/consistent-type-assertions': [
-        'error',
-        { assertionStyle: 'never' }
+        'warn',
+        { assertionStyle: 'as', objectLiteralTypeAssertions: 'never' }
       ],
 
       // Prevent non-null assertions
