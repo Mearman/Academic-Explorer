@@ -20,6 +20,7 @@ import type {
 	GraphOptions,
 	EntityType
 } from "../../types";
+import { RelationType } from "../../types";
 
 import { logger } from "@/lib/logger";
 import { useGraphStore } from "@/stores/graph-store";
@@ -76,7 +77,7 @@ export class XYFlowProvider implements GraphProvider {
 				stroke: this.getEdgeColor(edge.type),
 				strokeWidth: edge.weight ? Math.max(1, edge.weight * 3) : 1,
 			},
-			animated: edge.type === "cited",
+			animated: edge.type === RelationType.CITED,
 		};
 	}
 

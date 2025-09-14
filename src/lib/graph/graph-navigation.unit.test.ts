@@ -138,7 +138,7 @@ describe("Graph Navigation System", () => {
 			const xyData = provider.getXYFlowData();
 
 			// Simulate node click
-			const mockEvent = {} as React.MouseEvent;
+			const mockEvent: React.MouseEvent = {} as React.MouseEvent;
 			provider.handleNodeClick(mockEvent, xyData.nodes[0]);
 			expect(mockOnNodeClick).toHaveBeenCalledWith(testNode);
 
