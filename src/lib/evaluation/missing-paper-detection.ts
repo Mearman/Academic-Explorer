@@ -325,7 +325,7 @@ async function performAuthorNetworkAnalysis(
 	onProgress?.({
 		currentMethod: "Author Network Analysis",
 		progress: 100,
-		message: `Found ${candidates.length} potential author network papers`,
+		message: `Found ${String(candidates.length)} potential author network papers`,
 		papersFound: candidates.length
 	});
 
@@ -372,8 +372,8 @@ async function performKeywordExpansionAnalysis(
 			const response = await openAlex.works.getWorks({
 				search: searchQuery,
 				filter: buildFilterString({
-					from_publication_date: `${yearRange.start}-01-01`,
-					to_publication_date: `${yearRange.end}-12-31`,
+					from_publication_date: `${String(yearRange.start)}-01-01`,
+					to_publication_date: `${String(yearRange.end)}-12-31`,
 					cited_by_count: `>${String(config.minimumCitationThreshold || 5)}`
 				}),
 				select: ["id", "title", "display_name", "authorships", "publication_year", "doi", "ids", "primary_location", "best_oa_location", "cited_by_count", "abstract_inverted_index"],
