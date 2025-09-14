@@ -312,12 +312,12 @@ function findAdditionalPapers(
 /**
  * Main comparison function that evaluates Academic Explorer against STAR dataset
  */
-export async function compareAcademicExplorerResults(
+export function compareAcademicExplorerResults(
 	academicExplorerResults: WorkReference[],
 	starDataset: STARDataset,
 	config: MatchingConfig = DEFAULT_MATCHING_CONFIG,
 	onProgress?: (progress: ComparisonProgress) => void
-): Promise<ComparisonResults> {
+): ComparisonResults {
 	const startTime = new Date();
 
 	// Report progress

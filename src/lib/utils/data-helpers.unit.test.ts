@@ -27,7 +27,7 @@ describe("data-helpers", () => {
 	});
 
 	describe("debouncedSearch", () => {
-		it("should debounce search function calls", async () => {
+		it("should debounce search function calls", () => {
 			const searchFn = vi.fn();
 
 			// Call multiple times rapidly
@@ -46,7 +46,7 @@ describe("data-helpers", () => {
 			expect(searchFn).toHaveBeenCalledWith("query3");
 		});
 
-		it("should reset debounce timer with new calls", async () => {
+		it("should reset debounce timer with new calls", () => {
 			const searchFn = vi.fn();
 
 			debouncedSearch(searchFn, "query1");

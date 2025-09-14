@@ -23,7 +23,7 @@ function DatasetsManagement() {
 	const [uploadProgress, setUploadProgress] = useState(0)
 	const [isUploading, setIsUploading] = useState(false)
 
-	const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+	const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
 		const file = event.target.files?.[0]
 		if (file) {
 			setUploadFile(file)

@@ -37,13 +37,14 @@ interface UseLayoutOptions {
   enabled?: boolean;
   onLayoutChange?: () => void;
   fitViewAfterLayout?: boolean;
+  containerDimensions?: { width: number; height: number };
 }
 
 export function useLayout(
 	layout: GraphLayout | null,
 	options: UseLayoutOptions = {},
 ) {
-	const { enabled = true, onLayoutChange, fitViewAfterLayout = true } = options;
+	const { enabled = true, onLayoutChange, fitViewAfterLayout = true, containerDimensions } = options;
 	const { getNodes, getEdges, setNodes, fitView, getViewport } = useReactFlow();
 	const containerRef = useRef<HTMLElement | null>(null);
 	const simulationRef = useRef<Simulation<D3Node, D3Link> | null>(null);
@@ -149,6 +150,10 @@ export function useLayout(
 			"useLayout",
 		);
 
+		// Use container dimensions to calculate proper center, fallback to defaults
+		const centerX = containerDimensions ? containerDimensions.width / 2 : 800;
+		const centerY = containerDimensions ? containerDimensions.height / 2 : 400;
+
 		// Create deterministic random source
 		const random = randomLcg(seed);
 
@@ -172,8 +177,8 @@ export function useLayout(
 			const radius = baseRadius + (index % 3) * minSpacing * 0.5 + hashVariation * minSpacing * 0.5;
 
 			const deterministicPosition = {
-				x: Math.cos(angle) * radius + 400 + (nodeHash % 100) - 50, // Reduced deterministic spread
-				y: Math.sin(angle) * radius + 300 + ((nodeHash * 17) % 100) - 50,
+				x: Math.cos(angle) * radius + centerX + (nodeHash % 100) - 50, // Reduced deterministic spread
+				y: Math.sin(angle) * radius + centerY + ((nodeHash * 17) % 100) - 50,
 			};
 
 			logger.info(
@@ -229,18 +234,15 @@ export function useLayout(
 			"useLayout",
 		);
 
-		// Get current viewport information for stable centering
+		// Get current viewport information for logging
 		const viewport = getViewport();
-
-		// Use viewport center if available, otherwise default to container center
-		const centerX = 400; // Keep stable center for determinism
-		const centerY = 300; // Keep stable center for determinism
 
 		logger.info("graph", "Using center coordinates for force simulation", {
 			centerX,
 			centerY,
+			containerDimensions,
 			viewport: { x: viewport.x, y: viewport.y, zoom: viewport.zoom },
-			reason: "Using fixed center for deterministic layout"
+			reason: containerDimensions ? "Using container center for proper centering" : "Using fallback center"
 		}, "useLayout");
 
 		// Configure forces
@@ -395,7 +397,7 @@ export function useLayout(
 				}, 100);
 			}
 		});
-	}, [layout, onLayoutChange, stopLayout, fitView, fitViewAfterLayout, getViewport]);
+	}, [layout, onLayoutChange, stopLayout, fitView, fitViewAfterLayout, getViewport, containerDimensions]);
 
 	// Main layout application function - D3 force only
 	const applyLayout = useCallback(() => {

@@ -64,6 +64,9 @@ const GraphNavigationInner: React.FC<GraphNavigationProps> = ({ className, style
 	// Provider instance ref
 	const providerRef = useRef<XYFlowProvider | null>(null);
 
+	// Container dimensions state
+	const [containerDimensions, setContainerDimensions] = React.useState<{ width: number; height: number } | undefined>();
+
 	// Layout hook integration - throttled to reduce log spam
 	const lastLogRef = useRef<number>(0);
 	const onLayoutChange = useCallback(() => {
@@ -80,9 +83,29 @@ const GraphNavigationInner: React.FC<GraphNavigationProps> = ({ className, style
 		currentLayout,
 		{
 			enabled: true,
-			onLayoutChange
+			onLayoutChange,
+			containerDimensions
 		}
 	);
+
+	// Measure container dimensions
+	useEffect(() => {
+		if (!containerRef.current) return;
+
+		const resizeObserver = new ResizeObserver((entries) => {
+			for (const entry of entries) {
+				const { width, height } = entry.contentRect;
+				setContainerDimensions({ width, height });
+				logger.info("graph", "Container dimensions updated", { width, height }, "GraphNavigation");
+			}
+		});
+
+		resizeObserver.observe(containerRef.current);
+
+		return () => {
+			resizeObserver.disconnect();
+		};
+	}, []);
 
 	// Initialize provider
 	useEffect(() => {
