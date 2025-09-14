@@ -7,6 +7,7 @@
  */
 
 import { describe, it, expect, beforeAll, afterAll, beforeEach, afterEach, vi } from 'vitest';
+import { execSync } from 'child_process';
 import { OpenAlexClient, createOpenAlexClient } from './openalex-client';
 import type { Work, Author as _Author, Source as _Source, InstitutionEntity as _InstitutionEntity, Topic as _Topic, EntityType as _EntityType } from './types';
 
@@ -24,7 +25,6 @@ const KNOWN_IDS = {
 // Get git config email for API requests
 const getGitEmail = () => {
   try {
-    const { execSync } = require('child_process');
     const gitEmail = execSync('git config user.email', { encoding: 'utf8' }).trim();
     return gitEmail || undefined;
   } catch {

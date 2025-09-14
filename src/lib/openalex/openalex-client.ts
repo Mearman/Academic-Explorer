@@ -40,10 +40,7 @@ import type {
   StatsParams
 } from './types';
 
-export interface OpenAlexClientOptions extends OpenAlexClientConfig {
-  // OpenAlexClient-specific configuration options
-  // Currently inherits all options from OpenAlexClientConfig
-}
+export type OpenAlexClientOptions = OpenAlexClientConfig;
 
 /**
  * Main OpenAlex API Client
