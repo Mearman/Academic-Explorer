@@ -58,10 +58,11 @@ export function useGraphData() {
 				force
 			});
 
-			// Recalculate depths after expansion
-			const pinnedNodeId = store.pinnedNodeId;
-			if (pinnedNodeId) {
-				store.calculateNodeDepths(pinnedNodeId);
+			// Recalculate depths after expansion using first pinned node
+			const pinnedNodes = Array.from(store.pinnedNodes);
+			const firstPinnedNodeId = pinnedNodes[0];
+			if (firstPinnedNodeId) {
+				store.calculateNodeDepths(firstPinnedNodeId);
 			}
 
 			logger.info("graph", "expandNode completed successfully", {
