@@ -47,7 +47,8 @@ export function useLayout(
 ) {
 	const { enabled = true, onLayoutChange, fitViewAfterLayout = true, containerDimensions } = options;
 	const { getNodes, getEdges, setNodes, fitView, getViewport, setCenter } = useReactFlow();
-	const pinnedNodeId = useGraphStore((state) => state.pinnedNodeId);
+	const pinnedNodes = useGraphStore((state) => state.pinnedNodes);
+	const pinnedNodeId = useGraphStore((state) => state.pinnedNodeId); // Legacy support
 	const containerRef = useRef<HTMLElement | null>(null);
 	const simulationRef = useRef<Simulation<D3Node, D3Link> | null>(null);
 	const isRunningRef = useRef(false);
@@ -117,15 +118,16 @@ export function useLayout(
 
 		// Using fixed D3 force parameters
 
-		// Fixed D3 force parameters with adjustments for pinned nodes
+		// Fixed D3 force parameters - consistent regardless of pinned nodes
 		const seed = 42;
-		const hasPinnedNode = !!pinnedNodeId;
+		const hasPinnedNodes = pinnedNodes.size > 0;
+		const pinnedNodeCount = pinnedNodes.size;
 
-		// Adjust parameters based on whether we have a pinned node
-		const linkDistance = hasPinnedNode ? 250 : 300; // Shorter links when pinned for tighter clustering
-		const linkStrength = hasPinnedNode ? 0.5 : 0.3; // Stronger links to pull nodes toward pinned center
-		const chargeStrength = hasPinnedNode ? -1500 : -2000; // Less repulsion when pinned to allow closer clustering
-		const centerStrength = hasPinnedNode ? 0.02 : 0.05; // Lower center force since pinned node acts as anchor
+		// Consistent force parameters (pinning only affects node position fixing, not forces)
+		const linkDistance = 300;
+		const linkStrength = 0.3;
+		const chargeStrength = -2000;
+		const centerStrength = 0.05;
 		const collisionRadius = 150; // Keep collision radius consistent
 		const collisionStrength = 2.0; // Keep collision strength consistent
 		const velocityDecay = 0.1; // Very low decay for maximum movement
@@ -139,8 +141,9 @@ export function useLayout(
 			{
 				nodeCount: nodes.length,
 				edgeCount: edges.length,
-				hasPinnedNode,
-				pinnedNodeId,
+				hasPinnedNodes,
+				pinnedNodeCount,
+				pinnedNodeIds: Array.from(pinnedNodes),
 				linkDistance,
 				linkStrength,
 				chargeStrength,
@@ -174,18 +177,18 @@ export function useLayout(
 		// Create deterministic random source
 		const random = randomLcg(seed);
 
-		// Convert ReactFlow nodes to D3 nodes with pinned node support
+		// Convert ReactFlow nodes to D3 nodes with multiple pinned nodes support
 		const d3Nodes: D3Node[] = nodes.map((node, index) => {
-			const isPinned = pinnedNodeId === node.id;
+			const isPinned = pinnedNodes.has(node.id);
 
 			if (isPinned) {
 				logger.info(
 					"graph",
-					"Pinning node at origin (0,0)",
+					"Pinning node at current position",
 					{
 						nodeId: node.id,
 						index,
-						position: { x: 0, y: 0 },
+						position: { x: node.position.x, y: node.position.y },
 						pinned: true,
 					},
 					"useLayout",
@@ -193,7 +196,7 @@ export function useLayout(
 			} else {
 				logger.info(
 					"graph",
-					"Preserving existing node position or initializing at origin",
+					"Node free to move during simulation",
 					{
 						nodeId: node.id,
 						index,
@@ -206,10 +209,10 @@ export function useLayout(
 
 			return {
 				id: node.id,
-				x: isPinned ? 0 : node.position.x, // Preserve existing position or pin at origin
-				y: isPinned ? 0 : node.position.y, // Preserve existing position or pin at origin
-				fx: isPinned ? 0 : undefined, // Fix pinned node at x=0
-				fy: isPinned ? 0 : undefined, // Fix pinned node at y=0
+				x: node.position.x, // Always preserve existing position
+				y: node.position.y, // Always preserve existing position
+				fx: isPinned ? node.position.x : undefined, // Fix pinned nodes at their current position
+				fy: isPinned ? node.position.y : undefined, // Fix pinned nodes at their current position
 				...node.data,
 			};
 		});
