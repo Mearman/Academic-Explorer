@@ -7,6 +7,7 @@ import { AbstractEntity, type EntityContext, type ExpansionOptions, type Expansi
 import type { Author } from "@/lib/openalex/types";
 import type { ExternalIdentifier } from "@/lib/graph/types";
 import { RelationType as RT } from "@/lib/graph/types";
+import { logger } from "@/lib/logger";
 
 export class AuthorEntity extends AbstractEntity<Author> {
 	constructor(client: any, entityData?: Author) {
@@ -66,13 +67,29 @@ export class AuthorEntity extends AbstractEntity<Author> {
 		const edges: any[] = [];
 		const { limit = 10 } = options;
 
+		logger.info("graph", "AuthorEntity.expand called", {
+			contextEntityId: context.entityId,
+			limit,
+			options
+		}, "AuthorEntity");
+
 		try {
 			// Fetch the author's recent works
+			logger.info("graph", "Fetching works for author", {
+				entityId: context.entityId
+			}, "AuthorEntity");
+
 			const worksQuery = await this.client.getWorks({
 				filter: `authorships.author.id:${context.entityId}`,
 				per_page: Math.min(limit, 8),
 				sort: "publication_year:desc"
 			});
+
+			logger.info("graph", "Works query result", {
+				resultCount: worksQuery.results?.length || 0,
+				totalCount: worksQuery.meta?.count || 0,
+				entityId: context.entityId
+			}, "AuthorEntity");
 
 			worksQuery.results.forEach((work: any) => {
 				// Add work node
@@ -108,8 +125,19 @@ export class AuthorEntity extends AbstractEntity<Author> {
 			});
 
 		} catch (error) {
+			logger.error("graph", "Error in AuthorEntity.expand", {
+				error: error instanceof Error ? error.message : "Unknown error",
+				entityId: context.entityId
+			}, "AuthorEntity");
 			this.handleError(error, "expand", context);
 		}
+
+		logger.info("graph", "AuthorEntity.expand returning", {
+			nodeCount: nodes.length,
+			edgeCount: edges.length,
+			entityId: context.entityId,
+			nodes: nodes.map(n => ({ id: n.id, type: n.type, label: n.label }))
+		}, "AuthorEntity");
 
 		return { nodes, edges };
 	}

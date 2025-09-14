@@ -76,6 +76,11 @@ export function useGraphData() {
 		const store = useGraphStore.getState();
 		const traversalDepth = store.traversalDepth;
 
+		logger.info("graph", "manualExpandNode called", {
+			nodeId,
+			traversalDepth
+		}, "useGraphData");
+
 		try {
 			await service.current.expandNode(nodeId, {
 				depth: traversalDepth,
@@ -87,7 +92,15 @@ export function useGraphData() {
 			if (pinnedNodeId) {
 				store.calculateNodeDepths(pinnedNodeId);
 			}
+
+			logger.info("graph", "manualExpandNode completed successfully", {
+				nodeId
+			}, "useGraphData");
 		} catch (err) {
+			logger.error("graph", "manualExpandNode failed", {
+				nodeId,
+				error: err instanceof Error ? err.message : "Unknown error"
+			}, "useGraphData");
 			logError("Failed to manually expand node in graph data hook", err, "useGraphData", "graph");
 			store.setError(err instanceof Error ? err.message : "Failed to expand node");
 		}
