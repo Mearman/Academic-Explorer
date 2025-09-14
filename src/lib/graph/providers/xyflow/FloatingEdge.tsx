@@ -11,11 +11,13 @@ import {
 	getStraightPath,
 	useReactFlow,
 	useStore,
+	useUpdateNodeInternals,
 	Edge as XYEdge,
 	Node as XYNode,
 } from "@xyflow/react";
 
 import { getFloatingEdgePositions } from "./floating-edge-utils";
+import { logger } from "@/lib/logger";
 
 function FloatingEdge({
 	id,
@@ -27,12 +29,38 @@ function FloatingEdge({
 	...edgeProps
 }: EdgeProps) {
 	const { getNode } = useReactFlow();
+	const updateNodeInternals = useUpdateNodeInternals();
 	const sourceNode = getNode(source);
 	const targetNode = getNode(target);
+
+	// Ensure nodes are measured
+	React.useEffect(() => {
+		if (sourceNode && targetNode) {
+			updateNodeInternals(source);
+			updateNodeInternals(target);
+		}
+	}, [sourceNode, targetNode, source, target, updateNodeInternals]);
 
 	if (!sourceNode || !targetNode) {
 		return null;
 	}
+
+	// Log node dimensions for debugging
+	logger.info("graph", "FloatingEdge source node dimensions", {
+		edgeId: id,
+		nodeId: sourceNode.id,
+		width: sourceNode.width || 'undefined',
+		height: sourceNode.height || 'undefined',
+		measured: sourceNode.measured
+	}, "FloatingEdge");
+
+	logger.info("graph", "FloatingEdge target node dimensions", {
+		edgeId: id,
+		nodeId: targetNode.id,
+		width: targetNode.width || 'undefined',
+		height: targetNode.height || 'undefined',
+		measured: targetNode.measured
+	}, "FloatingEdge");
 
 	// Calculate floating edge positions
 	const { sourceX, sourceY, targetX, targetY } = getFloatingEdgePositions(
@@ -54,16 +82,16 @@ function FloatingEdge({
 			<defs>
 				<marker
 					id={`arrow-${id}`}
-					viewBox="0 0 10 10"
-					refX="9"
-					refY="3"
+					viewBox="0 0 12 12"
+					refX="10"
+					refY="6"
 					markerWidth="6"
 					markerHeight="6"
 					orient="auto"
 					markerUnits="strokeWidth"
 				>
 					<path
-						d="M0,0 L0,6 L9,3 z"
+						d="M2,2 L2,10 L10,6 z"
 						fill={style?.stroke || "#b1b1b7"}
 						stroke="none"
 					/>
