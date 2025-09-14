@@ -20,6 +20,9 @@ const theme = createTheme({
   primaryColor: 'blue',
   fontFamily: 'Inter, system-ui, Avenir, Helvetica, Arial, sans-serif',
   defaultRadius: 'md',
+  // Respect system color scheme preferences
+  respectReducedMotion: true,
+  autoContrast: true,
 
   // Academic entity colors matching theme.css.ts
   colors: {
@@ -108,7 +111,10 @@ declare module '@tanstack/react-router' {
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <MantineProvider theme={theme}>
+    <MantineProvider
+      theme={theme}
+      defaultColorScheme="auto"
+    >
       <Notifications />
       <QueryClientProvider client={queryClient}>
         <RouterProvider router={router} />
