@@ -49,7 +49,7 @@ const GraphNavigationInner: React.FC<GraphNavigationProps> = ({ className, style
 	const navigate = useNavigate();
 	const reactFlowInstance = useReactFlow();
 	const containerRef = useRef<HTMLDivElement>(null);
-	const { loadEntityIntoGraph, manualExpandNode } = useGraphData();
+	const { loadEntityIntoGraph, expandNode } = useGraphData();
 
 
 	// Store state
@@ -184,10 +184,10 @@ const GraphNavigationInner: React.FC<GraphNavigationProps> = ({ className, style
 				const store = useGraphStore.getState();
 				store.setPinnedNode(node.id);
 
-				// Manually expand the node respecting traversal depth setting
-				void manualExpandNode(node.id);
+				// Expand the node respecting traversal depth setting
+				void expandNode(node.id);
 
-				logger.info("ui", "Node clicked - Manually expanding node with traversal depth", {
+				logger.info("ui", "Node clicked - Expanding node with traversal depth", {
 					nodeId: node.id,
 					entityId: node.entityId,
 					entityType: node.type,
@@ -216,7 +216,7 @@ const GraphNavigationInner: React.FC<GraphNavigationProps> = ({ className, style
 		return () => {
 			graphProvider.destroy();
 		};
-	}, [reactFlowInstance, navigate, setProvider, setPreviewEntity, loadEntityIntoGraph, manualExpandNode]);
+	}, [reactFlowInstance, navigate, setProvider, setPreviewEntity, loadEntityIntoGraph, expandNode]);
 
 	// Sync store data with XYFlow using incremental updates (applying visibility filters)
 	useEffect(() => {
