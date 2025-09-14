@@ -123,7 +123,7 @@ export class KeywordsApi {
 		params: KeywordsQueryParams = {}
 	): Promise<OpenAlexResponse<Keyword>> {
 		const filters: KeywordsFilters = {
-			"works_count": `>=${minWorksCount}`,
+			"works_count": `>=${String(minWorksCount)}`,
 		};
 
 		return this.getKeywords({
@@ -257,8 +257,8 @@ export class KeywordsApi {
 		params: KeywordsQueryParams = {}
 	): Promise<OpenAlexResponse<Keyword>> {
 		const filters: KeywordsFilters = {
-			"from_created_date": `${fromYear}-01-01`,
-			"to_created_date": `${toYear}-12-31`,
+			"from_created_date": `${String(fromYear)}-01-01`,
+			"to_created_date": `${String(toYear)}-12-31`,
 			"works_count": ">10", // Filter out very rare keywords
 		};
 

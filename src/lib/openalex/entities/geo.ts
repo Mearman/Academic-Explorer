@@ -374,7 +374,7 @@ export class GeoApi {
 
 		const filters: GeoFilters = {
 			"works_count": ">50",
-			"from_created_date": `${currentYear - 5}-01-01`, // Last 5 years
+			"from_created_date": `${String(currentYear - 5)}-01-01`, // Last 5 years
 		};
 
 		return this.getGeos({
@@ -397,10 +397,10 @@ export class GeoApi {
 					filterParts.push(`${key}:${value.join("|")}`);
 				} else if (typeof value === "boolean") {
 					// Handle boolean values
-					filterParts.push(`${key}:${value}`);
+					filterParts.push(`${key}:${String(value)}`);
 				} else {
 					// Handle string/number values
-					filterParts.push(`${key}:${value}`);
+					filterParts.push(`${key}:${String(value)}`);
 				}
 			}
 		});
