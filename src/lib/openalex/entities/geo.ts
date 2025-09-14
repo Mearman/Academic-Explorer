@@ -16,9 +16,7 @@ import { buildFilterString } from '../utils/query-builder';
  * Extended query parameters specific to Geo API
  * Note: Uses string filter to maintain compatibility with base QueryParams
  */
-export interface GeoQueryParams extends QueryParams {
-  // filter inherited from QueryParams as string
-}
+export type GeoQueryParams = QueryParams;
 
 /**
  * Options for searching geo entities

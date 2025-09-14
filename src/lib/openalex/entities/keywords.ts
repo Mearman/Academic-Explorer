@@ -16,9 +16,7 @@ import { buildFilterString } from '../utils/query-builder';
  * Extended query parameters specific to Keywords API
  * Note: Uses string filter to maintain compatibility with base QueryParams
  */
-export interface KeywordsQueryParams extends QueryParams {
-  // filter inherited from QueryParams as string
-}
+export type KeywordsQueryParams = QueryParams;
 
 /**
  * Options for searching keywords
