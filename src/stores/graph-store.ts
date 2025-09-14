@@ -29,6 +29,9 @@ interface GraphState {
   selectedNodeId: string | null;
   hoveredNodeId: string | null;
   selectedNodes: Set<string>;
+  pinnedNodes: Set<string>; // Support multiple pinned nodes
+
+  // Legacy support - will be deprecated
   pinnedNodeId: string | null;
 
   // Cache visibility and traversal control
@@ -83,7 +86,13 @@ interface GraphState {
   removeFromSelection: (nodeId: string) => void;
   clearSelection: () => void;
 
-  // Pinned node management
+  // Pinned node management - new multi-pin API
+  pinNode: (nodeId: string) => void;
+  unpinNode: (nodeId: string) => void;
+  clearAllPinnedNodes: () => void;
+  isPinned: (nodeId: string) => boolean;
+
+  // Legacy single-pin API - will be deprecated
   setPinnedNode: (nodeId: string | null) => void;
   clearPinnedNode: () => void;
 
@@ -133,7 +142,8 @@ export const useGraphStore = create<GraphState>()(
 			selectedNodeId: null,
 			hoveredNodeId: null,
 			selectedNodes: new Set(),
-			pinnedNodeId: null,
+			pinnedNodes: new Set(),
+			pinnedNodeId: null, // Legacy support
 			showAllCachedNodes: false,
 			traversalDepth: 1,
 			nodeDepths: new Map(),
@@ -303,16 +313,56 @@ export const useGraphStore = create<GraphState>()(
 				});
 			},
 
-			// Pinned node management
+			// Multi-pin node management (new API)
+			pinNode: (nodeId) => {
+				set((draft) => {
+					draft.pinnedNodes.add(nodeId);
+					// Keep legacy single pin in sync with first pinned node
+					if (draft.pinnedNodes.size === 1) {
+						draft.pinnedNodeId = nodeId;
+					}
+				});
+			},
+
+			unpinNode: (nodeId) => {
+				set((draft) => {
+					draft.pinnedNodes.delete(nodeId);
+					// Update legacy single pin
+					if (draft.pinnedNodeId === nodeId) {
+						const firstPinned = draft.pinnedNodes.values().next().value;
+						draft.pinnedNodeId = firstPinned || null;
+					}
+				});
+			},
+
+			clearAllPinnedNodes: () => {
+				set((draft) => {
+					draft.pinnedNodes.clear();
+					draft.pinnedNodeId = null; // Clear legacy pin too
+				});
+			},
+
+			isPinned: (nodeId) => {
+				const state = get();
+				return state.pinnedNodes.has(nodeId);
+			},
+
+			// Legacy single-pin API (maintained for backward compatibility)
 			setPinnedNode: (nodeId) => {
 				set((draft) => {
 					draft.pinnedNodeId = nodeId;
+					// Sync with multi-pin
+					draft.pinnedNodes.clear();
+					if (nodeId) {
+						draft.pinnedNodes.add(nodeId);
+					}
 				});
 			},
 
 			clearPinnedNode: () => {
 				set((draft) => {
 					draft.pinnedNodeId = null;
+					draft.pinnedNodes.clear();
 				});
 			},
 
@@ -391,6 +441,7 @@ export const useGraphStore = create<GraphState>()(
 					selectedNodeId: null,
 					hoveredNodeId: null,
 					selectedNodes: new Set(),
+					pinnedNodes: new Set(),
 					pinnedNodeId: null,
 					nodeDepths: new Map(),
 				});
@@ -412,6 +463,8 @@ export const useGraphStore = create<GraphState>()(
 					selectedNodeId: null,
 					hoveredNodeId: null,
 					selectedNodes: new Set(),
+					pinnedNodes: new Set(), // Clear pinned nodes on data change
+					pinnedNodeId: null, // Clear legacy pinned node
 					nodeDepths: new Map(), // Clear depths, will be recalculated when needed
 				});
 			},
