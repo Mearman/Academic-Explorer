@@ -386,14 +386,14 @@ async function performKeywordExpansionAnalysis(
 			// Small delay to avoid rate limiting
 			await new Promise(resolve => setTimeout(resolve, 150));
 		} catch (error) {
-			logError(`Keyword expansion search failed for terms ${termPair}`, error, "MissingPaperDetection", "api");
+			logError(`Keyword expansion search failed for terms ${String(termPair)}`, error, "MissingPaperDetection", "api");
 		}
 	}
 
 	onProgress?.({
 		currentMethod: "Keyword Expansion Analysis",
 		progress: 100,
-		message: `Found ${candidates.length} potential expanded keyword papers`,
+		message: `Found ${String(candidates.length)} potential expanded keyword papers`,
 		papersFound: candidates.length
 	});
 

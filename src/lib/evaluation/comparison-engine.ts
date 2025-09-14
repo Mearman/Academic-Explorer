@@ -385,7 +385,7 @@ export async function batchCompareResults(
 	for (let i = 0; i < starDatasets.length; i++) {
 		const dataset = starDatasets[i];
 
-		const result = await compareAcademicExplorerResults(
+		const result = compareAcademicExplorerResults(
 			academicExplorerResults,
 			dataset,
 			config,
