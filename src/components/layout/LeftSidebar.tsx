@@ -23,11 +23,12 @@ import {
 	IconTag,
 	IconBuildingStore,
 	IconArrowRight,
-	IconCircleDot,
 	IconGitBranch,
 	IconLink,
 	IconCoin,
-	IconQuote
+	IconQuote,
+	IconDatabase,
+	IconAdjustments
 } from "@tabler/icons-react"
 
 export const LeftSidebar: React.FC = () => {
@@ -35,16 +36,22 @@ export const LeftSidebar: React.FC = () => {
 	const [selectedEntityTypes, setSelectedEntityTypes] = useState<EntityType[]>([
 		"works", "authors", "sources", "institutions"
 	])
-	const { search, isLoading, clearGraph } = useGraphData()
+	const { search, isLoading, clearGraph, loadAllCachedNodes } = useGraphData()
 	const { colors } = useThemeColors()
 
 	// Graph store for statistics and visibility
-	const visibleEntityTypes = useGraphStore((state) => state.visibleEntityTypes)
+	const _visibleEntityTypes = useGraphStore((state) => state.visibleEntityTypes)
 	const getEntityTypeStats = useGraphStore((state) => state.getEntityTypeStats)
 	const toggleEntityTypeVisibility = useGraphStore((state) => state.toggleEntityTypeVisibility)
 	const visibleEdgeTypes = useGraphStore((state) => state.visibleEdgeTypes)
 	const getEdgeTypeStats = useGraphStore((state) => state.getEdgeTypeStats)
 	const toggleEdgeTypeVisibility = useGraphStore((state) => state.toggleEdgeTypeVisibility)
+
+	// Cache controls state
+	const showAllCachedNodes = useGraphStore((state) => state.showAllCachedNodes)
+	const setShowAllCachedNodes = useGraphStore((state) => state.setShowAllCachedNodes)
+	const traversalDepth = useGraphStore((state) => state.traversalDepth)
+	const setTraversalDepth = useGraphStore((state) => state.setTraversalDepth)
 
 	// Get statistics for entity types and edge types
 	const entityStats = useMemo(() => getEntityTypeStats(), [getEntityTypeStats])
@@ -84,6 +91,27 @@ export const LeftSidebar: React.FC = () => {
 
 	const handleEdgeTypeToggle = (edgeType: RelationType) => {
 		toggleEdgeTypeVisibility(edgeType)
+	}
+
+	const handleShowAllCachedToggle = async () => {
+		const newValue = !showAllCachedNodes
+		setShowAllCachedNodes(newValue)
+
+		if (newValue) {
+			// Load all cached nodes when enabling cache visibility
+			try {
+				await loadAllCachedNodes()
+			} catch (error) {
+				logError("Failed to load cached nodes", error, "LeftSidebar", "ui")
+			}
+		}
+	}
+
+	const handleTraversalDepthChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+		const value = parseInt(e.target.value, 10)
+		if (!isNaN(value) && value >= 1) {
+			setTraversalDepth(value)
+		}
 	}
 
 	// Use the exact same colors as graph nodes for consistency
@@ -405,6 +433,111 @@ export const LeftSidebar: React.FC = () => {
 					>
             Clear Graph
 					</button>
+				</div>
+
+				{/* Cache Controls */}
+				<div>
+					<div style={{
+						display: "flex",
+						alignItems: "center",
+						gap: "8px",
+						marginBottom: "12px",
+						fontSize: "13px",
+						fontWeight: 600,
+						color: colors.text.primary
+					}}>
+						<IconDatabase size={16} />
+            Cache & Traversal Settings
+					</div>
+
+					{/* Show All Cached Nodes Toggle */}
+					<div style={{ marginBottom: "16px" }}>
+						<label style={{
+							display: "flex",
+							alignItems: "center",
+							gap: "8px",
+							fontSize: "14px",
+							color: colors.text.primary,
+							cursor: "pointer"
+						}}>
+							<input
+								type="checkbox"
+								checked={showAllCachedNodes}
+								onChange={() => { void handleShowAllCachedToggle() }}
+								style={{ margin: 0 }}
+							/>
+							<span>Show all cached nodes</span>
+						</label>
+						<div style={{
+							fontSize: "11px",
+							color: colors.text.secondary,
+							marginLeft: "24px",
+							marginTop: "4px",
+							lineHeight: "1.3"
+						}}>
+							Display all nodes from the cache, not just currently visible ones
+						</div>
+					</div>
+
+					{/* Traversal Depth Control */}
+					<div>
+						<label style={{
+							display: "flex",
+							alignItems: "center",
+							gap: "8px",
+							marginBottom: "8px",
+							fontSize: "14px",
+							color: colors.text.primary
+						}}>
+							<IconAdjustments size={16} />
+							<span>Traversal Depth: {traversalDepth === Number.MAX_SAFE_INTEGER ? "∞" : traversalDepth}</span>
+						</label>
+						<div style={{
+							display: "flex",
+							alignItems: "center",
+							gap: "8px"
+						}}>
+							<input
+								type="range"
+								min={1}
+								max={10}
+								value={traversalDepth > 10 ? 10 : traversalDepth}
+								onChange={handleTraversalDepthChange}
+								style={{
+									flex: 1,
+									height: "4px",
+									background: colors.border.primary,
+									borderRadius: "2px",
+									outline: "none",
+									cursor: "pointer"
+								}}
+							/>
+							<button
+								onClick={() => { setTraversalDepth(Number.MAX_SAFE_INTEGER) }}
+								style={{
+									padding: "4px 8px",
+									fontSize: "11px",
+									backgroundColor: traversalDepth === Number.MAX_SAFE_INTEGER ? colors.primary : colors.background.secondary,
+									color: traversalDepth === Number.MAX_SAFE_INTEGER ? colors.text.inverse : colors.text.primary,
+									border: `1px solid ${colors.border.primary}`,
+									borderRadius: "4px",
+									cursor: "pointer",
+									minWidth: "24px"
+								}}
+								title="Set to infinity"
+							>
+								∞
+							</button>
+						</div>
+						<div style={{
+							fontSize: "11px",
+							color: colors.text.secondary,
+							marginTop: "4px",
+							lineHeight: "1.3"
+						}}>
+							Controls how many levels deep nodes will be displayed from pinned node
+						</div>
+					</div>
 				</div>
 
 				{/* Instructions */}
