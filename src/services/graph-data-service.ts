@@ -94,6 +94,76 @@ export class GraphDataService {
 	}
 
 	/**
+   * Load an entity and add it to the existing graph (without clearing)
+   * Used for progressive graph building when clicking on nodes
+   */
+	async loadEntityIntoGraph(entityId: string): Promise<void> {
+		const store = useGraphStore.getState();
+
+		try {
+			// Check if the node already exists with full data (not a placeholder)
+			const existingNode = Array.from(store.nodes.values()).find(
+				node => node.entityId === entityId && !node.metadata?.isPlaceholder
+			);
+
+			if (existingNode) {
+				// Node already exists with full data, just select it and potentially expand
+				store.selectNode(existingNode.id);
+
+				// Try to expand if not already expanded
+				if (!this.cache.expandedNodes.has(existingNode.id)) {
+					await this.expandNode(existingNode.id, {
+						limit: 10,
+						depth: 1
+					});
+				}
+				return;
+			}
+
+			// Detect entity type
+			const detection = this.detector.detectEntityIdentifier(entityId);
+
+			if (!detection.entityType) {
+				throw new Error(`Unable to detect entity type for: ${entityId}`);
+			}
+
+			// Fetch entity with rate-limited OpenAlex client
+			const entity = await rateLimitedOpenAlex.getEntity(detection.normalizedId);
+
+			// Transform to graph data
+			const { nodes, edges } = this.transformEntityToGraph(entity);
+
+			// Add new data to existing graph (do NOT clear)
+			store.addNodes(nodes);
+			store.addEdges(edges);
+
+			// Select the newly added primary node
+			const primaryNodeId = nodes[0]?.id;
+			if (primaryNodeId) {
+				store.selectNode(primaryNodeId);
+
+				// Automatically expand the newly added entity for context
+				await this.expandNode(primaryNodeId, {
+					limit: 10, // Moderate expansion to avoid overwhelming the graph
+					depth: 1   // Only direct relations
+				});
+			}
+
+			logger.info("graph", "Entity loaded into graph", {
+				entityId,
+				entityType: detection.entityType,
+				nodeCount: nodes.length,
+				edgeCount: edges.length
+			}, "GraphDataService");
+
+		} catch (error) {
+			const errorMessage = error instanceof Error ? error.message : "Unknown error";
+			store.setError(errorMessage);
+			logError("Failed to load entity into graph", error, "GraphDataService", "graph");
+		}
+	}
+
+	/**
    * Expand a node to show related entities
    */
 	async expandNode(nodeId: string, options: ExpansionOptions = {}): Promise<void> {
