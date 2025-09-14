@@ -150,9 +150,16 @@ export function useLayout(
 			"useLayout",
 		);
 
-		// Use container dimensions to calculate proper center, fallback to defaults
-		const centerX = containerDimensions ? containerDimensions.width / 2 : 800;
-		const centerY = containerDimensions ? containerDimensions.height / 2 : 400;
+		// Get current viewport information to calculate where nodes should center
+		const viewport = getViewport();
+
+		// Calculate the current viewport center in world coordinates
+		const viewportCenterX = containerDimensions ? -viewport.x + (containerDimensions.width / 2) / viewport.zoom : 800;
+		const viewportCenterY = containerDimensions ? -viewport.y + (containerDimensions.height / 2) / viewport.zoom : 400;
+
+		// Use viewport center as simulation center so nodes animate around current view
+		const centerX = viewportCenterX;
+		const centerY = viewportCenterY;
 
 		// Create deterministic random source
 		const random = randomLcg(seed);
@@ -234,15 +241,14 @@ export function useLayout(
 			"useLayout",
 		);
 
-		// Get current viewport information for logging
-		const viewport = getViewport();
-
 		logger.info("graph", "Using center coordinates for force simulation", {
 			centerX,
 			centerY,
+			viewportCenterX,
+			viewportCenterY,
 			containerDimensions,
 			viewport: { x: viewport.x, y: viewport.y, zoom: viewport.zoom },
-			reason: containerDimensions ? "Using container center for proper centering" : "Using fallback center"
+			reason: containerDimensions ? "Using viewport center for stable animation" : "Using fallback center"
 		}, "useLayout");
 
 		// Configure forces
@@ -264,12 +270,6 @@ export function useLayout(
 			);
 
 		isRunningRef.current = true;
-
-		// Center the viewport on the simulation center for stable viewing during animation
-		setTimeout(() => {
-			setCenter(centerX, centerY, { zoom: 0.8, duration: 300 });
-			logger.info("graph", "Centered viewport on simulation center", { centerX, centerY }, "useLayout");
-		}, 50);
 
 		// Set up tick handler for continuous position updates with safety timeout
 		let tickCount = 0;
