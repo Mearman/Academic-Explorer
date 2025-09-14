@@ -29,6 +29,7 @@ interface GraphState {
   selectedNodeId: string | null;
   hoveredNodeId: string | null;
   selectedNodes: Set<string>;
+  pinnedNodeId: string | null;
 
   // Provider (can be swapped)
   provider: GraphProvider | null;
@@ -77,6 +78,10 @@ interface GraphState {
   removeFromSelection: (nodeId: string) => void;
   clearSelection: () => void;
 
+  // Pinned node management
+  setPinnedNode: (nodeId: string | null) => void;
+  clearPinnedNode: () => void;
+
   // Bulk operations
   clear: () => void;
   setGraphData: (nodes: GraphNode[], edges: GraphEdge[]) => void;
@@ -117,6 +122,7 @@ export const useGraphStore = create<GraphState>()(
 			selectedNodeId: null,
 			hoveredNodeId: null,
 			selectedNodes: new Set(),
+			pinnedNodeId: null,
 			provider: null,
 			providerType: "xyflow",
 			visibleEntityTypes: new Set(["works", "authors", "sources", "institutions", "topics", "publishers", "funders", "keywords", "geo"]),
@@ -283,6 +289,19 @@ export const useGraphStore = create<GraphState>()(
 				});
 			},
 
+			// Pinned node management
+			setPinnedNode: (nodeId) => {
+				set((draft) => {
+					draft.pinnedNodeId = nodeId;
+				});
+			},
+
+			clearPinnedNode: () => {
+				set((draft) => {
+					draft.pinnedNodeId = null;
+				});
+			},
+
 			// Bulk operations
 			clear: () => {
 				const { provider } = get();
@@ -293,6 +312,7 @@ export const useGraphStore = create<GraphState>()(
 					selectedNodeId: null,
 					hoveredNodeId: null,
 					selectedNodes: new Set(),
+					pinnedNodeId: null,
 				});
 			},
 
