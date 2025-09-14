@@ -2,6 +2,8 @@ import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import { createRouter, RouterProvider, createHashHistory } from '@tanstack/react-router'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
+import { TanStackRouterDevtools } from '@tanstack/react-router-devtools'
 import { MantineProvider, createTheme } from '@mantine/core'
 import { Notifications } from '@mantine/notifications'
 import { Spotlight } from '@mantine/spotlight'
@@ -86,12 +88,94 @@ const theme = createTheme({
   },
 })
 
-// Create a new query client for data fetching
+// Import cache configuration and persistence
+import { persistQueryClient } from '@tanstack/react-query-persist-client'
+import { createIDBPersister } from '@/lib/cache/persister'
+import { CACHE_CONFIG } from '@/config/cache'
+import { calculateRetryDelay, RETRY_CONFIG } from '@/config/rate-limit'
+
+// Create enhanced query client with intelligent caching and retry logic
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      staleTime: 1000 * 60 * 5, // 5 minutes
-      gcTime: 1000 * 60 * 30, // 30 minutes (formerly cacheTime)
+      // Default cache times
+      staleTime: CACHE_CONFIG.defaultStaleTime, // 5 minutes
+      gcTime: CACHE_CONFIG.maxAge, // 7 days (keep data longer for offline support)
+
+      // Network and focus behavior
+      refetchOnWindowFocus: false,    // Don't refetch on tab focus (annoying for users)
+      refetchOnReconnect: 'always',   // Always refetch when coming back online
+
+      // Intelligent retry logic for different error types
+      retry: (failureCount: number, error: unknown) => {
+        // Type guard for error with status
+        const hasStatus = (err: unknown): err is { status: number } => {
+          return typeof err === 'object' && err !== null && 'status' in err;
+        };
+
+        // Don't retry client errors (4xx) except 429 rate limits
+        if (hasStatus(error) && error.status >= 400 && error.status < 500) {
+          if (error.status === 429) {
+            return failureCount < RETRY_CONFIG.rateLimited.maxAttempts;
+          }
+          return false; // Don't retry other 4xx errors
+        }
+
+        // Retry server errors (5xx) with limited attempts
+        if (hasStatus(error) && error.status >= 500) {
+          return failureCount < RETRY_CONFIG.server.maxAttempts;
+        }
+
+        // Retry network errors
+        return failureCount < RETRY_CONFIG.network.maxAttempts;
+      },
+
+      // Smart retry delay with exponential backoff
+      retryDelay: (attemptIndex: number, error: unknown) => {
+        // Type guard for error with status and headers
+        const hasStatus = (err: unknown): err is { status: number } => {
+          return typeof err === 'object' && err !== null && 'status' in err;
+        };
+        const hasHeaders = (err: unknown): err is { headers: { get?: (key: string) => string | null } } => {
+          return typeof err === 'object' && err !== null && 'headers' in err;
+        };
+
+        // Handle rate limiting specially
+        if (hasStatus(error) && error.status === 429) {
+          const retryAfterMs = hasHeaders(error) && error.headers.get
+            ? parseInt(error.headers.get('Retry-After') || '0') * 1000
+            : undefined;
+          return calculateRetryDelay(attemptIndex, RETRY_CONFIG.rateLimited, retryAfterMs);
+        }
+
+        // Handle server errors
+        if (hasStatus(error) && error.status >= 500) {
+          return calculateRetryDelay(attemptIndex, RETRY_CONFIG.server);
+        }
+
+        // Handle network errors
+        return calculateRetryDelay(attemptIndex, RETRY_CONFIG.network);
+      },
+    },
+    mutations: {
+      retry: 2, // Limited retries for mutations
+      retryDelay: (attemptIndex: number) =>
+        calculateRetryDelay(attemptIndex, RETRY_CONFIG.network),
+    },
+  },
+})
+
+// Enable persistence with IndexedDB for offline support
+persistQueryClient({
+  queryClient,
+  persister: createIDBPersister('academic-explorer-cache'),
+  maxAge: CACHE_CONFIG.maxAge, // 7 days
+
+  // Dehydrate options - what gets persisted
+  dehydrateOptions: {
+    shouldDehydrateQuery: (query) => {
+      // Only persist successful queries to avoid caching errors
+      return query.state.status === 'success';
     },
   },
 })
@@ -118,6 +202,20 @@ createRoot(document.getElementById('root')!).render(
       <Notifications />
       <QueryClientProvider client={queryClient}>
         <RouterProvider router={router} />
+
+        {/* TanStack DevTools - only in development */}
+        {import.meta.env.DEV && (
+          <>
+            <ReactQueryDevtools
+              initialIsOpen={false}
+              buttonPosition="bottom-left"
+            />
+            <TanStackRouterDevtools
+              router={router}
+              position="bottom-right"
+            />
+          </>
+        )}
       </QueryClientProvider>
       <Spotlight
         actions={[]}
