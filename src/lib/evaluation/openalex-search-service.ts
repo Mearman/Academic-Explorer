@@ -89,7 +89,7 @@ export function extractSearchCriteriaFromDataset(dataset: STARDataset): {
 
   // Apply date range if available
   if (dataset.searchStrategy.dateRange?.start || dataset.searchStrategy.dateRange?.end) {
-    const dateFilter: any = {};
+    const dateFilter: Record<string, string> = {};
 
     if (dataset.searchStrategy.dateRange?.start) {
       dateFilter['publication_year'] = `>${dataset.searchStrategy.dateRange.start.getFullYear() - 1}`;
@@ -137,18 +137,18 @@ export async function performAcademicExplorerSearch(
       }
 
       if (yearFilters.length > 0) {
-        (searchOptions.filters as any)['publication_year'] = yearFilters.join(',');
+        (searchOptions.filters as Record<string, string>)['publication_year'] = yearFilters.join(',');
       }
     }
 
     // Apply citation filter if specified
     if (config.minimumCitations && config.minimumCitations > 0) {
-      (searchOptions.filters as any)['cited_by_count'] = `>${config.minimumCitations - 1}`;
+      (searchOptions.filters as Record<string, string>)['cited_by_count'] = `>${config.minimumCitations - 1}`;
     }
 
     // Filter out preprints if not desired
     if (!config.includePreprints) {
-      (searchOptions.filters as any)['type'] = 'journal-article|book-chapter|book|dataset|dissertation|proceedings-article';
+      (searchOptions.filters as Record<string, string>)['type'] = 'journal-article|book-chapter|book|dataset|dissertation|proceedings-article';
     }
 
     console.log('Performing Academic Explorer search:', {
