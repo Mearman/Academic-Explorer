@@ -4,11 +4,12 @@ import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import { Group, Text, ActionIcon, useMantineColorScheme, Paper } from '@mantine/core'
 import { IconMoon, IconSun, IconDeviceDesktop } from '@tabler/icons-react'
 import { MainLayout } from '@/components/layout/MainLayout'
+import { useThemeColors } from '@/hooks/use-theme-colors'
 import { themeClass } from '../styles/theme.css'
-import { navigation, navLink } from '../styles/layout.css'
 
 function RootLayout() {
   const { colorScheme, setColorScheme } = useMantineColorScheme()
+  const { colors } = useThemeColors()
 
   // Get system preference
   const getSystemTheme = () => {
@@ -58,7 +59,7 @@ function RootLayout() {
           zIndex: 1000,
           padding: '12px 20px',
           borderRadius: 0,
-          borderBottom: '1px solid var(--mantine-color-gray-3)',
+          borderBottom: `1px solid ${colors.border.primary}`,
         }}
       >
         <Group justify="space-between" h="100%">
@@ -69,17 +70,93 @@ function RootLayout() {
           </Group>
 
           <Group gap="md">
-            <nav className={navigation}>
-              <Link to="/" className={navLink}>
+            <nav style={{ display: 'flex', gap: '1rem', padding: '0 1rem' }}>
+              <Link
+                to="/"
+                style={{
+                  color: colors.text.primary,
+                  textDecoration: 'none',
+                  padding: '0.5rem 0.75rem',
+                  borderRadius: '6px',
+                  fontSize: '14px',
+                  fontWeight: '500',
+                  transition: 'all 0.2s ease',
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.backgroundColor = colors.background.tertiary;
+                  e.currentTarget.style.color = colors.primary;
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.backgroundColor = 'transparent';
+                  e.currentTarget.style.color = colors.text.primary;
+                }}
+              >
                 Home
               </Link>
-              <Link to="/about" className={navLink}>
+              <Link
+                to="/about"
+                style={{
+                  color: colors.text.primary,
+                  textDecoration: 'none',
+                  padding: '0.5rem 0.75rem',
+                  borderRadius: '6px',
+                  fontSize: '14px',
+                  fontWeight: '500',
+                  transition: 'all 0.2s ease',
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.backgroundColor = colors.background.tertiary;
+                  e.currentTarget.style.color = colors.primary;
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.backgroundColor = 'transparent';
+                  e.currentTarget.style.color = colors.text.primary;
+                }}
+              >
                 About
               </Link>
-              <Link to="/demo" className={navLink}>
+              <Link
+                to="/demo"
+                style={{
+                  color: colors.text.primary,
+                  textDecoration: 'none',
+                  padding: '0.5rem 0.75rem',
+                  borderRadius: '6px',
+                  fontSize: '14px',
+                  fontWeight: '500',
+                  transition: 'all 0.2s ease',
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.backgroundColor = colors.background.tertiary;
+                  e.currentTarget.style.color = colors.primary;
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.backgroundColor = 'transparent';
+                  e.currentTarget.style.color = colors.text.primary;
+                }}
+              >
                 Query Demo
               </Link>
-              <Link to="/evaluation" className={navLink}>
+              <Link
+                to="/evaluation"
+                style={{
+                  color: colors.text.primary,
+                  textDecoration: 'none',
+                  padding: '0.5rem 0.75rem',
+                  borderRadius: '6px',
+                  fontSize: '14px',
+                  fontWeight: '500',
+                  transition: 'all 0.2s ease',
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.backgroundColor = colors.background.tertiary;
+                  e.currentTarget.style.color = colors.primary;
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.backgroundColor = 'transparent';
+                  e.currentTarget.style.color = colors.text.primary;
+                }}
+              >
                 Evaluation
               </Link>
             </nav>
