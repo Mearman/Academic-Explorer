@@ -12,18 +12,19 @@ import {
 	getBezierPath,
 	EdgeLabelRenderer,
 	BaseEdge,
+	Position,
 } from "@xyflow/react";
 
 // Helper function to calculate arrow rotation based on target position
-function getArrowRotation(targetPosition: any): number {
+function getArrowRotation(targetPosition: Position): number {
 	switch (targetPosition) {
-		case "top":
+		case Position.Top:
 			return 90;  // Point down into top of node
-		case "right":
+		case Position.Right:
 			return 180; // Point left into right of node
-		case "bottom":
+		case Position.Bottom:
 			return 270; // Point up into bottom of node
-		case "left":
+		case Position.Left:
 			return 0;   // Point right into left of node
 		default:
 			return 0;
@@ -39,7 +40,7 @@ function SmartEdge({
 	sourcePosition,
 	targetPosition,
 	style = {},
-	markerEnd,
+	markerEnd, // eslint-disable-line @typescript-eslint/no-unused-vars
 	data,
 }: EdgeProps) {
 	// Use bezier curves for smooth curved edges
@@ -95,7 +96,7 @@ function SmartEdge({
 				<div
 					style={{
 						position: "absolute",
-						transform: `translate(-50%, -50%) translate(${targetX}px,${targetY}px)`,
+						transform: `translate(-50%, -50%) translate(${String(targetX)}px,${String(targetY)}px)`,
 						zIndex: 2000, // High z-index to be above nodes
 						pointerEvents: "none",
 					}}
@@ -104,7 +105,7 @@ function SmartEdge({
 						width="12"
 						height="12"
 						style={{
-							transform: `rotate(${getArrowRotation(targetPosition)}deg)`,
+							transform: `rotate(${String(getArrowRotation(targetPosition))}deg)`,
 						}}
 					>
 						{/* Arrow fill */}
@@ -123,7 +124,7 @@ function SmartEdge({
 					<div
 						style={{
 							position: "absolute",
-							transform: `translate(-50%, -50%) translate(${labelX}px,${labelY}px)`,
+							transform: `translate(-50%, -50%) translate(${String(labelX)}px,${String(labelY)}px)`,
 							fontSize: "10px",
 							color: "#666",
 							background: "rgba(255, 255, 255, 0.8)",
