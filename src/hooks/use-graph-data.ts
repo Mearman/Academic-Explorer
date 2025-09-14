@@ -4,13 +4,15 @@
  */
 
 import { useCallback, useRef } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 import { GraphDataService } from "@/services/graph-data-service";
 import { useGraphStore } from "@/stores/graph-store";
 import { logError } from "@/lib/logger";
 import type { SearchOptions } from "@/lib/graph/types";
 
 export function useGraphData() {
-	const service = useRef(new GraphDataService());
+	const queryClient = useQueryClient();
+	const service = useRef(new GraphDataService(queryClient));
 	const { isLoading, error } = useGraphStore();
 
 	const loadEntity = useCallback(async (entityId: string) => {
@@ -62,6 +64,35 @@ export function useGraphData() {
 		}
 	}, []);
 
+	const loadAllCachedNodes = useCallback(async () => {
+		try {
+			await service.current.loadAllCachedNodes();
+		} catch (err) {
+			logError("Failed to load cached nodes in graph data hook", err, "useGraphData", "graph");
+		}
+	}, []);
+
+	const manualExpandNode = useCallback(async (nodeId: string) => {
+		const store = useGraphStore.getState();
+		const traversalDepth = store.traversalDepth;
+
+		try {
+			await service.current.expandNode(nodeId, {
+				depth: traversalDepth,
+				limit: 10, // Moderate limit for manual expansion
+			});
+
+			// Recalculate depths after expansion
+			const pinnedNodeId = store.pinnedNodeId;
+			if (pinnedNodeId) {
+				store.calculateNodeDepths(pinnedNodeId);
+			}
+		} catch (err) {
+			logError("Failed to manually expand node in graph data hook", err, "useGraphData", "graph");
+			store.setError(err instanceof Error ? err.message : "Failed to expand node");
+		}
+	}, []);
+
 	const clearGraph = useCallback(() => {
 		const { clear } = useGraphStore.getState();
 		clear();
@@ -70,7 +101,9 @@ export function useGraphData() {
 	return {
 		loadEntity,
 		loadEntityIntoGraph,
+		loadAllCachedNodes,
 		expandNode,
+		manualExpandNode,
 		search,
 		clearGraph,
 		isLoading,
