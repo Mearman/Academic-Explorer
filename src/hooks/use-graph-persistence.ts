@@ -80,12 +80,12 @@ export function useGraphPersistence() {
       const stored = localStorage.getItem(STORAGE_KEY)
       if (!stored) return []
 
-      const parsed = JSON.parse(stored)
+      const parsed: unknown = JSON.parse(stored)
       if (!Array.isArray(parsed)) {
-        logger.warn('storage', 'Invalid sessions data format, expected array', { parsed }, 'useGraphPersistence')
+        logger.warn('storage', 'Invalid sessions data format, expected array', { parsed: String(parsed) }, 'useGraphPersistence')
         return []
       }
-      const sessions = parsed.filter(isValidGraphSession)
+      const sessions = (parsed as GraphSession[]).filter(isValidGraphSession)
       return sessions.map(session => ({
         ...session,
         createdAt: new Date(session.createdAt),
