@@ -662,6 +662,7 @@ export interface WorksFilters {
   'host_venue.issn'?: string | string[];
   'host_venue.lineage'?: string | string[];
   'host_venue.publisher'?: string | string[];
+  'ids.openalex'?: string | string[];
   'is_oa'?: boolean;
   'is_paratext'?: boolean;
   'is_retracted'?: boolean;
