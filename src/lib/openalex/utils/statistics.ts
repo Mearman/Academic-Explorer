@@ -123,7 +123,7 @@ export class StatisticsApi {
 
     const entityCountPromises = entityTypes.map(async (entityType) => {
       try {
-        const response = await this.client.getResponse<any>(entityType, { per_page: 1 });
+        const response = await this.client.getResponse<{ meta: { count: number } }>(entityType, { per_page: 1 });
         return { entityType, count: response.meta.count };
       } catch {
         return { entityType, count: 0 };
@@ -131,14 +131,14 @@ export class StatisticsApi {
     });
 
     const entityCounts = await Promise.all(entityCountPromises);
-    const totalEntities: Record<EntityType, number> = {} as any;
+    const totalEntities: Record<EntityType, number> = {} as Record<EntityType, number>;
 
     entityCounts.forEach(({ entityType, count }) => {
       totalEntities[entityType] = count;
     });
 
     // Get growth rates (comparing last year to previous year)
-    const growthRates: Record<EntityType, any> = {} as any;
+    const growthRates: Record<EntityType, { lastYear: number; previousYear: number; growthRate: number }> = {} as Record<EntityType, { lastYear: number; previousYear: number; growthRate: number }>;
 
     for (const entityType of entityTypes) {
       try {
@@ -146,8 +146,8 @@ export class StatisticsApi {
         const prevYearFilter = `from_created_date:${currentYear - 2}-01-01,to_created_date:${currentYear - 2}-12-31`;
 
         const [lastYearResponse, prevYearResponse] = await Promise.all([
-          this.client.getResponse<any>(entityType, { filter: lastYearFilter, per_page: 1 }),
-          this.client.getResponse<any>(entityType, { filter: prevYearFilter, per_page: 1 })
+          this.client.getResponse<{ meta: { count: number } }>(entityType, { filter: lastYearFilter, per_page: 1 }),
+          this.client.getResponse<{ meta: { count: number } }>(entityType, { filter: prevYearFilter, per_page: 1 })
         ]);
 
         const lastYearCount = lastYearResponse.meta.count;
@@ -206,7 +206,7 @@ export class StatisticsApi {
    */
   async getEntityAnalytics(
     entityType: EntityType,
-    params: StatsParams = {}
+    _params: StatsParams = {}
   ): Promise<EntityAnalytics> {
     // Distribution analysis
     const distributionAnalysis = await this.getDistributionAnalysis(entityType);
@@ -243,7 +243,7 @@ export class StatisticsApi {
    */
   async getImpactMetrics(
     entityType: EntityType,
-    params: StatsParams = {}
+    _params: StatsParams = {}
   ): Promise<ImpactMetrics> {
     // H-index distribution
     const hIndexDistribution = await this.getHIndexDistribution(entityType);
@@ -281,7 +281,7 @@ export class StatisticsApi {
   async getComparativeStats(
     entityType: EntityType,
     groupBy: string,
-    params: StatsParams = {}
+    _params: StatsParams = {}
   ): Promise<{
     groups: Array<{
       group: string;
@@ -306,7 +306,7 @@ export class StatisticsApi {
     };
   }> {
     // Get grouped data
-    const groupedResponse = await this.client.getResponse<any>(entityType, {
+    const groupedResponse = await this.client.getResponse<{ group_by?: Array<{ key: string; key_display_name?: string; count: number; cited_by_count?: number }> }>(entityType, {
       group_by: groupBy,
       per_page: 1,
     });
@@ -316,10 +316,10 @@ export class StatisticsApi {
     }
 
     const groups = groupedResponse.group_by.slice(0, 20); // Top 20 groups
-    const totalEntities = groups.reduce((sum: number, group: any) => sum + group.count, 0);
-    const totalCitations = groups.reduce((sum: number, group: any) => sum + (group.cited_by_count || 0), 0);
+    const totalEntities = groups.reduce((sum: number, group) => sum + group.count, 0);
+    const totalCitations = groups.reduce((sum: number, group) => sum + (group.cited_by_count || 0), 0);
 
-    const groupMetrics: any[] = [];
+    const groupMetrics: Array<{ group: string; group_display_name: string; metrics: { count: number; cited_by_count: number; mean_cited_by_count: number; h_index: number } }> = [];
 
     for (let i = 0; i < Math.min(10, groups.length); i++) {
       const group = groups[i];
@@ -327,13 +327,13 @@ export class StatisticsApi {
       try {
         // Get more detailed stats for each group
         const groupFilter = `${groupBy}:${group.key}`;
-        const groupStats = await this.client.getResponse<any>(entityType, {
+        const groupStats = await this.client.getResponse<{ results: Array<{ cited_by_count?: number }> }>(entityType, {
           filter: groupFilter,
           per_page: 100,
           sort: 'cited_by_count',
         });
 
-        const citations = groupStats.results.map((item: any) => item.cited_by_count || 0);
+        const citations = groupStats.results.map((item) => item.cited_by_count || 0);
         const avgCitations = citations.reduce((sum, c) => sum + c, 0) / citations.length;
         const medianCitations = citations.sort((a, b) => a - b)[Math.floor(citations.length / 2)] || 0;
 
@@ -376,7 +376,7 @@ export class StatisticsApi {
     });
 
     // Calculate diversity index (Shannon diversity)
-    const diversityIndex = this.calculateShannonDiversity(groups.map((g: any) => g.count));
+    const diversityIndex = this.calculateShannonDiversity(groups.map((g) => g.count));
 
     return {
       groups: groupMetrics,
@@ -394,10 +394,10 @@ export class StatisticsApi {
   private async getCoverageMetrics() {
     try {
       const [worksWithDoi, worksOpenAccess, authorsWithOrcid, institutionsWithRor] = await Promise.all([
-        this.client.getResponse<any>('works', { filter: 'has_doi:true', per_page: 1 }),
-        this.client.getResponse<any>('works', { filter: 'is_oa:true', per_page: 1 }),
-        this.client.getResponse<any>('authors', { filter: 'has_orcid:true', per_page: 1 }),
-        this.client.getResponse<any>('institutions', { filter: 'has_ror:true', per_page: 1 }),
+        this.client.getResponse<{ meta: { count: number } }>('works', { filter: 'has_doi:true', per_page: 1 }),
+        this.client.getResponse<{ meta: { count: number } }>('works', { filter: 'is_oa:true', per_page: 1 }),
+        this.client.getResponse<{ meta: { count: number } }>('authors', { filter: 'has_orcid:true', per_page: 1 }),
+        this.client.getResponse<{ meta: { count: number } }>('institutions', { filter: 'has_ror:true', per_page: 1 }),
       ]);
 
       return {
