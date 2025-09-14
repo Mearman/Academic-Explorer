@@ -34,13 +34,44 @@ export function useGraphData() {
 	const expandNode = useCallback(async (nodeId: string, options?: {
     depth?: number;
     limit?: number;
+    force?: boolean;
   }) => {
 		const store = useGraphStore.getState();
 		store.setLoading(true);
 
+		// Use traversal depth from store if not specified
+		const depth = options?.depth ?? store.traversalDepth;
+		const limit = options?.limit ?? 10;
+		const force = options?.force ?? true; // Default to force expansion for consistent behavior
+
+		logger.info("graph", "expandNode called", {
+			nodeId,
+			depth,
+			limit,
+			force
+		}, "useGraphData");
+
 		try {
-			await service.current.expandNode(nodeId, options);
+			await service.current.expandNode(nodeId, {
+				depth,
+				limit,
+				force
+			});
+
+			// Recalculate depths after expansion
+			const pinnedNodeId = store.pinnedNodeId;
+			if (pinnedNodeId) {
+				store.calculateNodeDepths(pinnedNodeId);
+			}
+
+			logger.info("graph", "expandNode completed successfully", {
+				nodeId
+			}, "useGraphData");
 		} catch (err) {
+			logger.error("graph", "expandNode failed", {
+				nodeId,
+				error: err instanceof Error ? err.message : "Unknown error"
+			}, "useGraphData");
 			logError("Failed to expand node in graph data hook", err, "useGraphData", "graph");
 			store.setError(err instanceof Error ? err.message : "Failed to expand node");
 		} finally {
@@ -72,40 +103,6 @@ export function useGraphData() {
 		}
 	}, []);
 
-	const manualExpandNode = useCallback(async (nodeId: string) => {
-		const store = useGraphStore.getState();
-		const traversalDepth = store.traversalDepth;
-
-		logger.info("graph", "manualExpandNode called", {
-			nodeId,
-			traversalDepth
-		}, "useGraphData");
-
-		try {
-			await service.current.expandNode(nodeId, {
-				depth: traversalDepth,
-				limit: 10, // Moderate limit for manual expansion
-				force: true, // Force expansion even if marked as already expanded
-			});
-
-			// Recalculate depths after expansion
-			const pinnedNodeId = store.pinnedNodeId;
-			if (pinnedNodeId) {
-				store.calculateNodeDepths(pinnedNodeId);
-			}
-
-			logger.info("graph", "manualExpandNode completed successfully", {
-				nodeId
-			}, "useGraphData");
-		} catch (err) {
-			logger.error("graph", "manualExpandNode failed", {
-				nodeId,
-				error: err instanceof Error ? err.message : "Unknown error"
-			}, "useGraphData");
-			logError("Failed to manually expand node in graph data hook", err, "useGraphData", "graph");
-			store.setError(err instanceof Error ? err.message : "Failed to expand node");
-		}
-	}, []);
 
 	const clearGraph = useCallback(() => {
 		const { clear } = useGraphStore.getState();
@@ -117,7 +114,6 @@ export function useGraphData() {
 		loadEntityIntoGraph,
 		loadAllCachedNodes,
 		expandNode,
-		manualExpandNode,
 		search,
 		clearGraph,
 		isLoading,
