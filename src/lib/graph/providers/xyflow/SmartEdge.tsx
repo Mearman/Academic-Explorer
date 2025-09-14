@@ -71,7 +71,7 @@ function SmartEdge({
 					{/* Arrow outline (white/light stroke) */}
 					<path
 						d="M2,2 L2,10 L10,6 z"
-						fill={style?.stroke || "#b1b1b7"}
+						fill={style.stroke || "#b1b1b7"}
 						stroke="white"
 						strokeWidth="1"
 						strokeLinejoin="round"
@@ -79,7 +79,7 @@ function SmartEdge({
 					{/* Arrow fill */}
 					<path
 						d="M2,2 L2,10 L10,6 z"
-						fill={style?.stroke || "#b1b1b7"}
+						fill={style.stroke || "#b1b1b7"}
 						stroke="none"
 					/>
 				</marker>
@@ -111,7 +111,7 @@ function SmartEdge({
 						{/* Arrow fill */}
 						<path
 							d="M2,2 L2,10 L10,6 z"
-							fill={style?.stroke || "#b1b1b7"}
+							fill={style.stroke || "#b1b1b7"}
 							stroke="none"
 						/>
 					</svg>
