@@ -10,7 +10,17 @@ import { useGraphData } from '@/hooks/use-graph-data'
 import { useThemeColors } from '@/hooks/use-theme-colors'
 import { logError } from '@/lib/logger'
 import type { EntityType } from '@/lib/openalex/types'
-import { IconSearch, IconFilter, IconGraph } from '@tabler/icons-react'
+import {
+  IconSearch,
+  IconFilter,
+  IconGraph,
+  IconFile,
+  IconUser,
+  IconBook,
+  IconBuilding,
+  IconTag,
+  IconBuildingStore
+} from '@tabler/icons-react'
 
 export const LeftSidebar: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState('')
@@ -46,13 +56,13 @@ export const LeftSidebar: React.FC = () => {
     clearGraph()
   }
 
-  const entityTypeOptions: { type: EntityType; label: string; color: string; icon: string }[] = [
-    { type: 'works', label: 'Works', color: getEntityColor('works'), icon: '📄' },
-    { type: 'authors', label: 'Authors', color: getEntityColor('authors'), icon: '👤' },
-    { type: 'sources', label: 'Sources', color: getEntityColor('sources'), icon: '📚' },
-    { type: 'institutions', label: 'Institutions', color: getEntityColor('institutions'), icon: '🏛️' },
-    { type: 'topics', label: 'Topics', color: getEntityColor('topics'), icon: '🏷️' },
-    { type: 'publishers', label: 'Publishers', color: getEntityColor('publishers'), icon: '🏢' },
+  const entityTypeOptions: { type: EntityType; label: string; color: string; icon: React.ReactNode }[] = [
+    { type: 'works', label: 'Works', color: getEntityColor('works'), icon: <IconFile size={16} /> },
+    { type: 'authors', label: 'Authors', color: getEntityColor('authors'), icon: <IconUser size={16} /> },
+    { type: 'sources', label: 'Sources', color: getEntityColor('sources'), icon: <IconBook size={16} /> },
+    { type: 'institutions', label: 'Institutions', color: getEntityColor('institutions'), icon: <IconBuilding size={16} /> },
+    { type: 'topics', label: 'Topics', color: getEntityColor('topics'), icon: <IconTag size={16} /> },
+    { type: 'publishers', label: 'Publishers', color: getEntityColor('publishers'), icon: <IconBuildingStore size={16} /> },
   ]
 
   return (
@@ -148,7 +158,7 @@ export const LeftSidebar: React.FC = () => {
                   onChange={() => { handleEntityTypeToggle(option.type) }}
                   style={{ margin: 0 }}
                 />
-                <span style={{ fontSize: '16px' }}>{option.icon}</span>
+                <span>{option.icon}</span>
                 <span style={{ fontSize: '14px', color: colors.text.primary }}>{option.label}</span>
                 <span
                   style={{

@@ -6,7 +6,7 @@
 import React from 'react'
 import { useLayoutStore } from '@/stores/layout-store'
 import { useThemeColors } from '@/hooks/use-theme-colors'
-import { IconPin, IconPinFilled, IconChevronLeft, IconChevronRight } from '@tabler/icons-react'
+import { IconPin, IconPinFilled, IconChevronLeft, IconChevronRight, IconSearch, IconFile } from '@tabler/icons-react'
 
 interface CollapsibleSidebarProps {
   side: 'left' | 'right'
@@ -150,8 +150,8 @@ export const CollapsibleSidebar: React.FC<CollapsibleSidebarProps> = ({
             gap: '8px',
             opacity: 0.5
           }}>
-            <div style={{ fontSize: '20px' }}>
-              {side === 'left' ? '🔍' : '📄'}
+            <div>
+              {side === 'left' ? <IconSearch size={20} /> : <IconFile size={20} />}
             </div>
           </div>
         )}

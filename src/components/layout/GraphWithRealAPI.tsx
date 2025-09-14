@@ -4,6 +4,7 @@
  */
 
 import React, { useState } from 'react'
+import { IconLoader, IconX } from '@tabler/icons-react'
 import { useGraphStore } from '@/stores/graph-store'
 import { useGraphData } from '@/hooks/use-graph-data'
 import { RealGraphVisualization } from '@/components/organisms/RealGraphVisualization'
@@ -137,7 +138,10 @@ export const GraphWithRealAPI: React.FC = () => {
           zIndex: 1000
         }}>
           <div style={{ textAlign: 'center' }}>
-            <div>🔄 Loading from OpenAlex API...</div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <IconLoader size={16} />
+              Loading from OpenAlex API...
+            </div>
             <div style={{ fontSize: '12px', color: '#6b7280', marginTop: '4px' }}>
               Fetching academic data
             </div>
@@ -160,7 +164,10 @@ export const GraphWithRealAPI: React.FC = () => {
           fontSize: '14px',
           zIndex: 1000
         }}>
-          ❌ Error: {error}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <IconX size={16} />
+            Error: {error}
+          </div>
         </div>
       )}
 

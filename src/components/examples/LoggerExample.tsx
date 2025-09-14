@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Button, Group, Stack, Text, Paper } from '@mantine/core';
+import { IconBulb } from '@tabler/icons-react';
 import {
   logger,
   logApiRequest,
@@ -145,8 +146,9 @@ export function LoggerExample() {
           </Button>
         </Group>
 
-        <Text size="xs" c="dimmed">
-          💡 Tip: Use the filters in the App Logs panel to focus on specific log levels or categories
+        <Text size="xs" c="dimmed" style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+          <IconBulb size={12} />
+          Tip: Use the filters in the App Logs panel to focus on specific log levels or categories
         </Text>
       </Stack>
     </Paper>

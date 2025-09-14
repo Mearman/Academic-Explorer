@@ -7,7 +7,19 @@ import React from 'react'
 import { CollapsibleSidebar } from './CollapsibleSidebar'
 import { useLayoutStore } from '@/stores/layout-store'
 import { useGraphStore } from '@/stores/graph-store'
-import { IconInfoCircle, IconExternalLink, IconUsers, IconBookmark } from '@tabler/icons-react'
+import {
+  IconInfoCircle,
+  IconExternalLink,
+  IconUsers,
+  IconBookmark,
+  IconFile,
+  IconUser,
+  IconBook,
+  IconBuilding,
+  IconTag,
+  IconBuildingStore,
+  IconSearch
+} from '@tabler/icons-react'
 
 export const RightSidebar: React.FC = () => {
   const { previewEntityId } = useLayoutStore()
@@ -29,15 +41,15 @@ export const RightSidebar: React.FC = () => {
     }
   }
 
-  const getEntityIcon = (type: string): string => {
+  const getEntityIcon = (type: string): React.ReactNode => {
     switch (type) {
-      case 'works': return '📄'
-      case 'authors': return '👤'
-      case 'sources': return '📚'
-      case 'institutions': return '🏛️'
-      case 'topics': return '🏷️'
-      case 'publishers': return '🏢'
-      default: return '🔍'
+      case 'works': return <IconFile size={16} />
+      case 'authors': return <IconUser size={16} />
+      case 'sources': return <IconBook size={16} />
+      case 'institutions': return <IconBuilding size={16} />
+      case 'topics': return <IconTag size={16} />
+      case 'publishers': return <IconBuildingStore size={16} />
+      default: return <IconSearch size={16} />
     }
   }
 
@@ -298,8 +310,8 @@ export const RightSidebar: React.FC = () => {
           textAlign: 'center',
           color: '#6b7280'
         }}>
-          <div style={{ fontSize: '48px', marginBottom: '12px', opacity: 0.5 }}>
-            🔍
+          <div style={{ marginBottom: '12px', opacity: 0.5 }}>
+            <IconSearch size={48} />
           </div>
           <div style={{ fontSize: '14px', fontWeight: 500, marginBottom: '4px' }}>
             No Entity Selected

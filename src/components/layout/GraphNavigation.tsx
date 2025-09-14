@@ -19,6 +19,7 @@ import {
   type Edge as XYEdge,
 } from '@xyflow/react';
 import { useNavigate } from '@tanstack/react-router';
+import { IconSearch } from '@tabler/icons-react';
 
 import { useGraphStore } from '@/stores/graph-store';
 import { useLayoutStore } from '@/stores/layout-store';
@@ -230,7 +231,9 @@ const GraphNavigationInner: React.FC<GraphNavigationProps> = ({ className, style
               fontSize: '14px',
               color: '#666'
             }}>
-              <div style={{ marginBottom: '8px', fontSize: '24px' }}>🔍</div>
+              <div style={{ marginBottom: '8px' }}>
+                <IconSearch size={24} />
+              </div>
               <div>No entities to display</div>
               <div style={{ fontSize: '12px', marginTop: '4px' }}>
                 Search for entities or navigate to an entity page to see the graph

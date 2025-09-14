@@ -4,6 +4,7 @@
  */
 
 import React, { useState, useMemo } from 'react'
+import { IconClipboard, IconAlertTriangle } from '@tabler/icons-react'
 import type {
   MissingPaperDetectionResults,
   MissingPaperDetectionConfig,
@@ -456,7 +457,9 @@ function MissingPaperResults({ results, executionTime }: MissingPaperResultsProp
                 backgroundColor: '#f9fafb',
                 borderRadius: '8px'
               }}>
-                <div style={{ fontSize: '48px', marginBottom: '16px', opacity: 0.3 }}>📋</div>
+                <div style={{ marginBottom: '16px', opacity: 0.3 }}>
+                  <IconClipboard size={48} />
+                </div>
                 <p style={{ fontSize: '16px', color: '#6b7280', margin: 0 }}>
                   No potential missing papers detected
                 </p>
@@ -576,9 +579,10 @@ function MissingPaperResults({ results, executionTime }: MissingPaperResultsProp
                         borderRadius: '6px'
                       }}
                     >
-                      <p style={{ fontSize: '12px', color: '#7f1d1d', margin: 0 }}>
-                        ⚠️ {bias}
-                      </p>
+                      <div style={{ fontSize: '12px', color: '#7f1d1d', margin: 0, display: 'flex', alignItems: 'center', gap: '4px' }}>
+                        <IconAlertTriangle size={12} />
+                        {bias}
+                      </div>
                     </div>
                   ))}
                 </div>

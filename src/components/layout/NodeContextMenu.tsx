@@ -8,7 +8,7 @@ import { useGraphData } from '@/hooks/use-graph-data'
 import { useGraphStore } from '@/stores/graph-store'
 import { logError } from '@/lib/logger'
 import type { GraphNode } from '@/lib/graph/types'
-import { IconExternalLink, IconCopy, IconGitBranch, IconInfoCircle } from '@tabler/icons-react'
+import { IconExternalLink, IconCopy, IconGitBranch, IconInfoCircle, IconCheck } from '@tabler/icons-react'
 
 interface NodeContextMenuProps {
   node: GraphNode
@@ -86,7 +86,7 @@ export const NodeContextMenu: React.FC<NodeContextMenuProps> = ({
       const activeElement = document.activeElement
       if (activeElement && activeElement instanceof HTMLElement) {
         const originalText = activeElement.textContent
-        activeElement.textContent = '✓ Copied!'
+        activeElement.textContent = 'Copied!'
         setTimeout(() => {
           activeElement.textContent = originalText
         }, 1000)
