@@ -334,7 +334,7 @@ function DatasetsManagement() {
 										id="file-upload"
 										type="file"
 										accept=".csv,.json,.xlsx,.xls"
-										onChange={(e) => void handleFileUpload(e)}
+										onChange={(e) => { handleFileUpload(e); }}
 										style={{ display: "none" }}
 									/>
 									<button

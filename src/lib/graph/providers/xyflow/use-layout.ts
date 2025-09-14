@@ -45,7 +45,7 @@ export function useLayout(
 	options: UseLayoutOptions = {},
 ) {
 	const { enabled = true, onLayoutChange, fitViewAfterLayout = true, containerDimensions } = options;
-	const { getNodes, getEdges, setNodes, fitView, getViewport } = useReactFlow();
+	const { getNodes, getEdges, setNodes, fitView, getViewport, setCenter } = useReactFlow();
 	const containerRef = useRef<HTMLElement | null>(null);
 	const simulationRef = useRef<Simulation<D3Node, D3Link> | null>(null);
 	const isRunningRef = useRef(false);
@@ -265,6 +265,12 @@ export function useLayout(
 
 		isRunningRef.current = true;
 
+		// Center the viewport on the simulation center for stable viewing during animation
+		setTimeout(() => {
+			setCenter(centerX, centerY, { zoom: 0.8, duration: 300 });
+			logger.info("graph", "Centered viewport on simulation center", { centerX, centerY }, "useLayout");
+		}, 50);
+
 		// Set up tick handler for continuous position updates with safety timeout
 		let tickCount = 0;
 		const maxTicks = 500; // Safety limit to prevent infinite simulation
@@ -397,7 +403,7 @@ export function useLayout(
 				}, 100);
 			}
 		});
-	}, [layout, onLayoutChange, stopLayout, fitView, fitViewAfterLayout, getViewport, containerDimensions]);
+	}, [layout, onLayoutChange, stopLayout, fitView, fitViewAfterLayout, getViewport, setCenter, containerDimensions]);
 
 	// Main layout application function - D3 force only
 	const applyLayout = useCallback(() => {

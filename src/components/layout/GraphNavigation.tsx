@@ -16,6 +16,7 @@ import {
 	BackgroundVariant,
 	Panel,
 	type Node as XYNode,
+	type Edge,
 } from "@xyflow/react";
 import { useNavigate } from "@tanstack/react-router";
 import { IconSearch } from "@tabler/icons-react";
@@ -59,7 +60,7 @@ const GraphNavigationInner: React.FC<GraphNavigationProps> = ({ className, style
 
 	// XYFlow state - synced with store
 	const [nodes, setNodes, onNodesChange] = useNodesState<XYNode>([]);
-	const [edges, setEdges, onEdgesChange] = useEdgesState([]);
+	const [edges, setEdges, onEdgesChange] = useEdgesState<Edge>([]);
 
 	// Provider instance ref
 	const providerRef = useRef<XYFlowProvider | null>(null);
