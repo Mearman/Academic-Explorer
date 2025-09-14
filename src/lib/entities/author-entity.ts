@@ -4,13 +4,14 @@
  */
 
 import { AbstractEntity, type EntityContext, type ExpansionOptions, type ExpansionResult } from "./abstract-entity";
-import type { Author } from "@/lib/openalex/types";
-import type { ExternalIdentifier } from "@/lib/graph/types";
+import type { RateLimitedOpenAlexClient } from "@/lib/openalex/rate-limited-client";
+import type { Author, Work } from "@/lib/openalex/types";
+import type { ExternalIdentifier, GraphNode, GraphEdge } from "@/lib/graph/types";
 import { RelationType as RT } from "@/lib/graph/types";
 import { logger } from "@/lib/logger";
 
 export class AuthorEntity extends AbstractEntity<Author> {
-	constructor(client: any, entityData?: Author) {
+	constructor(client: RateLimitedOpenAlexClient, entityData?: Author) {
 		super(client, "authors", entityData);
 	}
 
@@ -63,8 +64,8 @@ export class AuthorEntity extends AbstractEntity<Author> {
    * Expand an author to show recent works
    */
 	async expand(context: EntityContext, options: ExpansionOptions): Promise<ExpansionResult> {
-		const nodes: any[] = [];
-		const edges: any[] = [];
+		const nodes: GraphNode[] = [];
+		const edges: GraphEdge[] = [];
 		const { limit = 10 } = options;
 
 		logger.info("graph", "AuthorEntity.expand called", {
@@ -86,12 +87,12 @@ export class AuthorEntity extends AbstractEntity<Author> {
 			});
 
 			logger.info("graph", "Works query result", {
-				resultCount: worksQuery.results?.length || 0,
-				totalCount: worksQuery.meta?.count || 0,
+				resultCount: worksQuery.results.length || 0,
+				totalCount: worksQuery.meta.count || 0,
 				entityId: context.entityId
 			}, "AuthorEntity");
 
-			worksQuery.results.forEach((work: any) => {
+			worksQuery.results.forEach((work: Work) => {
 				// Add work node
 				const workNode = {
 					id: work.id,

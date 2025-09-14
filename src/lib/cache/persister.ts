@@ -90,7 +90,10 @@ export function createHybridPersister(dbName = "academic-explorer-cache"): Persi
 			let total = 0;
 			for (const key in localStorage) {
 				if (Object.prototype.hasOwnProperty.call(localStorage, key)) {
-					total += (localStorage[key].length + key.length);
+					const value = localStorage[key];
+					if (typeof value === "string") {
+						total += (value.length + key.length);
+					}
 				}
 			}
 			return total * 2; // UTF-16 characters are 2 bytes
@@ -174,11 +177,11 @@ export function createHybridPersister(dbName = "academic-explorer-cache"): Persi
 					try {
 						const stored = localStorage.getItem(LOCALSTORAGE_KEY);
 						if (stored) {
-							const parsed = JSON.parse(stored)
+							const parsed = JSON.parse(stored) as unknown
 
 							// Validate parsed data structure
 							if (!isPersistedClientData(parsed)) {
-								logger.warn("cache", "Invalid localStorage cache structure, clearing", { keys: Object.keys(parsed || {}) });
+								logger.warn("cache", "Invalid localStorage cache structure, clearing", { keys: Object.keys((parsed as Record<string, unknown>) || {}) });
 								localStorage.removeItem(LOCALSTORAGE_KEY);
 								throw new Error("Invalid cache structure");
 							}
@@ -210,7 +213,7 @@ export function createHybridPersister(dbName = "academic-explorer-cache"): Persi
 				const db = await openDatabase();
 				const tx = db.transaction("cache", "readonly");
 				const store = tx.objectStore("cache");
-				const data = await store.get("queryClient");
+				const data = await store.get("queryClient") as unknown;
 
 				// Validate persisted data structure
 				if (!isPersistedClientData(data)) {
@@ -327,7 +330,7 @@ export function createIDBPersister(dbName = "academic-explorer-cache"): Persiste
 				const db = await openDatabase();
 				const tx = db.transaction("cache", "readonly");
 				const store = tx.objectStore("cache");
-				const data = await store.get("queryClient");
+				const data = await store.get("queryClient") as unknown;
 
 				// Validate persisted data structure
 				if (!isPersistedClientData(data)) {
@@ -393,7 +396,7 @@ export async function getCacheStats(dbName = "academic-explorer-cache") {
 		const db = await openDB(dbName, 1);
 		const tx = db.transaction("cache", "readonly");
 		const store = tx.objectStore("cache");
-		const data = await store.get("queryClient");
+		const data = await store.get("queryClient") as unknown;
 
 		// Validate persisted data structure
 		if (!isPersistedClientWithTimestamp(data)) {
