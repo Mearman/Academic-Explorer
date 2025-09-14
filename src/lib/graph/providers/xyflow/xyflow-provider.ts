@@ -38,24 +38,13 @@ export class XYFlowProvider implements GraphProvider {
 			id: node.id,
 			type: "custom",
 			position: node.position,
-			// Let CSS handle dimensions naturally, floating edges will use measured dimensions
+			zIndex: 1, // Ensure nodes are below edges
 			data: {
 				label: node.label,
 				entityId: node.entityId,
 				entityType: node.type,
 				externalIds: node.externalIds,
 				metadata: node.metadata,
-			},
-			style: {
-				background: this.getEntityColor(node.type),
-				color: "white",
-				borderRadius: "8px",
-				border: "2px solid #333",
-				padding: "8px",
-				fontSize: "11px",
-				fontWeight: "bold",
-				minWidth: "120px",
-				textAlign: "center",
 			},
 		};
 	}
@@ -73,6 +62,7 @@ export class XYFlowProvider implements GraphProvider {
 			targetHandle,
 			type: "smart", // Use smart edge for automatic handle connection
 			label: edge.label,
+			zIndex: -1, // Edges behind nodes
 			data: {
 				label: edge.label,
 				...edge.metadata

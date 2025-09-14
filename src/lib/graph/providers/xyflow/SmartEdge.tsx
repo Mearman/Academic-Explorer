@@ -14,6 +14,22 @@ import {
 	BaseEdge,
 } from "@xyflow/react";
 
+// Helper function to calculate arrow rotation based on target position
+function getArrowRotation(targetPosition: any): number {
+	switch (targetPosition) {
+		case 'top':
+			return 90;  // Point down into top of node
+		case 'right':
+			return 180; // Point left into right of node
+		case 'bottom':
+			return 270; // Point up into bottom of node
+		case 'left':
+			return 0;   // Point right into left of node
+		default:
+			return 0;
+	}
+}
+
 function SmartEdge({
 	id,
 	sourceX,
@@ -38,10 +54,11 @@ function SmartEdge({
 
 	return (
 		<>
-			{/* SVG marker definitions for arrows */}
+			{/* SVG marker definitions for arrows with outlines */}
 			<defs>
+				{/* Outlined arrow marker - will be rendered above nodes separately */}
 				<marker
-					id={`arrow-${id}`}
+					id={`arrow-outline-${id}`}
 					viewBox="0 0 12 12"
 					refX="10"
 					refY="6"
@@ -50,6 +67,15 @@ function SmartEdge({
 					orient="auto"
 					markerUnits="strokeWidth"
 				>
+					{/* Arrow outline (white/light stroke) */}
+					<path
+						d="M2,2 L2,10 L10,6 z"
+						fill={style?.stroke || "#b1b1b7"}
+						stroke="white"
+						strokeWidth="1"
+						strokeLinejoin="round"
+					/>
+					{/* Arrow fill */}
 					<path
 						d="M2,2 L2,10 L10,6 z"
 						fill={style?.stroke || "#b1b1b7"}
@@ -58,12 +84,38 @@ function SmartEdge({
 				</marker>
 			</defs>
 
-			{/* Base edge path */}
+			{/* Main edge path - NO arrow marker */}
 			<BaseEdge
 				path={edgePath}
-				markerEnd={markerEnd || `url(#arrow-${id})`}
 				style={style}
 			/>
+
+			{/* Arrow rendered separately at high z-index using EdgeLabelRenderer */}
+			<EdgeLabelRenderer>
+				<div
+					style={{
+						position: "absolute",
+						transform: `translate(-50%, -50%) translate(${targetX}px,${targetY}px)`,
+						zIndex: 2000, // High z-index to be above nodes
+						pointerEvents: "none",
+					}}
+				>
+					<svg
+						width="12"
+						height="12"
+						style={{
+							transform: `rotate(${getArrowRotation(targetPosition)}deg)`,
+						}}
+					>
+						{/* Arrow fill */}
+						<path
+							d="M2,2 L2,10 L10,6 z"
+							fill={style?.stroke || "#b1b1b7"}
+							stroke="none"
+						/>
+					</svg>
+				</div>
+			</EdgeLabelRenderer>
 
 			{/* Optional edge label */}
 			{data?.label && typeof data.label === "string" ? (
