@@ -412,19 +412,19 @@ export class OpenAlexClient {
         yield* this.authors.streamAuthors(params) as AsyncGenerator<T[], void, unknown>;
         break;
       case 'sources':
-        yield* this.sources.streamSources(params as any) as AsyncGenerator<T[], void, unknown>;
+        yield* this.sources.streamSources(params as Record<string, unknown>) as AsyncGenerator<T[], void, unknown>;
         break;
       case 'institutions':
-        yield* this.institutions.streamInstitutions(params as any) as AsyncGenerator<T[], void, unknown>;
+        yield* this.institutions.streamInstitutions(params as Record<string, unknown>) as AsyncGenerator<T[], void, unknown>;
         break;
       case 'topics':
-        yield* this.topics.stream(params as any) as AsyncGenerator<T[], void, unknown>;
+        yield* this.topics.stream(params as Record<string, unknown>) as AsyncGenerator<T[], void, unknown>;
         break;
       case 'publishers':
-        yield* this.publishers.stream(params as any) as AsyncGenerator<T[], void, unknown>;
+        yield* this.publishers.stream(params as Record<string, unknown>) as AsyncGenerator<T[], void, unknown>;
         break;
       case 'funders':
-        yield* this.funders.stream(params as any) as AsyncGenerator<T[], void, unknown>;
+        yield* this.funders.stream(params as Record<string, unknown>) as AsyncGenerator<T[], void, unknown>;
         break;
       case 'keywords':
         yield* this.keywords.streamKeywords(params) as AsyncGenerator<T[], void, unknown>;
