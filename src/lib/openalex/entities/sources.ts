@@ -39,7 +39,7 @@ export class SourcesApi {
    * });
    * ```
    */
-  async getSources(params: QueryParams & { filter?: SourcesFilters } = {}): Promise<OpenAlexResponse<Source>> {
+  async getSources(params: Omit<QueryParams, 'filter'> & { filter?: SourcesFilters } = {}): Promise<OpenAlexResponse<Source>> {
     const queryParams = this.buildFilterParams(params);
     return this.client.getResponse<Source>('sources', queryParams);
   }
@@ -142,7 +142,7 @@ export class SourcesApi {
    */
   async getSourcesByCountry(
     countryCode: string,
-    params: QueryParams & { filter?: SourcesFilters } = {}
+    params: Omit<QueryParams, 'filter'> & { filter?: SourcesFilters } = {}
   ): Promise<OpenAlexResponse<Source>> {
     const filters: SourcesFilters = {
       ...params.filter,
@@ -240,7 +240,7 @@ export class SourcesApi {
       throw new Error('Random sample size cannot exceed 10,000');
     }
 
-    const params: QueryParams & { filter?: SourcesFilters } = {
+    const params: Omit<QueryParams, 'filter'> & { filter?: SourcesFilters } = {
       filter: filters,
       sample: count,
       per_page: count,
@@ -366,7 +366,7 @@ export class SourcesApi {
   ): Promise<OpenAlexResponse<Source>> {
     const combinedFilters = { ...filters };
 
-    const params: QueryParams & { filter?: SourcesFilters } = {
+    const params: Omit<QueryParams, 'filter'> & { filter?: SourcesFilters } = {
       filter: combinedFilters,
       sort: 'cited_by_count:desc',
       per_page: limit,
@@ -428,9 +428,9 @@ export class SourcesApi {
    * Converts SourcesFilters object to query string format
    * @private
    */
-  private buildFilterParams(params: QueryParams & { filter?: SourcesFilters }): QueryParams {
+  private buildFilterParams(params: Omit<QueryParams, 'filter'> & { filter?: SourcesFilters }): QueryParams {
     if (!params.filter) {
-      return params;
+      return params as QueryParams;
     }
 
     const filterStrings: string[] = [];
