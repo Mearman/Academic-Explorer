@@ -323,8 +323,15 @@ export class GroupingApi {
       group_limit: max_groups_per_dimension,
     });
 
-    const dimensions: any = { primary: primary.groups };
-    const crossTabulation: any[] = [];
+    const dimensions: { primary: GroupResult[]; secondary?: GroupResult[] } = { primary: primary.groups };
+    const crossTabulation: Array<{
+      primary_key: string;
+      secondary_key: string;
+      tertiary_key?: string;
+      count: number;
+      percentage_of_total: number;
+      percentage_of_primary: number;
+    }> = [];
     const primaryTotals: Record<string, number> = {};
 
     // Process secondary dimension if specified
@@ -346,7 +353,7 @@ export class GroupingApi {
               ? `${baseParams.filter},${combinedFilter}`
               : combinedFilter;
 
-            const crossResult = await this.client.getResponse<any>(entityType, {
+            const crossResult = await this.client.getResponse<{ meta: { count: number } }>(entityType, {
               filter: fullFilter,
               per_page: 1,
             });
@@ -426,7 +433,16 @@ export class GroupingApi {
       group_limit,
     });
 
-    const result: any[] = [];
+    const result: Array<{
+      group: string;
+      group_display_name: string;
+      top_performers: Array<{
+        id: string;
+        display_name: string;
+        metric_value: number;
+        rank_in_group: number;
+      }>;
+    }> = [];
 
     // For each group, get top performers
     for (const group of groups.groups) {
@@ -436,14 +452,14 @@ export class GroupingApi {
           ? `${params.filter},${groupFilter}`
           : groupFilter;
 
-        const topPerformers = await this.client.getResponse<any>(entityType, {
+        const topPerformers = await this.client.getResponse<{ results: Array<{ id: string; display_name: string; [key: string]: unknown }> }>(entityType, {
           filter: fullFilter,
           sort: metric,
           per_page: top_n,
           select: ['id', 'display_name', metric],
         });
 
-        const performersWithRank = topPerformers.results.map((performer: any, index: number) => ({
+        const performersWithRank = topPerformers.results.map((performer: { id: string; display_name: string; [key: string]: unknown }, index: number) => ({
           id: performer.id,
           display_name: performer.display_name,
           metric_value: performer[metric] || 0,
@@ -520,14 +536,38 @@ export class GroupingApi {
       include_citation_stats: true,
     });
 
-    const result: any[] = [];
+    const result: Array<{
+      group: string;
+      group_display_name: string;
+      count: number;
+      percentage: number;
+      statistics: {
+        total: number;
+        mean: number;
+        percentiles?: {
+          p25: number;
+          p50: number;
+          p75: number;
+          p90: number;
+        };
+      };
+    }> = [];
     let grandTotalMetric = 0;
     let totalEntities = 0;
 
     for (const group of groups.groups) {
-      const stats: any = {
-        total: (group as any)[metric] || 0,
-        mean: group.count > 0 ? ((group as any)[metric] || 0) / group.count : 0,
+      const stats: {
+        total: number;
+        mean: number;
+        percentiles?: {
+          p25: number;
+          p50: number;
+          p75: number;
+          p90: number;
+        };
+      } = {
+        total: (group as Record<string, unknown>)[metric] as number || 0,
+        mean: group.count > 0 ? ((group as Record<string, unknown>)[metric] as number || 0) / group.count : 0,
       };
 
       // Calculate percentiles if requested (simplified approximation)
@@ -539,7 +579,7 @@ export class GroupingApi {
             ? `${params.filter},${groupFilter}`
             : groupFilter;
 
-          const sample = await this.client.getResponse<any>(entityType, {
+          const sample = await this.client.getResponse<{ results: Array<Record<string, unknown>> }>(entityType, {
             filter: fullFilter,
             sort: metric,
             per_page: Math.min(100, group.count),
@@ -547,7 +587,7 @@ export class GroupingApi {
           });
 
           const values = sample.results
-            .map((item: any) => item[metric] || 0)
+            .map((item: Record<string, unknown>) => (item[metric] as number) || 0)
             .sort((a: number, b: number) => a - b);
 
           if (values.length > 0) {
