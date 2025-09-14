@@ -46,7 +46,7 @@ export function useLayout(
 	options: UseLayoutOptions = {},
 ) {
 	const { enabled = true, onLayoutChange, fitViewAfterLayout = true, containerDimensions } = options;
-	const { getNodes, getEdges, setNodes, fitView, getViewport, setCenter } = useReactFlow();
+	const { getNodes, getEdges, setNodes, fitView, getViewport } = useReactFlow();
 	const pinnedNodes = useGraphStore((state) => state.pinnedNodes);
 	const simulationRef = useRef<Simulation<D3Node, D3Link> | null>(null);
 	const isRunningRef = useRef(false);

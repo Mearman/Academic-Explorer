@@ -370,7 +370,7 @@ export class XYFlowProvider implements GraphProvider {
 
 	fitView(): void {
 		if (this.reactFlowInstance) {
-			this.reactFlowInstance.fitView({ padding: 0.1 });
+			void this.reactFlowInstance.fitView({ padding: 0.1 });
 		}
 	}
 
@@ -379,7 +379,7 @@ export class XYFlowProvider implements GraphProvider {
 
 		if (nodeId && this.nodes.has(nodeId)) {
 			const node = this.nodes.get(nodeId)!;
-			this.reactFlowInstance.setCenter(node.position.x, node.position.y, { zoom: 1.5 });
+			void this.reactFlowInstance.setCenter(node.position.x, node.position.y, { zoom: 1.5 });
 		} else {
 			this.fitView();
 		}
@@ -431,7 +431,7 @@ export class XYFlowProvider implements GraphProvider {
 		this.setEdges(snapshot.edges);
 
 		if (snapshot.viewport && this.reactFlowInstance) {
-			this.reactFlowInstance.setViewport({
+			void this.reactFlowInstance.setViewport({
 				x: snapshot.viewport.center.x,
 				y: snapshot.viewport.center.y,
 				zoom: snapshot.viewport.zoom,
