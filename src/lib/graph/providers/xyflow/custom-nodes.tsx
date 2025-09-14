@@ -8,7 +8,7 @@ import { Handle, Position } from '@xyflow/react';
 import type { EntityType, ExternalIdentifier } from '../../types';
 
 // Helper function for safe metadata access
-const renderMetadataValue = (value: unknown): React.ReactNode => {
+const _renderMetadataValue = (value: unknown): React.ReactNode => {
   if (typeof value === 'number' || typeof value === 'string') {
     return value;
   }

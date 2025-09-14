@@ -4,16 +4,9 @@
  */
 
 import {
-  ReactFlow,
   Node as XYNode,
   Edge as XYEdge,
   ReactFlowInstance,
-  useNodesState,
-  useEdgesState,
-  Controls,
-  MiniMap,
-  Background,
-  Panel,
 } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
 
@@ -120,7 +113,7 @@ export class XYFlowProvider implements GraphProvider {
     }
   }
 
-  async initialize(container: HTMLElement, options: GraphOptions = {}): Promise<void> {
+  async initialize(container: HTMLElement, _options: GraphOptions = {}): Promise<void> {
     this.container = container;
     this.mounted = true;
 
@@ -232,7 +225,7 @@ export class XYFlowProvider implements GraphProvider {
     }
   }
 
-  highlightPath(nodeIds: string[]): void {
+  highlightPath(_nodeIds: string[]): void {
     // Implementation would highlight nodes and edges in path
     if (this.reactFlowInstance) {
       // Update highlighting for path

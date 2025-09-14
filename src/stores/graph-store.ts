@@ -9,7 +9,6 @@ import type {
   GraphEdge,
   GraphProvider,
   ProviderType,
-  RelationType
 } from '@/lib/graph/types';
 
 interface GraphState {

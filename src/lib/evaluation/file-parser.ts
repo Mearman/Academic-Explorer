@@ -164,7 +164,7 @@ function parseJSONContent(content: string): RawPaperData[] {
  * Parse Excel content (placeholder - would need a library like xlsx)
  * For now, returns empty array with error
  */
-function parseExcelContent(file: File, config: ParseConfig): Promise<RawPaperData[]> {
+function parseExcelContent(_file: File, _config: ParseConfig): Promise<RawPaperData[]> {
   // TODO: Implement Excel parsing using a library like 'xlsx'
   // This is a placeholder that would require adding xlsx dependency
   return Promise.resolve([]);
