@@ -244,7 +244,7 @@ export class GeoApi {
    * @example
    * ```typescript
    * for await (const geoBatch of geoApi.streamGeos({ filter: { 'works_count': '>100' } })) {
-   *   console.log(`Processing ${geoBatch.length} geo entities`);
+   *   logger.info("api", `Processing ${geoBatch.length} geo entities`);
    * }
    * ```
    */

@@ -534,7 +534,7 @@ export class AuthorsApi {
    *   filter: 'last_known_institution.id:I27837315'
    * })) {
    *   for (const author of authorBatch) {
-   *     console.log(`Processing ${author.display_name}`);
+   *     logger.info("api", `Processing ${author.display_name}`);
    *   }
    * }
    * ```

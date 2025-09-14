@@ -360,7 +360,7 @@ export class InstitutionsApi {
    * for await (const batch of institutionsApi.streamInstitutions({
    *   filters: { 'country_code': 'US' }
    * })) {
-   *   console.log(`Processing batch of ${batch.length} institutions`);
+   *   logger.info("api", `Processing batch of ${batch.length} institutions`);
    * }
    * ```
    */

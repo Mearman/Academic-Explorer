@@ -18,7 +18,7 @@ export class SourcesApi {
    * @example
    * ```typescript
    * const source = await sourcesApi.getSource('S4306400886');
-   * console.log(source.display_name); // "Nature"
+   * logger.info("api", source.display_name); // "Nature"
    * ```
    */
 	async getSource(id: string, params: QueryParams = {}): Promise<Source> {
@@ -394,7 +394,7 @@ export class SourcesApi {
    * @example
    * ```typescript
    * for await (const batch of sourcesApi.streamSources({ 'is_oa': true })) {
-   *   console.log(`Processing ${batch.length} open access sources...`);
+   *   logger.info("api", `Processing ${batch.length} open access sources...`);
    *   // Process batch
    * }
    * ```
