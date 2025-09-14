@@ -21,7 +21,7 @@ function WorkRoute() {
       }
     };
 
-    loadWork();
+    void loadWork();
   }, [workId, loadEntity]);
 
   // Return null - the graph is visible from MainLayout

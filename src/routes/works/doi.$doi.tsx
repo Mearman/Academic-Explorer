@@ -34,7 +34,7 @@ function DOIWorkRoute() {
       } catch (error) {
         logError('Failed to resolve DOI', error, 'DOIWorkRoute', 'routing');
         // Navigate to search with the DOI as query
-        navigate({
+        void navigate({
           to: '/search',
           search: { q: doi },
           replace: true,
@@ -42,7 +42,7 @@ function DOIWorkRoute() {
       }
     }
 
-    resolveDOI()
+    void resolveDOI()
   }, [doi, navigate, detector, loadEntity])
 
   return (

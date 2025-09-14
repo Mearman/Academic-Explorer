@@ -34,7 +34,7 @@ function RORInstitutionRoute() {
       } catch (error) {
         logError('Failed to resolve ROR ID', error, 'RORInstitutionRoute', 'routing');
         // Navigate to search with the ROR ID as query
-        navigate({
+        void navigate({
           to: '/search',
           search: { q: ror },
           replace: true,
@@ -42,7 +42,7 @@ function RORInstitutionRoute() {
       }
     }
 
-    resolveROR()
+    void resolveROR()
   }, [ror, navigate, detector, loadEntity])
 
   return (

@@ -21,7 +21,7 @@ function AuthorRoute() {
       }
     };
 
-    loadAuthor();
+    void loadAuthor();
   }, [authorId, loadEntity]);
 
   // Return null - the graph is visible from MainLayout

@@ -34,7 +34,7 @@ function ISSNSourceRoute() {
       } catch (error) {
         logError('Failed to resolve ISSN:', error, 'ISSNSourceRoute', 'routing')
         // Navigate to search with the ISSN as query
-        navigate({
+        void navigate({
           to: '/search',
           search: { q: issn },
           replace: true,
@@ -42,7 +42,7 @@ function ISSNSourceRoute() {
       }
     }
 
-    resolveISSN()
+    void resolveISSN()
   }, [issn, navigate, detector, loadEntity])
 
   return (

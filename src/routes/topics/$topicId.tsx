@@ -21,7 +21,7 @@ function TopicRoute() {
       }
     };
 
-    loadTopic();
+    void loadTopic();
   }, [topicId, loadEntity]);
 
   // Return null - the graph is visible from MainLayout

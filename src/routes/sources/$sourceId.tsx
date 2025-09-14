@@ -21,7 +21,7 @@ function SourceRoute() {
       }
     };
 
-    loadSource();
+    void loadSource();
   }, [sourceId, loadEntity]);
 
   // Return null - the graph is visible from MainLayout

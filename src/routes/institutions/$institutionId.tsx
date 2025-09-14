@@ -21,7 +21,7 @@ function InstitutionRoute() {
       }
     };
 
-    loadInstitution();
+    void loadInstitution();
   }, [institutionId, loadEntity]);
 
   // Return null - the graph is visible from MainLayout

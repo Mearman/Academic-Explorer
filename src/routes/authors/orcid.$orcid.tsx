@@ -34,7 +34,7 @@ function ORCIDAuthorRoute() {
       } catch (error) {
         logError('Failed to resolve ORCID:', error, 'ORCIDAuthorRoute', 'routing')
         // Navigate to search with the ORCID as query
-        navigate({
+        void navigate({
           to: '/search',
           search: { q: orcid },
           replace: true,
@@ -42,7 +42,7 @@ function ORCIDAuthorRoute() {
       }
     }
 
-    resolveORCID()
+    void resolveORCID()
   }, [orcid, navigate, detector, loadEntity])
 
   return (
