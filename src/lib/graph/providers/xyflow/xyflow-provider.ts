@@ -35,9 +35,8 @@ export class XYFlowProvider implements GraphProvider {
 
 	// Convert generic GraphNode to XYFlow node
 	private toXYNode(node: GraphNode): XYNode {
-		// Get pinned node state from store
-		const pinnedNodeId = useGraphStore.getState().pinnedNodeId;
-		const isPinned = pinnedNodeId === node.id;
+		// Check if node is pinned using the new multi-pin API
+		const isPinned = useGraphStore.getState().isPinned(node.id);
 
 		return {
 			id: node.id,
