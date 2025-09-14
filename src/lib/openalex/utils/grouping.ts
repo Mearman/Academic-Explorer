@@ -4,7 +4,7 @@
  */
 
 import { OpenAlexBaseClient } from '../client';
-import { EntityType, QueryParams, GroupParams, OpenAlexResponse } from '../types';
+import { EntityType, QueryParams, GroupParams, OpenAlexResponse as _OpenAlexResponse } from '../types';
 
 /**
  * Group result with enhanced metadata
@@ -86,7 +86,7 @@ export class GroupingApi {
     const {
       group_limit = 100,
       min_count = 1,
-      include_citation_stats = true,
+      include_citation_stats: _include_citation_stats = true,
       ...queryParams
     } = params;
 
@@ -96,7 +96,7 @@ export class GroupingApi {
       per_page: 1, // We only need the grouping results
     };
 
-    const response = await this.client.getResponse<any>(entityType, groupParams);
+    const response = await this.client.getResponse<{ group_by?: Array<{ key: string; key_display_name: string; count: number; cited_by_count?: number; works_count?: number; h_index?: number }> }>(entityType, groupParams);
 
     if (!response.group_by) {
       throw new Error(`Grouping not supported for entity type: ${entityType} with field: ${groupBy}`);
