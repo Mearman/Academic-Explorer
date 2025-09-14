@@ -49,33 +49,55 @@ function FloatingEdge({
   });
 
   return (
-    <g>
-      <path
-        id={id}
-        className="react-flow__edge-path"
-        d={edgePath}
-        markerEnd={markerEnd}
-        style={style}
-        fill="none"
-      />
-      {/* Optional edge label */}
-      {data?.label && typeof data.label === 'string' ? (
-        <text
-          x={(sourceX + targetX) / 2}
-          y={(sourceY + targetY) / 2}
-          className="react-flow__edge-label"
-          style={{
-            fontSize: '10px',
-            fill: '#666',
-            textAnchor: 'middle',
-            dominantBaseline: 'middle',
-            pointerEvents: 'none',
-          }}
+    <>
+      {/* SVG marker definitions for arrows */}
+      <defs>
+        <marker
+          id={`arrow-${id}`}
+          viewBox="0 0 10 10"
+          refX="9"
+          refY="3"
+          markerWidth="6"
+          markerHeight="6"
+          orient="auto"
+          markerUnits="strokeWidth"
         >
-          {data.label}
-        </text>
-      ) : null}
-    </g>
+          <path
+            d="M0,0 L0,6 L9,3 z"
+            fill={style?.stroke || '#b1b1b7'}
+            stroke="none"
+          />
+        </marker>
+      </defs>
+
+      <g>
+        <path
+          id={id}
+          className="react-flow__edge-path"
+          d={edgePath}
+          markerEnd={markerEnd || `url(#arrow-${id})`}
+          style={style}
+          fill="none"
+        />
+        {/* Optional edge label */}
+        {data?.label && typeof data.label === 'string' ? (
+          <text
+            x={(sourceX + targetX) / 2}
+            y={(sourceY + targetY) / 2}
+            className="react-flow__edge-label"
+            style={{
+              fontSize: '10px',
+              fill: '#666',
+              textAnchor: 'middle',
+              dominantBaseline: 'middle',
+              pointerEvents: 'none',
+            }}
+          >
+            {data.label}
+          </text>
+        ) : null}
+      </g>
+    </>
   );
 }
 
