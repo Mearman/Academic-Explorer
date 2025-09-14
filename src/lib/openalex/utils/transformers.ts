@@ -13,7 +13,7 @@
  * ```typescript
  * const work = await openAlex.works.getWork('W2741809807');
  * const abstract = reconstructAbstract(work.abstract_inverted_index);
- * console.log(abstract); // "Machine learning algorithms have shown..."
+ * logger.info("general", abstract); // "Machine learning algorithms have shown..."
  * ```
  */
 export function reconstructAbstract(invertedIndex: Record<string, number[]> | null | undefined): string | null {
@@ -69,7 +69,7 @@ export function reconstructAbstract(invertedIndex: Record<string, number[]> | nu
  * @example
  * ```typescript
  * const stats = getAbstractStats(work.abstract_inverted_index);
- * console.log(`Abstract has ${stats.wordCount} words and ${stats.uniqueWords} unique words`);
+ * logger.info("general", `Abstract has ${stats.wordCount} words and ${stats.uniqueWords} unique words`);
  * ```
  */
 export function getAbstractStats(invertedIndex: Record<string, number[]> | null | undefined): {
@@ -409,7 +409,7 @@ export function formatCitation(
  * ```typescript
  * const abstract = reconstructAbstract(work.abstract_inverted_index);
  * const readability = analyzeReadability(abstract);
- * console.log(`Reading level: ${readability.fleschKincaidGrade}`);
+ * logger.info("general", `Reading level: ${readability.fleschKincaidGrade}`);
  * ```
  */
 export function analyzeReadability(abstract: string | null): {

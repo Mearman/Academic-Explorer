@@ -360,7 +360,7 @@ export function buildSelectString(fields: string[]): string {
  * ```typescript
  * const validation = validateDateRange('2020-01-01', '2023-12-31');
  * if (validation.isValid) {
- *   console.log('Valid range:', validation.normalizedFrom, 'to', validation.normalizedTo);
+ *   logger.info("general", 'Valid range:', validation.normalizedFrom, 'to', validation.normalizedTo);
  * }
  * ```
  */

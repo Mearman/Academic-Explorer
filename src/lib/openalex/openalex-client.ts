@@ -397,7 +397,7 @@ export class OpenAlexClient {
    * @example
    * ```typescript
    * for await (const batch of client.stream('works', { filter: 'publication_year:2023' })) {
-   *   console.log(`Processing batch of ${batch.length} works`);
+   *   logger.info("api", `Processing batch of ${batch.length} works`);
    * }
    * ```
    */
@@ -447,7 +447,7 @@ export class OpenAlexClient {
    *   { filter: 'publication_year:2023', per_page: 100 },
    *   async (works) => {
    *     for (const work of works) {
-   *       console.log(`Processing work: ${work.display_name}`);
+   *       logger.info("api", `Processing work: ${work.display_name}`);
    *       // Process each work
    *     }
    *   }
