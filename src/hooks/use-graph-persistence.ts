@@ -161,7 +161,7 @@ export function useGraphPersistence() {
 
       // Apply layout and fit view
       if (store.provider) {
-        store.provider.applyLayout({ type: 'force' })
+        store.provider.applyLayout(store.currentLayout)
         store.provider.fitView()
       }
 
