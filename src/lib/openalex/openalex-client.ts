@@ -414,13 +414,13 @@ export class OpenAlexClient {
         yield* this.authors.streamAuthors(params) as AsyncGenerator<T[], void, unknown>;
         break;
       case 'sources':
-        yield* this.sources.streamSources(params) as AsyncGenerator<T[], void, unknown>;
+        yield* this.sources.streamSources(params as any) as AsyncGenerator<T[], void, unknown>;
         break;
       case 'institutions':
-        yield* this.institutions.streamInstitutions(params) as AsyncGenerator<T[], void, unknown>;
+        yield* this.institutions.streamInstitutions(params as any) as AsyncGenerator<T[], void, unknown>;
         break;
       case 'topics':
-        yield* this.topics.streamTopics(params) as AsyncGenerator<T[], void, unknown>;
+        yield* this.topics.stream(params as any) as AsyncGenerator<T[], void, unknown>;
         break;
       case 'publishers':
         yield* this.publishers.streamPublishers(params) as AsyncGenerator<T[], void, unknown>;
