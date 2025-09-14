@@ -14,15 +14,19 @@ function RootLayout() {
     return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
   }
 
-  // Cycle through: auto -> opposite-of-system -> auto (simplified 2-state cycle)
+  // Cycle through: auto -> opposite-of-system -> system -> auto (3-state cycle)
   const cycleColorScheme = () => {
     const systemTheme = getSystemTheme()
+    const oppositeSystemTheme = systemTheme === 'dark' ? 'light' : 'dark'
 
     if (colorScheme === 'auto') {
-      // After auto, show the opposite of system theme
-      setColorScheme(systemTheme === 'dark' ? 'light' : 'dark')
+      // auto -> opposite of system theme
+      setColorScheme(oppositeSystemTheme)
+    } else if (colorScheme === oppositeSystemTheme) {
+      // opposite of system -> system theme
+      setColorScheme(systemTheme)
     } else {
-      // From any explicit mode, go back to auto
+      // system theme -> auto
       setColorScheme('auto')
     }
   }
@@ -41,8 +45,12 @@ function RootLayout() {
   // Get aria label for accessibility
   const getAriaLabel = () => {
     const systemTheme = getSystemTheme()
+    const oppositeSystemTheme = systemTheme === 'dark' ? 'light' : 'dark'
+
     if (colorScheme === 'auto') {
-      return `Current: Auto (${systemTheme}). Click for ${systemTheme === 'dark' ? 'light' : 'dark'} mode`
+      return `Current: Auto (${systemTheme}). Click for ${oppositeSystemTheme} mode`
+    } else if (colorScheme === oppositeSystemTheme) {
+      return `Current: ${colorScheme === 'light' ? 'Light' : 'Dark'} mode. Click for ${systemTheme} mode`
     } else {
       return `Current: ${colorScheme === 'light' ? 'Light' : 'Dark'} mode. Click for auto mode`
     }
