@@ -120,7 +120,7 @@ export class StatisticsApi {
     const currentYear = new Date().getFullYear();
 
     // Get entity counts for all types
-    const entityTypes: EntityType[] = ['works', 'authors', 'sources', 'institutions', 'topics', 'publishers', 'funders'];
+    const entityTypes: EntityType[] = ['works', 'authors', 'sources', 'institutions', 'topics', 'concepts', 'publishers', 'funders', 'keywords', 'geo'];
 
     const entityCountPromises = entityTypes.map(async (entityType) => {
       try {
@@ -132,14 +132,38 @@ export class StatisticsApi {
     });
 
     const entityCounts = await Promise.all(entityCountPromises);
-    const totalEntities: Record<EntityType, number> = {};
+
+    // Initialize totalEntities with all EntityType keys
+    const totalEntities: Record<EntityType, number> = {
+      works: 0,
+      authors: 0,
+      sources: 0,
+      institutions: 0,
+      topics: 0,
+      concepts: 0,
+      publishers: 0,
+      funders: 0,
+      keywords: 0,
+      geo: 0,
+    };
 
     entityCounts.forEach(({ entityType, count }) => {
       totalEntities[entityType] = count;
     });
 
-    // Get growth rates (comparing last year to previous year)
-    const growthRates: Record<EntityType, { yearly_growth: number; monthly_growth: number; total_added_last_year: number }> = {};
+    // Initialize growthRates with all EntityType keys
+    const growthRates: Record<EntityType, { yearly_growth: number; monthly_growth: number; total_added_last_year: number }> = {
+      works: { yearly_growth: 0, monthly_growth: 0, total_added_last_year: 0 },
+      authors: { yearly_growth: 0, monthly_growth: 0, total_added_last_year: 0 },
+      sources: { yearly_growth: 0, monthly_growth: 0, total_added_last_year: 0 },
+      institutions: { yearly_growth: 0, monthly_growth: 0, total_added_last_year: 0 },
+      topics: { yearly_growth: 0, monthly_growth: 0, total_added_last_year: 0 },
+      concepts: { yearly_growth: 0, monthly_growth: 0, total_added_last_year: 0 },
+      publishers: { yearly_growth: 0, monthly_growth: 0, total_added_last_year: 0 },
+      funders: { yearly_growth: 0, monthly_growth: 0, total_added_last_year: 0 },
+      keywords: { yearly_growth: 0, monthly_growth: 0, total_added_last_year: 0 },
+      geo: { yearly_growth: 0, monthly_growth: 0, total_added_last_year: 0 },
+    };
 
     for (const entityType of entityTypes) {
       try {
