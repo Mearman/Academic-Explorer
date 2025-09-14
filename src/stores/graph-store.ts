@@ -102,7 +102,7 @@ export const useGraphStore = create<GraphState>()(
       velocityDecay: 0.4,     // Higher decay for faster stabilization
       alpha: 1,
       alphaDecay: 0.03,       // Faster decay to reach stability quicker
-      collisionStrength: 1.0  // Maximum collision strength to prevent overlaps
+      collisionStrength: 0.8  // Strong but not maximum to allow settling
     }
   },
   isLoading: false,
