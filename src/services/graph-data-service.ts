@@ -92,7 +92,7 @@ export class GraphDataService {
 				store.calculateNodeDepths(primaryNodeId);
 
 				// Pin the primary node as the origin for traversal depth calculation
-				store.setPinnedNode(primaryNodeId);
+				store.pinNode(primaryNodeId);
 			}
 
 			logger.info("graph", "Entity graph loaded without auto-expansion", {
@@ -230,16 +230,18 @@ export class GraphDataService {
 			setCachedGraphNodes(this.queryClient, finalNodes);
 			setCachedGraphEdges(this.queryClient, finalEdges);
 
-			// If there's a pinned node, recalculate depths from it
-			const pinnedNodeId = store.pinnedNodeId;
-			if (pinnedNodeId) {
-				store.calculateNodeDepths(pinnedNodeId);
+			// If there are pinned nodes, recalculate depths from the first one
+			const pinnedNodes = Array.from(store.pinnedNodes);
+			const firstPinnedNodeId = pinnedNodes[0];
+			if (firstPinnedNodeId) {
+				store.calculateNodeDepths(firstPinnedNodeId);
 			}
 
 			logger.info("graph", "Loaded all cached entities into graph", {
 				nodeCount: finalNodes.length,
 				edgeCount: finalEdges.length,
-				pinnedNodeId
+				pinnedNodesCount: pinnedNodes.length,
+				firstPinnedNodeId
 			}, "GraphDataService");
 
 		} catch (error) {
