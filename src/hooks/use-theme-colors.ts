@@ -8,8 +8,13 @@ import type { EntityType } from '@/lib/graph/types';
 
 export function useThemeColors() {
   const theme = useMantineTheme();
-  const { colorScheme, resolvedColorScheme } = useMantineColorScheme();
-  // Use resolvedColorScheme instead of colorScheme to handle 'auto' mode correctly
+  const { colorScheme } = useMantineColorScheme();
+
+  // Resolve the actual color scheme when colorScheme is 'auto'
+  const resolvedColorScheme = colorScheme === 'auto'
+    ? (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light')
+    : colorScheme;
+
   const isDark = resolvedColorScheme === 'dark';
 
   // Base color utilities
