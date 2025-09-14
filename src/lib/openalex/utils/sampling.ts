@@ -97,7 +97,7 @@ export class SamplingApi {
     const { sample_size = 100, seed, ...queryParams } = params;
 
     // First, get distribution of the stratification field
-    const groupedResponse = await this.client.getResponse<any>(entityType, {
+    const groupedResponse = await this.client.getResponse<{ group_by?: Array<{ key: string; key_display_name?: string; count: number }> }>(entityType, {
       ...queryParams,
       group_by: stratifyBy,
       per_page: 100, // Get top strata
@@ -318,7 +318,7 @@ export class SamplingApi {
    * );
    * ```
    */
-  async abTestSample<T = OpenAlexEntity>(
+  async abTestSample<T extends { id: string } = OpenAlexEntity>(
     entityType: EntityType,
     groupA: SampleParams,
     groupB: SampleParams
@@ -333,8 +333,8 @@ export class SamplingApi {
     ]);
 
     // Check for overlap (entities appearing in both samples)
-    const idsA = new Set(sampleA.results.map((item: any) => item.id));
-    const overlap = sampleB.results.filter((item: any) => idsA.has(item.id));
+    const idsA = new Set(sampleA.results.map((item) => item.id));
+    const overlap = sampleB.results.filter((item) => idsA.has(item.id));
 
     return {
       groupA: sampleA,
