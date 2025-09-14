@@ -1,8 +1,10 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { Title, Text, Stack, List, Card, Badge, Group, Divider } from '@mantine/core'
+import { useThemeColors } from '@/hooks/use-theme-colors'
 import { pageTitle, pageDescription } from '../styles/layout.css'
 
 function AboutPage() {
+  const { colors } = useThemeColors()
   const techStack = [
     { name: 'React', version: '19.1.1', color: 'blue' },
     { name: 'TypeScript', version: '5.8.3', color: 'blue' },
@@ -20,7 +22,7 @@ function AboutPage() {
       radius="lg"
       withBorder
       style={{
-        backgroundColor: 'rgba(255, 255, 255, 0.95)',
+        backgroundColor: colors.background.blur,
         backdropFilter: 'blur(10px)',
         maxWidth: '800px',
       }}
