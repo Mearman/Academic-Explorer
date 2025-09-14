@@ -442,10 +442,10 @@ export class WorksApi {
 					filterParts.push(`${key}:${value.join("|")}`);
 				} else if (typeof value === "boolean") {
 					// Handle boolean values
-					filterParts.push(`${key}:${value}`);
+					filterParts.push(`${key}:${String(value)}`);
 				} else {
 					// Handle string/number values
-					filterParts.push(`${key}:${value}`);
+					filterParts.push(`${key}:${String(value)}`);
 				}
 			}
 		});
