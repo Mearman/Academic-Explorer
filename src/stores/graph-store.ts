@@ -99,9 +99,9 @@ export const useGraphStore = create<GraphState>()(
       chargeStrength: -600,   // Stronger repulsion for better separation
       centerStrength: 0.03,   // Even weaker centering for more spread
       collisionRadius: 100,   // Larger collision radius to prevent overlaps
-      velocityDecay: 0.2,     // Lower decay for more movement and settling
+      velocityDecay: 0.4,     // Higher decay for faster stabilization
       alpha: 1,
-      alphaDecay: 0.015,      // Slower decay for longer simulation time
+      alphaDecay: 0.03,       // Faster decay to reach stability quicker
       collisionStrength: 1.0  // Maximum collision strength to prevent overlaps
     }
   },
