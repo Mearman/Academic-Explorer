@@ -19,7 +19,9 @@ import { detectEntityType } from "./entity-detection";
 /**
  * Factory for creating entity instances based on type
  */
+// eslint-disable-next-line @typescript-eslint/no-extraneous-class
 export class EntityFactory {
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	private static readonly entities = new Map<EntityType, new (client: RateLimitedOpenAlexClient, entityData?: any) => AbstractEntity<any>>();
 
 	/**
