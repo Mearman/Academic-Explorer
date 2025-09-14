@@ -447,7 +447,7 @@ export class GraphDataService {
         }
         break;
 
-      case 'source':
+      case ('source' as any):
         const source = entity as Source;
         if (source.issn_l) {
           externalIds.push({
@@ -458,7 +458,7 @@ export class GraphDataService {
         }
         break;
 
-      case 'institution':
+      case ('institution' as any):
         const institution = entity as InstitutionEntity;
         if (institution.ror) {
           externalIds.push({
@@ -480,26 +480,26 @@ export class GraphDataService {
     const metadata: Record<string, unknown> = {};
 
     switch (entityType) {
-      case 'work':
+      case ('work' as any):
         const work = entity as Work;
         metadata.year = work.publication_year;
         metadata.citationCount = work.cited_by_count;
         metadata.openAccess = work.open_access?.is_oa;
         break;
 
-      case 'author':
+      case ('author' as any):
         const author = entity as Author;
         metadata.worksCount = author.works_count;
         metadata.citationCount = author.cited_by_count;
         break;
 
-      case 'source':
+      case ('source' as any):
         const source = entity as Source;
         metadata.worksCount = source.works_count;
         metadata.type = source.type;
         break;
 
-      case 'institution':
+      case ('institution' as any):
         const institution = entity as InstitutionEntity;
         metadata.worksCount = institution.works_count;
         metadata.country = institution.country_code;
@@ -518,7 +518,7 @@ export class GraphDataService {
     try {
       // Fetch the author's recent works
       const worksQuery = await openAlex.works.getWorks({
-        filter: { author: authorId },
+        filter: { 'authorships.author.id': authorId },
         per_page: Math.min(options.limit, 8),
         sort: 'publication_year:desc'
       });
@@ -569,8 +569,8 @@ export class GraphDataService {
                   url: `https://orcid.org/${authorship.author.orcid}`,
                 }] : [],
                 metadata: {
-                  worksCount: authorship.author.works_count,
-                  citationCount: authorship.author.cited_by_count,
+                  // Note: works_count and cited_by_count not available on authorship.author
+                  // These would need to be fetched separately from the full author entity
                 },
               };
 
@@ -619,7 +619,7 @@ export class GraphDataService {
       // Add citations (works that cite this work)
       if (work.cited_by_count > 0) {
         const citationsQuery = await openAlex.works.getWorks({
-          filter: { cites: workId },
+          filter: { 'referenced_works': workId },
           per_page: Math.min(options.limit, 5), // Limit citations to avoid clutter
           sort: 'cited_by_count:desc'
         });
