@@ -17,6 +17,13 @@ export interface OpenAlexClientConfig {
   retryDelay?: number;
 }
 
+interface FullyConfiguredClient extends OpenAlexClientConfig {
+  rateLimit: {
+    requestsPerSecond: number;
+    requestsPerDay: number;
+  };
+}
+
 export class OpenAlexApiError extends Error {
   constructor(
     message: string,
@@ -42,23 +49,31 @@ interface RateLimitState {
 }
 
 export class OpenAlexBaseClient {
-  private config: Required<OpenAlexClientConfig>;
+  private config: Required<FullyConfiguredClient>;
   private rateLimitState: RateLimitState;
 
   constructor(config: OpenAlexClientConfig = {}) {
-    this.config = {
+    // Create a fully-specified config with all required properties
+    const defaultConfig: Required<FullyConfiguredClient> = {
       baseUrl: 'https://api.openalex.org',
       userEmail: '',
       rateLimit: {
         requestsPerSecond: 10, // Conservative default
         requestsPerDay: 100000, // OpenAlex limit
-        ...config.rateLimit,
       },
       timeout: 30000, // 30 seconds
       retries: 3,
       retryDelay: 1000, // 1 second
+    };
+
+    this.config = {
+      ...defaultConfig,
       ...config,
-    } as Required<OpenAlexClientConfig>;
+      rateLimit: {
+        ...defaultConfig.rateLimit,
+        ...config.rateLimit,
+      },
+    };
 
     // Initialize rate limiting state
     this.rateLimitState = {
