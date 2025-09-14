@@ -145,7 +145,7 @@ function parseCSVContent(content: string, config: ParseConfig): RawPaperData[] {
  */
 function parseJSONContent(content: string): RawPaperData[] {
 	try {
-		const parsed = JSON.parse(content);
+		const parsed: unknown = JSON.parse(content);
 
 		if (Array.isArray(parsed)) {
 			return parsed as RawPaperData[];
@@ -209,7 +209,7 @@ function convertToWorkReference(rawData: RawPaperData, config: ParseConfig): Wor
 	// Parse publication year
 	let publicationYear: number | undefined;
 	if (yearValue) {
-		const yearNum = typeof yearValue === "number" ? yearValue : parseInt(yearValue.toString(), 10);
+		const yearNum = typeof yearValue === "number" ? yearValue : parseInt(String(yearValue), 10);
 		if (!isNaN(yearNum) && yearNum > 1800 && yearNum <= new Date().getFullYear() + 5) {
 			publicationYear = yearNum;
 		}
@@ -295,7 +295,7 @@ export async function parseSTARFile(
 				errors.push("Excel parsing not yet implemented - please convert to CSV or JSON");
 				break;
 			default:
-				throw new Error(`Unsupported file format: ${format}`);
+				throw new Error(`Unsupported file format: ${String(format)}`);
 		}
 	} catch (error) {
 		errors.push(`Failed to parse file: ${error instanceof Error ? error.message : "Unknown error"}`);
