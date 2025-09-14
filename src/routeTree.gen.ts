@@ -13,7 +13,6 @@ import { Route as SearchRouteImport } from './routes/search'
 import { Route as GraphRouteImport } from './routes/graph'
 import { Route as ExploreRouteImport } from './routes/explore'
 import { Route as EvaluationRouteImport } from './routes/evaluation'
-import { Route as ApiTestRouteImport } from './routes/api-test'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as ExternalIdRouteImport } from './routes/$externalId'
 import { Route as IndexRouteImport } from './routes/index'
@@ -48,11 +47,6 @@ const ExploreRoute = ExploreRouteImport.update({
 const EvaluationRoute = EvaluationRouteImport.update({
   id: '/evaluation',
   path: '/evaluation',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ApiTestRoute = ApiTestRouteImport.update({
-  id: '/api-test',
-  path: '/api-test',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AboutRoute = AboutRouteImport.update({
@@ -136,7 +130,6 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/$externalId': typeof ExternalIdRoute
   '/about': typeof AboutRoute
-  '/api-test': typeof ApiTestRoute
   '/evaluation': typeof EvaluationRouteWithChildren
   '/explore': typeof ExploreRouteWithChildren
   '/graph': typeof GraphRoute
@@ -158,7 +151,6 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/$externalId': typeof ExternalIdRoute
   '/about': typeof AboutRoute
-  '/api-test': typeof ApiTestRoute
   '/evaluation': typeof EvaluationRouteWithChildren
   '/explore': typeof ExploreRouteWithChildren
   '/graph': typeof GraphRoute
@@ -181,7 +173,6 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/$externalId': typeof ExternalIdRoute
   '/about': typeof AboutRoute
-  '/api-test': typeof ApiTestRoute
   '/evaluation': typeof EvaluationRouteWithChildren
   '/explore': typeof ExploreRouteWithChildren
   '/graph': typeof GraphRoute
@@ -205,7 +196,6 @@ export interface FileRouteTypes {
     | '/'
     | '/$externalId'
     | '/about'
-    | '/api-test'
     | '/evaluation'
     | '/explore'
     | '/graph'
@@ -227,7 +217,6 @@ export interface FileRouteTypes {
     | '/'
     | '/$externalId'
     | '/about'
-    | '/api-test'
     | '/evaluation'
     | '/explore'
     | '/graph'
@@ -249,7 +238,6 @@ export interface FileRouteTypes {
     | '/'
     | '/$externalId'
     | '/about'
-    | '/api-test'
     | '/evaluation'
     | '/explore'
     | '/graph'
@@ -272,7 +260,6 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   ExternalIdRoute: typeof ExternalIdRoute
   AboutRoute: typeof AboutRoute
-  ApiTestRoute: typeof ApiTestRoute
   EvaluationRoute: typeof EvaluationRouteWithChildren
   ExploreRoute: typeof ExploreRouteWithChildren
   GraphRoute: typeof GraphRoute
@@ -316,13 +303,6 @@ declare module '@tanstack/react-router' {
       path: '/evaluation'
       fullPath: '/evaluation'
       preLoaderRoute: typeof EvaluationRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/api-test': {
-      id: '/api-test'
-      path: '/api-test'
-      fullPath: '/api-test'
-      preLoaderRoute: typeof ApiTestRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/about': {
@@ -462,7 +442,6 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   ExternalIdRoute: ExternalIdRoute,
   AboutRoute: AboutRoute,
-  ApiTestRoute: ApiTestRoute,
   EvaluationRoute: EvaluationRouteWithChildren,
   ExploreRoute: ExploreRouteWithChildren,
   GraphRoute: GraphRoute,
