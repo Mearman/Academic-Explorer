@@ -568,7 +568,7 @@ describe('transformers', () => {
       // All should succeed
       expect(abstract).toBeTruthy();
       expect(stats).toBeTruthy();
-      expect(keywords).toHaveLength.greaterThan(0);
+      expect(keywords.length).toBeGreaterThan(0);
       expect(readability).toBeTruthy();
 
       // Verify consistency
