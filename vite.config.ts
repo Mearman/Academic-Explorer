@@ -42,4 +42,4 @@ export default defineConfig({
       exclude: ['node_modules/', 'src/test/'],
     },
   },
-})
+} as any)
