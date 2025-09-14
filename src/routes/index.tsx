@@ -64,7 +64,7 @@ function HomePage() {
 				</Text>
 
 				{/* Quick Search */}
-				<form onSubmit={handleSearch} style={{ width: "100%" }}>
+				<form onSubmit={(e) => { void handleSearch(e); }} style={{ width: "100%" }}>
 					<Stack gap="md">
 						<TextInput
 							size="lg"
@@ -93,7 +93,7 @@ function HomePage() {
 						<Group gap="xs" wrap="wrap">
 							<Anchor
 								size="sm"
-								onClick={() => handleExampleSearch("machine learning")}
+								onClick={() => { void handleExampleSearch("machine learning"); }}
 								style={{ cursor: "pointer" }}
 							>
                 machine learning
@@ -101,7 +101,7 @@ function HomePage() {
 							<Text size="sm" c="dimmed">•</Text>
 							<Anchor
 								size="sm"
-								onClick={() => handleExampleSearch("climate change")}
+								onClick={() => { void handleExampleSearch("climate change"); }}
 								style={{ cursor: "pointer" }}
 							>
                 climate change
@@ -109,7 +109,7 @@ function HomePage() {
 							<Text size="sm" c="dimmed">•</Text>
 							<Anchor
 								size="sm"
-								onClick={() => handleExampleSearch("0000-0003-1613-5981")}
+								onClick={() => { void handleExampleSearch("0000-0003-1613-5981"); }}
 								style={{ cursor: "pointer" }}
 							>
                 ORCID example

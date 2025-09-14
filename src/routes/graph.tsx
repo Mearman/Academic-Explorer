@@ -38,7 +38,7 @@ function GraphDemo() {
 				</Text>
 
 				<Button
-					onClick={() => navigate({ to: "/" })}
+					onClick={() => { void navigate({ to: "/" }); }}
 					size="lg"
 				>
           Go to Main Graph View
