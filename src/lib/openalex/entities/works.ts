@@ -114,7 +114,7 @@ export class WorksApi {
       page: options.page,
       per_page: options.per_page,
       select: options.select,
-      filter: options.filters,
+      filter: options.filters ? this.buildFilterString(options.filters) : undefined,
     };
 
     return this.getWorks(params);
@@ -144,7 +144,7 @@ export class WorksApi {
       ...params.filter,
     };
 
-    return this.getWorks({ ...params, filter: filters });
+    return this.getWorks({ ...params, filter: this.buildFilterString(filters) });
   }
 
   /**
@@ -171,7 +171,7 @@ export class WorksApi {
       ...params.filter,
     };
 
-    return this.getWorks({ ...params, filter: filters });
+    return this.getWorks({ ...params, filter: this.buildFilterString(filters) });
   }
 
   /**
@@ -198,7 +198,7 @@ export class WorksApi {
       ...params.filter,
     };
 
-    return this.getWorks({ ...params, filter: filters });
+    return this.getWorks({ ...params, filter: this.buildFilterString(filters) });
   }
 
   /**
@@ -225,7 +225,7 @@ export class WorksApi {
       ...params.filter,
     };
 
-    return this.getWorks({ ...params, filter: filters });
+    return this.getWorks({ ...params, filter: this.buildFilterString(filters) });
   }
 
   /**
@@ -512,7 +512,7 @@ export class WorksApi {
       ...params.filter,
     };
 
-    return this.getWorks({ ...params, filter: filters });
+    return this.getWorks({ ...params, filter: this.buildFilterString(filters) });
   }
 
   /**
@@ -535,7 +535,7 @@ export class WorksApi {
       ...params.filter,
     };
 
-    return this.getWorks({ ...params, filter: filters });
+    return this.getWorks({ ...params, filter: this.buildFilterString(filters) });
   }
 
   /**
