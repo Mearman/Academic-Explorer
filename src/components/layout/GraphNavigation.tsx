@@ -49,7 +49,7 @@ const GraphNavigationInner: React.FC<GraphNavigationProps> = ({ className, style
 	const navigate = useNavigate();
 	const reactFlowInstance = useReactFlow();
 	const containerRef = useRef<HTMLDivElement>(null);
-	const { loadEntityIntoGraph } = useGraphData();
+	const { loadEntityIntoGraph, manualExpandNode } = useGraphData();
 
 
 	// Store state
@@ -70,15 +70,15 @@ const GraphNavigationInner: React.FC<GraphNavigationProps> = ({ className, style
 	const { graphProvider: _graphProvider, setPreviewEntity } = useLayoutStore();
 
 	// XYFlow state - synced with store
-	const [nodes, setNodes, onNodesChangeOriginal] = useNodesState([]);
+	const [nodes, setNodes, onNodesChangeOriginal] = useNodesState<XYNode>([]);
 	const [edges, setEdges, onEdgesChange] = useEdgesState([]);
 
 	// Wrapped nodes change handler that also triggers handle recalculation
-	const onNodesChange = useCallback((changes: NodeChange[]) => {
+	const onNodesChange = useCallback((changes: NodeChange<XYNode>[]) => {
 		onNodesChangeOriginal(changes);
 
 		// Check if any change involves position updates (drag, layout changes)
-		const hasPositionChange = changes.some((change: NodeChange) => {
+		const hasPositionChange = changes.some((change: NodeChange<XYNode>) => {
 			return change.type === "position" || change.type === "dimensions";
 		});
 
@@ -184,15 +184,16 @@ const GraphNavigationInner: React.FC<GraphNavigationProps> = ({ className, style
 				const store = useGraphStore.getState();
 				store.setPinnedNode(node.id);
 
-				// Load the entity into the graph (this will handle selection and expansion)
-				void loadEntityIntoGraph(node.entityId);
+				// Manually expand the node respecting traversal depth setting
+				void manualExpandNode(node.id);
 
-				logger.info("ui", "Node clicked - Loading entity into graph and pinning", {
+				logger.info("ui", "Node clicked - Manually expanding node with traversal depth", {
 					nodeId: node.id,
 					entityId: node.entityId,
 					entityType: node.type,
 					newHashPath,
-					pinned: true
+					pinned: true,
+					traversalDepth: store.traversalDepth
 				}, "GraphNavigation");
 			},
 
@@ -215,7 +216,7 @@ const GraphNavigationInner: React.FC<GraphNavigationProps> = ({ className, style
 		return () => {
 			graphProvider.destroy();
 		};
-	}, [reactFlowInstance, navigate, setProvider, setPreviewEntity, loadEntityIntoGraph]);
+	}, [reactFlowInstance, navigate, setProvider, setPreviewEntity, loadEntityIntoGraph, manualExpandNode]);
 
 	// Sync store data with XYFlow using incremental updates (applying visibility filters)
 	useEffect(() => {
@@ -283,18 +284,18 @@ const GraphNavigationInner: React.FC<GraphNavigationProps> = ({ className, style
 				const { nodes: newXYNodes, edges: newXYEdges } = providerRef.current.getXYFlowDataForNodes(Array.from(newNodeIds));
 
 				// Apply incremental changes using ReactFlow's utilities
-				const nodeChanges: NodeChange[] = [
+				const nodeChanges: NodeChange<XYNode>[] = [
 					// Add new nodes (get fresh data from provider)
-					...newXYNodes.map((node): NodeChange => ({ type: "add", item: node })),
+					...newXYNodes.map((node): NodeChange<XYNode> => ({ type: "add", item: node })),
 					// Remove deleted nodes
-					...Array.from(removedNodeIds).map((id): NodeChange => ({ type: "remove", id }))
+					...Array.from(removedNodeIds).map((id): NodeChange<XYNode> => ({ type: "remove", id }))
 				];
 
-				const edgeChanges: EdgeChange[] = [
+				const edgeChanges: EdgeChange<XYEdge>[] = [
 					// Add new edges (get fresh data from provider)
-					...newXYEdges.map((edge): EdgeChange => ({ type: "add", item: edge })),
+					...newXYEdges.map((edge): EdgeChange<XYEdge> => ({ type: "add", item: edge })),
 					// Remove deleted edges
-					...Array.from(removedEdgeIds).map((id): EdgeChange => ({ type: "remove", id }))
+					...Array.from(removedEdgeIds).map((id): EdgeChange<XYEdge> => ({ type: "remove", id }))
 				];
 
 				// Apply changes to ReactFlow
