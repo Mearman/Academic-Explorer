@@ -195,14 +195,15 @@ export function useLayout(
     // Extract layout options
     const {
       seed = 42,
-      linkDistance = 200,
-      linkStrength = 0.8,
-      chargeStrength = -500,
-      centerStrength = 0.05,
-      collisionRadius = 80,
-      velocityDecay = 0.3,
+      linkDistance = 220,
+      linkStrength = 0.7,
+      chargeStrength = -600,
+      centerStrength = 0.03,
+      collisionRadius = 100,
+      collisionStrength = 1.0,
+      velocityDecay = 0.2,
       alpha = 1,
-      alphaDecay = 0.0228
+      alphaDecay = 0.015
     } = layout.options || {};
 
     logger.info('graph', 'Starting D3 Force simulation', {
@@ -210,7 +211,8 @@ export function useLayout(
       edgeCount: edges.length,
       linkDistance,
       chargeStrength,
-      collisionRadius
+      collisionRadius,
+      collisionStrength
     }, 'useLayout');
 
     // Create deterministic random source
@@ -274,7 +276,7 @@ export function useLayout(
         .strength(centerStrength))
       .force('collision', forceCollide<D3Node>()
         .radius(collisionRadius)
-        .strength(0.7));
+        .strength(collisionStrength));
 
     isRunningRef.current = true;
 
