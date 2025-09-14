@@ -309,6 +309,7 @@ export function useLayout(
 				return;
 			}
 
+			// Update node positions - this triggers edge recalculation in DynamicFloatingEdge components
 			setNodes((currentNodes) =>
 				currentNodes.map((node) => {
 					const d3Node = d3Nodes.find((d) => d.id === node.id);
