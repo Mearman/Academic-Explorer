@@ -48,7 +48,6 @@ export function useLayout(
 	const { enabled = true, onLayoutChange, fitViewAfterLayout = true, containerDimensions } = options;
 	const { getNodes, getEdges, setNodes, fitView, getViewport, setCenter } = useReactFlow();
 	const pinnedNodes = useGraphStore((state) => state.pinnedNodes);
-	const pinnedNodeId = useGraphStore((state) => state.pinnedNodeId); // Legacy support
 	const containerRef = useRef<HTMLElement | null>(null);
 	const simulationRef = useRef<Simulation<D3Node, D3Link> | null>(null);
 	const isRunningRef = useRef(false);

@@ -167,8 +167,8 @@ export class StatisticsApi {
 
 		for (const entityType of entityTypes) {
 			try {
-				const lastYearFilter = `from_created_date:${currentYear - 1}-01-01,to_created_date:${currentYear - 1}-12-31`;
-				const prevYearFilter = `from_created_date:${currentYear - 2}-01-01,to_created_date:${currentYear - 2}-12-31`;
+				const lastYearFilter = `from_created_date:${String(currentYear - 1)}-01-01,to_created_date:${String(currentYear - 1)}-12-31`;
+				const prevYearFilter = `from_created_date:${String(currentYear - 2)}-01-01,to_created_date:${String(currentYear - 2)}-12-31`;
 
 				const [lastYearResponse, prevYearResponse] = await Promise.all([
 					this.client.getResponse<{ meta: { count: number } }>(entityType, { filter: lastYearFilter, per_page: 1 }),
