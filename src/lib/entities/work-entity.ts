@@ -4,12 +4,13 @@
  */
 
 import { AbstractEntity, type EntityContext, type ExpansionOptions, type ExpansionResult } from "./abstract-entity";
+import type { RateLimitedOpenAlexClient } from "@/lib/openalex/rate-limited-client";
 import type { Work } from "@/lib/openalex/types";
-import type { ExternalIdentifier, RelationType } from "@/lib/graph/types";
+import type { ExternalIdentifier, GraphNode, GraphEdge } from "@/lib/graph/types";
 import { RelationType as RT } from "@/lib/graph/types";
 
 export class WorkEntity extends AbstractEntity<Work> {
-	constructor(client: any, entityData?: Work) {
+	constructor(client: RateLimitedOpenAlexClient, entityData?: Work) {
 		super(client, "works", entityData);
 	}
 
@@ -68,8 +69,8 @@ export class WorkEntity extends AbstractEntity<Work> {
    * Expand a work to show citations and references
    */
 	async expand(context: EntityContext, options: ExpansionOptions): Promise<ExpansionResult> {
-		const nodes: any[] = [];
-		const edges: any[] = [];
+		const nodes: GraphNode[] = [];
+		const edges: GraphEdge[] = [];
 		const { limit = 10 } = options;
 
 		try {

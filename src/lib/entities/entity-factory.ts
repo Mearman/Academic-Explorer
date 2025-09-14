@@ -5,7 +5,7 @@
 
 import type { RateLimitedOpenAlexClient } from "@/lib/openalex/rate-limited-client";
 import type { EntityType } from "@/lib/graph/types";
-import type { OpenAlexEntity, Work, Author, Source, InstitutionEntity } from "@/lib/openalex/types";
+import type { OpenAlexEntity } from "@/lib/openalex/types";
 
 import { AbstractEntity } from "./abstract-entity";
 import { WorkEntity } from "./work-entity";
@@ -20,7 +20,7 @@ import { detectEntityType } from "./entity-detection";
  * Factory for creating entity instances based on type
  */
 export class EntityFactory {
-	private static readonly entities = new Map<EntityType, any>();
+	private static readonly entities = new Map<EntityType, new (client: RateLimitedOpenAlexClient, entityData?: OpenAlexEntity) => AbstractEntity<OpenAlexEntity>>();
 
 	/**
    * Register entity classes
@@ -46,7 +46,7 @@ export class EntityFactory {
 			throw new Error(`No entity class registered for type: ${entityType}`);
 		}
 
-		return new EntityClass(client, entityData) as AbstractEntity<T>;
+		return new EntityClass(client, entityData as OpenAlexEntity) as AbstractEntity<T>;
 	}
 
 	/**
