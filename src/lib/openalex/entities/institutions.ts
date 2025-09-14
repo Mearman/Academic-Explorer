@@ -414,7 +414,7 @@ export class InstitutionsApi {
           if (Array.isArray(value)) {
             return `${key}:${value.join('|')}`;
           }
-          return `${key}:${value}`;
+          return `${key}:${String(value)}`;
         });
       queryParams.filter = filterPairs.join(',');
     }

@@ -113,7 +113,7 @@ export class AuthorsApi {
         if (Array.isArray(value)) {
           filterStrings.push(`${key}:${value.map(v => encodeURIComponent(String(v))).join('%7C')}`);
         } else if (typeof value === 'boolean') {
-          filterStrings.push(`${key}:${value}`);
+          filterStrings.push(`${key}:${value.toString()}`);
         } else {
           filterStrings.push(`${key}:${encodeURIComponent(String(value))}`);
         }
@@ -214,7 +214,7 @@ export class AuthorsApi {
         if (Array.isArray(value)) {
           filterStrings.push(`${key}:${value.map(v => encodeURIComponent(String(v))).join('%7C')}`);
         } else if (typeof value === 'boolean') {
-          filterStrings.push(`${key}:${value}`);
+          filterStrings.push(`${key}:${value.toString()}`);
         } else {
           filterStrings.push(`${key}:${encodeURIComponent(String(value))}`);
         }
@@ -311,7 +311,7 @@ export class AuthorsApi {
     // First, get all works by this author to analyze co-authorships
     const works = await this.getAuthorWorks(authorId, {
       'publication_year': filters.from_publication_year
-        ? `>=${filters.from_publication_year}`
+        ? `>=${filters.from_publication_year.toString()}`
         : undefined,
     }, {
       ...params,
@@ -465,7 +465,7 @@ export class AuthorsApi {
         if (Array.isArray(value)) {
           filterStrings.push(`${key}:${value.map(v => encodeURIComponent(String(v))).join('%7C')}`);
         } else if (typeof value === 'boolean') {
-          filterStrings.push(`${key}:${value}`);
+          filterStrings.push(`${key}:${value.toString()}`);
         } else {
           filterStrings.push(`${key}:${encodeURIComponent(String(value))}`);
         }
@@ -505,7 +505,7 @@ export class AuthorsApi {
         if (Array.isArray(value)) {
           filterStrings.push(`${key}:${value.map(v => encodeURIComponent(String(v))).join('%7C')}`);
         } else if (typeof value === 'boolean') {
-          filterStrings.push(`${key}:${value}`);
+          filterStrings.push(`${key}:${value.toString()}`);
         } else {
           filterStrings.push(`${key}:${encodeURIComponent(String(value))}`);
         }

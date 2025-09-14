@@ -109,7 +109,7 @@ const RealGraphVisualizationInner: React.FC = () => {
       setTimeout(() => {
         if (currentInstance) {
           logger.info('graph', 'Manual fitView after layout', undefined, 'RealGraphVisualization')
-          currentInstance.fitView({ padding: 0.2 })
+          void currentInstance.fitView({ padding: 0.2 })
         }
       }, 50)
     } else if (graphEdgeArray.length > 0) {

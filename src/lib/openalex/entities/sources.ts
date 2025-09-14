@@ -339,11 +339,11 @@ export class SourcesApi {
     const filters: SourcesFilters = {};
 
     if (minAPC !== undefined && maxAPC !== undefined) {
-      filters['apc_usd'] = `${minAPC}-${maxAPC}`;
+      filters['apc_usd'] = `${minAPC.toString()}-${maxAPC.toString()}`;
     } else if (minAPC !== undefined) {
-      filters['apc_usd'] = `>${minAPC}`;
+      filters['apc_usd'] = `>${minAPC.toString()}`;
     } else if (maxAPC !== undefined) {
-      filters['apc_usd'] = `<${maxAPC}`;
+      filters['apc_usd'] = `<${maxAPC.toString()}`;
     }
 
     return this.getSources({
@@ -449,9 +449,9 @@ export class SourcesApi {
         if (Array.isArray(value)) {
           filterStrings.push(`${key}:${value.join('|')}`);
         } else if (typeof value === 'boolean') {
-          filterStrings.push(`${key}:${value}`);
+          filterStrings.push(`${key}:${value.toString()}`);
         } else {
-          filterStrings.push(`${key}:${value}`);
+          filterStrings.push(`${key}:${String(value)}`);
         }
       }
     });
