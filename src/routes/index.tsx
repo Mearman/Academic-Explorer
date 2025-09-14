@@ -3,11 +3,13 @@ import { Title, Text, Stack, Card, Button, Group, TextInput, Anchor } from '@man
 import { IconSearch, IconGraph, IconBrandReact, IconDatabase } from '@tabler/icons-react'
 import { useState } from 'react'
 import { useGraphData } from '@/hooks/use-graph-data'
+import { useThemeColors } from '@/hooks/use-theme-colors'
 import { pageTitle } from '../styles/layout.css'
 
 function HomePage() {
   const [searchQuery, setSearchQuery] = useState('')
   const { search, isLoading } = useGraphData()
+  const { colors } = useThemeColors()
 
   const handleSearch = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -42,14 +44,14 @@ function HomePage() {
       radius="lg"
       withBorder
       style={{
-        backgroundColor: 'rgba(255, 255, 255, 0.95)',
+        backgroundColor: colors.background.blur,
         backdropFilter: 'blur(10px)',
         maxWidth: '600px',
       }}
     >
       <Stack gap="lg" align="center">
         <Group>
-          <IconGraph size={40} color="var(--mantine-color-blue-6)" />
+          <IconGraph size={40} color={colors.primary} />
           <Title order={1} className={pageTitle} ta="center">
             Academic Explorer
           </Title>
@@ -119,15 +121,15 @@ function HomePage() {
         <Stack gap="sm" align="center" style={{ width: '100%' }}>
           <Group gap="lg" justify="center">
             <Group gap="xs">
-              <IconBrandReact size={16} color="var(--mantine-color-blue-6)" />
+              <IconBrandReact size={16} color={colors.primary} />
               <Text size="xs" c="dimmed">React 19</Text>
             </Group>
             <Group gap="xs">
-              <IconDatabase size={16} color="var(--mantine-color-green-6)" />
+              <IconDatabase size={16} color={colors.success} />
               <Text size="xs" c="dimmed">OpenAlex API</Text>
             </Group>
             <Group gap="xs">
-              <IconGraph size={16} color="var(--mantine-color-violet-6)" />
+              <IconGraph size={16} color={colors.entity.source} />
               <Text size="xs" c="dimmed">XYFlow</Text>
             </Group>
           </Group>
