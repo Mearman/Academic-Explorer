@@ -1,5 +1,5 @@
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
-import { useEffect } from 'react'
+import { useEffect, useMemo } from 'react'
 import { EntityDetector } from '@/lib/graph/utils/entity-detection'
 import { useGraphData } from '@/hooks/use-graph-data'
 
@@ -10,7 +10,7 @@ export const Route = createFileRoute('/$externalId')({
 function ExternalIdRoute() {
   const { externalId } = Route.useParams()
   const navigate = useNavigate()
-  const detector = new EntityDetector()
+  const detector = useMemo(() => new EntityDetector(), [])
   const { loadEntity } = useGraphData()
 
   useEffect(() => {
