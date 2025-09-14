@@ -26,7 +26,7 @@ export function reconstructAbstract(invertedIndex: Record<string, number[]> | nu
   let maxPosition = 0;
 
   // First pass: determine the maximum position to size the array
-  Object.entries(invertedIndex).forEach(([word, positions]) => {
+  Object.entries(invertedIndex).forEach(([_word, positions]) => {
     if (Array.isArray(positions)) {
       positions.forEach(pos => {
         if (typeof pos === 'number' && pos >= 0) {

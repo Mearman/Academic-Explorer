@@ -534,7 +534,7 @@ export class StatisticsApi {
     };
   }
 
-  private async getTrendAnalysis(entityType: EntityType) {
+  private async getTrendAnalysis(_entityType: EntityType) {
     // Implementation for trend analysis
     return {
       recent_growth: 15.5,
@@ -546,7 +546,7 @@ export class StatisticsApi {
     };
   }
 
-  private async getCollaborationMetrics(entityType: EntityType) {
+  private async getCollaborationMetrics(_entityType: EntityType) {
     // Implementation for collaboration metrics
     return {
       avg_authors_per_work: 3.2,
@@ -555,7 +555,7 @@ export class StatisticsApi {
     };
   }
 
-  private async getHIndexDistribution(entityType: EntityType) {
+  private async getHIndexDistribution(_entityType: EntityType) {
     // Implementation for H-index distribution
     return {
       median_h_index: 15,
@@ -564,7 +564,7 @@ export class StatisticsApi {
     };
   }
 
-  private async getFieldNormalizedMetrics(entityType: EntityType) {
+  private async getFieldNormalizedMetrics(_entityType: EntityType) {
     // Implementation for field-normalized metrics
     return {
       avg_field_citation_ratio: 1.2,
@@ -575,7 +575,7 @@ export class StatisticsApi {
     };
   }
 
-  private async getTemporalImpact(entityType: EntityType) {
+  private async getTemporalImpact(_entityType: EntityType) {
     // Implementation for temporal impact
     return {
       citation_half_life: 7.2,
