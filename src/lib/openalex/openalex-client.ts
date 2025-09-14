@@ -275,8 +275,9 @@ export class OpenAlexClient {
     // Remove URL prefix if present
     const cleanId = id.replace(/^https?:\/\/openalex\.org\//, '');
 
-    // Basic format check - should have letter followed by digits
-    if (!/^[WASITCPF]\d+$/.test(cleanId)) {
+    // Basic format check - should have letter followed by digits, including K and G (case insensitive)
+    const regexTest = /^[WASITCPFKG]\d+$/i.test(cleanId);
+    if (!regexTest) {
       return null;
     }
 
