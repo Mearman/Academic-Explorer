@@ -1,13 +1,22 @@
 /**
  * Graph data service for integrating OpenAlex API with graph visualization
  * Handles data transformation, caching, and progressive loading
+ * Now integrated with TanStack Query for persistent caching
  */
 
+import { QueryClient } from "@tanstack/react-query";
 import { rateLimitedOpenAlex } from "@/lib/openalex/rate-limited-client";
 import { EntityDetector } from "@/lib/graph/utils/entity-detection";
 import { EntityFactory, type ExpansionOptions } from "@/lib/entities";
 import { useGraphStore } from "@/stores/graph-store";
 import { logError, logger } from "@/lib/logger";
+import {
+	getCachedOpenAlexEntities,
+	setCachedGraphNodes,
+	setCachedGraphEdges,
+	setNodeExpanded,
+	isNodeExpanded
+} from "@/lib/cache/graph-cache";
 import type {
 	GraphNode,
 	GraphEdge,
@@ -28,9 +37,11 @@ import type {
 export class GraphDataService {
 	private detector: EntityDetector;
 	private cache: GraphCache;
+	private queryClient: QueryClient;
 
-	constructor() {
+	constructor(queryClient: QueryClient) {
 		this.detector = new EntityDetector();
+		this.queryClient = queryClient;
 		this.cache = {
 			nodes: new Map(),
 			edges: new Map(),
@@ -66,20 +77,29 @@ export class GraphDataService {
 			this.cache.expandedNodes.clear();
 			this.cache.fetchedRelationships.clear();
 
-			// Add new data
+			// Add new data to store
 			store.addNodes(nodes);
 			store.addEdges(edges);
 
-			// Get the primary node ID for expansion
-			const primaryNodeId = nodes[0]?.id;
+			// Cache the graph data in TanStack Query for persistence
+			setCachedGraphNodes(this.queryClient, nodes);
+			setCachedGraphEdges(this.queryClient, edges);
 
+			// Get the primary node ID and calculate depths
+			const primaryNodeId = nodes[0]?.id;
 			if (primaryNodeId) {
-				// Automatically load related entities for full context
-				await this.expandNode(primaryNodeId, {
-					limit: 15, // Full expansion for rich graph experience
-					depth: 1   // Only direct relations
-				});
+				// Calculate node depths from the primary node
+				store.calculateNodeDepths(primaryNodeId);
+
+				// Pin the primary node as the origin for traversal depth calculation
+				store.setPinnedNode(primaryNodeId);
 			}
+
+			logger.info("graph", "Entity graph loaded without auto-expansion", {
+				nodeCount: nodes.length,
+				edgeCount: edges.length,
+				primaryNodeId
+			}, "GraphDataService");
 
 			// Layout is now handled by the ReactFlow component's useLayout hook
 			// No need for explicit layout application here
@@ -110,30 +130,12 @@ export class GraphDataService {
 				// Node already exists with full data, select it and always try to expand further
 				store.selectNode(existingNode.id);
 
-				logger.info("graph", "Existing node clicked - expanding incrementally", {
+				logger.info("graph", "Existing node selected, no automatic expansion", {
 					nodeId: existingNode.id,
 					entityId,
-					isAlreadyExpanded: this.cache.expandedNodes.has(existingNode.id)
 				}, "GraphDataService");
 
-				// Always attempt expansion when clicking on a node
-				// If already expanded once, force re-expansion with more depth/connections
-				const isAlreadyExpanded = this.cache.expandedNodes.has(existingNode.id);
-
-				if (isAlreadyExpanded) {
-					// Re-expand with deeper connections and more entities
-					await this.expandNode(existingNode.id, {
-						limit: 20, // More entities on subsequent clicks
-						depth: 2,  // Deeper exploration
-						force: true // Force re-expansion
-					});
-				} else {
-					// First expansion - moderate scope
-					await this.expandNode(existingNode.id, {
-						limit: 10,
-						depth: 1
-					});
-				}
+				// Note: Expansion is now manual-only - user must explicitly click to expand
 				return;
 			}
 
@@ -159,11 +161,7 @@ export class GraphDataService {
 			if (primaryNodeId) {
 				store.selectNode(primaryNodeId);
 
-				// Automatically expand the newly added entity for context
-				await this.expandNode(primaryNodeId, {
-					limit: 10, // Moderate expansion to avoid overwhelming the graph
-					depth: 1   // Only direct relations
-				});
+				// Note: No automatic expansion - user must manually expand nodes
 			}
 
 			logger.info("graph", "Entity loaded into graph", {
@@ -181,14 +179,83 @@ export class GraphDataService {
 	}
 
 	/**
+	 * Load all cached OpenAlex entities into the graph
+	 * Shows all available cached data up to the specified traversal depth
+	 */
+	async loadAllCachedNodes(): Promise<void> {
+		const store = useGraphStore.getState();
+
+		try {
+			// Get all cached OpenAlex entities from TanStack Query
+			const cachedEntities = getCachedOpenAlexEntities(this.queryClient);
+
+			if (cachedEntities.length === 0) {
+				logger.info("graph", "No cached entities found to load", {}, "GraphDataService");
+				return;
+			}
+
+			logger.info("graph", "Loading all cached entities into graph", {
+				count: cachedEntities.length
+			}, "GraphDataService");
+
+			// Transform all cached entities to graph nodes and edges
+			const allNodes: GraphNode[] = [];
+			const allEdges: GraphEdge[] = [];
+
+			for (const entity of cachedEntities) {
+				try {
+					const { nodes, edges } = this.transformEntityToGraph(entity);
+					allNodes.push(...nodes);
+					allEdges.push(...edges);
+				} catch (error) {
+					logError("Failed to transform cached entity to graph", error, "GraphDataService", "graph");
+				}
+			}
+
+			// Remove duplicates (entities might reference each other)
+			const uniqueNodes = new Map<string, GraphNode>();
+			allNodes.forEach(node => uniqueNodes.set(node.id, node));
+
+			const uniqueEdges = new Map<string, GraphEdge>();
+			allEdges.forEach(edge => uniqueEdges.set(edge.id, edge));
+
+			// Add to graph store
+			const finalNodes = Array.from(uniqueNodes.values());
+			const finalEdges = Array.from(uniqueEdges.values());
+
+			store.addNodes(finalNodes);
+			store.addEdges(finalEdges);
+
+			// Update cached graph data
+			setCachedGraphNodes(this.queryClient, finalNodes);
+			setCachedGraphEdges(this.queryClient, finalEdges);
+
+			// If there's a pinned node, recalculate depths from it
+			const pinnedNodeId = store.pinnedNodeId;
+			if (pinnedNodeId) {
+				store.calculateNodeDepths(pinnedNodeId);
+			}
+
+			logger.info("graph", "Loaded all cached entities into graph", {
+				nodeCount: finalNodes.length,
+				edgeCount: finalEdges.length,
+				pinnedNodeId
+			}, "GraphDataService");
+
+		} catch (error) {
+			logError("Failed to load cached nodes into graph", error, "GraphDataService", "graph");
+		}
+	}
+
+	/**
    * Expand a node to show related entities
    * This method performs incremental expansion without setting global loading state
    */
 	async expandNode(nodeId: string, options: ExpansionOptions = {}): Promise<void> {
 		const { force = false } = options;
 
-		// Check if already expanded (unless forced)
-		if (!force && this.cache.expandedNodes.has(nodeId)) {
+		// Check if already expanded using TanStack Query cache (unless forced)
+		if (!force && isNodeExpanded(this.queryClient, nodeId)) {
 			logger.info("graph", "Node already expanded, skipping expansion", { nodeId }, "GraphDataService");
 			return;
 		}
@@ -238,8 +305,14 @@ export class GraphDataService {
 			store.addNodes(relatedData.nodes);
 			store.addEdges(relatedData.edges);
 
-			// Mark as expanded
-			this.cache.expandedNodes.add(nodeId);
+			// Update cached graph data
+			const allNodes = Array.from(store.nodes.values());
+			const allEdges = Array.from(store.edges.values());
+			setCachedGraphNodes(this.queryClient, allNodes);
+			setCachedGraphEdges(this.queryClient, allEdges);
+
+			// Mark as expanded in TanStack Query cache
+			setNodeExpanded(this.queryClient, nodeId, true);
 
 			// Layout is automatically handled by the provider when nodes/edges are added
 
