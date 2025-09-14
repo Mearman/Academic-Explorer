@@ -4,6 +4,7 @@
  */
 
 import { OpenAlexError, OpenAlexResponse, QueryParams } from "./types";
+import { RETRY_CONFIG, calculateRetryDelay } from "@/config/rate-limit";
 
 export interface OpenAlexClientConfig {
   baseUrl?: string;
@@ -198,6 +199,11 @@ export class OpenAlexBaseClient {
 		options: RequestInit = {},
 		retryCount = 0
 	): Promise<Response> {
+		// Determine max attempts: use config.retries if explicitly set (including 0), otherwise use RETRY_CONFIG
+		const maxRateLimitRetries = this.config.retries !== 3 ? this.config.retries : RETRY_CONFIG.rateLimited.maxAttempts; // 3 is default
+		const maxServerRetries = this.config.retries !== 3 ? this.config.retries : RETRY_CONFIG.server.maxAttempts; // 3 is default
+		const maxNetworkRetries = this.config.retries !== 3 ? this.config.retries : RETRY_CONFIG.network.maxAttempts; // 3 is default
+
 		try {
 			await this.enforceRateLimit();
 
@@ -216,29 +222,38 @@ export class OpenAlexBaseClient {
 
 			clearTimeout(timeoutId);
 
-			// Handle rate limiting from server
+			// Handle rate limiting from server with enhanced retry logic
 			if (response.status === 429) {
 				const retryAfter = response.headers.get("Retry-After");
-				const waitTime = retryAfter ? parseInt(retryAfter) * 1000 : this.config.retryDelay;
+				const retryAfterMs = retryAfter ? parseInt(retryAfter) * 1000 : undefined;
 
-				if (retryCount < this.config.retries) {
+				if (retryCount < maxRateLimitRetries) {
+					const waitTime = this.config.retries !== 3 ?
+						(retryAfterMs || this.config.retryDelay) :
+						calculateRetryDelay(retryCount, RETRY_CONFIG.rateLimited, retryAfterMs);
 					await this.sleep(waitTime);
 					return this.makeRequest(url, options, retryCount + 1);
 				}
 
 				throw new OpenAlexRateLimitError(
-					"Rate limit exceeded and max retries reached",
-					waitTime
+					`Rate limit exceeded and max retries reached (${maxRateLimitRetries} attempts)`,
+					retryAfterMs || (this.config.retries !== 3 ? this.config.retryDelay : calculateRetryDelay(retryCount, RETRY_CONFIG.rateLimited))
 				);
 			}
 
-			// Handle other HTTP errors
-			if (!response.ok) {
-				if (retryCount < this.config.retries && response.status >= 500) {
-					// Retry on server errors
-					await this.sleep(this.config.retryDelay * Math.pow(2, retryCount));
+			// Handle server errors (5xx) with enhanced retry logic
+			if (!response.ok && response.status >= 500) {
+				if (retryCount < maxServerRetries) {
+					const waitTime = this.config.retries !== 3 ?
+						this.config.retryDelay * Math.pow(2, retryCount) :
+						calculateRetryDelay(retryCount, RETRY_CONFIG.server);
+					await this.sleep(waitTime);
 					return this.makeRequest(url, options, retryCount + 1);
 				}
+			}
+
+			// Handle other HTTP errors (no retry for 4xx except 429)
+			if (!response.ok) {
 				throw await this.parseError(response);
 			}
 
@@ -252,14 +267,17 @@ export class OpenAlexBaseClient {
 				throw error;
 			}
 
-			// Handle network errors
-			if (retryCount < this.config.retries) {
-				await this.sleep(this.config.retryDelay * Math.pow(2, retryCount));
+			// Handle network errors with enhanced retry logic
+			if (retryCount < maxNetworkRetries) {
+				const waitTime = this.config.retries !== 3 ?
+					this.config.retryDelay * Math.pow(2, retryCount) :
+					calculateRetryDelay(retryCount, RETRY_CONFIG.network);
+				await this.sleep(waitTime);
 				return this.makeRequest(url, options, retryCount + 1);
 			}
 
 			throw new OpenAlexApiError(
-				`Network error: ${error instanceof Error ? error.message : "Unknown error"}`
+				`Network error after ${maxNetworkRetries} attempts: ${error instanceof Error ? error.message : "Unknown error"}`
 			);
 		}
 	}
