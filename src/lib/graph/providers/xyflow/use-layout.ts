@@ -409,7 +409,7 @@ export function useLayout(
 				}, 100);
 			}
 		});
-	}, [layout, onLayoutChange, stopLayout, fitView, fitViewAfterLayout, getViewport, setCenter, containerDimensions]);
+	}, [layout, onLayoutChange, stopLayout, fitView, fitViewAfterLayout, getViewport, containerDimensions, getNodes, getEdges, pinnedNodes, setNodes]);
 
 	// Main layout application function - D3 force only
 	const applyLayout = useCallback(() => {
@@ -449,7 +449,7 @@ export function useLayout(
 			"useLayout",
 		);
 		applyD3ForceLayout();
-	}, [enabled, layout, applyD3ForceLayout]);
+	}, [enabled, layout, applyD3ForceLayout, getNodes]);
 
 	// Apply layout when layout changes
 	useEffect(() => {
@@ -510,7 +510,7 @@ export function useLayout(
 
 		// Cleanup on unmount
 		return stopLayout;
-	}, [enabled, layout, applyLayout, stopLayout]);
+	}, [enabled, layout, applyLayout, stopLayout, getNodes]);
 
 	// Track previous node count to avoid re-layout on incremental additions
 	const previousNodeCountRef = useRef(0);
