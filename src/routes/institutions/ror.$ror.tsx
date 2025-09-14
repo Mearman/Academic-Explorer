@@ -26,11 +26,7 @@ function RORInstitutionRoute() {
           // Load the institution entity data into the graph
           await loadEntity(`ror:${detection.normalizedId}`)
 
-          // Navigate to the main graph view
-          navigate({
-            to: '/graph',
-            replace: true,
-          })
+          // No navigation needed - graph is always visible
         } else {
           throw new Error(`Invalid ROR ID format: ${decodedROR}`)
         }

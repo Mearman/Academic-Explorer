@@ -26,11 +26,7 @@ function ORCIDAuthorRoute() {
           // Load the author entity data into the graph
           await loadEntity(`orcid:${detection.normalizedId}`)
 
-          // Navigate to the main graph view
-          navigate({
-            to: '/graph',
-            replace: true,
-          })
+          // No navigation needed - graph is always visible
         } else {
           throw new Error(`Invalid ORCID format: ${decodedORCID}`)
         }

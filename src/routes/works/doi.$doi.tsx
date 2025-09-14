@@ -26,11 +26,7 @@ function DOIWorkRoute() {
           // Load the work entity data into the graph
           await loadEntity(`doi:${detection.normalizedId}`)
 
-          // Navigate to the main graph view
-          navigate({
-            to: '/graph',
-            replace: true,
-          })
+            // No navigation needed - graph is always visible
         } else {
           throw new Error(`Invalid DOI format: ${decodedDOI}`)
         }

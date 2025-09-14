@@ -26,11 +26,7 @@ function ISSNSourceRoute() {
           // Load the source entity data into the graph
           await loadEntity(`issn:${detection.normalizedId}`)
 
-          // Navigate to the main graph view
-          navigate({
-            to: '/graph',
-            replace: true,
-          })
+          // No navigation needed - graph is always visible
         } else {
           throw new Error(`Invalid ISSN format: ${decodedISSN}`)
         }
