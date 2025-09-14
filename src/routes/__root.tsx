@@ -31,14 +31,19 @@ function RootLayout() {
     }
   }
 
-  // Get the appropriate icon based on current scheme
+  // Get the appropriate icon based on the CURRENT state
   const getThemeIcon = () => {
+    const systemTheme = getSystemTheme()
+
     if (colorScheme === 'auto') {
+      // Auto mode - show desktop icon to represent auto/system preference
       return <IconDeviceDesktop size={18} />
     } else if (colorScheme === 'dark') {
-      return <IconSun size={18} />
-    } else {
+      // Dark mode - show moon icon to represent current dark state
       return <IconMoon size={18} />
+    } else {
+      // Light mode - show sun icon to represent current light state
+      return <IconSun size={18} />
     }
   }
 
