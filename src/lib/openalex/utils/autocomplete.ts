@@ -3,7 +3,7 @@
  * Provides autocomplete functionality and advanced search across all OpenAlex entity types
  */
 
-import { AutocompleteResult, EntityType } from '../types';
+import { AutocompleteResult, EntityType, QueryParams } from '../types';
 import { OpenAlexBaseClient } from '../client';
 
 interface DebouncedPromiseCache {
@@ -147,7 +147,7 @@ export class AutocompleteApi {
             ...this.formatFiltersForEntityType(filters, type),
           };
 
-          const response = await this.client.get<{ results: AutocompleteResult[] }>(endpoint, params as any);
+          const response = await this.client.get<{ results: AutocompleteResult[] }>(endpoint, params as QueryParams & { q: string });
           return response.results.map(result => ({
             ...result,
             entity_type: this.mapEntityTypeToSingular(type),
@@ -200,7 +200,7 @@ export class AutocompleteApi {
         const endpoint = `autocomplete/${entityType}`;
         const response = await this.client.get<{ results: AutocompleteResult[] }>(endpoint, {
           q: trimmedQuery,
-        } as any);
+        } as QueryParams & { q: string });
 
         return response.results.map(result => ({
           ...result,
