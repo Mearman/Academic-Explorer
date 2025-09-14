@@ -235,7 +235,7 @@ async function performCitationNetworkAnalysis(
       // Find papers that cite this paper
       const citingPapersResponse = await openAlex.works.getWorks({
         filter: {
-          cites: paper.openalexId,
+          referenced_works: paper.openalexId,
           cited_by_count: `>${config.minimumCitationThreshold || 5}`
         },
         select: ['id', 'title', 'display_name', 'authorships', 'publication_year', 'doi', 'ids', 'primary_location', 'best_oa_location', 'cited_by_count', 'abstract_inverted_index'],
