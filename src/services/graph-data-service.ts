@@ -22,9 +22,6 @@ import type {
   Author,
   Source,
   InstitutionEntity,
-  Topic,
-  Publisher,
-  Funder,
   OpenAlexEntity,
 } from '@/lib/openalex/types';
 
@@ -84,9 +81,8 @@ export class GraphDataService {
         });
       }
 
-      // Apply current layout from store
-      store.provider?.applyLayout(store.currentLayout);
-      store.provider?.fitView();
+      // Layout is now handled by the ReactFlow component's useLayout hook
+      // No need for explicit layout application here
 
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Unknown error';
@@ -184,9 +180,8 @@ export class GraphDataService {
       store.addNodes(nodes);
       store.addEdges(edges);
 
-      // Apply current layout from store
-      store.provider?.applyLayout(store.currentLayout);
-      store.provider?.fitView();
+      // Layout is now handled by the ReactFlow component's useLayout hook
+      // No need for explicit layout application here
 
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Search failed';
@@ -315,7 +310,7 @@ export class GraphDataService {
       const citedNode: GraphNode = {
         id: citedWorkId,
         type: 'works' as EntityType,
-        label: `Referenced Work ${index + 1}`,
+        label: ['Referenced Work', 1 + index].join(' '),
         entityId: citedWorkId,
         position: { x: (index - 1) * 200, y: 300 },
         externalIds: [],
@@ -413,7 +408,7 @@ export class GraphDataService {
         const parentNode: GraphNode = {
           id: parentId,
           type: 'institutions' as EntityType,
-          label: `Parent Institution ${index + 1}`,
+          label: ['Parent Institution', 1 + index].join(' '),
           entityId: parentId,
           position: { x: (index - 0.5) * 200, y: -150 },
           externalIds: [],
