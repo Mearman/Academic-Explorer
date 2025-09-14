@@ -161,9 +161,9 @@ async function performTemporalGapAnalysis(
 	const worksParams = {
 		search: searchQuery,
 		filter: buildFilterString({
-			from_publication_date: `${searchStart}-01-01`,
-			to_publication_date: `${searchEnd}-12-31`,
-			cited_by_count: `>${config.minimumCitationThreshold || 5}`
+			from_publication_date: `${String(searchStart)}-01-01`,
+			to_publication_date: `${String(searchEnd)}-12-31`,
+			cited_by_count: `>${String(config.minimumCitationThreshold || 5)}`
 		}),
 		select: ["id", "title", "display_name", "authorships", "publication_year", "doi", "ids", "primary_location", "best_oa_location", "cited_by_count", "abstract_inverted_index"],
 		per_page: config.maxPapersPerMethod || 50,
@@ -177,7 +177,7 @@ async function performTemporalGapAnalysis(
 		onProgress?.({
 			currentMethod: "Temporal Gap Analysis",
 			progress: 100,
-			message: `Found ${works.length} potential temporal gap papers`,
+			message: `Found ${String(works.length)} potential temporal gap papers`,
 			papersFound: works.length
 		});
 
@@ -226,7 +226,7 @@ async function performCitationNetworkAnalysis(
 		onProgress?.({
 			currentMethod: "Citation Network Analysis",
 			progress,
-			message: `Analyzing citations for paper ${i + 1}/${samplePapers.length}`,
+			message: `Analyzing citations for paper ${String(i + 1)}/${String(samplePapers.length)}`,
 			papersFound: candidates.length
 		});
 
@@ -237,7 +237,7 @@ async function performCitationNetworkAnalysis(
 			const citingPapersResponse = await openAlex.works.getWorks({
 				filter: buildFilterString({
 					referenced_works: paper.openalexId,
-					cited_by_count: `>${config.minimumCitationThreshold || 5}`
+					cited_by_count: `>${String(config.minimumCitationThreshold || 5)}`
 				}),
 				select: ["id", "title", "display_name", "authorships", "publication_year", "doi", "ids", "primary_location", "best_oa_location", "cited_by_count", "abstract_inverted_index"],
 				per_page: Math.min(20, (config.maxPapersPerMethod || 50) / samplePapers.length),
@@ -257,7 +257,7 @@ async function performCitationNetworkAnalysis(
 	onProgress?.({
 		currentMethod: "Citation Network Analysis",
 		progress: 100,
-		message: `Found ${candidates.length} potential citation network papers`,
+		message: `Found ${String(candidates.length)} potential citation network papers`,
 		papersFound: candidates.length
 	});
 
@@ -307,9 +307,9 @@ async function performAuthorNetworkAnalysis(
 		const response = await openAlex.works.getWorks({
 			search: `(author:${authorQuery}) AND (${keywordQuery})`,
 			filter: buildFilterString({
-				from_publication_date: `${yearRange.start - 1}-01-01`,
-				to_publication_date: `${yearRange.end + 1}-12-31`,
-				cited_by_count: `>${config.minimumCitationThreshold || 5}`
+				from_publication_date: `${String(yearRange.start - 1)}-01-01`,
+				to_publication_date: `${String(yearRange.end + 1)}-12-31`,
+				cited_by_count: `>${String(config.minimumCitationThreshold || 5)}`
 			}),
 			select: ["id", "title", "display_name", "authorships", "publication_year", "doi", "ids", "primary_location", "best_oa_location", "cited_by_count", "abstract_inverted_index"],
 			per_page: config.maxPapersPerMethod || 50,
@@ -374,7 +374,7 @@ async function performKeywordExpansionAnalysis(
 				filter: buildFilterString({
 					from_publication_date: `${yearRange.start}-01-01`,
 					to_publication_date: `${yearRange.end}-12-31`,
-					cited_by_count: `>${config.minimumCitationThreshold || 5}`
+					cited_by_count: `>${String(config.minimumCitationThreshold || 5)}`
 				}),
 				select: ["id", "title", "display_name", "authorships", "publication_year", "doi", "ids", "primary_location", "best_oa_location", "cited_by_count", "abstract_inverted_index"],
 				per_page: Math.min(10, (config.maxPapersPerMethod || 50) / (expandedTerms.length / 2)),
