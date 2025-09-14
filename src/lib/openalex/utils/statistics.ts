@@ -4,7 +4,7 @@
  */
 
 import { OpenAlexBaseClient } from '../client';
-import { EntityType, QueryParams, StatsParams } from '../types';
+import { EntityType, QueryParams as _QueryParams, StatsParams } from '../types';
 
 /**
  * Database-wide statistics
