@@ -19,6 +19,7 @@ import { SamplingApi } from './utils/sampling';
 import { GroupingApi } from './utils/grouping';
 import { StatisticsApi } from './utils/statistics';
 import { QueryBuilder, createWorksQuery, createAuthorsQuery } from './utils/query-builder';
+import { logError } from '@/lib/logger';
 import type {
   Work,
   Author,
@@ -382,7 +383,7 @@ export class OpenAlexClient {
    */
   public async getEntities(ids: string[]): Promise<OpenAlexEntity[]> {
     const promises = ids.map(id => this.getEntity(id).catch(error => {
-      console.warn(`Failed to fetch entity ${id}:`, error.message);
+      logError(`Failed to fetch entity ${id}`, error, 'OpenAlexClient', 'api');
       return null;
     }));
 

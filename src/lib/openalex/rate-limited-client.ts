@@ -6,6 +6,7 @@
 import { asyncRateLimit } from '@tanstack/pacer';
 import { OpenAlexClient, OpenAlexClientOptions } from './openalex-client';
 import { RATE_LIMIT_CONFIG } from '@/config/rate-limit';
+import { logger } from '@/lib/logger';
 import type {
   OpenAlexEntity,
   OpenAlexResponse,
@@ -78,7 +79,7 @@ export class RateLimitedOpenAlexClient {
       const batch = ids.slice(i, i + batchSize);
       const batchPromises = batch.map(id =>
         this.withRateLimit(() => this.client.getEntity(id).catch(error => {
-          console.warn(`Failed to fetch entity ${id}:`, error.message);
+          logger.warn('api', `Failed to fetch entity ${id}`, { id, error: error.message }, 'RateLimitedOpenAlexClient');
           return null;
         }))
       );

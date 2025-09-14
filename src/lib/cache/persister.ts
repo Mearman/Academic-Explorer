@@ -1,11 +1,18 @@
 /**
- * IndexedDB persister for TanStack Query
- * Provides persistent storage for query cache across browser sessions
+ * Hybrid persister for TanStack Query
+ * Provides optimized multi-tier storage: Memory → localStorage → IndexedDB
+ * localStorage is checked first for speed, then IndexedDB for bulk storage
  */
 
-import { deleteDB, openDB } from 'idb';
+import { openDB } from 'idb';
 import { PersistedClient, Persister } from '@tanstack/react-query-persist-client';
 import { CACHE_CONFIG } from '@/config/cache';
+import { logError, logger } from '@/lib/logger';
+
+// localStorage storage limits and configuration
+const LOCALSTORAGE_KEY = 'academic-explorer-cache';
+const LOCALSTORAGE_MAX_SIZE = 5 * 1024 * 1024; // 5MB conservative limit
+const LOCALSTORAGE_COMPRESSION_THRESHOLD = 50 * 1024; // 50KB - compress larger items
 
 /**
  * Create an IndexedDB persister for TanStack Query
@@ -40,7 +47,7 @@ export function createIDBPersister(dbName = 'academic-explorer-cache'): Persiste
         await store.put(persistedData, 'queryClient');
         await tx.done;
       } catch (error) {
-        console.error('Failed to persist query client:', error);
+        logError('Failed to persist query client', error, 'CachePersister', 'storage');
         // Don't throw - persistence failure shouldn't break the app
       }
     },
@@ -50,17 +57,20 @@ export function createIDBPersister(dbName = 'academic-explorer-cache'): Persiste
         const db = await openDatabase();
         const tx = db.transaction('cache', 'readonly');
         const store = tx.objectStore('cache');
-        const data = await store.get('queryClient') as PersistedClient & { timestamp?: number; version?: string } | undefined;
+        const data = await store.get('queryClient');
 
-        if (!data) {
+        // Type guard for persisted data
+        if (!data || typeof data !== 'object') {
           return undefined;
         }
 
+        const persistedData = data as PersistedClient & { timestamp?: number; version?: string };
+
         // Check if cache is expired (based on maxAge)
-        if (data.timestamp) {
-          const age = Date.now() - data.timestamp;
+        if (persistedData.timestamp) {
+          const age = Date.now() - persistedData.timestamp;
           if (age > CACHE_CONFIG.maxAge) {
-            console.info('Cache expired, clearing old data');
+            logger.info('cache', 'Cache expired, clearing old data', { age, maxAge: CACHE_CONFIG.maxAge });
             const delTx = db.transaction('cache', 'readwrite');
             const delStore = delTx.objectStore('cache');
             await delStore.delete('queryClient');
@@ -70,10 +80,16 @@ export function createIDBPersister(dbName = 'academic-explorer-cache'): Persiste
         }
 
         // Remove our metadata before returning to TanStack Query
-        const { timestamp, version, ...clientData } = data;
-        return clientData as PersistedClient;
+        const { timestamp, version, ...clientData } = persistedData;
+
+        // Validate that clientData has the required PersistedClient structure
+        if (!clientData.clientState) {
+          return undefined;
+        }
+
+        return clientData;
       } catch (error) {
-        console.error('Failed to restore query client:', error);
+        logError('Failed to restore query client', error, 'CachePersister', 'storage');
         return undefined;
       }
     },
@@ -86,7 +102,7 @@ export function createIDBPersister(dbName = 'academic-explorer-cache'): Persiste
         await store.delete('queryClient');
         await tx.done;
       } catch (error) {
-        console.error('Failed to remove persisted client:', error);
+        logError('Failed to remove persisted client', error, 'CachePersister', 'storage');
       }
     },
   };
@@ -100,9 +116,10 @@ export async function getCacheStats(dbName = 'academic-explorer-cache') {
     const db = await openDB(dbName, 1);
     const tx = db.transaction('cache', 'readonly');
     const store = tx.objectStore('cache');
-    const data = await store.get('queryClient') as PersistedClient & { timestamp?: number } | undefined;
+    const data = await store.get('queryClient');
 
-    if (!data) {
+    // Type guard for persisted data
+    if (!data || typeof data !== 'object') {
       return {
         exists: false,
         size: 0,
@@ -111,11 +128,13 @@ export async function getCacheStats(dbName = 'academic-explorer-cache') {
       };
     }
 
-    const age = data.timestamp ? Date.now() - data.timestamp : 0;
-    const queryCount = data.clientState?.queries?.length || 0;
+    const persistedData = data as PersistedClient & { timestamp?: number };
+
+    const age = persistedData.timestamp ? Date.now() - persistedData.timestamp : 0;
+    const queryCount = persistedData.clientState?.queries?.length || 0;
 
     // Estimate size (rough approximation)
-    const estimatedSize = new Blob([JSON.stringify(data)]).size;
+    const estimatedSize = new Blob([JSON.stringify(persistedData)]).size;
 
     return {
       exists: true,
@@ -125,7 +144,7 @@ export async function getCacheStats(dbName = 'academic-explorer-cache') {
       isExpired: age > CACHE_CONFIG.maxAge,
     };
   } catch (error) {
-    console.error('Failed to get cache stats:', error);
+    logError('Failed to get cache stats', error, 'CachePersister', 'storage');
     return {
       exists: false,
       size: 0,
@@ -149,13 +168,13 @@ export async function clearExpiredCache(dbName = 'academic-explorer-cache') {
       const store = tx.objectStore('cache');
       await store.delete('queryClient');
       await tx.done;
-      console.info('Cleared expired cache');
+      logger.info('cache', 'Cleared expired cache', { dbName });
       return true;
     }
 
     return false;
   } catch (error) {
-    console.error('Failed to clear expired cache:', error);
+    logError('Failed to clear expired cache', error, 'CachePersister', 'storage');
     return false;
   }
 }

@@ -5,6 +5,7 @@
 
 import { OpenAlexBaseClient } from '../client';
 import { EntityType, QueryParams, GroupParams, OpenAlexResponse as _OpenAlexResponse } from '../types';
+import { logger } from '@/lib/logger';
 
 /**
  * Raw group item from OpenAlex API response
@@ -248,7 +249,7 @@ export class GroupingApi {
           growth_rate: growthRate,
         });
       } catch (error) {
-        console.warn(`Failed to get temporal trends for group ${group.key}:`, error);
+        logger.warn('api', `Failed to get temporal trends for group ${group.key}`, { groupKey: group.key, error }, 'GroupingApi');
       }
     }
 
@@ -369,10 +370,7 @@ export class GroupingApi {
               percentage_of_primary: (count / primaryGroup.count) * 100,
             });
           } catch (error) {
-            console.warn(
-              `Failed cross-tabulation for ${primaryGroup.key} x ${secondaryGroup.key}:`,
-              error
-            );
+            logger.warn('api', `Failed cross-tabulation for ${primaryGroup.key} x ${secondaryGroup.key}`, { primaryKey: primaryGroup.key, secondaryKey: secondaryGroup.key, error }, 'GroupingApi');
           }
         }
       }
@@ -478,7 +476,7 @@ export class GroupingApi {
           top_performers: performersWithRank,
         });
       } catch (error) {
-        console.warn(`Failed to get top performers for group ${group.key}:`, error);
+        logger.warn('api', `Failed to get top performers for group ${group.key}`, { groupKey: group.key, error }, 'GroupingApi');
       }
     }
 
@@ -606,7 +604,7 @@ export class GroupingApi {
             // stats.median is already included in percentiles as p50
           }
         } catch (error) {
-          console.warn(`Failed to calculate percentiles for group ${group.key}:`, error);
+          logger.warn('api', `Failed to calculate percentiles for group ${group.key}`, { groupKey: group.key, error }, 'GroupingApi');
         }
       }
 

@@ -33,6 +33,7 @@ import {
   type SimulationLinkDatum
 } from 'd3-force';
 import { randomLcg } from 'd3-random';
+import { logger } from '@/lib/logger';
 
 // D3 simulation interfaces for type safety
 interface D3Node extends SimulationNodeDatum {
@@ -48,12 +49,14 @@ interface D3Link extends SimulationLinkDatum<D3Node> {
 
 export class XYFlowProvider implements GraphProvider {
   private container: HTMLElement | null = null;
+  private isLayoutInProgress: boolean = false;
   private nodes: Map<string, GraphNode> = new Map();
   private edges: Map<string, GraphEdge> = new Map();
   private events: GraphEvents = {};
   private reactFlowInstance: ReactFlowInstance | null = null;
   private mounted = false;
   private d3Simulation: Simulation<D3Node, D3Link> | null = null;
+  private currentLayout: GraphLayout | null = null;
 
   // Convert generic GraphNode to XYFlow node
   private toXYNode(node: GraphNode): XYNode {
@@ -174,11 +177,37 @@ export class XYFlowProvider implements GraphProvider {
   addNode(node: GraphNode): void {
     this.nodes.set(node.id, node);
     this.updateReactFlow();
+
+    // If we have a current force-directed layout, automatically re-apply it to include the new node
+    if (this.currentLayout && this.isForceDirectedLayout(this.currentLayout.type)) {
+      logger.info('graph', 'New node added to force-directed layout, re-applying layout to include it', { nodeId: node.id }, 'XYFlowProvider');
+      // Use a small delay to allow React state to update first
+      setTimeout(() => {
+        if (this.currentLayout) {
+          this.applyLayout(this.currentLayout);
+        }
+      }, 50);
+    }
+  }
+
+  private isForceDirectedLayout(layoutType: string): boolean {
+    return layoutType === 'd3-force' || layoutType === 'force-deterministic' || layoutType === 'force';
   }
 
   addEdge(edge: GraphEdge): void {
     this.edges.set(edge.id, edge);
     this.updateReactFlow();
+
+    // If we have a current force-directed layout, automatically re-apply it to include the new edge
+    if (this.currentLayout && this.isForceDirectedLayout(this.currentLayout.type)) {
+      logger.info('graph', 'New edge added to force-directed layout, re-applying layout to include it', { edgeId: edge.id }, 'XYFlowProvider');
+      // Use a small delay to allow React state to update first
+      setTimeout(() => {
+        if (this.currentLayout) {
+          this.applyLayout(this.currentLayout);
+        }
+      }, 50);
+    }
   }
 
   removeNode(nodeId: string): void {
@@ -197,6 +226,15 @@ export class XYFlowProvider implements GraphProvider {
     this.updateReactFlow();
   }
 
+  updateNode(nodeId: string, updates: Partial<GraphNode>): void {
+    const existingNode = this.nodes.get(nodeId);
+    if (existingNode) {
+      const updatedNode = { ...existingNode, ...updates };
+      this.nodes.set(nodeId, updatedNode);
+      this.updateReactFlow();
+    }
+  }
+
   clear(): void {
     this.nodes.clear();
     this.edges.clear();
@@ -204,30 +242,76 @@ export class XYFlowProvider implements GraphProvider {
   }
 
   applyLayout(layout: GraphLayout): void {
-    if (!this.reactFlowInstance) return;
-
     const nodes = Array.from(this.nodes.values());
+
+    if (nodes.length === 0) {
+      logger.info('graph', 'No nodes to layout, skipping', undefined, 'XYFlowProvider');
+      return;
+    }
+
+    // Only block if layout is currently in progress to prevent rapid-fire duplicates
+    if (this.isLayoutInProgress) {
+      logger.info('graph', 'Layout already in progress, skipping duplicate request', undefined, 'XYFlowProvider');
+      return;
+    }
+
+    // Store the current layout so we can re-apply it when new nodes are added
+    this.currentLayout = layout;
+
+    this.isLayoutInProgress = true;
+
+    // For force-directed layouts, always re-layout all nodes to maintain proper physics
+    const isForceLayout = ['force', 'force-deterministic', 'd3-force'].includes(layout.type);
+    const isCompleteReLayout = layout.options?.forceReLayout === true;
+
+    let targetNodes: GraphNode[];
+
+    if (isForceLayout || isCompleteReLayout) {
+      logger.info('graph', 'Force/Complete layout: Applying layout to all nodes', { layoutType: layout.type, nodeCount: nodes.length }, 'XYFlowProvider');
+      targetNodes = nodes; // Always re-layout all nodes for force layouts
+    } else {
+      // For non-force layouts (grid, circular, hierarchical), preserve existing positions
+      const nodesToLayout = nodes.filter(node =>
+        !node.position || (node.position.x === 0 && node.position.y === 0)
+      );
+
+      if (nodesToLayout.length === 0) {
+        logger.info('graph', 'Incremental layout: All nodes already positioned, skipping', undefined, 'XYFlowProvider');
+        return;
+      }
+
+      logger.info('graph', 'Incremental layout: Processing new nodes', { newNodeCount: nodesToLayout.length, existingNodeCount: nodes.length - nodesToLayout.length }, 'XYFlowProvider');
+      targetNodes = nodesToLayout;
+    }
 
     switch (layout.type) {
       case 'force':
-        this.applyForceLayout(nodes);
+        this.applyForceLayout(targetNodes);
         break;
       case 'force-deterministic':
-        this.applyDeterministicForceLayout(nodes, layout.options);
+        this.applyDeterministicForceLayout(targetNodes, layout.options);
         break;
       case 'd3-force':
-        this.applyD3ForceLayout(nodes, layout.options);
+        this.applyD3ForceLayout(targetNodes, layout.options);
         break;
       case 'hierarchical':
-        this.applyHierarchicalLayout(nodes);
+        this.applyHierarchicalLayout(targetNodes);
         break;
       case 'circular':
-        this.applyCircularLayout(nodes);
+        this.applyCircularLayout(targetNodes);
         break;
       case 'grid':
-        this.applyGridLayout(nodes);
+        this.applyGridLayout(targetNodes);
         break;
     }
+
+    // Update the nodes map with new positions (layout functions modify nodes in place)
+    targetNodes.forEach(node => {
+      this.nodes.set(node.id, node);
+    });
+
+    // Reset layout progress flag
+    this.isLayoutInProgress = false;
 
     this.updateReactFlow();
   }
@@ -489,7 +573,18 @@ export class XYFlowProvider implements GraphProvider {
       alphaDecay = 0.0228
     } = options || {};
 
-    if (nodes.length === 0) return;
+    logger.info('graph', 'D3 Force Layout starting', {
+      nodeCount: nodes.length,
+      iterations,
+      linkDistance,
+      chargeStrength,
+      collisionRadius
+    }, 'XYFlowProvider');
+
+    if (nodes.length === 0) {
+      logger.info('graph', 'D3 Force Layout: No nodes to layout', undefined, 'XYFlowProvider');
+      return;
+    }
 
     // Stop existing simulation if running
     if (this.d3Simulation) {
@@ -499,14 +594,34 @@ export class XYFlowProvider implements GraphProvider {
     // Create deterministic random number generator
     const random = randomLcg(seed);
 
-    // Convert GraphNodes to D3 nodes
-    const d3Nodes: D3Node[] = nodes.map(node => ({
-      id: node.id,
-      type: node.type,
-      label: node.label,
-      x: node.position.x + (random() - 0.5) * 20, // Small random jitter for initial positions
-      y: node.position.y + (random() - 0.5) * 20,
-    }));
+    // Convert GraphNodes to D3 nodes with deterministic positioning for new nodes
+    const d3Nodes: D3Node[] = nodes.map((node, index) => {
+      // For nodes at origin (new nodes), give them deterministic distributed positions
+      if (node.position.x === 0 && node.position.y === 0) {
+        // Use index for deterministic positioning around a circle
+        const angle = (index / nodes.length) * 2 * Math.PI;
+        const radius = 150 + (index % 3) * 50; // Deterministic radius variation
+        return {
+          id: node.id,
+          type: node.type,
+          label: node.label,
+          x: Math.cos(angle) * radius + 400, // Center around 400,300
+          y: Math.sin(angle) * radius + 300,
+        };
+      } else {
+        // For positioned nodes, keep existing position with small deterministic jitter
+        const nodeHash = node.id.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
+        const jitterX = ((nodeHash % 41) - 20); // -20 to 20 range, deterministic
+        const jitterY = (((nodeHash * 17) % 41) - 20); // Different but deterministic
+        return {
+          id: node.id,
+          type: node.type,
+          label: node.label,
+          x: node.position.x + jitterX,
+          y: node.position.y + jitterY,
+        };
+      }
+    });
 
     // Convert GraphEdges to D3 links
     const edges = Array.from(this.edges.values());
@@ -563,6 +678,10 @@ export class XYFlowProvider implements GraphProvider {
         };
       }
     });
+
+    logger.info('graph', 'D3 Force Layout completed', {
+      samplePositions: d3Nodes.slice(0, 3).map(n => ({ id: n.id, x: Math.round(n.x || 0), y: Math.round(n.y || 0) }))
+    }, 'XYFlowProvider');
   }
 
   private applyHierarchicalLayout(nodes: GraphNode[]): void {

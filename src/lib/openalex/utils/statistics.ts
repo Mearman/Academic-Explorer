@@ -5,6 +5,7 @@
 
 import { OpenAlexBaseClient } from '../client';
 import { EntityType, QueryParams as _QueryParams, StatsParams } from '../types';
+import { logger } from '@/lib/logger';
 
 /**
  * Database-wide statistics
@@ -375,7 +376,7 @@ export class StatisticsApi {
           },
         });
       } catch (error) {
-        console.warn(`Failed to get detailed stats for group ${group.key}:`, error);
+        logger.warn('api', `Failed to get detailed stats for group ${group.key}`, { groupKey: group.key, error }, 'StatisticsApi');
       }
     }
 

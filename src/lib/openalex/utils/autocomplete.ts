@@ -5,6 +5,7 @@
 
 import { AutocompleteResult, EntityType, QueryParams } from '../types';
 import { OpenAlexBaseClient } from '../client';
+import { logger } from '@/lib/logger';
 
 interface DebouncedPromiseCache {
   [key: string]: {
@@ -211,7 +212,7 @@ export class AutocompleteApi {
         return this.search(trimmedQuery);
       }
     } catch (error) {
-      console.warn(`Autocomplete failed for query "${query}":`, error);
+      logger.warn('api', `Autocomplete failed for query "${query}"`, { query, error }, 'AutocompleteApi');
       return [];
     }
   }

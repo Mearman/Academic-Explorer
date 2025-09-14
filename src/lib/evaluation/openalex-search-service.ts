@@ -7,6 +7,7 @@ import { openAlex } from '@/lib/openalex';
 import type { Work } from '@/lib/openalex';
 import type { SearchWorksOptions } from '@/lib/openalex/entities/works';
 import type { WorkReference, STARDataset } from './types';
+import { logError, logger } from '@/lib/logger';
 
 /**
  * Configuration for Academic Explorer search behavior
@@ -151,15 +152,18 @@ export async function performAcademicExplorerSearch(
       (searchOptions.filters as Record<string, string>)['type'] = 'journal-article|book-chapter|book|dataset|dissertation|proceedings-article';
     }
 
-    console.log('Performing Academic Explorer search:', {
+    logger.debug('api', 'Performing Academic Explorer search', {
       query,
       options: searchOptions
-    });
+    }, 'OpenAlexSearchService');
 
     // Perform the search
     const response = await openAlex.works.searchWorks(query, searchOptions);
 
-    console.log(`OpenAlex search returned ${response.results.length} results (${response.meta.count} total available)`);
+    logger.info('api', `OpenAlex search returned ${response.results.length} results (${response.meta.count} total available)`, {
+      resultCount: response.results.length,
+      totalAvailable: response.meta.count
+    }, 'OpenAlexSearchService');
 
     // Convert all results to WorkReference format
     const workReferences = response.results
@@ -169,7 +173,7 @@ export async function performAcademicExplorerSearch(
     return workReferences;
 
   } catch (error) {
-    console.error('Academic Explorer search failed:', error);
+    logError('Academic Explorer search failed', error, 'OpenAlexSearchService', 'api');
     throw new Error(`Academic Explorer search failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
   }
 }
@@ -196,7 +200,7 @@ export async function searchBasedOnSTARDataset(
       : config.yearRange
   };
 
-  console.log('Searching based on STAR dataset:', {
+  logger.debug('api', 'Searching based on STAR dataset', {
     datasetName: dataset.name,
     extractedQuery: query,
     dateRange: mergedConfig.yearRange,

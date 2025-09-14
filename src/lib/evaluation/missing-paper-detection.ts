@@ -6,6 +6,7 @@
 import { openAlex, buildFilterString } from '@/lib/openalex';
 import type { WorkReference, STARDataset } from './types';
 import { convertWorkToReference } from './openalex-search-service';
+import { logError } from '@/lib/logger';
 
 /**
  * Configuration for missing paper detection algorithms
@@ -182,7 +183,7 @@ async function performTemporalGapAnalysis(
 
     return works.map(convertWorkToReference);
   } catch (error) {
-    console.error('Temporal gap analysis failed:', error);
+    logError('Temporal gap analysis failed', error, 'MissingPaperDetection', 'api');
     return [];
   }
 }
@@ -249,7 +250,7 @@ async function performCitationNetworkAnalysis(
       // Small delay to avoid rate limiting
       await new Promise(resolve => setTimeout(resolve, 100));
     } catch (error) {
-      console.error(`Citation analysis failed for paper ${paper.openalexId}:`, error);
+      logError(`Citation analysis failed for paper ${paper.openalexId}`, error, 'MissingPaperDetection', 'api');
     }
   }
 
@@ -318,7 +319,7 @@ async function performAuthorNetworkAnalysis(
 
     candidates.push(...works.map(convertWorkToReference));
   } catch (error) {
-    console.error('Author network analysis failed:', error);
+    logError('Author network analysis failed', error, 'MissingPaperDetection', 'api');
   }
 
   onProgress?.({
@@ -385,7 +386,7 @@ async function performKeywordExpansionAnalysis(
       // Small delay to avoid rate limiting
       await new Promise(resolve => setTimeout(resolve, 150));
     } catch (error) {
-      console.error(`Keyword expansion search failed for terms ${termPair}:`, error);
+      logError(`Keyword expansion search failed for terms ${termPair}`, error, 'MissingPaperDetection', 'api');
     }
   }
 

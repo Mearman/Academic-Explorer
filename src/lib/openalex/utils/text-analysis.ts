@@ -5,6 +5,7 @@
 
 import { TextAnalysis } from '../types';
 import { OpenAlexBaseClient } from '../client';
+import { logger } from '@/lib/logger';
 
 /**
  * Text analysis options
@@ -112,7 +113,7 @@ export class TextAnalysisApi {
 
       const batchPromises = batch.map(text =>
         this.analyzeText(text, analysisOptions).catch(error => {
-          console.warn(`Failed to analyze text: ${text.substring(0, 50)}...`, error);
+          logger.warn('api', `Failed to analyze text: ${text.substring(0, 50)}...`, { text: text.substring(0, 100), error }, 'TextAnalysisApi');
           return null;
         })
       );
