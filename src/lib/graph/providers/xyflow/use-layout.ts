@@ -120,7 +120,7 @@ export function useLayout(
 		const linkDistance = 300; // Reduced distance between linked nodes
 		const linkStrength = 0.3; // Increased strength to pull connected nodes closer
 		const chargeStrength = -2000; // Reduced repulsion for closer spacing
-		const centerStrength = 0.003; // Minimal centering to reduce movement during simulation
+		const centerStrength = 0.05; // Stronger centering to keep graph anchored at (0,0)
 		const collisionRadius = 150; // Reduced collision zones for closer packing
 		const collisionStrength = 2.0; // Reduced collision strength to allow closer spacing
 		const velocityDecay = 0.1; // Very low decay for maximum movement
@@ -153,13 +153,14 @@ export function useLayout(
 		// Get current viewport information to calculate where nodes should center
 		const viewport = getViewport();
 
-		// Calculate the current viewport center in world coordinates
+		// Keep (0,0) as the fixed center point regardless of viewport position
+		// This ensures the graph origin remains stable during panning and zooming
+		const centerX = 0;
+		const centerY = 0;
+
+		// Calculate viewport center for logging purposes only
 		const viewportCenterX = containerDimensions ? -viewport.x + (containerDimensions.width / 2) / viewport.zoom : 800;
 		const viewportCenterY = containerDimensions ? -viewport.y + (containerDimensions.height / 2) / viewport.zoom : 400;
-
-		// Use viewport center as simulation center so nodes animate around current view
-		const centerX = viewportCenterX;
-		const centerY = viewportCenterY;
 
 		// Create deterministic random source
 		const random = randomLcg(seed);
@@ -241,14 +242,14 @@ export function useLayout(
 			"useLayout",
 		);
 
-		logger.info("graph", "Using center coordinates for force simulation", {
+		logger.info("graph", "Using fixed center coordinates (0,0) for force simulation", {
 			centerX,
 			centerY,
 			viewportCenterX,
 			viewportCenterY,
 			containerDimensions,
 			viewport: { x: viewport.x, y: viewport.y, zoom: viewport.zoom },
-			reason: containerDimensions ? "Using viewport center for stable animation" : "Using fallback center"
+			reason: "Using fixed (0,0) center for stable graph origin"
 		}, "useLayout");
 
 		// Configure forces
