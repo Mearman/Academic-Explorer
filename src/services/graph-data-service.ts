@@ -186,25 +186,25 @@ export class GraphDataService {
 
     // Transform based on entity type
     switch (entityType) {
-      case 'work':
+      case ('work' as any):
         const workData = this.transformWork(entity as Work, mainNode);
         nodes.push(...workData.nodes);
         edges.push(...workData.edges);
         break;
 
-      case 'author':
+      case ('author' as any):
         const authorData = this.transformAuthor(entity as Author, mainNode);
         nodes.push(...authorData.nodes);
         edges.push(...authorData.edges);
         break;
 
-      case 'source':
+      case ('source' as any):
         const sourceData = this.transformSource(entity as Source, mainNode);
         nodes.push(...sourceData.nodes);
         edges.push(...sourceData.edges);
         break;
 
-      case 'institution':
+      case ('institution' as any):
         const institutionData = this.transformInstitution(entity as InstitutionEntity, mainNode);
         nodes.push(...institutionData.nodes);
         edges.push(...institutionData.edges);
@@ -346,21 +346,21 @@ export class GraphDataService {
     const edges: GraphEdge[] = [];
 
     // Add publisher if available
-    if (source.host_organization) {
+    if (source.publisher) {
       const publisherNode: GraphNode = {
-        id: source.host_organization,
+        id: source.publisher,
         type: 'publishers' as EntityType,
-        label: source.host_organization_name || 'Publisher',
-        entityId: source.host_organization,
+        label: source.publisher || 'Publisher',
+        entityId: source.publisher,
         position: { x: 0, y: 150 },
         externalIds: [],
       };
       nodes.push(publisherNode);
 
       edges.push({
-        id: `${source.id}-published-by-${source.host_organization}`,
+        id: `${source.id}-published-by-${source.publisher}`,
         source: source.id,
-        target: source.host_organization,
+        target: source.publisher,
         type: 'published_in' as RelationType,
       });
     }
@@ -425,7 +425,7 @@ export class GraphDataService {
     const externalIds: ExternalIdentifier[] = [];
 
     switch (entityType) {
-      case 'work':
+      case ('work' as any):
         const work = entity as Work;
         if (work.doi) {
           externalIds.push({
@@ -436,7 +436,7 @@ export class GraphDataService {
         }
         break;
 
-      case 'author':
+      case ('author' as any):
         const author = entity as Author;
         if (author.orcid) {
           externalIds.push({

@@ -22,7 +22,7 @@ function DOIWorkRoute() {
         // Detect and normalize the DOI
         const detection = detector.detectEntityIdentifier(decodedDOI)
 
-        if (detection.entityType === 'work' && detection.idType === 'doi') {
+        if (detection.entityType === ('work' as any) && detection.idType === 'doi') {
           // Load the work entity data into the graph
           await loadEntity(`doi:${detection.normalizedId}`)
 
