@@ -1,0 +1,465 @@
+/**
+ * Abstract Entity class for OpenAlex entity operations
+ * Provides base functionality for entity-specific operations like expansion, transformation, validation
+ */
+
+import type { RateLimitedOpenAlexClient } from '@/lib/openalex/rate-limited-client';
+import { logger } from '@/lib/logger';
+import type {
+  GraphNode,
+  GraphEdge,
+  EntityType,
+  RelationType,
+  ExternalIdentifier
+} from '@/lib/graph/types';
+import type { OpenAlexEntity } from '@/lib/openalex/types';
+
+/**
+ * Options for entity expansion
+ */
+export interface ExpansionOptions {
+  limit?: number;
+  depth?: number;
+  relationTypes?: RelationType[];
+  force?: boolean;
+  selectFields?: string[]; // Fields to select for minimal API payload
+}
+
+/**
+ * Result of entity expansion
+ */
+export interface ExpansionResult {
+  nodes: GraphNode[];
+  edges: GraphEdge[];
+}
+
+/**
+ * Context for entity operations
+ */
+export interface EntityContext {
+  entityId: string;
+  entityType: EntityType;
+  client: RateLimitedOpenAlexClient;
+}
+
+/**
+ * Abstract base class for all OpenAlex entities
+ * Provides common functionality while allowing entity-specific implementations
+ * Handles both full and dehydrated entities automatically
+ */
+export abstract class AbstractEntity<TEntity extends OpenAlexEntity> {
+  protected readonly client: RateLimitedOpenAlexClient;
+  protected readonly entityType: EntityType;
+  protected readonly entityData?: TEntity;
+
+  constructor(client: RateLimitedOpenAlexClient, entityType: EntityType, entityData?: TEntity) {
+    this.client = client;
+    this.entityType = entityType;
+    this.entityData = entityData;
+  }
+
+  /**
+   * Abstract method to expand the entity (get related entities)
+   * Each entity type implements its own expansion logic
+   */
+  abstract expand(context: EntityContext, options: ExpansionOptions): Promise<ExpansionResult>;
+
+  /**
+   * Abstract method to check if entity is dehydrated
+   * Each entity type defines what fields are required for full hydration
+   */
+  protected abstract isDehydrated(entity: TEntity): boolean;
+
+  /**
+   * Get minimal fields required for graph display for this entity type
+   * Can be overridden for entity-specific requirements
+   */
+  protected getMinimalFields(): string[] {
+    return ['id', 'display_name'];
+  }
+
+  /**
+   * Get fields required for metadata extraction
+   * Can be overridden for entity-specific metadata requirements
+   */
+  protected getMetadataFields(): string[] {
+    return this.getMinimalFields(); // Default: same as minimal
+  }
+
+  /**
+   * Get fields that contain IDs of related entities for expansion
+   * These are the fields needed to discover related entities without fetching full metadata
+   * Can be overridden for entity-specific expansion requirements
+   */
+  protected getExpansionFields(): string[] {
+    return ['id', 'display_name']; // Default: minimal fields only
+  }
+
+  /**
+   * Get combined fields for expansion (expansion fields + metadata fields)
+   * This allows fetching entity with both relationship data and rich metadata in one API call
+   * Reduces total API calls during expansion
+   */
+  protected getCombinedExpansionFields(): string[] {
+    const expansionFields = this.getExpansionFields();
+    const metadataFields = this.getMetadataFields();
+
+    // Combine and deduplicate fields
+    const allFields = [...new Set([...expansionFields, ...metadataFields])];
+    return allFields;
+  }
+
+  /**
+   * Abstract method to extract external identifiers
+   * Each entity type has different external IDs (DOI, ORCID, ROR, etc.)
+   */
+  protected abstract extractExternalIds(entity: TEntity): ExternalIdentifier[];
+
+  /**
+   * Abstract method to extract metadata
+   * Each entity type has different metadata fields
+   */
+  protected abstract extractMetadata(entity: TEntity): Record<string, unknown>;
+
+  /**
+   * Extract minimal metadata from dehydrated entities for graph display
+   * Only extracts fields that are guaranteed to be present in dehydrated versions
+   * Can be overridden for entity-specific minimal data
+   */
+  protected extractMinimalMetadata(entity: TEntity): Record<string, unknown> {
+    return {
+      displayName: entity.display_name,
+      entityType: this.entityType
+    };
+  }
+
+  /**
+   * Transform OpenAlex entity to GraphNode
+   * Uses the abstract methods for entity-specific data extraction
+   * Works with both full and dehydrated entities
+   */
+  public transformToGraphNode(entity: TEntity, position?: { x: number; y: number }): GraphNode {
+    const externalIds = this.extractExternalIds(entity);
+    const metadata = this.isDehydrated(entity)
+      ? this.extractMinimalMetadata(entity)
+      : this.extractMetadata(entity);
+
+    return {
+      id: entity.id,
+      type: this.entityType,
+      label: this.getDisplayName(entity),
+      entityId: entity.id,
+      position: position || this.generateRandomPosition(),
+      externalIds,
+      metadata: {
+        ...metadata,
+        isDehydrated: this.isDehydrated(entity)
+      },
+    };
+  }
+
+  /**
+   * Create an edge between two entities
+   */
+  protected createEdge(
+    sourceId: string,
+    targetId: string,
+    relationType: RelationType,
+    weight?: number,
+    label?: string
+  ): GraphEdge {
+    return {
+      id: `${sourceId}-${relationType}-${targetId}`,
+      source: sourceId,
+      target: targetId,
+      type: relationType,
+      label: label || relationType.replace(/_/g, ' '),
+      weight: weight || 1.0,
+    };
+  }
+
+  /**
+   * Get display name for entity
+   * Can be overridden for entity-specific formatting
+   */
+  protected getDisplayName(entity: TEntity): string {
+    return entity.display_name || 'Unknown Entity';
+  }
+
+  /**
+   * Generate a random position for node placement
+   * Can be overridden for entity-specific positioning logic
+   */
+  protected generateRandomPosition(): { x: number; y: number } {
+    return {
+      x: Math.random() * 400 - 200,
+      y: Math.random() * 300 - 150
+    };
+  }
+
+  /**
+   * Generate deterministic position based on index
+   */
+  protected generateDeterministicPosition(index: number, total: number): { x: number; y: number } {
+    const angle = (index / total) * 2 * Math.PI;
+    const radius = 150 + (index % 3) * 50;
+    return {
+      x: Math.cos(angle) * radius,
+      y: Math.sin(angle) * radius,
+    };
+  }
+
+  /**
+   * Check if nodes array already contains a node with the given ID
+   */
+  protected hasNode(nodes: GraphNode[], nodeId: string): boolean {
+    return nodes.some(n => n.id === nodeId);
+  }
+
+  /**
+   * Handle operation errors gracefully
+   */
+  protected handleError(error: unknown, operation: string, context: EntityContext): void {
+    const errorMessage = error instanceof Error ? error : new Error(String(error));
+    logger.error(
+      'api',
+      `Failed to ${operation} ${this.entityType} ${context.entityId}`,
+      { entityType: this.entityType, entityId: context.entityId, operation, error: errorMessage.message },
+      'AbstractEntity'
+    );
+  }
+
+  /**
+   * Fetch entity with minimal fields for efficient graph node creation
+   * Uses select parameter to reduce API payload size
+   */
+  public async fetchMinimal(entityId: string): Promise<TEntity> {
+    try {
+      const fields = this.getMinimalFields();
+      const entity = await this.client.getEntity(entityId, { select: fields });
+      if (!this.validate(entity)) {
+        throw new Error(`Invalid entity returned for ${entityId}`);
+      }
+      return entity;
+    } catch (error) {
+      logger.warn(
+        'api',
+        `Failed to fetch minimal ${this.entityType} ${entityId}, trying full fetch`,
+        { entityType: this.entityType, entityId, fields: this.getMinimalFields(), error },
+        'AbstractEntity'
+      );
+      // Fallback to full entity fetch
+      const fullEntity = await this.client.getEntity(entityId);
+      if (!this.validate(fullEntity)) {
+        throw new Error(`Invalid full entity returned for ${entityId}`);
+      }
+      return fullEntity;
+    }
+  }
+
+  /**
+   * Fetch entity with metadata fields for rich graph display
+   * Uses select parameter with metadata-specific fields
+   */
+  public async fetchWithMetadata(entityId: string): Promise<TEntity> {
+    try {
+      const fields = this.getMetadataFields();
+      const entity = await this.client.getEntity(entityId, { select: fields });
+      if (!this.validate(entity)) {
+        throw new Error(`Invalid entity returned for ${entityId}`);
+      }
+      return entity;
+    } catch (error) {
+      logger.warn(
+        'api',
+        `Failed to fetch ${this.entityType} ${entityId} with metadata, trying full fetch`,
+        { entityType: this.entityType, entityId, fields: this.getMetadataFields(), error },
+        'AbstractEntity'
+      );
+      // Fallback to full entity fetch
+      const fullEntity = await this.client.getEntity(entityId);
+      if (!this.validate(fullEntity)) {
+        throw new Error(`Invalid full entity returned for ${entityId}`);
+      }
+      return fullEntity;
+    }
+  }
+
+  /**
+   * Fetch entity with only fields needed for expansion (related entity IDs)
+   * Uses select parameter to get only the relationship fields
+   */
+  public async fetchForExpansion(entityId: string): Promise<TEntity> {
+    try {
+      const fields = this.getExpansionFields();
+      const entity = await this.client.getEntity(entityId, { select: fields });
+      if (!this.validate(entity)) {
+        throw new Error(`Invalid entity returned for ${entityId}`);
+      }
+      return entity;
+    } catch (error) {
+      logger.warn(
+        'api',
+        `Failed to fetch ${this.entityType} ${entityId} for expansion, trying full fetch`,
+        { entityType: this.entityType, entityId, fields: this.getExpansionFields(), error },
+        'AbstractEntity'
+      );
+      // Fallback to full entity fetch
+      const fullEntity = await this.client.getEntity(entityId);
+      if (!this.validate(fullEntity)) {
+        throw new Error(`Invalid full entity returned for ${entityId}`);
+      }
+      return fullEntity;
+    }
+  }
+
+  /**
+   * Fetch entity with combined fields (expansion + metadata) for efficient expansion
+   * Gets both relationship data and rich metadata in a single API call
+   * Optimizes for expansion operations that need both types of data
+   */
+  public async fetchForFullExpansion(entityId: string): Promise<TEntity> {
+    try {
+      const fields = this.getCombinedExpansionFields();
+      const entity = await this.client.getEntity(entityId, { select: fields });
+      if (!this.validate(entity)) {
+        throw new Error(`Invalid entity returned for ${entityId}`);
+      }
+      return entity;
+    } catch (error) {
+      logger.warn(
+        'api',
+        `Failed to fetch ${this.entityType} ${entityId} for full expansion, trying full fetch`,
+        { entityType: this.entityType, entityId, fields: this.getCombinedExpansionFields(), error },
+        'AbstractEntity'
+      );
+      // Fallback to full entity fetch
+      const fullEntity = await this.client.getEntity(entityId);
+      if (!this.validate(fullEntity)) {
+        throw new Error(`Invalid full entity returned for ${entityId}`);
+      }
+      return fullEntity;
+    }
+  }
+
+  /**
+   * Hydrate a dehydrated entity by fetching full data
+   * Returns the full entity data if dehydrated, otherwise returns original
+   */
+  public async hydrate(entity: TEntity): Promise<TEntity> {
+    if (!this.isDehydrated(entity)) {
+      return entity;
+    }
+
+    try {
+      const fullEntity = await this.client.getEntity(entity.id);
+      if (!this.validate(fullEntity)) {
+        throw new Error(`Invalid hydrated entity returned for ${entity.id}`);
+      }
+      return fullEntity;
+    } catch (error) {
+      logger.warn(
+        'api',
+        `Failed to hydrate ${this.entityType} ${entity.id}, using dehydrated version`,
+        { entityType: this.entityType, entityId: entity.id, error },
+        'AbstractEntity'
+      );
+      return entity;
+    }
+  }
+
+  /**
+   * Ensure entity is hydrated before performing operations that need full data
+   * Used internally by methods that require more than basic fields
+   */
+  protected async ensureHydrated(entity: TEntity): Promise<TEntity> {
+    return await this.hydrate(entity);
+  }
+
+  /**
+   * Fetch related entity with appropriate field selection for graph display
+   * Uses EntityFactory to get the correct entity type and its minimal fields
+   */
+  protected async fetchRelatedEntity(entityId: string, preferMetadata: boolean = false): Promise<OpenAlexEntity | null> {
+    try {
+      // Import EntityFactory dynamically to avoid circular imports
+      const { EntityFactory } = await import('./entity-factory');
+
+      // Detect the entity type from the ID
+      const entityType = EntityFactory.detectEntityType(entityId);
+
+      // Create the appropriate entity instance
+      const relatedEntityInstance = EntityFactory.create(entityType, this.client);
+
+      // Fetch with appropriate field selection
+      const relatedEntity = preferMetadata
+        ? await relatedEntityInstance.fetchWithMetadata(entityId)
+        : await relatedEntityInstance.fetchMinimal(entityId);
+
+      return relatedEntity;
+    } catch (error) {
+      logger.warn(
+        'api',
+        `Failed to fetch related entity ${entityId}`,
+        { entityId, preferMetadata, error },
+        'AbstractEntity'
+      );
+      return null;
+    }
+  }
+
+  /**
+   * Batch fetch multiple related entities with field selection
+   * More efficient for fetching multiple entities of the same type
+   */
+  protected async fetchRelatedEntities(
+    entityIds: string[],
+    preferMetadata: boolean = false,
+    sequential: boolean = true
+  ): Promise<OpenAlexEntity[]> {
+    if (entityIds.length === 0) return [];
+
+    const results: OpenAlexEntity[] = [];
+
+    if (sequential) {
+      // Sequential processing to avoid rate limits
+      for (const entityId of entityIds) {
+        const entity = await this.fetchRelatedEntity(entityId, preferMetadata);
+        if (entity) {
+          results.push(entity);
+        }
+      }
+    } else {
+      // Parallel processing (use with caution due to rate limits)
+      const promises = entityIds.map(entityId => this.fetchRelatedEntity(entityId, preferMetadata));
+      const entities = await Promise.all(promises);
+      results.push(...entities.filter(Boolean) as OpenAlexEntity[]);
+    }
+
+    return results;
+  }
+
+  /**
+   * Validate entity data
+   * Can be overridden for entity-specific validation
+   */
+  public validate(entity: TEntity): boolean {
+    return Boolean(entity?.id && entity?.display_name);
+  }
+
+  /**
+   * Get entity summary for display
+   * Can be overridden for entity-specific summary generation
+   */
+  public getSummary(entity: TEntity): string {
+    return `${this.entityType}: ${this.getDisplayName(entity)}`;
+  }
+
+  /**
+   * Get search filters for this entity type
+   * Can be overridden for entity-specific search logic
+   */
+  public getSearchFilters(): Record<string, unknown> {
+    return {};
+  }
+}
