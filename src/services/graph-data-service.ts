@@ -20,6 +20,9 @@ import type {
   Author,
   Source,
   InstitutionEntity,
+  Topic,
+  Publisher,
+  Funder,
   OpenAlexEntity,
 } from '@/lib/openalex/types';
 
@@ -186,29 +189,33 @@ export class GraphDataService {
 
     // Transform based on entity type
     switch (entityType) {
-      case ('work' as any):
+      case 'works': {
         const workData = this.transformWork(entity as Work, mainNode);
         nodes.push(...workData.nodes);
         edges.push(...workData.edges);
         break;
+      }
 
-      case ('author' as any):
+      case 'authors': {
         const authorData = this.transformAuthor(entity as Author, mainNode);
         nodes.push(...authorData.nodes);
         edges.push(...authorData.edges);
         break;
+      }
 
-      case ('source' as any):
+      case 'sources': {
         const sourceData = this.transformSource(entity as Source, mainNode);
         nodes.push(...sourceData.nodes);
         edges.push(...sourceData.edges);
         break;
+      }
 
-      case ('institution' as any):
+      case 'institutions': {
         const institutionData = this.transformInstitution(entity as InstitutionEntity, mainNode);
         nodes.push(...institutionData.nodes);
         edges.push(...institutionData.edges);
         break;
+      }
     }
 
     return { nodes, edges };
@@ -425,7 +432,7 @@ export class GraphDataService {
     const externalIds: ExternalIdentifier[] = [];
 
     switch (entityType) {
-      case ('work' as any):
+      case 'works': {
         const work = entity as Work;
         if (work.doi) {
           externalIds.push({
@@ -435,8 +442,9 @@ export class GraphDataService {
           });
         }
         break;
+      }
 
-      case ('author' as any):
+      case 'authors': {
         const author = entity as Author;
         if (author.orcid) {
           externalIds.push({
@@ -446,8 +454,9 @@ export class GraphDataService {
           });
         }
         break;
+      }
 
-      case ('source' as any):
+      case 'sources': {
         const source = entity as Source;
         if (source.issn_l) {
           externalIds.push({
@@ -457,8 +466,9 @@ export class GraphDataService {
           });
         }
         break;
+      }
 
-      case ('institution' as any):
+      case 'institutions': {
         const institution = entity as InstitutionEntity;
         if (institution.ror) {
           externalIds.push({
@@ -468,6 +478,7 @@ export class GraphDataService {
           });
         }
         break;
+      }
     }
 
     return externalIds;
@@ -480,31 +491,35 @@ export class GraphDataService {
     const metadata: Record<string, unknown> = {};
 
     switch (entityType) {
-      case ('work' as any):
+      case 'works': {
         const work = entity as Work;
         metadata.year = work.publication_year;
         metadata.citationCount = work.cited_by_count;
         metadata.openAccess = work.open_access?.is_oa;
         break;
+      }
 
-      case ('author' as any):
+      case 'authors': {
         const author = entity as Author;
         metadata.worksCount = author.works_count;
         metadata.citationCount = author.cited_by_count;
         break;
+      }
 
-      case ('source' as any):
+      case 'sources': {
         const source = entity as Source;
         metadata.worksCount = source.works_count;
         metadata.type = source.type;
         break;
+      }
 
-      case ('institution' as any):
+      case 'institutions': {
         const institution = entity as InstitutionEntity;
         metadata.worksCount = institution.works_count;
         metadata.country = institution.country_code;
         metadata.type = institution.type;
         break;
+      }
     }
 
     return metadata;
@@ -903,9 +918,9 @@ export class GraphDataService {
     authors: Author[];
     sources: Source[];
     institutions: InstitutionEntity[];
-    topics?: any[];
-    publishers?: any[];
-    funders?: any[];
+    topics?: Topic[];
+    publishers?: Publisher[];
+    funders?: Funder[];
   }): { nodes: GraphNode[]; edges: GraphEdge[] } {
     const nodes: GraphNode[] = [];
     const edges: GraphEdge[] = [];
