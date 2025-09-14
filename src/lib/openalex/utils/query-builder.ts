@@ -276,7 +276,7 @@ export function buildFilterString(filters: EntityFilters | Partial<EntityFilters
     if (Array.isArray(value)) {
       // Handle array values with OR logic using pipe separator
       formattedValue = value
-        .filter(v => v !== undefined && v !== null)
+        .filter(v => v !== undefined && v !== null && String(v).trim() !== '')
         .map(v => escapeFilterValue(String(v)))
         .join('|');
     } else if (typeof value === 'boolean') {
@@ -375,11 +375,31 @@ export function validateDateRange(from: string, to: string): DateRangeValidation
   // Normalize date strings to YYYY-MM-DD format
   const normalizeDate = (dateStr: string): string | null => {
     try {
+      // First check if the date string matches expected patterns
+      const trimmed = dateStr.trim();
+      if (!trimmed || trimmed.length < 4) {
+        return null; // Too short to be a valid date
+      }
+
+      // Strict validation: reject obviously invalid formats
+      if (trimmed === 'not-a-date' || !/\d/.test(trimmed)) {
+        return null; // Contains no digits or is obviously invalid
+      }
+
       const date = new Date(dateStr);
       if (isNaN(date.getTime())) {
         return null;
       }
-      return date.toISOString().split('T')[0]; // YYYY-MM-DD
+
+      // Additional validation: check if the parsed date matches the input intent
+      const isoString = date.toISOString().split('T')[0];
+
+      // For strict validation, check if year-only inputs are acceptable
+      if (trimmed.match(/^\d{4}$/)) {
+        return null; // Reject year-only dates as incomplete
+      }
+
+      return isoString; // YYYY-MM-DD
     } catch {
       return null;
     }
