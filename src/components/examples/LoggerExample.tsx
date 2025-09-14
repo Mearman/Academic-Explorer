@@ -70,7 +70,7 @@ export function LoggerExample() {
       // Simulate an error
       throw new Error('This is a simulated error for logging demonstration');
     } catch (error) {
-      logError('Failed to process data', error as Error, 'LoggerExample', 'ui');
+      logError('Failed to process data', error instanceof Error ? error : new Error(String(error)), 'LoggerExample', 'ui');
     }
 
     componentLogger.warn('Simulated error logged');
@@ -85,7 +85,7 @@ export function LoggerExample() {
       timestamp: new Date().toISOString()
     });
 
-    componentLogger.debug(`Button clicked, counter is now ${counter + 1}`);
+    componentLogger.debug(`Button clicked, counter is now ${(counter + 1).toString()}`);
   };
 
   const handleDirectLogExample = () => {
