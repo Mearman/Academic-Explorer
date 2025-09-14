@@ -127,28 +127,6 @@ function RootLayout() {
                 About
               </Link>
               <Link
-                to="/demo"
-                style={{
-                  color: colors.text.primary,
-                  textDecoration: 'none',
-                  padding: '0.5rem 0.75rem',
-                  borderRadius: '6px',
-                  fontSize: '14px',
-                  fontWeight: '500',
-                  transition: 'all 0.2s ease',
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.backgroundColor = colors.background.tertiary;
-                  e.currentTarget.style.color = colors.primary;
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.backgroundColor = 'transparent';
-                  e.currentTarget.style.color = colors.text.primary;
-                }}
-              >
-                Query Demo
-              </Link>
-              <Link
                 to="/evaluation"
                 style={{
                   color: colors.text.primary,
