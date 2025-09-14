@@ -2,13 +2,52 @@ import { createRootRoute, Link, Outlet } from '@tanstack/react-router'
 import { TanStackRouterDevtools } from '@tanstack/router-devtools'
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import { Group, Text, ActionIcon, useMantineColorScheme, Paper } from '@mantine/core'
-import { IconMoon, IconSun } from '@tabler/icons-react'
+import { IconMoon, IconSun, IconDeviceDesktop } from '@tabler/icons-react'
 import { MainLayout } from '@/components/layout/MainLayout'
 import { themeClass } from '../styles/theme.css'
 import { navigation, navLink } from '../styles/layout.css'
 
 function RootLayout() {
-  const { colorScheme, toggleColorScheme } = useMantineColorScheme()
+  const { colorScheme, setColorScheme } = useMantineColorScheme()
+
+  // Get system preference
+  const getSystemTheme = () => {
+    return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
+  }
+
+  // Cycle through: auto -> opposite-of-system -> auto (simplified 2-state cycle)
+  const cycleColorScheme = () => {
+    const systemTheme = getSystemTheme()
+
+    if (colorScheme === 'auto') {
+      // After auto, show the opposite of system theme
+      setColorScheme(systemTheme === 'dark' ? 'light' : 'dark')
+    } else {
+      // From any explicit mode, go back to auto
+      setColorScheme('auto')
+    }
+  }
+
+  // Get the appropriate icon based on current scheme
+  const getThemeIcon = () => {
+    if (colorScheme === 'auto') {
+      return <IconDeviceDesktop size={18} />
+    } else if (colorScheme === 'dark') {
+      return <IconSun size={18} />
+    } else {
+      return <IconMoon size={18} />
+    }
+  }
+
+  // Get aria label for accessibility
+  const getAriaLabel = () => {
+    const systemTheme = getSystemTheme()
+    if (colorScheme === 'auto') {
+      return `Current: Auto (${systemTheme}). Click for ${systemTheme === 'dark' ? 'light' : 'dark'} mode`
+    } else {
+      return `Current: ${colorScheme === 'light' ? 'Light' : 'Dark'} mode. Click for auto mode`
+    }
+  }
 
   return (
     <div className={themeClass} style={{ height: '100vh', display: 'flex', flexDirection: 'column' }}>
@@ -46,12 +85,12 @@ function RootLayout() {
             </nav>
 
             <ActionIcon
-              onClick={() => toggleColorScheme()}
+              onClick={cycleColorScheme}
               variant="outline"
               size="lg"
-              aria-label="Toggle color scheme"
+              aria-label={getAriaLabel()}
             >
-              {colorScheme === 'dark' ? <IconSun size={18} /> : <IconMoon size={18} />}
+              {getThemeIcon()}
             </ActionIcon>
           </Group>
         </Group>
