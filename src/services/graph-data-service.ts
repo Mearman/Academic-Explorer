@@ -1032,7 +1032,7 @@ export class GraphDataService {
     return { nodes, edges };
   }
 
-  private determineLayout(nodeCount: number, edgeCount: number) {
+  private determineLayout(nodeCount: number, _edgeCount: number) {
     if (nodeCount <= 5) {
       return { type: 'circular' as const };
     } else if (nodeCount <= 20) {

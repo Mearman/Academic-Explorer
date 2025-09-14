@@ -22,7 +22,7 @@ function ISSNSourceRoute() {
         // Detect and normalize the ISSN
         const detection = detector.detectEntityIdentifier(decodedISSN)
 
-        if (detection.entityType === ('source' as any) && detection.idType === 'issn_l') {
+        if (detection.entityType === 'sources' && detection.idType === 'issn_l') {
           // Load the source entity data into the graph
           await loadEntity(`issn:${detection.normalizedId}`)
 

@@ -24,7 +24,6 @@ function ExternalIdRoute() {
 
         if (detection.entityType && detection.idType !== 'openalex') {
           // This is a recognized external ID, redirect to specific route
-          const entityTypePlural = detection.entityType + 's'
           let specificRoute: string
 
           switch (detection.idType) {
