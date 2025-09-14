@@ -423,10 +423,10 @@ export class OpenAlexClient {
         yield* this.topics.stream(params as any) as AsyncGenerator<T[], void, unknown>;
         break;
       case 'publishers':
-        yield* this.publishers.streamPublishers(params) as AsyncGenerator<T[], void, unknown>;
+        yield* this.publishers.stream(params as any) as AsyncGenerator<T[], void, unknown>;
         break;
       case 'funders':
-        yield* this.funders.streamFunders(params) as AsyncGenerator<T[], void, unknown>;
+        yield* this.funders.stream(params as any) as AsyncGenerator<T[], void, unknown>;
         break;
       case 'keywords':
         yield* this.keywords.streamKeywords(params) as AsyncGenerator<T[], void, unknown>;
