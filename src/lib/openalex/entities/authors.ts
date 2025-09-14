@@ -375,7 +375,12 @@ export class AuthorsApi {
     );
 
     return collaboratorResults
-      .filter((result): result is PromiseFulfilledResult<unknown> =>
+      .filter((result): result is PromiseFulfilledResult<{
+        author: Author;
+        collaboration_count: number;
+        first_collaboration_year: number | undefined;
+        last_collaboration_year: number | undefined;
+      }> =>
         result.status === 'fulfilled' && result.value !== null
       )
       .map(result => result.value);
