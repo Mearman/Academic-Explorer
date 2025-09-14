@@ -213,6 +213,16 @@ export const setupGlobalErrorHandling = () => {
 
   // Handle JavaScript errors
   window.addEventListener('error', (event) => {
+    const errorMessage = event.error?.message || event.message || '';
+
+    // Filter out benign ResizeObserver errors
+    if (errorMessage.includes('ResizeObserver loop completed with undelivered notifications')) {
+      // This is a benign browser warning that occurs when ResizeObserver
+      // callbacks take too long or trigger layout changes. It's not actionable
+      // and doesn't indicate a real error in the application.
+      return;
+    }
+
     logError('JavaScript error', event.error || new Error(event.message), event.filename);
   });
 
