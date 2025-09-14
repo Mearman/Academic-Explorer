@@ -132,14 +132,14 @@ export class StatisticsApi {
     });
 
     const entityCounts = await Promise.all(entityCountPromises);
-    const totalEntities: Record<EntityType, number> = {} as Record<EntityType, number>;
+    const totalEntities: Record<EntityType, number> = {};
 
     entityCounts.forEach(({ entityType, count }) => {
       totalEntities[entityType] = count;
     });
 
     // Get growth rates (comparing last year to previous year)
-    const growthRates: Record<EntityType, { yearly_growth: number; monthly_growth: number; total_added_last_year: number }> = {} as Record<EntityType, { yearly_growth: number; monthly_growth: number; total_added_last_year: number }>;
+    const growthRates: Record<EntityType, { yearly_growth: number; monthly_growth: number; total_added_last_year: number }> = {};
 
     for (const entityType of entityTypes) {
       try {
