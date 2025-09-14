@@ -16,7 +16,6 @@ import {
   BackgroundVariant,
   Panel,
   type Node as XYNode,
-  type Edge as XYEdge,
 } from '@xyflow/react';
 import { useNavigate } from '@tanstack/react-router';
 
@@ -27,6 +26,7 @@ import { XYFlowProvider } from '@/lib/graph/providers/xyflow/xyflow-provider';
 import { nodeTypes } from '@/lib/graph/providers/xyflow/node-types';
 import type { GraphNode } from '@/lib/graph/types';
 import { EntityDetector } from '@/lib/graph/utils/entity-detection';
+import { logger } from '@/lib/logger';
 
 import '@xyflow/react/dist/style.css';
 
@@ -55,7 +55,7 @@ const GraphNavigationInner: React.FC<GraphNavigationProps> = ({ className, style
 
   // XYFlow state - synced with store
   const [nodes, setNodes, onNodesChange] = useNodesState<XYNode>([]);
-  const [edges, setEdges, onEdgesChange] = useEdgesState<XYEdge>([]);
+  const [edges, setEdges, onEdgesChange] = useEdgesState([]);
 
   // Provider instance ref
   const providerRef = useRef<XYFlowProvider | null>(null);
@@ -64,7 +64,11 @@ const GraphNavigationInner: React.FC<GraphNavigationProps> = ({ className, style
   useEffect(() => {
     if (!containerRef.current) return;
 
-    const graphProvider = createGraphProvider('xyflow') as XYFlowProvider;
+    const graphProvider = createGraphProvider('xyflow');
+    // Type guard: we know createGraphProvider('xyflow') returns XYFlowProvider
+    if (!(graphProvider instanceof XYFlowProvider)) {
+      throw new Error('Expected XYFlowProvider instance');
+    }
     providerRef.current = graphProvider;
 
     // Set up navigation events
@@ -73,12 +77,12 @@ const GraphNavigationInner: React.FC<GraphNavigationProps> = ({ className, style
         // Extract clean OpenAlex ID from potential URL
         const cleanId = EntityDetector.extractOpenAlexId(node.entityId);
         // Navigate to entity page using the new route structure
-        navigate({ to: `/${node.type}/${cleanId}` });
+        void navigate({ to: `/${node.type}/${cleanId}` });
       },
 
       onNodeDoubleClick: (node: GraphNode) => {
         // TODO: Expand node functionality
-        console.log('Double clicked node:', node);
+        logger.info('ui', 'Double clicked node', { nodeId: node.id, entityId: node.entityId, entityType: node.type }, 'GraphNavigation');
       },
 
       onNodeHover: (node: GraphNode | null) => {
@@ -88,7 +92,7 @@ const GraphNavigationInner: React.FC<GraphNavigationProps> = ({ className, style
     });
 
     // Initialize with container
-    graphProvider.initialize(containerRef.current);
+    void graphProvider.initialize(containerRef.current);
 
     // Set ReactFlow instance
     graphProvider.setReactFlowInstance(reactFlowInstance);
@@ -188,7 +192,7 @@ const GraphNavigationInner: React.FC<GraphNavigationProps> = ({ className, style
         <Controls />
         <MiniMap
           nodeColor={(node) => {
-            switch (node.data?.entityType) {
+            switch (node.data.entityType) {
               case 'work': return '#e74c3c';
               case 'author': return '#3498db';
               case 'source': return '#2ecc71';

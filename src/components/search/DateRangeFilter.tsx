@@ -32,7 +32,14 @@ export function DateRangeFilter({
           <DatePickerInput
             placeholder="Start date"
             value={startDate}
-            onChange={onStartDateChange as (value: string | null) => void}
+            onChange={(value: string | null) => {
+              if (value === null) {
+                onStartDateChange(null);
+              } else {
+                const date = new Date(value);
+                onStartDateChange(isNaN(date.getTime()) ? null : date);
+              }
+            }}
             leftSection={<IconCalendar size={16} />}
             maxDate={endDate || undefined}
             disabled={disabled}
@@ -47,7 +54,14 @@ export function DateRangeFilter({
           <DatePickerInput
             placeholder="End date"
             value={endDate}
-            onChange={onEndDateChange as (value: string | null) => void}
+            onChange={(value: string | null) => {
+              if (value === null) {
+                onEndDateChange(null);
+              } else {
+                const date = new Date(value);
+                onEndDateChange(isNaN(date.getTime()) ? null : date);
+              }
+            }}
             leftSection={<IconCalendar size={16} />}
             minDate={startDate || undefined}
             disabled={disabled}

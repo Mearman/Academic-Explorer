@@ -18,6 +18,7 @@ import {
   type Edge,
   type OnConnect,
 } from '@xyflow/react';
+import { logger } from '@/lib/logger';
 
 import '@xyflow/react/dist/style.css';
 
@@ -74,12 +75,14 @@ const GraphNavigationInner: React.FC = () => {
   const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
 
   const onConnect: OnConnect = useCallback(
-    (params) => setEdges((eds) => addEdge(params, eds)),
+    (params) => {
+      setEdges((eds) => addEdge(params, eds));
+    },
     [setEdges]
   );
 
   const onNodeClick = useCallback((event: React.MouseEvent, node: Node) => {
-    console.log('Node clicked:', node);
+    logger.info('ui', 'Node clicked', { nodeId: node.id, nodeType: node.type }, 'GraphNavigationSimple');
     // Future: Navigate to entity page
     // navigate({ to: `/entity/${node.id}` });
   }, []);

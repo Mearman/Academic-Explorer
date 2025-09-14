@@ -9,6 +9,28 @@ import { useGraphStore } from '@/stores/graph-store';
 import type { GraphNode, GraphEdge, EntityType } from '@/lib/graph/types';
 import { RelationType } from '@/lib/graph/types';
 
+/**
+ * Type guard to validate EntityType values
+ */
+function isEntityType(value: string): value is EntityType {
+  const validEntityTypes: string[] = [
+    'works', 'authors', 'sources', 'institutions',
+    'topics', 'concepts', 'publishers', 'funders',
+    'keywords', 'geo'
+  ];
+  return validEntityTypes.includes(value);
+}
+
+/**
+ * Safely converts a string to EntityType with validation
+ */
+function toEntityType(value: string): EntityType {
+  if (isEntityType(value)) {
+    return value;
+  }
+  throw new Error(`Invalid EntityType: ${value}. Expected one of: works, authors, sources, institutions, topics, concepts, publishers, funders, keywords, geo`);
+}
+
 interface GraphDemoProps {
   className?: string;
 }
@@ -21,7 +43,7 @@ export const GraphDemo: React.FC<GraphDemoProps> = ({ className }) => {
     const sampleNodes: GraphNode[] = [
       {
         id: 'author1',
-        type: 'authors' as EntityType,
+        type: toEntityType('authors'),
         label: 'Jane Smith',
         entityId: 'A2755263674',
         position: { x: 100, y: 100 },
@@ -38,7 +60,7 @@ export const GraphDemo: React.FC<GraphDemoProps> = ({ className }) => {
       },
       {
         id: 'work1',
-        type: 'works' as EntityType,
+        type: toEntityType('works'),
         label: 'Machine Learning in Academic Research',
         entityId: 'W2755263675',
         position: { x: 300, y: 100 },
@@ -57,7 +79,7 @@ export const GraphDemo: React.FC<GraphDemoProps> = ({ className }) => {
       },
       {
         id: 'source1',
-        type: 'sources' as EntityType,
+        type: toEntityType('sources'),
         label: 'Journal of Computer Science',
         entityId: 'S2755263676',
         position: { x: 500, y: 100 },
@@ -74,7 +96,7 @@ export const GraphDemo: React.FC<GraphDemoProps> = ({ className }) => {
       },
       {
         id: 'institution1',
-        type: 'institutions' as EntityType,
+        type: toEntityType('institutions'),
         label: 'University of Example',
         entityId: 'I2755263677',
         position: { x: 100, y: 300 },

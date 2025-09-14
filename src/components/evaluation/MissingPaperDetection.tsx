@@ -10,6 +10,7 @@ import type {
   DetectionProgress
 } from '@/lib/evaluation/missing-paper-detection'
 import type { STARDataset, WorkReference } from '@/lib/evaluation/types'
+import { logger } from '@/lib/logger'
 
 interface MissingPaperDetectionProps {
   dataset: STARDataset
@@ -44,7 +45,7 @@ export function MissingPaperDetection({ dataset, onDetectionComplete }: MissingP
   }, [detectionJobs, dataset.id])
 
   const handleStartDetection = async () => {
-    const jobId = `detection_${dataset.id}_${Date.now()}`
+    const jobId = 'detection_' + dataset.id + '_' + Date.now().toString()
     const newJob: DetectionJob = {
       id: jobId,
       datasetId: dataset.id,
@@ -144,7 +145,7 @@ export function MissingPaperDetection({ dataset, onDetectionComplete }: MissingP
             <input
               type="number"
               value={detectionConfig.maxPapersPerMethod}
-              onChange={(e) => setDetectionConfig(prev => ({ ...prev, maxPapersPerMethod: parseInt(e.target.value) }))}
+              onChange={(e) => { setDetectionConfig(prev => ({ ...prev, maxPapersPerMethod: parseInt(e.target.value) })); }}
               style={{
                 width: '100%',
                 padding: '8px 12px',
@@ -164,7 +165,7 @@ export function MissingPaperDetection({ dataset, onDetectionComplete }: MissingP
             <input
               type="number"
               value={detectionConfig.minimumCitationThreshold}
-              onChange={(e) => setDetectionConfig(prev => ({ ...prev, minimumCitationThreshold: parseInt(e.target.value) }))}
+              onChange={(e) => { setDetectionConfig(prev => ({ ...prev, minimumCitationThreshold: parseInt(e.target.value) })); }}
               style={{
                 width: '100%',
                 padding: '8px 12px',
@@ -184,7 +185,7 @@ export function MissingPaperDetection({ dataset, onDetectionComplete }: MissingP
             <input
               type="number"
               value={detectionConfig.temporalWindowYears}
-              onChange={(e) => setDetectionConfig(prev => ({ ...prev, temporalWindowYears: parseInt(e.target.value) }))}
+              onChange={(e) => { setDetectionConfig(prev => ({ ...prev, temporalWindowYears: parseInt(e.target.value) })); }}
               style={{
                 width: '100%',
                 padding: '8px 12px',
@@ -209,8 +210,16 @@ export function MissingPaperDetection({ dataset, onDetectionComplete }: MissingP
             <label key={key} style={{ display: 'flex', alignItems: 'center', fontSize: '14px', color: '#374151' }}>
               <input
                 type="checkbox"
-                checked={detectionConfig[key as keyof MissingPaperDetectionConfig] as boolean}
-                onChange={(e) => setDetectionConfig(prev => ({ ...prev, [key]: e.target.checked }))}
+                checked={(() => {
+                  // Type guard to check if key is a valid config property
+                  if (key === 'enableTemporalAnalysis' || key === 'enableCitationAnalysis' ||
+                      key === 'enableAuthorAnalysis' || key === 'enableKeywordExpansion') {
+                    const value = detectionConfig[key];
+                    return typeof value === 'boolean' ? value : false;
+                  }
+                  return false;
+                })()}
+                onChange={(e) => { setDetectionConfig(prev => ({ ...prev, [key]: e.target.checked })); }}
                 style={{ marginRight: '8px' }}
               />
               {label}
@@ -222,7 +231,7 @@ export function MissingPaperDetection({ dataset, onDetectionComplete }: MissingP
       {/* Detection Control */}
       <div style={{ marginBottom: '24px' }}>
         <button
-          onClick={handleStartDetection}
+          onClick={() => { void handleStartDetection(); }}
           disabled={currentJob?.status === 'running'}
           style={{
             padding: '12px 24px',
@@ -241,7 +250,7 @@ export function MissingPaperDetection({ dataset, onDetectionComplete }: MissingP
 
         {currentJob?.results && (
           <button
-            onClick={() => console.log('Export results:', currentJob.results)}
+            onClick={() => { logger.debug('ui', 'Export detection results clicked', { resultsCount: currentJob.results?.missingPapers.length }, 'MissingPaperDetection'); }}
             style={{
               padding: '12px 24px',
               backgroundColor: '#10b981',
@@ -283,7 +292,7 @@ export function MissingPaperDetection({ dataset, onDetectionComplete }: MissingP
             marginBottom: '8px'
           }}>
             <div style={{
-              width: `${currentJob.progress.progress}%`,
+              width: `${String(currentJob.progress.progress)}%`,
               backgroundColor: '#f59e0b',
               borderRadius: '4px',
               height: '100%'
@@ -347,13 +356,18 @@ function MissingPaperResults({ results, executionTime }: MissingPaperResultsProp
       }}>
         {[
           { key: 'summary', label: 'Summary' },
-          { key: 'candidates', label: `Candidates (${results.candidateMissingPapers.length})` },
+          { key: 'candidates', label: `Candidates (${String(results.candidateMissingPapers.length)})` },
           { key: 'methods', label: 'Methods' },
           { key: 'validation', label: 'Validation' }
         ].map((tab) => (
           <button
             key={tab.key}
-            onClick={() => setActiveTab(tab.key as 'summary' | 'candidates' | 'methods' | 'validation')}
+            onClick={() => {
+              const tabKey = tab.key;
+              if (tabKey === 'summary' || tabKey === 'candidates' || tabKey === 'methods' || tabKey === 'validation') {
+                setActiveTab(tabKey);
+              }
+            }}
             style={{
               padding: '12px 20px',
               border: 'none',
@@ -538,7 +552,7 @@ function MissingPaperResults({ results, executionTime }: MissingPaperResultsProp
                 height: '8px'
               }}>
                 <div style={{
-                  width: `${results.validationMetrics.confidenceScore * 100}%`,
+                  width: `${String(results.validationMetrics.confidenceScore * 100)}%`,
                   backgroundColor: '#3b82f6',
                   borderRadius: '4px',
                   height: '100%'
@@ -614,7 +628,7 @@ function PaperCard({ paper, rank }: PaperCardProps) {
           </div>
 
           <p style={{ fontSize: '12px', color: '#6b7280', marginBottom: '8px' }}>
-            {paper.authors.slice(0, 3).join(', ')}{paper.authors.length > 3 ? ` et al. (${paper.authors.length} authors)` : ''}
+            {paper.authors.slice(0, 3).join(', ')}{paper.authors.length > 3 ? ` et al. (${String(paper.authors.length)} authors)` : ''}
           </p>
 
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', alignItems: 'center' }}>

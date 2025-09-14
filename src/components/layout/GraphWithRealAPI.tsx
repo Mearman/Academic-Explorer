@@ -8,6 +8,7 @@ import { useGraphStore } from '@/stores/graph-store'
 import { useGraphData } from '@/hooks/use-graph-data'
 import { RealGraphVisualization } from '@/components/organisms/RealGraphVisualization'
 import { GraphSessionManager } from '@/components/organisms/GraphSessionManager'
+import { logError } from '@/lib/logger'
 
 export const GraphWithRealAPI: React.FC = () => {
   const [testEntityId, setTestEntityId] = useState('W2741809807') // Known OpenAlex work ID
@@ -21,7 +22,7 @@ export const GraphWithRealAPI: React.FC = () => {
     try {
       await loadEntity(testEntityId)
     } catch (err) {
-      console.error('Failed to load test entity:', err)
+      logError('Failed to load test entity', err, 'GraphWithRealAPI', 'ui')
     } finally {
       setIsLoadingTest(false)
     }
@@ -35,7 +36,7 @@ export const GraphWithRealAPI: React.FC = () => {
         limit: 5
       })
     } catch (err) {
-      console.error('Failed to search:', err)
+      logError('Failed to search', err, 'GraphWithRealAPI', 'ui')
     } finally {
       setIsLoadingTest(false)
     }
@@ -59,7 +60,7 @@ export const GraphWithRealAPI: React.FC = () => {
         <input
           type="text"
           value={testEntityId}
-          onChange={(e) => setTestEntityId(e.target.value)}
+          onChange={(e) => { setTestEntityId(e.target.value) }}
           placeholder="Enter OpenAlex ID (e.g., W2741809807)"
           style={{
             padding: '6px 8px',
@@ -71,7 +72,7 @@ export const GraphWithRealAPI: React.FC = () => {
         />
 
         <button
-          onClick={handleLoadTestEntity}
+          onClick={() => void handleLoadTestEntity()}
           disabled={isLoadingTest || isLoading}
           style={{
             padding: '6px 12px',
@@ -87,7 +88,7 @@ export const GraphWithRealAPI: React.FC = () => {
         </button>
 
         <button
-          onClick={handleTestSearch}
+          onClick={() => void handleTestSearch()}
           disabled={isLoadingTest || isLoading}
           style={{
             padding: '6px 12px',
@@ -103,7 +104,7 @@ export const GraphWithRealAPI: React.FC = () => {
         </button>
 
         <button
-          onClick={() => setShowSessionManager(true)}
+          onClick={() => { setShowSessionManager(true) }}
           style={{
             padding: '6px 12px',
             background: '#8b5cf6',
@@ -171,7 +172,7 @@ export const GraphWithRealAPI: React.FC = () => {
       {/* Session Manager */}
       <GraphSessionManager
         isOpen={showSessionManager}
-        onClose={() => setShowSessionManager(false)}
+        onClose={() => { setShowSessionManager(false) }}
       />
     </div>
   )

@@ -6,6 +6,7 @@
 import React, { useCallback } from 'react'
 import { useGraphData } from '@/hooks/use-graph-data'
 import { useGraphStore } from '@/stores/graph-store'
+import { logError } from '@/lib/logger'
 import type { GraphNode } from '@/lib/graph/types'
 import { IconExternalLink, IconCopy, IconGitBranch, IconInfoCircle } from '@tabler/icons-react'
 
@@ -54,7 +55,7 @@ export const NodeContextMenu: React.FC<NodeContextMenuProps> = ({
     }
 
     // Try to create a URL with external ID if available
-    let url = `${window.location.origin}`
+    let url = window.location.origin
 
     if (node.externalIds.length > 0) {
       const extId = node.externalIds[0]
@@ -82,16 +83,16 @@ export const NodeContextMenu: React.FC<NodeContextMenuProps> = ({
     try {
       await navigator.clipboard.writeText(url)
       // Simple visual feedback
-      const button = document.activeElement as HTMLElement
-      if (button) {
-        const originalText = button.textContent
-        button.textContent = '✓ Copied!'
+      const activeElement = document.activeElement
+      if (activeElement && activeElement instanceof HTMLElement) {
+        const originalText = activeElement.textContent
+        activeElement.textContent = '✓ Copied!'
         setTimeout(() => {
-          button.textContent = originalText
+          activeElement.textContent = originalText
         }, 1000)
       }
     } catch (error) {
-      console.error('Failed to copy URL:', error)
+      logError('Failed to copy URL', error, 'NodeContextMenu', 'ui')
     }
 
     onClose()
@@ -195,7 +196,7 @@ export const NodeContextMenu: React.FC<NodeContextMenuProps> = ({
         {menuItems.map((item) => (
           <button
             key={item.id}
-            onClick={item.action}
+            onClick={() => void item.action()}
             disabled={item.disabled}
             style={{
               display: 'flex',

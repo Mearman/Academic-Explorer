@@ -8,6 +8,7 @@ import { CollapsibleSidebar } from './CollapsibleSidebar'
 import { LayoutControls } from '@/components/molecules/LayoutControls'
 import { useGraphData } from '@/hooks/use-graph-data'
 import { useThemeColors } from '@/hooks/use-theme-colors'
+import { logError } from '@/lib/logger'
 import type { EntityType } from '@/lib/openalex/types'
 import { IconSearch, IconFilter, IconGraph } from '@tabler/icons-react'
 
@@ -29,7 +30,7 @@ export const LeftSidebar: React.FC = () => {
         limit: 20,
       })
     } catch (error) {
-      console.error('Search failed:', error)
+      logError('Search failed', error, 'LeftSidebar', 'ui')
     }
   }
 
@@ -73,11 +74,11 @@ export const LeftSidebar: React.FC = () => {
             Search Academic Entities
           </div>
 
-          <form onSubmit={handleSearch} style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+          <form onSubmit={(e) => { void handleSearch(e) }} style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
             <input
               type="text"
               value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
+              onChange={(e) => { setSearchQuery(e.target.value) }}
               placeholder="Enter keywords, DOI, ORCID, etc..."
               style={{
                 width: '100%',
@@ -144,7 +145,7 @@ export const LeftSidebar: React.FC = () => {
                 <input
                   type="checkbox"
                   checked={selectedEntityTypes.includes(option.type)}
-                  onChange={() => handleEntityTypeToggle(option.type)}
+                  onChange={() => { handleEntityTypeToggle(option.type) }}
                   style={{ margin: 0 }}
                 />
                 <span style={{ fontSize: '16px' }}>{option.icon}</span>

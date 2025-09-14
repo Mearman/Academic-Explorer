@@ -160,7 +160,7 @@ export const LayoutControls: React.FC = () => {
                 <NumberInput
                   label="Iterations"
                   description="Number of simulation iterations"
-                  value={layoutOptions_.iterations as number || 300}
+                  value={typeof layoutOptions_.iterations === 'number' ? layoutOptions_.iterations : 300}
                   onChange={(value) => handleOptionChange('iterations', value)}
                   min={50}
                   max={500}
@@ -170,7 +170,7 @@ export const LayoutControls: React.FC = () => {
                 <NumberInput
                   label="Strength"
                   description="Force strength"
-                  value={layoutOptions_.strength as number || 100}
+                  value={typeof layoutOptions_.strength === 'number' ? layoutOptions_.strength : 100}
                   onChange={(value) => handleOptionChange('strength', value)}
                   min={50}
                   max={200}
@@ -180,7 +180,7 @@ export const LayoutControls: React.FC = () => {
                 <NumberInput
                   label="Distance"
                   description="Preferred distance between nodes"
-                  value={layoutOptions_.distance as number || 150}
+                  value={typeof layoutOptions_.distance === 'number' ? layoutOptions_.distance : 150}
                   onChange={(value) => handleOptionChange('distance', value)}
                   min={100}
                   max={300}
@@ -190,14 +190,14 @@ export const LayoutControls: React.FC = () => {
                 <Switch
                   label="Prevent Overlap"
                   description="Ensure nodes don't overlap"
-                  checked={layoutOptions_.preventOverlap as boolean ?? true}
+                  checked={typeof layoutOptions_.preventOverlap === 'boolean' ? layoutOptions_.preventOverlap : true}
                   onChange={(event) => handleOptionChange('preventOverlap', event.currentTarget.checked)}
                   size="sm"
                 />
                 <NumberInput
                   label="Seed"
                   description="Random seed for deterministic results"
-                  value={layoutOptions_.seed as number || 42}
+                  value={typeof layoutOptions_.seed === 'number' ? layoutOptions_.seed : 42}
                   onChange={(value) => handleOptionChange('seed', value)}
                   min={1}
                   max={1000}
@@ -214,7 +214,7 @@ export const LayoutControls: React.FC = () => {
                 <NumberInput
                   label="Iterations"
                   description="Number of simulation steps"
-                  value={layoutOptions_.iterations as number || 300}
+                  value={typeof layoutOptions_.iterations === 'number' ? layoutOptions_.iterations : 300}
                   onChange={(value) => handleOptionChange('iterations', value)}
                   min={100}
                   max={1000}
@@ -224,7 +224,7 @@ export const LayoutControls: React.FC = () => {
                 <NumberInput
                   label="Link Distance"
                   description="Target distance between connected nodes"
-                  value={layoutOptions_.linkDistance as number || 150}
+                  value={typeof layoutOptions_.linkDistance === 'number' ? layoutOptions_.linkDistance : 150}
                   onChange={(value) => handleOptionChange('linkDistance', value)}
                   min={50}
                   max={300}
@@ -234,7 +234,7 @@ export const LayoutControls: React.FC = () => {
                 <NumberInput
                   label="Charge Strength"
                   description="Node repulsion force (negative values repel)"
-                  value={layoutOptions_.chargeStrength as number || -300}
+                  value={typeof layoutOptions_.chargeStrength === 'number' ? layoutOptions_.chargeStrength : -300}
                   onChange={(value) => handleOptionChange('chargeStrength', value)}
                   min={-500}
                   max={-50}
@@ -244,7 +244,7 @@ export const LayoutControls: React.FC = () => {
                 <NumberInput
                   label="Collision Radius"
                   description="Minimum distance between nodes"
-                  value={layoutOptions_.collisionRadius as number || 60}
+                  value={typeof layoutOptions_.collisionRadius === 'number' ? layoutOptions_.collisionRadius : 60}
                   onChange={(value) => handleOptionChange('collisionRadius', value)}
                   min={30}
                   max={100}
@@ -254,7 +254,7 @@ export const LayoutControls: React.FC = () => {
                 <NumberInput
                   label="Velocity Decay"
                   description="Friction to slow down nodes (0-1)"
-                  value={layoutOptions_.velocityDecay as number || 0.4}
+                  value={typeof layoutOptions_.velocityDecay === 'number' ? layoutOptions_.velocityDecay : 0.4}
                   onChange={(value) => handleOptionChange('velocityDecay', value)}
                   min={0.1}
                   max={0.9}
@@ -264,7 +264,7 @@ export const LayoutControls: React.FC = () => {
                 <NumberInput
                   label="Seed"
                   description="Random seed for deterministic results"
-                  value={layoutOptions_.seed as number || 42}
+                  value={typeof layoutOptions_.seed === 'number' ? layoutOptions_.seed : 42}
                   onChange={(value) => handleOptionChange('seed', value)}
                   min={1}
                   max={1000}

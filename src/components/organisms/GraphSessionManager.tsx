@@ -6,6 +6,7 @@
 import React, { useState, useMemo } from 'react'
 import { useGraphPersistence } from '@/hooks/use-graph-persistence'
 import { useGraphStore } from '@/stores/graph-store'
+import { logError } from '@/lib/logger'
 import { IconDeviceFloppy, IconFolderOpen, IconTrash, IconEdit, IconClock, IconGraph, IconX } from '@tabler/icons-react'
 
 interface GraphSessionManagerProps {
@@ -44,9 +45,9 @@ export const GraphSessionManager: React.FC<GraphSessionManagerProps> = ({
       setSessionName('')
       setSessionDescription('')
       setActiveTab('load')
-      console.log('Session saved:', sessionId)
+      // Session saved successfully - no logging needed for user actions
     } catch (error) {
-      console.error('Failed to save session:', error)
+      logError('Failed to save session', error, 'GraphSessionManager', 'ui')
       alert('Failed to save session. Please try again.')
     }
   }

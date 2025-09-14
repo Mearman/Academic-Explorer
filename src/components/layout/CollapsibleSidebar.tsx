@@ -42,8 +42,12 @@ export const CollapsibleSidebar: React.FC<CollapsibleSidebarProps> = ({
   const toggle = side === 'left' ? toggleLeftSidebar : toggleRightSidebar
   const setPin = side === 'left' ? pinLeftSidebar : pinRightSidebar
 
-  const handleToggle = () => toggle()
-  const handlePin = () => setPin(!isPinned)
+  const handleToggle = () => {
+    toggle()
+  }
+  const handlePin = () => {
+    setPin(!isPinned)
+  }
 
   const sidebarStyle: React.CSSProperties = {
     position: 'relative',
@@ -52,9 +56,9 @@ export const CollapsibleSidebar: React.FC<CollapsibleSidebarProps> = ({
     borderRight: side === 'left' ? `1px solid ${colors.border.primary}` : undefined,
     borderLeft: side === 'right' ? `1px solid ${colors.border.primary}` : undefined,
     transition: 'width 200ms ease-in-out',
-    width: isOpen ? `${minWidth}px` : '48px',
-    minWidth: isOpen ? `${minWidth}px` : '48px',
-    maxWidth: isOpen ? `${maxWidth}px` : '48px',
+    width: isOpen ? `${String(minWidth)}px` : '48px',
+    minWidth: isOpen ? `${String(minWidth)}px` : '48px',
+    maxWidth: isOpen ? `${String(maxWidth)}px` : '48px',
     overflow: 'hidden',
     display: 'flex',
     flexDirection: 'column',

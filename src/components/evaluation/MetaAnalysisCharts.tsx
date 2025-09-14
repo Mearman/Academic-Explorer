@@ -77,7 +77,7 @@ export function PerformanceComparisonChart({ comparisonResults }: MetaAnalysisCh
       </h3>
 
       <div style={{
-        height: `${chartHeight}px`,
+        height: `${String(chartHeight)}px`,
         display: 'flex',
         flexDirection: 'column',
         gap: '16px'
@@ -116,7 +116,7 @@ export function PerformanceComparisonChart({ comparisonResults }: MetaAnalysisCh
                   overflow: 'hidden'
                 }}>
                   <div style={{
-                    width: `${(dataset.precision / maxValue) * 100}%`,
+                    width: `${String((dataset.precision / maxValue) * 100)}%`,
                     height: '100%',
                     backgroundColor: '#3b82f6',
                     borderRadius: '8px'
@@ -151,7 +151,7 @@ export function PerformanceComparisonChart({ comparisonResults }: MetaAnalysisCh
                   overflow: 'hidden'
                 }}>
                   <div style={{
-                    width: `${(dataset.recall / maxValue) * 100}%`,
+                    width: `${String((dataset.recall / maxValue) * 100)}%`,
                     height: '100%',
                     backgroundColor: '#10b981',
                     borderRadius: '8px'
@@ -186,7 +186,7 @@ export function PerformanceComparisonChart({ comparisonResults }: MetaAnalysisCh
                   overflow: 'hidden'
                 }}>
                   <div style={{
-                    width: `${(dataset.f1Score / maxValue) * 100}%`,
+                    width: `${String((dataset.f1Score / maxValue) * 100)}%`,
                     height: '100%',
                     backgroundColor: '#8b5cf6',
                     borderRadius: '8px'
@@ -304,7 +304,7 @@ export function PrecisionRecallScatterPlot({ comparisonResults }: MetaAnalysisCh
             x={20}
             y={plotSize / 2 + padding}
             textAnchor="middle"
-            transform={`rotate(-90 20 ${plotSize / 2 + padding})`}
+            transform={`rotate(-90 20 ${String(plotSize / 2 + padding)})`}
             style={{ fontSize: '12px', fill: '#6b7280' }}
           >
             Precision
@@ -338,7 +338,7 @@ export function PrecisionRecallScatterPlot({ comparisonResults }: MetaAnalysisCh
 
           {/* Scale indicators */}
           {[0, 0.25, 0.5, 0.75, 1.0].map((tick) => (
-            <g key={`scale-${tick}`}>
+            <g key={`scale-${String(tick)}`}>
               {/* X-axis ticks */}
               <line
                 x1={padding + tick * plotSize}

@@ -3,18 +3,18 @@
  * Integrates with graph store and provider system for proper layout handling
  */
 
-import React, { useCallback, useEffect, useMemo } from 'react'
+import React, { useCallback, useEffect, useMemo, useRef } from 'react'
 import {
   ReactFlow,
   ReactFlowProvider,
   useNodesState,
   useEdgesState,
+  useReactFlow,
   Controls,
   MiniMap,
   Background,
   BackgroundVariant,
   type Node,
-  type Edge,
   type OnConnect,
   type OnNodesChange,
 } from '@xyflow/react'
@@ -24,7 +24,8 @@ import { useContextMenu } from '@/hooks/use-context-menu'
 import { useThemeColors } from '@/hooks/use-theme-colors'
 import { NodeContextMenu } from '@/components/layout/NodeContextMenu'
 import { XYFlowProvider } from '@/lib/graph/providers/xyflow/xyflow-provider'
-import type { GraphNode, GraphEdge } from '@/lib/graph/types'
+import { logger, logError } from '@/lib/logger'
+import type { GraphNode } from '@/lib/graph/types'
 
 import '@xyflow/react/dist/style.css'
 
@@ -44,47 +45,92 @@ const RealGraphVisualizationInner: React.FC = () => {
   const { expandNode } = useGraphData()
   const { contextMenu, showContextMenu, hideContextMenu } = useContextMenu()
   const { colors } = useThemeColors()
+  const reactFlowInstance = useReactFlow()
 
   // Get provider instance
   const provider = useMemo(() => getProviderInstance(), [])
 
-  // Get XYFlow-compatible data from provider
-  const { nodes: xyNodes, edges: xyEdges } = useMemo(() => {
-    // Update provider with current graph data
+  // Set ReactFlow instance on the provider
+  useEffect(() => {
+    if (reactFlowInstance) {
+      provider.setReactFlowInstance(reactFlowInstance)
+    }
+  }, [reactFlowInstance, provider])
+
+  // Update provider when graph data changes
+  useEffect(() => {
     const graphNodeArray = Array.from(graphNodes.values())
     const graphEdgeArray = Array.from(graphEdges.values())
 
     provider.setNodes(graphNodeArray)
     provider.setEdges(graphEdgeArray)
+  }, [graphNodes, graphEdges, provider])
 
-    // Apply current layout if nodes exist
-    if (graphNodeArray.length > 0) {
-      provider.applyLayout(currentLayout)
-    }
+  // Initialize XYFlow state
+  const [nodes, setNodes, onNodesChange] = useNodesState([])
+  const [edges, setEdges, onEdgesChange] = useEdgesState([])
 
-    return provider.getXYFlowData()
-  }, [graphNodes, graphEdges, currentLayout, provider])
+  // Track layout type changes to force complete re-layout
+  const prevLayoutType = useRef(currentLayout.type)
 
-  const [nodes, setNodes, onNodesChange] = useNodesState(xyNodes)
-  const [edges, setEdges, onEdgesChange] = useEdgesState(xyEdges)
-
-  // Update XYFlow nodes/edges when provider data changes
+  // Single effect to handle both data updates and layout application
   useEffect(() => {
-    setNodes(xyNodes)
-    setEdges(xyEdges)
-  }, [xyNodes, xyEdges, setNodes, setEdges])
+    const graphNodeArray = Array.from(graphNodes.values())
+    const graphEdgeArray = Array.from(graphEdges.values())
+
+    if (graphNodeArray.length > 0) {
+      logger.info('graph', 'Processing graph data and layout', { nodeCount: graphNodeArray.length }, 'RealGraphVisualization')
+
+      // Check if this is a layout type change (user switched layouts)
+      const isLayoutTypeChange = prevLayoutType.current !== currentLayout.type
+      if (isLayoutTypeChange) {
+        logger.info('graph', 'Layout type changed', { from: prevLayoutType.current, to: currentLayout.type }, 'RealGraphVisualization')
+        prevLayoutType.current = currentLayout.type
+      }
+
+      // Apply the current layout with force re-layout if layout type changed
+      const layoutWithOptions = isLayoutTypeChange ? {
+        ...currentLayout,
+        options: { ...currentLayout.options, forceReLayout: true }
+      } : currentLayout
+
+      logger.info('graph', 'Applying layout', { type: layoutWithOptions.type, options: layoutWithOptions.options }, 'RealGraphVisualization')
+      provider.applyLayout(layoutWithOptions)
+
+      // Get updated data and set state
+      const newData = provider.getXYFlowData()
+      logger.info('graph', 'Setting nodes/edges with layout positions', { nodeCount: newData.nodes.length, edgeCount: newData.edges.length }, 'RealGraphVisualization')
+      logger.info('graph', 'Sample node positions', { samplePositions: newData.nodes.slice(0, 3).map(n => ({ id: n.id, position: n.position })) }, 'RealGraphVisualization')
+      setNodes(newData.nodes)
+      setEdges(newData.edges)
+
+      // Manually fit view after layout is applied and state is set
+      // Use a small delay to ensure state update has completed
+      const currentInstance = reactFlowInstance
+      setTimeout(() => {
+        if (currentInstance) {
+          logger.info('graph', 'Manual fitView after layout', undefined, 'RealGraphVisualization')
+          currentInstance.fitView({ padding: 0.2 })
+        }
+      }, 50)
+    } else if (graphEdgeArray.length > 0) {
+      // Handle edges-only case
+      const newData = provider.getXYFlowData()
+      setEdges(newData.edges)
+    }
+  }, [graphNodes, graphEdges, currentLayout, provider, setNodes, setEdges])
 
   const onNodeClick = useCallback((event: React.MouseEvent, node: Node) => {
-    console.log('Node clicked:', node)
+    logger.info('ui', 'Node clicked', { nodeId: node.id, nodeType: node.type }, 'RealGraphVisualization')
     // Future: Navigate to entity page based on node.data.graphNode
   }, [])
 
   const onNodeDoubleClick = useCallback(async (event: React.MouseEvent, node: Node) => {
-    console.log('Double-click: expanding node', node.id)
+    logger.info('ui', 'Double-click: expanding node', { nodeId: node.id }, 'RealGraphVisualization')
     try {
       await expandNode(node.id, { limit: 5 })
     } catch (error) {
-      console.error('Failed to expand node:', error)
+      logError('Failed to expand node', error, 'RealGraphVisualization', 'graph')
     }
   }, [expandNode])
 
@@ -99,13 +145,14 @@ const RealGraphVisualizationInner: React.FC = () => {
   const onConnect: OnConnect = useCallback(
     (params) => {
       // For now, we don't add manual connections since our edges come from the API
-      console.log('Connection attempt:', params)
+      logger.info('ui', 'Connection attempt', { source: params.source, target: params.target }, 'RealGraphVisualization')
     },
     []
   )
 
   // Custom onNodesChange to sync position updates back to provider and graph store
   const handleNodesChange: OnNodesChange = useCallback((changes) => {
+    logger.info('graph', 'handleNodesChange called', { changes: changes.map(c => ({ type: c.type, id: c.id, position: 'position' in c ? c.position : undefined })) }, 'RealGraphVisualization')
     onNodesChange(changes)
 
     // Update positions in provider for persistence
@@ -113,13 +160,8 @@ const RealGraphVisualizationInner: React.FC = () => {
       if (change.type === 'position' && change.position && change.id) {
         const graphNode = graphNodes.get(change.id)
         if (graphNode) {
-          // Update the graph node position
-          const updatedNode: GraphNode = {
-            ...graphNode,
-            position: change.position
-          }
           provider.updateNode?.(change.id, { position: change.position })
-          console.log(`Node ${change.id} moved to:`, change.position)
+          logger.info('graph', 'Node position changed', { nodeId: change.id, position: change.position }, 'RealGraphVisualization')
         }
       }
     })
@@ -136,7 +178,7 @@ const RealGraphVisualizationInner: React.FC = () => {
         onNodeClick={onNodeClick}
         onNodeDoubleClick={onNodeDoubleClick}
         onNodeContextMenu={onNodeContextMenu}
-        fitView
+        fitView={false}
         fitViewOptions={{
           padding: 0.2,
           includeHiddenNodes: false
@@ -178,7 +220,7 @@ const RealGraphVisualizationInner: React.FC = () => {
           y={contextMenu.y}
           onClose={hideContextMenu}
           onViewDetails={(node) => {
-            console.log('View details for:', node)
+            logger.info('ui', 'View details for node', { nodeId: node.id, entityType: node.entityType }, 'RealGraphVisualization')
             hideContextMenu()
             // TODO: Show details in right sidebar or navigate to entity page
           }}

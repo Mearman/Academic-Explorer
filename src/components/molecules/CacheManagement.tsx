@@ -21,12 +21,12 @@ import {
   IconTrash,
   IconRefresh,
   IconInfoCircle,
-  IconChartBar,
 } from '@tabler/icons-react';
 import { useQueryClient } from '@tanstack/react-query';
 import { getCacheStats, clearExpiredCache } from '@/lib/cache/persister';
 import { rateLimitedOpenAlex } from '@/lib/openalex/rate-limited-client';
 import { notifications } from '@mantine/notifications';
+import { logError } from '@/lib/logger';
 
 interface CacheStats {
   exists: boolean;
@@ -52,7 +52,7 @@ export function CacheManagement() {
       const stats = await getCacheStats();
       setCacheStats(stats);
     } catch (error) {
-      console.error('Failed to load cache stats:', error);
+      logError('Failed to load cache stats', error, 'CacheManagement', 'storage');
       setCacheStats({
         exists: false,
         size: 0,
@@ -97,7 +97,7 @@ export function CacheManagement() {
         icon: <IconTrash />,
       });
     } catch (error) {
-      console.error('Failed to clear cache:', error);
+      logError('Failed to clear cache', error, 'CacheManagement', 'storage');
       notifications.show({
         title: 'Cache Clear Failed',
         message: 'Failed to clear cache. Please try again.',
@@ -130,7 +130,7 @@ export function CacheManagement() {
         });
       }
     } catch (error) {
-      console.error('Failed to clear expired cache:', error);
+      logError('Failed to clear expired cache', error, 'CacheManagement', 'storage');
       notifications.show({
         title: 'Operation Failed',
         message: 'Failed to clear expired cache.',

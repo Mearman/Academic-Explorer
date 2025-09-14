@@ -120,7 +120,7 @@ export const RightSidebar: React.FC = () => {
           </div>
 
           {/* External IDs */}
-          {displayEntity.externalIds && displayEntity.externalIds.length > 0 && (
+          {displayEntity.externalIds.length > 0 && (
             <div>
               <div style={{
                 display: 'flex',

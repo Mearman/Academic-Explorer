@@ -10,7 +10,6 @@ import {
   Card,
   Text,
   Group,
-  Stack,
   Badge,
   Table,
   ScrollArea,
@@ -18,7 +17,6 @@ import {
   Tooltip,
 } from '@mantine/core';
 import {
-  IconDatabase,
   IconChartBar,
   IconSettings,
   IconInfoCircle,
