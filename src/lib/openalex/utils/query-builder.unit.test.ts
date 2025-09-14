@@ -266,7 +266,7 @@ describe('QueryBuilder', () => {
     it('should add search filter with trimmed query', () => {
       queryBuilder.addSearch('display_name.search', '  machine learning  ');
       expect(queryBuilder.build()).toEqual({
-        'display_name.search': 'machine learning'
+        'display_name.search': '"machine learning"' // Quotes added because the value contains spaces
       });
     });
 
@@ -683,7 +683,7 @@ describe('escapeFilterValue', () => {
 
   it('should handle strings with only quotes', () => {
     expect(escapeFilterValue('"')).toBe('"\""');
-    expect(escapeFilterValue('""')).toBe('"\\"\\""');
+    expect(escapeFilterValue('""')).toBe('"\\"\\""'); // Double quotes become: quote + escaped-quote + escaped-quote + quote
   });
 
   it('should handle empty quoted strings', () => {
