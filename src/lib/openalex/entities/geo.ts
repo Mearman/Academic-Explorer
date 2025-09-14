@@ -10,6 +10,7 @@ import {
   OpenAlexResponse,
 } from '../types';
 import { OpenAlexBaseClient } from '../client';
+import { buildFilterString } from '../utils/query-builder';
 
 /**
  * Extended query parameters specific to Geo API
@@ -93,8 +94,8 @@ export class GeoApi {
     const { filters = {}, sort = 'relevance_score', page = 1, per_page = 25, select } = options;
 
     const params: GeoQueryParams = {
-      'default.search': query,
-      filter: filters,
+      search: query,
+      filter: filters ? buildFilterString(filters) : undefined,
       sort,
       page,
       per_page,
