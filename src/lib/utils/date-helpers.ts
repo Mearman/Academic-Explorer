@@ -75,7 +75,7 @@ export function getRelativePublicationDate(dateString: string | null | undefined
 
     if (yearsDiff === 0) return 'This year';
     if (yearsDiff === 1) return '1 year ago';
-    return `${yearsDiff} years ago`;
+    return `${yearsDiff.toString()} years ago`;
   } catch {
     return 'Invalid date';
   }

@@ -143,8 +143,7 @@ export class GraphDataService {
       // Mark as expanded
       this.cache.expandedNodes.add(nodeId);
 
-      // Apply current layout from store
-      store.provider?.applyLayout(store.currentLayout);
+      // Layout is automatically handled by the provider when nodes/edges are added
 
     } catch (error) {
       logError('Failed to expand node', error, 'GraphDataService', 'graph');

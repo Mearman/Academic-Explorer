@@ -118,7 +118,7 @@ function parseCSVContent(content: string, config: ParseConfig): RawPaperData[] {
   } else {
     // Generate generic headers if no header row
     const firstRow = lines[0].split(delimiter);
-    headers = firstRow.map((_, index) => `column_${index}`);
+    headers = firstRow.map((_, index) => `column_${index.toString()}`);
   }
 
   // Parse data rows
@@ -320,7 +320,7 @@ export async function parseSTARFile(
     const workRef = convertToWorkReference(rawData, config);
 
     if (!workRef) {
-      errors.push(`Row ${index + 1}: Missing or invalid title`);
+      errors.push(`Row ${(index + 1).toString()}: Missing or invalid title`);
       return;
     }
 
@@ -394,7 +394,7 @@ export function createSTARDatasetFromParseResult(
       description: `Uploaded from ${file.name} (${parseResult.metadata.detectedFormat.toUpperCase()})`,
       methodology: 'STAR',
       originalSource: file.name,
-      dateRange: `${parseResult.metadata.totalRecords} records processed`
+      dateRange: `${parseResult.metadata.totalRecords.toString()} records processed`
     }
   };
 }

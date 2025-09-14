@@ -210,8 +210,8 @@ export class GroupingApi {
     for (const group of mainGroups.groups.slice(0, group_limit)) {
       try {
         const timeFilter = timeField === 'publication_year'
-          ? `publication_year:${from_year}-${to_year}`
-          : `from_created_date:${from_year}-01-01,to_created_date:${to_year}-12-31`;
+          ? `publication_year:${from_year.toString()}-${to_year.toString()}`
+          : `from_created_date:${from_year.toString()}-01-01,to_created_date:${to_year.toString()}-12-31`;
 
         const groupFilter = `${groupBy}:${group.key}`;
         const combinedFilter = params.filter

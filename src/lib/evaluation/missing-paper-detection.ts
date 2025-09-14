@@ -121,10 +121,10 @@ function extractDominantKeywords(dataset: STARDataset): string[] {
     .filter(word => !['the', 'and', 'for', 'are', 'but', 'not', 'you', 'all', 'can', 'had', 'her', 'was', 'one', 'our', 'out', 'day', 'get', 'has', 'him', 'his', 'how', 'its', 'may', 'new', 'now', 'old', 'see', 'two', 'who', 'boy', 'did', 'does', 'let', 'put', 'say', 'she', 'too', 'use'].includes(word));
 
   // Count word frequency
-  const wordCounts = titleWords.reduce((counts, word) => {
+  const wordCounts = titleWords.reduce<{ [word: string]: number }>((counts, word) => {
     counts[word] = (counts[word] || 0) + 1;
     return counts;
-  }, {} as { [word: string]: number });
+  }, {});
 
   // Get top keywords
   const topTitleKeywords = Object.entries(wordCounts)
@@ -543,12 +543,12 @@ export async function detectMissingPapers(
     .map(paper => extractCitationCount(paper))
     .filter(count => count > 0);
 
-  const temporalDistribution = candidateMissingPapers.reduce((dist, paper) => {
+  const temporalDistribution = candidateMissingPapers.reduce<{ [year: number]: number }>((dist, paper) => {
     if (paper.publicationYear) {
       dist[paper.publicationYear] = (dist[paper.publicationYear] || 0) + 1;
     }
     return dist;
-  }, {} as { [year: number]: number });
+  }, {});
 
   const methodContributions = {
     temporalGapAnalysis: detectionMethods.temporalGapAnalysis.length,
