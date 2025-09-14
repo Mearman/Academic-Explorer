@@ -178,7 +178,7 @@ export class InstitutionsApi {
    */
   async getInstitutionWorks(
     institutionId: string,
-    options: { filters?: Record<string, unknown>, sort?: string, page?: number, per_page?: number, select?: string[] } = {}
+    options: InstitutionSearchOptions = {}
   ): Promise<OpenAlexResponse<Work>> {
     const queryParams = {
       filter: `authorships.institution.id:${institutionId}`,
@@ -204,7 +204,7 @@ export class InstitutionsApi {
    */
   async getInstitutionAuthors(
     institutionId: string,
-    options: { filters?: Record<string, unknown>, sort?: string, page?: number, per_page?: number, select?: string[] } = {}
+    options: InstitutionSearchOptions = {}
   ): Promise<OpenAlexResponse<Author>> {
     const queryParams = {
       filter: `last_known_institution.id:${institutionId}`,
@@ -257,13 +257,20 @@ export class InstitutionsApi {
    */
   async getRandomInstitutions(
     count: number = 10,
-    options: InstitutionSearchOptions = {}
+    options: InstitutionSearchOptions = {},
+    seed?: number
   ): Promise<OpenAlexResponse<InstitutionEntity>> {
     const params = {
       ...options,
       sample: Math.min(count, 200), // OpenAlex limits sample to 200
-      seed: options.filters?.seed || Math.floor(Math.random() * 1000000)
     };
+
+    if (seed !== undefined) {
+      (params as any).seed = seed;
+    } else {
+      (params as any).seed = Math.floor(Math.random() * 1000000);
+    }
+
     return this.getInstitutions(params);
   }
 
