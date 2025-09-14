@@ -173,12 +173,25 @@ export class GraphDataService {
 				...results.geo,
 			];
 
+			// Track search statistics
+			const searchStats = new Map<EntityType, number>();
+			searchStats.set("works", results.works.length);
+			searchStats.set("authors", results.authors.length);
+			searchStats.set("sources", results.sources.length);
+			searchStats.set("institutions", results.institutions.length);
+			searchStats.set("topics", results.topics.length);
+			searchStats.set("publishers", results.publishers.length);
+			searchStats.set("funders", results.funders.length);
+			searchStats.set("keywords", results.keywords.length);
+			searchStats.set("geo", results.geo.length);
+
 			const { nodes, edges } = this.transformSearchResults(flatResults);
 
 			// Clear existing graph and add search results
 			store.clear();
 			store.addNodes(nodes);
 			store.addEdges(edges);
+			store.updateSearchStats(searchStats);
 
 			// Layout is now handled by the ReactFlow component's useLayout hook
 			// No need for explicit layout application here
