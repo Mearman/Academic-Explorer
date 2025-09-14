@@ -209,8 +209,11 @@ describe('GroupingApi', () => {
       const result = await groupingApi.getTemporalTrends('works', 'type');
 
       expect(consoleWarnSpy).toHaveBeenCalledWith(
-        'Failed to get temporal trends for group error-group:',
-        expect.any(Error)
+        '[api] Failed to get temporal trends for group error-group',
+        expect.objectContaining({
+          groupKey: 'error-group',
+          error: expect.any(Error)
+        })
       );
       expect(result.trends).toEqual([]);
       expect(result.overall_trend).toHaveLength(1);
@@ -367,8 +370,11 @@ describe('GroupingApi', () => {
       const result = await groupingApi.getTopPerformersByGroup('authors', 'field');
 
       expect(consoleWarnSpy).toHaveBeenCalledWith(
-        'Failed to get top performers for group error-group:',
-        expect.any(Error)
+        '[api] Failed to get top performers for group error-group',
+        expect.objectContaining({
+          groupKey: 'error-group',
+          error: expect.any(Error)
+        })
       );
       expect(result.groups).toHaveLength(0);
 
@@ -488,8 +494,11 @@ describe('GroupingApi', () => {
       });
 
       expect(consoleWarnSpy).toHaveBeenCalledWith(
-        'Failed to calculate percentiles for group error-group:',
-        expect.any(Error)
+        '[api] Failed to calculate percentiles for group error-group',
+        expect.objectContaining({
+          groupKey: 'error-group',
+          error: expect.any(Error)
+        })
       );
       expect(result.groups[0].stats.percentiles).toBeUndefined();
 

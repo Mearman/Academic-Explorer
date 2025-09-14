@@ -189,8 +189,11 @@ describe('SamplingApi', () => {
       });
 
       expect(consoleWarnSpy).toHaveBeenCalledWith(
-        'Failed to sample from stratum error-stratum:',
-        expect.any(Error)
+        '[api] Failed to sample from stratum error-stratum',
+        expect.objectContaining({
+          stratumKey: 'error-stratum',
+          error: expect.any(Error)
+        })
       );
       expect(result.samples).toEqual([]);
       expect(result.strata_info[0].sample_count).toBe(0);

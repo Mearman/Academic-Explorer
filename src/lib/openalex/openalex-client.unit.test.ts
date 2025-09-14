@@ -595,13 +595,20 @@ describe('OpenAlexClient', () => {
       mockWorksApi.getWork.mockResolvedValue(mockWork);
       mockAuthorsApi.getAuthor.mockRejectedValue(new Error('Not found'));
 
-      // Mock console.warn to avoid output during tests
-      const consoleSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
+      // Mock console.error since logError uses logger.error
+      const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
 
       const result = await client.getEntities(['W123', 'A456']);
 
       expect(result).toEqual([mockWork]);
-      expect(consoleSpy).toHaveBeenCalledWith('Failed to fetch entity A456:', 'Not found');
+      expect(consoleSpy).toHaveBeenCalledWith(
+        '[api] Failed to fetch entity A456',
+        expect.objectContaining({
+          name: expect.any(String),
+          message: expect.any(String),
+          stack: expect.any(String)
+        })
+      );
 
       consoleSpy.mockRestore();
     });

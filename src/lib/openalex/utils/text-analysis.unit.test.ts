@@ -161,8 +161,11 @@ describe('TextAnalysisApi', () => {
       expect(result).toHaveLength(1);
       expect(result[0]).toEqual(mockResponse);
       expect(consoleWarnSpy).toHaveBeenCalledWith(
-        'Failed to analyze text: Failed text...',
-        expect.any(Error)
+        '[api] Failed to analyze text: Failed text...',
+        expect.objectContaining({
+          text: 'Failed text',
+          error: expect.any(Error)
+        })
       );
 
       consoleWarnSpy.mockRestore();
