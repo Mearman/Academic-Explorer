@@ -179,7 +179,7 @@ export function extractKeywords(
     'your', 'here', 'there', 'where', 'when', 'why', 'how', 'what', 'which', 'who',
     'more', 'most', 'less', 'much', 'many', 'some', 'all', 'any', 'no', 'not',
     'very', 'too', 'also', 'just', 'only', 'even', 'still', 'yet', 'however',
-    'therefore', 'thus', 'hence', 'moreover', 'furthermore', 'nevertheless'
+    'therefore', 'thus', 'hence', 'moreover', 'furthermore', 'nevertheless', 'over'
   ]);
 
   // Extract words and clean them
