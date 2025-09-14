@@ -108,7 +108,7 @@ function DatasetsManagement() {
         </div>
 
         <button
-          onClick={() => setShowUploadModal(true)}
+          onClick={() => { setShowUploadModal(true); }}
           style={{
             backgroundColor: '#3b82f6',
             color: 'white',
@@ -144,7 +144,7 @@ function DatasetsManagement() {
             Upload your first STAR dataset to begin evaluation. Supported formats: CSV, JSON, Excel.
           </p>
           <button
-            onClick={() => setShowUploadModal(true)}
+            onClick={() => { setShowUploadModal(true); }}
             style={{
               backgroundColor: '#3b82f6',
               color: 'white',

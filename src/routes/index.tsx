@@ -70,7 +70,7 @@ function HomePage() {
               size="lg"
               placeholder="Search papers, authors, DOIs, ORCIDs..."
               value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
+              onChange={(e) => { setSearchQuery(e.target.value); }}
               leftSection={<IconSearch size={20} />}
               disabled={isLoading}
             />

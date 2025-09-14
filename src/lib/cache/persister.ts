@@ -14,6 +14,46 @@ const LOCALSTORAGE_KEY = 'academic-explorer-cache';
 const LOCALSTORAGE_MAX_SIZE = 5 * 1024 * 1024; // 5MB conservative limit
 const LOCALSTORAGE_COMPRESSION_THRESHOLD = 50 * 1024; // 50KB - compress larger items
 
+// Safe property accessor for unknown objects
+function getObjectProperty(obj: unknown, prop: string): unknown {
+  return obj !== null && typeof obj === 'object' && Object.prototype.hasOwnProperty.call(obj, prop)
+    ? (obj as Record<string, unknown>)[prop]
+    : undefined
+}
+
+// Type guard for PersistedClient with optional metadata
+function isPersistedClientData(obj: unknown): obj is PersistedClient & { timestamp?: number; version?: string } {
+  if (!obj || typeof obj !== 'object') return false
+
+  // Check for required PersistedClient properties
+  const clientState = getObjectProperty(obj, 'clientState')
+  if (!clientState || typeof clientState !== 'object') return false
+
+  // Validate optional metadata properties
+  const timestamp = getObjectProperty(obj, 'timestamp')
+  if (timestamp !== undefined && typeof timestamp !== 'number') return false
+
+  const version = getObjectProperty(obj, 'version')
+  if (version !== undefined && typeof version !== 'string') return false
+
+  return true
+}
+
+// Simpler type guard for PersistedClient with timestamp
+function isPersistedClientWithTimestamp(obj: unknown): obj is PersistedClient & { timestamp?: number } {
+  if (!obj || typeof obj !== 'object') return false
+
+  // Check for required PersistedClient properties
+  const clientState = getObjectProperty(obj, 'clientState')
+  if (!clientState || typeof clientState !== 'object') return false
+
+  // Validate optional timestamp
+  const timestamp = getObjectProperty(obj, 'timestamp')
+  if (timestamp !== undefined && typeof timestamp !== 'number') return false
+
+  return true
+}
+
 /**
  * Create a hybrid persister that uses localStorage first, then IndexedDB
  * Provides optimized multi-tier storage: Memory → localStorage → IndexedDB
@@ -134,7 +174,14 @@ export function createHybridPersister(dbName = 'academic-explorer-cache'): Persi
           try {
             const stored = localStorage.getItem(LOCALSTORAGE_KEY);
             if (stored) {
-              const parsed = JSON.parse(stored) as PersistedClient & { timestamp?: number; version?: string };
+              const parsed = JSON.parse(stored)
+
+              // Validate parsed data structure
+              if (!isPersistedClientData(parsed)) {
+                logger.warn('cache', 'Invalid localStorage cache structure, clearing', { keys: Object.keys(parsed || {}) });
+                localStorage.removeItem(LOCALSTORAGE_KEY);
+                throw new Error('Invalid cache structure');
+              }
 
               // Check if cache is expired
               if (parsed.timestamp) {
@@ -165,12 +212,19 @@ export function createHybridPersister(dbName = 'academic-explorer-cache'): Persi
         const store = tx.objectStore('cache');
         const data = await store.get('queryClient');
 
-        // Type guard for persisted data
-        if (!data || typeof data !== 'object') {
+        // Validate persisted data structure
+        if (!isPersistedClientData(data)) {
+          if (data) {
+            logger.warn('cache', 'Invalid IndexedDB cache structure, clearing');
+            const delTx = db.transaction('cache', 'readwrite');
+            const delStore = delTx.objectStore('cache');
+            await delStore.delete('queryClient');
+            await delTx.done;
+          }
           return undefined;
         }
 
-        const persistedData = data as PersistedClient & { timestamp?: number; version?: string };
+        const persistedData = data;
 
         // Check if cache is expired (based on maxAge)
         if (persistedData.timestamp) {
@@ -275,12 +329,19 @@ export function createIDBPersister(dbName = 'academic-explorer-cache'): Persiste
         const store = tx.objectStore('cache');
         const data = await store.get('queryClient');
 
-        // Type guard for persisted data
-        if (!data || typeof data !== 'object') {
+        // Validate persisted data structure
+        if (!isPersistedClientData(data)) {
+          if (data) {
+            logger.warn('cache', 'Invalid IndexedDB cache structure in IndexedDB-only persister, clearing');
+            const delTx = db.transaction('cache', 'readwrite');
+            const delStore = delTx.objectStore('cache');
+            await delStore.delete('queryClient');
+            await delTx.done;
+          }
           return undefined;
         }
 
-        const persistedData = data as PersistedClient & { timestamp?: number; version?: string };
+        const persistedData = data;
 
         // Check if cache is expired (based on maxAge)
         if (persistedData.timestamp) {
@@ -334,8 +395,8 @@ export async function getCacheStats(dbName = 'academic-explorer-cache') {
     const store = tx.objectStore('cache');
     const data = await store.get('queryClient');
 
-    // Type guard for persisted data
-    if (!data || typeof data !== 'object') {
+    // Validate persisted data structure
+    if (!isPersistedClientWithTimestamp(data)) {
       return {
         exists: false,
         size: 0,
@@ -344,7 +405,7 @@ export async function getCacheStats(dbName = 'academic-explorer-cache') {
       };
     }
 
-    const persistedData = data as PersistedClient & { timestamp?: number };
+    const persistedData = data;
 
     const age = persistedData.timestamp ? Date.now() - persistedData.timestamp : 0;
     const queryCount = persistedData.clientState?.queries?.length || 0;

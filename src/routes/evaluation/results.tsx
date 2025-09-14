@@ -590,7 +590,7 @@ function ComparisonResults() {
                         fontWeight: '500',
                         cursor: 'pointer'
                       }}
-                      onClick={() => logger.debug('ui', 'View detailed breakdown clicked', { resultId: result.id }, 'ComparisonResults')}
+                      onClick={() => { logger.debug('ui', 'View detailed breakdown clicked', { resultId: result.id }, 'ComparisonResults'); }}
                     >
                       View Breakdown
                     </button>
@@ -606,7 +606,7 @@ function ComparisonResults() {
                         fontWeight: '500',
                         cursor: 'pointer'
                       }}
-                      onClick={() => logger.debug('ui', 'Export results clicked', { resultId: result.id }, 'ComparisonResults')}
+                      onClick={() => { logger.debug('ui', 'Export results clicked', { resultId: result.id }, 'ComparisonResults'); }}
                     >
                       Export Results
                     </button>
@@ -622,7 +622,7 @@ function ComparisonResults() {
                         fontWeight: '500',
                         cursor: 'pointer'
                       }}
-                      onClick={() => logger.debug('ui', 'View additional papers clicked', { resultId: result.id }, 'ComparisonResults')}
+                      onClick={() => { logger.debug('ui', 'View additional papers clicked', { resultId: result.id }, 'ComparisonResults'); }}
                     >
                       View Additional Papers ({metrics.additionalPapersFound})
                     </button>
@@ -669,7 +669,7 @@ function ComparisonResults() {
                 ].map((tab) => (
                   <button
                     key={tab.key}
-                    onClick={() => setActiveVisualizationTab(tab.key as 'performance' | 'scatter' | 'heatmap' | 'overview')}
+                    onClick={() => { setActiveVisualizationTab(tab.key as 'performance' | 'scatter' | 'heatmap' | 'overview'); }}
                     style={{
                       padding: '12px 20px',
                       border: 'none',
@@ -751,7 +751,7 @@ function ComparisonResults() {
                   </label>
                   <select
                     value={selectedDatasetForMissingPapers || ''}
-                    onChange={(e) => setSelectedDatasetForMissingPapers(e.target.value || null)}
+                    onChange={(e) => { setSelectedDatasetForMissingPapers(e.target.value || null); }}
                     style={{
                       padding: '8px 12px',
                       borderRadius: '6px',

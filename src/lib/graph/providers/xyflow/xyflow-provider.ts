@@ -178,16 +178,8 @@ export class XYFlowProvider implements GraphProvider {
     this.nodes.set(node.id, node);
     this.updateReactFlow();
 
-    // If we have a current force-directed layout, automatically re-apply it to include the new node
-    if (this.currentLayout && this.isForceDirectedLayout(this.currentLayout.type)) {
-      logger.info('graph', 'New node added to force-directed layout, re-applying layout to include it', { nodeId: node.id }, 'XYFlowProvider');
-      // Use a small delay to allow React state to update first
-      setTimeout(() => {
-        if (this.currentLayout) {
-          this.applyLayout(this.currentLayout);
-        }
-      }, 50);
-    }
+    // Layout will be applied explicitly by the service layer when needed
+    // Automatic re-layout on individual node addition causes cascading effects
   }
 
   private isForceDirectedLayout(layoutType: string): boolean {
@@ -198,16 +190,8 @@ export class XYFlowProvider implements GraphProvider {
     this.edges.set(edge.id, edge);
     this.updateReactFlow();
 
-    // If we have a current force-directed layout, automatically re-apply it to include the new edge
-    if (this.currentLayout && this.isForceDirectedLayout(this.currentLayout.type)) {
-      logger.info('graph', 'New edge added to force-directed layout, re-applying layout to include it', { edgeId: edge.id }, 'XYFlowProvider');
-      // Use a small delay to allow React state to update first
-      setTimeout(() => {
-        if (this.currentLayout) {
-          this.applyLayout(this.currentLayout);
-        }
-      }, 50);
-    }
+    // Layout will be applied explicitly by the service layer when needed
+    // Automatic re-layout on individual edge addition causes cascading effects
   }
 
   removeNode(nodeId: string): void {
