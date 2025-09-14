@@ -5,6 +5,7 @@
 
 import React, { useState } from 'react'
 import { CollapsibleSidebar } from './CollapsibleSidebar'
+import { LayoutControls } from '@/components/molecules/LayoutControls'
 import { useGraphData } from '@/hooks/use-graph-data'
 import { useThemeColors } from '@/hooks/use-theme-colors'
 import type { EntityType } from '@/lib/openalex/types'
@@ -175,6 +176,10 @@ export const LeftSidebar: React.FC = () => {
           }}>
             <IconGraph size={16} />
             Graph Actions
+          </div>
+
+          <div style={{ marginBottom: '12px' }}>
+            <LayoutControls />
           </div>
 
           <button
