@@ -31,6 +31,11 @@ interface GraphState {
   selectedNodes: Set<string>;
   pinnedNodeId: string | null;
 
+  // Cache visibility and traversal control
+  showAllCachedNodes: boolean;
+  traversalDepth: number;
+  nodeDepths: Map<string, number>;
+
   // Provider (can be swapped)
   provider: GraphProvider | null;
   providerType: ProviderType;
@@ -82,6 +87,12 @@ interface GraphState {
   setPinnedNode: (nodeId: string | null) => void;
   clearPinnedNode: () => void;
 
+  // Cache visibility and traversal control
+  setShowAllCachedNodes: (show: boolean) => void;
+  setTraversalDepth: (depth: number) => void;
+  calculateNodeDepths: (originId: string) => void;
+  getNodesWithinDepth: (depth: number) => GraphNode[];
+
   // Bulk operations
   clear: () => void;
   setGraphData: (nodes: GraphNode[], edges: GraphEdge[]) => void;
@@ -123,6 +134,9 @@ export const useGraphStore = create<GraphState>()(
 			hoveredNodeId: null,
 			selectedNodes: new Set(),
 			pinnedNodeId: null,
+			showAllCachedNodes: false,
+			traversalDepth: 1,
+			nodeDepths: new Map(),
 			provider: null,
 			providerType: "xyflow",
 			visibleEntityTypes: new Set(["works", "authors", "sources", "institutions", "topics", "publishers", "funders", "keywords", "geo"]),
@@ -302,6 +316,71 @@ export const useGraphStore = create<GraphState>()(
 				});
 			},
 
+			// Cache visibility and traversal control
+			setShowAllCachedNodes: (show) => {
+				set((draft) => {
+					draft.showAllCachedNodes = show;
+				});
+			},
+
+			setTraversalDepth: (depth) => {
+				set((draft) => {
+					// Ensure valid depth (minimum 1, allow Infinity)
+					const validDepth = Math.max(1, depth);
+					draft.traversalDepth = validDepth;
+				});
+			},
+
+			calculateNodeDepths: (originId) => {
+				set((draft) => {
+					const { nodes, edges } = draft;
+					const depths = new Map<string, number>();
+
+					// BFS to calculate distances from origin
+					const queue: Array<{ nodeId: string; depth: number }> = [{ nodeId: originId, depth: 0 }];
+					const visited = new Set<string>();
+
+					while (queue.length > 0) {
+						const current = queue.shift();
+						if (!current) continue;
+
+						const { nodeId, depth } = current;
+						if (visited.has(nodeId)) continue;
+
+						visited.add(nodeId);
+						depths.set(nodeId, depth);
+
+						// Find connected nodes
+						edges.forEach(edge => {
+							let neighbor: string | null = null;
+							if (edge.source === nodeId && !visited.has(edge.target)) {
+								neighbor = edge.target;
+							} else if (edge.target === nodeId && !visited.has(edge.source)) {
+								neighbor = edge.source;
+							}
+
+							if (neighbor && nodes.has(neighbor)) {
+								queue.push({ nodeId: neighbor, depth: depth + 1 });
+							}
+						});
+					}
+
+					draft.nodeDepths = depths;
+				});
+			},
+
+			getNodesWithinDepth: (depth) => {
+				const { nodes, nodeDepths } = get();
+				if (depth === Infinity) {
+					return Array.from(nodes.values());
+				}
+
+				return Array.from(nodes.values()).filter(node => {
+					const nodeDepth = nodeDepths.get(node.id);
+					return nodeDepth !== undefined && nodeDepth <= depth;
+				});
+			},
+
 			// Bulk operations
 			clear: () => {
 				const { provider } = get();
@@ -313,6 +392,7 @@ export const useGraphStore = create<GraphState>()(
 					hoveredNodeId: null,
 					selectedNodes: new Set(),
 					pinnedNodeId: null,
+					nodeDepths: new Map(),
 				});
 			},
 
@@ -332,6 +412,7 @@ export const useGraphStore = create<GraphState>()(
 					selectedNodeId: null,
 					hoveredNodeId: null,
 					selectedNodes: new Set(),
+					nodeDepths: new Map(), // Clear depths, will be recalculated when needed
 				});
 			},
 
@@ -581,6 +662,8 @@ export const useGraphStore = create<GraphState>()(
 				providerType: state.providerType,
 				visibleEntityTypes: Array.from(state.visibleEntityTypes),
 				visibleEdgeTypes: Array.from(state.visibleEdgeTypes),
+				showAllCachedNodes: state.showAllCachedNodes,
+				traversalDepth: state.traversalDepth,
 			}),
 			onRehydrateStorage: () => (state) => {
 				if (state && Array.isArray(state.visibleEntityTypes)) {
