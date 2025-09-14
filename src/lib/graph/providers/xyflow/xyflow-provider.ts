@@ -37,6 +37,7 @@ export class XYFlowProvider implements GraphProvider {
 			id: node.id,
 			type: "custom",
 			position: node.position,
+			// Let CSS handle dimensions naturally, floating edges will use measured dimensions
 			data: {
 				label: node.label,
 				entityId: node.entityId,
