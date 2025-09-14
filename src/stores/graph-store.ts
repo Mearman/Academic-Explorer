@@ -349,15 +349,16 @@ export const useGraphStore = create<GraphState>()(
     const parent = new Map<string, string>();
 
     while (queue.length > 0) {
-      const current = queue.shift()!;
+      const current = queue.shift();
+      if (!current) continue;
 
       if (current === targetId) {
         // Reconstruct path
         const path: string[] = [];
-        let node = targetId;
+        let node: string | undefined = targetId;
         while (node) {
           path.unshift(node);
-          node = parent.get(node)!;
+          node = parent.get(node);
         }
         return path;
       }
@@ -388,7 +389,8 @@ export const useGraphStore = create<GraphState>()(
     const stack: string[] = [nodeId];
 
     while (stack.length > 0) {
-      const current = stack.pop()!;
+      const current = stack.pop();
+      if (!current) continue;
       if (visited.has(current)) continue;
 
       visited.add(current);

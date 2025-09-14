@@ -61,10 +61,23 @@ export function useThemeColors() {
     },
   };
 
+  // Type guard for valid entity color keys
+  const isValidEntityColorKey = (key: string): key is keyof typeof colors.entity => {
+    const validKeys = [
+      'work', 'author', 'source', 'institution', 'concept', 'topic', 'publisher', 'funder'
+    ];
+    return validKeys.includes(key);
+  };
+
   // Entity color utilities
   const getEntityColor = (entityType: EntityType | string): string => {
-    const normalizedType = entityType.toLowerCase() as keyof typeof colors.entity;
-    return colors.entity[normalizedType] || colors.primary;
+    const normalizedType = entityType.toLowerCase();
+
+    if (isValidEntityColorKey(normalizedType)) {
+      return colors.entity[normalizedType];
+    }
+
+    return colors.primary;
   };
 
   const getEntityColorShade = (entityType: EntityType | string, shade: number = 5): string => {

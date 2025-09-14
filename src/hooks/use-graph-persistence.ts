@@ -5,6 +5,7 @@
 
 import { useCallback } from 'react'
 import { useGraphStore } from '@/stores/graph-store'
+import { logError, logger } from '@/lib/logger'
 import type { GraphSnapshot } from '@/lib/graph/types'
 
 interface GraphSession {
@@ -28,6 +29,43 @@ interface GraphSession {
 const STORAGE_KEY = 'academic-explorer-sessions'
 const MAX_SESSIONS = 10 // Limit to prevent localStorage bloat
 
+// Type guard for GraphSession objects
+function isValidGraphSession(obj: unknown): obj is GraphSession {
+  if (!obj || typeof obj !== 'object') return false
+
+  // Object.prototype.hasOwnProperty.call for safe property checks
+  const hasProperty = (prop: string): boolean =>
+    Object.prototype.hasOwnProperty.call(obj, prop)
+
+  if (!hasProperty('id') || !hasProperty('name') || !hasProperty('snapshot')) return false
+
+  const session = obj as Record<string, unknown>
+
+  if (typeof session.id !== 'string' || typeof session.name !== 'string') return false
+
+  const createdAtValid = typeof session.createdAt === 'string' || session.createdAt instanceof Date
+  const lastModifiedValid = typeof session.lastModified === 'string' || session.lastModified instanceof Date
+
+  if (!createdAtValid || !lastModifiedValid) return false
+
+  // Safely check snapshot structure without type assertion
+  const snapshot = session.snapshot
+  if (!snapshot || typeof snapshot !== 'object') return false
+
+  const snapshotHasProperty = (prop: string): boolean =>
+    Object.prototype.hasOwnProperty.call(snapshot, prop)
+
+  if (!snapshotHasProperty('nodes') || !snapshotHasProperty('edges')) return false
+
+  // Access properties safely using reflection
+  const getProperty = (obj: unknown, prop: string): unknown => {
+    if (!obj || typeof obj !== 'object') return undefined
+    return (obj as Record<string, unknown>)[prop]
+  }
+
+  return Array.isArray(getProperty(snapshot, 'nodes')) && Array.isArray(getProperty(snapshot, 'edges'))
+}
+
 export function useGraphPersistence() {
   // Load all saved sessions
   const loadSessions = useCallback((): GraphSession[] => {
@@ -35,14 +73,19 @@ export function useGraphPersistence() {
       const stored = localStorage.getItem(STORAGE_KEY)
       if (!stored) return []
 
-      const sessions = JSON.parse(stored) as GraphSession[]
+      const parsed = JSON.parse(stored)
+      if (!Array.isArray(parsed)) {
+        logger.warn('storage', 'Invalid sessions data format, expected array', { parsed }, 'useGraphPersistence')
+        return []
+      }
+      const sessions = parsed.filter(isValidGraphSession)
       return sessions.map(session => ({
         ...session,
         createdAt: new Date(session.createdAt),
         lastModified: new Date(session.lastModified)
       }))
     } catch (error) {
-      console.error('Failed to load sessions:', error)
+      logError('Failed to load graph sessions from storage', error, 'useGraphPersistence', 'storage')
       return []
     }
   }, [])
@@ -92,7 +135,7 @@ export function useGraphPersistence() {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(updatedSessions))
       return sessionId
     } catch (error) {
-      console.error('Failed to save session:', error)
+      logError('Failed to save graph session to storage', error, 'useGraphPersistence', 'storage')
       throw new Error('Failed to save session. Storage might be full.')
     }
   }, [loadSessions])
@@ -132,7 +175,7 @@ export function useGraphPersistence() {
 
       return true
     } catch (error) {
-      console.error('Failed to load session:', error)
+      logError('Failed to load graph session from storage', error, 'useGraphPersistence', 'storage')
       return false
     }
   }, [loadSessions])
@@ -145,7 +188,7 @@ export function useGraphPersistence() {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(filteredSessions))
       return true
     } catch (error) {
-      console.error('Failed to delete session:', error)
+      logError('Failed to delete graph session from storage', error, 'useGraphPersistence', 'storage')
       return false
     }
   }, [loadSessions])
@@ -171,7 +214,7 @@ export function useGraphPersistence() {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(updatedSessions))
       return true
     } catch (error) {
-      console.error('Failed to update session:', error)
+      logError('Failed to update graph session in storage', error, 'useGraphPersistence', 'storage')
       return false
     }
   }, [loadSessions])
@@ -184,7 +227,7 @@ export function useGraphPersistence() {
       saveSession(sessionName, 'Automatically saved')
     } catch (error) {
       // Silently fail for auto-save
-      console.warn('Auto-save failed:', error)
+      logger.warn('storage', 'Auto-save failed', { error }, 'useGraphPersistence')
     }
   }, [saveSession])
 

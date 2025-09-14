@@ -6,6 +6,7 @@
 import { useCallback, useRef } from 'react';
 import { GraphDataService } from '@/services/graph-data-service';
 import { useGraphStore } from '@/stores/graph-store';
+import { logError } from '@/lib/logger';
 import type { SearchOptions } from '@/lib/graph/types';
 
 export function useGraphData() {
@@ -16,7 +17,7 @@ export function useGraphData() {
     try {
       await service.current.loadEntityGraph(entityId);
     } catch (err) {
-      console.error('Failed to load entity:', err);
+      logError('Failed to load entity in graph data hook', err, 'useGraphData', 'graph');
     }
   }, []);
 
@@ -30,7 +31,7 @@ export function useGraphData() {
     try {
       await service.current.expandNode(nodeId, options);
     } catch (err) {
-      console.error('Failed to expand node:', err);
+      logError('Failed to expand node in graph data hook', err, 'useGraphData', 'graph');
       store.setError(err instanceof Error ? err.message : 'Failed to expand node');
     } finally {
       store.setLoading(false);
@@ -49,7 +50,7 @@ export function useGraphData() {
     try {
       await service.current.searchAndVisualize(query, searchOptions);
     } catch (err) {
-      console.error('Failed to search:', err);
+      logError('Failed to perform graph search operation', err, 'useGraphData', 'graph');
     }
   }, []);
 
