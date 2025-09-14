@@ -145,13 +145,37 @@ const GraphNavigationInner: React.FC<GraphNavigationProps> = ({ className, style
 			onNodeClick: (node: GraphNode) => {
 				// Extract clean OpenAlex ID from potential URL
 				const cleanId = EntityDetector.extractOpenAlexId(node.entityId);
-				// Navigate to entity page using the new route structure
-				void navigate({ to: `/${node.type}/${cleanId}` });
+
+				// Update the entire URL to match the entity route structure
+				const newPath = `/${node.type}/${cleanId}`;
+				window.history.pushState({}, '', newPath);
+
+				// Update selection in store
+				const store = useGraphStore.getState();
+				store.selectNode(node.id);
+
+				// Update preview in sidebar
+				setPreviewEntity(node.entityId);
+
+				logger.info("ui", "Node clicked - URL updated", {
+					nodeId: node.id,
+					entityId: node.entityId,
+					entityType: node.type,
+					newPath
+				}, "GraphNavigation");
 			},
 
 			onNodeDoubleClick: (node: GraphNode) => {
-				// TODO: Expand node functionality
-				logger.info("ui", "Double clicked node", { nodeId: node.id, entityId: node.entityId, entityType: node.type }, "GraphNavigation");
+				// Double-click navigates to full entity page (preserves original navigation behavior)
+				const cleanId = EntityDetector.extractOpenAlexId(node.entityId);
+				void navigate({ to: `/${node.type}/${cleanId}` });
+
+				logger.info("ui", "Double clicked node - navigating to full page", {
+					nodeId: node.id,
+					entityId: node.entityId,
+					entityType: node.type,
+					navigateTo: `/${node.type}/${cleanId}`
+				}, "GraphNavigation");
 			},
 
 			onNodeHover: (node: GraphNode | null) => {
@@ -194,6 +218,96 @@ const GraphNavigationInner: React.FC<GraphNavigationProps> = ({ className, style
 			setEdges(xyEdges);
 		}
 	}, [storeNodes, storeEdges, setNodes, setEdges]);
+
+	// URL state synchronization - read selected entity from URL path on mount
+	useEffect(() => {
+		const currentPath = window.location.pathname;
+
+		if (currentPath && currentPath !== '/' && storeNodes.size > 0) {
+			// Parse URL path (format: "/entityType/entityId")
+			const pathParts = currentPath.split('/').filter(part => part.length > 0);
+
+			if (pathParts.length >= 2) {
+				const [entityType, entityId] = pathParts;
+
+				// Find the corresponding node in the graph
+				const matchingNode = Array.from(storeNodes.values()).find(node => {
+					const cleanNodeId = EntityDetector.extractOpenAlexId(node.entityId);
+					const cleanUrlId = EntityDetector.extractOpenAlexId(entityId);
+					return node.type === entityType && cleanNodeId === cleanUrlId;
+				});
+
+				if (matchingNode) {
+					// Update selection in store
+					const store = useGraphStore.getState();
+					store.selectNode(matchingNode.id);
+
+					// Update preview in sidebar
+					setPreviewEntity(matchingNode.entityId);
+
+					logger.info("graph", "Selected entity from URL path", {
+						currentPath,
+						entityType,
+						entityId,
+						nodeId: matchingNode.id,
+						nodeEntityId: matchingNode.entityId
+					}, "GraphNavigation");
+				}
+			}
+		}
+	}, [storeNodes, setPreviewEntity]);
+
+	// Browser history navigation (back/forward button support)
+	useEffect(() => {
+		const handlePopState = () => {
+			const currentPath = window.location.pathname;
+
+			if (currentPath && currentPath !== '/' && storeNodes.size > 0) {
+				// Parse URL path (format: "/entityType/entityId")
+				const pathParts = currentPath.split('/').filter(part => part.length > 0);
+
+				if (pathParts.length >= 2) {
+					const [entityType, entityId] = pathParts;
+
+					// Find the corresponding node in the graph
+					const matchingNode = Array.from(storeNodes.values()).find(node => {
+						const cleanNodeId = EntityDetector.extractOpenAlexId(node.entityId);
+						const cleanUrlId = EntityDetector.extractOpenAlexId(entityId);
+						return node.type === entityType && cleanNodeId === cleanUrlId;
+					});
+
+					if (matchingNode) {
+						// Update selection in store
+						const store = useGraphStore.getState();
+						store.selectNode(matchingNode.id);
+
+						// Update preview in sidebar
+						setPreviewEntity(matchingNode.entityId);
+
+						logger.info("graph", "Selected entity from browser history", {
+							currentPath,
+							entityType,
+							entityId,
+							nodeId: matchingNode.id,
+							nodeEntityId: matchingNode.entityId
+						}, "GraphNavigation");
+					}
+				}
+			} else {
+				// No entity in path or root path, clear selection
+				const store = useGraphStore.getState();
+				store.selectNode(null);
+				setPreviewEntity(null);
+			}
+		};
+
+		// Listen for browser back/forward button events
+		window.addEventListener('popstate', handlePopState);
+
+		return () => {
+			window.removeEventListener('popstate', handlePopState);
+		};
+	}, [storeNodes, setPreviewEntity]);
 
 	// Handle node clicks
 	const onNodeClick = useCallback((event: React.MouseEvent, node: XYNode) => {
