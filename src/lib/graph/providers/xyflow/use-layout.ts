@@ -193,11 +193,11 @@ export function useLayout(
 			} else {
 				logger.info(
 					"graph",
-					"Initializing node at origin for deterministic forces",
+					"Preserving existing node position or initializing at origin",
 					{
 						nodeId: node.id,
 						index,
-						startPosition: { x: 0, y: 0 },
+						existingPosition: node.position,
 						pinned: false,
 					},
 					"useLayout",
@@ -206,8 +206,8 @@ export function useLayout(
 
 			return {
 				id: node.id,
-				x: 0, // All nodes start at origin
-				y: 0, // All nodes start at origin
+				x: isPinned ? 0 : node.position.x, // Preserve existing position or pin at origin
+				y: isPinned ? 0 : node.position.y, // Preserve existing position or pin at origin
 				fx: isPinned ? 0 : undefined, // Fix pinned node at x=0
 				fy: isPinned ? 0 : undefined, // Fix pinned node at y=0
 				...node.data,
