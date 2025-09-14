@@ -44,7 +44,7 @@ function ExternalIdRoute() {
               throw new Error(`Unsupported ID type: ${detection.idType}`)
           }
 
-          navigate({
+          void navigate({
             to: specificRoute,
             replace: true,
           })
@@ -53,7 +53,7 @@ function ExternalIdRoute() {
           const entityType = detection.entityType;
           const entityRoute = `/${entityType}/${detection.normalizedId}`;
 
-          navigate({
+          void navigate({
             to: entityRoute,
             replace: true,
           });
@@ -67,7 +67,7 @@ function ExternalIdRoute() {
         logError('Failed to resolve external ID:', error, 'ExternalIdRoute', 'routing')
 
         // Fallback to search
-        navigate({
+        void navigate({
           to: '/search',
           search: { q: externalId },
           replace: true,
@@ -75,7 +75,7 @@ function ExternalIdRoute() {
       }
     }
 
-    resolveExternalId()
+    void resolveExternalId()
   }, [externalId, navigate, detector, loadEntity])
 
   return (
