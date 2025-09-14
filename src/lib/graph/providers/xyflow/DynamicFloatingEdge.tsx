@@ -13,21 +13,22 @@ import {
 	EdgeLabelRenderer,
 	BaseEdge,
 	useReactFlow,
+	Position,
 } from "@xyflow/react";
 
 import { calculateClosestAttachment, calculateArrowPosition, type EdgeAttachment } from "../../utils/edge-calculations";
 import { logger } from "@/lib/logger";
 
 // Helper function to calculate arrow rotation based on target position
-function getArrowRotation(targetPosition: string): number {
+function getArrowRotation(targetPosition: Position): number {
 	switch (targetPosition) {
-		case "top":
+		case Position.Top:
 			return 90;  // Point down into top of node
-		case "right":
+		case Position.Right:
 			return 180; // Point left into right of node
-		case "bottom":
+		case Position.Bottom:
 			return 270; // Point up into bottom of node
-		case "left":
+		case Position.Left:
 			return 0;   // Point right into left of node
 		default:
 			return 0;
@@ -39,7 +40,7 @@ function DynamicFloatingEdge({
 	source,
 	target,
 	style = {},
-	markerEnd,
+	markerEnd, // eslint-disable-line @typescript-eslint/no-unused-vars
 	data,
 }: EdgeProps) {
 	const { getNode } = useReactFlow();
@@ -59,8 +60,8 @@ function DynamicFloatingEdge({
 
 			// Return fallback attachment with center positions
 			return {
-				source: { x: 0, y: 0, position: "right" as any },
-				target: { x: 100, y: 0, position: "left" as any },
+				source: { x: 0, y: 0, position: Position.Right },
+				target: { x: 100, y: 0, position: Position.Left },
 				distance: 100
 			};
 		}
@@ -97,18 +98,17 @@ function DynamicFloatingEdge({
 		}
 
 		return result;
-	}, [id, sourceNode?.position.x, sourceNode?.position.y, sourceNode?.measured?.width, sourceNode?.measured?.height,
-		targetNode?.position.x, targetNode?.position.y, targetNode?.measured?.width, targetNode?.measured?.height]);
+	}, [id, sourceNode, targetNode]);
 
 	// Calculate bezier path using the dynamic attachment points
 	const [edgePath, labelX, labelY] = React.useMemo(() => {
 		return getBezierPath({
 			sourceX: attachment.source.x,
 			sourceY: attachment.source.y,
-			sourcePosition: attachment.source.position as any,
+			sourcePosition: attachment.source.position,
 			targetX: attachment.target.x,
 			targetY: attachment.target.y,
-			targetPosition: attachment.target.position as any,
+			targetPosition: attachment.target.position,
 		});
 	}, [attachment]);
 
@@ -163,7 +163,7 @@ function DynamicFloatingEdge({
 				<div
 					style={{
 						position: "absolute",
-						transform: `translate(-50%, -50%) translate(${arrowPosition.x}px,${arrowPosition.y}px)`,
+						transform: `translate(-50%, -50%) translate(${String(arrowPosition.x)}px,${String(arrowPosition.y)}px)`,
 						zIndex: 2000, // High z-index to be above nodes
 						pointerEvents: "none",
 					}}
@@ -172,7 +172,7 @@ function DynamicFloatingEdge({
 						width="12"
 						height="12"
 						style={{
-							transform: `rotate(${getArrowRotation(attachment.target.position as string)}deg)`,
+							transform: `rotate(${String(getArrowRotation(attachment.target.position))}deg)`,
 						}}
 					>
 						{/* Arrow fill */}
@@ -191,7 +191,7 @@ function DynamicFloatingEdge({
 					<div
 						style={{
 							position: "absolute",
-							transform: `translate(-50%, -50%) translate(${labelX}px,${labelY}px)`,
+							transform: `translate(-50%, -50%) translate(${String(labelX)}px,${String(labelY)}px)`,
 							fontSize: "10px",
 							color: "#666",
 							background: "rgba(255, 255, 255, 0.8)",
