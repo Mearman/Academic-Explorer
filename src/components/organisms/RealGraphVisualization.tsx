@@ -1,6 +1,6 @@
 /**
  * Real graph visualization component using XYFlow
- * Integrates with graph store and includes context menu support
+ * Integrates with graph store and provider system for proper layout handling
  */
 
 import React, { useCallback, useEffect, useMemo } from 'react'
@@ -23,78 +23,56 @@ import { useGraphData } from '@/hooks/use-graph-data'
 import { useContextMenu } from '@/hooks/use-context-menu'
 import { useThemeColors } from '@/hooks/use-theme-colors'
 import { NodeContextMenu } from '@/components/layout/NodeContextMenu'
+import { XYFlowProvider } from '@/lib/graph/providers/xyflow/xyflow-provider'
 import type { GraphNode, GraphEdge } from '@/lib/graph/types'
 
 import '@xyflow/react/dist/style.css'
 
 
-// Convert GraphNode to XYFlow Node
-const convertToXYFlowNode = (graphNode: GraphNode, getEntityColor: (entityType: string) => string): Node => {
-  const entityType = graphNode.type || 'works'
-  const color = getEntityColor(entityType)
+// Singleton provider instance for consistent state
+let providerInstance: XYFlowProvider | null = null;
 
-  return {
-    id: graphNode.id,
-    type: 'default',
-    position: graphNode.position || { x: Math.random() * 400, y: Math.random() * 400 },
-    data: {
-      label: graphNode.label || graphNode.id,
-      graphNode // Store original graph node data
-    },
-    style: {
-      background: color,
-      color: 'white',
-      border: '2px solid #333',
-      borderRadius: '8px',
-      padding: '10px',
-      fontSize: '12px',
-      minWidth: '120px',
-      textAlign: 'center'
-    },
+function getProviderInstance(): XYFlowProvider {
+  if (!providerInstance) {
+    providerInstance = new XYFlowProvider();
   }
-}
-
-// Convert GraphEdge to XYFlow Edge
-const convertToXYFlowEdge = (graphEdge: GraphEdge): Edge => {
-  return {
-    id: graphEdge.id,
-    source: graphEdge.source,
-    target: graphEdge.target,
-    label: graphEdge.label,
-    type: 'default',
-    style: {
-      strokeWidth: 2,
-      stroke: '#666'
-    }
-  }
+  return providerInstance;
 }
 
 const RealGraphVisualizationInner: React.FC = () => {
-  const { nodes: graphNodes, edges: graphEdges } = useGraphStore()
+  const { nodes: graphNodes, edges: graphEdges, currentLayout } = useGraphStore()
   const { expandNode } = useGraphData()
   const { contextMenu, showContextMenu, hideContextMenu } = useContextMenu()
-  const { getEntityColor, colors } = useThemeColors()
+  const { colors } = useThemeColors()
 
-  // Convert graph store data to XYFlow format
-  const initialNodes = useMemo(() => {
-    return Array.from(graphNodes.values()).map(node => convertToXYFlowNode(node, getEntityColor))
-  }, [graphNodes, getEntityColor])
+  // Get provider instance
+  const provider = useMemo(() => getProviderInstance(), [])
 
-  const initialEdges = useMemo(() => {
-    return Array.from(graphEdges.values()).map(convertToXYFlowEdge)
-  }, [graphEdges])
+  // Get XYFlow-compatible data from provider
+  const { nodes: xyNodes, edges: xyEdges } = useMemo(() => {
+    // Update provider with current graph data
+    const graphNodeArray = Array.from(graphNodes.values())
+    const graphEdgeArray = Array.from(graphEdges.values())
 
-  const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes)
-  const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges)
+    provider.setNodes(graphNodeArray)
+    provider.setEdges(graphEdgeArray)
 
-  // Update XYFlow nodes/edges when graph store changes
+    // Apply current layout if nodes exist
+    if (graphNodeArray.length > 0) {
+      provider.applyLayout(currentLayout)
+    }
+
+    return provider.getXYFlowData()
+  }, [graphNodes, graphEdges, currentLayout, provider])
+
+  const [nodes, setNodes, onNodesChange] = useNodesState(xyNodes)
+  const [edges, setEdges, onEdgesChange] = useEdgesState(xyEdges)
+
+  // Update XYFlow nodes/edges when provider data changes
   useEffect(() => {
-    const newNodes = Array.from(graphNodes.values()).map(node => convertToXYFlowNode(node, getEntityColor))
-    const newEdges = Array.from(graphEdges.values()).map(convertToXYFlowEdge)
-
-    setNodes(newNodes)
-    setEdges(newEdges)
-  }, [graphNodes, graphEdges, setNodes, setEdges, getEntityColor])
+    setNodes(xyNodes)
+    setEdges(xyEdges)
+  }, [xyNodes, xyEdges, setNodes, setEdges])
 
   const onNodeClick = useCallback((event: React.MouseEvent, node: Node) => {
     console.log('Node clicked:', node)
@@ -102,23 +80,21 @@ const RealGraphVisualizationInner: React.FC = () => {
   }, [])
 
   const onNodeDoubleClick = useCallback(async (event: React.MouseEvent, node: Node) => {
-    const graphNode = node.data.graphNode as GraphNode
-    if (graphNode) {
-      console.log('Double-click: expanding node', graphNode.id)
-      try {
-        await expandNode(graphNode.id, { limit: 5 })
-      } catch (error) {
-        console.error('Failed to expand node:', error)
-      }
+    console.log('Double-click: expanding node', node.id)
+    try {
+      await expandNode(node.id, { limit: 5 })
+    } catch (error) {
+      console.error('Failed to expand node:', error)
     }
   }, [expandNode])
 
   const onNodeContextMenu = useCallback((event: React.MouseEvent, node: Node) => {
-    const graphNode = node.data.graphNode as GraphNode
+    // Convert XYFlow node back to GraphNode for context menu
+    const graphNode = graphNodes.get(node.id)
     if (graphNode) {
       showContextMenu(graphNode, event)
     }
-  }, [showContextMenu])
+  }, [showContextMenu, graphNodes])
 
   const onConnect: OnConnect = useCallback(
     (params) => {
@@ -128,22 +104,26 @@ const RealGraphVisualizationInner: React.FC = () => {
     []
   )
 
-  // Custom onNodesChange to sync position updates back to graph store
+  // Custom onNodesChange to sync position updates back to provider and graph store
   const handleNodesChange: OnNodesChange = useCallback((changes) => {
     onNodesChange(changes)
 
-    // Update positions in graph store for persistence
+    // Update positions in provider for persistence
     changes.forEach(change => {
       if (change.type === 'position' && change.position && change.id) {
         const graphNode = graphNodes.get(change.id)
         if (graphNode) {
-          // Note: This would require a setNodePosition method in the graph store
-          // For now, we'll just log the position change
+          // Update the graph node position
+          const updatedNode: GraphNode = {
+            ...graphNode,
+            position: change.position
+          }
+          provider.updateNode?.(change.id, { position: change.position })
           console.log(`Node ${change.id} moved to:`, change.position)
         }
       }
     })
-  }, [onNodesChange, graphNodes])
+  }, [onNodesChange, graphNodes, provider])
 
   return (
     <div style={{ width: '100%', height: '100%', position: 'relative' }}>
@@ -173,8 +153,9 @@ const RealGraphVisualizationInner: React.FC = () => {
         />
         <MiniMap
           nodeColor={(node) => {
-            const graphNode = node.data?.graphNode as GraphNode
-            return graphNode ? getEntityColor(graphNode.type || 'works') : colors.text.tertiary
+            // Use node's computed background color from provider
+            const background = node.style?.background
+            return typeof background === 'string' ? background : colors.text.tertiary
           }}
           nodeStrokeWidth={3}
           zoomable

@@ -3,7 +3,7 @@
  * Handles data transformation, caching, and progressive loading
  */
 
-import { openAlex } from '@/lib/openalex/openalex-client';
+import { rateLimitedOpenAlex } from '@/lib/openalex/rate-limited-client';
 import { EntityDetector } from '@/lib/graph/utils/entity-detection';
 import { useGraphStore } from '@/stores/graph-store';
 import type {
@@ -56,8 +56,8 @@ export class GraphDataService {
         throw new Error(`Unable to detect entity type for: ${entityId}`);
       }
 
-      // Fetch entity with OpenAlex client
-      const entity = await openAlex.getEntity(detection.normalizedId);
+      // Fetch entity with rate-limited OpenAlex client
+      const entity = await rateLimitedOpenAlex.getEntity(detection.normalizedId);
 
       // Transform to graph data
       const { nodes, edges } = this.transformEntityToGraph(entity);
@@ -82,17 +82,8 @@ export class GraphDataService {
         });
       }
 
-      // Apply deterministic force layout
-      store.provider?.applyLayout({
-        type: 'force-deterministic',
-        options: {
-          iterations: 300,
-          strength: 100,
-          distance: 150,
-          preventOverlap: true,
-          seed: 42
-        }
-      });
+      // Apply current layout from store
+      store.provider?.applyLayout(store.currentLayout);
       store.provider?.fitView();
 
     } catch (error) {
@@ -156,17 +147,8 @@ export class GraphDataService {
       // Mark as expanded
       this.cache.expandedNodes.add(nodeId);
 
-      // Apply layout update
-      store.provider?.applyLayout({
-        type: 'force-deterministic',
-        options: {
-          iterations: 200, // Fewer iterations for expansion updates
-          strength: 100,
-          distance: 150,
-          preventOverlap: true,
-          seed: 42
-        }
-      });
+      // Apply current layout from store
+      store.provider?.applyLayout(store.currentLayout);
 
     } catch (error) {
       console.error('Failed to expand node:', error);
@@ -182,7 +164,7 @@ export class GraphDataService {
     store.setError(null);
 
     try {
-      const results = await openAlex.searchAll(query, {
+      const results = await rateLimitedOpenAlex.searchAll(query, {
         entityTypes: options.entityTypes,
         limit: options.limit || 20,
       });
@@ -194,9 +176,8 @@ export class GraphDataService {
       store.addNodes(nodes);
       store.addEdges(edges);
 
-      // Apply appropriate layout
-      const layout = this.determineLayout(nodes.length, edges.length);
-      store.provider?.applyLayout(layout);
+      // Apply current layout from store
+      store.provider?.applyLayout(store.currentLayout);
       store.provider?.fitView();
 
     } catch (error) {
@@ -568,7 +549,7 @@ export class GraphDataService {
 
     try {
       // Fetch the author's recent works
-      const worksQuery = await openAlex.works.getWorks({
+      const worksQuery = await rateLimitedOpenAlex.getWorks({
         filter: `authorships.author.id:${authorId}`,
         per_page: Math.min(options.limit, 8),
         sort: 'publication_year:desc'
@@ -665,11 +646,11 @@ export class GraphDataService {
 
     try {
       // Fetch the work to get its citations and references
-      const work = await openAlex.works.getWork(workId) as Work;
+      const work = await rateLimitedOpenAlex.getWork(workId) as Work;
 
       // Add citations (works that cite this work)
       if (work.cited_by_count > 0) {
-        const citationsQuery = await openAlex.works.getWorks({
+        const citationsQuery = await rateLimitedOpenAlex.getWorks({
           filter: `referenced_works:${workId}`,
           per_page: Math.min(options.limit, 5), // Limit citations to avoid clutter
           sort: 'cited_by_count:desc'
@@ -714,7 +695,7 @@ export class GraphDataService {
         // Fetch reference details in batches
         const referencePromises = referencesSlice.map(async (refId) => {
           try {
-            const refWork = await openAlex.works.getWork(refId) as Work;
+            const refWork = await rateLimitedOpenAlex.getWork(refId) as Work;
             return refWork;
           } catch (error) {
             console.warn(`Failed to fetch reference work ${refId}:`, error);
@@ -769,7 +750,7 @@ export class GraphDataService {
 
     try {
       // Fetch recent works published in this source
-      const worksQuery = await openAlex.works.getWorks({
+      const worksQuery = await rateLimitedOpenAlex.getWorks({
         filter: `primary_location.source.id:${sourceId}`,
         per_page: Math.min(options.limit, 10),
         sort: 'publication_year:desc'
@@ -856,7 +837,7 @@ export class GraphDataService {
 
     try {
       // Fetch authors affiliated with this institution
-      const authorsQuery = await openAlex.authors.getAuthors({
+      const authorsQuery = await rateLimitedOpenAlex.getAuthors({
         filter: `last_known_institution.id:${institutionId}`,
         per_page: Math.min(options.limit, 8),
         sort: 'works_count:desc' // Get most productive authors
@@ -893,7 +874,7 @@ export class GraphDataService {
       });
 
       // Also fetch recent works from this institution
-      const worksQuery = await openAlex.works.getWorks({
+      const worksQuery = await rateLimitedOpenAlex.getWorks({
         filter: `authorships.institutions.id:${institutionId}`,
         per_page: Math.min(options.limit, 6),
         sort: 'publication_year:desc'

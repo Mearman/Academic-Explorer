@@ -839,7 +839,7 @@ export interface GroupParams extends QueryParams {
 }
 
 // Query parameters
-export interface QueryParams {
+export interface QueryParams extends Record<string, unknown> {
   filter?: string;
   search?: string;
   sort?: string;

@@ -4,6 +4,7 @@
  */
 
 import { create } from 'zustand';
+import { persist, createJSONStorage } from 'zustand/middleware';
 import type {
   GraphNode,
   GraphEdge,
@@ -77,7 +78,9 @@ interface GraphState {
   getConnectedComponent: (nodeId: string) => Set<string>;
 }
 
-export const useGraphStore = create<GraphState>((set, get) => ({
+export const useGraphStore = create<GraphState>()(
+  persist(
+    (set, get) => ({
   // Initial state
   nodes: new Map(),
   edges: new Map(),
@@ -402,4 +405,14 @@ export const useGraphStore = create<GraphState>((set, get) => ({
 
     return visited;
   },
-}));
+}),
+    {
+      name: 'graph-layout-storage',
+      storage: createJSONStorage(() => localStorage),
+      partialize: (state) => ({
+        currentLayout: state.currentLayout,
+        providerType: state.providerType,
+      }),
+    }
+  )
+);

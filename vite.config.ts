@@ -45,8 +45,7 @@ export default defineConfig({
           'vendor-tanstack': [
             '@tanstack/react-query',
             '@tanstack/react-table',
-            '@tanstack/react-query-devtools',
-            '@tanstack/router-devtools'
+            '@tanstack/react-query-devtools'
           ],
 
           // Mantine UI suite
