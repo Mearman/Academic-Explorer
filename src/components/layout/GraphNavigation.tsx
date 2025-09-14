@@ -76,7 +76,7 @@ const GraphNavigationInner: React.FC<GraphNavigationProps> = ({ className, style
     }
   }, []);
 
-  const { isRunning: isLayoutRunning, reheatLayout } = useLayout(
+  const { isRunning: _isLayoutRunning, reheatLayout: _reheatLayout } = useLayout(
     currentLayout,
     {
       enabled: true,
