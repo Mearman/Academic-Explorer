@@ -504,8 +504,8 @@ export class GroupingApi {
 
     for (const group of groups.groups) {
       const stats: any = {
-        total: group[metric] || 0,
-        mean: group.count > 0 ? (group[metric] || 0) / group.count : 0,
+        total: (group as any)[metric] || 0,
+        mean: group.count > 0 ? ((group as any)[metric] || 0) / group.count : 0,
       };
 
       // Calculate percentiles if requested (simplified approximation)

@@ -71,7 +71,7 @@ export class TextAnalysisApi {
       include_scores,
     };
 
-    return this.client.get<TextAnalysis>('text', params);
+    return this.client.get<TextAnalysis>('text', params as any);
   }
 
   /**
