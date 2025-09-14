@@ -521,9 +521,12 @@ export {
   QueryBuilder,
   createWorksQuery,
   createAuthorsQuery,
+} from './utils/query-builder';
+
+export {
   OpenAlexApiError,
   OpenAlexRateLimitError
-} from './utils/query-builder';
+} from './client';
 
 export {
   reconstructAbstract,

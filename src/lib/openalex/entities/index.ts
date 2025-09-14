@@ -22,34 +22,21 @@ export type {
 } from './works';
 
 export type {
-  AuthorsQueryParams,
-  SearchAuthorsOptions,
+  AuthorWorksFilters,
+  AuthorCollaboratorsFilters,
 } from './authors';
 
-export type {
-  SourcesQueryParams,
-  SearchSourcesOptions,
-} from './sources';
+// Note: sources.ts uses QueryParams directly, no custom interfaces
 
 export type {
   InstitutionsQueryParams,
-  SearchInstitutionsOptions,
 } from './institutions';
 
-export type {
-  TopicsQueryParams,
-  SearchTopicsOptions,
-} from './topics';
+// Note: topics.ts uses QueryParams directly, no custom interfaces
 
-export type {
-  PublishersQueryParams,
-  SearchPublishersOptions,
-} from './publishers';
+// Note: publishers.ts uses QueryParams directly, no custom interfaces
 
-export type {
-  FundersQueryParams,
-  SearchFundersOptions,
-} from './funders';
+// Note: funders.ts uses QueryParams directly, no custom interfaces
 
 export type {
   KeywordsQueryParams,
