@@ -41,7 +41,7 @@ export class GraphDataService {
   }
 
   /**
-   * Load initial graph for an entity
+   * Load initial graph for an entity with related entities
    */
   async loadEntityGraph(entityId: string): Promise<void> {
     const store = useGraphStore.getState();
@@ -62,10 +62,25 @@ export class GraphDataService {
       // Transform to graph data
       const { nodes, edges } = this.transformEntityToGraph(entity);
 
-      // Clear existing graph and add new data
+      // Clear existing graph and expansion cache
       store.clear();
+      this.cache.expandedNodes.clear();
+      this.cache.fetchedRelationships.clear();
+
+      // Add new data
       store.addNodes(nodes);
       store.addEdges(edges);
+
+      // Get the primary node ID for expansion
+      const primaryNodeId = nodes[0]?.id;
+
+      if (primaryNodeId) {
+        // Automatically load related entities
+        await this.expandNode(primaryNodeId, {
+          limit: 15, // Reasonable limit for related entities
+          depth: 1   // Only direct relations
+        });
+      }
 
       // Apply force layout
       store.provider?.applyLayout({ type: 'force' });
@@ -87,9 +102,12 @@ export class GraphDataService {
     depth?: number;
     limit?: number;
     relationTypes?: RelationType[];
+    force?: boolean; // Allow forcing expansion even if already expanded
   } = {}): Promise<void> {
-    // Check if already expanded
-    if (this.cache.expandedNodes.has(nodeId)) {
+    const { force = false } = options;
+
+    // Check if already expanded (unless forced)
+    if (!force && this.cache.expandedNodes.has(nodeId)) {
       return;
     }
 
