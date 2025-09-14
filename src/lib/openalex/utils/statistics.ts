@@ -351,7 +351,7 @@ export class StatisticsApi {
           sort: 'cited_by_count',
         });
 
-        const citations = groupStats.results.map((item: any) => (item.cited_by_count as number) || 0);
+        const citations = groupStats.results.map((item) => (item as { cited_by_count?: number }).cited_by_count || 0);
         const avgCitations = citations.reduce((sum, c) => sum + c, 0) / citations.length;
         const medianCitations = citations.sort((a, b) => a - b)[Math.floor(citations.length / 2)] || 0;
 
@@ -445,7 +445,7 @@ export class StatisticsApi {
         select: ['cited_by_count']
       });
 
-      const citations = worksResponse.results.map((work: any) => work.cited_by_count || 0);
+      const citations = worksResponse.results.map((work) => (work as { cited_by_count?: number }).cited_by_count || 0);
       const totalCitations = citations.reduce((sum, c) => sum + c, 0);
       const avgCitations = totalCitations / citations.length;
 

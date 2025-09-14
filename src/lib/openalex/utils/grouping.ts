@@ -461,12 +461,15 @@ export class GroupingApi {
         });
 
         const resultsArray = topPerformers.results;
-        const performersWithRank = resultsArray.map((performer: any, index: number) => ({
-          id: performer.id,
-          display_name: performer.display_name,
-          metric_value: (performer[metric] as number) || 0,
-          rank_in_group: index + 1,
-        }));
+        const performersWithRank = resultsArray.map((performer, index: number) => {
+          const perfRecord = performer as Record<string, unknown>;
+          return {
+            id: perfRecord.id as string,
+            display_name: perfRecord.display_name as string,
+            metric_value: (perfRecord[metric] as number) || 0,
+            rank_in_group: index + 1,
+          };
+        });
 
         result.push({
           group: group.key,

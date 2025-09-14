@@ -533,10 +533,10 @@ export class GraphDataService {
     try {
       // Fetch the author's recent works
       const worksQuery = await openAlex.works.getWorks({
-        filter: { 'authorships.author.id': authorId },
+        filter: `authorships.author.id:${authorId}`,
         per_page: Math.min(options.limit, 8),
         sort: 'publication_year:desc'
-      } as any);
+      });
 
       worksQuery.results.forEach((work) => {
         // Add work node
@@ -634,10 +634,10 @@ export class GraphDataService {
       // Add citations (works that cite this work)
       if (work.cited_by_count > 0) {
         const citationsQuery = await openAlex.works.getWorks({
-          filter: { 'referenced_works': workId },
+          filter: `referenced_works:${workId}`,
           per_page: Math.min(options.limit, 5), // Limit citations to avoid clutter
           sort: 'cited_by_count:desc'
-        } as any);
+        });
 
         citationsQuery.results.forEach((citingWork) => {
           // Add citing work node
@@ -734,10 +734,10 @@ export class GraphDataService {
     try {
       // Fetch recent works published in this source
       const worksQuery = await openAlex.works.getWorks({
-        filter: { 'primary_location.source.id': sourceId },
+        filter: `primary_location.source.id:${sourceId}`,
         per_page: Math.min(options.limit, 10),
         sort: 'publication_year:desc'
-      } as any);
+      });
 
       worksQuery.results.forEach((work) => {
         // Add work node
@@ -821,10 +821,10 @@ export class GraphDataService {
     try {
       // Fetch authors affiliated with this institution
       const authorsQuery = await openAlex.authors.getAuthors({
-        filter: { 'last_known_institution.id': institutionId },
+        filter: `last_known_institution.id:${institutionId}`,
         per_page: Math.min(options.limit, 8),
         sort: 'works_count:desc' // Get most productive authors
-      } as any);
+      });
 
       authorsQuery.results.forEach((author) => {
         // Add author node
@@ -858,10 +858,10 @@ export class GraphDataService {
 
       // Also fetch recent works from this institution
       const worksQuery = await openAlex.works.getWorks({
-        filter: { 'authorships.institution.id': institutionId },
+        filter: `authorships.institution.id:${institutionId}`,
         per_page: Math.min(options.limit, 6),
         sort: 'publication_year:desc'
-      } as any);
+      });
 
       worksQuery.results.forEach((work) => {
         // Add work node
