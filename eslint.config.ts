@@ -3,10 +3,11 @@ import globals from 'globals';
 import reactHooks from 'eslint-plugin-react-hooks';
 import reactRefresh from 'eslint-plugin-react-refresh';
 import tseslint from 'typescript-eslint';
+import noEmoji from './eslint-rules/no-emoji.js';
 
 export default tseslint.config([
   {
-    ignores: ['dist/**/*', 'node_modules/**/*', 'coverage/**/*', 'routeTree.gen.ts', 'vite.config.ts', 'vite.config.old.ts', 'vitest.workspace.ts', 'src/test/setup.ts', '.nx/**/*', 'eslint.config.ts'],
+    ignores: ['dist/**/*', 'node_modules/**/*', 'coverage/**/*', 'routeTree.gen.ts', 'vite.config.ts', 'vite.config.old.ts', 'vitest.workspace.ts', 'src/test/setup.ts', '.nx/**/*', 'eslint.config.ts', 'eslint-rules/**/*'],
   },
   // Allow console usage in specific files where it's necessary
   {
@@ -30,6 +31,11 @@ export default tseslint.config([
     plugins: {
       'react-hooks': reactHooks,
       'react-refresh': reactRefresh,
+      'custom': {
+        rules: {
+          'no-emoji': noEmoji,
+        },
+      },
     },
     rules: {
       ...reactHooks.configs.recommended.rules,
@@ -66,6 +72,9 @@ export default tseslint.config([
 
       // Temporarily relax unnecessary conditions - too many to fix in this session
       '@typescript-eslint/no-unnecessary-condition': 'warn',
+
+      // Custom rules
+      'custom/no-emoji': 'error',
     },
     languageOptions: {
       ecmaVersion: 2020,
