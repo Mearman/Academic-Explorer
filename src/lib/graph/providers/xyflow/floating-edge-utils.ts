@@ -10,7 +10,7 @@ import { Node as XYNode, Position } from "@xyflow/react";
 
 // Node dimensions - can be customized based on your node size
 const DEFAULT_NODE_WIDTH = 120;
-const DEFAULT_NODE_HEIGHT = 40;
+const DEFAULT_NODE_HEIGHT = 80; // Increased to match actual node height with metadata
 
 /**
  * Get the intersection point of the line between the center of the intersectionNode and the target node
@@ -54,19 +54,18 @@ export function getNodeIntersection(intersectionNode: XYNode, targetNode: XYNode
 	const halfWidth = targetNodeWidth / 2;
 	const halfHeight = targetNodeHeight / 2;
 
-	// Determine which edge of the rectangle the line intersects
+	// Calculate intersection with rectangle boundary
+	// We need to find where the line from intersection center to target center hits the target rectangle
 	let t: number;
 
-	// Check intersection with vertical edges (left/right)
-	if (Math.abs(normalizedX) > Math.abs(normalizedY)) {
-		// Line is more horizontal, intersects left or right edge
-		t = normalizedX > 0 ? halfWidth / Math.abs(normalizedX) : halfWidth / Math.abs(normalizedX);
-	} else {
-		// Line is more vertical, intersects top or bottom edge
-		t = normalizedY > 0 ? halfHeight / Math.abs(normalizedY) : halfHeight / Math.abs(normalizedY);
-	}
+	// Calculate t for intersection with each edge
+	const tRight = Math.abs(normalizedX) > 1e-10 ? halfWidth / Math.abs(normalizedX) : Infinity;
+	const tTop = Math.abs(normalizedY) > 1e-10 ? halfHeight / Math.abs(normalizedY) : Infinity;
 
-	// Calculate intersection point
+	// Take the minimum t (closest intersection to target center)
+	t = Math.min(tRight, tTop);
+
+	// Calculate intersection point - move from target center outward to edge
 	const intersectionX = targetNodeCenter.x - normalizedX * t;
 	const intersectionY = targetNodeCenter.y - normalizedY * t;
 
