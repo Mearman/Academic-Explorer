@@ -328,7 +328,7 @@ function DatasetsManagement() {
                     id="file-upload"
                     type="file"
                     accept=".csv,.json,.xlsx,.xls"
-                    onChange={handleFileUpload}
+                    onChange={(e) => void handleFileUpload(e)}
                     style={{ display: 'none' }}
                   />
                   <button
@@ -417,7 +417,7 @@ function DatasetsManagement() {
                   Cancel
                 </button>
                 <button
-                  onClick={handleUpload}
+                  onClick={() => void handleUpload()}
                   disabled={!uploadFile || isUploading}
                   style={{
                     padding: '8px 16px',
