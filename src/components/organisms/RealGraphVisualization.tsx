@@ -74,6 +74,13 @@ const RealGraphVisualizationInner: React.FC = () => {
     const graphNodeArray = Array.from(graphNodes.values())
     const graphEdgeArray = Array.from(graphEdges.values())
 
+    logger.info('graph', 'Graph data changed in RealGraphVisualization', {
+      nodeCount: graphNodeArray.length,
+      edgeCount: graphEdgeArray.length,
+      nodeIds: graphNodeArray.map(n => n.id),
+      nodePositions: graphNodeArray.map(n => ({ id: n.id, position: n.position }))
+    }, 'RealGraphVisualization')
+
     provider.setNodes(graphNodeArray)
     provider.setEdges(graphEdgeArray)
   }, [graphNodes, graphEdges, provider])
@@ -89,6 +96,15 @@ const RealGraphVisualizationInner: React.FC = () => {
   useEffect(() => {
     const graphNodeArray = Array.from(graphNodes.values())
     const graphEdgeArray = Array.from(graphEdges.values())
+
+    logger.info('graph', 'Main data processing effect triggered', {
+      nodeCount: graphNodeArray.length,
+      edgeCount: graphEdgeArray.length,
+      currentLayoutType: currentLayout.type,
+      isLayoutRunning,
+      nodeIds: graphNodeArray.map(n => n.id),
+      nodePositions: graphNodeArray.map(n => ({ id: n.id, x: n.position.x, y: n.position.y }))
+    }, 'RealGraphVisualization')
 
     if (graphNodeArray.length > 0) {
       logger.info('graph', 'Processing graph data and layout', { nodeCount: graphNodeArray.length }, 'RealGraphVisualization')
@@ -109,8 +125,12 @@ const RealGraphVisualizationInner: React.FC = () => {
 
       // Get updated data and set state
       const newData = provider.getXYFlowData()
-      logger.info('graph', 'Setting nodes/edges with layout positions', { nodeCount: newData.nodes.length, edgeCount: newData.edges.length }, 'RealGraphVisualization')
-      logger.info('graph', 'Sample node positions', { samplePositions: newData.nodes.slice(0, 3).map(n => ({ id: n.id, position: n.position })) }, 'RealGraphVisualization')
+      logger.info('graph', 'Setting nodes/edges with layout positions', {
+        nodeCount: newData.nodes.length,
+        edgeCount: newData.edges.length,
+        newNodePositions: newData.nodes.slice(0, 5).map(n => ({ id: n.id, position: n.position }))
+      }, 'RealGraphVisualization')
+
       setNodes(newData.nodes)
       setEdges(newData.edges)
 
@@ -125,6 +145,7 @@ const RealGraphVisualizationInner: React.FC = () => {
       }, currentLayout.type === 'd3-force' ? 150 : 50)
     } else if (graphEdgeArray.length > 0) {
       // Handle edges-only case
+      logger.info('graph', 'Handling edges-only case', { edgeCount: graphEdgeArray.length }, 'RealGraphVisualization')
       const newData = provider.getXYFlowData()
       setEdges(newData.edges)
     }
@@ -137,16 +158,38 @@ const RealGraphVisualizationInner: React.FC = () => {
 
   const onNodeDoubleClick = useCallback(async (event: React.MouseEvent, node: Node) => {
     logger.info('ui', 'Double-click: expanding node', { nodeId: node.id }, 'RealGraphVisualization')
+
+    // Track state before expansion
+    const beforeExpansion = {
+      nodeCount: Array.from(graphNodes.values()).length,
+      nodeIds: Array.from(graphNodes.values()).map(n => n.id)
+    }
+    logger.info('graph', 'State before node expansion', beforeExpansion, 'RealGraphVisualization')
+
     try {
       await expandNode(node.id, { limit: 5 })
 
+      // Track state after expansion
+      const afterExpansion = {
+        nodeCount: Array.from(graphNodes.values()).length,
+        nodeIds: Array.from(graphNodes.values()).map(n => n.id),
+        newNodes: Array.from(graphNodes.values()).filter(n => !beforeExpansion.nodeIds.includes(n.id)),
+        addedNodePositions: Array.from(graphNodes.values())
+          .filter(n => !beforeExpansion.nodeIds.includes(n.id))
+          .map(n => ({ id: n.id, position: n.position }))
+      }
+      logger.info('graph', 'State after node expansion', afterExpansion, 'RealGraphVisualization')
+
       // Reheat layout when new nodes are added (applies to all layout types)
-      logger.info('graph', 'Reheating layout after node expansion', { layoutType: currentLayout.type }, 'RealGraphVisualization')
+      logger.info('graph', 'Reheating layout after node expansion', {
+        layoutType: currentLayout.type,
+        nodesAdded: afterExpansion.newNodes.length
+      }, 'RealGraphVisualization')
       reheatLayout(0.3) // Restart with moderate energy
     } catch (error) {
       logError('Failed to expand node', error, 'RealGraphVisualization', 'graph')
     }
-  }, [expandNode, currentLayout.type, reheatLayout])
+  }, [expandNode, currentLayout.type, reheatLayout, graphNodes])
 
   const onNodeContextMenu = useCallback((event: React.MouseEvent, node: Node) => {
     // Convert XYFlow node back to GraphNode for context menu

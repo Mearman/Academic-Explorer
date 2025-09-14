@@ -224,10 +224,19 @@ export function useLayout(
       if (node.position.x === 0 && node.position.y === 0) {
         const angle = (index / nodes.length) * 2 * Math.PI;
         const radius = Math.min(150 + (index % 3) * 50, 300);
+        const newPosition = {
+          x: Math.cos(angle) * radius + 400,
+          y: Math.sin(angle) * radius + 300
+        };
+        logger.info('graph', 'Initializing new node position', {
+          nodeId: node.id,
+          wasAtOrigin: true,
+          newPosition
+        }, 'useLayout');
         return {
           id: node.id,
-          x: Math.cos(angle) * radius + 400,
-          y: Math.sin(angle) * radius + 300,
+          x: newPosition.x,
+          y: newPosition.y,
           ...node.data,
         };
       } else {
@@ -235,10 +244,21 @@ export function useLayout(
         const nodeHash = node.id.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
         const jitterX = ((nodeHash % 21) - 10) * 2; // -20 to 20
         const jitterY = (((nodeHash * 17) % 21) - 10) * 2;
+        const existingPosition = {
+          originalX: node.position.x,
+          originalY: node.position.y,
+          withJitterX: node.position.x + jitterX,
+          withJitterY: node.position.y + jitterY
+        };
+        logger.info('graph', 'Keeping existing node position with jitter', {
+          nodeId: node.id,
+          wasAtOrigin: false,
+          positions: existingPosition
+        }, 'useLayout');
         return {
           id: node.id,
-          x: node.position.x + jitterX,
-          y: node.position.y + jitterY,
+          x: existingPosition.withJitterX,
+          y: existingPosition.withJitterY,
           ...node.data,
         };
       }
@@ -315,17 +335,28 @@ export function useLayout(
   // Main layout application function
   const applyLayout = useCallback(() => {
     if (!enabled || !layout) {
+      logger.info('graph', 'Layout application skipped', { enabled, hasLayout: !!layout }, 'useLayout');
       return;
     }
 
     const nodes = getNodes();
+    logger.info('graph', 'Layout application started', {
+      layoutType: layout.type,
+      nodeCount: nodes.length,
+      nodeIds: nodes.map(n => n.id),
+      nodePositions: nodes.map(n => ({ id: n.id, position: n.position }))
+    }, 'useLayout');
+
     if (nodes.length === 0) {
+      logger.info('graph', 'No nodes to layout', undefined, 'useLayout');
       return;
     }
 
     if (layout.type === 'd3-force') {
+      logger.info('graph', 'Applying D3 force layout', { nodeCount: nodes.length }, 'useLayout');
       applyD3ForceLayout();
     } else {
+      logger.info('graph', 'Applying static layout', { layoutType: layout.type, nodeCount: nodes.length }, 'useLayout');
       stopLayout(); // Stop any running simulation
       applyStaticLayout(layout.type, nodes, layout.options);
 
@@ -340,9 +371,17 @@ export function useLayout(
 
   // Apply layout when layout changes
   useEffect(() => {
+    logger.info('graph', 'Layout useEffect triggered', {
+      enabled,
+      layoutType: layout?.type,
+      dependencies: { enabled, layoutType: layout?.type }
+    }, 'useLayout');
+
     if (enabled && layout) {
+      logger.info('graph', 'Triggering layout application from useEffect', { layoutType: layout.type }, 'useLayout');
       applyLayout();
     } else {
+      logger.info('graph', 'Stopping layout from useEffect', { enabled, hasLayout: !!layout }, 'useLayout');
       stopLayout();
     }
 
@@ -357,10 +396,20 @@ export function useLayout(
 
   // Reheat simulation (useful when adding new nodes to D3 force)
   const reheatLayout = useCallback((alpha = 0.3) => {
+    logger.info('graph', 'Reheat layout called', {
+      alpha,
+      hasSimulation: !!simulationRef.current,
+      isRunning: isRunningRef.current,
+      layoutType: layout?.type
+    }, 'useLayout');
+
     if (simulationRef.current && isRunningRef.current && layout?.type === 'd3-force') {
       simulationRef.current.alpha(alpha).restart();
       logger.info('graph', 'D3 Force simulation reheated', { alpha }, 'useLayout');
     } else {
+      logger.info('graph', 'Reheating via restart layout', {
+        reason: !simulationRef.current ? 'no simulation' : !isRunningRef.current ? 'not running' : 'not d3-force'
+      }, 'useLayout');
       // If not running or not D3 force, just restart
       restartLayout();
     }

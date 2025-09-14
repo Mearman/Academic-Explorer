@@ -74,6 +74,7 @@ export interface GraphLayout {
     chargeStrength?: number;
     centerStrength?: number;
     collisionRadius?: number;
+    collisionStrength?: number;
     velocityDecay?: number;
     alpha?: number;
     alphaDecay?: number;
