@@ -94,12 +94,12 @@ export const useGraphStore = create<GraphState>()(
     options: {
       seed: 42,
       iterations: 300,
-      linkDistance: 150,
-      linkStrength: 1,
-      chargeStrength: -300,
-      centerStrength: 0.1,
-      collisionRadius: 60,
-      velocityDecay: 0.4,
+      linkDistance: 200,      // Increased for more spacing
+      linkStrength: 0.8,      // Slightly weaker link forces
+      chargeStrength: -500,   // Stronger repulsion for better separation
+      centerStrength: 0.05,   // Weaker centering for more natural spread
+      collisionRadius: 80,    // Larger collision radius to prevent overlaps
+      velocityDecay: 0.3,     // Lower decay for more movement
       alpha: 1,
       alphaDecay: 0.0228
     }
