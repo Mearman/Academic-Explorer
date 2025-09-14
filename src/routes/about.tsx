@@ -14,10 +14,21 @@ function AboutPage() {
   ]
 
   return (
-    <Stack gap="xl">
-      <div>
-        <Title order={1} className={pageTitle}>
-          About Academic Explorer
+    <Card
+      shadow="xl"
+      padding="xl"
+      radius="lg"
+      withBorder
+      style={{
+        backgroundColor: 'rgba(255, 255, 255, 0.95)',
+        backdropFilter: 'blur(10px)',
+        maxWidth: '800px',
+      }}
+    >
+      <Stack gap="xl">
+        <div>
+          <Title order={1} className={pageTitle} ta="center">
+            About Academic Explorer
         </Title>
         <Text className={pageDescription}>
           A PhD research project focused on academic literature exploration and analysis
@@ -103,7 +114,8 @@ function AboutPage() {
           </div>
         </Stack>
       </Card>
-    </Stack>
+      </Stack>
+    </Card>
   )
 }
 
