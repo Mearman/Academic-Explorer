@@ -111,7 +111,7 @@ export class AuthorsApi {
     Object.entries(filters).forEach(([key, value]) => {
       if (value !== undefined && value !== null) {
         if (Array.isArray(value)) {
-          filterStrings.push(`${key}:${value.map(v => encodeURIComponent(String(v))).join('|')}`);
+          filterStrings.push(`${key}:${value.map(v => encodeURIComponent(String(v))).join('%7C')}`);
         } else if (typeof value === 'boolean') {
           filterStrings.push(`${key}:${value}`);
         } else {
@@ -212,7 +212,7 @@ export class AuthorsApi {
     Object.entries(filters).forEach(([key, value]) => {
       if (value !== undefined && value !== null && key !== 'authorships.author.id') {
         if (Array.isArray(value)) {
-          filterStrings.push(`${key}:${value.map(v => encodeURIComponent(String(v))).join('|')}`);
+          filterStrings.push(`${key}:${value.map(v => encodeURIComponent(String(v))).join('%7C')}`);
         } else if (typeof value === 'boolean') {
           filterStrings.push(`${key}:${value}`);
         } else {
@@ -463,7 +463,7 @@ export class AuthorsApi {
     Object.entries(filters).forEach(([key, value]) => {
       if (value !== undefined && value !== null) {
         if (Array.isArray(value)) {
-          filterStrings.push(`${key}:${value.map(v => encodeURIComponent(String(v))).join('|')}`);
+          filterStrings.push(`${key}:${value.map(v => encodeURIComponent(String(v))).join('%7C')}`);
         } else if (typeof value === 'boolean') {
           filterStrings.push(`${key}:${value}`);
         } else {
@@ -503,7 +503,7 @@ export class AuthorsApi {
     Object.entries(filters).forEach(([key, value]) => {
       if (value !== undefined && value !== null) {
         if (Array.isArray(value)) {
-          filterStrings.push(`${key}:${value.map(v => encodeURIComponent(String(v))).join('|')}`);
+          filterStrings.push(`${key}:${value.map(v => encodeURIComponent(String(v))).join('%7C')}`);
         } else if (typeof value === 'boolean') {
           filterStrings.push(`${key}:${value}`);
         } else {
