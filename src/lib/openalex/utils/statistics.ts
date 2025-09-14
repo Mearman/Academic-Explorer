@@ -115,7 +115,7 @@ export class StatisticsApi {
    * });
    * ```
    */
-  async getDatabaseStats(params: StatsParams = {}): Promise<DatabaseStats> {
+  async getDatabaseStats(_params: StatsParams = {}): Promise<DatabaseStats> {
     const currentYear = new Date().getFullYear();
 
     // Get entity counts for all types

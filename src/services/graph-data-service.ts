@@ -217,7 +217,7 @@ export class GraphDataService {
   /**
    * Transform Work entity
    */
-  private transformWork(work: Work, mainNode: GraphNode): { nodes: GraphNode[]; edges: GraphEdge[] } {
+  private transformWork(work: Work, _mainNode: GraphNode): { nodes: GraphNode[]; edges: GraphEdge[] } {
     const nodes: GraphNode[] = [];
     const edges: GraphEdge[] = [];
 
@@ -305,7 +305,7 @@ export class GraphDataService {
   /**
    * Transform Author entity (basic implementation)
    */
-  private transformAuthor(author: Author, mainNode: GraphNode): { nodes: GraphNode[]; edges: GraphEdge[] } {
+  private transformAuthor(author: Author, _mainNode: GraphNode): { nodes: GraphNode[]; edges: GraphEdge[] } {
     const nodes: GraphNode[] = [];
     const edges: GraphEdge[] = [];
 
@@ -341,7 +341,7 @@ export class GraphDataService {
   /**
    * Transform Source entity (basic implementation)
    */
-  private transformSource(source: Source, mainNode: GraphNode): { nodes: GraphNode[]; edges: GraphEdge[] } {
+  private transformSource(source: Source, _mainNode: GraphNode): { nodes: GraphNode[]; edges: GraphEdge[] } {
     const nodes: GraphNode[] = [];
     const edges: GraphEdge[] = [];
 
@@ -371,7 +371,7 @@ export class GraphDataService {
   /**
    * Transform Institution entity (basic implementation)
    */
-  private transformInstitution(institution: InstitutionEntity, mainNode: GraphNode): { nodes: GraphNode[]; edges: GraphEdge[] } {
+  private transformInstitution(institution: InstitutionEntity, _mainNode: GraphNode): { nodes: GraphNode[]; edges: GraphEdge[] } {
     const nodes: GraphNode[] = [];
     const edges: GraphEdge[] = [];
 
