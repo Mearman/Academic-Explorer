@@ -297,11 +297,3 @@ export const InstitutionNode: React.FC<CustomNodeProps> = ({ data, selected }) =
   );
 };
 
-// Node types registry for XYFlow
-export const nodeTypes = {
-  custom: CustomNode,
-  work: WorkNode,
-  author: AuthorNode,
-  source: SourceNode,
-  institution: InstitutionNode,
-};

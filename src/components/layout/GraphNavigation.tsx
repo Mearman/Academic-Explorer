@@ -24,7 +24,7 @@ import { useGraphStore } from '@/stores/graph-store';
 import { useLayoutStore } from '@/stores/layout-store';
 import { createGraphProvider } from '@/lib/graph/provider-factory';
 import { XYFlowProvider } from '@/lib/graph/providers/xyflow/xyflow-provider';
-import { nodeTypes } from '@/lib/graph/providers/xyflow/custom-nodes';
+import { nodeTypes } from '@/lib/graph/providers/xyflow/node-types';
 import type { GraphNode } from '@/lib/graph/types';
 
 import '@xyflow/react/dist/style.css';
