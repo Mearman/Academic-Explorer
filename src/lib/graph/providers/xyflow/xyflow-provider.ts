@@ -21,6 +21,31 @@ import type {
   EntityType
 } from '../../types';
 
+// D3-force imports for physics-based layouts
+import {
+  forceSimulation,
+  forceLink,
+  forceManyBody,
+  forceCenter,
+  forceCollide,
+  type Simulation,
+  type SimulationNodeDatum,
+  type SimulationLinkDatum
+} from 'd3-force';
+import { randomLcg } from 'd3-random';
+
+// D3 simulation interfaces for type safety
+interface D3Node extends SimulationNodeDatum {
+  id: string;
+  type: EntityType;
+  label: string;
+}
+
+interface D3Link extends SimulationLinkDatum<D3Node> {
+  id: string;
+  type: string;
+}
+
 export class XYFlowProvider implements GraphProvider {
   private container: HTMLElement | null = null;
   private nodes: Map<string, GraphNode> = new Map();
@@ -28,6 +53,7 @@ export class XYFlowProvider implements GraphProvider {
   private events: GraphEvents = {};
   private reactFlowInstance: ReactFlowInstance | null = null;
   private mounted = false;
+  private d3Simulation: Simulation<D3Node, D3Link> | null = null;
 
   // Convert generic GraphNode to XYFlow node
   private toXYNode(node: GraphNode): XYNode {
@@ -126,6 +152,11 @@ export class XYFlowProvider implements GraphProvider {
     this.mounted = false;
     this.container = null;
     this.reactFlowInstance = null;
+    // Clean up D3 simulation
+    if (this.d3Simulation) {
+      this.d3Simulation.stop();
+      this.d3Simulation = null;
+    }
   }
 
   setNodes(nodes: GraphNode[]): void {
@@ -183,6 +214,9 @@ export class XYFlowProvider implements GraphProvider {
         break;
       case 'force-deterministic':
         this.applyDeterministicForceLayout(nodes, layout.options);
+        break;
+      case 'd3-force':
+        this.applyD3ForceLayout(nodes, layout.options);
         break;
       case 'hierarchical':
         this.applyHierarchicalLayout(nodes);
@@ -439,6 +473,96 @@ export class XYFlowProvider implements GraphProvider {
         }
       }
     }
+  }
+
+  private applyD3ForceLayout(nodes: GraphNode[], options?: GraphLayout['options']): void {
+    const {
+      seed = 42,
+      iterations = 300,
+      linkDistance = 150,
+      linkStrength = 1,
+      chargeStrength = -300,
+      centerStrength = 0.1,
+      collisionRadius = 60,
+      velocityDecay = 0.4,
+      alpha = 1,
+      alphaDecay = 0.0228
+    } = options || {};
+
+    if (nodes.length === 0) return;
+
+    // Stop existing simulation if running
+    if (this.d3Simulation) {
+      this.d3Simulation.stop();
+    }
+
+    // Create deterministic random number generator
+    const random = randomLcg(seed);
+
+    // Convert GraphNodes to D3 nodes
+    const d3Nodes: D3Node[] = nodes.map(node => ({
+      id: node.id,
+      type: node.type,
+      label: node.label,
+      x: node.position.x + (random() - 0.5) * 20, // Small random jitter for initial positions
+      y: node.position.y + (random() - 0.5) * 20,
+    }));
+
+    // Convert GraphEdges to D3 links
+    const edges = Array.from(this.edges.values());
+    const d3Links: D3Link[] = edges
+      .filter(edge => {
+        // Only include links where both nodes exist
+        const sourceExists = d3Nodes.find(n => n.id === edge.source);
+        const targetExists = d3Nodes.find(n => n.id === edge.target);
+        return sourceExists && targetExists;
+      })
+      .map(edge => ({
+        id: edge.id,
+        type: edge.type,
+        source: edge.source,
+        target: edge.target,
+      }));
+
+    // Create simulation with deterministic random source
+    this.d3Simulation = forceSimulation<D3Node>(d3Nodes)
+      .randomSource(random)
+      .velocityDecay(velocityDecay)
+      .alpha(alpha)
+      .alphaDecay(alphaDecay);
+
+    // Configure forces
+    this.d3Simulation
+      .force('link', forceLink<D3Node, D3Link>(d3Links)
+        .id(d => d.id)
+        .distance(linkDistance)
+        .strength(linkStrength))
+      .force('charge', forceManyBody<D3Node>()
+        .strength(chargeStrength))
+      .force('center', forceCenter<D3Node>()
+        .strength(centerStrength))
+      .force('collision', forceCollide<D3Node>()
+        .radius(collisionRadius)
+        .strength(0.7));
+
+    // Run simulation for specified iterations
+    for (let i = 0; i < iterations; ++i) {
+      this.d3Simulation.tick();
+    }
+
+    // Stop the simulation
+    this.d3Simulation.stop();
+
+    // Update GraphNode positions from D3 simulation
+    d3Nodes.forEach(d3Node => {
+      const graphNode = nodes.find(n => n.id === d3Node.id);
+      if (graphNode && d3Node.x !== undefined && d3Node.y !== undefined) {
+        graphNode.position = {
+          x: d3Node.x,
+          y: d3Node.y,
+        };
+      }
+    });
   }
 
   private applyHierarchicalLayout(nodes: GraphNode[]): void {
