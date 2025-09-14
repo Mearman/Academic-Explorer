@@ -27,8 +27,8 @@ function FloatingEdge({
   ...edgeProps
 }: EdgeProps) {
   const { getNode } = useReactFlow();
-  const sourceNode = useStore((store) => store.nodeInternals.get(source)) as XYNode;
-  const targetNode = useStore((store) => store.nodeInternals.get(target)) as XYNode;
+  const sourceNode = getNode(source);
+  const targetNode = getNode(target);
 
   if (!sourceNode || !targetNode) {
     return null;
