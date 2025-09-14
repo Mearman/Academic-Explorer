@@ -31,6 +31,7 @@ import { edgeTypes } from "@/lib/graph/providers/xyflow/edge-types";
 import { useLayout } from "@/lib/graph/providers/xyflow/use-layout";
 import type { GraphNode } from "@/lib/graph/types";
 import { EntityDetector } from "@/lib/graph/utils/entity-detection";
+import { useGraphData } from "@/hooks/use-graph-data";
 import { logger } from "@/lib/logger";
 
 import "@xyflow/react/dist/style.css";
@@ -45,6 +46,7 @@ const GraphNavigationInner: React.FC<GraphNavigationProps> = ({ className, style
 	const navigate = useNavigate();
 	const reactFlowInstance = useReactFlow();
 	const containerRef = useRef<HTMLDivElement>(null);
+	const { loadEntityIntoGraph } = useGraphData();
 
 
 	// Store state
@@ -66,7 +68,7 @@ const GraphNavigationInner: React.FC<GraphNavigationProps> = ({ className, style
 
 	// XYFlow state - synced with store
 	const [nodes, setNodes, onNodesChangeOriginal] = useNodesState<XYNode>([]);
-	const [edges, setEdges, onEdgesChange] = useEdgesState<Edge>([]);
+	const [edges, setEdges, onEdgesChange] = useEdgesState([]);
 
 	// Wrapped nodes change handler that also triggers handle recalculation
 	const onNodesChange = useCallback((changes: NodeChange[]) => {
@@ -152,16 +154,15 @@ const GraphNavigationInner: React.FC<GraphNavigationProps> = ({ className, style
 
 				// Update URL to hash-based route structure for bookmarking
 				const newHashPath = `#/${node.type}/${cleanId}`;
-				window.location.replace(newHashPath);
-
-				// Update selection in store
-				const store = useGraphStore.getState();
-				store.selectNode(node.id);
+				window.history.pushState(null, "", newHashPath);
 
 				// Update preview in sidebar
 				setPreviewEntity(node.entityId);
 
-				logger.info("ui", "Node clicked - Hash URL updated directly", {
+				// Load the entity into the graph (this will handle selection and expansion)
+				void loadEntityIntoGraph(node.entityId);
+
+				logger.info("ui", "Node clicked - Loading entity into graph", {
 					nodeId: node.id,
 					entityId: node.entityId,
 					entityType: node.type,
@@ -169,18 +170,6 @@ const GraphNavigationInner: React.FC<GraphNavigationProps> = ({ className, style
 				}, "GraphNavigation");
 			},
 
-			onNodeDoubleClick: (node: GraphNode) => {
-				// Double-click navigates to full entity page (preserves original navigation behavior)
-				const cleanId = EntityDetector.extractOpenAlexId(node.entityId);
-				void navigate({ to: `/${node.type}/${cleanId}` });
-
-				logger.info("ui", "Double clicked node - navigating to full page", {
-					nodeId: node.id,
-					entityId: node.entityId,
-					entityType: node.type,
-					navigateTo: `/${node.type}/${cleanId}`
-				}, "GraphNavigation");
-			},
 
 			onNodeHover: (node: GraphNode | null) => {
 				// Update preview in sidebar
@@ -200,7 +189,7 @@ const GraphNavigationInner: React.FC<GraphNavigationProps> = ({ className, style
 		return () => {
 			graphProvider.destroy();
 		};
-	}, [reactFlowInstance, navigate, setProvider, setPreviewEntity]);
+	}, [reactFlowInstance, navigate, setProvider, setPreviewEntity, loadEntityIntoGraph]);
 
 	// Sync store data with XYFlow (applying visibility filters)
 	useEffect(() => {
@@ -334,13 +323,6 @@ const GraphNavigationInner: React.FC<GraphNavigationProps> = ({ className, style
 		}
 	}, []);
 
-	// Handle node double clicks
-	const onNodeDoubleClick = useCallback((event: React.MouseEvent, node: XYNode) => {
-		logger.info("ui", "Node double-click", { nodeId: node.id }, "GraphNavigation");
-		if (providerRef.current) {
-			providerRef.current.handleNodeDoubleClick(event, node);
-		}
-	}, []);
 
 	// Handle node mouse enter
 	const onNodeMouseEnter = useCallback((event: React.MouseEvent, node: XYNode) => {
@@ -395,7 +377,6 @@ const GraphNavigationInner: React.FC<GraphNavigationProps> = ({ className, style
 				onNodesChange={onNodesChange}
 				onEdgesChange={onEdgesChange}
 				onNodeClick={onNodeClick}
-				onNodeDoubleClick={onNodeDoubleClick}
 				onNodeMouseEnter={onNodeMouseEnter}
 				onNodeMouseLeave={onNodeMouseLeave}
 				nodeTypes={nodeTypes}
