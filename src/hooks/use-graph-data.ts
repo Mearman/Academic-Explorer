@@ -21,6 +21,14 @@ export function useGraphData() {
 		}
 	}, []);
 
+	const loadEntityIntoGraph = useCallback(async (entityId: string) => {
+		try {
+			await service.current.loadEntityIntoGraph(entityId);
+		} catch (err) {
+			logError("Failed to load entity into graph in graph data hook", err, "useGraphData", "graph");
+		}
+	}, []);
+
 	const expandNode = useCallback(async (nodeId: string, options?: {
     depth?: number;
     limit?: number;
@@ -61,6 +69,7 @@ export function useGraphData() {
 
 	return {
 		loadEntity,
+		loadEntityIntoGraph,
 		expandNode,
 		search,
 		clearGraph,
