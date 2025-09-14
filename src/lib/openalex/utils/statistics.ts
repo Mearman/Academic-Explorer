@@ -138,7 +138,7 @@ export class StatisticsApi {
     });
 
     // Get growth rates (comparing last year to previous year)
-    const growthRates: Record<EntityType, { lastYear: number; previousYear: number; growthRate: number }> = {} as Record<EntityType, { lastYear: number; previousYear: number; growthRate: number }>;
+    const growthRates: Record<EntityType, { yearly_growth: number; monthly_growth: number; total_added_last_year: number }> = {} as Record<EntityType, { yearly_growth: number; monthly_growth: number; total_added_last_year: number }>;
 
     for (const entityType of entityTypes) {
       try {
@@ -317,9 +317,27 @@ export class StatisticsApi {
 
     const groups = groupedResponse.group_by.slice(0, 20); // Top 20 groups
     const totalEntities = groups.reduce((sum: number, group) => sum + group.count, 0);
-    const totalCitations = groups.reduce((sum: number, group) => sum + (group.cited_by_count || 0), 0);
+    const totalCitations = groups.reduce((sum: number, group) => {
+      const groupAsRecord = group as { cited_by_count?: number };
+      return sum + (groupAsRecord.cited_by_count || 0);
+    }, 0);
 
-    const groupMetrics: Array<{ group: string; group_display_name: string; metrics: { count: number; cited_by_count: number; mean_cited_by_count: number; h_index: number } }> = [];
+    const groupMetrics: Array<{
+      group: string;
+      group_display_name: string;
+      metrics: {
+        total_count: number;
+        avg_citations: number;
+        median_citations: number;
+        growth_rate: number;
+        market_share: number;
+      };
+      rankings: {
+        by_count: number;
+        by_citations: number;
+        by_growth: number;
+      };
+    }> = [];
 
     for (let i = 0; i < Math.min(10, groups.length); i++) {
       const group = groups[i];
@@ -333,7 +351,7 @@ export class StatisticsApi {
           sort: 'cited_by_count',
         });
 
-        const citations = groupStats.results.map((item) => item.cited_by_count || 0);
+        const citations = groupStats.results.map((item: any) => (item.cited_by_count as number) || 0);
         const avgCitations = citations.reduce((sum, c) => sum + c, 0) / citations.length;
         const medianCitations = citations.sort((a, b) => a - b)[Math.floor(citations.length / 2)] || 0;
 
@@ -427,7 +445,7 @@ export class StatisticsApi {
         select: ['cited_by_count']
       });
 
-      const citations = worksResponse.results.map((work) => work.cited_by_count || 0);
+      const citations = worksResponse.results.map((work: any) => work.cited_by_count || 0);
       const totalCitations = citations.reduce((sum, c) => sum + c, 0);
       const avgCitations = totalCitations / citations.length;
 
