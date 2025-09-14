@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect } from "react";
 import { useGraphData } from "@/hooks/use-graph-data";
+import { useGraphStore } from "@/stores/graph-store";
 import { logError } from "@/lib/logger";
 
 export const Route = createFileRoute("/authors/$authorId")({
@@ -9,20 +10,27 @@ export const Route = createFileRoute("/authors/$authorId")({
 
 function AuthorRoute() {
 	const { authorId } = Route.useParams();
-	const { loadEntity } = useGraphData();
+	const { loadEntity, loadEntityIntoGraph } = useGraphData();
+	const { nodes } = useGraphStore();
 
 	useEffect(() => {
 		const loadAuthor = async () => {
 			try {
-				// Load author entity into the graph
-				await loadEntity(authorId);
+				// If graph already has nodes, use incremental loading to preserve existing entities
+				// This prevents clearing the graph when clicking on nodes or navigating
+				if (nodes.size > 0) {
+					await loadEntityIntoGraph(authorId);
+				} else {
+					// If graph is empty, use full loading (clears graph for initial load)
+					await loadEntity(authorId);
+				}
 			} catch (error) {
 				logError("Failed to load author", error, "AuthorRoute", "routing");
 			}
 		};
 
 		void loadAuthor();
-	}, [authorId, loadEntity]);
+	}, [authorId, loadEntity, loadEntityIntoGraph, nodes.size]);
 
 	// Return null - the graph is visible from MainLayout
 	// The route content is just for triggering the data load

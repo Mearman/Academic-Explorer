@@ -3,6 +3,7 @@ import { useEffect, useMemo } from "react"
 import { IconBuilding } from "@tabler/icons-react"
 import { EntityDetector } from "@/lib/graph/utils/entity-detection"
 import { useGraphData } from "@/hooks/use-graph-data"
+import { useGraphStore } from "@/stores/graph-store"
 import { logError } from "@/lib/logger"
 
 export const Route = createFileRoute("/institutions/ror/$ror")({
@@ -13,7 +14,8 @@ function RORInstitutionRoute() {
 	const { ror } = Route.useParams()
 	const navigate = useNavigate()
 	const detector = useMemo(() => new EntityDetector(), [])
-	const { loadEntity } = useGraphData()
+	const { loadEntity, loadEntityIntoGraph } = useGraphData()
+	const { nodes } = useGraphStore()
 
 	useEffect(() => {
 		const resolveROR = async () => {
@@ -25,8 +27,13 @@ function RORInstitutionRoute() {
 				const detection = detector.detectEntityIdentifier(decodedROR)
 
 				if (detection.entityType === "institutions" && detection.idType === "ror") {
-					// Load the institution entity data into the graph
-					await loadEntity(`ror:${detection.normalizedId}`)
+					// If graph already has nodes, use incremental loading to preserve existing entities
+					if (nodes.size > 0) {
+						await loadEntityIntoGraph(`ror:${detection.normalizedId}`);
+					} else {
+						// If graph is empty, use full loading (clears graph for initial load)
+						await loadEntity(`ror:${detection.normalizedId}`);
+					}
 
 					// No navigation needed - graph is always visible
 				} else {
@@ -44,7 +51,7 @@ function RORInstitutionRoute() {
 		}
 
 		void resolveROR()
-	}, [ror, navigate, detector, loadEntity])
+	}, [ror, navigate, detector, loadEntity, loadEntityIntoGraph, nodes.size])
 
 	return (
 		<div style={{

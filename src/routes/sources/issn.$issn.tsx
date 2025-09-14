@@ -3,6 +3,7 @@ import { useEffect, useMemo } from "react"
 import { IconBook } from "@tabler/icons-react"
 import { EntityDetector } from "@/lib/graph/utils/entity-detection"
 import { useGraphData } from "@/hooks/use-graph-data"
+import { useGraphStore } from "@/stores/graph-store"
 import { logError } from "@/lib/logger"
 
 export const Route = createFileRoute("/sources/issn/$issn")({
@@ -13,7 +14,8 @@ function ISSNSourceRoute() {
 	const { issn } = Route.useParams()
 	const navigate = useNavigate()
 	const detector = useMemo(() => new EntityDetector(), [])
-	const { loadEntity } = useGraphData()
+	const { loadEntity, loadEntityIntoGraph } = useGraphData()
+	const { nodes } = useGraphStore()
 
 	useEffect(() => {
 		const resolveISSN = async () => {
@@ -25,8 +27,13 @@ function ISSNSourceRoute() {
 				const detection = detector.detectEntityIdentifier(decodedISSN)
 
 				if (detection.entityType === "sources" && detection.idType === "issn_l") {
-					// Load the source entity data into the graph
-					await loadEntity(`issn:${detection.normalizedId}`)
+					// If graph already has nodes, use incremental loading to preserve existing entities
+					if (nodes.size > 0) {
+						await loadEntityIntoGraph(`issn:${detection.normalizedId}`);
+					} else {
+						// If graph is empty, use full loading (clears graph for initial load)
+						await loadEntity(`issn:${detection.normalizedId}`);
+					}
 
 					// No navigation needed - graph is always visible
 				} else {
@@ -44,7 +51,7 @@ function ISSNSourceRoute() {
 		}
 
 		void resolveISSN()
-	}, [issn, navigate, detector, loadEntity])
+	}, [issn, navigate, detector, loadEntity, loadEntityIntoGraph, nodes.size])
 
 	return (
 		<div style={{

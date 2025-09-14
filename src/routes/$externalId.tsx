@@ -5,6 +5,7 @@ import {
 } from "@tabler/icons-react"
 import { EntityDetector } from "@/lib/graph/utils/entity-detection"
 import { useGraphData } from "@/hooks/use-graph-data"
+import { useGraphStore } from "@/stores/graph-store"
 import { logError } from "@/lib/logger"
 
 export const Route = createFileRoute("/$externalId")({
@@ -15,7 +16,8 @@ function ExternalIdRoute() {
 	const { externalId } = Route.useParams()
 	const navigate = useNavigate()
 	const detector = useMemo(() => new EntityDetector(), [])
-	const { loadEntity } = useGraphData()
+	const { loadEntity, loadEntityIntoGraph } = useGraphData()
+	const { nodes } = useGraphStore()
 
 	useEffect(() => {
 		const resolveExternalId = async () => {
@@ -62,7 +64,13 @@ function ExternalIdRoute() {
 					});
 				} else if (detection.entityType) {
 					// This is some other external ID, load directly
-					await loadEntity(detection.normalizedId);
+					// If graph already has nodes, use incremental loading to preserve existing entities
+					if (nodes.size > 0) {
+						await loadEntityIntoGraph(detection.normalizedId);
+					} else {
+						// If graph is empty, use full loading (clears graph for initial load)
+						await loadEntity(detection.normalizedId);
+					}
 				} else {
 					throw new Error(`Unable to detect entity type for: ${decodedId}`)
 				}
@@ -79,7 +87,7 @@ function ExternalIdRoute() {
 		}
 
 		void resolveExternalId()
-	}, [externalId, navigate, detector, loadEntity])
+	}, [externalId, navigate, detector, loadEntity, loadEntityIntoGraph, nodes.size])
 
 	return (
 		<div style={{
