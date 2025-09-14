@@ -421,13 +421,13 @@ export class StatisticsApi {
    */
   private async getCitationMetrics() {
     try {
-      const worksResponse = await this.client.getResponse<any>('works', {
+      const worksResponse = await this.client.getResponse<{ results: Array<{ cited_by_count?: number }> }>('works', {
         per_page: 100,
         sort: 'cited_by_count',
         select: ['cited_by_count']
       });
 
-      const citations = worksResponse.results.map((work: any) => work.cited_by_count || 0);
+      const citations = worksResponse.results.map((work) => work.cited_by_count || 0);
       const totalCitations = citations.reduce((sum, c) => sum + c, 0);
       const avgCitations = totalCitations / citations.length;
 
@@ -453,21 +453,21 @@ export class StatisticsApi {
    */
   private async getTemporalDistribution() {
     try {
-      const yearGrouping = await this.client.getResponse<any>('works', {
+      const yearGrouping = await this.client.getResponse<{ group_by?: Array<{ key: string; count: number }> }>('works', {
         group_by: 'publication_year',
         per_page: 1,
       });
 
       if (yearGrouping.group_by) {
-        const years = yearGrouping.group_by.map((group: any) => parseInt(group.key)).filter(y => y > 1900);
-        const yearCounts = yearGrouping.group_by.map((group: any) => ({ year: parseInt(group.key), count: group.count }));
+        const years = yearGrouping.group_by.map((group) => parseInt(group.key)).filter(y => y > 1900);
+        const yearCounts = yearGrouping.group_by.map((group) => ({ year: parseInt(group.key), count: group.count }));
 
         // Find peak years (top 3 by publication count)
         const peakYears = yearCounts
-          .filter((yc: any) => yc.year > 1900)
-          .sort((a: any, b: any) => b.count - a.count)
+          .filter((yc) => yc.year > 1900)
+          .sort((a, b) => b.count - a.count)
           .slice(0, 3)
-          .map((yc: any) => yc.year);
+          .map((yc) => yc.year);
 
         return {
           oldest_work_year: Math.min(...years),
@@ -491,14 +491,14 @@ export class StatisticsApi {
    */
   private async getGeographicDistribution(): Promise<Record<string, number>> {
     try {
-      const countryGrouping = await this.client.getResponse<any>('institutions', {
+      const countryGrouping = await this.client.getResponse<{ group_by?: Array<{ key: string; key_display_name?: string; count: number }> }>('institutions', {
         group_by: 'country_code',
         per_page: 1,
       });
 
       if (countryGrouping.group_by) {
         const distribution: Record<string, number> = {};
-        countryGrouping.group_by.slice(0, 20).forEach((group: any) => {
+        countryGrouping.group_by.slice(0, 20).forEach((group) => {
           distribution[group.key_display_name || group.key] = group.count;
         });
         return distribution;
@@ -517,7 +517,7 @@ export class StatisticsApi {
   }
 
   // Additional private helper methods would go here...
-  private async getDistributionAnalysis(entityType: EntityType) {
+  private async getDistributionAnalysis(_entityType: EntityType) {
     // Implementation for distribution analysis
     return {
       citation_distribution: {
