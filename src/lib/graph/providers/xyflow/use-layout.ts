@@ -210,7 +210,7 @@ export function useLayout(
       chargeStrength = -600,
       centerStrength = 0.03,
       collisionRadius = 100,
-      collisionStrength = 1.0,
+      collisionStrength = 0.8,
       velocityDecay = 0.4,     // Match store config
       alpha = 1,
       alphaDecay = 0.03        // Match store config
@@ -320,7 +320,10 @@ export function useLayout(
     isRunningRef.current = true;
 
     // Set up tick handler for continuous position updates
+    let tickCount = 0;
     simulationRef.current.on('tick', () => {
+      tickCount++;
+
       setNodes(currentNodes =>
         currentNodes.map(node => {
           const d3Node = d3Nodes.find(d => d.id === node.id);
@@ -333,6 +336,17 @@ export function useLayout(
           return node;
         })
       );
+
+      // Log alpha progression every 10 ticks instead of every tick
+      if (tickCount % 10 === 0) {
+        const currentAlpha = simulationRef.current?.alpha();
+        logger.info('graph', 'D3 Force simulation progress', {
+          tick: tickCount,
+          alpha: currentAlpha,
+          alphaTarget: 0.005,
+          isRunning: currentAlpha > 0.005
+        }, 'useLayout');
+      }
 
       onLayoutChange?.();
     });
