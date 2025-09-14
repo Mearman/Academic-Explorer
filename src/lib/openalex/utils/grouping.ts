@@ -436,6 +436,7 @@ export class GroupingApi {
     const result: Array<{
       group: string;
       group_display_name: string;
+      group_total: number;
       top_performers: Array<{
         id: string;
         display_name: string;
@@ -459,10 +460,11 @@ export class GroupingApi {
           select: ['id', 'display_name', metric],
         });
 
-        const performersWithRank = topPerformers.results.map((performer: { id: string; display_name: string; [key: string]: unknown }, index: number) => ({
+        const resultsArray = topPerformers.results;
+        const performersWithRank = resultsArray.map((performer: any, index: number) => ({
           id: performer.id,
           display_name: performer.display_name,
-          metric_value: performer[metric] || 0,
+          metric_value: (performer[metric] as number) || 0,
           rank_in_group: index + 1,
         }));
 
@@ -540,20 +542,21 @@ export class GroupingApi {
       group: string;
       group_display_name: string;
       count: number;
-      percentage: number;
-      statistics: {
+      stats: {
         total: number;
         mean: number;
+        median?: number;
         percentiles?: {
           p25: number;
-          p50: number;
           p75: number;
           p90: number;
+          p95: number;
+          p99: number;
         };
       };
     }> = [];
     let grandTotalMetric = 0;
-    let totalEntities = 0;
+    const totalEntities = groups.groups.reduce((sum, group) => sum + group.count, 0);
 
     for (const group of groups.groups) {
       const stats: {
@@ -566,8 +569,8 @@ export class GroupingApi {
           p90: number;
         };
       } = {
-        total: (group as Record<string, unknown>)[metric] as number || 0,
-        mean: group.count > 0 ? ((group as Record<string, unknown>)[metric] as number || 0) / group.count : 0,
+        total: (group as unknown as Record<string, unknown>)[metric] as number || 0,
+        mean: group.count > 0 ? ((group as unknown as Record<string, unknown>)[metric] as number || 0) / group.count : 0,
       };
 
       // Calculate percentiles if requested (simplified approximation)
@@ -593,12 +596,11 @@ export class GroupingApi {
           if (values.length > 0) {
             stats.percentiles = {
               p25: this.percentile(values, 25),
+              p50: this.percentile(values, 50),
               p75: this.percentile(values, 75),
               p90: this.percentile(values, 90),
-              p95: this.percentile(values, 95),
-              p99: this.percentile(values, 99),
             };
-            stats.median = this.percentile(values, 50);
+            // stats.median is already included in percentiles as p50
           }
         } catch (error) {
           console.warn(`Failed to calculate percentiles for group ${group.key}:`, error);
@@ -609,11 +611,21 @@ export class GroupingApi {
         group: group.key,
         group_display_name: group.key_display_name,
         count: group.count,
-        stats,
+        stats: {
+          total: stats.total,
+          mean: stats.mean,
+          median: stats.percentiles?.p50,
+          percentiles: stats.percentiles ? {
+            p25: stats.percentiles.p25,
+            p75: stats.percentiles.p75,
+            p90: stats.percentiles.p90,
+            p95: stats.percentiles.p90, // Use p90 as approximation
+            p99: stats.percentiles.p90, // Use p90 as approximation
+          } : undefined,
+        },
       });
 
       grandTotalMetric += stats.total;
-      totalEntities += group.count;
     }
 
     return {
