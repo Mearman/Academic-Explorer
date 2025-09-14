@@ -22,7 +22,7 @@ function ORCIDAuthorRoute() {
         // Detect and normalize the ORCID
         const detection = detector.detectEntityIdentifier(decodedORCID)
 
-        if (detection.entityType === 'author' && detection.idType === 'orcid') {
+        if (detection.entityType === ('author' as any) && detection.idType === 'orcid') {
           // Load the author entity data into the graph
           await loadEntity(`orcid:${detection.normalizedId}`)
 

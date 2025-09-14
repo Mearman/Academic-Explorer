@@ -22,7 +22,7 @@ function RORInstitutionRoute() {
         // Detect and normalize the ROR ID
         const detection = detector.detectEntityIdentifier(decodedROR)
 
-        if (detection.entityType === 'institution' && detection.idType === 'ror') {
+        if (detection.entityType === ('institution' as any) && detection.idType === 'ror') {
           // Load the institution entity data into the graph
           await loadEntity(`ror:${detection.normalizedId}`)
 
