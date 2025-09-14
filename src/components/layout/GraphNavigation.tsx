@@ -71,7 +71,7 @@ const GraphNavigationInner: React.FC<GraphNavigationProps> = ({ className, style
 
 	// XYFlow state - synced with store
 	const [nodes, setNodes, onNodesChangeOriginal] = useNodesState<XYNode>([]);
-	const [edges, setEdges, onEdgesChange] = useEdgesState([]);
+	const [edges, setEdges, onEdgesChange] = useEdgesState<XYEdge>([]);
 
 	// Wrapped nodes change handler that also triggers handle recalculation
 	const onNodesChange = useCallback((changes: NodeChange<XYNode>[]) => {
@@ -180,19 +180,21 @@ const GraphNavigationInner: React.FC<GraphNavigationProps> = ({ className, style
 				// Update preview in sidebar
 				setPreviewEntity(node.entityId);
 
-				// Pin the selected node at origin (0,0) for layout
+				// Select and pin the node (using new multi-pin API)
 				const store = useGraphStore.getState();
-				store.setPinnedNode(node.id);
+				store.selectNode(node.id);
+				store.pinNode(node.id);
 
 				// Expand the node respecting traversal depth setting
 				void expandNode(node.id);
 
-				logger.info("ui", "Node clicked - Expanding node with traversal depth", {
+				logger.info("ui", "Node clicked - Selecting, pinning, and expanding node", {
 					nodeId: node.id,
 					entityId: node.entityId,
 					entityType: node.type,
 					newHashPath,
-					pinned: true,
+					selected: true,
+					pinned: true, // Now automatically pinned using multi-pin API
 					traversalDepth: store.traversalDepth
 				}, "GraphNavigation");
 			},
@@ -352,10 +354,9 @@ const GraphNavigationInner: React.FC<GraphNavigationProps> = ({ className, style
 				});
 
 				if (matchingNode) {
-					// Update selection in store and pin the node
+					// Update selection in store (no longer automatically pin)
 					const store = useGraphStore.getState();
 					store.selectNode(matchingNode.id);
-					store.setPinnedNode(matchingNode.id);
 
 					// Update preview in sidebar
 					setPreviewEntity(matchingNode.entityId);
@@ -398,10 +399,9 @@ const GraphNavigationInner: React.FC<GraphNavigationProps> = ({ className, style
 					});
 
 					if (matchingNode) {
-						// Update selection in store and pin the node
+						// Update selection in store (no longer automatically pin)
 						const store = useGraphStore.getState();
 						store.selectNode(matchingNode.id);
-						store.setPinnedNode(matchingNode.id);
 
 						// Update preview in sidebar
 						setPreviewEntity(matchingNode.entityId);
@@ -416,10 +416,9 @@ const GraphNavigationInner: React.FC<GraphNavigationProps> = ({ className, style
 					}
 				}
 			} else {
-				// No entity in hash or root hash, clear selection and pinned node
+				// No entity in hash or root hash, clear selection only
 				const store = useGraphStore.getState();
 				store.selectNode(null);
-				store.clearPinnedNode();
 				setPreviewEntity(null);
 			}
 		};
