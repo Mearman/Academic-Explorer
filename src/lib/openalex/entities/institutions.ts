@@ -181,7 +181,7 @@ export class InstitutionsApi {
     options: InstitutionSearchOptions = {}
   ): Promise<OpenAlexResponse<Work>> {
     const queryParams = {
-      filter: `authorships.institution.id:${institutionId}`,
+      filter: `authorships.institutions.id:${institutionId}`,
       ...this.buildQueryParams(options)
     };
     return this.client.getResponse<Work>('works', queryParams);

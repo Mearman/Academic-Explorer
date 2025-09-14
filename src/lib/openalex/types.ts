@@ -635,10 +635,10 @@ export interface WorksFilters {
   // Works-specific filters
   'authorships.author.id'?: string | string[];
   'authorships.author.orcid'?: string | string[];
-  'authorships.institution.id'?: string | string[];
-  'authorships.institution.ror'?: string | string[];
-  'authorships.institution.country_code'?: string | string[];
-  'authorships.institution.type'?: string | string[];
+  'authorships.institutions.id'?: string | string[];
+  'authorships.institutions.ror'?: string | string[];
+  'authorships.institutions.country_code'?: string | string[];
+  'authorships.institutions.type'?: string | string[];
   'best_oa_location.source.id'?: string | string[];
   'cited_by_count'?: string | number;
   'concepts.id'?: string | string[];

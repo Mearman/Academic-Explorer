@@ -194,7 +194,7 @@ describe('WorksApi', () => {
       await worksApi.getWorksByInstitution('I27837315');
 
       expect(mockClient.getResponse).toHaveBeenCalledWith('works', {
-        filter: 'authorships.institution.id:I27837315',
+        filter: 'authorships.institutions.id:I27837315',
       });
     });
   });

@@ -166,7 +166,7 @@ export class WorksApi {
     params: WorksQueryParams = {}
   ): Promise<OpenAlexResponse<Work>> {
     const filters: WorksFilters = {
-      'authorships.institution.id': institutionId,
+      'authorships.institutions.id': institutionId,
     };
 
     // Merge with existing filters if present

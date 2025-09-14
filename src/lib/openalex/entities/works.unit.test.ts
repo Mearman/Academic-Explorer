@@ -415,7 +415,7 @@ describe('WorksApi Unit Tests', () => {
       const result = await worksApi.getWorksByInstitution('I27837315');
 
       expect(mockClient.getResponse).toHaveBeenCalledWith('works', {
-        filter: 'authorships.institution.id:I27837315',
+        filter: 'authorships.institutions.id:I27837315',
       });
       expect(result).toEqual(mockInstitutionWorksResponse);
     });
@@ -426,7 +426,7 @@ describe('WorksApi Unit Tests', () => {
       await worksApi.getWorksByInstitution('https://ror.org/01234567');
 
       expect(mockClient.getResponse).toHaveBeenCalledWith('works', {
-        filter: 'authorships.institution.id:https://ror.org/01234567',
+        filter: 'authorships.institutions.id:https://ror.org/01234567',
       });
     });
 
@@ -440,7 +440,7 @@ describe('WorksApi Unit Tests', () => {
       await worksApi.getWorksByInstitution('I27837315', params);
 
       expect(mockClient.getResponse).toHaveBeenCalledWith('works', {
-        filter: 'authorships.institution.id:I27837315,publication_year:2020-2023,is_oa:true',
+        filter: 'authorships.institutions.id:I27837315,publication_year:2020-2023,is_oa:true',
         sort: 'publication_date',
       });
     });
