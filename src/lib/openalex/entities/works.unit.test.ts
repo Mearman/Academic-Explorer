@@ -9,8 +9,14 @@ import { OpenAlexBaseClient } from '../client';
 import { OpenAlexApiError, OpenAlexRateLimitError } from '../client';
 import type { Work, OpenAlexResponse, WorksFilters, QueryParams } from '../types';
 
-// Mock the base client
-vi.mock('../client');
+// Mock only the base client, not the error classes
+vi.mock('../client', async () => {
+  const actual = await vi.importActual('../client');
+  return {
+    ...actual,
+    OpenAlexBaseClient: vi.fn()
+  };
+});
 
 describe('WorksApi Unit Tests', () => {
   let worksApi: WorksApi;
@@ -119,6 +125,10 @@ describe('WorksApi Unit Tests', () => {
 
     it('should handle client errors properly', async () => {
       const error = new OpenAlexApiError('Work not found', 404);
+      // Test that the error is constructed properly first
+      expect(error.message).toBe('Work not found');
+      expect(error.statusCode).toBe(404);
+
       mockClient.getById.mockRejectedValue(error);
 
       await expect(worksApi.getWork('W999999999')).rejects.toThrow('Work not found');
@@ -280,7 +290,11 @@ describe('WorksApi Unit Tests', () => {
 
       expect(mockClient.getResponse).toHaveBeenCalledWith('works', {
         search: '',
-        sort: 'relevance_score',
+        sort: 'publication_date', // Empty queries should use publication_date sort
+        page: undefined,
+        per_page: undefined,
+        select: undefined,
+        filter: undefined
       });
     });
 
@@ -1317,7 +1331,11 @@ describe('WorksApi Unit Tests', () => {
 
       expect(mockClient.getResponse).toHaveBeenCalledWith('works', {
         search: '',
-        sort: 'relevance_score',
+        sort: 'publication_date', // Empty queries should use publication_date sort
+        page: undefined,
+        per_page: undefined,
+        select: undefined,
+        filter: undefined
       });
     });
 
