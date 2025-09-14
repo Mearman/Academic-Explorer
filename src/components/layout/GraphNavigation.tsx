@@ -120,7 +120,7 @@ const GraphNavigationInner: React.FC<GraphNavigationProps> = ({ className, style
 		}
 	}, []);
 
-	const { isRunning: _isLayoutRunning, reheatLayout: _reheatLayout } = useLayout(
+	const { isRunning: _isLayoutRunning, restartLayout } = useLayout(
 		currentLayout,
 		{
 			enabled: true,
@@ -314,12 +314,20 @@ const GraphNavigationInner: React.FC<GraphNavigationProps> = ({ className, style
 				removedNodes: Array.from(removedNodeIds),
 				removedEdges: Array.from(removedEdgeIds)
 			}, "GraphNavigation");
+
+			// Restart layout simulation when new nodes are added to include them in positioning
+			if (newNodeIds.size > 0) {
+				restartLayout(); // Full restart to include new nodes in D3 simulation
+				logger.info("graph", "Restarting layout due to new nodes", {
+					newNodeCount: newNodeIds.size
+				}, "GraphNavigation");
+			}
 		}
 
 		// Update refs for next comparison
 		previousNodeIdsRef.current = currentNodeIds;
 		previousEdgeIdsRef.current = currentEdgeIds;
-	}, [storeNodes, storeEdges, visibleEntityTypes, visibleEdgeTypes, getVisibleNodes, getVisibleEdges, setNodes, setEdges]);
+	}, [storeNodes, storeEdges, visibleEntityTypes, visibleEdgeTypes, getVisibleNodes, getVisibleEdges, setNodes, setEdges, restartLayout]);
 
 	// URL state synchronization - read selected entity from hash on mount
 	useEffect(() => {
