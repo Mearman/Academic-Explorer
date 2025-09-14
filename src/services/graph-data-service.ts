@@ -182,7 +182,7 @@ export class GraphDataService {
 	 * Load all cached OpenAlex entities into the graph
 	 * Shows all available cached data up to the specified traversal depth
 	 */
-	async loadAllCachedNodes(): Promise<void> {
+	loadAllCachedNodes(): void {
 		const store = useGraphStore.getState();
 
 		try {
