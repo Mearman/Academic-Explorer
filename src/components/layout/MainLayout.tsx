@@ -47,19 +47,41 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
           display: 'flex',
           flexDirection: 'column',
           height: '100vh',
-          overflow: 'hidden'
+          overflow: 'hidden',
+          position: 'relative'
         }}
       >
-        {children ? (
-          children
-        ) : (
-          <GraphNavigation
+        {/* Graph is always visible as background */}
+        <GraphNavigation
+          style={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            flex: 1,
+            width: '100%',
+            height: '100%'
+          }}
+        />
+
+        {/* Route content rendered as overlay if present */}
+        {children && (
+          <div
             style={{
-              flex: 1,
-              width: '100%',
-              height: '100%'
+              position: 'absolute',
+              top: '50%',
+              left: '50%',
+              transform: 'translate(-50%, -50%)',
+              zIndex: 100,
+              maxWidth: '90vw',
+              maxHeight: '90vh',
+              overflow: 'auto',
+              pointerEvents: 'auto'
             }}
-          />
+          >
+            {children}
+          </div>
         )}
       </AppShell.Main>
 
