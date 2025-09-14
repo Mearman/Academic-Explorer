@@ -69,10 +69,10 @@ export class SourcesApi {
       'default.search': query,
     };
 
-    return this.getSources({
+    return this.getSources(this.buildFilterParams({
       ...params,
       filter: searchFilters,
-    });
+    }));
   }
 
   /**
@@ -94,11 +94,11 @@ export class SourcesApi {
       'publisher': publisher,
     };
 
-    return this.getSources({
+    return this.getSources(this.buildFilterParams({
       ...params,
       filter: filters,
       sort: params.sort || 'works_count:desc',
-    });
+    }));
   }
 
   /**
@@ -119,11 +119,11 @@ export class SourcesApi {
       'is_oa': true,
     };
 
-    return this.getSources({
+    return this.getSources(this.buildFilterParams({
       ...params,
       filter: filters,
       sort: params.sort || 'works_count:desc',
-    });
+    }));
   }
 
   /**
@@ -149,11 +149,11 @@ export class SourcesApi {
       'country_code': countryCode,
     };
 
-    return this.getSources({
+    return this.getSources(this.buildFilterParams({
       ...params,
       filter: filters,
       sort: params.sort || 'works_count:desc',
-    });
+    }));
   }
 
   /**
@@ -250,7 +250,7 @@ export class SourcesApi {
       params.seed = seed;
     }
 
-    return this.getSources(params);
+    return this.getSources(this.buildFilterParams(params));
   }
 
   /**
