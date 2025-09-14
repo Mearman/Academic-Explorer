@@ -1,0 +1,64 @@
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: "/"
+    schedule:
+      interval: weekly
+      day: monday
+      time: "09:00"
+      timezone: "Europe/London"
+    open-pull-requests-limit: 10
+    reviewers:
+      - "your-username"
+    commit-message:
+      prefix: "chore"
+      include: "scope"
+    groups:
+      # Group React ecosystem updates
+      react:
+        patterns:
+          - "react*"
+          - "@types/react*"
+      # Group TanStack ecosystem updates
+      tanstack:
+        patterns:
+          - "@tanstack/*"
+      # Group testing dependencies
+      testing:
+        patterns:
+          - "vitest*"
+          - "@vitest/*"
+          - "jsdom"
+          - "@types/jsdom"
+      # Group build tools
+      build-tools:
+        patterns:
+          - "vite*"
+          - "@vitejs/*"
+          - "typescript*"
+          - "eslint*"
+          - "@eslint/*"
+      # Group Mantine UI components
+      mantine:
+        patterns:
+          - "@mantine/*"
+      # Group semantic-release tools
+      semantic-release:
+        patterns:
+          - "semantic-release"
+          - "@semantic-release/*"
+
+  # GitHub Actions updates
+  - package-ecosystem: github-actions
+    directory: "/"
+    schedule:
+      interval: monthly
+      day: monday
+      time: "09:00"
+      timezone: "Europe/London"
+    open-pull-requests-limit: 5
+    reviewers:
+      - "your-username"
+    commit-message:
+      prefix: "ci"
+      include: "scope"
