@@ -14,6 +14,14 @@ export interface DetectionResult {
 
 export class EntityDetector {
   /**
+   * Extract clean OpenAlex ID from URL or return input if already clean
+   */
+  static extractOpenAlexId(input: string): string {
+    // Remove URL prefix if present
+    return input.replace(/^https?:\/\/openalex\.org\//, '');
+  }
+
+  /**
    * Detect entity type and ID type from various identifier formats
    */
   detectEntityIdentifier(input: string): DetectionResult {
