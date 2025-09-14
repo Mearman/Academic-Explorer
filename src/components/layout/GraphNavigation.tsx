@@ -27,6 +27,7 @@ import { XYFlowProvider } from '@/lib/graph/providers/xyflow/xyflow-provider';
 import { nodeTypes } from '@/lib/graph/providers/xyflow/node-types';
 import type { GraphNode } from '@/lib/graph/types';
 import { EntityDetector } from '@/lib/graph/utils/entity-detection';
+import { LayoutControls } from '@/components/molecules/LayoutControls';
 
 import '@xyflow/react/dist/style.css';
 
@@ -213,6 +214,12 @@ const GraphNavigationInner: React.FC<GraphNavigationProps> = ({ className, style
             Academic Explorer Graph
           </div>
         </Panel>
+
+        {nodes.length > 0 && (
+          <Panel position="top-right">
+            <LayoutControls />
+          </Panel>
+        )}
 
         {nodes.length === 0 && (
           <Panel position="top-right">
