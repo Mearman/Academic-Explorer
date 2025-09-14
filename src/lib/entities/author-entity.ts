@@ -55,7 +55,7 @@ export class AuthorEntity extends AbstractEntity<Author> {
 	/**
    * Check if author entity is dehydrated (missing key fields)
    */
-	protected isDehydrated(author: Author): boolean {
+	protected isDehydrated(_author: Author): boolean {
 		// Author entities are never considered dehydrated as all fields are always present
 		return false;
 	}

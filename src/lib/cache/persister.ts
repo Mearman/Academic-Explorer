@@ -355,11 +355,6 @@ export function createIDBPersister(dbName = "academic-explorer-cache"): Persiste
 				// Remove our metadata before returning to TanStack Query
 				const { version, ...clientData } = persistedData;
 
-				// Validate that clientData has the required PersistedClient structure
-				if (!clientData.clientState) {
-					return undefined;
-				}
-
 				return clientData;
 			} catch (error) {
 				logError("Failed to restore query client", error, "CachePersister", "storage");

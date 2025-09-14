@@ -61,8 +61,8 @@ export class WorkEntity extends AbstractEntity<Work> {
    * Check if work entity is dehydrated (missing key fields)
    */
 	protected isDehydrated(work: Work): boolean {
-		// A work is dehydrated if it's missing publication_year or cited_by_count
-		return work.publication_year === undefined || work.cited_by_count === undefined;
+		// A work is dehydrated if it's missing publication_year
+		return work.publication_year === undefined;
 	}
 
 	/**
@@ -101,7 +101,7 @@ export class WorkEntity extends AbstractEntity<Work> {
 			}
 
 			// Add references (works this work cites) - sequentially to avoid rate limiting
-			if (work.referenced_works && work.referenced_works.length > 0) {
+			if (work.referenced_works.length > 0) {
 				const referencesSlice = work.referenced_works.slice(0, Math.min(limit, 5));
 
 				// Use the abstract helper to fetch related works with minimal fields
@@ -153,8 +153,8 @@ export class WorkEntity extends AbstractEntity<Work> {
 		return {
 			year: work.publication_year,
 			citationCount: work.cited_by_count,
-			openAccess: work.open_access?.is_oa,
-			authorCount: work.authorships?.length || 0,
+			openAccess: work.open_access.is_oa,
+			authorCount: work.authorships.length,
 			type: work.type,
 			venue: work.primary_location?.source?.display_name,
 		};
@@ -183,8 +183,8 @@ export class WorkEntity extends AbstractEntity<Work> {
    * Get work summary including year and citation count
    */
 	public getSummary(work: Work): string {
-		const year = work.publication_year ? ` (${work.publication_year})` : "";
-		const citations = work.cited_by_count ? ` - ${work.cited_by_count} citations` : "";
+		const year = work.publication_year ? ` (${String(work.publication_year)})` : "";
+		const citations = work.cited_by_count ? ` - ${String(work.cited_by_count)} citations` : "";
 		return `${this.getDisplayName(work)}${year}${citations}`;
 	}
 }

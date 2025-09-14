@@ -463,7 +463,7 @@ export const LeftSidebar: React.FC = () => {
 							<input
 								type="checkbox"
 								checked={showAllCachedNodes}
-								onChange={() => { void handleShowAllCachedToggle() }}
+								onChange={() => handleShowAllCachedToggle()}
 								style={{ margin: 0 }}
 							/>
 							<span>Show all cached nodes</span>
