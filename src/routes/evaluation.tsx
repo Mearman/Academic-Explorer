@@ -5,6 +5,7 @@
 
 import { createFileRoute } from '@tanstack/react-router'
 import React from 'react'
+import { IconChartBar, IconSearch, IconTrendingUp, IconBulb } from '@tabler/icons-react'
 import { logger } from '@/lib/logger'
 
 export const Route = createFileRoute('/evaluation')({
@@ -58,7 +59,7 @@ function EvaluationDashboard() {
               padding: '8px',
               marginRight: '12px'
             }}>
-              📊
+              <IconChartBar size={20} />
             </div>
             <h3 style={{ fontSize: '18px', fontWeight: '600', color: '#1f2937', margin: 0 }}>
               STAR Datasets
@@ -109,7 +110,7 @@ function EvaluationDashboard() {
               padding: '8px',
               marginRight: '12px'
             }}>
-              🔍
+              <IconSearch size={20} />
             </div>
             <h3 style={{ fontSize: '18px', fontWeight: '600', color: '#1f2937', margin: 0 }}>
               Run Comparisons
@@ -153,7 +154,7 @@ function EvaluationDashboard() {
               padding: '8px',
               marginRight: '12px'
             }}>
-            📈
+            <IconTrendingUp size={20} />
             </div>
             <h3 style={{ fontSize: '18px', fontWeight: '600', color: '#1f2937', margin: 0 }}>
               Results & Analytics
@@ -254,7 +255,10 @@ function EvaluationDashboard() {
             margin: 0,
             fontStyle: 'italic'
           }}>
-            💡 <strong>PhD Evaluation Context:</strong> This evaluation demonstrates Academic Explorer's ability to
+            <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+              <IconBulb size={14} />
+              <strong>PhD Evaluation Context:</strong>
+            </span> This evaluation demonstrates Academic Explorer's ability to
             improve upon existing systematic reviews by identifying previously missed papers and providing more
             efficient literature discovery pathways. Results provide quantitative evidence for thesis Chapter 6 evaluation.
           </p>

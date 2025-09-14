@@ -5,6 +5,7 @@
 
 import { createFileRoute } from '@tanstack/react-router'
 import React, { useState } from 'react'
+import { IconUpload, IconChartBar } from '@tabler/icons-react'
 import { parseSTARFile, createSTARDatasetFromParseResult, DEFAULT_COLUMN_MAPPINGS } from '@/lib/evaluation/file-parser'
 import type { STARDataset } from '@/lib/evaluation/types'
 import { logError, logger } from '@/lib/logger'
@@ -123,7 +124,8 @@ function DatasetsManagement() {
             gap: '8px'
           }}
         >
-          📤 Upload Dataset
+          <IconUpload size={16} />
+          Upload Dataset
         </button>
       </div>
 
@@ -136,7 +138,9 @@ function DatasetsManagement() {
           padding: '48px 24px',
           textAlign: 'center'
         }}>
-          <div style={{ fontSize: '48px', marginBottom: '16px', opacity: 0.3 }}>📊</div>
+          <div style={{ marginBottom: '16px', opacity: 0.3 }}>
+            <IconChartBar size={48} />
+          </div>
           <h3 style={{ fontSize: '18px', fontWeight: '600', color: '#374151', marginBottom: '8px' }}>
             No datasets uploaded yet
           </h3>
@@ -317,7 +321,9 @@ function DatasetsManagement() {
                   }}
                   onClick={() => document.getElementById('file-upload')?.click()}
                 >
-                  <div style={{ fontSize: '32px', marginBottom: '12px' }}>📤</div>
+                  <div style={{ marginBottom: '12px' }}>
+                    <IconUpload size={32} />
+                  </div>
                   <p style={{ fontSize: '16px', fontWeight: '500', color: '#374151', marginBottom: '8px' }}>
                     Upload your dataset file
                   </p>

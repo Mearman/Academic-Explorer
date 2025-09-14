@@ -5,6 +5,7 @@
 
 import { createFileRoute } from '@tanstack/react-router'
 import React, { useState, useMemo, useEffect } from 'react'
+import { IconChartBar, IconSearch, IconBulb } from '@tabler/icons-react'
 import { compareAcademicExplorerResults, DEFAULT_MATCHING_CONFIG } from '@/lib/evaluation/comparison-engine'
 import { searchBasedOnSTARDataset, calculateSearchCoverage, DEFAULT_SEARCH_CONFIG } from '@/lib/evaluation/openalex-search-service'
 import type { STARDataset, ComparisonResults as ComparisonResultsType, WorkReference, ComparisonProgress } from '@/lib/evaluation/types'
@@ -358,7 +359,9 @@ function ComparisonResults() {
           padding: '48px 24px',
           textAlign: 'center'
         }}>
-          <div style={{ fontSize: '48px', marginBottom: '16px', opacity: 0.3 }}>📊</div>
+          <div style={{ marginBottom: '16px', opacity: 0.3 }}>
+            <IconChartBar size={48} />
+          </div>
           <h3 style={{ fontSize: '18px', fontWeight: '600', color: '#374151', marginBottom: '8px' }}>
             No comparison results available
           </h3>
@@ -790,7 +793,9 @@ function ComparisonResults() {
                     backgroundColor: '#f9fafb',
                     borderRadius: '8px'
                   }}>
-                    <div style={{ fontSize: '48px', marginBottom: '16px', opacity: 0.3 }}>🔍</div>
+                    <div style={{ marginBottom: '16px', opacity: 0.3 }}>
+                      <IconSearch size={48} />
+                    </div>
                     <h3 style={{ fontSize: '18px', fontWeight: '600', color: '#374151', marginBottom: '8px' }}>
                       Select a Dataset
                     </h3>
@@ -812,7 +817,10 @@ function ComparisonResults() {
             marginTop: '24px'
           }}>
             <h3 style={{ fontSize: '16px', fontWeight: '600', color: '#92400e', marginBottom: '8px' }}>
-              💡 Thesis Integration Notes
+              <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                <IconBulb size={16} />
+                Thesis Integration Notes
+              </span>
             </h3>
             <p style={{ fontSize: '14px', color: '#78350f', lineHeight: '1.5', margin: 0 }}>
               These results demonstrate Academic Explorer's quantitative performance improvements over traditional
