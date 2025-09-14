@@ -65,13 +65,14 @@ const GraphNavigationInner: React.FC<GraphNavigationProps> = ({ className, style
 		getVisibleEdges,
 		visibleEntityTypes,
 		visibleEdgeTypes,
+		pinnedNodes,
 	} = useGraphStore();
 
 	const { graphProvider: _graphProvider, setPreviewEntity } = useLayoutStore();
 
 	// XYFlow state - synced with store
 	const [nodes, setNodes, onNodesChangeOriginal] = useNodesState<XYNode>([]);
-	const [edges, setEdges, onEdgesChange] = useEdgesState<XYEdge>([]);
+	const [edges, setEdges, onEdgesChange] = useEdgesState([]);
 
 	// Wrapped nodes change handler that also triggers handle recalculation
 	const onNodesChange = useCallback((changes: NodeChange<XYNode>[]) => {
@@ -180,10 +181,28 @@ const GraphNavigationInner: React.FC<GraphNavigationProps> = ({ className, style
 				// Update preview in sidebar
 				setPreviewEntity(node.entityId);
 
-				// Select and pin the node (using new multi-pin API)
+				// Select and pin the node first
 				const store = useGraphStore.getState();
 				store.selectNode(node.id);
-				store.pinNode(node.id);
+				store.clearAllPinnedNodes(); // Clear previous pinned nodes
+				store.pinNode(node.id); // Pin the new node at its current position
+
+				// Center the view on the pinned node with a small delay to ensure pinning state is processed
+				setTimeout(() => {
+					const currentNodes = reactFlowInstance.getNodes();
+					const targetNode = currentNodes.find(n => n.id === node.id);
+					if (targetNode) {
+						void reactFlowInstance.fitView({
+							nodes: [targetNode],
+							padding: 0.3,
+							duration: 500
+						});
+						logger.info("ui", "Centered view on pinned node", {
+							nodeId: node.id,
+							position: targetNode.position
+						}, "GraphNavigation");
+					}
+				}, 200); // Longer delay to ensure pinning is processed
 
 				// Expand the node respecting traversal depth setting
 				void expandNode(node.id);
@@ -327,12 +346,21 @@ const GraphNavigationInner: React.FC<GraphNavigationProps> = ({ className, style
 					}, "GraphNavigation");
 				}, 50); // 50ms delay to allow React state to settle
 			}
+		} else if (providerRef.current && newNodeIds.size === 0 && removedNodeIds.size === 0) {
+			// No node additions/removals, but we still need to refresh node data (e.g., pinning state changed)
+			const { nodes: refreshedNodes } = providerRef.current.getXYFlowData();
+			setNodes(refreshedNodes);
+
+			logger.info("graph", "Refreshed node data for pinning state changes", {
+				nodeCount: refreshedNodes.length,
+				pinnedCount: pinnedNodes.size
+			}, "GraphNavigation");
 		}
 
 		// Update refs for next comparison
 		previousNodeIdsRef.current = currentNodeIds;
 		previousEdgeIdsRef.current = currentEdgeIds;
-	}, [storeNodes, storeEdges, visibleEntityTypes, visibleEdgeTypes, getVisibleNodes, getVisibleEdges, setNodes, setEdges, restartLayout]);
+	}, [storeNodes, storeEdges, visibleEntityTypes, visibleEdgeTypes, pinnedNodes, getVisibleNodes, getVisibleEdges, setNodes, setEdges, restartLayout]);
 
 	// URL state synchronization - read selected entity from hash on mount
 	useEffect(() => {
