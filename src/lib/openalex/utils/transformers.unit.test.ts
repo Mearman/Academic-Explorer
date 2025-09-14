@@ -93,9 +93,9 @@ describe('transformers', () => {
     it('should handle invalid position arrays', () => {
       const invertedIndex = {
         'valid': [0],
-        'invalid1': ['not a number' as any],
-        'invalid2': [null as any],
-        'invalid3': [undefined as any],
+        'invalid1': ['not a number' as unknown as number],
+        'invalid2': [null as unknown as number],
+        'invalid3': [undefined as unknown as number],
         'valid2': [1],
       };
 
@@ -128,7 +128,7 @@ describe('transformers', () => {
     it('should handle non-array position values', () => {
       const invertedIndex = {
         'word1': [0],
-        'word2': 'not an array' as any,
+        'word2': 'not an array' as unknown as number[],
         'word3': [1],
       };
 
@@ -239,7 +239,7 @@ describe('transformers', () => {
 
     it('should return false for work with non-object abstract', () => {
       const work = {
-        abstract_inverted_index: 'not an object' as any,
+        abstract_inverted_index: 'not an object' as unknown as Record<string, number[]>,
       };
 
       expect(hasAbstract(work)).toBe(false);
@@ -417,7 +417,7 @@ describe('transformers', () => {
     });
 
     it('should default to APA for unknown style', () => {
-      const citation = formatCitation(mockWork, 'unknown' as any);
+      const citation = formatCitation(mockWork, 'unknown' as 'apa' | 'mla' | 'chicago');
 
       // Should be same as APA format
       expect(citation).toContain('John Doe & Jane Smith');
