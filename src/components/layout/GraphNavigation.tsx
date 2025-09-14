@@ -59,8 +59,24 @@ const GraphNavigationInner: React.FC<GraphNavigationProps> = ({ className, style
 	const { graphProvider: _graphProvider, setPreviewEntity } = useLayoutStore();
 
 	// XYFlow state - synced with store
-	const [nodes, setNodes, onNodesChange] = useNodesState<XYNode>([]);
+	const [nodes, setNodes, onNodesChangeOriginal] = useNodesState<XYNode>([]);
 	const [edges, setEdges, onEdgesChange] = useEdgesState<Edge>([]);
+
+	// Wrapped nodes change handler that also triggers handle recalculation
+	const onNodesChange = useCallback((changes: any) => {
+		onNodesChangeOriginal(changes);
+
+		// Check if any change involves position updates (drag, layout changes)
+		const hasPositionChange = changes.some((change: any) =>
+			change.type === 'position' ||
+			change.type === 'dragStop' ||
+			(change.type === 'replace' && change.item.position)
+		);
+
+		if (hasPositionChange && providerRef.current) {
+			providerRef.current.onNodePositionsChanged();
+		}
+	}, [onNodesChangeOriginal]);
 
 	// Provider instance ref
 	const providerRef = useRef<XYFlowProvider | null>(null);
@@ -77,6 +93,11 @@ const GraphNavigationInner: React.FC<GraphNavigationProps> = ({ className, style
 		if (now - lastLogRef.current > 500) {
 			logger.info("graph", "Layout positions updated", undefined, "GraphNavigation");
 			lastLogRef.current = now;
+		}
+
+		// Notify provider to recalculate edge handles based on new positions
+		if (providerRef.current) {
+			providerRef.current.onNodePositionsChanged();
 		}
 	}, []);
 
