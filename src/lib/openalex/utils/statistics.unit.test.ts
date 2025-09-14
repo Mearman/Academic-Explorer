@@ -3,17 +3,17 @@ import { StatisticsApi } from './statistics';
 import type { OpenAlexBaseClient } from '../client';
 import type { OpenAlexResponse } from '../types';
 
-// Mock the client
+// Mock the client using Vitest
 const mockClient = {
   getResponse: vi.fn(),
-} as unknown as jest.Mocked<OpenAlexBaseClient>;
+} as unknown as OpenAlexBaseClient;
 
 describe('StatisticsApi', () => {
   let statisticsApi: StatisticsApi;
 
   beforeEach(() => {
     vi.clearAllMocks();
-    mockClient.getResponse.mockReset();
+    vi.mocked(mockClient.getResponse).mockReset();
     statisticsApi = new StatisticsApi(mockClient);
   });
 
@@ -55,10 +55,10 @@ describe('StatisticsApi', () => {
 
       // Clear any previous implementations
       vi.clearAllMocks();
-      mockClient.getResponse.mockReset();
+      vi.mocked(mockClient.getResponse).mockReset();
 
       // For specific metric calls, override when we know they're coming
-      mockClient.getResponse.mockImplementation((entityType, params) => {
+      vi.mocked(mockClient.getResponse).mockImplementation((entityType, params) => {
         // If it's a citation sample request
         if (params && 'sort' in params && params.sort === 'cited_by_count:desc') {
           return Promise.resolve(mockCitationsResponse);
@@ -114,7 +114,7 @@ describe('StatisticsApi', () => {
 
     it('should handle entity count errors gracefully', async () => {
       // Mock some successful and some failed entity count calls
-      mockClient.getResponse
+      vi.mocked(mockClient.getResponse)
         .mockResolvedValueOnce({ results: [], meta: { count: 100, db_response_time_ms: 20, page: 1, per_page: 1 } })
         .mockRejectedValueOnce(new Error('API Error'))
         .mockResolvedValue({ results: [], meta: { count: 50, db_response_time_ms: 20, page: 1, per_page: 1 } });
@@ -157,7 +157,7 @@ describe('StatisticsApi', () => {
         meta: { count: 1000, db_response_time_ms: 40, page: 1, per_page: 100 },
       };
 
-      mockClient.getResponse
+      vi.mocked(mockClient.getResponse)
         .mockResolvedValueOnce(mockDistributionResponse) // Distribution analysis
         .mockResolvedValueOnce(mockTrendResponse) // Trend analysis
         .mockResolvedValueOnce(mockCollabResponse); // Collaboration metrics
@@ -208,7 +208,7 @@ describe('StatisticsApi', () => {
         group_by: [{ key: '2023', count: 1000 }],
       };
 
-      mockClient.getResponse
+      vi.mocked(mockClient.getResponse)
         .mockResolvedValueOnce(mockDistributionResponse)
         .mockResolvedValueOnce(mockTrendResponse);
 
@@ -248,7 +248,7 @@ describe('StatisticsApi', () => {
         meta: { count: 5000, db_response_time_ms: 35, page: 1, per_page: 100 },
       };
 
-      mockClient.getResponse
+      vi.mocked(mockClient.getResponse)
         .mockResolvedValueOnce(mockHIndexResponse) // H-index distribution
         .mockResolvedValueOnce(mockFieldResponse) // Field-normalized metrics
         .mockResolvedValueOnce(mockTemporalImpactResponse); // Temporal impact
@@ -284,7 +284,7 @@ describe('StatisticsApi', () => {
     it('should get comparative statistics between entity groups', async () => {
       // Clear any previous implementations
       vi.clearAllMocks();
-      mockClient.getResponse.mockReset();
+      vi.mocked(mockClient.getResponse).mockReset();
 
       const mockGroupResponse: OpenAlexResponse<{ group_by?: Array<{ key: string; key_display_name: string; count: number; cited_by_count?: number }> }> = {
         results: [],
@@ -307,7 +307,7 @@ describe('StatisticsApi', () => {
       };
 
       // Set up specific implementation for this test
-      mockClient.getResponse.mockImplementation((entityType, params) => {
+      vi.mocked(mockClient.getResponse).mockImplementation((entityType, params) => {
         // First call: main grouping request
         if (params && 'group_by' in params && params.group_by === 'type' && params.per_page === 1) {
           return Promise.resolve(mockGroupResponse);
@@ -346,7 +346,7 @@ describe('StatisticsApi', () => {
     it('should handle unsupported grouping gracefully', async () => {
       // Clear any previous implementations
       vi.clearAllMocks();
-      mockClient.getResponse.mockReset();
+      vi.mocked(mockClient.getResponse).mockReset();
 
       const mockEmptyResponse: OpenAlexResponse<{ group_by?: Array<{ key: string; key_display_name: string; count: number }> }> = {
         results: [],
@@ -355,7 +355,7 @@ describe('StatisticsApi', () => {
       };
 
       // Set up specific implementation for unsupported grouping
-      mockClient.getResponse.mockImplementation((entityType, params) => {
+      vi.mocked(mockClient.getResponse).mockImplementation((entityType, params) => {
         if (params && 'group_by' in params && params.group_by === 'invalid_field') {
           return Promise.resolve(mockEmptyResponse);
         }
@@ -375,11 +375,11 @@ describe('StatisticsApi', () => {
 
       // Clear any previous implementations
       vi.clearAllMocks();
-      mockClient.getResponse.mockReset();
+      vi.mocked(mockClient.getResponse).mockReset();
 
       // Test getCoverageMetrics through getDatabaseStats
       const mockBasicResponse = { results: [], meta: { count: 100, db_response_time_ms: 20, page: 1, per_page: 1 } };
-      mockClient.getResponse.mockResolvedValue(mockBasicResponse);
+      vi.mocked(mockClient.getResponse).mockResolvedValue(mockBasicResponse);
 
       const result = await statisticsApi.getDatabaseStats();
 
