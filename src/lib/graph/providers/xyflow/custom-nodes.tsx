@@ -5,6 +5,7 @@
 
 import React from "react";
 import { Handle, Position } from "@xyflow/react";
+// Note: Handles are still needed for XYFlow to register connection points, but floating edges override positioning
 import {
 	IconCalendar,
 	IconChartBar,
@@ -133,12 +134,12 @@ export const CustomNode: React.FC<CustomNodeProps> = ({ data, selected }) => {
 			<Handle
 				type="target"
 				position={Position.Top}
-				style={{ background: "#555", width: "8px", height: "8px" }}
+				style={{ background: '#555', width: '8px', height: '8px' }}
 			/>
 			<Handle
 				type="source"
 				position={Position.Bottom}
-				style={{ background: "#555", width: "8px", height: "8px" }}
+				style={{ background: '#555', width: '8px', height: '8px' }}
 			/>
 
 			{/* Node content */}
