@@ -2,8 +2,14 @@ import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import { createRouter, RouterProvider, createHashHistory } from '@tanstack/react-router'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
-import { TanStackRouterDevtools } from '@tanstack/react-router-devtools'
+import { TanStackDevtools } from '@tanstack/react-devtools'
+import { ReactQueryDevtoolsPanel } from '@tanstack/react-query-devtools'
+import { TanStackRouterDevtoolsPanel } from '@tanstack/react-router-devtools'
+import { ReactTableDevtoolsPanel } from '@tanstack/react-table-devtools'
+import { OpenAlexCachePanel } from './components/devtools/OpenAlexCachePanel'
+import { EntityGraphPanel } from './components/devtools/EntityGraphPanel'
+import { ApplicationLoggerPanel } from './components/devtools/ApplicationLoggerPanel'
+import { setupGlobalErrorHandling } from './lib/logger'
 import { MantineProvider, createTheme } from '@mantine/core'
 import { Notifications } from '@mantine/notifications'
 import { Spotlight } from '@mantine/spotlight'
@@ -180,6 +186,9 @@ persistQueryClient({
   },
 })
 
+// Setup global error handling for logging
+setupGlobalErrorHandling()
+
 // Create a new router instance with hash-based history for GitHub Pages
 const router = createRouter({
   routeTree,
@@ -203,18 +212,45 @@ createRoot(document.getElementById('root')!).render(
       <QueryClientProvider client={queryClient}>
         <RouterProvider router={router} />
 
-        {/* TanStack DevTools - only in development */}
+        {/* TanStack DevTools - unified panel for all tools */}
         {import.meta.env.DEV && (
-          <>
-            <ReactQueryDevtools
-              initialIsOpen={false}
-              buttonPosition="bottom-left"
-            />
-            <TanStackRouterDevtools
-              router={router}
-              position="bottom-right"
-            />
-          </>
+          <TanStackDevtools
+            config={{
+              position: 'bottom-left',
+            }}
+            plugins={[
+              {
+                name: 'TanStack Query',
+                render: <ReactQueryDevtoolsPanel />,
+              },
+              {
+                name: 'TanStack Router',
+                render: <TanStackRouterDevtoolsPanel router={router} />,
+              },
+              {
+                name: 'TanStack Table',
+                render: (
+                  <div style={{ padding: '16px', color: '#666' }}>
+                    <h3>React Table Devtools</h3>
+                    <p>Table instances will appear here when tables are rendered in your app.</p>
+                    <small>Use ReactTableDevtools component directly in pages with tables for specific debugging.</small>
+                  </div>
+                ),
+              },
+              {
+                name: 'OpenAlex Cache',
+                render: <OpenAlexCachePanel />,
+              },
+              {
+                name: 'Entity Graph',
+                render: <EntityGraphPanel />,
+              },
+              {
+                name: 'App Logs',
+                render: <ApplicationLoggerPanel />,
+              },
+            ]}
+          />
         )}
       </QueryClientProvider>
       <Spotlight
