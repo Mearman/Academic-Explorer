@@ -13,6 +13,7 @@ import { setupGlobalErrorHandling } from './lib/logger'
 import { MantineProvider, createTheme } from '@mantine/core'
 import { Notifications } from '@mantine/notifications'
 import { Spotlight } from '@mantine/spotlight'
+import { IconSearch } from '@tabler/icons-react'
 
 // Import Mantine core styles
 import '@mantine/core/styles.css'
@@ -256,7 +257,7 @@ createRoot(document.getElementById('root')!).render(
       <Spotlight
         actions={[]}
         searchProps={{
-          leftSection: <span>🔍</span>,
+          leftSection: <IconSearch size={16} />,
           placeholder: 'Search Academic Explorer...',
         }}
         nothingFound="Nothing found..."
