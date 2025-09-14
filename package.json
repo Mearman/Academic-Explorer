@@ -13,9 +13,9 @@
     "test:ui": "vitest --ui --coverage",
     "test:run": "vitest run --coverage",
     "test:unit": "vitest --project=unit --coverage",
-    "test:integration": "vitest run --environment=node --coverage src/lib/openalex/openalex-client.integration.test.ts",
+    "test:integration": "vitest run --project=integration",
     "test:unit:run": "vitest run --project=unit --coverage",
-    "test:integration:run": "vitest run --environment=node --coverage src/lib/openalex/openalex-client.integration.test.ts"
+    "test:integration:run": "vitest run --project=integration"
   },
   "dependencies": {
     "@mantine/core": "^8.3.1",
