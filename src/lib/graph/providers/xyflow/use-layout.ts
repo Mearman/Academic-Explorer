@@ -165,48 +165,23 @@ export function useLayout(
 		// Create deterministic random source
 		const random = randomLcg(seed);
 
-		// Convert ReactFlow nodes to D3 nodes with deterministic positions
+		// Convert ReactFlow nodes to D3 nodes - all starting at (0,0) for deterministic force application
 		const d3Nodes: D3Node[] = nodes.map((node, index) => {
-			// Always use deterministic positions based on node index and ID for true determinism
-			const angle = (index / nodes.length) * 2 * Math.PI;
-
-			// Add deterministic variation based on node ID to prevent all nodes starting at same position
-			const nodeHash = node.id
-				.split("")
-				.reduce((acc, char) => acc + char.charCodeAt(0), 0);
-			const hashVariation = (nodeHash % 100) / 100; // 0 to 0.99
-
-			// Ensure minimum spacing based on collision radius * 3 for closer initial spacing
-			const minSpacing = collisionRadius * 3;
-			const baseRadius = Math.max(
-				400, // Reduced base radius for more compact layout
-				(Math.sqrt(nodes.length) * minSpacing) / 3, // Reduced divisor for closer packing
-			);
-			const radius = baseRadius + (index % 3) * minSpacing * 0.5 + hashVariation * minSpacing * 0.5;
-
-			const deterministicPosition = {
-				x: Math.cos(angle) * radius + centerX + (nodeHash % 100) - 50, // Reduced deterministic spread
-				y: Math.sin(angle) * radius + centerY + ((nodeHash * 17) % 100) - 50,
-			};
-
 			logger.info(
 				"graph",
-				"Initializing deterministic node position",
+				"Initializing node at origin for deterministic forces",
 				{
 					nodeId: node.id,
 					index,
-					nodeHash,
-					hashVariation,
-					angle: ((angle * 180) / Math.PI).toFixed(1) + "°",
-					position: deterministicPosition,
+					startPosition: { x: 0, y: 0 },
 				},
 				"useLayout",
 			);
 
 			return {
 				id: node.id,
-				x: deterministicPosition.x,
-				y: deterministicPosition.y,
+				x: 0, // All nodes start at origin
+				y: 0, // All nodes start at origin
 				...node.data,
 			};
 		});
@@ -507,21 +482,41 @@ export function useLayout(
 		return stopLayout;
 	}, [enabled, layout, applyLayout, stopLayout]);
 
-	// Additional effect to trigger layout when nodes become available
+	// Track previous node count to avoid re-layout on incremental additions
+	const previousNodeCountRef = useRef(0);
+
+	// Additional effect to trigger layout when nodes become available (but not on incremental updates)
 	useEffect(() => {
 		const nodes = getNodes();
-		if (enabled && layout && nodes.length > 0 && !simulationRef.current) {
+		const currentNodeCount = nodes.length;
+		const previousNodeCount = previousNodeCountRef.current;
+
+		// Only trigger layout if:
+		// 1. Layout is enabled and configured
+		// 2. Nodes are available
+		// 3. No simulation is running
+		// 4. This is initial load (previous count was 0) OR node count significantly changed
+		const isInitialLoad = previousNodeCount === 0 && currentNodeCount > 0;
+		const isSignificantChange = currentNodeCount > previousNodeCount * 1.5; // 50% increase
+
+		if (enabled && layout && nodes.length > 0 && !simulationRef.current && (isInitialLoad || isSignificantChange)) {
 			logger.info(
 				"graph",
 				"Nodes became available, triggering layout",
 				{
 					layoutType: layout.type,
-					nodeCount: nodes.length,
+					nodeCount: currentNodeCount,
+					previousCount: previousNodeCount,
+					isInitialLoad,
+					isSignificantChange
 				},
 				"useLayout",
 			);
 			applyLayout();
 		}
+
+		// Update the reference for next comparison
+		previousNodeCountRef.current = currentNodeCount;
 	});
 
 	// Manual restart function
