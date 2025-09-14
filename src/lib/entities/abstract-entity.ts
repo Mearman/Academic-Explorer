@@ -13,6 +13,7 @@ import type {
 	ExternalIdentifier
 } from "@/lib/graph/types";
 import type { OpenAlexEntity } from "@/lib/openalex/types";
+import { detectEntityType } from "./entity-detection";
 
 /**
  * Options for entity expansion
@@ -374,30 +375,23 @@ export abstract class AbstractEntity<TEntity extends OpenAlexEntity> {
 
   /**
    * Fetch related entity with appropriate field selection for graph display
-   * Uses EntityFactory to get the correct entity type and its minimal fields
+   * Uses entity detection utility to determine type and fetches directly via client
    */
   protected async fetchRelatedEntity(entityId: string, preferMetadata: boolean = false): Promise<OpenAlexEntity | null> {
   	try {
-  		// Import EntityFactory dynamically to avoid circular imports
-  		const { EntityFactory } = await import("./entity-factory");
+  		// Detect the entity type from the ID (validates ID format)
+  		const entityType = detectEntityType(entityId);
 
-  		// Detect the entity type from the ID
-  		const entityType = EntityFactory.detectEntityType(entityId);
-
-  		// Create the appropriate entity instance
-  		const relatedEntityInstance = EntityFactory.create(entityType, this.client);
-
-  		// Fetch with appropriate field selection
-  		const relatedEntity = preferMetadata
-  			? await relatedEntityInstance.fetchWithMetadata(entityId)
-  			: await relatedEntityInstance.fetchMinimal(entityId);
+  		// Fetch the entity directly using the client
+  		// The preferMetadata parameter is noted for potential future field selection optimization
+  		const relatedEntity = await this.client.getEntity(entityId);
 
   		return relatedEntity;
   	} catch (error) {
   		logger.warn(
   			"api",
   			`Failed to fetch related entity ${entityId}`,
-  			{ entityId, preferMetadata, error },
+  			{ entityId, entityType: "unknown", preferMetadata, error },
   			"AbstractEntity"
   		);
   		return null;

@@ -10,6 +10,7 @@ import type { OpenAlexEntity, Work, Author, Source, InstitutionEntity } from "@/
 import { AbstractEntity } from "./abstract-entity";
 import { WorkEntity } from "./work-entity";
 import { AuthorEntity } from "./author-entity";
+import { detectEntityType } from "./entity-detection";
 
 // Import other entity types as they're created
 // import { SourceEntity } from './source-entity';
@@ -55,55 +56,16 @@ export class EntityFactory {
 		entityData: T,
 		client: RateLimitedOpenAlexClient
 	): AbstractEntity<T> {
-		const entityType = this.detectEntityType(entityData);
+		const entityType = detectEntityType(entityData);
 		return this.create(entityType, client, entityData);
 	}
 
 	/**
    * Detect entity type from OpenAlex ID or entity data
+   * @deprecated Use detectEntityType from entity-detection.ts instead
    */
 	static detectEntityType(entityOrId: OpenAlexEntity | string): EntityType {
-		if (typeof entityOrId === "string") {
-			// Detect from ID format (W123456789, A123456789, etc.)
-			const match = entityOrId.match(/^https:\/\/openalex\.org\/([WASITP])\d+$/);
-			if (match) {
-				const prefix = match[1];
-				return this.prefixToEntityType(prefix);
-			}
-
-			// Handle bare IDs
-			const bareMatch = entityOrId.match(/^([WASITP])\d+$/);
-			if (bareMatch) {
-				const prefix = bareMatch[1];
-				return this.prefixToEntityType(prefix);
-			}
-
-			throw new Error(`Cannot detect entity type from ID: ${entityOrId}`);
-		}
-
-		// Detect from entity data structure
-		if ("authorships" in entityOrId) return "works";
-		if ("works_count" in entityOrId && "orcid" in entityOrId) return "authors";
-		if ("issn_l" in entityOrId) return "sources";
-		if ("ror" in entityOrId) return "institutions";
-
-		throw new Error("Cannot detect entity type from entity data");
-	}
-
-	/**
-   * Convert OpenAlex ID prefix to entity type
-   */
-	private static prefixToEntityType(prefix: string): EntityType {
-		switch (prefix) {
-			case "W": return "works";
-			case "A": return "authors";
-			case "S": return "sources";
-			case "I": return "institutions";
-			case "T": return "topics";
-			case "P": return "publishers";
-			default:
-				throw new Error(`Unknown entity prefix: ${prefix}`);
-		}
+		return detectEntityType(entityOrId);
 	}
 
 	/**
