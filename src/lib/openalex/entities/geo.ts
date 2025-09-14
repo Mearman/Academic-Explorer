@@ -293,7 +293,12 @@ export class GeoApi {
     };
   }> {
     const allGeos = await this.getAllGeos(params, 1000);
-    const statsByContinent: Record<string, any> = {};
+    const statsByContinent: Record<string, {
+      count: number;
+      total_works: number;
+      total_citations: number;
+      avg_works_per_region: number;
+    }> = {};
 
     for (const geo of allGeos) {
       const continent = geo.continent || 'Unknown';

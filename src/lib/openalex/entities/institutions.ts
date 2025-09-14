@@ -260,16 +260,11 @@ export class InstitutionsApi {
     options: InstitutionSearchOptions = {},
     seed?: number
   ): Promise<OpenAlexResponse<InstitutionEntity>> {
-    const params = {
+    const params: InstitutionSearchOptions & { sample: number; seed: number } = {
       ...options,
       sample: Math.min(count, 200), // OpenAlex limits sample to 200
+      seed: seed !== undefined ? seed : Math.floor(Math.random() * 1000000),
     };
-
-    if (seed !== undefined) {
-      (params as any).seed = seed;
-    } else {
-      (params as any).seed = Math.floor(Math.random() * 1000000);
-    }
 
     return this.getInstitutions(params);
   }

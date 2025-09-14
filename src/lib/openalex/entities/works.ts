@@ -15,9 +15,7 @@ import { OpenAlexBaseClient } from '../client';
  * Extended query parameters specific to Works API
  * Note: Uses string filter to maintain compatibility with base QueryParams
  */
-export interface WorksQueryParams extends QueryParams {
-  // filter inherited from QueryParams as string
-}
+export type WorksQueryParams = QueryParams;
 
 /**
  * Options for searching works
