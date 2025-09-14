@@ -32,6 +32,11 @@ export default defineWorkspace([
 
   // Component tests - React component rendering and interactions
   {
+    resolve: {
+      alias: {
+        '@': path.resolve(__dirname, './src'),
+      },
+    },
     test: {
       name: 'component',
       include: ['src/**/*.component.test.ts', 'src/**/*.component.test.tsx'],
@@ -54,6 +59,11 @@ export default defineWorkspace([
 
   // Integration tests - API integration, cache behaviour, cross-component workflows
   {
+    resolve: {
+      alias: {
+        '@': path.resolve(__dirname, './src'),
+      },
+    },
     test: {
       name: 'integration',
       include: ['src/**/*.integration.test.ts'],

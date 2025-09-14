@@ -174,6 +174,7 @@ export class AutocompleteApi {
     const cached = this.debounceCache[cacheKey];
 
     if (cached && (now - cached.timestamp < this.DEBOUNCE_DELAY)) {
+      // Safe cast: cache stores promises from the same generic function type
       return cached.promise as Promise<T>;
     }
 
@@ -182,7 +183,7 @@ export class AutocompleteApi {
 
     const promise = fn();
     this.debounceCache[cacheKey] = {
-      promise: promise as Promise<AutocompleteResult[]>,
+      promise: promise,
       timestamp: now,
     };
 

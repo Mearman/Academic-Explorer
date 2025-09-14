@@ -105,7 +105,7 @@ export function useGraphPersistence() {
       throw new Error('Cannot save empty graph')
     }
 
-    const sessionId = `session_${Date.now()}`
+    const sessionId = `session_${Date.now().toString()}`
     const snapshot: GraphSnapshot = {
       nodes: Array.from(store.nodes.values()),
       edges: Array.from(store.edges.values()),
