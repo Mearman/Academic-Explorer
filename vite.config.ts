@@ -3,6 +3,7 @@ import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import { TanStackRouterVite } from '@tanstack/router-plugin/vite'
 import { vanillaExtractPlugin } from '@vanilla-extract/vite-plugin'
+import { devtools } from '@tanstack/devtools-vite'
 import path from 'path'
 
 // https://vite.dev/config/
@@ -13,6 +14,7 @@ export default defineConfig({
     },
   },
   plugins: [
+    devtools(),
     TanStackRouterVite({
       // Enable hash-based routing for GitHub Pages compatibility
       routeFilePrefix: '',
@@ -45,7 +47,10 @@ export default defineConfig({
           'vendor-tanstack': [
             '@tanstack/react-query',
             '@tanstack/react-table',
-            '@tanstack/react-query-devtools'
+            '@tanstack/react-devtools',
+            '@tanstack/react-query-devtools',
+            '@tanstack/react-router-devtools',
+            '@tanstack/react-table-devtools'
           ],
 
           // Mantine UI suite
