@@ -31,10 +31,11 @@ import '@xyflow/react/dist/style.css';
 
 interface GraphNavigationProps {
   className?: string;
+  style?: React.CSSProperties;
 }
 
 // Inner component that uses ReactFlow hooks
-const GraphNavigationInner: React.FC<GraphNavigationProps> = ({ className }) => {
+const GraphNavigationInner: React.FC<GraphNavigationProps> = ({ className, style }) => {
   const navigate = useNavigate();
   const reactFlowInstance = useReactFlow();
   const containerRef = useRef<HTMLDivElement>(null);
@@ -167,7 +168,7 @@ const GraphNavigationInner: React.FC<GraphNavigationProps> = ({ className }) => 
   }
 
   return (
-    <div ref={containerRef} className={className} style={{ width: '100%', height: '100%' }}>
+    <div ref={containerRef} className={className} style={{ width: '100%', height: '100%', ...style }}>
       <ReactFlow
         nodes={nodes}
         edges={edges}
