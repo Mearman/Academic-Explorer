@@ -3,13 +3,15 @@
  * Contains search, filters, and entity type selection
  */
 
-import React, { useState } from "react"
+import React, { useState, useMemo } from "react"
 import { CollapsibleSidebar } from "./CollapsibleSidebar"
 import { LayoutControls } from "@/components/molecules/LayoutControls"
 import { useGraphData } from "@/hooks/use-graph-data"
+import { useGraphStore } from "@/stores/graph-store"
 import { useThemeColors } from "@/hooks/use-theme-colors"
 import { logError } from "@/lib/logger"
 import type { EntityType } from "@/lib/openalex/types"
+import { RelationType } from "@/lib/graph/types"
 import {
 	IconSearch,
 	IconFilter,
@@ -19,7 +21,13 @@ import {
 	IconBook,
 	IconBuilding,
 	IconTag,
-	IconBuildingStore
+	IconBuildingStore,
+	IconArrowRight,
+	IconCircleDot,
+	IconGitBranch,
+	IconLink,
+	IconCoin,
+	IconQuote
 } from "@tabler/icons-react"
 
 export const LeftSidebar: React.FC = () => {
@@ -29,6 +37,18 @@ export const LeftSidebar: React.FC = () => {
 	])
 	const { search, isLoading, clearGraph } = useGraphData()
 	const { colors } = useThemeColors()
+
+	// Graph store for statistics and visibility
+	const visibleEntityTypes = useGraphStore((state) => state.visibleEntityTypes)
+	const getEntityTypeStats = useGraphStore((state) => state.getEntityTypeStats)
+	const toggleEntityTypeVisibility = useGraphStore((state) => state.toggleEntityTypeVisibility)
+	const visibleEdgeTypes = useGraphStore((state) => state.visibleEdgeTypes)
+	const getEdgeTypeStats = useGraphStore((state) => state.getEdgeTypeStats)
+	const toggleEdgeTypeVisibility = useGraphStore((state) => state.toggleEdgeTypeVisibility)
+
+	// Get statistics for entity types and edge types
+	const entityStats = useMemo(() => getEntityTypeStats(), [getEntityTypeStats])
+	const edgeStats = useMemo(() => getEdgeTypeStats(), [getEdgeTypeStats])
 
 	const handleSearch = async (e: React.FormEvent) => {
 		e.preventDefault()
@@ -45,15 +65,25 @@ export const LeftSidebar: React.FC = () => {
 	}
 
 	const handleEntityTypeToggle = (entityType: EntityType) => {
+		const isCurrentlySelected = selectedEntityTypes.includes(entityType)
+
+		// Update search filter state
 		setSelectedEntityTypes(prev =>
-			prev.includes(entityType)
+			isCurrentlySelected
 				? prev.filter(type => type !== entityType)
 				: [...prev, entityType]
 		)
+
+		// Also update visibility in graph store
+		toggleEntityTypeVisibility(entityType)
 	}
 
 	const handleClearGraph = () => {
 		clearGraph()
+	}
+
+	const handleEdgeTypeToggle = (edgeType: RelationType) => {
+		toggleEdgeTypeVisibility(edgeType)
 	}
 
 	// Use the exact same colors as graph nodes for consistency
@@ -76,6 +106,28 @@ export const LeftSidebar: React.FC = () => {
 		}
 	};
 
+	// Edge type colors for consistency with graph visualization
+	const getGraphEdgeColor = (edgeType: RelationType): string => {
+		switch (edgeType) {
+			case RelationType.AUTHORED:
+				return "#2980b9";
+			case RelationType.CITED:
+				return "#e67e22";
+			case RelationType.AFFILIATED:
+				return "#27ae60";
+			case RelationType.PUBLISHED_IN:
+				return "#8e44ad";
+			case RelationType.FUNDED_BY:
+				return "#c0392b";
+			case RelationType.RELATED_TO:
+				return "#f39c12";
+			case RelationType.REFERENCES:
+				return "#34495e";
+			default:
+				return "#7f8c8d";
+		}
+	};
+
 	const entityTypeOptions: { type: EntityType; label: string; color: string; icon: React.ReactNode }[] = [
 		{ type: "works", label: "Works", color: getGraphNodeColor("works"), icon: <IconFile size={16} /> },
 		{ type: "authors", label: "Authors", color: getGraphNodeColor("authors"), icon: <IconUser size={16} /> },
@@ -83,6 +135,16 @@ export const LeftSidebar: React.FC = () => {
 		{ type: "institutions", label: "Institutions", color: getGraphNodeColor("institutions"), icon: <IconBuilding size={16} /> },
 		{ type: "topics", label: "Topics", color: getGraphNodeColor("topics"), icon: <IconTag size={16} /> },
 		{ type: "publishers", label: "Publishers", color: getGraphNodeColor("publishers"), icon: <IconBuildingStore size={16} /> },
+	]
+
+	const edgeTypeOptions: { type: RelationType; label: string; color: string; icon: React.ReactNode }[] = [
+		{ type: RelationType.AUTHORED, label: "Authored", color: getGraphEdgeColor(RelationType.AUTHORED), icon: <IconUser size={16} /> },
+		{ type: RelationType.CITED, label: "Cited", color: getGraphEdgeColor(RelationType.CITED), icon: <IconQuote size={16} /> },
+		{ type: RelationType.AFFILIATED, label: "Affiliated", color: getGraphEdgeColor(RelationType.AFFILIATED), icon: <IconBuilding size={16} /> },
+		{ type: RelationType.PUBLISHED_IN, label: "Published In", color: getGraphEdgeColor(RelationType.PUBLISHED_IN), icon: <IconBook size={16} /> },
+		{ type: RelationType.FUNDED_BY, label: "Funded By", color: getGraphEdgeColor(RelationType.FUNDED_BY), icon: <IconCoin size={16} /> },
+		{ type: RelationType.RELATED_TO, label: "Related To", color: getGraphEdgeColor(RelationType.RELATED_TO), icon: <IconGitBranch size={16} /> },
+		{ type: RelationType.REFERENCES, label: "References", color: getGraphEdgeColor(RelationType.REFERENCES), icon: <IconArrowRight size={16} /> },
 	]
 
 	return (
@@ -142,7 +204,7 @@ export const LeftSidebar: React.FC = () => {
 					</form>
 				</div>
 
-				{/* Entity Type Filters */}
+				{/* Entity Type Filters & Visibility */}
 				<div>
 					<div style={{
 						display: "flex",
@@ -154,43 +216,157 @@ export const LeftSidebar: React.FC = () => {
 						color: colors.text.primary
 					}}>
 						<IconFilter size={16} />
-            Entity Types
+            Entity Types & Visibility
 					</div>
 
 					<div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
-						{entityTypeOptions.map(option => (
-							<label
-								key={option.type}
-								style={{
-									display: "flex",
-									alignItems: "center",
-									gap: "8px",
-									cursor: "pointer",
-									padding: "6px",
-									borderRadius: "4px",
-									backgroundColor: selectedEntityTypes.includes(option.type) ? colors.background.tertiary : "transparent",
-									transition: "background-color 0.2s",
-								}}
-							>
-								<input
-									type="checkbox"
-									checked={selectedEntityTypes.includes(option.type)}
-									onChange={() => { handleEntityTypeToggle(option.type) }}
-									style={{ margin: 0 }}
-								/>
-								<span>{option.icon}</span>
-								<span style={{ fontSize: "14px", color: colors.text.primary }}>{option.label}</span>
-								<span
+						{entityTypeOptions.map(option => {
+							const totalCount = entityStats.total.get(option.type) || 0;
+							const visibleCount = entityStats.visible.get(option.type) || 0;
+							const searchCount = entityStats.searchResults.get(option.type) || 0;
+
+							return (
+								<label
+									key={option.type}
 									style={{
-										width: "12px",
-										height: "12px",
-										borderRadius: "50%",
-										backgroundColor: option.color,
-										marginLeft: "auto",
+										display: "flex",
+										flexDirection: "column",
+										gap: "4px",
+										cursor: "pointer",
+										padding: "8px",
+										borderRadius: "6px",
+										backgroundColor: selectedEntityTypes.includes(option.type) ? colors.background.tertiary : "transparent",
+										border: `1px solid ${colors.border.primary}`,
+										transition: "background-color 0.2s",
 									}}
-								/>
-							</label>
-						))}
+								>
+									{/* Main row with checkbox, icon, label, and color */}
+									<div style={{
+										display: "flex",
+										alignItems: "center",
+										gap: "8px",
+									}}>
+										<input
+											type="checkbox"
+											checked={selectedEntityTypes.includes(option.type)}
+											onChange={() => { handleEntityTypeToggle(option.type) }}
+											style={{ margin: 0 }}
+										/>
+										<span>{option.icon}</span>
+										<span style={{ fontSize: "14px", color: colors.text.primary, fontWeight: 500 }}>
+											{option.label}
+										</span>
+										<span
+											style={{
+												width: "10px",
+												height: "10px",
+												borderRadius: "50%",
+												backgroundColor: option.color,
+												marginLeft: "auto",
+											}}
+										/>
+									</div>
+
+									{/* Statistics row */}
+									{(totalCount > 0 || searchCount > 0) && (
+										<div style={{
+											display: "flex",
+											alignItems: "center",
+											gap: "12px",
+											fontSize: "11px",
+											color: colors.text.secondary,
+											marginLeft: "24px",
+										}}>
+											{totalCount > 0 && <span>Total: {totalCount}</span>}
+											{searchCount > 0 && <span>Found: {searchCount}</span>}
+											{totalCount > 0 && <span>Visible: {visibleCount}</span>}
+										</div>
+									)}
+								</label>
+							);
+						})}
+					</div>
+				</div>
+
+				{/* Edge Types & Visibility */}
+				<div>
+					<div style={{
+						display: "flex",
+						alignItems: "center",
+						gap: "8px",
+						marginBottom: "12px",
+						fontSize: "13px",
+						fontWeight: 600,
+						color: colors.text.primary
+					}}>
+						<IconLink size={16} />
+            Edge Types & Visibility
+					</div>
+
+					<div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+						{edgeTypeOptions.map(option => {
+							const totalCount = edgeStats.total.get(option.type) || 0;
+							const visibleCount = edgeStats.visible.get(option.type) || 0;
+
+							return (
+								<label
+									key={option.type}
+									style={{
+										display: "flex",
+										flexDirection: "column",
+										gap: "4px",
+										cursor: "pointer",
+										padding: "8px",
+										borderRadius: "6px",
+										backgroundColor: visibleEdgeTypes.has(option.type) ? colors.background.tertiary : "transparent",
+										border: `1px solid ${colors.border.primary}`,
+										transition: "background-color 0.2s",
+									}}
+								>
+									{/* Main row with checkbox, icon, label, and color */}
+									<div style={{
+										display: "flex",
+										alignItems: "center",
+										gap: "8px",
+									}}>
+										<input
+											type="checkbox"
+											checked={visibleEdgeTypes.has(option.type)}
+											onChange={() => { handleEdgeTypeToggle(option.type) }}
+											style={{ margin: 0 }}
+										/>
+										<span>{option.icon}</span>
+										<span style={{ fontSize: "14px", color: colors.text.primary, fontWeight: 500 }}>
+											{option.label}
+										</span>
+										<span
+											style={{
+												width: "10px",
+												height: "10px",
+												borderRadius: "50%",
+												backgroundColor: option.color,
+												marginLeft: "auto",
+											}}
+										/>
+									</div>
+
+									{/* Statistics row */}
+									{totalCount > 0 && (
+										<div style={{
+											display: "flex",
+											alignItems: "center",
+											gap: "12px",
+											fontSize: "11px",
+											color: colors.text.secondary,
+											marginLeft: "24px",
+										}}>
+											<span>Total: {totalCount}</span>
+											<span>Visible: {visibleCount}</span>
+										</div>
+									)}
+								</label>
+							);
+						})}
 					</div>
 				</div>
 
@@ -244,8 +420,9 @@ export const LeftSidebar: React.FC = () => {
 					<ul style={{ margin: "4px 0", paddingLeft: "16px" }}>
 						<li>Search for keywords, author names, paper titles</li>
 						<li>Use DOI, ORCID, ROR ID for specific entities</li>
+						<li>Checkboxes control search filtering AND graph visibility</li>
 						<li>Click nodes to navigate, double-click to expand</li>
-						<li>Use filters to focus on specific entity types</li>
+						<li>Statistics show: total nodes, search results, visible nodes</li>
 					</ul>
 				</div>
 			</div>
