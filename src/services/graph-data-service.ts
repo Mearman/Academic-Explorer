@@ -95,11 +95,22 @@ export class GraphDataService {
 				store.pinNode(primaryNodeId);
 			}
 
-			logger.info("graph", "Entity graph loaded without auto-expansion", {
+			logger.info("graph", "Entity graph loaded with placeholder nodes", {
 				nodeCount: nodes.length,
 				edgeCount: edges.length,
-				primaryNodeId
+				primaryNodeId,
+				placeholderCount: nodes.filter(n => n.metadata?.isPlaceholder).length
 			}, "GraphDataService");
+
+			// Start loading placeholder node data in the background (non-blocking)
+			if (nodes.some(n => n.metadata?.isPlaceholder)) {
+				// Use setTimeout to ensure this happens after the current execution context
+				setTimeout(() => {
+					this.loadAllPlaceholderNodes().catch((error: unknown) => {
+						logError("Background placeholder loading failed", error, "GraphDataService", "graph");
+					});
+				}, 100);
+			}
 
 			// Layout is now handled by the ReactFlow component's useLayout hook
 			// No need for explicit layout application here
@@ -168,8 +179,23 @@ export class GraphDataService {
 				entityId,
 				entityType: detection.entityType,
 				nodeCount: nodes.length,
-				edgeCount: edges.length
+				edgeCount: edges.length,
+				placeholderCount: nodes.filter(n => n.metadata?.isPlaceholder).length
 			}, "GraphDataService");
+
+			// Start loading placeholder node data in the background for new nodes
+			const newPlaceholderNodes = nodes.filter(n => n.metadata?.isPlaceholder);
+			if (newPlaceholderNodes.length > 0) {
+				setTimeout(() => {
+					// Load only the new placeholder nodes
+					const loadPromises = newPlaceholderNodes.map(node =>
+						this.loadPlaceholderNodeData(node.id)
+					);
+					Promise.allSettled(loadPromises).catch((error: unknown) => {
+						logError("Background placeholder loading failed", error, "GraphDataService", "graph");
+					});
+				}, 100);
+			}
 
 		} catch (error) {
 			const errorMessage = error instanceof Error ? error.message : "Unknown error";
@@ -247,6 +273,106 @@ export class GraphDataService {
 		} catch (error) {
 			logError("Failed to load cached nodes into graph", error, "GraphDataService", "graph");
 		}
+	}
+
+	/**
+   * Load data for placeholder nodes in the background
+   * This method loads full entity data for nodes that are currently placeholders
+   */
+	async loadPlaceholderNodeData(nodeId: string): Promise<void> {
+		const store = useGraphStore.getState();
+		const node = store.getNode(nodeId);
+
+		if (!node || !node.metadata?.isPlaceholder) {
+			logger.debug("graph", "Node is not a placeholder, skipping data load", { nodeId }, "GraphDataService");
+			return;
+		}
+
+		try {
+			// Mark node as loading
+			store.markNodeAsLoading(nodeId);
+
+			logger.info("graph", "Loading placeholder node data", {
+				nodeId,
+				entityType: node.type,
+				label: node.label
+			}, "GraphDataService");
+
+			// Fetch full entity data from OpenAlex
+			const entity = await rateLimitedOpenAlex.getEntity(node.entityId);
+
+			// Extract full data from the entity
+			const fullNodeData = this.createNodeFromEntity(entity, node.type);
+
+			// Update the node with full data
+			store.markNodeAsLoaded(nodeId, {
+				label: fullNodeData.label,
+				externalIds: fullNodeData.externalIds,
+				metadata: {
+					...fullNodeData.metadata,
+					isPlaceholder: false,
+					isLoading: false,
+				}
+			});
+
+			logger.info("graph", "Placeholder node data loaded successfully", {
+				nodeId,
+				newLabel: fullNodeData.label
+			}, "GraphDataService");
+
+		} catch (error) {
+			const errorMessage = error instanceof Error ? error.message : "Failed to load node data";
+			store.markNodeAsError(nodeId, errorMessage);
+			logError("Failed to load placeholder node data", error, "GraphDataService", "graph");
+		}
+	}
+
+	/**
+   * Load data for all placeholder nodes in batches
+   * This method processes placeholder nodes in the background without blocking the UI
+   */
+	async loadAllPlaceholderNodes(): Promise<void> {
+		const store = useGraphStore.getState();
+		const placeholderNodes = store.getPlaceholderNodes();
+
+		if (placeholderNodes.length === 0) {
+			logger.debug("graph", "No placeholder nodes to load", {}, "GraphDataService");
+			return;
+		}
+
+		logger.info("graph", "Starting batch load of placeholder nodes", {
+			placeholderCount: placeholderNodes.length
+		}, "GraphDataService");
+
+		// Process nodes in batches to avoid overwhelming the API
+		const BATCH_SIZE = 3;
+		const batches: GraphNode[][] = [];
+
+		for (let i = 0; i < placeholderNodes.length; i += BATCH_SIZE) {
+			batches.push(placeholderNodes.slice(i, i + BATCH_SIZE));
+		}
+
+		// Process batches sequentially with delay to respect rate limits
+		for (const [batchIndex, batch] of batches.entries()) {
+			logger.debug("graph", `Processing batch ${String(batchIndex + 1)}/${String(batches.length)}`, {
+				batchSize: batch.length,
+				nodeIds: batch.map(n => n.id)
+			}, "GraphDataService");
+
+			// Load all nodes in this batch in parallel
+			const loadPromises = batch.map(node => this.loadPlaceholderNodeData(node.id));
+			await Promise.allSettled(loadPromises);
+
+			// Add delay between batches to respect rate limits (except for last batch)
+			if (batchIndex < batches.length - 1) {
+				await new Promise(resolve => setTimeout(resolve, 1000));
+			}
+		}
+
+		logger.info("graph", "Finished loading all placeholder nodes", {
+			totalProcessed: placeholderNodes.length,
+			batchCount: String(batches.length)
+		}, "GraphDataService");
 	}
 
 	/**
@@ -432,32 +558,40 @@ export class GraphDataService {
 	}
 
 	/**
-   * Transform Work entity
+   * Transform Work entity with lazy loading approach
    */
 	private transformWork(work: Work, _mainNode: GraphNode): { nodes: GraphNode[]; edges: GraphEdge[] } {
 		const nodes: GraphNode[] = [];
 		const edges: GraphEdge[] = [];
+		const store = useGraphStore.getState();
 
-		// Add author nodes and authorship edges
+		// Add author nodes as placeholders (they'll be loaded on demand)
 		work.authorships.slice(0, 5).forEach((authorship, index) => {
-			const authorNode: GraphNode = {
-				id: authorship.author.id,
-				type: "authors" as EntityType,
-				label: authorship.author.display_name,
-				entityId: authorship.author.id,
-				position: { x: (index - 2) * 150, y: -150 },
-				externalIds: authorship.author.orcid ? [
-					{
-						type: "orcid",
-						value: authorship.author.orcid,
-						url: `https://orcid.org/${authorship.author.orcid}`,
+			// Check if author node already exists
+			const existingNode = store.getNode(authorship.author.id);
+
+			if (!existingNode) {
+				// Create placeholder node with basic info from authorship
+				const authorNode: GraphNode = {
+					id: authorship.author.id,
+					type: "authors" as EntityType,
+					label: authorship.author.display_name,
+					entityId: authorship.author.id,
+					position: { x: (index - 2) * 150, y: -150 },
+					externalIds: authorship.author.orcid ? [
+						{
+							type: "orcid",
+							value: authorship.author.orcid,
+							url: `https://orcid.org/${authorship.author.orcid}`,
+						}
+					] : [],
+					metadata: {
+						position: authorship.author_position,
+						isPlaceholder: true, // Mark as placeholder for lazy loading
 					}
-				] : [],
-				metadata: {
-					position: authorship.author_position,
-				}
-			};
-			nodes.push(authorNode);
+				};
+				nodes.push(authorNode);
+			}
 
 			edges.push({
 				id: `${authorship.author.id}-authored-${work.id}`,
@@ -468,23 +602,30 @@ export class GraphDataService {
 			});
 		});
 
-		// Add source/journal node
+		// Add source/journal node as placeholder
 		if (work.primary_location?.source) {
-			const sourceNode: GraphNode = {
-				id: work.primary_location.source.id,
-				type: "sources" as EntityType,
-				label: work.primary_location.source.display_name,
-				entityId: work.primary_location.source.id,
-				position: { x: 0, y: 150 },
-				externalIds: work.primary_location.source.issn_l ? [
-					{
-						type: "issn_l",
-						value: work.primary_location.source.issn_l,
-						url: `https://portal.issn.org/resource/ISSN/${work.primary_location.source.issn_l}`,
+			const existingSourceNode = store.getNode(work.primary_location.source.id);
+
+			if (!existingSourceNode) {
+				const sourceNode: GraphNode = {
+					id: work.primary_location.source.id,
+					type: "sources" as EntityType,
+					label: work.primary_location.source.display_name,
+					entityId: work.primary_location.source.id,
+					position: { x: 0, y: 150 },
+					externalIds: work.primary_location.source.issn_l ? [
+						{
+							type: "issn_l",
+							value: work.primary_location.source.issn_l,
+							url: `https://portal.issn.org/resource/ISSN/${work.primary_location.source.issn_l}`,
+						}
+					] : [],
+					metadata: {
+						isPlaceholder: true, // Mark as placeholder for lazy loading
 					}
-				] : [],
-			};
-			nodes.push(sourceNode);
+				};
+				nodes.push(sourceNode);
+			}
 
 			edges.push({
 				id: `${work.id}-published-in-${work.primary_location.source.id}`,
@@ -494,19 +635,23 @@ export class GraphDataService {
 			});
 		}
 
-		// Add a few cited works (if available)
+		// Add referenced works as placeholders - they'll be loaded on demand
 		work.referenced_works.slice(0, 3).forEach((citedWorkId, index) => {
-			// Create placeholder nodes for cited works (would need separate API calls to get full data)
-			const citedNode: GraphNode = {
-				id: citedWorkId,
-				type: "works" as EntityType,
-				label: ["Referenced Work", 1 + index].join(" "),
-				entityId: citedWorkId,
-				position: { x: (index - 1) * 200, y: 300 },
-				externalIds: [],
-				metadata: { isPlaceholder: true },
-			};
-			nodes.push(citedNode);
+			const existingCitedNode = store.getNode(citedWorkId);
+
+			if (!existingCitedNode) {
+				// Create minimal placeholder - label will be updated when data is loaded
+				const citedNode: GraphNode = {
+					id: citedWorkId,
+					type: "works" as EntityType,
+					label: `Referenced Work ${String(index + 1)}`,
+					entityId: citedWorkId,
+					position: { x: (index - 1) * 200, y: 300 },
+					externalIds: [],
+					metadata: { isPlaceholder: true },
+				};
+				nodes.push(citedNode);
+			}
 
 			edges.push({
 				id: `${work.id}-cites-${citedWorkId}`,
@@ -520,29 +665,37 @@ export class GraphDataService {
 	}
 
 	/**
-   * Transform Author entity (basic implementation)
+   * Transform Author entity with lazy loading approach
    */
 	private transformAuthor(author: Author, _mainNode: GraphNode): { nodes: GraphNode[]; edges: GraphEdge[] } {
 		const nodes: GraphNode[] = [];
 		const edges: GraphEdge[] = [];
+		const store = useGraphStore.getState();
 
-		// Add affiliated institutions
+		// Add affiliated institutions as placeholders
 		author.affiliations.slice(0, 3).forEach((affiliation, index) => {
-			const institutionNode: GraphNode = {
-				id: affiliation.institution.id,
-				type: "institutions" as EntityType,
-				label: affiliation.institution.display_name,
-				entityId: affiliation.institution.id,
-				position: { x: (index - 1) * 200, y: 150 },
-				externalIds: affiliation.institution.ror ? [
-					{
-						type: "ror",
-						value: affiliation.institution.ror,
-						url: `https://ror.org/${affiliation.institution.ror}`,
+			const existingInstitutionNode = store.getNode(affiliation.institution.id);
+
+			if (!existingInstitutionNode) {
+				const institutionNode: GraphNode = {
+					id: affiliation.institution.id,
+					type: "institutions" as EntityType,
+					label: affiliation.institution.display_name,
+					entityId: affiliation.institution.id,
+					position: { x: (index - 1) * 200, y: 150 },
+					externalIds: affiliation.institution.ror ? [
+						{
+							type: "ror",
+							value: affiliation.institution.ror,
+							url: `https://ror.org/${affiliation.institution.ror}`,
+						}
+					] : [],
+					metadata: {
+						isPlaceholder: true, // Mark as placeholder for lazy loading
 					}
-				] : [],
-			};
-			nodes.push(institutionNode);
+				};
+				nodes.push(institutionNode);
+			}
 
 			edges.push({
 				id: `${author.id}-affiliated-${affiliation.institution.id}`,
