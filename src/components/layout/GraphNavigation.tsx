@@ -38,6 +38,7 @@ import { useGraphData } from "@/hooks/use-graph-data";
 import { useEntityInteraction, INTERACTION_PRESETS } from "@/hooks/use-entity-interaction";
 import { useContextMenu } from "@/hooks/use-context-menu";
 import { NodeContextMenu } from "@/components/layout/NodeContextMenu";
+import { GraphToolbar } from "@/components/graph/GraphToolbar";
 import { logger } from "@/lib/logger";
 import { GRAPH_ANIMATION, FIT_VIEW_PRESETS } from "@/lib/graph/constants";
 
@@ -684,6 +685,11 @@ const GraphNavigationInner: React.FC<GraphNavigationProps> = ({ className, style
             Academic Explorer Graph
 					</div>
 				</Panel>
+				{nodes.length > 0 && (
+					<Panel position="top-right">
+						<GraphToolbar />
+					</Panel>
+				)}
 
 
 				{nodes.length === 0 && (
