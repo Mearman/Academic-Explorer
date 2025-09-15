@@ -100,7 +100,7 @@ export class QueryBuilder<T extends EntityFilters = EntityFilters> {
 		// Handle different operators for numeric and string values
 		if (operator !== "=") {
 			const operatorSymbol = operator === "!=" ? "!" : operator;
-			this.filters[field] = `${operatorSymbol}${value}` as T[K];
+			this.filters[field] = `${operatorSymbol}${String(value)}` as T[K];
 		} else {
 			this.filters[field] = value;
 		}
@@ -156,7 +156,7 @@ export class QueryBuilder<T extends EntityFilters = EntityFilters> {
 	): this {
 		const validation = validateDateRange(fromDate, toDate);
 		if (!validation.isValid) {
-			throw new Error(`Invalid date range: ${validation.error}`);
+			throw new Error(`Invalid date range: ${String(validation.error)}`);
 		}
 
 		if (validation.normalizedFrom) {
