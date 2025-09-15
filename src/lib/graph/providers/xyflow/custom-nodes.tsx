@@ -148,6 +148,24 @@ const getEntityColor = (entityType: EntityType): string => {
 	}
 };
 
+// Convert hex color to rgba format for glow effects
+const hexToRgba = (hex: string, alpha: number): string => {
+	const r = parseInt(hex.slice(1, 3), 16);
+	const g = parseInt(hex.slice(3, 5), 16);
+	const b = parseInt(hex.slice(5, 7), 16);
+	return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+};
+
+// Get entity-specific glow colors
+const getEntityGlowColors = (entityType: EntityType): { border: string; glow: string; solidBorder: string } => {
+	const baseColor = getEntityColor(entityType);
+	return {
+		border: hexToRgba(baseColor, 0.5),     // Semi-transparent for inner border
+		glow: hexToRgba(baseColor, 0.3),       // More transparent for outer glow
+		solidBorder: baseColor                  // Solid color for selected border
+	};
+};
+
 // Get entity type label
 const getEntityTypeLabel = (entityType: EntityType): string => {
 	switch (entityType) {
@@ -179,6 +197,7 @@ export const CustomNode: React.FC<CustomNodeProps> = ({ data, selected }) => {
 	const { isPinned } = useGraphStore();
 	const backgroundColor = getEntityColor(data.entityType);
 	const _typeLabel = getEntityTypeLabel(data.entityType);
+	const glowColors = getEntityGlowColors(data.entityType);
 
 	// Get current pin state from store
 	const isNodePinned = isPinned(data.entityId);
@@ -189,12 +208,14 @@ export const CustomNode: React.FC<CustomNodeProps> = ({ data, selected }) => {
 	const nodeStyle: React.CSSProperties = {
 		...baseNodeStyle,
 		backgroundColor,
+		// Only selected nodes get glow effect in their entity color
 		boxShadow: selected
-			? "0 0 0 2px rgba(52, 152, 219, 0.5)"
-			: isNodePinned
-				? "0 0 0 3px rgba(255, 193, 7, 0.8), 0 0 15px rgba(255, 193, 7, 0.4)"
-				: "none",
-		border: isNodePinned ? "2px solid #ffc107" : "none",
+			? `0 0 0 2px ${glowColors.border}, 0 0 15px ${glowColors.glow}`
+			: "none",
+		// Pinned nodes get border styling (but only if not selected to avoid double borders)
+		border: isNodePinned && !selected ? "2px solid #ffc107" : selected ? `2px solid ${glowColors.solidBorder}` : "none",
+		// Pinned nodes get slightly different background opacity to distinguish them
+		opacity: isNodePinned && !selected ? 0.9 : 1,
 	};
 
 	return (
@@ -337,12 +358,14 @@ export const WorkNode: React.FC<CustomNodeProps> = ({ data, selected }) => {
 	const nodeStyle: React.CSSProperties = {
 		...baseNodeStyle,
 		backgroundColor: "#e74c3c",
+		// Only selected nodes get glow effect
 		boxShadow: selected
-			? "0 0 0 2px rgba(52, 152, 219, 0.5)"
-			: isNodePinned
-				? "0 0 0 3px rgba(255, 193, 7, 0.8), 0 0 15px rgba(255, 193, 7, 0.4)"
-				: "none",
-		border: isNodePinned ? "2px solid #ffc107" : "none",
+			? "0 0 0 2px rgba(52, 152, 219, 0.5), 0 0 15px rgba(52, 152, 219, 0.3)"
+			: "none",
+		// Pinned nodes get border styling (but only if not selected to avoid double borders)
+		border: isNodePinned && !selected ? "2px solid #ffc107" : selected ? "2px solid #3498db" : "none",
+		// Pinned nodes get slightly different background opacity to distinguish them
+		opacity: isNodePinned && !selected ? 0.9 : 1,
 	};
 
 	return (
@@ -425,12 +448,14 @@ export const AuthorNode: React.FC<CustomNodeProps> = ({ data, selected }) => {
 	const nodeStyle: React.CSSProperties = {
 		...baseNodeStyle,
 		backgroundColor: "#3498db",
+		// Only selected nodes get glow effect
 		boxShadow: selected
-			? "0 0 0 2px rgba(52, 152, 219, 0.5)"
-			: isNodePinned
-				? "0 0 0 3px rgba(255, 193, 7, 0.8), 0 0 15px rgba(255, 193, 7, 0.4)"
-				: "none",
-		border: isNodePinned ? "2px solid #ffc107" : "none",
+			? "0 0 0 2px rgba(52, 152, 219, 0.5), 0 0 15px rgba(52, 152, 219, 0.3)"
+			: "none",
+		// Pinned nodes get border styling (but only if not selected to avoid double borders)
+		border: isNodePinned && !selected ? "2px solid #ffc107" : selected ? "2px solid #3498db" : "none",
+		// Pinned nodes get slightly different background opacity to distinguish them
+		opacity: isNodePinned && !selected ? 0.9 : 1,
 	};
 
 	const orcid = data.externalIds.find(id => id.type === "orcid");
@@ -501,12 +526,14 @@ export const SourceNode: React.FC<CustomNodeProps> = ({ data, selected }) => {
 	const nodeStyle: React.CSSProperties = {
 		...baseNodeStyle,
 		backgroundColor: "#2ecc71",
+		// Only selected nodes get glow effect
 		boxShadow: selected
-			? "0 0 0 2px rgba(52, 152, 219, 0.5)"
-			: isNodePinned
-				? "0 0 0 3px rgba(255, 193, 7, 0.8), 0 0 15px rgba(255, 193, 7, 0.4)"
-				: "none",
-		border: isNodePinned ? "2px solid #ffc107" : "none",
+			? "0 0 0 2px rgba(52, 152, 219, 0.5), 0 0 15px rgba(52, 152, 219, 0.3)"
+			: "none",
+		// Pinned nodes get border styling (but only if not selected to avoid double borders)
+		border: isNodePinned && !selected ? "2px solid #ffc107" : selected ? "2px solid #3498db" : "none",
+		// Pinned nodes get slightly different background opacity to distinguish them
+		opacity: isNodePinned && !selected ? 0.9 : 1,
 	};
 
 	const issn = data.externalIds.find(id => id.type === "issn_l");
@@ -577,12 +604,14 @@ export const InstitutionNode: React.FC<CustomNodeProps> = ({ data, selected }) =
 	const nodeStyle: React.CSSProperties = {
 		...baseNodeStyle,
 		backgroundColor: "#f39c12",
+		// Only selected nodes get glow effect
 		boxShadow: selected
-			? "0 0 0 2px rgba(52, 152, 219, 0.5)"
-			: isNodePinned
-				? "0 0 0 3px rgba(255, 193, 7, 0.8), 0 0 15px rgba(255, 193, 7, 0.4)"
-				: "none",
-		border: isNodePinned ? "2px solid #ffc107" : "none",
+			? "0 0 0 2px rgba(52, 152, 219, 0.5), 0 0 15px rgba(52, 152, 219, 0.3)"
+			: "none",
+		// Pinned nodes get border styling (but only if not selected to avoid double borders)
+		border: isNodePinned && !selected ? "2px solid #ffc107" : selected ? "2px solid #3498db" : "none",
+		// Pinned nodes get slightly different background opacity to distinguish them
+		opacity: isNodePinned && !selected ? 0.9 : 1,
 	};
 
 	const ror = data.externalIds.find(id => id.type === "ror");
