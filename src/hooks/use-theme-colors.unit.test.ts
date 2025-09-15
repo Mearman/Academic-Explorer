@@ -4,9 +4,8 @@
 
 import { describe, it, expect, beforeEach, vi } from "vitest";
 import { renderHook } from "@testing-library/react";
-import { MantineProvider, MantineTheme } from "@mantine/core";
+import { MantineTheme } from "@mantine/core";
 import { useThemeColors } from "./use-theme-colors";
-import React from "react";
 
 // Mock the Mantine hooks
 vi.mock("@mantine/core", async () => {
