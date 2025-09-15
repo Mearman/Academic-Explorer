@@ -183,12 +183,12 @@ export class QueryBuilder<T extends EntityFilters = EntityFilters> {
    *   .addSearch('display_name.search', 'neural networks');
    * ```
    */
-	addSearch<K extends keyof T>(field: K, query: string): this {
+	addSearch(field: keyof T, query: string): this {
 		if (!query || query.trim().length === 0) {
 			return this;
 		}
 
-		this.filters[field] = escapeFilterValue(query.trim()) as T[K];
+		this.filters[field] = escapeFilterValue(query.trim()) as T[keyof T];
 		return this;
 	}
 
@@ -260,6 +260,7 @@ export class QueryBuilder<T extends EntityFilters = EntityFilters> {
  * ```
  */
 export function buildFilterString(filters: EntityFilters | Partial<EntityFilters>): string {
+	// eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
 	if (!filters || Object.keys(filters).length === 0) {
 		return "";
 	}
@@ -311,6 +312,7 @@ export function buildFilterString(filters: EntityFilters | Partial<EntityFilters
  * ```
  */
 export function buildSortString(sorts: SortOptions | SortOptions[]): string {
+	// eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
 	if (!sorts) {
 		return "";
 	}

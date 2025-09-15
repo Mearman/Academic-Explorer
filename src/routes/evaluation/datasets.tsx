@@ -229,7 +229,7 @@ function DatasetsManagement() {
 									marginBottom: "16px",
 									lineHeight: "1.4"
 								}}>
-									{dataset.metadata?.description}
+									{dataset.metadata.description}
 								</p>
 							)}
 
