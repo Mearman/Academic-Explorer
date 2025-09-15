@@ -3,7 +3,7 @@
  * Supports CSV, JSON, and Excel files for systematic literature review data
  */
 
-import * as XLSX from "xlsx";
+import * as ExcelJS from "exceljs";
 import type { WorkReference, STARDataset } from "./types";
 
 /**
@@ -162,26 +162,49 @@ function parseJSONContent(content: string): RawPaperData[] {
 }
 
 /**
- * Parse Excel content using xlsx library
+ * Parse Excel content using exceljs library
  * Reads the first worksheet by default or specified sheet name
  */
 async function parseExcelContent(file: File, config: ParseConfig): Promise<RawPaperData[]> {
 	const arrayBuffer = await file.arrayBuffer();
-	const workbook = XLSX.read(arrayBuffer, { type: "array" });
+	const workbook = new ExcelJS.Workbook();
+	await workbook.xlsx.load(arrayBuffer);
 
 	// Use specified sheet name or default to first sheet
-	const sheetName = config.sheetName || workbook.SheetNames[0];
+	const sheetName = config.sheetName || workbook.worksheets[0]?.name;
 
-	if (!workbook.SheetNames.includes(sheetName)) {
-		throw new Error(`Sheet "${sheetName}" not found in Excel file`);
+	if (!sheetName) {
+		throw new Error("No worksheets found in Excel file");
 	}
 
-	const worksheet = workbook.Sheets[sheetName];
+	const worksheet = workbook.getWorksheet(sheetName);
 
-	// Convert to JSON with header row
-	const jsonData: unknown[][] = XLSX.utils.sheet_to_json(worksheet, {
-		header: 1,
-		defval: ""
+	if (!worksheet) {
+		const availableSheets = workbook.worksheets.map(ws => ws.name).join(", ");
+		throw new Error(`Sheet "${sheetName}" not found in Excel file. Available sheets: ${availableSheets}`);
+	}
+
+	// Convert to array of arrays format similar to xlsx
+	const jsonData: unknown[][] = [];
+
+	worksheet.eachRow((row, _rowNumber) => {
+		// Convert row to array of values
+		const rowValues: unknown[] = [];
+		row.eachCell({ includeEmpty: true }, (cell, colNumber) => {
+			// Get the raw value, handling different cell types
+			let value: unknown = cell.value;
+
+			// Handle rich text and formulas
+			if (cell.type === ExcelJS.ValueType.RichText) {
+				value = cell.text;
+			} else if (cell.type === ExcelJS.ValueType.Formula) {
+				value = cell.result || cell.formula;
+			}
+
+			rowValues[colNumber - 1] = value ?? "";
+		});
+
+		jsonData.push(rowValues);
 	});
 
 	if (jsonData.length === 0) {
