@@ -37,9 +37,6 @@ export class XYFlowProvider implements GraphProvider {
 
 	// Convert generic GraphNode to XYFlow node
 	private toXYNode(node: GraphNode): XYNode {
-		// Check if node is pinned using the new multi-pin API
-		const isPinned = useGraphStore.getState().isPinned(node.id);
-
 		return {
 			id: node.id,
 			type: "custom",
@@ -51,7 +48,7 @@ export class XYFlowProvider implements GraphProvider {
 				entityType: node.type,
 				externalIds: node.externalIds,
 				metadata: node.metadata,
-				isPinned, // Add pinned state to node data
+				// Pin state is read directly from store in components, not stored in node data
 			},
 		};
 	}
@@ -78,7 +75,7 @@ export class XYFlowProvider implements GraphProvider {
 				stroke: this.getEdgeColor(edge.type),
 				strokeWidth: edge.weight ? Math.max(1, edge.weight * 3) : 1,
 			},
-			animated: edge.type === RelationType.CITED,
+			animated: edge.type === RelationType.REFERENCES,
 		};
 	}
 

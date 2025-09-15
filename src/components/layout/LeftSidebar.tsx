@@ -139,8 +139,6 @@ export const LeftSidebar: React.FC = () => {
 		switch (edgeType) {
 			case RelationType.AUTHORED:
 				return "#2980b9";
-			case RelationType.CITED:
-				return "#e67e22";
 			case RelationType.AFFILIATED:
 				return "#27ae60";
 			case RelationType.PUBLISHED_IN:
@@ -167,7 +165,6 @@ export const LeftSidebar: React.FC = () => {
 
 	const edgeTypeOptions: { type: RelationType; label: string; color: string; icon: React.ReactNode }[] = [
 		{ type: RelationType.AUTHORED, label: "Authored", color: getGraphEdgeColor(RelationType.AUTHORED), icon: <IconUser size={16} /> },
-		{ type: RelationType.CITED, label: "Cited", color: getGraphEdgeColor(RelationType.CITED), icon: <IconQuote size={16} /> },
 		{ type: RelationType.AFFILIATED, label: "Affiliated", color: getGraphEdgeColor(RelationType.AFFILIATED), icon: <IconBuilding size={16} /> },
 		{ type: RelationType.PUBLISHED_IN, label: "Published In", color: getGraphEdgeColor(RelationType.PUBLISHED_IN), icon: <IconBook size={16} /> },
 		{ type: RelationType.FUNDED_BY, label: "Funded By", color: getGraphEdgeColor(RelationType.FUNDED_BY), icon: <IconCoin size={16} /> },
