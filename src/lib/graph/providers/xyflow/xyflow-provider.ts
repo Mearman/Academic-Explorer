@@ -371,7 +371,7 @@ export class XYFlowProvider implements GraphProvider {
 
 	fitView(): void {
 		if (this.reactFlowInstance) {
-			void this.reactFlowInstance.fitView({ padding: 0.1 });
+			void this.reactFlowInstance.fitView({ padding: 0.1, duration: 800 });
 		}
 	}
 
