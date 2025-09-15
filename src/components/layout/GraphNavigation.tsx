@@ -35,7 +35,7 @@ import { useLayout } from "@/lib/graph/providers/xyflow/use-layout";
 import type { GraphNode, EntityType, ExternalIdentifier } from "@/lib/graph/types";
 import { EntityDetector } from "@/lib/graph/utils/entity-detection";
 import { useGraphData } from "@/hooks/use-graph-data";
-import { useEntityInteraction, INTERACTION_PRESETS } from "@/hooks/use-entity-interaction";
+import { useEntityInteraction } from "@/hooks/use-entity-interaction";
 import { useContextMenu } from "@/hooks/use-context-menu";
 import { NodeContextMenu } from "@/components/layout/NodeContextMenu";
 import { GraphToolbar } from "@/components/graph/GraphToolbar";
@@ -202,17 +202,12 @@ const GraphNavigationInner: React.FC<GraphNavigationProps> = ({ className, style
 	}, [reactFlowInstance]);
 
 	// Use shared entity interaction logic with centerOnNode function
-	const { interactWithEntity } = useEntityInteraction(centerOnNode);
+	const { handleGraphNodeClick: baseHandleGraphNodeClick, handleGraphNodeDoubleClick } = useEntityInteraction(centerOnNode);
 
-	// Custom graph node click handler that includes URL hash updates
+	// Custom graph node single click handler that includes URL hash updates
 	const handleGraphNodeClick = useCallback(async (node: GraphNode) => {
-		// Use shared entity interaction logic with full graph node preset
-		await interactWithEntity(
-			node.entityId,
-			node.type,
-			INTERACTION_PRESETS.GRAPH_NODE_CLICK,
-			node
-		);
+		// Use shared entity interaction logic for single click (no expansion)
+		await baseHandleGraphNodeClick(node);
 
 		// Handle URL hash update locally (not in shared hook)
 		const cleanId = EntityDetector.extractOpenAlexId(node.entityId);
@@ -226,12 +221,36 @@ const GraphNavigationInner: React.FC<GraphNavigationProps> = ({ className, style
 			isProgrammaticNavigationRef.current = false;
 		}, 10);
 
-		logger.info("graph", "Node click completed - sidebar should update immediately", {
+		logger.info("graph", "Node single click completed - no expansion", {
 			nodeId: node.id,
 			entityId: node.entityId,
 			type: node.type
 		});
-	}, [interactWithEntity]);
+	}, [baseHandleGraphNodeClick]);
+
+	// Custom graph node double click handler for expansion
+	const handleGraphNodeDoubleClickWithHash = useCallback(async (node: GraphNode) => {
+		// Use shared entity interaction logic for double click (with expansion)
+		await handleGraphNodeDoubleClick(node);
+
+		// Handle URL hash update locally (not in shared hook)
+		const cleanId = EntityDetector.extractOpenAlexId(node.entityId);
+		const newHashPath = `#/${node.type}/${cleanId}`;
+
+		// Set programmatic navigation flag to prevent hashchange handler loops
+		isProgrammaticNavigationRef.current = true;
+		window.history.pushState(null, "", newHashPath);
+
+		setTimeout(() => {
+			isProgrammaticNavigationRef.current = false;
+		}, 10);
+
+		logger.info("graph", "Node double click completed - expanded", {
+			nodeId: node.id,
+			entityId: node.entityId,
+			type: node.type
+		});
+	}, [handleGraphNodeDoubleClick]);
 
 	const { isRunning: _isLayoutRunning, restartLayout } = useLayout(
 		currentLayout,
@@ -281,10 +300,14 @@ const GraphNavigationInner: React.FC<GraphNavigationProps> = ({ className, style
 		// Set up navigation events
 		graphProvider.setEvents({
 			onNodeClick: (node: GraphNode) => {
-				// Use shared entity interaction logic
+				// Single click: select, pin, center, update preview (no expansion)
 				void handleGraphNodeClick(node);
 			},
 
+			onNodeDoubleClick: (node: GraphNode) => {
+				// Double click: select, pin, center, update preview AND expand
+				void handleGraphNodeDoubleClickWithHash(node);
+			},
 
 			onNodeHover: (node: GraphNode | null) => {
 				// Update preview in sidebar
@@ -304,7 +327,7 @@ const GraphNavigationInner: React.FC<GraphNavigationProps> = ({ className, style
 		return () => {
 			graphProvider.destroy();
 		};
-	}, [reactFlowInstance, navigate, setProvider, setPreviewEntity, loadEntityIntoGraph, expandNode, centerOnNode, autoPinOnLayoutStabilization, handleGraphNodeClick]);
+	}, [reactFlowInstance, navigate, setProvider, setPreviewEntity, loadEntityIntoGraph, expandNode, centerOnNode, autoPinOnLayoutStabilization, handleGraphNodeClick, handleGraphNodeDoubleClickWithHash]);
 
 	// Sync store data with XYFlow using incremental updates (applying visibility filters)
 	useEffect(() => {
@@ -575,6 +598,12 @@ const GraphNavigationInner: React.FC<GraphNavigationProps> = ({ className, style
 		}
 	}, []);
 
+	// Handle node double clicks
+	const onNodeDoubleClick = useCallback((event: React.MouseEvent, node: XYNode) => {
+		if (providerRef.current) {
+			providerRef.current.handleNodeDoubleClick(event, node);
+		}
+	}, []);
 
 	// Handle node mouse enter
 	const onNodeMouseEnter = useCallback((event: React.MouseEvent, node: XYNode) => {
@@ -647,6 +676,7 @@ const GraphNavigationInner: React.FC<GraphNavigationProps> = ({ className, style
 				onNodesChange={onNodesChange}
 				onEdgesChange={onEdgesChange}
 				onNodeClick={onNodeClick}
+				onNodeDoubleClick={onNodeDoubleClick}
 				onNodeMouseEnter={onNodeMouseEnter}
 				onNodeMouseLeave={onNodeMouseLeave}
 				onNodeContextMenu={onNodeContextMenu}
