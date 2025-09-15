@@ -10,6 +10,7 @@ import { describe, it, expect, beforeAll, afterAll, beforeEach, afterEach, vi } 
 import { execSync } from "child_process";
 import { OpenAlexClient, createOpenAlexClient } from "./openalex-client";
 import type { Work, Author as _Author, Source as _Source, InstitutionEntity as _InstitutionEntity, Topic as _Topic, EntityType as _EntityType } from "./types";
+import { logger } from "@/lib/logger";
 
 // Known stable OpenAlex IDs for testing (these should exist in the database)
 const KNOWN_IDS = {
@@ -54,7 +55,7 @@ describe("OpenAlex Client Integration Tests", () => {
 				isOnline = false;
 			}
 		} catch (_error) {
-			console.warn("No internet connection or OpenAlex API unavailable. Skipping integration tests.");
+			logger.warn("test", "No internet connection or OpenAlex API unavailable. Skipping integration tests.");
 			isOnline = false;
 		}
 
@@ -90,7 +91,7 @@ describe("OpenAlex Client Integration Tests", () => {
 	describe("Client Initialization and Configuration", () => {
 		it("should initialize client with configuration", { timeout: TEST_CONFIG.TIMEOUT }, async () => {
 			if (!isOnline) {
-				console.warn("Skipping test: No internet connection");
+				logger.warn("test", "Skipping test: No internet connection");
 				return;
 			}
 
@@ -112,7 +113,7 @@ describe("OpenAlex Client Integration Tests", () => {
 
 		it("should handle missing email configuration gracefully", { timeout: TEST_CONFIG.TIMEOUT }, async () => {
 			if (!isOnline) {
-				console.warn("Skipping test: No internet connection");
+				logger.warn("test", "Skipping test: No internet connection");
 				return;
 			}
 
@@ -128,7 +129,7 @@ describe("OpenAlex Client Integration Tests", () => {
 	describe("Entity Retrieval by Known IDs", () => {
 		it("should retrieve a known work by ID", { timeout: TEST_CONFIG.TIMEOUT }, async () => {
 			if (!isOnline) {
-				console.warn("Skipping test: No internet connection");
+				logger.warn("test", "Skipping test: No internet connection");
 				return;
 			}
 
@@ -146,7 +147,7 @@ describe("OpenAlex Client Integration Tests", () => {
 
 		it("should retrieve a known author by ID", { timeout: TEST_CONFIG.TIMEOUT }, async () => {
 			if (!isOnline) {
-				console.warn("Skipping test: No internet connection");
+				logger.warn("test", "Skipping test: No internet connection");
 				return;
 			}
 
@@ -164,7 +165,7 @@ describe("OpenAlex Client Integration Tests", () => {
 
 		it("should retrieve a known source by ID", { timeout: TEST_CONFIG.TIMEOUT }, async () => {
 			if (!isOnline) {
-				console.warn("Skipping test: No internet connection");
+				logger.warn("test", "Skipping test: No internet connection");
 				return;
 			}
 
@@ -180,7 +181,7 @@ describe("OpenAlex Client Integration Tests", () => {
 
 		it("should retrieve a known institution by ID", { timeout: TEST_CONFIG.TIMEOUT }, async () => {
 			if (!isOnline) {
-				console.warn("Skipping test: No internet connection");
+				logger.warn("test", "Skipping test: No internet connection");
 				return;
 			}
 
@@ -198,7 +199,7 @@ describe("OpenAlex Client Integration Tests", () => {
 	describe("Generic Entity Retrieval", () => {
 		it("should detect entity type and retrieve work", { timeout: TEST_CONFIG.TIMEOUT }, async () => {
 			if (!isOnline) {
-				console.warn("Skipping test: No internet connection");
+				logger.warn("test", "Skipping test: No internet connection");
 				return;
 			}
 
@@ -211,7 +212,7 @@ describe("OpenAlex Client Integration Tests", () => {
 
 		it("should detect entity type and retrieve author", { timeout: TEST_CONFIG.TIMEOUT }, async () => {
 			if (!isOnline) {
-				console.warn("Skipping test: No internet connection");
+				logger.warn("test", "Skipping test: No internet connection");
 				return;
 			}
 
@@ -224,7 +225,7 @@ describe("OpenAlex Client Integration Tests", () => {
 
 		it("should handle multiple entity retrieval", { timeout: TEST_CONFIG.TIMEOUT }, async () => {
 			if (!isOnline) {
-				console.warn("Skipping test: No internet connection");
+				logger.warn("test", "Skipping test: No internet connection");
 				return;
 			}
 
@@ -252,7 +253,7 @@ describe("OpenAlex Client Integration Tests", () => {
 	describe("Search and Filtering Workflows", () => {
 		it("should perform end-to-end search → filter → retrieve workflow", { timeout: TEST_CONFIG.TIMEOUT }, async () => {
 			if (!isOnline) {
-				console.warn("Skipping test: No internet connection");
+				logger.warn("test", "Skipping test: No internet connection");
 				return;
 			}
 
@@ -286,7 +287,7 @@ describe("OpenAlex Client Integration Tests", () => {
 
 		it("should search across multiple entity types", { timeout: TEST_CONFIG.TIMEOUT }, async () => {
 			if (!isOnline) {
-				console.warn("Skipping test: No internet connection");
+				logger.warn("test", "Skipping test: No internet connection");
 				return;
 			}
 
@@ -309,7 +310,7 @@ describe("OpenAlex Client Integration Tests", () => {
 			);
 
 			if (!stanfordInstitution) {
-				console.warn("Stanford not found in results:", results.institutions.map(i => i.display_name));
+				logger.warn("test", "Stanford not found in results", { institutions: results.institutions.map(i => i.display_name) });
 				// At least verify we got some institutions back
 				expect(results.institutions.length).toBeGreaterThanOrEqual(0);
 			} else {
@@ -319,7 +320,7 @@ describe("OpenAlex Client Integration Tests", () => {
 
 		it("should filter works by publication year range", { timeout: TEST_CONFIG.TIMEOUT }, async () => {
 			if (!isOnline) {
-				console.warn("Skipping test: No internet connection");
+				logger.warn("test", "Skipping test: No internet connection");
 				return;
 			}
 
@@ -340,7 +341,7 @@ describe("OpenAlex Client Integration Tests", () => {
 
 		it("should filter for open access works", { timeout: TEST_CONFIG.TIMEOUT }, async () => {
 			if (!isOnline) {
-				console.warn("Skipping test: No internet connection");
+				logger.warn("test", "Skipping test: No internet connection");
 				return;
 			}
 
@@ -362,7 +363,7 @@ describe("OpenAlex Client Integration Tests", () => {
 	describe("Cross-Entity Relationship Tests", () => {
 		it("should retrieve works by known author", { timeout: TEST_CONFIG.TIMEOUT }, async () => {
 			if (!isOnline) {
-				console.warn("Skipping test: No internet connection");
+				logger.warn("test", "Skipping test: No internet connection");
 				return;
 			}
 
@@ -385,7 +386,7 @@ describe("OpenAlex Client Integration Tests", () => {
 
 		it("should retrieve works by known institution", { timeout: TEST_CONFIG.TIMEOUT }, async () => {
 			if (!isOnline) {
-				console.warn("Skipping test: No internet connection");
+				logger.warn("test", "Skipping test: No internet connection");
 				return;
 			}
 
@@ -410,7 +411,7 @@ describe("OpenAlex Client Integration Tests", () => {
 
 		it("should retrieve referenced works and citation relationships", { timeout: TEST_CONFIG.TIMEOUT }, async () => {
 			if (!isOnline) {
-				console.warn("Skipping test: No internet connection");
+				logger.warn("test", "Skipping test: No internet connection");
 				return;
 			}
 
@@ -453,7 +454,7 @@ describe("OpenAlex Client Integration Tests", () => {
 	describe("Autocomplete Functionality", () => {
 		it("should provide autocomplete suggestions", { timeout: TEST_CONFIG.TIMEOUT }, async () => {
 			if (!isOnline) {
-				console.warn("Skipping test: No internet connection");
+				logger.warn("test", "Skipping test: No internet connection");
 				return;
 			}
 
@@ -474,7 +475,7 @@ describe("OpenAlex Client Integration Tests", () => {
 
 		it("should provide entity-specific autocomplete suggestions", { timeout: TEST_CONFIG.TIMEOUT }, async () => {
 			if (!isOnline) {
-				console.warn("Skipping test: No internet connection");
+				logger.warn("test", "Skipping test: No internet connection");
 				return;
 			}
 
@@ -495,7 +496,7 @@ describe("OpenAlex Client Integration Tests", () => {
 	describe("Streaming and Batch Processing", () => {
 		it("should stream small batches of works", { timeout: TEST_CONFIG.TIMEOUT }, async () => {
 			if (!isOnline) {
-				console.warn("Skipping test: No internet connection");
+				logger.warn("test", "Skipping test: No internet connection");
 				return;
 			}
 
@@ -534,7 +535,7 @@ describe("OpenAlex Client Integration Tests", () => {
 
 		it("should batch process works with callback", { timeout: TEST_CONFIG.TIMEOUT }, async () => {
 			if (!isOnline) {
-				console.warn("Skipping test: No internet connection");
+				logger.warn("test", "Skipping test: No internet connection");
 				return;
 			}
 
@@ -573,7 +574,7 @@ describe("OpenAlex Client Integration Tests", () => {
 	describe("Error Handling and Rate Limiting", () => {
 		it("should handle non-existent entity IDs gracefully", { timeout: TEST_CONFIG.TIMEOUT }, async () => {
 			if (!isOnline) {
-				console.warn("Skipping test: No internet connection");
+				logger.warn("test", "Skipping test: No internet connection");
 				return;
 			}
 
@@ -584,7 +585,7 @@ describe("OpenAlex Client Integration Tests", () => {
 
 		it("should handle malformed queries gracefully", { timeout: TEST_CONFIG.TIMEOUT }, async () => {
 			if (!isOnline) {
-				console.warn("Skipping test: No internet connection");
+				logger.warn("test", "Skipping test: No internet connection");
 				return;
 			}
 
@@ -598,7 +599,7 @@ describe("OpenAlex Client Integration Tests", () => {
 
 		it("should respect rate limits during sequential requests", { timeout: TEST_CONFIG.TIMEOUT * 2 }, async () => {
 			if (!isOnline) {
-				console.warn("Skipping test: No internet connection");
+				logger.warn("test", "Skipping test: No internet connection");
 				return;
 			}
 
@@ -631,7 +632,7 @@ describe("OpenAlex Client Integration Tests", () => {
 
 		it("should retry failed requests", { timeout: TEST_CONFIG.TIMEOUT }, async () => {
 			if (!isOnline) {
-				console.warn("Skipping test: No internet connection");
+				logger.warn("test", "Skipping test: No internet connection");
 				return;
 			}
 
@@ -665,7 +666,7 @@ describe("OpenAlex Client Integration Tests", () => {
 	describe("Data Integrity and Structure Validation", () => {
 		it("should validate work data structure", { timeout: TEST_CONFIG.TIMEOUT }, async () => {
 			if (!isOnline) {
-				console.warn("Skipping test: No internet connection");
+				logger.warn("test", "Skipping test: No internet connection");
 				return;
 			}
 
@@ -698,7 +699,7 @@ describe("OpenAlex Client Integration Tests", () => {
 
 		it("should validate author data structure", { timeout: TEST_CONFIG.TIMEOUT }, async () => {
 			if (!isOnline) {
-				console.warn("Skipping test: No internet connection");
+				logger.warn("test", "Skipping test: No internet connection");
 				return;
 			}
 
@@ -728,7 +729,7 @@ describe("OpenAlex Client Integration Tests", () => {
 
 		it("should validate response metadata", { timeout: TEST_CONFIG.TIMEOUT }, async () => {
 			if (!isOnline) {
-				console.warn("Skipping test: No internet connection");
+				logger.warn("test", "Skipping test: No internet connection");
 				return;
 			}
 
@@ -798,7 +799,7 @@ describe("OpenAlex Client Integration Tests", () => {
 
 		it("should provide client statistics", { timeout: TEST_CONFIG.TIMEOUT }, async () => {
 			if (!isOnline) {
-				console.warn("Skipping test: No internet connection");
+				logger.warn("test", "Skipping test: No internet connection");
 				return;
 			}
 
@@ -819,7 +820,7 @@ describe("OpenAlex Client Integration Tests", () => {
 
 		it("should update client configuration", { timeout: TEST_CONFIG.TIMEOUT }, async () => {
 			if (!isOnline) {
-				console.warn("Skipping test: No internet connection");
+				logger.warn("test", "Skipping test: No internet connection");
 				return;
 			}
 
