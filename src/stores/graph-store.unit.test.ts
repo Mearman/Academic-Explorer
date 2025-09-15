@@ -88,7 +88,7 @@ describe("GraphStore", () => {
 			providerType: "xyflow",
 			visibleEntityTypes: new Set(["works", "authors", "sources", "institutions", "topics", "publishers", "funders", "keywords", "geo"]),
 			lastSearchStats: new Map(),
-			visibleEdgeTypes: new Set(["authored", "cited", "affiliated", "published_in", "funded_by", "related_to", "references"]),
+			visibleEdgeTypes: new Set(["authored", "affiliated", "published_in", "funded_by", "related_to", "references"]),
 			currentLayout: {
 				type: "d3-force",
 				options: {
@@ -133,7 +133,7 @@ describe("GraphStore", () => {
 			expect(state.isLoading).toBe(false);
 			expect(state.error).toBeNull();
 			expect(state.visibleEntityTypes.size).toBe(9);
-			expect(state.visibleEdgeTypes.size).toBe(7);
+			expect(state.visibleEdgeTypes.size).toBe(6);
 		});
 
 		it("should have correct default visible entity types", () => {
@@ -147,7 +147,7 @@ describe("GraphStore", () => {
 
 		it("should have correct default visible edge types", () => {
 			const state = useGraphStore.getState();
-			const expectedTypes: RelationType[] = ["authored", "cited", "affiliated", "published_in", "funded_by", "related_to", "references"];
+			const expectedTypes: RelationType[] = ["authored", "affiliated", "published_in", "funded_by", "related_to", "references"];
 
 			expectedTypes.forEach(type => {
 				expect(state.visibleEdgeTypes.has(type)).toBe(true);
@@ -974,7 +974,7 @@ describe("GraphStore", () => {
 		it("should maintain type safety for edge types", () => {
 			const { setEdgeTypeVisibility, toggleEdgeTypeVisibility } = useGraphStore.getState();
 
-			const edgeTypes: RelationType[] = ["authored", "cited", "affiliated", "published_in", "funded_by", "related_to", "references"];
+			const edgeTypes: RelationType[] = ["authored", "affiliated", "published_in", "funded_by", "related_to", "references"];
 
 			edgeTypes.forEach(type => {
 				expect(() => {
