@@ -63,14 +63,6 @@ export class EntityFactory {
 	}
 
 	/**
-   * Detect entity type from OpenAlex ID or entity data
-   * @deprecated Use detectEntityType from entity-detection.ts instead
-   */
-	static detectEntityType(entityOrId: OpenAlexEntity | string): EntityType {
-		return detectEntityType(entityOrId);
-	}
-
-	/**
    * Get all registered entity types
    */
 	static getRegisteredTypes(): EntityType[] {
