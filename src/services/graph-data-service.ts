@@ -564,6 +564,9 @@ export class GraphDataService {
 				return;
 			}
 
+			// Mark the node as loading to provide visual feedback
+			store.markNodeAsLoading(nodeId);
+
 			// Log expansion attempt
 			logger.info("graph", "Expanding node", {
 				nodeId,
@@ -619,9 +622,22 @@ export class GraphDataService {
 			// Mark as expanded in TanStack Query cache
 			setNodeExpanded(this.queryClient, nodeId, true);
 
+			// Mark the node as loaded (expansion completed successfully)
+			store.markNodeAsLoaded(nodeId, {
+				metadata: {
+					...node.metadata,
+					isLoading: false,
+					expandedAt: Date.now()
+				}
+			});
+
 			// Layout is automatically handled by the provider when nodes/edges are added
 
 		} catch (error) {
+			// Mark the node as error if expansion failed
+			const errorMessage = error instanceof Error ? error.message : "Expansion failed";
+			store.markNodeAsError(nodeId, errorMessage);
+
 			logError("Failed to expand node", error, "GraphDataService", "graph");
 		}
 	}
@@ -885,6 +901,9 @@ export class GraphDataService {
 				label: "affiliated with",
 			});
 		});
+
+		// Note: Placeholder work nodes are only created when actual work IDs are known
+		// from expansion operations. This prevents creating placeholders with invalid IDs.
 
 		return { nodes, edges };
 	}
