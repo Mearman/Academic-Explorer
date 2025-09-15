@@ -4,10 +4,11 @@
  */
 
 import React, { useCallback } from "react";
-import { IconScissors, IconTarget } from "@tabler/icons-react";
+import { IconScissors, IconTarget, IconGitBranch } from "@tabler/icons-react";
 import { useReactFlow } from "@xyflow/react";
 
 import { useGraphUtilities } from "@/hooks/use-graph-utilities";
+import { useGraphData } from "@/hooks/use-graph-data";
 import { logger } from "@/lib/logger";
 
 interface GraphToolbarProps {
@@ -18,6 +19,7 @@ export const GraphToolbar: React.FC<GraphToolbarProps> = ({
 	className = ""
 }) => {
 	const { trimLeafNodes } = useGraphUtilities();
+	const { expandNode } = useGraphData();
 	const { getNodes, getEdges, setNodes } = useReactFlow();
 
 	// Graph utility action
@@ -86,6 +88,82 @@ export const GraphToolbar: React.FC<GraphToolbarProps> = ({
 		});
 	}, [getNodes, getEdges, setNodes]);
 
+	// Expand selected nodes action
+	const handleExpandSelected = useCallback(async () => {
+		logger.info("graph", "Expand selected nodes action triggered from graph toolbar");
+
+		const currentNodes = getNodes();
+
+		// Find all currently selected nodes
+		const selectedNodes = currentNodes.filter(node => node.selected);
+
+		if (selectedNodes.length === 0) {
+			logger.warn("graph", "No nodes currently selected for expansion");
+			return;
+		}
+
+		logger.info("graph", "Expanding selected nodes", {
+			selectedCount: selectedNodes.length,
+			selectedNodeIds: selectedNodes.map(node => node.id)
+		});
+
+		// Expand each selected node
+		const expansionPromises = selectedNodes.map(async (node) => {
+			try {
+				// Extract entity ID from node data for expansion
+				const entityId = typeof node.data?.entityId === "string" ? node.data.entityId : node.id;
+
+				logger.info("graph", "Expanding node", {
+					nodeId: node.id,
+					entityId: entityId,
+					entityType: node.data?.entityType
+				});
+
+				await expandNode(entityId, {
+					depth: 1, // Expand 1 level
+					limit: 10, // Limit connections per node
+					force: false // Don't force re-expansion if already expanded
+				});
+
+				return { nodeId: node.id, entityId, success: true };
+			} catch (error) {
+				const entityId = typeof node.data?.entityId === "string" ? node.data.entityId : node.id;
+				logger.error("graph", "Failed to expand node", {
+					nodeId: node.id,
+					entityId: entityId,
+					error: error instanceof Error ? error.message : "Unknown error"
+				});
+				return {
+					nodeId: node.id,
+					entityId: entityId,
+					success: false,
+					error: error instanceof Error ? error.message : "Unknown error"
+				};
+			}
+		});
+
+		try {
+			const results = await Promise.allSettled(expansionPromises);
+			const successful = results.filter(result => result.status === "fulfilled" && result.value.success).length;
+			const failed = results.length - successful;
+
+			logger.info("graph", "Expand selected nodes completed", {
+				totalNodes: selectedNodes.length,
+				successful,
+				failed,
+				results: results.map(result =>
+					result.status === "fulfilled" ? result.value : { error: result.reason }
+				)
+			});
+
+		} catch (error) {
+			logger.error("graph", "Expand selected nodes failed", {
+				selectedCount: selectedNodes.length,
+				error: error instanceof Error ? error.message : "Unknown error"
+			});
+		}
+	}, [getNodes, expandNode]);
+
 	return (
 		<div className={`flex gap-2 p-3 bg-white/95 backdrop-blur-sm border border-gray-200 rounded-lg shadow-lg ${className}`}>
 			<button
@@ -104,6 +182,15 @@ export const GraphToolbar: React.FC<GraphToolbarProps> = ({
 			>
 				<IconTarget size={16} />
 				<span>Select 1-Degree</span>
+			</button>
+
+			<button
+				onClick={handleExpandSelected}
+				className="flex items-center gap-2 px-3 py-2 text-sm bg-green-50 hover:bg-green-100 text-green-700 rounded transition-colors"
+				title="Expand Selected - Load connections for all selected nodes"
+			>
+				<IconGitBranch size={16} />
+				<span>Expand Selected</span>
 			</button>
 		</div>
 	);
