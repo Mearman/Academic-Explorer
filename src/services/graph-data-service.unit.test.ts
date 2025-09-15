@@ -986,9 +986,9 @@ describe("GraphDataService", () => {
 					expect.arrayContaining([
 						expect.objectContaining({
 							metadata: expect.objectContaining({
-								publication_year: 2024,
-								citations_count: 150,
-								referenced_works_count: 75,
+								year: 2024,
+								citationCount: 150,
+								openAccess: expect.any(Boolean),
 							}),
 						}),
 					])
@@ -1014,8 +1014,8 @@ describe("GraphDataService", () => {
 					expect.arrayContaining([
 						expect.objectContaining({
 							metadata: expect.objectContaining({
-								works_count: 30,
-								cited_by_count: 600,
+								worksCount: 30,
+								citationCount: 600,
 							}),
 						}),
 					])
@@ -1061,9 +1061,9 @@ describe("GraphDataService", () => {
 				expect(mockStore.addEdges).toHaveBeenCalledWith(
 					expect.arrayContaining([
 						expect.objectContaining({
-							source: expect.stringContaining("W123456789"),
-							target: expect.stringContaining("A123456789"),
-							type: "authored_by",
+							source: expect.stringContaining("A123456789"),
+							target: expect.stringContaining("W123456789"),
+							type: "authored",
 						}),
 					])
 				);
@@ -1077,6 +1077,11 @@ describe("GraphDataService", () => {
 					authors: [mockAuthorEntity],
 					sources: [],
 					institutions: [],
+					topics: [],
+					publishers: [],
+					funders: [],
+					keywords: [],
+					geo: [],
 					meta: { count: 2, per_page: 25, page: 1 },
 				});
 
@@ -1099,6 +1104,18 @@ describe("GraphDataService", () => {
 	});
 
 	describe("error handling", () => {
+		beforeEach(() => {
+			// Clear API call history from previous tests
+			vi.mocked(rateLimitedOpenAlex.getEntity).mockClear();
+
+			// Clear store mock call history
+			Object.values(mockStore).forEach((mockFn) => {
+				if (typeof mockFn === "function" && "mockClear" in mockFn) {
+					mockFn.mockClear();
+				}
+			});
+		});
+
 		it("should handle unknown entity types gracefully", async () => {
 			const unknownEntity = {
 				id: "X123456789",
@@ -1122,7 +1139,13 @@ describe("GraphDataService", () => {
 				id: "W123456789",
 				display_name: "Minimal Work",
 				type: "article",
-				// Missing optional properties like doi, authorships, etc.
+				// Include minimum required properties for transformation
+				authorships: [],
+				referenced_works: [],
+				open_access: {
+					is_oa: false,
+				},
+				// Missing optional properties like doi, primary_location, etc.
 			} as Work;
 
 			mockDetector.detectEntityIdentifier.mockReturnValue({
@@ -1165,6 +1188,25 @@ describe("GraphDataService", () => {
 	});
 
 	describe("integration scenarios", () => {
+		beforeEach(() => {
+			// Clear API call history from previous tests
+			vi.mocked(rateLimitedOpenAlex.getEntity).mockClear();
+			vi.mocked(rateLimitedOpenAlex.searchAll).mockClear();
+
+			// Clear store mock call history
+			Object.values(mockStore).forEach((mockFn) => {
+				if (typeof mockFn === "function" && "mockClear" in mockFn) {
+					mockFn.mockClear();
+				}
+			});
+
+			// Setup detector for integration tests
+			mockDetector.detectEntityIdentifier.mockImplementation((id: string) => ({
+				entityType: "works",
+				normalizedId: id,
+			}));
+		});
+
 		it("should handle complex work with multiple relationships", async () => {
 			const complexWork: Work = {
 				...mockWorkEntity,
@@ -1175,6 +1217,7 @@ describe("GraphDataService", () => {
 							display_name: "First Author",
 							orcid: "0000-0000-0000-0001",
 						},
+						author_position: "first",
 						institutions: [
 							{
 								id: "I111111111",
@@ -1194,6 +1237,7 @@ describe("GraphDataService", () => {
 							display_name: "Second Author",
 							orcid: "0000-0000-0000-0002",
 						},
+						author_position: "middle",
 						institutions: [
 							{
 								id: "I111111111",
@@ -1236,14 +1280,14 @@ describe("GraphDataService", () => {
 			expect(mockStore.addEdges).toHaveBeenCalledWith(
 				expect.arrayContaining([
 					expect.objectContaining({
-						source: expect.stringMatching(/W123456789/),
-						target: expect.stringMatching(/A111111111/),
-						type: "authored_by",
+						source: expect.stringMatching(/A111111111/),
+						target: expect.stringMatching(/W123456789/),
+						type: "authored",
 					}),
 					expect.objectContaining({
-						source: expect.stringMatching(/W123456789/),
-						target: expect.stringMatching(/A222222222/),
-						type: "authored_by",
+						source: expect.stringMatching(/A222222222/),
+						target: expect.stringMatching(/W123456789/),
+						type: "authored",
 					}),
 				])
 			);
@@ -1285,6 +1329,11 @@ describe("GraphDataService", () => {
 				authors: [],
 				sources: [],
 				institutions: [],
+				topics: [],
+				publishers: [],
+				funders: [],
+				keywords: [],
+				geo: [],
 				meta: { count: 100, per_page: 25, page: 1 },
 			});
 
