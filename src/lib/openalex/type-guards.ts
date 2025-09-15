@@ -22,7 +22,6 @@ import type {
 export function isWork(entity: OpenAlexEntity): entity is Work {
 	return (
 		entity != null &&
-    typeof entity === "object" &&
     "authorships" in entity &&
     "locations" in entity &&
     "primary_location" in entity &&
@@ -36,7 +35,6 @@ export function isWork(entity: OpenAlexEntity): entity is Work {
 export function isAuthor(entity: OpenAlexEntity): entity is Author {
 	return (
 		entity != null &&
-    typeof entity === "object" &&
     "affiliations" in entity &&
     "works_count" in entity &&
     "last_known_institutions" in entity &&
@@ -50,7 +48,6 @@ export function isAuthor(entity: OpenAlexEntity): entity is Author {
 export function isInstitution(entity: OpenAlexEntity): entity is InstitutionEntity {
 	return (
 		entity != null &&
-    typeof entity === "object" &&
     "geo" in entity &&
     "country_code" in entity &&
     "works_count" in entity &&
@@ -64,7 +61,6 @@ export function isInstitution(entity: OpenAlexEntity): entity is InstitutionEnti
 export function isSource(entity: OpenAlexEntity): entity is Source {
 	return (
 		entity != null &&
-    typeof entity === "object" &&
     "issn_l" in entity &&
     "host_organization" in entity &&
     "abbreviated_title" in entity
@@ -77,7 +73,6 @@ export function isSource(entity: OpenAlexEntity): entity is Source {
 export function isTopic(entity: OpenAlexEntity): entity is Topic {
 	return (
 		entity != null &&
-    typeof entity === "object" &&
     "subfield" in entity &&
     "field" in entity &&
     "domain" in entity &&
@@ -92,7 +87,6 @@ export function isTopic(entity: OpenAlexEntity): entity is Topic {
 export function isConcept(entity: OpenAlexEntity): entity is Concept {
 	return (
 		entity != null &&
-    typeof entity === "object" &&
     "level" in entity &&
     "ancestors" in entity &&
     "related_concepts" in entity &&
@@ -108,7 +102,6 @@ export function isConcept(entity: OpenAlexEntity): entity is Concept {
 export function isPublisher(entity: OpenAlexEntity): entity is Publisher {
 	return (
 		entity != null &&
-    typeof entity === "object" &&
     "parent_publisher" in entity &&
     "sources_api_url" in entity &&
     "hierarchy_level" in entity
@@ -121,7 +114,6 @@ export function isPublisher(entity: OpenAlexEntity): entity is Publisher {
 export function isFunder(entity: OpenAlexEntity): entity is Funder {
 	return (
 		entity != null &&
-    typeof entity === "object" &&
     "grants_count" in entity &&
     "works_count" in entity &&
     "country_code" in entity &&
@@ -135,7 +127,6 @@ export function isFunder(entity: OpenAlexEntity): entity is Funder {
 export function isKeyword(entity: OpenAlexEntity): entity is Keyword {
 	return (
 		entity != null &&
-    typeof entity === "object" &&
     "keywords" in entity &&
     "works_count" in entity &&
     "cited_by_count" in entity &&
