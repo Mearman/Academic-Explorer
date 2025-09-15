@@ -101,26 +101,64 @@ export class AuthorEntity extends AbstractEntity<Author> {
 				? ExpansionQueryBuilder.mergeFilters(baseFilter, expansionSettings?.filters || [])
 				: baseFilter;
 
-			const worksResponse = await this.client.getWorks({
-				filter: finalFilter,
-				per_page: Math.min(effectiveLimit, 8),
-				sort: queryParams.sort || "publication_year:desc",
-				select: queryParams.select
-			});
+			// Fetch all works with pagination if no limit specified, or fetch up to limit
+			const shouldFetchAll = !effectiveLimit || effectiveLimit <= 0 || effectiveLimit >= 10000;
+			let allWorks: Work[] = [];
+			let page = 1;
+			let totalFetched = 0;
 
-			// Note: worksResponse and worksResponse.results are guaranteed by the client
-			// Remove unnecessary null checks as they are always truthy based on type definitions
+			logger.info("graph", "Starting works fetch", {
+				shouldFetchAll,
+				effectiveLimit,
+				entityId: context.entityId
+			}, "AuthorEntity");
 
-			logger.debug("graph", "Works query result", {
-				resultCount: worksResponse.results.length,
-				totalCount: worksResponse.meta.count,
-				entityId: context.entityId,
-				filter: finalFilter,
-				sort: queryParams.sort || "publication_year:desc"
+			do {
+				const worksResponse = await this.client.getWorks({
+					filter: finalFilter,
+					per_page: 200, // Always use maximum per page
+					page: page,
+					sort: queryParams.sort,
+					select: queryParams.select
+				});
+
+				if (!worksResponse.results || worksResponse.results.length === 0) {
+					break; // No more results
+				}
+
+				allWorks.push(...worksResponse.results);
+				totalFetched += worksResponse.results.length;
+
+				logger.debug("graph", "Fetched works page", {
+					page,
+					pageResults: worksResponse.results.length,
+					totalFetched,
+					totalAvailable: worksResponse.meta.count,
+					entityId: context.entityId
+				}, "AuthorEntity");
+
+				// Check if we have enough results or if this was the last page
+				if (!shouldFetchAll && totalFetched >= effectiveLimit) {
+					allWorks = allWorks.slice(0, effectiveLimit); // Trim to exact limit
+					break;
+				}
+
+				if (worksResponse.results.length < 200) {
+					// Last page (partial page means no more results)
+					break;
+				}
+
+				page++;
+			} while (shouldFetchAll || totalFetched < effectiveLimit);
+
+			logger.info("graph", "Completed works fetch", {
+				totalFetched: allWorks.length,
+				pagesProcessed: page,
+				entityId: context.entityId
 			}, "AuthorEntity");
 
 			// Process each work manually since we can't use transformToGraphNode with different entity types
-			worksResponse.results.forEach((work: Work) => {
+			allWorks.forEach((work: Work) => {
 				// Create work node manually with proper metadata
 				const workNode: GraphNode = {
 					id: work.id,
