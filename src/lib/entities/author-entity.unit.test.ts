@@ -30,6 +30,7 @@ describe("AuthorEntity", () => {
 		// Create comprehensive mock client
 		mockClient = {
 			getEntity: vi.fn(),
+			getAuthor: vi.fn(),
 			getWorks: vi.fn(),
 			search: vi.fn(),
 			works: {
@@ -146,12 +147,27 @@ describe("AuthorEntity", () => {
 				]
 			};
 
+			// Mock getAuthor to return author data with affiliations
+			const mockAuthor: Author = {
+				id: entityId,
+				display_name: "Test Author",
+				affiliations: [
+					{
+						institution: {
+							id: "https://openalex.org/I1",
+							display_name: "Test Institution"
+						}
+					}
+				]
+			} as Author;
+
+			mockClient.getAuthor.mockResolvedValue(mockAuthor);
 			mockClient.getWorks.mockResolvedValue(mockWorksResponse);
 
 			const result = await authorEntity.expand(context, options);
 
-			expect(result.nodes).toHaveLength(2);
-			expect(result.edges).toHaveLength(2);
+			expect(result.nodes).toHaveLength(3); // 2 works + 1 institution from author affiliations
+			expect(result.edges).toHaveLength(3); // 2 author-work edges + 1 author-institution edge
 			expect(mockClient.getWorks).toHaveBeenCalledWith({
 				filter: `authorships.author.id:${entityId}`,
 				page: 1,
@@ -172,17 +188,47 @@ describe("AuthorEntity", () => {
 				results: []
 			};
 
+			// Mock getAuthor to return author data with affiliations
+			const mockAuthor: Author = {
+				id: entityId,
+				display_name: "Test Author",
+				affiliations: [
+					{
+						institution: {
+							id: "https://openalex.org/I1",
+							display_name: "Test Institution"
+						}
+					}
+				]
+			} as Author;
+
+			mockClient.getAuthor.mockResolvedValue(mockAuthor);
 			mockClient.getWorks.mockResolvedValue(emptyResponse);
 
 			const result = await authorEntity.expand(context, options);
 
-			expect(result.nodes).toHaveLength(0);
-			expect(result.edges).toHaveLength(0);
+			expect(result.nodes).toHaveLength(1); // 1 institution from author affiliations (no works)
+			expect(result.edges).toHaveLength(1); // 1 author-institution edge
 			expect(logger.error).not.toHaveBeenCalled();
 		});
 
 		describe("error handling", () => {
 			it("should handle undefined response from works search", async () => {
+				// Mock getAuthor to return author data with affiliations
+				const mockAuthor: Author = {
+					id: entityId,
+					display_name: "Test Author",
+					affiliations: [
+						{
+							institution: {
+								id: "https://openalex.org/I1",
+								display_name: "Test Institution"
+							}
+						}
+					]
+				} as Author;
+
+				mockClient.getAuthor.mockResolvedValue(mockAuthor);
 				mockClient.getWorks.mockResolvedValue(undefined as any);
 
 				const result = await authorEntity.expand(context, options);
@@ -212,6 +258,21 @@ describe("AuthorEntity", () => {
 					// Missing 'results' property
 				};
 
+				// Mock getAuthor to return author data with affiliations
+				const mockAuthor: Author = {
+					id: entityId,
+					display_name: "Test Author",
+					affiliations: [
+						{
+							institution: {
+								id: "https://openalex.org/I1",
+								display_name: "Test Institution"
+							}
+						}
+					]
+				} as Author;
+
+				mockClient.getAuthor.mockResolvedValue(mockAuthor);
 				mockClient.getWorks.mockResolvedValue(responseWithoutResults as any);
 
 				const result = await authorEntity.expand(context, options);
