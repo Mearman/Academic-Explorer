@@ -28,13 +28,13 @@ function buildQueryParams(settings: ExpansionSettings, baseSelect?: string[]): O
 	params.per_page = 200; // OpenAlex maximum per page
 
 	// Build sort string
-	const sortString = buildSortString(settings.sorts);
+	const sortString = buildSortString(settings.sorts ?? []);
 	if (sortString) {
 		params.sort = sortString;
 	}
 
 	// Build filter string
-	const filterString = buildFilterString(settings.filters);
+	const filterString = buildFilterString(settings.filters ?? []);
 	if (filterString) {
 		params.filter = filterString;
 	}
@@ -206,15 +206,17 @@ function validateSettings(settings: ExpansionSettings): { valid: boolean; errors
 	const errors: string[] = [];
 
 	// Validate limit
-	if (settings.limit <= 0) {
-		errors.push("Limit must be greater than 0");
-	}
-	if (settings.limit > 200) {
-		errors.push("Limit cannot exceed 200 (OpenAlex maximum)");
+	if (settings.limit !== undefined) {
+		if (settings.limit < 0) {
+			errors.push("Limit must be 0 (unlimited) or greater");
+		}
+		if (settings.limit > 10000) {
+			errors.push("Limit cannot exceed 10000 for performance reasons");
+		}
 	}
 
 	// Validate sorts
-	for (const sort of settings.sorts) {
+	for (const sort of settings.sorts ?? []) {
 		if (!sort.property) {
 			errors.push("Sort criteria must have a property");
 		}
@@ -227,14 +229,15 @@ function validateSettings(settings: ExpansionSettings): { valid: boolean; errors
 	}
 
 	// Check for duplicate sort properties
-	const sortProperties = settings.sorts.map(s => s.property);
+	const sorts = settings.sorts ?? [];
+	const sortProperties = sorts.map(s => s.property);
 	const uniqueSortProperties = new Set(sortProperties);
 	if (sortProperties.length !== uniqueSortProperties.size) {
 		errors.push("Duplicate sort properties are not allowed");
 	}
 
 	// Validate filters
-	for (const filter of settings.filters) {
+	for (const filter of settings.filters ?? []) {
 		if (!filter.property) {
 			errors.push("Filter criteria must have a property");
 		}
@@ -303,7 +306,7 @@ function mergeFilters(baseFilters: string | undefined, additionalFilters: Filter
 function withAdditionalFilters(settings: ExpansionSettings, additionalFilters: FilterCriteria[]): ExpansionSettings {
 	return {
 		...settings,
-		filters: [...settings.filters, ...additionalFilters]
+		filters: [...(settings.filters ?? []), ...additionalFilters]
 	};
 }
 
@@ -312,7 +315,7 @@ function withAdditionalFilters(settings: ExpansionSettings, additionalFilters: F
  */
 function withFallbackSort(settings: ExpansionSettings, fallbackSort: SortCriteria): ExpansionSettings {
 	// Only add fallback if no sorts are defined
-	if (settings.sorts.length > 0) {
+	if ((settings.sorts ?? []).length > 0) {
 		return settings;
 	}
 
