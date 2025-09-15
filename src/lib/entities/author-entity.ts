@@ -122,7 +122,7 @@ export class AuthorEntity extends AbstractEntity<Author> {
 					select: queryParams.select
 				});
 
-				if (!worksResponse.results || worksResponse.results.length === 0) {
+				if (worksResponse.results.length === 0) {
 					break; // No more results
 				}
 
