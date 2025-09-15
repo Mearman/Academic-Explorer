@@ -253,8 +253,7 @@ export const LeftSidebar: React.FC = () => {
 		<div style={{
 			display: "flex",
 			flexDirection: "column",
-			height: "100%",
-			overflow: "auto",
+			minHeight: "100%",
 			padding: "16px",
 			gap: "8px"
 		}}>
