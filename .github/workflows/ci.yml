@@ -298,10 +298,22 @@ jobs:
       - name: Update version and create follow-up commit
         if: steps.check-release.outputs.release_created == 'true'
         run: |
-          # Update package.json version to match the release
-          npm version ${{ steps.check-release.outputs.new_version }} --no-git-tag-version
+          # Check if package.json and CHANGELOG.md have changes from semantic-release
+          if git diff --quiet HEAD package.json CHANGELOG.md; then
+            echo "No changes to commit - semantic-release didn't update files"
+            exit 0
+          fi
 
-          # Commit the version bump (CHANGELOG.md was already updated by semantic-release)
+          # Check current version in package.json
+          CURRENT_VERSION=$(node -p "require('./package.json').version")
+          if [ "$CURRENT_VERSION" != "${{ steps.check-release.outputs.new_version }}" ]; then
+            echo "Version mismatch - updating package.json from $CURRENT_VERSION to ${{ steps.check-release.outputs.new_version }}"
+            npm version ${{ steps.check-release.outputs.new_version }} --no-git-tag-version
+          else
+            echo "Package.json already at correct version: $CURRENT_VERSION"
+          fi
+
+          # Commit the changes (semantic-release already updated the files)
           git add package.json CHANGELOG.md
           git commit -m "chore(release): ${{ steps.check-release.outputs.new_version }} [skip ci]
 
