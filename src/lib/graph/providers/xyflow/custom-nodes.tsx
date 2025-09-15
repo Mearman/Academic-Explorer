@@ -15,10 +15,14 @@ import {
 	IconBook,
 	IconBuilding,
 	IconPin,
-	IconPinFilled
+	IconPinFilled,
+	IconArrowsMaximize,
+	IconCircleDashed,
+	IconCirclePlus
 } from "@tabler/icons-react";
 import type { EntityType, ExternalIdentifier } from "../../types";
 import { useGraphStore } from "@/stores/graph-store";
+import { useGraphData } from "@/hooks/use-graph-data";
 
 // Helper function for safe metadata access
 const _renderMetadataValue = (value: unknown): React.ReactNode => {
@@ -80,6 +84,160 @@ const PinToggleButton: React.FC<PinToggleButtonProps> = ({ nodeId, isPinned, cla
 			) : (
 				<IconPin size={10} style={{ color: "#ffffff" }} />
 			)}
+		</button>
+	);
+};
+
+// Expand button component
+interface ExpandButtonProps {
+  nodeId: string;
+  className?: string;
+}
+
+const ExpandButton: React.FC<ExpandButtonProps> = ({ nodeId, className }) => {
+	const { expandNode } = useGraphData();
+
+	const handleExpand = (e: React.MouseEvent) => {
+		e.stopPropagation(); // Prevent node selection/dragging
+		void expandNode(nodeId);
+	};
+
+	return (
+		<button
+			className={`nodrag ${className || ""}`}
+			onClick={handleExpand}
+			style={{
+				background: "rgba(0, 0, 0, 0.7)",
+				border: "none",
+				borderRadius: "0px 0px 8px 0px", // Only bottom-right corner rounded
+				padding: "0px",
+				margin: "0px",
+				display: "flex",
+				alignItems: "center",
+				justifyContent: "center",
+				cursor: "pointer",
+				transition: "all 0.2s ease",
+				width: "20px",
+				alignSelf: "stretch",
+				flexShrink: 0,
+				boxSizing: "border-box"
+			}}
+			onMouseEnter={(e) => {
+				e.currentTarget.style.background = "rgba(0, 0, 0, 0.9)";
+			}}
+			onMouseLeave={(e) => {
+				e.currentTarget.style.background = "rgba(0, 0, 0, 0.7)";
+			}}
+			title="Expand node connections"
+		>
+			<IconArrowsMaximize size={10} style={{ color: "#ffffff" }} />
+		</button>
+	);
+};
+
+// Select adjacent nodes button component
+interface SelectAdjacentButtonProps {
+  nodeId: string;
+  className?: string;
+}
+
+const SelectAdjacentButton: React.FC<SelectAdjacentButtonProps> = ({ nodeId, className }) => {
+	const { getNeighbors, clearSelection, addToSelection } = useGraphStore();
+
+	const handleSelectAdjacent = (e: React.MouseEvent) => {
+		e.stopPropagation(); // Prevent node selection/dragging
+
+		// Get adjacent nodes (neighbors)
+		const neighbors = getNeighbors(nodeId);
+		const allNodeIds = [nodeId, ...neighbors.map(n => n.id)];
+
+		// Clear current selection and select all adjacent nodes and the node itself
+		clearSelection();
+		allNodeIds.forEach(id => { addToSelection(id); });
+	};
+
+	return (
+		<button
+			className={`nodrag ${className || ""}`}
+			onClick={handleSelectAdjacent}
+			style={{
+				background: "rgba(0, 0, 0, 0.7)",
+				border: "none",
+				borderRadius: "0px", // No rounded corners for middle buttons
+				padding: "0px",
+				margin: "0px",
+				display: "flex",
+				alignItems: "center",
+				justifyContent: "center",
+				cursor: "pointer",
+				transition: "all 0.2s ease",
+				width: "20px",
+				alignSelf: "stretch",
+				flexShrink: 0,
+				boxSizing: "border-box"
+			}}
+			onMouseEnter={(e) => {
+				e.currentTarget.style.background = "rgba(0, 0, 0, 0.9)";
+			}}
+			onMouseLeave={(e) => {
+				e.currentTarget.style.background = "rgba(0, 0, 0, 0.7)";
+			}}
+			title="Select this node and all adjacent nodes"
+		>
+			<IconCircleDashed size={10} style={{ color: "#ffffff" }} />
+		</button>
+	);
+};
+
+// Add adjacent nodes to selection button component
+interface AddAdjacentButtonProps {
+  nodeId: string;
+  className?: string;
+}
+
+const AddAdjacentButton: React.FC<AddAdjacentButtonProps> = ({ nodeId, className }) => {
+	const { getNeighbors, addToSelection } = useGraphStore();
+
+	const handleAddAdjacent = (e: React.MouseEvent) => {
+		e.stopPropagation(); // Prevent node selection/dragging
+
+		// Get adjacent nodes (neighbors)
+		const neighbors = getNeighbors(nodeId);
+		const allNodeIds = [nodeId, ...neighbors.map(n => n.id)];
+
+		// Add all adjacent nodes and the node itself to existing selection
+		allNodeIds.forEach(id => { addToSelection(id); });
+	};
+
+	return (
+		<button
+			className={`nodrag ${className || ""}`}
+			onClick={handleAddAdjacent}
+			style={{
+				background: "rgba(0, 0, 0, 0.7)",
+				border: "none",
+				borderRadius: "0px", // No rounded corners for middle buttons
+				padding: "0px",
+				margin: "0px",
+				display: "flex",
+				alignItems: "center",
+				justifyContent: "center",
+				cursor: "pointer",
+				transition: "all 0.2s ease",
+				width: "20px",
+				alignSelf: "stretch",
+				flexShrink: 0,
+				boxSizing: "border-box"
+			}}
+			onMouseEnter={(e) => {
+				e.currentTarget.style.background = "rgba(0, 0, 0, 0.9)";
+			}}
+			onMouseLeave={(e) => {
+				e.currentTarget.style.background = "rgba(0, 0, 0, 0.7)";
+			}}
+			title="Add this node and all adjacent nodes to selection"
+		>
+			<IconCirclePlus size={10} style={{ color: "#ffffff" }} />
 		</button>
 	);
 };
@@ -341,6 +499,23 @@ export const CustomNode: React.FC<CustomNodeProps> = ({ data, selected }) => {
 				</div>
 			)}
 
+			{/* Bottom bar with action buttons - flush to edges */}
+			<div style={{
+				display: "flex",
+				justifyContent: "flex-end",
+				alignItems: "stretch", // Stretch children to full height
+				backgroundColor: "rgba(0,0,0,0.2)",
+				padding: "0px", // Remove all padding
+				borderRadius: "0 0 8px 8px", // Only bottom corners rounded
+				fontSize: "9px",
+				opacity: 0.8,
+				minHeight: "20px" // Slightly smaller than top bar
+			}}>
+				<SelectAdjacentButton nodeId={data.entityId} />
+				<AddAdjacentButton nodeId={data.entityId} />
+				<ExpandButton nodeId={data.entityId} />
+			</div>
+
 		</div>
 	);
 };
@@ -432,6 +607,24 @@ export const WorkNode: React.FC<CustomNodeProps> = ({ data, selected }) => {
 					{data.metadata.citationCount} citations
 				</div>
 			)}
+
+			{/* Bottom bar with action buttons - flush to edges */}
+			<div style={{
+				display: "flex",
+				justifyContent: "flex-end",
+				alignItems: "stretch", // Stretch children to full height
+				backgroundColor: "rgba(0,0,0,0.2)",
+				padding: "0px", // Remove all padding
+				borderRadius: "0 0 8px 8px", // Only bottom corners rounded
+				fontSize: "9px",
+				opacity: 0.8,
+				minHeight: "20px" // Slightly smaller than top bar
+			}}>
+				<SelectAdjacentButton nodeId={data.entityId} />
+				<AddAdjacentButton nodeId={data.entityId} />
+				<ExpandButton nodeId={data.entityId} />
+			</div>
+
 		</div>
 	);
 };
@@ -511,6 +704,24 @@ export const AuthorNode: React.FC<CustomNodeProps> = ({ data, selected }) => {
           ORCID: {orcid.value}
 				</div>
 			)}
+
+			{/* Bottom bar with action buttons - flush to edges */}
+			<div style={{
+				display: "flex",
+				justifyContent: "flex-end",
+				alignItems: "stretch", // Stretch children to full height
+				backgroundColor: "rgba(0,0,0,0.2)",
+				padding: "0px", // Remove all padding
+				borderRadius: "0 0 8px 8px", // Only bottom corners rounded
+				fontSize: "9px",
+				opacity: 0.8,
+				minHeight: "20px" // Slightly smaller than top bar
+			}}>
+				<SelectAdjacentButton nodeId={data.entityId} />
+				<AddAdjacentButton nodeId={data.entityId} />
+				<ExpandButton nodeId={data.entityId} />
+			</div>
+
 		</div>
 	);
 };
@@ -590,6 +801,24 @@ export const SourceNode: React.FC<CustomNodeProps> = ({ data, selected }) => {
           ISSN: {issn.value}
 				</div>
 			)}
+
+			{/* Bottom bar with action buttons - flush to edges */}
+			<div style={{
+				display: "flex",
+				justifyContent: "flex-end",
+				alignItems: "stretch", // Stretch children to full height
+				backgroundColor: "rgba(0,0,0,0.2)",
+				padding: "0px", // Remove all padding
+				borderRadius: "0 0 8px 8px", // Only bottom corners rounded
+				fontSize: "9px",
+				opacity: 0.8,
+				minHeight: "20px" // Slightly smaller than top bar
+			}}>
+				<SelectAdjacentButton nodeId={data.entityId} />
+				<AddAdjacentButton nodeId={data.entityId} />
+				<ExpandButton nodeId={data.entityId} />
+			</div>
+
 		</div>
 	);
 };
