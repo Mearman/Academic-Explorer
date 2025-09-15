@@ -131,6 +131,15 @@ interface GraphState {
   getConnectedEdges: (nodeId: string) => GraphEdge[];
   findShortestPath: (sourceId: string, targetId: string) => string[];
   getConnectedComponent: (nodeId: string) => Set<string>;
+
+  // Lazy loading support
+  createPlaceholderNode: (entityId: string, type: EntityType, label?: string) => GraphNode;
+  markNodeAsLoading: (nodeId: string) => void;
+  markNodeAsLoaded: (nodeId: string, fullData: Partial<GraphNode>) => void;
+  markNodeAsError: (nodeId: string, error: string) => void;
+  getPlaceholderNodes: () => GraphNode[];
+  getLoadingNodes: () => GraphNode[];
+  hasPlaceholderOrLoadingNodes: () => boolean;
 }
 
 export const useGraphStore = create<GraphState>()(
@@ -705,6 +714,96 @@ export const useGraphStore = create<GraphState>()(
 				}
 
 				return visited;
+			},
+
+			// Lazy loading support
+			createPlaceholderNode: (entityId, type, label) => {
+				const placeholderNode: GraphNode = {
+					id: entityId,
+					type,
+					label: label || `Loading ${type}...`,
+					entityId,
+					position: { x: 0, y: 0 },
+					externalIds: [],
+					metadata: {
+						isPlaceholder: true,
+						isLoading: false,
+					}
+				};
+
+				set((draft) => {
+					draft.nodes.set(entityId, placeholderNode);
+					draft.provider?.addNode(placeholderNode);
+				});
+
+				return placeholderNode;
+			},
+
+			markNodeAsLoading: (nodeId) => {
+				set((draft) => {
+					const node = draft.nodes.get(nodeId);
+					if (node) {
+						node.metadata = {
+							...node.metadata,
+							isLoading: true,
+							loadingError: undefined,
+						};
+						node.label = node.label.includes("Loading") ? node.label : `Loading ${node.label}...`;
+					}
+				});
+			},
+
+			markNodeAsLoaded: (nodeId, fullData) => {
+				set((draft) => {
+					const node = draft.nodes.get(nodeId);
+					if (node) {
+						// Update node with full data
+						Object.assign(node, fullData);
+						node.metadata = {
+							...node.metadata,
+							...fullData.metadata,
+							isPlaceholder: false,
+							isLoading: false,
+							loadingError: undefined,
+							dataLoadedAt: Date.now(),
+						};
+						// Remove "Loading..." from label if present
+						if (node.label.startsWith("Loading ")) {
+							node.label = node.label.replace("Loading ", "").replace("...", "");
+						}
+					}
+				});
+			},
+
+			markNodeAsError: (nodeId, error) => {
+				set((draft) => {
+					const node = draft.nodes.get(nodeId);
+					if (node) {
+						node.metadata = {
+							...node.metadata,
+							isLoading: false,
+							loadingError: error,
+						};
+						node.label = `Error: ${node.label.replace("Loading ", "").replace("...", "")}`;
+					}
+				});
+			},
+
+			getPlaceholderNodes: () => {
+				const { nodes } = get();
+				return Array.from(nodes.values()).filter(node => node.metadata?.isPlaceholder);
+			},
+
+			getLoadingNodes: () => {
+				const { nodes } = get();
+				return Array.from(nodes.values()).filter(node => node.metadata?.isLoading);
+			},
+
+			hasPlaceholderOrLoadingNodes: () => {
+				const { nodes } = get();
+				return Array.from(nodes.values()).some(node =>
+					node.metadata?.isPlaceholder || node.metadata?.isLoading
+				);
 			},
 		})),
 		{
