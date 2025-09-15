@@ -584,33 +584,6 @@ export interface Keyword {
   created_date: string;
 }
 
-/**
- * Geo Entity - Geographic regions and continents
- */
-export interface Geo {
-  id: OpenAlexId;
-  display_name: string;
-  description?: string;
-  wikidata_id?: WikidataId;
-  iso_code?: string;
-  country_code?: string;
-  continent?: string;
-  works_count: number;
-  cited_by_count: number;
-  ids: {
-    openalex: OpenAlexId;
-    wikidata?: WikidataId;
-    geonames?: string;
-  };
-  counts_by_year: Array<{
-    year: number;
-    works_count: number;
-    cited_by_count: number;
-  }>;
-  works_api_url: string;
-  updated_date: string;
-  created_date: string;
-}
 
 /**
  * Text Analysis Result - For /text endpoint
@@ -805,19 +778,6 @@ export interface KeywordsFilters {
   "works_count"?: string | number;
 }
 
-export interface GeoFilters {
-  "cited_by_count"?: string | number;
-  "continent"?: string | string[];
-  "country_code"?: string | string[];
-  "default.search"?: string;
-  "display_name.search"?: string;
-  "from_created_date"?: string;
-  "from_updated_date"?: string;
-  "iso_code"?: string | string[];
-  "to_created_date"?: string;
-  "to_updated_date"?: string;
-  "works_count"?: string | number;
-}
 
 // Statistical endpoint parameters
 export interface StatsParams {
@@ -860,7 +820,7 @@ export interface AutocompleteResult {
   hint?: string;
   cited_by_count?: number;
   works_count?: number;
-  entity_type: "work" | "author" | "source" | "institution" | "topic" | "publisher" | "funder" | "concept" | "keyword" | "geo";
+  entity_type: "work" | "author" | "source" | "institution" | "topic" | "publisher" | "funder" | "concept" | "keyword";
   external_id?: string;
   filter_key?: string;
 }
@@ -881,6 +841,6 @@ export interface OpenAlexError {
 }
 
 // Union types for all entities
-export type OpenAlexEntity = Work | Author | Source | InstitutionEntity | Topic | Concept | Publisher | Funder | Keyword | Geo;
-export type EntityType = "works" | "authors" | "sources" | "institutions" | "topics" | "concepts" | "publishers" | "funders" | "keywords" | "geo";
-export type EntityFilters = WorksFilters | AuthorsFilters | SourcesFilters | InstitutionsFilters | TopicsFilters | PublishersFilters | FundersFilters | KeywordsFilters | GeoFilters;
+export type OpenAlexEntity = Work | Author | Source | InstitutionEntity | Topic | Concept | Publisher | Funder | Keyword;
+export type EntityType = "works" | "authors" | "sources" | "institutions" | "topics" | "concepts" | "publishers" | "funders" | "keywords";
+export type EntityFilters = WorksFilters | AuthorsFilters | SourcesFilters | InstitutionsFilters | TopicsFilters | PublishersFilters | FundersFilters | KeywordsFilters;
