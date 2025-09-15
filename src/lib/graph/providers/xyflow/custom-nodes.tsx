@@ -351,6 +351,7 @@ export const CustomNode: React.FC<CustomNodeProps> = ({ data, selected }) => {
 // Work-specific node
 export const WorkNode: React.FC<CustomNodeProps> = ({ data, selected }) => {
 	const { isPinned } = useGraphStore();
+	const glowColors = getEntityGlowColors("works");
 
 	// Get current pin state from store
 	const isNodePinned = isPinned(data.entityId);
@@ -358,12 +359,12 @@ export const WorkNode: React.FC<CustomNodeProps> = ({ data, selected }) => {
 	const nodeStyle: React.CSSProperties = {
 		...baseNodeStyle,
 		backgroundColor: "#e74c3c",
-		// Only selected nodes get glow effect
+		// Only selected nodes get glow effect in their entity color
 		boxShadow: selected
-			? "0 0 0 2px rgba(52, 152, 219, 0.5), 0 0 15px rgba(52, 152, 219, 0.3)"
+			? `0 0 0 2px ${glowColors.border}, 0 0 15px ${glowColors.glow}`
 			: "none",
 		// Pinned nodes get border styling (but only if not selected to avoid double borders)
-		border: isNodePinned && !selected ? "2px solid #ffc107" : selected ? "2px solid #3498db" : "none",
+		border: isNodePinned && !selected ? "2px solid #ffc107" : selected ? `2px solid ${glowColors.solidBorder}` : "none",
 		// Pinned nodes get slightly different background opacity to distinguish them
 		opacity: isNodePinned && !selected ? 0.9 : 1,
 	};
@@ -441,6 +442,7 @@ export const WorkNode: React.FC<CustomNodeProps> = ({ data, selected }) => {
 // Author-specific node
 export const AuthorNode: React.FC<CustomNodeProps> = ({ data, selected }) => {
 	const { isPinned } = useGraphStore();
+	const glowColors = getEntityGlowColors("authors");
 
 	// Get current pin state from store
 	const isNodePinned = isPinned(data.entityId);
@@ -448,12 +450,12 @@ export const AuthorNode: React.FC<CustomNodeProps> = ({ data, selected }) => {
 	const nodeStyle: React.CSSProperties = {
 		...baseNodeStyle,
 		backgroundColor: "#3498db",
-		// Only selected nodes get glow effect
+		// Only selected nodes get glow effect in their entity color
 		boxShadow: selected
-			? "0 0 0 2px rgba(52, 152, 219, 0.5), 0 0 15px rgba(52, 152, 219, 0.3)"
+			? `0 0 0 2px ${glowColors.border}, 0 0 15px ${glowColors.glow}`
 			: "none",
 		// Pinned nodes get border styling (but only if not selected to avoid double borders)
-		border: isNodePinned && !selected ? "2px solid #ffc107" : selected ? "2px solid #3498db" : "none",
+		border: isNodePinned && !selected ? "2px solid #ffc107" : selected ? `2px solid ${glowColors.solidBorder}` : "none",
 		// Pinned nodes get slightly different background opacity to distinguish them
 		opacity: isNodePinned && !selected ? 0.9 : 1,
 	};
@@ -519,6 +521,7 @@ export const AuthorNode: React.FC<CustomNodeProps> = ({ data, selected }) => {
 // Source-specific node
 export const SourceNode: React.FC<CustomNodeProps> = ({ data, selected }) => {
 	const { isPinned } = useGraphStore();
+	const glowColors = getEntityGlowColors("sources");
 
 	// Get current pin state from store
 	const isNodePinned = isPinned(data.entityId);
@@ -526,12 +529,12 @@ export const SourceNode: React.FC<CustomNodeProps> = ({ data, selected }) => {
 	const nodeStyle: React.CSSProperties = {
 		...baseNodeStyle,
 		backgroundColor: "#2ecc71",
-		// Only selected nodes get glow effect
+		// Only selected nodes get glow effect in their entity color
 		boxShadow: selected
-			? "0 0 0 2px rgba(52, 152, 219, 0.5), 0 0 15px rgba(52, 152, 219, 0.3)"
+			? `0 0 0 2px ${glowColors.border}, 0 0 15px ${glowColors.glow}`
 			: "none",
 		// Pinned nodes get border styling (but only if not selected to avoid double borders)
-		border: isNodePinned && !selected ? "2px solid #ffc107" : selected ? "2px solid #3498db" : "none",
+		border: isNodePinned && !selected ? "2px solid #ffc107" : selected ? `2px solid ${glowColors.solidBorder}` : "none",
 		// Pinned nodes get slightly different background opacity to distinguish them
 		opacity: isNodePinned && !selected ? 0.9 : 1,
 	};
