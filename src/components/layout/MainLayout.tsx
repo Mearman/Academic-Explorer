@@ -4,7 +4,7 @@
  */
 
 import React from "react";
-import { AppShell, Group, Text, ActionIcon, useMantineColorScheme, Paper } from "@mantine/core";
+import { AppShell, Group, Text, ActionIcon, useMantineColorScheme } from "@mantine/core";
 import { IconMoon, IconSun, IconDeviceDesktop, IconMenu2, IconX } from "@tabler/icons-react";
 import { Link } from "@tanstack/react-router";
 import { useLayoutStore } from "@/stores/layout-store";

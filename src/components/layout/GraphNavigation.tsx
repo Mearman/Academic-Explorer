@@ -313,7 +313,7 @@ const GraphNavigationInner: React.FC<GraphNavigationProps> = ({ className, style
 		return () => {
 			graphProvider.destroy();
 		};
-	}, [reactFlowInstance, navigate, setProvider, setPreviewEntity, loadEntityIntoGraph, expandNode, centerOnNode]);
+	}, [reactFlowInstance, navigate, setProvider, setPreviewEntity, loadEntityIntoGraph, expandNode, centerOnNode, autoPinOnLayoutStabilization]);
 
 	// Sync store data with XYFlow using incremental updates (applying visibility filters)
 	useEffect(() => {
@@ -427,7 +427,7 @@ const GraphNavigationInner: React.FC<GraphNavigationProps> = ({ className, style
 		// Update refs for next comparison
 		previousNodeIdsRef.current = currentNodeIds;
 		previousEdgeIdsRef.current = currentEdgeIds;
-	}, [storeNodes, storeEdges, visibleEntityTypes, visibleEdgeTypes, setNodes, setEdges]);
+	}, [storeNodes, storeEdges, visibleEntityTypes, visibleEdgeTypes, setNodes, setEdges, getVisibleNodes, getVisibleEdges]);
 
 	// URL state synchronization - read selected entity from hash on mount
 	useEffect(() => {
@@ -478,7 +478,7 @@ const GraphNavigationInner: React.FC<GraphNavigationProps> = ({ className, style
 				}
 			}
 		}
-	}, [storeNodes, setPreviewEntity, centerOnNode]);
+	}, [storeNodes, setPreviewEntity, centerOnNode, autoPinOnLayoutStabilization]);
 
 	// Browser history navigation (back/forward button support for hash routing)
 	useEffect(() => {
@@ -548,7 +548,7 @@ const GraphNavigationInner: React.FC<GraphNavigationProps> = ({ className, style
 		return () => {
 			window.removeEventListener("hashchange", handleHashChange);
 		};
-	}, [storeNodes, setPreviewEntity, centerOnNode]);
+	}, [storeNodes, setPreviewEntity, centerOnNode, autoPinOnLayoutStabilization]);
 
 	// Handle node clicks
 	const onNodeClick = useCallback((event: React.MouseEvent, node: XYNode) => {

@@ -5,12 +5,15 @@
 
 import React, { useState, useMemo } from "react"
 import { LayoutControls } from "@/components/molecules/LayoutControls"
+import { ExpansionSettingsDialog } from "@/components/molecules/ExpansionSettingsDialog"
 import { useGraphData } from "@/hooks/use-graph-data"
 import { useGraphStore } from "@/stores/graph-store"
+import { useExpansionSettingsSummary } from "@/stores/expansion-settings-store"
 import { useThemeColors } from "@/hooks/use-theme-colors"
 import { logError } from "@/lib/logger"
 import type { EntityType } from "@/lib/openalex/types"
 import { RelationType } from "@/lib/graph/types"
+import type { ExpansionTarget } from "@/lib/graph/types/expansion-settings"
 import {
 	IconSearch,
 	IconFilter,
@@ -26,7 +29,8 @@ import {
 	IconLink,
 	IconCoin,
 	IconDatabase,
-	IconAdjustments
+	IconAdjustments,
+	IconSettings
 } from "@tabler/icons-react"
 
 export const LeftSidebar: React.FC = () => {
@@ -34,6 +38,7 @@ export const LeftSidebar: React.FC = () => {
 	const [selectedEntityTypes, setSelectedEntityTypes] = useState<EntityType[]>([
 		"works", "authors", "sources", "institutions"
 	])
+	const [expansionDialogTarget, setExpansionDialogTarget] = useState<ExpansionTarget | null>(null)
 	const { search, isLoading, clearGraph, loadAllCachedNodes } = useGraphData()
 	const { colors } = useThemeColors()
 
@@ -111,6 +116,24 @@ export const LeftSidebar: React.FC = () => {
 			setTraversalDepth(value)
 		}
 	}
+
+	// Component for displaying expansion settings summary
+	const ExpansionSettingsSummary: React.FC<{ target: ExpansionTarget }> = ({ target }) => {
+		const summary = useExpansionSettingsSummary(target);
+
+		if (!summary) return null;
+
+		return (
+			<div style={{
+				fontSize: "10px",
+				color: colors.text.tertiary,
+				fontStyle: "italic",
+				marginTop: "2px"
+			}}>
+				{summary}
+			</div>
+		);
+	};
 
 	// Use the exact same colors as graph nodes for consistency
 	const getGraphNodeColor = (entityType: EntityType): string => {
@@ -352,13 +375,12 @@ export const LeftSidebar: React.FC = () => {
 						const visibleCount = edgeStats.visible.get(option.type) || 0;
 
 						return (
-							<label
+							<div
 								key={option.type}
 								style={{
 									display: "flex",
 									flexDirection: "column",
 									gap: "4px",
-									cursor: "pointer",
 									padding: "8px",
 									borderRadius: "6px",
 									backgroundColor: visibleEdgeTypes.has(option.type) ? colors.background.tertiary : "transparent",
@@ -366,7 +388,7 @@ export const LeftSidebar: React.FC = () => {
 									transition: "background-color 0.2s",
 								}}
 							>
-								{/* Main row with checkbox, icon, label, and color */}
+								{/* Main row with checkbox, icon, label, settings, and color */}
 								<div style={{
 									display: "flex",
 									alignItems: "center",
@@ -376,12 +398,42 @@ export const LeftSidebar: React.FC = () => {
 										type="checkbox"
 										checked={visibleEdgeTypes.has(option.type)}
 										onChange={() => { handleEdgeTypeToggle(option.type) }}
-										style={{ margin: 0 }}
+										style={{ margin: 0, cursor: "pointer" }}
 									/>
 									<span>{option.icon}</span>
 									<span style={{ fontSize: "14px", color: colors.text.primary, fontWeight: 500 }}>
 										{option.label}
 									</span>
+
+									{/* Settings button */}
+									<button
+										onClick={(e) => {
+											e.stopPropagation();
+											setExpansionDialogTarget(option.type);
+										}}
+										style={{
+											padding: "4px",
+											backgroundColor: "transparent",
+											border: "none",
+											cursor: "pointer",
+											color: colors.text.secondary,
+											display: "flex",
+											alignItems: "center",
+											justifyContent: "center",
+											borderRadius: "4px",
+											transition: "background-color 0.2s"
+										}}
+										onMouseEnter={(e) => {
+											e.currentTarget.style.backgroundColor = colors.background.secondary;
+										}}
+										onMouseLeave={(e) => {
+											e.currentTarget.style.backgroundColor = "transparent";
+										}}
+										title="Configure expansion settings"
+									>
+										<IconSettings size={14} />
+									</button>
+
 									<span
 										style={{
 											width: "10px",
@@ -393,21 +445,30 @@ export const LeftSidebar: React.FC = () => {
 									/>
 								</div>
 
-								{/* Statistics row */}
-								{totalCount > 0 && (
-									<div style={{
-										display: "flex",
-										alignItems: "center",
-										gap: "12px",
-										fontSize: "11px",
-										color: colors.text.secondary,
-										marginLeft: "24px",
-									}}>
-										<span>Total: {totalCount}</span>
-										<span>Visible: {visibleCount}</span>
-									</div>
-								)}
-							</label>
+								{/* Statistics and settings summary row */}
+								<div style={{
+									display: "flex",
+									flexDirection: "column",
+									gap: "4px",
+									marginLeft: "24px",
+								}}>
+									{totalCount > 0 && (
+										<div style={{
+											display: "flex",
+											alignItems: "center",
+											gap: "12px",
+											fontSize: "11px",
+											color: colors.text.secondary,
+										}}>
+											<span>Total: {totalCount}</span>
+											<span>Visible: {visibleCount}</span>
+										</div>
+									)}
+
+									{/* Expansion settings summary */}
+									<ExpansionSettingsSummary target={option.type} />
+								</div>
+							</div>
 						);
 					})}
 				</div>
@@ -571,8 +632,18 @@ export const LeftSidebar: React.FC = () => {
 					<li>Checkboxes control search filtering AND graph visibility</li>
 					<li>Click nodes to navigate, double-click to expand</li>
 					<li>Statistics show: total nodes, search results, visible nodes</li>
+					<li>Click <IconSettings size={12} style={{ display: "inline", verticalAlign: "middle" }} /> next to edge types to configure expansion settings</li>
 				</ul>
 			</div>
+
+			{/* Expansion Settings Dialog */}
+			{expansionDialogTarget && (
+				<ExpansionSettingsDialog
+					target={expansionDialogTarget}
+					isOpen={true}
+					onClose={() => { setExpansionDialogTarget(null) }}
+				/>
+			)}
 		</div>
 	)
 }

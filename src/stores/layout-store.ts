@@ -47,6 +47,15 @@ interface LayoutState {
   setAutoPinOnLayoutStabilization: (enabled: boolean) => void;
 }
 
+type LayoutPersistedState = Partial<Pick<LayoutState,
+  | "leftSidebarOpen"
+  | "leftSidebarPinned"
+  | "rightSidebarOpen"
+  | "rightSidebarPinned"
+  | "graphProvider"
+  | "autoPinOnLayoutStabilization"
+>>;
+
 export const useLayoutStore = create<LayoutState>()(
 	persist(
 		(set) => ({
@@ -118,10 +127,16 @@ export const useLayoutStore = create<LayoutState>()(
 				autoPinOnLayoutStabilization: state.autoPinOnLayoutStabilization,
 			}),
 			// Migration for existing localStorage entries that don't have autoPinOnLayoutStabilization
-			migrate: (persistedState: any, version: number) => {
+			migrate: (persistedState: unknown, _version: number): unknown => {
 				// If the persisted state doesn't have autoPinOnLayoutStabilization, add it with default value
-				if (persistedState && typeof persistedState.autoPinOnLayoutStabilization === "undefined") {
-					persistedState.autoPinOnLayoutStabilization = true;
+				if (persistedState && typeof persistedState === "object") {
+					const state = persistedState as LayoutPersistedState;
+					if (typeof state.autoPinOnLayoutStabilization === "undefined") {
+						return {
+							...state,
+							autoPinOnLayoutStabilization: true,
+						};
+					}
 				}
 				return persistedState;
 			},
