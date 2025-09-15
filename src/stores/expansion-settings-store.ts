@@ -47,10 +47,17 @@ interface ExpansionSettingsState {
 
 // Initialize with default settings
 const initializeDefaultSettings = (): Record<ExpansionTarget, ExpansionSettings> => {
-	const settings: Record<ExpansionTarget, ExpansionSettings> = {};
+	// Create properly typed settings object by building it incrementally
+	const allTargets = Object.values(RelationType);
+	const firstTarget = allTargets[0];
+	const firstSetting = getDefaultSettingsForTarget(firstTarget);
 
-	// Add default settings for all relation types
-	Object.values(RelationType).forEach(relationType => {
+	const settings: Record<ExpansionTarget, ExpansionSettings> = {
+		[firstTarget]: firstSetting
+	};
+
+	// Add remaining targets
+	allTargets.slice(1).forEach(relationType => {
 		const defaultSetting = getDefaultSettingsForTarget(relationType);
 		settings[relationType] = defaultSetting;
 	});
@@ -227,8 +234,8 @@ export const useExpansionSettingsStore = create<ExpansionSettingsState>()(
 
 			importSettings: (settingsObject: Record<string, ExpansionSettings>) => {
 				set((state) => {
-					// Create a new settings object ensuring proper typing
-					const newSettings: Record<ExpansionTarget, ExpansionSettings> = {};
+					// Start with current settings and update only valid targets
+					const newSettings = { ...state.settings };
 
 					// Copy only valid expansion targets
 					Object.entries(settingsObject).forEach(([key, value]) => {
