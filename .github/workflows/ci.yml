@@ -229,9 +229,10 @@ jobs:
       pull-requests: write
 
     outputs:
-      released: ${{ steps.release.outputs.new_release_published }}
-      version: ${{ steps.release.outputs.new_release_version }}
-      tag: ${{ steps.release.outputs.new_release_git_tag }}
+      released: ${{ steps.determine-version.outputs.should_release }}
+      version: ${{ steps.determine-version.outputs.new_version }}
+      tag: ${{ steps.determine-version.outputs.tag_name }}
+      release_commit: ${{ steps.version-bump.outputs.commit_sha }}
 
     steps:
       - name: Checkout
@@ -260,26 +261,183 @@ jobs:
           key: ${{ needs.setup.outputs.cache-key }}
           fail-on-cache-miss: true
 
-      - name: Download build artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: dist-${{ github.sha }}
-          path: dist/
-
-      - name: Remove empty files
-        run: find dist -type f -size 0 -delete
-        shell: bash
-
-      - name: Semantic Release
-        id: release
-        uses: cycjimmy/semantic-release-action@v4
-        with:
-          semantic_version: 22
-          extra_plugins: |
-            @semantic-release/changelog
+      - name: Determine next version and create tag
+        id: determine-version
+        run: |
+          # Install semantic-release plugins
+          npm install -g \
+            semantic-release \
+            @semantic-release/commit-analyzer \
+            @semantic-release/release-notes-generator \
+            @semantic-release/changelog \
+            @semantic-release/npm \
             @semantic-release/git
+
+          # Create a temporary semantic-release config for dry-run (no git operations)
+          cat > .releaserc.tmp.json << 'EOF'
+          {
+            "branches": ["main"],
+            "repositoryUrl": "https://github.com/Mearman/Academic-Explorer",
+            "dryRun": false,
+            "plugins": [
+              "@semantic-release/commit-analyzer",
+              "@semantic-release/release-notes-generator"
+            ]
+          }
+          EOF
+
+          # Use semantic-release in dry-run mode to determine next version
+          SEMANTIC_OUTPUT=$(npx semantic-release --extends ./.releaserc.tmp.json --dry-run 2>&1) || true
+          echo "$SEMANTIC_OUTPUT"
+
+          # Extract version information
+          if echo "$SEMANTIC_OUTPUT" | grep -q "The next release version is"; then
+            NEW_VERSION=$(echo "$SEMANTIC_OUTPUT" | grep "The next release version is" | sed 's/.*The next release version is \([0-9][^ ]*\).*/\1/')
+            echo "should_release=true" >> $GITHUB_OUTPUT
+            echo "new_version=${NEW_VERSION}" >> $GITHUB_OUTPUT
+            echo "Next version will be: ${NEW_VERSION}"
+
+            # Create tag on the triggering commit (before any modifications)
+            TAG_NAME="v${NEW_VERSION}"
+            git tag "${TAG_NAME}" ${{ github.sha }}
+            git push origin "${TAG_NAME}"
+            echo "tag_name=${TAG_NAME}" >> $GITHUB_OUTPUT
+            echo "Created tag ${TAG_NAME} on commit ${{ github.sha }}"
+          else
+            echo "should_release=false" >> $GITHUB_OUTPUT
+            echo "No release needed"
+          fi
+
+          # Clean up temp file
+          rm -f .releaserc.tmp.json
+
+      - name: Update version and create changelog
+        id: version-bump
+        if: steps.determine-version.outputs.should_release == 'true'
+        run: |
+          # Configure git
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+
+          # Update package.json version
+          npm version ${{ steps.determine-version.outputs.new_version }} --no-git-tag-version
+
+          # Generate changelog manually using semantic-release
+          npx semantic-release --dry-run || true
+
+          # Create a manual changelog entry if one doesn't exist
+          NEW_VERSION="${{ steps.determine-version.outputs.new_version }}"
+          DATE=$(date +%Y-%m-%d)
+
+          # Check if CHANGELOG.md exists, create if not
+          if [ ! -f CHANGELOG.md ]; then
+            echo "# Changelog" > CHANGELOG.md
+            echo "" >> CHANGELOG.md
+          fi
+
+          # Add new version entry at the top (after "# Changelog")
+          if ! grep -q "## \[${NEW_VERSION}\]" CHANGELOG.md; then
+            # Create temp file with new entry
+            cat > temp_changelog.md << EOF
+# Changelog
+
+## [${NEW_VERSION}] - ${DATE}
+
+### Features & Improvements
+- Release ${NEW_VERSION}
+
+EOF
+
+            # Append rest of existing changelog (skip the first line "# Changelog")
+            tail -n +2 CHANGELOG.md >> temp_changelog.md
+            mv temp_changelog.md CHANGELOG.md
+          fi
+
+          # Commit the changes
+          git add package.json CHANGELOG.md
+          git commit -m "chore(release): ${NEW_VERSION} [skip ci]
+
+Automated version bump and changelog update for release ${NEW_VERSION}"
+
+          # Push the version bump commit
+          git push origin main
+
+          # Store commit SHA for later use
+          COMMIT_SHA=$(git rev-parse HEAD)
+          echo "commit_sha=${COMMIT_SHA}" >> $GITHUB_OUTPUT
+          echo "Version bump committed as ${COMMIT_SHA}"
+
+      - name: Build with updated version
+        if: steps.determine-version.outputs.should_release == 'true'
+        run: |
+          # Rebuild with the updated version
+          pnpm build
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NODE_OPTIONS: '--max-old-space-size=4096'
+
+      - name: Upload updated build artifact
+        if: steps.determine-version.outputs.should_release == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: dist-release-${{ github.run_id }}
+          path: dist/
+          retention-days: 1
+          compression-level: 6
+
+      - name: Create GitHub release
+        if: steps.determine-version.outputs.should_release == 'true'
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const fs = require('fs');
+
+            // Read changelog to get release notes
+            let releaseNotes = '';
+            try {
+              const changelog = fs.readFileSync('CHANGELOG.md', 'utf8');
+              const version = '${{ steps.determine-version.outputs.new_version }}';
+              const lines = changelog.split('\n');
+              let capturing = false;
+              let capturedLines = [];
+
+              for (const line of lines) {
+                // Stop capturing if we hit another version header
+                if (line.startsWith('## [') && capturing) {
+                  break;
+                }
+                // Start capturing when we find our version
+                if (line.includes(`[${version}]`)) {
+                  capturing = true;
+                  continue;
+                }
+                if (capturing && line.trim()) {
+                  capturedLines.push(line);
+                }
+              }
+              releaseNotes = capturedLines.join('\n').trim() || `Release ${version}`;
+            } catch (error) {
+              console.log('Error reading changelog:', error);
+              releaseNotes = `Release ${{ steps.determine-version.outputs.new_version }}`;
+            }
+
+            // Create the release
+            try {
+              const release = await github.rest.repos.createRelease({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                tag_name: '${{ steps.determine-version.outputs.tag_name }}',
+                name: '${{ steps.determine-version.outputs.tag_name }}',
+                body: releaseNotes,
+                draft: false,
+                prerelease: false,
+                target_commitish: '${{ github.sha }}'
+              });
+              console.log('Created release:', release.data.html_url);
+            } catch (error) {
+              console.error('Error creating release:', error);
+              throw error;
+            }
 
   deploy:
     needs: [release]
@@ -301,7 +459,7 @@ jobs:
       - name: Download build artifact
         uses: actions/download-artifact@v4
         with:
-          name: dist-${{ github.sha }}
+          name: dist-release-${{ github.run_id }}
           path: dist/
 
       - name: Setup Pages
@@ -329,5 +487,6 @@ jobs:
         with:
           name: |
             dist-${{ github.sha }}
+            dist-release-${{ github.run_id }}
             coverage-*-${{ github.sha }}
           failOnError: false
