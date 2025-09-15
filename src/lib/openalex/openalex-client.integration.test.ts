@@ -354,7 +354,7 @@ describe("OpenAlex Client Integration Tests", () => {
 
 			// Verify all works are open access
 			for (const work of oaWorks.results) {
-				expect(work.open_access?.is_oa).toBe(true);
+				expect(work.open_access.is_oa).toBe(true);
 			}
 		});
 	});
@@ -376,8 +376,8 @@ describe("OpenAlex Client Integration Tests", () => {
 
 			// Verify the author is listed in the authorships
 			for (const work of authorWorks.results) {
-				const hasAuthor = work.authorships?.some(authorship =>
-					authorship.author?.id === `https://openalex.org/${KNOWN_IDS.AUTHOR}`
+				const hasAuthor = work.authorships.some(authorship =>
+					authorship.author.id === `https://openalex.org/${KNOWN_IDS.AUTHOR}`
 				);
 				expect(hasAuthor).toBe(true);
 			}
@@ -399,8 +399,8 @@ describe("OpenAlex Client Integration Tests", () => {
 
 			// Verify the institution is associated with the works
 			for (const work of institutionWorks.results) {
-				const hasInstitution = work.authorships?.some(authorship =>
-					authorship.institutions?.some(inst =>
+				const hasInstitution = work.authorships.some(authorship =>
+					authorship.institutions.some(inst =>
 						inst.id === `https://openalex.org/${KNOWN_IDS.INSTITUTION}`
 					)
 				);
@@ -441,7 +441,7 @@ describe("OpenAlex Client Integration Tests", () => {
 				// Verify citing works reference the original work
 				for (const citingWork of citingWorks.results) {
 					expect(citingWork.referenced_works).toBeDefined();
-					const referencesOriginal = citingWork.referenced_works?.includes(
+					const referencesOriginal = citingWork.referenced_works.includes(
 						`https://openalex.org/${KNOWN_IDS.WORK}`
 					);
 					expect(referencesOriginal).toBe(true);
@@ -555,7 +555,7 @@ describe("OpenAlex Client Integration Tests", () => {
 					for (const work of batch) {
 						expect(work.id).toBeDefined();
 						expect(work.publication_year).toBe(2023);
-						expect(work.open_access?.is_oa).toBe(true);
+						expect(work.open_access.is_oa).toBe(true);
 					}
 
 					// Stop after processing 2 batches for testing
@@ -682,23 +682,17 @@ describe("OpenAlex Client Integration Tests", () => {
 			expect(typeof work.cited_by_count).toBe("number");
 
 			// Array fields
-			if (work.authorships) {
-				expect(Array.isArray(work.authorships)).toBe(true);
-				for (const authorship of work.authorships) {
-					expect(authorship.author).toBeDefined();
-					if (authorship.author) {
-						expect(typeof authorship.author.id).toBe("string");
-						expect(typeof authorship.author.display_name).toBe("string");
-					}
-				}
+			expect(Array.isArray(work.authorships)).toBe(true);
+			for (const authorship of work.authorships) {
+				expect(authorship.author).toBeDefined();
+				expect(typeof authorship.author.id).toBe("string");
+				expect(typeof authorship.author.display_name).toBe("string");
 			}
 
-			if (work.referenced_works) {
-				expect(Array.isArray(work.referenced_works)).toBe(true);
-				for (const refWork of work.referenced_works) {
-					expect(typeof refWork).toBe("string");
-					expect(refWork.startsWith("https://openalex.org/")).toBe(true);
-				}
+			expect(Array.isArray(work.referenced_works)).toBe(true);
+			for (const refWork of work.referenced_works) {
+				expect(typeof refWork).toBe("string");
+				expect(refWork.startsWith("https://openalex.org/")).toBe(true);
 			}
 		});
 
