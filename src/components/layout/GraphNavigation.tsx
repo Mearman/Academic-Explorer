@@ -35,6 +35,7 @@ import { useLayout } from "@/lib/graph/providers/xyflow/use-layout";
 import type { GraphNode, EntityType, ExternalIdentifier } from "@/lib/graph/types";
 import { EntityDetector } from "@/lib/graph/utils/entity-detection";
 import { useGraphData } from "@/hooks/use-graph-data";
+import { useEntityInteraction, INTERACTION_PRESETS } from "@/hooks/use-entity-interaction";
 import { useContextMenu } from "@/hooks/use-context-menu";
 import { NodeContextMenu } from "@/components/layout/NodeContextMenu";
 import { logger } from "@/lib/logger";
@@ -199,6 +200,32 @@ const GraphNavigationInner: React.FC<GraphNavigationProps> = ({ className, style
 		}, "GraphNavigation");
 	}, [reactFlowInstance]);
 
+	// Use shared entity interaction logic with centerOnNode function
+	const { interactWithEntity } = useEntityInteraction(centerOnNode);
+
+	// Custom graph node click handler that includes URL hash updates
+	const handleGraphNodeClick = useCallback(async (node: GraphNode) => {
+		// Use shared entity interaction logic with full graph node preset
+		await interactWithEntity(
+			node.entityId,
+			node.type,
+			INTERACTION_PRESETS.GRAPH_NODE_CLICK,
+			node
+		);
+
+		// Handle URL hash update locally (not in shared hook)
+		const cleanId = EntityDetector.extractOpenAlexId(node.entityId);
+		const newHashPath = `#/${node.type}/${cleanId}`;
+
+		// Set programmatic navigation flag to prevent hashchange handler loops
+		isProgrammaticNavigationRef.current = true;
+		window.history.pushState(null, "", newHashPath);
+
+		setTimeout(() => {
+			isProgrammaticNavigationRef.current = false;
+		}, 10);
+	}, [interactWithEntity]);
+
 	const { isRunning: _isLayoutRunning, restartLayout } = useLayout(
 		currentLayout,
 		{
@@ -247,51 +274,8 @@ const GraphNavigationInner: React.FC<GraphNavigationProps> = ({ className, style
 		// Set up navigation events
 		graphProvider.setEvents({
 			onNodeClick: (node: GraphNode) => {
-				// Extract clean OpenAlex ID from potential URL
-				const cleanId = EntityDetector.extractOpenAlexId(node.entityId);
-
-				// Update URL to hash-based route structure for bookmarking
-				const newHashPath = `#/${node.type}/${cleanId}`;
-
-				// Set flag to prevent hashchange handler from firing
-				isProgrammaticNavigationRef.current = true;
-				window.history.pushState(null, "", newHashPath);
-
-				// Reset flag after a brief delay to allow for potential hashchange events
-				setTimeout(() => {
-					isProgrammaticNavigationRef.current = false;
-				}, 10);
-
-				// Update preview in sidebar
-				setPreviewEntity(node.entityId);
-
-				// Select and pin the node first
-				const store = useGraphStore.getState();
-				store.selectNode(node.id);
-
-				// Only clear pinned nodes if auto-pin is disabled
-				// When auto-pin is enabled, preserve all pinned nodes from layout stabilization
-				if (!autoPinOnLayoutStabilization) {
-					store.clearAllPinnedNodes(); // Clear previous pinned nodes
-				}
-
-				store.pinNode(node.id); // Pin the new node at its current position
-
-				// Smoothly animate the pinned node to the center of the viewport
-				centerOnNode(node.id, node.position);
-
-				// Expand the node respecting traversal depth setting
-				void expandNode(node.id);
-
-				logger.info("ui", "Node clicked - Selecting, pinning, and expanding node", {
-					nodeId: node.id,
-					entityId: node.entityId,
-					entityType: node.type,
-					newHashPath,
-					selected: true,
-					pinned: true, // Now automatically pinned using multi-pin API
-					traversalDepth: store.traversalDepth
-				}, "GraphNavigation");
+				// Use shared entity interaction logic
+				void handleGraphNodeClick(node);
 			},
 
 
@@ -313,7 +297,7 @@ const GraphNavigationInner: React.FC<GraphNavigationProps> = ({ className, style
 		return () => {
 			graphProvider.destroy();
 		};
-	}, [reactFlowInstance, navigate, setProvider, setPreviewEntity, loadEntityIntoGraph, expandNode, centerOnNode, autoPinOnLayoutStabilization]);
+	}, [reactFlowInstance, navigate, setProvider, setPreviewEntity, loadEntityIntoGraph, expandNode, centerOnNode, autoPinOnLayoutStabilization, handleGraphNodeClick]);
 
 	// Sync store data with XYFlow using incremental updates (applying visibility filters)
 	useEffect(() => {
