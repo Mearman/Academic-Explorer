@@ -47,8 +47,14 @@ interface ExpansionSettingsState {
 
 // Initialize with default settings
 const initializeDefaultSettings = (): Record<ExpansionTarget, ExpansionSettings> => {
+	// Get all possible expansion targets (both entity types and relation types)
+	const allEntityTypes: ExpansionTarget[] = [
+		"works", "authors", "sources", "institutions", "topics", "concepts", "publishers", "funders", "keywords", "geo"
+	];
+	const allRelationTypes: ExpansionTarget[] = Object.values(RelationType);
+	const allTargets = [...allEntityTypes, ...allRelationTypes];
+
 	// Create properly typed settings object by building it incrementally
-	const allTargets = Object.values(RelationType);
 	const firstTarget = allTargets[0];
 	const firstSetting = getDefaultSettingsForTarget(firstTarget);
 
@@ -57,9 +63,9 @@ const initializeDefaultSettings = (): Record<ExpansionTarget, ExpansionSettings>
 	};
 
 	// Add remaining targets
-	allTargets.slice(1).forEach(relationType => {
-		const defaultSetting = getDefaultSettingsForTarget(relationType);
-		settings[relationType] = defaultSetting;
+	allTargets.slice(1).forEach(target => {
+		const defaultSetting = getDefaultSettingsForTarget(target);
+		settings[target] = defaultSetting;
 	});
 
 	return settings;
