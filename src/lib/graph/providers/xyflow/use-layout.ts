@@ -122,7 +122,7 @@ export function useLayout(
 		// Using fixed D3 force parameters
 
 		// Fixed D3 force parameters - consistent regardless of pinned nodes
-		const seed = 42;
+		const seed = 0;
 		const hasPinnedNodes = pinnedNodes.size > 0;
 		const pinnedNodeCount = pinnedNodes.size;
 
