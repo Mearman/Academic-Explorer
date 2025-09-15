@@ -278,6 +278,8 @@ jobs:
 
           # Run semantic-release to handle everything automatically
           npx semantic-release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Check if release was created
         id: check-release
