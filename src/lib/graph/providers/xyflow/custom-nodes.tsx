@@ -52,19 +52,20 @@ const PinToggleButton: React.FC<PinToggleButtonProps> = ({ nodeId, isPinned, cla
 			className={`nodrag ${className || ""}`}
 			onClick={handleTogglePin}
 			style={{
-				position: "absolute",
-				top: "4px",
-				right: "4px",
 				background: "rgba(0, 0, 0, 0.7)",
 				border: "none",
-				borderRadius: "4px",
-				padding: "2px",
+				borderRadius: "0px 8px 0px 0px", // Only top-right corner rounded
+				padding: "0px",
+				margin: "0px",
 				display: "flex",
 				alignItems: "center",
 				justifyContent: "center",
 				cursor: "pointer",
 				transition: "all 0.2s ease",
-				zIndex: 10,
+				width: "20px",
+				alignSelf: "stretch", // Explicitly stretch to fill parent height
+				flexShrink: 0,
+				boxSizing: "border-box" // Ensure proper box model
 			}}
 			onMouseEnter={(e) => {
 				e.currentTarget.style.background = "rgba(0, 0, 0, 0.9)";
@@ -75,9 +76,9 @@ const PinToggleButton: React.FC<PinToggleButtonProps> = ({ nodeId, isPinned, cla
 			title={isPinned ? "Unpin node" : "Pin node"}
 		>
 			{isPinned ? (
-				<IconPinFilled size={12} style={{ color: "#ffc107" }} />
+				<IconPinFilled size={10} style={{ color: "#ffc107" }} />
 			) : (
-				<IconPin size={12} style={{ color: "#ffffff" }} />
+				<IconPin size={10} style={{ color: "#ffffff" }} />
 			)}
 		</button>
 	);
@@ -104,7 +105,7 @@ interface CustomNodeProps {
 
 // Base node styles
 const baseNodeStyle: React.CSSProperties = {
-	padding: "8px 12px",
+	padding: "0px", // Remove padding so top bar can extend to edges
 	borderRadius: "8px",
 	border: "none",
 	fontSize: "11px",
@@ -118,7 +119,7 @@ const baseNodeStyle: React.CSSProperties = {
 	lineHeight: "1.2",
 	width: "fit-content",
 	height: "fit-content",
-	position: "relative", // Enable absolute positioning for pin button
+	position: "relative", // Keep relative for handle positioning
 };
 
 // Entity-specific colors
@@ -248,26 +249,34 @@ export const CustomNode: React.FC<CustomNodeProps> = ({ data, selected }) => {
 				style={{ background: "#555", width: "8px", height: "8px" }}
 			/>
 
-			{/* Pin toggle button */}
-			<PinToggleButton nodeId={data.entityId} isPinned={isNodePinned} />
-
-			{/* Node content */}
-			<div style={{ marginBottom: "2px", display: "flex", alignItems: "center", gap: "4px" }}>
-				<span>{data.label}</span>
+			{/* Top bar with node type and pin button - flush to edges */}
+			<div style={{
+				display: "flex",
+				justifyContent: "space-between",
+				alignItems: "stretch", // Stretch children to full height
+				backgroundColor: "rgba(0,0,0,0.2)",
+				padding: "0px", // Remove all padding
+				borderRadius: "8px 8px 0 0", // Only top corners rounded
+				fontSize: "9px",
+				opacity: 0.8,
+				minHeight: "24px" // Set explicit height
+			}}>
+				<span style={{
+					display: "flex",
+					alignItems: "center",
+					paddingLeft: "8px" // Only the text gets padding
+				}}>{typeLabel}</span>
+				<PinToggleButton nodeId={data.entityId} isPinned={isNodePinned} />
 			</div>
 
-			{/* Entity type badge */}
-			<div
-				style={{
-					fontSize: "9px",
-					opacity: 0.8,
-					backgroundColor: "rgba(0,0,0,0.2)",
-					padding: "1px 4px",
-					borderRadius: "3px",
-					marginBottom: "2px",
-				}}
-			>
-				{typeLabel}
+			{/* Title centered across full width with proper padding */}
+			<div style={{
+				textAlign: "center",
+				wordWrap: "break-word",
+				lineHeight: "1.2",
+				padding: "8px 12px 4px 12px" // Add padding that was removed from parent
+			}}>
+				{data.label}
 			</div>
 
 			{/* External ID (if available) */}
@@ -280,6 +289,7 @@ export const CustomNode: React.FC<CustomNodeProps> = ({ data, selected }) => {
 						overflow: "hidden",
 						textOverflow: "ellipsis",
 						whiteSpace: "nowrap",
+						padding: "0 12px" // Add horizontal padding
 					}}
 				>
 					{primaryExternalId.type.toUpperCase()}: {primaryExternalId.value}
@@ -288,7 +298,12 @@ export const CustomNode: React.FC<CustomNodeProps> = ({ data, selected }) => {
 
 			{/* Metadata indicators */}
 			{data.metadata && (
-				<div style={{ fontSize: "8px", opacity: 0.6, marginTop: "2px" }}>
+				<div style={{
+					fontSize: "8px",
+					opacity: 0.6,
+					marginTop: "2px",
+					padding: "0 12px 8px 12px" // Add padding and bottom spacing
+				}}>
 					{data.metadata.year && (
 						<span style={{ marginRight: "4px", display: "inline-flex", alignItems: "center", gap: "2px" }}>
 							<IconCalendar size={12} /> {data.metadata.year}
@@ -340,21 +355,55 @@ export const WorkNode: React.FC<CustomNodeProps> = ({ data, selected }) => {
 			<Handle type="source" position={Position.Bottom} id="bottom-source" style={{ background: "#555", width: "8px", height: "8px" }} />
 			<Handle type="source" position={Position.Left} id="left-source" style={{ background: "#555", width: "8px", height: "8px" }} />
 
-			{/* Pin toggle button */}
-			<PinToggleButton nodeId={data.entityId} isPinned={isNodePinned} />
+			{/* Top bar with node type and pin button - flush to edges */}
+			<div style={{
+				display: "flex",
+				justifyContent: "space-between",
+				alignItems: "stretch", // Stretch children to full height
+				backgroundColor: "rgba(0,0,0,0.2)",
+				padding: "0px", // Remove all padding
+				borderRadius: "8px 8px 0 0", // Only top corners rounded
+				fontSize: "9px",
+				opacity: 0.8,
+				minHeight: "24px" // Set explicit height
+			}}>
+				<span style={{
+					display: "flex",
+					alignItems: "center",
+					paddingLeft: "8px" // Only the text gets padding
+				}}>Work</span>
+				<PinToggleButton nodeId={data.entityId} isPinned={isNodePinned} />
+			</div>
 
-			<div style={{ marginBottom: "4px", display: "flex", alignItems: "center", gap: "4px" }}>
+			{/* Title with icon centered across full width with proper padding */}
+			<div style={{
+				display: "flex",
+				alignItems: "center",
+				justifyContent: "center",
+				gap: "4px",
+				wordWrap: "break-word",
+				lineHeight: "1.2",
+				padding: "8px 12px 4px 12px" // Add padding that was removed from parent
+			}}>
 				<IconFile size={14} /> {data.label}
 			</div>
 
 			{data.metadata?.year && (
-				<div style={{ fontSize: "9px", opacity: 0.8 }}>
+				<div style={{
+					fontSize: "9px",
+					opacity: 0.8,
+					padding: "0 12px"
+				}}>
 					{data.metadata.year}
 				</div>
 			)}
 
 			{data.metadata?.citationCount && (
-				<div style={{ fontSize: "8px", opacity: 0.7 }}>
+				<div style={{
+					fontSize: "8px",
+					opacity: 0.7,
+					padding: "0 12px 8px 12px"
+				}}>
 					{data.metadata.citationCount} citations
 				</div>
 			)}
@@ -394,11 +443,30 @@ export const AuthorNode: React.FC<CustomNodeProps> = ({ data, selected }) => {
 			<Handle type="source" position={Position.Bottom} id="bottom-source" style={{ background: "#555", width: "8px", height: "8px" }} />
 			<Handle type="source" position={Position.Left} id="left-source" style={{ background: "#555", width: "8px", height: "8px" }} />
 
-			{/* Pin toggle button */}
-			<PinToggleButton nodeId={data.entityId} isPinned={isNodePinned} />
+			{/* Pin button positioned at top-right edge */}
+			<div style={{ position: "relative" }}>
+				<div style={{
+					position: "absolute",
+					top: "0px",
+					right: "0px",
+					zIndex: 10
+				}}>
+					<PinToggleButton nodeId={data.entityId} isPinned={isNodePinned} />
+				</div>
 
-			<div style={{ marginBottom: "4px", display: "flex", alignItems: "center", gap: "4px" }}>
-				<IconUser size={14} /> {data.label}
+				{/* Title with icon centered across full width */}
+				<div style={{
+					display: "flex",
+					alignItems: "center",
+					justifyContent: "center",
+					gap: "4px",
+					wordWrap: "break-word",
+					lineHeight: "1.2",
+					paddingTop: "2px", // Small padding to avoid overlap with pin
+					marginBottom: "4px"
+				}}>
+					<IconUser size={14} /> {data.label}
+				</div>
 			</div>
 
 			{orcid && (
@@ -442,11 +510,30 @@ export const SourceNode: React.FC<CustomNodeProps> = ({ data, selected }) => {
 			<Handle type="source" position={Position.Bottom} id="bottom-source" style={{ background: "#555", width: "8px", height: "8px" }} />
 			<Handle type="source" position={Position.Left} id="left-source" style={{ background: "#555", width: "8px", height: "8px" }} />
 
-			{/* Pin toggle button */}
-			<PinToggleButton nodeId={data.entityId} isPinned={isNodePinned} />
+			{/* Pin button positioned at top-right edge */}
+			<div style={{ position: "relative" }}>
+				<div style={{
+					position: "absolute",
+					top: "0px",
+					right: "0px",
+					zIndex: 10
+				}}>
+					<PinToggleButton nodeId={data.entityId} isPinned={isNodePinned} />
+				</div>
 
-			<div style={{ marginBottom: "4px", display: "flex", alignItems: "center", gap: "4px" }}>
-				<IconBook size={14} /> {data.label}
+				{/* Title with icon centered across full width */}
+				<div style={{
+					display: "flex",
+					alignItems: "center",
+					justifyContent: "center",
+					gap: "4px",
+					wordWrap: "break-word",
+					lineHeight: "1.2",
+					paddingTop: "2px", // Small padding to avoid overlap with pin
+					marginBottom: "4px"
+				}}>
+					<IconBook size={14} /> {data.label}
+				</div>
 			</div>
 
 			{issn && (
@@ -490,11 +577,30 @@ export const InstitutionNode: React.FC<CustomNodeProps> = ({ data, selected }) =
 			<Handle type="source" position={Position.Bottom} id="bottom-source" style={{ background: "#555", width: "8px", height: "8px" }} />
 			<Handle type="source" position={Position.Left} id="left-source" style={{ background: "#555", width: "8px", height: "8px" }} />
 
-			{/* Pin toggle button */}
-			<PinToggleButton nodeId={data.entityId} isPinned={isNodePinned} />
+			{/* Pin button positioned at top-right edge */}
+			<div style={{ position: "relative" }}>
+				<div style={{
+					position: "absolute",
+					top: "0px",
+					right: "0px",
+					zIndex: 10
+				}}>
+					<PinToggleButton nodeId={data.entityId} isPinned={isNodePinned} />
+				</div>
 
-			<div style={{ marginBottom: "4px", display: "flex", alignItems: "center", gap: "4px" }}>
-				<IconBuilding size={14} /> {data.label}
+				{/* Title with icon centered across full width */}
+				<div style={{
+					display: "flex",
+					alignItems: "center",
+					justifyContent: "center",
+					gap: "4px",
+					wordWrap: "break-word",
+					lineHeight: "1.2",
+					paddingTop: "2px", // Small padding to avoid overlap with pin
+					marginBottom: "4px"
+				}}>
+					<IconBuilding size={14} /> {data.label}
+				</div>
 			</div>
 
 			{ror && (
