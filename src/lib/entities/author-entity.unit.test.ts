@@ -154,8 +154,10 @@ describe("AuthorEntity", () => {
 			expect(result.edges).toHaveLength(2);
 			expect(mockClient.getWorks).toHaveBeenCalledWith({
 				filter: `authorships.author.id:${entityId}`,
-				per_page: Math.min(options.limit || 10, 8),
-				sort: "publication_year:desc"
+				page: 1,
+				per_page: 200,
+				select: undefined,
+				sort: undefined
 			});
 		});
 

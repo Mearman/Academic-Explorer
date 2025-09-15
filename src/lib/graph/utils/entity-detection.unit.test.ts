@@ -125,15 +125,6 @@ describe("EntityDetector", () => {
 				});
 			});
 
-			it("should detect Geo entities", () => {
-				const result = detector.detectEntityIdentifier("G123456789");
-				expect(result).toEqual({
-					entityType: "geo",
-					idType: "openalex",
-					normalizedId: "G123456789",
-					originalInput: "G123456789"
-				});
-			});
 
 			it("should handle case insensitive OpenAlex IDs", () => {
 				const result = detector.detectEntityIdentifier("w123456789");
@@ -575,11 +566,10 @@ describe("EntityDetector", () => {
 		it("should handle all EntityType values", () => {
 			const entityTypes: EntityType[] = [
 				"works", "authors", "sources", "institutions", "topics",
-				"concepts", "publishers", "funders", "keywords", "geo"
-			];
+				"concepts", "publishers", "funders", "keywords"			];
 
 			for (let i = 0; i < entityTypes.length; i++) {
-				const prefix = ["W", "A", "S", "I", "T", "C", "P", "F", "K", "G"][i];
+				const prefix = ["W", "A", "S", "I", "T", "C", "P", "F", "K"][i];
 				const result = detector.detectEntityIdentifier(`${prefix}123456789`);
 				expect(result.entityType).toBe(entityTypes[i]);
 			}
