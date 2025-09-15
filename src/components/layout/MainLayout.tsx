@@ -12,6 +12,8 @@ import { useThemeColors } from "@/hooks/use-theme-colors";
 import { GraphNavigation } from "./GraphNavigation";
 import { LeftSidebar } from "./LeftSidebar";
 import { RightSidebar } from "./RightSidebar";
+import { LeftRibbon } from "./LeftRibbon";
+import { RightRibbon } from "./RightRibbon";
 
 interface MainLayoutProps {
   children?: React.ReactNode;
@@ -83,13 +85,13 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
 		<AppShell
 			header={{ height: 60 }}
 			navbar={{
-				width: { base: 280, sm: 300, md: 350 },
-				collapsed: { desktop: !leftSidebarEffectivelyVisible, mobile: !leftSidebarEffectivelyVisible },
+				width: leftSidebarEffectivelyVisible ? { base: 280, sm: 300, md: 350 } : 60,
+				collapsed: { mobile: !leftSidebarEffectivelyVisible },
 				breakpoint: "sm"
 			}}
 			aside={{
-				width: { base: 280, sm: 300, md: 350 },
-				collapsed: { desktop: !rightSidebarEffectivelyVisible, mobile: !rightSidebarEffectivelyVisible },
+				width: rightSidebarEffectivelyVisible ? { base: 280, sm: 300, md: 350 } : 60,
+				collapsed: { mobile: !rightSidebarEffectivelyVisible },
 				breakpoint: "sm"
 			}}
 			padding={0}
@@ -207,7 +209,7 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
 
 			{/* Left Sidebar - Search and Filters */}
 			<AppShell.Navbar>
-				<LeftSidebar />
+				{leftSidebarEffectivelyVisible ? <LeftSidebar /> : <LeftRibbon />}
 			</AppShell.Navbar>
 
 			{/* Main Graph Area */}
@@ -252,7 +254,7 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
 
 			{/* Right Sidebar - Entity Details and Preview */}
 			<AppShell.Aside style={{ height: "100%" }}>
-				<RightSidebar />
+				{rightSidebarEffectivelyVisible ? <RightSidebar /> : <RightRibbon />}
 			</AppShell.Aside>
 		</AppShell>
 	);
