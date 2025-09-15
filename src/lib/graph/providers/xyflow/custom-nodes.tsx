@@ -141,8 +141,6 @@ const getEntityColor = (entityType: EntityType): string => {
 			return "#e67e22";
 		case "keywords":
 			return "#34495e";
-		case "geo":
-			return "#16a085";
 		default:
 			return "#95a5a6";
 	}
@@ -185,8 +183,6 @@ const getEntityTypeLabel = (entityType: EntityType): string => {
 			return "Funder";
 		case "keywords":
 			return "Keyword";
-		case "geo":
-			return "Location";
 		default:
 			return "Entity";
 	}
