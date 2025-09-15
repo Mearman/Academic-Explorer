@@ -30,6 +30,7 @@ describe('AuthorEntity', () => {
     // Create comprehensive mock client
     mockClient = {
       getEntity: vi.fn(),
+      getWorks: vi.fn(),
       search: vi.fn(),
       works: {
         search: vi.fn(),
@@ -104,8 +105,12 @@ describe('AuthorEntity', () => {
 
   describe('expand', () => {
     const entityId = 'https://openalex.org/A5025875274';
-    const limit = 10;
-    const options = {};
+    const context = {
+      entityId: 'https://openalex.org/A5025875274',
+      entityType: 'authors' as const,
+      client: mockClient
+    };
+    const options = { limit: 10 };
 
     it('should successfully expand author with valid works response', async () => {
       const mockWorksResponse: OpenAlexResponse<Work> = {
@@ -133,15 +138,16 @@ describe('AuthorEntity', () => {
         ]
       };
 
-      mockClient.works.search.mockResolvedValue(mockWorksResponse);
+      mockClient.getWorks.mockResolvedValue(mockWorksResponse);
 
-      const result = await authorEntity.expand(entityId, limit, options);
+      const result = await authorEntity.expand(context, options);
 
-      expect(result.nodeCount).toBe(2);
-      expect(result.edgeCount).toBe(2);
-      expect(mockClient.works.search).toHaveBeenCalledWith({
+      expect(result.nodes).toHaveLength(2);
+      expect(result.edges).toHaveLength(2);
+      expect(mockClient.getWorks).toHaveBeenCalledWith({
         filter: `authorships.author.id:${entityId}`,
-        perPage: limit
+        per_page: Math.min(options.limit || 10, 8),
+        sort: "publication_year:desc"
       });
     });
 
@@ -156,26 +162,26 @@ describe('AuthorEntity', () => {
         results: []
       };
 
-      mockClient.works.search.mockResolvedValue(emptyResponse);
+      mockClient.getWorks.mockResolvedValue(emptyResponse);
 
-      const result = await authorEntity.expand(entityId, limit, options);
+      const result = await authorEntity.expand(context, options);
 
-      expect(result.nodeCount).toBe(0);
-      expect(result.edgeCount).toBe(0);
+      expect(result.nodes).toHaveLength(0);
+      expect(result.edges).toHaveLength(0);
       expect(logger.error).not.toHaveBeenCalled();
     });
 
     describe('error handling', () => {
       it('should handle undefined response from works search', async () => {
-        mockClient.works.search.mockResolvedValue(undefined as any);
+        mockClient.getWorks.mockResolvedValue(undefined as any);
 
-        const result = await authorEntity.expand(entityId, limit, options);
+        const result = await authorEntity.expand(context, options);
 
-        expect(result.nodeCount).toBe(0);
-        expect(result.edgeCount).toBe(0);
+        expect(result.nodes).toHaveLength(0);
+        expect(result.edges).toHaveLength(0);
         expect(logger.error).toHaveBeenCalledWith(
-          expect.stringContaining('Cannot read properties of undefined'),
-          expect.any(String),
+          "graph",
+          "Works response is undefined",
           entityId
         );
       });
@@ -191,15 +197,15 @@ describe('AuthorEntity', () => {
           // Missing 'results' property
         };
 
-        mockClient.works.search.mockResolvedValue(responseWithoutResults as any);
+        mockClient.getWorks.mockResolvedValue(responseWithoutResults as any);
 
-        const result = await authorEntity.expand(entityId, limit, options);
+        const result = await authorEntity.expand(context, options);
 
-        expect(result.nodeCount).toBe(0);
-        expect(result.edgeCount).toBe(0);
+        expect(result.nodes).toHaveLength(0);
+        expect(result.edges).toHaveLength(0);
         expect(logger.error).toHaveBeenCalledWith(
-          expect.stringContaining('Cannot read properties of undefined'),
-          expect.any(String),
+          "graph",
+          "Works response missing results property",
           entityId
         );
       });
@@ -215,34 +221,34 @@ describe('AuthorEntity', () => {
           results: null
         };
 
-        mockClient.works.search.mockResolvedValue(responseWithNullResults as any);
+        mockClient.getWorks.mockResolvedValue(responseWithNullResults as any);
 
-        const result = await authorEntity.expand(entityId, limit, options);
+        const result = await authorEntity.expand(context, options);
 
         // Should handle null gracefully without throwing
-        expect(result.nodeCount).toBe(0);
-        expect(result.edgeCount).toBe(0);
+        expect(result.nodes).toHaveLength(0);
+        expect(result.edges).toHaveLength(0);
       });
 
       it('should handle API rejection with proper error logging', async () => {
         const apiError = new Error('API Error');
-        mockClient.works.search.mockRejectedValue(apiError);
+        mockClient.getWorks.mockRejectedValue(apiError);
 
-        const result = await authorEntity.expand(entityId, limit, options);
+        const result = await authorEntity.expand(context, options);
 
-        expect(result.nodeCount).toBe(0);
-        expect(result.edgeCount).toBe(0);
+        expect(result.nodes).toHaveLength(0);
+        expect(result.edges).toHaveLength(0);
         expect(logger.error).toHaveBeenCalled();
       });
 
       it('should handle rate limiting errors', async () => {
         const rateLimitError = new Error('429 TOO MANY REQUESTS');
-        mockClient.works.search.mockRejectedValue(rateLimitError);
+        mockClient.getWorks.mockRejectedValue(rateLimitError);
 
-        const result = await authorEntity.expand(entityId, limit, options);
+        const result = await authorEntity.expand(context, options);
 
-        expect(result.nodeCount).toBe(0);
-        expect(result.edgeCount).toBe(0);
+        expect(result.nodes).toHaveLength(0);
+        expect(result.edges).toHaveLength(0);
         expect(logger.error).toHaveBeenCalled();
       });
     });
