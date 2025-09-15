@@ -339,7 +339,8 @@ export class AuthorsApi {
 					});
 				}
 
-				const stats = collaboratorStats.get(coauthorId)!;
+				const stats = collaboratorStats.get(coauthorId);
+				if (!stats) return;
 				stats.count++;
 				if (work.publication_year) {
 					stats.years.push(work.publication_year);
