@@ -88,6 +88,7 @@ describe("GraphDataService", () => {
 					display_name: "Test Author",
 					orcid: "0000-0000-0000-0000",
 				},
+				author_position: "first",
 				institutions: [
 					{
 						id: "I123456789",
@@ -106,6 +107,12 @@ describe("GraphDataService", () => {
 		},
 		citations_count: 100,
 		referenced_works_count: 50,
+		referenced_works: ["W111111111", "W222222222", "W333333333"],
+		open_access: {
+			is_oa: true,
+			oa_date: "2023-01-01",
+			oa_url: "https://example.com/open-access-url",
+		},
 	} as Work;
 
 	const mockAuthorEntity: Author = {
@@ -146,6 +153,109 @@ describe("GraphDataService", () => {
 		lineage: ["I987654321"],
 	} as InstitutionEntity;
 
+	// Additional mock entities for complex tests
+	const mockAuthor1: Author = {
+		id: "A111111111",
+		display_name: "First Author",
+		orcid: "0000-0000-0000-0001",
+		works_count: 20,
+		cited_by_count: 300,
+		affiliations: [
+			{
+				institution: {
+					id: "I111111111",
+					display_name: "First Institution",
+					ror: "01abc11111",
+				},
+			},
+		],
+	} as Author;
+
+	const mockAuthor2: Author = {
+		id: "A222222222",
+		display_name: "Second Author",
+		orcid: "0000-0000-0000-0002",
+		works_count: 15,
+		cited_by_count: 250,
+		affiliations: [
+			{
+				institution: {
+					id: "I222222222",
+					display_name: "Second Institution",
+					ror: "01abc22222",
+				},
+			},
+		],
+	} as Author;
+
+	const mockSource1: Source = {
+		id: "S111111111",
+		display_name: "Primary Source",
+		issn_l: "1111-1111",
+		works_count: 500,
+		cited_by_count: 25000,
+		publisher: {
+			id: "P111111111",
+			display_name: "Primary Publisher",
+		},
+	} as Source;
+
+	// Complex work entity for integration tests
+	const _mockComplexWork: Work = {
+		id: "W123456789",
+		display_name: "Test Work",
+		type: "article",
+		publication_year: 2023,
+		doi: "10.1234/test",
+		authorships: [
+			{
+				author: {
+					id: "A111111111",
+					display_name: "First Author",
+					orcid: "0000-0000-0000-0001",
+				},
+				author_position: "first",
+				institutions: [
+					{
+						id: "I111111111",
+						display_name: "First Institution",
+						ror: "01abc11111",
+					},
+				],
+			},
+			{
+				author: {
+					id: "A222222222",
+					display_name: "Second Author",
+					orcid: "0000-0000-0000-0002",
+				},
+				author_position: "middle",
+				institutions: [
+					{
+						id: "I222222222",
+						display_name: "Second Institution",
+						ror: "01abc22222",
+					},
+				],
+			},
+		],
+		primary_location: {
+			source: {
+				id: "S111111111",
+				display_name: "Primary Source",
+				issn_l: "1111-1111",
+			},
+		},
+		citations_count: 100,
+		referenced_works_count: 3,
+		referenced_works: ["W111111111", "W222222222", "W333333333"],
+		open_access: {
+			is_oa: true,
+			oa_date: "2023-01-01",
+			oa_url: "https://example.com/open-access-url",
+		},
+	} as Work;
+
 	beforeEach(() => {
 		queryClient = new QueryClient({
 			defaultOptions: {
@@ -170,9 +280,6 @@ describe("GraphDataService", () => {
 			pinnedNodes: new Set(),
 		};
 
-		// Mock useGraphStore properly
-		vi.mocked(useGraphStore.getState).mockReturnValue(mockStore);
-
 		// Mock detector
 		mockDetector = {
 			detectEntityIdentifier: vi.fn(),
@@ -189,8 +296,30 @@ describe("GraphDataService", () => {
 		vi.mocked(EntityFactory.isSupported).mockReturnValue(true);
 		vi.mocked(EntityFactory.create).mockReturnValue(mockEntity);
 
-		// Reset all mocks before creating service
-		vi.clearAllMocks();
+		// Mock useGraphStore properly AFTER other setup to avoid clearing
+		vi.mocked(useGraphStore.getState).mockReturnValue(mockStore);
+
+		// Setup getEntity mock to return appropriate mock data based on ID
+		vi.mocked(rateLimitedOpenAlex.getEntity).mockImplementation((id: string) => {
+			switch (id) {
+				case "W123456789":
+					return Promise.resolve(mockWorkEntity);
+				case "A123456789":
+					return Promise.resolve(mockAuthorEntity);
+				case "A111111111":
+					return Promise.resolve(mockAuthor1);
+				case "A222222222":
+					return Promise.resolve(mockAuthor2);
+				case "S123456789":
+					return Promise.resolve(mockSourceEntity);
+				case "S111111111":
+					return Promise.resolve(mockSource1);
+				case "I123456789":
+					return Promise.resolve(mockInstitutionEntity);
+				default:
+					return Promise.reject(new Error(`Entity not found: ${id}`));
+			}
+		});
 
 		service = new GraphDataService(queryClient);
 	});
@@ -217,10 +346,20 @@ describe("GraphDataService", () => {
 
 	describe("loadEntityGraph", () => {
 		beforeEach(() => {
-			mockDetector.detectEntityIdentifier.mockReturnValue({
-				entityType: "works",
-				normalizedId: "W123456789",
+			// Clear only specific mock call history, not all mocks
+			Object.values(mockStore).forEach((mockFn) => {
+				if (typeof mockFn === "function" && "mockClear" in mockFn) {
+					mockFn.mockClear();
+				}
 			});
+			vi.mocked(rateLimitedOpenAlex.getEntity).mockClear();
+			vi.mocked(logError).mockClear();
+
+			// Setup detector to handle multiple calls consistently
+			mockDetector.detectEntityIdentifier.mockImplementation((id: string) => ({
+				entityType: "works",
+				normalizedId: id,
+			}));
 			vi.mocked(rateLimitedOpenAlex.getEntity).mockResolvedValue(mockWorkEntity);
 		});
 
@@ -307,6 +446,9 @@ describe("GraphDataService", () => {
 
 	describe("loadEntityIntoGraph", () => {
 		beforeEach(() => {
+			// Clear API call history from previous tests
+			vi.mocked(rateLimitedOpenAlex.getEntity).mockClear();
+
 			mockDetector.detectEntityIdentifier.mockReturnValue({
 				entityType: "authors",
 				normalizedId: "A123456789",
@@ -429,6 +571,9 @@ describe("GraphDataService", () => {
 		const nodeId = "W123456789";
 
 		beforeEach(() => {
+			// Clear API call history from previous tests
+			vi.mocked(rateLimitedOpenAlex.getEntity).mockClear();
+
 			mockStore.nodes = new Map([
 				[
 					nodeId,
@@ -455,11 +600,40 @@ describe("GraphDataService", () => {
 
 		it("should expand node when forced", async () => {
 			vi.mocked(isNodeExpanded).mockReturnValue(true);
-			vi.mocked(rateLimitedOpenAlex.getEntity).mockResolvedValue(mockWorkEntity);
+
+			// Clear API mock calls for clean test state
+			vi.mocked(rateLimitedOpenAlex.getEntity).mockClear();
+
+			// Mock the entity.expand method to simulate successful expansion
+			const mockExpand = vi.fn().mockResolvedValue({
+				nodes: [
+					{
+						id: "related-node-1",
+						entityId: "A999999999",
+						type: "authors" as EntityType,
+						label: "Related Author",
+						metadata: {},
+						externalIds: [],
+					},
+				],
+				edges: [
+					{
+						id: "edge-1",
+						source: nodeId,
+						target: "related-node-1",
+						type: "authored",
+					},
+				],
+			});
+
+			// Override EntityFactory.create to return our mock entity
+			vi.mocked(EntityFactory.create).mockReturnValue({
+				expand: mockExpand,
+			});
 
 			await service.expandNode(nodeId, { force: true });
 
-			expect(rateLimitedOpenAlex.getEntity).toHaveBeenCalledWith(nodeId);
+			expect(mockExpand).toHaveBeenCalled();
 			expect(mockStore.addNodes).toHaveBeenCalled();
 			expect(mockStore.addEdges).toHaveBeenCalled();
 			expect(setNodeExpanded).toHaveBeenCalledWith(queryClient, nodeId, true);
@@ -484,10 +658,21 @@ describe("GraphDataService", () => {
 		it("should handle expansion errors", async () => {
 			vi.mocked(isNodeExpanded).mockReturnValue(false);
 			const expansionError = new Error("Expansion failed");
-			vi.mocked(rateLimitedOpenAlex.getEntity).mockRejectedValue(expansionError);
+
+			// Clear logError mock for clean test state
+			vi.mocked(logError).mockClear();
+
+			// Mock the entity.expand method to throw an error
+			const mockExpand = vi.fn().mockRejectedValue(expansionError);
+
+			// Override EntityFactory.create to return our mock entity
+			vi.mocked(EntityFactory.create).mockReturnValue({
+				expand: mockExpand,
+			});
 
 			await service.expandNode(nodeId);
 
+			// Check that logError was called with the expansion error
 			expect(logError).toHaveBeenCalledWith(
 				"Failed to expand node",
 				expansionError,
@@ -505,11 +690,33 @@ describe("GraphDataService", () => {
 		};
 
 		beforeEach(() => {
+			// Clear API call history from previous tests
+			vi.mocked(rateLimitedOpenAlex.getEntity).mockClear();
+			vi.mocked(rateLimitedOpenAlex.searchAll).mockClear();
+
+			// Clear store mock call history
+			Object.values(mockStore).forEach((mockFn) => {
+				if (typeof mockFn === "function" && "mockClear" in mockFn) {
+					mockFn.mockClear();
+				}
+			});
+
+			// Setup detector for search results
+			mockDetector.detectEntityIdentifier.mockImplementation((id: string) => ({
+				entityType: "works",
+				normalizedId: id,
+			}));
+
 			vi.mocked(rateLimitedOpenAlex.searchAll).mockResolvedValue({
 				works: [mockWorkEntity],
 				authors: [],
 				sources: [],
 				institutions: [],
+				topics: [],
+				publishers: [],
+				funders: [],
+				keywords: [],
+				geo: [],
 				meta: { count: 1, per_page: 25, page: 1 },
 			});
 		});
