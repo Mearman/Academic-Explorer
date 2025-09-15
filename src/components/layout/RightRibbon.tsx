@@ -19,7 +19,7 @@ import {
 } from "@tabler/icons-react";
 
 export const RightRibbon: React.FC = () => {
-	const { previewEntityId, setRightSidebarOpen } = useLayoutStore();
+	const { previewEntityId, expandSidebarToSection } = useLayoutStore();
 	const { selectedNodeId, hoveredNodeId, nodes } = useGraphStore();
 	const { colors } = useThemeColors();
 
@@ -30,11 +30,8 @@ export const RightRibbon: React.FC = () => {
 	const handleExpandSidebarToSection = (sectionKey: string, sectionName: string) => {
 		logger.info("ui", `Expanding right sidebar to ${sectionName} section`, { sectionKey });
 
-		// Expand the sidebar
-		setRightSidebarOpen(true);
-
-		// Expand the corresponding section in localStorage
-		localStorage.setItem(`sidebar-section-${sectionKey}`, JSON.stringify(true));
+		// Use the layout store to expand sidebar and section
+		expandSidebarToSection('right', sectionKey);
 
 		// Scroll to top after a brief delay to allow sidebar to expand
 		// The sidebar scrolls to the top to show the expanded section
