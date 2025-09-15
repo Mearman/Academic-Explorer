@@ -439,7 +439,7 @@ export class GraphDataService {
 		const edges: GraphEdge[] = [];
 
 		// Add author nodes and authorship edges
-		work.authorships?.slice(0, 5).forEach((authorship, index) => {
+		work.authorships.slice(0, 5).forEach((authorship, index) => {
 			const authorNode: GraphNode = {
 				id: authorship.author.id,
 				type: "authors" as EntityType,
@@ -495,7 +495,7 @@ export class GraphDataService {
 		}
 
 		// Add a few cited works (if available)
-		work.referenced_works?.slice(0, 3).forEach((citedWorkId, index) => {
+		work.referenced_works.slice(0, 3).forEach((citedWorkId, index) => {
 			// Create placeholder nodes for cited works (would need separate API calls to get full data)
 			const citedNode: GraphNode = {
 				id: citedWorkId,
@@ -527,7 +527,7 @@ export class GraphDataService {
 		const edges: GraphEdge[] = [];
 
 		// Add affiliated institutions
-		author.affiliations?.slice(0, 3).forEach((affiliation, index) => {
+		author.affiliations.slice(0, 3).forEach((affiliation, index) => {
 			const institutionNode: GraphNode = {
 				id: affiliation.institution.id,
 				type: "institutions" as EntityType,
@@ -705,7 +705,7 @@ export class GraphDataService {
 				const work = entity as Work;
 				metadata.year = work.publication_year;
 				metadata.citationCount = work.cited_by_count;
-				metadata.openAccess = work.open_access?.is_oa;
+				metadata.openAccess = work.open_access.is_oa;
 				break;
 			}
 
@@ -744,10 +744,9 @@ export class GraphDataService {
 
 		results.forEach((entity, index) => {
 			const detection = this.detector.detectEntityIdentifier(entity.id);
-			const entityType = detection.entityType as EntityType;
 
-			if (entityType) {
-				const node = this.createNodeFromEntity(entity, entityType);
+			if (detection.entityType) {
+				const node = this.createNodeFromEntity(entity, detection.entityType);
 				// Position nodes in a grid layout for search results
 				const cols = Math.ceil(Math.sqrt(results.length));
 				const row = Math.floor(index / cols);
