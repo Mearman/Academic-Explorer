@@ -13,7 +13,11 @@ export enum RelationType {
   PUBLISHED_IN = "published_in",
   FUNDED_BY = "funded_by",
   RELATED_TO = "related_to",
-  REFERENCES = "references"
+  REFERENCES = "references",
+  CITED = "cited", // Citation relationship (work A cites work B)
+  CITES = "cites", // Alternative citation naming
+  PUBLISHED_BY = "published_by", // Alternative publishing relationship
+  PART_OF = "part_of" // Institutional hierarchy
 }
 
 export interface Position {
