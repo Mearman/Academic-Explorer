@@ -9,6 +9,7 @@ import { rateLimitedOpenAlex } from "@/lib/openalex/rate-limited-client";
 import { EntityDetector } from "@/lib/graph/utils/entity-detection";
 import { EntityFactory, type ExpansionOptions } from "@/lib/entities";
 import { useGraphStore } from "@/stores/graph-store";
+import { useExpansionSettingsStore } from "@/stores/expansion-settings-store";
 import { logError, logger } from "@/lib/logger";
 import { RequestDeduplicationService, createRequestDeduplicationService } from "./request-deduplication-service";
 import {
@@ -26,6 +27,7 @@ import type {
 	SearchOptions,
 	GraphCache,
 } from "@/lib/graph/types";
+import type { ExpansionTarget } from "@/lib/graph/types/expansion-settings";
 import { RelationType } from "@/lib/graph/types";
 import type {
 	Work,
@@ -80,10 +82,7 @@ export class GraphDataService {
 				() => rateLimitedOpenAlex.getEntity(apiEntityId)
 			);
 
-			// Check if entity was successfully fetched
-			if (!entity) {
-				throw new Error(`Entity not found or failed to fetch: ${apiEntityId}`);
-			}
+			// Entity successfully fetched
 
 			// Transform to graph data
 			const { nodes, edges } = this.transformEntityToGraph(entity);
@@ -184,10 +183,7 @@ export class GraphDataService {
 				() => rateLimitedOpenAlex.getEntity(apiEntityId)
 			);
 
-			// Check if entity was successfully fetched
-			if (!entity) {
-				throw new Error(`Entity not found or failed to fetch: ${apiEntityId}`);
-			}
+			// Entity successfully fetched
 
 			// Transform to graph data
 			const { nodes, edges } = this.transformEntityToGraph(entity);
@@ -333,10 +329,7 @@ export class GraphDataService {
 				() => rateLimitedOpenAlex.getEntity(node.entityId)
 			);
 
-			// Check if entity was successfully fetched
-			if (!entity) {
-				throw new Error(`Entity not found or failed to fetch: ${node.entityId}`);
-			}
+			// Entity successfully fetched
 
 			// Extract full data from the entity
 			const fullNodeData = this.createNodeFromEntity(entity, node.type);
@@ -478,14 +471,34 @@ export class GraphDataService {
 			// Create entity instance using the factory
 			const entity = EntityFactory.create(node.type, rateLimitedOpenAlex);
 
-			// Expand the entity
+			// Get expansion settings for this entity type
+			const expansionSettingsStore = useExpansionSettingsStore.getState();
+			const expansionTarget = node.type as ExpansionTarget;
+			const expansionSettings = expansionSettingsStore.getSettings(expansionTarget);
+
+			// Log expansion settings usage
+			logger.debug("graph", "Retrieved expansion settings for node expansion", {
+				nodeId,
+				entityType: node.type,
+				expansionTarget,
+				settingsEnabled: expansionSettings.enabled,
+				settingsLimit: expansionSettings.limit,
+				sortsCount: expansionSettings.sorts.length,
+				filtersCount: expansionSettings.filters.length
+			}, "GraphDataService");
+
+			// Expand the entity with expansion settings
 			const context = {
 				entityId: node.entityId,
 				entityType: node.type,
 				client: rateLimitedOpenAlex
 			};
+			const enhancedOptions = {
+				...options,
+				expansionSettings
+			};
 
-			const relatedData = await entity.expand(context, options);
+			const relatedData = await entity.expand(context, enhancedOptions);
 
 			// Add new nodes and edges to the graph
 			store.addNodes(relatedData.nodes);

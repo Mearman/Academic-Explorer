@@ -57,7 +57,7 @@ vi.mock("@/lib/cache/graph-cache", () => ({
 	isNodeExpanded: vi.fn(),
 }));
 
-vi.mock("../request-deduplication-service", () => ({
+vi.mock("./request-deduplication-service", () => ({
 	createRequestDeduplicationService: vi.fn(),
 }));
 
@@ -71,7 +71,7 @@ import {
 	setNodeExpanded,
 	isNodeExpanded,
 } from "@/lib/cache/graph-cache";
-import { createRequestDeduplicationService } from "../request-deduplication-service";
+import { createRequestDeduplicationService } from "./request-deduplication-service";
 
 describe("GraphDataService", () => {
 	let service: GraphDataService;
@@ -310,36 +310,12 @@ describe("GraphDataService", () => {
 		// Mock useGraphStore properly AFTER other setup to avoid clearing
 		vi.mocked(useGraphStore.getState).mockReturnValue(mockStore);
 
-		// Mock deduplication service
+		// Mock deduplication service BEFORE creating the service
 		mockDeduplicationService = {
 			getEntity: vi.fn(),
 		};
 		vi.mocked(createRequestDeduplicationService).mockReturnValue(mockDeduplicationService);
 
-		// Setup deduplication service getEntity mock to return appropriate mock data based on ID
-		mockDeduplicationService.getEntity.mockImplementation((id: string) => {
-			// Handle both direct IDs and full URLs
-			const entityId = id.startsWith("https://openalex.org/") ? id.replace("https://openalex.org/", "") : id;
-
-			switch (entityId) {
-				case "W123456789":
-					return Promise.resolve(mockWorkEntity);
-				case "A123456789":
-					return Promise.resolve(mockAuthorEntity);
-				case "A111111111":
-					return Promise.resolve(mockAuthor1);
-				case "A222222222":
-					return Promise.resolve(mockAuthor2);
-				case "S123456789":
-					return Promise.resolve(mockSourceEntity);
-				case "S111111111":
-					return Promise.resolve(mockSource1);
-				case "I123456789":
-					return Promise.resolve(mockInstitutionEntity);
-				default:
-					return Promise.reject(new Error(`Entity not found: ${id}`));
-			}
-		});
 
 		// Setup getEntity mock to return appropriate mock data based on ID
 		vi.mocked(rateLimitedOpenAlex.getEntity).mockImplementation((id: string) => {
@@ -366,6 +342,7 @@ describe("GraphDataService", () => {
 			}
 		});
 
+		// Create service AFTER all mocks are properly set up
 		service = new GraphDataService(queryClient);
 	});
 
@@ -407,7 +384,7 @@ describe("GraphDataService", () => {
 				normalizedId: id,
 				idType: "openalex",
 			}));
-			vi.mocked(rateLimitedOpenAlex.getEntity).mockResolvedValue(mockWorkEntity);
+			mockDeduplicationService.getEntity.mockResolvedValue(mockWorkEntity);
 			mockDeduplicationService.getEntity.mockResolvedValue(mockWorkEntity);
 		});
 
@@ -426,10 +403,11 @@ describe("GraphDataService", () => {
 			expect(mockStore.setLoading).toHaveBeenCalledWith(false);
 			expect(logger.info).toHaveBeenCalledWith(
 				"graph",
-				"Entity graph loaded without auto-expansion",
+				"Entity graph loaded with placeholder nodes",
 				expect.objectContaining({
 					nodeCount: expect.any(Number),
 					edgeCount: expect.any(Number),
+					placeholderCount: expect.any(Number),
 				}),
 				"GraphDataService"
 			);
@@ -505,7 +483,7 @@ describe("GraphDataService", () => {
 				normalizedId: "A123456789",
 				idType: "openalex",
 			});
-			vi.mocked(rateLimitedOpenAlex.getEntity).mockResolvedValue(mockAuthorEntity);
+			mockDeduplicationService.getEntity.mockResolvedValue(mockAuthorEntity);
 			mockDeduplicationService.getEntity.mockResolvedValue(mockAuthorEntity);
 		});
 
@@ -826,7 +804,7 @@ describe("GraphDataService", () => {
 					entityType: "works",
 					normalizedId: "W123456789",
 				});
-				vi.mocked(rateLimitedOpenAlex.getEntity).mockResolvedValue(mockWorkEntity);
+				mockDeduplicationService.getEntity.mockResolvedValue(mockWorkEntity);
 
 				await service.loadEntityGraph("W123456789");
 
@@ -848,7 +826,7 @@ describe("GraphDataService", () => {
 					entityType: "authors",
 					normalizedId: "A123456789",
 				});
-				vi.mocked(rateLimitedOpenAlex.getEntity).mockResolvedValue(mockAuthorEntity);
+				mockDeduplicationService.getEntity.mockResolvedValue(mockAuthorEntity);
 
 				await service.loadEntityGraph("A123456789");
 
@@ -868,7 +846,7 @@ describe("GraphDataService", () => {
 					entityType: "sources",
 					normalizedId: "S123456789",
 				});
-				vi.mocked(rateLimitedOpenAlex.getEntity).mockResolvedValue(mockSourceEntity);
+				mockDeduplicationService.getEntity.mockResolvedValue(mockSourceEntity);
 
 				await service.loadEntityGraph("S123456789");
 
@@ -888,7 +866,7 @@ describe("GraphDataService", () => {
 					entityType: "institutions",
 					normalizedId: "I123456789",
 				});
-				vi.mocked(rateLimitedOpenAlex.getEntity).mockResolvedValue(mockInstitutionEntity);
+				mockDeduplicationService.getEntity.mockResolvedValue(mockInstitutionEntity);
 
 				await service.loadEntityGraph("I123456789");
 
@@ -915,7 +893,7 @@ describe("GraphDataService", () => {
 					entityType: "works",
 					normalizedId: "W123456789",
 				});
-				vi.mocked(rateLimitedOpenAlex.getEntity).mockResolvedValue(workWithDoi);
+				mockDeduplicationService.getEntity.mockResolvedValue(workWithDoi);
 
 				await service.loadEntityGraph("W123456789");
 
@@ -943,7 +921,7 @@ describe("GraphDataService", () => {
 					entityType: "authors",
 					normalizedId: "A123456789",
 				});
-				vi.mocked(rateLimitedOpenAlex.getEntity).mockResolvedValue(authorWithOrcid);
+				mockDeduplicationService.getEntity.mockResolvedValue(authorWithOrcid);
 
 				await service.loadEntityGraph("A123456789");
 
@@ -971,7 +949,7 @@ describe("GraphDataService", () => {
 					entityType: "sources",
 					normalizedId: "S123456789",
 				});
-				vi.mocked(rateLimitedOpenAlex.getEntity).mockResolvedValue(sourceWithIssn);
+				mockDeduplicationService.getEntity.mockResolvedValue(sourceWithIssn);
 
 				await service.loadEntityGraph("S123456789");
 
@@ -999,7 +977,7 @@ describe("GraphDataService", () => {
 					entityType: "institutions",
 					normalizedId: "I123456789",
 				});
-				vi.mocked(rateLimitedOpenAlex.getEntity).mockResolvedValue(institutionWithRor);
+				mockDeduplicationService.getEntity.mockResolvedValue(institutionWithRor);
 
 				await service.loadEntityGraph("I123456789");
 
@@ -1031,8 +1009,8 @@ describe("GraphDataService", () => {
 					entityType: "works",
 					normalizedId: "W123456789",
 				});
-				vi.mocked(rateLimitedOpenAlex.getEntity).mockClear();
-				vi.mocked(rateLimitedOpenAlex.getEntity).mockResolvedValueOnce(workWithMetadata);
+				mockDeduplicationService.getEntity.mockClear();
+				mockDeduplicationService.getEntity.mockResolvedValue(workWithMetadata);
 
 				await service.loadEntityGraph("W123456789");
 
@@ -1063,7 +1041,7 @@ describe("GraphDataService", () => {
 					entityType: "authors",
 					normalizedId: "A123456789",
 				});
-				vi.mocked(rateLimitedOpenAlex.getEntity).mockResolvedValue(authorWithMetadata);
+				mockDeduplicationService.getEntity.mockResolvedValue(authorWithMetadata);
 
 				await service.loadEntityGraph("A123456789");
 
@@ -1110,7 +1088,7 @@ describe("GraphDataService", () => {
 					entityType: "works",
 					normalizedId: "W123456789",
 				});
-				vi.mocked(rateLimitedOpenAlex.getEntity).mockResolvedValue(workWithRelations);
+				mockDeduplicationService.getEntity.mockResolvedValue(workWithRelations);
 
 				await service.loadEntityGraph("W123456789");
 
@@ -1206,7 +1184,7 @@ describe("GraphDataService", () => {
 				entityType: "works",
 				normalizedId: "X123456789",
 			});
-			vi.mocked(rateLimitedOpenAlex.getEntity).mockResolvedValueOnce(unknownEntity);
+			mockDeduplicationService.getEntity.mockResolvedValue(unknownEntity);
 
 			await service.loadEntityGraph("X123456789");
 
@@ -1232,7 +1210,7 @@ describe("GraphDataService", () => {
 				entityType: "works",
 				normalizedId: "W123456789",
 			});
-			vi.mocked(rateLimitedOpenAlex.getEntity).mockResolvedValue(minimalWork);
+			mockDeduplicationService.getEntity.mockResolvedValue(minimalWork);
 
 			await service.loadEntityGraph("W123456789");
 
@@ -1257,7 +1235,7 @@ describe("GraphDataService", () => {
 				entityType: "works",
 				normalizedId: "W123456789",
 			});
-			vi.mocked(rateLimitedOpenAlex.getEntity).mockResolvedValue(mockWorkEntity);
+			mockDeduplicationService.getEntity.mockResolvedValue(mockWorkEntity);
 
 			// Should not throw error, but log it
 			await service.loadEntityGraph("W123456789");
@@ -1343,7 +1321,7 @@ describe("GraphDataService", () => {
 				entityType: "works",
 				normalizedId: "W123456789",
 			});
-			vi.mocked(rateLimitedOpenAlex.getEntity).mockResolvedValueOnce(complexWork);
+			mockDeduplicationService.getEntity.mockResolvedValue(complexWork);
 
 			await service.loadEntityGraph("W123456789");
 
@@ -1448,7 +1426,7 @@ describe("GraphDataService", () => {
 	describe("error handling and null safety", () => {
 		describe("loadEntityIntoGraph null/undefined handling", () => {
 			it("should handle undefined entity response from API", async () => {
-				vi.mocked(rateLimitedOpenAlex.getEntity).mockResolvedValue(undefined);
+				mockDeduplicationService.getEntity.mockResolvedValue(undefined);
 
 				try {
 					await service.loadEntityIntoGraph("A5025875274", "authors");
@@ -1459,7 +1437,7 @@ describe("GraphDataService", () => {
 			});
 
 			it("should handle null entity response from API", async () => {
-				vi.mocked(rateLimitedOpenAlex.getEntity).mockResolvedValue(null);
+				mockDeduplicationService.getEntity.mockResolvedValue(null);
 
 				try {
 					await service.loadEntityIntoGraph("A5025875274", "authors");
@@ -1475,7 +1453,7 @@ describe("GraphDataService", () => {
 					// Missing 'id' property
 				};
 
-				vi.mocked(rateLimitedOpenAlex.getEntity).mockResolvedValue(entityWithoutId);
+				mockDeduplicationService.getEntity.mockResolvedValue(entityWithoutId);
 
 				try {
 					await service.loadEntityIntoGraph("A5025875274", "authors");
@@ -1488,7 +1466,7 @@ describe("GraphDataService", () => {
 
 		describe("loadPlaceholderNodeData null/undefined handling", () => {
 			it("should handle undefined institution response", async () => {
-				vi.mocked(rateLimitedOpenAlex.getEntity).mockResolvedValue(undefined);
+				mockDeduplicationService.getEntity.mockResolvedValue(undefined);
 
 				try {
 					await service.loadPlaceholderNodeData("https://openalex.org/I161548249", "institutions", "Bangor University");
@@ -1505,7 +1483,7 @@ describe("GraphDataService", () => {
 					// Missing 'ror' property that code might access
 				};
 
-				vi.mocked(rateLimitedOpenAlex.getEntity).mockResolvedValue(institutionWithoutRor);
+				mockDeduplicationService.getEntity.mockResolvedValue(institutionWithoutRor);
 
 				try {
 					await service.loadPlaceholderNodeData("https://openalex.org/I161548249", "institutions", "Bangor University");
@@ -1516,7 +1494,7 @@ describe("GraphDataService", () => {
 			});
 
 			it("should handle null institution response gracefully", async () => {
-				vi.mocked(rateLimitedOpenAlex.getEntity).mockResolvedValue(null);
+				mockDeduplicationService.getEntity.mockResolvedValue(null);
 
 				try {
 					await service.loadPlaceholderNodeData("https://openalex.org/I161548249", "institutions", "Bangor University");
@@ -1556,7 +1534,7 @@ describe("GraphDataService", () => {
 					invalid: true
 				};
 
-				vi.mocked(rateLimitedOpenAlex.getEntity).mockResolvedValue(malformedResponse);
+				mockDeduplicationService.getEntity.mockResolvedValue(malformedResponse);
 
 				try {
 					await service.loadEntityIntoGraph("A5025875274", "authors");
