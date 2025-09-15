@@ -121,7 +121,7 @@ export const CustomNode: React.FC<CustomNodeProps> = ({ data, selected }) => {
 	const typeLabel = getEntityTypeLabel(data.entityType);
 
 	// Get primary external ID for display
-	const primaryExternalId = data.externalIds[0];
+	const primaryExternalId = data.externalIds.length > 0 ? data.externalIds[0] : undefined;
 
 	const nodeStyle: React.CSSProperties = {
 		...baseNodeStyle,

@@ -404,7 +404,7 @@ async function performKeywordExpansionAnalysis(
  * Expand keywords with common academic synonyms and related terms
  */
 function expandKeywordsWithSynonyms(keywords: string[]): string[] {
-	const synonymMap: { [key: string]: string[] } = {
+	const synonymMap: { [key: string]: string[] | undefined } = {
 		"machine": ["artificial", "automated", "computational"],
 		"learning": ["training", "education", "algorithm"],
 		"analysis": ["evaluation", "assessment", "examination"],
@@ -424,8 +424,9 @@ function expandKeywordsWithSynonyms(keywords: string[]): string[] {
 
 		// Find synonyms for individual words in multi-word keywords
 		keyword.toLowerCase().split(/\s+/).forEach(word => {
-			if (synonymMap[word]) {
-				synonymMap[word].forEach(synonym => {
+			const synonyms = synonymMap[word];
+			if (synonyms) {
+				synonyms.forEach(synonym => {
 					expanded.add(keyword.replace(new RegExp(word, "gi"), synonym));
 				});
 			}
