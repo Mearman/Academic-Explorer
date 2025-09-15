@@ -12,8 +12,7 @@ import {
 	buildFilterString,
 	buildSortString,
 	buildSelectString,
-	SORT_FIELDS,
-	SELECT_PRESETS
+	SORT_FIELDS
 } from "./query-builder";
 import type { WorksFilters, AuthorsFilters, SourcesFilters, InstitutionsFilters } from "../types";
 
@@ -96,7 +95,7 @@ export const impactAnalysis = {
 	/**
 	 * Institutional impact comparison
 	 */
-	institutionComparison: (institutionIds: string[]): InstitutionsFilters => ({
+	institutionComparison: (_institutionIds: string[]): InstitutionsFilters => ({
 		"works_count": ">1000"
 	}),
 
