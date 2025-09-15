@@ -30,7 +30,9 @@ import {
 	IconCoin,
 	IconDatabase,
 	IconAdjustments,
-	IconSettings
+	IconSettings,
+	IconMapPin,
+	IconKey
 } from "@tabler/icons-react"
 
 export const LeftSidebar: React.FC = () => {
@@ -150,6 +152,12 @@ export const LeftSidebar: React.FC = () => {
 				return "#9b59b6";
 			case "publishers":
 				return "#1abc9c";
+			case "funders":
+				return "#e67e22";
+			case "keywords":
+				return "#16a085";
+			case "geo":
+				return "#8e44ad";
 			default:
 				return "#95a5a6";
 		}
@@ -182,6 +190,9 @@ export const LeftSidebar: React.FC = () => {
 		{ type: "institutions", label: "Institutions", color: getGraphNodeColor("institutions"), icon: <IconBuilding size={16} /> },
 		{ type: "topics", label: "Topics", color: getGraphNodeColor("topics"), icon: <IconTag size={16} /> },
 		{ type: "publishers", label: "Publishers", color: getGraphNodeColor("publishers"), icon: <IconBuildingStore size={16} /> },
+		{ type: "funders", label: "Funders", color: getGraphNodeColor("funders"), icon: <IconCoin size={16} /> },
+		{ type: "keywords", label: "Keywords", color: getGraphNodeColor("keywords"), icon: <IconKey size={16} /> },
+		{ type: "geo", label: "Geo", color: getGraphNodeColor("geo"), icon: <IconMapPin size={16} /> },
 	]
 
 	const edgeTypeOptions: { type: RelationType; label: string; color: string; icon: React.ReactNode }[] = [
