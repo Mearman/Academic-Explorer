@@ -110,6 +110,14 @@ export function useGraphData() {
 		clear();
 	}, []);
 
+	const hydrateNode = useCallback(async (nodeId: string) => {
+		try {
+			await service.current.hydrateNode(nodeId);
+		} catch (err) {
+			logError("Failed to hydrate node in graph data hook", err, "useGraphData", "graph");
+		}
+	}, []);
+
 	return {
 		loadEntity,
 		loadEntityIntoGraph,
@@ -117,6 +125,7 @@ export function useGraphData() {
 		expandNode,
 		search,
 		clearGraph,
+		hydrateNode,
 		isLoading,
 		error,
 	};
