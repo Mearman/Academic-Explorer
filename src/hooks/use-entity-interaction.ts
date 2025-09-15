@@ -25,10 +25,18 @@ export interface EntityInteractionOptions {
  * Default options for different interaction contexts
  */
 export const INTERACTION_PRESETS = {
-	/** Entity interaction without auto-expand: select, pin, center, update preview */
+	/** Entity interaction on single click: select, pin, center, update preview (no expansion) */
 	GRAPH_NODE_CLICK: {
 		centerOnNode: true,
-		expandNode: false, // Removed auto-expand - now handled by explicit expand button
+		expandNode: false, // Single click should never expand
+		pinNode: true,
+		updatePreview: true,
+	} satisfies EntityInteractionOptions,
+
+	/** Entity interaction on double click: select, pin, center, update preview AND expand */
+	GRAPH_NODE_DOUBLE_CLICK: {
+		centerOnNode: true,
+		expandNode: true, // Double click should expand
 		pinNode: true,
 		updatePreview: true,
 	} satisfies EntityInteractionOptions,
@@ -125,13 +133,25 @@ export function useEntityInteraction(centerOnNodeFn?: (nodeId: string, position?
 	}, [loadEntityIntoGraph, expandNode, setPreviewEntity, autoPinOnLayoutStabilization, centerOnNodeFn]);
 
 	/**
-   * Convenience method for graph node clicks (full interaction)
+   * Convenience method for graph node single clicks (selection only, no expansion)
    */
 	const handleGraphNodeClick = useCallback((node: GraphNode) => {
 		return interactWithEntity(
 			node.entityId,
 			node.type,
 			INTERACTION_PRESETS.GRAPH_NODE_CLICK,
+			node
+		);
+	}, [interactWithEntity]);
+
+	/**
+   * Convenience method for graph node double clicks (selection + expansion)
+   */
+	const handleGraphNodeDoubleClick = useCallback((node: GraphNode) => {
+		return interactWithEntity(
+			node.entityId,
+			node.type,
+			INTERACTION_PRESETS.GRAPH_NODE_DOUBLE_CLICK,
 			node
 		);
 	}, [interactWithEntity]);
@@ -150,6 +170,7 @@ export function useEntityInteraction(centerOnNodeFn?: (nodeId: string, position?
 	return {
 		interactWithEntity,
 		handleGraphNodeClick,
+		handleGraphNodeDoubleClick,
 		handleSidebarEntityClick,
 		INTERACTION_PRESETS,
 	};
