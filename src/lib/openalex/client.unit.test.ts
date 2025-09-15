@@ -78,7 +78,7 @@ describe("OpenAlexBaseClient", () => {
 					headers: expect.objectContaining({
 						"Accept": "application/json",
 						"User-Agent": "OpenAlex-TypeScript-Client/1.0",
-					}),
+					}) as HeadersInit,
 				})
 			);
 
@@ -125,7 +125,7 @@ describe("OpenAlexBaseClient", () => {
 					headers: expect.objectContaining({
 						"Accept": "application/json",
 						"User-Agent": "OpenAlex-TypeScript-Client/1.0",
-					}),
+					}) as HeadersInit,
 				})
 			);
 		});
@@ -401,7 +401,7 @@ describe("OpenAlexBaseClient", () => {
 					headers: expect.objectContaining({
 						"Accept": "application/json",
 						"User-Agent": "OpenAlex-TypeScript-Client/1.0",
-					}),
+					}) as HeadersInit,
 				})
 			);
 		});
