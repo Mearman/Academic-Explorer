@@ -122,12 +122,12 @@ export function useLayout(
 		const pinnedNodeCount = pinnedNodes.size;
 
 		// Consistent force parameters (pinning only affects node position fixing, not forces)
-		const linkDistance = 300;
-		const linkStrength = 0.3;
-		const chargeStrength = -2000;
+		const linkDistance = 100; // Reduced from 300 for stronger edges
+		const linkStrength = 0.5; // Increased from 0.3 for stronger edges
+		const chargeStrength = -10_000; // Increased from -2000 for stronger node repulsion
 		const centerStrength = 0.05;
 		const collisionRadius = 150; // Keep collision radius consistent
-		const collisionStrength = 2.0; // Keep collision strength consistent
+		const collisionStrength = 1.0; // Keep collision strength consistent
 		const velocityDecay = 0.1; // Very low decay for maximum movement
 		const alpha = 1;
 		const alphaDecay = 0.02; // Faster decay for reasonable simulation time
