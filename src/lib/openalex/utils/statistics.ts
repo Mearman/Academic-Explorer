@@ -120,7 +120,7 @@ export class StatisticsApi {
 		const currentYear = new Date().getFullYear();
 
 		// Get entity counts for all types
-		const entityTypes: EntityType[] = ["works", "authors", "sources", "institutions", "topics", "concepts", "publishers", "funders", "keywords", "geo"];
+		const entityTypes: EntityType[] = ["works", "authors", "sources", "institutions", "topics", "concepts", "publishers", "funders", "keywords"];
 
 		const entityCountPromises = entityTypes.map(async (entityType) => {
 			try {
@@ -144,7 +144,6 @@ export class StatisticsApi {
 			publishers: 0,
 			funders: 0,
 			keywords: 0,
-			geo: 0,
 		};
 
 		entityCounts.forEach(({ entityType, count }) => {
@@ -162,7 +161,6 @@ export class StatisticsApi {
 			publishers: { yearly_growth: 0, monthly_growth: 0, total_added_last_year: 0 },
 			funders: { yearly_growth: 0, monthly_growth: 0, total_added_last_year: 0 },
 			keywords: { yearly_growth: 0, monthly_growth: 0, total_added_last_year: 0 },
-			geo: { yearly_growth: 0, monthly_growth: 0, total_added_last_year: 0 },
 		};
 
 		for (const entityType of entityTypes) {

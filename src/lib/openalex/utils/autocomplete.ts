@@ -234,7 +234,6 @@ export class AutocompleteApi {
 			"publishers": "publisher",
 			"funders": "funder",
 			"keywords": "keyword",
-			"geo": "geo",
 		};
 
 		return mapping[entityType];
