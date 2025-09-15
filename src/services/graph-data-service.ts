@@ -22,11 +22,11 @@ import type {
 	GraphNode,
 	GraphEdge,
 	EntityType,
-	RelationType,
 	ExternalIdentifier,
 	SearchOptions,
 	GraphCache,
 } from "@/lib/graph/types";
+import { RelationType } from "@/lib/graph/types";
 import type {
 	Work,
 	Author,
@@ -655,7 +655,8 @@ export class GraphDataService {
 				id: `${authorship.author.id}-authored-${work.id}`,
 				source: authorship.author.id,
 				target: work.id,
-				type: "authored" as RelationType,
+				type: RelationType.AUTHORED,
+				label: authorship.author_position === "first" ? "first author" : "co-author",
 				weight: authorship.author_position === "first" ? 1.0 : 0.5,
 			});
 		});
@@ -689,7 +690,8 @@ export class GraphDataService {
 				id: `${work.id}-published-in-${work.primary_location.source.id}`,
 				source: work.id,
 				target: work.primary_location.source.id,
-				type: "published_in" as RelationType,
+				type: RelationType.PUBLISHED_IN,
+				label: "published in",
 			});
 		}
 
@@ -715,7 +717,8 @@ export class GraphDataService {
 				id: `${work.id}-cites-${citedWorkId}`,
 				source: work.id,
 				target: citedWorkId,
-				type: "cited" as RelationType,
+				type: RelationType.CITED,
+				label: "cites",
 			});
 		});
 
@@ -759,7 +762,8 @@ export class GraphDataService {
 				id: `${author.id}-affiliated-${affiliation.institution.id}`,
 				source: author.id,
 				target: affiliation.institution.id,
-				type: "affiliated" as RelationType,
+				type: RelationType.AFFILIATED,
+				label: "affiliated with",
 			});
 		});
 
@@ -789,7 +793,8 @@ export class GraphDataService {
 				id: `${source.id}-published-by-${source.publisher}`,
 				source: source.id,
 				target: source.publisher,
-				type: "published_in" as RelationType,
+				type: RelationType.PUBLISHED_BY,
+				label: "published by",
 			});
 		}
 
@@ -821,7 +826,8 @@ export class GraphDataService {
 					id: `${institution.id}-part-of-${parentId}`,
 					source: institution.id,
 					target: parentId,
-					type: "affiliated" as RelationType,
+					type: RelationType.PART_OF,
+					label: "part of",
 				});
 			}
 		});
