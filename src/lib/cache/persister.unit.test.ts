@@ -234,13 +234,12 @@ describe("Cache Persister", () => {
 				const persister = createHybridPersister();
 
 				// Mock localStorage availability check to pass, then fail on actual data
-				localStorageMock.setItem.mockImplementation((key, value) => {
+				localStorageMock.setItem.mockImplementation((key, _value) => {
 					if (key === "__test__") return; // Availability test passes
 					throw new Error("Quota exceeded"); // Actual data persistence fails
 				});
 
-				localStorageMock.removeItem.mockImplementation((key) => {
-					if (key === "__test__") return; // Availability test passes
+				localStorageMock.removeItem.mockImplementation((_key) => {
 					// Allow removal of academic-explorer-cache key
 				});
 
@@ -304,7 +303,7 @@ describe("Cache Persister", () => {
 
 				localStorageMock.getItem.mockReturnValue(JSON.stringify(expiredData));
 
-				const result = await persister.restoreClient();
+				await persister.restoreClient();
 
 				expect(localStorageMock.removeItem).toHaveBeenCalledWith("academic-explorer-cache");
 				expect(logger.logger.info).toHaveBeenCalledWith(
@@ -448,7 +447,7 @@ describe("Cache Persister", () => {
 				const persister = createHybridPersister();
 
 				// Mock localStorage availability check to pass
-				localStorageMock.setItem.mockImplementation((key, value) => {
+				localStorageMock.setItem.mockImplementation((key, _value) => {
 					if (key === "__test__") return; // Availability test passes
 				});
 				localStorageMock.removeItem.mockImplementation((key) => {
@@ -487,6 +486,7 @@ describe("Cache Persister", () => {
 
 	describe("createIDBPersister", () => {
 		it("should create IndexedDB-only persister with basic functionality", async () => {
+			// eslint-disable-next-line @typescript-eslint/no-deprecated
 			const persister = createIDBPersister("test-db");
 
 			await persister.persistClient(samplePersistedClient);
@@ -502,6 +502,7 @@ describe("Cache Persister", () => {
 		});
 
 		it("should restore client data without version metadata", async () => {
+			// eslint-disable-next-line @typescript-eslint/no-deprecated
 			const persister = createIDBPersister();
 
 			mockStore.get.mockResolvedValue(samplePersistedData);
@@ -516,6 +517,7 @@ describe("Cache Persister", () => {
 		});
 
 		it("should handle expired cache in IndexedDB-only mode", async () => {
+			// eslint-disable-next-line @typescript-eslint/no-deprecated
 			const persister = createIDBPersister();
 
 			const expiredData = {
@@ -685,7 +687,7 @@ describe("Cache Persister", () => {
 				return null; // No existing data, low usage
 			});
 
-			localStorageMock.setItem.mockImplementation((key, value) => {
+			localStorageMock.setItem.mockImplementation((key, _value) => {
 				if (key === "__test__") return; // Availability test passes
 				const error = new Error("QuotaExceededError");
 				error.name = "QuotaExceededError";
@@ -727,7 +729,7 @@ describe("Cache Persister", () => {
 
 			localStorageMock.getItem.mockReturnValue(JSON.stringify(invalidData));
 
-			const result = await persister.restoreClient();
+			await persister.restoreClient();
 
 			expect(localStorageMock.removeItem).toHaveBeenCalledWith("academic-explorer-cache");
 		});
