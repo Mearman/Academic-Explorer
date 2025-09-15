@@ -592,8 +592,8 @@ export class GraphDataService {
 				expansionTarget,
 				settingsEnabled: expansionSettings.enabled,
 				settingsLimit: expansionSettings.limit,
-				sortsCount: expansionSettings.sorts.length,
-				filtersCount: expansionSettings.filters.length
+				sortsCount: (expansionSettings.sorts ?? []).length,
+				filtersCount: (expansionSettings.filters ?? []).length
 			}, "GraphDataService");
 
 			// Expand the entity with expansion settings
