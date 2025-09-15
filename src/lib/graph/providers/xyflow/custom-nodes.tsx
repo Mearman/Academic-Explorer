@@ -17,6 +17,7 @@ import {
 	IconPin,
 	IconPinFilled,
 	IconArrowsMaximize,
+	IconArrowsMinimize,
 	IconCircleDashed,
 	IconCirclePlus
 } from "@tabler/icons-react";
@@ -238,6 +239,65 @@ const AddAdjacentButton: React.FC<AddAdjacentButtonProps> = ({ nodeId, className
 			title="Add this node and all adjacent nodes to selection"
 		>
 			<IconCirclePlus size={10} style={{ color: "#ffffff" }} />
+		</button>
+	);
+};
+
+// Collapse isolated adjacent nodes button component
+interface CollapseIsolatedButtonProps {
+  nodeId: string;
+  className?: string;
+}
+
+const CollapseIsolatedButton: React.FC<CollapseIsolatedButtonProps> = ({ nodeId, className }) => {
+	const { getNeighbors, removeNode } = useGraphStore();
+
+	const handleCollapseIsolated = (e: React.MouseEvent) => {
+		e.stopPropagation(); // Prevent node selection/dragging
+
+		// Get adjacent nodes (neighbors) of the current node
+		const neighbors = getNeighbors(nodeId);
+
+		// For each neighbor, check if it only connects to the current node
+		neighbors.forEach(neighbor => {
+			const neighborConnections = getNeighbors(neighbor.id);
+
+			// If the neighbor only connects to the current node (isolated), remove it
+			if (neighborConnections.length === 1 && neighborConnections[0].id === nodeId) {
+				removeNode(neighbor.id);
+			}
+		});
+	};
+
+	return (
+		<button
+			className={`nodrag ${className || ""}`}
+			onClick={handleCollapseIsolated}
+			style={{
+				background: "rgba(0, 0, 0, 0.7)",
+				border: "none",
+				borderRadius: "8px 0px 0px 0px", // Only top-left corner rounded
+				padding: "0px",
+				margin: "0px",
+				display: "flex",
+				alignItems: "center",
+				justifyContent: "center",
+				cursor: "pointer",
+				transition: "all 0.2s ease",
+				width: "20px",
+				alignSelf: "stretch",
+				flexShrink: 0,
+				boxSizing: "border-box"
+			}}
+			onMouseEnter={(e) => {
+				e.currentTarget.style.background = "rgba(0, 0, 0, 0.9)";
+			}}
+			onMouseLeave={(e) => {
+				e.currentTarget.style.background = "rgba(0, 0, 0, 0.7)";
+			}}
+			title="Collapse isolated adjacent nodes"
+		>
+			<IconArrowsMinimize size={10} style={{ color: "#ffffff" }} />
 		</button>
 	);
 };
@@ -511,6 +571,7 @@ export const CustomNode: React.FC<CustomNodeProps> = ({ data, selected }) => {
 				opacity: 0.8,
 				minHeight: "20px" // Slightly smaller than top bar
 			}}>
+				<CollapseIsolatedButton nodeId={data.entityId} />
 				<SelectAdjacentButton nodeId={data.entityId} />
 				<AddAdjacentButton nodeId={data.entityId} />
 				<ExpandButton nodeId={data.entityId} />
@@ -620,6 +681,7 @@ export const WorkNode: React.FC<CustomNodeProps> = ({ data, selected }) => {
 				opacity: 0.8,
 				minHeight: "20px" // Slightly smaller than top bar
 			}}>
+				<CollapseIsolatedButton nodeId={data.entityId} />
 				<SelectAdjacentButton nodeId={data.entityId} />
 				<AddAdjacentButton nodeId={data.entityId} />
 				<ExpandButton nodeId={data.entityId} />
@@ -717,6 +779,7 @@ export const AuthorNode: React.FC<CustomNodeProps> = ({ data, selected }) => {
 				opacity: 0.8,
 				minHeight: "20px" // Slightly smaller than top bar
 			}}>
+				<CollapseIsolatedButton nodeId={data.entityId} />
 				<SelectAdjacentButton nodeId={data.entityId} />
 				<AddAdjacentButton nodeId={data.entityId} />
 				<ExpandButton nodeId={data.entityId} />
@@ -814,6 +877,7 @@ export const SourceNode: React.FC<CustomNodeProps> = ({ data, selected }) => {
 				opacity: 0.8,
 				minHeight: "20px" // Slightly smaller than top bar
 			}}>
+				<CollapseIsolatedButton nodeId={data.entityId} />
 				<SelectAdjacentButton nodeId={data.entityId} />
 				<AddAdjacentButton nodeId={data.entityId} />
 				<ExpandButton nodeId={data.entityId} />
