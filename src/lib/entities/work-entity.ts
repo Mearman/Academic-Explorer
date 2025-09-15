@@ -89,6 +89,9 @@ export class WorkEntity extends AbstractEntity<Work> {
 			// Get expansion settings, with fallback to defaults
 			const effectiveLimit = expansionSettings?.enabled ? expansionSettings.limit : limit;
 
+			// Fetch all results with pagination if no limit specified, or fetch up to limit
+			const shouldFetchAll = !effectiveLimit || effectiveLimit <= 0 || effectiveLimit >= 10000;
+
 			// Build query parameters from expansion settings if available
 			let queryParams: { filter?: string; sort?: string; select?: string[] } = {};
 			if (expansionSettings?.enabled) {
@@ -106,30 +109,68 @@ export class WorkEntity extends AbstractEntity<Work> {
 
 			// Add citations (works that cite this work)
 			if (work.cited_by_count > 0) {
-				const citationsPerPage = Math.min(effectiveLimit, 5); // Limit citations to avoid clutter
-
 				// Merge base filter with expansion settings filters if available
 				const baseFilter = `referenced_works:${context.entityId}`;
 				const finalFilter = queryParams.filter
 					? ExpansionQueryBuilder.mergeFilters(baseFilter, expansionSettings?.filters || [])
 					: baseFilter;
 
-				const citationsQuery = await this.client.getWorks({
-					filter: finalFilter,
-					per_page: citationsPerPage,
-					sort: queryParams.sort || "cited_by_count:desc",
-					select: queryParams.select
-				});
+				// Fetch all citations with pagination if no limit specified, or fetch up to limit
+				let allCitations: Work[] = [];
+				let page = 1;
+				let totalFetched = 0;
 
-				logger.debug("graph", "Citations query result", {
-					resultCount: citationsQuery.results.length,
-					totalCount: citationsQuery.meta.count,
-					entityId: context.entityId,
-					filter: finalFilter,
-					sort: queryParams.sort || "cited_by_count:desc"
+				logger.info("graph", "Starting citations fetch", {
+					shouldFetchAll,
+					effectiveLimit,
+					entityId: context.entityId
 				}, "WorkEntity");
 
-				citationsQuery.results.forEach((citingWork: Work) => {
+				do {
+					const citationsQuery = await this.client.getWorks({
+						filter: finalFilter,
+						per_page: 200, // Always use maximum per page
+						page: page,
+						sort: queryParams.sort,
+						select: queryParams.select
+					});
+
+					if (citationsQuery.results.length === 0) {
+						break; // No more results
+					}
+
+					allCitations.push(...citationsQuery.results);
+					totalFetched += citationsQuery.results.length;
+
+					logger.debug("graph", "Fetched citations page", {
+						page,
+						pageResults: citationsQuery.results.length,
+						totalFetched,
+						totalAvailable: citationsQuery.meta.count,
+						entityId: context.entityId
+					}, "WorkEntity");
+
+					// Check if we have enough results or if this was the last page
+					if (!shouldFetchAll && totalFetched >= effectiveLimit) {
+						allCitations = allCitations.slice(0, effectiveLimit); // Trim to exact limit
+						break;
+					}
+
+					if (citationsQuery.results.length < 200) {
+						// Last page (partial page means no more results)
+						break;
+					}
+
+					page++;
+				} while (shouldFetchAll || totalFetched < effectiveLimit);
+
+				logger.info("graph", "Completed citations fetch", {
+					totalFetched: allCitations.length,
+					pagesProcessed: page,
+					entityId: context.entityId
+				}, "WorkEntity");
+
+				allCitations.forEach((citingWork: Work) => {
 					const citingNode = this.transformToGraphNode(citingWork);
 					nodes.push(citingNode);
 
@@ -146,29 +187,36 @@ export class WorkEntity extends AbstractEntity<Work> {
 
 			// Add references (works this work cites) - sequentially to avoid rate limiting
 			if (work.referenced_works.length > 0) {
-				const referencesSlice = work.referenced_works.slice(0, Math.min(effectiveLimit, 5));
+				// Apply limit to references if specified
+				const referencesSlice = shouldFetchAll || !effectiveLimit || effectiveLimit <= 0
+					? work.referenced_works
+					: work.referenced_works.slice(0, effectiveLimit);
 
-				logger.debug("graph", "Fetching referenced works", {
+				logger.info("graph", "Starting references fetch", {
 					referencesCount: referencesSlice.length,
 					totalReferences: work.referenced_works.length,
-					entityId: context.entityId
+					entityId: context.entityId,
+					shouldFetchAll
 				}, "WorkEntity");
 
 				// Use the abstract helper to fetch related works with minimal fields
 				const relatedWorks = await this.fetchRelatedEntities(referencesSlice, false, true);
 
 				relatedWorks.forEach((refWork) => {
-					const refNode = this.transformToGraphNode(refWork as Work);
-					nodes.push(refNode);
+					// Referenced works should be Work entities - use type guard for safety
+					if (refWork.id && "display_name" in refWork) {
+						const refNode = this.transformToGraphNode(refWork as Work);
+						nodes.push(refNode);
 
-					// Add reference edge
-					edges.push(this.createEdge(
-						context.entityId,
-						refWork.id,
-						RT.REFERENCES,
-						1.0,
-						"references"
-					));
+						// Add reference edge
+						edges.push(this.createEdge(
+							context.entityId,
+							refWork.id,
+							RT.REFERENCES,
+							1.0,
+							"references"
+						));
+					}
 				});
 			}
 
