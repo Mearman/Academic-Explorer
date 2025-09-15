@@ -22,7 +22,7 @@ import {
 export const LeftRibbon: React.FC = () => {
 	const { clearGraph, loadAllCachedNodes } = useGraphData();
 	const { colors } = useThemeColors();
-	const { setLeftSidebarOpen } = useLayoutStore();
+	const { expandSidebarToSection } = useLayoutStore();
 
 	const handleClearGraph = () => {
 		logger.info("ui", "Clear graph clicked from left ribbon");
@@ -41,11 +41,8 @@ export const LeftRibbon: React.FC = () => {
 	const handleExpandSidebarToSection = (sectionKey: string, sectionName: string) => {
 		logger.info("ui", `Expanding sidebar to ${sectionName} section`, { sectionKey });
 
-		// Expand the sidebar
-		setLeftSidebarOpen(true);
-
-		// Expand the corresponding section in localStorage
-		localStorage.setItem(`sidebar-section-${sectionKey}`, JSON.stringify(true));
+		// Use the layout store to expand sidebar and section
+		expandSidebarToSection('left', sectionKey);
 
 		// Scroll to top after a brief delay to allow sidebar to expand
 		// The sidebar scrolls to the top to show the expanded section
