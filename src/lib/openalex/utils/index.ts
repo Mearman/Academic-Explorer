@@ -76,4 +76,4 @@ export type {
 } from "./query-builder";
 
 // Example usage exports (for documentation and testing)
-// export * as QueryBuilderExamples from './query-builder-examples'; // TODO: Create examples file
+export * as QueryBuilderExamples from "./query-builder-examples";
