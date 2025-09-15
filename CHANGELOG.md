@@ -1,3 +1,10 @@
+## [2.0.1](https://github.com/Mearman/Academic-Explorer/compare/v2.0.0...v2.0.1) (2025-09-15)
+
+
+### Bug Fixes
+
+* **lint:** resolve CI ESLint and formatting issues ([8275de5](https://github.com/Mearman/Academic-Explorer/commit/8275de5dab422c6b7ce2ba2325b73f451f76921a))
+
 # [2.0.0](https://github.com/Mearman/Academic-Explorer/compare/v1.4.0...v2.0.0) (2025-09-15)
 
 
