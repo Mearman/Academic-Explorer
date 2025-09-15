@@ -49,14 +49,14 @@ export interface FilterCriteria {
 export interface ExpansionSettings {
   /** The target type (entity or edge type) these settings apply to */
   target: ExpansionTarget;
-  /** Maximum number of results to return */
-  limit: number;
+  /** Maximum number of results to return (0 = no limit) */
+  limit?: number;
   /** Sort criteria in priority order */
-  sorts: SortCriteria[];
+  sorts?: SortCriteria[];
   /** Filter criteria */
-  filters: FilterCriteria[];
+  filters?: FilterCriteria[];
   /** Whether expansion is enabled for this target */
-  enabled: boolean;
+  enabled?: boolean;
   /** Optional custom name for this configuration */
   name?: string;
 }
@@ -284,67 +284,31 @@ export const ENTITY_PROPERTIES: Record<string, PropertyDefinition[]> = {
 	]
 };
 
-// Default expansion settings for different targets
+// Default expansion settings for different targets - no filters, sorting, or limits by default
 export const DEFAULT_EXPANSION_SETTINGS: Record<string, ExpansionSettings> = {
 	[RelationType.REFERENCES]: {
 		target: RelationType.REFERENCES,
-		limit: 10,
-		sorts: [
-			{ property: "publication_year", direction: "desc", priority: 1, label: "Publication Year" }
-		],
-		filters: [],
-		enabled: true,
-		name: "References (Newest First)"
+		name: "References"
 	},
 	[RelationType.AUTHORED]: {
 		target: RelationType.AUTHORED,
-		limit: 15,
-		sorts: [
-			{ property: "cited_by_count", direction: "desc", priority: 1, label: "Citation Count" }
-		],
-		filters: [],
-		enabled: true,
-		name: "Most Cited Works"
+		name: "Works"
 	},
 	[RelationType.AFFILIATED]: {
 		target: RelationType.AFFILIATED,
-		limit: 5,
-		sorts: [
-			{ property: "works_count", direction: "desc", priority: 1, label: "Works Count" }
-		],
-		filters: [],
-		enabled: true,
-		name: "Most Productive Institutions"
+		name: "Institutions"
 	},
 	[RelationType.PUBLISHED_IN]: {
 		target: RelationType.PUBLISHED_IN,
-		limit: 5,
-		sorts: [
-			{ property: "works_count", direction: "desc", priority: 1, label: "Works Count" }
-		],
-		filters: [],
-		enabled: true,
-		name: "Most Active Sources"
+		name: "Sources"
 	},
 	[RelationType.FUNDED_BY]: {
 		target: RelationType.FUNDED_BY,
-		limit: 5,
-		sorts: [
-			{ property: "works_count", direction: "desc", priority: 1, label: "Works Count" }
-		],
-		filters: [],
-		enabled: true,
-		name: "Most Active Funders"
+		name: "Funders"
 	},
 	[RelationType.RELATED_TO]: {
 		target: RelationType.RELATED_TO,
-		limit: 10,
-		sorts: [
-			{ property: "cited_by_count", direction: "desc", priority: 1, label: "Citation Count" }
-		],
-		filters: [],
-		enabled: true,
-		name: "Most Cited Related"
+		name: "Related"
 	}
 };
 
@@ -366,12 +330,16 @@ export function getPropertiesForTarget(target: ExpansionTarget): PropertyDefinit
  * Helper function to get default settings for a target
  */
 export function getDefaultSettingsForTarget(target: ExpansionTarget): ExpansionSettings {
-	return DEFAULT_EXPANSION_SETTINGS[target] ?? {
+	const defaultSettings = DEFAULT_EXPANSION_SETTINGS[target] ?? { target };
+
+	// Return settings with proper defaults for optional properties
+	return {
 		target,
-		limit: 10,
-		sorts: [],
-		filters: [],
-		enabled: true
+		limit: defaultSettings.limit ?? 0, // 0 means no limit
+		sorts: defaultSettings.sorts ?? [],
+		filters: defaultSettings.filters ?? [],
+		enabled: defaultSettings.enabled ?? true,
+		name: defaultSettings.name
 	};
 }
 
