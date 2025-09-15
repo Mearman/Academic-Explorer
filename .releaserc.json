@@ -1,6 +1,6 @@
 {
   "branches": ["main"],
-  "repositoryUrl": "https://github.com/your-username/Academic-Explorer",
+  "repositoryUrl": "https://github.com/Mearman/Academic-Explorer",
   "plugins": [
     "@semantic-release/commit-analyzer",
     "@semantic-release/release-notes-generator",
