@@ -1,3 +1,59 @@
+# [1.3.0](https://github.com/Mearman/Academic-Explorer/compare/v1.2.0...v1.3.0) (2025-09-15)
+
+
+### Bug Fixes
+
+* **cache:** remove geo entity type from cache configuration ([3ea4c10](https://github.com/Mearman/Academic-Explorer/commit/3ea4c10bafd6304b66813e56d29b4d80710e11f5))
+* **ci:** add GITHUB_TOKEN environment variable for semantic-release ([f8d1057](https://github.com/Mearman/Academic-Explorer/commit/f8d105704bf388726579583e6554c93e91a2c30d))
+* **ci:** replace manual changelog with semantic-release built-in functionality ([30b7c8b](https://github.com/Mearman/Academic-Explorer/commit/30b7c8b4584ad84ac45f1ed70d3b5e9088c65346))
+* **client:** remove geo API from OpenAlex clients ([9f627c3](https://github.com/Mearman/Academic-Explorer/commit/9f627c3a96d318ec69dd927d3d6572362bae84b1))
+* **entities:** remove geo exports from entity index ([8d06b06](https://github.com/Mearman/Academic-Explorer/commit/8d06b06aa68c9353cc53ef827772b9c9c0c9aaf6))
+* **entities:** remove unnecessary null check in author pagination ([ae153c4](https://github.com/Mearman/Academic-Explorer/commit/ae153c411528cac1ca4b1a2321b7b8ac235f290f))
+* **expansion:** add TypeScript support for optional ExpansionSettings ([8e18279](https://github.com/Mearman/Academic-Explorer/commit/8e182790d9f97580da6ce33c24d48f3ad3f74f17))
+* **graph-navigation:** add node update detection for placeholder loading ([0cc2528](https://github.com/Mearman/Academic-Explorer/commit/0cc2528b3824b71c48ae802e2783655248f436b7))
+* **graph-navigation:** remove non-existent updateNodes method call ([f406b62](https://github.com/Mearman/Academic-Explorer/commit/f406b62a0195eb7d1861ac2fcda69c45c80d40eb))
+* **graph:** remove geo entity type from custom node components ([92969d4](https://github.com/Mearman/Academic-Explorer/commit/92969d4df4c15c8b40383d26fd958522edfb889d))
+* **graph:** resolve edge visibility toggle issue in graph navigation ([038db69](https://github.com/Mearman/Academic-Explorer/commit/038db694fd1a97c097144f767f3e65a3792d193a))
+* **hooks:** remove geo hooks and clean up exports ([ec4a8a8](https://github.com/Mearman/Academic-Explorer/commit/ec4a8a81169051b406e51d59a5269017a428c7da))
+* **services:** add null coalescing for optional expansion properties ([721a954](https://github.com/Mearman/Academic-Explorer/commit/721a954dc242d13cf0118406c14b91caf8a1e906))
+* **services:** remove geo entity type references ([7c4a634](https://github.com/Mearman/Academic-Explorer/commit/7c4a634970df12740a2799add645b0443806a03b))
+* **stores:** handle optional arrays in ExpansionSettingsStore ([1aac183](https://github.com/Mearman/Academic-Explorer/commit/1aac18372a17585bab4d1480638f74d19cbbec6e))
+* **stores:** update entity type support to include all valid types ([d40cfb5](https://github.com/Mearman/Academic-Explorer/commit/d40cfb573755cec3be710e9fbcbb360537700ac4))
+* **types:** align EntityType with actual OpenAlex API endpoints ([03a9a5e](https://github.com/Mearman/Academic-Explorer/commit/03a9a5ef5d66f0d86d2650a82e0ed570d3e5266d))
+* **ui:** handle optional properties in ExpansionSettingsDialog ([3d80fd9](https://github.com/Mearman/Academic-Explorer/commit/3d80fd992166fdd0fdb9034bdcbdd13aa82c84a1))
+* **ui:** remove geo entity type from sidebar filters ([bbb9be3](https://github.com/Mearman/Academic-Explorer/commit/bbb9be39b88e6a280bffb6cfd6edcbaecaab9e12))
+* **utils:** remove geo references from OpenAlex utilities ([5da41e0](https://github.com/Mearman/Academic-Explorer/commit/5da41e0aa735c861763ff451289a6fbcfdf0764b))
+
+
+### Features
+
+* **api:** add raw API data display feature for selected entities ([82f0b62](https://github.com/Mearman/Academic-Explorer/commit/82f0b62bd1682efa7b5abcacd825941cef5191a4))
+* **ci:** implement custom release workflow with proper tag and version flow ([d33671b](https://github.com/Mearman/Academic-Explorer/commit/d33671b7ce6b5dc2d09db041410b39aefc4f730b))
+* **entities:** implement comprehensive pagination for author works expansion ([bbb4c3e](https://github.com/Mearman/Academic-Explorer/commit/bbb4c3e23fb3fb075a52280cc658492e029e4aa7))
+* **entities:** implement unlimited expansion for WorkEntity ([42451f7](https://github.com/Mearman/Academic-Explorer/commit/42451f73838c101d337fb419795899ac225d2eef))
+* **graph:** add loading state management for node expansion ([6f06226](https://github.com/Mearman/Academic-Explorer/commit/6f0622654137d8accdf9c268d2e6e3cbe0b921c3))
+* **graph:** add rawApiData field to GraphNode interface ([9317d2a](https://github.com/Mearman/Academic-Explorer/commit/9317d2ab5905a2d56762a6e2e59bccec059a0613))
+* **hooks:** add useEntityInteraction hook for DRY entity behavior ([8210c0d](https://github.com/Mearman/Academic-Explorer/commit/8210c0d1edb7ad93a6a0fb823a6b01ab4dde3792))
+* **layout:** add LeftRibbon component for collapsed left sidebar ([773cde6](https://github.com/Mearman/Academic-Explorer/commit/773cde625fcd6c6d2e6eae6de568dd681fed180b))
+* **layout:** add RightRibbon component for collapsed right sidebar ([ad1c639](https://github.com/Mearman/Academic-Explorer/commit/ad1c6395095cc051086d646b96c6d40ea307e857))
+* **layout:** enhance RightSidebar with rich entity display ([aeef373](https://github.com/Mearman/Academic-Explorer/commit/aeef3739e7c6588055428404fea75f678296607a))
+* **layout:** implement dual sidebar ribbon mode functionality ([09ce498](https://github.com/Mearman/Academic-Explorer/commit/09ce4987d2e52cfb0755e8087b579d3771274866))
+* **molecules:** add copy JSON functionality to RawApiDataSection ([3e10975](https://github.com/Mearman/Academic-Explorer/commit/3e10975e6fa058a7850a91c6adc4dba8569ef7e8))
+* **molecules:** add RichEntityDisplay component ([95a2ff1](https://github.com/Mearman/Academic-Explorer/commit/95a2ff1feb544a34e8a6214d033e182e2e891848))
+* **service:** implement immediate parallel placeholder loading strategy ([0008bde](https://github.com/Mearman/Academic-Explorer/commit/0008bdec0094a7aabc234e2f73805dc4f90ed2b3))
+* **type-guards:** add OpenAlex entity type guard utilities ([bf05559](https://github.com/Mearman/Academic-Explorer/commit/bf055591bf5474a5edc90187e5d682d79540e35d))
+* **ui:** enhance raw API data display with expandable sections ([db9d313](https://github.com/Mearman/Academic-Explorer/commit/db9d313ceae1fe20925c6fa58db8d6766fe71580))
+* **ui:** integrate raw API data section into right sidebar ([1db6be9](https://github.com/Mearman/Academic-Explorer/commit/1db6be9e09f6ee933e4d00b9ce35ff0506966945))
+
+
+### Performance Improvements
+
+* **graph:** optimize force layout parameters for circular arrangements ([fdb7922](https://github.com/Mearman/Academic-Explorer/commit/fdb79221cd68b3e19c08e3dd435023611212824e))
+* **graph:** optimize force-directed layout parameters ([cfcbca9](https://github.com/Mearman/Academic-Explorer/commit/cfcbca9fdb0f6eafffeea9524dffb9f184bd6ccf))
+* **graph:** optimize XYFlow node update detection in GraphNavigation ([b07df7f](https://github.com/Mearman/Academic-Explorer/commit/b07df7fa539ccb8edb060b86c8f320ba9aae5c8a))
+* **graph:** standardize force layout random seed to 0 ([5987a65](https://github.com/Mearman/Academic-Explorer/commit/5987a6555d7a6ffa092776808c0af31255a0478c))
+* **query:** optimize pagination by always using maximum per_page ([f919d84](https://github.com/Mearman/Academic-Explorer/commit/f919d84073c92ef5405070478c972eb92e88fd04))
+
 # [1.2.0](https://github.com/Mearman/Academic-Explorer/compare/v1.1.0...v1.2.0) (2025-09-15)
 
 
