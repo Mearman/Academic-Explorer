@@ -43,7 +43,7 @@ export const INTERACTION_PRESETS = {
 } as const;
 
 export function useEntityInteraction(centerOnNodeFn?: (nodeId: string, position?: { x: number; y: number }) => void) {
-	const { loadEntityIntoGraph, expandNode } = useGraphData();
+	const { loadEntityIntoGraph, expandNode, hydrateNode } = useGraphData();
 	const { setPreviewEntity, autoPinOnLayoutStabilization } = useLayoutStore();
 
 	/**
@@ -67,14 +67,26 @@ export function useEntityInteraction(centerOnNodeFn?: (nodeId: string, position?
 
 			let targetNode = existingNode;
 
-			// If no existing node provided, load entity into graph
+			// If no existing node provided, find or load entity into graph
 			if (!targetNode) {
-				await loadEntityIntoGraph(entityId);
-
-				// Find the newly loaded/selected node
+				// First check if a minimal node already exists
 				targetNode = Array.from(store.nodes.values()).find(
-					node => node.entityId === entityId && !node.metadata?.isPlaceholder
+					node => node.entityId === entityId
 				);
+
+				if (targetNode && targetNode.metadata?.hydrationLevel === "minimal") {
+					// Hydrate the minimal node to get full data
+					await hydrateNode(targetNode.id);
+					// Get updated node reference after hydration
+					targetNode = store.nodes.get(targetNode.id) || targetNode;
+				} else if (!targetNode) {
+					// No existing node, load entity into graph
+					await loadEntityIntoGraph(entityId);
+					// Find the newly loaded node
+					targetNode = Array.from(store.nodes.values()).find(
+						node => node.entityId === entityId
+					);
+				}
 			}
 
 			if (!targetNode) {
@@ -130,7 +142,7 @@ export function useEntityInteraction(centerOnNodeFn?: (nodeId: string, position?
 				error
 			});
 		}
-	}, [loadEntityIntoGraph, expandNode, setPreviewEntity, autoPinOnLayoutStabilization, centerOnNodeFn]);
+	}, [loadEntityIntoGraph, expandNode, hydrateNode, setPreviewEntity, autoPinOnLayoutStabilization, centerOnNodeFn]);
 
 	/**
    * Convenience method for graph node single clicks (selection only, no expansion)
