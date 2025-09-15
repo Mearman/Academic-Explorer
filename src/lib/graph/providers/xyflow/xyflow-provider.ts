@@ -142,11 +142,11 @@ export class XYFlowProvider implements GraphProvider {
 			const currentSourceNode = currentNodes.find(n => n.id === sourceId);
 			const currentTargetNode = currentNodes.find(n => n.id === targetId);
 
-			if (currentSourceNode) {
-				sourceNode = { ...sourceNode!, position: currentSourceNode.position };
+			if (currentSourceNode && sourceNode) {
+				sourceNode = { ...sourceNode, position: currentSourceNode.position };
 			}
-			if (currentTargetNode) {
-				targetNode = { ...targetNode!, position: currentTargetNode.position };
+			if (currentTargetNode && targetNode) {
+				targetNode = { ...targetNode, position: currentTargetNode.position };
 			}
 		}
 
@@ -379,8 +379,10 @@ export class XYFlowProvider implements GraphProvider {
 		if (!this.reactFlowInstance) return;
 
 		if (nodeId && this.nodes.has(nodeId)) {
-			const node = this.nodes.get(nodeId)!;
-			void this.reactFlowInstance.setCenter(node.position.x, node.position.y, { zoom: 1.5 });
+			const node = this.nodes.get(nodeId);
+			if (node) {
+				void this.reactFlowInstance.setCenter(node.position.x, node.position.y, { zoom: 1.5 });
+			}
 		} else {
 			this.fitView();
 		}
