@@ -49,17 +49,15 @@ import { isWork, isAuthor, isInstitution } from "@/lib/openalex/type-guards";
 
 interface RichEntityDisplayProps {
 	entity: GraphNode;
-	isExpanded?: boolean;
 }
 
 export const RichEntityDisplay: React.FC<RichEntityDisplayProps> = ({
-	entity,
-	isExpanded = false
+	entity
 }) => {
 	const { colors } = useThemeColors();
 	const { data: rawData, isLoading } = useRawEntityData({
 		entityId: entity.entityId,
-		enabled: isExpanded
+		enabled: true
 	});
 	const { handleSidebarEntityClick } = useEntityInteraction();
 
@@ -622,7 +620,7 @@ export const RichEntityDisplay: React.FC<RichEntityDisplayProps> = ({
 		<Stack gap="md">
 			<BasicInfoCard />
 
-			{isExpanded && !isLoading && rawData && (
+			{!isLoading && rawData && (
 				<>
 					{entity.type === "works" && <WorksDisplay work={rawData} />}
 					{entity.type === "authors" && <AuthorsDisplay author={rawData} />}
@@ -631,7 +629,7 @@ export const RichEntityDisplay: React.FC<RichEntityDisplayProps> = ({
 				</>
 			)}
 
-			{isExpanded && isLoading && (
+			{isLoading && (
 				<Card padding="md" radius="md" withBorder>
 					<Group gap="xs">
 						<IconClock size={16} />
