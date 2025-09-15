@@ -32,7 +32,13 @@ import {
 	IconAdjustments,
 	IconSettings,
 	IconMapPin,
-	IconKey
+	IconKey,
+	IconHierarchy,
+	IconCategory,
+	IconWorld,
+	IconHash,
+	IconBulb,
+	IconNetwork
 } from "@tabler/icons-react"
 
 export const LeftSidebar: React.FC = () => {
@@ -157,6 +163,7 @@ export const LeftSidebar: React.FC = () => {
 	// Edge type colors for consistency with graph visualization
 	const getGraphEdgeColor = (edgeType: RelationType): string => {
 		switch (edgeType) {
+			// Core academic relationships
 			case RelationType.AUTHORED:
 				return "#2980b9";
 			case RelationType.AFFILIATED:
@@ -165,10 +172,39 @@ export const LeftSidebar: React.FC = () => {
 				return "#8e44ad";
 			case RelationType.FUNDED_BY:
 				return "#c0392b";
-			case RelationType.RELATED_TO:
-				return "#f39c12";
 			case RelationType.REFERENCES:
 				return "#34495e";
+			case RelationType.RELATED_TO:
+				return "#f39c12";
+
+			// Publishing relationships
+			case RelationType.SOURCE_PUBLISHED_BY:
+				return "#1abc9c";
+
+			// Institutional relationships
+			case RelationType.INSTITUTION_CHILD_OF:
+				return "#9b59b6";
+			case RelationType.PUBLISHER_CHILD_OF:
+				return "#8e44ad";
+
+			// Topic/keyword relationships
+			case RelationType.WORK_HAS_TOPIC:
+				return "#e67e22";
+			case RelationType.WORK_HAS_KEYWORD:
+				return "#16a085";
+			case RelationType.AUTHOR_RESEARCHES:
+				return "#f39c12";
+
+			// Geographic relationships
+			case RelationType.INSTITUTION_LOCATED_IN:
+				return "#3498db";
+			case RelationType.FUNDER_LOCATED_IN:
+				return "#2ecc71";
+
+			// Topic hierarchy
+			case RelationType.TOPIC_PART_OF_FIELD:
+				return "#e74c3c";
+
 			default:
 				return "#7f8c8d";
 		}
@@ -187,12 +223,32 @@ export const LeftSidebar: React.FC = () => {
 	]
 
 	const edgeTypeOptions: { type: RelationType; label: string; color: string; icon: React.ReactNode }[] = [
+		// Core academic relationships
 		{ type: RelationType.AUTHORED, label: "Authored", color: getGraphEdgeColor(RelationType.AUTHORED), icon: <IconUser size={16} /> },
 		{ type: RelationType.AFFILIATED, label: "Affiliated", color: getGraphEdgeColor(RelationType.AFFILIATED), icon: <IconBuilding size={16} /> },
 		{ type: RelationType.PUBLISHED_IN, label: "Published In", color: getGraphEdgeColor(RelationType.PUBLISHED_IN), icon: <IconBook size={16} /> },
 		{ type: RelationType.FUNDED_BY, label: "Funded By", color: getGraphEdgeColor(RelationType.FUNDED_BY), icon: <IconCoin size={16} /> },
-		{ type: RelationType.RELATED_TO, label: "Related To", color: getGraphEdgeColor(RelationType.RELATED_TO), icon: <IconGitBranch size={16} /> },
 		{ type: RelationType.REFERENCES, label: "References", color: getGraphEdgeColor(RelationType.REFERENCES), icon: <IconArrowRight size={16} /> },
+		{ type: RelationType.RELATED_TO, label: "Related To", color: getGraphEdgeColor(RelationType.RELATED_TO), icon: <IconGitBranch size={16} /> },
+
+		// Publishing relationships
+		{ type: RelationType.SOURCE_PUBLISHED_BY, label: "Source Published By", color: getGraphEdgeColor(RelationType.SOURCE_PUBLISHED_BY), icon: <IconBuildingStore size={16} /> },
+
+		// Institutional relationships
+		{ type: RelationType.INSTITUTION_CHILD_OF, label: "Institution Child Of", color: getGraphEdgeColor(RelationType.INSTITUTION_CHILD_OF), icon: <IconHierarchy size={16} /> },
+		{ type: RelationType.PUBLISHER_CHILD_OF, label: "Publisher Child Of", color: getGraphEdgeColor(RelationType.PUBLISHER_CHILD_OF), icon: <IconNetwork size={16} /> },
+
+		// Topic/keyword relationships
+		{ type: RelationType.WORK_HAS_TOPIC, label: "Work Has Topic", color: getGraphEdgeColor(RelationType.WORK_HAS_TOPIC), icon: <IconTag size={16} /> },
+		{ type: RelationType.WORK_HAS_KEYWORD, label: "Work Has Keyword", color: getGraphEdgeColor(RelationType.WORK_HAS_KEYWORD), icon: <IconHash size={16} /> },
+		{ type: RelationType.AUTHOR_RESEARCHES, label: "Author Researches", color: getGraphEdgeColor(RelationType.AUTHOR_RESEARCHES), icon: <IconBulb size={16} /> },
+
+		// Geographic relationships
+		{ type: RelationType.INSTITUTION_LOCATED_IN, label: "Institution Located In", color: getGraphEdgeColor(RelationType.INSTITUTION_LOCATED_IN), icon: <IconMapPin size={16} /> },
+		{ type: RelationType.FUNDER_LOCATED_IN, label: "Funder Located In", color: getGraphEdgeColor(RelationType.FUNDER_LOCATED_IN), icon: <IconWorld size={16} /> },
+
+		// Topic hierarchy
+		{ type: RelationType.TOPIC_PART_OF_FIELD, label: "Topic Part Of Field", color: getGraphEdgeColor(RelationType.TOPIC_PART_OF_FIELD), icon: <IconCategory size={16} /> },
 	]
 
 	return (
