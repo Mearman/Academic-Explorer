@@ -13,7 +13,6 @@ import { TopicsApi } from "./entities/topics";
 import { PublishersApi } from "./entities/publishers";
 import { FundersApi } from "./entities/funders";
 import { KeywordsApi } from "./entities/keywords";
-import { GeoApi } from "./entities/geo";
 import { AutocompleteApi } from "./utils/autocomplete";
 import { createWorksQuery, createAuthorsQuery } from "./utils/query-builder";
 import type {
@@ -25,7 +24,6 @@ import type {
 	Publisher,
 	Funder,
 	Keyword as _Keyword,
-	Geo as _Geo,
 	OpenAlexEntity as _OpenAlexEntity,
 	AutocompleteResult,
 	EntityType,
@@ -41,7 +39,6 @@ vi.mock("./entities/topics");
 vi.mock("./entities/publishers");
 vi.mock("./entities/funders");
 vi.mock("./entities/keywords");
-vi.mock("./entities/geo");
 vi.mock("./utils/autocomplete");
 vi.mock("./utils/query-builder");
 
@@ -56,7 +53,6 @@ describe("OpenAlexClient", () => {
 	let mockPublishersApi: vi.Mocked<PublishersApi>;
 	let mockFundersApi: vi.Mocked<FundersApi>;
 	let mockKeywordsApi: vi.Mocked<KeywordsApi>;
-	let mockGeoApi: vi.Mocked<GeoApi>;
 	let mockAutocompleteApi: vi.Mocked<AutocompleteApi>;
 
 	beforeEach(() => {
@@ -127,11 +123,6 @@ describe("OpenAlexClient", () => {
 			streamKeywords: vi.fn(),
 		} as unknown as vi.Mocked<KeywordsApi>;
 
-		mockGeoApi = {
-			getGeo: vi.fn(),
-			getGeos: vi.fn(),
-			streamGeos: vi.fn(),
-		} as unknown as vi.Mocked<GeoApi>;
 
 		mockAutocompleteApi = {
 			autocomplete: vi.fn(),
@@ -146,7 +137,6 @@ describe("OpenAlexClient", () => {
 		(PublishersApi as unknown as Mock).mockImplementation(() => mockPublishersApi);
 		(FundersApi as unknown as Mock).mockImplementation(() => mockFundersApi);
 		(KeywordsApi as unknown as Mock).mockImplementation(() => mockKeywordsApi);
-		(GeoApi as unknown as Mock).mockImplementation(() => mockGeoApi);
 		(AutocompleteApi as unknown as Mock).mockImplementation(() => mockAutocompleteApi);
 
 		// Mock query builder functions
@@ -380,7 +370,6 @@ describe("OpenAlexClient", () => {
 				publishers: [],
 				funders: [],
 				keywords: [],
-				geo: [],
 			});
 
 			const expectedParams = {

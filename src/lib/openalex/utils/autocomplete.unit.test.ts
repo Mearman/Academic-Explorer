@@ -411,7 +411,6 @@ describe("AutocompleteApi", () => {
 				["publishers", "publisher"],
 				["funders", "funder"],
 				["keywords", "keyword"],
-				["geo", "geo"],
 			];
 
 			for (const [plural, singular] of entityTypeMappings) {
