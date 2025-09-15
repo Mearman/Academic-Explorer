@@ -67,6 +67,24 @@ export const useGraphUtilities = () => {
 		}
 	}, [nodes, edges, applyUtilityResult, setLoading, setError]);
 
+	const trimDegree1Nodes = useCallback(() => {
+		setLoading(true);
+		setError(null);
+
+		try {
+			const result = graphUtilitiesService.trimDegree1Nodes(nodes, edges);
+			applyUtilityResult(result);
+			return result;
+		} catch (error) {
+			const errorMessage = error instanceof Error ? error.message : "Unknown error";
+			logger.error("graph", "Trim degree 1 nodes failed", { error: errorMessage });
+			setError(`Failed to trim degree 1 nodes: ${errorMessage}`);
+			throw error;
+		} finally {
+			setLoading(false);
+		}
+	}, [nodes, edges, applyUtilityResult, setLoading, setError]);
+
 	const removeIsolatedNodes = useCallback(() => {
 		setLoading(true);
 		setError(null);
@@ -190,6 +208,7 @@ export const useGraphUtilities = () => {
 		// Graph modification utilities
 		trimLeafNodes,
 		trimRootNodes,
+		trimDegree1Nodes,
 		removeIsolatedNodes,
 		filterByPublicationYear,
 		extractEgoNetwork,

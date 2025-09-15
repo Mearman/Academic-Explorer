@@ -117,6 +117,64 @@ export class GraphUtilitiesService {
 	}
 
 	/**
+   * Remove nodes with degree 1 (exactly 1 total connection)
+   * Useful for removing true leaf nodes that have only one connection
+   */
+	trimDegree1Nodes(nodes: GraphNode[], edges: GraphEdge[]): GraphUtilityResult {
+		const startTime = performance.now();
+		this.logger.info("graph", "Starting degree 1 node trimming", {
+			nodeCount: nodes.length,
+			edgeCount: edges.length
+		});
+
+		// Count total degree for each node (incoming + outgoing)
+		const degreeCount = new Map<string, number>();
+
+		// Initialize all nodes with degree 0
+		nodes.forEach(node => {
+			degreeCount.set(node.id, 0);
+		});
+
+		// Count connections for each node
+		edges.forEach(edge => {
+			// Each edge contributes 1 to both source and target degree
+			degreeCount.set(edge.source, (degreeCount.get(edge.source) || 0) + 1);
+			degreeCount.set(edge.target, (degreeCount.get(edge.target) || 0) + 1);
+		});
+
+		// Filter out nodes with exactly degree 1
+		const filteredNodes = nodes.filter(node => {
+			const totalDegree = degreeCount.get(node.id) || 0;
+			return totalDegree !== 1;
+		});
+
+		// Remove edges connected to deleted nodes
+		const nodeIds = new Set(filteredNodes.map(n => n.id));
+		const filteredEdges = edges.filter(edge =>
+			nodeIds.has(edge.source) && nodeIds.has(edge.target)
+		);
+
+		const removedCount = nodes.length - filteredNodes.length;
+		const duration = performance.now() - startTime;
+
+		this.logger.info("graph", "Degree 1 node trimming completed", {
+			originalNodes: nodes.length,
+			filteredNodes: filteredNodes.length,
+			removedNodes: removedCount,
+			originalEdges: edges.length,
+			filteredEdges: filteredEdges.length,
+			duration
+		});
+
+		return {
+			nodes: filteredNodes,
+			edges: filteredEdges,
+			removedCount,
+			operation: "trimDegree1Nodes"
+		};
+	}
+
+	/**
    * Remove isolated nodes (nodes with no connections at all)
    * Cleans up disconnected entities in the academic network
    */
