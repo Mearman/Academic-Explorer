@@ -4,7 +4,7 @@
  */
 
 import React, { useState } from "react";
-import { IconCode, IconEye, IconEyeOff, IconDownload, IconLoader, IconCopy } from "@tabler/icons-react";
+import { IconDownload, IconLoader, IconCopy } from "@tabler/icons-react";
 import { useRawEntityData } from "@/hooks/use-raw-entity-data";
 import { useThemeColors } from "@/hooks/use-theme-colors";
 import { logger } from "@/lib/logger";
@@ -19,7 +19,6 @@ export const RawApiDataSection: React.FC<RawApiDataSectionProps> = ({
 	className
 }) => {
 	const { colors } = useThemeColors();
-	const [isExpanded, setIsExpanded] = useState(false);
 	const [viewMode, setViewMode] = useState<"formatted" | "raw">("formatted");
 
 	const {
@@ -29,7 +28,7 @@ export const RawApiDataSection: React.FC<RawApiDataSectionProps> = ({
 		isError
 	} = useRawEntityData({
 		entityId,
-		enabled: !!entityId && isExpanded
+		enabled: !!entityId
 	});
 
 	// Note: ExpandableSection component removed as we now show all data expanded by default
@@ -319,32 +318,6 @@ export const RawApiDataSection: React.FC<RawApiDataSectionProps> = ({
 
 	return (
 		<div className={className}>
-			{/* Header */}
-			<div
-				style={{
-					display: "flex",
-					alignItems: "center",
-					justifyContent: "space-between",
-					gap: "8px",
-					paddingBottom: "8px",
-					borderBottom: `1px solid ${colors.border.primary}`,
-					fontSize: "13px",
-					fontWeight: 600,
-					color: colors.text.primary,
-					cursor: "pointer"
-				}}
-				onClick={() => { setIsExpanded(!isExpanded); }}
-			>
-				<div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
-					<IconCode size={16} />
-          Raw API Data
-				</div>
-				{isExpanded ? <IconEyeOff size={16} /> : <IconEye size={16} />}
-			</div>
-
-			{/* Content */}
-			{isExpanded && (
-				<div style={{ marginTop: "12px" }}>
 					{isLoading && (
 						<div style={{
 							display: "flex",
@@ -493,8 +466,6 @@ export const RawApiDataSection: React.FC<RawApiDataSectionProps> = ({
 							</div>
 						</>
 					)}
-				</div>
-			)}
 		</div>
 	);
 };
