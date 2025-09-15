@@ -125,6 +125,25 @@ const GraphNavigationInner: React.FC<GraphNavigationProps> = ({ className, style
 		}
 	}, []);
 
+	// Reusable function to center on a specific node
+	const centerOnNode = useCallback((nodeId: string, delay: number = 200) => {
+		setTimeout(() => {
+			const currentNodes = reactFlowInstance.getNodes();
+			const targetNode = currentNodes.find(n => n.id === nodeId);
+			if (targetNode) {
+				void reactFlowInstance.fitView({
+					nodes: [targetNode],
+					padding: 0.3,
+					duration: 500
+				});
+				logger.info("ui", "Auto-centered view on selected node", {
+					nodeId: nodeId,
+					position: targetNode.position
+				}, "GraphNavigation");
+			}
+		}, delay);
+	}, [reactFlowInstance]);
+
 	const { isRunning: _isLayoutRunning, restartLayout } = useLayout(
 		currentLayout,
 		{
@@ -192,21 +211,7 @@ const GraphNavigationInner: React.FC<GraphNavigationProps> = ({ className, style
 				store.pinNode(node.id); // Pin the new node at its current position
 
 				// Center the view on the pinned node with a small delay to ensure pinning state is processed
-				setTimeout(() => {
-					const currentNodes = reactFlowInstance.getNodes();
-					const targetNode = currentNodes.find(n => n.id === node.id);
-					if (targetNode) {
-						void reactFlowInstance.fitView({
-							nodes: [targetNode],
-							padding: 0.3,
-							duration: 500
-						});
-						logger.info("ui", "Centered view on pinned node", {
-							nodeId: node.id,
-							position: targetNode.position
-						}, "GraphNavigation");
-					}
-				}, 200); // Longer delay to ensure pinning is processed
+				centerOnNode(node.id, 200);
 
 				// Expand the node respecting traversal depth setting
 				void expandNode(node.id);
@@ -386,24 +391,32 @@ const GraphNavigationInner: React.FC<GraphNavigationProps> = ({ className, style
 				});
 
 				if (matchingNode) {
-					// Update selection in store (no longer automatically pin)
+					// Update selection in store
 					const store = useGraphStore.getState();
 					store.selectNode(matchingNode.id);
+
+					// Pin the node to the center of the screen
+					store.clearAllPinnedNodes(); // Clear previous pinned nodes
+					store.pinNode(matchingNode.id);
 
 					// Update preview in sidebar
 					setPreviewEntity(matchingNode.entityId);
 
-					logger.info("graph", "Selected entity from hash URL", {
+					// Center the view on the selected node
+					centerOnNode(matchingNode.id, 200);
+
+					logger.info("graph", "Selected and auto-centered entity from hash URL", {
 						currentHash,
 						entityType,
 						entityId,
 						nodeId: matchingNode.id,
-						nodeEntityId: matchingNode.entityId
+						nodeEntityId: matchingNode.entityId,
+						pinned: true
 					}, "GraphNavigation");
 				}
 			}
 		}
-	}, [storeNodes, setPreviewEntity]);
+	}, [storeNodes, setPreviewEntity, centerOnNode]);
 
 	// Browser history navigation (back/forward button support for hash routing)
 	useEffect(() => {
@@ -431,19 +444,27 @@ const GraphNavigationInner: React.FC<GraphNavigationProps> = ({ className, style
 					});
 
 					if (matchingNode) {
-						// Update selection in store (no longer automatically pin)
+						// Update selection in store
 						const store = useGraphStore.getState();
 						store.selectNode(matchingNode.id);
+
+						// Pin the node to the center of the screen
+						store.clearAllPinnedNodes(); // Clear previous pinned nodes
+						store.pinNode(matchingNode.id);
 
 						// Update preview in sidebar
 						setPreviewEntity(matchingNode.entityId);
 
-						logger.info("graph", "Selected entity from hash change", {
+						// Center the view on the selected node
+						centerOnNode(matchingNode.id, 200);
+
+						logger.info("graph", "Selected and auto-centered entity from hash change", {
 							currentHash,
 							entityType,
 							entityId,
 							nodeId: matchingNode.id,
-							nodeEntityId: matchingNode.entityId
+							nodeEntityId: matchingNode.entityId,
+							pinned: true
 						}, "GraphNavigation");
 					}
 				}
@@ -461,7 +482,7 @@ const GraphNavigationInner: React.FC<GraphNavigationProps> = ({ className, style
 		return () => {
 			window.removeEventListener("hashchange", handleHashChange);
 		};
-	}, [storeNodes, setPreviewEntity]);
+	}, [storeNodes, setPreviewEntity, centerOnNode]);
 
 	// Handle node clicks
 	const onNodeClick = useCallback((event: React.MouseEvent, node: XYNode) => {
