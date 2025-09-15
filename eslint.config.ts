@@ -9,27 +9,6 @@ export default tseslint.config([
   {
     ignores: ['dist/**/*', 'node_modules/**/*', 'coverage/**/*', 'routeTree.gen.ts', 'vite.config.ts', 'vite.config.old.ts', 'vitest.workspace.ts', 'src/test/setup.ts', '.nx/**/*', 'eslint.config.ts', 'eslint-rules/**/*'],
   },
-  // Relax strict type checking for test files due to mocking framework patterns
-  {
-    files: [
-      'src/**/*.test.ts',
-      'src/**/*.test.tsx',
-      'src/**/*.integration.test.ts',
-      'src/**/*.unit.test.ts',
-      'src/**/*.component.test.ts',
-      'src/**/*.e2e.test.ts',
-    ],
-    rules: {
-      'no-console': 'off',
-      '@typescript-eslint/no-unsafe-assignment': 'off',
-      '@typescript-eslint/no-unsafe-call': 'off',
-      '@typescript-eslint/no-unsafe-member-access': 'off',
-      '@typescript-eslint/no-unsafe-argument': 'off',
-      '@typescript-eslint/no-unsafe-return': 'off',
-      '@typescript-eslint/no-explicit-any': 'off',
-      '@typescript-eslint/consistent-type-assertions': 'off',
-    },
-  },
   // Allow console usage in specific files where it's necessary
   {
     files: [
@@ -111,6 +90,29 @@ export default tseslint.config([
         projectService: true,
         tsconfigRootDir: import.meta.dirname,
       },
+    },
+  },
+  // Relax strict type checking for test files due to mocking framework patterns
+  // This MUST come after the main config to properly override rules
+  {
+    files: [
+      'src/**/*.test.ts',
+      'src/**/*.test.tsx',
+      'src/**/*.integration.test.ts',
+      'src/**/*.unit.test.ts',
+      'src/**/*.component.test.ts',
+      'src/**/*.e2e.test.ts',
+    ],
+    rules: {
+      'no-console': 'off',
+      '@typescript-eslint/no-unsafe-assignment': 'off',
+      '@typescript-eslint/no-unsafe-call': 'off',
+      '@typescript-eslint/no-unsafe-member-access': 'off',
+      '@typescript-eslint/no-unsafe-argument': 'off',
+      '@typescript-eslint/no-unsafe-return': 'off',
+      '@typescript-eslint/no-explicit-any': 'off',
+      '@typescript-eslint/consistent-type-assertions': 'off',
+      '@typescript-eslint/no-non-null-assertion': 'off',
     },
   },
 ]);
