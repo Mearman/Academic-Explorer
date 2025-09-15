@@ -4,7 +4,7 @@
  */
 
 import React, { useState } from "react";
-import { IconCode, IconEye, IconEyeOff, IconDownload, IconLoader } from "@tabler/icons-react";
+import { IconCode, IconEye, IconEyeOff, IconDownload, IconLoader, IconCopy } from "@tabler/icons-react";
 import { useRawEntityData } from "@/hooks/use-raw-entity-data";
 import { useThemeColors } from "@/hooks/use-theme-colors";
 import { logger } from "@/lib/logger";
@@ -294,6 +294,25 @@ export const RawApiDataSection: React.FC<RawApiDataSectionProps> = ({
 		}
 	};
 
+	const copyJsonData = async () => {
+		if (!rawData) return;
+
+		try {
+			const jsonString = JSON.stringify(rawData, null, 2);
+			await navigator.clipboard.writeText(jsonString);
+
+			logger.info("ui", "Raw API data copied to clipboard", {
+				entityId,
+				dataSize: jsonString.length
+			}, "RawApiDataSection");
+		} catch (error) {
+			logger.error("ui", "Failed to copy raw API data to clipboard", {
+				entityId,
+				error: error instanceof Error ? error.message : "Unknown error"
+			}, "RawApiDataSection");
+		}
+	};
+
 	if (!entityId) {
 		return null;
 	}
@@ -391,6 +410,24 @@ export const RawApiDataSection: React.FC<RawApiDataSectionProps> = ({
 									}}
 								>
                   Raw JSON
+								</button>
+								<button
+									onClick={() => { void copyJsonData(); }}
+									style={{
+										padding: "4px 8px",
+										fontSize: "11px",
+										backgroundColor: "#8b5cf6",
+										color: "white",
+										border: "none",
+										borderRadius: "4px",
+										cursor: "pointer",
+										display: "flex",
+										alignItems: "center",
+										gap: "4px"
+									}}
+								>
+									<IconCopy size={12} />
+                  Copy
 								</button>
 								<button
 									onClick={downloadJsonData}
