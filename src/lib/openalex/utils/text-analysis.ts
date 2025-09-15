@@ -112,7 +112,7 @@ export class TextAnalysisApi {
 			const batch = texts.slice(i, i + batch_size);
 
 			const batchPromises = batch.map(text =>
-				this.analyzeText(text, analysisOptions).catch(error => {
+				this.analyzeText(text, analysisOptions).catch((error: unknown) => {
 					logger.warn("api", `Failed to analyze text: ${text.substring(0, 50)}...`, { text: text.substring(0, 100), error }, "TextAnalysisApi");
 					return null;
 				})

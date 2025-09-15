@@ -79,7 +79,7 @@ function ComparisonResults() {
 		try {
 			const savedDatasets = localStorage.getItem("star-datasets")
 			if (savedDatasets) {
-				const datasets: STARDataset[] = JSON.parse(savedDatasets)
+				const datasets = JSON.parse(savedDatasets) as STARDataset[]
 				setStarDatasets(datasets)
 
 				// Initialize comparison runs for each dataset
@@ -139,7 +139,7 @@ function ComparisonResults() {
 			const academicExplorerResults = await performAcademicExplorerSearch(dataset)
 
 			// Step 2: Run comparison with progress tracking
-			const comparisonResults = await compareAcademicExplorerResults(
+			const comparisonResults = compareAcademicExplorerResults(
 				academicExplorerResults,
 				dataset,
 				DEFAULT_MATCHING_CONFIG,
@@ -244,7 +244,7 @@ function ComparisonResults() {
 	const completedComparisonResults = useMemo(() => {
 		return comparisonRuns
 			.filter(run => run.status === "completed" && run.comparisonResults)
-			.map(run => run.comparisonResults!)
+			.map(run => run.comparisonResults as ComparisonResultsType)
 	}, [comparisonRuns])
 
 	const formatPercent = (value: number) => `${(value * 100).toFixed(1)}%`
@@ -774,9 +774,9 @@ function ComparisonResults() {
 								</div>
 
 								{/* Missing Paper Detection Component */}
-								{selectedDatasetForMissingPapers && (
+								{selectedDatasetForMissingPapers && starDatasets.find(d => d.id === selectedDatasetForMissingPapers) && (
 									<MissingPaperDetection
-										dataset={starDatasets.find(d => d.id === selectedDatasetForMissingPapers)!}
+										dataset={starDatasets.find(d => d.id === selectedDatasetForMissingPapers) as STARDataset}
 										onDetectionComplete={(results) => {
 											setMissingPaperResults(prev => ({
 												...prev,

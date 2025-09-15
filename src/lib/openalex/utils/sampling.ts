@@ -83,12 +83,12 @@ export class SamplingApi {
    * });
    * ```
    */
-	async stratifiedSample<T = OpenAlexEntity>(
+	async stratifiedSample(
 		entityType: EntityType,
 		stratifyBy: string,
 		params: AdvancedSampleParams = {}
 	): Promise<{
-    samples: T[];
+    samples: OpenAlexEntity[];
     strata_info: Array<{
       stratum: string;
       count: number;
@@ -106,7 +106,7 @@ export class SamplingApi {
 
 		if (!groupedResponse.group_by) {
 			// Fallback to regular random sample if grouping not supported
-			const regularSample = await this.randomSample<T>(entityType, params);
+			const regularSample = await this.randomSample(entityType, params);
 			return {
 				samples: regularSample.results,
 				strata_info: [{
@@ -120,7 +120,7 @@ export class SamplingApi {
 		const strata = groupedResponse.group_by.slice(0, 10); // Limit to top 10 strata
 		const totalCount = strata.reduce((sum, s) => sum + s.count, 0);
 
-		const samples: T[] = [];
+		const samples: OpenAlexEntity[] = [];
 		const strataInfo: Array<{ stratum: string; count: number; sample_count: number }> = [];
 
 		// Sample proportionally from each stratum
@@ -129,7 +129,7 @@ export class SamplingApi {
 			const stratumSampleSize = Math.max(1, Math.round(sample_size * proportion));
 
 			try {
-				const stratumSample = await this.randomSample<T>(entityType, {
+				const stratumSample = await this.randomSample(entityType, {
 					...queryParams,
 					sample_size: stratumSampleSize,
 					seed: seed ? seed + stratum.key.length : undefined, // Vary seed per stratum
@@ -172,11 +172,11 @@ export class SamplingApi {
    * });
    * ```
    */
-	async temporallyDiverseSample<T = OpenAlexEntity>(
+	async temporallyDiverseSample(
 		entityType: EntityType,
 		params: AdvancedSampleParams = {}
 	): Promise<{
-    samples: T[];
+    samples: OpenAlexEntity[];
     temporal_distribution: Array<{
       period: string;
       count: number;
@@ -194,7 +194,7 @@ export class SamplingApi {
 		const { sample_size = 100 } = params;
 		const samplesPerPeriod = Math.ceil(sample_size / periods.length);
 
-		const samples: T[] = [];
+		const samples: OpenAlexEntity[] = [];
 		const temporalDistribution: Array<{ period: string; count: number; sample_count: number }> = [];
 
 		for (const period of periods) {
@@ -207,7 +207,7 @@ export class SamplingApi {
 					? `${params.filter},${dateFilter}`
 					: dateFilter;
 
-				const periodSample = await this.randomSample<T>(entityType, {
+				const periodSample = await this.randomSample(entityType, {
 					...params,
 					sample_size: samplesPerPeriod,
 					filter: periodFilter,
@@ -393,7 +393,7 @@ export class SamplingApi {
 	/**
    * Fisher-Yates shuffle algorithm with optional seed
    */
-	private shuffleArray<T>(array: T[], seed?: number): void {
+	private shuffleArray(array: unknown[], seed?: number): void {
 		// Simple seeded random number generator (not cryptographically secure)
 		const random = seed ? this.seededRandom(seed) : Math.random;
 
