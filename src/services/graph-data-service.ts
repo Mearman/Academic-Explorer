@@ -113,39 +113,14 @@ export class GraphDataService {
 				store.pinNode(primaryNodeId);
 			}
 
-			logger.info("graph", "Entity graph loaded with placeholder nodes", {
+			logger.info("graph", "Entity graph loaded with incremental hydration", {
 				nodeCount: nodes.length,
 				edgeCount: edges.length,
 				primaryNodeId,
-				placeholderCount: nodes.filter(n => n.metadata?.isPlaceholder).length
+				minimalNodes: nodes.filter(n => n.metadata?.hydrationLevel === "minimal").length,
+				fullNodes: nodes.filter(n => n.metadata?.hydrationLevel === "full").length
 			}, "GraphDataService");
 
-			// TEMPORARILY DISABLED: All automatic placeholder loading disabled for debugging
-			// Start loading placeholder node data immediately in the background (non-blocking)
-			// if (nodes.some(n => n.metadata?.isPlaceholder)) {
-			// 	// Trigger immediate parallel loading for maximum responsiveness
-			// 	logger.info("graph", "Starting immediate parallel placeholder loading", {
-			// 		placeholderCount: nodes.filter(n => n.metadata?.isPlaceholder).length
-			// 	}, "GraphDataService");
-
-			// 	// Load all placeholders immediately in parallel (non-blocking)
-			// 	this.loadAllPlaceholdersImmediate().catch((error: unknown) => {
-			// 		logger.warn("graph", "Immediate placeholder loading failed, falling back to sequential", {
-			// 			error: error instanceof Error ? error.message : "Unknown error"
-			// 		}, "GraphDataService");
-
-			// 		// Fallback to sequential loading with delays if parallel fails
-			// 		setTimeout(() => {
-			// 			this.loadAllPlaceholderNodes().catch((fallbackError: unknown) => {
-			// 				logError("Both immediate and fallback placeholder loading failed", fallbackError, "GraphDataService", "graph");
-			// 			});
-			// 		}, 500);
-			// 	});
-			// }
-
-			logger.info("graph", "Placeholder loading temporarily disabled for debugging", {
-				placeholderCount: nodes.filter(n => n.metadata?.isPlaceholder).length
-			}, "GraphDataService");
 
 			// Layout is now handled by the ReactFlow component's useLayout hook
 			// No need for explicit layout application here
@@ -167,9 +142,9 @@ export class GraphDataService {
 		const store = useGraphStore.getState();
 
 		try {
-			// Check if the node already exists with full data (not a placeholder)
+			// Check if the node already exists with full data
 			const existingNode = Array.from(store.nodes.values()).find(
-				node => node.entityId === entityId && !node.metadata?.isPlaceholder
+				node => node.entityId === entityId && node.metadata?.hydrationLevel === "full"
 			);
 
 			if (existingNode) {
@@ -778,6 +753,181 @@ export class GraphDataService {
 	}
 
 	/**
+   * Fetch entity with specific fields using the appropriate OpenAlex API method
+   */
+	private async fetchEntityWithFields(entityId: string, entityType: EntityType, fields: string[]): Promise<OpenAlexEntity> {
+		const params = { select: fields };
+
+		switch (entityType) {
+			case "works":
+				return await rateLimitedOpenAlex.getWork(entityId, params);
+			case "authors":
+				return await rateLimitedOpenAlex.getAuthor(entityId, params);
+			case "sources":
+				return await rateLimitedOpenAlex.getSource(entityId, params);
+			case "institutions":
+				return await rateLimitedOpenAlex.getInstitution(entityId, params);
+			case "topics":
+				return await rateLimitedOpenAlex.getTopic(entityId, params);
+			case "publishers":
+				return await rateLimitedOpenAlex.getPublisher(entityId, params);
+			case "funders":
+				return await rateLimitedOpenAlex.getFunder(entityId, params);
+			case "keywords":
+				return await rateLimitedOpenAlex.getKeyword(entityId, params);
+			default:
+				// Fallback to generic method without field selection
+				return await rateLimitedOpenAlex.getEntity(entityId);
+		}
+	}
+
+	/**
+   * Create a minimal node with just essential data using selective API field loading
+   * This replaces the placeholder system with incremental hydration
+   */
+	async createMinimalNode(entityId: string, entityType: EntityType): Promise<GraphNode | null> {
+		try {
+			// Define minimal fields needed for basic node display
+			const minimalFieldsMap: Partial<Record<EntityType, string[]>> = {
+				works: ["id", "display_name", "publication_year", "cited_by_count", "open_access.is_oa"],
+				authors: ["id", "display_name", "works_count", "cited_by_count"],
+				sources: ["id", "display_name", "works_count", "cited_by_count", "type"],
+				institutions: ["id", "display_name", "works_count", "cited_by_count", "country_code"],
+				topics: ["id", "display_name", "works_count", "cited_by_count"],
+				publishers: ["id", "display_name", "works_count", "sources_count"],
+				funders: ["id", "display_name", "works_count", "grants_count"],
+				keywords: ["id", "display_name", "works_count", "cited_by_count"]
+			};
+
+			const fields = minimalFieldsMap[entityType] || ["id", "display_name"];
+
+			// Use the specific entity method with field selection for minimal data
+			const entity = await this.deduplicationService.getEntity(
+				entityId,
+				() => this.fetchEntityWithFields(entityId, entityType, fields)
+			);
+
+			// Create node with minimal data - hydration level indicates completeness
+			return {
+				id: entity.id,
+				type: entityType,
+				label: entity.display_name || `${entityType} ${entity.id}`,
+				entityId: entity.id,
+				position: { x: 0, y: 0 }, // Will be positioned by layout
+				externalIds: [], // Will be populated during full hydration
+				metadata: {
+					hydrationLevel: "minimal", // Track hydration level
+					citationCount: "cited_by_count" in entity ? entity.cited_by_count : undefined,
+					year: "publication_year" in entity ? entity.publication_year : undefined,
+					openAccess: "open_access" in entity ? entity.open_access?.is_oa : undefined,
+					isLoading: false,
+					dataLoadedAt: Date.now(),
+				}
+			};
+		} catch (error) {
+			logError(`Failed to create minimal node for ${entityId}`, error, "GraphDataService", "graph");
+			return null;
+		}
+	}
+
+	/**
+   * Background hydration for nodes to get basic display data (non-blocking)
+   */
+	private async hydrateNodeInBackground(entityId: string): Promise<void> {
+		const store = useGraphStore.getState();
+		const node = store.nodes.get(entityId);
+
+		if (!node || node.metadata?.hydrationLevel === "full") {
+			return;
+		}
+
+		try {
+			// Get minimal data for display purposes only
+			const minimalNode = await this.createMinimalNode(entityId, node.type);
+			if (minimalNode) {
+				// Update only the label and basic metadata, keep position
+				store.updateNode(entityId, {
+					...node,
+					label: minimalNode.label,
+					metadata: {
+						...node.metadata,
+						...minimalNode.metadata,
+						hydrationLevel: "minimal"
+					}
+				});
+
+				logger.debug("graph", "Background hydration completed", {
+					entityId,
+					newLabel: minimalNode.label
+				});
+			}
+		} catch (error) {
+			// Silent failure for background hydration - don't spam logs
+			logger.debug("graph", "Background hydration failed silently", {
+				entityId,
+				error: error instanceof Error ? error.message : "Unknown error"
+			});
+		}
+	}
+
+	/**
+   * Hydrate a node with full data when needed (e.g., when user interacts with it)
+   */
+	async hydrateNode(nodeId: string): Promise<void> {
+		const store = useGraphStore.getState();
+		const node = store.nodes.get(nodeId);
+
+		if (!node) {
+			logger.warn("graph", "Cannot hydrate non-existent node", { nodeId });
+			return;
+		}
+
+		// Skip if already fully hydrated
+		if (node.metadata?.hydrationLevel === "full") {
+			logger.debug("graph", "Node already fully hydrated", { nodeId });
+			return;
+		}
+
+		try {
+			// Mark node as loading during hydration
+			store.markNodeAsLoading(nodeId);
+
+			// Fetch full entity data without field restrictions
+			const fullEntity = await this.deduplicationService.getEntity(
+				node.entityId,
+				() => rateLimitedOpenAlex.getEntity(node.entityId)
+			);
+
+			// Transform to full graph data to get external IDs and metadata
+			const { nodes } = this.transformEntityToGraph(fullEntity);
+			const fullNodeData = nodes[0];
+
+			if (fullNodeData) {
+				// Update node with full data
+				store.updateNode(nodeId, {
+					...fullNodeData,
+					position: node.position, // Preserve current position
+					metadata: {
+						...fullNodeData.metadata,
+						hydrationLevel: "full",
+						isLoading: false,
+						dataLoadedAt: Date.now(),
+					}
+				});
+
+				logger.info("graph", "Node fully hydrated", {
+					nodeId,
+					entityType: node.type,
+					externalIdCount: fullNodeData.externalIds.length
+				});
+			}
+		} catch (error) {
+			logError(`Failed to hydrate node ${nodeId}`, error, "GraphDataService", "graph");
+			store.markNodeAsLoading(nodeId, false); // Clear loading state on error
+		}
+	}
+
+	/**
    * Transform OpenAlex entity to graph nodes and edges
    */
 	private transformEntityToGraph(entity: OpenAlexEntity, options: { loadPlaceholders?: boolean } = {}): { nodes: GraphNode[]; edges: GraphEdge[] } {
@@ -856,7 +1006,8 @@ export class GraphDataService {
 					] : [],
 					metadata: {
 						position: authorship.author_position,
-						isPlaceholder: true, // Mark as placeholder for lazy loading
+						hydrationLevel: "minimal" as const,
+						isLoading: false
 					}
 				};
 				nodes.push(authorNode);
@@ -891,7 +1042,8 @@ export class GraphDataService {
 						}
 					] : [],
 					metadata: {
-						isPlaceholder: true, // Mark as placeholder for lazy loading
+						hydrationLevel: "minimal" as const,
+						isLoading: false
 					}
 				};
 				nodes.push(sourceNode);
@@ -911,17 +1063,28 @@ export class GraphDataService {
 			const existingCitedNode = store.getNode(citedWorkId);
 
 			if (!existingCitedNode) {
-				// Create minimal placeholder - label will be updated when data is loaded
+				// Create minimal node with basic data - will be hydrated when user interacts
 				const citedNode: GraphNode = {
 					id: citedWorkId,
 					type: "works" as EntityType,
-					label: `Referenced Work ${String(index + 1)}`,
+					label: `Referenced Work ${String(index + 1)}`, // Temporary label, will be updated with real title
 					entityId: citedWorkId,
 					position: { x: (index - 1) * 200, y: 300 },
 					externalIds: [],
-					metadata: { isPlaceholder: true },
+					metadata: {
+						hydrationLevel: "minimal",
+						isLoading: false
+					},
 				};
 				nodes.push(citedNode);
+
+				// Schedule background hydration for referenced works to get real titles
+				this.hydrateNodeInBackground(citedWorkId).catch((error: unknown) => {
+					logger.warn("graph", "Background hydration failed for referenced work", {
+						citedWorkId,
+						error: error instanceof Error ? error.message : "Unknown error"
+					});
+				});
 			}
 
 			edges.push({
@@ -964,7 +1127,8 @@ export class GraphDataService {
 							}
 						] : [],
 						metadata: {
-							isPlaceholder: true, // Mark as placeholder for lazy loading
+							hydrationLevel: "minimal" as const,
+							isLoading: false
 						}
 					};
 					nodes.push(institutionNode);
@@ -1034,7 +1198,10 @@ export class GraphDataService {
 					entityId: parentId,
 					position: { x: (index - 0.5) * 200, y: -150 },
 					externalIds: [],
-					metadata: { isPlaceholder: true },
+					metadata: {
+						hydrationLevel: "minimal" as const,
+						isLoading: false
+					},
 				};
 				nodes.push(parentNode);
 
