@@ -422,11 +422,13 @@ describe("GraphDataService", () => {
 			expect(mockStore.setLoading).toHaveBeenCalledWith(false);
 			expect(logger.info).toHaveBeenCalledWith(
 				"graph",
-				"Entity graph loaded with placeholder nodes",
+				"Entity graph loaded with incremental hydration",
 				expect.objectContaining({
 					nodeCount: expect.any(Number),
 					edgeCount: expect.any(Number),
-					placeholderCount: expect.any(Number),
+					minimalNodes: expect.any(Number),
+					fullNodes: expect.any(Number),
+					primaryNodeId: expect.any(String),
 				}),
 				"GraphDataService"
 			);
@@ -510,7 +512,7 @@ describe("GraphDataService", () => {
 			const existingNode = {
 				id: "node-1",
 				entityId: "A123456789",
-				metadata: { isPlaceholder: false },
+				metadata: { hydrationLevel: "full" as const },
 			};
 
 			// Mock the store's nodes.values() method
@@ -537,14 +539,14 @@ describe("GraphDataService", () => {
 			expect(mockStore.addEdges).toHaveBeenCalled();
 		});
 
-		it("should handle placeholder nodes by loading full data", async () => {
-			const placeholderNode = {
+		it("should handle minimal hydration nodes by loading full data", async () => {
+			const minimalNode = {
 				id: "node-1",
 				entityId: "A123456789",
-				metadata: { isPlaceholder: true },
+				metadata: { hydrationLevel: "minimal" as const },
 			};
 
-			mockStore.nodes = new Map([["node-1", placeholderNode]]);
+			mockStore.nodes = new Map([["node-1", minimalNode]]);
 
 			await service.loadEntityIntoGraph("A123456789");
 

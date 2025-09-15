@@ -48,18 +48,18 @@ describe("RelationshipDetectionService", () => {
 			expect(mockStore.getNode).toHaveBeenCalledWith("nonexistent");
 		});
 
-		it("should skip placeholder nodes", async () => {
-			const placeholderNode: GraphNode = {
+		it("should skip minimal hydration nodes", async () => {
+			const minimalNode: GraphNode = {
 				id: "W123",
 				type: "works" as EntityType,
 				label: "Test Work",
 				entityId: "https://openalex.org/W123",
 				position: { x: 0, y: 0 },
 				externalIds: [],
-				metadata: { isPlaceholder: true }
+				metadata: { hydrationLevel: "minimal" as const }
 			};
 
-			mockStore.getNode.mockReturnValue(placeholderNode);
+			mockStore.getNode.mockReturnValue(minimalNode);
 
 			const result = await service.detectRelationshipsForNode("W123");
 
