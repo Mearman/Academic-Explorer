@@ -15,27 +15,17 @@ import {
 	IconGraph,
 	IconDatabase,
 	IconTrash,
-	IconAdjustments,
 	IconLink,
 } from "@tabler/icons-react";
 
 export const LeftRibbon: React.FC = () => {
-	const { clearGraph, loadAllCachedNodes } = useGraphData();
+	const { clearGraph } = useGraphData();
 	const { colors } = useThemeColors();
 	const { expandSidebarToSection } = useLayoutStore();
 
 	const handleClearGraph = () => {
 		logger.info("ui", "Clear graph clicked from left ribbon");
 		clearGraph();
-	};
-
-	const handleLoadCachedNodes = () => {
-		logger.info("ui", "Load cached nodes clicked from left ribbon");
-		try {
-			loadAllCachedNodes();
-		} catch (error) {
-			logger.error("ui", "Failed to load cached nodes from ribbon", error);
-		}
 	};
 
 	const handleExpandSidebarToSection = (sectionKey: string, sectionName: string) => {
