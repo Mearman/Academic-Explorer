@@ -22,6 +22,9 @@ interface LayoutState {
   leftSidebarHovered: boolean;
   rightSidebarHovered: boolean;
 
+  // Section expansion states
+  expandedSections: Record<string, boolean>;
+
   // Graph provider selection
   graphProvider: ProviderType;
 
@@ -42,6 +45,8 @@ interface LayoutState {
   setRightSidebarAutoHidden: (autoHidden: boolean) => void;
   setLeftSidebarHovered: (hovered: boolean) => void;
   setRightSidebarHovered: (hovered: boolean) => void;
+  setSectionExpanded: (sectionKey: string, expanded: boolean) => void;
+  expandSidebarToSection: (sidebar: 'left' | 'right', sectionKey: string) => void;
   setGraphProvider: (provider: ProviderType) => void;
   setPreviewEntity: (entityId: string | null) => void;
   setAutoPinOnLayoutStabilization: (enabled: boolean) => void;
@@ -52,6 +57,7 @@ type LayoutPersistedState = Partial<Pick<LayoutState,
   | "leftSidebarPinned"
   | "rightSidebarOpen"
   | "rightSidebarPinned"
+  | "expandedSections"
   | "graphProvider"
   | "autoPinOnLayoutStabilization"
 >>;
@@ -68,6 +74,7 @@ export const useLayoutStore = create<LayoutState>()(
 			rightSidebarAutoHidden: false,
 			leftSidebarHovered: false,
 			rightSidebarHovered: false,
+			expandedSections: {},
 			graphProvider: "xyflow",
 			previewEntityId: null,
 			autoPinOnLayoutStabilization: true,
@@ -107,6 +114,26 @@ export const useLayoutStore = create<LayoutState>()(
 			setRightSidebarHovered: (hovered) =>
 				set({ rightSidebarHovered: hovered }),
 
+			setSectionExpanded: (sectionKey, expanded) =>
+				set((state) => ({
+					expandedSections: {
+						...state.expandedSections,
+						[sectionKey]: expanded,
+					},
+				})),
+
+			expandSidebarToSection: (sidebar, sectionKey) =>
+				set((state) => ({
+					// Open the appropriate sidebar
+					leftSidebarOpen: sidebar === 'left' ? true : state.leftSidebarOpen,
+					rightSidebarOpen: sidebar === 'right' ? true : state.rightSidebarOpen,
+					// Expand the target section
+					expandedSections: {
+						...state.expandedSections,
+						[sectionKey]: true,
+					},
+				})),
+
 			setGraphProvider: (provider) =>
 				set({ graphProvider: provider }),
 
@@ -123,6 +150,7 @@ export const useLayoutStore = create<LayoutState>()(
 			partialize: (state) => ({
 				leftSidebarPinned: state.leftSidebarPinned,
 				rightSidebarPinned: state.rightSidebarPinned,
+				expandedSections: state.expandedSections,
 				graphProvider: state.graphProvider,
 				autoPinOnLayoutStabilization: state.autoPinOnLayoutStabilization,
 			}),
