@@ -312,14 +312,14 @@ export const ExpansionSettingsDialog: React.FC<ExpansionSettingsDialogProps> = (
 						{/* Sort Settings */}
 						<SortBuilder
 							target={target}
-							sorts={localSettings.sorts}
+							sorts={localSettings.sorts ?? []}
 							onSortsChange={(sorts) => { setLocalSettings({ ...localSettings, sorts }); }}
 						/>
 
 						{/* Filter Settings */}
 						<FilterBuilder
 							target={target}
-							filters={localSettings.filters}
+							filters={localSettings.filters ?? []}
 							onFiltersChange={(filters) => { setLocalSettings({ ...localSettings, filters }); }}
 						/>
 
