@@ -4,9 +4,9 @@
  */
 
 import React from "react"
-import { CollapsibleSidebar } from "./CollapsibleSidebar"
 import { useLayoutStore } from "@/stores/layout-store"
 import { useGraphStore } from "@/stores/graph-store"
+import { useThemeColors } from "@/hooks/use-theme-colors"
 import {
 	IconInfoCircle,
 	IconExternalLink,
@@ -24,6 +24,7 @@ import {
 export const RightSidebar: React.FC = () => {
 	const { previewEntityId } = useLayoutStore()
 	const { selectedNodeId, hoveredNodeId, nodes } = useGraphStore()
+	const { colors } = useThemeColors()
 
 	// Determine which entity to show details for
 	const displayEntityId = hoveredNodeId || selectedNodeId || previewEntityId
@@ -66,7 +67,29 @@ export const RightSidebar: React.FC = () => {
 	}
 
 	return (
-		<CollapsibleSidebar side="right" title="Entity Details">
+		<div style={{
+			display: "flex",
+			flexDirection: "column",
+			height: "100%",
+			overflow: "auto",
+			padding: "16px",
+			gap: "16px"
+		}}>
+			{/* Header */}
+			<div style={{
+				display: "flex",
+				alignItems: "center",
+				gap: "8px",
+				paddingBottom: "12px",
+				borderBottom: `1px solid ${colors.border.primary}`,
+				fontSize: "16px",
+				fontWeight: 600,
+				color: colors.text.primary
+			}}>
+				<IconInfoCircle size={18} />
+				Entity Details
+			</div>
+
 			{displayEntity ? (
 				<div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
 
@@ -321,6 +344,6 @@ export const RightSidebar: React.FC = () => {
 					</div>
 				</div>
 			)}
-		</CollapsibleSidebar>
+		</div>
 	)
 }

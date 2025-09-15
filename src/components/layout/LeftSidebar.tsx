@@ -4,7 +4,6 @@
  */
 
 import React, { useState, useMemo } from "react"
-import { CollapsibleSidebar } from "./CollapsibleSidebar"
 import { LayoutControls } from "@/components/molecules/LayoutControls"
 import { useGraphData } from "@/hooks/use-graph-data"
 import { useGraphStore } from "@/stores/graph-store"
@@ -172,10 +171,30 @@ export const LeftSidebar: React.FC = () => {
 	]
 
 	return (
-		<CollapsibleSidebar side="left" title="Search & Filters">
-			<div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
+		<div style={{
+			display: "flex",
+			flexDirection: "column",
+			height: "100%",
+			overflow: "auto",
+			padding: "16px",
+			gap: "20px"
+		}}>
+			{/* Header */}
+			<div style={{
+				display: "flex",
+				alignItems: "center",
+				gap: "8px",
+				paddingBottom: "12px",
+				borderBottom: `1px solid ${colors.border.primary}`,
+				fontSize: "16px",
+				fontWeight: 600,
+				color: colors.text.primary
+			}}>
+				<IconSearch size={18} />
+				Search & Filters
+			</div>
 
-				{/* Search Section */}
+			{/* Search Section */}
 				<div>
 					<div style={{
 						display: "flex",
@@ -554,7 +573,6 @@ export const LeftSidebar: React.FC = () => {
 						<li>Statistics show: total nodes, search results, visible nodes</li>
 					</ul>
 				</div>
-			</div>
-		</CollapsibleSidebar>
+		</div>
 	)
 }
