@@ -221,19 +221,42 @@ export class XYFlowProvider implements GraphProvider {
 
 	// Get color for edge type
 	private getEdgeColor(relationType: string): string {
+		// Log all edge types for debugging
+		logger.debug("graph", "Edge color mapping", {
+			relationType,
+			mappedColor: this.getMappedEdgeColor(relationType)
+		});
+
+		return this.getMappedEdgeColor(relationType);
+	}
+
+	private getMappedEdgeColor(relationType: string): string {
 		switch (relationType) {
 			case "authored":
-				return "#3498db";
+				return "#3498db"; // Blue
 			case "cited":
-				return "#e74c3c";
+				return "#e74c3c"; // Red
 			case "affiliated":
-				return "#f39c12";
+				return "#f39c12"; // Orange
 			case "published_in":
-				return "#2ecc71";
+				return "#2ecc71"; // Green
 			case "funded_by":
-				return "#e67e22";
+				return "#e67e22"; // Orange
+			case "references": // Additional relationship type
+				return "#e74c3c"; // Red (same as cited)
+			case "cites": // Alternative citation naming
+				return "#e74c3c"; // Red
+			case "published_by": // Alternative publishing relationship
+				return "#2ecc71"; // Green
+			case "part_of": // Institutional hierarchy
+				return "#f39c12"; // Orange
 			default:
-				return "#95a5a6";
+				// Log unmapped relationship types to identify missing mappings
+				logger.warn("graph", "Unmapped edge relationship type - using default grey", {
+					relationType,
+					defaultColor: "#95a5a6"
+				});
+				return "#95a5a6"; // Grey
 		}
 	}
 
