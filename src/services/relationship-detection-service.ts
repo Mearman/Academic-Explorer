@@ -1,0 +1,476 @@
+/**
+ * Relationship Detection Service
+ * Automatically detects and creates relationships between newly added nodes and existing graph nodes
+ */
+
+import { QueryClient } from "@tanstack/react-query";
+import { rateLimitedOpenAlex } from "@/lib/openalex/rate-limited-client";
+import { EntityDetector } from "@/lib/graph/utils/entity-detection";
+import { useGraphStore } from "@/stores/graph-store";
+import { logError, logger } from "@/lib/logger";
+import { RequestDeduplicationService, createRequestDeduplicationService } from "./request-deduplication-service";
+import type {
+	GraphNode,
+	GraphEdge,
+	EntityType,
+} from "@/lib/graph/types";
+import { RelationType } from "@/lib/graph/types";
+import type {
+	Work,
+	Author,
+	Source,
+	InstitutionEntity,
+	OpenAlexEntity,
+} from "@/lib/openalex/types";
+
+/**
+ * Minimal entity data needed for relationship detection
+ * Contains only the essential fields to determine relationships
+ */
+interface MinimalEntityData {
+	id: string;
+	entityType: EntityType;
+	display_name: string;
+	authorships?: Array<{ author: { id: string; display_name: string } }>;
+	primary_location?: { source?: { id: string; display_name: string } };
+	referenced_works?: string[];
+	affiliations?: Array<{ institution: { id: string; display_name: string } }>;
+	lineage?: string[];
+	publisher?: string;
+}
+
+/**
+ * Detected relationship between nodes
+ */
+interface DetectedRelationship {
+	sourceNodeId: string;
+	targetNodeId: string;
+	relationType: RelationType;
+	label: string;
+	weight?: number;
+	metadata?: Record<string, unknown>;
+}
+
+/**
+ * Service for automatically detecting relationships between newly added nodes and existing graph nodes
+ */
+export class RelationshipDetectionService {
+	private detector: EntityDetector;
+	private queryClient: QueryClient;
+	private deduplicationService: RequestDeduplicationService;
+
+	constructor(queryClient: QueryClient) {
+		this.detector = new EntityDetector();
+		this.queryClient = queryClient;
+		this.deduplicationService = createRequestDeduplicationService(queryClient);
+	}
+
+	/**
+	 * Detect and create relationships for a newly added node
+	 * Fetches minimal data and analyzes relationships with existing nodes
+	 */
+	async detectRelationshipsForNode(nodeId: string): Promise<GraphEdge[]> {
+		const store = useGraphStore.getState();
+		const newNode = store.getNode(nodeId);
+
+		if (!newNode) {
+			logger.warn("graph", "Node not found for relationship detection", { nodeId }, "RelationshipDetectionService");
+			return [];
+		}
+
+		// Skip if this is already a placeholder node (it will be handled by placeholder loading)
+		if (newNode.metadata?.isPlaceholder) {
+			logger.debug("graph", "Skipping relationship detection for placeholder node", { nodeId }, "RelationshipDetectionService");
+			return [];
+		}
+
+		try {
+			logger.info("graph", "Starting relationship detection for node", {
+				nodeId,
+				entityType: newNode.type,
+				label: newNode.label
+			}, "RelationshipDetectionService");
+
+			// Fetch minimal entity data
+			const minimalData = await this.fetchMinimalEntityData(newNode.entityId, newNode.type);
+
+			if (!minimalData) {
+				logger.warn("graph", "Could not fetch minimal data for relationship detection", {
+					nodeId,
+					entityId: newNode.entityId
+				}, "RelationshipDetectionService");
+				return [];
+			}
+
+			// Get all existing nodes in the graph
+			const existingNodes = Array.from(store.nodes.values()).filter(node => node.id !== nodeId);
+
+			// Detect relationships with existing nodes
+			const detectedRelationships = this.analyzeRelationships(minimalData, existingNodes);
+
+			logger.info("graph", "Relationship detection completed", {
+				nodeId,
+				detectedCount: detectedRelationships.length,
+				relationships: detectedRelationships.map(r => ({
+					target: r.targetNodeId,
+					type: r.relationType
+				}))
+			}, "RelationshipDetectionService");
+
+			// Convert detected relationships to graph edges
+			const newEdges = this.createEdgesFromRelationships(detectedRelationships);
+
+			// Add edges to the graph store
+			if (newEdges.length > 0) {
+				store.addEdges(newEdges);
+				logger.info("graph", "Added relationship edges to graph", {
+					nodeId,
+					edgeCount: newEdges.length,
+					edgeIds: newEdges.map(e => e.id)
+				}, "RelationshipDetectionService");
+			}
+
+			return newEdges;
+
+		} catch (error) {
+			logError("Failed to detect relationships for node", error, "RelationshipDetectionService", "graph");
+			return [];
+		}
+	}
+
+	/**
+	 * Fetch minimal entity data required for relationship detection
+	 * Uses field selection to minimize API response size and improve performance
+	 */
+	private async fetchMinimalEntityData(entityId: string, entityType: EntityType): Promise<MinimalEntityData | null> {
+		try {
+			// Define minimal fields needed for each entity type
+			const fieldsMap: Partial<Record<EntityType, string[]>> = {
+				works: [
+					"id",
+					"display_name",
+					"authorships.author.id",
+					"authorships.author.display_name",
+					"primary_location.source.id",
+					"primary_location.source.display_name",
+					"referenced_works"
+				],
+				authors: [
+					"id",
+					"display_name",
+					"affiliations.institution.id",
+					"affiliations.institution.display_name"
+				],
+				sources: [
+					"id",
+					"display_name",
+					"publisher"
+				],
+				institutions: [
+					"id",
+					"display_name",
+					"lineage"
+				],
+				topics: ["id", "display_name"],
+				concepts: ["id", "display_name"],
+				publishers: ["id", "display_name"],
+				funders: ["id", "display_name"],
+				keywords: ["id", "display_name"]
+			};
+
+			const selectFields = fieldsMap[entityType] || ["id", "display_name"];
+
+			logger.debug("graph", "Fetching minimal entity data", {
+				entityId,
+				entityType,
+				selectFields
+			}, "RelationshipDetectionService");
+
+			// Fetch entity with minimal fields using deduplication service
+			const entity = await this.deduplicationService.getEntity(
+				entityId,
+				() => this.fetchEntityWithSelect(entityId, entityType, selectFields)
+			);
+
+			// Transform to minimal data format
+			const minimalData: MinimalEntityData = {
+				id: entity.id,
+				entityType,
+				display_name: entity.display_name
+			};
+
+			// Add type-specific fields
+			switch (entityType) {
+				case "works": {
+					const work = entity as Work;
+					minimalData.authorships = work.authorships;
+					minimalData.primary_location = work.primary_location;
+					minimalData.referenced_works = work.referenced_works;
+					break;
+				}
+				case "authors": {
+					const author = entity as Author;
+					minimalData.affiliations = author.affiliations;
+					break;
+				}
+				case "sources": {
+					const source = entity as Source;
+					minimalData.publisher = source.publisher;
+					break;
+				}
+				case "institutions": {
+					const institution = entity as InstitutionEntity;
+					minimalData.lineage = institution.lineage;
+					break;
+				}
+			}
+
+			logger.debug("graph", "Minimal entity data fetched successfully", {
+				entityId,
+				entityType,
+				hasAuthorships: !!minimalData.authorships?.length,
+				hasAffiliations: !!minimalData.affiliations?.length,
+				hasReferences: !!minimalData.referenced_works?.length
+			}, "RelationshipDetectionService");
+
+			return minimalData;
+
+		} catch (error) {
+			logError("Failed to fetch minimal entity data", error, "RelationshipDetectionService", "graph");
+			return null;
+		}
+	}
+
+	/**
+	 * Analyze relationships between the new entity and existing graph nodes
+	 */
+	private analyzeRelationships(newEntityData: MinimalEntityData, existingNodes: GraphNode[]): DetectedRelationship[] {
+		const relationships: DetectedRelationship[] = [];
+
+		logger.debug("graph", "Analyzing relationships", {
+			newEntityId: newEntityData.id,
+			newEntityType: newEntityData.entityType,
+			existingNodeCount: existingNodes.length
+		}, "RelationshipDetectionService");
+
+		// Analyze relationships based on entity type
+		switch (newEntityData.entityType) {
+			case "works":
+				relationships.push(...this.analyzeWorkRelationships(newEntityData, existingNodes));
+				break;
+			case "authors":
+				relationships.push(...this.analyzeAuthorRelationships(newEntityData, existingNodes));
+				break;
+			case "sources":
+				relationships.push(...this.analyzeSourceRelationships(newEntityData, existingNodes));
+				break;
+			case "institutions":
+				relationships.push(...this.analyzeInstitutionRelationships(newEntityData, existingNodes));
+				break;
+		}
+
+		logger.debug("graph", "Relationship analysis completed", {
+			newEntityId: newEntityData.id,
+			detectedCount: relationships.length,
+			relationshipTypes: [...new Set(relationships.map(r => r.relationType))]
+		}, "RelationshipDetectionService");
+
+		return relationships;
+	}
+
+	/**
+	 * Analyze relationships for a Work entity
+	 */
+	private analyzeWorkRelationships(workData: MinimalEntityData, existingNodes: GraphNode[]): DetectedRelationship[] {
+		const relationships: DetectedRelationship[] = [];
+
+		// Check for author relationships
+		if (workData.authorships) {
+			for (const authorship of workData.authorships) {
+				const authorNode = existingNodes.find(node =>
+					node.entityId === authorship.author.id || node.id === authorship.author.id
+				);
+				if (authorNode) {
+					relationships.push({
+						sourceNodeId: authorship.author.id,
+						targetNodeId: workData.id,
+						relationType: RelationType.AUTHORED,
+						label: "authored",
+						weight: 1.0
+					});
+				}
+			}
+		}
+
+		// Check for source/journal relationships
+		if (workData.primary_location?.source) {
+			const sourceId = workData.primary_location.source.id;
+			const sourceNode = existingNodes.find(node =>
+				node.entityId === sourceId || node.id === sourceId
+			);
+			if (sourceNode) {
+				relationships.push({
+					sourceNodeId: workData.id,
+					targetNodeId: sourceId,
+					relationType: RelationType.PUBLISHED_IN,
+					label: "published in"
+				});
+			}
+		}
+
+		// Check for citation relationships
+		if (workData.referenced_works) {
+			for (const referencedWorkId of workData.referenced_works) {
+				const referencedNode = existingNodes.find(node =>
+					node.entityId === referencedWorkId || node.id === referencedWorkId
+				);
+				if (referencedNode) {
+					relationships.push({
+						sourceNodeId: workData.id,
+						targetNodeId: referencedWorkId,
+						relationType: RelationType.REFERENCES,
+						label: "references"
+					});
+				}
+			}
+		}
+
+		return relationships;
+	}
+
+	/**
+	 * Analyze relationships for an Author entity
+	 */
+	private analyzeAuthorRelationships(authorData: MinimalEntityData, existingNodes: GraphNode[]): DetectedRelationship[] {
+		const relationships: DetectedRelationship[] = [];
+
+		// Check for institutional affiliations
+		if (authorData.affiliations) {
+			for (const affiliation of authorData.affiliations) {
+				const institutionNode = existingNodes.find(node =>
+					node.entityId === affiliation.institution.id || node.id === affiliation.institution.id
+				);
+				if (institutionNode) {
+					relationships.push({
+						sourceNodeId: authorData.id,
+						targetNodeId: affiliation.institution.id,
+						relationType: RelationType.AFFILIATED,
+						label: "affiliated with"
+					});
+				}
+			}
+		}
+
+		// Check existing works for authorship relationships
+		// Note: We would need to fetch work data to check authorships, but that would be expensive
+		// This is better handled when the work is added and analyzes its authors
+
+		return relationships;
+	}
+
+	/**
+	 * Analyze relationships for a Source entity
+	 */
+	private analyzeSourceRelationships(sourceData: MinimalEntityData, existingNodes: GraphNode[]): DetectedRelationship[] {
+		const relationships: DetectedRelationship[] = [];
+
+		// Check for publisher relationships
+		if (sourceData.publisher) {
+			const publisherNode = existingNodes.find(node =>
+				node.entityId === sourceData.publisher || node.id === sourceData.publisher
+			);
+			if (publisherNode) {
+				relationships.push({
+					sourceNodeId: sourceData.id,
+					targetNodeId: sourceData.publisher,
+					relationType: RelationType.SOURCE_PUBLISHED_BY,
+					label: "published by"
+				});
+			}
+		}
+
+		// Check existing works for publication relationships
+		// Note: We would need to fetch work data to check primary_location.source
+		// This is better handled when the work is added and analyzes its source
+
+		return relationships;
+	}
+
+	/**
+	 * Analyze relationships for an Institution entity
+	 */
+	private analyzeInstitutionRelationships(institutionData: MinimalEntityData, existingNodes: GraphNode[]): DetectedRelationship[] {
+		const relationships: DetectedRelationship[] = [];
+
+		// Check for parent institution relationships
+		if (institutionData.lineage) {
+			for (const parentId of institutionData.lineage) {
+				if (parentId !== institutionData.id) {
+					const parentNode = existingNodes.find(node =>
+						node.entityId === parentId || node.id === parentId
+					);
+					if (parentNode) {
+						relationships.push({
+							sourceNodeId: institutionData.id,
+							targetNodeId: parentId,
+							relationType: RelationType.INSTITUTION_CHILD_OF,
+							label: "child of"
+						});
+					}
+				}
+			}
+		}
+
+		return relationships;
+	}
+
+	/**
+	 * Fetch entity with field selection based on entity type
+	 */
+	private async fetchEntityWithSelect(entityId: string, entityType: EntityType, selectFields: string[]): Promise<OpenAlexEntity> {
+		const params = { select: selectFields };
+
+		switch (entityType) {
+			case "works":
+				return rateLimitedOpenAlex.getWork(entityId, params);
+			case "authors":
+				return rateLimitedOpenAlex.getAuthor(entityId, params);
+			case "sources":
+				return rateLimitedOpenAlex.getSource(entityId, params);
+			case "institutions":
+				return rateLimitedOpenAlex.getInstitution(entityId, params);
+			case "topics":
+				return rateLimitedOpenAlex.getTopic(entityId, params);
+			case "publishers":
+				return rateLimitedOpenAlex.getPublisher(entityId, params);
+			case "funders":
+				return rateLimitedOpenAlex.getFunder(entityId, params);
+			case "keywords":
+				return rateLimitedOpenAlex.getKeyword(entityId, params);
+			default:
+				throw new Error(`Unsupported entity type for field selection: ${entityType}`);
+		}
+	}
+
+	/**
+	 * Convert detected relationships to graph edges
+	 */
+	private createEdgesFromRelationships(relationships: DetectedRelationship[]): GraphEdge[] {
+		return relationships.map(rel => ({
+			id: `${rel.sourceNodeId}-${rel.relationType}-${rel.targetNodeId}`,
+			source: rel.sourceNodeId,
+			target: rel.targetNodeId,
+			type: rel.relationType,
+			label: rel.label,
+			weight: rel.weight,
+			metadata: rel.metadata
+		}));
+	}
+}
+
+/**
+ * Create a new RelationshipDetectionService instance
+ */
+export function createRelationshipDetectionService(queryClient: QueryClient): RelationshipDetectionService {
+	return new RelationshipDetectionService(queryClient);
+}
