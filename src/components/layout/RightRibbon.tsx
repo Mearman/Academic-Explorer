@@ -8,6 +8,7 @@ import { Stack, ActionIcon, Tooltip, Badge, Divider } from "@mantine/core";
 import { useGraphStore } from "@/stores/graph-store";
 import { useLayoutStore } from "@/stores/layout-store";
 import { useThemeColors } from "@/hooks/use-theme-colors";
+import { logger } from "@/lib/logger";
 import {
 	IconInfoCircle,
 	IconExternalLink,
@@ -18,13 +19,36 @@ import {
 } from "@tabler/icons-react";
 
 export const RightRibbon: React.FC = () => {
-	const { previewEntityId } = useLayoutStore();
+	const { previewEntityId, setRightSidebarOpen } = useLayoutStore();
 	const { selectedNodeId, hoveredNodeId, nodes } = useGraphStore();
 	const { colors } = useThemeColors();
 
 	// Determine which entity to show indicator for
 	const displayEntityId = hoveredNodeId || selectedNodeId || previewEntityId;
 	const hasEntity = Boolean(displayEntityId);
+
+	const handleExpandSidebarToSection = (sectionKey: string, sectionName: string) => {
+		logger.info("ui", `Expanding right sidebar to ${sectionName} section`, { sectionKey });
+
+		// Expand the sidebar
+		setRightSidebarOpen(true);
+
+		// Expand the corresponding section in localStorage
+		localStorage.setItem(`sidebar-section-${sectionKey}`, JSON.stringify(true));
+
+		// Scroll to top after a brief delay to allow sidebar to expand
+		// The sidebar scrolls to the top to show the expanded section
+		setTimeout(() => {
+			// Find the right sidebar container and scroll to top
+			const sidebarContainer = document.querySelector('[data-mantine-component="AppShell"] > aside');
+			if (sidebarContainer) {
+				const scrollableElement = sidebarContainer.querySelector('[style*="overflow: auto"]') || sidebarContainer;
+				if (scrollableElement instanceof HTMLElement) {
+					scrollableElement.scrollTop = 0;
+				}
+			}
+		}, 150); // Small delay to allow expansion animation
+	};
 
 	const ribbonButtonStyle = {
 		width: "40px",
@@ -66,6 +90,7 @@ export const RightRibbon: React.FC = () => {
 							variant="subtle"
 							size="lg"
 							style={hasEntity ? { ...ribbonButtonStyle, ...activeButtonStyle } : ribbonButtonStyle}
+							onClick={() => handleExpandSidebarToSection("entity-info", "Entity Information")}
 							onMouseEnter={(e) => {
 								if (!hasEntity) {
 									Object.assign(e.currentTarget.style, ribbonButtonHoverStyle);
@@ -103,6 +128,7 @@ export const RightRibbon: React.FC = () => {
 						variant="subtle"
 						size="lg"
 						style={ribbonButtonStyle}
+						onClick={() => handleExpandSidebarToSection("external-links", "External Links")}
 						onMouseEnter={(e) => {
 							Object.assign(e.currentTarget.style, ribbonButtonHoverStyle);
 						}}
@@ -122,11 +148,12 @@ export const RightRibbon: React.FC = () => {
 
 			{/* View controls */}
 			<Stack gap="xs" align="center">
-				<Tooltip label="Rich view mode" position="left" withArrow>
+				<Tooltip label="View options" position="left" withArrow>
 					<ActionIcon
 						variant="subtle"
 						size="lg"
 						style={ribbonButtonStyle}
+						onClick={() => handleExpandSidebarToSection("view-options", "View Options")}
 						onMouseEnter={(e) => {
 							Object.assign(e.currentTarget.style, ribbonButtonHoverStyle);
 						}}
@@ -138,11 +165,12 @@ export const RightRibbon: React.FC = () => {
 					</ActionIcon>
 				</Tooltip>
 
-				<Tooltip label="Simple view mode" position="left" withArrow>
+				<Tooltip label="Raw API data" position="left" withArrow>
 					<ActionIcon
 						variant="subtle"
 						size="lg"
 						style={ribbonButtonStyle}
+						onClick={() => handleExpandSidebarToSection("raw-api-data", "Raw API Data")}
 						onMouseEnter={(e) => {
 							Object.assign(e.currentTarget.style, ribbonButtonHoverStyle);
 						}}
@@ -150,7 +178,7 @@ export const RightRibbon: React.FC = () => {
 							Object.assign(e.currentTarget.style, ribbonButtonStyle);
 						}}
 					>
-						<IconTarget size={20} />
+						<IconEye size={20} />
 					</ActionIcon>
 				</Tooltip>
 			</Stack>
@@ -168,6 +196,7 @@ export const RightRibbon: React.FC = () => {
 							variant="subtle"
 							size="lg"
 							style={ribbonButtonStyle}
+							onClick={() => handleExpandSidebarToSection("graph-stats", "Graph Statistics")}
 							onMouseEnter={(e) => {
 								Object.assign(e.currentTarget.style, ribbonButtonHoverStyle);
 							}}
@@ -206,6 +235,7 @@ export const RightRibbon: React.FC = () => {
 							variant="subtle"
 							size="lg"
 							style={hasEntity ? { ...ribbonButtonStyle, ...activeButtonStyle } : ribbonButtonStyle}
+							onClick={() => handleExpandSidebarToSection("entity-info", "Entity Information")}
 							onMouseEnter={(e) => {
 								if (!hasEntity) {
 									Object.assign(e.currentTarget.style, ribbonButtonHoverStyle);
@@ -217,7 +247,7 @@ export const RightRibbon: React.FC = () => {
 								}
 							}}
 						>
-							<IconEye size={20} />
+							<IconTarget size={20} />
 						</ActionIcon>
 					</Tooltip>
 					{hasEntity && (

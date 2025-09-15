@@ -7,6 +7,7 @@ import React from "react";
 import { Stack, ActionIcon, Tooltip, Divider } from "@mantine/core";
 import { useGraphData } from "@/hooks/use-graph-data";
 import { useThemeColors } from "@/hooks/use-theme-colors";
+import { useLayoutStore } from "@/stores/layout-store";
 import { logger } from "@/lib/logger";
 import {
 	IconSearch,
@@ -15,11 +16,13 @@ import {
 	IconDatabase,
 	IconTrash,
 	IconAdjustments,
+	IconLink,
 } from "@tabler/icons-react";
 
 export const LeftRibbon: React.FC = () => {
 	const { clearGraph, loadAllCachedNodes } = useGraphData();
 	const { colors } = useThemeColors();
+	const { setLeftSidebarOpen } = useLayoutStore();
 
 	const handleClearGraph = () => {
 		logger.info("ui", "Clear graph clicked from left ribbon");
@@ -33,6 +36,29 @@ export const LeftRibbon: React.FC = () => {
 		} catch (error) {
 			logger.error("ui", "Failed to load cached nodes from ribbon", error);
 		}
+	};
+
+	const handleExpandSidebarToSection = (sectionKey: string, sectionName: string) => {
+		logger.info("ui", `Expanding sidebar to ${sectionName} section`, { sectionKey });
+
+		// Expand the sidebar
+		setLeftSidebarOpen(true);
+
+		// Expand the corresponding section in localStorage
+		localStorage.setItem(`sidebar-section-${sectionKey}`, JSON.stringify(true));
+
+		// Scroll to top after a brief delay to allow sidebar to expand
+		// The sidebar scrolls to the top to show the expanded section
+		setTimeout(() => {
+			// Find the left sidebar container and scroll to top
+			const sidebarContainer = document.querySelector('[data-mantine-component="AppShell"] > nav');
+			if (sidebarContainer) {
+				const scrollableElement = sidebarContainer.querySelector('[style*="overflow: auto"]') || sidebarContainer;
+				if (scrollableElement instanceof HTMLElement) {
+					scrollableElement.scrollTop = 0;
+				}
+			}
+		}, 150); // Small delay to allow expansion animation
 	};
 
 	const ribbonButtonStyle = {
@@ -68,6 +94,7 @@ export const LeftRibbon: React.FC = () => {
 						variant="subtle"
 						size="lg"
 						style={ribbonButtonStyle}
+						onClick={() => handleExpandSidebarToSection("search", "Search Academic Entities")}
 						onMouseEnter={(e) => {
 							Object.assign(e.currentTarget.style, ribbonButtonHoverStyle);
 						}}
@@ -84,6 +111,7 @@ export const LeftRibbon: React.FC = () => {
 						variant="subtle"
 						size="lg"
 						style={ribbonButtonStyle}
+						onClick={() => handleExpandSidebarToSection("entity-filters", "Entity Types & Visibility")}
 						onMouseEnter={(e) => {
 							Object.assign(e.currentTarget.style, ribbonButtonHoverStyle);
 						}}
@@ -108,6 +136,7 @@ export const LeftRibbon: React.FC = () => {
 						variant="subtle"
 						size="lg"
 						style={ribbonButtonStyle}
+						onClick={() => handleExpandSidebarToSection("graph-actions", "Graph Actions")}
 						onMouseEnter={(e) => {
 							Object.assign(e.currentTarget.style, ribbonButtonHoverStyle);
 						}}
@@ -119,12 +148,12 @@ export const LeftRibbon: React.FC = () => {
 					</ActionIcon>
 				</Tooltip>
 
-				<Tooltip label="Load cached nodes" position="right" withArrow>
+				<Tooltip label="Cache & traversal settings" position="right" withArrow>
 					<ActionIcon
 						variant="subtle"
 						size="lg"
 						style={ribbonButtonStyle}
-						onClick={handleLoadCachedNodes}
+						onClick={() => handleExpandSidebarToSection("cache-settings", "Cache & Traversal Settings")}
 						onMouseEnter={(e) => {
 							Object.assign(e.currentTarget.style, ribbonButtonHoverStyle);
 						}}
@@ -136,11 +165,12 @@ export const LeftRibbon: React.FC = () => {
 					</ActionIcon>
 				</Tooltip>
 
-				<Tooltip label="Traversal settings" position="right" withArrow>
+				<Tooltip label="Edge types & visibility" position="right" withArrow>
 					<ActionIcon
 						variant="subtle"
 						size="lg"
 						style={ribbonButtonStyle}
+						onClick={() => handleExpandSidebarToSection("edge-filters", "Edge Types & Visibility")}
 						onMouseEnter={(e) => {
 							Object.assign(e.currentTarget.style, ribbonButtonHoverStyle);
 						}}
@@ -148,7 +178,7 @@ export const LeftRibbon: React.FC = () => {
 							Object.assign(e.currentTarget.style, ribbonButtonStyle);
 						}}
 					>
-						<IconAdjustments size={20} />
+						<IconLink size={20} />
 					</ActionIcon>
 				</Tooltip>
 			</Stack>
