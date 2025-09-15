@@ -12,7 +12,6 @@ export * from "./topics";
 export * from "./publishers";
 export * from "./funders";
 export * from "./keywords";
-export * from "./geo";
 
 // Export types and interfaces
 export type {
@@ -43,7 +42,3 @@ export type {
 	SearchKeywordsOptions,
 } from "./keywords";
 
-export type {
-	GeoQueryParams,
-	SearchGeoOptions,
-} from "./geo";
