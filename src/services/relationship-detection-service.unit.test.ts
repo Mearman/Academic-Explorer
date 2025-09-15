@@ -8,7 +8,6 @@ import { RelationshipDetectionService } from "./relationship-detection-service";
 import { useGraphStore } from "@/stores/graph-store";
 import { RelationType } from "@/lib/graph/types";
 import type { GraphNode, EntityType } from "@/lib/graph/types";
-import type { Work, Author } from "@/lib/openalex/types";
 
 // Mock the external dependencies
 vi.mock("@/lib/openalex/rate-limited-client");
