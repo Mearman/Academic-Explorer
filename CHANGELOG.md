@@ -1,3 +1,50 @@
+# [2.0.0](https://github.com/Mearman/Academic-Explorer/compare/v1.4.0...v2.0.0) (2025-09-15)
+
+
+### Bug Fixes
+
+* **ci:** handle version already updated by semantic-release ([4882d10](https://github.com/Mearman/Academic-Explorer/commit/4882d10a230ef593c28a9229cd8a4dee153886e2))
+* **graph:** improve error handling and icon imports in GraphToolbar ([d76b123](https://github.com/Mearman/Academic-Explorer/commit/d76b123a5a97f436b022ee26a38a90e3835478da))
+* **hooks:** update entity interaction to use hydration levels ([03f7820](https://github.com/Mearman/Academic-Explorer/commit/03f7820acf28adfbda905d4a79824d4e8a757cf4))
+* **layout:** implement proper sidebar scrolling with viewport-aware height ([925dd09](https://github.com/Mearman/Academic-Explorer/commit/925dd099a423b7a3fcef1d056861cdc992ead947))
+* **test:** resolve AuthorEntity test failures with proper getAuthor mocking ([47c6f85](https://github.com/Mearman/Academic-Explorer/commit/47c6f854a7c74c7746bd7c638c5dd0928de7cfe2))
+
+
+### Features
+
+* **author-entity:** add institution affiliation nodes to graph expansion ([add3352](https://github.com/Mearman/Academic-Explorer/commit/add33526d7b9cd1a3161a0d7a7e016b80eaaafe6))
+* **components:** add GraphToolbar component for graph operations ([5ef9b50](https://github.com/Mearman/Academic-Explorer/commit/5ef9b507b7a4bbf67e1a643e5736891d5b9b778e))
+* **entities:** add abstract outbound edges API for minimal field requests ([afaf045](https://github.com/Mearman/Academic-Explorer/commit/afaf045c69a35ba748544b26a17ff128b3ae89aa))
+* **entities:** implement outbound edges API for minimal field requests ([8ef204c](https://github.com/Mearman/Academic-Explorer/commit/8ef204c79cfd9ebd9716a806221723bc1e3685f8))
+* **graph:** add 1-degree neighbor selection to graph toolbar ([ed069d1](https://github.com/Mearman/Academic-Explorer/commit/ed069d177de3e298081dfdc8232f7839f4de8ced))
+* **graph:** add collapse isolated adjacent nodes button ([ecb5cbe](https://github.com/Mearman/Academic-Explorer/commit/ecb5cbe4dc208ab32bd7a9d1aca51f2ae1f209a1))
+* **graph:** add double-click expansion behavior to node interaction ([c6824d2](https://github.com/Mearman/Academic-Explorer/commit/c6824d20993bc13cdc87caf871bcbbb9866abe98))
+* **graph:** add expand and node selection buttons to graph nodes ([8c34b8b](https://github.com/Mearman/Academic-Explorer/commit/8c34b8bc60647eb2ad8812ed3c5eaa4e98560157))
+* **graph:** add expand selected nodes action to graph toolbar ([631599a](https://github.com/Mearman/Academic-Explorer/commit/631599a2340a260831169ab2600185efb96676a4))
+* **graph:** add graph utilities service with academic research operations ([6ff42c6](https://github.com/Mearman/Academic-Explorer/commit/6ff42c692bfeb6ef97cbae4f242546c82d919548))
+* **graph:** add pin all and unpin all actions to graph toolbar ([199b019](https://github.com/Mearman/Academic-Explorer/commit/199b0192b6f2ea10d3fc356cd63d8bccdb946539))
+* **graph:** add trim degree-1 nodes utility function ([c0d9408](https://github.com/Mearman/Academic-Explorer/commit/c0d9408ae0ad66022bfc8021a5e222a3642a6d60))
+* **graph:** integrate automatic relationship detection with GraphDataService ([1d4f788](https://github.com/Mearman/Academic-Explorer/commit/1d4f788a2b7ed209ab96cc443652f0bd8f1191c5))
+* **graph:** remove auto-expand behavior on node selection ([a2bd6b9](https://github.com/Mearman/Academic-Explorer/commit/a2bd6b9ad616ade74c20ede7db0452cff536b1a6))
+* **graph:** replace placeholder system with incremental hydration ([77ee029](https://github.com/Mearman/Academic-Explorer/commit/77ee0293f79e61095cdbac0c8d05f86765adcd7c))
+* **hooks:** add hydrateNode method to useGraphData hook ([c72837e](https://github.com/Mearman/Academic-Explorer/commit/c72837e7a58b997247618173416bff1a10ead950))
+* **hooks:** add useGraphUtilities hook for graph manipulation ([ddc2458](https://github.com/Mearman/Academic-Explorer/commit/ddc24587b95e0ecbf620862de1a0f4ca0e80bd0a))
+* **layout:** add CollapsibleSection component and LeftSidebar reorganization ([eddab79](https://github.com/Mearman/Academic-Explorer/commit/eddab79d81ba70c62f2675ebb46e50cf389923ca))
+* **layout:** implement ribbon icon expansion to sidebar sections ([1699c01](https://github.com/Mearman/Academic-Explorer/commit/1699c018e5e2d4d0312bf8cf5f93077d890f2da1))
+* **layout:** integrate GraphToolbar in GraphNavigation top-right panel ([5a77340](https://github.com/Mearman/Academic-Explorer/commit/5a773407ac1d60d70c1d530b2f64b64a0d5041b1))
+* **layout:** reorganize RightSidebar with collapsible sections ([f4a21d9](https://github.com/Mearman/Academic-Explorer/commit/f4a21d9912fcb139caafbfa16fd08b42eab86610))
+* **layout:** standardize collapse functionality in RightSidebar ([f4e9307](https://github.com/Mearman/Academic-Explorer/commit/f4e9307c6e35903b599d7228b6067612f9c324e1))
+* **layout:** wrap RawApiDataSection in CollapsibleSection for consistency ([cbd549c](https://github.com/Mearman/Academic-Explorer/commit/cbd549cc7ef79bb0c7ad39e68946d4fbc864ccda))
+* **services:** add RelationshipDetectionService for automatic graph relationship discovery ([78c7969](https://github.com/Mearman/Academic-Explorer/commit/78c79692bb7a54ee456a38b74b37fe4309b8d34b))
+* **store:** add hydration level tracking to graph store ([ce8b691](https://github.com/Mearman/Academic-Explorer/commit/ce8b691509fb56d1bb453768252439c1c677d25e))
+* **stores:** extend layout store with section expansion state management ([c90232f](https://github.com/Mearman/Academic-Explorer/commit/c90232f3439320c6e31496a39b3c0477fbdbed15))
+
+
+### BREAKING CHANGES
+
+* **graph:** Placeholder system removed in favor of incremental hydration
+* **graph:** Nodes no longer auto-expand when clicked, users must use expand button
+
 # [1.3.0](https://github.com/Mearman/Academic-Explorer/compare/v1.2.0...v1.3.0) (2025-09-15)
 
 
