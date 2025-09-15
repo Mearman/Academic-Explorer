@@ -50,12 +50,11 @@ function DatasetsManagement() {
 
 				// Show error details to user for critical errors
 				const criticalErrors = parseResult.metadata.errors.filter(error =>
-					error.includes("Excel parsing not yet implemented") ||
-          error.includes("Failed to parse")
+					error.includes("Failed to parse")
 				)
 
 				if (criticalErrors.length > 0) {
-					alert(`Upload failed: ${criticalErrors.join(", ")}\n\nSupported formats: CSV, JSON`)
+					alert(`Upload failed: ${criticalErrors.join(", ")}\n\nSupported formats: CSV, JSON, Excel`)
 					throw new Error("File parsing failed")
 				}
 			}

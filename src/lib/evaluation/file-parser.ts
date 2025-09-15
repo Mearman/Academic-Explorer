@@ -3,6 +3,7 @@
  * Supports CSV, JSON, and Excel files for systematic literature review data
  */
 
+import * as XLSX from "xlsx";
 import type { WorkReference, STARDataset } from "./types";
 
 /**
@@ -161,13 +162,58 @@ function parseJSONContent(content: string): RawPaperData[] {
 }
 
 /**
- * Parse Excel content (placeholder - would need a library like xlsx)
- * For now, returns empty array with error
+ * Parse Excel content using xlsx library
+ * Reads the first worksheet by default or specified sheet name
  */
-function parseExcelContent(_file: File, _config: ParseConfig): Promise<RawPaperData[]> {
-	// TODO: Implement Excel parsing using a library like 'xlsx'
-	// This is a placeholder that would require adding xlsx dependency
-	return Promise.resolve([]);
+async function parseExcelContent(file: File, config: ParseConfig): Promise<RawPaperData[]> {
+	const arrayBuffer = await file.arrayBuffer();
+	const workbook = XLSX.read(arrayBuffer, { type: "array" });
+
+	// Use specified sheet name or default to first sheet
+	const sheetName = config.sheetName || workbook.SheetNames[0];
+
+	if (!workbook.SheetNames.includes(sheetName)) {
+		throw new Error(`Sheet "${sheetName}" not found in Excel file`);
+	}
+
+	const worksheet = workbook.Sheets[sheetName];
+
+	// Convert to JSON with header row
+	const jsonData: unknown[][] = XLSX.utils.sheet_to_json(worksheet, {
+		header: 1,
+		defval: ""
+	});
+
+	if (jsonData.length === 0) {
+		return [];
+	}
+
+	// Extract headers from first row
+	const headers = jsonData[0];
+	const dataRows = jsonData.slice(1);
+
+	// Convert rows to objects
+	return dataRows.map(row => {
+		const record: Record<string, string> = {};
+		headers.forEach((header, index) => {
+			const headerStr = String(header);
+			const value = row[index];
+			let valueStr = "";
+
+			if (value != null) {
+				// Handle different types safely
+				if (typeof value === "string" || typeof value === "number" || typeof value === "boolean") {
+					valueStr = String(value);
+				} else {
+					// For complex objects, use JSON.stringify or handle specially
+					valueStr = JSON.stringify(value);
+				}
+			}
+
+			record[headerStr] = valueStr;
+		});
+		return record as RawPaperData;
+	});
 }
 
 /**
@@ -300,7 +346,6 @@ export async function parseSTARFile(
 				break;
 			case "excel":
 				rawRecords = await parseExcelContent(file, config);
-				errors.push("Excel parsing not yet implemented - please convert to CSV or JSON");
 				break;
 			default:
 				throw new Error(`Unsupported file format: ${String(format)}`);
