@@ -59,9 +59,6 @@ export interface GraphNode {
   // External identifiers (DOIs, ORCIDs, etc.)
   externalIds: ExternalIdentifier[];
 
-  // Raw API data from OpenAlex (full entity response)
-  rawApiData?: Record<string, unknown>;
-
   // Metadata for display and filtering
   metadata?: {
     citationCount?: number;
