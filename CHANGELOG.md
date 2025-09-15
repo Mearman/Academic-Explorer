@@ -1,3 +1,10 @@
+## [1.0.1](https://github.com/Mearman/Academic-Explorer/compare/v1.0.0...v1.0.1) (2025-09-15)
+
+
+### Bug Fixes
+
+* **ci:** remove empty files before semantic-release upload ([c1b72bc](https://github.com/Mearman/Academic-Explorer/commit/c1b72bc2430e5a4343561dbc1b48ddb1fb4b2ed0))
+
 # 1.0.0 (2025-09-15)
 
 
