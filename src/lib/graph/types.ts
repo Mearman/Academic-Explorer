@@ -42,6 +42,10 @@ export interface GraphNode {
     citationCount?: number;
     year?: number;
     openAccess?: boolean;
+    isPlaceholder?: boolean;
+    isLoading?: boolean;
+    loadingError?: string;
+    dataLoadedAt?: number; // timestamp
     [key: string]: unknown;
   };
 }
