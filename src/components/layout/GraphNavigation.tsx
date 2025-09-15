@@ -72,7 +72,7 @@ const GraphNavigationInner: React.FC<GraphNavigationProps> = ({ className, style
 		pinnedNodes: _pinnedNodes,
 	} = useGraphStore();
 
-	const { graphProvider: _graphProvider, setPreviewEntity } = useLayoutStore();
+	const { graphProvider: _graphProvider, setPreviewEntity, autoPinOnLayoutStabilization } = useLayoutStore();
 
 	// XYFlow state - synced with store
 	const [nodes, setNodes, onNodesChangeOriginal] = useNodesState<XYNode>([]);
@@ -126,15 +126,15 @@ const GraphNavigationInner: React.FC<GraphNavigationProps> = ({ className, style
 		}
 	}, []);
 
-	// Smoothly animate a node to the center of the viewport (0,0) and keep it visible
+	// Center the viewport on a node without moving the node's position
 	const centerOnNode = useCallback((nodeId: string, currentPosition?: { x: number; y: number }) => {
-		let startX: number;
-		let startY: number;
+		let targetX: number;
+		let targetY: number;
 
 		if (currentPosition) {
-			// Use provided position for immediate start
-			startX = currentPosition.x;
-			startY = currentPosition.y;
+			// Use provided position
+			targetX = currentPosition.x;
+			targetY = currentPosition.y;
 		} else {
 			// Fallback to searching for the node
 			const currentNodes = reactFlowInstance.getNodes();
@@ -145,101 +145,59 @@ const GraphNavigationInner: React.FC<GraphNavigationProps> = ({ className, style
 				return;
 			}
 
-			startX = targetNode.position.x;
-			startY = targetNode.position.y;
+			targetX = targetNode.position.x;
+			targetY = targetNode.position.y;
 		}
-		// Always animate to (0,0) - the force simulation center
-		const targetX = 0;
-		const targetY = 0;
 
-		// Smooth animation parameters
-		const duration = 800; // ms
-		const startTime = Date.now();
+		// Center the viewport on the node's current position without moving the node
+		void reactFlowInstance.setCenter(targetX, targetY, {
+			zoom: reactFlowInstance.getZoom(),
+			duration: 800 // Smooth viewport animation
+		});
 
-		// Easing function for smooth animation
-		const easeInOutCubic = (t: number): number => {
-			return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
-		};
+		// Optional: Fit view to show the node and its immediate neighbors after centering
+		setTimeout(() => {
+			const currentNodes = reactFlowInstance.getNodes();
+			const currentEdges = reactFlowInstance.getEdges();
+			const selectedNode = currentNodes.find(n => n.id === nodeId);
 
-		// Animation loop
-		const animate = () => {
-			const elapsed = Date.now() - startTime;
-			const progress = Math.min(elapsed / duration, 1);
-			const easedProgress = easeInOutCubic(progress);
+			if (selectedNode) {
+				// Find all nodes directly connected to the selected node
+				const connectedNodeIds = new Set<string>();
+				connectedNodeIds.add(nodeId); // Include the selected node itself
 
-			// Interpolate node position towards (0,0)
-			const currentX = startX + (targetX - startX) * easedProgress;
-			const currentY = startY + (targetY - startY) * easedProgress;
-
-			// Update node position
-			setNodes(currentNodes =>
-				currentNodes.map(node =>
-					node.id === nodeId
-						? { ...node, position: { x: currentX, y: currentY } }
-						: node
-				)
-			);
-
-			// Simultaneously pan the viewport to keep the node centered in view
-			void reactFlowInstance.setCenter(currentX, currentY, {
-				zoom: reactFlowInstance.getZoom(),
-				duration: 0 // Instant viewport updates for smooth tracking
-			});
-
-			// Continue animation or finish
-			if (progress < 1) {
-				requestAnimationFrame(animate);
-			} else {
-				// Animation complete - node is now at (0,0), add smooth final viewport adjustment
-				setTimeout(() => {
-					const currentNodes = reactFlowInstance.getNodes();
-					const currentEdges = reactFlowInstance.getEdges();
-					const finalNode = currentNodes.find(n => n.id === nodeId);
-
-					if (finalNode) {
-						// Find all nodes directly connected to the selected node
-						const connectedNodeIds = new Set<string>();
-						connectedNodeIds.add(nodeId); // Include the selected node itself
-
-						// Find all edges connected to the selected node
-						currentEdges.forEach(edge => {
-							if (edge.source === nodeId) {
-								connectedNodeIds.add(edge.target);
-							} else if (edge.target === nodeId) {
-								connectedNodeIds.add(edge.source);
-							}
-						});
-
-						// Get all connected nodes
-						const connectedNodes = currentNodes.filter(node =>
-							connectedNodeIds.has(node.id)
-						);
-
-						logger.info("ui", "Fitting view to selected node and its neighbors", {
-							selectedNodeId: nodeId,
-							connectedNodeIds: Array.from(connectedNodeIds),
-							totalNodesInView: connectedNodes.length
-						}, "GraphNavigation");
-
-						void reactFlowInstance.fitView({
-							nodes: connectedNodes,
-							...FIT_VIEW_PRESETS.NEIGHBORHOOD
-						});
+				// Find all edges connected to the selected node
+				currentEdges.forEach(edge => {
+					if (edge.source === nodeId) {
+						connectedNodeIds.add(edge.target);
+					} else if (edge.target === nodeId) {
+						connectedNodeIds.add(edge.source);
 					}
-				}, GRAPH_ANIMATION.FIT_VIEW_CONFLICT_DELAY);
+				});
 
-				logger.info("ui", "Smoothly animated selected node to center (0,0)", {
-					nodeId: nodeId,
-					startPosition: { x: startX, y: startY },
-					finalPosition: { x: targetX, y: targetY },
-					duration: elapsed
+				// Get all connected nodes
+				const connectedNodes = currentNodes.filter(node =>
+					connectedNodeIds.has(node.id)
+				);
+
+				logger.info("ui", "Fitting view to selected node and its neighbors", {
+					selectedNodeId: nodeId,
+					connectedNodeIds: Array.from(connectedNodeIds),
+					totalNodesInView: connectedNodes.length
 				}, "GraphNavigation");
-			}
-		};
 
-		// Start the animation
-		requestAnimationFrame(animate);
-	}, [reactFlowInstance, setNodes]);
+				void reactFlowInstance.fitView({
+					nodes: connectedNodes,
+					...FIT_VIEW_PRESETS.NEIGHBORHOOD
+				});
+			}
+		}, GRAPH_ANIMATION.FIT_VIEW_CONFLICT_DELAY);
+
+		logger.info("ui", "Centered viewport on node at its current position", {
+			nodeId: nodeId,
+			nodePosition: { x: targetX, y: targetY }
+		}, "GraphNavigation");
+	}, [reactFlowInstance]);
 
 	const { isRunning: _isLayoutRunning, restartLayout } = useLayout(
 		currentLayout,
@@ -310,7 +268,13 @@ const GraphNavigationInner: React.FC<GraphNavigationProps> = ({ className, style
 				// Select and pin the node first
 				const store = useGraphStore.getState();
 				store.selectNode(node.id);
-				store.clearAllPinnedNodes(); // Clear previous pinned nodes
+
+				// Only clear pinned nodes if auto-pin is disabled
+				// When auto-pin is enabled, preserve all pinned nodes from layout stabilization
+				if (!autoPinOnLayoutStabilization) {
+					store.clearAllPinnedNodes(); // Clear previous pinned nodes
+				}
+
 				store.pinNode(node.id); // Pin the new node at its current position
 
 				// Smoothly animate the pinned node to the center of the viewport
@@ -490,7 +454,11 @@ const GraphNavigationInner: React.FC<GraphNavigationProps> = ({ className, style
 					store.selectNode(matchingNode.id);
 
 					// Pin the node to the center of the screen
-					store.clearAllPinnedNodes(); // Clear previous pinned nodes
+					// Only clear pinned nodes if auto-pin is disabled
+					// When auto-pin is enabled, preserve all pinned nodes from layout stabilization
+					if (!autoPinOnLayoutStabilization) {
+						store.clearAllPinnedNodes(); // Clear previous pinned nodes
+					}
 					store.pinNode(matchingNode.id);
 
 					// Update preview in sidebar
@@ -543,7 +511,11 @@ const GraphNavigationInner: React.FC<GraphNavigationProps> = ({ className, style
 						store.selectNode(matchingNode.id);
 
 						// Pin the node to the center of the screen
-						store.clearAllPinnedNodes(); // Clear previous pinned nodes
+						// Only clear pinned nodes if auto-pin is disabled
+						// When auto-pin is enabled, preserve all pinned nodes from layout stabilization
+						if (!autoPinOnLayoutStabilization) {
+							store.clearAllPinnedNodes(); // Clear previous pinned nodes
+						}
 						store.pinNode(matchingNode.id);
 
 						// Update preview in sidebar
