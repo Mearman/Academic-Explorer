@@ -224,6 +224,12 @@ const GraphNavigationInner: React.FC<GraphNavigationProps> = ({ className, style
 		setTimeout(() => {
 			isProgrammaticNavigationRef.current = false;
 		}, 10);
+
+		logger.info("graph", "Node click completed - sidebar should update immediately", {
+			nodeId: node.id,
+			entityId: node.entityId,
+			type: node.type
+		});
 	}, [interactWithEntity]);
 
 	const { isRunning: _isLayoutRunning, restartLayout } = useLayout(
