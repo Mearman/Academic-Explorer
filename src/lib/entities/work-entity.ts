@@ -89,13 +89,13 @@ export class WorkEntity extends AbstractEntity<Work> {
 					const citingNode = this.transformToGraphNode(citingWork);
 					nodes.push(citingNode);
 
-					// Add citation edge
+					// Add citation edge (citing work references this work)
 					edges.push(this.createEdge(
 						citingWork.id,
 						context.entityId,
-						RT.CITED,
+						RT.REFERENCES,
 						1.0,
-						"cites"
+						"references"
 					));
 				});
 			}
