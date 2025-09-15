@@ -192,10 +192,36 @@ const GraphNavigationInner: React.FC<GraphNavigationProps> = ({ className, style
 				// Animation complete - node is now at (0,0), add smooth final viewport adjustment
 				setTimeout(() => {
 					const currentNodes = reactFlowInstance.getNodes();
+					const currentEdges = reactFlowInstance.getEdges();
 					const finalNode = currentNodes.find(n => n.id === nodeId);
+
 					if (finalNode) {
+						// Find all nodes directly connected to the selected node
+						const connectedNodeIds = new Set<string>();
+						connectedNodeIds.add(nodeId); // Include the selected node itself
+
+						// Find all edges connected to the selected node
+						currentEdges.forEach(edge => {
+							if (edge.source === nodeId) {
+								connectedNodeIds.add(edge.target);
+							} else if (edge.target === nodeId) {
+								connectedNodeIds.add(edge.source);
+							}
+						});
+
+						// Get all connected nodes
+						const connectedNodes = currentNodes.filter(node =>
+							connectedNodeIds.has(node.id)
+						);
+
+						logger.info("ui", "Fitting view to selected node and its neighbors", {
+							selectedNodeId: nodeId,
+							connectedNodeIds: Array.from(connectedNodeIds),
+							totalNodesInView: connectedNodes.length
+						}, "GraphNavigation");
+
 						void reactFlowInstance.fitView({
-							nodes: [finalNode],
+							nodes: connectedNodes,
 							padding: 0.3,
 							duration: 300
 						});
