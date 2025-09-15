@@ -309,13 +309,15 @@ export class AutocompleteApi {
    */
 	private cleanupCache(): void {
 		const now = Date.now();
-		const expiredKeys = Object.keys(this.debounceCache).filter(
-			key => now - this.debounceCache[key].timestamp > this.CACHE_TTL
-		);
+		const freshCache: DebouncedPromiseCache = {};
 
-		for (const key of expiredKeys) {
-			delete this.debounceCache[key];
+		for (const [key, value] of Object.entries(this.debounceCache)) {
+			if (now - value.timestamp <= this.CACHE_TTL) {
+				freshCache[key] = value;
+			}
 		}
+
+		this.debounceCache = freshCache;
 	}
 
 	/**
