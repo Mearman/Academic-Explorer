@@ -503,7 +503,7 @@ describe("OpenAlexBaseClient", () => {
 		it("should set correct default headers", async () => {
 			await client.get("works");
 
-			const [, options] = mockFetch.mock.calls[0];
+			const [, options] = mockFetch.mock.calls[0] as [string, RequestInit];
 			expect(options.headers).toMatchObject({
 				"Accept": "application/json",
 				"User-Agent": "OpenAlex-TypeScript-Client/1.0",

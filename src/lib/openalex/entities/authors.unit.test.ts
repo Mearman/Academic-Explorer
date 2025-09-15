@@ -20,12 +20,13 @@ describe("AuthorsApi", () => {
 	let mockClient: vi.Mocked<OpenAlexBaseClient>;
 
 	beforeEach(() => {
-		mockClient = {
+		const mockClientObj: vi.Mocked<OpenAlexBaseClient> = {
 			getById: vi.fn(),
 			getResponse: vi.fn(),
 			stream: vi.fn(),
 			getAll: vi.fn(),
-		} as unknown as vi.Mocked<OpenAlexBaseClient>;
+		} as vi.Mocked<OpenAlexBaseClient>;
+		mockClient = mockClientObj;
 
 		authorsApi = new AuthorsApi(mockClient);
 	});
