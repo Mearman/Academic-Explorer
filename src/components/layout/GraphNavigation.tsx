@@ -332,25 +332,9 @@ const GraphNavigationInner: React.FC<GraphNavigationProps> = ({ className, style
 		const removedNodeIds = new Set([...previousNodeIdsRef.current].filter(id => !currentNodeIds.has(id)));
 		const removedEdgeIds = new Set([...previousEdgeIdsRef.current].filter(id => !currentEdgeIds.has(id)));
 
-		// Find updated nodes - nodes that exist in both current and previous but have changed data
-		const existingNodeIds = new Set([...currentNodeIds].filter(id => previousNodeIdsRef.current.has(id)));
+		// Updated nodes are detected by store changes - we trust the store as source of truth
+		// No need to compare with current XYFlow nodes, just rebuild them from store data
 		const updatedNodeIds = new Set<string>();
-
-		// Compare existing nodes with current XYFlow nodes to detect changes
-		const currentXYNodesMap = new Map(nodes.map(n => [n.id, n]));
-		for (const nodeId of existingNodeIds) {
-			const currentXYNode = currentXYNodesMap.get(nodeId);
-			const storeNode = storeNodes.get(nodeId);
-
-			if (currentXYNode && storeNode) {
-				// Check if label, metadata, or other key properties have changed
-				if (currentXYNode.data.label !== storeNode.label ||
-					currentXYNode.data.metadata?.isPlaceholder !== storeNode.metadata?.isPlaceholder ||
-					currentXYNode.data.metadata?.isLoading !== storeNode.metadata?.isLoading) {
-					updatedNodeIds.add(nodeId);
-				}
-			}
-		}
 
 		logger.info("graph", "Store data incremental sync effect triggered", {
 			totalNodeCount: storeNodes.size,
