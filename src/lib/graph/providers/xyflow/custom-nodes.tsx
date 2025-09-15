@@ -212,10 +212,10 @@ export const CustomNode: React.FC<CustomNodeProps> = ({ data, selected }) => {
 		boxShadow: selected
 			? `0 0 0 2px ${glowColors.border}, 0 0 15px ${glowColors.glow}`
 			: "none",
-		// Pinned nodes get border styling (but only if not selected to avoid double borders)
-		border: isNodePinned && !selected ? "2px solid #ffc107" : selected ? `2px solid ${glowColors.solidBorder}` : "none",
-		// Pinned nodes get slightly different background opacity to distinguish them
-		opacity: isNodePinned && !selected ? 0.9 : 1,
+		// Only selected nodes get border styling
+		border: selected ? `2px solid ${glowColors.solidBorder}` : "none",
+		// No opacity changes for pinned nodes
+		opacity: 1,
 	};
 
 	return (
@@ -363,10 +363,10 @@ export const WorkNode: React.FC<CustomNodeProps> = ({ data, selected }) => {
 		boxShadow: selected
 			? `0 0 0 2px ${glowColors.border}, 0 0 15px ${glowColors.glow}`
 			: "none",
-		// Pinned nodes get border styling (but only if not selected to avoid double borders)
-		border: isNodePinned && !selected ? "2px solid #ffc107" : selected ? `2px solid ${glowColors.solidBorder}` : "none",
-		// Pinned nodes get slightly different background opacity to distinguish them
-		opacity: isNodePinned && !selected ? 0.9 : 1,
+		// Only selected nodes get border styling
+		border: selected ? `2px solid ${glowColors.solidBorder}` : "none",
+		// No opacity changes for pinned nodes
+		opacity: 1,
 	};
 
 	return (
@@ -454,10 +454,10 @@ export const AuthorNode: React.FC<CustomNodeProps> = ({ data, selected }) => {
 		boxShadow: selected
 			? `0 0 0 2px ${glowColors.border}, 0 0 15px ${glowColors.glow}`
 			: "none",
-		// Pinned nodes get border styling (but only if not selected to avoid double borders)
-		border: isNodePinned && !selected ? "2px solid #ffc107" : selected ? `2px solid ${glowColors.solidBorder}` : "none",
-		// Pinned nodes get slightly different background opacity to distinguish them
-		opacity: isNodePinned && !selected ? 0.9 : 1,
+		// Only selected nodes get border styling
+		border: selected ? `2px solid ${glowColors.solidBorder}` : "none",
+		// No opacity changes for pinned nodes
+		opacity: 1,
 	};
 
 	const orcid = data.externalIds.find(id => id.type === "orcid");
@@ -533,10 +533,10 @@ export const SourceNode: React.FC<CustomNodeProps> = ({ data, selected }) => {
 		boxShadow: selected
 			? `0 0 0 2px ${glowColors.border}, 0 0 15px ${glowColors.glow}`
 			: "none",
-		// Pinned nodes get border styling (but only if not selected to avoid double borders)
-		border: isNodePinned && !selected ? "2px solid #ffc107" : selected ? `2px solid ${glowColors.solidBorder}` : "none",
-		// Pinned nodes get slightly different background opacity to distinguish them
-		opacity: isNodePinned && !selected ? 0.9 : 1,
+		// Only selected nodes get border styling
+		border: selected ? `2px solid ${glowColors.solidBorder}` : "none",
+		// No opacity changes for pinned nodes
+		opacity: 1,
 	};
 
 	const issn = data.externalIds.find(id => id.type === "issn_l");
@@ -612,10 +612,10 @@ export const InstitutionNode: React.FC<CustomNodeProps> = ({ data, selected }) =
 		boxShadow: selected
 			? `0 0 0 2px ${glowColors.border}, 0 0 15px ${glowColors.glow}`
 			: "none",
-		// Pinned nodes get border styling (but only if not selected to avoid double borders)
-		border: isNodePinned && !selected ? "2px solid #ffc107" : selected ? `2px solid ${glowColors.solidBorder}` : "none",
-		// Pinned nodes get slightly different background opacity to distinguish them
-		opacity: isNodePinned && !selected ? 0.9 : 1,
+		// Only selected nodes get border styling
+		border: selected ? `2px solid ${glowColors.solidBorder}` : "none",
+		// No opacity changes for pinned nodes
+		opacity: 1,
 	};
 
 	const ror = data.externalIds.find(id => id.type === "ror");
