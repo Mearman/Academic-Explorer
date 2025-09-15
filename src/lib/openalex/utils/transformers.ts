@@ -285,7 +285,7 @@ export function formatCitation(
 	const year = publication_year?.toString();
 	const volume = biblio?.volume;
 	const issue = biblio?.issue;
-	const pages = biblio?.first_page && biblio?.last_page
+	const pages = biblio?.first_page && biblio.last_page
 		? `${biblio.first_page}-${biblio.last_page}`
 		: biblio?.first_page;
 
