@@ -730,8 +730,8 @@ export class GraphDataService {
 				id: `${work.id}-cites-${citedWorkId}`,
 				source: work.id,
 				target: citedWorkId,
-				type: RelationType.CITED,
-				label: "cites",
+				type: RelationType.REFERENCES,
+				label: "references",
 			});
 		});
 
@@ -806,7 +806,7 @@ export class GraphDataService {
 				id: `${source.id}-published-by-${source.publisher}`,
 				source: source.id,
 				target: source.publisher,
-				type: RelationType.PUBLISHED_BY,
+				type: RelationType.SOURCE_PUBLISHED_BY,
 				label: "published by",
 			});
 		}
@@ -836,11 +836,11 @@ export class GraphDataService {
 				nodes.push(parentNode);
 
 				edges.push({
-					id: `${institution.id}-part-of-${parentId}`,
+					id: `${institution.id}-child-of-${parentId}`,
 					source: institution.id,
 					target: parentId,
-					type: RelationType.PART_OF,
-					label: "part of",
+					type: RelationType.INSTITUTION_CHILD_OF,
+					label: "child of",
 				});
 			}
 		});
