@@ -386,14 +386,14 @@ const GraphNavigationInner: React.FC<GraphNavigationProps> = ({ className, style
 					providerRef.current.removeNodes(Array.from(removedNodeIds));
 				}
 
+				// Note: Node updates will be handled by ReactFlow changes below
 				if (updatedNodeIds.size > 0) {
 					const updatedNodes = visibleNodes.filter(n => updatedNodeIds.has(n.id));
-					logger.info("graph", "Updating existing nodes with new data", {
+					logger.info("graph", "Detected existing nodes with updated data", {
 						updatedNodeCount: updatedNodes.length,
 						updatedNodeIds: Array.from(updatedNodeIds),
 						updatedLabels: updatedNodes.map(n => ({ id: n.id, label: n.label }))
 					}, "GraphNavigation");
-					providerRef.current.updateNodes(updatedNodes);
 				}
 
 				if (removedNodeIds.size > 0) {
