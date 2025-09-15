@@ -703,30 +703,31 @@ export class GraphDataService {
 		switch (entityType) {
 			case "works": {
 				const work = entity as Work;
-				metadata.year = work.publication_year;
-				metadata.citationCount = work.cited_by_count;
-				metadata.openAccess = work.open_access.is_oa;
+				metadata.publication_year = work.publication_year;
+				metadata.cited_by_count = work.cited_by_count;
+				metadata.referenced_works_count = work.referenced_works_count;
+				metadata.open_access = work.open_access?.is_oa;
 				break;
 			}
 
 			case "authors": {
 				const author = entity as Author;
-				metadata.worksCount = author.works_count;
-				metadata.citationCount = author.cited_by_count;
+				metadata.works_count = author.works_count;
+				metadata.cited_by_count = author.cited_by_count;
 				break;
 			}
 
 			case "sources": {
 				const source = entity as Source;
-				metadata.worksCount = source.works_count;
+				metadata.works_count = source.works_count;
 				metadata.type = source.type;
 				break;
 			}
 
 			case "institutions": {
 				const institution = entity as InstitutionEntity;
-				metadata.worksCount = institution.works_count;
-				metadata.country = institution.country_code;
+				metadata.works_count = institution.works_count;
+				metadata.country_code = institution.country_code;
 				metadata.type = institution.type;
 				break;
 			}
