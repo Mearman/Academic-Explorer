@@ -111,32 +111,15 @@ export const RawApiDataSection: React.FC<RawApiDataSectionProps> = ({
 				return <span style={{ color: "#6b7280", fontStyle: "italic" }}>[]</span>;
 			}
 
-			// Show first few items, then expandable section for the rest
-			const showDirectly = Math.min(3, value.length);
-			const hasMore = value.length > showDirectly;
-
+			// Show all items expanded by default
 			return (
 				<div style={{ marginLeft: "8px" }}>
-					{value.slice(0, showDirectly).map((item, index) => (
+					{value.map((item, index) => (
 						<div key={index} style={{ marginBottom: "2px" }}>
 							<span style={{ color: "#6b7280" }}>[{index}]:</span>{" "}
 							{formatValue(item, depth + 1)}
 						</div>
 					))}
-					{hasMore && (
-						<ExpandableSection
-							title={`More array items`}
-							itemCount={value.length - showDirectly}
-							defaultExpanded={value.length <= 20} // Auto-expand smaller arrays
-						>
-							{value.slice(showDirectly).map((item, index) => (
-								<div key={index + showDirectly} style={{ marginBottom: "2px" }}>
-									<span style={{ color: "#6b7280" }}>[{index + showDirectly}]:</span>{" "}
-									{formatValue(item, depth + 1)}
-								</div>
-							))}
-						</ExpandableSection>
-					)}
 				</div>
 			);
 		}
@@ -148,32 +131,15 @@ export const RawApiDataSection: React.FC<RawApiDataSectionProps> = ({
 				return <span style={{ color: "#6b7280", fontStyle: "italic" }}>{"{}"}</span>;
 			}
 
-			// Show first few properties, then expandable section for the rest
-			const showDirectly = Math.min(5, entries.length);
-			const hasMore = entries.length > showDirectly;
-
+			// Show all properties expanded by default
 			return (
 				<div style={{ marginLeft: "8px" }}>
-					{entries.slice(0, showDirectly).map(([key, val]) => (
+					{entries.map(([key, val]) => (
 						<div key={key} style={{ marginBottom: "2px" }}>
 							<span style={{ color: "#1f2937", fontWeight: "500" }}>{key}:</span>{" "}
 							{formatValue(val, depth + 1)}
 						</div>
 					))}
-					{hasMore && (
-						<ExpandableSection
-							title={`More object properties`}
-							itemCount={entries.length - showDirectly}
-							defaultExpanded={entries.length <= 15} // Auto-expand smaller objects
-						>
-							{entries.slice(showDirectly).map(([key, val]) => (
-								<div key={key} style={{ marginBottom: "2px" }}>
-									<span style={{ color: "#1f2937", fontWeight: "500" }}>{key}:</span>{" "}
-									{formatValue(val, depth + 1)}
-								</div>
-							))}
-						</ExpandableSection>
-					)}
 				</div>
 			);
 		}
