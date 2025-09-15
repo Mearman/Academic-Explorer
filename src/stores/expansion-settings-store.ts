@@ -121,9 +121,11 @@ export const useExpansionSettingsStore = create<ExpansionSettingsState>()(
 			addSortCriteria: (target: ExpansionTarget, criteria: Omit<SortCriteria, "priority">) => {
 				set((state) => {
 					const settings = state.settings[target];
-					const newPriority = Math.max(0, ...settings.sorts.map(s => s.priority)) + 1;
+					const sorts = settings.sorts ?? [];
+					const newPriority = Math.max(0, ...sorts.map(s => s.priority)) + 1;
 					const newCriteria: SortCriteria = { ...criteria, priority: newPriority };
 
+					if (!settings.sorts) settings.sorts = [];
 					settings.sorts.push(newCriteria);
 					state.settings[target] = settings;
 				});
@@ -134,6 +136,7 @@ export const useExpansionSettingsStore = create<ExpansionSettingsState>()(
 			updateSortCriteria: (target: ExpansionTarget, index: number, criteriaUpdate: Partial<SortCriteria>) => {
 				set((state) => {
 					const settings = state.settings[target];
+					if (!settings.sorts) settings.sorts = [];
 					settings.sorts[index] = { ...settings.sorts[index], ...criteriaUpdate };
 					state.settings[target] = settings;
 				});
@@ -144,6 +147,7 @@ export const useExpansionSettingsStore = create<ExpansionSettingsState>()(
 			removeSortCriteria: (target: ExpansionTarget, index: number) => {
 				set((state) => {
 					const settings = state.settings[target];
+					if (!settings.sorts) settings.sorts = [];
 					settings.sorts.splice(index, 1);
 
 					// Renumber priorities to maintain sequence
@@ -160,6 +164,7 @@ export const useExpansionSettingsStore = create<ExpansionSettingsState>()(
 			reorderSortCriteria: (target: ExpansionTarget, fromIndex: number, toIndex: number) => {
 				set((state) => {
 					const settings = state.settings[target];
+					if (!settings.sorts) settings.sorts = [];
 
 					// Move the item
 					const [movedItem] = settings.sorts.splice(fromIndex, 1);
@@ -179,6 +184,7 @@ export const useExpansionSettingsStore = create<ExpansionSettingsState>()(
 			addFilterCriteria: (target: ExpansionTarget, criteria: FilterCriteria) => {
 				set((state) => {
 					const settings = state.settings[target];
+					if (!settings.filters) settings.filters = [];
 					settings.filters.push(criteria);
 					state.settings[target] = settings;
 				});
@@ -189,6 +195,7 @@ export const useExpansionSettingsStore = create<ExpansionSettingsState>()(
 			updateFilterCriteria: (target: ExpansionTarget, index: number, criteriaUpdate: Partial<FilterCriteria>) => {
 				set((state) => {
 					const settings = state.settings[target];
+					if (!settings.filters) settings.filters = [];
 					settings.filters[index] = { ...settings.filters[index], ...criteriaUpdate };
 					state.settings[target] = settings;
 				});
@@ -199,6 +206,7 @@ export const useExpansionSettingsStore = create<ExpansionSettingsState>()(
 			removeFilterCriteria: (target: ExpansionTarget, index: number) => {
 				set((state) => {
 					const settings = state.settings[target];
+					if (!settings.filters) settings.filters = [];
 					settings.filters.splice(index, 1);
 					state.settings[target] = settings;
 				});
@@ -209,6 +217,7 @@ export const useExpansionSettingsStore = create<ExpansionSettingsState>()(
 			toggleFilterEnabled: (target: ExpansionTarget, index: number) => {
 				set((state) => {
 					const settings = state.settings[target];
+					if (!settings.filters) settings.filters = [];
 					settings.filters[index].enabled = !settings.filters[index].enabled;
 					state.settings[target] = settings;
 				});
@@ -222,8 +231,9 @@ export const useExpansionSettingsStore = create<ExpansionSettingsState>()(
 				const parts: string[] = [];
 
 				// Add sort summary
-				if (settings.sorts.length > 0) {
-					const sortSummary = settings.sorts
+				const sorts = settings.sorts ?? [];
+				if (sorts.length > 0) {
+					const sortSummary = sorts
 						.sort((a, b) => a.priority - b.priority)
 						.map(s => `${s.direction === "desc" ? "↓" : "↑"}${s.label || s.property}`)
 						.join(", ");
@@ -231,15 +241,16 @@ export const useExpansionSettingsStore = create<ExpansionSettingsState>()(
 				}
 
 				// Add filter summary
-				const enabledFilters = settings.filters.filter(f => f.enabled);
+				const filters = settings.filters ?? [];
+				const enabledFilters = filters.filter(f => f.enabled);
 				if (enabledFilters.length > 0) {
 					const enabledFiltersCount: number = enabledFilters.length;
 					parts.push(`${String(enabledFiltersCount)} filters`);
 				}
 
 				// Add limit
-				const limitValue: number = settings.limit;
-				parts.push(`${String(limitValue)} max`);
+				const limitValue = settings.limit ?? 0;
+				parts.push(limitValue > 0 ? `${String(limitValue)} max` : "unlimited");
 
 				return parts.join(" | ");
 			},
