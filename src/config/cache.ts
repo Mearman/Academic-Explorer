@@ -54,6 +54,14 @@ export const ENTITY_CACHE_TIMES = {
 		stale: 1000 * 60 * 60 * 24 * 30,  // 30 days - funders very stable
 		gc: 1000 * 60 * 60 * 24 * 90,     // 90 days - keep for 3 months
 	},
+	keyword: {
+		stale: 1000 * 60 * 60 * 24 * 7,   // 7 days - keywords fairly stable
+		gc: 1000 * 60 * 60 * 24 * 30,     // 30 days - keep for a month
+	},
+	concepts: {
+		stale: 1000 * 60 * 60 * 24 * 7,   // 7 days - concepts fairly stable
+		gc: 1000 * 60 * 60 * 24 * 30,     // 30 days - keep for a month
+	},
 	search: {
 		stale: 1000 * 60 * 5,              // 5 minutes - search results need freshness
 		gc: 1000 * 60 * 60,                // 1 hour - don't keep search results long

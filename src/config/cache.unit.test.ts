@@ -230,7 +230,7 @@ describe("cache configuration", () => {
 			// This test ensures the EntityType type includes all expected values
 			const expectedTypes = [
 				"work", "author", "source", "institution", "topic",
-				"publisher", "funder", "search", "related"
+				"publisher", "funder", "keyword", "concepts", "search", "related"
 			];
 
 			// Verify all expected types exist in ENTITY_CACHE_TIMES
