@@ -4,11 +4,12 @@
  */
 
 import React, { useCallback } from "react";
-import { IconScissors, IconTarget, IconGitBranch } from "@tabler/icons-react";
+import { IconScissors, IconTarget, IconGitBranch, IconPin, IconPinOff } from "@tabler/icons-react";
 import { useReactFlow } from "@xyflow/react";
 
 import { useGraphUtilities } from "@/hooks/use-graph-utilities";
 import { useGraphData } from "@/hooks/use-graph-data";
+import { useGraphStore } from "@/stores/graph-store";
 import { logger } from "@/lib/logger";
 
 interface GraphToolbarProps {
@@ -21,6 +22,7 @@ export const GraphToolbar: React.FC<GraphToolbarProps> = ({
 	const { trimLeafNodes } = useGraphUtilities();
 	const { expandNode } = useGraphData();
 	const { getNodes, getEdges, setNodes } = useReactFlow();
+	const { pinNode, clearAllPinnedNodes, pinnedNodes } = useGraphStore();
 
 	// Graph utility action
 	const handleTrimLeaves = useCallback(() => {
@@ -164,6 +166,58 @@ export const GraphToolbar: React.FC<GraphToolbarProps> = ({
 		}
 	}, [getNodes, expandNode]);
 
+	// Pin all nodes action
+	const handlePinAll = useCallback(() => {
+		logger.info("graph", "Pin all nodes action triggered from graph toolbar");
+
+		const currentNodes = getNodes();
+
+		if (currentNodes.length === 0) {
+			logger.warn("graph", "No nodes available to pin");
+			return;
+		}
+
+		logger.info("graph", "Pinning all nodes", {
+			nodeCount: currentNodes.length,
+			nodeIds: currentNodes.map(node => node.id)
+		});
+
+		// Pin each node using the store function
+		currentNodes.forEach(node => {
+			pinNode(node.id);
+		});
+
+		logger.info("graph", "Pin all nodes completed", {
+			totalNodes: currentNodes.length,
+			pinnedCount: pinnedNodes.size
+		});
+	}, [getNodes, pinNode, pinnedNodes.size]);
+
+	// Unpin all nodes action
+	const handleUnpinAll = useCallback(() => {
+		logger.info("graph", "Unpin all nodes action triggered from graph toolbar");
+
+		const currentPinnedCount = pinnedNodes.size;
+
+		if (currentPinnedCount === 0) {
+			logger.warn("graph", "No nodes currently pinned to unpin");
+			return;
+		}
+
+		logger.info("graph", "Unpinning all nodes", {
+			pinnedCount: currentPinnedCount,
+			pinnedNodeIds: Array.from(pinnedNodes)
+		});
+
+		// Clear all pinned nodes using the store function
+		clearAllPinnedNodes();
+
+		logger.info("graph", "Unpin all nodes completed", {
+			previouslyPinnedCount: currentPinnedCount,
+			currentPinnedCount: pinnedNodes.size
+		});
+	}, [pinnedNodes, clearAllPinnedNodes]);
+
 	return (
 		<div className={`flex gap-2 p-3 bg-white/95 backdrop-blur-sm border border-gray-200 rounded-lg shadow-lg ${className}`}>
 			<button
@@ -191,6 +245,24 @@ export const GraphToolbar: React.FC<GraphToolbarProps> = ({
 			>
 				<IconGitBranch size={16} />
 				<span>Expand Selected</span>
+			</button>
+
+			<button
+				onClick={handlePinAll}
+				className="flex items-center gap-2 px-3 py-2 text-sm bg-purple-50 hover:bg-purple-100 text-purple-700 rounded transition-colors"
+				title="Pin All - Pin all nodes to prevent them from moving during layout"
+			>
+				<IconPin size={16} />
+				<span>Pin All</span>
+			</button>
+
+			<button
+				onClick={handleUnpinAll}
+				className="flex items-center gap-2 px-3 py-2 text-sm bg-orange-50 hover:bg-orange-100 text-orange-700 rounded transition-colors"
+				title="Unpin All - Unpin all nodes to allow them to move during layout"
+			>
+				<IconPinOff size={16} />
+				<span>Unpin All</span>
 			</button>
 		</div>
 	);
