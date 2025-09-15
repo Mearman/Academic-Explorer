@@ -38,6 +38,7 @@ import { useGraphData } from "@/hooks/use-graph-data";
 import { useContextMenu } from "@/hooks/use-context-menu";
 import { NodeContextMenu } from "@/components/layout/NodeContextMenu";
 import { logger } from "@/lib/logger";
+import { GRAPH_ANIMATION, FIT_VIEW_PRESETS } from "@/lib/graph/constants";
 
 import "@xyflow/react/dist/style.css";
 
@@ -222,11 +223,10 @@ const GraphNavigationInner: React.FC<GraphNavigationProps> = ({ className, style
 
 						void reactFlowInstance.fitView({
 							nodes: connectedNodes,
-							padding: 0.3,
-							duration: 800
+							...FIT_VIEW_PRESETS.NEIGHBORHOOD
 						});
 					}
-				}, 900); // Delay to avoid conflicts with automatic layout fitView (800ms)
+				}, GRAPH_ANIMATION.FIT_VIEW_CONFLICT_DELAY);
 
 				logger.info("ui", "Smoothly animated selected node to center (0,0)", {
 					nodeId: nodeId,
@@ -345,7 +345,7 @@ const GraphNavigationInner: React.FC<GraphNavigationProps> = ({ className, style
 		return () => {
 			graphProvider.destroy();
 		};
-	}, [reactFlowInstance, navigate, setProvider, setPreviewEntity, loadEntityIntoGraph, expandNode]);
+	}, [reactFlowInstance, navigate, setProvider, setPreviewEntity, loadEntityIntoGraph, expandNode, centerOnNode]);
 
 	// Sync store data with XYFlow using incremental updates (applying visibility filters)
 	useEffect(() => {
@@ -669,7 +669,7 @@ const GraphNavigationInner: React.FC<GraphNavigationProps> = ({ className, style
 				edgeTypes={edgeTypes}
 				elevateEdgesOnSelect={true}
 				fitView
-				fitViewOptions={{ padding: 0.1, duration: 800 }}
+				fitViewOptions={FIT_VIEW_PRESETS.DEFAULT}
 				attributionPosition="bottom-left"
 			>
 				<Controls />
