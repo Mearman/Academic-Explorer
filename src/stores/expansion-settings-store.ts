@@ -47,20 +47,34 @@ interface ExpansionSettingsState {
 
 // Initialize with default settings
 const initializeDefaultSettings = (): Record<ExpansionTarget, ExpansionSettings> => {
-	// Get all possible expansion targets (both entity types and relation types)
-	const allEntityTypes: ExpansionTarget[] = [
-		"works", "authors", "sources", "institutions", "topics", "concepts", "publishers", "funders", "keywords", "geo"
-	];
-	const allRelationTypes: ExpansionTarget[] = Object.values(RelationType);
-	const allTargets = [...allEntityTypes, ...allRelationTypes];
+	// Explicitly create the complete settings object with all required keys
+	const settings = {
+		// Entity types
+		works: getDefaultSettingsForTarget("works"),
+		authors: getDefaultSettingsForTarget("authors"),
+		sources: getDefaultSettingsForTarget("sources"),
+		institutions: getDefaultSettingsForTarget("institutions"),
+		topics: getDefaultSettingsForTarget("topics"),
+		concepts: getDefaultSettingsForTarget("concepts"),
+		publishers: getDefaultSettingsForTarget("publishers"),
+		funders: getDefaultSettingsForTarget("funders"),
+		keywords: getDefaultSettingsForTarget("keywords"),
+		geo: getDefaultSettingsForTarget("geo"),
 
-	// Create properly typed settings object using Object.fromEntries for complete initialization
-	const settingsEntries = allTargets.map(target => [
-		target,
-		getDefaultSettingsForTarget(target)
-	] as const);
+		// Relation types
+		[RelationType.REFERENCES]: getDefaultSettingsForTarget(RelationType.REFERENCES),
+		[RelationType.AUTHORED]: getDefaultSettingsForTarget(RelationType.AUTHORED),
+		[RelationType.AFFILIATED]: getDefaultSettingsForTarget(RelationType.AFFILIATED),
+		[RelationType.PUBLISHED_IN]: getDefaultSettingsForTarget(RelationType.PUBLISHED_IN),
+		[RelationType.FUNDED_BY]: getDefaultSettingsForTarget(RelationType.FUNDED_BY),
+		[RelationType.RELATED_TO]: getDefaultSettingsForTarget(RelationType.RELATED_TO),
+		[RelationType.CITED]: getDefaultSettingsForTarget(RelationType.CITED),
+		[RelationType.CITES]: getDefaultSettingsForTarget(RelationType.CITES),
+		[RelationType.PUBLISHED_BY]: getDefaultSettingsForTarget(RelationType.PUBLISHED_BY),
+		[RelationType.PART_OF]: getDefaultSettingsForTarget(RelationType.PART_OF)
+	};
 
-	return Object.fromEntries(settingsEntries) as Record<ExpansionTarget, ExpansionSettings>;
+	return settings;
 };
 
 export const useExpansionSettingsStore = create<ExpansionSettingsState>()(
