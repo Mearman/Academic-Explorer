@@ -251,8 +251,15 @@ export const RightSidebar: React.FC = () => {
 						</Card>
 					</CollapsibleSection>
 
-					{/* Raw API Data Section - Uses Component's Built-in Collapsing */}
-					<RawApiDataSection entityId={displayEntity.entityId} />
+					{/* Raw API Data Section */}
+					<CollapsibleSection
+						title="Raw API Data"
+						icon={<IconEye size={16} />}
+						defaultExpanded={false}
+						storageKey="raw-api-data"
+					>
+						<RawApiDataSection entityId={displayEntity.entityId} />
+					</CollapsibleSection>
 				</>
 			) : (
 				/* Empty State */
