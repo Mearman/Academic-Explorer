@@ -105,7 +105,7 @@ describe("GraphDataService", () => {
 				issn_l: "1234-5678",
 			},
 		},
-		citations_count: 100,
+		cited_by_count: 100,
 		referenced_works_count: 50,
 		referenced_works: ["W111111111", "W222222222", "W333333333"],
 		open_access: {
@@ -970,7 +970,7 @@ describe("GraphDataService", () => {
 				const workWithMetadata = {
 					...mockWorkEntity,
 					publication_year: 2024,
-					citations_count: 150,
+					cited_by_count: 150,
 					referenced_works_count: 75,
 				};
 
@@ -989,8 +989,10 @@ describe("GraphDataService", () => {
 							entityId: "W123456789",
 							type: "works",
 							metadata: expect.objectContaining({
-								year: 2024,
-								openAccess: expect.any(Boolean),
+								publication_year: 2024,
+								cited_by_count: 150,
+								referenced_works_count: 75,
+								open_access: expect.any(Boolean),
 							}),
 						}),
 					])
@@ -1016,8 +1018,8 @@ describe("GraphDataService", () => {
 					expect.arrayContaining([
 						expect.objectContaining({
 							metadata: expect.objectContaining({
-								worksCount: 30,
-								citationCount: 600,
+								works_count: 30,
+								cited_by_count: 600,
 							}),
 						}),
 					])
@@ -1063,8 +1065,8 @@ describe("GraphDataService", () => {
 				expect(mockStore.addEdges).toHaveBeenCalledWith(
 					expect.arrayContaining([
 						expect.objectContaining({
-							source: expect.stringContaining("A123456789"),
-							target: expect.stringContaining("W123456789"),
+							source: "A123456789",
+							target: "W123456789",
 							type: "authored",
 						}),
 					])
