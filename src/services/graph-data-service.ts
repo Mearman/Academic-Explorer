@@ -87,8 +87,8 @@ export class GraphDataService {
 
 			// Entity successfully fetched
 
-			// Transform to graph data
-			const { nodes, edges } = this.transformEntityToGraph(entity);
+			// Transform to graph data (with placeholders for initial graph loading)
+			const { nodes, edges } = this.transformEntityToGraph(entity, { loadPlaceholders: true });
 
 			// Clear existing graph and expansion cache
 			store.clear();
@@ -120,27 +120,32 @@ export class GraphDataService {
 				placeholderCount: nodes.filter(n => n.metadata?.isPlaceholder).length
 			}, "GraphDataService");
 
+			// TEMPORARILY DISABLED: All automatic placeholder loading disabled for debugging
 			// Start loading placeholder node data immediately in the background (non-blocking)
-			if (nodes.some(n => n.metadata?.isPlaceholder)) {
-				// Trigger immediate parallel loading for maximum responsiveness
-				logger.info("graph", "Starting immediate parallel placeholder loading", {
-					placeholderCount: nodes.filter(n => n.metadata?.isPlaceholder).length
-				}, "GraphDataService");
+			// if (nodes.some(n => n.metadata?.isPlaceholder)) {
+			// 	// Trigger immediate parallel loading for maximum responsiveness
+			// 	logger.info("graph", "Starting immediate parallel placeholder loading", {
+			// 		placeholderCount: nodes.filter(n => n.metadata?.isPlaceholder).length
+			// 	}, "GraphDataService");
 
-				// Load all placeholders immediately in parallel (non-blocking)
-				this.loadAllPlaceholdersImmediate().catch((error: unknown) => {
-					logger.warn("graph", "Immediate placeholder loading failed, falling back to sequential", {
-						error: error instanceof Error ? error.message : "Unknown error"
-					}, "GraphDataService");
+			// 	// Load all placeholders immediately in parallel (non-blocking)
+			// 	this.loadAllPlaceholdersImmediate().catch((error: unknown) => {
+			// 		logger.warn("graph", "Immediate placeholder loading failed, falling back to sequential", {
+			// 			error: error instanceof Error ? error.message : "Unknown error"
+			// 		}, "GraphDataService");
 
-					// Fallback to sequential loading with delays if parallel fails
-					setTimeout(() => {
-						this.loadAllPlaceholderNodes().catch((fallbackError: unknown) => {
-							logError("Both immediate and fallback placeholder loading failed", fallbackError, "GraphDataService", "graph");
-						});
-					}, 500);
-				});
-			}
+			// 		// Fallback to sequential loading with delays if parallel fails
+			// 		setTimeout(() => {
+			// 			this.loadAllPlaceholderNodes().catch((fallbackError: unknown) => {
+			// 				logError("Both immediate and fallback placeholder loading failed", fallbackError, "GraphDataService", "graph");
+			// 			});
+			// 		}, 500);
+			// 	});
+			// }
+
+			logger.info("graph", "Placeholder loading temporarily disabled for debugging", {
+				placeholderCount: nodes.filter(n => n.metadata?.isPlaceholder).length
+			}, "GraphDataService");
 
 			// Layout is now handled by the ReactFlow component's useLayout hook
 			// No need for explicit layout application here
@@ -158,7 +163,7 @@ export class GraphDataService {
    * Load an entity and add it to the existing graph (without clearing)
    * Used for progressive graph building when clicking on nodes
    */
-	async loadEntityIntoGraph(entityId: string): Promise<void> {
+	async loadEntityIntoGraph(entityId: string, options: { loadPlaceholders?: boolean } = {}): Promise<void> {
 		const store = useGraphStore.getState();
 
 		try {
@@ -201,7 +206,7 @@ export class GraphDataService {
 			// Entity successfully fetched
 
 			// Transform to graph data
-			const { nodes, edges } = this.transformEntityToGraph(entity);
+			const { nodes, edges } = this.transformEntityToGraph(entity, options);
 
 			// Add new data to existing graph (do NOT clear)
 			store.addNodes(nodes);
@@ -212,10 +217,12 @@ export class GraphDataService {
 			if (primaryNodeId) {
 				store.selectNode(primaryNodeId);
 
-				// Detect relationships with existing nodes
-				this.relationshipDetectionService.detectRelationshipsForNode(primaryNodeId).catch((error: unknown) => {
-					logError("Failed to detect relationships for newly added node", error, "GraphDataService", "graph");
-				});
+				// Only detect relationships if placeholder loading is enabled (for expansion)
+				if (options.loadPlaceholders === true) {
+					this.relationshipDetectionService.detectRelationshipsForNode(primaryNodeId).catch((error: unknown) => {
+						logError("Failed to detect relationships for newly added node", error, "GraphDataService", "graph");
+					});
+				}
 
 				// Note: No automatic expansion - user must manually expand nodes
 			}
@@ -228,9 +235,9 @@ export class GraphDataService {
 				placeholderCount: nodes.filter(n => n.metadata?.isPlaceholder).length
 			}, "GraphDataService");
 
-			// Start loading placeholder node data in the background for new nodes
+			// Only load placeholder node data if explicitly requested (for expansion)
 			const newPlaceholderNodes = nodes.filter(n => n.metadata?.isPlaceholder);
-			if (newPlaceholderNodes.length > 0) {
+			if (newPlaceholderNodes.length > 0 && options.loadPlaceholders === true) {
 				logger.info("graph", "Found placeholder nodes to load", {
 					count: newPlaceholderNodes.length,
 					nodeIds: newPlaceholderNodes.map(n => n.id),
@@ -303,7 +310,7 @@ export class GraphDataService {
 
 			for (const entity of cachedEntities) {
 				try {
-					const { nodes, edges } = this.transformEntityToGraph(entity);
+					const { nodes, edges } = this.transformEntityToGraph(entity, { loadPlaceholders: true });
 					allNodes.push(...nodes);
 					allEdges.push(...edges);
 				} catch (error) {
@@ -773,7 +780,7 @@ export class GraphDataService {
 	/**
    * Transform OpenAlex entity to graph nodes and edges
    */
-	private transformEntityToGraph(entity: OpenAlexEntity): { nodes: GraphNode[]; edges: GraphEdge[] } {
+	private transformEntityToGraph(entity: OpenAlexEntity, options: { loadPlaceholders?: boolean } = {}): { nodes: GraphNode[]; edges: GraphEdge[] } {
 		const nodes: GraphNode[] = [];
 		const edges: GraphEdge[] = [];
 
@@ -795,7 +802,7 @@ export class GraphDataService {
 			}
 
 			case "authors": {
-				const authorData = this.transformAuthor(entity as Author, mainNode);
+				const authorData = this.transformAuthor(entity as Author, mainNode, options);
 				nodes.push(...authorData.nodes);
 				edges.push(...authorData.edges);
 				break;
@@ -932,44 +939,46 @@ export class GraphDataService {
 	/**
    * Transform Author entity with lazy loading approach
    */
-	private transformAuthor(author: Author, _mainNode: GraphNode): { nodes: GraphNode[]; edges: GraphEdge[] } {
+	private transformAuthor(author: Author, _mainNode: GraphNode, options: { loadPlaceholders?: boolean } = {}): { nodes: GraphNode[]; edges: GraphEdge[] } {
 		const nodes: GraphNode[] = [];
 		const edges: GraphEdge[] = [];
 		const store = useGraphStore.getState();
 
-		// Add affiliated institutions as placeholders
-		author.affiliations.slice(0, 3).forEach((affiliation, index) => {
-			const existingInstitutionNode = store.getNode(affiliation.institution.id);
+		// Add affiliated institutions as placeholders only if loadPlaceholders is true
+		if (options.loadPlaceholders) {
+			author.affiliations.slice(0, 3).forEach((affiliation, index) => {
+				const existingInstitutionNode = store.getNode(affiliation.institution.id);
 
-			if (!existingInstitutionNode) {
-				const institutionNode: GraphNode = {
-					id: affiliation.institution.id,
-					type: "institutions" as EntityType,
-					label: affiliation.institution.display_name,
-					entityId: affiliation.institution.id,
-					position: { x: (index - 1) * 200, y: 150 },
-					externalIds: affiliation.institution.ror ? [
-						{
-							type: "ror",
-							value: affiliation.institution.ror,
-							url: `https://ror.org/${affiliation.institution.ror}`,
+				if (!existingInstitutionNode) {
+					const institutionNode: GraphNode = {
+						id: affiliation.institution.id,
+						type: "institutions" as EntityType,
+						label: affiliation.institution.display_name,
+						entityId: affiliation.institution.id,
+						position: { x: (index - 1) * 200, y: 150 },
+						externalIds: affiliation.institution.ror ? [
+							{
+								type: "ror",
+								value: affiliation.institution.ror,
+								url: `https://ror.org/${affiliation.institution.ror}`,
+							}
+						] : [],
+						metadata: {
+							isPlaceholder: true, // Mark as placeholder for lazy loading
 						}
-					] : [],
-					metadata: {
-						isPlaceholder: true, // Mark as placeholder for lazy loading
-					}
-				};
-				nodes.push(institutionNode);
-			}
+					};
+					nodes.push(institutionNode);
+				}
 
-			edges.push({
-				id: `${author.id}-affiliated-${affiliation.institution.id}`,
-				source: author.id,
-				target: affiliation.institution.id,
-				type: RelationType.AFFILIATED,
-				label: "affiliated with",
+				edges.push({
+					id: `${author.id}-affiliated-${affiliation.institution.id}`,
+					source: author.id,
+					target: affiliation.institution.id,
+					type: RelationType.AFFILIATED,
+					label: "affiliated with",
+				});
 			});
-		});
+		}
 
 		// Note: Placeholder work nodes are only created when actual work IDs are known
 		// from expansion operations. This prevents creating placeholders with invalid IDs.
