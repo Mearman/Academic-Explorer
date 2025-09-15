@@ -706,7 +706,7 @@ export class GraphDataService {
 				metadata.publication_year = work.publication_year;
 				metadata.cited_by_count = work.cited_by_count;
 				metadata.referenced_works_count = work.referenced_works_count;
-				metadata.open_access = work.open_access?.is_oa;
+				metadata.open_access = work.open_access.is_oa;
 				break;
 			}
 
