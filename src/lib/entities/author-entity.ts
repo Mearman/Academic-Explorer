@@ -77,6 +77,44 @@ export class AuthorEntity extends AbstractEntity<Author> {
 		}, "AuthorEntity");
 
 		try {
+			// First, fetch the author entity to get affiliation data for institution nodes
+			const author = await this.client.getAuthor(context.entityId, {
+				select: ["id", "display_name", "affiliations"]
+			});
+
+			// Create institution placeholder nodes from affiliations
+			if (author.affiliations && author.affiliations.length > 0) {
+				author.affiliations.slice(0, 3).forEach((affiliation, index) => {
+					const institutionNode: GraphNode = {
+						id: affiliation.institution.id,
+						type: "institutions" as const,
+						label: affiliation.institution.display_name,
+						entityId: affiliation.institution.id,
+						position: { x: (index - 1) * 200, y: 150 },
+						externalIds: affiliation.institution.ror ? [
+							{
+								type: "ror" as const,
+								value: affiliation.institution.ror,
+								url: `https://ror.org/${affiliation.institution.ror}`,
+							}
+						] : [],
+						metadata: {
+							isPlaceholder: true, // Mark as placeholder for lazy loading
+						}
+					};
+					nodes.push(institutionNode);
+
+					// Add affiliation edge
+					edges.push(this.createEdge(
+						context.entityId,
+						affiliation.institution.id,
+						RT.AFFILIATED,
+						1.0,
+						"affiliated with"
+					));
+				});
+			}
+
 			// Get expansion settings, with fallback to defaults
 			const effectiveLimit = expansionSettings?.enabled ? expansionSettings.limit : limit;
 
