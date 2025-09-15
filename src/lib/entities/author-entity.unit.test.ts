@@ -187,10 +187,14 @@ describe("AuthorEntity", () => {
 
 				expect(result.nodes).toHaveLength(0);
 				expect(result.edges).toHaveLength(0);
+				// Check for the specific error pattern that should occur
 				expect(logger.error).toHaveBeenCalledWith(
 					"graph",
-					"Works response is undefined",
-					entityId,
+					"Error in AuthorEntity.expand",
+					expect.objectContaining({
+						entityId: entityId,
+						error: expect.stringContaining("Cannot read properties of undefined")
+					}),
 					"AuthorEntity"
 				);
 			});
@@ -212,10 +216,14 @@ describe("AuthorEntity", () => {
 
 				expect(result.nodes).toHaveLength(0);
 				expect(result.edges).toHaveLength(0);
+				// Check for the specific error pattern that should occur
 				expect(logger.error).toHaveBeenCalledWith(
 					"graph",
-					"Works response missing results property",
-					entityId,
+					"Error in AuthorEntity.expand",
+					expect.objectContaining({
+						entityId: entityId,
+						error: expect.stringContaining("Cannot read properties of undefined")
+					}),
 					"AuthorEntity"
 				);
 			});

@@ -39,6 +39,12 @@ vi.mock("@/stores/graph-store", () => ({
 		getState: vi.fn(),
 	},
 }));
+
+vi.mock("@/stores/expansion-settings-store", () => ({
+	useExpansionSettingsStore: {
+		getState: vi.fn(),
+	},
+}));
 vi.mock("@/lib/logger", () => ({
 	logger: {
 		info: vi.fn(),
@@ -72,6 +78,7 @@ import {
 	isNodeExpanded,
 } from "@/lib/cache/graph-cache";
 import { createRequestDeduplicationService } from "./request-deduplication-service";
+import { useExpansionSettingsStore } from "@/stores/expansion-settings-store";
 
 describe("GraphDataService", () => {
 	let service: GraphDataService;
@@ -79,6 +86,7 @@ describe("GraphDataService", () => {
 	let mockStore: any;
 	let mockDetector: any;
 	let mockDeduplicationService: any;
+	let mockExpansionSettingsStore: any;
 
 	// Test data fixtures
 	const mockWorkEntity: Work = {
@@ -309,6 +317,19 @@ describe("GraphDataService", () => {
 
 		// Mock useGraphStore properly AFTER other setup to avoid clearing
 		vi.mocked(useGraphStore.getState).mockReturnValue(mockStore);
+
+		// Mock expansion settings store
+		mockExpansionSettingsStore = {
+			getSettings: vi.fn().mockReturnValue({
+				target: "works",
+				limit: 25,
+				sorts: [],
+				filters: [],
+				enabled: true,
+				name: "Default Settings"
+			}),
+		};
+		vi.mocked(useExpansionSettingsStore.getState).mockReturnValue(mockExpansionSettingsStore);
 
 		// Mock deduplication service BEFORE creating the service
 		mockDeduplicationService = {
