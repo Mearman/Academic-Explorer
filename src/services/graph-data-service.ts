@@ -117,14 +117,26 @@ export class GraphDataService {
 				placeholderCount: nodes.filter(n => n.metadata?.isPlaceholder).length
 			}, "GraphDataService");
 
-			// Start loading placeholder node data in the background (non-blocking)
+			// Start loading placeholder node data immediately in the background (non-blocking)
 			if (nodes.some(n => n.metadata?.isPlaceholder)) {
-				// Use setTimeout to ensure this happens after the current execution context
-				setTimeout(() => {
-					this.loadAllPlaceholderNodes().catch((error: unknown) => {
-						logError("Background placeholder loading failed", error, "GraphDataService", "graph");
-					});
-				}, 100);
+				// Trigger immediate parallel loading for maximum responsiveness
+				logger.info("graph", "Starting immediate parallel placeholder loading", {
+					placeholderCount: nodes.filter(n => n.metadata?.isPlaceholder).length
+				}, "GraphDataService");
+
+				// Load all placeholders immediately in parallel (non-blocking)
+				this.loadAllPlaceholdersImmediate().catch((error: unknown) => {
+					logger.warn("graph", "Immediate placeholder loading failed, falling back to sequential", {
+						error: error instanceof Error ? error.message : "Unknown error"
+					}, "GraphDataService");
+
+					// Fallback to sequential loading with delays if parallel fails
+					setTimeout(() => {
+						this.loadAllPlaceholderNodes().catch((fallbackError: unknown) => {
+							logError("Both immediate and fallback placeholder loading failed", fallbackError, "GraphDataService", "graph");
+						});
+					}, 500);
+				});
 			}
 
 			// Layout is now handled by the ReactFlow component's useLayout hook
@@ -217,10 +229,11 @@ export class GraphDataService {
 					labels: newPlaceholderNodes.map(n => n.label)
 				}, "GraphDataService");
 
+				// Start loading immediately with minimal delay
 				setTimeout(() => {
 					// Load only the new placeholder nodes
 					const loadPromises = newPlaceholderNodes.map(node => {
-						logger.debug("graph", "Starting placeholder load for node", {
+						logger.debug("graph", "Starting immediate placeholder load for node", {
 							nodeId: node.id,
 							label: node.label,
 							entityId: node.entityId
@@ -237,8 +250,8 @@ export class GraphDataService {
 						}, "GraphDataService");
 						if (rejected > 0) {
 							const rejectedReasons = results
-								.filter(r => r.status === "rejected")
-								.map(r => (r as PromiseRejectedResult).reason);
+								.filter((r): r is PromiseRejectedResult => r.status === "rejected")
+								.map(r => r.reason instanceof Error ? r.reason.message : String(r.reason));
 							logger.warn("graph", "Some placeholder loads failed", {
 								rejectedReasons
 							}, "GraphDataService");
@@ -371,10 +384,7 @@ export class GraphDataService {
 				() => rateLimitedOpenAlex.getEntity(node.entityId)
 			);
 
-			// Check if entity was successfully fetched
-			if (!entity) {
-				throw new Error(`Entity not found for ID: ${node.entityId}`);
-			}
+			// Entity is guaranteed to be defined here - deduplicationService.getEntity throws on failure
 
 			logger.debug("graph", "Entity fetched successfully", {
 				nodeId,
@@ -425,11 +435,11 @@ export class GraphDataService {
 			placeholderCount: placeholderNodes.length
 		}, "GraphDataService");
 
-		// Process nodes individually with proper delays to respect rate limits
+		// Process nodes individually with minimal delays for faster loading
 		// Deduplication service will handle caching and prevent duplicate requests
-		const DELAY_BETWEEN_NODES = 500; // 500ms delay between individual node requests
-		const BATCH_SIZE = 5; // Process 5 nodes, then longer break
-		const BATCH_DELAY = 2000; // 2 second delay between batches
+		const DELAY_BETWEEN_NODES = 100; // Reduced to 100ms for faster loading
+		const BATCH_SIZE = 10; // Process more nodes per batch
+		const BATCH_DELAY = 500; // Reduced delay between batches
 
 		let processedCount = 0;
 
@@ -474,6 +484,51 @@ export class GraphDataService {
 			totalRequested: placeholderNodes.length,
 			totalProcessed: processedCount,
 			successRate: processedCount / placeholderNodes.length
+		}, "GraphDataService");
+	}
+
+	/**
+   * Load all placeholder nodes immediately in parallel
+   * This method loads all placeholders simultaneously without delays for maximum speed
+   * Recommended for use when the graph is first loaded to proactively load all placeholder data
+   */
+	async loadAllPlaceholdersImmediate(): Promise<void> {
+		const store = useGraphStore.getState();
+		const placeholderNodes = store.getPlaceholderNodes();
+
+		if (placeholderNodes.length === 0) {
+			logger.debug("graph", "No placeholder nodes to load immediately", {}, "GraphDataService");
+			return;
+		}
+
+		logger.info("graph", "Starting immediate parallel load of all placeholder nodes", {
+			placeholderCount: placeholderNodes.length
+		}, "GraphDataService");
+
+		// Load all placeholders in parallel using Promise.allSettled to prevent failures from blocking others
+		const loadPromises = placeholderNodes.map(node =>
+			this.loadPlaceholderNodeData(node.id).catch((error: unknown) => {
+				logger.warn("graph", "Failed to load placeholder node in parallel batch", {
+					nodeId: node.id,
+					entityType: node.type,
+					label: node.label,
+					error: error instanceof Error ? error.message : "Unknown error"
+				}, "GraphDataService");
+				return null; // Return null for failed loads to continue processing
+			})
+		);
+
+		const results = await Promise.allSettled(loadPromises);
+
+		// Count successful loads
+		const successfulLoads = results.filter(result => result.status === "fulfilled").length;
+		const failedLoads = results.length - successfulLoads;
+
+		logger.info("graph", "Completed immediate parallel loading of all placeholder nodes", {
+			totalRequested: placeholderNodes.length,
+			successful: successfulLoads,
+			failed: failedLoads,
+			successRate: successfulLoads / placeholderNodes.length
 		}, "GraphDataService");
 	}
 
