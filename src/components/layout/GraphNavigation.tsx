@@ -69,7 +69,7 @@ const GraphNavigationInner: React.FC<GraphNavigationProps> = ({ className, style
 		getVisibleEdges,
 		visibleEntityTypes,
 		visibleEdgeTypes,
-		pinnedNodes,
+		pinnedNodes: _pinnedNodes,
 	} = useGraphStore();
 
 	const { graphProvider: _graphProvider, setPreviewEntity } = useLayoutStore();
@@ -454,21 +454,12 @@ const GraphNavigationInner: React.FC<GraphNavigationProps> = ({ className, style
 					}, "GraphNavigation");
 				}, 50); // 50ms delay to allow React state to settle
 			}
-		} else if (providerRef.current && newNodeIds.size === 0 && removedNodeIds.size === 0) {
-			// No node additions/removals, but we still need to refresh node data (e.g., pinning state changed)
-			const { nodes: refreshedNodes } = providerRef.current.getXYFlowData();
-			setNodes(refreshedNodes);
-
-			logger.info("graph", "Refreshed node data for pinning state changes", {
-				nodeCount: refreshedNodes.length,
-				pinnedCount: pinnedNodes.size
-			}, "GraphNavigation");
 		}
 
 		// Update refs for next comparison
 		previousNodeIdsRef.current = currentNodeIds;
 		previousEdgeIdsRef.current = currentEdgeIds;
-	}, [storeNodes, storeEdges, visibleEntityTypes, visibleEdgeTypes, pinnedNodes, getVisibleNodes, getVisibleEdges, setNodes, setEdges, restartLayout]);
+	}, [storeNodes, storeEdges, visibleEntityTypes, visibleEdgeTypes, getVisibleNodes, getVisibleEdges, setNodes, setEdges, restartLayout]);
 
 	// URL state synchronization - read selected entity from hash on mount
 	useEffect(() => {
