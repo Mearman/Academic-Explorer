@@ -68,6 +68,15 @@ export abstract class AbstractEntity<TEntity extends OpenAlexEntity> {
   abstract expand(context: EntityContext, options: ExpansionOptions): Promise<ExpansionResult>;
 
   /**
+   * Abstract method to perform minimal API request for outbound edges discovery
+   * Returns only the entity data needed to identify all related node IDs and edge types
+   * Should be implemented with minimal field selection to reduce API payload
+   * @param entityId - The ID of the entity to get outbound edges for
+   * @returns Promise resolving to entity data with only relationship fields populated
+   */
+  abstract fetchForOutboundEdges(entityId: string): Promise<TEntity>;
+
+  /**
    * Abstract method to check if entity is dehydrated
    * Each entity type defines what fields are required for full hydration
    */
@@ -123,6 +132,20 @@ export abstract class AbstractEntity<TEntity extends OpenAlexEntity> {
    * Each entity type has different metadata fields
    */
   protected abstract extractMetadata(entity: TEntity): Record<string, unknown>;
+
+  /**
+   * Abstract method to extract outbound edges and related node IDs from entity
+   * Returns relationship information without requiring full entity hydration
+   * Should work with minimal entity data returned from fetchForOutboundEdges
+   * @param entity - Entity data with relationship fields populated
+   * @returns Array of objects containing target node IDs and relationship types
+   */
+  protected abstract extractOutboundEdges(entity: TEntity): Array<{
+    targetId: string;
+    relationType: RelationType;
+    weight?: number;
+    label?: string;
+  }>;
 
   /**
    * Extract minimal metadata from dehydrated entities for graph display
@@ -461,5 +484,55 @@ export abstract class AbstractEntity<TEntity extends OpenAlexEntity> {
    */
   public getSearchFilters(): Record<string, unknown> {
   	return {};
+  }
+
+  /**
+   * Get all outbound edges and related node IDs for an entity
+   * Performs minimal API request and extracts relationship information
+   * Optimized for graph discovery without fetching full entity metadata
+   * @param entityId - Optional entity ID. If not provided, uses instance's entity data
+   * @returns Promise resolving to array of outbound edge information
+   */
+  public async getOutboundEdges(entityId?: string): Promise<Array<{
+    targetId: string;
+    relationType: RelationType;
+    weight?: number;
+    label?: string;
+  }>> {
+    const targetEntityId = entityId || this.entityData?.id;
+    if (!targetEntityId) {
+      logger.warn("api", `Cannot get outbound edges: no entity ID provided or available for ${this.entityType}`, {
+        entityType: this.entityType,
+        hasEntityData: Boolean(this.entityData),
+        providedEntityId: Boolean(entityId)
+      });
+      return [];
+    }
+
+    try {
+      logger.debug("api", `Fetching outbound edges for ${this.entityType} ${targetEntityId}`, {
+        entityType: this.entityType,
+        entityId: targetEntityId
+      });
+
+      const entity = await this.fetchForOutboundEdges(targetEntityId);
+      const edges = this.extractOutboundEdges(entity);
+
+      logger.debug("api", `Extracted ${edges.length} outbound edges for ${this.entityType} ${targetEntityId}`, {
+        entityType: this.entityType,
+        entityId: targetEntityId,
+        edgeCount: edges.length,
+        relationTypes: edges.map(e => e.relationType)
+      });
+
+      return edges;
+    } catch (error) {
+      logger.error("api", `Failed to get outbound edges for ${this.entityType} ${targetEntityId}`, {
+        entityType: this.entityType,
+        entityId: targetEntityId,
+        error: error instanceof Error ? error.message : String(error)
+      });
+      return [];
+    }
   }
 }
