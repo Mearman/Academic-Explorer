@@ -298,11 +298,12 @@ export class GeoApi {
       total_works: number;
       total_citations: number;
       avg_works_per_region: number;
-    } | undefined> = {};
+    }> = {};
 
 		for (const geo of allGeos) {
 			const continent = geo.continent || "Unknown";
 
+			// eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
 			if (!statsByContinent[continent]) {
 				statsByContinent[continent] = {
 					count: 0,
