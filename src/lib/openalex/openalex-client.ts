@@ -12,7 +12,6 @@ import { TopicsApi } from "./entities/topics";
 import { PublishersApi } from "./entities/publishers";
 import { FundersApi } from "./entities/funders";
 import { KeywordsApi } from "./entities/keywords";
-import { GeoApi } from "./entities/geo";
 import { AutocompleteApi } from "./utils/autocomplete";
 import { TextAnalysisApi } from "./utils/text-analysis";
 import { SamplingApi } from "./utils/sampling";
@@ -29,7 +28,6 @@ import type {
 	Publisher,
 	Funder,
 	Keyword,
-	Geo,
 	EntityType,
 	OpenAlexEntity,
 	AutocompleteResult,
@@ -92,8 +90,6 @@ export class OpenAlexClient {
 	/** Keywords API - research keywords and their usage */
 	public readonly keywords: KeywordsApi;
 
-	/** Geo API - geographic regions and continents */
-	public readonly geo: GeoApi;
 
 	/** Autocomplete API - search suggestions and cross-entity search */
 	public readonly autocomplete: AutocompleteApi;
@@ -122,7 +118,6 @@ export class OpenAlexClient {
 		this.publishers = new PublishersApi(this.baseClient);
 		this.funders = new FundersApi(this.baseClient);
 		this.keywords = new KeywordsApi(this.baseClient);
-		this.geo = new GeoApi(this.baseClient);
 
 		// Initialize utility APIs
 		this.autocomplete = new AutocompleteApi(this.baseClient);
@@ -161,8 +156,6 @@ export class OpenAlexClient {
 				return this.funders.get(id);
 			case "keywords":
 				return this.keywords.getKeyword(id);
-			case "geo":
-				return this.geo.getGeo(id);
 			default:
 				throw new Error(`Unable to determine entity type for ID: ${id}`);
 		}
@@ -195,7 +188,6 @@ export class OpenAlexClient {
     publishers: Publisher[];
     funders: Funder[];
     keywords: Keyword[];
-    geo: Geo[];
   }> {
 		const { entityTypes = ["works", "authors", "sources", "institutions"], limit = 25, page = 1 } = options;
 
@@ -214,7 +206,6 @@ export class OpenAlexClient {
 			entityTypes.includes("publishers") ? this.publishers.getMultiple(searchParams) : Promise.resolve({ results: [] }),
 			entityTypes.includes("funders") ? this.funders.getMultiple(searchParams) : Promise.resolve({ results: [] }),
 			entityTypes.includes("keywords") ? this.keywords.getKeywords(searchParams) : Promise.resolve({ results: [] }),
-			entityTypes.includes("geo") ? this.geo.getGeos(searchParams) : Promise.resolve({ results: [] }),
 		]);
 
 		return {
@@ -226,7 +217,6 @@ export class OpenAlexClient {
 			publishers: results[5].status === "fulfilled" ? results[5].value.results : [],
 			funders: results[6].status === "fulfilled" ? results[6].value.results : [],
 			keywords: results[7].status === "fulfilled" ? results[7].value.results : [],
-			geo: results[8].status === "fulfilled" ? results[8].value.results : [],
 		};
 	}
 
@@ -300,8 +290,6 @@ export class OpenAlexClient {
 				return "funders";
 			case "K":
 				return "keywords";
-			case "G":
-				return "geo";
 			default:
 				return null;
 		}
@@ -430,9 +418,6 @@ export class OpenAlexClient {
 			case "keywords":
 				yield* this.keywords.streamKeywords(params) as AsyncGenerator<T[], void, unknown>;
 				break;
-			case "geo":
-				yield* this.geo.streamGeos(params) as AsyncGenerator<T[], void, unknown>;
-				break;
 			default:
 				throw new Error(`Unsupported entity type: ${entityType}`);
 		}
@@ -503,7 +488,6 @@ export type {
 	Publisher,
 	Funder,
 	Keyword,
-	Geo,
 	EntityType,
 	OpenAlexEntity,
 	AutocompleteResult,

@@ -19,7 +19,6 @@ import type {
 	Publisher,
 	Funder,
 	Keyword,
-	Geo,
 	AutocompleteResult,
 	EntityType,
 } from "./types";
@@ -243,14 +242,6 @@ export class RateLimitedOpenAlexClient {
 		return this.withRateLimit(() => this.client.keywords.getKeywords(params));
 	}
 
-	// Geo API with rate limiting
-	public async getGeo(id: string, params?: QueryParams): Promise<Geo> {
-		return this.withRateLimit(() => this.client.geo.getGeo(id, params));
-	}
-
-	public async getGeos(params?: QueryParams): Promise<OpenAlexResponse<Geo>> {
-		return this.withRateLimit(() => this.client.geo.getGeos(params));
-	}
 
 	// Autocomplete with rate limiting
 	public async autocomplete(query: string, entityType?: EntityType): Promise<AutocompleteResult[]> {
@@ -296,7 +287,6 @@ export class RateLimitedOpenAlexClient {
     publishers: Publisher[];
     funders: Funder[];
     keywords: Keyword[];
-    geo: Geo[];
   }> {
 		return this.withRateLimit(() => this.client.searchAll(query, options));
 	}
