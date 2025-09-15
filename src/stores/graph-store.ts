@@ -160,7 +160,23 @@ export const useGraphStore = create<GraphState>()(
 			providerType: "xyflow",
 			visibleEntityTypes: new Set(["works", "authors", "sources", "institutions", "topics", "publishers", "funders", "keywords", "geo"]),
 			lastSearchStats: new Map(),
-			visibleEdgeTypes: new Set(["authored", "affiliated", "published_in", "funded_by", "related_to", "references"] as RelationType[]),
+			visibleEdgeTypes: new Set([
+				RelationType.AUTHORED,
+				RelationType.AFFILIATED,
+				RelationType.PUBLISHED_IN,
+				RelationType.FUNDED_BY,
+				RelationType.REFERENCES,
+				RelationType.RELATED_TO,
+				RelationType.SOURCE_PUBLISHED_BY,
+				RelationType.INSTITUTION_CHILD_OF,
+				RelationType.PUBLISHER_CHILD_OF,
+				RelationType.WORK_HAS_TOPIC,
+				RelationType.WORK_HAS_KEYWORD,
+				RelationType.AUTHOR_RESEARCHES,
+				RelationType.INSTITUTION_LOCATED_IN,
+				RelationType.FUNDER_LOCATED_IN,
+				RelationType.TOPIC_PART_OF_FIELD
+			]),
 			currentLayout: {
 				type: "d3-force",
 				options: {
@@ -584,7 +600,23 @@ export const useGraphStore = create<GraphState>()(
 			},
 
 			setAllEdgeTypesVisible: (visible) => {
-				const allTypes: RelationType[] = ["authored", "affiliated", "published_in", "funded_by", "related_to", "references"] as RelationType[];
+				const allTypes: RelationType[] = [
+					RelationType.AUTHORED,
+					RelationType.AFFILIATED,
+					RelationType.PUBLISHED_IN,
+					RelationType.FUNDED_BY,
+					RelationType.REFERENCES,
+					RelationType.RELATED_TO,
+					RelationType.SOURCE_PUBLISHED_BY,
+					RelationType.INSTITUTION_CHILD_OF,
+					RelationType.PUBLISHER_CHILD_OF,
+					RelationType.WORK_HAS_TOPIC,
+					RelationType.WORK_HAS_KEYWORD,
+					RelationType.AUTHOR_RESEARCHES,
+					RelationType.INSTITUTION_LOCATED_IN,
+					RelationType.FUNDER_LOCATED_IN,
+					RelationType.TOPIC_PART_OF_FIELD
+				];
 				set({
 					visibleEdgeTypes: visible ? new Set(allTypes) : new Set()
 				});
@@ -819,10 +851,22 @@ export const useGraphStore = create<GraphState>()(
 			}),
 			onRehydrateStorage: () => (state) => {
 				if (state && Array.isArray(state.visibleEntityTypes)) {
-					state.visibleEntityTypes = new Set(state.visibleEntityTypes as EntityType[]);
+					// Type guard: only valid EntityType values
+					const validEntityTypes = state.visibleEntityTypes.filter((type): type is EntityType =>
+						typeof type === "string" &&
+						["works", "authors", "sources", "institutions", "topics", "publishers", "funders", "keywords", "geo"].includes(type)
+					);
+					state.visibleEntityTypes = new Set(validEntityTypes);
 				}
 				if (state && Array.isArray(state.visibleEdgeTypes)) {
-					state.visibleEdgeTypes = new Set(state.visibleEdgeTypes as RelationType[]);
+					// Type guard: only valid RelationType values
+					const isValidRelationType = (type: unknown): type is RelationType => {
+						if (typeof type !== "string") return false;
+						return Object.values(RelationType).some((validType: string) => validType === type);
+					};
+
+					const validEdgeTypes = state.visibleEdgeTypes.filter(isValidRelationType);
+					state.visibleEdgeTypes = new Set(validEdgeTypes);
 				}
 			},
 		}
