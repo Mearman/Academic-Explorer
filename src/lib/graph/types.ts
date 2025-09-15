@@ -8,16 +8,34 @@ import type { EntityType as OpenAlexEntityType } from "@/lib/openalex/types"
 export type EntityType = OpenAlexEntityType
 
 export enum RelationType {
-  AUTHORED = "authored",
-  AFFILIATED = "affiliated",
-  PUBLISHED_IN = "published_in",
-  FUNDED_BY = "funded_by",
-  RELATED_TO = "related_to",
-  REFERENCES = "references",
-  CITED = "cited", // Citation relationship (work A cites work B)
-  CITES = "cites", // Alternative citation naming
-  PUBLISHED_BY = "published_by", // Alternative publishing relationship
-  PART_OF = "part_of" // Institutional hierarchy
+  // Core academic relationships (unique and specific)
+  AUTHORED = "authored",                    // Author → Work
+  AFFILIATED = "affiliated",                // Author → Institution
+  PUBLISHED_IN = "published_in",            // Work → Source
+  FUNDED_BY = "funded_by",                  // Work → Funder
+  REFERENCES = "references",                // Work → Work (citations)
+
+  // Publishing relationships
+  SOURCE_PUBLISHED_BY = "source_published_by",  // Source → Publisher
+
+  // Institutional relationships
+  INSTITUTION_CHILD_OF = "institution_child_of",    // Institution → Parent Institution
+  PUBLISHER_CHILD_OF = "publisher_child_of",        // Publisher → Parent Publisher
+
+  // Topic/keyword relationships
+  WORK_HAS_TOPIC = "work_has_topic",            // Work → Topic
+  WORK_HAS_KEYWORD = "work_has_keyword",        // Work → Keyword
+  AUTHOR_RESEARCHES = "author_researches",      // Author → Topic
+
+  // Geographic relationships
+  INSTITUTION_LOCATED_IN = "institution_located_in",  // Institution → Geo/Country
+  FUNDER_LOCATED_IN = "funder_located_in",            // Funder → Country
+
+  // Topic hierarchy
+  TOPIC_PART_OF_FIELD = "topic_part_of_field",       // Topic → Field → Domain
+
+  // General catch-all (use sparingly)
+  RELATED_TO = "related_to"                     // General relationships
 }
 
 export interface Position {
