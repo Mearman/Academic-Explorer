@@ -211,12 +211,39 @@ export class GraphDataService {
 			// Start loading placeholder node data in the background for new nodes
 			const newPlaceholderNodes = nodes.filter(n => n.metadata?.isPlaceholder);
 			if (newPlaceholderNodes.length > 0) {
+				logger.info("graph", "Found placeholder nodes to load", {
+					count: newPlaceholderNodes.length,
+					nodeIds: newPlaceholderNodes.map(n => n.id),
+					labels: newPlaceholderNodes.map(n => n.label)
+				}, "GraphDataService");
+
 				setTimeout(() => {
 					// Load only the new placeholder nodes
-					const loadPromises = newPlaceholderNodes.map(node =>
-						this.loadPlaceholderNodeData(node.id)
-					);
-					Promise.allSettled(loadPromises).catch((error: unknown) => {
+					const loadPromises = newPlaceholderNodes.map(node => {
+						logger.debug("graph", "Starting placeholder load for node", {
+							nodeId: node.id,
+							label: node.label,
+							entityId: node.entityId
+						}, "GraphDataService");
+						return this.loadPlaceholderNodeData(node.id);
+					});
+					Promise.allSettled(loadPromises).then((results) => {
+						const fulfilled = results.filter(r => r.status === "fulfilled").length;
+						const rejected = results.filter(r => r.status === "rejected").length;
+						logger.info("graph", "Placeholder loading completed", {
+							fulfilled,
+							rejected,
+							total: results.length
+						}, "GraphDataService");
+						if (rejected > 0) {
+							const rejectedReasons = results
+								.filter(r => r.status === "rejected")
+								.map(r => (r as PromiseRejectedResult).reason);
+							logger.warn("graph", "Some placeholder loads failed", {
+								rejectedReasons
+							}, "GraphDataService");
+						}
+					}).catch((error: unknown) => {
 						logError("Background placeholder loading failed", error, "GraphDataService", "graph");
 					});
 				}, 100);
@@ -308,8 +335,17 @@ export class GraphDataService {
 		const store = useGraphStore.getState();
 		const node = store.getNode(nodeId);
 
-		if (!node || !node.metadata?.isPlaceholder) {
-			logger.debug("graph", "Node is not a placeholder, skipping data load", { nodeId }, "GraphDataService");
+		if (!node) {
+			logger.warn("graph", "Node not found, cannot load placeholder data", { nodeId }, "GraphDataService");
+			return;
+		}
+
+		if (!node.metadata?.isPlaceholder) {
+			logger.debug("graph", "Node is not a placeholder, skipping data load", {
+				nodeId,
+				isPlaceholder: node.metadata?.isPlaceholder,
+				metadata: node.metadata
+			}, "GraphDataService");
 			return;
 		}
 
@@ -324,12 +360,27 @@ export class GraphDataService {
 			}, "GraphDataService");
 
 			// Fetch full entity data using deduplication service
+			logger.debug("graph", "Fetching entity data", {
+				nodeId,
+				entityId: node.entityId,
+				entityType: node.type
+			}, "GraphDataService");
+
 			const entity = await this.deduplicationService.getEntity(
 				node.entityId,
 				() => rateLimitedOpenAlex.getEntity(node.entityId)
 			);
 
-			// Entity successfully fetched
+			// Check if entity was successfully fetched
+			if (!entity) {
+				throw new Error(`Entity not found for ID: ${node.entityId}`);
+			}
+
+			logger.debug("graph", "Entity fetched successfully", {
+				nodeId,
+				entityId: node.entityId,
+				entityDisplayName: entity.display_name
+			}, "GraphDataService");
 
 			// Extract full data from the entity
 			const fullNodeData = this.createNodeFromEntity(entity, node.type);
