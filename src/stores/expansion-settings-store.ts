@@ -54,21 +54,13 @@ const initializeDefaultSettings = (): Record<ExpansionTarget, ExpansionSettings>
 	const allRelationTypes: ExpansionTarget[] = Object.values(RelationType);
 	const allTargets = [...allEntityTypes, ...allRelationTypes];
 
-	// Create properly typed settings object by building it incrementally
-	const firstTarget = allTargets[0];
-	const firstSetting = getDefaultSettingsForTarget(firstTarget);
+	// Create properly typed settings object using Object.fromEntries for complete initialization
+	const settingsEntries = allTargets.map(target => [
+		target,
+		getDefaultSettingsForTarget(target)
+	] as const);
 
-	const settings: Record<ExpansionTarget, ExpansionSettings> = {
-		[firstTarget]: firstSetting
-	};
-
-	// Add remaining targets
-	allTargets.slice(1).forEach(target => {
-		const defaultSetting = getDefaultSettingsForTarget(target);
-		settings[target] = defaultSetting;
-	});
-
-	return settings;
+	return Object.fromEntries(settingsEntries) as Record<ExpansionTarget, ExpansionSettings>;
 };
 
 export const useExpansionSettingsStore = create<ExpansionSettingsState>()(
