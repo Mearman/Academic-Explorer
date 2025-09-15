@@ -7,6 +7,7 @@ import React from "react"
 import { useLayoutStore } from "@/stores/layout-store"
 import { useGraphStore } from "@/stores/graph-store"
 import { useThemeColors } from "@/hooks/use-theme-colors"
+import { RawApiDataSection } from "@/components/molecules/RawApiDataSection"
 import {
 	IconInfoCircle,
 	IconExternalLink,
@@ -321,6 +322,9 @@ export const RightSidebar: React.FC = () => {
 							<li>Hover to preview details</li>
 						</ul>
 					</div>
+
+					{/* Raw API Data */}
+					<RawApiDataSection entityId={displayEntity.entityId} />
 				</div>
 			) : (
 			/* Empty State */
