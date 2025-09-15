@@ -1,3 +1,10 @@
+## [2.1.1](https://github.com/Mearman/Academic-Explorer/compare/v2.1.0...v2.1.1) (2025-09-15)
+
+
+### Bug Fixes
+
+* **test:** resolve ESLint errors in cache persister tests ([0bad7d1](https://github.com/Mearman/Academic-Explorer/commit/0bad7d135c2a84cfc427de3fb0308c211663b32f))
+
 # [2.1.0](https://github.com/Mearman/Academic-Explorer/compare/v2.0.1...v2.1.0) (2025-09-15)
 
 
