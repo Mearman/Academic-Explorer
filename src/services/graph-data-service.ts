@@ -904,21 +904,21 @@ export class GraphDataService {
 
 			// Update node with full data
 			store.updateNode(nodeId, {
-					...fullNodeData,
-					position: node.position, // Preserve current position
-					metadata: {
-						...fullNodeData.metadata,
-						hydrationLevel: "full",
-						isLoading: false,
-						dataLoadedAt: Date.now(),
-					}
-				});
+				...fullNodeData,
+				position: node.position, // Preserve current position
+				metadata: {
+					...fullNodeData.metadata,
+					hydrationLevel: "full",
+					isLoading: false,
+					dataLoadedAt: Date.now(),
+				}
+			});
 
-				logger.info("graph", "Node fully hydrated", {
-					nodeId,
-					entityType: node.type,
-					externalIdCount: fullNodeData.externalIds.length
-				});
+			logger.info("graph", "Node fully hydrated", {
+				nodeId,
+				entityType: node.type,
+				externalIdCount: fullNodeData.externalIds.length
+			});
 		} catch (error) {
 			logError(`Failed to hydrate node ${nodeId}`, error, "GraphDataService", "graph");
 			store.markNodeAsLoading(nodeId, false); // Clear loading state on error
