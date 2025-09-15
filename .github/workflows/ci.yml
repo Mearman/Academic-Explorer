@@ -17,6 +17,7 @@ jobs:
 
     outputs:
       cache-key: ${{ steps.cache-keys.outputs.cache-key }}
+      nx-cache-key: ${{ steps.cache-keys.outputs.nx-cache-key }}
 
     steps:
       - name: Checkout
@@ -37,6 +38,7 @@ jobs:
         id: cache-keys
         run: |
           echo "cache-key=node-modules-${{ hashFiles('pnpm-lock.yaml') }}" >> $GITHUB_OUTPUT
+          echo "nx-cache-key=nx-${{ runner.os }}-${{ hashFiles('nx.json', 'package.json', 'pnpm-lock.yaml', '**/tsconfig.json', 'vite.config.ts') }}" >> $GITHUB_OUTPUT
 
       - name: Cache node_modules
         id: cache-deps
@@ -57,7 +59,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: .nx/cache
-          key: nx-${{ runner.os }}-${{ github.sha }}
+          key: ${{ steps.cache-keys.outputs.nx-cache-key }}
           restore-keys: |
             nx-${{ runner.os }}-
 
@@ -97,7 +99,7 @@ jobs:
         uses: actions/cache/restore@v4
         with:
           path: .nx/cache
-          key: nx-${{ runner.os }}-${{ github.sha }}
+          key: ${{ needs.setup.outputs.nx-cache-key }}
           restore-keys: |
             nx-${{ runner.os }}-
 
@@ -114,6 +116,13 @@ jobs:
           path: dist/
           retention-days: 1
           compression-level: 6
+
+      - name: Save Nx cache
+        if: always()
+        uses: actions/cache/save@v4
+        with:
+          path: .nx/cache
+          key: ${{ needs.setup.outputs.nx-cache-key }}-${{ matrix.check }}-${{ github.run_number }}
 
   test:
     needs: setup
@@ -158,7 +167,7 @@ jobs:
         uses: actions/cache/restore@v4
         with:
           path: .nx/cache
-          key: nx-${{ runner.os }}-${{ github.sha }}
+          key: ${{ needs.setup.outputs.nx-cache-key }}
           restore-keys: |
             nx-${{ runner.os }}-
 
@@ -174,6 +183,13 @@ jobs:
           name: coverage-${{ matrix.test-type }}-${{ github.sha }}
           path: coverage/
           retention-days: 7
+
+      - name: Save Nx cache
+        if: always()
+        uses: actions/cache/save@v4
+        with:
+          path: .nx/cache
+          key: ${{ needs.setup.outputs.nx-cache-key }}-${{ matrix.test-type }}-${{ github.run_number }}
 
   coverage-report:
     needs: [test]
