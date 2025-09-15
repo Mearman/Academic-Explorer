@@ -14,11 +14,22 @@ interface LayoutState {
   rightSidebarOpen: boolean;
   rightSidebarPinned: boolean;
 
+  // Autohide states
+  leftSidebarAutoHidden: boolean;
+  rightSidebarAutoHidden: boolean;
+
+  // Hover states for autohide
+  leftSidebarHovered: boolean;
+  rightSidebarHovered: boolean;
+
   // Graph provider selection
   graphProvider: ProviderType;
 
   // Preview entity (for hover/selection)
   previewEntityId: string | null;
+
+  // Graph behavior preferences
+  autoPinOnLayoutStabilization: boolean;
 
   // Actions
   toggleLeftSidebar: () => void;
@@ -27,8 +38,13 @@ interface LayoutState {
   setRightSidebarOpen: (open: boolean) => void;
   pinLeftSidebar: (pinned: boolean) => void;
   pinRightSidebar: (pinned: boolean) => void;
+  setLeftSidebarAutoHidden: (autoHidden: boolean) => void;
+  setRightSidebarAutoHidden: (autoHidden: boolean) => void;
+  setLeftSidebarHovered: (hovered: boolean) => void;
+  setRightSidebarHovered: (hovered: boolean) => void;
   setGraphProvider: (provider: ProviderType) => void;
   setPreviewEntity: (entityId: string | null) => void;
+  setAutoPinOnLayoutStabilization: (enabled: boolean) => void;
 }
 
 export const useLayoutStore = create<LayoutState>()(
@@ -39,8 +55,13 @@ export const useLayoutStore = create<LayoutState>()(
 			leftSidebarPinned: false,
 			rightSidebarOpen: true,
 			rightSidebarPinned: false,
+			leftSidebarAutoHidden: false,
+			rightSidebarAutoHidden: false,
+			leftSidebarHovered: false,
+			rightSidebarHovered: false,
 			graphProvider: "xyflow",
 			previewEntityId: null,
+			autoPinOnLayoutStabilization: true,
 
 			// Actions
 			toggleLeftSidebar: () =>
@@ -65,11 +86,26 @@ export const useLayoutStore = create<LayoutState>()(
 			pinRightSidebar: (pinned) =>
 				set({ rightSidebarPinned: pinned }),
 
+			setLeftSidebarAutoHidden: (autoHidden) =>
+				set({ leftSidebarAutoHidden: autoHidden }),
+
+			setRightSidebarAutoHidden: (autoHidden) =>
+				set({ rightSidebarAutoHidden: autoHidden }),
+
+			setLeftSidebarHovered: (hovered) =>
+				set({ leftSidebarHovered: hovered }),
+
+			setRightSidebarHovered: (hovered) =>
+				set({ rightSidebarHovered: hovered }),
+
 			setGraphProvider: (provider) =>
 				set({ graphProvider: provider }),
 
 			setPreviewEntity: (entityId) =>
 				set({ previewEntityId: entityId }),
+
+			setAutoPinOnLayoutStabilization: (enabled) =>
+				set({ autoPinOnLayoutStabilization: enabled }),
 		}),
 		{
 			name: "academic-explorer-layout",
@@ -79,7 +115,17 @@ export const useLayoutStore = create<LayoutState>()(
 				leftSidebarPinned: state.leftSidebarPinned,
 				rightSidebarPinned: state.rightSidebarPinned,
 				graphProvider: state.graphProvider,
+				autoPinOnLayoutStabilization: state.autoPinOnLayoutStabilization,
 			}),
+			// Migration for existing localStorage entries that don't have autoPinOnLayoutStabilization
+			migrate: (persistedState: any, version: number) => {
+				// If the persisted state doesn't have autoPinOnLayoutStabilization, add it with default value
+				if (persistedState && typeof persistedState.autoPinOnLayoutStabilization === 'undefined') {
+					persistedState.autoPinOnLayoutStabilization = true;
+				}
+				return persistedState;
+			},
+			version: 1,
 		}
 	)
 );
