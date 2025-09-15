@@ -151,7 +151,7 @@ export const useGraphStore = create<GraphState>()(
 			providerType: "xyflow",
 			visibleEntityTypes: new Set(["works", "authors", "sources", "institutions", "topics", "publishers", "funders", "keywords", "geo"]),
 			lastSearchStats: new Map(),
-			visibleEdgeTypes: new Set(["authored", "cited", "affiliated", "published_in", "funded_by", "related_to", "references"] as RelationType[]),
+			visibleEdgeTypes: new Set(["authored", "affiliated", "published_in", "funded_by", "related_to", "references"] as RelationType[]),
 			currentLayout: {
 				type: "d3-force",
 				options: {
@@ -575,7 +575,7 @@ export const useGraphStore = create<GraphState>()(
 			},
 
 			setAllEdgeTypesVisible: (visible) => {
-				const allTypes: RelationType[] = ["authored", "cited", "affiliated", "published_in", "funded_by", "related_to", "references"] as RelationType[];
+				const allTypes: RelationType[] = ["authored", "affiliated", "published_in", "funded_by", "related_to", "references"] as RelationType[];
 				set({
 					visibleEdgeTypes: visible ? new Set(allTypes) : new Set()
 				});
