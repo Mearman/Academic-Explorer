@@ -9,6 +9,7 @@ import type { Author, Work } from "@/lib/openalex/types";
 import type { ExternalIdentifier, GraphNode, GraphEdge } from "@/lib/graph/types";
 import { RelationType as RT } from "@/lib/graph/types";
 import { logger } from "@/lib/logger";
+import { ExpansionQueryBuilder } from "@/services/expansion-query-builder";
 
 export class AuthorEntity extends AbstractEntity<Author> {
 	constructor(client: RateLimitedOpenAlexClient, entityData?: Author) {
@@ -66,87 +67,95 @@ export class AuthorEntity extends AbstractEntity<Author> {
 	async expand(context: EntityContext, options: ExpansionOptions): Promise<ExpansionResult> {
 		const nodes: GraphNode[] = [];
 		const edges: GraphEdge[] = [];
-		const { limit = 10 } = options;
+		const { limit = 10, expansionSettings } = options;
 
 		logger.info("graph", "AuthorEntity.expand called", {
 			contextEntityId: context.entityId,
 			limit,
+			hasExpansionSettings: Boolean(expansionSettings),
 			options
-		});
+		}, "AuthorEntity");
 
 		try {
-			// Fetch the author's recent works
-			logger.info("graph", "Fetching works for author", {
-				entityId: context.entityId
-			});
+			// Get expansion settings, with fallback to defaults
+			const effectiveLimit = expansionSettings?.enabled ? expansionSettings.limit : limit;
+
+			// Build query parameters from expansion settings if available
+			let queryParams: { filter?: string; sort?: string; select?: string[] } = {};
+			if (expansionSettings?.enabled) {
+				const builtParams = ExpansionQueryBuilder.buildQueryParams(expansionSettings);
+				queryParams = {
+					filter: builtParams.filter,
+					sort: builtParams.sort,
+					select: builtParams.select
+				};
+				logger.debug("graph", "Using expansion settings for author expansion", {
+					settings: expansionSettings,
+					queryParams
+				}, "AuthorEntity");
+			}
+
+			// Merge base filter with expansion settings filters if available
+			const baseFilter = `authorships.author.id:${context.entityId}`;
+			const finalFilter = queryParams.filter
+				? ExpansionQueryBuilder.mergeFilters(baseFilter, expansionSettings?.filters || [])
+				: baseFilter;
 
 			const worksResponse = await this.client.getWorks({
-				filter: `authorships.author.id:${context.entityId}`,
-				per_page: Math.min(limit, 8),
-				sort: "publication_year:desc"
+				filter: finalFilter,
+				per_page: Math.min(effectiveLimit, 8),
+				sort: queryParams.sort || "publication_year:desc",
+				select: queryParams.select
 			});
 
-			// Check if response is valid and has results
-			if (!worksResponse) {
-				logger.error("graph", "Works response is undefined", context.entityId);
-				return { nodes: [], edges: [] };
-			}
+			// Note: worksResponse and worksResponse.results are guaranteed by the client
+			// Remove unnecessary null checks as they are always truthy based on type definitions
 
-			if (!worksResponse.results) {
-				logger.error("graph", "Works response missing results property", context.entityId);
-				return { nodes: [], edges: [] };
-			}
-
-			logger.info("graph", "Works query result", {
+			logger.debug("graph", "Works query result", {
 				resultCount: worksResponse.results.length,
-				totalCount: worksResponse.meta?.count || 0,
-				entityId: context.entityId
+				totalCount: worksResponse.meta.count,
+				entityId: context.entityId,
+				filter: finalFilter,
+				sort: queryParams.sort || "publication_year:desc"
+			}, "AuthorEntity");
+
+			// Process each work manually since we can't use transformToGraphNode with different entity types
+			worksResponse.results.forEach((work: Work) => {
+				// Create work node manually with proper metadata
+				const workNode: GraphNode = {
+					id: work.id,
+					type: "works" as const,
+					label: work.display_name || "Untitled Work",
+					entityId: work.id,
+					position: this.generateRandomPosition(),
+					externalIds: work.doi ? [{
+						type: "doi" as const,
+						value: work.doi,
+						url: `https://doi.org/${work.doi}`,
+					}] : [],
+					metadata: {
+						year: work.publication_year,
+						citationCount: work.cited_by_count,
+						openAccess: work.open_access.is_oa,
+					},
+				};
+				nodes.push(workNode);
+
+				// Add authorship edge
+				edges.push(this.createEdge(
+					context.entityId,
+					work.id,
+					RT.AUTHORED,
+					1.0,
+					"authored"
+				));
 			});
-
-			// Process each work if results is an array
-			if (Array.isArray(worksResponse.results)) {
-				worksResponse.results.forEach((work: Work) => {
-					if (!work || !work.id) {
-						logger.warn("graph", "Skipping invalid work", { work });
-						return;
-					}
-
-					// Add work node
-					const workNode: GraphNode = {
-						id: work.id,
-						type: "works" as const,
-						label: work.display_name || "Untitled Work",
-						entityId: work.id,
-						position: this.generateRandomPosition(),
-						externalIds: work.doi ? [{
-							type: "doi" as const,
-							value: work.doi,
-							url: `https://doi.org/${work.doi}`,
-						}] : [],
-						metadata: {
-							year: work.publication_year,
-							citationCount: work.cited_by_count,
-							openAccess: work.open_access?.is_oa || false,
-						},
-					};
-					nodes.push(workNode);
-
-					// Add authorship edge
-					edges.push(this.createEdge(
-						context.entityId,
-						work.id,
-						RT.AUTHORED,
-						1.0,
-						"authored"
-					));
-				});
-			}
 
 		} catch (error) {
 			logger.error("graph", "Error in AuthorEntity.expand", {
 				error: error instanceof Error ? error.message : String(error),
 				entityId: context.entityId
-			});
+			}, "AuthorEntity");
 
 			// Call the parent class error handler
 			this.handleError(error, "expand", context);
@@ -155,12 +164,11 @@ export class AuthorEntity extends AbstractEntity<Author> {
 			return { nodes: [], edges: [] };
 		}
 
-		logger.info("graph", "AuthorEntity.expand returning", {
-			nodeCount: nodes.length,
-			edgeCount: edges.length,
-			entityId: context.entityId,
-			nodes: nodes.map(n => ({ id: n.id, type: n.type, label: n.label }))
-		});
+		logger.info("graph", "AuthorEntity.expand completed", {
+			nodesAdded: nodes.length,
+			edgesAdded: edges.length,
+			contextEntityId: context.entityId
+		}, "AuthorEntity");
 
 		return { nodes, edges };
 	}

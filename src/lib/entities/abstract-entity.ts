@@ -14,6 +14,7 @@ import type {
 } from "@/lib/graph/types";
 import type { OpenAlexEntity } from "@/lib/openalex/types";
 import { detectEntityType } from "./entity-detection";
+import type { ExpansionSettings } from "@/lib/graph/types/expansion-settings";
 
 /**
  * Options for entity expansion
@@ -24,6 +25,7 @@ export interface ExpansionOptions {
   relationTypes?: RelationType[];
   force?: boolean;
   selectFields?: string[]; // Fields to select for minimal API payload
+  expansionSettings?: ExpansionSettings; // Settings for customizing expansion behavior
 }
 
 /**

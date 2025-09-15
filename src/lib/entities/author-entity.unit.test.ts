@@ -123,17 +123,25 @@ describe("AuthorEntity", () => {
 				results: [
           {
           	id: "https://openalex.org/W1",
+          	display_name: "Work 1",
           	title: "Work 1",
           	authorships: [],
           	referenced_works: [],
-          	publication_year: 2023
+          	publication_year: 2023,
+          	cited_by_count: 10,
+          	open_access: { is_oa: true },
+          	doi: null
           } as Work,
           {
           	id: "https://openalex.org/W2",
+          	display_name: "Work 2",
           	title: "Work 2",
           	authorships: [],
           	referenced_works: [],
-          	publication_year: 2022
+          	publication_year: 2022,
+          	cited_by_count: 5,
+          	open_access: { is_oa: false },
+          	doi: null
           } as Work
 				]
 			};
@@ -182,7 +190,8 @@ describe("AuthorEntity", () => {
 				expect(logger.error).toHaveBeenCalledWith(
 					"graph",
 					"Works response is undefined",
-					entityId
+					entityId,
+					"AuthorEntity"
 				);
 			});
 
@@ -206,7 +215,8 @@ describe("AuthorEntity", () => {
 				expect(logger.error).toHaveBeenCalledWith(
 					"graph",
 					"Works response missing results property",
-					entityId
+					entityId,
+					"AuthorEntity"
 				);
 			});
 
