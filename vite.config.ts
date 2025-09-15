@@ -78,6 +78,7 @@ export default defineConfig({
     globals: true,
     environment: 'jsdom',
     setupFiles: ['./src/test/setup.ts'],
+    watch: false,
     coverage: {
       reporter: ['text', 'json', 'html'],
       exclude: ['node_modules/', 'src/test/', 'src/routes/', 'src/styles/', 'src/routeTree.gen.ts'],
