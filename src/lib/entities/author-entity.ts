@@ -72,65 +72,87 @@ export class AuthorEntity extends AbstractEntity<Author> {
 			contextEntityId: context.entityId,
 			limit,
 			options
-		}, "AuthorEntity");
+		});
 
 		try {
 			// Fetch the author's recent works
 			logger.info("graph", "Fetching works for author", {
 				entityId: context.entityId
-			}, "AuthorEntity");
+			});
 
-			const worksQuery = await this.client.getWorks({
+			const worksResponse = await this.client.getWorks({
 				filter: `authorships.author.id:${context.entityId}`,
 				per_page: Math.min(limit, 8),
 				sort: "publication_year:desc"
 			});
 
+			// Check if response is valid and has results
+			if (!worksResponse) {
+				logger.error("graph", "Works response is undefined", context.entityId);
+				return { nodes: [], edges: [] };
+			}
+
+			if (!worksResponse.results) {
+				logger.error("graph", "Works response missing results property", context.entityId);
+				return { nodes: [], edges: [] };
+			}
+
 			logger.info("graph", "Works query result", {
-				resultCount: worksQuery.results.length || 0,
-				totalCount: worksQuery.meta.count || 0,
+				resultCount: worksResponse.results.length,
+				totalCount: worksResponse.meta?.count || 0,
 				entityId: context.entityId
-			}, "AuthorEntity");
-
-			worksQuery.results.forEach((work: Work) => {
-				// Add work node
-				const workNode = {
-					id: work.id,
-					type: "works" as const,
-					label: work.display_name || "Untitled Work",
-					entityId: work.id,
-					position: this.generateRandomPosition(),
-					externalIds: work.doi ? [{
-						type: "doi" as const,
-						value: work.doi,
-						url: `https://doi.org/${work.doi}`,
-					}] : [],
-					metadata: {
-						year: work.publication_year,
-						citationCount: work.cited_by_count,
-						openAccess: work.open_access.is_oa,
-					},
-				};
-				nodes.push(workNode);
-
-				// Add authorship edge
-				edges.push(this.createEdge(
-					context.entityId,
-					work.id,
-					RT.AUTHORED,
-					1.0,
-					"authored"
-				));
-
-				// Note: Removed inferred collaboration edges - only show real relationships from data
 			});
+
+			// Process each work if results is an array
+			if (Array.isArray(worksResponse.results)) {
+				worksResponse.results.forEach((work: Work) => {
+					if (!work || !work.id) {
+						logger.warn("graph", "Skipping invalid work", { work });
+						return;
+					}
+
+					// Add work node
+					const workNode: GraphNode = {
+						id: work.id,
+						type: "works" as const,
+						label: work.display_name || "Untitled Work",
+						entityId: work.id,
+						position: this.generateRandomPosition(),
+						externalIds: work.doi ? [{
+							type: "doi" as const,
+							value: work.doi,
+							url: `https://doi.org/${work.doi}`,
+						}] : [],
+						metadata: {
+							year: work.publication_year,
+							citationCount: work.cited_by_count,
+							openAccess: work.open_access?.is_oa || false,
+						},
+					};
+					nodes.push(workNode);
+
+					// Add authorship edge
+					edges.push(this.createEdge(
+						context.entityId,
+						work.id,
+						RT.AUTHORED,
+						1.0,
+						"authored"
+					));
+				});
+			}
 
 		} catch (error) {
 			logger.error("graph", "Error in AuthorEntity.expand", {
-				error: error instanceof Error ? error.message : "Unknown error",
+				error: error instanceof Error ? error.message : String(error),
 				entityId: context.entityId
-			}, "AuthorEntity");
+			});
+
+			// Call the parent class error handler
 			this.handleError(error, "expand", context);
+
+			// Return empty result on error
+			return { nodes: [], edges: [] };
 		}
 
 		logger.info("graph", "AuthorEntity.expand returning", {
@@ -138,7 +160,7 @@ export class AuthorEntity extends AbstractEntity<Author> {
 			edgeCount: edges.length,
 			entityId: context.entityId,
 			nodes: nodes.map(n => ({ id: n.id, type: n.type, label: n.label }))
-		}, "AuthorEntity");
+		});
 
 		return { nodes, edges };
 	}
