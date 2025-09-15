@@ -20,6 +20,7 @@ import { randomLcg } from "d3-random";
 import type { GraphLayout, EntityType } from "../../types";
 import { logger } from "@/lib/logger";
 import { useGraphStore } from "@/stores/graph-store";
+import { useLayoutStore } from "@/stores/layout-store";
 import { FIT_VIEW_PRESETS } from "../../constants";
 
 // Extended node interface for D3 simulation
@@ -49,6 +50,9 @@ export function useLayout(
 	const { enabled = true, onLayoutChange, fitViewAfterLayout = true, containerDimensions } = options;
 	const { getNodes, getEdges, setNodes, fitView, getViewport } = useReactFlow();
 	const pinnedNodes = useGraphStore((state) => state.pinnedNodes);
+	const autoPinOnLayoutStabilization = useLayoutStore((state) => state.autoPinOnLayoutStabilization);
+
+	logger.debug("graph", "Auto-pin preference loaded", { autoPinOnLayoutStabilization });
 	const simulationRef = useRef<Simulation<D3Node, D3Link> | null>(null);
 	const isRunningRef = useRef(false);
 	const timeoutRef = useRef<number | null>(null);
@@ -143,6 +147,7 @@ export function useLayout(
 				hasPinnedNodes,
 				pinnedNodeCount,
 				pinnedNodeIds: Array.from(pinnedNodes),
+				autoPinOnLayoutStabilization,
 				linkDistance,
 				linkStrength,
 				chargeStrength,
@@ -291,10 +296,45 @@ export function useLayout(
 					{
 						maxTicks,
 						finalAlpha: simulationRef.current?.alpha(),
+						autoPinOnLayoutStabilization,
 					},
 					"useLayout",
 				);
 				simulationRef.current?.stop();
+
+				// Auto-pin all nodes when layout stabilizes if user preference is enabled (timeout case)
+				if (autoPinOnLayoutStabilization) {
+					const graphStore = useGraphStore.getState();
+					const currentNodes = getNodes();
+
+
+					logger.info(
+						"graph",
+						"Auto-pinning all nodes after layout timeout",
+						{
+							nodeCount: currentNodes.length,
+							nodeIds: currentNodes.map(n => n.id),
+							userPreference: true,
+							reason: "simulation timeout",
+						},
+						"useLayout",
+					);
+
+					// Pin all nodes at their current positions
+					currentNodes.forEach(node => {
+						graphStore.pinNode(node.id);
+					});
+
+					logger.info(
+						"graph",
+						"All nodes auto-pinned after layout timeout",
+						{
+							pinnedCount: currentNodes.length,
+							totalPinnedNodes: graphStore.pinnedNodes.size,
+						},
+						"useLayout",
+					);
+				}
 
 				// Fit view after forced stop if enabled
 				if (fitViewAfterLayout) {
@@ -392,10 +432,44 @@ export function useLayout(
 						x: Math.round(n.x || 0),
 						y: Math.round(n.y || 0),
 					})),
+					autoPinOnLayoutStabilization,
 				},
 				"useLayout",
 			);
 			isRunningRef.current = false;
+
+			// Auto-pin all nodes when layout stabilizes if user preference is enabled
+			if (autoPinOnLayoutStabilization) {
+				const graphStore = useGraphStore.getState();
+				const currentNodes = getNodes();
+
+
+				logger.info(
+					"graph",
+					"Auto-pinning all nodes after layout stabilization",
+					{
+						nodeCount: currentNodes.length,
+						nodeIds: currentNodes.map(n => n.id),
+						userPreference: true,
+					},
+					"useLayout",
+				);
+
+				// Pin all nodes at their current positions
+				currentNodes.forEach(node => {
+					graphStore.pinNode(node.id);
+				});
+
+				logger.info(
+					"graph",
+					"All nodes auto-pinned after layout stabilization",
+					{
+						pinnedCount: currentNodes.length,
+						totalPinnedNodes: graphStore.pinnedNodes.size,
+					},
+					"useLayout",
+				);
+			}
 
 			// Auto-fit view after layout stabilizes if enabled
 			if (fitViewAfterLayout) {
@@ -410,7 +484,7 @@ export function useLayout(
 				}, 100);
 			}
 		});
-	}, [layout, onLayoutChange, stopLayout, fitView, fitViewAfterLayout, getViewport, containerDimensions, getNodes, getEdges, setNodes]);
+	}, [layout, onLayoutChange, stopLayout, fitView, fitViewAfterLayout, getViewport, containerDimensions, getNodes, getEdges, setNodes, autoPinOnLayoutStabilization, pinnedNodes]);
 
 	// Main layout application function - D3 force only
 	const applyLayout = useCallback(() => {
