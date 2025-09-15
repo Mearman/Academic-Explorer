@@ -8,20 +8,23 @@ import '@testing-library/jest-dom';
 // Configure test environment globals
 globalThis.__DEV__ = true;
 
-// Mock matchMedia for component tests that use responsive hooks
-Object.defineProperty(window, 'matchMedia', {
-  writable: true,
-  value: vi.fn().mockImplementation(query => ({
-    matches: false,
-    media: query,
-    onchange: null,
-    addListener: vi.fn(), // deprecated
-    removeListener: vi.fn(), // deprecated
-    addEventListener: vi.fn(),
-    removeEventListener: vi.fn(),
-    dispatchEvent: vi.fn(),
-  })),
-});
+// Environment-aware DOM mocking (only for jsdom environment)
+if (typeof window !== 'undefined') {
+  // Mock matchMedia for component tests that use responsive hooks
+  Object.defineProperty(window, 'matchMedia', {
+    writable: true,
+    value: vi.fn().mockImplementation(query => ({
+      matches: false,
+      media: query,
+      onchange: null,
+      addListener: vi.fn(), // deprecated
+      removeListener: vi.fn(), // deprecated
+      addEventListener: vi.fn(),
+      removeEventListener: vi.fn(),
+      dispatchEvent: vi.fn(),
+    })),
+  });
+}
 
 // Mock ResizeObserver for components that measure elements
 global.ResizeObserver = vi.fn().mockImplementation(() => ({

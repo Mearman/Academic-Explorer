@@ -58,11 +58,74 @@ export class RateLimitedOpenAlexClient {
 	}
 
 	/**
-   * Rate-limited wrapper for any client method call
+   * Rate-limited wrapper for any client method call with enhanced error handling
    */
 	private async withRateLimit<T>(operation: () => Promise<T>): Promise<T> {
-		// eslint-disable-next-line @typescript-eslint/no-unsafe-return
-		return this.rateLimiter(operation);
+		const maxRetries = 3;
+		let lastError: unknown;
+
+		for (let attempt = 0; attempt <= maxRetries; attempt++) {
+			try {
+				// eslint-disable-next-line @typescript-eslint/no-unsafe-return
+				return await this.rateLimiter(async () => {
+					try {
+						return await operation();
+					} catch (error) {
+						// If this is a 429 error, we want to retry with exponential backoff
+						if (error && typeof error === "object" && "statusCode" in error && error.statusCode === 429) {
+							if (attempt < maxRetries) {
+								const backoffDelay = Math.min(1000 * Math.pow(2, attempt), 10000); // Cap at 10 seconds
+								logger.warn("api", `Rate limit hit, retrying after ${String(backoffDelay)}ms`, {
+									attempt: attempt + 1,
+									maxRetries: maxRetries + 1,
+									backoffDelay
+								}, "RateLimitedOpenAlexClient");
+
+								await new Promise(resolve => setTimeout(resolve, backoffDelay));
+								throw error; // Re-throw to trigger outer retry loop
+							}
+						}
+						throw error;
+					}
+				});
+			} catch (error) {
+				lastError = error;
+
+				// If this is not a retryable error or we've exhausted retries, throw
+				if (!this.isRetryableError(error) || attempt === maxRetries) {
+					break;
+				}
+
+				// Log retry attempt
+				logger.info("api", `Retrying operation (attempt ${String(attempt + 2)}/${String(maxRetries + 1)})`, {
+					error: error instanceof Error ? error.message : String(error)
+				}, "RateLimitedOpenAlexClient");
+			}
+		}
+
+		// If we get here, all retries failed
+		throw lastError;
+	}
+
+	/**
+   * Check if an error is retryable
+   */
+	private isRetryableError(error: unknown): boolean {
+		// Retry 429 (rate limit), 502 (bad gateway), 503 (service unavailable), 504 (gateway timeout)
+		if (error && typeof error === "object" && "statusCode" in error) {
+			const statusCode = error.statusCode as number;
+			return [429, 502, 503, 504].includes(statusCode);
+		}
+
+		// Retry network errors
+		if (error instanceof Error) {
+			const errorMessage = error.message.toLowerCase();
+			return errorMessage.includes("network") ||
+						 errorMessage.includes("timeout") ||
+						 errorMessage.includes("connection");
+		}
+
+		return false;
 	}
 
 	// Entity retrieval methods with rate limiting

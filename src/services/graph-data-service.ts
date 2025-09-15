@@ -10,6 +10,7 @@ import { EntityDetector } from "@/lib/graph/utils/entity-detection";
 import { EntityFactory, type ExpansionOptions } from "@/lib/entities";
 import { useGraphStore } from "@/stores/graph-store";
 import { logError, logger } from "@/lib/logger";
+import { RequestDeduplicationService, createRequestDeduplicationService } from "./request-deduplication-service";
 import {
 	getCachedOpenAlexEntities,
 	setCachedGraphNodes,
@@ -38,10 +39,12 @@ export class GraphDataService {
 	private detector: EntityDetector;
 	private cache: GraphCache;
 	private queryClient: QueryClient;
+	private deduplicationService: RequestDeduplicationService;
 
 	constructor(queryClient: QueryClient) {
 		this.detector = new EntityDetector();
 		this.queryClient = queryClient;
+		this.deduplicationService = createRequestDeduplicationService(queryClient);
 		this.cache = {
 			nodes: new Map(),
 			edges: new Map(),
@@ -66,12 +69,16 @@ export class GraphDataService {
 				throw new Error(`Unable to detect entity type for: ${entityId}`);
 			}
 
-			// Fetch entity with rate-limited OpenAlex client
+			// Fetch entity with deduplication service and cache-first strategy
 			// For OpenAlex IDs, construct the full URL
 			const apiEntityId = detection.idType === "openalex"
 				? `https://openalex.org/${detection.normalizedId}`
 				: detection.normalizedId;
-			const entity = await rateLimitedOpenAlex.getEntity(apiEntityId);
+
+			const entity = await this.deduplicationService.getEntity(
+				apiEntityId,
+				() => rateLimitedOpenAlex.getEntity(apiEntityId)
+			);
 
 			// Check if entity was successfully fetched
 			if (!entity) {
@@ -166,12 +173,16 @@ export class GraphDataService {
 				throw new Error(`Unable to detect entity type for: ${entityId}`);
 			}
 
-			// Fetch entity with rate-limited OpenAlex client
+			// Fetch entity with deduplication service and cache-first strategy
 			// For OpenAlex IDs, construct the full URL
 			const apiEntityId = detection.idType === "openalex"
 				? `https://openalex.org/${detection.normalizedId}`
 				: detection.normalizedId;
-			const entity = await rateLimitedOpenAlex.getEntity(apiEntityId);
+
+			const entity = await this.deduplicationService.getEntity(
+				apiEntityId,
+				() => rateLimitedOpenAlex.getEntity(apiEntityId)
+			);
 
 			// Check if entity was successfully fetched
 			if (!entity) {
@@ -316,8 +327,11 @@ export class GraphDataService {
 				label: node.label
 			}, "GraphDataService");
 
-			// Fetch full entity data from OpenAlex
-			const entity = await rateLimitedOpenAlex.getEntity(node.entityId);
+			// Fetch full entity data using deduplication service
+			const entity = await this.deduplicationService.getEntity(
+				node.entityId,
+				() => rateLimitedOpenAlex.getEntity(node.entityId)
+			);
 
 			// Check if entity was successfully fetched
 			if (!entity) {
@@ -367,34 +381,55 @@ export class GraphDataService {
 			placeholderCount: placeholderNodes.length
 		}, "GraphDataService");
 
-		// Process nodes in batches to avoid overwhelming the API
-		const BATCH_SIZE = 3;
-		const batches: GraphNode[][] = [];
+		// Process nodes individually with proper delays to respect rate limits
+		// Deduplication service will handle caching and prevent duplicate requests
+		const DELAY_BETWEEN_NODES = 500; // 500ms delay between individual node requests
+		const BATCH_SIZE = 5; // Process 5 nodes, then longer break
+		const BATCH_DELAY = 2000; // 2 second delay between batches
 
-		for (let i = 0; i < placeholderNodes.length; i += BATCH_SIZE) {
-			batches.push(placeholderNodes.slice(i, i + BATCH_SIZE));
-		}
+		let processedCount = 0;
 
-		// Process batches sequentially with delay to respect rate limits
-		for (const [batchIndex, batch] of batches.entries()) {
-			logger.debug("graph", `Processing batch ${String(batchIndex + 1)}/${String(batches.length)}`, {
-				batchSize: batch.length,
-				nodeIds: batch.map(n => n.id)
+		for (let i = 0; i < placeholderNodes.length; i++) {
+			const node = placeholderNodes[i];
+
+			logger.debug("graph", `Processing placeholder node ${String(i + 1)}/${String(placeholderNodes.length)}`, {
+				nodeId: node.id,
+				entityType: node.type,
+				label: node.label
 			}, "GraphDataService");
 
-			// Load all nodes in this batch in parallel
-			const loadPromises = batch.map(node => this.loadPlaceholderNodeData(node.id));
-			await Promise.allSettled(loadPromises);
+			try {
+				await this.loadPlaceholderNodeData(node.id);
+				processedCount++;
 
-			// Add delay between batches to respect rate limits (except for last batch)
-			if (batchIndex < batches.length - 1) {
-				await new Promise(resolve => setTimeout(resolve, 1000));
+				// Add delay between individual nodes
+				if (i < placeholderNodes.length - 1) {
+					await new Promise(resolve => setTimeout(resolve, DELAY_BETWEEN_NODES));
+				}
+
+				// Add longer delay every BATCH_SIZE nodes
+				if ((i + 1) % BATCH_SIZE === 0 && i < placeholderNodes.length - 1) {
+					logger.debug("graph", `Batch of ${String(BATCH_SIZE)} nodes completed, taking longer break`, {
+						processedSoFar: i + 1,
+						remaining: placeholderNodes.length - (i + 1)
+					}, "GraphDataService");
+
+					await new Promise(resolve => setTimeout(resolve, BATCH_DELAY));
+				}
+			} catch (error) {
+				logger.warn("graph", "Failed to load placeholder node, continuing with next", {
+					nodeId: node.id,
+					error: error instanceof Error ? error.message : "Unknown error"
+				}, "GraphDataService");
+
+				// Continue with next node even if this one fails
 			}
 		}
 
 		logger.info("graph", "Finished loading all placeholder nodes", {
-			totalProcessed: placeholderNodes.length,
-			batchCount: String(batches.length)
+			totalRequested: placeholderNodes.length,
+			totalProcessed: processedCount,
+			successRate: processedCount / placeholderNodes.length
 		}, "GraphDataService");
 	}
 

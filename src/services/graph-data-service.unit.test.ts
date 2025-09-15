@@ -57,6 +57,10 @@ vi.mock("@/lib/cache/graph-cache", () => ({
 	isNodeExpanded: vi.fn(),
 }));
 
+vi.mock("../request-deduplication-service", () => ({
+	createRequestDeduplicationService: vi.fn(),
+}));
+
 // Import mocked modules
 import { rateLimitedOpenAlex } from "@/lib/openalex/rate-limited-client";
 import { logger, logError } from "@/lib/logger";
@@ -67,12 +71,14 @@ import {
 	setNodeExpanded,
 	isNodeExpanded,
 } from "@/lib/cache/graph-cache";
+import { createRequestDeduplicationService } from "../request-deduplication-service";
 
 describe("GraphDataService", () => {
 	let service: GraphDataService;
 	let queryClient: QueryClient;
 	let mockStore: any;
 	let mockDetector: any;
+	let mockDeduplicationService: any;
 
 	// Test data fixtures
 	const mockWorkEntity: Work = {
@@ -275,6 +281,11 @@ describe("GraphDataService", () => {
 			pinNode: vi.fn(),
 			selectNode: vi.fn(),
 			updateSearchStats: vi.fn(),
+			getNode: vi.fn(),
+			getPlaceholderNodes: vi.fn().mockReturnValue([]),
+			markNodeAsLoading: vi.fn(),
+			markNodeAsLoaded: vi.fn(),
+			markNodeAsError: vi.fn(),
 			nodes: new Map(),
 			edges: new Map(),
 			pinnedNodes: new Set(),
@@ -299,9 +310,43 @@ describe("GraphDataService", () => {
 		// Mock useGraphStore properly AFTER other setup to avoid clearing
 		vi.mocked(useGraphStore.getState).mockReturnValue(mockStore);
 
+		// Mock deduplication service
+		mockDeduplicationService = {
+			getEntity: vi.fn(),
+		};
+		vi.mocked(createRequestDeduplicationService).mockReturnValue(mockDeduplicationService);
+
+		// Setup deduplication service getEntity mock to return appropriate mock data based on ID
+		mockDeduplicationService.getEntity.mockImplementation((id: string) => {
+			// Handle both direct IDs and full URLs
+			const entityId = id.startsWith("https://openalex.org/") ? id.replace("https://openalex.org/", "") : id;
+
+			switch (entityId) {
+				case "W123456789":
+					return Promise.resolve(mockWorkEntity);
+				case "A123456789":
+					return Promise.resolve(mockAuthorEntity);
+				case "A111111111":
+					return Promise.resolve(mockAuthor1);
+				case "A222222222":
+					return Promise.resolve(mockAuthor2);
+				case "S123456789":
+					return Promise.resolve(mockSourceEntity);
+				case "S111111111":
+					return Promise.resolve(mockSource1);
+				case "I123456789":
+					return Promise.resolve(mockInstitutionEntity);
+				default:
+					return Promise.reject(new Error(`Entity not found: ${id}`));
+			}
+		});
+
 		// Setup getEntity mock to return appropriate mock data based on ID
 		vi.mocked(rateLimitedOpenAlex.getEntity).mockImplementation((id: string) => {
-			switch (id) {
+			// Handle both direct IDs and full URLs
+			const entityId = id.startsWith("https://openalex.org/") ? id.replace("https://openalex.org/", "") : id;
+
+			switch (entityId) {
 				case "W123456789":
 					return Promise.resolve(mockWorkEntity);
 				case "A123456789":
@@ -353,14 +398,17 @@ describe("GraphDataService", () => {
 				}
 			});
 			vi.mocked(rateLimitedOpenAlex.getEntity).mockClear();
+			mockDeduplicationService.getEntity.mockClear();
 			vi.mocked(logError).mockClear();
 
 			// Setup detector to handle multiple calls consistently
 			mockDetector.detectEntityIdentifier.mockImplementation((id: string) => ({
 				entityType: "works",
 				normalizedId: id,
+				idType: "openalex",
 			}));
 			vi.mocked(rateLimitedOpenAlex.getEntity).mockResolvedValue(mockWorkEntity);
+			mockDeduplicationService.getEntity.mockResolvedValue(mockWorkEntity);
 		});
 
 		it("should load entity graph successfully", async () => {
@@ -369,7 +417,7 @@ describe("GraphDataService", () => {
 			expect(mockStore.setLoading).toHaveBeenCalledWith(true);
 			expect(mockStore.setError).toHaveBeenCalledWith(null);
 			expect(mockDetector.detectEntityIdentifier).toHaveBeenCalledWith("W123456789");
-			expect(rateLimitedOpenAlex.getEntity).toHaveBeenCalledWith("W123456789");
+			expect(mockDeduplicationService.getEntity).toHaveBeenCalledWith("https://openalex.org/W123456789", expect.any(Function));
 			expect(mockStore.clear).toHaveBeenCalled();
 			expect(mockStore.addNodes).toHaveBeenCalled();
 			expect(mockStore.addEdges).toHaveBeenCalled();
@@ -408,7 +456,9 @@ describe("GraphDataService", () => {
 
 		it("should handle API errors", async () => {
 			const apiError = new Error("API error");
-			vi.mocked(rateLimitedOpenAlex.getEntity).mockRejectedValue(apiError);
+			// Clear previous mocks and set up the error for this test
+			mockDeduplicationService.getEntity.mockClear();
+			mockDeduplicationService.getEntity.mockRejectedValue(apiError);
 
 			await service.loadEntityGraph("W123456789");
 
@@ -448,12 +498,15 @@ describe("GraphDataService", () => {
 		beforeEach(() => {
 			// Clear API call history from previous tests
 			vi.mocked(rateLimitedOpenAlex.getEntity).mockClear();
+			mockDeduplicationService.getEntity.mockClear();
 
 			mockDetector.detectEntityIdentifier.mockReturnValue({
 				entityType: "authors",
 				normalizedId: "A123456789",
+				idType: "openalex",
 			});
 			vi.mocked(rateLimitedOpenAlex.getEntity).mockResolvedValue(mockAuthorEntity);
+			mockDeduplicationService.getEntity.mockResolvedValue(mockAuthorEntity);
 		});
 
 		it("should select existing node if it exists", async () => {
@@ -482,7 +535,7 @@ describe("GraphDataService", () => {
 			await service.loadEntityIntoGraph("A123456789");
 
 			expect(mockDetector.detectEntityIdentifier).toHaveBeenCalledWith("A123456789");
-			expect(rateLimitedOpenAlex.getEntity).toHaveBeenCalledWith("A123456789");
+			expect(mockDeduplicationService.getEntity).toHaveBeenCalledWith("https://openalex.org/A123456789", expect.any(Function));
 			expect(mockStore.addNodes).toHaveBeenCalled();
 			expect(mockStore.addEdges).toHaveBeenCalled();
 		});
@@ -498,7 +551,7 @@ describe("GraphDataService", () => {
 
 			await service.loadEntityIntoGraph("A123456789");
 
-			expect(rateLimitedOpenAlex.getEntity).toHaveBeenCalledWith("A123456789");
+			expect(mockDeduplicationService.getEntity).toHaveBeenCalledWith("https://openalex.org/A123456789", expect.any(Function));
 			expect(mockStore.addNodes).toHaveBeenCalled();
 		});
 
