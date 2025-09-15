@@ -1,3 +1,10 @@
+# [2.1.0](https://github.com/Mearman/Academic-Explorer/compare/v2.0.1...v2.1.0) (2025-09-15)
+
+
+### Features
+
+* **graph:** enhance incremental hydration with selective field loading ([0ab808a](https://github.com/Mearman/Academic-Explorer/commit/0ab808a583fc04bf1fed73b0e02168a1df77ad9b))
+
 ## [2.0.1](https://github.com/Mearman/Academic-Explorer/compare/v2.0.0...v2.0.1) (2025-09-15)
 
 
