@@ -3,7 +3,7 @@
  * Shows entity details and related information
  */
 
-import React, { useState } from "react"
+import React from "react"
 import {
 	Stack,
 	Card,
@@ -14,10 +14,7 @@ import {
 	ActionIcon,
 	Alert,
 	Center,
-	Table,
-	ThemeIcon,
-	Switch,
-	Tooltip
+	ThemeIcon
 } from "@mantine/core"
 import { CollapsibleSection } from "@/components/molecules/CollapsibleSection"
 import { useLayoutStore } from "@/stores/layout-store"
@@ -32,7 +29,6 @@ import {
 	IconBookmark,
 	IconSearch,
 	IconStar,
-	IconTarget,
 	IconEye
 } from "@tabler/icons-react"
 
@@ -40,10 +36,9 @@ export const RightSidebar: React.FC = () => {
 	const { previewEntityId } = useLayoutStore()
 	const { selectedNodeId, hoveredNodeId, nodes } = useGraphStore()
 	const { colors } = useThemeColors()
-	const [richView, setRichView] = useState(true)
 
-	// Determine which entity to show details for
-	const displayEntityId = hoveredNodeId || selectedNodeId || previewEntityId
+	// Determine which entity to show details for - prioritize selectedNodeId for immediate display
+	const displayEntityId = selectedNodeId || hoveredNodeId || previewEntityId
 	const displayEntity = displayEntityId ? nodes.get(displayEntityId) : null
 
 	return (
@@ -58,7 +53,6 @@ export const RightSidebar: React.FC = () => {
 			<div style={{
 				display: "flex",
 				alignItems: "center",
-				justifyContent: "space-between",
 				paddingBottom: "12px",
 				borderBottom: `1px solid ${colors.border.primary}`,
 				marginBottom: "8px"
@@ -71,21 +65,6 @@ export const RightSidebar: React.FC = () => {
 						Entity Details
 					</Text>
 				</Group>
-				<Tooltip label={richView ? "Switch to simple view" : "Switch to rich view"}>
-					<Switch
-						size="sm"
-						checked={richView}
-						onChange={(event) => { setRichView(event.currentTarget.checked); }}
-						color="blue"
-						thumbIcon={
-							richView ? (
-								<IconStar size={12} />
-							) : (
-								<IconTarget size={12} />
-							)
-						}
-					/>
-				</Tooltip>
 			</div>
 
 			{displayEntity ? (
@@ -98,57 +77,6 @@ export const RightSidebar: React.FC = () => {
 						storageKey="entity-info"
 					>
 						<RichEntityDisplay entity={displayEntity} />
-
-						{/* Metadata for simple view */}
-						{!richView && displayEntity.metadata && Object.keys(displayEntity.metadata).length > 0 && (
-							<Card padding="md" radius="md" withBorder style={{ marginTop: "12px" }}>
-								<Group gap="xs" mb="sm">
-									<ThemeIcon variant="light" size="sm">
-										<IconInfoCircle size={16} />
-									</ThemeIcon>
-									<Text size="sm" fw={600}>
-										Metadata
-									</Text>
-								</Group>
-
-								<Table verticalSpacing="xs">
-									<Table.Tbody>
-										{Object.entries(displayEntity.metadata).map(([key, value]) => {
-											if (value === undefined || value === null || key === "isPlaceholder") return null
-
-											return (
-												<Table.Tr key={key}>
-													<Table.Td>
-														<Text size="xs" c="dimmed" fw={500}>
-															{key.charAt(0).toUpperCase() + key.slice(1).replace(/([A-Z])/g, " $1")}
-														</Text>
-													</Table.Td>
-													<Table.Td style={{ textAlign: "right" }}>
-														<Text size="xs" fw={600}>
-															{(() => {
-																if (typeof value === "boolean") {
-																	return value ? "Yes" : "No";
-																}
-																if (typeof value === "object") {
-																	if (Array.isArray(value)) {
-																		return value.join(", ");
-																	}
-																	return "[Object]";
-																}
-																if (typeof value === "string" || typeof value === "number") {
-																	return String(value);
-																}
-																return "N/A";
-															})()}
-														</Text>
-													</Table.Td>
-												</Table.Tr>
-											)
-										})}
-									</Table.Tbody>
-								</Table>
-							</Card>
-						)}
 					</CollapsibleSection>
 
 					{/* External Links Section */}
@@ -205,7 +133,7 @@ export const RightSidebar: React.FC = () => {
 					{/* View Controls Section */}
 					<CollapsibleSection
 						title="View Options"
-						icon={richView ? <IconStar size={16} /> : <IconTarget size={16} />}
+						icon={<IconStar size={16} />}
 						defaultExpanded={false}
 						storageKey="view-options"
 					>
@@ -219,7 +147,6 @@ export const RightSidebar: React.FC = () => {
 								<Text size="xs">• Click to navigate to entity page</Text>
 								<Text size="xs">• Double-click to expand relationships</Text>
 								<Text size="xs">• Hover to preview details</Text>
-								<Text size="xs">• Toggle rich/simple view with switch above</Text>
 							</Stack>
 						</Alert>
 					</CollapsibleSection>
@@ -245,7 +172,7 @@ export const RightSidebar: React.FC = () => {
 							<Group justify="space-between">
 								<Text size="xs" c="dimmed">Current Entity:</Text>
 								<Text size="xs" fw={600}>
-									{displayEntity ? "Showing details" : "None"}
+									{"Showing details"}
 								</Text>
 							</Group>
 						</Card>
