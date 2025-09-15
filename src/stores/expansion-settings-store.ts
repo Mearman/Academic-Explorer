@@ -61,17 +61,22 @@ const initializeDefaultSettings = (): Record<ExpansionTarget, ExpansionSettings>
 		keywords: getDefaultSettingsForTarget("keywords"),
 		geo: getDefaultSettingsForTarget("geo"),
 
-		// Relation types
-		[RelationType.REFERENCES]: getDefaultSettingsForTarget(RelationType.REFERENCES),
+		// Relation types - each unique and specific
 		[RelationType.AUTHORED]: getDefaultSettingsForTarget(RelationType.AUTHORED),
 		[RelationType.AFFILIATED]: getDefaultSettingsForTarget(RelationType.AFFILIATED),
 		[RelationType.PUBLISHED_IN]: getDefaultSettingsForTarget(RelationType.PUBLISHED_IN),
 		[RelationType.FUNDED_BY]: getDefaultSettingsForTarget(RelationType.FUNDED_BY),
+		[RelationType.REFERENCES]: getDefaultSettingsForTarget(RelationType.REFERENCES),
 		[RelationType.RELATED_TO]: getDefaultSettingsForTarget(RelationType.RELATED_TO),
-		[RelationType.CITED]: getDefaultSettingsForTarget(RelationType.CITED),
-		[RelationType.CITES]: getDefaultSettingsForTarget(RelationType.CITES),
-		[RelationType.PUBLISHED_BY]: getDefaultSettingsForTarget(RelationType.PUBLISHED_BY),
-		[RelationType.PART_OF]: getDefaultSettingsForTarget(RelationType.PART_OF)
+		[RelationType.SOURCE_PUBLISHED_BY]: getDefaultSettingsForTarget(RelationType.SOURCE_PUBLISHED_BY),
+		[RelationType.INSTITUTION_CHILD_OF]: getDefaultSettingsForTarget(RelationType.INSTITUTION_CHILD_OF),
+		[RelationType.PUBLISHER_CHILD_OF]: getDefaultSettingsForTarget(RelationType.PUBLISHER_CHILD_OF),
+		[RelationType.WORK_HAS_TOPIC]: getDefaultSettingsForTarget(RelationType.WORK_HAS_TOPIC),
+		[RelationType.WORK_HAS_KEYWORD]: getDefaultSettingsForTarget(RelationType.WORK_HAS_KEYWORD),
+		[RelationType.AUTHOR_RESEARCHES]: getDefaultSettingsForTarget(RelationType.AUTHOR_RESEARCHES),
+		[RelationType.INSTITUTION_LOCATED_IN]: getDefaultSettingsForTarget(RelationType.INSTITUTION_LOCATED_IN),
+		[RelationType.FUNDER_LOCATED_IN]: getDefaultSettingsForTarget(RelationType.FUNDER_LOCATED_IN),
+		[RelationType.TOPIC_PART_OF_FIELD]: getDefaultSettingsForTarget(RelationType.TOPIC_PART_OF_FIELD)
 	};
 
 	return settings;
