@@ -81,6 +81,7 @@ export function ApplicationLoggerPanel() {
 			"storage": "teal",
 			"search": "cyan",
 			"general": "gray",
+			"expansion": "violet",
 		};
 		return colors[category] || "gray";
 	};

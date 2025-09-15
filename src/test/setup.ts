@@ -4,9 +4,13 @@
  */
 
 import '@testing-library/jest-dom';
+import { enableMapSet } from 'immer';
 
 // Configure test environment globals
 globalThis.__DEV__ = true;
+
+// Enable Immer plugins for test environment
+enableMapSet();
 
 // Environment-aware DOM mocking (only for jsdom environment)
 if (typeof window !== 'undefined') {
