@@ -81,8 +81,8 @@ describe("AuthorsApi", () => {
 		it("should fetch multiple authors with default parameters", async () => {
 			const mockResponse: OpenAlexResponse<Author> = {
 				results: [
-          { id: "A1", display_name: "Author 1", works_count: 50, cited_by_count: 100 } as Author,
-          { id: "A2", display_name: "Author 2", works_count: 75, cited_by_count: 200 } as Author,
+          { id: "A1", display_name: "Author 1", works_count: 50, cited_by_count: 100 },
+          { id: "A2", display_name: "Author 2", works_count: 75, cited_by_count: 200 },
 				],
 				meta: {
 					count: 2,
@@ -126,7 +126,7 @@ describe("AuthorsApi", () => {
 		it("should search authors by query string", async () => {
 			const mockResponse: OpenAlexResponse<Author> = {
 				results: [
-          { id: "A1", display_name: "Einstein" } as Author,
+          { id: "A1", display_name: "Einstein" },
 				],
 				meta: { count: 1, db_response_time_ms: 15, page: 1, per_page: 25 },
 			};
@@ -221,8 +221,8 @@ describe("AuthorsApi", () => {
 		it("should filter authors by institution ID", async () => {
 			const mockResponse: OpenAlexResponse<Author> = {
 				results: [
-          { id: "A1", display_name: "MIT Author 1" } as Author,
-          { id: "A2", display_name: "MIT Author 2" } as Author,
+          { id: "A1", display_name: "MIT Author 1" },
+          { id: "A2", display_name: "MIT Author 2" },
 				],
 				meta: { count: 2, db_response_time_ms: 18, page: 1, per_page: 25 },
 			};
@@ -276,7 +276,7 @@ describe("AuthorsApi", () => {
 		it("should filter authors by country code", async () => {
 			const mockResponse: OpenAlexResponse<Author> = {
 				results: [
-          { id: "A1", display_name: "US Author" } as Author,
+          { id: "A1", display_name: "US Author" },
 				],
 				meta: { count: 1, db_response_time_ms: 12, page: 1, per_page: 25 },
 			};
@@ -663,7 +663,7 @@ describe("AuthorsApi", () => {
 		it("should fetch random authors with default count", async () => {
 			const mockResponse: OpenAlexResponse<Author> = {
 				results: [
-          { id: "A1", display_name: "Random Author 1" } as Author,
+          { id: "A1", display_name: "Random Author 1" },
 				],
 				meta: { count: 1, db_response_time_ms: 10, page: 1, per_page: 25 },
 			};
@@ -753,7 +753,7 @@ describe("AuthorsApi", () => {
 		it("should filter authors with ORCID identifiers", async () => {
 			const mockResponse: OpenAlexResponse<Author> = {
 				results: [
-          { id: "A1", display_name: "Author with ORCID", orcid: "0000-0003-1613-5981" } as Author,
+          { id: "A1", display_name: "Author with ORCID", orcid: "0000-0003-1613-5981" },
 				],
 				meta: { count: 1, db_response_time_ms: 15, page: 1, per_page: 25 },
 			};
@@ -792,7 +792,7 @@ describe("AuthorsApi", () => {
 		it("should fetch most cited authors with default limit", async () => {
 			const mockResponse: OpenAlexResponse<Author> = {
 				results: [
-          { id: "A1", display_name: "Highly Cited Author", cited_by_count: 10000 } as Author,
+          { id: "A1", display_name: "Highly Cited Author", cited_by_count: 10000 },
 				],
 				meta: { count: 1, db_response_time_ms: 20, page: 1, per_page: 50 },
 			};
@@ -883,7 +883,7 @@ describe("AuthorsApi", () => {
 		it("should fetch most productive authors by works count", async () => {
 			const mockResponse: OpenAlexResponse<Author> = {
 				results: [
-          { id: "A1", display_name: "Productive Author", works_count: 500 } as Author,
+          { id: "A1", display_name: "Productive Author", works_count: 500 },
 				],
 				meta: { count: 1, db_response_time_ms: 18, page: 1, per_page: 50 },
 			};
@@ -937,11 +937,11 @@ describe("AuthorsApi", () => {
 	describe("streamAuthors", () => {
 		it("should delegate to client stream method", async () => {
 			const mockBatch1 = [
-        { id: "A1", display_name: "Author 1" } as Author,
-        { id: "A2", display_name: "Author 2" } as Author,
+        { id: "A1", display_name: "Author 1" },
+        { id: "A2", display_name: "Author 2" },
 			];
 			const mockBatch2 = [
-        { id: "A3", display_name: "Author 3" } as Author,
+        { id: "A3", display_name: "Author 3" },
 			];
 
 			// Mock async generator
@@ -970,7 +970,7 @@ describe("AuthorsApi", () => {
 
 		it("should use custom batch size", async () => {
 			const mockGenerator = (async function* () {
-				yield [{ id: "A1", display_name: "Author 1" } as Author];
+				yield [{ id: "A1", display_name: "Author 1" }];
 			})();
 
 			mockClient.stream.mockReturnValue(mockGenerator);
