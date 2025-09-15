@@ -83,7 +83,7 @@ export class AuthorEntity extends AbstractEntity<Author> {
 			});
 
 			// Create institution placeholder nodes from affiliations
-			if (author.affiliations && author.affiliations.length > 0) {
+			if (author.affiliations.length > 0) {
 				author.affiliations.slice(0, 3).forEach((affiliation, index) => {
 					const institutionNode: GraphNode = {
 						id: affiliation.institution.id,
@@ -333,7 +333,7 @@ export class AuthorEntity extends AbstractEntity<Author> {
 		}> = [];
 
 		// Add institution affiliations
-		if (author.affiliations) {
+		if (author.affiliations.length > 0) {
 			author.affiliations.forEach(affiliation => {
 				edges.push({
 					targetId: affiliation.institution.id,

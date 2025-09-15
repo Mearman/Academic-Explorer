@@ -324,7 +324,7 @@ export class WorkEntity extends AbstractEntity<Work> {
 		}> = [];
 
 		// Add author relationships
-		if (work.authorships) {
+		if (work.authorships.length > 0) {
 			work.authorships.forEach(authorship => {
 				edges.push({
 					targetId: authorship.author.id,
@@ -346,7 +346,7 @@ export class WorkEntity extends AbstractEntity<Work> {
 		}
 
 		// Add reference relationships (limit to first 5 to avoid overwhelming)
-		if (work.referenced_works) {
+		if (work.referenced_works.length > 0) {
 			work.referenced_works.slice(0, 5).forEach(refId => {
 				edges.push({
 					targetId: refId,
