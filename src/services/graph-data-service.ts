@@ -12,6 +12,7 @@ import { useGraphStore } from "@/stores/graph-store";
 import { useExpansionSettingsStore } from "@/stores/expansion-settings-store";
 import { logError, logger } from "@/lib/logger";
 import { RequestDeduplicationService, createRequestDeduplicationService } from "./request-deduplication-service";
+import { RelationshipDetectionService, createRelationshipDetectionService } from "./relationship-detection-service";
 import {
 	getCachedOpenAlexEntities,
 	setCachedGraphNodes,
@@ -42,11 +43,13 @@ export class GraphDataService {
 	private cache: GraphCache;
 	private queryClient: QueryClient;
 	private deduplicationService: RequestDeduplicationService;
+	private relationshipDetectionService: RelationshipDetectionService;
 
 	constructor(queryClient: QueryClient) {
 		this.detector = new EntityDetector();
 		this.queryClient = queryClient;
 		this.deduplicationService = createRequestDeduplicationService(queryClient);
+		this.relationshipDetectionService = createRelationshipDetectionService(queryClient);
 		this.cache = {
 			nodes: new Map(),
 			edges: new Map(),
@@ -208,6 +211,11 @@ export class GraphDataService {
 			const primaryNodeId = nodes[0]?.id;
 			if (primaryNodeId) {
 				store.selectNode(primaryNodeId);
+
+				// Detect relationships with existing nodes
+				this.relationshipDetectionService.detectRelationshipsForNode(primaryNodeId).catch((error: unknown) => {
+					logError("Failed to detect relationships for newly added node", error, "GraphDataService", "graph");
+				});
 
 				// Note: No automatic expansion - user must manually expand nodes
 			}
@@ -416,6 +424,69 @@ export class GraphDataService {
 			store.markNodeAsError(nodeId, errorMessage);
 			logError("Failed to load placeholder node data", error, "GraphDataService", "graph");
 		}
+	}
+
+	/**
+	 * Manually trigger relationship detection for a specific node
+	 * This can be used to detect relationships for nodes that were added before this feature was available
+	 */
+	async detectRelationshipsForNode(nodeId: string): Promise<void> {
+		try {
+			await this.relationshipDetectionService.detectRelationshipsForNode(nodeId);
+		} catch (error) {
+			logError("Failed to detect relationships for node", error, "GraphDataService", "graph");
+		}
+	}
+
+	/**
+	 * Detect relationships for all nodes in the current graph
+	 * This can be useful to retroactively detect relationships after loading cached data
+	 */
+	async detectRelationshipsForAllNodes(): Promise<void> {
+		const store = useGraphStore.getState();
+		const allNodes = Array.from(store.nodes.values());
+
+		logger.info("graph", "Starting relationship detection for all nodes", {
+			nodeCount: allNodes.length
+		}, "GraphDataService");
+
+		let processedCount = 0;
+		const batchSize = 5;
+		const delayBetweenBatches = 1000; // 1 second delay to avoid overwhelming the API
+
+		for (let i = 0; i < allNodes.length; i += batchSize) {
+			const batch = allNodes.slice(i, i + batchSize);
+
+			// Process batch in parallel
+			const batchPromises = batch.map(node =>
+				this.relationshipDetectionService.detectRelationshipsForNode(node.id).catch((error: unknown) => {
+					logger.warn("graph", "Failed to detect relationships for node in batch", {
+						nodeId: node.id,
+						error: error instanceof Error ? error.message : "Unknown error"
+					}, "GraphDataService");
+				})
+			);
+
+			await Promise.allSettled(batchPromises);
+			processedCount += batch.length;
+
+			logger.debug("graph", "Relationship detection batch completed", {
+				batchIndex: Math.floor(i / batchSize) + 1,
+				processedCount,
+				totalNodes: allNodes.length,
+				progress: Math.round((processedCount / allNodes.length) * 100)
+			}, "GraphDataService");
+
+			// Add delay between batches (except for the last batch)
+			if (i + batchSize < allNodes.length) {
+				await new Promise(resolve => setTimeout(resolve, delayBetweenBatches));
+			}
+		}
+
+		logger.info("graph", "Relationship detection completed for all nodes", {
+			totalProcessed: processedCount,
+			totalNodes: allNodes.length
+		}, "GraphDataService");
 	}
 
 	/**
