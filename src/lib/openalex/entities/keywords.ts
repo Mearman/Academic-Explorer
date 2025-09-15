@@ -93,7 +93,7 @@ export class KeywordsApi {
 
 		const params: KeywordsQueryParams = {
 			search: query,
-			filter: filters ? buildFilterString(filters) : undefined,
+			filter: buildFilterString(filters),
 			sort,
 			page,
 			per_page,

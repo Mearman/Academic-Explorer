@@ -93,7 +93,7 @@ export class GeoApi {
 
 		const params: GeoQueryParams = {
 			search: query,
-			filter: filters ? buildFilterString(filters) : undefined,
+			filter: buildFilterString(filters),
 			sort,
 			page,
 			per_page,
@@ -298,7 +298,7 @@ export class GeoApi {
       total_works: number;
       total_citations: number;
       avg_works_per_region: number;
-    }> = {};
+    } | undefined> = {};
 
 		for (const geo of allGeos) {
 			const continent = geo.continent || "Unknown";
