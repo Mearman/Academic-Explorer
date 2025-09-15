@@ -95,9 +95,6 @@ export class EntityDetector {
 			case "K":
 				entityType = "keywords";
 				break;
-			case "G":
-				entityType = "geo";
-				break;
 			default:
 				entityType = null;
 		}
