@@ -3,8 +3,9 @@
  * Provides expandable sections with icons and state persistence
  */
 
-import React, { useState } from "react";
+import React from "react";
 import { useThemeColors } from "@/hooks/use-theme-colors";
+import { useLayoutStore } from "@/stores/layout-store";
 import { IconChevronDown, IconChevronRight } from "@tabler/icons-react";
 
 interface CollapsibleSectionProps {
@@ -23,27 +24,16 @@ export const CollapsibleSection: React.FC<CollapsibleSectionProps> = ({
 	storageKey,
 }) => {
 	const { colors } = useThemeColors();
+	const { expandedSections, setSectionExpanded } = useLayoutStore();
 
-	// Initialize expanded state from localStorage if storageKey provided
-	const getInitialExpanded = () => {
-		if (storageKey) {
-			const stored = localStorage.getItem(`sidebar-section-${storageKey}`);
-			if (stored !== null) {
-				return JSON.parse(stored) as boolean;
-			}
-		}
-		return defaultExpanded;
-	};
-
-	const [isExpanded, setIsExpanded] = useState(getInitialExpanded);
+	// Get current expanded state from store or default
+	const isExpanded = storageKey
+		? (expandedSections[storageKey] ?? defaultExpanded)
+		: defaultExpanded;
 
 	const toggleExpanded = () => {
-		const newExpanded = !isExpanded;
-		setIsExpanded(newExpanded);
-
-		// Persist state if storageKey provided
 		if (storageKey) {
-			localStorage.setItem(`sidebar-section-${storageKey}`, JSON.stringify(newExpanded));
+			setSectionExpanded(storageKey, !isExpanded);
 		}
 	};
 
