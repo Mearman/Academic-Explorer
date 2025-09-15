@@ -332,6 +332,26 @@ const GraphNavigationInner: React.FC<GraphNavigationProps> = ({ className, style
 		const removedNodeIds = new Set([...previousNodeIdsRef.current].filter(id => !currentNodeIds.has(id)));
 		const removedEdgeIds = new Set([...previousEdgeIdsRef.current].filter(id => !currentEdgeIds.has(id)));
 
+		// Find updated nodes - nodes that exist in both current and previous but have changed data
+		const existingNodeIds = new Set([...currentNodeIds].filter(id => previousNodeIdsRef.current.has(id)));
+		const updatedNodeIds = new Set<string>();
+
+		// Compare existing nodes with current XYFlow nodes to detect changes
+		const currentXYNodesMap = new Map(nodes.map(n => [n.id, n]));
+		for (const nodeId of existingNodeIds) {
+			const currentXYNode = currentXYNodesMap.get(nodeId);
+			const storeNode = storeNodes.get(nodeId);
+
+			if (currentXYNode && storeNode) {
+				// Check if label, metadata, or other key properties have changed
+				if (currentXYNode.data.label !== storeNode.label ||
+					currentXYNode.data.metadata?.isPlaceholder !== storeNode.metadata?.isPlaceholder ||
+					currentXYNode.data.metadata?.isLoading !== storeNode.metadata?.isLoading) {
+					updatedNodeIds.add(nodeId);
+				}
+			}
+		}
+
 		logger.info("graph", "Store data incremental sync effect triggered", {
 			totalNodeCount: storeNodes.size,
 			totalEdgeCount: storeEdges.size,
@@ -339,12 +359,13 @@ const GraphNavigationInner: React.FC<GraphNavigationProps> = ({ className, style
 			visibleEdgeCount: visibleEdges.length,
 			newNodes: newNodeIds.size,
 			newEdges: newEdgeIds.size,
+			updatedNodes: updatedNodeIds.size,
 			removedNodes: removedNodeIds.size,
 			removedEdges: removedEdgeIds.size,
 			hasProvider: !!providerRef.current
 		}, "GraphNavigation");
 
-		if (providerRef.current && (newNodeIds.size > 0 || newEdgeIds.size > 0 || removedNodeIds.size > 0 || removedEdgeIds.size > 0)) {
+		if (providerRef.current && (newNodeIds.size > 0 || newEdgeIds.size > 0 || updatedNodeIds.size > 0 || removedNodeIds.size > 0 || removedEdgeIds.size > 0)) {
 			// Special case: If we have no previous nodes, this is initial load - use setNodes/setEdges
 			if (previousNodeIdsRef.current.size === 0 && previousEdgeIdsRef.current.size === 0) {
 				providerRef.current.setNodes(visibleNodes);
@@ -365,6 +386,20 @@ const GraphNavigationInner: React.FC<GraphNavigationProps> = ({ className, style
 					providerRef.current.removeNodes(Array.from(removedNodeIds));
 				}
 
+				if (updatedNodeIds.size > 0) {
+					const updatedNodes = visibleNodes.filter(n => updatedNodeIds.has(n.id));
+					logger.info("graph", "Updating existing nodes with new data", {
+						updatedNodeCount: updatedNodes.length,
+						updatedNodeIds: Array.from(updatedNodeIds),
+						updatedLabels: updatedNodes.map(n => ({ id: n.id, label: n.label }))
+					}, "GraphNavigation");
+					providerRef.current.updateNodes(updatedNodes);
+				}
+
+				if (removedNodeIds.size > 0) {
+					providerRef.current.removeNodes(Array.from(removedNodeIds));
+				}
+
 				if (removedEdgeIds.size > 0) {
 					providerRef.current.removeEdges(Array.from(removedEdgeIds));
 				}
@@ -377,13 +412,20 @@ const GraphNavigationInner: React.FC<GraphNavigationProps> = ({ className, style
 				setNodes(xyNodes);
 				setEdges(xyEdges);
 			} else {
-				// Incremental update: Get only new data and apply changes
+				// Incremental update: Get only new and updated data and apply changes
 				const { nodes: newXYNodes, edges: newXYEdges } = providerRef.current.getXYFlowDataForNodes(Array.from(newNodeIds));
+				const { nodes: updatedXYNodes } = providerRef.current.getXYFlowDataForNodes(Array.from(updatedNodeIds));
 
 				// Apply incremental changes using ReactFlow's utilities
 				const nodeChanges: NodeChange<XYNode>[] = [
 					// Add new nodes (get fresh data from provider)
 					...newXYNodes.map((node): NodeChange<XYNode> => ({ type: "add", item: node })),
+					// Update existing nodes with new data
+					...updatedXYNodes.map((node): NodeChange<XYNode> => ({
+						type: "replace",
+						id: node.id,
+						item: node
+					})),
 					// Remove deleted nodes
 					...Array.from(removedNodeIds).map((id): NodeChange<XYNode> => ({ type: "remove", id }))
 				];
