@@ -201,7 +201,7 @@ jobs:
           verbose: true
 
   release:
-    needs: [quality-checks, test]
+    needs: [setup, quality-checks, test]
     runs-on: ubuntu-latest
     timeout-minutes: 15
 
