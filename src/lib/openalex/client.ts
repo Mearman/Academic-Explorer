@@ -177,7 +177,7 @@ export class OpenAlexBaseClient {
    */
 	private async parseError(response: Response): Promise<OpenAlexApiError> {
 		try {
-			const errorData: OpenAlexError = await response.json();
+			const errorData = await response.json() as OpenAlexError;
 			return new OpenAlexApiError(
 				errorData.message || errorData.error || `HTTP ${response.status.toString()}`,
 				response.status,
@@ -217,7 +217,7 @@ export class OpenAlexBaseClient {
 				headers: {
 					"Accept": "application/json",
 					"User-Agent": "OpenAlex-TypeScript-Client/1.0",
-					...options.headers,
+					...(options.headers && typeof options.headers === "object" && !Array.isArray(options.headers) && !(options.headers instanceof Headers) ? options.headers : {}),
 				},
 			});
 
@@ -289,7 +289,7 @@ export class OpenAlexBaseClient {
 	public async get<T>(endpoint: string, params: QueryParams = {}): Promise<T> {
 		const url = this.buildUrl(endpoint, params);
 		const response = await this.makeRequest(url);
-		return response.json();
+		return response.json() as Promise<T>;
 	}
 
 	/**
