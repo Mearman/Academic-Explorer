@@ -819,7 +819,7 @@ export class GraphDataService {
 					hydrationLevel: "minimal", // Track hydration level
 					citationCount: "cited_by_count" in entity ? entity.cited_by_count : undefined,
 					year: "publication_year" in entity ? entity.publication_year : undefined,
-					openAccess: "open_access" in entity ? entity.open_access?.is_oa : undefined,
+					openAccess: "open_access" in entity ? entity.open_access.is_oa : undefined,
 					isLoading: false,
 					dataLoadedAt: Date.now(),
 				}
@@ -902,9 +902,8 @@ export class GraphDataService {
 			const { nodes } = this.transformEntityToGraph(fullEntity);
 			const fullNodeData = nodes[0];
 
-			if (fullNodeData) {
-				// Update node with full data
-				store.updateNode(nodeId, {
+			// Update node with full data
+			store.updateNode(nodeId, {
 					...fullNodeData,
 					position: node.position, // Preserve current position
 					metadata: {
@@ -920,7 +919,6 @@ export class GraphDataService {
 					entityType: node.type,
 					externalIdCount: fullNodeData.externalIds.length
 				});
-			}
 		} catch (error) {
 			logError(`Failed to hydrate node ${nodeId}`, error, "GraphDataService", "graph");
 			store.markNodeAsLoading(nodeId, false); // Clear loading state on error
