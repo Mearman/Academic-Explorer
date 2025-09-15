@@ -6,6 +6,7 @@
 import React, { useState, useMemo } from "react"
 import { LayoutControls } from "@/components/molecules/LayoutControls"
 import { ExpansionSettingsDialog } from "@/components/molecules/ExpansionSettingsDialog"
+import { CollapsibleSection } from "@/components/molecules/CollapsibleSection"
 import { useGraphData } from "@/hooks/use-graph-data"
 import { useGraphStore } from "@/stores/graph-store"
 import { useExpansionSettingsSummary } from "@/stores/expansion-settings-store"
@@ -255,7 +256,7 @@ export const LeftSidebar: React.FC = () => {
 			height: "100%",
 			overflow: "auto",
 			padding: "16px",
-			gap: "20px"
+			gap: "8px"
 		}}>
 			{/* Header */}
 			<div style={{
@@ -266,27 +267,20 @@ export const LeftSidebar: React.FC = () => {
 				borderBottom: `1px solid ${colors.border.primary}`,
 				fontSize: "16px",
 				fontWeight: 600,
-				color: colors.text.primary
+				color: colors.text.primary,
+				marginBottom: "8px"
 			}}>
 				<IconSearch size={18} />
 				Search & Filters
 			</div>
 
 			{/* Search Section */}
-			<div>
-				<div style={{
-					display: "flex",
-					alignItems: "center",
-					gap: "8px",
-					marginBottom: "8px",
-					fontSize: "13px",
-					fontWeight: 600,
-					color: colors.text.primary
-				}}>
-					<IconSearch size={16} />
-            Search Academic Entities
-				</div>
-
+			<CollapsibleSection
+				title="Search Academic Entities"
+				icon={<IconSearch size={16} />}
+				defaultExpanded={true}
+				storageKey="search"
+			>
 				<form onSubmit={(e) => { void handleSearch(e) }} style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
 					<input
 						type="text"
@@ -323,23 +317,15 @@ export const LeftSidebar: React.FC = () => {
 						{isLoading ? "Searching..." : "Search"}
 					</button>
 				</form>
-			</div>
+			</CollapsibleSection>
 
-			{/* Entity Type Filters & Visibility */}
-			<div>
-				<div style={{
-					display: "flex",
-					alignItems: "center",
-					gap: "8px",
-					marginBottom: "12px",
-					fontSize: "13px",
-					fontWeight: 600,
-					color: colors.text.primary
-				}}>
-					<IconFilter size={16} />
-            Entity Types & Visibility
-				</div>
-
+			{/* Entity Type Filters */}
+			<CollapsibleSection
+				title="Entity Types & Visibility"
+				icon={<IconFilter size={16} />}
+				defaultExpanded={true}
+				storageKey="entity-filters"
+			>
 				<div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
 					{entityTypeOptions.map(option => {
 						const totalCount = entityStats.total.get(option.type) || 0;
@@ -407,23 +393,15 @@ export const LeftSidebar: React.FC = () => {
 						);
 					})}
 				</div>
-			</div>
+			</CollapsibleSection>
 
 			{/* Edge Types & Visibility */}
-			<div>
-				<div style={{
-					display: "flex",
-					alignItems: "center",
-					gap: "8px",
-					marginBottom: "12px",
-					fontSize: "13px",
-					fontWeight: 600,
-					color: colors.text.primary
-				}}>
-					<IconLink size={16} />
-            Edge Types & Visibility
-				</div>
-
+			<CollapsibleSection
+				title="Edge Types & Visibility"
+				icon={<IconLink size={16} />}
+				defaultExpanded={false}
+				storageKey="edge-filters"
+			>
 				<div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
 					{edgeTypeOptions.map(option => {
 						const totalCount = edgeStats.total.get(option.type) || 0;
@@ -527,60 +505,44 @@ export const LeftSidebar: React.FC = () => {
 						);
 					})}
 				</div>
-			</div>
+			</CollapsibleSection>
 
 			{/* Graph Actions */}
-			<div>
-				<div style={{
-					display: "flex",
-					alignItems: "center",
-					gap: "8px",
-					marginBottom: "8px",
-					fontSize: "13px",
-					fontWeight: 600,
-					color: colors.text.primary
-				}}>
-					<IconGraph size={16} />
-            Graph Actions
-				</div>
-
-				<div style={{ marginBottom: "12px" }}>
+			<CollapsibleSection
+				title="Graph Actions"
+				icon={<IconGraph size={16} />}
+				defaultExpanded={true}
+				storageKey="graph-actions"
+			>
+				<div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
 					<LayoutControls />
+
+					<button
+						onClick={handleClearGraph}
+						style={{
+							width: "100%",
+							padding: "8px 16px",
+							backgroundColor: colors.error,
+							color: colors.text.inverse,
+							border: "none",
+							borderRadius: "6px",
+							fontSize: "14px",
+							cursor: "pointer",
+							transition: "background-color 0.2s",
+						}}
+					>
+						Clear Graph
+					</button>
 				</div>
+			</CollapsibleSection>
 
-				<button
-					onClick={handleClearGraph}
-					style={{
-						width: "100%",
-						padding: "8px 16px",
-						backgroundColor: colors.error,
-						color: colors.text.inverse,
-						border: "none",
-						borderRadius: "6px",
-						fontSize: "14px",
-						cursor: "pointer",
-						transition: "background-color 0.2s",
-					}}
-				>
-            Clear Graph
-				</button>
-			</div>
-
-			{/* Cache Controls */}
-			<div>
-				<div style={{
-					display: "flex",
-					alignItems: "center",
-					gap: "8px",
-					marginBottom: "12px",
-					fontSize: "13px",
-					fontWeight: 600,
-					color: colors.text.primary
-				}}>
-					<IconDatabase size={16} />
-            Cache & Traversal Settings
-				</div>
-
+			{/* Cache & Traversal Settings */}
+			<CollapsibleSection
+				title="Cache & Traversal Settings"
+				icon={<IconDatabase size={16} />}
+				defaultExpanded={false}
+				storageKey="cache-settings"
+			>
 				{/* Show All Cached Nodes Toggle */}
 				<div style={{ marginBottom: "16px" }}>
 					<label style={{
@@ -606,7 +568,7 @@ export const LeftSidebar: React.FC = () => {
 						marginTop: "4px",
 						lineHeight: "1.3"
 					}}>
-							Display all nodes from the cache, not just currently visible ones
+						Display all nodes from the cache, not just currently visible ones
 					</div>
 				</div>
 
@@ -657,7 +619,7 @@ export const LeftSidebar: React.FC = () => {
 							}}
 							title="Set to infinity"
 						>
-								∞
+							∞
 						</button>
 					</div>
 					<div style={{
@@ -666,10 +628,10 @@ export const LeftSidebar: React.FC = () => {
 						marginTop: "4px",
 						lineHeight: "1.3"
 					}}>
-							Controls how many levels deep nodes will be displayed from pinned node
+						Controls how many levels deep nodes will be displayed from pinned node
 					</div>
 				</div>
-			</div>
+			</CollapsibleSection>
 
 			{/* Instructions */}
 			<div style={{
@@ -679,6 +641,7 @@ export const LeftSidebar: React.FC = () => {
 				fontSize: "12px",
 				color: colors.text.secondary,
 				lineHeight: "1.4",
+				marginTop: "8px"
 			}}>
 				<strong>Tips:</strong>
 				<ul style={{ margin: "4px 0", paddingLeft: "16px" }}>
