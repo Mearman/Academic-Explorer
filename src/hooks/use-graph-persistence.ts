@@ -109,8 +109,8 @@ export function useGraphPersistence() {
 		const snapshot: GraphSnapshot = {
 			nodes: Array.from(store.nodes.values()),
 			edges: Array.from(store.edges.values()),
-			viewport: {
-				zoom: 1, // TODO: Get actual viewport state from provider
+			viewport: store.provider?.getSnapshot().viewport || {
+				zoom: 1,
 				center: { x: 0, y: 0 }
 			}
 		}
@@ -169,7 +169,13 @@ export function useGraphPersistence() {
 			// Apply layout and fit view
 			if (store.provider) {
 				store.provider.applyLayout(store.currentLayout)
-				store.provider.fitView()
+
+				// Restore viewport state if available, otherwise fit view
+				if (session.snapshot.viewport) {
+					store.provider.loadSnapshot(session.snapshot)
+				} else {
+					store.provider.fitView()
+				}
 			}
 
 			// Update last modified
