@@ -865,7 +865,6 @@ describe("GraphDataService", () => {
 
 		describe("search result transformation", () => {
 			it("should transform search results with minimal connections", async () => {
-				const searchResults = [mockWorkEntity, mockAuthorEntity];
 				vi.mocked(rateLimitedOpenAlex.searchAll).mockResolvedValue({
 					works: [mockWorkEntity],
 					authors: [mockAuthorEntity],
