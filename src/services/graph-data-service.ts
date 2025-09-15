@@ -207,33 +207,34 @@ export class GraphDataService {
 				entityType: detection.entityType,
 				nodeCount: nodes.length,
 				edgeCount: edges.length,
-				placeholderCount: nodes.filter(n => n.metadata?.isPlaceholder).length
+				minimalNodes: nodes.filter(n => n.metadata?.hydrationLevel === "minimal").length,
+				fullNodes: nodes.filter(n => n.metadata?.hydrationLevel === "full").length
 			}, "GraphDataService");
 
-			// Only load placeholder node data if explicitly requested (for expansion)
-			const newPlaceholderNodes = nodes.filter(n => n.metadata?.isPlaceholder);
-			if (newPlaceholderNodes.length > 0 && options.loadPlaceholders === true) {
-				logger.info("graph", "Found placeholder nodes to load", {
-					count: newPlaceholderNodes.length,
-					nodeIds: newPlaceholderNodes.map(n => n.id),
-					labels: newPlaceholderNodes.map(n => n.label)
+			// Only load minimal node data if explicitly requested (for expansion)
+			const newMinimalNodes = nodes.filter(n => n.metadata?.hydrationLevel === "minimal");
+			if (newMinimalNodes.length > 0 && options.loadPlaceholders === true) {
+				logger.info("graph", "Found minimal nodes to hydrate", {
+					count: newMinimalNodes.length,
+					nodeIds: newMinimalNodes.map(n => n.id),
+					labels: newMinimalNodes.map(n => n.label)
 				}, "GraphDataService");
 
-				// Start loading immediately with minimal delay
+				// Start hydrating immediately with minimal delay
 				setTimeout(() => {
-					// Load only the new placeholder nodes
-					const loadPromises = newPlaceholderNodes.map(node => {
-						logger.debug("graph", "Starting immediate placeholder load for node", {
+					// Hydrate only the new minimal nodes
+					const loadPromises = newMinimalNodes.map(node => {
+						logger.debug("graph", "Starting immediate node hydration", {
 							nodeId: node.id,
 							label: node.label,
 							entityId: node.entityId
 						}, "GraphDataService");
-						return this.loadPlaceholderNodeData(node.id);
+						return this.hydrateNodeToFull(node.id);
 					});
 					Promise.allSettled(loadPromises).then((results) => {
 						const fulfilled = results.filter(r => r.status === "fulfilled").length;
 						const rejected = results.filter(r => r.status === "rejected").length;
-						logger.info("graph", "Placeholder loading completed", {
+						logger.info("graph", "Node hydration completed", {
 							fulfilled,
 							rejected,
 							total: results.length
@@ -242,12 +243,12 @@ export class GraphDataService {
 							const rejectedReasons = results
 								.filter((r): r is PromiseRejectedResult => r.status === "rejected")
 								.map(r => r.reason instanceof Error ? r.reason.message : String(r.reason));
-							logger.warn("graph", "Some placeholder loads failed", {
+							logger.warn("graph", "Some node hydrations failed", {
 								rejectedReasons
 							}, "GraphDataService");
 						}
 					}).catch((error: unknown) => {
-						logError("Background placeholder loading failed", error, "GraphDataService", "graph");
+						logError("Background node hydration failed", error, "GraphDataService", "graph");
 					});
 				}, 100);
 			}
@@ -331,22 +332,22 @@ export class GraphDataService {
 	}
 
 	/**
-   * Load data for placeholder nodes in the background
-   * This method loads full entity data for nodes that are currently placeholders
+   * Hydrate a minimal node to full hydration level with complete entity data
+   * This method loads full entity data for nodes that are currently at minimal hydration level
    */
-	async loadPlaceholderNodeData(nodeId: string): Promise<void> {
+	async hydrateNodeToFull(nodeId: string): Promise<void> {
 		const store = useGraphStore.getState();
 		const node = store.getNode(nodeId);
 
 		if (!node) {
-			logger.warn("graph", "Node not found, cannot load placeholder data", { nodeId }, "GraphDataService");
+			logger.warn("graph", "Node not found, cannot hydrate to full", { nodeId }, "GraphDataService");
 			return;
 		}
 
-		if (!node.metadata?.isPlaceholder) {
-			logger.debug("graph", "Node is not a placeholder, skipping data load", {
+		if (node.metadata?.hydrationLevel === "full") {
+			logger.debug("graph", "Node is already fully hydrated, skipping", {
 				nodeId,
-				isPlaceholder: node.metadata?.isPlaceholder,
+				hydrationLevel: node.metadata.hydrationLevel,
 				metadata: node.metadata
 			}, "GraphDataService");
 			return;
@@ -356,7 +357,7 @@ export class GraphDataService {
 			// Mark node as loading
 			store.markNodeAsLoading(nodeId);
 
-			logger.info("graph", "Loading placeholder node data", {
+			logger.info("graph", "Hydrating node to full", {
 				nodeId,
 				entityType: node.type,
 				label: node.label
@@ -391,12 +392,13 @@ export class GraphDataService {
 				externalIds: fullNodeData.externalIds,
 				metadata: {
 					...fullNodeData.metadata,
-					isPlaceholder: false,
+					hydrationLevel: "full",
 					isLoading: false,
+					dataLoadedAt: Date.now(),
 				}
 			});
 
-			logger.info("graph", "Placeholder node data loaded successfully", {
+			logger.info("graph", "Node fully hydrated", {
 				nodeId,
 				newLabel: fullNodeData.label
 			}, "GraphDataService");
@@ -404,7 +406,7 @@ export class GraphDataService {
 		} catch (error) {
 			const errorMessage = error instanceof Error ? error.message : "Failed to load node data";
 			store.markNodeAsError(nodeId, errorMessage);
-			logError("Failed to load placeholder node data", error, "GraphDataService", "graph");
+			logError("Failed to hydrate node to full", error, "GraphDataService", "graph");
 		}
 	}
 
@@ -472,20 +474,20 @@ export class GraphDataService {
 	}
 
 	/**
-   * Load data for all placeholder nodes in batches
-   * This method processes placeholder nodes in the background without blocking the UI
+   * Hydrate all minimal nodes to full in batches
+   * This method processes minimal nodes in the background without blocking the UI
    */
-	async loadAllPlaceholderNodes(): Promise<void> {
+	async hydrateAllMinimalNodes(): Promise<void> {
 		const store = useGraphStore.getState();
-		const placeholderNodes = store.getPlaceholderNodes();
+		const minimalNodes = store.getMinimalNodes();
 
-		if (placeholderNodes.length === 0) {
-			logger.debug("graph", "No placeholder nodes to load", {}, "GraphDataService");
+		if (minimalNodes.length === 0) {
+			logger.debug("graph", "No minimal nodes to hydrate", {}, "GraphDataService");
 			return;
 		}
 
-		logger.info("graph", "Starting batch load of placeholder nodes", {
-			placeholderCount: placeholderNodes.length
+		logger.info("graph", "Starting batch hydration of minimal nodes", {
+			minimalNodeCount: minimalNodes.length
 		}, "GraphDataService");
 
 		// Process nodes individually with minimal delays for faster loading
@@ -496,35 +498,35 @@ export class GraphDataService {
 
 		let processedCount = 0;
 
-		for (let i = 0; i < placeholderNodes.length; i++) {
-			const node = placeholderNodes[i];
+		for (let i = 0; i < minimalNodes.length; i++) {
+			const node = minimalNodes[i];
 
-			logger.debug("graph", `Processing placeholder node ${String(i + 1)}/${String(placeholderNodes.length)}`, {
+			logger.debug("graph", `Processing minimal node ${String(i + 1)}/${String(minimalNodes.length)}`, {
 				nodeId: node.id,
 				entityType: node.type,
 				label: node.label
 			}, "GraphDataService");
 
 			try {
-				await this.loadPlaceholderNodeData(node.id);
+				await this.hydrateNodeToFull(node.id);
 				processedCount++;
 
 				// Add delay between individual nodes
-				if (i < placeholderNodes.length - 1) {
+				if (i < minimalNodes.length - 1) {
 					await new Promise(resolve => setTimeout(resolve, DELAY_BETWEEN_NODES));
 				}
 
 				// Add longer delay every BATCH_SIZE nodes
-				if ((i + 1) % BATCH_SIZE === 0 && i < placeholderNodes.length - 1) {
+				if ((i + 1) % BATCH_SIZE === 0 && i < minimalNodes.length - 1) {
 					logger.debug("graph", `Batch of ${String(BATCH_SIZE)} nodes completed, taking longer break`, {
 						processedSoFar: i + 1,
-						remaining: placeholderNodes.length - (i + 1)
+						remaining: minimalNodes.length - (i + 1)
 					}, "GraphDataService");
 
 					await new Promise(resolve => setTimeout(resolve, BATCH_DELAY));
 				}
 			} catch (error) {
-				logger.warn("graph", "Failed to load placeholder node, continuing with next", {
+				logger.warn("graph", "Failed to hydrate minimal node, continuing with next", {
 					nodeId: node.id,
 					error: error instanceof Error ? error.message : "Unknown error"
 				}, "GraphDataService");
@@ -533,55 +535,55 @@ export class GraphDataService {
 			}
 		}
 
-		logger.info("graph", "Finished loading all placeholder nodes", {
-			totalRequested: placeholderNodes.length,
+		logger.info("graph", "Finished hydrating all minimal nodes", {
+			totalRequested: minimalNodes.length,
 			totalProcessed: processedCount,
-			successRate: processedCount / placeholderNodes.length
+			successRate: processedCount / minimalNodes.length
 		}, "GraphDataService");
 	}
 
 	/**
-   * Load all placeholder nodes immediately in parallel
-   * This method loads all placeholders simultaneously without delays for maximum speed
-   * Recommended for use when the graph is first loaded to proactively load all placeholder data
+   * Hydrate all minimal nodes immediately in parallel
+   * This method hydrates all minimal nodes simultaneously without delays for maximum speed
+   * Recommended for use when the graph is first loaded to proactively hydrate all minimal node data
    */
-	async loadAllPlaceholdersImmediate(): Promise<void> {
+	async hydrateAllMinimalNodesImmediate(): Promise<void> {
 		const store = useGraphStore.getState();
-		const placeholderNodes = store.getPlaceholderNodes();
+		const minimalNodes = store.getMinimalNodes();
 
-		if (placeholderNodes.length === 0) {
-			logger.debug("graph", "No placeholder nodes to load immediately", {}, "GraphDataService");
+		if (minimalNodes.length === 0) {
+			logger.debug("graph", "No minimal nodes to hydrate immediately", {}, "GraphDataService");
 			return;
 		}
 
-		logger.info("graph", "Starting immediate parallel load of all placeholder nodes", {
-			placeholderCount: placeholderNodes.length
+		logger.info("graph", "Starting immediate parallel hydration of all minimal nodes", {
+			minimalNodeCount: minimalNodes.length
 		}, "GraphDataService");
 
-		// Load all placeholders in parallel using Promise.allSettled to prevent failures from blocking others
-		const loadPromises = placeholderNodes.map(node =>
-			this.loadPlaceholderNodeData(node.id).catch((error: unknown) => {
-				logger.warn("graph", "Failed to load placeholder node in parallel batch", {
+		// Hydrate all minimal nodes in parallel using Promise.allSettled to prevent failures from blocking others
+		const hydratePromises = minimalNodes.map(node =>
+			this.hydrateNodeToFull(node.id).catch((error: unknown) => {
+				logger.warn("graph", "Failed to hydrate minimal node in parallel batch", {
 					nodeId: node.id,
 					entityType: node.type,
 					label: node.label,
 					error: error instanceof Error ? error.message : "Unknown error"
 				}, "GraphDataService");
-				return null; // Return null for failed loads to continue processing
+				return null; // Return null for failed hydrations to continue processing
 			})
 		);
 
-		const results = await Promise.allSettled(loadPromises);
+		const results = await Promise.allSettled(hydratePromises);
 
-		// Count successful loads
-		const successfulLoads = results.filter(result => result.status === "fulfilled").length;
-		const failedLoads = results.length - successfulLoads;
+		// Count successful hydrations
+		const successfulHydrations = results.filter(result => result.status === "fulfilled").length;
+		const failedHydrations = results.length - successfulHydrations;
 
-		logger.info("graph", "Completed immediate parallel loading of all placeholder nodes", {
-			totalRequested: placeholderNodes.length,
-			successful: successfulLoads,
-			failed: failedLoads,
-			successRate: successfulLoads / placeholderNodes.length
+		logger.info("graph", "Completed immediate parallel hydration of all minimal nodes", {
+			totalRequested: minimalNodes.length,
+			successful: successfulHydrations,
+			failed: failedHydrations,
+			successRate: successfulHydrations / minimalNodes.length
 		}, "GraphDataService");
 	}
 

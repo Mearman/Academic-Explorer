@@ -1485,12 +1485,12 @@ describe("GraphDataService", () => {
 			});
 		});
 
-		describe("loadPlaceholderNodeData null/undefined handling", () => {
+		describe("hydrateNodeToFull null/undefined handling", () => {
 			it("should handle undefined institution response", async () => {
 				mockDeduplicationService.getEntity.mockResolvedValue(undefined);
 
 				try {
-					await service.loadPlaceholderNodeData("https://openalex.org/I161548249", "institutions", "Bangor University");
+					await service.hydrateNodeToFull("https://openalex.org/I161548249");
 				} catch (error) {
 					expect(error).toBeDefined();
 					expect(String(error)).toContain("Cannot read properties of undefined");
@@ -1507,7 +1507,7 @@ describe("GraphDataService", () => {
 				mockDeduplicationService.getEntity.mockResolvedValue(institutionWithoutRor);
 
 				try {
-					await service.loadPlaceholderNodeData("https://openalex.org/I161548249", "institutions", "Bangor University");
+					await service.hydrateNodeToFull("https://openalex.org/I161548249");
 				} catch (error) {
 					expect(error).toBeDefined();
 					expect(String(error)).toContain("Cannot read properties of undefined");
@@ -1518,7 +1518,7 @@ describe("GraphDataService", () => {
 				mockDeduplicationService.getEntity.mockResolvedValue(null);
 
 				try {
-					await service.loadPlaceholderNodeData("https://openalex.org/I161548249", "institutions", "Bangor University");
+					await service.hydrateNodeToFull("https://openalex.org/I161548249");
 				} catch (error) {
 					expect(error).toBeDefined();
 				}
@@ -1531,7 +1531,7 @@ describe("GraphDataService", () => {
 				vi.mocked(rateLimitedOpenAlex.getEntity).mockRejectedValue(rateLimitError);
 
 				try {
-					await service.loadPlaceholderNodeData("https://openalex.org/I2799442855", "institutions", "New York University Press");
+					await service.hydrateNodeToFull("https://openalex.org/I2799442855");
 				} catch (error) {
 					expect(String(error)).toContain("429");
 				}
