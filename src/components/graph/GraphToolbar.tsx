@@ -4,7 +4,7 @@
  */
 
 import React, { useCallback } from "react";
-import { IconScissors, IconTarget, IconGitBranch, IconPin, IconPinOff } from "@tabler/icons-react";
+import { IconScissors, IconTarget, IconGitBranch, IconPin, IconPinnedOff } from "@tabler/icons-react";
 import { useReactFlow } from "@xyflow/react";
 
 import { useGraphUtilities } from "@/hooks/use-graph-utilities";
@@ -154,7 +154,7 @@ export const GraphToolbar: React.FC<GraphToolbarProps> = ({
 				successful,
 				failed,
 				results: results.map(result =>
-					result.status === "fulfilled" ? result.value : { error: result.reason }
+					result.status === "fulfilled" ? result.value : { error: result.reason instanceof Error ? result.reason.message : String(result.reason) }
 				)
 			});
 
@@ -239,7 +239,13 @@ export const GraphToolbar: React.FC<GraphToolbarProps> = ({
 			</button>
 
 			<button
-				onClick={handleExpandSelected}
+				onClick={() => {
+					handleExpandSelected().catch((error: unknown) => {
+						logger.error("graph", "Unhandled error in expand selected", {
+							error: error instanceof Error ? error.message : String(error)
+						});
+					});
+				}}
 				className="flex items-center gap-2 px-3 py-2 text-sm bg-green-50 hover:bg-green-100 text-green-700 rounded transition-colors"
 				title="Expand Selected - Load connections for all selected nodes"
 			>
@@ -261,7 +267,7 @@ export const GraphToolbar: React.FC<GraphToolbarProps> = ({
 				className="flex items-center gap-2 px-3 py-2 text-sm bg-orange-50 hover:bg-orange-100 text-orange-700 rounded transition-colors"
 				title="Unpin All - Unpin all nodes to allow them to move during layout"
 			>
-				<IconPinOff size={16} />
+				<IconPinnedOff size={16} />
 				<span>Unpin All</span>
 			</button>
 		</div>
