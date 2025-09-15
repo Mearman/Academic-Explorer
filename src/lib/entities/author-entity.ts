@@ -99,7 +99,8 @@ export class AuthorEntity extends AbstractEntity<Author> {
 							}
 						] : [],
 						metadata: {
-							isPlaceholder: true, // Mark as placeholder for lazy loading
+							hydrationLevel: "minimal" as const,
+							isLoading: false
 						}
 					};
 					nodes.push(institutionNode);
@@ -299,5 +300,50 @@ export class AuthorEntity extends AbstractEntity<Author> {
 		const institutionText = institution ? ` - ${institution}` : "";
 
 		return `${name}${institutionText}${works}`;
+	}
+
+	/**
+   * Fetch author data with minimal fields needed for outbound edge extraction
+   */
+	async fetchForOutboundEdges(entityId: string): Promise<Author> {
+		return await this.client.getAuthor(entityId, {
+			select: [
+				"id",
+				"display_name",
+				"affiliations",
+				"last_known_institutions"
+			]
+		});
+	}
+
+	/**
+   * Extract outbound edges from author (affiliations with institutions)
+   */
+	protected extractOutboundEdges(author: Author): Array<{
+		targetId: string;
+		relationType: RT;
+		weight?: number;
+		label?: string;
+	}> {
+		const edges: Array<{
+			targetId: string;
+			relationType: RT;
+			weight?: number;
+			label?: string;
+		}> = [];
+
+		// Add institution affiliations
+		if (author.affiliations) {
+			author.affiliations.forEach(affiliation => {
+				edges.push({
+					targetId: affiliation.institution.id,
+					relationType: RT.AFFILIATED,
+					weight: 1.0,
+					label: "affiliated with"
+				});
+			});
+		}
+
+		return edges;
 	}
 }

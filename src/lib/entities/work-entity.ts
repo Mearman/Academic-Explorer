@@ -291,4 +291,72 @@ export class WorkEntity extends AbstractEntity<Work> {
 		const citations = work.cited_by_count ? ` - ${String(work.cited_by_count)} citations` : "";
 		return `${this.getDisplayName(work)}${year}${citations}`;
 	}
+
+	/**
+   * Fetch work data with minimal fields needed for outbound edge extraction
+   */
+	async fetchForOutboundEdges(entityId: string): Promise<Work> {
+		return await this.client.getWork(entityId, {
+			select: [
+				"id",
+				"display_name",
+				"authorships",
+				"primary_location",
+				"referenced_works"
+			]
+		});
+	}
+
+	/**
+   * Extract outbound edges from work (authors, sources, references)
+   */
+	protected extractOutboundEdges(work: Work): Array<{
+		targetId: string;
+		relationType: RT;
+		weight?: number;
+		label?: string;
+	}> {
+		const edges: Array<{
+			targetId: string;
+			relationType: RT;
+			weight?: number;
+			label?: string;
+		}> = [];
+
+		// Add author relationships
+		if (work.authorships) {
+			work.authorships.forEach(authorship => {
+				edges.push({
+					targetId: authorship.author.id,
+					relationType: RT.AUTHORED,
+					weight: 1.0,
+					label: "authored"
+				});
+			});
+		}
+
+		// Add source relationship
+		if (work.primary_location?.source) {
+			edges.push({
+				targetId: work.primary_location.source.id,
+				relationType: RT.PUBLISHED_IN,
+				weight: 1.0,
+				label: "published in"
+			});
+		}
+
+		// Add reference relationships (limit to first 5 to avoid overwhelming)
+		if (work.referenced_works) {
+			work.referenced_works.slice(0, 5).forEach(refId => {
+				edges.push({
+					targetId: refId,
+					relationType: RT.REFERENCES,
+					weight: 0.5,
+					label: "references"
+				});
+			});
+		}
+
+		return edges;
+	}
 }

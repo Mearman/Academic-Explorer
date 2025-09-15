@@ -499,40 +499,40 @@ export abstract class AbstractEntity<TEntity extends OpenAlexEntity> {
     weight?: number;
     label?: string;
   }>> {
-    const targetEntityId = entityId || this.entityData?.id;
-    if (!targetEntityId) {
-      logger.warn("api", `Cannot get outbound edges: no entity ID provided or available for ${this.entityType}`, {
-        entityType: this.entityType,
-        hasEntityData: Boolean(this.entityData),
-        providedEntityId: Boolean(entityId)
-      });
-      return [];
-    }
+  	const targetEntityId = entityId || this.entityData?.id;
+  	if (!targetEntityId) {
+  		logger.warn("api", `Cannot get outbound edges: no entity ID provided or available for ${this.entityType}`, {
+  			entityType: this.entityType,
+  			hasEntityData: Boolean(this.entityData),
+  			providedEntityId: Boolean(entityId)
+  		});
+  		return [];
+  	}
 
-    try {
-      logger.debug("api", `Fetching outbound edges for ${this.entityType} ${targetEntityId}`, {
-        entityType: this.entityType,
-        entityId: targetEntityId
-      });
+  	try {
+  		logger.debug("api", `Fetching outbound edges for ${this.entityType} ${targetEntityId}`, {
+  			entityType: this.entityType,
+  			entityId: targetEntityId
+  		});
 
-      const entity = await this.fetchForOutboundEdges(targetEntityId);
-      const edges = this.extractOutboundEdges(entity);
+  		const entity = await this.fetchForOutboundEdges(targetEntityId);
+  		const edges = this.extractOutboundEdges(entity);
 
-      logger.debug("api", `Extracted ${edges.length} outbound edges for ${this.entityType} ${targetEntityId}`, {
-        entityType: this.entityType,
-        entityId: targetEntityId,
-        edgeCount: edges.length,
-        relationTypes: edges.map(e => e.relationType)
-      });
+  		logger.debug("api", `Extracted ${String(edges.length)} outbound edges for ${this.entityType} ${targetEntityId}`, {
+  			entityType: this.entityType,
+  			entityId: targetEntityId,
+  			edgeCount: edges.length,
+  			relationTypes: edges.map(e => e.relationType)
+  		});
 
-      return edges;
-    } catch (error) {
-      logger.error("api", `Failed to get outbound edges for ${this.entityType} ${targetEntityId}`, {
-        entityType: this.entityType,
-        entityId: targetEntityId,
-        error: error instanceof Error ? error.message : String(error)
-      });
-      return [];
-    }
+  		return edges;
+  	} catch (error) {
+  		logger.error("api", `Failed to get outbound edges for ${this.entityType} ${targetEntityId}`, {
+  			entityType: this.entityType,
+  			entityId: targetEntityId,
+  			error: error instanceof Error ? error.message : String(error)
+  		});
+  		return [];
+  	}
   }
 }
