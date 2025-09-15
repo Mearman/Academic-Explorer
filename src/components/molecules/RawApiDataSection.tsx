@@ -4,7 +4,7 @@
  */
 
 import React, { useState } from "react";
-import { IconCode, IconEye, IconEyeOff, IconDownload, IconLoader, IconChevronDown, IconChevronRight } from "@tabler/icons-react";
+import { IconCode, IconEye, IconEyeOff, IconDownload, IconLoader } from "@tabler/icons-react";
 import { useRawEntityData } from "@/hooks/use-raw-entity-data";
 import { useThemeColors } from "@/hooks/use-theme-colors";
 import { logger } from "@/lib/logger";
@@ -32,57 +32,56 @@ export const RawApiDataSection: React.FC<RawApiDataSectionProps> = ({
 		enabled: !!entityId && isExpanded
 	});
 
-	const ExpandableSection: React.FC<{
-		title: string;
-		itemCount: number;
-		children: React.ReactNode;
-		defaultExpanded?: boolean;
-	}> = ({ title, itemCount, children, defaultExpanded = false }) => {
-		const [isExpanded, setIsExpanded] = useState(defaultExpanded);
-
-		return (
-			<div>
-				<div
-					style={{
-						color: "#6b7280",
-						fontStyle: "italic",
-						cursor: "pointer",
-						display: "flex",
-						alignItems: "center",
-						gap: "4px",
-						padding: "2px 0",
-						userSelect: "none"
-					}}
-					onClick={() => {
-						setIsExpanded(!isExpanded);
-					}}
-				>
-					{isExpanded ? (
-						<IconChevronDown size={12} />
-					) : (
-						<IconChevronRight size={12} />
-					)}
-					{title} ({itemCount} items)
-				</div>
-				{isExpanded && (
-					<div style={{ marginLeft: "8px" }}>
-						{children}
-					</div>
-				)}
-			</div>
-		);
-	};
+	// Note: ExpandableSection component removed as we now show all data expanded by default
 
 	const formatValue = (value: unknown, depth = 0): React.ReactNode => {
-		if (value === null) return <span style={{ color: "#6b7280", fontStyle: "italic" }}>null</span>;
-		if (value === undefined) return <span style={{ color: "#6b7280", fontStyle: "italic" }}>undefined</span>;
+		// Enhanced styling with better visual hierarchy
+		const indentSize = 16;
+
+		if (value === null) return (
+			<span style={{
+				color: colors.text.secondary,
+				fontStyle: "italic",
+				fontSize: "12px",
+				fontWeight: "500"
+			}}>
+				null
+			</span>
+		);
+
+		if (value === undefined) return (
+			<span style={{
+				color: colors.text.secondary,
+				fontStyle: "italic",
+				fontSize: "12px",
+				fontWeight: "500"
+			}}>
+				undefined
+			</span>
+		);
 
 		if (typeof value === "boolean") {
-			return <span style={{ color: "#059669" }}>{value ? "true" : "false"}</span>;
+			return (
+				<span style={{
+					color: value ? "#10b981" : "#f59e0b",
+					fontWeight: "600",
+					fontSize: "12px"
+				}}>
+					{value ? "true" : "false"}
+				</span>
+			);
 		}
 
 		if (typeof value === "number") {
-			return <span style={{ color: "#dc2626" }}>{value.toLocaleString()}</span>;
+			return (
+				<span style={{
+					color: "#dc2626",
+					fontWeight: "600",
+					fontSize: "12px"
+				}}>
+					{value.toLocaleString()}
+				</span>
+			);
 		}
 
 		if (typeof value === "string") {
@@ -96,27 +95,82 @@ export const RawApiDataSection: React.FC<RawApiDataSectionProps> = ({
 						style={{
 							color: "#2563eb",
 							textDecoration: "underline",
-							wordBreak: "break-all"
+							wordBreak: "break-all",
+							fontSize: "12px",
+							fontWeight: "500",
+							backgroundColor: "#eff6ff",
+							padding: "1px 4px",
+							borderRadius: "3px"
 						}}
 					>
 						{value}
 					</a>
 				);
 			}
-			return <span style={{ color: "#111827" }}>{value}</span>;
+
+			// Enhanced string styling with quotes and better contrast
+			return (
+				<span style={{
+					color: "#059669",
+					fontSize: "12px",
+					fontWeight: "500"
+				}}>
+					"{value}"
+				</span>
+			);
 		}
 
 		if (Array.isArray(value)) {
 			if (value.length === 0) {
-				return <span style={{ color: "#6b7280", fontStyle: "italic" }}>[]</span>;
+				return (
+					<span style={{
+						color: colors.text.secondary,
+						fontStyle: "italic",
+						fontSize: "12px",
+						backgroundColor: "#f3f4f6",
+						padding: "2px 6px",
+						borderRadius: "4px"
+					}}>
+						[] (empty array)
+					</span>
+				);
 			}
 
-			// Show all items expanded by default
+			// Enhanced array display with better visual hierarchy
 			return (
-				<div style={{ marginLeft: "8px" }}>
+				<div style={{
+					marginLeft: `${indentSize.toString()}px`,
+					borderLeft: `2px solid ${colors.border.secondary}`,
+					paddingLeft: "8px",
+					marginTop: "4px"
+				}}>
+					<div style={{
+						color: colors.text.secondary,
+						fontSize: "11px",
+						fontWeight: "600",
+						marginBottom: "4px",
+						textTransform: "uppercase",
+						letterSpacing: "0.5px"
+					}}>
+						Array ({value.length} items)
+					</div>
 					{value.map((item, index) => (
-						<div key={index} style={{ marginBottom: "2px" }}>
-							<span style={{ color: "#6b7280" }}>[{index}]:</span>{" "}
+						<div key={index} style={{
+							marginBottom: "6px",
+							paddingBottom: "4px",
+							borderBottom: index < value.length - 1 ? `1px solid ${colors.border.secondary}` : "none"
+						}}>
+							<span style={{
+								color: "#8b5cf6",
+								fontWeight: "600",
+								fontSize: "11px",
+								backgroundColor: "#f3f4f6",
+								padding: "1px 4px",
+								borderRadius: "3px",
+								marginRight: "8px"
+							}}>
+								[{index}]
+							</span>
 							{formatValue(item, depth + 1)}
 						</div>
 					))}
@@ -128,15 +182,55 @@ export const RawApiDataSection: React.FC<RawApiDataSectionProps> = ({
 			const entries = Object.entries(value as Record<string, unknown>);
 
 			if (entries.length === 0) {
-				return <span style={{ color: "#6b7280", fontStyle: "italic" }}>{"{}"}</span>;
+				return (
+					<span style={{
+						color: colors.text.secondary,
+						fontStyle: "italic",
+						fontSize: "12px",
+						backgroundColor: "#f3f4f6",
+						padding: "2px 6px",
+						borderRadius: "4px"
+					}}>
+						{"{}"} (empty object)
+					</span>
+				);
 			}
 
-			// Show all properties expanded by default
+			// Enhanced object display with better visual hierarchy
 			return (
-				<div style={{ marginLeft: "8px" }}>
-					{entries.map(([key, val]) => (
-						<div key={key} style={{ marginBottom: "2px" }}>
-							<span style={{ color: "#1f2937", fontWeight: "500" }}>{key}:</span>{" "}
+				<div style={{
+					marginLeft: `${indentSize.toString()}px`,
+					borderLeft: `2px solid ${colors.border.secondary}`,
+					paddingLeft: "8px",
+					marginTop: "4px"
+				}}>
+					<div style={{
+						color: colors.text.secondary,
+						fontSize: "11px",
+						fontWeight: "600",
+						marginBottom: "4px",
+						textTransform: "uppercase",
+						letterSpacing: "0.5px"
+					}}>
+						Object ({entries.length} properties)
+					</div>
+					{entries.map(([key, val], index) => (
+						<div key={key} style={{
+							marginBottom: "6px",
+							paddingBottom: "4px",
+							borderBottom: index < entries.length - 1 ? `1px solid ${colors.border.secondary}` : "none"
+						}}>
+							<span style={{
+								color: "#1f2937",
+								fontWeight: "600",
+								fontSize: "12px",
+								backgroundColor: "#fef3c7",
+								padding: "1px 4px",
+								borderRadius: "3px",
+								marginRight: "8px"
+							}}>
+								{key}:
+							</span>
 							{formatValue(val, depth + 1)}
 						</div>
 					))}
@@ -146,11 +240,29 @@ export const RawApiDataSection: React.FC<RawApiDataSectionProps> = ({
 
 		// Fallback for any other value types (should rarely happen)
 		if (typeof value === "object") {
-			return <span style={{ color: "#6b7280", fontStyle: "italic" }}>[Unknown Object]</span>;
+			return (
+				<span style={{
+					color: colors.text.secondary,
+					fontStyle: "italic",
+					fontSize: "12px",
+					backgroundColor: "#fef2f2",
+					padding: "2px 6px",
+					borderRadius: "4px"
+				}}>
+					[Unknown Object]
+				</span>
+			);
 		}
 
 		// Only primitive types should reach here (string, number, boolean, symbol, bigint)
-		return <span>{value as string | number | boolean}</span>;
+		return (
+			<span style={{
+				color: colors.text.primary,
+				fontSize: "12px"
+			}}>
+				{value as string | number | boolean}
+			</span>
+		);
 	};
 
 	const downloadJsonData = () => {
@@ -302,18 +414,20 @@ export const RawApiDataSection: React.FC<RawApiDataSectionProps> = ({
 
 							{/* Data Display */}
 							<div style={{
-								maxHeight: "400px",
+								maxHeight: "500px",
 								overflow: "auto",
-								padding: "12px",
-								backgroundColor: "#f9fafb",
-								borderRadius: "6px",
-								border: "1px solid #e5e7eb"
+								padding: "16px",
+								backgroundColor: "#ffffff",
+								borderRadius: "8px",
+								border: `2px solid ${colors.border.secondary}`,
+								boxShadow: "0 1px 3px rgba(0, 0, 0, 0.1)"
 							}}>
 								{viewMode === "formatted" ? (
 									<div style={{
-										fontSize: "11px",
+										fontSize: "12px",
 										fontFamily: "ui-monospace, SFMono-Regular, 'SF Mono', Consolas, 'Liberation Mono', Menlo, monospace",
-										lineHeight: "1.4"
+										lineHeight: "1.6",
+										color: colors.text.primary
 									}}>
 										{formatValue(rawData)}
 									</div>
