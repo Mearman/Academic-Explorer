@@ -4,6 +4,19 @@
  */
 
 import React from "react"
+import {
+	Stack,
+	Card,
+	Group,
+	Badge,
+	Text,
+	Anchor,
+	ActionIcon,
+	Alert,
+	Center,
+	Table,
+	ThemeIcon
+} from "@mantine/core"
 import { useLayoutStore } from "@/stores/layout-store"
 import { useGraphStore } from "@/stores/graph-store"
 import { useThemeColors } from "@/hooks/use-theme-colors"
@@ -68,286 +81,225 @@ export const RightSidebar: React.FC = () => {
 	}
 
 	return (
-		<div style={{
-			display: "flex",
-			flexDirection: "column",
-			height: "100%",
-			overflow: "auto",
-			padding: "16px",
-			gap: "16px"
-		}}>
+		<Stack gap="md" p="md" h="100%" style={{ overflow: "auto" }}>
 			{/* Header */}
-			<div style={{
-				display: "flex",
-				alignItems: "center",
-				gap: "8px",
-				paddingBottom: "12px",
-				borderBottom: `1px solid ${colors.border.primary}`,
-				fontSize: "16px",
-				fontWeight: 600,
-				color: colors.text.primary
-			}}>
-				<IconInfoCircle size={18} />
-				Entity Details
-			</div>
+			<Group gap="xs" pb="sm" style={{ borderBottom: `1px solid ${colors.border.primary}` }}>
+				<ThemeIcon variant="light" size="sm">
+					<IconInfoCircle size={18} />
+				</ThemeIcon>
+				<Text size="lg" fw={600}>
+					Entity Details
+				</Text>
+			</Group>
 
 			{displayEntity ? (
-				<div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
-
+				<Stack gap="md">
 					{/* Entity Header */}
-					<div style={{
-						padding: "16px",
-						backgroundColor: "#f9fafb",
-						borderRadius: "8px",
-						border: "2px solid",
-						borderColor: getEntityColor(displayEntity.type),
-					}}>
-						<div style={{
-							display: "flex",
-							alignItems: "flex-start",
-							gap: "12px",
-							marginBottom: "8px"
-						}}>
-							<span style={{ fontSize: "24px" }}>
+					<Card
+						padding="md"
+						radius="md"
+						withBorder
+						style={{ borderColor: getEntityColor(displayEntity.type), borderWidth: 2 }}
+					>
+						<Group align="flex-start" gap="md" mb="xs">
+							<ThemeIcon
+								size="xl"
+								color={getEntityColor(displayEntity.type)}
+								variant="light"
+							>
 								{getEntityIcon(displayEntity.type)}
-							</span>
-							<div style={{ flex: 1 }}>
-								<div style={{
-									display: "flex",
-									alignItems: "center",
-									gap: "8px",
-									marginBottom: "4px"
-								}}>
-									<span style={{
-										fontSize: "12px",
-										fontWeight: 600,
-										color: getEntityColor(displayEntity.type),
-										textTransform: "uppercase",
-										letterSpacing: "0.5px"
-									}}>
-										{getEntityTypeLabel(displayEntity.type)}
-									</span>
-								</div>
-								<h4 style={{
-									margin: 0,
-									fontSize: "14px",
-									fontWeight: 600,
-									color: "#111827",
-									lineHeight: "1.3",
-									wordWrap: "break-word"
-								}}>
+							</ThemeIcon>
+							<Stack gap="xs" style={{ flex: 1 }}>
+								<Badge
+									color={getEntityColor(displayEntity.type)}
+									variant="light"
+									size="sm"
+								>
+									{getEntityTypeLabel(displayEntity.type)}
+								</Badge>
+								<Text size="sm" fw={600} style={{ wordWrap: "break-word" }}>
 									{displayEntity.label}
-								</h4>
-							</div>
-						</div>
+								</Text>
+							</Stack>
+						</Group>
 
 						{/* OpenAlex ID */}
-						<div style={{
-							fontSize: "11px",
-							color: "#6b7280",
-							fontFamily: "monospace",
-							backgroundColor: "#ffffff",
-							padding: "4px 6px",
-							borderRadius: "4px",
-							wordBreak: "break-all"
-						}}>
+						<Text
+							size="xs"
+							c="dimmed"
+							ff="monospace"
+							p="xs"
+							bg="gray.0"
+							style={{ borderRadius: 4, wordBreak: "break-all" }}
+						>
 							{displayEntity.entityId}
-						</div>
-					</div>
+						</Text>
+					</Card>
 
 					{/* External IDs */}
 					{displayEntity.externalIds.length > 0 && (
-						<div>
-							<div style={{
-								display: "flex",
-								alignItems: "center",
-								gap: "6px",
-								marginBottom: "8px",
-								fontSize: "13px",
-								fontWeight: 600,
-								color: "#374151"
-							}}>
-								<IconExternalLink size={16} />
-                External Links
-							</div>
+						<Card padding="md" radius="md" withBorder>
+							<Group gap="xs" mb="sm">
+								<ThemeIcon variant="light" size="sm">
+									<IconExternalLink size={16} />
+								</ThemeIcon>
+								<Text size="sm" fw={600}>
+									External Links
+								</Text>
+							</Group>
 
-							<div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
+							<Stack gap="xs">
 								{displayEntity.externalIds.map((extId, index) => (
-									<a
+									<Anchor
 										key={index}
 										href={extId.url}
 										target="_blank"
 										rel="noopener noreferrer"
-										style={{
-											display: "flex",
-											alignItems: "center",
-											gap: "8px",
-											padding: "6px 8px",
-											backgroundColor: "#f3f4f6",
-											borderRadius: "4px",
-											textDecoration: "none",
-											color: "#374151",
-											fontSize: "12px",
-											transition: "background-color 0.2s",
-										}}
+										style={{ textDecoration: "none" }}
 									>
-										<span style={{
-											fontWeight: 600,
-											textTransform: "uppercase",
-											color: "#6b7280",
-											minWidth: "40px"
-										}}>
-											{extId.type}
-										</span>
-										<span style={{
-											fontFamily: "monospace",
-											flex: 1,
-											overflow: "hidden",
-											textOverflow: "ellipsis",
-											whiteSpace: "nowrap"
-										}}>
-											{extId.value}
-										</span>
-										<IconExternalLink size={12} style={{ opacity: 0.5 }} />
-									</a>
+										<Group
+											gap="sm"
+											p="xs"
+											style={{
+												backgroundColor: "var(--mantine-color-gray-0)",
+												borderRadius: "var(--mantine-radius-sm)",
+												transition: "background-color 0.2s",
+											}}
+										>
+											<Badge size="xs" variant="light" color="gray">
+												{extId.type.toUpperCase()}
+											</Badge>
+											<Text
+												size="xs"
+												ff="monospace"
+												style={{
+													flex: 1,
+													overflow: "hidden",
+													textOverflow: "ellipsis",
+													whiteSpace: "nowrap"
+												}}
+											>
+												{extId.value}
+											</Text>
+											<ActionIcon size="xs" variant="subtle">
+												<IconExternalLink size={12} />
+											</ActionIcon>
+										</Group>
+									</Anchor>
 								))}
-							</div>
-						</div>
+							</Stack>
+						</Card>
 					)}
 
 					{/* Metadata */}
 					{displayEntity.metadata && Object.keys(displayEntity.metadata).length > 0 && (
-						<div>
-							<div style={{
-								display: "flex",
-								alignItems: "center",
-								gap: "6px",
-								marginBottom: "8px",
-								fontSize: "13px",
-								fontWeight: 600,
-								color: "#374151"
-							}}>
-								<IconInfoCircle size={16} />
-                Metadata
-							</div>
+						<Card padding="md" radius="md" withBorder>
+							<Group gap="xs" mb="sm">
+								<ThemeIcon variant="light" size="sm">
+									<IconInfoCircle size={16} />
+								</ThemeIcon>
+								<Text size="sm" fw={600}>
+									Metadata
+								</Text>
+							</Group>
 
-							<div style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
-								{Object.entries(displayEntity.metadata).map(([key, value]) => {
-									if (value === undefined || value === null || key === "isPlaceholder") return null
+							<Table verticalSpacing="xs">
+								<Table.Tbody>
+									{Object.entries(displayEntity.metadata).map(([key, value]) => {
+										if (value === undefined || value === null || key === "isPlaceholder") return null
 
-									return (
-										<div key={key} style={{
-											display: "flex",
-											justifyContent: "space-between",
-											padding: "4px 0",
-											borderBottom: "1px solid #f3f4f6",
-											fontSize: "12px"
-										}}>
-											<span style={{ color: "#6b7280", fontWeight: 500 }}>
-												{key.charAt(0).toUpperCase() + key.slice(1).replace(/([A-Z])/g, " $1")}:
-											</span>
-											<span style={{ color: "#111827", fontWeight: 600, textAlign: "right" }}>
-												{(() => {
-													if (typeof value === "boolean") {
-														return value ? "Yes" : "No";
-													}
-													if (typeof value === "object") {
-														if (Array.isArray(value)) {
-															return value.join(", ");
-														}
-														return "[Object]";
-													}
-													if (typeof value === "string" || typeof value === "number") {
-														return String(value);
-													}
-													return "N/A";
-												})()}
-											</span>
-										</div>
-									)
-								})}
-							</div>
-						</div>
+										return (
+											<Table.Tr key={key}>
+												<Table.Td>
+													<Text size="xs" c="dimmed" fw={500}>
+														{key.charAt(0).toUpperCase() + key.slice(1).replace(/([A-Z])/g, " $1")}
+													</Text>
+												</Table.Td>
+												<Table.Td style={{ textAlign: "right" }}>
+													<Text size="xs" fw={600}>
+														{(() => {
+															if (typeof value === "boolean") {
+																return value ? "Yes" : "No";
+															}
+															if (typeof value === "object") {
+																if (Array.isArray(value)) {
+																	return value.join(", ");
+																}
+																return "[Object]";
+															}
+															if (typeof value === "string" || typeof value === "number") {
+																return String(value);
+															}
+															return "N/A";
+														})()}
+													</Text>
+												</Table.Td>
+											</Table.Tr>
+										)
+									})}
+								</Table.Tbody>
+							</Table>
+						</Card>
 					)}
 
 					{/* Graph Statistics */}
-					<div>
-						<div style={{
-							display: "flex",
-							alignItems: "center",
-							gap: "6px",
-							marginBottom: "8px",
-							fontSize: "13px",
-							fontWeight: 600,
-							color: "#374151"
-						}}>
-							<IconUsers size={16} />
-              Graph Statistics
-						</div>
+					<Card padding="md" radius="md" withBorder>
+						<Group gap="xs" mb="sm">
+							<ThemeIcon variant="light" size="sm">
+								<IconUsers size={16} />
+							</ThemeIcon>
+							<Text size="sm" fw={600}>
+								Graph Statistics
+							</Text>
+						</Group>
 
-						<div style={{
-							padding: "12px",
-							backgroundColor: "#f9fafb",
-							borderRadius: "6px",
-							fontSize: "12px"
-						}}>
-							<div style={{ display: "flex", justifyContent: "space-between", marginBottom: "4px" }}>
-								<span style={{ color: "#6b7280" }}>Total Nodes:</span>
-								<span style={{ color: "#111827", fontWeight: 600 }}>{nodes.size}</span>
-							</div>
-							<div style={{ display: "flex", justifyContent: "space-between" }}>
-								<span style={{ color: "#6b7280" }}>Selected:</span>
-								<span style={{ color: "#111827", fontWeight: 600 }}>
-									{selectedNodeId ? "1 node" : "None"}
-								</span>
-							</div>
-						</div>
-					</div>
+						<Group justify="space-between" mb="xs">
+							<Text size="xs" c="dimmed">Total Nodes:</Text>
+							<Text size="xs" fw={600}>{nodes.size}</Text>
+						</Group>
+						<Group justify="space-between">
+							<Text size="xs" c="dimmed">Selected:</Text>
+							<Text size="xs" fw={600}>
+								{selectedNodeId ? "1 node" : "None"}
+							</Text>
+						</Group>
+					</Card>
 
 					{/* Actions */}
-					<div style={{
-						padding: "12px",
-						backgroundColor: "#f0f9ff",
-						borderRadius: "6px",
-						fontSize: "12px",
-						color: "#1e40af"
-					}}>
-						<div style={{ display: "flex", alignItems: "center", gap: "6px", marginBottom: "4px" }}>
-							<IconBookmark size={14} />
-							<strong>Available Actions:</strong>
-						</div>
-						<ul style={{ margin: "4px 0", paddingLeft: "16px", lineHeight: "1.4" }}>
-							<li>Click to navigate to entity page</li>
-							<li>Double-click to expand relationships</li>
-							<li>Hover to preview details</li>
-						</ul>
-					</div>
+					<Alert
+						icon={<IconBookmark size={16} />}
+						title="Available Actions"
+						color="blue"
+						variant="light"
+					>
+						<Stack gap="xs">
+							<Text size="xs">• Click to navigate to entity page</Text>
+							<Text size="xs">• Double-click to expand relationships</Text>
+							<Text size="xs">• Hover to preview details</Text>
+						</Stack>
+					</Alert>
 
 					{/* Raw API Data */}
 					<RawApiDataSection entityId={displayEntity.entityId} />
-				</div>
+				</Stack>
 			) : (
-			/* Empty State */
-				<div style={{
-					display: "flex",
-					flexDirection: "column",
-					alignItems: "center",
-					justifyContent: "center",
-					height: "200px",
-					textAlign: "center",
-					color: "#6b7280"
-				}}>
-					<div style={{ marginBottom: "12px", opacity: 0.5 }}>
-						<IconSearch size={48} />
-					</div>
-					<div style={{ fontSize: "14px", fontWeight: 500, marginBottom: "4px" }}>
-            No Entity Selected
-					</div>
-					<div style={{ fontSize: "12px", lineHeight: "1.4", maxWidth: "200px" }}>
-            Hover over or click on a node in the graph to see detailed information here.
-					</div>
-				</div>
+				/* Empty State */
+				<Center h={200}>
+					<Stack align="center" gap="md">
+						<ThemeIcon size="xl" variant="light" color="gray">
+							<IconSearch size={32} />
+						</ThemeIcon>
+						<Stack align="center" gap="xs">
+							<Text size="sm" fw={500}>
+								No Entity Selected
+							</Text>
+							<Text size="xs" c="dimmed" ta="center" maw={200}>
+								Hover over or click on a node in the graph to see detailed information here.
+							</Text>
+						</Stack>
+					</Stack>
+				</Center>
 			)}
-		</div>
+		</Stack>
 	)
 }
