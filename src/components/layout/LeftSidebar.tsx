@@ -195,384 +195,384 @@ export const LeftSidebar: React.FC = () => {
 			</div>
 
 			{/* Search Section */}
-				<div>
-					<div style={{
-						display: "flex",
-						alignItems: "center",
-						gap: "8px",
-						marginBottom: "8px",
-						fontSize: "13px",
-						fontWeight: 600,
-						color: colors.text.primary
-					}}>
-						<IconSearch size={16} />
+			<div>
+				<div style={{
+					display: "flex",
+					alignItems: "center",
+					gap: "8px",
+					marginBottom: "8px",
+					fontSize: "13px",
+					fontWeight: 600,
+					color: colors.text.primary
+				}}>
+					<IconSearch size={16} />
             Search Academic Entities
-					</div>
-
-					<form onSubmit={(e) => { void handleSearch(e) }} style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
-						<input
-							type="text"
-							value={searchQuery}
-							onChange={(e) => { setSearchQuery(e.target.value) }}
-							placeholder="Enter keywords, DOI, ORCID, etc..."
-							style={{
-								width: "100%",
-								padding: "8px 12px",
-								border: `1px solid ${colors.border.primary}`,
-								borderRadius: "6px",
-								fontSize: "14px",
-								outline: "none",
-								boxSizing: "border-box",
-								backgroundColor: colors.background.primary,
-								color: colors.text.primary,
-							}}
-							disabled={isLoading}
-						/>
-						<button
-							type="submit"
-							disabled={!searchQuery.trim() || isLoading}
-							style={{
-								padding: "8px 16px",
-								backgroundColor: isLoading ? colors.text.tertiary : colors.primary,
-								color: colors.text.inverse,
-								border: "none",
-								borderRadius: "6px",
-								fontSize: "14px",
-								cursor: isLoading ? "not-allowed" : "pointer",
-								transition: "background-color 0.2s",
-							}}
-						>
-							{isLoading ? "Searching..." : "Search"}
-						</button>
-					</form>
 				</div>
 
-				{/* Entity Type Filters & Visibility */}
-				<div>
-					<div style={{
-						display: "flex",
-						alignItems: "center",
-						gap: "8px",
-						marginBottom: "12px",
-						fontSize: "13px",
-						fontWeight: 600,
-						color: colors.text.primary
-					}}>
-						<IconFilter size={16} />
-            Entity Types & Visibility
-					</div>
-
-					<div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
-						{entityTypeOptions.map(option => {
-							const totalCount = entityStats.total.get(option.type) || 0;
-							const visibleCount = entityStats.visible.get(option.type) || 0;
-							const searchCount = entityStats.searchResults.get(option.type) || 0;
-
-							return (
-								<label
-									key={option.type}
-									style={{
-										display: "flex",
-										flexDirection: "column",
-										gap: "4px",
-										cursor: "pointer",
-										padding: "8px",
-										borderRadius: "6px",
-										backgroundColor: selectedEntityTypes.includes(option.type) ? colors.background.tertiary : "transparent",
-										border: `1px solid ${colors.border.primary}`,
-										transition: "background-color 0.2s",
-									}}
-								>
-									{/* Main row with checkbox, icon, label, and color */}
-									<div style={{
-										display: "flex",
-										alignItems: "center",
-										gap: "8px",
-									}}>
-										<input
-											type="checkbox"
-											checked={selectedEntityTypes.includes(option.type)}
-											onChange={() => { handleEntityTypeToggle(option.type) }}
-											style={{ margin: 0 }}
-										/>
-										<span>{option.icon}</span>
-										<span style={{ fontSize: "14px", color: colors.text.primary, fontWeight: 500 }}>
-											{option.label}
-										</span>
-										<span
-											style={{
-												width: "10px",
-												height: "10px",
-												borderRadius: "50%",
-												backgroundColor: option.color,
-												marginLeft: "auto",
-											}}
-										/>
-									</div>
-
-									{/* Statistics row */}
-									{(totalCount > 0 || searchCount > 0) && (
-										<div style={{
-											display: "flex",
-											alignItems: "center",
-											gap: "12px",
-											fontSize: "11px",
-											color: colors.text.secondary,
-											marginLeft: "24px",
-										}}>
-											{totalCount > 0 && <span>Total: {totalCount}</span>}
-											{searchCount > 0 && <span>Found: {searchCount}</span>}
-											{totalCount > 0 && <span>Visible: {visibleCount}</span>}
-										</div>
-									)}
-								</label>
-							);
-						})}
-					</div>
-				</div>
-
-				{/* Edge Types & Visibility */}
-				<div>
-					<div style={{
-						display: "flex",
-						alignItems: "center",
-						gap: "8px",
-						marginBottom: "12px",
-						fontSize: "13px",
-						fontWeight: 600,
-						color: colors.text.primary
-					}}>
-						<IconLink size={16} />
-            Edge Types & Visibility
-					</div>
-
-					<div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
-						{edgeTypeOptions.map(option => {
-							const totalCount = edgeStats.total.get(option.type) || 0;
-							const visibleCount = edgeStats.visible.get(option.type) || 0;
-
-							return (
-								<label
-									key={option.type}
-									style={{
-										display: "flex",
-										flexDirection: "column",
-										gap: "4px",
-										cursor: "pointer",
-										padding: "8px",
-										borderRadius: "6px",
-										backgroundColor: visibleEdgeTypes.has(option.type) ? colors.background.tertiary : "transparent",
-										border: `1px solid ${colors.border.primary}`,
-										transition: "background-color 0.2s",
-									}}
-								>
-									{/* Main row with checkbox, icon, label, and color */}
-									<div style={{
-										display: "flex",
-										alignItems: "center",
-										gap: "8px",
-									}}>
-										<input
-											type="checkbox"
-											checked={visibleEdgeTypes.has(option.type)}
-											onChange={() => { handleEdgeTypeToggle(option.type) }}
-											style={{ margin: 0 }}
-										/>
-										<span>{option.icon}</span>
-										<span style={{ fontSize: "14px", color: colors.text.primary, fontWeight: 500 }}>
-											{option.label}
-										</span>
-										<span
-											style={{
-												width: "10px",
-												height: "10px",
-												borderRadius: "50%",
-												backgroundColor: option.color,
-												marginLeft: "auto",
-											}}
-										/>
-									</div>
-
-									{/* Statistics row */}
-									{totalCount > 0 && (
-										<div style={{
-											display: "flex",
-											alignItems: "center",
-											gap: "12px",
-											fontSize: "11px",
-											color: colors.text.secondary,
-											marginLeft: "24px",
-										}}>
-											<span>Total: {totalCount}</span>
-											<span>Visible: {visibleCount}</span>
-										</div>
-									)}
-								</label>
-							);
-						})}
-					</div>
-				</div>
-
-				{/* Graph Actions */}
-				<div>
-					<div style={{
-						display: "flex",
-						alignItems: "center",
-						gap: "8px",
-						marginBottom: "8px",
-						fontSize: "13px",
-						fontWeight: 600,
-						color: colors.text.primary
-					}}>
-						<IconGraph size={16} />
-            Graph Actions
-					</div>
-
-					<div style={{ marginBottom: "12px" }}>
-						<LayoutControls />
-					</div>
-
-					<button
-						onClick={handleClearGraph}
+				<form onSubmit={(e) => { void handleSearch(e) }} style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+					<input
+						type="text"
+						value={searchQuery}
+						onChange={(e) => { setSearchQuery(e.target.value) }}
+						placeholder="Enter keywords, DOI, ORCID, etc..."
 						style={{
 							width: "100%",
+							padding: "8px 12px",
+							border: `1px solid ${colors.border.primary}`,
+							borderRadius: "6px",
+							fontSize: "14px",
+							outline: "none",
+							boxSizing: "border-box",
+							backgroundColor: colors.background.primary,
+							color: colors.text.primary,
+						}}
+						disabled={isLoading}
+					/>
+					<button
+						type="submit"
+						disabled={!searchQuery.trim() || isLoading}
+						style={{
 							padding: "8px 16px",
-							backgroundColor: colors.error,
+							backgroundColor: isLoading ? colors.text.tertiary : colors.primary,
 							color: colors.text.inverse,
 							border: "none",
 							borderRadius: "6px",
 							fontSize: "14px",
-							cursor: "pointer",
+							cursor: isLoading ? "not-allowed" : "pointer",
 							transition: "background-color 0.2s",
 						}}
 					>
-            Clear Graph
+						{isLoading ? "Searching..." : "Search"}
 					</button>
+				</form>
+			</div>
+
+			{/* Entity Type Filters & Visibility */}
+			<div>
+				<div style={{
+					display: "flex",
+					alignItems: "center",
+					gap: "8px",
+					marginBottom: "12px",
+					fontSize: "13px",
+					fontWeight: 600,
+					color: colors.text.primary
+				}}>
+					<IconFilter size={16} />
+            Entity Types & Visibility
 				</div>
 
-				{/* Cache Controls */}
-				<div>
-					<div style={{
+				<div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+					{entityTypeOptions.map(option => {
+						const totalCount = entityStats.total.get(option.type) || 0;
+						const visibleCount = entityStats.visible.get(option.type) || 0;
+						const searchCount = entityStats.searchResults.get(option.type) || 0;
+
+						return (
+							<label
+								key={option.type}
+								style={{
+									display: "flex",
+									flexDirection: "column",
+									gap: "4px",
+									cursor: "pointer",
+									padding: "8px",
+									borderRadius: "6px",
+									backgroundColor: selectedEntityTypes.includes(option.type) ? colors.background.tertiary : "transparent",
+									border: `1px solid ${colors.border.primary}`,
+									transition: "background-color 0.2s",
+								}}
+							>
+								{/* Main row with checkbox, icon, label, and color */}
+								<div style={{
+									display: "flex",
+									alignItems: "center",
+									gap: "8px",
+								}}>
+									<input
+										type="checkbox"
+										checked={selectedEntityTypes.includes(option.type)}
+										onChange={() => { handleEntityTypeToggle(option.type) }}
+										style={{ margin: 0 }}
+									/>
+									<span>{option.icon}</span>
+									<span style={{ fontSize: "14px", color: colors.text.primary, fontWeight: 500 }}>
+										{option.label}
+									</span>
+									<span
+										style={{
+											width: "10px",
+											height: "10px",
+											borderRadius: "50%",
+											backgroundColor: option.color,
+											marginLeft: "auto",
+										}}
+									/>
+								</div>
+
+								{/* Statistics row */}
+								{(totalCount > 0 || searchCount > 0) && (
+									<div style={{
+										display: "flex",
+										alignItems: "center",
+										gap: "12px",
+										fontSize: "11px",
+										color: colors.text.secondary,
+										marginLeft: "24px",
+									}}>
+										{totalCount > 0 && <span>Total: {totalCount}</span>}
+										{searchCount > 0 && <span>Found: {searchCount}</span>}
+										{totalCount > 0 && <span>Visible: {visibleCount}</span>}
+									</div>
+								)}
+							</label>
+						);
+					})}
+				</div>
+			</div>
+
+			{/* Edge Types & Visibility */}
+			<div>
+				<div style={{
+					display: "flex",
+					alignItems: "center",
+					gap: "8px",
+					marginBottom: "12px",
+					fontSize: "13px",
+					fontWeight: 600,
+					color: colors.text.primary
+				}}>
+					<IconLink size={16} />
+            Edge Types & Visibility
+				</div>
+
+				<div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+					{edgeTypeOptions.map(option => {
+						const totalCount = edgeStats.total.get(option.type) || 0;
+						const visibleCount = edgeStats.visible.get(option.type) || 0;
+
+						return (
+							<label
+								key={option.type}
+								style={{
+									display: "flex",
+									flexDirection: "column",
+									gap: "4px",
+									cursor: "pointer",
+									padding: "8px",
+									borderRadius: "6px",
+									backgroundColor: visibleEdgeTypes.has(option.type) ? colors.background.tertiary : "transparent",
+									border: `1px solid ${colors.border.primary}`,
+									transition: "background-color 0.2s",
+								}}
+							>
+								{/* Main row with checkbox, icon, label, and color */}
+								<div style={{
+									display: "flex",
+									alignItems: "center",
+									gap: "8px",
+								}}>
+									<input
+										type="checkbox"
+										checked={visibleEdgeTypes.has(option.type)}
+										onChange={() => { handleEdgeTypeToggle(option.type) }}
+										style={{ margin: 0 }}
+									/>
+									<span>{option.icon}</span>
+									<span style={{ fontSize: "14px", color: colors.text.primary, fontWeight: 500 }}>
+										{option.label}
+									</span>
+									<span
+										style={{
+											width: "10px",
+											height: "10px",
+											borderRadius: "50%",
+											backgroundColor: option.color,
+											marginLeft: "auto",
+										}}
+									/>
+								</div>
+
+								{/* Statistics row */}
+								{totalCount > 0 && (
+									<div style={{
+										display: "flex",
+										alignItems: "center",
+										gap: "12px",
+										fontSize: "11px",
+										color: colors.text.secondary,
+										marginLeft: "24px",
+									}}>
+										<span>Total: {totalCount}</span>
+										<span>Visible: {visibleCount}</span>
+									</div>
+								)}
+							</label>
+						);
+					})}
+				</div>
+			</div>
+
+			{/* Graph Actions */}
+			<div>
+				<div style={{
+					display: "flex",
+					alignItems: "center",
+					gap: "8px",
+					marginBottom: "8px",
+					fontSize: "13px",
+					fontWeight: 600,
+					color: colors.text.primary
+				}}>
+					<IconGraph size={16} />
+            Graph Actions
+				</div>
+
+				<div style={{ marginBottom: "12px" }}>
+					<LayoutControls />
+				</div>
+
+				<button
+					onClick={handleClearGraph}
+					style={{
+						width: "100%",
+						padding: "8px 16px",
+						backgroundColor: colors.error,
+						color: colors.text.inverse,
+						border: "none",
+						borderRadius: "6px",
+						fontSize: "14px",
+						cursor: "pointer",
+						transition: "background-color 0.2s",
+					}}
+				>
+            Clear Graph
+				</button>
+			</div>
+
+			{/* Cache Controls */}
+			<div>
+				<div style={{
+					display: "flex",
+					alignItems: "center",
+					gap: "8px",
+					marginBottom: "12px",
+					fontSize: "13px",
+					fontWeight: 600,
+					color: colors.text.primary
+				}}>
+					<IconDatabase size={16} />
+            Cache & Traversal Settings
+				</div>
+
+				{/* Show All Cached Nodes Toggle */}
+				<div style={{ marginBottom: "16px" }}>
+					<label style={{
 						display: "flex",
 						alignItems: "center",
 						gap: "8px",
-						marginBottom: "12px",
-						fontSize: "13px",
-						fontWeight: 600,
+						fontSize: "14px",
+						color: colors.text.primary,
+						cursor: "pointer"
+					}}>
+						<input
+							type="checkbox"
+							checked={showAllCachedNodes}
+							onChange={() => { handleShowAllCachedToggle(); }}
+							style={{ margin: 0 }}
+						/>
+						<span>Show all cached nodes</span>
+					</label>
+					<div style={{
+						fontSize: "11px",
+						color: colors.text.secondary,
+						marginLeft: "24px",
+						marginTop: "4px",
+						lineHeight: "1.3"
+					}}>
+							Display all nodes from the cache, not just currently visible ones
+					</div>
+				</div>
+
+				{/* Traversal Depth Control */}
+				<div>
+					<label style={{
+						display: "flex",
+						alignItems: "center",
+						gap: "8px",
+						marginBottom: "8px",
+						fontSize: "14px",
 						color: colors.text.primary
 					}}>
-						<IconDatabase size={16} />
-            Cache & Traversal Settings
-					</div>
-
-					{/* Show All Cached Nodes Toggle */}
-					<div style={{ marginBottom: "16px" }}>
-						<label style={{
-							display: "flex",
-							alignItems: "center",
-							gap: "8px",
-							fontSize: "14px",
-							color: colors.text.primary,
-							cursor: "pointer"
-						}}>
-							<input
-								type="checkbox"
-								checked={showAllCachedNodes}
-								onChange={() => { handleShowAllCachedToggle(); }}
-								style={{ margin: 0 }}
-							/>
-							<span>Show all cached nodes</span>
-						</label>
-						<div style={{
-							fontSize: "11px",
-							color: colors.text.secondary,
-							marginLeft: "24px",
-							marginTop: "4px",
-							lineHeight: "1.3"
-						}}>
-							Display all nodes from the cache, not just currently visible ones
-						</div>
-					</div>
-
-					{/* Traversal Depth Control */}
-					<div>
-						<label style={{
-							display: "flex",
-							alignItems: "center",
-							gap: "8px",
-							marginBottom: "8px",
-							fontSize: "14px",
-							color: colors.text.primary
-						}}>
-							<IconAdjustments size={16} />
-							<span>Traversal Depth: {traversalDepth === Number.MAX_SAFE_INTEGER ? "∞" : traversalDepth}</span>
-						</label>
-						<div style={{
-							display: "flex",
-							alignItems: "center",
-							gap: "8px"
-						}}>
-							<input
-								type="range"
-								min={1}
-								max={10}
-								value={traversalDepth > 10 ? 10 : traversalDepth}
-								onChange={handleTraversalDepthChange}
-								style={{
-									flex: 1,
-									height: "4px",
-									background: colors.border.primary,
-									borderRadius: "2px",
-									outline: "none",
-									cursor: "pointer"
-								}}
-							/>
-							<button
-								onClick={() => { setTraversalDepth(Number.MAX_SAFE_INTEGER) }}
-								style={{
-									padding: "4px 8px",
-									fontSize: "11px",
-									backgroundColor: traversalDepth === Number.MAX_SAFE_INTEGER ? colors.primary : colors.background.secondary,
-									color: traversalDepth === Number.MAX_SAFE_INTEGER ? colors.text.inverse : colors.text.primary,
-									border: `1px solid ${colors.border.primary}`,
-									borderRadius: "4px",
-									cursor: "pointer",
-									minWidth: "24px"
-								}}
-								title="Set to infinity"
-							>
+						<IconAdjustments size={16} />
+						<span>Traversal Depth: {traversalDepth === Number.MAX_SAFE_INTEGER ? "∞" : traversalDepth}</span>
+					</label>
+					<div style={{
+						display: "flex",
+						alignItems: "center",
+						gap: "8px"
+					}}>
+						<input
+							type="range"
+							min={1}
+							max={10}
+							value={traversalDepth > 10 ? 10 : traversalDepth}
+							onChange={handleTraversalDepthChange}
+							style={{
+								flex: 1,
+								height: "4px",
+								background: colors.border.primary,
+								borderRadius: "2px",
+								outline: "none",
+								cursor: "pointer"
+							}}
+						/>
+						<button
+							onClick={() => { setTraversalDepth(Number.MAX_SAFE_INTEGER) }}
+							style={{
+								padding: "4px 8px",
+								fontSize: "11px",
+								backgroundColor: traversalDepth === Number.MAX_SAFE_INTEGER ? colors.primary : colors.background.secondary,
+								color: traversalDepth === Number.MAX_SAFE_INTEGER ? colors.text.inverse : colors.text.primary,
+								border: `1px solid ${colors.border.primary}`,
+								borderRadius: "4px",
+								cursor: "pointer",
+								minWidth: "24px"
+							}}
+							title="Set to infinity"
+						>
 								∞
-							</button>
-						</div>
-						<div style={{
-							fontSize: "11px",
-							color: colors.text.secondary,
-							marginTop: "4px",
-							lineHeight: "1.3"
-						}}>
+						</button>
+					</div>
+					<div style={{
+						fontSize: "11px",
+						color: colors.text.secondary,
+						marginTop: "4px",
+						lineHeight: "1.3"
+					}}>
 							Controls how many levels deep nodes will be displayed from pinned node
-						</div>
 					</div>
 				</div>
+			</div>
 
-				{/* Instructions */}
-				<div style={{
-					padding: "12px",
-					backgroundColor: colors.background.secondary,
-					borderRadius: "6px",
-					fontSize: "12px",
-					color: colors.text.secondary,
-					lineHeight: "1.4",
-				}}>
-					<strong>Tips:</strong>
-					<ul style={{ margin: "4px 0", paddingLeft: "16px" }}>
-						<li>Search for keywords, author names, paper titles</li>
-						<li>Use DOI, ORCID, ROR ID for specific entities</li>
-						<li>Checkboxes control search filtering AND graph visibility</li>
-						<li>Click nodes to navigate, double-click to expand</li>
-						<li>Statistics show: total nodes, search results, visible nodes</li>
-					</ul>
-				</div>
+			{/* Instructions */}
+			<div style={{
+				padding: "12px",
+				backgroundColor: colors.background.secondary,
+				borderRadius: "6px",
+				fontSize: "12px",
+				color: colors.text.secondary,
+				lineHeight: "1.4",
+			}}>
+				<strong>Tips:</strong>
+				<ul style={{ margin: "4px 0", paddingLeft: "16px" }}>
+					<li>Search for keywords, author names, paper titles</li>
+					<li>Use DOI, ORCID, ROR ID for specific entities</li>
+					<li>Checkboxes control search filtering AND graph visibility</li>
+					<li>Click nodes to navigate, double-click to expand</li>
+					<li>Statistics show: total nodes, search results, visible nodes</li>
+				</ul>
+			</div>
 		</div>
 	)
 }

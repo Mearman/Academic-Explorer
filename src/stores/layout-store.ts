@@ -120,7 +120,7 @@ export const useLayoutStore = create<LayoutState>()(
 			// Migration for existing localStorage entries that don't have autoPinOnLayoutStabilization
 			migrate: (persistedState: any, version: number) => {
 				// If the persisted state doesn't have autoPinOnLayoutStabilization, add it with default value
-				if (persistedState && typeof persistedState.autoPinOnLayoutStabilization === 'undefined') {
+				if (persistedState && typeof persistedState.autoPinOnLayoutStabilization === "undefined") {
 					persistedState.autoPinOnLayoutStabilization = true;
 				}
 				return persistedState;
