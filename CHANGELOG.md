@@ -1,3 +1,60 @@
+# [1.2.0](https://github.com/Mearman/Academic-Explorer/compare/v1.1.0...v1.2.0) (2025-09-15)
+
+
+### Bug Fixes
+
+* **entities:** improve AuthorEntity.expand error handling and robustness ([40d15ab](https://github.com/Mearman/Academic-Explorer/commit/40d15abf6133e684176f979524f005f7d79350a5))
+* **graph-service:** update relationship type references to new enum values ([6e18c0d](https://github.com/Mearman/Academic-Explorer/commit/6e18c0d08bd0235ba148dd628c38cfb2151584f8))
+* **graph:** add explicit toString() calls in hexToRgba function ([24170b7](https://github.com/Mearman/Academic-Explorer/commit/24170b70d172b3150034bf4a0b44286a932f4362))
+* **graph:** add null checks for entity fetching failures ([7f7ff3f](https://github.com/Mearman/Academic-Explorer/commit/7f7ff3f9bf4ed46523438156c0db3873fc178812))
+* **graph:** apply entity-specific glow colors to InstitutionNode ([6532038](https://github.com/Mearman/Academic-Explorer/commit/65320385abf4271ab3c4b1d1973f7a4062707a27))
+* **graph:** complete entity-specific glow colors for all node types ([6f12246](https://github.com/Mearman/Academic-Explorer/commit/6f12246d98633c4eca9d7366e90fa6e7c586ab04))
+* **lint:** remove unused variables and imports ([49ce03b](https://github.com/Mearman/Academic-Explorer/commit/49ce03b510a82c0cfaa39fb1a37d2c84835b9ddc))
+* **store:** eliminate type coercion in expansion settings initialization ([f055cc1](https://github.com/Mearman/Academic-Explorer/commit/f055cc1bd03c9b619c0df643a8aef03fcb82e357))
+* **store:** eliminate type coercion in expansion settings store ([835701a](https://github.com/Mearman/Academic-Explorer/commit/835701ae46e0438776c6d40f344dba42456295d8))
+* **stores:** complete expansion settings initialization for all entity types ([ce0a1cd](https://github.com/Mearman/Academic-Explorer/commit/ce0a1cd4dec398d41aad147f3a659bfefbb77fd2))
+* **stores:** remove cited edge type from graph store configuration ([add6c13](https://github.com/Mearman/Academic-Explorer/commit/add6c1303a495558fbd9afd3b7e35f6ce9b7ec89))
+* **test:** resolve expansion settings integration test failures ([606fd4f](https://github.com/Mearman/Academic-Explorer/commit/606fd4fc140e71e8a74a17472c841b7dcc662fba))
+* **test:** resolve test failures in graph-data-service ([4e7c185](https://github.com/Mearman/Academic-Explorer/commit/4e7c185810f4168236a2e781552db8ba0316d044))
+* **ui:** update UI components for consolidated edge types ([48192f7](https://github.com/Mearman/Academic-Explorer/commit/48192f711415c5deb96c8362e44920e2a50511cd))
+
+
+### Features
+
+* **entities:** enhance entity models with expansion capabilities ([97d2290](https://github.com/Mearman/Academic-Explorer/commit/97d22903809efbc6ea63533367487276c9160e13))
+* **expansion-settings:** update store to support all 15 relationship types ([00b5256](https://github.com/Mearman/Academic-Explorer/commit/00b525662c9d64c9a4c666c8ab68852814707444))
+* **graph-store:** enable all 15 relationship types by default for new users ([6271bdc](https://github.com/Mearman/Academic-Explorer/commit/6271bdcc86e6b3538326c89822306bd3ce9c75d3))
+* **graph:** add interactive pin toggle buttons to graph nodes ([f4ba549](https://github.com/Mearman/Academic-Explorer/commit/f4ba549f8d48dee2b4834b1b4b4da895ba6766d5))
+* **graph:** display entity IDs in node top bars instead of entity types ([3f24e50](https://github.com/Mearman/Academic-Explorer/commit/3f24e5094c3f0a8b98c4909106e96dea84419e07))
+* **graph:** enhance edge color mapping with comprehensive relationship support ([c745c07](https://github.com/Mearman/Academic-Explorer/commit/c745c0771ce337ecf17dd1b0ceefb140a4dc488c))
+* **graph:** extend RelationType enum with additional relationship types ([186f4de](https://github.com/Mearman/Academic-Explorer/commit/186f4de1c17d3eaa2df29a107bbcc14ff699e771))
+* **graph:** implement auto-pin on layout stabilization ([be7cc8d](https://github.com/Mearman/Academic-Explorer/commit/be7cc8dc8b48519070eadb17e7bc39a91d89493f))
+* **graph:** implement lazy loading for related entities ([83023d7](https://github.com/Mearman/Academic-Explorer/commit/83023d797c53676fa749bdf90ee7d0195b3dc3b7))
+* **graph:** improve edge creation with enum values and descriptive labels ([37db0d9](https://github.com/Mearman/Academic-Explorer/commit/37db0d9bd8155272467e2677581df5c03d8301fe))
+* **graph:** improve node visual hierarchy and styling ([def1858](https://github.com/Mearman/Academic-Explorer/commit/def1858e2ac5a68c5af4574f9649b12e860f2c31))
+* **graph:** improve OpenAlex ID handling in graph data service ([1f8159f](https://github.com/Mearman/Academic-Explorer/commit/1f8159f434d800f96c6d4b975e679025b26e898d))
+* **graph:** update navigation to respect auto-pin preferences ([ebb691e](https://github.com/Mearman/Academic-Explorer/commit/ebb691ede818c771b2dba9c6d38112e37bbec83a))
+* **infra:** improve test infrastructure and development tooling ([f6ad274](https://github.com/Mearman/Academic-Explorer/commit/f6ad274b708be30a851fd4c5438c619a30da559f))
+* **layout:** implement sidebar autohide functionality ([83f39a3](https://github.com/Mearman/Academic-Explorer/commit/83f39a3165637f396357fd443826d68c42372a4a))
+* **layout:** integrate expansion settings UI into application layout ([05db8b5](https://github.com/Mearman/Academic-Explorer/commit/05db8b514ae98dc2de5e41a560f4961d3953d438))
+* **service:** add expansion query builder for OpenAlex API integration ([be24cee](https://github.com/Mearman/Academic-Explorer/commit/be24ceec47cf52d8e902b23368778b2e9f7686a2))
+* **service:** integrate expansion settings into graph data service ([c01f315](https://github.com/Mearman/Academic-Explorer/commit/c01f3156b525c55c19a4a014c720a46b45ba542d))
+* **sidebar:** add complete entity type support with missing types ([68faf2d](https://github.com/Mearman/Academic-Explorer/commit/68faf2d595fdd15faeafc61dd8f0b2aa38478eb8)), closes [#e67e22](https://github.com/Mearman/Academic-Explorer/issues/e67e22) [#16a085](https://github.com/Mearman/Academic-Explorer/issues/16a085) [#8e44](https://github.com/Mearman/Academic-Explorer/issues/8e44)
+* **sidebar:** add support for all 15 relationship types in edge filters ([696a4f6](https://github.com/Mearman/Academic-Explorer/commit/696a4f6769a7daedc4f1fda552835e39e20f85b8))
+* **store:** add auto-pin layout stabilization preference ([3ec84cd](https://github.com/Mearman/Academic-Explorer/commit/3ec84cdfcec9560a9904a5e70fee5bd2dd3e3568))
+* **store:** add expansion settings store with Zustand persistence ([a5b0088](https://github.com/Mearman/Academic-Explorer/commit/a5b0088e6651f76bce638aff6cfa5b281075d7be))
+* **store:** add lazy loading support for graph nodes ([67f7863](https://github.com/Mearman/Academic-Explorer/commit/67f786372d64c066f8dfffdfc2f67989f269db26))
+* **types:** add expansion settings type definitions and utilities ([ea1fe01](https://github.com/Mearman/Academic-Explorer/commit/ea1fe01131e461ff5b35c2c0d15a2583421e7d76))
+* **types:** add lazy loading metadata fields to GraphNode ([1a019c6](https://github.com/Mearman/Academic-Explorer/commit/1a019c6a3d6d575618b0cd325bcaa3704b9f46c8))
+* **types:** expand RelationType enum with semantic-specific relationships ([bff1c4a](https://github.com/Mearman/Academic-Explorer/commit/bff1c4a1ee9196ef6411e64c0be21fb8c65ca515))
+* **ui:** add expansion settings UI components for graph configuration ([5e166aa](https://github.com/Mearman/Academic-Explorer/commit/5e166aaba1897fa5045faf6b225ec59fce7f519f))
+* **ui:** restructure graph nodes with dedicated top bar ([055678c](https://github.com/Mearman/Academic-Explorer/commit/055678c7dedccbfebf0b63a71eb35caf4e1e0a89))
+
+
+### Performance Improvements
+
+* **graph:** optimize useEffect dependencies in graph components ([f4aba14](https://github.com/Mearman/Academic-Explorer/commit/f4aba1420b6e4079219d4fc5d72ef510371a0389))
+
 # [1.1.0](https://github.com/Mearman/Academic-Explorer/compare/v1.0.1...v1.1.0) (2025-09-15)
 
 
