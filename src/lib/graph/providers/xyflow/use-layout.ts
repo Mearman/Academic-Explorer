@@ -126,13 +126,12 @@ export function useLayout(
 		const hasPinnedNodes = pinnedNodes.size > 0;
 		const pinnedNodeCount = pinnedNodes.size;
 
-		// Consistent force parameters optimized for circular arrangements around hub nodes
-		const linkDistance = 150; // Increased for more space around central nodes
-		const linkStrength = 0.1; // Increased for stronger edge pull to create circular patterns
-		const chargeStrength = -800; // Reduced repulsion to allow closer circular grouping
-		const centerStrength = 0.05; // Slightly increased center force to prevent drift
-		const collisionRadius = 80; // Reduced for tighter circular packing
-		const collisionStrength = 0.8; // Slightly reduced to allow closer grouping
+		const linkDistance = 100;
+		const linkStrength = 0.01;
+		const chargeStrength = -1_000;
+		const centerStrength = 0.01;
+		const collisionRadius = 120;
+		const collisionStrength = 1.0;
 		const velocityDecay = 0.1; // Very low decay for maximum movement
 		const alpha = 1;
 		const alphaDecay = 0.02; // Faster decay for reasonable simulation time
