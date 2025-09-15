@@ -250,6 +250,10 @@ jobs:
           name: dist-${{ github.sha }}
           path: dist/
 
+      - name: Remove empty files
+        run: find dist -type f -size 0 -delete
+        shell: bash
+
       - name: Semantic Release
         id: release
         uses: cycjimmy/semantic-release-action@v4
