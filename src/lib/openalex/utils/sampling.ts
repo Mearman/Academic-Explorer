@@ -200,8 +200,8 @@ export class SamplingApi {
 		for (const period of periods) {
 			try {
 				const dateFilter = entityType === "works"
-					? `publication_year:${period.start}-${period.end}`
-					: `from_created_date:${period.start}-01-01,to_created_date:${period.end}-12-31`;
+					? `publication_year:${String(period.start)}-${String(period.end)}`
+					: `from_created_date:${String(period.start)}-01-01,to_created_date:${String(period.end)}-12-31`;
 
 				const periodFilter = params.filter
 					? `${params.filter},${dateFilter}`
