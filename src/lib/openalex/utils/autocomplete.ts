@@ -11,7 +11,7 @@ interface DebouncedPromiseCache {
   [key: string]: {
     promise: Promise<unknown>;
     timestamp: number;
-  };
+  } | undefined;
 }
 
 /**
@@ -236,7 +236,7 @@ export class AutocompleteApi {
 			"geo": "geo",
 		};
 
-		return mapping[entityType] || "work";
+		return mapping[entityType];
 	}
 
 	/**
