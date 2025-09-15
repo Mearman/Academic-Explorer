@@ -332,8 +332,8 @@ export class GraphDataService {
 	}
 
 	/**
-   * Hydrate a minimal node to full hydration level with complete entity data
-   * This method loads full entity data for nodes that are currently at minimal hydration level
+   * Hydrate a minimal node to full hydration level with selective API field loading
+   * This method uses selective field loading to minimize API payload while providing rich metadata
    */
 	async hydrateNodeToFull(nodeId: string): Promise<void> {
 		const store = useGraphStore.getState();
@@ -357,51 +357,83 @@ export class GraphDataService {
 			// Mark node as loading
 			store.markNodeAsLoading(nodeId);
 
-			logger.info("graph", "Hydrating node to full", {
+			logger.info("graph", "Hydrating node to full with selective field loading", {
 				nodeId,
 				entityType: node.type,
 				label: node.label
 			}, "GraphDataService");
 
-			// Fetch full entity data using deduplication service
-			logger.debug("graph", "Fetching entity data", {
-				nodeId,
-				entityId: node.entityId,
-				entityType: node.type
-			}, "GraphDataService");
+			// Check if we can use selective field loading for this entity type
+			if (EntityFactory.isSupported(node.type)) {
+				// Use entity-specific selective field loading for metadata
+				const entityInstance = EntityFactory.create(node.type, rateLimitedOpenAlex);
 
-			const entity = await this.deduplicationService.getEntity(
-				node.entityId,
-				() => rateLimitedOpenAlex.getEntity(node.entityId)
-			);
+				logger.debug("graph", "Using selective field loading for metadata fields", {
+					nodeId,
+					entityId: node.entityId,
+					entityType: node.type
+				}, "GraphDataService");
 
-			// Entity is guaranteed to be defined here - deduplicationService.getEntity throws on failure
+				const entity = await this.deduplicationService.getEntity(
+					node.entityId,
+					() => entityInstance.fetchWithMetadata(node.entityId)
+				);
 
-			logger.debug("graph", "Entity fetched successfully", {
-				nodeId,
-				entityId: node.entityId,
-				entityDisplayName: entity.display_name
-			}, "GraphDataService");
+				// Extract metadata-level data from the entity
+				const fullNodeData = this.createNodeFromEntity(entity, node.type);
 
-			// Extract full data from the entity
-			const fullNodeData = this.createNodeFromEntity(entity, node.type);
+				// Update the node with full metadata
+				store.markNodeAsLoaded(nodeId, {
+					label: fullNodeData.label,
+					externalIds: fullNodeData.externalIds,
+					metadata: {
+						...fullNodeData.metadata,
+						hydrationLevel: "full",
+						isLoading: false,
+						dataLoadedAt: Date.now(),
+					}
+				});
 
-			// Update the node with full data
-			store.markNodeAsLoaded(nodeId, {
-				label: fullNodeData.label,
-				externalIds: fullNodeData.externalIds,
-				metadata: {
-					...fullNodeData.metadata,
-					hydrationLevel: "full",
-					isLoading: false,
-					dataLoadedAt: Date.now(),
-				}
-			});
+				logger.info("graph", "Node hydrated with selective field loading", {
+					nodeId,
+					newLabel: fullNodeData.label,
+					fieldsLoaded: "metadata"
+				}, "GraphDataService");
 
-			logger.info("graph", "Node fully hydrated", {
-				nodeId,
-				newLabel: fullNodeData.label
-			}, "GraphDataService");
+			} else {
+				// Fallback to full entity fetch for unsupported types
+				logger.debug("graph", "Fallback to full entity fetch", {
+					nodeId,
+					entityType: node.type,
+					reason: "entity type not supported for selective loading"
+				}, "GraphDataService");
+
+				const entity = await this.deduplicationService.getEntity(
+					node.entityId,
+					() => rateLimitedOpenAlex.getEntity(node.entityId)
+				);
+
+				// Extract full data from the entity
+				const fullNodeData = this.createNodeFromEntity(entity, node.type);
+
+				// Update the node with full data
+				store.markNodeAsLoaded(nodeId, {
+					label: fullNodeData.label,
+					externalIds: fullNodeData.externalIds,
+					metadata: {
+						...fullNodeData.metadata,
+						hydrationLevel: "full",
+						isLoading: false,
+						dataLoadedAt: Date.now(),
+					}
+				});
+
+				logger.info("graph", "Node hydrated with full entity fetch", {
+					nodeId,
+					newLabel: fullNodeData.label,
+					fieldsLoaded: "all"
+				}, "GraphDataService");
+			}
 
 		} catch (error) {
 			const errorMessage = error instanceof Error ? error.message : "Failed to load node data";
