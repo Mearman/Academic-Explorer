@@ -269,14 +269,13 @@ jobs:
             @semantic-release/release-notes-generator \
             @semantic-release/changelog \
             @semantic-release/npm \
-            @semantic-release/git \
             @semantic-release/github
 
           # Configure git
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
 
-          # Run semantic-release to handle everything automatically
+          # Run semantic-release to create tag and GitHub release
           npx semantic-release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -286,14 +285,30 @@ jobs:
         run: |
           # Check if semantic-release created a new tag/release
           LATEST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "")
-          if [ -n "$LATEST_TAG" ] && git tag --points-at HEAD | grep -q "$LATEST_TAG"; then
+          if [ -n "$LATEST_TAG" ] && git tag --points-at ${{ github.sha }} | grep -q "$LATEST_TAG"; then
             echo "release_created=true" >> $GITHUB_OUTPUT
             echo "release_tag=$LATEST_TAG" >> $GITHUB_OUTPUT
-            echo "Release created: $LATEST_TAG"
+            echo "new_version=${LATEST_TAG#v}" >> $GITHUB_OUTPUT
+            echo "Release created: $LATEST_TAG against commit ${{ github.sha }}"
           else
             echo "release_created=false" >> $GITHUB_OUTPUT
             echo "No release created"
           fi
+
+      - name: Update version and create follow-up commit
+        if: steps.check-release.outputs.release_created == 'true'
+        run: |
+          # Update package.json version to match the release
+          npm version ${{ steps.check-release.outputs.new_version }} --no-git-tag-version
+
+          # Commit the version bump (CHANGELOG.md was already updated by semantic-release)
+          git add package.json CHANGELOG.md
+          git commit -m "chore(release): ${{ steps.check-release.outputs.new_version }} [skip ci]
+
+          Automated version bump for release ${{ steps.check-release.outputs.release_tag }}"
+
+          # Push the follow-up commit
+          git push origin main
 
       - name: Build for release
         if: steps.check-release.outputs.release_created == 'true'
