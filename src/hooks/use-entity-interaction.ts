@@ -25,10 +25,10 @@ export interface EntityInteractionOptions {
  * Default options for different interaction contexts
  */
 export const INTERACTION_PRESETS = {
-	/** Full entity interaction: select, pin, center, expand, update preview */
+	/** Entity interaction without auto-expand: select, pin, center, update preview */
 	GRAPH_NODE_CLICK: {
 		centerOnNode: true,
-		expandNode: true,
+		expandNode: false, // Removed auto-expand - now handled by explicit expand button
 		pinNode: true,
 		updatePreview: true,
 	} satisfies EntityInteractionOptions,
