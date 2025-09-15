@@ -153,8 +153,6 @@ export const LeftSidebar: React.FC = () => {
 				return "#e67e22";
 			case "keywords":
 				return "#16a085";
-			case "geo":
-				return "#8e44ad";
 			default:
 				return "#95a5a6";
 		}
@@ -219,7 +217,6 @@ export const LeftSidebar: React.FC = () => {
 		{ type: "publishers", label: "Publishers", color: getGraphNodeColor("publishers"), icon: <IconBuildingStore size={16} /> },
 		{ type: "funders", label: "Funders", color: getGraphNodeColor("funders"), icon: <IconCoin size={16} /> },
 		{ type: "keywords", label: "Keywords", color: getGraphNodeColor("keywords"), icon: <IconKey size={16} /> },
-		{ type: "geo", label: "Geo", color: getGraphNodeColor("geo"), icon: <IconMapPin size={16} /> },
 	]
 
 	const edgeTypeOptions: { type: RelationType; label: string; color: string; icon: React.ReactNode }[] = [
