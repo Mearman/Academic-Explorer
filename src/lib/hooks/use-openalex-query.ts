@@ -16,7 +16,6 @@ import type {
 	Publisher,
 	Funder,
 	Keyword,
-	Geo,
 	OpenAlexEntity,
 	OpenAlexResponse,
 	QueryParams,
@@ -303,20 +302,6 @@ export function useKeyword(id: string | undefined, params?: QueryParams, options
 	});
 }
 
-// Geo hooks
-export function useGeo(id: string | undefined, params?: QueryParams, options?: Partial<UseQueryOptions<Geo>>) {
-	return useQuery({
-		queryKey: params ? [...queryKeys.all, "geo", id || "", params] : [...queryKeys.all, "geo", id || ""],
-		queryFn: async () => {
-			if (!id) throw new Error("Geo ID is required");
-			return rateLimitedOpenAlex.getGeo(id, params);
-		},
-		enabled: !!id,
-		staleTime: 1000 * 60 * 60 * 24, // 1 day - geo data is stable
-		gcTime: 1000 * 60 * 60 * 24 * 7, // 7 days
-		...options,
-	});
-}
 
 // Autocomplete hooks
 export function useAutocomplete(query: string | undefined, entityType?: string, options?: Partial<UseQueryOptions<AutocompleteResult[]>>) {

@@ -45,8 +45,6 @@ export {
 	// Keywords hooks
 	useKeyword,
 
-	// Geo hooks
-	useGeo,
 
 	// Autocomplete hooks
 	useAutocomplete,
