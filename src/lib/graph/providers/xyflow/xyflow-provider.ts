@@ -24,6 +24,7 @@ import { RelationType } from "../../types";
 
 import { logger } from "@/lib/logger";
 import { useGraphStore } from "@/stores/graph-store";
+import { FIT_VIEW_PRESETS } from "../../constants";
 
 export class XYFlowProvider implements GraphProvider {
 	private container: HTMLElement | null = null;
@@ -371,7 +372,7 @@ export class XYFlowProvider implements GraphProvider {
 
 	fitView(): void {
 		if (this.reactFlowInstance) {
-			void this.reactFlowInstance.fitView({ padding: 0.1, duration: 800 });
+			void this.reactFlowInstance.fitView(FIT_VIEW_PRESETS.DEFAULT);
 		}
 	}
 

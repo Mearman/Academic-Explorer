@@ -20,6 +20,7 @@ import { randomLcg } from "d3-random";
 import type { GraphLayout, EntityType } from "../../types";
 import { logger } from "@/lib/logger";
 import { useGraphStore } from "@/stores/graph-store";
+import { FIT_VIEW_PRESETS } from "../../constants";
 
 // Extended node interface for D3 simulation
 interface D3Node extends SimulationNodeDatum {
@@ -298,7 +299,7 @@ export function useLayout(
 				// Fit view after forced stop if enabled
 				if (fitViewAfterLayout) {
 					setTimeout(() => {
-						void fitView({ padding: 0.1, duration: 800 });
+						void fitView(FIT_VIEW_PRESETS.DEFAULT);
 						logger.info(
 							"graph",
 							"Auto-fitted view after simulation timeout",
@@ -399,7 +400,7 @@ export function useLayout(
 			// Auto-fit view after layout stabilizes if enabled
 			if (fitViewAfterLayout) {
 				setTimeout(() => {
-					void fitView({ padding: 0.1, duration: 800 });
+					void fitView(FIT_VIEW_PRESETS.DEFAULT);
 					logger.info(
 						"graph",
 						"Auto-fitted view after simulation completion",
