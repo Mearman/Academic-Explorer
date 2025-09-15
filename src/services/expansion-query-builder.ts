@@ -24,10 +24,8 @@ export interface OpenAlexQueryParams {
 function buildQueryParams(settings: ExpansionSettings, baseSelect?: string[]): OpenAlexQueryParams {
 	const params: OpenAlexQueryParams = {};
 
-	// Set pagination limit
-	if (settings.limit > 0) {
-		params.per_page = Math.min(settings.limit, 200); // OpenAlex max per page is 200
-	}
+	// Always use maximum per_page for efficiency, handle total limit separately
+	params.per_page = 200; // OpenAlex maximum per page
 
 	// Build sort string
 	const sortString = buildSortString(settings.sorts);
