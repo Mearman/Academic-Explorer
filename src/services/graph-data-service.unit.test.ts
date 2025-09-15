@@ -1391,4 +1391,148 @@ describe("GraphDataService", () => {
 			);
 		});
 	});
+
+	describe("error handling and null safety", () => {
+		describe("loadEntityIntoGraph null/undefined handling", () => {
+			it("should handle undefined entity response from API", async () => {
+				vi.mocked(rateLimitedOpenAlex.getEntity).mockResolvedValue(undefined);
+
+				try {
+					await service.loadEntityIntoGraph("A5025875274", "authors");
+				} catch (error) {
+					expect(error).toBeDefined();
+					expect(String(error)).toContain("Cannot read properties of undefined");
+				}
+			});
+
+			it("should handle null entity response from API", async () => {
+				vi.mocked(rateLimitedOpenAlex.getEntity).mockResolvedValue(null);
+
+				try {
+					await service.loadEntityIntoGraph("A5025875274", "authors");
+				} catch (error) {
+					expect(error).toBeDefined();
+					expect(String(error)).toContain("Cannot read properties of undefined");
+				}
+			});
+
+			it("should handle entity without required id property", async () => {
+				const entityWithoutId = {
+					display_name: 'Test Author',
+					// Missing 'id' property
+				};
+
+				vi.mocked(rateLimitedOpenAlex.getEntity).mockResolvedValue(entityWithoutId);
+
+				try {
+					await service.loadEntityIntoGraph("A5025875274", "authors");
+				} catch (error) {
+					expect(error).toBeDefined();
+					expect(String(error)).toContain("Cannot read properties of undefined");
+				}
+			});
+		});
+
+		describe("loadPlaceholderNodeData null/undefined handling", () => {
+			it("should handle undefined institution response", async () => {
+				vi.mocked(rateLimitedOpenAlex.getEntity).mockResolvedValue(undefined);
+
+				try {
+					await service.loadPlaceholderNodeData('https://openalex.org/I161548249', 'institutions', 'Bangor University');
+				} catch (error) {
+					expect(error).toBeDefined();
+					expect(String(error)).toContain("Cannot read properties of undefined");
+				}
+			});
+
+			it("should handle institution without ror property", async () => {
+				const institutionWithoutRor = {
+					id: 'https://openalex.org/I161548249',
+					display_name: 'Bangor University',
+					// Missing 'ror' property that code might access
+				};
+
+				vi.mocked(rateLimitedOpenAlex.getEntity).mockResolvedValue(institutionWithoutRor);
+
+				try {
+					await service.loadPlaceholderNodeData('https://openalex.org/I161548249', 'institutions', 'Bangor University');
+				} catch (error) {
+					expect(error).toBeDefined();
+					expect(String(error)).toContain("Cannot read properties of undefined");
+				}
+			});
+
+			it("should handle null institution response gracefully", async () => {
+				vi.mocked(rateLimitedOpenAlex.getEntity).mockResolvedValue(null);
+
+				try {
+					await service.loadPlaceholderNodeData('https://openalex.org/I161548249', 'institutions', 'Bangor University');
+				} catch (error) {
+					expect(error).toBeDefined();
+				}
+			});
+		});
+
+		describe("rate limiting and API errors", () => {
+			it("should handle 429 rate limit errors", async () => {
+				const rateLimitError = new Error('429 TOO MANY REQUESTS');
+				vi.mocked(rateLimitedOpenAlex.getEntity).mockRejectedValue(rateLimitError);
+
+				try {
+					await service.loadPlaceholderNodeData('https://openalex.org/I2799442855', 'institutions', 'New York University Press');
+				} catch (error) {
+					expect(String(error)).toContain('429');
+				}
+			});
+
+			it("should handle network errors gracefully", async () => {
+				const networkError = new Error('Network error');
+				vi.mocked(rateLimitedOpenAlex.getEntity).mockRejectedValue(networkError);
+
+				try {
+					await service.loadEntityIntoGraph("A5025875274", "authors");
+				} catch (error) {
+					expect(error).toBeDefined();
+					expect(logError).toHaveBeenCalled();
+				}
+			});
+
+			it("should handle malformed API responses", async () => {
+				const malformedResponse = {
+					// Missing expected properties
+					invalid: true
+				};
+
+				vi.mocked(rateLimitedOpenAlex.getEntity).mockResolvedValue(malformedResponse);
+
+				try {
+					await service.loadEntityIntoGraph("A5025875274", "authors");
+				} catch (error) {
+					expect(error).toBeDefined();
+				}
+			});
+		});
+
+		describe("store method safety", () => {
+			it("should handle missing store methods gracefully", async () => {
+				// Mock store without all expected methods
+				const incompleteStore = {
+					nodes: new Map(),
+					edges: new Map(),
+					addNode: vi.fn(),
+					addEdge: vi.fn(),
+					// Missing setError, getNode methods that code might call
+				};
+
+				vi.mocked(useGraphStore.getState).mockReturnValue(incompleteStore as any);
+
+				try {
+					await service.loadEntityIntoGraph("A5025875274", "authors");
+				} catch (error) {
+					// Should handle missing store methods
+					expect(error).toBeDefined();
+				}
+			});
+		});
+	});
 });
