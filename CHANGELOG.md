@@ -1,3 +1,10 @@
+# [1.1.0](https://github.com/Mearman/Academic-Explorer/compare/v1.0.1...v1.1.0) (2025-09-15)
+
+
+### Features
+
+* **ci:** improve Nx caching strategy for better performance ([34db9f0](https://github.com/Mearman/Academic-Explorer/commit/34db9f0d7ce9e36fe25578c6f400832433d07e39))
+
 ## [1.0.1](https://github.com/Mearman/Academic-Explorer/compare/v1.0.0...v1.0.1) (2025-09-15)
 
 
