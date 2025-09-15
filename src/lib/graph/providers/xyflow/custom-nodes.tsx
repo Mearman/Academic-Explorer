@@ -340,6 +340,7 @@ export const CustomNode: React.FC<CustomNodeProps> = ({ data, selected }) => {
 					)}
 				</div>
 			)}
+
 		</div>
 	);
 };
