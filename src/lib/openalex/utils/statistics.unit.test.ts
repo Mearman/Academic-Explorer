@@ -162,7 +162,7 @@ describe("StatisticsApi", () => {
 				.mockResolvedValueOnce(mockTrendResponse) // Trend analysis
 				.mockResolvedValueOnce(mockCollabResponse); // Collaboration metrics
 
-			const result = await statisticsApi.getEntityAnalytics("works");
+			const result = statisticsApi.getEntityAnalytics("works");
 
 			expect(result.distribution_analysis).toEqual({
 				citation_distribution: {
@@ -212,7 +212,7 @@ describe("StatisticsApi", () => {
 				.mockResolvedValueOnce(mockDistributionResponse)
 				.mockResolvedValueOnce(mockTrendResponse);
 
-			const result = await statisticsApi.getEntityAnalytics("sources");
+			const result = statisticsApi.getEntityAnalytics("sources");
 
 			expect(result.collaboration_metrics).toBeUndefined();
 		});
@@ -253,7 +253,7 @@ describe("StatisticsApi", () => {
 				.mockResolvedValueOnce(mockFieldResponse) // Field-normalized metrics
 				.mockResolvedValueOnce(mockTemporalImpactResponse); // Temporal impact
 
-			const result = await statisticsApi.getImpactMetrics("authors");
+			const result = statisticsApi.getImpactMetrics("authors");
 
 			expect(result.h_index_distribution).toEqual({
 				median_h_index: expect.any(Number),
@@ -389,7 +389,7 @@ describe("StatisticsApi", () => {
 			expect(result.geographic_distribution).toBeDefined();
 
 			// Test distribution analysis through getEntityAnalytics
-			const analytics = await statisticsApi.getEntityAnalytics("works");
+			const analytics = statisticsApi.getEntityAnalytics("works");
 			expect(analytics.distribution_analysis).toBeDefined();
 			expect(analytics.trend_analysis).toBeDefined();
 		});
