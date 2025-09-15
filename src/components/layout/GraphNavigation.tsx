@@ -252,6 +252,10 @@ const GraphNavigationInner: React.FC<GraphNavigationProps> = ({ className, style
 		}
 	);
 
+	// Ref to capture latest restartLayout function without adding it to dependencies
+	const restartLayoutRef = useRef(restartLayout);
+	restartLayoutRef.current = restartLayout;
+
 	// Measure container dimensions
 	useEffect(() => {
 		if (!containerRef.current) return;
@@ -448,7 +452,7 @@ const GraphNavigationInner: React.FC<GraphNavigationProps> = ({ className, style
 			if (newNodeIds.size > 0) {
 				// Add a small delay to ensure React state updates are complete
 				setTimeout(() => {
-					restartLayout(); // Full restart to include new nodes in D3 simulation
+					restartLayoutRef.current(); // Full restart to include new nodes in D3 simulation
 					logger.info("graph", "Restarting layout due to new nodes", {
 						newNodeCount: newNodeIds.size
 					}, "GraphNavigation");
@@ -459,7 +463,7 @@ const GraphNavigationInner: React.FC<GraphNavigationProps> = ({ className, style
 		// Update refs for next comparison
 		previousNodeIdsRef.current = currentNodeIds;
 		previousEdgeIdsRef.current = currentEdgeIds;
-	}, [storeNodes, storeEdges, visibleEntityTypes, visibleEdgeTypes, getVisibleNodes, getVisibleEdges, setNodes, setEdges, restartLayout]);
+	}, [storeNodes, storeEdges, visibleEntityTypes, visibleEdgeTypes, setNodes, setEdges]);
 
 	// URL state synchronization - read selected entity from hash on mount
 	useEffect(() => {

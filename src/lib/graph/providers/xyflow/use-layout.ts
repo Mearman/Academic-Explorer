@@ -410,7 +410,7 @@ export function useLayout(
 				}, 100);
 			}
 		});
-	}, [layout, onLayoutChange, stopLayout, fitView, fitViewAfterLayout, getViewport, containerDimensions, getNodes, getEdges, pinnedNodes, setNodes]);
+	}, [layout, onLayoutChange, stopLayout, fitView, fitViewAfterLayout, getViewport, containerDimensions, getNodes, getEdges, setNodes]);
 
 	// Main layout application function - D3 force only
 	const applyLayout = useCallback(() => {
