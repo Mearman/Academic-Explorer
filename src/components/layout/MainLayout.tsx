@@ -208,7 +208,7 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
 			</AppShell.Header>
 
 			{/* Left Sidebar - Search and Filters */}
-			<AppShell.Navbar style={{ overflow: "auto" }}>
+			<AppShell.Navbar style={{ display: "flex", flexDirection: "column", height: "calc(100vh - 60px)", maxHeight: "calc(100vh - 60px)", overflowY: "auto", overflowX: "hidden" }}>
 				{leftSidebarEffectivelyVisible ? <LeftSidebar /> : <LeftRibbon />}
 			</AppShell.Navbar>
 
@@ -253,7 +253,7 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
 			</AppShell.Main>
 
 			{/* Right Sidebar - Entity Details and Preview */}
-			<AppShell.Aside style={{ height: "100%", overflow: "auto" }}>
+			<AppShell.Aside style={{ display: "flex", flexDirection: "column", height: "calc(100vh - 60px)", maxHeight: "calc(100vh - 60px)", overflowY: "auto", overflowX: "hidden" }}>
 				{rightSidebarEffectivelyVisible ? <RightSidebar /> : <RightRibbon />}
 			</AppShell.Aside>
 		</AppShell>
