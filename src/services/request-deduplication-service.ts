@@ -180,7 +180,6 @@ export class RequestDeduplicationService {
 		if (entityId.includes("/P")) return "publishers";
 		if (entityId.includes("/F")) return "funders";
 		if (entityId.includes("/K")) return "keywords";
-		if (entityId.includes("/G")) return "geo";
 		return "unknown";
 	}
 

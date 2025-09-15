@@ -666,7 +666,6 @@ export class GraphDataService {
 				...results.publishers,
 				...results.funders,
 				...results.keywords,
-				...results.geo,
 			];
 
 			// Track search statistics
@@ -679,7 +678,6 @@ export class GraphDataService {
 			searchStats.set("publishers", results.publishers.length);
 			searchStats.set("funders", results.funders.length);
 			searchStats.set("keywords", results.keywords.length);
-			searchStats.set("geo", results.geo.length);
 
 			const { nodes, edges } = this.transformSearchResults(flatResults);
 
