@@ -19,6 +19,7 @@ import {
 	Switch,
 	Tooltip
 } from "@mantine/core"
+import { CollapsibleSection } from "@/components/molecules/CollapsibleSection"
 import { useLayoutStore } from "@/stores/layout-store"
 import { useGraphStore } from "@/stores/graph-store"
 import { useThemeColors } from "@/hooks/use-theme-colors"
@@ -31,7 +32,8 @@ import {
 	IconBookmark,
 	IconSearch,
 	IconStar,
-	IconTarget
+	IconTarget,
+	IconEye
 } from "@tabler/icons-react"
 
 export const RightSidebar: React.FC = () => {
