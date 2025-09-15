@@ -125,24 +125,95 @@ const GraphNavigationInner: React.FC<GraphNavigationProps> = ({ className, style
 		}
 	}, []);
 
-	// Reusable function to center on a specific node
-	const centerOnNode = useCallback((nodeId: string, delay: number = 200) => {
-		setTimeout(() => {
+	// Smoothly animate a node to the center of the viewport (0,0) and keep it visible
+	const centerOnNode = useCallback((nodeId: string, currentPosition?: { x: number; y: number }) => {
+		let startX: number;
+		let startY: number;
+
+		if (currentPosition) {
+			// Use provided position for immediate start
+			startX = currentPosition.x;
+			startY = currentPosition.y;
+		} else {
+			// Fallback to searching for the node
 			const currentNodes = reactFlowInstance.getNodes();
 			const targetNode = currentNodes.find(n => n.id === nodeId);
-			if (targetNode) {
-				void reactFlowInstance.fitView({
-					nodes: [targetNode],
-					padding: 0.3,
-					duration: 500
-				});
-				logger.info("ui", "Auto-centered view on selected node", {
+
+			if (!targetNode) {
+				logger.info("ui", "Cannot center node - node not found", { nodeId }, "GraphNavigation");
+				return;
+			}
+
+			startX = targetNode.position.x;
+			startY = targetNode.position.y;
+		}
+		// Always animate to (0,0) - the force simulation center
+		const targetX = 0;
+		const targetY = 0;
+
+		// Smooth animation parameters
+		const duration = 800; // ms
+		const startTime = Date.now();
+
+		// Easing function for smooth animation
+		const easeInOutCubic = (t: number): number => {
+			return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+		};
+
+		// Animation loop
+		const animate = () => {
+			const elapsed = Date.now() - startTime;
+			const progress = Math.min(elapsed / duration, 1);
+			const easedProgress = easeInOutCubic(progress);
+
+			// Interpolate node position towards (0,0)
+			const currentX = startX + (targetX - startX) * easedProgress;
+			const currentY = startY + (targetY - startY) * easedProgress;
+
+			// Update node position
+			setNodes(currentNodes =>
+				currentNodes.map(node =>
+					node.id === nodeId
+						? { ...node, position: { x: currentX, y: currentY } }
+						: node
+				)
+			);
+
+			// Simultaneously pan the viewport to keep the node centered in view
+			void reactFlowInstance.setCenter(currentX, currentY, {
+				zoom: reactFlowInstance.getZoom(),
+				duration: 0 // Instant viewport updates for smooth tracking
+			});
+
+			// Continue animation or finish
+			if (progress < 1) {
+				requestAnimationFrame(animate);
+			} else {
+				// Animation complete - node is now at (0,0), add smooth final viewport adjustment
+				setTimeout(() => {
+					const currentNodes = reactFlowInstance.getNodes();
+					const finalNode = currentNodes.find(n => n.id === nodeId);
+					if (finalNode) {
+						void reactFlowInstance.fitView({
+							nodes: [finalNode],
+							padding: 0.3,
+							duration: 300
+						});
+					}
+				}, 50);
+
+				logger.info("ui", "Smoothly animated selected node to center (0,0)", {
 					nodeId: nodeId,
-					position: targetNode.position
+					startPosition: { x: startX, y: startY },
+					finalPosition: { x: targetX, y: targetY },
+					duration: elapsed
 				}, "GraphNavigation");
 			}
-		}, delay);
-	}, [reactFlowInstance]);
+		};
+
+		// Start the animation
+		requestAnimationFrame(animate);
+	}, [reactFlowInstance, setNodes]);
 
 	const { isRunning: _isLayoutRunning, restartLayout } = useLayout(
 		currentLayout,
@@ -210,8 +281,8 @@ const GraphNavigationInner: React.FC<GraphNavigationProps> = ({ className, style
 				store.clearAllPinnedNodes(); // Clear previous pinned nodes
 				store.pinNode(node.id); // Pin the new node at its current position
 
-				// Center the view on the pinned node with a small delay to ensure pinning state is processed
-				centerOnNode(node.id, 200);
+				// Smoothly animate the pinned node to the center of the viewport
+				centerOnNode(node.id, node.position);
 
 				// Expand the node respecting traversal depth setting
 				void expandNode(node.id);
@@ -402,8 +473,8 @@ const GraphNavigationInner: React.FC<GraphNavigationProps> = ({ className, style
 					// Update preview in sidebar
 					setPreviewEntity(matchingNode.entityId);
 
-					// Center the view on the selected node
-					centerOnNode(matchingNode.id, 200);
+					// Smoothly animate the selected node to the center of the viewport
+					centerOnNode(matchingNode.id, matchingNode.position);
 
 					logger.info("graph", "Selected and auto-centered entity from hash URL", {
 						currentHash,
@@ -455,8 +526,8 @@ const GraphNavigationInner: React.FC<GraphNavigationProps> = ({ className, style
 						// Update preview in sidebar
 						setPreviewEntity(matchingNode.entityId);
 
-						// Center the view on the selected node
-						centerOnNode(matchingNode.id, 200);
+						// Smoothly animate the selected node to the center of the viewport
+						centerOnNode(matchingNode.id, matchingNode.position);
 
 						logger.info("graph", "Selected and auto-centered entity from hash change", {
 							currentHash,
