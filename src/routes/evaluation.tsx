@@ -3,7 +3,7 @@
  * Provides PhD thesis evaluation capabilities using systematic literature reviews
  */
 
-import { createFileRoute } from "@tanstack/react-router"
+import { createFileRoute, useNavigate } from "@tanstack/react-router"
 import React from "react"
 import { IconChartBar, IconSearch, IconTrendingUp, IconBulb } from "@tabler/icons-react"
 import { logger } from "@/lib/logger"
@@ -13,6 +13,8 @@ export const Route = createFileRoute("/evaluation")({
 })
 
 function EvaluationDashboard() {
+	const navigate = useNavigate();
+
 	return (
 		<div style={{ padding: "24px", maxWidth: "1200px", margin: "0 auto" }}>
 			{/* Header */}
@@ -70,8 +72,8 @@ function EvaluationDashboard() {
 					</p>
 					<button
 						onClick={() => {
-							// TODO: Navigate to datasets page
 							logger.debug("ui", "Navigate to datasets clicked", {}, "EvaluationDashboard");
+							void navigate({ to: "/evaluation/datasets" });
 						}}
 						style={{
 							backgroundColor: "#3b82f6",
