@@ -158,7 +158,7 @@ export const useGraphStore = create<GraphState>()(
 			nodeDepths: new Map(),
 			provider: null,
 			providerType: "xyflow",
-			visibleEntityTypes: new Set(["works", "authors", "sources", "institutions", "topics", "publishers", "funders", "keywords", "geo"]),
+			visibleEntityTypes: new Set(["works", "authors", "sources", "institutions", "topics", "concepts", "publishers", "funders", "keywords"]),
 			lastSearchStats: new Map(),
 			visibleEdgeTypes: new Set([
 				RelationType.AUTHORED,
@@ -524,7 +524,7 @@ export const useGraphStore = create<GraphState>()(
 			},
 
 			setAllEntityTypesVisible: (visible) => {
-				const allTypes: EntityType[] = ["works", "authors", "sources", "institutions", "topics", "publishers", "funders", "keywords", "geo"];
+				const allTypes: EntityType[] = ["works", "authors", "sources", "institutions", "topics", "concepts", "publishers", "funders", "keywords"];
 				set({
 					visibleEntityTypes: visible ? new Set(allTypes) : new Set()
 				});
@@ -854,7 +854,7 @@ export const useGraphStore = create<GraphState>()(
 					// Type guard: only valid EntityType values
 					const validEntityTypes = state.visibleEntityTypes.filter((type): type is EntityType =>
 						typeof type === "string" &&
-						["works", "authors", "sources", "institutions", "topics", "publishers", "funders", "keywords", "geo"].includes(type)
+						["works", "authors", "sources", "institutions", "topics", "concepts", "publishers", "funders", "keywords"].includes(type)
 					);
 					state.visibleEntityTypes = new Set(validEntityTypes);
 				}

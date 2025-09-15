@@ -59,7 +59,6 @@ const initializeDefaultSettings = (): Record<ExpansionTarget, ExpansionSettings>
 		publishers: getDefaultSettingsForTarget("publishers"),
 		funders: getDefaultSettingsForTarget("funders"),
 		keywords: getDefaultSettingsForTarget("keywords"),
-		geo: getDefaultSettingsForTarget("geo"),
 
 		// Relation types - each unique and specific
 		[RelationType.AUTHORED]: getDefaultSettingsForTarget(RelationType.AUTHORED),
