@@ -56,8 +56,7 @@ export const RichEntityDisplay: React.FC<RichEntityDisplayProps> = ({
 }) => {
 	const { colors } = useThemeColors();
 	const { data: rawData, isLoading } = useRawEntityData({
-		entityId: entity.entityId,
-		enabled: true
+		entityId: entity.entityId
 	});
 	const { handleSidebarEntityClick } = useEntityInteraction();
 
