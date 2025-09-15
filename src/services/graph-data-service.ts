@@ -67,11 +67,15 @@ export class GraphDataService {
 			}
 
 			// Fetch entity with rate-limited OpenAlex client
-			const entity = await rateLimitedOpenAlex.getEntity(detection.normalizedId);
+			// For OpenAlex IDs, construct the full URL
+			const apiEntityId = detection.idType === "openalex"
+				? `https://openalex.org/${detection.normalizedId}`
+				: detection.normalizedId;
+			const entity = await rateLimitedOpenAlex.getEntity(apiEntityId);
 
 			// Check if entity was successfully fetched
 			if (!entity) {
-				throw new Error(`Entity not found or failed to fetch: ${detection.normalizedId}`);
+				throw new Error(`Entity not found or failed to fetch: ${apiEntityId}`);
 			}
 
 			// Transform to graph data
@@ -163,11 +167,15 @@ export class GraphDataService {
 			}
 
 			// Fetch entity with rate-limited OpenAlex client
-			const entity = await rateLimitedOpenAlex.getEntity(detection.normalizedId);
+			// For OpenAlex IDs, construct the full URL
+			const apiEntityId = detection.idType === "openalex"
+				? `https://openalex.org/${detection.normalizedId}`
+				: detection.normalizedId;
+			const entity = await rateLimitedOpenAlex.getEntity(apiEntityId);
 
 			// Check if entity was successfully fetched
 			if (!entity) {
-				throw new Error(`Entity not found or failed to fetch: ${detection.normalizedId}`);
+				throw new Error(`Entity not found or failed to fetch: ${apiEntityId}`);
 			}
 
 			// Transform to graph data
