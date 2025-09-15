@@ -397,7 +397,8 @@ const GraphNavigationInner: React.FC<GraphNavigationProps> = ({ className, style
 				setEdges(xyEdges);
 			} else {
 				// Incremental update: Get only new and updated data and apply changes
-				const { nodes: newXYNodes, edges: newXYEdges } = providerRef.current.getXYFlowDataForNodes(Array.from(newNodeIds));
+				const { nodes: newXYNodes } = providerRef.current.getXYFlowDataForNodes(Array.from(newNodeIds));
+				const { edges: newXYEdges } = providerRef.current.getXYFlowDataForEdges(Array.from(newEdgeIds));
 				const { nodes: updatedXYNodes } = providerRef.current.getXYFlowDataForNodes(Array.from(updatedNodeIds));
 
 				// Apply incremental changes using ReactFlow's utilities

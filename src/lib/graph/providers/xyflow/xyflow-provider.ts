@@ -352,6 +352,20 @@ export class XYFlowProvider implements GraphProvider {
 		};
 	}
 
+	// Get XYFlow data for specific edges only
+	getXYFlowDataForEdges(edgeIds: string[]): { nodes: XYNode[]; edges: XYEdge[] } {
+		const requestedEdges = edgeIds
+			.map(id => this.edges.get(id))
+			.filter((edge): edge is GraphEdge => edge !== undefined)
+			.map(edge => this.toXYEdge(edge));
+
+		// No nodes needed for edge-only data
+		return {
+			nodes: [],
+			edges: requestedEdges
+		};
+	}
+
 	removeNode(nodeId: string): void {
 		this.nodes.delete(nodeId);
 		// Also remove connected edges
