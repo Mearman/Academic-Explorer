@@ -64,7 +64,7 @@ export interface GraphNode {
     citationCount?: number;
     year?: number;
     openAccess?: boolean;
-    isPlaceholder?: boolean;
+    hydrationLevel?: "minimal" | "full"; // Track data completeness level
     isLoading?: boolean;
     loadingError?: string;
     dataLoadedAt?: number; // timestamp
