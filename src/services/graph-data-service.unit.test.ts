@@ -28,12 +28,17 @@ vi.mock("@/lib/openalex/rate-limited-client", () => ({
 	rateLimitedOpenAlex: {
 		getEntity: vi.fn(),
 		search: vi.fn(),
+		searchAll: vi.fn(),
 	},
 }));
 
 vi.mock("@/lib/graph/utils/entity-detection");
 vi.mock("@/lib/entities");
-vi.mock("@/stores/graph-store");
+vi.mock("@/stores/graph-store", () => ({
+	useGraphStore: {
+		getState: vi.fn(),
+	},
+}));
 vi.mock("@/lib/logger", () => ({
 	logger: {
 		info: vi.fn(),
@@ -159,14 +164,14 @@ describe("GraphDataService", () => {
 			calculateNodeDepths: vi.fn(),
 			pinNode: vi.fn(),
 			selectNode: vi.fn(),
+			updateSearchStats: vi.fn(),
 			nodes: new Map(),
 			edges: new Map(),
+			pinnedNodes: new Set(),
 		};
 
 		// Mock useGraphStore properly
-		Object.assign(useGraphStore, {
-			getState: vi.fn(() => mockStore),
-		});
+		vi.mocked(useGraphStore.getState).mockReturnValue(mockStore);
 
 		// Mock detector
 		mockDetector = {
@@ -175,7 +180,14 @@ describe("GraphDataService", () => {
 		vi.mocked(EntityDetector).mockImplementation(() => mockDetector);
 
 		// Mock EntityFactory
+		const mockEntity = {
+			expand: vi.fn().mockResolvedValue({
+				nodes: [],
+				edges: [],
+			}),
+		};
 		vi.mocked(EntityFactory.isSupported).mockReturnValue(true);
+		vi.mocked(EntityFactory.create).mockReturnValue(mockEntity);
 
 		// Reset all mocks before creating service
 		vi.clearAllMocks();
@@ -488,19 +500,25 @@ describe("GraphDataService", () => {
 	describe("searchAndVisualize", () => {
 		const searchQuery = "machine learning";
 		const searchOptions: SearchOptions = {
-			entityType: "works",
+			entityTypes: ["works"],
 			limit: 10,
 		};
 
 		beforeEach(() => {
-			vi.mocked(rateLimitedOpenAlex.search).mockResolvedValue([mockWorkEntity]);
+			vi.mocked(rateLimitedOpenAlex.searchAll).mockResolvedValue({
+				works: [mockWorkEntity],
+				authors: [],
+				sources: [],
+				institutions: [],
+				meta: { count: 1, per_page: 25, page: 1 },
+			});
 		});
 
 		it("should perform search and visualize results", async () => {
 			await service.searchAndVisualize(searchQuery, searchOptions);
 
 			expect(mockStore.setLoading).toHaveBeenCalledWith(true);
-			expect(rateLimitedOpenAlex.search).toHaveBeenCalledWith(
+			expect(rateLimitedOpenAlex.searchAll).toHaveBeenCalledWith(
 				searchQuery,
 				expect.objectContaining(searchOptions)
 			);
@@ -512,7 +530,7 @@ describe("GraphDataService", () => {
 
 		it("should handle search errors", async () => {
 			const searchError = new Error("Search failed");
-			vi.mocked(rateLimitedOpenAlex.search).mockRejectedValue(searchError);
+			vi.mocked(rateLimitedOpenAlex.searchAll).mockRejectedValue(searchError);
 
 			await service.searchAndVisualize(searchQuery, searchOptions);
 
@@ -529,11 +547,11 @@ describe("GraphDataService", () => {
 		it("should use default options when none provided", async () => {
 			await service.searchAndVisualize(searchQuery, {});
 
-			expect(rateLimitedOpenAlex.search).toHaveBeenCalledWith(
+			expect(rateLimitedOpenAlex.searchAll).toHaveBeenCalledWith(
 				searchQuery,
 				expect.objectContaining({
-					entityType: undefined,
-					limit: undefined,
+					entityTypes: undefined,
+					limit: 20,
 				})
 			);
 		});
@@ -848,9 +866,15 @@ describe("GraphDataService", () => {
 		describe("search result transformation", () => {
 			it("should transform search results with minimal connections", async () => {
 				const searchResults = [mockWorkEntity, mockAuthorEntity];
-				vi.mocked(rateLimitedOpenAlex.search).mockResolvedValue(searchResults);
+				vi.mocked(rateLimitedOpenAlex.searchAll).mockResolvedValue({
+					works: [mockWorkEntity],
+					authors: [mockAuthorEntity],
+					sources: [],
+					institutions: [],
+					meta: { count: 2, per_page: 25, page: 1 },
+				});
 
-				await service.searchAndVisualize("test query", { entityType: "works" });
+				await service.searchAndVisualize("test query", { entityTypes: ["works"] });
 
 				expect(mockStore.addNodes).toHaveBeenCalledWith(
 					expect.arrayContaining([
@@ -1050,9 +1074,15 @@ describe("GraphDataService", () => {
 				display_name: `Work ${i}`,
 			}));
 
-			vi.mocked(rateLimitedOpenAlex.search).mockResolvedValue(largeResultSet);
+			vi.mocked(rateLimitedOpenAlex.searchAll).mockResolvedValue({
+				works: largeResultSet,
+				authors: [],
+				sources: [],
+				institutions: [],
+				meta: { count: 100, per_page: 25, page: 1 },
+			});
 
-			await service.searchAndVisualize("large query", { entityType: "works", limit: 100 });
+			await service.searchAndVisualize("large query", { entityTypes: ["works"], limit: 100 });
 
 			expect(mockStore.addNodes).toHaveBeenCalledWith(
 				expect.arrayContaining(
