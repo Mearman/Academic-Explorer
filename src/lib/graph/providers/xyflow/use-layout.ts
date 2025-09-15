@@ -132,10 +132,10 @@ export function useLayout(
 		const centerStrength = 0.01;
 		const collisionRadius = 120;
 		const collisionStrength = 1.0;
-		const velocityDecay = 0.1; // Very low decay for maximum movement
+		const velocityDecay = 0.1;
 		const alpha = 1;
-		const alphaDecay = 0.02; // Faster decay for reasonable simulation time
-		const minAlpha = 0.1; // Higher threshold for quicker stability
+		const alphaDecay = 0.02;
+		const minAlpha = 0.1;
 
 		logger.info(
 			"graph",
