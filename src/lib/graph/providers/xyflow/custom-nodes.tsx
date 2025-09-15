@@ -14,9 +14,11 @@ import {
 	IconUser,
 	IconBook,
 	IconBuilding,
-	IconPin
+	IconPin,
+	IconPinFilled
 } from "@tabler/icons-react";
 import type { EntityType, ExternalIdentifier } from "../../types";
+import { useGraphStore } from "@/stores/graph-store";
 
 // Helper function for safe metadata access
 const _renderMetadataValue = (value: unknown): React.ReactNode => {
@@ -24,6 +26,61 @@ const _renderMetadataValue = (value: unknown): React.ReactNode => {
 		return value;
 	}
 	return null;
+};
+
+// Pin toggle button component
+interface PinToggleButtonProps {
+  nodeId: string;
+  isPinned: boolean;
+  className?: string;
+}
+
+const PinToggleButton: React.FC<PinToggleButtonProps> = ({ nodeId, isPinned, className }) => {
+	const { pinNode, unpinNode } = useGraphStore();
+
+	const handleTogglePin = (e: React.MouseEvent) => {
+		e.stopPropagation(); // Prevent node selection/dragging
+		if (isPinned) {
+			unpinNode(nodeId);
+		} else {
+			pinNode(nodeId);
+		}
+	};
+
+	return (
+		<button
+			className={`nodrag ${className || ""}`}
+			onClick={handleTogglePin}
+			style={{
+				position: "absolute",
+				top: "4px",
+				right: "4px",
+				background: "rgba(0, 0, 0, 0.7)",
+				border: "none",
+				borderRadius: "4px",
+				padding: "2px",
+				display: "flex",
+				alignItems: "center",
+				justifyContent: "center",
+				cursor: "pointer",
+				transition: "all 0.2s ease",
+				zIndex: 10,
+			}}
+			onMouseEnter={(e) => {
+				e.currentTarget.style.background = "rgba(0, 0, 0, 0.9)";
+			}}
+			onMouseLeave={(e) => {
+				e.currentTarget.style.background = "rgba(0, 0, 0, 0.7)";
+			}}
+			title={isPinned ? "Unpin node" : "Pin node"}
+		>
+			{isPinned ? (
+				<IconPinFilled size={12} style={{ color: "#ffc107" }} />
+			) : (
+				<IconPin size={12} style={{ color: "#ffffff" }} />
+			)}
+		</button>
+	);
 };
 
 interface NodeData {
@@ -61,6 +118,7 @@ const baseNodeStyle: React.CSSProperties = {
 	lineHeight: "1.2",
 	width: "fit-content",
 	height: "fit-content",
+	position: "relative", // Enable absolute positioning for pin button
 };
 
 // Entity-specific colors
@@ -117,8 +175,12 @@ const getEntityTypeLabel = (entityType: EntityType): string => {
 
 // Custom node component
 export const CustomNode: React.FC<CustomNodeProps> = ({ data, selected }) => {
+	const { isPinned } = useGraphStore();
 	const backgroundColor = getEntityColor(data.entityType);
 	const typeLabel = getEntityTypeLabel(data.entityType);
+
+	// Get current pin state from store
+	const isNodePinned = isPinned(data.entityId);
 
 	// Get primary external ID for display
 	const primaryExternalId = data.externalIds.length > 0 ? data.externalIds[0] : undefined;
@@ -128,10 +190,10 @@ export const CustomNode: React.FC<CustomNodeProps> = ({ data, selected }) => {
 		backgroundColor,
 		boxShadow: selected
 			? "0 0 0 2px rgba(52, 152, 219, 0.5)"
-			: data.isPinned
+			: isNodePinned
 				? "0 0 0 3px rgba(255, 193, 7, 0.8), 0 0 15px rgba(255, 193, 7, 0.4)"
 				: "none",
-		border: data.isPinned ? "2px solid #ffc107" : "none",
+		border: isNodePinned ? "2px solid #ffc107" : "none",
 	};
 
 	return (
@@ -186,9 +248,11 @@ export const CustomNode: React.FC<CustomNodeProps> = ({ data, selected }) => {
 				style={{ background: "#555", width: "8px", height: "8px" }}
 			/>
 
+			{/* Pin toggle button */}
+			<PinToggleButton nodeId={data.entityId} isPinned={isNodePinned} />
+
 			{/* Node content */}
 			<div style={{ marginBottom: "2px", display: "flex", alignItems: "center", gap: "4px" }}>
-				{data.isPinned && <IconPin size={12} style={{ color: "#ffc107" }} />}
 				<span>{data.label}</span>
 			</div>
 
@@ -248,15 +312,20 @@ export const CustomNode: React.FC<CustomNodeProps> = ({ data, selected }) => {
 
 // Work-specific node
 export const WorkNode: React.FC<CustomNodeProps> = ({ data, selected }) => {
+	const { isPinned } = useGraphStore();
+
+	// Get current pin state from store
+	const isNodePinned = isPinned(data.entityId);
+
 	const nodeStyle: React.CSSProperties = {
 		...baseNodeStyle,
 		backgroundColor: "#e74c3c",
 		boxShadow: selected
 			? "0 0 0 2px rgba(52, 152, 219, 0.5)"
-			: data.isPinned
+			: isNodePinned
 				? "0 0 0 3px rgba(255, 193, 7, 0.8), 0 0 15px rgba(255, 193, 7, 0.4)"
 				: "none",
-		border: data.isPinned ? "2px solid #ffc107" : "none",
+		border: isNodePinned ? "2px solid #ffc107" : "none",
 	};
 
 	return (
@@ -271,8 +340,10 @@ export const WorkNode: React.FC<CustomNodeProps> = ({ data, selected }) => {
 			<Handle type="source" position={Position.Bottom} id="bottom-source" style={{ background: "#555", width: "8px", height: "8px" }} />
 			<Handle type="source" position={Position.Left} id="left-source" style={{ background: "#555", width: "8px", height: "8px" }} />
 
+			{/* Pin toggle button */}
+			<PinToggleButton nodeId={data.entityId} isPinned={isNodePinned} />
+
 			<div style={{ marginBottom: "4px", display: "flex", alignItems: "center", gap: "4px" }}>
-				{data.isPinned && <IconPin size={12} style={{ color: "#ffc107" }} />}
 				<IconFile size={14} /> {data.label}
 			</div>
 
@@ -293,15 +364,20 @@ export const WorkNode: React.FC<CustomNodeProps> = ({ data, selected }) => {
 
 // Author-specific node
 export const AuthorNode: React.FC<CustomNodeProps> = ({ data, selected }) => {
+	const { isPinned } = useGraphStore();
+
+	// Get current pin state from store
+	const isNodePinned = isPinned(data.entityId);
+
 	const nodeStyle: React.CSSProperties = {
 		...baseNodeStyle,
 		backgroundColor: "#3498db",
 		boxShadow: selected
 			? "0 0 0 2px rgba(52, 152, 219, 0.5)"
-			: data.isPinned
+			: isNodePinned
 				? "0 0 0 3px rgba(255, 193, 7, 0.8), 0 0 15px rgba(255, 193, 7, 0.4)"
 				: "none",
-		border: data.isPinned ? "2px solid #ffc107" : "none",
+		border: isNodePinned ? "2px solid #ffc107" : "none",
 	};
 
 	const orcid = data.externalIds.find(id => id.type === "orcid");
@@ -318,8 +394,10 @@ export const AuthorNode: React.FC<CustomNodeProps> = ({ data, selected }) => {
 			<Handle type="source" position={Position.Bottom} id="bottom-source" style={{ background: "#555", width: "8px", height: "8px" }} />
 			<Handle type="source" position={Position.Left} id="left-source" style={{ background: "#555", width: "8px", height: "8px" }} />
 
+			{/* Pin toggle button */}
+			<PinToggleButton nodeId={data.entityId} isPinned={isNodePinned} />
+
 			<div style={{ marginBottom: "4px", display: "flex", alignItems: "center", gap: "4px" }}>
-				{data.isPinned && <IconPin size={12} style={{ color: "#ffc107" }} />}
 				<IconUser size={14} /> {data.label}
 			</div>
 
@@ -334,15 +412,20 @@ export const AuthorNode: React.FC<CustomNodeProps> = ({ data, selected }) => {
 
 // Source-specific node
 export const SourceNode: React.FC<CustomNodeProps> = ({ data, selected }) => {
+	const { isPinned } = useGraphStore();
+
+	// Get current pin state from store
+	const isNodePinned = isPinned(data.entityId);
+
 	const nodeStyle: React.CSSProperties = {
 		...baseNodeStyle,
 		backgroundColor: "#2ecc71",
 		boxShadow: selected
 			? "0 0 0 2px rgba(52, 152, 219, 0.5)"
-			: data.isPinned
+			: isNodePinned
 				? "0 0 0 3px rgba(255, 193, 7, 0.8), 0 0 15px rgba(255, 193, 7, 0.4)"
 				: "none",
-		border: data.isPinned ? "2px solid #ffc107" : "none",
+		border: isNodePinned ? "2px solid #ffc107" : "none",
 	};
 
 	const issn = data.externalIds.find(id => id.type === "issn_l");
@@ -359,8 +442,10 @@ export const SourceNode: React.FC<CustomNodeProps> = ({ data, selected }) => {
 			<Handle type="source" position={Position.Bottom} id="bottom-source" style={{ background: "#555", width: "8px", height: "8px" }} />
 			<Handle type="source" position={Position.Left} id="left-source" style={{ background: "#555", width: "8px", height: "8px" }} />
 
+			{/* Pin toggle button */}
+			<PinToggleButton nodeId={data.entityId} isPinned={isNodePinned} />
+
 			<div style={{ marginBottom: "4px", display: "flex", alignItems: "center", gap: "4px" }}>
-				{data.isPinned && <IconPin size={12} style={{ color: "#ffc107" }} />}
 				<IconBook size={14} /> {data.label}
 			</div>
 
@@ -375,15 +460,20 @@ export const SourceNode: React.FC<CustomNodeProps> = ({ data, selected }) => {
 
 // Institution-specific node
 export const InstitutionNode: React.FC<CustomNodeProps> = ({ data, selected }) => {
+	const { isPinned } = useGraphStore();
+
+	// Get current pin state from store
+	const isNodePinned = isPinned(data.entityId);
+
 	const nodeStyle: React.CSSProperties = {
 		...baseNodeStyle,
 		backgroundColor: "#f39c12",
 		boxShadow: selected
 			? "0 0 0 2px rgba(52, 152, 219, 0.5)"
-			: data.isPinned
+			: isNodePinned
 				? "0 0 0 3px rgba(255, 193, 7, 0.8), 0 0 15px rgba(255, 193, 7, 0.4)"
 				: "none",
-		border: data.isPinned ? "2px solid #ffc107" : "none",
+		border: isNodePinned ? "2px solid #ffc107" : "none",
 	};
 
 	const ror = data.externalIds.find(id => id.type === "ror");
@@ -400,8 +490,10 @@ export const InstitutionNode: React.FC<CustomNodeProps> = ({ data, selected }) =
 			<Handle type="source" position={Position.Bottom} id="bottom-source" style={{ background: "#555", width: "8px", height: "8px" }} />
 			<Handle type="source" position={Position.Left} id="left-source" style={{ background: "#555", width: "8px", height: "8px" }} />
 
+			{/* Pin toggle button */}
+			<PinToggleButton nodeId={data.entityId} isPinned={isNodePinned} />
+
 			<div style={{ marginBottom: "4px", display: "flex", alignItems: "center", gap: "4px" }}>
-				{data.isPinned && <IconPin size={12} style={{ color: "#ffc107" }} />}
 				<IconBuilding size={14} /> {data.label}
 			</div>
 
