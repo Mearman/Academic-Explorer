@@ -11,14 +11,20 @@ export function useThemeColors() {
 
 	// Resolve the actual color scheme when colorScheme is 'auto'
 	const resolvedColorScheme = colorScheme === "auto"
-		? (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light")
+		? (() => {
+			try {
+				return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+			} catch {
+				return "light"; // Fallback to light mode if matchMedia fails
+			}
+		})()
 		: colorScheme;
 
 	const isDark = resolvedColorScheme === "dark";
 
 	// Base color utilities
 	const getColor = (color: string, shade: number = 5) => {
-		return theme.colors[color][shade] || color;
+		return theme.colors[color]?.[shade] || color;
 	};
 
 	// Semantic colors that adapt to light/dark mode
@@ -47,22 +53,22 @@ export function useThemeColors() {
 		},
 
 		// Semantic colors
-		primary: theme.colors.blue[5],
-		success: theme.colors.green[5] || "#10b981",
-		warning: theme.colors.yellow[5] || "#f59e0b",
-		error: theme.colors.red[5] || "#ef4444",
-		info: theme.colors.blue[5],
+		primary: theme.colors.blue?.[5] || "#228be6",
+		success: theme.colors.green?.[5] || "#10b981",
+		warning: theme.colors.yellow?.[5] || "#f59e0b",
+		error: theme.colors.red?.[5] || "#ef4444",
+		info: theme.colors.blue?.[5] || "#228be6",
 
 		// Academic entity colors
 		entity: {
-			work: theme.colors.blue[5],
-			author: theme.colors.author[5] || "#10b981",
-			source: theme.colors.source[5] || "#8b5cf6",
-			institution: theme.colors.institution[5] || "#f59e0b",
-			concept: theme.colors.red[5] || "#ef4444",
-			topic: theme.colors.red[5] || "#ef4444",
-			publisher: theme.colors.cyan[5] || "#06b6d4",
-			funder: theme.colors.pink[5] || "#ec4899",
+			work: theme.colors.blue?.[5] || "#228be6",
+			author: theme.colors.author?.[5] || "#10b981",
+			source: theme.colors.source?.[5] || "#8b5cf6",
+			institution: theme.colors.institution?.[5] || "#f59e0b",
+			concept: theme.colors.red?.[5] || "#ef4444",
+			topic: theme.colors.red?.[5] || "#ef4444",
+			publisher: theme.colors.cyan?.[5] || "#06b6d4",
+			funder: theme.colors.pink?.[5] || "#ec4899",
 		},
 	};
 
