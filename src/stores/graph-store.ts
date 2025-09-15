@@ -132,12 +132,14 @@ interface GraphState {
   findShortestPath: (sourceId: string, targetId: string) => string[];
   getConnectedComponent: (nodeId: string) => Set<string>;
 
-  // Lazy loading support
+  // Incremental hydration support
   createPlaceholderNode: (entityId: string, type: EntityType, label?: string) => GraphNode;
-  markNodeAsLoading: (nodeId: string) => void;
+  markNodeAsLoading: (nodeId: string, loading?: boolean) => void;
   markNodeAsLoaded: (nodeId: string, fullData: Partial<GraphNode>) => void;
   markNodeAsError: (nodeId: string, error: string) => void;
-  getPlaceholderNodes: () => GraphNode[];
+  getPlaceholderNodes: () => GraphNode[]; // Legacy - returns minimal nodes
+  getMinimalNodes: () => GraphNode[];
+  getFullyHydratedNodes: () => GraphNode[];
   getLoadingNodes: () => GraphNode[];
   hasPlaceholderOrLoadingNodes: () => boolean;
 }
@@ -771,16 +773,21 @@ export const useGraphStore = create<GraphState>()(
 				return placeholderNode;
 			},
 
-			markNodeAsLoading: (nodeId) => {
+			markNodeAsLoading: (nodeId, loading = true) => {
 				set((draft) => {
 					const node = draft.nodes.get(nodeId);
 					if (node) {
 						node.metadata = {
 							...node.metadata,
-							isLoading: true,
-							loadingError: undefined,
+							isLoading: loading,
+							loadingError: loading ? undefined : node.metadata?.loadingError,
 						};
-						node.label = node.label.includes("Loading") ? node.label : `Loading ${node.label}...`;
+						if (loading) {
+							node.label = node.label.includes("Loading") ? node.label : `Loading ${node.label}...`;
+						} else {
+							// Remove "Loading " prefix when clearing loading state
+							node.label = node.label.replace(/^Loading /, "").replace(/\.\.\.$/, "");
+						}
 					}
 				});
 			},
@@ -823,7 +830,16 @@ export const useGraphStore = create<GraphState>()(
 
 			getPlaceholderNodes: () => {
 				const { nodes } = get();
-				return Array.from(nodes.values()).filter(node => node.metadata?.isPlaceholder);
+				// Legacy method - now returns nodes with minimal hydration level
+				return Array.from(nodes.values()).filter(node => node.metadata?.hydrationLevel === "minimal");
+			},
+			getMinimalNodes: () => {
+				const { nodes } = get();
+				return Array.from(nodes.values()).filter(node => node.metadata?.hydrationLevel === "minimal");
+			},
+			getFullyHydratedNodes: () => {
+				const { nodes } = get();
+				return Array.from(nodes.values()).filter(node => node.metadata?.hydrationLevel === "full");
 			},
 
 			getLoadingNodes: () => {
