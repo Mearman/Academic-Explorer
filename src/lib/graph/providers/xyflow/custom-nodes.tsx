@@ -249,7 +249,7 @@ export const CustomNode: React.FC<CustomNodeProps> = ({ data, selected }) => {
 				style={{ background: "#555", width: "8px", height: "8px" }}
 			/>
 
-			{/* Top bar with node type and pin button - flush to edges */}
+			{/* Top bar with node ID and pin button - flush to edges */}
 			<div style={{
 				display: "flex",
 				justifyContent: "space-between",
@@ -264,8 +264,10 @@ export const CustomNode: React.FC<CustomNodeProps> = ({ data, selected }) => {
 				<span style={{
 					display: "flex",
 					alignItems: "center",
-					paddingLeft: "8px" // Only the text gets padding
-				}}>{typeLabel}</span>
+					paddingLeft: "8px", // Only the text gets padding
+					fontFamily: "monospace",
+					fontSize: "8px"
+				}}>{data.entityId}</span>
 				<PinToggleButton nodeId={data.entityId} isPinned={isNodePinned} />
 			</div>
 
@@ -355,7 +357,7 @@ export const WorkNode: React.FC<CustomNodeProps> = ({ data, selected }) => {
 			<Handle type="source" position={Position.Bottom} id="bottom-source" style={{ background: "#555", width: "8px", height: "8px" }} />
 			<Handle type="source" position={Position.Left} id="left-source" style={{ background: "#555", width: "8px", height: "8px" }} />
 
-			{/* Top bar with node type and pin button - flush to edges */}
+			{/* Top bar with node ID and pin button - flush to edges */}
 			<div style={{
 				display: "flex",
 				justifyContent: "space-between",
@@ -370,8 +372,10 @@ export const WorkNode: React.FC<CustomNodeProps> = ({ data, selected }) => {
 				<span style={{
 					display: "flex",
 					alignItems: "center",
-					paddingLeft: "8px" // Only the text gets padding
-				}}>Work</span>
+					paddingLeft: "8px", // Only the text gets padding
+					fontFamily: "monospace",
+					fontSize: "8px"
+				}}>{data.entityId}</span>
 				<PinToggleButton nodeId={data.entityId} isPinned={isNodePinned} />
 			</div>
 
@@ -443,30 +447,39 @@ export const AuthorNode: React.FC<CustomNodeProps> = ({ data, selected }) => {
 			<Handle type="source" position={Position.Bottom} id="bottom-source" style={{ background: "#555", width: "8px", height: "8px" }} />
 			<Handle type="source" position={Position.Left} id="left-source" style={{ background: "#555", width: "8px", height: "8px" }} />
 
-			{/* Pin button positioned at top-right edge */}
-			<div style={{ position: "relative" }}>
-				<div style={{
-					position: "absolute",
-					top: "0px",
-					right: "0px",
-					zIndex: 10
-				}}>
-					<PinToggleButton nodeId={data.entityId} isPinned={isNodePinned} />
-				</div>
-
-				{/* Title with icon centered across full width */}
-				<div style={{
+			{/* Top bar with node ID and pin button - flush to edges */}
+			<div style={{
+				display: "flex",
+				justifyContent: "space-between",
+				alignItems: "stretch", // Stretch children to full height
+				backgroundColor: "rgba(0,0,0,0.2)",
+				padding: "0px", // Remove all padding
+				borderRadius: "8px 8px 0 0", // Only top corners rounded
+				fontSize: "9px",
+				opacity: 0.8,
+				minHeight: "24px" // Set explicit height
+			}}>
+				<span style={{
 					display: "flex",
 					alignItems: "center",
-					justifyContent: "center",
-					gap: "4px",
-					wordWrap: "break-word",
-					lineHeight: "1.2",
-					paddingTop: "2px", // Small padding to avoid overlap with pin
-					marginBottom: "4px"
-				}}>
-					<IconUser size={14} /> {data.label}
-				</div>
+					paddingLeft: "8px", // Only the text gets padding
+					fontFamily: "monospace",
+					fontSize: "8px"
+				}}>{data.entityId}</span>
+				<PinToggleButton nodeId={data.entityId} isPinned={isNodePinned} />
+			</div>
+
+			{/* Title with icon centered across full width with proper padding */}
+			<div style={{
+				display: "flex",
+				alignItems: "center",
+				justifyContent: "center",
+				gap: "4px",
+				wordWrap: "break-word",
+				lineHeight: "1.2",
+				padding: "8px 12px 4px 12px" // Add padding that was removed from parent
+			}}>
+				<IconUser size={14} /> {data.label}
 			</div>
 
 			{orcid && (
@@ -510,30 +523,39 @@ export const SourceNode: React.FC<CustomNodeProps> = ({ data, selected }) => {
 			<Handle type="source" position={Position.Bottom} id="bottom-source" style={{ background: "#555", width: "8px", height: "8px" }} />
 			<Handle type="source" position={Position.Left} id="left-source" style={{ background: "#555", width: "8px", height: "8px" }} />
 
-			{/* Pin button positioned at top-right edge */}
-			<div style={{ position: "relative" }}>
-				<div style={{
-					position: "absolute",
-					top: "0px",
-					right: "0px",
-					zIndex: 10
-				}}>
-					<PinToggleButton nodeId={data.entityId} isPinned={isNodePinned} />
-				</div>
-
-				{/* Title with icon centered across full width */}
-				<div style={{
+			{/* Top bar with node ID and pin button - flush to edges */}
+			<div style={{
+				display: "flex",
+				justifyContent: "space-between",
+				alignItems: "stretch", // Stretch children to full height
+				backgroundColor: "rgba(0,0,0,0.2)",
+				padding: "0px", // Remove all padding
+				borderRadius: "8px 8px 0 0", // Only top corners rounded
+				fontSize: "9px",
+				opacity: 0.8,
+				minHeight: "24px" // Set explicit height
+			}}>
+				<span style={{
 					display: "flex",
 					alignItems: "center",
-					justifyContent: "center",
-					gap: "4px",
-					wordWrap: "break-word",
-					lineHeight: "1.2",
-					paddingTop: "2px", // Small padding to avoid overlap with pin
-					marginBottom: "4px"
-				}}>
-					<IconBook size={14} /> {data.label}
-				</div>
+					paddingLeft: "8px", // Only the text gets padding
+					fontFamily: "monospace",
+					fontSize: "8px"
+				}}>{data.entityId}</span>
+				<PinToggleButton nodeId={data.entityId} isPinned={isNodePinned} />
+			</div>
+
+			{/* Title with icon centered across full width with proper padding */}
+			<div style={{
+				display: "flex",
+				alignItems: "center",
+				justifyContent: "center",
+				gap: "4px",
+				wordWrap: "break-word",
+				lineHeight: "1.2",
+				padding: "8px 12px 4px 12px" // Add padding that was removed from parent
+			}}>
+				<IconBook size={14} /> {data.label}
 			</div>
 
 			{issn && (
@@ -577,30 +599,39 @@ export const InstitutionNode: React.FC<CustomNodeProps> = ({ data, selected }) =
 			<Handle type="source" position={Position.Bottom} id="bottom-source" style={{ background: "#555", width: "8px", height: "8px" }} />
 			<Handle type="source" position={Position.Left} id="left-source" style={{ background: "#555", width: "8px", height: "8px" }} />
 
-			{/* Pin button positioned at top-right edge */}
-			<div style={{ position: "relative" }}>
-				<div style={{
-					position: "absolute",
-					top: "0px",
-					right: "0px",
-					zIndex: 10
-				}}>
-					<PinToggleButton nodeId={data.entityId} isPinned={isNodePinned} />
-				</div>
-
-				{/* Title with icon centered across full width */}
-				<div style={{
+			{/* Top bar with node ID and pin button - flush to edges */}
+			<div style={{
+				display: "flex",
+				justifyContent: "space-between",
+				alignItems: "stretch", // Stretch children to full height
+				backgroundColor: "rgba(0,0,0,0.2)",
+				padding: "0px", // Remove all padding
+				borderRadius: "8px 8px 0 0", // Only top corners rounded
+				fontSize: "9px",
+				opacity: 0.8,
+				minHeight: "24px" // Set explicit height
+			}}>
+				<span style={{
 					display: "flex",
 					alignItems: "center",
-					justifyContent: "center",
-					gap: "4px",
-					wordWrap: "break-word",
-					lineHeight: "1.2",
-					paddingTop: "2px", // Small padding to avoid overlap with pin
-					marginBottom: "4px"
-				}}>
-					<IconBuilding size={14} /> {data.label}
-				</div>
+					paddingLeft: "8px", // Only the text gets padding
+					fontFamily: "monospace",
+					fontSize: "8px"
+				}}>{data.entityId}</span>
+				<PinToggleButton nodeId={data.entityId} isPinned={isNodePinned} />
+			</div>
+
+			{/* Title with icon centered across full width with proper padding */}
+			<div style={{
+				display: "flex",
+				alignItems: "center",
+				justifyContent: "center",
+				gap: "4px",
+				wordWrap: "break-word",
+				lineHeight: "1.2",
+				padding: "8px 12px 4px 12px" // Add padding that was removed from parent
+			}}>
+				<IconBuilding size={14} /> {data.label}
 			</div>
 
 			{ror && (
