@@ -69,6 +69,11 @@ export class GraphDataService {
 			// Fetch entity with rate-limited OpenAlex client
 			const entity = await rateLimitedOpenAlex.getEntity(detection.normalizedId);
 
+			// Check if entity was successfully fetched
+			if (!entity) {
+				throw new Error(`Entity not found or failed to fetch: ${detection.normalizedId}`);
+			}
+
 			// Transform to graph data
 			const { nodes, edges } = this.transformEntityToGraph(entity);
 
@@ -159,6 +164,11 @@ export class GraphDataService {
 
 			// Fetch entity with rate-limited OpenAlex client
 			const entity = await rateLimitedOpenAlex.getEntity(detection.normalizedId);
+
+			// Check if entity was successfully fetched
+			if (!entity) {
+				throw new Error(`Entity not found or failed to fetch: ${detection.normalizedId}`);
+			}
 
 			// Transform to graph data
 			const { nodes, edges } = this.transformEntityToGraph(entity);
@@ -300,6 +310,11 @@ export class GraphDataService {
 
 			// Fetch full entity data from OpenAlex
 			const entity = await rateLimitedOpenAlex.getEntity(node.entityId);
+
+			// Check if entity was successfully fetched
+			if (!entity) {
+				throw new Error(`Entity not found or failed to fetch: ${node.entityId}`);
+			}
 
 			// Extract full data from the entity
 			const fullNodeData = this.createNodeFromEntity(entity, node.type);
