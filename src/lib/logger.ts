@@ -209,22 +209,23 @@ export const useLogger = (componentName: string) => {
 export const setupGlobalErrorHandling = () => {
 	// Handle unhandled promise rejections
 	window.addEventListener("unhandledrejection", (event) => {
-		logError("Unhandled promise rejection", new Error(event.reason), "global");
+		const reason = typeof event.reason === "string" ? event.reason : String(event.reason);
+		logError("Unhandled promise rejection", new Error(reason), "global");
 	});
 
 	// Handle JavaScript errors
 	window.addEventListener("error", (event) => {
-		const errorMessage = event.error?.message || event.message || "";
+		const errorMessage = (event.error instanceof Error ? event.error.message : undefined) || event.message || "";
 
 		// Filter out benign ResizeObserver errors
-		if (errorMessage.includes("ResizeObserver loop completed with undelivered notifications")) {
+		if (typeof errorMessage === "string" && errorMessage.includes("ResizeObserver loop completed with undelivered notifications")) {
 			// This is a benign browser warning that occurs when ResizeObserver
 			// callbacks take too long or trigger layout changes. It's not actionable
 			// and doesn't indicate a real error in the application.
 			return;
 		}
 
-		logError("JavaScript error", event.error || new Error(event.message), event.filename);
+		logError("JavaScript error", event.error instanceof Error ? event.error : new Error(event.message), event.filename);
 	});
 
 	// Handle React error boundaries (if you set up the logger in an error boundary)
