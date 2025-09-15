@@ -9,7 +9,6 @@ export type EntityType = OpenAlexEntityType
 
 export enum RelationType {
   AUTHORED = "authored",
-  CITED = "cited",
   AFFILIATED = "affiliated",
   PUBLISHED_IN = "published_in",
   FUNDED_BY = "funded_by",
