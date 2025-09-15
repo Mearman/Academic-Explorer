@@ -31,7 +31,7 @@ export const RightRibbon: React.FC = () => {
 		logger.info("ui", `Expanding right sidebar to ${sectionName} section`, { sectionKey });
 
 		// Use the layout store to expand sidebar and section
-		expandSidebarToSection('right', sectionKey);
+		expandSidebarToSection("right", sectionKey);
 
 		// Scroll to top after a brief delay to allow sidebar to expand
 		// The sidebar scrolls to the top to show the expanded section
@@ -87,7 +87,7 @@ export const RightRibbon: React.FC = () => {
 							variant="subtle"
 							size="lg"
 							style={hasEntity ? { ...ribbonButtonStyle, ...activeButtonStyle } : ribbonButtonStyle}
-							onClick={() => handleExpandSidebarToSection("entity-info", "Entity Information")}
+							onClick={() => { handleExpandSidebarToSection("entity-info", "Entity Information"); }}
 							onMouseEnter={(e) => {
 								if (!hasEntity) {
 									Object.assign(e.currentTarget.style, ribbonButtonHoverStyle);
@@ -125,7 +125,7 @@ export const RightRibbon: React.FC = () => {
 						variant="subtle"
 						size="lg"
 						style={ribbonButtonStyle}
-						onClick={() => handleExpandSidebarToSection("external-links", "External Links")}
+						onClick={() => { handleExpandSidebarToSection("external-links", "External Links"); }}
 						onMouseEnter={(e) => {
 							Object.assign(e.currentTarget.style, ribbonButtonHoverStyle);
 						}}
@@ -150,7 +150,7 @@ export const RightRibbon: React.FC = () => {
 						variant="subtle"
 						size="lg"
 						style={ribbonButtonStyle}
-						onClick={() => handleExpandSidebarToSection("view-options", "View Options")}
+						onClick={() => { handleExpandSidebarToSection("view-options", "View Options"); }}
 						onMouseEnter={(e) => {
 							Object.assign(e.currentTarget.style, ribbonButtonHoverStyle);
 						}}
@@ -167,7 +167,7 @@ export const RightRibbon: React.FC = () => {
 						variant="subtle"
 						size="lg"
 						style={ribbonButtonStyle}
-						onClick={() => handleExpandSidebarToSection("raw-api-data", "Raw API Data")}
+						onClick={() => { handleExpandSidebarToSection("raw-api-data", "Raw API Data"); }}
 						onMouseEnter={(e) => {
 							Object.assign(e.currentTarget.style, ribbonButtonHoverStyle);
 						}}
@@ -193,7 +193,7 @@ export const RightRibbon: React.FC = () => {
 							variant="subtle"
 							size="lg"
 							style={ribbonButtonStyle}
-							onClick={() => handleExpandSidebarToSection("graph-stats", "Graph Statistics")}
+							onClick={() => { handleExpandSidebarToSection("graph-stats", "Graph Statistics"); }}
 							onMouseEnter={(e) => {
 								Object.assign(e.currentTarget.style, ribbonButtonHoverStyle);
 							}}
@@ -232,7 +232,7 @@ export const RightRibbon: React.FC = () => {
 							variant="subtle"
 							size="lg"
 							style={hasEntity ? { ...ribbonButtonStyle, ...activeButtonStyle } : ribbonButtonStyle}
-							onClick={() => handleExpandSidebarToSection("entity-info", "Entity Information")}
+							onClick={() => { handleExpandSidebarToSection("entity-info", "Entity Information"); }}
 							onMouseEnter={(e) => {
 								if (!hasEntity) {
 									Object.assign(e.currentTarget.style, ribbonButtonHoverStyle);

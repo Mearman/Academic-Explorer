@@ -46,7 +46,7 @@ interface LayoutState {
   setLeftSidebarHovered: (hovered: boolean) => void;
   setRightSidebarHovered: (hovered: boolean) => void;
   setSectionExpanded: (sectionKey: string, expanded: boolean) => void;
-  expandSidebarToSection: (sidebar: 'left' | 'right', sectionKey: string) => void;
+  expandSidebarToSection: (sidebar: "left" | "right", sectionKey: string) => void;
   setGraphProvider: (provider: ProviderType) => void;
   setPreviewEntity: (entityId: string | null) => void;
   setAutoPinOnLayoutStabilization: (enabled: boolean) => void;
@@ -125,8 +125,8 @@ export const useLayoutStore = create<LayoutState>()(
 			expandSidebarToSection: (sidebar, sectionKey) =>
 				set((state) => ({
 					// Open the appropriate sidebar
-					leftSidebarOpen: sidebar === 'left' ? true : state.leftSidebarOpen,
-					rightSidebarOpen: sidebar === 'right' ? true : state.rightSidebarOpen,
+					leftSidebarOpen: sidebar === "left" ? true : state.leftSidebarOpen,
+					rightSidebarOpen: sidebar === "right" ? true : state.rightSidebarOpen,
 					// Expand the target section
 					expandedSections: {
 						...state.expandedSections,

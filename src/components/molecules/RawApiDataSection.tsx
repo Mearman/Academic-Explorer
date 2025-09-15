@@ -318,154 +318,154 @@ export const RawApiDataSection: React.FC<RawApiDataSectionProps> = ({
 
 	return (
 		<div className={className}>
-					{isLoading && (
-						<div style={{
-							display: "flex",
-							alignItems: "center",
-							gap: "8px",
-							padding: "12px",
-							color: "#6b7280",
-							fontSize: "12px"
-						}}>
-							<IconLoader size={16} style={{ animation: "spin 1s linear infinite" }} />
+			{isLoading && (
+				<div style={{
+					display: "flex",
+					alignItems: "center",
+					gap: "8px",
+					padding: "12px",
+					color: "#6b7280",
+					fontSize: "12px"
+				}}>
+					<IconLoader size={16} style={{ animation: "spin 1s linear infinite" }} />
               Loading raw API data...
-						</div>
-					)}
+				</div>
+			)}
 
-					{isError && (
-						<div style={{
-							padding: "12px",
-							backgroundColor: "#fef2f2",
-							borderRadius: "6px",
-							border: "1px solid #fecaca",
-							color: "#dc2626",
-							fontSize: "12px"
-						}}>
+			{isError && (
+				<div style={{
+					padding: "12px",
+					backgroundColor: "#fef2f2",
+					borderRadius: "6px",
+					border: "1px solid #fecaca",
+					color: "#dc2626",
+					fontSize: "12px"
+				}}>
               Failed to load raw API data: {error instanceof Error ? error.message : "Unknown error"}
-						</div>
-					)}
+				</div>
+			)}
 
-					{rawData && (
-						<>
-							{/* Controls */}
-							<div style={{
+			{rawData && (
+				<>
+					{/* Controls */}
+					<div style={{
+						display: "flex",
+						alignItems: "center",
+						gap: "8px",
+						marginBottom: "12px",
+						paddingBottom: "8px",
+						borderBottom: `1px solid ${colors.border.secondary}`
+					}}>
+						<button
+							onClick={() => { setViewMode("formatted"); }}
+							style={{
+								padding: "4px 8px",
+								fontSize: "11px",
+								backgroundColor: viewMode === "formatted" ? "#3b82f6" : "#f3f4f6",
+								color: viewMode === "formatted" ? "white" : "#374151",
+								border: "none",
+								borderRadius: "4px",
+								cursor: "pointer"
+							}}
+						>
+                  Formatted
+						</button>
+						<button
+							onClick={() => { setViewMode("raw"); }}
+							style={{
+								padding: "4px 8px",
+								fontSize: "11px",
+								backgroundColor: viewMode === "raw" ? "#3b82f6" : "#f3f4f6",
+								color: viewMode === "raw" ? "white" : "#374151",
+								border: "none",
+								borderRadius: "4px",
+								cursor: "pointer"
+							}}
+						>
+                  Raw JSON
+						</button>
+						<button
+							onClick={() => { void copyJsonData(); }}
+							style={{
+								padding: "4px 8px",
+								fontSize: "11px",
+								backgroundColor: "#8b5cf6",
+								color: "white",
+								border: "none",
+								borderRadius: "4px",
+								cursor: "pointer",
 								display: "flex",
 								alignItems: "center",
-								gap: "8px",
-								marginBottom: "12px",
-								paddingBottom: "8px",
-								borderBottom: `1px solid ${colors.border.secondary}`
-							}}>
-								<button
-									onClick={() => { setViewMode("formatted"); }}
-									style={{
-										padding: "4px 8px",
-										fontSize: "11px",
-										backgroundColor: viewMode === "formatted" ? "#3b82f6" : "#f3f4f6",
-										color: viewMode === "formatted" ? "white" : "#374151",
-										border: "none",
-										borderRadius: "4px",
-										cursor: "pointer"
-									}}
-								>
-                  Formatted
-								</button>
-								<button
-									onClick={() => { setViewMode("raw"); }}
-									style={{
-										padding: "4px 8px",
-										fontSize: "11px",
-										backgroundColor: viewMode === "raw" ? "#3b82f6" : "#f3f4f6",
-										color: viewMode === "raw" ? "white" : "#374151",
-										border: "none",
-										borderRadius: "4px",
-										cursor: "pointer"
-									}}
-								>
-                  Raw JSON
-								</button>
-								<button
-									onClick={() => { void copyJsonData(); }}
-									style={{
-										padding: "4px 8px",
-										fontSize: "11px",
-										backgroundColor: "#8b5cf6",
-										color: "white",
-										border: "none",
-										borderRadius: "4px",
-										cursor: "pointer",
-										display: "flex",
-										alignItems: "center",
-										gap: "4px"
-									}}
-								>
-									<IconCopy size={12} />
+								gap: "4px"
+							}}
+						>
+							<IconCopy size={12} />
                   Copy
-								</button>
-								<button
-									onClick={downloadJsonData}
-									style={{
-										padding: "4px 8px",
-										fontSize: "11px",
-										backgroundColor: "#10b981",
-										color: "white",
-										border: "none",
-										borderRadius: "4px",
-										cursor: "pointer",
-										display: "flex",
-										alignItems: "center",
-										gap: "4px"
-									}}
-								>
-									<IconDownload size={12} />
+						</button>
+						<button
+							onClick={downloadJsonData}
+							style={{
+								padding: "4px 8px",
+								fontSize: "11px",
+								backgroundColor: "#10b981",
+								color: "white",
+								border: "none",
+								borderRadius: "4px",
+								cursor: "pointer",
+								display: "flex",
+								alignItems: "center",
+								gap: "4px"
+							}}
+						>
+							<IconDownload size={12} />
                   Download
-								</button>
-							</div>
+						</button>
+					</div>
 
-							{/* Data Display */}
+					{/* Data Display */}
+					<div style={{
+						maxHeight: "500px",
+						overflow: "auto",
+						padding: "16px",
+						backgroundColor: "#ffffff",
+						borderRadius: "8px",
+						border: `2px solid ${colors.border.secondary}`,
+						boxShadow: "0 1px 3px rgba(0, 0, 0, 0.1)"
+					}}>
+						{viewMode === "formatted" ? (
 							<div style={{
-								maxHeight: "500px",
-								overflow: "auto",
-								padding: "16px",
-								backgroundColor: "#ffffff",
-								borderRadius: "8px",
-								border: `2px solid ${colors.border.secondary}`,
-								boxShadow: "0 1px 3px rgba(0, 0, 0, 0.1)"
+								fontSize: "12px",
+								fontFamily: "ui-monospace, SFMono-Regular, 'SF Mono', Consolas, 'Liberation Mono', Menlo, monospace",
+								lineHeight: "1.6",
+								color: colors.text.primary
 							}}>
-								{viewMode === "formatted" ? (
-									<div style={{
-										fontSize: "12px",
-										fontFamily: "ui-monospace, SFMono-Regular, 'SF Mono', Consolas, 'Liberation Mono', Menlo, monospace",
-										lineHeight: "1.6",
-										color: colors.text.primary
-									}}>
-										{formatValue(rawData)}
-									</div>
-								) : (
-									<pre style={{
-										fontSize: "10px",
-										fontFamily: "ui-monospace, SFMono-Regular, 'SF Mono', Consolas, 'Liberation Mono', Menlo, monospace",
-										margin: 0,
-										whiteSpace: "pre-wrap",
-										wordBreak: "break-word",
-										color: "#374151"
-									}}>
-										{JSON.stringify(rawData, null, 2)}
-									</pre>
-								)}
+								{formatValue(rawData)}
 							</div>
-
-							{/* Data Stats */}
-							<div style={{
-								marginTop: "8px",
+						) : (
+							<pre style={{
 								fontSize: "10px",
-								color: "#6b7280",
-								textAlign: "center"
+								fontFamily: "ui-monospace, SFMono-Regular, 'SF Mono', Consolas, 'Liberation Mono', Menlo, monospace",
+								margin: 0,
+								whiteSpace: "pre-wrap",
+								wordBreak: "break-word",
+								color: "#374151"
 							}}>
-								{Object.keys(rawData).length} properties • {JSON.stringify(rawData).length.toLocaleString()} characters
-							</div>
-						</>
-					)}
+								{JSON.stringify(rawData, null, 2)}
+							</pre>
+						)}
+					</div>
+
+					{/* Data Stats */}
+					<div style={{
+						marginTop: "8px",
+						fontSize: "10px",
+						color: "#6b7280",
+						textAlign: "center"
+					}}>
+						{Object.keys(rawData).length} properties • {JSON.stringify(rawData).length.toLocaleString()} characters
+					</div>
+				</>
+			)}
 		</div>
 	);
 };

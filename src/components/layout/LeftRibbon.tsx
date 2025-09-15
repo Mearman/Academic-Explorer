@@ -42,7 +42,7 @@ export const LeftRibbon: React.FC = () => {
 		logger.info("ui", `Expanding sidebar to ${sectionName} section`, { sectionKey });
 
 		// Use the layout store to expand sidebar and section
-		expandSidebarToSection('left', sectionKey);
+		expandSidebarToSection("left", sectionKey);
 
 		// Scroll to top after a brief delay to allow sidebar to expand
 		// The sidebar scrolls to the top to show the expanded section
@@ -91,7 +91,7 @@ export const LeftRibbon: React.FC = () => {
 						variant="subtle"
 						size="lg"
 						style={ribbonButtonStyle}
-						onClick={() => handleExpandSidebarToSection("search", "Search Academic Entities")}
+						onClick={() => { handleExpandSidebarToSection("search", "Search Academic Entities"); }}
 						onMouseEnter={(e) => {
 							Object.assign(e.currentTarget.style, ribbonButtonHoverStyle);
 						}}
@@ -108,7 +108,7 @@ export const LeftRibbon: React.FC = () => {
 						variant="subtle"
 						size="lg"
 						style={ribbonButtonStyle}
-						onClick={() => handleExpandSidebarToSection("entity-filters", "Entity Types & Visibility")}
+						onClick={() => { handleExpandSidebarToSection("entity-filters", "Entity Types & Visibility"); }}
 						onMouseEnter={(e) => {
 							Object.assign(e.currentTarget.style, ribbonButtonHoverStyle);
 						}}
@@ -133,7 +133,7 @@ export const LeftRibbon: React.FC = () => {
 						variant="subtle"
 						size="lg"
 						style={ribbonButtonStyle}
-						onClick={() => handleExpandSidebarToSection("graph-actions", "Graph Actions")}
+						onClick={() => { handleExpandSidebarToSection("graph-actions", "Graph Actions"); }}
 						onMouseEnter={(e) => {
 							Object.assign(e.currentTarget.style, ribbonButtonHoverStyle);
 						}}
@@ -150,7 +150,7 @@ export const LeftRibbon: React.FC = () => {
 						variant="subtle"
 						size="lg"
 						style={ribbonButtonStyle}
-						onClick={() => handleExpandSidebarToSection("cache-settings", "Cache & Traversal Settings")}
+						onClick={() => { handleExpandSidebarToSection("cache-settings", "Cache & Traversal Settings"); }}
 						onMouseEnter={(e) => {
 							Object.assign(e.currentTarget.style, ribbonButtonHoverStyle);
 						}}
@@ -167,7 +167,7 @@ export const LeftRibbon: React.FC = () => {
 						variant="subtle"
 						size="lg"
 						style={ribbonButtonStyle}
-						onClick={() => handleExpandSidebarToSection("edge-filters", "Edge Types & Visibility")}
+						onClick={() => { handleExpandSidebarToSection("edge-filters", "Edge Types & Visibility"); }}
 						onMouseEnter={(e) => {
 							Object.assign(e.currentTarget.style, ribbonButtonHoverStyle);
 						}}
