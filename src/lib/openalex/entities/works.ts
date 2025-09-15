@@ -252,6 +252,7 @@ export class WorksApi {
 		// First get the work to access its referenced_works array
 		const work = await this.getWork(workId, { select: ["referenced_works"] });
 
+		// eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
 		if (!work.referenced_works || work.referenced_works.length === 0) {
 			return [];
 		}
@@ -298,6 +299,7 @@ export class WorksApi {
 		// First get the work to access its related_works array
 		const work = await this.getWork(workId, { select: ["related_works"] });
 
+		// eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
 		if (!work.related_works || work.related_works.length === 0) {
 			return [];
 		}
@@ -538,7 +540,7 @@ export class WorksApi {
 		params: WorksQueryParams = {}
 	): Promise<OpenAlexResponse<Work>> {
 		const filters: WorksFilters = {
-			"publication_year": `${startYear}-${endYear}`,
+			"publication_year": `${String(startYear)}-${String(endYear)}`,
 		};
 
 		// Merge with existing filters if present
@@ -589,7 +591,7 @@ export class WorksApi {
 		params: WorksQueryParams = {}
 	): Promise<OpenAlexResponse<Work>> {
 		const filters: WorksFilters = {
-			"cited_by_count": `>${minCitations}`,
+			"cited_by_count": `>${String(minCitations)}`,
 		};
 
 		// Merge with existing filters if present
@@ -605,6 +607,6 @@ export class WorksApi {
 export function createDefaultWorksApi(): WorksApi {
 	// Using dynamic import for lazy loading and avoiding circular dependencies
 	// eslint-disable-next-line @typescript-eslint/no-require-imports
-	const { defaultClient } = require("../client");
-	return new WorksApi(defaultClient);
+	const { defaultClient } = require("../client") as { defaultClient: unknown };
+	return new WorksApi(defaultClient as never);
 }

@@ -382,7 +382,7 @@ export class OpenAlexClient {
    * ```
    */
 	public async getEntities(ids: string[]): Promise<OpenAlexEntity[]> {
-		const promises = ids.map(id => this.getEntity(id).catch(error => {
+		const promises = ids.map(id => this.getEntity(id).catch((error: unknown) => {
 			logError(`Failed to fetch entity ${id}`, error, "OpenAlexClient", "api");
 			return null;
 		}));
@@ -454,12 +454,12 @@ export class OpenAlexClient {
    * );
    * ```
    */
-	public async batchProcess<T = OpenAlexEntity>(
+	public async batchProcess(
 		entityType: EntityType,
 		params: QueryParams,
-		processor: (batch: T[]) => Promise<void> | void
+		processor: (batch: OpenAlexEntity[]) => Promise<void> | void
 	): Promise<void> {
-		for await (const batch of this.stream<T>(entityType, params)) {
+		for await (const batch of this.stream(entityType, params)) {
 			await processor(batch);
 		}
 	}

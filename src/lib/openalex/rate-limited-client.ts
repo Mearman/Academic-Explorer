@@ -61,6 +61,7 @@ export class RateLimitedOpenAlexClient {
    * Rate-limited wrapper for any client method call
    */
 	private async withRateLimit<T>(operation: () => Promise<T>): Promise<T> {
+		// eslint-disable-next-line @typescript-eslint/no-unsafe-return
 		return this.rateLimiter(operation);
 	}
 
@@ -78,8 +79,8 @@ export class RateLimitedOpenAlexClient {
 		for (let i = 0; i < ids.length; i += batchSize) {
 			const batch = ids.slice(i, i + batchSize);
 			const batchPromises = batch.map(id =>
-				this.withRateLimit(() => this.client.getEntity(id).catch(error => {
-					logger.warn("api", `Failed to fetch entity ${id}`, { id, error: error.message }, "RateLimitedOpenAlexClient");
+				this.withRateLimit(() => this.client.getEntity(id).catch((error: unknown) => {
+					logger.warn("api", `Failed to fetch entity ${id}`, { id, error: String(error) }, "RateLimitedOpenAlexClient");
 					return null;
 				}))
 			);
@@ -319,6 +320,7 @@ export function createRateLimitedOpenAlexClient(options?: OpenAlexClientOptions)
  * Configured with conservative rate limits for production use
  */
 export const rateLimitedOpenAlex = new RateLimitedOpenAlexClient({
+	// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
 	userEmail: import.meta.env.VITE_OPENALEX_EMAIL || undefined,
 	rateLimit: {
 		requestsPerSecond: 8,  // Conservative under 10 req/sec
