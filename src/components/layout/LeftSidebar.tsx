@@ -37,20 +37,20 @@ import {
 
 export const LeftSidebar: React.FC = () => {
 	const [searchQuery, setSearchQuery] = useState("")
-	const [selectedEntityTypes, setSelectedEntityTypes] = useState<EntityType[]>([
-		"works", "authors", "sources", "institutions"
-	])
 	const [expansionDialogTarget, setExpansionDialogTarget] = useState<ExpansionTarget | null>(null)
 	const { search, isLoading, clearGraph, loadAllCachedNodes } = useGraphData()
 	const { colors } = useThemeColors()
 
-	// Graph store for statistics and visibility
-	const _visibleEntityTypes = useGraphStore((state) => state.visibleEntityTypes)
+	// Graph store for statistics and visibility - use as single source of truth
+	const visibleEntityTypes = useGraphStore((state) => state.visibleEntityTypes)
 	const getEntityTypeStats = useGraphStore((state) => state.getEntityTypeStats)
 	const toggleEntityTypeVisibility = useGraphStore((state) => state.toggleEntityTypeVisibility)
 	const visibleEdgeTypes = useGraphStore((state) => state.visibleEdgeTypes)
 	const getEdgeTypeStats = useGraphStore((state) => state.getEdgeTypeStats)
 	const toggleEdgeTypeVisibility = useGraphStore((state) => state.toggleEdgeTypeVisibility)
+
+	// Convert Set to Array for search functionality
+	const selectedEntityTypes = useMemo(() => Array.from(visibleEntityTypes), [visibleEntityTypes])
 
 	// Cache controls state
 	const showAllCachedNodes = useGraphStore((state) => state.showAllCachedNodes)
@@ -77,16 +77,7 @@ export const LeftSidebar: React.FC = () => {
 	}
 
 	const handleEntityTypeToggle = (entityType: EntityType) => {
-		const isCurrentlySelected = selectedEntityTypes.includes(entityType)
-
-		// Update search filter state
-		setSelectedEntityTypes(prev =>
-			isCurrentlySelected
-				? prev.filter(type => type !== entityType)
-				: [...prev, entityType]
-		)
-
-		// Also update visibility in graph store
+		// Toggle visibility in graph store - this updates both search filters and graph visibility
 		toggleEntityTypeVisibility(entityType)
 	}
 
@@ -312,7 +303,7 @@ export const LeftSidebar: React.FC = () => {
 									cursor: "pointer",
 									padding: "8px",
 									borderRadius: "6px",
-									backgroundColor: selectedEntityTypes.includes(option.type) ? colors.background.tertiary : "transparent",
+									backgroundColor: visibleEntityTypes.has(option.type) ? colors.background.tertiary : "transparent",
 									border: `1px solid ${colors.border.primary}`,
 									transition: "background-color 0.2s",
 								}}
@@ -325,7 +316,7 @@ export const LeftSidebar: React.FC = () => {
 								}}>
 									<input
 										type="checkbox"
-										checked={selectedEntityTypes.includes(option.type)}
+										checked={visibleEntityTypes.has(option.type)}
 										onChange={() => { handleEntityTypeToggle(option.type) }}
 										style={{ margin: 0 }}
 									/>
