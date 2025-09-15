@@ -23,7 +23,6 @@ import type {
 import { RelationType } from "../../types";
 
 import { logger } from "@/lib/logger";
-import { useGraphStore } from "@/stores/graph-store";
 import { FIT_VIEW_PRESETS } from "../../constants";
 
 export class XYFlowProvider implements GraphProvider {

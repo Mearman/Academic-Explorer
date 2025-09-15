@@ -178,7 +178,7 @@ const getEntityTypeLabel = (entityType: EntityType): string => {
 export const CustomNode: React.FC<CustomNodeProps> = ({ data, selected }) => {
 	const { isPinned } = useGraphStore();
 	const backgroundColor = getEntityColor(data.entityType);
-	const typeLabel = getEntityTypeLabel(data.entityType);
+	const _typeLabel = getEntityTypeLabel(data.entityType);
 
 	// Get current pin state from store
 	const isNodePinned = isPinned(data.entityId);

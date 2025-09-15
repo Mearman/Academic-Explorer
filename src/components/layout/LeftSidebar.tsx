@@ -26,7 +26,6 @@ import {
 	IconGitBranch,
 	IconLink,
 	IconCoin,
-	IconQuote,
 	IconDatabase,
 	IconAdjustments
 } from "@tabler/icons-react"
