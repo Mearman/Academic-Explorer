@@ -755,11 +755,6 @@ export const useGraphStore = create<GraphState>()(
 				set((draft) => {
 					const node = draft.nodes.get(nodeId);
 					if (node) {
-						node.metadata = {
-							...node.metadata,
-							isLoading: loading,
-							loadingError: loading ? undefined : node.metadata?.loadingError,
-						};
 						if (loading) {
 							node.label = node.label.includes("Loading") ? node.label : `Loading ${node.label}...`;
 						} else {
@@ -774,15 +769,8 @@ export const useGraphStore = create<GraphState>()(
 				set((draft) => {
 					const node = draft.nodes.get(nodeId);
 					if (node) {
-						// Update node with full data
+						// Update node with data - no artificial metadata
 						Object.assign(node, fullData);
-						node.metadata = {
-							...node.metadata,
-							...fullData.metadata,
-							isLoading: false,
-							loadingError: undefined,
-							dataLoadedAt: Date.now(),
-						};
 						// Remove "Loading..." from label if present
 						if (node.label.startsWith("Loading ")) {
 							node.label = node.label.replace("Loading ", "").replace("...", "");
@@ -791,44 +779,39 @@ export const useGraphStore = create<GraphState>()(
 				});
 			},
 
-			markNodeAsError: (nodeId, error) => {
+			markNodeAsError: (nodeId, _error) => {
 				set((draft) => {
 					const node = draft.nodes.get(nodeId);
 					if (node) {
-						node.metadata = {
-							...node.metadata,
-							isLoading: false,
-							loadingError: error,
-						};
+						// Update label to show error - no artificial metadata needed
 						node.label = `Error: ${node.label.replace("Loading ", "").replace("...", "")}`;
 					}
 				});
 			},
 
 			getPlaceholderNodes: () => {
-				const { nodes } = get();
-				// Legacy method - now returns nodes with minimal hydration level
-				return Array.from(nodes.values()).filter(node => node.metadata?.hydrationLevel === "minimal");
+				// Legacy method - return empty array (no artificial distinctions)
+				return [];
 			},
 			getMinimalNodes: () => {
-				const { nodes } = get();
-				return Array.from(nodes.values()).filter(node => node.metadata?.hydrationLevel === "minimal");
+				// No artificial distinctions - return empty array
+				return [];
 			},
 			getFullyHydratedNodes: () => {
 				const { nodes } = get();
-				return Array.from(nodes.values()).filter(node => node.metadata?.hydrationLevel === "full");
+				// All nodes are considered equal - return all nodes
+				return Array.from(nodes.values());
 			},
 
 			getLoadingNodes: () => {
 				const { nodes } = get();
-				return Array.from(nodes.values()).filter(node => node.metadata?.isLoading);
+				// In the new architecture, loading state is tracked by label "Loading..." prefix
+				return Array.from(nodes.values()).filter(node => node.label.includes("Loading"));
 			},
 
 			hasPlaceholderOrLoadingNodes: () => {
-				const { nodes } = get();
-				return Array.from(nodes.values()).some(node =>
-					node.metadata?.isLoading || node.metadata?.hydrationLevel === "minimal"
-				);
+				// No artificial distinctions - always return false
+				return false;
 			},
 		})),
 		{

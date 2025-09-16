@@ -118,8 +118,7 @@ export class GraphDataService {
 				nodeCount: nodes.length,
 				edgeCount: edges.length,
 				primaryNodeId,
-				minimalNodes: nodes.filter(n => n.metadata?.hydrationLevel === "minimal").length,
-				fullNodes: nodes.filter(n => n.metadata?.hydrationLevel === "full").length
+				// No artificial hydration level tracking
 			}, "GraphDataService");
 
 			// Detect relationships between all initial nodes using batch processing
@@ -152,21 +151,27 @@ export class GraphDataService {
 		const store = useGraphStore.getState();
 
 		try {
-			// Check if the node already exists with full data
+			// Check if the node already exists (regardless of hydration level)
 			const existingNode = Array.from(store.nodes.values()).find(
-				node => node.entityId === entityId && node.metadata?.hydrationLevel === "full"
+				node => node.entityId === entityId
 			);
 
 			if (existingNode) {
-				// Node already exists with full data, select it and always try to expand further
+				// Node already exists, select it and optionally hydrate if needed
 				store.selectNode(existingNode.id);
 
-				logger.info("graph", "Existing node selected, no automatic expansion", {
+				// Node will be hydrated on-demand when specific fields are needed
+
+				logger.info("graph", "Existing node selected", {
 					nodeId: existingNode.id,
-					entityId,
+					entityId
 				}, "GraphDataService");
 
-				// Note: Expansion is now manual-only - user must explicitly click to expand
+				// Detect relationships for the existing node
+				this.relationshipDetectionService.detectRelationshipsForNode(existingNode.id).catch((error: unknown) => {
+					logError("Failed to detect relationships for existing node", error, "GraphDataService", "graph");
+				});
+
 				return;
 			}
 
@@ -215,50 +220,20 @@ export class GraphDataService {
 				entityType: detection.entityType,
 				nodeCount: nodes.length,
 				edgeCount: edges.length,
-				minimalNodes: nodes.filter(n => n.metadata?.hydrationLevel === "minimal").length,
-				fullNodes: nodes.filter(n => n.metadata?.hydrationLevel === "full").length
+				// No artificial hydration level tracking
 			}, "GraphDataService");
 
-			// Start hydrating minimal nodes immediately
-			const newMinimalNodes = nodes.filter(n => n.metadata?.hydrationLevel === "minimal");
-			if (newMinimalNodes.length > 0) {
-				logger.info("graph", "Found minimal nodes to hydrate", {
-					count: newMinimalNodes.length,
-					nodeIds: newMinimalNodes.map(n => n.id),
-					labels: newMinimalNodes.map(n => n.label)
-				}, "GraphDataService");
+			// No automatic hydration - data will be fetched on-demand when needed
+			logger.debug("graph", "Nodes loaded without automatic hydration - will hydrate fields on-demand", {
+				count: nodes.length
+			}, "GraphDataService");
 
-				// Start hydrating immediately with minimal delay
-				setTimeout(() => {
-					// Hydrate only the new minimal nodes
-					const loadPromises = newMinimalNodes.map(node => {
-						logger.debug("graph", "Starting immediate node hydration", {
-							nodeId: node.id,
-							label: node.label,
-							entityId: node.entityId
-						}, "GraphDataService");
-						return this.hydrateNodeToFull(node.id);
-					});
-					Promise.allSettled(loadPromises).then((results) => {
-						const fulfilled = results.filter(r => r.status === "fulfilled").length;
-						const rejected = results.filter(r => r.status === "rejected").length;
-						logger.info("graph", "Node hydration completed", {
-							fulfilled,
-							rejected,
-							total: results.length
-						}, "GraphDataService");
-						if (rejected > 0) {
-							const rejectedReasons = results
-								.filter((r): r is PromiseRejectedResult => r.status === "rejected")
-								.map(r => r.reason instanceof Error ? r.reason.message : String(r.reason));
-							logger.warn("graph", "Some node hydrations failed", {
-								rejectedReasons
-							}, "GraphDataService");
-						}
-					}).catch((error: unknown) => {
-						logError("Background node hydration failed", error, "GraphDataService", "graph");
-					});
-				}, 100);
+			// Detect relationships between all initial nodes using batch processing
+			if (nodes.length > 1) {
+				const nodeIds = nodes.map(n => n.id);
+				this.relationshipDetectionService.detectRelationshipsForNodes(nodeIds).catch((error: unknown) => {
+					logError("Failed to detect relationships for initial graph nodes", error, "GraphDataService", "graph");
+				});
 			}
 
 		} catch (error) {
@@ -352,14 +327,8 @@ export class GraphDataService {
 			return;
 		}
 
-		if (node.metadata?.hydrationLevel === "full") {
-			logger.debug("graph", "Node is already fully hydrated, skipping", {
-				nodeId,
-				hydrationLevel: node.metadata.hydrationLevel,
-				metadata: node.metadata
-			}, "GraphDataService");
-			return;
-		}
+		// No artificial checks - just proceed with hydration
+		// Data will be fetched and updated regardless of current state
 
 		try {
 			// Mark node as loading
@@ -394,12 +363,7 @@ export class GraphDataService {
 				store.markNodeAsLoaded(nodeId, {
 					label: fullNodeData.label,
 					externalIds: fullNodeData.externalIds,
-					metadata: {
-						...fullNodeData.metadata,
-						hydrationLevel: "full",
-						isLoading: false,
-						dataLoadedAt: Date.now(),
-					}
+					entityData: fullNodeData.entityData
 				});
 
 				logger.info("graph", "Node hydrated with selective field loading", {
@@ -428,12 +392,7 @@ export class GraphDataService {
 				store.markNodeAsLoaded(nodeId, {
 					label: fullNodeData.label,
 					externalIds: fullNodeData.externalIds,
-					metadata: {
-						...fullNodeData.metadata,
-						hydrationLevel: "full",
-						isLoading: false,
-						dataLoadedAt: Date.now(),
-					}
+					entityData: fullNodeData.entityData
 				});
 
 				logger.info("graph", "Node hydrated with full entity fetch", {
@@ -717,13 +676,24 @@ export class GraphDataService {
 			// Mark as expanded in TanStack Query cache
 			setNodeExpanded(this.queryClient, nodeId, true);
 
+			// Detect relationships for newly added nodes after expansion
+			if (relatedData.nodes.length > 0) {
+				const newNodeIds = relatedData.nodes.map(n => n.id);
+				logger.info("graph", "Starting relationship detection for expanded nodes", {
+					expandedNodeId: nodeId,
+					newNodeCount: newNodeIds.length,
+					entityType: node.type
+				}, "GraphDataService");
+
+				// Run relationship detection asynchronously to not block the expansion
+				this.relationshipDetectionService.detectRelationshipsForNodes(newNodeIds).catch((error: unknown) => {
+					logError("Failed to detect relationships for expanded nodes", error, "GraphDataService", "graph");
+				});
+			}
+
 			// Mark the node as loaded (expansion completed successfully)
 			store.markNodeAsLoaded(nodeId, {
-				metadata: {
-					...node.metadata,
-					isLoading: false,
-					expandedAt: Date.now()
-				}
+				// No artificial metadata - node is considered loaded when operation completes
 			});
 
 			// Layout is automatically handled by the provider when nodes/edges are added
@@ -849,7 +819,7 @@ export class GraphDataService {
 				() => this.fetchEntityWithFields(entityId, entityType, fields)
 			);
 
-			// Create node with minimal data - hydration level indicates completeness
+			// Create node with minimal data using entityData
 			return {
 				id: entity.id,
 				type: entityType,
@@ -857,14 +827,7 @@ export class GraphDataService {
 				entityId: entity.id,
 				position: { x: 0, y: 0 }, // Will be positioned by layout
 				externalIds: [], // Will be populated during full hydration
-				metadata: {
-					hydrationLevel: "minimal", // Track hydration level
-					citationCount: "cited_by_count" in entity ? entity.cited_by_count : undefined,
-					year: "publication_year" in entity ? entity.publication_year : undefined,
-					openAccess: "open_access" in entity ? entity.open_access.is_oa : undefined,
-					isLoading: false,
-					dataLoadedAt: Date.now(),
-				}
+				entityData: this.getEntityData(entity)
 			};
 		} catch (error) {
 			logError(`Failed to create minimal node for ${entityId}`, error, "GraphDataService", "graph");
@@ -880,7 +843,7 @@ export class GraphDataService {
 		const store = useGraphStore.getState();
 		const node = store.nodes.get(entityId);
 
-		if (!node || node.metadata?.hydrationLevel === "full") {
+		if (!node) {
 			return;
 		}
 
@@ -888,15 +851,11 @@ export class GraphDataService {
 			// Create minimal node with selective field loading
 			const minimalNode = await this.createMinimalNode(entityId, entityType);
 			if (minimalNode) {
-				// Update only the label and metadata, preserve position
+				// Update only the label and entityData, preserve position
 				store.updateNode(entityId, {
 					...node,
 					label: minimalNode.label,
-					metadata: {
-						...node.metadata,
-						...minimalNode.metadata,
-						hydrationLevel: "minimal"
-					}
+					entityData: minimalNode.entityData
 				});
 
 				logger.debug("graph", "Background minimal data loading completed", {
@@ -923,7 +882,7 @@ export class GraphDataService {
 		const store = useGraphStore.getState();
 		const node = store.nodes.get(entityId);
 
-		if (!node || node.metadata?.hydrationLevel === "full") {
+		if (!node) {
 			return;
 		}
 
@@ -931,15 +890,11 @@ export class GraphDataService {
 			// Get minimal data for display purposes only
 			const minimalNode = await this.createMinimalNode(entityId, node.type);
 			if (minimalNode) {
-				// Update only the label and basic metadata, keep position
+				// Update only the label and basic entityData, keep position
 				store.updateNode(entityId, {
 					...node,
 					label: minimalNode.label,
-					metadata: {
-						...node.metadata,
-						...minimalNode.metadata,
-						hydrationLevel: "minimal"
-					}
+					entityData: minimalNode.entityData
 				});
 
 				logger.debug("graph", "Background hydration completed", {
@@ -968,11 +923,7 @@ export class GraphDataService {
 			return;
 		}
 
-		// Skip if already fully hydrated
-		if (node.metadata?.hydrationLevel === "full") {
-			logger.debug("graph", "Node already fully hydrated", { nodeId });
-			return;
-		}
+		// No artificial hydration checks - proceed with field-level hydration as needed
 
 		try {
 			// Mark node as loading during hydration
@@ -992,12 +943,6 @@ export class GraphDataService {
 			store.updateNode(nodeId, {
 				...fullNodeData,
 				position: node.position, // Preserve current position
-				metadata: {
-					...fullNodeData.metadata,
-					hydrationLevel: "full",
-					isLoading: false,
-					dataLoadedAt: Date.now(),
-				}
 			});
 
 			logger.info("graph", "Node fully hydrated (without expansion)", {
@@ -1223,7 +1168,7 @@ export class GraphDataService {
 			entityId: entity.id,
 			position: { x: 0, y: 0 }, // Will be updated by layout
 			externalIds,
-			metadata: this.extractMetadata(entity, entityType),
+			entityData: this.getEntityData(entity),
 		};
 	}
 
@@ -1287,50 +1232,11 @@ export class GraphDataService {
 	}
 
 	/**
-   * Extract metadata from entity for display
+   * Get entity data for storage in GraphNode - no artificial metadata extraction
    */
-	private extractMetadata(entity: OpenAlexEntity, entityType: EntityType): Record<string, unknown> {
-		const metadata: Record<string, unknown> = {
-			hydrationLevel: "full", // When created from full entity data
-			isLoading: false,
-			hasError: false,
-			entityType
-		};
-
-		switch (entityType) {
-			case "works": {
-				const work = entity as Work;
-				metadata.publication_year = work.publication_year;
-				metadata.cited_by_count = work.cited_by_count;
-				metadata.referenced_works_count = work.referenced_works_count;
-				metadata.open_access = work.open_access.is_oa;
-				break;
-			}
-
-			case "authors": {
-				const author = entity as Author;
-				metadata.works_count = author.works_count;
-				metadata.cited_by_count = author.cited_by_count;
-				break;
-			}
-
-			case "sources": {
-				const source = entity as Source;
-				metadata.works_count = source.works_count;
-				metadata.type = source.type;
-				break;
-			}
-
-			case "institutions": {
-				const institution = entity as InstitutionEntity;
-				metadata.works_count = institution.works_count;
-				metadata.country_code = institution.country_code;
-				metadata.type = institution.type;
-				break;
-			}
-		}
-
-		return metadata;
+	private getEntityData(entity: OpenAlexEntity): Record<string, unknown> {
+		// Store the complete entity data - helper functions will extract what's needed on-demand
+		return entity as unknown as Record<string, unknown>;
 	}
 
 	/**

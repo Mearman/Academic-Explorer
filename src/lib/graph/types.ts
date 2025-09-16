@@ -59,17 +59,8 @@ export interface GraphNode {
   // External identifiers (DOIs, ORCIDs, etc.)
   externalIds: ExternalIdentifier[];
 
-  // Metadata for display and filtering
-  metadata?: {
-    citationCount?: number;
-    year?: number;
-    openAccess?: boolean;
-    hydrationLevel?: "minimal" | "full"; // Track data completeness level
-    isLoading?: boolean;
-    loadingError?: string;
-    dataLoadedAt?: number; // timestamp
-    [key: string]: unknown;
-  };
+  // Raw entity data - all display data extracted on-demand via helper functions
+  entityData?: Record<string, unknown>;
 }
 
 export interface GraphEdge {
