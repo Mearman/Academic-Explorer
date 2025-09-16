@@ -146,8 +146,8 @@ function startAnimatedSimulation(
   nodes = inputNodes.map(node => ({
     ...node,
     // Handle pinned nodes
-    fx: pinnedNodes?.has(node.id) ? node.x : undefined,
-    fy: pinnedNodes?.has(node.id) ? node.y : undefined,
+    fx: pinnedNodes && pinnedNodes[node.id] ? node.x : undefined,
+    fy: pinnedNodes && pinnedNodes[node.id] ? node.y : undefined,
   }));
 
   // Clone links
