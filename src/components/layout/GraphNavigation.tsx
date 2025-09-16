@@ -3,7 +3,7 @@
  * Provider-agnostic graph visualization with XYFlow implementation
  */
 
-import React, { useEffect, useRef, useCallback, useMemo } from "react";
+import React, { useEffect, useRef, useCallback } from "react";
 import {
 	ReactFlow,
 	ReactFlowProvider,
@@ -22,7 +22,6 @@ import {
 	type NodeChange,
 	type EdgeChange,
 } from "@xyflow/react";
-import { useNavigate } from "@tanstack/react-router";
 import { IconSearch } from "@tabler/icons-react";
 
 import { useGraphStore } from "@/stores/graph-store";
@@ -32,16 +31,12 @@ import { XYFlowProvider } from "@/lib/graph/providers/xyflow/xyflow-provider";
 import { nodeTypes } from "@/lib/graph/providers/xyflow/node-types";
 import { edgeTypes } from "@/lib/graph/providers/xyflow/edge-types";
 import { useAnimatedLayout } from "@/lib/graph/providers/xyflow/use-animated-layout";
-import type { GraphNode, EntityType, ExternalIdentifier, RelationType, GraphEdge } from "@/lib/graph/types";
-import { EntityDetector } from "@/lib/graph/utils/entity-detection";
-import { useGraphData } from "@/hooks/use-graph-data";
+import type { GraphNode, EntityType } from "@/lib/graph/types";
 import { useEntityInteraction } from "@/hooks/use-entity-interaction";
 import { useContextMenu } from "@/hooks/use-context-menu";
 import { NodeContextMenu } from "@/components/layout/NodeContextMenu";
 import { GraphToolbar } from "@/components/graph/GraphToolbar";
 import { AnimatedGraphControls } from "@/components/graph/AnimatedGraphControls";
-import { DataFetchingProgress } from "@/components/molecules/DataFetchingProgress";
-import { useDataFetchingProgressStore } from "@/stores/data-fetching-progress-store";
 import { logger } from "@/lib/logger";
 import { GRAPH_ANIMATION, FIT_VIEW_PRESETS } from "@/lib/graph/constants";
 
@@ -54,12 +49,8 @@ interface GraphNavigationProps {
 
 // Inner component that uses ReactFlow hooks
 const GraphNavigationInner: React.FC<GraphNavigationProps> = ({ className, style }) => {
-	const navigate = useNavigate();
 	const reactFlowInstance = useReactFlow();
 	const containerRef = useRef<HTMLDivElement>(null);
-	const graphData = useGraphData();
-	const loadEntityIntoGraph = graphData.loadEntityIntoGraph;
-	const expandNode = graphData.expandNode;
 	const contextMenuData = useContextMenu();
 	const contextMenu = contextMenuData.contextMenu;
 	const showContextMenu = contextMenuData.showContextMenu;
@@ -68,32 +59,22 @@ const GraphNavigationInner: React.FC<GraphNavigationProps> = ({ className, style
 
 	// Store state
 	const graphStore = useGraphStore();
-	const _provider = graphStore.provider;
 	const setProvider = graphStore.setProvider;
 	const storeNodes = graphStore.nodes;
 	const storeEdges = graphStore.edges;
-	const currentLayout = graphStore.currentLayout;
 	const isLoading = graphStore.isLoading;
 	const error = graphStore.error;
 	const visibleEntityTypes = graphStore.visibleEntityTypes;
 	const visibleEdgeTypes = graphStore.visibleEdgeTypes;
-	const _pinnedNodes = graphStore.pinnedNodes;
 
 	// Use direct selectors for raw store data to avoid computed array dependencies
 	const rawNodesMap = useGraphStore((state) => state.nodes);
 	const rawEdgesMap = useGraphStore((state) => state.edges);
 
 	const layoutStore = useLayoutStore();
-	const _graphProvider = layoutStore.graphProvider;
 	const setPreviewEntity = layoutStore.setPreviewEntity;
 	const autoPinOnLayoutStabilization = layoutStore.autoPinOnLayoutStabilization;
 
-	// Data fetching progress store - use stable selectors
-	const requestsMap = useDataFetchingProgressStore((state) => state.requests);
-	const workerReady = useDataFetchingProgressStore((state) => state.workerReady);
-
-	// Convert to array only when needed (memoized) - using stable selector
-	const activeRequests = React.useMemo(() => Object.values(requestsMap), [requestsMap]);
 
 	// XYFlow state - synced with store
 	const [nodes, setNodes, onNodesChangeOriginal] = useNodesState<XYNode>([]);
@@ -128,7 +109,6 @@ const GraphNavigationInner: React.FC<GraphNavigationProps> = ({ className, style
 	const isProgrammaticNavigationRef = useRef(false);
 
 	// Flag to disable layout during incremental updates
-	const _isIncrementalUpdateRef = useRef(false);
 
 	// Layout hook integration - throttled to reduce log spam
 	const lastLogRef = useRef<number>(0);

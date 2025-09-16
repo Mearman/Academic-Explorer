@@ -45,7 +45,7 @@ export const RightSidebar: React.FC = () => {
 	const displayEntityId = selectedNodeId || hoveredNodeId || previewEntityId
 	const displayEntity = useGraphStore(React.useCallback((state) =>
 		displayEntityId ? state.nodes[displayEntityId] : null,
-		[displayEntityId]
+	[displayEntityId]
 	))
 
 	return (

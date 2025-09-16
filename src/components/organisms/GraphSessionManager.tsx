@@ -27,7 +27,7 @@ export const GraphSessionManager: React.FC<GraphSessionManagerProps> = ({
 
 	const hasGraphData = useGraphStore(React.useCallback((state) =>
 		Object.keys(state.nodes).length > 0 || Object.keys(state.edges).length > 0,
-		[]
+	[]
 	))
 	const {
 		loadSessions,
