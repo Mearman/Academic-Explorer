@@ -1,3 +1,11 @@
+## [4.0.3](https://github.com/Mearman/Academic-Explorer/compare/v4.0.2...v4.0.3) (2025-09-16)
+
+
+### Bug Fixes
+
+* **tests:** remove unnecessary optional chaining in test files ([d2bb46d](https://github.com/Mearman/Academic-Explorer/commit/d2bb46d11dbf8784702390eb832ee0275f778087))
+* **types:** remove unnecessary optional chaining in stores and layouts ([8254fbd](https://github.com/Mearman/Academic-Explorer/commit/8254fbdf27d386e917f928305b06dceb2e0e93f0))
+
 ## [4.0.2](https://github.com/Mearman/Academic-Explorer/compare/v4.0.1...v4.0.2) (2025-09-16)
 
 
