@@ -75,7 +75,7 @@ interface AnimatedGraphState {
 
   // Configuration
   setUseAnimatedLayout: (use: boolean) => void;
-  updateAnimationConfig: (config: Partial<typeof AnimatedGraphState.prototype.animationConfig>) => void;
+  updateAnimationConfig: (config: Partial<AnimatedGraphState['animationConfig']>) => void;
 
   // Integration with base graph store
   syncWithGraphStore: () => void;
@@ -302,9 +302,11 @@ export const useAnimatedGraphStore = create<AnimatedGraphState>()(
             state.staticPositions.set(pos.id, { ...pos });
           });
 
-          logger.debug('graph', 'Synced with graph store', {
+          logger.info('graph', 'Synced animated store with graph store', {
             nodeCount: nodes.length,
-            positionCount: positions.length
+            positionCount: positions.length,
+            layoutType: graphStore.currentLayout?.type,
+            pinnedNodeCount: graphStore.pinnedNodes.size,
           });
         });
       },
@@ -362,6 +364,13 @@ export const useAnimationConfig = () => useAnimatedGraphStore((state) => ({
   useAnimatedLayout: state.useAnimatedLayout,
   updateConfig: state.updateAnimationConfig,
   setUseAnimatedLayout: state.setUseAnimatedLayout,
+}));
+
+// Individual stable hooks to avoid object recreation
+export const usePositionTrackingActions = () => useAnimatedGraphStore((state) => ({
+  updateAnimatedPositions: state.updateAnimatedPositions,
+  updateStaticPositions: state.updateStaticPositions,
+  applyPositionsToGraphStore: state.applyPositionsToGraphStore,
 }));
 
 export const usePositionTracking = () => useAnimatedGraphStore((state) => ({
