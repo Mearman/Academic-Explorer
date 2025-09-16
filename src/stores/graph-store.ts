@@ -126,6 +126,12 @@ interface GraphState {
   updateSearchStats: (stats: Record<EntityType, number>) => void;
   recomputeEntityTypeStats: () => void;
   recomputeEdgeTypeStats: () => void;
+  getEntityTypeStats: () => {
+    visible: Record<EntityType, number>;
+    total: Record<EntityType, number>;
+    searchResults: Record<EntityType, number>;
+  };
+  getVisibleNodes: () => GraphNode[];
 
   // Edge type management
   toggleEdgeTypeVisibility: (edgeType: RelationType) => void;
@@ -143,9 +149,8 @@ interface GraphState {
   getConnectedComponent: (nodeId: string) => string[];
 
   // Incremental hydration support
-  markNodeAsLoading: (nodeId: string, loading?: boolean) => void;
   markNodeAsLoaded: (nodeId: string, fullData: Partial<GraphNode>) => void;
-  markNodeAsError: (nodeId: string, error: string) => void;
+  markNodeAsError: (nodeId: string) => void;
   getPlaceholderNodes: () => GraphNode[]; // Legacy - returns minimal nodes
   getMinimalNodes: () => GraphNode[];
   getFullyHydratedNodes: () => GraphNode[];
@@ -170,27 +175,27 @@ export const useGraphStore = create<GraphState>()(
 			provider: null,
 			providerType: "xyflow",
 			visibleEntityTypes: {
-				"works": true,
-				"authors": true,
-				"sources": true,
-				"institutions": true,
-				"topics": true,
-				"concepts": true,
-				"publishers": true,
-				"funders": true,
-				"keywords": true
+				works: true,
+				authors: true,
+				sources: true,
+				institutions: true,
+				topics: true,
+				concepts: true,
+				publishers: true,
+				funders: true,
+				keywords: true
 			},
 			lastSearchStats: {
-				"concepts": 0,
-				"topics": 0,
-				"keywords": 0,
-				"works": 0,
-				"authors": 0,
-				"sources": 0,
-				"institutions": 0,
-				"publishers": 0,
-				"funders": 0
-			} as Record<EntityType, number>,
+				concepts: 0,
+				topics: 0,
+				keywords: 0,
+				works: 0,
+				authors: 0,
+				sources: 0,
+				institutions: 0,
+				publishers: 0,
+				funders: 0
+			},
 			visibleEdgeTypes: {
 				[RelationType.AUTHORED]: true,
 				[RelationType.AFFILIATED]: true,
@@ -230,37 +235,37 @@ export const useGraphStore = create<GraphState>()(
 			// Pre-computed statistics (cached to avoid getSnapshot infinite loops)
 			entityTypeStats: {
 				visible: {
-					"concepts": 0,
-					"topics": 0,
-					"keywords": 0,
-					"works": 0,
-					"authors": 0,
-					"sources": 0,
-					"institutions": 0,
-					"publishers": 0,
-					"funders": 0
+					concepts: 0,
+					topics: 0,
+					keywords: 0,
+					works: 0,
+					authors: 0,
+					sources: 0,
+					institutions: 0,
+					publishers: 0,
+					funders: 0
 				},
 				total: {
-					"concepts": 0,
-					"topics": 0,
-					"keywords": 0,
-					"works": 0,
-					"authors": 0,
-					"sources": 0,
-					"institutions": 0,
-					"publishers": 0,
-					"funders": 0
+					concepts: 0,
+					topics: 0,
+					keywords: 0,
+					works: 0,
+					authors: 0,
+					sources: 0,
+					institutions: 0,
+					publishers: 0,
+					funders: 0
 				},
 				searchResults: {
-					"concepts": 0,
-					"topics": 0,
-					"keywords": 0,
-					"works": 0,
-					"authors": 0,
-					"sources": 0,
-					"institutions": 0,
-					"publishers": 0,
-					"funders": 0
+					concepts: 0,
+					topics: 0,
+					keywords: 0,
+					works: 0,
+					authors: 0,
+					sources: 0,
+					institutions: 0,
+					publishers: 0,
+					funders: 0
 				}
 			},
 			edgeTypeStats: {
@@ -353,19 +358,25 @@ export const useGraphStore = create<GraphState>()(
 			removeNode: (nodeId) => {
 				set((draft) => {
 					// Remove node
-					delete draft.nodes[nodeId];
+					const { [nodeId]: removedNode, ...remainingNodes } = draft.nodes;
+					draft.nodes = remainingNodes;
 					draft.provider?.removeNode(nodeId);
 
 					// Remove connected edges
-					Object.values(draft.edges).forEach(edge => {
+					const edgeEntries = Object.entries(draft.edges);
+					const remainingEdges: Record<string, GraphEdge> = {};
+					edgeEntries.forEach(([edgeId, edge]) => {
 						if (edge.source === nodeId || edge.target === nodeId) {
-							delete draft.edges[edge.id];
 							draft.provider?.removeEdge(edge.id);
+						} else {
+							remainingEdges[edgeId] = edge;
 						}
 					});
+					draft.edges = remainingEdges;
 
 					// Clear selection if removed
-					delete draft.selectedNodes[nodeId];
+					const { [nodeId]: removedFromSelection, ...remainingSelection } = draft.selectedNodes;
+					draft.selectedNodes = remainingSelection;
 					if (draft.selectedNodeId === nodeId) {
 						draft.selectedNodeId = null;
 					}
@@ -414,7 +425,8 @@ export const useGraphStore = create<GraphState>()(
 
 			removeEdge: (edgeId) => {
 				set((draft) => {
-					delete draft.edges[edgeId];
+					const { [edgeId]: removed, ...remaining } = draft.edges;
+					draft.edges = remaining;
 					draft.provider?.removeEdge(edgeId);
 				});
 				// Recompute cached statistics after data change
@@ -448,7 +460,8 @@ export const useGraphStore = create<GraphState>()(
 
 			removeFromSelection: (nodeId) => {
 				set((draft) => {
-					delete draft.selectedNodes[nodeId];
+					const { [nodeId]: removed, ...remaining } = draft.selectedNodes;
+					draft.selectedNodes = remaining;
 				});
 			},
 
@@ -473,10 +486,11 @@ export const useGraphStore = create<GraphState>()(
 
 			unpinNode: (nodeId) => {
 				set((draft) => {
-					delete draft.pinnedNodes[nodeId];
+					const { [nodeId]: removed, ...remaining } = draft.pinnedNodes;
+					draft.pinnedNodes = remaining;
 					// Update legacy single pin
 					if (draft.pinnedNodeId === nodeId) {
-						const remainingPinnedNodes = Object.keys(draft.pinnedNodes);
+						const remainingPinnedNodes = Object.keys(remaining);
 						draft.pinnedNodeId = remainingPinnedNodes[0] || null;
 					}
 				});
@@ -491,7 +505,7 @@ export const useGraphStore = create<GraphState>()(
 
 			isPinned: (nodeId) => {
 				const state = get();
-				return Boolean(state.pinnedNodes[nodeId]);
+				return state.pinnedNodes[nodeId] ?? false;
 			},
 
 			// Legacy single-pin API (maintained for backward compatibility)
@@ -632,12 +646,15 @@ export const useGraphStore = create<GraphState>()(
 				set((state) => {
 					const newVisibleTypes: Record<EntityType, boolean> = { ...state.visibleEntityTypes };
 					if (newVisibleTypes[entityType]) {
-						delete newVisibleTypes[entityType];
+						const { [entityType]: removed, ...remaining } = newVisibleTypes;
+						return { visibleEntityTypes: remaining };
 					} else {
 						newVisibleTypes[entityType] = true;
+						return { visibleEntityTypes: newVisibleTypes };
 					}
-					return { visibleEntityTypes: newVisibleTypes };
 				});
+				// Recompute cached statistics after visibility change
+				get().recomputeEntityTypeStats();
 			},
 
 			setEntityTypeVisibility: (entityType, visible) => {
@@ -645,11 +662,14 @@ export const useGraphStore = create<GraphState>()(
 					const newVisibleTypes: Record<EntityType, boolean> = { ...state.visibleEntityTypes };
 					if (visible) {
 						newVisibleTypes[entityType] = true;
+						return { visibleEntityTypes: newVisibleTypes };
 					} else {
-						delete newVisibleTypes[entityType];
+						const { [entityType]: removed, ...remaining } = newVisibleTypes;
+						return { visibleEntityTypes: remaining };
 					}
-					return { visibleEntityTypes: newVisibleTypes };
 				});
+				// Recompute cached statistics after visibility change
+				get().recomputeEntityTypeStats();
 			},
 
 			setAllEntityTypesVisible: (visible) => {
@@ -667,10 +687,16 @@ export const useGraphStore = create<GraphState>()(
 				set({
 					visibleEntityTypes: visibleTypes
 				});
+				// Recompute cached statistics after visibility change
+				get().recomputeEntityTypeStats();
 			},
 
 			updateSearchStats: (stats) => {
-				set({ lastSearchStats: stats });
+				set((state) => {
+					state.lastSearchStats = stats;
+					// Also update the cached search results in entityTypeStats
+					state.entityTypeStats.searchResults = stats;
+				});
 			},
 
 			recomputeEntityTypeStats: () => {
@@ -717,16 +743,27 @@ export const useGraphStore = create<GraphState>()(
 				});
 			},
 
+			getEntityTypeStats: () => {
+				const state = get();
+				return state.entityTypeStats;
+			},
+
+			getVisibleNodes: () => {
+				const { nodes, visibleEntityTypes } = get();
+				return Object.values(nodes).filter(node => visibleEntityTypes[node.type]);
+			},
+
 			// Edge type management
 			toggleEdgeTypeVisibility: (edgeType) => {
 				set((state) => {
 					const newVisibleTypes: Record<RelationType, boolean> = { ...state.visibleEdgeTypes };
 					if (newVisibleTypes[edgeType]) {
-						delete newVisibleTypes[edgeType];
+						const { [edgeType]: removed, ...remaining } = newVisibleTypes;
+						return { visibleEdgeTypes: remaining };
 					} else {
 						newVisibleTypes[edgeType] = true;
+						return { visibleEdgeTypes: newVisibleTypes };
 					}
-					return { visibleEdgeTypes: newVisibleTypes };
 				});
 			},
 
@@ -735,10 +772,11 @@ export const useGraphStore = create<GraphState>()(
 					const newVisibleTypes: Record<RelationType, boolean> = { ...state.visibleEdgeTypes };
 					if (visible) {
 						newVisibleTypes[edgeType] = true;
+						return { visibleEdgeTypes: newVisibleTypes };
 					} else {
-						delete newVisibleTypes[edgeType];
+						const { [edgeType]: removed, ...remaining } = newVisibleTypes;
+						return { visibleEdgeTypes: remaining };
 					}
-					return { visibleEdgeTypes: newVisibleTypes };
 				});
 			},
 
@@ -805,10 +843,13 @@ export const useGraphStore = create<GraphState>()(
 
 					// Count total and visible edges by type
 					Object.values(state.edges).forEach(edge => {
-						total[edge.relationType] = (total[edge.relationType] || 0) + 1;
+						const edgeType = edge.type;
+						const currentTotal = total[edgeType];
+						total[edgeType] = (typeof currentTotal === "number" ? currentTotal : 0) + 1;
 
-						if (state.visibleEdgeTypes[edge.relationType]) {
-							visible[edge.relationType] = (visible[edge.relationType] || 0) + 1;
+						if (state.visibleEdgeTypes[edgeType]) {
+							const currentVisible = visible[edgeType];
+							visible[edgeType] = (typeof currentVisible === "number" ? currentVisible : 0) + 1;
 						}
 					});
 
@@ -950,7 +991,7 @@ export const useGraphStore = create<GraphState>()(
 				});
 			},
 
-			markNodeAsError: (nodeId, _error) => {
+			markNodeAsError: (nodeId) => {
 				set((draft) => {
 					const node = draft.nodes[nodeId];
 					if (node) {
@@ -1007,7 +1048,15 @@ export const useGraphStore = create<GraphState>()(
 				traversalDepth: state.traversalDepth,
 			}),
 			onRehydrateStorage: () => (state) => {
-				if (state && Array.isArray(state.visibleEntityTypes)) {
+				// Type guard for state object
+				const isStateObject = (value: unknown): value is Record<string, unknown> => {
+					return typeof value === "object" && value !== null;
+				};
+
+				if (!isStateObject(state)) return;
+
+				// Type guard for visibleEntityTypes array
+				if ("visibleEntityTypes" in state && Array.isArray(state.visibleEntityTypes)) {
 					// Type guard: only valid EntityType values
 					const validEntityTypes = state.visibleEntityTypes.filter((type): type is EntityType =>
 						typeof type === "string" &&
@@ -1029,7 +1078,9 @@ export const useGraphStore = create<GraphState>()(
 					});
 					state.visibleEntityTypes = visibleTypesRecord;
 				}
-				if (state && Array.isArray(state.visibleEdgeTypes)) {
+
+				// Type guard for visibleEdgeTypes array
+				if ("visibleEdgeTypes" in state && Array.isArray(state.visibleEdgeTypes)) {
 					// Type guard: only valid RelationType values
 					const isValidRelationType = (type: unknown): type is RelationType => {
 						if (typeof type !== "string") return false;

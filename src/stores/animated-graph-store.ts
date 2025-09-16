@@ -243,7 +243,7 @@ export const useAnimatedGraphStore = create<AnimatedGraphState>()(
 
 					logger.info("graph", "Animation completed", {
 						...completedStats,
-						duration: `${duration}ms`,
+						duration: `${duration.toString()}ms`,
 						historyCount: state.animationHistory.length
 					});
 				});

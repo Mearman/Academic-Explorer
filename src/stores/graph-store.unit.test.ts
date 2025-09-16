@@ -92,10 +92,10 @@ describe("GraphStore", () => {
 				sources: true,
 				institutions: true,
 				topics: true,
+				concepts: true,
 				publishers: true,
 				funders: true,
-				keywords: true,
-				geo: true
+				keywords: true
 			},
 			lastSearchStats: {},
 			visibleEdgeTypes: {
@@ -104,7 +104,16 @@ describe("GraphStore", () => {
 				published_in: true,
 				funded_by: true,
 				related_to: true,
-				references: true
+				references: true,
+				source_published_by: true,
+				institution_child_of: true,
+				publisher_child_of: true,
+				work_has_topic: true,
+				work_has_keyword: true,
+				author_researches: true,
+				institution_located_in: true,
+				funder_located_in: true,
+				topic_part_of_field: true
 			},
 			currentLayout: {
 				type: "d3-force",
@@ -150,12 +159,12 @@ describe("GraphStore", () => {
 			expect(state.isLoading).toBe(false);
 			expect(state.error).toBeNull();
 			expect(Object.keys(state.visibleEntityTypes).length).toBe(9);
-			expect(Object.keys(state.visibleEdgeTypes).length).toBe(6);
+			expect(Object.keys(state.visibleEdgeTypes).length).toBe(15);
 		});
 
 		it("should have correct default visible entity types", () => {
 			const state = useGraphStore.getState();
-			const expectedTypes: EntityType[] = ["works", "authors", "sources", "institutions", "topics", "publishers", "funders", "keywords", "geo"];
+			const expectedTypes: EntityType[] = ["works", "authors", "sources", "institutions", "topics", "concepts", "publishers", "funders", "keywords"];
 
 			expectedTypes.forEach(type => {
 				expect(state.visibleEntityTypes[type]).toBe(true);
@@ -388,8 +397,8 @@ describe("GraphStore", () => {
 
 			const state = useGraphStore.getState();
 			const updatedNode = state.nodes["N1"];
-			expect(updatedNode?.data.label).toBe("Updated Label");
-			expect(updatedNode?.directlyVisited).toBe(true);
+			expect(updatedNode.data.label).toBe("Updated Label");
+			expect(updatedNode.directlyVisited).toBe(true);
 		});
 
 		it("should handle update of non-existent node", () => {
@@ -646,6 +655,10 @@ describe("GraphStore", () => {
 			setAllEntityTypesVisible(false);
 			const falseState = useGraphStore.getState();
 			expect(Object.keys(falseState.visibleEntityTypes).length).toBe(9); // concepts, topics, keywords, works, authors, sources, institutions, publishers, funders
+			// When false, all values should be false (the key exists but value is false)
+			expect(falseState.visibleEntityTypes["works"]).toBe(false);
+			expect(falseState.visibleEntityTypes["authors"]).toBe(false);
+			expect(falseState.visibleEntityTypes["concepts"]).toBe(false);
 
 			// Set all visible - this creates a new object with all true
 			setAllEntityTypesVisible(true);

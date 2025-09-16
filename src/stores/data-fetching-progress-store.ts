@@ -110,7 +110,8 @@ export const useDataFetchingProgressStore = create<DataFetchingProgressState>()(
 
 		removeRequest: (nodeId: string) =>
 		{ set((state) => {
-			delete state.requests[nodeId];
+			const { [nodeId]: removed, ...rest } = state.requests;
+			state.requests = rest;
 		}); },
 
 		setWorkerReady: (ready: boolean) =>
@@ -120,11 +121,13 @@ export const useDataFetchingProgressStore = create<DataFetchingProgressState>()(
 
 		clearCompleted: () =>
 		{ set((state) => {
-			Object.keys(state.requests).forEach(nodeId => {
-				if (state.requests[nodeId].status === "completed") {
-					delete state.requests[nodeId];
+			const filteredRequests: Record<string, DataFetchingProgressItem> = {};
+			Object.entries(state.requests).forEach(([nodeId, request]) => {
+				if (request.status !== "completed") {
+					filteredRequests[nodeId] = request;
 				}
 			});
+			state.requests = filteredRequests;
 		}); },
 
 		clearAll: () =>
