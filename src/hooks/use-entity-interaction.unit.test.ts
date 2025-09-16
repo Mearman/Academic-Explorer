@@ -32,15 +32,27 @@ vi.mock("@/lib/logger", () => ({
 }));
 
 const mockGraphStore = {
-	nodes: new Map(),
-	selectNode: vi.fn(),
+	nodes: {} as Record<string, any>,
+	selectedNodeId: null as string | null,
+	selectNode: vi.fn().mockImplementation((nodeId: string | null) => {
+		// Simulate state guard behavior - only update if different
+		if (mockGraphStore.selectedNodeId !== nodeId) {
+			mockGraphStore.selectedNodeId = nodeId;
+		}
+	}),
 	pinNode: vi.fn(),
 	clearAllPinnedNodes: vi.fn(),
 	getState: vi.fn(),
 };
 
 const mockLayoutStore = {
-	setPreviewEntity: vi.fn(),
+	previewEntityId: null as string | null,
+	setPreviewEntity: vi.fn().mockImplementation((entityId: string | null) => {
+		// Simulate state guard behavior - only update if different
+		if (mockLayoutStore.previewEntityId !== entityId) {
+			mockLayoutStore.previewEntityId = entityId;
+		}
+	}),
 	autoPinOnLayoutStabilization: false,
 };
 
@@ -85,8 +97,12 @@ describe("useEntityInteraction", () => {
 		const { logger } = await import("@/lib/logger");
 
 		// Setup default mock implementations
-		mockGraphStore.nodes.clear();
+		mockGraphStore.nodes = {};
+		mockGraphStore.selectedNodeId = null;
 		mockGraphStore.getState.mockReturnValue(mockGraphStore);
+
+		// Reset layout store state
+		mockLayoutStore.previewEntityId = null;
 
 		vi.mocked(useGraphStore.getState).mockReturnValue(mockGraphStore);
 		vi.mocked(useLayoutStore).mockReturnValue(mockLayoutStore);
@@ -174,9 +190,7 @@ describe("useEntityInteraction", () => {
 			});
 
 			// Mock finding the existing node by entity ID
-			mockGraphStore.nodes.set("node1", existingNode);
-			const mockValues = vi.fn().mockReturnValue([existingNode]);
-			mockGraphStore.nodes.values = mockValues;
+			mockGraphStore.nodes["node1"] = existingNode;
 
 			await act(async () => {
 				await result.current.interactWithEntity(
@@ -197,11 +211,13 @@ describe("useEntityInteraction", () => {
 			const { result } = renderHook(() => useEntityInteraction(mockCenterOnNodeFn));
 			const newNode = createMockNode("node1", testEntityId);
 
-			// Mock no existing nodes initially, then find the newly loaded node
-			const mockValues = vi.fn()
-				.mockReturnValueOnce([]) // No existing nodes
-				.mockReturnValueOnce([newNode]); // Node found after loading
-			mockGraphStore.nodes.values = mockValues;
+			// Mock no existing nodes initially
+			mockGraphStore.nodes = {};
+
+			// Mock loadEntityIntoGraph to add the node to the store
+			mockGraphData.loadEntityIntoGraph.mockImplementation(async () => {
+				mockGraphStore.nodes["node1"] = newNode;
+			});
 
 			await act(async () => {
 				await result.current.interactWithEntity(
@@ -385,9 +401,7 @@ describe("useEntityInteraction", () => {
 			const graphNode = createMockNode("node1", testEntityId);
 
 			// Mock the entity already exists in the store
-			mockGraphStore.nodes.set("node1", graphNode);
-			const mockValues = vi.fn().mockReturnValue([graphNode]);
-			mockGraphStore.nodes.values = mockValues;
+			mockGraphStore.nodes["node1"] = graphNode;
 
 			await act(async () => {
 				await result.current.handleGraphNodeClick(graphNode);
@@ -404,9 +418,7 @@ describe("useEntityInteraction", () => {
 			const graphNode = createMockNode("node1", testEntityId);
 
 			// Mock the entity already exists in the store
-			mockGraphStore.nodes.set("node1", graphNode);
-			const mockValues = vi.fn().mockReturnValue([graphNode]);
-			mockGraphStore.nodes.values = mockValues;
+			mockGraphStore.nodes["node1"] = graphNode;
 
 			await act(async () => {
 				await result.current.handleGraphNodeDoubleClick(graphNode);
@@ -424,9 +436,7 @@ describe("useEntityInteraction", () => {
 			const existingNode = createMockNode("node1", testEntityId);
 
 			// Mock the entity already exists in the store
-			mockGraphStore.nodes.set("node1", existingNode);
-			const mockValues = vi.fn().mockReturnValue([existingNode]);
-			mockGraphStore.nodes.values = mockValues;
+			mockGraphStore.nodes["node1"] = existingNode;
 
 			await act(async () => {
 				await result.current.handleSidebarEntityClick(testEntityId, testEntityType);
