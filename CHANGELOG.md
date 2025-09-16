@@ -1,3 +1,10 @@
+## [4.0.2](https://github.com/Mearman/Academic-Explorer/compare/v4.0.1...v4.0.2) (2025-09-16)
+
+
+### Bug Fixes
+
+* **types:** remove unnecessary conditionals in author-entity ([f47cfdf](https://github.com/Mearman/Academic-Explorer/commit/f47cfdf32c54a420fffe66df00366b1e078d800f))
+
 ## [4.0.1](https://github.com/Mearman/Academic-Explorer/compare/v4.0.0...v4.0.1) (2025-09-16)
 
 
