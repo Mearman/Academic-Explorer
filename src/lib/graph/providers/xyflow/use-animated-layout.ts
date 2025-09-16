@@ -321,10 +321,10 @@ export function useAnimatedLayout(options: UseAnimatedLayoutOptions = {}) {
     if (isLayoutRunningRef.current) {
       stopAnimation();
       isLayoutRunningRef.current = false;
-      resetAnimation();
+      storeMethodsRef.current.resetAnimation();
       logger.info('graph', 'Animated layout stopped');
     }
-  }, [stopAnimation, resetAnimation]);
+  }, [stopAnimation]);
 
   // Pause layout
   const pauseLayout = useCallback(() => {
