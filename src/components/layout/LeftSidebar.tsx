@@ -356,7 +356,7 @@ export const LeftSidebar: React.FC = () => {
 									transition: "background-color 0.2s",
 								}}
 							>
-								{/* Main row with checkbox, icon, label, expand button, and color */}
+								{/* Main row with checkbox, icon, label, and color */}
 								<div style={{
 									display: "flex",
 									alignItems: "center",
@@ -372,44 +372,6 @@ export const LeftSidebar: React.FC = () => {
 									<span style={{ fontSize: "14px", color: colors.text.primary, fontWeight: 500 }}>
 										{option.label}
 									</span>
-
-									{/* Expand all button - only show if there are nodes of this type */}
-									{totalCount > 0 && (
-										<button
-											onClick={(e) => {
-												e.stopPropagation();
-												void handleExpandAllNodesOfType(option.type);
-											}}
-											disabled={isLoading}
-											style={{
-												padding: "4px",
-												backgroundColor: "transparent",
-												border: "none",
-												cursor: isLoading ? "not-allowed" : "pointer",
-												color: colors.text.secondary,
-												display: "flex",
-												alignItems: "center",
-												justifyContent: "center",
-												borderRadius: "4px",
-												transition: "background-color 0.2s",
-												opacity: isLoading ? 0.5 : 1,
-											}}
-											onMouseEnter={(e) => {
-												if (!isLoading) {
-													e.currentTarget.style.backgroundColor = colors.background.secondary;
-													e.currentTarget.style.color = colors.primary;
-												}
-											}}
-											onMouseLeave={(e) => {
-												e.currentTarget.style.backgroundColor = "transparent";
-												e.currentTarget.style.color = colors.text.secondary;
-											}}
-											title={`Expand all ${option.label.toLowerCase()} nodes`}
-										>
-											<IconCirclePlus size={14} />
-										</button>
-									)}
-
 									<span
 										style={{
 											width: "10px",
@@ -436,6 +398,58 @@ export const LeftSidebar: React.FC = () => {
 										{totalCount > 0 && <span>Visible: {visibleCount}</span>}
 									</div>
 								)}
+
+								{/* Action bar with expand button - similar to graph node action bars */}
+								<div style={{
+									display: "flex",
+									justifyContent: "flex-end",
+									alignItems: "stretch",
+									backgroundColor: "rgba(0,0,0,0.2)",
+									padding: "0px",
+									borderRadius: "0 0 6px 6px", // Only bottom corners rounded to match the label container
+									fontSize: "9px",
+									opacity: 0.8,
+									minHeight: "20px",
+									marginTop: "4px"
+								}}>
+									<button
+										onClick={(e) => {
+											e.stopPropagation();
+											void handleExpandAllNodesOfType(option.type);
+										}}
+										disabled={isLoading}
+										style={{
+											padding: "4px 8px",
+											backgroundColor: "transparent",
+											border: "none",
+											cursor: isLoading ? "not-allowed" : "pointer",
+											color: colors.text.secondary,
+											display: "flex",
+											alignItems: "center",
+											justifyContent: "center",
+											borderRadius: "0 0 6px 0", // Match the parent container
+											transition: "background-color 0.2s",
+											opacity: isLoading ? 0.5 : 1,
+											fontSize: "10px",
+											minHeight: "20px",
+											flex: 1,
+										}}
+										onMouseEnter={(e) => {
+											if (!isLoading) {
+												e.currentTarget.style.backgroundColor = "rgba(255,255,255,0.1)";
+												e.currentTarget.style.color = colors.primary;
+											}
+										}}
+										onMouseLeave={(e) => {
+											e.currentTarget.style.backgroundColor = "transparent";
+											e.currentTarget.style.color = colors.text.secondary;
+										}}
+										title={`Expand all visible nodes to find ${option.label.toLowerCase()}`}
+									>
+										<IconCirclePlus size={12} style={{ marginRight: "4px" }} />
+										Expand All
+									</button>
+								</div>
 							</label>
 						);
 					})}
