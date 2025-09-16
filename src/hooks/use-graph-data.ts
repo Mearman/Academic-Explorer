@@ -10,7 +10,7 @@ import { useGraphStore } from "@/stores/graph-store";
 import { useDataFetchingWorker } from "@/hooks/use-data-fetching-worker";
 import { useExpansionSettingsStore } from "@/stores/expansion-settings-store";
 import { logger, logError } from "@/lib/logger";
-import { setCachedGraphNodes, setCachedGraphEdges, setNodeExpanded } from "@/lib/cache/graph-cache";
+import { setNodeExpanded } from "@/lib/cache/graph-cache";
 import type { SearchOptions, EntityType, ExpansionTarget } from "@/lib/graph/types";
 import type { ExpandCompletePayload } from "@/workers/data-fetching.worker";
 

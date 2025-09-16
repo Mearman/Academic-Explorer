@@ -360,8 +360,8 @@ export function useLayout(
             typeof d3Node.y === "number"
 					) {
 						// Type assertion is safe here because we've checked the types above
-						const x = d3Node.x as number;
-						const y = d3Node.y as number;
+						const x = d3Node.x;
+						const y = d3Node.y;
 						return {
 							...node,
 							position: { x, y },

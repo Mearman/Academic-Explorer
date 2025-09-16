@@ -47,7 +47,7 @@ class MockWorker {
 
 	constructor(public url: string, public options?: WorkerOptions) {
 		// Setup default behavior for postMessage
-		this.postMessage.mockImplementation((data: any) => {
+		this.postMessage.mockImplementation((_data: any) => {
 			// Do nothing by default, tests can override
 		});
 
@@ -296,7 +296,7 @@ describe("useAnimatedForceSimulation", () => {
 
 	it("should handle worker errors", async () => {
 		const onError = vi.fn();
-		const { result } = renderHook(() =>
+		renderHook(() =>
 			useAnimatedForceSimulation({ onError })
 		);
 

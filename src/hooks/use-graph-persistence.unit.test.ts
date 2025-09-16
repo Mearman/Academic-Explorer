@@ -124,11 +124,11 @@ describe("useGraphPersistence", () => {
 
 		// Reset mock store - use Records instead of Maps
 		mockStore.nodes = {
-			"W123": mockGraphSnapshot.nodes[0] as GraphNode,
-			"A456": mockGraphSnapshot.nodes[1] as GraphNode,
+			"W123": mockGraphSnapshot.nodes[0],
+			"A456": mockGraphSnapshot.nodes[1],
 		};
 		mockStore.edges = {
-			"edge1": mockGraphSnapshot.edges[0] as GraphEdge,
+			"edge1": mockGraphSnapshot.edges[0],
 		};
 
 		// Reset provider to valid mock object

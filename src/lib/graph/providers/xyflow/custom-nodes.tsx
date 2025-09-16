@@ -381,29 +381,6 @@ const getEntityGlowColors = (entityType: EntityType): { border: string; glow: st
 	};
 };
 
-// Get entity type label
-const getEntityTypeLabel = (entityType: EntityType): string => {
-	switch (entityType) {
-		case "works":
-			return "Work";
-		case "authors":
-			return "Author";
-		case "sources":
-			return "Source";
-		case "institutions":
-			return "Institution";
-		case "topics":
-			return "Topic";
-		case "publishers":
-			return "Publisher";
-		case "funders":
-			return "Funder";
-		case "keywords":
-			return "Keyword";
-		default:
-			return "Entity";
-	}
-};
 
 // Custom node component
 export const CustomNode: React.FC<CustomNodeProps> = ({ data, selected }) => {
