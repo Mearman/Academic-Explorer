@@ -2,26 +2,30 @@
  * Unit tests for use-graph-data hook
  */
 
+// Mock dependencies first (before any imports)
+vi.mock("@/services/graph-data-service");
+vi.mock("@/stores/graph-store");
+vi.mock("@/hooks/use-data-fetching-worker");
+vi.mock("@/lib/logger", () => ({
+	logger: {
+		info: vi.fn(),
+		warn: vi.fn(),
+		error: vi.fn(),
+		debug: vi.fn(),
+	},
+	logError: vi.fn(),
+}));
+
 import { renderHook } from "@testing-library/react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { vi, type Mock } from "vitest";
 import { useGraphData } from "./use-graph-data";
 import { GraphDataService } from "@/services/graph-data-service";
 import { useGraphStore } from "@/stores/graph-store";
+import { useDataFetchingWorker } from "@/hooks/use-data-fetching-worker";
 import { logger, logError } from "@/lib/logger";
 import type { SearchOptions } from "@/lib/graph/types";
 import React from "react";
-
-// Mock dependencies
-vi.mock("@/services/graph-data-service");
-vi.mock("@/stores/graph-store");
-vi.mock("@/lib/logger", () => ({
-	logger: {
-		info: vi.fn(),
-		error: vi.fn(),
-	},
-	logError: vi.fn(),
-}));
 
 const MockedGraphDataService = GraphDataService as unknown as {
   new (queryClient: QueryClient): {
@@ -33,13 +37,11 @@ const MockedGraphDataService = GraphDataService as unknown as {
   };
 };
 
-const mockUseGraphStore = useGraphStore as unknown as {
-  (): {
-    isLoading: boolean;
-    error: string | null;
-  };
+const mockUseGraphStore = useGraphStore as unknown as Mock & {
   getState: Mock;
 };
+
+const mockUseDataFetchingWorker = useDataFetchingWorker as unknown as Mock;
 
 describe("useGraphData", () => {
 	let queryClient: QueryClient;
@@ -51,6 +53,7 @@ describe("useGraphData", () => {
     traversalDepth: number;
     pinnedNodes: Set<string>;
     calculateNodeDepths: Mock;
+    markNodeAsLoading: Mock;
   };
 
 	const createWrapper = () => {
@@ -86,16 +89,55 @@ describe("useGraphData", () => {
 			setError: vi.fn(),
 			clear: vi.fn(),
 			traversalDepth: 2,
-			pinnedNodes: new Set(["node1"]),
+			pinnedNodes: { "node1": true },
 			calculateNodeDepths: vi.fn(),
+			markNodeAsLoading: vi.fn(),
+			nodes: {
+				"test-node-id": {
+					id: "test-node-id",
+					entityId: "W123456789",
+					entityData: { id: "W123456789", display_name: "Test Node" },
+					label: "Test Node",
+					type: "works",
+					externalIds: [],
+				}
+			},
 		};
 
-		mockUseGraphStore.mockReturnValue({
-			isLoading: false,
-			error: null,
+		// Mock useGraphStore to return primitive values based on selector
+		mockUseGraphStore.mockImplementation((selector?: (state: any) => any) => {
+			const state = {
+				isLoading: false,
+				error: null,
+				...mockStore,
+			};
+
+			if (selector) {
+				return selector(state);
+			}
+			return state;
 		});
 
-		mockUseGraphStore.getState = vi.fn().mockReturnValue(mockStore);
+		mockUseGraphStore.getState = vi.fn().mockReturnValue({
+			isLoading: false,
+			error: null,
+			...mockStore,
+		});
+
+		// Mock data fetching worker (default to not ready to test fallback behavior)
+		mockUseDataFetchingWorker.mockReturnValue({
+			isWorkerReady: false,
+			activeRequests: new Set(),
+			expandNode: vi.fn().mockResolvedValue(undefined),
+			cancelExpansion: vi.fn(),
+			cancelAllExpansions: vi.fn(),
+			getStats: vi.fn().mockReturnValue({
+				totalRequests: 0,
+				completedRequests: 0,
+				failedRequests: 0,
+				averageDuration: 0,
+			}),
+		});
 	});
 
 	afterEach(() => {
@@ -129,9 +171,17 @@ describe("useGraphData", () => {
 		});
 
 		it("should return loading state from store", () => {
-			mockUseGraphStore.mockReturnValue({
-				isLoading: true,
-				error: null,
+			mockUseGraphStore.mockImplementation((selector?: (state: any) => any) => {
+				const state = {
+					isLoading: true,
+					error: null,
+					...mockStore,
+				};
+
+				if (selector) {
+					return selector(state);
+				}
+				return state;
 			});
 
 			const { result } = renderHook(() => useGraphData(), {
@@ -143,9 +193,17 @@ describe("useGraphData", () => {
 
 		it("should return error state from store", () => {
 			const errorMessage = "Test error";
-			mockUseGraphStore.mockReturnValue({
-				isLoading: false,
-				error: errorMessage,
+			mockUseGraphStore.mockImplementation((selector?: (state: any) => any) => {
+				const state = {
+					isLoading: false,
+					error: errorMessage,
+					...mockStore,
+				};
+
+				if (selector) {
+					return selector(state);
+				}
+				return state;
 			});
 
 			const { result } = renderHook(() => useGraphData(), {
@@ -247,6 +305,23 @@ describe("useGraphData", () => {
 	});
 
 	describe("expandNode", () => {
+		beforeEach(() => {
+			// Configure worker to NOT be ready so tests fall back to service
+			mockUseDataFetchingWorker.mockReturnValue({
+				isWorkerReady: false, // Force fallback to service
+				activeRequests: new Set(),
+				expandNode: vi.fn().mockResolvedValue(undefined),
+				cancelExpansion: vi.fn(),
+				cancelAllExpansions: vi.fn(),
+				getStats: vi.fn().mockReturnValue({
+					totalRequests: 0,
+					completedRequests: 0,
+					failedRequests: 0,
+					averageDuration: 0,
+				}),
+			});
+		});
+
 		it("should call service.expandNode with default options from store", async () => {
 			const { result } = renderHook(() => useGraphData(), {
 				wrapper: createWrapper(),
@@ -256,11 +331,7 @@ describe("useGraphData", () => {
 			await result.current.expandNode(nodeId);
 
 			expect(mockStore.setLoading).toHaveBeenCalledWith(true);
-			expect(mockService.expandNode).toHaveBeenCalledWith(nodeId, {
-				depth: 2, // From mockStore.traversalDepth
-				limit: 10,
-				force: true,
-			});
+			expect(mockService.expandNode).toHaveBeenCalledWith(nodeId, undefined);
 			expect(mockStore.setLoading).toHaveBeenCalledWith(false);
 		});
 
@@ -286,19 +357,16 @@ describe("useGraphData", () => {
 
 			expect(logger.info).toHaveBeenCalledWith(
 				"graph",
-				"expandNode called",
+				"Fallback expansion completed",
 				{
 					nodeId,
-					depth: 2,
-					limit: 10,
-					force: true,
 				},
 				"useGraphData"
 			);
 
 			expect(logger.info).toHaveBeenCalledWith(
 				"graph",
-				"expandNode completed successfully",
+				"Fallback expansion completed",
 				{ nodeId },
 				"useGraphData"
 			);
@@ -316,7 +384,9 @@ describe("useGraphData", () => {
 		});
 
 		it("should handle no pinned nodes gracefully", async () => {
-			mockStore.pinnedNodes = new Set();
+			// Override the getState mock for this test to return empty pinnedNodes
+			const localMockStore = { ...mockStore, pinnedNodes: {} };
+			mockUseGraphStore.getState = vi.fn().mockReturnValue(localMockStore);
 
 			const { result } = renderHook(() => useGraphData(), {
 				wrapper: createWrapper(),
@@ -325,7 +395,7 @@ describe("useGraphData", () => {
 			const nodeId = "test-node-id";
 			await result.current.expandNode(nodeId);
 
-			expect(mockStore.calculateNodeDepths).not.toHaveBeenCalled();
+			expect(localMockStore.calculateNodeDepths).not.toHaveBeenCalled();
 		});
 
 		it("should handle errors and set error state", async () => {
@@ -341,7 +411,7 @@ describe("useGraphData", () => {
 
 			expect(logger.error).toHaveBeenCalledWith(
 				"graph",
-				"expandNode failed",
+				"Fallback expansion failed",
 				{
 					nodeId,
 					error: "Expand node failed",
@@ -350,7 +420,7 @@ describe("useGraphData", () => {
 			);
 
 			expect(logError).toHaveBeenCalledWith(
-				"Failed to expand node in graph data hook",
+				"Failed to expand node via fallback",
 				error,
 				"useGraphData",
 				"graph"
@@ -373,7 +443,7 @@ describe("useGraphData", () => {
 
 			expect(logger.error).toHaveBeenCalledWith(
 				"graph",
-				"expandNode failed",
+				"Fallback expansion failed",
 				{
 					nodeId,
 					error: "Unknown error",

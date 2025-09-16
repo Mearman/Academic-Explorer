@@ -36,8 +36,8 @@ vi.mock("@/lib/logger", () => ({
 }));
 
 const mockGraphStore = {
-	nodes: new Map(),
-	edges: new Map(),
+	nodes: {} as Record<string, GraphNode>,
+	edges: {} as Record<string, GraphEdge>,
 	setGraphData: vi.fn(),
 	setLoading: vi.fn(),
 	setError: vi.fn(),
@@ -115,20 +115,27 @@ describe("useGraphUtilities", () => {
 		const { graphUtilitiesService } = await import("@/lib/graph/graph-utilities-service");
 		const { logger } = await import("@/lib/logger");
 
-		// Setup mock graph store
-		const testNodesMap = new Map(testNodes.map(n => [n.id, n]));
-		const testEdgesMap = new Map(testEdges.map(e => [e.id, e]));
+		// Setup mock graph store - use Records instead of Maps
+		const testNodesRecord: Record<string, GraphNode> = {};
+		const testEdgesRecord: Record<string, GraphEdge> = {};
 
-		mockGraphStore.nodes = testNodesMap;
-		mockGraphStore.edges = testEdgesMap;
+		testNodes.forEach(node => {
+			testNodesRecord[node.id] = node;
+		});
+		testEdges.forEach(edge => {
+			testEdgesRecord[edge.id] = edge;
+		});
+
+		mockGraphStore.nodes = testNodesRecord;
+		mockGraphStore.edges = testEdgesRecord;
 
 		// Configure useGraphStore mock to return different values based on selector
 		vi.mocked(useGraphStore).mockImplementation((selector: any) => {
 			if (typeof selector === "function") {
 				// Mock the state object
 				const state = {
-					nodes: testNodesMap,
-					edges: testEdgesMap,
+					nodes: testNodesRecord,
+					edges: testEdgesRecord,
 					setGraphData: mockGraphStore.setGraphData,
 					setLoading: mockGraphStore.setLoading,
 					setError: mockGraphStore.setError,
@@ -548,8 +555,8 @@ describe("useGraphUtilities", () => {
 			vi.mocked(useGraphStore).mockImplementation((selector: any) => {
 				if (typeof selector === "function") {
 					const state = {
-						nodes: new Map(),
-						edges: new Map(),
+						nodes: {},
+						edges: {},
 						setGraphData: mockGraphStore.setGraphData,
 						setLoading: mockGraphStore.setLoading,
 						setError: mockGraphStore.setError,
@@ -582,15 +589,22 @@ describe("useGraphUtilities", () => {
 			expect(result.current.edgeCount).toBe(2);
 
 			// Simulate store update
-			const newNodesMap = new Map(testNodes.slice(0, 2).map(n => [n.id, n]));
-			const newEdgesMap = new Map(testEdges.slice(0, 1).map(e => [e.id, e]));
+			const newNodesRecord: Record<string, GraphNode> = {};
+			const newEdgesRecord: Record<string, GraphEdge> = {};
+
+			testNodes.slice(0, 2).forEach(node => {
+				newNodesRecord[node.id] = node;
+			});
+			testEdges.slice(0, 1).forEach(edge => {
+				newEdgesRecord[edge.id] = edge;
+			});
 
 			const { useGraphStore } = await import("@/stores/graph-store");
 			vi.mocked(useGraphStore).mockImplementation((selector: any) => {
 				if (typeof selector === "function") {
 					const state = {
-						nodes: newNodesMap,
-						edges: newEdgesMap,
+						nodes: newNodesRecord,
+						edges: newEdgesRecord,
 						setGraphData: mockGraphStore.setGraphData,
 						setLoading: mockGraphStore.setLoading,
 						setError: mockGraphStore.setError,

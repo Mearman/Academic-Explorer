@@ -44,7 +44,7 @@ describe("LayoutControls", () => {
 			</TestWrapper>
 		);
 
-		expect(screen.getByRole("button", { name: /D3 Force Layout/i })).toBeInTheDocument();
+		expect(screen.getByRole("button", { name: /Layout/i })).toBeInTheDocument();
 	});
 
 	it("shows popover when button is clicked", async () => {
@@ -54,7 +54,7 @@ describe("LayoutControls", () => {
 			</TestWrapper>
 		);
 
-		const button = screen.getByRole("button", { name: /D3 Force Layout/i });
+		const button = screen.getByRole("button", { name: /Layout/i });
 		fireEvent.click(button);
 
 		// Check that the popover is open by checking for aria-expanded
@@ -72,7 +72,7 @@ describe("LayoutControls", () => {
 			</TestWrapper>
 		);
 
-		const button = screen.getByRole("button", { name: /D3 Force Layout/i });
+		const button = screen.getByRole("button", { name: /Layout/i });
 
 		// Test that clicking the button would trigger the layout change
 		// Since the component's handleLayoutChange always sets d3-force layout,

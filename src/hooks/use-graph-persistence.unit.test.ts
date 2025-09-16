@@ -7,7 +7,7 @@ import { vi, type Mock } from "vitest";
 import { useGraphPersistence } from "./use-graph-persistence";
 import { useGraphStore } from "@/stores/graph-store";
 import { logger, logError } from "@/lib/logger";
-import type { GraphSnapshot } from "@/lib/graph/types";
+import type { GraphSnapshot, GraphNode, GraphEdge } from "@/lib/graph/types";
 
 // Mock dependencies
 vi.mock("@/stores/graph-store");
@@ -52,8 +52,8 @@ Object.defineProperty(window, "localStorage", {
 
 describe("useGraphPersistence", () => {
 	const mockStore = {
-		nodes: new Map(),
-		edges: new Map(),
+		nodes: {} as Record<string, GraphNode>,
+		edges: {} as Record<string, GraphEdge>,
 		provider: {
 			getSnapshot: vi.fn(),
 			applyLayout: vi.fn(),
@@ -122,12 +122,14 @@ describe("useGraphPersistence", () => {
 		vi.clearAllMocks();
 		localStorageMock.clear();
 
-		// Reset mock store
-		mockStore.nodes = new Map([
-			["W123", mockGraphSnapshot.nodes[0]],
-			["A456", mockGraphSnapshot.nodes[1]],
-		]);
-		mockStore.edges = new Map([["edge1", mockGraphSnapshot.edges[0]]]);
+		// Reset mock store - use Records instead of Maps
+		mockStore.nodes = {
+			"W123": mockGraphSnapshot.nodes[0] as GraphNode,
+			"A456": mockGraphSnapshot.nodes[1] as GraphNode,
+		};
+		mockStore.edges = {
+			"edge1": mockGraphSnapshot.edges[0] as GraphEdge,
+		};
 
 		// Reset provider to valid mock object
 		mockStore.provider = {
@@ -258,7 +260,7 @@ describe("useGraphPersistence", () => {
 		});
 
 		it("should throw error when trying to save empty graph", () => {
-			mockStore.nodes = new Map(); // Empty graph
+			mockStore.nodes = {}; // Empty graph
 
 			const { result } = renderHook(() => useGraphPersistence());
 
@@ -550,7 +552,7 @@ describe("useGraphPersistence", () => {
 		});
 
 		it("should handle auto-save errors silently", () => {
-			mockStore.nodes = new Map(); // Empty graph will cause saveSession to throw
+			mockStore.nodes = {}; // Empty graph will cause saveSession to throw
 
 			const { result } = renderHook(() => useGraphPersistence());
 
