@@ -33,9 +33,9 @@ export class AuthorEntity extends AbstractEntity<Author> {
 			"orcid",
 			"works_count",
 			"cited_by_count",
-			"h_index",
+			"summary_stats",
 			"affiliations",
-			"last_known_institution"
+			"last_known_institutions"
 		];
 	}
 
