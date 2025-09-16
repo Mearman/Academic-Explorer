@@ -4,14 +4,12 @@
  */
 
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import type { WorkReference, STARDataset } from "./types";
+import type { WorkReference } from "./types";
 import {
 	detectFileFormat,
 	parseSTARFile,
 	createSTARDatasetFromParseResult,
 	DEFAULT_COLUMN_MAPPINGS,
-	type SupportedFileFormat,
-	type RawPaperData,
 	type ParseResult,
 	type ParseConfig,
 } from "./file-parser";
