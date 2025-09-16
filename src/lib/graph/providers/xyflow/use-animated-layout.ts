@@ -84,23 +84,8 @@ export function useAnimatedLayout(options: UseAnimatedLayoutOptions = {}) {
     applyPositionsToGraphStore: useAnimatedGraphStore.getState().applyPositionsToGraphStore,
   });
 
-  // Update refs when store methods change (should be rare)
-  useEffect(() => {
-    storeMethodsRef.current = {
-      startAnimation: useAnimatedGraphStore.getState().startAnimation,
-      completeAnimation: useAnimatedGraphStore.getState().completeAnimation,
-      resetAnimation: useAnimatedGraphStore.getState().resetAnimation,
-      setAnimating: useAnimatedGraphStore.getState().setAnimating,
-      setPaused: useAnimatedGraphStore.getState().setPaused,
-      setProgress: useAnimatedGraphStore.getState().setProgress,
-      setAlpha: useAnimatedGraphStore.getState().setAlpha,
-      setIteration: useAnimatedGraphStore.getState().setIteration,
-      setFPS: useAnimatedGraphStore.getState().setFPS,
-      updateAnimatedPositions: useAnimatedGraphStore.getState().updateAnimatedPositions,
-      updateStaticPositions: useAnimatedGraphStore.getState().updateStaticPositions,
-      applyPositionsToGraphStore: useAnimatedGraphStore.getState().applyPositionsToGraphStore,
-    };
-  });
+  // Store methods are stable in Zustand, no need to update refs
+  // This useEffect was causing infinite loops by running on every render
 
   // Create stable animation state object
   const animationState = useMemo(() => ({
