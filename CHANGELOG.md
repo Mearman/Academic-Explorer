@@ -1,3 +1,10 @@
+## [4.0.1](https://github.com/Mearman/Academic-Explorer/compare/v4.0.0...v4.0.1) (2025-09-16)
+
+
+### Bug Fixes
+
+* **hooks:** add missing setWorkerReady dependency to useCallback ([3c20f81](https://github.com/Mearman/Academic-Explorer/commit/3c20f81378c785f3a6dfb746b5a852944e4f72a5))
+
 # [4.0.0](https://github.com/Mearman/Academic-Explorer/compare/v3.0.0...v4.0.0) (2025-09-16)
 
 
