@@ -3,10 +3,10 @@
  * Provides smooth, real-time animation streaming while keeping UI responsive
  */
 
-import { useCallback, useEffect, useRef, useState } from 'react';
-import { logger } from '@/lib/logger';
-import type { EntityType } from '@/lib/graph/types';
-import { getConfigByGraphSize } from '@/lib/graph/utils/performance-config';
+import { useCallback, useEffect, useRef, useState } from "react";
+import { logger } from "@/lib/logger";
+import type { EntityType } from "@/lib/graph/types";
+import { getConfigByGraphSize } from "@/lib/graph/utils/performance-config";
 
 // Types matching the worker interfaces
 interface NodePosition {
@@ -82,320 +82,320 @@ interface UseAnimatedForceSimulationOptions {
 }
 
 export function useAnimatedForceSimulation(options: UseAnimatedForceSimulationOptions = {}) {
-  const {
-    onPositionUpdate,
-    onComplete,
-    onError,
-    autoStart = false,
-  } = options;
+	const {
+		onPositionUpdate,
+		onComplete,
+		onError,
+		autoStart = false,
+	} = options;
 
-  // Worker ref
-  const workerRef = useRef<Worker | null>(null);
-  const isWorkerReady = useRef(false);
+	// Worker ref
+	const workerRef = useRef<Worker | null>(null);
+	const isWorkerReady = useRef(false);
 
-  // Animation state
-  const [animationState, setAnimationState] = useState<AnimationState>({
-    isRunning: false,
-    isPaused: false,
-    alpha: 1,
-    iteration: 0,
-    progress: 0,
-    fps: 0,
-    nodeCount: 0,
-    linkCount: 0,
-  });
+	// Animation state
+	const [animationState, setAnimationState] = useState<AnimationState>({
+		isRunning: false,
+		isPaused: false,
+		alpha: 1,
+		iteration: 0,
+		progress: 0,
+		fps: 0,
+		nodeCount: 0,
+		linkCount: 0,
+	});
 
-  // Current positions
-  const [nodePositions, setNodePositions] = useState<NodePosition[]>([]);
+	// Current positions
+	const [nodePositions, setNodePositions] = useState<NodePosition[]>([]);
 
-  // Performance stats
-  const [performanceStats, setPerformanceStats] = useState({
-    averageFPS: 0,
-    minFPS: Infinity,
-    maxFPS: 0,
-    frameCount: 0,
-  });
+	// Performance stats
+	const [performanceStats, setPerformanceStats] = useState({
+		averageFPS: 0,
+		minFPS: Infinity,
+		maxFPS: 0,
+		frameCount: 0,
+	});
 
-  // Initialize worker
-  useEffect(() => {
-    logger.info('graph', 'Initializing animated force simulation worker');
+	// Initialize worker
+	useEffect(() => {
+		logger.info("graph", "Initializing animated force simulation worker");
 
-    try {
-      workerRef.current = new Worker(
-        new URL('../workers/force-animation.worker.ts', import.meta.url),
-        { type: 'module' }
-      );
+		try {
+			workerRef.current = new Worker(
+				new URL("../workers/force-animation.worker.ts", import.meta.url),
+				{ type: "module" }
+			);
 
-      workerRef.current.addEventListener('message', handleWorkerMessage);
-      workerRef.current.addEventListener('error', handleWorkerError);
+			workerRef.current.addEventListener("message", handleWorkerMessage);
+			workerRef.current.addEventListener("error", handleWorkerError);
 
-    } catch (error) {
-      logger.error('graph', 'Failed to initialize force animation worker', { error });
-      onError?.('Failed to initialize Web Worker for force simulation');
-    }
+		} catch (error) {
+			logger.error("graph", "Failed to initialize force animation worker", { error });
+			onError?.("Failed to initialize Web Worker for force simulation");
+		}
 
-    return () => {
-      if (workerRef.current) {
-        workerRef.current.terminate();
-        workerRef.current = null;
-        isWorkerReady.current = false;
-      }
-    };
-  }, [onError]);
+		return () => {
+			if (workerRef.current) {
+				workerRef.current.terminate();
+				workerRef.current = null;
+				isWorkerReady.current = false;
+			}
+		};
+	}, [onError]);
 
-  // Handle worker messages
-  const handleWorkerMessage = useCallback((event: MessageEvent<WorkerMessage>) => {
-    const { type, positions, alpha, iteration, progress, fps, totalIterations, finalAlpha, reason, nodeCount, linkCount, config } = event.data;
+	// Handle worker messages
+	const handleWorkerMessage = useCallback((event: MessageEvent<WorkerMessage>) => {
+		const { type, positions, alpha, iteration, progress, fps, totalIterations, finalAlpha, reason, nodeCount, linkCount, config } = event.data;
 
-    switch (type) {
-      case 'ready':
-        isWorkerReady.current = true;
-        logger.info('graph', 'Force animation worker ready');
-        break;
+		switch (type) {
+			case "ready":
+				isWorkerReady.current = true;
+				logger.info("graph", "Force animation worker ready");
+				break;
 
-      case 'started':
-        setAnimationState(prev => ({
-          ...prev,
-          isRunning: true,
-          isPaused: false,
-          nodeCount: nodeCount || 0,
-          linkCount: linkCount || 0,
-        }));
+			case "started":
+				setAnimationState(prev => ({
+					...prev,
+					isRunning: true,
+					isPaused: false,
+					nodeCount: nodeCount || 0,
+					linkCount: linkCount || 0,
+				}));
 
-        logger.info('graph', 'Force animation started', {
-          nodeCount,
-          linkCount,
-          config,
-        });
-        break;
+				logger.info("graph", "Force animation started", {
+					nodeCount,
+					linkCount,
+					config,
+				});
+				break;
 
-      case 'tick':
-        if (positions && typeof alpha === 'number' && typeof iteration === 'number' && typeof progress === 'number') {
-          // Update positions
-          setNodePositions(positions);
-          onPositionUpdate?.(positions);
+			case "tick":
+				if (positions && typeof alpha === "number" && typeof iteration === "number" && typeof progress === "number") {
+					// Update positions
+					setNodePositions(positions);
+					onPositionUpdate?.(positions);
 
-          // Update animation state
-          setAnimationState(prev => ({
-            ...prev,
-            alpha,
-            iteration,
-            progress,
-            fps: fps || prev.fps,
-          }));
+					// Update animation state
+					setAnimationState(prev => ({
+						...prev,
+						alpha,
+						iteration,
+						progress,
+						fps: fps || prev.fps,
+					}));
 
-          // Update performance stats
-          if (fps) {
-            setPerformanceStats(prev => ({
-              averageFPS: (prev.averageFPS * prev.frameCount + fps) / (prev.frameCount + 1),
-              minFPS: Math.min(prev.minFPS, fps),
-              maxFPS: Math.max(prev.maxFPS, fps),
-              frameCount: prev.frameCount + 1,
-            }));
-          }
+					// Update performance stats
+					if (fps) {
+						setPerformanceStats(prev => ({
+							averageFPS: (prev.averageFPS * prev.frameCount + fps) / (prev.frameCount + 1),
+							minFPS: Math.min(prev.minFPS, fps),
+							maxFPS: Math.max(prev.maxFPS, fps),
+							frameCount: prev.frameCount + 1,
+						}));
+					}
 
-          logger.debug('graph', `Animation tick ${iteration}`, {
-            alpha: alpha.toFixed(4),
-            progress: `${(progress * 100).toFixed(1)}%`,
-            fps: fps?.toFixed(1),
-          });
-        }
-        break;
+					logger.debug("graph", `Animation tick ${iteration}`, {
+						alpha: alpha.toFixed(4),
+						progress: `${(progress * 100).toFixed(1)}%`,
+						fps: fps?.toFixed(1),
+					});
+				}
+				break;
 
-      case 'complete':
-        if (positions && typeof totalIterations === 'number' && typeof finalAlpha === 'number' && reason) {
-          setNodePositions(positions);
-          onPositionUpdate?.(positions);
-          onComplete?.(positions, { totalIterations, finalAlpha, reason });
+			case "complete":
+				if (positions && typeof totalIterations === "number" && typeof finalAlpha === "number" && reason) {
+					setNodePositions(positions);
+					onPositionUpdate?.(positions);
+					onComplete?.(positions, { totalIterations, finalAlpha, reason });
 
-          setAnimationState(prev => ({
-            ...prev,
-            isRunning: false,
-            isPaused: false,
-            progress: 1,
-            alpha: finalAlpha,
-          }));
+					setAnimationState(prev => ({
+						...prev,
+						isRunning: false,
+						isPaused: false,
+						progress: 1,
+						alpha: finalAlpha,
+					}));
 
-          // Use current performance stats from state callback
-          setPerformanceStats(currentStats => {
-            logger.info('graph', 'Force animation completed', {
-              totalIterations,
-              finalAlpha: finalAlpha.toFixed(4),
-              reason,
-              averageFPS: currentStats.averageFPS.toFixed(1),
-            });
-            return currentStats; // Return unchanged stats
-          });
-        }
-        break;
+					// Use current performance stats from state callback
+					setPerformanceStats(currentStats => {
+						logger.info("graph", "Force animation completed", {
+							totalIterations,
+							finalAlpha: finalAlpha.toFixed(4),
+							reason,
+							averageFPS: currentStats.averageFPS.toFixed(1),
+						});
+						return currentStats; // Return unchanged stats
+					});
+				}
+				break;
 
-      case 'stopped':
-        setAnimationState(prev => ({
-          ...prev,
-          isRunning: false,
-          isPaused: false,
-        }));
-        logger.info('graph', 'Force animation stopped');
-        break;
+			case "stopped":
+				setAnimationState(prev => ({
+					...prev,
+					isRunning: false,
+					isPaused: false,
+				}));
+				logger.info("graph", "Force animation stopped");
+				break;
 
-      case 'paused':
-        setAnimationState(prev => ({
-          ...prev,
-          isPaused: true,
-        }));
-        logger.info('graph', 'Force animation paused');
-        break;
+			case "paused":
+				setAnimationState(prev => ({
+					...prev,
+					isPaused: true,
+				}));
+				logger.info("graph", "Force animation paused");
+				break;
 
-      case 'resumed':
-        setAnimationState(prev => ({
-          ...prev,
-          isPaused: false,
-        }));
-        logger.info('graph', 'Force animation resumed');
-        break;
+			case "resumed":
+				setAnimationState(prev => ({
+					...prev,
+					isPaused: false,
+				}));
+				logger.info("graph", "Force animation resumed");
+				break;
 
-      case 'error':
-        const errorMessage = `Worker error: ${event.data.error}`;
-        logger.error('graph', 'Force animation worker error', event.data);
-        onError?.(errorMessage);
-        break;
+			case "error":
+				const errorMessage = `Worker error: ${event.data.error}`;
+				logger.error("graph", "Force animation worker error", event.data);
+				onError?.(errorMessage);
+				break;
 
-      default:
-        logger.warn('graph', 'Unknown worker message type', { type });
-    }
-  }, [onPositionUpdate, onComplete, onError]);
+			default:
+				logger.warn("graph", "Unknown worker message type", { type });
+		}
+	}, [onPositionUpdate, onComplete, onError]);
 
-  // Handle worker errors
-  const handleWorkerError = useCallback((error: ErrorEvent) => {
-    const errorMessage = `Worker error: ${error.message}`;
-    logger.error('graph', 'Force animation worker error', { error: error.message, filename: error.filename, lineno: error.lineno });
-    onError?.(errorMessage);
-  }, [onError]);
+	// Handle worker errors
+	const handleWorkerError = useCallback((error: ErrorEvent) => {
+		const errorMessage = `Worker error: ${error.message}`;
+		logger.error("graph", "Force animation worker error", { error: error.message, filename: error.filename, lineno: error.lineno });
+		onError?.(errorMessage);
+	}, [onError]);
 
-  // Start animation
-  const startAnimation = useCallback((
-    nodes: AnimatedNode[],
-    links: AnimatedLink[],
-    config?: AnimationConfig,
-    pinnedNodes?: Set<string>
-  ) => {
-    if (!workerRef.current || !isWorkerReady.current) {
-      logger.error('graph', 'Worker not ready for animation start');
-      onError?.('Animation worker not ready');
-      return;
-    }
+	// Start animation
+	const startAnimation = useCallback((
+		nodes: AnimatedNode[],
+		links: AnimatedLink[],
+		config?: AnimationConfig,
+		pinnedNodes?: Set<string>
+	) => {
+		if (!workerRef.current || !isWorkerReady.current) {
+			logger.error("graph", "Worker not ready for animation start");
+			onError?.("Animation worker not ready");
+			return;
+		}
 
-    if (nodes.length === 0) {
-      logger.warn('graph', 'Cannot start animation with no nodes');
-      return;
-    }
+		if (nodes.length === 0) {
+			logger.warn("graph", "Cannot start animation with no nodes");
+			return;
+		}
 
-    // Reset performance stats
-    setPerformanceStats({
-      averageFPS: 0,
-      minFPS: Infinity,
-      maxFPS: 0,
-      frameCount: 0,
-    });
+		// Reset performance stats
+		setPerformanceStats({
+			averageFPS: 0,
+			minFPS: Infinity,
+			maxFPS: 0,
+			frameCount: 0,
+		});
 
-    logger.info('graph', 'Starting animated force simulation', {
-      nodeCount: nodes.length,
-      linkCount: links.length,
-      pinnedCount: pinnedNodes ? Object.keys(pinnedNodes).length : 0,
-      config,
-    });
+		logger.info("graph", "Starting animated force simulation", {
+			nodeCount: nodes.length,
+			linkCount: links.length,
+			pinnedCount: pinnedNodes ? Object.keys(pinnedNodes).length : 0,
+			config,
+		});
 
-    workerRef.current.postMessage({
-      type: 'start',
-      nodes,
-      links,
-      config,
-      pinnedNodes,
-    });
-  }, [onError]);
+		workerRef.current.postMessage({
+			type: "start",
+			nodes,
+			links,
+			config,
+			pinnedNodes,
+		});
+	}, [onError]);
 
-  // Stop animation
-  const stopAnimation = useCallback(() => {
-    if (workerRef.current) {
-      workerRef.current.postMessage({ type: 'stop' });
-    }
-  }, []);
+	// Stop animation
+	const stopAnimation = useCallback(() => {
+		if (workerRef.current) {
+			workerRef.current.postMessage({ type: "stop" });
+		}
+	}, []);
 
-  // Pause animation
-  const pauseAnimation = useCallback(() => {
-    if (workerRef.current) {
-      // Use state callback to check current animation state without dependency
-      setAnimationState(current => {
-        if (current.isRunning && !current.isPaused) {
-          workerRef.current?.postMessage({ type: 'pause' });
-        }
-        return current; // Return unchanged state
-      });
-    }
-  }, []);
+	// Pause animation
+	const pauseAnimation = useCallback(() => {
+		if (workerRef.current) {
+			// Use state callback to check current animation state without dependency
+			setAnimationState(current => {
+				if (current.isRunning && !current.isPaused) {
+					workerRef.current?.postMessage({ type: "pause" });
+				}
+				return current; // Return unchanged state
+			});
+		}
+	}, []);
 
-  // Resume animation
-  const resumeAnimation = useCallback(() => {
-    if (workerRef.current) {
-      // Use state callback to check current animation state without dependency
-      setAnimationState(current => {
-        if (current.isRunning && current.isPaused) {
-          workerRef.current?.postMessage({ type: 'resume' });
-        }
-        return current; // Return unchanged state
-      });
-    }
-  }, []);
+	// Resume animation
+	const resumeAnimation = useCallback(() => {
+		if (workerRef.current) {
+			// Use state callback to check current animation state without dependency
+			setAnimationState(current => {
+				if (current.isRunning && current.isPaused) {
+					workerRef.current?.postMessage({ type: "resume" });
+				}
+				return current; // Return unchanged state
+			});
+		}
+	}, []);
 
-  // Get optimal configuration based on graph size using performance utilities
-  const getOptimalConfig = useCallback((nodeCount: number, edgeCount: number = 0, pinnedNodeCount: number = 0): AnimationConfig => {
-    const config = getConfigByGraphSize(nodeCount, edgeCount, pinnedNodeCount);
+	// Get optimal configuration based on graph size using performance utilities
+	const getOptimalConfig = useCallback((nodeCount: number, edgeCount: number = 0, pinnedNodeCount: number = 0): AnimationConfig => {
+		const config = getConfigByGraphSize(nodeCount, edgeCount, pinnedNodeCount);
 
-    return {
-      targetFPS: config.targetFPS,
-      sendEveryNTicks: config.sendEveryNTicks,
-      alphaDecay: config.alphaDecay,
-      maxIterations: config.maxIterations,
-      linkDistance: config.linkDistance,
-      linkStrength: config.linkStrength,
-      chargeStrength: config.chargeStrength,
-      centerStrength: config.centerStrength,
-      collisionRadius: config.collisionRadius,
-      collisionStrength: config.collisionStrength,
-      velocityDecay: config.velocityDecay,
-    };
-  }, []);
+		return {
+			targetFPS: config.targetFPS,
+			sendEveryNTicks: config.sendEveryNTicks,
+			alphaDecay: config.alphaDecay,
+			maxIterations: config.maxIterations,
+			linkDistance: config.linkDistance,
+			linkStrength: config.linkStrength,
+			chargeStrength: config.chargeStrength,
+			centerStrength: config.centerStrength,
+			collisionRadius: config.collisionRadius,
+			collisionStrength: config.collisionStrength,
+			velocityDecay: config.velocityDecay,
+		};
+	}, []);
 
-  // Reset positions
-  const resetPositions = useCallback(() => {
-    setNodePositions([]);
-    setAnimationState(prev => ({
-      ...prev,
-      alpha: 1,
-      iteration: 0,
-      progress: 0,
-    }));
-  }, []);
+	// Reset positions
+	const resetPositions = useCallback(() => {
+		setNodePositions([]);
+		setAnimationState(prev => ({
+			...prev,
+			alpha: 1,
+			iteration: 0,
+			progress: 0,
+		}));
+	}, []);
 
-  return {
-    // State
-    animationState,
-    nodePositions,
-    performanceStats,
-    isWorkerReady: isWorkerReady.current,
+	return {
+		// State
+		animationState,
+		nodePositions,
+		performanceStats,
+		isWorkerReady: isWorkerReady.current,
 
-    // Actions
-    startAnimation,
-    stopAnimation,
-    pauseAnimation,
-    resumeAnimation,
-    resetPositions,
-    getOptimalConfig,
+		// Actions
+		startAnimation,
+		stopAnimation,
+		pauseAnimation,
+		resumeAnimation,
+		resetPositions,
+		getOptimalConfig,
 
-    // Computed properties
-    isIdle: !animationState.isRunning && !animationState.isPaused,
-    canPause: animationState.isRunning && !animationState.isPaused,
-    canResume: animationState.isRunning && animationState.isPaused,
-    canStop: animationState.isRunning || animationState.isPaused,
-  };
+		// Computed properties
+		isIdle: !animationState.isRunning && !animationState.isPaused,
+		canPause: animationState.isRunning && !animationState.isPaused,
+		canResume: animationState.isRunning && animationState.isPaused,
+		canStop: animationState.isRunning || animationState.isPaused,
+	};
 }
