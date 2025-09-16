@@ -67,12 +67,28 @@ const GraphNavigationInner: React.FC<GraphNavigationProps> = ({ className, style
 		currentLayout,
 		isLoading,
 		error,
-		getVisibleNodes,
-		getVisibleEdges,
 		visibleEntityTypes,
 		visibleEdgeTypes,
 		pinnedNodes: _pinnedNodes,
 	} = useGraphStore();
+
+	// Create stable selectors for visible nodes and edges
+	const getVisibleNodes = useCallback(() => {
+		const { nodes, visibleEntityTypes } = useGraphStore.getState();
+		return Array.from(nodes.values()).filter(node => visibleEntityTypes.has(node.type));
+	}, []);
+
+	const getVisibleEdges = useCallback(() => {
+		const { edges, nodes, visibleEntityTypes, visibleEdgeTypes } = useGraphStore.getState();
+		return Array.from(edges.values()).filter(edge => {
+			const sourceNode = nodes.get(edge.source);
+			const targetNode = nodes.get(edge.target);
+			return sourceNode && targetNode &&
+				visibleEntityTypes.has(sourceNode.type) &&
+				visibleEntityTypes.has(targetNode.type) &&
+				visibleEdgeTypes.has(edge.type);
+		});
+	}, []);
 
 	const { graphProvider: _graphProvider, setPreviewEntity, autoPinOnLayoutStabilization } = useLayoutStore();
 
@@ -331,6 +347,7 @@ const GraphNavigationInner: React.FC<GraphNavigationProps> = ({ className, style
 
 	// Sync store data with XYFlow using incremental updates (applying visibility filters)
 	useEffect(() => {
+		// Get visible data fresh on each effect run to avoid stale function references
 		const visibleNodes = getVisibleNodes();
 		const visibleEdges = getVisibleEdges();
 
