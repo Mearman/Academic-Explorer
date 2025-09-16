@@ -86,12 +86,11 @@ export function useAnimatedForceSimulation(options: UseAnimatedForceSimulationOp
 		onPositionUpdate,
 		onComplete,
 		onError,
-		autoStart = false,
 	} = options;
 
 	// Worker ref
 	const workerRef = useRef<Worker | null>(null);
-	const isWorkerReady = useRef(false);
+	const [isWorkerReady, setIsWorkerReady] = useState(false);
 
 	// Animation state
 	const [animationState, setAnimationState] = useState<AnimationState>({
@@ -116,40 +115,13 @@ export function useAnimatedForceSimulation(options: UseAnimatedForceSimulationOp
 		frameCount: 0,
 	});
 
-	// Initialize worker
-	useEffect(() => {
-		logger.info("graph", "Initializing animated force simulation worker");
-
-		try {
-			workerRef.current = new Worker(
-				new URL("../workers/force-animation.worker.ts", import.meta.url),
-				{ type: "module" }
-			);
-
-			workerRef.current.addEventListener("message", handleWorkerMessage);
-			workerRef.current.addEventListener("error", handleWorkerError);
-
-		} catch (error) {
-			logger.error("graph", "Failed to initialize force animation worker", { error });
-			onError?.("Failed to initialize Web Worker for force simulation");
-		}
-
-		return () => {
-			if (workerRef.current) {
-				workerRef.current.terminate();
-				workerRef.current = null;
-				isWorkerReady.current = false;
-			}
-		};
-	}, [onError]);
-
 	// Handle worker messages
 	const handleWorkerMessage = useCallback((event: MessageEvent<WorkerMessage>) => {
 		const { type, positions, alpha, iteration, progress, fps, totalIterations, finalAlpha, reason, nodeCount, linkCount, config } = event.data;
 
 		switch (type) {
 			case "ready":
-				isWorkerReady.current = true;
+				setIsWorkerReady(true);
 				logger.info("graph", "Force animation worker ready");
 				break;
 
@@ -194,7 +166,7 @@ export function useAnimatedForceSimulation(options: UseAnimatedForceSimulationOp
 						}));
 					}
 
-					logger.debug("graph", `Animation tick ${iteration}`, {
+					logger.debug("graph", `Animation tick ${String(iteration)}`, {
 						alpha: alpha.toFixed(4),
 						progress: `${(progress * 100).toFixed(1)}%`,
 						fps: fps?.toFixed(1),
@@ -254,11 +226,12 @@ export function useAnimatedForceSimulation(options: UseAnimatedForceSimulationOp
 				logger.info("graph", "Force animation resumed");
 				break;
 
-			case "error":
-				const errorMessage = `Worker error: ${event.data.error}`;
+			case "error": {
+				const errorMessage = `Worker error: ${event.data.error ?? "Unknown error"}`;
 				logger.error("graph", "Force animation worker error", event.data);
 				onError?.(errorMessage);
 				break;
+			}
 
 			default:
 				logger.warn("graph", "Unknown worker message type", { type });
@@ -272,6 +245,33 @@ export function useAnimatedForceSimulation(options: UseAnimatedForceSimulationOp
 		onError?.(errorMessage);
 	}, [onError]);
 
+	// Initialize worker
+	useEffect(() => {
+		logger.info("graph", "Initializing animated force simulation worker");
+
+		try {
+			workerRef.current = new Worker(
+				new URL("../workers/force-animation.worker.ts", import.meta.url),
+				{ type: "module" }
+			);
+
+			workerRef.current.addEventListener("message", handleWorkerMessage);
+			workerRef.current.addEventListener("error", handleWorkerError);
+
+		} catch (error) {
+			logger.error("graph", "Failed to initialize force animation worker", { error });
+			onError?.("Failed to initialize Web Worker for force simulation");
+		}
+
+		return () => {
+			if (workerRef.current) {
+				workerRef.current.terminate();
+				workerRef.current = null;
+				setIsWorkerReady(false);
+			}
+		};
+	}, [handleWorkerMessage, handleWorkerError, onError]);
+
 	// Start animation
 	const startAnimation = useCallback((
 		nodes: AnimatedNode[],
@@ -279,7 +279,7 @@ export function useAnimatedForceSimulation(options: UseAnimatedForceSimulationOp
 		config?: AnimationConfig,
 		pinnedNodes?: Set<string>
 	) => {
-		if (!workerRef.current || !isWorkerReady.current) {
+		if (!workerRef.current || !isWorkerReady) {
 			logger.error("graph", "Worker not ready for animation start");
 			onError?.("Animation worker not ready");
 			return;
@@ -301,7 +301,7 @@ export function useAnimatedForceSimulation(options: UseAnimatedForceSimulationOp
 		logger.info("graph", "Starting animated force simulation", {
 			nodeCount: nodes.length,
 			linkCount: links.length,
-			pinnedCount: pinnedNodes ? Object.keys(pinnedNodes).length : 0,
+			pinnedCount: pinnedNodes ? pinnedNodes.size : 0,
 			config,
 		});
 
@@ -312,7 +312,7 @@ export function useAnimatedForceSimulation(options: UseAnimatedForceSimulationOp
 			config,
 			pinnedNodes,
 		});
-	}, [onError]);
+	}, [onError, isWorkerReady]);
 
 	// Stop animation
 	const stopAnimation = useCallback(() => {
@@ -382,7 +382,7 @@ export function useAnimatedForceSimulation(options: UseAnimatedForceSimulationOp
 		animationState,
 		nodePositions,
 		performanceStats,
-		isWorkerReady: isWorkerReady.current,
+		isWorkerReady,
 
 		// Actions
 		startAnimation,
