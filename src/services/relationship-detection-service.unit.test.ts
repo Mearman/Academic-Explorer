@@ -32,10 +32,19 @@ describe("RelationshipDetectionService", () => {
 		// Mock the graph store
 		mockStore = {
 			getNode: vi.fn(),
-			nodes: new Map(),
+			nodes: {},
 			addEdges: vi.fn(),
 		};
 		vi.mocked(useGraphStore.getState).mockReturnValue(mockStore);
+
+		// Mock the deduplication service to prevent undefined access
+		const mockDeduplicationService = {
+			getEntity: vi.fn(),
+			getStats: vi.fn(),
+			clear: vi.fn(),
+			refreshEntity: vi.fn()
+		};
+		(service as any).deduplicationService = mockDeduplicationService;
 	});
 
 	describe("detectRelationshipsForNode", () => {
@@ -888,7 +897,8 @@ describe("RelationshipDetectionService", () => {
 			];
 
 			mockStore.getNode.mockReturnValue(testNode);
-			mockStore.nodes = new Map(existingNodes.map(node => [node.id, node]));
+			// Set up nodes as an object (not Map) for the graph store
+			mockStore.nodes = Object.fromEntries(existingNodes.map(node => [node.id, node]));
 			mockDeduplicationService.getEntity.mockResolvedValue(mockWorkData);
 
 			const result = await service.detectRelationshipsForNode("W123");

@@ -9,10 +9,7 @@ import { EntityDetector } from "@/lib/graph/utils/entity-detection";
 import { EntityFactory } from "@/lib/entities";
 import { useGraphStore } from "@/stores/graph-store";
 import type {
-	_GraphNode,
-	GraphEdge,
 	EntityType,
-	_ExternalIdentifier,
 	SearchOptions,
 } from "@/lib/graph/types";
 import type {
@@ -67,6 +64,10 @@ vi.mock("./request-deduplication-service", () => ({
 	createRequestDeduplicationService: vi.fn(),
 }));
 
+vi.mock("./relationship-detection-service", () => ({
+	createRelationshipDetectionService: vi.fn(),
+}));
+
 // Import mocked modules
 import { rateLimitedOpenAlex } from "@/lib/openalex/rate-limited-client";
 import { logger, logError } from "@/lib/logger";
@@ -78,6 +79,7 @@ import {
 	isNodeExpanded,
 } from "@/lib/cache/graph-cache";
 import { createRequestDeduplicationService } from "./request-deduplication-service";
+import { createRelationshipDetectionService } from "./relationship-detection-service";
 import { useExpansionSettingsStore } from "@/stores/expansion-settings-store";
 
 describe("GraphDataService", () => {
@@ -86,6 +88,7 @@ describe("GraphDataService", () => {
 	let mockStore: any;
 	let mockDetector: any;
 	let mockDeduplicationService: any;
+	let mockRelationshipDetectionService: any;
 	let mockExpansionSettingsStore: any;
 
 	// Test data fixtures
@@ -214,61 +217,6 @@ describe("GraphDataService", () => {
 		},
 	} as Source;
 
-	// Complex work entity for integration tests
-	const _mockComplexWork: Work = {
-		id: "W123456789",
-		display_name: "Test Work",
-		type: "article",
-		publication_year: 2023,
-		doi: "10.1234/test",
-		authorships: [
-			{
-				author: {
-					id: "A111111111",
-					display_name: "First Author",
-					orcid: "0000-0000-0000-0001",
-				},
-				author_position: "first",
-				institutions: [
-					{
-						id: "I111111111",
-						display_name: "First Institution",
-						ror: "01abc11111",
-					},
-				],
-			},
-			{
-				author: {
-					id: "A222222222",
-					display_name: "Second Author",
-					orcid: "0000-0000-0000-0002",
-				},
-				author_position: "middle",
-				institutions: [
-					{
-						id: "I222222222",
-						display_name: "Second Institution",
-						ror: "01abc22222",
-					},
-				],
-			},
-		],
-		primary_location: {
-			source: {
-				id: "S111111111",
-				display_name: "Primary Source",
-				issn_l: "1111-1111",
-			},
-		},
-		citations_count: 100,
-		referenced_works_count: 3,
-		referenced_works: ["W111111111", "W222222222", "W333333333"],
-		open_access: {
-			is_oa: true,
-			oa_date: "2023-01-01",
-			oa_url: "https://example.com/open-access-url",
-		},
-	} as Work;
 
 	beforeEach(() => {
 		queryClient = new QueryClient({
@@ -336,6 +284,13 @@ describe("GraphDataService", () => {
 			getEntity: vi.fn(),
 		};
 		vi.mocked(createRequestDeduplicationService).mockReturnValue(mockDeduplicationService);
+
+		// Mock relationship detection service BEFORE creating the service
+		mockRelationshipDetectionService = {
+			detectRelationshipsForNode: vi.fn().mockResolvedValue([]),
+			detectRelationshipsForNodes: vi.fn().mockResolvedValue([]),
+		};
+		vi.mocked(createRelationshipDetectionService).mockReturnValue(mockRelationshipDetectionService);
 
 
 		// Setup getEntity mock to return appropriate mock data based on ID
@@ -470,19 +425,6 @@ describe("GraphDataService", () => {
 		});
 
 		it("should pin and calculate depths for primary node", async () => {
-			// Mock transformEntityToGraph to return nodes with a primary node
-			const _mockNodes = [
-				{
-					id: "node-1",
-					entityId: "W123456789",
-					type: "works" as EntityType,
-					label: "Test Work",
-					entityData: {},
-					externalIds: [],
-				},
-			];
-			const _mockEdges: GraphEdge[] = [];
-
 			// We'll test this through the behavior - the service should call store methods
 			await service.loadEntityGraph("W123456789");
 
@@ -513,12 +455,8 @@ describe("GraphDataService", () => {
 				entityData: { id: "https://openalex.org/A123456789", display_name: "Test Entity" },
 			};
 
-			// Mock the store's nodes.values() method
-			const mockNodes = new Map([["node-1", existingNode]]);
-			mockStore.nodes = mockNodes;
-
-			// Mock Array.from behavior for the store.nodes.values() call
-			vi.spyOn(Array, "from").mockReturnValueOnce([existingNode]);
+			// Mock the store's nodes as an object (not Map) since implementation uses Object.values()
+			mockStore.nodes = { "node-1": existingNode };
 
 			await service.loadEntityIntoGraph("A123456789");
 
@@ -527,7 +465,7 @@ describe("GraphDataService", () => {
 		});
 
 		it("should load new entity if not exists", async () => {
-			mockStore.nodes = new Map();
+			mockStore.nodes = {};
 
 			await service.loadEntityIntoGraph("A123456789");
 
@@ -544,7 +482,7 @@ describe("GraphDataService", () => {
 				entityData: { id: "https://openalex.org/A123456789" },
 			};
 
-			mockStore.nodes = new Map([["node-1", existingNode]]);
+			mockStore.nodes = { "node-1": existingNode };
 
 			await service.loadEntityIntoGraph("A123456789");
 
@@ -624,19 +562,16 @@ describe("GraphDataService", () => {
 			// Clear API call history from previous tests
 			vi.mocked(rateLimitedOpenAlex.getEntity).mockClear();
 
-			mockStore.nodes = new Map([
-				[
-					nodeId,
-					{
-						id: nodeId,
-						entityId: nodeId,
-						type: "works" as EntityType,
-						label: "Test Work",
-						entityData: {},
-						externalIds: [],
-					},
-				],
-			]);
+			mockStore.nodes = {
+				[nodeId]: {
+					id: nodeId,
+					entityId: nodeId,
+					type: "works" as EntityType,
+					label: "Test Work",
+					entityData: {},
+					externalIds: [],
+				},
+			};
 		});
 
 		it("should skip expansion if already expanded and not forced", async () => {
@@ -650,6 +585,7 @@ describe("GraphDataService", () => {
 
 		it("should expand node when forced", async () => {
 			vi.mocked(isNodeExpanded).mockReturnValue(true);
+			vi.mocked(EntityFactory.isSupported).mockReturnValue(true);
 
 			// Clear API mock calls for clean test state
 			vi.mocked(rateLimitedOpenAlex.getEntity).mockClear();
@@ -676,10 +612,13 @@ describe("GraphDataService", () => {
 				],
 			});
 
-			// Override EntityFactory.create to return our mock entity
-			vi.mocked(EntityFactory.create).mockReturnValue({
+			// Create a proper mock entity instance
+			const mockEntity = {
 				expand: mockExpand,
-			});
+			};
+
+			// Override EntityFactory.create to return our mock entity
+			vi.mocked(EntityFactory.create).mockReturnValue(mockEntity);
 
 			await service.expandNode(nodeId, { force: true });
 
@@ -690,7 +629,7 @@ describe("GraphDataService", () => {
 		});
 
 		it("should return early if node not found", async () => {
-			mockStore.nodes = new Map();
+			mockStore.nodes = {};
 
 			await service.expandNode("nonexistent");
 
@@ -707,6 +646,7 @@ describe("GraphDataService", () => {
 
 		it("should handle expansion errors", async () => {
 			vi.mocked(isNodeExpanded).mockReturnValue(false);
+			vi.mocked(EntityFactory.isSupported).mockReturnValue(true);
 			const expansionError = new Error("Expansion failed");
 
 			// Clear logError mock for clean test state
@@ -715,10 +655,13 @@ describe("GraphDataService", () => {
 			// Mock the entity.expand method to throw an error
 			const mockExpand = vi.fn().mockRejectedValue(expansionError);
 
-			// Override EntityFactory.create to return our mock entity
-			vi.mocked(EntityFactory.create).mockReturnValue({
+			// Create a proper mock entity instance
+			const mockEntity = {
 				expand: mockExpand,
-			});
+			};
+
+			// Override EntityFactory.create to return our mock entity
+			vi.mocked(EntityFactory.create).mockReturnValue(mockEntity);
 
 			await service.expandNode(nodeId);
 
@@ -1381,21 +1324,19 @@ describe("GraphDataService", () => {
 
 		it("should handle expansion of already expanded nodes with force option", async () => {
 			vi.mocked(isNodeExpanded).mockReturnValue(true);
+			vi.mocked(EntityFactory.isSupported).mockReturnValue(true);
 			const nodeId = "W123456789";
 
-			mockStore.nodes = new Map([
-				[
-					nodeId,
-					{
-						id: nodeId,
-						entityId: nodeId,
-						type: "works" as EntityType,
-						label: "Test Work",
-						entityData: {},
-						externalIds: [],
-					},
-				],
-			]);
+			mockStore.nodes = {
+				[nodeId]: {
+					id: nodeId,
+					entityId: nodeId,
+					type: "works" as EntityType,
+					label: "Test Work",
+					entityData: {},
+					externalIds: [],
+				},
+			};
 
 			// Setup mock expand function
 			const mockExpand = vi.fn().mockResolvedValue({
@@ -1403,10 +1344,13 @@ describe("GraphDataService", () => {
 				edges: [],
 			});
 
-			// Override EntityFactory.create to return our mock entity
-			vi.mocked(EntityFactory.create).mockReturnValue({
+			// Create a proper mock entity instance
+			const mockEntity = {
 				expand: mockExpand,
-			});
+			};
+
+			// Override EntityFactory.create to return our mock entity
+			vi.mocked(EntityFactory.create).mockReturnValue(mockEntity);
 
 			await service.expandNode(nodeId, { force: true });
 

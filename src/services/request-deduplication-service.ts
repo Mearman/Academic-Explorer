@@ -126,7 +126,7 @@ export class RequestDeduplicationService {
 		try {
 			// Try direct entity query first
 			const directCached = this.queryClient.getQueryData<OpenAlexEntity>(["entity", entityId]);
-			if (directCached && this.isCacheEntryFresh(directCached)) {
+			if (directCached && this.isCacheEntryFresh()) {
 				return directCached;
 			}
 
@@ -151,7 +151,7 @@ export class RequestDeduplicationService {
 			// Return the first fresh match
 			for (const query of allQueries) {
 				const entity = query.state.data as OpenAlexEntity;
-				if (this.isCacheEntryFresh(entity)) {
+				if (this.isCacheEntryFresh()) {
 					return entity;
 				}
 			}
@@ -169,7 +169,7 @@ export class RequestDeduplicationService {
 	/**
    * Check if cached entity is still fresh (within 5 minutes)
    */
-	private isCacheEntryFresh(_entity: OpenAlexEntity): boolean {
+	private isCacheEntryFresh(): boolean {
 		// For now, assume all cached entities are fresh for 5 minutes
 		// In a production system, you might want to add timestamp metadata
 		return true; // Simplified for now - could add timestamp checking here

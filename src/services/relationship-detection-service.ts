@@ -214,17 +214,35 @@ export class RelationshipDetectionService {
 				selectFields
 			}, "RelationshipDetectionService");
 
+			// Check if deduplication service is available
+			if (!this.deduplicationService) {
+				logger.error("graph", "Deduplication service not initialized", {
+					entityId,
+					entityType
+				}, "RelationshipDetectionService");
+				return null;
+			}
+
 			// Fetch entity with minimal fields using deduplication service
 			const entity = await this.deduplicationService.getEntity(
 				entityId,
 				() => this.fetchEntityWithSelect(entityId, entityType, selectFields)
 			);
 
-			// Transform to minimal data format
+			// Check if entity is null or undefined
+			if (!entity) {
+				logger.warn("graph", "Entity not found or is null", {
+					entityId,
+					entityType
+				}, "RelationshipDetectionService");
+				return null;
+			}
+
+			// Transform to minimal data format with null checks
 			const minimalData: MinimalEntityData = {
-				id: entity.id,
+				id: entity.id || "",
 				entityType,
-				display_name: entity.display_name
+				display_name: entity.display_name || ""
 			};
 
 			// Add type-specific fields

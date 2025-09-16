@@ -7,8 +7,7 @@ import { logger } from "@/lib/logger";
 import type {
 	ExpansionSettings,
 	SortCriteria,
-	FilterCriteria,
-	FilterOperator as _FilterOperator
+	FilterCriteria
 } from "@/lib/graph/types/expansion-settings";
 
 export interface OpenAlexQueryParams {
