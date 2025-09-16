@@ -13,7 +13,7 @@ import type { Work, Author, Source, Institution, Topic, Concept, Publisher, Fund
  */
 type Paths<T, D extends number = 10> = [D] extends [never]
   ? never
-  : T extends ReadonlyArray<any>
+  : T extends ReadonlyArray<unknown>
   ? never // Arrays cannot be partially selected in OpenAlex
   : T extends Date | string | number | boolean | null | undefined
   ? never // Primitive types cannot be further nested

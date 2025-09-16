@@ -54,7 +54,7 @@ describe("OpenAlex Client Integration Tests", () => {
 			} else {
 				isOnline = false;
 			}
-		} catch (_error) {
+		} catch {
 			logger.warn("test", "No internet connection or OpenAlex API unavailable. Skipping integration tests.");
 			isOnline = false;
 		}

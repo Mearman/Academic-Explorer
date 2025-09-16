@@ -23,8 +23,6 @@ import type {
 	Topic,
 	Publisher,
 	Funder,
-	Keyword as _Keyword,
-	OpenAlexEntity as _OpenAlexEntity,
 	AutocompleteResult,
 	EntityType,
 } from "./types";
