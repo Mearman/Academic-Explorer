@@ -66,6 +66,38 @@ export class RelationshipDetectionService {
 	}
 
 	/**
+	 * Detect and create relationships for multiple nodes in batch
+	 * More efficient than processing nodes individually
+	 */
+	async detectRelationshipsForNodes(nodeIds: string[]): Promise<GraphEdge[]> {
+		if (nodeIds.length === 0) return [];
+
+		logger.info("graph", "Starting batch relationship detection", {
+			nodeCount: nodeIds.length,
+			nodeIds
+		}, "RelationshipDetectionService");
+
+		const allNewEdges: GraphEdge[] = [];
+
+		// Process nodes sequentially to avoid overwhelming the API
+		for (const nodeId of nodeIds) {
+			try {
+				const edges = await this.detectRelationshipsForNode(nodeId);
+				allNewEdges.push(...edges);
+			} catch (error) {
+				logError("Failed to detect relationships for node in batch", error, "RelationshipDetectionService", "graph");
+			}
+		}
+
+		logger.info("graph", "Batch relationship detection completed", {
+			processedNodeCount: nodeIds.length,
+			totalEdgesCreated: allNewEdges.length
+		}, "RelationshipDetectionService");
+
+		return allNewEdges;
+	}
+
+	/**
 	 * Detect and create relationships for a newly added node
 	 * Fetches minimal data and analyzes relationships with existing nodes
 	 */
@@ -78,11 +110,8 @@ export class RelationshipDetectionService {
 			return [];
 		}
 
-		// Skip if this is a minimal node that hasn't been fully hydrated yet
-		if (newNode.metadata?.hydrationLevel === "minimal") {
-			logger.debug("graph", "Skipping relationship detection for minimal node", { nodeId }, "RelationshipDetectionService");
-			return [];
-		}
+		// Note: We fetch relationship data on-demand, so hydration level doesn't matter
+		// The relationship detection service will fetch the minimal data needed regardless
 
 		try {
 			logger.info("graph", "Starting relationship detection for node", {

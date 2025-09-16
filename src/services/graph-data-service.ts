@@ -122,6 +122,15 @@ export class GraphDataService {
 				fullNodes: nodes.filter(n => n.metadata?.hydrationLevel === "full").length
 			}, "GraphDataService");
 
+			// Detect relationships between all initial nodes using batch processing
+			logger.info("graph", "Starting relationship detection for initial graph nodes", {
+				nodeCount: nodes.length
+			}, "GraphDataService");
+
+			const nodeIds = nodes.map(node => node.id);
+			this.relationshipDetectionService.detectRelationshipsForNodes(nodeIds).catch((error: unknown) => {
+				logError("Failed to detect relationships for initial nodes", error, "GraphDataService", "graph");
+			});
 
 			// Layout is now handled by the ReactFlow component's useLayout hook
 			// No need for explicit layout application here
