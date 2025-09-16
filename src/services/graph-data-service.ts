@@ -52,10 +52,10 @@ export class GraphDataService {
 		this.deduplicationService = createRequestDeduplicationService(queryClient);
 		this.relationshipDetectionService = createRelationshipDetectionService(queryClient);
 		this.cache = {
-			nodes: {},
-			edges: {},
-			expandedNodes: {},
-			fetchedRelationships: {},
+			nodes: new Map(),
+			edges: new Map(),
+			expandedNodes: new Set(),
+			fetchedRelationships: new Map(),
 		};
 	}
 
@@ -93,8 +93,8 @@ export class GraphDataService {
 
 			// Clear existing graph and expansion cache
 			store.clear();
-			this.cache.expandedNodes = {};
-			this.cache.fetchedRelationships = {};
+			this.cache.expandedNodes = new Set();
+			this.cache.fetchedRelationships = new Map();
 
 			// Add new data to store
 			store.addNodes(nodes);
@@ -404,7 +404,7 @@ export class GraphDataService {
 
 		} catch (error) {
 			const errorMessage = error instanceof Error ? error.message : "Failed to load node data";
-			store.markNodeAsError(nodeId, errorMessage);
+			store.markNodeAsError(nodeId);
 			logError("Failed to hydrate node to full", error, "GraphDataService", "graph");
 		}
 	}
@@ -628,7 +628,7 @@ export class GraphDataService {
 				force,
 				limit: options.limit,
 				depth: options.depth,
-				wasAlreadyExpanded: !!this.cache.expandedNodes[nodeId]
+				wasAlreadyExpanded: this.cache.expandedNodes.has(nodeId)
 			}, "GraphDataService");
 
 			// Create entity instance using the factory
@@ -701,7 +701,7 @@ export class GraphDataService {
 		} catch (error) {
 			// Mark the node as error if expansion failed
 			const errorMessage = error instanceof Error ? error.message : "Expansion failed";
-			store.markNodeAsError(nodeId, errorMessage);
+			store.markNodeAsError(nodeId);
 
 			logError("Failed to expand node", error, "GraphDataService", "graph");
 		}
@@ -1000,7 +1000,7 @@ export class GraphDataService {
 						continue;
 					}
 
-					logger.debug("graph", `Found ${relatedEntityIds.length} ${entityType} entities related to ${node.id}`, {
+					logger.debug("graph", `Found ${relatedEntityIds.length.toString()} ${entityType} entities related to ${node.id}`, {
 						nodeId: node.id,
 						sourceType: node.type,
 						targetType: entityType,
@@ -1051,7 +1051,7 @@ export class GraphDataService {
 			// Add new nodes and edges to the graph
 			if (newNodes.length > 0) {
 				store.addNodes(newNodes);
-				logger.info("graph", `Added ${newNodes.length} new ${entityType} nodes to graph`, {
+				logger.info("graph", `Added ${newNodes.length.toString()} new ${entityType} nodes to graph`, {
 					entityType,
 					addedCount: newNodes.length
 				}, "GraphDataService");
@@ -1059,7 +1059,7 @@ export class GraphDataService {
 
 			if (newEdges.length > 0) {
 				store.addEdges(newEdges);
-				logger.info("graph", `Added ${newEdges.length} new edges to graph`, {
+				logger.info("graph", `Added ${newEdges.length.toString()} new edges to graph`, {
 					entityType,
 					edgeCount: newEdges.length
 				}, "GraphDataService");
@@ -1179,28 +1179,28 @@ export class GraphDataService {
 		// Transform based on entity type
 		switch (entityType) {
 			case "works": {
-				const workData = this.transformWork(entity as Work, mainNode);
+				const workData = this.transformWork(entity as Work);
 				nodes.push(...workData.nodes);
 				edges.push(...workData.edges);
 				break;
 			}
 
 			case "authors": {
-				const authorData = this.transformAuthor(entity as Author, mainNode);
+				const authorData = this.transformAuthor(entity as Author);
 				nodes.push(...authorData.nodes);
 				edges.push(...authorData.edges);
 				break;
 			}
 
 			case "sources": {
-				const sourceData = this.transformSource(entity as Source, mainNode);
+				const sourceData = this.transformSource(entity as Source);
 				nodes.push(...sourceData.nodes);
 				edges.push(...sourceData.edges);
 				break;
 			}
 
 			case "institutions": {
-				const institutionData = this.transformInstitution(entity as InstitutionEntity, mainNode);
+				const institutionData = this.transformInstitution(entity as InstitutionEntity);
 				nodes.push(...institutionData.nodes);
 				edges.push(...institutionData.edges);
 				break;
@@ -1213,7 +1213,7 @@ export class GraphDataService {
 	/**
    * Transform Work entity with incremental hydration approach
    */
-	private transformWork(work: Work, _mainNode: GraphNode): { nodes: GraphNode[]; edges: GraphEdge[] } {
+	private transformWork(work: Work): { nodes: GraphNode[]; edges: GraphEdge[] } {
 		const nodes: GraphNode[] = [];
 		const edges: GraphEdge[] = [];
 		const store = useGraphStore.getState();
@@ -1277,7 +1277,7 @@ export class GraphDataService {
    * Transform Author entity with incremental hydration approach
    * Note: Institution nodes are now only created during explicit expansion, not automatic loading
    */
-	private transformAuthor(author: Author, _mainNode: GraphNode): { nodes: GraphNode[]; edges: GraphEdge[] } {
+	private transformAuthor(author: Author): { nodes: GraphNode[]; edges: GraphEdge[] } {
 		const nodes: GraphNode[] = [];
 		const edges: GraphEdge[] = [];
 		const store = useGraphStore.getState();
@@ -1305,7 +1305,7 @@ export class GraphDataService {
 	/**
    * Transform Source entity (basic implementation)
    */
-	private transformSource(source: Source, _mainNode: GraphNode): { nodes: GraphNode[]; edges: GraphEdge[] } {
+	private transformSource(source: Source): { nodes: GraphNode[]; edges: GraphEdge[] } {
 		const nodes: GraphNode[] = [];
 		const edges: GraphEdge[] = [];
 		const store = useGraphStore.getState();
@@ -1333,7 +1333,7 @@ export class GraphDataService {
 	/**
    * Transform Institution entity (basic implementation)
    */
-	private transformInstitution(institution: InstitutionEntity, _mainNode: GraphNode): { nodes: GraphNode[]; edges: GraphEdge[] } {
+	private transformInstitution(institution: InstitutionEntity): { nodes: GraphNode[]; edges: GraphEdge[] } {
 		const nodes: GraphNode[] = [];
 		const edges: GraphEdge[] = [];
 		const store = useGraphStore.getState();
