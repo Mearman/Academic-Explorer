@@ -3,12 +3,13 @@
  * Integrates Web Worker-based animated force simulation with existing layout system
  */
 
-import { useCallback, useEffect, useRef } from "react";
+import { useCallback, useEffect, useRef, useMemo } from "react";
 import { useReactFlow } from "@xyflow/react";
 import type { EntityType } from "../../types";
 import { logger } from "@/lib/logger";
 import { useGraphStore } from "@/stores/graph-store";
-import { useAnimatedGraphStore, useAnimationState, usePositionTracking } from "@/stores/animated-graph-store";
+import { useLayoutStore } from "@/stores/layout-store";
+import { useAnimatedGraphStore } from "@/stores/animated-graph-store";
 import { useAnimatedForceSimulation } from "@/hooks/use-animated-force-simulation";
 import { FIT_VIEW_PRESETS } from "../../constants";
 
@@ -53,10 +54,35 @@ export function useAnimatedLayout(options: UseAnimatedLayoutOptions = {}) {
   } = options;
 
   const { getNodes, getEdges, setNodes, fitView } = useReactFlow();
+
+  // Stable individual selectors to avoid infinite loops
   const pinnedNodes = useGraphStore((state) => state.pinnedNodes);
-  const animatedStore = useAnimatedGraphStore();
-  const animationState = useAnimationState();
-  const positionTracking = usePositionTracking();
+  const currentLayout = useGraphStore((state) => state.currentLayout);
+  const autoPinOnLayoutStabilization = useLayoutStore((state) => state.autoPinOnLayoutStabilization);
+
+  // Get individual store methods using stable selectors
+  const animatedStore = useAnimatedGraphStore.getState();
+  const isAnimating = useAnimatedGraphStore((state) => state.isAnimating);
+  const isPaused = useAnimatedGraphStore((state) => state.isPaused);
+  const progress = useAnimatedGraphStore((state) => state.progress);
+  const alpha = useAnimatedGraphStore((state) => state.alpha);
+  const iteration = useAnimatedGraphStore((state) => state.iteration);
+  const fps = useAnimatedGraphStore((state) => state.fps);
+
+  // Create stable animation state object
+  const animationState = useMemo(() => ({
+    isAnimating,
+    isPaused,
+    progress,
+    alpha,
+    iteration,
+    fps,
+  }), [isAnimating, isPaused, progress, alpha, iteration, fps]);
+
+  // Get stable position tracking methods
+  const updateAnimatedPositions = useAnimatedGraphStore((state) => state.updateAnimatedPositions);
+  const updateStaticPositions = useAnimatedGraphStore((state) => state.updateStaticPositions);
+  const applyPositionsToGraphStore = useAnimatedGraphStore((state) => state.applyPositionsToGraphStore);
 
   // Animation control refs
   const isLayoutRunningRef = useRef(false);
@@ -75,7 +101,7 @@ export function useAnimatedLayout(options: UseAnimatedLayoutOptions = {}) {
   } = useAnimatedForceSimulation({
     onPositionUpdate: useCallback((positions: NodePosition[]) => {
       // Update animated store with new positions
-      positionTracking.updateAnimatedPositions(positions);
+      updateAnimatedPositions(positions);
 
       // Update ReactFlow nodes with new positions
       setNodes((currentNodes) =>
@@ -92,15 +118,37 @@ export function useAnimatedLayout(options: UseAnimatedLayoutOptions = {}) {
       );
 
       onLayoutChange?.();
-    }, [positionTracking, setNodes, onLayoutChange]),
+    }, [updateAnimatedPositions, setNodes, onLayoutChange]),
 
     onComplete: useCallback((positions: NodePosition[], stats: { totalIterations: number; finalAlpha: number; reason: string }) => {
       // Update final positions in store
-      positionTracking.updateStaticPositions(positions);
-      animatedStore.completeAnimation(stats);
+      updateStaticPositions(positions);
+      const statsWithDuration = { ...stats, duration: Date.now() };
+      animatedStore.completeAnimation(statsWithDuration);
 
       // Apply positions to graph store for persistence
-      positionTracking.applyPositionsToGraphStore();
+      applyPositionsToGraphStore();
+
+      // Auto-pin all nodes if preference is enabled
+      if (autoPinOnLayoutStabilization) {
+        const graphStore = useGraphStore.getState();
+        const currentNodes = getNodes();
+
+        logger.info('graph', 'Auto-pinning all nodes after animated layout completion', {
+          nodeCount: currentNodes.length,
+          userPreference: true,
+          reason: stats.reason
+        });
+
+        currentNodes.forEach(node => {
+          graphStore.pinNode(node.id);
+        });
+
+        logger.info('graph', 'All nodes auto-pinned after animated layout completion', {
+          pinnedCount: currentNodes.length,
+          totalPinnedNodes: graphStore.pinnedNodes.size,
+        });
+      }
 
       // Auto-fit view if enabled
       if (fitViewAfterLayout) {
@@ -113,9 +161,9 @@ export function useAnimatedLayout(options: UseAnimatedLayoutOptions = {}) {
       isLayoutRunningRef.current = false;
       logger.info('graph', 'Animated layout completed', {
         ...stats,
-        performanceStats: hookAnimationState.fps,
+        autoPinEnabled: autoPinOnLayoutStabilization,
       });
-    }, [positionTracking, animatedStore, fitViewAfterLayout, fitView, hookAnimationState.fps]),
+    }, [updateStaticPositions, applyPositionsToGraphStore, animatedStore, fitViewAfterLayout, fitView, autoPinOnLayoutStabilization, getNodes]),
 
     onError: useCallback((error: string) => {
       logger.error('graph', 'Animated layout error', { error });
@@ -151,7 +199,7 @@ export function useAnimatedLayout(options: UseAnimatedLayoutOptions = {}) {
       const isPinned = pinnedNodes.has(node.id);
       return {
         id: node.id,
-        type: node.data?.type,
+        type: node.data?.type as EntityType | undefined,
         x: node.position.x,
         y: node.position.y,
         fx: isPinned ? node.position.x : undefined,
@@ -200,17 +248,19 @@ export function useAnimatedLayout(options: UseAnimatedLayoutOptions = {}) {
     // Get optimal configuration based on graph size
     const config = getOptimalConfig(animatedNodes.length);
 
-    // Add custom configuration based on graph characteristics
+    // Use graph store's layout configuration if available
+    const layoutOptions = currentLayout?.options;
     const enhancedConfig = {
       ...config,
-      linkDistance: 100,
-      linkStrength: 0.01,
-      chargeStrength: -1000,
-      centerStrength: 0.01,
-      collisionRadius: 120,
-      collisionStrength: 1.0,
-      velocityDecay: 0.1,
-      seed: 0, // For deterministic layouts
+      linkDistance: layoutOptions?.linkDistance ?? 100,
+      linkStrength: layoutOptions?.linkStrength ?? 0.01,
+      chargeStrength: layoutOptions?.chargeStrength ?? -1000,
+      centerStrength: layoutOptions?.centerStrength ?? 0.01,
+      collisionRadius: layoutOptions?.collisionRadius ?? 120,
+      collisionStrength: layoutOptions?.collisionStrength ?? 1.0,
+      velocityDecay: layoutOptions?.velocityDecay ?? 0.1,
+      alphaDecay: layoutOptions?.alphaDecay ?? config.alphaDecay,
+      seed: layoutOptions?.seed ?? 0, // For deterministic layouts
     };
 
     logger.info('graph', 'Starting animated force layout', {
@@ -218,6 +268,9 @@ export function useAnimatedLayout(options: UseAnimatedLayoutOptions = {}) {
       linkCount: animatedLinks.length,
       pinnedCount: pinnedNodes.size,
       config: enhancedConfig,
+      layoutType: currentLayout?.type,
+      autoPinOnLayoutStabilization,
+      usingGraphStoreConfig: !!layoutOptions,
     });
 
     isLayoutRunningRef.current = true;
@@ -232,6 +285,7 @@ export function useAnimatedLayout(options: UseAnimatedLayoutOptions = {}) {
     prepareAnimationData,
     getOptimalConfig,
     pinnedNodes,
+    currentLayout,
     animatedStore,
     startAnimation,
   ]);
@@ -289,12 +343,13 @@ export function useAnimatedLayout(options: UseAnimatedLayoutOptions = {}) {
     };
   }, [stopLayout]);
 
-  // Auto-sync positions with graph store when not animating
-  useEffect(() => {
-    if (!animationState.isAnimating) {
-      positionTracking.syncWithGraphStore();
-    }
-  }, [animationState.isAnimating, positionTracking]);
+  // Auto-sync positions with graph store when not animating (REMOVED - causing infinite loop)
+  // This sync will be handled manually when needed to avoid React 19 + Zustand + Immer loops
+  // useEffect(() => {
+  //   if (!animationState.isAnimating) {
+  //     positionTracking.syncWithGraphStore();
+  //   }
+  // }, [animationState.isAnimating, positionTracking]);
 
   return {
     // State
