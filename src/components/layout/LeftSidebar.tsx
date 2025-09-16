@@ -40,13 +40,14 @@ import {
 	IconWorld,
 	IconHash,
 	IconBulb,
-	IconNetwork
+	IconNetwork,
+	IconCirclePlus
 } from "@tabler/icons-react"
 
 export const LeftSidebar: React.FC = () => {
 	const [searchQuery, setSearchQuery] = useState("")
 	const [expansionDialogTarget, setExpansionDialogTarget] = useState<ExpansionTarget | null>(null)
-	const { search, isLoading, clearGraph, loadAllCachedNodes } = useGraphData()
+	const { search, isLoading, clearGraph, loadAllCachedNodes, expandAllNodesOfType } = useGraphData()
 	const { colors } = useThemeColors()
 
 	// Graph store for statistics and visibility - use as single source of truth
@@ -115,6 +116,14 @@ export const LeftSidebar: React.FC = () => {
 		const value = parseInt(e.target.value, 10)
 		if (!isNaN(value) && value >= 1) {
 			setTraversalDepth(value)
+		}
+	}
+
+	const handleExpandAllNodesOfType = async (entityType: EntityType) => {
+		try {
+			await expandAllNodesOfType(entityType)
+		} catch (error) {
+			logError("Failed to expand all nodes of type", error, "LeftSidebar", "ui")
 		}
 	}
 
@@ -347,7 +356,7 @@ export const LeftSidebar: React.FC = () => {
 									transition: "background-color 0.2s",
 								}}
 							>
-								{/* Main row with checkbox, icon, label, and color */}
+								{/* Main row with checkbox, icon, label, expand button, and color */}
 								<div style={{
 									display: "flex",
 									alignItems: "center",
@@ -363,6 +372,44 @@ export const LeftSidebar: React.FC = () => {
 									<span style={{ fontSize: "14px", color: colors.text.primary, fontWeight: 500 }}>
 										{option.label}
 									</span>
+
+									{/* Expand all button - only show if there are nodes of this type */}
+									{totalCount > 0 && (
+										<button
+											onClick={(e) => {
+												e.stopPropagation();
+												void handleExpandAllNodesOfType(option.type);
+											}}
+											disabled={isLoading}
+											style={{
+												padding: "4px",
+												backgroundColor: "transparent",
+												border: "none",
+												cursor: isLoading ? "not-allowed" : "pointer",
+												color: colors.text.secondary,
+												display: "flex",
+												alignItems: "center",
+												justifyContent: "center",
+												borderRadius: "4px",
+												transition: "background-color 0.2s",
+												opacity: isLoading ? 0.5 : 1,
+											}}
+											onMouseEnter={(e) => {
+												if (!isLoading) {
+													e.currentTarget.style.backgroundColor = colors.background.secondary;
+													e.currentTarget.style.color = colors.primary;
+												}
+											}}
+											onMouseLeave={(e) => {
+												e.currentTarget.style.backgroundColor = "transparent";
+												e.currentTarget.style.color = colors.text.secondary;
+											}}
+											title={`Expand all ${option.label.toLowerCase()} nodes`}
+										>
+											<IconCirclePlus size={14} />
+										</button>
+									)}
+
 									<span
 										style={{
 											width: "10px",
