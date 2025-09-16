@@ -11,7 +11,7 @@ import type { Work, Author, Source, Institution, Topic, Concept, Publisher, Fund
  */
 type ValidFieldPaths<T> = {
   [K in keyof T]: K extends string
-    ? T[K] extends Array<infer _U>
+    ? T[K] extends Array<any>
       ? K // Array fields can only be selected as whole arrays (OpenAlex limitation)
       : T[K] extends object
       ? K // Object fields can only be selected as whole objects (OpenAlex limitation)

@@ -9,7 +9,7 @@
 import { describe, it, expect, beforeAll, afterAll, beforeEach, afterEach, vi } from "vitest";
 import { execSync } from "child_process";
 import { OpenAlexClient, createOpenAlexClient } from "./openalex-client";
-import type { Work, Author as _Author, Source as _Source, InstitutionEntity as _InstitutionEntity, Topic as _Topic, EntityType as _EntityType } from "./types";
+import type { Work } from "./types";
 import { logger } from "@/lib/logger";
 
 // Known stable OpenAlex IDs for testing (these should exist in the database)
