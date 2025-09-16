@@ -183,7 +183,7 @@ export function useDataFetchingWorker(options: UseDataFetchingWorkerOptions = {}
 			default:
 				logger.warn("graph", "Unknown worker message type", { type });
 		}
-	}, [onExpandComplete, onExpandError, onProgress, completeRequest, failRequest, updateProgress]);
+	}, [onExpandComplete, onExpandError, onProgress, completeRequest, failRequest, updateProgress, setWorkerReady]);
 
 	// Handle worker errors
 	const handleWorkerError = useCallback((error: ErrorEvent) => {
