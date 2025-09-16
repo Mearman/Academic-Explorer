@@ -234,12 +234,12 @@ describe("Cache Persister", () => {
 				const persister = createHybridPersister();
 
 				// Mock localStorage availability check to pass, then fail on actual data
-				localStorageMock.setItem.mockImplementation((key, _value) => {
+				localStorageMock.setItem.mockImplementation((key) => {
 					if (key === "__test__") return; // Availability test passes
 					throw new Error("Quota exceeded"); // Actual data persistence fails
 				});
 
-				localStorageMock.removeItem.mockImplementation((_key) => {
+				localStorageMock.removeItem.mockImplementation(() => {
 					// Allow removal of academic-explorer-cache key
 				});
 
@@ -447,7 +447,7 @@ describe("Cache Persister", () => {
 				const persister = createHybridPersister();
 
 				// Mock localStorage availability check to pass
-				localStorageMock.setItem.mockImplementation((key, _value) => {
+				localStorageMock.setItem.mockImplementation((key) => {
 					if (key === "__test__") return; // Availability test passes
 				});
 				localStorageMock.removeItem.mockImplementation((key) => {

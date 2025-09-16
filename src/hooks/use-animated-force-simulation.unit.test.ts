@@ -47,7 +47,7 @@ class MockWorker {
 
 	constructor(public url: string, public options?: WorkerOptions) {
 		// Setup default behavior for postMessage
-		this.postMessage.mockImplementation((_data: any) => {
+		this.postMessage.mockImplementation(() => {
 			// Do nothing by default, tests can override
 		});
 
@@ -111,7 +111,7 @@ global.Worker = MockWorker as any;
 global.URL = class MockURL {
 	href: string;
 
-	constructor(_url: string, _base?: string) {
+	constructor() {
 		this.href = "mock-worker-url";
 	}
 
