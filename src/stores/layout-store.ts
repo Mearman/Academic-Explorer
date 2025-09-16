@@ -64,7 +64,7 @@ type LayoutPersistedState = Partial<Pick<LayoutState,
 
 export const useLayoutStore = create<LayoutState>()(
 	persist(
-		(set) => ({
+		(set, get) => ({
 			// Initial state
 			leftSidebarOpen: true,
 			leftSidebarPinned: false,
@@ -137,8 +137,12 @@ export const useLayoutStore = create<LayoutState>()(
 			setGraphProvider: (provider) =>
 				set({ graphProvider: provider }),
 
-			setPreviewEntity: (entityId) =>
-				set({ previewEntityId: entityId }),
+			setPreviewEntity: (entityId) => {
+				const currentState = get();
+				if (currentState.previewEntityId !== entityId) {
+					set({ previewEntityId: entityId });
+				}
+			},
 
 			setAutoPinOnLayoutStabilization: (enabled) =>
 				set({ autoPinOnLayoutStabilization: enabled }),

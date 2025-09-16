@@ -448,7 +448,12 @@ export const useGraphStore = create<GraphState>()(
 			},
 
 			// Selection
-			selectNode: (nodeId) => set({ selectedNodeId: nodeId }),
+			selectNode: (nodeId) => {
+				const currentState = get();
+				if (currentState.selectedNodeId !== nodeId) {
+					set({ selectedNodeId: nodeId });
+				}
+			},
 
 			hoverNode: (nodeId) => set({ hoveredNodeId: nodeId }),
 
