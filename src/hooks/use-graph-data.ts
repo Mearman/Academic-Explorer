@@ -35,10 +35,6 @@ export function useGraphData() {
 			// Clear node loading state
 			store.markNodeAsLoading(result.nodeId, false);
 
-			// TODO: Add store methods to handle cached data and depth calculation
-			// store.updateCachedGraphData(queryClient);
-			// store.recalculateDepthsFromFirstPinned();
-
 			logger.info("graph", "Worker-based node expansion completed", {
 				nodeId: result.nodeId,
 				nodesAdded: result.nodes.length,
