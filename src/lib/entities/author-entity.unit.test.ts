@@ -313,6 +313,16 @@ describe("AuthorEntity", () => {
 
 			it("should handle API rejection with proper error logging", async () => {
 				const apiError = new Error("API Error");
+
+				// Mock getAuthor to succeed first (required before getWorks is called)
+				const mockAuthor: Author = {
+					id: entityId,
+					display_name: "Test Author",
+					affiliations: []
+				} as Author;
+				mockClient.getAuthor.mockResolvedValue(mockAuthor);
+
+				// Mock getWorks to fail
 				mockClient.getWorks.mockRejectedValue(apiError);
 
 				const result = await authorEntity.expand(context, options);
@@ -324,6 +334,16 @@ describe("AuthorEntity", () => {
 
 			it("should handle rate limiting errors", async () => {
 				const rateLimitError = new Error("429 TOO MANY REQUESTS");
+
+				// Mock getAuthor to succeed first (required before getWorks is called)
+				const mockAuthor: Author = {
+					id: entityId,
+					display_name: "Test Author",
+					affiliations: []
+				} as Author;
+				mockClient.getAuthor.mockResolvedValue(mockAuthor);
+
+				// Mock getWorks to fail with rate limit error
 				mockClient.getWorks.mockRejectedValue(rateLimitError);
 
 				const result = await authorEntity.expand(context, options);
