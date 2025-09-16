@@ -48,7 +48,7 @@ export default defineConfig({
     },
   },
   plugins: [
-    devtools(),
+    // devtools(), // Temporarily disabled for testing
     TanStackRouterVite({
       // Enable hash-based routing for GitHub Pages compatibility
       routeFilePrefix: '',
