@@ -13,6 +13,7 @@ import { useExpansionSettingsStore } from "@/stores/expansion-settings-store";
 import { logError, logger } from "@/lib/logger";
 import { RequestDeduplicationService, createRequestDeduplicationService } from "./request-deduplication-service";
 import { RelationshipDetectionService, createRelationshipDetectionService } from "./relationship-detection-service";
+import { safeSlice } from "@/lib/openalex/utils/hydration-helpers";
 import {
 	getCachedOpenAlexEntities,
 	setCachedGraphNodes,
@@ -1059,7 +1060,7 @@ export class GraphDataService {
 		const store = useGraphStore.getState();
 
 		// Add author nodes with minimal data for incremental hydration
-		work.authorships?.slice(0, 5).forEach((authorship, index) => {
+		safeSlice(work.authorships, 0, 5).forEach((authorship, index) => {
 			// Check if author node already exists
 			const existingNode = store.getNode(authorship.author.id);
 
@@ -1133,7 +1134,7 @@ export class GraphDataService {
 		}
 
 		// Add referenced works with minimal data for incremental hydration
-		work.referenced_works?.slice(0, 3).forEach((citedWorkId, index) => {
+		safeSlice(work.referenced_works, 0, 3).forEach((citedWorkId, index) => {
 			const existingCitedNode = store.getNode(citedWorkId);
 
 			if (!existingCitedNode) {
@@ -1175,45 +1176,28 @@ export class GraphDataService {
 
 	/**
    * Transform Author entity with incremental hydration approach
+   * Note: Institution nodes are now only created during explicit expansion, not automatic loading
    */
 	private transformAuthor(author: Author, _mainNode: GraphNode): { nodes: GraphNode[]; edges: GraphEdge[] } {
 		const nodes: GraphNode[] = [];
 		const edges: GraphEdge[] = [];
 		const store = useGraphStore.getState();
 
-		// Add affiliated institutions as minimal nodes with incremental hydration
-		author.affiliations?.slice(0, 3).forEach((affiliation, index) => {
+		// Only create edges to institutions that already exist in the graph
+		// Do NOT automatically create institution nodes - they should only be created during explicit expansion
+		safeSlice(author.affiliations, 0, 3).forEach((affiliation) => {
 			const existingInstitutionNode = store.getNode(affiliation.institution.id);
 
-			if (!existingInstitutionNode) {
-				const institutionNode: GraphNode = {
-					id: affiliation.institution.id,
-					type: "institutions" as EntityType,
-					label: affiliation.institution.display_name,
-					entityId: affiliation.institution.id,
-					position: { x: (index - 1) * 200, y: 150 },
-					externalIds: affiliation.institution.ror ? [
-						{
-							type: "ror",
-							value: affiliation.institution.ror,
-							url: `https://ror.org/${affiliation.institution.ror}`,
-						}
-					] : [],
-					metadata: {
-						hydrationLevel: "minimal" as const,
-						isLoading: false
-					}
-				};
-				nodes.push(institutionNode);
+			// Only create edge if the institution node already exists in the graph
+			if (existingInstitutionNode) {
+				edges.push({
+					id: `${author.id}-affiliated-${affiliation.institution.id}`,
+					source: author.id,
+					target: affiliation.institution.id,
+					type: RelationType.AFFILIATED,
+					label: "affiliated with",
+				});
 			}
-
-			edges.push({
-				id: `${author.id}-affiliated-${affiliation.institution.id}`,
-				source: author.id,
-				target: affiliation.institution.id,
-				type: RelationType.AFFILIATED,
-				label: "affiliated with",
-			});
 		});
 
 		return { nodes, edges };
@@ -1258,7 +1242,7 @@ export class GraphDataService {
 		const edges: GraphEdge[] = [];
 
 		// Add parent institutions from lineage
-		institution.lineage?.slice(0, 2).forEach((parentId, index) => {
+		safeSlice(institution.lineage, 0, 2).forEach((parentId, index) => {
 			if (parentId !== institution.id) {
 				const parentNode: GraphNode = {
 					id: parentId,
