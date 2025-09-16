@@ -1059,116 +1059,56 @@ export class GraphDataService {
 		const edges: GraphEdge[] = [];
 		const store = useGraphStore.getState();
 
-		// Add author nodes with minimal data for incremental hydration
-		safeSlice(work.authorships, 0, 5).forEach((authorship, index) => {
-			// Check if author node already exists
-			const existingNode = store.getNode(authorship.author.id);
+		// Only create edges to authors that already exist in the graph
+		// Do NOT automatically create author nodes - they should only be created during explicit expansion
+		safeSlice(work.authorships, 0, 5).forEach((authorship) => {
+			const existingAuthorNode = store.getNode(authorship.author.id);
 
-			if (!existingNode) {
-				// Create minimal node with basic info from authorship
-				const authorNode: GraphNode = {
-					id: authorship.author.id,
-					type: "authors" as EntityType,
-					label: authorship.author.display_name,
-					entityId: authorship.author.id,
-					position: { x: (index - 2) * 150, y: -150 },
-					externalIds: authorship.author.orcid ? [
-						{
-							type: "orcid",
-							value: authorship.author.orcid,
-							url: `https://orcid.org/${authorship.author.orcid}`,
-						}
-					] : [],
-					metadata: {
-						position: authorship.author_position,
-						hydrationLevel: "minimal" as const,
-						isLoading: false
-					}
-				};
-				nodes.push(authorNode);
+			// Only create edge if the author node already exists in the graph
+			if (existingAuthorNode) {
+				edges.push({
+					id: `${authorship.author.id}-authored-${work.id}`,
+					source: authorship.author.id,
+					target: work.id,
+					type: RelationType.AUTHORED,
+					label: authorship.author_position === "first" ? "first author" : "co-author",
+					weight: authorship.author_position === "first" ? 1.0 : 0.5,
+				});
 			}
-
-			edges.push({
-				id: `${authorship.author.id}-authored-${work.id}`,
-				source: authorship.author.id,
-				target: work.id,
-				type: RelationType.AUTHORED,
-				label: authorship.author_position === "first" ? "first author" : "co-author",
-				weight: authorship.author_position === "first" ? 1.0 : 0.5,
-			});
 		});
 
-		// Add source/journal node with minimal data
+		// Only create edges to sources that already exist in the graph
+		// Do NOT automatically create source nodes - they should only be created during explicit expansion
 		if (work.primary_location?.source) {
 			const existingSourceNode = store.getNode(work.primary_location.source.id);
 
-			if (!existingSourceNode) {
-				const sourceNode: GraphNode = {
-					id: work.primary_location.source.id,
-					type: "sources" as EntityType,
-					label: work.primary_location.source.display_name,
-					entityId: work.primary_location.source.id,
-					position: { x: 0, y: 150 },
-					externalIds: work.primary_location.source.issn_l ? [
-						{
-							type: "issn_l",
-							value: work.primary_location.source.issn_l,
-							url: `https://portal.issn.org/resource/ISSN/${work.primary_location.source.issn_l}`,
-						}
-					] : [],
-					metadata: {
-						hydrationLevel: "minimal" as const,
-						isLoading: false
-					}
-				};
-				nodes.push(sourceNode);
-			}
-
-			edges.push({
-				id: `${work.id}-published-in-${work.primary_location.source.id}`,
-				source: work.id,
-				target: work.primary_location.source.id,
-				type: RelationType.PUBLISHED_IN,
-				label: "published in",
-			});
-		}
-
-		// Add referenced works with minimal data for incremental hydration
-		safeSlice(work.referenced_works, 0, 3).forEach((citedWorkId, index) => {
-			const existingCitedNode = store.getNode(citedWorkId);
-
-			if (!existingCitedNode) {
-				// Create minimal node with basic data - will be hydrated on demand
-				const citedNode: GraphNode = {
-					id: citedWorkId,
-					type: "works" as EntityType,
-					label: `Referenced Work ${String(index + 1)}`, // Temporary label, will be updated with real title
-					entityId: citedWorkId,
-					position: { x: (index - 1) * 200, y: 300 },
-					externalIds: [],
-					metadata: {
-						hydrationLevel: "minimal",
-						isLoading: false
-					},
-				};
-				nodes.push(citedNode);
-
-				// Schedule minimal data loading for referenced works to get real titles and metadata
-				this.loadMinimalDataInBackground(citedWorkId, "works").catch((error: unknown) => {
-					logger.warn("graph", "Background minimal data loading failed for referenced work", {
-						citedWorkId,
-						error: error instanceof Error ? error.message : "Unknown error"
-					});
+			// Only create edge if the source node already exists in the graph
+			if (existingSourceNode) {
+				edges.push({
+					id: `${work.id}-published-in-${work.primary_location.source.id}`,
+					source: work.id,
+					target: work.primary_location.source.id,
+					type: RelationType.PUBLISHED_IN,
+					label: "published in",
 				});
 			}
+		}
 
-			edges.push({
-				id: `${work.id}-cites-${citedWorkId}`,
-				source: work.id,
-				target: citedWorkId,
-				type: RelationType.REFERENCES,
-				label: "references",
-			});
+		// Only create edges to referenced works that already exist in the graph
+		// Do NOT automatically create referenced work nodes - they should only be created during explicit expansion
+		safeSlice(work.referenced_works, 0, 3).forEach((citedWorkId) => {
+			const existingCitedNode = store.getNode(citedWorkId);
+
+			// Only create edge if the referenced work node already exists in the graph
+			if (existingCitedNode) {
+				edges.push({
+					id: `${work.id}-cites-${citedWorkId}`,
+					source: work.id,
+					target: citedWorkId,
+					type: RelationType.REFERENCES,
+					label: "references",
+				});
+			}
 		});
 
 		return { nodes, edges };
@@ -1209,26 +1149,23 @@ export class GraphDataService {
 	private transformSource(source: Source, _mainNode: GraphNode): { nodes: GraphNode[]; edges: GraphEdge[] } {
 		const nodes: GraphNode[] = [];
 		const edges: GraphEdge[] = [];
+		const store = useGraphStore.getState();
 
-		// Add publisher if available
+		// Only create edges to publishers that already exist in the graph
+		// Do NOT automatically create publisher nodes - they should only be created during explicit expansion
 		if (source.publisher) {
-			const publisherNode: GraphNode = {
-				id: source.publisher,
-				type: "publishers" as EntityType,
-				label: source.publisher || "Publisher",
-				entityId: source.publisher,
-				position: { x: 0, y: 150 },
-				externalIds: [],
-			};
-			nodes.push(publisherNode);
+			const existingPublisherNode = store.getNode(source.publisher);
 
-			edges.push({
-				id: `${source.id}-published-by-${source.publisher}`,
-				source: source.id,
-				target: source.publisher,
-				type: RelationType.SOURCE_PUBLISHED_BY,
-				label: "published by",
-			});
+			// Only create edge if the publisher node already exists in the graph
+			if (existingPublisherNode) {
+				edges.push({
+					id: `${source.id}-published-by-${source.publisher}`,
+					source: source.id,
+					target: source.publisher,
+					type: RelationType.SOURCE_PUBLISHED_BY,
+					label: "published by",
+				});
+			}
 		}
 
 		return { nodes, edges };
@@ -1240,31 +1177,24 @@ export class GraphDataService {
 	private transformInstitution(institution: InstitutionEntity, _mainNode: GraphNode): { nodes: GraphNode[]; edges: GraphEdge[] } {
 		const nodes: GraphNode[] = [];
 		const edges: GraphEdge[] = [];
+		const store = useGraphStore.getState();
 
-		// Add parent institutions from lineage
-		safeSlice(institution.lineage, 0, 2).forEach((parentId, index) => {
+		// Only create edges to parent institutions that already exist in the graph
+		// Do NOT automatically create parent institution nodes - they should only be created during explicit expansion
+		safeSlice(institution.lineage, 0, 2).forEach((parentId) => {
 			if (parentId !== institution.id) {
-				const parentNode: GraphNode = {
-					id: parentId,
-					type: "institutions" as EntityType,
-					label: ["Parent Institution", 1 + index].join(" "),
-					entityId: parentId,
-					position: { x: (index - 0.5) * 200, y: -150 },
-					externalIds: [],
-					metadata: {
-						hydrationLevel: "minimal" as const,
-						isLoading: false
-					},
-				};
-				nodes.push(parentNode);
+				const existingParentNode = store.getNode(parentId);
 
-				edges.push({
-					id: `${institution.id}-child-of-${parentId}`,
-					source: institution.id,
-					target: parentId,
-					type: RelationType.INSTITUTION_CHILD_OF,
-					label: "child of",
-				});
+				// Only create edge if the parent institution node already exists in the graph
+				if (existingParentNode) {
+					edges.push({
+						id: `${institution.id}-child-of-${parentId}`,
+						source: institution.id,
+						target: parentId,
+						type: RelationType.INSTITUTION_CHILD_OF,
+						label: "child of",
+					});
+				}
 			}
 		});
 
