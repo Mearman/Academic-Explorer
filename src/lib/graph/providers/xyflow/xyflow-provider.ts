@@ -260,7 +260,7 @@ export class XYFlowProvider implements GraphProvider {
 		}
 	}
 
-	async initialize(container: HTMLElement, _options: GraphOptions = {}): Promise<void> {
+	async initialize(container: HTMLElement): Promise<void> {
 		this.container = container;
 		this.mounted = true;
 
@@ -435,7 +435,7 @@ export class XYFlowProvider implements GraphProvider {
 		}
 	}
 
-	highlightPath(_nodeIds: string[]): void {
+	highlightPath(): void {
 		// Implementation would highlight nodes and edges in path
 		if (this.reactFlowInstance) {
 			// Update highlighting for path

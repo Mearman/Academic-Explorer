@@ -25,13 +25,6 @@ import type { EntityType, ExternalIdentifier } from "../../types";
 import { useGraphStore } from "@/stores/graph-store";
 import { useGraphData } from "@/hooks/use-graph-data";
 
-// Helper function for safe metadata access
-const _renderMetadataValue = (value: unknown): React.ReactNode => {
-	if (typeof value === "number" || typeof value === "string") {
-		return value;
-	}
-	return null;
-};
 
 // Pin toggle button component
 interface PinToggleButtonProps {
@@ -416,7 +409,6 @@ const getEntityTypeLabel = (entityType: EntityType): string => {
 export const CustomNode: React.FC<CustomNodeProps> = ({ data, selected }) => {
 	const isPinned = useGraphStore((state) => state.isPinned);
 	const backgroundColor = getEntityColor(data.entityType);
-	const _typeLabel = getEntityTypeLabel(data.entityType);
 	const glowColors = getEntityGlowColors(data.entityType);
 
 	// Get current pin state from store
