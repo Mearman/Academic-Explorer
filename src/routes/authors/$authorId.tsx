@@ -16,7 +16,7 @@ function AuthorRoute() {
 	const loadEntity = graphData.loadEntity;
 	const loadEntityIntoGraph = graphData.loadEntityIntoGraph;
 	const expandNode = graphData.expandNode;
-	const nodeCount = useGraphStore((state) => Object.keys(state.nodes).length);
+	const nodeCount = useGraphStore((state) => state.totalNodeCount);
 
 	// Fetch entity data for title
 	const rawEntityDataResult = useRawEntityData({

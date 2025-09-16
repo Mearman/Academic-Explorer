@@ -53,6 +53,8 @@ interface GraphState {
   lastSearchStats: Record<EntityType, number>; // object instead of Map
 
   // Pre-computed statistics (cached to avoid getSnapshot infinite loops)
+  totalNodeCount: number;
+  totalEdgeCount: number;
   entityTypeStats: {
     visible: Record<EntityType, number>;
     total: Record<EntityType, number>;
@@ -233,6 +235,8 @@ export const useGraphStore = create<GraphState>()(
 			error: null,
 
 			// Pre-computed statistics (cached to avoid getSnapshot infinite loops)
+			totalNodeCount: 0,
+			totalEdgeCount: 0,
 			entityTypeStats: {
 				visible: {
 					concepts: 0,
@@ -731,7 +735,8 @@ export const useGraphStore = create<GraphState>()(
 					};
 
 					// Count total and visible nodes by type
-					Object.values(state.nodes).forEach(node => {
+					const nodeValues = Object.values(state.nodes);
+					nodeValues.forEach(node => {
 						total[node.type] = (total[node.type] || 0) + 1;
 
 						if (state.visibleEntityTypes[node.type]) {
@@ -739,7 +744,8 @@ export const useGraphStore = create<GraphState>()(
 						}
 					});
 
-					// Update cached statistics
+					// Update cached statistics including total counts
+					state.totalNodeCount = nodeValues.length;
 					state.entityTypeStats = {
 						total,
 						visible,
@@ -847,7 +853,8 @@ export const useGraphStore = create<GraphState>()(
 					};
 
 					// Count total and visible edges by type
-					Object.values(state.edges).forEach(edge => {
+					const edgeValues = Object.values(state.edges);
+					edgeValues.forEach(edge => {
 						const edgeType = edge.type;
 						const currentTotal = total[edgeType];
 						total[edgeType] = (typeof currentTotal === "number" ? currentTotal : 0) + 1;
@@ -858,7 +865,8 @@ export const useGraphStore = create<GraphState>()(
 						}
 					});
 
-					// Update cached statistics
+					// Update cached statistics including total counts
+					state.totalEdgeCount = edgeValues.length;
 					state.edgeTypeStats = {
 						total,
 						visible

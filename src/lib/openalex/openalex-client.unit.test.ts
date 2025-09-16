@@ -651,7 +651,7 @@ describe("OpenAlexClient", () => {
 
 		it("should throw error for unsupported entity type", async () => {
 			await expect(async () => {
-					// eslint-disable-next-line @typescript-eslint/no-unused-vars
+				// eslint-disable-next-line @typescript-eslint/no-unused-vars
 				for await (const _item of client.stream("invalid" as EntityType)) {
 					// This should not execute
 				}

@@ -17,7 +17,7 @@ function RORInstitutionRoute() {
 	const graphData = useGraphData()
 	const loadEntity = graphData.loadEntity
 	const loadEntityIntoGraph = graphData.loadEntityIntoGraph
-	const nodeCount = useGraphStore((state) => Object.keys(state.nodes).length)
+	const nodeCount = useGraphStore((state) => state.totalNodeCount)
 
 	useEffect(() => {
 		const resolveROR = async () => {

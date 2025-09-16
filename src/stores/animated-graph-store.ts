@@ -345,36 +345,24 @@ export const useAnimatedGraphStore = create<AnimatedGraphState>()(
 	)
 );
 
-// Convenience hooks for specific store slices
-export const useAnimationState = () => useAnimatedGraphStore((state) => ({
-	isAnimating: state.isAnimating,
-	isPaused: state.isPaused,
-	progress: state.progress,
-	alpha: state.alpha,
-	iteration: state.iteration,
-	fps: state.fps,
-}));
+// Individual stable selectors to avoid object recreation (React 19 + Zustand compatibility)
+export const useIsAnimating = () => useAnimatedGraphStore((state) => state.isAnimating);
+export const useIsPaused = () => useAnimatedGraphStore((state) => state.isPaused);
+export const useAnimationProgress = () => useAnimatedGraphStore((state) => state.progress);
+export const useAnimationAlpha = () => useAnimatedGraphStore((state) => state.alpha);
+export const useAnimationIteration = () => useAnimatedGraphStore((state) => state.iteration);
+export const useAnimationFPS = () => useAnimatedGraphStore((state) => state.fps);
 
-export const useAnimationConfig = () => useAnimatedGraphStore((state) => ({
-	config: state.animationConfig,
-	useAnimatedLayout: state.useAnimatedLayout,
-	updateConfig: state.updateAnimationConfig,
-	setUseAnimatedLayout: state.setUseAnimatedLayout,
-}));
+export const useAnimationConfig = () => useAnimatedGraphStore((state) => state.animationConfig);
+export const useUseAnimatedLayout = () => useAnimatedGraphStore((state) => state.useAnimatedLayout);
+export const useUpdateAnimationConfig = () => useAnimatedGraphStore((state) => state.updateAnimationConfig);
+export const useSetUseAnimatedLayout = () => useAnimatedGraphStore((state) => state.setUseAnimatedLayout);
 
-// Individual stable hooks to avoid object recreation
-export const usePositionTrackingActions = () => useAnimatedGraphStore((state) => ({
-	updateAnimatedPositions: state.updateAnimatedPositions,
-	updateStaticPositions: state.updateStaticPositions,
-	applyPositionsToGraphStore: state.applyPositionsToGraphStore,
-}));
-
-export const usePositionTracking = () => useAnimatedGraphStore((state) => ({
-	getNodePosition: state.getNodePosition,
-	getAllPositions: state.getAllPositions,
-	updateAnimatedPositions: state.updateAnimatedPositions,
-	updateStaticPositions: state.updateStaticPositions,
-	clearPositions: state.clearPositions,
-	syncWithGraphStore: state.syncWithGraphStore,
-	applyPositionsToGraphStore: state.applyPositionsToGraphStore,
-}));
+// Position tracking selectors
+export const useGetNodePosition = () => useAnimatedGraphStore((state) => state.getNodePosition);
+export const useGetAllPositions = () => useAnimatedGraphStore((state) => state.getAllPositions);
+export const useUpdateAnimatedPositions = () => useAnimatedGraphStore((state) => state.updateAnimatedPositions);
+export const useUpdateStaticPositions = () => useAnimatedGraphStore((state) => state.updateStaticPositions);
+export const useClearPositions = () => useAnimatedGraphStore((state) => state.clearPositions);
+export const useApplyPositionsToGraphStore = () => useAnimatedGraphStore((state) => state.applyPositionsToGraphStore);
+export const useSyncWithGraphStore = () => useAnimatedGraphStore((state) => state.syncWithGraphStore);
