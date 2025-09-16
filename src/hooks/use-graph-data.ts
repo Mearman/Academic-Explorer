@@ -42,7 +42,7 @@ export function useGraphData() {
 			store.markNodeAsLoading(result.nodeId, false);
 
 			// Calculate depths after expansion
-			const pinnedNodes = Array.from(store.pinnedNodes);
+			const pinnedNodes = Object.keys(store.pinnedNodes);
 			const firstPinnedNodeId = pinnedNodes[0];
 			if (firstPinnedNodeId) {
 				store.calculateNodeDepths(firstPinnedNodeId);
