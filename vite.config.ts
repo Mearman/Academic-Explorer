@@ -70,6 +70,9 @@ export default defineConfig({
     __DEV__: JSON.stringify(true),
     __BUILD_INFO__: JSON.stringify(getBuildInfo()),
   },
+  worker: {
+    format: 'es', // Enable ES module format for workers
+  },
   build: {
     rollupOptions: {
       output: {
@@ -99,6 +102,7 @@ export default defineConfig({
 
           // Graph visualization (route-specific)
           'vendor-xyflow': ['@xyflow/react'],
+          'vendor-d3': ['d3-force', 'd3-random'],
 
           // Icons and utilities
           'vendor-icons': ['@tabler/icons-react'],
