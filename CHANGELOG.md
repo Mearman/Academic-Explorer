@@ -1,3 +1,11 @@
+# [2.2.0](https://github.com/Mearman/Academic-Explorer/compare/v2.1.3...v2.2.0) (2025-09-16)
+
+
+### Features
+
+* **entities:** implement proper selective API field loading for incremental hydration ([05e9e49](https://github.com/Mearman/Academic-Explorer/commit/05e9e49d0e957be2e508f0c5dd1cf862096dd501))
+* **graph:** optimize referenced work nodes with efficient minimal data loading ([251824f](https://github.com/Mearman/Academic-Explorer/commit/251824f2f169f27b0a8a73ce68290e03ccdacba3))
+
 ## [2.1.3](https://github.com/Mearman/Academic-Explorer/compare/v2.1.2...v2.1.3) (2025-09-16)
 
 
