@@ -67,34 +67,53 @@ export class RelationshipDetectionService {
 
 	/**
 	 * Detect and create relationships for multiple nodes in batch
-	 * More efficient than processing nodes individually
+	 * Uses two-pass approach to find relationships between nodes added in the same batch
 	 */
 	async detectRelationshipsForNodes(nodeIds: string[]): Promise<GraphEdge[]> {
 		if (nodeIds.length === 0) return [];
 
-		logger.info("graph", "Starting batch relationship detection", {
+		logger.info("graph", "Starting batch relationship detection with two-pass approach", {
 			nodeCount: nodeIds.length,
 			nodeIds
 		}, "RelationshipDetectionService");
 
 		const allNewEdges: GraphEdge[] = [];
 
-		// Process nodes sequentially to avoid overwhelming the API
+		// Two-pass approach:
+		// Pass 1: Process each node individually (finds relationships with pre-existing nodes)
 		for (const nodeId of nodeIds) {
 			try {
 				const edges = await this.detectRelationshipsForNode(nodeId);
 				allNewEdges.push(...edges);
 			} catch (error) {
-				logError("Failed to detect relationships for node in batch", error, "RelationshipDetectionService", "graph");
+				logError("Failed to detect relationships for node in batch pass 1", error, "RelationshipDetectionService", "graph");
 			}
 		}
 
-		logger.info("graph", "Batch relationship detection completed", {
-			processedNodeCount: nodeIds.length,
-			totalEdgesCreated: allNewEdges.length
+		// Pass 2: Re-check all nodes for relationships with each other (cross-batch relationships)
+		logger.info("graph", "Starting pass 2: cross-batch relationship detection", {
+			nodeCount: nodeIds.length
 		}, "RelationshipDetectionService");
 
-		return allNewEdges;
+		for (const nodeId of nodeIds) {
+			try {
+				const crossBatchEdges = await this.detectCrossBatchRelationships(nodeId, nodeIds);
+				allNewEdges.push(...crossBatchEdges);
+			} catch (error) {
+				logError("Failed to detect cross-batch relationships for node", error, "RelationshipDetectionService", "graph");
+			}
+		}
+
+		// Remove duplicate edges (same source-target-type combinations)
+		const uniqueEdges = this.deduplicateEdges(allNewEdges);
+
+		logger.info("graph", "Batch relationship detection completed", {
+			processedNodeCount: nodeIds.length,
+			totalEdgesCreated: uniqueEdges.length,
+			duplicatesRemoved: allNewEdges.length - uniqueEdges.length
+		}, "RelationshipDetectionService");
+
+		return uniqueEdges;
 	}
 
 	/**
@@ -479,6 +498,96 @@ export class RelationshipDetectionService {
 			default:
 				throw new Error(`Unsupported entity type for field selection: ${entityType}`);
 		}
+	}
+
+	/**
+	 * Detect relationships between a node and other nodes in the same batch
+	 * This finds relationships that wouldn't be caught in the first pass
+	 */
+	private async detectCrossBatchRelationships(nodeId: string, batchNodeIds: string[]): Promise<GraphEdge[]> {
+		const store = useGraphStore.getState();
+		const sourceNode = store.getNode(nodeId);
+
+		if (!sourceNode) {
+			return [];
+		}
+
+		try {
+			// Fetch minimal entity data for the source node
+			const sourceData = await this.fetchMinimalEntityData(sourceNode.entityId, sourceNode.type);
+			if (!sourceData) {
+				return [];
+			}
+
+			// Get only the other nodes in this batch (exclude the source node itself)
+			const otherBatchNodes = batchNodeIds
+				.filter(id => id !== nodeId)
+				.map(id => store.getNode(id))
+				.filter(Boolean) as GraphNode[];
+
+			// Analyze relationships specifically with the batch nodes
+			const detectedRelationships = this.analyzeCrossBatchRelationships(sourceData, otherBatchNodes);
+
+			logger.debug("graph", "Cross-batch relationship detection", {
+				sourceNodeId: nodeId,
+				batchNodeCount: otherBatchNodes.length,
+				detectedCount: detectedRelationships.length
+			}, "RelationshipDetectionService");
+
+			return this.createEdgesFromRelationships(detectedRelationships);
+
+		} catch (error) {
+			logError("Failed to detect cross-batch relationships", error, "RelationshipDetectionService", "graph");
+			return [];
+		}
+	}
+
+	/**
+	 * Analyze relationships between source entity and batch nodes specifically
+	 * Similar to analyzeRelationships but focused on batch nodes only
+	 */
+	private analyzeCrossBatchRelationships(sourceData: MinimalEntityData, batchNodes: GraphNode[]): DetectedRelationship[] {
+		const relationships: DetectedRelationship[] = [];
+
+		// For works, check if any batch nodes are referenced works
+		if (sourceData.entityType === "works" && sourceData.referenced_works) {
+			for (const referencedWorkId of sourceData.referenced_works) {
+				const referencedNode = batchNodes.find(node =>
+					node.entityId === referencedWorkId || node.id === referencedWorkId
+				);
+				if (referencedNode) {
+					relationships.push({
+						sourceNodeId: sourceData.id,
+						targetNodeId: referencedWorkId,
+						relationType: RelationType.REFERENCES,
+						label: "references"
+					});
+				}
+			}
+		}
+
+		// Additional cross-batch relationship patterns can be added here
+		// Only for actual relationships present in OpenAlex data, not synthetic ones
+
+		return relationships;
+	}
+
+	/**
+	 * Remove duplicate edges based on source-target-type combination
+	 */
+	private deduplicateEdges(edges: GraphEdge[]): GraphEdge[] {
+		const seen = new Set<string>();
+		const uniqueEdges: GraphEdge[] = [];
+
+		for (const edge of edges) {
+			const key = `${edge.source}-${edge.type}-${edge.target}`;
+			if (!seen.has(key)) {
+				seen.add(key);
+				uniqueEdges.push(edge);
+			}
+		}
+
+		return uniqueEdges;
 	}
 
 	/**
