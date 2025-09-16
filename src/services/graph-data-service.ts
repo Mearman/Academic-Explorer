@@ -974,9 +974,9 @@ export class GraphDataService {
 				() => rateLimitedOpenAlex.getEntity(node.entityId)
 			);
 
-			// Transform to full graph data to get external IDs and metadata
-			const { nodes } = this.transformEntityToGraph(fullEntity);
-			const fullNodeData = nodes[0];
+			// Create updated node data WITHOUT creating related entities (hydration only)
+			// This prevents automatic expansion of related entities during single-click hydration
+			const fullNodeData = this.createNodeFromEntity(fullEntity, node.type);
 
 			// Update node with full data
 			store.updateNode(nodeId, {
@@ -990,7 +990,7 @@ export class GraphDataService {
 				}
 			});
 
-			logger.info("graph", "Node fully hydrated", {
+			logger.info("graph", "Node fully hydrated (without expansion)", {
 				nodeId,
 				entityType: node.type,
 				externalIdCount: fullNodeData.externalIds.length

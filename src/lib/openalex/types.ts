@@ -11,6 +11,9 @@ export type RORId = string;
 export type ISSNId = string;
 export type WikidataId = string;
 
+// Utility type for making all fields except id optional (for partial hydration)
+type PartialExceptId<T> = { id: T extends { id: infer U } ? U : never } & Partial<Omit<T, "id">>;
+
 // Common utility types
 export interface OpenAlexResponse<T> {
   results: T[];
@@ -208,6 +211,9 @@ export interface Work {
   }>;
 }
 
+// Partial hydration types - only id is guaranteed, all other fields are optional
+export type PartialWork = PartialExceptId<Work>;
+
 // Author entity
 export interface Author {
   id: OpenAlexId;
@@ -263,6 +269,12 @@ export interface Author {
     };
   }>;
 }
+
+export type PartialAuthor = PartialExceptId<Author>;
+
+// Add partial types for other entities as needed
+export type PartialSource = PartialExceptId<Source>;
+export type PartialInstitution = PartialExceptId<Institution>;
 
 // Source entity (journals, conferences, etc.)
 export interface Source {
