@@ -1,9 +1,13 @@
 import js from '@eslint/js';
 import globals from 'globals';
+import react from 'eslint-plugin-react';
 import reactHooks from 'eslint-plugin-react-hooks';
 import reactRefresh from 'eslint-plugin-react-refresh';
 import tseslint from 'typescript-eslint';
 import noEmoji from './eslint-rules/no-emoji.js';
+import noZustandComputedFunctions from './eslint-rules/no-zustand-computed-functions.js';
+import noUnstableDependencies from './eslint-rules/no-unstable-dependencies.js';
+import noSelectorObjectCreation from './eslint-rules/no-selector-object-creation.js';
 
 export default tseslint.config([
   {
@@ -26,11 +30,15 @@ export default tseslint.config([
       ...tseslint.configs.strictTypeChecked,
     ],
     plugins: {
+      'react': react,
       'react-hooks': reactHooks,
       'react-refresh': reactRefresh,
       'custom': {
         rules: {
           'no-emoji': noEmoji,
+          'no-zustand-computed-functions': noZustandComputedFunctions,
+          'no-unstable-dependencies': noUnstableDependencies,
+          'no-selector-object-creation': noSelectorObjectCreation,
         },
       },
     },
@@ -40,6 +48,10 @@ export default tseslint.config([
         'warn',
         { allowConstantExport: true },
       ],
+
+      // Official React ESLint rules to prevent infinite loops and performance issues
+      'react/jsx-no-constructed-context-values': 'error',
+      'react/no-array-index-key': 'warn',
       '@typescript-eslint/no-unused-vars': [
         'error',
         {
@@ -73,6 +85,11 @@ export default tseslint.config([
 
       // Custom rules
       'custom/no-emoji': 'error',
+
+      // React 19 + Zustand + Immer infinite loop prevention rules
+      'custom/no-zustand-computed-functions': 'error',
+      'custom/no-unstable-dependencies': 'error',
+      'custom/no-selector-object-creation': 'error',
     },
     languageOptions: {
       ecmaVersion: 2020,
@@ -86,6 +103,11 @@ export default tseslint.config([
         sourceType: 'module',
         projectService: true,
         tsconfigRootDir: import.meta.dirname,
+      },
+    },
+    settings: {
+      react: {
+        version: 'detect',
       },
     },
   },

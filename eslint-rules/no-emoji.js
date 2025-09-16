@@ -38,7 +38,7 @@ const COMMON_ICON_SUGGESTIONS = {
   '💻': 'IconDeviceLaptop',
 };
 
-module.exports = {
+export default {
   meta: {
     type: 'problem',
     docs: {
