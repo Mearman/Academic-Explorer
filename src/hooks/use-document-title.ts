@@ -38,55 +38,55 @@ interface UseDocumentTitleOptions {
  * ```
  */
 export const useDocumentTitle = (
-  title: string | null | undefined,
-  options: UseDocumentTitleOptions = {}
+	title: string | null | undefined,
+	options: UseDocumentTitleOptions = {}
 ) => {
-  const {
-    baseTitle = "Academic Explorer",
-    restoreOnUnmount = false
-  } = options;
+	const {
+		baseTitle = "Academic Explorer",
+		restoreOnUnmount = false
+	} = options;
 
-  const originalTitle = useRef<string | null>(null);
+	const originalTitle = useRef<string | null>(null);
 
-  useEffect(() => {
-    // Store original title on first mount
-    if (originalTitle.current === null) {
-      originalTitle.current = document.title;
-    }
+	useEffect(() => {
+		// Store original title on first mount
+		if (originalTitle.current === null) {
+			originalTitle.current = document.title;
+		}
 
-    // Only update title if we have a valid title
-    if (title && typeof title === "string" && title.trim()) {
-      const newTitle = `${title.trim()} - ${baseTitle}`;
-      document.title = newTitle;
+		// Only update title if we have a valid title
+		if (title && typeof title === "string" && title.trim()) {
+			const newTitle = `${title.trim()} - ${baseTitle}`;
+			document.title = newTitle;
 
-      logger.debug("ui", "Document title updated", {
-        newTitle,
-        entityTitle: title.trim(),
-        baseTitle
-      }, "useDocumentTitle");
-    } else if (title === null || title === undefined || title.trim() === "") {
-      // Reset to base title if no specific title provided
-      document.title = baseTitle;
+			logger.debug("ui", "Document title updated", {
+				newTitle,
+				entityTitle: title.trim(),
+				baseTitle
+			}, "useDocumentTitle");
+		} else if (title === null || title === undefined || title.trim() === "") {
+			// Reset to base title if no specific title provided
+			document.title = baseTitle;
 
-      logger.debug("ui", "Document title reset to base", {
-        baseTitle
-      }, "useDocumentTitle");
-    }
-  }, [title, baseTitle]);
+			logger.debug("ui", "Document title reset to base", {
+				baseTitle
+			}, "useDocumentTitle");
+		}
+	}, [title, baseTitle]);
 
-  useEffect(() => {
-    // Cleanup effect for restoring original title
-    if (restoreOnUnmount) {
-      return () => {
-        if (originalTitle.current) {
-          document.title = originalTitle.current;
-          logger.debug("ui", "Document title restored", {
-            restoredTitle: originalTitle.current
-          }, "useDocumentTitle");
-        }
-      };
-    }
-  }, [restoreOnUnmount]);
+	useEffect(() => {
+		// Cleanup effect for restoring original title
+		if (restoreOnUnmount) {
+			return () => {
+				if (originalTitle.current) {
+					document.title = originalTitle.current;
+					logger.debug("ui", "Document title restored", {
+						restoredTitle: originalTitle.current
+					}, "useDocumentTitle");
+				}
+			};
+		}
+	}, [restoreOnUnmount]);
 };
 
 /**
@@ -102,9 +102,9 @@ export const useDocumentTitle = (
  * ```
  */
 export const useEntityDocumentTitle = (
-  entity: { display_name?: string } | null | undefined,
-  options: UseDocumentTitleOptions = {}
+	entity: { display_name?: string } | null | undefined,
+	options: UseDocumentTitleOptions = {}
 ) => {
-  const displayName = entity?.display_name;
-  useDocumentTitle(displayName, options);
+	const displayName = entity?.display_name;
+	useDocumentTitle(displayName, options);
 };

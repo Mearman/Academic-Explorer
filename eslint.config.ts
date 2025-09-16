@@ -43,10 +43,7 @@ export default tseslint.config([
       '@typescript-eslint/no-unused-vars': [
         'error',
         {
-          argsIgnorePattern: '^_',
-          varsIgnorePattern: '^_',
-          caughtErrorsIgnorePattern: '^_',
-          destructuredArrayIgnorePattern: '^_',
+          // Remove underscore patterns - unused declarations must be removed
           ignoreRestSiblings: true,
         },
       ],

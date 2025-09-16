@@ -46,7 +46,7 @@ let isReady = false;
 const currentRequests = new Map<string, AbortController>();
 
 // Initialize worker
-async function initializeWorker() {
+function initializeWorker() {
 	try {
 		// Pre-warm the rate-limited client
 		// Note: getCachedStats method doesn't exist, using getStats instead

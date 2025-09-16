@@ -15,7 +15,7 @@ export interface DataFetchingProgressItem {
     total: number;
     stage: string;
   };
-  status: 'active' | 'completed' | 'error';
+  status: "active" | "completed" | "error";
   error?: string;
   startTime: number;
 }
@@ -41,104 +41,104 @@ interface DataFetchingProgressState {
 }
 
 export const useDataFetchingProgressStore = create<DataFetchingProgressState>()(
-  immer((set, get) => ({
-    // State - using plain object for Immer compatibility
-    requests: {},
-    workerReady: false,
+	immer((set, get) => ({
+		// State - using plain object for Immer compatibility
+		requests: {},
+		workerReady: false,
 
-    // Actions
-    addRequest: (nodeId: string, entityName?: string, entityType?: string) =>
-      set((state) => {
-        state.requests[nodeId] = {
-          nodeId,
-          entityName,
-          entityType,
-          progress: {
-            completed: 0,
-            total: 1,
-            stage: "Starting..."
-          },
-          status: 'active',
-          startTime: Date.now()
-        };
-      }),
+		// Actions
+		addRequest: (nodeId: string, entityName?: string, entityType?: string) =>
+		{ set((state) => {
+			state.requests[nodeId] = {
+				nodeId,
+				entityName,
+				entityType,
+				progress: {
+					completed: 0,
+					total: 1,
+					stage: "Starting..."
+				},
+				status: "active",
+				startTime: Date.now()
+			};
+		}); },
 
-    updateProgress: (nodeId: string, progress: { completed: number; total: number; stage: string }) =>
-      set((state) => {
-        const request = state.requests[nodeId];
-        if (request && request.status === 'active') {
-          request.progress = progress;
-        }
-      }),
+		updateProgress: (nodeId: string, progress: { completed: number; total: number; stage: string }) =>
+		{ set((state) => {
+			const request = state.requests[nodeId];
+			if (request && request.status === "active") {
+				request.progress = progress;
+			}
+		}); },
 
-    completeRequest: (nodeId: string) =>
-      set((state) => {
-        const request = state.requests[nodeId];
-        if (request) {
-          request.status = 'completed';
-          request.progress = {
-            completed: request.progress.total,
-            total: request.progress.total,
-            stage: "Completed"
-          };
+		completeRequest: (nodeId: string) =>
+		{ set((state) => {
+			const request = state.requests[nodeId];
+			if (request) {
+				request.status = "completed";
+				request.progress = {
+					completed: request.progress.total,
+					total: request.progress.total,
+					stage: "Completed"
+				};
 
-          // Auto-remove completed requests after 3 seconds
-          setTimeout(() => {
-            get().removeRequest(nodeId);
-          }, 3000);
-        }
-      }),
+				// Auto-remove completed requests after 3 seconds
+				setTimeout(() => {
+					get().removeRequest(nodeId);
+				}, 3000);
+			}
+		}); },
 
-    failRequest: (nodeId: string, error: string) =>
-      set((state) => {
-        const request = state.requests[nodeId];
-        if (request) {
-          request.status = 'error';
-          request.error = error;
-          request.progress = {
-            completed: 0,
-            total: request.progress.total,
-            stage: "Failed"
-          };
+		failRequest: (nodeId: string, error: string) =>
+		{ set((state) => {
+			const request = state.requests[nodeId];
+			if (request) {
+				request.status = "error";
+				request.error = error;
+				request.progress = {
+					completed: 0,
+					total: request.progress.total,
+					stage: "Failed"
+				};
 
-          // Auto-remove failed requests after 5 seconds
-          setTimeout(() => {
-            get().removeRequest(nodeId);
-          }, 5000);
-        }
-      }),
+				// Auto-remove failed requests after 5 seconds
+				setTimeout(() => {
+					get().removeRequest(nodeId);
+				}, 5000);
+			}
+		}); },
 
-    removeRequest: (nodeId: string) =>
-      set((state) => {
-        delete state.requests[nodeId];
-      }),
+		removeRequest: (nodeId: string) =>
+		{ set((state) => {
+			delete state.requests[nodeId];
+		}); },
 
-    setWorkerReady: (ready: boolean) =>
-      set((state) => {
-        state.workerReady = ready;
-      }),
+		setWorkerReady: (ready: boolean) =>
+		{ set((state) => {
+			state.workerReady = ready;
+		}); },
 
-    clearCompleted: () =>
-      set((state) => {
-        Object.keys(state.requests).forEach(nodeId => {
-          if (state.requests[nodeId].status === 'completed') {
-            delete state.requests[nodeId];
-          }
-        });
-      }),
+		clearCompleted: () =>
+		{ set((state) => {
+			Object.keys(state.requests).forEach(nodeId => {
+				if (state.requests[nodeId].status === "completed") {
+					delete state.requests[nodeId];
+				}
+			});
+		}); },
 
-    clearAll: () =>
-      set((state) => {
-        state.requests = {};
-      }),
+		clearAll: () =>
+		{ set((state) => {
+			state.requests = {};
+		}); },
 
-    // Selectors
-    getActiveRequests: () => {
-      return Object.values(get().requests);
-    },
+		// Selectors
+		getActiveRequests: () => {
+			return Object.values(get().requests);
+		},
 
-    getRequestByNodeId: (nodeId: string) => {
-      return get().requests[nodeId];
-    }
-  }))
+		getRequestByNodeId: (nodeId: string) => {
+			return get().requests[nodeId];
+		}
+	}))
 );

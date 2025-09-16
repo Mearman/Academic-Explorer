@@ -1028,7 +1028,7 @@ export class GraphDataService {
 										source: node.id,
 										target: entityId,
 										type: relationshipType,
-										label: relationshipType.replace(/_/g, ' ')
+										label: relationshipType.replace(/_/g, " ")
 									};
 									newEdges.push(edge);
 								}
@@ -1089,7 +1089,7 @@ export class GraphDataService {
 	 * Extract related entity IDs of a specific type from entity data
 	 */
 	private extractRelatedEntitiesOfType(entityData: unknown, targetType: EntityType): string[] {
-		if (!entityData || typeof entityData !== 'object') {
+		if (!entityData || typeof entityData !== "object") {
 			return [];
 		}
 
@@ -1098,15 +1098,15 @@ export class GraphDataService {
 
 		// Map of entity types to their common field names in OpenAlex data
 		const fieldMappings: Record<EntityType, string[]> = {
-			works: ['referenced_works', 'related_works', 'cites'],
-			authors: ['authorships', 'authors'],
-			sources: ['primary_location', 'locations', 'host_venue'],
-			institutions: ['institutions', 'affiliations'],
-			topics: ['topics', 'concepts'],
-			concepts: ['concepts'],
-			publishers: ['publishers'],
-			funders: ['grants', 'funders'],
-			keywords: ['keywords']
+			works: ["referenced_works", "related_works", "cites"],
+			authors: ["authorships", "authors"],
+			sources: ["primary_location", "locations", "host_venue"],
+			institutions: ["institutions", "affiliations"],
+			topics: ["topics", "concepts"],
+			concepts: ["concepts"],
+			publishers: ["publishers"],
+			funders: ["grants", "funders"],
+			keywords: ["keywords"]
 		};
 
 		const fieldsToCheck = fieldMappings[targetType] || [];
@@ -1116,18 +1116,18 @@ export class GraphDataService {
 
 			if (Array.isArray(fieldValue)) {
 				for (const item of fieldValue) {
-					if (typeof item === 'string' && item.startsWith('https://openalex.org/')) {
+					if (typeof item === "string" && item.startsWith("https://openalex.org/")) {
 						entityIds.push(item);
-					} else if (item && typeof item === 'object') {
+					} else if (item && typeof item === "object") {
 						const itemData = item as Record<string, unknown>;
-						if (typeof itemData.id === 'string' && itemData.id.startsWith('https://openalex.org/')) {
+						if (typeof itemData.id === "string" && itemData.id.startsWith("https://openalex.org/")) {
 							entityIds.push(itemData.id);
 						}
 					}
 				}
-			} else if (fieldValue && typeof fieldValue === 'object') {
+			} else if (fieldValue && typeof fieldValue === "object") {
 				const objData = fieldValue as Record<string, unknown>;
-				if (typeof objData.id === 'string' && objData.id.startsWith('https://openalex.org/')) {
+				if (typeof objData.id === "string" && objData.id.startsWith("https://openalex.org/")) {
 					entityIds.push(objData.id);
 				}
 			}
@@ -1145,16 +1145,16 @@ export class GraphDataService {
 	private determineRelationshipType(sourceType: EntityType, targetType: EntityType): RelationType | null {
 		// Map common relationships between entity types
 		const relationshipMap: Record<string, RelationType> = {
-			'works-works': RelationType.REFERENCES,
-			'works-authors': RelationType.AUTHORED,
-			'works-sources': RelationType.PUBLISHED_IN,
-			'works-institutions': RelationType.AFFILIATED,
-			'works-topics': RelationType.WORK_HAS_TOPIC,
-			'works-funders': RelationType.FUNDED_BY,
-			'authors-works': RelationType.AUTHORED,
-			'authors-institutions': RelationType.AFFILIATED,
-			'sources-publishers': RelationType.SOURCE_PUBLISHED_BY,
-			'institutions-institutions': RelationType.INSTITUTION_CHILD_OF,
+			"works-works": RelationType.REFERENCES,
+			"works-authors": RelationType.AUTHORED,
+			"works-sources": RelationType.PUBLISHED_IN,
+			"works-institutions": RelationType.AFFILIATED,
+			"works-topics": RelationType.WORK_HAS_TOPIC,
+			"works-funders": RelationType.FUNDED_BY,
+			"authors-works": RelationType.AUTHORED,
+			"authors-institutions": RelationType.AFFILIATED,
+			"sources-publishers": RelationType.SOURCE_PUBLISHED_BY,
+			"institutions-institutions": RelationType.INSTITUTION_CHILD_OF,
 		};
 
 		const key = `${sourceType}-${targetType}`;
