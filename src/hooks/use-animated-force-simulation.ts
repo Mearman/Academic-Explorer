@@ -301,7 +301,7 @@ export function useAnimatedForceSimulation(options: UseAnimatedForceSimulationOp
     logger.info('graph', 'Starting animated force simulation', {
       nodeCount: nodes.length,
       linkCount: links.length,
-      pinnedCount: pinnedNodes?.size || 0,
+      pinnedCount: pinnedNodes ? Object.keys(pinnedNodes).length : 0,
       config,
     });
 

@@ -101,7 +101,7 @@ export function useGraphPersistence() {
 	const saveSession = useCallback((name: string, description?: string): string => {
 		const store = useGraphStore.getState()
 
-		if (store.nodes.size === 0) {
+		if (Object.keys(store.nodes).length === 0) {
 			throw new Error("Cannot save empty graph")
 		}
 

@@ -12,11 +12,13 @@ export const useGraphUtilities = () => {
 	// Get current graph state with stable selectors
 	const nodesMap = useGraphStore((state) => state.nodes);
 	const edgesMap = useGraphStore((state) => state.edges);
-	const { setGraphData, setLoading, setError } = useGraphStore();
+	const setGraphData = useGraphStore((state) => state.setGraphData);
+	const setLoading = useGraphStore((state) => state.setLoading);
+	const setError = useGraphStore((state) => state.setError);
 
-	// Convert Maps to arrays with stable dependencies
-	const nodes = useMemo(() => Array.from(nodesMap.values()), [nodesMap]);
-	const edges = useMemo(() => Array.from(edgesMap.values()), [edgesMap]);
+	// Convert Records to arrays with stable dependencies
+	const nodes = useMemo(() => Object.values(nodesMap), [nodesMap]);
+	const edges = useMemo(() => Object.values(edgesMap), [edgesMap]);
 
 	// Apply utility result to store
 	const applyUtilityResult = useCallback((result: GraphUtilityResult) => {
@@ -179,19 +181,19 @@ export const useGraphUtilities = () => {
 	// Graph statistics
 	const getGraphStats = useCallback(() => {
 		const components = findConnectedComponents();
-		const nodesByType = new Map<string, number>();
-		const edgesByType = new Map<string, number>();
+		const nodesByType: Record<string, number> = {};
+		const edgesByType: Record<string, number> = {};
 
 		// Count nodes by type
 		nodes.forEach(node => {
-			const count = nodesByType.get(node.type) || 0;
-			nodesByType.set(node.type, count + 1);
+			const count = nodesByType[node.type] || 0;
+			nodesByType[node.type] = count + 1;
 		});
 
 		// Count edges by type
 		edges.forEach(edge => {
-			const count = edgesByType.get(edge.type) || 0;
-			edgesByType.set(edge.type, count + 1);
+			const count = edgesByType[edge.type] || 0;
+			edgesByType[edge.type] = count + 1;
 		});
 
 		return {
@@ -199,8 +201,8 @@ export const useGraphUtilities = () => {
 			totalEdges: edges.length,
 			connectedComponents: components.length,
 			largestComponentSize: components.length > 0 ? Math.max(...components.map(c => c.length)) : 0,
-			nodesByType: Object.fromEntries(nodesByType),
-			edgesByType: Object.fromEntries(edgesByType),
+			nodesByType,
+			edgesByType,
 		};
 	}, [nodes, edges, findConnectedComponents]);
 
