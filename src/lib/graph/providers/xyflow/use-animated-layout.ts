@@ -191,23 +191,23 @@ export function useAnimatedLayout(options: UseAnimatedLayoutOptions = {}) {
         ...stats,
         autoPinEnabled: autoPinOnLayoutStabilization,
       });
-    }, [updateStaticPositions, applyPositionsToGraphStore, completeAnimation, fitViewAfterLayout, fitView, autoPinOnLayoutStabilization, getNodes]),
+    }, [fitViewAfterLayout, fitView, autoPinOnLayoutStabilization, getNodes]),
 
     onError: useCallback((error: string) => {
       logger.error('graph', 'Animated layout error', { error });
       isLayoutRunningRef.current = false;
-      resetAnimation();
-    }, [resetAnimation]),
+      storeMethodsRef.current.resetAnimation();
+    }, []),
   });
 
-  // Sync animation state between hook and store
+  // Sync animation state between hook and store using refs to prevent infinite loops
   useEffect(() => {
-    setAnimating(hookAnimationState.isRunning);
-    setPaused(hookAnimationState.isPaused);
-    setProgress(hookAnimationState.progress);
-    setAlpha(hookAnimationState.alpha);
-    setIteration(hookAnimationState.iteration);
-    setFPS(hookAnimationState.fps);
+    storeMethodsRef.current.setAnimating(hookAnimationState.isRunning);
+    storeMethodsRef.current.setPaused(hookAnimationState.isPaused);
+    storeMethodsRef.current.setProgress(hookAnimationState.progress);
+    storeMethodsRef.current.setAlpha(hookAnimationState.alpha);
+    storeMethodsRef.current.setIteration(hookAnimationState.iteration);
+    storeMethodsRef.current.setFPS(hookAnimationState.fps);
   }, [
     hookAnimationState.isRunning,
     hookAnimationState.isPaused,
@@ -215,12 +215,6 @@ export function useAnimatedLayout(options: UseAnimatedLayoutOptions = {}) {
     hookAnimationState.alpha,
     hookAnimationState.iteration,
     hookAnimationState.fps,
-    setAnimating,
-    setPaused,
-    setProgress,
-    setAlpha,
-    setIteration,
-    setFPS,
   ]);
 
   // Convert ReactFlow data to animation format
@@ -307,7 +301,7 @@ export function useAnimatedLayout(options: UseAnimatedLayoutOptions = {}) {
     });
 
     isLayoutRunningRef.current = true;
-    startAnimationInStore();
+    storeMethodsRef.current.startAnimation();
 
     // Start the animation
     startAnimation(animatedNodes, animatedLinks, enhancedConfig, pinnedNodes);
@@ -319,7 +313,6 @@ export function useAnimatedLayout(options: UseAnimatedLayoutOptions = {}) {
     getOptimalConfig,
     pinnedNodes,
     currentLayout,
-    startAnimationInStore,
     startAnimation,
   ]);
 
