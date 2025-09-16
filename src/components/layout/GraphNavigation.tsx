@@ -31,7 +31,7 @@ import { createGraphProvider } from "@/lib/graph/provider-factory";
 import { XYFlowProvider } from "@/lib/graph/providers/xyflow/xyflow-provider";
 import { nodeTypes } from "@/lib/graph/providers/xyflow/node-types";
 import { edgeTypes } from "@/lib/graph/providers/xyflow/edge-types";
-import { useLayout } from "@/lib/graph/providers/xyflow/use-layout";
+import { useAnimatedLayout } from "@/lib/graph/providers/xyflow/use-animated-layout";
 import type { GraphNode, EntityType, ExternalIdentifier } from "@/lib/graph/types";
 import { EntityDetector } from "@/lib/graph/utils/entity-detection";
 import { useGraphData } from "@/hooks/use-graph-data";
@@ -39,6 +39,7 @@ import { useEntityInteraction } from "@/hooks/use-entity-interaction";
 import { useContextMenu } from "@/hooks/use-context-menu";
 import { NodeContextMenu } from "@/components/layout/NodeContextMenu";
 import { GraphToolbar } from "@/components/graph/GraphToolbar";
+import { AnimatedGraphControls } from "@/components/graph/AnimatedGraphControls";
 import { logger } from "@/lib/logger";
 import { GRAPH_ANIMATION, FIT_VIEW_PRESETS } from "@/lib/graph/constants";
 
@@ -268,16 +269,25 @@ const GraphNavigationInner: React.FC<GraphNavigationProps> = ({ className, style
 		});
 	}, [handleGraphNodeDoubleClick]);
 
-	const { isRunning: _isLayoutRunning, restartLayout } = useLayout(
-		currentLayout,
-		{
-			enabled: true,
-			onLayoutChange,
-			containerDimensions,
-			// Keep automatic fitView enabled - it's already smooth with 800ms duration
-			fitViewAfterLayout: true
-		}
-	);
+	const {
+		isRunning: _isLayoutRunning,
+		isAnimating: _isLayoutAnimating,
+		restartLayout,
+		applyLayout,
+		pauseLayout,
+		resumeLayout,
+		stopLayout,
+		canPause,
+		canResume,
+		canStop
+	} = useAnimatedLayout({
+		enabled: true,
+		onLayoutChange,
+		containerDimensions,
+		// Keep automatic fitView enabled - it's already smooth with 800ms duration
+		fitViewAfterLayout: true,
+		useAnimation: true
+	});
 
 	// Ref to capture latest restartLayout function without adding it to dependencies
 	const restartLayoutRef = useRef(restartLayout);
@@ -735,6 +745,17 @@ const GraphNavigationInner: React.FC<GraphNavigationProps> = ({ className, style
 				{nodes.length > 0 && (
 					<Panel position="top-right">
 						<GraphToolbar />
+					</Panel>
+				)}
+
+				{nodes.length > 0 && (
+					<Panel position="bottom-left">
+						<AnimatedGraphControls
+							enabled={true}
+							onLayoutChange={onLayoutChange}
+							fitViewAfterLayout={true}
+							containerDimensions={containerDimensions}
+						/>
 					</Panel>
 				)}
 
