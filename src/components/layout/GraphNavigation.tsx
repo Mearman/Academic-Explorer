@@ -269,29 +269,25 @@ const GraphNavigationInner: React.FC<GraphNavigationProps> = ({ className, style
 		});
 	}, [handleGraphNodeDoubleClick]);
 
-	// TEMPORARILY DISABLED - Investigating infinite loop
-	// const {
-	// 	isRunning: _isLayoutRunning,
-	// 	isAnimating: _isLayoutAnimating,
-	// 	restartLayout,
-	// 	applyLayout,
-	// 	pauseLayout,
-	// 	resumeLayout,
-	// 	stopLayout,
-	// 	canPause,
-	// 	canResume,
-	// 	canStop
-	// } = useAnimatedLayout({
-	// 	enabled: true,
-	// 	onLayoutChange,
-	// 	containerDimensions,
-	// 	// Keep automatic fitView enabled - it's already smooth with 800ms duration
-	// 	fitViewAfterLayout: true,
-	// 	useAnimation: true
-	// });
-
-	// Stub values to prevent undefined errors
-	const restartLayout = () => {};
+	const {
+		isRunning: _isLayoutRunning,
+		isAnimating: _isLayoutAnimating,
+		restartLayout,
+		applyLayout,
+		pauseLayout,
+		resumeLayout,
+		stopLayout,
+		canPause,
+		canResume,
+		canStop
+	} = useAnimatedLayout({
+		enabled: true,
+		onLayoutChange,
+		containerDimensions,
+		// Keep automatic fitView enabled - it's already smooth with 800ms duration
+		fitViewAfterLayout: true,
+		useAnimation: true
+	});
 
 	// Ref to capture latest restartLayout function without adding it to dependencies
 	const restartLayoutRef = useRef(restartLayout);
@@ -752,8 +748,7 @@ const GraphNavigationInner: React.FC<GraphNavigationProps> = ({ className, style
 					</Panel>
 				)}
 
-				{/* TEMPORARILY DISABLED - Investigating infinite loop */}
-				{/* {nodes.length > 0 && (
+				{nodes.length > 0 && (
 					<Panel position="bottom-left">
 						<AnimatedGraphControls
 							enabled={true}
@@ -762,7 +757,7 @@ const GraphNavigationInner: React.FC<GraphNavigationProps> = ({ className, style
 							containerDimensions={containerDimensions}
 						/>
 					</Panel>
-				)} */}
+				)}
 
 
 				{nodes.length === 0 && (
