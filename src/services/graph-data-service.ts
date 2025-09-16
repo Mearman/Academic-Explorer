@@ -732,15 +732,17 @@ export class GraphDataService {
 			];
 
 			// Track search statistics
-			const searchStats: Record<EntityType, number> = {};
-			searchStats["works"] = results.works.length;
-			searchStats["authors"] = results.authors.length;
-			searchStats["sources"] = results.sources.length;
-			searchStats["institutions"] = results.institutions.length;
-			searchStats["topics"] = results.topics.length;
-			searchStats["publishers"] = results.publishers.length;
-			searchStats["funders"] = results.funders.length;
-			searchStats["keywords"] = results.keywords.length;
+			const searchStats = {
+				works: results.works.length,
+				authors: results.authors.length,
+				sources: results.sources.length,
+				institutions: results.institutions.length,
+				topics: results.topics.length,
+				concepts: 0, // Concepts not currently used in search
+				publishers: results.publishers.length,
+				funders: results.funders.length,
+				keywords: results.keywords.length,
+			} satisfies Record<EntityType, number>;
 
 			const { nodes, edges } = this.transformSearchResults(flatResults);
 
