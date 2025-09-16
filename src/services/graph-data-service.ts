@@ -1367,7 +1367,12 @@ export class GraphDataService {
    * Extract metadata from entity for display
    */
 	private extractMetadata(entity: OpenAlexEntity, entityType: EntityType): Record<string, unknown> {
-		const metadata: Record<string, unknown> = {};
+		const metadata: Record<string, unknown> = {
+			hydrationLevel: "full", // When created from full entity data
+			isLoading: false,
+			hasError: false,
+			entityType
+		};
 
 		switch (entityType) {
 			case "works": {
@@ -1431,4 +1436,11 @@ export class GraphDataService {
 
 		return { nodes, edges };
 	}
+}
+
+/**
+ * Factory function to create a GraphDataService instance
+ */
+export function createGraphDataService(queryClient: QueryClient): GraphDataService {
+	return new GraphDataService(queryClient);
 }
