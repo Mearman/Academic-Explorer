@@ -269,9 +269,17 @@ const GraphNavigationInner: React.FC<GraphNavigationProps> = ({ className, style
 		});
 	}, [handleGraphNodeDoubleClick]);
 
+	// RE-ENABLED with infinite loop fix
 	const {
 		isRunning: _isLayoutRunning,
 		isAnimating: _isLayoutAnimating,
+		isPaused,
+		progress,
+		alpha,
+		iteration,
+		fps,
+		performanceStats,
+		isWorkerReady,
 		restartLayout,
 		applyLayout,
 		pauseLayout,
@@ -279,7 +287,8 @@ const GraphNavigationInner: React.FC<GraphNavigationProps> = ({ className, style
 		stopLayout,
 		canPause,
 		canResume,
-		canStop
+		canStop,
+		canRestart
 	} = useAnimatedLayout({
 		enabled: true,
 		onLayoutChange,
@@ -748,6 +757,7 @@ const GraphNavigationInner: React.FC<GraphNavigationProps> = ({ className, style
 					</Panel>
 				)}
 
+				{/* RE-ENABLED with infinite loop fix */}
 				{nodes.length > 0 && (
 					<Panel position="bottom-left">
 						<AnimatedGraphControls
@@ -755,6 +765,25 @@ const GraphNavigationInner: React.FC<GraphNavigationProps> = ({ className, style
 							onLayoutChange={onLayoutChange}
 							fitViewAfterLayout={true}
 							containerDimensions={containerDimensions}
+							// Pass animation state and actions from useAnimatedLayout hook
+							isRunning={_isLayoutRunning}
+							isAnimating={_isLayoutAnimating}
+							isPaused={isPaused}
+							progress={progress}
+							alpha={alpha}
+							iteration={iteration}
+							fps={fps}
+							performanceStats={performanceStats}
+							isWorkerReady={isWorkerReady}
+							applyLayout={applyLayout}
+							stopLayout={stopLayout}
+							pauseLayout={pauseLayout}
+							resumeLayout={resumeLayout}
+							restartLayout={restartLayout}
+							canPause={canPause}
+							canResume={canResume}
+							canStop={canStop}
+							canRestart={canRestart}
 						/>
 					</Panel>
 				)}
