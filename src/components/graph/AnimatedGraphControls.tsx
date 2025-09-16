@@ -28,8 +28,7 @@ import {
   IconBolt,
 } from '@tabler/icons-react';
 import { useDisclosure } from '@mantine/hooks';
-import { useAnimatedLayout } from '@/lib/graph/providers/xyflow/use-animated-layout';
-import { useAnimationConfig } from '@/stores/animated-graph-store';
+// Removed useAnimationConfig import to avoid infinite loop conflicts
 import { logger } from '@/lib/logger';
 
 interface AnimatedGraphControlsProps {
@@ -37,6 +36,31 @@ interface AnimatedGraphControlsProps {
   onLayoutChange?: () => void;
   fitViewAfterLayout?: boolean;
   containerDimensions?: { width: number; height: number };
+  // Animation state props passed from parent
+  isRunning?: boolean;
+  isAnimating?: boolean;
+  isPaused?: boolean;
+  progress?: number;
+  alpha?: number;
+  iteration?: number;
+  fps?: number;
+  performanceStats?: {
+    averageFPS: number;
+    minFPS: number;
+    maxFPS: number;
+    frameCount: number;
+  };
+  isWorkerReady?: boolean;
+  // Action props passed from parent
+  applyLayout?: () => void;
+  stopLayout?: () => void;
+  pauseLayout?: () => void;
+  resumeLayout?: () => void;
+  restartLayout?: () => void;
+  canPause?: boolean;
+  canResume?: boolean;
+  canStop?: boolean;
+  canRestart?: boolean;
 }
 
 export const AnimatedGraphControls: React.FC<AnimatedGraphControlsProps> = ({
@@ -44,50 +68,52 @@ export const AnimatedGraphControls: React.FC<AnimatedGraphControlsProps> = ({
   onLayoutChange,
   fitViewAfterLayout = true,
   containerDimensions,
+  // Animation state props
+  isRunning = false,
+  isAnimating = false,
+  isPaused = false,
+  progress = 0,
+  alpha = 1,
+  iteration = 0,
+  fps = 0,
+  performanceStats = {
+    averageFPS: 0,
+    minFPS: Infinity,
+    maxFPS: 0,
+    frameCount: 0,
+  },
+  isWorkerReady = false,
+  // Action props
+  applyLayout = () => {},
+  stopLayout = () => {},
+  pauseLayout = () => {},
+  resumeLayout = () => {},
+  restartLayout = () => {},
+  canPause = false,
+  canResume = false,
+  canStop = false,
+  canRestart = false,
 }) => {
   const [showSettings, { toggle: toggleSettings }] = useDisclosure(false);
-  const { config, useAnimatedLayout: useAnimation, updateConfig, setUseAnimatedLayout } = useAnimationConfig();
 
-  const {
-    isRunning,
-    isAnimating,
-    isPaused,
-    progress,
-    alpha,
-    iteration,
-    fps,
-    performanceStats,
-    isWorkerReady,
-    applyLayout,
-    stopLayout,
-    pauseLayout,
-    resumeLayout,
-    restartLayout,
-    canPause,
-    canResume,
-    canStop,
-    canRestart,
-  } = useAnimatedLayout({
-    enabled: enabled && useAnimation,
-    onLayoutChange,
-    fitViewAfterLayout,
-    containerDimensions,
-    useAnimation,
-  });
+  // Animation config is now handled entirely by parent component via useAnimatedLayout hook
+  // No longer using useAnimationConfig() to avoid conflicts with prop-based state
+
+  // Animation state and actions now come from props passed by parent
 
   const handleStartLayout = () => {
     logger.info('graph', 'User initiated animated layout');
     applyLayout();
   };
 
-  const handleConfigChange = (key: keyof typeof config, value: number) => {
-    updateConfig({ [key]: value });
-    logger.info('graph', 'Animation config updated', { [key]: value });
+  // Configuration updates are now handled by parent component
+  const handleConfigChange = (key: string, value: number) => {
+    logger.info('graph', 'Animation config change requested (handled by parent)', { [key]: value });
   };
 
   const getStatusColor = () => {
     if (!isWorkerReady) return 'gray';
-    if (!enabled || !useAnimation) return 'gray';
+    if (!enabled) return 'gray';
     if (isAnimating && !isPaused) return 'blue';
     if (isPaused) return 'yellow';
     return 'green';
@@ -96,7 +122,8 @@ export const AnimatedGraphControls: React.FC<AnimatedGraphControlsProps> = ({
   const getStatusText = () => {
     if (!isWorkerReady) return 'Worker Loading...';
     if (!enabled) return 'Disabled';
-    if (!useAnimation) return 'Static Mode';
+    // Animation mode is always enabled when component is rendered
+    return 'Ready';
     if (isAnimating && !isPaused) return 'Animating';
     if (isPaused) return 'Paused';
     return 'Ready';
@@ -122,8 +149,8 @@ export const AnimatedGraphControls: React.FC<AnimatedGraphControlsProps> = ({
           <Group gap="xs">
             <Switch
               size="sm"
-              checked={useAnimation}
-              onChange={(event) => setUseAnimatedLayout(event.currentTarget.checked)}
+              checked={true}
+              onChange={() => logger.info('graph', 'Animation toggle handled by parent')}
               label="Enable"
               disabled={!enabled}
             />
@@ -145,7 +172,7 @@ export const AnimatedGraphControls: React.FC<AnimatedGraphControlsProps> = ({
           <Button
             leftSection={<IconPlayerPlay size={16} />}
             onClick={handleStartLayout}
-            disabled={!enabled || !useAnimation || !isWorkerReady || isAnimating}
+            disabled={!enabled || !isWorkerReady || isAnimating}
             size="sm"
           >
             Start
@@ -245,7 +272,7 @@ export const AnimatedGraphControls: React.FC<AnimatedGraphControlsProps> = ({
             <NumberInput
               label="Target FPS"
               description="Frames per second for animation"
-              value={config.targetFPS}
+              value={60}
               onChange={(value) => handleConfigChange('targetFPS', Number(value) || 60)}
               min={1}
               max={120}
@@ -256,7 +283,7 @@ export const AnimatedGraphControls: React.FC<AnimatedGraphControlsProps> = ({
             <NumberInput
               label="Alpha Decay"
               description="How quickly the simulation cools down"
-              value={config.alphaDecay}
+              value={0.02}
               onChange={(value) => handleConfigChange('alphaDecay', Number(value) || 0.02)}
               min={0.001}
               max={0.1}
@@ -268,7 +295,7 @@ export const AnimatedGraphControls: React.FC<AnimatedGraphControlsProps> = ({
             <NumberInput
               label="Max Iterations"
               description="Maximum number of simulation steps"
-              value={config.maxIterations}
+              value={1000}
               onChange={(value) => handleConfigChange('maxIterations', Number(value) || 1000)}
               min={100}
               max={5000}
