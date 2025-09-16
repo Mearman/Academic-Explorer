@@ -31,7 +31,8 @@ import { XYFlowProvider } from "@/lib/graph/providers/xyflow/xyflow-provider";
 import { nodeTypes } from "@/lib/graph/providers/xyflow/node-types";
 import { edgeTypes } from "@/lib/graph/providers/xyflow/edge-types";
 import { useAnimatedLayout } from "@/lib/graph/providers/xyflow/use-animated-layout";
-import type { GraphNode, EntityType } from "@/lib/graph/types";
+import type { GraphNode, EntityType, ExternalIdentifier } from "@/lib/graph/types";
+import { EntityDetector } from "@/lib/graph/utils/entity-detection";
 import { useEntityInteraction } from "@/hooks/use-entity-interaction";
 import { useContextMenu } from "@/hooks/use-context-menu";
 import { NodeContextMenu } from "@/components/layout/NodeContextMenu";
@@ -59,7 +60,9 @@ const GraphNavigationInner: React.FC<GraphNavigationProps> = ({ className, style
 
 	// Store state
 	const graphStore = useGraphStore();
-	const setProvider = graphStore.setProvider;
+	const setProvider = useCallback((provider: XYFlowProvider) => {
+		graphStore.setProvider(provider);
+	}, [graphStore]);
 	const storeNodes = graphStore.nodes;
 	const storeEdges = graphStore.edges;
 	const isLoading = graphStore.isLoading;
@@ -72,7 +75,9 @@ const GraphNavigationInner: React.FC<GraphNavigationProps> = ({ className, style
 	const rawEdgesMap = useGraphStore((state) => state.edges);
 
 	const layoutStore = useLayoutStore();
-	const setPreviewEntity = layoutStore.setPreviewEntity;
+	const setPreviewEntity = useCallback((entityId: string | null) => {
+		layoutStore.setPreviewEntity(entityId);
+	}, [layoutStore]);
 	const autoPinOnLayoutStabilization = layoutStore.autoPinOnLayoutStabilization;
 
 
@@ -367,7 +372,7 @@ const GraphNavigationInner: React.FC<GraphNavigationProps> = ({ className, style
 		return () => {
 			graphProvider.destroy();
 		};
-	}, [reactFlowInstance, setPreviewEntity, autoPinOnLayoutStabilization]);
+	}, [reactFlowInstance, setPreviewEntity, autoPinOnLayoutStabilization, handleGraphNodeClick, handleGraphNodeDoubleClickWithHash, setProvider]);
 
 	// Sync store data with XYFlow using incremental updates (applying visibility filters)
 	useEffect(() => {
@@ -414,29 +419,29 @@ const GraphNavigationInner: React.FC<GraphNavigationProps> = ({ className, style
 			hasProvider: !!providerRef.current
 		}, "GraphNavigation");
 
-		if (providerRef.current && (newNodeIds.size > 0 || newEdgeIds.size > 0 || updatedNodeIds.size > 0 || removedNodeIds.size > 0 || removedEdgeIds.size > 0)) {
+		if (providerRef.current && (newNodeIds.size || newEdgeIds.size || updatedNodeIds.size || removedNodeIds.size || removedEdgeIds.size)) {
 			// Special case: If we have no previous nodes, this is initial load - use setNodes/setEdges
 			if (previousNodeIdsRef.current.size === 0 && previousEdgeIdsRef.current.size === 0) {
 				providerRef.current.setNodes(currentVisibleNodes);
 				providerRef.current.setEdges(currentVisibleEdges);
 			} else {
 				// Use incremental provider methods for updates
-				if (newNodeIds.size > 0) {
+				if (newNodeIds.size) {
 					const newNodes = currentVisibleNodes.filter(n => newNodeIds.has(n.id));
 					providerRef.current.addNodes(newNodes);
 				}
 
-				if (newEdgeIds.size > 0) {
+				if (newEdgeIds.size) {
 					const newEdges = currentVisibleEdges.filter(e => newEdgeIds.has(e.id));
 					providerRef.current.addEdges(newEdges);
 				}
 
-				if (removedNodeIds.size > 0) {
+				if (removedNodeIds.size) {
 					providerRef.current.removeNodes(Array.from(removedNodeIds));
 				}
 
 				// Note: Node updates will be handled by ReactFlow changes below
-				if (updatedNodeIds.size > 0) {
+				if (updatedNodeIds.size) {
 					const updatedNodes = currentVisibleNodes.filter(n => updatedNodeIds.has(n.id));
 					logger.info("graph", "Detected existing nodes with updated data", {
 						updatedNodeCount: updatedNodes.length,
@@ -445,11 +450,11 @@ const GraphNavigationInner: React.FC<GraphNavigationProps> = ({ className, style
 					}, "GraphNavigation");
 				}
 
-				if (removedNodeIds.size > 0) {
+				if (removedNodeIds.size) {
 					providerRef.current.removeNodes(Array.from(removedNodeIds));
 				}
 
-				if (removedEdgeIds.size > 0) {
+				if (removedEdgeIds.size) {
 					providerRef.current.removeEdges(Array.from(removedEdgeIds));
 				}
 			}
@@ -488,11 +493,11 @@ const GraphNavigationInner: React.FC<GraphNavigationProps> = ({ className, style
 				];
 
 				// Apply changes to ReactFlow
-				if (nodeChanges.length > 0) {
+				if (nodeChanges.length) {
 					setNodes(prevNodes => applyNodeChanges(nodeChanges, prevNodes));
 				}
 
-				if (edgeChanges.length > 0) {
+				if (edgeChanges.length) {
 					setEdges(prevEdges => applyEdgeChanges(edgeChanges, prevEdges));
 				}
 			}
@@ -505,7 +510,7 @@ const GraphNavigationInner: React.FC<GraphNavigationProps> = ({ className, style
 			}, "GraphNavigation");
 
 			// Restart layout simulation when new nodes are added to include them in positioning
-			if (newNodeIds.size > 0) {
+			if (newNodeIds.size) {
 				// Add a small delay to ensure React state updates are complete
 				setTimeout(() => {
 					restartLayoutRef.current(); // Full restart to include new nodes in D3 simulation
@@ -519,13 +524,13 @@ const GraphNavigationInner: React.FC<GraphNavigationProps> = ({ className, style
 		// Update refs for next comparison
 		previousNodeIdsRef.current = currentNodeIds;
 		previousEdgeIdsRef.current = currentEdgeIds;
-	}, [rawNodesMap, rawEdgesMap, visibleEntityTypes, visibleEdgeTypes, setNodes, setEdges]);
+	}, [rawNodesMap, rawEdgesMap, visibleEntityTypes, visibleEdgeTypes, setNodes, setEdges, storeNodes, storeEdges]);
 
 	// URL state synchronization - read selected entity from hash on mount
 	useEffect(() => {
 		const currentHash = window.location.hash;
 
-		if (currentHash && currentHash !== "#/" && Object.keys(storeNodes).length > 0) {
+		if (currentHash && currentHash !== "#/" && Object.keys(storeNodes).length) {
 			// Parse hash (format: "#/entityType/entityId")
 			const hashPath = currentHash.substring(1); // Remove the '#'
 			const pathParts = hashPath.split("/").filter(part => part.length > 0);
@@ -582,7 +587,7 @@ const GraphNavigationInner: React.FC<GraphNavigationProps> = ({ className, style
 
 			const currentHash = window.location.hash;
 
-			if (currentHash && currentHash !== "#/" && Object.keys(storeNodes).length > 0) {
+			if (currentHash && currentHash !== "#/" && Object.keys(storeNodes).length) {
 				// Parse hash (format: "#/entityType/entityId")
 				const hashPath = currentHash.substring(1); // Remove the '#'
 				const pathParts = hashPath.split("/").filter(part => part.length > 0);
@@ -673,23 +678,50 @@ const GraphNavigationInner: React.FC<GraphNavigationProps> = ({ className, style
 	// Handle node right-click for context menu
 	const onNodeContextMenu = useCallback((event: React.MouseEvent, node: XYNode) => {
 		event.preventDefault();
-		if (providerRef.current) {
-			// Convert XYFlow node back to GraphNode for context menu
-			const graphNode: GraphNode = {
-				id: node.id,
-				entityId: node.data.entityId as string,
-				type: node.data.entityType as EntityType,
-				label: node.data.label as string,
-				position: node.position,
-				externalIds: node.data.externalIds as ExternalIdentifier[]
-			};
-			showContextMenu(graphNode, event);
+		if (providerRef.current && node.data) {
+			// Type guards for node data properties
+			const isValidString = (value: unknown): value is string =>
+				typeof value === "string" && value.length > 0;
+
+			const isValidEntityType = (value: unknown): value is EntityType =>
+				typeof value === "string" &&
+				["works", "authors", "sources", "institutions", "topics", "concepts", "publishers", "funders", "keywords"].includes(value);
+
+			const isValidExternalIds = (value: unknown): value is ExternalIdentifier[] =>
+				Array.isArray(value) && value.every(item => {
+					if (!item || typeof item !== "object") return false;
+					const typedItem = item as Record<string, unknown>;
+					return "type" in typedItem && typeof typedItem.type === "string" &&
+						"value" in typedItem && typeof typedItem.value === "string" &&
+						"url" in typedItem && typeof typedItem.url === "string";
+				});
+
+			// Validate all required properties
+			if (isValidString(node.data.entityId) &&
+			    isValidEntityType(node.data.entityType) &&
+			    isValidString(node.data.label)) {
+
+				const externalIds = isValidExternalIds(node.data.externalIds)
+					? node.data.externalIds
+					: [];
+
+				// Convert XYFlow node back to GraphNode for context menu
+				const graphNode: GraphNode = {
+					id: node.id,
+					entityId: node.data.entityId,
+					type: node.data.entityType,
+					label: node.data.label,
+					position: node.position,
+					externalIds
+				};
+				showContextMenu(graphNode, event);
+			}
 		}
 	}, [showContextMenu]);
 
 	// Loading state - only show full loading screen if there are no existing nodes
 	// This prevents the loading screen from showing during incremental expansions
-	if (isLoading && Object.keys(storeNodes).length === 0) {
+	if (isLoading && !Object.keys(storeNodes).length) {
 		return (
 			<div className={className} style={{
 				display: "flex",
@@ -705,6 +737,8 @@ const GraphNavigationInner: React.FC<GraphNavigationProps> = ({ className, style
 
 	// Error state
 	if (error) {
+		const errorMessage: string = error;
+
 		return (
 			<div className={className} style={{
 				display: "flex",
@@ -714,7 +748,7 @@ const GraphNavigationInner: React.FC<GraphNavigationProps> = ({ className, style
 				background: "#f8f9fa",
 				color: "#e74c3c"
 			}}>
-				<div>Error loading graph: {error}</div>
+				<div>Error loading graph: {errorMessage}</div>
 			</div>
 		);
 	}

@@ -20,14 +20,8 @@ const layoutOptions = [
 export const LayoutControls: React.FC = () => {
 	const currentLayout = useGraphStore((state) => state.currentLayout);
 	const setLayout = useGraphStore((state) => state.setLayout);
-	const [layoutOptions_, setLayoutOptions] = React.useState(currentLayout.options || {});
 
-	// Sync local options state with store when currentLayout changes
-	React.useEffect(() => {
-		setLayoutOptions(currentLayout.options || {});
-	}, [currentLayout]);
-
-	const handleLayoutChange = (_type: GraphLayout["type"]) => {
+	const handleLayoutChange = () => {
 		// Always use D3 force layout with empty options (hook will use fixed parameters)
 		const newLayout: GraphLayout = {
 			type: "d3-force",
@@ -37,22 +31,6 @@ export const LayoutControls: React.FC = () => {
 		setLayout(newLayout);
 	};
 
-	const _handleOptionChange = (key: string, value: unknown) => {
-		const newOptions = { ...layoutOptions_, [key]: value };
-		setLayoutOptions(newOptions);
-
-		if (currentLayout.type === "force-deterministic") {
-			setLayout({
-				type: "force-deterministic",
-				options: newOptions
-			});
-		} else if (currentLayout.type === "d3-force") {
-			setLayout({
-				type: "d3-force",
-				options: newOptions
-			});
-		}
-	};
 
 	const currentOption = layoutOptions.find(opt => opt.type === currentLayout.type);
 	const CurrentIcon = currentOption?.icon || IconLayout;
@@ -81,7 +59,7 @@ export const LayoutControls: React.FC = () => {
 									key={option.type}
 									variant={currentLayout.type === option.type ? "filled" : "subtle"}
 									leftSection={<OptionIcon size={16} />}
-									onClick={() => { handleLayoutChange(option.type); }}
+									onClick={() => { handleLayoutChange(); }}
 									size="sm"
 									justify="flex-start"
 									fullWidth

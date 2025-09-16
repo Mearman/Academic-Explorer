@@ -4,10 +4,11 @@
  * Can be dropped into existing graph implementations
  */
 
-import React, { useEffect } from "react";
+import React, { useEffect, useMemo } from "react";
 import { useAnimatedLayout } from "@/lib/graph/providers/xyflow/use-animated-layout";
 import { useAnimatedGraphStore } from "@/stores/animated-graph-store";
 import { logger } from "@/lib/logger";
+import { AnimatedLayoutContext } from "./animated-layout-context";
 
 interface AnimatedLayoutProviderProps {
   children: React.ReactNode;
@@ -27,11 +28,12 @@ export const AnimatedLayoutProvider: React.FC<AnimatedLayoutProviderProps> = ({
 	containerDimensions,
 	autoStartOnNodeChange = false,
 }) => {
-	const animatedStore = useAnimatedGraphStore();
-	const useAnimation = animatedStore.useAnimatedLayout;
+	// Use stable selector to prevent infinite loops in React 19
+	const useAnimation = useAnimatedGraphStore((state) => state.useAnimatedLayout);
 
 	const {
 		isRunning,
+		isAnimating,
 		applyLayout,
 		isWorkerReady,
 	} = useAnimatedLayout({
@@ -42,8 +44,8 @@ export const AnimatedLayoutProvider: React.FC<AnimatedLayoutProviderProps> = ({
 		useAnimation,
 	});
 
-
 	// Auto-start animation when significant node changes occur
+	// Remove applyLayout from dependencies to prevent infinite loops
 	useEffect(() => {
 		if (!autoStartOnNodeChange || !enabled || !useAnimation || !isWorkerReady || isRunning) {
 			return;
@@ -58,8 +60,16 @@ export const AnimatedLayoutProvider: React.FC<AnimatedLayoutProviderProps> = ({
 			isWorkerReady,
 			isRunning,
 		});
-	}, [autoStartOnNodeChange, enabled, useAnimation, isWorkerReady, isRunning, applyLayout]);
+	}, [autoStartOnNodeChange, enabled, useAnimation, isWorkerReady, isRunning]);
 
+	// Create stable context value to prevent unnecessary re-renders
+	const contextValue = useMemo(() => ({
+		isAnimating,
+		isRunning,
+		isWorkerReady,
+		applyLayout,
+		useAnimation,
+	}), [isAnimating, isRunning, isWorkerReady, applyLayout, useAnimation]);
 
 	logger.debug("graph", "AnimatedLayoutProvider render", {
 		enabled,
@@ -69,25 +79,8 @@ export const AnimatedLayoutProvider: React.FC<AnimatedLayoutProviderProps> = ({
 	});
 
 	return (
-		<>
+		<AnimatedLayoutContext.Provider value={contextValue}>
 			{children}
-		</>
+		</AnimatedLayoutContext.Provider>
 	);
-};
-
-// Context for accessing animated layout functions from child components
-export const AnimatedLayoutContext = React.createContext<{
-  isAnimating: boolean;
-  isRunning: boolean;
-  isWorkerReady: boolean;
-  applyLayout: () => void;
-  useAnimation: boolean;
-  	} | null>(null);
-
-export const useAnimatedLayoutContext = () => {
-	const context = React.useContext(AnimatedLayoutContext);
-	if (!context) {
-		throw new Error("useAnimatedLayoutContext must be used within AnimatedLayoutProvider");
-	}
-	return context;
 };
