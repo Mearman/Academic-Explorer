@@ -22,6 +22,7 @@ import type {
 	InstitutionEntity,
 	OpenAlexEntity,
 } from "@/lib/openalex/types";
+import { ADVANCED_FIELD_SELECTIONS, type AdvancedEntityFieldSelections } from "@/lib/openalex/advanced-field-selection";
 
 /**
  * Minimal entity data needed for relationship detection
@@ -192,41 +193,20 @@ export class RelationshipDetectionService {
 	 */
 	private async fetchMinimalEntityData(entityId: string, entityType: EntityType): Promise<MinimalEntityData | null> {
 		try {
-			// Define minimal fields needed for each entity type
-			const fieldsMap: Partial<Record<EntityType, string[]>> = {
-				works: [
-					"id",
-					"display_name",
-					"authorships.author.id",
-					"authorships.author.display_name",
-					"primary_location.source.id",
-					"primary_location.source.display_name",
-					"referenced_works"
-				],
-				authors: [
-					"id",
-					"display_name",
-					"affiliations.institution.id",
-					"affiliations.institution.display_name"
-				],
-				sources: [
-					"id",
-					"display_name",
-					"publisher"
-				],
-				institutions: [
-					"id",
-					"display_name",
-					"lineage"
-				],
-				topics: ["id", "display_name"],
-				concepts: ["id", "display_name"],
-				publishers: ["id", "display_name"],
-				funders: ["id", "display_name"],
-				keywords: ["id", "display_name"]
+			// Use advanced type-safe field selections with full path inference
+			const fieldsMap: AdvancedEntityFieldSelections = {
+				works: ADVANCED_FIELD_SELECTIONS.works.minimal,
+				authors: ADVANCED_FIELD_SELECTIONS.authors.minimal,
+				sources: ADVANCED_FIELD_SELECTIONS.sources.minimal,
+				institutions: ADVANCED_FIELD_SELECTIONS.institutions.minimal,
+				concepts: ADVANCED_FIELD_SELECTIONS.concepts.minimal,
+				topics: ["id", "display_name"], // TODO: Add advanced type-safe selections
+				publishers: ["id", "display_name"], // TODO: Add advanced type-safe selections
+				funders: ["id", "display_name"], // TODO: Add advanced type-safe selections
+				keywords: ["id", "display_name"] // Keywords don't have strict typing yet
 			};
 
-			const selectFields = fieldsMap[entityType] || ["id", "display_name"];
+			const selectFields = fieldsMap[entityType];
 
 			logger.debug("graph", "Fetching minimal entity data", {
 				entityId,
@@ -278,7 +258,9 @@ export class RelationshipDetectionService {
 				entityType,
 				hasAuthorships: !!minimalData.authorships?.length,
 				hasAffiliations: !!minimalData.affiliations?.length,
-				hasReferences: !!minimalData.referenced_works?.length
+				hasReferences: !!minimalData.referenced_works?.length,
+				referencedWorksCount: minimalData.referenced_works?.length || 0,
+				firstFewReferences: minimalData.referenced_works?.slice(0, 3) || []
 			}, "RelationshipDetectionService");
 
 			return minimalData;
@@ -551,11 +533,27 @@ export class RelationshipDetectionService {
 
 		// For works, check if any batch nodes are referenced works
 		if (sourceData.entityType === "works" && sourceData.referenced_works) {
+			logger.debug("graph", "Checking cross-batch citations for work", {
+				workId: sourceData.id,
+				workTitle: sourceData.display_name,
+				referencedWorksCount: sourceData.referenced_works.length,
+				batchNodeCount: batchNodes.length,
+				referencedWorkIds: sourceData.referenced_works.slice(0, 5), // First 5 for debugging
+				batchNodeIds: batchNodes.map(n => n.entityId).slice(0, 5) // First 5 for debugging
+			}, "RelationshipDetectionService");
+
 			for (const referencedWorkId of sourceData.referenced_works) {
 				const referencedNode = batchNodes.find(node =>
 					node.entityId === referencedWorkId || node.id === referencedWorkId
 				);
 				if (referencedNode) {
+					logger.info("graph", "FOUND cross-batch citation relationship!", {
+						sourceWork: sourceData.display_name,
+						sourceId: sourceData.id,
+						targetWork: referencedNode.label,
+						targetId: referencedWorkId
+					}, "RelationshipDetectionService");
+
 					relationships.push({
 						sourceNodeId: sourceData.id,
 						targetNodeId: referencedWorkId,

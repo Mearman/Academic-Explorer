@@ -98,10 +98,7 @@ export class AuthorEntity extends AbstractEntity<Author> {
 								url: `https://ror.org/${affiliation.institution.ror}`,
 							}
 						] : [],
-						metadata: {
-							hydrationLevel: "minimal" as const,
-							isLoading: false
-						}
+						entityData: affiliation.institution as unknown as Record<string, unknown>
 					};
 					nodes.push(institutionNode);
 
@@ -132,6 +129,17 @@ export class AuthorEntity extends AbstractEntity<Author> {
 					settings: expansionSettings,
 					queryParams
 				}, "AuthorEntity");
+			}
+
+			// Ensure referenced_works is always included for relationship detection
+			const requiredFields = ["id", "display_name", "referenced_works", "doi", "publication_year", "cited_by_count", "open_access"];
+			if (queryParams.select) {
+				// Merge with existing select fields, avoiding duplicates
+				const mergedFields = [...new Set([...queryParams.select, ...requiredFields])];
+				queryParams.select = mergedFields;
+			} else {
+				// Use required fields if no select is specified
+				queryParams.select = requiredFields;
 			}
 
 			// Merge base filter with expansion settings filters if available
@@ -197,8 +205,9 @@ export class AuthorEntity extends AbstractEntity<Author> {
 			}, "AuthorEntity");
 
 			// Process each work manually since we can't use transformToGraphNode with different entity types
+			const workNodeIds: string[] = [];
 			allWorks.forEach((work: Work) => {
-				// Create work node manually with proper metadata
+				// Create work node with entity data
 				const workNode: GraphNode = {
 					id: work.id,
 					type: "works" as const,
@@ -210,13 +219,10 @@ export class AuthorEntity extends AbstractEntity<Author> {
 						value: work.doi,
 						url: `https://doi.org/${work.doi}`,
 					}] : [],
-					metadata: {
-						year: work.publication_year,
-						citationCount: work.cited_by_count,
-						openAccess: work.open_access.is_oa,
-					},
+					entityData: work as unknown as Record<string, unknown>
 				};
 				nodes.push(workNode);
+				workNodeIds.push(work.id);
 
 				// Add authorship edge
 				edges.push(this.createEdge(
@@ -227,6 +233,9 @@ export class AuthorEntity extends AbstractEntity<Author> {
 					"authored"
 				));
 			});
+
+			// Note: Relationship detection for the new work nodes will be handled automatically
+			// by the GraphDataService after this expansion method returns its results
 
 		} catch (error) {
 			logger.error("graph", "Error in AuthorEntity.expand", {

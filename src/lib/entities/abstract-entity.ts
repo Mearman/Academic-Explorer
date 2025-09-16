@@ -166,9 +166,6 @@ export abstract class AbstractEntity<TEntity extends OpenAlexEntity> {
    */
   public transformToGraphNode(entity: TEntity, position?: { x: number; y: number }): GraphNode {
   	const externalIds = this.extractExternalIds(entity);
-  	const metadata = this.isDehydrated(entity)
-  		? this.extractMinimalMetadata(entity)
-  		: this.extractMetadata(entity);
 
   	return {
   		id: entity.id,
@@ -177,10 +174,7 @@ export abstract class AbstractEntity<TEntity extends OpenAlexEntity> {
   		entityId: entity.id,
   		position: position || this.generateRandomPosition(),
   		externalIds,
-  		metadata: {
-  			...metadata,
-  			isDehydrated: this.isDehydrated(entity)
-  		},
+  		entityData: entity as unknown as Record<string, unknown>
   	};
   }
 
