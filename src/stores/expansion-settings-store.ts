@@ -264,9 +264,12 @@ export const useExpansionSettingsStore = create<ExpansionSettingsState>()(
 					// Start with current settings and update only valid targets
 					const newSettings = { ...state.settings };
 
-					// Copy only valid expansion targets
+					// Copy only valid expansion targets (entity types or relation types)
 					Object.entries(settingsObject).forEach(([key, value]) => {
-						if (Object.values(RelationType).includes(key as RelationType)) {
+						const isEntityType = ["works", "authors", "sources", "institutions", "topics", "concepts", "publishers", "funders", "keywords"].includes(key);
+						const isRelationType = Object.values(RelationType).includes(key as RelationType);
+
+						if (isEntityType || isRelationType) {
 							newSettings[key as ExpansionTarget] = value;
 						}
 					});
