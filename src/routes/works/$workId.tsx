@@ -2,6 +2,8 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useEffect } from "react";
 import { useGraphData } from "@/hooks/use-graph-data";
 import { useGraphStore } from "@/stores/graph-store";
+import { useRawEntityData } from "@/hooks/use-raw-entity-data";
+import { useEntityDocumentTitle } from "@/hooks/use-document-title";
 import { logError } from "@/lib/logger";
 
 export const Route = createFileRoute("/works/$workId")({
@@ -12,6 +14,15 @@ function WorkRoute() {
 	const { workId } = Route.useParams();
 	const { loadEntity, loadEntityIntoGraph } = useGraphData();
 	const { nodes } = useGraphStore();
+
+	// Fetch entity data for title
+	const { data: work } = useRawEntityData({
+		entityId: workId,
+		enabled: !!workId
+	});
+
+	// Update document title with work name
+	useEntityDocumentTitle(work);
 
 	useEffect(() => {
 		const loadWork = async () => {

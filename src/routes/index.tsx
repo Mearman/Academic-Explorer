@@ -4,6 +4,7 @@ import { IconSearch, IconGraph, IconBrandReact, IconDatabase } from "@tabler/ico
 import { useState } from "react"
 import { useGraphData } from "@/hooks/use-graph-data"
 import { useThemeColors } from "@/hooks/use-theme-colors"
+import { useDocumentTitle } from "@/hooks/use-document-title"
 import { pageTitle } from "../styles/layout.css"
 import { logError } from "@/lib/logger"
 
@@ -11,6 +12,9 @@ function HomePage() {
 	const [searchQuery, setSearchQuery] = useState("")
 	const { search, isLoading } = useGraphData()
 	const { colors } = useThemeColors()
+
+	// Set home page title
+	useDocumentTitle(null) // This will use the default base title "Academic Explorer"
 
 	const handleSearch = async (e: React.FormEvent) => {
 		e.preventDefault()

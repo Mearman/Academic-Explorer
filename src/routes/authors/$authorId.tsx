@@ -2,6 +2,8 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useEffect } from "react";
 import { useGraphData } from "@/hooks/use-graph-data";
 import { useGraphStore } from "@/stores/graph-store";
+import { useRawEntityData } from "@/hooks/use-raw-entity-data";
+import { useEntityDocumentTitle } from "@/hooks/use-document-title";
 import { logError } from "@/lib/logger";
 
 export const Route = createFileRoute("/authors/$authorId")({
@@ -12,6 +14,15 @@ function AuthorRoute() {
 	const { authorId } = Route.useParams();
 	const { loadEntity, loadEntityIntoGraph, expandNode } = useGraphData();
 	const { nodes } = useGraphStore();
+
+	// Fetch entity data for title
+	const { data: author } = useRawEntityData({
+		entityId: authorId,
+		enabled: !!authorId
+	});
+
+	// Update document title with author name
+	useEntityDocumentTitle(author);
 
 	useEffect(() => {
 		const loadAuthor = async () => {

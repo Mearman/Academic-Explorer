@@ -2,6 +2,8 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useEffect } from "react";
 import { useGraphData } from "@/hooks/use-graph-data";
 import { useGraphStore } from "@/stores/graph-store";
+import { useRawEntityData } from "@/hooks/use-raw-entity-data";
+import { useEntityDocumentTitle } from "@/hooks/use-document-title";
 import { logError } from "@/lib/logger";
 
 export const Route = createFileRoute("/institutions/$institutionId")({
@@ -12,6 +14,15 @@ function InstitutionRoute() {
 	const { institutionId } = Route.useParams();
 	const { loadEntity, loadEntityIntoGraph } = useGraphData();
 	const { nodes } = useGraphStore();
+
+	// Fetch entity data for title
+	const { data: institution } = useRawEntityData({
+		entityId: institutionId,
+		enabled: !!institutionId
+	});
+
+	// Update document title with institution name
+	useEntityDocumentTitle(institution);
 
 	useEffect(() => {
 		const loadInstitution = async () => {
