@@ -351,8 +351,8 @@ export class AuthorsApi {
 		// Filter by minimum works if specified
 		const minWorks = filters.min_works || 1;
 		const filteredCollaborators = Array.from(collaboratorStats.entries())
-			.filter(([_, stats]) => stats.count >= minWorks)
-			.sort(([_, a], [__, b]) => b.count - a.count);
+			.filter(([, stats]) => stats.count >= minWorks)
+			.sort(([, a], [, b]) => b.count - a.count);
 
 		// Get author details for top collaborators
 		const collaboratorResults = await Promise.allSettled(
@@ -368,7 +368,7 @@ export class AuthorsApi {
 						first_collaboration_year: stats.years.length > 0 ? Math.min(...stats.years) : undefined,
 						last_collaboration_year: stats.years.length > 0 ? Math.max(...stats.years) : undefined,
 					};
-				} catch (_error) {
+				} catch {
 					// Skip authors that can't be fetched
 					return null;
 				}

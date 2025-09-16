@@ -17,7 +17,6 @@ import type {
 	GraphLayout,
 	GraphEvents,
 	GraphSnapshot,
-	GraphOptions,
 	EntityType
 } from "../../types";
 import { RelationType } from "../../types";

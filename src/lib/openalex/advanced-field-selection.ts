@@ -6,12 +6,6 @@
 
 import type { Work, Author, Source, Institution, Topic, Concept, Publisher, Funder } from "./types";
 
-/**
- * Utility to extract only string keys from an interface (top-level fields)
- */
-type _ExtractStringKeys<T> = {
-  [K in keyof T]: K extends string ? K : never;
-}[keyof T];
 
 /**
  * Utility to get all possible field paths from a type, with proper depth limiting
@@ -19,7 +13,7 @@ type _ExtractStringKeys<T> = {
  */
 type Paths<T, D extends number = 10> = [D] extends [never]
   ? never
-  : T extends ReadonlyArray<infer _U>
+  : T extends ReadonlyArray<infer U>
   ? never // Arrays cannot be partially selected in OpenAlex
   : T extends Date | string | number | boolean | null | undefined
   ? never // Primitive types cannot be further nested
