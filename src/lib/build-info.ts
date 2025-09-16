@@ -15,7 +15,6 @@ export interface BuildInfo {
 
 // Type declaration for global build info
 declare global {
-	// eslint-disable-next-line no-var
 	var __BUILD_INFO__: BuildInfo
 }
 

@@ -46,6 +46,7 @@ import { useEntityInteraction } from "@/hooks/use-entity-interaction";
 import type { GraphNode } from "@/lib/graph/types";
 import type { Authorship, OpenAlexEntity } from "@/lib/openalex/types";
 import { isWork, isAuthor, isInstitution } from "@/lib/openalex/type-guards";
+import { getNodeYear, getNodeOpenAccess, getNodeCitationCount } from "@/lib/graph/utils/node-helpers";
 
 interface RichEntityDisplayProps {
 	entity: GraphNode;
@@ -577,12 +578,12 @@ export const RichEntityDisplay: React.FC<RichEntityDisplayProps> = ({
 						<Badge color={getEntityColor(entity.type)} variant="light" size="sm">
 							{entity.type.replace(/s$/, "").toUpperCase()}
 						</Badge>
-						{entity.metadata?.year && (
+						{getNodeYear(entity) && (
 							<Badge variant="light" color="gray" size="sm">
-								{entity.metadata.year}
+								{getNodeYear(entity)}
 							</Badge>
 						)}
-						{entity.metadata?.openAccess && (
+						{getNodeOpenAccess(entity) && (
 							<Badge variant="light" color="green" size="sm">
 								Open Access
 							</Badge>
@@ -591,11 +592,11 @@ export const RichEntityDisplay: React.FC<RichEntityDisplayProps> = ({
 					<Title order={4} size="sm" style={{ wordWrap: "break-word" }}>
 						{entity.label}
 					</Title>
-					{entity.metadata?.citationCount !== undefined && (
+					{getNodeCitationCount(entity) !== undefined && (
 						<Group gap="xs">
 							<IconQuote size={14} />
 							<Text size="xs" c="dimmed">
-								{formatNumber(entity.metadata.citationCount)} citations
+								{formatNumber(getNodeCitationCount(entity) || 0)} citations
 							</Text>
 						</Group>
 					)}

@@ -46,7 +46,7 @@ export class XYFlowProvider implements GraphProvider {
 				entityId: node.entityId,
 				entityType: node.type,
 				externalIds: node.externalIds,
-				metadata: node.metadata,
+				entityData: node.entityData,
 				// Pin state is read directly from store in components, not stored in node data
 			},
 		};
@@ -68,7 +68,7 @@ export class XYFlowProvider implements GraphProvider {
 			zIndex: -1, // Edges behind nodes
 			data: {
 				label: edge.label,
-				...edge.metadata
+				...(edge.metadata || {})
 			},
 			style: {
 				stroke: this.getEdgeColor(edge.type),

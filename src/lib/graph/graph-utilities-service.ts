@@ -5,6 +5,7 @@
 
 import type { GraphNode, GraphEdge } from "./types";
 import { logger } from "@/lib/logger";
+import { getNodeYear } from "./utils/node-helpers";
 
 export interface GraphUtilityResult {
   nodes: GraphNode[];
@@ -227,7 +228,7 @@ export class GraphUtilitiesService {
 		const filteredNodes = nodes.filter(node => {
 			// Only filter Works entities by publication year
 			if (node.type === "works") {
-				const pubYear = node.metadata?.year;
+				const pubYear = getNodeYear(node);
 				if (typeof pubYear === "number") {
 					return pubYear >= minYear && pubYear <= maxYear;
 				}

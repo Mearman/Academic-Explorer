@@ -43,7 +43,7 @@ export const INTERACTION_PRESETS = {
 } as const;
 
 export function useEntityInteraction(centerOnNodeFn?: (nodeId: string, position?: { x: number; y: number }) => void) {
-	const { loadEntityIntoGraph, expandNode, hydrateNode } = useGraphData();
+	const { loadEntityIntoGraph, expandNode } = useGraphData();
 	const { setPreviewEntity, autoPinOnLayoutStabilization } = useLayoutStore();
 
 	/**
@@ -74,12 +74,10 @@ export function useEntityInteraction(centerOnNodeFn?: (nodeId: string, position?
 					node => node.entityId === entityId
 				);
 
-				if (targetNode && targetNode.metadata?.hydrationLevel === "minimal") {
-					// Hydrate the minimal node to get full data
-					await hydrateNode(targetNode.id);
-					// Get updated node reference after hydration
-					targetNode = store.nodes.get(targetNode.id) || targetNode;
-				} else if (!targetNode) {
+				if (targetNode) {
+					// Node exists - use it as-is and hydrate on-demand if needed during use
+					// No artificial pre-checks needed
+				} else {
 					// No existing node, load entity into graph
 					await loadEntityIntoGraph(entityId);
 					// Find the newly loaded node
@@ -142,7 +140,7 @@ export function useEntityInteraction(centerOnNodeFn?: (nodeId: string, position?
 				error
 			});
 		}
-	}, [loadEntityIntoGraph, expandNode, hydrateNode, setPreviewEntity, autoPinOnLayoutStabilization, centerOnNodeFn]);
+	}, [loadEntityIntoGraph, expandNode, setPreviewEntity, autoPinOnLayoutStabilization, centerOnNodeFn]);
 
 	/**
    * Convenience method for graph node single clicks (selection only, no expansion)
