@@ -863,7 +863,51 @@ export class GraphDataService {
 	}
 
 	/**
-   * Background hydration for nodes to get basic display data (non-blocking)
+   * Load minimal data in background for nodes to get basic display data (non-blocking)
+   * Uses selective API field loading for efficiency
+   */
+	private async loadMinimalDataInBackground(entityId: string, entityType: EntityType): Promise<void> {
+		const store = useGraphStore.getState();
+		const node = store.nodes.get(entityId);
+
+		if (!node || node.metadata?.hydrationLevel === "full") {
+			return;
+		}
+
+		try {
+			// Create minimal node with selective field loading
+			const minimalNode = await this.createMinimalNode(entityId, entityType);
+			if (minimalNode) {
+				// Update only the label and metadata, preserve position
+				store.updateNode(entityId, {
+					...node,
+					label: minimalNode.label,
+					metadata: {
+						...node.metadata,
+						...minimalNode.metadata,
+						hydrationLevel: "minimal"
+					}
+				});
+
+				logger.debug("graph", "Background minimal data loading completed", {
+					entityId,
+					newLabel: minimalNode.label,
+					entityType
+				}, "GraphDataService");
+			}
+		} catch (error) {
+			// Silent failure for background loading - don't spam logs
+			logger.debug("graph", "Background minimal data loading failed silently", {
+				entityId,
+				entityType,
+				error: error instanceof Error ? error.message : "Unknown error"
+			}, "GraphDataService");
+		}
+	}
+
+	/**
+   * Legacy background hydration for nodes to get basic display data (non-blocking)
+   * @deprecated Use loadMinimalDataInBackground instead for better performance
    */
 	private async hydrateNodeInBackground(entityId: string): Promise<void> {
 		const store = useGraphStore.getState();
@@ -1108,9 +1152,9 @@ export class GraphDataService {
 				};
 				nodes.push(citedNode);
 
-				// Schedule background hydration for referenced works to get real titles
-				this.hydrateNodeInBackground(citedWorkId).catch((error: unknown) => {
-					logger.warn("graph", "Background hydration failed for referenced work", {
+				// Schedule minimal data loading for referenced works to get real titles and metadata
+				this.loadMinimalDataInBackground(citedWorkId, "works").catch((error: unknown) => {
+					logger.warn("graph", "Background minimal data loading failed for referenced work", {
 						citedWorkId,
 						error: error instanceof Error ? error.message : "Unknown error"
 					});
