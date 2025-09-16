@@ -19,6 +19,13 @@ export function DateRangeFilter({
 	label = "Publication Date Range",
 	disabled = false,
 }: DateRangeFilterProps) {
+	const handleStartDateChange = (value: string | null) => {
+		onStartDateChange(value ? new Date(value) : null);
+	};
+
+	const handleEndDateChange = (value: string | null) => {
+		onEndDateChange(value ? new Date(value) : null);
+	};
 	return (
 		<Group align="flex-end">
 			<div>
@@ -32,14 +39,7 @@ export function DateRangeFilter({
 					<DatePickerInput
 						placeholder="Start date"
 						value={startDate}
-						onChange={(value: string | null) => {
-							if (value === null) {
-								onStartDateChange(null);
-							} else {
-								const date = new Date(value);
-								onStartDateChange(isNaN(date.getTime()) ? null : date);
-							}
-						}}
+						onChange={handleStartDateChange}
 						leftSection={<IconCalendar size={16} />}
 						maxDate={endDate || undefined}
 						disabled={disabled}
@@ -54,14 +54,7 @@ export function DateRangeFilter({
 					<DatePickerInput
 						placeholder="End date"
 						value={endDate}
-						onChange={(value: string | null) => {
-							if (value === null) {
-								onEndDateChange(null);
-							} else {
-								const date = new Date(value);
-								onEndDateChange(isNaN(date.getTime()) ? null : date);
-							}
-						}}
+						onChange={handleEndDateChange}
 						leftSection={<IconCalendar size={16} />}
 						minDate={startDate || undefined}
 						disabled={disabled}
