@@ -6,10 +6,8 @@
 import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
 import { immer } from "zustand/middleware/immer";
-import { enableMapSet } from "immer";
-
-// Enable Immer MapSet plugin for Map and Set support
-enableMapSet();
+// Using plain objects instead of Maps/Sets for stable references
+// No need for enableMapSet() with plain objects
 import type {
 	GraphNode,
 	GraphEdge,
@@ -21,15 +19,15 @@ import type {
 import { RelationType } from "@/lib/graph/types";
 
 interface GraphState {
-  // Data (library agnostic)
-  nodes: Map<string, GraphNode>;
-  edges: Map<string, GraphEdge>;
+  // Data (library agnostic) - using plain objects for stable references
+  nodes: Record<string, GraphNode>;
+  edges: Record<string, GraphEdge>;
 
-  // Selection and interaction
+  // Selection and interaction - using arrays/objects for stable references
   selectedNodeId: string | null;
   hoveredNodeId: string | null;
-  selectedNodes: Set<string>;
-  pinnedNodes: Set<string>; // Support multiple pinned nodes
+  selectedNodes: Record<string, boolean>; // object instead of Set
+  pinnedNodes: Record<string, boolean>; // object instead of Set
 
   // Legacy support - will be deprecated
   pinnedNodeId: string | null;
@@ -37,7 +35,7 @@ interface GraphState {
   // Cache visibility and traversal control
   showAllCachedNodes: boolean;
   traversalDepth: number;
-  nodeDepths: Map<string, number>;
+  nodeDepths: Record<string, number>; // object instead of Map
 
   // Provider (can be swapped)
   provider: GraphProvider | null;
@@ -50,12 +48,12 @@ interface GraphState {
   isLoading: boolean;
   error: string | null;
 
-  // Entity type visibility and statistics
-  visibleEntityTypes: Set<EntityType>;
-  lastSearchStats: Map<EntityType, number>;
+  // Entity type visibility and statistics - using objects for stable references
+  visibleEntityTypes: Record<EntityType, boolean>; // object instead of Set
+  lastSearchStats: Record<EntityType, number>; // object instead of Map
 
   // Edge type visibility
-  visibleEdgeTypes: Set<RelationType>;
+  visibleEdgeTypes: Record<RelationType, boolean>; // object instead of Set
 
   // Actions (work with any provider)
   setProvider: (provider: GraphProvider) => void;
@@ -114,24 +112,21 @@ interface GraphState {
   toggleEntityTypeVisibility: (entityType: EntityType) => void;
   setEntityTypeVisibility: (entityType: EntityType, visible: boolean) => void;
   setAllEntityTypesVisible: (visible: boolean) => void;
-  updateSearchStats: (stats: Map<EntityType, number>) => void;
-  getEntityTypeStats: () => { visible: Map<EntityType, number>; total: Map<EntityType, number>; searchResults: Map<EntityType, number> };
-  getVisibleNodes: () => GraphNode[];
-  getVisibleEdges: () => GraphEdge[];
-  getNodesByType: (entityType: EntityType) => GraphNode[];
+  updateSearchStats: (stats: Record<EntityType, number>) => void;
+  getEntityTypeStats: () => { visible: Record<EntityType, number>; total: Record<EntityType, number>; searchResults: Record<EntityType, number> };
 
   // Edge type management
   toggleEdgeTypeVisibility: (edgeType: RelationType) => void;
   setEdgeTypeVisibility: (edgeType: RelationType, visible: boolean) => void;
   setAllEdgeTypesVisible: (visible: boolean) => void;
-  getEdgeTypeStats: () => { visible: Map<RelationType, number>; total: Map<RelationType, number> };
+  getEdgeTypeStats: () => { visible: Record<RelationType, number>; total: Record<RelationType, number> };
   getVisibleEdgesByType: () => GraphEdge[];
 
   // Graph queries (provider agnostic)
   getNeighbors: (nodeId: string) => GraphNode[];
   getConnectedEdges: (nodeId: string) => GraphEdge[];
   findShortestPath: (sourceId: string, targetId: string) => string[];
-  getConnectedComponent: (nodeId: string) => Set<string>;
+  getConnectedComponent: (nodeId: string) => string[];
 
   // Incremental hydration support
   markNodeAsLoading: (nodeId: string, loading?: boolean) => void;
@@ -147,38 +142,58 @@ interface GraphState {
 export const useGraphStore = create<GraphState>()(
 	persist(
 		immer((set, get) => ({
-			// Initial state
-			nodes: new Map(),
-			edges: new Map(),
+			// Initial state - using plain objects for stable references
+			nodes: {},
+			edges: {},
 			selectedNodeId: null,
 			hoveredNodeId: null,
-			selectedNodes: new Set(),
-			pinnedNodes: new Set(),
+			selectedNodes: {},
+			pinnedNodes: {},
 			pinnedNodeId: null, // Legacy support
 			showAllCachedNodes: false,
 			traversalDepth: 1,
-			nodeDepths: new Map(),
+			nodeDepths: {},
 			provider: null,
 			providerType: "xyflow",
-			visibleEntityTypes: new Set(["works", "authors", "sources", "institutions", "topics", "concepts", "publishers", "funders", "keywords"]),
-			lastSearchStats: new Map(),
-			visibleEdgeTypes: new Set([
-				RelationType.AUTHORED,
-				RelationType.AFFILIATED,
-				RelationType.PUBLISHED_IN,
-				RelationType.FUNDED_BY,
-				RelationType.REFERENCES,
-				RelationType.RELATED_TO,
-				RelationType.SOURCE_PUBLISHED_BY,
-				RelationType.INSTITUTION_CHILD_OF,
-				RelationType.PUBLISHER_CHILD_OF,
-				RelationType.WORK_HAS_TOPIC,
-				RelationType.WORK_HAS_KEYWORD,
-				RelationType.AUTHOR_RESEARCHES,
-				RelationType.INSTITUTION_LOCATED_IN,
-				RelationType.FUNDER_LOCATED_IN,
-				RelationType.TOPIC_PART_OF_FIELD
-			]),
+			visibleEntityTypes: {
+				"works": true,
+				"authors": true,
+				"sources": true,
+				"institutions": true,
+				"topics": true,
+				"concepts": true,
+				"publishers": true,
+				"funders": true,
+				"keywords": true
+			},
+			lastSearchStats: {
+				"concepts": 0,
+				"topics": 0,
+				"keywords": 0,
+				"works": 0,
+				"authors": 0,
+				"sources": 0,
+				"institutions": 0,
+				"publishers": 0,
+				"funders": 0
+			} as Record<EntityType, number>,
+			visibleEdgeTypes: {
+				[RelationType.AUTHORED]: true,
+				[RelationType.AFFILIATED]: true,
+				[RelationType.PUBLISHED_IN]: true,
+				[RelationType.FUNDED_BY]: true,
+				[RelationType.REFERENCES]: true,
+				[RelationType.RELATED_TO]: true,
+				[RelationType.SOURCE_PUBLISHED_BY]: true,
+				[RelationType.INSTITUTION_CHILD_OF]: true,
+				[RelationType.PUBLISHER_CHILD_OF]: true,
+				[RelationType.WORK_HAS_TOPIC]: true,
+				[RelationType.WORK_HAS_KEYWORD]: true,
+				[RelationType.AUTHOR_RESEARCHES]: true,
+				[RelationType.INSTITUTION_LOCATED_IN]: true,
+				[RelationType.FUNDER_LOCATED_IN]: true,
+				[RelationType.TOPIC_PART_OF_FIELD]: true
+			},
 			currentLayout: {
 				type: "d3-force",
 				options: {
@@ -201,9 +216,17 @@ export const useGraphStore = create<GraphState>()(
 			// Provider management
 			setProvider: (provider) => {
 				const state = get();
-				// Transfer existing data to new provider
-				provider.setNodes(Array.from(state.nodes.values()));
-				provider.setEdges(Array.from(state.edges.values()));
+
+				// Don't update if it's the same provider instance
+				if (state.provider === provider) {
+					return;
+				}
+
+				// Set nodes and edges on the new provider outside of the Zustand set call
+				provider.setNodes(Object.values(state.nodes));
+				provider.setEdges(Object.values(state.edges));
+
+				// Only update the provider in the store
 				set({ provider });
 			},
 
@@ -224,7 +247,7 @@ export const useGraphStore = create<GraphState>()(
 			// Node management
 			addNode: (node) => {
 				set((draft) => {
-					draft.nodes.set(node.id, node);
+					draft.nodes[node.id] = node;
 					draft.provider?.addNode(node);
 				});
 			},
@@ -232,7 +255,7 @@ export const useGraphStore = create<GraphState>()(
 			addNodes: (nodes) => {
 				set((draft) => {
 					nodes.forEach(node => {
-						draft.nodes.set(node.id, node);
+						draft.nodes[node.id] = node;
 						draft.provider?.addNode(node);
 					});
 				});
@@ -241,19 +264,19 @@ export const useGraphStore = create<GraphState>()(
 			removeNode: (nodeId) => {
 				set((draft) => {
 					// Remove node
-					draft.nodes.delete(nodeId);
+					delete draft.nodes[nodeId];
 					draft.provider?.removeNode(nodeId);
 
 					// Remove connected edges
-					Array.from(draft.edges.values()).forEach(edge => {
+					Object.values(draft.edges).forEach(edge => {
 						if (edge.source === nodeId || edge.target === nodeId) {
-							draft.edges.delete(edge.id);
+							delete draft.edges[edge.id];
 							draft.provider?.removeEdge(edge.id);
 						}
 					});
 
 					// Clear selection if removed
-					draft.selectedNodes.delete(nodeId);
+					delete draft.selectedNodes[nodeId];
 					if (draft.selectedNodeId === nodeId) {
 						draft.selectedNodeId = null;
 					}
@@ -265,23 +288,23 @@ export const useGraphStore = create<GraphState>()(
 
 			updateNode: (nodeId, updates) => {
 				set((draft) => {
-					const existingNode = draft.nodes.get(nodeId);
+					const existingNode = draft.nodes[nodeId];
 					if (existingNode) {
 						const updatedNode = { ...existingNode, ...updates };
-						draft.nodes.set(nodeId, updatedNode);
+						draft.nodes[nodeId] = updatedNode;
 						// Note: Provider update would need to be handled by provider
 					}
 				});
 			},
 
 			getNode: (nodeId) => {
-				return get().nodes.get(nodeId);
+				return get().nodes[nodeId];
 			},
 
 			// Edge management
 			addEdge: (edge) => {
 				set((draft) => {
-					draft.edges.set(edge.id, edge);
+					draft.edges[edge.id] = edge;
 					draft.provider?.addEdge(edge);
 				});
 			},
@@ -289,7 +312,7 @@ export const useGraphStore = create<GraphState>()(
 			addEdges: (edges) => {
 				set((draft) => {
 					edges.forEach(edge => {
-						draft.edges.set(edge.id, edge);
+						draft.edges[edge.id] = edge;
 						draft.provider?.addEdge(edge);
 					});
 				});
@@ -297,23 +320,23 @@ export const useGraphStore = create<GraphState>()(
 
 			removeEdge: (edgeId) => {
 				set((draft) => {
-					draft.edges.delete(edgeId);
+					delete draft.edges[edgeId];
 					draft.provider?.removeEdge(edgeId);
 				});
 			},
 
 			updateEdge: (edgeId, updates) => {
 				set((draft) => {
-					const existingEdge = draft.edges.get(edgeId);
+					const existingEdge = draft.edges[edgeId];
 					if (existingEdge) {
 						const updatedEdge = { ...existingEdge, ...updates };
-						draft.edges.set(edgeId, updatedEdge);
+						draft.edges[edgeId] = updatedEdge;
 					}
 				});
 			},
 
 			getEdge: (edgeId) => {
-				return get().edges.get(edgeId);
+				return get().edges[edgeId];
 			},
 
 			// Selection
@@ -323,29 +346,30 @@ export const useGraphStore = create<GraphState>()(
 
 			addToSelection: (nodeId) => {
 				set((draft) => {
-					draft.selectedNodes.add(nodeId);
+					draft.selectedNodes[nodeId] = true;
 				});
 			},
 
 			removeFromSelection: (nodeId) => {
 				set((draft) => {
-					draft.selectedNodes.delete(nodeId);
+					delete draft.selectedNodes[nodeId];
 				});
 			},
 
 			clearSelection: () => {
 				set((draft) => {
 					draft.selectedNodeId = null;
-					draft.selectedNodes.clear();
+					draft.selectedNodes = {};
 				});
 			},
 
 			// Multi-pin node management (new API)
 			pinNode: (nodeId) => {
 				set((draft) => {
-					draft.pinnedNodes.add(nodeId);
+					draft.pinnedNodes[nodeId] = true;
 					// Keep legacy single pin in sync with first pinned node
-					if (draft.pinnedNodes.size === 1) {
+					const pinnedNodeIds = Object.keys(draft.pinnedNodes);
+					if (pinnedNodeIds.length === 1) {
 						draft.pinnedNodeId = nodeId;
 					}
 				});
@@ -353,25 +377,25 @@ export const useGraphStore = create<GraphState>()(
 
 			unpinNode: (nodeId) => {
 				set((draft) => {
-					draft.pinnedNodes.delete(nodeId);
+					delete draft.pinnedNodes[nodeId];
 					// Update legacy single pin
 					if (draft.pinnedNodeId === nodeId) {
-						const firstPinned = draft.pinnedNodes.values().next().value;
-						draft.pinnedNodeId = firstPinned || null;
+						const remainingPinnedNodes = Object.keys(draft.pinnedNodes);
+						draft.pinnedNodeId = remainingPinnedNodes[0] || null;
 					}
 				});
 			},
 
 			clearAllPinnedNodes: () => {
 				set((draft) => {
-					draft.pinnedNodes.clear();
+					draft.pinnedNodes = {};
 					draft.pinnedNodeId = null; // Clear legacy pin too
 				});
 			},
 
 			isPinned: (nodeId) => {
 				const state = get();
-				return state.pinnedNodes.has(nodeId);
+				return Boolean(state.pinnedNodes[nodeId]);
 			},
 
 			// Legacy single-pin API (maintained for backward compatibility)
@@ -379,9 +403,9 @@ export const useGraphStore = create<GraphState>()(
 				set((draft) => {
 					draft.pinnedNodeId = nodeId;
 					// Sync with multi-pin
-					draft.pinnedNodes.clear();
+					draft.pinnedNodes = {};
 					if (nodeId) {
-						draft.pinnedNodes.add(nodeId);
+						draft.pinnedNodes[nodeId] = true;
 					}
 				});
 			},
@@ -389,7 +413,7 @@ export const useGraphStore = create<GraphState>()(
 			clearPinnedNode: () => {
 				set((draft) => {
 					draft.pinnedNodeId = null;
-					draft.pinnedNodes.clear();
+					draft.pinnedNodes = {};
 				});
 			},
 
@@ -411,32 +435,32 @@ export const useGraphStore = create<GraphState>()(
 			calculateNodeDepths: (originId) => {
 				set((draft) => {
 					const { nodes, edges } = draft;
-					const depths = new Map<string, number>();
+					const depths: Record<string, number> = {};
 
 					// BFS to calculate distances from origin
 					const queue: Array<{ nodeId: string; depth: number }> = [{ nodeId: originId, depth: 0 }];
-					const visited = new Set<string>();
+					const visited: Record<string, boolean> = {};
 
 					while (queue.length > 0) {
 						const current = queue.shift();
 						if (!current) continue;
 
 						const { nodeId, depth } = current;
-						if (visited.has(nodeId)) continue;
+						if (visited[nodeId]) continue;
 
-						visited.add(nodeId);
-						depths.set(nodeId, depth);
+						visited[nodeId] = true;
+						depths[nodeId] = depth;
 
 						// Find connected nodes
-						edges.forEach(edge => {
+						Object.values(edges).forEach(edge => {
 							let neighbor: string | null = null;
-							if (edge.source === nodeId && !visited.has(edge.target)) {
+							if (edge.source === nodeId && !visited[edge.target]) {
 								neighbor = edge.target;
-							} else if (edge.target === nodeId && !visited.has(edge.source)) {
+							} else if (edge.target === nodeId && !visited[edge.source]) {
 								neighbor = edge.source;
 							}
 
-							if (neighbor && nodes.has(neighbor)) {
+							if (neighbor && nodes[neighbor]) {
 								queue.push({ nodeId: neighbor, depth: depth + 1 });
 							}
 						});
@@ -449,11 +473,11 @@ export const useGraphStore = create<GraphState>()(
 			getNodesWithinDepth: (depth) => {
 				const { nodes, nodeDepths } = get();
 				if (depth === Infinity) {
-					return Array.from(nodes.values());
+					return Object.values(nodes);
 				}
 
-				return Array.from(nodes.values()).filter(node => {
-					const nodeDepth = nodeDepths.get(node.id);
+				return Object.values(nodes).filter(node => {
+					const nodeDepth = nodeDepths[node.id];
 					return nodeDepth !== undefined && nodeDepth <= depth;
 				});
 			},
@@ -463,21 +487,28 @@ export const useGraphStore = create<GraphState>()(
 				const { provider } = get();
 				provider?.clear();
 				set({
-					nodes: new Map(),
-					edges: new Map(),
+					nodes: {},
+					edges: {},
 					selectedNodeId: null,
 					hoveredNodeId: null,
-					selectedNodes: new Set(),
-					pinnedNodes: new Set(),
+					selectedNodes: {},
+					pinnedNodes: {},
 					pinnedNodeId: null,
-					nodeDepths: new Map(),
+					nodeDepths: {},
 				});
 			},
 
 			setGraphData: (nodes, edges) => {
 				const { provider } = get();
-				const nodesMap = new Map(nodes.map(node => [node.id, node]));
-				const edgesMap = new Map(edges.map(edge => [edge.id, edge]));
+				const nodesRecord: Record<string, GraphNode> = {};
+				const edgesRecord: Record<string, GraphEdge> = {};
+
+				nodes.forEach(node => {
+					nodesRecord[node.id] = node;
+				});
+				edges.forEach(edge => {
+					edgesRecord[edge.id] = edge;
+				});
 
 				if (provider) {
 					provider.setNodes(nodes);
@@ -485,14 +516,14 @@ export const useGraphStore = create<GraphState>()(
 				}
 
 				set({
-					nodes: nodesMap,
-					edges: edgesMap,
+					nodes: nodesRecord,
+					edges: edgesRecord,
 					selectedNodeId: null,
 					hoveredNodeId: null,
-					selectedNodes: new Set(),
-					pinnedNodes: new Set(), // Clear pinned nodes on data change
+					selectedNodes: {}, // Clear selected nodes on data change
+					pinnedNodes: {}, // Clear pinned nodes on data change
 					pinnedNodeId: null, // Clear legacy pinned node
-					nodeDepths: new Map(), // Clear depths, will be recalculated when needed
+					nodeDepths: {}, // Clear depths, will be recalculated when needed
 				});
 			},
 
@@ -503,11 +534,11 @@ export const useGraphStore = create<GraphState>()(
 			// Entity type management
 			toggleEntityTypeVisibility: (entityType) => {
 				set((state) => {
-					const newVisibleTypes = new Set(state.visibleEntityTypes);
-					if (newVisibleTypes.has(entityType)) {
-						newVisibleTypes.delete(entityType);
+					const newVisibleTypes: Record<EntityType, boolean> = { ...state.visibleEntityTypes };
+					if (newVisibleTypes[entityType]) {
+						delete newVisibleTypes[entityType];
 					} else {
-						newVisibleTypes.add(entityType);
+						newVisibleTypes[entityType] = true;
 					}
 					return { visibleEntityTypes: newVisibleTypes };
 				});
@@ -515,40 +546,69 @@ export const useGraphStore = create<GraphState>()(
 
 			setEntityTypeVisibility: (entityType, visible) => {
 				set((state) => {
-					const newVisibleTypes = new Set(state.visibleEntityTypes);
+					const newVisibleTypes: Record<EntityType, boolean> = { ...state.visibleEntityTypes };
 					if (visible) {
-						newVisibleTypes.add(entityType);
+						newVisibleTypes[entityType] = true;
 					} else {
-						newVisibleTypes.delete(entityType);
+						delete newVisibleTypes[entityType];
 					}
 					return { visibleEntityTypes: newVisibleTypes };
 				});
 			},
 
 			setAllEntityTypesVisible: (visible) => {
-				const allTypes: EntityType[] = ["works", "authors", "sources", "institutions", "topics", "concepts", "publishers", "funders", "keywords"];
+				const visibleTypes: Record<EntityType, boolean> = {
+					concepts: visible,
+					topics: visible,
+					keywords: visible,
+					works: visible,
+					authors: visible,
+					sources: visible,
+					institutions: visible,
+					publishers: visible,
+					funders: visible
+				};
 				set({
-					visibleEntityTypes: visible ? new Set(allTypes) : new Set()
+					visibleEntityTypes: visibleTypes
 				});
 			},
 
 			updateSearchStats: (stats) => {
-				set({ lastSearchStats: new Map(stats) });
+				set({ lastSearchStats: stats });
 			},
 
 			getEntityTypeStats: () => {
 				const { nodes, visibleEntityTypes, lastSearchStats } = get();
-				const total = new Map<EntityType, number>();
-				const visible = new Map<EntityType, number>();
+				// Initialize with all entity types set to 0
+				const total: Record<EntityType, number> = {
+					concepts: 0,
+					topics: 0,
+					keywords: 0,
+					works: 0,
+					authors: 0,
+					sources: 0,
+					institutions: 0,
+					publishers: 0,
+					funders: 0
+				};
+				const visible: Record<EntityType, number> = {
+					concepts: 0,
+					topics: 0,
+					keywords: 0,
+					works: 0,
+					authors: 0,
+					sources: 0,
+					institutions: 0,
+					publishers: 0,
+					funders: 0
+				};
 
 				// Count total and visible nodes by type
-				nodes.forEach(node => {
-					const currentTotal = total.get(node.type) || 0;
-					total.set(node.type, currentTotal + 1);
+				Object.values(nodes).forEach(node => {
+					total[node.type] = (total[node.type] || 0) + 1;
 
-					if (visibleEntityTypes.has(node.type)) {
-						const currentVisible = visible.get(node.type) || 0;
-						visible.set(node.type, currentVisible + 1);
+					if (visibleEntityTypes[node.type]) {
+						visible[node.type] = (visible[node.type] || 0) + 1;
 					}
 				});
 
@@ -559,36 +619,14 @@ export const useGraphStore = create<GraphState>()(
 				};
 			},
 
-			getVisibleNodes: () => {
-				const { nodes, visibleEntityTypes } = get();
-				return Array.from(nodes.values()).filter(node => visibleEntityTypes.has(node.type));
-			},
-
-			getVisibleEdges: () => {
-				const { edges, nodes, visibleEntityTypes, visibleEdgeTypes } = get();
-				return Array.from(edges.values()).filter(edge => {
-					const sourceNode = nodes.get(edge.source);
-					const targetNode = nodes.get(edge.target);
-					return sourceNode && targetNode &&
-						visibleEntityTypes.has(sourceNode.type) &&
-						visibleEntityTypes.has(targetNode.type) &&
-						visibleEdgeTypes.has(edge.type);
-				});
-			},
-
-			getNodesByType: (entityType) => {
-				const { nodes } = get();
-				return Array.from(nodes.values()).filter(node => node.type === entityType);
-			},
-
 			// Edge type management
 			toggleEdgeTypeVisibility: (edgeType) => {
 				set((state) => {
-					const newVisibleTypes = new Set(state.visibleEdgeTypes);
-					if (newVisibleTypes.has(edgeType)) {
-						newVisibleTypes.delete(edgeType);
+					const newVisibleTypes: Record<RelationType, boolean> = { ...state.visibleEdgeTypes };
+					if (newVisibleTypes[edgeType]) {
+						delete newVisibleTypes[edgeType];
 					} else {
-						newVisibleTypes.add(edgeType);
+						newVisibleTypes[edgeType] = true;
 					}
 					return { visibleEdgeTypes: newVisibleTypes };
 				});
@@ -596,52 +634,83 @@ export const useGraphStore = create<GraphState>()(
 
 			setEdgeTypeVisibility: (edgeType, visible) => {
 				set((state) => {
-					const newVisibleTypes = new Set(state.visibleEdgeTypes);
+					const newVisibleTypes: Record<RelationType, boolean> = { ...state.visibleEdgeTypes };
 					if (visible) {
-						newVisibleTypes.add(edgeType);
+						newVisibleTypes[edgeType] = true;
 					} else {
-						newVisibleTypes.delete(edgeType);
+						delete newVisibleTypes[edgeType];
 					}
 					return { visibleEdgeTypes: newVisibleTypes };
 				});
 			},
 
 			setAllEdgeTypesVisible: (visible) => {
-				const allTypes: RelationType[] = [
-					RelationType.AUTHORED,
-					RelationType.AFFILIATED,
-					RelationType.PUBLISHED_IN,
-					RelationType.FUNDED_BY,
-					RelationType.REFERENCES,
-					RelationType.RELATED_TO,
-					RelationType.SOURCE_PUBLISHED_BY,
-					RelationType.INSTITUTION_CHILD_OF,
-					RelationType.PUBLISHER_CHILD_OF,
-					RelationType.WORK_HAS_TOPIC,
-					RelationType.WORK_HAS_KEYWORD,
-					RelationType.AUTHOR_RESEARCHES,
-					RelationType.INSTITUTION_LOCATED_IN,
-					RelationType.FUNDER_LOCATED_IN,
-					RelationType.TOPIC_PART_OF_FIELD
-				];
+				const visibleTypes: Record<RelationType, boolean> = {
+					[RelationType.AUTHORED]: visible,
+					[RelationType.AFFILIATED]: visible,
+					[RelationType.PUBLISHED_IN]: visible,
+					[RelationType.FUNDED_BY]: visible,
+					[RelationType.REFERENCES]: visible,
+					[RelationType.RELATED_TO]: visible,
+					[RelationType.SOURCE_PUBLISHED_BY]: visible,
+					[RelationType.INSTITUTION_CHILD_OF]: visible,
+					[RelationType.PUBLISHER_CHILD_OF]: visible,
+					[RelationType.WORK_HAS_TOPIC]: visible,
+					[RelationType.WORK_HAS_KEYWORD]: visible,
+					[RelationType.AUTHOR_RESEARCHES]: visible,
+					[RelationType.INSTITUTION_LOCATED_IN]: visible,
+					[RelationType.FUNDER_LOCATED_IN]: visible,
+					[RelationType.TOPIC_PART_OF_FIELD]: visible
+				};
 				set({
-					visibleEdgeTypes: visible ? new Set(allTypes) : new Set()
+					visibleEdgeTypes: visibleTypes
 				});
 			},
 
 			getEdgeTypeStats: () => {
 				const { edges, visibleEdgeTypes } = get();
-				const total = new Map<RelationType, number>();
-				const visible = new Map<RelationType, number>();
+				// Initialize with all relation types set to 0
+				const total: Record<RelationType, number> = {
+					[RelationType.AUTHORED]: 0,
+					[RelationType.AFFILIATED]: 0,
+					[RelationType.PUBLISHED_IN]: 0,
+					[RelationType.FUNDED_BY]: 0,
+					[RelationType.REFERENCES]: 0,
+					[RelationType.RELATED_TO]: 0,
+					[RelationType.SOURCE_PUBLISHED_BY]: 0,
+					[RelationType.INSTITUTION_CHILD_OF]: 0,
+					[RelationType.PUBLISHER_CHILD_OF]: 0,
+					[RelationType.WORK_HAS_TOPIC]: 0,
+					[RelationType.WORK_HAS_KEYWORD]: 0,
+					[RelationType.AUTHOR_RESEARCHES]: 0,
+					[RelationType.INSTITUTION_LOCATED_IN]: 0,
+					[RelationType.FUNDER_LOCATED_IN]: 0,
+					[RelationType.TOPIC_PART_OF_FIELD]: 0
+				};
+				const visible: Record<RelationType, number> = {
+					[RelationType.AUTHORED]: 0,
+					[RelationType.AFFILIATED]: 0,
+					[RelationType.PUBLISHED_IN]: 0,
+					[RelationType.FUNDED_BY]: 0,
+					[RelationType.REFERENCES]: 0,
+					[RelationType.RELATED_TO]: 0,
+					[RelationType.SOURCE_PUBLISHED_BY]: 0,
+					[RelationType.INSTITUTION_CHILD_OF]: 0,
+					[RelationType.PUBLISHER_CHILD_OF]: 0,
+					[RelationType.WORK_HAS_TOPIC]: 0,
+					[RelationType.WORK_HAS_KEYWORD]: 0,
+					[RelationType.AUTHOR_RESEARCHES]: 0,
+					[RelationType.INSTITUTION_LOCATED_IN]: 0,
+					[RelationType.FUNDER_LOCATED_IN]: 0,
+					[RelationType.TOPIC_PART_OF_FIELD]: 0
+				};
 
 				// Count total and visible edges by type
-				edges.forEach(edge => {
-					const currentTotal = total.get(edge.type) || 0;
-					total.set(edge.type, currentTotal + 1);
+				Object.values(edges).forEach(edge => {
+					total[edge.type] = (total[edge.type] || 0) + 1;
 
-					if (visibleEdgeTypes.has(edge.type)) {
-						const currentVisible = visible.get(edge.type) || 0;
-						visible.set(edge.type, currentVisible + 1);
+					if (visibleEdgeTypes[edge.type]) {
+						visible[edge.type] = (visible[edge.type] || 0) + 1;
 					}
 				});
 
@@ -653,7 +722,7 @@ export const useGraphStore = create<GraphState>()(
 
 			getVisibleEdgesByType: () => {
 				const { edges, visibleEdgeTypes } = get();
-				return Array.from(edges.values()).filter(edge => visibleEdgeTypes.has(edge.type));
+				return Object.values(edges).filter(edge => visibleEdgeTypes[edge.type]);
 			},
 
 			// Graph algorithms (work with generic data)
@@ -661,12 +730,12 @@ export const useGraphStore = create<GraphState>()(
 				const { edges, nodes } = get();
 				const neighbors: GraphNode[] = [];
 
-				edges.forEach(edge => {
+				Object.values(edges).forEach(edge => {
 					if (edge.source === nodeId) {
-						const neighbor = nodes.get(edge.target);
+						const neighbor = nodes[edge.target];
 						if (neighbor) neighbors.push(neighbor);
 					} else if (edge.target === nodeId) {
-						const neighbor = nodes.get(edge.source);
+						const neighbor = nodes[edge.source];
 						if (neighbor) neighbors.push(neighbor);
 					}
 				});
@@ -678,7 +747,7 @@ export const useGraphStore = create<GraphState>()(
 				const { edges } = get();
 				const connectedEdges: GraphEdge[] = [];
 
-				edges.forEach(edge => {
+				Object.values(edges).forEach(edge => {
 					if (edge.source === nodeId || edge.target === nodeId) {
 						connectedEdges.push(edge);
 					}
@@ -692,8 +761,8 @@ export const useGraphStore = create<GraphState>()(
 
 				// Simple BFS implementation
 				const queue: string[] = [sourceId];
-				const visited = new Set<string>([sourceId]);
-				const parent = new Map<string, string>();
+				const visited: Record<string, boolean> = { [sourceId]: true };
+				const parent: Record<string, string> = {};
 
 				while (queue.length > 0) {
 					const current = queue.shift();
@@ -705,23 +774,23 @@ export const useGraphStore = create<GraphState>()(
 						let node: string | undefined = targetId;
 						while (node) {
 							path.unshift(node);
-							node = parent.get(node);
+							node = parent[node];
 						}
 						return path;
 					}
 
 					// Check all connected nodes
-					edges.forEach(edge => {
+					Object.values(edges).forEach(edge => {
 						let neighbor: string | null = null;
-						if (edge.source === current && !visited.has(edge.target)) {
+						if (edge.source === current && !visited[edge.target]) {
 							neighbor = edge.target;
-						} else if (edge.target === current && !visited.has(edge.source)) {
+						} else if (edge.target === current && !visited[edge.source]) {
 							neighbor = edge.source;
 						}
 
-						if (neighbor && nodes.has(neighbor)) {
-							visited.add(neighbor);
-							parent.set(neighbor, current);
+						if (neighbor && nodes[neighbor]) {
+							visited[neighbor] = true;
+							parent[neighbor] = current;
 							queue.push(neighbor);
 						}
 					});
@@ -732,34 +801,35 @@ export const useGraphStore = create<GraphState>()(
 
 			getConnectedComponent: (nodeId) => {
 				const { edges } = get();
-				const visited = new Set<string>();
+				const visited: Record<string, boolean> = {};
 				const stack: string[] = [nodeId];
 
 				while (stack.length > 0) {
 					const current = stack.pop();
 					if (!current) continue;
-					if (visited.has(current)) continue;
+					if (visited[current]) continue;
 
-					visited.add(current);
+					visited[current] = true;
 
 					// Add all connected nodes
-					edges.forEach(edge => {
-						if (edge.source === current && !visited.has(edge.target)) {
+					Object.values(edges).forEach(edge => {
+						if (edge.source === current && !visited[edge.target]) {
 							stack.push(edge.target);
-						} else if (edge.target === current && !visited.has(edge.source)) {
+						} else if (edge.target === current && !visited[edge.source]) {
 							stack.push(edge.source);
 						}
 					});
 				}
 
-				return visited;
+				// Return array of visited node IDs for consistency
+				return Object.keys(visited);
 			},
 
 			// Incremental hydration support
 
 			markNodeAsLoading: (nodeId, loading = true) => {
 				set((draft) => {
-					const node = draft.nodes.get(nodeId);
+					const node = draft.nodes[nodeId];
 					if (node) {
 						if (loading) {
 							node.label = node.label.includes("Loading") ? node.label : `Loading ${node.label}...`;
@@ -773,7 +843,7 @@ export const useGraphStore = create<GraphState>()(
 
 			markNodeAsLoaded: (nodeId, fullData) => {
 				set((draft) => {
-					const node = draft.nodes.get(nodeId);
+					const node = draft.nodes[nodeId];
 					if (node) {
 						// Update node with data - no artificial metadata
 						Object.assign(node, fullData);
@@ -787,7 +857,7 @@ export const useGraphStore = create<GraphState>()(
 
 			markNodeAsError: (nodeId, _error) => {
 				set((draft) => {
-					const node = draft.nodes.get(nodeId);
+					const node = draft.nodes[nodeId];
 					if (node) {
 						// Update label to show error - no artificial metadata needed
 						node.label = `Error: ${node.label.replace("Loading ", "").replace("...", "")}`;
@@ -806,13 +876,13 @@ export const useGraphStore = create<GraphState>()(
 			getFullyHydratedNodes: () => {
 				const { nodes } = get();
 				// All nodes are considered equal - return all nodes
-				return Array.from(nodes.values());
+				return Object.values(nodes);
 			},
 
 			getLoadingNodes: () => {
 				const { nodes } = get();
 				// In the new architecture, loading state is tracked by label "Loading..." prefix
-				return Array.from(nodes.values()).filter(node => node.label.includes("Loading"));
+				return Object.values(nodes).filter(node => node.label.includes("Loading"));
 			},
 
 			hasPlaceholderOrLoadingNodes: () => {
@@ -826,8 +896,8 @@ export const useGraphStore = create<GraphState>()(
 			partialize: (state) => ({
 				currentLayout: state.currentLayout,
 				providerType: state.providerType,
-				visibleEntityTypes: Array.from(state.visibleEntityTypes),
-				visibleEdgeTypes: Array.from(state.visibleEdgeTypes),
+				visibleEntityTypes: Object.keys(state.visibleEntityTypes),
+				visibleEdgeTypes: Object.keys(state.visibleEdgeTypes),
 				showAllCachedNodes: state.showAllCachedNodes,
 				traversalDepth: state.traversalDepth,
 			}),
@@ -838,7 +908,21 @@ export const useGraphStore = create<GraphState>()(
 						typeof type === "string" &&
 						["works", "authors", "sources", "institutions", "topics", "concepts", "publishers", "funders", "keywords"].includes(type)
 					);
-					state.visibleEntityTypes = new Set(validEntityTypes);
+					const visibleTypesRecord: Record<EntityType, boolean> = {
+						concepts: false,
+						topics: false,
+						keywords: false,
+						works: false,
+						authors: false,
+						sources: false,
+						institutions: false,
+						publishers: false,
+						funders: false
+					};
+					validEntityTypes.forEach(type => {
+						visibleTypesRecord[type] = true;
+					});
+					state.visibleEntityTypes = visibleTypesRecord;
 				}
 				if (state && Array.isArray(state.visibleEdgeTypes)) {
 					// Type guard: only valid RelationType values
@@ -848,7 +932,27 @@ export const useGraphStore = create<GraphState>()(
 					};
 
 					const validEdgeTypes = state.visibleEdgeTypes.filter(isValidRelationType);
-					state.visibleEdgeTypes = new Set(validEdgeTypes);
+					const visibleEdgeTypesRecord: Record<RelationType, boolean> = {
+						[RelationType.AUTHORED]: false,
+						[RelationType.AFFILIATED]: false,
+						[RelationType.PUBLISHED_IN]: false,
+						[RelationType.FUNDED_BY]: false,
+						[RelationType.REFERENCES]: false,
+						[RelationType.RELATED_TO]: false,
+						[RelationType.SOURCE_PUBLISHED_BY]: false,
+						[RelationType.INSTITUTION_CHILD_OF]: false,
+						[RelationType.PUBLISHER_CHILD_OF]: false,
+						[RelationType.WORK_HAS_TOPIC]: false,
+						[RelationType.WORK_HAS_KEYWORD]: false,
+						[RelationType.AUTHOR_RESEARCHES]: false,
+						[RelationType.INSTITUTION_LOCATED_IN]: false,
+						[RelationType.FUNDER_LOCATED_IN]: false,
+						[RelationType.TOPIC_PART_OF_FIELD]: false
+					};
+					validEdgeTypes.forEach(type => {
+						visibleEdgeTypesRecord[type] = true;
+					});
+					state.visibleEdgeTypes = visibleEdgeTypesRecord;
 				}
 			},
 		}

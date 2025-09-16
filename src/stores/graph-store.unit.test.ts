@@ -74,21 +74,38 @@ describe("GraphStore", () => {
 	beforeEach(() => {
 		// Reset store to initial state
 		useGraphStore.setState({
-			nodes: new Map(),
-			edges: new Map(),
+			nodes: {},
+			edges: {},
 			selectedNodeId: null,
 			hoveredNodeId: null,
-			selectedNodes: new Set(),
-			pinnedNodes: new Set(),
+			selectedNodes: {},
+			pinnedNodes: {},
 			pinnedNodeId: null,
 			showAllCachedNodes: false,
 			traversalDepth: 1,
-			nodeDepths: new Map(),
+			nodeDepths: {},
 			provider: null,
 			providerType: "xyflow",
-			visibleEntityTypes: new Set(["works", "authors", "sources", "institutions", "topics", "publishers", "funders", "keywords", "geo"]),
-			lastSearchStats: new Map(),
-			visibleEdgeTypes: new Set(["authored", "affiliated", "published_in", "funded_by", "related_to", "references"]),
+			visibleEntityTypes: {
+				works: true,
+				authors: true,
+				sources: true,
+				institutions: true,
+				topics: true,
+				publishers: true,
+				funders: true,
+				keywords: true,
+				geo: true
+			},
+			lastSearchStats: {},
+			visibleEdgeTypes: {
+				authored: true,
+				affiliated: true,
+				published_in: true,
+				funded_by: true,
+				related_to: true,
+				references: true
+			},
 			currentLayout: {
 				type: "d3-force",
 				options: {
@@ -118,22 +135,22 @@ describe("GraphStore", () => {
 		it("should have correct initial state", () => {
 			const state = useGraphStore.getState();
 
-			expect(state.nodes.size).toBe(0);
-			expect(state.edges.size).toBe(0);
+			expect(Object.keys(state.nodes).length).toBe(0);
+			expect(Object.keys(state.edges).length).toBe(0);
 			expect(state.selectedNodeId).toBeNull();
 			expect(state.hoveredNodeId).toBeNull();
-			expect(state.selectedNodes.size).toBe(0);
-			expect(state.pinnedNodes.size).toBe(0);
+			expect(Object.keys(state.selectedNodes).length).toBe(0);
+			expect(Object.keys(state.pinnedNodes).length).toBe(0);
 			expect(state.pinnedNodeId).toBeNull();
 			expect(state.showAllCachedNodes).toBe(false);
 			expect(state.traversalDepth).toBe(1);
-			expect(state.nodeDepths.size).toBe(0);
+			expect(Object.keys(state.nodeDepths).length).toBe(0);
 			expect(state.provider).toBeNull();
 			expect(state.providerType).toBe("xyflow");
 			expect(state.isLoading).toBe(false);
 			expect(state.error).toBeNull();
-			expect(state.visibleEntityTypes.size).toBe(9);
-			expect(state.visibleEdgeTypes.size).toBe(6);
+			expect(Object.keys(state.visibleEntityTypes).length).toBe(9);
+			expect(Object.keys(state.visibleEdgeTypes).length).toBe(6);
 		});
 
 		it("should have correct default visible entity types", () => {
@@ -141,7 +158,7 @@ describe("GraphStore", () => {
 			const expectedTypes: EntityType[] = ["works", "authors", "sources", "institutions", "topics", "publishers", "funders", "keywords", "geo"];
 
 			expectedTypes.forEach(type => {
-				expect(state.visibleEntityTypes.has(type)).toBe(true);
+				expect(state.visibleEntityTypes[type]).toBe(true);
 			});
 		});
 
@@ -150,7 +167,7 @@ describe("GraphStore", () => {
 			const expectedTypes: RelationType[] = ["authored", "affiliated", "published_in", "funded_by", "related_to", "references"];
 
 			expectedTypes.forEach(type => {
-				expect(state.visibleEdgeTypes.has(type)).toBe(true);
+				expect(state.visibleEdgeTypes[type]).toBe(true);
 			});
 		});
 
@@ -279,8 +296,8 @@ describe("GraphStore", () => {
 			addNode(testNode);
 
 			const state = useGraphStore.getState();
-			expect(state.nodes.get("N1")).toEqual(testNode);
-			expect(state.nodes.size).toBe(1);
+			expect(state.nodes["N1"]).toEqual(testNode);
+			expect(Object.keys(state.nodes).length).toBe(1);
 			expect(mockProvider.addNode).toHaveBeenCalledWith(testNode);
 		});
 
@@ -298,9 +315,9 @@ describe("GraphStore", () => {
 			addNodes(testNodes);
 
 			const state = useGraphStore.getState();
-			expect(state.nodes.size).toBe(3);
+			expect(Object.keys(state.nodes).length).toBe(3);
 			testNodes.forEach(node => {
-				expect(state.nodes.get(node.id)).toEqual(node);
+				expect(state.nodes[node.id]).toEqual(node);
 				expect(mockProvider.addNode).toHaveBeenCalledWith(node);
 			});
 		});
@@ -312,7 +329,7 @@ describe("GraphStore", () => {
 			expect(() => { addNode(testNode); }).not.toThrow();
 
 			const state = useGraphStore.getState();
-			expect(state.nodes.get("N1")).toEqual(testNode);
+			expect(state.nodes["N1"]).toEqual(testNode);
 		});
 
 		it("should remove node and connected edges", () => {
@@ -340,17 +357,17 @@ describe("GraphStore", () => {
 			removeNode("N1");
 
 			const state = useGraphStore.getState();
-			expect(state.nodes.get("N1")).toBeUndefined();
-			expect(state.nodes.size).toBe(2);
-			expect(state.edges.get("E1")).toBeUndefined(); // Connected edge removed
-			expect(state.edges.get("E3")).toBeUndefined(); // Connected edge removed
-			expect(state.edges.get("E2")).toBeDefined(); // Unconnected edge remains
-			expect(state.edges.size).toBe(1);
+			expect(state.nodes["N1"]).toBeUndefined();
+			expect(Object.keys(state.nodes).length).toBe(2);
+			expect(state.edges["E1"]).toBeUndefined(); // Connected edge removed
+			expect(state.edges["E3"]).toBeUndefined(); // Connected edge removed
+			expect(state.edges["E2"]).toBeDefined(); // Unconnected edge remains
+			expect(Object.keys(state.edges).length).toBe(1);
 
 			// Selection and hover should be cleared
 			expect(state.selectedNodeId).toBeNull();
 			expect(state.hoveredNodeId).toBeNull();
-			expect(state.selectedNodes.has("N1")).toBe(false);
+			expect(state.selectedNodes["N1"]).toBeFalsy();
 
 			expect(mockProvider.removeNode).toHaveBeenCalledWith("N1");
 			expect(mockProvider.removeEdge).toHaveBeenCalledWith("E1");
@@ -370,7 +387,7 @@ describe("GraphStore", () => {
 			updateNode("N1", updates);
 
 			const state = useGraphStore.getState();
-			const updatedNode = state.nodes.get("N1");
+			const updatedNode = state.nodes["N1"];
 			expect(updatedNode?.data.label).toBe("Updated Label");
 			expect(updatedNode?.directlyVisited).toBe(true);
 		});
@@ -383,7 +400,7 @@ describe("GraphStore", () => {
 			}).not.toThrow();
 
 			const state = useGraphStore.getState();
-			expect(state.nodes.size).toBe(0);
+			expect(Object.keys(state.nodes).length).toBe(0);
 		});
 
 		it("should get existing node", () => {
@@ -438,10 +455,10 @@ describe("GraphStore", () => {
 			addToSelection("N3");
 
 			const state = useGraphStore.getState();
-			expect(state.selectedNodes.has("N1")).toBe(true);
-			expect(state.selectedNodes.has("N2")).toBe(true);
-			expect(state.selectedNodes.has("N3")).toBe(true);
-			expect(state.selectedNodes.size).toBe(3);
+			expect(state.selectedNodes["N1"]).toBeTruthy();
+			expect(state.selectedNodes["N2"]).toBeTruthy();
+			expect(state.selectedNodes["N3"]).toBeTruthy();
+			expect(Object.keys(state.selectedNodes).length).toBe(3);
 		});
 
 		it("should remove from selection", () => {
@@ -454,10 +471,10 @@ describe("GraphStore", () => {
 			removeFromSelection("N2");
 
 			const state = useGraphStore.getState();
-			expect(state.selectedNodes.has("N1")).toBe(true);
-			expect(state.selectedNodes.has("N2")).toBe(false);
-			expect(state.selectedNodes.has("N3")).toBe(true);
-			expect(state.selectedNodes.size).toBe(2);
+			expect(state.selectedNodes["N1"]).toBeTruthy();
+			expect(state.selectedNodes["N2"]).toBeFalsy();
+			expect(state.selectedNodes["N3"]).toBeTruthy();
+			expect(Object.keys(state.selectedNodes).length).toBe(2);
 		});
 
 		it("should clear all selection", () => {
@@ -472,7 +489,7 @@ describe("GraphStore", () => {
 
 			const state = useGraphStore.getState();
 			expect(state.selectedNodeId).toBeNull();
-			expect(state.selectedNodes.size).toBe(0);
+			expect(Object.keys(state.selectedNodes).length).toBe(0);
 		});
 	});
 
@@ -483,8 +500,8 @@ describe("GraphStore", () => {
 			pinNode("N1");
 
 			const state = useGraphStore.getState();
-			expect(state.pinnedNodes.has("N1")).toBe(true);
-			expect(state.pinnedNodes.size).toBe(1);
+			expect(state.pinnedNodes["N1"]).toBeTruthy();
+			expect(Object.keys(state.pinnedNodes).length).toBe(1);
 			expect(state.pinnedNodeId).toBe("N1"); // Legacy sync
 		});
 
@@ -496,10 +513,10 @@ describe("GraphStore", () => {
 			pinNode("N3");
 
 			const state = useGraphStore.getState();
-			expect(state.pinnedNodes.has("N1")).toBe(true);
-			expect(state.pinnedNodes.has("N2")).toBe(true);
-			expect(state.pinnedNodes.has("N3")).toBe(true);
-			expect(state.pinnedNodes.size).toBe(3);
+			expect(state.pinnedNodes["N1"]).toBeTruthy();
+			expect(state.pinnedNodes["N2"]).toBeTruthy();
+			expect(state.pinnedNodes["N3"]).toBeTruthy();
+			expect(Object.keys(state.pinnedNodes).length).toBe(3);
 			expect(state.pinnedNodeId).toBe("N1"); // Legacy sync with first pinned
 		});
 
@@ -513,10 +530,10 @@ describe("GraphStore", () => {
 			unpinNode("N2");
 
 			const state = useGraphStore.getState();
-			expect(state.pinnedNodes.has("N1")).toBe(true);
-			expect(state.pinnedNodes.has("N2")).toBe(false);
-			expect(state.pinnedNodes.has("N3")).toBe(true);
-			expect(state.pinnedNodes.size).toBe(2);
+			expect(state.pinnedNodes["N1"]).toBeTruthy();
+			expect(state.pinnedNodes["N2"]).toBeFalsy();
+			expect(state.pinnedNodes["N3"]).toBeTruthy();
+			expect(Object.keys(state.pinnedNodes).length).toBe(2);
 		});
 
 		it("should update legacy pin when unpinning first node", () => {
@@ -531,7 +548,7 @@ describe("GraphStore", () => {
 			unpinNode("N1");
 
 			const state = useGraphStore.getState();
-			expect(state.pinnedNodes.has("N1")).toBe(false);
+			expect(state.pinnedNodes["N1"]).toBeFalsy();
 			expect(state.pinnedNodeId).toBe("N2"); // Should update to next pinned node
 		});
 
@@ -542,7 +559,7 @@ describe("GraphStore", () => {
 			unpinNode("N1");
 
 			const state = useGraphStore.getState();
-			expect(state.pinnedNodes.size).toBe(0);
+			expect(Object.keys(state.pinnedNodes).length).toBe(0);
 			expect(state.pinnedNodeId).toBeNull();
 		});
 
@@ -556,7 +573,7 @@ describe("GraphStore", () => {
 			clearAllPinnedNodes();
 
 			const state = useGraphStore.getState();
-			expect(state.pinnedNodes.size).toBe(0);
+			expect(Object.keys(state.pinnedNodes).length).toBe(0);
 			expect(state.pinnedNodeId).toBeNull();
 		});
 
@@ -600,59 +617,60 @@ describe("GraphStore", () => {
 		it("should toggle entity type visibility", () => {
 			const { toggleEntityTypeVisibility } = useGraphStore.getState();
 
-			expect(useGraphStore.getState().visibleEntityTypes.has("works")).toBe(true);
+			expect(useGraphStore.getState().visibleEntityTypes["works"]).toBe(true);
 
 			toggleEntityTypeVisibility("works");
-			expect(useGraphStore.getState().visibleEntityTypes.has("works")).toBe(false);
+			expect(useGraphStore.getState().visibleEntityTypes["works"]).toBeUndefined();
 
 			toggleEntityTypeVisibility("works");
-			expect(useGraphStore.getState().visibleEntityTypes.has("works")).toBe(true);
+			expect(useGraphStore.getState().visibleEntityTypes["works"]).toBe(true);
 		});
 
 		it("should set entity type visibility explicitly", () => {
 			const { setEntityTypeVisibility } = useGraphStore.getState();
 
 			setEntityTypeVisibility("authors", false);
-			expect(useGraphStore.getState().visibleEntityTypes.has("authors")).toBe(false);
+			expect(useGraphStore.getState().visibleEntityTypes["authors"]).toBeUndefined();
 
 			setEntityTypeVisibility("authors", true);
-			expect(useGraphStore.getState().visibleEntityTypes.has("authors")).toBe(true);
+			expect(useGraphStore.getState().visibleEntityTypes["authors"]).toBe(true);
 
 			setEntityTypeVisibility("new_type" as EntityType, true);
-			expect(useGraphStore.getState().visibleEntityTypes.has("new_type" as EntityType)).toBe(true);
+			expect(useGraphStore.getState().visibleEntityTypes["new_type" as EntityType]).toBe(true);
 		});
 
 		it("should set all entity types visible", () => {
 			const { setAllEntityTypesVisible } = useGraphStore.getState();
 
-			// Clear all first
+			// Clear all first - this replaces current object entirely
 			setAllEntityTypesVisible(false);
-			expect(useGraphStore.getState().visibleEntityTypes.size).toBe(0);
+			const falseState = useGraphStore.getState();
+			expect(Object.keys(falseState.visibleEntityTypes).length).toBe(9); // concepts, topics, keywords, works, authors, sources, institutions, publishers, funders
 
-			// Set all visible
+			// Set all visible - this creates a new object with all true
 			setAllEntityTypesVisible(true);
 			const state = useGraphStore.getState();
-			expect(state.visibleEntityTypes.size).toBe(9);
-			expect(state.visibleEntityTypes.has("works")).toBe(true);
-			expect(state.visibleEntityTypes.has("authors")).toBe(true);
-			expect(state.visibleEntityTypes.has("sources")).toBe(true);
+			expect(Object.keys(state.visibleEntityTypes).length).toBe(9); // same 9 types
+			expect(state.visibleEntityTypes["works"]).toBe(true);
+			expect(state.visibleEntityTypes["authors"]).toBe(true);
+			expect(state.visibleEntityTypes["sources"]).toBe(true);
 		});
 
 		it("should update search stats", () => {
 			const { updateSearchStats } = useGraphStore.getState();
 
-			const stats = new Map<EntityType, number>([
-				["works", 100],
-				["authors", 50],
-				["sources", 25]
-			]);
+			const stats = {
+				"works": 100,
+				"authors": 50,
+				"sources": 25
+			} as Record<EntityType, number>;
 
 			updateSearchStats(stats);
 
 			const state = useGraphStore.getState();
-			expect(state.lastSearchStats.get("works")).toBe(100);
-			expect(state.lastSearchStats.get("authors")).toBe(50);
-			expect(state.lastSearchStats.get("sources")).toBe(25);
+			expect(state.lastSearchStats["works"]).toBe(100);
+			expect(state.lastSearchStats["authors"]).toBe(50);
+			expect(state.lastSearchStats["sources"]).toBe(25);
 		});
 
 		it("should get entity type stats", () => {
@@ -672,24 +690,24 @@ describe("GraphStore", () => {
 			setEntityTypeVisibility("sources", false);
 
 			// Set search stats
-			const searchStats = new Map<EntityType, number>([
-				["works", 200],
-				["authors", 150]
-			]);
+			const searchStats = {
+				"works": 200,
+				"authors": 150
+			} as Record<EntityType, number>;
 			updateSearchStats(searchStats);
 
 			const stats = getEntityTypeStats();
 
-			expect(stats.total.get("works")).toBe(2);
-			expect(stats.total.get("authors")).toBe(1);
-			expect(stats.total.get("sources")).toBe(2);
+			expect(stats.total["works"]).toBe(2);
+			expect(stats.total["authors"]).toBe(1);
+			expect(stats.total["sources"]).toBe(2);
 
-			expect(stats.visible.get("works")).toBe(2);
-			expect(stats.visible.get("authors")).toBe(1);
-			expect(stats.visible.get("sources")).toBeUndefined(); // Not visible
+			expect(stats.visible["works"]).toBe(2);
+			expect(stats.visible["authors"]).toBe(1);
+			expect(stats.visible["sources"]).toBe(0); // Not visible but still present with count 0
 
-			expect(stats.searchResults.get("works")).toBe(200);
-			expect(stats.searchResults.get("authors")).toBe(150);
+			expect(stats.searchResults["works"]).toBe(200);
+			expect(stats.searchResults["authors"]).toBe(150);
 		});
 
 		it("should get visible nodes", () => {
@@ -762,10 +780,10 @@ describe("GraphStore", () => {
 			calculateNodeDepths("N1");
 
 			const state = useGraphStore.getState();
-			expect(state.nodeDepths.get("N1")).toBe(0);
-			expect(state.nodeDepths.get("N2")).toBe(1);
-			expect(state.nodeDepths.get("N3")).toBe(2);
-			expect(state.nodeDepths.get("N4")).toBe(1);
+			expect(state.nodeDepths["N1"]).toBe(0);
+			expect(state.nodeDepths["N2"]).toBe(1);
+			expect(state.nodeDepths["N3"]).toBe(2);
+			expect(state.nodeDepths["N4"]).toBe(1);
 		});
 
 		it("should handle calculate depths for disconnected graph", () => {
@@ -782,9 +800,9 @@ describe("GraphStore", () => {
 			calculateNodeDepths("N1");
 
 			const state = useGraphStore.getState();
-			expect(state.nodeDepths.get("N1")).toBe(0);
-			expect(state.nodeDepths.get("N2")).toBeUndefined();
-			expect(state.nodeDepths.get("N3")).toBeUndefined();
+			expect(state.nodeDepths["N1"]).toBe(0);
+			expect(state.nodeDepths["N2"]).toBeUndefined();
+			expect(state.nodeDepths["N3"]).toBeUndefined();
 		});
 
 		it("should get nodes within depth", () => {
@@ -934,26 +952,26 @@ describe("GraphStore", () => {
 			const { getConnectedComponent, addNode } = useGraphStore.getState();
 
 			const component1 = getConnectedComponent("N1");
-			expect(component1.size).toBe(4);
-			expect(Array.from(component1).sort()).toEqual(["N1", "N2", "N3", "N4"]);
+			expect(component1.length).toBe(4);
+			expect(component1.sort()).toEqual(["N1", "N2", "N3", "N4"]);
 
 			const component2 = getConnectedComponent("N3");
-			expect(component2.size).toBe(4);
-			expect(Array.from(component2).sort()).toEqual(["N1", "N2", "N3", "N4"]);
+			expect(component2.length).toBe(4);
+			expect(component2.sort()).toEqual(["N1", "N2", "N3", "N4"]);
 
 			// Add isolated node
 			addNode(createTestNode("ISOLATED"));
 			const isolatedComponent = getConnectedComponent("ISOLATED");
-			expect(isolatedComponent.size).toBe(1);
-			expect(Array.from(isolatedComponent)).toEqual(["ISOLATED"]);
+			expect(isolatedComponent.length).toBe(1);
+			expect(isolatedComponent).toEqual(["ISOLATED"]);
 		});
 
 		it("should handle connected component for non-existent node", () => {
 			const { getConnectedComponent } = useGraphStore.getState();
 
 			const component = getConnectedComponent("NON_EXISTENT");
-			expect(component.size).toBe(1);
-			expect(Array.from(component)).toEqual(["NON_EXISTENT"]);
+			expect(component.length).toBe(1);
+			expect(component).toEqual(["NON_EXISTENT"]);
 		});
 	});
 
@@ -984,17 +1002,17 @@ describe("GraphStore", () => {
 			});
 		});
 
-		it("should handle Map and Set operations correctly", () => {
+		it("should handle Record operations correctly", () => {
 			const { addNode, pinNode, isPinned } = useGraphStore.getState();
 
-			// Test Map operations
+			// Test Record operations
 			const node = createTestNode("N1");
 			addNode(node);
-			expect(useGraphStore.getState().nodes.get("N1")).toEqual(node);
+			expect(useGraphStore.getState().nodes["N1"]).toEqual(node);
 
-			// Test Set operations
+			// Test Record operations
 			pinNode("N1");
-			expect(useGraphStore.getState().pinnedNodes.has("N1")).toBe(true);
+			expect(useGraphStore.getState().pinnedNodes["N1"]).toBeTruthy();
 			expect(isPinned("N1")).toBe(true);
 		});
 	});

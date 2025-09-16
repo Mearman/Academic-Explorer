@@ -6,13 +6,9 @@
 import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
 import { immer } from "zustand/middleware/immer";
-import { enableMapSet } from "immer";
 import { useGraphStore } from "./graph-store";
 import type { GraphNode } from "@/lib/graph/types";
 import { logger } from "@/lib/logger";
-
-// Enable Immer MapSet plugin for Map and Set support
-enableMapSet();
 
 interface NodePosition {
   id: string;
@@ -37,8 +33,8 @@ interface AnimatedGraphState {
   fps: number;
 
   // Position tracking
-  animatedPositions: Map<string, NodePosition>;
-  staticPositions: Map<string, NodePosition>;
+  animatedPositions: Record<string, NodePosition>;
+  staticPositions: Record<string, NodePosition>;
 
   // Animation history and stats
   animationHistory: AnimationStats[];
@@ -93,8 +89,8 @@ export const useAnimatedGraphStore = create<AnimatedGraphState>()(
       iteration: 0,
       fps: 0,
 
-      animatedPositions: new Map(),
-      staticPositions: new Map(),
+      animatedPositions: {},
+      staticPositions: {},
       animationHistory: [],
       currentAnimationStart: 0,
 
@@ -157,11 +153,11 @@ export const useAnimatedGraphStore = create<AnimatedGraphState>()(
       updateAnimatedPositions: (positions) => {
         set((state) => {
           // Clear existing animated positions
-          state.animatedPositions.clear();
+          state.animatedPositions = {};
 
           // Add new positions
           positions.forEach(pos => {
-            state.animatedPositions.set(pos.id, { ...pos });
+            state.animatedPositions[pos.id] = { ...pos };
           });
 
           logger.debug('graph', 'Updated animated positions', {
@@ -174,11 +170,11 @@ export const useAnimatedGraphStore = create<AnimatedGraphState>()(
       updateStaticPositions: (positions) => {
         set((state) => {
           // Clear existing static positions
-          state.staticPositions.clear();
+          state.staticPositions = {};
 
           // Add new positions
           positions.forEach(pos => {
-            state.staticPositions.set(pos.id, { ...pos });
+            state.staticPositions[pos.id] = { ...pos };
           });
 
           logger.info('graph', 'Updated static positions', {
@@ -190,23 +186,23 @@ export const useAnimatedGraphStore = create<AnimatedGraphState>()(
       getNodePosition: (nodeId) => {
         const state = get();
         // Prefer animated positions when animating, otherwise use static
-        if (state.isAnimating && state.animatedPositions.has(nodeId)) {
-          return state.animatedPositions.get(nodeId);
+        if (state.isAnimating && state.animatedPositions[nodeId]) {
+          return state.animatedPositions[nodeId];
         }
-        return state.staticPositions.get(nodeId);
+        return state.staticPositions[nodeId];
       },
 
       getAllPositions: () => {
         const state = get();
         // Return appropriate position set based on animation state
         const positions = state.isAnimating ? state.animatedPositions : state.staticPositions;
-        return Array.from(positions.values());
+        return Object.values(positions);
       },
 
       clearPositions: () => {
         set((state) => {
-          state.animatedPositions.clear();
-          state.staticPositions.clear();
+          state.animatedPositions = {};
+          state.staticPositions = {};
           logger.info('graph', 'Cleared all positions');
         });
       },
@@ -239,11 +235,11 @@ export const useAnimatedGraphStore = create<AnimatedGraphState>()(
           }
 
           // Move animated positions to static positions
-          state.staticPositions.clear();
-          state.animatedPositions.forEach((pos, id) => {
-            state.staticPositions.set(id, { ...pos });
+          state.staticPositions = {};
+          Object.entries(state.animatedPositions).forEach(([id, pos]) => {
+            state.staticPositions[id] = { ...pos };
           });
-          state.animatedPositions.clear();
+          state.animatedPositions = {};
 
           logger.info('graph', 'Animation completed', {
             ...completedStats,
@@ -261,7 +257,7 @@ export const useAnimatedGraphStore = create<AnimatedGraphState>()(
           state.alpha = 1;
           state.iteration = 0;
           state.fps = 0;
-          state.animatedPositions.clear();
+          state.animatedPositions = {};
           logger.info('graph', 'Animation reset');
         });
       },
@@ -286,27 +282,27 @@ export const useAnimatedGraphStore = create<AnimatedGraphState>()(
       // Integration with base graph store
       syncWithGraphStore: () => {
         const graphStore = useGraphStore.getState();
-        const nodes = Array.from(graphStore.nodes.values());
+        const nodes = Object.values(graphStore.nodes);
 
         set((state) => {
           // Extract current positions from graph store nodes
-          const positions: NodePosition[] = nodes.map(node => ({
+          const positions: NodePosition[] = nodes.map((node: GraphNode) => ({
             id: node.id,
             x: node.position?.x || 0,
             y: node.position?.y || 0,
           }));
 
           // Update static positions
-          state.staticPositions.clear();
+          state.staticPositions = {};
           positions.forEach(pos => {
-            state.staticPositions.set(pos.id, { ...pos });
+            state.staticPositions[pos.id] = { ...pos };
           });
 
           logger.info('graph', 'Synced animated store with graph store', {
             nodeCount: nodes.length,
             positionCount: positions.length,
             layoutType: graphStore.currentLayout?.type,
-            pinnedNodeCount: graphStore.pinnedNodes.size,
+            pinnedNodeCount: Object.keys(graphStore.pinnedNodes).length,
           });
         });
       },
@@ -323,7 +319,7 @@ export const useAnimatedGraphStore = create<AnimatedGraphState>()(
 
         // Update graph store nodes with current positions
         currentPositions.forEach(pos => {
-          const node = graphStore.nodes.get(pos.id);
+          const node = graphStore.nodes[pos.id];
           if (node) {
             graphStore.updateNode(pos.id, {
               position: { x: pos.x, y: pos.y }
