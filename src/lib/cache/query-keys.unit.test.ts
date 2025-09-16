@@ -7,8 +7,7 @@ import { describe, it, expect } from "vitest";
 import {
 	queryKeys,
 	getEntityQueryKey,
-	getRelatedEntityQueryKeys,
-	type QueryKey as _QueryKey
+	getRelatedEntityQueryKeys
 } from "./query-keys";
 
 describe("Query Keys Factory", () => {

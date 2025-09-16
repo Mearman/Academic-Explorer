@@ -146,8 +146,8 @@ function startAnimatedSimulation(
 	nodes = inputNodes.map(node => ({
 		...node,
 		// Handle pinned nodes
-		fx: pinnedNodes && pinnedNodes[node.id] ? node.x : undefined,
-		fy: pinnedNodes && pinnedNodes[node.id] ? node.y : undefined,
+		fx: pinnedNodes && pinnedNodes.has(node.id) ? node.x : undefined,
+		fy: pinnedNodes && pinnedNodes.has(node.id) ? node.y : undefined,
 	}));
 
 	// Clone links
@@ -317,7 +317,7 @@ function resumeSimulation() {
 self.onerror = function(error) {
 	self.postMessage({
 		type: "error",
-		error: error instanceof ErrorEvent ? error.message : error instanceof Error ? error.message : String(error),
+		error: error instanceof ErrorEvent ? error.message : error instanceof Error ? error.message : "Unknown error",
 		filename: error instanceof ErrorEvent ? error.filename : undefined,
 		lineno: error instanceof ErrorEvent ? error.lineno : undefined,
 	});

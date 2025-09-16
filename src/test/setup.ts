@@ -28,6 +28,20 @@ if (typeof window !== 'undefined') {
       dispatchEvent: vi.fn(),
     })),
   });
+} else {
+  // Mock localStorage for node environment (integration/e2e tests)
+  // This prevents Zustand persist middleware warnings
+  const mockStorage = {
+    getItem: vi.fn(() => null),
+    setItem: vi.fn(),
+    removeItem: vi.fn(),
+    clear: vi.fn(),
+    length: 0,
+    key: vi.fn(() => null),
+  };
+
+  global.localStorage = mockStorage;
+  global.sessionStorage = mockStorage;
 }
 
 // Mock ResizeObserver for components that measure elements

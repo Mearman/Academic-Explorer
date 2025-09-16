@@ -27,10 +27,10 @@ describe("Entity Data Storage Integration", () => {
 		const store = useGraphStore.getState();
 
 		// Clear nodes and edges properly
-		for (const nodeId of store.nodes.keys()) {
+		for (const nodeId of Object.keys(store.nodes)) {
 			store.removeNode(nodeId);
 		}
-		for (const edgeId of store.edges.keys()) {
+		for (const edgeId of Object.keys(store.edges)) {
 			store.removeEdge(edgeId);
 		}
 	});
@@ -82,8 +82,8 @@ describe("Entity Data Storage Integration", () => {
 			const store = useGraphStore.getState();
 
 			// Verify the main work was added with entity data
-			expect(store.nodes.has("https://openalex.org/W123456789")).toBe(true);
-			const mainNode = store.nodes.get("https://openalex.org/W123456789");
+			expect("https://openalex.org/W123456789" in store.nodes).toBe(true);
+			const mainNode = store.nodes["https://openalex.org/W123456789"];
 			expect(mainNode?.entityData).toBeDefined();
 			expect(mainNode?.entityData?.referenced_works).toEqual([
 				"https://openalex.org/W987654321",
@@ -92,17 +92,17 @@ describe("Entity Data Storage Integration", () => {
 
 			// Verify referenced works are NOT automatically created as nodes
 			// (they should be created through relationship detection or on-demand loading)
-			expect(store.nodes.has("https://openalex.org/W987654321")).toBe(false);
-			expect(store.nodes.has("https://openalex.org/W555666777")).toBe(false);
+			expect("https://openalex.org/W987654321" in store.nodes).toBe(false);
+			expect("https://openalex.org/W555666777" in store.nodes).toBe(false);
 
 			// Verify only the primary node exists (total nodes should be 1)
-			expect(store.nodes.size).toBe(1);
+			expect(Object.keys(store.nodes).length).toBe(1);
 
 			logger.info("integration", "Entity data storage test completed successfully", {
 				mainNodeId: mainNode?.id,
 				hasEntityData: !!mainNode?.entityData,
 				referencedWorksCount: mainNode?.entityData?.referenced_works?.length,
-				totalNodes: store.nodes.size
+				totalNodes: Object.keys(store.nodes).length
 			});
 		});
 
@@ -149,18 +149,18 @@ describe("Entity Data Storage Integration", () => {
 			const store = useGraphStore.getState();
 
 			// Verify only the primary work was loaded
-			expect(store.nodes.size).toBe(1);
-			expect(store.nodes.has("https://openalex.org/W123456789")).toBe(true);
+			expect(Object.keys(store.nodes).length).toBe(1);
+			expect("https://openalex.org/W123456789" in store.nodes).toBe(true);
 
 			// Verify referenced work is NOT automatically created as a node
-			expect(store.nodes.has("https://openalex.org/W987654321")).toBe(false);
+			expect("https://openalex.org/W987654321" in store.nodes).toBe(false);
 
 			// Verify the entity data contains referenced works information
-			const mainNode = store.nodes.get("https://openalex.org/W123456789");
+			const mainNode = store.nodes["https://openalex.org/W123456789"];
 			expect(mainNode?.entityData?.referenced_works).toEqual(["https://openalex.org/W987654321"]);
 
 			logger.info("integration", "Entity data test completed", {
-				totalNodes: store.nodes.size,
+				totalNodes: Object.keys(store.nodes).length,
 				hasEntityData: !!mainNode?.entityData,
 				referencedWorksCount: mainNode?.entityData?.referenced_works?.length
 			});
@@ -191,15 +191,15 @@ describe("Entity Data Storage Integration", () => {
 
 			logger.info("integration", "Adding node to store", {
 				nodeId: testNode.id,
-				nodeCount: store.nodes.size
+				nodeCount: Object.keys(store.nodes).length
 			});
 
 			store.addNode(testNode);
 
 			logger.info("integration", "Node added to store", {
 				nodeId: testNode.id,
-				nodeCount: store.nodes.size,
-				nodeExists: store.nodes.has(testNode.id)
+				nodeCount: Object.keys(store.nodes).length,
+				nodeExists: testNode.id in store.nodes
 			});
 
 			// Mock full work entity
@@ -238,7 +238,7 @@ describe("Entity Data Storage Integration", () => {
 				.mockResolvedValue(mockFullWork);
 
 			// Verify initial minimal state
-			let node = store.nodes.get("https://openalex.org/W123456789");
+			let node = store.nodes["https://openalex.org/W123456789"];
 
 			// Debug logging to understand what's happening
 			logger.info("integration", "Node metadata after adding to store", {
@@ -255,7 +255,7 @@ describe("Entity Data Storage Integration", () => {
 			await graphDataService.loadEntityIntoGraph("https://openalex.org/W123456789");
 
 			// Verify it was upgraded to full hydration
-			node = store.nodes.get("https://openalex.org/W123456789");
+			node = store.nodes["https://openalex.org/W123456789"];
 			expect(node?.metadata?.hydrationLevel).toBe("full");
 			expect(node?.label).toBe("Full Work Title");
 
@@ -279,7 +279,7 @@ describe("Entity Data Storage Integration", () => {
 			// since we removed artificial hydration level tracking
 
 			logger.info("integration", "Store integration test completed", {
-				finalNodeCount: store.nodes.size,
+				finalNodeCount: Object.keys(store.nodes).length,
 				hasMinimalOrLoading: store.hasPlaceholderOrLoadingNodes()
 			});
 		});
