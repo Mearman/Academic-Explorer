@@ -172,7 +172,7 @@ describe("AuthorEntity", () => {
 				filter: `authorships.author.id:${entityId}`,
 				page: 1,
 				per_page: 200,
-				select: undefined,
+				select: ["id", "display_name", "referenced_works", "doi", "publication_year", "cited_by_count", "open_access"],
 				sort: undefined
 			});
 		});

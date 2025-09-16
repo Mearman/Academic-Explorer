@@ -1,6 +1,6 @@
 /**
- * Integration tests for incremental hydration functionality
- * Verifies that minimal nodes are properly hydrated when interacted with
+ * Integration tests for entity data storage functionality
+ * Verifies that entity data is properly stored and accessible on-demand
  */
 
 import { beforeEach, describe, expect, it, vi } from "vitest";
@@ -10,7 +10,7 @@ import { QueryClient } from "@tanstack/react-query";
 import { logger } from "@/lib/logger";
 import type { Work } from "@/lib/openalex/types";
 
-describe("Incremental Hydration Integration", () => {
+describe("Entity Data Storage Integration", () => {
 	let queryClient: QueryClient;
 	let graphDataService: ReturnType<typeof createGraphDataService>;
 
@@ -35,8 +35,8 @@ describe("Incremental Hydration Integration", () => {
 		}
 	});
 
-	describe("Referenced work minimal loading", () => {
-		it("should create minimal nodes for referenced works", async () => {
+	describe("Entity data storage", () => {
+		it("should store referenced works data in primary node", async () => {
 			// Mock work with referenced works
 			const mockWork: Work = {
 				id: "https://openalex.org/W123456789",
@@ -81,36 +81,32 @@ describe("Incremental Hydration Integration", () => {
 
 			const store = useGraphStore.getState();
 
-			// Verify the main work was added
+			// Verify the main work was added with entity data
 			expect(store.nodes.has("https://openalex.org/W123456789")).toBe(true);
 			const mainNode = store.nodes.get("https://openalex.org/W123456789");
-			expect(mainNode?.metadata?.hydrationLevel).toBe("full");
+			expect(mainNode?.entityData).toBeDefined();
+			expect(mainNode?.entityData?.referenced_works).toEqual([
+				"https://openalex.org/W987654321",
+				"https://openalex.org/W555666777"
+			]);
 
-			// Verify referenced works were added as minimal nodes
-			expect(store.nodes.has("https://openalex.org/W987654321")).toBe(true);
-			expect(store.nodes.has("https://openalex.org/W555666777")).toBe(true);
+			// Verify referenced works are NOT automatically created as nodes
+			// (they should be created through relationship detection or on-demand loading)
+			expect(store.nodes.has("https://openalex.org/W987654321")).toBe(false);
+			expect(store.nodes.has("https://openalex.org/W555666777")).toBe(false);
 
-			const refNode1 = store.nodes.get("https://openalex.org/W987654321");
-			const refNode2 = store.nodes.get("https://openalex.org/W555666777");
+			// Verify only the primary node exists (total nodes should be 1)
+			expect(store.nodes.size).toBe(1);
 
-			expect(refNode1?.metadata?.hydrationLevel).toBe("minimal");
-			expect(refNode2?.metadata?.hydrationLevel).toBe("minimal");
-
-			// Verify basic node structure for minimal nodes
-			expect(refNode1?.id).toBe("https://openalex.org/W987654321");
-			expect(refNode1?.entityId).toBe("https://openalex.org/W987654321");
-			expect(refNode1?.type).toBe("works");
-			expect(refNode1?.label).toContain("Referenced Work");
-
-			logger.info("integration", "Incremental hydration test completed successfully", {
-				mainNodeHydration: mainNode?.metadata?.hydrationLevel,
-				refNode1Hydration: refNode1?.metadata?.hydrationLevel,
-				refNode2Hydration: refNode2?.metadata?.hydrationLevel,
+			logger.info("integration", "Entity data storage test completed successfully", {
+				mainNodeId: mainNode?.id,
+				hasEntityData: !!mainNode?.entityData,
+				referencedWorksCount: mainNode?.entityData?.referenced_works?.length,
 				totalNodes: store.nodes.size
 			});
 		});
 
-		it("should handle background minimal data loading", async () => {
+		it("should store entity data without creating referenced work nodes", async () => {
 			// Mock work entity
 			const mockWork: Work = {
 				id: "https://openalex.org/W123456789",
@@ -143,46 +139,30 @@ describe("Incremental Hydration Integration", () => {
 				created_date: "2023-01-01"
 			};
 
-			// Mock referenced work with minimal fields
-			const mockReferencedWork: Partial<Work> = {
-				id: "https://openalex.org/W987654321",
-				display_name: "Referenced Paper Title",
-				publication_year: 2022,
-				cited_by_count: 5
-			};
-
-			let callCount = 0;
+			// Mock the API to return only the primary work
 			vi.spyOn(graphDataService["deduplicationService"], "getEntity")
-				.mockImplementation(async (entityId: string) => {
-					callCount++;
-					if (entityId === "https://openalex.org/W123456789") {
-						return mockWork;
-					} else if (entityId === "https://openalex.org/W987654321") {
-						return mockReferencedWork as Work;
-					}
-					throw new Error(`Unexpected entity ID: ${entityId}`);
-				});
+				.mockResolvedValue(mockWork);
 
 			// Load the main work
 			await graphDataService.loadEntityGraph("https://openalex.org/W123456789");
 
 			const store = useGraphStore.getState();
 
-			// Verify referenced work has minimal hydration initially
-			const refNode = store.nodes.get("https://openalex.org/W987654321");
-			expect(refNode?.metadata?.hydrationLevel).toBe("minimal");
-			expect(refNode?.label).toContain("Referenced Work");
+			// Verify only the primary work was loaded
+			expect(store.nodes.size).toBe(1);
+			expect(store.nodes.has("https://openalex.org/W123456789")).toBe(true);
 
-			// Give background loading time to complete
-			await new Promise(resolve => setTimeout(resolve, 100));
+			// Verify referenced work is NOT automatically created as a node
+			expect(store.nodes.has("https://openalex.org/W987654321")).toBe(false);
 
-			// Check if background loading was triggered
-			expect(callCount).toBeGreaterThanOrEqual(1);
+			// Verify the entity data contains referenced works information
+			const mainNode = store.nodes.get("https://openalex.org/W123456789");
+			expect(mainNode?.entityData?.referenced_works).toEqual(["https://openalex.org/W987654321"]);
 
-			logger.info("integration", "Background loading test completed", {
-				apiCalls: callCount,
-				refNodeHydration: refNode?.metadata?.hydrationLevel,
-				refNodeLabel: refNode?.label
+			logger.info("integration", "Entity data test completed", {
+				totalNodes: store.nodes.size,
+				hasEntityData: !!mainNode?.entityData,
+				referencedWorksCount: mainNode?.entityData?.referenced_works?.length
 			});
 		});
 	});
@@ -288,55 +268,15 @@ describe("Incremental Hydration Integration", () => {
 	});
 
 	describe("Store integration", () => {
-		it("should correctly identify nodes with minimal hydration", async () => {
+		it("should return false for hasPlaceholderOrLoadingNodes function", async () => {
 			const store = useGraphStore.getState();
 
-			// Add a mix of nodes
-			store.addNode({
-				id: "minimal-node",
-				entityId: "minimal-node",
-				type: "works",
-				label: "Minimal Node",
-				position: { x: 0, y: 0 },
-				metadata: { hydrationLevel: "minimal", entityType: "works", isLoading: false, hasError: false }
-			});
-
-			store.addNode({
-				id: "full-node",
-				entityId: "full-node",
-				type: "works",
-				label: "Full Node",
-				position: { x: 100, y: 0 },
-				metadata: { hydrationLevel: "full", entityType: "works", isLoading: false, hasError: false }
-			});
-
-			store.addNode({
-				id: "loading-node",
-				entityId: "loading-node",
-				type: "works",
-				label: "Loading Node",
-				position: { x: 200, y: 0 },
-				metadata: { hydrationLevel: "full", entityType: "works", isLoading: true, hasError: false }
-			});
-
-			// Test hasPlaceholderOrLoadingNodes function
-			expect(store.hasPlaceholderOrLoadingNodes()).toBe(true);
-
-			// Update minimal node to full
-			store.updateNode("minimal-node", {
-				metadata: { hydrationLevel: "full", entityType: "works", isLoading: false, hasError: false }
-			});
-
-			// Should still have loading node
-			expect(store.hasPlaceholderOrLoadingNodes()).toBe(true);
-
-			// Update loading node
-			store.updateNode("loading-node", {
-				metadata: { hydrationLevel: "full", entityType: "works", isLoading: false, hasError: false }
-			});
-
-			// Now no minimal or loading nodes
+			// Test hasPlaceholderOrLoadingNodes function - should always return false
+			// since we no longer have artificial hydration levels
 			expect(store.hasPlaceholderOrLoadingNodes()).toBe(false);
+
+			// The function should always return false regardless of store contents
+			// since we removed artificial hydration level tracking
 
 			logger.info("integration", "Store integration test completed", {
 				finalNodeCount: store.nodes.size,

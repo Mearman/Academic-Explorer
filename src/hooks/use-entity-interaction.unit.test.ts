@@ -47,7 +47,6 @@ const mockLayoutStore = {
 const mockGraphData = {
 	loadEntityIntoGraph: vi.fn(),
 	expandNode: vi.fn(),
-	hydrateNode: vi.fn(),
 };
 
 const mockLogger = {
@@ -61,16 +60,17 @@ describe("useEntityInteraction", () => {
 	const testEntityId = "W123456789";
 	const testEntityType = "works";
 
-	const createMockNode = (id: string, entityId: string, hydrationLevel?: string): GraphNode => ({
+	const createMockNode = (id: string, entityId: string, entityData?: Record<string, unknown>): GraphNode => ({
 		id,
 		entityId,
 		type: "works",
 		label: "Test Work",
 		position: { x: 100, y: 200 },
 		externalIds: [],
-		metadata: {
-			hydrationLevel: hydrationLevel || "full",
-			isLoading: false,
+		entityData: entityData || {
+			id: entityId,
+			display_name: "Test Work",
+			publication_year: 2023,
 		},
 	});
 
@@ -95,7 +95,6 @@ describe("useEntityInteraction", () => {
 		// Reset and setup mock functions
 		mockGraphData.loadEntityIntoGraph.mockResolvedValue(undefined);
 		mockGraphData.expandNode.mockResolvedValue(undefined);
-		mockGraphData.hydrateNode.mockResolvedValue(undefined);
 
 		// Setup logger mocks
 		vi.mocked(logger.info).mockImplementation(mockLogger.info);
@@ -147,9 +146,9 @@ describe("useEntityInteraction", () => {
 	});
 
 	describe("interactWithEntity", () => {
-		it("should handle existing fully hydrated node", async () => {
+		it("should handle existing node with entity data", async () => {
 			const { result } = renderHook(() => useEntityInteraction(mockCenterOnNodeFn));
-			const existingNode = createMockNode("node1", testEntityId, "full");
+			const existingNode = createMockNode("node1", testEntityId);
 
 			await act(async () => {
 				await result.current.interactWithEntity(
@@ -167,18 +166,17 @@ describe("useEntityInteraction", () => {
 			expect(mockGraphData.expandNode).not.toHaveBeenCalled();
 		});
 
-		it("should handle existing minimal node and hydrate it", async () => {
+		it("should handle existing node found by entity ID", async () => {
 			const { result } = renderHook(() => useEntityInteraction(mockCenterOnNodeFn));
-			const minimalNode = createMockNode("node1", testEntityId, "minimal");
-			const hydratedNode = createMockNode("node1", testEntityId, "full");
+			const existingNode = createMockNode("node1", testEntityId, {
+				id: testEntityId,
+				display_name: "Existing Work",
+			});
 
-			// Mock finding the minimal node
-			mockGraphStore.nodes.set("node1", minimalNode);
-			const mockValues = vi.fn().mockReturnValue([minimalNode]);
+			// Mock finding the existing node by entity ID
+			mockGraphStore.nodes.set("node1", existingNode);
+			const mockValues = vi.fn().mockReturnValue([existingNode]);
 			mockGraphStore.nodes.values = mockValues;
-
-			// Mock getting the hydrated node after hydration
-			mockGraphStore.nodes.get = vi.fn().mockReturnValue(hydratedNode);
 
 			await act(async () => {
 				await result.current.interactWithEntity(
@@ -188,7 +186,8 @@ describe("useEntityInteraction", () => {
 				);
 			});
 
-			expect(mockGraphData.hydrateNode).toHaveBeenCalledWith("node1");
+			// Should use existing node without loading
+			expect(mockGraphData.loadEntityIntoGraph).not.toHaveBeenCalled();
 			expect(mockGraphStore.selectNode).toHaveBeenCalledWith("node1");
 			expect(mockLayoutStore.setPreviewEntity).toHaveBeenCalledWith(testEntityId);
 			expect(mockGraphStore.pinNode).toHaveBeenCalledWith("node1");
@@ -196,7 +195,7 @@ describe("useEntityInteraction", () => {
 
 		it("should load new entity when no existing node found", async () => {
 			const { result } = renderHook(() => useEntityInteraction(mockCenterOnNodeFn));
-			const newNode = createMockNode("node1", testEntityId, "full");
+			const newNode = createMockNode("node1", testEntityId);
 
 			// Mock no existing nodes initially, then find the newly loaded node
 			const mockValues = vi.fn()
@@ -219,7 +218,7 @@ describe("useEntityInteraction", () => {
 
 		it("should handle expansion when requested", async () => {
 			const { result } = renderHook(() => useEntityInteraction(mockCenterOnNodeFn));
-			const existingNode = createMockNode("node1", testEntityId, "full");
+			const existingNode = createMockNode("node1", testEntityId);
 
 			await act(async () => {
 				await result.current.interactWithEntity(
@@ -242,7 +241,7 @@ describe("useEntityInteraction", () => {
 
 		it("should clear pinned nodes when auto-pin is disabled", async () => {
 			const { result } = renderHook(() => useEntityInteraction(mockCenterOnNodeFn));
-			const existingNode = createMockNode("node1", testEntityId, "full");
+			const existingNode = createMockNode("node1", testEntityId);
 			mockLayoutStore.autoPinOnLayoutStabilization = false;
 
 			await act(async () => {
@@ -268,7 +267,7 @@ describe("useEntityInteraction", () => {
 			vi.mocked(useLayoutStore).mockReturnValue(autoPinLayoutStore);
 
 			const { result } = renderHook(() => useEntityInteraction(mockCenterOnNodeFn));
-			const existingNode = createMockNode("node1", testEntityId, "full");
+			const existingNode = createMockNode("node1", testEntityId);
 
 			await act(async () => {
 				await result.current.interactWithEntity(
@@ -285,7 +284,7 @@ describe("useEntityInteraction", () => {
 
 		it("should skip centering when no center function provided", async () => {
 			const { result } = renderHook(() => useEntityInteraction());
-			const existingNode = createMockNode("node1", testEntityId, "full");
+			const existingNode = createMockNode("node1", testEntityId);
 
 			await act(async () => {
 				await result.current.interactWithEntity(
@@ -355,7 +354,7 @@ describe("useEntityInteraction", () => {
 
 		it("should use custom options", async () => {
 			const { result } = renderHook(() => useEntityInteraction(mockCenterOnNodeFn));
-			const existingNode = createMockNode("node1", testEntityId, "full");
+			const existingNode = createMockNode("node1", testEntityId);
 			const customOptions = {
 				centerOnNode: false,
 				expandNode: false,
@@ -383,7 +382,7 @@ describe("useEntityInteraction", () => {
 	describe("convenience methods", () => {
 		it("should handle graph node click with correct preset", async () => {
 			const { result } = renderHook(() => useEntityInteraction(mockCenterOnNodeFn));
-			const graphNode = createMockNode("node1", testEntityId, "full");
+			const graphNode = createMockNode("node1", testEntityId);
 
 			// Mock the entity already exists in the store
 			mockGraphStore.nodes.set("node1", graphNode);
@@ -402,7 +401,7 @@ describe("useEntityInteraction", () => {
 
 		it("should handle graph node double click with correct preset", async () => {
 			const { result } = renderHook(() => useEntityInteraction(mockCenterOnNodeFn));
-			const graphNode = createMockNode("node1", testEntityId, "full");
+			const graphNode = createMockNode("node1", testEntityId);
 
 			// Mock the entity already exists in the store
 			mockGraphStore.nodes.set("node1", graphNode);
@@ -422,7 +421,7 @@ describe("useEntityInteraction", () => {
 
 		it("should handle sidebar entity click with correct preset", async () => {
 			const { result } = renderHook(() => useEntityInteraction(mockCenterOnNodeFn));
-			const existingNode = createMockNode("node1", testEntityId, "full");
+			const existingNode = createMockNode("node1", testEntityId);
 
 			// Mock the entity already exists in the store
 			mockGraphStore.nodes.set("node1", existingNode);
@@ -481,7 +480,7 @@ describe("useEntityInteraction", () => {
 	describe("logging", () => {
 		it("should log interaction start and completion", async () => {
 			const { result } = renderHook(() => useEntityInteraction(mockCenterOnNodeFn));
-			const existingNode = createMockNode("node1", testEntityId, "full");
+			const existingNode = createMockNode("node1", testEntityId);
 
 			await act(async () => {
 				await result.current.interactWithEntity(

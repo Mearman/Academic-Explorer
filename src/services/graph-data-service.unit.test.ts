@@ -426,8 +426,6 @@ describe("GraphDataService", () => {
 				expect.objectContaining({
 					nodeCount: expect.any(Number),
 					edgeCount: expect.any(Number),
-					minimalNodes: expect.any(Number),
-					fullNodes: expect.any(Number),
 					primaryNodeId: expect.any(String),
 				}),
 				"GraphDataService"
@@ -479,7 +477,7 @@ describe("GraphDataService", () => {
 					entityId: "W123456789",
 					type: "works" as EntityType,
 					label: "Test Work",
-					metadata: {},
+					entityData: {},
 					externalIds: [],
 				},
 			];
@@ -512,7 +510,7 @@ describe("GraphDataService", () => {
 			const existingNode = {
 				id: "node-1",
 				entityId: "A123456789",
-				metadata: { hydrationLevel: "full" as const },
+				entityData: { id: "https://openalex.org/A123456789", display_name: "Test Entity" },
 			};
 
 			// Mock the store's nodes.values() method
@@ -539,19 +537,19 @@ describe("GraphDataService", () => {
 			expect(mockStore.addEdges).toHaveBeenCalled();
 		});
 
-		it("should handle minimal hydration nodes by loading full data", async () => {
-			const minimalNode = {
+		it("should load existing node when entity is requested", async () => {
+			const existingNode = {
 				id: "node-1",
 				entityId: "A123456789",
-				metadata: { hydrationLevel: "minimal" as const },
+				entityData: { id: "https://openalex.org/A123456789" },
 			};
 
-			mockStore.nodes = new Map([["node-1", minimalNode]]);
+			mockStore.nodes = new Map([["node-1", existingNode]]);
 
 			await service.loadEntityIntoGraph("A123456789");
 
-			expect(mockDeduplicationService.getEntity).toHaveBeenCalledWith("https://openalex.org/A123456789", expect.any(Function));
-			expect(mockStore.addNodes).toHaveBeenCalled();
+			// Should not fetch entity data since node already exists
+			expect(mockDeduplicationService.getEntity).not.toHaveBeenCalled();
 		});
 
 		it("should handle detection errors", async () => {
@@ -634,7 +632,7 @@ describe("GraphDataService", () => {
 						entityId: nodeId,
 						type: "works" as EntityType,
 						label: "Test Work",
-						metadata: {},
+						entityData: {},
 						externalIds: [],
 					},
 				],
@@ -664,7 +662,7 @@ describe("GraphDataService", () => {
 						entityId: "A999999999",
 						type: "authors" as EntityType,
 						label: "Related Author",
-						metadata: {},
+						entityData: {},
 						externalIds: [],
 					},
 				],
@@ -1017,9 +1015,9 @@ describe("GraphDataService", () => {
 			});
 		});
 
-		describe("metadata extraction behavior", () => {
-			it("should extract metadata from work entity", async () => {
-				const workWithMetadata = {
+		describe("entity data storage behavior", () => {
+			it("should store entity data from work entity", async () => {
+				const workWithData = {
 					...mockWorkEntity,
 					publication_year: 2024,
 					cited_by_count: 150,
@@ -1031,7 +1029,7 @@ describe("GraphDataService", () => {
 					normalizedId: "W123456789",
 				});
 				mockDeduplicationService.getEntity.mockClear();
-				mockDeduplicationService.getEntity.mockResolvedValue(workWithMetadata);
+				mockDeduplicationService.getEntity.mockResolvedValue(workWithData);
 
 				await service.loadEntityGraph("W123456789");
 
@@ -1040,19 +1038,18 @@ describe("GraphDataService", () => {
 						expect.objectContaining({
 							entityId: "W123456789",
 							type: "works",
-							metadata: expect.objectContaining({
+							entityData: expect.objectContaining({
 								publication_year: 2024,
 								cited_by_count: 150,
 								referenced_works_count: 75,
-								open_access: expect.any(Boolean),
 							}),
 						}),
 					])
 				);
 			});
 
-			it("should extract metadata from author entity", async () => {
-				const authorWithMetadata = {
+			it("should store entity data from author entity", async () => {
+				const authorWithData = {
 					...mockAuthorEntity,
 					works_count: 30,
 					cited_by_count: 600,
@@ -1062,14 +1059,14 @@ describe("GraphDataService", () => {
 					entityType: "authors",
 					normalizedId: "A123456789",
 				});
-				mockDeduplicationService.getEntity.mockResolvedValue(authorWithMetadata);
+				mockDeduplicationService.getEntity.mockResolvedValue(authorWithData);
 
 				await service.loadEntityGraph("A123456789");
 
 				expect(mockStore.addNodes).toHaveBeenCalledWith(
 					expect.arrayContaining([
 						expect.objectContaining({
-							metadata: expect.objectContaining({
+							entityData: expect.objectContaining({
 								works_count: 30,
 								cited_by_count: 600,
 							}),
@@ -1113,13 +1110,22 @@ describe("GraphDataService", () => {
 
 				await service.loadEntityGraph("W123456789");
 
-				// Should create edges between work and its related entities
-				expect(mockStore.addEdges).toHaveBeenCalledWith(
+				// Should store the work entity with its relationship data
+				expect(mockStore.addNodes).toHaveBeenCalledWith(
 					expect.arrayContaining([
 						expect.objectContaining({
-							source: "A123456789",
-							target: "W123456789",
-							type: "authored",
+							entityId: "W123456789",
+							type: "works",
+							entityData: expect.objectContaining({
+								authorships: expect.arrayContaining([
+									expect.objectContaining({
+										author: expect.objectContaining({
+											id: "A123456789",
+											display_name: "Test Author",
+										}),
+									}),
+								]),
+							}),
 						}),
 					])
 				);
@@ -1346,28 +1352,28 @@ describe("GraphDataService", () => {
 
 			await service.loadEntityGraph("W123456789");
 
-			// Should create nodes for all entities
+			// Should create the primary work node with full entity data
 			expect(mockStore.addNodes).toHaveBeenCalledWith(
 				expect.arrayContaining([
-					expect.objectContaining({ entityId: "W123456789", type: "works" }),
-					expect.objectContaining({ entityId: "A111111111", type: "authors" }),
-					expect.objectContaining({ entityId: "A222222222", type: "authors" }),
-					expect.objectContaining({ entityId: "S111111111", type: "sources" }),
-				])
-			);
-
-			// Should create edges for all relationships
-			expect(mockStore.addEdges).toHaveBeenCalledWith(
-				expect.arrayContaining([
 					expect.objectContaining({
-						source: expect.stringMatching(/A111111111/),
-						target: expect.stringMatching(/W123456789/),
-						type: "authored",
-					}),
-					expect.objectContaining({
-						source: expect.stringMatching(/A222222222/),
-						target: expect.stringMatching(/W123456789/),
-						type: "authored",
+						entityId: "W123456789",
+						type: "works",
+						entityData: expect.objectContaining({
+							authorships: expect.arrayContaining([
+								expect.objectContaining({
+									author: expect.objectContaining({
+										id: "A111111111",
+										display_name: "First Author",
+									}),
+								}),
+								expect.objectContaining({
+									author: expect.objectContaining({
+										id: "A222222222",
+										display_name: "Second Author",
+									}),
+								}),
+							]),
+						})
 					}),
 				])
 			);
@@ -1385,7 +1391,7 @@ describe("GraphDataService", () => {
 						entityId: nodeId,
 						type: "works" as EntityType,
 						label: "Test Work",
-						metadata: {},
+						entityData: {},
 						externalIds: [],
 					},
 				],
