@@ -40,7 +40,6 @@ interface UseAnimatedLayoutOptions {
   enabled?: boolean;
   onLayoutChange?: () => void;
   fitViewAfterLayout?: boolean;
-  containerDimensions?: { width: number; height: number };
   useAnimation?: boolean;
 }
 
@@ -49,7 +48,6 @@ export function useAnimatedLayout(options: UseAnimatedLayoutOptions = {}) {
 		enabled = true,
 		onLayoutChange,
 		fitViewAfterLayout = true,
-		containerDimensions,
 		useAnimation = true,
 	} = options;
 
@@ -107,7 +105,6 @@ export function useAnimatedLayout(options: UseAnimatedLayoutOptions = {}) {
 		pauseAnimation,
 		resumeAnimation,
 		animationState: hookAnimationState,
-		nodePositions,
 		performanceStats,
 		getOptimalConfig,
 		isWorkerReady,
@@ -208,7 +205,7 @@ export function useAnimatedLayout(options: UseAnimatedLayoutOptions = {}) {
 		const edges = getEdges();
 
 		const animatedNodes: AnimatedNode[] = nodes.map((node) => {
-			const isPinned = Boolean(pinnedNodes[node.id]);
+			const isPinned = !!pinnedNodes[node.id];
 			return {
 				id: node.id,
 				type: node.data?.type as EntityType | undefined,
@@ -264,15 +261,15 @@ export function useAnimatedLayout(options: UseAnimatedLayoutOptions = {}) {
 		const layoutOptions = currentLayout?.options;
 		const enhancedConfig = {
 			...config,
-			linkDistance: layoutOptions?.linkDistance ?? 100,
-			linkStrength: layoutOptions?.linkStrength ?? 0.01,
-			chargeStrength: layoutOptions?.chargeStrength ?? -1000,
-			centerStrength: layoutOptions?.centerStrength ?? 0.01,
-			collisionRadius: layoutOptions?.collisionRadius ?? 120,
-			collisionStrength: layoutOptions?.collisionStrength ?? 1.0,
-			velocityDecay: layoutOptions?.velocityDecay ?? 0.1,
-			alphaDecay: layoutOptions?.alphaDecay ?? config.alphaDecay,
-			seed: layoutOptions?.seed ?? 0, // For deterministic layouts
+			linkDistance: layoutOptions?.linkDistance || 100,
+			linkStrength: layoutOptions?.linkStrength || 0.01,
+			chargeStrength: layoutOptions?.chargeStrength || -1000,
+			centerStrength: layoutOptions?.centerStrength || 0.01,
+			collisionRadius: layoutOptions?.collisionRadius || 120,
+			collisionStrength: layoutOptions?.collisionStrength || 1.0,
+			velocityDecay: layoutOptions?.velocityDecay || 0.1,
+			alphaDecay: layoutOptions?.alphaDecay || config.alphaDecay,
+			seed: layoutOptions?.seed || 0, // For deterministic layouts
 		};
 
 		logger.info("graph", "Starting animated force layout", {
@@ -289,7 +286,8 @@ export function useAnimatedLayout(options: UseAnimatedLayoutOptions = {}) {
 		storeMethodsRef.current.startAnimation();
 
 		// Start the animation
-		startAnimation(animatedNodes, animatedLinks, enhancedConfig, pinnedNodes);
+		const pinnedNodeSet = new Set(Object.keys(pinnedNodes).filter(key => pinnedNodes[key]));
+		startAnimation(animatedNodes, animatedLinks, enhancedConfig, pinnedNodeSet);
 	}, [
 		enabled,
 		useAnimation,
@@ -299,6 +297,7 @@ export function useAnimatedLayout(options: UseAnimatedLayoutOptions = {}) {
 		pinnedNodes,
 		currentLayout,
 		startAnimation,
+		autoPinOnLayoutStabilization,
 	]);
 
 	// Stop layout

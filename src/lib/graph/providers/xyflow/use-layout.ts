@@ -145,7 +145,7 @@ export function useLayout(
 				edgeCount: edges.length,
 				hasPinnedNodes,
 				pinnedNodeCount,
-				pinnedNodeIds: Array.from(pinnedNodes),
+				pinnedNodeIds: Object.keys(pinnedNodes),
 				autoPinOnLayoutStabilization,
 				linkDistance,
 				linkStrength,
@@ -182,7 +182,7 @@ export function useLayout(
 
 		// Convert ReactFlow nodes to D3 nodes with multiple pinned nodes support
 		const d3Nodes: D3Node[] = nodes.map((node, index) => {
-			const isPinned = pinnedNodes.has(node.id);
+			const isPinned = pinnedNodes[node.id];
 
 			if (isPinned) {
 				logger.info(
@@ -359,9 +359,12 @@ export function useLayout(
             typeof d3Node.x === "number" &&
             typeof d3Node.y === "number"
 					) {
+						// Type assertion is safe here because we've checked the types above
+						const x = d3Node.x as number;
+						const y = d3Node.y as number;
 						return {
 							...node,
-							position: { x: d3Node.x, y: d3Node.y },
+							position: { x, y },
 						};
 					}
 					return node;
