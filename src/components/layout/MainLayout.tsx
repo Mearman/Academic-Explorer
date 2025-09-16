@@ -20,21 +20,23 @@ interface MainLayoutProps {
 }
 
 export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
-	const {
-		leftSidebarOpen,
-		rightSidebarOpen,
-		leftSidebarPinned,
-		rightSidebarPinned,
-		leftSidebarAutoHidden,
-		rightSidebarAutoHidden,
-		leftSidebarHovered,
-		rightSidebarHovered,
-		toggleLeftSidebar,
-		toggleRightSidebar,
-	} = useLayoutStore();
+	const layoutStore = useLayoutStore();
+	const leftSidebarOpen = layoutStore.leftSidebarOpen;
+	const rightSidebarOpen = layoutStore.rightSidebarOpen;
+	const leftSidebarPinned = layoutStore.leftSidebarPinned;
+	const rightSidebarPinned = layoutStore.rightSidebarPinned;
+	const leftSidebarAutoHidden = layoutStore.leftSidebarAutoHidden;
+	const rightSidebarAutoHidden = layoutStore.rightSidebarAutoHidden;
+	const leftSidebarHovered = layoutStore.leftSidebarHovered;
+	const rightSidebarHovered = layoutStore.rightSidebarHovered;
+	const toggleLeftSidebar = layoutStore.toggleLeftSidebar;
+	const toggleRightSidebar = layoutStore.toggleRightSidebar;
 
-	const { colorScheme, setColorScheme } = useMantineColorScheme();
-	const { colors } = useThemeColors();
+	const mantineColorScheme = useMantineColorScheme();
+	const colorScheme = mantineColorScheme.colorScheme;
+	const setColorScheme = mantineColorScheme.setColorScheme;
+	const themeColors = useThemeColors();
+	const colors = themeColors.colors;
 
 	// Calculate effective visibility for each sidebar
 	const leftSidebarEffectivelyVisible = leftSidebarOpen && (!leftSidebarAutoHidden || leftSidebarHovered || leftSidebarPinned);

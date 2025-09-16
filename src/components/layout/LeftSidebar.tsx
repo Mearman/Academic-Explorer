@@ -47,29 +47,67 @@ import {
 export const LeftSidebar: React.FC = () => {
 	const [searchQuery, setSearchQuery] = useState("")
 	const [expansionDialogTarget, setExpansionDialogTarget] = useState<ExpansionTarget | null>(null)
-	const { search, isLoading, clearGraph, loadAllCachedNodes, expandAllNodesOfType } = useGraphData()
-	const { colors } = useThemeColors()
+	const graphData = useGraphData()
+	const search = graphData.search
+	const isLoading = graphData.isLoading
+	const clearGraph = graphData.clearGraph
+	const loadAllCachedNodes = graphData.loadAllCachedNodes
+	const expandAllNodesOfType = graphData.expandAllNodesOfType
+	const themeColors = useThemeColors()
+	const colors = themeColors.colors
 
 	// Graph store for statistics and visibility - use as single source of truth
 	const visibleEntityTypes = useGraphStore((state) => state.visibleEntityTypes)
-	const getEntityTypeStats = useGraphStore((state) => state.getEntityTypeStats)
 	const toggleEntityTypeVisibility = useGraphStore((state) => state.toggleEntityTypeVisibility)
 	const visibleEdgeTypes = useGraphStore((state) => state.visibleEdgeTypes)
-	const getEdgeTypeStats = useGraphStore((state) => state.getEdgeTypeStats)
 	const toggleEdgeTypeVisibility = useGraphStore((state) => state.toggleEdgeTypeVisibility)
 
-	// Convert Set to Array for search functionality
-	const selectedEntityTypes = useMemo(() => Array.from(visibleEntityTypes), [visibleEntityTypes])
+	// Use stable selectors with useMemo to avoid getSnapshot infinite loops (React 19 + Zustand + Immer pattern)
+	const rawNodes = useGraphStore((state) => state.nodes)
+	const rawEdges = useGraphStore((state) => state.edges)
+	const searchResults = useGraphStore((state) => state.searchResults)
+
+	const entityStats = useMemo(() => ({
+		total: rawNodes ? Object.values(rawNodes).reduce((acc, node) => {
+			acc[node.type] = (acc[node.type] || 0) + 1;
+			return acc;
+		}, {} as Record<EntityType, number>) : {} as Record<EntityType, number>,
+		visible: rawNodes ? Object.values(rawNodes)
+			.filter(node => visibleEntityTypes[node.type])
+			.reduce((acc, node) => {
+				acc[node.type] = (acc[node.type] || 0) + 1;
+				return acc;
+			}, {} as Record<EntityType, number>) : {} as Record<EntityType, number>,
+		searchResults: searchResults ? Object.values(searchResults).reduce((acc, node) => {
+			acc[node.type] = (acc[node.type] || 0) + 1;
+			return acc;
+		}, {} as Record<EntityType, number>) : {} as Record<EntityType, number>
+	}), [rawNodes, visibleEntityTypes, searchResults])
+
+	const edgeStats = useMemo(() => ({
+		total: rawEdges ? Object.values(rawEdges).reduce((acc, edge) => {
+			acc[edge.relationType] = (acc[edge.relationType] || 0) + 1;
+			return acc;
+		}, {} as Record<RelationType, number>) : {} as Record<RelationType, number>,
+		visible: rawEdges ? Object.values(rawEdges)
+			.filter(edge => visibleEdgeTypes[edge.relationType])
+			.reduce((acc, edge) => {
+				acc[edge.relationType] = (acc[edge.relationType] || 0) + 1;
+				return acc;
+			}, {} as Record<RelationType, number>) : {} as Record<RelationType, number>
+	}), [rawEdges, visibleEdgeTypes])
+
+	// Convert Record to Array for search functionality
+	const selectedEntityTypes = useMemo(() =>
+		Object.entries(visibleEntityTypes).filter(([, visible]) => visible).map(([type]) => type as EntityType),
+		[visibleEntityTypes]
+	)
 
 	// Cache controls state
 	const showAllCachedNodes = useGraphStore((state) => state.showAllCachedNodes)
 	const setShowAllCachedNodes = useGraphStore((state) => state.setShowAllCachedNodes)
 	const traversalDepth = useGraphStore((state) => state.traversalDepth)
 	const setTraversalDepth = useGraphStore((state) => state.setTraversalDepth)
-
-	// Get statistics for entity types and edge types
-	const entityStats = useMemo(() => getEntityTypeStats(), [getEntityTypeStats])
-	const edgeStats = useMemo(() => getEdgeTypeStats(), [getEdgeTypeStats])
 
 	const handleSearch = async (e: React.FormEvent) => {
 		e.preventDefault()
@@ -337,9 +375,9 @@ export const LeftSidebar: React.FC = () => {
 			>
 				<div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
 					{entityTypeOptions.map(option => {
-						const totalCount = entityStats.total.get(option.type) || 0;
-						const visibleCount = entityStats.visible.get(option.type) || 0;
-						const searchCount = entityStats.searchResults.get(option.type) || 0;
+						const totalCount = entityStats.total[option.type] || 0;
+						const visibleCount = entityStats.visible[option.type] || 0;
+						const searchCount = entityStats.searchResults[option.type] || 0;
 
 						return (
 							<label
@@ -351,7 +389,7 @@ export const LeftSidebar: React.FC = () => {
 									cursor: "pointer",
 									padding: "8px",
 									borderRadius: "6px",
-									backgroundColor: visibleEntityTypes.has(option.type) ? colors.background.tertiary : "transparent",
+									backgroundColor: visibleEntityTypes[option.type] ? colors.background.tertiary : "transparent",
 									border: `1px solid ${colors.border.primary}`,
 									transition: "background-color 0.2s",
 								}}
@@ -364,7 +402,7 @@ export const LeftSidebar: React.FC = () => {
 								}}>
 									<input
 										type="checkbox"
-										checked={visibleEntityTypes.has(option.type)}
+										checked={visibleEntityTypes[option.type] || false}
 										onChange={() => { handleEntityTypeToggle(option.type) }}
 										style={{ margin: 0 }}
 									/>
@@ -465,8 +503,8 @@ export const LeftSidebar: React.FC = () => {
 			>
 				<div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
 					{edgeTypeOptions.map(option => {
-						const totalCount = edgeStats.total.get(option.type) || 0;
-						const visibleCount = edgeStats.visible.get(option.type) || 0;
+						const totalCount = edgeStats.total[option.type] || 0;
+						const visibleCount = edgeStats.visible[option.type] || 0;
 
 						return (
 							<div
@@ -477,7 +515,7 @@ export const LeftSidebar: React.FC = () => {
 									gap: "4px",
 									padding: "8px",
 									borderRadius: "6px",
-									backgroundColor: visibleEdgeTypes.has(option.type) ? colors.background.tertiary : "transparent",
+									backgroundColor: visibleEdgeTypes[option.type] ? colors.background.tertiary : "transparent",
 									border: `1px solid ${colors.border.primary}`,
 									transition: "background-color 0.2s",
 								}}
@@ -490,7 +528,7 @@ export const LeftSidebar: React.FC = () => {
 								}}>
 									<input
 										type="checkbox"
-										checked={visibleEdgeTypes.has(option.type)}
+										checked={visibleEdgeTypes[option.type] || false}
 										onChange={() => { handleEdgeTypeToggle(option.type) }}
 										style={{ margin: 0, cursor: "pointer" }}
 									/>

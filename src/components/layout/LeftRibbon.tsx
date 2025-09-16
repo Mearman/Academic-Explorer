@@ -19,9 +19,12 @@ import {
 } from "@tabler/icons-react";
 
 export const LeftRibbon: React.FC = () => {
-	const { clearGraph } = useGraphData();
-	const { colors } = useThemeColors();
-	const { expandSidebarToSection } = useLayoutStore();
+	const graphData = useGraphData();
+	const clearGraph = graphData.clearGraph;
+	const themeColors = useThemeColors();
+	const colors = themeColors.colors;
+	const layoutStore = useLayoutStore();
+	const expandSidebarToSection = layoutStore.expandSidebarToSection;
 
 	const handleClearGraph = () => {
 		logger.info("ui", "Clear graph clicked from left ribbon");

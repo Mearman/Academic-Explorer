@@ -37,7 +37,8 @@ export const SortBuilder: React.FC<SortBuilderProps> = ({
 	onSortsChange,
 	className
 }) => {
-	const { colors } = useThemeColors();
+	const themeColors = useThemeColors();
+	const colors = themeColors.colors;
 	const [showAddForm, setShowAddForm] = useState(false);
 	const [newSort, setNewSort] = useState<NewSortForm>({
 		property: "",

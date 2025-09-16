@@ -18,18 +18,18 @@ export const RawApiDataSection: React.FC<RawApiDataSectionProps> = ({
 	entityId,
 	className
 }) => {
-	const { colors } = useThemeColors();
+	const themeColors = useThemeColors();
+	const colors = themeColors.colors;
 	const [viewMode, setViewMode] = useState<"formatted" | "raw">("formatted");
 
-	const {
-		data: rawData,
-		isLoading,
-		error,
-		isError
-	} = useRawEntityData({
+	const rawEntityDataResult = useRawEntityData({
 		entityId,
 		enabled: !!entityId
 	});
+	const rawData = rawEntityDataResult.data;
+	const isLoading = rawEntityDataResult.isLoading;
+	const error = rawEntityDataResult.error;
+	const isError = rawEntityDataResult.isError;
 
 	// Note: ExpandableSection component removed as we now show all data expanded by default
 

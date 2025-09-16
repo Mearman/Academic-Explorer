@@ -18,7 +18,8 @@ const layoutOptions = [
 ];
 
 export const LayoutControls: React.FC = () => {
-	const { currentLayout, setLayout } = useGraphStore();
+	const currentLayout = useGraphStore((state) => state.currentLayout);
+	const setLayout = useGraphStore((state) => state.setLayout);
 	const [layoutOptions_, setLayoutOptions] = React.useState(currentLayout.options || {});
 
 	// Sync local options state with store when currentLayout changes

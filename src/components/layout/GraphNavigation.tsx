@@ -3,7 +3,7 @@
  * Provider-agnostic graph visualization with XYFlow implementation
  */
 
-import React, { useEffect, useRef, useCallback } from "react";
+import React, { useEffect, useRef, useCallback, useMemo } from "react";
 import {
 	ReactFlow,
 	ReactFlowProvider,
@@ -32,7 +32,7 @@ import { XYFlowProvider } from "@/lib/graph/providers/xyflow/xyflow-provider";
 import { nodeTypes } from "@/lib/graph/providers/xyflow/node-types";
 import { edgeTypes } from "@/lib/graph/providers/xyflow/edge-types";
 import { useAnimatedLayout } from "@/lib/graph/providers/xyflow/use-animated-layout";
-import type { GraphNode, EntityType, ExternalIdentifier } from "@/lib/graph/types";
+import type { GraphNode, EntityType, ExternalIdentifier, RelationType, GraphEdge } from "@/lib/graph/types";
 import { EntityDetector } from "@/lib/graph/utils/entity-detection";
 import { useGraphData } from "@/hooks/use-graph-data";
 import { useEntityInteraction } from "@/hooks/use-entity-interaction";
@@ -40,6 +40,8 @@ import { useContextMenu } from "@/hooks/use-context-menu";
 import { NodeContextMenu } from "@/components/layout/NodeContextMenu";
 import { GraphToolbar } from "@/components/graph/GraphToolbar";
 import { AnimatedGraphControls } from "@/components/graph/AnimatedGraphControls";
+import { DataFetchingProgress } from "@/components/molecules/DataFetchingProgress";
+import { useDataFetchingProgressStore } from "@/stores/data-fetching-progress-store";
 import { logger } from "@/lib/logger";
 import { GRAPH_ANIMATION, FIT_VIEW_PRESETS } from "@/lib/graph/constants";
 
@@ -55,43 +57,43 @@ const GraphNavigationInner: React.FC<GraphNavigationProps> = ({ className, style
 	const navigate = useNavigate();
 	const reactFlowInstance = useReactFlow();
 	const containerRef = useRef<HTMLDivElement>(null);
-	const { loadEntityIntoGraph, expandNode } = useGraphData();
-	const { contextMenu, showContextMenu, hideContextMenu } = useContextMenu();
+	const graphData = useGraphData();
+	const loadEntityIntoGraph = graphData.loadEntityIntoGraph;
+	const expandNode = graphData.expandNode;
+	const contextMenuData = useContextMenu();
+	const contextMenu = contextMenuData.contextMenu;
+	const showContextMenu = contextMenuData.showContextMenu;
+	const hideContextMenu = contextMenuData.hideContextMenu;
 
 
 	// Store state
-	const {
-		provider: _provider,
-		setProvider,
-		nodes: storeNodes,
-		edges: storeEdges,
-		currentLayout,
-		isLoading,
-		error,
-		visibleEntityTypes,
-		visibleEdgeTypes,
-		pinnedNodes: _pinnedNodes,
-	} = useGraphStore();
+	const graphStore = useGraphStore();
+	const _provider = graphStore.provider;
+	const setProvider = graphStore.setProvider;
+	const storeNodes = graphStore.nodes;
+	const storeEdges = graphStore.edges;
+	const currentLayout = graphStore.currentLayout;
+	const isLoading = graphStore.isLoading;
+	const error = graphStore.error;
+	const visibleEntityTypes = graphStore.visibleEntityTypes;
+	const visibleEdgeTypes = graphStore.visibleEdgeTypes;
+	const _pinnedNodes = graphStore.pinnedNodes;
 
-	// Create stable selectors for visible nodes and edges
-	const getVisibleNodes = useCallback(() => {
-		const { nodes, visibleEntityTypes } = useGraphStore.getState();
-		return Array.from(nodes.values()).filter(node => visibleEntityTypes.has(node.type));
-	}, []);
+	// Use direct selectors for raw store data to avoid computed array dependencies
+	const rawNodesMap = useGraphStore((state) => state.nodes);
+	const rawEdgesMap = useGraphStore((state) => state.edges);
 
-	const getVisibleEdges = useCallback(() => {
-		const { edges, nodes, visibleEntityTypes, visibleEdgeTypes } = useGraphStore.getState();
-		return Array.from(edges.values()).filter(edge => {
-			const sourceNode = nodes.get(edge.source);
-			const targetNode = nodes.get(edge.target);
-			return sourceNode && targetNode &&
-				visibleEntityTypes.has(sourceNode.type) &&
-				visibleEntityTypes.has(targetNode.type) &&
-				visibleEdgeTypes.has(edge.type);
-		});
-	}, []);
+	const layoutStore = useLayoutStore();
+	const _graphProvider = layoutStore.graphProvider;
+	const setPreviewEntity = layoutStore.setPreviewEntity;
+	const autoPinOnLayoutStabilization = layoutStore.autoPinOnLayoutStabilization;
 
-	const { graphProvider: _graphProvider, setPreviewEntity, autoPinOnLayoutStabilization } = useLayoutStore();
+	// Data fetching progress store - use stable selectors
+	const requestsMap = useDataFetchingProgressStore((state) => state.requests);
+	const workerReady = useDataFetchingProgressStore((state) => state.workerReady);
+
+	// Convert to array only when needed (memoized) - using stable selector
+	const activeRequests = React.useMemo(() => Object.values(requestsMap), [requestsMap]);
 
 	// XYFlow state - synced with store
 	const [nodes, setNodes, onNodesChangeOriginal] = useNodesState<XYNode>([]);
@@ -219,7 +221,9 @@ const GraphNavigationInner: React.FC<GraphNavigationProps> = ({ className, style
 	}, [reactFlowInstance]);
 
 	// Use shared entity interaction logic with centerOnNode function
-	const { handleGraphNodeClick: baseHandleGraphNodeClick, handleGraphNodeDoubleClick } = useEntityInteraction(centerOnNode);
+	const entityInteraction = useEntityInteraction(centerOnNode);
+	const baseHandleGraphNodeClick = entityInteraction.handleGraphNodeClick;
+	const handleGraphNodeDoubleClick = entityInteraction.handleGraphNodeDoubleClick;
 
 	// Custom graph node single click handler that includes URL hash updates
 	const handleGraphNodeClick = useCallback(async (node: GraphNode) => {
@@ -325,6 +329,24 @@ const GraphNavigationInner: React.FC<GraphNavigationProps> = ({ className, style
 	useEffect(() => {
 		if (!containerRef.current) return;
 
+		// Only create a new provider if we don't have one yet
+		if (providerRef.current) {
+			// Update existing provider with new event handlers
+			const existingProvider = providerRef.current;
+			existingProvider.setEvents({
+				onNodeClick: (node: GraphNode) => {
+					void handleGraphNodeClick(node);
+				},
+				onNodeDoubleClick: (node: GraphNode) => {
+					void handleGraphNodeDoubleClickWithHash(node);
+				},
+				onNodeHover: (node: GraphNode | null) => {
+					setPreviewEntity(node?.entityId || null);
+				},
+			});
+			return;
+		}
+
 		const graphProvider = createGraphProvider("xyflow");
 		// Type guard: we know createGraphProvider('xyflow') returns XYFlowProvider
 		if (!(graphProvider instanceof XYFlowProvider)) {
@@ -356,23 +378,36 @@ const GraphNavigationInner: React.FC<GraphNavigationProps> = ({ className, style
 		// Set ReactFlow instance
 		graphProvider.setReactFlowInstance(reactFlowInstance);
 
-		// Update store
-		setProvider(graphProvider);
+		// Set the provider in the store (now safe with fixed selectors)
+		const currentProvider = useGraphStore.getState().provider;
+		if (currentProvider !== graphProvider) {
+			setProvider(graphProvider);
+		}
 
 		return () => {
 			graphProvider.destroy();
 		};
-	}, [reactFlowInstance, navigate, setProvider, setPreviewEntity, loadEntityIntoGraph, expandNode, centerOnNode, autoPinOnLayoutStabilization, handleGraphNodeClick, handleGraphNodeDoubleClickWithHash]);
+	}, [reactFlowInstance, setPreviewEntity, autoPinOnLayoutStabilization]);
 
 	// Sync store data with XYFlow using incremental updates (applying visibility filters)
 	useEffect(() => {
-		// Get visible data fresh on each effect run to avoid stale function references
-		const visibleNodes = getVisibleNodes();
-		const visibleEdges = getVisibleEdges();
+		// Compute visible nodes and edges inside effect to avoid dependency cycle
+		const nodesList = Object.values(rawNodesMap);
+		const currentVisibleNodes = nodesList.filter(node => visibleEntityTypes[node.type]);
+
+		const edgesList = Object.values(rawEdgesMap);
+		const currentVisibleEdges = edgesList.filter(edge => {
+			const sourceNode = rawNodesMap[edge.source];
+			const targetNode = rawNodesMap[edge.target];
+			return sourceNode && targetNode &&
+				visibleEntityTypes[sourceNode.type] &&
+				visibleEntityTypes[targetNode.type] &&
+				visibleEdgeTypes[edge.type];
+		});
 
 		// Get current node and edge IDs
-		const currentNodeIds = new Set(visibleNodes.map(n => n.id));
-		const currentEdgeIds = new Set(visibleEdges.map(e => e.id));
+		const currentNodeIds = new Set(currentVisibleNodes.map(n => n.id));
+		const currentEdgeIds = new Set(currentVisibleEdges.map(e => e.id));
 
 		// Find new nodes and edges
 		const newNodeIds = new Set([...currentNodeIds].filter(id => !previousNodeIdsRef.current.has(id)));
@@ -387,10 +422,10 @@ const GraphNavigationInner: React.FC<GraphNavigationProps> = ({ className, style
 		const updatedNodeIds = new Set<string>();
 
 		logger.info("graph", "Store data incremental sync effect triggered", {
-			totalNodeCount: storeNodes.size,
-			totalEdgeCount: storeEdges.size,
-			visibleNodeCount: visibleNodes.length,
-			visibleEdgeCount: visibleEdges.length,
+			totalNodeCount: Object.keys(storeNodes).length,
+			totalEdgeCount: Object.keys(storeEdges).length,
+			visibleNodeCount: currentVisibleNodes.length,
+			visibleEdgeCount: currentVisibleEdges.length,
 			newNodes: newNodeIds.size,
 			newEdges: newEdgeIds.size,
 			updatedNodes: updatedNodeIds.size,
@@ -402,17 +437,17 @@ const GraphNavigationInner: React.FC<GraphNavigationProps> = ({ className, style
 		if (providerRef.current && (newNodeIds.size > 0 || newEdgeIds.size > 0 || updatedNodeIds.size > 0 || removedNodeIds.size > 0 || removedEdgeIds.size > 0)) {
 			// Special case: If we have no previous nodes, this is initial load - use setNodes/setEdges
 			if (previousNodeIdsRef.current.size === 0 && previousEdgeIdsRef.current.size === 0) {
-				providerRef.current.setNodes(visibleNodes);
-				providerRef.current.setEdges(visibleEdges);
+				providerRef.current.setNodes(currentVisibleNodes);
+				providerRef.current.setEdges(currentVisibleEdges);
 			} else {
 				// Use incremental provider methods for updates
 				if (newNodeIds.size > 0) {
-					const newNodes = visibleNodes.filter(n => newNodeIds.has(n.id));
+					const newNodes = currentVisibleNodes.filter(n => newNodeIds.has(n.id));
 					providerRef.current.addNodes(newNodes);
 				}
 
 				if (newEdgeIds.size > 0) {
-					const newEdges = visibleEdges.filter(e => newEdgeIds.has(e.id));
+					const newEdges = currentVisibleEdges.filter(e => newEdgeIds.has(e.id));
 					providerRef.current.addEdges(newEdges);
 				}
 
@@ -422,7 +457,7 @@ const GraphNavigationInner: React.FC<GraphNavigationProps> = ({ className, style
 
 				// Note: Node updates will be handled by ReactFlow changes below
 				if (updatedNodeIds.size > 0) {
-					const updatedNodes = visibleNodes.filter(n => updatedNodeIds.has(n.id));
+					const updatedNodes = currentVisibleNodes.filter(n => updatedNodeIds.has(n.id));
 					logger.info("graph", "Detected existing nodes with updated data", {
 						updatedNodeCount: updatedNodes.length,
 						updatedNodeIds: Array.from(updatedNodeIds),
@@ -504,13 +539,13 @@ const GraphNavigationInner: React.FC<GraphNavigationProps> = ({ className, style
 		// Update refs for next comparison
 		previousNodeIdsRef.current = currentNodeIds;
 		previousEdgeIdsRef.current = currentEdgeIds;
-	}, [storeNodes, storeEdges, visibleEntityTypes, visibleEdgeTypes, setNodes, setEdges, getVisibleNodes, getVisibleEdges]);
+	}, [rawNodesMap, rawEdgesMap, visibleEntityTypes, visibleEdgeTypes, setNodes, setEdges]);
 
 	// URL state synchronization - read selected entity from hash on mount
 	useEffect(() => {
 		const currentHash = window.location.hash;
 
-		if (currentHash && currentHash !== "#/" && storeNodes.size > 0) {
+		if (currentHash && currentHash !== "#/" && Object.keys(storeNodes).length > 0) {
 			// Parse hash (format: "#/entityType/entityId")
 			const hashPath = currentHash.substring(1); // Remove the '#'
 			const pathParts = hashPath.split("/").filter(part => part.length > 0);
@@ -519,7 +554,7 @@ const GraphNavigationInner: React.FC<GraphNavigationProps> = ({ className, style
 				const [entityType, entityId] = pathParts;
 
 				// Find the corresponding node in the graph
-				const matchingNode = Array.from(storeNodes.values()).find(node => {
+				const matchingNode = Object.values(storeNodes).find(node => {
 					const cleanNodeId = EntityDetector.extractOpenAlexId(node.entityId);
 					const cleanUrlId = EntityDetector.extractOpenAlexId(entityId);
 					return node.type === entityType && cleanNodeId === cleanUrlId;
@@ -567,7 +602,7 @@ const GraphNavigationInner: React.FC<GraphNavigationProps> = ({ className, style
 
 			const currentHash = window.location.hash;
 
-			if (currentHash && currentHash !== "#/" && storeNodes.size > 0) {
+			if (currentHash && currentHash !== "#/" && Object.keys(storeNodes).length > 0) {
 				// Parse hash (format: "#/entityType/entityId")
 				const hashPath = currentHash.substring(1); // Remove the '#'
 				const pathParts = hashPath.split("/").filter(part => part.length > 0);
@@ -576,7 +611,7 @@ const GraphNavigationInner: React.FC<GraphNavigationProps> = ({ className, style
 					const [entityType, entityId] = pathParts;
 
 					// Find the corresponding node in the graph
-					const matchingNode = Array.from(storeNodes.values()).find(node => {
+					const matchingNode = Object.values(storeNodes).find(node => {
 						const cleanNodeId = EntityDetector.extractOpenAlexId(node.entityId);
 						const cleanUrlId = EntityDetector.extractOpenAlexId(entityId);
 						return node.type === entityType && cleanNodeId === cleanUrlId;
@@ -674,7 +709,7 @@ const GraphNavigationInner: React.FC<GraphNavigationProps> = ({ className, style
 
 	// Loading state - only show full loading screen if there are no existing nodes
 	// This prevents the loading screen from showing during incremental expansions
-	if (isLoading && storeNodes.size === 0) {
+	if (isLoading && Object.keys(storeNodes).length === 0) {
 		return (
 			<div className={className} style={{
 				display: "flex",
@@ -810,6 +845,13 @@ const GraphNavigationInner: React.FC<GraphNavigationProps> = ({ className, style
 					</Panel>
 				)}
 			</ReactFlow>
+
+			{/* Data fetching progress indicators */}
+			{/* Temporarily disabled to fix infinite loop */}
+			{/* <DataFetchingProgress
+				activeRequests={activeRequests}
+				workerReady={workerReady}
+			/> */}
 
 			{/* Context menu */}
 			{contextMenu.visible && contextMenu.node && (

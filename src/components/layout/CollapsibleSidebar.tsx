@@ -25,25 +25,25 @@ export const CollapsibleSidebar: React.FC<CollapsibleSidebarProps> = ({
 	minWidth = 320,
 	maxWidth = 400,
 }) => {
-	const {
-		leftSidebarOpen,
-		rightSidebarOpen,
-		leftSidebarPinned,
-		rightSidebarPinned,
-		leftSidebarAutoHidden,
-		rightSidebarAutoHidden,
-		leftSidebarHovered,
-		rightSidebarHovered,
-		toggleLeftSidebar,
-		toggleRightSidebar,
-		pinLeftSidebar,
-		pinRightSidebar,
-		setLeftSidebarAutoHidden,
-		setRightSidebarAutoHidden,
-		setLeftSidebarHovered,
-		setRightSidebarHovered,
-	} = useLayoutStore()
-	const { colors } = useThemeColors()
+	const layoutStore = useLayoutStore()
+	const leftSidebarOpen = layoutStore.leftSidebarOpen
+	const rightSidebarOpen = layoutStore.rightSidebarOpen
+	const leftSidebarPinned = layoutStore.leftSidebarPinned
+	const rightSidebarPinned = layoutStore.rightSidebarPinned
+	const leftSidebarAutoHidden = layoutStore.leftSidebarAutoHidden
+	const rightSidebarAutoHidden = layoutStore.rightSidebarAutoHidden
+	const leftSidebarHovered = layoutStore.leftSidebarHovered
+	const rightSidebarHovered = layoutStore.rightSidebarHovered
+	const toggleLeftSidebar = layoutStore.toggleLeftSidebar
+	const toggleRightSidebar = layoutStore.toggleRightSidebar
+	const pinLeftSidebar = layoutStore.pinLeftSidebar
+	const pinRightSidebar = layoutStore.pinRightSidebar
+	const setLeftSidebarAutoHidden = layoutStore.setLeftSidebarAutoHidden
+	const setRightSidebarAutoHidden = layoutStore.setRightSidebarAutoHidden
+	const setLeftSidebarHovered = layoutStore.setLeftSidebarHovered
+	const setRightSidebarHovered = layoutStore.setRightSidebarHovered
+	const themeColors = useThemeColors()
+	const colors = themeColors.colors
 
 	const autoHideTimeoutRef = useRef<NodeJS.Timeout | null>(null)
 

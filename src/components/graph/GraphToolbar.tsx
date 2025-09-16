@@ -19,10 +19,18 @@ interface GraphToolbarProps {
 export const GraphToolbar: React.FC<GraphToolbarProps> = ({
 	className = ""
 }) => {
-	const { trimLeafNodes } = useGraphUtilities();
-	const { expandNode } = useGraphData();
-	const { getNodes, getEdges, setNodes } = useReactFlow();
-	const { pinNode, clearAllPinnedNodes, pinnedNodes } = useGraphStore();
+	const trimLeafNodes = useGraphUtilities().trimLeafNodes;
+	const expandNode = useGraphData().expandNode;
+	const reactFlow = useReactFlow();
+	const getNodes = reactFlow.getNodes;
+	const getEdges = reactFlow.getEdges;
+	const setNodes = reactFlow.setNodes;
+	const pinNode = useGraphStore((state) => state.pinNode);
+	const clearAllPinnedNodes = useGraphStore((state) => state.clearAllPinnedNodes);
+	// Use stable selectors to avoid getSnapshot infinite loops (React 19 + Zustand + Immer pattern)
+	const pinnedNodes = useGraphStore((state) => state.pinnedNodes);
+	const pinnedNodesCount = React.useMemo(() => Object.keys(pinnedNodes).length, [pinnedNodes]);
+	const pinnedNodeIds = React.useMemo(() => Object.keys(pinnedNodes), [pinnedNodes]);
 
 	// Graph utility action
 	const handleTrimLeaves = useCallback(() => {
@@ -189,15 +197,15 @@ export const GraphToolbar: React.FC<GraphToolbarProps> = ({
 
 		logger.info("graph", "Pin all nodes completed", {
 			totalNodes: currentNodes.length,
-			pinnedCount: pinnedNodes.size
+			pinnedCount: pinnedNodesCount
 		});
-	}, [getNodes, pinNode, pinnedNodes.size]);
+	}, [getNodes, pinNode, pinnedNodesCount]);
 
 	// Unpin all nodes action
 	const handleUnpinAll = useCallback(() => {
 		logger.info("graph", "Unpin all nodes action triggered from graph toolbar");
 
-		const currentPinnedCount = pinnedNodes.size;
+		const currentPinnedCount = pinnedNodesCount;
 
 		if (currentPinnedCount === 0) {
 			logger.warn("graph", "No nodes currently pinned to unpin");
@@ -206,7 +214,7 @@ export const GraphToolbar: React.FC<GraphToolbarProps> = ({
 
 		logger.info("graph", "Unpinning all nodes", {
 			pinnedCount: currentPinnedCount,
-			pinnedNodeIds: Array.from(pinnedNodes)
+			pinnedNodeIds: pinnedNodeIds
 		});
 
 		// Clear all pinned nodes using the store function
@@ -214,9 +222,9 @@ export const GraphToolbar: React.FC<GraphToolbarProps> = ({
 
 		logger.info("graph", "Unpin all nodes completed", {
 			previouslyPinnedCount: currentPinnedCount,
-			currentPinnedCount: pinnedNodes.size
+			currentPinnedCount: 0
 		});
-	}, [pinnedNodes, clearAllPinnedNodes]);
+	}, [pinnedNodesCount, pinnedNodeIds, clearAllPinnedNodes]);
 
 	return (
 		<div className={`flex gap-2 p-3 bg-white/95 backdrop-blur-sm border border-gray-200 rounded-lg shadow-lg ${className}`}>

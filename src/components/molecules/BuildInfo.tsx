@@ -9,7 +9,8 @@ import { useThemeColors } from "@/hooks/use-theme-colors"
 import { IconBrandGithub, IconTag, IconGitCommit, IconClock } from "@tabler/icons-react"
 
 export const BuildInfo: React.FC = () => {
-	const { colors } = useThemeColors()
+	const themeColors = useThemeColors()
+	const colors = themeColors.colors
 	const buildInfo = getBuildInfo()
 
 	return (

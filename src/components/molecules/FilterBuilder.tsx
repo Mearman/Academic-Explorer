@@ -92,7 +92,8 @@ export const FilterBuilder: React.FC<FilterBuilderProps> = ({
 	onFiltersChange,
 	className
 }) => {
-	const { colors } = useThemeColors();
+	const themeColors = useThemeColors();
+	const colors = themeColors.colors;
 	const [showAddForm, setShowAddForm] = useState(false);
 	const [newFilter, setNewFilter] = useState<NewFilterForm>({
 		property: "",

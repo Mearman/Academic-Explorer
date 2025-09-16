@@ -35,16 +35,16 @@ export const ExpansionSettingsDialog: React.FC<ExpansionSettingsDialogProps> = (
 	isOpen,
 	onClose
 }) => {
-	const { colors } = useThemeColors();
+	const themeColors = useThemeColors();
+	const colors = themeColors.colors;
 	const [localSettings, setLocalSettings] = useState<ExpansionSettings | null>(null);
 	const [showPreview, setShowPreview] = useState(false);
 
-	const {
-		getSettings,
-		updateSettings,
-		exportSettings,
-		importSettings
-	} = useExpansionSettingsStore();
+	const expansionSettingsStore = useExpansionSettingsStore();
+	const getSettings = expansionSettingsStore.getSettings;
+	const updateSettings = expansionSettingsStore.updateSettings;
+	const exportSettings = expansionSettingsStore.exportSettings;
+	const importSettings = expansionSettingsStore.importSettings;
 
 	// Load settings when dialog opens
 	useEffect(() => {

@@ -25,11 +25,14 @@ export const NodeContextMenu: React.FC<NodeContextMenuProps> = ({
 	onClose,
 	onViewDetails
 }) => {
-	const { expandNode } = useGraphData()
-	const { nodes, pinNode, unpinNode, isPinned } = useGraphStore()
+	const graphData = useGraphData()
+	const expandNode = graphData.expandNode
+	const pinNode = useGraphStore((state) => state.pinNode)
+	const unpinNode = useGraphStore((state) => state.unpinNode)
+	const isPinned = useGraphStore((state) => state.isPinned)
 
-	// For now, assume all nodes in store have been expanded
-	const isExpanded = nodes.has(node.id)
+	// Check if node exists in store
+	const isExpanded = useGraphStore(React.useCallback((state) => Boolean(state.nodes[node.id]), [node.id]))
 	const isNodePinned = isPinned(node.id)
 
 	const handleExpand = useCallback(async () => {

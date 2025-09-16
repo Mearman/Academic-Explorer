@@ -19,9 +19,15 @@ import {
 } from "@tabler/icons-react";
 
 export const RightRibbon: React.FC = () => {
-	const { previewEntityId, expandSidebarToSection } = useLayoutStore();
-	const { selectedNodeId, hoveredNodeId, nodes } = useGraphStore();
-	const { colors } = useThemeColors();
+	const layoutStore = useLayoutStore();
+	const previewEntityId = layoutStore.previewEntityId;
+	const expandSidebarToSection = layoutStore.expandSidebarToSection;
+	const selectedNodeId = useGraphStore((state) => state.selectedNodeId);
+	const hoveredNodeId = useGraphStore((state) => state.hoveredNodeId);
+	const nodesMap = useGraphStore((state) => state.graph.vertices);
+	const nodes = Array.from(nodesMap.values());
+	const themeColors = useThemeColors();
+	const colors = themeColors.colors;
 
 	// Determine which entity to show indicator for
 	const displayEntityId = hoveredNodeId || selectedNodeId || previewEntityId;
@@ -188,7 +194,7 @@ export const RightRibbon: React.FC = () => {
 			{/* Graph statistics */}
 			<Stack gap="xs" align="center">
 				<div style={{ position: "relative" }}>
-					<Tooltip label={`Graph statistics (${String(nodes.size)} nodes)`} position="left" withArrow>
+					<Tooltip label={`Graph statistics (${String(Object.keys(nodes).length)} nodes)`} position="left" withArrow>
 						<ActionIcon
 							variant="subtle"
 							size="lg"
@@ -204,7 +210,7 @@ export const RightRibbon: React.FC = () => {
 							<IconUsers size={20} />
 						</ActionIcon>
 					</Tooltip>
-					{nodes.size > 0 && (
+					{Object.keys(nodes).length > 0 && (
 						<Badge
 							size="xs"
 							variant="filled"
@@ -221,7 +227,7 @@ export const RightRibbon: React.FC = () => {
 								justifyContent: "center",
 							}}
 						>
-							{nodes.size > 99 ? "99+" : nodes.size}
+							{Object.keys(nodes).length > 99 ? "99+" : Object.keys(nodes).length}
 						</Badge>
 					)}
 				</div>

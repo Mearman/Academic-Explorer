@@ -55,11 +55,15 @@ interface RichEntityDisplayProps {
 export const RichEntityDisplay: React.FC<RichEntityDisplayProps> = ({
 	entity
 }) => {
-	const { colors } = useThemeColors();
-	const { data: rawData, isLoading } = useRawEntityData({
+	const themeColors = useThemeColors();
+	const colors = themeColors.colors;
+	const rawEntityData = useRawEntityData({
 		entityId: entity.entityId
 	});
-	const { handleSidebarEntityClick } = useEntityInteraction();
+	const rawData = rawEntityData.data;
+	const isLoading = rawEntityData.isLoading;
+	const entityInteraction = useEntityInteraction();
+	const handleSidebarEntityClick = entityInteraction.handleSidebarEntityClick;
 
 	const getEntityIcon = (type: string, size = 20) => {
 		const iconProps = { size };

@@ -33,13 +33,20 @@ import {
 } from "@tabler/icons-react"
 
 export const RightSidebar: React.FC = () => {
-	const { previewEntityId } = useLayoutStore()
-	const { selectedNodeId, hoveredNodeId, nodes } = useGraphStore()
-	const { colors } = useThemeColors()
+	const layoutStore = useLayoutStore()
+	const previewEntityId = layoutStore.previewEntityId
+	const selectedNodeId = useGraphStore((state) => state.selectedNodeId)
+	const hoveredNodeId = useGraphStore((state) => state.hoveredNodeId)
+	const nodes = useGraphStore((state) => state.nodes)
+	const themeColors = useThemeColors()
+	const colors = themeColors.colors
 
 	// Determine which entity to show details for - prioritize selectedNodeId for immediate display
 	const displayEntityId = selectedNodeId || hoveredNodeId || previewEntityId
-	const displayEntity = displayEntityId ? nodes.get(displayEntityId) : null
+	const displayEntity = useGraphStore(React.useCallback((state) =>
+		displayEntityId ? state.nodes[displayEntityId] : null,
+		[displayEntityId]
+	))
 
 	return (
 		<div style={{
@@ -161,7 +168,7 @@ export const RightSidebar: React.FC = () => {
 						<Card padding="md" radius="md" withBorder>
 							<Group justify="space-between" mb="xs">
 								<Text size="xs" c="dimmed">Total Nodes:</Text>
-								<Text size="xs" fw={600}>{nodes.size}</Text>
+								<Text size="xs" fw={600}>{Object.keys(nodes).length}</Text>
 							</Group>
 							<Group justify="space-between" mb="xs">
 								<Text size="xs" c="dimmed">Selected:</Text>

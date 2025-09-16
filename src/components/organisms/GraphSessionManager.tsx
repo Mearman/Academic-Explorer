@@ -25,7 +25,10 @@ export const GraphSessionManager: React.FC<GraphSessionManagerProps> = ({
 	const [editName, setEditName] = useState("")
 	const [editDescription, setEditDescription] = useState("")
 
-	const { nodes, edges } = useGraphStore()
+	const hasGraphData = useGraphStore(React.useCallback((state) =>
+		Object.keys(state.nodes).length > 0 || Object.keys(state.edges).length > 0,
+		[]
+	))
 	const {
 		loadSessions,
 		saveSession,
@@ -35,7 +38,6 @@ export const GraphSessionManager: React.FC<GraphSessionManagerProps> = ({
 	} = useGraphPersistence()
 
 	const sessions = useMemo(() => loadSessions(), [loadSessions])
-	const hasGraphData = nodes.size > 0 || edges.size > 0
 
 	const handleSave = () => {
 		if (!sessionName.trim()) return
@@ -505,7 +507,7 @@ export const GraphSessionManager: React.FC<GraphSessionManagerProps> = ({
 										fontSize: "13px",
 										color: "#6b7280"
 									}}>
-										<strong>Current Graph:</strong> {nodes.size} nodes, {edges.size} edges
+										<strong>Current Graph:</strong> {Object.keys(nodes).length} nodes, {Object.keys(edges).length} edges
 									</div>
 
 									<button
