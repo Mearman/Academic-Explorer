@@ -1,3 +1,102 @@
+# [4.0.0](https://github.com/Mearman/Academic-Explorer/compare/v3.0.0...v4.0.0) (2025-09-16)
+
+
+### Bug Fixes
+
+* **components:** integrate worker fixes across graph components ([240204c](https://github.com/Mearman/Academic-Explorer/commit/240204c8a88ada283a836a1749a974e879fbd3d6))
+* **components:** replace destructuring with stable selectors ([35c3c32](https://github.com/Mearman/Academic-Explorer/commit/35c3c32085dbd86bd8a9c7b0a5f84e8dc5c33205))
+* **components:** resolve DatePickerInput onChange type mismatch ([228988e](https://github.com/Mearman/Academic-Explorer/commit/228988ef4716f27e535f6bc1cb4db8bfd85559c9))
+* **entities:** add null safety checks for author expansion ([df43a40](https://github.com/Mearman/Academic-Explorer/commit/df43a40a36b2c6763db546282d5c243b52a11543))
+* **graph:** complete ref-based store method transition in useAnimatedLayout ([d51135e](https://github.com/Mearman/Academic-Explorer/commit/d51135e6b552ea2fe977806b4e4de72c6b59d281))
+* **graph:** complete stopLayout ref transition in useAnimatedLayout ([74de017](https://github.com/Mearman/Academic-Explorer/commit/74de0174c28eb94d175968b147bbad3cf0964428))
+* **graph:** remove problematic useEffect in useAnimatedLayout ([7e88086](https://github.com/Mearman/Academic-Explorer/commit/7e880863d932cafe46f16b6f192f2d8760e5190b))
+* **graph:** resolve trim leaves button sync issue with stable selectors ([d5113fd](https://github.com/Mearman/Academic-Explorer/commit/d5113fdf1ade34ef2b12d7666e4085786d140416))
+* **graph:** temporarily disable animated layout controls to resolve infinite loops ([a66932c](https://github.com/Mearman/Academic-Explorer/commit/a66932ce06a1f3ac6dd86f560bdb08a02793f9b3))
+* **hooks:** add explicit type annotations in use-entity-interaction ([509e798](https://github.com/Mearman/Academic-Explorer/commit/509e798f0a589dbd2f92345a95a09741cb0d185d))
+* **hooks:** correct Array.from usage in use-graph-data ([9ea2351](https://github.com/Mearman/Academic-Explorer/commit/9ea2351f572137f773ff33958630f7d14b50b999))
+* **hooks:** prevent infinite loops in useAnimatedForceSimulation ([b725024](https://github.com/Mearman/Academic-Explorer/commit/b725024cc08faa02fca4b64605d13ed7718d33f3))
+* **hooks:** resolve React 19 infinite loop in data fetching worker ([9ac326f](https://github.com/Mearman/Academic-Explorer/commit/9ac326fb5aa5ffb474639015bde99b8502667ca4))
+* **hooks:** update Set/Map usage for Object compatibility ([517a442](https://github.com/Mearman/Academic-Explorer/commit/517a4426699f3290b515fbada965bc4b01151b65))
+* **layout:** add missing variables and re-enable AnimatedGraphControls ([910dc57](https://github.com/Mearman/Academic-Explorer/commit/910dc573167c974644b70deb02fcd93061ba2643))
+* **layout:** correct Record<string, boolean> usage in XYFlow providers ([2c7a934](https://github.com/Mearman/Academic-Explorer/commit/2c7a934b8cba0ee9668f8a6e1d0775a6492fc5ef))
+* **lint:** remove more unused parameters in tests ([dc728cf](https://github.com/Mearman/Academic-Explorer/commit/dc728cf5090e3e13584721e97a007ae3d46458db))
+* **lint:** remove unused type parameters and imports ([f3b8291](https://github.com/Mearman/Academic-Explorer/commit/f3b82917bb949eecbdbbfd9309ea925500b40349))
+* **lint:** replace any with unknown and remove unused catch parameter ([9fc6ef2](https://github.com/Mearman/Academic-Explorer/commit/9fc6ef2aaf5ba1a54e7b97e80515eef1c63c948d))
+* **lint:** resolve more unused variables and destructuring issues ([8aab21e](https://github.com/Mearman/Academic-Explorer/commit/8aab21e3dbbac7f29f58c00a00d3fc6633f36354))
+* **lint:** resolve more unused variables and parameters ([b2c73d5](https://github.com/Mearman/Academic-Explorer/commit/b2c73d5a5b8996941f96117cf976cbd22c7b0de8))
+* **lint:** resolve unused variables and functions ([26354ce](https://github.com/Mearman/Academic-Explorer/commit/26354ce2e3c3481d4fe6af449fe57cf9fc750cf3))
+* **lint:** resolve unused variables and parameters ([36b9916](https://github.com/Mearman/Academic-Explorer/commit/36b991622246fdec99dc9c475a7a17664e5d30fa))
+* **lint:** resolve unused variables and parameters ([36870b4](https://github.com/Mearman/Academic-Explorer/commit/36870b4553d1f80f52380802286e3be889fa3177))
+* **lint:** resolve unused variables and type issues ([bc925f1](https://github.com/Mearman/Academic-Explorer/commit/bc925f179af1c7378bd3571d92e73d9af43f9763))
+* **routes:** apply stable selector patterns to route components ([60ee3bc](https://github.com/Mearman/Academic-Explorer/commit/60ee3bc5c2e7890c1e86f3f26ba9846787c1cbb5))
+* **services:** initialize GraphCache with proper Map/Set types ([4618862](https://github.com/Mearman/Academic-Explorer/commit/461886259eb1a93b738f429540faa1988d873884))
+* **services:** update services for Object-based store compatibility ([8a694d7](https://github.com/Mearman/Academic-Explorer/commit/8a694d7614e7f42b0f355eefdbf1c8da47698a59))
+* **store:** add cached statistics state to prevent infinite loops ([2c5fd13](https://github.com/Mearman/Academic-Explorer/commit/2c5fd13428e8afbc0f96a3274300929e00de7dd9))
+* **stores:** convert Set/Map to Object for React 19 compatibility ([e60fafb](https://github.com/Mearman/Academic-Explorer/commit/e60fafbb2502f1ada94570f2d548e564641070e3))
+* **stores:** resolve React 19 + Zustand infinite loops in stores ([2a44295](https://github.com/Mearman/Academic-Explorer/commit/2a442958cc3e0381aba926eab782ada09868044d))
+* **tests:** resolve author entity expand error handling tests ([5214fc8](https://github.com/Mearman/Academic-Explorer/commit/5214fc8fb5aa3f801c4a8c9d912c8b224450b711))
+* **tests:** update useEntityInteraction tests for state guard compatibility ([ba5a799](https://github.com/Mearman/Academic-Explorer/commit/ba5a79993b9a8da569e51da4d780cebfa46d5942))
+* **types:** add missing ExpansionTarget export ([6ba9ee7](https://github.com/Mearman/Academic-Explorer/commit/6ba9ee7e970a4b0dfedf31addf2230babce79424))
+* **types:** make ExpansionSettings compatible with Record<string, unknown> ([2ab21fb](https://github.com/Mearman/Academic-Explorer/commit/2ab21fbed992979b72d40f5602f68a94a5c0f763))
+* **types:** resolve remaining TypeScript build errors ([4864914](https://github.com/Mearman/Academic-Explorer/commit/48649148361e3ab4269a23252ce6a4a8c20158d0))
+* **ui:** eliminate hook conflicts in AnimatedGraphControls ([bfba1b1](https://github.com/Mearman/Academic-Explorer/commit/bfba1b190138c1ba4a2a5237d321ee5a2e95342e))
+* **ui:** use cached statistics in LeftSidebar to prevent infinite loops ([010a369](https://github.com/Mearman/Academic-Explorer/commit/010a369bc746b161667a01384094e92bb9f9611f))
+* **workers:** improve type safety and error handling ([ecef1fc](https://github.com/Mearman/Academic-Explorer/commit/ecef1fc0d37dd8a134e0d900210367e4b2986fc9))
+* **workers:** improve type safety in force animation worker ([147ae47](https://github.com/Mearman/Academic-Explorer/commit/147ae47b5620bbb0381da21344e12b01713f5a9e))
+* **workers:** standardize ExpansionSettings types across worker interfaces ([3fc6a7a](https://github.com/Mearman/Academic-Explorer/commit/3fc6a7a428c34da10ecfddc73485d1e24e3f7986))
+* **workers:** update force animation worker for Object-based pinnedNodes ([801a115](https://github.com/Mearman/Academic-Explorer/commit/801a1157b132829ba9ffe5f4fef5c014743ddfd5))
+* **xyflow:** convert destructuring to stable selectors in graph providers ([37816b9](https://github.com/Mearman/Academic-Explorer/commit/37816b9aa398ddcd98e6c87718aba15d3d786b6b))
+
+
+### Features
+
+* **components:** add animated graph controls UI component ([0f14e4b](https://github.com/Mearman/Academic-Explorer/commit/0f14e4bbaf698000ea773cd1b8ce2126b298e01d))
+* **components:** add animated layout provider component ([3c9601d](https://github.com/Mearman/Academic-Explorer/commit/3c9601d37ca7c1f7d9651525be93fe6d27ded087))
+* **components:** add main animated graph component ([66930d4](https://github.com/Mearman/Academic-Explorer/commit/66930d4778dd0b58aa56911910872621baec8613))
+* **components:** integrate animated layout controls in GraphNavigation ([4e87505](https://github.com/Mearman/Academic-Explorer/commit/4e8750516d429c6ca82cd09da864309caaa2d1dd))
+* **eslint:** add custom rules to prevent React 19 + Zustand infinite loops ([c501d3e](https://github.com/Mearman/Academic-Explorer/commit/c501d3e50056d6ecfae5d468effbe52ec0458cec))
+* **graph:** add performance configuration utilities ([887d596](https://github.com/Mearman/Academic-Explorer/commit/887d596b52427f294de0d96e60e486ea8eaa8d4e))
+* **graph:** add XYFlow animated layout integration ([bd5c97b](https://github.com/Mearman/Academic-Explorer/commit/bd5c97b56669facbbece0f552e8c42c9cb1fe1d0))
+* **graph:** re-enable animated layout controls after infinite loop fix ([e93db7b](https://github.com/Mearman/Academic-Explorer/commit/e93db7b2cbfb152f96ea25b43cc10637530ba1bb))
+* **graph:** refactor animated layout hook with stable selectors ([50f5ed4](https://github.com/Mearman/Academic-Explorer/commit/50f5ed4808f9977901fd315696e38aa85e03393e))
+* **hooks:** add animated force simulation React hook ([f9e43e7](https://github.com/Mearman/Academic-Explorer/commit/f9e43e73adbc245c7a40134e92883eadb4048f47))
+* **hooks:** add document title management hook ([13cdb45](https://github.com/Mearman/Academic-Explorer/commit/13cdb45822c019b33020ea87a23464dfca36083a))
+* **hooks:** enhance worker hooks for stable React 19 operation ([df65c70](https://github.com/Mearman/Academic-Explorer/commit/df65c70e88beb9db985b484330a5b5d07df6d6f5))
+* **hooks:** expose expandAllNodesOfType in useGraphData hook ([338afc1](https://github.com/Mearman/Academic-Explorer/commit/338afc1d2a1005ceec53513db336524deb21ced8))
+* **routes:** integrate document title management across entity routes ([cd0a4a4](https://github.com/Mearman/Academic-Explorer/commit/cd0a4a4f66254880ccb1a505f523744f79ffd109))
+* **services:** add expandAllNodesOfType bulk expansion method ([d8826be](https://github.com/Mearman/Academic-Explorer/commit/d8826bee14739c9ef57e415022f6ff4938ac493a))
+* **store:** implement cached node/edge counts and stable selectors ([079f83e](https://github.com/Mearman/Academic-Explorer/commit/079f83e4232f29aee6e52910b186e4289e452e12))
+* **stores:** add animated graph store for position tracking ([d0b1f98](https://github.com/Mearman/Academic-Explorer/commit/d0b1f98c2b075d4166568b335e4d17b5a2f9d5c4))
+* **stores:** add getNodesByType method to graph store ([67ed15a](https://github.com/Mearman/Academic-Explorer/commit/67ed15a1c0330841170f325c6be58dfbf2a42ce2))
+* **ui:** add expand all nodes buttons to entity type filter ([9a4f197](https://github.com/Mearman/Academic-Explorer/commit/9a4f197222294367bd2fe7dec2ddcd0122d5f930))
+* **workers:** add D3 force simulation Web Worker ([29cfca2](https://github.com/Mearman/Academic-Explorer/commit/29cfca21b82214e7635752e815657bea1efbc6fe))
+* **workers:** add data fetching worker infrastructure ([7771959](https://github.com/Mearman/Academic-Explorer/commit/7771959c06c5f5bac6b4251784714107d95aa8ba))
+
+
+### Performance Improvements
+
+* **services:** optimize expandAllNodesOfType algorithm for efficiency ([4fed864](https://github.com/Mearman/Academic-Explorer/commit/4fed8647be2f92bb52ea57277f2b55f1be64300d))
+
+
+### BREAKING CHANGES
+
+* **store:** Replace object-creating selectors with individual selectors
+
+- Add totalNodeCount and totalEdgeCount cached fields to GraphState
+- Update recomputation functions to maintain cached totals
+- Replace Object.keys(state.nodes).length with state.totalNodeCount in all routes
+- Replace object-literal convenience hooks with individual stable selectors
+- Fix indentation in test file
+
+Benefits:
+- Eliminates React 19 infinite loop triggers from unstable references
+- Reduces ESLint errors from 68 to 0
+- Improves performance by avoiding repeated Object.keys() operations
+- Maintains React 19 + Zustand + Immer compatibility
+
+Routes updated: , authors, institutions, sources, topics, works
+Store hooks: useAnimationState -> individual useIsAnimating, etc.
+
 # [3.0.0](https://github.com/Mearman/Academic-Explorer/compare/v2.3.1...v3.0.0) (2025-09-16)
 
 
