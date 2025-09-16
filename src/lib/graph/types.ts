@@ -7,6 +7,9 @@
 import type { EntityType as OpenAlexEntityType } from "@/lib/openalex/types"
 export type EntityType = OpenAlexEntityType
 
+// Re-export ExpansionTarget from expansion settings
+export type { ExpansionTarget } from "./types/expansion-settings"
+
 export enum RelationType {
   // Core academic relationships (unique and specific)
   AUTHORED = "authored",                    // Author → Work
