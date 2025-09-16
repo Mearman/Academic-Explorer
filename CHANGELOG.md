@@ -1,3 +1,34 @@
+# [3.0.0](https://github.com/Mearman/Academic-Explorer/compare/v2.3.1...v3.0.0) (2025-09-16)
+
+
+### Bug Fixes
+
+* **build:** resolve TypeScript errors and improve field selection types ([305031a](https://github.com/Mearman/Academic-Explorer/commit/305031ac8c9373016200ccb170fd0a067c1319c0))
+* **entities:** correct OpenAlex API field selections and warnings ([a5ab58b](https://github.com/Mearman/Academic-Explorer/commit/a5ab58b564e17272ad31c3de92addf49110fcdf0))
+* **graph:** implement two-pass relationship detection for cross-batch citations ([106eadd](https://github.com/Mearman/Academic-Explorer/commit/106eaddf435126e95a063ebadac352c87f956338))
+* **graph:** prevent automatic institution expansion on author node single-click ([ca97dcf](https://github.com/Mearman/Academic-Explorer/commit/ca97dcf1220313e0a46d037253cae96e0f1ee930))
+* **graph:** prevent automatic node expansion in all transform methods ([b8834b5](https://github.com/Mearman/Academic-Explorer/commit/b8834b51248c65cc04e0376fde064918bd8060f8))
+
+
+### Code Refactoring
+
+* **graph:** replace metadata field with on-demand entityData storage ([34dc359](https://github.com/Mearman/Academic-Explorer/commit/34dc35954bacb4c32c9c14a45b5eebdcd3a705fe))
+
+
+### Features
+
+* **build:** add build metadata generation system ([49f19fc](https://github.com/Mearman/Academic-Explorer/commit/49f19fc8408dbaca9bb5632b37ef603acbbe5c91))
+* **components:** add BuildInfo footer component ([3a65cd3](https://github.com/Mearman/Academic-Explorer/commit/3a65cd3111c2513c346e7e79cd87291843264fbe))
+* **graph:** enhance relationship detection for all node additions ([2a806f6](https://github.com/Mearman/Academic-Explorer/commit/2a806f64c4d5cdbbbd4a2fdf2b542aad1ed02b1f))
+* **layout:** integrate BuildInfo component in LeftSidebar ([24c25fc](https://github.com/Mearman/Academic-Explorer/commit/24c25fc3989ba68165b7a9df078e8f65c7509f36))
+* **types:** implement field-by-field partial hydration system ([c9656c2](https://github.com/Mearman/Academic-Explorer/commit/c9656c2799b51c1968256eca730f467884b69743))
+* **utils:** add build metadata utilities and interfaces ([9bfbea9](https://github.com/Mearman/Academic-Explorer/commit/9bfbea91d084339a7d72328c37232adc01ec781a))
+
+
+### BREAKING CHANGES
+
+* **graph:** GraphNode.metadata replaced with GraphNode.entityData
+
 ## [2.3.1](https://github.com/Mearman/Academic-Explorer/compare/v2.3.0...v2.3.1) (2025-09-16)
 
 
