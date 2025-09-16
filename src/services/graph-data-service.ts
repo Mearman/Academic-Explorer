@@ -957,21 +957,21 @@ export class GraphDataService {
 	}
 
 	/**
-	 * Expand all nodes of a specific entity type
-	 * Useful for exploring all instances of works, authors, etc.
+	 * Expand all visible nodes to find only entities of the specified type
+	 * This efficiently fetches only the target entity type, avoiding unnecessary API calls
 	 */
 	async expandAllNodesOfType(entityType: EntityType, options: ExpansionOptions = {}): Promise<void> {
 		const store = useGraphStore.getState();
-		const nodesOfType = store.getNodesByType(entityType);
+		const allVisibleNodes = store.getVisibleNodes();
 
-		if (nodesOfType.length === 0) {
-			logger.info("graph", `No nodes of type ${entityType} found to expand`, { entityType }, "GraphDataService");
+		if (allVisibleNodes.length === 0) {
+			logger.info("graph", "No visible nodes found to expand", { entityType }, "GraphDataService");
 			return;
 		}
 
-		logger.info("graph", `Expanding all nodes of type ${entityType}`, {
+		logger.info("graph", `Expanding all visible nodes to find ${entityType} entities`, {
 			entityType,
-			nodeCount: nodesOfType.length,
+			visibleNodeCount: allVisibleNodes.length,
 			options
 		}, "GraphDataService");
 
@@ -979,28 +979,99 @@ export class GraphDataService {
 		store.setLoading(true);
 
 		try {
-			// Expand each node of the specified type
-			const expansionPromises = nodesOfType.map(node =>
-				this.expandNode(node.id, options).catch((error: unknown) => {
-					logger.warn("graph", `Failed to expand node ${node.id} during bulk expansion`, {
+			const newNodes: GraphNode[] = [];
+			const newEdges: GraphEdge[] = [];
+
+			// For each visible node, extract only entities of the target type from their data
+			for (const node of allVisibleNodes) {
+				try {
+					// Get the node's entity data
+					if (!node.entityData) {
+						// If node doesn't have entity data, skip it
+						continue;
+					}
+
+					// Extract entities of target type from the node's entity data
+					const relatedEntityIds = this.extractRelatedEntitiesOfType(node.entityData, entityType);
+
+					if (relatedEntityIds.length === 0) {
+						continue;
+					}
+
+					logger.debug("graph", `Found ${relatedEntityIds.length} ${entityType} entities related to ${node.id}`, {
 						nodeId: node.id,
-						entityType: node.type,
+						sourceType: node.type,
+						targetType: entityType,
+						relatedCount: relatedEntityIds.length
+					}, "GraphDataService");
+
+					// Fetch only the entities of target type (efficiently)
+					for (const entityId of relatedEntityIds.slice(0, options.limit || 10)) {
+						// Skip if we already have this node
+						if (store.nodes.has(entityId)) {
+							continue;
+						}
+
+						try {
+							// Create minimal node for the target entity type
+							const minimalNode = await this.createMinimalNode(entityId, entityType);
+							if (minimalNode) {
+								newNodes.push(minimalNode);
+
+								// Create edge from source node to new node
+								const relationshipType = this.determineRelationshipType(node.type, entityType);
+								if (relationshipType) {
+									const edge: GraphEdge = {
+										id: `${node.id}-${relationshipType}-${entityId}`,
+										source: node.id,
+										target: entityId,
+										type: relationshipType,
+										label: relationshipType.replace(/_/g, ' ')
+									};
+									newEdges.push(edge);
+								}
+							}
+						} catch (error) {
+							logger.warn("graph", `Failed to fetch ${entityType} entity`, {
+								entityId,
+								error: error instanceof Error ? error.message : "Unknown error"
+							}, "GraphDataService");
+						}
+					}
+				} catch (error) {
+					logger.warn("graph", `Failed to process node ${node.id}`, {
+						nodeId: node.id,
 						error: error instanceof Error ? error.message : "Unknown error"
 					}, "GraphDataService");
-					// Don't rethrow - continue with other nodes
-				})
-			);
+				}
+			}
 
-			// Wait for all expansions to complete (or fail)
-			await Promise.all(expansionPromises);
+			// Add new nodes and edges to the graph
+			if (newNodes.length > 0) {
+				store.addNodes(newNodes);
+				logger.info("graph", `Added ${newNodes.length} new ${entityType} nodes to graph`, {
+					entityType,
+					addedCount: newNodes.length
+				}, "GraphDataService");
+			}
 
-			logger.info("graph", `Completed expanding all nodes of type ${entityType}`, {
+			if (newEdges.length > 0) {
+				store.addEdges(newEdges);
+				logger.info("graph", `Added ${newEdges.length} new edges to graph`, {
+					entityType,
+					edgeCount: newEdges.length
+				}, "GraphDataService");
+			}
+
+			logger.info("graph", `Completed expanding all visible nodes for ${entityType} entities`, {
 				entityType,
-				expandedCount: nodesOfType.length
+				expandedNodeCount: allVisibleNodes.length,
+				newNodesAdded: newNodes.length,
+				newEdgesAdded: newEdges.length
 			}, "GraphDataService");
 
 		} catch (error) {
-			const errorMessage = `Failed to expand all nodes of type ${entityType}`;
+			const errorMessage = `Failed to expand all visible nodes for ${entityType}`;
 			logger.error("graph", errorMessage, {
 				entityType,
 				error: error instanceof Error ? error.message : "Unknown error"
@@ -1010,6 +1081,79 @@ export class GraphDataService {
 		} finally {
 			store.setLoading(false);
 		}
+	}
+
+	/**
+	 * Extract related entity IDs of a specific type from entity data
+	 */
+	private extractRelatedEntitiesOfType(entityData: unknown, targetType: EntityType): string[] {
+		if (!entityData || typeof entityData !== 'object') {
+			return [];
+		}
+
+		const data = entityData as Record<string, unknown>;
+		const entityIds: string[] = [];
+
+		// Map of entity types to their common field names in OpenAlex data
+		const fieldMappings: Record<EntityType, string[]> = {
+			works: ['referenced_works', 'related_works', 'cites'],
+			authors: ['authorships', 'authors'],
+			sources: ['primary_location', 'locations', 'host_venue'],
+			institutions: ['institutions', 'affiliations'],
+			topics: ['topics', 'concepts'],
+			concepts: ['concepts'],
+			publishers: ['publishers'],
+			funders: ['grants', 'funders'],
+			keywords: ['keywords']
+		};
+
+		const fieldsToCheck = fieldMappings[targetType] || [];
+
+		for (const field of fieldsToCheck) {
+			const fieldValue = data[field];
+
+			if (Array.isArray(fieldValue)) {
+				for (const item of fieldValue) {
+					if (typeof item === 'string' && item.startsWith('https://openalex.org/')) {
+						entityIds.push(item);
+					} else if (item && typeof item === 'object') {
+						const itemData = item as Record<string, unknown>;
+						if (typeof itemData.id === 'string' && itemData.id.startsWith('https://openalex.org/')) {
+							entityIds.push(itemData.id);
+						}
+					}
+				}
+			} else if (fieldValue && typeof fieldValue === 'object') {
+				const objData = fieldValue as Record<string, unknown>;
+				if (typeof objData.id === 'string' && objData.id.startsWith('https://openalex.org/')) {
+					entityIds.push(objData.id);
+				}
+			}
+		}
+
+		return [...new Set(entityIds)]; // Remove duplicates
+	}
+
+	/**
+	 * Determine the relationship type between two entity types
+	 */
+	private determineRelationshipType(sourceType: EntityType, targetType: EntityType): RelationType | null {
+		// Map common relationships between entity types
+		const relationshipMap: Record<string, RelationType> = {
+			'works-works': RelationType.REFERENCES,
+			'works-authors': RelationType.AUTHORED,
+			'works-sources': RelationType.PUBLISHED_IN,
+			'works-institutions': RelationType.AFFILIATED,
+			'works-topics': RelationType.WORK_HAS_TOPIC,
+			'works-funders': RelationType.FUNDED_BY,
+			'authors-works': RelationType.AUTHORED,
+			'authors-institutions': RelationType.AFFILIATED,
+			'sources-publishers': RelationType.SOURCE_PUBLISHED_BY,
+			'institutions-institutions': RelationType.INSTITUTION_CHILD_OF,
+		};
+
+		const key = `${sourceType}-${targetType}`;
+		return relationshipMap[key] || RelationType.RELATED_TO;
 	}
 
 	/**
