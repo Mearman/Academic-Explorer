@@ -46,7 +46,7 @@ export interface FilterCriteria {
   label?: string;
 }
 
-export interface ExpansionSettings {
+export interface ExpansionSettings extends Record<string, unknown> {
   /** The target type (entity or edge type) these settings apply to */
   target: ExpansionTarget;
   /** Maximum number of results to return (0 = no limit) */
