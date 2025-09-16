@@ -171,8 +171,8 @@ export function CacheManagementPanel() {
 								</Table.Thead>
 								<Table.Tbody>
 									{queryCache.length > 0 ? (
-										queryCache.slice(0, 100).map((entry, index) => (
-											<Table.Tr key={index}>
+										queryCache.slice(0, 100).map((entry) => (
+											<Table.Tr key={formatQueryKey(entry.queryKey)}>
 												<Table.Td>
 													<Text size="xs" style={{ wordBreak: "break-all" }}>
 														{formatQueryKey(entry.queryKey)}

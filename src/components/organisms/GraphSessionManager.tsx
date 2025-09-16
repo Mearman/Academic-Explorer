@@ -29,6 +29,8 @@ export const GraphSessionManager: React.FC<GraphSessionManagerProps> = ({
 		Object.keys(state.nodes).length > 0 || Object.keys(state.edges).length > 0,
 	[]
 	))
+	const nodes = useGraphStore((state) => state.nodes)
+	const edges = useGraphStore((state) => state.edges)
 	const {
 		loadSessions,
 		saveSession,
@@ -43,7 +45,7 @@ export const GraphSessionManager: React.FC<GraphSessionManagerProps> = ({
 		if (!sessionName.trim()) return
 
 		try {
-			const _sessionId = saveSession(sessionName.trim(), sessionDescription.trim() || undefined)
+			saveSession(sessionName.trim(), sessionDescription.trim() || undefined)
 			setSessionName("")
 			setSessionDescription("")
 			setActiveTab("load")
