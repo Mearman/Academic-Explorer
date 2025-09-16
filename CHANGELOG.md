@@ -1,3 +1,11 @@
+## [2.3.1](https://github.com/Mearman/Academic-Explorer/compare/v2.3.0...v2.3.1) (2025-09-16)
+
+
+### Bug Fixes
+
+* **entities:** update author metadata fields for OpenAlex API compatibility ([83b7954](https://github.com/Mearman/Academic-Explorer/commit/83b7954eafe524f31c50cd14764022d395a853ae))
+* **graph:** add null safety for array operations in graph data service ([abd60d6](https://github.com/Mearman/Academic-Explorer/commit/abd60d6d6a5338597060db6563e7626f286c57eb))
+
 # [2.3.0](https://github.com/Mearman/Academic-Explorer/compare/v2.2.0...v2.3.0) (2025-09-16)
 
 
