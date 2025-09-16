@@ -732,7 +732,7 @@ export class GraphDataService {
 			];
 
 			// Track search statistics
-			const searchStats: Record<EntityType, number> = {} as Record<EntityType, number>;
+			const searchStats: Record<EntityType, number> = {};
 			searchStats["works"] = results.works.length;
 			searchStats["authors"] = results.authors.length;
 			searchStats["sources"] = results.sources.length;

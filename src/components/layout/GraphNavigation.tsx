@@ -677,7 +677,7 @@ const GraphNavigationInner: React.FC<GraphNavigationProps> = ({ className, style
 	// Handle node right-click for context menu
 	const onNodeContextMenu = useCallback((event: React.MouseEvent, node: XYNode) => {
 		event.preventDefault();
-		if (providerRef.current && node.data) {
+		if (providerRef.current) {
 			// Type guards for node data properties
 			const isValidString = (value: unknown): value is string =>
 				typeof value === "string" && value.length > 0;

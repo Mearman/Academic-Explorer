@@ -208,7 +208,7 @@ export function useAnimatedLayout(options: UseAnimatedLayoutOptions = {}) {
 			const isPinned = pinnedNodes[node.id] ?? false;
 			return {
 				id: node.id,
-				type: node.data?.type as EntityType | undefined,
+				type: node.data.entityType as EntityType | undefined,
 				x: node.position.x,
 				y: node.position.y,
 				fx: isPinned ? node.position.x : undefined,

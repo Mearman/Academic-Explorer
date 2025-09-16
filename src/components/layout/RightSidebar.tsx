@@ -97,7 +97,7 @@ export const RightSidebar: React.FC = () => {
 							<Stack gap="xs">
 								{displayEntity.externalIds.map((extId, index) => (
 									<Anchor
-										key={extId.url || extId.type || `extid-${String(index)}`}
+										key={extId.url || `extid-${extId.type}-${String(index)}`}
 										href={extId.url}
 										target="_blank"
 										rel="noopener noreferrer"
