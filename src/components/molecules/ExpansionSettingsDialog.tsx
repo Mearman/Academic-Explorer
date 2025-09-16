@@ -391,7 +391,7 @@ export const ExpansionSettingsDialog: React.FC<ExpansionSettingsDialogProps> = (
                     Validation Errors:
 									</div>
 									{validation.errors.map((errorMsg, index) => (
-										<div key={index} style={{
+										<div key={`error-${String(index)}-${errorMsg.substring(0, 20)}`} style={{
 											fontSize: "11px",
 											color: colors.error
 										}}>

@@ -154,7 +154,7 @@ export const RawApiDataSection: React.FC<RawApiDataSectionProps> = ({
 						Array ({value.length} items)
 					</div>
 					{value.map((item, index) => (
-						<div key={index} style={{
+						<div key={`array-item-${String(index)}-${JSON.stringify(item).substring(0, 20)}`} style={{
 							marginBottom: "6px",
 							paddingBottom: "4px",
 							borderBottom: index < value.length - 1 ? `1px solid ${colors.border.secondary}` : "none"

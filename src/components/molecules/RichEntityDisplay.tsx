@@ -209,7 +209,7 @@ export const RichEntityDisplay: React.FC<RichEntityDisplayProps> = ({
 						<ScrollArea.Autosize mah={120}>
 							<Stack gap="xs">
 								{work.authorships.slice(0, 10).map((authorship: Authorship, index: number) => (
-									<Group key={index} gap="sm" wrap="nowrap">
+									<Group key={authorship.author.id || `authorship-${String(index)}`} gap="sm" wrap="nowrap">
 										<Badge size="xs" variant="light">
 											{authorship.author_position}
 										</Badge>
@@ -265,7 +265,7 @@ export const RichEntityDisplay: React.FC<RichEntityDisplayProps> = ({
 						<Group gap="xs">
 							{work.topics.slice(0, 8).map((topic, index: number) => (
 								<Badge
-									key={index}
+									key={topic.id || `topic-${String(index)}`}
 									size="sm"
 									variant="light"
 									color={getEntityColor("topics")}
@@ -386,7 +386,7 @@ export const RichEntityDisplay: React.FC<RichEntityDisplayProps> = ({
 						<Timeline active={0} bulletSize={20} lineWidth={2}>
 							{author.affiliations.slice(0, 5).map((affiliation, index: number) => (
 								<Timeline.Item
-									key={index}
+									key={affiliation.institution.id || `affiliation-${String(index)}`}
 									bullet={<IconBuilding size={12} />}
 									title={
 										<Anchor
@@ -431,7 +431,7 @@ export const RichEntityDisplay: React.FC<RichEntityDisplayProps> = ({
 
 						<Stack gap="xs">
 							{author.topics.slice(0, 5).map((topic, index: number) => (
-								<Group key={index} justify="space-between">
+								<Group key={topic.id || `author-topic-${String(index)}`} justify="space-between">
 									<Anchor
 										size="sm"
 										c={getEntityColor("topics")}
@@ -545,7 +545,7 @@ export const RichEntityDisplay: React.FC<RichEntityDisplayProps> = ({
 
 						<Stack gap="xs">
 							{institution.topics.slice(0, 6).map((topic, index: number) => (
-								<Group key={index} justify="space-between">
+								<Group key={topic.id || `institution-topic-${String(index)}`} justify="space-between">
 									<Anchor
 										size="sm"
 										c={getEntityColor("topics")}
