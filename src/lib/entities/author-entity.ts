@@ -82,8 +82,14 @@ export class AuthorEntity extends AbstractEntity<Author> {
 				select: ["id", "display_name", "affiliations"]
 			});
 
+			// Ensure author object is valid
+			if (!author) {
+				logger.warn("graph", "Author not found", { entityId: context.entityId }, "AuthorEntity");
+				return { nodes: [], edges: [] };
+			}
+
 			// Create minimal institution nodes from affiliations
-			if (author.affiliations.length > 0) {
+			if (author.affiliations && author.affiliations.length > 0) {
 				author.affiliations.slice(0, 3).forEach((affiliation, index) => {
 					const institutionNode: GraphNode = {
 						id: affiliation.institution.id,
@@ -283,7 +289,7 @@ export class AuthorEntity extends AbstractEntity<Author> {
 		return {
 			worksCount: author.works_count,
 			citationCount: author.cited_by_count,
-			affiliations: author.affiliations.map(a => a.institution.display_name),
+			affiliations: author.affiliations?.map(a => a.institution.display_name) || [],
 			lastKnownInstitutions: author.last_known_institutions?.map(i => i.display_name) || [],
 		};
 	}
@@ -342,7 +348,7 @@ export class AuthorEntity extends AbstractEntity<Author> {
 		}> = [];
 
 		// Add institution affiliations
-		if (author.affiliations.length > 0) {
+		if (author.affiliations && author.affiliations.length > 0) {
 			author.affiliations.forEach(affiliation => {
 				edges.push({
 					targetId: affiliation.institution.id,
