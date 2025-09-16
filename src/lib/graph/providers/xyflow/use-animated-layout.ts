@@ -68,19 +68,39 @@ export function useAnimatedLayout(options: UseAnimatedLayoutOptions = {}) {
   const iteration = useAnimatedGraphStore((state) => state.iteration);
   const fps = useAnimatedGraphStore((state) => state.fps);
 
-  // Get stable store methods
-  const startAnimationInStore = useAnimatedGraphStore((state) => state.startAnimation);
-  const completeAnimation = useAnimatedGraphStore((state) => state.completeAnimation);
-  const resetAnimation = useAnimatedGraphStore((state) => state.resetAnimation);
-  const setAnimating = useAnimatedGraphStore((state) => state.setAnimating);
-  const setPaused = useAnimatedGraphStore((state) => state.setPaused);
-  const setProgress = useAnimatedGraphStore((state) => state.setProgress);
-  const setAlpha = useAnimatedGraphStore((state) => state.setAlpha);
-  const setIteration = useAnimatedGraphStore((state) => state.setIteration);
-  const setFPS = useAnimatedGraphStore((state) => state.setFPS);
-  const updateAnimatedPositions = useAnimatedGraphStore((state) => state.updateAnimatedPositions);
-  const updateStaticPositions = useAnimatedGraphStore((state) => state.updateStaticPositions);
-  const applyPositionsToGraphStore = useAnimatedGraphStore((state) => state.applyPositionsToGraphStore);
+  // Use refs to store methods and prevent circular dependencies
+  const storeMethodsRef = useRef({
+    startAnimation: useAnimatedGraphStore.getState().startAnimation,
+    completeAnimation: useAnimatedGraphStore.getState().completeAnimation,
+    resetAnimation: useAnimatedGraphStore.getState().resetAnimation,
+    setAnimating: useAnimatedGraphStore.getState().setAnimating,
+    setPaused: useAnimatedGraphStore.getState().setPaused,
+    setProgress: useAnimatedGraphStore.getState().setProgress,
+    setAlpha: useAnimatedGraphStore.getState().setAlpha,
+    setIteration: useAnimatedGraphStore.getState().setIteration,
+    setFPS: useAnimatedGraphStore.getState().setFPS,
+    updateAnimatedPositions: useAnimatedGraphStore.getState().updateAnimatedPositions,
+    updateStaticPositions: useAnimatedGraphStore.getState().updateStaticPositions,
+    applyPositionsToGraphStore: useAnimatedGraphStore.getState().applyPositionsToGraphStore,
+  });
+
+  // Update refs when store methods change (should be rare)
+  useEffect(() => {
+    storeMethodsRef.current = {
+      startAnimation: useAnimatedGraphStore.getState().startAnimation,
+      completeAnimation: useAnimatedGraphStore.getState().completeAnimation,
+      resetAnimation: useAnimatedGraphStore.getState().resetAnimation,
+      setAnimating: useAnimatedGraphStore.getState().setAnimating,
+      setPaused: useAnimatedGraphStore.getState().setPaused,
+      setProgress: useAnimatedGraphStore.getState().setProgress,
+      setAlpha: useAnimatedGraphStore.getState().setAlpha,
+      setIteration: useAnimatedGraphStore.getState().setIteration,
+      setFPS: useAnimatedGraphStore.getState().setFPS,
+      updateAnimatedPositions: useAnimatedGraphStore.getState().updateAnimatedPositions,
+      updateStaticPositions: useAnimatedGraphStore.getState().updateStaticPositions,
+      applyPositionsToGraphStore: useAnimatedGraphStore.getState().applyPositionsToGraphStore,
+    };
+  });
 
   // Create stable animation state object
   const animationState = useMemo(() => ({
@@ -109,7 +129,7 @@ export function useAnimatedLayout(options: UseAnimatedLayoutOptions = {}) {
   } = useAnimatedForceSimulation({
     onPositionUpdate: useCallback((positions: NodePosition[]) => {
       // Update animated store with new positions
-      updateAnimatedPositions(positions);
+      storeMethodsRef.current.updateAnimatedPositions(positions);
 
       // Update ReactFlow nodes with new positions
       setNodes((currentNodes) =>
@@ -126,16 +146,16 @@ export function useAnimatedLayout(options: UseAnimatedLayoutOptions = {}) {
       );
 
       onLayoutChange?.();
-    }, [updateAnimatedPositions, setNodes, onLayoutChange]),
+    }, [setNodes, onLayoutChange]),
 
     onComplete: useCallback((positions: NodePosition[], stats: { totalIterations: number; finalAlpha: number; reason: string }) => {
       // Update final positions in store
-      updateStaticPositions(positions);
+      storeMethodsRef.current.updateStaticPositions(positions);
       const statsWithDuration = { ...stats, duration: Date.now() };
-      completeAnimation(statsWithDuration);
+      storeMethodsRef.current.completeAnimation(statsWithDuration);
 
       // Apply positions to graph store for persistence
-      applyPositionsToGraphStore();
+      storeMethodsRef.current.applyPositionsToGraphStore();
 
       // Auto-pin all nodes if preference is enabled
       if (autoPinOnLayoutStabilization) {
