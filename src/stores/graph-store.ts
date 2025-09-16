@@ -52,6 +52,17 @@ interface GraphState {
   visibleEntityTypes: Record<EntityType, boolean>; // object instead of Set
   lastSearchStats: Record<EntityType, number>; // object instead of Map
 
+  // Pre-computed statistics (cached to avoid getSnapshot infinite loops)
+  entityTypeStats: {
+    visible: Record<EntityType, number>;
+    total: Record<EntityType, number>;
+    searchResults: Record<EntityType, number>;
+  };
+  edgeTypeStats: {
+    visible: Record<RelationType, number>;
+    total: Record<RelationType, number>;
+  };
+
   // Edge type visibility
   visibleEdgeTypes: Record<RelationType, boolean>; // object instead of Set
 
@@ -113,14 +124,17 @@ interface GraphState {
   setEntityTypeVisibility: (entityType: EntityType, visible: boolean) => void;
   setAllEntityTypesVisible: (visible: boolean) => void;
   updateSearchStats: (stats: Record<EntityType, number>) => void;
-  getEntityTypeStats: () => { visible: Record<EntityType, number>; total: Record<EntityType, number>; searchResults: Record<EntityType, number> };
+  recomputeEntityTypeStats: () => void;
+  recomputeEdgeTypeStats: () => void;
 
   // Edge type management
   toggleEdgeTypeVisibility: (edgeType: RelationType) => void;
   setEdgeTypeVisibility: (edgeType: RelationType, visible: boolean) => void;
   setAllEdgeTypesVisible: (visible: boolean) => void;
-  getEdgeTypeStats: () => { visible: Record<RelationType, number>; total: Record<RelationType, number> };
-  getVisibleEdgesByType: () => GraphEdge[];
+
+  // Loading state management
+  markNodeAsLoading: (nodeId: string, loading?: boolean) => void;
+  clearNodeLoading: (nodeId: string) => void;
 
   // Graph queries (provider agnostic)
   getNeighbors: (nodeId: string) => GraphNode[];
@@ -213,6 +227,79 @@ export const useGraphStore = create<GraphState>()(
 			isLoading: false,
 			error: null,
 
+			// Pre-computed statistics (cached to avoid getSnapshot infinite loops)
+			entityTypeStats: {
+				visible: {
+					"concepts": 0,
+					"topics": 0,
+					"keywords": 0,
+					"works": 0,
+					"authors": 0,
+					"sources": 0,
+					"institutions": 0,
+					"publishers": 0,
+					"funders": 0
+				},
+				total: {
+					"concepts": 0,
+					"topics": 0,
+					"keywords": 0,
+					"works": 0,
+					"authors": 0,
+					"sources": 0,
+					"institutions": 0,
+					"publishers": 0,
+					"funders": 0
+				},
+				searchResults: {
+					"concepts": 0,
+					"topics": 0,
+					"keywords": 0,
+					"works": 0,
+					"authors": 0,
+					"sources": 0,
+					"institutions": 0,
+					"publishers": 0,
+					"funders": 0
+				}
+			},
+			edgeTypeStats: {
+				visible: {
+					[RelationType.AUTHORED]: 0,
+					[RelationType.AFFILIATED]: 0,
+					[RelationType.PUBLISHED_IN]: 0,
+					[RelationType.FUNDED_BY]: 0,
+					[RelationType.REFERENCES]: 0,
+					[RelationType.RELATED_TO]: 0,
+					[RelationType.SOURCE_PUBLISHED_BY]: 0,
+					[RelationType.INSTITUTION_CHILD_OF]: 0,
+					[RelationType.PUBLISHER_CHILD_OF]: 0,
+					[RelationType.WORK_HAS_TOPIC]: 0,
+					[RelationType.WORK_HAS_KEYWORD]: 0,
+					[RelationType.AUTHOR_RESEARCHES]: 0,
+					[RelationType.INSTITUTION_LOCATED_IN]: 0,
+					[RelationType.FUNDER_LOCATED_IN]: 0,
+					[RelationType.TOPIC_PART_OF_FIELD]: 0
+				},
+				total: {
+					[RelationType.AUTHORED]: 0,
+					[RelationType.AFFILIATED]: 0,
+					[RelationType.PUBLISHED_IN]: 0,
+					[RelationType.FUNDED_BY]: 0,
+					[RelationType.REFERENCES]: 0,
+					[RelationType.RELATED_TO]: 0,
+					[RelationType.SOURCE_PUBLISHED_BY]: 0,
+					[RelationType.INSTITUTION_CHILD_OF]: 0,
+					[RelationType.PUBLISHER_CHILD_OF]: 0,
+					[RelationType.WORK_HAS_TOPIC]: 0,
+					[RelationType.WORK_HAS_KEYWORD]: 0,
+					[RelationType.AUTHOR_RESEARCHES]: 0,
+					[RelationType.INSTITUTION_LOCATED_IN]: 0,
+					[RelationType.FUNDER_LOCATED_IN]: 0,
+					[RelationType.TOPIC_PART_OF_FIELD]: 0
+				}
+			},
+
 			// Provider management
 			setProvider: (provider) => {
 				const state = get();
@@ -259,6 +346,8 @@ export const useGraphStore = create<GraphState>()(
 						draft.provider?.addNode(node);
 					});
 				});
+				// Recompute cached statistics after data change
+				get().recomputeEntityTypeStats();
 			},
 
 			removeNode: (nodeId) => {
@@ -284,6 +373,9 @@ export const useGraphStore = create<GraphState>()(
 						draft.hoveredNodeId = null;
 					}
 				});
+				// Recompute cached statistics after data change
+				get().recomputeEntityTypeStats();
+				get().recomputeEdgeTypeStats();
 			},
 
 			updateNode: (nodeId, updates) => {
@@ -316,6 +408,8 @@ export const useGraphStore = create<GraphState>()(
 						draft.provider?.addEdge(edge);
 					});
 				});
+				// Recompute cached statistics after data change
+				get().recomputeEdgeTypeStats();
 			},
 
 			removeEdge: (edgeId) => {
@@ -323,6 +417,8 @@ export const useGraphStore = create<GraphState>()(
 					delete draft.edges[edgeId];
 					draft.provider?.removeEdge(edgeId);
 				});
+				// Recompute cached statistics after data change
+				get().recomputeEdgeTypeStats();
 			},
 
 			updateEdge: (edgeId, updates) => {
@@ -577,46 +673,48 @@ export const useGraphStore = create<GraphState>()(
 				set({ lastSearchStats: stats });
 			},
 
-			getEntityTypeStats: () => {
-				const { nodes, visibleEntityTypes, lastSearchStats } = get();
-				// Initialize with all entity types set to 0
-				const total: Record<EntityType, number> = {
-					concepts: 0,
-					topics: 0,
-					keywords: 0,
-					works: 0,
-					authors: 0,
-					sources: 0,
-					institutions: 0,
-					publishers: 0,
-					funders: 0
-				};
-				const visible: Record<EntityType, number> = {
-					concepts: 0,
-					topics: 0,
-					keywords: 0,
-					works: 0,
-					authors: 0,
-					sources: 0,
-					institutions: 0,
-					publishers: 0,
-					funders: 0
-				};
+			recomputeEntityTypeStats: () => {
+				set((state) => {
+					// Initialize with all entity types set to 0
+					const total: Record<EntityType, number> = {
+						concepts: 0,
+						topics: 0,
+						keywords: 0,
+						works: 0,
+						authors: 0,
+						sources: 0,
+						institutions: 0,
+						publishers: 0,
+						funders: 0
+					};
+					const visible: Record<EntityType, number> = {
+						concepts: 0,
+						topics: 0,
+						keywords: 0,
+						works: 0,
+						authors: 0,
+						sources: 0,
+						institutions: 0,
+						publishers: 0,
+						funders: 0
+					};
 
-				// Count total and visible nodes by type
-				Object.values(nodes).forEach(node => {
-					total[node.type] = (total[node.type] || 0) + 1;
+					// Count total and visible nodes by type
+					Object.values(state.nodes).forEach(node => {
+						total[node.type] = (total[node.type] || 0) + 1;
 
-					if (visibleEntityTypes[node.type]) {
-						visible[node.type] = (visible[node.type] || 0) + 1;
-					}
+						if (state.visibleEntityTypes[node.type]) {
+							visible[node.type] = (visible[node.type] || 0) + 1;
+						}
+					});
+
+					// Update cached statistics
+					state.entityTypeStats = {
+						total,
+						visible,
+						searchResults: state.lastSearchStats
+					};
 				});
-
-				return {
-					total,
-					visible,
-					searchResults: lastSearchStats
-				};
 			},
 
 			// Edge type management
@@ -667,62 +765,59 @@ export const useGraphStore = create<GraphState>()(
 				});
 			},
 
-			getEdgeTypeStats: () => {
-				const { edges, visibleEdgeTypes } = get();
-				// Initialize with all relation types set to 0
-				const total: Record<RelationType, number> = {
-					[RelationType.AUTHORED]: 0,
-					[RelationType.AFFILIATED]: 0,
-					[RelationType.PUBLISHED_IN]: 0,
-					[RelationType.FUNDED_BY]: 0,
-					[RelationType.REFERENCES]: 0,
-					[RelationType.RELATED_TO]: 0,
-					[RelationType.SOURCE_PUBLISHED_BY]: 0,
-					[RelationType.INSTITUTION_CHILD_OF]: 0,
-					[RelationType.PUBLISHER_CHILD_OF]: 0,
-					[RelationType.WORK_HAS_TOPIC]: 0,
-					[RelationType.WORK_HAS_KEYWORD]: 0,
-					[RelationType.AUTHOR_RESEARCHES]: 0,
-					[RelationType.INSTITUTION_LOCATED_IN]: 0,
-					[RelationType.FUNDER_LOCATED_IN]: 0,
-					[RelationType.TOPIC_PART_OF_FIELD]: 0
-				};
-				const visible: Record<RelationType, number> = {
-					[RelationType.AUTHORED]: 0,
-					[RelationType.AFFILIATED]: 0,
-					[RelationType.PUBLISHED_IN]: 0,
-					[RelationType.FUNDED_BY]: 0,
-					[RelationType.REFERENCES]: 0,
-					[RelationType.RELATED_TO]: 0,
-					[RelationType.SOURCE_PUBLISHED_BY]: 0,
-					[RelationType.INSTITUTION_CHILD_OF]: 0,
-					[RelationType.PUBLISHER_CHILD_OF]: 0,
-					[RelationType.WORK_HAS_TOPIC]: 0,
-					[RelationType.WORK_HAS_KEYWORD]: 0,
-					[RelationType.AUTHOR_RESEARCHES]: 0,
-					[RelationType.INSTITUTION_LOCATED_IN]: 0,
-					[RelationType.FUNDER_LOCATED_IN]: 0,
-					[RelationType.TOPIC_PART_OF_FIELD]: 0
-				};
+			recomputeEdgeTypeStats: () => {
+				set((state) => {
+					// Initialize with all relation types set to 0
+					const total: Record<RelationType, number> = {
+						[RelationType.AUTHORED]: 0,
+						[RelationType.AFFILIATED]: 0,
+						[RelationType.PUBLISHED_IN]: 0,
+						[RelationType.FUNDED_BY]: 0,
+						[RelationType.REFERENCES]: 0,
+						[RelationType.RELATED_TO]: 0,
+						[RelationType.SOURCE_PUBLISHED_BY]: 0,
+						[RelationType.INSTITUTION_CHILD_OF]: 0,
+						[RelationType.PUBLISHER_CHILD_OF]: 0,
+						[RelationType.WORK_HAS_TOPIC]: 0,
+						[RelationType.WORK_HAS_KEYWORD]: 0,
+						[RelationType.AUTHOR_RESEARCHES]: 0,
+						[RelationType.INSTITUTION_LOCATED_IN]: 0,
+						[RelationType.FUNDER_LOCATED_IN]: 0,
+						[RelationType.TOPIC_PART_OF_FIELD]: 0
+					};
+					const visible: Record<RelationType, number> = {
+						[RelationType.AUTHORED]: 0,
+						[RelationType.AFFILIATED]: 0,
+						[RelationType.PUBLISHED_IN]: 0,
+						[RelationType.FUNDED_BY]: 0,
+						[RelationType.REFERENCES]: 0,
+						[RelationType.RELATED_TO]: 0,
+						[RelationType.SOURCE_PUBLISHED_BY]: 0,
+						[RelationType.INSTITUTION_CHILD_OF]: 0,
+						[RelationType.PUBLISHER_CHILD_OF]: 0,
+						[RelationType.WORK_HAS_TOPIC]: 0,
+						[RelationType.WORK_HAS_KEYWORD]: 0,
+						[RelationType.AUTHOR_RESEARCHES]: 0,
+						[RelationType.INSTITUTION_LOCATED_IN]: 0,
+						[RelationType.FUNDER_LOCATED_IN]: 0,
+						[RelationType.TOPIC_PART_OF_FIELD]: 0
+					};
 
-				// Count total and visible edges by type
-				Object.values(edges).forEach(edge => {
-					total[edge.type] = (total[edge.type] || 0) + 1;
+					// Count total and visible edges by type
+					Object.values(state.edges).forEach(edge => {
+						total[edge.relationType] = (total[edge.relationType] || 0) + 1;
 
-					if (visibleEdgeTypes[edge.type]) {
-						visible[edge.type] = (visible[edge.type] || 0) + 1;
-					}
+						if (state.visibleEdgeTypes[edge.relationType]) {
+							visible[edge.relationType] = (visible[edge.relationType] || 0) + 1;
+						}
+					});
+
+					// Update cached statistics
+					state.edgeTypeStats = {
+						total,
+						visible
+					};
 				});
-
-				return {
-					total,
-					visible
-				};
-			},
-
-			getVisibleEdgesByType: () => {
-				const { edges, visibleEdgeTypes } = get();
-				return Object.values(edges).filter(edge => visibleEdgeTypes[edge.type]);
 			},
 
 			// Graph algorithms (work with generic data)
@@ -861,6 +956,16 @@ export const useGraphStore = create<GraphState>()(
 					if (node) {
 						// Update label to show error - no artificial metadata needed
 						node.label = `Error: ${node.label.replace("Loading ", "").replace("...", "")}`;
+					}
+				});
+			},
+
+			clearNodeLoading: (nodeId) => {
+				set((draft) => {
+					const node = draft.nodes[nodeId];
+					if (node) {
+						// Remove "Loading " prefix and "..." suffix from label
+						node.label = node.label.replace(/^Loading /, "").replace(/\.\.\.$/, "");
 					}
 				});
 			},
