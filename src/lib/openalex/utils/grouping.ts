@@ -99,7 +99,6 @@ export class GroupingApi {
 		const {
 			group_limit = 100,
 			min_count = 1,
-			include_citation_stats = true,
 			...queryParams
 		} = params;
 

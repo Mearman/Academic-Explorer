@@ -4,7 +4,7 @@
  */
 
 import { OpenAlexBaseClient } from "../client";
-import { EntityType, StatsParams } from "../types";
+import { EntityType } from "../types";
 import { logger } from "@/lib/logger";
 
 /**
@@ -116,7 +116,7 @@ export class StatisticsApi {
    * });
    * ```
    */
-	async getDatabaseStats(_params: StatsParams = {}): Promise<DatabaseStats> {
+	async getDatabaseStats(): Promise<DatabaseStats> {
 		const currentYear = new Date().getFullYear();
 
 		// Get entity counts for all types
@@ -228,19 +228,18 @@ export class StatisticsApi {
    * ```
    */
 	getEntityAnalytics(
-		entityType: EntityType,
-		_params: StatsParams = {}
+		entityType: EntityType
 	): EntityAnalytics {
 		// Distribution analysis
-		const distributionAnalysis = this.getDistributionAnalysis(entityType);
+		const distributionAnalysis = this.getDistributionAnalysis();
 
 		// Trend analysis
-		const trendAnalysis = this.getTrendAnalysis(entityType);
+		const trendAnalysis = this.getTrendAnalysis();
 
 		// Collaboration metrics (for applicable entity types)
 		let collaborationMetrics;
 		if (entityType === "works" || entityType === "authors") {
-			collaborationMetrics = this.getCollaborationMetrics(entityType);
+			collaborationMetrics = this.getCollaborationMetrics();
 		}
 
 		return {
@@ -265,17 +264,16 @@ export class StatisticsApi {
    * ```
    */
 	getImpactMetrics(
-		entityType: EntityType,
-		_params: StatsParams = {}
+		entityType: EntityType
 	): ImpactMetrics {
 		// H-index distribution
-		const hIndexDistribution = this.getHIndexDistribution(entityType);
+		const hIndexDistribution = this.getHIndexDistribution();
 
 		// Field-normalized metrics
-		const fieldNormalizedMetrics = this.getFieldNormalizedMetrics(entityType);
+		const fieldNormalizedMetrics = this.getFieldNormalizedMetrics();
 
 		// Temporal impact analysis
-		const temporalImpact = this.getTemporalImpact(entityType);
+		const temporalImpact = this.getTemporalImpact();
 
 		return {
 			h_index_distribution: hIndexDistribution,
@@ -303,8 +301,7 @@ export class StatisticsApi {
    */
 	async getComparativeStats(
 		entityType: EntityType,
-		groupBy: string,
-		_params: StatsParams = {}
+		groupBy: string
 	): Promise<{
     groups: Array<{
       group: string;
@@ -558,7 +555,7 @@ export class StatisticsApi {
 	}
 
 	// Additional private helper methods would go here...
-	private getDistributionAnalysis(_entityType: EntityType) {
+	private getDistributionAnalysis() {
 		// Implementation for distribution analysis
 		return {
 			citation_distribution: {
@@ -575,7 +572,7 @@ export class StatisticsApi {
 		};
 	}
 
-	private getTrendAnalysis(_entityType: EntityType) {
+	private getTrendAnalysis() {
 		// Implementation for trend analysis
 		return {
 			recent_growth: 15.5,
@@ -587,7 +584,7 @@ export class StatisticsApi {
 		};
 	}
 
-	private getCollaborationMetrics(_entityType: EntityType) {
+	private getCollaborationMetrics() {
 		// Implementation for collaboration metrics
 		return {
 			avg_authors_per_work: 3.2,
@@ -596,7 +593,7 @@ export class StatisticsApi {
 		};
 	}
 
-	private getHIndexDistribution(_entityType: EntityType) {
+	private getHIndexDistribution() {
 		// Implementation for H-index distribution
 		return {
 			median_h_index: 15,
@@ -605,7 +602,7 @@ export class StatisticsApi {
 		};
 	}
 
-	private getFieldNormalizedMetrics(_entityType: EntityType) {
+	private getFieldNormalizedMetrics() {
 		// Implementation for field-normalized metrics
 		return {
 			avg_field_citation_ratio: 1.2,
@@ -616,7 +613,7 @@ export class StatisticsApi {
 		};
 	}
 
-	private getTemporalImpact(_entityType: EntityType) {
+	private getTemporalImpact() {
 		// Implementation for temporal impact
 		return {
 			citation_half_life: 7.2,
