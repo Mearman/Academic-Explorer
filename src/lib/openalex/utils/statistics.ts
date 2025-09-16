@@ -258,14 +258,10 @@ export class StatisticsApi {
    *
    * @example
    * ```typescript
-   * const impact = await statisticsApi.getImpactMetrics('authors', {
-   *   timeframe: 'year'
-   * });
+   * const impact = await statisticsApi.getImpactMetrics();
    * ```
    */
-	getImpactMetrics(
-		entityType: EntityType
-	): ImpactMetrics {
+	getImpactMetrics(): ImpactMetrics {
 		// H-index distribution
 		const hIndexDistribution = this.getHIndexDistribution();
 

@@ -253,7 +253,7 @@ describe("StatisticsApi", () => {
 				.mockResolvedValueOnce(mockFieldResponse) // Field-normalized metrics
 				.mockResolvedValueOnce(mockTemporalImpactResponse); // Temporal impact
 
-			const result = statisticsApi.getImpactMetrics("authors");
+			const result = statisticsApi.getImpactMetrics();
 
 			expect(result.h_index_distribution).toEqual({
 				median_h_index: expect.any(Number),

@@ -403,7 +403,6 @@ export class GraphDataService {
 			}
 
 		} catch (error) {
-			const errorMessage = error instanceof Error ? error.message : "Failed to load node data";
 			store.markNodeAsError(nodeId);
 			logError("Failed to hydrate node to full", error, "GraphDataService", "graph");
 		}
@@ -700,7 +699,6 @@ export class GraphDataService {
 
 		} catch (error) {
 			// Mark the node as error if expansion failed
-			const errorMessage = error instanceof Error ? error.message : "Expansion failed";
 			store.markNodeAsError(nodeId);
 
 			logError("Failed to expand node", error, "GraphDataService", "graph");

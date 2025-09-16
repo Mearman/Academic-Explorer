@@ -69,9 +69,9 @@ function ComparisonResults() {
 	const [starDatasets, setStarDatasets] = useState<STARDataset[]>([])
 	const [comparisonRuns, setComparisonRuns] = useState<ComparisonRun[]>([])
 	const [isRunningComparison, setIsRunningComparison] = useState(false)
-	const [_selectedDatasetId, setSelectedDatasetId] = useState<string | null>(null)
+	const [, setSelectedDatasetId] = useState<string | null>(null)
 	const [activeVisualizationTab, setActiveVisualizationTab] = useState<"performance" | "scatter" | "heatmap" | "overview">("performance")
-	const [_missingPaperResults, setMissingPaperResults] = useState<{ [datasetId: string]: MissingPaperDetectionResults }>({})
+	const [, setMissingPaperResults] = useState<{ [datasetId: string]: MissingPaperDetectionResults }>({})
 	const [selectedDatasetForMissingPapers, setSelectedDatasetForMissingPapers] = useState<string | null>(null)
 
 	// Load STAR datasets from localStorage on component mount
