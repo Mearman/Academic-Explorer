@@ -25,7 +25,6 @@ export const AnimatedLayoutProvider: React.FC<AnimatedLayoutProviderProps> = ({
 	enabled = true,
 	onLayoutChange,
 	fitViewAfterLayout = true,
-	containerDimensions,
 	autoStartOnNodeChange = false,
 }) => {
 	// Use stable selector to prevent infinite loops in React 19
@@ -40,7 +39,6 @@ export const AnimatedLayoutProvider: React.FC<AnimatedLayoutProviderProps> = ({
 		enabled: enabled && useAnimation,
 		onLayoutChange,
 		fitViewAfterLayout,
-		containerDimensions,
 		useAnimation,
 	});
 

@@ -281,7 +281,6 @@ const GraphNavigationInner: React.FC<GraphNavigationProps> = ({ className, style
 	} = useAnimatedLayout({
 		enabled: true,
 		onLayoutChange,
-		containerDimensions,
 		// Keep automatic fitView enabled - it's already smooth with 800ms duration
 		fitViewAfterLayout: true,
 		useAnimation: true

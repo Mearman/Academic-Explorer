@@ -35,7 +35,7 @@ interface UseDataFetchingWorkerReturn {
     entityId: string,
     entityType: EntityType,
     options?: ExpansionOptions,
-    expansionSettings?: Record<string, unknown>
+    expansionSettings?: ExpansionSettings
   ) => Promise<void>;
 
   cancelExpansion: (nodeId: string) => void;
