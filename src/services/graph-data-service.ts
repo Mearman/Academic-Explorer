@@ -52,10 +52,10 @@ export class GraphDataService {
 		this.deduplicationService = createRequestDeduplicationService(queryClient);
 		this.relationshipDetectionService = createRelationshipDetectionService(queryClient);
 		this.cache = {
-			nodes: new Map(),
-			edges: new Map(),
-			expandedNodes: new Set(),
-			fetchedRelationships: new Map(),
+			nodes: {},
+			edges: {},
+			expandedNodes: {},
+			fetchedRelationships: {},
 		};
 	}
 
@@ -93,8 +93,8 @@ export class GraphDataService {
 
 			// Clear existing graph and expansion cache
 			store.clear();
-			this.cache.expandedNodes.clear();
-			this.cache.fetchedRelationships.clear();
+			this.cache.expandedNodes = {};
+			this.cache.fetchedRelationships = {};
 
 			// Add new data to store
 			store.addNodes(nodes);
@@ -152,7 +152,7 @@ export class GraphDataService {
 
 		try {
 			// Check if the node already exists (regardless of hydration level)
-			const existingNode = Array.from(store.nodes.values()).find(
+			const existingNode = Object.values(store.nodes).find(
 				node => node.entityId === entityId
 			);
 
@@ -278,15 +278,15 @@ export class GraphDataService {
 			}
 
 			// Remove duplicates (entities might reference each other)
-			const uniqueNodes = new Map<string, GraphNode>();
-			allNodes.forEach(node => uniqueNodes.set(node.id, node));
+			const uniqueNodes: Record<string, GraphNode> = {};
+			allNodes.forEach(node => uniqueNodes[node.id] = node);
 
-			const uniqueEdges = new Map<string, GraphEdge>();
-			allEdges.forEach(edge => uniqueEdges.set(edge.id, edge));
+			const uniqueEdges: Record<string, GraphEdge> = {};
+			allEdges.forEach(edge => uniqueEdges[edge.id] = edge);
 
 			// Add to graph store
-			const finalNodes = Array.from(uniqueNodes.values());
-			const finalEdges = Array.from(uniqueEdges.values());
+			const finalNodes = Object.values(uniqueNodes);
+			const finalEdges = Object.values(uniqueEdges);
 
 			store.addNodes(finalNodes);
 			store.addEdges(finalEdges);
@@ -296,7 +296,7 @@ export class GraphDataService {
 			setCachedGraphEdges(this.queryClient, finalEdges);
 
 			// If there are pinned nodes, recalculate depths from the first one
-			const pinnedNodes = Array.from(store.pinnedNodes);
+			const pinnedNodes = Object.keys(store.pinnedNodes).filter(nodeId => store.pinnedNodes[nodeId]);
 			const firstPinnedNodeId = pinnedNodes[0];
 			if (firstPinnedNodeId) {
 				store.calculateNodeDepths(firstPinnedNodeId);
@@ -427,7 +427,7 @@ export class GraphDataService {
 	 */
 	async detectRelationshipsForAllNodes(): Promise<void> {
 		const store = useGraphStore.getState();
-		const allNodes = Array.from(store.nodes.values());
+		const allNodes = Object.values(store.nodes);
 
 		logger.info("graph", "Starting relationship detection for all nodes", {
 			nodeCount: allNodes.length
@@ -606,7 +606,7 @@ export class GraphDataService {
 
 		try {
 			// Get the node to expand
-			const node = store.nodes.get(nodeId);
+			const node = store.nodes[nodeId];
 			if (!node) return;
 
 			// Check if entity type is supported
@@ -628,7 +628,7 @@ export class GraphDataService {
 				force,
 				limit: options.limit,
 				depth: options.depth,
-				wasAlreadyExpanded: this.cache.expandedNodes.has(nodeId)
+				wasAlreadyExpanded: !!this.cache.expandedNodes[nodeId]
 			}, "GraphDataService");
 
 			// Create entity instance using the factory
@@ -668,8 +668,8 @@ export class GraphDataService {
 			store.addEdges(relatedData.edges);
 
 			// Update cached graph data
-			const allNodes = Array.from(store.nodes.values());
-			const allEdges = Array.from(store.edges.values());
+			const allNodes = Object.values(store.nodes);
+			const allEdges = Object.values(store.edges);
 			setCachedGraphNodes(this.queryClient, allNodes);
 			setCachedGraphEdges(this.queryClient, allEdges);
 
@@ -734,15 +734,15 @@ export class GraphDataService {
 			];
 
 			// Track search statistics
-			const searchStats = new Map<EntityType, number>();
-			searchStats.set("works", results.works.length);
-			searchStats.set("authors", results.authors.length);
-			searchStats.set("sources", results.sources.length);
-			searchStats.set("institutions", results.institutions.length);
-			searchStats.set("topics", results.topics.length);
-			searchStats.set("publishers", results.publishers.length);
-			searchStats.set("funders", results.funders.length);
-			searchStats.set("keywords", results.keywords.length);
+			const searchStats: Record<EntityType, number> = {} as Record<EntityType, number>;
+			searchStats["works"] = results.works.length;
+			searchStats["authors"] = results.authors.length;
+			searchStats["sources"] = results.sources.length;
+			searchStats["institutions"] = results.institutions.length;
+			searchStats["topics"] = results.topics.length;
+			searchStats["publishers"] = results.publishers.length;
+			searchStats["funders"] = results.funders.length;
+			searchStats["keywords"] = results.keywords.length;
 
 			const { nodes, edges } = this.transformSearchResults(flatResults);
 
@@ -841,7 +841,7 @@ export class GraphDataService {
    */
 	private async loadMinimalDataInBackground(entityId: string, entityType: EntityType): Promise<void> {
 		const store = useGraphStore.getState();
-		const node = store.nodes.get(entityId);
+		const node = store.nodes[entityId];
 
 		if (!node) {
 			return;
@@ -880,7 +880,7 @@ export class GraphDataService {
    */
 	private async hydrateNodeInBackground(entityId: string): Promise<void> {
 		const store = useGraphStore.getState();
-		const node = store.nodes.get(entityId);
+		const node = store.nodes[entityId];
 
 		if (!node) {
 			return;
@@ -916,7 +916,7 @@ export class GraphDataService {
    */
 	async hydrateNode(nodeId: string): Promise<void> {
 		const store = useGraphStore.getState();
-		const node = store.nodes.get(nodeId);
+		const node = store.nodes[nodeId];
 
 		if (!node) {
 			logger.warn("graph", "Cannot hydrate non-existent node", { nodeId });
@@ -962,7 +962,9 @@ export class GraphDataService {
 	 */
 	async expandAllNodesOfType(entityType: EntityType, options: ExpansionOptions = {}): Promise<void> {
 		const store = useGraphStore.getState();
-		const allVisibleNodes = store.getVisibleNodes();
+		// Use direct selectors instead of unstable getter function to avoid infinite loops
+		const { nodes, visibleEntityTypes } = store;
+		const allVisibleNodes = Object.values(nodes).filter(node => visibleEntityTypes[node.type]);
 
 		if (allVisibleNodes.length === 0) {
 			logger.info("graph", "No visible nodes found to expand", { entityType }, "GraphDataService");
@@ -1008,7 +1010,7 @@ export class GraphDataService {
 					// Fetch only the entities of target type (efficiently)
 					for (const entityId of relatedEntityIds.slice(0, options.limit || 10)) {
 						// Skip if we already have this node
-						if (store.nodes.has(entityId)) {
+						if (store.nodes[entityId]) {
 							continue;
 						}
 
@@ -1131,7 +1133,10 @@ export class GraphDataService {
 			}
 		}
 
-		return [...new Set(entityIds)]; // Remove duplicates
+		// Remove duplicates using Record pattern
+		const unique: Record<string, boolean> = {};
+		entityIds.forEach(id => unique[id] = true);
+		return Object.keys(unique);
 	}
 
 	/**

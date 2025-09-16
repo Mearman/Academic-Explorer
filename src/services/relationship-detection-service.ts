@@ -152,7 +152,7 @@ export class RelationshipDetectionService {
 			}
 
 			// Get all existing nodes in the graph
-			const existingNodes = Array.from(store.nodes.values()).filter(node => node.id !== nodeId);
+			const existingNodes = Object.values(store.nodes).filter(node => node.id !== nodeId);
 
 			// Detect relationships with existing nodes
 			const detectedRelationships = this.analyzeRelationships(minimalData, existingNodes);
@@ -299,10 +299,17 @@ export class RelationshipDetectionService {
 				break;
 		}
 
+		// Deduplicate relationship types using Record pattern
+		const relationshipTypesRecord: Record<string, boolean> = {};
+		for (const relationship of relationships) {
+			relationshipTypesRecord[relationship.relationType] = true;
+		}
+		const uniqueRelationshipTypes = Object.keys(relationshipTypesRecord);
+
 		logger.debug("graph", "Relationship analysis completed", {
 			newEntityId: newEntityData.id,
 			detectedCount: relationships.length,
-			relationshipTypes: [...new Set(relationships.map(r => r.relationType))]
+			relationshipTypes: uniqueRelationshipTypes
 		}, "RelationshipDetectionService");
 
 		return relationships;
@@ -574,13 +581,13 @@ export class RelationshipDetectionService {
 	 * Remove duplicate edges based on source-target-type combination
 	 */
 	private deduplicateEdges(edges: GraphEdge[]): GraphEdge[] {
-		const seen = new Set<string>();
+		const seen: Record<string, boolean> = {};
 		const uniqueEdges: GraphEdge[] = [];
 
 		for (const edge of edges) {
 			const key = `${edge.source}-${edge.type}-${edge.target}`;
-			if (!seen.has(key)) {
-				seen.add(key);
+			if (!seen[key]) {
+				seen[key] = true;
 				uniqueEdges.push(edge);
 			}
 		}
