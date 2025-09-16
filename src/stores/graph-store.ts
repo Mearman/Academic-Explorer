@@ -118,6 +118,7 @@ interface GraphState {
   getEntityTypeStats: () => { visible: Map<EntityType, number>; total: Map<EntityType, number>; searchResults: Map<EntityType, number> };
   getVisibleNodes: () => GraphNode[];
   getVisibleEdges: () => GraphEdge[];
+  getNodesByType: (entityType: EntityType) => GraphNode[];
 
   // Edge type management
   toggleEdgeTypeVisibility: (edgeType: RelationType) => void;
@@ -573,6 +574,11 @@ export const useGraphStore = create<GraphState>()(
 						visibleEntityTypes.has(targetNode.type) &&
 						visibleEdgeTypes.has(edge.type);
 				});
+			},
+
+			getNodesByType: (entityType) => {
+				const { nodes } = get();
+				return Array.from(nodes.values()).filter(node => node.type === entityType);
 			},
 
 			// Edge type management
