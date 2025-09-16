@@ -61,13 +61,26 @@ export function useAnimatedLayout(options: UseAnimatedLayoutOptions = {}) {
   const autoPinOnLayoutStabilization = useLayoutStore((state) => state.autoPinOnLayoutStabilization);
 
   // Get individual store methods using stable selectors
-  const animatedStore = useAnimatedGraphStore.getState();
   const isAnimating = useAnimatedGraphStore((state) => state.isAnimating);
   const isPaused = useAnimatedGraphStore((state) => state.isPaused);
   const progress = useAnimatedGraphStore((state) => state.progress);
   const alpha = useAnimatedGraphStore((state) => state.alpha);
   const iteration = useAnimatedGraphStore((state) => state.iteration);
   const fps = useAnimatedGraphStore((state) => state.fps);
+
+  // Get stable store methods
+  const startAnimationInStore = useAnimatedGraphStore((state) => state.startAnimation);
+  const completeAnimation = useAnimatedGraphStore((state) => state.completeAnimation);
+  const resetAnimation = useAnimatedGraphStore((state) => state.resetAnimation);
+  const setAnimating = useAnimatedGraphStore((state) => state.setAnimating);
+  const setPaused = useAnimatedGraphStore((state) => state.setPaused);
+  const setProgress = useAnimatedGraphStore((state) => state.setProgress);
+  const setAlpha = useAnimatedGraphStore((state) => state.setAlpha);
+  const setIteration = useAnimatedGraphStore((state) => state.setIteration);
+  const setFPS = useAnimatedGraphStore((state) => state.setFPS);
+  const updateAnimatedPositions = useAnimatedGraphStore((state) => state.updateAnimatedPositions);
+  const updateStaticPositions = useAnimatedGraphStore((state) => state.updateStaticPositions);
+  const applyPositionsToGraphStore = useAnimatedGraphStore((state) => state.applyPositionsToGraphStore);
 
   // Create stable animation state object
   const animationState = useMemo(() => ({
@@ -78,11 +91,6 @@ export function useAnimatedLayout(options: UseAnimatedLayoutOptions = {}) {
     iteration,
     fps,
   }), [isAnimating, isPaused, progress, alpha, iteration, fps]);
-
-  // Get stable position tracking methods
-  const updateAnimatedPositions = useAnimatedGraphStore((state) => state.updateAnimatedPositions);
-  const updateStaticPositions = useAnimatedGraphStore((state) => state.updateStaticPositions);
-  const applyPositionsToGraphStore = useAnimatedGraphStore((state) => state.applyPositionsToGraphStore);
 
   // Animation control refs
   const isLayoutRunningRef = useRef(false);
@@ -124,7 +132,7 @@ export function useAnimatedLayout(options: UseAnimatedLayoutOptions = {}) {
       // Update final positions in store
       updateStaticPositions(positions);
       const statsWithDuration = { ...stats, duration: Date.now() };
-      animatedStore.completeAnimation(statsWithDuration);
+      completeAnimation(statsWithDuration);
 
       // Apply positions to graph store for persistence
       applyPositionsToGraphStore();
@@ -163,23 +171,23 @@ export function useAnimatedLayout(options: UseAnimatedLayoutOptions = {}) {
         ...stats,
         autoPinEnabled: autoPinOnLayoutStabilization,
       });
-    }, [updateStaticPositions, applyPositionsToGraphStore, animatedStore, fitViewAfterLayout, fitView, autoPinOnLayoutStabilization, getNodes]),
+    }, [updateStaticPositions, applyPositionsToGraphStore, completeAnimation, fitViewAfterLayout, fitView, autoPinOnLayoutStabilization, getNodes]),
 
     onError: useCallback((error: string) => {
       logger.error('graph', 'Animated layout error', { error });
       isLayoutRunningRef.current = false;
-      animatedStore.resetAnimation();
-    }, [animatedStore]),
+      resetAnimation();
+    }, [resetAnimation]),
   });
 
   // Sync animation state between hook and store
   useEffect(() => {
-    animatedStore.setAnimating(hookAnimationState.isRunning);
-    animatedStore.setPaused(hookAnimationState.isPaused);
-    animatedStore.setProgress(hookAnimationState.progress);
-    animatedStore.setAlpha(hookAnimationState.alpha);
-    animatedStore.setIteration(hookAnimationState.iteration);
-    animatedStore.setFPS(hookAnimationState.fps);
+    setAnimating(hookAnimationState.isRunning);
+    setPaused(hookAnimationState.isPaused);
+    setProgress(hookAnimationState.progress);
+    setAlpha(hookAnimationState.alpha);
+    setIteration(hookAnimationState.iteration);
+    setFPS(hookAnimationState.fps);
   }, [
     hookAnimationState.isRunning,
     hookAnimationState.isPaused,
@@ -187,7 +195,12 @@ export function useAnimatedLayout(options: UseAnimatedLayoutOptions = {}) {
     hookAnimationState.alpha,
     hookAnimationState.iteration,
     hookAnimationState.fps,
-    animatedStore,
+    setAnimating,
+    setPaused,
+    setProgress,
+    setAlpha,
+    setIteration,
+    setFPS,
   ]);
 
   // Convert ReactFlow data to animation format
@@ -274,7 +287,7 @@ export function useAnimatedLayout(options: UseAnimatedLayoutOptions = {}) {
     });
 
     isLayoutRunningRef.current = true;
-    animatedStore.startAnimation();
+    startAnimationInStore();
 
     // Start the animation
     startAnimation(animatedNodes, animatedLinks, enhancedConfig, pinnedNodes);
@@ -286,7 +299,7 @@ export function useAnimatedLayout(options: UseAnimatedLayoutOptions = {}) {
     getOptimalConfig,
     pinnedNodes,
     currentLayout,
-    animatedStore,
+    startAnimationInStore,
     startAnimation,
   ]);
 
@@ -295,10 +308,10 @@ export function useAnimatedLayout(options: UseAnimatedLayoutOptions = {}) {
     if (isLayoutRunningRef.current) {
       stopAnimation();
       isLayoutRunningRef.current = false;
-      animatedStore.resetAnimation();
+      resetAnimation();
       logger.info('graph', 'Animated layout stopped');
     }
-  }, [stopAnimation, animatedStore]);
+  }, [stopAnimation, resetAnimation]);
 
   // Pause layout
   const pauseLayout = useCallback(() => {
