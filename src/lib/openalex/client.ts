@@ -347,7 +347,7 @@ export class OpenAlexBaseClient {
 	/**
    * Extract cursor from OpenAlex response metadata
    */
-	private extractCursorFromResponse<T>(): string | undefined {
+	private extractCursorFromResponse(): string | undefined {
 		// OpenAlex typically includes pagination info in meta
 		// This is a placeholder - actual implementation depends on OpenAlex response format
 		return undefined;

@@ -687,7 +687,7 @@ describe("Cache Persister", () => {
 				return null; // No existing data, low usage
 			});
 
-			localStorageMock.setItem.mockImplementation((key, _value) => {
+			localStorageMock.setItem.mockImplementation((key) => {
 				if (key === "__test__") return; // Availability test passes
 				const error = new Error("QuotaExceededError");
 				error.name = "QuotaExceededError";

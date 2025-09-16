@@ -205,7 +205,7 @@ export function useAnimatedLayout(options: UseAnimatedLayoutOptions = {}) {
 		const edges = getEdges();
 
 		const animatedNodes: AnimatedNode[] = nodes.map((node) => {
-			const isPinned = Boolean(pinnedNodes[node.id]);
+			const isPinned = pinnedNodes[node.id] ?? false;
 			return {
 				id: node.id,
 				type: node.data?.type as EntityType | undefined,

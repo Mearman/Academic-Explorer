@@ -733,7 +733,7 @@ describe("WorksApi Unit Tests", () => {
 			mockClient.getById.mockResolvedValue(mockWorkManyRelated);
 			mockClient.getResponse.mockResolvedValue(mockRelatedResponse);
 
-			const _result = await worksApi.getRelatedWorks("W123", { limit: 2 });
+			await worksApi.getRelatedWorks("W123", { limit: 2 });
 
 			expect(mockClient.getResponse).toHaveBeenCalledWith("works", {
 				filter: "ids.openalex:W456|W789",
@@ -903,7 +903,7 @@ describe("WorksApi Unit Tests", () => {
 				sort: "cited_by_count",
 			};
 
-			const _result = await worksApi.getAllWorks(params, 1000);
+			await worksApi.getAllWorks(params, 1000);
 
 			expect(mockClient.getAll).toHaveBeenCalledWith("works", {
 				filter: "is_oa:true",
