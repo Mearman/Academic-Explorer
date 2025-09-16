@@ -5,6 +5,40 @@ import { TanStackRouterVite } from '@tanstack/router-plugin/vite'
 import { vanillaExtractPlugin } from '@vanilla-extract/vite-plugin'
 import { devtools } from '@tanstack/devtools-vite'
 import path from 'path'
+import { execSync } from 'child_process'
+
+// Build metadata generation
+function getBuildInfo() {
+  try {
+    const now = new Date()
+    const commitHash = execSync('git rev-parse HEAD', { encoding: 'utf8' }).trim()
+    const shortCommitHash = execSync('git rev-parse --short HEAD', { encoding: 'utf8' }).trim()
+    const commitTimestamp = execSync('git log -1 --format=%ct', { encoding: 'utf8' }).trim()
+    const commitDate = new Date(parseInt(commitTimestamp) * 1000)
+    const branchName = execSync('git rev-parse --abbrev-ref HEAD', { encoding: 'utf8' }).trim()
+
+    return {
+      buildTimestamp: now.toISOString(),
+      commitHash,
+      shortCommitHash,
+      commitTimestamp: commitDate.toISOString(),
+      branchName,
+      version: process.env.npm_package_version || '0.0.0',
+      repositoryUrl: 'https://github.com/Mearman/Academic-Explorer'
+    }
+  } catch (error) {
+    console.warn('Failed to get git information:', error)
+    return {
+      buildTimestamp: new Date().toISOString(),
+      commitHash: 'unknown',
+      shortCommitHash: 'unknown',
+      commitTimestamp: new Date().toISOString(),
+      branchName: 'unknown',
+      version: process.env.npm_package_version || '0.0.0',
+      repositoryUrl: 'https://github.com/Mearman/Academic-Explorer'
+    }
+  }
+}
 
 // https://vite.dev/config/
 export default defineConfig({
@@ -34,6 +68,7 @@ export default defineConfig({
   },
   define: {
     __DEV__: JSON.stringify(true),
+    __BUILD_INFO__: JSON.stringify(getBuildInfo()),
   },
   build: {
     rollupOptions: {
