@@ -70,8 +70,8 @@ export function useEntityInteraction(centerOnNodeFn?: (nodeId: string, position?
 			// If no existing node provided, find or load entity into graph
 			if (!targetNode) {
 				// First check if a minimal node already exists
-				targetNode = Array.from(store.nodes.values()).find(
-					node => node.entityId === entityId
+				targetNode = Object.values(store.nodes).find(
+					(node: GraphNode) => node.entityId === entityId
 				);
 
 				if (targetNode) {
@@ -81,8 +81,9 @@ export function useEntityInteraction(centerOnNodeFn?: (nodeId: string, position?
 					// No existing node, load entity into graph
 					await loadEntityIntoGraph(entityId);
 					// Find the newly loaded node
-					targetNode = Array.from(store.nodes.values()).find(
-						node => node.entityId === entityId
+					const updatedStore = useGraphStore.getState();
+					targetNode = Object.values(updatedStore.nodes).find(
+						(node: GraphNode) => node.entityId === entityId
 					);
 				}
 			}
