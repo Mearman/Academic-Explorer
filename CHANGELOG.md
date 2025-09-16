@@ -1,3 +1,10 @@
+## [2.1.2](https://github.com/Mearman/Academic-Explorer/compare/v2.1.1...v2.1.2) (2025-09-16)
+
+
+### Bug Fixes
+
+* **test:** remove unused imports in file-parser tests ([caefe12](https://github.com/Mearman/Academic-Explorer/commit/caefe12a39b388613287682cc4a17f9b29d86e5b))
+
 ## [2.1.1](https://github.com/Mearman/Academic-Explorer/compare/v2.1.0...v2.1.1) (2025-09-15)
 
 
