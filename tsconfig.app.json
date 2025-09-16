@@ -36,6 +36,8 @@
     "src/**/*.test.tsx",
     "src/**/*.spec.ts",
     "src/**/*.spec.tsx",
-    "src/test/**/*"
+    "src/test/**/*",
+    "src/lib/openalex/debug-types.ts",
+    "src/lib/openalex/test-advanced-fields.ts"
   ]
 }

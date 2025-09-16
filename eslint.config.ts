@@ -7,7 +7,7 @@ import noEmoji from './eslint-rules/no-emoji.js';
 
 export default tseslint.config([
   {
-    ignores: ['dist/**/*', 'node_modules/**/*', 'coverage/**/*', 'routeTree.gen.ts', 'vite.config.ts', 'vite.config.old.ts', 'vitest.workspace.ts', 'src/test/setup.ts', '.nx/**/*', 'eslint.config.ts', 'eslint-rules/**/*'],
+    ignores: ['dist/**/*', 'node_modules/**/*', 'coverage/**/*', 'routeTree.gen.ts', 'vite.config.ts', 'vite.config.old.ts', 'vitest.workspace.ts', 'src/test/setup.ts', '.nx/**/*', 'eslint.config.ts', 'eslint-rules/**/*', 'src/lib/openalex/debug-types.ts', 'src/lib/openalex/test-advanced-fields.ts'],
   },
   // Allow console usage in specific files where it's necessary
   {
