@@ -87,8 +87,8 @@ export class GraphDataService {
 
 			// Entity successfully fetched
 
-			// Transform to graph data (with placeholders for initial graph loading)
-			const { nodes, edges } = this.transformEntityToGraph(entity, { loadPlaceholders: true });
+			// Transform to graph data with incremental hydration
+			const { nodes, edges } = this.transformEntityToGraph(entity);
 
 			// Clear existing graph and expansion cache
 			store.clear();
@@ -138,7 +138,7 @@ export class GraphDataService {
    * Load an entity and add it to the existing graph (without clearing)
    * Used for progressive graph building when clicking on nodes
    */
-	async loadEntityIntoGraph(entityId: string, options: { loadPlaceholders?: boolean } = {}): Promise<void> {
+	async loadEntityIntoGraph(entityId: string): Promise<void> {
 		const store = useGraphStore.getState();
 
 		try {
@@ -181,7 +181,7 @@ export class GraphDataService {
 			// Entity successfully fetched
 
 			// Transform to graph data
-			const { nodes, edges } = this.transformEntityToGraph(entity, options);
+			const { nodes, edges } = this.transformEntityToGraph(entity);
 
 			// Add new data to existing graph (do NOT clear)
 			store.addNodes(nodes);
@@ -192,12 +192,10 @@ export class GraphDataService {
 			if (primaryNodeId) {
 				store.selectNode(primaryNodeId);
 
-				// Only detect relationships if placeholder loading is enabled (for expansion)
-				if (options.loadPlaceholders === true) {
-					this.relationshipDetectionService.detectRelationshipsForNode(primaryNodeId).catch((error: unknown) => {
-						logError("Failed to detect relationships for newly added node", error, "GraphDataService", "graph");
-					});
-				}
+				// Detect relationships for newly added node
+				this.relationshipDetectionService.detectRelationshipsForNode(primaryNodeId).catch((error: unknown) => {
+					logError("Failed to detect relationships for newly added node", error, "GraphDataService", "graph");
+				});
 
 				// Note: No automatic expansion - user must manually expand nodes
 			}
@@ -211,9 +209,9 @@ export class GraphDataService {
 				fullNodes: nodes.filter(n => n.metadata?.hydrationLevel === "full").length
 			}, "GraphDataService");
 
-			// Only load minimal node data if explicitly requested (for expansion)
+			// Start hydrating minimal nodes immediately
 			const newMinimalNodes = nodes.filter(n => n.metadata?.hydrationLevel === "minimal");
-			if (newMinimalNodes.length > 0 && options.loadPlaceholders === true) {
+			if (newMinimalNodes.length > 0) {
 				logger.info("graph", "Found minimal nodes to hydrate", {
 					count: newMinimalNodes.length,
 					nodeIds: newMinimalNodes.map(n => n.id),
@@ -286,7 +284,7 @@ export class GraphDataService {
 
 			for (const entity of cachedEntities) {
 				try {
-					const { nodes, edges } = this.transformEntityToGraph(entity, { loadPlaceholders: true });
+					const { nodes, edges } = this.transformEntityToGraph(entity);
 					allNodes.push(...nodes);
 					allEdges.push(...edges);
 				} catch (error) {
@@ -817,7 +815,7 @@ export class GraphDataService {
 
 	/**
    * Create a minimal node with just essential data using selective API field loading
-   * This replaces the placeholder system with incremental hydration
+   * Uses incremental hydration with minimal API field loading
    */
 	async createMinimalNode(entityId: string, entityType: EntityType): Promise<GraphNode | null> {
 		try {
@@ -962,7 +960,7 @@ export class GraphDataService {
 	/**
    * Transform OpenAlex entity to graph nodes and edges
    */
-	private transformEntityToGraph(entity: OpenAlexEntity, options: { loadPlaceholders?: boolean } = {}): { nodes: GraphNode[]; edges: GraphEdge[] } {
+	private transformEntityToGraph(entity: OpenAlexEntity): { nodes: GraphNode[]; edges: GraphEdge[] } {
 		const nodes: GraphNode[] = [];
 		const edges: GraphEdge[] = [];
 
@@ -984,7 +982,7 @@ export class GraphDataService {
 			}
 
 			case "authors": {
-				const authorData = this.transformAuthor(entity as Author, mainNode, options);
+				const authorData = this.transformAuthor(entity as Author, mainNode);
 				nodes.push(...authorData.nodes);
 				edges.push(...authorData.edges);
 				break;
@@ -1009,20 +1007,20 @@ export class GraphDataService {
 	}
 
 	/**
-   * Transform Work entity with lazy loading approach
+   * Transform Work entity with incremental hydration approach
    */
 	private transformWork(work: Work, _mainNode: GraphNode): { nodes: GraphNode[]; edges: GraphEdge[] } {
 		const nodes: GraphNode[] = [];
 		const edges: GraphEdge[] = [];
 		const store = useGraphStore.getState();
 
-		// Add author nodes as placeholders (they'll be loaded on demand)
+		// Add author nodes with minimal data for incremental hydration
 		work.authorships.slice(0, 5).forEach((authorship, index) => {
 			// Check if author node already exists
 			const existingNode = store.getNode(authorship.author.id);
 
 			if (!existingNode) {
-				// Create placeholder node with basic info from authorship
+				// Create minimal node with basic info from authorship
 				const authorNode: GraphNode = {
 					id: authorship.author.id,
 					type: "authors" as EntityType,
@@ -1055,7 +1053,7 @@ export class GraphDataService {
 			});
 		});
 
-		// Add source/journal node as placeholder
+		// Add source/journal node with minimal data
 		if (work.primary_location?.source) {
 			const existingSourceNode = store.getNode(work.primary_location.source.id);
 
@@ -1090,12 +1088,12 @@ export class GraphDataService {
 			});
 		}
 
-		// Add referenced works as placeholders - they'll be loaded on demand
+		// Add referenced works with minimal data for incremental hydration
 		work.referenced_works.slice(0, 3).forEach((citedWorkId, index) => {
 			const existingCitedNode = store.getNode(citedWorkId);
 
 			if (!existingCitedNode) {
-				// Create minimal node with basic data - will be hydrated when user interacts
+				// Create minimal node with basic data - will be hydrated on demand
 				const citedNode: GraphNode = {
 					id: citedWorkId,
 					type: "works" as EntityType,
@@ -1132,52 +1130,47 @@ export class GraphDataService {
 	}
 
 	/**
-   * Transform Author entity with lazy loading approach
+   * Transform Author entity with incremental hydration approach
    */
-	private transformAuthor(author: Author, _mainNode: GraphNode, options: { loadPlaceholders?: boolean } = {}): { nodes: GraphNode[]; edges: GraphEdge[] } {
+	private transformAuthor(author: Author, _mainNode: GraphNode): { nodes: GraphNode[]; edges: GraphEdge[] } {
 		const nodes: GraphNode[] = [];
 		const edges: GraphEdge[] = [];
 		const store = useGraphStore.getState();
 
-		// Add affiliated institutions as placeholders only if loadPlaceholders is true
-		if (options.loadPlaceholders) {
-			author.affiliations.slice(0, 3).forEach((affiliation, index) => {
-				const existingInstitutionNode = store.getNode(affiliation.institution.id);
+		// Add affiliated institutions as minimal nodes with incremental hydration
+		author.affiliations.slice(0, 3).forEach((affiliation, index) => {
+			const existingInstitutionNode = store.getNode(affiliation.institution.id);
 
-				if (!existingInstitutionNode) {
-					const institutionNode: GraphNode = {
-						id: affiliation.institution.id,
-						type: "institutions" as EntityType,
-						label: affiliation.institution.display_name,
-						entityId: affiliation.institution.id,
-						position: { x: (index - 1) * 200, y: 150 },
-						externalIds: affiliation.institution.ror ? [
-							{
-								type: "ror",
-								value: affiliation.institution.ror,
-								url: `https://ror.org/${affiliation.institution.ror}`,
-							}
-						] : [],
-						metadata: {
-							hydrationLevel: "minimal" as const,
-							isLoading: false
+			if (!existingInstitutionNode) {
+				const institutionNode: GraphNode = {
+					id: affiliation.institution.id,
+					type: "institutions" as EntityType,
+					label: affiliation.institution.display_name,
+					entityId: affiliation.institution.id,
+					position: { x: (index - 1) * 200, y: 150 },
+					externalIds: affiliation.institution.ror ? [
+						{
+							type: "ror",
+							value: affiliation.institution.ror,
+							url: `https://ror.org/${affiliation.institution.ror}`,
 						}
-					};
-					nodes.push(institutionNode);
-				}
+					] : [],
+					metadata: {
+						hydrationLevel: "minimal" as const,
+						isLoading: false
+					}
+				};
+				nodes.push(institutionNode);
+			}
 
-				edges.push({
-					id: `${author.id}-affiliated-${affiliation.institution.id}`,
-					source: author.id,
-					target: affiliation.institution.id,
-					type: RelationType.AFFILIATED,
-					label: "affiliated with",
-				});
+			edges.push({
+				id: `${author.id}-affiliated-${affiliation.institution.id}`,
+				source: author.id,
+				target: affiliation.institution.id,
+				type: RelationType.AFFILIATED,
+				label: "affiliated with",
 			});
-		}
-
-		// Note: Placeholder work nodes are only created when actual work IDs are known
-		// from expansion operations. This prevents creating placeholders with invalid IDs.
+		});
 
 		return { nodes, edges };
 	}

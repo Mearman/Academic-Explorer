@@ -82,7 +82,7 @@ export class AuthorEntity extends AbstractEntity<Author> {
 				select: ["id", "display_name", "affiliations"]
 			});
 
-			// Create institution placeholder nodes from affiliations
+			// Create minimal institution nodes from affiliations
 			if (author.affiliations.length > 0) {
 				author.affiliations.slice(0, 3).forEach((affiliation, index) => {
 					const institutionNode: GraphNode = {

@@ -133,7 +133,6 @@ interface GraphState {
   getConnectedComponent: (nodeId: string) => Set<string>;
 
   // Incremental hydration support
-  createPlaceholderNode: (entityId: string, type: EntityType, label?: string) => GraphNode;
   markNodeAsLoading: (nodeId: string, loading?: boolean) => void;
   markNodeAsLoaded: (nodeId: string, fullData: Partial<GraphNode>) => void;
   markNodeAsError: (nodeId: string, error: string) => void;
@@ -750,28 +749,7 @@ export const useGraphStore = create<GraphState>()(
 				return visited;
 			},
 
-			// Lazy loading support
-			createPlaceholderNode: (entityId, type, label) => {
-				const placeholderNode: GraphNode = {
-					id: entityId,
-					type,
-					label: label || `Loading ${type}...`,
-					entityId,
-					position: { x: 0, y: 0 },
-					externalIds: [],
-					metadata: {
-						isPlaceholder: true,
-						isLoading: false,
-					}
-				};
-
-				set((draft) => {
-					draft.nodes.set(entityId, placeholderNode);
-					draft.provider?.addNode(placeholderNode);
-				});
-
-				return placeholderNode;
-			},
+			// Incremental hydration support
 
 			markNodeAsLoading: (nodeId, loading = true) => {
 				set((draft) => {
@@ -801,7 +779,6 @@ export const useGraphStore = create<GraphState>()(
 						node.metadata = {
 							...node.metadata,
 							...fullData.metadata,
-							isPlaceholder: false,
 							isLoading: false,
 							loadingError: undefined,
 							dataLoadedAt: Date.now(),
@@ -850,7 +827,7 @@ export const useGraphStore = create<GraphState>()(
 			hasPlaceholderOrLoadingNodes: () => {
 				const { nodes } = get();
 				return Array.from(nodes.values()).some(node =>
-					node.metadata?.isPlaceholder || node.metadata?.isLoading
+					node.metadata?.isLoading || node.metadata?.hydrationLevel === "minimal"
 				);
 			},
 		})),

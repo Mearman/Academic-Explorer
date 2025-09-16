@@ -78,9 +78,9 @@ export class RelationshipDetectionService {
 			return [];
 		}
 
-		// Skip if this is already a placeholder node (it will be handled by placeholder loading)
-		if (newNode.metadata?.isPlaceholder) {
-			logger.debug("graph", "Skipping relationship detection for placeholder node", { nodeId }, "RelationshipDetectionService");
+		// Skip if this is a minimal node that hasn't been fully hydrated yet
+		if (newNode.metadata?.hydrationLevel === "minimal") {
+			logger.debug("graph", "Skipping relationship detection for minimal node", { nodeId }, "RelationshipDetectionService");
 			return [];
 		}
 

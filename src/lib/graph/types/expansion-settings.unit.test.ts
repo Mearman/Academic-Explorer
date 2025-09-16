@@ -12,7 +12,6 @@ import {
 	type ExpansionSettings,
 	type PropertyType,
 	type PropertyDefinition,
-	type EntityTypeProperties,
 	ENTITY_PROPERTIES,
 	DEFAULT_EXPANSION_SETTINGS,
 	getPropertiesForTarget,
@@ -35,14 +34,14 @@ describe("expansion settings types and utilities", () => {
 			});
 
 			it("should have at least one property definition for each entity type", () => {
-				Object.entries(ENTITY_PROPERTIES).forEach(([entityType, properties]) => {
+				Object.entries(ENTITY_PROPERTIES).forEach(([_entityType, properties]) => {
 					expect(properties.length).toBeGreaterThan(0);
 					expect(Array.isArray(properties)).toBe(true);
 				});
 			});
 
 			it("should have all property definitions with required fields", () => {
-				Object.entries(ENTITY_PROPERTIES).forEach(([entityType, properties]) => {
+				Object.entries(ENTITY_PROPERTIES).forEach(([_entityType, properties]) => {
 					properties.forEach(property => {
 						expect(property).toHaveProperty("property");
 						expect(property).toHaveProperty("label");
