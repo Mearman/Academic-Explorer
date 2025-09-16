@@ -216,11 +216,15 @@ export function useAnimatedForceSimulation(options: UseAnimatedForceSimulationOp
             alpha: finalAlpha,
           }));
 
-          logger.info('graph', 'Force animation completed', {
-            totalIterations,
-            finalAlpha: finalAlpha.toFixed(4),
-            reason,
-            averageFPS: performanceStats.averageFPS.toFixed(1),
+          // Use current performance stats from state callback
+          setPerformanceStats(currentStats => {
+            logger.info('graph', 'Force animation completed', {
+              totalIterations,
+              finalAlpha: finalAlpha.toFixed(4),
+              reason,
+              averageFPS: currentStats.averageFPS.toFixed(1),
+            });
+            return currentStats; // Return unchanged stats
           });
         }
         break;
@@ -259,7 +263,7 @@ export function useAnimatedForceSimulation(options: UseAnimatedForceSimulationOp
       default:
         logger.warn('graph', 'Unknown worker message type', { type });
     }
-  }, [onPositionUpdate, onComplete, onError, performanceStats.averageFPS]);
+  }, [onPositionUpdate, onComplete, onError]);
 
   // Handle worker errors
   const handleWorkerError = useCallback((error: ErrorEvent) => {
@@ -319,17 +323,29 @@ export function useAnimatedForceSimulation(options: UseAnimatedForceSimulationOp
 
   // Pause animation
   const pauseAnimation = useCallback(() => {
-    if (workerRef.current && animationState.isRunning && !animationState.isPaused) {
-      workerRef.current.postMessage({ type: 'pause' });
+    if (workerRef.current) {
+      // Use state callback to check current animation state without dependency
+      setAnimationState(current => {
+        if (current.isRunning && !current.isPaused) {
+          workerRef.current?.postMessage({ type: 'pause' });
+        }
+        return current; // Return unchanged state
+      });
     }
-  }, [animationState.isRunning, animationState.isPaused]);
+  }, []);
 
   // Resume animation
   const resumeAnimation = useCallback(() => {
-    if (workerRef.current && animationState.isRunning && animationState.isPaused) {
-      workerRef.current.postMessage({ type: 'resume' });
+    if (workerRef.current) {
+      // Use state callback to check current animation state without dependency
+      setAnimationState(current => {
+        if (current.isRunning && current.isPaused) {
+          workerRef.current?.postMessage({ type: 'resume' });
+        }
+        return current; // Return unchanged state
+      });
     }
-  }, [animationState.isRunning, animationState.isPaused]);
+  }, []);
 
   // Get optimal configuration based on graph size using performance utilities
   const getOptimalConfig = useCallback((nodeCount: number, edgeCount: number = 0, pinnedNodeCount: number = 0): AnimationConfig => {
