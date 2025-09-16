@@ -43,7 +43,8 @@ function DynamicFloatingEdge({
 	markerEnd, // eslint-disable-line @typescript-eslint/no-unused-vars
 	data,
 }: EdgeProps) {
-	const { getNode } = useReactFlow();
+	const reactFlow = useReactFlow();
+	const getNode = reactFlow.getNode;
 
 	// Get current node positions from ReactFlow
 	const sourceNode = getNode(source);

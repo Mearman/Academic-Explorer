@@ -41,7 +41,8 @@ interface PinToggleButtonProps {
 }
 
 const PinToggleButton: React.FC<PinToggleButtonProps> = ({ nodeId, isPinned, className }) => {
-	const { pinNode, unpinNode } = useGraphStore();
+	const pinNode = useGraphStore((state) => state.pinNode);
+	const unpinNode = useGraphStore((state) => state.unpinNode);
 
 	const handleTogglePin = (e: React.MouseEvent) => {
 		e.stopPropagation(); // Prevent node selection/dragging
@@ -96,7 +97,8 @@ interface ExpandButtonProps {
 }
 
 const ExpandButton: React.FC<ExpandButtonProps> = ({ nodeId, className }) => {
-	const { expandNode } = useGraphData();
+	const graphData = useGraphData();
+	const expandNode = graphData.expandNode;
 
 	const handleExpand = (e: React.MouseEvent) => {
 		e.stopPropagation(); // Prevent node selection/dragging
@@ -143,7 +145,9 @@ interface SelectAdjacentButtonProps {
 }
 
 const SelectAdjacentButton: React.FC<SelectAdjacentButtonProps> = ({ nodeId, className }) => {
-	const { getNeighbors, clearSelection, addToSelection } = useGraphStore();
+	const getNeighbors = useGraphStore((state) => state.getNeighbors);
+	const clearSelection = useGraphStore((state) => state.clearSelection);
+	const addToSelection = useGraphStore((state) => state.addToSelection);
 
 	const handleSelectAdjacent = (e: React.MouseEvent) => {
 		e.stopPropagation(); // Prevent node selection/dragging
@@ -197,7 +201,8 @@ interface AddAdjacentButtonProps {
 }
 
 const AddAdjacentButton: React.FC<AddAdjacentButtonProps> = ({ nodeId, className }) => {
-	const { getNeighbors, addToSelection } = useGraphStore();
+	const getNeighbors = useGraphStore((state) => state.getNeighbors);
+	const addToSelection = useGraphStore((state) => state.addToSelection);
 
 	const handleAddAdjacent = (e: React.MouseEvent) => {
 		e.stopPropagation(); // Prevent node selection/dragging
@@ -250,7 +255,8 @@ interface CollapseIsolatedButtonProps {
 }
 
 const CollapseIsolatedButton: React.FC<CollapseIsolatedButtonProps> = ({ nodeId, className }) => {
-	const { getNeighbors, removeNode } = useGraphStore();
+	const getNeighbors = useGraphStore((state) => state.getNeighbors);
+	const removeNode = useGraphStore((state) => state.removeNode);
 
 	const handleCollapseIsolated = (e: React.MouseEvent) => {
 		e.stopPropagation(); // Prevent node selection/dragging
@@ -408,7 +414,7 @@ const getEntityTypeLabel = (entityType: EntityType): string => {
 
 // Custom node component
 export const CustomNode: React.FC<CustomNodeProps> = ({ data, selected }) => {
-	const { isPinned } = useGraphStore();
+	const isPinned = useGraphStore((state) => state.isPinned);
 	const backgroundColor = getEntityColor(data.entityType);
 	const _typeLabel = getEntityTypeLabel(data.entityType);
 	const glowColors = getEntityGlowColors(data.entityType);
@@ -583,7 +589,7 @@ export const CustomNode: React.FC<CustomNodeProps> = ({ data, selected }) => {
 
 // Work-specific node
 export const WorkNode: React.FC<CustomNodeProps> = ({ data, selected }) => {
-	const { isPinned } = useGraphStore();
+	const isPinned = useGraphStore((state) => state.isPinned);
 	const glowColors = getEntityGlowColors("works");
 
 	// Get current pin state from store
@@ -693,7 +699,7 @@ export const WorkNode: React.FC<CustomNodeProps> = ({ data, selected }) => {
 
 // Author-specific node
 export const AuthorNode: React.FC<CustomNodeProps> = ({ data, selected }) => {
-	const { isPinned } = useGraphStore();
+	const isPinned = useGraphStore((state) => state.isPinned);
 	const glowColors = getEntityGlowColors("authors");
 
 	// Get current pin state from store
@@ -791,7 +797,7 @@ export const AuthorNode: React.FC<CustomNodeProps> = ({ data, selected }) => {
 
 // Source-specific node
 export const SourceNode: React.FC<CustomNodeProps> = ({ data, selected }) => {
-	const { isPinned } = useGraphStore();
+	const isPinned = useGraphStore((state) => state.isPinned);
 	const glowColors = getEntityGlowColors("sources");
 
 	// Get current pin state from store
@@ -889,7 +895,7 @@ export const SourceNode: React.FC<CustomNodeProps> = ({ data, selected }) => {
 
 // Institution-specific node
 export const InstitutionNode: React.FC<CustomNodeProps> = ({ data, selected }) => {
-	const { isPinned } = useGraphStore();
+	const isPinned = useGraphStore((state) => state.isPinned);
 	const glowColors = getEntityGlowColors("institutions");
 
 	// Get current pin state from store

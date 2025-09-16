@@ -159,7 +159,7 @@ export function useAnimatedLayout(options: UseAnimatedLayoutOptions = {}) {
 
         logger.info('graph', 'All nodes auto-pinned after animated layout completion', {
           pinnedCount: currentNodes.length,
-          totalPinnedNodes: graphStore.pinnedNodes.size,
+          totalPinnedNodes: Object.keys(graphStore.pinnedNodes).length,
         });
       }
 
@@ -208,7 +208,7 @@ export function useAnimatedLayout(options: UseAnimatedLayoutOptions = {}) {
     const edges = getEdges();
 
     const animatedNodes: AnimatedNode[] = nodes.map((node) => {
-      const isPinned = pinnedNodes.has(node.id);
+      const isPinned = Boolean(pinnedNodes[node.id]);
       return {
         id: node.id,
         type: node.data?.type as EntityType | undefined,
@@ -278,7 +278,7 @@ export function useAnimatedLayout(options: UseAnimatedLayoutOptions = {}) {
     logger.info('graph', 'Starting animated force layout', {
       nodeCount: animatedNodes.length,
       linkCount: animatedLinks.length,
-      pinnedCount: pinnedNodes.size,
+      pinnedCount: Object.keys(pinnedNodes).length,
       config: enhancedConfig,
       layoutType: currentLayout?.type,
       autoPinOnLayoutStabilization,

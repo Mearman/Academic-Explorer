@@ -123,8 +123,8 @@ export function useLayout(
 
 		// Fixed D3 force parameters - consistent regardless of pinned nodes
 		const seed = 0;
-		const hasPinnedNodes = pinnedNodes.size > 0;
-		const pinnedNodeCount = pinnedNodes.size;
+		const hasPinnedNodes = Object.keys(pinnedNodes).length > 0;
+		const pinnedNodeCount = Object.keys(pinnedNodes).length;
 
 		const linkDistance = 100;
 		const linkStrength = 0.01;
@@ -329,7 +329,7 @@ export function useLayout(
 						"All nodes auto-pinned after layout timeout",
 						{
 							pinnedCount: currentNodes.length,
-							totalPinnedNodes: graphStore.pinnedNodes.size,
+							totalPinnedNodes: Object.keys(graphStore.pinnedNodes).length,
 						},
 						"useLayout",
 					);
@@ -464,7 +464,7 @@ export function useLayout(
 					"All nodes auto-pinned after layout stabilization",
 					{
 						pinnedCount: currentNodes.length,
-						totalPinnedNodes: graphStore.pinnedNodes.size,
+						totalPinnedNodes: Object.keys(graphStore.pinnedNodes).length,
 					},
 					"useLayout",
 				);
