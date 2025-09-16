@@ -8,7 +8,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { GraphDataService } from "@/services/graph-data-service";
 import { useGraphStore } from "@/stores/graph-store";
 import { logger, logError } from "@/lib/logger";
-import type { SearchOptions } from "@/lib/graph/types";
+import type { SearchOptions, EntityType } from "@/lib/graph/types";
 
 export function useGraphData() {
 	const queryClient = useQueryClient();
@@ -80,6 +80,55 @@ export function useGraphData() {
 		}
 	}, []);
 
+	const expandAllNodesOfType = useCallback(async (entityType: EntityType, options?: {
+		depth?: number;
+		limit?: number;
+		force?: boolean;
+	}) => {
+		const store = useGraphStore.getState();
+		store.setLoading(true);
+
+		// Use traversal depth from store if not specified
+		const depth = options?.depth ?? store.traversalDepth;
+		const limit = options?.limit ?? 10;
+		const force = options?.force ?? true;
+
+		logger.info("graph", "expandAllNodesOfType called", {
+			entityType,
+			depth,
+			limit,
+			force
+		}, "useGraphData");
+
+		try {
+			await service.current.expandAllNodesOfType(entityType, {
+				depth,
+				limit,
+				force
+			});
+
+			// Recalculate depths after expansion using first pinned node
+			const pinnedNodes = Array.from(store.pinnedNodes);
+			const firstPinnedNodeId = pinnedNodes[0];
+			if (firstPinnedNodeId) {
+				store.calculateNodeDepths(firstPinnedNodeId);
+			}
+
+			logger.info("graph", "expandAllNodesOfType completed successfully", {
+				entityType
+			}, "useGraphData");
+		} catch (err) {
+			logger.error("graph", "expandAllNodesOfType failed", {
+				entityType,
+				error: err instanceof Error ? err.message : "Unknown error"
+			}, "useGraphData");
+			logError("Failed to expand all nodes of type in graph data hook", err, "useGraphData", "graph");
+			store.setError(err instanceof Error ? err.message : `Failed to expand all ${entityType} nodes`);
+		} finally {
+			store.setLoading(false);
+		}
+	}, []);
+
 	const search = useCallback(async (query: string, options?: Partial<SearchOptions>) => {
 		const searchOptions: SearchOptions = {
 			query,
@@ -123,6 +172,7 @@ export function useGraphData() {
 		loadEntityIntoGraph,
 		loadAllCachedNodes,
 		expandNode,
+		expandAllNodesOfType,
 		search,
 		clearGraph,
 		hydrateNode,
