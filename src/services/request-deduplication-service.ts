@@ -84,19 +84,26 @@ export class RequestDeduplicationService {
 		try {
 			const entity = await fetcher();
 
-			// Cache the result in TanStack Query for future use
-			this.queryClient.setQueryData(
-				["entity", entityId],
-				entity,
-				{
-					updatedAt: Date.now(),
-				}
-			);
-
-			logger.info("api", "Entity request completed and cached", {
-				entityId,
-				entityType: entity.id ? this.detectEntityType(entity.id) : "unknown"
-			}, "RequestDeduplicationService");
+			// Cache the result in TanStack Query for future use (handle cache errors gracefully)
+			try {
+				this.queryClient.setQueryData(
+					["entity", entityId],
+					entity,
+					{
+						updatedAt: Date.now(),
+					}
+				);
+				logger.info("api", "Entity request completed and cached", {
+					entityId,
+					entityType: entity.id ? this.detectEntityType(entity.id) : "unknown"
+				}, "RequestDeduplicationService");
+			} catch (cacheError) {
+				logger.warn("cache", "Failed to cache entity, but returning result", {
+					entityId,
+					entityType: entity.id ? this.detectEntityType(entity.id) : "unknown",
+					cacheError: cacheError instanceof Error ? cacheError.message : "Unknown cache error"
+				}, "RequestDeduplicationService");
+			}
 
 			return entity;
 		} catch (error) {
