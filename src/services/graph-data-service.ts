@@ -957,6 +957,62 @@ export class GraphDataService {
 	}
 
 	/**
+	 * Expand all nodes of a specific entity type
+	 * Useful for exploring all instances of works, authors, etc.
+	 */
+	async expandAllNodesOfType(entityType: EntityType, options: ExpansionOptions = {}): Promise<void> {
+		const store = useGraphStore.getState();
+		const nodesOfType = store.getNodesByType(entityType);
+
+		if (nodesOfType.length === 0) {
+			logger.info("graph", `No nodes of type ${entityType} found to expand`, { entityType }, "GraphDataService");
+			return;
+		}
+
+		logger.info("graph", `Expanding all nodes of type ${entityType}`, {
+			entityType,
+			nodeCount: nodesOfType.length,
+			options
+		}, "GraphDataService");
+
+		// Set loading state for the bulk operation
+		store.setLoading(true);
+
+		try {
+			// Expand each node of the specified type
+			const expansionPromises = nodesOfType.map(node =>
+				this.expandNode(node.id, options).catch((error: unknown) => {
+					logger.warn("graph", `Failed to expand node ${node.id} during bulk expansion`, {
+						nodeId: node.id,
+						entityType: node.type,
+						error: error instanceof Error ? error.message : "Unknown error"
+					}, "GraphDataService");
+					// Don't rethrow - continue with other nodes
+				})
+			);
+
+			// Wait for all expansions to complete (or fail)
+			await Promise.all(expansionPromises);
+
+			logger.info("graph", `Completed expanding all nodes of type ${entityType}`, {
+				entityType,
+				expandedCount: nodesOfType.length
+			}, "GraphDataService");
+
+		} catch (error) {
+			const errorMessage = `Failed to expand all nodes of type ${entityType}`;
+			logger.error("graph", errorMessage, {
+				entityType,
+				error: error instanceof Error ? error.message : "Unknown error"
+			}, "GraphDataService");
+			store.setError(errorMessage);
+			logError(errorMessage, error, "GraphDataService", "graph");
+		} finally {
+			store.setLoading(false);
+		}
+	}
+
+	/**
    * Transform OpenAlex entity to graph nodes and edges
    */
 	private transformEntityToGraph(entity: OpenAlexEntity): { nodes: GraphNode[]; edges: GraphEdge[] } {
