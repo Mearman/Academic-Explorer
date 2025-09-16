@@ -1059,7 +1059,7 @@ export class GraphDataService {
 		const store = useGraphStore.getState();
 
 		// Add author nodes with minimal data for incremental hydration
-		work.authorships.slice(0, 5).forEach((authorship, index) => {
+		work.authorships?.slice(0, 5).forEach((authorship, index) => {
 			// Check if author node already exists
 			const existingNode = store.getNode(authorship.author.id);
 
@@ -1133,7 +1133,7 @@ export class GraphDataService {
 		}
 
 		// Add referenced works with minimal data for incremental hydration
-		work.referenced_works.slice(0, 3).forEach((citedWorkId, index) => {
+		work.referenced_works?.slice(0, 3).forEach((citedWorkId, index) => {
 			const existingCitedNode = store.getNode(citedWorkId);
 
 			if (!existingCitedNode) {
@@ -1182,7 +1182,7 @@ export class GraphDataService {
 		const store = useGraphStore.getState();
 
 		// Add affiliated institutions as minimal nodes with incremental hydration
-		author.affiliations.slice(0, 3).forEach((affiliation, index) => {
+		author.affiliations?.slice(0, 3).forEach((affiliation, index) => {
 			const existingInstitutionNode = store.getNode(affiliation.institution.id);
 
 			if (!existingInstitutionNode) {
