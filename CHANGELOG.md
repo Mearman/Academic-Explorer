@@ -1,3 +1,11 @@
+## [4.0.4](https://github.com/Mearman/Academic-Explorer/compare/v4.0.3...v4.0.4) (2025-09-16)
+
+
+### Bug Fixes
+
+* **lint:** remove unnecessary conditionals and fix property access ([2043435](https://github.com/Mearman/Academic-Explorer/commit/2043435f5757a1b95d5cc49dca560283d4942535))
+* **types:** complete EntityType Record with concepts property ([237abe1](https://github.com/Mearman/Academic-Explorer/commit/237abe19d11de9734c1ec0091596a7e3a4409f20))
+
 ## [4.0.3](https://github.com/Mearman/Academic-Explorer/compare/v4.0.2...v4.0.3) (2025-09-16)
 
 
