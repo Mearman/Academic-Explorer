@@ -1,3 +1,15 @@
+# [2.3.0](https://github.com/Mearman/Academic-Explorer/compare/v2.2.0...v2.3.0) (2025-09-16)
+
+
+### Bug Fixes
+
+* **test:** skip problematic hydration transition test to unblock CI ([5735e20](https://github.com/Mearman/Academic-Explorer/commit/5735e20930d4f2f71f63fb0b8f9e41d01ee69225))
+
+
+### Features
+
+* **graph:** enhance entity metadata extraction with hydration levels ([c446d01](https://github.com/Mearman/Academic-Explorer/commit/c446d0166ea56fee0eca4fd72b05b98d4d6a8335))
+
 # [2.2.0](https://github.com/Mearman/Academic-Explorer/compare/v2.1.3...v2.2.0) (2025-09-16)
 
 
