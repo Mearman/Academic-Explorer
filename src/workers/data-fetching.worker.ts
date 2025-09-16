@@ -6,6 +6,7 @@
 import { rateLimitedOpenAlex } from "@/lib/openalex/rate-limited-client";
 import { EntityFactory, type ExpansionOptions } from "@/lib/entities";
 import type { EntityType, GraphNode, GraphEdge } from "@/lib/graph/types";
+import type { ExpansionSettings } from "@/lib/graph/types/expansion-settings";
 
 // Message types for communication with main thread
 export interface DataFetchingMessage {
@@ -19,7 +20,7 @@ export interface ExpandNodePayload {
   entityId: string;
   entityType: EntityType;
   options: ExpansionOptions;
-  expansionSettings?: unknown;
+  expansionSettings?: ExpansionSettings;
 }
 
 export interface DataFetchingResponse {
@@ -53,14 +54,16 @@ function initializeWorker() {
 		rateLimitedOpenAlex.getStats();
 		isReady = true;
 
-		postMessage({
+		const readyMessage: DataFetchingResponse = {
 			type: "ready"
-		} as DataFetchingResponse);
+		};
+		postMessage(readyMessage);
 	} catch (error) {
-		postMessage({
+		const errorMessage: DataFetchingResponse = {
 			type: "ready",
 			error: error instanceof Error ? error.message : "Failed to initialize worker"
-		} as DataFetchingResponse);
+		};
+		postMessage(errorMessage);
 	}
 }
 
@@ -97,14 +100,15 @@ async function handleExpandNode(id: string, payload: ExpandNodePayload) {
 			...options,
 			expansionSettings,
 			onProgress: (progress: { completed: number; total: number; stage: string }) => {
-				postMessage({
+				const progressMessage: DataFetchingResponse = {
 					type: "progress",
 					id,
 					payload: {
 						nodeId,
 						...progress
 					}
-				} as DataFetchingResponse);
+				};
+				postMessage(progressMessage);
 			}
 		};
 
@@ -129,11 +133,12 @@ async function handleExpandNode(id: string, payload: ExpandNodePayload) {
 			}
 		};
 
-		postMessage({
+		const completeMessage: DataFetchingResponse = {
 			type: "expandComplete",
 			id,
 			payload: response
-		} as DataFetchingResponse);
+		};
+		postMessage(completeMessage);
 
 	} catch (error) {
 		// Clean up request tracking
@@ -150,7 +155,7 @@ async function handleExpandNode(id: string, payload: ExpandNodePayload) {
 			errorMessage = "Expansion was cancelled";
 		}
 
-		postMessage({
+		const errorResponse: DataFetchingResponse = {
 			type: "expandError",
 			id,
 			error: errorMessage,
@@ -159,28 +164,31 @@ async function handleExpandNode(id: string, payload: ExpandNodePayload) {
 				duration: Date.now() - startTime,
 				apiCalls
 			}
-		} as DataFetchingResponse);
+		};
+		postMessage(errorResponse);
 	}
 }
 
 // Handle batch expansion (future feature)
 function handleBatchExpand(id: string) {
 	// Placeholder for batch expansion functionality
-	postMessage({
+	const batchErrorMessage: DataFetchingResponse = {
 		type: "expandError",
 		id,
 		error: "Batch expansion not yet implemented"
-	} as DataFetchingResponse);
+	};
+	postMessage(batchErrorMessage);
 }
 
 // Handle search requests (future feature)
 function handleSearch(id: string) {
 	// Placeholder for search functionality
-	postMessage({
+	const searchErrorMessage: DataFetchingResponse = {
 		type: "expandError",
 		id,
 		error: "Worker-based search not yet implemented"
-	} as DataFetchingResponse);
+	};
+	postMessage(searchErrorMessage);
 }
 
 // Cancel request
@@ -197,19 +205,22 @@ self.onmessage = async (event: MessageEvent<DataFetchingMessage>) => {
 	const { type, id, payload } = event.data;
 
 	if (!isReady && type !== "cancel") {
-		postMessage({
+		const notReadyMessage: DataFetchingResponse = {
 			type: "expandError",
 			id,
 			error: "Worker not ready"
-		} as DataFetchingResponse);
+		};
+		postMessage(notReadyMessage);
 		return;
 	}
 
 	try {
 		switch (type) {
-			case "expandNode":
-				await handleExpandNode(id, payload as ExpandNodePayload);
+			case "expandNode": {
+				const expandPayload = payload as ExpandNodePayload;
+				await handleExpandNode(id, expandPayload);
 				break;
+			}
 
 			case "batchExpand":
 				handleBatchExpand(id);
@@ -223,19 +234,23 @@ self.onmessage = async (event: MessageEvent<DataFetchingMessage>) => {
 				cancelRequest(id);
 				break;
 
-			default:
-				postMessage({
+			default: {
+				const unknownTypeMessage: DataFetchingResponse = {
 					type: "expandError",
 					id,
-					error: `Unknown message type: ${type}`
-				} as DataFetchingResponse);
+					error: "Unknown message type: " + String(type)
+				};
+				postMessage(unknownTypeMessage);
+				break;
+			}
 		}
 	} catch (error) {
-		postMessage({
+		const processingErrorMessage: DataFetchingResponse = {
 			type: "expandError",
 			id,
 			error: error instanceof Error ? error.message : "Worker processing error"
-		} as DataFetchingResponse);
+		};
+		postMessage(processingErrorMessage);
 	}
 };
 
@@ -243,10 +258,11 @@ self.onmessage = async (event: MessageEvent<DataFetchingMessage>) => {
 self.onerror = (error) => {
 	const errorMessage = typeof error === "string" ? error :
 		(error instanceof ErrorEvent ? error.message : "Unknown worker error");
-	postMessage({
+	const workerErrorMessage: DataFetchingResponse = {
 		type: "expandError",
 		error: `Worker error: ${errorMessage}`
-	} as DataFetchingResponse);
+	};
+	postMessage(workerErrorMessage);
 };
 
 // Initialize the worker

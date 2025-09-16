@@ -8,6 +8,7 @@ import { logger } from "@/lib/logger";
 import { useDataFetchingProgressStore } from "@/stores/data-fetching-progress-store";
 import type { EntityType } from "@/lib/graph/types";
 import type { ExpansionOptions } from "@/lib/entities";
+import type { ExpansionSettings } from "@/lib/graph/types/expansion-settings";
 import type {
 	DataFetchingMessage,
 	DataFetchingResponse,
@@ -34,7 +35,7 @@ interface UseDataFetchingWorkerReturn {
     entityId: string,
     entityType: EntityType,
     options?: ExpansionOptions,
-    expansionSettings?: any
+    expansionSettings?: Record<string, unknown>
   ) => Promise<void>;
 
   cancelExpansion: (nodeId: string) => void;
@@ -63,7 +64,7 @@ export function useDataFetchingWorker(options: UseDataFetchingWorkerOptions = {}
 	const [activeRequests, setActiveRequests] = useState<Set<string>>(new Set());
 	const pendingRequestsRef = useRef<Map<string, {
     nodeId: string;
-    resolve: (value: void) => void;
+    resolve: () => void;
     reject: (error: Error) => void;
     timestamp: number;
     	}>>(new Map());
@@ -75,42 +76,6 @@ export function useDataFetchingWorker(options: UseDataFetchingWorkerOptions = {}
 		failedRequests: 0,
 		totalDuration: 0,
 	});
-
-	// Initialize worker
-	useEffect(() => {
-		logger.info("graph", "Initializing data fetching worker");
-
-		try {
-			workerRef.current = new Worker(
-				new URL("../workers/data-fetching.worker.ts", import.meta.url),
-				{ type: "module" }
-			);
-
-			workerRef.current.addEventListener("message", handleWorkerMessage);
-			workerRef.current.addEventListener("error", handleWorkerError);
-
-		} catch (error) {
-			logger.error("graph", "Failed to initialize data fetching worker", { error });
-			onExpandError?.("worker-init", "Failed to initialize data fetching worker");
-		}
-
-		return () => {
-			if (workerRef.current) {
-				// Cancel all pending requests
-				pendingRequestsRef.current.forEach((request, id) => {
-					request.reject(new Error("Worker terminated"));
-				});
-
-				workerRef.current.terminate();
-				workerRef.current = null;
-				setIsWorkerReady(false);
-
-				// Clear progress store
-				progressStore.clearAll();
-				progressStore.setWorkerReady(false);
-			}
-		};
-	}, [onExpandError]);
 
 	// Handle worker messages
 	const handleWorkerMessage = useCallback((event: MessageEvent<DataFetchingResponse>) => {
@@ -154,9 +119,9 @@ export function useDataFetchingWorker(options: UseDataFetchingWorkerOptions = {}
 
 						logger.info("graph", "Node expansion completed via worker", {
 							nodeId: request.nodeId,
-							nodesAdded: payload.nodes?.length || 0,
-							edgesAdded: payload.edges?.length || 0,
-							duration: payload.statistics?.duration || 0
+							nodesAdded: (payload as ExpandCompletePayload).nodes.length || 0,
+							edgesAdded: (payload as ExpandCompletePayload).edges.length || 0,
+							duration: (payload as ExpandCompletePayload).statistics?.duration || 0
 						});
 					}
 				}
@@ -198,11 +163,7 @@ export function useDataFetchingWorker(options: UseDataFetchingWorkerOptions = {}
 				if (id && payload) {
 					const request = pendingRequestsRef.current.get(id);
 					if (request) {
-						const progressData = {
-							completed: payload.completed,
-							total: payload.total,
-							stage: payload.stage
-						};
+						const progressData = payload as { completed: number; total: number; stage: string };
 
 						// Update progress store
 						progressStore.updateProgress(request.nodeId, progressData);
@@ -216,7 +177,7 @@ export function useDataFetchingWorker(options: UseDataFetchingWorkerOptions = {}
 			default:
 				logger.warn("graph", "Unknown worker message type", { type });
 		}
-	}, [onExpandComplete, onExpandError, onProgress]);
+	}, [onExpandComplete, onExpandError, onProgress, progressStore]);
 
 	// Handle worker errors
 	const handleWorkerError = useCallback((error: ErrorEvent) => {
@@ -227,16 +188,59 @@ export function useDataFetchingWorker(options: UseDataFetchingWorkerOptions = {}
 		});
 
 		// Reject all pending requests
-		pendingRequestsRef.current.forEach((request, id) => {
+		pendingRequestsRef.current.forEach((request) => {
 			request.reject(new Error(`Worker error: ${error.message}`));
 			onExpandError?.(request.nodeId, `Worker error: ${error.message}`);
 		});
 
-		// Clear tracking
+		// Clear pending requests
 		pendingRequestsRef.current.clear();
 		setActiveRequests(new Set());
+
+		// Update progress store
+		progressStore.clearAll();
+		progressStore.setWorkerReady(false);
 		setIsWorkerReady(false);
-	}, [onExpandError]);
+	}, [onExpandError, progressStore]);
+
+	// Initialize worker
+	useEffect(() => {
+		const currentPendingRequests = pendingRequestsRef.current;
+
+		logger.info("graph", "Initializing data fetching worker");
+
+		try {
+			workerRef.current = new Worker(
+				new URL("../workers/data-fetching.worker.ts", import.meta.url),
+				{ type: "module" }
+			);
+
+			workerRef.current.addEventListener("message", handleWorkerMessage);
+			workerRef.current.addEventListener("error", handleWorkerError);
+
+		} catch (error) {
+			logger.error("graph", "Failed to initialize data fetching worker", { error });
+			onExpandError?.("worker-init", "Failed to initialize data fetching worker");
+		}
+
+		return () => {
+			if (workerRef.current) {
+				// Cancel all pending requests
+				currentPendingRequests.forEach((request) => {
+					request.reject(new Error("Worker terminated"));
+				});
+
+				workerRef.current.terminate();
+				workerRef.current = null;
+				setIsWorkerReady(false);
+
+				// Clear progress store
+				progressStore.clearAll();
+				progressStore.setWorkerReady(false);
+			}
+		};
+	}, [handleWorkerError, handleWorkerMessage, onExpandError, progressStore]); // Add all function dependencies
+
 
 	// Expand node via worker
 	const expandNode = useCallback(async (
@@ -244,7 +248,7 @@ export function useDataFetchingWorker(options: UseDataFetchingWorkerOptions = {}
 		entityId: string,
 		entityType: EntityType,
 		options: ExpansionOptions = {},
-		expansionSettings?: any
+		expansionSettings?: ExpansionSettings
 	): Promise<void> => {
 		if (!workerRef.current || !isWorkerReady) {
 			throw new Error("Data fetching worker not ready");
@@ -256,7 +260,7 @@ export function useDataFetchingWorker(options: UseDataFetchingWorkerOptions = {}
 		}
 
 		// Generate unique request ID
-		const requestId = `${nodeId}-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+		const requestId = `${nodeId}-${Date.now().toString()}-${Math.random().toString(36).substring(2, 11)}`;
 
 		// Create promise for tracking completion
 		return new Promise<void>((resolve, reject) => {
@@ -299,22 +303,23 @@ export function useDataFetchingWorker(options: UseDataFetchingWorkerOptions = {}
 				requestId
 			});
 		});
-	}, [isWorkerReady, activeRequests]);
+	}, [isWorkerReady, activeRequests, progressStore]);
 
 	// Cancel specific expansion
 	const cancelExpansion = useCallback((nodeId: string) => {
 		// Find request by nodeId
 		const requestToCancel = Array.from(pendingRequestsRef.current.entries())
-			.find(([_, request]) => request.nodeId === nodeId);
+			.find(([, request]) => request.nodeId === nodeId);
 
 		if (requestToCancel && workerRef.current) {
 			const [requestId, request] = requestToCancel;
 
 			// Send cancel message to worker
-			workerRef.current.postMessage({
+			const cancelMessage: DataFetchingMessage = {
 				type: "cancel",
 				id: requestId
-			} as DataFetchingMessage);
+			};
+			workerRef.current.postMessage(cancelMessage);
 
 			// Clean up tracking
 			pendingRequestsRef.current.delete(requestId);
@@ -338,10 +343,11 @@ export function useDataFetchingWorker(options: UseDataFetchingWorkerOptions = {}
 	const cancelAllExpansions = useCallback(() => {
 		pendingRequestsRef.current.forEach((request, requestId) => {
 			if (workerRef.current) {
-				workerRef.current.postMessage({
+				const cancelMessage: DataFetchingMessage = {
 					type: "cancel",
 					id: requestId
-				} as DataFetchingMessage);
+				};
+				workerRef.current.postMessage(cancelMessage);
 			}
 
 			request.reject(new Error("All expansions cancelled"));
@@ -363,7 +369,7 @@ export function useDataFetchingWorker(options: UseDataFetchingWorkerOptions = {}
 			totalRequests: stats.totalRequests,
 			completedRequests: stats.completedRequests,
 			failedRequests: stats.failedRequests,
-			averageDuration: stats.completedRequests > 0
+			averageDuration: stats.completedRequests
 				? stats.totalDuration / stats.completedRequests
 				: 0
 		};
