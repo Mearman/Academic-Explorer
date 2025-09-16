@@ -7,6 +7,7 @@ import React, { useState, useMemo } from "react"
 import { LayoutControls } from "@/components/molecules/LayoutControls"
 import { ExpansionSettingsDialog } from "@/components/molecules/ExpansionSettingsDialog"
 import { CollapsibleSection } from "@/components/molecules/CollapsibleSection"
+import { BuildInfo } from "@/components/molecules/BuildInfo"
 import { useGraphData } from "@/hooks/use-graph-data"
 import { useGraphStore } from "@/stores/graph-store"
 import { useExpansionSettingsSummary } from "@/stores/expansion-settings-store"
@@ -652,6 +653,9 @@ export const LeftSidebar: React.FC = () => {
 					<li>Click <IconSettings size={12} style={{ display: "inline", verticalAlign: "middle" }} /> next to edge types to configure expansion settings</li>
 				</ul>
 			</div>
+
+			{/* Build Information */}
+			<BuildInfo />
 
 			{/* Expansion Settings Dialog */}
 			{expansionDialogTarget && (
