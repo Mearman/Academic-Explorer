@@ -284,11 +284,21 @@ export abstract class AbstractEntity<TEntity extends OpenAlexEntity> {
 
   /**
    * Fetch entity with metadata fields for rich graph display
-   * Uses select parameter with metadata-specific fields
+   * Uses select parameter with metadata-specific fields for efficient loading
    */
   public async fetchWithMetadata(entityId: string): Promise<TEntity> {
   	try {
-  		const entity = await this.client.getEntity(entityId);
+  		const metadataFields = this.getMetadataFields();
+  		logger.debug("api", `Fetching ${this.entityType} with metadata fields`, {
+  			entityType: this.entityType,
+  			entityId,
+  			fields: metadataFields
+  		}, "AbstractEntity");
+
+  		// Use selective field loading to minimize API payload
+  		const params = { select: metadataFields };
+  		const entity = await this.fetchEntityWithSpecificFields(entityId, params);
+
   		if (!this.validateEntityType(entity)) {
   			throw new Error(`Invalid entity returned for ${entityId}`);
   		}
@@ -296,7 +306,7 @@ export abstract class AbstractEntity<TEntity extends OpenAlexEntity> {
   	} catch (error) {
   		logger.warn(
   			"api",
-  			`Failed to fetch ${this.entityType} ${entityId} with metadata, trying full fetch`,
+  			`Failed to fetch ${this.entityType} ${entityId} with metadata fields, trying full fetch`,
   			{ entityType: this.entityType, entityId, fields: this.getMetadataFields(), error },
   			"AbstractEntity"
   		);
@@ -310,12 +320,50 @@ export abstract class AbstractEntity<TEntity extends OpenAlexEntity> {
   }
 
   /**
+   * Fetch entity with specific fields using the appropriate entity-specific API method
+   * This method ensures proper field selection is applied per entity type
+   */
+  private async fetchEntityWithSpecificFields(entityId: string, params: { select: string[] }): Promise<TEntity> {
+  	switch (this.entityType) {
+  		case "works":
+  			return await this.client.getWork(entityId, params) as TEntity;
+  		case "authors":
+  			return await this.client.getAuthor(entityId, params) as TEntity;
+  		case "sources":
+  			return await this.client.getSource(entityId, params) as TEntity;
+  		case "institutions":
+  			return await this.client.getInstitution(entityId, params) as TEntity;
+  		case "topics":
+  			return await this.client.getTopic(entityId, params) as TEntity;
+  		case "publishers":
+  			return await this.client.getPublisher(entityId, params) as TEntity;
+  		case "funders":
+  			return await this.client.getFunder(entityId, params) as TEntity;
+  		case "keywords":
+  			return await this.client.getKeyword(entityId, params) as TEntity;
+  		default:
+  			// Fallback to generic method without field selection
+  			return await this.client.getEntity(entityId) as TEntity;
+  	}
+  }
+
+  /**
    * Fetch entity with only fields needed for expansion (related entity IDs)
    * Uses select parameter to get only the relationship fields
    */
   public async fetchForExpansion(entityId: string): Promise<TEntity> {
   	try {
-  		const entity = await this.client.getEntity(entityId);
+  		const expansionFields = this.getExpansionFields();
+  		logger.debug("api", `Fetching ${this.entityType} with expansion fields`, {
+  			entityType: this.entityType,
+  			entityId,
+  			fields: expansionFields
+  		}, "AbstractEntity");
+
+  		// Use selective field loading for expansion relationships
+  		const params = { select: expansionFields };
+  		const entity = await this.fetchEntityWithSpecificFields(entityId, params);
+
   		if (!this.validateEntityType(entity)) {
   			throw new Error(`Invalid entity returned for ${entityId}`);
   		}
@@ -323,7 +371,7 @@ export abstract class AbstractEntity<TEntity extends OpenAlexEntity> {
   	} catch (error) {
   		logger.warn(
   			"api",
-  			`Failed to fetch ${this.entityType} ${entityId} for expansion, trying full fetch`,
+  			`Failed to fetch ${this.entityType} ${entityId} with expansion fields, trying full fetch`,
   			{ entityType: this.entityType, entityId, fields: this.getExpansionFields(), error },
   			"AbstractEntity"
   		);
