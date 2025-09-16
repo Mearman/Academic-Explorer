@@ -9,9 +9,7 @@ import {
 	calculateClosestAttachment,
 	calculateArrowPosition,
 	batchCalculateAttachments,
-	type NodeBounds as _NodeBounds,
 	type AttachmentPoint,
-	type EdgeAttachment as _EdgeAttachment
 } from "./edge-calculations";
 
 // Mock the logger
@@ -157,7 +155,7 @@ describe("Edge Calculations", () => {
 			const targetNode = { x: 300, y: 0, width: 200, height: 100 };
 
 			// Override the Position enum temporarily to trigger fallback
-			const _originalPositions = [Position.Top, Position.Right, Position.Bottom, Position.Left];
+			// const originalPositions = [Position.Top, Position.Right, Position.Bottom, Position.Left];
 
 			const result = calculateClosestAttachment(sourceNode, targetNode);
 
@@ -269,7 +267,7 @@ describe("Edge Calculations", () => {
 			expect(result.has("edge3")).toBe(true);
 
 			// Verify each attachment has required properties
-			for (const [_edgeId, attachment] of result) {
+			for (const [, attachment] of result) {
 				expect(attachment).toMatchObject({
 					source: expect.objectContaining({
 						x: expect.any(Number),
@@ -376,7 +374,7 @@ describe("Edge Calculations", () => {
 
 			const edge1Attachment = result.get("edge1")!; // node1 -> node2 (horizontal)
 			const edge2Attachment = result.get("edge2")!; // node2 -> node3 (diagonal)
-			const _edge3Attachment = result.get("edge3")!; // node1 -> node3 (diagonal)
+			// const edge3Attachment = result.get("edge3")!; // node1 -> node3 (diagonal)
 
 			// These should be different due to different node positions
 			expect(edge1Attachment.source.position).not.toBe(edge2Attachment.source.position);
@@ -434,7 +432,7 @@ describe("Edge Calculations", () => {
 			expect(attachments.size).toBe(3);
 
 			// Test arrow positioning for each attachment
-			for (const [_edgeId, attachment] of attachments) {
+			for (const [, attachment] of attachments) {
 				const sourceArrow = calculateArrowPosition(attachment.source);
 				const targetArrow = calculateArrowPosition(attachment.target);
 

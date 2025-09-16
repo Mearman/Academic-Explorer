@@ -5,6 +5,33 @@
 
 import { logger } from "@/lib/logger";
 
+// Extended Navigator interface for device memory API
+interface NavigatorWithDeviceMemory extends Navigator {
+  deviceMemory?: number;
+}
+
+// Extended Performance interface for memory API
+interface PerformanceWithMemory extends Performance {
+  memory?: {
+    usedJSHeapSize: number;
+    totalJSHeapSize: number;
+    jsHeapSizeLimit: number;
+  };
+}
+
+// Type guards for browser API feature detection
+function hasDeviceMemory(navigator: Navigator): navigator is NavigatorWithDeviceMemory {
+	return "deviceMemory" in navigator;
+}
+
+function hasPerformanceMemory(performance: Performance): performance is PerformanceWithMemory {
+	return "memory" in performance;
+}
+
+function hasRequestAnimationFrame(context: unknown): context is { requestAnimationFrame: typeof requestAnimationFrame } {
+	return typeof context === "object" && context !== null && "requestAnimationFrame" in context;
+}
+
 export interface PerformanceConfig {
   // Animation settings
   targetFPS: number;
@@ -131,23 +158,24 @@ export const PERFORMANCE_PROFILES = {
 export function detectDeviceCapabilities(): DeviceCapabilities {
 	const cores = navigator.hardwareConcurrency || 4;
 
-	// Estimate memory (very rough)
-	const memory = (navigator as any).deviceMemory ||
-    (cores >= 8 ? 8 : cores >= 4 ? 4 : 2);
+	// Estimate memory (very rough) using proper type guard
+	const memory = hasDeviceMemory(navigator) && navigator.deviceMemory
+		? navigator.deviceMemory
+		: (cores >= 8 ? 8 : cores >= 4 ? 4 : 2);
 
-	// Detect low power mode (iOS Safari)
-	const isLowPowerMode = (navigator as any).userAgent?.includes("Safari") &&
-    window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches;
+	// Detect low power mode (iOS Safari) using proper navigator.userAgent access
+	const isLowPowerMode = navigator.userAgent.includes("Safari") &&
+    window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
 	// Detect mobile
 	const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
 		navigator.userAgent
 	);
 
-	// Feature detection
+	// Feature detection with proper type guards
 	const supportsWebWorkers = typeof Worker !== "undefined";
 	const supportsRequestAnimationFrame = typeof requestAnimationFrame !== "undefined" &&
-    typeof (self as any).requestAnimationFrame !== "undefined";
+    hasRequestAnimationFrame(self);
 
 	return {
 		cores,
@@ -363,6 +391,11 @@ export class PerformanceMonitor {
 			? this.fpsHistory.reduce((a, b) => a + b, 0) / this.fpsHistory.length
 			: 0;
 
+		// Use proper type guard for performance.memory access
+		const memoryUsage = hasPerformanceMemory(performance)
+			? performance.memory?.usedJSHeapSize
+			: undefined;
+
 		return {
 			averageFPS,
 			minFPS: Math.min(...this.fpsHistory),
@@ -370,7 +403,7 @@ export class PerformanceMonitor {
 			frameDrops: this.frameDrops,
 			totalFrames: this.frameCount,
 			animationDuration: duration,
-			memoryUsage: (performance as any).memory?.usedJSHeapSize,
+			memoryUsage,
 		};
 	}
 }

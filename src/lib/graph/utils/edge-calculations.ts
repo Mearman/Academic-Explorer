@@ -133,8 +133,8 @@ export function calculateClosestAttachment(
  */
 export function calculateArrowPosition(
 	attachmentPoint: AttachmentPoint,
-	_nodeWidth: number = DEFAULT_NODE_WIDTH,
-	_nodeHeight: number = DEFAULT_NODE_HEIGHT,
+	_nodeWidth?: number,
+	_nodeHeight?: number,
 	offset: number = 5
 ): { x: number; y: number } {
 	const { x, y, position } = attachmentPoint;

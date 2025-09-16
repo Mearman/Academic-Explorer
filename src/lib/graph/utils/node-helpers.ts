@@ -156,7 +156,7 @@ export function getNodeNestedField(node: GraphNode, path: string): unknown {
 /**
  * Check if node is currently being loaded (has pending data fetch)
  */
-export function isNodeLoading(_node: GraphNode): boolean {
+export function isNodeLoading(): boolean {
 	// In true on-demand system, we don't track loading state artificially
 	// Loading is handled at the component/hook level when data is actually needed
 	return false;
@@ -165,7 +165,7 @@ export function isNodeLoading(_node: GraphNode): boolean {
 /**
  * Check if node has error in data loading
  */
-export function nodeHasError(_node: GraphNode): boolean {
+export function nodeHasError(): boolean {
 	// Errors are handled at the component/hook level, not stored in node
 	return false;
 }
