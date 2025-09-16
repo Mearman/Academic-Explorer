@@ -62,45 +62,14 @@ export const LeftSidebar: React.FC = () => {
 	const visibleEdgeTypes = useGraphStore((state) => state.visibleEdgeTypes)
 	const toggleEdgeTypeVisibility = useGraphStore((state) => state.toggleEdgeTypeVisibility)
 
-	// Use stable selectors with useMemo to avoid getSnapshot infinite loops (React 19 + Zustand + Immer pattern)
-	const rawNodes = useGraphStore((state) => state.nodes)
-	const rawEdges = useGraphStore((state) => state.edges)
-	const searchResults = useGraphStore((state) => state.searchResults)
-
-	const entityStats = useMemo(() => ({
-		total: rawNodes ? Object.values(rawNodes).reduce((acc, node) => {
-			acc[node.type] = (acc[node.type] || 0) + 1;
-			return acc;
-		}, {} as Record<EntityType, number>) : {} as Record<EntityType, number>,
-		visible: rawNodes ? Object.values(rawNodes)
-			.filter(node => visibleEntityTypes[node.type])
-			.reduce((acc, node) => {
-				acc[node.type] = (acc[node.type] || 0) + 1;
-				return acc;
-			}, {} as Record<EntityType, number>) : {} as Record<EntityType, number>,
-		searchResults: searchResults ? Object.values(searchResults).reduce((acc, node) => {
-			acc[node.type] = (acc[node.type] || 0) + 1;
-			return acc;
-		}, {} as Record<EntityType, number>) : {} as Record<EntityType, number>
-	}), [rawNodes, visibleEntityTypes, searchResults])
-
-	const edgeStats = useMemo(() => ({
-		total: rawEdges ? Object.values(rawEdges).reduce((acc, edge) => {
-			acc[edge.relationType] = (acc[edge.relationType] || 0) + 1;
-			return acc;
-		}, {} as Record<RelationType, number>) : {} as Record<RelationType, number>,
-		visible: rawEdges ? Object.values(rawEdges)
-			.filter(edge => visibleEdgeTypes[edge.relationType])
-			.reduce((acc, edge) => {
-				acc[edge.relationType] = (acc[edge.relationType] || 0) + 1;
-				return acc;
-			}, {} as Record<RelationType, number>) : {} as Record<RelationType, number>
-	}), [rawEdges, visibleEdgeTypes])
+	// Use cached statistics from store to avoid getSnapshot infinite loops (React 19 + Zustand + Immer pattern)
+	const entityStats = useGraphStore((state) => state.entityTypeStats)
+	const edgeStats = useGraphStore((state) => state.edgeTypeStats)
 
 	// Convert Record to Array for search functionality
 	const selectedEntityTypes = useMemo(() =>
 		Object.entries(visibleEntityTypes).filter(([, visible]) => visible).map(([type]) => type as EntityType),
-		[visibleEntityTypes]
+	[visibleEntityTypes]
 	)
 
 	// Cache controls state
