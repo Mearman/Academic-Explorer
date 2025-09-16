@@ -467,7 +467,7 @@ function MissingPaperResults({ results, executionTime }: MissingPaperResultsProp
 						) : (
 							<div style={{ display: "grid", gap: "16px" }}>
 								{results.candidateMissingPapers.slice(0, 20).map((paper, index) => (
-									<PaperCard key={index} paper={paper} rank={index + 1} />
+									<PaperCard key={paper.title || `paper-${String(index)}`} paper={paper} rank={index + 1} />
 								))}
 
 								{results.candidateMissingPapers.length > 20 && (
@@ -571,7 +571,7 @@ function MissingPaperResults({ results, executionTime }: MissingPaperResultsProp
 								<div style={{ display: "grid", gap: "8px" }}>
 									{results.validationMetrics.algorithmicBias.map((bias, index) => (
 										<div
-											key={index}
+											key={`bias-${String(index)}-${bias.substring(0, 10)}`}
 											style={{
 												padding: "12px",
 												backgroundColor: "#fef2f2",

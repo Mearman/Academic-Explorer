@@ -83,7 +83,7 @@ export function PerformanceComparisonChart({ comparisonResults }: MetaAnalysisCh
 				gap: "16px"
 			}}>
 				{chartData.map((dataset, index) => (
-					<div key={index} style={{ display: "flex", alignItems: "center", gap: "16px" }}>
+					<div key={dataset.datasetName || `dataset-${String(index)}`} style={{ display: "flex", alignItems: "center", gap: "16px" }}>
 						{/* Dataset name */}
 						<div style={{
 							width: "200px",
@@ -389,7 +389,7 @@ export function PrecisionRecallScatterPlot({ comparisonResults }: MetaAnalysisCh
             Datasets
 					</h4>
 					{plotData.map((point, index) => (
-						<div key={index} style={{
+						<div key={point.datasetName || `point-${String(index)}`} style={{
 							display: "flex",
 							alignItems: "center",
 							gap: "8px",
@@ -796,7 +796,7 @@ export function DatasetStatisticsOverview({ comparisonResults }: MetaAnalysisCha
 					</thead>
 					<tbody>
 						{statisticsData.map((row, index) => (
-							<tr key={index} style={{
+							<tr key={row.name || `row-${String(index)}`} style={{
 								backgroundColor: index % 2 === 0 ? "#ffffff" : "#f9fafb"
 							}}>
 								<td style={{

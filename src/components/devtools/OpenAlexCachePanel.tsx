@@ -235,8 +235,8 @@ export function OpenAlexCachePanel() {
 				<Paper p="md" withBorder>
 					<Text fw={500} mb="sm">Recent API Requests</Text>
 					<Stack gap="xs">
-						{stats.recentRequests.map((request, index) => (
-							<Group key={index} justify="space-between" p="xs" style={{ borderRadius: 4, backgroundColor: "var(--mantine-color-gray-0)" }}>
+						{stats.recentRequests.map((request) => (
+							<Group key={`${request.timestamp}-${request.url.substring(0, 20)}`} justify="space-between" p="xs" style={{ borderRadius: 4, backgroundColor: "var(--mantine-color-gray-0)" }}>
 								<Stack gap={2}>
 									<Code>{request.url}</Code>
 									<Group gap="xs">
