@@ -59,7 +59,7 @@ interface WorkerMessage {
 }
 
 // Worker state
-let animationId: number | null = null;
+let animationId: ReturnType<typeof setTimeout> | number | null = null;
 let simulation: Simulation<WorkerNode, WorkerLink> | null = null;
 let isRunning = false;
 let isPaused = false;
@@ -265,7 +265,7 @@ function startAnimatedSimulation(
     if ('requestAnimationFrame' in self) {
       animationId = self.requestAnimationFrame(animate);
     } else {
-      animationId = setTimeout(() => animate(performance.now()), 16);
+      animationId = (self as any).setTimeout(() => animate(performance.now()), 16);
     }
   }
 
@@ -279,9 +279,9 @@ function stopSimulation() {
 
   if (animationId !== null) {
     if ('cancelAnimationFrame' in self) {
-      self.cancelAnimationFrame(animationId);
+      self.cancelAnimationFrame(animationId as number);
     } else {
-      clearTimeout(animationId);
+      (self as any).clearTimeout(animationId);
     }
     animationId = null;
   }
@@ -317,9 +317,9 @@ function resumeSimulation() {
 self.onerror = function(error) {
   self.postMessage({
     type: 'error',
-    error: error.message,
-    filename: error.filename,
-    lineno: error.lineno,
+    error: error instanceof ErrorEvent ? error.message : String(error),
+    filename: error instanceof ErrorEvent ? error.filename : undefined,
+    lineno: error instanceof ErrorEvent ? error.lineno : undefined,
   });
 };
 
