@@ -4,7 +4,8 @@ import { useThemeColors } from "@/hooks/use-theme-colors"
 import { pageTitle, pageDescription } from "../styles/layout.css"
 
 function AboutPage() {
-	const { colors } = useThemeColors()
+	const themeColors = useThemeColors();
+	const colors = themeColors.colors;
 	const techStack = [
 		{ name: "React", version: "19.1.1", color: "blue" },
 		{ name: "TypeScript", version: "5.8.3", color: "blue" },

@@ -16,8 +16,10 @@ function ExternalIdRoute() {
 	const { externalId } = Route.useParams()
 	const navigate = useNavigate()
 	const detector = useMemo(() => new EntityDetector(), [])
-	const { loadEntity, loadEntityIntoGraph } = useGraphData()
-	const { nodes } = useGraphStore()
+	const graphData = useGraphData()
+	const loadEntity = graphData.loadEntity
+	const loadEntityIntoGraph = graphData.loadEntityIntoGraph
+	const nodeCount = useGraphStore((state) => Object.keys(state.nodes).length)
 
 	useEffect(() => {
 		const resolveExternalId = async () => {
@@ -65,7 +67,7 @@ function ExternalIdRoute() {
 				} else if (detection.entityType) {
 					// This is some other external ID, load directly
 					// If graph already has nodes, use incremental loading to preserve existing entities
-					if (nodes.size > 0) {
+					if (nodeCount > 0) {
 						await loadEntityIntoGraph(detection.normalizedId);
 					} else {
 						// If graph is empty, use full loading (clears graph for initial load)
@@ -87,7 +89,7 @@ function ExternalIdRoute() {
 		}
 
 		void resolveExternalId()
-	}, [externalId, navigate, detector, loadEntity, loadEntityIntoGraph, nodes.size])
+	}, [externalId, navigate, detector, loadEntity, loadEntityIntoGraph, nodeCount])
 
 	return (
 		<div style={{

@@ -12,14 +12,18 @@ export const Route = createFileRoute("/authors/$authorId")({
 
 function AuthorRoute() {
 	const { authorId } = Route.useParams();
-	const { loadEntity, loadEntityIntoGraph, expandNode } = useGraphData();
-	const { nodes } = useGraphStore();
+	const graphData = useGraphData();
+	const loadEntity = graphData.loadEntity;
+	const loadEntityIntoGraph = graphData.loadEntityIntoGraph;
+	const expandNode = graphData.expandNode;
+	const nodeCount = useGraphStore((state) => Object.keys(state.nodes).length);
 
 	// Fetch entity data for title
-	const { data: author } = useRawEntityData({
+	const rawEntityDataResult = useRawEntityData({
 		entityId: authorId,
 		enabled: !!authorId
 	});
+	const author = rawEntityDataResult.data;
 
 	// Update document title with author name
 	useEntityDocumentTitle(author);
@@ -29,7 +33,7 @@ function AuthorRoute() {
 			try {
 				// If graph already has nodes, use incremental loading to preserve existing entities
 				// This prevents clearing the graph when clicking on nodes or navigating
-				if (nodes.size > 0) {
+				if (nodeCount > 0) {
 					await loadEntityIntoGraph(authorId);
 				} else {
 					// If graph is empty, use full loading (clears graph for initial load)
@@ -46,7 +50,7 @@ function AuthorRoute() {
 		};
 
 		void loadAuthor();
-	}, [authorId, loadEntity, loadEntityIntoGraph, expandNode, nodes.size]);
+	}, [authorId, loadEntity, loadEntityIntoGraph, expandNode, nodeCount]);
 
 	// Return null - the graph is visible from MainLayout
 	// The route content is just for triggering the data load

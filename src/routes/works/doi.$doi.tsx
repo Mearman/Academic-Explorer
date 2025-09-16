@@ -14,8 +14,10 @@ function DOIWorkRoute() {
 	const { doi } = Route.useParams()
 	const navigate = useNavigate()
 	const detector = useMemo(() => new EntityDetector(), [])
-	const { loadEntity, loadEntityIntoGraph } = useGraphData()
-	const { nodes } = useGraphStore()
+	const graphData = useGraphData()
+	const loadEntity = graphData.loadEntity
+	const loadEntityIntoGraph = graphData.loadEntityIntoGraph
+	const nodeCount = useGraphStore((state) => Object.keys(state.nodes).length)
 
 	useEffect(() => {
 		const resolveDOI = async () => {
@@ -28,7 +30,7 @@ function DOIWorkRoute() {
 
 				if (detection.entityType === "works" && detection.idType === "doi") {
 					// If graph already has nodes, use incremental loading to preserve existing entities
-					if (nodes.size > 0) {
+					if (nodeCount > 0) {
 						await loadEntityIntoGraph(`doi:${detection.normalizedId}`);
 					} else {
 						// If graph is empty, use full loading (clears graph for initial load)
@@ -51,7 +53,7 @@ function DOIWorkRoute() {
 		}
 
 		void resolveDOI()
-	}, [doi, navigate, detector, loadEntity, loadEntityIntoGraph, nodes.size])
+	}, [doi, navigate, detector, loadEntity, loadEntityIntoGraph, nodeCount])
 
 	return (
 		<div style={{

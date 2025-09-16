@@ -10,8 +10,11 @@ import { logError } from "@/lib/logger"
 
 function HomePage() {
 	const [searchQuery, setSearchQuery] = useState("")
-	const { search, isLoading } = useGraphData()
-	const { colors } = useThemeColors()
+	const graphData = useGraphData();
+	const search = graphData.search;
+	const isLoading = graphData.isLoading;
+	const themeColors = useThemeColors();
+	const colors = themeColors.colors;
 
 	// Set home page title
 	useDocumentTitle(null) // This will use the default base title "Academic Explorer"

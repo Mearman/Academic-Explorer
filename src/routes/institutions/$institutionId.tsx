@@ -12,14 +12,17 @@ export const Route = createFileRoute("/institutions/$institutionId")({
 
 function InstitutionRoute() {
 	const { institutionId } = Route.useParams();
-	const { loadEntity, loadEntityIntoGraph } = useGraphData();
-	const { nodes } = useGraphStore();
+	const graphData = useGraphData();
+	const loadEntity = graphData.loadEntity;
+	const loadEntityIntoGraph = graphData.loadEntityIntoGraph;
+	const nodeCount = useGraphStore((state) => Object.keys(state.nodes).length);
 
 	// Fetch entity data for title
-	const { data: institution } = useRawEntityData({
+	const rawEntityData = useRawEntityData({
 		entityId: institutionId,
 		enabled: !!institutionId
 	});
+	const institution = rawEntityData.data;
 
 	// Update document title with institution name
 	useEntityDocumentTitle(institution);
@@ -29,7 +32,7 @@ function InstitutionRoute() {
 			try {
 				// If graph already has nodes, use incremental loading to preserve existing entities
 				// This prevents clearing the graph when clicking on nodes or navigating
-				if (nodes.size > 0) {
+				if (nodeCount > 0) {
 					await loadEntityIntoGraph(institutionId);
 				} else {
 					// If graph is empty, use full loading (clears graph for initial load)
@@ -41,7 +44,7 @@ function InstitutionRoute() {
 		};
 
 		void loadInstitution();
-	}, [institutionId, loadEntity, loadEntityIntoGraph, nodes.size]);
+	}, [institutionId, loadEntity, loadEntityIntoGraph, nodeCount]);
 
 	// Return null - the graph is visible from MainLayout
 	// The route content is just for triggering the data load

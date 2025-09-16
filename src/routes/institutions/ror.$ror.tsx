@@ -14,8 +14,10 @@ function RORInstitutionRoute() {
 	const { ror } = Route.useParams()
 	const navigate = useNavigate()
 	const detector = useMemo(() => new EntityDetector(), [])
-	const { loadEntity, loadEntityIntoGraph } = useGraphData()
-	const { nodes } = useGraphStore()
+	const graphData = useGraphData()
+	const loadEntity = graphData.loadEntity
+	const loadEntityIntoGraph = graphData.loadEntityIntoGraph
+	const nodeCount = useGraphStore((state) => Object.keys(state.nodes).length)
 
 	useEffect(() => {
 		const resolveROR = async () => {
@@ -28,7 +30,7 @@ function RORInstitutionRoute() {
 
 				if (detection.entityType === "institutions" && detection.idType === "ror") {
 					// If graph already has nodes, use incremental loading to preserve existing entities
-					if (nodes.size > 0) {
+					if (nodeCount > 0) {
 						await loadEntityIntoGraph(`ror:${detection.normalizedId}`);
 					} else {
 						// If graph is empty, use full loading (clears graph for initial load)
@@ -51,7 +53,7 @@ function RORInstitutionRoute() {
 		}
 
 		void resolveROR()
-	}, [ror, navigate, detector, loadEntity, loadEntityIntoGraph, nodes.size])
+	}, [ror, navigate, detector, loadEntity, loadEntityIntoGraph, nodeCount])
 
 	return (
 		<div style={{

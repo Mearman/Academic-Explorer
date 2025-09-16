@@ -12,14 +12,17 @@ export const Route = createFileRoute("/topics/$topicId")({
 
 function TopicRoute() {
 	const { topicId } = Route.useParams();
-	const { loadEntity, loadEntityIntoGraph } = useGraphData();
-	const { nodes } = useGraphStore();
+	const graphData = useGraphData();
+	const loadEntity = graphData.loadEntity;
+	const loadEntityIntoGraph = graphData.loadEntityIntoGraph;
+	const nodeCount = useGraphStore((state) => Object.keys(state.nodes).length);
 
 	// Fetch entity data for title
-	const { data: topic } = useRawEntityData({
+	const rawEntityData = useRawEntityData({
 		entityId: topicId,
 		enabled: !!topicId
 	});
+	const topic = rawEntityData.data;
 
 	// Update document title with topic name
 	useEntityDocumentTitle(topic);
@@ -29,7 +32,7 @@ function TopicRoute() {
 			try {
 				// If graph already has nodes, use incremental loading to preserve existing entities
 				// This prevents clearing the graph when clicking on nodes or navigating
-				if (nodes.size > 0) {
+				if (nodeCount > 0) {
 					await loadEntityIntoGraph(topicId);
 				} else {
 					// If graph is empty, use full loading (clears graph for initial load)
@@ -41,7 +44,7 @@ function TopicRoute() {
 		};
 
 		void loadTopic();
-	}, [topicId, loadEntity, loadEntityIntoGraph, nodes.size]);
+	}, [topicId, loadEntity, loadEntityIntoGraph, nodeCount]);
 
 	// Return null - the graph is visible from MainLayout
 	// The route content is just for triggering the data load

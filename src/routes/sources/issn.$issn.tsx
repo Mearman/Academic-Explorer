@@ -14,8 +14,10 @@ function ISSNSourceRoute() {
 	const { issn } = Route.useParams()
 	const navigate = useNavigate()
 	const detector = useMemo(() => new EntityDetector(), [])
-	const { loadEntity, loadEntityIntoGraph } = useGraphData()
-	const { nodes } = useGraphStore()
+	const graphData = useGraphData()
+	const loadEntity = graphData.loadEntity
+	const loadEntityIntoGraph = graphData.loadEntityIntoGraph
+	const nodeCount = useGraphStore((state) => Object.keys(state.nodes).length)
 
 	useEffect(() => {
 		const resolveISSN = async () => {
@@ -28,7 +30,7 @@ function ISSNSourceRoute() {
 
 				if (detection.entityType === "sources" && detection.idType === "issn_l") {
 					// If graph already has nodes, use incremental loading to preserve existing entities
-					if (nodes.size > 0) {
+					if (nodeCount > 0) {
 						await loadEntityIntoGraph(`issn:${detection.normalizedId}`);
 					} else {
 						// If graph is empty, use full loading (clears graph for initial load)
@@ -51,7 +53,7 @@ function ISSNSourceRoute() {
 		}
 
 		void resolveISSN()
-	}, [issn, navigate, detector, loadEntity, loadEntityIntoGraph, nodes.size])
+	}, [issn, navigate, detector, loadEntity, loadEntityIntoGraph, nodeCount])
 
 	return (
 		<div style={{
