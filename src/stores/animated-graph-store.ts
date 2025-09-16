@@ -288,8 +288,8 @@ export const useAnimatedGraphStore = create<AnimatedGraphState>()(
 					// Extract current positions from graph store nodes
 					const positions: NodePosition[] = nodes.map((node: GraphNode) => ({
 						id: node.id,
-						x: node.position?.x || 0,
-						y: node.position?.y || 0,
+						x: node.position.x,
+						y: node.position.y,
 					}));
 
 					// Update static positions
@@ -301,7 +301,7 @@ export const useAnimatedGraphStore = create<AnimatedGraphState>()(
 					logger.info("graph", "Synced animated store with graph store", {
 						nodeCount: nodes.length,
 						positionCount: positions.length,
-						layoutType: graphStore.currentLayout?.type,
+						layoutType: graphStore.currentLayout.type,
 						pinnedNodeCount: Object.keys(graphStore.pinnedNodes).length,
 					});
 				});

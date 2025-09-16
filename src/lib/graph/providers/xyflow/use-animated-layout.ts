@@ -258,7 +258,7 @@ export function useAnimatedLayout(options: UseAnimatedLayoutOptions = {}) {
 		const config = getOptimalConfig(animatedNodes.length);
 
 		// Use graph store's layout configuration if available
-		const layoutOptions = currentLayout?.options;
+		const layoutOptions = currentLayout.options;
 		const enhancedConfig = {
 			...config,
 			linkDistance: layoutOptions?.linkDistance || 100,
@@ -277,7 +277,7 @@ export function useAnimatedLayout(options: UseAnimatedLayoutOptions = {}) {
 			linkCount: animatedLinks.length,
 			pinnedCount: Object.keys(pinnedNodes).length,
 			config: enhancedConfig,
-			layoutType: currentLayout?.type,
+			layoutType: currentLayout.type,
 			autoPinOnLayoutStabilization,
 			usingGraphStoreConfig: !!layoutOptions,
 		});
