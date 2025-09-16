@@ -29,24 +29,15 @@ export function useGraphData() {
 			store.addNodes(result.nodes);
 			store.addEdges(result.edges);
 
-			// Update cached graph data
-			const allNodes = Object.values(store.nodes);
-			const allEdges = Object.values(store.edges);
-			setCachedGraphNodes(queryClient, allNodes);
-			setCachedGraphEdges(queryClient, allEdges);
-
 			// Mark as expanded in cache
 			setNodeExpanded(queryClient, result.nodeId, true);
 
 			// Clear node loading state
 			store.markNodeAsLoading(result.nodeId, false);
 
-			// Calculate depths after expansion
-			const pinnedNodes = Object.keys(store.pinnedNodes);
-			const firstPinnedNodeId = pinnedNodes[0];
-			if (firstPinnedNodeId) {
-				store.calculateNodeDepths(firstPinnedNodeId);
-			}
+			// TODO: Add store methods to handle cached data and depth calculation
+			// store.updateCachedGraphData(queryClient);
+			// store.recalculateDepthsFromFirstPinned();
 
 			logger.info("graph", "Worker-based node expansion completed", {
 				nodeId: result.nodeId,

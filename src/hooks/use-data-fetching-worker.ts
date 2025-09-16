@@ -57,8 +57,14 @@ export function useDataFetchingWorker(options: UseDataFetchingWorkerOptions = {}
 	const workerRef = useRef<Worker | null>(null);
 	const [isWorkerReady, setIsWorkerReady] = useState(false);
 
-	// Progress store for UI updates
-	const progressStore = useDataFetchingProgressStore();
+	// Progress store for UI updates - extract stable methods only
+	const addRequest = useDataFetchingProgressStore((state) => state.addRequest);
+	const updateProgress = useDataFetchingProgressStore((state) => state.updateProgress);
+	const completeRequest = useDataFetchingProgressStore((state) => state.completeRequest);
+	const failRequest = useDataFetchingProgressStore((state) => state.failRequest);
+	const removeRequest = useDataFetchingProgressStore((state) => state.removeRequest);
+	const setWorkerReady = useDataFetchingProgressStore((state) => state.setWorkerReady);
+	const clearAll = useDataFetchingProgressStore((state) => state.clearAll);
 
 	// Request tracking
 	const [activeRequests, setActiveRequests] = useState<Set<string>>(new Set());
@@ -86,11 +92,11 @@ export function useDataFetchingWorker(options: UseDataFetchingWorkerOptions = {}
 				if (error) {
 					logger.error("graph", "Data fetching worker failed to initialize", { error });
 					setIsWorkerReady(false);
-					progressStore.setWorkerReady(false);
+					setWorkerReady(false);
 				} else {
 					logger.info("graph", "Data fetching worker ready");
 					setIsWorkerReady(true);
-					progressStore.setWorkerReady(true);
+					setWorkerReady(true);
 				}
 				break;
 
@@ -111,7 +117,7 @@ export function useDataFetchingWorker(options: UseDataFetchingWorkerOptions = {}
 						});
 
 						// Update progress store
-						progressStore.completeRequest(request.nodeId);
+						completeRequest(request.nodeId);
 
 						// Call completion callback
 						onExpandComplete?.(payload as ExpandCompletePayload);
@@ -145,7 +151,7 @@ export function useDataFetchingWorker(options: UseDataFetchingWorkerOptions = {}
 
 						// Update progress store with error
 						const errorMessage = error || "Unknown expansion error";
-						progressStore.failRequest(request.nodeId, errorMessage);
+						failRequest(request.nodeId, errorMessage);
 
 						// Call error callback
 						onExpandError?.(request.nodeId, errorMessage);
@@ -166,7 +172,7 @@ export function useDataFetchingWorker(options: UseDataFetchingWorkerOptions = {}
 						const progressData = payload as { completed: number; total: number; stage: string };
 
 						// Update progress store
-						progressStore.updateProgress(request.nodeId, progressData);
+						updateProgress(request.nodeId, progressData);
 
 						// Call progress callback
 						onProgress?.(request.nodeId, progressData);
@@ -177,7 +183,7 @@ export function useDataFetchingWorker(options: UseDataFetchingWorkerOptions = {}
 			default:
 				logger.warn("graph", "Unknown worker message type", { type });
 		}
-	}, [onExpandComplete, onExpandError, onProgress, progressStore]);
+	}, [onExpandComplete, onExpandError, onProgress, completeRequest, failRequest, updateProgress]);
 
 	// Handle worker errors
 	const handleWorkerError = useCallback((error: ErrorEvent) => {
@@ -198,10 +204,10 @@ export function useDataFetchingWorker(options: UseDataFetchingWorkerOptions = {}
 		setActiveRequests(new Set());
 
 		// Update progress store
-		progressStore.clearAll();
-		progressStore.setWorkerReady(false);
+		clearAll();
+		setWorkerReady(false);
 		setIsWorkerReady(false);
-	}, [onExpandError, progressStore]);
+	}, [onExpandError, clearAll, setWorkerReady]);
 
 	// Initialize worker
 	useEffect(() => {
@@ -235,11 +241,11 @@ export function useDataFetchingWorker(options: UseDataFetchingWorkerOptions = {}
 				setIsWorkerReady(false);
 
 				// Clear progress store
-				progressStore.clearAll();
-				progressStore.setWorkerReady(false);
+				clearAll();
+				setWorkerReady(false);
 			}
 		};
-	}, [handleWorkerError, handleWorkerMessage, onExpandError, progressStore]); // Add all function dependencies
+	}, [handleWorkerError, handleWorkerMessage, onExpandError, clearAll, setWorkerReady]); // Add all function dependencies
 
 
 	// Expand node via worker
@@ -276,7 +282,7 @@ export function useDataFetchingWorker(options: UseDataFetchingWorkerOptions = {}
 			statsRef.current.totalRequests++;
 
 			// Add to progress store
-			progressStore.addRequest(nodeId, undefined, entityType);
+			addRequest(nodeId, undefined, entityType);
 
 			// Prepare payload
 			const payload: ExpandNodePayload = {
@@ -303,7 +309,7 @@ export function useDataFetchingWorker(options: UseDataFetchingWorkerOptions = {}
 				requestId
 			});
 		});
-	}, [isWorkerReady, activeRequests, progressStore]);
+	}, [isWorkerReady, activeRequests, addRequest]);
 
 	// Cancel specific expansion
 	const cancelExpansion = useCallback((nodeId: string) => {
@@ -330,14 +336,14 @@ export function useDataFetchingWorker(options: UseDataFetchingWorkerOptions = {}
 			});
 
 			// Remove from progress store
-			progressStore.removeRequest(nodeId);
+			removeRequest(nodeId);
 
 			// Reject the promise
 			request.reject(new Error("Expansion cancelled by user"));
 
 			logger.info("graph", "Cancelled node expansion", { nodeId, requestId });
 		}
-	}, [progressStore]);
+	}, [removeRequest]);
 
 	// Cancel all expansions
 	const cancelAllExpansions = useCallback(() => {
@@ -357,10 +363,10 @@ export function useDataFetchingWorker(options: UseDataFetchingWorkerOptions = {}
 		setActiveRequests(new Set());
 
 		// Clear progress store
-		progressStore.clearAll();
+		clearAll();
 
 		logger.info("graph", "Cancelled all node expansions");
-	}, [progressStore]);
+	}, [clearAll]);
 
 	// Get statistics
 	const getStats = useCallback(() => {
