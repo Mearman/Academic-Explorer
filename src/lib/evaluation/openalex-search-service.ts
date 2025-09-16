@@ -186,7 +186,7 @@ export async function searchBasedOnSTARDataset(
 	dataset: STARDataset,
 	config: AcademicExplorerSearchConfig = DEFAULT_SEARCH_CONFIG
 ): Promise<WorkReference[]> {
-	const { query, filters: _filters } = extractSearchCriteriaFromDataset(dataset);
+	const { query } = extractSearchCriteriaFromDataset(dataset);
 
 	// Merge dataset-extracted filters with config filters
 	const mergedConfig: AcademicExplorerSearchConfig = {

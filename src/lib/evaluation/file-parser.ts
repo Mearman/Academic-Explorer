@@ -187,7 +187,7 @@ async function parseExcelContent(file: File, config: ParseConfig): Promise<RawPa
 	// Convert to array of arrays format similar to xlsx
 	const jsonData: unknown[][] = [];
 
-	worksheet.eachRow((row, _rowNumber) => {
+	worksheet.eachRow((row) => {
 		// Convert row to array of values
 		const rowValues: unknown[] = [];
 		row.eachCell({ includeEmpty: true }, (cell, colNumber) => {

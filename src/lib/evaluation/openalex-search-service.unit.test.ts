@@ -440,7 +440,7 @@ describe("OpenAlex Search Service", () => {
 				}
 			};
 
-			const { query, filters: _filters } = extractSearchCriteriaFromDataset(datasetWithoutKeywords);
+			const { query } = extractSearchCriteriaFromDataset(datasetWithoutKeywords);
 
 			expect(query).toBe("Deep Learning Applications in Medical Imaging");
 		});
@@ -454,7 +454,7 @@ describe("OpenAlex Search Service", () => {
 				}
 			};
 
-			const { query, filters: _filters } = extractSearchCriteriaFromDataset(datasetWithDuplicateKeywords);
+			const { query } = extractSearchCriteriaFromDataset(datasetWithDuplicateKeywords);
 
 			expect(query).toBe("Deep Learning Applications in Medical Imaging unique keyword");
 		});
@@ -471,7 +471,7 @@ describe("OpenAlex Search Service", () => {
 				}
 			};
 
-			const { query: _query, filters } = extractSearchCriteriaFromDataset(datasetWithoutDates);
+			const { filters } = extractSearchCriteriaFromDataset(datasetWithoutDates);
 
 			expect(filters.filters).toEqual({});
 		});
@@ -488,7 +488,7 @@ describe("OpenAlex Search Service", () => {
 				}
 			};
 
-			const { query: _query, filters } = extractSearchCriteriaFromDataset(datasetWithOnlyStart);
+			const { filters } = extractSearchCriteriaFromDataset(datasetWithOnlyStart);
 
 			expect(filters.filters).toEqual({
 				publication_year: ">2019"
@@ -507,7 +507,7 @@ describe("OpenAlex Search Service", () => {
 				}
 			};
 
-			const { query: _query, filters } = extractSearchCriteriaFromDataset(datasetWithOnlyEnd);
+			const { filters } = extractSearchCriteriaFromDataset(datasetWithOnlyEnd);
 
 			expect(filters.filters).toEqual({
 				publication_year: "<2024"
@@ -523,7 +523,7 @@ describe("OpenAlex Search Service", () => {
 				}
 			};
 
-			const { query, filters: _filters } = extractSearchCriteriaFromDataset(datasetWithManyKeywords);
+			const { query } = extractSearchCriteriaFromDataset(datasetWithManyKeywords);
 
 			// Should only include first 3 additional keywords
 			const additionalKeywords = query.replace("Deep Learning Applications in Medical Imaging ", "");

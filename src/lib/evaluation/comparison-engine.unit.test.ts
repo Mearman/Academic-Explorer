@@ -6,7 +6,6 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
 import {
 	compareAcademicExplorerResults,
-	batchCompareResults as _batchCompareResults,
 	DEFAULT_MATCHING_CONFIG,
 	stringSimilarity,
 	calculateAuthorSimilarity,
@@ -16,7 +15,7 @@ import {
 	checkYearMatch,
 	type MatchingConfig
 } from "./comparison-engine";
-import type { WorkReference, STARDataset, ComparisonResults as _ComparisonResults, MatchingResults as _MatchingResults } from "./types";
+import type { WorkReference, STARDataset } from "./types";
 
 // Mock the logger
 vi.mock("@/lib/logger", () => ({
