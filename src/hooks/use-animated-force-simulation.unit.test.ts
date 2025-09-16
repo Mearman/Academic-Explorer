@@ -178,7 +178,7 @@ describe("useAnimatedForceSimulation", () => {
 
 		// Manually trigger the ready message to ensure it's processed
 		await act(async () => {
-			if (mockWorker && mockWorker.onmessage) {
+			if (mockWorker.onmessage) {
 				mockWorker.onmessage(new MessageEvent("message", {
 					data: { type: "ready" }
 				}));

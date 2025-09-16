@@ -84,8 +84,8 @@ describe("Entity Data Storage Integration", () => {
 			// Verify the main work was added with entity data
 			expect("https://openalex.org/W123456789" in store.nodes).toBe(true);
 			const mainNode = store.nodes["https://openalex.org/W123456789"];
-			expect(mainNode?.entityData).toBeDefined();
-			expect(mainNode?.entityData?.referenced_works).toEqual([
+			expect(mainNode.entityData).toBeDefined();
+			expect(mainNode.entityData?.referenced_works).toEqual([
 				"https://openalex.org/W987654321",
 				"https://openalex.org/W555666777"
 			]);
@@ -99,9 +99,9 @@ describe("Entity Data Storage Integration", () => {
 			expect(Object.keys(store.nodes).length).toBe(1);
 
 			logger.info("integration", "Entity data storage test completed successfully", {
-				mainNodeId: mainNode?.id,
-				hasEntityData: !!mainNode?.entityData,
-				referencedWorksCount: mainNode?.entityData?.referenced_works?.length,
+				mainNodeId: mainNode.id,
+				hasEntityData: !!mainNode.entityData,
+				referencedWorksCount: mainNode.entityData?.referenced_works?.length,
 				totalNodes: Object.keys(store.nodes).length
 			});
 		});
@@ -157,12 +157,12 @@ describe("Entity Data Storage Integration", () => {
 
 			// Verify the entity data contains referenced works information
 			const mainNode = store.nodes["https://openalex.org/W123456789"];
-			expect(mainNode?.entityData?.referenced_works).toEqual(["https://openalex.org/W987654321"]);
+			expect(mainNode.entityData?.referenced_works).toEqual(["https://openalex.org/W987654321"]);
 
 			logger.info("integration", "Entity data test completed", {
 				totalNodes: Object.keys(store.nodes).length,
-				hasEntityData: !!mainNode?.entityData,
-				referencedWorksCount: mainNode?.entityData?.referenced_works?.length
+				hasEntityData: !!mainNode.entityData,
+				referencedWorksCount: mainNode.entityData?.referenced_works?.length
 			});
 		});
 	});
