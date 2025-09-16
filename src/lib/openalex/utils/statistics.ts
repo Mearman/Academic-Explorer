@@ -4,7 +4,7 @@
  */
 
 import { OpenAlexBaseClient } from "../client";
-import { EntityType, QueryParams as _QueryParams, StatsParams } from "../types";
+import { EntityType, StatsParams } from "../types";
 import { logger } from "@/lib/logger";
 
 /**

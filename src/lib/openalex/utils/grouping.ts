@@ -4,7 +4,7 @@
  */
 
 import { OpenAlexBaseClient } from "../client";
-import { EntityType, QueryParams, GroupParams, OpenAlexResponse as _OpenAlexResponse } from "../types";
+import { EntityType, QueryParams, GroupParams } from "../types";
 import { logger } from "@/lib/logger";
 
 /**
@@ -99,7 +99,7 @@ export class GroupingApi {
 		const {
 			group_limit = 100,
 			min_count = 1,
-			include_citation_stats: _include_citation_stats = true,
+			include_citation_stats = true,
 			...queryParams
 		} = params;
 

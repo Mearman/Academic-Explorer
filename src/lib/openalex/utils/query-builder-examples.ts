@@ -95,7 +95,7 @@ export const impactAnalysis = {
 	/**
 	 * Institutional impact comparison
 	 */
-	institutionComparison: (_institutionIds: string[]): InstitutionsFilters => ({
+	institutionComparison: (): InstitutionsFilters => ({
 		"works_count": ">1000"
 	}),
 

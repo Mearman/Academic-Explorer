@@ -34,8 +34,6 @@ import type {
 	WorksFilters,
 	AuthorsFilters,
 	SortOptions,
-	LogicalOperator as _LogicalOperator,
-	DateRangeValidation as _DateRangeValidation
 } from "./query-builder";
 
 describe("QueryBuilder", () => {

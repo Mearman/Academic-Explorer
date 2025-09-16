@@ -145,7 +145,7 @@ export class AutocompleteApi {
 					const endpoint = `${type}/autocomplete`;
 					const params: QueryParams & { q: string } = {
 						q: query.trim(),
-						...this.formatFiltersForEntityType(filters, type),
+						...this.formatFiltersForEntityType(filters),
 					};
 
 					const response = await this.client.get<{ results: AutocompleteResult[] }>(endpoint, params);
@@ -284,8 +284,7 @@ export class AutocompleteApi {
    * Format filters for specific entity type endpoints
    */
 	private formatFiltersForEntityType(
-		filters: Record<string, unknown>,
-		_entityType: EntityType
+		filters: Record<string, unknown>
 	): Record<string, unknown> {
 		// OpenAlex autocomplete endpoints might not support all filters
 		// Return basic filters that are commonly supported

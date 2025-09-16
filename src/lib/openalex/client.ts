@@ -339,7 +339,7 @@ export class OpenAlexBaseClient {
 			yield response.results;
 
 			// Extract cursor from next page URL if available
-			cursor = this.extractCursorFromResponse(response);
+			cursor = this.extractCursorFromResponse();
 
 		} while (cursor);
 	}
