@@ -57,16 +57,6 @@ export const NodeContextMenu: React.FC<NodeContextMenuProps> = ({
 	}, [node, onViewDetails, onClose])
 
 	const handleCopyUrl = useCallback(async () => {
-		const _entityTypeMap = {
-			"works": "works",
-			"authors": "authors",
-			"sources": "sources",
-			"institutions": "institutions",
-			"topics": "topics",
-			"publishers": "publishers",
-			"funders": "funders"
-		}
-
 		// Try to create a URL with external ID if available
 		let url = window.location.origin
 

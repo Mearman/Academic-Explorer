@@ -3,7 +3,7 @@
  * Shows icon-only controls for entity details and information
  */
 
-import React from "react";
+import React, { useMemo } from "react";
 import { Stack, ActionIcon, Tooltip, Badge, Divider } from "@mantine/core";
 import { useGraphStore } from "@/stores/graph-store";
 import { useLayoutStore } from "@/stores/layout-store";
@@ -24,8 +24,17 @@ export const RightRibbon: React.FC = () => {
 	const expandSidebarToSection = layoutStore.expandSidebarToSection;
 	const selectedNodeId = useGraphStore((state) => state.selectedNodeId);
 	const hoveredNodeId = useGraphStore((state) => state.hoveredNodeId);
-	const nodesMap = useGraphStore((state) => state.graph.vertices);
-	const nodes = Array.from(nodesMap.values());
+	const nodesMap = useGraphStore((state) => state.nodes);
+	const nodes = useMemo(() => {
+		try {
+			// Safe conversion of object values to array with type checking
+			const nodeValues = Object.values(nodesMap);
+			return Array.isArray(nodeValues) ? nodeValues : [];
+		} catch (error) {
+			logger.warn("ui", "Failed to convert nodes map to array", { error });
+			return [];
+		}
+	}, [nodesMap]);
 	const themeColors = useThemeColors();
 	const colors = themeColors.colors;
 
@@ -194,7 +203,7 @@ export const RightRibbon: React.FC = () => {
 			{/* Graph statistics */}
 			<Stack gap="xs" align="center">
 				<div style={{ position: "relative" }}>
-					<Tooltip label={`Graph statistics (${String(Object.keys(nodes).length)} nodes)`} position="left" withArrow>
+					<Tooltip label={`Graph statistics (${String(nodes.length)} nodes)`} position="left" withArrow>
 						<ActionIcon
 							variant="subtle"
 							size="lg"
@@ -210,7 +219,7 @@ export const RightRibbon: React.FC = () => {
 							<IconUsers size={20} />
 						</ActionIcon>
 					</Tooltip>
-					{Object.keys(nodes).length > 0 && (
+					{nodes.length > 0 && (
 						<Badge
 							size="xs"
 							variant="filled"
@@ -227,7 +236,7 @@ export const RightRibbon: React.FC = () => {
 								justifyContent: "center",
 							}}
 						>
-							{Object.keys(nodes).length > 99 ? "99+" : Object.keys(nodes).length}
+							{nodes.length > 99 ? "99+" : nodes.length}
 						</Badge>
 					)}
 				</div>
