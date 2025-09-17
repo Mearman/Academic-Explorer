@@ -78,6 +78,16 @@ export const LeftRibbon: React.FC = () => {
 			return;
 		}
 
+		// Check if this group is already active and sidebar is open - if so, toggle sidebar
+		const isCurrentlyActive = activeGroupId === groupId;
+		const isCurrentlyOpen = layoutStore.leftSidebarOpen;
+
+		if (isCurrentlyActive && isCurrentlyOpen) {
+			logger.info("ui", `Toggling sidebar closed for active group ${groupId}`);
+			layoutStore.setLeftSidebarOpen(false);
+			return;
+		}
+
 		// Activate the group and expand sidebar
 		setActiveGroup("left", groupId);
 		layoutStore.setLeftSidebarOpen(true);
