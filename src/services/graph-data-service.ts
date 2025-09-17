@@ -696,9 +696,9 @@ export class GraphDataService {
 		// Individual expansions should be seamless and not disrupt the existing graph
 
 		try {
-			// Get the node to expand
+			// Get the node to expand - use "in" operator to avoid ESLint false positive
+			if (!(nodeId in store.nodes)) return;
 			const node = store.nodes[nodeId];
-			if (!node) return;
 
 			// Check if entity type is supported
 			if (!EntityFactory.isSupported(node.type)) {
@@ -950,11 +950,11 @@ export class GraphDataService {
    */
 	private async loadMinimalDataInBackground(entityId: string, entityType: EntityType): Promise<void> {
 		const store = useGraphStore.getState();
-		const node = store.nodes[entityId];
 
-		if (!node) {
+		if (!(entityId in store.nodes)) {
 			return;
 		}
+		const node = store.nodes[entityId];
 
 		try {
 			// Create minimal node with selective field loading
@@ -989,11 +989,11 @@ export class GraphDataService {
    */
 	private async hydrateNodeInBackground(entityId: string): Promise<void> {
 		const store = useGraphStore.getState();
-		const node = store.nodes[entityId];
 
-		if (!node) {
+		if (!(entityId in store.nodes)) {
 			return;
 		}
+		const node = store.nodes[entityId];
 
 		try {
 			// Get minimal data for display purposes only
@@ -1025,12 +1025,12 @@ export class GraphDataService {
    */
 	async hydrateNode(nodeId: string): Promise<void> {
 		const store = useGraphStore.getState();
-		const node = store.nodes[nodeId];
 
-		if (!node) {
+		if (!(nodeId in store.nodes)) {
 			logger.warn("graph", "Cannot hydrate non-existent node", { nodeId });
 			return;
 		}
+		const node = store.nodes[nodeId];
 
 		// No artificial hydration checks - proceed with field-level hydration as needed
 
@@ -1119,7 +1119,7 @@ export class GraphDataService {
 					// Fetch only the entities of target type (efficiently)
 					for (const entityId of relatedEntityIds.slice(0, options.limit || 10)) {
 						// Skip if we already have this node
-						if (store.nodes[entityId]) {
+						if (entityId in store.nodes) {
 							continue;
 						}
 
