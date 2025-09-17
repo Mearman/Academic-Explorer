@@ -72,6 +72,7 @@ interface WorkerMessage {
   error?: string;
   filename?: string;
   lineno?: number;
+  wasPaused?: boolean;
 }
 
 interface UseAnimatedForceSimulationOptions {
