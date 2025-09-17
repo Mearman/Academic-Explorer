@@ -273,7 +273,7 @@ export const LeftRibbon: React.FC = () => {
 			leftGroups: Object.keys(leftGroups),
 			rightGroups: Object.keys(rightGroups),
 			targetGroupExists: targetGroupId in leftGroups,
-			targetGroupSections: leftGroups[targetGroupId]?.sections ?? null
+			targetGroupSections: leftGroups[targetGroupId].sections
 		});
 
 		// Remove from left sidebar groups

@@ -249,7 +249,7 @@ export const useLayoutStore = create<LayoutState>()(
 						sectionId,
 						groupExists: Boolean(group),
 						existingGroupIds: Object.keys(toolGroups),
-						existingGroupSections: group ? group.sections : null
+						existingGroupSections: group.sections
 					});
 
 					// If group exists and already contains the section, do nothing
