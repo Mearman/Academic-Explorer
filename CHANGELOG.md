@@ -1,3 +1,10 @@
+# [5.3.0](https://github.com/Mearman/Academic-Explorer/compare/v5.2.0...v5.3.0) (2025-09-17)
+
+
+### Features
+
+* implement advanced type-safe field selections for topics, publishers, and funders ([8fc5dfe](https://github.com/Mearman/Academic-Explorer/commit/8fc5dfed181c233e7f475de37b89d4eb88fb594f))
+
 # [5.2.0](https://github.com/Mearman/Academic-Explorer/compare/v5.1.0...v5.2.0) (2025-09-17)
 
 
