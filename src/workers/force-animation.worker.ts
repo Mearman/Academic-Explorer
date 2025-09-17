@@ -51,7 +51,7 @@ interface AnimationConfig {
 }
 
 interface WorkerMessage {
-  type: "start" | "stop" | "pause" | "resume";
+  type: "start" | "stop" | "pause" | "resume" | "update_parameters";
   nodes?: WorkerNode[];
   links?: WorkerLink[];
   config?: AnimationConfig;
@@ -100,6 +100,9 @@ self.onmessage = function(event: MessageEvent<WorkerMessage>) {
 			break;
 		case "resume":
 			resumeSimulation();
+			break;
+		case "update_parameters":
+			updateParameters(config);
 			break;
 	}
 };
@@ -311,6 +314,68 @@ function resumeSimulation() {
 			type: "resumed",
 		});
 	}
+}
+
+function updateParameters(newConfig: AnimationConfig) {
+	if (!simulation || !isRunning) {
+		// If simulation is not running, just ignore the update
+		return;
+	}
+
+	// Update forces with new parameters
+	if (newConfig.linkDistance !== undefined || newConfig.linkStrength !== undefined) {
+		const linkForce = simulation.force("link") as any;
+		if (linkForce) {
+			if (newConfig.linkDistance !== undefined) {
+				linkForce.distance(newConfig.linkDistance);
+			}
+			if (newConfig.linkStrength !== undefined) {
+				linkForce.strength(newConfig.linkStrength);
+			}
+		}
+	}
+
+	if (newConfig.chargeStrength !== undefined) {
+		const chargeForce = simulation.force("charge") as any;
+		if (chargeForce) {
+			chargeForce.strength(newConfig.chargeStrength);
+		}
+	}
+
+	if (newConfig.centerStrength !== undefined) {
+		const centerForce = simulation.force("center") as any;
+		if (centerForce) {
+			centerForce.strength(newConfig.centerStrength);
+		}
+	}
+
+	if (newConfig.collisionRadius !== undefined || newConfig.collisionStrength !== undefined) {
+		const collisionForce = simulation.force("collision") as any;
+		if (collisionForce) {
+			if (newConfig.collisionRadius !== undefined) {
+				collisionForce.radius(newConfig.collisionRadius);
+			}
+			if (newConfig.collisionStrength !== undefined) {
+				collisionForce.strength(newConfig.collisionStrength);
+			}
+		}
+	}
+
+	if (newConfig.velocityDecay !== undefined) {
+		simulation.velocityDecay(newConfig.velocityDecay);
+	}
+
+	if (newConfig.alphaDecay !== undefined) {
+		simulation.alphaDecay(newConfig.alphaDecay);
+	}
+
+	// Restart forces by calling simulation.restart() to apply new force parameters
+	simulation.restart();
+
+	self.postMessage({
+		type: "parameters_updated",
+		config: newConfig,
+	});
 }
 
 // Handle worker errors
