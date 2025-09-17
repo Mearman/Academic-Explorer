@@ -288,7 +288,7 @@ export const GraphStatsSection: React.FC<GraphStatsSectionProps> = ({
 			</CollapsibleSection>
 
 			{/* Search Results Summary */}
-			{lastSearchStats && Object.values(lastSearchStats).some(v => (v ?? 0) > 0) && (
+			{Object.values(lastSearchStats).some(v => v > 0) && (
 				<>
 					<Divider style={{ margin: "16px 0" }} />
 					<CollapsibleSection

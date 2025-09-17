@@ -68,7 +68,7 @@ export const EntityFiltersSection: React.FC = () => {
 
 			// Count nodes by type
 			for (const node of nodes) {
-				if (node?.type && total[node.type] !== undefined) {
+				if (node && node.type in total) {
 					total[node.type]++;
 					// Note: visibility is handled at the graph level, not per-node
 					// For now, count all nodes as visible
@@ -110,7 +110,7 @@ export const EntityFiltersSection: React.FC = () => {
 	}, [nodesMap]);
 
 	const handleToggleEntityType = (entityType: EntityType) => {
-		const currentVisibility = visibleEntityTypes[entityType] ?? true;
+		const currentVisibility = visibleEntityTypes[entityType];
 		logger.info("ui", `Toggling entity type visibility`, {
 			entityType,
 			fromVisible: currentVisibility,
@@ -124,7 +124,7 @@ export const EntityFiltersSection: React.FC = () => {
 			{entityTypeOptions.map(option => {
 				const totalCount = entityStats.total[option.type] || 0;
 				const visibleCount = entityStats.visible[option.type] || 0;
-				const isVisible = visibleEntityTypes[option.type] ?? true;
+				const isVisible = visibleEntityTypes[option.type];
 				const Icon = option.icon;
 
 				return (
