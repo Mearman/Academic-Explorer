@@ -104,6 +104,7 @@ export function useAnimatedLayout(options: UseAnimatedLayoutOptions = {}) {
 		stopAnimation,
 		pauseAnimation,
 		resumeAnimation,
+		updateParameters: updateAnimationParameters,
 		animationState: hookAnimationState,
 		performanceStats,
 		getOptimalConfig,
@@ -329,6 +330,31 @@ export function useAnimatedLayout(options: UseAnimatedLayoutOptions = {}) {
 		}
 	}, [restartLayout, applyAnimatedLayout]);
 
+	// Update force parameters during animation
+	const updateParameters = useCallback((newParams: Partial<{
+		linkDistance: number;
+		linkStrength: number;
+		chargeStrength: number;
+		centerStrength: number;
+		collisionRadius: number;
+		collisionStrength: number;
+		velocityDecay: number;
+		alphaDecay: number;
+	}>) => {
+		if (isLayoutRunningRef.current && enabled && useAnimation && isWorkerReady) {
+			// Update the worker with new parameters
+			updateAnimationParameters(newParams);
+			logger.info("graph", "Updating force parameters", { newParams });
+		} else {
+			logger.debug("graph", "Cannot update parameters - animation not running", {
+				isRunning: isLayoutRunningRef.current,
+				enabled,
+				useAnimation,
+				isWorkerReady,
+			});
+		}
+	}, [enabled, useAnimation, isWorkerReady, updateAnimationParameters]);
+
 	// Cleanup on unmount
 	useEffect(() => {
 		return () => {
@@ -363,6 +389,7 @@ export function useAnimatedLayout(options: UseAnimatedLayoutOptions = {}) {
 		resumeLayout,
 		restartLayout,
 		reheatLayout,
+		updateParameters,
 
 		// Computed properties
 		canPause: isLayoutRunningRef.current && !animationState.isPaused,
