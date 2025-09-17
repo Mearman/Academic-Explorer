@@ -77,7 +77,7 @@ export const useLayoutStore = create<LayoutState>()(
 			expandedSections: {},
 			graphProvider: "xyflow",
 			previewEntityId: null,
-			autoPinOnLayoutStabilization: true,
+			autoPinOnLayoutStabilization: false,
 
 			// Actions
 			toggleLeftSidebar: () =>
