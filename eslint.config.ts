@@ -9,6 +9,7 @@ import noEmoji from './eslint-rules/no-emoji.js';
 import noZustandComputedFunctions from './eslint-rules/no-zustand-computed-functions.js';
 import noUnstableDependencies from './eslint-rules/no-unstable-dependencies.js';
 import noSelectorObjectCreation from './eslint-rules/no-selector-object-creation.js';
+import noDeprecatedComments from './eslint-rules/no-deprecated-comments.js';
 
 export default tseslint.config([
   {
@@ -31,6 +32,7 @@ export default tseslint.config([
           'no-zustand-computed-functions': noZustandComputedFunctions,
           'no-unstable-dependencies': noUnstableDependencies,
           'no-selector-object-creation': noSelectorObjectCreation,
+          'no-deprecated-comments': noDeprecatedComments,
         },
       },
     },
@@ -92,6 +94,7 @@ export default tseslint.config([
 
       // Custom rules
       'custom/no-emoji': 'error',
+      'custom/no-deprecated-comments': 'error',
 
       // React 19 + Zustand + Immer infinite loop prevention rules
       'custom/no-zustand-computed-functions': 'error',
