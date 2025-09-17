@@ -11,13 +11,9 @@ export { GraphActionsSection } from "./GraphActionsSection";
 export { SettingsSection } from "./SettingsSection";
 
 // Placeholder sections for remaining implementations
-export const CacheSettingsSection: React.FC = () => {
-	return React.createElement("div", {}, "Cache Settings Section - TODO: Implement");
-};
+export { CacheSettingsSection } from "./CacheSettingsSection";
 
-export const EdgeFiltersSection: React.FC = () => {
-	return React.createElement("div", {}, "Edge Filters Section - TODO: Implement");
-};
+export { EdgeFiltersSection } from "./EdgeFiltersSection";
 
 export { EntityInfoSection } from "./EntityInfoSection";
 
