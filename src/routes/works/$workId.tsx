@@ -34,7 +34,7 @@ function WorkRoute() {
 			}, "WorkRoute");
 
 			// Replace current URL with normalized version, preserving query params
-			navigate({
+			void navigate({
 				to: "/works/$workId",
 				params: { workId: detection.normalizedId },
 				search: (prev) => prev, // Preserve existing search params
