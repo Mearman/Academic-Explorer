@@ -22,7 +22,7 @@ const ErrorTestComponent: React.FC = () => {
 
 	const triggerAsyncError = () => {
 		// This will trigger an unhandled promise rejection
-		Promise.reject(new Error("Test async error - This should be caught by global error handling"));
+		void Promise.reject(new Error("Test async error - This should be caught by global error handling"));
 	};
 
 	const triggerJSError = () => {
