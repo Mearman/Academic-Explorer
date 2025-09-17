@@ -252,8 +252,7 @@ export class WorksApi {
 		// First get the work to access its referenced_works array
 		const work = await this.getWork(workId, { select: ["referenced_works"] });
 
-		// eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-		if (!work.referenced_works || work.referenced_works.length === 0) {
+		if (work.referenced_works.length === 0) {
 			return [];
 		}
 
@@ -299,8 +298,7 @@ export class WorksApi {
 		// First get the work to access its related_works array
 		const work = await this.getWork(workId, { select: ["related_works"] });
 
-		// eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-		if (!work.related_works || work.related_works.length === 0) {
+		if (work.related_works.length === 0) {
 			return [];
 		}
 
@@ -604,9 +602,8 @@ export class WorksApi {
  * Create a default Works API instance using the default client
  * Import this lazily to avoid circular dependencies
  */
-export function createDefaultWorksApi(): WorksApi {
+export async function createDefaultWorksApi(): Promise<WorksApi> {
 	// Using dynamic import for lazy loading and avoiding circular dependencies
-	// eslint-disable-next-line @typescript-eslint/no-require-imports
-	const { defaultClient } = require("../client") as { defaultClient: unknown };
+	const { defaultClient } = await import("../client");
 	return new WorksApi(defaultClient as never);
 }

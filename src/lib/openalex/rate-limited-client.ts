@@ -31,7 +31,7 @@ import type {
  */
 export class RateLimitedOpenAlexClient {
 	private readonly client: OpenAlexClient;
-	private readonly rateLimiter: ReturnType<typeof asyncRateLimit>;
+	private readonly rateLimiter: <T>(operation: () => Promise<T>) => Promise<T>;
 
 	constructor(options: OpenAlexClientOptions = {}) {
 		// Create underlying client with conservative settings
@@ -65,8 +65,7 @@ export class RateLimitedOpenAlexClient {
 
 		for (let attempt = 0; attempt <= maxRetries; attempt++) {
 			try {
-				// eslint-disable-next-line @typescript-eslint/no-unsafe-return
-				return await this.rateLimiter(async () => {
+				const result = await this.rateLimiter(async (): Promise<T> => {
 					try {
 						return await operation();
 					} catch (error) {
@@ -87,6 +86,7 @@ export class RateLimitedOpenAlexClient {
 						throw error;
 					}
 				});
+				return result;
 			} catch (error) {
 				lastError = error;
 
@@ -373,8 +373,7 @@ export function createRateLimitedOpenAlexClient(options?: OpenAlexClientOptions)
  * Configured with conservative rate limits for production use
  */
 export const rateLimitedOpenAlex = new RateLimitedOpenAlexClient({
-	// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-	userEmail: import.meta.env.VITE_OPENALEX_EMAIL || undefined,
+	userEmail: (import.meta.env.VITE_OPENALEX_EMAIL as string) || undefined,
 	rateLimit: {
 		requestsPerSecond: 8,  // Conservative under 10 req/sec
 		requestsPerDay: 95000, // Conservative under 100k req/day

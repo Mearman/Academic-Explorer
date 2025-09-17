@@ -11,7 +11,7 @@ interface DebouncedPromiseCache {
   [key: string]: {
     promise: Promise<unknown>;
     timestamp: number;
-  };
+  } | undefined;
 }
 
 /**
@@ -173,7 +173,6 @@ export class AutocompleteApi {
 		const now = Date.now();
 		const cached = this.debounceCache[cacheKey];
 
-		// eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
 		if (cached && (now - cached.timestamp < this.DEBOUNCE_DELAY)) {
 			// Safe cast: cache stores promises from the same generic function type
 			return cached.promise as Promise<T>;

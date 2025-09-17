@@ -1357,13 +1357,13 @@ describe("WorksApi Unit Tests", () => {
 		});
 
 		it("should handle zero results in streaming", async () => {
-			/* eslint-disable-next-line require-yield */
-			const mockEmptyGenerator = async function* (): AsyncGenerator<Work[], void, unknown> {
-				// Generator that yields nothing - this is intentional for testing empty results
-				return;
-			};
+			// Create an empty async generator that immediately completes
+			async function* createEmptyGenerator(): AsyncGenerator<Work[], void, unknown> {
+				// This generator intentionally yields nothing to simulate empty results
+				// The function ends without any yield statements, which is valid for testing
+			}
 
-			mockClient.stream.mockReturnValue(mockEmptyGenerator());
+			mockClient.stream.mockReturnValue(createEmptyGenerator());
 
 			const batches: Work[][] = [];
 			for await (const batch of worksApi.streamWorks()) {

@@ -259,8 +259,7 @@ export class QueryBuilder<T extends EntityFilters = EntityFilters> {
  * // Result: "publication_year:2023,is_oa:true,authorships.author.id:A1234|A5678"
  * ```
  */
-export function buildFilterString(filters: EntityFilters | Partial<EntityFilters>): string {
-	// eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+export function buildFilterString(filters: EntityFilters | Partial<EntityFilters> | null | undefined): string {
 	if (!filters || Object.keys(filters).length === 0) {
 		return "";
 	}
@@ -311,8 +310,7 @@ export function buildFilterString(filters: EntityFilters | Partial<EntityFilters
  * // Result: "publication_year:desc,cited_by_count:desc"
  * ```
  */
-export function buildSortString(sorts: SortOptions | SortOptions[]): string {
-	// eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+export function buildSortString(sorts: SortOptions | SortOptions[] | null | undefined): string {
 	if (!sorts) {
 		return "";
 	}
