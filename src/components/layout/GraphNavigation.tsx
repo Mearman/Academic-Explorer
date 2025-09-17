@@ -84,7 +84,8 @@ const GraphNavigationInner: React.FC<GraphNavigationProps> = ({ className, style
 
 	// XYFlow state - synced with store
 	const [nodes, setNodes, onNodesChangeOriginal] = useNodesState<XYNode>([]);
-	const [edges, setEdges, onEdgesChange] = useEdgesState([]);
+	const initialEdges: XYEdge[] = [];
+	const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
 
 	// Wrapped nodes change handler that also triggers handle recalculation
 	const onNodesChange = useCallback((changes: NodeChange<XYNode>[]) => {
