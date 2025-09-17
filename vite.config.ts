@@ -7,6 +7,7 @@ import { devtools } from '@tanstack/devtools-vite'
 import { VitePWA } from 'vite-plugin-pwa'
 import path from 'path'
 import { execSync } from 'child_process'
+import { resolveConfig } from './config/shared'
 
 // Build metadata generation
 function getBuildInfo() {
@@ -43,11 +44,7 @@ function getBuildInfo() {
 
 // https://vite.dev/config/
 export default defineConfig({
-  resolve: {
-    alias: {
-      '@': path.resolve(__dirname, './src'),
-    },
-  },
+  resolve: resolveConfig,
   plugins: [
     devtools(),
     TanStackRouterVite({
@@ -171,20 +168,4 @@ export default defineConfig({
     // Increase chunk size warning threshold since we're now splitting properly
     chunkSizeWarningLimit: 800
   },
-  test: {
-    globals: true,
-    environment: 'jsdom',
-    setupFiles: ['./src/test/setup.ts'],
-    watch: false,
-    coverage: {
-      reporter: ['text', 'json', 'html'],
-      exclude: ['node_modules/', 'src/test/', 'src/routes/', 'src/styles/', 'src/routeTree.gen.ts'],
-      thresholds: {
-        lines: 50,
-        functions: 50,
-        branches: 50,
-        statements: 50,
-      },
-    },
-  },
-} as any)
+})
