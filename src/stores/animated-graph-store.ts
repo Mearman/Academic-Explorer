@@ -33,8 +33,8 @@ interface AnimatedGraphState {
   fps: number;
 
   // Position tracking
-  animatedPositions: Record<string, NodePosition>;
-  staticPositions: Record<string, NodePosition>;
+  animatedPositions: Record<string, NodePosition | undefined>;
+  staticPositions: Record<string, NodePosition | undefined>;
 
   // Animation history and stats
   animationHistory: AnimationStats[];
