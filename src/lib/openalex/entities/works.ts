@@ -252,7 +252,7 @@ export class WorksApi {
 		// First get the work to access its referenced_works array
 		const work = await this.getWork(workId, { select: ["referenced_works"] });
 
-		if (work.referenced_works.length === 0) {
+		if (!work.referenced_works || work.referenced_works.length === 0) {
 			return [];
 		}
 
@@ -298,7 +298,7 @@ export class WorksApi {
 		// First get the work to access its related_works array
 		const work = await this.getWork(workId, { select: ["related_works"] });
 
-		if (work.related_works.length === 0) {
+		if (!work.related_works || work.related_works.length === 0) {
 			return [];
 		}
 
