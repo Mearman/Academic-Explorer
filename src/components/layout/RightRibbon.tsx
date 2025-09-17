@@ -261,8 +261,8 @@ export const RightRibbon: React.FC = () => {
 		logger.info("ui", `Current groups before removal`, {
 			leftGroups: Object.keys(leftGroups),
 			rightGroups: Object.keys(rightGroups),
-			targetGroupExists: Boolean(rightGroups[targetGroupId]),
-			targetGroupSections: rightGroups[targetGroupId]?.sections || null
+			targetGroupExists: targetGroupId in rightGroups,
+			targetGroupSections: rightGroups[targetGroupId]?.sections ?? null
 		});
 
 		// Remove from left sidebar groups

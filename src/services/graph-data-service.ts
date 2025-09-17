@@ -351,8 +351,8 @@ export class GraphDataService {
 			allEdges.forEach(edge => uniqueEdges[edge.id] = edge);
 
 			// Add to graph store
-			const finalNodes = Object.values(uniqueNodes).filter((node): node is NonNullable<typeof node> => node != null);
-			const finalEdges = Object.values(uniqueEdges).filter((edge): edge is NonNullable<typeof edge> => edge != null);
+			const finalNodes = Object.values(uniqueNodes);
+			const finalEdges = Object.values(uniqueEdges);
 
 			store.addNodes(finalNodes);
 			store.addEdges(finalEdges);

@@ -125,7 +125,7 @@ export function logVersionComparison(
 			newVersion: currentVersion,
 			reason,
 			oldCommit: storedMetadata?.commitHash?.slice(0, 7),
-			newCommit: getCurrentBuildInfo()?.commitHash?.slice(0, 7)
+			newCommit: getCurrentBuildInfo()?.commitHash.slice(0, 7)
 		});
 	} else {
 		logger.info("cache", "Version check passed - cache preserved", {
