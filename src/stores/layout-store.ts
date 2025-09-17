@@ -8,6 +8,7 @@ import { persist, createJSONStorage } from "zustand/middleware";
 import type { ProviderType } from "@/lib/graph/types";
 import { getDefaultSectionPlacements, getAllSectionIds, getSectionById } from "@/stores/section-registry";
 import { updateGroupDefinition, getGroupDefinition, registerGroupDefinition } from "@/stores/group-registry";
+import { logger } from "@/lib/logger";
 
 interface ToolGroup {
   id: string;
@@ -389,57 +390,62 @@ export const useLayoutStore = create<LayoutState>()(
 				const state = get();
 				const toolGroups = state.toolGroups[sidebar];
 
+				logger.info("ui", `Starting reorderGroups`, {
+					sidebar,
+					sourceGroupId,
+					targetGroupId,
+					insertBefore,
+					availableGroups: Object.keys(toolGroups)
+				});
+
 				// Get group definitions for both source and target
 				const sourceDefinition = getGroupDefinition(sourceGroupId);
 				const targetDefinition = getGroupDefinition(targetGroupId);
 
-				if (!sourceDefinition || !targetDefinition) return;
+				logger.info("ui", `Group definitions found`, {
+					sourceDefinition: sourceDefinition ? { id: sourceDefinition.id, order: sourceDefinition.order } : null,
+					targetDefinition: targetDefinition ? { id: targetDefinition.id, order: targetDefinition.order } : null
+				});
 
-				// Calculate new order for source group
-				const targetOrder = targetDefinition.order ?? 999;
-
-				// Get all other groups to adjust their orders
-				const allGroupIds = Object.keys(toolGroups);
-				const otherGroups = allGroupIds
-					.filter(id => id !== sourceGroupId)
-					.map(id => ({ id, definition: getGroupDefinition(id) }))
-					.filter(({ definition }) => definition !== undefined)
-					.map(({ id, definition }) => ({ id, definition: definition as NonNullable<typeof definition> })) // Type assertion after filter
-					.sort((a, b) => (a.definition.order ?? 999) - (b.definition.order ?? 999));
-
-				// Calculate new order
-				let newOrder: number;
-				if (insertBefore) {
-					newOrder = targetOrder;
-					// Shift all groups at or after target order up by 1
-					otherGroups.forEach(({ definition }) => {
-						const currentOrder = definition.order ?? 999;
-						if (currentOrder >= targetOrder) {
-							registerGroupDefinition({
-								...definition,
-								order: currentOrder + 1
-							});
-						}
+				if (!sourceDefinition || !targetDefinition) {
+					logger.warn("ui", `Missing group definitions, cannot reorder`, {
+						sourceDefinition: !!sourceDefinition,
+						targetDefinition: !!targetDefinition
 					});
-				} else {
-					newOrder = targetOrder + 1;
-					// Shift all groups after target order up by 1
-					otherGroups.forEach(({ definition }) => {
-						const currentOrder = definition.order ?? 999;
-						if (currentOrder > targetOrder) {
-							registerGroupDefinition({
-								...definition,
-								order: currentOrder + 1
-							});
-						}
-					});
+					return;
 				}
 
-				// Update source group order
-				registerGroupDefinition({
-					...sourceDefinition,
-					order: newOrder
+				// Get all groups for this sidebar and sort them by current order
+				const allGroupIds = Object.keys(toolGroups);
+				const allGroups = allGroupIds
+					.map(id => ({ id, definition: getGroupDefinition(id) }))
+					.filter(({ definition }) => definition !== undefined)
+					.map(({ id, definition }) => ({ id, definition: definition as NonNullable<typeof definition> }))
+					.sort((a, b) => (a.definition.order ?? 999) - (b.definition.order ?? 999));
+
+				// Create a new ordered list by removing source and inserting it at the target position
+				const reorderedGroups = allGroups.filter(({ id }) => id !== sourceGroupId);
+				const targetIndex = reorderedGroups.findIndex(({ id }) => id === targetGroupId);
+
+				const insertIndex = insertBefore ? targetIndex : targetIndex + 1;
+				reorderedGroups.splice(insertIndex, 0, { id: sourceGroupId, definition: sourceDefinition });
+
+				// Reassign orders starting from 1
+				reorderedGroups.forEach(({ id, definition }, index) => {
+					const newOrder = index + 1;
+					logger.info("ui", `Reassigning order for group ${id}`, {
+						groupId: id,
+						oldOrder: definition.order,
+						newOrder: newOrder
+					});
+
+					registerGroupDefinition({
+						...definition,
+						order: newOrder
+					});
 				});
+
+				logger.info("ui", `Reorder complete`);
 			},
 
 			setGraphProvider: (provider) =>
