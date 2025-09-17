@@ -16,11 +16,11 @@ export const AnimatedLayoutContext = React.createContext<{
 	iteration: number;
 	fps: number;
 	performanceStats: {
-		fps: number;
-		frameTime: number;
-		lastFrameTime: number;
-		avgFrameTime: number;
-	} | null;
+		averageFPS: number;
+		minFPS: number;
+		maxFPS: number;
+		frameCount: number;
+	};
 	useAnimation: boolean;
 
 	// Actions
