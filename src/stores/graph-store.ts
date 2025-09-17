@@ -553,7 +553,7 @@ export const useGraphStore = create<GraphState>()(
 
 			calculateNodeDepths: (originId) => {
 				set((draft) => {
-					const { nodes, edges } = draft;
+					const { edges } = draft;
 					const depths: Record<string, number> = {};
 
 					// BFS to calculate distances from origin
@@ -579,7 +579,7 @@ export const useGraphStore = create<GraphState>()(
 								neighbor = edge.source;
 							}
 
-							if (neighbor && nodes[neighbor]) {
+							if (neighbor) {
 								queue.push({ nodeId: neighbor, depth: depth + 1 });
 							}
 						});
@@ -597,7 +597,7 @@ export const useGraphStore = create<GraphState>()(
 
 				return Object.values(nodes).filter(node => {
 					const nodeDepth = nodeDepths[node.id];
-					return nodeDepth !== undefined && nodeDepth <= depth;
+					return nodeDepth <= depth;
 				});
 			},
 
