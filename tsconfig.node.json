@@ -25,6 +25,8 @@
     "vite.config.ts",
     "vite.config.old.ts",
     "vitest.workspace.ts",
-    "eslint.config.ts"
+    "eslint.config.ts",
+    "playwright.config.ts",
+    "config/**/*"
   ]
 }
