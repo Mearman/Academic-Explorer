@@ -297,7 +297,7 @@ describe("OpenAlexClient", () => {
 
 			await client.getEntity("https://openalex.org/W2741809807");
 
-			expect(mockWorksApi.getWork).toHaveBeenCalledWith("https://openalex.org/W2741809807");
+			expect(mockWorksApi.getWork).toHaveBeenCalledWith("W2741809807");
 		});
 
 		it("should throw error for unknown entity type", async () => {

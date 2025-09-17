@@ -66,7 +66,9 @@ describe("useRawEntityData", () => {
 		// Setup default entity detection
 		mockEntityDetector.detectEntityIdentifier.mockReturnValue({
 			entityType: "works",
-			cleanId: "W123456789",
+			idType: "openalex",
+			normalizedId: "W123456789",
+			originalInput: "W123456789",
 		});
 	});
 
@@ -106,7 +108,9 @@ describe("useRawEntityData", () => {
 
 			mockEntityDetector.detectEntityIdentifier.mockReturnValue({
 				entityType: "works",
-				cleanId: "W123456789",
+				idType: "openalex",
+				normalizedId: "W123456789",
+				originalInput: "W123456789",
 			});
 
 			renderHook(() =>
@@ -127,7 +131,9 @@ describe("useRawEntityData", () => {
 
 			mockEntityDetector.detectEntityIdentifier.mockReturnValue({
 				entityType: "authors",
-				cleanId: "A123456789",
+				idType: "openalex",
+				normalizedId: "A123456789",
+				originalInput: "A123456789",
 			});
 
 			renderHook(() =>
@@ -161,7 +167,9 @@ describe("useRawEntityData", () => {
 				vi.clearAllMocks();
 				mockEntityDetector.detectEntityIdentifier.mockReturnValue({
 					entityType: testCase.input as any,
-					cleanId: "TEST123",
+					idType: "openalex",
+					normalizedId: "TEST123",
+					originalInput: "TEST123",
 				});
 
 				renderHook(() =>
@@ -180,7 +188,9 @@ describe("useRawEntityData", () => {
 		it("should throw error for undetectable entity type", () => {
 			mockEntityDetector.detectEntityIdentifier.mockReturnValue({
 				entityType: null,
-				cleanId: null,
+				idType: "openalex",
+				normalizedId: "",
+				originalInput: "INVALID123",
 			});
 
 			expect(() => {
@@ -257,7 +267,9 @@ describe("useRawEntityData", () => {
 		it("should log entity detection debug info", () => {
 			mockEntityDetector.detectEntityIdentifier.mockReturnValue({
 				entityType: "works",
-				cleanId: "W123456789",
+				idType: "openalex",
+				normalizedId: "W123456789",
+				originalInput: "W123456789",
 			});
 
 			renderHook(() =>
