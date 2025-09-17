@@ -126,7 +126,7 @@ export async function performSearch(page: Page, query: string): Promise<void> {
  * Navigate to a specific entity page
  */
 export async function navigateToEntity(page: Page, entityType: string, entityId: string): Promise<void> {
-	const path = `/entity/${entityType}/${entityId}`
+	const path = `/${entityType}/${entityId}`
 	await navigateToApp(page, path)
 	await waitForOpenAlexData(page)
 }
