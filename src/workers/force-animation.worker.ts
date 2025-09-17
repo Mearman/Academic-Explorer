@@ -319,8 +319,19 @@ function resumeSimulation() {
 function updateParameters(newConfig: AnimationConfig) {
 	if (!simulation || !isRunning) {
 		// If simulation is not running, just ignore the update
+		console.log("Worker: updateParameters ignored - simulation not running", {
+			hasSimulation: !!simulation,
+			isRunning,
+			isPaused
+		});
 		return;
 	}
+
+	console.log("Worker: updateParameters called", {
+		isRunning,
+		isPaused,
+		newConfig
+	});
 
 	// Update forces with new parameters
 	if (newConfig.linkDistance !== undefined || newConfig.linkStrength !== undefined) {
@@ -369,12 +380,26 @@ function updateParameters(newConfig: AnimationConfig) {
 		simulation.alphaDecay(newConfig.alphaDecay);
 	}
 
-	// Restart forces by calling simulation.restart() to apply new force parameters
-	simulation.restart();
+	// Apply new force parameters - but respect paused state
+	// Only restart if not paused; if paused, parameters are updated but simulation stays paused
+	console.log("Worker: About to apply parameters", {
+		isPaused,
+		willRestart: !isPaused
+	});
+
+	if (!isPaused) {
+		console.log("Worker: Restarting simulation (not paused)");
+		simulation.restart();
+	} else {
+		console.log("Worker: Simulation is paused, NOT restarting");
+	}
+	// If paused, the parameters are already updated in the forces above
+	// and will take effect when the simulation is resumed
 
 	self.postMessage({
 		type: "parameters_updated",
 		config: newConfig,
+		wasPaused: isPaused,
 	});
 }
 
