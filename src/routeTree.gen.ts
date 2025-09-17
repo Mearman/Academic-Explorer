@@ -13,6 +13,7 @@ import { Route as SearchRouteImport } from './routes/search'
 import { Route as GraphRouteImport } from './routes/graph'
 import { Route as ExploreRouteImport } from './routes/explore'
 import { Route as EvaluationRouteImport } from './routes/evaluation'
+import { Route as ErrorTestRouteImport } from './routes/error-test'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as ExternalIdRouteImport } from './routes/$externalId'
 import { Route as IndexRouteImport } from './routes/index'
@@ -48,6 +49,11 @@ const ExploreRoute = ExploreRouteImport.update({
 const EvaluationRoute = EvaluationRouteImport.update({
   id: '/evaluation',
   path: '/evaluation',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ErrorTestRoute = ErrorTestRouteImport.update({
+  id: '/error-test',
+  path: '/error-test',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AboutRoute = AboutRouteImport.update({
@@ -136,6 +142,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/$externalId': typeof ExternalIdRoute
   '/about': typeof AboutRoute
+  '/error-test': typeof ErrorTestRoute
   '/evaluation': typeof EvaluationRouteWithChildren
   '/explore': typeof ExploreRouteWithChildren
   '/graph': typeof GraphRoute
@@ -158,6 +165,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/$externalId': typeof ExternalIdRoute
   '/about': typeof AboutRoute
+  '/error-test': typeof ErrorTestRoute
   '/evaluation': typeof EvaluationRouteWithChildren
   '/explore': typeof ExploreRouteWithChildren
   '/graph': typeof GraphRoute
@@ -181,6 +189,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/$externalId': typeof ExternalIdRoute
   '/about': typeof AboutRoute
+  '/error-test': typeof ErrorTestRoute
   '/evaluation': typeof EvaluationRouteWithChildren
   '/explore': typeof ExploreRouteWithChildren
   '/graph': typeof GraphRoute
@@ -205,6 +214,7 @@ export interface FileRouteTypes {
     | '/'
     | '/$externalId'
     | '/about'
+    | '/error-test'
     | '/evaluation'
     | '/explore'
     | '/graph'
@@ -227,6 +237,7 @@ export interface FileRouteTypes {
     | '/'
     | '/$externalId'
     | '/about'
+    | '/error-test'
     | '/evaluation'
     | '/explore'
     | '/graph'
@@ -249,6 +260,7 @@ export interface FileRouteTypes {
     | '/'
     | '/$externalId'
     | '/about'
+    | '/error-test'
     | '/evaluation'
     | '/explore'
     | '/graph'
@@ -272,6 +284,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   ExternalIdRoute: typeof ExternalIdRoute
   AboutRoute: typeof AboutRoute
+  ErrorTestRoute: typeof ErrorTestRoute
   EvaluationRoute: typeof EvaluationRouteWithChildren
   ExploreRoute: typeof ExploreRouteWithChildren
   GraphRoute: typeof GraphRoute
@@ -316,6 +329,13 @@ declare module '@tanstack/react-router' {
       path: '/evaluation'
       fullPath: '/evaluation'
       preLoaderRoute: typeof EvaluationRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/error-test': {
+      id: '/error-test'
+      path: '/error-test'
+      fullPath: '/error-test'
+      preLoaderRoute: typeof ErrorTestRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/about': {
@@ -462,6 +482,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   ExternalIdRoute: ExternalIdRoute,
   AboutRoute: AboutRoute,
+  ErrorTestRoute: ErrorTestRoute,
   EvaluationRoute: EvaluationRouteWithChildren,
   ExploreRoute: ExploreRouteWithChildren,
   GraphRoute: GraphRoute,
