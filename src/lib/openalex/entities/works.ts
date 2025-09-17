@@ -252,8 +252,8 @@ export class WorksApi {
 		// First get the work to access its referenced_works array
 		const work = await this.getWork(workId, { select: ["referenced_works"] });
 
-		// Check if referenced_works array exists and is empty
-		if (!work.referenced_works?.length) {
+		// Check if referenced_works array is empty
+		if (work.referenced_works.length === 0) {
 			return [];
 		}
 
@@ -299,8 +299,8 @@ export class WorksApi {
 		// First get the work to access its related_works array
 		const work = await this.getWork(workId, { select: ["related_works"] });
 
-		// Check if related_works array exists and is empty
-		if (!work.related_works?.length) {
+		// Check if related_works array is empty
+		if (work.related_works.length === 0) {
 			return [];
 		}
 

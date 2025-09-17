@@ -591,14 +591,14 @@ describe("WorksApi Unit Tests", () => {
 			expect(mockClient.getResponse).not.toHaveBeenCalled();
 		});
 
-		it("should handle undefined referenced_works", async () => {
-			const mockWorkUndefinedRefs: Work = {
+		it("should handle empty referenced_works", async () => {
+			const mockWorkEmptyRefs: Work = {
 				id: "W123",
-				display_name: "Work With Undefined References",
-				referenced_works: undefined,
+				display_name: "Work With Empty References",
+				referenced_works: [],
 			} as Work;
 
-			mockClient.getById.mockResolvedValue(mockWorkUndefinedRefs);
+			mockClient.getById.mockResolvedValue(mockWorkEmptyRefs);
 
 			const result = await worksApi.getReferencedWorks("W123");
 
@@ -710,14 +710,14 @@ describe("WorksApi Unit Tests", () => {
 			expect(mockClient.getResponse).not.toHaveBeenCalled();
 		});
 
-		it("should handle undefined related_works", async () => {
-			const mockWorkUndefinedRelated: Work = {
+		it("should handle empty related_works", async () => {
+			const mockWorkEmptyRelated: Work = {
 				id: "W123",
-				display_name: "Work With Undefined Related",
-				related_works: undefined,
+				display_name: "Work With Empty Related",
+				related_works: [],
 			} as Work;
 
-			mockClient.getById.mockResolvedValue(mockWorkUndefinedRelated);
+			mockClient.getById.mockResolvedValue(mockWorkEmptyRelated);
 
 			const result = await worksApi.getRelatedWorks("W123");
 

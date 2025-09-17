@@ -1131,16 +1131,14 @@ export class GraphDataService {
 
 								// Create edge from source node to new node
 								const relationshipType = this.determineRelationshipType(node.type, entityType);
-								if (relationshipType) {
-									const edge: GraphEdge = {
-										id: `${node.id}-${relationshipType}-${entityId}`,
-										source: node.id,
-										target: entityId,
-										type: relationshipType,
-										label: relationshipType.replace(/_/g, " ")
-									};
-									newEdges.push(edge);
-								}
+								const edge: GraphEdge = {
+									id: `${node.id}-${relationshipType}-${entityId}`,
+									source: node.id,
+									target: entityId,
+									type: relationshipType,
+									label: relationshipType.replace(/_/g, " ")
+								};
+								newEdges.push(edge);
 							}
 						} catch (error) {
 							logger.warn("graph", `Failed to fetch ${entityType} entity`, {
@@ -1218,7 +1216,7 @@ export class GraphDataService {
 			keywords: ["keywords"]
 		};
 
-		const fieldsToCheck = fieldMappings[targetType] || [];
+		const fieldsToCheck = fieldMappings[targetType];
 
 		for (const field of fieldsToCheck) {
 			const fieldValue = data[field];
@@ -1251,9 +1249,9 @@ export class GraphDataService {
 	/**
 	 * Determine the relationship type between two entity types
 	 */
-	private determineRelationshipType(sourceType: EntityType, targetType: EntityType): RelationType | null {
+	private determineRelationshipType(sourceType: EntityType, targetType: EntityType): RelationType {
 		// Map common relationships between entity types
-		const relationshipMap: Record<string, RelationType> = {
+		const relationshipMap: Partial<Record<string, RelationType>> = {
 			"works-works": RelationType.REFERENCES,
 			"works-authors": RelationType.AUTHORED,
 			"works-sources": RelationType.PUBLISHED_IN,
