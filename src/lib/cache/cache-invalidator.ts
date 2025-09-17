@@ -117,7 +117,7 @@ async function clearIndexedDBCache(): Promise<void> {
 /**
  * Clear all cache layers
  */
-async function clearAllCacheLayers(): Promise<{ clearedLayers: CacheLayer[]; errors: Array<{ layer: CacheLayer; error: string }> }> {
+export async function clearAllCacheLayers(): Promise<{ clearedLayers: CacheLayer[]; errors: Array<{ layer: CacheLayer; error: string }> }> {
 	const clearedLayers: CacheLayer[] = [];
 	const errors: Array<{ layer: CacheLayer; error: string }> = [];
 
