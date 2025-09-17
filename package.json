@@ -26,7 +26,12 @@
     "verify": "nx verify",
     "verify:full": "nx verify:full",
     "verify:parallel": "nx verify:parallel",
-    "nx": "nx"
+    "nx": "nx",
+    "prepare": "husky",
+    "lint:fix": "eslint . --fix",
+    "lint:staged": "lint-staged",
+    "hooks:install": "husky",
+    "hooks:test": "npx lint-staged --diff"
   },
   "dependencies": {
     "@mantine/core": "^8.3.1",
@@ -86,8 +91,10 @@
     "eslint-plugin-react-hooks": "^5.2.0",
     "eslint-plugin-react-refresh": "^0.4.20",
     "globals": "^16.3.0",
+    "husky": "^9.1.7",
     "jiti": "^2.5.1",
     "jsdom": "^25.0.1",
+    "lint-staged": "^16.1.6",
     "nx": "21.5.2",
     "playwright": "^1.55.0",
     "semantic-release": "^24.2.8",
