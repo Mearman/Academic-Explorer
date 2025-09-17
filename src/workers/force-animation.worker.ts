@@ -324,39 +324,39 @@ function updateParameters(newConfig: AnimationConfig) {
 
 	// Update forces with new parameters
 	if (newConfig.linkDistance !== undefined || newConfig.linkStrength !== undefined) {
-		const linkForce = simulation.force("link") as ReturnType<typeof forceLink<WorkerNode, WorkerLink>> | undefined;
+		const linkForce = simulation.force("link");
 		if (linkForce) {
 			if (newConfig.linkDistance !== undefined) {
-				linkForce.distance(newConfig.linkDistance);
+				(linkForce as ReturnType<typeof forceLink<WorkerNode, WorkerLink>>).distance(newConfig.linkDistance);
 			}
 			if (newConfig.linkStrength !== undefined) {
-				linkForce.strength(newConfig.linkStrength);
+				(linkForce as ReturnType<typeof forceLink<WorkerNode, WorkerLink>>).strength(newConfig.linkStrength);
 			}
 		}
 	}
 
 	if (newConfig.chargeStrength !== undefined) {
-		const chargeForce = simulation.force("charge") as ReturnType<typeof forceManyBody<WorkerNode>> | undefined;
+		const chargeForce = simulation.force("charge");
 		if (chargeForce) {
-			chargeForce.strength(newConfig.chargeStrength);
+			(chargeForce as ReturnType<typeof forceManyBody<WorkerNode>>).strength(newConfig.chargeStrength);
 		}
 	}
 
 	if (newConfig.centerStrength !== undefined) {
-		const centerForce = simulation.force("center") as ReturnType<typeof forceCenter<WorkerNode>> | undefined;
+		const centerForce = simulation.force("center");
 		if (centerForce) {
-			centerForce.strength(newConfig.centerStrength);
+			(centerForce as ReturnType<typeof forceCenter<WorkerNode>>).strength(newConfig.centerStrength);
 		}
 	}
 
 	if (newConfig.collisionRadius !== undefined || newConfig.collisionStrength !== undefined) {
-		const collisionForce = simulation.force("collision") as ReturnType<typeof forceCollide<WorkerNode>> | undefined;
+		const collisionForce = simulation.force("collision");
 		if (collisionForce) {
 			if (newConfig.collisionRadius !== undefined) {
-				collisionForce.radius(newConfig.collisionRadius);
+				(collisionForce as ReturnType<typeof forceCollide<WorkerNode>>).radius(newConfig.collisionRadius);
 			}
 			if (newConfig.collisionStrength !== undefined) {
-				collisionForce.strength(newConfig.collisionStrength);
+				(collisionForce as ReturnType<typeof forceCollide<WorkerNode>>).strength(newConfig.collisionStrength);
 			}
 		}
 	}

@@ -41,12 +41,14 @@ beforeEach(async () => {
 	// Set up console logging in tests
 	page.on("console", (msg) => {
 		if (msg.type() === "error") {
+			// eslint-disable-next-line no-console -- E2E error logging
 			console.error(`Browser console error: ${msg.text()}`)
 		}
 	})
 
 	// Set up error handling
 	page.on("pageerror", (error) => {
+		// eslint-disable-next-line no-console -- E2E error logging
 		console.error(`Browser page error: ${error.message}`)
 	})
 

@@ -523,7 +523,7 @@ export class GraphDataService {
 			// Collect all detected edges from successful batch operations
 			const allDetectedEdges: GraphEdge[] = [];
 			batchResults.forEach(result => {
-				if (result.status === 'fulfilled' && result.value.success && result.value.edges.length > 0) {
+				if (result.status === "fulfilled" && result.value.success && result.value.edges.length > 0) {
 					allDetectedEdges.push(...result.value.edges);
 				}
 			});

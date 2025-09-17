@@ -3,11 +3,11 @@
  * Tests routing, entity navigation, and basic user journeys
  */
 
-import { test, expect, describe } from "vitest"
+import { test, describe } from "vitest"
+import { expect } from "@playwright/test"
 import type { Page } from "@playwright/test"
 import {
 	navigateToApp,
-	waitForAppReady,
 	mockOpenAlexAPI,
 	navigateToEntity,
 	getEntityDisplay,

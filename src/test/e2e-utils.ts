@@ -3,8 +3,7 @@
  * Provides common helpers for testing OpenAlex integration and app functionality
  */
 
-import type { Page, Locator } from "@playwright/test"
-import { expect as playwrightExpect } from "@playwright/test"
+import type { Page } from "@playwright/test"
 import { expect as vitestExpect } from "vitest"
 
 /**
@@ -43,7 +42,7 @@ export async function navigateToApp(page: Page, path: string = "/"): Promise<voi
 /**
  * Mock OpenAlex API responses for testing
  */
-export async function mockOpenAlexAPI(page: Page, responses: Record<string, any> = {}): Promise<void> {
+export async function mockOpenAlexAPI(page: Page, responses: Record<string, unknown> = {}): Promise<void> {
 	await page.route("**/openalex.org/**", async (route) => {
 		const url = route.request().url()
 
@@ -77,7 +76,7 @@ export async function mockOpenAlexAPI(page: Page, responses: Record<string, any>
 /**
  * Wait for OpenAlex data to load (loading states to disappear)
  */
-export async function waitForOpenAlexData(page: Page, timeout: number = 15000): Promise<void> {
+export async function waitForOpenAlexData(page: Page): Promise<void> {
 	// Wait for loading skeletons to disappear
 	const loadingSelectors = [
 		'[data-testid="loading-skeleton"]',
