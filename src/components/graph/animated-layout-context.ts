@@ -25,6 +25,16 @@ export const AnimatedLayoutContext = React.createContext<{
 	pauseLayout: () => void;
 	resumeLayout: () => void;
 	reheatLayout: (alpha?: number) => void;
+	updateParameters: (newParams: Partial<{
+		linkDistance: number;
+		linkStrength: number;
+		chargeStrength: number;
+		centerStrength: number;
+		collisionRadius: number;
+		collisionStrength: number;
+		velocityDecay: number;
+		alphaDecay: number;
+	}>) => void;
 
 	// Computed properties
 	canPause: boolean;
