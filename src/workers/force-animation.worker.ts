@@ -324,7 +324,7 @@ function updateParameters(newConfig: AnimationConfig) {
 
 	// Update forces with new parameters
 	if (newConfig.linkDistance !== undefined || newConfig.linkStrength !== undefined) {
-		const linkForce = simulation.force("link");
+		const linkForce = simulation.force("link") as ReturnType<typeof forceLink<WorkerNode, WorkerLink>> | undefined;
 		if (linkForce) {
 			if (newConfig.linkDistance !== undefined) {
 				linkForce.distance(newConfig.linkDistance);
@@ -336,21 +336,21 @@ function updateParameters(newConfig: AnimationConfig) {
 	}
 
 	if (newConfig.chargeStrength !== undefined) {
-		const chargeForce = simulation.force("charge");
+		const chargeForce = simulation.force("charge") as ReturnType<typeof forceManyBody<WorkerNode>> | undefined;
 		if (chargeForce) {
 			chargeForce.strength(newConfig.chargeStrength);
 		}
 	}
 
 	if (newConfig.centerStrength !== undefined) {
-		const centerForce = simulation.force("center");
+		const centerForce = simulation.force("center") as ReturnType<typeof forceCenter<WorkerNode>> | undefined;
 		if (centerForce) {
 			centerForce.strength(newConfig.centerStrength);
 		}
 	}
 
 	if (newConfig.collisionRadius !== undefined || newConfig.collisionStrength !== undefined) {
-		const collisionForce = simulation.force("collision");
+		const collisionForce = simulation.force("collision") as ReturnType<typeof forceCollide<WorkerNode>> | undefined;
 		if (collisionForce) {
 			if (newConfig.collisionRadius !== undefined) {
 				collisionForce.radius(newConfig.collisionRadius);
