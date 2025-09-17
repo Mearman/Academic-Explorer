@@ -7,52 +7,52 @@
     "build": {
       "cache": true,
       "dependsOn": ["^build", "typecheck"],
-      "inputs": ["production", "^production"],
+      "inputs": ["production", "^production", "{workspaceRoot}/vite.config.ts", "{workspaceRoot}/config/**/*"],
       "outputs": ["{projectRoot}/dist"]
     },
     "test": {
       "cache": true,
-      "inputs": ["default", "^production", "{workspaceRoot}/jest.preset.js"],
+      "inputs": ["default", "^production", "{workspaceRoot}/vitest.workspace.ts", "{workspaceRoot}/config/**/*"],
       "outputs": ["{projectRoot}/coverage"]
     },
     "test:unit:run": {
       "cache": true,
-      "inputs": ["default", "^production"],
+      "inputs": ["default", "^production", "{workspaceRoot}/vitest.workspace.ts", "{workspaceRoot}/config/**/*"],
       "outputs": ["{projectRoot}/coverage"]
     },
     "test:component:run": {
       "cache": true,
-      "inputs": ["default", "^production"],
+      "inputs": ["default", "^production", "{workspaceRoot}/vitest.workspace.ts", "{workspaceRoot}/config/**/*"],
       "outputs": ["{projectRoot}/coverage"]
     },
     "test:integration:run": {
       "cache": true,
-      "inputs": ["default", "^production"],
+      "inputs": ["default", "^production", "{workspaceRoot}/vitest.workspace.ts", "{workspaceRoot}/config/**/*"],
       "outputs": ["{projectRoot}/coverage"]
     },
     "test:e2e:run": {
       "cache": true,
-      "inputs": ["default", "^production"],
+      "inputs": ["default", "^production", "{workspaceRoot}/vitest.workspace.ts", "{workspaceRoot}/config/**/*", "{workspaceRoot}/playwright.config.ts"],
       "outputs": ["{projectRoot}/coverage"]
     },
     "preview": {
       "cache": true,
-      "inputs": ["^production"],
+      "inputs": ["^production", "{workspaceRoot}/vite.config.ts", "{workspaceRoot}/config/**/*"],
       "dependsOn": ["build"]
     },
     "lint:fix": {
       "cache": true,
-      "inputs": ["default", "{workspaceRoot}/.eslintrc.json", "{workspaceRoot}/.eslintignore"],
+      "inputs": ["default", "{workspaceRoot}/eslint.config.ts"],
       "outputs": ["{projectRoot}/**/*.{js,jsx,ts,tsx}"]
     },
     "lint": {
       "cache": true,
-      "inputs": ["default", "{workspaceRoot}/.eslintrc.json", "{workspaceRoot}/.eslintignore"],
+      "inputs": ["default", "{workspaceRoot}/eslint.config.ts"],
       "outputs": ["{options.outputFile}"]
     },
     "typecheck": {
       "cache": true,
-      "inputs": ["default", "^production"]
+      "inputs": ["default", "^production", "{workspaceRoot}/tsconfig*.json", "{workspaceRoot}/config/**/*"]
     }
   },
   "namedInputs": {
