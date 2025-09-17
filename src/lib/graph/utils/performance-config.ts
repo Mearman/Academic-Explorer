@@ -4,6 +4,7 @@
  */
 
 import { logger } from "@/lib/logger";
+import { DEFAULT_FORCE_PARAMS } from "../force-params";
 
 // Extended Navigator interface for device memory API
 interface NavigatorWithDeviceMemory extends Navigator {
@@ -82,13 +83,13 @@ export const PERFORMANCE_PROFILES = {
 		sendEveryNTicks: 1,
 		alphaDecay: 0.01,
 		maxIterations: 800,
-		linkDistance: 100,
-		linkStrength: 0.01,
-		chargeStrength: -1000,
-		centerStrength: 0.01,
-		collisionRadius: 120,
-		collisionStrength: 1.0,
-		velocityDecay: 0.1,
+		linkDistance: DEFAULT_FORCE_PARAMS.linkDistance,
+		linkStrength: DEFAULT_FORCE_PARAMS.linkStrength,
+		chargeStrength: DEFAULT_FORCE_PARAMS.chargeStrength,
+		centerStrength: DEFAULT_FORCE_PARAMS.centerStrength,
+		collisionRadius: DEFAULT_FORCE_PARAMS.collisionRadius,
+		collisionStrength: DEFAULT_FORCE_PARAMS.collisionStrength,
+		velocityDecay: DEFAULT_FORCE_PARAMS.velocityDecay,
 		useWebWorker: true,
 		enableProgressUpdates: true,
 		enablePerformanceMonitoring: true,

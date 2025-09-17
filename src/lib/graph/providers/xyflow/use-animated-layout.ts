@@ -12,6 +12,7 @@ import { useLayoutStore } from "@/stores/layout-store";
 import { useAnimatedGraphStore } from "@/stores/animated-graph-store";
 import { useAnimatedForceSimulation } from "@/hooks/use-animated-force-simulation";
 import { FIT_VIEW_PRESETS } from "../../constants";
+import { DEFAULT_FORCE_PARAMS } from "../../force-params";
 
 // Import the position type
 interface NodePosition {
@@ -245,13 +246,13 @@ export function useAnimatedLayout(options: UseAnimatedLayoutOptions = {}) {
 		const layoutOptions = currentLayout.options;
 		const enhancedConfig = {
 			...config,
-			linkDistance: layoutOptions?.linkDistance || 100,
-			linkStrength: layoutOptions?.linkStrength || 0.01,
-			chargeStrength: layoutOptions?.chargeStrength || -1000,
-			centerStrength: layoutOptions?.centerStrength || 0.01,
-			collisionRadius: layoutOptions?.collisionRadius || 120,
-			collisionStrength: layoutOptions?.collisionStrength || 1.0,
-			velocityDecay: layoutOptions?.velocityDecay || 0.1,
+			linkDistance: layoutOptions?.linkDistance || DEFAULT_FORCE_PARAMS.linkDistance,
+			linkStrength: layoutOptions?.linkStrength || DEFAULT_FORCE_PARAMS.linkStrength,
+			chargeStrength: layoutOptions?.chargeStrength || DEFAULT_FORCE_PARAMS.chargeStrength,
+			centerStrength: layoutOptions?.centerStrength || DEFAULT_FORCE_PARAMS.centerStrength,
+			collisionRadius: layoutOptions?.collisionRadius || DEFAULT_FORCE_PARAMS.collisionRadius,
+			collisionStrength: layoutOptions?.collisionStrength || DEFAULT_FORCE_PARAMS.collisionStrength,
+			velocityDecay: layoutOptions?.velocityDecay || DEFAULT_FORCE_PARAMS.velocityDecay,
 			alphaDecay: layoutOptions?.alphaDecay || config.alphaDecay,
 			seed: layoutOptions?.seed || 0, // For deterministic layouts
 		};

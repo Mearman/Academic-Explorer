@@ -7,6 +7,7 @@ import { describe, it, expect, beforeEach, vi } from "vitest";
 import { useGraphStore } from "./graph-store";
 import type { GraphNode, GraphEdge, GraphProvider, GraphLayout, EntityType } from "@/lib/graph/types";
 import { RelationType } from "@/lib/graph/types";
+import { DEFAULT_FORCE_PARAMS } from "@/lib/graph/force-params";
 
 // Mock localStorage for persistence testing
 const localStorageMock = (() => {
@@ -234,7 +235,7 @@ describe("GraphStore", () => {
 				options: {
 					seed: 123,
 					iterations: 500,
-					linkDistance: 100,
+					linkDistance: DEFAULT_FORCE_PARAMS.linkDistance,
 					linkStrength: 1.0,
 					chargeStrength: -400,
 					centerStrength: 0.1,
@@ -272,7 +273,7 @@ describe("GraphStore", () => {
 				options: {
 					seed: 123,
 					iterations: 500,
-					linkDistance: 100,
+					linkDistance: DEFAULT_FORCE_PARAMS.linkDistance,
 					linkStrength: 1.0,
 					chargeStrength: -400,
 					centerStrength: 0.1,

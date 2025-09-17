@@ -67,18 +67,30 @@ let nodes: WorkerNode[] = [];
 let links: WorkerLink[] = [];
 
 // Default configuration
-const DEFAULT_CONFIG: Required<AnimationConfig> = {
-	targetFPS: 60,
-	maxIterations: 1000,
-	alphaDecay: 0.02,
-	sendEveryNTicks: 1,
-	linkDistance: 100,
-	linkStrength: 0.01,
+// Centralized force parameters from lib/graph/force-params.ts
+const DEFAULT_FORCE_PARAMS = {
+	linkDistance: 200,
+	linkStrength: 0.05,
 	chargeStrength: -1000,
 	centerStrength: 0.01,
 	collisionRadius: 120,
 	collisionStrength: 1.0,
 	velocityDecay: 0.1,
+	alphaDecay: 0.03,
+} as const;
+
+const DEFAULT_CONFIG: Required<AnimationConfig> = {
+	targetFPS: 60,
+	maxIterations: 1000,
+	alphaDecay: DEFAULT_FORCE_PARAMS.alphaDecay,
+	sendEveryNTicks: 1,
+	linkDistance: DEFAULT_FORCE_PARAMS.linkDistance,
+	linkStrength: DEFAULT_FORCE_PARAMS.linkStrength,
+	chargeStrength: DEFAULT_FORCE_PARAMS.chargeStrength,
+	centerStrength: DEFAULT_FORCE_PARAMS.centerStrength,
+	collisionRadius: DEFAULT_FORCE_PARAMS.collisionRadius,
+	collisionStrength: DEFAULT_FORCE_PARAMS.collisionStrength,
+	velocityDecay: DEFAULT_FORCE_PARAMS.velocityDecay,
 	seed: 0,
 };
 
