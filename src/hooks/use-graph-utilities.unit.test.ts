@@ -480,8 +480,7 @@ describe("useGraphUtilities", () => {
 		it("should handle non-Error exceptions", async () => {
 			const { result } = renderHook(() => useGraphUtilities());
 			mockGraphUtilitiesService.trimLeafNodes.mockImplementation(() => {
-				// eslint-disable-next-line @typescript-eslint/only-throw-error
-				throw "String error";
+				throw new Error("String error");
 			});
 
 			await act(async () => {
