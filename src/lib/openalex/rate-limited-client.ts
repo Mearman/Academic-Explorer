@@ -1,9 +1,8 @@
 /**
- * Rate-limited OpenAlex client using TanStack Pacer
+ * Rate-limited OpenAlex client using simple time-based throttling
  * Provides additional rate limiting on top of the existing OpenAlex client
  */
 
-import { asyncRateLimit } from "@tanstack/pacer";
 import { OpenAlexClient, OpenAlexClientOptions } from "./openalex-client";
 import { RATE_LIMIT_CONFIG } from "@/config/rate-limit";
 import { logger } from "@/lib/logger";
@@ -31,7 +30,8 @@ import type {
  */
 export class RateLimitedOpenAlexClient {
 	private readonly client: OpenAlexClient;
-	private readonly rateLimiter: <T>(operation: () => Promise<T>) => Promise<T>;
+	private lastRequestTime = 0;
+	private readonly minInterval: number;
 
 	constructor(options: OpenAlexClientOptions = {}) {
 		// Create underlying client with conservative settings
@@ -44,16 +44,23 @@ export class RateLimitedOpenAlexClient {
 			},
 		});
 
-		// Create TanStack Pacer rate limiter with sliding window
-		// asyncRateLimit expects a function first, then options
-		this.rateLimiter = asyncRateLimit(
-			async <T>(operation: () => Promise<T>) => operation(),
-			{
-				limit: RATE_LIMIT_CONFIG.openAlex.limit, // 8 requests
-				window: RATE_LIMIT_CONFIG.openAlex.window, // per 1000ms (1 second)
-				// Note: TanStack Pacer uses a sliding window by default
-			}
-		);
+		// Calculate minimum interval between requests (in ms)
+		this.minInterval = 1000 / RATE_LIMIT_CONFIG.openAlex.limit; // 125ms for 8 req/sec
+	}
+
+	/**
+   * Simple rate limiting using time-based throttling
+   */
+	private async applyRateLimit(): Promise<void> {
+		const now = Date.now();
+		const timeSinceLastRequest = now - this.lastRequestTime;
+
+		if (timeSinceLastRequest < this.minInterval) {
+			const delay = this.minInterval - timeSinceLastRequest;
+			await new Promise(resolve => setTimeout(resolve, delay));
+		}
+
+		this.lastRequestTime = Date.now();
 	}
 
 	/**
@@ -65,27 +72,10 @@ export class RateLimitedOpenAlexClient {
 
 		for (let attempt = 0; attempt <= maxRetries; attempt++) {
 			try {
-				const result = await this.rateLimiter(async (): Promise<T> => {
-					try {
-						return await operation();
-					} catch (error) {
-						// If this is a 429 error, we want to retry with exponential backoff
-						if (error && typeof error === "object" && "statusCode" in error && error.statusCode === 429) {
-							if (attempt < maxRetries) {
-								const backoffDelay = Math.min(1000 * Math.pow(2, attempt), 10000); // Cap at 10 seconds
-								logger.warn("api", `Rate limit hit, retrying after ${String(backoffDelay)}ms`, {
-									attempt: attempt + 1,
-									maxRetries: maxRetries + 1,
-									backoffDelay
-								}, "RateLimitedOpenAlexClient");
+				// Apply rate limiting before each attempt
+				await this.applyRateLimit();
 
-								await new Promise(resolve => setTimeout(resolve, backoffDelay));
-								throw error; // Re-throw to trigger outer retry loop
-							}
-						}
-						throw error;
-					}
-				});
+				const result = await operation();
 				return result;
 			} catch (error) {
 				lastError = error;
