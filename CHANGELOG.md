@@ -1,3 +1,45 @@
+# [5.2.0](https://github.com/Mearman/Academic-Explorer/compare/v5.1.0...v5.2.0) (2025-09-17)
+
+
+### Bug Fixes
+
+* **build:** resolve TypeScript compilation errors in layout components ([7b4b2d7](https://github.com/Mearman/Academic-Explorer/commit/7b4b2d797f1203039294253f831d2a53894a2e6a))
+* **cache:** improve timeout handling in persister ([03c0380](https://github.com/Mearman/Academic-Explorer/commit/03c0380f2c57beeedd04ea2b14361c85b4ee564d))
+* **layout:** improve group reordering algorithm and logging ([d20f2d7](https://github.com/Mearman/Academic-Explorer/commit/d20f2d759a077f242c36fdefee69086e5b1fe651))
+* **layout:** minor refinements to GroupRibbonButton ([1d6b8f0](https://github.com/Mearman/Academic-Explorer/commit/1d6b8f09ec4a4f59d51194e367e1f3cd512a66e4))
+* **sections:** correct EntityType string values in ExternalLinksSection ([1f53964](https://github.com/Mearman/Academic-Explorer/commit/1f53964d8ac74d782c1f5cb341a4e0168b4eb935))
+* **sections:** integrate existing RawApiDataSection component ([6995a9f](https://github.com/Mearman/Academic-Explorer/commit/6995a9ff3a4689de0e88e82a1811dd4934091a29))
+
+
+### Features
+
+* **cache:** export clearAllCacheLayers function ([709c029](https://github.com/Mearman/Academic-Explorer/commit/709c0296b7cd7c81e3ebdadcd8653d7072b1a229))
+* **components:** extract sidebar sections into dedicated components ([aa3f15c](https://github.com/Mearman/Academic-Explorer/commit/aa3f15c5998170718c419c869a86d26ecedd6480))
+* **eslint:** add no-deprecated-comments rule ([5a0f18e](https://github.com/Mearman/Academic-Explorer/commit/5a0f18eeb6dec1a0d75cadbc4dad8153516a99e3))
+* **layout:** add drag lifecycle callbacks to GroupRibbonButton ([35211d1](https://github.com/Mearman/Academic-Explorer/commit/35211d155d49599151be3cf8da8a502a4c32d72a))
+* **layout:** add dynamic sidebar layout components ([7b500be](https://github.com/Mearman/Academic-Explorer/commit/7b500be75b0f24260ac1ef26fe247345f2076237))
+* **layout:** add toggle behavior to LeftRibbon group buttons ([48bd362](https://github.com/Mearman/Academic-Explorer/commit/48bd362d2707505ea091438376bffaf0af7dd73d))
+* **layout:** add toggle behavior to RightRibbon group buttons ([27cf1c0](https://github.com/Mearman/Academic-Explorer/commit/27cf1c04e3f403dd886f7d7f4a0835f8d182dbb8))
+* **layout:** add visual drop zones for group reordering ([da42228](https://github.com/Mearman/Academic-Explorer/commit/da4222813a2da268f0eeec3e839d79d527dfcec5))
+* **layout:** add VSCode-style group sidebar components ([94d8f26](https://github.com/Mearman/Academic-Explorer/commit/94d8f26501e2e22f905d82d4fb6c69ef569a5e94))
+* **layout:** enhance GroupRibbonButton drag-and-drop logging ([1f2e8a1](https://github.com/Mearman/Academic-Explorer/commit/1f2e8a11379b06fa0d0f1f1e0336891ac52f37d0))
+* **layout:** enhance LeftRibbon drop zones for cross-sidebar group moves ([5a5794f](https://github.com/Mearman/Academic-Explorer/commit/5a5794f80bad8f69932c23a0b3ff81f6eb290f7e))
+* **layout:** enhance ribbon drop handling with detailed logging ([5639f7b](https://github.com/Mearman/Academic-Explorer/commit/5639f7b6844db825870871bc896f15b071f55e36))
+* **layout:** enhance RightRibbon drop zones for cross-sidebar group moves ([26b045a](https://github.com/Mearman/Academic-Explorer/commit/26b045a7f05bdd4a84eb9b50585c26f0aa034c9e))
+* **layout:** implement ribbon tab reordering with drag-and-drop ([8423e1a](https://github.com/Mearman/Academic-Explorer/commit/8423e1a116c6402099574980ebc0a773ea0bd957))
+* **layout:** improve group creation and section assignment logic ([e6c2d30](https://github.com/Mearman/Academic-Explorer/commit/e6c2d3077d641b3220981ee07ace0910d4e5a683))
+* **layout:** restrict group reordering to dedicated drop zones only ([b2c3980](https://github.com/Mearman/Academic-Explorer/commit/b2c39806ed66ecc495c6ee635acf3b519a059ac0))
+* **sections:** implement EdgeFiltersSection and CacheSettingsSection ([02042a4](https://github.com/Mearman/Academic-Explorer/commit/02042a44c0399b27a96266d5848f760fb62e3d5c))
+* **sections:** implement EntityInfoSection and GraphStatsSection ([e7525d0](https://github.com/Mearman/Academic-Explorer/commit/e7525d0d655f706994fcabd46f604f5eea0adf6d))
+* **sections:** implement ExternalLinksSection component ([6d4dbb3](https://github.com/Mearman/Academic-Explorer/commit/6d4dbb3244b3b3415035d0ae24a15ccedfece813))
+* **settings:** add Settings section with data management ([fbe10c9](https://github.com/Mearman/Academic-Explorer/commit/fbe10c94be631713b72d4816555eb45ef120ea10))
+* **store:** add group registry for tool group management ([d7fd68b](https://github.com/Mearman/Academic-Explorer/commit/d7fd68bc15a176a6fb20ad9d40c92aee2dd05c78))
+* **store:** add moveGroupToSidebar method for cross-sidebar group transfers ([910f957](https://github.com/Mearman/Academic-Explorer/commit/910f957b5045ee27caebb983782598749734c341))
+* **store:** add registry versioning for reactive updates ([203574c](https://github.com/Mearman/Academic-Explorer/commit/203574c8527ec96803c6fb00502b832caed74dd7))
+* **store:** add section placement management to layout store ([45a43b4](https://github.com/Mearman/Academic-Explorer/commit/45a43b43285f1f0ec56bbc6fc5be4993d53a8992))
+* **store:** add section registry with default placements ([caf926c](https://github.com/Mearman/Academic-Explorer/commit/caf926c13ed22e4c60a06ded7ae33b1de862ecdb))
+* **types:** add sidebar section types ([ceba52e](https://github.com/Mearman/Academic-Explorer/commit/ceba52eb1af9a88b955a09cd721c64346e93bf57))
+
 # [5.1.0](https://github.com/Mearman/Academic-Explorer/compare/v5.0.2...v5.1.0) (2025-09-17)
 
 
