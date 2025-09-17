@@ -6,6 +6,14 @@
 import { chromium, type Browser, type BrowserContext, type Page } from "@playwright/test"
 import { beforeAll, afterAll, beforeEach, afterEach } from "vitest"
 import { logger } from "@/lib/logger"
+import { useGraphStore } from "@/stores/graph-store";
+import { useGraphStore } from "@/stores/graph-store";
+import { useGraphStore } from "@/stores/graph-store";
+import { useGraphStore } from "@/stores/graph-store";
+import { useGraphStore } from "@/stores/graph-store";
+import { useGraphStore } from "@/stores/graph-store";
+import { useGraphStore } from "@/stores/graph-store";
+import { useGraphStore } from "@/stores/graph-store";
 
 let browser: Browser
 let context: BrowserContext
@@ -52,8 +60,16 @@ beforeEach(async () => {
 	})
 
 	// Make page available globally for tests
-	globalThis.e2ePage = page
+	  globalThis.e2ePage = page
 	globalThis.e2eContext = context
+	globalThis.useGraphStore = useGraphStore; // Expose useGraphStore globally
+	globalThis.useGraphStore = useGraphStore; // Expose useGraphStore globally
+	globalThis.useGraphStore = useGraphStore; // Expose useGraphStore globally
+	globalThis.useGraphStore = useGraphStore; // Expose useGraphStore globally
+	globalThis.useGraphStore = useGraphStore; // Expose useGraphStore globally
+	globalThis.useGraphStore = useGraphStore; // Expose useGraphStore globally
+	globalThis.useGraphStore = useGraphStore; // Expose useGraphStore globally
+	globalThis.useGraphStore = useGraphStore; // Expose useGraphStore globally
 })
 
 afterEach(async () => {

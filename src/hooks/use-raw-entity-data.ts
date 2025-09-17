@@ -56,7 +56,7 @@ export const useRawEntityData = (options: UseRawEntityDataOptions) => {
 		}
 
 		entityType = openAlexEntityTypeToCache(detection.entityType);
-		detectedEntityId = entityId;
+		detectedEntityId = detection.normalizedId;
 		logger.debug("cache", "Detected entity type for raw data cache", {
 			entityId,
 			detectedType: detection.entityType,

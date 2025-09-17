@@ -138,24 +138,25 @@ export class OpenAlexClient {
    */
 	public async getEntity(id: string): Promise<OpenAlexEntity> {
 		const entityType = this.detectEntityType(id);
+		const cleanId = id.replace(/^https?:\/\/openalex\.org\//, "");
 
 		switch (entityType) {
 			case "works":
-				return this.works.getWork(id);
+				return this.works.getWork(cleanId);
 			case "authors":
-				return this.authors.getAuthor(id);
+				return this.authors.getAuthor(cleanId);
 			case "sources":
-				return this.sources.getSource(id);
+				return this.sources.getSource(cleanId);
 			case "institutions":
-				return this.institutions.getInstitution(id);
+				return this.institutions.getInstitution(cleanId);
 			case "topics":
-				return this.topics.get(id);
+				return this.topics.get(cleanId);
 			case "publishers":
-				return this.publishers.get(id);
+				return this.publishers.get(cleanId);
 			case "funders":
-				return this.funders.get(id);
+				return this.funders.get(cleanId);
 			case "keywords":
-				return this.keywords.getKeyword(id);
+				return this.keywords.getKeyword(cleanId);
 			default:
 				throw new Error(`Unable to determine entity type for ID: ${id}`);
 		}

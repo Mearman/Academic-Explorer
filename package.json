@@ -35,6 +35,7 @@
     "prepare": "husky",
     "lint:fix": "eslint . --fix",
     "lint:staged": "lint-staged",
+    "clean": "rm -rf dist coverage .nx/cache .tanstack node_modules/.vite",
     "hooks:install": "husky",
     "hooks:test": "npx lint-staged --diff-filter=A"
   },

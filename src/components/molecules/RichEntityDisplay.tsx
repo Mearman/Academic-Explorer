@@ -593,7 +593,7 @@ export const RichEntityDisplay: React.FC<RichEntityDisplayProps> = ({
 							</Badge>
 						)}
 					</Group>
-					<Title order={4} size="sm" style={{ wordWrap: "break-word" }}>
+					<Title order={4} size="sm" style={{ wordWrap: "break-word" }} data-testid="rich-entity-display-title">
 						{entity.label}
 					</Title>
 					{getNodeCitationCount(entity) !== undefined && (

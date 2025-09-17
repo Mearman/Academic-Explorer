@@ -84,18 +84,24 @@ export async function navigateToApp(page: Page, path: string = "/"): Promise<voi
  * Mock OpenAlex API responses for testing
  */
 export async function mockOpenAlexAPI(page: Page, responses: Record<string, unknown> = {}): Promise<void> {
-	await page.route("**/openalex.org/**", async (route) => {
+	await page.route(/.*openalex\.org.*/, async (route) => {
 		const url = route.request().url()
 
-		// Extract the endpoint from the URL
-		const endpoint = url.split("openalex.org")[1]?.split("?")[0] || ""
+		// Extract the path from the URL (everything after openalex.org)
+		const urlParts = url.split("openalex.org")
+		const endpoint = urlParts[1]?.split("?")[0] || ""
 
-		// Use provided mock data or default responses
-		if (responses[endpoint]) {
+		// Also try matching without the leading slash
+		const endpointWithoutSlash = endpoint.startsWith("/") ? endpoint.substring(1) : endpoint
+
+		// Check both with and without leading slash
+		const mockData = responses[endpoint] || responses[`/${endpointWithoutSlash}`] || responses[endpointWithoutSlash]
+
+		if (mockData) {
 			await route.fulfill({
 				status: 200,
 				contentType: "application/json",
-				body: JSON.stringify(responses[endpoint])
+				body: JSON.stringify(mockData)
 			})
 		} else {
 			// Default mock responses for common endpoints
@@ -177,10 +183,10 @@ export async function navigateToEntity(page: Page, entityType: string, entityId:
  */
 export function getEntityDisplay(page: Page) {
 	return {
-		title: page.locator('[data-testid="entity-title"], h1, h2').first(),
-		description: page.locator('[data-testid="entity-description"]').first(),
-		metadata: page.locator('[data-testid="entity-metadata"]').first(),
-		content: page.locator('[data-testid="entity-content"]').first(),
+		title: page.locator('[data-testid="rich-entity-display-title"]').first(),
+		description: page.locator('[data-testid="entity-description"], [class*="description"], p').first(),
+		metadata: page.locator('[data-testid="entity-metadata"], [class*="metadata"], [class*="info"]').first(),
+		content: page.locator('[data-testid="entity-content"], main, article, [class*="content"]').first(),
 	}
 }
 
@@ -188,13 +194,17 @@ export function getEntityDisplay(page: Page) {
  * Check if the current page shows an error state
  */
 export async function hasErrorState(page: Page): Promise<boolean> {
+	// Only check for actual error UI components, not general text
 	const errorSelectors = [
-		'[data-testid*="error"]',
-		".error",
-		'[role="alert"]',
-		"text=/error/i",
-		"text=/not found/i",
-		"text=/failed/i"
+		'[data-testid="error-boundary"]',
+		'[data-testid="error-message"]',
+		'[data-testid*="error-display"]',
+		".error-boundary",
+		'[role="alert"][class*="error"]',
+		"text=/something went wrong/i",
+		"text=/page not found/i",
+		"text=/404/i",
+		"text=/500/i"
 	]
 
 	for (const selector of errorSelectors) {

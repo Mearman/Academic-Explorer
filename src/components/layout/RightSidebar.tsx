@@ -43,10 +43,10 @@ export const RightSidebar: React.FC = () => {
 
 	// Determine which entity to show details for - prioritize selectedNodeId for immediate display
 	const displayEntityId = selectedNodeId || hoveredNodeId || previewEntityId
-	const displayEntity = useGraphStore(React.useCallback((state) =>
-		displayEntityId ? state.nodes[displayEntityId] : null,
-	[displayEntityId]
-	))
+	const displayEntity = useGraphStore(React.useCallback((state) => {
+		const entity = displayEntityId ? state.nodes[displayEntityId] : null;
+		return entity;
+	}, [displayEntityId]))
 
 	return (
 		<div style={{
