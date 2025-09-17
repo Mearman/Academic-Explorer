@@ -5,6 +5,7 @@
 
 import React, { useState, useMemo } from "react"
 import { LayoutControls } from "@/components/molecules/LayoutControls"
+import { ForceControls } from "@/components/molecules/ForceControls"
 import { ExpansionSettingsDialog } from "@/components/molecules/ExpansionSettingsDialog"
 import { CollapsibleSection } from "@/components/molecules/CollapsibleSection"
 import { BuildInfo } from "@/components/molecules/BuildInfo"
@@ -602,6 +603,16 @@ export const LeftSidebar: React.FC = () => {
 						Clear Graph
 					</button>
 				</div>
+			</CollapsibleSection>
+
+			{/* Force Controls */}
+			<CollapsibleSection
+				title="Force Controls"
+				icon={<IconSettings size={16} />}
+				defaultExpanded={false}
+				storageKey="force-controls"
+			>
+				<ForceControls />
 			</CollapsibleSection>
 
 			{/* Cache & Traversal Settings */}
