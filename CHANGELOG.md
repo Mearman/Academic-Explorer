@@ -1,3 +1,12 @@
+## [5.0.2](https://github.com/Mearman/Academic-Explorer/compare/v5.0.1...v5.0.2) (2025-09-17)
+
+
+### Bug Fixes
+
+* **ci:** use pnpm nx commands for proper execution ([d27fd7f](https://github.com/Mearman/Academic-Explorer/commit/d27fd7f365439f7b187f34e0d53b6380645a95ca))
+* **lint:** resolve unnecessary condition warnings ([7942b27](https://github.com/Mearman/Academic-Explorer/commit/7942b279e0bc314e52587c8017c31707edbfcee3))
+* **tests:** make e2e test variables explicitly nullable ([75a478f](https://github.com/Mearman/Academic-Explorer/commit/75a478f61f8d561d254d2e0e25063367473c547a))
+
 ## [5.0.1](https://github.com/Mearman/Academic-Explorer/compare/v5.0.0...v5.0.1) (2025-09-17)
 
 
