@@ -490,9 +490,9 @@ describe("useGraphUtilities", () => {
 			expect(mockLogger.error).toHaveBeenCalledWith(
 				"graph",
 				"Trim leaf nodes failed",
-				{ error: "Unknown error" }
+				{ error: "String error" }
 			);
-			expect(mockGraphStore.setError).toHaveBeenCalledWith("Failed to trim leaf nodes: Unknown error");
+			expect(mockGraphStore.setError).toHaveBeenCalledWith("Failed to trim leaf nodes: String error");
 		});
 	});
 
