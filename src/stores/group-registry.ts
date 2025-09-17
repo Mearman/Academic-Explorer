@@ -141,14 +141,9 @@ const getNextOrderNumber = (): number => {
  * Update a group's definition based on its current sections
  * Note: This function will be called from the layout store after sections change
  */
-interface SectionData {
-	title: string;
-	icon: unknown;
-	description?: string;
-	category: string;
-}
+import type { SidebarSection } from "@/types/sidebar-sections";
 
-export const updateGroupDefinition = (groupId: string, sections: string[], getSectionById: (id: string) => SectionData | null): void => {
+export const updateGroupDefinition = (groupId: string, sections: string[], getSectionById: (id: string) => SidebarSection | undefined): void => {
 	if (sections.length === 0) {
 		// Skip empty groups - they will be filtered out when needed
 		return;
@@ -165,9 +160,9 @@ export const updateGroupDefinition = (groupId: string, sections: string[], getSe
 	const updatedDefinition: ToolGroupDefinition = {
 		id: groupId,
 		title: primarySection.title,
-		icon: primarySection.icon,
-		description: primarySection.description || `Group containing ${primarySection.title}`,
-		category: primarySection.category,
+		icon: primarySection.icon as React.ComponentType<{ size?: number; className?: string }>,
+		description: primarySection.tooltip || `Group containing ${primarySection.title}`,
+		category: primarySection.category || "General",
 		order: order,
 	};
 

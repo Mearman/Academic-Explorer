@@ -142,8 +142,6 @@ export const VerticalStackSidebar: React.FC<VerticalStackSidebarProps> = ({ side
 			style={{
 				height: "100%",
 				overflow: "auto",
-				onDrop: handleDrop,
-				onDragOver: handleDragOver,
 			}}
 			onDrop={handleDrop}
 			onDragOver={handleDragOver}
@@ -195,13 +193,14 @@ export const VerticalStackSidebar: React.FC<VerticalStackSidebarProps> = ({ side
 								/>
 
 								{/* Tool icon */}
-								<SectionIcon
-									size={16}
-									style={{
-										color: colors.text.primary,
-										marginRight: "8px"
-									}}
-								/>
+								<div style={{
+									color: colors.text.primary,
+									marginRight: "8px",
+									display: "flex",
+									alignItems: "center"
+								}}>
+									<SectionIcon size={16} />
+								</div>
 
 								{/* Tool title - clickable for collapse */}
 								<Text
