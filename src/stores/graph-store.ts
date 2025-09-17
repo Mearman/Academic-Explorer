@@ -67,8 +67,6 @@ interface GraphState {
   selectedNodes: Record<string, boolean>; // object instead of Set
   pinnedNodes: Record<string, boolean>; // object instead of Set
 
-  // Legacy support - will be deprecated
-  pinnedNodeId: string | null;
 
   // Cache visibility and traversal control
   showAllCachedNodes: boolean;
@@ -147,9 +145,6 @@ interface GraphState {
   clearAllPinnedNodes: () => void;
   isPinned: (nodeId: string) => boolean;
 
-  // Legacy single-pin API - will be deprecated
-  setPinnedNode: (nodeId: string | null) => void;
-  clearPinnedNode: () => void;
 
   // Cache visibility and traversal control
   setShowAllCachedNodes: (show: boolean) => void;
@@ -217,7 +212,6 @@ export const useGraphStore = create<GraphState>()(
 			hoveredNodeId: null,
 			selectedNodes: {},
 			pinnedNodes: {},
-			pinnedNodeId: null, // Legacy support
 			showAllCachedNodes: false,
 			traversalDepth: 1,
 			nodeDepths: {},
@@ -530,11 +524,6 @@ export const useGraphStore = create<GraphState>()(
 			pinNode: (nodeId) => {
 				set((draft) => {
 					draft.pinnedNodes[nodeId] = true;
-					// Keep legacy single pin in sync with first pinned node
-					const pinnedNodeIds = Object.keys(draft.pinnedNodes);
-					if (pinnedNodeIds.length === 1) {
-						draft.pinnedNodeId = nodeId;
-					}
 				});
 			},
 
@@ -542,18 +531,12 @@ export const useGraphStore = create<GraphState>()(
 				set((draft) => {
 					const { [nodeId]: removed, ...remaining } = draft.pinnedNodes;
 					draft.pinnedNodes = remaining;
-					// Update legacy single pin
-					if (draft.pinnedNodeId === nodeId) {
-						const remainingPinnedNodes = Object.keys(remaining);
-						draft.pinnedNodeId = remainingPinnedNodes[0] || null;
-					}
 				});
 			},
 
 			clearAllPinnedNodes: () => {
 				set((draft) => {
 					draft.pinnedNodes = {};
-					draft.pinnedNodeId = null; // Clear legacy pin too
 				});
 			},
 
@@ -562,24 +545,6 @@ export const useGraphStore = create<GraphState>()(
 				return state.pinnedNodes[nodeId] ?? false;
 			},
 
-			// Legacy single-pin API (maintained for backward compatibility)
-			setPinnedNode: (nodeId) => {
-				set((draft) => {
-					draft.pinnedNodeId = nodeId;
-					// Sync with multi-pin
-					draft.pinnedNodes = {};
-					if (nodeId) {
-						draft.pinnedNodes[nodeId] = true;
-					}
-				});
-			},
-
-			clearPinnedNode: () => {
-				set((draft) => {
-					draft.pinnedNodeId = null;
-					draft.pinnedNodes = {};
-				});
-			},
 
 			// Cache visibility and traversal control
 			setShowAllCachedNodes: (show) => {
@@ -658,7 +623,6 @@ export const useGraphStore = create<GraphState>()(
 					hoveredNodeId: null,
 					selectedNodes: {},
 					pinnedNodes: {},
-					pinnedNodeId: null,
 					nodeDepths: {},
 					// Clear cached state
 					cachedVisibleNodes: [],
@@ -693,7 +657,6 @@ export const useGraphStore = create<GraphState>()(
 					hoveredNodeId: null,
 					selectedNodes: {}, // Clear selected nodes on data change
 					pinnedNodes: {}, // Clear pinned nodes on data change
-					pinnedNodeId: null, // Clear legacy pinned node
 					nodeDepths: {}, // Clear depths, will be recalculated when needed
 					// Clear cached state as data has changed
 					cachedVisibleNodes: [],

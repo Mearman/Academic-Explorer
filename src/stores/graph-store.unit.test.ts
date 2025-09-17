@@ -81,7 +81,6 @@ describe("GraphStore", () => {
 			hoveredNodeId: null,
 			selectedNodes: {},
 			pinnedNodes: {},
-			pinnedNodeId: null,
 			showAllCachedNodes: false,
 			traversalDepth: 1,
 			nodeDepths: {},
@@ -151,7 +150,6 @@ describe("GraphStore", () => {
 			expect(state.hoveredNodeId).toBeNull();
 			expect(Object.keys(state.selectedNodes).length).toBe(0);
 			expect(Object.keys(state.pinnedNodes).length).toBe(0);
-			expect(state.pinnedNodeId).toBeNull();
 			expect(state.showAllCachedNodes).toBe(false);
 			expect(state.traversalDepth).toBe(1);
 			expect(Object.keys(state.nodeDepths).length).toBe(0);
@@ -512,7 +510,6 @@ describe("GraphStore", () => {
 			const state = useGraphStore.getState();
 			expect(state.pinnedNodes["N1"]).toBeTruthy();
 			expect(Object.keys(state.pinnedNodes).length).toBe(1);
-			expect(state.pinnedNodeId).toBe("N1"); // Legacy sync
 		});
 
 		it("should pin multiple nodes", () => {
@@ -527,7 +524,6 @@ describe("GraphStore", () => {
 			expect(state.pinnedNodes["N2"]).toBeTruthy();
 			expect(state.pinnedNodes["N3"]).toBeTruthy();
 			expect(Object.keys(state.pinnedNodes).length).toBe(3);
-			expect(state.pinnedNodeId).toBe("N1"); // Legacy sync with first pinned
 		});
 
 		it("should unpin node", () => {
@@ -553,13 +549,11 @@ describe("GraphStore", () => {
 			pinNode("N2");
 			pinNode("N3");
 
-			expect(useGraphStore.getState().pinnedNodeId).toBe("N1");
 
 			unpinNode("N1");
 
 			const state = useGraphStore.getState();
 			expect(state.pinnedNodes["N1"]).toBeFalsy();
-			expect(state.pinnedNodeId).toBe("N2"); // Should update to next pinned node
 		});
 
 		it("should clear legacy pin when unpinning last node", () => {
@@ -570,7 +564,6 @@ describe("GraphStore", () => {
 
 			const state = useGraphStore.getState();
 			expect(Object.keys(state.pinnedNodes).length).toBe(0);
-			expect(state.pinnedNodeId).toBeNull();
 		});
 
 		it("should clear all pinned nodes", () => {
@@ -584,7 +577,6 @@ describe("GraphStore", () => {
 
 			const state = useGraphStore.getState();
 			expect(Object.keys(state.pinnedNodes).length).toBe(0);
-			expect(state.pinnedNodeId).toBeNull();
 		});
 
 		it("should check if node is pinned", () => {
