@@ -49,6 +49,9 @@ interface AnimatedGraphState {
     autoStart: boolean;
   };
 
+  // Communication for restart requests from components outside AnimatedLayoutProvider
+  restartRequested: boolean;
+
   // Actions
   setAnimating: (animating: boolean) => void;
   setPaused: (paused: boolean) => void;
@@ -68,6 +71,10 @@ interface AnimatedGraphState {
   startAnimation: () => void;
   completeAnimation: (stats: AnimationStats) => void;
   resetAnimation: () => void;
+
+  // Communication for restart requests
+  requestRestart: () => void;
+  clearRestartRequest: () => void;
 
   // Configuration
   setUseAnimatedLayout: (use: boolean) => void;
@@ -95,6 +102,7 @@ export const useAnimatedGraphStore = create<AnimatedGraphState>()(
 			currentAnimationStart: 0,
 
 			useAnimatedLayout: true, // Default to using animated layout
+			restartRequested: false, // Communication flag for restart requests
 			animationConfig: {
 				targetFPS: 60,
 				alphaDecay: 0.02,
@@ -262,6 +270,20 @@ export const useAnimatedGraphStore = create<AnimatedGraphState>()(
 				});
 			},
 
+			// Communication for restart requests from components outside AnimatedLayoutProvider
+			requestRestart: () => {
+				set((state) => {
+					state.restartRequested = true;
+					logger.info("graph", "Animation restart requested from external component");
+				});
+			},
+
+			clearRestartRequest: () => {
+				set((state) => {
+					state.restartRequested = false;
+				});
+			},
+
 			// Configuration
 			setUseAnimatedLayout: (use) => {
 				set((state) => {
@@ -366,3 +388,8 @@ export const useUpdateStaticPositions = () => useAnimatedGraphStore((state) => s
 export const useClearPositions = () => useAnimatedGraphStore((state) => state.clearPositions);
 export const useApplyPositionsToGraphStore = () => useAnimatedGraphStore((state) => state.applyPositionsToGraphStore);
 export const useSyncWithGraphStore = () => useAnimatedGraphStore((state) => state.syncWithGraphStore);
+
+// Communication for restart requests from components outside AnimatedLayoutProvider
+export const useRestartRequested = () => useAnimatedGraphStore((state) => state.restartRequested);
+export const useRequestRestart = () => useAnimatedGraphStore((state) => state.requestRestart);
+export const useClearRestartRequest = () => useAnimatedGraphStore((state) => state.clearRestartRequest);
