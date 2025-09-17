@@ -14,7 +14,6 @@ import { LeftSidebar } from "./LeftSidebar";
 import { RightSidebar } from "./RightSidebar";
 import { LeftRibbon } from "./LeftRibbon";
 import { RightRibbon } from "./RightRibbon";
-import { AnimatedLayoutProvider } from "@/components/graph/AnimatedLayoutProvider";
 
 interface MainLayoutProps {
   children?: React.ReactNode;
