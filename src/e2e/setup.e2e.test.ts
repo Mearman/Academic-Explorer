@@ -11,17 +11,17 @@ import type { Page } from "@playwright/test"
 const getPage = (): Page => globalThis.e2ePage
 
 describe("E2E Setup Verification", () => {
-  test("should have browser page available", async () => {
-    const page = getPage()
-    vitestExpect(page).toBeDefined()
-    vitestExpect(typeof page.goto).toBe('function')
-  })
+	test("should have browser page available", async () => {
+		const page = getPage()
+		vitestExpect(page).toBeDefined()
+		vitestExpect(typeof page.goto).toBe("function")
+	})
 
-  test("should be able to navigate to data URL", async () => {
-    const page = getPage()
+	test("should be able to navigate to data URL", async () => {
+		const page = getPage()
 
-    // Create a simple HTML page as data URL
-    const htmlContent = `
+		// Create a simple HTML page as data URL
+		const htmlContent = `
       <!DOCTYPE html>
       <html>
         <head><title>Test Page</title></head>
@@ -31,30 +31,30 @@ describe("E2E Setup Verification", () => {
       </html>
     `
 
-    const dataUrl = `data:text/html;charset=utf-8,${encodeURIComponent(htmlContent)}`
+		const dataUrl = `data:text/html;charset=utf-8,${encodeURIComponent(htmlContent)}`
 
-    await page.goto(dataUrl)
+		await page.goto(dataUrl)
 
-    // Verify content is loaded
-    const testElement = page.locator('[data-testid="test-content"]')
-    await playwrightExpect(testElement).toBeVisible()
-    await playwrightExpect(testElement).toHaveText('Hello E2E World!')
-  })
+		// Verify content is loaded
+		const testElement = page.locator('[data-testid="test-content"]')
+		await playwrightExpect(testElement).toBeVisible()
+		await playwrightExpect(testElement).toHaveText("Hello E2E World!")
+	})
 
-  test("should be able to mock network requests", async () => {
-    const page = getPage()
+	test("should be able to mock network requests", async () => {
+		const page = getPage()
 
-    // Set up route mock for absolute URL
-    await page.route('**/test-api/**', async (route) => {
-      await route.fulfill({
-        status: 200,
-        contentType: 'application/json',
-        body: JSON.stringify({ message: 'mocked response' })
-      })
-    })
+		// Set up route mock for absolute URL
+		await page.route("**/test-api/**", async (route) => {
+			await route.fulfill({
+				status: 200,
+				contentType: "application/json",
+				body: JSON.stringify({ message: "mocked response" })
+			})
+		})
 
-    // Create page that makes a request to absolute URL
-    const htmlContent = `
+		// Create page that makes a request to absolute URL
+		const htmlContent = `
       <!DOCTYPE html>
       <html>
         <body>
@@ -73,38 +73,38 @@ describe("E2E Setup Verification", () => {
       </html>
     `
 
-    const dataUrl = `data:text/html;charset=utf-8,${encodeURIComponent(htmlContent)}`
-    await page.goto(dataUrl)
+		const dataUrl = `data:text/html;charset=utf-8,${encodeURIComponent(htmlContent)}`
+		await page.goto(dataUrl)
 
-    // Wait for the mocked response
-    await page.waitForFunction(() => {
-      const result = document.getElementById('result');
-      return result && result.textContent === 'mocked response';
-    }, { timeout: 5000 })
+		// Wait for the mocked response
+		await page.waitForFunction(() => {
+			const result = document.getElementById("result");
+			return result && result.textContent === "mocked response";
+		}, { timeout: 5000 })
 
-    const result = page.locator('#result')
-    await playwrightExpect(result).toHaveText('mocked response')
-  })
+		const result = page.locator("#result")
+		await playwrightExpect(result).toHaveText("mocked response")
+	})
 
-  test("should handle timeouts gracefully", async () => {
-    const page = getPage()
+	test("should handle timeouts gracefully", async () => {
+		const page = getPage()
 
-    // This should complete quickly and not timeout
-    const startTime = Date.now()
+		// This should complete quickly and not timeout
+		const startTime = Date.now()
 
-    const htmlContent = `
+		const htmlContent = `
       <!DOCTYPE html>
       <html>
         <body><div id="fast">Fast content</div></body>
       </html>
     `
 
-    const dataUrl = `data:text/html;charset=utf-8,${encodeURIComponent(htmlContent)}`
-    await page.goto(dataUrl)
+		const dataUrl = `data:text/html;charset=utf-8,${encodeURIComponent(htmlContent)}`
+		await page.goto(dataUrl)
 
-    await page.locator('#fast').waitFor({ timeout: 1000 })
+		await page.locator("#fast").waitFor({ timeout: 1000 })
 
-    const elapsed = Date.now() - startTime
-    vitestExpect(elapsed).toBeLessThan(2000) // Should be much faster than timeout
-  })
+		const elapsed = Date.now() - startTime
+		vitestExpect(elapsed).toBeLessThan(2000) // Should be much faster than timeout
+	})
 })
