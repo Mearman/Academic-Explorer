@@ -227,7 +227,10 @@ export function useAnimatedForceSimulation(options: UseAnimatedForceSimulationOp
 				break;
 
 			case "parameters_updated":
-				logger.info("graph", "Force parameters updated", { config });
+				logger.info("graph", "Force parameters updated", {
+					config,
+					wasPaused: event.data.wasPaused,
+				});
 				break;
 
 			case "error": {
