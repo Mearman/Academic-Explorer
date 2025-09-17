@@ -75,6 +75,7 @@ interface LayoutState {
   getActiveGroup: (sidebar: "left" | "right") => string | null;
   getToolGroupsForSidebar: (sidebar: "left" | "right") => Record<string, ToolGroup>;
   reorderGroups: (sidebar: "left" | "right", sourceGroupId: string, targetGroupId: string, insertBefore: boolean) => void;
+  moveGroupToSidebar: (sourceGroupId: string, targetSidebar: "left" | "right", targetGroupId?: string, insertBefore?: boolean) => void;
   setGraphProvider: (provider: ProviderType) => void;
   setPreviewEntity: (entityId: string | null) => void;
   setAutoPinOnLayoutStabilization: (enabled: boolean) => void;
@@ -446,6 +447,90 @@ export const useLayoutStore = create<LayoutState>()(
 				});
 
 				logger.info("ui", `Reorder complete`);
+			},
+
+			moveGroupToSidebar: (sourceGroupId, targetSidebar, targetGroupId, insertBefore = false) => {
+				const state = get();
+
+				logger.info("ui", `Starting moveGroupToSidebar`, {
+					sourceGroupId,
+					targetSidebar,
+					targetGroupId,
+					insertBefore
+				});
+
+				// Find the source group in both sidebars
+				const leftGroups = state.toolGroups.left;
+				const rightGroups = state.toolGroups.right;
+				let sourceGroup: ToolGroup | null = null;
+				let sourceSidebar: "left" | "right" | null = null;
+
+				if (leftGroups[sourceGroupId]) {
+					sourceGroup = leftGroups[sourceGroupId];
+					sourceSidebar = "left";
+				} else if (rightGroups[sourceGroupId]) {
+					sourceGroup = rightGroups[sourceGroupId];
+					sourceSidebar = "right";
+				}
+
+				if (!sourceGroup || !sourceSidebar) {
+					logger.warn("ui", `Source group ${sourceGroupId} not found in either sidebar`);
+					return;
+				}
+
+				if (sourceSidebar === targetSidebar) {
+					logger.info("ui", `Group ${sourceGroupId} is already on ${targetSidebar} sidebar, using reorderGroups instead`);
+					if (targetGroupId) {
+						get().reorderGroups(targetSidebar, sourceGroupId, targetGroupId, insertBefore);
+					}
+					return;
+				}
+
+				logger.info("ui", `Moving group ${sourceGroupId} from ${sourceSidebar} to ${targetSidebar}`, {
+					sourceGroup: { id: sourceGroup.id, sections: sourceGroup.sections }
+				});
+
+				// Remove from source sidebar
+				set(state => {
+					const newToolGroups = { ...state.toolGroups };
+
+					// Remove from source sidebar
+					if (sourceSidebar === "left") {
+						const { [sourceGroupId]: removed, ...remaining } = newToolGroups.left;
+						newToolGroups.left = remaining;
+					} else {
+						const { [sourceGroupId]: removed, ...remaining } = newToolGroups.right;
+						newToolGroups.right = remaining;
+					}
+
+					// Add to target sidebar
+					newToolGroups[targetSidebar] = {
+						...newToolGroups[targetSidebar],
+						[sourceGroupId]: sourceGroup
+					};
+
+					return { toolGroups: newToolGroups };
+				});
+
+				// If a target position is specified, reorder within the target sidebar
+				if (targetGroupId) {
+					// Give a moment for the state to update, then reorder
+					setTimeout(() => {
+						get().reorderGroups(targetSidebar, sourceGroupId, targetGroupId, insertBefore);
+					}, 0);
+				}
+
+				// Set the moved group as active on the target sidebar
+				get().setActiveGroup(targetSidebar, sourceGroupId);
+
+				// Open the target sidebar to show the moved group
+				if (targetSidebar === "left") {
+					get().setLeftSidebarOpen(true);
+				} else {
+					get().setRightSidebarOpen(true);
+				}
+
+				logger.info("ui", `Move to ${targetSidebar} sidebar complete`);
 			},
 
 			setGraphProvider: (provider) =>
