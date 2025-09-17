@@ -62,9 +62,15 @@ export default defineConfig({
   // Configure for hash-based routing deployment
   base: './',
   server: {
+    port: 5173,
+    strictPort: true, // Fail if port is already in use instead of trying another port
     hmr: {
       overlay: false
     }
+  },
+  preview: {
+    port: 4173,
+    strictPort: true, // Fail if port is already in use instead of trying another port
   },
   define: {
     __DEV__: JSON.stringify(true),
