@@ -18,6 +18,7 @@ import {
 import { randomLcg } from "d3-random";
 
 import type { GraphLayout, EntityType } from "../../types";
+import { DEFAULT_FORCE_PARAMS } from "../../force-params";
 import { logger } from "@/lib/logger";
 import { useGraphStore } from "@/stores/graph-store";
 import { useLayoutStore } from "@/stores/layout-store";
@@ -128,15 +129,15 @@ export function useLayout(
 
 		// Use layout options or fallback to default values
 		const options = layout?.options || {};
-		const linkDistance = options.linkDistance ?? 100;
-		const linkStrength = options.linkStrength ?? 0.01;
-		const chargeStrength = options.chargeStrength ?? -1_000;
-		const centerStrength = options.centerStrength ?? 0.01;
-		const collisionRadius = options.collisionRadius ?? 120;
-		const collisionStrength = options.collisionStrength ?? 1.0;
-		const velocityDecay = options.velocityDecay ?? 0.1;
+		const linkDistance = options.linkDistance ?? DEFAULT_FORCE_PARAMS.linkDistance;
+		const linkStrength = options.linkStrength ?? DEFAULT_FORCE_PARAMS.linkStrength;
+		const chargeStrength = options.chargeStrength ?? DEFAULT_FORCE_PARAMS.chargeStrength;
+		const centerStrength = options.centerStrength ?? DEFAULT_FORCE_PARAMS.centerStrength;
+		const collisionRadius = options.collisionRadius ?? DEFAULT_FORCE_PARAMS.collisionRadius;
+		const collisionStrength = options.collisionStrength ?? DEFAULT_FORCE_PARAMS.collisionStrength;
+		const velocityDecay = options.velocityDecay ?? DEFAULT_FORCE_PARAMS.velocityDecay;
 		const alpha = 1;
-		const alphaDecay = options.alphaDecay ?? 0.02;
+		const alphaDecay = options.alphaDecay ?? DEFAULT_FORCE_PARAMS.alphaDecay;
 		const minAlpha = 0.1;
 
 		logger.info(

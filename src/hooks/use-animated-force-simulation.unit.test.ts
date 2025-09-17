@@ -2,6 +2,8 @@
  * Unit tests for useAnimatedForceSimulation hook
  */
 
+import { DEFAULT_FORCE_PARAMS } from "@/lib/graph/force-params";
+
 // Mock the performance config first, before any imports
 vi.mock("@/lib/graph/utils/performance-config", () => ({
 	getConfigByGraphSize: vi.fn(() => ({
@@ -9,13 +11,13 @@ vi.mock("@/lib/graph/utils/performance-config", () => ({
 		sendEveryNTicks: 1,
 		alphaDecay: 0.02,
 		maxIterations: 1000,
-		linkDistance: 100,
-		linkStrength: 0.01,
-		chargeStrength: -1000,
-		centerStrength: 0.01,
-		collisionRadius: 120,
-		collisionStrength: 1.0,
-		velocityDecay: 0.1,
+		linkDistance: DEFAULT_FORCE_PARAMS.linkDistance,
+		linkStrength: DEFAULT_FORCE_PARAMS.linkStrength,
+		chargeStrength: DEFAULT_FORCE_PARAMS.chargeStrength,
+		centerStrength: DEFAULT_FORCE_PARAMS.centerStrength,
+		collisionRadius: DEFAULT_FORCE_PARAMS.collisionRadius,
+		collisionStrength: DEFAULT_FORCE_PARAMS.collisionStrength,
+		velocityDecay: DEFAULT_FORCE_PARAMS.velocityDecay,
 		useWebWorker: true,
 		enableProgressUpdates: true,
 		enablePerformanceMonitoring: false,
@@ -369,8 +371,8 @@ describe("useAnimatedForceSimulation", () => {
 			sendEveryNTicks: 1,
 			alphaDecay: 0.02,
 			maxIterations: 1000,
-			linkDistance: 100,
-			linkStrength: 0.01,
+			linkDistance: DEFAULT_FORCE_PARAMS.linkDistance,
+			linkStrength: DEFAULT_FORCE_PARAMS.linkStrength,
 			chargeStrength: -1000,
 			centerStrength: 0.01,
 			collisionRadius: 120,
@@ -383,8 +385,8 @@ describe("useAnimatedForceSimulation", () => {
 			sendEveryNTicks: 1,
 			alphaDecay: 0.02,
 			maxIterations: 1000,
-			linkDistance: 100,
-			linkStrength: 0.01,
+			linkDistance: DEFAULT_FORCE_PARAMS.linkDistance,
+			linkStrength: DEFAULT_FORCE_PARAMS.linkStrength,
 			chargeStrength: -1000,
 			centerStrength: 0.01,
 			collisionRadius: 120,
