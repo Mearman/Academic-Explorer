@@ -40,7 +40,6 @@ function SmartEdge({
 	sourcePosition,
 	targetPosition,
 	style = {},
-	markerEnd, // eslint-disable-line @typescript-eslint/no-unused-vars
 	data,
 }: EdgeProps) {
 	// Use bezier curves for smooth curved edges

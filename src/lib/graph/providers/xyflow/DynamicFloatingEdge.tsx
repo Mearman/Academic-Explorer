@@ -40,7 +40,6 @@ function DynamicFloatingEdge({
 	source,
 	target,
 	style = {},
-	markerEnd, // eslint-disable-line @typescript-eslint/no-unused-vars
 	data,
 }: EdgeProps) {
 	const reactFlow = useReactFlow();
