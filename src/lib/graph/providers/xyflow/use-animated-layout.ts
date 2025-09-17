@@ -139,26 +139,9 @@ export function useAnimatedLayout(options: UseAnimatedLayoutOptions = {}) {
 			// Apply positions to graph store for persistence
 			storeMethodsRef.current.applyPositionsToGraphStore();
 
-			// Auto-pin all nodes if preference is enabled
-			if (autoPinOnLayoutStabilization) {
-				const graphStore = useGraphStore.getState();
-				const currentNodes = getNodes();
-
-				logger.info("graph", "Auto-pinning all nodes after animated layout completion", {
-					nodeCount: currentNodes.length,
-					userPreference: true,
-					reason: stats.reason
-				});
-
-				currentNodes.forEach(node => {
-					graphStore.pinNode(node.id);
-				});
-
-				logger.info("graph", "All nodes auto-pinned after animated layout completion", {
-					pinnedCount: currentNodes.length,
-					totalPinnedNodes: Object.keys(graphStore.pinnedNodes).length,
-				});
-			}
+			// Auto-pin disabled to allow force parameter changes to work immediately
+			// Users can manually pin specific nodes if desired
+			logger.debug("graph", "Auto-pin disabled - nodes remain free to move on future parameter changes");
 
 			// Auto-fit view if enabled
 			if (fitViewAfterLayout) {

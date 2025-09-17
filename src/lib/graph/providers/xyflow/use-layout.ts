@@ -121,20 +121,22 @@ export function useLayout(
 
 		// Using fixed D3 force parameters
 
-		// Fixed D3 force parameters - consistent regardless of pinned nodes
+		// D3 force parameters - from layout options or defaults
 		const seed = 0;
 		const hasPinnedNodes = Object.keys(pinnedNodes).length > 0;
 		const pinnedNodeCount = Object.keys(pinnedNodes).length;
 
-		const linkDistance = 100;
-		const linkStrength = 0.01;
-		const chargeStrength = -1_000;
-		const centerStrength = 0.01;
-		const collisionRadius = 120;
-		const collisionStrength = 1.0;
-		const velocityDecay = 0.1;
+		// Use layout options or fallback to default values
+		const options = layout?.options || {};
+		const linkDistance = options.linkDistance ?? 100;
+		const linkStrength = options.linkStrength ?? 0.01;
+		const chargeStrength = options.chargeStrength ?? -1_000;
+		const centerStrength = options.centerStrength ?? 0.01;
+		const collisionRadius = options.collisionRadius ?? 120;
+		const collisionStrength = options.collisionStrength ?? 1.0;
+		const velocityDecay = options.velocityDecay ?? 0.1;
 		const alpha = 1;
-		const alphaDecay = 0.02;
+		const alphaDecay = options.alphaDecay ?? 0.02;
 		const minAlpha = 0.1;
 
 		logger.info(
@@ -301,39 +303,9 @@ export function useLayout(
 				);
 				simulationRef.current?.stop();
 
-				// Auto-pin all nodes when layout stabilizes if user preference is enabled (timeout case)
-				if (autoPinOnLayoutStabilization) {
-					const graphStore = useGraphStore.getState();
-					const currentNodes = getNodes();
-
-
-					logger.info(
-						"graph",
-						"Auto-pinning all nodes after layout timeout",
-						{
-							nodeCount: currentNodes.length,
-							nodeIds: currentNodes.map(n => n.id),
-							userPreference: true,
-							reason: "simulation timeout",
-						},
-						"useLayout",
-					);
-
-					// Pin all nodes at their current positions
-					currentNodes.forEach(node => {
-						graphStore.pinNode(node.id);
-					});
-
-					logger.info(
-						"graph",
-						"All nodes auto-pinned after layout timeout",
-						{
-							pinnedCount: currentNodes.length,
-							totalPinnedNodes: Object.keys(graphStore.pinnedNodes).length,
-						},
-						"useLayout",
-					);
-				}
+				// Auto-pin disabled to allow force parameter changes to work immediately
+				// Users can manually pin specific nodes if desired
+				logger.debug("graph", "Auto-pin disabled - nodes remain free to move on future parameter changes");
 
 				// Fit view after forced stop if enabled
 				if (fitViewAfterLayout) {
@@ -440,38 +412,9 @@ export function useLayout(
 			);
 			isRunningRef.current = false;
 
-			// Auto-pin all nodes when layout stabilizes if user preference is enabled
-			if (autoPinOnLayoutStabilization) {
-				const graphStore = useGraphStore.getState();
-				const currentNodes = getNodes();
-
-
-				logger.info(
-					"graph",
-					"Auto-pinning all nodes after layout stabilization",
-					{
-						nodeCount: currentNodes.length,
-						nodeIds: currentNodes.map(n => n.id),
-						userPreference: true,
-					},
-					"useLayout",
-				);
-
-				// Pin all nodes at their current positions
-				currentNodes.forEach(node => {
-					graphStore.pinNode(node.id);
-				});
-
-				logger.info(
-					"graph",
-					"All nodes auto-pinned after layout stabilization",
-					{
-						pinnedCount: currentNodes.length,
-						totalPinnedNodes: Object.keys(graphStore.pinnedNodes).length,
-					},
-					"useLayout",
-				);
-			}
+			// Auto-pin disabled to allow force parameter changes to work immediately
+			// Users can manually pin specific nodes if desired
+			logger.debug("graph", "Auto-pin disabled - nodes remain free to move on future parameter changes");
 
 			// Auto-fit view after layout stabilizes if enabled
 			if (fitViewAfterLayout) {
