@@ -10,6 +10,7 @@ import {
 	IconInfoCircle,
 	IconEye,
 	IconChartBar,
+	IconSettings,
 } from "@tabler/icons-react";
 
 export interface ToolGroupDefinition {
@@ -86,6 +87,14 @@ export const GROUP_DEFINITIONS: Record<string, ToolGroupDefinition> = {
 		description: "Graph analysis and statistics",
 		category: "analysis",
 		order: 7,
+	},
+	"settings": {
+		id: "settings",
+		title: "Settings",
+		icon: IconSettings,
+		description: "User preferences and data management",
+		category: "settings",
+		order: 8,
 	},
 };
 

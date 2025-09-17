@@ -8,6 +8,7 @@ import React from "react";
 export { SearchSection } from "./SearchSection";
 export { EntityFiltersSection } from "./EntityFiltersSection";
 export { GraphActionsSection } from "./GraphActionsSection";
+export { SettingsSection } from "./SettingsSection";
 
 // Placeholder sections for remaining implementations
 export const CacheSettingsSection: React.FC = () => {

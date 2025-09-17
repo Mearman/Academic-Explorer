@@ -15,6 +15,7 @@ import {
 	IconStar,
 	IconEye,
 	IconUsers,
+	IconSettings,
 } from "@tabler/icons-react";
 import type { SidebarSection } from "@/types/sidebar-sections";
 
@@ -29,6 +30,7 @@ const ExternalLinksSection = React.lazy(() => import("@/components/sections").th
 const ViewOptionsSection = React.lazy(() => import("@/components/sections").then(m => ({ default: m.ViewOptionsSection })));
 const RawApiDataSection = React.lazy(() => import("@/components/sections").then(m => ({ default: m.RawApiDataSection })));
 const GraphStatsSection = React.lazy(() => import("@/components/sections").then(m => ({ default: m.GraphStatsSection })));
+const SettingsSection = React.lazy(() => import("@/components/sections").then(m => ({ default: m.SettingsSection })));
 
 /**
  * Registry of all available sidebar sections
@@ -136,6 +138,16 @@ export const SECTION_DEFINITIONS: ReadonlyArray<SidebarSection> = [
 		category: "analysis",
 		order: 5,
 		tooltip: "Graph statistics",
+	},
+	{
+		id: "settings",
+		title: "Settings",
+		icon: IconSettings,
+		component: SettingsSection,
+		defaultSidebar: "right",
+		category: "settings",
+		order: 6,
+		tooltip: "User preferences and data management",
 	},
 ] as const;
 
