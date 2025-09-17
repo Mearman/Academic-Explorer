@@ -35,6 +35,16 @@
       "inputs": ["default", "^production"],
       "outputs": ["{projectRoot}/coverage"]
     },
+    "preview": {
+      "cache": true,
+      "inputs": ["^production"],
+      "dependsOn": ["build"]
+    },
+    "lint:fix": {
+      "cache": true,
+      "inputs": ["default", "{workspaceRoot}/.eslintrc.json", "{workspaceRoot}/.eslintignore"],
+      "outputs": ["{projectRoot}/**/*.{js,jsx,ts,tsx}"]
+    },
     "lint": {
       "cache": true,
       "inputs": ["default", "{workspaceRoot}/.eslintrc.json", "{workspaceRoot}/.eslintignore"],

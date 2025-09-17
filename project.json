@@ -45,7 +45,7 @@
     "test": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "vitest --coverage",
+        "command": "vitest run --project=unit --project=component --coverage",
         "cwd": "{projectRoot}"
       },
       "cache": true
@@ -53,7 +53,7 @@
     "test:run": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "vitest run --coverage",
+        "command": "vitest run --project=unit --project=component --coverage",
         "cwd": "{projectRoot}"
       },
       "cache": true
@@ -90,12 +90,28 @@
       },
       "cache": true
     },
+    "preview": {
+      "executor": "nx:run-commands",
+      "dependsOn": ["build"],
+      "options": {
+        "command": "vite preview",
+        "cwd": "{projectRoot}"
+      },
+      "cache": true
+    },
+    "lint:fix": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "eslint . --fix",
+        "cwd": "{projectRoot}"
+      },
+      "cache": true
+    },
     "verify": {
       "executor": "nx:run-commands",
-      "dependsOn": ["typecheck", "lint", "build"],
+      "dependsOn": ["typecheck", "lint", "test:unit:run", "build"],
       "options": {
         "commands": [
-          "vitest run --project=unit --reporter=verbose",
           "echo '✅ TypeScript checking passed'",
           "echo '✅ Linting passed'",
           "echo '✅ Unit tests passed'",
