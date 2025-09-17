@@ -31,9 +31,7 @@ export const ViewOptionsSection: React.FC = () => {
 	return React.createElement("div", {}, "View Options Section - TODO: Implement");
 };
 
-export const RawApiDataSection: React.FC = () => {
-	return React.createElement("div", {}, "Raw API Data Section - TODO: Implement");
-};
+export { RawApiDataSection } from "@/components/molecules/RawApiDataSection";
 
 export const GraphStatsSection: React.FC = () => {
 	return React.createElement("div", {}, "Graph Stats Section - TODO: Implement");
