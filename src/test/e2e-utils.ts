@@ -84,18 +84,18 @@ export async function navigateToApp(page: Page, path: string = "/"): Promise<voi
  * Mock OpenAlex API responses for testing
  */
 export async function mockOpenAlexAPI(page: Page, responses: Record<string, unknown> = {}): Promise<void> {
+	// Intercept both external OpenAlex API calls and local API proxy calls
+	// Use two separate route handlers for better matching
+
+	// Handle external OpenAlex API calls
 	await page.route(/.*openalex\.org.*/, async (route) => {
 		const url = route.request().url()
-
-		// Extract the path from the URL (everything after openalex.org)
 		const urlParts = url.split("openalex.org")
 		const endpoint = urlParts[1]?.split("?")[0] || ""
-
-		// Also try matching without the leading slash
 		const endpointWithoutSlash = endpoint.startsWith("/") ? endpoint.substring(1) : endpoint
 
-		// Check both with and without leading slash
 		const mockData = responses[endpoint] || responses[`/${endpointWithoutSlash}`] || responses[endpointWithoutSlash]
+
 
 		if (mockData) {
 			await route.fulfill({
@@ -104,13 +104,41 @@ export async function mockOpenAlexAPI(page: Page, responses: Record<string, unkn
 				body: JSON.stringify(mockData)
 			})
 		} else {
-			// Default mock responses for common endpoints
 			const defaultResponse = {
 				meta: { count: 0, db_response_time_ms: 10, page: 1, per_page: 25 },
 				results: [],
 				group_by: []
 			}
+			await route.fulfill({
+				status: 200,
+				contentType: "application/json",
+				body: JSON.stringify(defaultResponse)
+			})
+		}
+	})
 
+	// Handle local API proxy calls (e.g., /api/works/W123)
+	await page.route(/.*\/api\/.*/, async (route) => {
+		const url = route.request().url()
+		const apiMatch = url.match(/\/api\/(.+?)(?:\?|$)/)
+		const endpoint = apiMatch ? `/${apiMatch[1]}` : ""
+		const endpointWithoutSlash = endpoint.startsWith("/") ? endpoint.substring(1) : endpoint
+
+		const mockData = responses[endpoint] || responses[`/${endpointWithoutSlash}`] || responses[endpointWithoutSlash]
+
+
+		if (mockData) {
+			await route.fulfill({
+				status: 200,
+				contentType: "application/json",
+				body: JSON.stringify(mockData)
+			})
+		} else {
+			const defaultResponse = {
+				meta: { count: 0, db_response_time_ms: 10, page: 1, per_page: 25 },
+				results: [],
+				group_by: []
+			}
 			await route.fulfill({
 				status: 200,
 				contentType: "application/json",
@@ -194,17 +222,16 @@ export function getEntityDisplay(page: Page) {
  * Check if the current page shows an error state
  */
 export async function hasErrorState(page: Page): Promise<boolean> {
-	// Only check for actual error UI components, not general text
+	// Only check for actual page-level error UI components, not API error messages
 	const errorSelectors = [
 		'[data-testid="error-boundary"]',
-		'[data-testid="error-message"]',
+		'[data-testid="page-error"]',
 		'[data-testid*="error-display"]',
 		".error-boundary",
 		'[role="alert"][class*="error"]',
 		"text=/something went wrong/i",
-		"text=/page not found/i",
-		"text=/404/i",
-		"text=/500/i"
+		"text=/page not found/i"
+		// Removed generic 404/500 checks as they can match API error messages
 	]
 
 	for (const selector of errorSelectors) {
