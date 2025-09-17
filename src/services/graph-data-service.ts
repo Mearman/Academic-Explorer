@@ -139,7 +139,7 @@ export class GraphDataService {
 						currentStore.addEdges(detectedEdges);
 
 						// Update cached edges
-						const allEdges = Object.values(currentStore.edges);
+						const allEdges = Object.values(currentStore.edges).filter((edge): edge is NonNullable<typeof edge> => edge != null);
 						setCachedGraphEdges(this.queryClient, allEdges);
 					}
 				})
@@ -168,7 +168,7 @@ export class GraphDataService {
 
 		try {
 			// Check if the node already exists (regardless of hydration level)
-			const existingNode = Object.values(store.nodes).find(
+			const existingNode = Object.values(store.nodes).filter((node): node is NonNullable<typeof node> => node != null).find(
 				node => node.entityId === entityId
 			);
 
@@ -1085,7 +1085,7 @@ export class GraphDataService {
 		const store = useGraphStore.getState();
 		// Use direct selectors instead of unstable getter function to avoid infinite loops
 		const { nodes, visibleEntityTypes } = store;
-		const allVisibleNodes = Object.values(nodes).filter(node => visibleEntityTypes[node.type]);
+		const allVisibleNodes = Object.values(nodes).filter((node): node is NonNullable<typeof node> => node != null).filter(node => visibleEntityTypes[node.type]);
 
 		if (allVisibleNodes.length === 0) {
 			logger.info("graph", "No visible nodes found to expand", { entityType }, "GraphDataService");

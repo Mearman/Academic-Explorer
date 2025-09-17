@@ -43,15 +43,23 @@ export {
 // Existing cache utilities
 export { createHybridPersister, getCacheStats, clearExpiredCache } from "./persister";
 export {
-	createQueryKey,
-	createEntityQueryKey,
-	createSearchQueryKey,
-	createRelatedQueryKey,
-	createAutocompleteQueryKey,
-	parseQueryKey,
-	isValidQueryKey,
-	type QueryKeyConfig,
-	type EntityQueryKeyParams,
-	type SearchQueryKeyParams
+	queryKeys,
+	getEntityQueryKey,
+	getRelatedEntityQueryKeys,
+	type QueryKey
 } from "./query-keys";
-export { GraphCache, type GraphCacheEntry, type GraphCacheStats } from "./graph-cache";
+export {
+	graphQueryKeys,
+	getCachedOpenAlexEntities,
+	getCachedEntitiesByType,
+	setCachedGraphNodes,
+	setCachedGraphEdges,
+	getCachedGraphNodes,
+	getCachedGraphEdges,
+	setNodeExpanded,
+	isNodeExpanded,
+	clearGraphCache,
+	getGraphCacheStats,
+	useCachedEntities,
+	useGraphCache
+} from "./graph-cache";
