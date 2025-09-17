@@ -42,39 +42,65 @@ export const EntityFiltersSection: React.FC = () => {
 			const nodeValues = Object.values(nodesMap);
 			const nodes = Array.isArray(nodeValues) ? nodeValues : [];
 
-			const total = {} as Record<EntityType, number>;
-			const visible = {} as Record<EntityType, number>;
-
-			// Initialize counters
-			for (const option of entityTypeOptions) {
-				total[option.type] = 0;
-				visible[option.type] = 0;
-			}
+			// Initialize counters for all entity types
+			const total: Record<EntityType, number> = {
+				works: 0,
+				authors: 0,
+				sources: 0,
+				institutions: 0,
+				topics: 0,
+				concepts: 0,
+				publishers: 0,
+				funders: 0,
+				keywords: 0
+			};
+			const visible: Record<EntityType, number> = {
+				works: 0,
+				authors: 0,
+				sources: 0,
+				institutions: 0,
+				topics: 0,
+				concepts: 0,
+				publishers: 0,
+				funders: 0,
+				keywords: 0
+			};
 
 			// Count nodes by type
 			for (const node of nodes) {
-				if (node?.type) {
-					const entityType = node.type;
-					if (entityType && total[entityType] !== undefined) {
-						total[entityType]++;
-						// Note: visibility is handled at the graph level, not per-node
-						// For now, count all nodes as visible
-						visible[entityType]++;
-					}
+				if (node?.type && total[node.type] !== undefined) {
+					total[node.type]++;
+					// Note: visibility is handled at the graph level, not per-node
+					// For now, count all nodes as visible
+					visible[node.type]++;
 				}
 			}
 
 			return { total, visible };
 		} catch (error) {
 			logger.warn("ui", "Failed to calculate entity stats", { error });
-			const emptyTotal = {} as Record<EntityType, number>;
-			const emptyVisible = {} as Record<EntityType, number>;
-
-			// Initialize empty records for all entity types
-			for (const option of entityTypeOptions) {
-				emptyTotal[option.type] = 0;
-				emptyVisible[option.type] = 0;
-			}
+			const emptyTotal: Record<EntityType, number> = {
+				works: 0,
+				authors: 0,
+				sources: 0,
+				institutions: 0,
+				topics: 0,
+				concepts: 0,
+				publishers: 0,
+				funders: 0,
+				keywords: 0
+			};
+			const emptyVisible: Record<EntityType, number> = {
+				works: 0,
+				authors: 0,
+				sources: 0,
+				institutions: 0,
+				topics: 0,
+				concepts: 0,
+				publishers: 0,
+				funders: 0,
+				keywords: 0
+			};
 
 			return {
 				total: emptyTotal,

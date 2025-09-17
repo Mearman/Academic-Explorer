@@ -996,43 +996,6 @@ export class GraphDataService {
 		}
 	}
 
-	/**
-   * Legacy background hydration for nodes to get basic display data (non-blocking)
-   * @deprecated Use loadMinimalDataInBackground instead for better performance
-   */
-	private async hydrateNodeInBackground(entityId: string): Promise<void> {
-		const store = useGraphStore.getState();
-
-		if (!(entityId in store.nodes)) {
-			return;
-		}
-		const node = store.nodes[entityId];
-		if (!node) return;
-
-		try {
-			// Get minimal data for display purposes only
-			const minimalNode = await this.createMinimalNode(entityId, node.type);
-			if (minimalNode) {
-				// Update only the label and basic entityData, keep position
-				store.updateNode(entityId, {
-					...node,
-					label: minimalNode.label,
-					entityData: minimalNode.entityData
-				});
-
-				logger.debug("graph", "Background hydration completed", {
-					entityId,
-					newLabel: minimalNode.label
-				});
-			}
-		} catch (error) {
-			// Silent failure for background hydration - don't spam logs
-			logger.debug("graph", "Background hydration failed silently", {
-				entityId,
-				error: error instanceof Error ? error.message : "Unknown error"
-			});
-		}
-	}
 
 	/**
    * Hydrate a node with full data when needed (e.g., when user interacts with it)

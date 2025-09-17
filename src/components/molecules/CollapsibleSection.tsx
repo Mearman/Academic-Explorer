@@ -26,17 +26,17 @@ export const CollapsibleSection: React.FC<CollapsibleSectionProps> = ({
 	const themeColors = useThemeColors();
 	const colors = themeColors.colors;
 	const layoutStore = useLayoutStore();
-	const expandedSections = layoutStore.expandedSections;
-	const setSectionExpanded = layoutStore.setSectionExpanded;
+	const collapsedSections = layoutStore.collapsedSections;
+	const setSectionCollapsed = layoutStore.setSectionCollapsed;
 
-	// Get current expanded state from store or default
+	// Get current expanded state from store or default (inverted from collapsed)
 	const isExpanded = storageKey
-		? (expandedSections[storageKey] ?? defaultExpanded)
+		? !(collapsedSections[storageKey] ?? !defaultExpanded)
 		: defaultExpanded;
 
 	const toggleExpanded = () => {
 		if (storageKey) {
-			setSectionExpanded(storageKey, !isExpanded);
+			setSectionCollapsed(storageKey, isExpanded);
 		}
 	};
 
