@@ -178,6 +178,24 @@ jobs:
         if: matrix.test-type == 'e2e'
         run: pnpm exec playwright install --with-deps chromium
 
+      - name: Build application for E2E tests
+        if: matrix.test-type == 'e2e'
+        run: pnpm build
+        env:
+          NODE_OPTIONS: '--max-old-space-size=4096'
+
+      - name: Start preview server for E2E tests
+        if: matrix.test-type == 'e2e'
+        run: pnpm preview &
+        env:
+          NODE_OPTIONS: '--max-old-space-size=4096'
+
+      - name: Wait for preview server to be ready
+        if: matrix.test-type == 'e2e'
+        run: |
+          timeout 30 bash -c 'until curl -f http://localhost:4173 > /dev/null 2>&1; do sleep 1; done'
+          echo "Preview server is ready"
+
       - name: Run ${{ matrix.test-type }} tests
         run: timeout ${{ matrix.timeout }}m pnpm ${{ matrix.command }}
         env:
