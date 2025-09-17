@@ -3,7 +3,7 @@
  * Provides UI controls for adjusting D3 force simulation parameters
  */
 
-import React, { useState } from "react";
+import React, { useState, useCallback, useRef, useEffect } from "react";
 import {
 	Stack,
 	Text,
@@ -36,6 +36,42 @@ type ForceParameters = {
 	alphaDecay: number;
 };
 
+// Debounce hook for parameter changes
+const useDebouncedCallback = <T extends unknown[]>(
+	callback: (...args: T) => void,
+	delay: number
+) => {
+	const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+	const debouncedCallback = useCallback((...args: T) => {
+		if (timeoutRef.current) {
+			clearTimeout(timeoutRef.current);
+		}
+
+		timeoutRef.current = setTimeout(() => {
+			callback(...args);
+		}, delay);
+	}, [callback, delay]);
+
+	const cancelDebounce = useCallback(() => {
+		if (timeoutRef.current) {
+			clearTimeout(timeoutRef.current);
+			timeoutRef.current = null;
+		}
+	}, []);
+
+	useEffect(() => {
+		return cancelDebounce;
+	}, [cancelDebounce]);
+
+	return { debouncedCallback, cancelDebounce };
+};
+
+// Constrain value to min/max bounds
+const constrainValue = (value: number, min: number, max: number): number => {
+	return Math.max(min, Math.min(max, value));
+};
+
 export const ForceControls: React.FC = () => {
 	const currentLayout = useGraphStore((state) => state.currentLayout);
 	const setLayout = useGraphStore((state) => state.setLayout);
@@ -61,66 +97,134 @@ export const ForceControls: React.FC = () => {
 		};
 	});
 
-	const handleParameterChange = <K extends keyof ForceParameters>(
-		param: K,
-		value: ForceParameters[K],
+	// Immediate parameter change handler
+	const handleParameterChangeImmediate = useCallback((
+		param: keyof ForceParameters,
+		value: number,
 	) => {
 		logger.info("graph", `Force parameter changed: ${param}`, { param, value });
 
-		const newParams = { ...forceParams, [param]: value };
-		setForceParams(newParams);
-
 		// Update the current layout with new parameters
-		{
-			const updatedLayout = {
-				...currentLayout,
-				options: {
-					...currentLayout.options,
-					...newParams,
-				},
-			};
+		const updatedLayout = {
+			...currentLayout,
+			options: {
+				...currentLayout.options,
+				[param]: value,
+			},
+		};
 
-			setLayout(updatedLayout);
+		setLayout(updatedLayout);
 
-			// Check animation state - running vs paused vs stopped
-			const isCurrentlyAnimating = animationContext?.isAnimating ?? isAnimating;
-			const isCurrentlyPaused = animationContext?.isPaused ?? false;
-			const isRunning = animationContext?.isRunning ?? false;
+		// Check animation state - running vs paused vs stopped
+		const isCurrentlyAnimating = animationContext?.isAnimating ?? isAnimating;
+		const isCurrentlyPaused = animationContext?.isPaused ?? false;
+		const isRunning = animationContext?.isRunning ?? false;
 
-			if (isRunning && animationContext?.updateParameters) {
-				// Animation is active (running or paused) - update parameters without restart
-				logger.info("graph", "Updating force parameters during active simulation", {
-					param,
-					value,
-					isAnimating: isCurrentlyAnimating,
-					isPaused: isCurrentlyPaused,
-					isRunning,
-				});
+		if (isRunning && animationContext?.updateParameters) {
+			// Animation is active (running or paused) - update parameters without restart
+			logger.info("graph", "Updating force parameters during active simulation", {
+				param,
+				value,
+				isAnimating: isCurrentlyAnimating,
+				isPaused: isCurrentlyPaused,
+				isRunning,
+			});
 
-				animationContext.updateParameters({ [param]: value });
+			animationContext.updateParameters({ [param]: value });
+		} else {
+			// Animation not active - start/restart animation with new parameters
+			logger.info("graph", "Starting animation with updated force parameter", {
+				param,
+				value,
+				hasContext: !!animationContext,
+				isWorkerReady: animationContext?.isWorkerReady ?? "unknown",
+				isAnimating: isCurrentlyAnimating,
+				isPaused: isCurrentlyPaused,
+				isRunning,
+			});
+
+			setUseAnimatedLayout(true);
+
+			// Use context restartLayout if available, otherwise request restart via store
+			if (animationContext?.restartLayout) {
+				animationContext.restartLayout();
 			} else {
-				// Animation not active - start/restart animation with new parameters
-				logger.info("graph", "Starting animation with updated force parameter", {
-					param,
-					value,
-					hasContext: !!animationContext,
-					isWorkerReady: animationContext?.isWorkerReady ?? "unknown",
-					isAnimating: isCurrentlyAnimating,
-					isPaused: isCurrentlyPaused,
-					isRunning,
-				});
-
-				setUseAnimatedLayout(true);
-
-				// Use context restartLayout if available, otherwise request restart via store
-				if (animationContext?.restartLayout) {
-					animationContext.restartLayout();
-				} else {
-					requestRestart();
-				}
+				requestRestart();
 			}
 		}
-	};
+	}, [currentLayout, setLayout, animationContext, isAnimating, setUseAnimatedLayout, requestRestart]);
+
+	// Debounced version for text inputs (500ms delay)
+	const { debouncedCallback: debouncedParameterChange } = useDebouncedCallback(
+		handleParameterChangeImmediate,
+		500
+	);
+
+	// Immediate change handler for sliders (no debounce needed)
+	const handleSliderChange = useCallback((
+		param: keyof ForceParameters,
+		value: number,
+	) => {
+		const config = FORCE_PARAM_CONFIG[param];
+		const constrainedValue = constrainValue(value, config.min, config.max);
+
+		// Update local state immediately for responsive UI
+		setForceParams(prev => ({ ...prev, [param]: constrainedValue }));
+
+		// Apply to simulation immediately (sliders are already constrained)
+		handleParameterChangeImmediate(param, constrainedValue);
+	}, [handleParameterChangeImmediate]);
+
+	// Input change handler with validation and debouncing
+	const handleInputChange = useCallback((
+		param: keyof ForceParameters,
+		value: string | number,
+	) => {
+		const numValue = typeof value === "string" ? parseFloat(value) : value;
+
+		// Handle invalid inputs
+		if (isNaN(numValue)) {
+			logger.warn("graph", `Invalid input for param: ${String(value)}`);
+			return;
+		}
+
+		const config = FORCE_PARAM_CONFIG[param];
+		const constrainedValue = constrainValue(numValue, config.min, config.max);
+
+		// Only update if the value actually changed after constraining
+		if (constrainedValue !== numValue) {
+			logger.info("graph", `Constraining param from ${String(numValue)} to ${String(constrainedValue)}`, {
+				param,
+				originalValue: numValue,
+				constrainedValue,
+				min: config.min,
+				max: config.max
+			});
+		}
+
+		// Update local state immediately for responsive UI
+		setForceParams(prev => ({ ...prev, [param]: constrainedValue }));
+
+		// Debounced application to simulation
+		debouncedParameterChange(param, constrainedValue);
+	}, [debouncedParameterChange]);
+
+	// Input blur handler to correct displayed values that are out of bounds
+	const handleInputBlur = useCallback((
+		param: keyof ForceParameters
+	) => {
+		const currentValue = forceParams[param];
+		const config = FORCE_PARAM_CONFIG[param];
+		const constrainedValue = constrainValue(currentValue, config.min, config.max);
+
+		// If the displayed value is different from the constrained value, correct it
+		if (constrainedValue !== currentValue) {
+			logger.info("graph", `Correcting param on blur from ${String(currentValue)} to ${String(constrainedValue)}`);
+			setForceParams(prev => ({ ...prev, [param]: constrainedValue }));
+			// Also immediately apply the corrected value
+			handleParameterChangeImmediate(param, constrainedValue);
+		}
+	}, [forceParams, handleParameterChangeImmediate]);
 
 	const handleReset = () => {
 		logger.info("graph", "Resetting force parameters to defaults");
@@ -219,7 +323,7 @@ export const ForceControls: React.FC = () => {
 								max={FORCE_PARAM_CONFIG.linkDistance.max}
 								step={FORCE_PARAM_CONFIG.linkDistance.step}
 								value={forceParams.linkDistance}
-								onChange={(value) => { handleParameterChange("linkDistance", value); }}
+								onChange={(value) => { handleSliderChange("linkDistance", value); }}
 								size="sm"
 							/>
 							<NumberInput
@@ -229,7 +333,9 @@ export const ForceControls: React.FC = () => {
 								max={FORCE_PARAM_CONFIG.linkDistance.max}
 								step={FORCE_PARAM_CONFIG.linkDistance.step}
 								value={forceParams.linkDistance}
-								onChange={(value) => { handleParameterChange("linkDistance", Number(value) || 0); }}
+								onChange={(value) => { handleInputChange("linkDistance", value || 0); }}
+								onBlur={() => { handleInputBlur("linkDistance"); }}
+								clampBehavior="strict"
 							/>
 						</Group>
 					</Stack>
@@ -249,7 +355,7 @@ export const ForceControls: React.FC = () => {
 								max={FORCE_PARAM_CONFIG.linkStrength.max}
 								step={FORCE_PARAM_CONFIG.linkStrength.step}
 								value={forceParams.linkStrength}
-								onChange={(value) => { handleParameterChange("linkStrength", value); }}
+								onChange={(value) => { handleSliderChange("linkStrength", value); }}
 								size="sm"
 							/>
 							<NumberInput
@@ -259,7 +365,9 @@ export const ForceControls: React.FC = () => {
 								max={FORCE_PARAM_CONFIG.linkStrength.max}
 								step={FORCE_PARAM_CONFIG.linkStrength.step}
 								value={forceParams.linkStrength}
-								onChange={(value) => { handleParameterChange("linkStrength", Number(value) || 0); }}
+								onChange={(value) => { handleInputChange("linkStrength", value || 0); }}
+								onBlur={() => { handleInputBlur("linkStrength"); }}
+								clampBehavior="strict"
 								decimalScale={3}
 							/>
 						</Group>
@@ -287,7 +395,7 @@ export const ForceControls: React.FC = () => {
 								max={FORCE_PARAM_CONFIG.chargeStrength.max}
 								step={FORCE_PARAM_CONFIG.chargeStrength.step}
 								value={forceParams.chargeStrength}
-								onChange={(value) => { handleParameterChange("chargeStrength", value); }}
+								onChange={(value) => { handleSliderChange("chargeStrength", value); }}
 								size="sm"
 							/>
 							<NumberInput
@@ -297,7 +405,9 @@ export const ForceControls: React.FC = () => {
 								max={FORCE_PARAM_CONFIG.chargeStrength.max}
 								step={FORCE_PARAM_CONFIG.chargeStrength.step}
 								value={forceParams.chargeStrength}
-								onChange={(value) => { handleParameterChange("chargeStrength", Number(value) || 0); }}
+								onChange={(value) => { handleInputChange("chargeStrength", value || 0); }}
+								onBlur={() => { handleInputBlur("chargeStrength"); }}
+								clampBehavior="strict"
 							/>
 						</Group>
 					</Stack>
@@ -317,7 +427,7 @@ export const ForceControls: React.FC = () => {
 								max={FORCE_PARAM_CONFIG.centerStrength.max}
 								step={FORCE_PARAM_CONFIG.centerStrength.step}
 								value={forceParams.centerStrength}
-								onChange={(value) => { handleParameterChange("centerStrength", value); }}
+								onChange={(value) => { handleSliderChange("centerStrength", value); }}
 								size="sm"
 							/>
 							<NumberInput
@@ -327,7 +437,9 @@ export const ForceControls: React.FC = () => {
 								max={FORCE_PARAM_CONFIG.centerStrength.max}
 								step={FORCE_PARAM_CONFIG.centerStrength.step}
 								value={forceParams.centerStrength}
-								onChange={(value) => { handleParameterChange("centerStrength", Number(value) || 0); }}
+								onChange={(value) => { handleInputChange("centerStrength", value || 0); }}
+								onBlur={() => { handleInputBlur("centerStrength"); }}
+								clampBehavior="strict"
 								decimalScale={3}
 							/>
 						</Group>
@@ -355,7 +467,7 @@ export const ForceControls: React.FC = () => {
 								max={FORCE_PARAM_CONFIG.collisionRadius.max}
 								step={FORCE_PARAM_CONFIG.collisionRadius.step}
 								value={forceParams.collisionRadius}
-								onChange={(value) => { handleParameterChange("collisionRadius", value); }}
+								onChange={(value) => { handleSliderChange("collisionRadius", value); }}
 								size="sm"
 							/>
 							<NumberInput
@@ -365,7 +477,9 @@ export const ForceControls: React.FC = () => {
 								max={FORCE_PARAM_CONFIG.collisionRadius.max}
 								step={FORCE_PARAM_CONFIG.collisionRadius.step}
 								value={forceParams.collisionRadius}
-								onChange={(value) => { handleParameterChange("collisionRadius", Number(value) || 0); }}
+								onChange={(value) => { handleInputChange("collisionRadius", value || 0); }}
+								onBlur={() => { handleInputBlur("collisionRadius"); }}
+								clampBehavior="strict"
 							/>
 						</Group>
 					</Stack>
@@ -385,7 +499,7 @@ export const ForceControls: React.FC = () => {
 								max={FORCE_PARAM_CONFIG.collisionStrength.max}
 								step={FORCE_PARAM_CONFIG.collisionStrength.step}
 								value={forceParams.collisionStrength}
-								onChange={(value) => { handleParameterChange("collisionStrength", value); }}
+								onChange={(value) => { handleSliderChange("collisionStrength", value); }}
 								size="sm"
 							/>
 							<NumberInput
@@ -395,7 +509,9 @@ export const ForceControls: React.FC = () => {
 								max={FORCE_PARAM_CONFIG.collisionStrength.max}
 								step={FORCE_PARAM_CONFIG.collisionStrength.step}
 								value={forceParams.collisionStrength}
-								onChange={(value) => { handleParameterChange("collisionStrength", Number(value) || 0); }}
+								onChange={(value) => { handleInputChange("collisionStrength", value || 0); }}
+								onBlur={() => { handleInputBlur("collisionStrength"); }}
+								clampBehavior="strict"
 								decimalScale={1}
 							/>
 						</Group>
@@ -423,7 +539,7 @@ export const ForceControls: React.FC = () => {
 								max={FORCE_PARAM_CONFIG.velocityDecay.max}
 								step={FORCE_PARAM_CONFIG.velocityDecay.step}
 								value={forceParams.velocityDecay}
-								onChange={(value) => { handleParameterChange("velocityDecay", value); }}
+								onChange={(value) => { handleSliderChange("velocityDecay", value); }}
 								size="sm"
 							/>
 							<NumberInput
@@ -433,7 +549,9 @@ export const ForceControls: React.FC = () => {
 								max={FORCE_PARAM_CONFIG.velocityDecay.max}
 								step={FORCE_PARAM_CONFIG.velocityDecay.step}
 								value={forceParams.velocityDecay}
-								onChange={(value) => { handleParameterChange("velocityDecay", Number(value) || 0); }}
+								onChange={(value) => { handleInputChange("velocityDecay", value || 0); }}
+								onBlur={() => { handleInputBlur("velocityDecay"); }}
+								clampBehavior="strict"
 								decimalScale={2}
 							/>
 						</Group>
@@ -454,7 +572,7 @@ export const ForceControls: React.FC = () => {
 								max={FORCE_PARAM_CONFIG.alphaDecay.max}
 								step={FORCE_PARAM_CONFIG.alphaDecay.step}
 								value={forceParams.alphaDecay}
-								onChange={(value) => { handleParameterChange("alphaDecay", value); }}
+								onChange={(value) => { handleSliderChange("alphaDecay", value); }}
 								size="sm"
 							/>
 							<NumberInput
@@ -464,7 +582,9 @@ export const ForceControls: React.FC = () => {
 								max={FORCE_PARAM_CONFIG.alphaDecay.max}
 								step={FORCE_PARAM_CONFIG.alphaDecay.step}
 								value={forceParams.alphaDecay}
-								onChange={(value) => { handleParameterChange("alphaDecay", Number(value) || 0); }}
+								onChange={(value) => { handleInputChange("alphaDecay", value || 0); }}
+								onBlur={() => { handleInputBlur("alphaDecay"); }}
+								clampBehavior="strict"
 								decimalScale={3}
 							/>
 						</Group>
