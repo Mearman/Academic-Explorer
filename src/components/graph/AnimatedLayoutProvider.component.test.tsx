@@ -14,6 +14,8 @@ vi.mock("@/stores/animated-graph-store", () => ({
 	useAnimatedGraphStore: vi.fn(() => ({
 		useAnimatedLayout: true,
 	})),
+	useRestartRequested: vi.fn(() => false),
+	useClearRestartRequest: vi.fn(() => vi.fn()),
 }));
 
 // Mock the logger
