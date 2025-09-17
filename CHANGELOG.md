@@ -1,3 +1,34 @@
+# [5.1.0](https://github.com/Mearman/Academic-Explorer/compare/v5.0.2...v5.1.0) (2025-09-17)
+
+
+### Bug Fixes
+
+* **force-params:** unify hardcoded defaults throughout codebase ([e712a02](https://github.com/Mearman/Academic-Explorer/commit/e712a02ea08971f27f074ff87ac5ed0fd3a99110))
+* **graph:** implement synchronous relationship detection with atomic updates ([8b61298](https://github.com/Mearman/Academic-Explorer/commit/8b61298691741f0c42819636c20ac1e79d7cdd6a))
+* **react19:** implement cached state pattern to prevent infinite re-renders ([aabf8ca](https://github.com/Mearman/Academic-Explorer/commit/aabf8ca654ee2f3345ed707a84f3223ad92b565a))
+* **stores:** correct animated-graph-store Record types to handle undefined ([fc23852](https://github.com/Mearman/Academic-Explorer/commit/fc2385283d0cd43fb744c723927f9650609577ac))
+* **stores:** correct data-fetching-progress-store Record type to handle undefined ([eb8f6f5](https://github.com/Mearman/Academic-Explorer/commit/eb8f6f5de6a7a6a45e6fc8975356d84e3948460c))
+* **stores:** correct graph-store Record types to handle undefined ([8a57013](https://github.com/Mearman/Academic-Explorer/commit/8a57013b1984b78a2f01e9f46f0ba0ab853edc24))
+* **tests:** remove unnecessary optional chaining in integration tests ([efe69f0](https://github.com/Mearman/Academic-Explorer/commit/efe69f0c1934bb1e0adad765e7455ab59272bdf6))
+* **typescript:** resolve all focused CI build errors ([789ef38](https://github.com/Mearman/Academic-Explorer/commit/789ef38092c288a7e4d11279ebe6164aa0fc61cd))
+* **typescript:** resolve ALL remaining CI build errors ([6586a03](https://github.com/Mearman/Academic-Explorer/commit/6586a03f4ca08da1fcc2ed29d45c50d9caf44498))
+* **typescript:** resolve CI build errors ([6262488](https://github.com/Mearman/Academic-Explorer/commit/6262488e2427055003218d83793a8da40b930e6f))
+* **typescript:** resolve focused CI build errors ([062c08e](https://github.com/Mearman/Academic-Explorer/commit/062c08e8fd7a3a55f474524ba2a05428869e214b))
+
+
+### Features
+
+* **cache:** add cache invalidation orchestration system ([f84278a](https://github.com/Mearman/Academic-Explorer/commit/f84278a006df390d6cdfcd593c10a0cc6db9f2db))
+* **cache:** add CacheInitializer React component ([e2443a4](https://github.com/Mearman/Academic-Explorer/commit/e2443a4f6689e56d9ef26220f6675e027703f04a))
+* **cache:** add consolidated cache system exports ([5b5b1d6](https://github.com/Mearman/Academic-Explorer/commit/5b5b1d62f3dc632f8430c31a4baf7af2f3f3c0fb))
+* **cache:** add IndexedDB metadata storage for app version tracking ([143659a](https://github.com/Mearman/Academic-Explorer/commit/143659abb30edc1625c54dd11a992ce829ace299))
+* **cache:** add version detection and comparison utilities ([237f9e8](https://github.com/Mearman/Academic-Explorer/commit/237f9e8ba38e0652c1c2aff306fdfae71e592f51))
+* **cache:** add version-aware cache initialization system ([d276f7a](https://github.com/Mearman/Academic-Explorer/commit/d276f7a8fe1698b10edc3009463d4334564bb282))
+* **deps:** add TanStack Ranger for advanced range controls ([eb51172](https://github.com/Mearman/Academic-Explorer/commit/eb5117254ef2f660cdd3987c84c0d12ebefb34db))
+* **force-controls:** implement debounced and constrained parameter inputs ([f68204c](https://github.com/Mearman/Academic-Explorer/commit/f68204c58f70389cc1a0790d2a2a69f1cad657ec))
+* **graph:** restore hybrid context/fallback approach for ForceControls ([3f68f1c](https://github.com/Mearman/Academic-Explorer/commit/3f68f1ca19a582b4d0a53502b2bfdf44ca40be1a))
+* **main:** integrate version-aware cache initialization ([adf75c5](https://github.com/Mearman/Academic-Explorer/commit/adf75c563348f300646012bd2636e1c2a26545a5))
+
 ## [5.0.2](https://github.com/Mearman/Academic-Explorer/compare/v5.0.1...v5.0.2) (2025-09-17)
 
 
