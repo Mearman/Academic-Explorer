@@ -114,8 +114,8 @@ export const RightRibbon: React.FC = () => {
 		setDropInsertionIndex(null);
 	};
 
-	const handleDropZoneHover = (insertionIndex: number) => {
-		if (isDragging) {
+	const handleDropZoneHover = (insertionIndex: number, hasGroupDrag: boolean = false) => {
+		if (isDragging || hasGroupDrag) {
 			setDropInsertionIndex(insertionIndex);
 		}
 	};
@@ -125,64 +125,117 @@ export const RightRibbon: React.FC = () => {
 	};
 
 	// DropZone component for insertion indicators
-	const DropZone: React.FC<{ index: number; isActive: boolean }> = ({ index, isActive }) => (
-		<div
-			style={{
-				height: isDragging && isActive ? "40px" : "4px",
-				width: isDragging && isActive ? "40px" : "40px",
-				backgroundColor: isDragging && isActive ? colors.primary : "transparent",
-				transition: "all 0.2s ease",
-				borderRadius: "8px",
-				margin: isDragging && isActive ? "2px 0" : "0px",
-				opacity: isDragging && isActive ? 1 : 0,
-				border: isDragging && isActive ? `2px solid ${colors.primary}` : "none",
-				pointerEvents: "auto",
-				overflow: "hidden",
-			}}
-			onDragOver={(e) => {
-				e.preventDefault();
-				handleDropZoneHover(index);
-			}}
-			onDragLeave={handleDropZoneLeave}
-			onDrop={(e) => {
-				e.preventDefault();
-				logger.info("ui", `RightRibbon drop zone ${String(index)} received drop`, {
-					index,
-					types: Array.from(e.dataTransfer.types),
-					isDragging,
-					draggedGroupId
-				});
-				const groupReorderData = e.dataTransfer.getData("application/group-reorder");
-				if (groupReorderData && draggedGroupId) {
-					logger.info("ui", `Drop zone ${String(index)} processing reorder`, {
-						sourceGroupId: groupReorderData,
-						insertionIndex: index,
-						totalGroups: groupDefinitions.length
-					});
+	const DropZone: React.FC<{ index: number; isActive: boolean }> = ({ index, isActive }) => {
+		const [hasGroupDrag, setHasGroupDrag] = React.useState(false);
 
-					if (index === 0) {
-						// Dropping at the beginning - insert before first group
-						const firstGroup = groupDefinitions[0];
-						if (firstGroup?.id !== groupReorderData) {
-							handleGroupReorder(groupReorderData, firstGroup.id, true, e);
-						}
-					} else if (index === groupDefinitions.length) {
-						// Dropping at the end - insert after last group
-						const lastGroup = groupDefinitions[groupDefinitions.length - 1];
-						if (lastGroup?.id !== groupReorderData) {
-							handleGroupReorder(groupReorderData, lastGroup.id, false, e);
-						}
-					} else {
-						// Dropping between groups - use the group before this drop zone
-						const targetGroup = groupDefinitions[index - 1];
-						if (targetGroup?.id !== groupReorderData) {
-							handleGroupReorder(groupReorderData, targetGroup.id, false, e);
+		const handleDragOver = (e: React.DragEvent) => {
+			e.preventDefault();
+
+			// Check if this is a group reorder drag
+			const isGroupReorder = e.dataTransfer.types.includes("application/group-reorder");
+
+			if (isGroupReorder) {
+				setHasGroupDrag(true);
+				logger.info("ui", `RightRibbon DropZone ${String(index)} detected group drag`, {
+					index,
+					hasGroupDrag,
+					isDragging
+				});
+			}
+
+			handleDropZoneHover(index, isGroupReorder);
+		};
+
+		const handleDragLeave = () => {
+			// Only reset if we're actually leaving the drop zone
+			setHasGroupDrag(false);
+			handleDropZoneLeave();
+		};
+
+		// Show drop zone if there's a local drag OR if this drop zone detects a group drag AND it's active
+		// For cross-ribbon drops, we rely on hasGroupDrag since isDragging is local to each ribbon
+		const shouldShowDropZone = (isDragging || hasGroupDrag) && isActive;
+
+		return (
+			<div
+				style={{
+					height: shouldShowDropZone ? "40px" : "0px",
+					width: shouldShowDropZone ? "40px" : "40px",
+					backgroundColor: shouldShowDropZone ? colors.primary : "transparent",
+					transition: "all 0.2s ease",
+					borderRadius: "8px",
+					margin: shouldShowDropZone ? "2px 0" : "0px",
+					opacity: shouldShowDropZone ? 1 : 0,
+					border: shouldShowDropZone ? `2px solid ${colors.primary}` : "none",
+					pointerEvents: "auto",
+					overflow: "hidden",
+					// Add invisible padding for hit area when collapsed, offset by negative margin
+					padding: shouldShowDropZone ? "0" : "10px 0",
+					marginTop: shouldShowDropZone ? "2px" : "-10px",
+					marginBottom: shouldShowDropZone ? "2px" : "-10px",
+				}}
+				onDragOver={handleDragOver}
+				onDragLeave={handleDragLeave}
+				onDrop={(e) => {
+					e.preventDefault();
+					logger.info("ui", `RightRibbon drop zone ${String(index)} received drop`, {
+						index,
+						types: Array.from(e.dataTransfer.types),
+						isDragging,
+						draggedGroupId
+					});
+					const groupReorderData = e.dataTransfer.getData("application/group-reorder");
+					if (groupReorderData) {
+						logger.info("ui", `Drop zone ${String(index)} processing reorder/move`, {
+							sourceGroupId: groupReorderData,
+							insertionIndex: index,
+							totalGroups: groupDefinitions.length,
+							targetSidebar: "right"
+						});
+
+						// Check if this group is from the same sidebar (reorder) or different sidebar (move)
+						const rightGroups = getToolGroupsForSidebar("right");
+						const isFromSameSidebar = Boolean(rightGroups[groupReorderData]);
+
+						if (index === 0) {
+						// Dropping at the beginning
+							const firstGroup = groupDefinitions[0];
+							if (firstGroup.id !== groupReorderData) {
+								if (isFromSameSidebar) {
+									handleGroupReorder(groupReorderData, firstGroup.id, true, e);
+								} else {
+									layoutStore.moveGroupToSidebar(groupReorderData, "right", firstGroup.id, true);
+								}
+							}
+						} else if (index === groupDefinitions.length) {
+						// Dropping at the end
+							const lastGroup = groupDefinitions[groupDefinitions.length - 1];
+							if (lastGroup.id !== groupReorderData) {
+								if (isFromSameSidebar) {
+									handleGroupReorder(groupReorderData, lastGroup.id, false, e);
+								} else {
+									layoutStore.moveGroupToSidebar(groupReorderData, "right", lastGroup.id, false);
+								}
+							} else if (!isFromSameSidebar) {
+							// Moving from other sidebar to end when no target group
+								layoutStore.moveGroupToSidebar(groupReorderData, "right");
+							}
+						} else {
+						// Dropping between groups
+							const targetGroup = groupDefinitions[index - 1];
+							if (targetGroup.id !== groupReorderData) {
+								if (isFromSameSidebar) {
+									handleGroupReorder(groupReorderData, targetGroup.id, false, e);
+								} else {
+									layoutStore.moveGroupToSidebar(groupReorderData, "right", targetGroup.id, false);
+								}
+							}
 						}
 					}
-				}
-			}}
-		/>
-	);
+				}}
+			/>
+		);
+	};
 
 	const handleDrop = (draggedSectionId: string, targetGroupId: string, _event: React.DragEvent) => {
 		logger.info("ui", `Moving section ${draggedSectionId} to group ${targetGroupId}`, {
