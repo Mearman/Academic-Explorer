@@ -310,7 +310,7 @@ export class AutocompleteApi {
 		const freshCache: DebouncedPromiseCache = {};
 
 		for (const [key, value] of Object.entries(this.debounceCache)) {
-			if (now - value.timestamp <= this.CACHE_TTL) {
+			if (value && now - value.timestamp <= this.CACHE_TTL) {
 				freshCache[key] = value;
 			}
 		}
@@ -334,7 +334,8 @@ export class AutocompleteApi {
     newestEntry: number | null;
     } {
 		const entries = Object.values(this.debounceCache);
-		const timestamps = entries.map(entry => entry.timestamp);
+		const validEntries = entries.filter((entry): entry is NonNullable<typeof entry> => entry !== null && entry !== undefined);
+		const timestamps = validEntries.map(entry => entry.timestamp);
 
 		return {
 			cacheSize: entries.length,
