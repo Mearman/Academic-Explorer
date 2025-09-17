@@ -112,8 +112,8 @@ export class EntityDetector {
 			}
 		}
 
-		// Basic format check - should have letter followed by digits (case-insensitive)
-		if (!/^[wasitcpfkgWASITCPFKG]\d+$/.test(actualId)) {
+		// Basic format check - should have uppercase letter followed by digits (case-sensitive)
+		if (!/^[WASITCPFKG]\d+$/.test(actualId)) {
 			return {
 				entityType: null,
 				idType: "openalex",
@@ -122,8 +122,8 @@ export class EntityDetector {
 			};
 		}
 
-		const firstChar = actualId.charAt(0).toUpperCase();
-		const normalizedId = firstChar + actualId.slice(1); // Normalize to uppercase prefix
+		const firstChar = actualId.charAt(0);
+		const normalizedId = actualId; // Keep original case since we enforce uppercase
 		let entityType: EntityType | null = detectedEntityType; // Use detected type from path if available
 
 		// If no entity type was detected from path, infer from ID prefix
