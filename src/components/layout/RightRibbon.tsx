@@ -248,18 +248,27 @@ export const RightRibbon: React.FC = () => {
 	};
 
 	const handleDrop = (draggedSectionId: string, targetGroupId: string, _event: React.DragEvent) => {
-		logger.info("ui", `Moving section ${draggedSectionId} to group ${targetGroupId}`, {
+		logger.info("ui", `RightRibbon handleDrop: Moving section ${draggedSectionId} to group ${targetGroupId}`, {
 			draggedSectionId,
-			targetGroupId
+			targetGroupId,
+			side: "right"
 		});
 
 		// First, remove the section from all existing groups on both sides
 		const leftGroups = getToolGroupsForSidebar("left");
 		const rightGroups = getToolGroupsForSidebar("right");
 
+		logger.info("ui", `Current groups before removal`, {
+			leftGroups: Object.keys(leftGroups),
+			rightGroups: Object.keys(rightGroups),
+			targetGroupExists: Boolean(rightGroups[targetGroupId]),
+			targetGroupSections: rightGroups[targetGroupId]?.sections || null
+		});
+
 		// Remove from left sidebar groups
 		Object.entries(leftGroups).forEach(([groupId, group]) => {
 			if (group.sections.includes(draggedSectionId)) {
+				logger.info("ui", `Removing ${draggedSectionId} from left group ${groupId}`);
 				layoutStore.removeSectionFromGroup("left", groupId, draggedSectionId);
 			}
 		});
@@ -267,8 +276,17 @@ export const RightRibbon: React.FC = () => {
 		// Remove from right sidebar groups
 		Object.entries(rightGroups).forEach(([groupId, group]) => {
 			if (group.sections.includes(draggedSectionId)) {
+				logger.info("ui", `Removing ${draggedSectionId} from right group ${groupId}`);
 				layoutStore.removeSectionFromGroup("right", groupId, draggedSectionId);
 			}
+		});
+
+		// Check if target group exists after removals
+		const updatedRightGroups = getToolGroupsForSidebar("right");
+		logger.info("ui", `Groups after removal, before addition`, {
+			rightGroups: Object.keys(updatedRightGroups),
+			targetGroupExists: Boolean(updatedRightGroups[targetGroupId]),
+			targetGroupId
 		});
 
 		// Then add to the target group
