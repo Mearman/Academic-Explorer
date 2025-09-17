@@ -4,8 +4,8 @@
 
 // Default force parameters (matching current hardcoded values)
 export const DEFAULT_FORCE_PARAMS = {
-	linkDistance: 100,
-	linkStrength: 0.01,
+	linkDistance: 200,
+	linkStrength: 0.05,
 	chargeStrength: -1000,
 	centerStrength: 0.01,
 	collisionRadius: 120,
