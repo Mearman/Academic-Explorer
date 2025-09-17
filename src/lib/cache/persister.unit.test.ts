@@ -483,61 +483,6 @@ describe("Cache Persister", () => {
 		});
 	});
 
-	describe("createIDBPersister", () => {
-		it("should create IndexedDB-only persister with basic functionality", async () => {
-			// Testing with createHybridPersister (replaced deprecated createIDBPersister)
-			const persister = createHybridPersister();
-
-			// Force IndexedDB usage by making localStorage fail
-			localStorageMock.setItem.mockImplementation(() => {
-				throw new Error("localStorage not available");
-			});
-
-			await persister.persistClient(samplePersistedClient);
-
-			expect(mockStore.put).toHaveBeenCalledWith(
-				expect.objectContaining({
-					...samplePersistedClient,
-					timestamp: expect.any(Number),
-					version: "1.0",
-				}),
-				"queryClient"
-			);
-		});
-
-		it("should restore client data without version metadata", async () => {
-			// Testing with createHybridPersister (replaced deprecated createIDBPersister)
-			const persister = createHybridPersister();
-
-			mockStore.get.mockResolvedValue(samplePersistedData);
-
-			const result = await persister.restoreClient();
-
-			// Result should include timestamp but not version
-			expect(result).toEqual({
-				...samplePersistedClient,
-				timestamp: expect.any(Number),
-			});
-		});
-
-		it("should handle expired cache in IndexedDB-only mode", async () => {
-			// Testing with createHybridPersister (replaced deprecated createIDBPersister)
-			const persister = createHybridPersister();
-
-			const expiredData = {
-				...samplePersistedData,
-				timestamp: Date.now() - CACHE_CONFIG.maxAge - 1000,
-			};
-
-			localStorageMock.getItem.mockReturnValue(null);
-			mockStore.get.mockResolvedValue(expiredData);
-
-			const result = await persister.restoreClient();
-
-			expect(mockStore.delete).toHaveBeenCalledWith("queryClient");
-			expect(result).toBeUndefined();
-		});
-	});
 
 	describe("getCacheStats", () => {
 		it("should return cache statistics when cache exists", async () => {
