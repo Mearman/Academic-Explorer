@@ -243,22 +243,63 @@ export const useLayoutStore = create<LayoutState>()(
 					const toolGroups = state.toolGroups[sidebar];
 					const group = toolGroups[groupId];
 
+					logger.info("ui", `addSectionToGroup called`, {
+						sidebar,
+						groupId,
+						sectionId,
+						groupExists: Boolean(group),
+						existingGroupIds: Object.keys(toolGroups),
+						existingGroupSections: group ? group.sections : null
+					});
+
 					// If group exists and already contains the section, do nothing
 					if (group && group.sections.includes(sectionId)) {
+						logger.info("ui", `Section ${sectionId} already in group ${groupId}, skipping`);
 						return state;
 					}
 
+					if (!group) {
+						// Check if this is a valid group definition from the registry
+						const groupDefinition = getGroupDefinition(groupId);
+						if (!groupDefinition) {
+							logger.error("ui", `Cannot add section to non-existent group - no group definition found`, {
+								sidebar,
+								groupId,
+								sectionId,
+								availableGroups: Object.keys(toolGroups)
+							});
+							return state; // Only allow adding to groups that exist in the registry
+						}
+
+						logger.info("ui", `Creating new group from registry definition`, {
+							sidebar,
+							groupId,
+							sectionId,
+							groupDefinition: { id: groupDefinition.id, title: groupDefinition.title }
+						});
+					}
+
+					// Update existing group or create new one from registry
 					const updatedGroup = group ? {
 						// Update existing group
 						...group,
 						sections: [...group.sections, sectionId],
 						activeSection: sectionId, // Focus the newly added section
 					} : {
-						// Create new group
+						// Create new group from registry definition
 						id: groupId,
 						sections: [sectionId],
 						activeSection: sectionId,
 					};
+
+					logger.info("ui", `Adding section ${sectionId} to group ${groupId}`, {
+						sidebar,
+						groupId,
+						sectionId,
+						isNewGroup: !group,
+						oldSections: group?.sections || [],
+						newSections: updatedGroup.sections
+					});
 
 					// Update group definition based on sections
 					updateGroupDefinition(groupId, updatedGroup.sections, getSectionById);
