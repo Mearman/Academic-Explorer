@@ -193,8 +193,11 @@ jobs:
       - name: Wait for preview server to be ready
         if: matrix.test-type == 'e2e'
         run: |
+          echo "Waiting for preview server to start..."
           timeout 30 bash -c 'until curl -f http://localhost:4173 > /dev/null 2>&1; do sleep 1; done'
-          echo "Preview server is ready"
+          echo "Preview server responding, waiting for app to be ready..."
+          timeout 30 bash -c 'until curl -s http://localhost:4173 | grep -q "Academic Explorer\|<div id=\"root\""; do sleep 2; done'
+          echo "Preview server and app are ready"
 
       - name: Run ${{ matrix.test-type }} tests
         run: timeout ${{ matrix.timeout }}m pnpm ${{ matrix.command }}

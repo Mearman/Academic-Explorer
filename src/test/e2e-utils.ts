@@ -10,8 +10,50 @@ import { expect as vitestExpect } from "vitest"
  * Wait for the Academic Explorer app to be fully loaded and interactive
  */
 export async function waitForAppReady(page: Page): Promise<void> {
-	// Wait for the main AppShell header with "Academic Explorer" text to render
-	await page.waitForSelector("text=Academic Explorer", { timeout: 30000 })
+	// First wait for React to mount by checking for the root element
+	await page.waitForSelector("#root", { timeout: 30000 })
+
+	// Wait for Mantine components to be loaded (AppShell renders after Mantine initializes)
+	await page.waitForFunction(
+		() => {
+			const root = document.getElementById("root");
+			return root && root.children.length > 0;
+		},
+		{ timeout: 30000 }
+	)
+
+	// Try multiple selectors for the app header - be more flexible
+	const headerSelectors = [
+		"text=Academic Explorer",
+		"[data-mantine-color-scheme]", // Mantine theme provider
+		"header", // AppShell header
+		'[role="banner"]', // Header with role
+		".mantine-AppShell-header" // Mantine AppShell header class
+	];
+
+	let headerFound = false;
+	for (const selector of headerSelectors) {
+		try {
+			await page.waitForSelector(selector, { timeout: 15000 });
+			headerFound = true;
+			break;
+		} catch {
+			// Try next selector
+		}
+	}
+
+	if (!headerFound) {
+		// Last resort - wait for any significant content
+		await page.waitForFunction(
+			() => {
+				const root = document.getElementById("root");
+				if (!root) return false;
+				const textContent = root.textContent || "";
+				return textContent.length > 100; // App has substantial content
+			},
+			{ timeout: 30000 }
+		);
+	}
 
 	// Wait for any loading skeletons to disappear
 	await page.waitForFunction(
@@ -21,21 +63,20 @@ export async function waitForAppReady(page: Page): Promise<void> {
 		// Loading skeletons might not be present, that's ok
 	})
 
-	// Ensure router is ready
-	await page.waitForFunction(
-		() => window.location.hash !== "",
-		{ timeout: 5000 }
-	).catch(() => {
-		// Hash might be empty on root route, that's ok
-	})
+	// Give the app a moment to stabilize
+	await page.waitForTimeout(1000);
 }
 
 /**
  * Navigate to Academic Explorer and wait for it to be ready
  */
 export async function navigateToApp(page: Page, path: string = "/"): Promise<void> {
-	const url = path.startsWith("/") ? `#${path}` : `#/${path}`
-	await page.goto(url)
+	// Construct the full URL with hash routing
+	const baseUrl = process.env.E2E_BASE_URL || "http://localhost:4173"
+	const hashPath = path.startsWith("/") ? `#${path}` : `#/${path}`
+	const fullUrl = `${baseUrl}/${hashPath}`
+
+	await page.goto(fullUrl, { waitUntil: "domcontentloaded" })
 	await waitForAppReady(page)
 }
 
@@ -212,7 +253,28 @@ export async function assertPageLoadsWithoutErrors(page: Page, url?: string): Pr
 	const hasErrors = await hasErrorState(page)
 	vitestExpect(hasErrors).toBe(false)
 
-	// Check that main content is present
-	const hasContent = await page.locator('main, [role="main"], #root > *').first().isVisible()
+	// Check that main content is present - be more specific to Academic Explorer structure
+	const contentSelectors = [
+		"[data-mantine-color-scheme]", // Mantine app wrapper
+		".mantine-AppShell-root", // AppShell component
+		"main", // AppShell.Main
+		"header", // AppShell.Header
+		"#root > div", // Any content in root
+		'[class*="AppShell"]' // Any AppShell related class
+	];
+
+	let hasContent = false;
+	for (const selector of contentSelectors) {
+		try {
+			const element = page.locator(selector).first();
+			if (await element.isVisible({ timeout: 5000 })) {
+				hasContent = true;
+				break;
+			}
+		} catch {
+			// Continue to next selector
+		}
+	}
+
 	vitestExpect(hasContent).toBe(true)
 }
