@@ -336,7 +336,7 @@ describe("Academic Explorer Search", () => {
 
 		// Check if search state is preserved
 		const searchInput = page.locator('[data-testid="search-input"], input[type="search"]').first()
-		const inputValue = await searchInput.inputValue().catch(() => "")
+		await searchInput.inputValue().catch(() => "")
 
 		// State preservation is optional - just ensure app doesn't break
 		await assertPageLoadsWithoutErrors(page)

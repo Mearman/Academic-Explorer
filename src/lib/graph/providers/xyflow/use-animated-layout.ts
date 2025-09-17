@@ -157,7 +157,7 @@ export function useAnimatedLayout(options: UseAnimatedLayoutOptions = {}) {
 				...stats,
 				autoPinEnabled: autoPinOnLayoutStabilization,
 			});
-		}, [fitViewAfterLayout, fitView, autoPinOnLayoutStabilization, getNodes]),
+		}, [fitViewAfterLayout, fitView, autoPinOnLayoutStabilization]),
 
 		onError: useCallback((error: string) => {
 			logger.error("graph", "Animated layout error", { error });

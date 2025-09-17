@@ -219,7 +219,7 @@ describe("Academic Explorer Navigation", () => {
 
 		for (let i = 0; i < routes.length; i++) {
 			// Don't await - test rapid navigation
-			navigateToApp(page, routes[i])
+			void navigateToApp(page, routes[i])
 
 			// Small delay to allow route processing
 			await page.waitForTimeout(100)
