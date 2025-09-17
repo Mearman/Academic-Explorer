@@ -226,6 +226,10 @@ export function useAnimatedForceSimulation(options: UseAnimatedForceSimulationOp
 				logger.info("graph", "Force animation resumed");
 				break;
 
+			case "parameters_updated":
+				logger.info("graph", "Force parameters updated", { config });
+				break;
+
 			case "error": {
 				const errorMessage = `Worker error: ${event.data.error ?? "Unknown error"}`;
 				logger.error("graph", "Force animation worker error", event.data);
@@ -347,6 +351,25 @@ export function useAnimatedForceSimulation(options: UseAnimatedForceSimulationOp
 		}
 	}, []);
 
+	// Update parameters during animation
+	const updateParameters = useCallback((config: AnimationConfig) => {
+		if (workerRef.current && isWorkerReady) {
+			// Use state callback to check if animation is running
+			setAnimationState(current => {
+				if (current.isRunning) {
+					workerRef.current?.postMessage({
+						type: "update_parameters",
+						config,
+					});
+					logger.info("graph", "Updating force parameters during animation", { config });
+				} else {
+					logger.debug("graph", "Animation not running, ignoring parameter update");
+				}
+				return current; // Return unchanged state
+			});
+		}
+	}, [isWorkerReady]);
+
 	// Get optimal configuration based on graph size using performance utilities
 	const getOptimalConfig = useCallback((nodeCount: number, edgeCount: number = 0, pinnedNodeCount: number = 0): AnimationConfig => {
 		const config = getConfigByGraphSize(nodeCount, edgeCount, pinnedNodeCount);
@@ -389,6 +412,7 @@ export function useAnimatedForceSimulation(options: UseAnimatedForceSimulationOp
 		stopAnimation,
 		pauseAnimation,
 		resumeAnimation,
+		updateParameters,
 		resetPositions,
 		getOptimalConfig,
 
