@@ -1,10 +1,11 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect } from "react";
 import { useGraphData } from "@/hooks/use-graph-data";
 import { useGraphStore } from "@/stores/graph-store";
 import { useRawEntityData } from "@/hooks/use-raw-entity-data";
 import { useEntityDocumentTitle } from "@/hooks/use-document-title";
-import { logError } from "@/lib/logger";
+import { logError, logger } from "@/lib/logger";
+import { EntityDetector } from "@/lib/graph/utils/entity-detection";
 
 export const Route = createFileRoute("/authors/$authorId")({
 	component: AuthorRoute,
@@ -12,11 +13,37 @@ export const Route = createFileRoute("/authors/$authorId")({
 
 function AuthorRoute() {
 	const { authorId } = Route.useParams();
+	const navigate = useNavigate();
 	const graphData = useGraphData();
 	const loadEntity = graphData.loadEntity;
 	const loadEntityIntoGraph = graphData.loadEntityIntoGraph;
 	const expandNode = graphData.expandNode;
 	const nodeCount = useGraphStore((state) => state.totalNodeCount);
+
+	// Check if ID needs normalization and redirect if necessary
+	useEffect(() => {
+		if (!authorId) return;
+
+		const detector = new EntityDetector();
+		const detection = detector.detectEntityIdentifier(authorId);
+
+		// If ID was normalized and is different from input, redirect
+		if (detection.normalizedId && detection.normalizedId !== authorId) {
+			logger.info("routing", "Redirecting to normalized author ID", {
+				originalId: authorId,
+				normalizedId: detection.normalizedId
+			}, "AuthorRoute");
+
+			// Replace current URL with normalized version, preserving query params
+			navigate({
+				to: "/authors/$authorId",
+				params: { authorId: detection.normalizedId },
+				search: (prev) => prev, // Preserve existing search params
+				replace: true
+			});
+			return;
+		}
+	}, [authorId, navigate]);
 
 	// Fetch entity data for title
 	const rawEntityDataResult = useRawEntityData({

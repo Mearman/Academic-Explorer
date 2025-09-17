@@ -1,10 +1,11 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect } from "react";
 import { useGraphData } from "@/hooks/use-graph-data";
 import { useGraphStore } from "@/stores/graph-store";
 import { useRawEntityData } from "@/hooks/use-raw-entity-data";
 import { useEntityDocumentTitle } from "@/hooks/use-document-title";
-import { logError } from "@/lib/logger";
+import { logError, logger } from "@/lib/logger";
+import { EntityDetector } from "@/lib/graph/utils/entity-detection";
 
 export const Route = createFileRoute("/works/$workId")({
 	component: WorkRoute,
@@ -12,10 +13,36 @@ export const Route = createFileRoute("/works/$workId")({
 
 function WorkRoute() {
 	const { workId } = Route.useParams();
+	const navigate = useNavigate();
 	const graphData = useGraphData();
 	const loadEntity = graphData.loadEntity;
 	const loadEntityIntoGraph = graphData.loadEntityIntoGraph;
 	const nodeCount = useGraphStore((state) => state.totalNodeCount);
+
+	// Check if ID needs normalization and redirect if necessary
+	useEffect(() => {
+		if (!workId) return;
+
+		const detector = new EntityDetector();
+		const detection = detector.detectEntityIdentifier(workId);
+
+		// If ID was normalized and is different from input, redirect
+		if (detection.normalizedId && detection.normalizedId !== workId) {
+			logger.info("routing", "Redirecting to normalized work ID", {
+				originalId: workId,
+				normalizedId: detection.normalizedId
+			}, "WorkRoute");
+
+			// Replace current URL with normalized version, preserving query params
+			navigate({
+				to: "/works/$workId",
+				params: { workId: detection.normalizedId },
+				search: (prev) => prev, // Preserve existing search params
+				replace: true
+			});
+			return;
+		}
+	}, [workId, navigate]);
 
 	// Fetch entity data for title
 	const rawEntityDataResult = useRawEntityData({

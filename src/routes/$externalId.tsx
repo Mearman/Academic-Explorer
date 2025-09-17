@@ -27,6 +27,7 @@ function ExternalIdRoute() {
 				// Decode the parameter
 				const decodedId = decodeURIComponent(externalId)
 
+
 				// Detect entity type and ID type
 				const detection = detector.detectEntityIdentifier(decodedId)
 
