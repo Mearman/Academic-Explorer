@@ -127,9 +127,25 @@ export class GraphDataService {
 			}, "GraphDataService");
 
 			const nodeIds = nodes.map(node => node.id);
-			this.relationshipDetectionService.detectRelationshipsForNodes(nodeIds).catch((error: unknown) => {
-				logError("Failed to detect relationships for initial nodes", error, "GraphDataService", "graph");
-			});
+			this.relationshipDetectionService.detectRelationshipsForNodes(nodeIds)
+				.then((detectedEdges) => {
+					// Add detected relationship edges to the graph
+					if (detectedEdges.length > 0) {
+						logger.info("graph", "Adding detected relationship edges to initial graph", {
+							detectedEdgeCount: detectedEdges.length
+						}, "GraphDataService");
+
+						const currentStore = useGraphStore.getState();
+						currentStore.addEdges(detectedEdges);
+
+						// Update cached edges
+						const allEdges = Object.values(currentStore.edges);
+						setCachedGraphEdges(this.queryClient, allEdges);
+					}
+				})
+				.catch((error: unknown) => {
+					logError("Failed to detect relationships for initial nodes", error, "GraphDataService", "graph");
+				});
 
 			// Layout is now handled by the ReactFlow component's useLayout hook
 			// No need for explicit layout application here
@@ -168,9 +184,26 @@ export class GraphDataService {
 				}, "GraphDataService");
 
 				// Detect relationships for the existing node
-				this.relationshipDetectionService.detectRelationshipsForNode(existingNode.id).catch((error: unknown) => {
-					logError("Failed to detect relationships for existing node", error, "GraphDataService", "graph");
-				});
+				this.relationshipDetectionService.detectRelationshipsForNode(existingNode.id)
+					.then((detectedEdges) => {
+						// Add detected relationship edges to the graph
+						if (detectedEdges.length > 0) {
+							logger.info("graph", "Adding detected relationship edges for existing node", {
+								nodeId: existingNode.id,
+								detectedEdgeCount: detectedEdges.length
+							}, "GraphDataService");
+
+							const currentStore = useGraphStore.getState();
+							currentStore.addEdges(detectedEdges);
+
+							// Update cached edges
+							const allEdges = Object.values(currentStore.edges);
+							setCachedGraphEdges(this.queryClient, allEdges);
+						}
+					})
+					.catch((error: unknown) => {
+						logError("Failed to detect relationships for existing node", error, "GraphDataService", "graph");
+					});
 
 				return;
 			}
@@ -208,9 +241,26 @@ export class GraphDataService {
 				store.selectNode(primaryNodeId);
 
 				// Detect relationships for newly added node
-				this.relationshipDetectionService.detectRelationshipsForNode(primaryNodeId).catch((error: unknown) => {
-					logError("Failed to detect relationships for newly added node", error, "GraphDataService", "graph");
-				});
+				this.relationshipDetectionService.detectRelationshipsForNode(primaryNodeId)
+					.then((detectedEdges) => {
+						// Add detected relationship edges to the graph
+						if (detectedEdges.length > 0) {
+							logger.info("graph", "Adding detected relationship edges for newly added node", {
+								nodeId: primaryNodeId,
+								detectedEdgeCount: detectedEdges.length
+							}, "GraphDataService");
+
+							const currentStore = useGraphStore.getState();
+							currentStore.addEdges(detectedEdges);
+
+							// Update cached edges
+							const allEdges = Object.values(currentStore.edges);
+							setCachedGraphEdges(this.queryClient, allEdges);
+						}
+					})
+					.catch((error: unknown) => {
+						logError("Failed to detect relationships for newly added node", error, "GraphDataService", "graph");
+					});
 
 				// Note: No automatic expansion - user must manually expand nodes
 			}
@@ -231,9 +281,25 @@ export class GraphDataService {
 			// Detect relationships between all initial nodes using batch processing
 			if (nodes.length > 1) {
 				const nodeIds = nodes.map(n => n.id);
-				this.relationshipDetectionService.detectRelationshipsForNodes(nodeIds).catch((error: unknown) => {
-					logError("Failed to detect relationships for initial graph nodes", error, "GraphDataService", "graph");
-				});
+				this.relationshipDetectionService.detectRelationshipsForNodes(nodeIds)
+					.then((detectedEdges) => {
+						// Add detected relationship edges to the graph
+						if (detectedEdges.length > 0) {
+							logger.info("graph", "Adding detected relationship edges for initial graph nodes", {
+								detectedEdgeCount: detectedEdges.length
+							}, "GraphDataService");
+
+							const currentStore = useGraphStore.getState();
+							currentStore.addEdges(detectedEdges);
+
+							// Update cached edges
+							const allEdges = Object.values(currentStore.edges);
+							setCachedGraphEdges(this.queryClient, allEdges);
+						}
+					})
+					.catch((error: unknown) => {
+						logError("Failed to detect relationships for initial graph nodes", error, "GraphDataService", "graph");
+					});
 			}
 
 		} catch (error) {
@@ -439,17 +505,43 @@ export class GraphDataService {
 		for (let i = 0; i < allNodes.length; i += batchSize) {
 			const batch = allNodes.slice(i, i + batchSize);
 
-			// Process batch in parallel
+			// Process batch in parallel and collect edges
 			const batchPromises = batch.map(node =>
-				this.relationshipDetectionService.detectRelationshipsForNode(node.id).catch((error: unknown) => {
-					logger.warn("graph", "Failed to detect relationships for node in batch", {
-						nodeId: node.id,
-						error: error instanceof Error ? error.message : "Unknown error"
-					}, "GraphDataService");
-				})
+				this.relationshipDetectionService.detectRelationshipsForNode(node.id)
+					.then((edges) => ({ nodeId: node.id, edges, success: true }))
+					.catch((error: unknown) => {
+						logger.warn("graph", "Failed to detect relationships for node in batch", {
+							nodeId: node.id,
+							error: error instanceof Error ? error.message : "Unknown error"
+						}, "GraphDataService");
+						return { nodeId: node.id, edges: [], success: false };
+					})
 			);
 
-			await Promise.allSettled(batchPromises);
+			const batchResults = await Promise.allSettled(batchPromises);
+
+			// Collect all detected edges from successful batch operations
+			const allDetectedEdges: GraphEdge[] = [];
+			batchResults.forEach(result => {
+				if (result.status === 'fulfilled' && result.value.success && result.value.edges.length > 0) {
+					allDetectedEdges.push(...result.value.edges);
+				}
+			});
+
+			// Add detected edges to graph if any were found
+			if (allDetectedEdges.length > 0) {
+				logger.info("graph", "Adding detected edges from batch processing", {
+					batchIndex: Math.floor(i / batchSize) + 1,
+					detectedEdgeCount: allDetectedEdges.length
+				}, "GraphDataService");
+
+				const currentStore = useGraphStore.getState();
+				currentStore.addEdges(allDetectedEdges);
+
+				// Update cached edges
+				const updatedEdges = Object.values(currentStore.edges);
+				setCachedGraphEdges(this.queryClient, updatedEdges);
+			}
 			processedCount += batch.length;
 
 			logger.debug("graph", "Relationship detection batch completed", {
@@ -685,9 +777,26 @@ export class GraphDataService {
 				}, "GraphDataService");
 
 				// Run relationship detection asynchronously to not block the expansion
-				this.relationshipDetectionService.detectRelationshipsForNodes(newNodeIds).catch((error: unknown) => {
-					logError("Failed to detect relationships for expanded nodes", error, "GraphDataService", "graph");
-				});
+				this.relationshipDetectionService.detectRelationshipsForNodes(newNodeIds)
+					.then((detectedEdges) => {
+						// Add detected relationship edges to the graph
+						if (detectedEdges.length > 0) {
+							logger.info("graph", "Adding detected relationship edges to graph", {
+								expandedNodeId: nodeId,
+								detectedEdgeCount: detectedEdges.length
+							}, "GraphDataService");
+
+							const currentStore = useGraphStore.getState();
+							currentStore.addEdges(detectedEdges);
+
+							// Update cached edges
+							const allEdges = Object.values(currentStore.edges);
+							setCachedGraphEdges(this.queryClient, allEdges);
+						}
+					})
+					.catch((error: unknown) => {
+						logError("Failed to detect relationships for expanded nodes", error, "GraphDataService", "graph");
+					});
 			}
 
 			// Mark the node as loaded (expansion completed successfully)
