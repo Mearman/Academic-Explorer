@@ -400,18 +400,21 @@ const GraphNavigationInner: React.FC<GraphNavigationProps> = ({ className, style
 		// No need to compare with current XYFlow nodes, just rebuild them from store data
 		const updatedNodeIds = new Set<string>();
 
-		logger.info("graph", "Store data incremental sync effect triggered", {
-			totalNodeCount: Object.keys(storeNodes).length,
-			totalEdgeCount: Object.keys(storeEdges).length,
-			visibleNodeCount: currentVisibleNodes.length,
-			visibleEdgeCount: currentVisibleEdges.length,
-			newNodes: newNodeIds.size,
-			newEdges: newEdgeIds.size,
-			updatedNodes: updatedNodeIds.size,
-			removedNodes: removedNodeIds.size,
-			removedEdges: removedEdgeIds.size,
-			hasProvider: !!providerRef.current
-		}, "GraphNavigation");
+		// Only log when there are actual changes to avoid spam
+		if (newNodeIds.size || newEdgeIds.size || updatedNodeIds.size || removedNodeIds.size || removedEdgeIds.size) {
+			logger.info("graph", "Store data incremental sync effect triggered", {
+				totalNodeCount: Object.keys(storeNodes).length,
+				totalEdgeCount: Object.keys(storeEdges).length,
+				visibleNodeCount: currentVisibleNodes.length,
+				visibleEdgeCount: currentVisibleEdges.length,
+				newNodes: newNodeIds.size,
+				newEdges: newEdgeIds.size,
+				updatedNodes: updatedNodeIds.size,
+				removedNodes: removedNodeIds.size,
+				removedEdges: removedEdgeIds.size,
+				hasProvider: !!providerRef.current
+			}, "GraphNavigation");
+		}
 
 		if (providerRef.current && (newNodeIds.size || newEdgeIds.size || updatedNodeIds.size || removedNodeIds.size || removedEdgeIds.size)) {
 			// Special case: If we have no previous nodes, this is initial load - use setNodes/setEdges

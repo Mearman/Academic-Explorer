@@ -4,20 +4,16 @@ export default {
     // Run ESLint with auto-fix
     'eslint --fix',
     // Type check (without emitting files)
-    () => 'pnpm typecheck',
-    // Add files back to git staging area after fixes
-    'git add'
+    () => 'pnpm typecheck'
   ],
 
   // JSON files
   '*.json': [
-    'eslint --fix',
-    'git add'
+    'eslint --fix'
   ],
 
   // CSS files (if any vanilla extract files need linting)
   '*.{css,scss}': [
-    'eslint --fix',
-    'git add'
+    'eslint --fix'
   ]
 };

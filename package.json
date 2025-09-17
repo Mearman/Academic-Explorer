@@ -31,7 +31,7 @@
     "lint:fix": "eslint . --fix",
     "lint:staged": "lint-staged",
     "hooks:install": "husky",
-    "hooks:test": "npx lint-staged --diff"
+    "hooks:test": "npx lint-staged --diff-filter=A"
   },
   "dependencies": {
     "@mantine/core": "^8.3.1",
