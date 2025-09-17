@@ -17,8 +17,10 @@ export class EntityDetector {
    * Extract clean OpenAlex ID from URL or return input if already clean
    */
 	static extractOpenAlexId(input: string): string {
-		// Remove URL prefix if present
-		return input.replace(/^https?:\/\/openalex\.org\//, "");
+		// Remove URL prefix if present - handle both single and double slash variants
+		// Also handle api.openalex.org URLs
+		// Updated regex to handle https:/ (single slash after colon)
+		return input.replace(/^https?:\/*(?:api\.)?openalex\.org\//, "");
 	}
 
 	/**
@@ -49,13 +51,69 @@ export class EntityDetector {
 
 	/**
    * Detect OpenAlex ID format (W123456789, A123456789, etc.)
+   * Supports case-insensitive matching and normalizes to uppercase
    */
 	private detectOpenAlexId(input: string): DetectionResult {
-		// Remove URL prefix if present
-		const cleanId = input.replace(/^https?:\/\/openalex\.org\//, "");
+		// Remove URL prefix if present - handle both single and double slash variants
+		// Also handle api.openalex.org URLs
+		// Updated regex to handle https:/ (single slash after colon)
+		const cleanId = input.replace(/^https?:\/*(?:api\.)?openalex\.org\//, "");
 
-		// Basic format check - should have letter followed by digits
-		if (!/^[WASITCPFKG]\d+$/.test(cleanId)) {
+		// Handle path-based URLs like authors/A123 or works/W456
+		let actualId = cleanId;
+		let detectedEntityType: EntityType | null = null;
+
+		// Check for path-based format
+		if (cleanId.includes("/")) {
+			const parts = cleanId.split("/");
+			if (parts.length >= 2) {
+				const entityPath = parts[0];
+				const id = parts[1];
+
+				// Map entity path to entity type
+				switch (entityPath) {
+					case "authors":
+					case "people": // api.openalex.org uses "people" instead of "authors"
+						detectedEntityType = "authors";
+						actualId = id;
+						break;
+					case "works":
+						detectedEntityType = "works";
+						actualId = id;
+						break;
+					case "institutions":
+						detectedEntityType = "institutions";
+						actualId = id;
+						break;
+					case "sources":
+						detectedEntityType = "sources";
+						actualId = id;
+						break;
+					case "topics":
+						detectedEntityType = "topics";
+						actualId = id;
+						break;
+					case "concepts":
+						detectedEntityType = "concepts";
+						actualId = id;
+						break;
+					case "publishers":
+						detectedEntityType = "publishers";
+						actualId = id;
+						break;
+					case "funders":
+						detectedEntityType = "funders";
+						actualId = id;
+						break;
+					default:
+						// Unknown entity path, keep original
+						actualId = cleanId;
+				}
+			}
+		}
+
+		// Basic format check - should have letter followed by digits (case-insensitive)
+		if (!/^[wasitcpfkgWASITCPFKG]\d+$/.test(actualId)) {
 			return {
 				entityType: null,
 				idType: "openalex",
@@ -64,45 +122,49 @@ export class EntityDetector {
 			};
 		}
 
-		const firstChar = cleanId.charAt(0).toUpperCase();
-		let entityType: EntityType | null = null;
+		const firstChar = actualId.charAt(0).toUpperCase();
+		const normalizedId = firstChar + actualId.slice(1); // Normalize to uppercase prefix
+		let entityType: EntityType | null = detectedEntityType; // Use detected type from path if available
 
-		switch (firstChar) {
-			case "W":
-				entityType = "works";
-				break;
-			case "A":
-				entityType = "authors";
-				break;
-			case "S":
-				entityType = "sources";
-				break;
-			case "I":
-				entityType = "institutions";
-				break;
-			case "T":
-				entityType = "topics";
-				break;
-			case "C":
-				entityType = "concepts"; // Legacy, being phased out
-				break;
-			case "P":
-				entityType = "publishers";
-				break;
-			case "F":
-				entityType = "funders";
-				break;
-			case "K":
-				entityType = "keywords";
-				break;
-			default:
-				entityType = null;
+		// If no entity type was detected from path, infer from ID prefix
+		if (!entityType) {
+			switch (firstChar) {
+				case "W":
+					entityType = "works";
+					break;
+				case "A":
+					entityType = "authors";
+					break;
+				case "S":
+					entityType = "sources";
+					break;
+				case "I":
+					entityType = "institutions";
+					break;
+				case "T":
+					entityType = "topics";
+					break;
+				case "C":
+					entityType = "concepts"; // Legacy, being phased out
+					break;
+				case "P":
+					entityType = "publishers";
+					break;
+				case "F":
+					entityType = "funders";
+					break;
+				case "K":
+					entityType = "keywords";
+					break;
+				default:
+					entityType = null;
+			}
 		}
 
 		return {
 			entityType,
 			idType: "openalex",
-			normalizedId: cleanId,
+			normalizedId: normalizedId, // Return the normalized uppercase ID
 			originalInput: input,
 		};
 	}
@@ -230,7 +292,7 @@ export class EntityDetector {
 	}
 
 	/**
-   * Check if an ID is a valid OpenAlex ID
+   * Check if an ID is a valid OpenAlex ID (case-insensitive)
    */
 	isValidOpenAlexId(id: string): boolean {
 		if (!id || typeof id !== "string") {
@@ -240,8 +302,8 @@ export class EntityDetector {
 		// Remove URL prefix if present
 		const cleanId = id.replace(/^https?:\/\/openalex\.org\//, "");
 
-		// Check if it matches OpenAlex ID pattern (letter + 8-10 digits)
-		return /^[WASITCPFKG]\d{8,10}$/.test(cleanId);
+		// Check if it matches OpenAlex ID pattern (letter + 8-10 digits, case-insensitive)
+		return /^[wasitcpfkgWASITCPFKG]\d{8,10}$/.test(cleanId);
 	}
 
 	/**
