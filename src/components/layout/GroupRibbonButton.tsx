@@ -82,9 +82,18 @@ export const GroupRibbonButton: React.FC<GroupRibbonButtonProps> = ({
 	};
 
 	const handleDrop = (event: React.DragEvent) => {
+		logger.info("ui", `GroupRibbonButton ${group.id} drop event`, {
+			groupId: group.id,
+			side,
+			types: Array.from(event.dataTransfer.types),
+			hasOnDrop: Boolean(onDrop)
+		});
+
 		if (onDrop) {
 			event.preventDefault();
 			const draggedSectionId = event.dataTransfer.getData("text/plain");
+
+			logger.info("ui", `Got dragged section ID: ${draggedSectionId}`);
 
 			// Reject group-to-group drops - these should only happen via drop zones
 			if (draggedSectionId.startsWith("group:")) {
@@ -96,21 +105,44 @@ export const GroupRibbonButton: React.FC<GroupRibbonButtonProps> = ({
 				return;
 			}
 
-			logger.info("ui", `Dropping section ${draggedSectionId} onto group ${group.id}`, {
+			// Validate that we have a valid section ID and target group
+			if (!draggedSectionId || !group.id) {
+				logger.warn("ui", `Invalid drop data`, {
+					draggedSectionId,
+					targetGroupId: group.id,
+					side
+				});
+				return;
+			}
+
+			logger.info("ui", `Dropping section ${draggedSectionId} onto existing group ${group.id}`, {
 				draggedSectionId,
 				targetGroupId: group.id,
-				side
+				side,
+				groupExists: true // This is an existing group from the ribbon
 			});
 
 			onDrop(draggedSectionId, group.id, event);
+		} else {
+			logger.warn("ui", `No onDrop handler for ribbon button ${group.id}`);
 		}
 	};
 
 	const handleDragOver = (event: React.DragEvent) => {
 		// Reject group reorder drags on ribbon buttons - they should only use drop zones
 		const groupReorderData = event.dataTransfer.types.includes("application/group-reorder");
+
+		logger.info("ui", `GroupRibbonButton ${group.id} dragover`, {
+			groupId: group.id,
+			side,
+			types: Array.from(event.dataTransfer.types),
+			isGroupReorder: groupReorderData,
+			hasOnDragOver: Boolean(onDragOver)
+		});
+
 		if (groupReorderData) {
 			// Don't prevent default - reject the drop
+			logger.info("ui", `Rejecting group reorder drag on ribbon button ${group.id}`);
 			return;
 		}
 
@@ -118,7 +150,10 @@ export const GroupRibbonButton: React.FC<GroupRibbonButtonProps> = ({
 		if (onDragOver) {
 			event.preventDefault();
 			event.dataTransfer.dropEffect = "move";
+			logger.info("ui", `Allowing tool drag over ribbon button ${group.id}`);
 			onDragOver(event);
+		} else {
+			logger.warn("ui", `No onDragOver handler for ribbon button ${group.id}`);
 		}
 	};
 
@@ -127,7 +162,16 @@ export const GroupRibbonButton: React.FC<GroupRibbonButtonProps> = ({
 
 		// Don't highlight for group reorder drags - they should only use drop zones
 		const groupReorderData = event.dataTransfer.types.includes("application/group-reorder");
+
+		logger.info("ui", `GroupRibbonButton ${group.id} dragenter`, {
+			groupId: group.id,
+			side,
+			types: Array.from(event.dataTransfer.types),
+			isGroupReorder: groupReorderData
+		});
+
 		if (groupReorderData) {
+			logger.info("ui", `Ignoring dragenter for group reorder on ribbon button ${group.id}`);
 			return;
 		}
 
@@ -136,11 +180,21 @@ export const GroupRibbonButton: React.FC<GroupRibbonButtonProps> = ({
 		target.style.backgroundColor = colors.primary;
 		target.style.borderColor = colors.primary;
 		target.style.transform = "scale(1.05)";
+
+		logger.info("ui", `Applied highlight to ribbon button ${group.id} for tool drag`);
 	};
 
 	const handleDragLeave = (event: React.DragEvent) => {
 		// Don't process drag leave for group reorder drags - they don't get highlighted anyway
 		const groupReorderData = event.dataTransfer.types.includes("application/group-reorder");
+
+		logger.info("ui", `GroupRibbonButton ${group.id} dragleave`, {
+			groupId: group.id,
+			side,
+			types: Array.from(event.dataTransfer.types),
+			isGroupReorder: groupReorderData
+		});
+
 		if (groupReorderData) {
 			return;
 		}
@@ -155,6 +209,8 @@ export const GroupRibbonButton: React.FC<GroupRibbonButtonProps> = ({
 			target.style.backgroundColor = isActive ? colors.primary : "transparent";
 			target.style.borderColor = colors.border.primary;
 			target.style.transform = "scale(1)";
+
+			logger.info("ui", `Removed highlight from ribbon button ${group.id}`);
 		}
 	};
 
