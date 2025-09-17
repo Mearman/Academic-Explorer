@@ -4,11 +4,11 @@
  */
 
 import React, { useMemo } from "react";
-import { Stack, ActionIcon, Tooltip } from "@mantine/core";
+import { ActionIcon, Tooltip } from "@mantine/core";
 import { useGraphData } from "@/hooks/use-graph-data";
 import { useThemeColors } from "@/hooks/use-theme-colors";
 import { useLayoutStore } from "@/stores/layout-store";
-import { getGroupDefinition, createNewGroup, updateGroupDefinition } from "@/stores/group-registry";
+import { getGroupDefinition, createNewGroup, updateGroupDefinition, getRegistryVersion } from "@/stores/group-registry";
 import { getSectionById } from "@/stores/section-registry";
 import { GroupRibbonButton } from "@/components/layout/GroupRibbonButton";
 import { logger } from "@/lib/logger";
@@ -26,9 +26,15 @@ export const LeftRibbon: React.FC = () => {
 	const setActiveGroup = layoutStore.setActiveGroup;
 	const addSectionToGroup = layoutStore.addSectionToGroup;
 
+	// State for drag and drop visual feedback
+	const [isDragging, setIsDragging] = React.useState(false);
+	const [draggedGroupId, setDraggedGroupId] = React.useState<string | null>(null);
+	const [dropInsertionIndex, setDropInsertionIndex] = React.useState<number | null>(null);
+
 	// Get tool groups for left sidebar
 	const toolGroups = getToolGroupsForSidebar("left");
 	const activeGroupId = getActiveGroup("left");
+	const registryVersion = getRegistryVersion();
 	const groupDefinitions = useMemo(() => {
 		const definitions = Object.keys(toolGroups)
 			.map(groupId => getGroupDefinition(groupId))
@@ -38,12 +44,13 @@ export const LeftRibbon: React.FC = () => {
 		logger.info("ui", "Left ribbon group definitions", {
 			toolGroups,
 			groupKeys: Object.keys(toolGroups),
-			definitions: definitions.map(d => ({ id: d.id, title: d.title })),
-			activeGroupId
+			definitions: definitions.map(d => ({ id: d.id, title: d.title, order: d.order })),
+			activeGroupId,
+			registryVersion
 		});
 
 		return definitions;
-	}, [toolGroups, activeGroupId]);
+	}, [toolGroups, activeGroupId, registryVersion]);
 
 	const handleClearGraph = () => {
 		logger.info("ui", "Clear graph clicked from left ribbon");
@@ -91,15 +98,103 @@ export const LeftRibbon: React.FC = () => {
 	};
 
 	const handleGroupReorder = (sourceGroupId: string, targetGroupId: string, insertBefore: boolean, _event: React.DragEvent) => {
-		logger.info("ui", `Reordering group ${sourceGroupId} relative to ${targetGroupId}`, {
+		logger.info("ui", `LeftRibbon: Reordering group ${sourceGroupId} relative to ${targetGroupId}`, {
 			sourceGroupId,
 			targetGroupId,
 			insertBefore,
-			side: "left"
+			side: "left",
+			currentOrder: groupDefinitions.map(g => ({ id: g.id, order: g.order }))
 		});
 
 		layoutStore.reorderGroups("left", sourceGroupId, targetGroupId, insertBefore);
+
+		// Reset drag state
+		setIsDragging(false);
+		setDraggedGroupId(null);
+		setDropInsertionIndex(null);
 	};
+
+	const handleGroupDragStart = (groupId: string) => {
+		setIsDragging(true);
+		setDraggedGroupId(groupId);
+		logger.info("ui", `Starting group drag for ${groupId}`, { groupId, side: "left" });
+	};
+
+	const handleGroupDragEnd = () => {
+		setIsDragging(false);
+		setDraggedGroupId(null);
+		setDropInsertionIndex(null);
+	};
+
+	const handleDropZoneHover = (insertionIndex: number) => {
+		if (isDragging) {
+			setDropInsertionIndex(insertionIndex);
+		}
+	};
+
+	const handleDropZoneLeave = () => {
+		setDropInsertionIndex(null);
+	};
+
+	// DropZone component for insertion indicators
+	const DropZone: React.FC<{ index: number; isActive: boolean }> = ({ index, isActive }) => (
+		<div
+			style={{
+				height: isDragging && isActive ? "40px" : "4px",
+				width: isDragging && isActive ? "40px" : "40px",
+				backgroundColor: isDragging && isActive ? colors.primary : "transparent",
+				transition: "all 0.2s ease",
+				borderRadius: "8px",
+				margin: isDragging && isActive ? "2px 0" : "0px",
+				opacity: isDragging && isActive ? 1 : 0,
+				border: isDragging && isActive ? `2px solid ${colors.primary}` : "none",
+				pointerEvents: "auto",
+				overflow: "hidden",
+			}}
+			onDragOver={(e) => {
+				e.preventDefault();
+				handleDropZoneHover(index);
+			}}
+			onDragLeave={handleDropZoneLeave}
+			onDrop={(e) => {
+				e.preventDefault();
+				logger.info("ui", `LeftRibbon drop zone ${String(index)} received drop`, {
+					index,
+					types: Array.from(e.dataTransfer.types),
+					isDragging,
+					draggedGroupId
+				});
+				const groupReorderData = e.dataTransfer.getData("application/group-reorder");
+				if (groupReorderData && draggedGroupId) {
+					logger.info("ui", `Drop zone ${String(index)} processing reorder`, {
+						sourceGroupId: groupReorderData,
+						insertionIndex: index,
+						totalGroups: groupDefinitions.length
+					});
+
+					if (index === 0) {
+						// Dropping at the beginning - insert before first group
+						const firstGroup = groupDefinitions[0];
+						if (firstGroup?.id !== groupReorderData) {
+							handleGroupReorder(groupReorderData, firstGroup.id, true, e);
+						}
+					} else if (index === groupDefinitions.length) {
+						// Dropping at the end - insert after last group
+						const lastGroup = groupDefinitions[groupDefinitions.length - 1];
+						if (lastGroup?.id !== groupReorderData) {
+							handleGroupReorder(groupReorderData, lastGroup.id, false, e);
+						}
+					} else {
+						// Dropping between groups - use the group before this drop zone
+						const targetGroup = groupDefinitions[index - 1];
+						if (targetGroup?.id !== groupReorderData) {
+							handleGroupReorder(groupReorderData, targetGroup.id, false, e);
+						}
+					}
+				}
+			}}
+		/>
+	);
 
 	const handleDrop = (draggedSectionId: string, targetGroupId: string, _event: React.DragEvent) => {
 		logger.info("ui", `Moving section ${draggedSectionId} to group ${targetGroupId}`, {
@@ -136,6 +231,15 @@ export const LeftRibbon: React.FC = () => {
 	const handleEmptyAreaDrop = (event: React.DragEvent) => {
 		event.preventDefault();
 		event.stopPropagation();
+
+		// Check if this is a group reorder drag - if so, ignore it
+		const isGroupReorder = event.dataTransfer.types.includes("application/group-reorder");
+		if (isGroupReorder) {
+			logger.info("ui", "Ignoring group reorder drag in empty area", {
+				types: Array.from(event.dataTransfer.types)
+			});
+			return;
+		}
 
 		const draggedSectionId = event.dataTransfer.getData("text/plain");
 		if (!draggedSectionId) {
@@ -213,20 +317,32 @@ export const LeftRibbon: React.FC = () => {
 			}}
 		>
 			{/* Dynamic tool groups */}
-			<Stack gap="xs" align="center">
-				{groupDefinitions.map((group) => (
-					<GroupRibbonButton
-						key={group.id}
-						group={group}
-						isActive={activeGroupId === group.id}
-						onActivate={handleGroupActivate}
-						onDrop={handleDrop}
-						onDragOver={handleDragOver}
-						onGroupReorder={handleGroupReorder}
-						side="left"
-					/>
+			<div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "4px" }}>
+				{groupDefinitions.map((group, index) => (
+					<React.Fragment key={group.id}>
+						{/* Drop zone before first item or between items */}
+						<DropZone index={index} isActive={dropInsertionIndex === index} />
+
+						<GroupRibbonButton
+							group={group}
+							isActive={activeGroupId === group.id}
+							onActivate={handleGroupActivate}
+							onDrop={handleDrop}
+							onDragOver={handleDragOver}
+							onGroupReorder={handleGroupReorder}
+							onDragStart={handleGroupDragStart}
+							onDragEnd={handleGroupDragEnd}
+							side="left"
+						/>
+					</React.Fragment>
 				))}
-			</Stack>
+
+				{/* Drop zone after last item */}
+				<DropZone
+					index={groupDefinitions.length}
+					isActive={dropInsertionIndex === groupDefinitions.length}
+				/>
+			</div>
 
 			<div style={{ flex: 1 }} />
 
