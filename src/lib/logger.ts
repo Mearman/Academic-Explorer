@@ -59,9 +59,18 @@ class ApplicationLogger {
 
 		// Also log to console if enabled
 		if (this.config.enableConsoleOutput) {
-			const consoleMethod = level === "debug" ? "debug" : level === "info" ? "info" : level === "warn" ? "warn" : "error";
-			// eslint-disable-next-line no-console
-			console[consoleMethod](`[${category}] ${message}`, data || "");
+			const logMessage = `[${category}] ${message}`;
+			const logData = data || "";
+
+			if (level === "debug") {
+				console.debug(logMessage, logData);
+			} else if (level === "info") {
+				console.info(logMessage, logData);
+			} else if (level === "warn") {
+				console.warn(logMessage, logData);
+			} else {
+				console.error(logMessage, logData);
+			}
 		}
 	}
 

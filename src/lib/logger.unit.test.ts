@@ -255,14 +255,18 @@ describe("Logger Module", () => {
 	});
 
 	describe("Export functionality", () => {
+		let mockCreateElement: ReturnType<typeof vi.fn>;
+
 		beforeEach(() => {
 			// Mock DOM methods for export functionality
+			mockCreateElement = vi.fn(() => ({
+				href: "",
+				download: "",
+				click: vi.fn(),
+			}));
+
 			global.document = {
-				createElement: vi.fn(() => ({
-					href: "",
-					download: "",
-					click: vi.fn(),
-				})),
+				createElement: mockCreateElement,
 				body: {
 					appendChild: vi.fn(),
 					removeChild: vi.fn(),
@@ -289,13 +293,11 @@ describe("Logger Module", () => {
 				click: vi.fn(),
 			};
 
-			// eslint-disable-next-line @typescript-eslint/no-deprecated
-			vi.mocked(document.createElement).mockReturnValue(mockAnchor as unknown as HTMLAnchorElement);
+			mockCreateElement.mockReturnValue(mockAnchor as unknown as HTMLAnchorElement);
 
 			logger.exportLogs();
 
-			// eslint-disable-next-line @typescript-eslint/no-deprecated
-			expect(document.createElement).toHaveBeenCalledWith("a");
+			expect(mockCreateElement).toHaveBeenCalledWith("a");
 			expect(mockAnchor.href).toBe("mock-url");
 			expect(mockAnchor.download).toContain("academic-explorer-logs-");
 			expect(mockAnchor.download).toContain(".json");

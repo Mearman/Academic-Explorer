@@ -5,6 +5,7 @@
 
 import { chromium, type Browser, type BrowserContext, type Page } from "@playwright/test"
 import { beforeAll, afterAll, beforeEach, afterEach } from "vitest"
+import { logger } from "@/lib/logger"
 
 let browser: Browser
 let context: BrowserContext
@@ -41,15 +42,13 @@ beforeEach(async () => {
 	// Set up console logging in tests
 	page.on("console", (msg) => {
 		if (msg.type() === "error") {
-			// eslint-disable-next-line no-console -- E2E error logging
-			console.error(`Browser console error: ${msg.text()}`)
+			logger.error("general", `Browser console error: ${msg.text()}`, undefined, "e2e-setup")
 		}
 	})
 
 	// Set up error handling
 	page.on("pageerror", (error) => {
-		// eslint-disable-next-line no-console -- E2E error logging
-		console.error(`Browser page error: ${error.message}`)
+		logger.error("general", `Browser page error: ${error.message}`, undefined, "e2e-setup")
 	})
 
 	// Make page available globally for tests
