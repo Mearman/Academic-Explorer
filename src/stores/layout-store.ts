@@ -297,7 +297,7 @@ export const useLayoutStore = create<LayoutState>()(
 						groupId,
 						sectionId,
 						isNewGroup: !group,
-						oldSections: group?.sections || [],
+						oldSections: group.sections,
 						newSections: updatedGroup.sections
 					});
 

@@ -155,7 +155,7 @@ export const updateGroupDefinition = (groupId: string, sections: string[], getSe
 
 	// Preserve existing order if group already exists, otherwise assign new order
 	const existingDefinition = GROUP_DEFINITIONS[groupId];
-	const order = existingDefinition ? existingDefinition.order ?? getNextOrderNumber() : getNextOrderNumber();
+	const order = existingDefinition.order ?? getNextOrderNumber();
 
 	const updatedDefinition: ToolGroupDefinition = {
 		id: groupId,
