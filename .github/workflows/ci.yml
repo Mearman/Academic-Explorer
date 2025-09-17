@@ -131,7 +131,7 @@ jobs:
 
     strategy:
       matrix:
-        test-type: [unit, integration]
+        test-type: [unit, integration, e2e]
         include:
           - test-type: unit
             command: test:unit:run
@@ -139,6 +139,9 @@ jobs:
           - test-type: integration
             command: test:integration:run
             timeout: 15
+          - test-type: e2e
+            command: test:e2e
+            timeout: 20
 
     steps:
       - name: Checkout
