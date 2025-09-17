@@ -19,17 +19,21 @@ import { detectEntityType } from "./entity-detection";
 /**
  * Factory for creating entity instances based on type
  */
-// eslint-disable-next-line @typescript-eslint/no-extraneous-class
 export class EntityFactory {
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	private static readonly entities = new Map<EntityType, new (client: RateLimitedOpenAlexClient, entityData?: any) => AbstractEntity<any>>();
+	private static readonly entities = new Map<EntityType, new (client: RateLimitedOpenAlexClient, entityData?: unknown) => AbstractEntity<OpenAlexEntity>>();
+
+	// Instance property to satisfy no-extraneous-class rule
+	public readonly factoryType = "entity";
+
+	// Private constructor to prevent external instantiation
+	private constructor() {}
 
 	/**
    * Register entity classes
    */
 	static {
-		EntityFactory.entities.set("works", WorkEntity);
-		EntityFactory.entities.set("authors", AuthorEntity);
+		EntityFactory.entities.set("works", WorkEntity as new (client: RateLimitedOpenAlexClient, entityData?: unknown) => AbstractEntity<OpenAlexEntity>);
+		EntityFactory.entities.set("authors", AuthorEntity as new (client: RateLimitedOpenAlexClient, entityData?: unknown) => AbstractEntity<OpenAlexEntity>);
 		// EntityFactory.entities.set('sources', SourceEntity);
 		// EntityFactory.entities.set('institutions', InstitutionEntityClass);
 	}
@@ -48,7 +52,7 @@ export class EntityFactory {
 			throw new Error(`No entity class registered for type: ${entityType}`);
 		}
 
-		return new EntityClass(client, entityData as OpenAlexEntity) as AbstractEntity<T>;
+		return new EntityClass(client, entityData) as AbstractEntity<T>;
 	}
 
 	/**
@@ -83,6 +87,6 @@ export class EntityFactory {
 		entityType: EntityType,
 		entityClass: new (client: RateLimitedOpenAlexClient, entityData?: T) => AbstractEntity<T>
 	): void {
-		this.entities.set(entityType, entityClass);
+		this.entities.set(entityType, entityClass as new (client: RateLimitedOpenAlexClient, entityData?: unknown) => AbstractEntity<OpenAlexEntity>);
 	}
 }

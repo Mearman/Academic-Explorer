@@ -10,7 +10,6 @@ import { CACHE_CONFIG } from "@/config/cache";
 import * as logger from "@/lib/logger";
 import {
 	createHybridPersister,
-	createIDBPersister,
 	getCacheStats,
 	clearExpiredCache,
 } from "./persister";
@@ -486,8 +485,13 @@ describe("Cache Persister", () => {
 
 	describe("createIDBPersister", () => {
 		it("should create IndexedDB-only persister with basic functionality", async () => {
-			// eslint-disable-next-line @typescript-eslint/no-deprecated
-			const persister = createIDBPersister("test-db");
+			// Testing with createHybridPersister (replaced deprecated createIDBPersister)
+			const persister = createHybridPersister();
+
+			// Force IndexedDB usage by making localStorage fail
+			localStorageMock.setItem.mockImplementation(() => {
+				throw new Error("localStorage not available");
+			});
 
 			await persister.persistClient(samplePersistedClient);
 
@@ -502,8 +506,8 @@ describe("Cache Persister", () => {
 		});
 
 		it("should restore client data without version metadata", async () => {
-			// eslint-disable-next-line @typescript-eslint/no-deprecated
-			const persister = createIDBPersister();
+			// Testing with createHybridPersister (replaced deprecated createIDBPersister)
+			const persister = createHybridPersister();
 
 			mockStore.get.mockResolvedValue(samplePersistedData);
 
@@ -517,14 +521,15 @@ describe("Cache Persister", () => {
 		});
 
 		it("should handle expired cache in IndexedDB-only mode", async () => {
-			// eslint-disable-next-line @typescript-eslint/no-deprecated
-			const persister = createIDBPersister();
+			// Testing with createHybridPersister (replaced deprecated createIDBPersister)
+			const persister = createHybridPersister();
 
 			const expiredData = {
 				...samplePersistedData,
 				timestamp: Date.now() - CACHE_CONFIG.maxAge - 1000,
 			};
 
+			localStorageMock.getItem.mockReturnValue(null);
 			mockStore.get.mockResolvedValue(expiredData);
 
 			const result = await persister.restoreClient();
