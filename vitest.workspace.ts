@@ -54,7 +54,7 @@ export default defineWorkspace([
     },
   },
 
-  // E2E tests - Full user journeys and critical paths
+  // E2E tests - Full user journeys and critical paths with Playwright
   {
     resolve: {
       alias: {
@@ -66,8 +66,16 @@ export default defineWorkspace([
       include: ['src/**/*.e2e.test.ts'],
       environment: 'node',
       globals: true,
-      setupFiles: ['./src/test/setup.ts'],
+      setupFiles: ['./src/test/setup.ts', './src/test/e2e-setup.ts'],
       testTimeout: 90000,
+      // Serial execution for memory efficiency
+      maxConcurrency: 1,
+      pool: 'forks',
+      poolOptions: {
+        forks: {
+          singleFork: true,
+        },
+      },
     },
   },
 ])
