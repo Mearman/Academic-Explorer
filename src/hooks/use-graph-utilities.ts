@@ -17,8 +17,8 @@ export const useGraphUtilities = () => {
 	const setError = useGraphStore((state) => state.setError);
 
 	// Convert Records to arrays with stable dependencies
-	const nodes = useMemo(() => Object.values(nodesMap), [nodesMap]);
-	const edges = useMemo(() => Object.values(edgesMap), [edgesMap]);
+	const nodes = useMemo(() => Object.values(nodesMap).filter((node): node is NonNullable<typeof node> => node != null), [nodesMap]);
+	const edges = useMemo(() => Object.values(edgesMap).filter((edge): edge is NonNullable<typeof edge> => edge != null), [edgesMap]);
 
 	// Apply utility result to store
 	const applyUtilityResult = useCallback((result: GraphUtilityResult) => {

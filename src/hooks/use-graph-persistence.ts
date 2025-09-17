@@ -107,8 +107,8 @@ export function useGraphPersistence() {
 
 		const sessionId = `session_${Date.now().toString()}`
 		const snapshot: GraphSnapshot = {
-			nodes: Object.values(store.nodes),
-			edges: Object.values(store.edges),
+			nodes: Object.values(store.nodes).filter((node): node is NonNullable<typeof node> => node != null),
+			edges: Object.values(store.edges).filter((edge): edge is NonNullable<typeof edge> => edge != null),
 			viewport: store.provider?.getSnapshot().viewport || {
 				zoom: 1,
 				center: { x: 0, y: 0 }

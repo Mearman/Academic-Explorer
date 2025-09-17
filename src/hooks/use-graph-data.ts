@@ -89,7 +89,7 @@ export function useGraphData() {
 
 		// Get the node to expand
 		const node = store.nodes[nodeId];
-		if (!(nodeId in store.nodes)) {
+		if (!node) {
 			logger.warn("graph", "Node not found for expansion", { nodeId }, "useGraphData");
 			return;
 		}
