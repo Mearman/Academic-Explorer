@@ -506,10 +506,10 @@ export const useLayoutStore = create<LayoutState>()(
 				let sourceGroup: ToolGroup | null = null;
 				let sourceSidebar: "left" | "right" | null = null;
 
-				if (leftGroups[sourceGroupId]) {
+				if (sourceGroupId in leftGroups) {
 					sourceGroup = leftGroups[sourceGroupId];
 					sourceSidebar = "left";
-				} else if (rightGroups[sourceGroupId]) {
+				} else if (sourceGroupId in rightGroups) {
 					sourceGroup = rightGroups[sourceGroupId];
 					sourceSidebar = "right";
 				}
