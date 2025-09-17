@@ -6,6 +6,7 @@
 import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
 import type { ProviderType } from "@/lib/graph/types";
+import { getDefaultSectionPlacements, getAllSectionIds } from "@/stores/section-registry";
 
 interface LayoutState {
   // Sidebar states
@@ -24,6 +25,9 @@ interface LayoutState {
 
   // Section expansion states
   expandedSections: Record<string, boolean>;
+
+  // Section placement states (which sidebar each section is in)
+  sectionPlacements: Record<string, "left" | "right">;
 
   // Graph provider selection
   graphProvider: ProviderType;
@@ -47,6 +51,9 @@ interface LayoutState {
   setRightSidebarHovered: (hovered: boolean) => void;
   setSectionExpanded: (sectionKey: string, expanded: boolean) => void;
   expandSidebarToSection: (sidebar: "left" | "right", sectionKey: string) => void;
+  moveSectionToSidebar: (sectionId: string, targetSidebar: "left" | "right") => void;
+  resetSectionPlacements: () => void;
+  getSectionsForSidebar: (sidebar: "left" | "right") => string[];
   setGraphProvider: (provider: ProviderType) => void;
   setPreviewEntity: (entityId: string | null) => void;
   setAutoPinOnLayoutStabilization: (enabled: boolean) => void;
@@ -58,6 +65,7 @@ type LayoutPersistedState = Partial<Pick<LayoutState,
   | "rightSidebarOpen"
   | "rightSidebarPinned"
   | "expandedSections"
+  | "sectionPlacements"
   | "graphProvider"
   | "autoPinOnLayoutStabilization"
 >>;
@@ -75,6 +83,7 @@ export const useLayoutStore = create<LayoutState>()(
 			leftSidebarHovered: false,
 			rightSidebarHovered: false,
 			expandedSections: {},
+			sectionPlacements: getDefaultSectionPlacements(),
 			graphProvider: "xyflow",
 			previewEntityId: null,
 			autoPinOnLayoutStabilization: false,
@@ -134,6 +143,26 @@ export const useLayoutStore = create<LayoutState>()(
 					},
 				})),
 
+			moveSectionToSidebar: (sectionId, targetSidebar) =>
+				set((state) => ({
+					sectionPlacements: {
+						...state.sectionPlacements,
+						[sectionId]: targetSidebar,
+					},
+				})),
+
+			resetSectionPlacements: () =>
+				set({
+					sectionPlacements: getDefaultSectionPlacements(),
+				}),
+
+			getSectionsForSidebar: (sidebar) => {
+				const state = get();
+				return getAllSectionIds().filter(
+					sectionId => state.sectionPlacements[sectionId] === sidebar
+				);
+			},
+
 			setGraphProvider: (provider) =>
 				set({ graphProvider: provider }),
 
@@ -155,20 +184,29 @@ export const useLayoutStore = create<LayoutState>()(
 				leftSidebarPinned: state.leftSidebarPinned,
 				rightSidebarPinned: state.rightSidebarPinned,
 				expandedSections: state.expandedSections,
+				sectionPlacements: state.sectionPlacements,
 				graphProvider: state.graphProvider,
 				autoPinOnLayoutStabilization: state.autoPinOnLayoutStabilization,
 			}),
-			// Migration for existing localStorage entries that don't have autoPinOnLayoutStabilization
+			// Migration for existing localStorage entries
 			migrate: (persistedState: unknown): unknown => {
-				// If the persisted state doesn't have autoPinOnLayoutStabilization, add it with default value
 				if (persistedState && typeof persistedState === "object") {
 					const state = persistedState as LayoutPersistedState;
+					let migrated = false;
+
+					// Add autoPinOnLayoutStabilization if missing
 					if (typeof state.autoPinOnLayoutStabilization === "undefined") {
-						return {
-							...state,
-							autoPinOnLayoutStabilization: true,
-						};
+						state.autoPinOnLayoutStabilization = true;
+						migrated = true;
 					}
+
+					// Add sectionPlacements if missing
+					if (!state.sectionPlacements) {
+						state.sectionPlacements = getDefaultSectionPlacements();
+						migrated = true;
+					}
+
+					return migrated ? { ...state } : persistedState;
 				}
 				return persistedState;
 			},
