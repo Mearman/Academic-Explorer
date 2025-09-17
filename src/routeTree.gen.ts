@@ -20,6 +20,7 @@ import { Route as WorksWorkIdRouteImport } from './routes/works/$workId'
 import { Route as TopicsTopicIdRouteImport } from './routes/topics/$topicId'
 import { Route as SourcesSourceIdRouteImport } from './routes/sources/$sourceId'
 import { Route as InstitutionsInstitutionIdRouteImport } from './routes/institutions/$institutionId'
+import { Route as HttpsSplatRouteImport } from './routes/https/$'
 import { Route as ExploreGraphRouteImport } from './routes/explore/graph'
 import { Route as EvaluationResultsRouteImport } from './routes/evaluation/results'
 import { Route as EvaluationDatasetsRouteImport } from './routes/evaluation/datasets'
@@ -85,6 +86,11 @@ const InstitutionsInstitutionIdRoute =
     path: '/institutions/$institutionId',
     getParentRoute: () => rootRouteImport,
   } as any)
+const HttpsSplatRoute = HttpsSplatRouteImport.update({
+  id: '/https/$',
+  path: '/https/$',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ExploreGraphRoute = ExploreGraphRouteImport.update({
   id: '/graph',
   path: '/graph',
@@ -138,6 +144,7 @@ export interface FileRoutesByFullPath {
   '/evaluation/datasets': typeof EvaluationDatasetsRoute
   '/evaluation/results': typeof EvaluationResultsRoute
   '/explore/graph': typeof ExploreGraphRoute
+  '/https/$': typeof HttpsSplatRoute
   '/institutions/$institutionId': typeof InstitutionsInstitutionIdRoute
   '/sources/$sourceId': typeof SourcesSourceIdRoute
   '/topics/$topicId': typeof TopicsTopicIdRoute
@@ -159,6 +166,7 @@ export interface FileRoutesByTo {
   '/evaluation/datasets': typeof EvaluationDatasetsRoute
   '/evaluation/results': typeof EvaluationResultsRoute
   '/explore/graph': typeof ExploreGraphRoute
+  '/https/$': typeof HttpsSplatRoute
   '/institutions/$institutionId': typeof InstitutionsInstitutionIdRoute
   '/sources/$sourceId': typeof SourcesSourceIdRoute
   '/topics/$topicId': typeof TopicsTopicIdRoute
@@ -181,6 +189,7 @@ export interface FileRoutesById {
   '/evaluation/datasets': typeof EvaluationDatasetsRoute
   '/evaluation/results': typeof EvaluationResultsRoute
   '/explore/graph': typeof ExploreGraphRoute
+  '/https/$': typeof HttpsSplatRoute
   '/institutions/$institutionId': typeof InstitutionsInstitutionIdRoute
   '/sources/$sourceId': typeof SourcesSourceIdRoute
   '/topics/$topicId': typeof TopicsTopicIdRoute
@@ -204,6 +213,7 @@ export interface FileRouteTypes {
     | '/evaluation/datasets'
     | '/evaluation/results'
     | '/explore/graph'
+    | '/https/$'
     | '/institutions/$institutionId'
     | '/sources/$sourceId'
     | '/topics/$topicId'
@@ -225,6 +235,7 @@ export interface FileRouteTypes {
     | '/evaluation/datasets'
     | '/evaluation/results'
     | '/explore/graph'
+    | '/https/$'
     | '/institutions/$institutionId'
     | '/sources/$sourceId'
     | '/topics/$topicId'
@@ -246,6 +257,7 @@ export interface FileRouteTypes {
     | '/evaluation/datasets'
     | '/evaluation/results'
     | '/explore/graph'
+    | '/https/$'
     | '/institutions/$institutionId'
     | '/sources/$sourceId'
     | '/topics/$topicId'
@@ -265,6 +277,7 @@ export interface RootRouteChildren {
   GraphRoute: typeof GraphRoute
   SearchRoute: typeof SearchRoute
   AuthorsAuthorIdRoute: typeof AuthorsAuthorIdRoute
+  HttpsSplatRoute: typeof HttpsSplatRoute
   InstitutionsInstitutionIdRoute: typeof InstitutionsInstitutionIdRoute
   SourcesSourceIdRoute: typeof SourcesSourceIdRoute
   TopicsTopicIdRoute: typeof TopicsTopicIdRoute
@@ -352,6 +365,13 @@ declare module '@tanstack/react-router' {
       path: '/institutions/$institutionId'
       fullPath: '/institutions/$institutionId'
       preLoaderRoute: typeof InstitutionsInstitutionIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/https/$': {
+      id: '/https/$'
+      path: '/https/$'
+      fullPath: '/https/$'
+      preLoaderRoute: typeof HttpsSplatRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/explore/graph': {
@@ -447,6 +467,7 @@ const rootRouteChildren: RootRouteChildren = {
   GraphRoute: GraphRoute,
   SearchRoute: SearchRoute,
   AuthorsAuthorIdRoute: AuthorsAuthorIdRoute,
+  HttpsSplatRoute: HttpsSplatRoute,
   InstitutionsInstitutionIdRoute: InstitutionsInstitutionIdRoute,
   SourcesSourceIdRoute: SourcesSourceIdRoute,
   TopicsTopicIdRoute: TopicsTopicIdRoute,
