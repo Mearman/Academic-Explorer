@@ -148,21 +148,6 @@ export const VerticalStackSidebar: React.FC<VerticalStackSidebarProps> = ({ side
 			onDrop={handleDrop}
 			onDragOver={handleDragOver}
 		>
-			{/* Group header */}
-			<div style={{
-				padding: "12px 16px",
-				borderBottom: `1px solid ${colors.border.primary}`,
-				backgroundColor: colors.background.secondary,
-				display: "flex",
-				alignItems: "center",
-				gap: "8px"
-			}}>
-				<groupDefinition.icon size={18} />
-				<Text size="sm" fw={600} style={{ color: colors.text.primary }}>
-					{groupDefinition.title}
-				</Text>
-			</div>
-
 			{/* Vertical stack of all tools in the group */}
 			<Stack gap={0}>
 				{activeGroup.sections.map((sectionId, index) => {
