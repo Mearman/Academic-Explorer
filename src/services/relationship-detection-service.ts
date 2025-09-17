@@ -152,7 +152,7 @@ export class RelationshipDetectionService {
 			}
 
 			// Get all existing nodes in the graph
-			const existingNodes = Object.values(store.nodes).filter(node => node.id !== nodeId);
+			const existingNodes = Object.values(store.nodes).filter((node): node is NonNullable<typeof node> => node != null).filter(node => node.id !== nodeId);
 
 			// Detect relationships with existing nodes
 			const detectedRelationships = this.analyzeRelationships(minimalData, existingNodes);

@@ -83,7 +83,7 @@ export function CacheInitializer({ children }: CacheInitializerProps) {
 					<IconDatabase size={48} color="var(--mantine-color-blue-6)" />
 					<Text size="lg" fw={500}>Initializing Academic Explorer</Text>
 					<Text size="sm" c="dimmed">Checking for updates and preparing cache...</Text>
-					<Progress size="sm" value={undefined} animated style={{ width: 200 }} />
+					<Progress size="sm" value={100} animated style={{ width: 200 }} />
 				</Stack>
 			</Center>
 		);

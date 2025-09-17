@@ -636,11 +636,12 @@ export const useGraphStore = create<GraphState>()(
 
 			getNodesWithinDepth: (depth) => {
 				const { nodes, nodeDepths } = get();
+				const nodeValues = Object.values(nodes).filter((node): node is NonNullable<typeof node> => node != null);
 				if (depth === Infinity) {
-					return Object.values(nodes);
+					return nodeValues;
 				}
 
-				return Object.values(nodes).filter(node => {
+				return nodeValues.filter(node => {
 					const nodeDepth = nodeDepths[node.id];
 					return nodeDepth <= depth;
 				});
@@ -789,7 +790,7 @@ export const useGraphStore = create<GraphState>()(
 				set((state) => {
 					const { nodes } = state;
 					state.cachedLoadingNodes = Object.values(nodes).filter((node): node is GraphNode =>
-						node !== undefined && node.label && node.label.includes("Loading")
+						node !== undefined && typeof node.label === "string" && node.label.includes("Loading")
 					);
 				});
 			},
@@ -1033,7 +1034,7 @@ export const useGraphStore = create<GraphState>()(
 					}
 
 					// Check all connected nodes
-					Object.values(edges).forEach(edge => {
+					Object.values(edges).filter((edge): edge is NonNullable<typeof edge> => edge != null).forEach(edge => {
 						let neighbor: string | null = null;
 						if (edge.source === current && !visited[edge.target]) {
 							neighbor = edge.target;
@@ -1065,7 +1066,7 @@ export const useGraphStore = create<GraphState>()(
 					visited[current] = true;
 
 					// Add all connected nodes
-					Object.values(edges).forEach(edge => {
+					Object.values(edges).filter((edge): edge is NonNullable<typeof edge> => edge != null).forEach(edge => {
 						if (edge.source === current && !visited[edge.target]) {
 							stack.push(edge.target);
 						} else if (edge.target === current && !visited[edge.source]) {
@@ -1139,7 +1140,7 @@ export const useGraphStore = create<GraphState>()(
 			getFullyHydratedNodes: () => {
 				const { nodes } = get();
 				// All nodes are considered equal - return all nodes
-				return Object.values(nodes);
+				return Object.values(nodes).filter((node): node is NonNullable<typeof node> => node != null);
 			},
 
 			getLoadingNodes: () => {

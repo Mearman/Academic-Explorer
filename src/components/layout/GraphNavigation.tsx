@@ -345,10 +345,10 @@ const GraphNavigationInner: React.FC<GraphNavigationProps> = ({ className, style
 	// Sync store data with XYFlow using incremental updates (applying visibility filters)
 	useEffect(() => {
 		// Compute visible nodes and edges inside effect to avoid dependency cycle
-		const nodesList = Object.values(rawNodesMap);
+		const nodesList = Object.values(rawNodesMap).filter((node): node is NonNullable<typeof node> => node != null);
 		const currentVisibleNodes = nodesList.filter(node => visibleEntityTypes[node.type]);
 
-		const edgesList = Object.values(rawEdgesMap);
+		const edgesList = Object.values(rawEdgesMap).filter((edge): edge is NonNullable<typeof edge> => edge != null);
 		const currentVisibleEdges = edgesList.filter(edge => {
 			// Both nodes must exist and be visible
 			if (!(edge.source in rawNodesMap) || !(edge.target in rawNodesMap)) {
@@ -532,7 +532,7 @@ const GraphNavigationInner: React.FC<GraphNavigationProps> = ({ className, style
 					const [entityType, entityId] = pathParts;
 
 					// Find the corresponding node in the graph
-					const matchingNode = Object.values(storeNodes).find(node => {
+					const matchingNode = Object.values(storeNodes).filter((node): node is NonNullable<typeof node> => node != null).find(node => {
 						const cleanNodeId = EntityDetector.extractOpenAlexId(node.entityId);
 						const cleanUrlId = EntityDetector.extractOpenAlexId(entityId);
 						return node.type === entityType && cleanNodeId === cleanUrlId;
