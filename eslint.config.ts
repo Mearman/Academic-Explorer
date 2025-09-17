@@ -3,6 +3,7 @@ import globals from 'globals';
 import react from 'eslint-plugin-react';
 import reactHooks from 'eslint-plugin-react-hooks';
 import reactRefresh from 'eslint-plugin-react-refresh';
+import eslintComments from 'eslint-plugin-eslint-comments';
 import tseslint from 'typescript-eslint';
 import noEmoji from './eslint-rules/no-emoji.js';
 import noZustandComputedFunctions from './eslint-rules/no-zustand-computed-functions.js';
@@ -11,17 +12,7 @@ import noSelectorObjectCreation from './eslint-rules/no-selector-object-creation
 
 export default tseslint.config([
   {
-    ignores: ['dist/**/*', 'node_modules/**/*', 'coverage/**/*', 'routeTree.gen.ts', 'vite.config.ts', 'vite.config.old.ts', 'vitest.workspace.ts', 'src/test/setup.ts', '.nx/**/*', 'eslint.config.ts', 'eslint-rules/**/*', 'src/lib/openalex/debug-types.ts', 'src/lib/openalex/test-advanced-fields.ts'],
-  },
-  // Allow console usage in specific files where it's necessary
-  {
-    files: [
-      'src/components/devtools/*.tsx',
-      'src/lib/logger.ts',
-    ],
-    rules: {
-      'no-console': 'off',
-    },
+    ignores: ['dist/**/*', 'node_modules/**/*', 'coverage/**/*', 'src/routeTree.gen.ts', 'vite.config.ts', 'vite.config.old.ts', 'vitest.workspace.ts', 'src/test/setup.ts', '.nx/**/*', 'eslint.config.ts', 'eslint-rules/**/*', 'src/lib/openalex/debug-types.ts', 'src/lib/openalex/test-advanced-fields.ts'],
   },
   {
     files: ['**/*.{ts,tsx}'],
@@ -33,6 +24,7 @@ export default tseslint.config([
       'react': react,
       'react-hooks': reactHooks,
       'react-refresh': reactRefresh,
+      'eslint-comments': eslintComments,
       'custom': {
         rules: {
           'no-emoji': noEmoji,
@@ -73,6 +65,21 @@ export default tseslint.config([
       // Disallow direct console usage - use logger instead
       'no-console': 'error',
 
+      // Ban all eslint-disable comments - fix issues properly instead
+      'eslint-comments/no-use': ['error', { 'allow': [] }],
+
+      // Ban TypeScript escape hatch comments - fix types properly instead
+      '@typescript-eslint/ban-ts-comment': [
+        'error',
+        {
+          'ts-expect-error': false, // Allow with description
+          'ts-ignore': true,       // Never allow
+          'ts-nocheck': true,      // Never allow
+          'ts-check': true,        // Never allow
+          'minimumDescriptionLength': 10
+        }
+      ],
+
       // Temporarily relax floating promises to focus on other issues
       '@typescript-eslint/no-floating-promises': 'warn',
 
@@ -109,6 +116,16 @@ export default tseslint.config([
       react: {
         version: 'detect',
       },
+    },
+  },
+  // Allow console usage in specific files where it's necessary for logging infrastructure
+  {
+    files: [
+      'src/components/devtools/*.tsx',
+      'src/lib/logger.ts',
+    ],
+    rules: {
+      'no-console': 'off',
     },
   },
   // Relax strict type checking for test files due to mocking framework patterns
