@@ -754,50 +754,62 @@ export class GraphDataService {
 
 			const relatedData = await entity.expand(context, enhancedOptions);
 
-			// Add new nodes and edges to the graph
-			store.addNodes(relatedData.nodes);
-			store.addEdges(relatedData.edges);
-
-			// Update cached graph data
-			const allNodes = Object.values(store.nodes);
-			const allEdges = Object.values(store.edges);
-			setCachedGraphNodes(this.queryClient, allNodes);
-			setCachedGraphEdges(this.queryClient, allEdges);
-
-			// Mark as expanded in TanStack Query cache
-			setNodeExpanded(this.queryClient, nodeId, true);
-
-			// Detect relationships for newly added nodes after expansion
+			// Detect relationships for newly added nodes BEFORE adding to graph (synchronous)
+			let detectedEdges: GraphEdge[] = [];
 			if (relatedData.nodes.length > 0) {
 				const newNodeIds = relatedData.nodes.map(n => n.id);
-				logger.info("graph", "Starting relationship detection for expanded nodes", {
+				logger.info("graph", "Starting synchronous relationship detection for expanded nodes", {
 					expandedNodeId: nodeId,
 					newNodeCount: newNodeIds.length,
 					entityType: node.type
 				}, "GraphDataService");
 
-				// Run relationship detection asynchronously to not block the expansion
-				this.relationshipDetectionService.detectRelationshipsForNodes(newNodeIds)
-					.then((detectedEdges) => {
-						// Add detected relationship edges to the graph
-						if (detectedEdges.length > 0) {
-							logger.info("graph", "Adding detected relationship edges to graph", {
-								expandedNodeId: nodeId,
-								detectedEdgeCount: detectedEdges.length
-							}, "GraphDataService");
+				try {
+					// Run relationship detection synchronously to ensure edges are ready
+					detectedEdges = await this.relationshipDetectionService.detectRelationshipsForNodes(newNodeIds);
 
-							const currentStore = useGraphStore.getState();
-							currentStore.addEdges(detectedEdges);
-
-							// Update cached edges
-							const allEdges = Object.values(currentStore.edges);
-							setCachedGraphEdges(this.queryClient, allEdges);
-						}
-					})
-					.catch((error: unknown) => {
-						logError("Failed to detect relationships for expanded nodes", error, "GraphDataService", "graph");
-					});
+					logger.info("graph", "Synchronous relationship detection completed", {
+						expandedNodeId: nodeId,
+						detectedEdgeCount: detectedEdges.length,
+						relationships: detectedEdges.map(e => ({
+							source: e.source,
+							target: e.target,
+							type: e.type
+						}))
+					}, "GraphDataService");
+				} catch (error) {
+					logError("Failed to detect relationships for expanded nodes (synchronous)", error, "GraphDataService", "graph");
+					// Continue with expansion even if relationship detection fails
+				}
 			}
+
+			// Combine initial edges with detected relationship edges
+			const allNewEdges = [...relatedData.edges, ...detectedEdges];
+
+			// Atomic batch update: Add all nodes and edges together using setGraphData
+			const currentNodes = Object.values(store.nodes);
+			const currentEdges = Object.values(store.edges);
+			const finalNodes = [...currentNodes, ...relatedData.nodes];
+			const finalEdges = [...currentEdges, ...allNewEdges];
+
+			logger.info("graph", "Performing atomic batch update", {
+				expandedNodeId: nodeId,
+				newNodeCount: relatedData.nodes.length,
+				newEdgeCount: relatedData.edges.length,
+				detectedEdgeCount: detectedEdges.length,
+				totalNodeCount: finalNodes.length,
+				totalEdgeCount: finalEdges.length
+			}, "GraphDataService");
+
+			// Single atomic update to prevent React 19 state conflicts
+			store.setGraphData(finalNodes, finalEdges);
+
+			// Update cached graph data with final state
+			setCachedGraphNodes(this.queryClient, finalNodes);
+			setCachedGraphEdges(this.queryClient, finalEdges);
+
+			// Mark as expanded in TanStack Query cache
+			setNodeExpanded(this.queryClient, nodeId, true);
 
 			// Mark the node as loaded (expansion completed successfully)
 			store.markNodeAsLoaded(nodeId, {
