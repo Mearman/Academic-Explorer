@@ -356,7 +356,8 @@ const GraphNavigationInner: React.FC<GraphNavigationProps> = ({ className, style
 			}
 			const sourceNode = rawNodesMap[edge.source];
 			const targetNode = rawNodesMap[edge.target];
-			return visibleEntityTypes[sourceNode.type] &&
+			return sourceNode && targetNode &&
+				visibleEntityTypes[sourceNode.type] &&
 				visibleEntityTypes[targetNode.type] &&
 				visibleEdgeTypes[edge.type];
 		});
