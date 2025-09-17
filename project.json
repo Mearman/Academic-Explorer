@@ -66,6 +66,30 @@
       },
       "cache": true
     },
+    "test:component:run": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "vitest run --project=component",
+        "cwd": "{projectRoot}"
+      },
+      "cache": true
+    },
+    "test:integration:run": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "vitest run --project=integration",
+        "cwd": "{projectRoot}"
+      },
+      "cache": true
+    },
+    "test:e2e:run": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "vitest run --project=e2e",
+        "cwd": "{projectRoot}"
+      },
+      "cache": true
+    },
     "verify": {
       "executor": "nx:run-commands",
       "dependsOn": ["typecheck", "lint", "build"],
