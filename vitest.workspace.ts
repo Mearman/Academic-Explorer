@@ -1,81 +1,64 @@
 /// <reference types="vitest" />
 import { defineWorkspace } from 'vitest/config'
-import * as path from 'path'
+import { resolveConfig, testSetupFiles } from './config/shared'
 
-export default defineWorkspace([
-  // Unit tests - pure logic, utilities, data transformations
-  {
-    resolve: {
-      alias: {
-        '@': path.resolve(__dirname, './src'),
-      },
-    },
-    test: {
-      name: 'unit',
-      include: ['src/**/*.unit.test.ts'],
-      environment: 'jsdom',
-      globals: true,
-      setupFiles: ['./src/test/setup.ts'],
-      testTimeout: 30000,
-    },
+// Common configuration shared across all test projects
+const commonConfig = {
+  resolve: resolveConfig,
+  test: {
+    globals: true,
+    setupFiles: testSetupFiles,
+    watch: false,
   },
+}
 
-  // Component tests - React component rendering and interactions
+// Test project configurations
+const testProjects = [
   {
-    resolve: {
-      alias: {
-        '@': path.resolve(__dirname, './src'),
+    name: 'unit',
+    include: ['src/**/*.unit.test.ts'],
+    environment: 'jsdom',
+    testTimeout: 30000,
+    description: 'Unit tests - pure logic, utilities, data transformations',
+  },
+  {
+    name: 'component',
+    include: ['src/**/*.component.test.ts', 'src/**/*.component.test.tsx'],
+    environment: 'jsdom',
+    testTimeout: 30000,
+    description: 'Component tests - React component rendering and interactions',
+  },
+  {
+    name: 'integration',
+    include: ['src/**/*.integration.test.ts'],
+    environment: 'node',
+    testTimeout: 45000,
+    description: 'Integration tests - API integration, cache behaviour, cross-component workflows',
+  },
+  {
+    name: 'e2e',
+    include: ['src/**/*.e2e.test.ts'],
+    environment: 'node',
+    testTimeout: 90000,
+    setupFiles: ['./src/test/setup.ts', './src/test/e2e-setup.ts'],
+    // Serial execution for memory efficiency
+    maxConcurrency: 1,
+    pool: 'forks',
+    poolOptions: {
+      forks: {
+        singleFork: true,
       },
     },
-    test: {
-      name: 'component',
-      include: ['src/**/*.component.test.ts', 'src/**/*.component.test.tsx'],
-      environment: 'jsdom',
-      globals: true,
-      setupFiles: ['./src/test/setup.ts'],
-      testTimeout: 30000,
-    },
+    description: 'E2E tests - Full user journeys and critical paths with Playwright',
   },
+] as const
 
-  // Integration tests - API integration, cache behaviour, cross-component workflows
-  {
-    resolve: {
-      alias: {
-        '@': path.resolve(__dirname, './src'),
-      },
-    },
+export default defineWorkspace(
+  testProjects.map(({ description, ...projectConfig }) => ({
+    ...commonConfig,
     test: {
-      name: 'integration',
-      include: ['src/**/*.integration.test.ts'],
-      environment: 'node',
-      globals: true,
-      setupFiles: ['./src/test/setup.ts'],
-      testTimeout: 45000,
+      ...commonConfig.test,
+      ...projectConfig,
     },
-  },
-
-  // E2E tests - Full user journeys and critical paths with Playwright
-  {
-    resolve: {
-      alias: {
-        '@': path.resolve(__dirname, './src'),
-      },
-    },
-    test: {
-      name: 'e2e',
-      include: ['src/**/*.e2e.test.ts'],
-      environment: 'node',
-      globals: true,
-      setupFiles: ['./src/test/setup.ts', './src/test/e2e-setup.ts'],
-      testTimeout: 90000,
-      // Serial execution for memory efficiency
-      maxConcurrency: 1,
-      pool: 'forks',
-      poolOptions: {
-        forks: {
-          singleFork: true,
-        },
-      },
-    },
-  },
-])
+  }))
+)
