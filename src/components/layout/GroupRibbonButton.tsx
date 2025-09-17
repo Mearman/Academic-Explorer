@@ -21,6 +21,7 @@ interface GroupRibbonButtonProps {
   onDragStart?: (groupId: string, event: React.DragEvent) => void;
   onDrop?: (draggedSectionId: string, targetGroupId: string, event: React.DragEvent) => void;
   onDragOver?: (event: React.DragEvent) => void;
+  onGroupReorder?: (sourceGroupId: string, targetGroupId: string, insertBefore: boolean, event: React.DragEvent) => void;
   side: "left" | "right";
 }
 
@@ -32,6 +33,7 @@ export const GroupRibbonButton: React.FC<GroupRibbonButtonProps> = ({
 	onDragStart,
 	onDrop,
 	onDragOver,
+	onGroupReorder,
 	side,
 }) => {
 	const themeColors = useThemeColors();
@@ -46,11 +48,29 @@ export const GroupRibbonButton: React.FC<GroupRibbonButtonProps> = ({
 	};
 
 	const handleDragStart = (event: React.DragEvent) => {
-		if (onDragStart) {
-			logger.info("ui", `Starting drag for group ${group.id}`, {
+		// Detect if this is a group reorder drag (Ctrl/Cmd key held) or section drag
+		const isGroupReorder = event.ctrlKey || event.metaKey;
+
+		if (isGroupReorder && onGroupReorder) {
+			logger.info("ui", `Starting group reorder drag for group ${group.id}`, {
 				groupId: group.id,
 				side
 			});
+			// Set different data for group reordering
+			event.dataTransfer.setData("application/group-reorder", group.id);
+			event.dataTransfer.setData("text/plain", `group:${group.id}`);
+			event.dataTransfer.effectAllowed = "move";
+
+			// Add visual feedback for reordering
+			const target = event.currentTarget as HTMLElement;
+			target.style.opacity = "0.7";
+			target.style.border = "2px dashed " + colors.primary;
+		} else if (onDragStart) {
+			logger.info("ui", `Starting section drag for group ${group.id}`, {
+				groupId: group.id,
+				side
+			});
+			// Original section drag behavior
 			event.dataTransfer.setData("text/plain", group.id);
 			event.dataTransfer.effectAllowed = "move";
 
@@ -66,6 +86,7 @@ export const GroupRibbonButton: React.FC<GroupRibbonButtonProps> = ({
 		// Reset visual feedback
 		const target = event.currentTarget as HTMLElement;
 		target.style.opacity = "1";
+		target.style.border = `1px solid ${colors.border.primary}`;
 	};
 
 	const handleDrop = (event: React.DragEvent) => {
