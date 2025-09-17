@@ -86,6 +86,16 @@ export const GroupRibbonButton: React.FC<GroupRibbonButtonProps> = ({
 			event.preventDefault();
 			const draggedSectionId = event.dataTransfer.getData("text/plain");
 
+			// Reject group-to-group drops - these should only happen via drop zones
+			if (draggedSectionId.startsWith("group:")) {
+				logger.info("ui", `Rejecting group drop onto ribbon button`, {
+					draggedSectionId,
+					targetGroupId: group.id,
+					side
+				});
+				return;
+			}
+
 			logger.info("ui", `Dropping section ${draggedSectionId} onto group ${group.id}`, {
 				draggedSectionId,
 				targetGroupId: group.id,
@@ -97,12 +107,15 @@ export const GroupRibbonButton: React.FC<GroupRibbonButtonProps> = ({
 	};
 
 	const handleDragOver = (event: React.DragEvent) => {
-		// Always allow group reorder drags on ribbon buttons
+		// Reject group reorder drags on ribbon buttons - they should only use drop zones
 		const groupReorderData = event.dataTransfer.types.includes("application/group-reorder");
-		if (groupReorderData && onGroupReorder) {
-			event.preventDefault();
-			event.dataTransfer.dropEffect = "move";
-		} else if (onDragOver) {
+		if (groupReorderData) {
+			// Don't prevent default - reject the drop
+			return;
+		}
+
+		// Allow tool/section drags onto ribbon buttons
+		if (onDragOver) {
 			event.preventDefault();
 			event.dataTransfer.dropEffect = "move";
 			onDragOver(event);
@@ -112,7 +125,13 @@ export const GroupRibbonButton: React.FC<GroupRibbonButtonProps> = ({
 	const handleDragEnter = (event: React.DragEvent) => {
 		event.preventDefault();
 
-		// Add visual feedback for valid drop zone
+		// Don't highlight for group reorder drags - they should only use drop zones
+		const groupReorderData = event.dataTransfer.types.includes("application/group-reorder");
+		if (groupReorderData) {
+			return;
+		}
+
+		// Add visual feedback for valid drop zone (tools only)
 		const target = event.currentTarget as HTMLElement;
 		target.style.backgroundColor = colors.primary;
 		target.style.borderColor = colors.primary;
@@ -120,6 +139,12 @@ export const GroupRibbonButton: React.FC<GroupRibbonButtonProps> = ({
 	};
 
 	const handleDragLeave = (event: React.DragEvent) => {
+		// Don't process drag leave for group reorder drags - they don't get highlighted anyway
+		const groupReorderData = event.dataTransfer.types.includes("application/group-reorder");
+		if (groupReorderData) {
+			return;
+		}
+
 		// Only remove highlight if leaving the element entirely
 		const target = event.currentTarget as HTMLElement;
 		const rect = target.getBoundingClientRect();
