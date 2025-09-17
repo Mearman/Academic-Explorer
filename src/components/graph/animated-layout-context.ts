@@ -55,3 +55,9 @@ export const useAnimatedLayoutContext = () => {
 	}
 	return context;
 };
+
+// Safe version that returns null when context is not available
+export const useAnimatedLayoutContextSafe = () => {
+	const context = React.useContext(AnimatedLayoutContext);
+	return context;
+};
