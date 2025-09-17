@@ -1,3 +1,12 @@
+## [5.0.1](https://github.com/Mearman/Academic-Explorer/compare/v5.0.0...v5.0.1) (2025-09-17)
+
+
+### Bug Fixes
+
+* **ci:** resolve cache save failures and missing coverage artifacts ([b903b37](https://github.com/Mearman/Academic-Explorer/commit/b903b37ff8e823240aae0190f58147d2d70d1d95))
+* **lint:** resolve unnecessary conditional warnings ([533aa80](https://github.com/Mearman/Academic-Explorer/commit/533aa808a34bf351092f7a9983a00cb59cc19a7c))
+* **works:** handle undefined arrays in test compatibility ([84036ab](https://github.com/Mearman/Academic-Explorer/commit/84036ab53fc42bc438756de59822fae9bea0bdee))
+
 # [5.0.0](https://github.com/Mearman/Academic-Explorer/compare/v4.0.4...v5.0.0) (2025-09-17)
 
 
