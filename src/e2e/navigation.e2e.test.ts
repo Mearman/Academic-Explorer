@@ -98,7 +98,7 @@ describe("Academic Explorer Navigation", () => {
 
 			// Verify URL
 			const currentHash = await page.evaluate(() => window.location.hash)
-			expect(currentHash).toContain(`/entity/${type}/${id}`)
+			expect(currentHash).toContain(`/${type}/${id}`)
 
 			// Verify entity display
 			const entityDisplay = getEntityDisplay(page)
@@ -131,7 +131,7 @@ describe("Academic Explorer Navigation", () => {
 
 		// Verify final URL
 		const finalHash = await page.evaluate(() => window.location.hash)
-		expect(finalHash).toMatch(/#\/(entity\/works\/W123|W123)/)
+		expect(finalHash).toMatch(/#\/works\/W123/)
 
 		await assertPageLoadsWithoutErrors(page)
 	})
@@ -175,7 +175,7 @@ describe("Academic Explorer Navigation", () => {
 		})
 
 		// Navigate to non-existent entity
-		await navigateToApp(page, "/entity/works/NONEXISTENT")
+		await navigateToApp(page, "/works/NONEXISTENT")
 
 		// Should show error state without crashing
 		const errorElement = page.locator('[data-testid*="error"], .error, [role="alert"]')
