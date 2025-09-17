@@ -19,7 +19,7 @@ import {
 	IconInfoCircle,
 } from "@tabler/icons-react";
 import { useGraphStore } from "@/stores/graph-store";
-import { useAnimatedLayoutContext } from "@/components/graph/animated-layout-context";
+import { useAnimatedLayoutContextSafe } from "@/components/graph/animated-layout-context";
 import { logger } from "@/lib/logger";
 import { DEFAULT_FORCE_PARAMS, FORCE_PARAM_CONFIG } from "@/lib/graph/force-params";
 
@@ -39,8 +39,8 @@ export const ForceControls: React.FC = () => {
 	const currentLayout = useGraphStore((state) => state.currentLayout);
 	const setLayout = useGraphStore((state) => state.setLayout);
 
-	// Get animation context - will throw if not within AnimatedLayoutProvider
-	const animationContext = useAnimatedLayoutContext();
+	// Get animation context - safe version that returns null if not within AnimatedLayoutProvider
+	const animationContext = useAnimatedLayoutContextSafe();
 
 	// Initialize force parameters from current layout or defaults
 	const [forceParams, setForceParams] = useState<ForceParameters>(() => {
@@ -79,42 +79,50 @@ export const ForceControls: React.FC = () => {
 			setLayout(updatedLayout);
 
 			// Check animation state - running vs paused vs stopped (no fallbacks)
-			const isCurrentlyAnimating = animationContext.isAnimating;
-			const isCurrentlyPaused = animationContext.isPaused;
-			const isRunning = animationContext.isRunning;
+			// Only proceed if animation context is available
+			if (animationContext) {
+				const isCurrentlyAnimating = animationContext.isAnimating;
+				const isCurrentlyPaused = animationContext.isPaused;
+				const isRunning = animationContext.isRunning;
 
-			logger.debug("graph", "ForceControls: Animation state check", {
-				param,
-				value,
-				isAnimating: isCurrentlyAnimating,
-				isPaused: isCurrentlyPaused,
-				isRunning,
-				willUpdateParameters: isRunning
-			});
-
-			if (isRunning) {
-				// Animation is active (running or paused) - update parameters without restart
-				logger.info("graph", "Updating force parameters during active simulation", {
+				logger.debug("graph", "ForceControls: Animation state check", {
 					param,
 					value,
 					isAnimating: isCurrentlyAnimating,
 					isPaused: isCurrentlyPaused,
 					isRunning,
+					willUpdateParameters: isRunning
 				});
 
-				animationContext.updateParameters({ [param]: value });
+				if (isRunning) {
+					// Animation is active (running or paused) - update parameters without restart
+					logger.info("graph", "Updating force parameters during active simulation", {
+						param,
+						value,
+						isAnimating: isCurrentlyAnimating,
+						isPaused: isCurrentlyPaused,
+						isRunning,
+					});
+
+					animationContext.updateParameters({ [param]: value });
+				} else {
+					// Animation not active - start/restart animation with new parameters
+					logger.info("graph", "Starting animation with updated force parameter", {
+						param,
+						value,
+						isWorkerReady: animationContext.isWorkerReady,
+						isAnimating: isCurrentlyAnimating,
+						isPaused: isCurrentlyPaused,
+						isRunning,
+					});
+
+					animationContext.restartLayout();
+				}
 			} else {
-				// Animation not active - start/restart animation with new parameters
-				logger.info("graph", "Starting animation with updated force parameter", {
+				logger.info("graph", "Animation context not available - parameters updated but animation not triggered", {
 					param,
-					value,
-					isWorkerReady: animationContext.isWorkerReady,
-					isAnimating: isCurrentlyAnimating,
-					isPaused: isCurrentlyPaused,
-					isRunning,
+					value
 				});
-
-				animationContext.restartLayout();
 			}
 		}
 	};
@@ -137,29 +145,34 @@ export const ForceControls: React.FC = () => {
 			setLayout(updatedLayout);
 
 			// Check animation state - running vs paused vs stopped (no fallbacks)
-			const isCurrentlyAnimating = animationContext.isAnimating;
-			const isCurrentlyPaused = animationContext.isPaused;
-			const isRunning = animationContext.isRunning;
+			// Only proceed if animation context is available
+			if (animationContext) {
+				const isCurrentlyAnimating = animationContext.isAnimating;
+				const isCurrentlyPaused = animationContext.isPaused;
+				const isRunning = animationContext.isRunning;
 
-			if (isRunning) {
-				// Animation is active (running or paused) - update parameters without restart
-				logger.info("graph", "Updating force parameters to defaults during active simulation", {
-					isAnimating: isCurrentlyAnimating,
-					isPaused: isCurrentlyPaused,
-					isRunning,
-				});
+				if (isRunning) {
+					// Animation is active (running or paused) - update parameters without restart
+					logger.info("graph", "Updating force parameters to defaults during active simulation", {
+						isAnimating: isCurrentlyAnimating,
+						isPaused: isCurrentlyPaused,
+						isRunning,
+					});
 
-				animationContext.updateParameters(DEFAULT_FORCE_PARAMS);
+					animationContext.updateParameters(DEFAULT_FORCE_PARAMS);
+				} else {
+					// Animation not active - start/restart animation with default parameters
+					logger.info("graph", "Starting animation with default force parameters", {
+						isWorkerReady: animationContext.isWorkerReady,
+						isAnimating: isCurrentlyAnimating,
+						isPaused: isCurrentlyPaused,
+						isRunning,
+					});
+
+					animationContext.restartLayout();
+				}
 			} else {
-				// Animation not active - start/restart animation with default parameters
-				logger.info("graph", "Starting animation with default force parameters", {
-					isWorkerReady: animationContext.isWorkerReady,
-					isAnimating: isCurrentlyAnimating,
-					isPaused: isCurrentlyPaused,
-					isRunning,
-				});
-
-				animationContext.restartLayout();
+				logger.info("graph", "Animation context not available - parameters reset but animation not triggered");
 			}
 		}
 	};
