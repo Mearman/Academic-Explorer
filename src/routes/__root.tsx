@@ -1,5 +1,6 @@
 import { createRootRoute, Outlet } from "@tanstack/react-router"
 import { MainLayout } from "@/components/layout/MainLayout"
+import { RouterErrorComponent } from "@/components/error/RouterErrorComponent"
 import { themeClass } from "../styles/theme.css"
 
 function RootLayout() {
@@ -14,4 +15,5 @@ function RootLayout() {
 
 export const Route = createRootRoute({
 	component: RootLayout,
+	errorComponent: RouterErrorComponent,
 })
