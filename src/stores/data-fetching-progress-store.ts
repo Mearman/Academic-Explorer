@@ -22,7 +22,7 @@ export interface DataFetchingProgressItem {
 
 interface DataFetchingProgressState {
   // State - using plain object instead of Map for Immer compatibility
-  requests: Record<string, DataFetchingProgressItem>;
+  requests: Record<string, DataFetchingProgressItem | undefined>;
   workerReady: boolean;
 
   // Actions
