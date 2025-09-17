@@ -20,8 +20,8 @@ import { RelationType } from "@/lib/graph/types";
 
 interface GraphState {
   // Data (library agnostic) - using plain objects for stable references
-  nodes: Record<string, GraphNode>;
-  edges: Record<string, GraphEdge>;
+  nodes: Record<string, GraphNode | undefined>;
+  edges: Record<string, GraphEdge | undefined>;
 
   // Selection and interaction - using arrays/objects for stable references
   selectedNodeId: string | null;
