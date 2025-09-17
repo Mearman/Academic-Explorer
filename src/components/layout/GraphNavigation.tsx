@@ -30,7 +30,8 @@ import { createGraphProvider } from "@/lib/graph/provider-factory";
 import { XYFlowProvider } from "@/lib/graph/providers/xyflow/xyflow-provider";
 import { nodeTypes } from "@/lib/graph/providers/xyflow/node-types";
 import { edgeTypes } from "@/lib/graph/providers/xyflow/edge-types";
-import { useAnimatedLayout } from "@/lib/graph/providers/xyflow/use-animated-layout";
+import { useAnimatedLayoutContext } from "@/components/graph/animated-layout-context";
+import { AnimatedLayoutProvider } from "@/components/graph/AnimatedLayoutProvider";
 import type { GraphNode, EntityType, ExternalIdentifier } from "@/lib/graph/types";
 import { EntityDetector } from "@/lib/graph/utils/entity-detection";
 import { useEntityInteraction } from "@/hooks/use-entity-interaction";
@@ -258,10 +259,10 @@ const GraphNavigationInner: React.FC<GraphNavigationProps> = ({ className, style
 		});
 	}, [handleGraphNodeDoubleClick]);
 
-	// RE-ENABLED with infinite loop fix
+	// Get animation state and functions from context
 	const {
-		isRunning: _isLayoutRunning,
-		isAnimating: _isLayoutAnimating,
+		isRunning,
+		isAnimating,
 		isPaused,
 		progress,
 		alpha,
@@ -278,13 +279,7 @@ const GraphNavigationInner: React.FC<GraphNavigationProps> = ({ className, style
 		canResume,
 		canStop,
 		canRestart
-	} = useAnimatedLayout({
-		enabled: true,
-		onLayoutChange,
-		// Keep automatic fitView enabled - it's already smooth with 800ms duration
-		fitViewAfterLayout: true,
-		useAnimation: true
-	});
+	} = useAnimatedLayoutContext();
 
 	// Ref to capture latest restartLayout function without adding it to dependencies
 	const restartLayoutRef = useRef(restartLayout);
@@ -813,9 +808,9 @@ const GraphNavigationInner: React.FC<GraphNavigationProps> = ({ className, style
 							onLayoutChange={onLayoutChange}
 							fitViewAfterLayout={true}
 							containerDimensions={containerDimensions}
-							// Pass animation state and actions from useAnimatedLayout hook
-							isRunning={_isLayoutRunning}
-							isAnimating={_isLayoutAnimating}
+							// Pass animation state and actions from context
+							isRunning={isRunning}
+							isAnimating={isAnimating}
 							isPaused={isPaused}
 							progress={progress}
 							alpha={alpha}
@@ -883,11 +878,16 @@ const GraphNavigationInner: React.FC<GraphNavigationProps> = ({ className, style
 	);
 };
 
-// Main component wrapped in ReactFlowProvider
+// Main component wrapped in ReactFlowProvider and AnimatedLayoutProvider
 export const GraphNavigation: React.FC<GraphNavigationProps> = (props) => {
 	return (
 		<ReactFlowProvider>
-			<GraphNavigationInner {...props} />
+			<AnimatedLayoutProvider
+				enabled={true}
+				fitViewAfterLayout={true}
+			>
+				<GraphNavigationInner {...props} />
+			</AnimatedLayoutProvider>
 		</ReactFlowProvider>
 	);
 };
