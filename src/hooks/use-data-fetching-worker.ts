@@ -209,8 +209,13 @@ export function useDataFetchingWorker(options: UseDataFetchingWorkerOptions = {}
 		setIsWorkerReady(false);
 	}, [onExpandError, clearAll, setWorkerReady]);
 
-	// Initialize worker
+	// Initialize worker (only once)
 	useEffect(() => {
+		// Don't re-initialize if worker already exists
+		if (workerRef.current) {
+			return;
+		}
+
 		const currentPendingRequests = pendingRequestsRef.current;
 
 		logger.info("graph", "Initializing data fetching worker");
@@ -245,7 +250,7 @@ export function useDataFetchingWorker(options: UseDataFetchingWorkerOptions = {}
 				setWorkerReady(false);
 			}
 		};
-	}, [handleWorkerError, handleWorkerMessage, onExpandError, clearAll, setWorkerReady]); // Add all function dependencies
+	}, [clearAll, handleWorkerError, handleWorkerMessage, onExpandError, setWorkerReady]); // Initialize only once, but include stable dependencies
 
 
 	// Expand node via worker

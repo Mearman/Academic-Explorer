@@ -40,7 +40,7 @@ import { NodeContextMenu } from "@/components/layout/NodeContextMenu";
 import { GraphToolbar } from "@/components/graph/GraphToolbar";
 import { AnimatedGraphControls } from "@/components/graph/AnimatedGraphControls";
 import { logger } from "@/lib/logger";
-import { GRAPH_ANIMATION, FIT_VIEW_PRESETS } from "@/lib/graph/constants";
+import { FIT_VIEW_PRESETS } from "@/lib/graph/constants";
 
 import "@xyflow/react/dist/style.css";
 
@@ -84,8 +84,7 @@ const GraphNavigationInner: React.FC<GraphNavigationProps> = ({ className, style
 
 	// XYFlow state - synced with store
 	const [nodes, setNodes, onNodesChangeOriginal] = useNodesState<XYNode>([]);
-	// eslint-disable-next-line @typescript-eslint/no-unnecessary-type-arguments
-	const [edges, setEdges, onEdgesChange] = useEdgesState<XYEdge>([]);
+	const [edges, setEdges, onEdgesChange] = useEdgesState([]);
 
 	// Wrapped nodes change handler that also triggers handle recalculation
 	const onNodesChange = useCallback((changes: NodeChange<XYNode>[]) => {
@@ -134,7 +133,16 @@ const GraphNavigationInner: React.FC<GraphNavigationProps> = ({ className, style
 	}, []);
 
 	// Center the viewport on a node without moving the node's position
+	const lastCenterOperationRef = useRef<{ nodeId: string; timestamp: number }>({ nodeId: "", timestamp: 0 });
+
 	const centerOnNode = useCallback((nodeId: string, currentPosition?: { x: number; y: number }) => {
+		// Throttle centering operations to prevent spam
+		const now = Date.now();
+		if (lastCenterOperationRef.current.nodeId === nodeId &&
+		    (now - lastCenterOperationRef.current.timestamp) < 500) {
+			return; // Skip if same node centered within last 500ms
+		}
+
 		let targetX: number;
 		let targetY: number;
 
@@ -159,46 +167,11 @@ const GraphNavigationInner: React.FC<GraphNavigationProps> = ({ className, style
 		// Center the viewport on the node's current position without moving the node
 		void reactFlowInstance.setCenter(targetX, targetY, {
 			zoom: reactFlowInstance.getZoom(),
-			duration: 800 // Smooth viewport animation
+			duration: 400 // Reduced duration to prevent conflicts
 		});
 
-		// Optional: Fit view to show the node and its immediate neighbors after centering
-		setTimeout(() => {
-			const currentNodes = reactFlowInstance.getNodes();
-			const currentEdges = reactFlowInstance.getEdges();
-			const selectedNode = currentNodes.find(n => n.id === nodeId);
-
-			if (selectedNode) {
-				// Find all nodes directly connected to the selected node
-				const connectedNodeIds = new Set<string>();
-				connectedNodeIds.add(nodeId); // Include the selected node itself
-
-				// Find all edges connected to the selected node
-				currentEdges.forEach(edge => {
-					if (edge.source === nodeId) {
-						connectedNodeIds.add(edge.target);
-					} else if (edge.target === nodeId) {
-						connectedNodeIds.add(edge.source);
-					}
-				});
-
-				// Get all connected nodes
-				const connectedNodes = currentNodes.filter(node =>
-					connectedNodeIds.has(node.id)
-				);
-
-				logger.info("ui", "Fitting view to selected node and its neighbors", {
-					selectedNodeId: nodeId,
-					connectedNodeIds: Array.from(connectedNodeIds),
-					totalNodesInView: connectedNodes.length
-				}, "GraphNavigation");
-
-				void reactFlowInstance.fitView({
-					nodes: connectedNodes,
-					...FIT_VIEW_PRESETS.NEIGHBORHOOD
-				});
-			}
-		}, GRAPH_ANIMATION.FIT_VIEW_CONFLICT_DELAY);
+		// Update throttling tracker
+		lastCenterOperationRef.current = { nodeId, timestamp: now };
 
 		logger.info("ui", "Centered viewport on node at its current position", {
 			nodeId: nodeId,
@@ -378,6 +351,7 @@ const GraphNavigationInner: React.FC<GraphNavigationProps> = ({ className, style
 		const currentVisibleEdges = edgesList.filter(edge => {
 			const sourceNode = rawNodesMap[edge.source];
 			const targetNode = rawNodesMap[edge.target];
+			// Both nodes must exist and be visible
 			return sourceNode && targetNode &&
 				visibleEntityTypes[sourceNode.type] &&
 				visibleEntityTypes[targetNode.type] &&
@@ -523,68 +497,30 @@ const GraphNavigationInner: React.FC<GraphNavigationProps> = ({ className, style
 		previousEdgeIdsRef.current = currentEdgeIds;
 	}, [rawNodesMap, rawEdgesMap, visibleEntityTypes, visibleEdgeTypes, setNodes, setEdges, storeNodes, storeEdges]);
 
-	// URL state synchronization - read selected entity from hash on mount
+	// Combined URL state synchronization and browser history navigation
+	const lastHashProcessedRef = useRef<string>("");
+	const nodeCountRef = useRef<number>(0);
+
+	// Stable reference to node count to avoid dependency array issues
+	const storeNodeCount = Object.keys(storeNodes).length;
+
 	useEffect(() => {
+		// Only process when nodes are available and hash has changed
+		const currentNodeCount = storeNodeCount;
 		const currentHash = window.location.hash;
 
-		if (currentHash && currentHash !== "#/" && Object.keys(storeNodes).length) {
-			// Parse hash (format: "#/entityType/entityId")
-			const hashPath = currentHash.substring(1); // Remove the '#'
-			const pathParts = hashPath.split("/").filter(part => part.length > 0);
-
-			if (pathParts.length >= 2) {
-				const [entityType, entityId] = pathParts;
-
-				// Find the corresponding node in the graph
-				const matchingNode = Object.values(storeNodes).find(node => {
-					const cleanNodeId = EntityDetector.extractOpenAlexId(node.entityId);
-					const cleanUrlId = EntityDetector.extractOpenAlexId(entityId);
-					return node.type === entityType && cleanNodeId === cleanUrlId;
-				});
-
-				if (matchingNode) {
-					// Update selection in store
-					const store = useGraphStore.getState();
-					store.selectNode(matchingNode.id);
-
-					// Pin the node to the center of the screen
-					// Only clear pinned nodes if auto-pin is disabled
-					// When auto-pin is enabled, preserve all pinned nodes from layout stabilization
-					if (!autoPinOnLayoutStabilization) {
-						store.clearAllPinnedNodes(); // Clear previous pinned nodes
-					}
-					store.pinNode(matchingNode.id);
-
-					// Update preview in sidebar
-					setPreviewEntity(matchingNode.entityId);
-
-					// Smoothly animate the selected node to the center of the viewport
-					centerOnNode(matchingNode.id, matchingNode.position);
-
-					logger.info("graph", "Selected and auto-centered entity from hash URL", {
-						currentHash,
-						entityType,
-						entityId,
-						nodeId: matchingNode.id,
-						nodeEntityId: matchingNode.entityId,
-						pinned: true
-					}, "GraphNavigation");
-				}
-			}
+		// Skip if no nodes or same hash already processed
+		if (currentNodeCount === 0 || lastHashProcessedRef.current === currentHash) {
+			return;
 		}
-	}, [storeNodes, setPreviewEntity, centerOnNode, autoPinOnLayoutStabilization]);
 
-	// Browser history navigation (back/forward button support for hash routing)
-	useEffect(() => {
-		const handleHashChange = () => {
-			// Skip if this is a programmatic navigation to avoid duplicate processing
-			if (isProgrammaticNavigationRef.current) {
-				return;
-			}
+		// Skip if this is a programmatic navigation to avoid duplicate processing
+		if (isProgrammaticNavigationRef.current) {
+			return;
+		}
 
-			const currentHash = window.location.hash;
-
-			if (currentHash && currentHash !== "#/" && Object.keys(storeNodes).length) {
+		const processHashChange = () => {
+			if (currentHash && currentHash !== "#/") {
 				// Parse hash (format: "#/entityType/entityId")
 				const hashPath = currentHash.substring(1); // Remove the '#'
 				const pathParts = hashPath.split("/").filter(part => part.length > 0);
@@ -606,7 +542,6 @@ const GraphNavigationInner: React.FC<GraphNavigationProps> = ({ className, style
 
 						// Pin the node to the center of the screen
 						// Only clear pinned nodes if auto-pin is disabled
-						// When auto-pin is enabled, preserve all pinned nodes from layout stabilization
 						if (!autoPinOnLayoutStabilization) {
 							store.clearAllPinnedNodes(); // Clear previous pinned nodes
 						}
@@ -618,7 +553,7 @@ const GraphNavigationInner: React.FC<GraphNavigationProps> = ({ className, style
 						// Smoothly animate the selected node to the center of the viewport
 						centerOnNode(matchingNode.id, matchingNode.position);
 
-						logger.info("graph", "Selected and auto-centered entity from hash change", {
+						logger.info("graph", "Selected and auto-centered entity from hash URL", {
 							currentHash,
 							entityType,
 							entityId,
@@ -636,13 +571,33 @@ const GraphNavigationInner: React.FC<GraphNavigationProps> = ({ className, style
 			}
 		};
 
+		// Only run on initial load or when node count increases (new nodes added)
+		if (nodeCountRef.current === 0 || currentNodeCount > nodeCountRef.current) {
+			processHashChange();
+		}
+
+		lastHashProcessedRef.current = currentHash;
+		nodeCountRef.current = currentNodeCount;
+	}, [storeNodeCount, storeNodes, setPreviewEntity, centerOnNode, autoPinOnLayoutStabilization]);
+
+	// Browser history navigation (back/forward button support for hash routing)
+	useEffect(() => {
+		const handleHashChange = () => {
+			// Skip if this is a programmatic navigation to avoid duplicate processing
+			if (isProgrammaticNavigationRef.current) {
+				return;
+			}
+
+			lastHashProcessedRef.current = ""; // Reset to force processing
+		};
+
 		// Listen for hash changes (browser back/forward, manual hash changes)
 		window.addEventListener("hashchange", handleHashChange);
 
 		return () => {
 			window.removeEventListener("hashchange", handleHashChange);
 		};
-	}, [storeNodes, setPreviewEntity, centerOnNode, autoPinOnLayoutStabilization]);
+	}, []);
 
 	// Handle node clicks
 	const onNodeClick = useCallback((event: React.MouseEvent, node: XYNode) => {
