@@ -8,9 +8,9 @@ import { beforeAll, afterAll, beforeEach, afterEach } from "vitest"
 import { logger } from "@/lib/logger"
 import { useGraphStore } from "@/stores/graph-store"
 
-let browser: Browser
-let context: BrowserContext
-let page: Page
+let browser: Browser | undefined
+let context: BrowserContext | undefined
+let page: Page | undefined
 
 // Global browser setup
 beforeAll(async () => {
