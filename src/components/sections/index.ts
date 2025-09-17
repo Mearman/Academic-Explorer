@@ -19,9 +19,7 @@ export const EdgeFiltersSection: React.FC = () => {
 	return React.createElement("div", {}, "Edge Filters Section - TODO: Implement");
 };
 
-export const EntityInfoSection: React.FC = () => {
-	return React.createElement("div", {}, "Entity Info Section - TODO: Implement");
-};
+export { EntityInfoSection } from "./EntityInfoSection";
 
 export const ExternalLinksSection: React.FC = () => {
 	return React.createElement("div", {}, "External Links Section - TODO: Implement");
@@ -33,6 +31,4 @@ export const ViewOptionsSection: React.FC = () => {
 
 export { RawApiDataSection } from "@/components/molecules/RawApiDataSection";
 
-export const GraphStatsSection: React.FC = () => {
-	return React.createElement("div", {}, "Graph Stats Section - TODO: Implement");
-};
+export { GraphStatsSection } from "./GraphStatsSection";
