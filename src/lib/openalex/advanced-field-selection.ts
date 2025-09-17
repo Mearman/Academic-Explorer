@@ -247,6 +247,60 @@ export const ADVANCED_FIELD_SELECTIONS = {
 			"cited_by_count"
 		] as const satisfies ConceptSelectableFields[],
 	},
+
+	topics: {
+		/** Minimal fields for relationship detection */
+		minimal: [
+			"id",
+			"display_name",
+			"field"
+		] as const satisfies TopicSelectableFields[],
+
+		/** Basic fields for display */
+		basic: [
+			"id",
+			"display_name",
+			"field",
+			"works_count",
+			"cited_by_count"
+		] as const satisfies TopicSelectableFields[],
+	},
+
+	publishers: {
+		/** Minimal fields for relationship detection */
+		minimal: [
+			"id",
+			"display_name",
+			"country_codes"
+		] as const satisfies PublisherSelectableFields[],
+
+		/** Basic fields for display */
+		basic: [
+			"id",
+			"display_name",
+			"country_codes",
+			"works_count",
+			"cited_by_count"
+		] as const satisfies PublisherSelectableFields[],
+	},
+
+	funders: {
+		/** Minimal fields for relationship detection */
+		minimal: [
+			"id",
+			"display_name",
+			"country_code"
+		] as const satisfies FunderSelectableFields[],
+
+		/** Basic fields for display */
+		basic: [
+			"id",
+			"display_name",
+			"country_code",
+			"works_count",
+			"cited_by_count"
+		] as const satisfies FunderSelectableFields[],
+	},
 } as const;
 
 /**
