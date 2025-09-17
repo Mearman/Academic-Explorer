@@ -220,9 +220,6 @@ export const LeftRibbon: React.FC = () => {
 						group={group}
 						isActive={activeGroupId === group.id}
 						onActivate={handleGroupActivate}
-						onDragStart={(groupId, _event) => {
-							logger.info("ui", `Starting drag from left ribbon for group ${groupId}`, { groupId });
-						}}
 						onDrop={handleDrop}
 						onDragOver={handleDragOver}
 						onGroupReorder={handleGroupReorder}
