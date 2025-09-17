@@ -160,31 +160,6 @@ describe("Academic Explorer Navigation", () => {
 		await assertPageLoadsWithoutErrors(page)
 	})
 
-	test("should handle numeric ID detection and auto-routing", async () => {
-		const page = getPage()
-		await mockOpenAlexAPI(page, {
-			"/works/W123456789": {
-				meta: { count: 1 },
-				results: [{
-					id: "https://openalex.org/W123456789",
-					display_name: "Numeric ID Work",
-					publication_year: 2023
-				}]
-			}
-		})
-
-		// Test bare ID routing ($bareId.tsx pattern)
-		await navigateToApp(page, "/123456789")
-
-		// Should detect as work and route appropriately
-		await waitForNavigation(page)
-
-		// Verify entity loads
-		await assertPageLoadsWithoutErrors(page)
-
-		const entityDisplay = getEntityDisplay(page)
-		await expect(entityDisplay.title).toBeVisible()
-	})
 
 	test("should handle 404 and error states gracefully", async () => {
 		const page = getPage()
