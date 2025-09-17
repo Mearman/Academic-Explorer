@@ -19,8 +19,8 @@ export class EntityDetector {
 	static extractOpenAlexId(input: string): string {
 		// Remove URL prefix if present - handle both single and double slash variants
 		// Also handle api.openalex.org URLs
-		// Updated regex to handle https:/ (single slash after colon)
-		return input.replace(/^https?:\/*(?:api\.)?openalex\.org\//, "");
+		// Updated regex to handle https:/ (single slash after colon) and case-insensitive domains
+		return input.replace(/^https?:\/*(?:api\.)?openalex\.org\//i, "");
 	}
 
 	/**
@@ -56,8 +56,8 @@ export class EntityDetector {
 	private detectOpenAlexId(input: string): DetectionResult {
 		// Remove URL prefix if present - handle both single and double slash variants
 		// Also handle api.openalex.org URLs
-		// Updated regex to handle https:/ (single slash after colon)
-		const cleanId = input.replace(/^https?:\/*(?:api\.)?openalex\.org\//, "");
+		// Updated regex to handle https:/ (single slash after colon) and case-insensitive domains
+		const cleanId = input.replace(/^https?:\/*(?:api\.)?openalex\.org\//i, "");
 
 		// Handle path-based URLs like authors/A123 or works/W456
 		let actualId = cleanId;
@@ -112,8 +112,8 @@ export class EntityDetector {
 			}
 		}
 
-		// Basic format check - should have uppercase letter followed by digits (case-sensitive)
-		if (!/^[WASITCPFKG]\d+$/.test(actualId)) {
+		// Basic format check - should have letter followed by digits (case-insensitive)
+		if (!/^[wasitcpfkg]\d+$/i.test(actualId)) {
 			return {
 				entityType: null,
 				idType: "openalex",
@@ -122,8 +122,8 @@ export class EntityDetector {
 			};
 		}
 
-		const firstChar = actualId.charAt(0);
-		const normalizedId = actualId; // Keep original case since we enforce uppercase
+		const firstChar = actualId.charAt(0).toUpperCase();
+		const normalizedId = actualId.toUpperCase(); // Normalize to uppercase
 		let entityType: EntityType | null = detectedEntityType; // Use detected type from path if available
 
 		// If no entity type was detected from path, infer from ID prefix

@@ -128,8 +128,8 @@ describe("EntityDetector", () => {
 
 			it("should handle case insensitive OpenAlex IDs", () => {
 				const result = detector.detectEntityIdentifier("w123456789");
-				expect(result.entityType).toBeNull(); // Implementation is case-sensitive
-				expect(result.normalizedId).toBe("w123456789");
+				expect(result.entityType).toBe("works"); // Now handles case-insensitive IDs
+				expect(result.normalizedId).toBe("W123456789"); // Normalized to uppercase
 			});
 
 			it("should detect OpenAlex IDs from URLs", () => {
@@ -452,10 +452,10 @@ describe("EntityDetector", () => {
 	describe("Integration Tests", () => {
 		it("should handle mixed case inputs consistently", () => {
 			const inputs = [
-				{ input: "w123456789", shouldWork: false }, // lowercase fails
+				{ input: "w123456789", shouldWork: true }, // lowercase now works - normalized to uppercase
 				{ input: "W123456789", shouldWork: true },
-				{ input: "https://OPENALEX.ORG/W123456789", shouldWork: false }, // uppercase domain fails
-				{ input: "HTTPS://openalex.org/w123456789", shouldWork: false } // lowercase w fails
+				{ input: "https://OPENALEX.ORG/W123456789", shouldWork: true }, // uppercase domain now works
+				{ input: "HTTPS://openalex.org/w123456789", shouldWork: true } // lowercase w now works - normalized to uppercase
 			];
 
 			for (const testCase of inputs) {

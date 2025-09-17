@@ -10,8 +10,8 @@ import { expect as vitestExpect } from "vitest"
  * Wait for the Academic Explorer app to be fully loaded and interactive
  */
 export async function waitForAppReady(page: Page): Promise<void> {
-	// Wait for React to render
-	await page.waitForSelector('[data-testid="app-container"]', { timeout: 30000 })
+	// Wait for the main AppShell header with "Academic Explorer" text to render
+	await page.waitForSelector("text=Academic Explorer", { timeout: 30000 })
 
 	// Wait for any loading skeletons to disappear
 	await page.waitForFunction(
