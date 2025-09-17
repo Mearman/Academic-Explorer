@@ -66,7 +66,7 @@ export const ExternalLinksSection: React.FC<ExternalLinksSectionProps> = ({
 
 		// DOI link for works - access entityData safely
 		const entityData = entity.entityData;
-		if (entity.type === "WORK" && entityData?.doi) {
+		if (entity.type === "works" && entityData?.doi) {
 			const doiUrl = entityData.doi as string;
 			links.push({
 				label: "DOI Resolver",
@@ -78,7 +78,7 @@ export const ExternalLinksSection: React.FC<ExternalLinksSectionProps> = ({
 		}
 
 		// ORCID link for authors
-		if (entity.type === "AUTHOR" && entityData?.orcid) {
+		if (entity.type === "authors" && entityData?.orcid) {
 			const orcidUrl = entityData.orcid as string;
 			links.push({
 				label: "ORCID Profile",
@@ -107,7 +107,7 @@ export const ExternalLinksSection: React.FC<ExternalLinksSectionProps> = ({
 		}
 
 		// Publisher website for sources
-		if (entity.type === "SOURCE" && entityData?.homepage_url) {
+		if (entity.type === "sources" && entityData?.homepage_url) {
 			const publisherUrl = entityData.homepage_url as string;
 			links.push({
 				label: "Publisher Website",
