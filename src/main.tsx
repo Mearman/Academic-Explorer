@@ -219,57 +219,57 @@ createRoot(rootElement).render(
 				<QueryClientProvider client={queryClient}>
 					<RouterProvider router={router} />
 
-				{/* TanStack DevTools - unified panel for all tools */}
-				{import.meta.env.DEV && (
-					<TanStackDevtools
-						config={{
-							position: "bottom-left",
-						}}
-						plugins={[
-							{
-								name: "TanStack Query",
-								render: <ReactQueryDevtoolsPanel />,
-							},
-							{
-								name: "TanStack Router",
-								render: <TanStackRouterDevtoolsPanel router={router} />,
-							},
-							{
-								name: "TanStack Table",
-								render: (
-									<div style={{ padding: "16px", color: "#666" }}>
-										<h3>React Table Devtools</h3>
-										<p>Table instances will appear here when tables are rendered in your app.</p>
-										<small>Use ReactTableDevtools component directly in pages with tables for specific debugging.</small>
-									</div>
-								),
-							},
-							{
-								name: "OpenAlex Cache",
-								render: <OpenAlexCachePanel />,
-							},
-							{
-								name: "Entity Graph",
-								render: <EntityGraphPanel />,
-							},
-							{
-								name: "App Logs",
-								render: <ApplicationLoggerPanel />,
-							},
-						]}
-					/>
-				)}
-			</QueryClientProvider>
-			<Spotlight
-				actions={[]}
-				searchProps={{
-					leftSection: <IconSearch size={16} />,
-					placeholder: "Search Academic Explorer...",
-				}}
-				nothingFound="Nothing found..."
-				highlightQuery
-			/>
-		</MantineProvider>
+					{/* TanStack DevTools - unified panel for all tools */}
+					{import.meta.env.DEV && (
+						<TanStackDevtools
+							config={{
+								position: "bottom-left",
+							}}
+							plugins={[
+								{
+									name: "TanStack Query",
+									render: <ReactQueryDevtoolsPanel />,
+								},
+								{
+									name: "TanStack Router",
+									render: <TanStackRouterDevtoolsPanel router={router} />,
+								},
+								{
+									name: "TanStack Table",
+									render: (
+										<div style={{ padding: "16px", color: "#666" }}>
+											<h3>React Table Devtools</h3>
+											<p>Table instances will appear here when tables are rendered in your app.</p>
+											<small>Use ReactTableDevtools component directly in pages with tables for specific debugging.</small>
+										</div>
+									),
+								},
+								{
+									name: "OpenAlex Cache",
+									render: <OpenAlexCachePanel />,
+								},
+								{
+									name: "Entity Graph",
+									render: <EntityGraphPanel />,
+								},
+								{
+									name: "App Logs",
+									render: <ApplicationLoggerPanel />,
+								},
+							]}
+						/>
+					)}
+				</QueryClientProvider>
+				<Spotlight
+					actions={[]}
+					searchProps={{
+						leftSection: <IconSearch size={16} />,
+						placeholder: "Search Academic Explorer...",
+					}}
+					nothingFound="Nothing found..."
+					highlightQuery
+				/>
+			</MantineProvider>
 		</GlobalErrorBoundary>
 	</StrictMode>,
 )
