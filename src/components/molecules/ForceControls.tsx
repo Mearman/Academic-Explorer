@@ -22,88 +22,19 @@ import { useGraphStore } from "@/stores/graph-store";
 import { useSetUseAnimatedLayout, useIsAnimating, useRequestRestart } from "@/stores/animated-graph-store";
 import { useAnimatedLayoutContext } from "@/components/graph/animated-layout-context";
 import { logger } from "@/lib/logger";
+import { DEFAULT_FORCE_PARAMS, FORCE_PARAM_CONFIG } from "@/lib/graph/force-params";
 
-// Default force parameters (matching current hardcoded values)
-export const DEFAULT_FORCE_PARAMS = {
-	linkDistance: 100,
-	linkStrength: 0.01,
-	chargeStrength: -1000,
-	centerStrength: 0.01,
-	collisionRadius: 120,
-	collisionStrength: 1.0,
-	velocityDecay: 0.1,
-	alphaDecay: 0.02,
+// Local type for component state (allows for number mutations)
+type ForceParameters = {
+	linkDistance: number;
+	linkStrength: number;
+	chargeStrength: number;
+	centerStrength: number;
+	collisionRadius: number;
+	collisionStrength: number;
+	velocityDecay: number;
+	alphaDecay: number;
 };
-
-// Parameter ranges and descriptions for UI controls
-const FORCE_PARAM_CONFIG = {
-	linkDistance: {
-		min: 20,
-		max: 300,
-		step: 10,
-		label: "Link Distance",
-		description: "Distance between connected nodes",
-		unit: "px",
-	},
-	linkStrength: {
-		min: 0.001,
-		max: 1.0,
-		step: 0.001,
-		label: "Link Strength",
-		description: "Strength of connection forces",
-		unit: "",
-	},
-	chargeStrength: {
-		min: -3000,
-		max: -100,
-		step: 50,
-		label: "Charge Strength",
-		description: "Node repulsion force (negative = repel)",
-		unit: "",
-	},
-	centerStrength: {
-		min: 0,
-		max: 0.1,
-		step: 0.001,
-		label: "Center Strength",
-		description: "Force pulling nodes toward center",
-		unit: "",
-	},
-	collisionRadius: {
-		min: 30,
-		max: 200,
-		step: 5,
-		label: "Collision Radius",
-		description: "Node collision detection radius",
-		unit: "px",
-	},
-	collisionStrength: {
-		min: 0.1,
-		max: 2.0,
-		step: 0.1,
-		label: "Collision Strength",
-		description: "Strength of collision avoidance",
-		unit: "",
-	},
-	velocityDecay: {
-		min: 0.01,
-		max: 0.5,
-		step: 0.01,
-		label: "Velocity Decay",
-		description: "Movement dampening factor",
-		unit: "",
-	},
-	alphaDecay: {
-		min: 0.005,
-		max: 0.1,
-		step: 0.001,
-		label: "Alpha Decay",
-		description: "Animation decay rate",
-		unit: "",
-	},
-} as const;
-
-export type ForceParameters = typeof DEFAULT_FORCE_PARAMS;
 
 export const ForceControls: React.FC = () => {
 	const currentLayout = useGraphStore((state) => state.currentLayout);
@@ -158,22 +89,36 @@ export const ForceControls: React.FC = () => {
 
 			setLayout(updatedLayout);
 
-			// Always restart animation with new parameters (removes blocking for continuous adjustment)
-			logger.info("graph", "Restarting animation with updated force parameter", {
-				param,
-				value,
-				hasContext: !!animationContext,
-				isWorkerReady: animationContext?.isWorkerReady ?? "unknown",
-				isAnimating: animationContext?.isAnimating ?? isAnimating,
-			});
+			// Check if animation is currently running - if so, update parameters, otherwise restart
+			const isCurrentlyAnimating = animationContext?.isAnimating ?? isAnimating;
 
-			setUseAnimatedLayout(true);
+			if (isCurrentlyAnimating && animationContext?.updateParameters) {
+				// Animation is running - update parameters without restart to prevent flickering
+				logger.info("graph", "Updating force parameters during animation", {
+					param,
+					value,
+					isAnimating: isCurrentlyAnimating,
+				});
 
-			// Use context restartLayout if available, otherwise request restart via store
-			if (animationContext?.restartLayout) {
-				animationContext.restartLayout();
+				animationContext.updateParameters({ [param]: value });
 			} else {
-				requestRestart();
+				// Animation not running - start/restart animation with new parameters
+				logger.info("graph", "Starting animation with updated force parameter", {
+					param,
+					value,
+					hasContext: !!animationContext,
+					isWorkerReady: animationContext?.isWorkerReady ?? "unknown",
+					isAnimating: isCurrentlyAnimating,
+				});
+
+				setUseAnimatedLayout(true);
+
+				// Use context restartLayout if available, otherwise request restart via store
+				if (animationContext?.restartLayout) {
+					animationContext.restartLayout();
+				} else {
+					requestRestart();
+				}
 			}
 		}
 	};
@@ -195,20 +140,32 @@ export const ForceControls: React.FC = () => {
 
 			setLayout(updatedLayout);
 
-			// Always restart animation with default parameters (removes blocking for continuous adjustment)
-			logger.info("graph", "Restarting animation with default force parameters", {
-				hasContext: !!animationContext,
-				isWorkerReady: animationContext?.isWorkerReady ?? "unknown",
-				isAnimating: animationContext?.isAnimating ?? isAnimating,
-			});
+			// Check if animation is currently running - if so, update parameters, otherwise restart
+			const isCurrentlyAnimating = animationContext?.isAnimating ?? isAnimating;
 
-			setUseAnimatedLayout(true);
+			if (isCurrentlyAnimating && animationContext?.updateParameters) {
+				// Animation is running - update parameters without restart to prevent flickering
+				logger.info("graph", "Updating force parameters to defaults during animation", {
+					isAnimating: isCurrentlyAnimating,
+				});
 
-			// Use context restartLayout if available, otherwise request restart via store
-			if (animationContext?.restartLayout) {
-				animationContext.restartLayout();
+				animationContext.updateParameters(DEFAULT_FORCE_PARAMS);
 			} else {
-				requestRestart();
+				// Animation not running - start/restart animation with default parameters
+				logger.info("graph", "Starting animation with default force parameters", {
+					hasContext: !!animationContext,
+					isWorkerReady: animationContext?.isWorkerReady ?? "unknown",
+					isAnimating: isCurrentlyAnimating,
+				});
+
+				setUseAnimatedLayout(true);
+
+				// Use context restartLayout if available, otherwise request restart via store
+				if (animationContext?.restartLayout) {
+					animationContext.restartLayout();
+				} else {
+					requestRestart();
+				}
 			}
 		}
 	};
