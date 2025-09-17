@@ -20,6 +20,21 @@
       "inputs": ["default", "^production"],
       "outputs": ["{projectRoot}/coverage"]
     },
+    "test:component:run": {
+      "cache": true,
+      "inputs": ["default", "^production"],
+      "outputs": ["{projectRoot}/coverage"]
+    },
+    "test:integration:run": {
+      "cache": true,
+      "inputs": ["default", "^production"],
+      "outputs": ["{projectRoot}/coverage"]
+    },
+    "test:e2e:run": {
+      "cache": true,
+      "inputs": ["default", "^production"],
+      "outputs": ["{projectRoot}/coverage"]
+    },
     "lint": {
       "cache": true,
       "inputs": ["default", "{workspaceRoot}/.eslintrc.json", "{workspaceRoot}/.eslintignore"],
