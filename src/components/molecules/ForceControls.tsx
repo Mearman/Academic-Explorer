@@ -44,7 +44,7 @@ export const ForceControls: React.FC = () => {
 
 	// Initialize force parameters from current layout or defaults
 	const [forceParams, setForceParams] = useState<ForceParameters>(() => {
-		const current = currentLayout?.options || {};
+		const current = currentLayout?.options ?? {};
 		return {
 			linkDistance: current.linkDistance ?? DEFAULT_FORCE_PARAMS.linkDistance,
 			linkStrength: current.linkStrength ?? DEFAULT_FORCE_PARAMS.linkStrength,

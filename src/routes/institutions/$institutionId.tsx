@@ -34,7 +34,7 @@ function InstitutionRoute() {
 			}, "InstitutionRoute");
 
 			// Replace current URL with normalized version, preserving query params
-			navigate({
+			void navigate({
 				to: "/institutions/$institutionId",
 				params: { institutionId: detection.normalizedId },
 				search: (prev) => prev, // Preserve existing search params

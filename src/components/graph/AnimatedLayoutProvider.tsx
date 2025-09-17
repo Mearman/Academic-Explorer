@@ -96,7 +96,7 @@ export const AnimatedLayoutProvider: React.FC<AnimatedLayoutProviderProps> = ({
 			// Restart the animation
 			restartLayout();
 		}
-	}, [restartRequested, enabled, useAnimation, isWorkerReady, restartLayout, clearRestartRequest]);
+	}, [restartRequested, enabled, useAnimation, isWorkerReady, isRunning, restartLayout, clearRestartRequest]);
 
 	// Create stable context value to prevent unnecessary re-renders
 	const contextValue = useMemo(() => ({

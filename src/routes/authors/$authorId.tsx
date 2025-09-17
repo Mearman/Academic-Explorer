@@ -35,7 +35,7 @@ function AuthorRoute() {
 			}, "AuthorRoute");
 
 			// Replace current URL with normalized version, preserving query params
-			navigate({
+			void navigate({
 				to: "/authors/$authorId",
 				params: { authorId: detection.normalizedId },
 				search: (prev) => prev, // Preserve existing search params
