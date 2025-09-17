@@ -14,7 +14,7 @@ function HttpsRoute() {
 	const detector = useMemo(() => new EntityDetector(), [])
 
 	useEffect(() => {
-		const resolveHttpsUrl = async () => {
+		const resolveHttpsUrl = () => {
 			try {
 				// Check if splat parameter exists
 				if (!_splat) {
@@ -54,7 +54,7 @@ function HttpsRoute() {
 			}
 		}
 
-		void resolveHttpsUrl()
+		resolveHttpsUrl()
 	}, [_splat, navigate, detector])
 
 	return (
