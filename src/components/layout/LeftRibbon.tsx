@@ -1,22 +1,17 @@
 /**
  * Left ribbon component for collapsed left sidebar
- * Shows icon-only navigation with tooltips
+ * Shows icon-only navigation with tooltips using dynamic section generation
  */
 
-import React from "react";
-import { Stack, ActionIcon, Tooltip, Divider } from "@mantine/core";
+import React, { useMemo } from "react";
+import { Stack, ActionIcon, Tooltip } from "@mantine/core";
 import { useGraphData } from "@/hooks/use-graph-data";
 import { useThemeColors } from "@/hooks/use-theme-colors";
 import { useLayoutStore } from "@/stores/layout-store";
+import { getSectionById, getSectionsSorted } from "@/stores/section-registry";
+import { RibbonButton } from "@/components/layout/RibbonButton";
 import { logger } from "@/lib/logger";
-import {
-	IconSearch,
-	IconFilter,
-	IconGraph,
-	IconDatabase,
-	IconTrash,
-	IconLink,
-} from "@tabler/icons-react";
+import { IconTrash } from "@tabler/icons-react";
 
 export const LeftRibbon: React.FC = () => {
 	const graphData = useGraphData();
@@ -25,30 +20,56 @@ export const LeftRibbon: React.FC = () => {
 	const colors = themeColors.colors;
 	const layoutStore = useLayoutStore();
 	const expandSidebarToSection = layoutStore.expandSidebarToSection;
+	const getSectionsForSidebar = layoutStore.getSectionsForSidebar;
+	const moveSectionToSidebar = layoutStore.moveSectionToSidebar;
+
+	// Get sections for left sidebar
+	const leftSectionIds = getSectionsForSidebar("left");
+	const leftSections = useMemo(() => {
+		const sections = leftSectionIds
+			.map(id => getSectionById(id))
+			.filter((section): section is NonNullable<typeof section> => section !== undefined);
+		return getSectionsSorted(sections);
+	}, [leftSectionIds]);
 
 	const handleClearGraph = () => {
 		logger.info("ui", "Clear graph clicked from left ribbon");
 		clearGraph();
 	};
 
-	const handleExpandSidebarToSection = (sectionKey: string, sectionName: string) => {
-		logger.info("ui", `Expanding sidebar to ${sectionName} section`, { sectionKey });
+	const handleSectionActivate = (sectionId: string) => {
+		const section = getSectionById(sectionId);
+		if (section) {
+			logger.info("ui", `Expanding sidebar to ${section.title} section`, { sectionId });
 
-		// Use the layout store to expand sidebar and section
-		expandSidebarToSection("left", sectionKey);
+			// Use the layout store to expand sidebar and section
+			expandSidebarToSection("left", sectionId);
 
-		// Scroll to top after a brief delay to allow sidebar to expand
-		// The sidebar scrolls to the top to show the expanded section
-		setTimeout(() => {
-			// Find the left sidebar container and scroll to top
-			const sidebarContainer = document.querySelector('[data-mantine-component="AppShell"] > nav');
-			if (sidebarContainer) {
-				const scrollableElement = sidebarContainer.querySelector('[style*="overflow: auto"]') || sidebarContainer;
-				if (scrollableElement instanceof HTMLElement) {
-					scrollableElement.scrollTop = 0;
+			// Scroll to top after a brief delay to allow sidebar to expand
+			setTimeout(() => {
+				// Find the left sidebar container and scroll to top
+				const sidebarContainer = document.querySelector('[data-mantine-component="AppShell"] > nav');
+				if (sidebarContainer) {
+					const scrollableElement = sidebarContainer.querySelector('[style*="overflow: auto"]') || sidebarContainer;
+					if (scrollableElement instanceof HTMLElement) {
+						scrollableElement.scrollTop = 0;
+					}
 				}
-			}
-		}, 150); // Small delay to allow expansion animation
+			}, 150); // Small delay to allow expansion animation
+		}
+	};
+
+	const handleDrop = (draggedSectionId: string, targetSectionId: string, _event: React.DragEvent) => {
+		// For left ribbon, we want to move the dragged section to the left sidebar
+		logger.info("ui", `Moving section ${draggedSectionId} to left sidebar`, {
+			draggedSectionId,
+			targetSectionId
+		});
+		moveSectionToSidebar(draggedSectionId, "left");
+	};
+
+	const handleDragOver = (event: React.DragEvent) => {
+		event.preventDefault();
 	};
 
 	const ribbonButtonStyle = {
@@ -60,10 +81,6 @@ export const LeftRibbon: React.FC = () => {
 		transition: "all 0.2s ease",
 	};
 
-	const ribbonButtonHoverStyle = {
-		backgroundColor: colors.background.tertiary,
-		borderColor: colors.primary,
-	};
 
 	return (
 		<div
@@ -77,100 +94,19 @@ export const LeftRibbon: React.FC = () => {
 				borderRight: `1px solid ${colors.border.primary}`,
 			}}
 		>
-			{/* Search section */}
+			{/* Dynamic sections */}
 			<Stack gap="xs" align="center">
-				<Tooltip label="Search academic entities" position="right" withArrow>
-					<ActionIcon
-						variant="subtle"
-						size="lg"
-						style={ribbonButtonStyle}
-						onClick={() => { handleExpandSidebarToSection("search", "Search Academic Entities"); }}
-						onMouseEnter={(e) => {
-							Object.assign(e.currentTarget.style, ribbonButtonHoverStyle);
-						}}
-						onMouseLeave={(e) => {
-							Object.assign(e.currentTarget.style, ribbonButtonStyle);
-						}}
-					>
-						<IconSearch size={20} />
-					</ActionIcon>
-				</Tooltip>
-
-				<Tooltip label="Entity & edge filters" position="right" withArrow>
-					<ActionIcon
-						variant="subtle"
-						size="lg"
-						style={ribbonButtonStyle}
-						onClick={() => { handleExpandSidebarToSection("entity-filters", "Entity Types & Visibility"); }}
-						onMouseEnter={(e) => {
-							Object.assign(e.currentTarget.style, ribbonButtonHoverStyle);
-						}}
-						onMouseLeave={(e) => {
-							Object.assign(e.currentTarget.style, ribbonButtonStyle);
-						}}
-					>
-						<IconFilter size={20} />
-					</ActionIcon>
-				</Tooltip>
-			</Stack>
-
-			<Divider
-				orientation="horizontal"
-				style={{ width: "32px", borderColor: colors.border.primary }}
-			/>
-
-			{/* Graph controls */}
-			<Stack gap="xs" align="center">
-				<Tooltip label="Graph layout controls" position="right" withArrow>
-					<ActionIcon
-						variant="subtle"
-						size="lg"
-						style={ribbonButtonStyle}
-						onClick={() => { handleExpandSidebarToSection("graph-actions", "Graph Actions"); }}
-						onMouseEnter={(e) => {
-							Object.assign(e.currentTarget.style, ribbonButtonHoverStyle);
-						}}
-						onMouseLeave={(e) => {
-							Object.assign(e.currentTarget.style, ribbonButtonStyle);
-						}}
-					>
-						<IconGraph size={20} />
-					</ActionIcon>
-				</Tooltip>
-
-				<Tooltip label="Cache & traversal settings" position="right" withArrow>
-					<ActionIcon
-						variant="subtle"
-						size="lg"
-						style={ribbonButtonStyle}
-						onClick={() => { handleExpandSidebarToSection("cache-settings", "Cache & Traversal Settings"); }}
-						onMouseEnter={(e) => {
-							Object.assign(e.currentTarget.style, ribbonButtonHoverStyle);
-						}}
-						onMouseLeave={(e) => {
-							Object.assign(e.currentTarget.style, ribbonButtonStyle);
-						}}
-					>
-						<IconDatabase size={20} />
-					</ActionIcon>
-				</Tooltip>
-
-				<Tooltip label="Edge types & visibility" position="right" withArrow>
-					<ActionIcon
-						variant="subtle"
-						size="lg"
-						style={ribbonButtonStyle}
-						onClick={() => { handleExpandSidebarToSection("edge-filters", "Edge Types & Visibility"); }}
-						onMouseEnter={(e) => {
-							Object.assign(e.currentTarget.style, ribbonButtonHoverStyle);
-						}}
-						onMouseLeave={(e) => {
-							Object.assign(e.currentTarget.style, ribbonButtonStyle);
-						}}
-					>
-						<IconLink size={20} />
-					</ActionIcon>
-				</Tooltip>
+				{leftSections.map((section) => (
+					<RibbonButton
+						key={section.id}
+						section={section}
+						onActivate={handleSectionActivate}
+						onDragStart={() => {}} // Enable dragging
+						onDrop={handleDrop}
+						onDragOver={handleDragOver}
+						side="left"
+					/>
+				))}
 			</Stack>
 
 			<div style={{ flex: 1 }} />

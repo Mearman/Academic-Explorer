@@ -1,27 +1,23 @@
 /**
  * Right ribbon component for collapsed right sidebar
- * Shows icon-only controls for entity details and information
+ * Shows icon-only controls for entity details and information using dynamic section generation
  */
 
 import React, { useMemo } from "react";
-import { Stack, ActionIcon, Tooltip, Badge, Divider } from "@mantine/core";
+import { Stack } from "@mantine/core";
 import { useGraphStore } from "@/stores/graph-store";
 import { useLayoutStore } from "@/stores/layout-store";
 import { useThemeColors } from "@/hooks/use-theme-colors";
+import { getSectionById, getSectionsSorted } from "@/stores/section-registry";
+import { RibbonButton } from "@/components/layout/RibbonButton";
 import { logger } from "@/lib/logger";
-import {
-	IconInfoCircle,
-	IconExternalLink,
-	IconUsers,
-	IconEye,
-	IconTarget,
-	IconStar,
-} from "@tabler/icons-react";
 
 export const RightRibbon: React.FC = () => {
 	const layoutStore = useLayoutStore();
 	const previewEntityId = layoutStore.previewEntityId;
 	const expandSidebarToSection = layoutStore.expandSidebarToSection;
+	const getSectionsForSidebar = layoutStore.getSectionsForSidebar;
+	const moveSectionToSidebar = layoutStore.moveSectionToSidebar;
 	const selectedNodeId = useGraphStore((state) => state.selectedNodeId);
 	const hoveredNodeId = useGraphStore((state) => state.hoveredNodeId);
 	const nodesMap = useGraphStore((state) => state.nodes);
@@ -38,49 +34,73 @@ export const RightRibbon: React.FC = () => {
 	const themeColors = useThemeColors();
 	const colors = themeColors.colors;
 
+	// Get sections for right sidebar
+	const rightSectionIds = getSectionsForSidebar("right");
+	const rightSections = useMemo(() => {
+		const sections = rightSectionIds
+			.map(id => getSectionById(id))
+			.filter((section): section is NonNullable<typeof section> => section !== undefined);
+		return getSectionsSorted(sections);
+	}, [rightSectionIds]);
+
 	// Determine which entity to show indicator for
 	const displayEntityId = hoveredNodeId || selectedNodeId || previewEntityId;
 	const hasEntity = Boolean(displayEntityId);
 
-	const handleExpandSidebarToSection = (sectionKey: string, sectionName: string) => {
-		logger.info("ui", `Expanding right sidebar to ${sectionName} section`, { sectionKey });
+	const handleSectionActivate = (sectionId: string) => {
+		const section = getSectionById(sectionId);
+		if (section) {
+			logger.info("ui", `Expanding right sidebar to ${section.title} section`, { sectionId });
 
-		// Use the layout store to expand sidebar and section
-		expandSidebarToSection("right", sectionKey);
+			// Use the layout store to expand sidebar and section
+			expandSidebarToSection("right", sectionId);
 
-		// Scroll to top after a brief delay to allow sidebar to expand
-		// The sidebar scrolls to the top to show the expanded section
-		setTimeout(() => {
-			// Find the right sidebar container and scroll to top
-			const sidebarContainer = document.querySelector('[data-mantine-component="AppShell"] > aside');
-			if (sidebarContainer) {
-				const scrollableElement = sidebarContainer.querySelector('[style*="overflow: auto"]') || sidebarContainer;
-				if (scrollableElement instanceof HTMLElement) {
-					scrollableElement.scrollTop = 0;
+			// Scroll to top after a brief delay to allow sidebar to expand
+			setTimeout(() => {
+				// Find the right sidebar container and scroll to top
+				const sidebarContainer = document.querySelector('[data-mantine-component="AppShell"] > aside');
+				if (sidebarContainer) {
+					const scrollableElement = sidebarContainer.querySelector('[style*="overflow: auto"]') || sidebarContainer;
+					if (scrollableElement instanceof HTMLElement) {
+						scrollableElement.scrollTop = 0;
+					}
 				}
-			}
-		}, 150); // Small delay to allow expansion animation
+			}, 150); // Small delay to allow expansion animation
+		}
 	};
 
-	const ribbonButtonStyle = {
-		width: "40px",
-		height: "40px",
-		borderRadius: "8px",
-		backgroundColor: "transparent",
-		border: `1px solid ${colors.border.primary}`,
-		transition: "all 0.2s ease",
+	const handleDrop = (draggedSectionId: string, targetSectionId: string, _event: React.DragEvent) => {
+		// For right ribbon, we want to move the dragged section to the right sidebar
+		logger.info("ui", `Moving section ${draggedSectionId} to right sidebar`, {
+			draggedSectionId,
+			targetSectionId
+		});
+		moveSectionToSidebar(draggedSectionId, "right");
 	};
 
-	const ribbonButtonHoverStyle = {
-		backgroundColor: colors.background.tertiary,
-		borderColor: colors.primary,
+	const handleDragOver = (event: React.DragEvent) => {
+		event.preventDefault();
 	};
 
-	const activeButtonStyle = {
-		backgroundColor: colors.primary,
-		borderColor: colors.primary,
-		color: colors.text.inverse,
+	// Helper function to get badge info for sections that need indicators
+	const getSectionBadge = (sectionId: string) => {
+		switch (sectionId) {
+			case "entity-info":
+				return {
+					show: hasEntity,
+					color: "blue"
+				};
+			case "graph-stats":
+				return {
+					show: nodes.length > 0,
+					count: nodes.length,
+					color: "gray"
+				};
+			default:
+				return { show: false };
+		}
 	};
+
 
 	return (
 		<div
@@ -94,191 +114,26 @@ export const RightRibbon: React.FC = () => {
 				borderLeft: `1px solid ${colors.border.primary}`,
 			}}
 		>
-			{/* Entity details indicator */}
+			{/* Dynamic sections */}
 			<Stack gap="xs" align="center">
-				<div style={{ position: "relative" }}>
-					<Tooltip label="Entity details" position="left" withArrow>
-						<ActionIcon
-							variant="subtle"
-							size="lg"
-							style={hasEntity ? { ...ribbonButtonStyle, ...activeButtonStyle } : ribbonButtonStyle}
-							onClick={() => { handleExpandSidebarToSection("entity-info", "Entity Information"); }}
-							onMouseEnter={(e) => {
-								if (!hasEntity) {
-									Object.assign(e.currentTarget.style, ribbonButtonHoverStyle);
-								}
-							}}
-							onMouseLeave={(e) => {
-								if (!hasEntity) {
-									Object.assign(e.currentTarget.style, ribbonButtonStyle);
-								}
-							}}
-						>
-							<IconInfoCircle size={20} />
-						</ActionIcon>
-					</Tooltip>
-					{hasEntity && (
-						<Badge
-							size="xs"
-							variant="filled"
-							color="blue"
-							style={{
-								position: "absolute",
-								top: "-4px",
-								right: "-4px",
-								minWidth: "8px",
-								height: "8px",
-								padding: 0,
-								borderRadius: "50%",
-							}}
+				{rightSections.map((section) => {
+					const badge = getSectionBadge(section.id);
+					const isActive = section.id === "entity-info" && hasEntity;
+
+					return (
+						<RibbonButton
+							key={section.id}
+							section={section}
+							isActive={isActive}
+							badge={badge}
+							onActivate={handleSectionActivate}
+							onDragStart={() => {}} // Enable dragging
+							onDrop={handleDrop}
+							onDragOver={handleDragOver}
+							side="right"
 						/>
-					)}
-				</div>
-
-				<Tooltip label="External links" position="left" withArrow>
-					<ActionIcon
-						variant="subtle"
-						size="lg"
-						style={ribbonButtonStyle}
-						onClick={() => { handleExpandSidebarToSection("external-links", "External Links"); }}
-						onMouseEnter={(e) => {
-							Object.assign(e.currentTarget.style, ribbonButtonHoverStyle);
-						}}
-						onMouseLeave={(e) => {
-							Object.assign(e.currentTarget.style, ribbonButtonStyle);
-						}}
-					>
-						<IconExternalLink size={20} />
-					</ActionIcon>
-				</Tooltip>
-			</Stack>
-
-			<Divider
-				orientation="horizontal"
-				style={{ width: "32px", borderColor: colors.border.primary }}
-			/>
-
-			{/* View controls */}
-			<Stack gap="xs" align="center">
-				<Tooltip label="View options" position="left" withArrow>
-					<ActionIcon
-						variant="subtle"
-						size="lg"
-						style={ribbonButtonStyle}
-						onClick={() => { handleExpandSidebarToSection("view-options", "View Options"); }}
-						onMouseEnter={(e) => {
-							Object.assign(e.currentTarget.style, ribbonButtonHoverStyle);
-						}}
-						onMouseLeave={(e) => {
-							Object.assign(e.currentTarget.style, ribbonButtonStyle);
-						}}
-					>
-						<IconStar size={20} />
-					</ActionIcon>
-				</Tooltip>
-
-				<Tooltip label="Raw API data" position="left" withArrow>
-					<ActionIcon
-						variant="subtle"
-						size="lg"
-						style={ribbonButtonStyle}
-						onClick={() => { handleExpandSidebarToSection("raw-api-data", "Raw API Data"); }}
-						onMouseEnter={(e) => {
-							Object.assign(e.currentTarget.style, ribbonButtonHoverStyle);
-						}}
-						onMouseLeave={(e) => {
-							Object.assign(e.currentTarget.style, ribbonButtonStyle);
-						}}
-					>
-						<IconEye size={20} />
-					</ActionIcon>
-				</Tooltip>
-			</Stack>
-
-			<Divider
-				orientation="horizontal"
-				style={{ width: "32px", borderColor: colors.border.primary }}
-			/>
-
-			{/* Graph statistics */}
-			<Stack gap="xs" align="center">
-				<div style={{ position: "relative" }}>
-					<Tooltip label={`Graph statistics (${String(nodes.length)} nodes)`} position="left" withArrow>
-						<ActionIcon
-							variant="subtle"
-							size="lg"
-							style={ribbonButtonStyle}
-							onClick={() => { handleExpandSidebarToSection("graph-stats", "Graph Statistics"); }}
-							onMouseEnter={(e) => {
-								Object.assign(e.currentTarget.style, ribbonButtonHoverStyle);
-							}}
-							onMouseLeave={(e) => {
-								Object.assign(e.currentTarget.style, ribbonButtonStyle);
-							}}
-						>
-							<IconUsers size={20} />
-						</ActionIcon>
-					</Tooltip>
-					{nodes.length > 0 && (
-						<Badge
-							size="xs"
-							variant="filled"
-							color="gray"
-							style={{
-								position: "absolute",
-								top: "-8px",
-								right: "-8px",
-								fontSize: "9px",
-								minWidth: "16px",
-								height: "16px",
-								display: "flex",
-								alignItems: "center",
-								justifyContent: "center",
-							}}
-						>
-							{nodes.length > 99 ? "99+" : nodes.length}
-						</Badge>
-					)}
-				</div>
-
-				<div style={{ position: "relative" }}>
-					<Tooltip label="Selected/hovered entity" position="left" withArrow>
-						<ActionIcon
-							variant="subtle"
-							size="lg"
-							style={hasEntity ? { ...ribbonButtonStyle, ...activeButtonStyle } : ribbonButtonStyle}
-							onClick={() => { handleExpandSidebarToSection("entity-info", "Entity Information"); }}
-							onMouseEnter={(e) => {
-								if (!hasEntity) {
-									Object.assign(e.currentTarget.style, ribbonButtonHoverStyle);
-								}
-							}}
-							onMouseLeave={(e) => {
-								if (!hasEntity) {
-									Object.assign(e.currentTarget.style, ribbonButtonStyle);
-								}
-							}}
-						>
-							<IconTarget size={20} />
-						</ActionIcon>
-					</Tooltip>
-					{hasEntity && (
-						<Badge
-							size="xs"
-							variant="filled"
-							color="green"
-							style={{
-								position: "absolute",
-								top: "-4px",
-								right: "-4px",
-								minWidth: "8px",
-								height: "8px",
-								padding: 0,
-								borderRadius: "50%",
-							}}
-						/>
-					)}
-				</div>
+					);
+				})}
 			</Stack>
 
 			<div style={{ flex: 1 }} />
