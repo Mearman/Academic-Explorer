@@ -50,6 +50,7 @@ export const AnimatedLayoutProvider: React.FC<AnimatedLayoutProviderProps> = ({
 		resumeLayout,
 		restartLayout,
 		reheatLayout,
+		updateParameters,
 		canPause,
 		canResume,
 		canStop,
@@ -118,6 +119,7 @@ export const AnimatedLayoutProvider: React.FC<AnimatedLayoutProviderProps> = ({
 		pauseLayout,
 		resumeLayout,
 		reheatLayout,
+		updateParameters,
 
 		// Computed properties
 		canPause,
@@ -141,6 +143,7 @@ export const AnimatedLayoutProvider: React.FC<AnimatedLayoutProviderProps> = ({
 		pauseLayout,
 		resumeLayout,
 		reheatLayout,
+		updateParameters,
 		canPause,
 		canResume,
 		canStop,
