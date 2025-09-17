@@ -101,6 +101,8 @@ jobs:
           path: .nx/cache
           key: ${{ needs.setup.outputs.nx-cache-key }}
           restore-keys: |
+            ${{ needs.setup.outputs.nx-cache-key }}-
+            nx-${{ runner.os }}-${{ hashFiles('nx.json', 'package.json', 'pnpm-lock.yaml') }}-
             nx-${{ runner.os }}-
 
       - name: Run ${{ matrix.check }}
@@ -122,7 +124,7 @@ jobs:
         uses: actions/cache/save@v4
         with:
           path: .nx/cache
-          key: ${{ needs.setup.outputs.nx-cache-key }}-${{ matrix.check }}-${{ github.run_number }}
+          key: ${{ needs.setup.outputs.nx-cache-key }}-${{ matrix.check }}-${{ github.run_id }}-${{ github.run_attempt }}
 
   test:
     needs: setup
@@ -172,6 +174,8 @@ jobs:
           path: .nx/cache
           key: ${{ needs.setup.outputs.nx-cache-key }}
           restore-keys: |
+            ${{ needs.setup.outputs.nx-cache-key }}-
+            nx-${{ runner.os }}-${{ hashFiles('nx.json', 'package.json', 'pnpm-lock.yaml') }}-
             nx-${{ runner.os }}-
 
       - name: Install Playwright browsers
@@ -205,7 +209,7 @@ jobs:
           NODE_OPTIONS: '--max-old-space-size=8192 --expose-gc'
 
       - name: Upload coverage artifact
-        if: always()
+        if: always() && matrix.test-type == 'unit'
         uses: actions/upload-artifact@v4
         with:
           name: coverage-${{ matrix.test-type }}-${{ github.sha }}
@@ -217,7 +221,7 @@ jobs:
         uses: actions/cache/save@v4
         with:
           path: .nx/cache
-          key: ${{ needs.setup.outputs.nx-cache-key }}-${{ matrix.test-type }}-${{ github.run_number }}
+          key: ${{ needs.setup.outputs.nx-cache-key }}-${{ matrix.test-type }}-${{ github.run_id }}-${{ github.run_attempt }}
 
   coverage-report:
     needs: [test]
@@ -230,10 +234,10 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Download all coverage artifacts
+      - name: Download coverage artifacts
         uses: actions/download-artifact@v4
         with:
-          pattern: coverage-*-${{ github.sha }}
+          pattern: coverage-unit-${{ github.sha }}
           path: coverage-reports/
           merge-multiple: true
 
