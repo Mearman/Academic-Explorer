@@ -18,7 +18,6 @@ interface GroupRibbonButtonProps {
     color?: string;
   };
   onActivate: (groupId: string) => void;
-  onDragStart?: (groupId: string, event: React.DragEvent) => void;
   onDrop?: (draggedSectionId: string, targetGroupId: string, event: React.DragEvent) => void;
   onDragOver?: (event: React.DragEvent) => void;
   onGroupReorder?: (sourceGroupId: string, targetGroupId: string, insertBefore: boolean, event: React.DragEvent) => void;
@@ -30,7 +29,6 @@ export const GroupRibbonButton: React.FC<GroupRibbonButtonProps> = ({
 	isActive = false,
 	badge,
 	onActivate,
-	onDragStart,
 	onDrop,
 	onDragOver,
 	onGroupReorder,
@@ -48,15 +46,13 @@ export const GroupRibbonButton: React.FC<GroupRibbonButtonProps> = ({
 	};
 
 	const handleDragStart = (event: React.DragEvent) => {
-		// Detect if this is a group reorder drag (Ctrl/Cmd key held) or section drag
-		const isGroupReorder = event.ctrlKey || event.metaKey;
-
-		if (isGroupReorder && onGroupReorder) {
+		// Ribbon buttons are always for group reordering
+		if (onGroupReorder) {
 			logger.info("ui", `Starting group reorder drag for group ${group.id}`, {
 				groupId: group.id,
 				side
 			});
-			// Set different data for group reordering
+			// Set data for group reordering
 			event.dataTransfer.setData("application/group-reorder", group.id);
 			event.dataTransfer.setData("text/plain", `group:${group.id}`);
 			event.dataTransfer.effectAllowed = "move";
@@ -65,20 +61,6 @@ export const GroupRibbonButton: React.FC<GroupRibbonButtonProps> = ({
 			const target = event.currentTarget as HTMLElement;
 			target.style.opacity = "0.7";
 			target.style.border = "2px dashed " + colors.primary;
-		} else if (onDragStart) {
-			logger.info("ui", `Starting section drag for group ${group.id}`, {
-				groupId: group.id,
-				side
-			});
-			// Original section drag behavior
-			event.dataTransfer.setData("text/plain", group.id);
-			event.dataTransfer.effectAllowed = "move";
-
-			// Add visual feedback
-			const target = event.currentTarget as HTMLElement;
-			target.style.opacity = "0.5";
-
-			onDragStart(group.id, event);
 		}
 	};
 
@@ -105,7 +87,12 @@ export const GroupRibbonButton: React.FC<GroupRibbonButtonProps> = ({
 	};
 
 	const handleDragOver = (event: React.DragEvent) => {
-		if (onDragOver) {
+		// Always allow group reorder drags on ribbon buttons
+		const groupReorderData = event.dataTransfer.types.includes("application/group-reorder");
+		if (groupReorderData && onGroupReorder) {
+			event.preventDefault();
+			event.dataTransfer.dropEffect = "move";
+		} else if (onDragOver) {
 			event.preventDefault();
 			event.dataTransfer.dropEffect = "move";
 			onDragOver(event);
@@ -172,7 +159,7 @@ export const GroupRibbonButton: React.FC<GroupRibbonButtonProps> = ({
 					size="lg"
 					style={isActive ? { ...ribbonButtonStyle, ...activeButtonStyle } : ribbonButtonStyle}
 					onClick={handleClick}
-					draggable={Boolean(onDragStart)}
+					draggable={true}
 					onDragStart={handleDragStart}
 					onDragEnd={handleDragEnd}
 					onDrop={handleDrop}
