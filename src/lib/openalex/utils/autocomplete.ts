@@ -334,7 +334,7 @@ export class AutocompleteApi {
     newestEntry: number | null;
     } {
 		const entries = Object.values(this.debounceCache);
-		const validEntries = entries.filter((entry): entry is NonNullable<typeof entry> => entry !== null && entry !== undefined);
+		const validEntries = entries.filter((entry): entry is NonNullable<typeof entry> => entry !== undefined);
 		const timestamps = validEntries.map(entry => entry.timestamp);
 
 		return {

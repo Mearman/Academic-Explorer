@@ -350,11 +350,13 @@ const GraphNavigationInner: React.FC<GraphNavigationProps> = ({ className, style
 
 		const edgesList = Object.values(rawEdgesMap);
 		const currentVisibleEdges = edgesList.filter(edge => {
+			// Both nodes must exist and be visible
+			if (!(edge.source in rawNodesMap) || !(edge.target in rawNodesMap)) {
+				return false;
+			}
 			const sourceNode = rawNodesMap[edge.source];
 			const targetNode = rawNodesMap[edge.target];
-			// Both nodes must exist and be visible
-			return sourceNode && targetNode &&
-				visibleEntityTypes[sourceNode.type] &&
+			return visibleEntityTypes[sourceNode.type] &&
 				visibleEntityTypes[targetNode.type] &&
 				visibleEdgeTypes[edge.type];
 		});
