@@ -197,7 +197,7 @@ export class GraphDataService {
 							currentStore.addEdges(detectedEdges);
 
 							// Update cached edges
-							const allEdges = Object.values(currentStore.edges);
+							const allEdges = Object.values(currentStore.edges).filter((edge): edge is NonNullable<typeof edge> => edge != null);
 							setCachedGraphEdges(this.queryClient, allEdges);
 						}
 					})
@@ -254,7 +254,7 @@ export class GraphDataService {
 							currentStore.addEdges(detectedEdges);
 
 							// Update cached edges
-							const allEdges = Object.values(currentStore.edges);
+							const allEdges = Object.values(currentStore.edges).filter((edge): edge is NonNullable<typeof edge> => edge != null);
 							setCachedGraphEdges(this.queryClient, allEdges);
 						}
 					})
@@ -293,7 +293,7 @@ export class GraphDataService {
 							currentStore.addEdges(detectedEdges);
 
 							// Update cached edges
-							const allEdges = Object.values(currentStore.edges);
+							const allEdges = Object.values(currentStore.edges).filter((edge): edge is NonNullable<typeof edge> => edge != null);
 							setCachedGraphEdges(this.queryClient, allEdges);
 						}
 					})
@@ -351,8 +351,8 @@ export class GraphDataService {
 			allEdges.forEach(edge => uniqueEdges[edge.id] = edge);
 
 			// Add to graph store
-			const finalNodes = Object.values(uniqueNodes);
-			const finalEdges = Object.values(uniqueEdges);
+			const finalNodes = Object.values(uniqueNodes).filter((node): node is NonNullable<typeof node> => node != null);
+			const finalEdges = Object.values(uniqueEdges).filter((edge): edge is NonNullable<typeof edge> => edge != null);
 
 			store.addNodes(finalNodes);
 			store.addEdges(finalEdges);
@@ -492,7 +492,7 @@ export class GraphDataService {
 	 */
 	async detectRelationshipsForAllNodes(): Promise<void> {
 		const store = useGraphStore.getState();
-		const allNodes = Object.values(store.nodes);
+		const allNodes = Object.values(store.nodes).filter((node): node is NonNullable<typeof node> => node != null);
 
 		logger.info("graph", "Starting relationship detection for all nodes", {
 			nodeCount: allNodes.length
@@ -539,7 +539,7 @@ export class GraphDataService {
 				currentStore.addEdges(allDetectedEdges);
 
 				// Update cached edges
-				const updatedEdges = Object.values(currentStore.edges);
+				const updatedEdges = Object.values(currentStore.edges).filter((edge): edge is NonNullable<typeof edge> => edge != null);
 				setCachedGraphEdges(this.queryClient, updatedEdges);
 			}
 			processedCount += batch.length;
@@ -699,6 +699,7 @@ export class GraphDataService {
 			// Get the node to expand - use "in" operator to avoid ESLint false positive
 			if (!(nodeId in store.nodes)) return;
 			const node = store.nodes[nodeId];
+			if (!node) return;
 
 			// Check if entity type is supported
 			if (!EntityFactory.isSupported(node.type)) {
@@ -1006,6 +1007,7 @@ export class GraphDataService {
 			return;
 		}
 		const node = store.nodes[entityId];
+		if (!node) return;
 
 		try {
 			// Get minimal data for display purposes only
@@ -1043,6 +1045,7 @@ export class GraphDataService {
 			return;
 		}
 		const node = store.nodes[nodeId];
+		if (!node) return;
 
 		// No artificial hydration checks - proceed with field-level hydration as needed
 

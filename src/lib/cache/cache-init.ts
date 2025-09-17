@@ -6,7 +6,7 @@
 import { QueryClient, type QueryClientConfig } from "@tanstack/react-query";
 import { persistQueryClient, type PersistQueryClientOptions } from "@tanstack/react-query-persist-client";
 import { createHybridPersister } from "./persister";
-import { checkAndInvalidateCache, type InvalidationResult } from "./cache-invalidator";
+import { checkAndInvalidateCache, CacheLayer, type InvalidationResult } from "./cache-invalidator";
 import { CACHE_CONFIG } from "@/config/cache";
 import { calculateRetryDelay, RETRY_CONFIG } from "@/config/rate-limit";
 import { logger, logError } from "@/lib/logger";
@@ -150,7 +150,7 @@ export async function initializeQueryClient(): Promise<{
 			invalidationResult: {
 				triggered: false,
 				clearedLayers: [],
-				errors: [{ layer: "metadata" as const, error: "Initialization failed" }],
+				errors: [{ layer: CacheLayer.METADATA, error: "Initialization failed" }],
 				newVersion: "unknown",
 				timestamp: new Date().toISOString()
 			}
