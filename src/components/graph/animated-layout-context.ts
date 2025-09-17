@@ -6,11 +6,31 @@
 import React from "react";
 
 export const AnimatedLayoutContext = React.createContext<{
+	// State
 	isAnimating: boolean;
 	isRunning: boolean;
 	isWorkerReady: boolean;
-	applyLayout: () => void;
+	isPaused: boolean;
+	progress: number;
+	alpha: number;
+	iteration: number;
+	fps: number;
+	performanceStats: any;
 	useAnimation: boolean;
+
+	// Actions
+	applyLayout: () => void;
+	restartLayout: () => void;
+	stopLayout: () => void;
+	pauseLayout: () => void;
+	resumeLayout: () => void;
+	reheatLayout: (alpha?: number) => void;
+
+	// Computed properties
+	canPause: boolean;
+	canResume: boolean;
+	canStop: boolean;
+	canRestart: boolean;
 		} | null>(null);
 
 export const useAnimatedLayoutContext = () => {

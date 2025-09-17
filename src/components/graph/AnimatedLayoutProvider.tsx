@@ -6,7 +6,7 @@
 
 import React, { useEffect, useMemo } from "react";
 import { useAnimatedLayout } from "@/lib/graph/providers/xyflow/use-animated-layout";
-import { useAnimatedGraphStore } from "@/stores/animated-graph-store";
+import { useAnimatedGraphStore, useRestartRequested, useClearRestartRequest } from "@/stores/animated-graph-store";
 import { logger } from "@/lib/logger";
 import { AnimatedLayoutContext } from "./animated-layout-context";
 
@@ -30,11 +30,30 @@ export const AnimatedLayoutProvider: React.FC<AnimatedLayoutProviderProps> = ({
 	// Use stable selector to prevent infinite loops in React 19
 	const useAnimation = useAnimatedGraphStore((state) => state.useAnimatedLayout);
 
+	// Communication for restart requests from components outside this provider
+	const restartRequested = useRestartRequested();
+	const clearRestartRequest = useClearRestartRequest();
+
 	const {
 		isRunning,
 		isAnimating,
-		applyLayout,
+		isPaused,
+		progress,
+		alpha,
+		iteration,
+		fps,
+		performanceStats,
 		isWorkerReady,
+		applyLayout,
+		stopLayout,
+		pauseLayout,
+		resumeLayout,
+		restartLayout,
+		reheatLayout,
+		canPause,
+		canResume,
+		canStop,
+		canRestart,
 	} = useAnimatedLayout({
 		enabled: enabled && useAnimation,
 		onLayoutChange,
@@ -60,14 +79,73 @@ export const AnimatedLayoutProvider: React.FC<AnimatedLayoutProviderProps> = ({
 		});
 	}, [autoStartOnNodeChange, enabled, useAnimation, isWorkerReady, isRunning]);
 
+	// Listen for restart requests from components outside this provider
+	useEffect(() => {
+		if (restartRequested && enabled && useAnimation && isWorkerReady) {
+			logger.info("graph", "Restart request received from external component", {
+				enabled,
+				useAnimation,
+				isWorkerReady,
+				isRunning,
+			});
+
+			// Clear the request flag first to prevent multiple triggers
+			clearRestartRequest();
+
+			// Restart the animation
+			restartLayout();
+		}
+	}, [restartRequested, enabled, useAnimation, isWorkerReady, restartLayout, clearRestartRequest]);
+
 	// Create stable context value to prevent unnecessary re-renders
 	const contextValue = useMemo(() => ({
+		// State
 		isAnimating,
 		isRunning,
 		isWorkerReady,
-		applyLayout,
+		isPaused,
+		progress,
+		alpha,
+		iteration,
+		fps,
+		performanceStats,
 		useAnimation,
-	}), [isAnimating, isRunning, isWorkerReady, applyLayout, useAnimation]);
+
+		// Actions
+		applyLayout,
+		restartLayout,
+		stopLayout,
+		pauseLayout,
+		resumeLayout,
+		reheatLayout,
+
+		// Computed properties
+		canPause,
+		canResume,
+		canStop,
+		canRestart,
+	}), [
+		isAnimating,
+		isRunning,
+		isWorkerReady,
+		isPaused,
+		progress,
+		alpha,
+		iteration,
+		fps,
+		performanceStats,
+		useAnimation,
+		applyLayout,
+		restartLayout,
+		stopLayout,
+		pauseLayout,
+		resumeLayout,
+		reheatLayout,
+		canPause,
+		canResume,
+		canStop,
+		canRestart,
+	]);
 
 	logger.debug("graph", "AnimatedLayoutProvider render", {
 		enabled,
