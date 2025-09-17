@@ -1,12 +1,19 @@
 /**
- * Layout store for sidebar state management
- * Simple Zustand store without Immer to avoid React 19 infinite loops
+ * Group-based layout store for VSCode-style sidebar state management
+ * Ribbon buttons represent tool groups (categories), multiple tools can be in each group
  */
 
 import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
 import type { ProviderType } from "@/lib/graph/types";
-import { getDefaultSectionPlacements, getAllSectionIds } from "@/stores/section-registry";
+import { getDefaultSectionPlacements, getAllSectionIds, getSectionById } from "@/stores/section-registry";
+import { updateGroupDefinition, getGroupDefinition, registerGroupDefinition } from "@/stores/group-registry";
+
+interface ToolGroup {
+  id: string;
+  sections: string[];
+  activeSection: string | null;
+}
 
 interface LayoutState {
   // Sidebar states
@@ -23,11 +30,17 @@ interface LayoutState {
   leftSidebarHovered: boolean;
   rightSidebarHovered: boolean;
 
-  // Section expansion states
-  expandedSections: Record<string, boolean>;
+  // Section collapsed states (for tool headers)
+  collapsedSections: Record<string, boolean>;
 
   // Section placement states (which sidebar each section is in)
   sectionPlacements: Record<string, "left" | "right">;
+
+  // Active group for each sidebar (VSCode-style single active group)
+  activeGroups: Record<"left" | "right", string | null>;
+
+  // Tool groups for each sidebar (category-based groups with multiple tools)
+  toolGroups: Record<"left" | "right", Record<string, ToolGroup>>;
 
   // Graph provider selection
   graphProvider: ProviderType;
@@ -49,23 +62,66 @@ interface LayoutState {
   setRightSidebarAutoHidden: (autoHidden: boolean) => void;
   setLeftSidebarHovered: (hovered: boolean) => void;
   setRightSidebarHovered: (hovered: boolean) => void;
-  setSectionExpanded: (sectionKey: string, expanded: boolean) => void;
+  setSectionCollapsed: (sectionKey: string, collapsed: boolean) => void;
   expandSidebarToSection: (sidebar: "left" | "right", sectionKey: string) => void;
+  setActiveGroup: (sidebar: "left" | "right", groupId: string | null) => void;
+  addSectionToGroup: (sidebar: "left" | "right", groupId: string, sectionId: string) => void;
+  removeSectionFromGroup: (sidebar: "left" | "right", groupId: string, sectionId: string) => void;
+  setActiveTabInGroup: (sidebar: "left" | "right", groupId: string, sectionId: string) => void;
   moveSectionToSidebar: (sectionId: string, targetSidebar: "left" | "right") => void;
   resetSectionPlacements: () => void;
   getSectionsForSidebar: (sidebar: "left" | "right") => string[];
+  getActiveGroup: (sidebar: "left" | "right") => string | null;
+  getToolGroupsForSidebar: (sidebar: "left" | "right") => Record<string, ToolGroup>;
+  reorderGroups: (sidebar: "left" | "right", sourceGroupId: string, targetGroupId: string, insertBefore: boolean) => void;
   setGraphProvider: (provider: ProviderType) => void;
   setPreviewEntity: (entityId: string | null) => void;
   setAutoPinOnLayoutStabilization: (enabled: boolean) => void;
 }
+
+// Helper function to create default tool groups based on categories
+const createDefaultToolGroups = (): Record<"left" | "right", Record<string, ToolGroup>> => {
+	const placements = getDefaultSectionPlacements();
+	const leftSections = getAllSectionIds().filter(id => placements[id] === "left");
+	const rightSections = getAllSectionIds().filter(id => placements[id] === "right");
+
+	// Get unique categories for each sidebar
+	const leftCategories = [...new Set(leftSections.map(id => getSectionById(id)?.category).filter((cat): cat is string => Boolean(cat)))];
+	const rightCategories = [...new Set(rightSections.map(id => getSectionById(id)?.category).filter((cat): cat is string => Boolean(cat)))];
+
+	const createGroupsForSide = (sections: string[], categories: string[]) => {
+		const groups: Record<string, ToolGroup> = {};
+		for (const category of categories) {
+			const categorySections = sections.filter(id => {
+				const section = getSectionById(id);
+				return section?.category === category;
+			});
+			if (categorySections.length > 0) {
+				groups[category] = {
+					id: category,
+					sections: categorySections,
+					activeSection: categorySections[0], // Default to first section
+				};
+			}
+		}
+		return groups;
+	};
+
+	return {
+		left: createGroupsForSide(leftSections, leftCategories),
+		right: createGroupsForSide(rightSections, rightCategories),
+	};
+};
 
 type LayoutPersistedState = Partial<Pick<LayoutState,
   | "leftSidebarOpen"
   | "leftSidebarPinned"
   | "rightSidebarOpen"
   | "rightSidebarPinned"
-  | "expandedSections"
+  | "collapsedSections"
   | "sectionPlacements"
+  | "activeGroups"
+  | "toolGroups"
   | "graphProvider"
   | "autoPinOnLayoutStabilization"
 >>;
@@ -82,8 +138,10 @@ export const useLayoutStore = create<LayoutState>()(
 			rightSidebarAutoHidden: false,
 			leftSidebarHovered: false,
 			rightSidebarHovered: false,
-			expandedSections: {},
+			collapsedSections: {},
 			sectionPlacements: getDefaultSectionPlacements(),
+			activeGroups: { left: null, right: null },
+			toolGroups: createDefaultToolGroups(),
 			graphProvider: "xyflow",
 			previewEntityId: null,
 			autoPinOnLayoutStabilization: false,
@@ -123,25 +181,177 @@ export const useLayoutStore = create<LayoutState>()(
 			setRightSidebarHovered: (hovered) =>
 				set({ rightSidebarHovered: hovered }),
 
-			setSectionExpanded: (sectionKey, expanded) =>
+			setSectionCollapsed: (sectionKey, collapsed) =>
 				set((state) => ({
-					expandedSections: {
-						...state.expandedSections,
-						[sectionKey]: expanded,
+					collapsedSections: {
+						...state.collapsedSections,
+						[sectionKey]: collapsed,
 					},
 				})),
 
 			expandSidebarToSection: (sidebar, sectionKey) =>
+				set((state) => {
+					// Find which group contains this section
+					const toolGroups = state.toolGroups[sidebar];
+					let targetGroupId: string | null = null;
+
+					for (const [groupId, group] of Object.entries(toolGroups)) {
+						if (group.sections.includes(sectionKey)) {
+							targetGroupId = groupId;
+							break;
+						}
+					}
+
+					if (!targetGroupId) return state;
+
+					// Update the group's active section and set as active group
+					const updatedGroups = {
+						...toolGroups,
+						[targetGroupId]: {
+							...toolGroups[targetGroupId],
+							activeSection: sectionKey,
+						},
+					};
+
+					return {
+						// Open the appropriate sidebar
+						leftSidebarOpen: sidebar === "left" ? true : state.leftSidebarOpen,
+						rightSidebarOpen: sidebar === "right" ? true : state.rightSidebarOpen,
+						toolGroups: {
+							...state.toolGroups,
+							[sidebar]: updatedGroups,
+						},
+						activeGroups: {
+							...state.activeGroups,
+							[sidebar]: targetGroupId,
+						},
+					};
+				}),
+
+			setActiveGroup: (sidebar, groupId) =>
 				set((state) => ({
-					// Open the appropriate sidebar
-					leftSidebarOpen: sidebar === "left" ? true : state.leftSidebarOpen,
-					rightSidebarOpen: sidebar === "right" ? true : state.rightSidebarOpen,
-					// Expand the target section
-					expandedSections: {
-						...state.expandedSections,
-						[sectionKey]: true,
+					activeGroups: {
+						...state.activeGroups,
+						[sidebar]: groupId,
 					},
 				})),
+
+			addSectionToGroup: (sidebar, groupId, sectionId) =>
+				set((state) => {
+					const toolGroups = state.toolGroups[sidebar];
+					const group = toolGroups[groupId];
+
+					// If group exists and already contains the section, do nothing
+					if (group && group.sections.includes(sectionId)) {
+						return state;
+					}
+
+					const updatedGroup = group ? {
+						// Update existing group
+						...group,
+						sections: [...group.sections, sectionId],
+						activeSection: sectionId, // Focus the newly added section
+					} : {
+						// Create new group
+						id: groupId,
+						sections: [sectionId],
+						activeSection: sectionId,
+					};
+
+					// Update group definition based on sections
+					updateGroupDefinition(groupId, updatedGroup.sections, getSectionById);
+
+					return {
+						toolGroups: {
+							...state.toolGroups,
+							[sidebar]: {
+								...toolGroups,
+								[groupId]: updatedGroup,
+							},
+						},
+						activeGroups: {
+							...state.activeGroups,
+							[sidebar]: groupId, // Activate the group
+						},
+					};
+				}),
+
+			removeSectionFromGroup: (sidebar, groupId, sectionId) =>
+				set((state) => {
+					const toolGroups = state.toolGroups[sidebar];
+					const group = toolGroups[groupId];
+
+					if (!group) return state;
+
+					const updatedSections = group.sections.filter(id => id !== sectionId);
+					const newActiveSection = group.activeSection === sectionId
+						? updatedSections[0] || null
+						: group.activeSection;
+
+					// If group becomes empty, remove it entirely
+					if (updatedSections.length === 0) {
+						const { [groupId]: removedGroup, ...remainingGroups } = toolGroups;
+						const newActiveGroup = state.activeGroups[sidebar] === groupId
+							? null
+							: state.activeGroups[sidebar];
+
+						// Remove group definition
+						updateGroupDefinition(groupId, [], getSectionById);
+
+						return {
+							toolGroups: {
+								...state.toolGroups,
+								[sidebar]: remainingGroups,
+							},
+							activeGroups: {
+								...state.activeGroups,
+								[sidebar]: newActiveGroup,
+							},
+						};
+					}
+
+					const updatedGroup = {
+						...group,
+						sections: updatedSections,
+						activeSection: newActiveSection,
+					};
+
+					// Update group definition based on new sections
+					updateGroupDefinition(groupId, updatedGroup.sections, getSectionById);
+
+					return {
+						toolGroups: {
+							...state.toolGroups,
+							[sidebar]: {
+								...toolGroups,
+								[groupId]: updatedGroup,
+							},
+						},
+					};
+				}),
+
+			setActiveTabInGroup: (sidebar, groupId, sectionId) =>
+				set((state) => {
+					const toolGroups = state.toolGroups[sidebar];
+					const group = toolGroups[groupId];
+
+					if (!group || !group.sections.includes(sectionId)) return state;
+
+					const updatedGroup = {
+						...group,
+						activeSection: sectionId,
+					};
+
+					return {
+						toolGroups: {
+							...state.toolGroups,
+							[sidebar]: {
+								...toolGroups,
+								[groupId]: updatedGroup,
+							},
+						},
+					};
+				}),
 
 			moveSectionToSidebar: (sectionId, targetSidebar) =>
 				set((state) => ({
@@ -154,6 +364,8 @@ export const useLayoutStore = create<LayoutState>()(
 			resetSectionPlacements: () =>
 				set({
 					sectionPlacements: getDefaultSectionPlacements(),
+					activeGroups: { left: null, right: null },
+					toolGroups: createDefaultToolGroups(),
 				}),
 
 			getSectionsForSidebar: (sidebar) => {
@@ -161,6 +373,73 @@ export const useLayoutStore = create<LayoutState>()(
 				return getAllSectionIds().filter(
 					sectionId => state.sectionPlacements[sectionId] === sidebar
 				);
+			},
+
+			getActiveGroup: (sidebar) => {
+				const state = get();
+				return state.activeGroups[sidebar];
+			},
+
+			getToolGroupsForSidebar: (sidebar) => {
+				const state = get();
+				return state.toolGroups[sidebar];
+			},
+
+			reorderGroups: (sidebar, sourceGroupId, targetGroupId, insertBefore) => {
+				const state = get();
+				const toolGroups = state.toolGroups[sidebar];
+
+				// Get group definitions for both source and target
+				const sourceDefinition = getGroupDefinition(sourceGroupId);
+				const targetDefinition = getGroupDefinition(targetGroupId);
+
+				if (!sourceDefinition || !targetDefinition) return;
+
+				// Calculate new order for source group
+				const targetOrder = targetDefinition.order ?? 999;
+
+				// Get all other groups to adjust their orders
+				const allGroupIds = Object.keys(toolGroups);
+				const otherGroups = allGroupIds
+					.filter(id => id !== sourceGroupId)
+					.map(id => ({ id, definition: getGroupDefinition(id) }))
+					.filter(({ definition }) => definition !== undefined)
+					.map(({ id, definition }) => ({ id, definition: definition as NonNullable<typeof definition> })) // Type assertion after filter
+					.sort((a, b) => (a.definition.order ?? 999) - (b.definition.order ?? 999));
+
+				// Calculate new order
+				let newOrder: number;
+				if (insertBefore) {
+					newOrder = targetOrder;
+					// Shift all groups at or after target order up by 1
+					otherGroups.forEach(({ definition }) => {
+						const currentOrder = definition.order ?? 999;
+						if (currentOrder >= targetOrder) {
+							registerGroupDefinition({
+								...definition,
+								order: currentOrder + 1
+							});
+						}
+					});
+				} else {
+					newOrder = targetOrder + 1;
+					// Shift all groups after target order up by 1
+					otherGroups.forEach(({ definition }) => {
+						const currentOrder = definition.order ?? 999;
+						if (currentOrder > targetOrder) {
+							registerGroupDefinition({
+								...definition,
+								order: currentOrder + 1
+							});
+						}
+					});
+				}
+
+				// Update source group order
+				registerGroupDefinition({
+					...sourceDefinition,
+					order: newOrder
+				});
 			},
 
 			setGraphProvider: (provider) =>
@@ -183,8 +462,10 @@ export const useLayoutStore = create<LayoutState>()(
 			partialize: (state) => ({
 				leftSidebarPinned: state.leftSidebarPinned,
 				rightSidebarPinned: state.rightSidebarPinned,
-				expandedSections: state.expandedSections,
+				collapsedSections: state.collapsedSections,
 				sectionPlacements: state.sectionPlacements,
+				activeGroups: state.activeGroups,
+				toolGroups: state.toolGroups,
 				graphProvider: state.graphProvider,
 				autoPinOnLayoutStabilization: state.autoPinOnLayoutStabilization,
 			}),
@@ -206,11 +487,29 @@ export const useLayoutStore = create<LayoutState>()(
 						migrated = true;
 					}
 
+					// Add collapsedSections if missing
+					if (!state.collapsedSections) {
+						state.collapsedSections = {};
+						migrated = true;
+					}
+
+					// Add toolGroups if missing (new group-based system)
+					if (!state.toolGroups) {
+						state.toolGroups = createDefaultToolGroups();
+						migrated = true;
+					}
+
+					// Add activeGroups if missing
+					if (!state.activeGroups) {
+						state.activeGroups = { left: null, right: null };
+						migrated = true;
+					}
+
 					return migrated ? { ...state } : persistedState;
 				}
 				return persistedState;
 			},
-			version: 1,
+			version: 2,
 		}
 	)
 );

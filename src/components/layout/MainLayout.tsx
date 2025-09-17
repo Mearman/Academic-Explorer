@@ -10,8 +10,8 @@ import { Link } from "@tanstack/react-router";
 import { useLayoutStore } from "@/stores/layout-store";
 import { useThemeColors } from "@/hooks/use-theme-colors";
 import { GraphNavigation } from "./GraphNavigation";
-import { LeftSidebar } from "./LeftSidebar";
-import { RightSidebar } from "./RightSidebar";
+import { LeftSidebarDynamic } from "./LeftSidebarDynamic";
+import { RightSidebarDynamic } from "./RightSidebarDynamic";
 import { LeftRibbon } from "./LeftRibbon";
 import { RightRibbon } from "./RightRibbon";
 
@@ -87,13 +87,13 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
 		<AppShell
 			header={{ height: 60 }}
 			navbar={{
-				width: leftSidebarEffectivelyVisible ? { base: 280, sm: 300, md: 350 } : 60,
-				collapsed: { mobile: !leftSidebarEffectivelyVisible },
+				width: leftSidebarEffectivelyVisible ? { base: 340, sm: 360, md: 410 } : 60,
+				collapsed: { mobile: false }, // Never collapse on mobile since we always show activity bar
 				breakpoint: "sm"
 			}}
 			aside={{
-				width: rightSidebarEffectivelyVisible ? { base: 280, sm: 300, md: 350 } : 60,
-				collapsed: { mobile: !rightSidebarEffectivelyVisible },
+				width: rightSidebarEffectivelyVisible ? { base: 340, sm: 360, md: 410 } : 60,
+				collapsed: { mobile: false }, // Never collapse on mobile since we always show activity bar
 				breakpoint: "sm"
 			}}
 			padding={0}
@@ -209,9 +209,16 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
 				</Group>
 			</AppShell.Header>
 
-			{/* Left Sidebar - Search and Filters */}
-			<AppShell.Navbar style={{ display: "flex", flexDirection: "column", height: "calc(100vh - 60px)", maxHeight: "calc(100vh - 60px)", overflowY: "auto", overflowX: "hidden" }}>
-				{leftSidebarEffectivelyVisible ? <LeftSidebar /> : <LeftRibbon />}
+			{/* Left Sidebar - Activity Bar + Content (VSCode-style) */}
+			<AppShell.Navbar style={{ display: "flex", flexDirection: "row", height: "calc(100vh - 60px)", maxHeight: "calc(100vh - 60px)", overflowY: "hidden", overflowX: "hidden" }}>
+				{/* Activity Bar (always visible) */}
+				<LeftRibbon />
+				{/* Sidebar content (when expanded) */}
+				{leftSidebarEffectivelyVisible && (
+					<div style={{ flex: 1, display: "flex", flexDirection: "column", overflowY: "auto", overflowX: "hidden" }}>
+						<LeftSidebarDynamic />
+					</div>
+				)}
 			</AppShell.Navbar>
 
 			{/* Main Graph Area */}
@@ -254,9 +261,16 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
 				)}
 			</AppShell.Main>
 
-			{/* Right Sidebar - Entity Details and Preview */}
-			<AppShell.Aside style={{ display: "flex", flexDirection: "column", height: "calc(100vh - 60px)", maxHeight: "calc(100vh - 60px)", overflowY: "auto", overflowX: "hidden" }}>
-				{rightSidebarEffectivelyVisible ? <RightSidebar /> : <RightRibbon />}
+			{/* Right Sidebar - Content + Activity Bar (VSCode-style) */}
+			<AppShell.Aside style={{ display: "flex", flexDirection: "row", height: "calc(100vh - 60px)", maxHeight: "calc(100vh - 60px)", overflowY: "hidden", overflowX: "hidden" }}>
+				{/* Sidebar content (when expanded) */}
+				{rightSidebarEffectivelyVisible && (
+					<div style={{ flex: 1, display: "flex", flexDirection: "column", overflowY: "auto", overflowX: "hidden" }}>
+						<RightSidebarDynamic />
+					</div>
+				)}
+				{/* Activity Bar (always visible) */}
+				<RightRibbon />
 			</AppShell.Aside>
 		</AppShell>
 	);

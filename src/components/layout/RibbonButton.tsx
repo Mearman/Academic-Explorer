@@ -72,11 +72,13 @@ export const RibbonButton: React.FC<RibbonButtonProps> = ({
 		if (onDrop) {
 			event.preventDefault();
 			const draggedSectionId = event.dataTransfer.getData("text/plain");
+
 			logger.info("ui", `Dropping section ${draggedSectionId} onto ${section.id}`, {
 				draggedSectionId,
 				targetSectionId: section.id,
 				side
 			});
+
 			onDrop(draggedSectionId, section.id, event);
 		}
 	};
