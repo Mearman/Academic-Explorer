@@ -242,8 +242,9 @@ describe("GraphDataService", () => {
 			markNodeAsLoading: vi.fn(),
 			markNodeAsLoaded: vi.fn(),
 			markNodeAsError: vi.fn(),
-			nodes: new Map(),
-			edges: new Map(),
+			setGraphData: vi.fn(), // Added missing method
+			nodes: {}, // Changed from Map to Record
+			edges: {}, // Changed from Map to Record
 			pinnedNodes: new Set(),
 		};
 
@@ -623,8 +624,7 @@ describe("GraphDataService", () => {
 			await service.expandNode(nodeId, { force: true });
 
 			expect(mockExpand).toHaveBeenCalled();
-			expect(mockStore.addNodes).toHaveBeenCalled();
-			expect(mockStore.addEdges).toHaveBeenCalled();
+			expect(mockStore.setGraphData).toHaveBeenCalled();
 			expect(setNodeExpanded).toHaveBeenCalledWith(queryClient, nodeId, true);
 		});
 
