@@ -200,9 +200,9 @@ export class RelationshipDetectionService {
 				sources: ADVANCED_FIELD_SELECTIONS.sources.minimal,
 				institutions: ADVANCED_FIELD_SELECTIONS.institutions.minimal,
 				concepts: ADVANCED_FIELD_SELECTIONS.concepts.minimal,
-				topics: ["id", "display_name"], // TODO: Add advanced type-safe selections
-				publishers: ["id", "display_name"], // TODO: Add advanced type-safe selections
-				funders: ["id", "display_name"], // TODO: Add advanced type-safe selections
+				topics: ADVANCED_FIELD_SELECTIONS.topics.minimal,
+				publishers: ADVANCED_FIELD_SELECTIONS.publishers.minimal,
+				funders: ADVANCED_FIELD_SELECTIONS.funders.minimal,
 				keywords: ["id", "display_name"] // Keywords don't have strict typing yet
 			};
 
