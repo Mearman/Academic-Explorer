@@ -242,27 +242,27 @@ describe("Entity Data Storage Integration", () => {
 
 			// Debug logging to understand what's happening
 			logger.info("integration", "Node metadata after adding to store", {
-				nodeId: node?.id,
-				hasMetadata: !!node?.metadata,
-				metadata: node?.metadata,
-				hydrationLevel: node?.metadata?.hydrationLevel
+				nodeId: node.id,
+				hasMetadata: !!node.metadata,
+				metadata: node.metadata,
+				hydrationLevel: node.metadata.hydrationLevel
 			});
 
-			expect(node?.metadata?.hydrationLevel).toBe("minimal");
-			expect(node?.label).toBe("Minimal Work Node");
+			expect(node.metadata.hydrationLevel).toBe("minimal");
+			expect(node.label).toBe("Minimal Work Node");
 
 			// Load the entity into graph (which should upgrade minimal to full)
 			await graphDataService.loadEntityIntoGraph("https://openalex.org/W123456789");
 
 			// Verify it was upgraded to full hydration
 			node = store.nodes["https://openalex.org/W123456789"];
-			expect(node?.metadata?.hydrationLevel).toBe("full");
-			expect(node?.label).toBe("Full Work Title");
+			expect(node.metadata.hydrationLevel).toBe("full");
+			expect(node.label).toBe("Full Work Title");
 
 			logger.info("integration", "Hydration level transition test completed", {
 				initialHydration: "minimal",
-				finalHydration: node?.metadata?.hydrationLevel,
-				labelChanged: "Minimal Work Node" !== node?.label
+				finalHydration: node.metadata.hydrationLevel,
+				labelChanged: "Minimal Work Node" !== node.label
 			});
 		});
 	});
