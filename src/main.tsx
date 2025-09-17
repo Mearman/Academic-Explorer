@@ -13,6 +13,7 @@ import { MantineProvider, createTheme } from "@mantine/core"
 import { Notifications } from "@mantine/notifications"
 import { Spotlight } from "@mantine/spotlight"
 import { IconSearch } from "@tabler/icons-react"
+import { GlobalErrorBoundary } from "./components/error/GlobalErrorBoundary"
 
 // Import Mantine core styles
 import "@mantine/core/styles.css"
@@ -209,13 +210,14 @@ if (!rootElement) {
 
 createRoot(rootElement).render(
 	<StrictMode>
-		<MantineProvider
-			theme={theme}
-			defaultColorScheme="auto"
-		>
-			<Notifications />
-			<QueryClientProvider client={queryClient}>
-				<RouterProvider router={router} />
+		<GlobalErrorBoundary>
+			<MantineProvider
+				theme={theme}
+				defaultColorScheme="auto"
+			>
+				<Notifications />
+				<QueryClientProvider client={queryClient}>
+					<RouterProvider router={router} />
 
 				{/* TanStack DevTools - unified panel for all tools */}
 				{import.meta.env.DEV && (
@@ -268,5 +270,6 @@ createRoot(rootElement).render(
 				highlightQuery
 			/>
 		</MantineProvider>
+		</GlobalErrorBoundary>
 	</StrictMode>,
 )
