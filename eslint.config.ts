@@ -47,7 +47,7 @@ export default tseslint.config([
       '@typescript-eslint/no-unused-vars': [
         'error',
         {
-          // Remove underscore patterns - unused declarations must be removed
+          argsIgnorePattern: '^_', // Allow underscore-prefixed unused parameters
           ignoreRestSiblings: true,
         },
       ],
