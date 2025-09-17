@@ -21,6 +21,8 @@ interface GroupRibbonButtonProps {
   onDrop?: (draggedSectionId: string, targetGroupId: string, event: React.DragEvent) => void;
   onDragOver?: (event: React.DragEvent) => void;
   onGroupReorder?: (sourceGroupId: string, targetGroupId: string, insertBefore: boolean, event: React.DragEvent) => void;
+  onDragStart?: (groupId: string) => void;
+  onDragEnd?: () => void;
   side: "left" | "right";
 }
 
@@ -32,6 +34,8 @@ export const GroupRibbonButton: React.FC<GroupRibbonButtonProps> = ({
 	onDrop,
 	onDragOver,
 	onGroupReorder,
+	onDragStart,
+	onDragEnd,
 	side,
 }) => {
 	const themeColors = useThemeColors();
@@ -61,6 +65,9 @@ export const GroupRibbonButton: React.FC<GroupRibbonButtonProps> = ({
 			const target = event.currentTarget as HTMLElement;
 			target.style.opacity = "0.7";
 			target.style.border = "2px dashed " + colors.primary;
+
+			// Notify parent component about drag start
+			onDragStart?.(group.id);
 		}
 	};
 
@@ -69,6 +76,9 @@ export const GroupRibbonButton: React.FC<GroupRibbonButtonProps> = ({
 		const target = event.currentTarget as HTMLElement;
 		target.style.opacity = "1";
 		target.style.border = `1px solid ${colors.border.primary}`;
+
+		// Notify parent component about drag end
+		onDragEnd?.();
 	};
 
 	const handleDrop = (event: React.DragEvent) => {
