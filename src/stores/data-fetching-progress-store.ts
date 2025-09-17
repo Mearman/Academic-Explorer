@@ -123,7 +123,7 @@ export const useDataFetchingProgressStore = create<DataFetchingProgressState>()(
 		{ set((state) => {
 			const filteredRequests: Record<string, DataFetchingProgressItem> = {};
 			Object.entries(state.requests).forEach(([nodeId, request]) => {
-				if (request.status !== "completed") {
+				if (request && request.status !== "completed") {
 					filteredRequests[nodeId] = request;
 				}
 			});
@@ -137,7 +137,7 @@ export const useDataFetchingProgressStore = create<DataFetchingProgressState>()(
 
 		// Selectors
 		getActiveRequests: () => {
-			return Object.values(get().requests);
+			return Object.values(get().requests).filter((request): request is NonNullable<typeof request> => request != null);
 		},
 
 		getRequestByNodeId: (nodeId: string) => {

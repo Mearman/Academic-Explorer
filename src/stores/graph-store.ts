@@ -338,8 +338,8 @@ export const useGraphStore = create<GraphState>()(
 				}
 
 				// Set nodes and edges on the new provider outside of the Zustand set call
-				provider.setNodes(Object.values(state.nodes));
-				provider.setEdges(Object.values(state.edges));
+				provider.setNodes(Object.values(state.nodes).filter((node): node is NonNullable<typeof node> => node != null));
+				provider.setEdges(Object.values(state.edges).filter((edge): edge is NonNullable<typeof edge> => edge != null));
 
 				// Only update the provider in the store
 				set({ provider });
@@ -396,7 +396,7 @@ export const useGraphStore = create<GraphState>()(
 					draft.provider?.removeNode(nodeId);
 
 					// Remove connected edges
-					const edgeEntries = Object.entries(draft.edges);
+					const edgeEntries = Object.entries(draft.edges).filter(([, edge]) => edge != null) as [string, GraphEdge][];
 					const remainingEdges: Record<string, GraphEdge> = {};
 					edgeEntries.forEach(([edgeId, edge]) => {
 						if (edge.source === nodeId || edge.target === nodeId) {
@@ -616,7 +616,7 @@ export const useGraphStore = create<GraphState>()(
 						depths[nodeId] = depth;
 
 						// Find connected nodes
-						Object.values(edges).forEach(edge => {
+						Object.values(edges).filter((edge): edge is NonNullable<typeof edge> => edge != null).forEach(edge => {
 							let neighbor: string | null = null;
 							if (edge.source === nodeId && !visited[edge.target]) {
 								neighbor = edge.target;

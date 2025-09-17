@@ -788,8 +788,8 @@ export class GraphDataService {
 			const allNewEdges = [...relatedData.edges, ...detectedEdges];
 
 			// Atomic batch update: Add all nodes and edges together using setGraphData
-			const currentNodes = Object.values(store.nodes);
-			const currentEdges = Object.values(store.edges);
+			const currentNodes = Object.values(store.nodes).filter((node): node is NonNullable<typeof node> => node != null);
+			const currentEdges = Object.values(store.edges).filter((edge): edge is NonNullable<typeof edge> => edge != null);
 			const finalNodes = [...currentNodes, ...relatedData.nodes];
 			const finalEdges = [...currentEdges, ...allNewEdges];
 

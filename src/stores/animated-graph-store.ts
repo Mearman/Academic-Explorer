@@ -204,7 +204,7 @@ export const useAnimatedGraphStore = create<AnimatedGraphState>()(
 				const state = get();
 				// Return appropriate position set based on animation state
 				const positions = state.isAnimating ? state.animatedPositions : state.staticPositions;
-				return Object.values(positions);
+				return Object.values(positions).filter((position): position is NonNullable<typeof position> => position != null);
 			},
 
 			clearPositions: () => {
@@ -245,7 +245,9 @@ export const useAnimatedGraphStore = create<AnimatedGraphState>()(
 					// Move animated positions to static positions
 					state.staticPositions = {};
 					Object.entries(state.animatedPositions).forEach(([id, pos]) => {
-						state.staticPositions[id] = { ...pos };
+						if (pos) {
+							state.staticPositions[id] = { ...pos };
+						}
 					});
 					state.animatedPositions = {};
 
@@ -304,7 +306,7 @@ export const useAnimatedGraphStore = create<AnimatedGraphState>()(
 			// Integration with base graph store
 			syncWithGraphStore: () => {
 				const graphStore = useGraphStore.getState();
-				const nodes = Object.values(graphStore.nodes);
+				const nodes = Object.values(graphStore.nodes).filter((node): node is NonNullable<typeof node> => node != null);
 
 				set((state) => {
 					// Extract current positions from graph store nodes
