@@ -86,7 +86,7 @@ export class GlobalErrorBoundary extends Component<Props, State> {
 			userAgent: navigator.userAgent,
 			url: window.location.href,
 			errorStack: error.stack,
-			componentStack: errorInfo.componentStack,
+			componentStack: errorInfo.componentStack ?? undefined,
 			errorBoundary: "GlobalErrorBoundary",
 			additionalContext: {
 				reactVersion: React.version,
@@ -98,7 +98,7 @@ export class GlobalErrorBoundary extends Component<Props, State> {
 		// Try to get build info if available
 		try {
 			import("@/lib/build-info").then((buildModule) => {
-				debugInfo.buildInfo = buildModule.getBuildInfo?.();
+				debugInfo.buildInfo = buildModule.getBuildInfo();
 			}).catch(() => {
 				// Build info not available
 			});
@@ -245,7 +245,7 @@ export class GlobalErrorBoundary extends Component<Props, State> {
 											<ActionIcon
 												variant="light"
 												color={copied ? "green" : "blue"}
-												onClick={this.handleCopyDebugData}
+												onClick={() => void this.handleCopyDebugData()}
 												size="lg"
 											>
 												{copied ? <IconCheck size={18} /> : <IconCopy size={18} />}
@@ -308,7 +308,7 @@ export class GlobalErrorBoundary extends Component<Props, State> {
 											<Text fw={500} size="sm" mb="xs">
 												Error Stack:
 											</Text>
-											<ScrollArea.Autosize maxHeight={200}>
+											<ScrollArea.Autosize mah={200}>
 												<Code block color="red">
 													{error.stack}
 												</Code>
@@ -321,7 +321,7 @@ export class GlobalErrorBoundary extends Component<Props, State> {
 											<Text fw={500} size="sm" mb="xs">
 												Component Stack:
 											</Text>
-											<ScrollArea.Autosize maxHeight={150}>
+											<ScrollArea.Autosize mah={150}>
 												<Code block color="orange">
 													{this.state.errorInfo.componentStack}
 												</Code>
@@ -335,7 +335,7 @@ export class GlobalErrorBoundary extends Component<Props, State> {
 												Full Debug Data (JSON)
 											</Text>
 										</summary>
-										<ScrollArea.Autosize maxHeight={300} mt="xs">
+										<ScrollArea.Autosize mah={300} mt="xs">
 											<Code block>
 												{this.generateDebugData()}
 											</Code>
@@ -359,8 +359,8 @@ export class GlobalErrorBoundary extends Component<Props, State> {
 								</Text>
 								{import.meta.env.DEV && (
 									<Text size="sm">
-									• <strong>Copy debug data</strong> - Share technical details when reporting issues
-								</Text>
+										• <strong>Copy debug data</strong> - Share technical details when reporting issues
+									</Text>
 								)}
 							</Stack>
 						</Alert>
