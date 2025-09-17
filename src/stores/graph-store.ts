@@ -18,6 +18,44 @@ import type {
 } from "@/lib/graph/types";
 import { RelationType } from "@/lib/graph/types";
 
+// Helper function to create initial edge type stats
+const createInitialEdgeTypeStats = () => ({
+	visible: {
+		[RelationType.AUTHORED]: 0,
+		[RelationType.AFFILIATED]: 0,
+		[RelationType.PUBLISHED_IN]: 0,
+		[RelationType.FUNDED_BY]: 0,
+		[RelationType.REFERENCES]: 0,
+		[RelationType.RELATED_TO]: 0,
+		[RelationType.SOURCE_PUBLISHED_BY]: 0,
+		[RelationType.INSTITUTION_CHILD_OF]: 0,
+		[RelationType.PUBLISHER_CHILD_OF]: 0,
+		[RelationType.WORK_HAS_TOPIC]: 0,
+		[RelationType.WORK_HAS_KEYWORD]: 0,
+		[RelationType.AUTHOR_RESEARCHES]: 0,
+		[RelationType.INSTITUTION_LOCATED_IN]: 0,
+		[RelationType.FUNDER_LOCATED_IN]: 0,
+		[RelationType.TOPIC_PART_OF_FIELD]: 0
+	},
+	total: {
+		[RelationType.AUTHORED]: 0,
+		[RelationType.AFFILIATED]: 0,
+		[RelationType.PUBLISHED_IN]: 0,
+		[RelationType.FUNDED_BY]: 0,
+		[RelationType.REFERENCES]: 0,
+		[RelationType.RELATED_TO]: 0,
+		[RelationType.SOURCE_PUBLISHED_BY]: 0,
+		[RelationType.INSTITUTION_CHILD_OF]: 0,
+		[RelationType.PUBLISHER_CHILD_OF]: 0,
+		[RelationType.WORK_HAS_TOPIC]: 0,
+		[RelationType.WORK_HAS_KEYWORD]: 0,
+		[RelationType.AUTHOR_RESEARCHES]: 0,
+		[RelationType.INSTITUTION_LOCATED_IN]: 0,
+		[RelationType.FUNDER_LOCATED_IN]: 0,
+		[RelationType.TOPIC_PART_OF_FIELD]: 0
+	}
+});
+
 interface GraphState {
   // Data (library agnostic) - using plain objects for stable references
   nodes: Record<string, GraphNode | undefined>;
@@ -67,6 +105,12 @@ interface GraphState {
 
   // Edge type visibility
   visibleEdgeTypes: Record<RelationType, boolean>; // object instead of Set
+
+  // Cached computed results (stable references for React 19 compatibility)
+  cachedVisibleNodes: GraphNode[];
+  cachedLoadingNodes: GraphNode[];
+  nodeNeighborsCache: Record<string, GraphNode[]>;
+  nodeEdgesCache: Record<string, GraphEdge[]>;
 
   // Actions (work with any provider)
   setProvider: (provider: GraphProvider) => void;
@@ -128,6 +172,9 @@ interface GraphState {
   updateSearchStats: (stats: Record<EntityType, number>) => void;
   recomputeEntityTypeStats: () => void;
   recomputeEdgeTypeStats: () => void;
+  recomputeVisibleNodes: () => void;
+  recomputeLoadingNodes: () => void;
+  recomputeNodeCaches: () => void;
   getEntityTypeStats: () => {
     visible: Record<EntityType, number>;
     total: Record<EntityType, number>;
@@ -215,6 +262,13 @@ export const useGraphStore = create<GraphState>()(
 				[RelationType.FUNDER_LOCATED_IN]: true,
 				[RelationType.TOPIC_PART_OF_FIELD]: true
 			},
+
+			// Cached computed results (stable references for React 19 compatibility)
+			cachedVisibleNodes: [],
+			cachedLoadingNodes: [],
+			nodeNeighborsCache: {},
+			nodeEdgesCache: {},
+
 			currentLayout: {
 				type: "d3-force",
 				options: {
@@ -272,42 +326,7 @@ export const useGraphStore = create<GraphState>()(
 					funders: 0
 				}
 			},
-			edgeTypeStats: {
-				visible: {
-					[RelationType.AUTHORED]: 0,
-					[RelationType.AFFILIATED]: 0,
-					[RelationType.PUBLISHED_IN]: 0,
-					[RelationType.FUNDED_BY]: 0,
-					[RelationType.REFERENCES]: 0,
-					[RelationType.RELATED_TO]: 0,
-					[RelationType.SOURCE_PUBLISHED_BY]: 0,
-					[RelationType.INSTITUTION_CHILD_OF]: 0,
-					[RelationType.PUBLISHER_CHILD_OF]: 0,
-					[RelationType.WORK_HAS_TOPIC]: 0,
-					[RelationType.WORK_HAS_KEYWORD]: 0,
-					[RelationType.AUTHOR_RESEARCHES]: 0,
-					[RelationType.INSTITUTION_LOCATED_IN]: 0,
-					[RelationType.FUNDER_LOCATED_IN]: 0,
-					[RelationType.TOPIC_PART_OF_FIELD]: 0
-				},
-				total: {
-					[RelationType.AUTHORED]: 0,
-					[RelationType.AFFILIATED]: 0,
-					[RelationType.PUBLISHED_IN]: 0,
-					[RelationType.FUNDED_BY]: 0,
-					[RelationType.REFERENCES]: 0,
-					[RelationType.RELATED_TO]: 0,
-					[RelationType.SOURCE_PUBLISHED_BY]: 0,
-					[RelationType.INSTITUTION_CHILD_OF]: 0,
-					[RelationType.PUBLISHER_CHILD_OF]: 0,
-					[RelationType.WORK_HAS_TOPIC]: 0,
-					[RelationType.WORK_HAS_KEYWORD]: 0,
-					[RelationType.AUTHOR_RESEARCHES]: 0,
-					[RelationType.INSTITUTION_LOCATED_IN]: 0,
-					[RelationType.FUNDER_LOCATED_IN]: 0,
-					[RelationType.TOPIC_PART_OF_FIELD]: 0
-				}
-			},
+			edgeTypeStats: createInitialEdgeTypeStats(),
 
 			// Provider management
 			setProvider: (provider) => {
@@ -346,6 +365,12 @@ export const useGraphStore = create<GraphState>()(
 					draft.nodes[node.id] = node;
 					draft.provider?.addNode(node);
 				});
+				// Recompute caches after single node addition
+				const state = get();
+				state.recomputeEntityTypeStats();
+				state.recomputeVisibleNodes();
+				state.recomputeLoadingNodes();
+				state.recomputeNodeCaches();
 			},
 
 			addNodes: (nodes) => {
@@ -356,7 +381,11 @@ export const useGraphStore = create<GraphState>()(
 					});
 				});
 				// Recompute cached statistics after data change
-				get().recomputeEntityTypeStats();
+				const state = get();
+				state.recomputeEntityTypeStats();
+				state.recomputeVisibleNodes();
+				state.recomputeLoadingNodes();
+				state.recomputeNodeCaches();
 			},
 
 			removeNode: (nodeId) => {
@@ -389,8 +418,12 @@ export const useGraphStore = create<GraphState>()(
 					}
 				});
 				// Recompute cached statistics after data change
-				get().recomputeEntityTypeStats();
-				get().recomputeEdgeTypeStats();
+				const state = get();
+				state.recomputeEntityTypeStats();
+				state.recomputeEdgeTypeStats();
+				state.recomputeVisibleNodes();
+				state.recomputeLoadingNodes();
+				state.recomputeNodeCaches();
 			},
 
 			updateNode: (nodeId, updates) => {
@@ -414,6 +447,10 @@ export const useGraphStore = create<GraphState>()(
 					draft.edges[edge.id] = edge;
 					draft.provider?.addEdge(edge);
 				});
+				// Recompute node caches after single edge addition
+				const state = get();
+				state.recomputeEdgeTypeStats();
+				state.recomputeNodeCaches();
 			},
 
 			addEdges: (edges) => {
@@ -424,7 +461,9 @@ export const useGraphStore = create<GraphState>()(
 					});
 				});
 				// Recompute cached statistics after data change
-				get().recomputeEdgeTypeStats();
+				const state = get();
+				state.recomputeEdgeTypeStats();
+				state.recomputeNodeCaches();
 			},
 
 			removeEdge: (edgeId) => {
@@ -434,7 +473,9 @@ export const useGraphStore = create<GraphState>()(
 					draft.provider?.removeEdge(edgeId);
 				});
 				// Recompute cached statistics after data change
-				get().recomputeEdgeTypeStats();
+				const state = get();
+				state.recomputeEdgeTypeStats();
+				state.recomputeNodeCaches();
 			},
 
 			updateEdge: (edgeId, updates) => {
@@ -445,6 +486,10 @@ export const useGraphStore = create<GraphState>()(
 						draft.edges[edgeId] = updatedEdge;
 					}
 				});
+				// Recompute cached statistics after data change
+				const state = get();
+				state.recomputeEdgeTypeStats();
+				state.recomputeNodeCaches();
 			},
 
 			getEdge: (edgeId) => {
@@ -614,6 +659,12 @@ export const useGraphStore = create<GraphState>()(
 					pinnedNodes: {},
 					pinnedNodeId: null,
 					nodeDepths: {},
+					// Clear cached state
+					cachedVisibleNodes: [],
+					cachedLoadingNodes: [],
+					nodeNeighborsCache: {},
+					nodeEdgesCache: {},
+					edgeTypeStats: createInitialEdgeTypeStats(),
 				});
 			},
 
@@ -643,7 +694,18 @@ export const useGraphStore = create<GraphState>()(
 					pinnedNodes: {}, // Clear pinned nodes on data change
 					pinnedNodeId: null, // Clear legacy pinned node
 					nodeDepths: {}, // Clear depths, will be recalculated when needed
+					// Clear cached state as data has changed
+					cachedVisibleNodes: [],
+					cachedLoadingNodes: [],
+					nodeNeighborsCache: {},
+					nodeEdgesCache: {},
+					edgeTypeStats: createInitialEdgeTypeStats(),
 				});
+				// Recompute all caches after setting new data
+				const state = get();
+				state.recomputeVisibleNodes();
+				state.recomputeNodeCaches();
+				state.recomputeEdgeTypeStats();
 			},
 
 			// Loading states
@@ -663,7 +725,9 @@ export const useGraphStore = create<GraphState>()(
 					}
 				});
 				// Recompute cached statistics after visibility change
-				get().recomputeEntityTypeStats();
+				const state = get();
+				state.recomputeEntityTypeStats();
+				state.recomputeVisibleNodes();
 			},
 
 			setEntityTypeVisibility: (entityType, visible) => {
@@ -678,7 +742,9 @@ export const useGraphStore = create<GraphState>()(
 					}
 				});
 				// Recompute cached statistics after visibility change
-				get().recomputeEntityTypeStats();
+				const state = get();
+				state.recomputeEntityTypeStats();
+				state.recomputeVisibleNodes();
 			},
 
 			setAllEntityTypesVisible: (visible) => {
@@ -697,7 +763,9 @@ export const useGraphStore = create<GraphState>()(
 					visibleEntityTypes: visibleTypes
 				});
 				// Recompute cached statistics after visibility change
-				get().recomputeEntityTypeStats();
+				const state = get();
+				state.recomputeEntityTypeStats();
+				state.recomputeVisibleNodes();
 			},
 
 			updateSearchStats: (stats) => {
@@ -705,6 +773,62 @@ export const useGraphStore = create<GraphState>()(
 					state.lastSearchStats = stats;
 					// Also update the cached search results in entityTypeStats
 					state.entityTypeStats.searchResults = stats;
+				});
+			},
+
+			recomputeVisibleNodes: () => {
+				set((state) => {
+					const { nodes, visibleEntityTypes } = state;
+					state.cachedVisibleNodes = Object.values(nodes).filter((node): node is GraphNode =>
+						node !== undefined && visibleEntityTypes[node.type]
+					);
+				});
+			},
+
+			recomputeLoadingNodes: () => {
+				set((state) => {
+					const { nodes } = state;
+					state.cachedLoadingNodes = Object.values(nodes).filter((node): node is GraphNode =>
+						node !== undefined && node.label && node.label.includes("Loading")
+					);
+				});
+			},
+
+			recomputeNodeCaches: () => {
+				set((state) => {
+					const { nodes, edges } = state;
+					const newNeighborsCache: Record<string, GraphNode[]> = {};
+					const newEdgesCache: Record<string, GraphEdge[]> = {};
+
+					// Clear and rebuild node-specific caches
+					Object.keys(nodes).forEach(nodeId => {
+						const neighbors: GraphNode[] = [];
+						const connectedEdges: GraphEdge[] = [];
+
+						Object.values(edges).forEach(edge => {
+							if (!edge) return;
+
+							// Collect connected edges
+							if (edge.source === nodeId || edge.target === nodeId) {
+								connectedEdges.push(edge);
+							}
+
+							// Collect neighbor nodes
+							if (edge.source === nodeId) {
+								const neighbor = nodes[edge.target];
+								if (neighbor) neighbors.push(neighbor);
+							} else if (edge.target === nodeId) {
+								const neighbor = nodes[edge.source];
+								if (neighbor) neighbors.push(neighbor);
+							}
+						});
+
+						newNeighborsCache[nodeId] = neighbors;
+						newEdgesCache[nodeId] = connectedEdges;
+					});
+
+					state.nodeNeighborsCache = newNeighborsCache;
+					state.nodeEdgesCache = newEdgesCache;
 				});
 			},
 
@@ -735,7 +859,7 @@ export const useGraphStore = create<GraphState>()(
 					};
 
 					// Count total and visible nodes by type
-					const nodeValues = Object.values(state.nodes);
+					const nodeValues = Object.values(state.nodes).filter((node): node is GraphNode => node !== undefined);
 					nodeValues.forEach(node => {
 						total[node.type] = (total[node.type] || 0) + 1;
 
@@ -760,8 +884,8 @@ export const useGraphStore = create<GraphState>()(
 			},
 
 			getVisibleNodes: () => {
-				const { nodes, visibleEntityTypes } = get();
-				return Object.values(nodes).filter(node => visibleEntityTypes[node.type]);
+				const state = get();
+				return state.cachedVisibleNodes;
 			},
 
 			// Edge type management
@@ -853,7 +977,7 @@ export const useGraphStore = create<GraphState>()(
 					};
 
 					// Count total and visible edges by type
-					const edgeValues = Object.values(state.edges);
+					const edgeValues = Object.values(state.edges).filter((edge): edge is GraphEdge => edge !== undefined);
 					edgeValues.forEach(edge => {
 						const edgeType = edge.type;
 						const currentTotal = total[edgeType];
@@ -876,33 +1000,13 @@ export const useGraphStore = create<GraphState>()(
 
 			// Graph algorithms (work with generic data)
 			getNeighbors: (nodeId) => {
-				const { edges, nodes } = get();
-				const neighbors: GraphNode[] = [];
-
-				Object.values(edges).forEach(edge => {
-					if (edge.source === nodeId) {
-						const neighbor = nodes[edge.target];
-						if (neighbor) neighbors.push(neighbor);
-					} else if (edge.target === nodeId) {
-						const neighbor = nodes[edge.source];
-						if (neighbor) neighbors.push(neighbor);
-					}
-				});
-
-				return neighbors;
+				const state = get();
+				return state.nodeNeighborsCache[nodeId] || [];
 			},
 
 			getConnectedEdges: (nodeId) => {
-				const { edges } = get();
-				const connectedEdges: GraphEdge[] = [];
-
-				Object.values(edges).forEach(edge => {
-					if (edge.source === nodeId || edge.target === nodeId) {
-						connectedEdges.push(edge);
-					}
-				});
-
-				return connectedEdges;
+				const state = get();
+				return state.nodeEdgesCache[nodeId] || [];
 			},
 
 			findShortestPath: (sourceId, targetId) => {
@@ -981,10 +1085,10 @@ export const useGraphStore = create<GraphState>()(
 					const node = draft.nodes[nodeId];
 					if (node) {
 						if (loading) {
-							node.label = node.label.includes("Loading") ? node.label : `Loading ${node.label}...`;
+							node.label = (node.label && node.label.includes("Loading")) ? node.label : `Loading ${node.label || "Node"}...`;
 						} else {
 							// Remove "Loading " prefix when clearing loading state
-							node.label = node.label.replace(/^Loading /, "").replace(/\.\.\.$/, "");
+							node.label = (node.label || "").replace(/^Loading /, "").replace(/\.\.\.$/, "");
 						}
 					}
 				});
@@ -1039,9 +1143,8 @@ export const useGraphStore = create<GraphState>()(
 			},
 
 			getLoadingNodes: () => {
-				const { nodes } = get();
-				// In the new architecture, loading state is tracked by label "Loading..." prefix
-				return Object.values(nodes).filter(node => node.label.includes("Loading"));
+				const state = get();
+				return state.cachedLoadingNodes;
 			},
 
 			hasPlaceholderOrLoadingNodes: () => {
