@@ -35,10 +35,25 @@ export class XYFlowProvider implements GraphProvider {
 
 	// Convert generic GraphNode to XYFlow node
 	private toXYNode(node: GraphNode): XYNode {
+		// Validate position coordinates and provide safe defaults for NaN values
+		const safePosition = {
+			x: Number.isFinite(node.position.x) ? node.position.x : 0,
+			y: Number.isFinite(node.position.y) ? node.position.y : 0,
+		};
+
+		// Log warning if NaN values were detected and corrected
+		if (!Number.isFinite(node.position.x) || !Number.isFinite(node.position.y)) {
+			logger.warn("graph", "NaN position detected and corrected", {
+				nodeId: node.id,
+				originalPosition: node.position,
+				correctedPosition: safePosition,
+			});
+		}
+
 		return {
 			id: node.id,
 			type: "custom",
-			position: node.position,
+			position: safePosition,
 			zIndex: 1, // Ensure nodes are below edges
 			data: {
 				label: node.label,
@@ -151,23 +166,49 @@ export class XYFlowProvider implements GraphProvider {
 			return { sourceHandle: "right-source", targetHandle: "left" };
 		}
 
+		// Validate source and target positions, use safe defaults for NaN values
+		const safeSourcePosition = {
+			x: Number.isFinite(sourceNode.position.x) ? sourceNode.position.x : 0,
+			y: Number.isFinite(sourceNode.position.y) ? sourceNode.position.y : 0,
+		};
+		const safeTargetPosition = {
+			x: Number.isFinite(targetNode.position.x) ? targetNode.position.x : 0,
+			y: Number.isFinite(targetNode.position.y) ? targetNode.position.y : 0,
+		};
+
+		// Log warnings if NaN positions were corrected
+		if (!Number.isFinite(sourceNode.position.x) || !Number.isFinite(sourceNode.position.y)) {
+			logger.warn("graph", "NaN source position detected in edge calculation", {
+				sourceId,
+				originalPosition: sourceNode.position,
+				correctedPosition: safeSourcePosition,
+			});
+		}
+		if (!Number.isFinite(targetNode.position.x) || !Number.isFinite(targetNode.position.y)) {
+			logger.warn("graph", "NaN target position detected in edge calculation", {
+				targetId,
+				originalPosition: targetNode.position,
+				correctedPosition: safeTargetPosition,
+			});
+		}
+
 		// Estimate node dimensions (these should match the actual rendered sizes)
 		const nodeWidth = 160;  // Based on minWidth/maxWidth from custom nodes
 		const nodeHeight = 120; // Estimated height including content
 
-		// Calculate handle positions (center of each side)
+		// Calculate handle positions (center of each side) using safe positions
 		const sourceHandles = {
-			"top-source": { x: sourceNode.position.x + nodeWidth/2, y: sourceNode.position.y },
-			"right-source": { x: sourceNode.position.x + nodeWidth, y: sourceNode.position.y + nodeHeight/2 },
-			"bottom-source": { x: sourceNode.position.x + nodeWidth/2, y: sourceNode.position.y + nodeHeight },
-			"left-source": { x: sourceNode.position.x, y: sourceNode.position.y + nodeHeight/2 }
+			"top-source": { x: safeSourcePosition.x + nodeWidth/2, y: safeSourcePosition.y },
+			"right-source": { x: safeSourcePosition.x + nodeWidth, y: safeSourcePosition.y + nodeHeight/2 },
+			"bottom-source": { x: safeSourcePosition.x + nodeWidth/2, y: safeSourcePosition.y + nodeHeight },
+			"left-source": { x: safeSourcePosition.x, y: safeSourcePosition.y + nodeHeight/2 }
 		};
 
 		const targetHandles = {
-			"top": { x: targetNode.position.x + nodeWidth/2, y: targetNode.position.y },
-			"right": { x: targetNode.position.x + nodeWidth, y: targetNode.position.y + nodeHeight/2 },
-			"bottom": { x: targetNode.position.x + nodeWidth/2, y: targetNode.position.y + nodeHeight },
-			"left": { x: targetNode.position.x, y: targetNode.position.y + nodeHeight/2 }
+			"top": { x: safeTargetPosition.x + nodeWidth/2, y: safeTargetPosition.y },
+			"right": { x: safeTargetPosition.x + nodeWidth, y: safeTargetPosition.y + nodeHeight/2 },
+			"bottom": { x: safeTargetPosition.x + nodeWidth/2, y: safeTargetPosition.y + nodeHeight },
+			"left": { x: safeTargetPosition.x, y: safeTargetPosition.y + nodeHeight/2 }
 		};
 
 		// Find the shortest distance combination
