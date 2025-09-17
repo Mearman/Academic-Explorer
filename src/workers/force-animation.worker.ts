@@ -319,23 +319,12 @@ function resumeSimulation() {
 function updateParameters(newConfig: AnimationConfig) {
 	if (!simulation || !isRunning) {
 		// If simulation is not running, just ignore the update
-		console.log("Worker: updateParameters ignored - simulation not running", {
-			hasSimulation: !!simulation,
-			isRunning,
-			isPaused
-		});
 		return;
 	}
 
-	console.log("Worker: updateParameters called", {
-		isRunning,
-		isPaused,
-		newConfig
-	});
-
 	// Update forces with new parameters
 	if (newConfig.linkDistance !== undefined || newConfig.linkStrength !== undefined) {
-		const linkForce = simulation.force("link") as any;
+		const linkForce = simulation.force("link");
 		if (linkForce) {
 			if (newConfig.linkDistance !== undefined) {
 				linkForce.distance(newConfig.linkDistance);
@@ -347,21 +336,21 @@ function updateParameters(newConfig: AnimationConfig) {
 	}
 
 	if (newConfig.chargeStrength !== undefined) {
-		const chargeForce = simulation.force("charge") as any;
+		const chargeForce = simulation.force("charge");
 		if (chargeForce) {
 			chargeForce.strength(newConfig.chargeStrength);
 		}
 	}
 
 	if (newConfig.centerStrength !== undefined) {
-		const centerForce = simulation.force("center") as any;
+		const centerForce = simulation.force("center");
 		if (centerForce) {
 			centerForce.strength(newConfig.centerStrength);
 		}
 	}
 
 	if (newConfig.collisionRadius !== undefined || newConfig.collisionStrength !== undefined) {
-		const collisionForce = simulation.force("collision") as any;
+		const collisionForce = simulation.force("collision");
 		if (collisionForce) {
 			if (newConfig.collisionRadius !== undefined) {
 				collisionForce.radius(newConfig.collisionRadius);
@@ -382,16 +371,8 @@ function updateParameters(newConfig: AnimationConfig) {
 
 	// Apply new force parameters - but respect paused state
 	// Only restart if not paused; if paused, parameters are updated but simulation stays paused
-	console.log("Worker: About to apply parameters", {
-		isPaused,
-		willRestart: !isPaused
-	});
-
 	if (!isPaused) {
-		console.log("Worker: Restarting simulation (not paused)");
 		simulation.restart();
-	} else {
-		console.log("Worker: Simulation is paused, NOT restarting");
 	}
 	// If paused, the parameters are already updated in the forces above
 	// and will take effect when the simulation is resumed

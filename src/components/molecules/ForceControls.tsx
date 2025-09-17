@@ -83,7 +83,7 @@ export const ForceControls: React.FC = () => {
 			const isCurrentlyPaused = animationContext.isPaused;
 			const isRunning = animationContext.isRunning;
 
-			console.log("ForceControls: Animation state check", {
+			logger.debug("graph", "ForceControls: Animation state check", {
 				param,
 				value,
 				isAnimating: isCurrentlyAnimating,
