@@ -106,11 +106,11 @@
     "nx": "21.5.2",
     "playwright": "^1.55.0",
     "semantic-release": "^24.2.8",
-    "typescript": "~5.8.3",
-    "typescript-eslint": "^8.39.1",
+    "typescript": "~5.9.2",
+    "typescript-eslint": "^8.44.0",
     "vite": "^7.1.2",
     "vite-plugin-pwa": "^1.0.3",
-    "vitest": "^2.1.8"
+    "vitest": "^3.2.4"
   },
   "pnpm": {
     "overrides": {
