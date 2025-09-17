@@ -170,7 +170,7 @@ export const LeftRibbon: React.FC = () => {
 		return (
 			<div
 				style={{
-					height: shouldShowDropZone ? "40px" : "20px",
+					height: shouldShowDropZone ? "40px" : "0px",
 					width: shouldShowDropZone ? "40px" : "40px",
 					backgroundColor: shouldShowDropZone ? colors.primary : "transparent",
 					transition: "all 0.2s ease",
@@ -180,6 +180,10 @@ export const LeftRibbon: React.FC = () => {
 					border: shouldShowDropZone ? `2px solid ${colors.primary}` : "none",
 					pointerEvents: "auto",
 					overflow: "hidden",
+					// Add invisible padding for hit area when collapsed, offset by negative margin
+					padding: shouldShowDropZone ? "0" : "10px 0",
+					marginTop: shouldShowDropZone ? "2px" : "-10px",
+					marginBottom: shouldShowDropZone ? "2px" : "-10px",
 				}}
 				onDragOver={handleDragOver}
 				onDragLeave={handleDragLeave}
