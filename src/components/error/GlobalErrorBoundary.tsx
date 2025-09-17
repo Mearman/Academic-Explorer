@@ -21,8 +21,10 @@ import {
 	IconCheck,
 	IconBug,
 	IconExternalLink,
+	IconDatabase,
 } from "@tabler/icons-react";
 import { notifications } from "@mantine/notifications";
+import { clearExpiredCache } from "@/lib/cache/persister";
 import { logger, logError } from "@/lib/logger";
 
 interface Props {
@@ -37,6 +39,7 @@ interface State {
 	errorId: string | null;
 	debugInfo: DebugInfo | null;
 	copied: boolean;
+	clearingCache: boolean;
 }
 
 interface DebugInfo {
@@ -66,6 +69,7 @@ export class GlobalErrorBoundary extends Component<Props, State> {
 			errorId: null,
 			debugInfo: null,
 			copied: false,
+			clearingCache: false,
 		};
 	}
 
@@ -134,7 +138,43 @@ export class GlobalErrorBoundary extends Component<Props, State> {
 			errorId: null,
 			debugInfo: null,
 			copied: false,
+			clearingCache: false,
 		});
+	};
+
+	private handleClearCache = async (): Promise<void> => {
+		this.setState({ clearingCache: true });
+		try {
+			// Clear IndexedDB cache
+			await clearExpiredCache();
+
+			// Clear localStorage cache
+			try {
+				localStorage.removeItem("academic-explorer-cache");
+			} catch (localStorageError) {
+				logger.warn("ui", "Failed to clear localStorage cache", { localStorageError }, "GlobalErrorBoundary");
+			}
+
+			notifications.show({
+				title: "Cache Cleared",
+				message: "All cached data has been cleared. Please reload the page.",
+				color: "green",
+				icon: <IconDatabase size={16} />,
+			});
+
+			logger.info("ui", "Cache cleared from error boundary", {}, "GlobalErrorBoundary");
+
+		} catch (error) {
+			logError("Failed to clear cache from error boundary", error, "GlobalErrorBoundary");
+			notifications.show({
+				title: "Cache Clear Failed",
+				message: "Failed to clear cache. Please try reloading the page.",
+				color: "red",
+				icon: <IconAlertTriangle size={16} />,
+			});
+		} finally {
+			this.setState({ clearingCache: false });
+		}
 	};
 
 	private generateDebugData = (): string => {
@@ -210,7 +250,7 @@ export class GlobalErrorBoundary extends Component<Props, State> {
 				return this.props.fallback;
 			}
 
-			const { error, errorId, copied } = this.state;
+			const { error, errorId, copied, clearingCache } = this.state;
 
 			return (
 				<Container size="md" py="xl">
@@ -273,6 +313,15 @@ export class GlobalErrorBoundary extends Component<Props, State> {
 										variant="light"
 									>
 										Try Again
+									</Button>
+									<Button
+										leftSection={<IconDatabase size={16} />}
+										onClick={() => void this.handleClearCache()}
+										variant="light"
+										color="orange"
+										loading={clearingCache}
+									>
+										Clear Cache
 									</Button>
 									<Button
 										leftSection={<IconExternalLink size={16} />}
@@ -353,6 +402,9 @@ export class GlobalErrorBoundary extends Component<Props, State> {
 								</Text>
 								<Text size="sm">
 									• <strong>Try again</strong> - Reset the error state and continue using the app
+								</Text>
+								<Text size="sm">
+									• <strong>Clear cache</strong> - Remove cached data that might be causing issues
 								</Text>
 								<Text size="sm">
 									• <strong>Report the issue</strong> - Help us improve by reporting this error on GitHub
