@@ -21,6 +21,11 @@ export interface ToolGroupDefinition {
 	order?: number; // For ordering in ribbons (lower numbers appear first)
 }
 
+// Version counter to track changes for React re-renders
+let registryVersion = 0;
+
+export const getRegistryVersion = (): number => registryVersion;
+
 /**
  * Tool group definitions mapped by category
  * This is mutable to allow dynamic registration of new groups
@@ -89,6 +94,7 @@ export const GROUP_DEFINITIONS: Record<string, ToolGroupDefinition> = {
  */
 export const registerGroupDefinition = (groupDefinition: ToolGroupDefinition): void => {
 	GROUP_DEFINITIONS[groupDefinition.id] = groupDefinition;
+	registryVersion++; // Increment version to trigger re-renders
 };
 
 /**
