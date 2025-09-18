@@ -70,6 +70,46 @@
       "cache": false,
       "inputs": ["default", "^production", "{workspaceRoot}/knip.ts", "{workspaceRoot}/tsconfig*.json", "{workspaceRoot}/package.json"],
       "outputs": ["{projectRoot}/**/*.{js,jsx,ts,tsx}"]
+    },
+    "a11y:test": {
+      "cache": true,
+      "dependsOn": ["build"],
+      "inputs": ["^production", "{workspaceRoot}/.pa11yci.json", "{projectRoot}/dist/**/*"],
+      "outputs": ["pa11y-results.json"]
+    },
+    "a11y:lighthouse": {
+      "cache": true,
+      "dependsOn": ["build"],
+      "inputs": ["^production", "{workspaceRoot}/.lighthouserc.js", "{projectRoot}/dist/**/*"],
+      "outputs": [".lighthouseci/**/*"]
+    },
+    "a11y:dev": {
+      "cache": false,
+      "inputs": ["default", "{workspaceRoot}/.pa11yci-dev.json"],
+      "outputs": ["pa11y-results.json"]
+    },
+    "a11y:ci": {
+      "cache": true,
+      "dependsOn": ["a11y:test", "a11y:lighthouse"],
+      "inputs": [],
+      "outputs": ["pa11y-results.json", ".lighthouseci/**/*"]
+    },
+    "test:a11y": {
+      "cache": true,
+      "inputs": ["default", "^production", "{workspaceRoot}/vitest.workspace.ts", "{workspaceRoot}/config/**/*"],
+      "outputs": ["{projectRoot}/coverage"]
+    },
+    "test:a11y:e2e": {
+      "cache": true,
+      "dependsOn": ["build"],
+      "inputs": ["default", "^production", "{workspaceRoot}/vitest.workspace.ts", "{workspaceRoot}/config/**/*", "{workspaceRoot}/playwright.config.ts"],
+      "outputs": ["{projectRoot}/coverage"]
+    },
+    "verify:a11y": {
+      "cache": true,
+      "dependsOn": ["lint", "test:a11y", "a11y:ci"],
+      "inputs": [],
+      "outputs": []
     }
   },
   "namedInputs": {

@@ -149,6 +149,83 @@
         "cwd": "{projectRoot}"
       },
       "cache": true
+    },
+    "a11y:test": {
+      "executor": "nx:run-commands",
+      "dependsOn": ["build"],
+      "options": {
+        "command": "pa11y-ci",
+        "cwd": "{projectRoot}"
+      },
+      "outputs": ["pa11y-results.json"],
+      "cache": true
+    },
+    "a11y:lighthouse": {
+      "executor": "nx:run-commands",
+      "dependsOn": ["build"],
+      "options": {
+        "command": "lhci autorun",
+        "cwd": "{projectRoot}"
+      },
+      "outputs": [".lighthouseci/**/*"],
+      "cache": true
+    },
+    "a11y:dev": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "pa11y-ci --config .pa11yci-dev.json",
+        "cwd": "{projectRoot}"
+      },
+      "outputs": ["pa11y-results.json"],
+      "cache": false
+    },
+    "a11y:ci": {
+      "executor": "nx:run-commands",
+      "dependsOn": ["a11y:test", "a11y:lighthouse"],
+      "options": {
+        "commands": [
+          "echo '✅ pa11y-ci accessibility tests passed'",
+          "echo '✅ Lighthouse CI accessibility audit passed'",
+          "echo '🎉 All accessibility checks passed!'"
+        ],
+        "parallel": false,
+        "cwd": "{projectRoot}"
+      },
+      "cache": true
+    },
+    "test:a11y": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "vitest run --project=component --testNamePattern=\"accessibility\" --coverage",
+        "cwd": "{projectRoot}"
+      },
+      "outputs": ["{projectRoot}/coverage"],
+      "cache": true
+    },
+    "test:a11y:e2e": {
+      "executor": "nx:run-commands",
+      "dependsOn": ["build"],
+      "options": {
+        "command": "vitest run --project=e2e --testNamePattern=\"accessibility\"",
+        "cwd": "{projectRoot}"
+      },
+      "outputs": ["{projectRoot}/coverage"],
+      "cache": true
+    },
+    "verify:a11y": {
+      "executor": "nx:run-commands",
+      "dependsOn": ["lint", "test:a11y", "a11y:ci"],
+      "options": {
+        "commands": [
+          "echo '✅ ESLint accessibility rules passed'",
+          "echo '✅ Component accessibility tests passed'",
+          "echo '✅ pa11y-ci and Lighthouse CI passed'",
+          "echo '🎉 Full accessibility verification completed!'"
+        ],
+        "parallel": false,
+        "cwd": "{projectRoot}"
+      },
+      "cache": true
     }
   },
   "tags": ["type:app", "scope:academic-explorer"]
