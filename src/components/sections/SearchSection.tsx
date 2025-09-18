@@ -14,7 +14,7 @@ import { logger } from "@/lib/logger";
 export const SearchSection: React.FC = () => {
 	const [searchQuery, setSearchQuery] = useState("");
 	const graphData = useGraphData();
-	const { loadEntity, isLoading } = graphData;
+	const { loadEntity, loadEntityIntoRepository, isLoading } = graphData;
 	const themeColors = useThemeColors();
 	const colors = themeColors.colors;
 
@@ -42,14 +42,8 @@ export const SearchSection: React.FC = () => {
 				});
 
 				if (repositoryMode) {
-					// TODO: In repository mode, we need to implement search that returns nodes
-					// For now, this is a placeholder that loads entity into graph and then
-					// could move it to repository. Full implementation would require
-					// modifying the graph data service to support repository mode
-					logger.warn("ui", "Repository mode search not fully implemented yet", {
-						query: searchQuery
-					});
-					await loadEntity(searchQuery);
+					// Repository mode - add entity to repository collection
+					await loadEntityIntoRepository(searchQuery);
 				} else {
 					// Live mode - add directly to graph (current behavior)
 					await loadEntity(searchQuery);
