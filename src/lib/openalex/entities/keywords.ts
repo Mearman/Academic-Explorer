@@ -11,6 +11,8 @@ import {
 } from "../types";
 import { OpenAlexBaseClient } from "../client";
 import { buildFilterString } from "../utils/query-builder";
+import { isString } from "lodash-es";
+import { trustObjectShape, extractProperty } from "@/lib/utils/type-helpers";
 
 /**
  * Strict query parameters specific to Keywords API
@@ -48,14 +50,29 @@ export interface StrictKeywordsQueryParams {
 }
 
 /**
+ * Type guard to check if a value is a string array
+ */
+function isStringArray(value: unknown): value is string[] {
+	return Array.isArray(value) && value.every(item => isString(item));
+}
+
+/**
  * Convert strict keywords query params to base query params
  */
 function toQueryParams(params: StrictKeywordsQueryParams): QueryParams {
-	return {
+	const result: QueryParams = {
 		...params,
-		sort: params.sort as string,
-		select: params.select as string[],
 	};
+
+	if (params.sort && isString(params.sort)) {
+		result.sort = params.sort;
+	}
+
+	if (params.select && isStringArray(params.select)) {
+		result.select = params.select;
+	}
+
+	return result;
 }
 
 /**
@@ -118,6 +135,29 @@ export class KeywordsApi {
 	constructor(private client: OpenAlexBaseClient) {}
 
 	/**
+	 * Type guard to check if params is QueryParams by checking for string sort property
+	 */
+	private isQueryParams(params: unknown): params is QueryParams {
+		if (typeof params !== "object" || params === null) {
+			return false;
+		}
+		if (!("sort" in params)) {
+			return false;
+		}
+		// After validation, safely cast to record to access properties
+		const paramsObj = trustObjectShape(params);
+		const sortValue = extractProperty(paramsObj, "sort");
+		return typeof sortValue === "string";
+	}
+
+	/**
+	 * Type guard to check if params is StrictKeywordsQueryParams
+	 */
+	private isStrictKeywordsQueryParams(params: unknown): params is StrictKeywordsQueryParams {
+		return typeof params === "object" && params !== null;
+	}
+
+	/**
    * Get a single keyword by its OpenAlex ID
    *
    * @param id - The keyword ID (must be a valid OpenAlex keyword ID)
@@ -138,10 +178,17 @@ export class KeywordsApi {
 		}
 		// If it's already QueryParams (has string sort), pass directly
 		if ("sort" in params && typeof params.sort === "string") {
-			return this.client.getById<Keyword>("keywords", id, params as QueryParams);
+			// Validate that this is actually QueryParams
+			if (this.isQueryParams(params)) {
+				return this.client.getById<Keyword>("keywords", id, params);
+			}
 		}
 		// Otherwise, convert from StrictKeywordsQueryParams
-		return this.client.getById<Keyword>("keywords", id, toQueryParams(params as StrictKeywordsQueryParams));
+		if (this.isStrictKeywordsQueryParams(params)) {
+			return this.client.getById<Keyword>("keywords", id, toQueryParams(params));
+		}
+		// Default case - treat as basic params
+		return this.client.getById<Keyword>("keywords", id, toQueryParams({}));
 	}
 
 	/**
@@ -162,10 +209,17 @@ export class KeywordsApi {
 	async getKeywords(params: StrictKeywordsQueryParams | QueryParams = {}): Promise<OpenAlexResponse<Keyword>> {
 		// If it's already QueryParams (has string sort), pass directly
 		if ("sort" in params && typeof params.sort === "string") {
-			return this.client.getResponse<Keyword>("keywords", params as QueryParams);
+			// Validate that this is actually QueryParams
+			if (this.isQueryParams(params)) {
+				return this.client.getResponse<Keyword>("keywords", params);
+			}
 		}
 		// Otherwise, convert from StrictKeywordsQueryParams
-		return this.client.getResponse<Keyword>("keywords", toQueryParams(params as StrictKeywordsQueryParams));
+		if (this.isStrictKeywordsQueryParams(params)) {
+			return this.client.getResponse<Keyword>("keywords", toQueryParams(params));
+		}
+		// Default case - treat as basic params
+		return this.client.getResponse<Keyword>("keywords", toQueryParams({}));
 	}
 
 	/**
@@ -287,10 +341,18 @@ export class KeywordsApi {
 	async *streamKeywords(params: StrictKeywordsQueryParams | QueryParams = {}): AsyncGenerator<Keyword[], void, unknown> {
 		// If it's already QueryParams (has string sort), pass directly
 		if ("sort" in params && typeof params.sort === "string") {
-			yield* this.client.stream<Keyword>("keywords", params as QueryParams);
+			// Validate that this is actually QueryParams
+			if (this.isQueryParams(params)) {
+				yield* this.client.stream<Keyword>("keywords", params);
+				return;
+			}
+		}
+		// Otherwise, convert from StrictKeywordsQueryParams
+		if (this.isStrictKeywordsQueryParams(params)) {
+			yield* this.client.stream<Keyword>("keywords", toQueryParams(params));
 		} else {
-			// Otherwise, convert from StrictKeywordsQueryParams
-			yield* this.client.stream<Keyword>("keywords", toQueryParams(params as StrictKeywordsQueryParams));
+			// Default case - treat as basic params
+			yield* this.client.stream<Keyword>("keywords", toQueryParams({}));
 		}
 	}
 

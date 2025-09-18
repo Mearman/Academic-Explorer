@@ -439,7 +439,9 @@ export class SourcesApi {
    */
 	private buildFilterParams(params: Omit<QueryParams, "filter"> & { filter?: SourcesFilters }): QueryParams {
 		if (!params.filter) {
-			return params as QueryParams;
+			// Extract only QueryParams compatible fields
+			const { filter: _, ...queryParams } = params;
+			return queryParams;
 		}
 
 		const filterStrings: string[] = [];
