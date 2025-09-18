@@ -394,7 +394,7 @@ export const useGraphStore = create<GraphState>()(
 					draft.provider?.removeNode(nodeId);
 
 					// Remove connected edges
-					const edgeEntries = Object.entries(draft.edges).filter(([, edge]): edge is [string, GraphEdge] => edge != null);
+					const edgeEntries = Object.entries(draft.edges).filter((entry): entry is [string, GraphEdge] => entry[1] != null);
 					const remainingEdges: Record<string, GraphEdge> = {};
 					edgeEntries.forEach(([edgeId, edge]) => {
 						if (edge.source === nodeId || edge.target === nodeId) {
