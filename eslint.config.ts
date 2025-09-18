@@ -39,13 +39,13 @@ export default tseslint.config([
     rules: {
       ...reactHooks.configs.recommended.rules,
       'react-refresh/only-export-components': [
-        'warn',
+        'error',
         { allowConstantExport: true },
       ],
 
       // Official React ESLint rules to prevent infinite loops and performance issues
       'react/jsx-no-constructed-context-values': 'error',
-      'react/no-array-index-key': 'warn',
+      'react/no-array-index-key': 'error',
       '@typescript-eslint/no-unused-vars': [
         'error',
         {
@@ -57,7 +57,7 @@ export default tseslint.config([
       // Additional strict rules beyond strictTypeChecked
       // Prevent type assertions (prefer type guards) - temporarily relaxed
       '@typescript-eslint/consistent-type-assertions': [
-        'warn',
+        'error',
         { assertionStyle: 'as', objectLiteralTypeAssertions: 'never' }
       ],
 
@@ -83,10 +83,10 @@ export default tseslint.config([
       ],
 
       // Temporarily relax floating promises to focus on other issues
-      '@typescript-eslint/no-floating-promises': 'warn',
+      '@typescript-eslint/no-floating-promises': 'error',
 
       // Temporarily relax unnecessary conditions - too many to fix in this session
-      '@typescript-eslint/no-unnecessary-condition': 'warn',
+      '@typescript-eslint/no-unnecessary-condition': 'error',
 
       // Style preferences
       'quotes': ['error', 'double', { 'allowTemplateLiterals': true, 'avoidEscape': true }],
