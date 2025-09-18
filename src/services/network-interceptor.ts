@@ -28,9 +28,17 @@ export class NetworkInterceptor {
 	private activeRequests = new Map<string, RequestContext>();
 
 	constructor() {
-		this.originalFetch = window.fetch.bind(window);
-		this.originalXhrOpen = XMLHttpRequest.prototype.open.bind(XMLHttpRequest.prototype);
-		this.originalXhrSend = XMLHttpRequest.prototype.send.bind(XMLHttpRequest.prototype);
+		// Only initialize in browser environment
+		if (typeof window !== "undefined" && typeof window.fetch === "function") {
+			this.originalFetch = window.fetch.bind(window);
+			this.originalXhrOpen = XMLHttpRequest.prototype.open.bind(XMLHttpRequest.prototype);
+			this.originalXhrSend = XMLHttpRequest.prototype.send.bind(XMLHttpRequest.prototype);
+		} else {
+			// Fallback for Node.js environment (tests)
+			this.originalFetch = (() => Promise.reject(new Error("fetch not available in Node.js"))) as typeof fetch;
+			this.originalXhrOpen = function() {} as typeof XMLHttpRequest.prototype.open;
+			this.originalXhrSend = function() {} as typeof XMLHttpRequest.prototype.send;
+		}
 	}
 
 	/**
@@ -52,11 +60,15 @@ export class NetworkInterceptor {
 			return;
 		}
 
-		this.interceptFetch();
-		this.interceptXHR();
-		this.isInitialized = true;
-
-		logger.info("api", "Network interceptor initialized", {}, "NetworkInterceptor");
+		// Only initialize in browser environment
+		if (typeof window !== "undefined" && typeof window.fetch === "function") {
+			this.interceptFetch();
+			this.interceptXHR();
+			this.isInitialized = true;
+			logger.info("api", "Network interceptor initialized", {}, "NetworkInterceptor");
+		} else {
+			logger.warn("api", "Network interceptor skipped - not in browser environment", {}, "NetworkInterceptor");
+		}
 	}
 
 	/**
