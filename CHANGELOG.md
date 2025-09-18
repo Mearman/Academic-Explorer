@@ -1,3 +1,10 @@
+## [6.0.2](https://github.com/Mearman/Academic-Explorer/compare/v6.0.1...v6.0.2) (2025-09-18)
+
+
+### Bug Fixes
+
+* **a11y:** add missing aria-labels to improve accessibility ([f1d7d31](https://github.com/Mearman/Academic-Explorer/commit/f1d7d31e10cb2e7a0b9b1728872316c8a306cf5c))
+
 ## [6.0.1](https://github.com/Mearman/Academic-Explorer/compare/v6.0.0...v6.0.1) (2025-09-18)
 
 
