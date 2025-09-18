@@ -157,7 +157,7 @@ const GraphNavigationInner: React.FC<GraphNavigationProps> = ({ className, style
 			const targetNode = currentNodes.find(n => n.id === nodeId);
 
 			if (!targetNode) {
-				logger.info("ui", "Cannot center node - node not found", { nodeId }, "GraphNavigation");
+				logger.debug("ui", "Cannot center node - node not found", { nodeId }, "GraphNavigation");
 				return;
 			}
 
@@ -174,7 +174,7 @@ const GraphNavigationInner: React.FC<GraphNavigationProps> = ({ className, style
 		// Update throttling tracker
 		lastCenterOperationRef.current = { nodeId, timestamp: now };
 
-		logger.info("ui", "Centered viewport on node at its current position", {
+		logger.debug("ui", "Centered viewport on node at its current position", {
 			nodeId: nodeId,
 			nodePosition: { x: targetX, y: targetY }
 		}, "GraphNavigation");
@@ -202,7 +202,7 @@ const GraphNavigationInner: React.FC<GraphNavigationProps> = ({ className, style
 			isProgrammaticNavigationRef.current = false;
 		}, 10);
 
-		logger.info("graph", "Node single click completed - no expansion", {
+		logger.debug("graph", "Node single click completed - no expansion", {
 			nodeId: node.id,
 			entityId: node.entityId,
 			type: node.type
@@ -226,7 +226,7 @@ const GraphNavigationInner: React.FC<GraphNavigationProps> = ({ className, style
 			isProgrammaticNavigationRef.current = false;
 		}, 10);
 
-		logger.info("graph", "Node double click completed - expanded", {
+		logger.debug("graph", "Node double click completed - expanded", {
 			nodeId: node.id,
 			entityId: node.entityId,
 			type: node.type
@@ -418,7 +418,7 @@ const GraphNavigationInner: React.FC<GraphNavigationProps> = ({ className, style
 				// Note: Node updates will be handled by ReactFlow changes below
 				if (updatedNodeIds.size) {
 					const updatedNodes = currentVisibleNodes.filter(n => updatedNodeIds.has(n.id));
-					logger.info("graph", "Detected existing nodes with updated data", {
+					logger.debug("graph", "Detected existing nodes with updated data", {
 						updatedNodeCount: updatedNodes.length,
 						updatedNodeIds: Array.from(updatedNodeIds),
 						updatedLabels: updatedNodes.map(n => ({ id: n.id, label: n.label }))
@@ -489,7 +489,7 @@ const GraphNavigationInner: React.FC<GraphNavigationProps> = ({ className, style
 				// Add a small delay to ensure React state updates are complete
 				setTimeout(() => {
 					restartLayoutRef.current(); // Full restart to include new nodes in D3 simulation
-					logger.info("graph", "Restarting layout due to new nodes", {
+					logger.debug("graph", "Restarting layout due to new nodes", {
 						newNodeCount: newNodeIds.size
 					}, "GraphNavigation");
 				}, 50); // 50ms delay to allow React state to settle
@@ -557,7 +557,7 @@ const GraphNavigationInner: React.FC<GraphNavigationProps> = ({ className, style
 						// Smoothly animate the selected node to the center of the viewport
 						centerOnNode(matchingNode.id, matchingNode.position);
 
-						logger.info("graph", "Selected and auto-centered entity from hash URL", {
+						logger.debug("graph", "Selected and auto-centered entity from hash URL", {
 							currentHash,
 							entityType,
 							entityId,
@@ -643,14 +643,29 @@ const GraphNavigationInner: React.FC<GraphNavigationProps> = ({ className, style
 				typeof value === "string" &&
 				["works", "authors", "sources", "institutions", "topics", "concepts", "publishers", "funders", "keywords"].includes(value);
 
+			const isExternalIdentifier = (item: unknown): item is ExternalIdentifier => {
+				if (!item || typeof item !== "object" || item === null) return false;
+
+				// Check for required properties using type predicate approach
+				if (!("type" in item) || !("value" in item) || !("url" in item)) return false;
+
+				// Type narrowing with safe property access
+				const hasRequiredProps = (obj: object): obj is Record<"type" | "value" | "url", unknown> => {
+					return "type" in obj && "value" in obj && "url" in obj;
+				};
+
+				if (!hasRequiredProps(item)) return false;
+
+				if (typeof item.type !== "string" || typeof item.value !== "string" || typeof item.url !== "string") {
+					return false;
+				}
+
+				// Validate specific enum values for type
+				return ["doi", "orcid", "issn_l", "ror", "wikidata"].includes(item.type);
+			};
+
 			const isValidExternalIds = (value: unknown): value is ExternalIdentifier[] =>
-				Array.isArray(value) && value.every(item => {
-					if (!item || typeof item !== "object") return false;
-					const typedItem = item as Record<string, unknown>;
-					return "type" in typedItem && typeof typedItem.type === "string" &&
-						"value" in typedItem && typeof typedItem.value === "string" &&
-						"url" in typedItem && typeof typedItem.url === "string";
-				});
+				Array.isArray(value) && value.every(isExternalIdentifier);
 
 			// Validate all required properties
 			if (isValidString(node.data.entityId) &&
@@ -687,7 +702,85 @@ const GraphNavigationInner: React.FC<GraphNavigationProps> = ({ className, style
 				return;
 			}
 
-			const dropData = JSON.parse(transferData) as { type: string; node?: GraphNode; edge?: GraphEdge };
+			const parsed: unknown = JSON.parse(transferData);
+
+			const isGraphNode = (value: unknown): value is GraphNode => {
+				if (!value || typeof value !== "object" || value === null) return false;
+
+				const requiredProps = ["id", "type", "label", "entityId", "position", "externalIds"];
+				for (const prop of requiredProps) {
+					if (!(prop in value)) return false;
+				}
+
+				// Type narrowing with safe property access
+				const hasGraphNodeProps = (obj: object): obj is Record<"id" | "type" | "label" | "entityId" | "position" | "externalIds", unknown> => {
+					return "id" in obj && "type" in obj && "label" in obj && "entityId" in obj && "position" in obj && "externalIds" in obj;
+				};
+
+				if (!hasGraphNodeProps(value)) return false;
+
+				return typeof value.id === "string" &&
+					typeof value.type === "string" &&
+					typeof value.label === "string" &&
+					typeof value.entityId === "string" &&
+					value.position && typeof value.position === "object" &&
+					Array.isArray(value.externalIds);
+			};
+
+			const isGraphEdge = (value: unknown): value is GraphEdge => {
+				if (!value || typeof value !== "object" || value === null) return false;
+
+				const requiredProps = ["id", "source", "target", "type"];
+				for (const prop of requiredProps) {
+					if (!(prop in value)) return false;
+				}
+
+				// Type narrowing with safe property access
+				const hasGraphEdgeProps = (obj: object): obj is Record<"id" | "source" | "target" | "type", unknown> => {
+					return "id" in obj && "source" in obj && "target" in obj && "type" in obj;
+				};
+
+				if (!hasGraphEdgeProps(value)) return false;
+
+				return typeof value.id === "string" &&
+					typeof value.source === "string" &&
+					typeof value.target === "string" &&
+					typeof value.type === "string";
+			};
+
+			// Type guard for drop data structure
+			const isValidDropData = (value: unknown): value is { type: string; node?: GraphNode; edge?: GraphEdge } => {
+				if (!value || typeof value !== "object" || value === null) return false;
+				if (!("type" in value)) return false;
+
+				// Type narrowing with safe property access
+				const hasDropDataProps = (obj: object): obj is Record<"type" | "node" | "edge", unknown> => {
+					return "type" in obj;
+				};
+
+				if (!hasDropDataProps(value)) return false;
+
+				if (typeof value.type !== "string") return false;
+
+				// Check optional node property
+				if ("node" in value && value.node !== undefined && !isGraphNode(value.node)) {
+					return false;
+				}
+
+				// Check optional edge property
+				if ("edge" in value && value.edge !== undefined && !isGraphEdge(value.edge)) {
+					return false;
+				}
+
+				return true;
+			};
+
+			if (!isValidDropData(parsed)) {
+				logger.warn("graph", "Invalid drop data format", { data: typeof parsed }, "GraphNavigation");
+				return;
+			}
+
+			const dropData = parsed;
 			const { type } = dropData;
 
 			if (type === "repository-node" && dropData.node) {
@@ -715,7 +808,7 @@ const GraphNavigationInner: React.FC<GraphNavigationProps> = ({ className, style
 				const store = useGraphStore.getState();
 				store.addNodes([updatedNode]);
 
-				logger.info("graph", "Added repository node to graph via drag-drop", {
+				logger.debug("graph", "Added repository node to graph via drag-drop", {
 					nodeId: node.id,
 					nodeType: node.type,
 					position
@@ -728,7 +821,7 @@ const GraphNavigationInner: React.FC<GraphNavigationProps> = ({ className, style
 				const store = useGraphStore.getState();
 				store.addEdges([edge]);
 
-				logger.info("graph", "Added repository edge to graph via drag-drop", {
+				logger.debug("graph", "Added repository edge to graph via drag-drop", {
 					edgeId: edge.id,
 					edgeType: edge.type,
 					source: edge.source,

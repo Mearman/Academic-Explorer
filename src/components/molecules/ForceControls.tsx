@@ -102,7 +102,7 @@ export const ForceControls: React.FC = () => {
 		param: keyof ForceParameters,
 		value: number,
 	) => {
-		logger.info("graph", `Force parameter changed: ${param}`, { param, value });
+		logger.debug("graph", `Force parameter changed: ${param}`, { param, value });
 
 		// Update the current layout with new parameters
 		const updatedLayout = {
@@ -122,7 +122,7 @@ export const ForceControls: React.FC = () => {
 
 		if (isRunning && animationContext?.updateParameters) {
 			// Animation is active (running or paused) - update parameters without restart
-			logger.info("graph", "Updating force parameters during active simulation", {
+			logger.debug("graph", "Updating force parameters during active simulation", {
 				param,
 				value,
 				isAnimating: isCurrentlyAnimating,
@@ -133,7 +133,7 @@ export const ForceControls: React.FC = () => {
 			animationContext.updateParameters({ [param]: value });
 		} else {
 			// Animation not active - start/restart animation with new parameters
-			logger.info("graph", "Starting animation with updated force parameter", {
+			logger.debug("graph", "Starting animation with updated force parameter", {
 				param,
 				value,
 				hasContext: !!animationContext,
@@ -193,7 +193,7 @@ export const ForceControls: React.FC = () => {
 
 		// Only update if the value actually changed after constraining
 		if (constrainedValue !== numValue) {
-			logger.info("graph", `Constraining param from ${String(numValue)} to ${String(constrainedValue)}`, {
+			logger.debug("graph", `Constraining param from ${String(numValue)} to ${String(constrainedValue)}`, {
 				param,
 				originalValue: numValue,
 				constrainedValue,
@@ -219,7 +219,7 @@ export const ForceControls: React.FC = () => {
 
 		// If the displayed value is different from the constrained value, correct it
 		if (constrainedValue !== currentValue) {
-			logger.info("graph", `Correcting param on blur from ${String(currentValue)} to ${String(constrainedValue)}`);
+			logger.debug("graph", `Correcting param on blur from ${String(currentValue)} to ${String(constrainedValue)}`);
 			setForceParams(prev => ({ ...prev, [param]: constrainedValue }));
 			// Also immediately apply the corrected value
 			handleParameterChangeImmediate(param, constrainedValue);
@@ -227,7 +227,7 @@ export const ForceControls: React.FC = () => {
 	}, [forceParams, handleParameterChangeImmediate]);
 
 	const handleReset = () => {
-		logger.info("graph", "Resetting force parameters to defaults");
+		logger.debug("graph", "Resetting force parameters to defaults");
 
 		setForceParams(DEFAULT_FORCE_PARAMS);
 
@@ -250,7 +250,7 @@ export const ForceControls: React.FC = () => {
 
 			if (isRunning && animationContext?.updateParameters) {
 				// Animation is active (running or paused) - update parameters without restart
-				logger.info("graph", "Updating force parameters to defaults during active simulation", {
+				logger.debug("graph", "Updating force parameters to defaults during active simulation", {
 					isAnimating: isCurrentlyAnimating,
 					isPaused: isCurrentlyPaused,
 					isRunning,
@@ -259,7 +259,7 @@ export const ForceControls: React.FC = () => {
 				animationContext.updateParameters(DEFAULT_FORCE_PARAMS);
 			} else {
 				// Animation not active - start/restart animation with default parameters
-				logger.info("graph", "Starting animation with default force parameters", {
+				logger.debug("graph", "Starting animation with default force parameters", {
 					hasContext: !!animationContext,
 					isWorkerReady: animationContext?.isWorkerReady ?? "unknown",
 					isAnimating: isCurrentlyAnimating,

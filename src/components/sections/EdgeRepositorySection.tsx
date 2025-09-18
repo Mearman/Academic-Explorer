@@ -59,7 +59,7 @@ const EdgeRepositoryItem: React.FC<EdgeRepositoryItemProps> = ({
 		}));
 		event.dataTransfer.effectAllowed = "copy";
 
-		logger.info("repository", "Started dragging repository edge", {
+		logger.debug("repository", "Started dragging repository edge", {
 			edgeId: edge.id,
 			edgeType: edge.type,
 			source: edge.source,
@@ -177,7 +177,7 @@ export const EdgeRepositorySection: React.FC = () => {
 		const selectedEdgeIds = Object.keys(selectedRepositoryEdges);
 		if (selectedEdgeIds.length > 0) {
 			removeFromRepository([], selectedEdgeIds);
-			logger.info("repository", "Removed selected edges from repository", {
+			logger.debug("repository", "Removed selected edges from repository", {
 				removedCount: selectedEdgeIds.length
 			});
 		}
@@ -185,7 +185,7 @@ export const EdgeRepositorySection: React.FC = () => {
 
 	const handleRemoveEdge = useCallback((edgeId: string) => {
 		removeFromRepository([], [edgeId]);
-		logger.info("repository", "Removed single edge from repository", { edgeId });
+		logger.debug("repository", "Removed single edge from repository", { edgeId });
 	}, [removeFromRepository]);
 
 	return (

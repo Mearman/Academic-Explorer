@@ -28,7 +28,7 @@ export const SectionContextMenu: React.FC<SectionContextMenuProps> = ({
 	const section = getSectionById(sectionId);
 
 	const handleMoveToSidebar = (sidebar: "left" | "right") => {
-		logger.info("ui", `Moving section ${sectionId} to ${sidebar} sidebar via context menu`, {
+		logger.debug("ui", `Moving section ${sectionId} to ${sidebar} sidebar via context menu`, {
 			sectionId,
 			fromSidebar: currentSidebar,
 			toSidebar: sidebar
@@ -37,7 +37,7 @@ export const SectionContextMenu: React.FC<SectionContextMenuProps> = ({
 	};
 
 	const handleResetPlacements = () => {
-		logger.info("ui", "Resetting all section placements to defaults", {
+		logger.debug("ui", "Resetting all section placements to defaults", {
 			sectionId
 		});
 		resetSectionPlacements();

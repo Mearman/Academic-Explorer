@@ -178,7 +178,22 @@ export const RawApiDataSection: React.FC<RawApiDataSectionProps> = ({
 		}
 
 		if (typeof value === "object") {
-			const entries = Object.entries(value as Record<string, unknown>);
+			// Type guard: ensure value is a non-null object
+			if (value === null || Array.isArray(value)) {
+				return (
+					<span style={{
+						color: colors.text.secondary,
+						fontStyle: "italic",
+						fontSize: "12px",
+						backgroundColor: "#fef2f2",
+						padding: "2px 6px",
+						borderRadius: "4px"
+					}}>
+						[Unexpected value type]
+					</span>
+				);
+			}
+			const entries = Object.entries(value);
 
 			if (entries.length === 0) {
 				return (
@@ -254,12 +269,29 @@ export const RawApiDataSection: React.FC<RawApiDataSectionProps> = ({
 		}
 
 		// Only primitive types should reach here (string, number, boolean, symbol, bigint)
+		// Type guard: ensure value is a displayable primitive
+		if (typeof value === "string" || typeof value === "number" || typeof value === "boolean") {
+			return (
+				<span style={{
+					color: colors.text.primary,
+					fontSize: "12px"
+				}}>
+					{value}
+				</span>
+			);
+		}
+
+		// Fallback for unexpected types
 		return (
 			<span style={{
-				color: colors.text.primary,
-				fontSize: "12px"
+				color: colors.text.secondary,
+				fontStyle: "italic",
+				fontSize: "12px",
+				backgroundColor: "#fef2f2",
+				padding: "2px 6px",
+				borderRadius: "4px"
 			}}>
-				{value as string | number | boolean}
+				[Unsupported type: {typeof value}]
 			</span>
 		);
 	};
@@ -281,7 +313,7 @@ export const RawApiDataSection: React.FC<RawApiDataSectionProps> = ({
 
 			URL.revokeObjectURL(url);
 
-			logger.info("ui", "Raw API data downloaded", {
+			logger.debug("ui", "Raw API data downloaded", {
 				entityId,
 				filename: a.download
 			}, "RawApiDataSection");
@@ -300,7 +332,7 @@ export const RawApiDataSection: React.FC<RawApiDataSectionProps> = ({
 			const jsonString = JSON.stringify(rawData, null, 2);
 			await navigator.clipboard.writeText(jsonString);
 
-			logger.info("ui", "Raw API data copied to clipboard", {
+			logger.debug("ui", "Raw API data copied to clipboard", {
 				entityId,
 				dataSize: jsonString.length
 			}, "RawApiDataSection");

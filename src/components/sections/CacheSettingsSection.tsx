@@ -43,26 +43,26 @@ export const CacheSettingsSection: React.FC<CacheSettingsSectionProps> = ({
 	const handleToggleCachedNodes = () => {
 		const newValue = !showAllCachedNodes;
 		setShowAllCachedNodes(newValue);
-		logger.info("ui", `Toggled show cached nodes to ${newValue ? "on" : "off"}`);
+		logger.debug("ui", `Toggled show cached nodes to ${newValue ? "on" : "off"}`);
 	};
 
 	const handleTraversalDepthChange = (value: string | number) => {
 		const numValue = typeof value === "string" ? parseInt(value, 10) : value;
 		if (typeof numValue === "number" && !isNaN(numValue) && numValue >= 1 && numValue <= 10) {
 			setTraversalDepth(numValue);
-			logger.info("ui", `Set traversal depth to ${numValue.toString()}`);
+			logger.debug("ui", `Set traversal depth to ${numValue.toString()}`);
 		}
 	};
 
 	const handleClearGraph = () => {
 		clear();
 		setClearModalOpen(false);
-		logger.info("ui", "Graph cleared from cache settings");
+		logger.debug("ui", "Graph cleared from cache settings");
 	};
 
 	const handleClearCache = () => {
 		// In a real implementation, this would clear the actual cache
-		logger.info("ui", "Cache clear requested");
+		logger.debug("ui", "Cache clear requested");
 		// For now, just log the action
 	};
 
@@ -88,7 +88,7 @@ export const CacheSettingsSection: React.FC<CacheSettingsSectionProps> = ({
 		document.body.removeChild(a);
 		URL.revokeObjectURL(url);
 
-		logger.info("ui", "Cache exported");
+		logger.debug("ui", "Cache exported");
 	};
 
 	return (

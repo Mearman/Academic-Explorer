@@ -18,7 +18,7 @@ export function ApplicationLoggerPanel() {
 
 		// Add some test log entries to verify filtering works
 		if (logger.getLogs().length === 0) {
-			logger.info("general", "ApplicationLoggerPanel initialized", { component: "devtools" }, "ApplicationLoggerPanel");
+			logger.debug("general", "ApplicationLoggerPanel initialized", { component: "devtools" }, "ApplicationLoggerPanel");
 			logger.debug("ui", "Filter test log entry", { testData: "filtering" }, "ApplicationLoggerPanel");
 			logger.warn("cache", "Sample warning for filter testing", { level: "warn" });
 			logger.error("api", "Sample error for filter testing", { status: 500 });
@@ -110,7 +110,7 @@ export function ApplicationLoggerPanel() {
 		try {
 			const allLogsText = filteredLogs.map(formatLogEntry).join("\n\n");
 			await navigator.clipboard.writeText(allLogsText);
-			logger.info("ui", "Copied all filtered logs to clipboard", { count: filteredLogs.length }, "ApplicationLoggerPanel");
+			logger.debug("ui", "Copied all filtered logs to clipboard", { count: filteredLogs.length }, "ApplicationLoggerPanel");
 		} catch (error) {
 			logger.error("ui", "Failed to copy logs to clipboard", { error }, "ApplicationLoggerPanel");
 		}

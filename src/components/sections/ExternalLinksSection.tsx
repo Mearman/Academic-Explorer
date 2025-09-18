@@ -36,12 +36,31 @@ export const ExternalLinksSection: React.FC<ExternalLinksSectionProps> = ({
 	const entityNode = displayEntityId ? nodesMap[displayEntityId] : null;
 
 	const handleLinkClick = (url: string, linkType: string) => {
-		logger.info("ui", `Opening external link: ${linkType}`, {
+		logger.debug("ui", `Opening external link: ${linkType}`, {
 			url,
 			entityId: displayEntityId,
 			linkType
 		});
 		window.open(url, "_blank", "noopener,noreferrer");
+	};
+
+	// Type guards for safe URL handling
+	const isString = (value: unknown): value is string => {
+		return typeof value === "string" && value.length > 0;
+	};
+
+	const isValidUrl = (value: unknown): value is string => {
+		if (!isString(value)) return false;
+		try {
+			new URL(value);
+			return true;
+		} catch {
+			return false;
+		}
+	};
+
+	const isIdsRecord = (value: unknown): value is Record<string, unknown> => {
+		return value !== null && typeof value === "object" && !Array.isArray(value);
 	};
 
 	const generateLinks = (entity: GraphNode) => {
@@ -66,11 +85,10 @@ export const ExternalLinksSection: React.FC<ExternalLinksSectionProps> = ({
 
 		// DOI link for works - access entityData safely
 		const entityData = entity.entityData;
-		if (entity.type === "works" && entityData?.doi) {
-			const doiUrl = entityData.doi as string;
+		if (entity.type === "works" && entityData?.doi && isValidUrl(entityData.doi)) {
 			links.push({
 				label: "DOI Resolver",
-				url: doiUrl,
+				url: entityData.doi,
 				icon: <IconFileText size={16} />,
 				description: "View full article via DOI",
 				type: "doi"
@@ -78,11 +96,10 @@ export const ExternalLinksSection: React.FC<ExternalLinksSectionProps> = ({
 		}
 
 		// ORCID link for authors
-		if (entity.type === "authors" && entityData?.orcid) {
-			const orcidUrl = entityData.orcid as string;
+		if (entity.type === "authors" && entityData?.orcid && isValidUrl(entityData.orcid)) {
 			links.push({
 				label: "ORCID Profile",
-				url: orcidUrl,
+				url: entityData.orcid,
 				icon: <IconExternalLink size={16} />,
 				description: "View ORCID researcher profile",
 				type: "orcid"
@@ -90,13 +107,12 @@ export const ExternalLinksSection: React.FC<ExternalLinksSectionProps> = ({
 		}
 
 		// Homepage/website links
-		if (entityData?.homepage_url) {
-			const homepageUrl = entityData.homepage_url as string;
+		if (entityData?.homepage_url && isValidUrl(entityData.homepage_url)) {
 			try {
-				const domain = new URL(homepageUrl).hostname;
+				const domain = new URL(entityData.homepage_url).hostname;
 				links.push({
 					label: `Visit ${domain}`,
-					url: homepageUrl,
+					url: entityData.homepage_url,
 					icon: <IconLink size={16} />,
 					description: "Official website",
 					type: "homepage"
@@ -107,11 +123,10 @@ export const ExternalLinksSection: React.FC<ExternalLinksSectionProps> = ({
 		}
 
 		// Publisher website for sources
-		if (entity.type === "sources" && entityData?.homepage_url) {
-			const publisherUrl = entityData.homepage_url as string;
+		if (entity.type === "sources" && entityData?.homepage_url && isValidUrl(entityData.homepage_url)) {
 			links.push({
 				label: "Publisher Website",
-				url: publisherUrl,
+				url: entityData.homepage_url,
 				icon: <IconLink size={16} />,
 				description: "View publisher's website",
 				type: "publisher"
@@ -119,12 +134,10 @@ export const ExternalLinksSection: React.FC<ExternalLinksSectionProps> = ({
 		}
 
 		// Wikipedia link
-		const ids = entityData?.ids as Record<string, unknown> | undefined;
-		if (ids?.wikipedia) {
-			const wikipediaUrl = ids.wikipedia as string;
+		if (isIdsRecord(entityData?.ids) && isValidUrl(entityData.ids.wikipedia)) {
 			links.push({
 				label: "Wikipedia",
-				url: wikipediaUrl,
+				url: entityData.ids.wikipedia,
 				icon: <IconExternalLink size={16} />,
 				description: "View Wikipedia article",
 				type: "wikipedia"
@@ -132,11 +145,10 @@ export const ExternalLinksSection: React.FC<ExternalLinksSectionProps> = ({
 		}
 
 		// Wikidata link
-		if (ids?.wikidata) {
-			const wikidataUrl = ids.wikidata as string;
+		if (isIdsRecord(entityData?.ids) && isValidUrl(entityData.ids.wikidata)) {
 			links.push({
 				label: "Wikidata",
-				url: wikidataUrl,
+				url: entityData.ids.wikidata,
 				icon: <IconExternalLink size={16} />,
 				description: "View Wikidata entry",
 				type: "wikidata"

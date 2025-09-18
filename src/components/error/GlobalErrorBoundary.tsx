@@ -162,7 +162,7 @@ export class GlobalErrorBoundary extends Component<Props, State> {
 				icon: <IconDatabase size={16} />,
 			});
 
-			logger.info("ui", "Cache cleared from error boundary", {}, "GlobalErrorBoundary");
+			logger.debug("ui", "Cache cleared from error boundary", {}, "GlobalErrorBoundary");
 
 		} catch (error) {
 			logError("Failed to clear cache from error boundary", error, "GlobalErrorBoundary");

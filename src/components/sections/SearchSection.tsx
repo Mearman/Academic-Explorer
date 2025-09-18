@@ -25,7 +25,7 @@ export const SearchSection: React.FC = () => {
 
 	const handleRepositoryModeToggle = useCallback((checked: boolean) => {
 		setRepositoryMode(checked);
-		logger.info("ui", `Repository mode ${checked ? "enabled" : "disabled"}`, {
+		logger.debug("ui", `Repository mode ${checked ? "enabled" : "disabled"}`, {
 			repositoryMode: checked
 		});
 	}, [setRepositoryMode]);
@@ -36,7 +36,7 @@ export const SearchSection: React.FC = () => {
 
 		void (async () => {
 			try {
-				logger.info("ui", "Starting search from SearchSection", {
+				logger.debug("ui", "Starting search from SearchSection", {
 					query: searchQuery,
 					repositoryMode
 				});
@@ -49,7 +49,7 @@ export const SearchSection: React.FC = () => {
 					await loadEntity(searchQuery);
 				}
 
-				logger.info("ui", "Search completed successfully", {
+				logger.debug("ui", "Search completed successfully", {
 					query: searchQuery,
 					repositoryMode
 				});

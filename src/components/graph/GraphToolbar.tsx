@@ -34,10 +34,10 @@ export const GraphToolbar: React.FC<GraphToolbarProps> = ({
 
 	// Graph utility action
 	const handleTrimLeaves = useCallback(() => {
-		logger.info("graph", "Trim leaves action triggered from graph toolbar");
+		logger.debug("graph", "Trim leaves action triggered from graph toolbar");
 		try {
 			const result = trimLeafNodes();
-			logger.info("graph", "Trim leaves completed", {
+			logger.debug("graph", "Trim leaves completed", {
 				removedCount: result.removedCount,
 				remainingNodes: result.nodes.length
 			});
@@ -50,7 +50,7 @@ export const GraphToolbar: React.FC<GraphToolbarProps> = ({
 
 	// 1-degree selection action
 	const handleSelect1Degree = useCallback(() => {
-		logger.info("graph", "1-degree selection action triggered from graph toolbar");
+		logger.debug("graph", "1-degree selection action triggered from graph toolbar");
 
 		const currentNodes = getNodes();
 		const currentEdges = getEdges();
@@ -63,7 +63,7 @@ export const GraphToolbar: React.FC<GraphToolbarProps> = ({
 			return;
 		}
 
-		logger.info("graph", "Finding 1-degree neighbors", {
+		logger.debug("graph", "Finding 1-degree neighbors", {
 			selectedNodeId: selectedNode.id,
 			totalNodes: currentNodes.length,
 			totalEdges: currentEdges.length
@@ -90,7 +90,7 @@ export const GraphToolbar: React.FC<GraphToolbarProps> = ({
 
 		setNodes(updatedNodes);
 
-		logger.info("graph", "1-degree selection completed", {
+		logger.debug("graph", "1-degree selection completed", {
 			selectedNodeId: selectedNode.id,
 			neighborCount: oneDegreeNodeIds.size - 1, // Subtract 1 for the original node
 			totalSelected: oneDegreeNodeIds.size,
@@ -100,7 +100,7 @@ export const GraphToolbar: React.FC<GraphToolbarProps> = ({
 
 	// Expand selected nodes action
 	const handleExpandSelected = useCallback(async () => {
-		logger.info("graph", "Expand selected nodes action triggered from graph toolbar");
+		logger.debug("graph", "Expand selected nodes action triggered from graph toolbar");
 
 		const currentNodes = getNodes();
 
@@ -112,7 +112,7 @@ export const GraphToolbar: React.FC<GraphToolbarProps> = ({
 			return;
 		}
 
-		logger.info("graph", "Expanding selected nodes", {
+		logger.debug("graph", "Expanding selected nodes", {
 			selectedCount: selectedNodes.length,
 			selectedNodeIds: selectedNodes.map(node => node.id)
 		});
@@ -123,7 +123,7 @@ export const GraphToolbar: React.FC<GraphToolbarProps> = ({
 				// Extract entity ID from node data for expansion
 				const entityId: string = typeof node.data.entityId === "string" ? node.data.entityId : node.id;
 
-				logger.info("graph", "Expanding node", {
+				logger.debug("graph", "Expanding node", {
 					nodeId: node.id,
 					entityId: entityId,
 					entityType: node.data.entityType
@@ -157,7 +157,7 @@ export const GraphToolbar: React.FC<GraphToolbarProps> = ({
 			const successful = results.filter(result => result.status === "fulfilled" && result.value.success).length;
 			const failed = results.length - successful;
 
-			logger.info("graph", "Expand selected nodes completed", {
+			logger.debug("graph", "Expand selected nodes completed", {
 				totalNodes: selectedNodes.length,
 				successful,
 				failed,
@@ -176,7 +176,7 @@ export const GraphToolbar: React.FC<GraphToolbarProps> = ({
 
 	// Pin all nodes action
 	const handlePinAll = useCallback(() => {
-		logger.info("graph", "Pin all nodes action triggered from graph toolbar");
+		logger.debug("graph", "Pin all nodes action triggered from graph toolbar");
 
 		const currentNodes = getNodes();
 
@@ -185,7 +185,7 @@ export const GraphToolbar: React.FC<GraphToolbarProps> = ({
 			return;
 		}
 
-		logger.info("graph", "Pinning all nodes", {
+		logger.debug("graph", "Pinning all nodes", {
 			nodeCount: currentNodes.length,
 			nodeIds: currentNodes.map(node => node.id)
 		});
@@ -195,7 +195,7 @@ export const GraphToolbar: React.FC<GraphToolbarProps> = ({
 			pinNode(node.id);
 		});
 
-		logger.info("graph", "Pin all nodes completed", {
+		logger.debug("graph", "Pin all nodes completed", {
 			totalNodes: currentNodes.length,
 			pinnedCount: pinnedNodesCount
 		});
@@ -203,7 +203,7 @@ export const GraphToolbar: React.FC<GraphToolbarProps> = ({
 
 	// Unpin all nodes action
 	const handleUnpinAll = useCallback(() => {
-		logger.info("graph", "Unpin all nodes action triggered from graph toolbar");
+		logger.debug("graph", "Unpin all nodes action triggered from graph toolbar");
 
 		const currentPinnedCount = pinnedNodesCount;
 
@@ -212,7 +212,7 @@ export const GraphToolbar: React.FC<GraphToolbarProps> = ({
 			return;
 		}
 
-		logger.info("graph", "Unpinning all nodes", {
+		logger.debug("graph", "Unpinning all nodes", {
 			pinnedCount: currentPinnedCount,
 			pinnedNodeIds: pinnedNodeIds
 		});
@@ -220,7 +220,7 @@ export const GraphToolbar: React.FC<GraphToolbarProps> = ({
 		// Clear all pinned nodes using the store function
 		clearAllPinnedNodes();
 
-		logger.info("graph", "Unpin all nodes completed", {
+		logger.debug("graph", "Unpin all nodes completed", {
 			previouslyPinnedCount: currentPinnedCount,
 			currentPinnedCount: 0
 		});

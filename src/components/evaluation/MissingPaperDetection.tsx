@@ -140,10 +140,11 @@ export function MissingPaperDetection({ dataset, onDetectionComplete }: MissingP
 					marginBottom: "16px"
 				}}>
 					<div>
-						<label style={{ fontSize: "14px", fontWeight: "500", color: "#374151", display: "block", marginBottom: "4px" }}>
+						<label htmlFor="max-papers-input" style={{ fontSize: "14px", fontWeight: "500", color: "#374151", display: "block", marginBottom: "4px" }}>
               Max Papers per Method
 						</label>
 						<input
+							id="max-papers-input"
 							type="number"
 							value={detectionConfig.maxPapersPerMethod}
 							onChange={(e) => { setDetectionConfig(prev => ({ ...prev, maxPapersPerMethod: parseInt(e.target.value) })); }}
@@ -160,10 +161,11 @@ export function MissingPaperDetection({ dataset, onDetectionComplete }: MissingP
 					</div>
 
 					<div>
-						<label style={{ fontSize: "14px", fontWeight: "500", color: "#374151", display: "block", marginBottom: "4px" }}>
+						<label htmlFor="min-citation-input" style={{ fontSize: "14px", fontWeight: "500", color: "#374151", display: "block", marginBottom: "4px" }}>
               Min Citation Threshold
 						</label>
 						<input
+							id="min-citation-input"
 							type="number"
 							value={detectionConfig.minimumCitationThreshold}
 							onChange={(e) => { setDetectionConfig(prev => ({ ...prev, minimumCitationThreshold: parseInt(e.target.value) })); }}
@@ -180,10 +182,11 @@ export function MissingPaperDetection({ dataset, onDetectionComplete }: MissingP
 					</div>
 
 					<div>
-						<label style={{ fontSize: "14px", fontWeight: "500", color: "#374151", display: "block", marginBottom: "4px" }}>
+						<label htmlFor="temporal-window-input" style={{ fontSize: "14px", fontWeight: "500", color: "#374151", display: "block", marginBottom: "4px" }}>
               Temporal Window (Years)
 						</label>
 						<input
+							id="temporal-window-input"
 							type="number"
 							value={detectionConfig.temporalWindowYears}
 							onChange={(e) => { setDetectionConfig(prev => ({ ...prev, temporalWindowYears: parseInt(e.target.value) })); }}

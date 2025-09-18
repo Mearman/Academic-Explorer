@@ -11,6 +11,7 @@ import { useThemeColors } from "@/hooks/use-theme-colors";
 import { CollapsibleSection } from "@/components/molecules/CollapsibleSection";
 import { logger } from "@/lib/logger";
 import { RelationType } from "@/lib/graph/types";
+import { safeParseRelationType } from "@/lib/type-guards";
 
 interface EdgeFiltersSectionProps {
 	className?: string;
@@ -62,27 +63,27 @@ export const EdgeFiltersSection: React.FC<EdgeFiltersSectionProps> = ({
 	const totalTypesCount = Object.keys(RELATION_TYPE_CONFIG).length;
 
 	const handleShowAll = () => {
-		logger.info("ui", "Showing all edge types");
+		logger.debug("ui", "Showing all edge types");
 		Object.keys(RELATION_TYPE_CONFIG).forEach(edgeTypeKey => {
-			const edgeType = edgeTypeKey as RelationType;
-			if (!visibleEdgeTypes[edgeType]) {
+			const edgeType = safeParseRelationType(edgeTypeKey);
+			if (edgeType && !visibleEdgeTypes[edgeType]) {
 				toggleEdgeTypeVisibility(edgeType);
 			}
 		});
 	};
 
 	const handleHideAll = () => {
-		logger.info("ui", "Hiding all edge types");
+		logger.debug("ui", "Hiding all edge types");
 		Object.keys(RELATION_TYPE_CONFIG).forEach(edgeTypeKey => {
-			const edgeType = edgeTypeKey as RelationType;
-			if (visibleEdgeTypes[edgeType]) {
+			const edgeType = safeParseRelationType(edgeTypeKey);
+			if (edgeType && visibleEdgeTypes[edgeType]) {
 				toggleEdgeTypeVisibility(edgeType);
 			}
 		});
 	};
 
 	const handleToggleEdgeType = (edgeType: RelationType) => {
-		logger.info("ui", `Toggling edge type ${edgeType}`, {
+		logger.debug("ui", `Toggling edge type ${edgeType}`, {
 			edgeType,
 			currentlyVisible: visibleEdgeTypes[edgeType]
 		});
@@ -169,7 +170,8 @@ export const EdgeFiltersSection: React.FC<EdgeFiltersSectionProps> = ({
 			>
 				<Stack gap="xs" style={{ marginTop: "8px" }}>
 					{Object.entries(RELATION_TYPE_CONFIG).map(([edgeTypeKey, config]) => {
-						const edgeType = edgeTypeKey as RelationType;
+						const edgeType = safeParseRelationType(edgeTypeKey);
+						if (!edgeType) return null;
 						const visibleCount = edgeTypeStats.visible[edgeType] || 0;
 						const totalCount = edgeTypeStats.total[edgeType] || 0;
 						const isVisible = visibleEdgeTypes[edgeType] || false;

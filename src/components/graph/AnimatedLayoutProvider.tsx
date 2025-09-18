@@ -83,7 +83,7 @@ export const AnimatedLayoutProvider: React.FC<AnimatedLayoutProviderProps> = ({
 	// Listen for restart requests from components outside this provider
 	useEffect(() => {
 		if (restartRequested && enabled && useAnimation && isWorkerReady) {
-			logger.info("graph", "Restart request received from external component", {
+			logger.debug("graph", "Restart request received from external component", {
 				enabled,
 				useAnimation,
 				isWorkerReady,

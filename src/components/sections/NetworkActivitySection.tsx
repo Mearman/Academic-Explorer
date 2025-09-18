@@ -78,7 +78,7 @@ const NetworkActivitySection: React.FC = () => {
 
 	const copyToClipboard = (text: string) => {
 		void navigator.clipboard.writeText(text).then(() => {
-			logger.info("ui", "Copied to clipboard", { textLength: text.length }, "NetworkActivitySection");
+			logger.debug("ui", "Copied to clipboard", { textLength: text.length }, "NetworkActivitySection");
 		});
 	};
 
