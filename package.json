@@ -66,7 +66,9 @@
     "zustand": "^5.0.8"
   },
   "devDependencies": {
+    "@axe-core/playwright": "^4.10.2",
     "@eslint/js": "^9.33.0",
+    "@lhci/cli": "^0.15.1",
     "@nx/eslint": "^21.5.2",
     "@nx/playwright": "^21.5.2",
     "@nx/react": "^21.5.2",
@@ -90,8 +92,10 @@
     "@vitejs/plugin-react": "^5.0.3",
     "@vitest/coverage-v8": "^3.2.4",
     "@vitest/ui": "^3.2.4",
+    "axe-core": "^4.10.3",
     "eslint": "^9.33.0",
     "eslint-plugin-eslint-comments": "^3.2.0",
+    "eslint-plugin-jsx-a11y": "^6.10.2",
     "eslint-plugin-react": "^7.37.5",
     "eslint-plugin-react-hooks": "^5.2.0",
     "eslint-plugin-react-refresh": "^0.4.20",
@@ -102,13 +106,15 @@
     "knip": "^5.63.1",
     "lint-staged": "^16.1.6",
     "nx": "21.5.2",
+    "pa11y-ci": "^4.0.1",
     "playwright": "^1.55.0",
     "semantic-release": "^24.2.8",
     "typescript": "~5.9.2",
     "typescript-eslint": "^8.44.0",
     "vite": "^7.1.6",
     "vite-plugin-pwa": "^1.0.3",
-    "vitest": "^3.2.4"
+    "vitest": "^3.2.4",
+    "vitest-axe": "^0.1.0"
   },
   "pnpm": {
     "overrides": {
