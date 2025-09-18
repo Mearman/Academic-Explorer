@@ -216,6 +216,7 @@ jobs:
           path: coverage/
           retention-days: 7
 
+
       - name: Save Nx cache
         if: always()
         uses: actions/cache/save@v4
@@ -241,12 +242,56 @@ jobs:
           path: coverage-reports/
           merge-multiple: true
 
-      - name: Upload combined coverage to Codecov
-        uses: codecov/codecov-action@v4
+      - name: Generate coverage summary
+        run: |
+          echo "## Coverage Report" >> $GITHUB_STEP_SUMMARY
+          node scripts/generate-coverage-report.js summary >> $GITHUB_STEP_SUMMARY
+
+      - name: Comment coverage on PR
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v7
         with:
-          directory: coverage-reports/
-          fail_ci_if_error: false
-          verbose: true
+          script: |
+            const { exec } = require('child_process');
+            const { promisify } = require('util');
+            const execAsync = promisify(exec);
+
+            try {
+              // Get new coverage report
+              const { stdout } = await execAsync('node scripts/generate-coverage-report.js pr-comment');
+
+              // Find existing coverage comments
+              const comments = await github.rest.issues.listComments({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue.number,
+              });
+
+              const coverageComments = comments.data.filter(comment =>
+                comment.body.includes('## Coverage Report') &&
+                comment.user.type === 'Bot'
+              );
+
+              // Hide previous coverage comments by updating them
+              for (const comment of coverageComments) {
+                await github.rest.issues.updateComment({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  comment_id: comment.id,
+                  body: `<details><summary>Previous Coverage Report (${new Date(comment.created_at).toLocaleString()})</summary>\n\n${comment.body}\n</details>`
+                });
+              }
+
+              // Add new coverage comment
+              await github.rest.issues.createComment({
+                issue_number: context.issue.number,
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                body: stdout
+              });
+            } catch (error) {
+              console.error('Failed to generate coverage comment:', error);
+            }
 
   release:
     needs: [setup, quality-checks, test]

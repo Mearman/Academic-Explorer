@@ -123,7 +123,7 @@ export function useAnimatedForceSimulation(options: UseAnimatedForceSimulationOp
 		switch (type) {
 			case "ready":
 				setIsWorkerReady(true);
-				logger.info("graph", "Force animation worker ready");
+				logger.debug("graph", "Force animation worker ready");
 				break;
 
 			case "started":
@@ -228,7 +228,7 @@ export function useAnimatedForceSimulation(options: UseAnimatedForceSimulationOp
 				break;
 
 			case "parameters_updated":
-				logger.info("graph", "Force parameters updated", {
+				logger.debug("graph", "Force parameters updated", {
 					config,
 					wasPaused: event.data.wasPaused,
 				});
@@ -255,7 +255,7 @@ export function useAnimatedForceSimulation(options: UseAnimatedForceSimulationOp
 
 	// Initialize worker
 	useEffect(() => {
-		logger.info("graph", "Initializing animated force simulation worker");
+		logger.debug("graph", "Initializing animated force simulation worker");
 
 		try {
 			workerRef.current = new Worker(

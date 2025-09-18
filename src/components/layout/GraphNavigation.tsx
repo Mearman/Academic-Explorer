@@ -123,7 +123,7 @@ const GraphNavigationInner: React.FC<GraphNavigationProps> = ({ className, style
 		const now = Date.now();
 		// Only log every 500ms to reduce spam
 		if (now - lastLogRef.current > 500) {
-			logger.info("graph", "Layout positions updated", undefined, "GraphNavigation");
+			logger.debug("graph", "Layout positions updated", undefined, "GraphNavigation");
 			lastLogRef.current = now;
 		}
 
@@ -267,7 +267,7 @@ const GraphNavigationInner: React.FC<GraphNavigationProps> = ({ className, style
 			for (const entry of entries) {
 				const { width, height } = entry.contentRect;
 				setContainerDimensions({ width, height });
-				logger.info("graph", "Container dimensions updated", { width, height }, "GraphNavigation");
+				logger.debug("graph", "Container dimensions updated", { width, height }, "GraphNavigation");
 			}
 		});
 
@@ -380,7 +380,7 @@ const GraphNavigationInner: React.FC<GraphNavigationProps> = ({ className, style
 
 		// Only log when there are actual changes to avoid spam
 		if (newNodeIds.size || newEdgeIds.size || updatedNodeIds.size || removedNodeIds.size || removedEdgeIds.size) {
-			logger.info("graph", "Store data incremental sync effect triggered", {
+			logger.debug("graph", "Store data incremental sync effect triggered", {
 				totalNodeCount: Object.keys(storeNodes).length,
 				totalEdgeCount: Object.keys(storeEdges).length,
 				visibleNodeCount: currentVisibleNodes.length,
@@ -477,7 +477,7 @@ const GraphNavigationInner: React.FC<GraphNavigationProps> = ({ className, style
 				}
 			}
 
-			logger.info("graph", "Applied incremental XYFlow changes", {
+			logger.debug("graph", "Applied incremental XYFlow changes", {
 				addedNodes: Array.from(newNodeIds),
 				addedEdges: Array.from(newEdgeIds),
 				removedNodes: Array.from(removedNodeIds),
