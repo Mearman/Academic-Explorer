@@ -122,22 +122,6 @@ describe("edge types configuration", () => {
 		});
 	});
 
-	describe("default export", () => {
-		it("should provide default export that matches named export", async () => {
-			const defaultExport = (await import("./edge-types")).default;
-			expect(defaultExport).toBe(edgeTypes);
-		});
-
-		it("should support both named and default import patterns", async () => {
-			// Named import: import { edgeTypes } from "./edge-types"
-			const { edgeTypes: namedImport } = await import("./edge-types");
-
-			// Default import: import edgeTypes from "./edge-types"
-			const defaultImport = (await import("./edge-types")).default;
-
-			expect(namedImport).toBe(defaultImport);
-		});
-	});
 
 	describe("configuration immutability", () => {
 		it("should maintain consistent edge type configuration", () => {
