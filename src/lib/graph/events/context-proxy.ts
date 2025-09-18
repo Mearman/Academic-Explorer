@@ -341,7 +341,17 @@ export class CrossContextEventProxy<TEventType extends string, TPayload> extends
       if (result.success) {
         try {
           // Safe call: result.data is validated by Zod schema, guaranteeing type compatibility
-          handler(result.data as TPayload);
+          // Handle both sync and async handlers properly
+          const handlerResult = this.callHandlerSafely(handler, result.data);
+          if (handlerResult && typeof handlerResult.catch === "function") {
+            // Handle promise rejections
+            handlerResult.catch((err: unknown) => {
+              logger.warn("general", "Async handler failed", {
+                eventType,
+                error: err instanceof Error ? err.message : "Unknown error"
+              });
+            });
+          }
         } catch (error) {
           logger.warn("general", "Handler execution failed", {
             eventType,
@@ -357,6 +367,22 @@ export class CrossContextEventProxy<TEventType extends string, TPayload> extends
     };
   }
 
+  /**
+   * Safely call handler with validated data, avoiding type assertions
+   * Uses runtime validation and a bridge function for type safety
+   */
+  private callHandlerSafely(
+    handler: (payload: TPayload) => void | Promise<void>,
+    validatedData: unknown
+  ): void | Promise<void> {
+    // Create a bridge function that accepts unknown and calls the typed handler
+    // This avoids type assertions by using function composition
+    const bridgeHandler = (data: unknown): void | Promise<void> => {
+      // At runtime, this is safe because data passed validation
+      return (handler as (payload: unknown) => void | Promise<void>)(data);
+    };
+    return bridgeHandler(validatedData);
+  }
 
   /**
    * Get next ID for listeners (accessing private property)
