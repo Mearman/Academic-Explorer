@@ -20,35 +20,15 @@ vi.mock("@/lib/logger", () => ({
 
 // Enhanced mock worker for component testing
 class TestWorker extends EventTarget {
-  private messageHandlers: Array<(event: MessageEvent) => void> = [];
   private sharedEventBridge: EventBridge | null = null; // Will be set to shared instance
 
   postMessage = vi.fn();
   terminate = vi.fn();
 
-  // Constructor inherited from EventTarget
-
   // Set the shared EventBridge instance
   setEventBridge(eventBridge: EventBridge) {
     this.sharedEventBridge = eventBridge;
   }
-
-  addEventListener = vi.fn((type: string, listener: any) => {
-    if (type === "message") {
-      this.messageHandlers.push(listener);
-    }
-    super.addEventListener(type, listener);
-  });
-
-  removeEventListener = vi.fn((type: string, listener: any) => {
-    if (type === "message") {
-      const index = this.messageHandlers.indexOf(listener);
-      if (index > -1) {
-        this.messageHandlers.splice(index, 1);
-      }
-    }
-    super.removeEventListener(type, listener);
-  });
 
   // Simulate worker sending EventBridge messages
   simulateEventBridgeMessage(eventType: string, payload: any) {
@@ -57,12 +37,6 @@ class TestWorker extends EventTarget {
       // Emit directly to current context handlers (no cross-context needed in tests)
       this.sharedEventBridge.emit(eventType, payload, "current");
     }
-  }
-
-  // Simulate legacy worker message
-  simulateLegacyMessage(message: any) {
-    const event = new MessageEvent("message", { data: message });
-    this.messageHandlers.forEach(handler => { handler(event); });
   }
 }
 
@@ -341,64 +315,6 @@ describe("useDataFetchingWorker EventBridge Integration", () => {
     });
   });
 
-  describe("Legacy Message Compatibility", () => {
-    it("should still handle legacy worker messages", async () => {
-      const { eventBridge } = await import("@/lib/graph/events");
-      const { result } = renderHook(() => useDataFetchingWorker());
-
-      testWorker = workerInstances[0];
-      testWorker.setEventBridge(eventBridge);
-
-      // Simulate legacy ready message
-      act(() => {
-        testWorker.simulateLegacyMessage({ type: "ready" });
-      });
-
-      expect(result.current.isWorkerReady).toBe(true);
-    });
-
-    it("should handle both EventBridge and legacy messages simultaneously", async () => {
-      const { eventBridge } = await import("@/lib/graph/events");
-      const onExpandError = vi.fn();
-      const { result } = renderHook(() => useDataFetchingWorker({ onExpandError }));
-
-      testWorker = workerInstances[0];
-      testWorker.setEventBridge(eventBridge);
-
-      // Legacy ready
-      act(() => {
-        testWorker.simulateLegacyMessage({ type: "ready" });
-      });
-
-      expect(result.current.isWorkerReady).toBe(true);
-
-      // EventBridge error (doesn't call error callback, just sets worker state)
-      act(() => {
-        testWorker.simulateEventBridgeMessage(WorkerEventType.WORKER_ERROR, {
-          workerId: "data-fetching-worker",
-          workerType: "data-fetching",
-          error: "EventBridge error",
-          timestamp: Date.now(),
-        });
-      });
-
-      // Worker should be marked as not ready
-      expect(result.current.isWorkerReady).toBe(false);
-
-      // Legacy error (does call error callback)
-      act(() => {
-        testWorker.simulateLegacyMessage({
-          type: "expandError",
-          error: "Legacy error",
-          requestId: "req-456",
-        });
-      });
-
-      // Only legacy error should trigger callback
-      expect(onExpandError).toHaveBeenCalledTimes(1);
-      expect(onExpandError).toHaveBeenCalledWith("Expansion failed: Legacy error");
-    });
-  });
 
   describe("Worker Type Filtering", () => {
     it("should only handle events for data-fetching worker", async () => {
