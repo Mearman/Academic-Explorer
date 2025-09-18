@@ -7,6 +7,7 @@ import { QueryClient } from "@tanstack/react-query";
 import { logger } from "@/lib/logger";
 import { trackDeduplication, trackCacheOperation } from "@/services/network-interceptor";
 import type { OpenAlexEntity } from "@/lib/openalex/types";
+import { isOpenAlexEntity } from "@/lib/openalex/type-guards";
 
 interface RequestCacheEntry {
   promise: Promise<OpenAlexEntity>;
@@ -35,7 +36,7 @@ export class RequestDeduplicationService {
 		// First, check if we have this entity cached in TanStack Query
 		const cachedEntity = this.getCachedEntity(entityId);
 		if (cachedEntity) {
-			logger.info("cache", "Entity served from TanStack Query cache", {
+			logger.debug("cache", "Entity served from TanStack Query cache", {
 				entityId,
 				source: "tanstack-query"
 			}, "RequestDeduplicationService");
@@ -53,7 +54,7 @@ export class RequestDeduplicationService {
 				throw new Error(`Request entry not found for ${entityId}`);
 			}
 
-			logger.info("cache", "Entity request deduplicated", {
+			logger.debug("cache", "Entity request deduplicated", {
 				entityId,
 				ageMs: Date.now() - entry.timestamp,
 				source: "deduplication"
@@ -66,7 +67,7 @@ export class RequestDeduplicationService {
 		}
 
 		// Create new request and add to deduplication cache
-		logger.info("api", "Creating new entity request", {
+		logger.debug("api", "Creating new entity request", {
 			entityId,
 			ongoingRequestsCount: this.ongoingRequests.size
 		}, "RequestDeduplicationService");
@@ -101,7 +102,7 @@ export class RequestDeduplicationService {
 						updatedAt: Date.now(),
 					}
 				);
-				logger.info("api", "Entity request completed and cached", {
+				logger.debug("api", "Entity request completed and cached", {
 					entityId,
 					entityType: entity.id ? this.detectEntityType(entity.id) : "unknown"
 				}, "RequestDeduplicationService");
@@ -147,8 +148,8 @@ export class RequestDeduplicationService {
 
 					// Check if this is an entity query containing our target
 					const queryKey = query.queryKey;
-					if (Array.isArray(queryKey) && queryKey[0] === "entity") {
-						const data = query.state.data as OpenAlexEntity;
+					if (Array.isArray(queryKey) && queryKey[0] === "entity" && isOpenAlexEntity(query.state.data)) {
+						const data = query.state.data;
 						return data.id === entityId;
 					}
 
@@ -158,9 +159,8 @@ export class RequestDeduplicationService {
 
 			// Return the first fresh match
 			for (const query of allQueries) {
-				const entity = query.state.data as OpenAlexEntity;
-				if (this.isCacheEntryFresh()) {
-					return entity;
+				if (isOpenAlexEntity(query.state.data) && this.isCacheEntryFresh()) {
+					return query.state.data;
 				}
 			}
 
@@ -229,7 +229,7 @@ export class RequestDeduplicationService {
 		const clearedCount = this.ongoingRequests.size;
 		this.ongoingRequests.clear();
 
-		logger.info("cache", "Cleared all ongoing requests", {
+		logger.debug("cache", "Cleared all ongoing requests", {
 			clearedCount
 		}, "RequestDeduplicationService");
 	}
@@ -249,7 +249,7 @@ export class RequestDeduplicationService {
 			queryKey: ["entity", entityId]
 		});
 
-		logger.info("cache", "Force refreshing entity", {
+		logger.debug("cache", "Force refreshing entity", {
 			entityId
 		}, "RequestDeduplicationService");
 

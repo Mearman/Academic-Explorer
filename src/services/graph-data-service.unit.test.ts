@@ -376,7 +376,7 @@ describe("GraphDataService", () => {
 			expect(setCachedGraphNodes).toHaveBeenCalled();
 			expect(setCachedGraphEdges).toHaveBeenCalled();
 			expect(mockStore.setLoading).toHaveBeenCalledWith(false);
-			expect(logger.info).toHaveBeenCalledWith(
+			expect(logger.debug).toHaveBeenCalledWith(
 				"graph",
 				"Entity graph loaded with incremental hydration",
 				expect.objectContaining({
@@ -519,7 +519,7 @@ describe("GraphDataService", () => {
 			expect(mockStore.addEdges).toHaveBeenCalled();
 			expect(setCachedGraphNodes).toHaveBeenCalled();
 			expect(setCachedGraphEdges).toHaveBeenCalled();
-			expect(logger.info).toHaveBeenCalledWith(
+			expect(logger.debug).toHaveBeenCalledWith(
 				"graph",
 				"Loading all cached entities into graph",
 				{ count: 2 },
@@ -532,7 +532,7 @@ describe("GraphDataService", () => {
 
 			service.loadAllCachedNodes();
 
-			expect(logger.info).toHaveBeenCalledWith(
+			expect(logger.debug).toHaveBeenCalledWith(
 				"graph",
 				"No cached entities found to load",
 				{},

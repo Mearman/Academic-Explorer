@@ -26,6 +26,13 @@ export class NetworkInterceptor {
 	private originalXhrSend: typeof XMLHttpRequest.prototype.send;
 	private isInitialized = false;
 	private activeRequests = new Map<string, RequestContext>();
+	private xhrDataMap = new WeakMap<XMLHttpRequest, {
+		url: string;
+		method: string;
+		type: NetworkRequest["type"];
+		category: NetworkRequest["category"];
+		requestId?: string;
+	}>();
 
 	constructor() {
 		// Only initialize in browser environment
@@ -35,9 +42,13 @@ export class NetworkInterceptor {
 			this.originalXhrSend = XMLHttpRequest.prototype.send.bind(XMLHttpRequest.prototype);
 		} else {
 			// Fallback for Node.js environment (tests)
-			this.originalFetch = (() => Promise.reject(new Error("fetch not available in Node.js"))) as typeof fetch;
-			this.originalXhrOpen = function() {} as typeof XMLHttpRequest.prototype.open;
-			this.originalXhrSend = function() {} as typeof XMLHttpRequest.prototype.send;
+			this.originalFetch = (() => Promise.reject(new Error("fetch not available in Node.js"))) satisfies typeof fetch;
+			this.originalXhrOpen = function(_method: string, _url: string | URL, _async?: boolean, _user?: string | null, _password?: string | null): void {
+				// No-op for Node.js environment
+			} satisfies typeof XMLHttpRequest.prototype.open;
+			this.originalXhrSend = function(_body?: Document | XMLHttpRequestBodyInit | null): void {
+				// No-op for Node.js environment
+			} satisfies typeof XMLHttpRequest.prototype.send;
 		}
 	}
 
@@ -65,7 +76,7 @@ export class NetworkInterceptor {
 			this.interceptFetch();
 			this.interceptXHR();
 			this.isInitialized = true;
-			logger.info("api", "Network interceptor initialized", {}, "NetworkInterceptor");
+			logger.debug("api", "Network interceptor initialized", {}, "NetworkInterceptor");
 		} else {
 			logger.warn("api", "Network interceptor skipped - not in browser environment", {}, "NetworkInterceptor");
 		}
@@ -84,7 +95,7 @@ export class NetworkInterceptor {
 		this.activeRequests.clear();
 		this.isInitialized = false;
 
-		logger.info("api", "Network interceptor cleaned up", {}, "NetworkInterceptor");
+		logger.debug("api", "Network interceptor cleaned up", {}, "NetworkInterceptor");
 	}
 
 	/**
@@ -124,7 +135,7 @@ export class NetworkInterceptor {
 
 						store.completeRequest(requestId, response.status, size);
 
-						logger.info("api", "Fetch request completed", {
+						logger.debug("api", "Fetch request completed", {
 							requestId,
 							url,
 							status: response.status,
@@ -166,7 +177,7 @@ export class NetworkInterceptor {
 		const originalOpen = this.originalXhrOpen;
 		const originalSend = this.originalXhrSend;
 		const createRequestInfo = this.createRequestInfo.bind(this);
-		const { activeRequests } = this;
+		const { activeRequests, xhrDataMap } = this;
 
 		XMLHttpRequest.prototype.open = function(
 			method: string,
@@ -178,40 +189,20 @@ export class NetworkInterceptor {
 			const urlString = typeof url === "string" ? url : url.toString();
 			const requestInfo = createRequestInfo(urlString, method);
 
-      // Store request info on the XHR object with type safety
-      interface XHRWithInterceptor extends XMLHttpRequest {
-        __networkInterceptor?: {
-          url: string;
-          method: string;
-          type: NetworkRequest["type"];
-          category: NetworkRequest["category"];
-        };
-      }
+			// Store request info using WeakMap for type safety
+			xhrDataMap.set(this, {
+				url: urlString,
+				method,
+				type: requestInfo.type,
+				category: requestInfo.category,
+			});
 
-      const xhrWithInterceptor = this as XHRWithInterceptor;
-      xhrWithInterceptor.__networkInterceptor = {
-      	url: urlString,
-      	method,
-      	type: requestInfo.type,
-      	category: requestInfo.category,
-      };
-
-      originalOpen.call(this, method, url, async ?? true, user, password);
+			originalOpen.call(this, method, url, async ?? true, user, password);
 		};
 
 		XMLHttpRequest.prototype.send = function(body?: Document | XMLHttpRequestBodyInit | null) {
-      interface XHRWithInterceptor extends XMLHttpRequest {
-        __networkInterceptor?: {
-          url: string;
-          method: string;
-          type: NetworkRequest["type"];
-          category: NetworkRequest["category"];
-        };
-        __networkInterceptorRequestId?: string;
-      }
-
-      const xhrWithInterceptor = this as XHRWithInterceptor;
-      const requestData = xhrWithInterceptor.__networkInterceptor;
+			// Access request data from WeakMap for type safety
+			const requestData = xhrDataMap.get(this);
 
       if (requestData) {
       	const store = useNetworkActivityStore.getState();
@@ -232,25 +223,27 @@ export class NetworkInterceptor {
       		category: requestData.category,
       	});
 
-      	// Store request ID on XHR for completion tracking
-      	xhrWithInterceptor.__networkInterceptorRequestId = requestId;
+      	// Store request ID in WeakMap for completion tracking
+      	const updatedData = { ...requestData, requestId };
+      	xhrDataMap.set(this, updatedData);
 
       	// Override readystatechange handler
       	const originalReadyStateChange = this.onreadystatechange;
       	this.onreadystatechange = function(event) {
       		if (this.readyState === 4) {
       			// Request completed
-      			const thisXhr = this as XHRWithInterceptor;
-      			const finalRequestId = thisXhr.__networkInterceptorRequestId;
+      			// Access request data from WeakMap for type safety
+      			const xhrData = xhrDataMap.get(this);
+      			const finalRequestId = xhrData?.requestId;
       			if (finalRequestId) {
       				if (this.status >= 200 && this.status < 300) {
       					// Calculate response size
       					const responseSize = this.responseText ? this.responseText.length : 0;
       					store.completeRequest(finalRequestId, this.status, responseSize);
 
-      					logger.info("api", "XHR request completed", {
+      					logger.debug("api", "XHR request completed", {
       						requestId: finalRequestId,
-      						url: requestData.url,
+      						url: xhrData?.url || "unknown",
       						status: this.status,
       						size: responseSize
       					}, "NetworkInterceptor");
@@ -263,7 +256,7 @@ export class NetworkInterceptor {
 
       					logger.error("api", "XHR request failed", {
       						requestId: finalRequestId,
-      						url: requestData.url,
+      						url: xhrData?.url || "unknown",
       						status: this.status,
       						statusText: this.statusText
       					}, "NetworkInterceptor");
@@ -350,7 +343,7 @@ export class NetworkInterceptor {
 		// Complete immediately for cache operations
 		store.completeRequest(requestId, 200, size);
 
-		logger.info("cache", "Cache operation tracked", {
+		logger.debug("cache", "Cache operation tracked", {
 			requestId,
 			operation,
 			key,
@@ -382,7 +375,7 @@ export class NetworkInterceptor {
 			},
 		});
 
-		logger.info("api", "Worker operation started", {
+		logger.debug("api", "Worker operation started", {
 			requestId,
 			operation,
 			entityType,
@@ -410,7 +403,7 @@ export class NetworkInterceptor {
 			},
 		});
 
-		logger.info("cache", "Request deduplication tracked", {
+		logger.debug("cache", "Request deduplication tracked", {
 			url,
 			entityId
 		}, "NetworkInterceptor");

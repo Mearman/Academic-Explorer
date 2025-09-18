@@ -157,10 +157,20 @@ export const updateGroupDefinition = (groupId: string, sections: string[], getSe
 	const existingDefinition = GROUP_DEFINITIONS[groupId];
 	const order = existingDefinition.order ?? getNextOrderNumber();
 
+	// Type guard for icon component
+	function isIconComponent(icon: unknown): icon is React.ComponentType<{ size?: number; className?: string }> {
+		return typeof icon === "function";
+	}
+
+	// Use icon if it's a valid component, otherwise use default
+	const iconComponent = isIconComponent(primarySection.icon)
+		? primarySection.icon
+		: GROUP_DEFINITIONS["data-input"].icon;
+
 	const updatedDefinition: ToolGroupDefinition = {
 		id: groupId,
 		title: primarySection.title,
-		icon: primarySection.icon as React.ComponentType<{ size?: number; className?: string }>,
+		icon: iconComponent,
 		description: primarySection.tooltip || `Group containing ${primarySection.title}`,
 		category: primarySection.category || "General",
 		order: order,

@@ -97,7 +97,7 @@ export const useExpansionSettingsStore = create<ExpansionSettingsState>()(
 					state.settings[target] = updatedSettings;
 				});
 
-				logger.info("expansion", "Updated settings for target", { target, settingsUpdate }, "ExpansionSettingsStore");
+				logger.debug("expansion", "Updated settings for target", { target, settingsUpdate }, "ExpansionSettingsStore");
 			},
 
 			resetSettings: (target: ExpansionTarget) => {
@@ -106,7 +106,7 @@ export const useExpansionSettingsStore = create<ExpansionSettingsState>()(
 					state.settings[target] = defaultSettings;
 				});
 
-				logger.info("expansion", "Reset settings for target", { target }, "ExpansionSettingsStore");
+				logger.debug("expansion", "Reset settings for target", { target }, "ExpansionSettingsStore");
 			},
 
 			resetAllSettings: () => {
@@ -114,7 +114,7 @@ export const useExpansionSettingsStore = create<ExpansionSettingsState>()(
 					state.settings = initializeDefaultSettings();
 				});
 
-				logger.info("expansion", "Reset all expansion settings", {}, "ExpansionSettingsStore");
+				logger.debug("expansion", "Reset all expansion settings", {}, "ExpansionSettingsStore");
 			},
 
 			addSortCriteria: (target: ExpansionTarget, criteria: Omit<SortCriteria, "priority">) => {
@@ -129,7 +129,7 @@ export const useExpansionSettingsStore = create<ExpansionSettingsState>()(
 					state.settings[target] = settings;
 				});
 
-				logger.info("expansion", "Added sort criteria", { target, criteria }, "ExpansionSettingsStore");
+				logger.debug("expansion", "Added sort criteria", { target, criteria }, "ExpansionSettingsStore");
 			},
 
 			updateSortCriteria: (target: ExpansionTarget, index: number, criteriaUpdate: Partial<SortCriteria>) => {
@@ -140,7 +140,7 @@ export const useExpansionSettingsStore = create<ExpansionSettingsState>()(
 					state.settings[target] = settings;
 				});
 
-				logger.info("expansion", "Updated sort criteria", { target, index, criteriaUpdate }, "ExpansionSettingsStore");
+				logger.debug("expansion", "Updated sort criteria", { target, index, criteriaUpdate }, "ExpansionSettingsStore");
 			},
 
 			removeSortCriteria: (target: ExpansionTarget, index: number) => {
@@ -157,7 +157,7 @@ export const useExpansionSettingsStore = create<ExpansionSettingsState>()(
 					state.settings[target] = settings;
 				});
 
-				logger.info("expansion", "Removed sort criteria", { target, index }, "ExpansionSettingsStore");
+				logger.debug("expansion", "Removed sort criteria", { target, index }, "ExpansionSettingsStore");
 			},
 
 			reorderSortCriteria: (target: ExpansionTarget, fromIndex: number, toIndex: number) => {
@@ -177,7 +177,7 @@ export const useExpansionSettingsStore = create<ExpansionSettingsState>()(
 					state.settings[target] = settings;
 				});
 
-				logger.info("expansion", "Reordered sort criteria", { target, fromIndex, toIndex }, "ExpansionSettingsStore");
+				logger.debug("expansion", "Reordered sort criteria", { target, fromIndex, toIndex }, "ExpansionSettingsStore");
 			},
 
 			addFilterCriteria: (target: ExpansionTarget, criteria: FilterCriteria) => {
@@ -188,7 +188,7 @@ export const useExpansionSettingsStore = create<ExpansionSettingsState>()(
 					state.settings[target] = settings;
 				});
 
-				logger.info("expansion", "Added filter criteria", { target, criteria }, "ExpansionSettingsStore");
+				logger.debug("expansion", "Added filter criteria", { target, criteria }, "ExpansionSettingsStore");
 			},
 
 			updateFilterCriteria: (target: ExpansionTarget, index: number, criteriaUpdate: Partial<FilterCriteria>) => {
@@ -199,7 +199,7 @@ export const useExpansionSettingsStore = create<ExpansionSettingsState>()(
 					state.settings[target] = settings;
 				});
 
-				logger.info("expansion", "Updated filter criteria", { target, index, criteriaUpdate }, "ExpansionSettingsStore");
+				logger.debug("expansion", "Updated filter criteria", { target, index, criteriaUpdate }, "ExpansionSettingsStore");
 			},
 
 			removeFilterCriteria: (target: ExpansionTarget, index: number) => {
@@ -210,7 +210,7 @@ export const useExpansionSettingsStore = create<ExpansionSettingsState>()(
 					state.settings[target] = settings;
 				});
 
-				logger.info("expansion", "Removed filter criteria", { target, index }, "ExpansionSettingsStore");
+				logger.debug("expansion", "Removed filter criteria", { target, index }, "ExpansionSettingsStore");
 			},
 
 			toggleFilterEnabled: (target: ExpansionTarget, index: number) => {
@@ -221,7 +221,7 @@ export const useExpansionSettingsStore = create<ExpansionSettingsState>()(
 					state.settings[target] = settings;
 				});
 
-				logger.info("expansion", "Toggled filter enabled", { target, index }, "ExpansionSettingsStore");
+				logger.debug("expansion", "Toggled filter enabled", { target, index }, "ExpansionSettingsStore");
 			},
 
 			getSettingsSummary: (target: ExpansionTarget): string => {
@@ -243,13 +243,12 @@ export const useExpansionSettingsStore = create<ExpansionSettingsState>()(
 				const filters = settings.filters ?? [];
 				const enabledFilters = filters.filter(f => f.enabled);
 				if (enabledFilters.length > 0) {
-					const enabledFiltersCount: number = enabledFilters.length;
-					parts.push(`${String(enabledFiltersCount)} filters`);
+					parts.push(`${enabledFilters.length.toString()} filters`);
 				}
 
 				// Add limit
 				const limitValue = settings.limit ?? 0;
-				parts.push(limitValue > 0 ? `${String(limitValue)} max` : "unlimited");
+				parts.push(limitValue > 0 ? `${limitValue.toString()} max` : "unlimited");
 
 				return parts.join(" | ");
 			},
@@ -266,18 +265,26 @@ export const useExpansionSettingsStore = create<ExpansionSettingsState>()(
 
 					// Copy only valid expansion targets (entity types or relation types)
 					Object.entries(settingsObject).forEach(([key, value]) => {
-						const isEntityType = ["works", "authors", "sources", "institutions", "topics", "concepts", "publishers", "funders", "keywords"].includes(key);
-						const isRelationType = Object.values(RelationType).includes(key as RelationType);
+						// Type guard for entity types
+						function isEntityType(k: string): k is "works" | "authors" | "sources" | "institutions" | "topics" | "concepts" | "publishers" | "funders" | "keywords" {
+							return ["works", "authors", "sources", "institutions", "topics", "concepts", "publishers", "funders", "keywords"].includes(k);
+						}
 
-						if (isEntityType || isRelationType) {
-							newSettings[key as ExpansionTarget] = value;
+						// Type guard for relation types
+						function isRelationType(k: string): k is RelationType {
+							const relationTypes: string[] = Object.values(RelationType);
+							return relationTypes.includes(k);
+						}
+
+						if (isEntityType(key) || isRelationType(key)) {
+							newSettings[key] = value;
 						}
 					});
 
 					state.settings = newSettings;
 				});
 
-				logger.info("expansion", "Imported settings", { count: Object.keys(settingsObject).length }, "ExpansionSettingsStore");
+				logger.debug("expansion", "Imported settings", { count: Object.keys(settingsObject).length }, "ExpansionSettingsStore");
 			}
 		})),
 		{
@@ -285,7 +292,7 @@ export const useExpansionSettingsStore = create<ExpansionSettingsState>()(
 			storage: createJSONStorage(() => localStorage),
 			onRehydrateStorage: () => (state) => {
 				if (state) {
-					logger.info("expansion", "Rehydrated expansion settings from localStorage", {
+					logger.debug("expansion", "Rehydrated expansion settings from localStorage", {
 						settingsCount: Object.keys(state.settings).length
 					}, "ExpansionSettingsStore");
 				}

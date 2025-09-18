@@ -18,6 +18,13 @@ export interface OpenAlexQueryParams {
 }
 
 /**
+ * Type guard to check if a value is an array with exactly 2 elements
+ */
+function isTwoElementArray(value: unknown): value is [unknown, unknown] {
+	return Array.isArray(value) && value.length === 2;
+}
+
+/**
  * Build OpenAlex query parameters from expansion settings
  */
 function buildQueryParams(settings: ExpansionSettings, baseSelect?: string[]): OpenAlexQueryParams {
@@ -129,8 +136,9 @@ function buildSingleFilter(filter: FilterCriteria): string | null {
 				return `${property}:${formatValue(value)}`;
 
 			case "between":
-				if (Array.isArray(value) && value.length === 2) {
-					const [min, max] = value as [unknown, unknown];
+				if (isTwoElementArray(value)) {
+					const min = value[0];
+					const max = value[1];
 					return `${property}:${formatValue(min)}-${formatValue(max)}`;
 				}
 				return null;

@@ -123,7 +123,7 @@ export const useRepositoryStore = create<RepositoryState>()(
 			setRepositoryMode: (enabled: boolean) => {
 				set(state => {
 					state.repositoryMode = enabled;
-					logger.info("repository", `Repository mode ${enabled ? "enabled" : "disabled"}`, {
+					logger.debug("repository", `Repository mode ${enabled ? "enabled" : "disabled"}`, {
 						nodeCount: Object.keys(state.repositoryNodes).length,
 						edgeCount: Object.keys(state.repositoryEdges).length
 					});
@@ -151,7 +151,7 @@ export const useRepositoryStore = create<RepositoryState>()(
 						}
 					}
 
-					logger.info("repository", "Added items to repository", {
+					logger.debug("repository", "Added items to repository", {
 						addedNodes,
 						addedEdges,
 						totalNodes: Object.keys(state.repositoryNodes).length,
@@ -179,7 +179,7 @@ export const useRepositoryStore = create<RepositoryState>()(
 						Reflect.deleteProperty(state.selectedRepositoryEdges, edgeId);
 					}
 
-					logger.info("repository", "Removed items from repository", {
+					logger.debug("repository", "Removed items from repository", {
 						removedNodes: nodeIds.length,
 						removedEdges: edgeIds.length,
 						remainingNodes: Object.keys(state.repositoryNodes).length,
@@ -203,7 +203,7 @@ export const useRepositoryStore = create<RepositoryState>()(
 					state.selectedRepositoryNodes = {};
 					state.selectedRepositoryEdges = {};
 
-					logger.info("repository", "Cleared repository", {
+					logger.debug("repository", "Cleared repository", {
 						clearedNodes: nodeCount,
 						clearedEdges: edgeCount
 					});
