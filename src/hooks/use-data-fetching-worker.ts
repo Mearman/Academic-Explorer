@@ -145,8 +145,14 @@ export function useDataFetchingWorker(options: UseDataFetchingWorkerOptions = {}
 				total: 100,
 				stage: payload.currentStep
 			});
+			// Call progress callback
+			onProgress?.(request.nodeId, {
+				completed: Math.round(payload.progress * 100),
+				total: 100,
+				stage: payload.currentStep
+			});
 		}
-	}, [updateProgress]);
+	}, [updateProgress, onProgress]);
 
 	// Handle EventBridge data fetch complete events
 	const handleDataFetchComplete = useCallback((payload: WorkerEventPayloads[WorkerEventType.DATA_FETCH_COMPLETE]) => {
