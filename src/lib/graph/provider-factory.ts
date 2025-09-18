@@ -44,5 +44,6 @@ export function getAvailableProviders(): ProviderType[] {
  * Check if a provider type is supported
  */
 export function isProviderSupported(type: string): type is ProviderType {
-	return getAvailableProviders().includes(type as ProviderType);
+	const availableProviders: readonly string[] = getAvailableProviders();
+	return availableProviders.includes(type);
 }

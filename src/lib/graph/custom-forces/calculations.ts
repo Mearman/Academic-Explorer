@@ -104,10 +104,19 @@ export const calculateRadialForce: ForceCalculationFunction = (
   alpha: number
 ): boolean => {
   // Type guard for RadialForceConfig
-  if (!('radius' in config)) {
+  if (!("radius" in config)) {
     return false;
   }
-  const radialConfig = config as RadialForceConfig;
+
+  function isRadialForceConfig(cfg: CustomForceConfig): cfg is RadialForceConfig {
+    return "radius" in cfg;
+  }
+
+  if (!isRadialForceConfig(config)) {
+    return false;
+  }
+
+  const radialConfig = config;
   const {
     centerX = 0,
     centerY = 0,
@@ -170,10 +179,19 @@ export const calculatePropertyForce: ForceCalculationFunction = (
   alpha: number
 ): boolean => {
   // Type guard for PropertyForceConfig
-  if (!('propertyName' in config && 'type' in config)) {
+  if (!("propertyName" in config && "type" in config)) {
     return false;
   }
-  const propertyConfig = config as PropertyForceConfig;
+
+  function isPropertyForceConfig(cfg: CustomForceConfig): cfg is PropertyForceConfig {
+    return "propertyName" in cfg && "type" in cfg;
+  }
+
+  if (!isPropertyForceConfig(config)) {
+    return false;
+  }
+
+  const propertyConfig = config;
   const {
     type,
     propertyName,
@@ -238,10 +256,19 @@ export const calculatePropertyBothForce: ForceCalculationFunction = (
   alpha: number
 ): boolean => {
   // Type guard for PropertyBothForceConfig
-  if (!('xProperty' in config && 'yProperty' in config)) {
+  if (!("xProperty" in config && "yProperty" in config)) {
     return false;
   }
-  const bothConfig = config as PropertyBothForceConfig;
+
+  function isPropertyBothForceConfig(cfg: CustomForceConfig): cfg is PropertyBothForceConfig {
+    return "xProperty" in cfg && "yProperty" in cfg;
+  }
+
+  if (!isPropertyBothForceConfig(config)) {
+    return false;
+  }
+
+  const bothConfig = config;
 
   // Apply X-axis force
   calculatePropertyForce(nodes, {
@@ -269,10 +296,19 @@ export const calculateClusterForce: ForceCalculationFunction = (
   alpha: number
 ): boolean => {
   // Type guard for ClusterForceConfig
-  if (!('propertyName' in config && 'clusters' in config)) {
+  if (!("propertyName" in config && "clusters" in config)) {
     return false;
   }
-  const clusterConfig = config as ClusterForceConfig;
+
+  function isClusterForceConfig(cfg: CustomForceConfig): cfg is ClusterForceConfig {
+    return "propertyName" in cfg && "clusters" in cfg;
+  }
+
+  if (!isClusterForceConfig(config)) {
+    return false;
+  }
+
+  const clusterConfig = config;
   const { propertyName, spacing, arrangement, gridDimensions } = clusterConfig;
 
   // Group nodes by property value
@@ -356,10 +392,19 @@ export const calculateRepulsionForce: ForceCalculationFunction = (
   alpha: number
 ): boolean => {
   // Type guard for RepulsionForceConfig
-  if (!('maxDistance' in config)) {
+  if (!("maxDistance" in config)) {
     return false;
   }
-  const repulsionConfig = config as RepulsionForceConfig;
+
+  function isRepulsionForceConfig(cfg: CustomForceConfig): cfg is RepulsionForceConfig {
+    return "maxDistance" in cfg;
+  }
+
+  if (!isRepulsionForceConfig(config)) {
+    return false;
+  }
+
+  const repulsionConfig = config;
   const { maxDistance, minDistance, falloff, nodeSelector } = repulsionConfig;
 
   // Filter nodes if selector is provided
@@ -421,10 +466,19 @@ export const calculateAttractionForce: ForceCalculationFunction = (
   alpha: number
 ): boolean => {
   // Type guard for AttractionForceConfig
-  if (!('attractorSelector' in config)) {
+  if (!("attractorSelector" in config)) {
     return false;
   }
-  const attractionConfig = config as AttractionForceConfig;
+
+  function isAttractionForceConfig(cfg: CustomForceConfig): cfg is AttractionForceConfig {
+    return "attractorSelector" in cfg;
+  }
+
+  if (!isAttractionForceConfig(config)) {
+    return false;
+  }
+
+  const attractionConfig = config;
   const { attractorSelector, maxDistance, falloff } = attractionConfig;
 
   const attractors = nodes.filter(attractorSelector);
@@ -484,10 +538,19 @@ export const calculateOrbitForce: ForceCalculationFunction = (
   alpha: number
 ): boolean => {
   // Type guard for OrbitForceConfig
-  if (!('centerSelector' in config && 'radius' in config && 'speed' in config && 'direction' in config)) {
+  if (!("centerSelector" in config && "radius" in config && "speed" in config && "direction" in config)) {
     return false;
   }
-  const orbitConfig = config as OrbitForceConfig;
+
+  function isOrbitForceConfig(cfg: CustomForceConfig): cfg is OrbitForceConfig {
+    return "centerSelector" in cfg && "radius" in cfg && "speed" in cfg && "direction" in cfg;
+  }
+
+  if (!isOrbitForceConfig(config)) {
+    return false;
+  }
+
+  const orbitConfig = config;
   const { centerSelector, radius, speed, direction } = orbitConfig;
 
   const centers = nodes.filter(centerSelector);
@@ -517,27 +580,32 @@ export const calculateOrbitForce: ForceCalculationFunction = (
 
     if (!nearestCenter) return;
 
-    // TypeScript assertion after null check
-    const center = nearestCenter as EnhancedSimulationNode;
-    const finalCenterX = typeof center.x === "number" ? center.x : 0;
-    const finalCenterY = typeof center.y === "number" ? center.y : 0;
-    const finalOrbiterX = typeof orbiter.x === "number" ? orbiter.x : 0;
-    const finalOrbiterY = typeof orbiter.y === "number" ? orbiter.y : 0;
+    // Extract coordinates safely with explicit type checking
+    function ensureNumeric(value: unknown): number {
+      return typeof value === "number" && !isNaN(value) ? value : 0;
+    }
+
+    // Explicitly type the narrowed center to fix TypeScript inference
+    const center: EnhancedSimulationNode = nearestCenter;
+    const centerX = ensureNumeric(center.x);
+    const centerY = ensureNumeric(center.y);
+    const orbiterX = ensureNumeric(orbiter.x);
+    const orbiterY = ensureNumeric(orbiter.y);
 
     // Calculate current angle
-    const currentAngle = Math.atan2(finalOrbiterY - finalCenterY, finalOrbiterX - finalCenterX);
+    const currentAngle = Math.atan2(orbiterY - centerY, orbiterX - centerX);
 
     // Calculate new angle based on orbital speed
     const angleDirection = direction === "clockwise" ? -1 : 1;
     const newAngle = currentAngle + (speed * angleDirection * alpha);
 
     // Calculate target position
-    const targetX = finalCenterX + (Math.cos(newAngle) * radius);
-    const targetY = finalCenterY + (Math.sin(newAngle) * radius);
+    const targetX = centerX + (Math.cos(newAngle) * radius);
+    const targetY = centerY + (Math.sin(newAngle) * radius);
 
     // Apply force toward target orbital position
-    const dx = targetX - finalOrbiterX;
-    const dy = targetY - finalOrbiterY;
+    const dx = targetX - orbiterX;
+    const dy = targetY - orbiterY;
 
     const currentVx = typeof orbiter.vx === "number" ? orbiter.vx : 0;
     const currentVy = typeof orbiter.vy === "number" ? orbiter.vy : 0;

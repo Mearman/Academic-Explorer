@@ -40,8 +40,12 @@ export function getNodeYear(node: GraphNode): number | undefined {
  * Get open access status for a node - extracted on-demand from entity data
  */
 export function getNodeOpenAccess(node: GraphNode): boolean | undefined {
-	const openAccess = node.entityData?.open_access as Record<string, unknown> | undefined;
-	if (openAccess?.is_oa !== undefined) {
+	function isOpenAccessRecord(value: unknown): value is Record<string, unknown> {
+		return value !== null && typeof value === "object";
+	}
+
+	const openAccess = node.entityData?.open_access;
+	if (isOpenAccessRecord(openAccess) && openAccess.is_oa !== undefined) {
 		return Boolean(openAccess.is_oa);
 	}
 	return undefined;
@@ -62,8 +66,12 @@ export function getNodeWorksCount(node: GraphNode): number | undefined {
  */
 export function getNodeHIndex(node: GraphNode): number | undefined {
 	if (node.type === "authors") {
-		const summaryStats = node.entityData?.summary_stats as Record<string, unknown> | undefined;
-		if (summaryStats?.h_index !== undefined) {
+		function isSummaryStatsRecord(value: unknown): value is Record<string, unknown> {
+			return value !== null && typeof value === "object";
+		}
+
+		const summaryStats = node.entityData?.summary_stats;
+		if (isSummaryStatsRecord(summaryStats) && summaryStats.h_index !== undefined) {
 			return Number(summaryStats.h_index);
 		}
 	}
@@ -142,12 +150,21 @@ export function getNodeField(node: GraphNode, field: string): unknown {
 export function getNodeNestedField(node: GraphNode, path: string): unknown {
 	if (!node.entityData) return undefined;
 
+	function isRecord(value: unknown): value is Record<string, unknown> {
+		return value !== null && typeof value === "object";
+	}
+
 	const keys = path.split(".");
 	let current: Record<string, unknown> = node.entityData;
 
 	for (const key of keys) {
 		if (current[key] === undefined) return undefined;
-		current = current[key] as Record<string, unknown>;
+		const nextValue = current[key];
+		if (!isRecord(nextValue)) {
+			// If this is the last key, return the value, otherwise return undefined
+			return keys[keys.length - 1] === key ? nextValue : undefined;
+		}
+		current = nextValue;
 	}
 
 	return current;
