@@ -204,7 +204,10 @@ export const AllEdgesSection: React.FC = () => {
 			if (!(type in acc)) {
 				acc[type] = [];
 			}
-			acc[type].push(edge);
+			const edgeArray = acc[type];
+			if (edgeArray) {
+				edgeArray.push(edge);
+			}
 			return acc;
 		}, {});
 
