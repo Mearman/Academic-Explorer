@@ -4,7 +4,7 @@
  */
 
 import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
-import { renderHook, act } from "@testing-library/react";
+import { renderHook, act, cleanup } from "@testing-library/react";
 import { useAnimatedForceSimulation } from "./use-animated-force-simulation";
 import { EventBridge } from "@/lib/graph/events/event-bridge";
 import { WorkerEventType, type WorkerEventPayloads } from "@/lib/graph/events/types";
@@ -98,6 +98,7 @@ describe("useAnimatedForceSimulation EventBridge Integration", () => {
   afterEach(() => {
     EventBridge.resetInstance();
     vi.clearAllMocks();
+    cleanup(); // Clean up DOM between tests
   });
 
   describe("EventBridge Communication", () => {

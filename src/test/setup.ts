@@ -3,11 +3,13 @@
  * This file runs before each test file
  */
 
+import { vi } from 'vitest';
+
 // Only import jest-dom for component tests where DOM assertions are needed
 // Skip for E2E tests running in Node environment where expect may not be available yet
 if (typeof window !== 'undefined') {
-  // We're in a DOM environment (jsdom), safe to import jest-dom
-  import('@testing-library/jest-dom');
+  // We're in a DOM environment (jsdom), load jest-dom after vitest globals are available
+  import('@testing-library/jest-dom/vitest');
 }
 
 import { enableMapSet } from 'immer';

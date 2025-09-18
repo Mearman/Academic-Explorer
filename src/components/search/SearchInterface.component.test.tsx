@@ -1,5 +1,5 @@
-import { render, screen, fireEvent, waitFor } from "@testing-library/react";
-import { describe, it, expect, vi, beforeEach } from "vitest";
+import { render, screen, fireEvent, waitFor, cleanup } from "@testing-library/react";
+import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { MantineProvider } from "@mantine/core";
 import { SearchInterface } from "./SearchInterface";
 
@@ -19,6 +19,10 @@ describe("SearchInterface", () => {
 
 	beforeEach(() => {
 		vi.clearAllMocks();
+	});
+
+	afterEach(() => {
+		cleanup(); // Clean up DOM between tests
 	});
 
 	it("should render search interface with default props", () => {

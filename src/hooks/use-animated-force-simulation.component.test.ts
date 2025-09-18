@@ -36,7 +36,7 @@ vi.mock("@/lib/logger", () => ({
 }));
 
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
-import { renderHook, act } from "@testing-library/react";
+import { renderHook, act, cleanup } from "@testing-library/react";
 import { useAnimatedForceSimulation } from "./use-animated-force-simulation";
 import { getConfigByGraphSize } from "@/lib/graph/utils/performance-config";
 
@@ -139,6 +139,7 @@ describe("useAnimatedForceSimulation", () => {
 
 	afterEach(() => {
 		vi.restoreAllMocks();
+		cleanup(); // Clean up DOM between tests
 	});
 
 	it("should initialize with default state", () => {

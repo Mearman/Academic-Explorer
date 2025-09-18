@@ -5,7 +5,7 @@
 
 import React from "react";
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
-import { render, screen, fireEvent, waitFor } from "@testing-library/react";
+import { render, screen, fireEvent, waitFor, cleanup } from "@testing-library/react";
 import { GraphToolbar } from "./GraphToolbar";
 import type { GraphEdge } from "@/lib/graph/types";
 import { RelationType } from "@/lib/graph/types";
@@ -158,6 +158,7 @@ describe("GraphToolbar", () => {
 
 	afterEach(() => {
 		vi.restoreAllMocks();
+		cleanup(); // Clean up DOM between tests
 	});
 
 	describe("rendering", () => {

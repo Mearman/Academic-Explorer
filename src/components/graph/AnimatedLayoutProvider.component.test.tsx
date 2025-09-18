@@ -3,8 +3,8 @@
  * Verifies that the component renders correctly and provides context
  */
 
-import { describe, it, expect, vi, beforeEach } from "vitest";
-import { render, screen } from "@testing-library/react";
+import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
+import { render, screen, cleanup } from "@testing-library/react";
 import { ReactFlowProvider } from "@xyflow/react";
 import { AnimatedLayoutProvider } from "./AnimatedLayoutProvider";
 import { useAnimatedLayoutContext } from "./animated-layout-context";
@@ -54,6 +54,10 @@ const TestConsumer = () => {
 describe("AnimatedLayoutProvider", () => {
 	beforeEach(() => {
 		vi.clearAllMocks();
+	});
+
+	afterEach(() => {
+		cleanup(); // Clean up DOM between tests
 	});
 
 	it("should render children without errors", () => {

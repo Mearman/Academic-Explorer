@@ -204,6 +204,7 @@ export default defineConfig({
           name: 'component',
           include: ['src/**/*.component.test.ts', 'src/**/*.component.test.tsx'],
           environment: 'jsdom',
+          setupFiles: ['./src/test/setup.ts', './src/test/component-setup.ts'],
           testTimeout: 30000,
         },
       },

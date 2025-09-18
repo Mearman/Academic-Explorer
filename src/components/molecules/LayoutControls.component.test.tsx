@@ -3,11 +3,11 @@
  */
 
 import React from "react";
-import { render, screen, fireEvent } from "@testing-library/react";
+import { render, screen, fireEvent, cleanup } from "@testing-library/react";
 import { MantineProvider } from "@mantine/core";
 import { LayoutControls } from "./LayoutControls";
 import { useGraphStore } from "@/stores/graph-store";
-import { vi, describe, it, expect, beforeEach } from "vitest";
+import { vi, describe, it, expect, beforeEach, afterEach } from "vitest";
 
 // Mock the graph store
 vi.mock("@/stores/graph-store", () => ({
@@ -35,6 +35,10 @@ describe("LayoutControls", () => {
 			},
 			setLayout: mockSetLayout,
 		} as any);
+	});
+
+	afterEach(() => {
+		cleanup(); // Clean up DOM between tests
 	});
 
 	it("renders the layout button with correct label", () => {
