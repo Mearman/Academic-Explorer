@@ -163,6 +163,7 @@ export default tseslint.config([
       'src/lib/openalex/client.ts',
       'src/lib/openalex/utils/query-builder.ts',
       'src/lib/utils/type-helpers.ts',
+      'src/lib/hooks/use-openalex-query.ts', // Generic query hook requires type assertions
     ],
     rules: {
       '@typescript-eslint/consistent-type-assertions': 'off', // External API boundaries require type assertions

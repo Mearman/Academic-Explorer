@@ -328,7 +328,7 @@ export function getPropertiesForTarget(target: ExpansionTarget): PropertyDefinit
 	}
 
 	function isEntityType(value: ExpansionTarget): value is EntityType {
-		return typeof value === "string" && !Object.values(RelationType).includes(value);
+		return typeof value === "string" && !Object.values(RelationType).some(relType => relType === value);
 	}
 
 	if (isEntityType(target)) {
