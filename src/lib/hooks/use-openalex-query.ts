@@ -60,9 +60,9 @@ export function useOpenAlexEntity<T extends OpenAlexEntity>(
 		queryKey: params
 			? [...getEntityQueryKey(entityType, id || ""), params]
 			: getEntityQueryKey(entityType, id || ""),
-		queryFn: async () => {
+		queryFn: async (): Promise<T> => {
 			if (!id) throw new Error("Entity ID is required");
-			return rateLimitedOpenAlex.getEntity(id);
+			return rateLimitedOpenAlex.getEntity(id) as Promise<T>;
 		},
 		enabled: !!id,
 		...getEntityQueryOptions<T>(entityType),
