@@ -9,7 +9,9 @@ import { IconSearch, IconEyeOff, IconTrash, IconSelectAll, IconX, IconArrowRight
 import { useGraphStore } from "@/stores/graph-store";
 import { useThemeColors } from "@/hooks/use-theme-colors";
 import { logger } from "@/lib/logger";
-import type { GraphEdge, RelationType } from "@/lib/graph/types";
+import type { GraphEdge } from "@/lib/graph/types";
+import { RelationType } from "@/lib/graph/types";
+
 import {
 	IconPencil,
 	IconUsers,
@@ -25,21 +27,21 @@ import {
 } from "@tabler/icons-react";
 
 const relationTypeOptions = [
-	{ type: "authored" as RelationType, label: "Authored", icon: IconPencil, description: "Author → Work" },
-	{ type: "affiliated" as RelationType, label: "Affiliated", icon: IconUsers, description: "Author → Institution" },
-	{ type: "published_in" as RelationType, label: "Published In", icon: IconBook, description: "Work → Source" },
-	{ type: "funded_by" as RelationType, label: "Funded By", icon: IconCoin, description: "Work → Funder" },
-	{ type: "references" as RelationType, label: "References", icon: IconQuote, description: "Work → Work" },
-	{ type: "source_published_by" as RelationType, label: "Source Published By", icon: IconBuildingStore, description: "Source → Publisher" },
-	{ type: "institution_child_of" as RelationType, label: "Institution Child Of", icon: IconBuilding, description: "Institution → Parent" },
-	{ type: "publisher_child_of" as RelationType, label: "Publisher Child Of", icon: IconBuildingStore, description: "Publisher → Parent" },
-	{ type: "work_has_topic" as RelationType, label: "Work Has Topic", icon: IconTag, description: "Work → Topic" },
-	{ type: "work_has_keyword" as RelationType, label: "Work Has Keyword", icon: IconTag, description: "Work → Keyword" },
-	{ type: "author_researches" as RelationType, label: "Author Researches", icon: IconBulb, description: "Author → Topic" },
-	{ type: "institution_located_in" as RelationType, label: "Institution Located In", icon: IconMapPin, description: "Institution → Location" },
-	{ type: "funder_located_in" as RelationType, label: "Funder Located In", icon: IconMapPin, description: "Funder → Location" },
-	{ type: "topic_part_of_field" as RelationType, label: "Topic Part Of Field", icon: IconBulb, description: "Topic → Field" },
-	{ type: "related_to" as RelationType, label: "Related To", icon: IconLink, description: "General relation" },
+	{ type: RelationType.AUTHORED, label: "Authored", icon: IconPencil, description: "Author → Work" },
+	{ type: RelationType.AFFILIATED, label: "Affiliated", icon: IconUsers, description: "Author → Institution" },
+	{ type: RelationType.PUBLISHED_IN, label: "Published In", icon: IconBook, description: "Work → Source" },
+	{ type: RelationType.FUNDED_BY, label: "Funded By", icon: IconCoin, description: "Work → Funder" },
+	{ type: RelationType.REFERENCES, label: "References", icon: IconQuote, description: "Work → Work" },
+	{ type: RelationType.SOURCE_PUBLISHED_BY, label: "Source Published By", icon: IconBuildingStore, description: "Source → Publisher" },
+	{ type: RelationType.INSTITUTION_CHILD_OF, label: "Institution Child Of", icon: IconBuilding, description: "Institution → Parent" },
+	{ type: RelationType.PUBLISHER_CHILD_OF, label: "Publisher Child Of", icon: IconBuildingStore, description: "Publisher → Parent" },
+	{ type: RelationType.WORK_HAS_TOPIC, label: "Work Has Topic", icon: IconTag, description: "Work → Topic" },
+	{ type: RelationType.WORK_HAS_KEYWORD, label: "Work Has Keyword", icon: IconTag, description: "Work → Keyword" },
+	{ type: RelationType.AUTHOR_RESEARCHES, label: "Author Researches", icon: IconBulb, description: "Author → Topic" },
+	{ type: RelationType.INSTITUTION_LOCATED_IN, label: "Institution Located In", icon: IconMapPin, description: "Institution → Location" },
+	{ type: RelationType.FUNDER_LOCATED_IN, label: "Funder Located In", icon: IconMapPin, description: "Funder → Location" },
+	{ type: RelationType.TOPIC_PART_OF_FIELD, label: "Topic Part Of Field", icon: IconBulb, description: "Topic → Field" },
+	{ type: RelationType.RELATED_TO, label: "Related To", icon: IconLink, description: "General relation" },
 ];
 
 interface EdgeItemProps {
@@ -240,7 +242,7 @@ export const AllEdgesSection: React.FC = () => {
 	const handleHighlightEdge = useCallback((edgeId: string) => {
 		const edge = edges[edgeId];
 		if (edge) {
-			logger.info("graph", "Highlighting edge endpoints", {
+			logger.debug("graph", "Highlighting edge endpoints", {
 				edgeId,
 				source: edge.source,
 				target: edge.target
@@ -257,7 +259,7 @@ export const AllEdgesSection: React.FC = () => {
 	}, [edges, clearSelection, addToSelection, selectNode]);
 
 	const handleRemoveEdge = useCallback((edgeId: string) => {
-		logger.info("graph", "Removing edge from AllEdgesSection", { edgeId });
+		logger.debug("graph", "Removing edge from AllEdgesSection", { edgeId });
 		removeEdge(edgeId);
 		setSelectedEdgeIds(prev => {
 			const newSet = new Set(prev);
@@ -269,7 +271,7 @@ export const AllEdgesSection: React.FC = () => {
 	const handleBatchActions = useCallback((action: "highlight" | "remove") => {
 		const selectedEdges = filteredEdges.filter(edge => selectedEdgeIds.has(edge.id));
 
-		logger.info("graph", "Batch action on edges", {
+		logger.debug("graph", "Batch action on edges", {
 			action,
 			edgeCount: selectedEdges.length,
 			edgeIds: selectedEdges.map(e => e.id)

@@ -35,7 +35,7 @@ export const EntityInfoSection: React.FC<EntityInfoSectionProps> = ({
 
 	React.useEffect(() => {
 		if (displayEntityId) {
-			logger.info("ui", "EntityInfoSection displaying entity", {
+			logger.debug("ui", "EntityInfoSection displaying entity", {
 				entityId: displayEntityId,
 				source: hoveredNodeId ? "hover" : selectedNodeId ? "selection" : "preview",
 				hasNodeData: !!entityNode

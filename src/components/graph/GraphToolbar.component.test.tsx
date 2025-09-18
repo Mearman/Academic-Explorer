@@ -31,6 +31,7 @@ vi.mock("@/stores/graph-store", () => ({
 
 vi.mock("@/lib/logger", () => ({
 	logger: {
+		debug: vi.fn(),
 		info: vi.fn(),
 		warn: vi.fn(),
 		error: vi.fn(),
@@ -39,8 +40,7 @@ vi.mock("@/lib/logger", () => ({
 
 // Test wrapper component
 const TestWrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-	const { ReactFlowProvider } = require("@xyflow/react");
-	return <ReactFlowProvider>{children}</ReactFlowProvider>;
+	return <div data-testid="react-flow-provider">{children}</div>;
 };
 
 describe("GraphToolbar", () => {
@@ -209,11 +209,11 @@ describe("GraphToolbar", () => {
 			fireEvent.click(trimButton);
 
 			expect(mockTrimLeafNodes).toHaveBeenCalledTimes(1);
-			expect(vi.mocked(logger.info)).toHaveBeenCalledWith(
+			expect(vi.mocked(logger.debug)).toHaveBeenCalledWith(
 				"graph",
 				"Trim leaves action triggered from graph toolbar"
 			);
-			expect(vi.mocked(logger.info)).toHaveBeenCalledWith(
+			expect(vi.mocked(logger.debug)).toHaveBeenCalledWith(
 				"graph",
 				"Trim leaves completed",
 				{
@@ -249,7 +249,7 @@ describe("GraphToolbar", () => {
 		it("should handle non-Error exceptions in trim leaves", async () => {
 			const { logger } = await import("@/lib/logger");
 			mockTrimLeafNodes.mockImplementation(() => {
-				throw "String error";
+				throw new Error("String error");
 			});
 
 			render(
@@ -264,7 +264,7 @@ describe("GraphToolbar", () => {
 			expect(vi.mocked(logger.error)).toHaveBeenCalledWith(
 				"graph",
 				"Trim leaves failed",
-				{ error: "Unknown error" }
+				{ error: "String error" }
 			);
 		});
 	});
@@ -287,7 +287,7 @@ describe("GraphToolbar", () => {
 			expect(mockSetNodes).toHaveBeenCalled();
 
 			// Verify logging
-			expect(vi.mocked(logger.info)).toHaveBeenCalledWith(
+			expect(vi.mocked(logger.debug)).toHaveBeenCalledWith(
 				"graph",
 				"1-degree selection action triggered from graph toolbar"
 			);
@@ -330,7 +330,7 @@ describe("GraphToolbar", () => {
 			expect(setNodesCall).toBeDefined();
 
 			// Should select W2 (originally selected) and its neighbors
-			expect(vi.mocked(logger.info)).toHaveBeenCalledWith(
+			expect(vi.mocked(logger.debug)).toHaveBeenCalledWith(
 				"graph",
 				"1-degree selection completed",
 				expect.objectContaining({
@@ -359,7 +359,7 @@ describe("GraphToolbar", () => {
 				expect(mockExpandNode).toHaveBeenCalled();
 			});
 
-			expect(vi.mocked(logger.info)).toHaveBeenCalledWith(
+			expect(vi.mocked(logger.debug)).toHaveBeenCalledWith(
 				"graph",
 				"Expand selected nodes action triggered from graph toolbar"
 			);
@@ -400,7 +400,7 @@ describe("GraphToolbar", () => {
 			fireEvent.click(expandButton);
 
 			await waitFor(() => {
-				expect(vi.mocked(logger.info)).toHaveBeenCalledWith(
+				expect(vi.mocked(logger.debug)).toHaveBeenCalledWith(
 					"graph",
 					"Expand selected nodes completed",
 					expect.objectContaining({
@@ -425,7 +425,7 @@ describe("GraphToolbar", () => {
 			fireEvent.click(pinButton);
 
 			expect(mockPinNode).toHaveBeenCalledTimes(3); // All test nodes
-			expect(vi.mocked(logger.info)).toHaveBeenCalledWith(
+			expect(vi.mocked(logger.debug)).toHaveBeenCalledWith(
 				"graph",
 				"Pin all nodes action triggered from graph toolbar"
 			);
@@ -463,7 +463,7 @@ describe("GraphToolbar", () => {
 			fireEvent.click(unpinButton);
 
 			expect(mockClearAllPinnedNodes).toHaveBeenCalledTimes(1);
-			expect(vi.mocked(logger.info)).toHaveBeenCalledWith(
+			expect(vi.mocked(logger.debug)).toHaveBeenCalledWith(
 				"graph",
 				"Unpin all nodes action triggered from graph toolbar"
 			);

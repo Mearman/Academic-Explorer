@@ -20,7 +20,6 @@ import {
   Tooltip,
   Alert,
   Modal,
-  Tabs,
   Collapse,
   JsonInput,
   TextInput,
@@ -29,16 +28,9 @@ import {
   IconWaveSquare,
   IconPlus,
   IconTrash,
-  IconSettings,
-  IconPlay,
-  IconPause,
-  IconRefresh,
   IconChevronDown,
   IconInfoCircle,
-  IconPreset,
-  IconDownload,
-  IconUpload,
-  IconBolt,
+  IconTemplate,
 } from "@tabler/icons-react";
 import { useDisclosure } from "@mantine/hooks";
 import { logger } from "@/lib/logger";
@@ -47,7 +39,12 @@ import type {
   CustomForce,
   CustomForceType,
   CustomForceConfig,
-  ForcePreset,
+  RadialForceConfig,
+  PropertyForceConfig,
+  ClusterForceConfig,
+  RepulsionForceConfig,
+  AttractionForceConfig,
+  OrbitForceConfig,
 } from "@/lib/graph/custom-forces";
 
 /**
@@ -59,7 +56,9 @@ interface ForceConfigFormProps {
 }
 
 const RadialConfigForm: React.FC<ForceConfigFormProps> = ({ config, onChange }) => {
-  const radialConfig = config as any;
+  const isRadialConfig = (cfg: CustomForceConfig): cfg is RadialForceConfig => cfg.type === "radial";
+  if (!isRadialConfig(config)) return null;
+  const radialConfig = config;
 
   return (
     <Stack gap="sm">
@@ -67,7 +66,7 @@ const RadialConfigForm: React.FC<ForceConfigFormProps> = ({ config, onChange }) 
         label="Radius"
         description="Target radius for radial layout"
         value={radialConfig.radius || 200}
-        onChange={(value) => { onChange({ ...radialConfig, radius: value || 200 }); }}
+        onChange={(value) => { onChange({ ...radialConfig, radius: typeof value === "number" ? value : 200 }); }}
         min={50}
         max={500}
         step={10}
@@ -76,13 +75,13 @@ const RadialConfigForm: React.FC<ForceConfigFormProps> = ({ config, onChange }) 
         <NumberInput
           label="Center X"
           value={radialConfig.centerX || 0}
-          onChange={(value) => { onChange({ ...radialConfig, centerX: value || 0 }); }}
+          onChange={(value) => { onChange({ ...radialConfig, centerX: typeof value === "number" ? value : 0 }); }}
           step={10}
         />
         <NumberInput
           label="Center Y"
           value={radialConfig.centerY || 0}
-          onChange={(value) => { onChange({ ...radialConfig, centerY: value || 0 }); }}
+          onChange={(value) => { onChange({ ...radialConfig, centerY: typeof value === "number" ? value : 0 }); }}
           step={10}
         />
       </Group>
@@ -90,7 +89,7 @@ const RadialConfigForm: React.FC<ForceConfigFormProps> = ({ config, onChange }) 
         label="Inner Radius (optional)"
         description="For annular layouts"
         value={radialConfig.innerRadius || 0}
-        onChange={(value) => { onChange({ ...radialConfig, innerRadius: value || 0 }); }}
+        onChange={(value) => { onChange({ ...radialConfig, innerRadius: typeof value === "number" ? value : 0 }); }}
         min={0}
         max={400}
         step={10}
@@ -106,7 +105,10 @@ const RadialConfigForm: React.FC<ForceConfigFormProps> = ({ config, onChange }) 
 };
 
 const PropertyConfigForm: React.FC<ForceConfigFormProps> = ({ config, onChange }) => {
-  const propertyConfig = config as any;
+  const isPropertyConfig = (cfg: CustomForceConfig): cfg is PropertyForceConfig =>
+    cfg.type === "property-x" || cfg.type === "property-y";
+  if (!isPropertyConfig(config)) return null;
+  const propertyConfig = config;
 
   return (
     <Stack gap="sm">
@@ -124,30 +126,35 @@ const PropertyConfigForm: React.FC<ForceConfigFormProps> = ({ config, onChange }
           { value: "two_yr_mean_citedness", label: "2-Year Mean Citedness" },
         ]}
         searchable
-        creatable
-        getCreateLabel={(query) => `+ Use property: ${query}`}
-        onCreate={(query) => ({ value: query, label: query })}
       />
       <Group grow>
         <NumberInput
           label="Min Value"
           description="Minimum coordinate"
           value={propertyConfig.minValue || -400}
-          onChange={(value) => { onChange({ ...propertyConfig, minValue: value || -400 }); }}
+          onChange={(value) => { onChange({ ...propertyConfig, minValue: typeof value === "number" ? value : -400 }); }}
           step={10}
         />
         <NumberInput
           label="Max Value"
           description="Maximum coordinate"
           value={propertyConfig.maxValue || 400}
-          onChange={(value) => { onChange({ ...propertyConfig, maxValue: value || 400 }); }}
+          onChange={(value) => { onChange({ ...propertyConfig, maxValue: typeof value === "number" ? value : 400 }); }}
           step={10}
         />
       </Group>
       <Select
         label="Scale Type"
         value={propertyConfig.scaleType || "linear"}
-        onChange={(value) => { onChange({ ...propertyConfig, scaleType: value || "linear" }); }}
+        onChange={(value) => {
+          const validScaleTypes = ["linear", "log", "sqrt", "pow"] as const;
+          const isValidScaleType = (val: string | null): val is typeof validScaleTypes[number] => {
+            if (val === null) return false;
+            return validScaleTypes.some(type => type === val);
+          };
+          const scaleType = isValidScaleType(value) ? value : "linear";
+          onChange({ ...propertyConfig, scaleType });
+        }}
         data={[
           { value: "linear", label: "Linear" },
           { value: "log", label: "Logarithmic" },
@@ -159,11 +166,11 @@ const PropertyConfigForm: React.FC<ForceConfigFormProps> = ({ config, onChange }
         <NumberInput
           label="Scale Exponent"
           value={propertyConfig.scaleExponent || 2}
-          onChange={(value) => { onChange({ ...propertyConfig, scaleExponent: value || 2 }); }}
+          onChange={(value) => { onChange({ ...propertyConfig, scaleExponent: typeof value === "number" ? value : 2 }); }}
           min={0.1}
           max={5}
           step={0.1}
-          precision={1}
+          decimalScale={1}
         />
       )}
       <Switch
@@ -176,7 +183,9 @@ const PropertyConfigForm: React.FC<ForceConfigFormProps> = ({ config, onChange }
 };
 
 const ClusterConfigForm: React.FC<ForceConfigFormProps> = ({ config, onChange }) => {
-  const clusterConfig = config as any;
+  const isClusterConfig = (cfg: CustomForceConfig): cfg is ClusterForceConfig => cfg.type === "cluster";
+  if (!isClusterConfig(config)) return null;
+  const clusterConfig = config;
 
   return (
     <Stack gap="sm">
@@ -192,15 +201,12 @@ const ClusterConfigForm: React.FC<ForceConfigFormProps> = ({ config, onChange })
           { value: "publication_year", label: "Publication Year" },
         ]}
         searchable
-        creatable
-        getCreateLabel={(query) => `+ Group by: ${query}`}
-        onCreate={(query) => ({ value: query, label: query })}
       />
       <NumberInput
         label="Cluster Spacing"
         description="Distance between cluster centers"
         value={clusterConfig.spacing || 150}
-        onChange={(value) => { onChange({ ...clusterConfig, spacing: value || 150 }); }}
+        onChange={(value) => { onChange({ ...clusterConfig, spacing: typeof value === "number" ? value : 150 }); }}
         min={50}
         max={500}
         step={10}
@@ -208,7 +214,15 @@ const ClusterConfigForm: React.FC<ForceConfigFormProps> = ({ config, onChange })
       <Select
         label="Arrangement"
         value={clusterConfig.arrangement || "circular"}
-        onChange={(value) => { onChange({ ...clusterConfig, arrangement: value || "circular" }); }}
+        onChange={(value) => {
+          const validArrangements = ["grid", "circular", "random"] as const;
+          const isValidArrangement = (val: string | null): val is typeof validArrangements[number] => {
+            if (val === null) return false;
+            return validArrangements.some(arrangement => arrangement === val);
+          };
+          const arrangement = isValidArrangement(value) ? value : "circular";
+          onChange({ ...clusterConfig, arrangement });
+        }}
         data={[
           { value: "circular", label: "Circular" },
           { value: "grid", label: "Grid" },
@@ -239,9 +253,14 @@ const ForceConfigForm: React.FC<ForceConfigFormProps> = ({ config, onChange }) =
           value={JSON.stringify(config, null, 2)}
           onChange={(value) => {
             try {
-              const parsed = JSON.parse(value);
-              onChange(parsed);
-            } catch (error) {
+              const parsed: unknown = JSON.parse(value);
+              // Type guard to ensure parsed value matches CustomForceConfig structure
+              const isValidConfig = (obj: unknown): obj is CustomForceConfig =>
+                typeof obj === "object" && obj !== null && "type" in obj;
+              if (isValidConfig(parsed)) {
+                onChange(parsed);
+              }
+            } catch {
               // Invalid JSON, ignore
             }
           }}
@@ -331,7 +350,7 @@ const ForceItem: React.FC<ForceItemProps> = ({ force, onUpdate, onRemove }) => {
               label="Priority"
               description="Force application order (higher = later)"
               value={force.priority}
-              onChange={(value) => { onUpdate({ priority: value || 0 }); }}
+              onChange={(value) => { onUpdate({ priority: typeof value === "number" ? value : 0 }); }}
               min={0}
               max={100}
               step={1}
@@ -386,7 +405,7 @@ export const CustomForcesSection: React.FC = () => {
             centerX: 0,
             centerY: 0,
             evenDistribution: true,
-          };
+          } satisfies RadialForceConfig;
           break;
         case "property-x":
           defaultConfig = {
@@ -395,7 +414,7 @@ export const CustomForcesSection: React.FC = () => {
             minValue: -400,
             maxValue: 400,
             scaleType: "linear",
-          };
+          } satisfies PropertyForceConfig;
           break;
         case "property-y":
           defaultConfig = {
@@ -404,7 +423,7 @@ export const CustomForcesSection: React.FC = () => {
             minValue: -300,
             maxValue: 300,
             scaleType: "log",
-          };
+          } satisfies PropertyForceConfig;
           break;
         case "cluster":
           defaultConfig = {
@@ -412,10 +431,42 @@ export const CustomForcesSection: React.FC = () => {
             propertyName: "type",
             spacing: 150,
             arrangement: "circular",
-          };
+          } satisfies ClusterForceConfig;
           break;
-        default:
-          defaultConfig = { type: newForceType } as CustomForceConfig;
+        case "repulsion":
+          defaultConfig = {
+            type: "repulsion",
+            maxDistance: 100,
+            minDistance: 10,
+            falloff: "quadratic",
+          } satisfies RepulsionForceConfig;
+          break;
+        case "attraction":
+          defaultConfig = {
+            type: "attraction",
+            attractorSelector: () => true,
+            maxDistance: 200,
+            falloff: "linear",
+          } satisfies AttractionForceConfig;
+          break;
+        case "orbit":
+          defaultConfig = {
+            type: "orbit",
+            centerSelector: () => true,
+            radius: 100,
+            speed: 0.01,
+            direction: "clockwise",
+          } satisfies OrbitForceConfig;
+          break;
+        default: {
+          // Fallback for unknown force types - this should never happen with proper typing
+          // Create a minimal config that matches the CustomForceConfig union type
+          const minimalConfig: RadialForceConfig = {
+            type: "radial", // Safe fallback to a known type
+            radius: 100,
+          };
+          defaultConfig = minimalConfig;
+        }
       }
 
       const forceId = customForceManager.addForce({
@@ -427,7 +478,7 @@ export const CustomForcesSection: React.FC = () => {
         config: defaultConfig,
       });
 
-      logger.info("graph", "Custom force added via UI", { forceId, type: newForceType, name: newForceName });
+      logger.debug("graph", "Custom force added via UI", { forceId, type: newForceType, name: newForceName });
 
       setNewForceName("");
       setNewForceType("radial");
@@ -456,14 +507,14 @@ export const CustomForcesSection: React.FC = () => {
       customForceManager.loadPreset(preset);
       setForces(customForceManager.getAllForces());
       closePresetModal();
-      logger.info("graph", "Force preset loaded", { presetId, name: preset.name });
+      logger.debug("graph", "Force preset loaded", { presetId, name: preset.name });
     }
   }, [closePresetModal]);
 
   const handleClearAll = useCallback(() => {
     customForceManager.clearAllForces();
     setForces([]);
-    logger.info("graph", "All custom forces cleared");
+    logger.debug("graph", "All custom forces cleared");
   }, []);
 
   const handleAddQuickForce = useCallback((type: "year-citation" | "radial" | "institution") => {
@@ -480,7 +531,7 @@ export const CustomForcesSection: React.FC = () => {
           break;
       }
       setForces(customForceManager.getAllForces());
-      logger.info("graph", "Quick force added", { type });
+      logger.debug("graph", "Quick force added", { type });
     } catch (error) {
       logger.error("graph", "Failed to add quick force", { error, type });
     }
@@ -516,7 +567,7 @@ export const CustomForcesSection: React.FC = () => {
         <Button
           variant="light"
           size="xs"
-          leftSection={<IconPreset size={12} />}
+          leftSection={<IconTemplate size={12} />}
           onClick={openPresetModal}
         >
           Presets
@@ -601,7 +652,15 @@ export const CustomForcesSection: React.FC = () => {
           <Select
             label="Force Type"
             value={newForceType}
-            onChange={(value) => { setNewForceType(value as CustomForceType); }}
+            onChange={(value) => {
+              const validForceTypes: CustomForceType[] = ["radial", "property-x", "property-y", "cluster", "repulsion", "attraction", "orbit"];
+              const isValidForceType = (val: string | null): val is CustomForceType => {
+                if (val === null) return false;
+                return validForceTypes.some(type => type === val);
+              };
+              const forceType = isValidForceType(value) ? value : "radial";
+              setNewForceType(forceType);
+            }}
             data={[
               { value: "radial", label: "Radial Layout" },
               { value: "property-x", label: "Property-based X Position" },

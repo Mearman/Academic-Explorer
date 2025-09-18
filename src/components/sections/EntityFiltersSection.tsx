@@ -8,6 +8,7 @@ import { useGraphStore } from "@/stores/graph-store";
 import { useThemeColors } from "@/hooks/use-theme-colors";
 import { logger } from "@/lib/logger";
 import type { EntityType } from "@/lib/openalex/types";
+import { Checkbox, Badge, Stack } from "@mantine/core";
 import {
 	IconFile,
 	IconUser,
@@ -19,15 +20,16 @@ import {
 	IconBulb,
 } from "@tabler/icons-react";
 
-const entityTypeOptions = [
-	{ type: "works" as EntityType, label: "Works", icon: IconFile },
-	{ type: "authors" as EntityType, label: "Authors", icon: IconUser },
-	{ type: "sources" as EntityType, label: "Sources", icon: IconBook },
-	{ type: "institutions" as EntityType, label: "Institutions", icon: IconBuilding },
-	{ type: "topics" as EntityType, label: "Topics", icon: IconTag },
-	{ type: "publishers" as EntityType, label: "Publishers", icon: IconBuildingStore },
-	{ type: "funders" as EntityType, label: "Funders", icon: IconCoin },
-	{ type: "concepts" as EntityType, label: "Concepts", icon: IconBulb },
+// Properly typed entity options without type assertions
+const entityTypeOptions: Array<{ type: EntityType; label: string; icon: React.ComponentType<{ size?: number; style?: React.CSSProperties }> }> = [
+	{ type: "works", label: "Works", icon: IconFile },
+	{ type: "authors", label: "Authors", icon: IconUser },
+	{ type: "sources", label: "Sources", icon: IconBook },
+	{ type: "institutions", label: "Institutions", icon: IconBuilding },
+	{ type: "topics", label: "Topics", icon: IconTag },
+	{ type: "publishers", label: "Publishers", icon: IconBuildingStore },
+	{ type: "funders", label: "Funders", icon: IconCoin },
+	{ type: "concepts", label: "Concepts", icon: IconBulb },
 ];
 
 export const EntityFiltersSection: React.FC = () => {
@@ -111,7 +113,7 @@ export const EntityFiltersSection: React.FC = () => {
 
 	const handleToggleEntityType = (entityType: EntityType) => {
 		const currentVisibility = visibleEntityTypes[entityType];
-		logger.info("ui", `Toggling entity type visibility`, {
+		logger.debug("ui", `Toggling entity type visibility`, {
 			entityType,
 			fromVisible: currentVisibility,
 			toVisible: !currentVisibility
@@ -120,7 +122,7 @@ export const EntityFiltersSection: React.FC = () => {
 	};
 
 	return (
-		<div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+		<Stack gap="xs">
 			{entityTypeOptions.map(option => {
 				const totalCount = entityStats.total[option.type] || 0;
 				const visibleCount = entityStats.visible[option.type] || 0;
@@ -139,15 +141,13 @@ export const EntityFiltersSection: React.FC = () => {
 							backgroundColor: isVisible ? "transparent" : colors.background.secondary,
 							opacity: isVisible ? 1 : 0.6,
 							transition: "all 0.2s ease",
-							cursor: "pointer",
 						}}
-						onClick={() => { handleToggleEntityType(option.type); }}
 					>
-						<input
-							type="checkbox"
+						<Checkbox
 							checked={isVisible}
 							onChange={() => { handleToggleEntityType(option.type); }}
-							style={{ cursor: "pointer" }}
+							size="sm"
+							aria-label={`Toggle ${option.label} visibility`}
 						/>
 						<Icon size={16} style={{ color: colors.text.secondary }} />
 						<span style={{
@@ -157,16 +157,12 @@ export const EntityFiltersSection: React.FC = () => {
 						}}>
 							{option.label}
 						</span>
-						<span style={{
-							fontSize: "12px",
-							color: colors.text.secondary,
-							fontWeight: 500
-						}}>
+						<Badge size="xs" variant="light" color={isVisible ? "blue" : "gray"}>
 							{visibleCount}/{totalCount}
-						</span>
+						</Badge>
 					</div>
 				);
 			})}
-		</div>
+		</Stack>
 	);
 };

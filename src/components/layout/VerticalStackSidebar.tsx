@@ -43,7 +43,7 @@ export const VerticalStackSidebar: React.FC<VerticalStackSidebarProps> = ({ side
 		const draggedSectionId = event.dataTransfer.getData("text/plain");
 		if (!draggedSectionId || !activeGroupId) return;
 
-		logger.info("ui", `Moving section ${draggedSectionId} to active group ${activeGroupId} for ${side} sidebar`, {
+		logger.debug("ui", `Moving section ${draggedSectionId} to active group ${activeGroupId} for ${side} sidebar`, {
 			draggedSectionId,
 			activeGroupId,
 			side
@@ -76,7 +76,7 @@ export const VerticalStackSidebar: React.FC<VerticalStackSidebarProps> = ({ side
 	};
 
 	const handleToolDragStart = (sectionId: string, event: React.DragEvent) => {
-		logger.info("ui", `Starting drag for tool ${sectionId}`, { sectionId, side });
+		logger.debug("ui", `Starting drag for tool ${sectionId}`, { sectionId, side });
 		event.dataTransfer.setData("text/plain", sectionId);
 		event.dataTransfer.effectAllowed = "move";
 	};
@@ -88,7 +88,7 @@ export const VerticalStackSidebar: React.FC<VerticalStackSidebarProps> = ({ side
 		const draggedSectionId = event.dataTransfer.getData("text/plain");
 		if (!draggedSectionId || !activeGroupId || draggedSectionId === targetSectionId) return;
 
-		logger.info("ui", `Moving tool ${draggedSectionId} to group ${activeGroupId}`, {
+		logger.debug("ui", `Moving tool ${draggedSectionId} to group ${activeGroupId}`, {
 			draggedSectionId,
 			targetGroupId: activeGroupId,
 			side

@@ -51,7 +51,7 @@ export const RightRibbon: React.FC = () => {
 			.filter((def): def is NonNullable<typeof def> => def !== undefined)
 			.sort((a, b) => (a.order || 999) - (b.order || 999));
 
-		logger.info("ui", "Right ribbon group definitions", {
+		logger.debug("ui", "Right ribbon group definitions", {
 			toolGroups,
 			groupKeys: Object.keys(toolGroups),
 			definitions: definitions.map(d => ({ id: d.id, title: d.title, order: d.order })),
@@ -67,14 +67,14 @@ export const RightRibbon: React.FC = () => {
 	const hasEntity = Boolean(displayEntityId);
 
 	const handleGroupActivate = (groupId: string) => {
-		logger.info("ui", `Activating group ${groupId} for right sidebar`, { groupId });
+		logger.debug("ui", `Activating group ${groupId} for right sidebar`, { groupId });
 
 		// Check if this group is already active and sidebar is open - if so, toggle sidebar
 		const isCurrentlyActive = activeGroupId === groupId;
 		const isCurrentlyOpen = layoutStore.rightSidebarOpen;
 
 		if (isCurrentlyActive && isCurrentlyOpen) {
-			logger.info("ui", `Toggling sidebar closed for active group ${groupId}`);
+			logger.debug("ui", `Toggling sidebar closed for active group ${groupId}`);
 			layoutStore.setRightSidebarOpen(false);
 			return;
 		}
@@ -97,7 +97,7 @@ export const RightRibbon: React.FC = () => {
 	};
 
 	const handleGroupReorder = (sourceGroupId: string, targetGroupId: string, insertBefore: boolean, _event: React.DragEvent) => {
-		logger.info("ui", `Reordering group ${sourceGroupId} relative to ${targetGroupId}`, {
+		logger.debug("ui", `Reordering group ${sourceGroupId} relative to ${targetGroupId}`, {
 			sourceGroupId,
 			targetGroupId,
 			insertBefore,
@@ -115,7 +115,7 @@ export const RightRibbon: React.FC = () => {
 	const handleGroupDragStart = (groupId: string) => {
 		setIsDragging(true);
 		setDraggedGroupId(groupId);
-		logger.info("ui", `Starting group drag for ${groupId}`, { groupId, side: "right" });
+		logger.debug("ui", `Starting group drag for ${groupId}`, { groupId, side: "right" });
 	};
 
 	const handleGroupDragEnd = () => {
@@ -146,7 +146,7 @@ export const RightRibbon: React.FC = () => {
 
 			if (isGroupReorder) {
 				setHasGroupDrag(true);
-				logger.info("ui", `RightRibbon DropZone ${String(index)} detected group drag`, {
+				logger.debug("ui", `RightRibbon DropZone ${String(index)} detected group drag`, {
 					index,
 					hasGroupDrag,
 					isDragging
@@ -188,7 +188,7 @@ export const RightRibbon: React.FC = () => {
 				onDragLeave={handleDragLeave}
 				onDrop={(e) => {
 					e.preventDefault();
-					logger.info("ui", `RightRibbon drop zone ${String(index)} received drop`, {
+					logger.debug("ui", `RightRibbon drop zone ${String(index)} received drop`, {
 						index,
 						types: Array.from(e.dataTransfer.types),
 						isDragging,
@@ -196,7 +196,7 @@ export const RightRibbon: React.FC = () => {
 					});
 					const groupReorderData = e.dataTransfer.getData("application/group-reorder");
 					if (groupReorderData) {
-						logger.info("ui", `Drop zone ${String(index)} processing reorder/move`, {
+						logger.debug("ui", `Drop zone ${String(index)} processing reorder/move`, {
 							sourceGroupId: groupReorderData,
 							insertionIndex: index,
 							totalGroups: groupDefinitions.length,
@@ -248,7 +248,7 @@ export const RightRibbon: React.FC = () => {
 	};
 
 	const handleDrop = (draggedSectionId: string, targetGroupId: string, _event: React.DragEvent) => {
-		logger.info("ui", `RightRibbon handleDrop: Moving section ${draggedSectionId} to group ${targetGroupId}`, {
+		logger.debug("ui", `RightRibbon handleDrop: Moving section ${draggedSectionId} to group ${targetGroupId}`, {
 			draggedSectionId,
 			targetGroupId,
 			side: "right"
@@ -258,7 +258,7 @@ export const RightRibbon: React.FC = () => {
 		const leftGroups = getToolGroupsForSidebar("left");
 		const rightGroups = getToolGroupsForSidebar("right");
 
-		logger.info("ui", `Current groups before removal`, {
+		logger.debug("ui", `Current groups before removal`, {
 			leftGroups: Object.keys(leftGroups),
 			rightGroups: Object.keys(rightGroups),
 			targetGroupExists: targetGroupId in rightGroups,
@@ -268,7 +268,7 @@ export const RightRibbon: React.FC = () => {
 		// Remove from left sidebar groups
 		Object.entries(leftGroups).forEach(([groupId, group]) => {
 			if (group.sections.includes(draggedSectionId)) {
-				logger.info("ui", `Removing ${draggedSectionId} from left group ${groupId}`);
+				logger.debug("ui", `Removing ${draggedSectionId} from left group ${groupId}`);
 				layoutStore.removeSectionFromGroup("left", groupId, draggedSectionId);
 			}
 		});
@@ -276,14 +276,14 @@ export const RightRibbon: React.FC = () => {
 		// Remove from right sidebar groups
 		Object.entries(rightGroups).forEach(([groupId, group]) => {
 			if (group.sections.includes(draggedSectionId)) {
-				logger.info("ui", `Removing ${draggedSectionId} from right group ${groupId}`);
+				logger.debug("ui", `Removing ${draggedSectionId} from right group ${groupId}`);
 				layoutStore.removeSectionFromGroup("right", groupId, draggedSectionId);
 			}
 		});
 
 		// Check if target group exists after removals
 		const updatedRightGroups = getToolGroupsForSidebar("right");
-		logger.info("ui", `Groups after removal, before addition`, {
+		logger.debug("ui", `Groups after removal, before addition`, {
 			rightGroups: Object.keys(updatedRightGroups),
 			targetGroupExists: Boolean(updatedRightGroups[targetGroupId]),
 			targetGroupId
@@ -304,7 +304,7 @@ export const RightRibbon: React.FC = () => {
 		// Check if this is a group reorder drag - if so, ignore it
 		const isGroupReorder = event.dataTransfer.types.includes("application/group-reorder");
 		if (isGroupReorder) {
-			logger.info("ui", "Ignoring group reorder drag in empty area", {
+			logger.debug("ui", "Ignoring group reorder drag in empty area", {
 				types: Array.from(event.dataTransfer.types)
 			});
 			return;
@@ -330,7 +330,7 @@ export const RightRibbon: React.FC = () => {
 		const newGroup = createNewGroup(draggedSectionId);
 		const groupId = newGroup.id;
 
-		logger.info("ui", `Creating new group ${groupId} for section ${draggedSectionId} on right ribbon`, {
+		logger.debug("ui", `Creating new group ${groupId} for section ${draggedSectionId} on right ribbon`, {
 			draggedSectionId,
 			groupId,
 			category: section.category,

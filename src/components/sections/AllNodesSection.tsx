@@ -11,6 +11,7 @@ import { useGraphData } from "@/hooks/use-graph-data";
 import { useThemeColors } from "@/hooks/use-theme-colors";
 import { logger } from "@/lib/logger";
 import type { GraphNode, EntityType } from "@/lib/graph/types";
+
 import {
 	IconFile,
 	IconUser,
@@ -23,15 +24,15 @@ import {
 } from "@tabler/icons-react";
 
 const entityTypeOptions = [
-	{ type: "works" as EntityType, label: "Works", icon: IconFile },
-	{ type: "authors" as EntityType, label: "Authors", icon: IconUser },
-	{ type: "sources" as EntityType, label: "Sources", icon: IconBook },
-	{ type: "institutions" as EntityType, label: "Institutions", icon: IconBuilding },
-	{ type: "topics" as EntityType, label: "Topics", icon: IconTag },
-	{ type: "publishers" as EntityType, label: "Publishers", icon: IconBuildingStore },
-	{ type: "funders" as EntityType, label: "Funders", icon: IconCoin },
-	{ type: "concepts" as EntityType, label: "Concepts", icon: IconBulb },
-];
+	{ type: "works" satisfies EntityType, label: "Works", icon: IconFile },
+	{ type: "authors" satisfies EntityType, label: "Authors", icon: IconUser },
+	{ type: "sources" satisfies EntityType, label: "Sources", icon: IconBook },
+	{ type: "institutions" satisfies EntityType, label: "Institutions", icon: IconBuilding },
+	{ type: "topics" satisfies EntityType, label: "Topics", icon: IconTag },
+	{ type: "publishers" satisfies EntityType, label: "Publishers", icon: IconBuildingStore },
+	{ type: "funders" satisfies EntityType, label: "Funders", icon: IconCoin },
+	{ type: "concepts" satisfies EntityType, label: "Concepts", icon: IconBulb },
+] as const;
 
 interface NodeItemProps {
   node: GraphNode;
@@ -222,7 +223,7 @@ export const AllNodesSection: React.FC = () => {
 
 	const handleExpandNode = useCallback(async (nodeId: string) => {
 		try {
-			logger.info("graph", "Expanding node from AllNodesSection", { nodeId });
+			logger.debug("graph", "Expanding node from AllNodesSection", { nodeId });
 			await expandNode(nodeId, {
 				depth: 1,
 				limit: 10,
@@ -237,7 +238,7 @@ export const AllNodesSection: React.FC = () => {
 	}, [expandNode]);
 
 	const handleRemoveNode = useCallback((nodeId: string) => {
-		logger.info("graph", "Removing node from AllNodesSection", { nodeId });
+		logger.debug("graph", "Removing node from AllNodesSection", { nodeId });
 		removeNode(nodeId);
 		setSelectedNodeIds(prev => {
 			const newSet = new Set(prev);
@@ -249,7 +250,7 @@ export const AllNodesSection: React.FC = () => {
 	const handleBatchActions = useCallback((action: "pin" | "unpin" | "expand" | "remove" | "select") => {
 		const selectedNodes = filteredNodes.filter(node => selectedNodeIds.has(node.id));
 
-		logger.info("graph", "Batch action on nodes", {
+		logger.debug("graph", "Batch action on nodes", {
 			action,
 			nodeCount: selectedNodes.length,
 			nodeIds: selectedNodes.map(n => n.id)

@@ -33,7 +33,7 @@ export function CacheInitializer({ children }: CacheInitializerProps) {
 
 		async function initialize() {
 			try {
-				logger.info("cache", "Starting cache initialization with version checking");
+				logger.debug("cache", "Starting cache initialization with version checking");
 
 				const { queryClient, invalidationResult } = await initializeQueryClient();
 
@@ -45,12 +45,12 @@ export function CacheInitializer({ children }: CacheInitializerProps) {
 					});
 
 					if (invalidationResult.triggered) {
-						logger.info("cache", "Cache initialization completed with invalidation", {
+						logger.debug("cache", "Cache initialization completed with invalidation", {
 							reason: invalidationResult.reason,
 							clearedLayers: invalidationResult.clearedLayers
 						});
 					} else {
-						logger.info("cache", "Cache initialization completed without invalidation");
+						logger.debug("cache", "Cache initialization completed without invalidation");
 					}
 				}
 			} catch (error) {

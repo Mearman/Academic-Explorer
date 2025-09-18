@@ -32,7 +32,7 @@ export const SettingsSection: React.FC = () => {
 		setResetState(prev => ({ ...prev, resettingPreferences: true }));
 
 		try {
-			logger.info("ui", "Starting user preferences reset", {}, "SettingsSection");
+			logger.debug("ui", "Starting user preferences reset", {}, "SettingsSection");
 
 			// Clear Zustand persisted stores
 			// This will reset layout store, expansion settings, graph store, etc.
@@ -45,7 +45,7 @@ export const SettingsSection: React.FC = () => {
 			for (const key of storeKeys) {
 				try {
 					localStorage.removeItem(key);
-					logger.info("ui", `Cleared persisted store: ${key}`, { key }, "SettingsSection");
+					logger.debug("ui", `Cleared persisted store: ${key}`, { key }, "SettingsSection");
 				} catch (error) {
 					logger.warn("ui", `Failed to clear store: ${key}`, { key, error }, "SettingsSection");
 				}
@@ -57,7 +57,7 @@ export const SettingsSection: React.FC = () => {
 			// Clear app metadata
 			await clearAppMetadata();
 
-			logger.info("ui", "User preferences reset completed", {}, "SettingsSection");
+			logger.debug("ui", "User preferences reset completed", {}, "SettingsSection");
 
 			notifications.show({
 				title: "Preferences Reset",
@@ -86,7 +86,7 @@ export const SettingsSection: React.FC = () => {
 		setResetState(prev => ({ ...prev, clearingCache: true }));
 
 		try {
-			logger.info("ui", "Starting complete data reset", {}, "SettingsSection");
+			logger.debug("ui", "Starting complete data reset", {}, "SettingsSection");
 
 			// Clear TanStack Query cache
 			queryClient.clear();
@@ -94,7 +94,7 @@ export const SettingsSection: React.FC = () => {
 			// Clear all cache layers (IndexedDB, localStorage cache, memory)
 			const result = await clearAllCacheLayers();
 
-			logger.info("ui", "Cache layers cleared", {
+			logger.debug("ui", "Cache layers cleared", {
 				clearedLayers: result.clearedLayers,
 				errors: result.errors
 			}, "SettingsSection");
@@ -114,7 +114,7 @@ export const SettingsSection: React.FC = () => {
 				}
 			}
 
-			logger.info("ui", "Complete data reset completed", {}, "SettingsSection");
+			logger.debug("ui", "Complete data reset completed", {}, "SettingsSection");
 
 			notifications.show({
 				title: "Data Cleared",

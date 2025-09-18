@@ -21,15 +21,16 @@ import {
 	IconBulb,
 } from "@tabler/icons-react";
 
-const entityTypeOptions = [
-	{ type: "works" as EntityType, label: "Works", icon: IconFile },
-	{ type: "authors" as EntityType, label: "Authors", icon: IconUser },
-	{ type: "sources" as EntityType, label: "Sources", icon: IconBook },
-	{ type: "institutions" as EntityType, label: "Institutions", icon: IconBuilding },
-	{ type: "topics" as EntityType, label: "Topics", icon: IconTag },
-	{ type: "publishers" as EntityType, label: "Publishers", icon: IconBuildingStore },
-	{ type: "funders" as EntityType, label: "Funders", icon: IconCoin },
-	{ type: "concepts" as EntityType, label: "Concepts", icon: IconBulb },
+// Properly typed entity options without type assertions
+const entityTypeOptions: Array<{ type: EntityType; label: string; icon: React.ComponentType<{ size?: number; style?: React.CSSProperties }> }> = [
+	{ type: "works", label: "Works", icon: IconFile },
+	{ type: "authors", label: "Authors", icon: IconUser },
+	{ type: "sources", label: "Sources", icon: IconBook },
+	{ type: "institutions", label: "Institutions", icon: IconBuilding },
+	{ type: "topics", label: "Topics", icon: IconTag },
+	{ type: "publishers", label: "Publishers", icon: IconBuildingStore },
+	{ type: "funders", label: "Funders", icon: IconCoin },
+	{ type: "concepts", label: "Concepts", icon: IconBulb },
 ];
 
 interface NodeRepositoryItemProps {
@@ -60,7 +61,7 @@ const NodeRepositoryItem: React.FC<NodeRepositoryItemProps> = ({
 		}));
 		event.dataTransfer.effectAllowed = "copy";
 
-		logger.info("repository", "Started dragging repository node", {
+		logger.debug("repository", "Started dragging repository node", {
 			nodeId: node.id,
 			nodeType: node.type,
 			nodeLabel: node.label
@@ -179,7 +180,7 @@ export const NodeRepositorySection: React.FC = () => {
 		const selectedNodeIds = Object.keys(selectedRepositoryNodes);
 		if (selectedNodeIds.length > 0) {
 			removeFromRepository(selectedNodeIds);
-			logger.info("repository", "Removed selected nodes from repository", {
+			logger.debug("repository", "Removed selected nodes from repository", {
 				removedCount: selectedNodeIds.length
 			});
 		}
@@ -187,7 +188,7 @@ export const NodeRepositorySection: React.FC = () => {
 
 	const handleRemoveNode = useCallback((nodeId: string) => {
 		removeFromRepository([nodeId]);
-		logger.info("repository", "Removed single node from repository", { nodeId });
+		logger.debug("repository", "Removed single node from repository", { nodeId });
 	}, [removeFromRepository]);
 
 	return (

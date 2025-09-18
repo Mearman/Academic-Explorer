@@ -41,7 +41,7 @@ export const LeftRibbon: React.FC = () => {
 			.filter((def): def is NonNullable<typeof def> => def !== undefined)
 			.sort((a, b) => (a.order || 999) - (b.order || 999));
 
-		logger.info("ui", "Left ribbon group definitions", {
+		logger.debug("ui", "Left ribbon group definitions", {
 			toolGroups,
 			groupKeys: Object.keys(toolGroups),
 			definitions: definitions.map(d => ({ id: d.id, title: d.title, order: d.order })),
@@ -53,18 +53,18 @@ export const LeftRibbon: React.FC = () => {
 	}, [toolGroups, activeGroupId, registryVersion]);
 
 	const handleClearGraph = () => {
-		logger.info("ui", "Clear graph clicked from left ribbon");
+		logger.debug("ui", "Clear graph clicked from left ribbon");
 		clearGraph();
 	};
 
 	const handleGroupActivate = (groupId: string) => {
-		logger.info("ui", `Activating group ${groupId} for left sidebar`, { groupId });
+		logger.debug("ui", `Activating group ${groupId} for left sidebar`, { groupId });
 
 		// Check if group exists before activating
 		const currentToolGroups = getToolGroupsForSidebar("left");
 		const groupExists = Boolean(currentToolGroups[groupId]);
 
-		logger.info("ui", `Group ${groupId} exists: ${groupExists ? "true" : "false"}`, {
+		logger.debug("ui", `Group ${groupId} exists: ${groupExists ? "true" : "false"}`, {
 			groupId,
 			groupExists,
 			currentGroups: Object.keys(currentToolGroups)
@@ -83,7 +83,7 @@ export const LeftRibbon: React.FC = () => {
 		const isCurrentlyOpen = layoutStore.leftSidebarOpen;
 
 		if (isCurrentlyActive && isCurrentlyOpen) {
-			logger.info("ui", `Toggling sidebar closed for active group ${groupId}`);
+			logger.debug("ui", `Toggling sidebar closed for active group ${groupId}`);
 			layoutStore.setLeftSidebarOpen(false);
 			return;
 		}
@@ -92,7 +92,7 @@ export const LeftRibbon: React.FC = () => {
 		setActiveGroup("left", groupId);
 		layoutStore.setLeftSidebarOpen(true);
 
-		logger.info("ui", `Sidebar should now be open for group ${groupId}`);
+		logger.debug("ui", `Sidebar should now be open for group ${groupId}`);
 
 		// Scroll to top after a brief delay to allow sidebar to expand
 		setTimeout(() => {
@@ -108,7 +108,7 @@ export const LeftRibbon: React.FC = () => {
 	};
 
 	const handleGroupReorder = (sourceGroupId: string, targetGroupId: string, insertBefore: boolean, _event: React.DragEvent) => {
-		logger.info("ui", `LeftRibbon: Reordering group ${sourceGroupId} relative to ${targetGroupId}`, {
+		logger.debug("ui", `LeftRibbon: Reordering group ${sourceGroupId} relative to ${targetGroupId}`, {
 			sourceGroupId,
 			targetGroupId,
 			insertBefore,
@@ -127,7 +127,7 @@ export const LeftRibbon: React.FC = () => {
 	const handleGroupDragStart = (groupId: string) => {
 		setIsDragging(true);
 		setDraggedGroupId(groupId);
-		logger.info("ui", `Starting group drag for ${groupId}`, { groupId, side: "left" });
+		logger.debug("ui", `Starting group drag for ${groupId}`, { groupId, side: "left" });
 	};
 
 	const handleGroupDragEnd = () => {
@@ -158,7 +158,7 @@ export const LeftRibbon: React.FC = () => {
 
 			if (isGroupReorder) {
 				setHasGroupDrag(true);
-				logger.info("ui", `LeftRibbon DropZone ${String(index)} detected group drag`, {
+				logger.debug("ui", `LeftRibbon DropZone ${String(index)} detected group drag`, {
 					index,
 					hasGroupDrag,
 					isDragging
@@ -199,7 +199,7 @@ export const LeftRibbon: React.FC = () => {
 				onDragLeave={handleDragLeave}
 				onDrop={(e) => {
 					e.preventDefault();
-					logger.info("ui", `LeftRibbon drop zone ${String(index)} received drop`, {
+					logger.debug("ui", `LeftRibbon drop zone ${String(index)} received drop`, {
 						index,
 						types: Array.from(e.dataTransfer.types),
 						isDragging,
@@ -207,7 +207,7 @@ export const LeftRibbon: React.FC = () => {
 					});
 					const groupReorderData = e.dataTransfer.getData("application/group-reorder");
 					if (groupReorderData) {
-						logger.info("ui", `Drop zone ${String(index)} processing reorder/move`, {
+						logger.debug("ui", `Drop zone ${String(index)} processing reorder/move`, {
 							sourceGroupId: groupReorderData,
 							insertionIndex: index,
 							totalGroups: groupDefinitions.length,
@@ -259,7 +259,7 @@ export const LeftRibbon: React.FC = () => {
 	};
 
 	const handleDrop = (draggedSectionId: string, targetGroupId: string, _event: React.DragEvent) => {
-		logger.info("ui", `LeftRibbon handleDrop: Moving section ${draggedSectionId} to group ${targetGroupId}`, {
+		logger.debug("ui", `LeftRibbon handleDrop: Moving section ${draggedSectionId} to group ${targetGroupId}`, {
 			draggedSectionId,
 			targetGroupId,
 			side: "left"
@@ -269,7 +269,7 @@ export const LeftRibbon: React.FC = () => {
 		const leftGroups = getToolGroupsForSidebar("left");
 		const rightGroups = getToolGroupsForSidebar("right");
 
-		logger.info("ui", `Current groups before removal`, {
+		logger.debug("ui", `Current groups before removal`, {
 			leftGroups: Object.keys(leftGroups),
 			rightGroups: Object.keys(rightGroups),
 			targetGroupExists: targetGroupId in leftGroups,
@@ -279,7 +279,7 @@ export const LeftRibbon: React.FC = () => {
 		// Remove from left sidebar groups
 		Object.entries(leftGroups).forEach(([groupId, group]) => {
 			if (group.sections.includes(draggedSectionId)) {
-				logger.info("ui", `Removing ${draggedSectionId} from left group ${groupId}`);
+				logger.debug("ui", `Removing ${draggedSectionId} from left group ${groupId}`);
 				layoutStore.removeSectionFromGroup("left", groupId, draggedSectionId);
 			}
 		});
@@ -287,14 +287,14 @@ export const LeftRibbon: React.FC = () => {
 		// Remove from right sidebar groups
 		Object.entries(rightGroups).forEach(([groupId, group]) => {
 			if (group.sections.includes(draggedSectionId)) {
-				logger.info("ui", `Removing ${draggedSectionId} from right group ${groupId}`);
+				logger.debug("ui", `Removing ${draggedSectionId} from right group ${groupId}`);
 				layoutStore.removeSectionFromGroup("right", groupId, draggedSectionId);
 			}
 		});
 
 		// Check if target group exists after removals
 		const updatedLeftGroups = getToolGroupsForSidebar("left");
-		logger.info("ui", `Groups after removal, before addition`, {
+		logger.debug("ui", `Groups after removal, before addition`, {
 			leftGroups: Object.keys(updatedLeftGroups),
 			targetGroupExists: Boolean(updatedLeftGroups[targetGroupId]),
 			targetGroupId
@@ -315,7 +315,7 @@ export const LeftRibbon: React.FC = () => {
 		// Check if this is a group reorder drag - if so, ignore it
 		const isGroupReorder = event.dataTransfer.types.includes("application/group-reorder");
 		if (isGroupReorder) {
-			logger.info("ui", "Ignoring group reorder drag in empty area", {
+			logger.debug("ui", "Ignoring group reorder drag in empty area", {
 				types: Array.from(event.dataTransfer.types)
 			});
 			return;
@@ -341,7 +341,7 @@ export const LeftRibbon: React.FC = () => {
 		const newGroup = createNewGroup(draggedSectionId);
 		const groupId = newGroup.id;
 
-		logger.info("ui", `Creating new group ${groupId} for section ${draggedSectionId} on left ribbon`, {
+		logger.debug("ui", `Creating new group ${groupId} for section ${draggedSectionId} on left ribbon`, {
 			draggedSectionId,
 			groupId,
 			category: section.category,

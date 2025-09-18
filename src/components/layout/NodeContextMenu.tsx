@@ -149,6 +149,8 @@ export const NodeContextMenu: React.FC<NodeContextMenuProps> = ({
 		<>
 			{/* Overlay to close menu when clicking outside */}
 			<div
+				role="button"
+				tabIndex={0}
 				style={{
 					position: "fixed",
 					top: 0,
@@ -158,6 +160,12 @@ export const NodeContextMenu: React.FC<NodeContextMenuProps> = ({
 					zIndex: 999,
 				}}
 				onClick={onClose}
+				onKeyDown={(e) => {
+					if (e.key === "Escape" || e.key === "Enter" || e.key === " ") {
+						onClose()
+					}
+				}}
+				aria-label="Close context menu"
 			/>
 
 			{/* Context menu */}

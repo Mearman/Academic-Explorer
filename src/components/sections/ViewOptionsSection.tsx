@@ -33,51 +33,51 @@ export const ViewOptionsSection: React.FC<ViewOptionsSectionProps> = ({
 	const handleNodeSizingChange = (value: string | null) => {
 		if (value) {
 			setNodeSizing(value);
-			logger.info("ui", `Changed node sizing to ${value}`);
+			logger.debug("ui", `Changed node sizing to ${value}`);
 		}
 	};
 
 	const handleColorSchemeChange = (value: string | null) => {
 		if (value) {
 			setNodeColorScheme(value);
-			logger.info("ui", `Changed color scheme to ${value}`);
+			logger.debug("ui", `Changed color scheme to ${value}`);
 		}
 	};
 
 	const handleEdgeStyleChange = (value: string | null) => {
 		if (value) {
 			setEdgeStyle(value);
-			logger.info("ui", `Changed edge style to ${value}`);
+			logger.debug("ui", `Changed edge style to ${value}`);
 		}
 	};
 
 	const handleToggleLabels = () => {
 		const newValue = !showLabels;
 		setShowLabels(newValue);
-		logger.info("ui", `Toggled labels to ${newValue ? "visible" : "hidden"}`);
+		logger.debug("ui", `Toggled labels to ${newValue ? "visible" : "hidden"}`);
 	};
 
 	const handleToggleNodeBorders = () => {
 		const newValue = !showNodeBorders;
 		setShowNodeBorders(newValue);
-		logger.info("ui", `Toggled node borders to ${newValue ? "visible" : "hidden"}`);
+		logger.debug("ui", `Toggled node borders to ${newValue ? "visible" : "hidden"}`);
 	};
 
 	const handleResetView = () => {
 		// Mock reset functionality
-		logger.info("ui", "Resetting view to defaults");
+		logger.debug("ui", "Resetting view to defaults");
 		// In a real implementation, this would reset zoom/pan
 	};
 
 	const handleExportImage = () => {
 		// Mock export functionality
-		logger.info("ui", "Exporting graph image");
+		logger.debug("ui", "Exporting graph image");
 		// In a real implementation, this would capture the graph as an image
 	};
 
 	const handleFitToView = () => {
 		// Mock fit to view functionality
-		logger.info("ui", "Fitting graph to view");
+		logger.debug("ui", "Fitting graph to view");
 		// In a real implementation, this would call ReactFlow's fitView
 	};
 

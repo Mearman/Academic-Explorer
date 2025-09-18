@@ -83,7 +83,7 @@ export const GraphStatsSection: React.FC<GraphStatsSectionProps> = ({
 		document.body.removeChild(a);
 		URL.revokeObjectURL(url);
 
-		logger.info("ui", "Graph statistics exported", {
+		logger.debug("ui", "Graph statistics exported", {
 			nodeCount: totalNodeCount,
 			edgeCount: totalEdgeCount
 		});

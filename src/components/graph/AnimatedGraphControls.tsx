@@ -98,13 +98,13 @@ export const AnimatedGraphControls: React.FC<AnimatedGraphControlsProps> = ({
 	// Animation state and actions now come from props passed by parent
 
 	const handleStartLayout = () => {
-		logger.info("graph", "User initiated animated layout");
+		logger.debug("graph", "User initiated animated layout");
 		applyLayout();
 	};
 
 	// Configuration updates are now handled by parent component
 	const handleConfigChange = (key: string, value: number) => {
-		logger.info("graph", "Animation config change requested (handled by parent)", { [key]: value });
+		logger.debug("graph", "Animation config change requested (handled by parent)", { [key]: value });
 	};
 
 	const getStatusColor = () => {
@@ -146,7 +146,7 @@ export const AnimatedGraphControls: React.FC<AnimatedGraphControlsProps> = ({
 						<Switch
 							size="sm"
 							checked={true}
-							onChange={() => { logger.info("graph", "Animation toggle handled by parent"); }}
+							onChange={() => { logger.debug("graph", "Animation toggle handled by parent"); }}
 							label="Enable"
 							disabled={!enabled}
 						/>
