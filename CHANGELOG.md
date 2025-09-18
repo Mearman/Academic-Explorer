@@ -1,3 +1,10 @@
+## [5.3.1](https://github.com/Mearman/Academic-Explorer/compare/v5.3.0...v5.3.1) (2025-09-18)
+
+
+### Bug Fixes
+
+* **app:** correct indentation to resolve ESLint infinite recursion ([89ba829](https://github.com/Mearman/Academic-Explorer/commit/89ba829c27eeaca3c3a5cb18cc42de6f127b78a0))
+
 # [5.3.0](https://github.com/Mearman/Academic-Explorer/compare/v5.2.0...v5.3.0) (2025-09-17)
 
 
