@@ -6,6 +6,7 @@
 import React from "react";
 import { Handle, Position } from "@xyflow/react";
 // Note: Handles are still needed for XYFlow to register connection points, but floating edges override positioning
+import { Tooltip } from "@mantine/core";
 import {
 	IconCalendar,
 	IconChartBar,
@@ -47,39 +48,40 @@ const PinToggleButton: React.FC<PinToggleButtonProps> = ({ nodeId, isPinned, cla
 	};
 
 	return (
-		<button
-			className={`nodrag ${className || ""}`}
-			onClick={handleTogglePin}
-			style={{
-				background: "rgba(0, 0, 0, 0.7)",
-				border: "none",
-				borderRadius: "0px 8px 0px 0px", // Only top-right corner rounded
-				padding: "0px",
-				margin: "0px",
-				display: "flex",
-				alignItems: "center",
-				justifyContent: "center",
-				cursor: "pointer",
-				transition: "all 0.2s ease",
-				width: "20px",
-				alignSelf: "stretch", // Explicitly stretch to fill parent height
-				flexShrink: 0,
-				boxSizing: "border-box" // Ensure proper box model
-			}}
-			onMouseEnter={(e) => {
-				e.currentTarget.style.background = "rgba(0, 0, 0, 0.9)";
-			}}
-			onMouseLeave={(e) => {
-				e.currentTarget.style.background = "rgba(0, 0, 0, 0.7)";
-			}}
-			title={isPinned ? "Unpin node" : "Pin node"}
-		>
-			{isPinned ? (
-				<IconPinFilled size={10} style={{ color: "#ffc107" }} />
-			) : (
-				<IconPin size={10} style={{ color: "#ffffff" }} />
-			)}
-		</button>
+		<Tooltip label={isPinned ? "Unpin node" : "Pin node"} openDelay={200} position="top" withArrow>
+			<button
+				className={`nodrag ${className || ""}`}
+				onClick={handleTogglePin}
+				style={{
+					background: "rgba(0, 0, 0, 0.7)",
+					border: "none",
+					borderRadius: "0px 8px 0px 0px", // Only top-right corner rounded
+					padding: "0px",
+					margin: "0px",
+					display: "flex",
+					alignItems: "center",
+					justifyContent: "center",
+					cursor: "pointer",
+					transition: "all 0.2s ease",
+					width: "20px",
+					alignSelf: "stretch", // Explicitly stretch to fill parent height
+					flexShrink: 0,
+					boxSizing: "border-box" // Ensure proper box model
+				}}
+				onMouseEnter={(e) => {
+					e.currentTarget.style.background = "rgba(0, 0, 0, 0.9)";
+				}}
+				onMouseLeave={(e) => {
+					e.currentTarget.style.background = "rgba(0, 0, 0, 0.7)";
+				}}
+			>
+				{isPinned ? (
+					<IconPinFilled size={10} style={{ color: "#ffc107" }} />
+				) : (
+					<IconPin size={10} style={{ color: "#ffffff" }} />
+				)}
+			</button>
+		</Tooltip>
 	);
 };
 
@@ -99,35 +101,36 @@ const ExpandButton: React.FC<ExpandButtonProps> = ({ nodeId, className }) => {
 	};
 
 	return (
-		<button
-			className={`nodrag ${className || ""}`}
-			onClick={handleExpand}
-			style={{
-				background: "rgba(0, 0, 0, 0.7)",
-				border: "none",
-				borderRadius: "0px 0px 8px 0px", // Only bottom-right corner rounded
-				padding: "0px",
-				margin: "0px",
-				display: "flex",
-				alignItems: "center",
-				justifyContent: "center",
-				cursor: "pointer",
-				transition: "all 0.2s ease",
-				width: "20px",
-				alignSelf: "stretch",
-				flexShrink: 0,
-				boxSizing: "border-box"
-			}}
-			onMouseEnter={(e) => {
-				e.currentTarget.style.background = "rgba(0, 0, 0, 0.9)";
-			}}
-			onMouseLeave={(e) => {
-				e.currentTarget.style.background = "rgba(0, 0, 0, 0.7)";
-			}}
-			title="Expand node connections"
-		>
-			<IconArrowsMaximize size={10} style={{ color: "#ffffff" }} />
-		</button>
+		<Tooltip label="Expand node connections" openDelay={200} position="bottom" withArrow>
+			<button
+				className={`nodrag ${className || ""}`}
+				onClick={handleExpand}
+				style={{
+					background: "rgba(0, 0, 0, 0.7)",
+					border: "none",
+					borderRadius: "0px 0px 8px 0px", // Only bottom-right corner rounded
+					padding: "0px",
+					margin: "0px",
+					display: "flex",
+					alignItems: "center",
+					justifyContent: "center",
+					cursor: "pointer",
+					transition: "all 0.2s ease",
+					width: "20px",
+					alignSelf: "stretch",
+					flexShrink: 0,
+					boxSizing: "border-box"
+				}}
+				onMouseEnter={(e) => {
+					e.currentTarget.style.background = "rgba(0, 0, 0, 0.9)";
+				}}
+				onMouseLeave={(e) => {
+					e.currentTarget.style.background = "rgba(0, 0, 0, 0.7)";
+				}}
+			>
+				<IconArrowsMaximize size={10} style={{ color: "#ffffff" }} />
+			</button>
+		</Tooltip>
 	);
 };
 
@@ -155,35 +158,36 @@ const SelectAdjacentButton: React.FC<SelectAdjacentButtonProps> = ({ nodeId, cla
 	};
 
 	return (
-		<button
-			className={`nodrag ${className || ""}`}
-			onClick={handleSelectAdjacent}
-			style={{
-				background: "rgba(0, 0, 0, 0.7)",
-				border: "none",
-				borderRadius: "0px", // No rounded corners for middle buttons
-				padding: "0px",
-				margin: "0px",
-				display: "flex",
-				alignItems: "center",
-				justifyContent: "center",
-				cursor: "pointer",
-				transition: "all 0.2s ease",
-				width: "20px",
-				alignSelf: "stretch",
-				flexShrink: 0,
-				boxSizing: "border-box"
-			}}
-			onMouseEnter={(e) => {
-				e.currentTarget.style.background = "rgba(0, 0, 0, 0.9)";
-			}}
-			onMouseLeave={(e) => {
-				e.currentTarget.style.background = "rgba(0, 0, 0, 0.7)";
-			}}
-			title="Select this node and all adjacent nodes"
-		>
-			<IconCircleDashed size={10} style={{ color: "#ffffff" }} />
-		</button>
+		<Tooltip label="Select this node and all adjacent nodes" openDelay={200} position="bottom" withArrow>
+			<button
+				className={`nodrag ${className || ""}`}
+				onClick={handleSelectAdjacent}
+				style={{
+					background: "rgba(0, 0, 0, 0.7)",
+					border: "none",
+					borderRadius: "0px", // No rounded corners for middle buttons
+					padding: "0px",
+					margin: "0px",
+					display: "flex",
+					alignItems: "center",
+					justifyContent: "center",
+					cursor: "pointer",
+					transition: "all 0.2s ease",
+					width: "20px",
+					alignSelf: "stretch",
+					flexShrink: 0,
+					boxSizing: "border-box"
+				}}
+				onMouseEnter={(e) => {
+					e.currentTarget.style.background = "rgba(0, 0, 0, 0.9)";
+				}}
+				onMouseLeave={(e) => {
+					e.currentTarget.style.background = "rgba(0, 0, 0, 0.7)";
+				}}
+			>
+				<IconCircleDashed size={10} style={{ color: "#ffffff" }} />
+			</button>
+		</Tooltip>
 	);
 };
 
@@ -209,35 +213,36 @@ const AddAdjacentButton: React.FC<AddAdjacentButtonProps> = ({ nodeId, className
 	};
 
 	return (
-		<button
-			className={`nodrag ${className || ""}`}
-			onClick={handleAddAdjacent}
-			style={{
-				background: "rgba(0, 0, 0, 0.7)",
-				border: "none",
-				borderRadius: "0px", // No rounded corners for middle buttons
-				padding: "0px",
-				margin: "0px",
-				display: "flex",
-				alignItems: "center",
-				justifyContent: "center",
-				cursor: "pointer",
-				transition: "all 0.2s ease",
-				width: "20px",
-				alignSelf: "stretch",
-				flexShrink: 0,
-				boxSizing: "border-box"
-			}}
-			onMouseEnter={(e) => {
-				e.currentTarget.style.background = "rgba(0, 0, 0, 0.9)";
-			}}
-			onMouseLeave={(e) => {
-				e.currentTarget.style.background = "rgba(0, 0, 0, 0.7)";
-			}}
-			title="Add this node and all adjacent nodes to selection"
-		>
-			<IconCirclePlus size={10} style={{ color: "#ffffff" }} />
-		</button>
+		<Tooltip label="Add this node and all adjacent nodes to selection" openDelay={200} position="bottom" withArrow>
+			<button
+				className={`nodrag ${className || ""}`}
+				onClick={handleAddAdjacent}
+				style={{
+					background: "rgba(0, 0, 0, 0.7)",
+					border: "none",
+					borderRadius: "0px", // No rounded corners for middle buttons
+					padding: "0px",
+					margin: "0px",
+					display: "flex",
+					alignItems: "center",
+					justifyContent: "center",
+					cursor: "pointer",
+					transition: "all 0.2s ease",
+					width: "20px",
+					alignSelf: "stretch",
+					flexShrink: 0,
+					boxSizing: "border-box"
+				}}
+				onMouseEnter={(e) => {
+					e.currentTarget.style.background = "rgba(0, 0, 0, 0.9)";
+				}}
+				onMouseLeave={(e) => {
+					e.currentTarget.style.background = "rgba(0, 0, 0, 0.7)";
+				}}
+			>
+				<IconCirclePlus size={10} style={{ color: "#ffffff" }} />
+			</button>
+		</Tooltip>
 	);
 };
 
@@ -269,35 +274,36 @@ const CollapseIsolatedButton: React.FC<CollapseIsolatedButtonProps> = ({ nodeId,
 	};
 
 	return (
-		<button
-			className={`nodrag ${className || ""}`}
-			onClick={handleCollapseIsolated}
-			style={{
-				background: "rgba(0, 0, 0, 0.7)",
-				border: "none",
-				borderRadius: "8px 0px 0px 0px", // Only top-left corner rounded
-				padding: "0px",
-				margin: "0px",
-				display: "flex",
-				alignItems: "center",
-				justifyContent: "center",
-				cursor: "pointer",
-				transition: "all 0.2s ease",
-				width: "20px",
-				alignSelf: "stretch",
-				flexShrink: 0,
-				boxSizing: "border-box"
-			}}
-			onMouseEnter={(e) => {
-				e.currentTarget.style.background = "rgba(0, 0, 0, 0.9)";
-			}}
-			onMouseLeave={(e) => {
-				e.currentTarget.style.background = "rgba(0, 0, 0, 0.7)";
-			}}
-			title="Collapse isolated adjacent nodes"
-		>
-			<IconArrowsMinimize size={10} style={{ color: "#ffffff" }} />
-		</button>
+		<Tooltip label="Collapse isolated adjacent nodes" openDelay={200} position="bottom" withArrow>
+			<button
+				className={`nodrag ${className || ""}`}
+				onClick={handleCollapseIsolated}
+				style={{
+					background: "rgba(0, 0, 0, 0.7)",
+					border: "none",
+					borderRadius: "8px 0px 0px 0px", // Only top-left corner rounded
+					padding: "0px",
+					margin: "0px",
+					display: "flex",
+					alignItems: "center",
+					justifyContent: "center",
+					cursor: "pointer",
+					transition: "all 0.2s ease",
+					width: "20px",
+					alignSelf: "stretch",
+					flexShrink: 0,
+					boxSizing: "border-box"
+				}}
+				onMouseEnter={(e) => {
+					e.currentTarget.style.background = "rgba(0, 0, 0, 0.9)";
+				}}
+				onMouseLeave={(e) => {
+					e.currentTarget.style.background = "rgba(0, 0, 0, 0.7)";
+				}}
+			>
+				<IconArrowsMinimize size={10} style={{ color: "#ffffff" }} />
+			</button>
+		</Tooltip>
 	);
 };
 
