@@ -13,47 +13,14 @@ import type { ExpansionOptions } from "@/lib/entities";
 import type { ExpansionSettings } from "@/lib/graph/types/expansion-settings";
 import type {
 	DataFetchingMessage,
-	DataFetchingResponse,
 	ExpandNodePayload,
-	ExpandCompletePayload
 } from "@/workers/data-fetching.worker";
 
-// Type guards for worker message payloads
-function isExpandCompletePayload(payload: unknown): payload is ExpandCompletePayload {
-	if (typeof payload !== "object" || payload === null) return false;
-
-	// Check if the payload has the required properties
-	if (!("nodeId" in payload && "nodes" in payload && "edges" in payload)) {
-		return false;
-	}
-
-	// Use array indexing to access properties without type assertions
-	const hasValidNodeId = typeof payload["nodeId"] === "string";
-	const hasValidNodes = Array.isArray(payload["nodes"]);
-	const hasValidEdges = Array.isArray(payload["edges"]);
-
-	return hasValidNodeId && hasValidNodes && hasValidEdges;
-}
-
-function isProgressPayload(payload: unknown): payload is { completed: number; total: number; stage: string } {
-	if (typeof payload !== "object" || payload === null) return false;
-
-	// Check if the payload has the required properties
-	if (!("completed" in payload && "total" in payload && "stage" in payload)) {
-		return false;
-	}
-
-	// Use array indexing to access properties without type assertions
-	const hasValidCompleted = typeof payload["completed"] === "number";
-	const hasValidTotal = typeof payload["total"] === "number";
-	const hasValidStage = typeof payload["stage"] === "string";
-
-	return hasValidCompleted && hasValidTotal && hasValidStage;
-}
+// Hook for data fetching worker functionality
 
 // Hook options
 interface UseDataFetchingWorkerOptions {
-  onExpandComplete?: (result: ExpandCompletePayload) => void;
+  onExpandComplete?: (result: WorkerEventPayloads[WorkerEventType.DATA_FETCH_COMPLETE]) => void;
   onExpandError?: (nodeId: string, error: string) => void;
   onProgress?: (nodeId: string, progress: { completed: number; total: number; stage: string }) => void;
 }
@@ -173,16 +140,8 @@ export function useDataFetchingWorker(options: UseDataFetchingWorkerOptions = {}
 			// Update progress store
 			completeRequest(request.nodeId);
 
-			// Create ExpandCompletePayload for backward compatibility
-			const completePayload: ExpandCompletePayload = {
-				nodeId: payload.nodeId,
-				nodes: payload.nodes,
-				edges: payload.edges,
-				statistics: payload.statistics
-			};
-
 			// Call completion callback
-			onExpandComplete?.(completePayload);
+			onExpandComplete?.(payload);
 			request.resolve();
 
 			logger.debug("graph", "Node expansion completed via EventBridge", {
@@ -224,105 +183,6 @@ export function useDataFetchingWorker(options: UseDataFetchingWorkerOptions = {}
 		}
 	}, [failRequest, onExpandError]);
 
-	// Legacy message handler for old-style communication (can be removed after full migration)
-	const handleWorkerMessage = useCallback((event: MessageEvent<DataFetchingResponse>) => {
-		const { type, id, payload, error } = event.data;
-
-		switch (type) {
-			case "ready":
-				if (error) {
-					logger.error("graph", "Data fetching worker failed to initialize", { error });
-					setIsWorkerReady(false);
-					setWorkerReady(false);
-				} else {
-					logger.debug("graph", "Data fetching worker ready");
-					setIsWorkerReady(true);
-					setWorkerReady(true);
-				}
-				break;
-
-			case "expandComplete":
-				if (id && payload && isExpandCompletePayload(payload)) {
-					const request = pendingRequestsRef.current.get(id);
-					if (request) {
-						// Update statistics
-						statsRef.current.completedRequests++;
-						statsRef.current.totalDuration += (Date.now() - request.timestamp);
-
-						// Clean up tracking
-						pendingRequestsRef.current.delete(id);
-						setActiveRequests(prev => {
-							const newSet = new Set(prev);
-							newSet.delete(request.nodeId);
-							return newSet;
-						});
-
-						// Update progress store
-						completeRequest(request.nodeId);
-
-						// Call completion callback
-						onExpandComplete?.(payload);
-						request.resolve();
-
-						logger.debug("graph", "Node expansion completed via worker", {
-							nodeId: request.nodeId,
-							nodesAdded: payload.nodes.length || 0,
-							edgesAdded: payload.edges.length || 0,
-							duration: payload.statistics?.duration || 0
-						});
-					}
-				}
-				break;
-
-			case "expandError":
-				if (id) {
-					const request = pendingRequestsRef.current.get(id);
-					if (request) {
-						// Update statistics
-						statsRef.current.failedRequests++;
-						statsRef.current.totalDuration += (Date.now() - request.timestamp);
-
-						// Clean up tracking
-						pendingRequestsRef.current.delete(id);
-						setActiveRequests(prev => {
-							const newSet = new Set(prev);
-							newSet.delete(request.nodeId);
-							return newSet;
-						});
-
-						// Update progress store with error
-						const errorMessage = error || "Unknown expansion error";
-						failRequest(request.nodeId, errorMessage);
-
-						// Call error callback
-						onExpandError?.(request.nodeId, errorMessage);
-						request.reject(new Error(errorMessage));
-
-						logger.error("graph", "Node expansion failed via worker", {
-							nodeId: request.nodeId,
-							error: errorMessage
-						});
-					}
-				}
-				break;
-
-			case "progress":
-				if (id && payload && isProgressPayload(payload)) {
-					const request = pendingRequestsRef.current.get(id);
-					if (request) {
-						// Update progress store
-						updateProgress(request.nodeId, payload);
-
-						// Call progress callback
-						onProgress?.(request.nodeId, payload);
-					}
-				}
-				break;
-
-			default:
-				logger.warn("graph", "Unknown worker message type", { type });
-		}
-	}, [onExpandComplete, onExpandError, onProgress, completeRequest, failRequest, updateProgress, setWorkerReady]);
 
 	// Handle worker errors
 	const handleWorkerError = useCallback((error: ErrorEvent) => {
@@ -365,8 +225,7 @@ export function useDataFetchingWorker(options: UseDataFetchingWorkerOptions = {}
 				{ type: "module" }
 			);
 
-			// Keep legacy message listeners temporarily for debugging
-			workerRef.current.addEventListener("message", handleWorkerMessage);
+			// Add error listener
 			workerRef.current.addEventListener("error", handleWorkerError);
 
 			// Register worker with event bridge for cross-context communication
@@ -393,7 +252,7 @@ export function useDataFetchingWorker(options: UseDataFetchingWorkerOptions = {}
 				setWorkerReady(false);
 			}
 		};
-	}, [clearAll, handleWorkerMessage, onExpandError, setWorkerReady, handleWorkerError]); // Initialize only once, but include stable dependencies
+	}, [clearAll, onExpandError, setWorkerReady, handleWorkerError]); // Initialize only once, but include stable dependencies
 
 	// Register EventBridge listeners for cross-context communication
 	useEffect(() => {
