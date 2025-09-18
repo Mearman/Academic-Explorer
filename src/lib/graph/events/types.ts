@@ -413,7 +413,7 @@ const GraphNodeSchema = z.object({
   id: z.string(),
   type: z.string(),
   position: z.object({ x: z.number(), y: z.number() }).optional(),
-  data: z.record(z.unknown())
+  data: z.record(z.string(), z.unknown())
 });
 
 const GraphEdgeSchema = z.object({
@@ -421,7 +421,7 @@ const GraphEdgeSchema = z.object({
   source: z.string(),
   target: z.string(),
   type: z.string().optional(),
-  data: z.record(z.unknown()).optional()
+  data: z.record(z.string(), z.unknown()).optional()
 });
 
 // Graph Event Payload Schemas
@@ -485,7 +485,7 @@ export const EntityEventPayloadSchemas = {
     entityId: z.string(),
     entityType: z.string(),
     updatedFields: z.array(z.string()),
-    newData: z.record(z.unknown())
+    newData: z.record(z.string(), z.unknown())
   }),
   [EntityEventType.ENTITY_CONNECTIONS_UPDATED]: BaseEventPayloadSchema.extend({
     entityId: z.string(),
@@ -537,7 +537,7 @@ export const NodeEventPayloadSchemas = {
     nodeId: z.string(),
     entityId: z.string(),
     entityType: z.string(),
-    styleChanges: z.record(z.unknown())
+    styleChanges: z.record(z.string(), z.unknown())
   }),
   [NodeEventType.NODE_LOADING_STATE_CHANGED]: BaseEventPayloadSchema.extend({
     nodeId: z.string(),
@@ -601,7 +601,7 @@ export const EdgeEventPayloadSchemas = {
     sourceEntityId: z.string(),
     targetEntityId: z.string(),
     relationType: z.string(),
-    styleChanges: z.record(z.unknown())
+    styleChanges: z.record(z.string(), z.unknown())
   }),
   [EdgeEventType.EDGE_VISIBILITY_CHANGED]: BaseEventPayloadSchema.extend({
     edgeId: z.string(),
@@ -639,4 +639,16 @@ export function parseEventPayloadWithSchema<T extends z.ZodType>(
 ): z.infer<T> | null {
   const result = schema.safeParse(payload);
   return result.success ? result.data : null;
+}
+
+
+/**
+ * Parse and validate payload, throwing on failure
+ * Returns typed payload or throws error
+ */
+export function parseValidEventPayload<TPayload>(
+  payload: unknown,
+  schema: z.ZodType<TPayload>
+): TPayload {
+  return schema.parse(payload);
 }
