@@ -8,6 +8,7 @@ import { EntityDetector } from "@/lib/graph/utils/entity-detection";
 import { logger } from "@/lib/logger";
 import type { GraphNode, GraphEdge } from "@/lib/graph/types";
 import type { OpenAlexEntity } from "@/lib/openalex/types";
+import { isOpenAlexEntity } from "@/lib/openalex/type-guards";
 
 // Query key factories for graph data
 export const graphQueryKeys = {
@@ -50,9 +51,9 @@ export function getCachedOpenAlexEntities(queryClient: QueryClient): OpenAlexEnt
 	// Extract the data from successful queries
 	entityQueries.forEach(query => {
 		try {
-			const entity = query.state.data as OpenAlexEntity;
-			if (entity.id) {
-				cachedEntities.push(entity);
+			const data = query.state.data;
+			if (isOpenAlexEntity(data)) {
+				cachedEntities.push(data);
 			}
 		} catch (error) {
 			logger.warn("cache", "Failed to extract entity from cached query", {
@@ -62,7 +63,7 @@ export function getCachedOpenAlexEntities(queryClient: QueryClient): OpenAlexEnt
 		}
 	});
 
-	logger.info("cache", "Retrieved cached OpenAlex entities", {
+	logger.debug("cache", "Retrieved cached OpenAlex entities", {
 		count: cachedEntities.length
 	}, "GraphCache");
 
@@ -100,7 +101,7 @@ export function getCachedEntitiesByType(
 export function setCachedGraphNodes(queryClient: QueryClient, nodes: GraphNode[]) {
 	queryClient.setQueryData(graphQueryKeys.nodes(), nodes);
 
-	logger.info("cache", "Stored graph nodes in TanStack Query cache", {
+	logger.debug("cache", "Stored graph nodes in TanStack Query cache", {
 		count: nodes.length
 	}, "GraphCache");
 }
@@ -111,7 +112,7 @@ export function setCachedGraphNodes(queryClient: QueryClient, nodes: GraphNode[]
 export function setCachedGraphEdges(queryClient: QueryClient, edges: GraphEdge[]) {
 	queryClient.setQueryData(graphQueryKeys.edges(), edges);
 
-	logger.info("cache", "Stored graph edges in TanStack Query cache", {
+	logger.debug("cache", "Stored graph edges in TanStack Query cache", {
 		count: edges.length
 	}, "GraphCache");
 }
@@ -136,7 +137,7 @@ export function getCachedGraphEdges(queryClient: QueryClient): GraphEdge[] | und
 export function setNodeExpanded(queryClient: QueryClient, nodeId: string, expanded: boolean) {
 	queryClient.setQueryData(graphQueryKeys.expandedNode(nodeId), expanded);
 
-	logger.info("cache", "Updated node expansion status", {
+	logger.debug("cache", "Updated node expansion status", {
 		nodeId,
 		expanded
 	}, "GraphCache");
@@ -162,7 +163,7 @@ export function clearGraphCache(queryClient: QueryClient) {
 		}
 	});
 
-	logger.info("cache", "Cleared all graph cache data", {}, "GraphCache");
+	logger.debug("cache", "Cleared all graph cache data", {}, "GraphCache");
 }
 
 /**
