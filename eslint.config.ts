@@ -173,6 +173,7 @@ export default tseslint.config([
       'src/lib/openalex/utils/query-builder.ts',
       'src/lib/utils/type-helpers.ts',
       'src/lib/hooks/use-openalex-query.ts', // Generic query hook requires type assertions
+      'src/lib/graph/events/context-proxy.ts', // Cross-context event proxy requires type assertions for validated data
     ],
     rules: {
       '@typescript-eslint/consistent-type-assertions': 'off', // External API boundaries require type assertions

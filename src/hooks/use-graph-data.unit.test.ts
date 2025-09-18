@@ -2,7 +2,11 @@
  * Unit tests for use-graph-data hook
  */
 
-// Mock dependencies first (before any imports)
+import { renderHook } from "@testing-library/react";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { describe, it, expect, beforeEach, afterEach, vi, type Mock } from "vitest";
+
+// Mock dependencies after imports
 vi.mock("@/services/graph-data-service");
 vi.mock("@/stores/graph-store");
 vi.mock("@/hooks/use-data-fetching-worker");
@@ -15,10 +19,6 @@ vi.mock("@/lib/logger", () => ({
 	},
 	logError: vi.fn(),
 }));
-
-import { renderHook } from "@testing-library/react";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { vi, type Mock } from "vitest";
 import { useGraphData } from "./use-graph-data";
 import { GraphDataService } from "@/services/graph-data-service";
 import { useGraphStore } from "@/stores/graph-store";

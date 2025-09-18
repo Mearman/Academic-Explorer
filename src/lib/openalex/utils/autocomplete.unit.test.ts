@@ -3,7 +3,7 @@
  * Tests debouncing, caching, entity-specific searches, and cross-entity functionality
  */
 
-import { describe, it, expect, beforeEach, vi, type MockedFunction } from "vitest";
+import { describe, it, expect, beforeEach, afterEach, vi, type MockedFunction } from "vitest";
 import { AutocompleteApi } from "./autocomplete";
 import { OpenAlexBaseClient } from "../client";
 import type { AutocompleteResult, EntityType } from "../types";
