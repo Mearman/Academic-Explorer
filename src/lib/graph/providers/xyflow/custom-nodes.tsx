@@ -20,7 +20,8 @@ import {
 	IconArrowsMaximize,
 	IconArrowsMinimize,
 	IconCircleDashed,
-	IconCirclePlus
+	IconCirclePlus,
+	IconScissors
 } from "@tabler/icons-react";
 import type { EntityType, ExternalIdentifier } from "../../types";
 import { useGraphStore } from "@/stores/graph-store";
@@ -307,6 +308,67 @@ const CollapseIsolatedButton: React.FC<CollapseIsolatedButtonProps> = ({ nodeId,
 	);
 };
 
+// Remove leaf nodes button component
+interface RemoveLeafNodesButtonProps {
+  nodeId: string;
+  className?: string;
+}
+
+const RemoveLeafNodesButton: React.FC<RemoveLeafNodesButtonProps> = ({ nodeId, className }) => {
+	const getNeighbors = useGraphStore((state) => state.getNeighbors);
+	const removeNode = useGraphStore((state) => state.removeNode);
+
+	const handleRemoveLeafNodes = (e: React.MouseEvent) => {
+		e.stopPropagation(); // Prevent node selection/dragging
+
+		// Get adjacent nodes (neighbors) of the current node
+		const neighbors = getNeighbors(nodeId);
+
+		// For each neighbor, check if it's a leaf node (only has one connection)
+		neighbors.forEach(neighbor => {
+			const neighborConnections = getNeighbors(neighbor.id);
+
+			// If the neighbor is a leaf node (only connected to current node), remove it
+			if (neighborConnections.length === 1) {
+				removeNode(neighbor.id);
+			}
+		});
+	};
+
+	return (
+		<Tooltip label="Remove all leaf nodes connected to this node" openDelay={200} position="bottom" withArrow>
+			<button
+				className={`nodrag ${className || ""}`}
+				onClick={handleRemoveLeafNodes}
+				style={{
+					background: "rgba(0, 0, 0, 0.7)",
+					border: "none",
+					borderRadius: "0px", // No rounded corners for middle buttons
+					padding: "0px",
+					margin: "0px",
+					display: "flex",
+					alignItems: "center",
+					justifyContent: "center",
+					cursor: "pointer",
+					transition: "all 0.2s ease",
+					width: "20px",
+					alignSelf: "stretch",
+					flexShrink: 0,
+					boxSizing: "border-box"
+				}}
+				onMouseEnter={(e) => {
+					e.currentTarget.style.background = "rgba(0, 0, 0, 0.9)";
+				}}
+				onMouseLeave={(e) => {
+					e.currentTarget.style.background = "rgba(0, 0, 0, 0.7)";
+				}}
+			>
+				<IconScissors size={10} style={{ color: "#ffffff" }} />
+			</button>
+		</Tooltip>
+	);
+};
+
 interface NodeData {
   label: string;
   entityId: string;
@@ -553,6 +615,7 @@ export const CustomNode: React.FC<CustomNodeProps> = ({ data, selected }) => {
 				minHeight: "20px" // Slightly smaller than top bar
 			}}>
 				<CollapseIsolatedButton nodeId={data.entityId} />
+				<RemoveLeafNodesButton nodeId={data.entityId} />
 				<SelectAdjacentButton nodeId={data.entityId} />
 				<AddAdjacentButton nodeId={data.entityId} />
 				<ExpandButton nodeId={data.entityId} />
@@ -663,6 +726,7 @@ export const WorkNode: React.FC<CustomNodeProps> = ({ data, selected }) => {
 				minHeight: "20px" // Slightly smaller than top bar
 			}}>
 				<CollapseIsolatedButton nodeId={data.entityId} />
+				<RemoveLeafNodesButton nodeId={data.entityId} />
 				<SelectAdjacentButton nodeId={data.entityId} />
 				<AddAdjacentButton nodeId={data.entityId} />
 				<ExpandButton nodeId={data.entityId} />
@@ -761,6 +825,7 @@ export const AuthorNode: React.FC<CustomNodeProps> = ({ data, selected }) => {
 				minHeight: "20px" // Slightly smaller than top bar
 			}}>
 				<CollapseIsolatedButton nodeId={data.entityId} />
+				<RemoveLeafNodesButton nodeId={data.entityId} />
 				<SelectAdjacentButton nodeId={data.entityId} />
 				<AddAdjacentButton nodeId={data.entityId} />
 				<ExpandButton nodeId={data.entityId} />
@@ -859,6 +924,7 @@ export const SourceNode: React.FC<CustomNodeProps> = ({ data, selected }) => {
 				minHeight: "20px" // Slightly smaller than top bar
 			}}>
 				<CollapseIsolatedButton nodeId={data.entityId} />
+				<RemoveLeafNodesButton nodeId={data.entityId} />
 				<SelectAdjacentButton nodeId={data.entityId} />
 				<AddAdjacentButton nodeId={data.entityId} />
 				<ExpandButton nodeId={data.entityId} />
