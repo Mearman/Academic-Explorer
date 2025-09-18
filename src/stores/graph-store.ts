@@ -18,6 +18,8 @@ import type {
 } from "@/lib/graph/types";
 import { RelationType } from "@/lib/graph/types";
 import { DEFAULT_FORCE_PARAMS } from "@/lib/graph/force-params";
+import { graphEventSystem, entityEventSystem } from "@/lib/graph/events";
+import { logger } from "@/lib/logger";
 
 // Helper function to create initial edge type stats
 const createInitialEdgeTypeStats = () => ({
@@ -369,6 +371,15 @@ export const useGraphStore = create<GraphState>()(
 				state.recomputeVisibleNodes();
 				state.recomputeLoadingNodes();
 				state.recomputeNodeCaches();
+
+				// Emit cross-context events
+				graphEventSystem.emitNodeAdded(node).catch((err: unknown) => {
+					const errorMessage = err instanceof Error ? err.message : "Unknown error";
+					logger.error("graph", "Failed to emit node added event", {
+						error: errorMessage,
+						nodeId: node.id
+					});
+				});
 			},
 
 			addNodes: (nodes) => {
@@ -384,12 +395,28 @@ export const useGraphStore = create<GraphState>()(
 				state.recomputeVisibleNodes();
 				state.recomputeLoadingNodes();
 				state.recomputeNodeCaches();
+
+				// Emit cross-context events
+				if (nodes.length > 0) {
+					graphEventSystem.emitBulkNodesAdded(nodes).catch((err: unknown) => {
+						const errorMessage = err instanceof Error ? err.message : "Unknown error";
+						logger.error("graph", "Failed to emit bulk nodes added event", {
+							error: errorMessage,
+							nodeCount: nodes.length
+						});
+					});
+				}
 			},
 
 			removeNode: (nodeId) => {
+				let removedNode: GraphNode | undefined;
+
 				set((draft) => {
+					// Store removed node for event emission
+					removedNode = draft.nodes[nodeId];
+
 					// Remove node
-					const { [nodeId]: removedNode, ...remainingNodes } = draft.nodes;
+					const { [nodeId]: removed, ...remainingNodes } = draft.nodes;
 					draft.nodes = remainingNodes;
 					draft.provider?.removeNode(nodeId);
 
@@ -415,6 +442,7 @@ export const useGraphStore = create<GraphState>()(
 						draft.hoveredNodeId = null;
 					}
 				});
+
 				// Recompute cached statistics after data change
 				const state = get();
 				state.recomputeEntityTypeStats();
@@ -422,6 +450,26 @@ export const useGraphStore = create<GraphState>()(
 				state.recomputeVisibleNodes();
 				state.recomputeLoadingNodes();
 				state.recomputeNodeCaches();
+
+				// Emit cross-context events
+				if (removedNode) {
+					const node = removedNode; // Type narrowing
+					graphEventSystem.emitNodeRemoved(nodeId, node.entityId, node.type).catch((err: unknown) => {
+						const errorMessage = err instanceof Error ? err.message : "Unknown error";
+						logger.error("graph", "Failed to emit node removed event", {
+							error: errorMessage,
+							nodeId, entityId: node.entityId
+						});
+					});
+
+					entityEventSystem.emitEntityRemoved(node.entityId, node.type, nodeId).catch((err: unknown) => {
+						const errorMessage = err instanceof Error ? err.message : "Unknown error";
+						logger.error("graph", "Failed to emit entity removed event", {
+							error: errorMessage,
+							entityId: node.entityId, nodeId
+						});
+					});
+				}
 			},
 
 			updateNode: (nodeId, updates) => {
