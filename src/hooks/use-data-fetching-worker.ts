@@ -6,6 +6,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { logger } from "@/lib/logger";
 import { useDataFetchingProgressStore } from "@/stores/data-fetching-progress-store";
+import { eventBridge } from "@/lib/graph/events";
 import type { EntityType } from "@/lib/graph/types";
 import type { ExpansionOptions } from "@/lib/entities";
 import type { ExpansionSettings } from "@/lib/graph/types/expansion-settings";
@@ -259,6 +260,9 @@ export function useDataFetchingWorker(options: UseDataFetchingWorkerOptions = {}
 
 			workerRef.current.addEventListener("message", handleWorkerMessage);
 			workerRef.current.addEventListener("error", handleWorkerError);
+
+			// Register worker with event bridge for cross-context communication
+			eventBridge.registerWorker(workerRef.current, "data-fetching-worker");
 
 		} catch (error) {
 			logger.error("graph", "Failed to initialize data fetching worker", { error });
