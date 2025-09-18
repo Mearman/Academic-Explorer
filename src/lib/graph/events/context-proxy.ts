@@ -12,7 +12,7 @@ import type {
   ExecutionContext,
   EventSystemListener
 } from "./types";
-import { parseEventPayloadWithSchema } from "./types";
+import { createZodValidatedHandler } from "./types";
 import type { z } from "zod";
 
 /**
@@ -321,38 +321,36 @@ export class CrossContextEventProxy<TEventType extends string, TPayload> extends
   }
 
   /**
-   * Create a validated handler wrapper that works with unknown payloads
+   * Create a type-safe validated handler wrapper using Zod
    */
   private createValidatedHandler(
     handler: (payload: TPayload) => void | Promise<void>,
     eventType: TEventType
   ): (payload: unknown) => void | Promise<void> {
-    return (payload: unknown) => {
-      const schema = this.eventSchemas.get(eventType);
-      if (!schema) {
-        logger.warn("general", "No schema found for event type", { eventType });
-        return;
-      }
+    const schema = this.eventSchemas.get(eventType);
+    if (!schema) {
+      logger.warn("general", "No schema found for event type", { eventType });
+      // Return a no-op handler that logs the missing schema
+      return () => {
+        logger.warn("general", "Cannot validate payload without schema", { eventType });
+      };
+    }
 
-      const validatedPayload = parseEventPayloadWithSchema(payload, schema);
-      if (validatedPayload === null) {
-        logger.warn("general", "Invalid cross-context payload received", { payload, eventType });
-        return;
-      }
-
-      // Use reflection to invoke handler without explicit type assertions
-      // This uses JavaScript's dynamic nature to avoid TypeScript type constraints
-      try {
-        // Invoke handler with validated payload using reflection
-        // This bypasses TypeScript's type checking while maintaining runtime safety
-        Reflect.apply(handler, null, [validatedPayload]);
-      } catch (error) {
-        logger.warn("general", "Handler execution failed", {
-          eventType,
-          error: error instanceof Error ? error.message : "Unknown error"
-        });
-      }
-    };
+    // Use the new type-safe Zod validator with proper error logging
+    // The createZodValidatedHandler ensures payload is properly typed after validation
+    return createZodValidatedHandler(
+      (validatedPayload: TPayload) => {
+        try {
+          return handler(validatedPayload);
+        } catch (error) {
+          logger.warn("general", "Handler execution failed", {
+            eventType,
+            error: error instanceof Error ? error.message : "Unknown error"
+          });
+        }
+      },
+      schema
+    );
   }
 
   /**
