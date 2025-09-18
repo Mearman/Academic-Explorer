@@ -604,7 +604,7 @@ describe("OpenAlexClient", () => {
 			mockWorksApi.getWork.mockRejectedValue(new Error("Error"));
 			mockAuthorsApi.getAuthor.mockRejectedValue(new Error("Error"));
 
-			const consoleSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
+			const consoleSpy = vi.spyOn(console, "error").mockImplementation(() => {});
 
 			const result = await client.getEntities(["W123", "A456"]);
 
