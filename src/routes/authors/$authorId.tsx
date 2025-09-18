@@ -29,7 +29,7 @@ function AuthorRoute() {
 
 		// If ID was normalized and is different from input, redirect
 		if (detection.normalizedId && detection.normalizedId !== authorId) {
-			logger.info("routing", "Redirecting to normalized author ID", {
+			logger.debug("routing", "Redirecting to normalized author ID", {
 				originalId: authorId,
 				normalizedId: detection.normalizedId
 			}, "AuthorRoute");

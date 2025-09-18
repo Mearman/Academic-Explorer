@@ -28,7 +28,7 @@ function WorkRoute() {
 
 		// If ID was normalized and is different from input, redirect
 		if (detection.normalizedId && detection.normalizedId !== workId) {
-			logger.info("routing", "Redirecting to normalized work ID", {
+			logger.debug("routing", "Redirecting to normalized work ID", {
 				originalId: workId,
 				normalizedId: detection.normalizedId
 			}, "WorkRoute");

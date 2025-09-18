@@ -98,7 +98,7 @@ describe("Entity Data Storage Integration", () => {
 			// Verify only the primary node exists (total nodes should be 1)
 			expect(Object.keys(store.nodes).length).toBe(1);
 
-			logger.info("integration", "Entity data storage test completed successfully", {
+			logger.debug("integration", "Entity data storage test completed successfully", {
 				mainNodeId: mainNode.id,
 				hasEntityData: !!mainNode.entityData,
 				referencedWorksCount: mainNode.entityData?.referenced_works?.length,
@@ -159,7 +159,7 @@ describe("Entity Data Storage Integration", () => {
 			const mainNode = store.nodes["https://openalex.org/W123456789"];
 			expect(mainNode.entityData?.referenced_works).toEqual(["https://openalex.org/W987654321"]);
 
-			logger.info("integration", "Entity data test completed", {
+			logger.debug("integration", "Entity data test completed", {
 				totalNodes: Object.keys(store.nodes).length,
 				hasEntityData: !!mainNode.entityData,
 				referencedWorksCount: mainNode.entityData?.referenced_works?.length
@@ -189,14 +189,14 @@ describe("Entity Data Storage Integration", () => {
 				}
 			};
 
-			logger.info("integration", "Adding node to store", {
+			logger.debug("integration", "Adding node to store", {
 				nodeId: testNode.id,
 				nodeCount: Object.keys(store.nodes).length
 			});
 
 			store.addNode(testNode);
 
-			logger.info("integration", "Node added to store", {
+			logger.debug("integration", "Node added to store", {
 				nodeId: testNode.id,
 				nodeCount: Object.keys(store.nodes).length,
 				nodeExists: testNode.id in store.nodes
@@ -241,7 +241,7 @@ describe("Entity Data Storage Integration", () => {
 			let node = store.nodes["https://openalex.org/W123456789"];
 
 			// Debug logging to understand what's happening
-			logger.info("integration", "Node metadata after adding to store", {
+			logger.debug("integration", "Node metadata after adding to store", {
 				nodeId: node.id,
 				hasMetadata: !!node.metadata,
 				metadata: node.metadata,
@@ -259,7 +259,7 @@ describe("Entity Data Storage Integration", () => {
 			expect(node.metadata.hydrationLevel).toBe("full");
 			expect(node.label).toBe("Full Work Title");
 
-			logger.info("integration", "Hydration level transition test completed", {
+			logger.debug("integration", "Hydration level transition test completed", {
 				initialHydration: "minimal",
 				finalHydration: node.metadata.hydrationLevel,
 				labelChanged: "Minimal Work Node" !== node.label
@@ -278,7 +278,7 @@ describe("Entity Data Storage Integration", () => {
 			// The function should always return false regardless of store contents
 			// since we removed artificial hydration level tracking
 
-			logger.info("integration", "Store integration test completed", {
+			logger.debug("integration", "Store integration test completed", {
 				finalNodeCount: Object.keys(store.nodes).length,
 				hasMinimalOrLoading: store.hasPlaceholderOrLoadingNodes()
 			});
