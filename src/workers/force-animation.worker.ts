@@ -53,15 +53,17 @@ interface AnimationConfig {
   seed?: number;
 }
 
-interface CustomForceData {
-  id?: string;
-  name: string;
-  type: string;
-  enabled?: boolean;
-  strength?: number;
-  priority?: number;
-  config: unknown;
-}
+// Import the proper CustomForce type
+import type { CustomForce } from "../lib/graph/custom-forces/types";
+
+// Type for adding a new custom force (id is optional, will be generated)
+type AddCustomForceData = Omit<CustomForce, "id"> & { id?: string };
+
+// Type for updating an existing custom force (all fields optional except id)
+type UpdateCustomForceData = Partial<Omit<CustomForce, "id">> & { id: string };
+
+// Type for worker message data that can be either add or update
+type CustomForceMessageData = (AddCustomForceData | UpdateCustomForceData) & { id?: string };
 
 interface WorkerMessage {
   type: "start" | "stop" | "pause" | "resume" | "update_parameters" | "sync_custom_forces" | "add_custom_force" | "remove_custom_force" | "update_custom_force";
@@ -69,8 +71,8 @@ interface WorkerMessage {
   links?: WorkerLink[];
   config?: AnimationConfig;
   pinnedNodes?: Set<string>;
-  customForces?: CustomForceData[];
-  forceData?: CustomForceData;
+  customForces?: AddCustomForceData[];
+  forceData?: CustomForceMessageData;
 }
 
 // Worker state
@@ -221,6 +223,8 @@ self.onmessage = function(event: MessageEvent<WorkerMessage>) {
 			break;
 		case "add_custom_force":
 			if (forceData) {
+				// For add operations, we can use forceData directly as AddCustomForceData
+				// since the function signature accepts optional id
 				addCustomForce(forceData);
 			}
 			break;
@@ -230,8 +234,21 @@ self.onmessage = function(event: MessageEvent<WorkerMessage>) {
 			}
 			break;
 		case "update_custom_force":
-			if (forceData) {
-				updateCustomForce(forceData);
+			if (forceData?.id) {
+				try {
+					// For update operations, extract id and pass remaining fields
+					const { id, ...updates } = forceData;
+					customForceManager?.updateForce(id, updates);
+					self.postMessage({
+						type: "custom_force_updated",
+						forceId: id,
+					});
+				} catch (error) {
+					self.postMessage({
+						type: "error",
+						error: `Failed to update custom force: ${error instanceof Error ? error.message : "Unknown error"}`,
+					});
+				}
 			}
 			break;
 	}
@@ -546,7 +563,7 @@ function updateParameters(newConfig: AnimationConfig) {
 	}, "main");
 }
 
-function syncCustomForces(customForces: CustomForceData[]) {
+function syncCustomForces(customForces: AddCustomForceData[]) {
 	if (!customForceManager) {
 		customForceManager = new CustomForceManager({
 			performance: {
@@ -577,7 +594,7 @@ function syncCustomForces(customForces: CustomForceData[]) {
 	});
 }
 
-function addCustomForce(forceData: CustomForceData) {
+function addCustomForce(forceData: AddCustomForceData) {
 	if (!customForceManager) {
 		customForceManager = new CustomForceManager({
 			performance: {
@@ -621,24 +638,6 @@ function removeCustomForce(forceId: string) {
 	}
 }
 
-function updateCustomForce(forceData: CustomForceData) {
-	if (!customForceManager || !forceData.id) {
-		return;
-	}
-
-	try {
-		customForceManager.updateForce(forceData.id, forceData);
-		self.postMessage({
-			type: "custom_force_updated",
-			forceId: forceData.id,
-		});
-	} catch (error) {
-		self.postMessage({
-			type: "error",
-			error: `Failed to update custom force: ${error instanceof Error ? error.message : "Unknown error"}`,
-		});
-	}
-}
 
 // Handle worker errors
 self.onerror = function(errorEvent) {
