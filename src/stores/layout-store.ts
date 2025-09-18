@@ -241,15 +241,16 @@ export const useLayoutStore = create<LayoutState>()(
 			addSectionToGroup: (sidebar, groupId, sectionId) =>
 				set((state) => {
 					const toolGroups = state.toolGroups[sidebar];
-					const group = toolGroups[groupId];
+					const group: ToolGroup | undefined = toolGroups[groupId];
 
+					const existingGroupSections = group?.sections;
 					logger.info("ui", `addSectionToGroup called`, {
 						sidebar,
 						groupId,
 						sectionId,
 						groupExists: Boolean(group),
 						existingGroupIds: Object.keys(toolGroups),
-						existingGroupSections: group?.sections
+						existingGroupSections
 					});
 
 					// Handle existing group
@@ -328,7 +329,7 @@ export const useLayoutStore = create<LayoutState>()(
 			removeSectionFromGroup: (sidebar, groupId, sectionId) =>
 				set((state) => {
 					const toolGroups = state.toolGroups[sidebar];
-					const group = toolGroups[groupId];
+					const group: ToolGroup | undefined = toolGroups[groupId];
 
 					if (group === undefined) return state;
 
@@ -382,7 +383,7 @@ export const useLayoutStore = create<LayoutState>()(
 			setActiveTabInGroup: (sidebar, groupId, sectionId) =>
 				set((state) => {
 					const toolGroups = state.toolGroups[sidebar];
-					const group = toolGroups[groupId];
+					const group: ToolGroup | undefined = toolGroups[groupId];
 
 					if (group === undefined || !group.sections.includes(sectionId)) return state;
 
