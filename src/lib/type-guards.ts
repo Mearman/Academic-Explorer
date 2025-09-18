@@ -10,8 +10,8 @@ import type { EntityType } from "@/lib/openalex/types";
  * Type guard to check if a string is a valid RelationType
  */
 export function isRelationType(value: string): value is RelationType {
-	const relationTypeValues = Object.values(RelationType);
-	return relationTypeValues.includes(value);
+	const validRelationTypes: string[] = Object.values(RelationType);
+	return validRelationTypes.includes(value);
 }
 
 /**

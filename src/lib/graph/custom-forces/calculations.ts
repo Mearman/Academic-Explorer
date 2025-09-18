@@ -3,8 +3,7 @@
  * Implements the actual force calculations for each custom force type
  */
 
- 
- 
+/* eslint-disable @typescript-eslint/consistent-type-assertions -- Type assertions needed after type guards for force config types */
 
 import type {
   EnhancedSimulationNode,
@@ -106,6 +105,10 @@ export const calculateRadialForce: ForceCalculationFunction = (
   strength: number,
   alpha: number
 ): boolean => {
+  // Type guard for RadialForceConfig
+  if (!('radius' in config)) {
+    return false;
+  }
   const radialConfig = config as RadialForceConfig;
   const {
     centerX = 0,
@@ -134,8 +137,10 @@ export const calculateRadialForce: ForceCalculationFunction = (
       targetAngle = startAngle + (index / nodes.length) * 2 * Math.PI;
     } else {
       // Use current position to determine angle
-      const currentX = (node.x || 0) - centerX;
-      const currentY = (node.y || 0) - centerY;
+      const nodeX = typeof node.x === "number" ? node.x : 0;
+      const nodeY = typeof node.y === "number" ? node.y : 0;
+      const currentX = nodeX - centerX;
+      const currentY = nodeY - centerY;
       targetAngle = Math.atan2(currentY, currentX);
     }
 
@@ -143,11 +148,13 @@ export const calculateRadialForce: ForceCalculationFunction = (
     const targetNodeY = centerY + Math.sin(targetAngle) * targetRadius;
 
     // Apply force toward target position
-    const dx = targetNodeX - (node.x || 0);
-    const dy = targetNodeY - (node.y || 0);
+    const dx = targetNodeX - nodeX;
+    const dy = targetNodeY - nodeY;
 
-    node.vx = (node.vx || 0) + dx * strength * alpha;
-    node.vy = (node.vy || 0) + dy * strength * alpha;
+    const currentVx = typeof node.vx === "number" ? node.vx : 0;
+    const currentVy = typeof node.vy === "number" ? node.vy : 0;
+    node.vx = currentVx + dx * strength * alpha;
+    node.vy = currentVy + dy * strength * alpha;
   });
 
   return true;
@@ -162,6 +169,10 @@ export const calculatePropertyForce: ForceCalculationFunction = (
   strength: number,
   alpha: number
 ): boolean => {
+  // Type guard for PropertyForceConfig
+  if (!('propertyName' in config && 'type' in config)) {
+    return false;
+  }
   const propertyConfig = config as PropertyForceConfig;
   const {
     type,
@@ -202,11 +213,15 @@ export const calculatePropertyForce: ForceCalculationFunction = (
     const targetCoord = normalizeValue(scaledValue, scaledMin, scaledMax, minValue, maxValue);
 
     if (isXAxis) {
-      const dx = targetCoord - (node.x || 0);
-      node.vx = (node.vx || 0) + dx * strength * alpha;
+      const nodeX = typeof node.x === "number" ? node.x : 0;
+      const dx = targetCoord - nodeX;
+      const currentVx = typeof node.vx === "number" ? node.vx : 0;
+      node.vx = currentVx + dx * strength * alpha;
     } else {
-      const dy = targetCoord - (node.y || 0);
-      node.vy = (node.vy || 0) + dy * strength * alpha;
+      const nodeY = typeof node.y === "number" ? node.y : 0;
+      const dy = targetCoord - nodeY;
+      const currentVy = typeof node.vy === "number" ? node.vy : 0;
+      node.vy = currentVy + dy * strength * alpha;
     }
   });
 
@@ -222,6 +237,10 @@ export const calculatePropertyBothForce: ForceCalculationFunction = (
   strength: number,
   alpha: number
 ): boolean => {
+  // Type guard for PropertyBothForceConfig
+  if (!('xProperty' in config && 'yProperty' in config)) {
+    return false;
+  }
   const bothConfig = config as PropertyBothForceConfig;
 
   // Apply X-axis force
@@ -249,6 +268,10 @@ export const calculateClusterForce: ForceCalculationFunction = (
   strength: number,
   alpha: number
 ): boolean => {
+  // Type guard for ClusterForceConfig
+  if (!('propertyName' in config && 'clusters' in config)) {
+    return false;
+  }
   const clusterConfig = config as ClusterForceConfig;
   const { propertyName, spacing, arrangement, gridDimensions } = clusterConfig;
 
@@ -308,11 +331,15 @@ export const calculateClusterForce: ForceCalculationFunction = (
     clusterNodes.forEach(node => {
       if (node.fx !== undefined || node.fy !== undefined) return; // Skip pinned nodes
 
-      const dx = center.x - (node.x || 0);
-      const dy = center.y - (node.y || 0);
+      const nodeX = typeof node.x === "number" ? node.x : 0;
+      const nodeY = typeof node.y === "number" ? node.y : 0;
+      const dx = center.x - nodeX;
+      const dy = center.y - nodeY;
 
-      node.vx = (node.vx || 0) + dx * strength * alpha;
-      node.vy = (node.vy || 0) + dy * strength * alpha;
+      const currentVx = typeof node.vx === "number" ? node.vx : 0;
+      const currentVy = typeof node.vy === "number" ? node.vy : 0;
+      node.vx = currentVx + dx * strength * alpha;
+      node.vy = currentVy + dy * strength * alpha;
     });
   });
 
@@ -328,6 +355,10 @@ export const calculateRepulsionForce: ForceCalculationFunction = (
   strength: number,
   alpha: number
 ): boolean => {
+  // Type guard for RepulsionForceConfig
+  if (!('maxDistance' in config)) {
+    return false;
+  }
   const repulsionConfig = config as RepulsionForceConfig;
   const { maxDistance, minDistance, falloff, nodeSelector } = repulsionConfig;
 
@@ -340,8 +371,12 @@ export const calculateRepulsionForce: ForceCalculationFunction = (
     nodes.forEach(target => {
       if (source === target) return;
 
-      const dx = (source.x || 0) - (target.x || 0);
-      const dy = (source.y || 0) - (target.y || 0);
+      const sourceX = typeof source.x === "number" ? source.x : 0;
+      const sourceY = typeof source.y === "number" ? source.y : 0;
+      const targetX = typeof target.x === "number" ? target.x : 0;
+      const targetY = typeof target.y === "number" ? target.y : 0;
+      const dx = sourceX - targetX;
+      const dy = sourceY - targetY;
       const distance = Math.sqrt(dx * dx + dy * dy);
 
       if (distance > maxDistance || distance < minDistance) return;
@@ -366,8 +401,10 @@ export const calculateRepulsionForce: ForceCalculationFunction = (
       const fx = (dx / distance) * force;
       const fy = (dy / distance) * force;
 
-      source.vx = (source.vx || 0) + fx;
-      source.vy = (source.vy || 0) + fy;
+      const currentVx = typeof source.vx === "number" ? source.vx : 0;
+      const currentVy = typeof source.vy === "number" ? source.vy : 0;
+      source.vx = currentVx + fx;
+      source.vy = currentVy + fy;
     });
   });
 
@@ -383,6 +420,10 @@ export const calculateAttractionForce: ForceCalculationFunction = (
   strength: number,
   alpha: number
 ): boolean => {
+  // Type guard for AttractionForceConfig
+  if (!('attractorSelector' in config)) {
+    return false;
+  }
   const attractionConfig = config as AttractionForceConfig;
   const { attractorSelector, maxDistance, falloff } = attractionConfig;
 
@@ -393,8 +434,12 @@ export const calculateAttractionForce: ForceCalculationFunction = (
     if (target.fx !== undefined || target.fy !== undefined) return; // Skip pinned nodes
 
     attractors.forEach(attractor => {
-      const dx = (attractor.x || 0) - (target.x || 0);
-      const dy = (attractor.y || 0) - (target.y || 0);
+      const attractorX = typeof attractor.x === "number" ? attractor.x : 0;
+      const attractorY = typeof attractor.y === "number" ? attractor.y : 0;
+      const targetX = typeof target.x === "number" ? target.x : 0;
+      const targetY = typeof target.y === "number" ? target.y : 0;
+      const dx = attractorX - targetX;
+      const dy = attractorY - targetY;
       const distance = Math.sqrt(dx * dx + dy * dy);
 
       if (distance > maxDistance) return;
@@ -419,8 +464,10 @@ export const calculateAttractionForce: ForceCalculationFunction = (
       const fx = (dx / distance) * force;
       const fy = (dy / distance) * force;
 
-      target.vx = (target.vx || 0) + fx;
-      target.vy = (target.vy || 0) + fy;
+      const currentVx = typeof target.vx === "number" ? target.vx : 0;
+      const currentVy = typeof target.vy === "number" ? target.vy : 0;
+      target.vx = currentVx + fx;
+      target.vy = currentVy + fy;
     });
   });
 
@@ -436,6 +483,10 @@ export const calculateOrbitForce: ForceCalculationFunction = (
   strength: number,
   alpha: number
 ): boolean => {
+  // Type guard for OrbitForceConfig
+  if (!('centerSelector' in config && 'radius' in config && 'speed' in config && 'direction' in config)) {
+    return false;
+  }
   const orbitConfig = config as OrbitForceConfig;
   const { centerSelector, radius, speed, direction } = orbitConfig;
 
@@ -450,8 +501,12 @@ export const calculateOrbitForce: ForceCalculationFunction = (
     let nearestDistance = Infinity;
 
     centers.forEach(center => {
-      const dx = (center.x || 0) - (orbiter.x || 0);
-      const dy = (center.y || 0) - (orbiter.y || 0);
+      const centerX = typeof center.x === "number" ? center.x : 0;
+      const centerY = typeof center.y === "number" ? center.y : 0;
+      const orbiterX = typeof orbiter.x === "number" ? orbiter.x : 0;
+      const orbiterY = typeof orbiter.y === "number" ? orbiter.y : 0;
+      const dx = centerX - orbiterX;
+      const dy = centerY - orbiterY;
       const distance = Math.sqrt(dx * dx + dy * dy);
 
       if (distance < nearestDistance) {
@@ -462,28 +517,30 @@ export const calculateOrbitForce: ForceCalculationFunction = (
 
     if (!nearestCenter) return;
 
-    const centerX: number = (nearestCenter.x ?? 0) as number;
-    const centerY: number = (nearestCenter.y ?? 0) as number;
-    const orbiterX = typeof orbiter.x === "number" ? orbiter.x : 0;
-    const orbiterY = typeof orbiter.y === "number" ? orbiter.y : 0;
+    const finalCenterX = typeof nearestCenter.x === "number" ? nearestCenter.x : 0;
+    const finalCenterY = typeof nearestCenter.y === "number" ? nearestCenter.y : 0;
+    const finalOrbiterX = typeof orbiter.x === "number" ? orbiter.x : 0;
+    const finalOrbiterY = typeof orbiter.y === "number" ? orbiter.y : 0;
 
     // Calculate current angle
-    const currentAngle = Math.atan2(orbiterY - centerY, orbiterX - centerX);
+    const currentAngle = Math.atan2(finalOrbiterY - finalCenterY, finalOrbiterX - finalCenterX);
 
     // Calculate new angle based on orbital speed
     const angleDirection = direction === "clockwise" ? -1 : 1;
     const newAngle = currentAngle + (speed * angleDirection * alpha);
 
     // Calculate target position
-    const targetX = centerX + (Math.cos(newAngle) * radius);
-    const targetY = centerY + (Math.sin(newAngle) * radius);
+    const targetX = finalCenterX + (Math.cos(newAngle) * radius);
+    const targetY = finalCenterY + (Math.sin(newAngle) * radius);
 
     // Apply force toward target orbital position
-    const dx = targetX - orbiterX;
-    const dy = targetY - orbiterY;
+    const dx = targetX - finalOrbiterX;
+    const dy = targetY - finalOrbiterY;
 
-    orbiter.vx = (orbiter.vx || 0) + dx * strength * alpha;
-    orbiter.vy = (orbiter.vy || 0) + dy * strength * alpha;
+    const currentVx = typeof orbiter.vx === "number" ? orbiter.vx : 0;
+    const currentVy = typeof orbiter.vy === "number" ? orbiter.vy : 0;
+    orbiter.vx = currentVx + dx * strength * alpha;
+    orbiter.vy = currentVy + dy * strength * alpha;
   });
 
   return true;

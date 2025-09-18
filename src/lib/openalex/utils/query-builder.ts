@@ -101,8 +101,9 @@ export class QueryBuilder<T extends EntityFilters = EntityFilters> {
 		if (operator !== "=") {
 			const operatorSymbol = operator === "!=" ? "!" : operator;
 			const formattedValue = `${operatorSymbol}${String(value)}`;
-			// Type-safe assignment using unknown first, then type guard
+			// Type-safe assignment using type guard validation
 			if (this.isAssignableToField(formattedValue)) {
+				// Since type guard validated the value, we can safely assign
 				this.filters[field] = formattedValue;
 			}
 		} else {
@@ -131,6 +132,7 @@ export class QueryBuilder<T extends EntityFilters = EntityFilters> {
 	addFilters(filters: Partial<T>): this {
 		Object.entries(filters).forEach(([key, value]) => {
 			if (value !== undefined && value !== null && this.isValidKey(key) && this.isAssignableToField(value)) {
+				// Type guards validated both key and value, safe to assign
 				this.filters[key] = value;
 			}
 		});
@@ -251,7 +253,7 @@ export class QueryBuilder<T extends EntityFilters = EntityFilters> {
 	/**
 	 * Type guard to check if a string key is valid for the filter type
 	 */
-	private isValidKey(key: string): key is keyof T {
+	private isValidKey(key: string): key is string & keyof T {
 		// OpenAlex API accepts any string key for filters, so this is always true
 		return typeof key === "string" && key.length > 0;
 	}
@@ -260,7 +262,7 @@ export class QueryBuilder<T extends EntityFilters = EntityFilters> {
 	 * Type guard to check if a value can be assigned to filter fields
 	 * OpenAlex API accepts strings, numbers, booleans, and arrays as filter values
 	 */
-	private isAssignableToField(value: unknown): value is T[keyof T] {
+	private isAssignableToField(value: unknown): value is string | number | boolean | Array<unknown> {
 		return (
 			typeof value === "string" ||
 			typeof value === "number" ||

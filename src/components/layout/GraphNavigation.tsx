@@ -723,7 +723,7 @@ const GraphNavigationInner: React.FC<GraphNavigationProps> = ({ className, style
 					typeof value.type === "string" &&
 					typeof value.label === "string" &&
 					typeof value.entityId === "string" &&
-					value.position && typeof value.position === "object" &&
+					typeof value.position === "object" && value.position !== null &&
 					Array.isArray(value.externalIds);
 			};
 
