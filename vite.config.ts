@@ -142,8 +142,7 @@ export default defineConfig({
             '@tanstack/react-table',
             '@tanstack/react-devtools',
             '@tanstack/react-query-devtools',
-            '@tanstack/react-router-devtools',
-            '@tanstack/react-table-devtools'
+            '@tanstack/react-router-devtools'
           ],
 
           // Mantine UI suite
@@ -161,7 +160,7 @@ export default defineConfig({
 
           // Icons and utilities
           'vendor-icons': ['@tabler/icons-react'],
-          'vendor-utils': ['lodash-es', 'date-fns', 'zod', 'zustand']
+          'vendor-utils': ['lodash-es', 'date-fns', 'zustand']
         }
       }
     },
