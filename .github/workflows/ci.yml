@@ -63,10 +63,95 @@ jobs:
           restore-keys: |
             nx-${{ runner.os }}-
 
-  quality-checks:
+  eslint-autofix:
     needs: setup
     runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    # Only run on push events and if commit doesn't contain [skip lint-fix]
+    if: github.event_name == 'push' && !contains(github.event.head_commit.message, '[skip lint-fix]')
+
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          fetch-depth: 0
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: ${{ env.PNPM_VERSION }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Restore node_modules cache
+        uses: actions/cache/restore@v4
+        with:
+          path: |
+            node_modules
+            ~/.pnpm-store
+          key: ${{ needs.setup.outputs.cache-key }}
+          fail-on-cache-miss: true
+
+      - name: Run ESLint with auto-fix
+        run: pnpm nx lint:fix
+        continue-on-error: true
+
+      - name: Check for changes
+        id: verify-changed-files
+        run: |
+          if [ -n "$(git status --porcelain)" ]; then
+            echo "changed=true" >> $GITHUB_OUTPUT
+            echo "Files changed by ESLint auto-fix:"
+            git status --porcelain
+          else
+            echo "changed=false" >> $GITHUB_OUTPUT
+            echo "No files were changed by ESLint auto-fix"
+          fi
+
+      - name: Configure Git
+        if: steps.verify-changed-files.outputs.changed == 'true'
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+
+      - name: Commit and push changes
+        if: steps.verify-changed-files.outputs.changed == 'true'
+        run: |
+          git add .
+          git commit -m "style: auto-fix ESLint issues [skip lint-fix]
+
+          Automatically applied ESLint fixes via GitHub Actions.
+
+          - Applied auto-fixable ESLint rules
+          - Triggered by commit: ${{ github.event.head_commit.message }}
+          - SHA: ${{ github.sha }}"
+          git push
+
+      - name: Summary
+        run: |
+          echo "## ESLint Auto-fix Summary" >> $GITHUB_STEP_SUMMARY
+          if [ "${{ steps.verify-changed-files.outputs.changed }}" == "true" ]; then
+            echo "✅ ESLint fixes were applied and committed" >> $GITHUB_STEP_SUMMARY
+            echo "📝 Changes pushed to ${{ github.ref_name }}" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "ℹ️ No ESLint fixes were needed" >> $GITHUB_STEP_SUMMARY
+          fi
+
+  quality-checks:
+    needs: [setup, eslint-autofix]
+    runs-on: ubuntu-latest
     timeout-minutes: 15
+
+    # Skip if eslint-autofix was skipped, otherwise run always
+    if: always() && (needs.eslint-autofix.result == 'success' || needs.eslint-autofix.result == 'skipped')
 
     strategy:
       matrix:
@@ -75,6 +160,9 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          # Fetch latest changes if eslint-autofix made commits
+          ref: ${{ github.ref }}
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
