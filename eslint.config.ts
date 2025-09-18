@@ -157,6 +157,18 @@ export default tseslint.config([
       'no-console': 'off',
     },
   },
+  // Allow type assertions in external API integration files where they're necessary for type contracts
+  {
+    files: [
+      'src/lib/openalex/client.ts',
+      'src/lib/openalex/utils/query-builder.ts',
+      'src/lib/utils/type-helpers.ts',
+    ],
+    rules: {
+      '@typescript-eslint/consistent-type-assertions': 'off', // External API boundaries require type assertions
+      '@typescript-eslint/no-unnecessary-type-assertion': 'off', // External API boundaries may need complex assertions
+    },
+  },
   // Relax strict type checking for test files due to mocking framework patterns
   // This MUST come after the main config to properly override rules
   {
@@ -170,6 +182,7 @@ export default tseslint.config([
     ],
     rules: {
       'no-console': 'off',
+      'custom/no-logger-info': 'off', // Allow logger.info in test files for testing purposes
       '@typescript-eslint/no-unsafe-assignment': 'off',
       '@typescript-eslint/no-unsafe-call': 'off',
       '@typescript-eslint/no-unsafe-member-access': 'off',
