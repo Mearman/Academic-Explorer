@@ -62,7 +62,7 @@ export function useOpenAlexEntity<T extends OpenAlexEntity>(
 			: getEntityQueryKey(entityType, id || ""),
 		queryFn: async () => {
 			if (!id) throw new Error("Entity ID is required");
-			return rateLimitedOpenAlex.getEntity(id) as Promise<T>;
+			return rateLimitedOpenAlex.getEntity(id);
 		},
 		enabled: !!id,
 		...getEntityQueryOptions<T>(entityType),
@@ -315,7 +315,12 @@ export function useAutocomplete(query: string | undefined, entityType?: string, 
 		// Valid entity types from cache config (without concepts, keywords, geo which aren't cached)
 		const validTypes: EntityType[] = ["work", "author", "source", "institution", "topic", "publisher", "funder", "search", "related"];
 
-		return validTypes.includes(normalized as EntityType) ? (normalized as EntityType) : "work";
+		// Type guard to check if normalized is a valid EntityType
+		function isValidEntityType(type: string): type is EntityType {
+			return validTypes.some(validType => validType === type);
+		}
+
+		return isValidEntityType(normalized) ? normalized : "work";
 	};
 
 	const validEntityType = normalizeEntityType(entityType);

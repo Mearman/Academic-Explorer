@@ -921,3 +921,16 @@ export interface OpenAlexError {
 export type OpenAlexEntity = Work | Author | Source | InstitutionEntity | Topic | Concept | Publisher | Funder | Keyword;
 export type EntityType = "works" | "authors" | "sources" | "institutions" | "topics" | "concepts" | "publishers" | "funders" | "keywords";
 export type EntityFilters = WorksFilters | AuthorsFilters | SourcesFilters | InstitutionsFilters | TopicsFilters | PublishersFilters | FundersFilters | KeywordsFilters;
+
+// Mapping from entity type to entity interface
+export type EntityTypeMap = {
+	works: Work;
+	authors: Author;
+	sources: Source;
+	institutions: InstitutionEntity;
+	topics: Topic;
+	concepts: Concept;
+	publishers: Publisher;
+	funders: Funder;
+	keywords: Keyword;
+};

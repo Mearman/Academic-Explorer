@@ -5,6 +5,7 @@
 
 import { OpenAlexError, OpenAlexResponse, QueryParams } from "./types";
 import { RETRY_CONFIG, calculateRetryDelay } from "@/config/rate-limit";
+import { validateApiResponse, trustApiContract } from "@/lib/utils/type-helpers";
 
 export interface OpenAlexClientConfig {
   baseUrl?: string;
@@ -177,12 +178,26 @@ export class OpenAlexBaseClient {
    */
 	private async parseError(response: Response): Promise<OpenAlexApiError> {
 		try {
-			const errorData = await response.json() as OpenAlexError;
-			return new OpenAlexApiError(
-				errorData.message || errorData.error || `HTTP ${response.status.toString()}`,
-				response.status,
-				response
-			);
+			const errorData: unknown = await response.json();
+			// Type guard for OpenAlexError
+			function isOpenAlexError(data: unknown): data is OpenAlexError {
+				return typeof data === "object" && data !== null &&
+					("message" in data || "error" in data);
+			}
+
+			if (isOpenAlexError(errorData)) {
+				return new OpenAlexApiError(
+					errorData.message || errorData.error || `HTTP ${response.status.toString()}`,
+					response.status,
+					response
+				);
+			} else {
+				return new OpenAlexApiError(
+					`HTTP ${response.status.toString()} ${response.statusText}`,
+					response.status,
+					response
+				);
+			}
 		} catch {
 			return new OpenAlexApiError(
 				`HTTP ${response.status.toString()} ${response.statusText}`,
@@ -289,7 +304,9 @@ export class OpenAlexBaseClient {
 	public async get<T>(endpoint: string, params: QueryParams = {}): Promise<T> {
 		const url = this.buildUrl(endpoint, params);
 		const response = await this.makeRequest(url);
-		return response.json() as Promise<T>;
+		const data: unknown = await response.json();
+		const validatedData = validateApiResponse(data);
+		return trustApiContract(validatedData) as unknown as T;
 	}
 
 	/**
