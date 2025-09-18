@@ -13,20 +13,102 @@ import { OpenAlexBaseClient } from "../client";
 import { buildFilterString } from "../utils/query-builder";
 
 /**
- * Extended query parameters specific to Keywords API
- * Note: Uses string filter to maintain compatibility with base QueryParams
+ * Strict query parameters specific to Keywords API
+ */
+export interface StrictKeywordsQueryParams {
+  /** Filter string for keyword queries */
+  readonly filter?: string;
+
+  /** Search query string */
+  readonly search?: string;
+
+  /** Sort order for results */
+  readonly sort?: KeywordSortOption;
+
+  /** Page number for pagination */
+  readonly page?: number;
+
+  /** Number of results per page */
+  readonly per_page?: number;
+
+  /** Cursor for cursor-based pagination */
+  readonly cursor?: string;
+
+  /** Specific fields to include in response */
+  readonly select?: KeywordSelectField[];
+
+  /** Sample size for random sampling */
+  readonly sample?: number;
+
+  /** Seed for reproducible random sampling */
+  readonly seed?: number;
+
+  /** Group by field */
+  readonly group_by?: string;
+}
+
+/**
+ * Convert strict keywords query params to base query params
+ */
+function toQueryParams(params: StrictKeywordsQueryParams): QueryParams {
+	return {
+		...params,
+		sort: params.sort as string,
+		select: params.select as string[],
+	};
+}
+
+/**
+ * Extended query parameters specific to Keywords API (for backward compatibility)
  */
 export type KeywordsQueryParams = QueryParams;
 
 /**
- * Options for searching keywords
+ * Sort options for keywords with strict typing
+ */
+export type KeywordSortOption =
+  | "relevance_score"
+  | "cited_by_count"
+  | "works_count"
+  | "created_date"
+  | "updated_date"
+  | "display_name"
+  | "random";
+
+/**
+ * Selectable fields for keywords queries
+ */
+export type KeywordSelectField =
+  | "id"
+  | "display_name"
+  | "description"
+  | "keywords"
+  | "works_count"
+  | "cited_by_count"
+  | "ids"
+  | "counts_by_year"
+  | "works_api_url"
+  | "updated_date"
+  | "created_date";
+
+/**
+ * Options for searching keywords with strict typing
  */
 export interface SearchKeywordsOptions {
-  filters?: KeywordsFilters;
-  sort?: "relevance_score" | "cited_by_count" | "works_count" | "created_date";
-  page?: number;
-  per_page?: number;
-  select?: string[];
+  /** Filters to apply to the search */
+  readonly filters?: KeywordsFilters;
+
+  /** Sort order for results */
+  readonly sort?: KeywordSortOption;
+
+  /** Page number for pagination (1-based) */
+  readonly page?: number;
+
+  /** Number of results per page (1-200) */
+  readonly per_page?: number;
+
+  /** Specific fields to include in response */
+  readonly select?: KeywordSelectField[];
 }
 
 /**
@@ -38,17 +120,28 @@ export class KeywordsApi {
 	/**
    * Get a single keyword by its OpenAlex ID
    *
-   * @param id - The keyword ID
-   * @param params - Additional query parameters
+   * @param id - The keyword ID (must be a valid OpenAlex keyword ID)
+   * @param params - Additional query parameters with strict typing
    * @returns Promise resolving to a keyword
+   * @throws {OpenAlexApiError} When the keyword is not found or invalid ID format
    *
    * @example
    * ```typescript
-   * const keyword = await keywordsApi.getKeyword('K123456789');
+   * const keyword = await keywordsApi.getKeyword('https://openalex.org/K123456789', {
+   *   select: ['id', 'display_name', 'works_count']
+   * });
    * ```
    */
-	async getKeyword(id: string, params: QueryParams = {}): Promise<Keyword> {
-		return this.client.getById<Keyword>("keywords", id, params);
+	async getKeyword(id: string, params: StrictKeywordsQueryParams | QueryParams = {}): Promise<Keyword> {
+		if (!id || typeof id !== "string") {
+			throw new Error("Keyword ID must be a non-empty string");
+		}
+		// If it's already QueryParams (has string sort), pass directly
+		if ("sort" in params && typeof params.sort === "string") {
+			return this.client.getById<Keyword>("keywords", id, params as QueryParams);
+		}
+		// Otherwise, convert from StrictKeywordsQueryParams
+		return this.client.getById<Keyword>("keywords", id, toQueryParams(params as StrictKeywordsQueryParams));
 	}
 
 	/**
@@ -66,22 +159,29 @@ export class KeywordsApi {
    * });
    * ```
    */
-	async getKeywords(params: KeywordsQueryParams = {}): Promise<OpenAlexResponse<Keyword>> {
-		return this.client.getResponse<Keyword>("keywords", params);
+	async getKeywords(params: StrictKeywordsQueryParams | QueryParams = {}): Promise<OpenAlexResponse<Keyword>> {
+		// If it's already QueryParams (has string sort), pass directly
+		if ("sort" in params && typeof params.sort === "string") {
+			return this.client.getResponse<Keyword>("keywords", params as QueryParams);
+		}
+		// Otherwise, convert from StrictKeywordsQueryParams
+		return this.client.getResponse<Keyword>("keywords", toQueryParams(params as StrictKeywordsQueryParams));
 	}
 
 	/**
-   * Search for keywords using text search
+   * Search for keywords using text search with strict validation
    *
-   * @param query - Search query string
+   * @param query - Search query string (must be non-empty)
    * @param options - Search options including filters and pagination
    * @returns Promise resolving to search results
+   * @throws {Error} When query is empty or invalid pagination parameters
    *
    * @example
    * ```typescript
    * const results = await keywordsApi.searchKeywords('machine learning', {
    *   sort: 'cited_by_count',
-   *   per_page: 10
+   *   per_page: 10,
+   *   select: ['id', 'display_name', 'works_count']
    * });
    * ```
    */
@@ -89,10 +189,22 @@ export class KeywordsApi {
 		query: string,
 		options: SearchKeywordsOptions = {}
 	): Promise<OpenAlexResponse<Keyword>> {
+		if (!query || typeof query !== "string" || query.trim().length === 0) {
+			throw new Error("Search query must be a non-empty string");
+		}
+
 		const { filters = {}, sort = "relevance_score", page = 1, per_page = 25, select } = options;
 
-		const params: KeywordsQueryParams = {
-			search: query,
+		// Validate pagination parameters
+		if (page < 1) {
+			throw new Error("Page number must be >= 1");
+		}
+		if (per_page < 1 || per_page > 200) {
+			throw new Error("per_page must be between 1 and 200");
+		}
+
+		const params: StrictKeywordsQueryParams = {
+			search: query.trim(),
 			filter: buildFilterString(filters),
 			sort,
 			page,
@@ -104,24 +216,30 @@ export class KeywordsApi {
 	}
 
 	/**
-   * Get keywords by minimum works count
+   * Get keywords by minimum works count with strict validation
    *
-   * @param minWorksCount - Minimum number of works for keywords
+   * @param minWorksCount - Minimum number of works for keywords (must be >= 0)
    * @param params - Additional query parameters
    * @returns Promise resolving to filtered keywords
+   * @throws {Error} When minWorksCount is invalid
    *
    * @example
    * ```typescript
    * const popularKeywords = await keywordsApi.getKeywordsByWorksCount(100, {
    *   sort: 'works_count',
-   *   per_page: 50
+   *   per_page: 50,
+   *   select: ['id', 'display_name', 'works_count', 'cited_by_count']
    * });
    * ```
    */
 	async getKeywordsByWorksCount(
 		minWorksCount: number,
-		params: KeywordsQueryParams = {}
+		params: StrictKeywordsQueryParams = {}
 	): Promise<OpenAlexResponse<Keyword>> {
+		if (!Number.isInteger(minWorksCount) || minWorksCount < 0) {
+			throw new Error("minWorksCount must be a non-negative integer");
+		}
+
 		const filters: KeywordsFilters = {
 			"works_count": `>=${String(minWorksCount)}`,
 		};
@@ -146,7 +264,7 @@ export class KeywordsApi {
    * });
    * ```
    */
-	async getRandomKeywords(params: KeywordsQueryParams = {}): Promise<OpenAlexResponse<Keyword>> {
+	async getRandomKeywords(params: StrictKeywordsQueryParams = {}): Promise<OpenAlexResponse<Keyword>> {
 		return this.getKeywords({
 			...params,
 			sort: "random",
@@ -166,8 +284,14 @@ export class KeywordsApi {
    * }
    * ```
    */
-	async *streamKeywords(params: KeywordsQueryParams = {}): AsyncGenerator<Keyword[], void, unknown> {
-		yield* this.client.stream<Keyword>("keywords", params);
+	async *streamKeywords(params: StrictKeywordsQueryParams | QueryParams = {}): AsyncGenerator<Keyword[], void, unknown> {
+		// If it's already QueryParams (has string sort), pass directly
+		if ("sort" in params && typeof params.sort === "string") {
+			yield* this.client.stream<Keyword>("keywords", params as QueryParams);
+		} else {
+			// Otherwise, convert from StrictKeywordsQueryParams
+			yield* this.client.stream<Keyword>("keywords", toQueryParams(params as StrictKeywordsQueryParams));
+		}
 	}
 
 	/**
@@ -185,10 +309,10 @@ export class KeywordsApi {
    * ```
    */
 	async getAllKeywords(
-		params: KeywordsQueryParams = {},
+		params: StrictKeywordsQueryParams = {},
 		maxResults?: number
 	): Promise<Keyword[]> {
-		return this.client.getAll<Keyword>("keywords", params, maxResults);
+		return this.client.getAll<Keyword>("keywords", toQueryParams(params), maxResults);
 	}
 
 	/**
@@ -204,7 +328,7 @@ export class KeywordsApi {
    * });
    * ```
    */
-	async getKeywordsStats(params: KeywordsQueryParams = {}): Promise<{
+	async getKeywordsStats(params: StrictKeywordsQueryParams = {}): Promise<{
     count: number;
     total_works: number;
     total_citations: number;
@@ -254,7 +378,7 @@ export class KeywordsApi {
 	async getTrendingKeywords(
 		fromYear: number,
 		toYear: number = new Date().getFullYear(),
-		params: KeywordsQueryParams = {}
+		params: StrictKeywordsQueryParams = {}
 	): Promise<OpenAlexResponse<Keyword>> {
 		const filters: KeywordsFilters = {
 			"from_created_date": `${String(fromYear)}-01-01`,
@@ -283,7 +407,7 @@ export class KeywordsApi {
    * });
    * ```
    */
-	async getHighlyCitedKeywords(params: KeywordsQueryParams = {}): Promise<OpenAlexResponse<Keyword>> {
+	async getHighlyCitedKeywords(params: StrictKeywordsQueryParams = {}): Promise<OpenAlexResponse<Keyword>> {
 		const filters: KeywordsFilters = {
 			"cited_by_count": ">1000",
 		};

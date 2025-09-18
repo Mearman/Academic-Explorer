@@ -11,6 +11,10 @@ export type RORId = string;
 export type ISSNId = string;
 export type WikidataId = string;
 
+// Filter utility types
+export type DateString = string; // ISO 8601 date string (e.g., "2023-01-15")
+export type NumericFilter = string | number; // Supports comparison operators like ">100", ">=50", etc.
+
 // Utility type for making all fields except id optional (for partial hydration)
 type PartialExceptId<T> = { id: T extends { id: infer U } ? U : never } & Partial<Omit<T, "id">>;
 
@@ -573,27 +577,67 @@ export interface Funder {
 
 /**
  * Keywords Entity - Research keywords and their usage
+ *
+ * @interface Keyword
+ * @description Represents a research keyword in the OpenAlex database with strict typing
  */
 export interface Keyword {
-  id: OpenAlexId;
-  display_name: string;
-  description?: string;
-  keywords?: string[];
-  works_count: number;
-  cited_by_count: number;
-  ids: {
-    openalex: OpenAlexId;
-    wikipedia?: string;
-    wikidata?: WikidataId;
+  /** Unique OpenAlex identifier for the keyword */
+  readonly id: OpenAlexId;
+
+  /** Human-readable name/label for the keyword */
+  readonly display_name: string;
+
+  /** Optional description or definition of the keyword */
+  readonly description?: string;
+
+  /** Array of related or synonymous keywords */
+  readonly keywords?: readonly string[];
+
+  /** Total number of works associated with this keyword (non-negative) */
+  readonly works_count: number;
+
+  /** Total number of citations for works with this keyword (non-negative) */
+  readonly cited_by_count: number;
+
+  /** External identifiers for the keyword */
+  readonly ids: {
+    /** OpenAlex identifier (always present) */
+    readonly openalex: OpenAlexId;
+    /** Wikipedia URL if available */
+    readonly wikipedia?: string;
+    /** Wikidata identifier if available */
+    readonly wikidata?: WikidataId;
   };
-  counts_by_year: Array<{
-    year: number;
-    works_count: number;
-    cited_by_count: number;
-  }>;
-  works_api_url: string;
-  updated_date: string;
-  created_date: string;
+
+  /** Year-by-year breakdown of works and citations */
+  readonly counts_by_year: readonly KeywordCountsByYear[];
+
+  /** OpenAlex API URL for retrieving works associated with this keyword */
+  readonly works_api_url: string;
+
+  /** ISO 8601 timestamp when the keyword was last updated */
+  readonly updated_date: string;
+
+  /** ISO 8601 timestamp when the keyword was first created */
+  readonly created_date: string;
+}
+
+/**
+ * Year-by-year statistics for a keyword
+ *
+ * @interface KeywordCountsByYear
+ * @description Represents annual statistics for keyword usage
+ */
+export interface KeywordCountsByYear {
+  /** Calendar year (4-digit year) */
+  readonly year: number;
+
+  /** Number of works published in this year with this keyword (non-negative) */
+  readonly works_count: number;
+
+  /** Number of citations in this year for works with this keyword (non-negative) */
+  readonly cited_by_count: number;
 }
 
 
@@ -779,15 +823,36 @@ export interface FundersFilters {
   "works_count"?: string | number;
 }
 
+/**
+ * Filters for querying keywords with strict typing
+ *
+ * @interface KeywordsFilters
+ * @description Supported filter parameters for keyword queries
+ */
 export interface KeywordsFilters {
-  "cited_by_count"?: string | number;
+  /** Filter by citation count (e.g., ">100", ">=50", "<1000") */
+  "cited_by_count"?: NumericFilter;
+
+  /** Default search across multiple fields */
   "default.search"?: string;
+
+  /** Search in keyword display names */
   "display_name.search"?: string;
-  "from_created_date"?: string;
-  "from_updated_date"?: string;
-  "to_created_date"?: string;
-  "to_updated_date"?: string;
-  "works_count"?: string | number;
+
+  /** Filter by creation date (ISO 8601 date string, e.g., "2020-01-01") */
+  "from_created_date"?: DateString;
+
+  /** Filter by last update date (ISO 8601 date string) */
+  "from_updated_date"?: DateString;
+
+  /** Filter by creation date upper bound (ISO 8601 date string) */
+  "to_created_date"?: DateString;
+
+  /** Filter by last update date upper bound (ISO 8601 date string) */
+  "to_updated_date"?: DateString;
+
+  /** Filter by works count (e.g., ">10", ">=5", "<100") */
+  "works_count"?: NumericFilter;
 }
 
 
