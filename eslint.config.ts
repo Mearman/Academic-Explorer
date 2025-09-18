@@ -90,7 +90,8 @@ export default tseslint.config([
 
       // Style preferences
       'quotes': ['error', 'double', { 'allowTemplateLiterals': true, 'avoidEscape': true }],
-      'indent': ['error', 'tab', { 'SwitchCase': 1 }],
+      // FIXME: Temporarily disabled due to ESLint 9.35.0 stack overflow on complex JSX nesting
+      // 'indent': ['error', 'tab', { 'SwitchCase': 1 }],
 
       // Custom rules
       'custom/no-emoji': 'error',
