@@ -331,7 +331,8 @@ export const useLayoutStore = create<LayoutState>()(
 					const toolGroups = state.toolGroups[sidebar];
 					const group: ToolGroup | undefined = toolGroups[groupId];
 
-					if (group === undefined) return state;
+					if (!(groupId in toolGroups)) return state;
+					if (!group) return state;
 
 					const updatedSections = group.sections.filter(id => id !== sectionId);
 					const newActiveSection = group.activeSection === sectionId
@@ -385,7 +386,8 @@ export const useLayoutStore = create<LayoutState>()(
 					const toolGroups = state.toolGroups[sidebar];
 					const group: ToolGroup | undefined = toolGroups[groupId];
 
-					if (group === undefined || !group.sections.includes(sectionId)) return state;
+					if (!(groupId in toolGroups)) return state;
+					if (!group || !group.sections.includes(sectionId)) return state;
 
 					const updatedGroup = {
 						...group,
