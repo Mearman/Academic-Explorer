@@ -12,6 +12,7 @@ import { useExpansionSettingsStore } from "@/stores/expansion-settings-store";
 import { logger, logError } from "@/lib/logger";
 import { setNodeExpanded } from "@/lib/cache/graph-cache";
 import { safeParseExpansionTarget } from "@/lib/type-guards";
+import { entityEventSystem } from "@/lib/graph/events";
 import type { SearchOptions, EntityType } from "@/lib/graph/types";
 import type { ExpandCompletePayload } from "@/workers/data-fetching.worker";
 
@@ -25,6 +26,9 @@ export function useGraphData() {
 	const dataFetchingWorker = useDataFetchingWorker({
 		onExpandComplete: useCallback((result: ExpandCompletePayload) => {
 			const store = useGraphStore.getState();
+
+			// Get the expanded node for entity information
+			const expandedNode = store.nodes[result.nodeId];
 
 			// Add new nodes and edges to the graph
 			store.addNodes(result.nodes);
@@ -43,6 +47,26 @@ export function useGraphData() {
 				duration: result.statistics?.duration || 0,
 				apiCalls: result.statistics?.apiCalls || 0
 			}, "useGraphData");
+
+			// Emit entity expansion event
+			if (expandedNode) {
+				entityEventSystem.emitEntityExpanded(
+					expandedNode.entityId,
+					expandedNode.type,
+					{
+						nodesAdded: result.nodes,
+						edgesAdded: result.edges,
+						depth: 1, // Default depth, could be extracted from expansion settings
+						duration: result.statistics?.duration || 0,
+						apiCalls: result.statistics?.apiCalls
+					}
+				).catch((err: unknown) => {
+					logger.error("graph", "Failed to emit entity expansion event", {
+						entityId: expandedNode.entityId,
+						error: err instanceof Error ? err.message : "Unknown error"
+					}, "useGraphData");
+				});
+			}
 
 		}, [queryClient]),
 
