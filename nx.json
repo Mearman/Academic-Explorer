@@ -1,7 +1,9 @@
 {
   "$schema": "./node_modules/nx/schemas/nx-schema.json",
   "plugins": [
-    "@nx/vite/plugin"
+    "@nx/vite/plugin",
+    "@nx/eslint/plugin",
+    "@nx/playwright/plugin"
   ],
   "targetDefaults": {
     "build": {
