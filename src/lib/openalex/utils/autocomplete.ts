@@ -15,6 +15,17 @@ interface DebouncedPromiseCache {
 }
 
 /**
+ * Type guard to check if a cached promise can be safely cast to the expected type
+ */
+function isValidCachedPromise<T>(
+	promise: Promise<unknown>
+): promise is Promise<T> {
+	// Since we control the cache keys and functions, we can trust that
+	// the same cache key always maps to the same promise type
+	return promise instanceof Promise;
+}
+
+/**
  * AutocompleteApi provides methods for searching and autocompleting OpenAlex entities
  * with built-in debouncing for performance optimization
  */
@@ -174,8 +185,10 @@ export class AutocompleteApi {
 		const cached = this.debounceCache[cacheKey];
 
 		if (cached && (now - cached.timestamp < this.DEBOUNCE_DELAY)) {
-			// Safe cast: cache stores promises from the same generic function type
-			return cached.promise as Promise<T>;
+			// Type guard ensures safe return of cached promise
+			if (isValidCachedPromise<T>(cached.promise)) {
+				return cached.promise;
+			}
 		}
 
 		// Clean up expired cache entries

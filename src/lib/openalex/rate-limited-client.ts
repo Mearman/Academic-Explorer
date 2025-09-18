@@ -20,6 +20,7 @@ import type {
 	Keyword,
 	AutocompleteResult,
 	EntityType,
+	EntityTypeMap,
 } from "./types";
 
 /**
@@ -101,9 +102,8 @@ export class RateLimitedOpenAlexClient {
    */
 	private isRetryableError(error: unknown): boolean {
 		// Retry 429 (rate limit), 502 (bad gateway), 503 (service unavailable), 504 (gateway timeout)
-		if (error && typeof error === "object" && "statusCode" in error) {
-			const statusCode = error.statusCode as number;
-			return [429, 502, 503, 504].includes(statusCode);
+		if (this.hasStatusCode(error)) {
+			return [429, 502, 503, 504].includes(error.statusCode);
 		}
 
 		// Retry network errors
@@ -115,6 +115,30 @@ export class RateLimitedOpenAlexClient {
 		}
 
 		return false;
+	}
+
+	/**
+	 * Type guard to check if an error has a status code property
+	 */
+	private isObjectWithStatusCode(obj: unknown): obj is Record<string, unknown> {
+		return obj !== null && typeof obj === "object" && "statusCode" in obj;
+	}
+
+	/**
+	 * Type guard to check if an error has a status code
+	 */
+	private hasStatusCode(error: unknown): error is { statusCode: number } {
+		if (!this.isObjectWithStatusCode(error)) {
+			return false;
+		}
+		return typeof error.statusCode === "number";
+	}
+
+	/**
+	 * Type guard to validate QueryParams
+	 */
+	private isValidQueryParams(params: QueryParams | undefined): params is QueryParams {
+		return params !== undefined && params !== null && typeof params === "object";
 	}
 
 	// Entity retrieval methods with rate limiting
@@ -225,11 +249,13 @@ export class RateLimitedOpenAlexClient {
 
 	// Keywords API with rate limiting
 	public async getKeyword(id: string, params?: QueryParams): Promise<Keyword> {
-		return this.withRateLimit(() => this.client.keywords.getKeyword(id, params as QueryParams));
+		const validParams = this.isValidQueryParams(params) ? params : {};
+		return this.withRateLimit(() => this.client.keywords.getKeyword(id, validParams));
 	}
 
 	public async getKeywords(params?: QueryParams): Promise<OpenAlexResponse<Keyword>> {
-		return this.withRateLimit(() => this.client.keywords.getKeywords(params as QueryParams));
+		const validParams = this.isValidQueryParams(params) ? params : {};
+		return this.withRateLimit(() => this.client.keywords.getKeywords(validParams));
 	}
 
 
@@ -314,10 +340,10 @@ export class RateLimitedOpenAlexClient {
 	}
 
 	// Streaming with rate limiting (more complex to implement properly)
-	public async *stream<T = OpenAlexEntity>(
-		entityType: EntityType,
+	public async *stream<T extends EntityType>(
+		entityType: T,
 		params: QueryParams = {}
-	): AsyncGenerator<T[], void, unknown> {
+	): AsyncGenerator<EntityTypeMap[T][], void, unknown> {
 		// For streaming, we need to apply rate limiting to each batch
 		const originalStream = this.client.stream<T>(entityType, params);
 
@@ -359,13 +385,47 @@ export function createRateLimitedOpenAlexClient(options?: OpenAlexClientOptions)
 }
 
 /**
+ * Type guard to check if environment variable is a non-empty string
+ */
+function isValidEmailEnv(value: unknown): value is string {
+	return typeof value === "string" && value.trim().length > 0;
+}
+
+/**
  * Default rate-limited client instance
  * Configured with conservative rate limits for production use
+ * Starts with environment variable email, can be updated dynamically via updateOpenAlexEmail()
  */
 export const rateLimitedOpenAlex = new RateLimitedOpenAlexClient({
-	userEmail: (import.meta.env.VITE_OPENALEX_EMAIL as string) || undefined,
+	userEmail: isValidEmailEnv(import.meta.env.VITE_OPENALEX_EMAIL)
+		? import.meta.env.VITE_OPENALEX_EMAIL
+		: undefined,
 	rateLimit: {
 		requestsPerSecond: 8,  // Conservative under 10 req/sec
 		requestsPerDay: 95000, // Conservative under 100k req/day
 	},
 });
+
+/**
+ * Update the email configuration for the global OpenAlex client
+ * This should be called when the user updates their email in settings
+ */
+export function updateOpenAlexEmail(email: string | undefined): void {
+	rateLimitedOpenAlex.updateConfig({
+		userEmail: email && email.trim().length > 0 ? email.trim() : undefined,
+	});
+
+	logger.debug("api", "Updated OpenAlex client email configuration", {
+		hasEmail: !!(email && email.trim().length > 0),
+		emailLength: email?.trim().length || 0
+	}, "RateLimitedOpenAlexClient");
+}
+
+/**
+ * Initialize OpenAlex client with stored email from settings
+ * This should be called after the settings store is hydrated
+ */
+export function initializeOpenAlexClientEmail(): void {
+	// This will be called from the settings store after hydration
+	// to apply any stored email configuration
+}

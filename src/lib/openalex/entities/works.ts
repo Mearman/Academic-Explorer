@@ -44,6 +44,13 @@ export class WorksApi {
 	constructor(private client: OpenAlexBaseClient) {}
 
 	/**
+	 * Type guard to check if value is WorksFilters
+	 */
+	private isWorksFilters(value: unknown): value is WorksFilters {
+		return typeof value === "object" && value !== null && !Array.isArray(value);
+	}
+
+	/**
    * Get a single work by its OpenAlex ID, DOI, or other identifier
    *
    * @param id - The work ID (OpenAlex ID, DOI, etc.)
@@ -80,7 +87,11 @@ export class WorksApi {
 
 		// Convert filters object to filter string, if it's not already a string
 		if (params.filter) {
-			queryParams.filter = typeof params.filter === "string" ? params.filter : this.buildFilterString(params.filter as WorksFilters);
+			if (typeof params.filter === "string") {
+				queryParams.filter = params.filter;
+			} else if (this.isWorksFilters(params.filter)) {
+				queryParams.filter = this.buildFilterString(params.filter);
+			}
 		}
 
 		return this.client.getResponse<Work>("works", queryParams);
@@ -355,7 +366,11 @@ export class WorksApi {
 
 		// Convert filters if provided
 		if (params.filter) {
-			queryParams.filter = typeof params.filter === "string" ? params.filter : this.buildFilterString(params.filter as WorksFilters);
+			if (typeof params.filter === "string") {
+				queryParams.filter = params.filter;
+			} else if (this.isWorksFilters(params.filter)) {
+				queryParams.filter = this.buildFilterString(params.filter);
+			}
 		}
 
 		const response = await this.client.getResponse<Work>("works", queryParams);
@@ -392,7 +407,11 @@ export class WorksApi {
 
 		// Convert filters if provided
 		if (params.filter) {
-			queryParams.filter = typeof params.filter === "string" ? params.filter : this.buildFilterString(params.filter as WorksFilters);
+			if (typeof params.filter === "string") {
+				queryParams.filter = params.filter;
+			} else if (this.isWorksFilters(params.filter)) {
+				queryParams.filter = this.buildFilterString(params.filter);
+			}
 		}
 
 		yield* this.client.stream<Work>("works", queryParams, queryParams.per_page);
@@ -420,7 +439,11 @@ export class WorksApi {
 
 		// Convert filters if provided
 		if (params.filter) {
-			queryParams.filter = typeof params.filter === "string" ? params.filter : this.buildFilterString(params.filter as WorksFilters);
+			if (typeof params.filter === "string") {
+				queryParams.filter = params.filter;
+			} else if (this.isWorksFilters(params.filter)) {
+				queryParams.filter = this.buildFilterString(params.filter);
+			}
 		}
 
 		return this.client.getAll<Work>("works", queryParams, maxResults);
@@ -512,7 +535,11 @@ export class WorksApi {
 
 		// Convert filters if provided
 		if (params.filter) {
-			queryParams.filter = typeof params.filter === "string" ? params.filter : this.buildFilterString(params.filter as WorksFilters);
+			if (typeof params.filter === "string") {
+				queryParams.filter = params.filter;
+			} else if (this.isWorksFilters(params.filter)) {
+				queryParams.filter = this.buildFilterString(params.filter);
+			}
 		}
 
 		return this.client.getResponse<Work>("works", queryParams);
@@ -607,5 +634,8 @@ export class WorksApi {
 export async function createDefaultWorksApi(): Promise<WorksApi> {
 	// Using dynamic import for lazy loading and avoiding circular dependencies
 	const { defaultClient } = await import("../client");
-	return new WorksApi(defaultClient as never);
+	if (!defaultClient) {
+		throw new Error("Default client not available");
+	}
+	return new WorksApi(defaultClient);
 }

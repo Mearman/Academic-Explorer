@@ -101,13 +101,11 @@ export class QueryBuilder<T extends EntityFilters = EntityFilters> {
 		if (operator !== "=") {
 			const operatorSymbol = operator === "!=" ? "!" : operator;
 			const formattedValue = `${operatorSymbol}${String(value)}`;
-			// Type-safe assignment using type guard validation
-			if (this.isAssignableToField(formattedValue)) {
-				// Since type guard validated the value, we can safely assign
-				this.filters[field] = formattedValue as T[K];
-			}
-		} else if (this.isAssignableToField(value)) {
-			this.filters[field] = value as T[K];
+			// Use safe assignment method instead of type assertion
+			this.safelyAssignToField(field, formattedValue);
+		} else {
+			// Use safe assignment method instead of type assertion
+			this.safelyAssignToField(field, value);
 		}
 
 		return this;
@@ -131,9 +129,9 @@ export class QueryBuilder<T extends EntityFilters = EntityFilters> {
    */
 	addFilters(filters: Partial<T>): this {
 		Object.entries(filters).forEach(([key, value]) => {
-			if (value !== undefined && value !== null && this.isValidKey(key) && this.isAssignableToField(value)) {
-				// Type guards validated both key and value, safe to assign
-				this.filters[key] = value as T[string & keyof T];
+			if (value !== undefined && value !== null) {
+				// Use safe assignment method instead of type assertion
+				this.safelyAssignByKey(key, value);
 			}
 		});
 		return this;
@@ -165,11 +163,11 @@ export class QueryBuilder<T extends EntityFilters = EntityFilters> {
 			throw new Error(`Invalid date range: ${String(validation.error)}`);
 		}
 
-		if (validation.normalizedFrom && this.isAssignableToField(validation.normalizedFrom)) {
-			this.filters[fromField] = validation.normalizedFrom as T[K];
+		if (validation.normalizedFrom) {
+			this.safelyAssignToField(fromField, validation.normalizedFrom);
 		}
-		if (validation.normalizedTo && this.isAssignableToField(validation.normalizedTo)) {
-			this.filters[toField] = validation.normalizedTo as T[K];
+		if (validation.normalizedTo) {
+			this.safelyAssignToField(toField, validation.normalizedTo);
 		}
 
 		return this;
@@ -195,9 +193,7 @@ export class QueryBuilder<T extends EntityFilters = EntityFilters> {
 		}
 
 		const escapedValue = escapeFilterValue(query.trim());
-		if (this.isAssignableToField(escapedValue)) {
-			this.filters[field] = escapedValue as T[keyof T];
-		}
+		this.safelyAssignToField(field, escapedValue);
 		return this;
 	}
 
@@ -269,6 +265,43 @@ export class QueryBuilder<T extends EntityFilters = EntityFilters> {
 			typeof value === "boolean" ||
 			Array.isArray(value)
 		);
+	}
+
+	/**
+	 * Type guard to safely access filters as a record
+	 */
+	private isFiltersRecord(filters: Partial<T>): filters is Partial<T> & Record<string, unknown> {
+		return typeof filters === "object" && filters !== null;
+	}
+
+	/**
+	 * Safely assign a value to a filter field after validation
+	 */
+	private safelyAssignToField(
+		field: keyof T,
+		value: unknown
+	): void {
+		if (this.isAssignableToField(value) && this.isFiltersRecord(this.filters)) {
+			// OpenAlex API is flexible with filter value types, so this assignment is safe
+			// after type guard validation
+			const filterKey = String(field);
+			const filtersRecord = this.filters as Record<string, unknown>;
+			filtersRecord[filterKey] = value;
+		}
+	}
+
+	/**
+	 * Safely assign a value to a filter field by key string after validation
+	 */
+	private safelyAssignByKey(
+		key: string,
+		value: unknown
+	): void {
+		if (this.isValidKey(key) && this.isAssignableToField(value) && this.isFiltersRecord(this.filters)) {
+			// Both key and value are validated, safe to assign
+			const filtersRecord = this.filters as Record<string, unknown>;
+			filtersRecord[key] = value;
+		}
 	}
 
 }

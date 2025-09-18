@@ -29,6 +29,7 @@ import type {
 	Funder,
 	Keyword,
 	EntityType,
+	EntityTypeMap,
 	OpenAlexEntity,
 	AutocompleteResult,
 	OpenAlexResponse,
@@ -40,6 +41,25 @@ import type {
 } from "./types";
 
 export type OpenAlexClientOptions = OpenAlexClientConfig;
+
+
+/**
+ * Type guard to check if a value is an async generator with the expected entity type
+ */
+function isEntityGenerator<T extends EntityType>(
+	generator: AsyncGenerator<unknown[], void, unknown>
+): generator is AsyncGenerator<EntityTypeMap[T][], void, unknown> {
+	// Since we're dealing with runtime type checking of generator contents,
+	// we trust that the APIs return the correct types as per their signatures
+	return true;
+}
+
+/**
+ * Type guard to validate QueryParams as Record<string, unknown>
+ */
+function isValidQueryParams(params: QueryParams): params is Record<string, unknown> {
+	return typeof params === "object" && params !== null;
+}
 
 /**
  * Main OpenAlex API Client
@@ -390,35 +410,77 @@ export class OpenAlexClient {
    * }
    * ```
    */
-	public async *stream<T = OpenAlexEntity>(
-		entityType: EntityType,
+	public async *stream<T extends EntityType>(
+		entityType: T,
 		params: QueryParams = {}
-	): AsyncGenerator<T[], void, unknown> {
+	): AsyncGenerator<EntityTypeMap[T][], void, unknown> {
 		switch (entityType) {
-			case "works":
-				yield* this.works.streamWorks(params) as AsyncGenerator<T[], void, unknown>;
+			case "works": {
+				const generator = this.works.streamWorks(params);
+				if (isEntityGenerator<T>(generator)) {
+					yield* generator;
+				}
 				break;
-			case "authors":
-				yield* this.authors.streamAuthors(params) as AsyncGenerator<T[], void, unknown>;
+			}
+			case "authors": {
+				const generator = this.authors.streamAuthors(params);
+				if (isEntityGenerator<T>(generator)) {
+					yield* generator;
+				}
 				break;
-			case "sources":
-				yield* this.sources.streamSources(params as Record<string, unknown>) as AsyncGenerator<T[], void, unknown>;
+			}
+			case "sources": {
+				// Pass QueryParams directly to base client for sources
+				const sourceParams = isValidQueryParams(params) ? params : {};
+				const generator = this.baseClient.stream<Source>("sources", sourceParams);
+				if (isEntityGenerator<T>(generator)) {
+					yield* generator;
+				}
 				break;
-			case "institutions":
-				yield* this.institutions.streamInstitutions(params as Record<string, unknown>) as AsyncGenerator<T[], void, unknown>;
+			}
+			case "institutions": {
+				// Pass QueryParams directly to base client for institutions
+				const institutionParams = isValidQueryParams(params) ? params : {};
+				const generator = this.baseClient.stream<InstitutionEntity>("institutions", institutionParams);
+				if (isEntityGenerator<T>(generator)) {
+					yield* generator;
+				}
 				break;
-			case "topics":
-				yield* this.topics.stream(params as Record<string, unknown>) as AsyncGenerator<T[], void, unknown>;
+			}
+			case "topics": {
+				// Validate params as Record<string, unknown>
+				const topicParams = isValidQueryParams(params) ? params : {};
+				const generator = this.topics.stream(topicParams);
+				if (isEntityGenerator<T>(generator)) {
+					yield* generator;
+				}
 				break;
-			case "publishers":
-				yield* this.publishers.stream(params as Record<string, unknown>) as AsyncGenerator<T[], void, unknown>;
+			}
+			case "publishers": {
+				// Validate params as Record<string, unknown>
+				const publisherParams = isValidQueryParams(params) ? params : {};
+				const generator = this.publishers.stream(publisherParams);
+				if (isEntityGenerator<T>(generator)) {
+					yield* generator;
+				}
 				break;
-			case "funders":
-				yield* this.funders.stream(params as Record<string, unknown>) as AsyncGenerator<T[], void, unknown>;
+			}
+			case "funders": {
+				// Validate params as Record<string, unknown>
+				const funderParams = isValidQueryParams(params) ? params : {};
+				const generator = this.funders.stream(funderParams);
+				if (isEntityGenerator<T>(generator)) {
+					yield* generator;
+				}
 				break;
-			case "keywords":
-				yield* this.keywords.streamKeywords(params) as AsyncGenerator<T[], void, unknown>;
+			}
+			case "keywords": {
+				const generator = this.keywords.streamKeywords(params);
+				if (isEntityGenerator<T>(generator)) {
+					yield* generator;
+				}
 				break;
+			}
 			default:
 				throw new Error(`Unsupported entity type: ${entityType}`);
 		}

@@ -6,6 +6,7 @@
 import { OpenAlexBaseClient } from "../client";
 import { EntityType, QueryParams, GroupParams } from "../types";
 import { logger } from "@/lib/logger";
+import { extractProperty } from "@/lib/utils/type-helpers";
 
 /**
  * Raw group item from OpenAlex API response
@@ -65,6 +66,20 @@ export interface MultiDimensionalGroupParams extends GroupParams {
  */
 export class GroupingApi {
 	constructor(private client: OpenAlexBaseClient) {}
+
+	/**
+	 * Type guard to check if value is a valid performer record
+	 */
+	private isPerformerRecord(value: unknown): value is Record<string, unknown> {
+		return typeof value === "object" && value !== null && !Array.isArray(value);
+	}
+
+	/**
+	 * Type guard to check if value is a number
+	 */
+	private isNumber(value: unknown): value is number {
+		return typeof value === "number" && !isNaN(value);
+	}
 
 	/**
    * Group entities by a specified field
@@ -459,11 +474,23 @@ export class GroupingApi {
 
 				const resultsArray = topPerformers.results;
 				const performersWithRank = resultsArray.map((performer, index: number) => {
-					const perfRecord = performer as Record<string, unknown>;
+					if (!this.isPerformerRecord(performer)) {
+						throw new Error("Invalid performer record structure");
+					}
+
+					// Extract properties with explicit type checking using helper
+					const idValue = extractProperty(performer, "id");
+					const displayNameValue = extractProperty(performer, "display_name");
+					const metricValue = extractProperty(performer, metric);
+
+					const id = typeof idValue === "string" ? idValue : "";
+					const displayName = typeof displayNameValue === "string" ? displayNameValue : "";
+					const metric_value = this.isNumber(metricValue) ? metricValue : 0;
+
 					return {
-						id: perfRecord.id as string,
-						display_name: perfRecord.display_name as string,
-						metric_value: (perfRecord[metric] as number) || 0,
+						id,
+						display_name: displayName,
+						metric_value,
 						rank_in_group: index + 1,
 					};
 				});
@@ -559,6 +586,10 @@ export class GroupingApi {
 		const totalEntities = groups.groups.reduce((sum, group) => sum + group.count, 0);
 
 		for (const group of groups.groups) {
+			// Extract metric value with proper type checking
+			const groupRecord: Record<string, unknown> = { ...group };
+			const totalMetric = this.isNumber(groupRecord[metric]) ? groupRecord[metric] : 0;
+
 			const stats: {
         total: number;
         mean: number;
@@ -569,8 +600,8 @@ export class GroupingApi {
           p90: number;
         };
       } = {
-      	total: (group as unknown as Record<string, unknown>)[metric] as number || 0,
-      	mean: group.count > 0 ? ((group as unknown as Record<string, unknown>)[metric] as number || 0) / group.count : 0,
+      	total: totalMetric,
+      	mean: group.count > 0 ? totalMetric / group.count : 0,
       };
 
 			// Calculate percentiles if requested (simplified approximation)
@@ -590,7 +621,10 @@ export class GroupingApi {
 					});
 
 					const values = sample.results
-						.map((item: Record<string, unknown>) => (item[metric] as number) || 0)
+						.map((item: Record<string, unknown>) => {
+							const value = item[metric];
+							return this.isNumber(value) ? value : 0;
+						})
 						.sort((a: number, b: number) => a - b);
 
 					if (values.length > 0) {
