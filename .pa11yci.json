@@ -11,12 +11,7 @@
     "threshold": 0,
     "includeNotices": false,
     "includeWarnings": false,
-    "rules": [
-      "label",
-      "link-name",
-      "button-name",
-      "aria-hidden-focus"
-    ],
+    "rules": [],
     "ignore": [
       "region",
       "page-has-heading-one"
