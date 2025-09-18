@@ -135,7 +135,7 @@ export function useAnimatedForceSimulation(options: UseAnimatedForceSimulationOp
 					linkCount: linkCount || 0,
 				}));
 
-				logger.info("graph", "Force animation started", {
+				logger.debug("graph", "Force animation started", {
 					nodeCount,
 					linkCount,
 					config,
@@ -191,7 +191,7 @@ export function useAnimatedForceSimulation(options: UseAnimatedForceSimulationOp
 
 					// Use current performance stats from state callback
 					setPerformanceStats(currentStats => {
-						logger.info("graph", "Force animation completed", {
+						logger.debug("graph", "Force animation completed", {
 							totalIterations,
 							finalAlpha: finalAlpha.toFixed(4),
 							reason,
@@ -208,7 +208,7 @@ export function useAnimatedForceSimulation(options: UseAnimatedForceSimulationOp
 					isRunning: false,
 					isPaused: false,
 				}));
-				logger.info("graph", "Force animation stopped");
+				logger.debug("graph", "Force animation stopped");
 				break;
 
 			case "paused":
@@ -216,7 +216,7 @@ export function useAnimatedForceSimulation(options: UseAnimatedForceSimulationOp
 					...prev,
 					isPaused: true,
 				}));
-				logger.info("graph", "Force animation paused");
+				logger.debug("graph", "Force animation paused");
 				break;
 
 			case "resumed":
@@ -224,7 +224,7 @@ export function useAnimatedForceSimulation(options: UseAnimatedForceSimulationOp
 					...prev,
 					isPaused: false,
 				}));
-				logger.info("graph", "Force animation resumed");
+				logger.debug("graph", "Force animation resumed");
 				break;
 
 			case "parameters_updated":
@@ -306,7 +306,7 @@ export function useAnimatedForceSimulation(options: UseAnimatedForceSimulationOp
 			frameCount: 0,
 		});
 
-		logger.info("graph", "Starting animated force simulation", {
+		logger.debug("graph", "Starting animated force simulation", {
 			nodeCount: nodes.length,
 			linkCount: links.length,
 			pinnedCount: pinnedNodes ? pinnedNodes.size : 0,
@@ -365,7 +365,7 @@ export function useAnimatedForceSimulation(options: UseAnimatedForceSimulationOp
 						type: "update_parameters",
 						config,
 					});
-					logger.info("graph", "Updating force parameters during animation", { config });
+					logger.debug("graph", "Updating force parameters during animation", { config });
 				} else {
 					logger.debug("graph", "Animation not running, ignoring parameter update");
 				}

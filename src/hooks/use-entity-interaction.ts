@@ -58,7 +58,7 @@ export function useEntityInteraction(centerOnNodeFn?: (nodeId: string, position?
 		try {
 			const store = useGraphStore.getState();
 
-			logger.info("graph", "Entity interaction started", {
+			logger.debug("graph", "Entity interaction started", {
 				entityId,
 				entityType,
 				options,
@@ -123,7 +123,7 @@ export function useEntityInteraction(centerOnNodeFn?: (nodeId: string, position?
 				await expandNode(targetNode.id);
 			}
 
-			logger.info("graph", "Entity interaction completed", {
+			logger.debug("graph", "Entity interaction completed", {
 				entityId,
 				entityType,
 				nodeId: targetNode.id,
