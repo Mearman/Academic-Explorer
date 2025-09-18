@@ -4,6 +4,7 @@ import react from 'eslint-plugin-react';
 import reactHooks from 'eslint-plugin-react-hooks';
 import reactRefresh from 'eslint-plugin-react-refresh';
 import eslintComments from 'eslint-plugin-eslint-comments';
+import jsxA11y from 'eslint-plugin-jsx-a11y';
 import tseslint from 'typescript-eslint';
 import noEmoji from './eslint-rules/no-emoji.js';
 import noZustandComputedFunctions from './eslint-rules/no-zustand-computed-functions.js';
@@ -26,6 +27,7 @@ export default tseslint.config([
       'react-hooks': reactHooks,
       'react-refresh': reactRefresh,
       'eslint-comments': eslintComments,
+      'jsx-a11y': jsxA11y,
       'custom': {
         rules: {
           'no-emoji': noEmoji,
@@ -38,6 +40,7 @@ export default tseslint.config([
     },
     rules: {
       ...reactHooks.configs.recommended.rules,
+      ...jsxA11y.configs.recommended.rules,
       'react-refresh/only-export-components': [
         'error',
         { allowConstantExport: true },
@@ -93,6 +96,23 @@ export default tseslint.config([
       // FIXME: Temporarily disabled due to ESLint 9.35.0 stack overflow on complex JSX nesting
       // 'indent': ['error', 'tab', { 'SwitchCase': 1 }],
 
+      // Accessibility rules - enforce WCAG 2.1 AA standards
+      'jsx-a11y/alt-text': 'error',
+      'jsx-a11y/aria-props': 'error',
+      'jsx-a11y/aria-proptypes': 'error',
+      'jsx-a11y/aria-unsupported-elements': 'error',
+      'jsx-a11y/click-events-have-key-events': 'error',
+      'jsx-a11y/heading-has-content': 'error',
+      'jsx-a11y/img-redundant-alt': 'error',
+      'jsx-a11y/interactive-supports-focus': 'error',
+      'jsx-a11y/label-has-associated-control': 'error',
+      'jsx-a11y/mouse-events-have-key-events': 'error',
+      'jsx-a11y/no-autofocus': 'error',
+      'jsx-a11y/no-distracting-elements': 'error',
+      'jsx-a11y/no-redundant-roles': 'error',
+      'jsx-a11y/role-has-required-aria-props': 'error',
+      'jsx-a11y/role-supports-aria-props': 'error',
+
       // Custom rules
       'custom/no-emoji': 'error',
       'custom/no-deprecated-comments': 'error',
@@ -127,6 +147,8 @@ export default tseslint.config([
     files: [
       'src/components/devtools/*.tsx',
       'src/lib/logger.ts',
+      'scripts/**/*.ts',
+      'scripts/**/*.js',
     ],
     rules: {
       'no-console': 'off',
