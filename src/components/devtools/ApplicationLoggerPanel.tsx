@@ -82,6 +82,7 @@ export function ApplicationLoggerPanel() {
 			"search": "cyan",
 			"general": "gray",
 			"expansion": "violet",
+			"repository": "indigo",
 		};
 		return colors[category] || "gray";
 	};
@@ -266,7 +267,7 @@ export function ApplicationLoggerPanel() {
 										value={selectedCategories}
 										onChange={(values) => {
 											const validCategories = values.filter((value): value is LogCategory =>
-												["api", "cache", "graph", "routing", "ui", "auth", "storage", "search", "general"].includes(value)
+												["api", "cache", "graph", "routing", "ui", "auth", "storage", "search", "general", "expansion", "repository"].includes(value)
 											);
 											setSelectedCategories(validCategories);
 										}}
@@ -280,6 +281,8 @@ export function ApplicationLoggerPanel() {
 											{ value: "storage", label: "Storage" },
 											{ value: "search", label: "Search" },
 											{ value: "general", label: "General" },
+											{ value: "expansion", label: "Expansion" },
+											{ value: "repository", label: "Repository" },
 										]}
 										styles={{
 											root: {
