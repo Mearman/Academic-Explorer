@@ -189,11 +189,17 @@ export function useAnimatedLayout(options: UseAnimatedLayoutOptions = {}) {
 		const nodes = getNodes();
 		const edges = getEdges();
 
+		function isEntityType(value: unknown): value is EntityType {
+			return typeof value === "string" &&
+				["works", "authors", "sources", "institutions", "publishers", "funders", "topics", "concepts"].includes(value);
+		}
+
 		const animatedNodes: AnimatedNode[] = nodes.map((node) => {
 			const isPinned = pinnedNodes[node.id] ?? false;
+			const entityType = isEntityType(node.data.entityType) ? node.data.entityType : undefined;
 			return {
 				id: node.id,
-				type: node.data.entityType as EntityType | undefined,
+				type: entityType,
 				x: node.position.x,
 				y: node.position.y,
 				fx: isPinned ? node.position.x : undefined,

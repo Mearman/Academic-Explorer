@@ -318,12 +318,24 @@ export const DEFAULT_EXPANSION_SETTINGS: Record<string, ExpansionSettings> = {
 export function getPropertiesForTarget(target: ExpansionTarget): PropertyDefinition[] {
 	// For relation types, use properties of the target entity type
 	// This is a simplified mapping - in practice you might want more sophisticated logic
-	if (Object.values(RelationType).includes(target as RelationType)) {
+	function isRelationType(value: ExpansionTarget): value is RelationType {
+		return Object.values(RelationType).some(relType => relType === value);
+	}
+
+	if (isRelationType(target)) {
 		// For now, return work properties as most relations involve works
 		return ENTITY_PROPERTIES.works;
 	}
 
-	return ENTITY_PROPERTIES[target as string] ?? [];
+	function isEntityType(value: ExpansionTarget): value is EntityType {
+		return typeof value === "string" && !Object.values(RelationType).includes(value);
+	}
+
+	if (isEntityType(target)) {
+		return ENTITY_PROPERTIES[target] ?? [];
+	}
+
+	return [];
 }
 
 /**

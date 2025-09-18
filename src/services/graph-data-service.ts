@@ -1613,9 +1613,18 @@ export class GraphDataService {
 			throw new Error("Invalid entity data: entity must be a non-null object");
 		}
 
+		// Type guard to ensure we have a valid record-like object
+		function isRecord(value: unknown): value is Record<string, unknown> {
+			return typeof value === "object" && value !== null && !Array.isArray(value);
+		}
+
+		if (!isRecord(entity)) {
+			throw new Error("Entity is not a valid record object");
+		}
+
 		// Use Object.assign to safely copy all enumerable properties
-		// Type assertion is safe since we're copying all enumerable properties to a plain object
-		return Object.assign({}, entity as unknown) as Record<string, unknown>;
+		// Safe since we've validated entity as a record-like object
+		return Object.assign({}, entity);
 	}
 
 	private getEntityData(entity: OpenAlexEntity): Record<string, unknown> {
