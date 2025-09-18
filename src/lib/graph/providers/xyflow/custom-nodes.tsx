@@ -28,7 +28,8 @@ import { useGraphStore } from "@/stores/graph-store";
 import { useGraphData } from "@/hooks/use-graph-data";
 import { useQueryClient } from "@tanstack/react-query";
 import { isNodeExpanded } from "@/lib/cache/graph-cache";
-import { useRef, useEffect } from "react";
+import { useEntityExpansionCallback } from "@/lib/graph/events";
+import { useRef } from "react";
 
 
 // Pin toggle button component
@@ -321,6 +322,7 @@ const RemoveLeafNodesButton: React.FC<RemoveLeafNodesButtonProps> = ({ nodeId, c
 	const queryClient = useQueryClient();
 	const getNeighbors = useGraphStore((state) => state.getNeighbors);
 	const removeNode = useGraphStore((state) => state.removeNode);
+	const getNode = useGraphStore((state) => state.getNode);
 	const pendingTrimRef = useRef(false);
 
 	const performTrim = () => {
@@ -341,26 +343,22 @@ const RemoveLeafNodesButton: React.FC<RemoveLeafNodesButtonProps> = ({ nodeId, c
 		pendingTrimRef.current = false;
 	};
 
-	// Effect to listen for expansion completion and execute pending trim
-	useEffect(() => {
-		if (!pendingTrimRef.current) return;
+	// Get the node to extract entity ID
+	const node = getNode(nodeId);
+	const entityId = node?.entityId;
 
-		// Check if node is now expanded
-		if (isNodeExpanded(queryClient, nodeId)) {
-			performTrim();
-			return;
-		}
-
-		// Set up polling to check for expansion (since TanStack Query cache changes don't trigger React updates)
-		const interval = setInterval(() => {
-			if (isNodeExpanded(queryClient, nodeId)) {
+	// Use cross-context entity expansion event listener instead of polling
+	useEntityExpansionCallback(
+		entityId || nodeId,
+		() => {
+			if (pendingTrimRef.current) {
 				performTrim();
-				clearInterval(interval);
 			}
-		}, 100); // Check every 100ms
-
-		return () => { clearInterval(interval); };
-	}, [pendingTrimRef.current, nodeId, queryClient]);
+		},
+		{
+			executeIn: "main" // Ensure UI updates happen in main thread
+		}
+	);
 
 	const handleRemoveLeafNodes = (e: React.MouseEvent) => {
 		e.stopPropagation(); // Prevent node selection/dragging
@@ -370,7 +368,7 @@ const RemoveLeafNodesButton: React.FC<RemoveLeafNodesButtonProps> = ({ nodeId, c
 			// Trim immediately
 			performTrim();
 		} else {
-			// Register for trimming once expansion completes
+			// Register for trimming once expansion completes via cross-context events
 			pendingTrimRef.current = true;
 		}
 	};
