@@ -5,6 +5,7 @@
 
 import '@testing-library/jest-dom';
 import { enableMapSet } from 'immer';
+import 'vitest-axe/extend-expect';
 
 // Configure test environment globals
 globalThis.__DEV__ = true;
