@@ -199,14 +199,14 @@ export const AllEdgesSection: React.FC = () => {
 		}
 
 		// Group by edge type
-		const grouped = filtered.reduce((acc, edge) => {
+		const grouped = filtered.reduce<Partial<Record<RelationType, GraphEdge[]>>>((acc, edge) => {
 			const type = edge.type;
 			if (!(type in acc)) {
 				acc[type] = [];
 			}
 			acc[type].push(edge);
 			return acc;
-		}, {} as Record<RelationType, GraphEdge[]>);
+		}, {});
 
 		return {
 			filteredEdges: filtered,
@@ -356,7 +356,7 @@ export const AllEdgesSection: React.FC = () => {
 			<ScrollArea style={{ height: "calc(100vh - 400px)" }}>
 				<Stack gap="md">
 					{relationTypeOptions.map(({ type, label, icon: IconComponent, description }) => {
-						const typeEdges = edgesByType[type] ?? [];
+						const typeEdges = edgesByType[type] || [];
 						const totalCount = edgeTypeStats.total[type] || 0;
 						const visibleCount = edgeTypeStats.visible[type] || 0;
 						const isTypeVisible = visibleCount > 0;
