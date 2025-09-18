@@ -230,7 +230,7 @@ export function getOptimalPerformanceConfig(
 ): PerformanceConfig {
 	const device = deviceCapabilities || detectDeviceCapabilities();
 
-	logger.info("graph", "Calculating optimal performance config", {
+	logger.debug("graph", "Calculating optimal performance config", {
 		graphMetrics,
 		deviceCapabilities: device,
 	});
@@ -308,7 +308,7 @@ export function getOptimalPerformanceConfig(
 		adjustedProfile.maxIterations = Math.max(adjustedProfile.maxIterations * 0.7, 100);
 	}
 
-	logger.info("graph", "Optimal performance config calculated", {
+	logger.debug("graph", "Optimal performance config calculated", {
 		baseProfile: graphMetrics.estimatedComplexity,
 		adjustments: {
 			lowPowerMode: device.isLowPowerMode,

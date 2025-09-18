@@ -334,8 +334,8 @@ export class StatisticsApi {
 		const groups = groupedResponse.group_by.slice(0, 20); // Top 20 groups
 		const totalEntities = groups.reduce((sum: number, group) => sum + group.count, 0);
 		const totalCitations = groups.reduce((sum: number, group) => {
-			const groupAsRecord = group as { cited_by_count?: number };
-			return sum + (groupAsRecord.cited_by_count || 0);
+			const citedByCount = this.extractCitedByCount(group);
+			return sum + citedByCount;
 		}, 0);
 
 		const groupMetrics: Array<{
@@ -367,7 +367,7 @@ export class StatisticsApi {
 					sort: "cited_by_count",
 				});
 
-				const citations = groupStats.results.map((item) => (item as { cited_by_count?: number }).cited_by_count || 0);
+				const citations = groupStats.results.map((item) => this.extractCitedByCount(item));
 				const avgCitations = citations.reduce((sum, c) => sum + c, 0) / citations.length;
 				const medianCitations = citations.sort((a, b) => a - b)[Math.floor(citations.length / 2)] || 0;
 
@@ -461,7 +461,7 @@ export class StatisticsApi {
 				select: ["cited_by_count"]
 			});
 
-			const citations = worksResponse.results.map((work) => (work as { cited_by_count?: number }).cited_by_count || 0);
+			const citations = worksResponse.results.map((work) => this.extractCitedByCount(work));
 			const totalCitations = citations.reduce((sum, c) => sum + c, 0);
 			const avgCitations = totalCitations / citations.length;
 
@@ -555,7 +555,7 @@ export class StatisticsApi {
 		// Implementation for distribution analysis
 		return {
 			citation_distribution: {
-				quartiles: [0, 1, 5, 20] as [number, number, number, number],
+				quartiles: [0, 1, 5, 20] satisfies [number, number, number, number],
 				deciles: [0, 0, 1, 1, 2, 3, 5, 8, 15, 30],
 				highly_cited_threshold: 100,
 			},
@@ -619,8 +619,28 @@ export class StatisticsApi {
 	}
 
 	/**
-   * Calculate Shannon diversity index
-   */
+	 * Type guard to safely extract cited_by_count from unknown objects
+	 */
+	private extractCitedByCount(item: unknown): number {
+		if (this.isObjectWithCitedByCount(item)) {
+			const citedByCount = item.cited_by_count;
+			if (typeof citedByCount === "number") {
+				return citedByCount;
+			}
+		}
+		return 0;
+	}
+
+	/**
+	 * Type guard to check if an item has a cited_by_count property
+	 */
+	private isObjectWithCitedByCount(item: unknown): item is { cited_by_count?: unknown } {
+		return item !== null && typeof item === "object" && "cited_by_count" in item;
+	}
+
+	/**
+	 * Calculate Shannon diversity index
+	 */
 	private calculateShannonDiversity(counts: number[]): number {
 		const total = counts.reduce((sum, count) => sum + count, 0);
 		if (total === 0) return 0;

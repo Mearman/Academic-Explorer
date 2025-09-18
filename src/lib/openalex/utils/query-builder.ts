@@ -100,7 +100,11 @@ export class QueryBuilder<T extends EntityFilters = EntityFilters> {
 		// Handle different operators for numeric and string values
 		if (operator !== "=") {
 			const operatorSymbol = operator === "!=" ? "!" : operator;
-			this.filters[field] = `${operatorSymbol}${String(value)}` as T[K];
+			const formattedValue = `${operatorSymbol}${String(value)}`;
+			// Type-safe assignment using unknown first, then type guard
+			if (this.isAssignableToField(formattedValue)) {
+				this.filters[field] = formattedValue;
+			}
 		} else {
 			this.filters[field] = value;
 		}
@@ -126,8 +130,8 @@ export class QueryBuilder<T extends EntityFilters = EntityFilters> {
    */
 	addFilters(filters: Partial<T>): this {
 		Object.entries(filters).forEach(([key, value]) => {
-			if (value !== undefined && value !== null) {
-				this.filters[key as keyof T] = value as T[keyof T];
+			if (value !== undefined && value !== null && this.isValidKey(key) && this.isAssignableToField(value)) {
+				this.filters[key] = value;
 			}
 		});
 		return this;
@@ -159,11 +163,11 @@ export class QueryBuilder<T extends EntityFilters = EntityFilters> {
 			throw new Error(`Invalid date range: ${String(validation.error)}`);
 		}
 
-		if (validation.normalizedFrom) {
-			this.filters[fromField] = validation.normalizedFrom as T[K];
+		if (validation.normalizedFrom && this.isAssignableToField(validation.normalizedFrom)) {
+			this.filters[fromField] = validation.normalizedFrom;
 		}
-		if (validation.normalizedTo) {
-			this.filters[toField] = validation.normalizedTo as T[K];
+		if (validation.normalizedTo && this.isAssignableToField(validation.normalizedTo)) {
+			this.filters[toField] = validation.normalizedTo;
 		}
 
 		return this;
@@ -188,7 +192,10 @@ export class QueryBuilder<T extends EntityFilters = EntityFilters> {
 			return this;
 		}
 
-		this.filters[field] = escapeFilterValue(query.trim()) as T[keyof T];
+		const escapedValue = escapeFilterValue(query.trim());
+		if (this.isAssignableToField(escapedValue)) {
+			this.filters[field] = escapedValue;
+		}
 		return this;
 	}
 
@@ -240,6 +247,28 @@ export class QueryBuilder<T extends EntityFilters = EntityFilters> {
 	clone(): QueryBuilder<T> {
 		return new QueryBuilder<T>({ ...this.filters }, this.logicalOperator);
 	}
+
+	/**
+	 * Type guard to check if a string key is valid for the filter type
+	 */
+	private isValidKey(key: string): key is keyof T {
+		// OpenAlex API accepts any string key for filters, so this is always true
+		return typeof key === "string" && key.length > 0;
+	}
+
+	/**
+	 * Type guard to check if a value can be assigned to filter fields
+	 * OpenAlex API accepts strings, numbers, booleans, and arrays as filter values
+	 */
+	private isAssignableToField(value: unknown): value is T[keyof T] {
+		return (
+			typeof value === "string" ||
+			typeof value === "number" ||
+			typeof value === "boolean" ||
+			Array.isArray(value)
+		);
+	}
+
 }
 
 /**
@@ -360,7 +389,7 @@ export function buildSelectString(fields: string[]): string {
  * ```typescript
  * const validation = validateDateRange('2020-01-01', '2023-12-31');
  * if (validation.isValid) {
- *   logger.info("general", 'Valid range:', validation.normalizedFrom, 'to', validation.normalizedTo);
+ *   logger.debug("general", 'Valid range:', validation.normalizedFrom, 'to', validation.normalizedTo);
  * }
  * ```
  */

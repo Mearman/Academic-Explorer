@@ -27,7 +27,16 @@ export class CustomForceManager {
   constructor(config: CustomForceManagerConfig = {}) {
     this.state = {
       forces: new Map(),
-      calculationFunctions: new Map(Object.entries(forceCalculations)),
+      calculationFunctions: new Map([
+        ["radial", forceCalculations.radial],
+        ["property-x", forceCalculations["property-x"]],
+        ["property-y", forceCalculations["property-y"]],
+        ["property-both", forceCalculations["property-both"]],
+        ["cluster", forceCalculations.cluster],
+        ["repulsion", forceCalculations.repulsion],
+        ["attraction", forceCalculations.attraction],
+        ["orbit", forceCalculations.orbit],
+      ]),
       performanceMetrics: [],
       config: {
         maxForces: 10,
@@ -76,7 +85,7 @@ export class CustomForceManager {
 
     this.state.forces.set(id, customForce);
 
-    logger.info("graph", "Custom force added", {
+    logger.debug("graph", "Custom force added", {
       id,
       type: customForce.type,
       name: customForce.name,
@@ -93,7 +102,7 @@ export class CustomForceManager {
     const removed = this.state.forces.delete(id);
 
     if (removed) {
-      logger.info("graph", "Custom force removed", { id });
+      logger.debug("graph", "Custom force removed", { id });
     } else {
       logger.warn("graph", "Attempted to remove non-existent force", { id });
     }
@@ -120,7 +129,7 @@ export class CustomForceManager {
 
     this.state.forces.set(id, updatedForce);
 
-    logger.info("graph", "Custom force updated", {
+    logger.debug("graph", "Custom force updated", {
       id,
       updates: Object.keys(updates),
     });
@@ -167,7 +176,7 @@ export class CustomForceManager {
 
     force.enabled = !force.enabled;
 
-    logger.info("graph", "Custom force toggled", {
+    logger.debug("graph", "Custom force toggled", {
       id,
       enabled: force.enabled,
     });
@@ -182,7 +191,7 @@ export class CustomForceManager {
     const count = this.state.forces.size;
     this.state.forces.clear();
 
-    logger.info("graph", "All custom forces cleared", { count });
+    logger.debug("graph", "All custom forces cleared", { count });
   }
 
   /**
@@ -294,7 +303,7 @@ export class CustomForceManager {
       this.addForce(force);
     });
 
-    logger.info("graph", "Force preset loaded", {
+    logger.debug("graph", "Force preset loaded", {
       presetId: preset.id,
       name: preset.name,
       forceCount: preset.forces.length,

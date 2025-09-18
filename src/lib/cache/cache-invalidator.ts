@@ -75,7 +75,7 @@ function clearLocalStorageCache(): void {
 		}
 
 		if (clearedKeys.length > 0) {
-			logger.info("cache", "Cleared localStorage cache", { keys: clearedKeys });
+			logger.debug("cache", "Cleared localStorage cache", { keys: clearedKeys });
 		} else {
 			logger.debug("cache", "No localStorage cache entries to clear");
 		}
@@ -107,7 +107,7 @@ async function clearIndexedDBCache(): Promise<void> {
 		await store.clear();
 		await tx.done;
 
-		logger.info("cache", "Cleared IndexedDB cache", { dbName: cacheDBName });
+		logger.debug("cache", "Cleared IndexedDB cache", { dbName: cacheDBName });
 	} catch (error) {
 		logError("Failed to clear IndexedDB cache", error, "CacheInvalidator", "storage");
 		throw error;
@@ -211,7 +211,7 @@ export async function checkAndInvalidateCache(): Promise<InvalidationResult> {
 				errorDetails: errors
 			});
 		} else {
-			logger.info("cache", "Cache invalidation completed successfully", {
+			logger.debug("cache", "Cache invalidation completed successfully", {
 				reason,
 				clearedLayers,
 				oldVersion: storedMetadata?.version,
@@ -261,7 +261,7 @@ export async function forceInvalidateCache(reason = "Manual invalidation"): Prom
 			timestamp
 		};
 
-		logger.info("cache", "Forced cache invalidation completed", {
+		logger.debug("cache", "Forced cache invalidation completed", {
 			clearedLayers,
 			errors: errors.length
 		});

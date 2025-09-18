@@ -107,7 +107,7 @@ describe("Cache Persister", () => {
 		localStorageMock.removeItem.mockClear();
 
 		// Setup logger mocks
-		vi.mocked(logger.logger.info).mockImplementation(() => {});
+		vi.mocked(logger.logger.debug).mockImplementation(() => {});
 		vi.mocked(logger.logger.warn).mockImplementation(() => {});
 		vi.mocked(logger.logError).mockImplementation(() => {});
 	});
@@ -130,7 +130,7 @@ describe("Cache Persister", () => {
 					"academic-explorer-cache",
 					expect.stringContaining('"timestamp"')
 				);
-				expect(logger.logger.info).toHaveBeenCalledWith(
+				expect(logger.logger.debug).toHaveBeenCalledWith(
 					"cache",
 					"Persisted query client to localStorage",
 					expect.objectContaining({
@@ -159,7 +159,7 @@ describe("Cache Persister", () => {
 					}),
 					"queryClient"
 				);
-				expect(logger.logger.info).toHaveBeenCalledWith(
+				expect(logger.logger.debug).toHaveBeenCalledWith(
 					"cache",
 					"Persisted query client to IndexedDB",
 					expect.objectContaining({ size: expect.any(Number) })
@@ -175,7 +175,7 @@ describe("Cache Persister", () => {
 
 				await persister.persistClient(samplePersistedClient);
 
-				expect(logger.logger.info).toHaveBeenCalledWith(
+				expect(logger.logger.debug).toHaveBeenCalledWith(
 					"cache",
 					"localStorage full, using IndexedDB for persistence",
 					expect.objectContaining({
@@ -267,7 +267,7 @@ describe("Cache Persister", () => {
 					...samplePersistedClient,
 					timestamp: expect.any(Number),
 				});
-				expect(logger.logger.info).toHaveBeenCalledWith(
+				expect(logger.logger.debug).toHaveBeenCalledWith(
 					"cache",
 					"Restored query client from localStorage",
 					expect.objectContaining({ age: expect.any(Number) })
@@ -305,7 +305,7 @@ describe("Cache Persister", () => {
 				await persister.restoreClient();
 
 				expect(localStorageMock.removeItem).toHaveBeenCalledWith("academic-explorer-cache");
-				expect(logger.logger.info).toHaveBeenCalledWith(
+				expect(logger.logger.debug).toHaveBeenCalledWith(
 					"cache",
 					"localStorage cache expired, clearing",
 					expect.objectContaining({
@@ -329,7 +329,7 @@ describe("Cache Persister", () => {
 					...samplePersistedClient,
 					timestamp: expect.any(Number),
 				});
-				expect(logger.logger.info).toHaveBeenCalledWith(
+				expect(logger.logger.debug).toHaveBeenCalledWith(
 					"cache",
 					"Restored query client from IndexedDB",
 					expect.objectContaining({ age: expect.any(Number) })
@@ -351,7 +351,7 @@ describe("Cache Persister", () => {
 
 				expect(mockStore.delete).toHaveBeenCalledWith("queryClient");
 				expect(result).toBeUndefined();
-				expect(logger.logger.info).toHaveBeenCalledWith(
+				expect(logger.logger.debug).toHaveBeenCalledWith(
 					"cache",
 					"IndexedDB cache expired, clearing old data",
 					expect.objectContaining({
@@ -436,7 +436,7 @@ describe("Cache Persister", () => {
 
 				expect(localStorageMock.removeItem).toHaveBeenCalledWith("academic-explorer-cache");
 				expect(mockStore.delete).toHaveBeenCalledWith("queryClient");
-				expect(logger.logger.info).toHaveBeenCalledWith(
+				expect(logger.logger.debug).toHaveBeenCalledWith(
 					"cache",
 					"Removed query client from all storage layers"
 				);
@@ -574,7 +574,7 @@ describe("Cache Persister", () => {
 
 			expect(result).toBe(true);
 			expect(mockStore.delete).toHaveBeenCalledWith("queryClient");
-			expect(logger.logger.info).toHaveBeenCalledWith(
+			expect(logger.logger.debug).toHaveBeenCalledWith(
 				"cache",
 				"Cleared expired cache",
 				{ dbName: "test-db" }
@@ -717,7 +717,7 @@ describe("Cache Persister", () => {
 
 			await persister.persistClient(largeClient);
 
-			expect(logger.logger.info).toHaveBeenCalledWith(
+			expect(logger.logger.debug).toHaveBeenCalledWith(
 				"cache",
 				"Data size over compression threshold, storing uncompressed",
 				expect.objectContaining({
