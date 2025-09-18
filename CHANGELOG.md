@@ -1,3 +1,31 @@
+# [6.0.0](https://github.com/Mearman/Academic-Explorer/compare/v5.9.0...v6.0.0) (2025-09-18)
+
+
+### Bug Fixes
+
+* **hooks:** call onProgress callback in data fetch progress handler ([dc613d0](https://github.com/Mearman/Academic-Explorer/commit/dc613d03ab6beb3b9cf6267a2ae680021d98f7b0))
+* **hooks:** eliminate ESLint errors in worker hooks without disable comments ([82c02e4](https://github.com/Mearman/Academic-Explorer/commit/82c02e4d93d16d339fa648e0a1da5a322cc5afc6))
+* **tests:** correct EventBridge component test payload validation ([7055af0](https://github.com/Mearman/Academic-Explorer/commit/7055af020b83efc6bdfc354fe97bec81a9933df3))
+
+
+### Code Refactoring
+
+* **hooks:** remove legacy message handling from data fetching worker ([1585318](https://github.com/Mearman/Academic-Explorer/commit/1585318249ea2ac08da1b2155dbc870536042989))
+
+
+### Features
+
+* **test:** integrate MSW for OpenAlex API mocking and resolve unhandled promise rejections ([50d87c7](https://github.com/Mearman/Academic-Explorer/commit/50d87c7104b75057b538b411e7b0eed0399b33f0))
+* **workers:** migrate data fetching worker to EventBridge communication ([7ef5f58](https://github.com/Mearman/Academic-Explorer/commit/7ef5f58abd9ea6deb5b179d2d9014cdc182e79d4))
+* **workers:** migrate force animation worker to EventBridge communication ([8f26762](https://github.com/Mearman/Academic-Explorer/commit/8f26762456a30688d788ae4f4a2f8698acff2ce5))
+
+
+### BREAKING CHANGES
+
+* **hooks:** Legacy postMessage communication no longer supported
+* **workers:** Worker now uses EventBridge instead of postMessage for all communication
+* **workers:** Worker now primarily uses EventBridge instead of postMessage
+
 # [5.9.0](https://github.com/Mearman/Academic-Explorer/compare/v5.8.2...v5.9.0) (2025-09-18)
 
 
