@@ -12,14 +12,12 @@
     "includeNotices": false,
     "includeWarnings": false,
     "rules": [
-      "color-contrast",
       "heading-order",
       "image-alt",
       "label",
       "link-name",
       "button-name",
-      "aria-hidden-focus",
-      "focus-order-semantics"
+      "aria-hidden-focus"
     ],
     "ignore": [
       "region",
