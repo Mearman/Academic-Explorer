@@ -225,11 +225,11 @@ export class RateLimitedOpenAlexClient {
 
 	// Keywords API with rate limiting
 	public async getKeyword(id: string, params?: QueryParams): Promise<Keyword> {
-		return this.withRateLimit(() => this.client.keywords.getKeyword(id, params));
+		return this.withRateLimit(() => this.client.keywords.getKeyword(id, params as QueryParams));
 	}
 
 	public async getKeywords(params?: QueryParams): Promise<OpenAlexResponse<Keyword>> {
-		return this.withRateLimit(() => this.client.keywords.getKeywords(params));
+		return this.withRateLimit(() => this.client.keywords.getKeywords(params as QueryParams));
 	}
 
 
