@@ -7,7 +7,7 @@ import React from "react";
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { GraphToolbar } from "./GraphToolbar";
-import type { GraphNode, GraphEdge } from "@/lib/graph/types";
+import type { GraphEdge } from "@/lib/graph/types";
 import { RelationType } from "@/lib/graph/types";
 
 // Mock XYFlow ReactFlowProvider and useReactFlow
@@ -52,33 +52,45 @@ describe("GraphToolbar", () => {
 	const mockPinNode = vi.fn();
 	const mockClearAllPinnedNodes = vi.fn();
 
-	const testNodes: GraphNode[] = [
+	const testNodes = [
 		{
 			id: "W1",
 			type: "works",
 			label: "Test Work 1",
-			entityId: "W1",
 			position: { x: 0, y: 0 },
-			externalIds: [],
 			selected: false,
+			data: {
+				entityId: "W1",
+				entityType: "works",
+				label: "Test Work 1",
+				externalIds: [],
+			},
 		},
 		{
 			id: "W2",
 			type: "works",
 			label: "Test Work 2",
-			entityId: "W2",
 			position: { x: 100, y: 100 },
-			externalIds: [],
 			selected: true,
+			data: {
+				entityId: "W2",
+				entityType: "works",
+				label: "Test Work 2",
+				externalIds: [],
+			},
 		},
 		{
 			id: "A1",
 			type: "authors",
 			label: "Test Author 1",
-			entityId: "A1",
 			position: { x: 50, y: 50 },
-			externalIds: [],
 			selected: false,
+			data: {
+				entityId: "A1",
+				entityType: "authors",
+				label: "Test Author 1",
+				externalIds: [],
+			},
 		},
 	];
 
@@ -421,7 +433,7 @@ describe("GraphToolbar", () => {
 				</TestWrapper>
 			);
 
-			const pinButton = screen.getByRole("button", { name: /pin all/i });
+			const pinButton = screen.getByRole("button", { name: /^pin all$/i });
 			fireEvent.click(pinButton);
 
 			expect(mockPinNode).toHaveBeenCalledTimes(3); // All test nodes
@@ -441,7 +453,7 @@ describe("GraphToolbar", () => {
 				</TestWrapper>
 			);
 
-			const pinButton = screen.getByRole("button", { name: /pin all/i });
+			const pinButton = screen.getByRole("button", { name: /^pin all$/i });
 			fireEvent.click(pinButton);
 
 			expect(vi.mocked(logger.warn)).toHaveBeenCalledWith(

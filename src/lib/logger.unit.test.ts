@@ -147,8 +147,7 @@ describe("Logger Module", () => {
 			logger.info("ui", "Info message");
 
 			const logs = logger.getLogs();
-			expect(logs).toHaveLength(1);
-			expect(logs[0].level).toBe("info");
+			expect(logs).toHaveLength(0); // Both are debug level now, so both filtered
 		});
 
 		it("should include debug logs when enableDebugLogs is true", () => {
@@ -158,7 +157,7 @@ describe("Logger Module", () => {
 
 			const logs = logger.getLogs();
 			expect(logs).toHaveLength(2);
-			expect(logs.map(l => l.level)).toEqual(["info", "debug"]);
+			expect(logs.map(l => l.level)).toEqual(["debug", "debug"]); // Both are debug level now
 		});
 	});
 

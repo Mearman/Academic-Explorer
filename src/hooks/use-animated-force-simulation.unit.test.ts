@@ -28,8 +28,8 @@ vi.mock("@/lib/graph/utils/performance-config", () => ({
 // Mock the logger
 vi.mock("@/lib/logger", () => ({
 	logger: {
-		info: vi.fn(),
 		debug: vi.fn(),
+		info: vi.fn(),
 		error: vi.fn(),
 		warn: vi.fn(),
 	},

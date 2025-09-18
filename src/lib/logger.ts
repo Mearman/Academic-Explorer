@@ -79,7 +79,7 @@ class ApplicationLogger {
 	}
 
 	info(category: LogCategory, message: string, data?: unknown, component?: string) {
-		this.log("info", category, message, data, component);
+		this.log("debug", category, message, data, component);
 	}
 
 	warn(category: LogCategory, message: string, data?: unknown, component?: string) {
@@ -137,7 +137,7 @@ export const logger = new ApplicationLogger();
 
 // Convenience functions for common logging patterns
 export const logApiRequest = (url: string, method: string, status?: number, responseTime?: number) => {
-	const level = status && status >= 400 ? "error" : status && status >= 300 ? "warn" : "info";
+	const level = status && status >= 400 ? "error" : status && status >= 300 ? "warn" : "debug";
 	logger.log(level, "api", `${method} ${url}${status ? ` - ${String(status)}` : ""}`, {
 		url,
 		method,

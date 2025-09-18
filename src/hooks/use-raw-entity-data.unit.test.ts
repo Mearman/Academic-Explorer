@@ -385,7 +385,10 @@ describe("useRawEntityData", () => {
 		it("should track cache hit with dataUpdatedAt", async () => {
 			const { useOpenAlexEntity } = await import("@/lib/hooks/use-openalex-query");
 
-			const now = Date.now();
+			// Mock Date.now to ensure consistent timing
+			const fixedNow = 1000000000000; // Fixed timestamp
+			const mockDateNow = vi.spyOn(Date, "now").mockReturnValue(fixedNow);
+
 			const mockEntityData: OpenAlexEntity = {
 				id: "https://openalex.org/W123456789",
 				display_name: "Test Work",
@@ -395,7 +398,7 @@ describe("useRawEntityData", () => {
 				...mockUseOpenAlexEntity,
 				data: mockEntityData,
 				isFetching: false,
-				dataUpdatedAt: now - 10000, // 10 seconds ago
+				dataUpdatedAt: fixedNow - 10000, // 10 seconds ago
 			});
 
 			renderHook(() =>
@@ -407,15 +410,22 @@ describe("useRawEntityData", () => {
 				"Raw entity data loaded from cache system",
 				expect.objectContaining({
 					fromCache: true,
-					dataAge: expect.any(Number),
+					dataAge: 10000, // Should be exactly 10000ms
 				}),
 				"useRawEntityData"
 			);
 
-			const logCall = mockLogger.debug.mock.calls[0];
-			const dataAge = logCall[2].dataAge;
-			expect(dataAge).toBeGreaterThan(9000); // Should be around 10 seconds
-			expect(dataAge).toBeLessThan(11000);
+			// Get the second call which should have the cache data with dataAge
+			const cacheLogCall = mockLogger.debug.mock.calls.find(call =>
+				call[1] === "Raw entity data loaded from cache system"
+			);
+
+			expect(cacheLogCall).toBeDefined();
+			const dataAge = cacheLogCall![2].dataAge;
+			expect(dataAge).toBe(10000); // Should be exactly 10 seconds
+
+			// Restore Date.now
+			mockDateNow.mockRestore();
 		});
 
 		it("should handle missing dataUpdatedAt", async () => {
