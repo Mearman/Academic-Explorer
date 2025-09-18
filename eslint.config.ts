@@ -11,6 +11,7 @@ import noZustandComputedFunctions from './eslint-rules/no-zustand-computed-funct
 import noUnstableDependencies from './eslint-rules/no-unstable-dependencies.js';
 import noSelectorObjectCreation from './eslint-rules/no-selector-object-creation.js';
 import noDeprecatedComments from './eslint-rules/no-deprecated-comments.js';
+import noLoggerInfo from './eslint-rules/no-logger-info.js';
 
 export default tseslint.config([
   {
@@ -35,6 +36,7 @@ export default tseslint.config([
           'no-unstable-dependencies': noUnstableDependencies,
           'no-selector-object-creation': noSelectorObjectCreation,
           'no-deprecated-comments': noDeprecatedComments,
+          'no-logger-info': noLoggerInfo,
         },
       },
     },
@@ -58,10 +60,10 @@ export default tseslint.config([
       ],
 
       // Additional strict rules beyond strictTypeChecked
-      // Prevent type assertions (prefer type guards) - temporarily relaxed
+      // Prevent type assertions (prefer type guards)
       '@typescript-eslint/consistent-type-assertions': [
         'error',
-        { assertionStyle: 'as', objectLiteralTypeAssertions: 'never' }
+        { assertionStyle: 'never' }
       ],
 
       // Prevent non-null assertions
@@ -116,6 +118,7 @@ export default tseslint.config([
       // Custom rules
       'custom/no-emoji': 'error',
       'custom/no-deprecated-comments': 'error',
+      'custom/no-logger-info': 'warn',
 
       // React 19 + Zustand + Immer infinite loop prevention rules
       'custom/no-zustand-computed-functions': 'error',
