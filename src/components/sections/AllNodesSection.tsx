@@ -178,7 +178,10 @@ export const AllNodesSection: React.FC = () => {
 			if (!(type in acc)) {
 				acc[type] = [];
 			}
-			acc[type].push(node);
+			const nodeArray = acc[type];
+			if (nodeArray) {
+				nodeArray.push(node);
+			}
 			return acc;
 		}, {});
 
