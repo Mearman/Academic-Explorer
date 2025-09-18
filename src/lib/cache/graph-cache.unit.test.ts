@@ -27,6 +27,7 @@ import {
 // Mock dependencies
 vi.mock("@/lib/logger", () => ({
 	logger: {
+		debug: vi.fn(),
 		info: vi.fn(),
 		warn: vi.fn(),
 	},
@@ -155,10 +156,13 @@ describe("Graph Cache", () => {
 		});
 
 		it("should handle malformed entity data gracefully", () => {
-			// Set up invalid data that will cause JSON extraction to fail
-			const invalidData = Object.create(null); // Object without a valid property access
+			// Set up invalid data that will cause property access to fail during type checking
+			const invalidData = Object.create(null);
 			Object.defineProperty(invalidData, "id", {
 				get() { throw new Error("Property access error"); }
+			});
+			Object.defineProperty(invalidData, "display_name", {
+				get() { return "Test Name"; } // Valid display_name to get past existence check
 			});
 
 			const invalidQuery = {
