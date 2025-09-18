@@ -80,6 +80,14 @@ export function useGraphData() {
 		}
 	}, []);
 
+	const loadEntityIntoRepository = useCallback(async (entityId: string) => {
+		try {
+			await service.current.loadEntityIntoRepository(entityId);
+		} catch (err) {
+			logError("Failed to load entity into repository in graph data hook", err, "useGraphData", "repository");
+		}
+	}, []);
+
 	const expandNode = useCallback(async (nodeId: string, options?: {
     depth?: number;
     limit?: number;
@@ -269,6 +277,7 @@ export function useGraphData() {
 	return {
 		loadEntity,
 		loadEntityIntoGraph,
+		loadEntityIntoRepository,
 		loadAllCachedNodes,
 		expandNode,
 		expandAllNodesOfType,

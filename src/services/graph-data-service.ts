@@ -9,6 +9,7 @@ import { rateLimitedOpenAlex } from "@/lib/openalex/rate-limited-client";
 import { EntityDetector } from "@/lib/graph/utils/entity-detection";
 import { EntityFactory, type ExpansionOptions } from "@/lib/entities";
 import { useGraphStore } from "@/stores/graph-store";
+import { useRepositoryStore } from "@/stores/repository-store";
 import { useExpansionSettingsStore } from "@/stores/expansion-settings-store";
 import { logError, logger } from "@/lib/logger";
 import { RequestDeduplicationService, createRequestDeduplicationService } from "./request-deduplication-service";
@@ -306,6 +307,52 @@ export class GraphDataService {
 			const errorMessage = error instanceof Error ? error.message : "Unknown error";
 			store.setError(errorMessage);
 			logError("Failed to load entity into graph", error, "GraphDataService", "graph");
+		}
+	}
+
+	/**
+	 * Load an entity and add it to the repository (without adding to main graph)
+	 * Used for repository mode when building a collection before adding to graph
+	 */
+	async loadEntityIntoRepository(entityId: string): Promise<void> {
+		const repositoryStore = useRepositoryStore.getState();
+
+		try {
+			// Detect entity type
+			const detection = this.detector.detectEntityIdentifier(entityId);
+
+			if (!detection.entityType) {
+				throw new Error(`Unable to detect entity type for: ${entityId}`);
+			}
+
+			// For OpenAlex IDs, construct the full URL
+			const apiEntityId = detection.idType === "openalex"
+				? `https://openalex.org/${detection.normalizedId}`
+				: detection.normalizedId;
+
+			const entity = await this.deduplicationService.getEntity(
+				apiEntityId,
+				() => rateLimitedOpenAlex.getEntity(apiEntityId)
+			);
+
+			// Entity successfully fetched
+
+			// Transform to graph data
+			const { nodes, edges } = this.transformEntityToGraph(entity);
+
+			// Add to repository instead of main graph
+			repositoryStore.addToRepository(nodes, edges);
+
+			logger.info("repository", "Entity loaded into repository", {
+				entityId,
+				entityType: detection.entityType,
+				nodeCount: nodes.length,
+				edgeCount: edges.length,
+			}, "GraphDataService");
+
+		} catch (error) {
+			logError("Failed to load entity into repository", error, "GraphDataService", "repository");
+			throw error; // Re-throw to let the hook handle the error
 		}
 	}
 
