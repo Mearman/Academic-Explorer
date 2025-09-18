@@ -11,7 +11,8 @@ import { useDataFetchingWorker } from "@/hooks/use-data-fetching-worker";
 import { useExpansionSettingsStore } from "@/stores/expansion-settings-store";
 import { logger, logError } from "@/lib/logger";
 import { setNodeExpanded } from "@/lib/cache/graph-cache";
-import type { SearchOptions, EntityType, ExpansionTarget } from "@/lib/graph/types";
+import { safeParseExpansionTarget } from "@/lib/type-guards";
+import type { SearchOptions, EntityType } from "@/lib/graph/types";
 import type { ExpandCompletePayload } from "@/workers/data-fetching.worker";
 
 export function useGraphData() {
@@ -145,7 +146,11 @@ export function useGraphData() {
 
 		// Get expansion settings for this entity type
 		const expansionSettingsStore = useExpansionSettingsStore.getState();
-		const expansionTarget = node.type as ExpansionTarget;
+		const expansionTarget = safeParseExpansionTarget(node.type);
+		if (!expansionTarget) {
+			logger.warn("graph", "Invalid node type for expansion settings", { nodeId, nodeType: node.type }, "useGraphData");
+			return;
+		}
 		const expansionSettings = expansionSettingsStore.getSettings(expansionTarget);
 
 		// Mark node as loading immediately for visual feedback

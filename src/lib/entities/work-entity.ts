@@ -203,9 +203,9 @@ export class WorkEntity extends AbstractEntity<Work> {
 				const relatedWorks = await this.fetchRelatedEntities(referencesSlice, false, true);
 
 				relatedWorks.forEach((refWork) => {
-					// Referenced works should be Work entities - use type guard for safety
-					if (refWork.id && "display_name" in refWork) {
-						const refNode = this.transformToGraphNode(refWork as Work);
+					// Use the inherited validation method instead of custom type guard
+					if (this.validateEntityType(refWork)) {
+						const refNode = this.transformToGraphNode(refWork);
 						nodes.push(refNode);
 
 						// Add reference edge

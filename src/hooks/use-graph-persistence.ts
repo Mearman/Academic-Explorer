@@ -29,16 +29,20 @@ interface GraphSession {
 const STORAGE_KEY = "academic-explorer-sessions"
 const MAX_SESSIONS = 10 // Limit to prevent localStorage bloat
 
+// Type guard for Record<string, unknown>
+function isRecord(obj: unknown): obj is Record<string, unknown> {
+	return obj !== null && typeof obj === "object"
+}
+
 // Helper function for safe property access
 function hasProperty(obj: unknown, prop: string): boolean {
-	return obj !== null && typeof obj === "object" && Object.prototype.hasOwnProperty.call(obj, prop)
+	return isRecord(obj) && Object.prototype.hasOwnProperty.call(obj, prop)
 }
 
 // Helper function for safe property value extraction
 function getProperty(obj: unknown, prop: string): unknown {
-	if (!hasProperty(obj, prop)) return undefined
-	// Safe cast: hasProperty already verified obj is a non-null object with the property
-	return (obj as Record<string, unknown>)[prop]
+	if (!hasProperty(obj, prop) || !isRecord(obj)) return undefined
+	return obj[prop]
 }
 
 // Type guard for GraphSession objects
@@ -85,7 +89,7 @@ export function useGraphPersistence() {
 				logger.warn("storage", "Invalid sessions data format, expected array", { parsed: String(parsed) }, "useGraphPersistence")
 				return []
 			}
-			const sessions = (parsed as GraphSession[]).filter(isValidGraphSession)
+			const sessions = parsed.filter(isValidGraphSession)
 			return sessions.map(session => ({
 				...session,
 				createdAt: new Date(session.createdAt),
