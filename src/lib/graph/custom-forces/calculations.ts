@@ -3,18 +3,14 @@
  * Implements the actual force calculations for each custom force type
  */
 
-/* eslint-disable @typescript-eslint/consistent-type-assertions -- Type assertions needed after type guards for force config types */
-
 import type {
   EnhancedSimulationNode,
   CustomForceConfig,
   ForceCalculationFunction,
   RadialForceConfig,
   PropertyForceConfig,
-  PropertyBothForceConfig,
   ClusterForceConfig,
   RepulsionForceConfig,
-  AttractionForceConfig,
   OrbitForceConfig,
 } from "./types";
 
