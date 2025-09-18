@@ -78,6 +78,12 @@ importers:
       '@eslint/js':
         specifier: ^9.33.0
         version: 9.35.0
+      '@nx/eslint':
+        specifier: ^21.5.2
+        version: 21.5.2(@babel/traverse@7.28.4)(@zkochan/js-yaml@0.0.7)(eslint@9.35.0(jiti@2.5.1))(nx@21.5.2)
+      '@nx/playwright':
+        specifier: ^21.5.2
+        version: 21.5.2(@babel/traverse@7.28.4)(@playwright/test@1.55.0)(@zkochan/js-yaml@0.0.7)(eslint@9.35.0(jiti@2.5.1))(nx@21.5.2)(typescript@5.9.2)
       '@nx/react':
         specifier: ^21.5.2
         version: 21.5.2(@babel/core@7.28.4)(@babel/traverse@7.28.4)(@swc/helpers@0.5.17)(@types/babel__core@7.20.5)(@zkochan/js-yaml@0.0.7)(eslint@9.35.0(jiti@2.5.1))(nx@21.5.2)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)(typescript@5.9.2)(vite@7.1.6(@types/node@24.3.3)(jiti@2.5.1)(terser@5.44.0)(tsx@4.20.5)(yaml@2.8.1))(vitest@3.2.4)(webpack@5.101.3)
@@ -1475,6 +1481,14 @@ packages:
     resolution: {integrity: sha512-Ur8GPdz52kLS5uE9IQf0wBtGyvQm4Y3M1ZDjRkR+oGf26aVGNTK6C0+kMJPuggR4Z6lurmHYA34ViGi2hHPPpA==}
     cpu: [x64]
     os: [win32]
+
+  '@nx/playwright@21.5.2':
+    resolution: {integrity: sha512-6qS6VviyMRjYcTbmgI21m27b8pcSXO0h4YbzedubIAC4pOCfBeBdoUm0qDXaK9ZxvDwjDtvM/xZwj2Hp1BFJDQ==}
+    peerDependencies:
+      '@playwright/test': ^1.36.0
+    peerDependenciesMeta:
+      '@playwright/test':
+        optional: true
 
   '@nx/react@21.5.2':
     resolution: {integrity: sha512-8xVWmENzSlSBvAusDoXaWRwgDDuImTYPY+jsMl4AD5mqUpr2u+nJ0xJQlnyUejRIs7iPUyHwd78+SEkZO5sCFQ==}
@@ -8879,6 +8893,28 @@ snapshots:
 
   '@nx/nx-win32-x64-msvc@21.5.2':
     optional: true
+
+  '@nx/playwright@21.5.2(@babel/traverse@7.28.4)(@playwright/test@1.55.0)(@zkochan/js-yaml@0.0.7)(eslint@9.35.0(jiti@2.5.1))(nx@21.5.2)(typescript@5.9.2)':
+    dependencies:
+      '@nx/devkit': 21.5.2(nx@21.5.2)
+      '@nx/eslint': 21.5.2(@babel/traverse@7.28.4)(@zkochan/js-yaml@0.0.7)(eslint@9.35.0(jiti@2.5.1))(nx@21.5.2)
+      '@nx/js': 21.5.2(@babel/traverse@7.28.4)(nx@21.5.2)
+      '@phenomnomnominal/tsquery': 5.0.1(typescript@5.9.2)
+      minimatch: 9.0.3
+      tslib: 2.8.1
+    optionalDependencies:
+      '@playwright/test': 1.55.0
+    transitivePeerDependencies:
+      - '@babel/traverse'
+      - '@swc-node/register'
+      - '@swc/core'
+      - '@zkochan/js-yaml'
+      - debug
+      - eslint
+      - nx
+      - supports-color
+      - typescript
+      - verdaccio
 
   '@nx/react@21.5.2(@babel/core@7.28.4)(@babel/traverse@7.28.4)(@swc/helpers@0.5.17)(@types/babel__core@7.20.5)(@zkochan/js-yaml@0.0.7)(eslint@9.35.0(jiti@2.5.1))(nx@21.5.2)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)(typescript@5.9.2)(vite@7.1.6(@types/node@24.3.3)(jiti@2.5.1)(terser@5.44.0)(tsx@4.20.5)(yaml@2.8.1))(vitest@3.2.4)(webpack@5.101.3)':
     dependencies:
