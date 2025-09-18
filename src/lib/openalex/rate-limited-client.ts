@@ -86,7 +86,7 @@ export class RateLimitedOpenAlexClient {
 				}
 
 				// Log retry attempt
-				logger.info("api", `Retrying operation (attempt ${String(attempt + 2)}/${String(maxRetries + 1)})`, {
+				logger.debug("api", `Retrying operation (attempt ${String(attempt + 2)}/${String(maxRetries + 1)})`, {
 					error: error instanceof Error ? error.message : String(error)
 				}, "RateLimitedOpenAlexClient");
 			}

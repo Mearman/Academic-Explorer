@@ -149,12 +149,12 @@ export function useAnimatedLayout(options: UseAnimatedLayoutOptions = {}) {
 			if (fitViewAfterLayout) {
 				setTimeout(() => {
 					void fitView(FIT_VIEW_PRESETS.DEFAULT);
-					logger.info("graph", "Auto-fitted view after animated layout completion");
+					logger.debug("graph", "Auto-fitted view after animated layout completion");
 				}, 100);
 			}
 
 			isLayoutRunningRef.current = false;
-			logger.info("graph", "Animated layout completed", {
+			logger.debug("graph", "Animated layout completed", {
 				...stats,
 				autoPinEnabled: autoPinOnLayoutStabilization,
 			});
@@ -219,7 +219,7 @@ export function useAnimatedLayout(options: UseAnimatedLayoutOptions = {}) {
 	// Apply animated layout
 	const applyAnimatedLayout = useCallback(() => {
 		if (!enabled || !useAnimation || !isWorkerReady) {
-			logger.info("graph", "Animated layout skipped", {
+			logger.debug("graph", "Animated layout skipped", {
 				enabled,
 				useAnimation,
 				isWorkerReady,
@@ -235,7 +235,7 @@ export function useAnimatedLayout(options: UseAnimatedLayoutOptions = {}) {
 		const { animatedNodes, animatedLinks } = prepareAnimationData();
 
 		if (animatedNodes.length === 0) {
-			logger.info("graph", "No nodes for animated layout");
+			logger.debug("graph", "No nodes for animated layout");
 			return;
 		}
 
@@ -257,7 +257,7 @@ export function useAnimatedLayout(options: UseAnimatedLayoutOptions = {}) {
 			seed: layoutOptions?.seed || 0, // For deterministic layouts
 		};
 
-		logger.info("graph", "Starting animated force layout", {
+		logger.debug("graph", "Starting animated force layout", {
 			nodeCount: animatedNodes.length,
 			linkCount: animatedLinks.length,
 			pinnedCount: Object.keys(pinnedNodes).length,
@@ -291,7 +291,7 @@ export function useAnimatedLayout(options: UseAnimatedLayoutOptions = {}) {
 			stopAnimation();
 			isLayoutRunningRef.current = false;
 			storeMethodsRef.current.resetAnimation();
-			logger.info("graph", "Animated layout stopped");
+			logger.debug("graph", "Animated layout stopped");
 		}
 	}, [stopAnimation]);
 
@@ -299,7 +299,7 @@ export function useAnimatedLayout(options: UseAnimatedLayoutOptions = {}) {
 	const pauseLayout = useCallback(() => {
 		if (isLayoutRunningRef.current && !animationState.isPaused) {
 			pauseAnimation();
-			logger.info("graph", "Animated layout paused");
+			logger.debug("graph", "Animated layout paused");
 		}
 	}, [pauseAnimation, animationState.isPaused]);
 
@@ -307,7 +307,7 @@ export function useAnimatedLayout(options: UseAnimatedLayoutOptions = {}) {
 	const resumeLayout = useCallback(() => {
 		if (isLayoutRunningRef.current && animationState.isPaused) {
 			resumeAnimation();
-			logger.info("graph", "Animated layout resumed");
+			logger.debug("graph", "Animated layout resumed");
 		}
 	}, [resumeAnimation, animationState.isPaused]);
 
@@ -323,7 +323,7 @@ export function useAnimatedLayout(options: UseAnimatedLayoutOptions = {}) {
 	const reheatLayout = useCallback((alpha = 0.3) => {
 		if (isLayoutRunningRef.current) {
 			// For animated simulation, we restart with higher energy
-			logger.info("graph", "Reheating animated layout", { alpha });
+			logger.debug("graph", "Reheating animated layout", { alpha });
 			restartLayout();
 		} else {
 			// Start new layout if not running
@@ -345,7 +345,7 @@ export function useAnimatedLayout(options: UseAnimatedLayoutOptions = {}) {
 		if (isLayoutRunningRef.current && enabled && useAnimation && isWorkerReady) {
 			// Update the worker with new parameters
 			updateAnimationParameters(newParams);
-			logger.info("graph", "Updating force parameters", { newParams });
+			logger.debug("graph", "Updating force parameters", { newParams });
 		} else {
 			logger.debug("graph", "Cannot update parameters - animation not running", {
 				isRunning: isLayoutRunningRef.current,

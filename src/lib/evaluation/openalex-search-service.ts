@@ -160,7 +160,7 @@ export async function performAcademicExplorerSearch(
 		// Perform the search
 		const response = await openAlex.works.searchWorks(query, searchOptions);
 
-		logger.info("api", `OpenAlex search returned ${String(response.results.length)} results (${String(response.meta.count)} total available)`, {
+		logger.debug("api", `OpenAlex search returned ${String(response.results.length)} results (${String(response.meta.count)} total available)`, {
 			resultCount: response.results.length,
 			totalAvailable: response.meta.count
 		}, "OpenAlexSearchService");

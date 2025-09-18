@@ -75,7 +75,7 @@ export class WorkEntity extends AbstractEntity<Work> {
 		const edges: GraphEdge[] = [];
 		const { limit = 10, expansionSettings } = options;
 
-		logger.info("graph", "WorkEntity.expand called", {
+		logger.debug("graph", "WorkEntity.expand called", {
 			contextEntityId: context.entityId,
 			limit,
 			hasExpansionSettings: Boolean(expansionSettings),
@@ -120,7 +120,7 @@ export class WorkEntity extends AbstractEntity<Work> {
 				let page = 1;
 				let totalFetched = 0;
 
-				logger.info("graph", "Starting citations fetch", {
+				logger.debug("graph", "Starting citations fetch", {
 					shouldFetchAll,
 					effectiveLimit,
 					entityId: context.entityId
@@ -164,7 +164,7 @@ export class WorkEntity extends AbstractEntity<Work> {
 					page++;
 				} while (shouldFetchAll || totalFetched < effectiveLimit);
 
-				logger.info("graph", "Completed citations fetch", {
+				logger.debug("graph", "Completed citations fetch", {
 					totalFetched: allCitations.length,
 					pagesProcessed: page,
 					entityId: context.entityId
@@ -192,7 +192,7 @@ export class WorkEntity extends AbstractEntity<Work> {
 					? work.referenced_works
 					: work.referenced_works.slice(0, effectiveLimit);
 
-				logger.info("graph", "Starting references fetch", {
+				logger.debug("graph", "Starting references fetch", {
 					referencesCount: referencesSlice.length,
 					totalReferences: work.referenced_works.length,
 					entityId: context.entityId,
@@ -224,7 +224,7 @@ export class WorkEntity extends AbstractEntity<Work> {
 			this.handleError(error, "expand", context);
 		}
 
-		logger.info("graph", "WorkEntity.expand completed", {
+		logger.debug("graph", "WorkEntity.expand completed", {
 			nodesAdded: nodes.length,
 			edgesAdded: edges.length,
 			contextEntityId: context.entityId

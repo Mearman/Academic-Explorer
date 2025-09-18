@@ -106,7 +106,7 @@ export function createHybridPersister(dbName = "academic-explorer-cache"): Persi
 	const maybeCompress = (data: string): string => {
 		if (data.length > LOCALSTORAGE_COMPRESSION_THRESHOLD) {
 			// Simple compression placeholder - in production might use LZ-string
-			logger.info("cache", "Data size over compression threshold, storing uncompressed", {
+			logger.debug("cache", "Data size over compression threshold, storing uncompressed", {
 				size: data.length,
 				threshold: LOCALSTORAGE_COMPRESSION_THRESHOLD
 			});
@@ -135,7 +135,7 @@ export function createHybridPersister(dbName = "academic-explorer-cache"): Persi
 						try {
 							const compressedData = maybeCompress(serializedData);
 							localStorage.setItem(LOCALSTORAGE_KEY, compressedData);
-							logger.info("cache", "Persisted query client to localStorage", {
+							logger.debug("cache", "Persisted query client to localStorage", {
 								size: dataSize,
 								usage: currentUsage + dataSize,
 								limit: LOCALSTORAGE_MAX_SIZE
@@ -147,7 +147,7 @@ export function createHybridPersister(dbName = "academic-explorer-cache"): Persi
 							try { localStorage.removeItem(LOCALSTORAGE_KEY); } catch { /* Ignore cleanup errors */ }
 						}
 					} else {
-						logger.info("cache", "localStorage full, using IndexedDB for persistence", {
+						logger.debug("cache", "localStorage full, using IndexedDB for persistence", {
 							currentUsage,
 							dataSize,
 							limit: LOCALSTORAGE_MAX_SIZE
@@ -162,7 +162,7 @@ export function createHybridPersister(dbName = "academic-explorer-cache"): Persi
 				await store.put(persistedData, "queryClient");
 				await tx.done;
 
-				logger.info("cache", "Persisted query client to IndexedDB", { size: dataSize });
+				logger.debug("cache", "Persisted query client to IndexedDB", { size: dataSize });
 
 			} catch (error) {
 				logError("Failed to persist query client", error, "CachePersister", "storage");
@@ -190,12 +190,12 @@ export function createHybridPersister(dbName = "academic-explorer-cache"): Persi
 							if (parsed.timestamp) {
 								const age = Date.now() - parsed.timestamp;
 								if (age > CACHE_CONFIG.maxAge) {
-									logger.info("cache", "localStorage cache expired, clearing", { age, maxAge: CACHE_CONFIG.maxAge });
+									logger.debug("cache", "localStorage cache expired, clearing", { age, maxAge: CACHE_CONFIG.maxAge });
 									localStorage.removeItem(LOCALSTORAGE_KEY);
 								} else {
 									// Remove metadata and return
 									const { version, ...clientData } = parsed;
-									logger.info("cache", "Restored query client from localStorage", { age });
+									logger.debug("cache", "Restored query client from localStorage", { age });
 									return clientData;
 								}
 							}
@@ -231,7 +231,7 @@ export function createHybridPersister(dbName = "academic-explorer-cache"): Persi
 				if (persistedData.timestamp) {
 					const age = Date.now() - persistedData.timestamp;
 					if (age > CACHE_CONFIG.maxAge) {
-						logger.info("cache", "IndexedDB cache expired, clearing old data", { age, maxAge: CACHE_CONFIG.maxAge });
+						logger.debug("cache", "IndexedDB cache expired, clearing old data", { age, maxAge: CACHE_CONFIG.maxAge });
 						const delTx = db.transaction("cache", "readwrite");
 						const delStore = delTx.objectStore("cache");
 						await delStore.delete("queryClient");
@@ -243,7 +243,7 @@ export function createHybridPersister(dbName = "academic-explorer-cache"): Persi
 				// Remove our metadata before returning to TanStack Query
 				const { version, ...clientData } = persistedData;
 
-				logger.info("cache", "Restored query client from IndexedDB", {
+				logger.debug("cache", "Restored query client from IndexedDB", {
 					age: persistedData.timestamp ? Date.now() - persistedData.timestamp : 0
 				});
 				return clientData;
@@ -271,7 +271,7 @@ export function createHybridPersister(dbName = "academic-explorer-cache"): Persi
 				await store.delete("queryClient");
 				await tx.done;
 
-				logger.info("cache", "Removed query client from all storage layers");
+				logger.debug("cache", "Removed query client from all storage layers");
 			} catch (error) {
 				logError("Failed to remove persisted client", error, "CachePersister", "storage");
 			}
@@ -340,7 +340,7 @@ export async function clearExpiredCache(dbName = "academic-explorer-cache") {
 			const store = tx.objectStore("cache");
 			await store.delete("queryClient");
 			await tx.done;
-			logger.info("cache", "Cleared expired cache", { dbName });
+			logger.debug("cache", "Cleared expired cache", { dbName });
 			return true;
 		}
 
