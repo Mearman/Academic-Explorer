@@ -17,6 +17,7 @@ import type {
 	EntityType,
 } from "@/lib/graph/types";
 import { RelationType } from "@/lib/graph/types";
+import { DEFAULT_FORCE_PARAMS } from "@/lib/graph/force-params";
 
 // Helper function to create initial edge type stats
 const createInitialEdgeTypeStats = () => ({
@@ -268,15 +269,8 @@ export const useGraphStore = create<GraphState>()(
 				options: {
 					seed: 42,
 					iterations: 300,
-					linkDistance: 220,      // Increased for more spacing between connected nodes
-					linkStrength: 0.7,      // Weaker link forces to allow more collision separation
-					chargeStrength: -600,   // Stronger repulsion for better separation
-					centerStrength: 0.03,   // Even weaker centering for more spread
-					collisionRadius: 100,   // Larger collision radius to prevent overlaps
-					velocityDecay: 0.4,     // Higher decay for faster stabilization
+					...DEFAULT_FORCE_PARAMS,
 					alpha: 1,
-					alphaDecay: 0.03,       // Faster decay to reach stability quicker
-					collisionStrength: 0.8  // Strong but not maximum to allow settling
 				}
 			},
 			isLoading: false,
