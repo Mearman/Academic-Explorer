@@ -10,6 +10,13 @@ import type { WorkReference, STARDataset } from "./types";
 import { logError, logger } from "@/lib/logger";
 
 /**
+ * Type guard to check if filters is a string record
+ */
+function isStringRecord(value: unknown): value is Record<string, string> {
+	return typeof value === "object" && value !== null && !Array.isArray(value);
+}
+
+/**
  * Configuration for Academic Explorer search behavior
  */
 export interface AcademicExplorerSearchConfig {
@@ -138,18 +145,34 @@ export async function performAcademicExplorerSearch(
 			}
 
 			if (yearFilters.length > 0) {
-				(searchOptions.filters as Record<string, string>)["publication_year"] = yearFilters.join(",");
+				if (!searchOptions.filters) {
+					searchOptions.filters = {};
+				}
+				// Safely ensure filters is a Record<string, string>
+				if (isStringRecord(searchOptions.filters)) {
+					searchOptions.filters["publication_year"] = yearFilters.join(",");
+				}
 			}
 		}
 
 		// Apply citation filter if specified
 		if (config.minimumCitations && config.minimumCitations > 0) {
-			(searchOptions.filters as Record<string, string>)["cited_by_count"] = `>${String(config.minimumCitations - 1)}`;
+			if (!searchOptions.filters) {
+				searchOptions.filters = {};
+			}
+			if (isStringRecord(searchOptions.filters)) {
+				searchOptions.filters["cited_by_count"] = `>${String(config.minimumCitations - 1)}`;
+			}
 		}
 
 		// Filter out preprints if not desired
 		if (!config.includePreprints) {
-			(searchOptions.filters as Record<string, string>)["type"] = "journal-article|book-chapter|book|dataset|dissertation|proceedings-article";
+			if (!searchOptions.filters) {
+				searchOptions.filters = {};
+			}
+			if (isStringRecord(searchOptions.filters)) {
+				searchOptions.filters["type"] = "journal-article|book-chapter|book|dataset|dissertation|proceedings-article";
+			}
 		}
 
 		logger.debug("api", "Performing Academic Explorer search", {

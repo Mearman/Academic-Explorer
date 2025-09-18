@@ -4,6 +4,7 @@
  */
 
 import * as ExcelJS from "exceljs";
+import { logger } from "@/lib/logger";
 import type { WorkReference, STARDataset } from "./types";
 
 /**
@@ -25,6 +26,91 @@ export interface RawPaperData {
   included?: boolean | string;
   excluded?: boolean | string;
   [key: string]: unknown;
+}
+
+/**
+ * Type guard to check if a value is a valid RawPaperData
+ */
+function isRawPaperData(value: unknown): value is RawPaperData {
+  if (typeof value !== "object" || value === null) {
+    return false;
+  }
+
+  // Ensure value is a plain object (not array, function, etc.)
+  if (Array.isArray(value) || typeof value === "function") {
+    return false;
+  }
+
+  // TypeScript now knows this is a non-null object that's not an array or function
+  // Check optional properties if they exist using 'in' operator and property access
+  if ("title" in value && value.title !== undefined && typeof value.title !== "string") {
+    return false;
+  }
+
+  if ("authors" in value && value.authors !== undefined &&
+      typeof value.authors !== "string" &&
+      !Array.isArray(value.authors)) {
+    return false;
+  }
+
+  if ("doi" in value && value.doi !== undefined && typeof value.doi !== "string") {
+    return false;
+  }
+
+  if ("year" in value && value.year !== undefined &&
+      typeof value.year !== "string" &&
+      typeof value.year !== "number") {
+    return false;
+  }
+
+  if ("source" in value && value.source !== undefined && typeof value.source !== "string") {
+    return false;
+  }
+
+  return true;
+}
+
+/**
+ * Type guard to check if a value is a valid array of RawPaperData
+ */
+function isRawPaperDataArray(value: unknown): value is RawPaperData[] {
+  return Array.isArray(value) && value.every(isRawPaperData);
+}
+
+/**
+ * Safely extract string value from unknown type
+ */
+function extractStringValue(value: unknown, fieldName: string): string | undefined {
+  if (value === null || value === undefined) {
+    return undefined;
+  }
+
+  if (typeof value === "string") {
+    return value;
+  }
+
+  // Log warning for unexpected type but don't throw
+  logger.warn("general", `Expected string for ${fieldName}, got ${typeof value}`, { fieldName, actualType: typeof value });
+  return undefined;
+}
+
+/**
+ * Safely extract string or string array value from unknown type
+ */
+function extractStringOrArrayValue(value: unknown): string | string[] | undefined {
+  if (value === null || value === undefined) {
+    return undefined;
+  }
+
+  if (typeof value === "string") {
+    return value;
+  }
+
+  if (Array.isArray(value) && value.every(item => typeof item === "string")) {
+    return value;
+  }
+
+  return undefined;
 }
 
 /**
@@ -148,13 +234,13 @@ function parseJSONContent(content: string): RawPaperData[] {
 	try {
 		const parsed: unknown = JSON.parse(content);
 
-		if (Array.isArray(parsed)) {
-			return parsed as RawPaperData[];
-		} else if (parsed && typeof parsed === "object") {
+		if (isRawPaperDataArray(parsed)) {
+			return parsed;
+		} else if (isRawPaperData(parsed)) {
 			// Handle single object
-			return [parsed as RawPaperData];
+			return [parsed];
 		} else {
-			throw new Error("Invalid JSON structure");
+			throw new Error("Invalid JSON structure: expected RawPaperData or RawPaperData[]");
 		}
 	} catch (error) {
 		throw new Error(`Failed to parse JSON: ${error instanceof Error ? error.message : "Unknown error"}`);
@@ -235,7 +321,9 @@ async function parseExcelContent(file: File, config: ParseConfig): Promise<RawPa
 
 			record[headerStr] = valueStr;
 		});
-		return record as RawPaperData;
+		// The record is built with known string keys and values, so it's safe to treat as RawPaperData
+		// All values are converted to strings above, satisfying the interface
+		return record;
 	});
 }
 
@@ -264,16 +352,17 @@ function normalizeAuthors(authors: string | string[] | undefined): string[] {
  * Convert raw paper data to WorkReference format
  */
 function convertToWorkReference(rawData: RawPaperData, config: ParseConfig): WorkReference | null {
-	const title = rawData[config.titleColumn || "title"] as string;
+	const title = extractStringValue(rawData[config.titleColumn || "title"], "title");
 
-	if (!title || typeof title !== "string" || !title.trim()) {
+	if (!title || !title.trim()) {
 		return null; // Skip records without title
 	}
 
-	const authors = normalizeAuthors(rawData[config.authorsColumn || "authors"] as string | string[]);
-	const doi = rawData[config.doiColumn || "doi"] as string;
+	const authorsValue = extractStringOrArrayValue(rawData[config.authorsColumn || "authors"]);
+	const authors = normalizeAuthors(authorsValue);
+	const doi = extractStringValue(rawData[config.doiColumn || "doi"], "doi");
 	const yearValue = rawData[config.yearColumn || "year"];
-	const source = rawData[config.sourceColumn || "source"] as string;
+	const source = extractStringValue(rawData[config.sourceColumn || "source"], "source");
 
 	// Parse publication year
 	let publicationYear: number | undefined;
@@ -295,9 +384,9 @@ function convertToWorkReference(rawData: RawPaperData, config: ParseConfig): Wor
 	return {
 		title: title.trim(),
 		authors,
-		doi: doi && typeof doi === "string" ? doi.trim() : undefined,
+		doi: doi ? doi.trim() : undefined,
 		publicationYear,
-		source: source && typeof source === "string" ? source.trim() : "Unknown",
+		source: source ? source.trim() : "Unknown",
 		openalexId: undefined // Will be populated later through matching
 	};
 }
