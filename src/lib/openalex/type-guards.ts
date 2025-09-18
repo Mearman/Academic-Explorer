@@ -170,3 +170,28 @@ export function hasProperty<K extends string>(
 ): entity is OpenAlexEntity & Record<K, unknown> {
 	return property in entity;
 }
+
+/**
+ * Type guard for filtering non-null values
+ */
+export function isNonNull<T>(value: T | null | undefined): value is T {
+	return value !== null && value !== undefined;
+}
+
+/**
+ * Type guard for checking if a TanStack Query result contains an OpenAlexEntity
+ */
+export function isOpenAlexEntity(data: unknown): data is OpenAlexEntity {
+	if (typeof data !== "object" || data === null) return false;
+
+	// Check if the data has the required properties
+	if (!("id" in data && "display_name" in data)) {
+		return false;
+	}
+
+	// Use array indexing to access properties without type assertions
+	const hasValidId = typeof data["id"] === "string";
+	const hasValidDisplayName = typeof data["display_name"] === "string";
+
+	return hasValidId && hasValidDisplayName;
+}
