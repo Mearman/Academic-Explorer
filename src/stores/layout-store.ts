@@ -249,16 +249,17 @@ export const useLayoutStore = create<LayoutState>()(
 						sectionId,
 						groupExists: Boolean(group),
 						existingGroupIds: Object.keys(toolGroups),
-						existingGroupSections: group.sections
+						existingGroupSections: group?.sections
 					});
 
-					// If group exists and already contains the section, do nothing
-					if (group && group.sections.includes(sectionId)) {
-						logger.info("ui", `Section ${sectionId} already in group ${groupId}, skipping`);
-						return state;
-					}
-
-					if (!group) {
+					// Handle existing group
+					if (group) {
+						// If group already contains the section, do nothing
+						if (group.sections.includes(sectionId)) {
+							logger.info("ui", `Section ${sectionId} already in group ${groupId}, skipping`);
+							return state;
+						}
+					} else {
 						// Check if this is a valid group definition from the registry
 						const groupDefinition = getGroupDefinition(groupId);
 						if (!groupDefinition) {
@@ -280,17 +281,22 @@ export const useLayoutStore = create<LayoutState>()(
 					}
 
 					// Update existing group or create new one from registry
-					const updatedGroup = group ? {
+					let updatedGroup: ToolGroup;
+					if (group) {
 						// Update existing group
-						...group,
-						sections: [...group.sections, sectionId],
-						activeSection: sectionId, // Focus the newly added section
-					} : {
+						updatedGroup = {
+							...group,
+							sections: [...group.sections, sectionId],
+							activeSection: sectionId, // Focus the newly added section
+						};
+					} else {
 						// Create new group from registry definition
-						id: groupId,
-						sections: [sectionId],
-						activeSection: sectionId,
-					};
+						updatedGroup = {
+							id: groupId,
+							sections: [sectionId],
+							activeSection: sectionId,
+						};
+					}
 
 					logger.info("ui", `Adding section ${sectionId} to group ${groupId}`, {
 						sidebar,
@@ -324,7 +330,7 @@ export const useLayoutStore = create<LayoutState>()(
 					const toolGroups = state.toolGroups[sidebar];
 					const group = toolGroups[groupId];
 
-					if (!group) return state;
+					if (group === undefined) return state;
 
 					const updatedSections = group.sections.filter(id => id !== sectionId);
 					const newActiveSection = group.activeSection === sectionId
@@ -378,7 +384,7 @@ export const useLayoutStore = create<LayoutState>()(
 					const toolGroups = state.toolGroups[sidebar];
 					const group = toolGroups[groupId];
 
-					if (!group || !group.sections.includes(sectionId)) return state;
+					if (group === undefined || !group.sections.includes(sectionId)) return state;
 
 					const updatedGroup = {
 						...group,
