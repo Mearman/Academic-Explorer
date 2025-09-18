@@ -3,7 +3,13 @@
  * This file runs before each test file
  */
 
-import '@testing-library/jest-dom';
+// Only import jest-dom for component tests where DOM assertions are needed
+// Skip for E2E tests running in Node environment where expect may not be available yet
+if (typeof window !== 'undefined') {
+  // We're in a DOM environment (jsdom), safe to import jest-dom
+  import('@testing-library/jest-dom');
+}
+
 import { enableMapSet } from 'immer';
 import 'vitest-axe/extend-expect';
 
@@ -33,12 +39,12 @@ if (typeof window !== 'undefined') {
   // Mock localStorage for node environment (integration/e2e tests)
   // This prevents Zustand persist middleware warnings
   const mockStorage = {
-    getItem: vi.fn(() => null),
-    setItem: vi.fn(),
-    removeItem: vi.fn(),
-    clear: vi.fn(),
+    getItem: () => null,
+    setItem: () => {},
+    removeItem: () => {},
+    clear: () => {},
     length: 0,
-    key: vi.fn(() => null),
+    key: () => null,
   };
 
   global.localStorage = mockStorage;
@@ -46,23 +52,26 @@ if (typeof window !== 'undefined') {
 }
 
 // Mock ResizeObserver for components that measure elements
-global.ResizeObserver = vi.fn().mockImplementation(() => ({
-  observe: vi.fn(),
-  unobserve: vi.fn(),
-  disconnect: vi.fn(),
-}));
+global.ResizeObserver = class ResizeObserver {
+  observe() {}
+  unobserve() {}
+  disconnect() {}
+};
 
 // Mock IntersectionObserver for components that use visibility detection
-global.IntersectionObserver = vi.fn().mockImplementation(() => ({
-  observe: vi.fn(),
-  unobserve: vi.fn(),
-  disconnect: vi.fn(),
-}));
+global.IntersectionObserver = class IntersectionObserver {
+  observe() {}
+  unobserve() {}
+  disconnect() {}
+};
 
 // Clean up between tests to prevent memory leaks
-afterEach(() => {
-  // Force garbage collection if available (helps with memory management)
-  if (global.gc) {
-    global.gc();
-  }
-});
+// Only register afterEach if we're in a proper test environment
+if (typeof afterEach === 'function') {
+  afterEach(() => {
+    // Force garbage collection if available (helps with memory management)
+    if (global.gc) {
+      global.gc();
+    }
+  });
+}
