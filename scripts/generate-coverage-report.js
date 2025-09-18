@@ -83,8 +83,9 @@ function main() {
   }
 }
 
-if (require.main === module) {
+// ES module - check if this file is being run directly
+if (import.meta.url === `file://${process.argv[1]}`) {
   main();
 }
 
-module.exports = { generateReport, THRESHOLDS };
+export { generateReport, THRESHOLDS };
