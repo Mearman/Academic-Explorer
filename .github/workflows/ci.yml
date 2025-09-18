@@ -423,6 +423,7 @@ jobs:
     needs: [setup, quality-checks, test, accessibility]
     runs-on: ubuntu-latest
     timeout-minutes: 15
+    continue-on-error: true
 
     if: github.ref == 'refs/heads/main' && github.event_name == 'push'
 
