@@ -959,12 +959,12 @@ export const useGraphStore = create<GraphState>()(
 			// Graph algorithms (work with generic data)
 			getNeighbors: (nodeId) => {
 				const state = get();
-				return state.nodeNeighborsCache[nodeId] || [];
+				return state.nodeNeighborsCache[nodeId] ?? [];
 			},
 
 			getConnectedEdges: (nodeId) => {
 				const state = get();
-				return state.nodeEdgesCache[nodeId] || [];
+				return state.nodeEdgesCache[nodeId] ?? [];
 			},
 
 			findShortestPath: (sourceId, targetId) => {
