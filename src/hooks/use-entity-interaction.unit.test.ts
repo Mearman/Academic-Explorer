@@ -25,6 +25,7 @@ vi.mock("@/hooks/use-graph-data", () => ({
 
 vi.mock("@/lib/logger", () => ({
 	logger: {
+		debug: vi.fn(),
 		info: vi.fn(),
 		warn: vi.fn(),
 		error: vi.fn(),
@@ -62,6 +63,7 @@ const mockGraphData = {
 };
 
 const mockLogger = {
+	debug: vi.fn(),
 	info: vi.fn(),
 	warn: vi.fn(),
 	error: vi.fn(),
@@ -113,7 +115,7 @@ describe("useEntityInteraction", () => {
 		mockGraphData.expandNode.mockResolvedValue(undefined);
 
 		// Setup logger mocks
-		vi.mocked(logger.info).mockImplementation(mockLogger.info);
+		vi.mocked(logger.debug).mockImplementation(mockLogger.debug);
 		vi.mocked(logger.warn).mockImplementation(mockLogger.warn);
 		vi.mocked(logger.error).mockImplementation(mockLogger.error);
 	});
@@ -246,7 +248,7 @@ describe("useEntityInteraction", () => {
 			});
 
 			expect(mockGraphData.expandNode).toHaveBeenCalledWith("node1");
-			expect(mockLogger.info).toHaveBeenCalledWith(
+			expect(mockLogger.debug).toHaveBeenCalledWith(
 				"graph",
 				"Entity interaction completed",
 				expect.objectContaining({
@@ -501,7 +503,7 @@ describe("useEntityInteraction", () => {
 				);
 			});
 
-			expect(mockLogger.info).toHaveBeenCalledWith(
+			expect(mockLogger.debug).toHaveBeenCalledWith(
 				"graph",
 				"Entity interaction started",
 				expect.objectContaining({
@@ -511,7 +513,7 @@ describe("useEntityInteraction", () => {
 				})
 			);
 
-			expect(mockLogger.info).toHaveBeenCalledWith(
+			expect(mockLogger.debug).toHaveBeenCalledWith(
 				"graph",
 				"Entity interaction completed",
 				expect.objectContaining({
