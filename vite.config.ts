@@ -132,6 +132,14 @@ export default defineConfig({
     globals: true,
     setupFiles: testSetupFiles,
     watch: false,
+    reporters: [
+      [
+        'default',
+        {
+          summary: false
+        }
+      ]
+    ],
     coverage: {
       enabled: true,
       provider: 'v8',
