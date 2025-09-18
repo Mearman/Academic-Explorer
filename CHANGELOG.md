@@ -1,3 +1,32 @@
+# [5.9.0](https://github.com/Mearman/Academic-Explorer/compare/v5.8.2...v5.9.0) (2025-09-18)
+
+
+### Bug Fixes
+
+* **ci:** adjust coverage thresholds for unit-only tested modules ([5a69176](https://github.com/Mearman/Academic-Explorer/commit/5a691764662ba09d9687c7c9845cac89b13a184d))
+* **ci:** adjust coverage thresholds to realistic levels ([9ddd173](https://github.com/Mearman/Academic-Explorer/commit/9ddd1736dcdb7ebff97fe250e035511f53a3c0f3))
+* **events:** implement type-safe Zod validation ([794f833](https://github.com/Mearman/Academic-Explorer/commit/794f833f93735fb78951c155fb66a3f2fa5a9454))
+* **events:** improve async handler support in cross-context event proxy ([5897e70](https://github.com/Mearman/Academic-Explorer/commit/5897e70bb64b66597b07a6f40dd6338458aecdf4))
+* **events:** improve type safety for event schemas in CrossContextEventProxy ([74c2fe1](https://github.com/Mearman/Academic-Explorer/commit/74c2fe1722d68b7de6f710593ab9e4e9b22f7560))
+* **events:** remove type assertion in validated handler ([1bdd4dd](https://github.com/Mearman/Academic-Explorer/commit/1bdd4ddfb12e6fef2da6a937853752fb4786b0b3))
+* **events:** resolve ESLint type assertion errors ([2bed779](https://github.com/Mearman/Academic-Explorer/commit/2bed779ff6eb9a33ae56e5164a6781c4eef2e273))
+* **events:** resolve type assertion and proxy revocation errors ([d4cc7d9](https://github.com/Mearman/Academic-Explorer/commit/d4cc7d9dc9423e743925c5d2dbc04fc72f701d39))
+* **events:** resolve TypeScript schema mismatch errors ([863840c](https://github.com/Mearman/Academic-Explorer/commit/863840c4f59e910df9b7bfb579cdf5809c105243))
+* **test:** resolve E2E test setup issues with expect and vi globals ([5cbf4ba](https://github.com/Mearman/Academic-Explorer/commit/5cbf4ba3da2c0343d01bb05d3627c46a056aab9f))
+* **tests:** resolve CI failures in unit tests and ESLint configuration ([e705e50](https://github.com/Mearman/Academic-Explorer/commit/e705e5021b07b1aecf0afe579edacb61eb3804fd))
+* **vitest:** replace deprecated basic reporter with default reporter ([6de0a96](https://github.com/Mearman/Academic-Explorer/commit/6de0a9681c3e7a6939acbc271eb6724665cce9f0))
+
+
+### Features
+
+* **custom-nodes:** replace polling with event-driven RemoveLeafNodesButton ([deb650c](https://github.com/Mearman/Academic-Explorer/commit/deb650cafb124399bb15de201a28c978992a82b1))
+* **deps:** add Zod for runtime type validation ([2591b5f](https://github.com/Mearman/Academic-Explorer/commit/2591b5f241af0acd90769889fe94a203539bc7f4))
+* **eslint:** add rule to disallow Reflect.apply usage ([3794de3](https://github.com/Mearman/Academic-Explorer/commit/3794de35b5d0182618e8d85638a5027f45d0959a))
+* **events:** add createValidatedUnknownHandler utility ([2bbac16](https://github.com/Mearman/Academic-Explorer/commit/2bbac163e933c845737783d5bf86715c1d5210f9))
+* **events:** add cross-context event system infrastructure ([4dd8c24](https://github.com/Mearman/Academic-Explorer/commit/4dd8c248e778a54b776930505aa0cbdd39f8bfe7))
+* **graph-store:** integrate event system with graph operations ([65e4d35](https://github.com/Mearman/Academic-Explorer/commit/65e4d35050f11740aa85f9f1822b258b2e7ffbc2))
+* **hooks:** integrate event system with data fetching hooks ([663039f](https://github.com/Mearman/Academic-Explorer/commit/663039ffdb8daa5daaa8060f55e4282e84687206))
+
 ## [5.8.2](https://github.com/Mearman/Academic-Explorer/compare/v5.8.1...v5.8.2) (2025-09-18)
 
 
