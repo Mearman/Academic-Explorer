@@ -340,10 +340,8 @@ export class CrossContextEventProxy<TEventType extends string, TPayload> extends
       const result = schema.safeParse(payload);
       if (result.success) {
         try {
-          // After successful validation, we know the data is compatible
-          // TypeScript inference limitations require this approach
-          const callHandler = handler as (data: unknown) => void | Promise<void>;
-          return callHandler(result.data);
+          // Safe call: result.data is validated by Zod schema, guaranteeing type compatibility
+          handler(result.data as TPayload);
         } catch (error) {
           logger.warn("general", "Handler execution failed", {
             eventType,
@@ -358,6 +356,7 @@ export class CrossContextEventProxy<TEventType extends string, TPayload> extends
       }
     };
   }
+
 
   /**
    * Get next ID for listeners (accessing private property)

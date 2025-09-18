@@ -409,11 +409,17 @@ export const useGraphStore = create<GraphState>()(
 			},
 
 			removeNode: (nodeId) => {
-				let removedNode: GraphNode | undefined;
+				let removedNodeData: { entityId: string; type: EntityType } | undefined;
 
 				set((draft) => {
-					// Store removed node for event emission
-					removedNode = draft.nodes[nodeId];
+					// Store removed node data for event emission (extract values before proxy revocation)
+					const removedNode = draft.nodes[nodeId];
+					if (removedNode) {
+						removedNodeData = {
+							entityId: removedNode.entityId,
+							type: removedNode.type
+						};
+					}
 
 					// Remove node
 					const { [nodeId]: removed, ...remainingNodes } = draft.nodes;
@@ -452,21 +458,22 @@ export const useGraphStore = create<GraphState>()(
 				state.recomputeNodeCaches();
 
 				// Emit cross-context events
-				if (removedNode) {
-					const node = removedNode; // Type narrowing
-					graphEventSystem.emitNodeRemoved(nodeId, node.entityId, node.type).catch((err: unknown) => {
+				if (removedNodeData) {
+					graphEventSystem.emitNodeRemoved(nodeId, removedNodeData.entityId, removedNodeData.type).catch((err: unknown) => {
 						const errorMessage = err instanceof Error ? err.message : "Unknown error";
 						logger.error("graph", "Failed to emit node removed event", {
 							error: errorMessage,
-							nodeId, entityId: node.entityId
+							nodeId,
+							entityId: removedNodeData?.entityId
 						});
 					});
 
-					entityEventSystem.emitEntityRemoved(node.entityId, node.type, nodeId).catch((err: unknown) => {
+					entityEventSystem.emitEntityRemoved(removedNodeData.entityId, removedNodeData.type, nodeId).catch((err: unknown) => {
 						const errorMessage = err instanceof Error ? err.message : "Unknown error";
 						logger.error("graph", "Failed to emit entity removed event", {
 							error: errorMessage,
-							entityId: node.entityId, nodeId
+							entityId: removedNodeData?.entityId,
+							nodeId
 						});
 					});
 				}
