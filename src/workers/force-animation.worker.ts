@@ -101,7 +101,7 @@ function isLinkForce(force: Force<WorkerNode, WorkerLink> | null): force is Retu
 }
 
 function isChargeForce(force: Force<WorkerNode, WorkerLink> | null): force is ReturnType<typeof forceManyBody<WorkerNode>> {
-	return force !== null && "strength" in force && !"distance" in force && !"radius" in force;
+	return force !== null && "strength" in force && !("distance" in force) && !("radius" in force);
 }
 
 function isCenterForce(force: Force<WorkerNode, WorkerLink> | null): force is ReturnType<typeof forceCenter<WorkerNode>> {
@@ -109,7 +109,7 @@ function isCenterForce(force: Force<WorkerNode, WorkerLink> | null): force is Re
 }
 
 function isCollisionForce(force: Force<WorkerNode, WorkerLink> | null): force is ReturnType<typeof forceCollide<WorkerNode>> {
-	return force !== null && "radius" in force && "strength" in force && !"distance" in force;
+	return force !== null && "radius" in force && "strength" in force && !("distance" in force);
 }
 
 // Worker timer abstraction
@@ -408,7 +408,7 @@ function updateParameters(newConfig: AnimationConfig) {
 
 	// Update forces with new parameters
 	if (newConfig.linkDistance !== undefined || newConfig.linkStrength !== undefined) {
-		const linkForce = simulation.force("link");
+		const linkForce = simulation.force("link") ?? null;
 		if (isLinkForce(linkForce)) {
 			if (newConfig.linkDistance !== undefined) {
 				linkForce.distance(newConfig.linkDistance);
@@ -420,21 +420,21 @@ function updateParameters(newConfig: AnimationConfig) {
 	}
 
 	if (newConfig.chargeStrength !== undefined) {
-		const chargeForce = simulation.force("charge");
+		const chargeForce = simulation.force("charge") ?? null;
 		if (isChargeForce(chargeForce)) {
 			chargeForce.strength(newConfig.chargeStrength);
 		}
 	}
 
 	if (newConfig.centerStrength !== undefined) {
-		const centerForce = simulation.force("center");
+		const centerForce = simulation.force("center") ?? null;
 		if (isCenterForce(centerForce)) {
 			centerForce.strength(newConfig.centerStrength);
 		}
 	}
 
 	if (newConfig.collisionRadius !== undefined || newConfig.collisionStrength !== undefined) {
-		const collisionForce = simulation.force("collision");
+		const collisionForce = simulation.force("collision") ?? null;
 		if (isCollisionForce(collisionForce)) {
 			if (newConfig.collisionRadius !== undefined) {
 				collisionForce.radius(newConfig.collisionRadius);

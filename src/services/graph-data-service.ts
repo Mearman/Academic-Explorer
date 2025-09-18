@@ -1614,8 +1614,8 @@ export class GraphDataService {
 		}
 
 		// Use Object.assign to safely copy all enumerable properties
-		// This avoids type assertions while maintaining all data
-		return Object.assign({}, entity);
+		// Type assertion is safe since we're copying all enumerable properties to a plain object
+		return Object.assign({}, entity as unknown) as Record<string, unknown>;
 	}
 
 	private getEntityData(entity: OpenAlexEntity): Record<string, unknown> {
