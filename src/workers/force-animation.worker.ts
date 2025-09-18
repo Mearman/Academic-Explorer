@@ -15,6 +15,8 @@ import {
 	type Force,
 } from "d3-force";
 import { randomLcg } from "d3-random";
+import { eventBridge } from "@/lib/graph/events/event-bridge";
+import { WorkerEventType } from "@/lib/graph/events/types";
 
 // Worker-compatible interfaces
 interface WorkerNode extends SimulationNodeDatum {
@@ -275,12 +277,15 @@ function startAnimatedSimulation(
 		);
 
 	// Send initial message
-	self.postMessage({
-		type: "started",
+	eventBridge.emit(WorkerEventType.FORCE_SIMULATION_PROGRESS, {
+		workerId: "force-animation-worker",
+		workerType: "force-animation" as const,
+		messageType: "started",
 		nodeCount: nodes.length,
 		linkCount: links.length,
 		config,
-	});
+		timestamp: Date.now()
+	}, "main");
 
 	// Start animation loop
 	isRunning = true;
@@ -312,14 +317,17 @@ function startAnimatedSimulation(
 					y: node.y || 0,
 				}));
 
-				self.postMessage({
-					type: "tick",
+				eventBridge.emit(WorkerEventType.FORCE_SIMULATION_PROGRESS, {
+					workerId: "force-animation-worker",
+					workerType: "force-animation" as const,
+					messageType: "tick",
 					positions,
 					alpha: simulation.alpha(),
 					iteration: tickCount,
 					progress: Math.min(tickCount / config.maxIterations, 1),
 					fps: 1000 / Math.max(currentTime - lastTime, 1),
-				});
+					timestamp: Date.now()
+				}, "main");
 			}
 
 			lastTime = currentTime;
@@ -337,13 +345,15 @@ function startAnimatedSimulation(
 					y: node.y || 0,
 				}));
 
-				self.postMessage({
-					type: "complete",
+				eventBridge.emit(WorkerEventType.FORCE_SIMULATION_COMPLETE, {
+					workerId: "force-animation-worker",
+					workerType: "force-animation" as const,
 					positions: finalPositions,
 					totalIterations: tickCount,
 					finalAlpha: simulation.alpha(),
 					reason: simulation.alpha() < simulation.alphaMin() ? "converged" : "max-iterations",
-				});
+					timestamp: Date.now()
+				}, "main");
 				return;
 			}
 		}
@@ -377,26 +387,34 @@ function stopSimulation() {
 		simulation.stop();
 	}
 
-	self.postMessage({
-		type: "stopped",
-	});
+	eventBridge.emit(WorkerEventType.FORCE_SIMULATION_STOPPED, {
+		workerId: "force-animation-worker",
+		workerType: "force-animation" as const,
+		timestamp: Date.now()
+	}, "main");
 }
 
 function pauseSimulation() {
 	isPaused = true;
 
-	self.postMessage({
-		type: "paused",
-	});
+	eventBridge.emit(WorkerEventType.FORCE_SIMULATION_PROGRESS, {
+		workerId: "force-animation-worker",
+		workerType: "force-animation" as const,
+		messageType: "paused",
+		timestamp: Date.now()
+	}, "main");
 }
 
 function resumeSimulation() {
 	if (isRunning && isPaused) {
 		isPaused = false;
 
-		self.postMessage({
-			type: "resumed",
-		});
+		eventBridge.emit(WorkerEventType.FORCE_SIMULATION_PROGRESS, {
+			workerId: "force-animation-worker",
+			workerType: "force-animation" as const,
+			messageType: "resumed",
+			timestamp: Date.now()
+		}, "main");
 	}
 }
 
@@ -461,11 +479,14 @@ function updateParameters(newConfig: AnimationConfig) {
 	// If paused, the parameters are already updated in the forces above
 	// and will take effect when the simulation is resumed
 
-	self.postMessage({
-		type: "parameters_updated",
+	eventBridge.emit(WorkerEventType.FORCE_SIMULATION_PROGRESS, {
+		workerId: "force-animation-worker",
+		workerType: "force-animation" as const,
+		messageType: "parameters_updated",
 		config: newConfig,
 		wasPaused: isPaused,
-	});
+		timestamp: Date.now()
+	}, "main");
 }
 
 // Handle worker errors
@@ -484,15 +505,19 @@ self.onerror = function(errorEvent) {
 		errorMessage = errorEvent;
 	}
 
-	self.postMessage({
-		type: "error",
+	eventBridge.emit(WorkerEventType.FORCE_SIMULATION_ERROR, {
+		workerId: "force-animation-worker",
+		workerType: "force-animation" as const,
 		error: errorMessage,
 		filename,
 		lineno,
-	});
+		timestamp: Date.now()
+	}, "main");
 };
 
 // Send ready message
-self.postMessage({
-	type: "ready",
-});
+eventBridge.emit(WorkerEventType.WORKER_READY, {
+	workerId: "force-animation-worker",
+	workerType: "force-animation" as const,
+	timestamp: Date.now()
+}, "main");
