@@ -654,17 +654,20 @@ export function parseValidEventPayload<TPayload>(
 }
 
 /**
- * Create a wrapper that validates payloads and executes handlers
- * Avoids type assertions by working with unknown types throughout
+ * Create a type-safe validated handler using Zod schema
+ * Returns a handler that validates unknown payloads and calls the typed handler
  */
-export function createValidatedUnknownHandler(
-  handler: (payload: unknown) => void | Promise<void>,
-  validator: (payload: unknown) => boolean
+export function createZodValidatedHandler<T>(
+  handler: (payload: T) => void | Promise<void>,
+  schema: z.ZodType<T>
 ): (payload: unknown) => void | Promise<void> {
   return (payload: unknown) => {
-    if (validator(payload)) {
-      return handler(payload);
+    const result = schema.safeParse(payload);
+    if (result.success) {
+      // result.data is properly typed as T
+      return handler(result.data);
     }
-    // Invalid payload is ignored (validator handles logging)
+    // Invalid payload is ignored (validation logging can be added here if needed)
   };
 }
+
