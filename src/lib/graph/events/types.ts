@@ -652,3 +652,19 @@ export function parseValidEventPayload<TPayload>(
 ): TPayload {
   return schema.parse(payload);
 }
+
+/**
+ * Create a wrapper that validates payloads and executes handlers
+ * Avoids type assertions by working with unknown types throughout
+ */
+export function createValidatedUnknownHandler(
+  handler: (payload: unknown) => void | Promise<void>,
+  validator: (payload: unknown) => boolean
+): (payload: unknown) => void | Promise<void> {
+  return (payload: unknown) => {
+    if (validator(payload)) {
+      return handler(payload);
+    }
+    // Invalid payload is ignored (validator handles logging)
+  };
+}
