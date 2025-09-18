@@ -1,3 +1,10 @@
+# [5.6.0](https://github.com/Mearman/Academic-Explorer/compare/v5.5.1...v5.6.0) (2025-09-18)
+
+
+### Features
+
+* **build:** add @nx/eslint and @nx/playwright plugins for enhanced CI caching ([2d8d7c6](https://github.com/Mearman/Academic-Explorer/commit/2d8d7c69be774d80b73ffa5b277b1978ce5eb517))
+
 ## [5.5.1](https://github.com/Mearman/Academic-Explorer/compare/v5.5.0...v5.5.1) (2025-09-18)
 
 
