@@ -1,3 +1,15 @@
+# [5.8.0](https://github.com/Mearman/Academic-Explorer/compare/v5.7.0...v5.8.0) (2025-09-18)
+
+
+### Bug Fixes
+
+* **ci:** make release job non-blocking to handle API failures ([28029cf](https://github.com/Mearman/Academic-Explorer/commit/28029cf56c1c2c067fa1e4a3e7e3fb93b4bf9ddb))
+
+
+### Features
+
+* **graph:** add scissors button with expansion listener for leaf node trimming ([09d7f61](https://github.com/Mearman/Academic-Explorer/commit/09d7f61aeecf5c9b51f267cb4e450d95451df33c))
+
 # [5.6.0](https://github.com/Mearman/Academic-Explorer/compare/v5.5.1...v5.6.0) (2025-09-18)
 
 
