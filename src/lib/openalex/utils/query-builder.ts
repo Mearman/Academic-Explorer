@@ -104,10 +104,10 @@ export class QueryBuilder<T extends EntityFilters = EntityFilters> {
 			// Type-safe assignment using type guard validation
 			if (this.isAssignableToField(formattedValue)) {
 				// Since type guard validated the value, we can safely assign
-				this.filters[field] = formattedValue;
+				this.filters[field] = formattedValue as T[K];
 			}
-		} else {
-			this.filters[field] = value;
+		} else if (this.isAssignableToField(value)) {
+			this.filters[field] = value as T[K];
 		}
 
 		return this;
@@ -133,7 +133,7 @@ export class QueryBuilder<T extends EntityFilters = EntityFilters> {
 		Object.entries(filters).forEach(([key, value]) => {
 			if (value !== undefined && value !== null && this.isValidKey(key) && this.isAssignableToField(value)) {
 				// Type guards validated both key and value, safe to assign
-				this.filters[key] = value;
+				this.filters[key] = value as T[string & keyof T];
 			}
 		});
 		return this;
@@ -166,10 +166,10 @@ export class QueryBuilder<T extends EntityFilters = EntityFilters> {
 		}
 
 		if (validation.normalizedFrom && this.isAssignableToField(validation.normalizedFrom)) {
-			this.filters[fromField] = validation.normalizedFrom;
+			this.filters[fromField] = validation.normalizedFrom as T[K];
 		}
 		if (validation.normalizedTo && this.isAssignableToField(validation.normalizedTo)) {
-			this.filters[toField] = validation.normalizedTo;
+			this.filters[toField] = validation.normalizedTo as T[K];
 		}
 
 		return this;
@@ -196,7 +196,7 @@ export class QueryBuilder<T extends EntityFilters = EntityFilters> {
 
 		const escapedValue = escapeFilterValue(query.trim());
 		if (this.isAssignableToField(escapedValue)) {
-			this.filters[field] = escapedValue;
+			this.filters[field] = escapedValue as T[keyof T];
 		}
 		return this;
 	}
