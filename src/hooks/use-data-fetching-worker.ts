@@ -16,6 +16,39 @@ import type {
 	ExpandCompletePayload
 } from "@/workers/data-fetching.worker";
 
+// Type guards for worker message payloads
+function isExpandCompletePayload(payload: unknown): payload is ExpandCompletePayload {
+	if (typeof payload !== "object" || payload === null) return false;
+
+	// Check if the payload has the required properties
+	if (!("nodeId" in payload && "nodes" in payload && "edges" in payload)) {
+		return false;
+	}
+
+	// Use array indexing to access properties without type assertions
+	const hasValidNodeId = typeof payload["nodeId"] === "string";
+	const hasValidNodes = Array.isArray(payload["nodes"]);
+	const hasValidEdges = Array.isArray(payload["edges"]);
+
+	return hasValidNodeId && hasValidNodes && hasValidEdges;
+}
+
+function isProgressPayload(payload: unknown): payload is { completed: number; total: number; stage: string } {
+	if (typeof payload !== "object" || payload === null) return false;
+
+	// Check if the payload has the required properties
+	if (!("completed" in payload && "total" in payload && "stage" in payload)) {
+		return false;
+	}
+
+	// Use array indexing to access properties without type assertions
+	const hasValidCompleted = typeof payload["completed"] === "number";
+	const hasValidTotal = typeof payload["total"] === "number";
+	const hasValidStage = typeof payload["stage"] === "string";
+
+	return hasValidCompleted && hasValidTotal && hasValidStage;
+}
+
 // Hook options
 interface UseDataFetchingWorkerOptions {
   onExpandComplete?: (result: ExpandCompletePayload) => void;
@@ -94,14 +127,14 @@ export function useDataFetchingWorker(options: UseDataFetchingWorkerOptions = {}
 					setIsWorkerReady(false);
 					setWorkerReady(false);
 				} else {
-					logger.info("graph", "Data fetching worker ready");
+					logger.debug("graph", "Data fetching worker ready");
 					setIsWorkerReady(true);
 					setWorkerReady(true);
 				}
 				break;
 
 			case "expandComplete":
-				if (id && payload) {
+				if (id && payload && isExpandCompletePayload(payload)) {
 					const request = pendingRequestsRef.current.get(id);
 					if (request) {
 						// Update statistics
@@ -120,14 +153,14 @@ export function useDataFetchingWorker(options: UseDataFetchingWorkerOptions = {}
 						completeRequest(request.nodeId);
 
 						// Call completion callback
-						onExpandComplete?.(payload as ExpandCompletePayload);
+						onExpandComplete?.(payload);
 						request.resolve();
 
-						logger.info("graph", "Node expansion completed via worker", {
+						logger.debug("graph", "Node expansion completed via worker", {
 							nodeId: request.nodeId,
-							nodesAdded: (payload as ExpandCompletePayload).nodes.length || 0,
-							edgesAdded: (payload as ExpandCompletePayload).edges.length || 0,
-							duration: (payload as ExpandCompletePayload).statistics?.duration || 0
+							nodesAdded: payload.nodes.length || 0,
+							edgesAdded: payload.edges.length || 0,
+							duration: payload.statistics?.duration || 0
 						});
 					}
 				}
@@ -166,16 +199,14 @@ export function useDataFetchingWorker(options: UseDataFetchingWorkerOptions = {}
 				break;
 
 			case "progress":
-				if (id && payload) {
+				if (id && payload && isProgressPayload(payload)) {
 					const request = pendingRequestsRef.current.get(id);
 					if (request) {
-						const progressData = payload as { completed: number; total: number; stage: string };
-
 						// Update progress store
-						updateProgress(request.nodeId, progressData);
+						updateProgress(request.nodeId, payload);
 
 						// Call progress callback
-						onProgress?.(request.nodeId, progressData);
+						onProgress?.(request.nodeId, payload);
 					}
 				}
 				break;
@@ -218,7 +249,7 @@ export function useDataFetchingWorker(options: UseDataFetchingWorkerOptions = {}
 
 		const currentPendingRequests = pendingRequestsRef.current;
 
-		logger.info("graph", "Initializing data fetching worker");
+		logger.debug("graph", "Initializing data fetching worker");
 
 		try {
 			workerRef.current = new Worker(
@@ -307,7 +338,7 @@ export function useDataFetchingWorker(options: UseDataFetchingWorkerOptions = {}
 
 			workerRef.current?.postMessage(message);
 
-			logger.info("graph", "Started node expansion via worker", {
+			logger.debug("graph", "Started node expansion via worker", {
 				nodeId,
 				entityId,
 				entityType,
@@ -346,7 +377,7 @@ export function useDataFetchingWorker(options: UseDataFetchingWorkerOptions = {}
 			// Reject the promise
 			request.reject(new Error("Expansion cancelled by user"));
 
-			logger.info("graph", "Cancelled node expansion", { nodeId, requestId });
+			logger.debug("graph", "Cancelled node expansion", { nodeId, requestId });
 		}
 	}, [removeRequest]);
 
@@ -370,7 +401,7 @@ export function useDataFetchingWorker(options: UseDataFetchingWorkerOptions = {}
 		// Clear progress store
 		clearAll();
 
-		logger.info("graph", "Cancelled all node expansions");
+		logger.debug("graph", "Cancelled all node expansions");
 	}, [clearAll]);
 
 	// Get statistics
