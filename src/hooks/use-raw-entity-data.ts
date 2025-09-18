@@ -79,7 +79,7 @@ export const useRawEntityData = (options: UseRawEntityDataOptions) => {
 
 	// Enhanced logging for cache behavior tracking
 	if (query.data) {
-		logger.info("cache", "Raw entity data loaded from cache system", {
+		logger.debug("cache", "Raw entity data loaded from cache system", {
 			entityId,
 			entityType,
 			fromCache: !query.isFetching,

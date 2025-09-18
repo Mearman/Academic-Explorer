@@ -22,7 +22,7 @@ export const useGraphUtilities = () => {
 
 	// Apply utility result to store
 	const applyUtilityResult = useCallback((result: GraphUtilityResult) => {
-		logger.info("graph", `Applied graph utility: ${result.operation}`, {
+		logger.debug("graph", `Applied graph utility: ${result.operation}`, {
 			operation: result.operation,
 			nodesAfter: result.nodes.length,
 			edgesAfter: result.edges.length,
