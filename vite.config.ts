@@ -7,7 +7,7 @@ import { devtools } from '@tanstack/devtools-vite'
 import { VitePWA } from 'vite-plugin-pwa'
 import path from 'path'
 import { execSync } from 'child_process'
-import { resolveConfig } from './config/shared'
+import { resolveConfig, testSetupFiles } from './config/shared'
 
 // Build metadata generation
 function getBuildInfo() {
@@ -127,6 +127,106 @@ export default defineConfig({
   },
   worker: {
     format: 'es', // Enable ES module format for workers
+  },
+  test: {
+    globals: true,
+    setupFiles: testSetupFiles,
+    watch: false,
+    coverage: {
+      enabled: true,
+      provider: 'v8',
+      reporter: ['text', 'json', 'html', 'lcov'],
+      exclude: [
+        'node_modules/**',
+        'dist/**',
+        'coverage/**',
+        '**/*.d.ts',
+        '**/*.config.ts',
+        '**/*.config.js',
+        '**/test/**',
+        '**/tests/**',
+        '**/__tests__/**',
+        '**/*.test.{ts,tsx,js,jsx}',
+        '**/*.spec.{ts,tsx,js,jsx}',
+        'src/routeTree.gen.ts',
+        'src/test/**',
+        '**/vite.config.ts',
+        '**/vitest.config.ts',
+        '**/vitest.workspace.ts',
+        '**/.eslintrc.{js,cjs}',
+        '**/eslint.config.{js,ts}',
+      ],
+      thresholds: {
+        global: {
+          branches: 75,
+          functions: 80,
+          lines: 80,
+          statements: 80,
+        },
+        perFile: true,
+        skipFull: false,
+        autoUpdate: false,
+        './src/lib/graph/graph-utilities-service.ts': {
+          branches: 90,
+          functions: 100,
+          lines: 90,
+          statements: 90,
+        },
+        './src/hooks/use-graph-utilities.ts': {
+          branches: 85,
+          functions: 90,
+          lines: 85,
+          statements: 85,
+        },
+      },
+    },
+    projects: [
+      {
+        resolve: resolveConfig,
+        test: {
+          name: 'unit',
+          include: ['src/**/*.unit.test.ts'],
+          environment: 'jsdom',
+          testTimeout: 30000,
+        },
+      },
+      {
+        resolve: resolveConfig,
+        test: {
+          name: 'component',
+          include: ['src/**/*.component.test.ts', 'src/**/*.component.test.tsx'],
+          environment: 'jsdom',
+          testTimeout: 30000,
+        },
+      },
+      {
+        resolve: resolveConfig,
+        test: {
+          name: 'integration',
+          include: ['src/**/*.integration.test.ts'],
+          environment: 'node',
+          testTimeout: 45000,
+        },
+      },
+      {
+        resolve: resolveConfig,
+        test: {
+          name: 'e2e',
+          include: ['src/**/*.e2e.test.ts'],
+          environment: 'node',
+          testTimeout: 90000,
+          setupFiles: ['./src/test/setup.ts', './src/test/e2e-setup.ts'],
+          // Serial execution for memory efficiency
+          maxConcurrency: 1,
+          pool: 'forks',
+          poolOptions: {
+            forks: {
+              singleFork: true,
+            },
+          },
+        },
+      },
+    ],
   },
   build: {
     rollupOptions: {
