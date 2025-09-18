@@ -1,3 +1,10 @@
+## [5.8.2](https://github.com/Mearman/Academic-Explorer/compare/v5.8.1...v5.8.2) (2025-09-18)
+
+
+### Bug Fixes
+
+* **pwa:** correct icon format from PNG to SVG ([031bafa](https://github.com/Mearman/Academic-Explorer/commit/031bafad8e21ce618dae69fdcfd9e6aeb17f8a20))
+
 ## [5.8.1](https://github.com/Mearman/Academic-Explorer/compare/v5.8.0...v5.8.1) (2025-09-18)
 
 
