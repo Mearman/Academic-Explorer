@@ -9,5 +9,3 @@ export const edgeTypes = {
 	smart: DynamicFloatingEdge, // Use dynamic edge that recalculates during layout
 	smartLegacy: SmartEdge, // Keep legacy edge for fallback
 };
-
-export default edgeTypes;
