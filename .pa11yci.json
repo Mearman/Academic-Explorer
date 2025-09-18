@@ -12,7 +12,6 @@
     "includeNotices": false,
     "includeWarnings": false,
     "rules": [
-      "heading-order",
       "image-alt",
       "label",
       "link-name",
