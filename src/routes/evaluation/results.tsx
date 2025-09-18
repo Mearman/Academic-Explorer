@@ -9,6 +9,19 @@ import { IconChartBar, IconSearch, IconBulb } from "@tabler/icons-react"
 import { compareAcademicExplorerResults, DEFAULT_MATCHING_CONFIG } from "@/lib/evaluation/comparison-engine"
 import { searchBasedOnSTARDataset, calculateSearchCoverage, DEFAULT_SEARCH_CONFIG } from "@/lib/evaluation/openalex-search-service"
 import type { STARDataset, ComparisonResults as ComparisonResultsType, WorkReference, ComparisonProgress } from "@/lib/evaluation/types"
+
+// Type guard for STARDataset array
+function isSTARDatasetArray(data: unknown): data is STARDataset[] {
+	return Array.isArray(data) && data.every(item =>
+		typeof item === "object" &&
+		item !== null &&
+		"id" in item &&
+		"name" in item &&
+		"reviewTopic" in item &&
+		"originalPaperCount" in item &&
+		"includedPapers" in item
+	)
+}
 import {
 	PerformanceComparisonChart,
 	PrecisionRecallScatterPlot,
@@ -79,21 +92,24 @@ function ComparisonResults() {
 		try {
 			const savedDatasets = localStorage.getItem("star-datasets")
 			if (savedDatasets) {
-				const datasets = JSON.parse(savedDatasets) as STARDataset[]
-				setStarDatasets(datasets)
+				const parsedDatasets: unknown = JSON.parse(savedDatasets)
+				if (isSTARDatasetArray(parsedDatasets)) {
+					const datasets = parsedDatasets
+					setStarDatasets(datasets)
 
-				// Initialize comparison runs for each dataset
-				const runs: ComparisonRun[] = datasets.map(dataset => ({
-					id: `run_${dataset.id}`,
-					datasetName: dataset.name,
-					runDate: new Date(),
-					status: "ready",
-					searchCriteria: {
-						query: dataset.reviewTopic,
-						entityTypes: ["works"]
-					}
-				}))
-				setComparisonRuns(runs)
+					// Initialize comparison runs for each dataset
+					const runs: ComparisonRun[] = datasets.map(dataset => ({
+						id: `run_${dataset.id}`,
+						datasetName: dataset.name,
+						runDate: new Date(),
+						status: "ready",
+						searchCriteria: {
+							query: dataset.reviewTopic,
+							entityTypes: ["works"]
+						}
+					}))
+					setComparisonRuns(runs)
+				}
 			}
 		} catch (error) {
 			logError("Failed to load STAR datasets:", error, "ComparisonResults", "routing")
@@ -244,7 +260,12 @@ function ComparisonResults() {
 	const completedComparisonResults = useMemo(() => {
 		return comparisonRuns
 			.filter(run => run.status === "completed" && run.comparisonResults)
-			.map(run => run.comparisonResults as ComparisonResultsType)
+			.map(run => {
+				if (!run.comparisonResults) {
+					throw new Error("Comparison results missing for completed run")
+				}
+				return run.comparisonResults
+			})
 	}, [comparisonRuns])
 
 	const formatPercent = (value: number) => `${(value * 100).toFixed(1)}%`
@@ -504,7 +525,7 @@ function ComparisonResults() {
 												</p>
 												<p style={{ fontSize: "12px", color: "#9ca3af" }}>
                         Completed on {result.runDate.toLocaleDateString()} •
-													{formatTime(("executionTime" in result ? result.executionTime : 0) || 0)} • {"apiCalls" in result ? (result as LegacyResult & { apiCalls?: string }).apiCalls || "N/A" : "N/A"} API calls
+													{formatTime(("executionTime" in result ? result.executionTime : 0) || 0)} • {"apiCalls" in result && result.apiCalls ? result.apiCalls : "N/A"} API calls
 												</p>
 											</div>
 
@@ -672,7 +693,11 @@ function ComparisonResults() {
 								].map((tab) => (
 									<button
 										key={tab.key}
-										onClick={() => { setActiveVisualizationTab(tab.key as "performance" | "scatter" | "heatmap" | "overview"); }}
+										onClick={() => {
+											if (tab.key === "performance" || tab.key === "scatter" || tab.key === "heatmap" || tab.key === "overview") {
+												setActiveVisualizationTab(tab.key)
+											}
+										}}
 										style={{
 											padding: "12px 20px",
 											border: "none",
@@ -743,16 +768,20 @@ function ComparisonResults() {
 							<div style={{ padding: "24px" }}>
 								{/* Dataset Selection */}
 								<div style={{ marginBottom: "24px" }}>
-									<label style={{
-										fontSize: "14px",
-										fontWeight: "500",
-										color: "#374151",
-										display: "block",
-										marginBottom: "8px"
-									}}>
+									<label
+										htmlFor="dataset-select"
+										style={{
+											fontSize: "14px",
+											fontWeight: "500",
+											color: "#374151",
+											display: "block",
+											marginBottom: "8px"
+										}}
+									>
                     Select Dataset for Missing Paper Analysis:
 									</label>
 									<select
+										id="dataset-select"
 										value={selectedDatasetForMissingPapers || ""}
 										onChange={(e) => { setSelectedDatasetForMissingPapers(e.target.value || null); }}
 										style={{
@@ -776,7 +805,13 @@ function ComparisonResults() {
 								{/* Missing Paper Detection Component */}
 								{selectedDatasetForMissingPapers && starDatasets.find(d => d.id === selectedDatasetForMissingPapers) && (
 									<MissingPaperDetection
-										dataset={starDatasets.find(d => d.id === selectedDatasetForMissingPapers) as STARDataset}
+										dataset={(() => {
+											const foundDataset = starDatasets.find(d => d.id === selectedDatasetForMissingPapers)
+											if (!foundDataset) {
+												throw new Error("Dataset not found")
+											}
+											return foundDataset
+										})()}
 										onDetectionComplete={(results) => {
 											setMissingPaperResults(prev => ({
 												...prev,

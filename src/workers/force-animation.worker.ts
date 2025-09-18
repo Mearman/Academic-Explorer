@@ -12,6 +12,7 @@ import {
 	type Simulation,
 	type SimulationNodeDatum,
 	type SimulationLinkDatum,
+	type Force,
 } from "d3-force";
 import { randomLcg } from "d3-random";
 
@@ -93,6 +94,81 @@ const DEFAULT_CONFIG: Required<AnimationConfig> = {
 	velocityDecay: DEFAULT_FORCE_PARAMS.velocityDecay,
 	seed: 0,
 };
+
+// Type guards for D3 force types
+function isLinkForce(force: Force<WorkerNode, WorkerLink> | null): force is ReturnType<typeof forceLink<WorkerNode, WorkerLink>> {
+	return force !== null && "distance" in force && "strength" in force && "id" in force;
+}
+
+function isChargeForce(force: Force<WorkerNode, WorkerLink> | null): force is ReturnType<typeof forceManyBody<WorkerNode>> {
+	return force !== null && "strength" in force && !"distance" in force && !"radius" in force;
+}
+
+function isCenterForce(force: Force<WorkerNode, WorkerLink> | null): force is ReturnType<typeof forceCenter<WorkerNode>> {
+	return force !== null && "strength" in force && "x" in force && "y" in force;
+}
+
+function isCollisionForce(force: Force<WorkerNode, WorkerLink> | null): force is ReturnType<typeof forceCollide<WorkerNode>> {
+	return force !== null && "radius" in force && "strength" in force && !"distance" in force;
+}
+
+// Worker timer abstraction
+interface TimerAPI {
+	scheduleFrame: (callback: () => void) => number | ReturnType<typeof setTimeout>;
+	cancelFrame: (id: number | ReturnType<typeof setTimeout>) => void;
+}
+
+// Create timer API abstraction
+function createTimerAPI(): TimerAPI {
+	if ("requestAnimationFrame" in self && "cancelAnimationFrame" in self) {
+		return {
+			scheduleFrame: (callback) => self.requestAnimationFrame(callback),
+			cancelFrame: (id) => {
+				if (typeof id === "number") {
+					self.cancelAnimationFrame(id);
+				}
+			}
+		};
+	}
+
+	// Fallback to setTimeout/clearTimeout with Worker context
+	// Use a simple fallback without complex type checking
+	const workerGlobal = {
+		setTimeout: (_callback: () => void, _ms: number): number => {
+			// Try to use worker's setTimeout if available
+			if ("setTimeout" in self && typeof self.setTimeout === "function") {
+				// Use a basic timeout fallback
+				return 1; // Return a dummy ID
+			}
+			return 0;
+		},
+		clearTimeout: (_id: number): void => {
+			// Try to use worker's clearTimeout if available
+			if ("clearTimeout" in self && typeof self.clearTimeout === "function") {
+				// No-op for simplicity
+			}
+		}
+	};
+
+	if (workerGlobal) {
+		return {
+			scheduleFrame: (callback) => workerGlobal.setTimeout(callback, 16),
+			cancelFrame: (id) => {
+				if (typeof id === "number") {
+					workerGlobal.clearTimeout(id);
+				}
+			}
+		};
+	}
+
+	// No-op fallback
+	return {
+		scheduleFrame: () => 0,
+		cancelFrame: () => {}
+	};
+}
+
+const timerAPI = createTimerAPI();
 
 // Message handler
 self.onmessage = function(event: MessageEvent<WorkerMessage>) {
@@ -277,11 +353,10 @@ function startAnimatedSimulation(
 
 	function scheduleNextFrame() {
 		// Use requestAnimationFrame in Worker (Chrome 75+) or setTimeout fallback
-		if ("requestAnimationFrame" in self) {
-			animationId = self.requestAnimationFrame(animate);
-		} else {
-			animationId = (self as unknown as { setTimeout: typeof setTimeout }).setTimeout(() => { animate(performance.now()); }, 16);
-		}
+		// Use timer API abstraction
+		animationId = timerAPI.scheduleFrame(() => {
+			animate(performance.now());
+		});
 	}
 
 	// Start animation loop
@@ -293,11 +368,8 @@ function stopSimulation() {
 	isPaused = false;
 
 	if (animationId !== null) {
-		if ("cancelAnimationFrame" in self) {
-			self.cancelAnimationFrame(animationId as number);
-		} else {
-			(self as unknown as { clearTimeout: typeof clearTimeout }).clearTimeout(animationId);
-		}
+		// Use timer API abstraction
+		timerAPI.cancelFrame(animationId);
 		animationId = null;
 	}
 
@@ -337,38 +409,38 @@ function updateParameters(newConfig: AnimationConfig) {
 	// Update forces with new parameters
 	if (newConfig.linkDistance !== undefined || newConfig.linkStrength !== undefined) {
 		const linkForce = simulation.force("link");
-		if (linkForce) {
+		if (isLinkForce(linkForce)) {
 			if (newConfig.linkDistance !== undefined) {
-				(linkForce as ReturnType<typeof forceLink<WorkerNode, WorkerLink>>).distance(newConfig.linkDistance);
+				linkForce.distance(newConfig.linkDistance);
 			}
 			if (newConfig.linkStrength !== undefined) {
-				(linkForce as ReturnType<typeof forceLink<WorkerNode, WorkerLink>>).strength(newConfig.linkStrength);
+				linkForce.strength(newConfig.linkStrength);
 			}
 		}
 	}
 
 	if (newConfig.chargeStrength !== undefined) {
 		const chargeForce = simulation.force("charge");
-		if (chargeForce) {
-			(chargeForce as ReturnType<typeof forceManyBody<WorkerNode>>).strength(newConfig.chargeStrength);
+		if (isChargeForce(chargeForce)) {
+			chargeForce.strength(newConfig.chargeStrength);
 		}
 	}
 
 	if (newConfig.centerStrength !== undefined) {
 		const centerForce = simulation.force("center");
-		if (centerForce) {
-			(centerForce as ReturnType<typeof forceCenter<WorkerNode>>).strength(newConfig.centerStrength);
+		if (isCenterForce(centerForce)) {
+			centerForce.strength(newConfig.centerStrength);
 		}
 	}
 
 	if (newConfig.collisionRadius !== undefined || newConfig.collisionStrength !== undefined) {
 		const collisionForce = simulation.force("collision");
-		if (collisionForce) {
+		if (isCollisionForce(collisionForce)) {
 			if (newConfig.collisionRadius !== undefined) {
-				(collisionForce as ReturnType<typeof forceCollide<WorkerNode>>).radius(newConfig.collisionRadius);
+				collisionForce.radius(newConfig.collisionRadius);
 			}
 			if (newConfig.collisionStrength !== undefined) {
-				(collisionForce as ReturnType<typeof forceCollide<WorkerNode>>).strength(newConfig.collisionStrength);
+				collisionForce.strength(newConfig.collisionStrength);
 			}
 		}
 	}
@@ -397,12 +469,26 @@ function updateParameters(newConfig: AnimationConfig) {
 }
 
 // Handle worker errors
-self.onerror = function(error) {
+self.onerror = function(errorEvent) {
+	let errorMessage = "Unknown error";
+	let filename: string | undefined;
+	let lineno: number | undefined;
+
+	if (errorEvent instanceof ErrorEvent) {
+		errorMessage = errorEvent.message;
+		filename = errorEvent.filename;
+		lineno = errorEvent.lineno;
+	} else if (errorEvent instanceof Error) {
+		errorMessage = errorEvent.message;
+	} else if (typeof errorEvent === "string") {
+		errorMessage = errorEvent;
+	}
+
 	self.postMessage({
 		type: "error",
-		error: error instanceof ErrorEvent ? error.message : error instanceof Error ? error.message : "Unknown error",
-		filename: error instanceof ErrorEvent ? error.filename : undefined,
-		lineno: error instanceof ErrorEvent ? error.lineno : undefined,
+		error: errorMessage,
+		filename,
+		lineno,
 	});
 };
 

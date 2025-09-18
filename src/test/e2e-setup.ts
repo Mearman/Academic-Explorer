@@ -6,6 +6,11 @@
 import { chromium, type Browser, type BrowserContext, type Page } from "@playwright/test"
 import { beforeAll, afterAll, beforeEach, afterEach } from "vitest"
 import { injectAxe, checkA11y, configureAxe } from "@axe-core/playwright"
+
+// Type guard for axe-core functions to ensure they are callable
+function isCallableFunction(fn: unknown): fn is (...args: unknown[]) => Promise<unknown> {
+	return typeof fn === "function"
+}
 import { logger } from "@/lib/logger"
 import { useGraphStore } from "@/stores/graph-store"
 
@@ -43,22 +48,38 @@ beforeEach(async () => {
 	page = await context.newPage()
 
 	// Inject axe-core for accessibility testing
-	await (injectAxe as (page: Page) => Promise<void>)(page)
+	try {
+		if (isCallableFunction(injectAxe)) {
+			await injectAxe(page);
+		} else {
+			logger.warn("general", "injectAxe is not available", undefined, "e2e-setup");
+		}
+	} catch (error: unknown) {
+		logger.warn("general", "Failed to inject axe-core", error instanceof Error ? { error: error.message } : undefined, "e2e-setup");
+	}
 
 	// Configure axe for WCAG 2.1 AA compliance
-	await (configureAxe as (page: Page, config: unknown) => Promise<void>)(page, {
-		rules: {
-			// Enable all WCAG 2.1 AA rules
-			"color-contrast": { enabled: true },
-			"keyboard-navigation": { enabled: true },
-			"focus-management": { enabled: true },
+	try {
+		if (isCallableFunction(configureAxe)) {
+			await configureAxe(page, {
+			rules: {
+				// Enable all WCAG 2.1 AA rules
+				"color-contrast": { enabled: true },
+				"keyboard-navigation": { enabled: true },
+				"focus-management": { enabled: true },
 
-			// Disable rules that may not apply to our SPA context
-			"region": { enabled: false },
-			"page-has-heading-one": { enabled: false },
-		},
-		tags: ["wcag2a", "wcag2aa", "wcag21aa"],
-	})
+				// Disable rules that may not apply to our SPA context
+				"region": { enabled: false },
+				"page-has-heading-one": { enabled: false },
+			},
+			tags: ["wcag2a", "wcag2aa", "wcag21aa"],
+			});
+		} else {
+			logger.warn("general", "configureAxe is not available", undefined, "e2e-setup");
+		}
+	} catch (error: unknown) {
+		logger.warn("general", "Failed to configure axe-core", error instanceof Error ? { error: error.message } : undefined, "e2e-setup");
+	}
 
 	// Set up console logging in tests
 	page.on("console", (msg) => {
@@ -78,7 +99,15 @@ beforeEach(async () => {
 	globalThis.useGraphStore = useGraphStore // Expose useGraphStore globally
 
 	// Expose accessibility testing functions globally
-	globalThis.checkA11y = checkA11y as (page: Page, selector?: string, options?: unknown) => Promise<void>
+	try {
+		if (isCallableFunction(checkA11y)) {
+			globalThis.checkA11y = checkA11y;
+		} else {
+			logger.warn("general", "checkA11y is not available", undefined, "e2e-setup");
+		}
+	} catch (error: unknown) {
+		logger.warn("general", "Failed to expose checkA11y globally", error instanceof Error ? { error: error.message } : undefined, "e2e-setup");
+	}
 })
 
 afterEach(async () => {

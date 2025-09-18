@@ -67,6 +67,30 @@ function initializeWorker() {
 	}
 }
 
+// Type guard for ExpandNodePayload
+function isExpandNodePayload(payload: unknown): payload is ExpandNodePayload {
+	if (typeof payload !== "object" || payload === null) {
+		return false;
+	}
+
+	// Use type narrowing instead of type assertion
+	if (!isRecord(payload)) {
+		return false;
+	}
+
+	return (
+		"nodeId" in payload && typeof payload.nodeId === "string" &&
+		"entityId" in payload && typeof payload.entityId === "string" &&
+		"entityType" in payload && typeof payload.entityType === "string" &&
+		"options" in payload && typeof payload.options === "object" && payload.options !== null
+	);
+}
+
+// Helper type guard for Record
+function isRecord(value: unknown): value is Record<string, unknown> {
+	return typeof value === "object" && value !== null && !Array.isArray(value);
+}
+
 // Handle expand node request
 async function handleExpandNode(id: string, payload: ExpandNodePayload) {
 	const startTime = Date.now();
@@ -217,8 +241,16 @@ self.onmessage = async (event: MessageEvent<DataFetchingMessage>) => {
 	try {
 		switch (type) {
 			case "expandNode": {
-				const expandPayload = payload as ExpandNodePayload;
-				await handleExpandNode(id, expandPayload);
+				if (!isExpandNodePayload(payload)) {
+					const validationErrorMessage: DataFetchingResponse = {
+						type: "expandError",
+						id,
+						error: "Invalid payload for expandNode operation"
+					};
+					postMessage(validationErrorMessage);
+					return;
+				}
+				await handleExpandNode(id, payload);
 				break;
 			}
 

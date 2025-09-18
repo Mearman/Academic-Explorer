@@ -11,6 +11,105 @@ import type { AxeResults, RunOptions } from "axe-core";
 // Note: vitest-axe matchers are extended globally via setup.ts
 
 /**
+ * Type guard to check if an object has violations property
+ */
+function hasViolationsProperty(obj: object): obj is { violations: unknown } {
+  return "violations" in obj;
+}
+
+/**
+ * Type guard to check if a value is a record (object with string keys)
+ */
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === "object" && value !== null && !Array.isArray(value);
+}
+
+/**
+ * Type guard to check if data structure matches AxeResults
+ */
+function isAxeResults(data: unknown): data is AxeResults {
+  if (typeof data !== "object" || data === null) {
+    return false;
+  }
+
+  // Check if it has violations property
+  if (!hasViolationsProperty(data)) {
+    return false;
+  }
+
+  const violationsValue = data.violations;
+  if (!Array.isArray(violationsValue)) {
+    return false;
+  }
+
+  // Validate violations structure
+  for (const violation of violationsValue) {
+    // Use type guard to check if violation is a valid record
+    if (!isRecord(violation)) {
+      return false;
+    }
+
+    // Check if violation has required properties
+    if (!("id" in violation) || !("description" in violation) || !("nodes" in violation)) {
+      return false;
+    }
+
+    // Access properties safely - TypeScript knows violation is Record<string, unknown>
+    const id = violation.id;
+    const description = violation.description;
+    const nodes = violation.nodes;
+
+    // Validate that all required properties exist and have correct types
+    if (typeof id !== "string") {
+      return false;
+    }
+
+    if (typeof description !== "string") {
+      return false;
+    }
+
+    if (!Array.isArray(nodes)) {
+      return false;
+    }
+  }
+
+  return true;
+}
+
+/**
+ * Validates and safely converts unknown data to AxeResults
+ * @param data - Unknown data from browser context
+ * @returns Validated AxeResults
+ */
+function validateAxeResults(data: unknown): AxeResults {
+  if (!isAxeResults(data)) {
+    throw new Error("Invalid axe results structure");
+  }
+  return data;
+}
+
+/**
+ * Type-safe wrapper for accessibility assertions
+ * Handles the vitest-axe extension properly
+ */
+function assertNoA11yViolations(results: AxeResults): void {
+  if (results.violations.length > 0) {
+    const violationMessages = results.violations.map(
+      (violation) => {
+        const nodeMessages = violation.nodes.map((node) => {
+          return typeof node.html === "string" ? node.html : String(node.html);
+        }).join("\n  ");
+        const violationId = typeof violation.id === "string" ? violation.id : String(violation.id);
+        const violationDesc = typeof violation.description === "string" ? violation.description : String(violation.description);
+        return `${violationId}: ${violationDesc}\n  ${nodeMessages}`;
+      }
+    ).join("\n\n");
+
+    throw new Error(`Accessibility violations found:\n\n${violationMessages}`);
+  }
+}
+
+/**
  * Common axe configuration for consistent testing
  * Follows WCAG 2.1 AA standards
  */
@@ -42,7 +141,7 @@ export async function testComponentAccessibility(
   config: RunOptions = axeConfig
 ): Promise<void> {
   const results = await axe(renderResult.container, config);
-  (expect as unknown as { (actual: unknown): { toHaveNoViolations: () => void } })(results).toHaveNoViolations();
+  assertNoA11yViolations(results);
 }
 
 /**
@@ -59,18 +158,35 @@ export async function testPageAccessibility(
     url: "https://unpkg.com/axe-core@4.10.3/axe.min.js",
   });
 
-  // Run axe accessibility scan
-  const results = await page.evaluate(async (axeConfig) => {
-    // @ts-expect-error axe is loaded globally from external script
-    return await (globalThis as { axe: { run: (element: Document, config: unknown) => Promise<AxeResults> } }).axe.run(document, axeConfig);
-  }, config);
+  // Run axe accessibility scan using string-based evaluation to avoid type issues
+  const configString = JSON.stringify(config);
+  const evaluationScript = `
+    (async function() {
+      if (typeof window.axe === 'undefined') {
+        throw new Error('Axe-core is not loaded in the page context');
+      }
+      const axeConfig = ${configString};
+      const results = await window.axe.run(document, axeConfig);
+      return JSON.stringify(results);
+    })()
+  `;
+
+  const rawResultsString: string = await page.evaluate(evaluationScript);
+  const rawResults: unknown = JSON.parse(rawResultsString);
+
+  // Validate the results
+  const results = validateAxeResults(rawResults);
 
   // Check for violations
   if (results.violations.length > 0) {
     const violationMessages = results.violations.map(
       (violation) => {
-        const nodeMessages = violation.nodes.map((node) => node.html).join("\n  ");
-        return `${violation.id}: ${violation.description}\n  ${nodeMessages}`;
+        const nodeMessages = violation.nodes.map((node) => {
+          return typeof node.html === "string" ? node.html : String(node.html);
+        }).join("\n  ");
+        const violationId = typeof violation.id === "string" ? violation.id : String(violation.id);
+        const violationDesc = typeof violation.description === "string" ? violation.description : String(violation.description);
+        return `${violationId}: ${violationDesc}\n  ${nodeMessages}`;
       }
     ).join("\n\n");
 
@@ -88,7 +204,7 @@ export async function testElementAccessibility(
   config: RunOptions = axeConfig
 ): Promise<void> {
   const results = await axe(element, config);
-  (expect as unknown as { (actual: unknown): { toHaveNoViolations: () => void } })(results).toHaveNoViolations();
+  assertNoA11yViolations(results);
 }
 
 /**
@@ -107,7 +223,7 @@ export async function testDynamicContentAccessibility(
   await renderResult.findByTestId(selector.replace("[data-testid=\"", "").replace("\"]", ""));
 
   const results = await axe(renderResult.container, config);
-  (expect as unknown as { (actual: unknown): { toHaveNoViolations: () => void } })(results).toHaveNoViolations();
+  assertNoA11yViolations(results);
 }
 
 /**
@@ -120,8 +236,9 @@ export function testKeyboardNavigation(element: Element): void {
   );
 
   focusableElements.forEach((el) => {
-    const htmlElement = el as HTMLElement;
-    expect(htmlElement.tabIndex).toBeGreaterThanOrEqual(0);
+    if (el instanceof HTMLElement) {
+      expect(el.tabIndex).toBeGreaterThanOrEqual(0);
+    }
   });
 }
 
@@ -183,5 +300,5 @@ export async function testFormAccessibility(form: Element): Promise<void> {
   };
 
   const results = await axe(form, formConfig);
-  (expect as unknown as { (actual: unknown): { toHaveNoViolations: () => void } })(results).toHaveNoViolations();
+  assertNoA11yViolations(results);
 }

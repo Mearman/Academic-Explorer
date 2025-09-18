@@ -310,6 +310,9 @@ function DatasetsManagement() {
 						<div style={{ padding: "24px" }}>
 							{!uploadFile ? (
 								<div
+									role="button"
+									tabIndex={0}
+									aria-label="Click to select a file or press Enter"
 									style={{
 										border: "2px dashed #d1d5db",
 										borderRadius: "8px",
@@ -319,6 +322,12 @@ function DatasetsManagement() {
 										backgroundColor: "#f9fafb"
 									}}
 									onClick={() => document.getElementById("file-upload")?.click()}
+									onKeyDown={(e) => {
+										if (e.key === "Enter" || e.key === " ") {
+											e.preventDefault();
+											document.getElementById("file-upload")?.click();
+										}
+									}}
 								>
 									<div style={{ marginBottom: "12px" }}>
 										<IconUpload size={32} />

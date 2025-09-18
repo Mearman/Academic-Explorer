@@ -28,7 +28,7 @@ function InstitutionRoute() {
 
 		// If ID was normalized and is different from input, redirect
 		if (detection.normalizedId && detection.normalizedId !== institutionId) {
-			logger.info("routing", "Redirecting to normalized institution ID", {
+			logger.debug("routing", "Redirecting to normalized institution ID", {
 				originalId: institutionId,
 				normalizedId: detection.normalizedId
 			}, "InstitutionRoute");
