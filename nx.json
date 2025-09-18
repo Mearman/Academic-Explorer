@@ -72,27 +72,23 @@
       "outputs": ["{projectRoot}/**/*.{js,jsx,ts,tsx}"]
     },
     "a11y:test": {
-      "cache": true,
+      "cache": false,
       "dependsOn": ["build"],
-      "inputs": ["^production", "{workspaceRoot}/.pa11yci.json", "{projectRoot}/dist/**/*"],
-      "outputs": ["pa11y-results.json"]
+      "inputs": ["^production", "{workspaceRoot}/.pa11yci.json", "{projectRoot}/dist/**/*"]
     },
     "a11y:lighthouse": {
-      "cache": true,
+      "cache": false,
       "dependsOn": ["build"],
-      "inputs": ["^production", "{workspaceRoot}/.lighthouserc.js", "{projectRoot}/dist/**/*"],
-      "outputs": [".lighthouseci/**/*"]
+      "inputs": ["^production", "{workspaceRoot}/.lighthouserc.js", "{projectRoot}/dist/**/*"]
     },
     "a11y:dev": {
       "cache": false,
-      "inputs": ["default", "{workspaceRoot}/.pa11yci-dev.json"],
-      "outputs": ["pa11y-results.json"]
+      "inputs": ["default", "{workspaceRoot}/.pa11yci-dev.json"]
     },
     "a11y:ci": {
-      "cache": true,
+      "cache": false,
       "dependsOn": ["a11y:test", "a11y:lighthouse"],
-      "inputs": [],
-      "outputs": ["pa11y-results.json", ".lighthouseci/**/*"]
+      "inputs": []
     },
     "test:a11y": {
       "cache": true,

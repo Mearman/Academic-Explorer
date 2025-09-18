@@ -330,6 +330,9 @@ jobs:
           path: coverage-reports/
           merge-multiple: true
 
+      - name: Create coverage summary
+        run: node scripts/create-coverage-summary.js
+
       - name: Generate coverage summary
         run: |
           echo "## Coverage Report" >> $GITHUB_STEP_SUMMARY
