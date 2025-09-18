@@ -12,6 +12,7 @@ if (typeof window !== 'undefined') {
 
 import { enableMapSet } from 'immer';
 import 'vitest-axe/extend-expect';
+import { startMockServer, stopMockServer, resetMockServer } from './msw/server';
 
 // Configure test environment globals
 globalThis.__DEV__ = true;
@@ -65,10 +66,21 @@ global.IntersectionObserver = class IntersectionObserver {
   disconnect() {}
 };
 
-// Clean up between tests to prevent memory leaks
-// Only register afterEach if we're in a proper test environment
-if (typeof afterEach === 'function') {
+// Setup MSW server for API mocking
+// Only in test environments with proper globals
+if (typeof beforeAll === 'function' && typeof afterAll === 'function' && typeof afterEach === 'function') {
+  beforeAll(() => {
+    startMockServer();
+  });
+
+  afterAll(() => {
+    stopMockServer();
+  });
+
   afterEach(() => {
+    // Reset MSW handlers between tests
+    resetMockServer();
+
     // Force garbage collection if available (helps with memory management)
     if (global.gc) {
       global.gc();

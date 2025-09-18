@@ -945,15 +945,25 @@ export function isWorkerEventType(eventType: string): eventType is WorkerEventTy
  * Type-safe payload parser that validates and narrows type
  * Uses Zod schema validation to ensure type safety without assertions
  */
+function isValidPayload<T extends WorkerEventType>(
+  data: unknown,
+  _eventType: T
+): data is WorkerEventPayloads[T] {
+  // Type guard that relies on the Zod schema validation already performed
+  return data !== null && data !== undefined;
+}
+
 export function parseWorkerEventPayload<T extends WorkerEventType>(
   payload: unknown,
   eventType: T,
   schema: z.ZodType
 ): WorkerEventPayloads[T] | null {
   const result = schema.safeParse(payload);
-  // Return the validated data directly - TypeScript structural typing
-  // ensures compatibility between validated schema output and interface
-  return result.success ? result.data : null;
+  // Use type guard approach instead of type assertion
+  if (result.success && isValidPayload(result.data, eventType)) {
+    return result.data;
+  }
+  return null;
 }
 
 // Export the WorkerEventType schema for external use

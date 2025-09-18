@@ -286,9 +286,10 @@ describe("useDataFetchingWorker EventBridge Integration", () => {
         });
       });
 
-      // Start expansion to create a pending request
+      // Start expansion to create a pending request and capture the promise
+      let expandPromise: Promise<any>;
       act(() => {
-        void result.current.expandNode("node-456", "A123456789", "authors");
+        expandPromise = result.current.expandNode("node-456", "A123456789", "authors");
       });
 
       // Wait for expansion to start
@@ -302,6 +303,7 @@ describe("useDataFetchingWorker EventBridge Integration", () => {
       const lastCall = postMessageCalls[postMessageCalls.length - 1];
       const requestId = lastCall[0].id;
 
+      // Simulate the error which will reject the promise
       act(() => {
         testWorker.simulateEventBridgeMessage(WorkerEventType.DATA_FETCH_ERROR, {
           requestId,
@@ -311,6 +313,9 @@ describe("useDataFetchingWorker EventBridge Integration", () => {
           timestamp: Date.now(),
         });
       });
+
+      // Catch the promise rejection that's expected from the error
+      await expect(expandPromise!).rejects.toThrow("API rate limit exceeded");
 
       expect(onExpandError).toHaveBeenCalledWith("node-456", "API rate limit exceeded");
     });
