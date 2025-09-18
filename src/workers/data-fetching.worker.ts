@@ -7,6 +7,8 @@ import { rateLimitedOpenAlex } from "@/lib/openalex/rate-limited-client";
 import { EntityFactory, type ExpansionOptions } from "@/lib/entities";
 import type { EntityType, GraphNode, GraphEdge } from "@/lib/graph/types";
 import type { ExpansionSettings } from "@/lib/graph/types/expansion-settings";
+import { eventBridge } from "@/lib/graph/events/event-bridge";
+import { WorkerEventType } from "@/lib/graph/events/types";
 
 // Message types for communication with main thread
 export interface DataFetchingMessage {
@@ -54,16 +56,20 @@ function initializeWorker() {
 		rateLimitedOpenAlex.getStats();
 		isReady = true;
 
-		const readyMessage: DataFetchingResponse = {
-			type: "ready"
-		};
-		postMessage(readyMessage);
+		// Emit worker ready event via EventBridge
+		eventBridge.emit(WorkerEventType.WORKER_READY, {
+			workerId: "data-fetching-worker",
+			workerType: "data-fetching" as const,
+			timestamp: Date.now()
+		}, "main");
 	} catch (error) {
-		const errorMessage: DataFetchingResponse = {
-			type: "ready",
-			error: error instanceof Error ? error.message : "Failed to initialize worker"
-		};
-		postMessage(errorMessage);
+		// Emit worker error event via EventBridge
+		eventBridge.emit(WorkerEventType.WORKER_ERROR, {
+			workerId: "data-fetching-worker",
+			workerType: "data-fetching" as const,
+			error: error instanceof Error ? error.message : "Failed to initialize worker",
+			timestamp: Date.now()
+		}, "main");
 	}
 }
 
@@ -124,15 +130,15 @@ async function handleExpandNode(id: string, payload: ExpandNodePayload) {
 			...options,
 			expansionSettings,
 			onProgress: (progress: { completed: number; total: number; stage: string }) => {
-				const progressMessage: DataFetchingResponse = {
-					type: "progress",
-					id,
-					payload: {
-						nodeId,
-						...progress
-					}
-				};
-				postMessage(progressMessage);
+				// Emit progress event via EventBridge
+				eventBridge.emit(WorkerEventType.DATA_FETCH_PROGRESS, {
+					requestId: id,
+					nodeId,
+					entityId: payload.entityId,
+					progress: progress.completed / progress.total,
+					currentStep: progress.stage,
+					timestamp: Date.now()
+				}, "main");
 			}
 		};
 
@@ -144,9 +150,11 @@ async function handleExpandNode(id: string, payload: ExpandNodePayload) {
 		// Clean up request tracking
 		currentRequests.delete(id);
 
-		// Send results back to main thread
-		const response: ExpandCompletePayload = {
+		// Emit completion event via EventBridge
+		eventBridge.emit(WorkerEventType.DATA_FETCH_COMPLETE, {
+			requestId: id,
 			nodeId,
+			entityId: payload.entityId,
 			nodes: relatedData.nodes,
 			edges: relatedData.edges,
 			statistics: {
@@ -154,15 +162,9 @@ async function handleExpandNode(id: string, payload: ExpandNodePayload) {
 				edgesAdded: relatedData.edges.length,
 				apiCalls,
 				duration: Date.now() - startTime
-			}
-		};
-
-		const completeMessage: DataFetchingResponse = {
-			type: "expandComplete",
-			id,
-			payload: response
-		};
-		postMessage(completeMessage);
+			},
+			timestamp: Date.now()
+		}, "main");
 
 	} catch (error) {
 		// Clean up request tracking
@@ -179,40 +181,37 @@ async function handleExpandNode(id: string, payload: ExpandNodePayload) {
 			errorMessage = "Expansion was cancelled";
 		}
 
-		const errorResponse: DataFetchingResponse = {
-			type: "expandError",
-			id,
+		// Emit error event via EventBridge
+		eventBridge.emit(WorkerEventType.DATA_FETCH_ERROR, {
+			requestId: id,
+			nodeId: payload.nodeId,
+			entityId: payload.entityId,
 			error: errorMessage,
-			payload: {
-				nodeId: payload.nodeId,
-				duration: Date.now() - startTime,
-				apiCalls
-			}
-		};
-		postMessage(errorResponse);
+			timestamp: Date.now()
+		}, "main");
 	}
 }
 
 // Handle batch expansion (future feature)
 function handleBatchExpand(id: string) {
-	// Placeholder for batch expansion functionality
-	const batchErrorMessage: DataFetchingResponse = {
-		type: "expandError",
-		id,
-		error: "Batch expansion not yet implemented"
-	};
-	postMessage(batchErrorMessage);
+	// Emit error event via EventBridge for unimplemented feature
+	eventBridge.emit(WorkerEventType.WORKER_ERROR, {
+		workerId: "data-fetching-worker",
+		workerType: "data-fetching" as const,
+		error: `Batch expansion not yet implemented (request: ${id})`,
+		timestamp: Date.now()
+	}, "main");
 }
 
 // Handle search requests (future feature)
 function handleSearch(id: string) {
-	// Placeholder for search functionality
-	const searchErrorMessage: DataFetchingResponse = {
-		type: "expandError",
-		id,
-		error: "Worker-based search not yet implemented"
-	};
-	postMessage(searchErrorMessage);
+	// Emit error event via EventBridge for unimplemented feature
+	eventBridge.emit(WorkerEventType.WORKER_ERROR, {
+		workerId: "data-fetching-worker",
+		workerType: "data-fetching" as const,
+		error: `Worker-based search not yet implemented (request: ${id})`,
+		timestamp: Date.now()
+	}, "main");
 }
 
 // Cancel request
@@ -229,12 +228,13 @@ self.onmessage = async (event: MessageEvent<DataFetchingMessage>) => {
 	const { type, id, payload } = event.data;
 
 	if (!isReady && type !== "cancel") {
-		const notReadyMessage: DataFetchingResponse = {
-			type: "expandError",
-			id,
-			error: "Worker not ready"
-		};
-		postMessage(notReadyMessage);
+		// Emit error event via EventBridge for worker not ready
+		eventBridge.emit(WorkerEventType.WORKER_ERROR, {
+			workerId: "data-fetching-worker",
+			workerType: "data-fetching" as const,
+			error: `Worker not ready (request: ${id})`,
+			timestamp: Date.now()
+		}, "main");
 		return;
 	}
 
@@ -242,12 +242,13 @@ self.onmessage = async (event: MessageEvent<DataFetchingMessage>) => {
 		switch (type) {
 			case "expandNode": {
 				if (!isExpandNodePayload(payload)) {
-					const validationErrorMessage: DataFetchingResponse = {
-						type: "expandError",
-						id,
-						error: "Invalid payload for expandNode operation"
-					};
-					postMessage(validationErrorMessage);
+					// Emit error event via EventBridge for invalid payload
+					eventBridge.emit(WorkerEventType.WORKER_ERROR, {
+						workerId: "data-fetching-worker",
+						workerType: "data-fetching" as const,
+						error: `Invalid payload for expandNode operation (request: ${id})`,
+						timestamp: Date.now()
+					}, "main");
 					return;
 				}
 				await handleExpandNode(id, payload);
@@ -267,22 +268,24 @@ self.onmessage = async (event: MessageEvent<DataFetchingMessage>) => {
 				break;
 
 			default: {
-				const unknownTypeMessage: DataFetchingResponse = {
-					type: "expandError",
-					id,
-					error: "Unknown message type: " + String(type)
-				};
-				postMessage(unknownTypeMessage);
+				// Emit error event via EventBridge for unknown message type
+				eventBridge.emit(WorkerEventType.WORKER_ERROR, {
+					workerId: "data-fetching-worker",
+					workerType: "data-fetching" as const,
+					error: `Unknown message type: ${String(type)} (request: ${id})`,
+					timestamp: Date.now()
+				}, "main");
 				break;
 			}
 		}
 	} catch (error) {
-		const processingErrorMessage: DataFetchingResponse = {
-			type: "expandError",
-			id,
-			error: error instanceof Error ? error.message : "Worker processing error"
-		};
-		postMessage(processingErrorMessage);
+		// Emit error event via EventBridge for processing error
+		eventBridge.emit(WorkerEventType.WORKER_ERROR, {
+			workerId: "data-fetching-worker",
+			workerType: "data-fetching" as const,
+			error: error instanceof Error ? error.message : "Worker processing error",
+			timestamp: Date.now()
+		}, "main");
 	}
 };
 
@@ -290,11 +293,14 @@ self.onmessage = async (event: MessageEvent<DataFetchingMessage>) => {
 self.onerror = (error) => {
 	const errorMessage = typeof error === "string" ? error :
 		(error instanceof ErrorEvent ? error.message : "Unknown worker error");
-	const workerErrorMessage: DataFetchingResponse = {
-		type: "expandError",
-		error: `Worker error: ${errorMessage}`
-	};
-	postMessage(workerErrorMessage);
+
+	// Emit error event via EventBridge for worker error
+	eventBridge.emit(WorkerEventType.WORKER_ERROR, {
+		workerId: "data-fetching-worker",
+		workerType: "data-fetching" as const,
+		error: `Worker error: ${errorMessage}`,
+		timestamp: Date.now()
+	}, "main");
 };
 
 // Initialize the worker
