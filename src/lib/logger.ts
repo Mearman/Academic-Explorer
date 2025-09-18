@@ -155,7 +155,7 @@ export const logCacheMiss = (key: string) => {
 };
 
 export const logGraphOperation = (operation: string, nodeCount?: number, edgeCount?: number, duration?: number) => {
-	logger.info("graph", `Graph operation: ${operation}`, {
+	logger.debug("graph", `Graph operation: ${operation}`, {
 		operation,
 		nodeCount,
 		edgeCount,
@@ -164,7 +164,7 @@ export const logGraphOperation = (operation: string, nodeCount?: number, edgeCou
 };
 
 export const logRouteChange = (from: string, to: string, params?: Record<string, unknown>) => {
-	logger.info("routing", `Route change: ${from} → ${to}`, { from, to, params });
+	logger.debug("routing", `Route change: ${from} → ${to}`, { from, to, params });
 };
 
 export const logUIInteraction = (component: string, action: string, data?: unknown) => {
@@ -208,7 +208,7 @@ export const useLogger = (componentName: string) => {
 
 	return {
 		debug: (message: string, data?: unknown) => { logger.debug("ui", message, data, componentName); },
-		info: (message: string, data?: unknown) => { logger.info("ui", message, data, componentName); },
+		info: (message: string, data?: unknown) => { logger.debug("ui", message, data, componentName); },
 		warn: (message: string, data?: unknown) => { logger.warn("ui", message, data, componentName); },
 		error: (message: string, data?: unknown) => { logger.error("ui", message, data, componentName); },
 	};
@@ -238,5 +238,5 @@ export const setupGlobalErrorHandling = () => {
 	});
 
 	// Handle React error boundaries (if you set up the logger in an error boundary)
-	logger.info("general", "Global error handling initialized", {}, "setupGlobalErrorHandling");
+	logger.debug("general", "Global error handling initialized", {}, "setupGlobalErrorHandling");
 };
