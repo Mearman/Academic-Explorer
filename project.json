@@ -157,8 +157,7 @@
         "command": "pa11y-ci",
         "cwd": "{projectRoot}"
       },
-      "outputs": ["pa11y-results.json"],
-      "cache": true
+      "cache": false
     },
     "a11y:lighthouse": {
       "executor": "nx:run-commands",
@@ -167,8 +166,7 @@
         "command": "lhci autorun",
         "cwd": "{projectRoot}"
       },
-      "outputs": [".lighthouseci/**/*"],
-      "cache": true
+      "cache": false
     },
     "a11y:dev": {
       "executor": "nx:run-commands",
@@ -176,7 +174,6 @@
         "command": "pa11y-ci --config .pa11yci-dev.json",
         "cwd": "{projectRoot}"
       },
-      "outputs": ["pa11y-results.json"],
       "cache": false
     },
     "a11y:ci": {
