@@ -35,6 +35,16 @@ vi.mock("@/lib/logger", () => ({
 	},
 }));
 
+// Mock EventBridge
+vi.mock("@/lib/graph/events/event-bridge", () => ({
+	eventBridge: {
+		registerWorker: vi.fn(),
+		registerMessageHandler: vi.fn(),
+		unregisterMessageHandler: vi.fn(),
+		sendMessage: vi.fn(),
+	},
+}));
+
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { renderHook, act, cleanup } from "@testing-library/react";
 import { useAnimatedForceSimulation } from "./use-animated-force-simulation";
