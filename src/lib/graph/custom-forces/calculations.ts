@@ -9,8 +9,10 @@ import type {
   ForceCalculationFunction,
   RadialForceConfig,
   PropertyForceConfig,
+  PropertyBothForceConfig,
   ClusterForceConfig,
   RepulsionForceConfig,
+  AttractionForceConfig,
   OrbitForceConfig,
 } from "./types";
 
@@ -126,6 +128,10 @@ export const calculateRadialForce: ForceCalculationFunction = (
       targetRadius = innerRadius + (radius - innerRadius) * ratio;
     }
 
+    // Get current position for calculations
+    const nodeX = typeof node.x === "number" ? node.x : 0;
+    const nodeY = typeof node.y === "number" ? node.y : 0;
+
     let targetAngle: number;
 
     if (evenDistribution) {
@@ -133,8 +139,6 @@ export const calculateRadialForce: ForceCalculationFunction = (
       targetAngle = startAngle + (index / nodes.length) * 2 * Math.PI;
     } else {
       // Use current position to determine angle
-      const nodeX = typeof node.x === "number" ? node.x : 0;
-      const nodeY = typeof node.y === "number" ? node.y : 0;
       const currentX = nodeX - centerX;
       const currentY = nodeY - centerY;
       targetAngle = Math.atan2(currentY, currentX);
@@ -513,8 +517,10 @@ export const calculateOrbitForce: ForceCalculationFunction = (
 
     if (!nearestCenter) return;
 
-    const finalCenterX = typeof nearestCenter.x === "number" ? nearestCenter.x : 0;
-    const finalCenterY = typeof nearestCenter.y === "number" ? nearestCenter.y : 0;
+    // TypeScript assertion after null check
+    const center = nearestCenter as EnhancedSimulationNode;
+    const finalCenterX = typeof center.x === "number" ? center.x : 0;
+    const finalCenterY = typeof center.y === "number" ? center.y : 0;
     const finalOrbiterX = typeof orbiter.x === "number" ? orbiter.x : 0;
     const finalOrbiterY = typeof orbiter.y === "number" ? orbiter.y : 0;
 
