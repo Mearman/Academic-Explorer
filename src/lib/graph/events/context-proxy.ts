@@ -340,11 +340,10 @@ export class CrossContextEventProxy<TEventType extends string, TPayload> extends
       const result = schema.safeParse(payload);
       if (result.success) {
         try {
-          // After successful validation, we know the payload is the correct type
-          // We need to work around TypeScript's limitations here since the generic system
-          // can't understand that schema validation ensures type safety
-          const validatedPayload: TPayload = result.data;
-          return handler(validatedPayload);
+          // After successful validation, we can safely call the handler
+          // The contract is that schemas validate the correct payload type
+          const typedHandler = handler;
+          return typedHandler(result.data);
         } catch (error) {
           logger.warn("general", "Handler execution failed", {
             eventType,
