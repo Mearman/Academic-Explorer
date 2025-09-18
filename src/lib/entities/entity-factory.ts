@@ -31,9 +31,22 @@ export class EntityFactory {
 	/**
    * Register entity classes
    */
+	/**
+	 * Type guard to validate entity class constructor
+	 */
+	private static isValidEntityConstructor(
+		constructor: unknown
+	): constructor is new (client: RateLimitedOpenAlexClient, entityData?: unknown) => AbstractEntity<OpenAlexEntity> {
+		return typeof constructor === "function";
+	}
+
 	static {
-		EntityFactory.entities.set("works", WorkEntity as new (client: RateLimitedOpenAlexClient, entityData?: unknown) => AbstractEntity<OpenAlexEntity>);
-		EntityFactory.entities.set("authors", AuthorEntity as new (client: RateLimitedOpenAlexClient, entityData?: unknown) => AbstractEntity<OpenAlexEntity>);
+		if (EntityFactory.isValidEntityConstructor(WorkEntity)) {
+			EntityFactory.entities.set("works", WorkEntity);
+		}
+		if (EntityFactory.isValidEntityConstructor(AuthorEntity)) {
+			EntityFactory.entities.set("authors", AuthorEntity);
+		}
 		// EntityFactory.entities.set('sources', SourceEntity);
 		// EntityFactory.entities.set('institutions', InstitutionEntityClass);
 	}
@@ -41,27 +54,29 @@ export class EntityFactory {
 	/**
    * Create an entity instance based on type
    */
-	static create<T extends OpenAlexEntity>(
+	static create(
 		entityType: EntityType,
 		client: RateLimitedOpenAlexClient,
-		entityData?: T
-	): AbstractEntity<T> {
+		entityData?: OpenAlexEntity
+	): AbstractEntity<OpenAlexEntity> {
 		const EntityClass = this.entities.get(entityType);
 
 		if (!EntityClass) {
 			throw new Error(`No entity class registered for type: ${entityType}`);
 		}
 
-		return new EntityClass(client, entityData) as AbstractEntity<T>;
+		// Create and return the instance
+		const instance = new EntityClass(client, entityData);
+		return instance;
 	}
 
 	/**
    * Create entity from OpenAlex data with automatic type detection
    */
-	static createFromData<T extends OpenAlexEntity>(
-		entityData: T,
+	static createFromData(
+		entityData: OpenAlexEntity,
 		client: RateLimitedOpenAlexClient
-	): AbstractEntity<T> {
+	): AbstractEntity<OpenAlexEntity> {
 		const entityType = detectEntityType(entityData);
 		return this.create(entityType, client, entityData);
 	}
@@ -87,6 +102,9 @@ export class EntityFactory {
 		entityType: EntityType,
 		entityClass: new (client: RateLimitedOpenAlexClient, entityData?: T) => AbstractEntity<T>
 	): void {
-		this.entities.set(entityType, entityClass as new (client: RateLimitedOpenAlexClient, entityData?: unknown) => AbstractEntity<OpenAlexEntity>);
+		if (!EntityFactory.isValidEntityConstructor(entityClass)) {
+			throw new Error(`Invalid entity class provided for registration: ${entityType}`);
+		}
+		this.entities.set(entityType, entityClass);
 	}
 }

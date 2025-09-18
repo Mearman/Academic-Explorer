@@ -100,7 +100,7 @@ export class AuthorEntity extends AbstractEntity<Author> {
 								url: `https://ror.org/${affiliation.institution.ror}`,
 							}
 						] : [],
-						entityData: affiliation.institution as unknown as Record<string, unknown>
+						entityData: { ...affiliation.institution }
 					};
 					nodes.push(institutionNode);
 
@@ -221,7 +221,7 @@ export class AuthorEntity extends AbstractEntity<Author> {
 						value: work.doi,
 						url: `https://doi.org/${work.doi}`,
 					}] : [],
-					entityData: work as unknown as Record<string, unknown>
+					entityData: { ...work }
 				};
 				nodes.push(workNode);
 				workNodeIds.push(work.id);

@@ -164,8 +164,19 @@ export abstract class AbstractEntity<TEntity extends OpenAlexEntity> {
    * Uses the abstract methods for entity-specific data extraction
    * Works with both full and dehydrated entities
    */
+  /**
+   * Type guard to check if an entity has the required properties to be converted to entityData
+   */
+  private isValidEntityData(entity: TEntity): entity is TEntity & Record<string, unknown> {
+    return typeof entity === "object" && entity !== null;
+  }
+
   public transformToGraphNode(entity: TEntity, position?: { x: number; y: number }): GraphNode {
   	const externalIds = this.extractExternalIds(entity);
+
+  	if (!this.isValidEntityData(entity)) {
+  		throw new Error("Invalid entity data for transformToGraphNode: entity is not a valid object");
+  	}
 
   	return {
   		id: entity.id,
@@ -174,7 +185,7 @@ export abstract class AbstractEntity<TEntity extends OpenAlexEntity> {
   		entityId: entity.id,
   		position: position || this.generateRandomPosition(),
   		externalIds,
-  		entityData: entity as unknown as Record<string, unknown>
+  		entityData: entity
   	};
   }
 
@@ -314,31 +325,55 @@ export abstract class AbstractEntity<TEntity extends OpenAlexEntity> {
   }
 
   /**
+   * Type guard to validate that an entity matches the expected TEntity type
+   */
+  private isValidSpecificEntity(entity: OpenAlexEntity): entity is TEntity {
+    return this.validateEntityType(entity);
+  }
+
+  /**
    * Fetch entity with specific fields using the appropriate entity-specific API method
    * This method ensures proper field selection is applied per entity type
    */
   private async fetchEntityWithSpecificFields(entityId: string, params: { select: string[] }): Promise<TEntity> {
+  	let entity: OpenAlexEntity;
+
   	switch (this.entityType) {
   		case "works":
-  			return await this.client.getWork(entityId, params) as TEntity;
+  			entity = await this.client.getWork(entityId, params);
+  			break;
   		case "authors":
-  			return await this.client.getAuthor(entityId, params) as TEntity;
+  			entity = await this.client.getAuthor(entityId, params);
+  			break;
   		case "sources":
-  			return await this.client.getSource(entityId, params) as TEntity;
+  			entity = await this.client.getSource(entityId, params);
+  			break;
   		case "institutions":
-  			return await this.client.getInstitution(entityId, params) as TEntity;
+  			entity = await this.client.getInstitution(entityId, params);
+  			break;
   		case "topics":
-  			return await this.client.getTopic(entityId, params) as TEntity;
+  			entity = await this.client.getTopic(entityId, params);
+  			break;
   		case "publishers":
-  			return await this.client.getPublisher(entityId, params) as TEntity;
+  			entity = await this.client.getPublisher(entityId, params);
+  			break;
   		case "funders":
-  			return await this.client.getFunder(entityId, params) as TEntity;
+  			entity = await this.client.getFunder(entityId, params);
+  			break;
   		case "keywords":
-  			return await this.client.getKeyword(entityId, params) as TEntity;
+  			entity = await this.client.getKeyword(entityId, params);
+  			break;
   		default:
   			// Fallback to generic method without field selection
-  			return await this.client.getEntity(entityId) as TEntity;
+  			entity = await this.client.getEntity(entityId);
+  			break;
   	}
+
+  	if (!this.isValidSpecificEntity(entity)) {
+  		throw new Error(`Invalid entity type returned from API for ${this.entityType}: ${entityId}`);
+  	}
+
+  	return entity;
   }
 
   /**
@@ -490,7 +525,11 @@ export abstract class AbstractEntity<TEntity extends OpenAlexEntity> {
   		// Parallel processing (use with caution due to rate limits)
   		const promises = entityIds.map(entityId => this.fetchRelatedEntity(entityId, preferMetadata));
   		const entities = await Promise.all(promises);
-  		results.push(...entities.filter(Boolean) as OpenAlexEntity[]);
+  		// Filter out null/undefined values and validate entity types
+		const validEntities = entities.filter((entity): entity is OpenAlexEntity => {
+			return entity !== null && entity !== undefined;
+		});
+		results.push(...validEntities);
   	}
 
   	return results;

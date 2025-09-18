@@ -5,6 +5,7 @@
 
 import { RelationType } from "@/lib/graph/types";
 import type { EntityType } from "@/lib/openalex/types";
+import type { ExpansionTarget } from "@/lib/graph/types";
 
 /**
  * Type guard to check if a string is a valid RelationType
@@ -68,4 +69,20 @@ export function assertEntityType(value: string): asserts value is EntityType {
 	if (!isEntityType(value)) {
 		throw new Error(`Invalid EntityType: ${value}`);
 	}
+}
+
+/**
+ * Type guard to check if a string is a valid ExpansionTarget (EntityType or RelationType)
+ */
+export function isExpansionTarget(value: string): value is ExpansionTarget {
+	return isEntityType(value) || isRelationType(value);
+}
+
+/**
+ * Safely convert string to ExpansionTarget with validation
+ * @param value - String to convert
+ * @returns ExpansionTarget if valid, null if invalid
+ */
+export function safeParseExpansionTarget(value: string): ExpansionTarget | null {
+	return isExpansionTarget(value) ? value : null;
 }
