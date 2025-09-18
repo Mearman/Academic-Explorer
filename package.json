@@ -48,7 +48,10 @@
     "a11y:ci": "nx a11y:ci",
     "test:a11y": "nx test:a11y",
     "test:a11y:e2e": "nx test:a11y:e2e",
-    "verify:a11y": "nx verify:a11y"
+    "verify:a11y": "nx verify:a11y",
+    "licenses:generate": "license-checker --production --onlyAllow 'MIT;Apache-2.0;BSD-3-Clause;ISC;BSD-2-Clause;0BSD;CC0-1.0;Unlicense;WTFPL' --excludePrivatePackages --customPath .license-checker-config.json --markdown --out ACKNOWLEDGEMENTS.md",
+    "licenses:check": "license-checker --production --failOn 'GPL;LGPL;AGPL;SSPL;EUPL;OSL;EPL;MPL;CC-BY-SA;CC-BY-NC' --excludePrivatePackages --summary",
+    "licenses:summary": "license-checker --production --excludePrivatePackages --summary"
   },
   "dependencies": {
     "@mantine/core": "^8.3.1",
@@ -113,6 +116,7 @@
     "jiti": "^2.5.1",
     "jsdom": "^27.0.0",
     "knip": "^5.63.1",
+    "license-checker": "^25.0.1",
     "lint-staged": "^16.1.6",
     "nx": "21.5.2",
     "pa11y-ci": "^4.0.1",
