@@ -80,6 +80,7 @@ function HomePage() {
 							onChange={(e) => { setSearchQuery(e.target.value); }}
 							leftSection={<IconSearch size={20} />}
 							disabled={isLoading}
+							aria-label="Search academic literature"
 						/>
 						<Button
 							type="submit"

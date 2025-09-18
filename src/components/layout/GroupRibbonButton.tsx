@@ -258,6 +258,7 @@ export const GroupRibbonButton: React.FC<GroupRibbonButtonProps> = ({
 					size="lg"
 					style={isActive ? { ...ribbonButtonStyle, ...activeButtonStyle } : ribbonButtonStyle}
 					onClick={handleClick}
+					aria-label={group.description}
 					draggable={true}
 					onDragStart={handleDragStart}
 					onDragEnd={handleDragEnd}

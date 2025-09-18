@@ -436,6 +436,7 @@ export const LeftRibbon: React.FC = () => {
 						borderColor: colors.error,
 					}}
 					onClick={handleClearGraph}
+					aria-label="Clear entire graph"
 					onMouseEnter={(e) => {
 						Object.assign(e.currentTarget.style, {
 							backgroundColor: colors.error,
