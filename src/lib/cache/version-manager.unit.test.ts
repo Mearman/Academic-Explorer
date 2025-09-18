@@ -283,7 +283,7 @@ describe("Version Manager", () => {
 
 			logVersionComparison(null, "1.0.0", false);
 
-			expect(loggerModule.logger.info).toHaveBeenCalledWith(
+			expect(loggerModule.logger.debug).toHaveBeenCalledWith(
 				"cache",
 				"Version check passed - cache preserved",
 				expect.objectContaining({

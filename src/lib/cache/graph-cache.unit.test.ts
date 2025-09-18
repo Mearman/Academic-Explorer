@@ -119,7 +119,7 @@ describe("Graph Cache", () => {
 			const entities = getCachedOpenAlexEntities(queryClient);
 
 			expect(entities).toEqual([]);
-			expect(logger.info).toHaveBeenCalledWith(
+			expect(logger.debug).toHaveBeenCalledWith(
 				"cache",
 				"Retrieved cached OpenAlex entities",
 				{ count: 0 },
@@ -137,7 +137,7 @@ describe("Graph Cache", () => {
 			expect(entities).toHaveLength(2);
 			expect(entities).toContainEqual(sampleWorkEntity);
 			expect(entities).toContainEqual(sampleAuthorEntity);
-			expect(logger.info).toHaveBeenCalledWith(
+			expect(logger.debug).toHaveBeenCalledWith(
 				"cache",
 				"Retrieved cached OpenAlex entities",
 				{ count: 2 },
@@ -285,7 +285,7 @@ describe("Graph Cache", () => {
 
 			const cachedNodes = queryClient.getQueryData(graphQueryKeys.nodes());
 			expect(cachedNodes).toEqual(nodes);
-			expect(logger.info).toHaveBeenCalledWith(
+			expect(logger.debug).toHaveBeenCalledWith(
 				"cache",
 				"Stored graph nodes in TanStack Query cache",
 				{ count: 1 },
@@ -298,7 +298,7 @@ describe("Graph Cache", () => {
 
 			const cachedNodes = queryClient.getQueryData(graphQueryKeys.nodes());
 			expect(cachedNodes).toEqual([]);
-			expect(logger.info).toHaveBeenCalledWith(
+			expect(logger.debug).toHaveBeenCalledWith(
 				"cache",
 				"Stored graph nodes in TanStack Query cache",
 				{ count: 0 },
@@ -315,7 +315,7 @@ describe("Graph Cache", () => {
 
 			const cachedEdges = queryClient.getQueryData(graphQueryKeys.edges());
 			expect(cachedEdges).toEqual(edges);
-			expect(logger.info).toHaveBeenCalledWith(
+			expect(logger.debug).toHaveBeenCalledWith(
 				"cache",
 				"Stored graph edges in TanStack Query cache",
 				{ count: 1 },
@@ -328,7 +328,7 @@ describe("Graph Cache", () => {
 
 			const cachedEdges = queryClient.getQueryData(graphQueryKeys.edges());
 			expect(cachedEdges).toEqual([]);
-			expect(logger.info).toHaveBeenCalledWith(
+			expect(logger.debug).toHaveBeenCalledWith(
 				"cache",
 				"Stored graph edges in TanStack Query cache",
 				{ count: 0 },
@@ -373,7 +373,7 @@ describe("Graph Cache", () => {
 
 			const expanded = queryClient.getQueryData(graphQueryKeys.expandedNode("W123"));
 			expect(expanded).toBe(true);
-			expect(logger.info).toHaveBeenCalledWith(
+			expect(logger.debug).toHaveBeenCalledWith(
 				"cache",
 				"Updated node expansion status",
 				{ nodeId: "W123", expanded: true },
@@ -386,7 +386,7 @@ describe("Graph Cache", () => {
 
 			const expanded = queryClient.getQueryData(graphQueryKeys.expandedNode("W123"));
 			expect(expanded).toBe(false);
-			expect(logger.info).toHaveBeenCalledWith(
+			expect(logger.debug).toHaveBeenCalledWith(
 				"cache",
 				"Updated node expansion status",
 				{ nodeId: "W123", expanded: false },
@@ -441,7 +441,7 @@ describe("Graph Cache", () => {
 			// Non-graph data should remain
 			expect(queryClient.getQueryData(["other", "data"])).toBe("should remain");
 
-			expect(logger.info).toHaveBeenCalledWith(
+			expect(logger.debug).toHaveBeenCalledWith(
 				"cache",
 				"Cleared all graph cache data",
 				{},
@@ -452,7 +452,7 @@ describe("Graph Cache", () => {
 		it("should handle empty cache gracefully", () => {
 			clearGraphCache(queryClient);
 
-			expect(logger.info).toHaveBeenCalledWith(
+			expect(logger.debug).toHaveBeenCalledWith(
 				"cache",
 				"Cleared all graph cache data",
 				{},

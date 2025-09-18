@@ -128,7 +128,7 @@ export function logVersionComparison(
 			newCommit: getCurrentBuildInfo()?.commitHash.slice(0, 7)
 		});
 	} else {
-		logger.info("cache", "Version check passed - cache preserved", {
+		logger.debug("cache", "Version check passed - cache preserved", {
 			version: currentVersion,
 			buildTime: getCurrentBuildInfo()?.buildTimestamp
 		});

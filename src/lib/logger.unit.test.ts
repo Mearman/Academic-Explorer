@@ -36,7 +36,7 @@ describe("Logger Module", () => {
 
 	describe("ApplicationLogger basic functionality", () => {
 		it("should create log entries with correct structure", () => {
-			logger.info("general", "Test message", { test: true });
+			logger.debug("general", "Test message", { test: true });
 
 			const logs = logger.getLogs();
 			expect(logs).toHaveLength(1);
@@ -63,9 +63,9 @@ describe("Logger Module", () => {
 		});
 
 		it("should add logs in reverse chronological order (newest first)", () => {
-			logger.info("general", "First message");
-			logger.info("general", "Second message");
-			logger.info("general", "Third message");
+			logger.debug("general", "First message");
+			logger.debug("general", "Second message");
+			logger.debug("general", "Third message");
 
 			const logs = logger.getLogs();
 			expect(logs[0].message).toBe("Third message");
@@ -78,7 +78,7 @@ describe("Logger Module", () => {
 
 			// Add 5 logs
 			for (let i = 1; i <= 5; i++) {
-				logger.info("general", `Message ${i}`);
+				logger.debug("general", `Message ${i}`);
 			}
 
 			const logs = logger.getLogs();
@@ -167,7 +167,7 @@ describe("Logger Module", () => {
 			const mockListener = vi.fn();
 			const unsubscribe = logger.subscribe(mockListener);
 
-			logger.info("general", "Test message");
+			logger.debug("general", "Test message");
 
 			expect(mockListener).toHaveBeenCalledTimes(1);
 			expect(mockListener).toHaveBeenCalledWith(
@@ -183,9 +183,9 @@ describe("Logger Module", () => {
 			const mockListener = vi.fn();
 			const unsubscribe = logger.subscribe(mockListener);
 
-			logger.info("general", "Before unsubscribe");
+			logger.debug("general", "Before unsubscribe");
 			unsubscribe();
-			logger.info("general", "After unsubscribe");
+			logger.debug("general", "After unsubscribe");
 
 			expect(mockListener).toHaveBeenCalledTimes(1);
 		});
@@ -197,7 +197,7 @@ describe("Logger Module", () => {
 			logger.subscribe(listener1);
 			logger.subscribe(listener2);
 
-			logger.info("general", "Test message");
+			logger.debug("general", "Test message");
 
 			expect(listener1).toHaveBeenCalledTimes(1);
 			expect(listener2).toHaveBeenCalledTimes(1);
@@ -235,7 +235,7 @@ describe("Logger Module", () => {
 			const mockListener = vi.fn();
 			logger.subscribe(mockListener);
 
-			logger.info("general", "Test message");
+			logger.debug("general", "Test message");
 			logger.clear();
 
 			const logs = logger.getLogs();
@@ -244,7 +244,7 @@ describe("Logger Module", () => {
 		});
 
 		it("should return a copy of logs array", () => {
-			logger.info("general", "Test message");
+			logger.debug("general", "Test message");
 
 			const logs1 = logger.getLogs();
 			const logs2 = logger.getLogs();
@@ -285,7 +285,7 @@ describe("Logger Module", () => {
 		});
 
 		it("should export logs as JSON file", () => {
-			logger.info("general", "Test log for export");
+			logger.debug("general", "Test log for export");
 
 			const mockAnchor = {
 				href: "",

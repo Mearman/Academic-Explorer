@@ -120,7 +120,7 @@ export class XYFlowProvider implements GraphProvider {
 
 		if (hasChanges) {
 			this.reactFlowInstance.setEdges(updatedEdges);
-			logger.info("graph", "DynamicFloatingEdge: Recalculated handles after layout change (legacy fallback)");
+			logger.debug("graph", "DynamicFloatingEdge: Recalculated handles after layout change (legacy fallback)");
 		}
 	}
 
@@ -162,7 +162,7 @@ export class XYFlowProvider implements GraphProvider {
 		}
 
 		if (!sourceNode || !targetNode) {
-			logger.info("graph", "DynamicFloatingEdge: Missing nodes for edge calculation (legacy fallback)", { sourceId, targetId });
+			logger.debug("graph", "DynamicFloatingEdge: Missing nodes for edge calculation (legacy fallback)", { sourceId, targetId });
 			return { sourceHandle: "right-source", targetHandle: "left" };
 		}
 
@@ -440,7 +440,7 @@ export class XYFlowProvider implements GraphProvider {
 	applyLayout(layout: GraphLayout): void {
 		// Layout is now handled by the unified useLayout hook in the React component
 		// This method is kept for interface compatibility but delegates to the hook
-		logger.info("graph", "Layout application delegated to useLayout hook", { layoutType: layout.type }, "XYFlowProvider");
+		logger.debug("graph", "Layout application delegated to useLayout hook", { layoutType: layout.type }, "XYFlowProvider");
 	}
 
 	fitView(): void {

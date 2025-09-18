@@ -23,7 +23,7 @@ export class GraphUtilitiesService {
    */
 	trimLeafNodes(nodes: GraphNode[], edges: GraphEdge[]): GraphUtilityResult {
 		const startTime = performance.now();
-		this.logger.info("graph", "Starting leaf node trimming", {
+		this.logger.debug("graph", "Starting leaf node trimming", {
 			nodeCount: nodes.length,
 			edgeCount: edges.length
 		});
@@ -50,7 +50,7 @@ export class GraphUtilitiesService {
 		const removedCount = nodes.length - filteredNodes.length;
 		const duration = performance.now() - startTime;
 
-		this.logger.info("graph", "Leaf node trimming completed", {
+		this.logger.debug("graph", "Leaf node trimming completed", {
 			originalNodes: nodes.length,
 			filteredNodes: filteredNodes.length,
 			removedNodes: removedCount,
@@ -73,7 +73,7 @@ export class GraphUtilitiesService {
    */
 	trimRootNodes(nodes: GraphNode[], edges: GraphEdge[]): GraphUtilityResult {
 		const startTime = performance.now();
-		this.logger.info("graph", "Starting root node trimming", {
+		this.logger.debug("graph", "Starting root node trimming", {
 			nodeCount: nodes.length,
 			edgeCount: edges.length
 		});
@@ -100,7 +100,7 @@ export class GraphUtilitiesService {
 		const removedCount = nodes.length - filteredNodes.length;
 		const duration = performance.now() - startTime;
 
-		this.logger.info("graph", "Root node trimming completed", {
+		this.logger.debug("graph", "Root node trimming completed", {
 			originalNodes: nodes.length,
 			filteredNodes: filteredNodes.length,
 			removedNodes: removedCount,
@@ -123,7 +123,7 @@ export class GraphUtilitiesService {
    */
 	trimDegree1Nodes(nodes: GraphNode[], edges: GraphEdge[]): GraphUtilityResult {
 		const startTime = performance.now();
-		this.logger.info("graph", "Starting degree 1 node trimming", {
+		this.logger.debug("graph", "Starting degree 1 node trimming", {
 			nodeCount: nodes.length,
 			edgeCount: edges.length
 		});
@@ -158,7 +158,7 @@ export class GraphUtilitiesService {
 		const removedCount = nodes.length - filteredNodes.length;
 		const duration = performance.now() - startTime;
 
-		this.logger.info("graph", "Degree 1 node trimming completed", {
+		this.logger.debug("graph", "Degree 1 node trimming completed", {
 			originalNodes: nodes.length,
 			filteredNodes: filteredNodes.length,
 			removedNodes: removedCount,
@@ -181,7 +181,7 @@ export class GraphUtilitiesService {
    */
 	removeIsolatedNodes(nodes: GraphNode[], edges: GraphEdge[]): GraphUtilityResult {
 		const startTime = performance.now();
-		this.logger.info("graph", "Starting isolated node removal", {
+		this.logger.debug("graph", "Starting isolated node removal", {
 			nodeCount: nodes.length,
 			edgeCount: edges.length
 		});
@@ -198,7 +198,7 @@ export class GraphUtilitiesService {
 		const removedCount = nodes.length - filteredNodes.length;
 		const duration = performance.now() - startTime;
 
-		this.logger.info("graph", "Isolated node removal completed", {
+		this.logger.debug("graph", "Isolated node removal completed", {
 			originalNodes: nodes.length,
 			filteredNodes: filteredNodes.length,
 			removedNodes: removedCount,
@@ -219,7 +219,7 @@ export class GraphUtilitiesService {
    */
 	filterByPublicationYear(nodes: GraphNode[], edges: GraphEdge[], minYear: number, maxYear: number): GraphUtilityResult {
 		const startTime = performance.now();
-		this.logger.info("graph", "Starting publication year filtering", {
+		this.logger.debug("graph", "Starting publication year filtering", {
 			nodeCount: nodes.length,
 			minYear,
 			maxYear
@@ -248,7 +248,7 @@ export class GraphUtilitiesService {
 		const removedCount = nodes.length - filteredNodes.length;
 		const duration = performance.now() - startTime;
 
-		this.logger.info("graph", "Publication year filtering completed", {
+		this.logger.debug("graph", "Publication year filtering completed", {
 			originalNodes: nodes.length,
 			filteredNodes: filteredNodes.length,
 			removedNodes: removedCount,
@@ -271,7 +271,7 @@ export class GraphUtilitiesService {
    */
 	extractEgoNetwork(nodes: GraphNode[], edges: GraphEdge[], centerNodeId: string, hops: number = 2): GraphUtilityResult {
 		const startTime = performance.now();
-		this.logger.info("graph", "Starting ego network extraction", {
+		this.logger.debug("graph", "Starting ego network extraction", {
 			centerNodeId,
 			hops,
 			nodeCount: nodes.length
@@ -313,7 +313,7 @@ export class GraphUtilitiesService {
 		const removedCount = nodes.length - egoNodes.length;
 		const duration = performance.now() - startTime;
 
-		this.logger.info("graph", "Ego network extraction completed", {
+		this.logger.debug("graph", "Ego network extraction completed", {
 			originalNodes: nodes.length,
 			egoNodes: egoNodes.length,
 			removedNodes: removedCount,
@@ -335,7 +335,7 @@ export class GraphUtilitiesService {
    */
 	findConnectedComponents(nodes: GraphNode[], edges: GraphEdge[]): GraphNode[][] {
 		const startTime = performance.now();
-		this.logger.info("graph", "Finding connected components", {
+		this.logger.debug("graph", "Finding connected components", {
 			nodeCount: nodes.length,
 			edgeCount: edges.length
 		});
@@ -375,7 +375,7 @@ export class GraphUtilitiesService {
 		});
 
 		const duration = performance.now() - startTime;
-		this.logger.info("graph", "Connected components analysis completed", {
+		this.logger.debug("graph", "Connected components analysis completed", {
 			totalComponents: components.length,
 			largestComponent: Math.max(...components.map(c => c.length)),
 			smallestComponent: Math.min(...components.map(c => c.length)),
@@ -414,7 +414,7 @@ export class GraphUtilitiesService {
 
 		const removedCount = nodes.length - largestComponent.length;
 
-		this.logger.info("graph", "Largest connected component extracted", {
+		this.logger.debug("graph", "Largest connected component extracted", {
 			originalNodes: nodes.length,
 			componentNodes: largestComponent.length,
 			removedNodes: removedCount,

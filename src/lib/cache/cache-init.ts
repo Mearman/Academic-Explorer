@@ -94,7 +94,7 @@ export async function initializeQueryClient(): Promise<{
   queryClient: QueryClient;
   invalidationResult: InvalidationResult;
 }> {
-	logger.info("cache", "Initializing QueryClient with version-aware persistence");
+	logger.debug("cache", "Initializing QueryClient with version-aware persistence");
 
 	// Create the query client
 	const queryClient = new QueryClient(createQueryClientConfig());
@@ -121,15 +121,15 @@ export async function initializeQueryClient(): Promise<{
 		// If cache was invalidated, we start fresh
 		// Otherwise, restore from existing cache
 		if (invalidationResult.triggered) {
-			logger.info("cache", "Setting up fresh persistence after cache invalidation");
+			logger.debug("cache", "Setting up fresh persistence after cache invalidation");
 		} else {
-			logger.info("cache", "Setting up persistence with existing cache");
+			logger.debug("cache", "Setting up persistence with existing cache");
 		}
 
 		// Set up persistence (this will restore from cache if available and not invalidated)
 		void persistQueryClient(persisterConfig);
 
-		logger.info("cache", "QueryClient initialization completed", {
+		logger.debug("cache", "QueryClient initialization completed", {
 			cacheInvalidated: invalidationResult.triggered,
 			reason: invalidationResult.reason
 		});
