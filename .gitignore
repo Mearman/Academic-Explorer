@@ -32,3 +32,6 @@ coverage
 .nx/workspace-data
 .cursor/rules/nx-rules.mdc
 .github/instructions/nx.instructions.md
+
+# Auto-generated acknowledgements (managed by CI)
+ACKNOWLEDGEMENTS.md
