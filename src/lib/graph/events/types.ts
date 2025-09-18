@@ -4,7 +4,8 @@
  */
 
 import { z } from "zod";
-import type { EntityType, RelationType, GraphNode, GraphEdge } from "@/lib/graph/types";
+import type { EntityType, GraphNode, GraphEdge } from "@/lib/graph/types";
+import { RelationType } from "@/lib/graph/types";
 
 // =============================================================================
 // Event Type Enums
@@ -69,6 +70,24 @@ export enum EdgeEventType {
   EDGE_WEIGHT_CHANGED = "edge:weight-changed",
   EDGE_STYLE_CHANGED = "edge:style-changed",
   EDGE_VISIBILITY_CHANGED = "edge:visibility-changed"
+}
+
+export enum WorkerEventType {
+  // Worker lifecycle
+  WORKER_READY = "worker:ready",
+  WORKER_ERROR = "worker:error",
+  WORKER_TERMINATED = "worker:terminated",
+
+  // Data fetching worker events
+  DATA_FETCH_PROGRESS = "worker:data-fetch-progress",
+  DATA_FETCH_COMPLETE = "worker:data-fetch-complete",
+  DATA_FETCH_ERROR = "worker:data-fetch-error",
+
+  // Force simulation worker events
+  FORCE_SIMULATION_PROGRESS = "worker:force-simulation-progress",
+  FORCE_SIMULATION_COMPLETE = "worker:force-simulation-complete",
+  FORCE_SIMULATION_ERROR = "worker:force-simulation-error",
+  FORCE_SIMULATION_STOPPED = "worker:force-simulation-stopped"
 }
 
 // =============================================================================
@@ -290,6 +309,99 @@ export interface EdgeEventPayloads {
   };
 }
 
+export interface WorkerEventPayloads {
+  [WorkerEventType.WORKER_READY]: {
+    workerId: string;
+    workerType: "data-fetching" | "force-animation";
+    timestamp: number;
+  };
+  [WorkerEventType.WORKER_ERROR]: {
+    workerId: string;
+    workerType: "data-fetching" | "force-animation";
+    error: string;
+    timestamp: number;
+  };
+  [WorkerEventType.WORKER_TERMINATED]: {
+    workerId: string;
+    workerType: "data-fetching" | "force-animation";
+    timestamp: number;
+  };
+  [WorkerEventType.DATA_FETCH_PROGRESS]: {
+    requestId: string;
+    nodeId: string;
+    entityId: string;
+    progress: number; // 0-1
+    currentStep: string;
+    timestamp: number;
+  };
+  [WorkerEventType.DATA_FETCH_COMPLETE]: {
+    requestId: string;
+    nodeId: string;
+    entityId: string;
+    nodes: GraphNode[];
+    edges: GraphEdge[];
+    statistics?: {
+      nodesAdded: number;
+      edgesAdded: number;
+      apiCalls: number;
+      duration: number;
+    };
+    timestamp: number;
+  };
+  [WorkerEventType.DATA_FETCH_ERROR]: {
+    requestId: string;
+    nodeId: string;
+    entityId: string;
+    error: string;
+    timestamp: number;
+  };
+  [WorkerEventType.FORCE_SIMULATION_PROGRESS]: {
+    workerId: string;
+    workerType: "force-animation";
+    messageType?: string; // "tick", "started", "paused", "resumed", "parameters_updated"
+    positions?: Array<{
+      id: string;
+      x: number;
+      y: number;
+    }>;
+    alpha?: number;
+    iteration?: number;
+    progress?: number;
+    fps?: number;
+    nodeCount?: number;
+    linkCount?: number;
+    config?: unknown;
+    wasPaused?: boolean;
+    timestamp: number;
+  };
+  [WorkerEventType.FORCE_SIMULATION_COMPLETE]: {
+    workerId: string;
+    workerType: "force-animation";
+    positions: Array<{
+      id: string;
+      x: number;
+      y: number;
+    }>;
+    totalIterations: number;
+    finalAlpha: number;
+    reason: string;
+    timestamp: number;
+  };
+  [WorkerEventType.FORCE_SIMULATION_ERROR]: {
+    workerId: string;
+    workerType: "force-animation";
+    error: string;
+    filename?: string;
+    lineno?: number;
+    timestamp: number;
+  };
+  [WorkerEventType.FORCE_SIMULATION_STOPPED]: {
+    workerId: string;
+    workerType: "force-animation";
+    timestamp: number;
+  };
+}
+
 // =============================================================================
 // Event Handler Types
 // =============================================================================
@@ -298,6 +410,7 @@ export type GraphEventHandler<T extends GraphEventType> = (payload: GraphEventPa
 export type EntityEventHandler<T extends EntityEventType> = (payload: EntityEventPayloads[T]) => void | Promise<void>;
 export type NodeEventHandler<T extends NodeEventType> = (payload: NodeEventPayloads[T]) => void | Promise<void>;
 export type EdgeEventHandler<T extends EdgeEventType> = (payload: EdgeEventPayloads[T]) => void | Promise<void>;
+export type WorkerEventHandler<T extends WorkerEventType> = (payload: WorkerEventPayloads[T]) => void | Promise<void>;
 
 // =============================================================================
 // Cross-Context Types
@@ -408,18 +521,59 @@ export const BaseEventPayloadSchema = z.object({
   timestamp: z.number()
 });
 
-// EntityType and RelationType schemas for proper validation
-const EntityTypeSchema = z.enum(["works", "authors", "sources", "institutions", "topics", "concepts", "publishers", "funders", "keywords"]);
-const RelationTypeSchema = z.enum([
-  "authored", "affiliated", "published_in", "funded_by", "references",
-  "source_published_by", "institution_child_of", "publisher_child_of",
-  "work_has_topic", "work_has_keyword", "author_researches",
-  "institution_located_in", "funder_located_in", "topic_part_of_field", "related_to"
-]);
+// =============================================================================
+// Zod Schema Generation Utilities
+// =============================================================================
 
-// ExternalIdentifier schema
+/**
+ * Type guard to ensure array has at least one element for Zod enum
+ */
+function isNonEmptyArray<T>(arr: T[]): arr is [T, ...T[]] {
+  return arr.length > 0;
+}
+
+/**
+ * Utility function to create Zod enum from TypeScript enum values
+ * Ensures single source of truth for enum definitions
+ */
+export function createZodEnumFromEnum(enumObject: Record<string, string>) {
+  const values = Object.values(enumObject);
+  if (!isNonEmptyArray(values)) {
+    throw new Error("Enum must have at least one value");
+  }
+  return z.enum(values);
+}
+
+/**
+ * Utility function to create Zod enum from union type values
+ * Ensures single source of truth for union type definitions
+ */
+export function createZodEnumFromUnion<T extends string>(values: readonly T[]) {
+  const valueArray = [...values];
+  if (!isNonEmptyArray(valueArray)) {
+    throw new Error("Union type values must have at least one value");
+  }
+  return z.enum(valueArray);
+}
+
+// EntityType schema - generated from the union type values
+// Note: EntityType is defined as a union type in OpenAlex types, not an enum
+// so we maintain the values in a const array to avoid duplication
+const ENTITY_TYPE_VALUES = ["works", "authors", "sources", "institutions", "topics", "concepts", "publishers", "funders", "keywords"] as const;
+const EntityTypeSchema = createZodEnumFromUnion(ENTITY_TYPE_VALUES);
+
+// RelationType schema - generated from the enum
+const RelationTypeSchema = createZodEnumFromEnum(RelationType);
+
+// WorkerEventType schema - generated from the enum
+const WorkerEventTypeSchema = createZodEnumFromEnum(WorkerEventType);
+
+// ExternalIdentifier types - keep in sync with the interface in types.ts
+const EXTERNAL_IDENTIFIER_TYPES = ["doi", "orcid", "issn_l", "ror", "wikidata"] as const;
+
+// ExternalIdentifier schema - generated from the const array
 const ExternalIdentifierSchema = z.object({
-  type: z.enum(["doi", "orcid", "issn_l", "ror", "wikidata"]),
+  type: createZodEnumFromUnion(EXTERNAL_IDENTIFIER_TYPES),
   value: z.string(),
   url: z.string()
 });
@@ -633,6 +787,90 @@ export const EdgeEventPayloadSchemas = {
   })
 };
 
+// Worker Event Payload Schemas
+export const WorkerEventPayloadSchemas = {
+  [WorkerEventType.WORKER_READY]: BaseEventPayloadSchema.extend({
+    workerId: z.string(),
+    workerType: z.enum(["data-fetching", "force-animation"])
+  }),
+  [WorkerEventType.WORKER_ERROR]: BaseEventPayloadSchema.extend({
+    workerId: z.string(),
+    workerType: z.enum(["data-fetching", "force-animation"]),
+    error: z.string()
+  }),
+  [WorkerEventType.WORKER_TERMINATED]: BaseEventPayloadSchema.extend({
+    workerId: z.string(),
+    workerType: z.enum(["data-fetching", "force-animation"])
+  }),
+  [WorkerEventType.DATA_FETCH_PROGRESS]: BaseEventPayloadSchema.extend({
+    requestId: z.string(),
+    nodeId: z.string(),
+    entityId: z.string(),
+    progress: z.number().min(0).max(1),
+    currentStep: z.string()
+  }),
+  [WorkerEventType.DATA_FETCH_COMPLETE]: BaseEventPayloadSchema.extend({
+    requestId: z.string(),
+    nodeId: z.string(),
+    entityId: z.string(),
+    nodes: z.array(GraphNodeSchema),
+    edges: z.array(GraphEdgeSchema),
+    statistics: z.object({
+      nodesAdded: z.number(),
+      edgesAdded: z.number(),
+      apiCalls: z.number(),
+      duration: z.number()
+    }).optional()
+  }),
+  [WorkerEventType.DATA_FETCH_ERROR]: BaseEventPayloadSchema.extend({
+    requestId: z.string(),
+    nodeId: z.string(),
+    entityId: z.string(),
+    error: z.string()
+  }),
+  [WorkerEventType.FORCE_SIMULATION_PROGRESS]: BaseEventPayloadSchema.extend({
+    workerId: z.string(),
+    workerType: z.literal("force-animation"),
+    messageType: z.string().optional(),
+    positions: z.array(z.object({
+      id: z.string(),
+      x: z.number(),
+      y: z.number()
+    })).optional(),
+    alpha: z.number().optional(),
+    iteration: z.number().optional(),
+    progress: z.number().optional(),
+    fps: z.number().optional(),
+    nodeCount: z.number().optional(),
+    linkCount: z.number().optional(),
+    config: z.unknown().optional(),
+    wasPaused: z.boolean().optional()
+  }),
+  [WorkerEventType.FORCE_SIMULATION_COMPLETE]: BaseEventPayloadSchema.extend({
+    workerId: z.string(),
+    workerType: z.literal("force-animation"),
+    positions: z.array(z.object({
+      id: z.string(),
+      x: z.number(),
+      y: z.number()
+    })),
+    totalIterations: z.number(),
+    finalAlpha: z.number(),
+    reason: z.string()
+  }),
+  [WorkerEventType.FORCE_SIMULATION_ERROR]: BaseEventPayloadSchema.extend({
+    workerId: z.string(),
+    workerType: z.literal("force-animation"),
+    error: z.string(),
+    filename: z.string().optional(),
+    lineno: z.number().optional()
+  }),
+  [WorkerEventType.FORCE_SIMULATION_STOPPED]: BaseEventPayloadSchema.extend({
+    workerId: z.string(),
+    workerType: z.literal("force-animation")
+  })
+};
+
 // Type inference from Zod schemas
 export type InferredGraphEventPayloads = {
   [K in keyof typeof GraphEventPayloadSchemas]: z.infer<typeof GraphEventPayloadSchemas[K]>;
@@ -648,6 +886,10 @@ export type InferredNodeEventPayloads = {
 
 export type InferredEdgeEventPayloads = {
   [K in keyof typeof EdgeEventPayloadSchemas]: z.infer<typeof EdgeEventPayloadSchemas[K]>;
+};
+
+export type InferredWorkerEventPayloads = {
+  [K in keyof typeof WorkerEventPayloadSchemas]: z.infer<typeof WorkerEventPayloadSchemas[K]>;
 };
 
 /**
@@ -691,4 +933,29 @@ export function createZodValidatedHandler<T>(
     // Invalid payload is ignored (validation logging can be added here if needed)
   };
 }
+
+/**
+ * Type guard to check if eventType is a valid WorkerEventType
+ */
+export function isWorkerEventType(eventType: string): eventType is WorkerEventType {
+  return WorkerEventTypeSchema.safeParse(eventType).success;
+}
+
+/**
+ * Type-safe payload parser that validates and narrows type
+ * Uses Zod schema validation to ensure type safety without assertions
+ */
+export function parseWorkerEventPayload<T extends WorkerEventType>(
+  payload: unknown,
+  eventType: T,
+  schema: z.ZodType
+): WorkerEventPayloads[T] | null {
+  const result = schema.safeParse(payload);
+  // Return the validated data directly - TypeScript structural typing
+  // ensures compatibility between validated schema output and interface
+  return result.success ? result.data : null;
+}
+
+// Export the WorkerEventType schema for external use
+export { WorkerEventTypeSchema };
 

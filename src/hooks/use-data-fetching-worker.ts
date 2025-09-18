@@ -7,6 +7,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { logger } from "@/lib/logger";
 import { useDataFetchingProgressStore } from "@/stores/data-fetching-progress-store";
 import { eventBridge } from "@/lib/graph/events";
+import { WorkerEventType, type WorkerEventPayloads, WorkerEventPayloadSchemas, parseWorkerEventPayload, isWorkerEventType } from "@/lib/graph/events/types";
 import type { EntityType } from "@/lib/graph/types";
 import type { ExpansionOptions } from "@/lib/entities";
 import type { ExpansionSettings } from "@/lib/graph/types/expansion-settings";
@@ -117,7 +118,107 @@ export function useDataFetchingWorker(options: UseDataFetchingWorkerOptions = {}
 		totalDuration: 0,
 	});
 
-	// Handle worker messages
+	// Handle EventBridge worker ready events
+	const handleWorkerReady = useCallback((payload: WorkerEventPayloads[WorkerEventType.WORKER_READY]) => {
+		if (payload.workerId === "data-fetching-worker") {
+			logger.debug("graph", "Data fetching worker ready via EventBridge");
+			setIsWorkerReady(true);
+			setWorkerReady(true);
+		}
+	}, [setWorkerReady]);
+
+	// Handle EventBridge worker error events
+	const handleWorkerErrorEvent = useCallback((payload: WorkerEventPayloads[WorkerEventType.WORKER_ERROR]) => {
+		if (payload.workerId === "data-fetching-worker") {
+			logger.error("graph", "Data fetching worker error via EventBridge", { error: payload.error });
+			setIsWorkerReady(false);
+			setWorkerReady(false);
+		}
+	}, [setWorkerReady]);
+
+	// Handle EventBridge data fetch progress events
+	const handleDataFetchProgress = useCallback((payload: WorkerEventPayloads[WorkerEventType.DATA_FETCH_PROGRESS]) => {
+		const request = pendingRequestsRef.current.get(payload.requestId);
+		if (request) {
+			updateProgress(request.nodeId, {
+				completed: Math.round(payload.progress * 100),
+				total: 100,
+				stage: payload.currentStep
+			});
+		}
+	}, [updateProgress]);
+
+	// Handle EventBridge data fetch complete events
+	const handleDataFetchComplete = useCallback((payload: WorkerEventPayloads[WorkerEventType.DATA_FETCH_COMPLETE]) => {
+		const request = pendingRequestsRef.current.get(payload.requestId);
+		if (request) {
+			// Update statistics
+			statsRef.current.completedRequests++;
+			statsRef.current.totalDuration += (Date.now() - request.timestamp);
+
+			// Clean up tracking
+			pendingRequestsRef.current.delete(payload.requestId);
+			setActiveRequests(prev => {
+				const newSet = new Set(prev);
+				newSet.delete(request.nodeId);
+				return newSet;
+			});
+
+			// Update progress store
+			completeRequest(request.nodeId);
+
+			// Create ExpandCompletePayload for backward compatibility
+			const completePayload: ExpandCompletePayload = {
+				nodeId: payload.nodeId,
+				nodes: payload.nodes,
+				edges: payload.edges,
+				statistics: payload.statistics
+			};
+
+			// Call completion callback
+			onExpandComplete?.(completePayload);
+			request.resolve();
+
+			logger.debug("graph", "Node expansion completed via EventBridge", {
+				nodeId: request.nodeId,
+				nodesAdded: payload.nodes.length || 0,
+				edgesAdded: payload.edges.length || 0,
+				duration: payload.statistics?.duration || 0
+			});
+		}
+	}, [completeRequest, onExpandComplete]);
+
+	// Handle EventBridge data fetch error events
+	const handleDataFetchError = useCallback((payload: WorkerEventPayloads[WorkerEventType.DATA_FETCH_ERROR]) => {
+		const request = pendingRequestsRef.current.get(payload.requestId);
+		if (request) {
+			// Update statistics
+			statsRef.current.failedRequests++;
+			statsRef.current.totalDuration += (Date.now() - request.timestamp);
+
+			// Clean up tracking
+			pendingRequestsRef.current.delete(payload.requestId);
+			setActiveRequests(prev => {
+				const newSet = new Set(prev);
+				newSet.delete(request.nodeId);
+				return newSet;
+			});
+
+			// Update progress store
+			failRequest(request.nodeId, payload.error);
+
+			// Handle error
+			onExpandError?.(request.nodeId, payload.error);
+			request.reject(new Error(payload.error));
+
+			logger.error("graph", "Node expansion failed via EventBridge", {
+				nodeId: request.nodeId,
+				error: payload.error
+			});
+		}
+	}, [failRequest, onExpandError]);
+
+	// Legacy message handler for old-style communication (can be removed after full migration)
 	const handleWorkerMessage = useCallback((event: MessageEvent<DataFetchingResponse>) => {
 		const { type, id, payload, error } = event.data;
 
@@ -258,6 +359,7 @@ export function useDataFetchingWorker(options: UseDataFetchingWorkerOptions = {}
 				{ type: "module" }
 			);
 
+			// Keep legacy message listeners temporarily for debugging
 			workerRef.current.addEventListener("message", handleWorkerMessage);
 			workerRef.current.addEventListener("error", handleWorkerError);
 
@@ -285,7 +387,69 @@ export function useDataFetchingWorker(options: UseDataFetchingWorkerOptions = {}
 				setWorkerReady(false);
 			}
 		};
-	}, [clearAll, handleWorkerError, handleWorkerMessage, onExpandError, setWorkerReady]); // Initialize only once, but include stable dependencies
+	}, [clearAll, handleWorkerMessage, onExpandError, setWorkerReady, handleWorkerError]); // Initialize only once, but include stable dependencies
+
+	// Register EventBridge listeners for cross-context communication
+	useEffect(() => {
+		// Register handlers for worker events
+		eventBridge.registerMessageHandler("data-fetching-worker-ready", (message) => {
+			if (isWorkerEventType(message.eventType) && message.eventType === WorkerEventType.WORKER_READY && message.payload) {
+				const payload = parseWorkerEventPayload(message.payload, WorkerEventType.WORKER_READY, WorkerEventPayloadSchemas[WorkerEventType.WORKER_READY]);
+				if (payload) {
+					handleWorkerReady(payload);
+				}
+			}
+		});
+
+		eventBridge.registerMessageHandler("data-fetching-worker-error", (message) => {
+			if (isWorkerEventType(message.eventType) && message.eventType === WorkerEventType.WORKER_ERROR && message.payload) {
+				const payload = parseWorkerEventPayload(message.payload, WorkerEventType.WORKER_ERROR, WorkerEventPayloadSchemas[WorkerEventType.WORKER_ERROR]);
+				if (payload) {
+					handleWorkerErrorEvent(payload);
+				}
+			}
+		});
+
+		eventBridge.registerMessageHandler("data-fetching-progress", (message) => {
+			if (isWorkerEventType(message.eventType) && message.eventType === WorkerEventType.DATA_FETCH_PROGRESS && message.payload) {
+				const payload = parseWorkerEventPayload(message.payload, WorkerEventType.DATA_FETCH_PROGRESS, WorkerEventPayloadSchemas[WorkerEventType.DATA_FETCH_PROGRESS]);
+				if (payload) {
+					handleDataFetchProgress(payload);
+				}
+			}
+		});
+
+		eventBridge.registerMessageHandler("data-fetching-complete", (message) => {
+			if (isWorkerEventType(message.eventType) && message.eventType === WorkerEventType.DATA_FETCH_COMPLETE && message.payload) {
+				const payload = parseWorkerEventPayload(message.payload, WorkerEventType.DATA_FETCH_COMPLETE, WorkerEventPayloadSchemas[WorkerEventType.DATA_FETCH_COMPLETE]);
+				if (payload) {
+					handleDataFetchComplete(payload);
+				}
+			}
+		});
+
+		eventBridge.registerMessageHandler("data-fetching-error", (message) => {
+			if (isWorkerEventType(message.eventType) && message.eventType === WorkerEventType.DATA_FETCH_ERROR && message.payload) {
+				const payload = parseWorkerEventPayload(message.payload, WorkerEventType.DATA_FETCH_ERROR, WorkerEventPayloadSchemas[WorkerEventType.DATA_FETCH_ERROR]);
+				if (payload) {
+					handleDataFetchError(payload);
+				}
+			}
+		});
+
+		logger.debug("graph", "Registered EventBridge listeners for data fetching worker");
+
+		return () => {
+			// Clean up event listeners
+			eventBridge.unregisterMessageHandler("data-fetching-worker-ready");
+			eventBridge.unregisterMessageHandler("data-fetching-worker-error");
+			eventBridge.unregisterMessageHandler("data-fetching-progress");
+			eventBridge.unregisterMessageHandler("data-fetching-complete");
+			eventBridge.unregisterMessageHandler("data-fetching-error");
+
+			logger.debug("graph", "Unregistered EventBridge listeners for data fetching worker");
+		};
+	}, [handleWorkerReady, handleWorkerErrorEvent, handleDataFetchProgress, handleDataFetchComplete, handleDataFetchError]);
 
 
 	// Expand node via worker

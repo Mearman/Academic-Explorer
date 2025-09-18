@@ -7,6 +7,8 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { logger } from "@/lib/logger";
 import type { EntityType } from "@/lib/graph/types";
 import { getConfigByGraphSize } from "@/lib/graph/utils/performance-config";
+import { eventBridge } from "@/lib/graph/events/event-bridge";
+import { WorkerEventType, type WorkerEventPayloads, WorkerEventPayloadSchemas, parseWorkerEventPayload, isWorkerEventType } from "@/lib/graph/events/types";
 
 // Types matching the worker interfaces
 interface NodePosition {
@@ -253,6 +255,149 @@ export function useAnimatedForceSimulation(options: UseAnimatedForceSimulationOp
 		onError?.(errorMessage);
 	}, [onError]);
 
+	// EventBridge handlers for new event system
+	const handleWorkerReady = useCallback((payload: WorkerEventPayloads[WorkerEventType.WORKER_READY]) => {
+		if (payload.workerType === "force-animation") {
+			setIsWorkerReady(true);
+			logger.debug("graph", "Force animation worker ready via EventBridge");
+		}
+	}, []);
+
+	const handleWorkerErrorEvent = useCallback((payload: WorkerEventPayloads[WorkerEventType.WORKER_ERROR]) => {
+		if (payload.workerType === "force-animation") {
+			const errorMessage = `Worker error: ${payload.error}`;
+			logger.error("graph", "Force animation worker error via EventBridge", payload);
+			onError?.(errorMessage);
+		}
+	}, [onError]);
+
+	const handleForceSimulationProgress = useCallback((payload: WorkerEventPayloads[WorkerEventType.FORCE_SIMULATION_PROGRESS]) => {
+		const { messageType, positions, alpha, iteration, progress, fps, nodeCount, linkCount, config, wasPaused } = payload;
+
+		switch (messageType) {
+			case "started":
+				setAnimationState(prev => ({
+					...prev,
+					isRunning: true,
+					isPaused: false,
+					nodeCount: nodeCount || 0,
+					linkCount: linkCount || 0,
+				}));
+
+				logger.debug("graph", "Force animation started via EventBridge", {
+					nodeCount,
+					linkCount,
+					config,
+				});
+				break;
+
+			case "tick":
+				if (positions && typeof alpha === "number" && typeof iteration === "number" && typeof progress === "number") {
+					// Update positions
+					setNodePositions(positions);
+					onPositionUpdate?.(positions);
+
+					// Update animation state
+					setAnimationState(prev => ({
+						...prev,
+						alpha,
+						iteration,
+						progress,
+						fps: fps || prev.fps,
+					}));
+
+					// Update performance stats
+					if (fps) {
+						setPerformanceStats(prev => ({
+							averageFPS: (prev.averageFPS * prev.frameCount + fps) / (prev.frameCount + 1),
+							minFPS: Math.min(prev.minFPS, fps),
+							maxFPS: Math.max(prev.maxFPS, fps),
+							frameCount: prev.frameCount + 1,
+						}));
+					}
+
+					logger.debug("graph", `Animation tick ${String(iteration)} via EventBridge`, {
+						alpha: alpha.toFixed(4),
+						progress: `${(progress * 100).toFixed(1)}%`,
+						fps: fps?.toFixed(1),
+					});
+				}
+				break;
+
+			case "paused":
+				setAnimationState(prev => ({
+					...prev,
+					isPaused: true,
+				}));
+				logger.debug("graph", "Force animation paused via EventBridge");
+				break;
+
+			case "resumed":
+				setAnimationState(prev => ({
+					...prev,
+					isPaused: false,
+				}));
+				logger.debug("graph", "Force animation resumed via EventBridge");
+				break;
+
+			case "parameters_updated":
+				logger.debug("graph", "Force parameters updated via EventBridge", {
+					config,
+					wasPaused,
+				});
+				break;
+
+			default:
+				logger.warn("graph", "Unknown force simulation progress message type", { messageType });
+		}
+	}, [onPositionUpdate]);
+
+	const handleForceSimulationComplete = useCallback((payload: WorkerEventPayloads[WorkerEventType.FORCE_SIMULATION_COMPLETE]) => {
+		const { positions, totalIterations, finalAlpha, reason } = payload;
+
+		setNodePositions(positions);
+		onPositionUpdate?.(positions);
+		onComplete?.(positions, { totalIterations, finalAlpha, reason });
+
+		setAnimationState(prev => ({
+			...prev,
+			isRunning: false,
+			isPaused: false,
+			progress: 1,
+			alpha: finalAlpha,
+		}));
+
+		// Use current performance stats from state callback
+		setPerformanceStats(currentStats => {
+			logger.debug("graph", "Force animation completed via EventBridge", {
+				totalIterations,
+				finalAlpha: finalAlpha.toFixed(4),
+				reason,
+				averageFPS: currentStats.averageFPS.toFixed(1),
+			});
+			return currentStats; // Return unchanged stats
+		});
+	}, [onPositionUpdate, onComplete]);
+
+	const handleForceSimulationStopped = useCallback((payload: WorkerEventPayloads[WorkerEventType.FORCE_SIMULATION_STOPPED]) => {
+		if (payload.workerType === "force-animation") {
+			setAnimationState(prev => ({
+				...prev,
+				isRunning: false,
+				isPaused: false,
+			}));
+			logger.debug("graph", "Force animation stopped via EventBridge");
+		}
+	}, []);
+
+	const handleForceSimulationError = useCallback((payload: WorkerEventPayloads[WorkerEventType.FORCE_SIMULATION_ERROR]) => {
+		if (payload.workerType === "force-animation") {
+			const errorMessage = `Worker error: ${payload.error}`;
+			logger.error("graph", "Force animation worker error via EventBridge", payload);
+			onError?.(errorMessage);
+		}
+	}, [onError]);
+
 	// Initialize worker
 	useEffect(() => {
 		logger.debug("graph", "Initializing animated force simulation worker");
@@ -266,19 +411,85 @@ export function useAnimatedForceSimulation(options: UseAnimatedForceSimulationOp
 			workerRef.current.addEventListener("message", handleWorkerMessage);
 			workerRef.current.addEventListener("error", handleWorkerError);
 
+			// Register the worker with EventBridge
+			eventBridge.registerWorker(workerRef.current, "force-animation-worker");
+
+			// Register EventBridge listeners
+			eventBridge.registerMessageHandler("force-animation-worker-ready", (message) => {
+				if (isWorkerEventType(message.eventType) && message.eventType === WorkerEventType.WORKER_READY && message.payload) {
+					const payload = parseWorkerEventPayload(message.payload, WorkerEventType.WORKER_READY, WorkerEventPayloadSchemas[WorkerEventType.WORKER_READY]);
+					if (payload) {
+						handleWorkerReady(payload);
+					}
+				}
+			});
+
+			eventBridge.registerMessageHandler("force-animation-worker-error", (message) => {
+				if (isWorkerEventType(message.eventType) && message.eventType === WorkerEventType.WORKER_ERROR && message.payload) {
+					const payload = parseWorkerEventPayload(message.payload, WorkerEventType.WORKER_ERROR, WorkerEventPayloadSchemas[WorkerEventType.WORKER_ERROR]);
+					if (payload) {
+						handleWorkerErrorEvent(payload);
+					}
+				}
+			});
+
+			eventBridge.registerMessageHandler("force-animation-progress", (message) => {
+				if (isWorkerEventType(message.eventType) && message.eventType === WorkerEventType.FORCE_SIMULATION_PROGRESS && message.payload) {
+					const payload = parseWorkerEventPayload(message.payload, WorkerEventType.FORCE_SIMULATION_PROGRESS, WorkerEventPayloadSchemas[WorkerEventType.FORCE_SIMULATION_PROGRESS]);
+					if (payload) {
+						handleForceSimulationProgress(payload);
+					}
+				}
+			});
+
+			eventBridge.registerMessageHandler("force-animation-complete", (message) => {
+				if (isWorkerEventType(message.eventType) && message.eventType === WorkerEventType.FORCE_SIMULATION_COMPLETE && message.payload) {
+					const payload = parseWorkerEventPayload(message.payload, WorkerEventType.FORCE_SIMULATION_COMPLETE, WorkerEventPayloadSchemas[WorkerEventType.FORCE_SIMULATION_COMPLETE]);
+					if (payload) {
+						handleForceSimulationComplete(payload);
+					}
+				}
+			});
+
+			eventBridge.registerMessageHandler("force-animation-stopped", (message) => {
+				if (isWorkerEventType(message.eventType) && message.eventType === WorkerEventType.FORCE_SIMULATION_STOPPED && message.payload) {
+					const payload = parseWorkerEventPayload(message.payload, WorkerEventType.FORCE_SIMULATION_STOPPED, WorkerEventPayloadSchemas[WorkerEventType.FORCE_SIMULATION_STOPPED]);
+					if (payload) {
+						handleForceSimulationStopped(payload);
+					}
+				}
+			});
+
+			eventBridge.registerMessageHandler("force-animation-simulation-error", (message) => {
+				if (isWorkerEventType(message.eventType) && message.eventType === WorkerEventType.FORCE_SIMULATION_ERROR && message.payload) {
+					const payload = parseWorkerEventPayload(message.payload, WorkerEventType.FORCE_SIMULATION_ERROR, WorkerEventPayloadSchemas[WorkerEventType.FORCE_SIMULATION_ERROR]);
+					if (payload) {
+						handleForceSimulationError(payload);
+					}
+				}
+			});
+
 		} catch (error) {
 			logger.error("graph", "Failed to initialize force animation worker", { error });
 			onError?.("Failed to initialize Web Worker for force simulation");
 		}
 
 		return () => {
+			// Unregister EventBridge listeners
+			eventBridge.unregisterMessageHandler("force-animation-worker-ready");
+			eventBridge.unregisterMessageHandler("force-animation-worker-error");
+			eventBridge.unregisterMessageHandler("force-animation-progress");
+			eventBridge.unregisterMessageHandler("force-animation-complete");
+			eventBridge.unregisterMessageHandler("force-animation-stopped");
+			eventBridge.unregisterMessageHandler("force-animation-simulation-error");
+
 			if (workerRef.current) {
 				workerRef.current.terminate();
 				workerRef.current = null;
 				setIsWorkerReady(false);
 			}
 		};
-	}, [handleWorkerMessage, handleWorkerError, onError]);
+	}, [handleWorkerMessage, handleWorkerError, onError, handleWorkerReady, handleWorkerErrorEvent, handleForceSimulationProgress, handleForceSimulationComplete, handleForceSimulationStopped, handleForceSimulationError]);
 
 	// Start animation
 	const startAnimation = useCallback((
