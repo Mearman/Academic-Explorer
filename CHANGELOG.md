@@ -1,3 +1,38 @@
+# [5.4.0](https://github.com/Mearman/Academic-Explorer/compare/v5.3.1...v5.4.0) (2025-09-18)
+
+
+### Bug Fixes
+
+* **components:** eliminate non-null assertions in section components ([af0033a](https://github.com/Mearman/Academic-Explorer/commit/af0033ab9465e8d4575415409dac72cc742c3d48))
+* **components:** improve type safety in AllEdgesSection and AllNodesSection ([2d9138c](https://github.com/Mearman/Academic-Explorer/commit/2d9138c28ccc7ebdfdbc74c90535c106be2347c5))
+* **lint:** disable no-unnecessary-condition rule to resolve false positives ([fda3491](https://github.com/Mearman/Academic-Explorer/commit/fda34913744ab5876ebe761d3ae8dacdce890197))
+* **lint:** temporarily disable indent rule to resolve ESLint stack overflow ([e80ba0e](https://github.com/Mearman/Academic-Explorer/commit/e80ba0e47cd0d96c88ef99d0df9e2435842cc0f8))
+* **services:** add browser environment checks to NetworkInterceptor ([3c9f904](https://github.com/Mearman/Academic-Explorer/commit/3c9f90440bafbf71a9b2e1b4c21dd721d32370ac))
+* **stores:** improve Record type safety in layout-store ([99c1810](https://github.com/Mearman/Academic-Explorer/commit/99c1810b477ad9b07836b731f7d4c59c4260fb33))
+* **stores:** improve request existence checks in network-activity-store ([1d2c647](https://github.com/Mearman/Academic-Explorer/commit/1d2c6470dd9170108063b82c8b657d3f2929f03d))
+* **stores:** use nullish coalescing for cache access in graph-store ([467d4d9](https://github.com/Mearman/Academic-Explorer/commit/467d4d92492d58a8b2d7a16b4499e40b6b2931a2))
+
+
+### Features
+
+* add knip for unused code detection ([23d3dec](https://github.com/Mearman/Academic-Explorer/commit/23d3dec26ca3e3628dd1607a7e9541fafe5eb9e4))
+* **components:** add AllEdgesSection for comprehensive edge management ([509bad7](https://github.com/Mearman/Academic-Explorer/commit/509bad7a8a9fd83b0254c1d192c24949734ae35a))
+* **components:** add AllNodesSection for comprehensive node management ([391e65c](https://github.com/Mearman/Academic-Explorer/commit/391e65caf4a197212eb3f1d12ab717dfaa1a1b07))
+* **components:** add EdgeRepositorySection for draggable edges ([43a1d33](https://github.com/Mearman/Academic-Explorer/commit/43a1d333a0e3a8e7c6b224ab9f273a07814bfd09))
+* **components:** add NetworkActivitySection for request monitoring ([00f575b](https://github.com/Mearman/Academic-Explorer/commit/00f575bd34be8d670be35746ce10ce246299c34c))
+* **components:** add NodeRepositorySection for draggable nodes ([ca1ebdb](https://github.com/Mearman/Academic-Explorer/commit/ca1ebdb54487df5dfc9c2a705ffc87b5e334e267))
+* **components:** enhance SearchSection with repository mode toggle ([bc5152a](https://github.com/Mearman/Academic-Explorer/commit/bc5152a86638b120fa95be8663f08b3e463b3a99))
+* **components:** update sections index with new component exports ([6a56b78](https://github.com/Mearman/Academic-Explorer/commit/6a56b788586f18bf8640d8535ceed0acfefead64))
+* **devtools:** add repository logging category to ApplicationLoggerPanel ([3873796](https://github.com/Mearman/Academic-Explorer/commit/3873796aeca74b1b951793610532736c78e23809))
+* **layout:** add drag-and-drop support to GraphNavigation ([1e68c35](https://github.com/Mearman/Academic-Explorer/commit/1e68c3569c5ac9f427fd3c966ca9315b1086b3b5))
+* **logger:** add repository logging category ([479fd9e](https://github.com/Mearman/Academic-Explorer/commit/479fd9e68c92266004a25cfa9c7d3af418c1c342))
+* **main:** add network monitoring initialization ([72387f0](https://github.com/Mearman/Academic-Explorer/commit/72387f02db8e37b2fbc1f69b2aba10b1d6b82c9a))
+* **monitoring:** add global network request interceptor ([1577fc2](https://github.com/Mearman/Academic-Explorer/commit/1577fc2edffba88e7e6cd53a26f13fa5d8e41399))
+* **monitoring:** add network activity store for request tracking ([04064ef](https://github.com/Mearman/Academic-Explorer/commit/04064efb39667041e8ecfd27b17d2e1f6a647325))
+* **services:** enhance request deduplication with network tracking ([eceb413](https://github.com/Mearman/Academic-Explorer/commit/eceb413ee63def1878695a894c1c685c7f3b1701))
+* **stores:** add repository store for drag-and-drop management ([1521a4d](https://github.com/Mearman/Academic-Explorer/commit/1521a4d1db6ba417d60d6c4f7aaa080d3b5fb756))
+* **stores:** update section registry with repository and monitoring sections ([6bfa888](https://github.com/Mearman/Academic-Explorer/commit/6bfa8886e8023a53b68d62c712f65e77e0716fb5))
+
 ## [5.3.1](https://github.com/Mearman/Academic-Explorer/compare/v5.3.0...v5.3.1) (2025-09-18)
 
 
