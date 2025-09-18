@@ -1,3 +1,10 @@
+## [5.5.1](https://github.com/Mearman/Academic-Explorer/compare/v5.5.0...v5.5.1) (2025-09-18)
+
+
+### Bug Fixes
+
+* **ci:** configure semantic-release to trigger releases for dependency updates ([ed05be9](https://github.com/Mearman/Academic-Explorer/commit/ed05be96359383a689580964a2cff5c59acbc32a))
+
 # [5.5.0](https://github.com/Mearman/Academic-Explorer/compare/v5.4.0...v5.5.0) (2025-09-18)
 
 
