@@ -12,6 +12,28 @@ const DB_VERSION = 1;
 const METADATA_STORE = "app_metadata";
 const METADATA_KEY = "current";
 
+// Type guard to check if value is a record
+function isRecord(value: unknown): value is Record<string, unknown> {
+	return value !== null && typeof value === "object";
+}
+
+/**
+ * Type guard to validate AppMetadata structure
+ */
+function isValidAppMetadata(value: unknown): value is AppMetadata {
+	if (!isRecord(value)) {
+		return false;
+	}
+
+	return (
+		typeof value.version === "string" &&
+		typeof value.lastCacheInvalidation === "string" &&
+		typeof value.installationTime === "string" &&
+		(value.buildTimestamp === undefined || typeof value.buildTimestamp === "string") &&
+		(value.commitHash === undefined || typeof value.commitHash === "string")
+	);
+}
+
 /**
  * Database connection for metadata storage
  */
@@ -74,7 +96,8 @@ export async function getStoredAppMetadata(): Promise<AppMetadata | null> {
 		const tx = db.transaction(METADATA_STORE, "readonly");
 		const store = tx.objectStore(METADATA_STORE);
 
-		const metadata = await store.get(METADATA_KEY) as AppMetadata | undefined;
+		const rawMetadata: unknown = await store.get(METADATA_KEY);
+		const metadata = isValidAppMetadata(rawMetadata) ? rawMetadata : undefined;
 		await tx.done;
 
 		if (metadata) {
