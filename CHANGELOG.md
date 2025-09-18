@@ -1,3 +1,10 @@
+## [6.0.1](https://github.com/Mearman/Academic-Explorer/compare/v6.0.0...v6.0.1) (2025-09-18)
+
+
+### Bug Fixes
+
+* **test:** resolve component test failures with DOM cleanup and jest-dom configuration ([c27f02f](https://github.com/Mearman/Academic-Explorer/commit/c27f02f5e0f9a8d08092bc5c0dd7e53c73a62a1a))
+
 # [6.0.0](https://github.com/Mearman/Academic-Explorer/compare/v5.9.0...v6.0.0) (2025-09-18)
 
 
