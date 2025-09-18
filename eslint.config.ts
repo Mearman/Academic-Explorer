@@ -13,7 +13,7 @@ import noDeprecatedComments from './eslint-rules/no-deprecated-comments.js';
 
 export default tseslint.config([
   {
-    ignores: ['dist/**/*', 'node_modules/**/*', 'coverage/**/*', 'src/routeTree.gen.ts', 'vite.config.ts', 'vite.config.old.ts', 'vitest.workspace.ts', 'src/test/setup.ts', '.nx/**/*', 'eslint.config.ts', 'eslint-rules/**/*', 'src/lib/openalex/debug-types.ts', 'src/lib/openalex/test-advanced-fields.ts'],
+    ignores: ['dist/**/*', 'node_modules/**/*', 'coverage/**/*', 'src/routeTree.gen.ts', 'vite.config.ts', 'vite.config.old.ts', 'vitest.workspace.ts', 'src/test/setup.ts', '.nx/**/*', 'eslint.config.ts', 'eslint-rules/**/*', 'src/lib/openalex/debug-types.ts', 'src/lib/openalex/test-advanced-fields.ts', 'knip.ts'],
   },
   {
     files: ['**/*.{ts,tsx}'],
