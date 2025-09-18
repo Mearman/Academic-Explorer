@@ -3,7 +3,8 @@
     "timeout": 10000,
     "wait": 2000,
     "chromeLaunchConfig": {
-      "args": ["--no-sandbox", "--disable-setuid-sandbox", "--disable-dev-shm-usage"]
+      "executablePath": "/usr/bin/google-chrome-stable",
+      "args": ["--no-sandbox", "--disable-setuid-sandbox", "--disable-dev-shm-usage", "--headless", "--disable-gpu"]
     },
     "standard": "WCAG2AA",
     "level": "error",

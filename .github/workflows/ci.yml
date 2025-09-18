@@ -405,6 +405,8 @@ jobs:
         run: pnpm nx a11y:ci
         env:
           NODE_OPTIONS: '--max-old-space-size=4096'
+          CHROME_PATH: '/usr/bin/google-chrome-stable'
+          PUPPETEER_EXECUTABLE_PATH: '/usr/bin/google-chrome-stable'
 
       - name: Upload accessibility reports
         if: always()
