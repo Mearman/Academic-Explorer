@@ -72,6 +72,15 @@ export default tseslint.config([
       // Disallow direct console usage - use logger instead
       'no-console': 'error',
 
+      // Disallow Reflect.apply usage
+      'no-restricted-syntax': [
+        'error',
+        {
+          'selector': 'CallExpression[callee.type="MemberExpression"][callee.object.name="Reflect"][callee.property.name="apply"]',
+          'message': 'Reflect.apply is not allowed. Use direct function calls or Function.prototype.apply instead.'
+        }
+      ],
+
       // Ban all eslint-disable comments - fix issues properly instead
       'eslint-comments/no-use': ['error', { 'allow': [] }],
 
