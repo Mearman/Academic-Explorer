@@ -44,14 +44,18 @@ export default {
         'link-name': 'warn',
         'document-title': 'warn',
         'meta-viewport': 'warn',
+        'meta-description': 'warn',
+        'crawlable-anchors': 'warn',
+        'target-size': 'warn',
 
-        // Performance-related (warnings, not errors)
+        // Technical/Performance issues (warnings, not errors)
         'unminified-javascript': 'warn',
         'unused-css-rules': 'warn',
         'unused-javascript': 'warn',
         'valid-source-maps': 'warn',
         'uses-passive-event-listeners': 'warn',
-        'target-size': 'warn'
+        'errors-in-console': 'warn',
+        'network-dependency-tree-insight': 'warn'
       }
     },
     upload: {
