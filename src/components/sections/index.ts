@@ -32,3 +32,5 @@ export { EdgeRepositorySection } from "./EdgeRepositorySection";
 export { AllNodesSection } from "./AllNodesSection";
 
 export { AllEdgesSection } from "./AllEdgesSection";
+
+export { CustomForcesSection } from "./CustomForcesSection";

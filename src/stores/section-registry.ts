@@ -21,6 +21,7 @@ import {
 	IconArrowsExchange,
 	IconCircleDot,
 	IconRoute,
+	IconWaveSquare,
 } from "@tabler/icons-react";
 import type { SidebarSection } from "@/types/sidebar-sections";
 
@@ -41,6 +42,7 @@ const NodeRepositorySection = React.lazy(() => import("@/components/sections").t
 const EdgeRepositorySection = React.lazy(() => import("@/components/sections").then(m => ({ default: m.EdgeRepositorySection })));
 const AllNodesSection = React.lazy(() => import("@/components/sections").then(m => ({ default: m.AllNodesSection })));
 const AllEdgesSection = React.lazy(() => import("@/components/sections").then(m => ({ default: m.AllEdgesSection })));
+const CustomForcesSection = React.lazy(() => import("@/components/sections").then(m => ({ default: m.CustomForcesSection })));
 
 /**
  * Registry of all available sidebar sections
@@ -136,6 +138,16 @@ export const SECTION_DEFINITIONS: ReadonlyArray<SidebarSection> = [
 		category: "graph-tools",
 		order: 9,
 		tooltip: "View and manage all graph edges",
+	},
+	{
+		id: "custom-forces",
+		title: "Custom Forces",
+		icon: IconWaveSquare,
+		component: CustomForcesSection,
+		defaultSidebar: "left",
+		category: "graph-control",
+		order: 10,
+		tooltip: "Configure custom forces for graph layout",
 	},
 
 	// Right sidebar sections (default)

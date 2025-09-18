@@ -10,17 +10,17 @@ import {
 	forceCenter,
 	forceCollide,
 	type Simulation,
-	type SimulationNodeDatum,
 	type SimulationLinkDatum,
 	type Force,
 } from "d3-force";
 import { randomLcg } from "d3-random";
 import { eventBridge } from "@/lib/graph/events/event-bridge";
 import { WorkerEventType } from "@/lib/graph/events/types";
+import { CustomForceManager } from "../lib/graph/custom-forces/manager";
+import type { EnhancedSimulationNode } from "../lib/graph/custom-forces/types";
 
 // Worker-compatible interfaces
-interface WorkerNode extends SimulationNodeDatum {
-  id: string;
+interface WorkerNode extends EnhancedSimulationNode {
   type?: string;
   fx?: number | null;
   fy?: number | null;
@@ -53,12 +53,24 @@ interface AnimationConfig {
   seed?: number;
 }
 
+interface CustomForceData {
+  id?: string;
+  name: string;
+  type: string;
+  enabled?: boolean;
+  strength?: number;
+  priority?: number;
+  config: unknown;
+}
+
 interface WorkerMessage {
-  type: "start" | "stop" | "pause" | "resume" | "update_parameters";
+  type: "start" | "stop" | "pause" | "resume" | "update_parameters" | "sync_custom_forces" | "add_custom_force" | "remove_custom_force" | "update_custom_force";
   nodes?: WorkerNode[];
   links?: WorkerLink[];
   config?: AnimationConfig;
   pinnedNodes?: Set<string>;
+  customForces?: CustomForceData[];
+  forceData?: CustomForceData;
 }
 
 // Worker state
@@ -68,6 +80,9 @@ let isRunning = false;
 let isPaused = false;
 let nodes: WorkerNode[] = [];
 let links: WorkerLink[] = [];
+
+// Custom force manager for this worker
+let customForceManager: CustomForceManager | null = null;
 
 // Default configuration
 // Centralized force parameters from lib/graph/force-params.ts
@@ -174,7 +189,14 @@ const timerAPI = createTimerAPI();
 
 // Message handler
 self.onmessage = function(event: MessageEvent<WorkerMessage>) {
-	const { type, nodes: newNodes, links: newLinks, config = {}, pinnedNodes } = event.data;
+	const data = event.data;
+	const type = data.type;
+	const newNodes = data.nodes;
+	const newLinks = data.links;
+	const config = data.config ?? {};
+	const pinnedNodes = data.pinnedNodes;
+	const customForces = data.customForces;
+	const forceData = data.forceData;
 
 	switch (type) {
 		case "start":
@@ -193,6 +215,24 @@ self.onmessage = function(event: MessageEvent<WorkerMessage>) {
 			break;
 		case "update_parameters":
 			updateParameters(config);
+			break;
+		case "sync_custom_forces":
+			syncCustomForces(customForces || []);
+			break;
+		case "add_custom_force":
+			if (forceData) {
+				addCustomForce(forceData);
+			}
+			break;
+		case "remove_custom_force":
+			if (forceData?.id) {
+				removeCustomForce(forceData.id);
+			}
+			break;
+		case "update_custom_force":
+			if (forceData) {
+				updateCustomForce(forceData);
+			}
 			break;
 	}
 };
@@ -230,6 +270,17 @@ function startAnimatedSimulation(
 ) {
 	// Stop any existing simulation
 	stopSimulation();
+
+	// Initialize custom force manager if not already created
+	if (!customForceManager) {
+		customForceManager = new CustomForceManager({
+			performance: {
+				enableTiming: true,
+				logSlowForces: false,
+				maxExecutionTime: 5, // 5ms max per force
+			},
+		});
+	}
 
 	// Merge optimal config with user config
 	const optimalConfig = getOptimalConfig(inputNodes.length);
@@ -307,6 +358,12 @@ function startAnimatedSimulation(
 		if (currentTime - lastTime >= targetInterval) {
 			// Run simulation tick
 			simulation.tick();
+
+			// Apply custom forces if available
+			if (customForceManager) {
+				customForceManager.applyForces(nodes, simulation.alpha());
+			}
+
 			tickCount++;
 
 			// Send intermediate state
@@ -487,6 +544,100 @@ function updateParameters(newConfig: AnimationConfig) {
 		wasPaused: isPaused,
 		timestamp: Date.now()
 	}, "main");
+}
+
+function syncCustomForces(customForces: CustomForceData[]) {
+	if (!customForceManager) {
+		customForceManager = new CustomForceManager({
+			performance: {
+				enableTiming: true,
+				logSlowForces: false,
+				maxExecutionTime: 5,
+			},
+		});
+	}
+
+	// Clear existing forces and add new ones
+	customForceManager.clearAllForces();
+
+	for (const forceData of customForces) {
+		try {
+			customForceManager.addForce(forceData);
+		} catch (error) {
+			self.postMessage({
+				type: "error",
+				error: `Failed to sync custom force: ${error instanceof Error ? error.message : "Unknown error"}`,
+			});
+		}
+	}
+
+	self.postMessage({
+		type: "custom_forces_synced",
+		count: customForces.length,
+	});
+}
+
+function addCustomForce(forceData: CustomForceData) {
+	if (!customForceManager) {
+		customForceManager = new CustomForceManager({
+			performance: {
+				enableTiming: true,
+				logSlowForces: false,
+				maxExecutionTime: 5,
+			},
+		});
+	}
+
+	try {
+		const forceId = customForceManager.addForce(forceData);
+		self.postMessage({
+			type: "custom_force_added",
+			forceId,
+		});
+	} catch (error) {
+		self.postMessage({
+			type: "error",
+			error: `Failed to add custom force: ${error instanceof Error ? error.message : "Unknown error"}`,
+		});
+	}
+}
+
+function removeCustomForce(forceId: string) {
+	if (!customForceManager) {
+		return;
+	}
+
+	try {
+		customForceManager.removeForce(forceId);
+		self.postMessage({
+			type: "custom_force_removed",
+			forceId,
+		});
+	} catch (error) {
+		self.postMessage({
+			type: "error",
+			error: `Failed to remove custom force: ${error instanceof Error ? error.message : "Unknown error"}`,
+		});
+	}
+}
+
+function updateCustomForce(forceData: CustomForceData) {
+	if (!customForceManager || !forceData.id) {
+		return;
+	}
+
+	try {
+		customForceManager.updateForce(forceData.id, forceData);
+		self.postMessage({
+			type: "custom_force_updated",
+			forceId: forceData.id,
+		});
+	} catch (error) {
+		self.postMessage({
+			type: "error",
+			error: `Failed to update custom force: ${error instanceof Error ? error.message : "Unknown error"}`,
+		});
+	}
 }
 
 // Handle worker errors
