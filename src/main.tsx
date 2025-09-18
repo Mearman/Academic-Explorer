@@ -8,6 +8,7 @@ import { OpenAlexCachePanel } from "./components/devtools/OpenAlexCachePanel"
 import { EntityGraphPanel } from "./components/devtools/EntityGraphPanel"
 import { ApplicationLoggerPanel } from "./components/devtools/ApplicationLoggerPanel"
 import { setupGlobalErrorHandling } from "./lib/logger"
+import { initializeNetworkMonitoring } from "./services/network-interceptor"
 import { MantineProvider, createTheme } from "@mantine/core"
 import { Notifications } from "@mantine/notifications"
 import { Spotlight } from "@mantine/spotlight"
@@ -98,6 +99,9 @@ const theme = createTheme({
 
 // Setup global error handling for logging
 setupGlobalErrorHandling()
+
+// Initialize network monitoring
+initializeNetworkMonitoring()
 
 // Create a new router instance with hash-based history for GitHub Pages
 const router = createRouter({
