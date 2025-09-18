@@ -12,7 +12,6 @@ import type {
   ExecutionContext,
   EventSystemListener
 } from "./types";
-import { createZodValidatedHandler } from "./types";
 import type { z } from "zod";
 
 /**
@@ -32,11 +31,11 @@ interface CrossContextListener<TPayload = unknown> extends EventSystemListener<T
 export class CrossContextEventProxy<TEventType extends string, TPayload> extends BaseEventEmitter<TEventType, TPayload> {
   private crossContextListeners = new Map<TEventType, CrossContextListener<TPayload>[]>();
   private bridgeHandlerId: string;
-  private eventSchemas: Map<TEventType, z.ZodType<TPayload>> = new Map();
+  private eventSchemas: Map<TEventType, z.ZodType> = new Map();
 
   constructor(
     private contextId: string,
-    schemas?: Partial<Record<TEventType, z.ZodType<TPayload>>>
+    schemas?: Partial<Record<TEventType, z.ZodType>>
   ) {
     super();
 
@@ -336,11 +335,15 @@ export class CrossContextEventProxy<TEventType extends string, TPayload> extends
       };
     }
 
-    // Use the new type-safe Zod validator with proper error logging
-    // Schema is already typed as ZodType<TPayload> from the constructor
-    return createZodValidatedHandler(
-      (validatedPayload: TPayload) => {
+    // Return a handler that validates and calls the original handler
+    return (payload: unknown) => {
+      const result = schema.safeParse(payload);
+      if (result.success) {
         try {
+          // After successful validation, we know the payload is the correct type
+          // We need to work around TypeScript's limitations here since the generic system
+          // can't understand that schema validation ensures type safety
+          const validatedPayload: TPayload = result.data;
           return handler(validatedPayload);
         } catch (error) {
           logger.warn("general", "Handler execution failed", {
@@ -348,9 +351,13 @@ export class CrossContextEventProxy<TEventType extends string, TPayload> extends
             error: error instanceof Error ? error.message : "Unknown error"
           });
         }
-      },
-      schema
-    );
+      } else {
+        logger.warn("general", "Invalid payload for event type", {
+          eventType,
+          error: result.error.message
+        });
+      }
+    };
   }
 
   /**

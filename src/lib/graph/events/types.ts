@@ -408,20 +408,41 @@ export const BaseEventPayloadSchema = z.object({
   timestamp: z.number()
 });
 
+// EntityType and RelationType schemas for proper validation
+const EntityTypeSchema = z.enum(["works", "authors", "sources", "institutions", "topics", "concepts", "publishers", "funders", "keywords"]);
+const RelationTypeSchema = z.enum([
+  "authored", "affiliated", "published_in", "funded_by", "references",
+  "source_published_by", "institution_child_of", "publisher_child_of",
+  "work_has_topic", "work_has_keyword", "author_researches",
+  "institution_located_in", "funder_located_in", "topic_part_of_field", "related_to"
+]);
+
+// ExternalIdentifier schema
+const ExternalIdentifierSchema = z.object({
+  type: z.enum(["doi", "orcid", "issn_l", "ror", "wikidata"]),
+  value: z.string(),
+  url: z.string()
+});
+
 // Graph Node and Edge schemas for validation
 const GraphNodeSchema = z.object({
   id: z.string(),
-  type: z.string(),
-  position: z.object({ x: z.number(), y: z.number() }).optional(),
-  data: z.record(z.string(), z.unknown())
+  type: EntityTypeSchema,
+  label: z.string(),
+  entityId: z.string(),
+  position: z.object({ x: z.number(), y: z.number() }),
+  externalIds: z.array(ExternalIdentifierSchema),
+  entityData: z.record(z.string(), z.unknown()).optional()
 });
 
 const GraphEdgeSchema = z.object({
   id: z.string(),
   source: z.string(),
   target: z.string(),
-  type: z.string().optional(),
-  data: z.record(z.string(), z.unknown()).optional()
+  type: RelationTypeSchema,
+  label: z.string().optional(),
+  weight: z.number().optional(),
+  metadata: z.record(z.string(), z.unknown()).optional()
 });
 
 // Graph Event Payload Schemas
@@ -432,7 +453,7 @@ export const GraphEventPayloadSchemas = {
   [GraphEventType.ANY_NODE_REMOVED]: BaseEventPayloadSchema.extend({
     nodeId: z.string(),
     entityId: z.string(),
-    entityType: z.string()
+    entityType: EntityTypeSchema
   }),
   [GraphEventType.ANY_EDGE_ADDED]: BaseEventPayloadSchema.extend({
     edge: GraphEdgeSchema
@@ -441,7 +462,7 @@ export const GraphEventPayloadSchemas = {
     edgeId: z.string(),
     sourceEntityId: z.string(),
     targetEntityId: z.string(),
-    relationType: z.string()
+    relationType: RelationTypeSchema
   }),
   [GraphEventType.LAYOUT_CHANGED]: BaseEventPayloadSchema.extend({
     layoutType: z.string()
@@ -462,7 +483,7 @@ export const GraphEventPayloadSchemas = {
 export const EntityEventPayloadSchemas = {
   [EntityEventType.ENTITY_EXPANDED]: BaseEventPayloadSchema.extend({
     entityId: z.string(),
-    entityType: z.string(),
+    entityType: EntityTypeSchema,
     expansionData: z.object({
       nodesAdded: z.array(GraphNodeSchema),
       edgesAdded: z.array(GraphEdgeSchema),
@@ -473,32 +494,32 @@ export const EntityEventPayloadSchemas = {
   }),
   [EntityEventType.ENTITY_REMOVED]: BaseEventPayloadSchema.extend({
     entityId: z.string(),
-    entityType: z.string(),
+    entityType: EntityTypeSchema,
     nodeId: z.string().optional()
   }),
   [EntityEventType.ENTITY_SELECTED]: BaseEventPayloadSchema.extend({
     entityId: z.string(),
-    entityType: z.string(),
+    entityType: EntityTypeSchema,
     nodeId: z.string().optional()
   }),
   [EntityEventType.ENTITY_DATA_UPDATED]: BaseEventPayloadSchema.extend({
     entityId: z.string(),
-    entityType: z.string(),
+    entityType: EntityTypeSchema,
     updatedFields: z.array(z.string()),
     newData: z.record(z.string(), z.unknown())
   }),
   [EntityEventType.ENTITY_CONNECTIONS_UPDATED]: BaseEventPayloadSchema.extend({
     entityId: z.string(),
-    entityType: z.string(),
+    entityType: EntityTypeSchema,
     newConnections: z.array(z.object({
       targetEntityId: z.string(),
-      targetEntityType: z.string(),
-      relationType: z.string()
+      targetEntityType: EntityTypeSchema,
+      relationType: RelationTypeSchema
     }))
   }),
   [EntityEventType.ANY]: BaseEventPayloadSchema.extend({
     entityId: z.string(),
-    entityType: z.string(),
+    entityType: EntityTypeSchema,
     eventType: z.string(),
     payload: z.unknown()
   })
@@ -509,56 +530,56 @@ export const NodeEventPayloadSchemas = {
   [NodeEventType.NODE_SELECTED]: BaseEventPayloadSchema.extend({
     nodeId: z.string(),
     entityId: z.string(),
-    entityType: z.string()
+    entityType: EntityTypeSchema
   }),
   [NodeEventType.NODE_DESELECTED]: BaseEventPayloadSchema.extend({
     nodeId: z.string(),
     entityId: z.string(),
-    entityType: z.string()
+    entityType: EntityTypeSchema
   }),
   [NodeEventType.NODE_HOVERED]: BaseEventPayloadSchema.extend({
     nodeId: z.string(),
     entityId: z.string(),
-    entityType: z.string()
+    entityType: EntityTypeSchema
   }),
   [NodeEventType.NODE_UNHOVERED]: BaseEventPayloadSchema.extend({
     nodeId: z.string(),
     entityId: z.string(),
-    entityType: z.string()
+    entityType: EntityTypeSchema
   }),
   [NodeEventType.NODE_POSITION_CHANGED]: BaseEventPayloadSchema.extend({
     nodeId: z.string(),
     entityId: z.string(),
-    entityType: z.string(),
+    entityType: EntityTypeSchema,
     oldPosition: z.object({ x: z.number(), y: z.number() }),
     newPosition: z.object({ x: z.number(), y: z.number() })
   }),
   [NodeEventType.NODE_STYLE_CHANGED]: BaseEventPayloadSchema.extend({
     nodeId: z.string(),
     entityId: z.string(),
-    entityType: z.string(),
+    entityType: EntityTypeSchema,
     styleChanges: z.record(z.string(), z.unknown())
   }),
   [NodeEventType.NODE_LOADING_STATE_CHANGED]: BaseEventPayloadSchema.extend({
     nodeId: z.string(),
     entityId: z.string(),
-    entityType: z.string(),
+    entityType: EntityTypeSchema,
     isLoading: z.boolean()
   }),
   [NodeEventType.NODE_PINNED]: BaseEventPayloadSchema.extend({
     nodeId: z.string(),
     entityId: z.string(),
-    entityType: z.string()
+    entityType: EntityTypeSchema
   }),
   [NodeEventType.NODE_UNPINNED]: BaseEventPayloadSchema.extend({
     nodeId: z.string(),
     entityId: z.string(),
-    entityType: z.string()
+    entityType: EntityTypeSchema
   }),
   [NodeEventType.NODE_VISIBILITY_CHANGED]: BaseEventPayloadSchema.extend({
     nodeId: z.string(),
     entityId: z.string(),
-    entityType: z.string(),
+    entityType: EntityTypeSchema,
     isVisible: z.boolean()
   })
 };
@@ -574,25 +595,25 @@ export const EdgeEventPayloadSchemas = {
     edgeId: z.string(),
     sourceEntityId: z.string(),
     targetEntityId: z.string(),
-    relationType: z.string()
+    relationType: RelationTypeSchema
   }),
   [EdgeEventType.EDGE_SELECTED]: BaseEventPayloadSchema.extend({
     edgeId: z.string(),
     sourceEntityId: z.string(),
     targetEntityId: z.string(),
-    relationType: z.string()
+    relationType: RelationTypeSchema
   }),
   [EdgeEventType.EDGE_DESELECTED]: BaseEventPayloadSchema.extend({
     edgeId: z.string(),
     sourceEntityId: z.string(),
     targetEntityId: z.string(),
-    relationType: z.string()
+    relationType: RelationTypeSchema
   }),
   [EdgeEventType.EDGE_WEIGHT_CHANGED]: BaseEventPayloadSchema.extend({
     edgeId: z.string(),
     sourceEntityId: z.string(),
     targetEntityId: z.string(),
-    relationType: z.string(),
+    relationType: RelationTypeSchema,
     oldWeight: z.number().optional(),
     newWeight: z.number().optional()
   }),
@@ -600,14 +621,14 @@ export const EdgeEventPayloadSchemas = {
     edgeId: z.string(),
     sourceEntityId: z.string(),
     targetEntityId: z.string(),
-    relationType: z.string(),
+    relationType: RelationTypeSchema,
     styleChanges: z.record(z.string(), z.unknown())
   }),
   [EdgeEventType.EDGE_VISIBILITY_CHANGED]: BaseEventPayloadSchema.extend({
     edgeId: z.string(),
     sourceEntityId: z.string(),
     targetEntityId: z.string(),
-    relationType: z.string(),
+    relationType: RelationTypeSchema,
     isVisible: z.boolean()
   })
 };
