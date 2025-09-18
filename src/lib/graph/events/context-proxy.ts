@@ -12,7 +12,7 @@ import type {
   ExecutionContext,
   EventSystemListener
 } from "./types";
-import { parseEventPayloadWithSchema, BaseEventPayloadSchema } from "./types";
+import { BaseEventPayloadSchema, parseEventPayloadWithSchema } from "./types";
 import type { z } from "zod";
 
 /**
@@ -136,7 +136,8 @@ export class CrossContextEventProxy<TEventType extends string, TPayload> extends
             return;
           }
 
-          // Zod validation ensures type safety - no assertion needed
+          // Handler expects TPayload but we have validated unknown
+          // The schema ensures structural compatibility
           return handler(validatedPayload);
         }
       };
@@ -340,7 +341,8 @@ export class CrossContextEventProxy<TEventType extends string, TPayload> extends
       return;
     }
 
-    // Zod validation ensures type safety - no assertion needed
+    // Handler expects TPayload but we have validated unknown
+    // The schema ensures structural compatibility
     return handler(validatedPayload);
   }
 
