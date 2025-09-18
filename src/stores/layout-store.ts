@@ -241,14 +241,19 @@ export const useLayoutStore = create<LayoutState>()(
 			addSectionToGroup: (sidebar, groupId, sectionId) =>
 				set((state) => {
 					const toolGroups = state.toolGroups[sidebar];
-					const group: ToolGroup | undefined = toolGroups[groupId];
+					// Type guard for group existence
+					function isValidGroup(g: ToolGroup | undefined): g is ToolGroup {
+						return g !== undefined;
+					}
+					const group = toolGroups[groupId];
+					const groupExists = isValidGroup(group);
 
-					const existingGroupSections = group?.sections;
-					logger.info("ui", `addSectionToGroup called`, {
+					const existingGroupSections = groupExists ? group.sections : undefined;
+					logger.debug("ui", `addSectionToGroup called`, {
 						sidebar,
 						groupId,
 						sectionId,
-						groupExists: Boolean(group),
+						groupExists,
 						existingGroupIds: Object.keys(toolGroups),
 						existingGroupSections
 					});
@@ -257,7 +262,7 @@ export const useLayoutStore = create<LayoutState>()(
 					if (group) {
 						// If group already contains the section, do nothing
 						if (group.sections.includes(sectionId)) {
-							logger.info("ui", `Section ${sectionId} already in group ${groupId}, skipping`);
+							logger.debug("ui", `Section ${sectionId} already in group ${groupId}, skipping`);
 							return state;
 						}
 					} else {
@@ -273,7 +278,7 @@ export const useLayoutStore = create<LayoutState>()(
 							return state; // Only allow adding to groups that exist in the registry
 						}
 
-						logger.info("ui", `Creating new group from registry definition`, {
+						logger.debug("ui", `Creating new group from registry definition`, {
 							sidebar,
 							groupId,
 							sectionId,
@@ -299,7 +304,7 @@ export const useLayoutStore = create<LayoutState>()(
 						};
 					}
 
-					logger.info("ui", `Adding section ${sectionId} to group ${groupId}`, {
+					logger.debug("ui", `Adding section ${sectionId} to group ${groupId}`, {
 						sidebar,
 						groupId,
 						sectionId,
@@ -441,7 +446,7 @@ export const useLayoutStore = create<LayoutState>()(
 				const state = get();
 				const toolGroups = state.toolGroups[sidebar];
 
-				logger.info("ui", `Starting reorderGroups`, {
+				logger.debug("ui", `Starting reorderGroups`, {
 					sidebar,
 					sourceGroupId,
 					targetGroupId,
@@ -453,7 +458,7 @@ export const useLayoutStore = create<LayoutState>()(
 				const sourceDefinition = getGroupDefinition(sourceGroupId);
 				const targetDefinition = getGroupDefinition(targetGroupId);
 
-				logger.info("ui", `Group definitions found`, {
+				logger.debug("ui", `Group definitions found`, {
 					sourceDefinition: sourceDefinition ? { id: sourceDefinition.id, order: sourceDefinition.order } : null,
 					targetDefinition: targetDefinition ? { id: targetDefinition.id, order: targetDefinition.order } : null
 				});
@@ -470,8 +475,7 @@ export const useLayoutStore = create<LayoutState>()(
 				const allGroupIds = Object.keys(toolGroups);
 				const allGroups = allGroupIds
 					.map(id => ({ id, definition: getGroupDefinition(id) }))
-					.filter(({ definition }) => definition !== undefined)
-					.map(({ id, definition }) => ({ id, definition: definition as NonNullable<typeof definition> }))
+					.filter((item): item is { id: string; definition: NonNullable<ReturnType<typeof getGroupDefinition>> } => item.definition !== undefined)
 					.sort((a, b) => (a.definition.order ?? 999) - (b.definition.order ?? 999));
 
 				// Create a new ordered list by removing source and inserting it at the target position
@@ -484,7 +488,7 @@ export const useLayoutStore = create<LayoutState>()(
 				// Reassign orders starting from 1
 				reorderedGroups.forEach(({ id, definition }, index) => {
 					const newOrder = index + 1;
-					logger.info("ui", `Reassigning order for group ${id}`, {
+					logger.debug("ui", `Reassigning order for group ${id}`, {
 						groupId: id,
 						oldOrder: definition.order,
 						newOrder: newOrder
@@ -496,13 +500,13 @@ export const useLayoutStore = create<LayoutState>()(
 					});
 				});
 
-				logger.info("ui", `Reorder complete`);
+				logger.debug("ui", `Reorder complete`);
 			},
 
 			moveGroupToSidebar: (sourceGroupId, targetSidebar, targetGroupId, insertBefore = false) => {
 				const state = get();
 
-				logger.info("ui", `Starting moveGroupToSidebar`, {
+				logger.debug("ui", `Starting moveGroupToSidebar`, {
 					sourceGroupId,
 					targetSidebar,
 					targetGroupId,
@@ -529,14 +533,14 @@ export const useLayoutStore = create<LayoutState>()(
 				}
 
 				if (sourceSidebar === targetSidebar) {
-					logger.info("ui", `Group ${sourceGroupId} is already on ${targetSidebar} sidebar, using reorderGroups instead`);
+					logger.debug("ui", `Group ${sourceGroupId} is already on ${targetSidebar} sidebar, using reorderGroups instead`);
 					if (targetGroupId) {
 						get().reorderGroups(targetSidebar, sourceGroupId, targetGroupId, insertBefore);
 					}
 					return;
 				}
 
-				logger.info("ui", `Moving group ${sourceGroupId} from ${sourceSidebar} to ${targetSidebar}`, {
+				logger.debug("ui", `Moving group ${sourceGroupId} from ${sourceSidebar} to ${targetSidebar}`, {
 					sourceGroup: { id: sourceGroup.id, sections: sourceGroup.sections }
 				});
 
@@ -580,7 +584,7 @@ export const useLayoutStore = create<LayoutState>()(
 					get().setRightSidebarOpen(true);
 				}
 
-				logger.info("ui", `Move to ${targetSidebar} sidebar complete`);
+				logger.debug("ui", `Move to ${targetSidebar} sidebar complete`);
 			},
 
 			setGraphProvider: (provider) =>
@@ -612,8 +616,43 @@ export const useLayoutStore = create<LayoutState>()(
 			}),
 			// Migration for existing localStorage entries
 			migrate: (persistedState: unknown): unknown => {
-				if (persistedState && typeof persistedState === "object") {
-					const state = persistedState as LayoutPersistedState;
+				function isValidPersistedState(state: unknown): state is Record<string, unknown> {
+					return state !== null && typeof state === "object";
+				}
+
+				function isLayoutPersistedState(state: unknown): state is LayoutPersistedState {
+					if (!isValidPersistedState(state)) {
+						return false;
+					}
+					// Validate optional boolean fields
+					const booleanFields = ["leftSidebarOpen", "leftSidebarPinned", "rightSidebarOpen", "rightSidebarPinned", "autoPinOnLayoutStabilization"];
+					for (const field of booleanFields) {
+						if (field in state && typeof state[field] !== "boolean" && typeof state[field] !== "undefined") {
+							return false;
+						}
+					}
+					// Validate optional object fields
+					if ("collapsedSections" in state && state.collapsedSections !== null && typeof state.collapsedSections !== "object") {
+						return false;
+					}
+					if ("sectionPlacements" in state && state.sectionPlacements !== null && typeof state.sectionPlacements !== "object") {
+						return false;
+					}
+					if ("activeGroups" in state && state.activeGroups !== null && typeof state.activeGroups !== "object") {
+						return false;
+					}
+					if ("toolGroups" in state && state.toolGroups !== null && typeof state.toolGroups !== "object") {
+						return false;
+					}
+					// Validate optional string fields
+					if ("graphProvider" in state && typeof state.graphProvider !== "string" && typeof state.graphProvider !== "undefined") {
+						return false;
+					}
+					return true;
+				}
+
+				if (isLayoutPersistedState(persistedState)) {
+					const state = persistedState;
 					let migrated = false;
 
 					// Add autoPinOnLayoutStabilization if missing

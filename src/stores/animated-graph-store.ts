@@ -116,12 +116,12 @@ export const useAnimatedGraphStore = create<AnimatedGraphState>()(
 					state.isAnimating = animating;
 					if (animating) {
 						state.currentAnimationStart = Date.now();
-						logger.info("graph", "Animation started", {
+						logger.debug("graph", "Animation started", {
 							timestamp: state.currentAnimationStart,
 							config: state.animationConfig
 						});
 					} else {
-						logger.info("graph", "Animation stopped");
+						logger.debug("graph", "Animation stopped");
 					}
 				});
 			},
@@ -129,7 +129,7 @@ export const useAnimatedGraphStore = create<AnimatedGraphState>()(
 			setPaused: (paused) => {
 				set((state) => {
 					state.isPaused = paused;
-					logger.info("graph", paused ? "Animation paused" : "Animation resumed");
+					logger.debug("graph", paused ? "Animation paused" : "Animation resumed");
 				});
 			},
 
@@ -185,7 +185,7 @@ export const useAnimatedGraphStore = create<AnimatedGraphState>()(
 						state.staticPositions[pos.id] = { ...pos };
 					});
 
-					logger.info("graph", "Updated static positions", {
+					logger.debug("graph", "Updated static positions", {
 						count: positions.length
 					});
 				});
@@ -211,7 +211,7 @@ export const useAnimatedGraphStore = create<AnimatedGraphState>()(
 				set((state) => {
 					state.animatedPositions = {};
 					state.staticPositions = {};
-					logger.info("graph", "Cleared all positions");
+					logger.debug("graph", "Cleared all positions");
 				});
 			},
 
@@ -251,7 +251,7 @@ export const useAnimatedGraphStore = create<AnimatedGraphState>()(
 					});
 					state.animatedPositions = {};
 
-					logger.info("graph", "Animation completed", {
+					logger.debug("graph", "Animation completed", {
 						...completedStats,
 						duration: `${duration.toString()}ms`,
 						historyCount: state.animationHistory.length
@@ -268,7 +268,7 @@ export const useAnimatedGraphStore = create<AnimatedGraphState>()(
 					state.iteration = 0;
 					state.fps = 0;
 					state.animatedPositions = {};
-					logger.info("graph", "Animation reset");
+					logger.debug("graph", "Animation reset");
 				});
 			},
 
@@ -276,7 +276,7 @@ export const useAnimatedGraphStore = create<AnimatedGraphState>()(
 			requestRestart: () => {
 				set((state) => {
 					state.restartRequested = true;
-					logger.info("graph", "Animation restart requested from external component");
+					logger.debug("graph", "Animation restart requested from external component");
 				});
 			},
 
@@ -290,14 +290,14 @@ export const useAnimatedGraphStore = create<AnimatedGraphState>()(
 			setUseAnimatedLayout: (use) => {
 				set((state) => {
 					state.useAnimatedLayout = use;
-					logger.info("graph", `Animated layout ${use ? "enabled" : "disabled"}`);
+					logger.debug("graph", `Animated layout ${use ? "enabled" : "disabled"}`);
 				});
 			},
 
 			updateAnimationConfig: (config) => {
 				set((state) => {
 					Object.assign(state.animationConfig, config);
-					logger.info("graph", "Animation config updated", {
+					logger.debug("graph", "Animation config updated", {
 						newConfig: state.animationConfig
 					});
 				});
@@ -322,7 +322,7 @@ export const useAnimatedGraphStore = create<AnimatedGraphState>()(
 						state.staticPositions[pos.id] = { ...pos };
 					});
 
-					logger.info("graph", "Synced animated store with graph store", {
+					logger.debug("graph", "Synced animated store with graph store", {
 						nodeCount: nodes.length,
 						positionCount: positions.length,
 						layoutType: graphStore.currentLayout.type,
@@ -351,7 +351,7 @@ export const useAnimatedGraphStore = create<AnimatedGraphState>()(
 					}
 				});
 
-				logger.info("graph", "Applied positions to graph store", {
+				logger.debug("graph", "Applied positions to graph store", {
 					appliedCount: currentPositions.length
 				});
 			},

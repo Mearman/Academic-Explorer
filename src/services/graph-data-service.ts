@@ -15,6 +15,8 @@ import { logError, logger } from "@/lib/logger";
 import { RequestDeduplicationService, createRequestDeduplicationService } from "./request-deduplication-service";
 import { RelationshipDetectionService, createRelationshipDetectionService } from "./relationship-detection-service";
 import { safeSlice } from "@/lib/openalex/utils/hydration-helpers";
+import { isEntityType } from "@/lib/type-guards";
+import { isWork, isAuthor, isSource, isInstitution } from "@/lib/openalex/type-guards";
 import {
 	getCachedOpenAlexEntities,
 	setCachedGraphNodes,
@@ -30,7 +32,6 @@ import type {
 	SearchOptions,
 	GraphCache,
 } from "@/lib/graph/types";
-import type { ExpansionTarget } from "@/lib/graph/types/expansion-settings";
 import { RelationType } from "@/lib/graph/types";
 import type {
 	Work,
@@ -115,7 +116,7 @@ export class GraphDataService {
 				store.pinNode(primaryNodeId);
 			}
 
-			logger.info("graph", "Entity graph loaded with incremental hydration", {
+			logger.debug("graph", "Entity graph loaded with incremental hydration", {
 				nodeCount: nodes.length,
 				edgeCount: edges.length,
 				primaryNodeId,
@@ -123,7 +124,7 @@ export class GraphDataService {
 			}, "GraphDataService");
 
 			// Detect relationships between all initial nodes using batch processing
-			logger.info("graph", "Starting relationship detection for initial graph nodes", {
+			logger.debug("graph", "Starting relationship detection for initial graph nodes", {
 				nodeCount: nodes.length
 			}, "GraphDataService");
 
@@ -132,7 +133,7 @@ export class GraphDataService {
 				.then((detectedEdges) => {
 					// Add detected relationship edges to the graph
 					if (detectedEdges.length > 0) {
-						logger.info("graph", "Adding detected relationship edges to initial graph", {
+						logger.debug("graph", "Adding detected relationship edges to initial graph", {
 							detectedEdgeCount: detectedEdges.length
 						}, "GraphDataService");
 
@@ -179,7 +180,7 @@ export class GraphDataService {
 
 				// Node will be hydrated on-demand when specific fields are needed
 
-				logger.info("graph", "Existing node selected", {
+				logger.debug("graph", "Existing node selected", {
 					nodeId: existingNode.id,
 					entityId
 				}, "GraphDataService");
@@ -189,7 +190,7 @@ export class GraphDataService {
 					.then((detectedEdges) => {
 						// Add detected relationship edges to the graph
 						if (detectedEdges.length > 0) {
-							logger.info("graph", "Adding detected relationship edges for existing node", {
+							logger.debug("graph", "Adding detected relationship edges for existing node", {
 								nodeId: existingNode.id,
 								detectedEdgeCount: detectedEdges.length
 							}, "GraphDataService");
@@ -246,7 +247,7 @@ export class GraphDataService {
 					.then((detectedEdges) => {
 						// Add detected relationship edges to the graph
 						if (detectedEdges.length > 0) {
-							logger.info("graph", "Adding detected relationship edges for newly added node", {
+							logger.debug("graph", "Adding detected relationship edges for newly added node", {
 								nodeId: primaryNodeId,
 								detectedEdgeCount: detectedEdges.length
 							}, "GraphDataService");
@@ -266,7 +267,7 @@ export class GraphDataService {
 				// Note: No automatic expansion - user must manually expand nodes
 			}
 
-			logger.info("graph", "Entity loaded into graph", {
+			logger.debug("graph", "Entity loaded into graph", {
 				entityId,
 				entityType: detection.entityType,
 				nodeCount: nodes.length,
@@ -286,7 +287,7 @@ export class GraphDataService {
 					.then((detectedEdges) => {
 						// Add detected relationship edges to the graph
 						if (detectedEdges.length > 0) {
-							logger.info("graph", "Adding detected relationship edges for initial graph nodes", {
+							logger.debug("graph", "Adding detected relationship edges for initial graph nodes", {
 								detectedEdgeCount: detectedEdges.length
 							}, "GraphDataService");
 
@@ -343,7 +344,7 @@ export class GraphDataService {
 			// Add to repository instead of main graph
 			repositoryStore.addToRepository(nodes, edges);
 
-			logger.info("repository", "Entity loaded into repository", {
+			logger.debug("repository", "Entity loaded into repository", {
 				entityId,
 				entityType: detection.entityType,
 				nodeCount: nodes.length,
@@ -368,11 +369,11 @@ export class GraphDataService {
 			const cachedEntities = getCachedOpenAlexEntities(this.queryClient);
 
 			if (cachedEntities.length === 0) {
-				logger.info("graph", "No cached entities found to load", {}, "GraphDataService");
+				logger.debug("graph", "No cached entities found to load", {}, "GraphDataService");
 				return;
 			}
 
-			logger.info("graph", "Loading all cached entities into graph", {
+			logger.debug("graph", "Loading all cached entities into graph", {
 				count: cachedEntities.length
 			}, "GraphDataService");
 
@@ -415,7 +416,7 @@ export class GraphDataService {
 				store.calculateNodeDepths(firstPinnedNodeId);
 			}
 
-			logger.info("graph", "Loaded all cached entities into graph", {
+			logger.debug("graph", "Loaded all cached entities into graph", {
 				nodeCount: finalNodes.length,
 				edgeCount: finalEdges.length,
 				pinnedNodesCount: pinnedNodes.length,
@@ -447,7 +448,7 @@ export class GraphDataService {
 			// Mark node as loading
 			store.markNodeAsLoading(nodeId);
 
-			logger.info("graph", "Hydrating node to full with selective field loading", {
+			logger.debug("graph", "Hydrating node to full with selective field loading", {
 				nodeId,
 				entityType: node.type,
 				label: node.label
@@ -479,7 +480,7 @@ export class GraphDataService {
 					entityData: fullNodeData.entityData
 				});
 
-				logger.info("graph", "Node hydrated with selective field loading", {
+				logger.debug("graph", "Node hydrated with selective field loading", {
 					nodeId,
 					newLabel: fullNodeData.label,
 					fieldsLoaded: "metadata"
@@ -508,7 +509,7 @@ export class GraphDataService {
 					entityData: fullNodeData.entityData
 				});
 
-				logger.info("graph", "Node hydrated with full entity fetch", {
+				logger.debug("graph", "Node hydrated with full entity fetch", {
 					nodeId,
 					newLabel: fullNodeData.label,
 					fieldsLoaded: "all"
@@ -541,7 +542,7 @@ export class GraphDataService {
 		const store = useGraphStore.getState();
 		const allNodes = Object.values(store.nodes).filter((node): node is NonNullable<typeof node> => node != null);
 
-		logger.info("graph", "Starting relationship detection for all nodes", {
+		logger.debug("graph", "Starting relationship detection for all nodes", {
 			nodeCount: allNodes.length
 		}, "GraphDataService");
 
@@ -577,7 +578,7 @@ export class GraphDataService {
 
 			// Add detected edges to graph if any were found
 			if (allDetectedEdges.length > 0) {
-				logger.info("graph", "Adding detected edges from batch processing", {
+				logger.debug("graph", "Adding detected edges from batch processing", {
 					batchIndex: Math.floor(i / batchSize) + 1,
 					detectedEdgeCount: allDetectedEdges.length
 				}, "GraphDataService");
@@ -604,7 +605,7 @@ export class GraphDataService {
 			}
 		}
 
-		logger.info("graph", "Relationship detection completed for all nodes", {
+		logger.debug("graph", "Relationship detection completed for all nodes", {
 			totalProcessed: processedCount,
 			totalNodes: allNodes.length
 		}, "GraphDataService");
@@ -623,7 +624,7 @@ export class GraphDataService {
 			return;
 		}
 
-		logger.info("graph", "Starting batch hydration of minimal nodes", {
+		logger.debug("graph", "Starting batch hydration of minimal nodes", {
 			minimalNodeCount: minimalNodes.length
 		}, "GraphDataService");
 
@@ -672,7 +673,7 @@ export class GraphDataService {
 			}
 		}
 
-		logger.info("graph", "Finished hydrating all minimal nodes", {
+		logger.debug("graph", "Finished hydrating all minimal nodes", {
 			totalRequested: minimalNodes.length,
 			totalProcessed: processedCount,
 			successRate: processedCount / minimalNodes.length
@@ -693,7 +694,7 @@ export class GraphDataService {
 			return;
 		}
 
-		logger.info("graph", "Starting immediate parallel hydration of all minimal nodes", {
+		logger.debug("graph", "Starting immediate parallel hydration of all minimal nodes", {
 			minimalNodeCount: minimalNodes.length
 		}, "GraphDataService");
 
@@ -716,7 +717,7 @@ export class GraphDataService {
 		const successfulHydrations = results.filter(result => result.status === "fulfilled").length;
 		const failedHydrations = results.length - successfulHydrations;
 
-		logger.info("graph", "Completed immediate parallel hydration of all minimal nodes", {
+		logger.debug("graph", "Completed immediate parallel hydration of all minimal nodes", {
 			totalRequested: minimalNodes.length,
 			successful: successfulHydrations,
 			failed: failedHydrations,
@@ -733,7 +734,7 @@ export class GraphDataService {
 
 		// Check if already expanded using TanStack Query cache (unless forced)
 		if (!force && isNodeExpanded(this.queryClient, nodeId)) {
-			logger.info("graph", "Node already expanded, skipping expansion", { nodeId }, "GraphDataService");
+			logger.debug("graph", "Node already expanded, skipping expansion", { nodeId }, "GraphDataService");
 			return;
 		}
 
@@ -761,7 +762,7 @@ export class GraphDataService {
 			store.markNodeAsLoading(nodeId);
 
 			// Log expansion attempt
-			logger.info("graph", "Expanding node", {
+			logger.debug("graph", "Expanding node", {
 				nodeId,
 				entityType: node.type,
 				force,
@@ -775,7 +776,12 @@ export class GraphDataService {
 
 			// Get expansion settings for this entity type
 			const expansionSettingsStore = useExpansionSettingsStore.getState();
-			const expansionTarget = node.type as ExpansionTarget;
+			// Safely convert entity type to expansion target with type guard
+			if (!isEntityType(node.type)) {
+				logger.error("graph", "Invalid entity type for expansion", { nodeId, entityType: node.type }, "GraphDataService");
+				return;
+			}
+			const expansionTarget = node.type; // Already validated as EntityType, which extends ExpansionTarget
 			const expansionSettings = expansionSettingsStore.getSettings(expansionTarget);
 
 			// Log expansion settings usage
@@ -806,7 +812,7 @@ export class GraphDataService {
 			let detectedEdges: GraphEdge[] = [];
 			if (relatedData.nodes.length > 0) {
 				const newNodeIds = relatedData.nodes.map(n => n.id);
-				logger.info("graph", "Starting synchronous relationship detection for expanded nodes", {
+				logger.debug("graph", "Starting synchronous relationship detection for expanded nodes", {
 					expandedNodeId: nodeId,
 					newNodeCount: newNodeIds.length,
 					entityType: node.type
@@ -816,7 +822,7 @@ export class GraphDataService {
 					// Run relationship detection synchronously to ensure edges are ready
 					detectedEdges = await this.relationshipDetectionService.detectRelationshipsForNodes(newNodeIds);
 
-					logger.info("graph", "Synchronous relationship detection completed", {
+					logger.debug("graph", "Synchronous relationship detection completed", {
 						expandedNodeId: nodeId,
 						detectedEdgeCount: detectedEdges.length,
 						relationships: detectedEdges.map(e => ({
@@ -840,7 +846,7 @@ export class GraphDataService {
 			const finalNodes = [...currentNodes, ...relatedData.nodes];
 			const finalEdges = [...currentEdges, ...allNewEdges];
 
-			logger.info("graph", "Performing atomic batch update", {
+			logger.debug("graph", "Performing atomic batch update", {
 				expandedNodeId: nodeId,
 				newNodeCount: relatedData.nodes.length,
 				newEdgeCount: relatedData.edges.length,
@@ -1079,7 +1085,7 @@ export class GraphDataService {
 				position: node.position, // Preserve current position
 			});
 
-			logger.info("graph", "Node fully hydrated (without expansion)", {
+			logger.debug("graph", "Node fully hydrated (without expansion)", {
 				nodeId,
 				entityType: node.type,
 				externalIdCount: fullNodeData.externalIds.length
@@ -1101,11 +1107,11 @@ export class GraphDataService {
 		const allVisibleNodes = Object.values(nodes).filter((node): node is NonNullable<typeof node> => node != null).filter(node => visibleEntityTypes[node.type]);
 
 		if (allVisibleNodes.length === 0) {
-			logger.info("graph", "No visible nodes found to expand", { entityType }, "GraphDataService");
+			logger.debug("graph", "No visible nodes found to expand", { entityType }, "GraphDataService");
 			return;
 		}
 
-		logger.info("graph", `Expanding all visible nodes to find ${entityType} entities`, {
+		logger.debug("graph", `Expanding all visible nodes to find ${entityType} entities`, {
 			entityType,
 			visibleNodeCount: allVisibleNodes.length,
 			options
@@ -1183,7 +1189,7 @@ export class GraphDataService {
 			// Add new nodes and edges to the graph
 			if (newNodes.length > 0) {
 				store.addNodes(newNodes);
-				logger.info("graph", `Added ${newNodes.length.toString()} new ${entityType} nodes to graph`, {
+				logger.debug("graph", `Added ${newNodes.length.toString()} new ${entityType} nodes to graph`, {
 					entityType,
 					addedCount: newNodes.length
 				}, "GraphDataService");
@@ -1191,13 +1197,13 @@ export class GraphDataService {
 
 			if (newEdges.length > 0) {
 				store.addEdges(newEdges);
-				logger.info("graph", `Added ${newEdges.length.toString()} new edges to graph`, {
+				logger.debug("graph", `Added ${newEdges.length.toString()} new edges to graph`, {
 					entityType,
 					edgeCount: newEdges.length
 				}, "GraphDataService");
 			}
 
-			logger.info("graph", `Completed expanding all visible nodes for ${entityType} entities`, {
+			logger.debug("graph", `Completed expanding all visible nodes for ${entityType} entities`, {
 				entityType,
 				expandedNodeCount: allVisibleNodes.length,
 				newNodesAdded: newNodes.length,
@@ -1225,7 +1231,16 @@ export class GraphDataService {
 			return [];
 		}
 
-		const data = entityData as Record<string, unknown>;
+		// Type guard for entityData as record
+		function isRecord(value: unknown): value is Record<string, unknown> {
+			return value !== null && typeof value === "object" && !Array.isArray(value);
+		}
+
+		if (!isRecord(entityData)) {
+			return [];
+		}
+
+		const data = entityData;
 		const entityIds: string[] = [];
 
 		// Map of entity types to their common field names in OpenAlex data
@@ -1250,17 +1265,15 @@ export class GraphDataService {
 				for (const item of fieldValue) {
 					if (typeof item === "string" && item.startsWith("https://openalex.org/")) {
 						entityIds.push(item);
-					} else if (item && typeof item === "object") {
-						const itemData = item as Record<string, unknown>;
-						if (typeof itemData.id === "string" && itemData.id.startsWith("https://openalex.org/")) {
-							entityIds.push(itemData.id);
+					} else if (item && typeof item === "object" && !Array.isArray(item)) {
+						if (isRecord(item) && typeof item.id === "string" && item.id.startsWith("https://openalex.org/")) {
+							entityIds.push(item.id);
 						}
 					}
 				}
-			} else if (fieldValue && typeof fieldValue === "object") {
-				const objData = fieldValue as Record<string, unknown>;
-				if (typeof objData.id === "string" && objData.id.startsWith("https://openalex.org/")) {
-					entityIds.push(objData.id);
+			} else if (fieldValue && typeof fieldValue === "object" && !Array.isArray(fieldValue)) {
+				if (isRecord(fieldValue) && typeof fieldValue.id === "string" && fieldValue.id.startsWith("https://openalex.org/")) {
+					entityIds.push(fieldValue.id);
 				}
 			}
 		}
@@ -1302,7 +1315,10 @@ export class GraphDataService {
 
 		// Determine entity type
 		const detection = this.detector.detectEntityIdentifier(entity.id);
-		const entityType = detection.entityType as EntityType;
+		if (!detection.entityType || !isEntityType(detection.entityType)) {
+			throw new Error(`Unable to determine valid entity type for: ${entity.id}`);
+		}
+		const entityType = detection.entityType;
 
 		// Create main entity node
 		const mainNode = this.createNodeFromEntity(entity, entityType);
@@ -1311,28 +1327,44 @@ export class GraphDataService {
 		// Transform based on entity type
 		switch (entityType) {
 			case "works": {
-				const workData = this.transformWork(entity as Work);
+				if (!isWork(entity)) {
+					logger.error("graph", "Entity is not a valid Work", { entityId: entity.id }, "GraphDataService");
+					break;
+				}
+				const workData = this.transformWork(entity);
 				nodes.push(...workData.nodes);
 				edges.push(...workData.edges);
 				break;
 			}
 
 			case "authors": {
-				const authorData = this.transformAuthor(entity as Author);
+				if (!isAuthor(entity)) {
+					logger.error("graph", "Entity is not a valid Author", { entityId: entity.id }, "GraphDataService");
+					break;
+				}
+				const authorData = this.transformAuthor(entity);
 				nodes.push(...authorData.nodes);
 				edges.push(...authorData.edges);
 				break;
 			}
 
 			case "sources": {
-				const sourceData = this.transformSource(entity as Source);
+				if (!isSource(entity)) {
+					logger.error("graph", "Entity is not a valid Source", { entityId: entity.id }, "GraphDataService");
+					break;
+				}
+				const sourceData = this.transformSource(entity);
 				nodes.push(...sourceData.nodes);
 				edges.push(...sourceData.edges);
 				break;
 			}
 
 			case "institutions": {
-				const institutionData = this.transformInstitution(entity as InstitutionEntity);
+				if (!isInstitution(entity)) {
+					logger.error("graph", "Entity is not a valid Institution", { entityId: entity.id }, "GraphDataService");
+					break;
+				}
+				const institutionData = this.transformInstitution(entity);
 				nodes.push(...institutionData.nodes);
 				edges.push(...institutionData.edges);
 				break;
@@ -1515,50 +1547,51 @@ export class GraphDataService {
 	private extractExternalIds(entity: OpenAlexEntity, entityType: EntityType): ExternalIdentifier[] {
 		const externalIds: ExternalIdentifier[] = [];
 
+		// Type guard for basic entity validation
+		if (!entity || typeof entity !== "object") {
+			return externalIds;
+		}
+
 		switch (entityType) {
 			case "works": {
-				const work = entity as Work;
-				if (work.doi) {
+				if ("doi" in entity && typeof entity.doi === "string" && entity.doi) {
 					externalIds.push({
 						type: "doi",
-						value: work.doi,
-						url: `https://doi.org/${work.doi}`,
+						value: entity.doi,
+						url: `https://doi.org/${entity.doi}`,
 					});
 				}
 				break;
 			}
 
 			case "authors": {
-				const author = entity as Author;
-				if (author.orcid) {
+				if ("orcid" in entity && typeof entity.orcid === "string" && entity.orcid) {
 					externalIds.push({
 						type: "orcid",
-						value: author.orcid,
-						url: author.orcid.startsWith("http") ? author.orcid : `https://orcid.org/${author.orcid}`,
+						value: entity.orcid,
+						url: entity.orcid.startsWith("http") ? entity.orcid : `https://orcid.org/${entity.orcid}`,
 					});
 				}
 				break;
 			}
 
 			case "sources": {
-				const source = entity as Source;
-				if (source.issn_l) {
+				if ("issn_l" in entity && typeof entity.issn_l === "string" && entity.issn_l) {
 					externalIds.push({
 						type: "issn_l",
-						value: source.issn_l,
-						url: `https://portal.issn.org/resource/ISSN/${source.issn_l}`,
+						value: entity.issn_l,
+						url: `https://portal.issn.org/resource/ISSN/${entity.issn_l}`,
 					});
 				}
 				break;
 			}
 
 			case "institutions": {
-				const institution = entity as InstitutionEntity;
-				if (institution.ror) {
+				if ("ror" in entity && typeof entity.ror === "string" && entity.ror) {
 					externalIds.push({
 						type: "ror",
-						value: institution.ror,
-						url: institution.ror.startsWith("http") ? institution.ror : `https://ror.org/${institution.ror}`,
+						value: entity.ror,
+						url: entity.ror.startsWith("http") ? entity.ror : `https://ror.org/${entity.ror}`,
 					});
 				}
 				break;
@@ -1571,9 +1604,23 @@ export class GraphDataService {
 	/**
    * Get entity data for storage in GraphNode - no artificial metadata extraction
    */
+	/**
+	 * Type guard to safely convert OpenAlexEntity to Record<string, unknown>
+	 */
+	private convertEntityToRecord(entity: OpenAlexEntity): Record<string, unknown> {
+		// All OpenAlex entities are guaranteed to be objects with string keys
+		if (typeof entity !== "object" || entity === null) {
+			throw new Error("Invalid entity data: entity must be a non-null object");
+		}
+
+		// Use Object.assign to safely copy all enumerable properties
+		// This avoids type assertions while maintaining all data
+		return Object.assign({}, entity);
+	}
+
 	private getEntityData(entity: OpenAlexEntity): Record<string, unknown> {
 		// Store the complete entity data - helper functions will extract what's needed on-demand
-		return entity as unknown as Record<string, unknown>;
+		return this.convertEntityToRecord(entity);
 	}
 
 	/**

@@ -205,7 +205,7 @@ export const useNetworkActivityStore = create<NetworkActivityState>()(
 
 			get().recomputeAll();
 
-			logger.info("api", "Network request added", {
+			logger.debug("api", "Network request added", {
 				id,
 				url: request.url,
 				type: request.type,
@@ -293,7 +293,7 @@ export const useNetworkActivityStore = create<NetworkActivityState>()(
 
 			get().recomputeAll();
 
-			logger.info("api", "Cleared old network requests", {
+			logger.debug("api", "Cleared old network requests", {
 				removed: requests.length - toKeep.length,
 				kept: toKeep.length
 			}, "NetworkActivityStore");
@@ -306,7 +306,7 @@ export const useNetworkActivityStore = create<NetworkActivityState>()(
 
 			get().recomputeAll();
 
-			logger.info("api", "Cleared all network requests", {}, "NetworkActivityStore");
+			logger.debug("api", "Cleared all network requests", {}, "NetworkActivityStore");
 		},
 
 		// Filter actions

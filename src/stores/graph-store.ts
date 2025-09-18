@@ -326,8 +326,18 @@ export const useGraphStore = create<GraphState>()(
 				}
 
 				// Set nodes and edges on the new provider outside of the Zustand set call
-				provider.setNodes(Object.values(state.nodes).filter((node): node is NonNullable<typeof node> => node != null));
-				provider.setEdges(Object.values(state.edges).filter((edge): edge is NonNullable<typeof edge> => edge != null));
+				// Type guard for filtering out undefined nodes
+				function isValidNode(node: GraphNode | undefined): node is GraphNode {
+					return node !== undefined;
+				}
+
+				// Type guard for filtering out undefined edges
+				function isValidEdge(edge: GraphEdge | undefined): edge is GraphEdge {
+					return edge !== undefined;
+				}
+
+				provider.setNodes(Object.values(state.nodes).filter(isValidNode));
+				provider.setEdges(Object.values(state.edges).filter(isValidEdge));
 
 				// Only update the provider in the store
 				set({ provider });
@@ -384,7 +394,7 @@ export const useGraphStore = create<GraphState>()(
 					draft.provider?.removeNode(nodeId);
 
 					// Remove connected edges
-					const edgeEntries = Object.entries(draft.edges).filter(([, edge]) => edge != null) as [string, GraphEdge][];
+					const edgeEntries = Object.entries(draft.edges).filter(([, edge]): edge is [string, GraphEdge] => edge != null);
 					const remainingEdges: Record<string, GraphEdge> = {};
 					edgeEntries.forEach(([edgeId, edge]) => {
 						if (edge.source === nodeId || edge.target === nodeId) {

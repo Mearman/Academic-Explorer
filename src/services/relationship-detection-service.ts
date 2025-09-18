@@ -8,6 +8,7 @@ import { rateLimitedOpenAlex } from "@/lib/openalex/rate-limited-client";
 import { EntityDetector } from "@/lib/graph/utils/entity-detection";
 import { useGraphStore } from "@/stores/graph-store";
 import { logError, logger } from "@/lib/logger";
+import { isWork, isAuthor, isSource, isInstitution, isNonNull } from "@/lib/openalex/type-guards";
 import { RequestDeduplicationService, createRequestDeduplicationService } from "./request-deduplication-service";
 import type {
 	GraphNode,
@@ -16,10 +17,6 @@ import type {
 } from "@/lib/graph/types";
 import { RelationType } from "@/lib/graph/types";
 import type {
-	Work,
-	Author,
-	Source,
-	InstitutionEntity,
 	OpenAlexEntity,
 } from "@/lib/openalex/types";
 import { ADVANCED_FIELD_SELECTIONS, type AdvancedEntityFieldSelections } from "@/lib/openalex/advanced-field-selection";
@@ -73,7 +70,7 @@ export class RelationshipDetectionService {
 	async detectRelationshipsForNodes(nodeIds: string[]): Promise<GraphEdge[]> {
 		if (nodeIds.length === 0) return [];
 
-		logger.info("graph", "Starting batch relationship detection with two-pass approach", {
+		logger.debug("graph", "Starting batch relationship detection with two-pass approach", {
 			nodeCount: nodeIds.length,
 			nodeIds
 		}, "RelationshipDetectionService");
@@ -92,7 +89,7 @@ export class RelationshipDetectionService {
 		}
 
 		// Pass 2: Re-check all nodes for relationships with each other (cross-batch relationships)
-		logger.info("graph", "Starting pass 2: cross-batch relationship detection", {
+		logger.debug("graph", "Starting pass 2: cross-batch relationship detection", {
 			nodeCount: nodeIds.length
 		}, "RelationshipDetectionService");
 
@@ -108,7 +105,7 @@ export class RelationshipDetectionService {
 		// Remove duplicate edges (same source-target-type combinations)
 		const uniqueEdges = this.deduplicateEdges(allNewEdges);
 
-		logger.info("graph", "Batch relationship detection completed", {
+		logger.debug("graph", "Batch relationship detection completed", {
 			processedNodeCount: nodeIds.length,
 			totalEdgesCreated: uniqueEdges.length,
 			duplicatesRemoved: allNewEdges.length - uniqueEdges.length
@@ -134,7 +131,7 @@ export class RelationshipDetectionService {
 		// The relationship detection service will fetch the minimal data needed regardless
 
 		try {
-			logger.info("graph", "Starting relationship detection for node", {
+			logger.debug("graph", "Starting relationship detection for node", {
 				nodeId,
 				entityType: newNode.type,
 				label: newNode.label
@@ -152,12 +149,12 @@ export class RelationshipDetectionService {
 			}
 
 			// Get all existing nodes in the graph
-			const existingNodes = Object.values(store.nodes).filter((node): node is NonNullable<typeof node> => node != null).filter(node => node.id !== nodeId);
+			const existingNodes = Object.values(store.nodes).filter(isNonNull).filter(node => node.id !== nodeId);
 
 			// Detect relationships with existing nodes
 			const detectedRelationships = this.analyzeRelationships(minimalData, existingNodes);
 
-			logger.info("graph", "Relationship detection completed", {
+			logger.debug("graph", "Relationship detection completed", {
 				nodeId,
 				detectedCount: detectedRelationships.length,
 				relationships: detectedRelationships.map(r => ({
@@ -172,7 +169,7 @@ export class RelationshipDetectionService {
 			// Add edges to the graph store
 			if (newEdges.length > 0) {
 				store.addEdges(newEdges);
-				logger.info("graph", "Added relationship edges to graph", {
+				logger.debug("graph", "Added relationship edges to graph", {
 					nodeId,
 					edgeCount: newEdges.length,
 					edgeIds: newEdges.map(e => e.id)
@@ -232,25 +229,29 @@ export class RelationshipDetectionService {
 			// Add type-specific fields
 			switch (entityType) {
 				case "works": {
-					const work = entity as Work;
-					minimalData.authorships = work.authorships;
-					minimalData.primary_location = work.primary_location;
-					minimalData.referenced_works = work.referenced_works;
+					if (isWork(entity)) {
+						minimalData.authorships = entity.authorships;
+						minimalData.primary_location = entity.primary_location;
+						minimalData.referenced_works = entity.referenced_works;
+					}
 					break;
 				}
 				case "authors": {
-					const author = entity as Author;
-					minimalData.affiliations = author.affiliations;
+					if (isAuthor(entity)) {
+						minimalData.affiliations = entity.affiliations;
+					}
 					break;
 				}
 				case "sources": {
-					const source = entity as Source;
-					minimalData.publisher = source.publisher;
+					if (isSource(entity)) {
+						minimalData.publisher = entity.publisher;
+					}
 					break;
 				}
 				case "institutions": {
-					const institution = entity as InstitutionEntity;
-					minimalData.lineage = institution.lineage;
+					if (isInstitution(entity)) {
+						minimalData.lineage = entity.lineage;
+					}
 					break;
 				}
 			}
@@ -514,7 +515,7 @@ export class RelationshipDetectionService {
 			const otherBatchNodes = batchNodeIds
 				.filter(id => id !== nodeId)
 				.map(id => store.getNode(id))
-				.filter(Boolean) as GraphNode[];
+				.filter(isNonNull);
 
 			// Analyze relationships specifically with the batch nodes
 			const detectedRelationships = this.analyzeCrossBatchRelationships(sourceData, otherBatchNodes);
@@ -556,7 +557,7 @@ export class RelationshipDetectionService {
 					node.entityId === referencedWorkId || node.id === referencedWorkId
 				);
 				if (referencedNode) {
-					logger.info("graph", "FOUND cross-batch citation relationship!", {
+					logger.debug("graph", "FOUND cross-batch citation relationship!", {
 						sourceWork: sourceData.display_name,
 						sourceId: sourceData.id,
 						targetWork: referencedNode.label,
