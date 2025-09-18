@@ -42,7 +42,7 @@ export class CustomForceManager {
       },
     };
 
-    logger.info("graph", "Custom force manager initialized", {
+    logger.debug("graph", "Custom force manager initialized", {
       config: this.state.config,
     });
   }
@@ -267,7 +267,7 @@ export class CustomForceManager {
   ): void {
     this.state.calculationFunctions.set(type, calculationFn);
 
-    logger.info("graph", "Custom calculation function registered", { type });
+    logger.debug("graph", "Custom calculation function registered", { type });
   }
 
   /**
@@ -338,7 +338,7 @@ export class CustomForceManager {
       ...config,
     };
 
-    logger.info("graph", "Force manager configuration updated", { config });
+    logger.debug("graph", "Force manager configuration updated", { config });
   }
 
   /**

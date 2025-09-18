@@ -39,7 +39,8 @@
     "lint:staged": "lint-staged",
     "clean": "rm -rf dist coverage .nx/cache .tanstack node_modules/.vite",
     "hooks:install": "husky",
-    "hooks:test": "npx lint-staged --diff-filter=A"
+    "hooks:test": "npx lint-staged --diff-filter=A",
+    "coverage:report": "node scripts/generate-coverage-report.js"
   },
   "dependencies": {
     "@mantine/core": "^8.3.1",
