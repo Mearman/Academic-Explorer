@@ -1,3 +1,10 @@
+## [6.0.3](https://github.com/Mearman/Academic-Explorer/compare/v6.0.2...v6.0.3) (2025-09-18)
+
+
+### Bug Fixes
+
+* **test:** resolve EventBridge mocking issues in force simulation tests ([70487f1](https://github.com/Mearman/Academic-Explorer/commit/70487f17f1c4e569bd2e983bab5d87dd57e2a9f0))
+
 ## [6.0.2](https://github.com/Mearman/Academic-Explorer/compare/v6.0.1...v6.0.2) (2025-09-18)
 
 
