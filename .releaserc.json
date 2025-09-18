@@ -3,7 +3,18 @@
   "repositoryUrl": "https://github.com/Mearman/Academic-Explorer",
   "tagFormat": "v${version}",
   "plugins": [
-    "@semantic-release/commit-analyzer",
+    [
+      "@semantic-release/commit-analyzer",
+      {
+        "releaseRules": [
+          {"type": "feat", "release": "minor"},
+          {"type": "fix", "release": "patch"},
+          {"type": "perf", "release": "patch"},
+          {"type": "chore", "scope": "deps", "release": "patch"},
+          {"type": "chore", "scope": "dependencies", "release": "patch"}
+        ]
+      }
+    ],
     "@semantic-release/release-notes-generator",
     [
       "@semantic-release/changelog",
