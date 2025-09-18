@@ -14,11 +14,17 @@ const LOCALSTORAGE_KEY = "academic-explorer-cache";
 const LOCALSTORAGE_MAX_SIZE = 5 * 1024 * 1024; // 5MB conservative limit
 const LOCALSTORAGE_COMPRESSION_THRESHOLD = 50 * 1024; // 50KB - compress larger items
 
+// Type guard to check if value is a record
+function isRecord(value: unknown): value is Record<string, unknown> {
+	return value !== null && typeof value === "object";
+}
+
 // Safe property accessor for unknown objects
 function getObjectProperty(obj: unknown, prop: string): unknown {
-	return obj !== null && typeof obj === "object" && Object.prototype.hasOwnProperty.call(obj, prop)
-		? (obj as Record<string, unknown>)[prop]
-		: undefined
+	if (isRecord(obj) && Object.prototype.hasOwnProperty.call(obj, prop)) {
+		return obj[prop];
+	}
+	return undefined;
 }
 
 // Type guard for PersistedClient with optional metadata
@@ -177,11 +183,13 @@ export function createHybridPersister(dbName = "academic-explorer-cache"): Persi
 					try {
 						const stored = localStorage.getItem(LOCALSTORAGE_KEY);
 						if (stored) {
-							const parsed = JSON.parse(stored) as unknown
+							const parsed: unknown = JSON.parse(stored);
 
 							// Validate parsed data structure
 							if (!isPersistedClientData(parsed)) {
-								logger.warn("cache", "Invalid localStorage cache structure, clearing", { keys: Object.keys(parsed as Record<string, unknown>) });
+								logger.warn("cache", "Invalid localStorage cache structure, clearing", {
+									keys: parsed && typeof parsed === "object" ? Object.keys(parsed) : []
+								});
 								localStorage.removeItem(LOCALSTORAGE_KEY);
 								throw new Error("Invalid cache structure");
 							}
@@ -211,7 +219,7 @@ export function createHybridPersister(dbName = "academic-explorer-cache"): Persi
 				const db = await openDatabase();
 				const tx = db.transaction("cache", "readonly");
 				const store = tx.objectStore("cache");
-				const data = await store.get("queryClient") as unknown;
+				const data: unknown = await store.get("queryClient");
 
 				// Validate persisted data structure
 				if (!isPersistedClientData(data)) {
@@ -288,7 +296,7 @@ export async function getCacheStats(dbName = "academic-explorer-cache") {
 		const db = await openDB(dbName, 1);
 		const tx = db.transaction("cache", "readonly");
 		const store = tx.objectStore("cache");
-		const data = await store.get("queryClient") as unknown;
+		const data: unknown = await store.get("queryClient");
 
 		// Validate persisted data structure
 		if (!isPersistedClientWithTimestamp(data)) {
