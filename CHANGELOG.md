@@ -1,3 +1,10 @@
+## [5.8.1](https://github.com/Mearman/Academic-Explorer/compare/v5.8.0...v5.8.1) (2025-09-18)
+
+
+### Bug Fixes
+
+* **ci:** revert release job to blocking ([c9414d7](https://github.com/Mearman/Academic-Explorer/commit/c9414d72ab00733390e245b8cc3e6d2f9803d270))
+
 # [5.8.0](https://github.com/Mearman/Academic-Explorer/compare/v5.7.0...v5.8.0) (2025-09-18)
 
 
