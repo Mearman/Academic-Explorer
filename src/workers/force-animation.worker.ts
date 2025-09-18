@@ -62,8 +62,8 @@ type AddCustomForceData = Omit<CustomForce, "id"> & { id?: string };
 // Type for updating an existing custom force (all fields optional except id)
 type UpdateCustomForceData = Partial<Omit<CustomForce, "id">> & { id: string };
 
-// Type for worker message data that can be either add or update
-type CustomForceMessageData = (AddCustomForceData | UpdateCustomForceData) & { id?: string };
+// Type for worker message data that includes all possible force data
+type CustomForceMessageData = AddCustomForceData | UpdateCustomForceData;
 
 interface WorkerMessage {
   type: "start" | "stop" | "pause" | "resume" | "update_parameters" | "sync_custom_forces" | "add_custom_force" | "remove_custom_force" | "update_custom_force";
@@ -223,9 +223,26 @@ self.onmessage = function(event: MessageEvent<WorkerMessage>) {
 			break;
 		case "add_custom_force":
 			if (forceData) {
-				// For add operations, we can use forceData directly as AddCustomForceData
-				// since the function signature accepts optional id
-				addCustomForce(forceData);
+				// For add operations, forceData should be AddCustomForceData
+				// Check required properties for add operation
+				if ("name" in forceData &&
+					"type" in forceData &&
+					"config" in forceData &&
+					typeof forceData.name === "string" &&
+					typeof forceData.type === "string" &&
+					typeof forceData.config === "object") {
+					// We've verified this has the required properties for AddCustomForceData
+					const addData: AddCustomForceData = {
+						name: forceData.name,
+						type: forceData.type,
+						enabled: ("enabled" in forceData && typeof forceData.enabled === "boolean") ? forceData.enabled : true,
+						strength: ("strength" in forceData && typeof forceData.strength === "number") ? forceData.strength : 0.5,
+						priority: ("priority" in forceData && typeof forceData.priority === "number") ? forceData.priority : 0,
+						config: forceData.config,
+						...(forceData.id && typeof forceData.id === "string" && { id: forceData.id })
+					};
+					addCustomForce(addData);
+				}
 			}
 			break;
 		case "remove_custom_force":
