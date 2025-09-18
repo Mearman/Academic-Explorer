@@ -412,7 +412,7 @@ describe("useRawEntityData", () => {
 				"useRawEntityData"
 			);
 
-			const logCall = mockLogger.info.mock.calls[0];
+			const logCall = mockLogger.debug.mock.calls[0];
 			const dataAge = logCall[2].dataAge;
 			expect(dataAge).toBeGreaterThan(9000); // Should be around 10 seconds
 			expect(dataAge).toBeLessThan(11000);
