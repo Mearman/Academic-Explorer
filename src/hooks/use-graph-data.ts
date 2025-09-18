@@ -35,7 +35,7 @@ export function useGraphData() {
 			// Clear node loading state
 			store.markNodeAsLoading(result.nodeId, false);
 
-			logger.info("graph", "Worker-based node expansion completed", {
+			logger.debug("graph", "Worker-based node expansion completed", {
 				nodeId: result.nodeId,
 				nodesAdded: result.nodes.length,
 				edgesAdded: result.edges.length,
@@ -118,7 +118,7 @@ export function useGraphData() {
 					store.calculateNodeDepths(firstPinnedNodeId);
 				}
 
-				logger.info("graph", "Fallback expansion completed", { nodeId }, "useGraphData");
+				logger.debug("graph", "Fallback expansion completed", { nodeId }, "useGraphData");
 			} catch (err) {
 				logger.error("graph", "Fallback expansion failed", {
 					nodeId,
@@ -134,7 +134,7 @@ export function useGraphData() {
 
 		// Check if expansion is already in progress
 		if (dataFetchingWorker.activeRequests.has(nodeId)) {
-			logger.info("graph", "Node expansion already in progress", { nodeId }, "useGraphData");
+			logger.debug("graph", "Node expansion already in progress", { nodeId }, "useGraphData");
 			return;
 		}
 
@@ -151,7 +151,7 @@ export function useGraphData() {
 		// Mark node as loading immediately for visual feedback
 		store.markNodeAsLoading(nodeId);
 
-		logger.info("graph", "Starting worker-based node expansion", {
+		logger.debug("graph", "Starting worker-based node expansion", {
 			nodeId,
 			entityType: node.type,
 			depth,
@@ -200,7 +200,7 @@ export function useGraphData() {
 		const limit = options?.limit ?? 10;
 		const force = options?.force ?? true;
 
-		logger.info("graph", "expandAllNodesOfType called", {
+		logger.debug("graph", "expandAllNodesOfType called", {
 			entityType,
 			depth,
 			limit,
@@ -221,7 +221,7 @@ export function useGraphData() {
 				store.calculateNodeDepths(firstPinnedNodeId);
 			}
 
-			logger.info("graph", "expandAllNodesOfType completed successfully", {
+			logger.debug("graph", "expandAllNodesOfType completed successfully", {
 				entityType
 			}, "useGraphData");
 		} catch (err) {

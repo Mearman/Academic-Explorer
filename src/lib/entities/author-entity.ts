@@ -69,7 +69,7 @@ export class AuthorEntity extends AbstractEntity<Author> {
 		const edges: GraphEdge[] = [];
 		const { limit = 10, expansionSettings } = options;
 
-		logger.info("graph", "AuthorEntity.expand called", {
+		logger.debug("graph", "AuthorEntity.expand called", {
 			contextEntityId: context.entityId,
 			limit,
 			hasExpansionSettings: Boolean(expansionSettings),
@@ -156,7 +156,7 @@ export class AuthorEntity extends AbstractEntity<Author> {
 			let page = 1;
 			let totalFetched = 0;
 
-			logger.info("graph", "Starting works fetch", {
+			logger.debug("graph", "Starting works fetch", {
 				shouldFetchAll,
 				effectiveLimit,
 				entityId: context.entityId
@@ -200,7 +200,7 @@ export class AuthorEntity extends AbstractEntity<Author> {
 				page++;
 			} while (shouldFetchAll || totalFetched < effectiveLimit);
 
-			logger.info("graph", "Completed works fetch", {
+			logger.debug("graph", "Completed works fetch", {
 				totalFetched: allWorks.length,
 				pagesProcessed: page,
 				entityId: context.entityId
@@ -252,7 +252,7 @@ export class AuthorEntity extends AbstractEntity<Author> {
 			return { nodes: [], edges: [] };
 		}
 
-		logger.info("graph", "AuthorEntity.expand completed", {
+		logger.debug("graph", "AuthorEntity.expand completed", {
 			nodesAdded: nodes.length,
 			edgesAdded: edges.length,
 			contextEntityId: context.entityId

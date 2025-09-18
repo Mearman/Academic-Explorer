@@ -374,7 +374,7 @@ export class WorksApi {
    * for await (const worksBatch of worksApi.streamWorks({
    *   filter: { 'publication_year': 2023 }
    * })) {
-   *   logger.info("api", `Processing batch of ${worksBatch.length} works`);
+   *   logger.debug("api", `Processing batch of ${worksBatch.length} works`);
    *   // Process works batch
    * }
    * ```

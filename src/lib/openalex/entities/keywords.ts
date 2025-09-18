@@ -280,7 +280,7 @@ export class KeywordsApi {
    * @example
    * ```typescript
    * for await (const keywordBatch of keywordsApi.streamKeywords({ filter: { 'works_count': '>10' } })) {
-   *   logger.info("api", `Processing ${keywordBatch.length} keywords`);
+   *   logger.debug("api", `Processing ${keywordBatch.length} keywords`);
    * }
    * ```
    */

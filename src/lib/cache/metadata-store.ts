@@ -31,7 +31,7 @@ async function openMetadataDB(): Promise<IDBPDatabase> {
 				// Create metadata store if it doesn't exist
 				if (!db.objectStoreNames.contains(METADATA_STORE)) {
 					db.createObjectStore(METADATA_STORE);
-					logger.info("cache", "Created app metadata store", { dbName: DB_NAME });
+					logger.debug("cache", "Created app metadata store", { dbName: DB_NAME });
 				}
 			},
 		});
@@ -55,7 +55,7 @@ export async function storeAppMetadata(metadata: AppMetadata): Promise<void> {
 		await store.put(metadata, METADATA_KEY);
 		await tx.done;
 
-		logger.info("cache", "Stored app metadata", {
+		logger.debug("cache", "Stored app metadata", {
 			version: metadata.version,
 			timestamp: metadata.lastCacheInvalidation
 		});
@@ -105,7 +105,7 @@ export async function clearAppMetadata(): Promise<void> {
 		await store.delete(METADATA_KEY);
 		await tx.done;
 
-		logger.info("cache", "Cleared app metadata");
+		logger.debug("cache", "Cleared app metadata");
 	} catch (error) {
 		logError("Failed to clear app metadata", error, "MetadataStore", "storage");
 		throw error;
