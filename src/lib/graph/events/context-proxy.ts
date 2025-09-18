@@ -32,11 +32,11 @@ interface CrossContextListener<TPayload = unknown> extends EventSystemListener<T
 export class CrossContextEventProxy<TEventType extends string, TPayload> extends BaseEventEmitter<TEventType, TPayload> {
   private crossContextListeners = new Map<TEventType, CrossContextListener<TPayload>[]>();
   private bridgeHandlerId: string;
-  private eventSchemas: Map<TEventType, z.ZodType> = new Map();
+  private eventSchemas: Map<TEventType, z.ZodType<TPayload>> = new Map();
 
   constructor(
     private contextId: string,
-    schemas?: Partial<Record<TEventType, z.ZodType>>
+    schemas?: Partial<Record<TEventType, z.ZodType<TPayload>>>
   ) {
     super();
 
@@ -337,7 +337,7 @@ export class CrossContextEventProxy<TEventType extends string, TPayload> extends
     }
 
     // Use the new type-safe Zod validator with proper error logging
-    // The createZodValidatedHandler ensures payload is properly typed after validation
+    // Schema is already typed as ZodType<TPayload> from the constructor
     return createZodValidatedHandler(
       (validatedPayload: TPayload) => {
         try {
