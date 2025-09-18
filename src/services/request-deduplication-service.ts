@@ -5,6 +5,7 @@
 
 import { QueryClient } from "@tanstack/react-query";
 import { logger } from "@/lib/logger";
+import { trackDeduplication, trackCacheOperation } from "@/services/network-interceptor";
 import type { OpenAlexEntity } from "@/lib/openalex/types";
 
 interface RequestCacheEntry {
@@ -38,6 +39,10 @@ export class RequestDeduplicationService {
 				entityId,
 				source: "tanstack-query"
 			}, "RequestDeduplicationService");
+
+			// Track cache hit in network monitor
+			trackCacheOperation("read", entityId, true);
+
 			return cachedEntity;
 		}
 
@@ -53,6 +58,9 @@ export class RequestDeduplicationService {
 				ageMs: Date.now() - entry.timestamp,
 				source: "deduplication"
 			}, "RequestDeduplicationService");
+
+			// Track deduplication in network monitor
+			trackDeduplication(`entity://${entityId}`, entityId);
 
 			return entry.promise;
 		}
