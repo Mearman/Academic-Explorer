@@ -22,3 +22,13 @@ export { ViewOptionsSection } from "./ViewOptionsSection";
 export { RawApiDataSection } from "@/components/molecules/RawApiDataSection";
 
 export { GraphStatsSection } from "./GraphStatsSection";
+
+export { default as NetworkActivitySection } from "./NetworkActivitySection";
+
+export { NodeRepositorySection } from "./NodeRepositorySection";
+
+export { EdgeRepositorySection } from "./EdgeRepositorySection";
+
+export { AllNodesSection } from "./AllNodesSection";
+
+export { AllEdgesSection } from "./AllEdgesSection";
