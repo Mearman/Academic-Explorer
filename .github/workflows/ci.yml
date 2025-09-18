@@ -303,13 +303,8 @@ jobs:
           timeout 30 bash -c 'until curl -s http://localhost:4173 | grep -q "Academic Explorer\|<div id=\"root\""; do sleep 2; done'
           echo "Preview server and app are ready"
 
-      - name: Run pa11y-ci accessibility tests
-        run: pnpm pa11y-ci --sitemap http://localhost:4173 --sitemap-find http://localhost:4173 --sitemap-replace http://localhost:4173
-        env:
-          NODE_OPTIONS: '--max-old-space-size=4096'
-
-      - name: Run Lighthouse CI accessibility audit
-        run: pnpm lhci autorun
+      - name: Run accessibility tests
+        run: pnpm nx a11y:ci
         env:
           NODE_OPTIONS: '--max-old-space-size=4096'
 
