@@ -173,14 +173,14 @@ export const AllNodesSection: React.FC = () => {
 		}
 
 		// Group by entity type
-		const grouped: Record<EntityType, GraphNode[]> = filtered.reduce((acc, node) => {
+		const grouped = filtered.reduce<Partial<Record<EntityType, GraphNode[]>>>((acc, node) => {
 			const type = node.type;
 			if (!(type in acc)) {
 				acc[type] = [];
 			}
 			acc[type].push(node);
 			return acc;
-		}, {} as Record<EntityType, GraphNode[]>);
+		}, {});
 
 		return {
 			filteredNodes: filtered,
@@ -352,7 +352,7 @@ export const AllNodesSection: React.FC = () => {
 			<ScrollArea style={{ height: "calc(100vh - 400px)" }}>
 				<Stack gap="md">
 					{entityTypeOptions.map(({ type, label, icon: IconComponent }) => {
-						const typeNodes = nodesByType[type] ?? [];
+						const typeNodes = nodesByType[type] || [];
 						const totalCount = entityTypeStats.total[type] || 0;
 						const visibleCount = entityTypeStats.visible[type] || 0;
 						const isTypeVisible = visibleEntityTypes[type];
