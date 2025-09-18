@@ -43,7 +43,7 @@ describe("Logger Module", () => {
 
 			const entry = logs[0];
 			expect(entry).toMatchObject({
-				level: "info",
+				level: "debug",
 				category: "general",
 				message: "Test message",
 				data: { test: true }
@@ -109,7 +109,7 @@ describe("Logger Module", () => {
 
 			const logs = logger.getLogs();
 			expect(logs[0]).toMatchObject({
-				level: "info",
+				level: "debug",
 				category: "api",
 				message: "Info message",
 				data: { info: true }
@@ -319,7 +319,7 @@ describe("Convenience logging functions", () => {
 
 			const logs = logger.getLogs();
 			expect(logs[0]).toMatchObject({
-				level: "info",
+				level: "debug",
 				category: "api",
 				message: "GET /api/works - 200",
 				data: {
@@ -410,7 +410,7 @@ describe("Convenience logging functions", () => {
 
 			const logs = logger.getLogs();
 			expect(logs[0]).toMatchObject({
-				level: "info",
+				level: "debug",
 				category: "graph",
 				message: "Graph operation: force-layout",
 				data: {
@@ -441,7 +441,7 @@ describe("Convenience logging functions", () => {
 
 			const logs = logger.getLogs();
 			expect(logs[0]).toMatchObject({
-				level: "info",
+				level: "debug",
 				category: "routing",
 				message: "Route change: /works → /authors/A123",
 				data: {
@@ -559,7 +559,7 @@ describe("Global error handling", () => {
 		// Should log initialization message
 		const logs = logger.getLogs();
 		expect(logs[0]).toMatchObject({
-			level: "info",
+			level: "debug",
 			category: "general",
 			message: "Global error handling initialized",
 			component: "setupGlobalErrorHandling"

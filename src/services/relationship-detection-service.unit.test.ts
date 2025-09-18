@@ -280,7 +280,10 @@ describe("RelationshipDetectionService", () => {
 						id: "https://openalex.org/S321",
 						display_name: "Test Journal"
 					}
-				}
+				},
+				// Required fields for isWork type guard
+				locations: [],
+				publication_year: 2023
 			};
 
 			mockDeduplicationService.getEntity.mockResolvedValue(mockWorkData);
@@ -308,7 +311,11 @@ describe("RelationshipDetectionService", () => {
 							display_name: "Test University"
 						}
 					}
-				]
+				],
+				// Required fields for isAuthor type guard
+				works_count: 10,
+				last_known_institutions: [],
+				orcid: null
 			};
 
 			mockDeduplicationService.getEntity.mockResolvedValue(mockAuthorData);
@@ -327,7 +334,11 @@ describe("RelationshipDetectionService", () => {
 			const mockSourceData = {
 				id: "https://openalex.org/S123",
 				display_name: "Test Journal",
-				publisher: "https://openalex.org/P456"
+				publisher: "https://openalex.org/P456",
+				// Required fields for isSource type guard
+				issn_l: "1234-5678",
+				host_organization: null,
+				abbreviated_title: "Test J"
 			};
 
 			mockDeduplicationService.getEntity.mockResolvedValue(mockSourceData);
@@ -866,7 +877,10 @@ describe("RelationshipDetectionService", () => {
 						id: "https://openalex.org/S321",
 						display_name: "Test Journal"
 					}
-				}
+				},
+				// Required fields for isWork type guard
+				locations: [],
+				publication_year: 2023
 			};
 
 			const existingNodes = [

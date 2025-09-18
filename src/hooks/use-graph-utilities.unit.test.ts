@@ -56,6 +56,7 @@ const mockGraphUtilitiesService = {
 };
 
 const mockLogger = {
+	debug: vi.fn(),
 	info: vi.fn(),
 	warn: vi.fn(),
 	error: vi.fn(),
@@ -158,6 +159,7 @@ describe("useGraphUtilities", () => {
 		vi.mocked(graphUtilitiesService.findConnectedComponents).mockImplementation(mockGraphUtilitiesService.findConnectedComponents);
 
 		// Connect logger mocks
+		vi.mocked(logger.debug).mockImplementation(mockLogger.debug);
 		vi.mocked(logger.info).mockImplementation(mockLogger.info);
 		vi.mocked(logger.warn).mockImplementation(mockLogger.warn);
 		vi.mocked(logger.error).mockImplementation(mockLogger.error);
@@ -270,7 +272,7 @@ describe("useGraphUtilities", () => {
 				testNodes.slice(0, 2),
 				testEdges.slice(0, 1)
 			);
-			expect(mockLogger.info).toHaveBeenCalledWith(
+			expect(mockLogger.debug).toHaveBeenCalledWith(
 				"graph",
 				"Applied graph utility: trimLeafNodes",
 				expect.objectContaining({
