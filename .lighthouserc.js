@@ -40,22 +40,22 @@ export default {
         'label': 'error',
 
         // Secondary accessibility (warnings)
-        'button-name': 'warn',
-        'link-name': 'warn',
-        'document-title': 'warn',
-        'meta-viewport': 'warn',
-        'meta-description': 'warn',
-        'crawlable-anchors': 'warn',
-        'target-size': 'warn',
+        'button-name': ['warn', { minScore: 0.9 }],
+        'link-name': ['warn', { minScore: 0.9 }],
+        'document-title': ['warn', { minScore: 0.9 }],
+        'meta-viewport': ['warn', { minScore: 0.9 }],
+        'meta-description': ['warn', { minScore: 0.9 }],
+        'crawlable-anchors': ['warn', { minScore: 0.9 }],
+        'target-size': ['warn', { minScore: 0.9 }],
 
         // Technical/Performance issues (warnings, not errors)
-        'unminified-javascript': 'warn',
-        'unused-css-rules': 'warn',
-        'unused-javascript': 'warn',
-        'valid-source-maps': 'warn',
-        'uses-passive-event-listeners': 'warn',
-        'errors-in-console': 'warn',
-        'network-dependency-tree-insight': 'warn'
+        'unminified-javascript': ['warn', { maxLength: 0 }],
+        'unused-css-rules': ['warn', { maxLength: 0 }],
+        'unused-javascript': ['warn', { maxLength: 0 }],
+        'valid-source-maps': ['warn', { minScore: 0.9 }],
+        'uses-passive-event-listeners': ['warn', { minScore: 0.9 }],
+        'errors-in-console': ['warn', { minScore: 0.9 }],
+        'network-dependency-tree-insight': ['warn', { minScore: 0.9 }]
       }
     },
     upload: {
