@@ -3,7 +3,7 @@
  * Tests provider creation, availability checking, and error handling
  */
 
-import { describe, it, expect, vi } from "vitest";
+import { describe, it, expect, beforeEach, vi } from "vitest";
 import {
 	createGraphProvider,
 	getAvailableProviders,

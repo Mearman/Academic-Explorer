@@ -3,7 +3,7 @@
  * Testing automatic detection of entity types from various identifier formats
  */
 
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, beforeEach } from "vitest";
 import { EntityDetector, type DetectionResult } from "./entity-detection";
 import type { EntityType } from "../types";
 
