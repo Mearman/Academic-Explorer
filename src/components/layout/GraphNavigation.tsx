@@ -32,7 +32,7 @@ import { nodeTypes } from "@/lib/graph/providers/xyflow/node-types";
 import { edgeTypes } from "@/lib/graph/providers/xyflow/edge-types";
 import { useAnimatedLayoutContext } from "@/components/graph/animated-layout-context";
 import { AnimatedLayoutProvider } from "@/components/graph/AnimatedLayoutProvider";
-import type { GraphNode, EntityType, ExternalIdentifier } from "@/lib/graph/types";
+import type { GraphNode, GraphEdge, EntityType, ExternalIdentifier } from "@/lib/graph/types";
 import { EntityDetector } from "@/lib/graph/utils/entity-detection";
 import { useEntityInteraction } from "@/hooks/use-entity-interaction";
 import { useContextMenu } from "@/hooks/use-context-menu";
@@ -675,6 +675,79 @@ const GraphNavigationInner: React.FC<GraphNavigationProps> = ({ className, style
 		}
 	}, [showContextMenu]);
 
+	// Repository drag and drop handlers
+
+	const handleDrop = useCallback((event: React.DragEvent) => {
+		event.preventDefault();
+
+		try {
+			const transferData = event.dataTransfer.getData("application/json");
+			if (!transferData) {
+				logger.warn("graph", "No data in drop event", {}, "GraphNavigation");
+				return;
+			}
+
+			const dropData = JSON.parse(transferData) as { type: string; node?: GraphNode; edge?: GraphEdge };
+			const { type } = dropData;
+
+			if (type === "repository-node" && dropData.node) {
+				const node = dropData.node;
+
+				// Get drop position relative to the flow
+				const reactFlowBounds = containerRef.current?.getBoundingClientRect();
+				if (!reactFlowBounds) {
+					logger.warn("graph", "Could not get ReactFlow bounds for drop", {}, "GraphNavigation");
+					return;
+				}
+
+				const position = reactFlowInstance.screenToFlowPosition({
+					x: event.clientX - reactFlowBounds.left,
+					y: event.clientY - reactFlowBounds.top,
+				});
+
+				// Update node position and add to graph
+				const updatedNode = {
+					...node,
+					position
+				};
+
+				// Add to main graph
+				const store = useGraphStore.getState();
+				store.addNodes([updatedNode]);
+
+				logger.info("graph", "Added repository node to graph via drag-drop", {
+					nodeId: node.id,
+					nodeType: node.type,
+					position
+				});
+
+			} else if (type === "repository-edge" && dropData.edge) {
+				const edge = dropData.edge;
+
+				// Add to main graph
+				const store = useGraphStore.getState();
+				store.addEdges([edge]);
+
+				logger.info("graph", "Added repository edge to graph via drag-drop", {
+					edgeId: edge.id,
+					edgeType: edge.type,
+					source: edge.source,
+					target: edge.target
+				});
+			}
+
+		} catch (error) {
+			logger.error("graph", "Failed to handle repository drop", {
+				error: error instanceof Error ? error.message : "Unknown error"
+			}, "GraphNavigation");
+		}
+	}, [reactFlowInstance]);
+
+	const handleDragOver = useCallback((event: React.DragEvent) => {
+		event.preventDefault();
+		event.dataTransfer.dropEffect = "copy";
+	}, []);
+
 	// Loading state - only show full loading screen if there are no existing nodes
 	// This prevents the loading screen from showing during incremental expansions
 	if (isLoading && !Object.keys(storeNodes).length) {
@@ -710,7 +783,13 @@ const GraphNavigationInner: React.FC<GraphNavigationProps> = ({ className, style
 	}
 
 	return (
-		<div ref={containerRef} className={className} style={{ width: "100%", height: "100%", ...style }}>
+		<div
+			ref={containerRef}
+			className={className}
+			style={{ width: "100%", height: "100%", ...style }}
+			onDrop={handleDrop}
+			onDragOver={handleDragOver}
+		>
 			<ReactFlow
 				nodes={nodes}
 				edges={edges}
