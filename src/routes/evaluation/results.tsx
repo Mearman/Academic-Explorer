@@ -525,7 +525,7 @@ function ComparisonResults() {
 												</p>
 												<p style={{ fontSize: "12px", color: "#9ca3af" }}>
                         Completed on {result.runDate.toLocaleDateString()} •
-													{formatTime(("executionTime" in result ? result.executionTime : 0) || 0)} • {"apiCalls" in result && result.apiCalls ? result.apiCalls : "N/A"} API calls
+													{formatTime(("executionTime" in result ? result.executionTime : 0) || 0)} • {"apiCalls" in result && typeof result.apiCalls === "number" ? result.apiCalls : "N/A"} API calls
 												</p>
 											</div>
 
