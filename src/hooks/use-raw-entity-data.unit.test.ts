@@ -307,7 +307,7 @@ describe("useRawEntityData", () => {
 				useRawEntityData({ entityId: "W123456789" })
 			);
 
-			expect(mockLogger.info).toHaveBeenCalledWith(
+			expect(mockLogger.debug).toHaveBeenCalledWith(
 				"cache",
 				"Raw entity data loaded from cache system",
 				expect.objectContaining({
@@ -402,7 +402,7 @@ describe("useRawEntityData", () => {
 				useRawEntityData({ entityId: "W123456789" })
 			);
 
-			expect(mockLogger.info).toHaveBeenCalledWith(
+			expect(mockLogger.debug).toHaveBeenCalledWith(
 				"cache",
 				"Raw entity data loaded from cache system",
 				expect.objectContaining({
@@ -436,7 +436,7 @@ describe("useRawEntityData", () => {
 				useRawEntityData({ entityId: "W123456789" })
 			);
 
-			expect(mockLogger.info).toHaveBeenCalledWith(
+			expect(mockLogger.debug).toHaveBeenCalledWith(
 				"cache",
 				"Raw entity data loaded from cache system",
 				expect.objectContaining({
@@ -464,7 +464,7 @@ describe("useRawEntityData", () => {
 				useRawEntityData({ entityId: "W123456789" })
 			);
 
-			expect(mockLogger.info).toHaveBeenCalledWith(
+			expect(mockLogger.debug).toHaveBeenCalledWith(
 				"cache",
 				"Raw entity data loaded from cache system",
 				expect.objectContaining({

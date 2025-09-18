@@ -355,7 +355,7 @@ describe("useGraphData", () => {
 			const nodeId = "test-node-id";
 			await result.current.expandNode(nodeId);
 
-			expect(logger.info).toHaveBeenCalledWith(
+			expect(logger.debug).toHaveBeenCalledWith(
 				"graph",
 				"Fallback expansion completed",
 				{
@@ -364,7 +364,7 @@ describe("useGraphData", () => {
 				"useGraphData"
 			);
 
-			expect(logger.info).toHaveBeenCalledWith(
+			expect(logger.debug).toHaveBeenCalledWith(
 				"graph",
 				"Fallback expansion completed",
 				{ nodeId },
