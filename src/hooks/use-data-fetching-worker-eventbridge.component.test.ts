@@ -204,8 +204,8 @@ describe("useDataFetchingWorker EventBridge Integration", () => {
 
     it("should handle data fetch complete via EventBridge", async () => {
       const { eventBridge } = await import("@/lib/graph/events");
-      const onComplete = vi.fn();
-      const { result } = renderHook(() => useDataFetchingWorker({ onComplete }));
+      const onExpandComplete = vi.fn();
+      const { result } = renderHook(() => useDataFetchingWorker({ onExpandComplete }));
 
       testWorker = workerInstances[0];
       testWorker.setEventBridge(eventBridge);
@@ -240,10 +240,18 @@ describe("useDataFetchingWorker EventBridge Integration", () => {
         nodeId: "node-456",
         entityId: "A123456789",
         nodes: [
-          { id: "node1", type: "author", data: { entityId: "A111", name: "Test Author" } },
+          {
+            id: "node1",
+            type: "authors",
+            label: "Test Author",
+            entityId: "A111",
+            position: { x: 100, y: 100 },
+            externalIds: [],
+            entityData: { name: "Test Author" }
+          },
         ],
         edges: [
-          { id: "edge1", source: "node-456", target: "node1", type: "collaboration" },
+          { id: "edge1", source: "node-456", target: "node1", type: "authored", label: "Authored" },
         ],
         statistics: {
           nodesAdded: 1,
@@ -258,14 +266,7 @@ describe("useDataFetchingWorker EventBridge Integration", () => {
         testWorker.simulateEventBridgeMessage(WorkerEventType.DATA_FETCH_COMPLETE, completePayload);
       });
 
-      expect(onComplete).toHaveBeenCalledWith({
-        requestId,
-        nodeId: "node-456",
-        entityId: "A123456789",
-        nodes: completePayload.nodes,
-        edges: completePayload.edges,
-        statistics: completePayload.statistics,
-      });
+      expect(onExpandComplete).toHaveBeenCalledWith(completePayload);
     });
 
     it("should handle data fetch error via EventBridge", async () => {
@@ -367,10 +368,10 @@ describe("useDataFetchingWorker EventBridge Integration", () => {
     it("should expand node and handle response via EventBridge", async () => {
       const { eventBridge } = await import("@/lib/graph/events");
       const onProgress = vi.fn();
-      const onComplete = vi.fn();
+      const onExpandComplete = vi.fn();
 
       const { result } = renderHook(() =>
-        useDataFetchingWorker({ onProgress, onComplete })
+        useDataFetchingWorker({ onProgress, onExpandComplete })
       );
 
       testWorker = workerInstances[0];
@@ -423,18 +424,20 @@ describe("useDataFetchingWorker EventBridge Integration", () => {
       expect(onProgress).toHaveBeenCalled();
 
       // Simulate completion
+      const completePayload: WorkerEventPayloads[WorkerEventType.DATA_FETCH_COMPLETE] = {
+        requestId,
+        nodeId: "node-123",
+        entityId: "A123456789",
+        nodes: [],
+        edges: [],
+        timestamp: Date.now(),
+      };
+
       act(() => {
-        testWorker.simulateEventBridgeMessage(WorkerEventType.DATA_FETCH_COMPLETE, {
-          requestId,
-          nodeId: "node-123",
-          entityId: "A123456789",
-          nodes: [],
-          edges: [],
-          timestamp: Date.now(),
-        });
+        testWorker.simulateEventBridgeMessage(WorkerEventType.DATA_FETCH_COMPLETE, completePayload);
       });
 
-      expect(onComplete).toHaveBeenCalled();
+      expect(onExpandComplete).toHaveBeenCalledWith(completePayload);
     });
   });
 
