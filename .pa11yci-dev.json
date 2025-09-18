@@ -1,0 +1,32 @@
+{
+  "defaults": {
+    "timeout": 5000,
+    "wait": 1000,
+    "chromeLaunchConfig": {
+      "args": ["--no-sandbox"]
+    },
+    "standard": "WCAG2AA",
+    "level": "error",
+    "threshold": 0,
+    "includeNotices": true,
+    "includeWarnings": true,
+    "rules": [
+      "color-contrast",
+      "heading-order",
+      "image-alt",
+      "label",
+      "link-name",
+      "button-name"
+    ],
+    "ignore": [
+      "region",
+      "page-has-heading-one"
+    ]
+  },
+  "urls": [
+    "http://localhost:5173/",
+    "http://localhost:5173/search",
+    "http://localhost:5173/about"
+  ],
+  "concurrency": 1
+}

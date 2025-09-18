@@ -1,0 +1,37 @@
+{
+  "defaults": {
+    "timeout": 10000,
+    "wait": 2000,
+    "chromeLaunchConfig": {
+      "args": ["--no-sandbox", "--disable-setuid-sandbox", "--disable-dev-shm-usage"]
+    },
+    "standard": "WCAG2AA",
+    "level": "error",
+    "threshold": 0,
+    "includeNotices": false,
+    "includeWarnings": false,
+    "rules": [
+      "color-contrast",
+      "heading-order",
+      "image-alt",
+      "label",
+      "link-name",
+      "button-name",
+      "aria-hidden-focus",
+      "focus-order-semantics"
+    ],
+    "ignore": [
+      "region",
+      "page-has-heading-one"
+    ]
+  },
+  "urls": [
+    "http://localhost:4173/",
+    "http://localhost:4173/search",
+    "http://localhost:4173/about",
+    "http://localhost:4173/authors/A1234567890",
+    "http://localhost:4173/works/W1234567890",
+    "http://localhost:4173/topics/T1234567890"
+  ],
+  "concurrency": 2
+}
