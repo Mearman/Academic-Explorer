@@ -42,12 +42,13 @@
     "hooks:install": "husky",
     "hooks:test": "npx lint-staged --diff-filter=A",
     "coverage:report": "node scripts/generate-coverage-report.js",
-    "a11y:test": "pa11y-ci",
-    "a11y:lighthouse": "lhci autorun",
-    "a11y:dev": "pa11y-ci --config .pa11yci-dev.json",
-    "a11y:ci": "pnpm run a11y:test && pnpm run a11y:lighthouse",
-    "test:a11y": "vitest --project=component --testNamePattern=\"accessibility\"",
-    "test:a11y:e2e": "vitest --project=e2e --testNamePattern=\"accessibility\""
+    "a11y:test": "nx a11y:test",
+    "a11y:lighthouse": "nx a11y:lighthouse",
+    "a11y:dev": "nx a11y:dev",
+    "a11y:ci": "nx a11y:ci",
+    "test:a11y": "nx test:a11y",
+    "test:a11y:e2e": "nx test:a11y:e2e",
+    "verify:a11y": "nx verify:a11y"
   },
   "dependencies": {
     "@mantine/core": "^8.3.1",
