@@ -505,11 +505,16 @@ export async function detectMissingPapers(
 	config: MissingPaperDetectionConfig = DEFAULT_DETECTION_CONFIG,
 	onProgress?: (progress: DetectionProgress) => void
 ): Promise<MissingPaperDetectionResults> {
-	const detectionMethods = {
-		temporalGapAnalysis: [] as WorkReference[],
-		citationNetworkAnalysis: [] as WorkReference[],
-		authorNetworkAnalysis: [] as WorkReference[],
-		keywordExpansionAnalysis: [] as WorkReference[]
+	const detectionMethods: {
+		temporalGapAnalysis: WorkReference[];
+		citationNetworkAnalysis: WorkReference[];
+		authorNetworkAnalysis: WorkReference[];
+		keywordExpansionAnalysis: WorkReference[];
+	} = {
+		temporalGapAnalysis: [],
+		citationNetworkAnalysis: [],
+		authorNetworkAnalysis: [],
+		keywordExpansionAnalysis: []
 	};
 
 	// Run enabled detection methods

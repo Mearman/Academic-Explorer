@@ -71,7 +71,7 @@ export function ApplicationLoggerPanel() {
 	};
 
 	const getCategoryBadgeColor = (category: LogCategory) => {
-		const colors = {
+		const colors: Record<LogCategory, string> = {
 			"api": "blue",
 			"cache": "green",
 			"graph": "purple",
@@ -83,8 +83,10 @@ export function ApplicationLoggerPanel() {
 			"general": "gray",
 			"expansion": "violet",
 			"repository": "indigo",
+			"settings": "yellow",
 		};
-		return colors[category] || "gray";
+		const color = colors[category];
+		return color ?? "gray";
 	};
 
 	const logStats = {
@@ -111,8 +113,8 @@ export function ApplicationLoggerPanel() {
 			const allLogsText = filteredLogs.map(formatLogEntry).join("\n\n");
 			await navigator.clipboard.writeText(allLogsText);
 			logger.debug("ui", "Copied all filtered logs to clipboard", { count: filteredLogs.length }, "ApplicationLoggerPanel");
-		} catch (error) {
-			logger.error("ui", "Failed to copy logs to clipboard", { error }, "ApplicationLoggerPanel");
+		} catch (error: unknown) {
+			logger.error("ui", "Failed to copy logs to clipboard", { error: error instanceof Error ? error.message : String(error) }, "ApplicationLoggerPanel");
 		}
 	};
 
@@ -121,8 +123,8 @@ export function ApplicationLoggerPanel() {
 			const logText = formatLogEntry(log);
 			await navigator.clipboard.writeText(logText);
 			logger.debug("ui", "Copied log entry to clipboard", { id: log.id }, "ApplicationLoggerPanel");
-		} catch (error) {
-			logger.error("ui", "Failed to copy log entry to clipboard", { error }, "ApplicationLoggerPanel");
+		} catch (error: unknown) {
+			logger.error("ui", "Failed to copy log entry to clipboard", { error: error instanceof Error ? error.message : String(error) }, "ApplicationLoggerPanel");
 		}
 	};
 
@@ -267,7 +269,7 @@ export function ApplicationLoggerPanel() {
 										value={selectedCategories}
 										onChange={(values) => {
 											const validCategories = values.filter((value): value is LogCategory =>
-												["api", "cache", "graph", "routing", "ui", "auth", "storage", "search", "general", "expansion", "repository"].includes(value)
+												["api", "cache", "graph", "routing", "ui", "auth", "storage", "search", "general", "expansion", "repository", "settings"].includes(value)
 											);
 											setSelectedCategories(validCategories);
 										}}
@@ -283,6 +285,7 @@ export function ApplicationLoggerPanel() {
 											{ value: "general", label: "General" },
 											{ value: "expansion", label: "Expansion" },
 											{ value: "repository", label: "Repository" },
+											{ value: "settings", label: "Settings" },
 										]}
 										styles={{
 											root: {
