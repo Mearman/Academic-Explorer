@@ -1,3 +1,10 @@
+# [5.5.0](https://github.com/Mearman/Academic-Explorer/compare/v5.4.0...v5.5.0) (2025-09-18)
+
+
+### Features
+
+* **repository:** implement repository mode search functionality ([d2c9821](https://github.com/Mearman/Academic-Explorer/commit/d2c98219e498ac8ac33bfb29ad982fbf2ebf8ec9))
+
 # [5.4.0](https://github.com/Mearman/Academic-Explorer/compare/v5.3.1...v5.4.0) (2025-09-18)
 
 
