@@ -76,7 +76,7 @@ describe("OpenAlexCLI Integration Tests", () => {
       if (stats.authors) {
         expect(stats.authors.count).toBeGreaterThan(0);
         expect(stats.authors.totalSize).toBeGreaterThan(0);
-        expect(typeof stats.authors.lastGenerated).toBe("string");
+        expect(typeof stats.authors.lastModified).toBe("string");
       }
 
       // Check works stats

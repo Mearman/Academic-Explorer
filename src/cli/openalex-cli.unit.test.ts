@@ -487,14 +487,14 @@ describe("OpenAlexCLI", () => {
       const mockAuthorIndex = {
         entityType: "authors",
         count: 5,
-        lastGenerated: "2025-01-01T00:00:00Z",
+        lastModified: "2025-01-01T00:00:00Z",
         metadata: { totalSize: 1000, files: [] }
       };
 
       const mockWorksIndex = {
         entityType: "works",
         count: 10,
-        lastGenerated: "2025-01-01T01:00:00Z",
+        lastModified: "2025-01-01T01:00:00Z",
         metadata: { totalSize: 2000, files: [] }
       };
 
@@ -518,12 +518,12 @@ describe("OpenAlexCLI", () => {
         authors: {
           count: 5,
           totalSize: 1000,
-          lastGenerated: "2025-01-01T00:00:00Z"
+          lastModified: "2025-01-01T00:00:00Z"
         },
         works: {
           count: 10,
           totalSize: 2000,
-          lastGenerated: "2025-01-01T01:00:00Z"
+          lastModified: "2025-01-01T01:00:00Z"
         }
       });
     });

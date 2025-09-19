@@ -29,12 +29,12 @@ const QueryResultSchema = z.object({
 }).strict();
 
 // Command options validation
-const SearchCommandOptionsSchema = z.looseObject({
+const SearchCommandOptionsSchema = z.object({
   limit: z.union([z.string(), z.undefined()]).optional(),
   format: z.string().optional(),
 });
 
-const FetchCommandOptionsSchema = z.looseObject({
+const FetchCommandOptionsSchema = z.object({
   perPage: z.union([z.string(), z.undefined()]).optional(),
   page: z.union([z.string(), z.undefined()]).optional(),
   filter: z.string().optional(),
@@ -262,9 +262,9 @@ program
 
       Object.entries(stats).forEach(([entityType, data]) => {
         const sizeInMB = (data.totalSize / (1024 * 1024)).toFixed(2);
-        const lastGen = new Date(data.lastGenerated).toLocaleString();
+        const lastMod = new Date(data.lastModified).toLocaleString();
 
-        console.log(`${entityType.toUpperCase().padEnd(12)}: ${data.count.toString().padStart(4)} entities, ${sizeInMB.padStart(6)}MB, last: ${lastGen}`);
+        console.log(`${entityType.toUpperCase().padEnd(12)}: ${data.count.toString().padStart(4)} entities, ${sizeInMB.padStart(6)}MB, last: ${lastMod}`);
       });
     }
   });
