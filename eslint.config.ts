@@ -74,12 +74,16 @@ export default tseslint.config([
       // Disallow direct console usage - use logger instead
       'no-console': 'error',
 
-      // Disallow Reflect.apply usage
+      // Disallow unsafe Reflect usage - prefer type guards and Zod validation
       'no-restricted-syntax': [
         'error',
         {
           'selector': 'CallExpression[callee.type="MemberExpression"][callee.object.name="Reflect"][callee.property.name="apply"]',
           'message': 'Reflect.apply is not allowed. Use direct function calls or Function.prototype.apply instead.'
+        },
+        {
+          'selector': 'CallExpression[callee.type="MemberExpression"][callee.object.name="Reflect"][callee.property.name="get"]',
+          'message': 'Reflect.get is not allowed. Reflect.get short-circuits TypeScript type safety and provides no runtime validation. Use proper type guards with Zod validation for guaranteed type safety instead.'
         }
       ],
 

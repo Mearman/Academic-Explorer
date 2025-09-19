@@ -8,32 +8,24 @@ import { join } from "path";
 import { generateQueryHash } from "./query-hash";
 import { logger } from "../logger";
 import type { QueryResult } from "../api/static-data-provider";
+import { z } from "zod";
 
 import { execSync } from "child_process";
 
 /**
- * Type guard to check if data has a results property that is an array
+ * Zod schema for OpenAlex API response
  */
-function hasResultsProperty(data: unknown): data is { results: unknown[] } {
-  try {
-    // Check if data is a non-null object
-    if (data === null || typeof data !== "object") {
-      return false;
-    }
+const openAlexResponseSchema = z.object({
+  results: z.array(z.unknown()),
+  meta: z.record(z.unknown()).optional(),
+});
 
-    // Check if data has a "results" property
-    if (!("results" in data)) {
-      return false;
-    }
-
-    // Use Reflect.get to safely access the property without type assertions
-    const results = Reflect.get(data, "results");
-
-    // Check if results is an array
-    return Array.isArray(results);
-  } catch {
-    return false;
-  }
+/**
+ * Type guard using Zod for guaranteed type safety
+ */
+function isValidOpenAlexResponse(data: unknown): data is { results: unknown[]; meta?: Record<string, unknown> } {
+  const result = openAlexResponseSchema.safeParse(data);
+  return result.success;
 }
 
 /**
@@ -410,8 +402,8 @@ export async function fetchOpenAlexQuery(url: string): Promise<unknown[]> {
 
         const data: unknown = await response.json();
 
-        // Type guard to ensure data has a results property that is an array
-        if (!hasResultsProperty(data)) {
+        // Use Zod validation for guaranteed type safety
+        if (!isValidOpenAlexResponse(data)) {
           throw new Error("Invalid response format from OpenAlex API");
         }
 
