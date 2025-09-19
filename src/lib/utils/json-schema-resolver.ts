@@ -1,5 +1,5 @@
 import { logger } from "@/lib/logger";
-import { z } from 'zod';
+import { z } from "zod";
 
 /**
  * JSON Schema with $ref support
@@ -19,8 +19,6 @@ export interface JsonSchemaRef {
   $ref: string;
 }
 
-// Schema for validating JSON data structure
-const JsonDataSchema = z.record(z.unknown());
 
 // Schema for entity index entries
 const EntityIndexEntrySchema = z.object({
@@ -38,29 +36,24 @@ const JsonSchemaZodSchema = z.object({
   $id: z.string().optional(),
   $ref: z.string().optional(),
   allOf: z.array(z.object({ $ref: z.string() })).optional(),
-}).and(z.record(z.unknown()));
+}).and(z.record(z.string(), z.unknown()));
 
-// Schema for raw entity index (old format)
-const RawEntityIndexSchema = z.record(z.string(), z.string());
+// Schema for raw entity index (new format)
+const RawEntityIndexSchema = z.record(z.string(), z.object({
+  $ref: z.string(),
+  lastModified: z.string(),
+  contentHash: z.string(),
+}));
 
 /**
  * Resolved entity index structure (new format with $ref pointers)
  */
 export interface ResolvedEntityIndex {
-  entityType: string;
-  count: number;
-  lastModified: string;
-  metadata: {
-    totalSize: number;
-    [key: string]: unknown;
-  };
-  entities: string[];
-  queries?: Array<{
-    queryHash: string;
-    originalUrl: string;
-    params: Record<string, unknown>;
+  [key: string]: {
+    $ref: string;
     lastModified: string;
-  }>;
+    contentHash: string;
+  };
 }
 
 /**
@@ -147,69 +140,11 @@ export class JsonSchemaResolver {
         return null;
       }
 
-      // Extract entities and metadata from $ref structure
-      const entities: string[] = [];
-      const queries: Array<{
-        queryHash: string;
-        originalUrl: string;
-        params: Record<string, unknown>;
-        lastModified: string;
-      }> = [];
-
-      let totalSize = 0;
-      let lastModified = new Date(0).toISOString();
-
-      for (const [key, refData] of Object.entries(rawIndex)) {
-        // Skip if not a proper $ref entry
-        if (!refData.$ref || !refData.lastModified) continue;
-
-        // Update latest modification time
-        if (refData.lastModified > lastModified) {
-          lastModified = refData.lastModified;
-        }
-
-        // Detect if this is an entity ID or query URL
-        if (this.isOpenAlexEntityId(key)) {
-          // Extract clean entity ID from the key
-          const entityId = this.extractEntityId(key);
-          if (entityId) {
-            entities.push(entityId);
-          }
-        } else if (this.isQueryUrl(key)) {
-          // Parse query URL to extract parameters
-          const queryInfo = this.parseQueryUrl(key);
-          if (queryInfo) {
-            queries.push({
-              queryHash: this.generateQueryHash(key),
-              originalUrl: key,
-              params: queryInfo.params,
-              lastModified: refData.lastModified,
-            });
-          }
-        }
-
-        // Estimate size (could be improved with actual file sizes)
-        totalSize += 1000; // Rough estimate
-      }
-
-      const resolvedIndex: ResolvedEntityIndex = {
-        entityType,
-        count: entities.length,
-        lastModified,
-        metadata: {
-          totalSize,
-          queryCount: queries.length,
-        },
-        entities,
-        queries,
-      };
-
       logger.debug("static-data", `Resolved ${entityType} index`, {
-        entityCount: entities.length,
-        queryCount: queries.length,
+        entryCount: Object.keys(rawIndex).length,
       });
 
-      return resolvedIndex;
+      return rawIndex;
     } catch (error) {
       logger.error("static-data", `Failed to resolve entity index for ${entityType}`, { error });
       return null;
@@ -327,7 +262,7 @@ export class JsonSchemaResolver {
   /**
    * Fetch JSON with caching
    */
-  private async fetchRawJson(url: string): Promise<unknown | null> {
+  private async fetchRawJson(url: string): Promise<unknown> {
     // Check cache first
     if (this.cache.has(url)) {
       const cachedValue = this.cache.get(url);
@@ -361,7 +296,7 @@ export class JsonSchemaResolver {
     try {
       return EntityIndexSchema.parse(rawData);
     } catch (error) {
-      logger.warn("json-schema-resolver", `Invalid entity index structure from ${url}`, { error });
+      logger.warn("static-data", `Invalid entity index structure from ${url}`, { error });
       return null;
     }
   }
@@ -373,7 +308,7 @@ export class JsonSchemaResolver {
     try {
       return JsonSchemaZodSchema.parse(rawData);
     } catch (error) {
-      logger.warn("json-schema-resolver", `Invalid JSON schema structure from ${url}`, { error });
+      logger.warn("static-data", `Invalid JSON schema structure from ${url}`, { error });
       return null;
     }
   }
@@ -385,7 +320,7 @@ export class JsonSchemaResolver {
     try {
       return RawEntityIndexSchema.parse(rawData);
     } catch (error) {
-      logger.warn("json-schema-resolver", `Invalid raw entity index structure from ${url}`, { error });
+      logger.warn("static-data", `Invalid raw entity index structure from ${url}`, { error });
       return null;
     }
   }
@@ -464,7 +399,7 @@ export class JsonSchemaResolver {
       let urlToProcess = queryUrl;
       try {
         const decoded = decodeURIComponent(queryUrl);
-        if (decoded.startsWith('http')) {
+        if (decoded.startsWith("http")) {
           urlToProcess = decoded;
         }
       } catch {
@@ -486,23 +421,17 @@ export class JsonSchemaResolver {
   }
 
   /**
-   * Generate a simple hash for query URL
+   * Generate URL identifier using URL encoding
    */
   private generateQueryHash(url: string): string {
-    // Simple hash implementation - could be improved
-    let hash = 0;
-    for (let i = 0; i < url.length; i++) {
-      const char = url.charCodeAt(i);
-      hash = ((hash << 5) - hash) + char;
-      hash = hash & hash; // Convert to 32-bit integer
-    }
-    return Math.abs(hash).toString(16);
+    // Use URL encoding instead of hash for consistent identification
+    return encodeURIComponent(url);
   }
 
   /**
    * Extract entity ID from various formats
    */
-  private extractEntityId(str: string): string | null {
+  extractEntityId(str: string): string | null {
     // Handle plain entity IDs first
     if (/^[WASITCPFKG]\d{8,10}$/.test(str)) {
       return str;
