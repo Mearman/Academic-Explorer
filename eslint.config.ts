@@ -79,11 +79,23 @@ export default tseslint.config([
         'error',
         {
           'selector': 'CallExpression[callee.type="MemberExpression"][callee.object.name="Reflect"][callee.property.name="apply"]',
-          'message': 'Reflect.apply is not allowed. Use direct function calls or Function.prototype.apply instead.'
+          'message': 'Reflect.apply is not allowed. Reflect.apply short-circuits TypeScript type safety and provides no runtime validation. Use direct function calls or Function.prototype.apply with proper type guards instead.'
         },
         {
           'selector': 'CallExpression[callee.type="MemberExpression"][callee.object.name="Reflect"][callee.property.name="get"]',
           'message': 'Reflect.get is not allowed. Reflect.get short-circuits TypeScript type safety and provides no runtime validation. Use proper type guards with Zod validation for guaranteed type safety instead.'
+        },
+        {
+          'selector': 'CallExpression[callee.type="MemberExpression"][callee.object.name="Reflect"][callee.property.name="set"]',
+          'message': 'Reflect.set is not allowed. Reflect.set short-circuits TypeScript type safety and provides no runtime validation. Use proper object property assignment with type guards instead.'
+        },
+        {
+          'selector': 'CallExpression[callee.type="MemberExpression"][callee.object.name="Reflect"][callee.property.name="has"]',
+          'message': 'Reflect.has is not allowed. Reflect.has short-circuits TypeScript type safety and provides no runtime validation. Use the "in" operator with proper type guards or Zod validation instead.'
+        },
+        {
+          'selector': 'CallExpression[callee.type="MemberExpression"][callee.object.name="Reflect"][callee.property.name="deleteProperty"]',
+          'message': 'Reflect.deleteProperty is not allowed. Reflect.deleteProperty short-circuits TypeScript type safety and provides no runtime validation. Use the delete operator with proper type guards instead.'
         }
       ],
 
