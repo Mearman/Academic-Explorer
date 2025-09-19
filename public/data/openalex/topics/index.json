@@ -1,0 +1,37 @@
+{
+  "entityType": "topics",
+  "count": 0,
+  "lastGenerated": "2025-09-19T07:14:01.797Z",
+  "entities": [],
+  "queries": [
+    {
+      "queryHash": "018c4d2a314b873d",
+      "url": "https://api.openalex.org/topics",
+      "params": {},
+      "resultCount": 25,
+      "size": 264379,
+      "lastModified": "2025-09-19T07:13:56.599Z"
+    },
+    {
+      "queryHash": "2e3adb29a1f1f608",
+      "url": "https://api.openalex.org/topics?sort=works_count,cited_by_count&select=id,display_name,works_count,cited_by_count&per_page=200",
+      "params": {
+        "sort": "works_count,cited_by_count",
+        "select": [
+          "id",
+          "display_name",
+          "works_count",
+          "cited_by_count"
+        ],
+        "per_page": 200
+      },
+      "resultCount": 200,
+      "size": 35201,
+      "lastModified": "2025-09-19T07:13:56.764Z"
+    }
+  ],
+  "metadata": {
+    "totalSize": 299580,
+    "files": []
+  }
+}
