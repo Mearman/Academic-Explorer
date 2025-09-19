@@ -10,13 +10,47 @@ import { OpenAlexCLI, SUPPORTED_ENTITIES, type QueryOptions, type CacheOptions }
 import type { StaticEntityType } from "../lib/api/static-data-provider.js";
 import type { EntityType } from "../lib/openalex/types.js";
 import { detectEntityType } from "../lib/entities/entity-detection.js";
+import { z } from "zod";
+
+// Zod schemas for CLI validation
+const StaticEntityTypeSchema = z.enum(["authors", "works", "institutions", "topics", "publishers", "funders"]);
+
+// Query result validation for display
+const QueryResultItemSchema = z.object({
+  display_name: z.string().optional(),
+  id: z.string().optional(),
+}).strict();
+
+const QueryResultSchema = z.object({
+  results: z.array(QueryResultItemSchema),
+  meta: z.object({
+    count: z.number().optional(),
+  }).strict().optional(),
+}).strict();
+
+// Command options validation
+const SearchCommandOptionsSchema = z.looseObject({
+  limit: z.union([z.string(), z.undefined()]).optional(),
+  format: z.string().optional(),
+});
+
+const FetchCommandOptionsSchema = z.looseObject({
+  perPage: z.union([z.string(), z.undefined()]).optional(),
+  page: z.union([z.string(), z.undefined()]).optional(),
+  filter: z.string().optional(),
+  select: z.string().optional(),
+  sort: z.string().optional(),
+  noCache: z.boolean().optional(),
+  noSave: z.boolean().optional(),
+  cacheOnly: z.boolean().optional(),
+  format: z.string().optional(),
+});
 
 // Helper function to validate and convert EntityType to StaticEntityType
 function toStaticEntityType(entityType: EntityType): StaticEntityType {
-  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions -- Runtime validation ensures type safety
-  if (SUPPORTED_ENTITIES.includes(entityType as StaticEntityType)) {
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions -- Already validated above
-    return entityType as StaticEntityType;
+  const validation = StaticEntityTypeSchema.safeParse(entityType);
+  if (validation.success) {
+    return validation.data;
   }
   throw new Error(`Entity type ${entityType} is not supported by CLI. Supported types: ${SUPPORTED_ENTITIES.join(", ")}`);
 }
@@ -37,15 +71,14 @@ program
   .option("-c, --count", "Show only count")
   .option("-f, --format <format>", "Output format (json, table)", "table")
   .action(async (entityType: string, options) => {
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions -- Runtime validation follows immediately
-    if (!SUPPORTED_ENTITIES.includes(entityType as StaticEntityType)) {
+    const entityTypeValidation = StaticEntityTypeSchema.safeParse(entityType);
+    if (!entityTypeValidation.success) {
       console.error(`Unsupported entity type: ${entityType}`);
       console.error(`Supported types: ${SUPPORTED_ENTITIES.join(", ")}`);
       process.exit(1);
     }
 
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions -- Already validated above
-    const staticEntityType = entityType as StaticEntityType;
+    const staticEntityType = entityTypeValidation.data;
     const entities = await cli.listEntities(staticEntityType);
 
     if (options.count) {
@@ -73,20 +106,20 @@ program
   .option("--no-save", "Don't save API results to cache")
   .option("--cache-only", "Only use cache, don't fetch from API if not found")
   .action(async (entityType: string, entityId: string, options) => {
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions -- Runtime validation follows immediately
-    if (!SUPPORTED_ENTITIES.includes(entityType as StaticEntityType)) {
+    const entityTypeValidation = StaticEntityTypeSchema.safeParse(entityType);
+    if (!entityTypeValidation.success) {
       console.error(`Unsupported entity type: ${entityType}`);
+      console.error(`Supported types: ${SUPPORTED_ENTITIES.join(", ")}`);
       process.exit(1);
     }
+
+    const staticEntityType = entityTypeValidation.data;
 
     const cacheOptions: CacheOptions = {
       useCache: !options.noCache,
       saveToCache: !options.noSave,
       cacheOnly: options.cacheOnly
     };
-
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions -- Already validated above
-    const staticEntityType = entityType as StaticEntityType;
     const entity = await cli.getEntityWithCache(staticEntityType, entityId, cacheOptions);
 
     if (!entity) {
@@ -184,20 +217,26 @@ program
   .option("-l, --limit <limit>", "Limit results", "10")
   .option("-f, --format <format>", "Output format (json, table)", "table")
   .action(async (entityType: string, searchTerm: string, options) => {
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions -- Runtime validation follows immediately
-    if (!SUPPORTED_ENTITIES.includes(entityType as StaticEntityType)) {
+    const entityTypeValidation = StaticEntityTypeSchema.safeParse(entityType);
+    if (!entityTypeValidation.success) {
       console.error(`Unsupported entity type: ${entityType}`);
+      console.error(`Supported types: ${SUPPORTED_ENTITIES.join(", ")}`);
       process.exit(1);
     }
 
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions -- Already validated above
-    const staticEntityType = entityType as StaticEntityType;
+    const optionsValidation = SearchCommandOptionsSchema.safeParse(options);
+    if (!optionsValidation.success) {
+      console.error(`Invalid options: ${optionsValidation.error.message}`);
+      process.exit(1);
+    }
+
+    const staticEntityType = entityTypeValidation.data;
+    const validatedOptions = optionsValidation.data;
     const results = await cli.searchEntities(staticEntityType, searchTerm);
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument -- Commander.js options are any-typed
-    const limit = typeof options.limit === "string" ? parseInt(options.limit) : 10;
+    const limit = typeof validatedOptions.limit === "string" ? parseInt(validatedOptions.limit, 10) : 10;
     const limitedResults = results.slice(0, limit);
 
-    if (options.format === "json") {
+    if (validatedOptions.format === "json") {
       console.log(JSON.stringify(limitedResults, null, 2));
     } else {
       console.log(`\nSearch results for "${searchTerm}" in ${entityType} (${limitedResults.length}/${results.length}):`);
@@ -235,14 +274,14 @@ program
   .command("index <entity-type>")
   .description("Show index information for entity type")
   .action(async (entityType: string) => {
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions -- Runtime validation follows immediately
-    if (!SUPPORTED_ENTITIES.includes(entityType as StaticEntityType)) {
+    const entityTypeValidation = StaticEntityTypeSchema.safeParse(entityType);
+    if (!entityTypeValidation.success) {
       console.error(`Unsupported entity type: ${entityType}`);
+      console.error(`Supported types: ${SUPPORTED_ENTITIES.join(", ")}`);
       process.exit(1);
     }
 
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions -- Already validated above
-    const staticEntityType = entityType as StaticEntityType;
+    const staticEntityType = entityTypeValidation.data;
     const index = await cli.loadIndex(staticEntityType);
 
     if (!index) {
@@ -267,33 +306,38 @@ program
   .option("--cache-only", "Only use cache, don't fetch from API if not found")
   .option("-f, --format <format>", "Output format (json, summary)", "json")
   .action(async (entityType: string, options) => {
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions -- Runtime validation follows immediately
-    if (!SUPPORTED_ENTITIES.includes(entityType as StaticEntityType)) {
+    const entityTypeValidation = StaticEntityTypeSchema.safeParse(entityType);
+    if (!entityTypeValidation.success) {
       console.error(`Unsupported entity type: ${entityType}`);
+      console.error(`Supported types: ${SUPPORTED_ENTITIES.join(", ")}`);
       process.exit(1);
     }
 
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions -- Already validated above
-    const staticEntityType = entityType as StaticEntityType;
+    const optionsValidation = FetchCommandOptionsSchema.safeParse(options);
+    if (!optionsValidation.success) {
+      console.error(`Invalid options: ${optionsValidation.error.message}`);
+      process.exit(1);
+    }
 
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument -- Commander.js options are any-typed
-    const perPage = typeof options.perPage === "string" ? parseInt(options.perPage) : 25;
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument -- Commander.js options are any-typed
-    const page = typeof options.page === "string" ? parseInt(options.page) : 1;
+    const staticEntityType = entityTypeValidation.data;
+    const validatedOptions = optionsValidation.data;
+
+    const perPage = typeof validatedOptions.perPage === "string" ? parseInt(validatedOptions.perPage, 10) : 25;
+    const page = typeof validatedOptions.page === "string" ? parseInt(validatedOptions.page, 10) : 1;
 
     const queryOptions: QueryOptions = {
       per_page: perPage,
       page: page
     };
 
-    if (options.filter) queryOptions.filter = options.filter;
-    if (options.select) queryOptions.select = options.select.split(",").map((s: string) => s.trim());
-    if (options.sort) queryOptions.sort = options.sort;
+    if (validatedOptions.filter) queryOptions.filter = validatedOptions.filter;
+    if (validatedOptions.select) queryOptions.select = validatedOptions.select.split(",").map((s: string) => s.trim());
+    if (validatedOptions.sort) queryOptions.sort = validatedOptions.sort;
 
     const cacheOptions: CacheOptions = {
-      useCache: !options.noCache,
-      saveToCache: !options.noSave,
-      cacheOnly: options.cacheOnly
+      useCache: !validatedOptions.noCache,
+      saveToCache: !validatedOptions.noSave,
+      cacheOnly: validatedOptions.cacheOnly
     };
 
     try {
@@ -304,45 +348,20 @@ program
         process.exit(1);
       }
 
-      if (options.format === "json") {
+      if (validatedOptions.format === "json") {
         console.log(JSON.stringify(result, null, 2));
       } else {
         // Summary format for query results
-        if (
-          typeof result === "object" &&
-          result !== null &&
-          "results" in result &&
-          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions -- Type guard requires assertion for property access
-          Array.isArray((result as { results: unknown }).results)
-        ) {
-          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions -- Already validated above
-          const apiResult = result as { results: unknown[]; meta?: { count: number } };
+        const queryResultValidation = QueryResultSchema.safeParse(result);
+        if (queryResultValidation.success) {
+          const apiResult = queryResultValidation.data;
           console.log(`\nQuery Results for ${staticEntityType.toUpperCase()}:`);
           console.log(`Total results: ${apiResult.meta?.count ?? apiResult.results.length}`);
           console.log(`Returned: ${apiResult.results.length}`);
 
           if (apiResult.results.length > 0) {
-            apiResult.results.slice(0, 10).forEach((item: unknown, index: number) => {
-              let displayName = `Item ${index + 1}`;
-              if (
-                typeof item === "object" &&
-                item !== null &&
-                "display_name" in item &&
-                // eslint-disable-next-line @typescript-eslint/consistent-type-assertions -- Type guard requires assertion for property access
-                typeof (item as { display_name: unknown }).display_name === "string"
-              ) {
-                // eslint-disable-next-line @typescript-eslint/consistent-type-assertions -- Already validated above
-                displayName = (item as { display_name: string }).display_name;
-              } else if (
-                typeof item === "object" &&
-                item !== null &&
-                "id" in item &&
-                // eslint-disable-next-line @typescript-eslint/consistent-type-assertions -- Type guard requires assertion for property access
-                typeof (item as { id: unknown }).id === "string"
-              ) {
-                // eslint-disable-next-line @typescript-eslint/consistent-type-assertions -- Already validated above
-                displayName = (item as { id: string }).id;
-              }
+            apiResult.results.slice(0, 10).forEach((item, index: number) => {
+              const displayName = item.display_name ?? item.id ?? `Item ${index + 1}`;
               console.log(`${(index + 1).toString().padStart(3)}: ${displayName}`);
             });
 

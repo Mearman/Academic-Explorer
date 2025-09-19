@@ -211,15 +211,6 @@ export default tseslint.config([
       '@typescript-eslint/no-unnecessary-type-assertion': 'off', // External API boundaries may need complex assertions
     },
   },
-  // Allow specific ESLint disable comments for CLI files where Commander.js creates unavoidable issues
-  {
-    files: [
-      'src/cli/**/*.ts', // CLI files need targeted disable comments for Commander.js integration
-    ],
-    rules: {
-      'eslint-comments/no-use': ['error', { 'allow': ['eslint-disable-next-line'] }], // Allow specific disable comments only
-    },
-  },
   // Relax strict type checking for test files due to mocking framework patterns
   // This MUST come after the main config to properly override rules
   {

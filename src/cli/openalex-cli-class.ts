@@ -10,30 +10,55 @@ import { dirname } from "path";
 import { generateQueryHash } from "../lib/utils/query-hash.js";
 import type { OpenAlexEntity, EntityType, OpenAlexResponse } from "../lib/openalex/types.js";
 import type { StaticEntityType } from "../lib/api/static-data-provider.js";
+import { z } from "zod";
 
-// Types
-interface StaticDataIndex {
-  entityType: string;
-  count: number;
-  lastGenerated: string;
-  entities: string[];
-  queries?: Array<{
-    queryHash: string;
-    url: string;
-    params: Record<string, unknown>;
-    resultCount: number;
-    size: number;
-    lastModified: string;
-  }>;
-  metadata: {
-    totalSize: number;
-    files: Array<{
-      id: string;
-      size: number;
-      lastModified: string;
-    }>;
-  };
-}
+// Zod schemas for runtime validation
+const StaticDataIndexSchema = z.object({
+  entityType: z.string(),
+  count: z.number(),
+  lastGenerated: z.string(),
+  entities: z.array(z.string()),
+  queries: z.array(z.object({
+    queryHash: z.string(),
+    url: z.string(),
+    params: z.record(z.unknown()),
+    resultCount: z.number(),
+    size: z.number(),
+    lastModified: z.string(),
+  })).optional(),
+  metadata: z.object({
+    totalSize: z.number(),
+    files: z.array(z.object({
+      id: z.string(),
+      size: z.number(),
+      lastModified: z.string(),
+    })),
+  }),
+});
+
+// Type derived from schema
+type StaticDataIndex = z.infer<typeof StaticDataIndexSchema>;
+
+// OpenAlex entity validation (basic properties required for CLI)
+const OpenAlexEntitySchema = z.looseObject({
+  id: z.string(),
+  display_name: z.string(),
+});
+
+// OpenAlex API response validation
+const OpenAlexAPIResponseSchema = z.object({
+  results: z.array(OpenAlexEntitySchema),
+  meta: z.looseObject({
+    count: z.number(),
+    page: z.number().optional(),
+    per_page: z.number().optional(),
+  }).optional(),
+}).strict();
+
+// Node.js error validation
+const NodeErrorSchema = z.object({
+  code: z.string(),
+}).strict();
 
 
 interface QueryOptions {
@@ -50,26 +75,6 @@ interface CacheOptions {
   cacheOnly: boolean;
 }
 
-// Type guards
-function isOpenAlexAPIResponse(value: unknown): value is OpenAlexResponse<OpenAlexEntity> {
-  return (
-    typeof value === "object" &&
-    value !== null &&
-    "results" in value &&
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions -- Type guard requires assertion for property access
-    Array.isArray((value as { results: unknown }).results)
-  );
-}
-
-function isNodeError(error: unknown): error is { code: string } {
-  return (
-    typeof error === "object" &&
-    error !== null &&
-    "code" in error &&
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions -- Type guard requires assertion for property access
-    typeof (error as { code: unknown }).code === "string"
-  );
-}
 
 // Configuration
 const STATIC_DATA_PATH = "public/data/openalex";
@@ -135,8 +140,9 @@ export class OpenAlexCLI {
           per_page: 1
         });
 
-        if (isOpenAlexAPIResponse(apiResult) && apiResult.results.length > 0) {
-          const entity = apiResult.results[0];
+        const validatedResult = OpenAlexAPIResponseSchema.safeParse(apiResult);
+        if (validatedResult.success && validatedResult.data.results.length > 0) {
+          const entity = validatedResult.data.results[0];
 
           // Save to cache if enabled
           if (cacheOptions.saveToCache) {
@@ -275,20 +281,13 @@ export class OpenAlexCLI {
       const indexContent = await readFile(indexPath, "utf-8");
       const parsed = JSON.parse(indexContent);
 
-      // Basic validation that it's a StaticDataIndex
-      if (
-        typeof parsed === "object" &&
-        parsed !== null &&
-        "entityType" in parsed &&
-        "count" in parsed &&
-        "entities" in parsed &&
-        Array.isArray(parsed.entities)
-      ) {
-        // eslint-disable-next-line @typescript-eslint/consistent-type-assertions -- Validated JSON parsing requires type assertion
-        return parsed as StaticDataIndex;
+      // Validate with Zod schema
+      const validatedIndex = StaticDataIndexSchema.safeParse(parsed);
+      if (validatedIndex.success) {
+        return validatedIndex.data;
       }
 
-      console.error(`Invalid index format for ${entityType}`);
+      console.error(`Invalid index format for ${entityType}:`, validatedIndex.error.message);
       return null;
     } catch (error) {
       console.error(`Failed to load index for ${entityType}:`, error);
@@ -299,29 +298,23 @@ export class OpenAlexCLI {
   /**
    * Load entity by ID
    */
-  async loadEntity(entityType: StaticEntityType, entityId: string): Promise<OpenAlexEntity | null> {
+  async loadEntity(entityType: StaticEntityType, entityId: string): Promise<z.infer<typeof OpenAlexEntitySchema> | null> {
     try {
       const entityPath = join(this.dataPath, entityType, `${entityId}.json`);
       const entityContent = await readFile(entityPath, "utf-8");
       const parsed = JSON.parse(entityContent);
 
-      // Basic validation that it's an OpenAlex entity
-      if (
-        typeof parsed === "object" &&
-        parsed !== null &&
-        "id" in parsed &&
-        "display_name" in parsed &&
-        typeof parsed.id === "string" &&
-        typeof parsed.display_name === "string"
-      ) {
-        // eslint-disable-next-line @typescript-eslint/consistent-type-assertions -- Validated JSON parsing requires type assertion
-        return parsed as OpenAlexEntity;
+      // Validate with Zod schema (basic validation only)
+      const validatedEntity = OpenAlexEntitySchema.safeParse(parsed);
+      if (validatedEntity.success) {
+        return validatedEntity.data;
       }
 
-      console.error(`Invalid entity format for ${entityId}`);
+      console.error(`Invalid entity format for ${entityId}:`, validatedEntity.error.message);
       return null;
     } catch (error: unknown) {
-      if (isNodeError(error) && error.code === "ENOENT") {
+      const nodeError = NodeErrorSchema.safeParse(error);
+      if (nodeError.success && nodeError.data.code === "ENOENT") {
         // File not found is expected, don't log as error
         return null;
       }
