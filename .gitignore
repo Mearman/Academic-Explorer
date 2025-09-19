@@ -36,3 +36,6 @@ coverage-reports
 
 # Auto-generated acknowledgements (managed by CI)
 ACKNOWLEDGEMENTS.md
+
+# Auto-generated static data indexes (build artifacts)
+public/data/openalex/*/index.json
