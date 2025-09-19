@@ -1,3 +1,11 @@
+## [6.2.1](https://github.com/Mearman/Academic-Explorer/compare/v6.2.0...v6.2.1) (2025-09-19)
+
+
+### Bug Fixes
+
+* **deps:** re-add d3-random dependency for force-animation worker ([394250c](https://github.com/Mearman/Academic-Explorer/commit/394250c20a728ce51524422053e3c65f57e6df75))
+* **deps:** update pnpm-lock.yaml after dependency cleanup ([110edf6](https://github.com/Mearman/Academic-Explorer/commit/110edf68b0ff2bfd9ae9ecdf67cddf1c4162285e))
+
 # [6.2.0](https://github.com/Mearman/Academic-Explorer/compare/v6.1.0...v6.2.0) (2025-09-19)
 
 
