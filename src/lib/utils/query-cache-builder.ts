@@ -17,7 +17,7 @@ import { execSync } from "child_process";
  */
 const openAlexResponseSchema = z.object({
   results: z.array(z.unknown()),
-  meta: z.record(z.unknown()).optional(),
+  meta: z.record(z.string(), z.unknown()).optional(),
 });
 
 /**
