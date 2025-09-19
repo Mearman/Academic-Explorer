@@ -9,7 +9,8 @@
   },
   "scripts": {
     "dev": "vite",
-    "build": "tsc -b tsconfig.app.json && vite build",
+    "build": "npm run generate:static-indexes && tsc -b tsconfig.app.json && vite build",
+    "generate:static-indexes": "npx tsx scripts/generate-static-data-index.ts",
     "typecheck": "tsc --noEmit",
     "lint": "eslint .",
     "knip": "knip",
