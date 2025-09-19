@@ -923,7 +923,7 @@ async function updateUnifiedIndex(dataPath: string, entityType: string, index: U
   }
 
   // Deduplicate entries that may have both prefixed and non-prefixed versions
-  deduplicateIndexEntries(index, entityType);
+  index = deduplicateIndexEntries(index, entityType);
 
   logger.debug("general", "Updated unified index with entities and queries", {
     entityType,
@@ -1135,7 +1135,7 @@ function reverseEngineerQueryUrl(entityType: string, queryResult: unknown, _file
  * Remove duplicate entries where both prefixed and non-prefixed versions exist
  * Keep the prefixed version (canonical) and remove the non-prefixed version
  */
-function deduplicateIndexEntries(index: UnifiedIndex, entityType: string) {
+function deduplicateIndexEntries(index: UnifiedIndex, entityType: string): UnifiedIndex {
   const prefix = getEntityPrefix(entityType);
   const keysToRemove: string[] = [];
 
@@ -1161,12 +1161,9 @@ function deduplicateIndexEntries(index: UnifiedIndex, entityType: string) {
     }
   }
 
-  // Remove the duplicate entries
-  for (const key of keysToRemove) {
-    if (Object.prototype.hasOwnProperty.call(index, key)) {
-      delete index[key];
-    }
-  }
+  // Remove the duplicate entries by creating new object
+  const filteredEntries = Object.entries(index).filter(([key]) => !keysToRemove.includes(key));
+  return Object.fromEntries(filteredEntries);
 }
 
 /**
@@ -1213,7 +1210,7 @@ function createContentHash(fileContent: string): string {
     if (parsed && typeof parsed === "object" && parsed !== null) {
       const ObjectSchema = z.record(z.string(), z.unknown());
       const contentResult = ObjectSchema.safeParse(parsed);
-      if (!contentResult.success) return generateContentHash(fileContent);
+      if (!contentResult.success) return createHash("sha256").update(fileContent).digest("hex").slice(0, 16);
 
       const cleanContent = { ...contentResult.data };
 

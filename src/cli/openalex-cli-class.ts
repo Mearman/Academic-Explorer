@@ -3,7 +3,7 @@
  * Separated for better testability
  */
 
-import { readFile, access, writeFile, mkdir } from "fs/promises";
+import { readFile, access, writeFile, mkdir, readdir, stat } from "fs/promises";
 import { join, resolve } from "path";
 import { fileURLToPath } from "url";
 import { dirname } from "path";
@@ -67,7 +67,7 @@ interface QueryIndexEntry {
 const OpenAlexEntitySchema = z.object({
   id: z.string(),
   display_name: z.string(),
-});
+}).catchall(z.unknown());
 
 // OpenAlex API response validation
 const OpenAlexAPIResponseSchema = z.object({
@@ -438,11 +438,30 @@ export class OpenAlexCLI {
   /**
    * Load legacy index format (for backward compatibility with tests)
    */
-  async loadIndex(entityType: StaticEntityType): Promise<unknown | null> {
+  async loadIndex(entityType: StaticEntityType): Promise<{ entityType: string; count: number; entities: string[] } | null> {
     try {
-      const indexPath = join(this.dataPath, entityType, "index.json");
-      const indexContent = await readFile(indexPath, "utf-8");
-      return JSON.parse(indexContent);
+      const unifiedIndex = await this.loadUnifiedIndex(entityType);
+      if (!unifiedIndex) return null;
+
+      // Transform unified index to legacy format expected by tests
+      const entities: string[] = [];
+
+      for (const [key, _entry] of Object.entries(unifiedIndex)) {
+        // Extract entity IDs from the unified index keys
+        const match = key.match(/\/([AWISTPFC]\d+)(?:\?|$)/);
+        if (match) {
+          const entityId = match[1];
+          if (!entities.includes(entityId)) {
+            entities.push(entityId);
+          }
+        }
+      }
+
+      return {
+        entityType,
+        count: entities.length,
+        entities
+      };
     } catch (error) {
       console.error(`Failed to load index for ${entityType}:`, error);
       return null;
@@ -968,16 +987,31 @@ export class OpenAlexCLI {
     const index = await this.loadUnifiedIndex(entityType);
     if (!index) return [];
 
-    // Extract entity IDs from index keys
+    // Map entity types to their ID prefixes
+    const entityPrefixes: Record<StaticEntityType, string> = {
+      works: "W",
+      authors: "A",
+      institutions: "I",
+      topics: "T",
+      publishers: "P",
+      funders: "F"
+    };
+
+    const prefix = entityPrefixes[entityType];
+    if (!prefix) return [];
+
+    // Extract entity IDs from index keys, filtering by entity type
     const entityIds: string[] = [];
     for (const key of Object.keys(index)) {
-      // Extract entity ID from various formats
-      const match = key.match(/[WASITCPFKG]\d{8,10}/);
-      if (match) {
-        const entityId = match[0];
-        // Only add unique entity IDs
-        if (!entityIds.includes(entityId)) {
-          entityIds.push(entityId);
+      // Extract entity ID that matches the specific entity type
+      const regex = new RegExp(`${prefix}\\d{8,10}`, "g");
+      const matches = key.match(regex);
+      if (matches) {
+        for (const entityId of matches) {
+          // Only add unique entity IDs
+          if (!entityIds.includes(entityId)) {
+            entityIds.push(entityId);
+          }
         }
       }
     }
@@ -1005,8 +1039,8 @@ export class OpenAlexCLI {
   /**
    * Get statistics for all entity types
    */
-  async getStatistics(): Promise<Record<string, { count: number; lastModified: string }>> {
-    const stats: Record<string, { count: number; lastModified: string }> = {};
+  async getStatistics(): Promise<Record<string, { count: number; totalSize: number; lastModified: string }>> {
+    const stats: Record<string, { count: number; totalSize: number; lastModified: string }> = {};
 
     for (const entityType of SUPPORTED_ENTITIES) {
       if (await this.hasStaticData(entityType)) {
@@ -1014,6 +1048,24 @@ export class OpenAlexCLI {
         if (index) {
           const entries = Object.values(index);
           const count = entries.length;
+
+          // Calculate total size by examining the entity directory
+          let totalSize = 0;
+          try {
+            const entityDir = join(this.dataPath, entityType);
+            const files = await readdir(entityDir);
+            for (const file of files) {
+              if (file.endsWith(".json")) {
+                const filePath = join(entityDir, file);
+                const fileStat = await stat(filePath);
+                totalSize += fileStat.size;
+              }
+            }
+          } catch {
+            // If we can't calculate size, use a default
+            totalSize = count * 1000; // Rough estimate
+          }
+
           const lastModified = entries.reduce<string | null>((latest: string | null, entry: IndexEntry) => {
             const entryTime = entry.lastModified ? new Date(entry.lastModified).getTime() : 0;
             const latestTime = latest ? new Date(latest).getTime() : 0;
@@ -1022,6 +1074,7 @@ export class OpenAlexCLI {
 
           stats[entityType] = {
             count,
+            totalSize,
             lastModified: lastModified || new Date().toISOString(),
           };
         }

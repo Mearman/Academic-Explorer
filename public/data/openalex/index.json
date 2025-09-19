@@ -5,7 +5,7 @@
   "description": "Root index merging all entity-specific data via JSON Schema references",
   "type": "object",
   "version": "1.0.0",
-  "lastModified": "2025-09-19T18:33:29.936Z",
+  "lastModified": "2025-09-19T19:25:46.063Z",
   "allOf": [
     {
       "$ref": "./authors/index.json"

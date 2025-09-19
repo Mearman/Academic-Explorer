@@ -135,15 +135,18 @@ program
 
       // Entity-specific summary fields
       if (staticEntityType === "authors" && "works_count" in entity) {
-        console.log(`Works Count: ${entity.works_count ?? "Unknown"}`);
+        const worksCount = typeof entity.works_count === "number" ? entity.works_count : "Unknown";
+        console.log(`Works Count: ${worksCount}`);
         const citedBy = typeof entity.cited_by_count === "number" ? entity.cited_by_count : 0;
         console.log(`Cited By Count: ${citedBy}`);
       } else if (staticEntityType === "works" && "publication_year" in entity) {
-        console.log(`Publication Year: ${entity.publication_year ?? "Unknown"}`);
+        const pubYear = typeof entity.publication_year === "number" ? entity.publication_year : "Unknown";
+        console.log(`Publication Year: ${pubYear}`);
         const citedBy = typeof entity.cited_by_count === "number" ? entity.cited_by_count : 0;
         console.log(`Cited By Count: ${citedBy}`);
       } else if (staticEntityType === "institutions" && "works_count" in entity) {
-        console.log(`Works Count: ${entity.works_count ?? "Unknown"}`);
+        const worksCount = typeof entity.works_count === "number" ? entity.works_count : "Unknown";
+        console.log(`Works Count: ${worksCount}`);
         const country = "country_code" in entity && typeof entity.country_code === "string" ? entity.country_code : "Unknown";
         console.log(`Country: ${country}`);
       }
@@ -195,15 +198,18 @@ program
 
       // Entity-specific summary fields
       if (staticEntityType === "authors" && "works_count" in entity) {
-        console.log(`Works Count: ${entity.works_count ?? "Unknown"}`);
+        const worksCount = typeof entity.works_count === "number" ? entity.works_count : "Unknown";
+        console.log(`Works Count: ${worksCount}`);
         const citedBy = typeof entity.cited_by_count === "number" ? entity.cited_by_count : 0;
         console.log(`Cited By Count: ${citedBy}`);
       } else if (staticEntityType === "works" && "publication_year" in entity) {
-        console.log(`Publication Year: ${entity.publication_year ?? "Unknown"}`);
+        const pubYear = typeof entity.publication_year === "number" ? entity.publication_year : "Unknown";
+        console.log(`Publication Year: ${pubYear}`);
         const citedBy = typeof entity.cited_by_count === "number" ? entity.cited_by_count : 0;
         console.log(`Cited By Count: ${citedBy}`);
       } else if (staticEntityType === "institutions" && "works_count" in entity) {
-        console.log(`Works Count: ${entity.works_count ?? "Unknown"}`);
+        const worksCount = typeof entity.works_count === "number" ? entity.works_count : "Unknown";
+        console.log(`Works Count: ${worksCount}`);
         const country = "country_code" in entity && typeof entity.country_code === "string" ? entity.country_code : "Unknown";
         console.log(`Country: ${country}`);
       }
