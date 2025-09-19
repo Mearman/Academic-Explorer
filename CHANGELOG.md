@@ -1,3 +1,17 @@
+# [6.3.0](https://github.com/Mearman/Academic-Explorer/compare/v6.2.1...v6.3.0) (2025-09-19)
+
+
+### Features
+
+* **eslint:** add prefer-destructured-params rule ([811446a](https://github.com/Mearman/Academic-Explorer/commit/811446a1bae90f9568d5faa3b098efedf7cb80c1))
+* **storage:** add IndexedDB adapter for Zustand persistence ([38deb23](https://github.com/Mearman/Academic-Explorer/commit/38deb233021220ba7498b22620b55dd8ba1ecd53))
+* **storage:** implement hybrid localStorage + IndexedDB storage ([0dfa255](https://github.com/Mearman/Academic-Explorer/commit/0dfa2550bbc19b7eb1e5aceaeb68cc834c7e00cc))
+
+
+### BREAKING CHANGES
+
+* **storage:** Storage behavior changes from pure IndexedDB to hybrid approach
+
 ## [6.2.1](https://github.com/Mearman/Academic-Explorer/compare/v6.2.0...v6.2.1) (2025-09-19)
 
 
