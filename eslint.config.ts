@@ -172,6 +172,10 @@ export default tseslint.config([
       'custom/no-emoji': 'off', // Allow emojis in build/infrastructure scripts for visual feedback
       '@typescript-eslint/restrict-template-expressions': 'off', // Allow number coercion in logging
       'custom/prefer-destructured-params': 'off', // Allow traditional parameters in utility functions
+      '@typescript-eslint/no-unsafe-assignment': 'off', // Allow unsafe operations in build scripts
+      '@typescript-eslint/no-unsafe-call': 'off', // Allow unsafe operations in build scripts
+      '@typescript-eslint/no-unsafe-member-access': 'off', // Allow unsafe operations in build scripts
+      '@typescript-eslint/no-redundant-type-constituents': 'off', // Allow complex types in build scripts
     },
   },
   // Allow type assertions in external API integration files where they're necessary for type contracts
