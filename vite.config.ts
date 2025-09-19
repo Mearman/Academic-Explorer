@@ -8,7 +8,7 @@ import { VitePWA } from 'vite-plugin-pwa'
 import path from 'path'
 import { execSync } from 'child_process'
 import { resolveConfig, testSetupFiles } from './config/shared'
-import { staticDataIndexPlugin } from './config/vite-plugins/static-data-index'
+import { openalexDataPlugin } from './src/build-plugins/openalex-data-plugin'
 
 // Build metadata generation
 function getBuildInfo() {
@@ -47,9 +47,7 @@ function getBuildInfo() {
 export default defineConfig(({ mode }) => ({
   resolve: resolveConfig,
   plugins: [
-    staticDataIndexPlugin({
-      autoDownload: mode === 'development' // Enable auto-download in development
-    }),
+    openalexDataPlugin(), // Comprehensive data management - always runs at build time
     devtools(),
     TanStackRouterVite({
       // Enable hash-based routing for GitHub Pages compatibility

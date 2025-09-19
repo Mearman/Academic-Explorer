@@ -13,7 +13,7 @@
   "scripts": {
     "cli": "tsx src/cli/openalex-cli.ts",
     "dev": "vite",
-    "build": "npm run generate:static-indexes && tsc -b tsconfig.app.json && vite build",
+    "build": "tsc -b tsconfig.app.json && vite build",
     "generate:static-indexes": "npx tsx scripts/generate-static-data-index.ts",
     "fetch:query-cache": "npx tsx scripts/fetch-query-cache.ts",
     "cache:queries": "npm run fetch:query-cache",

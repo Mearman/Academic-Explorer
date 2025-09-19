@@ -38,6 +38,9 @@
     "src/**/*.spec.tsx",
     "src/test/**/*",
     "src/lib/openalex/debug-types.ts",
-    "src/lib/openalex/test-advanced-fields.ts"
+    "src/lib/openalex/test-advanced-fields.ts",
+    "src/scripts/environmental-prisma-search-fixed.ts",
+    "src/scripts/environmental-prisma-search.ts",
+    "src/scripts/find-non-prisma-equivalents.ts"
   ]
 }
