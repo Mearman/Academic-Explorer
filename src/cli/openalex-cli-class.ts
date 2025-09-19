@@ -236,24 +236,48 @@ export class OpenAlexCLI {
       const entityPath = join(entityDir, filename);
       const newContent = JSON.stringify(entity, null, 2);
 
-      if (await hasContentChanged(entityPath, newContent)) {
+      const newContentHash = generateContentHash(newContent);
+
+      // Check if content hash has changed by comparing with index
+      let existingContentHash: string | null = null;
+      let existingLastModified: string | null = null;
+
+      try {
+        const existingIndex = await this.loadUnifiedIndex(entityType);
+        if (existingIndex && existingIndex[canonicalUrl]) {
+          existingContentHash = existingIndex[canonicalUrl].contentHash;
+          existingLastModified = existingIndex[canonicalUrl].lastModified;
+        }
+      } catch {
+        // Index doesn't exist or can't be read - treat as new content
+      }
+
+      const contentChanged = existingContentHash !== newContentHash;
+
+      if (contentChanged) {
         await writeFile(entityPath, newContent);
         console.error(`Saved ${entityType}/${filename} to cache (content changed)`);
 
-        // Update unified index
-        const { stat } = await import("fs/promises");
-        const stats = await stat(entityPath);
-        const contentHash = generateContentHash(newContent);
-
+        // Update unified index with new lastModified timestamp
         const indexEntry: IndexEntry = {
           $ref: `./${filename}`,
-          lastModified: stats.mtime.toISOString(),
-          contentHash,
+          lastModified: new Date().toISOString(),
+          contentHash: newContentHash,
         };
 
         await this.updateUnifiedIndex(entityType, canonicalUrl, indexEntry);
       } else {
         console.error(`Skipped ${entityType}/${filename} - no content changes`);
+
+        // Content hasn't changed, but ensure index entry exists with preserved lastModified
+        if (existingLastModified) {
+          const indexEntry: IndexEntry = {
+            $ref: `./${filename}`,
+            lastModified: existingLastModified, // Preserve existing timestamp
+            contentHash: newContentHash,
+          };
+          await this.updateUnifiedIndex(entityType, canonicalUrl, indexEntry);
+        }
       }
     } catch (error) {
       console.error(`Failed to save entity to cache:`, error);
@@ -314,35 +338,57 @@ export class OpenAlexCLI {
       const queryPath = join(queryDir, `${filename}.json`);
 
       const newContent = JSON.stringify(result, null, 2);
+      const newContentHash = generateContentHash(newContent);
 
-      if (await hasContentChanged(queryPath, newContent)) {
+      // Check if content hash has changed by comparing with existing query index
+      let existingContentHash: string | null = null;
+      let existingLastModified: string | null = null;
+
+      try {
+        const queryIndexPath = join(queryDir, "index.json");
+        const { readFile } = await import("fs/promises");
+        const queryIndexContent = await readFile(queryIndexPath, "utf-8");
+        const queryIndex = JSON.parse(queryIndexContent);
+
+        // Find existing entry for this URL
+        const existingEntry = queryIndex.queries?.find((entry: QueryIndexEntry) =>
+          entry.query && entry.query.url === url
+        );
+
+        if (existingEntry) {
+          existingContentHash = existingEntry.contentHash;
+          existingLastModified = existingEntry.lastModified;
+        }
+      } catch {
+        // Query index doesn't exist or can't be read - treat as new content
+      }
+
+      const contentChanged = existingContentHash !== newContentHash;
+
+      if (contentChanged) {
         await writeFile(queryPath, newContent);
         console.error(`Saved query ${filename} to cache (content changed)`);
-
-        // Get file stats for index entry
-        const { stat } = await import("fs/promises");
-        const stats = await stat(queryPath);
-
-        // Generate content hash
-        const contentHash = generateContentHash(newContent);
-
 
         // Create query definition with URL only (params parsing removed)
         const queryDef: QueryDefinition = { url };
 
-        // Update query index
-        const indexEntry: QueryIndexEntry = {
-          query: queryDef,
-          lastModified: stats.mtime.toISOString(),
-          contentHash,
-        };
-
+        // Update query index with new lastModified timestamp
         this.updateQueryIndex(entityType, queryDef, {
-          lastModified: stats.mtime.toISOString(),
-          contentHash,
+          lastModified: new Date().toISOString(),
+          contentHash: newContentHash,
         });
       } else {
         console.error(`Skipped query ${filename} - no content changes`);
+
+        // Content hasn't changed, but ensure index entry exists with preserved lastModified
+        if (existingLastModified) {
+          const queryDef: QueryDefinition = { url };
+
+          this.updateQueryIndex(entityType, queryDef, {
+            lastModified: existingLastModified, // Preserve existing timestamp
+            contentHash: newContentHash,
+          });
+        }
       }
     } catch (error) {
       console.error(`Failed to save query to cache:`, error);
