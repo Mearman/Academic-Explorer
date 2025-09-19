@@ -22,10 +22,8 @@ export interface JsonSchemaRef {
 // Schema for validating cached JSON data
 const JsonDataSchema = z.record(z.unknown());
 
-// Type guard for cached values
-function isValidCachedValue(value: unknown): value is NonNullable<unknown> {
-  return value !== null && value !== undefined;
-}
+// Generic cache type for better type safety
+type CacheValue<T> = T | null;
 
 /**
  * Resolved entity index structure (new format with $ref pointers)
@@ -315,12 +313,7 @@ export class JsonSchemaResolver {
     // Check cache first
     if (this.cache.has(url)) {
       const cachedValue = this.cache.get(url);
-      if (isValidCachedValue(cachedValue)) {
-        // Safe return since we control the cache and know the type
-        // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
-        return cachedValue as T;
-      }
-      return null;
+      return cachedValue !== undefined ? (cachedValue as T) : null;
     }
 
     try {
@@ -334,13 +327,10 @@ export class JsonSchemaResolver {
 
       const jsonResponse: unknown = await response.json();
 
-      // Validate the JSON response structure
+      // Validate the JSON response structure and cache if valid
       try {
         JsonDataSchema.parse(jsonResponse);
-
-        // If validation passes, cache and return the data
         this.cache.set(url, jsonResponse);
-        // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
         return jsonResponse as T;
       } catch {
         logger.warn("json-schema-resolver", `Invalid JSON structure from ${url}`);
