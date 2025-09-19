@@ -6,6 +6,8 @@
 import { OpenAlexClient, OpenAlexClientOptions } from "./openalex-client";
 import { RATE_LIMIT_CONFIG } from "@/config/rate-limit";
 import { logger } from "@/lib/logger";
+import { staticDataProvider } from "@/lib/api/static-data-provider";
+import { toStaticEntityType, cleanOpenAlexId } from "@/lib/utils/static-data-utils";
 import type {
 	OpenAlexEntity,
 	OpenAlexResponse,
@@ -141,9 +143,69 @@ export class RateLimitedOpenAlexClient {
 		return params !== undefined && params !== null && typeof params === "object";
 	}
 
-	// Entity retrieval methods with rate limiting
+	// Type guard to check if unknown data is an OpenAlex entity
+	private isOpenAlexEntity(data: unknown): data is OpenAlexEntity {
+		return (
+			data !== null &&
+			typeof data === "object" &&
+			"id" in data &&
+			typeof data.id === "string"
+		);
+	}
+
+	// Type guard for Work
+	private isWork(data: unknown): data is Work {
+		return this.isOpenAlexEntity(data);
+	}
+
+	// Type guard for Author
+	private isAuthor(data: unknown): data is Author {
+		return this.isOpenAlexEntity(data);
+	}
+
+	// Type guard for InstitutionEntity
+	private isInstitution(data: unknown): data is InstitutionEntity {
+		return this.isOpenAlexEntity(data);
+	}
+
+	// Type guard for Topic
+	private isTopic(data: unknown): data is Topic {
+		return this.isOpenAlexEntity(data);
+	}
+
+	// Type guard for Publisher
+	private isPublisher(data: unknown): data is Publisher {
+		return this.isOpenAlexEntity(data);
+	}
+
+	// Type guard for Funder
+	private isFunder(data: unknown): data is Funder {
+		return this.isOpenAlexEntity(data);
+	}
+
+	// Entity retrieval methods with rate limiting and static data fallback
 	public async getEntity(id: string): Promise<OpenAlexEntity> {
-		return this.withRateLimit(() => this.client.getEntity(id));
+		try {
+			// First, try static data if available
+			const entityType = this.client.detectEntityType(id);
+			if (entityType) {
+				const staticType = toStaticEntityType(entityType);
+				if (staticType) {
+					const staticEntity = await staticDataProvider.getEntity({ entityType: staticType, entityId: cleanOpenAlexId(id) });
+					if (this.isOpenAlexEntity(staticEntity)) {
+						logger.debug("static-data", "Served entity from static data", { id, entityType });
+						return staticEntity;
+					}
+				}
+			}
+
+			// Fallback to API with rate limiting
+			logger.debug("api", "Fetching entity from API", { id, entityType });
+			return await this.withRateLimit(() => this.client.getEntity(id));
+		} catch (error) {
+			logger.error("api", "Failed to get entity", { id, error });
+			throw error;
+		}
 	}
 
 	public async getEntities(ids: string[]): Promise<OpenAlexEntity[]> {
@@ -168,9 +230,25 @@ export class RateLimitedOpenAlexClient {
 		return results;
 	}
 
-	// Works API with rate limiting
+	// Works API with rate limiting and static data fallback
 	public async getWork(id: string, params?: QueryParams): Promise<Work> {
-		return this.withRateLimit(() => this.client.works.getWork(id, params));
+		try {
+			// Try static data first (only for simple gets without complex params)
+			if (!params || Object.keys(params).length === 0) {
+				const staticWork = await staticDataProvider.getEntity({ entityType: "works", entityId: cleanOpenAlexId(id) });
+				if (this.isWork(staticWork)) {
+					logger.debug("static-data", "Served work from static data", { id });
+					return staticWork;
+				}
+			}
+
+			// Fallback to API with rate limiting
+			logger.debug("api", "Fetching work from API", { id, params });
+			return await this.withRateLimit(() => this.client.works.getWork(id, params));
+		} catch (error) {
+			logger.error("api", "Failed to get work", { id, params, error });
+			throw error;
+		}
 	}
 
 	public async getWorks(params?: QueryParams): Promise<OpenAlexResponse<Work>> {
@@ -181,9 +259,25 @@ export class RateLimitedOpenAlexClient {
 		return this.withRateLimit(() => this.client.works.searchWorks(query, params));
 	}
 
-	// Authors API with rate limiting
+	// Authors API with rate limiting and static data fallback
 	public async getAuthor(id: string, params?: QueryParams): Promise<Author> {
-		return this.withRateLimit(() => this.client.authors.getAuthor(id, params));
+		try {
+			// Try static data first (only for simple gets without complex params)
+			if (!params || Object.keys(params).length === 0) {
+				const staticAuthor = await staticDataProvider.getEntity({ entityType: "authors", entityId: cleanOpenAlexId(id) });
+				if (this.isAuthor(staticAuthor)) {
+					logger.debug("static-data", "Served author from static data", { id });
+					return staticAuthor;
+				}
+			}
+
+			// Fallback to API with rate limiting
+			logger.debug("api", "Fetching author from API", { id, params });
+			return await this.withRateLimit(() => this.client.authors.getAuthor(id, params));
+		} catch (error) {
+			logger.error("api", "Failed to get author", { id, params, error });
+			throw error;
+		}
 	}
 
 	public async getAuthors(params?: QueryParams): Promise<OpenAlexResponse<Author>> {
@@ -207,9 +301,25 @@ export class RateLimitedOpenAlexClient {
 		return this.withRateLimit(() => this.client.sources.searchSources(query, params));
 	}
 
-	// Institutions API with rate limiting
+	// Institutions API with rate limiting and static data fallback
 	public async getInstitution(id: string, params?: QueryParams): Promise<InstitutionEntity> {
-		return this.withRateLimit(() => this.client.institutions.getInstitution(id, params));
+		try {
+			// Try static data first (only for simple gets without complex params)
+			if (!params || Object.keys(params).length === 0) {
+				const staticInstitution = await staticDataProvider.getEntity({ entityType: "institutions", entityId: cleanOpenAlexId(id) });
+				if (this.isInstitution(staticInstitution)) {
+					logger.debug("static-data", "Served institution from static data", { id });
+					return staticInstitution;
+				}
+			}
+
+			// Fallback to API with rate limiting
+			logger.debug("api", "Fetching institution from API", { id, params });
+			return await this.withRateLimit(() => this.client.institutions.getInstitution(id, params));
+		} catch (error) {
+			logger.error("api", "Failed to get institution", { id, params, error });
+			throw error;
+		}
 	}
 
 	public async getInstitutions(params?: Record<string, unknown>): Promise<OpenAlexResponse<InstitutionEntity>> {
@@ -220,27 +330,75 @@ export class RateLimitedOpenAlexClient {
 		return this.withRateLimit(() => this.client.institutions.searchInstitutions(query, params));
 	}
 
-	// Topics API with rate limiting
+	// Topics API with rate limiting and static data fallback
 	public async getTopic(id: string, params?: QueryParams): Promise<Topic> {
-		return this.withRateLimit(() => this.client.topics.get(id, params));
+		try {
+			// Try static data first (only for simple gets without complex params)
+			if (!params || Object.keys(params).length === 0) {
+				const staticTopic = await staticDataProvider.getEntity({ entityType: "topics", entityId: cleanOpenAlexId(id) });
+				if (this.isTopic(staticTopic)) {
+					logger.debug("static-data", "Served topic from static data", { id });
+					return staticTopic;
+				}
+			}
+
+			// Fallback to API with rate limiting
+			logger.debug("api", "Fetching topic from API", { id, params });
+			return await this.withRateLimit(() => this.client.topics.get(id, params));
+		} catch (error) {
+			logger.error("api", "Failed to get topic", { id, params, error });
+			throw error;
+		}
 	}
 
 	public async getTopics(params?: Record<string, unknown>): Promise<OpenAlexResponse<Topic>> {
 		return this.withRateLimit(() => this.client.topics.getMultiple(params));
 	}
 
-	// Publishers API with rate limiting
+	// Publishers API with rate limiting and static data fallback
 	public async getPublisher(id: string, params?: Record<string, unknown>): Promise<Publisher> {
-		return this.withRateLimit(() => this.client.publishers.get(id, params));
+		try {
+			// Try static data first (only for simple gets without complex params)
+			if (!params || Object.keys(params).length === 0) {
+				const staticPublisher = await staticDataProvider.getEntity({ entityType: "publishers", entityId: cleanOpenAlexId(id) });
+				if (this.isPublisher(staticPublisher)) {
+					logger.debug("static-data", "Served publisher from static data", { id });
+					return staticPublisher;
+				}
+			}
+
+			// Fallback to API with rate limiting
+			logger.debug("api", "Fetching publisher from API", { id, params });
+			return await this.withRateLimit(() => this.client.publishers.get(id, params));
+		} catch (error) {
+			logger.error("api", "Failed to get publisher", { id, params, error });
+			throw error;
+		}
 	}
 
 	public async getPublishers(params?: Record<string, unknown>): Promise<OpenAlexResponse<Publisher>> {
 		return this.withRateLimit(() => this.client.publishers.getMultiple(params));
 	}
 
-	// Funders API with rate limiting
+	// Funders API with rate limiting and static data fallback
 	public async getFunder(id: string, params?: Record<string, unknown>): Promise<Funder> {
-		return this.withRateLimit(() => this.client.funders.get(id, params));
+		try {
+			// Try static data first (only for simple gets without complex params)
+			if (!params || Object.keys(params).length === 0) {
+				const staticFunder = await staticDataProvider.getEntity({ entityType: "funders", entityId: cleanOpenAlexId(id) });
+				if (this.isFunder(staticFunder)) {
+					logger.debug("static-data", "Served funder from static data", { id });
+					return staticFunder;
+				}
+			}
+
+			// Fallback to API with rate limiting
+			logger.debug("api", "Fetching funder from API", { id, params });
+			return await this.withRateLimit(() => this.client.funders.get(id, params));
+		} catch (error) {
+			logger.error("api", "Failed to get funder", { id, params, error });
+			throw error;
+		}
 	}
 
 	public async getFunders(params?: Record<string, unknown>): Promise<OpenAlexResponse<Funder>> {
@@ -374,6 +532,39 @@ export class RateLimitedOpenAlexClient {
 			window: RATE_LIMIT_CONFIG.openAlex.window,
 			windowType: RATE_LIMIT_CONFIG.openAlex.windowType,
 		};
+	}
+
+	// Static data utility methods
+
+	/**
+   * Get static data statistics
+   */
+	public async getStaticDataStats() {
+		return await staticDataProvider.getStatistics();
+	}
+
+	/**
+   * Clear static data cache
+   */
+	public clearStaticCache(): void {
+		staticDataProvider.clearCache();
+	}
+
+	/**
+   * Check if entity is available in static data
+   */
+	public async hasStaticEntity(entityType: EntityType, id: string): Promise<boolean> {
+		const staticType = toStaticEntityType(entityType);
+		if (!staticType) return false;
+
+		return await staticDataProvider.hasEntity({ entityType: staticType, entityId: cleanOpenAlexId(id) });
+	}
+
+	/**
+   * Get static data cache statistics
+   */
+	public getStaticCacheStats() {
+		return staticDataProvider.getCacheStats();
 	}
 }
 
