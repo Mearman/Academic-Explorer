@@ -150,7 +150,7 @@ export class OpenAlexCLI {
   /**
    * Get entity by ID with cache control
    */
-  async getEntityWithCache(entityType: StaticEntityType, entityId: string, cacheOptions: CacheOptions): Promise<OpenAlexEntity | null> {
+  async getEntityWithCache(entityType: StaticEntityType, entityId: string, cacheOptions: CacheOptions): Promise<{ id: string; display_name: string; [key: string]: unknown } | null> {
     // Try cache first if enabled
     if (cacheOptions.useCache || cacheOptions.cacheOnly) {
       const cached = await this.loadEntity(entityType, entityId);
@@ -195,7 +195,7 @@ export class OpenAlexCLI {
   /**
    * Save entity to static cache
    */
-  async saveEntityToCache(entityType: StaticEntityType, entity: OpenAlexEntity): Promise<void> {
+  async saveEntityToCache(entityType: StaticEntityType, entity: { id: string; display_name: string; [key: string]: unknown }): Promise<void> {
     try {
       const entityDir = join(this.dataPath, entityType);
       await mkdir(entityDir, { recursive: true });
@@ -341,7 +341,7 @@ export class OpenAlexCLI {
   /**
    * Load entity by ID
    */
-  async loadEntity(entityType: StaticEntityType, entityId: string): Promise<{ id: string; display_name: string } | null> {
+  async loadEntity(entityType: StaticEntityType, entityId: string): Promise<{ id: string; display_name: string; [key: string]: unknown } | null> {
     try {
       const entityPath = join(this.dataPath, entityType, `${entityId}.json`);
       const entityContent = await readFile(entityPath, "utf-8");
@@ -391,9 +391,9 @@ export class OpenAlexCLI {
   /**
    * Search entities by display name
    */
-  async searchEntities(entityType: StaticEntityType, searchTerm: string): Promise<{ id: string; display_name: string }[]> {
+  async searchEntities(entityType: StaticEntityType, searchTerm: string): Promise<{ id: string; display_name: string; [key: string]: unknown }[]> {
     const entityIds = await this.listEntities(entityType);
-    const results: { id: string; display_name: string }[] = [];
+    const results: { id: string; display_name: string; [key: string]: unknown }[] = [];
 
     for (const entityId of entityIds) {
       const entity = await this.loadEntity(entityType, entityId);
