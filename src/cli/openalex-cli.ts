@@ -144,7 +144,7 @@ program
         console.log(`Cited By Count: ${citedBy}`);
       } else if (staticEntityType === "institutions" && "works_count" in entity) {
         console.log(`Works Count: ${entity.works_count ?? "Unknown"}`);
-        const country = typeof entity.country_code === "string" ? entity.country_code : "Unknown";
+        const country = "country_code" in entity && typeof entity.country_code === "string" ? entity.country_code : "Unknown";
         console.log(`Country: ${country}`);
       }
     }
@@ -204,7 +204,7 @@ program
         console.log(`Cited By Count: ${citedBy}`);
       } else if (staticEntityType === "institutions" && "works_count" in entity) {
         console.log(`Works Count: ${entity.works_count ?? "Unknown"}`);
-        const country = typeof entity.country_code === "string" ? entity.country_code : "Unknown";
+        const country = "country_code" in entity && typeof entity.country_code === "string" ? entity.country_code : "Unknown";
         console.log(`Country: ${country}`);
       }
     }
@@ -337,7 +337,7 @@ program
     const cacheOptions: CacheOptions = {
       useCache: !validatedOptions.noCache,
       saveToCache: !validatedOptions.noSave,
-      cacheOnly: validatedOptions.cacheOnly
+      cacheOnly: validatedOptions.cacheOnly ?? false
     };
 
     try {

@@ -21,7 +21,7 @@ const StaticDataIndexSchema = z.object({
   queries: z.array(z.object({
     queryHash: z.string(),
     url: z.string(),
-    params: z.record(z.unknown()),
+    params: z.record(z.string(), z.unknown()),
     resultCount: z.number(),
     size: z.number(),
     lastModified: z.string(),
@@ -83,6 +83,7 @@ const NodeErrorSchema = z.object({
 
 
 interface QueryOptions {
+  search?: string;
   filter?: string;
   select?: string[];
   sort?: string;
@@ -285,6 +286,7 @@ export class OpenAlexCLI {
     const baseUrl = "https://api.openalex.org";
     const params = new URLSearchParams();
 
+    if (options.search) params.set("search", options.search);
     if (options.filter) params.set("filter", options.filter);
     if (options.select) params.set("select", options.select.join(","));
     if (options.sort) params.set("sort", options.sort);
@@ -339,15 +341,16 @@ export class OpenAlexCLI {
   /**
    * Load entity by ID
    */
-  async loadEntity(entityType: StaticEntityType, entityId: string): Promise<z.infer<typeof OpenAlexEntitySchema> | null> {
+  async loadEntity(entityType: StaticEntityType, entityId: string): Promise<{ id: string; display_name: string } | null> {
     try {
       const entityPath = join(this.dataPath, entityType, `${entityId}.json`);
       const entityContent = await readFile(entityPath, "utf-8");
       const parsed = JSON.parse(entityContent);
 
-      // Validate using type guard
-      if (isOpenAlexEntity(parsed)) {
-        return parsed;
+      // Validate using Zod schema
+      const validatedEntity = OpenAlexEntitySchema.safeParse(parsed);
+      if (validatedEntity.success) {
+        return validatedEntity.data;
       }
 
       console.error(`Invalid entity format for ${entityId}: missing required properties`);
@@ -388,9 +391,9 @@ export class OpenAlexCLI {
   /**
    * Search entities by display name
    */
-  async searchEntities(entityType: StaticEntityType, searchTerm: string): Promise<OpenAlexEntity[]> {
+  async searchEntities(entityType: StaticEntityType, searchTerm: string): Promise<{ id: string; display_name: string }[]> {
     const entityIds = await this.listEntities(entityType);
-    const results: OpenAlexEntity[] = [];
+    const results: { id: string; display_name: string }[] = [];
 
     for (const entityId of entityIds) {
       const entity = await this.loadEntity(entityType, entityId);
