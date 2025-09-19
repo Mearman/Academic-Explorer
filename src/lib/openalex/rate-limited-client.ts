@@ -187,7 +187,7 @@ export class RateLimitedOpenAlexClient {
 	public async getEntity(id: string): Promise<OpenAlexEntity> {
 		try {
 			// First, try static data if available
-			const entityType = this.client.detectEntityType(id);
+			const entityType = this.detectEntityType(id);
 			if (entityType) {
 				const staticType = toStaticEntityType(entityType);
 				if (staticType) {
