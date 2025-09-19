@@ -48,10 +48,35 @@ export function toOpenAlexEntityType(staticType: StaticEntityType): OpenAlexEnti
 }
 
 /**
- * Clean OpenAlex ID (remove URL prefix)
+ * Clean OpenAlex ID (remove URL prefix and handle URL encoding)
  */
 export function cleanOpenAlexId(id: string): string {
-  return id.replace(/^https?:\/\/openalex\.org\//, "");
+  // Handle plain entity IDs first
+  if (/^[WASITCPFKG]\d{8,10}$/.test(id)) {
+    return id;
+  }
+
+  // Try URL decoding for URL-encoded format
+  try {
+    const decoded = decodeURIComponent(id);
+
+    // Handle full API URLs like "https://api.openalex.org/works/W2241997964"
+    const apiUrlMatch = decoded.match(/https?:\/\/(?:api\.)?openalex\.org\/(?:works|authors|sources|institutions|topics|publishers|funders)\/([WASITCPFKG]\d{8,10})/);
+    if (apiUrlMatch) {
+      return apiUrlMatch[1];
+    }
+
+    // Handle direct OpenAlex URLs like "https://openalex.org/W2241997964"
+    const directUrlMatch = decoded.match(/https?:\/\/openalex\.org\/([WASITCPFKG]\d{8,10})/);
+    if (directUrlMatch) {
+      return directUrlMatch[1];
+    }
+  } catch {
+    // Not URL encoded, not a valid URL
+  }
+
+  // Return as-is if no pattern matches
+  return id;
 }
 
 /**
