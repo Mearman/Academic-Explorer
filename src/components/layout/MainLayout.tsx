@@ -84,20 +84,74 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
 	};
 
 	return (
-		<AppShell
-			header={{ height: 60 }}
-			navbar={{
-				width: leftSidebarEffectivelyVisible ? { base: 340, sm: 360, md: 410 } : 60,
-				collapsed: { mobile: false }, // Never collapse on mobile since we always show activity bar
-				breakpoint: "sm"
-			}}
-			aside={{
-				width: rightSidebarEffectivelyVisible ? { base: 340, sm: 360, md: 410 } : 60,
-				collapsed: { mobile: false }, // Never collapse on mobile since we always show activity bar
-				breakpoint: "sm"
-			}}
-			padding={0}
-		>
+		<>
+			{/* Skip Links for Accessibility */}
+			<div
+				style={{
+					position: "absolute",
+					top: "-40px",
+					left: "6px",
+					background: colors.background.primary,
+					color: colors.text.primary,
+					padding: "8px",
+					zIndex: 1000,
+					textDecoration: "none",
+					border: `1px solid ${colors.border.primary}`,
+					borderRadius: "4px"
+				}}
+				onFocus={(e) => {
+					e.currentTarget.style.top = "6px";
+				}}
+				onBlur={(e) => {
+					e.currentTarget.style.top = "-40px";
+				}}
+			>
+				<a
+					href="#main-navigation"
+					style={{
+						color: colors.text.primary,
+						textDecoration: "none",
+						marginRight: "1rem"
+					}}
+				>
+					Skip to navigation
+				</a>
+				<a
+					href="#main-content"
+					style={{
+						color: colors.text.primary,
+						textDecoration: "none",
+						marginRight: "1rem"
+					}}
+				>
+					Skip to main content
+				</a>
+				<a
+					href="#left-sidebar"
+					style={{
+						color: colors.text.primary,
+						textDecoration: "none",
+						marginRight: "1rem"
+					}}
+				>
+					Skip to tools sidebar
+				</a>
+			</div>
+
+			<AppShell
+				header={{ height: 60 }}
+				navbar={{
+					width: leftSidebarEffectivelyVisible ? { base: 340, sm: 360, md: 410 } : 60,
+					collapsed: { mobile: false }, // Never collapse on mobile since we always show activity bar
+					breakpoint: "sm"
+				}}
+				aside={{
+					width: rightSidebarEffectivelyVisible ? { base: 340, sm: 360, md: 410 } : 60,
+					collapsed: { mobile: false }, // Never collapse on mobile since we always show activity bar
+					breakpoint: "sm"
+				}}
+				padding={0}
+			>
 			{/* Header */}
 			<AppShell.Header>
 				<Group justify="space-between" h="100%" px="md">
@@ -118,7 +172,7 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
 					</Group>
 
 					<Group gap="md">
-						<nav style={{ display: "flex", gap: "1rem", padding: "0 1rem" }}>
+						<nav id="main-navigation" style={{ display: "flex", gap: "1rem", padding: "0 1rem" }}>
 							<Link
 								to="/"
 								style={{
@@ -210,7 +264,7 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
 			</AppShell.Header>
 
 			{/* Left Sidebar - Activity Bar + Content (VSCode-style) */}
-			<AppShell.Navbar style={{ display: "flex", flexDirection: "row", height: "calc(100vh - 60px)", maxHeight: "calc(100vh - 60px)", overflowY: "hidden", overflowX: "hidden" }}>
+			<AppShell.Navbar id="left-sidebar" style={{ display: "flex", flexDirection: "row", height: "calc(100vh - 60px)", maxHeight: "calc(100vh - 60px)", overflowY: "hidden", overflowX: "hidden" }}>
 				{/* Activity Bar (always visible) */}
 				<LeftRibbon />
 				{/* Sidebar content (when expanded) */}
@@ -223,6 +277,7 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
 
 			{/* Main Graph Area */}
 			<AppShell.Main
+				id="main-content"
 				style={{
 					display: "flex",
 					flexDirection: "column",
@@ -273,5 +328,6 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
 				<RightRibbon />
 			</AppShell.Aside>
 		</AppShell>
+	</>
 	);
 };
