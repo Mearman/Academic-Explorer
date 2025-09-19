@@ -1,3 +1,10 @@
+# [6.2.0](https://github.com/Mearman/Academic-Explorer/compare/v6.1.0...v6.2.0) (2025-09-19)
+
+
+### Features
+
+* **a11y:** add skip links for keyboard navigation in MainLayout ([5920fb2](https://github.com/Mearman/Academic-Explorer/commit/5920fb2f7820a21d4044c233dc1a451ad9cae2a4))
+
 # [6.1.0](https://github.com/Mearman/Academic-Explorer/compare/v6.0.3...v6.1.0) (2025-09-19)
 
 
