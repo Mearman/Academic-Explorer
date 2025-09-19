@@ -436,14 +436,21 @@ export class OpenAlexCLI {
   }
 
   /**
-   * Load legacy index format (for backward compatibility with tests)
+   * Load index for entity type (returns raw unified index)
    */
-  async loadIndex(entityType: StaticEntityType): Promise<{ entityType: string; count: number; entities: string[] } | null> {
+  async loadIndex(entityType: StaticEntityType): Promise<UnifiedIndex | null> {
+    return this.loadUnifiedIndex(entityType);
+  }
+
+  /**
+   * Get entity summary for integration tests
+   */
+  async getEntitySummary(entityType: StaticEntityType): Promise<{ entityType: string; count: number; entities: string[] } | null> {
     try {
       const unifiedIndex = await this.loadUnifiedIndex(entityType);
       if (!unifiedIndex) return null;
 
-      // Transform unified index to legacy format expected by tests
+      // Transform unified index to summary format for integration tests
       const entities: string[] = [];
 
       for (const [key, _entry] of Object.entries(unifiedIndex)) {
@@ -460,10 +467,10 @@ export class OpenAlexCLI {
       return {
         entityType,
         count: entities.length,
-        entities
+        entities: entities.sort()
       };
     } catch (error) {
-      console.error(`Failed to load index for ${entityType}:`, error);
+      logger.error("general", `Failed to load entity summary for ${entityType}`, { error });
       return null;
     }
   }

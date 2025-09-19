@@ -1,0 +1,7 @@
+{
+  "https://api.openalex.org/invalid-entity-type/A999999997": {
+    "$ref": "./https%3A%2F%2Fapi.openalex.org%2Finvalid-entity-type%2FA999999997.json",
+    "lastModified": "2025-09-19T19:57:43.314Z",
+    "contentHash": "000000000a1e14f0"
+  }
+}

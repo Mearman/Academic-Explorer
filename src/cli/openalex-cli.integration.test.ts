@@ -29,7 +29,7 @@ describe("OpenAlexCLI Integration Tests", () => {
     });
 
     it("should load author index successfully", async () => {
-      const index = await cli.loadIndex("authors");
+      const index = await cli.getEntitySummary("authors");
 
       expect(index).toBeTruthy();
       expect(index?.entityType).toBe("authors");

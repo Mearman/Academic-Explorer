@@ -33,5 +33,15 @@
     "$ref": "./https%3A%2F%2Fapi%2Eopenalex%2Eorg%2Fauthors%2FAhttps%252F%252F%252Fapi%252Eopenalex%252Eorg%252Fauthors%252FA5025875274.json",
     "lastModified": "2025-09-19T17:03:04.892Z",
     "contentHash": "ac19256a0908ecf0"
+  },
+  "https://api.openalex.org/authors/A999999998": {
+    "$ref": "./https%3A%2F%2Fapi.openalex.org%2Fauthors%2FA999999998.json",
+    "lastModified": "2025-09-19T19:57:43.313Z",
+    "contentHash": "0000000045fc836f"
+  },
+  "https://api.openalex.org/authors/A999999995": {
+    "$ref": "./https%3A%2F%2Fapi.openalex.org%2Fauthors%2FA999999995.json",
+    "lastModified": "2025-09-19T19:57:43.317Z",
+    "contentHash": "0000000043a1218d"
   }
 }

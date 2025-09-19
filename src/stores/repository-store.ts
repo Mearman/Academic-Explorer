@@ -170,14 +170,16 @@ export const useRepositoryStore = create<RepositoryState>()(
 				set(state => {
 					// Remove nodes
 					for (const nodeId of nodeIds) {
-						Reflect.deleteProperty(state.repositoryNodes, nodeId);
-						Reflect.deleteProperty(state.selectedRepositoryNodes, nodeId);
+						const { [nodeId]: _, ...remainingNodes } = state.repositoryNodes;
+						state.repositoryNodes = remainingNodes;
+						state.selectedRepositoryNodes[nodeId] = false;
 					}
 
 					// Remove edges
 					for (const edgeId of edgeIds) {
-						Reflect.deleteProperty(state.repositoryEdges, edgeId);
-						Reflect.deleteProperty(state.selectedRepositoryEdges, edgeId);
+						const { [edgeId]: _, ...remainingEdges } = state.repositoryEdges;
+						state.repositoryEdges = remainingEdges;
+						state.selectedRepositoryEdges[edgeId] = false;
 					}
 
 					logger.debug("repository", "Removed items from repository", {
@@ -255,7 +257,7 @@ export const useRepositoryStore = create<RepositoryState>()(
 					if (selected) {
 						state.selectedRepositoryNodes[nodeId] = true;
 					} else {
-						Reflect.deleteProperty(state.selectedRepositoryNodes, nodeId);
+						state.selectedRepositoryNodes[nodeId] = false;
 					}
 				});
 				get().recomputeCounts();
@@ -266,7 +268,7 @@ export const useRepositoryStore = create<RepositoryState>()(
 					if (selected) {
 						state.selectedRepositoryEdges[edgeId] = true;
 					} else {
-						Reflect.deleteProperty(state.selectedRepositoryEdges, edgeId);
+						state.selectedRepositoryEdges[edgeId] = false;
 					}
 				});
 				get().recomputeCounts();
