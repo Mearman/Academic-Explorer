@@ -165,6 +165,7 @@ export default tseslint.config([
       'scripts/**/*.ts',
       'scripts/**/*.js',
       'src/lib/utils/static-data-index-generator.ts',
+      'src/lib/utils/openalex-downloader.ts',
       'config/vite-plugins/static-data-index.ts',
     ],
     rules: {
@@ -176,6 +177,7 @@ export default tseslint.config([
       '@typescript-eslint/no-unsafe-call': 'off', // Allow unsafe operations in build scripts
       '@typescript-eslint/no-unsafe-member-access': 'off', // Allow unsafe operations in build scripts
       '@typescript-eslint/no-redundant-type-constituents': 'off', // Allow complex types in build scripts
+      '@typescript-eslint/no-unused-vars': 'off', // Allow keeping backup functions in infrastructure
     },
   },
   // Allow type assertions in external API integration files where they're necessary for type contracts
