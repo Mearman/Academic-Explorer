@@ -7,7 +7,11 @@
     "type": "git",
     "url": "https://github.com/Mearman/Academic-Explorer.git"
   },
+  "bin": {
+    "openalex-cli": "./dist/cli/openalex-cli.js"
+  },
   "scripts": {
+    "cli": "tsx src/cli/openalex-cli.ts",
     "dev": "vite",
     "build": "npm run generate:static-indexes && tsc -b tsconfig.app.json && vite build",
     "generate:static-indexes": "npx tsx scripts/generate-static-data-index.ts",
@@ -68,6 +72,7 @@
     "@tanstack/react-router": "^1.131.44",
     "@tanstack/react-table": "^8.21.3",
     "@xyflow/react": "^12.8.5",
+    "commander": "^14.0.1",
     "d3-force": "^3.0.0",
     "d3-random": "^3.0.1",
     "date-fns": "^4.1.0",
