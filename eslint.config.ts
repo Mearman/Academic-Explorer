@@ -164,9 +164,14 @@ export default tseslint.config([
       'src/lib/logger.ts',
       'scripts/**/*.ts',
       'scripts/**/*.js',
+      'src/lib/utils/static-data-index-generator.ts',
+      'config/vite-plugins/static-data-index.ts',
     ],
     rules: {
       'no-console': 'off',
+      'custom/no-emoji': 'off', // Allow emojis in build/infrastructure scripts for visual feedback
+      '@typescript-eslint/restrict-template-expressions': 'off', // Allow number coercion in logging
+      'custom/prefer-destructured-params': 'off', // Allow traditional parameters in utility functions
     },
   },
   // Allow type assertions in external API integration files where they're necessary for type contracts
