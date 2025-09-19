@@ -1,7 +1,7 @@
 {
   "entityType": "authors",
   "count": 5,
-  "lastGenerated": "2025-09-19T08:19:59.690Z",
+  "lastModified": "2025-09-19T09:46:38.367Z",
   "entities": [
     "A5017572309",
     "A5017898742",
@@ -10,17 +10,17 @@
     "A5039168231"
   ],
   "metadata": {
-    "totalSize": 141328,
+    "totalSize": 141333,
     "files": [
       {
         "id": "A5017572309",
         "size": 17143,
-        "lastModified": "2025-09-19T08:12:07.838Z"
+        "lastModified": "2025-09-19T08:37:55.740Z"
       },
       {
         "id": "A5017898742",
-        "size": 21010,
-        "lastModified": "2025-09-19T08:10:09.983Z"
+        "size": 21015,
+        "lastModified": "2025-09-19T09:46:04.722Z"
       },
       {
         "id": "A5025875274",
