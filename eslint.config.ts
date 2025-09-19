@@ -183,6 +183,7 @@ export default tseslint.config([
       'src/lib/utils/static-data-index-generator.ts',
       'src/lib/utils/openalex-downloader.ts',
       'config/vite-plugins/static-data-index.ts',
+      'src/cli/**/*.ts',
     ],
     rules: {
       'no-console': 'off',
@@ -204,10 +205,12 @@ export default tseslint.config([
       'src/lib/utils/type-helpers.ts',
       'src/lib/hooks/use-openalex-query.ts', // Generic query hook requires type assertions
       'src/lib/graph/events/context-proxy.ts', // Cross-context event proxy requires type assertions for validated data
+      'src/cli/**/*.ts', // CLI tools need type assertions for external data validation
     ],
     rules: {
       '@typescript-eslint/consistent-type-assertions': 'off', // External API boundaries require type assertions
       '@typescript-eslint/no-unnecessary-type-assertion': 'off', // External API boundaries may need complex assertions
+      'eslint-comments/no-use': ['error', { 'allow': ['eslint-disable-next-line'] }], // Allow specific disable comments for CLI files
     },
   },
   // Relax strict type checking for test files due to mocking framework patterns
