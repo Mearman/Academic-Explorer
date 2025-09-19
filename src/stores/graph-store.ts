@@ -8,6 +8,7 @@ import { persist, createJSONStorage } from "zustand/middleware";
 import { immer } from "zustand/middleware/immer";
 // Using plain objects instead of Maps/Sets for stable references
 // No need for enableMapSet() with plain objects
+import { createHybridStorage } from "@/lib/storage/zustand-indexeddb";
 import type {
 	GraphNode,
 	GraphEdge,
@@ -1177,7 +1178,7 @@ export const useGraphStore = create<GraphState>()(
 		})),
 		{
 			name: "graph-layout-storage",
-			storage: createJSONStorage(() => localStorage),
+			storage: createJSONStorage(() => createHybridStorage()),
 			partialize: (state) => ({
 				currentLayout: state.currentLayout,
 				providerType: state.providerType,

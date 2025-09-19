@@ -8,6 +8,7 @@ import { create } from "zustand";
 import { immer } from "zustand/middleware/immer";
 import { persist, createJSONStorage } from "zustand/middleware";
 import { updateOpenAlexEmail } from "@/lib/openalex/rate-limited-client";
+import { createHybridStorage } from "@/lib/storage/zustand-indexeddb";
 import { logger } from "@/lib/logger";
 
 interface SettingsState {
@@ -58,7 +59,7 @@ export const useSettingsStore = create<SettingsState>()(
     })),
     {
       name: "academic-explorer-settings",
-      storage: createJSONStorage(() => localStorage),
+      storage: createJSONStorage(() => createHybridStorage()),
       onRehydrateStorage: () => (state) => {
         if (state) {
           // Initialize OpenAlex client with stored email after hydration

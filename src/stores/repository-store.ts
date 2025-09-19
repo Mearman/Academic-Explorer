@@ -8,6 +8,7 @@ import { persist, createJSONStorage } from "zustand/middleware";
 import { immer } from "zustand/middleware/immer";
 import type { GraphNode, GraphEdge, EntityType } from "@/lib/graph/types";
 import { RelationType } from "@/lib/graph/types";
+import { createHybridStorage } from "@/lib/storage/zustand-indexeddb";
 import { logger } from "@/lib/logger";
 
 interface RepositoryState {
@@ -366,7 +367,7 @@ export const useRepositoryStore = create<RepositoryState>()(
 		})),
 		{
 			name: "repository-storage",
-			storage: createJSONStorage(() => localStorage),
+			storage: createJSONStorage(() => createHybridStorage()),
 			partialize: (state) => ({
 				repositoryMode: state.repositoryMode,
 				nodeTypeFilter: state.nodeTypeFilter,

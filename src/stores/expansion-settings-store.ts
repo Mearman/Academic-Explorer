@@ -7,6 +7,7 @@
 import { create } from "zustand";
 import { immer } from "zustand/middleware/immer";
 import { persist, createJSONStorage } from "zustand/middleware";
+import { createHybridStorage } from "@/lib/storage/zustand-indexeddb";
 import { logger } from "@/lib/logger";
 import type {
 	ExpansionSettings,
@@ -289,7 +290,7 @@ export const useExpansionSettingsStore = create<ExpansionSettingsState>()(
 		})),
 		{
 			name: "academic-explorer-expansion-settings",
-			storage: createJSONStorage(() => localStorage),
+			storage: createJSONStorage(() => createHybridStorage()),
 			onRehydrateStorage: () => (state) => {
 				if (state) {
 					logger.debug("expansion", "Rehydrated expansion settings from localStorage", {

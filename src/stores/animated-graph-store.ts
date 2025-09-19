@@ -8,6 +8,7 @@ import { persist, createJSONStorage } from "zustand/middleware";
 import { immer } from "zustand/middleware/immer";
 import { useGraphStore } from "./graph-store";
 import type { GraphNode } from "@/lib/graph/types";
+import { createHybridStorage } from "@/lib/storage/zustand-indexeddb";
 import { logger } from "@/lib/logger";
 
 interface NodePosition {
@@ -358,7 +359,7 @@ export const useAnimatedGraphStore = create<AnimatedGraphState>()(
 		})),
 		{
 			name: "animated-graph-store",
-			storage: createJSONStorage(() => localStorage),
+			storage: createJSONStorage(() => createHybridStorage()),
 			// Only persist configuration, not runtime state
 			partialize: (state) => ({
 				useAnimatedLayout: state.useAnimatedLayout,

@@ -8,6 +8,7 @@ import { persist, createJSONStorage } from "zustand/middleware";
 import type { ProviderType } from "@/lib/graph/types";
 import { getDefaultSectionPlacements, getAllSectionIds, getSectionById } from "@/stores/section-registry";
 import { updateGroupDefinition, getGroupDefinition, registerGroupDefinition } from "@/stores/group-registry";
+import { createHybridStorage } from "@/lib/storage/zustand-indexeddb";
 import { logger } from "@/lib/logger";
 
 interface ToolGroup {
@@ -602,7 +603,7 @@ export const useLayoutStore = create<LayoutState>()(
 		}),
 		{
 			name: "academic-explorer-layout",
-			storage: createJSONStorage(() => localStorage),
+			storage: createJSONStorage(() => createHybridStorage()),
 			// Only persist certain values
 			partialize: (state) => ({
 				leftSidebarPinned: state.leftSidebarPinned,
