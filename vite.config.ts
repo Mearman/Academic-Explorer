@@ -47,7 +47,8 @@ function getBuildInfo() {
 export default defineConfig(({ mode }) => ({
   resolve: resolveConfig,
   plugins: [
-    openalexDataPlugin(), // Comprehensive data management - always runs at build time
+    // Only run OpenAlex data plugin in production builds, not during tests
+    ...(mode !== 'test' ? [openalexDataPlugin()] : []),
     devtools(),
     TanStackRouterVite({
       // Enable hash-based routing for GitHub Pages compatibility
