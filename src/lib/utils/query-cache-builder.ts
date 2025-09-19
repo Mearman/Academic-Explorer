@@ -5,7 +5,7 @@
 
 import { writeFile, mkdir } from "fs/promises";
 import { join } from "path";
-import { generateQueryHash } from "./query-hash";
+import { generateContentHash } from "./query-hash";
 import { logger } from "../logger";
 import type { QueryResult } from "../api/static-data-provider";
 import { z } from "zod";
@@ -177,7 +177,8 @@ export async function saveQueryToCache(
   }
 ): Promise<void> {
   try {
-    const queryHash = await generateQueryHash(url);
+    // Use URL encoding for filename, not content hash
+    const filename = encodeURIComponent(url) + ".json";
     const entityDir = join(options.outputDir, entityType);
 
     // Ensure entity directory exists
@@ -196,12 +197,18 @@ export async function saveQueryToCache(
       }
     };
 
+    const jsonContent = JSON.stringify(queryResult, null, 2);
+
+    // Use content hash for the actual content
+    const contentHash = generateContentHash(jsonContent);
+
     // Write to file
-    const filePath = join(entityDir, `${queryHash}.json`);
-    await writeFile(filePath, JSON.stringify(queryResult, null, 2));
+    const filePath = join(entityDir, filename);
+    await writeFile(filePath, jsonContent);
 
     logger.debug("query-cache", `Saved query cache for ${entityType}`, {
-      queryHash,
+      filename,
+      contentHash,
       url,
       resultCount: results.length,
       filePath
@@ -336,10 +343,10 @@ export async function addFilteredQuery(
   });
 
   const queryUrl = url.toString();
-  const queryHash = await generateQueryHash(queryUrl);
+  const urlIdentifier = encodeURIComponent(queryUrl);
 
   logger.debug("query-cache", `Adding filtered query for ${entityType}`, {
-    queryHash,
+    urlIdentifier,
     params,
     url: queryUrl
   });
@@ -359,7 +366,7 @@ export async function addFilteredQuery(
     }
   }
 
-  return queryHash;
+  return urlIdentifier;
 }
 
 /**
@@ -518,8 +525,8 @@ export async function fetchAndCacheQueries(
 }
 
 /**
- * Get query hash for a URL (utility function)
+ * Get URL identifier for a URL (utility function)
  */
-export async function getQueryHashForUrl(url: string): Promise<string> {
-  return await generateQueryHash(url);
+export function getUrlIdentifier(url: string): string {
+  return encodeURIComponent(url);
 }
