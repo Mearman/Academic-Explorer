@@ -11,7 +11,7 @@ const QueryInfoSchema = z.object({
   baseUrl: z.string(),
   params: z.record(z.string(), z.string()),
   normalizedUrl: z.string(),
-}).strict();
+}).and(z.record(z.unknown()));
 
 /**
  * Generate a hash for a query URL to use as filename

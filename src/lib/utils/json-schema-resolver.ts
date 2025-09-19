@@ -19,11 +19,29 @@ export interface JsonSchemaRef {
   $ref: string;
 }
 
-// Schema for validating cached JSON data
+// Schema for validating JSON data structure
 const JsonDataSchema = z.record(z.unknown());
 
-// Generic cache type for better type safety
-type CacheValue<T> = T | null;
+// Schema for entity index entries
+const EntityIndexEntrySchema = z.object({
+  $ref: z.string(),
+  lastModified: z.string().optional(),
+  contentHash: z.string().optional(),
+});
+
+// Schema for complete entity index
+const EntityIndexSchema = z.record(z.string(), EntityIndexEntrySchema);
+
+// Schema for JSON Schema objects
+const JsonSchemaZodSchema = z.object({
+  $schema: z.string().optional(),
+  $id: z.string().optional(),
+  $ref: z.string().optional(),
+  allOf: z.array(z.object({ $ref: z.string() })).optional(),
+}).and(z.record(z.unknown()));
+
+// Schema for raw entity index (old format)
+const RawEntityIndexSchema = z.record(z.string(), z.string());
 
 /**
  * Resolved entity index structure (new format with $ref pointers)
@@ -73,7 +91,7 @@ export class JsonSchemaResolver {
    */
   async resolveSchema(schemaUrl: string): Promise<JsonSchema | null> {
     try {
-      const schema = await this.fetchJson<JsonSchema>(schemaUrl);
+      const schema = await this.fetchJsonSchema(schemaUrl);
       if (!schema) {
         return null;
       }
@@ -102,7 +120,7 @@ export class JsonSchemaResolver {
 
       try {
         const refUrl = this.resolveRefUrl(ref.$ref, baseUrl);
-        const refSchema = await this.fetchJson<JsonSchema>(refUrl);
+        const refSchema = await this.fetchJsonSchema(refUrl);
 
         if (refSchema) {
           // Merge the referenced schema properties
@@ -122,7 +140,7 @@ export class JsonSchemaResolver {
   async resolveEntityIndex(entityType: string): Promise<ResolvedEntityIndex | null> {
     try {
       const indexUrl = `${this.basePath}${entityType}/index.json`;
-      const rawIndex = await this.fetchJson<RawEntityIndex>(indexUrl);
+      const rawIndex = await this.fetchRawEntityIndex(indexUrl);
 
       if (!rawIndex) {
         logger.debug("static-data", `No index found for ${entityType}`);
@@ -204,7 +222,7 @@ export class JsonSchemaResolver {
   async getEntityData(entityType: string, entityId: string): Promise<unknown> {
     try {
       const indexUrl = `${this.basePath}${entityType}/index.json`;
-      const rawIndex = await this.fetchJson<RawEntityIndex>(indexUrl);
+      const rawIndex = await this.fetchRawEntityIndex(indexUrl);
 
       if (!rawIndex) {
         return null;
@@ -232,7 +250,7 @@ export class JsonSchemaResolver {
 
       // Resolve the $ref to get actual entity data
       const entityUrl = this.resolveRefUrl(refData.$ref, indexUrl);
-      return await this.fetchJson(entityUrl);
+      return await this.fetchRawJson(entityUrl);
     } catch (error) {
       logger.error("static-data", `Failed to get entity data ${entityType}:${entityId}`, { error });
       return null;
@@ -245,7 +263,7 @@ export class JsonSchemaResolver {
   async getQueryData(entityType: string, queryUrl: string): Promise<unknown> {
     try {
       const indexUrl = `${this.basePath}${entityType}/index.json`;
-      const rawIndex = await this.fetchJson<RawEntityIndex>(indexUrl);
+      const rawIndex = await this.fetchRawEntityIndex(indexUrl);
 
       if (!rawIndex || !rawIndex[queryUrl]) {
         return null;
@@ -258,7 +276,7 @@ export class JsonSchemaResolver {
 
       // Resolve the $ref to get actual query results
       const dataUrl = this.resolveRefUrl(refData.$ref, indexUrl);
-      return await this.fetchJson(dataUrl);
+      return await this.fetchRawJson(dataUrl);
     } catch (error) {
       logger.error("static-data", `Failed to get query data ${entityType}:${queryUrl}`, { error });
       return null;
@@ -271,7 +289,7 @@ export class JsonSchemaResolver {
   async discoverEntityTypes(): Promise<string[]> {
     try {
       const mainIndexUrl = `${this.basePath}index.json`;
-      const mainIndex = await this.fetchJson<JsonSchema>(mainIndexUrl);
+      const mainIndex = await this.fetchJsonSchema(mainIndexUrl);
 
       if (!mainIndex || !mainIndex.allOf) {
         logger.warn("static-data", "Main index not found or missing allOf structure");
@@ -309,11 +327,11 @@ export class JsonSchemaResolver {
   /**
    * Fetch JSON with caching
    */
-  private async fetchJson<T = unknown>(url: string): Promise<T | null> {
+  private async fetchRawJson(url: string): Promise<unknown | null> {
     // Check cache first
     if (this.cache.has(url)) {
       const cachedValue = this.cache.get(url);
-      return cachedValue !== undefined ? (cachedValue as T) : null;
+      return cachedValue !== undefined ? cachedValue : null;
     }
 
     try {
@@ -327,17 +345,47 @@ export class JsonSchemaResolver {
 
       const jsonResponse: unknown = await response.json();
 
-      // Validate the JSON response structure and cache if valid
-      try {
-        JsonDataSchema.parse(jsonResponse);
-        this.cache.set(url, jsonResponse);
-        return jsonResponse as T;
-      } catch {
-        logger.warn("json-schema-resolver", `Invalid JSON structure from ${url}`);
-        return null;
-      }
+      // Cache the raw response
+      this.cache.set(url, jsonResponse);
+      return jsonResponse;
     } catch (error) {
       logger.warn("static-data", `Failed to fetch JSON from ${url}`, { error });
+      return null;
+    }
+  }
+
+  private async fetchEntityIndex(url: string): Promise<z.infer<typeof EntityIndexSchema> | null> {
+    const rawData = await this.fetchRawJson(url);
+    if (!rawData) return null;
+
+    try {
+      return EntityIndexSchema.parse(rawData);
+    } catch (error) {
+      logger.warn("json-schema-resolver", `Invalid entity index structure from ${url}`, { error });
+      return null;
+    }
+  }
+
+  private async fetchJsonSchema(url: string): Promise<z.infer<typeof JsonSchemaZodSchema> | null> {
+    const rawData = await this.fetchRawJson(url);
+    if (!rawData) return null;
+
+    try {
+      return JsonSchemaZodSchema.parse(rawData);
+    } catch (error) {
+      logger.warn("json-schema-resolver", `Invalid JSON schema structure from ${url}`, { error });
+      return null;
+    }
+  }
+
+  private async fetchRawEntityIndex(url: string): Promise<z.infer<typeof RawEntityIndexSchema> | null> {
+    const rawData = await this.fetchRawJson(url);
+    if (!rawData) return null;
+
+    try {
+      return RawEntityIndexSchema.parse(rawData);
+    } catch (error) {
+      logger.warn("json-schema-resolver", `Invalid raw entity index structure from ${url}`, { error });
       return null;
     }
   }
