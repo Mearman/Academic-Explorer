@@ -1,12 +1,12 @@
 import type { Plugin } from "vite";
 import { join, basename } from "path";
 import { watch } from "chokidar";
-import { generateAllIndexes, generateIndexForEntityType } from "../../src/lib/utils/static-data-index-generator";
+import { generateAllIndexes, generateIndexWithAutoDownload, generateIndexForEntityType } from "../../src/lib/utils/static-data-index-generator";
 
 /**
  * Vite plugin for auto-generating static data indexes with hot reload support
  */
-export function staticDataIndexPlugin(): Plugin {
+export function staticDataIndexPlugin(options: { autoDownload?: boolean } = {}): Plugin {
   let staticDataDir: string;
   let watcher: ReturnType<typeof watch> | null = null;
 
@@ -18,7 +18,10 @@ export function staticDataIndexPlugin(): Plugin {
     async buildStart() {
       // Generate indexes at build start
       console.log("🔄 Generating static data indexes...");
-      await generateAllIndexes(staticDataDir);
+      if (options.autoDownload) {
+        console.log("🔄 Auto-download enabled for build");
+      }
+      await generateAllIndexes(staticDataDir, { autoDownload: options.autoDownload });
     },
     async configureServer(server) {
       // Set up file watcher for development
@@ -34,7 +37,12 @@ export function staticDataIndexPlugin(): Plugin {
         const entityType = basename(join(filePath, ".."));
         const entityDir = join(staticDataDir, entityType);
         console.log(`${getActionIcon(action)} File ${action}: ${basename(filePath)} in ${entityType}`);
-        await generateIndexForEntityType(entityDir, entityType);
+
+        if (options.autoDownload) {
+          await generateIndexWithAutoDownload(entityDir, entityType, staticDataDir);
+        } else {
+          await generateIndexForEntityType(entityDir, entityType);
+        }
 
         // Trigger HMR for any modules that might depend on the index
         server.ws.send({
@@ -47,7 +55,10 @@ export function staticDataIndexPlugin(): Plugin {
       watcher.on("change", (filePath: string) => void handleFileChange(filePath, "changed"));
 
       // Generate initial indexes
-      await generateAllIndexes(staticDataDir);
+      if (options.autoDownload) {
+        console.log("🔄 Auto-download enabled for development");
+      }
+      await generateAllIndexes(staticDataDir, { autoDownload: options.autoDownload });
     },
     async closeBundle() {
       // Clean up watcher

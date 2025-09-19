@@ -84,6 +84,8 @@ export function ApplicationLoggerPanel() {
 			"expansion": "violet",
 			"repository": "indigo",
 			"settings": "yellow",
+			"static-data": "lime",
+			"query-cache": "grape",
 		};
 		const color = colors[category];
 		return color ?? "gray";

@@ -44,10 +44,12 @@ function getBuildInfo() {
 }
 
 // https://vite.dev/config/
-export default defineConfig({
+export default defineConfig(({ mode }) => ({
   resolve: resolveConfig,
   plugins: [
-    staticDataIndexPlugin(),
+    staticDataIndexPlugin({
+      autoDownload: mode === 'development' // Enable auto-download in development
+    }),
     devtools(),
     TanStackRouterVite({
       // Enable hash-based routing for GitHub Pages compatibility
@@ -278,4 +280,4 @@ export default defineConfig({
     // Increase chunk size warning threshold since we're now splitting properly
     chunkSizeWarningLimit: 800
   },
-})
+}))
