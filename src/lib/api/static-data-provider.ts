@@ -1,6 +1,7 @@
 import { logger } from "@/lib/logger";
 import { generateQueryHash } from "@/lib/utils/query-hash";
-import type { StaticDataIndex, QueryMetadata } from "@/lib/utils/static-data-index-generator";
+import { jsonSchemaResolver, type ResolvedEntityIndex } from "@/lib/utils/json-schema-resolver";
+import type { QueryMetadata } from "@/lib/utils/static-data-index-generator";
 
 /**
  * Configuration for static data provider
@@ -34,17 +35,20 @@ export interface QueryResult {
 
 /**
  * Static data provider for serving preloaded OpenAlex entities
+ * Now supports JSON Schema $ref resolution and allOf composition
  */
 export class StaticDataProvider {
-  private indexCache = new Map<StaticEntityType, StaticDataIndex>();
+  private indexCache = new Map<StaticEntityType, ResolvedEntityIndex>();
   private entityCache = new Map<string, unknown>();
   private queryCache = new Map<string, unknown>();
+  private availableEntityTypes: string[] = [];
   private readonly logger = logger;
+  private readonly resolver = jsonSchemaResolver;
 
   /**
    * Get the index for a specific entity type
    */
-  async getIndex(entityType: StaticEntityType): Promise<StaticDataIndex | null> {
+  async getIndex(entityType: StaticEntityType): Promise<ResolvedEntityIndex | null> {
     try {
       // Check cache first
       const cached = this.indexCache.get(entityType);
@@ -52,25 +56,14 @@ export class StaticDataProvider {
         return cached;
       }
 
-      // Fetch index from static files
-      const indexUrl = `${STATIC_DATA_CONFIG.basePath}${entityType}/index.json`;
-      const response = await this.fetchWithRetry({ url: indexUrl });
-
-      if (!response.ok) {
-        if (response.status === 404) {
-          this.logger.debug("static-data", `No static data available for ${entityType}`);
-          return null;
-        }
-        throw new Error(`Failed to fetch index: ${String(response.status)} ${response.statusText}`);
+      // Use JSON Schema resolver to get entity index
+      const index = await this.resolver.resolveEntityIndex(entityType);
+      if (!index) {
+        this.logger.debug("static-data", `No static data available for ${entityType}`);
+        return null;
       }
 
-      const indexData: unknown = await response.json();
-      if (!this.isValidIndex(indexData)) {
-        throw new Error(`Invalid index structure for ${entityType}`);
-      }
-      const index = indexData;
-
-      // Cache the index
+      // Cache the resolved index
       this.indexCache.set(entityType, index);
 
       this.logger.debug("static-data", `Loaded index for ${entityType}`, {
@@ -114,15 +107,12 @@ export class StaticDataProvider {
         return null;
       }
 
-      // Fetch entity from static files
-      const entityUrl = `${STATIC_DATA_CONFIG.basePath}${entityType}/${entityId}.json`;
-      const response = await this.fetchWithRetry({ url: entityUrl });
-
-      if (!response.ok) {
-        throw new Error(`Failed to fetch entity: ${String(response.status)} ${response.statusText}`);
+      // Use JSON Schema resolver to get entity data
+      const entity = await this.resolver.getEntityData(entityType, entityId);
+      if (!entity) {
+        this.logger.debug("static-data", `Failed to resolve entity data for ${entityId}`);
+        return null;
       }
-
-      const entity: unknown = await response.json();
 
       // Cache the entity
       this.entityCache.set(cacheKey, entity);
@@ -147,16 +137,22 @@ export class StaticDataProvider {
    * Get statistics about static data
    */
   async getStatistics(): Promise<Record<StaticEntityType, { count: number; totalSize: number } | null>> {
-    const entityTypes: StaticEntityType[] = ["authors", "works", "institutions", "topics", "publishers", "funders"];
+    // Discover available entity types dynamically
+    if (this.availableEntityTypes.length === 0) {
+      this.availableEntityTypes = await this.resolver.discoverEntityTypes();
+    }
+
     const stats: Record<string, { count: number; totalSize: number } | null> = {};
 
     await Promise.all(
-      entityTypes.map(async (entityType) => {
-        const index = await this.getIndex(entityType);
-        stats[entityType] = index ? {
-          count: index.count,
-          totalSize: index.metadata.totalSize
-        } : null;
+      this.availableEntityTypes.map(async (entityType) => {
+        if (this.isValidEntityType(entityType)) {
+          const index = await this.getIndex(entityType as StaticEntityType);
+          stats[entityType] = index ? {
+            count: index.count,
+            totalSize: index.metadata.totalSize
+          } : null;
+        }
       })
     );
 
@@ -192,23 +188,20 @@ export class StaticDataProvider {
       // Check if query exists in index
       const hasQuery = await this.hasQuery({ entityType, url });
       if (!hasQuery) {
-        this.logger.debug("static-data", `Query ${queryHash} not found in ${entityType} static data`);
+        this.logger.debug("static-data", `Query ${url} not found in ${entityType} static data`);
         return null;
       }
 
-      // Fetch query from static files
-      const queryUrl = `${STATIC_DATA_CONFIG.basePath}${entityType}/${queryHash}.json`;
-      const response = await this.fetchWithRetry({ url: queryUrl });
-
-      if (!response.ok) {
-        throw new Error(`Failed to fetch query: ${String(response.status)} ${response.statusText}`);
+      // Use JSON Schema resolver to get query data
+      const queryResult = await this.resolver.getQueryData(entityType, url);
+      if (!queryResult) {
+        this.logger.debug("static-data", `Failed to resolve query data for ${url}`);
+        return null;
       }
-
-      const queryResult: unknown = await response.json();
 
       // Validate and format the query result
       if (!this.isValidQueryResult(queryResult)) {
-        throw new Error(`Invalid query result structure for ${queryHash}`);
+        throw new Error(`Invalid query result structure for ${url}`);
       }
 
       const formattedResult: QueryResult = {
@@ -266,6 +259,8 @@ export class StaticDataProvider {
     this.indexCache.clear();
     this.entityCache.clear();
     this.queryCache.clear();
+    this.availableEntityTypes = [];
+    this.resolver.clearCache();
     this.logger.debug("static-data", "Cleared all static data caches");
   }
 
@@ -302,18 +297,21 @@ export class StaticDataProvider {
   }
 
   /**
-   * Validate index structure
+   * Check if entity type is valid
    */
-  private isValidIndex(index: unknown): index is StaticDataIndex {
-    return (
-      typeof index === "object" &&
-      index !== null &&
-      "entityType" in index &&
-      "count" in index &&
-      "entities" in index &&
-      "metadata" in index &&
-      Array.isArray(index.entities)
-    );
+  private isValidEntityType(entityType: string): entityType is StaticEntityType {
+    const validTypes: StaticEntityType[] = ["authors", "works", "institutions", "topics", "publishers", "funders"];
+    return validTypes.includes(entityType as StaticEntityType);
+  }
+
+  /**
+   * Get available entity types
+   */
+  async getAvailableEntityTypes(): Promise<string[]> {
+    if (this.availableEntityTypes.length === 0) {
+      this.availableEntityTypes = await this.resolver.discoverEntityTypes();
+    }
+    return this.availableEntityTypes;
   }
 
   /**

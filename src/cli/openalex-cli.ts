@@ -261,10 +261,9 @@ program
       console.log("=".repeat(50));
 
       Object.entries(stats).forEach(([entityType, data]) => {
-        const sizeInMB = (data.totalSize / (1024 * 1024)).toFixed(2);
         const lastMod = new Date(data.lastModified).toLocaleString();
 
-        console.log(`${entityType.toUpperCase().padEnd(12)}: ${data.count.toString().padStart(4)} entities, ${sizeInMB.padStart(6)}MB, last: ${lastMod}`);
+        console.log(`${entityType.toUpperCase().padEnd(12)}: ${data.count.toString().padStart(4)} entities, last: ${lastMod}`);
       });
     }
   });
@@ -282,10 +281,10 @@ program
     }
 
     const staticEntityType = entityTypeValidation.data;
-    const index = await cli.loadIndex(staticEntityType);
+    const index = await cli.loadUnifiedIndex(staticEntityType);
 
     if (!index) {
-      console.error(`No index found for ${entityType}`);
+      console.error(`No unified index found for ${entityType}`);
       process.exit(1);
     }
 
