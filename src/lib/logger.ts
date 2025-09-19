@@ -1,6 +1,6 @@
 // Logger types
 export type LogLevel = "debug" | "info" | "warn" | "error";
-export type LogCategory = "api" | "cache" | "graph" | "routing" | "ui" | "auth" | "storage" | "search" | "general" | "expansion" | "repository" | "settings";
+export type LogCategory = "api" | "cache" | "graph" | "routing" | "ui" | "auth" | "storage" | "search" | "general" | "expansion" | "repository" | "settings" | "static-data" | "query-cache";
 
 export interface LogEntry {
   id: string;
