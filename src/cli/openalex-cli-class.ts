@@ -56,6 +56,7 @@ function isOpenAlexAPIResponse(value: unknown): value is OpenAlexResponse<OpenAl
     typeof value === "object" &&
     value !== null &&
     "results" in value &&
+    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions -- Type guard requires assertion for property access
     Array.isArray((value as { results: unknown }).results)
   );
 }
@@ -65,6 +66,7 @@ function isNodeError(error: unknown): error is { code: string } {
     typeof error === "object" &&
     error !== null &&
     "code" in error &&
+    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions -- Type guard requires assertion for property access
     typeof (error as { code: unknown }).code === "string"
   );
 }
@@ -282,6 +284,7 @@ export class OpenAlexCLI {
         "entities" in parsed &&
         Array.isArray(parsed.entities)
       ) {
+        // eslint-disable-next-line @typescript-eslint/consistent-type-assertions -- Validated JSON parsing requires type assertion
         return parsed as StaticDataIndex;
       }
 
@@ -311,6 +314,7 @@ export class OpenAlexCLI {
         typeof parsed.id === "string" &&
         typeof parsed.display_name === "string"
       ) {
+        // eslint-disable-next-line @typescript-eslint/consistent-type-assertions -- Validated JSON parsing requires type assertion
         return parsed as OpenAlexEntity;
       }
 

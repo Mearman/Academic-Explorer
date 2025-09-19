@@ -13,7 +13,9 @@ import { detectEntityType } from "../lib/entities/entity-detection.js";
 
 // Helper function to validate and convert EntityType to StaticEntityType
 function toStaticEntityType(entityType: EntityType): StaticEntityType {
+  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions -- Runtime validation ensures type safety
   if (SUPPORTED_ENTITIES.includes(entityType as StaticEntityType)) {
+    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions -- Already validated above
     return entityType as StaticEntityType;
   }
   throw new Error(`Entity type ${entityType} is not supported by CLI. Supported types: ${SUPPORTED_ENTITIES.join(", ")}`);
@@ -35,12 +37,14 @@ program
   .option("-c, --count", "Show only count")
   .option("-f, --format <format>", "Output format (json, table)", "table")
   .action(async (entityType: string, options) => {
+    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions -- Runtime validation follows immediately
     if (!SUPPORTED_ENTITIES.includes(entityType as StaticEntityType)) {
       console.error(`Unsupported entity type: ${entityType}`);
       console.error(`Supported types: ${SUPPORTED_ENTITIES.join(", ")}`);
       process.exit(1);
     }
 
+    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions -- Already validated above
     const staticEntityType = entityType as StaticEntityType;
     const entities = await cli.listEntities(staticEntityType);
 
@@ -69,6 +73,7 @@ program
   .option("--no-save", "Don't save API results to cache")
   .option("--cache-only", "Only use cache, don't fetch from API if not found")
   .action(async (entityType: string, entityId: string, options) => {
+    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions -- Runtime validation follows immediately
     if (!SUPPORTED_ENTITIES.includes(entityType as StaticEntityType)) {
       console.error(`Unsupported entity type: ${entityType}`);
       process.exit(1);
@@ -80,6 +85,7 @@ program
       cacheOnly: options.cacheOnly
     };
 
+    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions -- Already validated above
     const staticEntityType = entityType as StaticEntityType;
     const entity = await cli.getEntityWithCache(staticEntityType, entityId, cacheOptions);
 
@@ -178,11 +184,13 @@ program
   .option("-l, --limit <limit>", "Limit results", "10")
   .option("-f, --format <format>", "Output format (json, table)", "table")
   .action(async (entityType: string, searchTerm: string, options) => {
+    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions -- Runtime validation follows immediately
     if (!SUPPORTED_ENTITIES.includes(entityType as StaticEntityType)) {
       console.error(`Unsupported entity type: ${entityType}`);
       process.exit(1);
     }
 
+    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions -- Already validated above
     const staticEntityType = entityType as StaticEntityType;
     const results = await cli.searchEntities(staticEntityType, searchTerm);
     // eslint-disable-next-line @typescript-eslint/no-unsafe-argument -- Commander.js options are any-typed
@@ -227,11 +235,13 @@ program
   .command("index <entity-type>")
   .description("Show index information for entity type")
   .action(async (entityType: string) => {
+    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions -- Runtime validation follows immediately
     if (!SUPPORTED_ENTITIES.includes(entityType as StaticEntityType)) {
       console.error(`Unsupported entity type: ${entityType}`);
       process.exit(1);
     }
 
+    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions -- Already validated above
     const staticEntityType = entityType as StaticEntityType;
     const index = await cli.loadIndex(staticEntityType);
 
@@ -257,11 +267,13 @@ program
   .option("--cache-only", "Only use cache, don't fetch from API if not found")
   .option("-f, --format <format>", "Output format (json, summary)", "json")
   .action(async (entityType: string, options) => {
+    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions -- Runtime validation follows immediately
     if (!SUPPORTED_ENTITIES.includes(entityType as StaticEntityType)) {
       console.error(`Unsupported entity type: ${entityType}`);
       process.exit(1);
     }
 
+    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions -- Already validated above
     const staticEntityType = entityType as StaticEntityType;
 
     // eslint-disable-next-line @typescript-eslint/no-unsafe-argument -- Commander.js options are any-typed
@@ -300,8 +312,10 @@ program
           typeof result === "object" &&
           result !== null &&
           "results" in result &&
+          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions -- Type guard requires assertion for property access
           Array.isArray((result as { results: unknown }).results)
         ) {
+          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions -- Already validated above
           const apiResult = result as { results: unknown[]; meta?: { count: number } };
           console.log(`\nQuery Results for ${staticEntityType.toUpperCase()}:`);
           console.log(`Total results: ${apiResult.meta?.count ?? apiResult.results.length}`);
@@ -314,15 +328,19 @@ program
                 typeof item === "object" &&
                 item !== null &&
                 "display_name" in item &&
+                // eslint-disable-next-line @typescript-eslint/consistent-type-assertions -- Type guard requires assertion for property access
                 typeof (item as { display_name: unknown }).display_name === "string"
               ) {
+                // eslint-disable-next-line @typescript-eslint/consistent-type-assertions -- Already validated above
                 displayName = (item as { display_name: string }).display_name;
               } else if (
                 typeof item === "object" &&
                 item !== null &&
                 "id" in item &&
+                // eslint-disable-next-line @typescript-eslint/consistent-type-assertions -- Type guard requires assertion for property access
                 typeof (item as { id: unknown }).id === "string"
               ) {
+                // eslint-disable-next-line @typescript-eslint/consistent-type-assertions -- Already validated above
                 displayName = (item as { id: string }).id;
               }
               console.log(`${(index + 1).toString().padStart(3)}: ${displayName}`);

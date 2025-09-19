@@ -205,21 +205,19 @@ export default tseslint.config([
       'src/lib/utils/type-helpers.ts',
       'src/lib/hooks/use-openalex-query.ts', // Generic query hook requires type assertions
       'src/lib/graph/events/context-proxy.ts', // Cross-context event proxy requires type assertions for validated data
-      'src/cli/openalex-cli-class.ts', // CLI class needs type assertions for JSON parsing validation
     ],
     rules: {
       '@typescript-eslint/consistent-type-assertions': 'off', // External API boundaries require type assertions
       '@typescript-eslint/no-unnecessary-type-assertion': 'off', // External API boundaries may need complex assertions
     },
   },
-  // Allow Commander.js-specific exceptions for main CLI file
+  // Allow specific ESLint disable comments for CLI files where Commander.js creates unavoidable issues
   {
     files: [
-      'src/cli/openalex-cli.ts', // Main CLI file uses Commander.js which has any-typed options
+      'src/cli/**/*.ts', // CLI files need targeted disable comments for Commander.js integration
     ],
     rules: {
-      '@typescript-eslint/consistent-type-assertions': 'off', // Commander.js requires type assertions
-      'eslint-comments/no-use': ['error', { 'allow': ['eslint-disable-next-line'] }], // Allow disable comments for Commander.js unsafe arguments
+      'eslint-comments/no-use': ['error', { 'allow': ['eslint-disable-next-line'] }], // Allow specific disable comments only
     },
   },
   // Relax strict type checking for test files due to mocking framework patterns
