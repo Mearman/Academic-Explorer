@@ -5,9 +5,8 @@
 import { describe, it, expect, beforeEach, vi } from "vitest";
 import {
   addFilteredQuery,
-  getQueryHashForUrl
+  getUrlIdentifier
 } from "./query-cache-builder";
-import { generateQueryHash } from "./static-data-index-generator";
 
 // Mock file system operations
 vi.mock("fs/promises", async (importOriginal) => {
@@ -33,75 +32,79 @@ describe("Query Cache Builder", () => {
     vi.clearAllMocks();
   });
 
-  describe("getQueryHashForUrl", () => {
-    it("should generate consistent hashes for the same URL", () => {
+  describe("getUrlIdentifier", () => {
+    it("should generate consistent identifiers for the same URL", () => {
       const url = "https://api.openalex.org/works?filter=author.id:A5017898742";
-      const hash1 = getQueryHashForUrl(url);
-      const hash2 = getQueryHashForUrl(url);
+      const id1 = getUrlIdentifier(url);
+      const id2 = getUrlIdentifier(url);
 
-      expect(hash1).toBe(hash2);
-      expect(hash1).toHaveLength(16);
-      expect(hash1).toMatch(/^[a-f0-9]{16}$/);
+      expect(id1).toBe(id2);
+      expect(id1).toBe(encodeURIComponent(url));
     });
 
-    it("should generate different hashes for different URLs", () => {
+    it("should generate different identifiers for different URLs", () => {
       const url1 = "https://api.openalex.org/works?filter=author.id:A5017898742";
       const url2 = "https://api.openalex.org/works?filter=author.id:A5017898742&select=id,display_name";
 
-      const hash1 = getQueryHashForUrl(url1);
-      const hash2 = getQueryHashForUrl(url2);
+      const id1 = getUrlIdentifier(url1);
+      const id2 = getUrlIdentifier(url2);
 
-      expect(hash1).not.toBe(hash2);
+      expect(id1).not.toBe(id2);
+      expect(id1).toBe(encodeURIComponent(url1));
+      expect(id2).toBe(encodeURIComponent(url2));
     });
 
     it("should handle URLs with same parameters in different order", () => {
       const url1 = "https://api.openalex.org/works?filter=author.id:A5017898742&per_page=25";
       const url2 = "https://api.openalex.org/works?per_page=25&filter=author.id:A5017898742";
 
-      const hash1 = getQueryHashForUrl(url1);
-      const hash2 = getQueryHashForUrl(url2);
+      const id1 = getUrlIdentifier(url1);
+      const id2 = getUrlIdentifier(url2);
 
-      // Note: Different order might produce different hashes - this is expected
-      // In practice, you'd want to normalize parameter order for consistency
-      expect(typeof hash1).toBe("string");
-      expect(typeof hash2).toBe("string");
+      // Different order produces different identifiers - this is expected behavior
+      expect(typeof id1).toBe("string");
+      expect(typeof id2).toBe("string");
+      expect(id1).toBe(encodeURIComponent(url1));
+      expect(id2).toBe(encodeURIComponent(url2));
     });
   });
 
   describe("addFilteredQuery", () => {
     it("should build correct URL for simple filter", async () => {
-      const queryHash = await addFilteredQuery("works", {
+      const urlIdentifier = await addFilteredQuery("works", {
         "filter": "author.id:A5017898742",
         "per_page": 25
       }, "/tmp/test");
 
-      expect(queryHash).toHaveLength(16);
-      expect(queryHash).toMatch(/^[a-f0-9]{16}$/);
+      const expectedUrl = "https://api.openalex.org/works?filter=author.id%3AA5017898742&per_page=25";
+      expect(urlIdentifier).toBe(encodeURIComponent(expectedUrl));
     });
 
     it("should build correct URL for select parameters", async () => {
-      const queryHash = await addFilteredQuery("works", {
+      const urlIdentifier = await addFilteredQuery("works", {
         "filter": "author.id:A5017898742",
         "select": ["id", "display_name", "publication_year"],
         "per_page": 25
       }, "/tmp/test");
 
-      expect(queryHash).toHaveLength(16);
+      const expectedUrl = "https://api.openalex.org/works?filter=author.id%3AA5017898742&select=id%2Cdisplay_name%2Cpublication_year&per_page=25";
+      expect(urlIdentifier).toBe(encodeURIComponent(expectedUrl));
     });
 
     it("should handle multiple parameters", async () => {
-      const queryHash = await addFilteredQuery("authors", {
+      const urlIdentifier = await addFilteredQuery("authors", {
         "sort": "works_count:desc",
         "filter": "last_known_institution.country_code:US",
         "per_page": 50
       }, "/tmp/test");
 
-      expect(queryHash).toHaveLength(16);
+      const expectedUrl = "https://api.openalex.org/authors?sort=works_count%3Adesc&filter=last_known_institution.country_code%3AUS&per_page=50";
+      expect(urlIdentifier).toBe(encodeURIComponent(expectedUrl));
     });
   });
 
   describe("URL examples", () => {
-    it("should generate hashes for example URLs", () => {
+    it("should generate URL identifiers for example URLs", () => {
       const examples = [
         "https://api.openalex.org/works?filter=author.id:A5017898742",
         "https://api.openalex.org/works?filter=author.id:A5017898742&select=id,display_name",
@@ -110,13 +113,10 @@ describe("Query Cache Builder", () => {
       ];
 
       examples.forEach(url => {
-        const hash = getQueryHashForUrl(url);
-        expect(hash).toHaveLength(16);
-        expect(hash).toMatch(/^[a-f0-9]{16}$/);
-
-        // Verify consistency with generateQueryHash
-        const expectedHash = generateQueryHash(url);
-        expect(hash).toBe(expectedHash);
+        const identifier = getUrlIdentifier(url);
+        expect(identifier).toBe(encodeURIComponent(url));
+        expect(typeof identifier).toBe("string");
+        expect(identifier.length).toBeGreaterThan(0);
       });
     });
   });
