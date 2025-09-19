@@ -8,6 +8,7 @@ import { VitePWA } from 'vite-plugin-pwa'
 import path from 'path'
 import { execSync } from 'child_process'
 import { resolveConfig, testSetupFiles } from './config/shared'
+import { staticDataIndexPlugin } from './config/vite-plugins/static-data-index'
 
 // Build metadata generation
 function getBuildInfo() {
@@ -46,6 +47,7 @@ function getBuildInfo() {
 export default defineConfig({
   resolve: resolveConfig,
   plugins: [
+    staticDataIndexPlugin(),
     devtools(),
     TanStackRouterVite({
       // Enable hash-based routing for GitHub Pages compatibility
