@@ -12,18 +12,11 @@ const STATIC_DATA_DIR = join(__dirname, "..", "public", "data", "openalex");
  */
 async function main(): Promise<void> {
   try {
-    // Check for auto-download flag
-    const autoDownload = process.argv.includes("--auto-download") || process.argv.includes("-d");
+    console.log("🔄 Auto-download enabled - will download missing entities");
 
-    if (autoDownload) {
-      console.log("🔄 Auto-download enabled - will download missing entities");
-    }
+    await generateAllIndexes(STATIC_DATA_DIR, { autoDownload: true });
 
-    await generateAllIndexes(STATIC_DATA_DIR, { autoDownload });
-
-    if (autoDownload) {
-      console.log("✅ Index generation with auto-download completed");
-    }
+    console.log("✅ Index generation with auto-download completed");
   } catch (error) {
     console.error("❌ Error generating static data indexes:", error);
     process.exit(1);
@@ -38,14 +31,13 @@ function showUsage(): void {
 Usage: npx tsx scripts/generate-static-data-index.ts [options]
 
 Options:
-  --auto-download, -d    Download missing entities from OpenAlex API
   --help, -h            Show this help message
 
 Examples:
   npx tsx scripts/generate-static-data-index.ts
-  npx tsx scripts/generate-static-data-index.ts --auto-download
   pnpm generate:static-indexes
-  pnpm generate:static-indexes --auto-download
+
+Note: Auto-download of missing entities is always enabled.
 `);
 }
 
