@@ -22,7 +22,7 @@ export interface QueryMetadata {
 export interface StaticDataIndex {
   entityType: string;
   count: number;
-  lastGenerated: string;
+  lastModified: string;
   entities: string[];
   queries?: QueryMetadata[];
   metadata: {
@@ -125,7 +125,7 @@ export async function generateIndexForEntityType(
     const indexContent: StaticDataIndex = {
       entityType,
       count: entityIds.length,
-      lastGenerated: new Date().toISOString(),
+      lastModified: new Date().toISOString(),
       entities: entityIds.sort(), // Sorted for consistent output
       queries: queryStats.length > 0 ? queryStats.sort((a, b) => a.queryHash.localeCompare(b.queryHash)) : undefined,
       metadata: {
@@ -134,9 +134,35 @@ export async function generateIndexForEntityType(
       }
     };
 
-    // Write index file
+    // Write index file only if content has changed
     const indexPath = join(entityDir, "index.json");
-    await writeFile(indexPath, JSON.stringify(indexContent, null, 2));
+    const newContent = JSON.stringify(indexContent, null, 2);
+
+    let shouldWrite = true;
+    try {
+      const existingContent = await readFile(indexPath, "utf-8");
+      const existingData = JSON.parse(existingContent);
+      // Compare everything except lastModified timestamp
+      const { lastModified: _, ...existingWithoutTimestamp } = existingData;
+      const { lastModified: __, ...newWithoutTimestamp } = indexContent;
+      shouldWrite = JSON.stringify(existingWithoutTimestamp) !== JSON.stringify(newWithoutTimestamp);
+    } catch {
+      // File doesn't exist or can't be read, so we should write
+      shouldWrite = true;
+    }
+
+    if (shouldWrite) {
+      await writeFile(indexPath, newContent);
+    } else {
+      // Keep the existing timestamp if content hasn't changed
+      try {
+        const existingContent = await readFile(indexPath, "utf-8");
+        const existingData = JSON.parse(existingContent);
+        indexContent.lastModified = existingData.lastModified;
+      } catch {
+        // If we can't preserve timestamp, use new one
+      }
+    }
 
     const queryMessage = queryStats.length > 0 ? ` and ${queryStats.length} queries` : "";
     console.log(`✅ Generated ${entityType}/index.json with ${entityIds.length} entities${queryMessage}`);
