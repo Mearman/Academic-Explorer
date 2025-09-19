@@ -1,7 +1,6 @@
 import { logger } from "@/lib/logger";
-import { generateQueryHash } from "@/lib/utils/query-hash";
+// generateQueryHash removed - using URL encoding instead
 import { jsonSchemaResolver, type ResolvedEntityIndex } from "@/lib/utils/json-schema-resolver";
-import type { QueryMetadata } from "@/lib/utils/static-data-index-generator";
 
 /**
  * Configuration for static data provider
@@ -67,8 +66,7 @@ export class StaticDataProvider {
       this.indexCache.set(entityType, index);
 
       this.logger.debug("static-data", `Loaded index for ${entityType}`, {
-        count: index.count,
-        totalSize: index.metadata.totalSize
+        entryCount: Object.keys(index).length
       });
 
       return index;
@@ -83,7 +81,10 @@ export class StaticDataProvider {
    */
   async hasEntity({ entityType, entityId }: { entityType: StaticEntityType; entityId: string }): Promise<boolean> {
     const index = await this.getIndex(entityType);
-    return index?.entities.includes(entityId) ?? false;
+    if (!index) return false;
+
+    // Check if any key in the index contains this entity ID
+    return Object.keys(index).some(key => this.resolver.extractEntityId(key) === entityId);
   }
 
   /**
@@ -130,7 +131,17 @@ export class StaticDataProvider {
    */
   async listAvailableEntities(entityType: StaticEntityType): Promise<string[]> {
     const index = await this.getIndex(entityType);
-    return index?.entities ?? [];
+    if (!index) return [];
+
+    // Extract entity IDs from index keys
+    const entityIds: string[] = [];
+    for (const key of Object.keys(index)) {
+      const entityId = this.resolver.extractEntityId(key);
+      if (entityId) {
+        entityIds.push(entityId);
+      }
+    }
+    return entityIds;
   }
 
   /**
@@ -147,10 +158,10 @@ export class StaticDataProvider {
     await Promise.all(
       this.availableEntityTypes.map(async (entityType) => {
         if (this.isValidEntityType(entityType)) {
-          const index = await this.getIndex(entityType as StaticEntityType);
+          const index = await this.getIndex(entityType);
           stats[entityType] = index ? {
-            count: index.count,
-            totalSize: index.metadata.totalSize
+            count: Object.keys(index).length,
+            totalSize: Object.keys(index).length * 1000 // Rough estimate
           } : null;
         }
       })
@@ -164,10 +175,10 @@ export class StaticDataProvider {
    */
   async hasQuery({ entityType, url }: { entityType: StaticEntityType; url: string }): Promise<boolean> {
     const index = await this.getIndex(entityType);
-    if (!index?.queries) return false;
+    if (!index) return false;
 
-    const queryHash = await generateQueryHash(url);
-    return index.queries.some(query => query.queryHash === queryHash);
+    // Check if the URL exists as a key in the index
+    return Object.keys(index).includes(url);
   }
 
   /**
@@ -175,8 +186,8 @@ export class StaticDataProvider {
    */
   async getQuery({ entityType, url }: { entityType: StaticEntityType; url: string }): Promise<QueryResult | null> {
     try {
-      const queryHash = await generateQueryHash(url);
-      const cacheKey = `${entityType}:query:${queryHash}`;
+      const urlIdentifier = encodeURIComponent(url);
+      const cacheKey = `${entityType}:query:${urlIdentifier}`;
 
       // Check query cache first
       const cached = this.queryCache.get(cacheKey);
@@ -223,34 +234,6 @@ export class StaticDataProvider {
     }
   }
 
-  /**
-   * List all available queries for a specific entity type
-   */
-  async listAvailableQueries(entityType: StaticEntityType): Promise<QueryMetadata[]> {
-    const index = await this.getIndex(entityType);
-    return index?.queries ?? [];
-  }
-
-  /**
-   * Find queries matching specific parameters
-   */
-  async findQueriesByParams(
-    entityType: StaticEntityType,
-    searchParams: Record<string, unknown>
-  ): Promise<QueryMetadata[]> {
-    const queries = await this.listAvailableQueries(entityType);
-
-    return queries.filter(query => {
-      // Simple parameter matching - could be enhanced with fuzzy matching
-      return Object.entries(searchParams).every(([key, value]) => {
-        const queryValue = query.params[key];
-        if (Array.isArray(queryValue) && Array.isArray(value)) {
-          return JSON.stringify(queryValue.sort()) === JSON.stringify(value.sort());
-        }
-        return queryValue === value;
-      });
-    });
-  }
 
   /**
    * Clear all caches
@@ -301,7 +284,7 @@ export class StaticDataProvider {
    */
   private isValidEntityType(entityType: string): entityType is StaticEntityType {
     const validTypes: StaticEntityType[] = ["authors", "works", "institutions", "topics", "publishers", "funders"];
-    return validTypes.includes(entityType as StaticEntityType);
+    return validTypes.some(validType => validType === entityType);
   }
 
   /**
