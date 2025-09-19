@@ -1,0 +1,18 @@
+{
+  "entityType": "institutions",
+  "count": 1,
+  "lastGenerated": "2025-09-19T06:54:17.482Z",
+  "entities": [
+    "I161548249"
+  ],
+  "metadata": {
+    "totalSize": 25888,
+    "files": [
+      {
+        "id": "I161548249",
+        "size": 25888,
+        "lastModified": "2025-09-19T06:22:02.833Z"
+      }
+    ]
+  }
+}

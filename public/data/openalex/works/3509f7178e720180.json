@@ -1,0 +1,36 @@
+{
+  "results": [
+    {
+      "id": "https://openalex.org/W2250748100"
+    },
+    {
+      "id": "https://openalex.org/W3200026003"
+    },
+    {
+      "id": "https://openalex.org/W2612755892"
+    },
+    {
+      "id": "https://openalex.org/W3188841554"
+    },
+    {
+      "id": "https://openalex.org/W2241997964"
+    },
+    {
+      "id": "https://openalex.org/W2760813866"
+    },
+    {
+      "id": "https://openalex.org/W2782160524"
+    },
+    {
+      "id": "https://openalex.org/W2978758657"
+    },
+    {
+      "id": "https://openalex.org/W3187234764"
+    }
+  ],
+  "meta": {
+    "count": 9,
+    "originalUrl": "https://api.openalex.org/works?filter=author.id:A5017898742&select=id",
+    "cached": true
+  }
+}

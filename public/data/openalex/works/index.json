@@ -1,0 +1,161 @@
+{
+  "entityType": "works",
+  "count": 9,
+  "lastGenerated": "2025-09-19T06:54:17.485Z",
+  "entities": [
+    "W2241997964",
+    "W2250748100",
+    "W2612755892",
+    "W2760813866",
+    "W2782160524",
+    "W2978758657",
+    "W3187234764",
+    "W3188841554",
+    "W3200026003"
+  ],
+  "queries": [
+    {
+      "queryHash": "000cf71ad8281f69",
+      "url": "https://api.openalex.org/works?filter=author.id:A5017898742&select=id,display_name,publication_year",
+      "params": {
+        "filter": "author.id:A5017898742",
+        "select": [
+          "id",
+          "display_name",
+          "publication_year"
+        ]
+      },
+      "resultCount": 9,
+      "size": 1959,
+      "lastModified": "2025-09-19T06:44:58.060Z"
+    },
+    {
+      "queryHash": "0793a2780a64c7ba",
+      "url": "https://api.openalex.org/works?filter=author.id:A5017898742&select=id,display_name",
+      "params": {
+        "filter": "author.id:A5017898742",
+        "select": [
+          "id",
+          "display_name"
+        ]
+      },
+      "resultCount": 9,
+      "size": 1654,
+      "lastModified": "2025-09-19T06:44:57.918Z"
+    },
+    {
+      "queryHash": "0f9a75820ad0466b",
+      "url": "https://api.openalex.org/works?filter=author.id:A5017898742&per_page=50",
+      "params": {
+        "filter": "author.id:A5017898742",
+        "per_page": 50
+      },
+      "resultCount": 9,
+      "size": 169998,
+      "lastModified": "2025-09-19T06:44:58.262Z"
+    },
+    {
+      "queryHash": "3509f7178e720180",
+      "url": "https://api.openalex.org/works?filter=author.id:A5017898742&select=id",
+      "params": {
+        "filter": "author.id:A5017898742",
+        "select": [
+          "id"
+        ]
+      },
+      "resultCount": 9,
+      "size": 705,
+      "lastModified": "2025-09-19T06:54:16.864Z"
+    },
+    {
+      "queryHash": "7deedf49ecbfa59b",
+      "url": "https://api.openalex.org/works?filter=author.id:A5017898742&select=id,display_name",
+      "params": {
+        "filter": "author.id:A5017898742",
+        "select": [
+          "id",
+          "display_name"
+        ]
+      },
+      "resultCount": 9,
+      "size": 1654,
+      "lastModified": "2025-09-19T06:54:16.989Z"
+    },
+    {
+      "queryHash": "b3dbda0738a871f0",
+      "url": "https://api.openalex.org/works?filter=author.id:A5017898742&select=id,display_name,publication_year",
+      "params": {
+        "filter": "author.id:A5017898742",
+        "select": [
+          "id",
+          "display_name",
+          "publication_year"
+        ]
+      },
+      "resultCount": 9,
+      "size": 1959,
+      "lastModified": "2025-09-19T06:54:17.127Z"
+    },
+    {
+      "queryHash": "b8c16c233a60d5c8",
+      "url": "https://api.openalex.org/works?filter=author.id:A5017898742&per_page=50",
+      "params": {
+        "filter": "author.id:A5017898742",
+        "per_page": 50
+      },
+      "resultCount": 9,
+      "size": 169998,
+      "lastModified": "2025-09-19T06:54:17.336Z"
+    }
+  ],
+  "metadata": {
+    "totalSize": 493315,
+    "files": [
+      {
+        "id": "W2241997964",
+        "size": 15387,
+        "lastModified": "2025-09-19T06:53:08.890Z"
+      },
+      {
+        "id": "W2250748100",
+        "size": 28260,
+        "lastModified": "2025-09-19T06:53:08.891Z"
+      },
+      {
+        "id": "W2612755892",
+        "size": 10978,
+        "lastModified": "2025-09-19T06:53:08.891Z"
+      },
+      {
+        "id": "W2760813866",
+        "size": 11728,
+        "lastModified": "2025-09-19T06:53:08.891Z"
+      },
+      {
+        "id": "W2782160524",
+        "size": 19041,
+        "lastModified": "2025-09-19T06:53:08.891Z"
+      },
+      {
+        "id": "W2978758657",
+        "size": 8500,
+        "lastModified": "2025-09-19T06:53:08.891Z"
+      },
+      {
+        "id": "W3187234764",
+        "size": 16487,
+        "lastModified": "2025-09-19T06:53:08.891Z"
+      },
+      {
+        "id": "W3188841554",
+        "size": 23534,
+        "lastModified": "2025-09-19T06:53:08.892Z"
+      },
+      {
+        "id": "W3200026003",
+        "size": 11473,
+        "lastModified": "2025-09-19T06:53:08.892Z"
+      }
+    ]
+  }
+}

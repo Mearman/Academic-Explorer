@@ -1,0 +1,54 @@
+{
+  "results": [
+    {
+      "id": "https://openalex.org/W2250748100",
+      "display_name": "Alternative Representations of 3D-Reconstructed Heritage Data",
+      "publication_year": 2015
+    },
+    {
+      "id": "https://openalex.org/W3200026003",
+      "display_name": "Synthetic visualizations in web-based mixed reality",
+      "publication_year": 2017
+    },
+    {
+      "id": "https://openalex.org/W2612755892",
+      "display_name": "The desktop is dead, long live the desktop! – Towards a multisensory desktop for visualization",
+      "publication_year": 2014
+    },
+    {
+      "id": "https://openalex.org/W3188841554",
+      "display_name": "3D Visualisations Should Not be Displayed Alone - Encouraging a Need for Multivocality in Visualisation",
+      "publication_year": 2021
+    },
+    {
+      "id": "https://openalex.org/W2241997964",
+      "display_name": "Harnessing Photogrammetry to Create Alternative Views in Heritage",
+      "publication_year": 2014
+    },
+    {
+      "id": "https://openalex.org/W2760813866",
+      "display_name": "Sewn with Ariadne’s Thread – Visualizations for Wearable & Ubiquitous Computing",
+      "publication_year": 2014
+    },
+    {
+      "id": "https://openalex.org/W2782160524",
+      "display_name": "Immersive Analytics and Deep Maps – the Next Big Thing for Cultural Heritage & Archaeology",
+      "publication_year": 2016
+    },
+    {
+      "id": "https://openalex.org/W2978758657",
+      "display_name": "Tangible papercraft visualisations for education",
+      "publication_year": 2019
+    },
+    {
+      "id": "https://openalex.org/W3187234764",
+      "display_name": "3D Visualisations Should Not be Displayed Alone - Encouraging a Need for Multivocality in Visualisation",
+      "publication_year": 2021
+    }
+  ],
+  "meta": {
+    "count": 9,
+    "originalUrl": "https://api.openalex.org/works?filter=author.id:A5017898742&select=id,display_name,publication_year",
+    "cached": true
+  }
+}
