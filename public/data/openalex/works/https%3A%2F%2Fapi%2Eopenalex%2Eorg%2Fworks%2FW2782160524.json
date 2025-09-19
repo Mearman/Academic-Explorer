@@ -1,0 +1,670 @@
+{
+  "id": "https://openalex.org/W2782160524",
+  "doi": null,
+  "title": "Immersive Analytics and Deep Maps – the Next Big Thing for Cultural Heritage & Archaeology",
+  "display_name": "Immersive Analytics and Deep Maps – the Next Big Thing for Cultural Heritage & Archaeology",
+  "publication_year": 2016,
+  "publication_date": "2016-10-01",
+  "ids": {
+    "openalex": "https://openalex.org/W2782160524",
+    "mag": "2782160524"
+  },
+  "language": "en",
+  "primary_location": {
+    "is_oa": false,
+    "landing_page_url": "https://pure.aber.ac.uk/portal/en/publications/immersive-analytics-and-deep-maps--the-next-big-thing-for-cultural-heritage--archaeology(31023376-3368-4a00-bab4-f382afc5c81a).html",
+    "pdf_url": null,
+    "source": {
+      "id": "https://openalex.org/S4306418842",
+      "display_name": "IEEE Visualization",
+      "issn_l": null,
+      "issn": null,
+      "is_oa": false,
+      "is_in_doaj": false,
+      "is_indexed_in_scopus": false,
+      "is_core": false,
+      "host_organization": null,
+      "host_organization_name": null,
+      "host_organization_lineage": [],
+      "host_organization_lineage_names": [],
+      "type": "conference"
+    },
+    "license": null,
+    "license_id": null,
+    "version": null,
+    "is_accepted": false,
+    "is_published": false
+  },
+  "type": "article",
+  "type_crossref": "proceedings-article",
+  "indexed_in": [],
+  "open_access": {
+    "is_oa": false,
+    "oa_status": "closed",
+    "oa_url": null,
+    "any_repository_has_fulltext": false
+  },
+  "authorships": [
+    {
+      "author_position": "first",
+      "author": {
+        "id": "https://openalex.org/A5009341822",
+        "display_name": "Jonathan C. Roberts",
+        "orcid": "https://orcid.org/0000-0001-7718-3181"
+      },
+      "institutions": [
+        {
+          "id": "https://openalex.org/I161548249",
+          "display_name": "Bangor University",
+          "ror": "https://ror.org/006jb1a24",
+          "country_code": "GB",
+          "type": "funder",
+          "lineage": [
+            "https://openalex.org/I161548249"
+          ]
+        }
+      ],
+      "countries": [
+        "GB"
+      ],
+      "is_corresponding": false,
+      "raw_author_name": "Jonathan Roberts",
+      "raw_affiliation_strings": [
+        "Prifysgol Bangor | Bangor University"
+      ],
+      "affiliations": [
+        {
+          "raw_affiliation_string": "Prifysgol Bangor | Bangor University",
+          "institution_ids": [
+            "https://openalex.org/I161548249"
+          ]
+        }
+      ]
+    },
+    {
+      "author_position": "middle",
+      "author": {
+        "id": "https://openalex.org/A5017898742",
+        "display_name": "Joseph Mearman",
+        "orcid": null
+      },
+      "institutions": [
+        {
+          "id": "https://openalex.org/I161548249",
+          "display_name": "Bangor University",
+          "ror": "https://ror.org/006jb1a24",
+          "country_code": "GB",
+          "type": "funder",
+          "lineage": [
+            "https://openalex.org/I161548249"
+          ]
+        }
+      ],
+      "countries": [
+        "GB"
+      ],
+      "is_corresponding": false,
+      "raw_author_name": "Joseph Mearman",
+      "raw_affiliation_strings": [
+        "Prifysgol Bangor | Bangor University"
+      ],
+      "affiliations": [
+        {
+          "raw_affiliation_string": "Prifysgol Bangor | Bangor University",
+          "institution_ids": [
+            "https://openalex.org/I161548249"
+          ]
+        }
+      ]
+    },
+    {
+      "author_position": "middle",
+      "author": {
+        "id": "https://openalex.org/A5065371627",
+        "display_name": "Panagiotis D. Ritsos",
+        "orcid": "https://orcid.org/0000-0001-9308-3885"
+      },
+      "institutions": [
+        {
+          "id": "https://openalex.org/I161548249",
+          "display_name": "Bangor University",
+          "ror": "https://ror.org/006jb1a24",
+          "country_code": "GB",
+          "type": "funder",
+          "lineage": [
+            "https://openalex.org/I161548249"
+          ]
+        }
+      ],
+      "countries": [
+        "GB"
+      ],
+      "is_corresponding": false,
+      "raw_author_name": "Panagiotis Ritsos",
+      "raw_affiliation_strings": [
+        "Prifysgol Bangor | Bangor University"
+      ],
+      "affiliations": [
+        {
+          "raw_affiliation_string": "Prifysgol Bangor | Bangor University",
+          "institution_ids": [
+            "https://openalex.org/I161548249"
+          ]
+        }
+      ]
+    },
+    {
+      "author_position": "middle",
+      "author": {
+        "id": "https://openalex.org/A5068168522",
+        "display_name": "Helen Cabot Miles",
+        "orcid": "https://orcid.org/0000-0003-4063-6479"
+      },
+      "institutions": [
+        {
+          "id": "https://openalex.org/I16038530",
+          "display_name": "Aberystwyth University",
+          "ror": "https://ror.org/015m2p889",
+          "country_code": "GB",
+          "type": "funder",
+          "lineage": [
+            "https://openalex.org/I16038530"
+          ]
+        }
+      ],
+      "countries": [
+        "GB"
+      ],
+      "is_corresponding": false,
+      "raw_author_name": "Helen Miles",
+      "raw_affiliation_strings": [
+        "Aberystwyth University, Aberystwyth, United Kingdom"
+      ],
+      "affiliations": [
+        {
+          "raw_affiliation_string": "Aberystwyth University, Aberystwyth, United Kingdom",
+          "institution_ids": [
+            "https://openalex.org/I16038530"
+          ]
+        }
+      ]
+    },
+    {
+      "author_position": "middle",
+      "author": {
+        "id": "https://openalex.org/A5101495888",
+        "display_name": "Andrew T. Wilson",
+        "orcid": "https://orcid.org/0000-0001-9380-0557"
+      },
+      "institutions": [
+        {
+          "id": "https://openalex.org/I161548249",
+          "display_name": "Bangor University",
+          "ror": "https://ror.org/006jb1a24",
+          "country_code": "GB",
+          "type": "funder",
+          "lineage": [
+            "https://openalex.org/I161548249"
+          ]
+        }
+      ],
+      "countries": [
+        "GB"
+      ],
+      "is_corresponding": false,
+      "raw_author_name": "Andrew Wilson",
+      "raw_affiliation_strings": [
+        "Prifysgol Bangor | Bangor University"
+      ],
+      "affiliations": [
+        {
+          "raw_affiliation_string": "Prifysgol Bangor | Bangor University",
+          "institution_ids": [
+            "https://openalex.org/I161548249"
+          ]
+        }
+      ]
+    },
+    {
+      "author_position": "middle",
+      "author": {
+        "id": "https://openalex.org/A5004526334",
+        "display_name": "Dave Perkins",
+        "orcid": "https://orcid.org/0000-0001-5246-5203"
+      },
+      "institutions": [
+        {
+          "id": "https://openalex.org/I161548249",
+          "display_name": "Bangor University",
+          "ror": "https://ror.org/006jb1a24",
+          "country_code": "GB",
+          "type": "funder",
+          "lineage": [
+            "https://openalex.org/I161548249"
+          ]
+        }
+      ],
+      "countries": [
+        "GB"
+      ],
+      "is_corresponding": false,
+      "raw_author_name": "Dave Perkins",
+      "raw_affiliation_strings": [
+        "Prifysgol Bangor | Bangor University"
+      ],
+      "affiliations": [
+        {
+          "raw_affiliation_string": "Prifysgol Bangor | Bangor University",
+          "institution_ids": [
+            "https://openalex.org/I161548249"
+          ]
+        }
+      ]
+    },
+    {
+      "author_position": "middle",
+      "author": {
+        "id": "https://openalex.org/A5110556667",
+        "display_name": "James Jackson",
+        "orcid": null
+      },
+      "institutions": [
+        {
+          "id": "https://openalex.org/I161548249",
+          "display_name": "Bangor University",
+          "ror": "https://ror.org/006jb1a24",
+          "country_code": "GB",
+          "type": "funder",
+          "lineage": [
+            "https://openalex.org/I161548249"
+          ]
+        }
+      ],
+      "countries": [
+        "GB"
+      ],
+      "is_corresponding": false,
+      "raw_author_name": "James Jackson",
+      "raw_affiliation_strings": [
+        "Prifysgol Bangor | Bangor University"
+      ],
+      "affiliations": [
+        {
+          "raw_affiliation_string": "Prifysgol Bangor | Bangor University",
+          "institution_ids": [
+            "https://openalex.org/I161548249"
+          ]
+        }
+      ]
+    },
+    {
+      "author_position": "middle",
+      "author": {
+        "id": "https://openalex.org/A5050006263",
+        "display_name": "Bernard Tiddeman",
+        "orcid": "https://orcid.org/0000-0001-7570-1192"
+      },
+      "institutions": [
+        {
+          "id": "https://openalex.org/I16038530",
+          "display_name": "Aberystwyth University",
+          "ror": "https://ror.org/015m2p889",
+          "country_code": "GB",
+          "type": "funder",
+          "lineage": [
+            "https://openalex.org/I16038530"
+          ]
+        }
+      ],
+      "countries": [
+        "GB"
+      ],
+      "is_corresponding": false,
+      "raw_author_name": "Bernard Tiddeman",
+      "raw_affiliation_strings": [
+        "Aberystwyth University, Aberystwyth, United Kingdom"
+      ],
+      "affiliations": [
+        {
+          "raw_affiliation_string": "Aberystwyth University, Aberystwyth, United Kingdom",
+          "institution_ids": [
+            "https://openalex.org/I16038530"
+          ]
+        }
+      ]
+    },
+    {
+      "author_position": "middle",
+      "author": {
+        "id": "https://openalex.org/A5013808128",
+        "display_name": "Frédéric Labrosse",
+        "orcid": "https://orcid.org/0000-0001-6189-1036"
+      },
+      "institutions": [
+        {
+          "id": "https://openalex.org/I16038530",
+          "display_name": "Aberystwyth University",
+          "ror": "https://ror.org/015m2p889",
+          "country_code": "GB",
+          "type": "funder",
+          "lineage": [
+            "https://openalex.org/I16038530"
+          ]
+        }
+      ],
+      "countries": [
+        "GB"
+      ],
+      "is_corresponding": false,
+      "raw_author_name": "Frederic Labrosse",
+      "raw_affiliation_strings": [
+        "Aberystwyth University, Aberystwyth, United Kingdom"
+      ],
+      "affiliations": [
+        {
+          "raw_affiliation_string": "Aberystwyth University, Aberystwyth, United Kingdom",
+          "institution_ids": [
+            "https://openalex.org/I16038530"
+          ]
+        }
+      ]
+    },
+    {
+      "author_position": "middle",
+      "author": {
+        "id": "https://openalex.org/A5034368713",
+        "display_name": "Ben Edwards",
+        "orcid": "https://orcid.org/0000-0003-3518-2193"
+      },
+      "institutions": [
+        {
+          "id": "https://openalex.org/I11983389",
+          "display_name": "Manchester Metropolitan University",
+          "ror": "https://ror.org/02hstj355",
+          "country_code": "GB",
+          "type": "funder",
+          "lineage": [
+            "https://openalex.org/I11983389"
+          ]
+        }
+      ],
+      "countries": [
+        "GB"
+      ],
+      "is_corresponding": false,
+      "raw_author_name": "Ben Edwards",
+      "raw_affiliation_strings": [
+        "Manchester Metropolitan University"
+      ],
+      "affiliations": [
+        {
+          "raw_affiliation_string": "Manchester Metropolitan University",
+          "institution_ids": [
+            "https://openalex.org/I11983389"
+          ]
+        }
+      ]
+    },
+    {
+      "author_position": "last",
+      "author": {
+        "id": "https://openalex.org/A5070400232",
+        "display_name": "Raimund Karl",
+        "orcid": "https://orcid.org/0000-0001-5832-8656"
+      },
+      "institutions": [
+        {
+          "id": "https://openalex.org/I161548249",
+          "display_name": "Bangor University",
+          "ror": "https://ror.org/006jb1a24",
+          "country_code": "GB",
+          "type": "funder",
+          "lineage": [
+            "https://openalex.org/I161548249"
+          ]
+        }
+      ],
+      "countries": [
+        "GB"
+      ],
+      "is_corresponding": false,
+      "raw_author_name": "Raimund Karl",
+      "raw_affiliation_strings": [
+        "Prifysgol Bangor | Bangor University"
+      ],
+      "affiliations": [
+        {
+          "raw_affiliation_string": "Prifysgol Bangor | Bangor University",
+          "institution_ids": [
+            "https://openalex.org/I161548249"
+          ]
+        }
+      ]
+    }
+  ],
+  "institution_assertions": [],
+  "countries_distinct_count": 1,
+  "institutions_distinct_count": 3,
+  "corresponding_author_ids": [],
+  "corresponding_institution_ids": [],
+  "apc_list": null,
+  "apc_paid": null,
+  "fwci": 0,
+  "has_fulltext": false,
+  "cited_by_count": 0,
+  "citation_normalized_percentile": {
+    "value": 0,
+    "is_in_top_1_percent": false,
+    "is_in_top_10_percent": false
+  },
+  "cited_by_percentile_year": {
+    "min": 0,
+    "max": 66
+  },
+  "biblio": {
+    "volume": null,
+    "issue": null,
+    "first_page": null,
+    "last_page": null
+  },
+  "is_retracted": false,
+  "is_paratext": false,
+  "primary_topic": {
+    "id": "https://openalex.org/T11211",
+    "display_name": "3D Surveying and Cultural Heritage",
+    "score": 0.9991,
+    "subfield": {
+      "id": "https://openalex.org/subfields/1907",
+      "display_name": "Geology"
+    },
+    "field": {
+      "id": "https://openalex.org/fields/19",
+      "display_name": "Earth and Planetary Sciences"
+    },
+    "domain": {
+      "id": "https://openalex.org/domains/3",
+      "display_name": "Physical Sciences"
+    }
+  },
+  "topics": [
+    {
+      "id": "https://openalex.org/T11211",
+      "display_name": "3D Surveying and Cultural Heritage",
+      "score": 0.9991,
+      "subfield": {
+        "id": "https://openalex.org/subfields/1907",
+        "display_name": "Geology"
+      },
+      "field": {
+        "id": "https://openalex.org/fields/19",
+        "display_name": "Earth and Planetary Sciences"
+      },
+      "domain": {
+        "id": "https://openalex.org/domains/3",
+        "display_name": "Physical Sciences"
+      }
+    },
+    {
+      "id": "https://openalex.org/T12981",
+      "display_name": "Conservation Techniques and Studies",
+      "score": 0.9904,
+      "subfield": {
+        "id": "https://openalex.org/subfields/1206",
+        "display_name": "Conservation"
+      },
+      "field": {
+        "id": "https://openalex.org/fields/12",
+        "display_name": "Arts and Humanities"
+      },
+      "domain": {
+        "id": "https://openalex.org/domains/2",
+        "display_name": "Social Sciences"
+      }
+    },
+    {
+      "id": "https://openalex.org/T12364",
+      "display_name": "Archaeological Research and Protection",
+      "score": 0.9884,
+      "subfield": {
+        "id": "https://openalex.org/subfields/1912",
+        "display_name": "Space and Planetary Science"
+      },
+      "field": {
+        "id": "https://openalex.org/fields/19",
+        "display_name": "Earth and Planetary Sciences"
+      },
+      "domain": {
+        "id": "https://openalex.org/domains/3",
+        "display_name": "Physical Sciences"
+      }
+    }
+  ],
+  "keywords": [],
+  "concepts": [
+    {
+      "id": "https://openalex.org/C60671577",
+      "wikidata": "https://www.wikidata.org/wiki/Q210272",
+      "display_name": "Cultural heritage",
+      "level": 2,
+      "score": 0.6062431
+    },
+    {
+      "id": "https://openalex.org/C41008148",
+      "wikidata": "https://www.wikidata.org/wiki/Q21198",
+      "display_name": "Computer science",
+      "level": 0,
+      "score": 0.4814093
+    },
+    {
+      "id": "https://openalex.org/C79158427",
+      "wikidata": "https://www.wikidata.org/wiki/Q485396",
+      "display_name": "Analytics",
+      "level": 2,
+      "score": 0.47943634
+    },
+    {
+      "id": "https://openalex.org/C75684735",
+      "wikidata": "https://www.wikidata.org/wiki/Q858810",
+      "display_name": "Big data",
+      "level": 2,
+      "score": 0.47305408
+    },
+    {
+      "id": "https://openalex.org/C166957645",
+      "wikidata": "https://www.wikidata.org/wiki/Q23498",
+      "display_name": "Archaeology",
+      "level": 1,
+      "score": 0.45712206
+    },
+    {
+      "id": "https://openalex.org/C2522767166",
+      "wikidata": "https://www.wikidata.org/wiki/Q2374463",
+      "display_name": "Data science",
+      "level": 1,
+      "score": 0.29866153
+    },
+    {
+      "id": "https://openalex.org/C95457728",
+      "wikidata": "https://www.wikidata.org/wiki/Q309",
+      "display_name": "History",
+      "level": 0,
+      "score": 0.24227339
+    },
+    {
+      "id": "https://openalex.org/C124101348",
+      "wikidata": "https://www.wikidata.org/wiki/Q172491",
+      "display_name": "Data mining",
+      "level": 1,
+      "score": 0.07356912
+    }
+  ],
+  "mesh": [],
+  "locations_count": 1,
+  "locations": [
+    {
+      "is_oa": false,
+      "landing_page_url": "https://pure.aber.ac.uk/portal/en/publications/immersive-analytics-and-deep-maps--the-next-big-thing-for-cultural-heritage--archaeology(31023376-3368-4a00-bab4-f382afc5c81a).html",
+      "pdf_url": null,
+      "source": {
+        "id": "https://openalex.org/S4306418842",
+        "display_name": "IEEE Visualization",
+        "issn_l": null,
+        "issn": null,
+        "is_oa": false,
+        "is_in_doaj": false,
+        "is_indexed_in_scopus": false,
+        "is_core": false,
+        "host_organization": null,
+        "host_organization_name": null,
+        "host_organization_lineage": [],
+        "host_organization_lineage_names": [],
+        "type": "conference"
+      },
+      "license": null,
+      "license_id": null,
+      "version": null,
+      "is_accepted": false,
+      "is_published": false
+    }
+  ],
+  "best_oa_location": null,
+  "sustainable_development_goals": [
+    {
+      "id": "https://metadata.un.org/sdg/11",
+      "display_name": "Sustainable cities and communities",
+      "score": 0.54
+    }
+  ],
+  "grants": [],
+  "datasets": [],
+  "versions": [],
+  "referenced_works_count": 0,
+  "referenced_works": [],
+  "related_works": [
+    "https://openalex.org/W3201741775",
+    "https://openalex.org/W3200116912",
+    "https://openalex.org/W3156906195",
+    "https://openalex.org/W3115609535",
+    "https://openalex.org/W3082170246",
+    "https://openalex.org/W2992289382",
+    "https://openalex.org/W2964496174",
+    "https://openalex.org/W2803095290",
+    "https://openalex.org/W2792805047",
+    "https://openalex.org/W2610013964",
+    "https://openalex.org/W2544656887",
+    "https://openalex.org/W2289876899",
+    "https://openalex.org/W2275953595",
+    "https://openalex.org/W2244312709",
+    "https://openalex.org/W2216183063",
+    "https://openalex.org/W2129726986",
+    "https://openalex.org/W2050194751",
+    "https://openalex.org/W1988534763",
+    "https://openalex.org/W1524651085",
+    "https://openalex.org/W146998742"
+  ],
+  "abstract_inverted_index": null,
+  "cited_by_api_url": "https://api.openalex.org/works?filter=cites:W2782160524",
+  "counts_by_year": [],
+  "updated_date": "2025-02-03T10:51:05.452570",
+  "created_date": "2018-01-12"
+}

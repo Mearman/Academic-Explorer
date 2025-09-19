@@ -1,0 +1,7 @@
+{
+  "https://api.openalex.org/autocomplete?q=\"Attention is all you need\"": {
+    "$ref": "./https%3A%2F%2Fapi%2Eopenalex%2Eorg%2Fautocomplete%3Fq%3D%22Attention%20is%20all%20you%20need%22.json",
+    "lastModified": "2025-09-19T15:20:41.489Z",
+    "contentHash": "a7d8cd647a32f5a5"
+  }
+}

@@ -1,0 +1,120 @@
+{
+  "meta": {
+    "count": 61,
+    "db_response_time_ms": 376,
+    "page": 1,
+    "per_page": 10
+  },
+  "results": [
+    {
+      "id": "https://openalex.org/W4385245566",
+      "short_id": "works/W4385245566",
+      "display_name": "Attention Is All You Need",
+      "hint": "Ashish Vaswani, Noam Shazeer, Niki Parmar, et al.",
+      "cited_by_count": 61603,
+      "works_count": null,
+      "entity_type": "work",
+      "external_id": "https://doi.org/10.48550/arxiv.1706.03762",
+      "filter_key": "id"
+    },
+    {
+      "id": "https://openalex.org/W2963403868",
+      "short_id": "works/W2963403868",
+      "display_name": "Attention is All you Need",
+      "hint": "Ashish Vaswani, Noam Shazeer, Niki Parmar, et al.",
+      "cited_by_count": 21208,
+      "works_count": null,
+      "entity_type": "work",
+      "external_id": null,
+      "filter_key": "id"
+    },
+    {
+      "id": "https://openalex.org/W3163652268",
+      "short_id": "works/W3163652268",
+      "display_name": "Attention Is All You Need In Speech Separation",
+      "hint": "Cem Subakan, Mirco Ravanelli, Samuele Cornell, et al.",
+      "cited_by_count": 434,
+      "works_count": null,
+      "entity_type": "work",
+      "external_id": "https://doi.org/10.1109/icassp39728.2021.9413901",
+      "filter_key": "id"
+    },
+    {
+      "id": "https://openalex.org/W2997150500",
+      "short_id": "works/W2997150500",
+      "display_name": "Channel Attention Is All You Need for Video Frame Interpolation",
+      "hint": "Myungsub Choi, Heewon Kim, Bohyung Han, et al.",
+      "cited_by_count": 291,
+      "works_count": null,
+      "entity_type": "work",
+      "external_id": "https://doi.org/10.1609/aaai.v34i07.6693",
+      "filter_key": "id"
+    },
+    {
+      "id": "https://openalex.org/W4390678101",
+      "short_id": "works/W4390678101",
+      "display_name": "Attention is all you need: utilizing attention in AI-enabled drug discovery",
+      "hint": "Yang Zhang, Caiqi Liu, Mujiexin Liu, et al.",
+      "cited_by_count": 163,
+      "works_count": null,
+      "entity_type": "work",
+      "external_id": "https://doi.org/10.1093/bib/bbad467",
+      "filter_key": "id"
+    },
+    {
+      "id": "https://openalex.org/W3199258042",
+      "short_id": "works/W3199258042",
+      "display_name": "Cross-Attention is All You Need: Adapting Pretrained Transformers for Machine Translation",
+      "hint": "Mozhdeh Gheini, Xiang Ren, Jonathan May",
+      "cited_by_count": 70,
+      "works_count": null,
+      "entity_type": "work",
+      "external_id": "https://doi.org/10.18653/v1/2021.emnlp-main.132",
+      "filter_key": "id"
+    },
+    {
+      "id": "https://openalex.org/W3099527960",
+      "short_id": "works/W3099527960",
+      "display_name": "Attention Is All You Need for Chinese Word Segmentation",
+      "hint": "Sufeng Duan, Hai Zhao",
+      "cited_by_count": 30,
+      "works_count": null,
+      "entity_type": "work",
+      "external_id": "https://doi.org/10.18653/v1/2020.emnlp-main.317",
+      "filter_key": "id"
+    },
+    {
+      "id": "https://openalex.org/W4385478480",
+      "short_id": "works/W4385478480",
+      "display_name": "Attention is all you need: An interpretable transformer-based asset allocation approach",
+      "hint": "Tian Ma, Wanwan Wang, Yu Chen",
+      "cited_by_count": 21,
+      "works_count": null,
+      "entity_type": "work",
+      "external_id": "https://doi.org/10.1016/j.irfa.2023.102876",
+      "filter_key": "id"
+    },
+    {
+      "id": "https://openalex.org/W3207381926",
+      "short_id": "works/W3207381926",
+      "display_name": "Yes, \"Attention Is All You Need\", for Exemplar based Colorization",
+      "hint": "Wang Yin, Peng Lu, Zhaoran Zhao, et al.",
+      "cited_by_count": 20,
+      "works_count": null,
+      "entity_type": "work",
+      "external_id": "https://doi.org/10.1145/3474085.3475385",
+      "filter_key": "id"
+    },
+    {
+      "id": "https://openalex.org/W4295763107",
+      "short_id": "works/W4295763107",
+      "display_name": "Equity‐premium prediction: Attention is all you need",
+      "hint": "Luiz Renato Lima, Lucas Lúcio Godeiro",
+      "cited_by_count": 12,
+      "works_count": null,
+      "entity_type": "work",
+      "external_id": "https://doi.org/10.1002/jae.2939",
+      "filter_key": "id"
+    }
+  ]
+}
