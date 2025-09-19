@@ -1,3 +1,16 @@
+# [6.1.0](https://github.com/Mearman/Academic-Explorer/compare/v6.0.3...v6.1.0) (2025-09-19)
+
+
+### Bug Fixes
+
+* **graph:** resolve CustomForce type compatibility in worker ([23c8ebb](https://github.com/Mearman/Academic-Explorer/commit/23c8ebb764046d5e2d439b4776727d0cd1463ebd))
+* **worker:** add proper type narrowing for CustomForce message handling ([85e3ea4](https://github.com/Mearman/Academic-Explorer/commit/85e3ea402c1a23c9247a91aad10aa13618886f04))
+
+
+### Features
+
+* **graph:** add CustomForcesSection with worker integration ([bc3bf26](https://github.com/Mearman/Academic-Explorer/commit/bc3bf2639dfe7a6fa17d38f136dc372b70f0086d))
+
 ## [6.0.3](https://github.com/Mearman/Academic-Explorer/compare/v6.0.2...v6.0.3) (2025-09-18)
 
 

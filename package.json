@@ -1,7 +1,7 @@
 {
   "name": "academic-explorer",
   "private": true,
-  "version": "6.0.3",
+  "version": "6.1.0",
   "type": "module",
   "repository": {
     "type": "git",
