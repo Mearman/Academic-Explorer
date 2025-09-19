@@ -1,3 +1,65 @@
+# [7.0.0](https://github.com/Mearman/Academic-Explorer/compare/v6.3.0...v7.0.0) (2025-09-19)
+
+
+### Bug Fixes
+
+* **build:** major ESLint fixes for OpenAlex data plugin ([391595e](https://github.com/Mearman/Academic-Explorer/commit/391595ec9d06dfebbd80a152501ce76364b7e6a4))
+* **ci:** resolve TypeScript compilation errors and integration test failures ([420842c](https://github.com/Mearman/Academic-Explorer/commit/420842c7d619305ff9a2d1bbeefdd28bad68450b))
+* **cli:** ensure consistent entity type handling across methods ([f760dec](https://github.com/Mearman/Academic-Explorer/commit/f760dec1f34d2cf13e08553ded5332681486ee5c))
+* **cli:** improve content change detection and index maintenance ([b5ae45f](https://github.com/Mearman/Academic-Explorer/commit/b5ae45f01a0c026d0d99ec64e36decf734e0f3ee))
+* **cli:** resolve TypeScript compilation errors ([4e9366b](https://github.com/Mearman/Academic-Explorer/commit/4e9366baa7ed87d3ae73f34f4d2e31e0695e633c))
+* **cli:** resolve TypeScript errors with proper Zod validation ([f3d8259](https://github.com/Mearman/Academic-Explorer/commit/f3d8259aec64e3ba68d53427fe9db8dd455067a3))
+* **data:** update indexes with corrected file metadata after restoration ([c8fa231](https://github.com/Mearman/Academic-Explorer/commit/c8fa231756e0134b2cb910045f10e160b2a6bef2))
+* **lint:** resolve all ESLint errors ([b62fe1c](https://github.com/Mearman/Academic-Explorer/commit/b62fe1c06cf1d830667de6cbf2e0274598d273c7))
+* **tests:** resolve unit test failures in static-data-integration ([532ccac](https://github.com/Mearman/Academic-Explorer/commit/532ccacdb8de3f2b84d6337bd9d178eca7f84bf0))
+* **types:** add explicit key type to Zod record schema ([17098a7](https://github.com/Mearman/Academic-Explorer/commit/17098a7da490f450aecc56ac5d0a6768abc6ce56))
+* **utils:** resolve ESLint violations in query-cache-builder ([0da2433](https://github.com/Mearman/Academic-Explorer/commit/0da2433d5b96a0a28f7617ee9366a597d08dadeb))
+
+
+### Code Refactoring
+
+* **utils:** remove legacy https-: encoding support ([3c06096](https://github.com/Mearman/Academic-Explorer/commit/3c06096fe3acd99840d5653c0701edcf2be266cc))
+* **utils:** remove legacy https-: encoding support ([d35403c](https://github.com/Mearman/Academic-Explorer/commit/d35403c5cd8b8fefcfbe699e4e205a9da61ea35d))
+* **utils:** simplify query-hash to content-only functionality ([d052cdb](https://github.com/Mearman/Academic-Explorer/commit/d052cdbfc142b83be783dd4c83e71ddc2e3ad26f))
+
+
+### Features
+
+* add Bangor University institution data to static cache ([df1e2db](https://github.com/Mearman/Academic-Explorer/commit/df1e2dbc7d25cca55688d46e22e4ae237c94b944))
+* add CLI script for static data index generation ([77e7eba](https://github.com/Mearman/Academic-Explorer/commit/77e7eba10d694d1083c558307f35b4a33ac04777))
+* add preloaded OpenAlex static data ([73b835a](https://github.com/Mearman/Academic-Explorer/commit/73b835afb69d6e9173c20bfc94234ab4355af87b))
+* add Vite plugin for static data index generation ([bb3c9b9](https://github.com/Mearman/Academic-Explorer/commit/bb3c9b9f275e19f92bf109b625a35ccfa957004a))
+* **build:** add OpenAlex data plugin and update build configuration ([1eadbdb](https://github.com/Mearman/Academic-Explorer/commit/1eadbdbfa41419c928bced1a04fe36dab661dda3))
+* **cli:** add entity type auto-detection to get command ([adfd26d](https://github.com/Mearman/Academic-Explorer/commit/adfd26d2f2f9284b6f227c18c89f5f56f9c602ed))
+* **cli:** add OpenAlex CLI infrastructure ([e7734fc](https://github.com/Mearman/Academic-Explorer/commit/e7734fc979f9786444bed463d47f8346d70e3d42))
+* **client:** add static data integration to rate-limited OpenAlex client ([7cd6cbd](https://github.com/Mearman/Academic-Explorer/commit/7cd6cbdea2d48ea863dfcbda278dd97da2b9c0aa))
+* **cli:** implement content-based file modification detection ([97c7eec](https://github.com/Mearman/Academic-Explorer/commit/97c7eec0b67645e7bb4b1118ad6959c08f6d1450))
+* **cli:** implement static data CLI with entity commands ([9e84b32](https://github.com/Mearman/Academic-Explorer/commit/9e84b32e2b85c4ce404a383446a85b651cbbda8d))
+* **data:** add cached OpenAlex query results and indexes ([8965786](https://github.com/Mearman/Academic-Explorer/commit/8965786e76401ba4e230afc8f96c701cd85c47e7))
+* **data:** add query result caching to static data index generator ([a74f22c](https://github.com/Mearman/Academic-Explorer/commit/a74f22c78c9d3c31d1098d1059f5f928b1402d9d))
+* **data:** add signposting index for OpenAlex entity navigation ([90096de](https://github.com/Mearman/Academic-Explorer/commit/90096dea0a742bc2d9716889789835daf734143b))
+* **data:** migrate OpenAlex data files to URL encoding ([4df78f5](https://github.com/Mearman/Academic-Explorer/commit/4df78f5e1e5e96b3493bb893e596af1a02315531))
+* **data:** preserve exact number formats from OpenAlex API ([17c1a6b](https://github.com/Mearman/Academic-Explorer/commit/17c1a6b633f4f5768e8376a33bec4efde84f7abe))
+* **data:** update indexes to use new $ref-based structure ([e24b311](https://github.com/Mearman/Academic-Explorer/commit/e24b3117590148b468c21813727beb39c6782f02))
+* **eslint:** enforce type safety with Zod validation over Reflect.get ([0711171](https://github.com/Mearman/Academic-Explorer/commit/0711171473b53aff0e02177317517b550d57e737))
+* **eslint:** enhance Reflect API restrictions with type safety explanations ([dcbd437](https://github.com/Mearman/Academic-Explorer/commit/dcbd43728763e9fb3abd588b26d021919f257336))
+* integrate static data index generation into build pipeline ([2fd635d](https://github.com/Mearman/Academic-Explorer/commit/2fd635deb795dc1e28c0299df21ce80176fd37ad))
+* integrate static data index plugin into Vite configuration ([43c1a8e](https://github.com/Mearman/Academic-Explorer/commit/43c1a8eb3220397ce38acc5b0da78cd74878e0ed))
+* **logger:** add static-data and query-cache log categories ([d5443eb](https://github.com/Mearman/Academic-Explorer/commit/d5443ebcb9203f1ed37dae1f98caac34702c06a7))
+* **query-cache:** create unified browser-safe SHA-256 hash generation ([d395898](https://github.com/Mearman/Academic-Explorer/commit/d395898b67faaa32be4a808a00bf4f40223a656d))
+* **scripts:** add automated query cache fetching script ([929f29e](https://github.com/Mearman/Academic-Explorer/commit/929f29e153edefc4b839568da847918bf4fda195))
+* **static-data:** add core static data provider infrastructure ([1267cd0](https://github.com/Mearman/Academic-Explorer/commit/1267cd039e13732ebae52cc61cffcb081beed943))
+* **static-data:** add query caching support to static data provider ([d606ae3](https://github.com/Mearman/Academic-Explorer/commit/d606ae30f16e055eab8ddc003192e46730051645))
+* **static-data:** add query metadata support to index generation ([252df26](https://github.com/Mearman/Academic-Explorer/commit/252df2620e1ba597ef1d9d68fa4ef3808ef93a63))
+
+
+### BREAKING CHANGES
+
+* **utils:** query hash functions no longer available, use URL encoding for filenames
+* **utils:** Legacy https-: encoded files are no longer supported
+* **utils:** Legacy https-: encoded files are no longer supported
+* **query-cache:** generateQueryHash is now async and returns Promise<string>
+
 # [6.3.0](https://github.com/Mearman/Academic-Explorer/compare/v6.2.1...v6.3.0) (2025-09-19)
 
 
