@@ -1,7 +1,7 @@
 import { readdir, writeFile, stat, mkdir, readFile } from "fs/promises";
 import { join, extname, basename } from "path";
 import { downloadEntityFromOpenAlex, findMissingEntities, downloadMultipleEntities } from "./openalex-downloader";
-import { parseQueryParams, generateQueryHash } from "./query-hash";
+// parseQueryParams and generateQueryHash removed - no longer needed
 import { fetchOpenAlexQuery, saveQueryToCache } from "./query-cache-builder";
 
 export interface FileMetadata {
@@ -31,11 +31,7 @@ export interface StaticDataIndex {
   };
 }
 
-/**
- * Generate a hash for a query URL to use as filename
- * Uses the unified hash function from query-hash.ts
- */
-export { generateQueryHash } from "./query-hash";
+// generateQueryHash export removed - no longer available
 
 /**
  * Generate index file for a specific entity type directory
@@ -101,7 +97,13 @@ export async function generateIndexForEntityType(
           const content = JSON.parse(await readFile(filePath, "utf-8"));
           if (content.meta && content.meta.originalUrl) {
             url = content.meta.originalUrl;
-            params = parseQueryParams(url);
+            // Extract query parameters from URL
+            try {
+              const urlObj = new URL(url);
+              params = Object.fromEntries(urlObj.searchParams);
+            } catch {
+              params = {};
+            }
           }
           if (content.results && Array.isArray(content.results)) {
             resultCount = content.results.length;
