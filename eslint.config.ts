@@ -12,6 +12,7 @@ import noUnstableDependencies from './eslint-rules/no-unstable-dependencies.js';
 import noSelectorObjectCreation from './eslint-rules/no-selector-object-creation.js';
 import noDeprecatedComments from './eslint-rules/no-deprecated-comments.js';
 import noLoggerInfo from './eslint-rules/no-logger-info.js';
+import preferDestructuredParams from './eslint-rules/prefer-destructured-params.js';
 
 export default tseslint.config([
   {
@@ -37,6 +38,7 @@ export default tseslint.config([
           'no-selector-object-creation': noSelectorObjectCreation,
           'no-deprecated-comments': noDeprecatedComments,
           'no-logger-info': noLoggerInfo,
+          'prefer-destructured-params': preferDestructuredParams,
         },
       },
     },
@@ -128,6 +130,7 @@ export default tseslint.config([
       'custom/no-emoji': 'error',
       'custom/no-deprecated-comments': 'error',
       'custom/no-logger-info': 'warn',
+      'custom/prefer-destructured-params': 'warn',
 
       // React 19 + Zustand + Immer infinite loop prevention rules
       'custom/no-zustand-computed-functions': 'error',
