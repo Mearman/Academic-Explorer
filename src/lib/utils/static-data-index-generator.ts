@@ -2,6 +2,7 @@ import { readdir, writeFile, stat, mkdir, readFile } from "fs/promises";
 import { join, extname, basename } from "path";
 import { downloadEntityFromOpenAlex, findMissingEntities, downloadMultipleEntities } from "./openalex-downloader";
 import { parseQueryParams, generateQueryHash } from "./query-hash";
+import { fetchOpenAlexQuery, saveQueryToCache } from "./query-cache-builder";
 
 export interface FileMetadata {
   id: string;
@@ -162,9 +163,10 @@ export async function generateAllIndexes(
       const entityDir = join(staticDataDir, entityType);
       await generateIndexForEntityType(entityDir, entityType);
 
-      // Auto-download missing entities if enabled
+      // Auto-download missing entities and queries if enabled
       if (options.autoDownload) {
         await downloadMissingEntities(entityType, entityDir, staticDataDir);
+        await downloadMissingQueries(entityType, entityDir);
       }
     }
 
@@ -230,6 +232,94 @@ export async function downloadMissingEntities(
 }
 
 /**
+ * Download missing query results for a specific entity type
+ */
+export async function downloadMissingQueries(
+  entityType: string,
+  entityDir: string
+): Promise<void> {
+  try {
+    // Check if we have an existing index with query definitions
+    const indexPath = join(entityDir, "index.json");
+    let expectedQueries: QueryMetadata[] = [];
+
+    try {
+      await stat(indexPath);
+      const indexContent = JSON.parse(await readFile(indexPath, "utf-8"));
+      expectedQueries = indexContent.queries || [];
+    } catch {
+      // No existing index, nothing to check
+      return;
+    }
+
+    if (expectedQueries.length === 0) {
+      return;
+    }
+
+    // Find missing query result files
+    const missingQueries: QueryMetadata[] = [];
+
+    for (const query of expectedQueries) {
+      const queryFilePath = join(entityDir, `${query.queryHash}.json`);
+      try {
+        await stat(queryFilePath);
+        // File exists, skip
+      } catch {
+        // File doesn't exist, needs to be downloaded
+        missingQueries.push(query);
+      }
+    }
+
+    if (missingQueries.length === 0) {
+      console.log(`✅ All ${entityType} query results are present`);
+      return;
+    }
+
+    console.log(`🔄 Found ${missingQueries.length} missing ${entityType} query results, downloading...`);
+
+    let downloaded = 0;
+    let failed = 0;
+
+    // Download missing query results
+    for (const query of missingQueries) {
+      try {
+        if (!query.url) {
+          console.warn(`⚠️  Query ${query.queryHash} has no URL, skipping`);
+          failed++;
+          continue;
+        }
+
+        console.log(`📥 Downloading query: ${query.url}`);
+
+        const results = await fetchOpenAlexQuery(query.url);
+        await saveQueryToCache(entityType, query.url, results, {
+          outputDir: join(entityDir, ".."),
+        });
+
+        downloaded++;
+        console.log(`✅ Downloaded query result: ${query.queryHash}`);
+      } catch (error) {
+        failed++;
+        console.error(`❌ Failed to download query ${query.queryHash}:`, error);
+      }
+    }
+
+    if (downloaded > 0) {
+      console.log(`✅ Downloaded ${downloaded} missing ${entityType} query results`);
+
+      // Regenerate index after downloading queries
+      await generateIndexForEntityType(entityDir, entityType);
+    }
+
+    if (failed > 0) {
+      console.warn(`⚠️  Failed to download ${failed} ${entityType} query results`);
+    }
+  } catch (error) {
+    console.error(`❌ Error downloading missing ${entityType} query results:`, error);
+  }
+}
+
+/**
  * Generate index with auto-download for a specific entity type
  */
 export async function generateIndexWithAutoDownload(
@@ -242,4 +332,7 @@ export async function generateIndexWithAutoDownload(
 
   // Download missing entities
   await downloadMissingEntities(entityType, entityDir, staticDataDir);
+
+  // Download missing queries
+  await downloadMissingQueries(entityType, entityDir);
 }
