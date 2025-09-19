@@ -1,47 +1,49 @@
 {
-  "description": "OpenAlex Static Data Index - Signposting to entity-specific indices",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://api.openalex.org/schema/index",
+  "title": "OpenAlex Static Data Index",
+  "description": "Root index merging all entity-specific data via JSON Schema references",
+  "type": "object",
   "version": "1.0.0",
-  "lastModified": "2025-09-19T09:50:00.000Z",
-  "entities": {
-    "authors": {
-      "path": "./authors/index.json",
-      "description": "Author entities and metadata"
+  "lastModified": "2025-09-19T16:29:44.030Z",
+  "allOf": [
+    {
+      "$ref": "./authors/index.json"
     },
-    "works": {
-      "path": "./works/index.json",
-      "description": "Work entities and metadata"
+    {
+      "$ref": "./autocomplete/index.json"
     },
-    "institutions": {
-      "path": "./institutions/index.json",
-      "description": "Institution entities and metadata"
+    {
+      "$ref": "./concepts/index.json"
     },
-    "topics": {
-      "path": "./topics/index.json",
-      "description": "Topic entities and metadata"
+    {
+      "$ref": "./funders/index.json"
     },
-    "publishers": {
-      "path": "./publishers/index.json",
-      "description": "Publisher entities and metadata",
-      "status": "not_available"
+    {
+      "$ref": "./institutions/index.json"
     },
-    "funders": {
-      "path": "./funders/index.json",
-      "description": "Funder entities and metadata",
-      "status": "not_available"
+    {
+      "$ref": "./publishers/index.json"
+    },
+    {
+      "$ref": "./sources/index.json"
+    },
+    {
+      "$ref": "./topics/index.json"
+    },
+    {
+      "$ref": "./works/index.json"
     }
-  },
-  "supportedEntityTypes": [
-    "authors",
-    "works",
-    "institutions",
-    "topics",
-    "publishers",
-    "funders"
   ],
   "availableEntityTypes": [
     "authors",
-    "works",
+    "autocomplete",
+    "concepts",
+    "funders",
     "institutions",
-    "topics"
+    "publishers",
+    "sources",
+    "topics",
+    "works"
   ]
 }

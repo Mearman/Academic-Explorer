@@ -1,18 +1,7 @@
 {
-  "entityType": "institutions",
-  "count": 1,
-  "lastModified": "2025-09-19T09:39:21.050Z",
-  "entities": [
-    "I161548249"
-  ],
-  "metadata": {
-    "totalSize": 25888,
-    "files": [
-      {
-        "id": "I161548249",
-        "size": 25888,
-        "lastModified": "2025-09-19T06:22:02.833Z"
-      }
-    ]
+  "https://api.openalex.org/institutions/I161548249": {
+    "$ref": "./https%3A%2F%2Fapi%2Eopenalex%2Eorg%2Finstitutions%2FI161548249.json",
+    "lastModified": "2025-09-19T16:29:28.895Z",
+    "contentHash": "94f5422e7c177aad"
   }
 }

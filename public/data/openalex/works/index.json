@@ -1,161 +1,72 @@
 {
-  "entityType": "works",
-  "count": 9,
-  "lastModified": "2025-09-19T09:39:21.063Z",
-  "entities": [
-    "W2241997964",
-    "W2250748100",
-    "W2612755892",
-    "W2760813866",
-    "W2782160524",
-    "W2978758657",
-    "W3187234764",
-    "W3188841554",
-    "W3200026003"
-  ],
-  "queries": [
-    {
-      "queryHash": "000cf71ad8281f69",
-      "url": "https://api.openalex.org/works?filter=author.id:A5017898742&select=id,display_name,publication_year",
-      "params": {
-        "filter": "author.id:A5017898742",
-        "select": [
-          "id",
-          "display_name",
-          "publication_year"
-        ]
-      },
-      "resultCount": 9,
-      "size": 1959,
-      "lastModified": "2025-09-19T06:44:58.060Z"
-    },
-    {
-      "queryHash": "0793a2780a64c7ba",
-      "url": "https://api.openalex.org/works?filter=author.id:A5017898742&select=id,display_name",
-      "params": {
-        "filter": "author.id:A5017898742",
-        "select": [
-          "id",
-          "display_name"
-        ]
-      },
-      "resultCount": 9,
-      "size": 1654,
-      "lastModified": "2025-09-19T06:44:57.918Z"
-    },
-    {
-      "queryHash": "0f9a75820ad0466b",
-      "url": "https://api.openalex.org/works?filter=author.id:A5017898742&per_page=50",
-      "params": {
-        "filter": "author.id:A5017898742",
-        "per_page": 50
-      },
-      "resultCount": 9,
-      "size": 169998,
-      "lastModified": "2025-09-19T06:44:58.262Z"
-    },
-    {
-      "queryHash": "3509f7178e720180",
-      "url": "https://api.openalex.org/works?filter=author.id:A5017898742&select=id",
-      "params": {
-        "filter": "author.id:A5017898742",
-        "select": [
-          "id"
-        ]
-      },
-      "resultCount": 9,
-      "size": 705,
-      "lastModified": "2025-09-19T06:54:16.864Z"
-    },
-    {
-      "queryHash": "7deedf49ecbfa59b",
-      "url": "https://api.openalex.org/works?filter=author.id:A5017898742&select=id,display_name",
-      "params": {
-        "filter": "author.id:A5017898742",
-        "select": [
-          "id",
-          "display_name"
-        ]
-      },
-      "resultCount": 9,
-      "size": 1654,
-      "lastModified": "2025-09-19T06:54:16.989Z"
-    },
-    {
-      "queryHash": "b3dbda0738a871f0",
-      "url": "https://api.openalex.org/works?filter=author.id:A5017898742&select=id,display_name,publication_year",
-      "params": {
-        "filter": "author.id:A5017898742",
-        "select": [
-          "id",
-          "display_name",
-          "publication_year"
-        ]
-      },
-      "resultCount": 9,
-      "size": 1959,
-      "lastModified": "2025-09-19T06:54:17.127Z"
-    },
-    {
-      "queryHash": "b8c16c233a60d5c8",
-      "url": "https://api.openalex.org/works?filter=author.id:A5017898742&per_page=50",
-      "params": {
-        "filter": "author.id:A5017898742",
-        "per_page": 50
-      },
-      "resultCount": 9,
-      "size": 169998,
-      "lastModified": "2025-09-19T06:54:17.336Z"
-    }
-  ],
-  "metadata": {
-    "totalSize": 493315,
-    "files": [
-      {
-        "id": "W2241997964",
-        "size": 15387,
-        "lastModified": "2025-09-19T06:53:08.890Z"
-      },
-      {
-        "id": "W2250748100",
-        "size": 28260,
-        "lastModified": "2025-09-19T06:53:08.891Z"
-      },
-      {
-        "id": "W2612755892",
-        "size": 10978,
-        "lastModified": "2025-09-19T06:53:08.891Z"
-      },
-      {
-        "id": "W2760813866",
-        "size": 11728,
-        "lastModified": "2025-09-19T06:53:08.891Z"
-      },
-      {
-        "id": "W2782160524",
-        "size": 19041,
-        "lastModified": "2025-09-19T06:53:08.891Z"
-      },
-      {
-        "id": "W2978758657",
-        "size": 8500,
-        "lastModified": "2025-09-19T06:53:08.891Z"
-      },
-      {
-        "id": "W3187234764",
-        "size": 16487,
-        "lastModified": "2025-09-19T06:53:08.891Z"
-      },
-      {
-        "id": "W3188841554",
-        "size": 23534,
-        "lastModified": "2025-09-19T06:53:08.892Z"
-      },
-      {
-        "id": "W3200026003",
-        "size": 11473,
-        "lastModified": "2025-09-19T06:53:08.892Z"
-      }
-    ]
+  "https://api.openalex.org/works/W2241997964": {
+    "$ref": "./https%3A%2F%2Fapi%2Eopenalex%2Eorg%2Fworks%2FW2241997964.json",
+    "lastModified": "2025-09-19T16:29:25.530Z",
+    "contentHash": "2fbeeeb9a36bc11f"
+  },
+  "https://api.openalex.org/works/W2250748100": {
+    "$ref": "./https%3A%2F%2Fapi%2Eopenalex%2Eorg%2Fworks%2FW2250748100.json",
+    "lastModified": "2025-09-19T16:29:25.658Z",
+    "contentHash": "5829e4f7cb7a1382"
+  },
+  "https://api.openalex.org/works/W2612755892": {
+    "$ref": "./https%3A%2F%2Fapi%2Eopenalex%2Eorg%2Fworks%2FW2612755892.json",
+    "lastModified": "2025-09-19T16:29:25.795Z",
+    "contentHash": "5e2bba7760f439db"
+  },
+  "https://api.openalex.org/works/W2760813866": {
+    "$ref": "./https%3A%2F%2Fapi%2Eopenalex%2Eorg%2Fworks%2FW2760813866.json",
+    "lastModified": "2025-09-19T16:29:25.935Z",
+    "contentHash": "54d6d4fd69e75e42"
+  },
+  "https://api.openalex.org/works/W2782160524": {
+    "$ref": "./https%3A%2F%2Fapi%2Eopenalex%2Eorg%2Fworks%2FW2782160524.json",
+    "lastModified": "2025-09-19T16:29:26.068Z",
+    "contentHash": "8dfaae48c6989a72"
+  },
+  "https://api.openalex.org/works/W2978758657": {
+    "$ref": "./https%3A%2F%2Fapi%2Eopenalex%2Eorg%2Fworks%2FW2978758657.json",
+    "lastModified": "2025-09-19T16:29:26.201Z",
+    "contentHash": "24180acf5f782df4"
+  },
+  "https://api.openalex.org/works/W3187234764": {
+    "$ref": "./https%3A%2F%2Fapi%2Eopenalex%2Eorg%2Fworks%2FW3187234764.json",
+    "lastModified": "2025-09-19T16:29:26.354Z",
+    "contentHash": "c70621aa2a4863e4"
+  },
+  "https://api.openalex.org/works/W3188841554": {
+    "$ref": "./https%3A%2F%2Fapi%2Eopenalex%2Eorg%2Fworks%2FW3188841554.json",
+    "lastModified": "2025-09-19T16:29:26.480Z",
+    "contentHash": "71ad89b40af94522"
+  },
+  "https://api.openalex.org/works/W3200026003": {
+    "$ref": "./https%3A%2F%2Fapi%2Eopenalex%2Eorg%2Fworks%2FW3200026003.json",
+    "lastModified": "2025-09-19T16:29:26.605Z",
+    "contentHash": "7c3ce3b9a522cc76"
+  },
+  "https://api.openalex.org/works?filter=author.id:A5017572309": {
+    "$ref": "./https%3A%2F%2Fapi%2Eopenalex%2Eorg%2Fworks%3Ffilter%3Dauthor%2Eid%3AA5017572309.json",
+    "lastModified": "2025-09-19T15:52:00.000Z",
+    "contentHash": ""
+  },
+  "https://api.openalex.org/works?filter=author.id:A5017898742": {
+    "$ref": "./https%3A%2F%2Fapi%2Eopenalex%2Eorg%2Fworks%3Ffilter%3Dauthor%2Eid%3AA5017898742.json",
+    "lastModified": "2025-09-19T15:52:00.000Z",
+    "contentHash": ""
+  },
+  "https://api.openalex.org/works?filter=author.id:A5039168231": {
+    "$ref": "./https%3A%2F%2Fapi%2Eopenalex%2Eorg%2Fworks%3Ffilter%3Dauthor%2Eid%3AA5039168231.json",
+    "lastModified": "2025-09-19T15:52:00.000Z",
+    "contentHash": ""
+  },
+  "https://api.openalex.org/works?filter=author.id:A5032473237": {
+    "$ref": "./https%3A%2F%2Fapi%2Eopenalex%2Eorg%2Fworks%3Ffilter%3Dauthor%2Eid%3AA5032473237.json",
+    "lastModified": "2025-09-19T15:52:00.000Z",
+    "contentHash": ""
+  },
+  "https://api.openalex.org/works?filter=author.id:A5025875274": {
+    "$ref": "./https%3A%2F%2Fapi%2Eopenalex%2Eorg%2Fworks%3Ffilter%3Dauthor%2Eid%3AA5025875274.json",
+    "lastModified": "2025-09-19T15:52:00.000Z",
+    "contentHash": ""
   }
 }

@@ -1,42 +1,27 @@
 {
-  "entityType": "authors",
-  "count": 5,
-  "lastModified": "2025-09-19T09:46:38.367Z",
-  "entities": [
-    "A5017572309",
-    "A5017898742",
-    "A5025875274",
-    "A5032473237",
-    "A5039168231"
-  ],
-  "metadata": {
-    "totalSize": 141333,
-    "files": [
-      {
-        "id": "A5017572309",
-        "size": 17143,
-        "lastModified": "2025-09-19T08:37:55.740Z"
-      },
-      {
-        "id": "A5017898742",
-        "size": 21015,
-        "lastModified": "2025-09-19T09:46:04.722Z"
-      },
-      {
-        "id": "A5025875274",
-        "size": 35247,
-        "lastModified": "2025-09-19T06:22:02.832Z"
-      },
-      {
-        "id": "A5032473237",
-        "size": 34751,
-        "lastModified": "2025-09-19T06:22:02.832Z"
-      },
-      {
-        "id": "A5039168231",
-        "size": 33177,
-        "lastModified": "2025-09-19T06:22:02.833Z"
-      }
-    ]
+  "https://api.openalex.org/authors/A5017572309": {
+    "$ref": "./https%3A%2F%2Fapi%2Eopenalex%2Eorg%2Fauthors%2FA5017572309.json",
+    "lastModified": "2025-09-19T16:29:28.238Z",
+    "contentHash": "509437b6ff068027"
+  },
+  "https://api.openalex.org/authors/A5017898742": {
+    "$ref": "./https%3A%2F%2Fapi%2Eopenalex%2Eorg%2Fauthors%2FA5017898742.json",
+    "lastModified": "2025-09-19T16:29:28.361Z",
+    "contentHash": "7c2eb632b9944c5b"
+  },
+  "https://api.openalex.org/authors/A5025875274": {
+    "$ref": "./https%3A%2F%2Fapi%2Eopenalex%2Eorg%2Fauthors%2FA5025875274.json",
+    "lastModified": "2025-09-19T16:29:28.487Z",
+    "contentHash": "9433bf98bee1c4f6"
+  },
+  "https://api.openalex.org/authors/A5032473237": {
+    "$ref": "./https%3A%2F%2Fapi%2Eopenalex%2Eorg%2Fauthors%2FA5032473237.json",
+    "lastModified": "2025-09-19T16:29:28.623Z",
+    "contentHash": "1045c62f68339d12"
+  },
+  "https://api.openalex.org/authors/A5039168231": {
+    "$ref": "./https%3A%2F%2Fapi%2Eopenalex%2Eorg%2Fauthors%2FA5039168231.json",
+    "lastModified": "2025-09-19T16:29:28.748Z",
+    "contentHash": "c75c6787f762bbb6"
   }
 }
