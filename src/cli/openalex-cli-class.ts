@@ -16,7 +16,7 @@ import { z } from "zod";
 const StaticDataIndexSchema = z.object({
   entityType: z.string(),
   count: z.number(),
-  lastGenerated: z.string(),
+  lastModified: z.string(),
   entities: z.array(z.string()),
   queries: z.array(z.object({
     queryHash: z.string(),
@@ -39,8 +39,29 @@ const StaticDataIndexSchema = z.object({
 // Type derived from schema
 type StaticDataIndex = z.infer<typeof StaticDataIndexSchema>;
 
+// Type guards
+function hasProperty<T extends string>(obj: object, prop: T): obj is Record<T, unknown> {
+  return prop in obj;
+}
+
+function isStaticDataIndex(obj: unknown): obj is StaticDataIndex {
+  if (typeof obj !== "object" || obj === null) return false;
+
+  return hasProperty(obj, "entityType") && typeof obj.entityType === "string" &&
+    hasProperty(obj, "count") && typeof obj.count === "number" &&
+    hasProperty(obj, "lastModified") && typeof obj.lastModified === "string" &&
+    hasProperty(obj, "entities") && Array.isArray(obj.entities);
+}
+
+function isOpenAlexEntity(obj: unknown): obj is z.infer<typeof OpenAlexEntitySchema> {
+  if (typeof obj !== "object" || obj === null) return false;
+
+  return hasProperty(obj, "id") && typeof obj.id === "string" &&
+    hasProperty(obj, "display_name") && typeof obj.display_name === "string";
+}
+
 // OpenAlex entity validation (basic properties required for CLI)
-const OpenAlexEntitySchema = z.looseObject({
+const OpenAlexEntitySchema = z.object({
   id: z.string(),
   display_name: z.string(),
 });
@@ -48,12 +69,12 @@ const OpenAlexEntitySchema = z.looseObject({
 // OpenAlex API response validation
 const OpenAlexAPIResponseSchema = z.object({
   results: z.array(OpenAlexEntitySchema),
-  meta: z.looseObject({
+  meta: z.object({
     count: z.number(),
     page: z.number().optional(),
     per_page: z.number().optional(),
   }).optional(),
-}).strict();
+});
 
 // Node.js error validation
 const NodeErrorSchema = z.object({
@@ -79,6 +100,17 @@ interface CacheOptions {
 // Configuration
 const STATIC_DATA_PATH = "public/data/openalex";
 const SUPPORTED_ENTITIES: readonly StaticEntityType[] = ["authors", "works", "institutions", "topics", "publishers", "funders"] as const;
+
+// Helper function to check if file contents are different
+async function hasContentChanged(filePath: string, newContent: string): Promise<boolean> {
+  try {
+    const existingContent = await readFile(filePath, "utf-8");
+    return existingContent !== newContent;
+  } catch {
+    // File doesn't exist, so content is "different"
+    return true;
+  }
+}
 
 // Get the project root directory
 const __filename = fileURLToPath(import.meta.url);
@@ -169,9 +201,14 @@ export class OpenAlexCLI {
 
       const entityId = entity.id.replace("https://openalex.org/", "");
       const entityPath = join(entityDir, `${entityId}.json`);
+      const newContent = JSON.stringify(entity, null, 2);
 
-      await writeFile(entityPath, JSON.stringify(entity, null, 2));
-      console.error(`Saved ${entityType}/${entityId} to cache`);
+      if (await hasContentChanged(entityPath, newContent)) {
+        await writeFile(entityPath, newContent);
+        console.error(`Saved ${entityType}/${entityId} to cache (content changed)`);
+      } else {
+        console.error(`Skipped ${entityType}/${entityId} - no content changes`);
+      }
     } catch (error) {
       console.error(`Failed to save entity to cache:`, error);
     }
@@ -228,9 +265,14 @@ export class OpenAlexCLI {
       await mkdir(queryDir, { recursive: true });
 
       const queryPath = join(queryDir, `${cacheKey}.json`);
-      await writeFile(queryPath, JSON.stringify(result, null, 2));
+      const newContent = JSON.stringify(result, null, 2);
 
-      console.error(`Saved query ${cacheKey} to cache`);
+      if (await hasContentChanged(queryPath, newContent)) {
+        await writeFile(queryPath, newContent);
+        console.error(`Saved query ${cacheKey} to cache (content changed)`);
+      } else {
+        console.error(`Skipped query ${cacheKey} - no content changes`);
+      }
     } catch (error) {
       console.error(`Failed to save query to cache:`, error);
     }
@@ -281,13 +323,12 @@ export class OpenAlexCLI {
       const indexContent = await readFile(indexPath, "utf-8");
       const parsed = JSON.parse(indexContent);
 
-      // Validate with Zod schema
-      const validatedIndex = StaticDataIndexSchema.safeParse(parsed);
-      if (validatedIndex.success) {
-        return validatedIndex.data;
+      // Validate using type guard
+      if (isStaticDataIndex(parsed)) {
+        return parsed;
       }
 
-      console.error(`Invalid index format for ${entityType}:`, validatedIndex.error.message);
+      console.error(`Invalid index format for ${entityType}: missing required properties`);
       return null;
     } catch (error) {
       console.error(`Failed to load index for ${entityType}:`, error);
@@ -304,13 +345,12 @@ export class OpenAlexCLI {
       const entityContent = await readFile(entityPath, "utf-8");
       const parsed = JSON.parse(entityContent);
 
-      // Validate with Zod schema (basic validation only)
-      const validatedEntity = OpenAlexEntitySchema.safeParse(parsed);
-      if (validatedEntity.success) {
-        return validatedEntity.data;
+      // Validate using type guard
+      if (isOpenAlexEntity(parsed)) {
+        return parsed;
       }
 
-      console.error(`Invalid entity format for ${entityId}:`, validatedEntity.error.message);
+      console.error(`Invalid entity format for ${entityId}: missing required properties`);
       return null;
     } catch (error: unknown) {
       const nodeError = NodeErrorSchema.safeParse(error);
@@ -365,8 +405,8 @@ export class OpenAlexCLI {
   /**
    * Get statistics for all entity types
    */
-  async getStatistics(): Promise<Record<string, { count: number; totalSize: number; lastGenerated: string }>> {
-    const stats: Record<string, { count: number; totalSize: number; lastGenerated: string }> = {};
+  async getStatistics(): Promise<Record<string, { count: number; totalSize: number; lastModified: string }>> {
+    const stats: Record<string, { count: number; totalSize: number; lastModified: string }> = {};
 
     for (const entityType of SUPPORTED_ENTITIES) {
       if (await this.hasStaticData(entityType)) {
@@ -375,7 +415,7 @@ export class OpenAlexCLI {
           stats[entityType] = {
             count: index.count,
             totalSize: index.metadata.totalSize,
-            lastGenerated: index.lastGenerated,
+            lastModified: index.lastModified,
           };
         }
       }
