@@ -170,7 +170,7 @@ export class StaticDataProvider {
     const index = await this.getIndex(entityType);
     if (!index?.queries) return false;
 
-    const queryHash = generateQueryHash(url);
+    const queryHash = await generateQueryHash(url);
     return index.queries.some(query => query.queryHash === queryHash);
   }
 
@@ -179,7 +179,7 @@ export class StaticDataProvider {
    */
   async getQuery({ entityType, url }: { entityType: StaticEntityType; url: string }): Promise<QueryResult | null> {
     try {
-      const queryHash = generateQueryHash(url);
+      const queryHash = await generateQueryHash(url);
       const cacheKey = `${entityType}:query:${queryHash}`;
 
       // Check query cache first
