@@ -723,8 +723,9 @@ export class OpenAlexCLI {
     if (queryDef.encoded) {
       try {
         const decoded = this.decodeQueryString(queryDef.encoded);
-        if (decoded) {
-          return this.paramsMatch(targetParams, decoded);
+        const validatedParams = this.validateQueryParams(decoded);
+        if (validatedParams) {
+          return this.paramsMatch(targetParams, validatedParams);
         }
       } catch (error) {
         // Continue to next matching method
@@ -758,6 +759,15 @@ export class OpenAlexCLI {
     } catch (error) {
       return null;
     }
+  }
+
+  /**
+   * Validate and convert decoded result to Record<string, unknown>
+   */
+  private validateQueryParams(decoded: unknown): Record<string, unknown> | null {
+    const QueryParamsSchema = z.record(z.string(), z.unknown());
+    const result = QueryParamsSchema.safeParse(decoded);
+    return result.success ? result.data : null;
   }
 
   /**
@@ -864,12 +874,14 @@ export class OpenAlexCLI {
     // Try cross-format matching
     if (def1.params && def2.encoded) {
       const decoded = this.decodeQueryString(def2.encoded);
-      return decoded ? this.paramsMatch(def1.params, decoded) : false;
+      const validatedParams = this.validateQueryParams(decoded);
+      return validatedParams ? this.paramsMatch(def1.params, validatedParams) : false;
     }
 
     if (def1.encoded && def2.params) {
       const decoded = this.decodeQueryString(def1.encoded);
-      return decoded ? this.paramsMatch(decoded, def2.params) : false;
+      const validatedParams = this.validateQueryParams(decoded);
+      return validatedParams ? this.paramsMatch(validatedParams, def2.params) : false;
     }
 
     if (def1.params && def2.url) {
@@ -901,7 +913,8 @@ export class OpenAlexCLI {
           if (entry.query.params) {
             decoded = entry.query.params;
           } else if (entry.query.encoded) {
-            decoded = this.decodeQueryString(entry.query.encoded);
+            const decodedResult = this.decodeQueryString(entry.query.encoded);
+            decoded = this.validateQueryParams(decodedResult);
           } else if (entry.query.url) {
             decoded = this.normalizeQueryParams(entry.query.url);
           }

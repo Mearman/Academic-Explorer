@@ -33,7 +33,7 @@ const IndexEntrySchema = z.object({
   contentHash: z.string().optional(),
 });
 
-const QueryParamsSchema = z.record(z.unknown());
+const QueryParamsSchema = z.record(z.string(), z.unknown());
 
 const QueryDefinitionSchema = z.object({
   params: QueryParamsSchema.optional(),
@@ -55,19 +55,19 @@ const OldQueryIndexSchema = z.object({
       lastModified: z.string().optional(),
       contentHash: z.string().optional(),
     })),
-    z.record(QueryDefinitionSchema),
+    z.record(z.string(), QueryDefinitionSchema),
   ]),
 });
 
 const RequestsWrapperSchema = z.object({
-  requests: z.record(z.object({
+  requests: z.record(z.string(), z.object({
     $ref: z.string().optional(),
     lastModified: z.string().optional(),
     contentHash: z.string().optional(),
   })),
 });
 
-const FlatIndexSchema = z.record(IndexEntrySchema);
+const FlatIndexSchema = z.record(z.string(), IndexEntrySchema);
 
 
 const ENTITY_TYPES = ["works", "authors", "institutions", "topics", "sources", "publishers", "funders", "concepts", "autocomplete"];
@@ -433,6 +433,10 @@ async function loadUnifiedIndex(dataPath: string, entityType: string): Promise<U
       // Clean and normalize existing unified format from requests
       const cleaned: UnifiedIndex = {};
       for (const [key, entry] of Object.entries(requestsWrapper.data.requests)) {
+        // Validate entry structure
+        const validatedEntry = IndexEntrySchema.safeParse(entry);
+        if (!validatedEntry.success) continue;
+
         // Parse the key and get its canonical form
         const parsedKey = parseIndexKey(key);
         if (parsedKey && parsedKey.type === "entity") {
@@ -440,11 +444,11 @@ async function loadUnifiedIndex(dataPath: string, entityType: string): Promise<U
           // Normalize the canonical URL to decoded form
           const canonicalKey = normalizeUrlForDeduplication(parsedKey.canonicalUrl);
           const cleanEntry: IndexEntry = {};
-          if (entry.lastModified) {
-            cleanEntry.lastModified = entry.lastModified;
+          if (validatedEntry.data.lastModified) {
+            cleanEntry.lastModified = validatedEntry.data.lastModified;
           }
-          if (entry.contentHash) {
-            cleanEntry.contentHash = entry.contentHash;
+          if (validatedEntry.data.contentHash) {
+            cleanEntry.contentHash = validatedEntry.data.contentHash;
           }
 
           // Merge with existing entry if duplicate canonical keys exist
@@ -586,7 +590,7 @@ function generateCanonicalQueryKey(query: unknown, entityType: string): string |
     const searchParams = new URLSearchParams();
     for (const [key, value] of Object.entries(params)) {
       if (Array.isArray(value)) {
-        searchParams.set(key, (value as string[]).join(","));
+        searchParams.set(key, value.join(","));
       } else {
         searchParams.set(key, String(value));
       }
@@ -616,7 +620,7 @@ function generateCanonicalQueryKeyFromEntry(entry: unknown, entityType: string):
     const searchParams = new URLSearchParams();
     for (const [key, value] of Object.entries(params)) {
       if (Array.isArray(value)) {
-        searchParams.set(key, (value as string[]).join(","));
+        searchParams.set(key, value.join(","));
       } else {
         searchParams.set(key, String(value));
       }
@@ -724,7 +728,7 @@ async function seedMissingData(dataPath: string, entityType: string, index: Unif
  */
 function formatJsonConsistently(jsonContent: string): string {
   try {
-    const parsed = JSON.parse(jsonContent);
+    const parsed: unknown = JSON.parse(jsonContent);
     return JSON.stringify(parsed, null, 2);
   } catch {
     // If parsing fails, return original content
@@ -996,7 +1000,7 @@ function determineCanonicalQueryUrl(entityType: string, filename: string, fileCo
         const searchParams = new URLSearchParams();
         for (const [key, value] of Object.entries(params)) {
           if (Array.isArray(value)) {
-            searchParams.set(key, (value as string[]).join(","));
+            searchParams.set(key, value.join(","));
           } else {
             searchParams.set(key, String(value));
           }
@@ -1081,10 +1085,14 @@ function reverseEngineerQueryUrl(entityType: string, queryResult: unknown, _file
   if (results.length === 0) return null;
 
   // Check what fields are present in the first result
-  const firstResult = results[0];
+  const firstResult: unknown = results[0];
   if (!firstResult || typeof firstResult !== "object") return null;
 
-  const fields = Object.keys(firstResult);
+  const ObjectSchema = z.record(z.string(), z.unknown());
+  const resultValidation = ObjectSchema.safeParse(firstResult);
+  if (!resultValidation.success) return null;
+
+  const fields = Object.keys(resultValidation.data);
 
   // Common patterns to detect:
 
@@ -1155,7 +1163,9 @@ function deduplicateIndexEntries(index: UnifiedIndex, entityType: string) {
 
   // Remove the duplicate entries
   for (const key of keysToRemove) {
-    delete index[key];
+    if (Object.prototype.hasOwnProperty.call(index, key)) {
+      delete index[key];
+    }
   }
 }
 
@@ -1186,8 +1196,8 @@ async function saveUnifiedIndex(dataPath: string, entityType: string, index: Uni
     // Write the flattened index directly (no requests wrapper)
     await writeFile(indexPath, JSON.stringify(refIndex, null, 2));
     logger.debug("general", "Saved unified index with $ref pointers and metadata");
-  } catch {
-    logger.error("general", "Error saving unified index");
+  } catch (error) {
+    logger.error("general", "Error saving unified index", error);
   }
 }
 
@@ -1201,10 +1211,17 @@ function createContentHash(fileContent: string): string {
 
     // Create a copy and remove volatile metadata fields
     if (parsed && typeof parsed === "object" && parsed !== null) {
-      const cleanContent = { ...parsed } as Record<string, unknown>;
+      const ObjectSchema = z.record(z.string(), z.unknown());
+      const contentResult = ObjectSchema.safeParse(parsed);
+      if (!contentResult.success) return generateContentHash(fileContent);
+
+      const cleanContent = { ...contentResult.data };
 
       if (cleanContent.meta && typeof cleanContent.meta === "object" && cleanContent.meta !== null) {
-        const metaObj = cleanContent.meta as Record<string, unknown>;
+        const metaResult = ObjectSchema.safeParse(cleanContent.meta);
+        if (!metaResult.success) return JSON.stringify(cleanContent);
+
+        const metaObj = metaResult.data;
 
         const { count, db_response_time_ms, ...cleanMeta } = metaObj;
 
@@ -1236,7 +1253,7 @@ function normalizeUrlForDeduplication(url: string): string {
   try {
     // Decode URL-encoded characters for comparison
     return decodeURIComponent(url);
-  } catch (error) {
+  } catch {
     return url;
   }
 }
