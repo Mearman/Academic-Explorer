@@ -1,0 +1,47 @@
+{
+  "description": "OpenAlex Static Data Index - Signposting to entity-specific indices",
+  "version": "1.0.0",
+  "lastModified": "2025-09-19T09:50:00.000Z",
+  "entities": {
+    "authors": {
+      "path": "./authors/index.json",
+      "description": "Author entities and metadata"
+    },
+    "works": {
+      "path": "./works/index.json",
+      "description": "Work entities and metadata"
+    },
+    "institutions": {
+      "path": "./institutions/index.json",
+      "description": "Institution entities and metadata"
+    },
+    "topics": {
+      "path": "./topics/index.json",
+      "description": "Topic entities and metadata"
+    },
+    "publishers": {
+      "path": "./publishers/index.json",
+      "description": "Publisher entities and metadata",
+      "status": "not_available"
+    },
+    "funders": {
+      "path": "./funders/index.json",
+      "description": "Funder entities and metadata",
+      "status": "not_available"
+    }
+  },
+  "supportedEntityTypes": [
+    "authors",
+    "works",
+    "institutions",
+    "topics",
+    "publishers",
+    "funders"
+  ],
+  "availableEntityTypes": [
+    "authors",
+    "works",
+    "institutions",
+    "topics"
+  ]
+}
