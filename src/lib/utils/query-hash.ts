@@ -1,40 +1,39 @@
 /**
- * Generate a hash for a query URL to use as filename (browser-compatible version)
- * Excludes mailto field from URL to ensure consistent hashing regardless of email
+ * Unified query hash generation - single source of truth
+ * Works in both Node.js and browser environments using SHA-256
+ * Excludes volatile parameters like mailto for consistent hashing
  */
-export function generateQueryHash(url: string): string {
-  // Create a normalized URL without mailto parameter
+
+/**
+ * Generate a hash for a query URL to use as filename
+ * Uses SHA-256 for consistent hashing across environments
+ */
+export async function generateQueryHash(url: string): Promise<string> {
+  // Create a normalized URL without volatile parameters
   const normalizedUrl = normalizeUrlForHashing(url);
 
-  // Browser-compatible simple hash algorithm
+  // Use Web Crypto API (available in both Node.js 16+ and browsers)
   const encoder = new TextEncoder();
   const data = encoder.encode(normalizedUrl);
-
-  // Simple hash algorithm for browser compatibility
-  let hash = 0;
-  for (let i = 0; i < data.length; i++) {
-    const char = data[i];
-    hash = ((hash << 5) - hash) + char;
-    hash = hash & hash; // Convert to 32-bit integer
-  }
-
-  // Convert to hex and take first 16 characters
-  return Math.abs(hash).toString(16).padStart(16, "0").substring(0, 16);
+  const hashBuffer = await crypto.subtle.digest("SHA-256", data);
+  const hashArray = Array.from(new Uint8Array(hashBuffer));
+  const hashHex = hashArray.map(b => b.toString(16).padStart(2, "0")).join("");
+  return hashHex.substring(0, 16);
 }
 
 /**
- * Normalize URL for hashing by removing mailto and other volatile parameters
+ * Normalize URL for hashing by removing volatile parameters and ensuring consistent order
  */
 function normalizeUrlForHashing(url: string): string {
   try {
     const urlObj = new URL(url);
 
-    // Remove mailto parameter to ensure consistent hashing
+    // Remove volatile parameters that shouldn't affect caching
     urlObj.searchParams.delete("mailto");
 
     // Sort parameters to ensure consistent order
     const sortedParams = new URLSearchParams();
-    const paramEntries = Array.from(urlObj.searchParams.entries()).sort(([a], [b]) => a.localeCompare(b));
+    const paramEntries = Array.from(urlObj.searchParams.entries()).sort((entryA, entryB) => entryA[0].localeCompare(entryB[0]));
 
     for (const [key, value] of paramEntries) {
       sortedParams.append(key, value);
