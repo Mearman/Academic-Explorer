@@ -28,7 +28,7 @@ const createMultiDegreeTestData = () => {
 	const institutionY = "https://openalex.org/I130238516" // Real institution
 	const workW1 = "https://openalex.org/W4281570305" // Real work
 	const workW2 = "https://openalex.org/W4210907977" // Real work
-	const workW3 = "https://openalex.org/W2964185482" // Real work
+	const workW3 = "https://openalex.org/W3188841554" // Real work (Attention Is All You Need)
 	const sourceS1 = "https://openalex.org/S137773608" // Real source
 	const sourceS2 = "https://openalex.org/S15744367" // Real source
 
@@ -422,7 +422,7 @@ describe("Multi-Degree Intra-Graph Connections", () => {
 			'[data-testid*="reference"]',
 			'[data-testid*="citation"]',
 			'[data-testid*="cited"]',
-			`text=${workW1.split("/").pop()}`,
+			`text="${workW1.split("/").pop()}"`,
 			'text="Advances in Machine Learning"'
 		].join(", "))
 

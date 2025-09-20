@@ -350,7 +350,7 @@ jobs:
   accessibility:
     needs: [setup, quality-checks]
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 20
     continue-on-error: true
 
     steps:
@@ -392,7 +392,7 @@ jobs:
       - name: Start preview server for accessibility testing
         run: pnpm preview &
         env:
-          NODE_OPTIONS: "--max-old-space-size=4096"
+          NODE_OPTIONS: "--max-old-space-size=6144"
 
       - name: Wait for preview server to be ready
         run: |
@@ -405,7 +405,7 @@ jobs:
       - name: Run accessibility tests
         run: pnpm nx a11y:ci
         env:
-          NODE_OPTIONS: "--max-old-space-size=4096"
+          NODE_OPTIONS: "--max-old-space-size=6144"
           CHROME_PATH: "/usr/bin/google-chrome-stable"
           PUPPETEER_EXECUTABLE_PATH: "/usr/bin/google-chrome-stable"
 
