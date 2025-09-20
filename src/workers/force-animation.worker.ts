@@ -192,6 +192,14 @@ const timerAPI = createTimerAPI();
 // Message handler
 self.onmessage = function(event: MessageEvent<WorkerMessage>) {
 	const data = event.data;
+
+	// Filter out EventBridge cross-context messages - these are handled by EventBridge
+	// Only process direct worker messages for force simulation control
+	if (data && typeof data === "object" && "type" in data && data.type === "event") {
+		// This is an EventBridge cross-context message, ignore it
+		return;
+	}
+
 	const type = data.type;
 	const newNodes = data.nodes;
 	const newLinks = data.links;

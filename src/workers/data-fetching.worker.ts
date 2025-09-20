@@ -55,7 +55,11 @@ const unifiedClient = createUnifiedOpenAlexClient({
   cacheEnabled: true,
   rateLimitEnabled: true,
   workerEnabled: false, // Disable worker coordination in worker itself
-  maxConcurrentRequests: 3
+  maxConcurrentRequests: 3,
+  // Modify User-Agent to identify worker requests for network tracking
+  headers: {
+    "User-Agent": "OpenAlex-TypeScript-Client/1.0 (data-fetching-worker)"
+  }
 });
 
 // Initialize worker
@@ -65,14 +69,33 @@ function initializeWorker() {
 		unifiedClient.getEnhancedMetrics();
 		isReady = true;
 
-		// Emit worker ready event via EventBridge
+		// Send dual ready signal for reliability:
+		// 1. Direct postMessage for immediate response
+		self.postMessage({
+			type: "ready",
+			workerId: "data-fetching-worker",
+			workerType: "data-fetching",
+			timestamp: Date.now()
+		});
+
+		// 2. EventBridge for cross-context communication
 		eventBridge.emit(WorkerEventType.WORKER_READY, {
 			workerId: "data-fetching-worker",
 			workerType: "data-fetching" as const,
 			timestamp: Date.now()
 		}, "main");
 	} catch (error) {
-		// Emit worker error event via EventBridge
+		// Send dual error signal for reliability:
+		// 1. Direct postMessage
+		self.postMessage({
+			type: "error",
+			workerId: "data-fetching-worker",
+			workerType: "data-fetching",
+			error: error instanceof Error ? error.message : "Failed to initialize worker",
+			timestamp: Date.now()
+		});
+
+		// 2. EventBridge
 		eventBridge.emit(WorkerEventType.WORKER_ERROR, {
 			workerId: "data-fetching-worker",
 			workerType: "data-fetching" as const,
@@ -330,6 +353,13 @@ async function handleWorkerRequest(request: WorkerRequest): Promise<void> {
 self.onmessage = async (event: MessageEvent<DataFetchingMessage | WorkerRequest>) => {
 	const data = event.data;
 
+	// Filter out EventBridge cross-context messages - these are handled by EventBridge
+	// Only process direct worker messages for data fetching operations
+	if (data && typeof data === "object" && "type" in data && data.type === "event") {
+		// This is an EventBridge cross-context message, ignore it
+		return;
+	}
+
 	// Handle WorkerRequest (for unified client API calls)
 	if (isWorkerRequest(data)) {
 		await handleWorkerRequest(data);
@@ -337,7 +367,7 @@ self.onmessage = async (event: MessageEvent<DataFetchingMessage | WorkerRequest>
 	}
 
 	// Handle legacy DataFetchingMessage (for graph expansion)
-	const { type, id, payload } = data as DataFetchingMessage;
+	const { type, id, payload } = data;
 
 	if (!isReady && type !== "cancel") {
 		// Emit error event via EventBridge for worker not ready
