@@ -132,7 +132,7 @@ export const GraphToolbar: React.FC<GraphToolbarProps> = ({
 				await expandNode(entityId, {
 					depth: 1, // Expand 1 level
 					limit: 10, // Limit connections per node
-					force: false // Don't force re-expansion if already expanded
+					force: true // Force fresh expansion with new citation fields
 				});
 
 				return { nodeId: node.id, entityId, success: true };

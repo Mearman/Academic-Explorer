@@ -10,6 +10,7 @@ import { IconDatabase, IconRefresh } from "@tabler/icons-react";
 import { initializeQueryClient, createStandardQueryClient } from "@/lib/cache/cache-init";
 import type { InvalidationResult } from "@/lib/cache/cache-invalidator";
 import { logger } from "@/lib/logger";
+import { useAutoRelationshipDetection } from "@/hooks/use-auto-relationship-detection";
 
 interface CacheInitializerProps {
   children: ReactNode;
@@ -20,6 +21,15 @@ interface InitializationState {
   queryClient?: QueryClient;
   invalidationResult?: InvalidationResult;
   error?: string;
+}
+
+/**
+ * Component that enables automatic relationship detection for all entity types
+ * This component just runs the hook and renders nothing
+ */
+function AutoRelationshipDetector() {
+	useAutoRelationshipDetection();
+	return null;
 }
 
 /**
@@ -110,6 +120,7 @@ export function CacheInitializer({ children }: CacheInitializerProps) {
 	// Render app with initialized query client
 	return (
 		<QueryClientProvider client={state.queryClient}>
+			<AutoRelationshipDetector />
 			{children}
 		</QueryClientProvider>
 	);

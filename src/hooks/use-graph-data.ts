@@ -3,9 +3,9 @@
  * Provides a clean interface for loading and manipulating graph data
  */
 
-import { useCallback, useRef } from "react";
+import { useCallback, useMemo } from "react";
 import { useQueryClient } from "@tanstack/react-query";
-import { GraphDataService } from "@/services/graph-data-service";
+import { getGraphDataService } from "@/lib/services/service-provider";
 import { useGraphStore } from "@/stores/graph-store";
 import { useDataFetchingWorker } from "@/hooks/use-data-fetching-worker";
 import { useExpansionSettingsStore } from "@/stores/expansion-settings-store";
@@ -18,7 +18,7 @@ import type { ExpandCompletePayload } from "@/workers/data-fetching.worker";
 
 export function useGraphData() {
 	const queryClient = useQueryClient();
-	const service = useRef(new GraphDataService(queryClient));
+	const service = useMemo(() => getGraphDataService(queryClient), [queryClient]);
 	const isLoading = useGraphStore((state) => state.isLoading);
 	const error = useGraphStore((state) => state.error);
 
@@ -91,27 +91,27 @@ export function useGraphData() {
 
 	const loadEntity = useCallback(async (entityId: string) => {
 		try {
-			await service.current.loadEntityGraph(entityId);
+			await service.loadEntityGraph(entityId);
 		} catch (err) {
 			logError("Failed to load entity in graph data hook", err, "useGraphData", "graph");
 		}
-	}, []);
+	}, [service]);
 
 	const loadEntityIntoGraph = useCallback(async (entityId: string) => {
 		try {
-			await service.current.loadEntityIntoGraph(entityId);
+			await service.loadEntityIntoGraph(entityId);
 		} catch (err) {
 			logError("Failed to load entity into graph in graph data hook", err, "useGraphData", "graph");
 		}
-	}, []);
+	}, [service]);
 
 	const loadEntityIntoRepository = useCallback(async (entityId: string) => {
 		try {
-			await service.current.loadEntityIntoRepository(entityId);
+			await service.loadEntityIntoRepository(entityId);
 		} catch (err) {
 			logError("Failed to load entity into repository in graph data hook", err, "useGraphData", "repository");
 		}
-	}, []);
+	}, [service]);
 
 	const expandNode = useCallback(async (nodeId: string, options?: {
     depth?: number;
@@ -134,7 +134,9 @@ export function useGraphData() {
 			// Fallback to original service method
 			store.setLoading(true);
 			try {
-				await service.current.expandNode(nodeId, options);
+				logger.debug("graph", "About to call service.expandNode", { nodeId, options }, "useGraphData");
+				await service.expandNode(nodeId, options);
+				logger.debug("graph", "service.expandNode completed", { nodeId }, "useGraphData");
 
 				// Recalculate depths after expansion using first pinned node
 				const pinnedNodes = Object.keys(store.pinnedNodes);
@@ -237,7 +239,7 @@ export function useGraphData() {
 		}, "useGraphData");
 
 		try {
-			await service.current.expandAllNodesOfType(entityType, {
+			await service.expandAllNodesOfType(entityType, {
 				depth,
 				limit,
 				force
@@ -263,7 +265,7 @@ export function useGraphData() {
 		} finally {
 			store.setLoading(false);
 		}
-	}, []);
+	}, [service]);
 
 	const search = useCallback(async (query: string, options?: Partial<SearchOptions>) => {
 		const searchOptions: SearchOptions = {
@@ -275,19 +277,19 @@ export function useGraphData() {
 		};
 
 		try {
-			await service.current.searchAndVisualize(query, searchOptions);
+			await service.searchAndVisualize(query, searchOptions);
 		} catch (err) {
 			logError("Failed to perform graph search operation", err, "useGraphData", "graph");
 		}
-	}, []);
+	}, [service]);
 
 	const loadAllCachedNodes = useCallback(() => {
 		try {
-			service.current.loadAllCachedNodes();
+			service.loadAllCachedNodes();
 		} catch (err) {
 			logError("Failed to load cached nodes in graph data hook", err, "useGraphData", "graph");
 		}
-	}, []);
+	}, [service]);
 
 
 	const clearGraph = useCallback(() => {
@@ -297,11 +299,11 @@ export function useGraphData() {
 
 	const hydrateNode = useCallback(async (nodeId: string) => {
 		try {
-			await service.current.hydrateNode(nodeId);
+			await service.hydrateNode(nodeId);
 		} catch (err) {
 			logError("Failed to hydrate node in graph data hook", err, "useGraphData", "graph");
 		}
-	}, []);
+	}, [service]);
 
 	return {
 		loadEntity,
