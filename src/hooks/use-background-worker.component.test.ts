@@ -55,21 +55,27 @@ class MockWorker {
 	public onmessage: ((event: MessageEvent) => void) | null = null;
 	public onerror: ((event: ErrorEvent) => void) | null = null;
 	private eventTarget = new EventTarget();
+	// Note: postMessage is now mocked but not used by real worker (uses EventBridge)
 	public postMessage = vi.fn();
 
 	constructor(public url: string, public options?: WorkerOptions) {
-		// Setup default behavior for postMessage
+		// Setup default behavior for postMessage (legacy compatibility)
 		this.postMessage.mockImplementation(() => {
 			// Do nothing by default, tests can override
 		});
 
-		// Simulate ready message on creation with a longer delay to ensure it's processed
+		// Simulate ready message via EventBridge instead of postMessage
 		setTimeout(() => {
-			if (this.onmessage) {
-				this.onmessage(new MessageEvent("message", {
-					data: { type: "ready" }
-				}));
-			}
+			// Mock EventBridge ready event
+			void import("@/lib/graph/events/event-bridge").then(({ eventBridge }) => {
+				if (eventBridge.emit) {
+					eventBridge.emit("WORKER_READY", {
+						workerId: "force-animation-worker",
+						workerType: "force-animation",
+						timestamp: Date.now()
+					}, "main");
+				}
+			});
 		}, 10);
 	}
 
@@ -224,14 +230,18 @@ describe("useBackgroundWorker", () => {
 			result.current.startAnimation(nodes, links);
 		});
 
-		// Verify worker received start message
-		expect(mockWorker.postMessage).toHaveBeenCalledWith({
-			type: "start",
-			nodes,
-			links,
-			config: undefined, // No config provided in the test
-			pinnedNodes: undefined,
-		});
+		// Verify EventBridge was used to send start message
+		const { eventBridge } = await import("@/lib/graph/events/event-bridge");
+		expect(eventBridge.sendMessage).toHaveBeenCalledWith(
+			"FORCE_SIMULATION_START",
+			expect.objectContaining({
+				nodes,
+				links,
+				config: undefined,
+				pinnedNodes: undefined,
+			}),
+			"force-animation-worker"
+		);
 	});
 
 	it("should handle position updates from worker", async () => {
