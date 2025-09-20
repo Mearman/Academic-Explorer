@@ -10,7 +10,7 @@ import { logger } from "@/lib/logger";
 import { useGraphStore } from "@/stores/graph-store";
 import { useLayoutStore } from "@/stores/layout-store";
 import { useAnimatedGraphStore } from "@/stores/animated-graph-store";
-import { useAnimatedForceSimulation } from "@/hooks/use-animated-force-simulation";
+import { useBackgroundWorker } from "@/hooks/use-background-worker";
 import { FIT_VIEW_PRESETS } from "../../constants";
 import { DEFAULT_FORCE_PARAMS } from "../../force-params";
 
@@ -110,7 +110,7 @@ export function useAnimatedLayout(options: UseAnimatedLayoutOptions = {}) {
 		performanceStats,
 		getOptimalConfig,
 		isWorkerReady,
-	} = useAnimatedForceSimulation({
+	} = useBackgroundWorker({
 		onPositionUpdate: useCallback((positions: NodePosition[]) => {
 			// Update animated store with new positions
 			storeMethodsRef.current.updateAnimatedPositions(positions);

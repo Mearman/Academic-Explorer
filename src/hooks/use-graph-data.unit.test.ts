@@ -9,7 +9,7 @@ import { describe, it, expect, beforeEach, afterEach, vi, type Mock } from "vite
 // Mock dependencies after imports
 vi.mock("@/services/graph-data-service");
 vi.mock("@/stores/graph-store");
-vi.mock("@/hooks/use-data-fetching-worker");
+vi.mock("@/hooks/use-background-worker");
 vi.mock("@/lib/logger", () => ({
 	logger: {
 		info: vi.fn(),
@@ -22,7 +22,7 @@ vi.mock("@/lib/logger", () => ({
 import { useGraphData } from "./use-graph-data";
 import { GraphDataService } from "@/services/graph-data-service";
 import { useGraphStore } from "@/stores/graph-store";
-import { useDataFetchingWorker } from "@/hooks/use-data-fetching-worker";
+import { useBackgroundWorker } from "@/hooks/use-background-worker";
 import { logger, logError } from "@/lib/logger";
 import type { SearchOptions } from "@/lib/graph/types";
 import React from "react";
@@ -41,7 +41,8 @@ const mockUseGraphStore = useGraphStore as unknown as Mock & {
   getState: Mock;
 };
 
-const mockUseDataFetchingWorker = useDataFetchingWorker as unknown as Mock;
+const mockUseBackgroundWorker = useBackgroundWorker as unknown as Mock;
+
 
 describe("useGraphData", () => {
 	let queryClient: QueryClient;
@@ -124,20 +125,24 @@ describe("useGraphData", () => {
 			...mockStore,
 		});
 
-		// Mock data fetching worker (default to not ready to test fallback behavior)
-		mockUseDataFetchingWorker.mockReturnValue({
-			isWorkerReady: false,
-			activeRequests: new Set(),
+		// Mock animated force simulation (not ready to force fallback to service)
+		mockUseBackgroundWorker.mockReturnValue({
+			isWorkerReady: false, // Force fallback to service for predictable tests
 			expandNode: vi.fn().mockResolvedValue(undefined),
 			cancelExpansion: vi.fn(),
-			cancelAllExpansions: vi.fn(),
-			getStats: vi.fn().mockReturnValue({
-				totalRequests: 0,
-				completedRequests: 0,
-				failedRequests: 0,
-				averageDuration: 0,
-			}),
+			// Other properties that might be accessed
+			animationState: { isRunning: false, isPaused: false },
+			nodePositions: [],
+			performanceStats: {},
+			startAnimation: vi.fn(),
+			stopAnimation: vi.fn(),
+			pauseAnimation: vi.fn(),
+			resumeAnimation: vi.fn(),
+			updateParameters: vi.fn(),
+			resetPositions: vi.fn(),
+			getOptimalConfig: vi.fn(),
 		});
+
 	});
 
 	afterEach(() => {
@@ -305,22 +310,6 @@ describe("useGraphData", () => {
 	});
 
 	describe("expandNode", () => {
-		beforeEach(() => {
-			// Configure worker to NOT be ready so tests fall back to service
-			mockUseDataFetchingWorker.mockReturnValue({
-				isWorkerReady: false, // Force fallback to service
-				activeRequests: new Set(),
-				expandNode: vi.fn().mockResolvedValue(undefined),
-				cancelExpansion: vi.fn(),
-				cancelAllExpansions: vi.fn(),
-				getStats: vi.fn().mockReturnValue({
-					totalRequests: 0,
-					completedRequests: 0,
-					failedRequests: 0,
-					averageDuration: 0,
-				}),
-			});
-		});
 
 		it("should call service.expandNode with default options from store", async () => {
 			const { result } = renderHook(() => useGraphData(), {
@@ -357,17 +346,10 @@ describe("useGraphData", () => {
 
 			expect(logger.debug).toHaveBeenCalledWith(
 				"graph",
-				"Fallback expansion completed",
+				"Node expansion completed via service fallback",
 				{
 					nodeId,
 				},
-				"useGraphData"
-			);
-
-			expect(logger.debug).toHaveBeenCalledWith(
-				"graph",
-				"Fallback expansion completed",
-				{ nodeId },
 				"useGraphData"
 			);
 		});
@@ -411,7 +393,7 @@ describe("useGraphData", () => {
 
 			expect(logger.error).toHaveBeenCalledWith(
 				"graph",
-				"Fallback expansion failed",
+				"Service fallback expansion failed",
 				{
 					nodeId,
 					error: "Expand node failed",
@@ -420,7 +402,7 @@ describe("useGraphData", () => {
 			);
 
 			expect(logError).toHaveBeenCalledWith(
-				"Failed to expand node via fallback",
+				"Failed to expand node via service fallback",
 				error,
 				"useGraphData",
 				"graph"
@@ -443,7 +425,7 @@ describe("useGraphData", () => {
 
 			expect(logger.error).toHaveBeenCalledWith(
 				"graph",
-				"Fallback expansion failed",
+				"Service fallback expansion failed",
 				{
 					nodeId,
 					error: "Unknown error",

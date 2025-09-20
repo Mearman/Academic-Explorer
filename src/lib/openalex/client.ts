@@ -75,6 +75,7 @@ export class OpenAlexBaseClient {
 			timeout: 30000, // 30 seconds
 			retries: 3,
 			retryDelay: 1000, // 1 second
+			headers: {},
 		};
 
 		this.config = {
