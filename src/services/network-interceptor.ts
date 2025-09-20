@@ -106,12 +106,12 @@ export class NetworkInterceptor {
 			const url = typeof input === "string" ? input : input instanceof URL ? input.toString() : input.url;
 			const method = init?.method || "GET";
 
-			const requestInfo = this.createRequestInfo(url, method);
+			const requestInfo = this.createRequestInfo(url, method, init?.headers);
 			const store = useNetworkActivityStore.getState();
 
 			const requestId = store.addRequest({
 				type: this.detectRequestType(url),
-				category: this.detectRequestCategory(url),
+				category: this.detectRequestCategory(url, init?.headers),
 				url,
 				method,
 				status: "pending",
@@ -280,13 +280,13 @@ export class NetworkInterceptor {
 	/**
    * Create request info with type and category detection
    */
-	private createRequestInfo(url: string, _method: string): {
+	private createRequestInfo(url: string, _method: string, headers?: HeadersInit): {
     type: NetworkRequest["type"];
     category: NetworkRequest["category"];
   } {
 		return {
 			type: this.detectRequestType(url),
-			category: this.detectRequestCategory(url),
+			category: this.detectRequestCategory(url, headers),
 		};
 	}
 
@@ -309,13 +309,39 @@ export class NetworkInterceptor {
 	/**
    * Detect request category (foreground vs background)
    */
-	private detectRequestCategory(url: string): NetworkRequest["category"] {
+	private detectRequestCategory(url: string, headers?: HeadersInit): NetworkRequest["category"] {
+		// Check for worker User-Agent first
+		if (headers) {
+			const userAgent = this.getHeaderValue(headers, "User-Agent");
+			if (userAgent && userAgent.includes("data-fetching-worker")) {
+				return "background";
+			}
+		}
+
 		// Consider API requests as foreground by default
 		// Background requests are typically cache operations or worker communications
 		if (url.includes("cache") || url.includes("worker")) {
 			return "background";
 		}
 		return "foreground";
+	}
+
+	/**
+   * Get header value from HeadersInit (Headers, Record, or array)
+   */
+	private getHeaderValue(headers: HeadersInit, key: string): string | null {
+		if (headers instanceof Headers) {
+			return headers.get(key);
+		}
+		if (Array.isArray(headers)) {
+			const found = headers.find(([k]) => k.toLowerCase() === key.toLowerCase());
+			return found ? found[1] : null;
+		}
+		if (typeof headers === "object" && headers !== null) {
+			const record = headers;
+			return record[key] || null;
+		}
+		return null;
 	}
 
 	/**
