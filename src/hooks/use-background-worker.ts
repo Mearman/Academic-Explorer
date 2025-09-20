@@ -10,9 +10,8 @@ import type { EntityType, GraphNode, GraphEdge } from "@/lib/graph/types";
 import type { ExpansionOptions } from "@/lib/entities";
 import type { ExpansionSettings } from "@/lib/graph/types/expansion-settings";
 import { getConfigByGraphSize } from "@/lib/graph/utils/performance-config";
-import { eventBridge } from "@/lib/graph/events/event-bridge";
+import { useBackgroundWorkerContext, useEventBridge } from "@/contexts/hooks";
 import { WorkerEventType, type WorkerEventPayloads, WorkerEventPayloadSchemas, parseWorkerEventPayload, isWorkerEventType } from "@/lib/graph/events/types";
-import { getBackgroundWorker } from "@/lib/graph/worker-singleton";
 
 // Types matching the worker interfaces
 interface NodePosition {
@@ -113,9 +112,20 @@ export function useBackgroundWorker(options: UseBackgroundWorkerOptions = {}) {
 		onExpansionError,
 	} = options;
 
-	// Worker ref
-	const workerRef = useRef<Worker | null>(null);
-	const [isWorkerReady, setIsWorkerReady] = useState(false);
+	// Use the context providers for worker management
+	const { worker, isWorkerReady, getWorker } = useBackgroundWorkerContext();
+	const { registerHandler, unregisterHandler, emit } = useEventBridge();
+	const workerRef = useRef<Worker | null>(worker);
+
+	// Debug tracking for isWorkerReady state changes
+	useEffect(() => {
+		logger.debug('worker', 'useBackgroundWorker isWorkerReady state changed', { isWorkerReady });
+	}, [isWorkerReady]);
+
+	// Keep workerRef in sync with the context worker
+	useEffect(() => {
+		workerRef.current = worker;
+	}, [worker]);
 
 	// Animation state
 	const [animationState, setAnimationState] = useState<AnimationState>({
@@ -328,7 +338,7 @@ export function useBackgroundWorker(options: UseBackgroundWorkerOptions = {}) {
 			setIsWorkerReady(true);
 			logger.debug("graph", "Force animation worker ready via EventBridge");
 		}
-	}, []);
+	}, [emit]);
 
 	const handleWorkerErrorEvent = useCallback((payload: WorkerEventPayloads[WorkerEventType.WORKER_ERROR]) => {
 		if (payload.workerType === "force-animation") {
@@ -455,7 +465,7 @@ export function useBackgroundWorker(options: UseBackgroundWorkerOptions = {}) {
 			}));
 			logger.debug("graph", "Force animation stopped via EventBridge");
 		}
-	}, []);
+	}, [emit]);
 
 	const handleForceSimulationError = useCallback((payload: WorkerEventPayloads[WorkerEventType.FORCE_SIMULATION_ERROR]) => {
 		if (payload.workerType === "force-animation") {
@@ -465,103 +475,77 @@ export function useBackgroundWorker(options: UseBackgroundWorkerOptions = {}) {
 		}
 	}, [onError]);
 
-	// Initialize worker using singleton
+	// Set up EventBridge listeners for this hook instance
 	useEffect(() => {
-		logger.debug("graph", "Initializing background worker via singleton");
+		logger.debug("graph", "Setting up EventBridge listeners for useBackgroundWorker hook");
 
-		// Get or create the singleton worker
-		getBackgroundWorker()
-			.then((worker) => {
-				workerRef.current = worker;
-				setIsWorkerReady(true);
+		// Set up event listeners when worker is available
+		if (worker) {
+			worker.addEventListener("message", handleWorkerMessage);
+			worker.addEventListener("error", handleWorkerError);
+		}
 
-				// Set up event listeners for this hook instance
-				worker.addEventListener("message", handleWorkerMessage);
-				worker.addEventListener("error", handleWorkerError);
-
-				logger.debug("graph", "Background worker ready via singleton");
-			})
-			.catch((error: unknown) => {
-				logger.error("graph", "Failed to get background worker", {
-					error: error instanceof Error ? error.message : "Unknown error"
-				});
-				onError?.("Failed to initialize Web Worker for force simulation");
-			});
-
-		// Register EventBridge listeners
-			eventBridge.registerMessageHandler("force-animation-worker-ready", (message) => {
-				if (isWorkerEventType(message.eventType) && message.eventType === WorkerEventType.WORKER_READY && message.payload) {
-					const payload = parseWorkerEventPayload(message.payload, WorkerEventType.WORKER_READY, WorkerEventPayloadSchemas[WorkerEventType.WORKER_READY]);
-					if (payload) {
-						handleWorkerReady(payload);
-					}
+		// Register EventBridge listeners using the context
+		registerHandler({ handlerId: "force-animation-worker-error", handler: (message) => {
+			if (isWorkerEventType(message.eventType) && message.eventType === WorkerEventType.WORKER_ERROR && message.payload) {
+				const payload = parseWorkerEventPayload(message.payload, WorkerEventType.WORKER_ERROR, WorkerEventPayloadSchemas[WorkerEventType.WORKER_ERROR]);
+				if (payload) {
+					handleWorkerErrorEvent(payload);
 				}
-			});
+			}
+		}});
 
-			eventBridge.registerMessageHandler("force-animation-worker-error", (message) => {
-				if (isWorkerEventType(message.eventType) && message.eventType === WorkerEventType.WORKER_ERROR && message.payload) {
-					const payload = parseWorkerEventPayload(message.payload, WorkerEventType.WORKER_ERROR, WorkerEventPayloadSchemas[WorkerEventType.WORKER_ERROR]);
-					if (payload) {
-						handleWorkerErrorEvent(payload);
-					}
+		registerHandler({ handlerId: "force-animation-progress", handler: (message) => {
+			if (isWorkerEventType(message.eventType) && message.eventType === WorkerEventType.FORCE_SIMULATION_PROGRESS && message.payload) {
+				const payload = parseWorkerEventPayload(message.payload, WorkerEventType.FORCE_SIMULATION_PROGRESS, WorkerEventPayloadSchemas[WorkerEventType.FORCE_SIMULATION_PROGRESS]);
+				if (payload) {
+					handleForceSimulationProgress(payload);
 				}
-			});
+			}
+		}});
 
-			eventBridge.registerMessageHandler("force-animation-progress", (message) => {
-				if (isWorkerEventType(message.eventType) && message.eventType === WorkerEventType.FORCE_SIMULATION_PROGRESS && message.payload) {
-					const payload = parseWorkerEventPayload(message.payload, WorkerEventType.FORCE_SIMULATION_PROGRESS, WorkerEventPayloadSchemas[WorkerEventType.FORCE_SIMULATION_PROGRESS]);
-					if (payload) {
-						handleForceSimulationProgress(payload);
-					}
+		registerHandler({ handlerId: "force-animation-complete", handler: (message) => {
+			if (isWorkerEventType(message.eventType) && message.eventType === WorkerEventType.FORCE_SIMULATION_COMPLETE && message.payload) {
+				const payload = parseWorkerEventPayload(message.payload, WorkerEventType.FORCE_SIMULATION_COMPLETE, WorkerEventPayloadSchemas[WorkerEventType.FORCE_SIMULATION_COMPLETE]);
+				if (payload) {
+					handleForceSimulationComplete(payload);
 				}
-			});
+			}
+		}});
 
-			eventBridge.registerMessageHandler("force-animation-complete", (message) => {
-				if (isWorkerEventType(message.eventType) && message.eventType === WorkerEventType.FORCE_SIMULATION_COMPLETE && message.payload) {
-					const payload = parseWorkerEventPayload(message.payload, WorkerEventType.FORCE_SIMULATION_COMPLETE, WorkerEventPayloadSchemas[WorkerEventType.FORCE_SIMULATION_COMPLETE]);
-					if (payload) {
-						handleForceSimulationComplete(payload);
-					}
+		registerHandler({ handlerId: "force-animation-stopped", handler: (message) => {
+			if (isWorkerEventType(message.eventType) && message.eventType === WorkerEventType.FORCE_SIMULATION_STOPPED && message.payload) {
+				const payload = parseWorkerEventPayload(message.payload, WorkerEventType.FORCE_SIMULATION_STOPPED, WorkerEventPayloadSchemas[WorkerEventType.FORCE_SIMULATION_STOPPED]);
+				if (payload) {
+					handleForceSimulationStopped(payload);
 				}
-			});
+			}
+		}});
 
-			eventBridge.registerMessageHandler("force-animation-stopped", (message) => {
-				if (isWorkerEventType(message.eventType) && message.eventType === WorkerEventType.FORCE_SIMULATION_STOPPED && message.payload) {
-					const payload = parseWorkerEventPayload(message.payload, WorkerEventType.FORCE_SIMULATION_STOPPED, WorkerEventPayloadSchemas[WorkerEventType.FORCE_SIMULATION_STOPPED]);
-					if (payload) {
-						handleForceSimulationStopped(payload);
-					}
+		registerHandler({ handlerId: "force-animation-simulation-error", handler: (message) => {
+			if (isWorkerEventType(message.eventType) && message.eventType === WorkerEventType.FORCE_SIMULATION_ERROR && message.payload) {
+				const payload = parseWorkerEventPayload(message.payload, WorkerEventType.FORCE_SIMULATION_ERROR, WorkerEventPayloadSchemas[WorkerEventType.FORCE_SIMULATION_ERROR]);
+				if (payload) {
+					handleForceSimulationError(payload);
 				}
-			});
-
-			eventBridge.registerMessageHandler("force-animation-simulation-error", (message) => {
-				if (isWorkerEventType(message.eventType) && message.eventType === WorkerEventType.FORCE_SIMULATION_ERROR && message.payload) {
-					const payload = parseWorkerEventPayload(message.payload, WorkerEventType.FORCE_SIMULATION_ERROR, WorkerEventPayloadSchemas[WorkerEventType.FORCE_SIMULATION_ERROR]);
-					if (payload) {
-						handleForceSimulationError(payload);
-					}
-				}
-			});
+			}
+		}});
 
 		return () => {
 			// Unregister EventBridge listeners for this hook instance
-			eventBridge.unregisterMessageHandler("force-animation-worker-ready");
-			eventBridge.unregisterMessageHandler("force-animation-worker-error");
-			eventBridge.unregisterMessageHandler("force-animation-progress");
-			eventBridge.unregisterMessageHandler("force-animation-complete");
-			eventBridge.unregisterMessageHandler("force-animation-stopped");
-			eventBridge.unregisterMessageHandler("force-animation-simulation-error");
+			unregisterHandler("force-animation-worker-error");
+			unregisterHandler("force-animation-progress");
+			unregisterHandler("force-animation-complete");
+			unregisterHandler("force-animation-stopped");
+			unregisterHandler("force-animation-simulation-error");
 
 			// Remove event listeners for this hook instance
-			if (workerRef.current) {
-				workerRef.current.removeEventListener("message", handleWorkerMessage);
-				workerRef.current.removeEventListener("error", handleWorkerError);
-				workerRef.current = null;
-				setIsWorkerReady(false);
+			if (worker) {
+				worker.removeEventListener("message", handleWorkerMessage);
+				worker.removeEventListener("error", handleWorkerError);
 			}
-			// Note: Don't terminate the worker - it's shared via singleton
 		};
-	}, [handleWorkerMessage, handleWorkerError, onError, handleWorkerReady, handleWorkerErrorEvent, handleForceSimulationProgress, handleForceSimulationComplete, handleForceSimulationStopped, handleForceSimulationError]);
+	}, [worker, handleWorkerMessage, handleWorkerError, registerHandler, unregisterHandler, handleWorkerErrorEvent, handleForceSimulationProgress, handleForceSimulationComplete, handleForceSimulationStopped, handleForceSimulationError]);
 
 	// Start animation
 	const startAnimation = useCallback((
@@ -596,20 +580,20 @@ export function useBackgroundWorker(options: UseBackgroundWorkerOptions = {}) {
 			config,
 		});
 
-		eventBridge.emit("FORCE_SIMULATION_START", {
+		emit({ eventType: "FORCE_SIMULATION_START", payload: {
 			nodes,
 			links,
 			config,
 			pinnedNodes,
-		}, "worker");
-	}, [onError, isWorkerReady]);
+		}, target: "worker" });
+	}, [emit, onError, isWorkerReady]);
 
 	// Stop animation
 	const stopAnimation = useCallback(() => {
 		if (workerRef.current) {
-			eventBridge.emit("FORCE_SIMULATION_STOP", {}, "worker");
+			emit({ eventType: "FORCE_SIMULATION_STOP", payload: {}, target: "worker" });
 		}
-	}, []);
+	}, [emit]);
 
 	// Pause animation
 	const pauseAnimation = useCallback(() => {
@@ -617,12 +601,12 @@ export function useBackgroundWorker(options: UseBackgroundWorkerOptions = {}) {
 			// Use state callback to check current animation state without dependency
 			setAnimationState(current => {
 				if (current.isRunning && !current.isPaused) {
-					eventBridge.emit("FORCE_SIMULATION_PAUSE", {}, "worker");
+					emit({ eventType: "FORCE_SIMULATION_PAUSE", payload: {}, target: "worker" });
 				}
 				return current; // Return unchanged state
 			});
 		}
-	}, []);
+	}, [emit]);
 
 	// Resume animation
 	const resumeAnimation = useCallback(() => {
@@ -630,12 +614,12 @@ export function useBackgroundWorker(options: UseBackgroundWorkerOptions = {}) {
 			// Use state callback to check current animation state without dependency
 			setAnimationState(current => {
 				if (current.isRunning && current.isPaused) {
-					eventBridge.emit("FORCE_SIMULATION_RESUME", {}, "worker");
+					emit({ eventType: "FORCE_SIMULATION_RESUME", payload: {}, target: "worker" });
 				}
 				return current; // Return unchanged state
 			});
 		}
-	}, []);
+	}, [emit]);
 
 	// Update parameters during animation
 	const updateParameters = useCallback((config: AnimationConfig) => {
@@ -643,9 +627,9 @@ export function useBackgroundWorker(options: UseBackgroundWorkerOptions = {}) {
 			// Use state callback to check if animation is running
 			setAnimationState(current => {
 				if (current.isRunning) {
-					eventBridge.emit("FORCE_SIMULATION_UPDATE_PARAMETERS", {
+					emit({ eventType: "FORCE_SIMULATION_UPDATE_PARAMETERS", payload: {
 						config,
-					}, "worker");
+					}, target: "worker" });
 					logger.debug("graph", "Updating force parameters during animation", { config });
 				} else {
 					logger.debug("graph", "Animation not running, ignoring parameter update");
@@ -707,7 +691,7 @@ export function useBackgroundWorker(options: UseBackgroundWorkerOptions = {}) {
 		const requestId = `${nodeId}-${Date.now().toString()}-${Math.random().toString(36).substring(2, 11)}`;
 
 		// Send expansion request to worker
-		eventBridge.emit("DATA_FETCH_EXPAND_NODE", {
+		emit({ eventType: "DATA_FETCH_EXPAND_NODE", payload: {
 			expandRequest: {
 				id: requestId,
 				nodeId,
@@ -716,7 +700,7 @@ export function useBackgroundWorker(options: UseBackgroundWorkerOptions = {}) {
 				options,
 				expansionSettings
 			}
-		}, "worker");
+		}, target: "worker" });
 
 		logger.debug("graph", "Started node expansion via force worker", {
 			nodeId,
@@ -728,9 +712,9 @@ export function useBackgroundWorker(options: UseBackgroundWorkerOptions = {}) {
 
 	const cancelExpansion = useCallback((requestId: string) => {
 		if (workerRef.current && isWorkerReady) {
-			eventBridge.emit("DATA_FETCH_CANCEL_EXPANSION", {
+			emit({ eventType: "DATA_FETCH_CANCEL_EXPANSION", payload: {
 				requestId
-			}, "worker");
+			}, target: "worker" });
 			logger.debug("graph", "Cancelled node expansion", { requestId });
 		}
 	}, [isWorkerReady]);

@@ -83,16 +83,37 @@ export function useGraphData() {
 			return;
 		}
 
-		// Check if force worker is ready
+		// Check if force worker is ready, with retry logic
 		if (!forceWorker.isWorkerReady) {
-			logger.warn("graph", "Force worker not ready, falling back to service", { nodeId }, "useGraphData");
+			logger.warn("graph", "Force worker not ready initially, waiting for readiness", { nodeId }, "useGraphData");
 
-			// Fallback to service
-			store.setLoading(true);
-			try {
-				logger.warn("graph", "About to call service.expandNode", { nodeId, options }, "useGraphData");
-				await service.expandNode(nodeId, options);
-				logger.warn("graph", "service.expandNode completed", { nodeId }, "useGraphData");
+			// Wait a short time for state propagation and retry
+			let retryCount = 0;
+			const maxRetries = 10;
+			const retryDelay = 100; // 100ms
+
+			while (!forceWorker.isWorkerReady && retryCount < maxRetries) {
+				await new Promise(resolve => setTimeout(resolve, retryDelay));
+				retryCount++;
+				logger.warn("graph", "Retry checking worker readiness", {
+					nodeId,
+					retryCount,
+					isReady: forceWorker.isWorkerReady,
+					hasWorker: !!forceWorker.worker,
+					workerState: typeof forceWorker
+				}, "useGraphData");
+			}
+
+			// If still not ready after retries, fall back to service
+			if (!forceWorker.isWorkerReady) {
+				logger.warn("graph", "Force worker not ready after retries, falling back to service", { nodeId, retriesUsed: retryCount }, "useGraphData");
+
+				// Fallback to service
+				store.setLoading(true);
+				try {
+					logger.warn("graph", "About to call service.expandNode", { nodeId, options }, "useGraphData");
+					await service.expandNode(nodeId, options);
+					logger.warn("graph", "service.expandNode completed", { nodeId }, "useGraphData");
 
 				// Recalculate depths after expansion using first pinned node
 				const pinnedNodes = Object.keys(store.pinnedNodes);
@@ -113,9 +134,12 @@ export function useGraphData() {
 				store.setLoading(false);
 			}
 			return;
+		} else {
+			logger.debug("graph", "Worker became ready after retries", { nodeId, retriesUsed: retryCount }, "useGraphData");
 		}
+	}
 
-		// Get expansion settings for this entity type
+	// Get expansion settings for this entity type
 		const expansionSettingsStore = useExpansionSettingsStore.getState();
 		const expansionTarget = safeParseExpansionTarget(node.type);
 		if (!expansionTarget) {

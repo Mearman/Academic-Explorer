@@ -16,6 +16,7 @@ import {
 import { randomLcg } from "d3-random";
 import { eventBridge } from "@/lib/graph/events/event-bridge";
 import { WorkerEventType } from "@/lib/graph/events/types";
+import { logger } from "@/lib/logger";
 import { CustomForceManager } from "../lib/graph/custom-forces/manager";
 import type { EnhancedSimulationNode } from "../lib/graph/custom-forces/types";
 import { createUnifiedOpenAlexClient } from "@/lib/openalex/cached-client";
@@ -226,37 +227,37 @@ function isForceSimulationStartPayload(data: unknown): data is {
 	config?: AnimationConfig;
 	pinnedNodes?: Set<string>;
 } {
-	if (typeof data !== 'object' || data === null) return false;
-	if (!('nodes' in data) || !('links' in data)) return false;
-	// Direct property access after checking the property exists
-	const obj = data as Record<string, unknown>;
-	return Array.isArray(obj.nodes) && Array.isArray(obj.links);
+	if (typeof data !== "object" || data === null) return false;
+	if (!("nodes" in data) || !("links" in data)) return false;
+	// Type narrowing after property checks
+	const record = data as Record<string, unknown>;
+	return Array.isArray(record.nodes) && Array.isArray(record.links);
 }
 
 function isUpdateParametersPayload(data: unknown): data is { config: AnimationConfig } {
-	return typeof data === 'object' && data !== null && 'config' in data;
+	return typeof data === "object" && data !== null && "config" in data;
 }
 
 function isCustomForcesSyncPayload(data: unknown): data is { customForces: AddCustomForceData[] } {
-	if (typeof data !== 'object' || data === null) return false;
-	if (!('customForces' in data)) return false;
-	const obj = data as Record<string, unknown>;
-	return Array.isArray(obj.customForces);
+	if (typeof data !== "object" || data === null) return false;
+	if (!("customForces" in data)) return false;
+	const record = data as Record<string, unknown>;
+	return Array.isArray(record.customForces);
 }
 
 function isCustomForcePayload(data: unknown): data is { forceData: Record<string, unknown> } {
-	return typeof data === 'object' && data !== null && 'forceData' in data;
+	return typeof data === "object" && data !== null && "forceData" in data;
 }
 
 function isExpandNodePayload(data: unknown): data is { expandRequest: ExpandNodeRequest } {
-	return typeof data === 'object' && data !== null && 'expandRequest' in data;
+	return typeof data === "object" && data !== null && "expandRequest" in data;
 }
 
 function isCancelExpansionPayload(data: unknown): data is { requestId: string } {
-	if (typeof data !== 'object' || data === null) return false;
-	if (!('requestId' in data)) return false;
-	const obj = data as Record<string, unknown>;
-	return typeof obj.requestId === 'string';
+	if (typeof data !== "object" || data === null) return false;
+	if (!("requestId" in data)) return false;
+	const record = data as Record<string, unknown>;
+	return typeof record.requestId === "string";
 }
 
 // EventBridge message handlers - replaces self.onmessage
@@ -351,7 +352,7 @@ eventBridge.registerMessageHandler("CUSTOM_FORCE_UPDATE", (data) => {
 					workerId: "force-animation-worker",
 					workerType: "force-animation" as const,
 					error: `Failed to update custom force: ${error instanceof Error ? error.message : "Unknown error"}`,
-					forceId: forceData.id as string,
+					forceId: typeof forceData.id === "string" ? forceData.id : String(forceData.id),
 					timestamp: Date.now()
 				}, "main");
 			}
@@ -988,5 +989,18 @@ self.onerror = function(errorEvent) {
 		timestamp: Date.now()
 	}, "main");
 };
+
+// Emit WORKER_READY event to notify main thread that worker is initialized
+try {
+	logger.debug("worker", "About to emit WORKER_READY event");
+	eventBridge.emit(WorkerEventType.WORKER_READY, {
+		workerId: "force-animation-worker",
+		workerType: "force-animation" as const,
+		timestamp: Date.now()
+	}); // Remove "main" target to broadcast to all contexts
+	logger.debug("worker", "WORKER_READY event emitted successfully");
+} catch (error) {
+	logger.error("worker", "Failed to emit WORKER_READY event", { error });
+}
 
 

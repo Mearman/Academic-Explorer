@@ -1,5 +1,7 @@
 import { StrictMode } from "react"
 import { createRoot } from "react-dom/client"
+import { BackgroundWorkerProvider } from "@/contexts/BackgroundWorkerProvider"
+import { EventBridgeProvider } from "@/contexts/EventBridgeProvider"
 import { createRouter, RouterProvider, createHashHistory } from "@tanstack/react-router"
 import { TanStackDevtools } from "@tanstack/react-devtools"
 import { ReactQueryDevtoolsPanel } from "@tanstack/react-query-devtools"
@@ -122,15 +124,17 @@ if (!rootElement) {
 }
 
 createRoot(rootElement).render(
-	<StrictMode>
+	/* <StrictMode> - Temporarily disabled to debug multiple hook instances */
 		<GlobalErrorBoundary>
-			<MantineProvider
-				theme={theme}
-				defaultColorScheme="auto"
-			>
-				<Notifications />
-				<CacheInitializer>
-					<RouterProvider router={router} />
+			<EventBridgeProvider>
+				<BackgroundWorkerProvider>
+					<MantineProvider
+						theme={theme}
+						defaultColorScheme="auto"
+					>
+					<Notifications />
+					<CacheInitializer>
+						<RouterProvider router={router} />
 
 					{/* TanStack DevTools - unified panel for all tools */}
 					{import.meta.env.DEV && (
@@ -183,6 +187,8 @@ createRoot(rootElement).render(
 					highlightQuery
 				/>
 			</MantineProvider>
-		</GlobalErrorBoundary>
-	</StrictMode>,
+		</BackgroundWorkerProvider>
+	</EventBridgeProvider>
+	</GlobalErrorBoundary>
+	/* </StrictMode> - Temporarily disabled to debug multiple hook instances */
 )

@@ -12,6 +12,7 @@ interface WorkerSingleton {
   isInitializing: boolean;
   readyCallbacks: Set<() => void>;
   errorCallbacks: Set<(error: string) => void>;
+  stateChangeCallbacks: Set<(isReady: boolean) => void>;
 }
 
 const workerState: WorkerSingleton = {
@@ -20,6 +21,7 @@ const workerState: WorkerSingleton = {
   isInitializing: false,
   readyCallbacks: new Set(),
   errorCallbacks: new Set(),
+  stateChangeCallbacks: new Set(),
 };
 
 /**
@@ -83,10 +85,30 @@ export function getBackgroundWorker(): Promise<Worker> {
       workerState.readyCallbacks.add(onReady);
 
       // Listen for worker ready via EventBridge
-      // TODO: Set up EventBridge listener for WORKER_READY
+      const handleWorkerReady = (message: any) => {
+        console.log("[worker-singleton] EventBridge message received", {
+          eventType: message.eventType,
+          payload: message.payload,
+          fullMessage: message
+        });
+        if (message.eventType === "worker:ready" && message.payload?.workerType === "force-animation") {
+          console.log("[worker-singleton] Worker ready event received via EventBridge");
+          clearTimeout(fallbackTimeout);
+          onReady();
+          eventBridge.unregisterMessageHandler("worker-singleton-ready");
+        }
+      };
 
-      // For now, assume ready after a short delay
-      setTimeout(onReady, 100);
+      console.log("[worker-singleton] Registering EventBridge message handler for worker-singleton-ready");
+      eventBridge.registerMessageHandler("worker-singleton-ready", handleWorkerReady);
+      console.log("[worker-singleton] EventBridge message handler registered successfully");
+
+      // Fallback timeout in case EventBridge doesn't work
+      const fallbackTimeout = setTimeout(() => {
+        logger.warn("graph", "Worker ready event not received, using fallback timeout");
+        eventBridge.unregisterMessageHandler("worker-singleton-ready");
+        onReady();
+      }, 5000);
 
     } catch (error) {
       workerState.isInitializing = false;

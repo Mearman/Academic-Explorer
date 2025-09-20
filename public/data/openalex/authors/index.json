@@ -26,8 +26,8 @@
   },
   "https://api.openalex.org/authors/A999999998": {
     "$ref": "./https%3A%2F%2Fapi.openalex.org%2Fauthors%2FA999999998.json",
-    "lastModified": "2025-09-20T18:05:44.259Z",
-    "contentHash": "40d770198dc32ca0"
+    "lastModified": "2025-09-20T22:20:49.797Z",
+    "contentHash": "0000000045fc836f"
   },
   "https://api.openalex.org/authors/A999999995": {
     "$ref": "./https%3A%2F%2Fapi.openalex.org%2Fauthors%2FA999999995.json",

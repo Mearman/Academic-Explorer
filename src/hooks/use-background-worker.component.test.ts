@@ -41,7 +41,7 @@ vi.mock("@/lib/graph/events/event-bridge", () => ({
 		registerWorker: vi.fn(),
 		registerMessageHandler: vi.fn(),
 		unregisterMessageHandler: vi.fn(),
-		sendMessage: vi.fn(),
+		emit: vi.fn(),
 	},
 }));
 
@@ -232,7 +232,7 @@ describe("useBackgroundWorker", () => {
 
 		// Verify EventBridge was used to send start message
 		const { eventBridge } = await import("@/lib/graph/events/event-bridge");
-		expect(eventBridge.sendMessage).toHaveBeenCalledWith(
+		expect(eventBridge.emit).toHaveBeenCalledWith(
 			"FORCE_SIMULATION_START",
 			expect.objectContaining({
 				nodes,
