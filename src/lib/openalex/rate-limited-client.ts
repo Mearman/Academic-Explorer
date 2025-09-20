@@ -35,6 +35,8 @@ export class RateLimitedOpenAlexClient {
 	private readonly client: OpenAlexClient;
 	private lastRequestTime = 0;
 	private readonly minInterval: number;
+	private readonly requestQueue: Array<() => void> = [];
+	private isProcessingQueue = false;
 
 	constructor(options: OpenAlexClientOptions = {}) {
 		// Create underlying client with conservative settings
@@ -52,18 +54,42 @@ export class RateLimitedOpenAlexClient {
 	}
 
 	/**
-   * Simple rate limiting using time-based throttling
+   * Queue-based rate limiting to handle concurrent requests properly
    */
 	private async applyRateLimit(): Promise<void> {
-		const now = Date.now();
-		const timeSinceLastRequest = now - this.lastRequestTime;
+		return new Promise<void>((resolve) => {
+			this.requestQueue.push(resolve);
+			void this.processQueue();
+		});
+	}
 
-		if (timeSinceLastRequest < this.minInterval) {
-			const delay = this.minInterval - timeSinceLastRequest;
-			await new Promise(resolve => setTimeout(resolve, delay));
+	/**
+   * Process the request queue with proper timing
+   */
+	private async processQueue(): Promise<void> {
+		if (this.isProcessingQueue) {
+			return;
 		}
 
-		this.lastRequestTime = Date.now();
+		this.isProcessingQueue = true;
+
+		while (this.requestQueue.length > 0) {
+			const now = Date.now();
+			const timeSinceLastRequest = now - this.lastRequestTime;
+
+			if (timeSinceLastRequest < this.minInterval) {
+				const delay = this.minInterval - timeSinceLastRequest;
+				await new Promise(resolve => setTimeout(resolve, delay));
+			}
+
+			this.lastRequestTime = Date.now();
+
+			// Release the next request
+			const resolve = this.requestQueue.shift();
+			resolve?.();
+		}
+
+		this.isProcessingQueue = false;
 	}
 
 	/**
