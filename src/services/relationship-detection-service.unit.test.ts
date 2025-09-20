@@ -161,7 +161,7 @@ describe("RelationshipDetectionService", () => {
 
 			const existingNodes: GraphNode[] = [
 				{
-					id: "W456",
+					id: "https://openalex.org/W456",
 					type: "works" as EntityType,
 					label: "Referenced Work",
 					entityId: "https://openalex.org/W456",
@@ -175,10 +175,56 @@ describe("RelationshipDetectionService", () => {
 			expect(result).toHaveLength(1);
 			expect(result[0]).toEqual({
 				sourceNodeId: "https://openalex.org/W123",
-				targetNodeId: "https://openalex.org/W456",
+				targetNodeId: "https://openalex.org/W456", // Use actual node ID (full URL format)
 				relationType: RelationType.REFERENCES,
 				label: "references"
 			});
+		});
+
+		it("should handle citation relationships correctly (real-world scenario)", () => {
+			// This test replicates the real-world scenario: both referenced_works and graph nodes use full URL format
+			const workData = {
+				id: "https://openalex.org/W3188841554",
+				entityType: "works" as EntityType,
+				display_name: "Attention Is All You Need",
+				referenced_works: [
+					"https://openalex.org/W2250748100", // Full URL format
+					"https://openalex.org/W3200026003"  // Full URL format
+				]
+			};
+
+			const existingNodes: GraphNode[] = [
+				{
+					id: "https://openalex.org/W2250748100", // Full URL format (real graph node format)
+					type: "works" as EntityType,
+					label: "Referenced Work 1",
+					entityId: "https://openalex.org/W2250748100", // Full URL in entityId
+					position: { x: 0, y: 0 },
+					externalIds: []
+				},
+				{
+					id: "https://openalex.org/W3200026003", // Full URL format (real graph node format)
+					type: "works" as EntityType,
+					label: "Referenced Work 2",
+					entityId: "https://openalex.org/W3200026003", // Full URL in entityId
+					position: { x: 0, y: 0 },
+					externalIds: []
+				}
+			];
+
+			const result = (service as any).analyzeWorkRelationships(workData, existingNodes);
+
+			expect(result).toHaveLength(2);
+			expect(result.every(r => r.relationType === RelationType.REFERENCES)).toBe(true);
+			// targetNodeId should be the actual node ID (full URL format)
+			expect(result.map(r => r.targetNodeId)).toEqual([
+				"https://openalex.org/W2250748100", // Full URL (node.id)
+				"https://openalex.org/W3200026003"  // Full URL (node.id)
+			]);
+			expect(result.map(r => r.sourceNodeId)).toEqual([
+				"https://openalex.org/W3188841554",
+				"https://openalex.org/W3188841554"
+			]);
 		});
 	});
 
@@ -484,8 +530,8 @@ describe("RelationshipDetectionService", () => {
 			expect(result).toHaveLength(2);
 			expect(result.every(r => r.relationType === RelationType.REFERENCES)).toBe(true);
 			expect(result.map(r => r.targetNodeId)).toEqual([
-				"https://openalex.org/W456",
-				"https://openalex.org/W789"
+				"W456", // FIXED: Use actual node IDs
+				"W789"  // FIXED: Use actual node IDs
 			]);
 		});
 

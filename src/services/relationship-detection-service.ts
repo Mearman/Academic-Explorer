@@ -120,10 +120,42 @@ export class RelationshipDetectionService {
 	 */
 	async detectRelationshipsForNode(nodeId: string): Promise<GraphEdge[]> {
 		const store = useGraphStore.getState();
-		const newNode = store.getNode(nodeId);
+
+		// Try to find the node using the provided nodeId, and also try normalizing it
+		let newNode = store.getNode(nodeId);
+
+		// If not found and nodeId is a full URL, try extracting just the ID part
+		if (!newNode && nodeId.includes("openalex.org/")) {
+			const shortId = nodeId.split("/").pop();
+			if (shortId) {
+				newNode = store.getNode(shortId);
+				logger.debug("graph", "Node lookup with normalized ID", {
+					originalNodeId: nodeId,
+					normalizedNodeId: shortId,
+					found: !!newNode
+				}, "RelationshipDetectionService");
+			}
+		}
+
+		// If still not found, try checking entityId field
+		if (!newNode) {
+			const allNodes = Object.values(store.nodes).filter(node => node != null);
+			newNode = allNodes.find(node => node.entityId === nodeId || node.id === nodeId);
+
+			if (newNode) {
+				logger.debug("graph", "Node found via entityId lookup", {
+					searchNodeId: nodeId,
+					foundNodeId: newNode.id,
+					foundEntityId: newNode.entityId
+				}, "RelationshipDetectionService");
+			}
+		}
 
 		if (!newNode) {
-			logger.warn("graph", "Node not found for relationship detection", { nodeId }, "RelationshipDetectionService");
+			logger.warn("graph", "Node not found for relationship detection", {
+				nodeId,
+				availableNodeCount: Object.keys(store.nodes).length
+			}, "RelationshipDetectionService");
 			return [];
 		}
 
@@ -360,17 +392,39 @@ export class RelationshipDetectionService {
 
 		// Check for citation relationships
 		if (workData.referenced_works) {
+			logger.debug("graph", "Analyzing citation relationships", {
+				workId: workData.id,
+				referencedWorksCount: workData.referenced_works.length,
+				existingNodesCount: existingNodes.length,
+				sampleReferencedWorks: workData.referenced_works.slice(0, 3)
+			}, "RelationshipDetectionService");
+
 			for (const referencedWorkId of workData.referenced_works) {
+				// Both referenced_works and node IDs use full URL format, so direct comparison should work
 				const referencedNode = existingNodes.find(node =>
 					node.entityId === referencedWorkId || node.id === referencedWorkId
 				);
+
 				if (referencedNode) {
+					logger.debug("graph", "Found citation relationship", {
+						sourceWork: workData.id,
+						targetWork: referencedWorkId,
+						targetNode: referencedNode.id,
+						relationshipType: RelationType.REFERENCES
+					}, "RelationshipDetectionService");
+
 					relationships.push({
 						sourceNodeId: workData.id,
-						targetNodeId: referencedWorkId,
+						targetNodeId: referencedNode.id, // Use the actual node ID, not the reference ID
 						relationType: RelationType.REFERENCES,
 						label: "references"
 					});
+				} else {
+					logger.debug("graph", "No matching node found for citation", {
+						sourceWork: workData.id,
+						referencedWorkId,
+						existingNodeIds: existingNodes.slice(0, 5).map(n => ({ id: n.id, entityId: n.entityId }))
+					}, "RelationshipDetectionService");
 				}
 			}
 		}
