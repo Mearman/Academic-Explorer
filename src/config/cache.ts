@@ -26,35 +26,35 @@ export const CACHE_CONFIG = {
  * GC time: How long to keep data in cache after last access
  */
 export const ENTITY_CACHE_TIMES = {
-	work: {
+	works: {
 		stale: 1000 * 60 * 60 * 24,       // 1 day - works rarely change after publication
 		gc: 1000 * 60 * 60 * 24 * 7,      // 7 days - keep for a week
 	},
-	author: {
+	authors: {
 		stale: 1000 * 60 * 60 * 12,       // 12 hours - author info updates moderately
 		gc: 1000 * 60 * 60 * 24 * 3,      // 3 days - keep for 3 days
 	},
-	source: {
+	sources: {
 		stale: 1000 * 60 * 60 * 24 * 7,   // 7 days - journals/sources very stable
 		gc: 1000 * 60 * 60 * 24 * 30,     // 30 days - keep for a month
 	},
-	institution: {
+	institutions: {
 		stale: 1000 * 60 * 60 * 24 * 30,  // 30 days - institutions very stable
 		gc: 1000 * 60 * 60 * 24 * 90,     // 90 days - keep for 3 months
 	},
-	topic: {
+	topics: {
 		stale: 1000 * 60 * 60 * 24 * 7,   // 7 days - topics fairly stable
 		gc: 1000 * 60 * 60 * 24 * 30,     // 30 days - keep for a month
 	},
-	publisher: {
+	publishers: {
 		stale: 1000 * 60 * 60 * 24 * 30,  // 30 days - publishers very stable
 		gc: 1000 * 60 * 60 * 24 * 90,     // 90 days - keep for 3 months
 	},
-	funder: {
+	funders: {
 		stale: 1000 * 60 * 60 * 24 * 30,  // 30 days - funders very stable
 		gc: 1000 * 60 * 60 * 24 * 90,     // 90 days - keep for 3 months
 	},
-	keyword: {
+	keywords: {
 		stale: 1000 * 60 * 60 * 24 * 7,   // 7 days - keywords fairly stable
 		gc: 1000 * 60 * 60 * 24 * 30,     // 30 days - keep for a month
 	},
