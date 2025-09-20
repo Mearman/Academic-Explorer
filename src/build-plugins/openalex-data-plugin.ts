@@ -780,7 +780,8 @@ async function reformatExistingFiles(dataPath: string, entityType: string): Prom
  */
 function urlToEncodedKey(url: string): string {
   return encodeURIComponent(url)
-    .replace(/\./g, "%2E")  // Ensure dots are encoded for safety
+    // Remove extra dot encoding - encodeURIComponent already handles URL safety
+    // .replace(/\./g, "%2E")  // Don't double-encode dots
     .replace(/!/g, "%21")   // Encode exclamation marks
     .replace(/'/g, "%27")   // Encode single quotes
     .replace(/\(/g, "%28") // Encode parentheses
