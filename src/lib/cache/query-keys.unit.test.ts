@@ -366,39 +366,39 @@ describe("Query Keys Factory", () => {
 
 describe("Entity Query Key Helper", () => {
 	describe("getEntityQueryKey", () => {
-		it("should return work query key", () => {
+		it("should return works query key", () => {
 			const workId = "W123456789";
-			expect(getEntityQueryKey("work", workId)).toEqual(["openalex", "works", workId]);
+			expect(getEntityQueryKey("works", workId)).toEqual(["openalex", "works", workId]);
 		});
 
-		it("should return author query key", () => {
+		it("should return authors query key", () => {
 			const authorId = "A123456789";
-			expect(getEntityQueryKey("author", authorId)).toEqual(["openalex", "authors", authorId]);
+			expect(getEntityQueryKey("authors", authorId)).toEqual(["openalex", "authors", authorId]);
 		});
 
-		it("should return source query key", () => {
+		it("should return sources query key", () => {
 			const sourceId = "S123456789";
-			expect(getEntityQueryKey("source", sourceId)).toEqual(["openalex", "sources", sourceId]);
+			expect(getEntityQueryKey("sources", sourceId)).toEqual(["openalex", "sources", sourceId]);
 		});
 
-		it("should return institution query key", () => {
+		it("should return institutions query key", () => {
 			const institutionId = "I123456789";
-			expect(getEntityQueryKey("institution", institutionId)).toEqual(["openalex", "institutions", institutionId]);
+			expect(getEntityQueryKey("institutions", institutionId)).toEqual(["openalex", "institutions", institutionId]);
 		});
 
-		it("should return topic query key", () => {
+		it("should return topics query key", () => {
 			const topicId = "T123456789";
-			expect(getEntityQueryKey("topic", topicId)).toEqual(["openalex", "topics", topicId]);
+			expect(getEntityQueryKey("topics", topicId)).toEqual(["openalex", "topics", topicId]);
 		});
 
-		it("should return publisher query key", () => {
+		it("should return publishers query key", () => {
 			const publisherId = "P123456789";
-			expect(getEntityQueryKey("publisher", publisherId)).toEqual(["openalex", "publishers", publisherId]);
+			expect(getEntityQueryKey("publishers", publisherId)).toEqual(["openalex", "publishers", publisherId]);
 		});
 
-		it("should return funder query key", () => {
+		it("should return funders query key", () => {
 			const funderId = "F123456789";
-			expect(getEntityQueryKey("funder", funderId)).toEqual(["openalex", "funders", funderId]);
+			expect(getEntityQueryKey("funders", funderId)).toEqual(["openalex", "funders", funderId]);
 		});
 
 		it("should throw error for unknown entity type", () => {
@@ -409,9 +409,9 @@ describe("Entity Query Key Helper", () => {
 
 describe("Related Entity Query Keys Helper", () => {
 	describe("getRelatedEntityQueryKeys", () => {
-		it("should return work related query keys", () => {
+		it("should return works related query keys", () => {
 			const workId = "W123456789";
-			const result = getRelatedEntityQueryKeys("work", workId);
+			const result = getRelatedEntityQueryKeys("works", workId);
 
 			expect(result).toEqual({
 				citations: ["openalex", "works", workId, "citations", undefined],
@@ -420,9 +420,9 @@ describe("Related Entity Query Keys Helper", () => {
 			});
 		});
 
-		it("should return author related query keys", () => {
+		it("should return authors related query keys", () => {
 			const authorId = "A123456789";
-			const result = getRelatedEntityQueryKeys("author", authorId);
+			const result = getRelatedEntityQueryKeys("authors", authorId);
 
 			expect(result).toEqual({
 				works: ["openalex", "authors", authorId, "works", undefined],
@@ -431,9 +431,9 @@ describe("Related Entity Query Keys Helper", () => {
 			});
 		});
 
-		it("should return source related query keys", () => {
+		it("should return sources related query keys", () => {
 			const sourceId = "S123456789";
-			const result = getRelatedEntityQueryKeys("source", sourceId);
+			const result = getRelatedEntityQueryKeys("sources", sourceId);
 
 			expect(result).toEqual({
 				works: ["openalex", "sources", sourceId, "works", undefined],
@@ -441,9 +441,9 @@ describe("Related Entity Query Keys Helper", () => {
 			});
 		});
 
-		it("should return institution related query keys", () => {
+		it("should return institutions related query keys", () => {
 			const institutionId = "I123456789";
-			const result = getRelatedEntityQueryKeys("institution", institutionId);
+			const result = getRelatedEntityQueryKeys("institutions", institutionId);
 
 			expect(result).toEqual({
 				works: ["openalex", "institutions", institutionId, "works", undefined],
@@ -451,9 +451,9 @@ describe("Related Entity Query Keys Helper", () => {
 			});
 		});
 
-		it("should return topic related query keys", () => {
+		it("should return topics related query keys", () => {
 			const topicId = "T123456789";
-			const result = getRelatedEntityQueryKeys("topic", topicId);
+			const result = getRelatedEntityQueryKeys("topics", topicId);
 
 			expect(result).toEqual({
 				works: ["openalex", "topics", topicId, "works", undefined],
@@ -461,8 +461,8 @@ describe("Related Entity Query Keys Helper", () => {
 		});
 
 		it("should return empty object for unsupported entity types", () => {
-			expect(getRelatedEntityQueryKeys("publisher", "P123456789")).toEqual({});
-			expect(getRelatedEntityQueryKeys("funder", "F123456789")).toEqual({});
+			expect(getRelatedEntityQueryKeys("publishers", "P123456789")).toEqual({});
+			expect(getRelatedEntityQueryKeys("funders", "F123456789")).toEqual({});
 		});
 
 		it("should return empty object for unknown entity type", () => {

@@ -88,22 +88,29 @@ export const queryKeys = {
  */
 export function getEntityQueryKey(entityType: EntityType, id: string) {
 	switch (entityType) {
-		case "work":
+		case "works":
 			return queryKeys.work(id);
-		case "author":
+		case "authors":
 			return queryKeys.author(id);
-		case "source":
+		case "sources":
 			return queryKeys.source(id);
-		case "institution":
+		case "institutions":
 			return queryKeys.institution(id);
-		case "topic":
+		case "topics":
 			return queryKeys.topic(id);
-		case "publisher":
+		case "publishers":
 			return queryKeys.publisher(id);
-		case "funder":
+		case "funders":
 			return queryKeys.funder(id);
+		case "keywords":
+		case "concepts":
+		case "search":
+		case "related":
+			// These don't have specific individual entity query keys
+			return [...queryKeys.all, entityType, id] as const;
 		default:
-			throw new Error(`Unknown entity type: ${entityType}`);
+			// This should never happen due to TypeScript exhaustiveness checking
+			throw new Error(`Unknown entity type: ${String(entityType)}`);
 	}
 }
 
@@ -112,29 +119,29 @@ export function getEntityQueryKey(entityType: EntityType, id: string) {
  */
 export function getRelatedEntityQueryKeys(entityType: EntityType, id: string) {
 	switch (entityType) {
-		case "work":
+		case "works":
 			return {
 				citations: queryKeys.workCitations(id),
 				references: queryKeys.workReferences(id),
 				related: queryKeys.workRelated(id),
 			};
-		case "author":
+		case "authors":
 			return {
 				works: queryKeys.authorWorks(id),
 				coauthors: queryKeys.authorCoauthors(id),
 				institutions: queryKeys.authorInstitutions(id),
 			};
-		case "source":
+		case "sources":
 			return {
 				works: queryKeys.sourceWorks(id),
 				authors: queryKeys.sourceAuthors(id),
 			};
-		case "institution":
+		case "institutions":
 			return {
 				works: queryKeys.institutionWorks(id),
 				authors: queryKeys.institutionAuthors(id),
 			};
-		case "topic":
+		case "topics":
 			return {
 				works: queryKeys.topicWorks(id),
 			};
