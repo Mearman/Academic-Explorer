@@ -16,6 +16,24 @@ import type {
 	ExpandNodePayload,
 } from "@/workers/data-fetching.worker";
 
+// Type for direct worker messages
+interface WorkerDirectMessage {
+	type: "ready" | "error";
+	workerId: string;
+	error?: string;
+	timestamp?: number;
+}
+
+// Type guard for worker direct messages
+function isWorkerDirectMessage(data: unknown): data is WorkerDirectMessage {
+	return (
+		typeof data === "object" &&
+		data !== null &&
+		"type" in data &&
+		"workerId" in data
+	);
+}
+
 // Hook for data fetching worker functionality
 
 // Hook options
@@ -227,7 +245,30 @@ export function useDataFetchingWorker(options: UseDataFetchingWorkerOptions = {}
 				{ type: "module" }
 			);
 
-			// Add error listener with stable handler
+			// Add direct message listener for worker ready/error signals
+			const directMessageHandler = (event: MessageEvent) => {
+				if (!isWorkerDirectMessage(event.data)) {
+					return;
+				}
+				const data = event.data;
+
+				if (data.workerId === "data-fetching-worker") {
+					switch (data.type) {
+						case "ready":
+							logger.debug("graph", "Data fetching worker ready via direct message");
+							setIsWorkerReady(true);
+							setWorkerReady(true);
+							break;
+						case "error":
+							logger.error("graph", "Data fetching worker error via direct message", { error: data.error });
+							setIsWorkerReady(false);
+							setWorkerReady(false);
+							break;
+					}
+				}
+			};
+
+			workerRef.current.addEventListener("message", directMessageHandler);
 			workerRef.current.addEventListener("error", stableErrorHandler);
 
 			// Register worker with event bridge for cross-context communication
@@ -253,7 +294,7 @@ export function useDataFetchingWorker(options: UseDataFetchingWorkerOptions = {}
 				setWorkerReady(false);
 			}
 		};
-	}, []); // No dependencies - initialize once only
+	}, [clearAll, setWorkerReady]);
 
 	// Register EventBridge listeners for cross-context communication
 	useEffect(() => {
