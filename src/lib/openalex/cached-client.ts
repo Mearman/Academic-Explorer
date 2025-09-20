@@ -176,7 +176,7 @@ export class CachedOpenAlexClient extends OpenAlexBaseClient {
           entityId: id,
           fields: requestedFields
         });
-        return cachedData as T;
+        return cachedData;
       }
 
       // Determine missing fields for surgical request
@@ -207,7 +207,7 @@ export class CachedOpenAlexClient extends OpenAlexBaseClient {
       // Combine cached and API data
       const combinedData = { ...cachedData, ...apiData };
 
-      return combinedData as T;
+      return combinedData;
 
     } catch (error) {
       logError('Cached getById failed, falling back to direct API', error, 'CachedOpenAlexClient', 'cache');
