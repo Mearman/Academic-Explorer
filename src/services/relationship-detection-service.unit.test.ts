@@ -530,8 +530,8 @@ describe("RelationshipDetectionService", () => {
 			expect(result).toHaveLength(2);
 			expect(result.every(r => r.relationType === RelationType.REFERENCES)).toBe(true);
 			expect(result.map(r => r.targetNodeId)).toEqual([
-				"W456", // FIXED: Use actual node IDs
-				"W789"  // FIXED: Use actual node IDs
+				"https://openalex.org/W456", // Use entity IDs as per the fixed pattern
+				"https://openalex.org/W789"  // Use entity IDs as per the fixed pattern
 			]);
 		});
 

@@ -175,7 +175,7 @@ const createMockInstitution = (id: string, parentIds: string[] = []): Institutio
 
 // Helper to create test graph nodes matching the actual GraphNode interface
 const createTestNode = (entityId: string, type: EntityType, entity: any): GraphNode => ({
-	id: `node-${entityId}`,
+	id: entityId, // Use same ID pattern as production
 	entityId,
 	type,
 	label: entity.display_name,
