@@ -56,8 +56,16 @@ export class EventBridge {
     worker.addEventListener("message", (event) => {
       // Type guard for message data
       const eventData: unknown = event.data;
+
+      // Only process messages that look like EventBridge messages
+      // Silently ignore other messages (e.g., direct worker messages)
       if (!this.isValidCrossContextMessage(eventData)) {
-        logger.warn("general", "Invalid cross-context message received", { data: eventData });
+        // Log the actual message to debug what's being sent
+        if (eventData && typeof eventData === "object" && "type" in eventData) {
+          logger.debug("general", "Direct worker message received from main thread", { type: eventData.type });
+        } else {
+          logger.debug("general", "Unknown message format received from main thread", { data: eventData });
+        }
         return;
       }
 
@@ -169,8 +177,16 @@ export class EventBridge {
       addEventListener("message", (event) => {
         // Type guard for message data
         const eventData: unknown = event.data;
+
+        // Only process messages that look like EventBridge messages
+        // Silently ignore other messages (e.g., direct worker messages)
         if (!this.isValidCrossContextMessage(eventData)) {
-          logger.warn("general", "Invalid cross-context message received in worker", { data: eventData });
+          // Log the actual message to debug what's flooding the worker
+          if (eventData && typeof eventData === "object" && "type" in eventData) {
+            logger.debug("general", "Direct worker message received", { type: eventData.type });
+          } else {
+            logger.debug("general", "Unknown message format received", { data: eventData });
+          }
           return;
         }
 
