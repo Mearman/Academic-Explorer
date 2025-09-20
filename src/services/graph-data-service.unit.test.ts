@@ -21,8 +21,8 @@ import type {
 } from "@/lib/openalex/types";
 
 // Mock dependencies
-vi.mock("@/lib/openalex/rate-limited-client", () => ({
-	rateLimitedOpenAlex: {
+vi.mock("@/lib/openalex/cached-client", () => ({
+	cachedOpenAlex: {
 		getEntity: vi.fn(),
 		search: vi.fn(),
 		searchAll: vi.fn(),
@@ -69,7 +69,7 @@ vi.mock("./relationship-detection-service", () => ({
 }));
 
 // Import mocked modules
-import { rateLimitedOpenAlex } from "@/lib/openalex/rate-limited-client";
+import { cachedOpenAlex } from "@/lib/openalex/cached-client";
 import { logger, logError } from "@/lib/logger";
 import {
 	getCachedOpenAlexEntities,
@@ -295,7 +295,7 @@ describe("GraphDataService", () => {
 
 
 		// Setup getEntity mock to return appropriate mock data based on ID
-		vi.mocked(rateLimitedOpenAlex.getEntity).mockImplementation((id: string) => {
+		vi.mocked(cachedOpenAlex.getEntity).mockImplementation((id: string) => {
 			// Handle both direct IDs and full URLs
 			const entityId = id.startsWith("https://openalex.org/") ? id.replace("https://openalex.org/", "") : id;
 
@@ -349,7 +349,7 @@ describe("GraphDataService", () => {
 					mockFn.mockClear();
 				}
 			});
-			vi.mocked(rateLimitedOpenAlex.getEntity).mockClear();
+			vi.mocked(cachedOpenAlex.getEntity).mockClear();
 			mockDeduplicationService.getEntity.mockClear();
 			vi.mocked(logError).mockClear();
 
@@ -437,7 +437,7 @@ describe("GraphDataService", () => {
 	describe("loadEntityIntoGraph", () => {
 		beforeEach(() => {
 			// Clear API call history from previous tests
-			vi.mocked(rateLimitedOpenAlex.getEntity).mockClear();
+			vi.mocked(cachedOpenAlex.getEntity).mockClear();
 			mockDeduplicationService.getEntity.mockClear();
 
 			mockDetector.detectEntityIdentifier.mockReturnValue({
@@ -462,7 +462,7 @@ describe("GraphDataService", () => {
 			await service.loadEntityIntoGraph("A123456789");
 
 			expect(mockStore.selectNode).toHaveBeenCalledWith("node-1");
-			expect(rateLimitedOpenAlex.getEntity).not.toHaveBeenCalled();
+			expect(cachedOpenAlex.getEntity).not.toHaveBeenCalled();
 		});
 
 		it("should load new entity if not exists", async () => {
@@ -561,7 +561,7 @@ describe("GraphDataService", () => {
 
 		beforeEach(() => {
 			// Clear API call history from previous tests
-			vi.mocked(rateLimitedOpenAlex.getEntity).mockClear();
+			vi.mocked(cachedOpenAlex.getEntity).mockClear();
 
 			mockStore.nodes = {
 				[nodeId]: {
@@ -581,7 +581,7 @@ describe("GraphDataService", () => {
 			await service.expandNode(nodeId);
 
 			expect(isNodeExpanded).toHaveBeenCalledWith(queryClient, nodeId);
-			expect(rateLimitedOpenAlex.getEntity).not.toHaveBeenCalled();
+			expect(cachedOpenAlex.getEntity).not.toHaveBeenCalled();
 		});
 
 		it("should expand node when forced", async () => {
@@ -589,7 +589,7 @@ describe("GraphDataService", () => {
 			vi.mocked(EntityFactory.isSupported).mockReturnValue(true);
 
 			// Clear API mock calls for clean test state
-			vi.mocked(rateLimitedOpenAlex.getEntity).mockClear();
+			vi.mocked(cachedOpenAlex.getEntity).mockClear();
 
 			// Mock the entity.expand method to simulate successful expansion
 			const mockExpand = vi.fn().mockResolvedValue({
@@ -633,7 +633,7 @@ describe("GraphDataService", () => {
 
 			await service.expandNode("nonexistent");
 
-			expect(rateLimitedOpenAlex.getEntity).not.toHaveBeenCalled();
+			expect(cachedOpenAlex.getEntity).not.toHaveBeenCalled();
 		});
 
 		it("should handle unsupported entity types", async () => {
@@ -641,7 +641,7 @@ describe("GraphDataService", () => {
 
 			await service.expandNode(nodeId);
 
-			expect(rateLimitedOpenAlex.getEntity).not.toHaveBeenCalled();
+			expect(cachedOpenAlex.getEntity).not.toHaveBeenCalled();
 		});
 
 		it("should handle expansion errors", async () => {
@@ -684,8 +684,8 @@ describe("GraphDataService", () => {
 
 		beforeEach(() => {
 			// Clear API call history from previous tests
-			vi.mocked(rateLimitedOpenAlex.getEntity).mockClear();
-			vi.mocked(rateLimitedOpenAlex.searchAll).mockClear();
+			vi.mocked(cachedOpenAlex.getEntity).mockClear();
+			vi.mocked(cachedOpenAlex.searchAll).mockClear();
 
 			// Clear store mock call history
 			Object.values(mockStore).forEach((mockFn) => {
@@ -700,7 +700,7 @@ describe("GraphDataService", () => {
 				normalizedId: id,
 			}));
 
-			vi.mocked(rateLimitedOpenAlex.searchAll).mockResolvedValue({
+			vi.mocked(cachedOpenAlex.searchAll).mockResolvedValue({
 				works: [mockWorkEntity],
 				authors: [],
 				sources: [],
@@ -718,7 +718,7 @@ describe("GraphDataService", () => {
 			await service.searchAndVisualize(searchQuery, searchOptions);
 
 			expect(mockStore.setLoading).toHaveBeenCalledWith(true);
-			expect(rateLimitedOpenAlex.searchAll).toHaveBeenCalledWith(
+			expect(cachedOpenAlex.searchAll).toHaveBeenCalledWith(
 				searchQuery,
 				expect.objectContaining(searchOptions)
 			);
@@ -730,7 +730,7 @@ describe("GraphDataService", () => {
 
 		it("should handle search errors", async () => {
 			const searchError = new Error("Search failed");
-			vi.mocked(rateLimitedOpenAlex.searchAll).mockRejectedValue(searchError);
+			vi.mocked(cachedOpenAlex.searchAll).mockRejectedValue(searchError);
 
 			await service.searchAndVisualize(searchQuery, searchOptions);
 
@@ -747,7 +747,7 @@ describe("GraphDataService", () => {
 		it("should use default options when none provided", async () => {
 			await service.searchAndVisualize(searchQuery, {});
 
-			expect(rateLimitedOpenAlex.searchAll).toHaveBeenCalledWith(
+			expect(cachedOpenAlex.searchAll).toHaveBeenCalledWith(
 				searchQuery,
 				expect.objectContaining({
 					entityTypes: undefined,
@@ -1088,7 +1088,7 @@ describe("GraphDataService", () => {
 			});
 
 			it("should transform search results with minimal connections", async () => {
-				vi.mocked(rateLimitedOpenAlex.searchAll).mockResolvedValue({
+				vi.mocked(cachedOpenAlex.searchAll).mockResolvedValue({
 					works: [mockWorkEntity],
 					authors: [mockAuthorEntity],
 					sources: [],
@@ -1122,7 +1122,7 @@ describe("GraphDataService", () => {
 	describe("error handling", () => {
 		beforeEach(() => {
 			// Clear API call history from previous tests
-			vi.mocked(rateLimitedOpenAlex.getEntity).mockClear();
+			vi.mocked(cachedOpenAlex.getEntity).mockClear();
 
 			// Clear store mock call history
 			Object.values(mockStore).forEach((mockFn) => {
@@ -1218,8 +1218,8 @@ describe("GraphDataService", () => {
 	describe("integration scenarios", () => {
 		beforeEach(() => {
 			// Clear API call history from previous tests
-			vi.mocked(rateLimitedOpenAlex.getEntity).mockClear();
-			vi.mocked(rateLimitedOpenAlex.searchAll).mockClear();
+			vi.mocked(cachedOpenAlex.getEntity).mockClear();
+			vi.mocked(cachedOpenAlex.searchAll).mockClear();
 
 			// Clear store mock call history
 			Object.values(mockStore).forEach((mockFn) => {
@@ -1365,7 +1365,7 @@ describe("GraphDataService", () => {
 				display_name: `Work ${i}`,
 			}));
 
-			vi.mocked(rateLimitedOpenAlex.searchAll).mockResolvedValue({
+			vi.mocked(cachedOpenAlex.searchAll).mockResolvedValue({
 				works: largeResultSet,
 				authors: [],
 				sources: [],
@@ -1478,7 +1478,7 @@ describe("GraphDataService", () => {
 		describe("rate limiting and API errors", () => {
 			it("should handle 429 rate limit errors", async () => {
 				const rateLimitError = new Error("429 TOO MANY REQUESTS");
-				vi.mocked(rateLimitedOpenAlex.getEntity).mockRejectedValue(rateLimitError);
+				vi.mocked(cachedOpenAlex.getEntity).mockRejectedValue(rateLimitError);
 
 				try {
 					await service.hydrateNodeToFull("https://openalex.org/I2799442855");
@@ -1489,7 +1489,7 @@ describe("GraphDataService", () => {
 
 			it("should handle network errors gracefully", async () => {
 				const networkError = new Error("Network error");
-				vi.mocked(rateLimitedOpenAlex.getEntity).mockRejectedValue(networkError);
+				vi.mocked(cachedOpenAlex.getEntity).mockRejectedValue(networkError);
 
 				try {
 					await service.loadEntityIntoGraph("A5025875274", "authors");

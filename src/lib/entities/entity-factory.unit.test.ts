@@ -7,7 +7,7 @@ import { describe, it, expect, beforeEach, vi } from "vitest";
 import { EntityFactory } from "./entity-factory";
 import { WorkEntity } from "./work-entity";
 import { AuthorEntity } from "./author-entity";
-import type { RateLimitedOpenAlexClient } from "@/lib/openalex/rate-limited-client";
+import type { CachedOpenAlexClient } from "@/lib/openalex/cached-client";
 import type { Work, Author } from "@/lib/openalex/types";
 import type { EntityType } from "@/lib/graph/types";
 
@@ -21,7 +21,7 @@ vi.mock("./entity-detection", () => ({
 const { detectEntityType } = await import("./entity-detection");
 
 describe("EntityFactory", () => {
-	let mockClient: RateLimitedOpenAlexClient;
+	let mockClient: CachedOpenAlexClient;
 
 	beforeEach(() => {
 		mockClient = {
@@ -33,7 +33,7 @@ describe("EntityFactory", () => {
 			publishers: vi.fn(),
 			funders: vi.fn(),
 			keywords: vi.fn()
-		} as unknown as RateLimitedOpenAlexClient;
+		} as unknown as CachedOpenAlexClient;
 
 		vi.clearAllMocks();
 	});
@@ -335,7 +335,7 @@ describe("EntityFactory", () => {
 	describe("register", () => {
 		// Create a mock entity class for testing
 		class MockEntity {
-			constructor(public client: RateLimitedOpenAlexClient, public entityData?: any) {}
+			constructor(public client: CachedOpenAlexClient, public entityData?: any) {}
 		}
 
 		beforeEach(() => {
@@ -377,7 +377,7 @@ describe("EntityFactory", () => {
 
 		it("should override existing registration", () => {
 			class OverrideEntity {
-				constructor(public client: RateLimitedOpenAlexClient, public entityData?: any) {}
+				constructor(public client: CachedOpenAlexClient, public entityData?: any) {}
 			}
 
 			EntityFactory.register("works", OverrideEntity as any);

@@ -5,7 +5,7 @@
 
 import { describe, it, expect, beforeEach, vi } from "vitest";
 import { AuthorEntity } from "./author-entity";
-import type { RateLimitedOpenAlexClient } from "@/lib/openalex/rate-limited-client";
+import type { CachedOpenAlexClient } from "@/lib/openalex/cached-client";
 import type { Author, Work, OpenAlexResponse } from "@/lib/openalex/types";
 import { logger } from "@/lib/logger";
 
@@ -21,7 +21,7 @@ vi.mock("@/lib/logger", () => ({
 }));
 
 describe("AuthorEntity", () => {
-	let mockClient: vi.Mocked<RateLimitedOpenAlexClient>;
+	let mockClient: vi.Mocked<CachedOpenAlexClient>;
 	let authorEntity: AuthorEntity;
 
 	beforeEach(() => {
@@ -82,7 +82,7 @@ describe("AuthorEntity", () => {
 				getMultiple: vi.fn(),
 				stream: vi.fn()
 			}
-		} as vi.Mocked<RateLimitedOpenAlexClient>;
+		} as vi.Mocked<CachedOpenAlexClient>;
 
 		authorEntity = new AuthorEntity(mockClient);
 	});

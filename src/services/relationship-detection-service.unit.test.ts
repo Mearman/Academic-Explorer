@@ -10,7 +10,7 @@ import { RelationType } from "@/lib/graph/types";
 import type { GraphNode, EntityType } from "@/lib/graph/types";
 
 // Mock the external dependencies
-vi.mock("@/lib/openalex/rate-limited-client");
+vi.mock("@/lib/openalex/cached-client");
 vi.mock("@/stores/graph-store");
 vi.mock("./request-deduplication-service");
 

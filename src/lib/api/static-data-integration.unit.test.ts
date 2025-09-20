@@ -3,7 +3,7 @@
  */
 
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { rateLimitedOpenAlex } from "@/lib/openalex/rate-limited-client";
+import { cachedOpenAlex } from "@/lib/openalex/cached-client";
 import { staticDataProvider } from "./static-data-provider";
 
 // Mock the static data provider
@@ -46,7 +46,7 @@ vi.mock("@/lib/logger", () => ({
   }
 }));
 
-describe("Rate-Limited OpenAlex Client with Static Data", () => {
+describe("Cached OpenAlex Client with Static Data", () => {
   beforeEach(() => {
     vi.clearAllMocks();
   });
@@ -61,12 +61,12 @@ describe("Rate-Limited OpenAlex Client with Static Data", () => {
 
       // Mock entity type detection
       const mockDetectEntityType = vi.fn().mockReturnValue("works");
-      rateLimitedOpenAlex.detectEntityType = mockDetectEntityType;
+      cachedOpenAlex.detectEntityType = mockDetectEntityType;
 
       // Mock static data provider to return the work
       vi.mocked(staticDataProvider.getEntity).mockResolvedValue(mockWork);
 
-      const result = await rateLimitedOpenAlex.getEntity("W2250748100");
+      const result = await cachedOpenAlex.getEntity("W2250748100");
 
       expect(result).toEqual(mockWork);
       expect(staticDataProvider.getEntity).toHaveBeenCalledWith({ entityType: "works", entityId: "W2250748100" });
@@ -82,16 +82,16 @@ describe("Rate-Limited OpenAlex Client with Static Data", () => {
 
       // Mock entity type detection
       const mockDetectEntityType = vi.fn().mockReturnValue("works");
-      rateLimitedOpenAlex.detectEntityType = mockDetectEntityType;
+      cachedOpenAlex.detectEntityType = mockDetectEntityType;
 
       // Mock the underlying client's getEntity method
       const mockGetEntity = vi.fn().mockResolvedValue(mockWork);
-      rateLimitedOpenAlex.getUnderlyingClient().getEntity = mockGetEntity;
+      cachedOpenAlex.getUnderlyingClient().getEntity = mockGetEntity;
 
       // Mock static data provider to return null (not found)
       vi.mocked(staticDataProvider.getEntity).mockResolvedValue(null);
 
-      const result = await rateLimitedOpenAlex.getEntity("W9999999999");
+      const result = await cachedOpenAlex.getEntity("W9999999999");
 
       expect(result).toEqual(mockWork);
       expect(staticDataProvider.getEntity).toHaveBeenCalledWith({ entityType: "works", entityId: "W9999999999" });
@@ -110,7 +110,7 @@ describe("Rate-Limited OpenAlex Client with Static Data", () => {
       // Mock static data provider to return the work
       vi.mocked(staticDataProvider.getEntity).mockResolvedValue(mockWork);
 
-      const result = await rateLimitedOpenAlex.getWork("W2250748100");
+      const result = await cachedOpenAlex.getWork("W2250748100");
 
       expect(result).toEqual(mockWork);
       expect(staticDataProvider.getEntity).toHaveBeenCalledWith({ entityType: "works", entityId: "W2250748100" });
@@ -126,9 +126,9 @@ describe("Rate-Limited OpenAlex Client with Static Data", () => {
 
       // Mock the underlying client's works.getWork method
       const mockGetWork = vi.fn().mockResolvedValue(mockWork);
-      rateLimitedOpenAlex.getUnderlyingClient().works.getWork = mockGetWork;
+      cachedOpenAlex.getUnderlyingClient().works.getWork = mockGetWork;
 
-      await rateLimitedOpenAlex.getWork("W2250748100", { select: "id,display_name" });
+      await cachedOpenAlex.getWork("W2250748100", { select: "id,display_name" });
 
       expect(staticDataProvider.getEntity).not.toHaveBeenCalled();
       expect(mockGetWork).toHaveBeenCalledWith("W2250748100", { select: "id,display_name" });
@@ -145,7 +145,7 @@ describe("Rate-Limited OpenAlex Client with Static Data", () => {
 
       vi.mocked(staticDataProvider.getEntity).mockResolvedValue(mockAuthor);
 
-      const result = await rateLimitedOpenAlex.getAuthor("A5017898742");
+      const result = await cachedOpenAlex.getAuthor("A5017898742");
 
       expect(result).toEqual(mockAuthor);
       expect(staticDataProvider.getEntity).toHaveBeenCalledWith({ entityType: "authors", entityId: "A5017898742" });
@@ -156,14 +156,14 @@ describe("Rate-Limited OpenAlex Client with Static Data", () => {
     it("should check if entity exists in static data", async () => {
       vi.mocked(staticDataProvider.hasEntity).mockResolvedValue(true);
 
-      const result = await rateLimitedOpenAlex.hasStaticEntity("works", "W2250748100");
+      const result = await cachedOpenAlex.hasStaticEntity("works", "W2250748100");
 
       expect(result).toBe(true);
       expect(staticDataProvider.hasEntity).toHaveBeenCalledWith({ entityType: "works", entityId: "W2250748100" });
     });
 
     it("should return false for unsupported entity types", async () => {
-      const result = await rateLimitedOpenAlex.hasStaticEntity("keywords", "K123456");
+      const result = await cachedOpenAlex.hasStaticEntity("keywords", "K123456");
 
       expect(result).toBe(false);
       expect(staticDataProvider.hasEntity).not.toHaveBeenCalled();
@@ -183,7 +183,7 @@ describe("Rate-Limited OpenAlex Client with Static Data", () => {
 
       vi.mocked(staticDataProvider.getStatistics).mockResolvedValue(mockStats);
 
-      const result = await rateLimitedOpenAlex.getStaticDataStats();
+      const result = await cachedOpenAlex.getStaticDataStats();
 
       expect(result).toEqual(mockStats);
       expect(staticDataProvider.getStatistics).toHaveBeenCalled();
@@ -192,7 +192,7 @@ describe("Rate-Limited OpenAlex Client with Static Data", () => {
 
   describe("clearStaticCache", () => {
     it("should clear static data cache", () => {
-      rateLimitedOpenAlex.clearStaticCache();
+      cachedOpenAlex.clearStaticCache();
 
       expect(staticDataProvider.clearCache).toHaveBeenCalled();
     });
@@ -207,11 +207,11 @@ describe("Rate-Limited OpenAlex Client with Static Data", () => {
 
       // Mock entity type detection
       const mockDetectEntityType = vi.fn().mockReturnValue("works");
-      rateLimitedOpenAlex.detectEntityType = mockDetectEntityType;
+      cachedOpenAlex.detectEntityType = mockDetectEntityType;
 
       vi.mocked(staticDataProvider.getEntity).mockResolvedValue(mockWork);
 
-      await rateLimitedOpenAlex.getEntity("https://openalex.org/W2250748100");
+      await cachedOpenAlex.getEntity("https://openalex.org/W2250748100");
 
       expect(staticDataProvider.getEntity).toHaveBeenCalledWith({ entityType: "works", entityId: "W2250748100" });
     });
