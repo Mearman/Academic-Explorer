@@ -11,7 +11,8 @@ import {
   StorageTier,
   StorageTierInterface,
   FieldCoverageByTier,
-  CachePolicy
+  CachePolicy,
+  CollectionMetadata
 } from "./types";
 
 export class EntityFieldAccumulator implements StorageTierInterface {
@@ -34,7 +35,7 @@ export class EntityFieldAccumulator implements StorageTierInterface {
     const cachedEntity = this.memoryCache.get(cacheKey);
 
     if (!cachedEntity) {
-      return {};
+      return Promise.resolve({} as Partial<T>);
     }
 
     // Check TTL for each field
@@ -170,7 +171,7 @@ export class EntityFieldAccumulator implements StorageTierInterface {
     const entityData = this.memoryCache.get(cacheKey);
 
     if (!entityData) {
-      return [];
+      return Promise.resolve([]);
     }
 
     // Return only non-expired fields
@@ -309,7 +310,7 @@ export class EntityFieldAccumulator implements StorageTierInterface {
     // No-op: EntityFieldAccumulator doesn't handle collections
   }
 
-  getCollectionMetadata(): Promise<unknown> {
+  getCollectionMetadata(queryKey: string): Promise<CollectionMetadata | null> {
     return Promise.resolve(null); // EntityFieldAccumulator doesn't handle collections
   }
 

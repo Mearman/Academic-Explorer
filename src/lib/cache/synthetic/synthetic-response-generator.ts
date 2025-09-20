@@ -13,7 +13,8 @@ import {
   MultiTierAvailabilityMatrix,
   StorageTier,
   CachePolicy,
-  EntityFieldAccumulation
+  EntityFieldAccumulation,
+  EntityFieldData
 } from "./types";
 import { StorageTierManager } from "./storage-tier-manager";
 import { EntityFieldAccumulator } from "./entity-field-accumulator";
@@ -52,9 +53,9 @@ export class SyntheticResponseGenerator {
       const isCollectionRequest = this.isCollectionRequest(params);
 
       if (isCollectionRequest) {
-        return await this.optimizeCollectionRequest(entityType, params);
+        return await this.optimizeCollectionRequest({ entityType, params });
       } else {
-        return await this.optimizeSingleEntityRequest(entityType, params);
+        return await this.optimizeSingleEntityRequest({ entityType, params });
       }
     } catch (error) {
       logError("Failed to optimize request", error, "SyntheticResponseGenerator", "cache");
@@ -113,7 +114,7 @@ export class SyntheticResponseGenerator {
       if (apiData?.results) {
         // Update caches with new API data
         if (entityType) {
-          await this.updateCachesWithApiData(entityType, apiData.results);
+          await this.updateCachesWithApiData({ entityType, apiResults: apiData.results });
         }
 
         synthesizedResults.push(...apiData.results);
@@ -484,7 +485,15 @@ export class SyntheticResponseGenerator {
         const { data } = await this.tierManager.getEntityFields(entityType, entityId, allCachedFields);
         if (Object.keys(data).length > 0 && cachedData[entityType]) {
           // Convert to EntityFieldData format if needed
-          cachedData[entityType][entityId] = data;
+          cachedData[entityType][entityId] = {
+            ...data,
+            _metadata: {
+              lastUpdated: new Date().toISOString(),
+              ttl: 24 * 60 * 60 * 1000, // 24 hours
+              fieldSources: {},
+              tier: "memory" as const
+            }
+          } as EntityFieldData;
         }
       }
     }
@@ -517,7 +526,7 @@ export class SyntheticResponseGenerator {
     for (const result of apiResults) {
       const entityId = this.extractEntityId(result);
       if (entityId) {
-        await this.fieldAccumulator.putEntityFields(entityType, entityId, result);
+        await this.fieldAccumulator.putEntityFields(entityType, entityId, result as Partial<unknown>);
       }
     }
   }
@@ -613,7 +622,7 @@ export class SyntheticResponseGenerator {
     return entityCount * (baseEntityCost + fieldCount * fieldCost);
   }
 
-  private createDefaultMetadata(): Record<string, unknown> {
+  private createDefaultMetadata(): { count: number; db_response_time_ms: number; page: number; per_page: number; groups_count?: number | undefined; } {
     return {
       count: 0,
       db_response_time_ms: 0,

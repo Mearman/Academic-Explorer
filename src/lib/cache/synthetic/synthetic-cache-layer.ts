@@ -239,7 +239,11 @@ export class SyntheticCacheLayerImpl implements SyntheticCacheLayer {
     try {
       // This would need the entity type - for now we'll use a default approach
       const entityType: EntityType = "works"; // Would need to be passed in or inferred
-      return await this.responseGenerator.analyzeMultiTierAvailability(entityIds, fields, entityType);
+      return await this.responseGenerator.analyzeMultiTierAvailability({
+        entityIds,
+        fields,
+        entityType
+      });
     } catch (error) {
       logError("Failed to analyze multi-tier availability", error, "SyntheticCacheLayer", "cache");
 

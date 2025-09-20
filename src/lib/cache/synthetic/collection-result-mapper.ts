@@ -30,14 +30,14 @@ export class CollectionResultMapper implements StorageTierInterface {
     const collection = this.memoryCollections.get(queryKey);
 
     if (!collection) {
-      return null;
+      return Promise.resolve(null);
     }
 
     // Check if collection is expired
     if (this.isCollectionExpired(collection.metadata)) {
       this.memoryCollections.delete(queryKey);
       logger.debug("cache", "Collection expired and removed from memory", { queryKey });
-      return null;
+      return Promise.resolve(null);
     }
 
     const entityIds = collection.pages[page];
@@ -346,8 +346,8 @@ export class CollectionResultMapper implements StorageTierInterface {
   }
 
   // Entity operations (not directly used by collection mapper but required by interface)
-  getEntityFields(): Promise<Record<string, unknown>> {
-    return Promise.resolve({}); // CollectionResultMapper doesn't handle entity fields
+  getEntityFields<T>(entityType: EntityType, entityId: string, fields: string[]): Promise<Partial<T>> {
+    return Promise.resolve({} as Partial<T>); // CollectionResultMapper doesn't handle entity fields
   }
 
   putEntityFields(): Promise<void> {
