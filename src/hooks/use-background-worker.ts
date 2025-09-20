@@ -596,19 +596,18 @@ export function useBackgroundWorker(options: UseBackgroundWorkerOptions = {}) {
 			config,
 		});
 
-		workerRef.current.postMessage({
-			type: "start",
+		eventBridge.emit("FORCE_SIMULATION_START", {
 			nodes,
 			links,
 			config,
 			pinnedNodes,
-		});
+		}, "worker");
 	}, [onError, isWorkerReady]);
 
 	// Stop animation
 	const stopAnimation = useCallback(() => {
 		if (workerRef.current) {
-			workerRef.current.postMessage({ type: "stop" });
+			eventBridge.emit("FORCE_SIMULATION_STOP", {}, "worker");
 		}
 	}, []);
 
@@ -618,7 +617,7 @@ export function useBackgroundWorker(options: UseBackgroundWorkerOptions = {}) {
 			// Use state callback to check current animation state without dependency
 			setAnimationState(current => {
 				if (current.isRunning && !current.isPaused) {
-					workerRef.current?.postMessage({ type: "pause" });
+					eventBridge.emit("FORCE_SIMULATION_PAUSE", {}, "worker");
 				}
 				return current; // Return unchanged state
 			});
@@ -631,7 +630,7 @@ export function useBackgroundWorker(options: UseBackgroundWorkerOptions = {}) {
 			// Use state callback to check current animation state without dependency
 			setAnimationState(current => {
 				if (current.isRunning && current.isPaused) {
-					workerRef.current?.postMessage({ type: "resume" });
+					eventBridge.emit("FORCE_SIMULATION_RESUME", {}, "worker");
 				}
 				return current; // Return unchanged state
 			});
@@ -644,10 +643,9 @@ export function useBackgroundWorker(options: UseBackgroundWorkerOptions = {}) {
 			// Use state callback to check if animation is running
 			setAnimationState(current => {
 				if (current.isRunning) {
-					workerRef.current?.postMessage({
-						type: "update_parameters",
+					eventBridge.emit("FORCE_SIMULATION_UPDATE_PARAMETERS", {
 						config,
-					});
+					}, "worker");
 					logger.debug("graph", "Updating force parameters during animation", { config });
 				} else {
 					logger.debug("graph", "Animation not running, ignoring parameter update");
@@ -709,8 +707,7 @@ export function useBackgroundWorker(options: UseBackgroundWorkerOptions = {}) {
 		const requestId = `${nodeId}-${Date.now().toString()}-${Math.random().toString(36).substring(2, 11)}`;
 
 		// Send expansion request to worker
-		workerRef.current.postMessage({
-			type: "expand_node",
+		eventBridge.emit("DATA_FETCH_EXPAND_NODE", {
 			expandRequest: {
 				id: requestId,
 				nodeId,
@@ -719,7 +716,7 @@ export function useBackgroundWorker(options: UseBackgroundWorkerOptions = {}) {
 				options,
 				expansionSettings
 			}
-		});
+		}, "worker");
 
 		logger.debug("graph", "Started node expansion via force worker", {
 			nodeId,
@@ -731,10 +728,9 @@ export function useBackgroundWorker(options: UseBackgroundWorkerOptions = {}) {
 
 	const cancelExpansion = useCallback((requestId: string) => {
 		if (workerRef.current && isWorkerReady) {
-			workerRef.current.postMessage({
-				type: "cancel_expansion",
+			eventBridge.emit("DATA_FETCH_CANCEL_EXPANSION", {
 				requestId
-			});
+			}, "worker");
 			logger.debug("graph", "Cancelled node expansion", { requestId });
 		}
 	}, [isWorkerReady]);
