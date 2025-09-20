@@ -1102,7 +1102,7 @@ export class OpenAlexCLI {
   /**
    * Get synthetic cache statistics
    */
-  async getCacheStats(): Promise<any> {
+  async getCacheStats(): Promise<unknown> {
     try {
       return await this.cachedClient.getCacheStats();
     } catch (error) {
@@ -1121,7 +1121,7 @@ export class OpenAlexCLI {
       const syntheticCache = createSyntheticCacheLayer();
 
       // Check if entity type is supported by synthetic cache
-      const supportedTypes = ['works', 'authors', 'sources', 'institutions', 'topics', 'publishers', 'funders'];
+      const supportedTypes = ["works", "authors", "sources", "institutions", "topics", "publishers", "funders"];
       if (!supportedTypes.includes(entityType)) {
         logger.warn("general", `Entity type ${entityType} not supported by synthetic cache`);
         return {
@@ -1161,7 +1161,7 @@ export class OpenAlexCLI {
       const fieldAccumulator = new EntityFieldAccumulator(policy);
 
       // Check if entity type is supported by synthetic cache
-      const supportedTypes = ['works', 'authors', 'sources', 'institutions', 'topics', 'publishers', 'funders'];
+      const supportedTypes = ["works", "authors", "sources", "institutions", "topics", "publishers", "funders"];
       if (!supportedTypes.includes(entityType)) {
         logger.warn("general", `Entity type ${entityType} not supported by synthetic cache`);
         return [];
@@ -1285,7 +1285,7 @@ export class OpenAlexCLI {
       filesProcessed: 0,
       entitiesCached: 0,
       queriesCached: 0,
-      errors: [] as string[]
+      errors: []
     };
 
     try {
@@ -1306,15 +1306,15 @@ export class OpenAlexCLI {
                 }
 
                 // Fetch entity from cached client (will use synthetic cache)
-                const entityTypeAsEntityType = type as unknown as EntityType;
+                const entityTypeForClient = type;
                 const entity = await this.cachedClient.getById(
                   type, // endpoint
                   entityData.entityId,
                   { select: entityData.fields } // only fetch fields we know about
                 );
 
-                if (entity && typeof entity === 'object' && 'id' in entity && 'display_name' in entity) {
-                  await this.saveEntityToCache(type, entity as { id: string; display_name: string; [key: string]: unknown });
+                if (entity && typeof entity === "object" && "id" in entity && "display_name" in entity) {
+                  await this.saveEntityToCache(type, entity);
                   result.entitiesCached++;
                 }
               } else {

@@ -474,7 +474,7 @@ program
       process.exit(1);
     }
 
-    const limit = typeof options.limit === "string" ? parseInt(options.limit, 10) : 10;
+    const limit = parseInt(String(options.limit || "10"), 10);
     const entities = await cli.getWellPopulatedEntities(entityTypeValidation.data, limit);
 
     if (options.format === "json") {
@@ -502,7 +502,7 @@ program
   .option("-l, --limit <limit>", "Limit results", "10")
   .option("-f, --format <format>", "Output format (json, table)", "table")
   .action(async (options) => {
-    const limit = typeof options.limit === "string" ? parseInt(options.limit, 10) : 10;
+    const limit = parseInt(String(options.limit || "10"), 10);
     const collections = await cli.getPopularCollections(limit);
 
     if (options.format === "json") {
