@@ -1,5 +1,5 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { useEffect } from "react";
+import { useEffect, useRef, useCallback } from "react";
 import { useGraphData } from "@/hooks/use-graph-data";
 import { useGraphStore } from "@/stores/graph-store";
 import { useRawEntityData } from "@/hooks/use-raw-entity-data";
@@ -19,6 +19,9 @@ function AuthorRoute() {
 	const loadEntityIntoGraph = graphData.loadEntityIntoGraph;
 	const expandNode = graphData.expandNode;
 	const nodeCount = useGraphStore((state) => state.totalNodeCount);
+
+	// Track which authors have been loaded to prevent infinite loops
+	const loadedAuthorsRef = useRef<Set<string>>(new Set());
 
 	// Check if ID needs normalization and redirect if necessary
 	useEffect(() => {
@@ -55,29 +58,47 @@ function AuthorRoute() {
 	// Update document title with author name
 	useEntityDocumentTitle(author);
 
-	useEffect(() => {
-		const loadAuthor = async () => {
-			try {
-				// If graph already has nodes, use incremental loading to preserve existing entities
-				// This prevents clearing the graph when clicking on nodes or navigating
-				if (nodeCount > 0) {
-					await loadEntityIntoGraph(authorId);
-				} else {
-					// If graph is empty, use full loading (clears graph for initial load)
-					await loadEntity(authorId);
-
-					// For initial author page load, automatically expand to show works
-					// This ensures users see a full graph when directly visiting an author URL
-					const authorNodeId = `https://openalex.org/${authorId}`;
-					await expandNode(authorNodeId);
-				}
-			} catch (error) {
-				logError("Failed to load author", error, "AuthorRoute", "routing");
+	// Create stable callback for loading author data
+	const loadAuthor = useCallback(async () => {
+		try {
+			// Check if this author has already been loaded to prevent infinite loops
+			if (loadedAuthorsRef.current.has(authorId)) {
+				logger.debug("routing", "Author already loaded, skipping", { authorId }, "AuthorRoute");
+				return;
 			}
-		};
 
+			// Mark this author as being loaded
+			loadedAuthorsRef.current.add(authorId);
+
+			// If graph already has nodes, use incremental loading to preserve existing entities
+			// This prevents clearing the graph when clicking on nodes or navigating
+			if (nodeCount > 0) {
+				await loadEntityIntoGraph(authorId);
+			} else {
+				// If graph is empty, use full loading (clears graph for initial load)
+				await loadEntity(authorId);
+
+				// For initial author page load, automatically expand to show works
+				// This ensures users see a full graph when directly visiting an author URL
+				const authorNodeId = `https://openalex.org/${authorId}`;
+				try {
+					await expandNode(authorNodeId);
+				} catch (expansionError) {
+					// Log expansion failures but don't prevent the author from loading
+					logger.warn("routing", "Failed to expand author on initial load", {
+						authorId,
+						error: expansionError instanceof Error ? expansionError.message : String(expansionError)
+					}, "AuthorRoute");
+				}
+			}
+		} catch (error) {
+			logError("Failed to load author", error, "AuthorRoute", "routing");
+		}
+	}, [authorId, nodeCount]);
+
+	useEffect(() => {
 		void loadAuthor();
-	}, [authorId, loadEntity, loadEntityIntoGraph, expandNode, nodeCount]);
+	}, [loadAuthor]);
 
 	// Return null - the graph is visible from MainLayout
 	// The route content is just for triggering the data load
