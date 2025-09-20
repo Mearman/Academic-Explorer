@@ -993,11 +993,12 @@ export class CachedOpenAlexClient extends OpenAlexBaseClient {
 
 /**
  * Create default cached client instance with full feature set enabled
+ * Worker disabled to prevent conflicts with dedicated data-fetching worker
  */
 export const cachedOpenAlex = new CachedOpenAlexClient({
   cacheEnabled: true,
   rateLimitEnabled: true,
-  workerEnabled: true,
+  workerEnabled: false, // Disabled to use dedicated data-fetching worker
   maxConcurrentRequests: 5,
   userEmail: typeof import.meta.env !== "undefined" &&
             import.meta.env.VITE_OPENALEX_EMAIL &&
@@ -1009,12 +1010,13 @@ export const cachedOpenAlex = new CachedOpenAlexClient({
 
 /**
  * Enhanced client factory for custom configurations
+ * Worker disabled by default to prevent conflicts with dedicated data-fetching worker
  */
 export function createUnifiedOpenAlexClient(config: CachedOpenAlexClientConfig = {}): CachedOpenAlexClient {
   return new CachedOpenAlexClient({
     cacheEnabled: true,
     rateLimitEnabled: true,
-    workerEnabled: true,
+    workerEnabled: false, // Disabled by default to use dedicated data-fetching worker
     maxConcurrentRequests: 5,
     ...config
   });

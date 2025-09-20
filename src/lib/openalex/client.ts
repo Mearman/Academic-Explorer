@@ -17,6 +17,7 @@ export interface OpenAlexClientConfig {
   timeout?: number;
   retries?: number;
   retryDelay?: number;
+  headers?: Record<string, string>;
 }
 
 interface FullyConfiguredClient extends OpenAlexClientConfig {
@@ -231,6 +232,7 @@ export class OpenAlexBaseClient {
 				headers: {
 					"Accept": "application/json",
 					"User-Agent": "OpenAlex-TypeScript-Client/1.0",
+					...(this.config.headers || {}),
 					...(options.headers && typeof options.headers === "object" && !Array.isArray(options.headers) && !(options.headers instanceof Headers) ? options.headers : {}),
 				},
 			});
