@@ -1124,7 +1124,22 @@ export class OpenAlexCLI {
   async getCacheStats(): Promise<CacheStats> {
     try {
       const stats = await this.cachedClient.getCacheStats();
-      return stats;
+
+      // Validate that stats has the required CacheStats structure
+      if (!stats || typeof stats !== "object" || !("enabled" in stats) || typeof stats.enabled !== "boolean") {
+        logger.warn("general", "Invalid cache stats structure, using default", { stats });
+        return { enabled: false };
+      }
+
+      // Ensure enabled is actually a boolean and safely copy other properties
+      const cacheStats: CacheStats = {
+        enabled: stats.enabled,
+        ...Object.fromEntries(
+          Object.entries(stats).filter(([key]) => key !== "enabled")
+        )
+      };
+
+      return cacheStats;
     } catch (error) {
       logger.error("general", "Failed to get cache stats", { error });
       return { enabled: false };
@@ -1340,7 +1355,15 @@ export class OpenAlexCLI {
 
                 if (entity && typeof entity === "object" && "id" in entity && "display_name" in entity &&
                     typeof entity.id === "string" && typeof entity.display_name === "string") {
-                  await this.saveEntityToCache(type, entity);
+                  // Type guard ensures entity has required structure
+                  const validEntity: { id: string; display_name: string; [key: string]: unknown } = {
+                    id: entity.id,
+                    display_name: entity.display_name,
+                    ...Object.fromEntries(
+                      Object.entries(entity).filter(([key]) => key !== "id" && key !== "display_name")
+                    )
+                  };
+                  await this.saveEntityToCache(type, validEntity);
                   result.entitiesCached++;
                 }
               } else {
