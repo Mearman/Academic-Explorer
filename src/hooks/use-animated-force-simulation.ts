@@ -120,7 +120,26 @@ export function useAnimatedForceSimulation(options: UseAnimatedForceSimulationOp
 
 	// Handle worker messages
 	const handleWorkerMessage = useCallback((event: MessageEvent<WorkerMessage>) => {
-		const { type, positions, alpha, iteration, progress, fps, totalIterations, finalAlpha, reason, nodeCount, linkCount, config } = event.data;
+		const data = event.data;
+
+		// Filter out EventBridge cross-context messages - these are handled by EventBridge
+		// Only process direct worker messages for force animation control
+		if (data && typeof data === "object" && "type" in data && data.type === "event") {
+			// This is an EventBridge cross-context message, ignore it
+			logger.debug("graph", "Filtered out EventBridge message", { messageType: data.type });
+			return;
+		}
+
+		// Debug: Log unrecognized message types to understand what's getting through
+		if (data && typeof data === "object" && "type" in data && !["ready", "started", "tick", "complete", "stopped", "paused", "resumed", "error"].includes(data.type)) {
+			logger.debug("graph", "Unrecognized message structure", {
+				type: data.type,
+				keys: Object.keys(data),
+				fullMessage: data
+			});
+		}
+
+		const { type, positions, alpha, iteration, progress, fps, totalIterations, finalAlpha, reason, nodeCount, linkCount, config } = data;
 
 		switch (type) {
 			case "ready":
