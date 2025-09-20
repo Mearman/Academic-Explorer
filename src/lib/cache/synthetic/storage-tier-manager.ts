@@ -3,16 +3,14 @@
  * Manages data distribution and access across memory, localStorage, IndexedDB, static, and API tiers
  */
 
-import { logger, logError } from '@/lib/logger';
+import { logger, logError } from "@/lib/logger";
 import {
   StorageTier,
   EntityType,
   StorageTierInterface,
-  EntityFieldData,
-  CollectionMetadata,
   StorageTierStats,
   CachePolicy
-} from './types';
+} from "./types";
 
 interface TierAccessStats {
   hits: number;
@@ -47,7 +45,7 @@ export class StorageTierManager {
    */
   registerTier(tier: StorageTier, implementation: StorageTierInterface): void {
     this.tiers.set(tier, implementation);
-    logger.debug('cache', 'Registered storage tier', { tier });
+    logger.debug("cache", "Registered storage tier", { tier });
   }
 
   /**
@@ -90,7 +88,7 @@ export class StorageTierManager {
             void this.promoteToHotTier(entityType, entityId, Object.keys(tierData));
           }
 
-          logger.debug('cache', 'Retrieved entity fields from tier', {
+          logger.debug("cache", "Retrieved entity fields from tier", {
             entityType,
             entityId,
             tier,
@@ -103,7 +101,7 @@ export class StorageTierManager {
         }
       } catch (error) {
         this.updateTierStats(tier, false, performance.now() - startTime);
-        logError(`Failed to get entity fields from ${tier}`, error, 'StorageTierManager', 'cache');
+        logError(`Failed to get entity fields from ${tier}`, error, "StorageTierManager", "cache");
       }
     }
 
@@ -123,14 +121,14 @@ export class StorageTierManager {
     const tierImpl = this.tiers.get(targetTier);
 
     if (!tierImpl) {
-      logger.warn('cache', 'Target storage tier not available', { targetTier, entityType, entityId });
+      logger.warn("cache", "Target storage tier not available", { targetTier, entityType, entityId });
       return;
     }
 
     try {
       await tierImpl.putEntityFields(entityType, entityId, data);
 
-      logger.debug('cache', 'Stored entity fields to tier', {
+      logger.debug("cache", "Stored entity fields to tier", {
         entityType,
         entityId,
         tier: targetTier,
@@ -142,7 +140,7 @@ export class StorageTierManager {
         await this.updateFieldCoverageIndex(entityType, entityId, Object.keys(data));
       }
     } catch (error) {
-      logError(`Failed to store entity fields to ${targetTier}`, error, 'StorageTierManager', 'cache');
+      logError(`Failed to store entity fields to ${targetTier}`, error, "StorageTierManager", "cache");
     }
   }
 
@@ -164,7 +162,7 @@ export class StorageTierManager {
         if (entityIds) {
           this.updateTierStats(tier, true, 0);
 
-          logger.debug('cache', 'Retrieved collection page from tier', {
+          logger.debug("cache", "Retrieved collection page from tier", {
             queryKey,
             page,
             tier,
@@ -174,7 +172,7 @@ export class StorageTierManager {
           return { entityIds, tier };
         }
       } catch (error) {
-        logError(`Failed to get collection page from ${tier}`, error, 'StorageTierManager', 'cache');
+        logError(`Failed to get collection page from ${tier}`, error, "StorageTierManager", "cache");
       }
     }
 
@@ -194,21 +192,21 @@ export class StorageTierManager {
     const tierImpl = this.tiers.get(targetTier);
 
     if (!tierImpl) {
-      logger.warn('cache', 'Target storage tier not available for collection', { targetTier, queryKey });
+      logger.warn("cache", "Target storage tier not available for collection", { targetTier, queryKey });
       return;
     }
 
     try {
       await tierImpl.putCollectionPage(queryKey, page, entityIds);
 
-      logger.debug('cache', 'Stored collection page to tier', {
+      logger.debug("cache", "Stored collection page to tier", {
         queryKey,
         page,
         tier: targetTier,
         entityCount: entityIds.length
       });
     } catch (error) {
-      logError(`Failed to store collection page to ${targetTier}`, error, 'StorageTierManager', 'cache');
+      logError(`Failed to store collection page to ${targetTier}`, error, "StorageTierManager", "cache");
     }
   }
 
@@ -224,7 +222,7 @@ export class StorageTierManager {
         // Store in memory tier
         await this.putEntityFields(entityType, entityId, data, StorageTier.MEMORY);
 
-        logger.debug('cache', 'Promoted entity data to hot tier', {
+        logger.debug("cache", "Promoted entity data to hot tier", {
           entityType,
           entityId,
           fields,
@@ -232,7 +230,7 @@ export class StorageTierManager {
         });
       }
     } catch (error) {
-      logError('Failed to promote data to hot tier', error, 'StorageTierManager', 'cache');
+      logError("Failed to promote data to hot tier", error, "StorageTierManager", "cache");
     }
   }
 
@@ -254,7 +252,7 @@ export class StorageTierManager {
           await memoryTier.deleteEntity(entityType, entityId);
         }
 
-        logger.debug('cache', 'Demoted entity data to cold tier', {
+        logger.debug("cache", "Demoted entity data to cold tier", {
           entityType,
           entityId,
           fields,
@@ -262,7 +260,7 @@ export class StorageTierManager {
         });
       }
     } catch (error) {
-      logError('Failed to demote data to cold tier', error, 'StorageTierManager', 'cache');
+      logError("Failed to demote data to cold tier", error, "StorageTierManager", "cache");
     }
   }
 
@@ -293,7 +291,7 @@ export class StorageTierManager {
           stats[StorageTier.STATIC] = tierStats[StorageTier.STATIC];
         }
       } catch (error) {
-        logError(`Failed to get stats for ${tier}`, error, 'StorageTierManager', 'cache');
+        logError(`Failed to get stats for ${tier}`, error, "StorageTierManager", "cache");
       }
     }
 
@@ -312,12 +310,12 @@ export class StorageTierManager {
         try {
           await tierImpl.deleteEntity(entityType, entityId);
         } catch (error) {
-          logError(`Failed to invalidate entity in ${tier}`, error, 'StorageTierManager', 'cache');
+          logError(`Failed to invalidate entity in ${tier}`, error, "StorageTierManager", "cache");
         }
       }
     }
 
-    logger.debug('cache', 'Invalidated entity across tiers', { entityType, entityId, tiers: targetTiers });
+    logger.debug("cache", "Invalidated entity across tiers", { entityType, entityId, tiers: targetTiers });
   }
 
   /**
@@ -332,12 +330,12 @@ export class StorageTierManager {
         try {
           await tierImpl.deleteCollection(queryKey);
         } catch (error) {
-          logError(`Failed to invalidate collection in ${tier}`, error, 'StorageTierManager', 'cache');
+          logError(`Failed to invalidate collection in ${tier}`, error, "StorageTierManager", "cache");
         }
       }
     }
 
-    logger.debug('cache', 'Invalidated collection across tiers', { queryKey, tiers: targetTiers });
+    logger.debug("cache", "Invalidated collection across tiers", { queryKey, tiers: targetTiers });
   }
 
   // Private helper methods
@@ -384,7 +382,7 @@ export class StorageTierManager {
     return StorageTier.INDEXED_DB;
   }
 
-  private shouldPromoteData(entityType: EntityType, entityId: string): boolean {
+  private shouldPromoteData(_entityType: EntityType, _entityId: string): boolean {
     // Simple heuristic: promote if accessed recently
     const accessThreshold = this.policy.tierPreferences.hotDataThreshold;
     const stats = this.accessStats.get(StorageTier.MEMORY);
@@ -415,14 +413,19 @@ export class StorageTierManager {
     if (memoryTier) {
       try {
         const coverageKey = `coverage:${entityType}:${entityId}`;
-        const existingCoverage = await memoryTier.getEntityFields(entityType, coverageKey, ['fields']) || {};
-        const existingFields = (existingCoverage as { fields?: string[] }).fields || [];
+        const existingCoverage = await memoryTier.getEntityFields(entityType, coverageKey, ["fields"]) || {};
+
+        function isStringArray(value: unknown): value is string[] {
+          return Array.isArray(value) && value.every(item => typeof item === "string");
+        }
+
+        const existingFields: string[] = (existingCoverage && typeof existingCoverage === "object" && "fields" in existingCoverage && isStringArray(existingCoverage.fields)) ? existingCoverage.fields : [];
         const updatedFields = [...new Set([...existingFields, ...fields])];
 
         await memoryTier.putEntityFields(entityType, coverageKey, { fields: updatedFields });
       } catch (error) {
         // Field coverage update is not critical
-        logger.warn('cache', 'Failed to update field coverage index', { entityType, entityId, error });
+        logger.warn("cache", "Failed to update field coverage index", { entityType, entityId, error });
       }
     }
   }
