@@ -3,6 +3,14 @@ import { join, extname, basename } from "path";
 import { downloadEntityFromOpenAlex, findMissingEntities, downloadMultipleEntities } from "./openalex-downloader";
 // parseQueryParams and generateQueryHash removed - no longer needed
 import { fetchOpenAlexQuery, saveQueryToCache } from "./query-cache-builder";
+import { createContentHash, hasContentChanged } from "./content-hash";
+
+/**
+ * Type guard to check if value is a record
+ */
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return value !== null && typeof value === "object" && !Array.isArray(value);
+}
 
 export interface FileMetadata {
   id: string;
@@ -23,6 +31,7 @@ export interface StaticDataIndex {
   entityType: string;
   count: number;
   lastModified: string;
+  contentHash: string;
   entities: string[];
   queries?: QueryMetadata[];
   metadata: {
@@ -123,11 +132,10 @@ export async function generateIndexForEntityType(
       })
     );
 
-    // Create index content
-    const indexContent: StaticDataIndex = {
+    // Create preliminary index content without timestamp and hash
+    const preliminaryIndexContent = {
       entityType,
       count: entityIds.length,
-      lastModified: new Date().toISOString(),
       entities: entityIds.sort(), // Sorted for consistent output
       queries: queryStats.length > 0 ? queryStats.sort((a, b) => a.queryHash.localeCompare(b.queryHash)) : undefined,
       metadata: {
@@ -136,38 +144,56 @@ export async function generateIndexForEntityType(
       }
     };
 
-    // Write index file only if content has changed
-    const indexPath = join(entityDir, "index.json");
-    const newContent = JSON.stringify(indexContent, null, 2);
+    // Generate content hash based on static fields only
+    const newContentHash = createContentHash(preliminaryIndexContent);
 
-    let shouldWrite = true;
+    // Check if content has actually changed by comparing hashes
+    const indexPath = join(entityDir, "index.json");
+    let existingContentHash: string | undefined;
+    let existingTimestamp: string | undefined;
+
     try {
       const existingContent = await readFile(indexPath, "utf-8");
       const existingData = JSON.parse(existingContent);
-      // Compare everything except lastModified timestamp
-      const { lastModified: _, ...existingWithoutTimestamp } = existingData;
-      const { lastModified: __, ...newWithoutTimestamp } = indexContent;
-      shouldWrite = JSON.stringify(existingWithoutTimestamp) !== JSON.stringify(newWithoutTimestamp);
+      existingContentHash = existingData.contentHash;
+      existingTimestamp = existingData.lastModified;
     } catch {
-      // File doesn't exist or can't be read, so we should write
-      shouldWrite = true;
+      // File doesn't exist or can't be read
+      existingContentHash = undefined;
+      existingTimestamp = undefined;
     }
 
-    if (shouldWrite) {
+    // Determine if we need to update the timestamp
+    const contentChanged = hasContentChanged({ currentHash: existingContentHash, newHash: newContentHash });
+    const timestamp = contentChanged ? new Date().toISOString() : (existingTimestamp ?? new Date().toISOString());
+
+    // Create final index content with hash and appropriate timestamp
+    const indexContent: StaticDataIndex = {
+      ...preliminaryIndexContent,
+      lastModified: timestamp,
+      contentHash: newContentHash
+    };
+
+    // Only write if content has changed
+    if (contentChanged) {
+      // Use a custom replacer to ensure consistent key ordering at all levels including root
+      const newContent = JSON.stringify(indexContent, (key, value: unknown) => {
+        if (isRecord(value)) {
+          // Sort object keys for consistent output (including root object)
+          const sortedObj: Record<string, unknown> = {};
+          Object.keys(value).sort().forEach(sortedKey => {
+            sortedObj[sortedKey] = value[sortedKey];
+          });
+          return sortedObj;
+        }
+        return value;
+      }, 2);
       await writeFile(indexPath, newContent);
-    } else {
-      // Keep the existing timestamp if content hasn't changed
-      try {
-        const existingContent = await readFile(indexPath, "utf-8");
-        const existingData = JSON.parse(existingContent);
-        indexContent.lastModified = existingData.lastModified;
-      } catch {
-        // If we can't preserve timestamp, use new one
-      }
     }
 
     const queryMessage = queryStats.length > 0 ? ` and ${queryStats.length} queries` : "";
-    console.log(`✅ Generated ${entityType}/index.json with ${entityIds.length} entities${queryMessage}`);
+    const statusMessage = contentChanged ? "Updated" : "Unchanged";
+    console.log(`✅ ${statusMessage} ${entityType}/index.json with ${entityIds.length} entities${queryMessage} (hash: ${newContentHash.substring(0, 8)}...)`);
   } catch (error) {
     console.error(`❌ Error generating index for ${entityType}:`, error);
   }
