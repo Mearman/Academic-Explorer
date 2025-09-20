@@ -4,7 +4,8 @@
  */
 
 import { OpenAlexClient, OpenAlexClientOptions } from "./openalex-client";
-import { RATE_LIMIT_CONFIG } from "@/config/rate-limit";
+import { RATE_LIMIT_CONFIG, RETRY_CONFIG, calculateRetryDelay } from "@/config/rate-limit";
+import { OpenAlexRateLimitError } from "./client";
 import { logger } from "@/lib/logger";
 import { staticDataProvider } from "@/lib/api/static-data-provider";
 import { toStaticEntityType, cleanOpenAlexId } from "@/lib/utils/static-data-utils";
@@ -96,7 +97,7 @@ export class RateLimitedOpenAlexClient {
    * Rate-limited wrapper for any client method call with enhanced error handling
    */
 	private async withRateLimit<T>(operation: () => Promise<T>): Promise<T> {
-		const maxRetries = 3;
+		const maxRetries = RETRY_CONFIG.rateLimited.maxAttempts; // Use proper retry config (5 attempts)
 		let lastError: unknown;
 
 		for (let attempt = 0; attempt <= maxRetries; attempt++) {
@@ -114,10 +115,25 @@ export class RateLimitedOpenAlexClient {
 					break;
 				}
 
-				// Log retry attempt
-				logger.debug("api", `Retrying operation (attempt ${String(attempt + 2)}/${String(maxRetries + 1)})`, {
-					error: error instanceof Error ? error.message : String(error)
-				}, "RateLimitedOpenAlexClient");
+				// Calculate retry delay with exponential backoff for 429 errors
+				if (this.hasStatusCode(error) && error.statusCode === 429) {
+					// Use rate-limited config for 429 errors
+					const retryAfterMs = error instanceof OpenAlexRateLimitError ? error.retryAfter : undefined;
+					const waitTime = calculateRetryDelay(attempt, RETRY_CONFIG.rateLimited, retryAfterMs);
+
+					logger.debug("api", `Rate limited, waiting ${String(waitTime)}ms before retry (attempt ${String(attempt + 2)}/${String(maxRetries + 1)})`, {
+						error: error instanceof Error ? error.message : "Unknown error",
+						waitTime,
+						retryAfter: retryAfterMs
+					}, "RateLimitedOpenAlexClient");
+
+					await new Promise(resolve => setTimeout(resolve, waitTime));
+				} else {
+					// Log retry attempt for other errors
+					logger.debug("api", `Retrying operation (attempt ${String(attempt + 2)}/${String(maxRetries + 1)})`, {
+						error: error instanceof Error ? error.message : "Unknown error"
+					}, "RateLimitedOpenAlexClient");
+				}
 			}
 		}
 

@@ -216,7 +216,6 @@ export class OpenAlexBaseClient {
 		retryCount = 0
 	): Promise<Response> {
 		// Determine max attempts: use config.retries if explicitly set (including 0), otherwise use RETRY_CONFIG
-		const maxRateLimitRetries = this.config.retries !== 3 ? this.config.retries : RETRY_CONFIG.rateLimited.maxAttempts; // 3 is default
 		const maxServerRetries = this.config.retries !== 3 ? this.config.retries : RETRY_CONFIG.server.maxAttempts; // 3 is default
 		const maxNetworkRetries = this.config.retries !== 3 ? this.config.retries : RETRY_CONFIG.network.maxAttempts; // 3 is default
 
@@ -238,22 +237,15 @@ export class OpenAlexBaseClient {
 
 			clearTimeout(timeoutId);
 
-			// Handle rate limiting from server with enhanced retry logic
+			// Handle rate limiting from server - no retries at base client level
+			// Let the rate-limited client wrapper handle 429 retry logic
 			if (response.status === 429) {
 				const retryAfter = response.headers.get("Retry-After");
 				const retryAfterMs = retryAfter ? parseInt(retryAfter) * 1000 : undefined;
 
-				if (retryCount < maxRateLimitRetries) {
-					const waitTime = this.config.retries !== 3 ?
-						(retryAfterMs || this.config.retryDelay) :
-						calculateRetryDelay(retryCount, RETRY_CONFIG.rateLimited, retryAfterMs);
-					await this.sleep(waitTime);
-					return await this.makeRequest(url, options, retryCount + 1);
-				}
-
 				throw new OpenAlexRateLimitError(
-					`Rate limit exceeded and max retries reached (${String(maxRateLimitRetries)} attempts)`,
-					retryAfterMs || (this.config.retries !== 3 ? this.config.retryDelay : calculateRetryDelay(retryCount, RETRY_CONFIG.rateLimited))
+					`Rate limit exceeded (HTTP 429)`,
+					retryAfterMs
 				);
 			}
 
