@@ -98,7 +98,12 @@ export const AnimatedGraphControls: React.FC<AnimatedGraphControlsProps> = ({
 	// Animation state and actions now come from props passed by parent
 
 	const handleStartLayout = () => {
-		logger.debug("graph", "User initiated animated layout");
+		logger.warn("graph", "TEMP DEBUG: User initiated animated layout", {
+			enabled,
+			isWorkerReady,
+			isAnimating,
+			applyLayoutExists: !!applyLayout
+		});
 		applyLayout();
 	};
 
@@ -118,8 +123,6 @@ export const AnimatedGraphControls: React.FC<AnimatedGraphControlsProps> = ({
 	const getStatusText = () => {
 		if (!isWorkerReady) return "Worker Loading...";
 		if (!enabled) return "Disabled";
-		// Animation mode is always enabled when component is rendered
-		return "Ready";
 		if (isAnimating && !isPaused) return "Animating";
 		if (isPaused) return "Paused";
 		return "Ready";
