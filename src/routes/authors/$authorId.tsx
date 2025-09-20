@@ -61,6 +61,8 @@ function AuthorRoute() {
 	// Create stable callback for loading author data
 	const loadAuthor = useCallback(async () => {
 		try {
+			logger.debug("routing", "loadAuthor called", { authorId, loadedAuthors: Array.from(loadedAuthorsRef.current) }, "AuthorRoute");
+
 			// Check if this author has already been loaded to prevent infinite loops
 			if (loadedAuthorsRef.current.has(authorId)) {
 				logger.debug("routing", "Author already loaded, skipping", { authorId }, "AuthorRoute");
@@ -73,16 +75,18 @@ function AuthorRoute() {
 			// If graph already has nodes, use incremental loading to preserve existing entities
 			// This prevents clearing the graph when clicking on nodes or navigating
 			if (nodeCount > 0) {
+				logger.debug("routing", "Loading author into existing graph", { authorId, nodeCount }, "AuthorRoute");
 				await loadEntityIntoGraph(authorId);
 			} else {
 				// If graph is empty, use full loading (clears graph for initial load)
+				logger.debug("routing", "Loading author into empty graph", { authorId }, "AuthorRoute");
 				await loadEntity(authorId);
 
 				// For initial author page load, automatically expand to show works
 				// This ensures users see a full graph when directly visiting an author URL
 				const authorNodeId = `https://openalex.org/${authorId}`;
 				try {
-					await expandNode(authorNodeId);
+					await expandNode(authorNodeId, { force: true });
 				} catch (expansionError) {
 					// Log expansion failures but don't prevent the author from loading
 					logger.warn("routing", "Failed to expand author on initial load", {
