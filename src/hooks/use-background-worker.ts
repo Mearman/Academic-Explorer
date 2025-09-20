@@ -12,6 +12,7 @@ import type { ExpansionSettings } from "@/lib/graph/types/expansion-settings";
 import { getConfigByGraphSize } from "@/lib/graph/utils/performance-config";
 import { eventBridge } from "@/lib/graph/events/event-bridge";
 import { WorkerEventType, type WorkerEventPayloads, WorkerEventPayloadSchemas, parseWorkerEventPayload, isWorkerEventType } from "@/lib/graph/events/types";
+import { getBackgroundWorker } from "@/lib/graph/worker-singleton";
 
 // Types matching the worker interfaces
 interface NodePosition {
@@ -464,23 +465,30 @@ export function useBackgroundWorker(options: UseBackgroundWorkerOptions = {}) {
 		}
 	}, [onError]);
 
-	// Initialize worker
+	// Initialize worker using singleton
 	useEffect(() => {
-		logger.debug("graph", "Initializing background worker");
+		logger.debug("graph", "Initializing background worker via singleton");
 
-		try {
-			workerRef.current = new Worker(
-				new URL("../workers/background.worker.ts", import.meta.url),
-				{ type: "module" }
-			);
+		// Get or create the singleton worker
+		getBackgroundWorker()
+			.then((worker) => {
+				workerRef.current = worker;
+				setIsWorkerReady(true);
 
-			workerRef.current.addEventListener("message", handleWorkerMessage);
-			workerRef.current.addEventListener("error", handleWorkerError);
+				// Set up event listeners for this hook instance
+				worker.addEventListener("message", handleWorkerMessage);
+				worker.addEventListener("error", handleWorkerError);
 
-			// Register the worker with EventBridge
-			eventBridge.registerWorker(workerRef.current, "force-animation-worker");
+				logger.debug("graph", "Background worker ready via singleton");
+			})
+			.catch((error: unknown) => {
+				logger.error("graph", "Failed to get background worker", {
+					error: error instanceof Error ? error.message : "Unknown error"
+				});
+				onError?.("Failed to initialize Web Worker for force simulation");
+			});
 
-			// Register EventBridge listeners
+		// Register EventBridge listeners
 			eventBridge.registerMessageHandler("force-animation-worker-ready", (message) => {
 				if (isWorkerEventType(message.eventType) && message.eventType === WorkerEventType.WORKER_READY && message.payload) {
 					const payload = parseWorkerEventPayload(message.payload, WorkerEventType.WORKER_READY, WorkerEventPayloadSchemas[WorkerEventType.WORKER_READY]);
@@ -535,13 +543,8 @@ export function useBackgroundWorker(options: UseBackgroundWorkerOptions = {}) {
 				}
 			});
 
-		} catch (error) {
-			logger.error("graph", "Failed to initialize force animation worker", { error });
-			onError?.("Failed to initialize Web Worker for force simulation");
-		}
-
 		return () => {
-			// Unregister EventBridge listeners
+			// Unregister EventBridge listeners for this hook instance
 			eventBridge.unregisterMessageHandler("force-animation-worker-ready");
 			eventBridge.unregisterMessageHandler("force-animation-worker-error");
 			eventBridge.unregisterMessageHandler("force-animation-progress");
@@ -549,11 +552,14 @@ export function useBackgroundWorker(options: UseBackgroundWorkerOptions = {}) {
 			eventBridge.unregisterMessageHandler("force-animation-stopped");
 			eventBridge.unregisterMessageHandler("force-animation-simulation-error");
 
+			// Remove event listeners for this hook instance
 			if (workerRef.current) {
-				workerRef.current.terminate();
+				workerRef.current.removeEventListener("message", handleWorkerMessage);
+				workerRef.current.removeEventListener("error", handleWorkerError);
 				workerRef.current = null;
 				setIsWorkerReady(false);
 			}
+			// Note: Don't terminate the worker - it's shared via singleton
 		};
 	}, [handleWorkerMessage, handleWorkerError, onError, handleWorkerReady, handleWorkerErrorEvent, handleForceSimulationProgress, handleForceSimulationComplete, handleForceSimulationStopped, handleForceSimulationError]);
 
