@@ -1738,20 +1738,64 @@ async function generateMainIndex(dataPath: string): Promise<void> {
     $ref: `./${entityType}/index.json`
   }));
 
-  const mainIndex = {
+  // Check if main index exists and compare content structure (excluding lastModified)
+  let existingMainIndex: { lastModified?: string; [key: string]: unknown } | null = null;
+  try {
+    const existingContent = await readFile(mainIndexPath, "utf-8");
+    const parsed: unknown = JSON.parse(existingContent);
+    if (parsed && typeof parsed === "object" && !Array.isArray(parsed)) {
+      // Safe property access without type assertion
+      const hasLastModified = "lastModified" in parsed;
+      const lastModifiedValue = hasLastModified && typeof parsed.lastModified === "string"
+        ? parsed.lastModified
+        : undefined;
+
+      existingMainIndex = {
+        lastModified: lastModifiedValue,
+        ...Object.fromEntries(Object.entries(parsed))
+      };
+    }
+  } catch {
+    // File doesn't exist or is invalid - will create new
+  }
+
+  // Create new main index structure
+  const newMainIndexContent = {
     $schema: "https://json-schema.org/draft/2020-12/schema",
     $id: "https://api.openalex.org/schema/index",
     title: "OpenAlex Static Data Index",
     description: "Root index merging all entity-specific data via JSON Schema references",
     type: "object",
     version: "1.0.0",
-    lastModified: new Date().toISOString(),
     allOf: entityRefs
   };
 
-  // Write the main index
-  await writeFile(mainIndexPath, JSON.stringify(mainIndex, null, 2), "utf-8");
-  logger.debug("general", "Auto-discovered main index with JSON Schema $ref structure", {
-    entityTypeCount: discoveredEntityTypes.length
-  });
+  // Compare content structure (excluding lastModified) to determine if update is needed
+  let contentChanged = true;
+  if (existingMainIndex) {
+    const { lastModified: existingLastModified, ...existingContent } = existingMainIndex;
+    const contentMatches = JSON.stringify(existingContent) === JSON.stringify(newMainIndexContent);
+    contentChanged = !contentMatches;
+  }
+
+  // Preserve existing lastModified if content hasn't changed, otherwise use current timestamp
+  const mainIndex = {
+    ...newMainIndexContent,
+    lastModified: contentChanged
+      ? new Date().toISOString()
+      : (existingMainIndex?.lastModified ?? new Date().toISOString())
+  };
+
+  // Only write if content has changed or file doesn't exist
+  if (contentChanged || !existingMainIndex) {
+    await writeFile(mainIndexPath, JSON.stringify(mainIndex, null, 2), "utf-8");
+    logger.debug("general", "Updated main index with JSON Schema $ref structure", {
+      entityTypeCount: discoveredEntityTypes.length,
+      contentChanged
+    });
+  } else {
+    logger.debug("general", "Main index content unchanged - skipping write", {
+      entityTypeCount: discoveredEntityTypes.length
+    });
+  }
 }
