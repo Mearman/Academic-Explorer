@@ -1124,7 +1124,7 @@ export class OpenAlexCLI {
   async getCacheStats(): Promise<CacheStats> {
     try {
       const stats = await this.cachedClient.getCacheStats();
-      return stats as CacheStats;
+      return stats;
     } catch (error) {
       logger.error("general", "Failed to get cache stats", { error });
       return { enabled: false };
@@ -1301,11 +1301,16 @@ export class OpenAlexCLI {
     queriesCached: number;
     errors: string[];
   }> {
-    const result = {
+    const result: {
+      filesProcessed: number;
+      entitiesCached: number;
+      queriesCached: number;
+      errors: string[];
+    } = {
       filesProcessed: 0,
       entitiesCached: 0,
       queriesCached: 0,
-      errors: [] as string[]
+      errors: []
     };
 
     try {
@@ -1335,7 +1340,7 @@ export class OpenAlexCLI {
 
                 if (entity && typeof entity === "object" && "id" in entity && "display_name" in entity &&
                     typeof entity.id === "string" && typeof entity.display_name === "string") {
-                  await this.saveEntityToCache(type, entity as { id: string; display_name: string; [key: string]: unknown });
+                  await this.saveEntityToCache(type, entity);
                   result.entitiesCached++;
                 }
               } else {

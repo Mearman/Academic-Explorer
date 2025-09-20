@@ -679,7 +679,7 @@ export class CachedOpenAlexClient extends OpenAlexBaseClient {
     }
 
     return new Promise<T>((resolve, reject) => {
-      const requestId = `req_${Date.now()}_${Math.random().toString(36).slice(2, 11)}`;
+      const requestId = `req_${Date.now().toString()}_${Math.random().toString(36).slice(2, 11)}`;
 
       const timeout = setTimeout(() => {
         this.pendingWorkerRequests.delete(requestId);
