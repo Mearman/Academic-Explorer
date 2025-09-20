@@ -18,7 +18,7 @@ import { eventBridge } from "@/lib/graph/events/event-bridge";
 import { WorkerEventType } from "@/lib/graph/events/types";
 import { logger } from "@/lib/logger";
 import { CustomForceManager } from "../lib/graph/custom-forces/manager";
-import type { EnhancedSimulationNode } from "../lib/graph/custom-forces/types";
+import type { EnhancedSimulationNode, CustomForceType, CustomForceConfig } from "../lib/graph/custom-forces/types";
 import { createUnifiedOpenAlexClient } from "@/lib/openalex/cached-client";
 import type { ExpansionOptions } from "@/lib/entities";
 import type { EntityType, GraphNode, GraphEdge } from "@/lib/graph/types";
@@ -310,11 +310,11 @@ eventBridge.registerMessageHandler("CUSTOM_FORCE_ADD", (data) => {
 			// We've verified this has the required properties for AddCustomForceData
 			const addData: AddCustomForceData = {
 				name: forceData.name,
-				type: forceData.type,
+				type: forceData.type as CustomForceType,
 				enabled: ("enabled" in forceData && typeof forceData.enabled === "boolean") ? forceData.enabled : true,
 				strength: ("strength" in forceData && typeof forceData.strength === "number") ? forceData.strength : 0.5,
 				priority: ("priority" in forceData && typeof forceData.priority === "number") ? forceData.priority : 0,
-				config: forceData.config,
+				config: forceData.config as CustomForceConfig,
 				...("id" in forceData && typeof forceData.id === "string" ? { id: forceData.id } : {})
 			};
 			addCustomForce(addData);

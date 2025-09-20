@@ -333,12 +333,7 @@ export function useBackgroundWorker(options: UseBackgroundWorkerOptions = {}) {
 	}, [onError]);
 
 	// EventBridge handlers for new event system
-	const handleWorkerReady = useCallback((payload: WorkerEventPayloads[WorkerEventType.WORKER_READY]) => {
-		if (payload.workerType === "force-animation") {
-			setIsWorkerReady(true);
-			logger.debug("graph", "Force animation worker ready via EventBridge");
-		}
-	}, [emit]);
+	// Note: Worker ready handling is now managed by BackgroundWorkerProvider
 
 	const handleWorkerErrorEvent = useCallback((payload: WorkerEventPayloads[WorkerEventType.WORKER_ERROR]) => {
 		if (payload.workerType === "force-animation") {
@@ -725,6 +720,7 @@ export function useBackgroundWorker(options: UseBackgroundWorkerOptions = {}) {
 		nodePositions,
 		performanceStats,
 		isWorkerReady,
+		worker,
 
 		// Actions
 		startAnimation,

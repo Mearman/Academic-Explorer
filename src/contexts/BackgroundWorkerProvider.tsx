@@ -8,6 +8,7 @@ import { getBackgroundWorker, isWorkerReady as checkWorkerReady, terminateBackgr
 import { eventBridge } from "@/lib/graph/events/event-bridge";
 import { logger } from "@/lib/logger";
 import { BackgroundWorkerContext, type BackgroundWorkerContextType } from "./contexts";
+import type { CrossContextMessage } from "@/lib/graph/events/types";
 
 // Type guard for worker ready payload
 function isWorkerReadyPayload(payload: unknown): payload is { workerType: string } {
@@ -57,7 +58,7 @@ export function BackgroundWorkerProvider({ children }: { children: React.ReactNo
 
     logger.debug("worker", "BackgroundWorkerProvider registering EventBridge handler");
 
-    const handleWorkerReady = (message: { eventType: string; payload: unknown }) => {
+    const handleWorkerReady = (message: CrossContextMessage) => {
       const eventType = message.eventType;
       const payload = message.payload;
       logger.debug("worker", "BackgroundWorkerProvider EventBridge message received", {

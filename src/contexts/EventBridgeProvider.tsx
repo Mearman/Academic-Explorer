@@ -7,6 +7,7 @@ import React, { useEffect, useRef, useCallback, useMemo } from "react";
 import { eventBridge } from "@/lib/graph/events/event-bridge";
 import { logger } from "@/lib/logger";
 import { EventBridgeContext, type EventBridgeContextType, type EventHandler } from "./contexts";
+import type { ExecutionContext } from "@/lib/graph/events/types";
 
 export function EventBridgeProvider({ children }: { children: React.ReactNode }) {
   const handlersRef = useRef<Map<string, EventHandler>>(new Map());
@@ -32,7 +33,7 @@ export function EventBridgeProvider({ children }: { children: React.ReactNode })
     eventBridge.unregisterMessageHandler(handlerId);
   }, []);
 
-  const emit = useCallback(({ eventType, payload, target }: { eventType: string; payload: unknown; target?: string }) => {
+  const emit = useCallback(({ eventType, payload, target }: { eventType: string; payload: unknown; target?: ExecutionContext }) => {
     logger.debug("eventbridge", "Emitting event", { eventType, target });
     eventBridge.emit(eventType, payload, target);
   }, []);

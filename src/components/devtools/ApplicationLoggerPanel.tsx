@@ -86,6 +86,8 @@ export function ApplicationLoggerPanel() {
 			"settings": "yellow",
 			"static-data": "lime",
 			"query-cache": "grape",
+			"worker": "dark",
+			"eventbridge": "emerald",
 		};
 		const color = colors[category];
 		return color ?? "gray";
