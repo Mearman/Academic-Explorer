@@ -90,9 +90,9 @@ export function useGraphData() {
 			// Fallback to service
 			store.setLoading(true);
 			try {
-				logger.debug("graph", "About to call service.expandNode", { nodeId, options }, "useGraphData");
+				logger.warn("graph", "About to call service.expandNode", { nodeId, options }, "useGraphData");
 				await service.expandNode(nodeId, options);
-				logger.debug("graph", "service.expandNode completed", { nodeId }, "useGraphData");
+				logger.warn("graph", "service.expandNode completed", { nodeId }, "useGraphData");
 
 				// Recalculate depths after expansion using first pinned node
 				const pinnedNodes = Object.keys(store.pinnedNodes);
@@ -133,7 +133,7 @@ export function useGraphData() {
 				workerReady: forceWorker.isWorkerReady
 			}, "useGraphData");
 
-			await forceWorker.expandNode(
+			forceWorker.expandNode(
 				nodeId,
 				node.entityId,
 				node.type,
