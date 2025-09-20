@@ -4,7 +4,7 @@
  */
 
 import { QueryClient } from "@tanstack/react-query";
-import { rateLimitedOpenAlex } from "@/lib/openalex/rate-limited-client";
+import { cachedOpenAlex } from "@/lib/openalex/cached-client";
 import { EntityDetector } from "@/lib/graph/utils/entity-detection";
 import { useGraphStore } from "@/stores/graph-store";
 import { logError, logger } from "@/lib/logger";
@@ -383,7 +383,7 @@ export class RelationshipDetectionService {
 				workId
 			}, "RelationshipDetectionService");
 
-			const workData = await rateLimitedOpenAlex.getWork(workId, {
+			const workData = await cachedOpenAlex.client.works.getWork(workId, {
 				select: ["id", "referenced_works"]
 			});
 
@@ -598,21 +598,21 @@ export class RelationshipDetectionService {
 
 		switch (entityType) {
 			case "works":
-				return rateLimitedOpenAlex.getWork(entityId, params);
+				return cachedOpenAlex.client.works.getWork(entityId, params);
 			case "authors":
-				return rateLimitedOpenAlex.getAuthor(entityId, params);
+				return cachedOpenAlex.client.authors.getAuthor(entityId, params);
 			case "sources":
-				return rateLimitedOpenAlex.getSource(entityId, params);
+				return cachedOpenAlex.client.sources.getSource(entityId, params);
 			case "institutions":
-				return rateLimitedOpenAlex.getInstitution(entityId, params);
+				return cachedOpenAlex.client.institutions.getInstitution(entityId, params);
 			case "topics":
-				return rateLimitedOpenAlex.getTopic(entityId, params);
+				return cachedOpenAlex.client.topics.get(entityId, params);
 			case "publishers":
-				return rateLimitedOpenAlex.getPublisher(entityId, params);
+				return cachedOpenAlex.client.publishers.get(entityId, params);
 			case "funders":
-				return rateLimitedOpenAlex.getFunder(entityId, params);
+				return cachedOpenAlex.client.funders.get(entityId, params);
 			case "keywords":
-				return rateLimitedOpenAlex.getKeyword(entityId, params);
+				return cachedOpenAlex.client.keywords.getKeyword(entityId, params);
 			default:
 				throw new Error(`Unsupported entity type for field selection: ${entityType}`);
 		}

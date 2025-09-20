@@ -5,8 +5,9 @@
  */
 
 import { QueryClient } from "@tanstack/react-query";
-import { rateLimitedOpenAlex } from "@/lib/openalex/rate-limited-client";
+import { cachedOpenAlex } from "@/lib/openalex/cached-client";
 import { EntityDetector } from "@/lib/graph/utils/entity-detection";
+import { detectEntityType } from "@/lib/entities/entity-detection";
 import { EntityFactory, type ExpansionOptions } from "@/lib/entities";
 import { useGraphStore } from "@/stores/graph-store";
 import { useRepositoryStore } from "@/stores/repository-store";
@@ -86,7 +87,7 @@ export class GraphDataService {
 
 			const entity = await this.deduplicationService.getEntity(
 				apiEntityId,
-				() => rateLimitedOpenAlex.getEntity(apiEntityId)
+				() => cachedOpenAlex.client.getEntity(apiEntityId)
 			);
 
 			// Entity successfully fetched
@@ -224,7 +225,7 @@ export class GraphDataService {
 
 			const entity = await this.deduplicationService.getEntity(
 				apiEntityId,
-				() => rateLimitedOpenAlex.getEntity(apiEntityId)
+				() => cachedOpenAlex.client.getEntity(apiEntityId)
 			);
 
 			// Entity successfully fetched
@@ -332,7 +333,7 @@ export class GraphDataService {
 
 			const entity = await this.deduplicationService.getEntity(
 				apiEntityId,
-				() => rateLimitedOpenAlex.getEntity(apiEntityId)
+				() => cachedOpenAlex.client.getEntity(apiEntityId)
 			);
 
 			// Entity successfully fetched
@@ -456,7 +457,7 @@ export class GraphDataService {
 			// Check if we can use selective field loading for this entity type
 			if (EntityFactory.isSupported(node.type)) {
 				// Use entity-specific selective field loading for metadata
-				const entityInstance = EntityFactory.create(node.type, rateLimitedOpenAlex);
+				const entityInstance = EntityFactory.create(node.type, cachedOpenAlex);
 
 				logger.debug("graph", "Using selective field loading for metadata fields", {
 					nodeId,
@@ -495,7 +496,7 @@ export class GraphDataService {
 
 				const entity = await this.deduplicationService.getEntity(
 					node.entityId,
-					() => rateLimitedOpenAlex.getEntity(node.entityId)
+					() => cachedOpenAlex.client.getEntity(node.entityId)
 				);
 
 				// Extract full data from the entity
@@ -808,7 +809,7 @@ export class GraphDataService {
 			}, "GraphDataService");
 
 			// Create entity instance using the factory
-			const entity = EntityFactory.create(node.type, rateLimitedOpenAlex);
+			const entity = EntityFactory.create(node.type, cachedOpenAlex);
 
 			// Get expansion settings for this entity type
 			const expansionSettingsStore = useExpansionSettingsStore.getState();
@@ -835,7 +836,7 @@ export class GraphDataService {
 			const context = {
 				entityId: node.entityId,
 				entityType: node.type,
-				client: rateLimitedOpenAlex
+				client: cachedOpenAlex
 			};
 			const enhancedOptions = {
 				...options,
@@ -935,35 +936,88 @@ export class GraphDataService {
 		store.setError(null);
 
 		try {
-			const results = await rateLimitedOpenAlex.searchAll(query, {
-				entityTypes: options.entityTypes,
-				limit: options.limit || 20,
-			});
+			// Search each entity type using the client API
+			const limit = options.limit || 20;
+			const entityTypes = options.entityTypes || ["works", "authors", "sources", "institutions", "topics"];
+			const allResults: OpenAlexEntity[] = [];
 
-			// Flatten the results object into a single array
-			const flatResults: OpenAlexEntity[] = [
-				...results.works,
-				...results.authors,
-				...results.sources,
-				...results.institutions,
-				...results.topics,
-				...results.publishers,
-				...results.funders,
-				...results.keywords,
-			];
+			// Search each entity type and collect results
+			for (const entityType of entityTypes) {
+				let entityResults: OpenAlexEntity[] = [];
+				try {
+					switch (entityType) {
+						case "works": {
+							const worksResponse = await cachedOpenAlex.client.works.getWorks({
+								search: query,
+								per_page: Math.min(limit, 25) // Limit per entity type
+							});
+							entityResults = worksResponse.results;
+							break;
+						}
+						case "authors": {
+							const authorsResponse = await cachedOpenAlex.client.authors.getAuthors({
+								search: query,
+								per_page: Math.min(limit, 25)
+							});
+							entityResults = authorsResponse.results;
+							break;
+						}
+						case "sources": {
+							const sourcesResponse = await cachedOpenAlex.client.sources.getSources({
+								search: query,
+								per_page: Math.min(limit, 25)
+							});
+							entityResults = sourcesResponse.results;
+							break;
+						}
+						case "institutions": {
+							const institutionsResponse = await cachedOpenAlex.client.institutions.searchInstitutions(query, {
+								per_page: Math.min(limit, 25)
+							});
+							entityResults = institutionsResponse.results;
+							break;
+						}
+						case "topics": {
+							const topicsResponse = await cachedOpenAlex.client.topics.getMultiple({
+								search: query,
+								per_page: Math.min(limit, 25)
+							});
+							entityResults = topicsResponse.results;
+							break;
+						}
+					}
+				} catch (error) {
+					logger.warn("api", `Failed to search ${entityType}`, { query, error });
+				}
+				allResults.push(...entityResults);
+			}
 
-			// Track search statistics
-			const searchStats = {
-				works: results.works.length,
-				authors: results.authors.length,
-				sources: results.sources.length,
-				institutions: results.institutions.length,
-				topics: results.topics.length,
-				concepts: 0, // Concepts not currently used in search
-				publishers: results.publishers.length,
-				funders: results.funders.length,
-				keywords: results.keywords.length,
-			} satisfies Record<EntityType, number>;
+			// Use the collected results
+			const flatResults: OpenAlexEntity[] = allResults;
+
+			// Track search statistics by counting results by entity type
+			const searchStats: Record<EntityType, number> = {
+				works: 0,
+				authors: 0,
+				sources: 0,
+				institutions: 0,
+				topics: 0,
+				concepts: 0,
+				publishers: 0,
+				funders: 0,
+				keywords: 0,
+			};
+
+			// Count results by entity type
+			for (const result of flatResults) {
+				try {
+					const entityType = detectEntityType(result);
+					searchStats[entityType]++;
+				} catch (error) {
+					// Skip results that can't be detected
+					logger.warn("graph", "Could not detect entity type for search result", { result, error });
+				}
+			}
 
 			const { nodes, edges } = this.transformSearchResults(flatResults);
 
@@ -993,24 +1047,24 @@ export class GraphDataService {
 
 		switch (entityType) {
 			case "works":
-				return await rateLimitedOpenAlex.getWork(entityId, params);
+				return await cachedOpenAlex.client.works.getWork(entityId, params);
 			case "authors":
-				return await rateLimitedOpenAlex.getAuthor(entityId, params);
+				return await cachedOpenAlex.client.authors.getAuthor(entityId, params);
 			case "sources":
-				return await rateLimitedOpenAlex.getSource(entityId, params);
+				return await cachedOpenAlex.client.sources.getSource(entityId, params);
 			case "institutions":
-				return await rateLimitedOpenAlex.getInstitution(entityId, params);
+				return await cachedOpenAlex.client.institutions.getInstitution(entityId, params);
 			case "topics":
-				return await rateLimitedOpenAlex.getTopic(entityId, params);
+				return await cachedOpenAlex.client.topics.get(entityId, params);
 			case "publishers":
-				return await rateLimitedOpenAlex.getPublisher(entityId, params);
+				return await cachedOpenAlex.client.publishers.get(entityId, params);
 			case "funders":
-				return await rateLimitedOpenAlex.getFunder(entityId, params);
+				return await cachedOpenAlex.client.funders.get(entityId, params);
 			case "keywords":
-				return await rateLimitedOpenAlex.getKeyword(entityId, params);
+				return await cachedOpenAlex.client.keywords.getKeyword(entityId, params);
 			default:
 				// Fallback to generic method without field selection
-				return await rateLimitedOpenAlex.getEntity(entityId);
+				return await cachedOpenAlex.client.getEntity(entityId);
 		}
 	}
 
@@ -1118,7 +1172,7 @@ export class GraphDataService {
 			// Fetch full entity data without field restrictions
 			const fullEntity = await this.deduplicationService.getEntity(
 				node.entityId,
-				() => rateLimitedOpenAlex.getEntity(node.entityId)
+				() => cachedOpenAlex.client.getEntity(node.entityId)
 			);
 
 			// Create updated node data WITHOUT creating related entities (hydration only)
