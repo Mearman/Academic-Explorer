@@ -113,7 +113,7 @@ export function useBackgroundWorker(options: UseBackgroundWorkerOptions = {}) {
 	} = options;
 
 	// Use the context providers for worker management
-	const { worker, isWorkerReady, getWorker } = useBackgroundWorkerContext();
+	const { worker, isWorkerReady } = useBackgroundWorkerContext();
 	const { registerHandler, unregisterHandler, emit } = useEventBridge();
 	const workerRef = useRef<Worker | null>(worker);
 

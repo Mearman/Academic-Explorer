@@ -53,6 +53,7 @@ export function EventBridgeProvider({ children }: { children: React.ReactNode })
       logger.debug("eventbridge", "EventBridgeProvider cleaning up");
 
       // Unregister all handlers we've registered
+      // Copy ref value to avoid stale closure warning
       const currentHandlers = handlersRef.current;
       const handlerIds = Array.from(currentHandlers.keys());
       for (const handlerId of handlerIds) {

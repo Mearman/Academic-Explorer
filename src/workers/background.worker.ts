@@ -18,7 +18,7 @@ import { eventBridge } from "@/lib/graph/events/event-bridge";
 import { WorkerEventType } from "@/lib/graph/events/types";
 import { logger } from "@/lib/logger";
 import { CustomForceManager } from "../lib/graph/custom-forces/manager";
-import type { EnhancedSimulationNode, CustomForceType, CustomForceConfig } from "../lib/graph/custom-forces/types";
+import type { EnhancedSimulationNode, CustomForceType } from "../lib/graph/custom-forces/types";
 import { createUnifiedOpenAlexClient } from "@/lib/openalex/cached-client";
 import type { ExpansionOptions } from "@/lib/entities";
 import type { EntityType, GraphNode, GraphEdge } from "@/lib/graph/types";
@@ -63,7 +63,10 @@ interface AnimationConfig {
 import type { CustomForce } from "../lib/graph/custom-forces/types";
 
 // Type for adding a new custom force (id is optional, will be generated)
-type AddCustomForceData = Omit<CustomForce, "id"> & { id?: string };
+type AddCustomForceData = Omit<CustomForce, "id" | "config"> & {
+  id?: string;
+  config: unknown; // Allow any config object, will be validated by manager
+};
 
 
 // Type for worker message data that includes all possible force data
@@ -221,6 +224,9 @@ function createTimerAPI(): TimerAPI {
 const timerAPI = createTimerAPI();
 
 // Type guards for EventBridge payloads
+function isValidCustomForceType(type: string): type is CustomForceType {
+	return ["radial", "property-x", "property-y", "property-both", "cluster", "repulsion", "attraction", "orbit"].includes(type);
+}
 function isForceSimulationStartPayload(data: unknown): data is {
 	nodes: WorkerNode[];
 	links: WorkerLink[];
@@ -229,9 +235,8 @@ function isForceSimulationStartPayload(data: unknown): data is {
 } {
 	if (typeof data !== "object" || data === null) return false;
 	if (!("nodes" in data) || !("links" in data)) return false;
-	// Type narrowing after property checks
-	const record = data as Record<string, unknown>;
-	return Array.isArray(record.nodes) && Array.isArray(record.links);
+	// TypeScript narrowing: after checks, we know data has these properties
+	return Array.isArray(data.nodes) && Array.isArray(data.links);
 }
 
 function isUpdateParametersPayload(data: unknown): data is { config: AnimationConfig } {
@@ -241,8 +246,8 @@ function isUpdateParametersPayload(data: unknown): data is { config: AnimationCo
 function isCustomForcesSyncPayload(data: unknown): data is { customForces: AddCustomForceData[] } {
 	if (typeof data !== "object" || data === null) return false;
 	if (!("customForces" in data)) return false;
-	const record = data as Record<string, unknown>;
-	return Array.isArray(record.customForces);
+	// TypeScript narrowing: after checks, we know data has customForces property
+	return Array.isArray(data.customForces);
 }
 
 function isCustomForcePayload(data: unknown): data is { forceData: Record<string, unknown> } {
@@ -256,8 +261,8 @@ function isExpandNodePayload(data: unknown): data is { expandRequest: ExpandNode
 function isCancelExpansionPayload(data: unknown): data is { requestId: string } {
 	if (typeof data !== "object" || data === null) return false;
 	if (!("requestId" in data)) return false;
-	const record = data as Record<string, unknown>;
-	return typeof record.requestId === "string";
+	// TypeScript narrowing: after checks, we know data has requestId property
+	return typeof data.requestId === "string";
 }
 
 // EventBridge message handlers - replaces self.onmessage
@@ -306,15 +311,16 @@ eventBridge.registerMessageHandler("CUSTOM_FORCE_ADD", (data) => {
 			typeof forceData.name === "string" &&
 			typeof forceData.type === "string" &&
 			typeof forceData.config === "object" &&
-			forceData.config !== null) {
+			forceData.config !== null &&
+			isValidCustomForceType(forceData.type)) {
 			// We've verified this has the required properties for AddCustomForceData
 			const addData: AddCustomForceData = {
 				name: forceData.name,
-				type: forceData.type as CustomForceType,
+				type: forceData.type,
 				enabled: ("enabled" in forceData && typeof forceData.enabled === "boolean") ? forceData.enabled : true,
 				strength: ("strength" in forceData && typeof forceData.strength === "number") ? forceData.strength : 0.5,
 				priority: ("priority" in forceData && typeof forceData.priority === "number") ? forceData.priority : 0,
-				config: forceData.config as CustomForceConfig,
+				config: forceData.config,
 				...("id" in forceData && typeof forceData.id === "string" ? { id: forceData.id } : {})
 			};
 			addCustomForce(addData);
