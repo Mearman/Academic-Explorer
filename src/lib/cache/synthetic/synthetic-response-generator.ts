@@ -4,7 +4,7 @@
  * Implements surgical request optimization and response synthesis
  */
 
-import { logger, logError } from '@/lib/logger';
+import { logger, logError } from "@/lib/logger";
 import {
   EntityType,
   QueryParams,
@@ -12,13 +12,13 @@ import {
   SurgicalRequest,
   MultiTierAvailabilityMatrix,
   StorageTier,
-  RequestStrategy,
-  CachePolicy
-} from './types';
-import { StorageTierManager } from './storage-tier-manager';
-import { EntityFieldAccumulator } from './entity-field-accumulator';
-import { CollectionResultMapper } from './collection-result-mapper';
-import { OpenAlexResponse } from '@/lib/openalex/types';
+  CachePolicy,
+  EntityFieldAccumulation
+} from "./types";
+import { StorageTierManager } from "./storage-tier-manager";
+import { EntityFieldAccumulator } from "./entity-field-accumulator";
+import { CollectionResultMapper } from "./collection-result-mapper";
+import { OpenAlexResponse } from "@/lib/openalex/types";
 
 export class SyntheticResponseGenerator {
   private tierManager: StorageTierManager;
@@ -57,14 +57,14 @@ export class SyntheticResponseGenerator {
         return await this.optimizeSingleEntityRequest(entityType, params);
       }
     } catch (error) {
-      logError('Failed to optimize request', error, 'SyntheticResponseGenerator', 'cache');
+      logError("Failed to optimize request", error, "SyntheticResponseGenerator", "cache");
 
       // Return fallback plan
       return {
         canSynthesize: false,
         requiredApiCalls: [{
-          type: 'full-collection',
-          url: this.buildApiUrl(entityType, params),
+          type: "full-collection",
+          url: this.buildApiUrl({ entityType, params }),
           fields: params.select || [],
           estimatedCost: 5000, // Conservative estimate
           tier: StorageTier.API
@@ -78,7 +78,7 @@ export class SyntheticResponseGenerator {
       };
     } finally {
       const responseTime = performance.now() - startTime;
-      logger.debug('cache', 'Request optimization completed', {
+      logger.debug("cache", "Request optimization completed", {
         entityType,
         responseTime,
         isCollection: this.isCollectionRequest(params)
@@ -100,7 +100,7 @@ export class SyntheticResponseGenerator {
       if (!plan.canSynthesize) {
         // No cached data available, return API response as-is
         if (!apiData) {
-          throw new Error('Cannot synthesize response without cached data or API data');
+          throw new Error("Cannot synthesize response without cached data or API data");
         }
         return apiData;
       }
@@ -120,12 +120,16 @@ export class SyntheticResponseGenerator {
       }
 
       // Add any cached data that wasn't in API response
-      const cachedEntities = await this.extractCachedEntities<T>(plan.cachedData);
-      synthesizedResults.push(...cachedEntities);
+      const cachedEntities = this.extractCachedEntities(plan.cachedData);
+      // Filter to ensure type safety
+      const typedCachedEntities = cachedEntities.filter((entity): entity is T => {
+        return typeof entity === "object" && entity !== null;
+      });
+      synthesizedResults.push(...typedCachedEntities);
 
       const responseTime = performance.now() - startTime;
 
-      logger.debug('cache', 'Response synthesis completed', {
+      logger.debug("cache", "Response synthesis completed", {
         entityType,
         cachedEntities: cachedEntities.length,
         apiEntities: apiData?.results?.length || 0,
@@ -139,7 +143,7 @@ export class SyntheticResponseGenerator {
       };
 
     } catch (error) {
-      logError('Failed to synthesize response', error, 'SyntheticResponseGenerator', 'cache');
+      logError("Failed to synthesize response", error, "SyntheticResponseGenerator", "cache");
 
       // Fallback to API data
       if (apiData) {
@@ -153,20 +157,24 @@ export class SyntheticResponseGenerator {
   /**
    * Analyze multi-tier availability for entities and fields
    */
-  async analyzeMultiTierAvailability(
-    entityIds: string[],
-    fields: string[],
-    entityType: EntityType
-  ): Promise<MultiTierAvailabilityMatrix> {
-    const entities: MultiTierAvailabilityMatrix['entities'] = {};
+  async analyzeMultiTierAvailability({
+    entityIds,
+    fields,
+    entityType
+  }: {
+    entityIds: string[];
+    fields: string[];
+    entityType: EntityType;
+  }): Promise<MultiTierAvailabilityMatrix> {
+    const entities: MultiTierAvailabilityMatrix["entities"] = {};
 
     for (const entityId of entityIds) {
-      const tierCoverage = {
-        memory: [] as string[],
-        localStorage: [] as string[],
-        indexedDB: [] as string[],
-        static: [] as string[],
-        missing: [] as string[]
+      const tierCoverage: MultiTierAvailabilityMatrix["entities"][string] = {
+        memory: [],
+        localStorage: [],
+        indexedDB: [],
+        static: [],
+        missing: []
       };
 
       // Check each storage tier for field availability
@@ -221,11 +229,15 @@ export class SyntheticResponseGenerator {
   /**
    * Generate surgical requests for missing data
    */
-  generateSurgicalRequests(
-    availability: MultiTierAvailabilityMatrix,
-    entityType: EntityType,
-    params: QueryParams
-  ): SurgicalRequest[] {
+  generateSurgicalRequests({
+    availability,
+    entityType,
+    _params
+  }: {
+    availability: MultiTierAvailabilityMatrix;
+    entityType: EntityType;
+    _params: QueryParams;
+  }): SurgicalRequest[] {
     const requests: SurgicalRequest[] = [];
     const entityIdsWithMissingFields = new Map<string, string[]>();
 
@@ -258,17 +270,17 @@ export class SyntheticResponseGenerator {
     if (commonFields.length > 0) {
       const entityIds = Array.from(entityIdsWithMissingFields.keys());
       requests.push({
-        type: 'batch-entities',
-        url: this.buildBatchApiUrl(entityType, entityIds, commonFields),
+        type: "batch-entities",
+        url: this.buildBatchApiUrl({ entityType, entityIds, fields: commonFields }),
         entityIds,
         fields: commonFields,
-        estimatedCost: this.estimateRequestCost(entityIds.length, commonFields.length),
+        estimatedCost: this.estimateRequestCost({ entityCount: entityIds.length, fieldCount: commonFields.length }),
         tier: StorageTier.API
       });
 
       // Remove common fields from individual entity needs
       for (const [entityId, missingFields] of entityIdsWithMissingFields) {
-        const remainingFields = missingFields.filter(f => !commonFields.includes(f));
+        const remainingFields = missingFields.filter((f: string) => !commonFields.includes(f));
         if (remainingFields.length > 0) {
           entityIdsWithMissingFields.set(entityId, remainingFields);
         } else {
@@ -281,21 +293,21 @@ export class SyntheticResponseGenerator {
     for (const [entityId, missingFields] of entityIdsWithMissingFields) {
       if (missingFields.length > 0) {
         requests.push({
-          type: 'single-entity',
-          url: this.buildSingleEntityApiUrl(entityType, entityId, missingFields),
+          type: "single-entity",
+          url: this.buildSingleEntityApiUrl({ entityType, entityId, fields: missingFields }),
           entityIds: [entityId],
           fields: missingFields,
-          estimatedCost: this.estimateRequestCost(1, missingFields.length),
+          estimatedCost: this.estimateRequestCost({ entityCount: 1, fieldCount: missingFields.length }),
           tier: StorageTier.API
         });
       }
     }
 
-    logger.debug('cache', 'Generated surgical requests', {
+    logger.debug("cache", "Generated surgical requests", {
       entityType,
       totalRequests: requests.length,
-      batchRequests: requests.filter(r => r.type === 'batch-entities').length,
-      singleRequests: requests.filter(r => r.type === 'single-entity').length,
+      batchRequests: requests.filter(r => r.type === "batch-entities").length,
+      singleRequests: requests.filter(r => r.type === "single-entity").length,
       totalCost: requests.reduce((sum, r) => sum + r.estimatedCost, 0)
     });
 
@@ -304,10 +316,13 @@ export class SyntheticResponseGenerator {
 
   // Private helper methods
 
-  private async optimizeCollectionRequest(
-    entityType: EntityType,
-    params: QueryParams
-  ): Promise<OptimizedRequestPlan> {
+  private async optimizeCollectionRequest({
+    entityType,
+    params
+  }: {
+    entityType: EntityType;
+    params: QueryParams;
+  }): Promise<OptimizedRequestPlan> {
     const queryKey = this.collectionMapper.generateQueryKey(entityType, params);
     const requestedFields = params.select || [];
     const page = params.page || 1;
@@ -320,8 +335,8 @@ export class SyntheticResponseGenerator {
       return {
         canSynthesize: false,
         requiredApiCalls: [{
-          type: 'full-collection',
-          url: this.buildApiUrl(entityType, params),
+          type: "full-collection",
+          url: this.buildApiUrl({ entityType, params }),
           fields: requestedFields,
           estimatedCost: 5000, // Estimate for full collection request
           tier: StorageTier.API
@@ -336,14 +351,14 @@ export class SyntheticResponseGenerator {
     }
 
     // Analyze field availability for cached entities
-    const availability = await this.analyzeMultiTierAvailability(
-      cachedEntityIds,
-      requestedFields,
+    const availability = await this.analyzeMultiTierAvailability({
+      entityIds: cachedEntityIds,
+      fields: requestedFields,
       entityType
-    );
+    });
 
     // Generate surgical requests for missing data
-    const surgicalRequests = this.generateSurgicalRequests(availability, entityType, params);
+    const surgicalRequests = this.generateSurgicalRequests({ availability, entityType, _params: params });
 
     // Calculate estimated savings
     const fullRequestCost = 5000;
@@ -353,7 +368,7 @@ export class SyntheticResponseGenerator {
     return {
       canSynthesize: true,
       requiredApiCalls: surgicalRequests,
-      cachedData: await this.buildCachedDataMap(availability, entityType),
+      cachedData: await this.buildCachedDataMap({ availability, entityType }),
       estimatedSavings: {
         bandwidth: bandwidthSavings,
         requests: surgicalRequests.length === 0 ? 1 : Math.max(0, 1 - surgicalRequests.length),
@@ -362,26 +377,29 @@ export class SyntheticResponseGenerator {
     };
   }
 
-  private async optimizeSingleEntityRequest(
-    entityType: EntityType,
-    params: QueryParams
-  ): Promise<OptimizedRequestPlan> {
+  private async optimizeSingleEntityRequest({
+    entityType,
+    params
+  }: {
+    entityType: EntityType;
+    params: QueryParams;
+  }): Promise<OptimizedRequestPlan> {
     const entityId = this.extractEntityIdFromParams(params);
     if (!entityId) {
-      throw new Error('Cannot extract entity ID from single entity request');
+      throw new Error("Cannot extract entity ID from single entity request");
     }
 
     const requestedFields = params.select || [];
 
     // Analyze field availability
-    const availability = await this.analyzeMultiTierAvailability(
-      [entityId],
-      requestedFields,
+    const availability = await this.analyzeMultiTierAvailability({
+      entityIds: [entityId],
+      fields: requestedFields,
       entityType
-    );
+    });
 
     // Generate surgical requests
-    const surgicalRequests = this.generateSurgicalRequests(availability, entityType, params);
+    const surgicalRequests = this.generateSurgicalRequests({ availability, entityType, _params: params });
 
     // Calculate savings
     const fullRequestCost = 1000; // Estimate for single entity request
@@ -391,7 +409,7 @@ export class SyntheticResponseGenerator {
     return {
       canSynthesize: surgicalRequests.length < requestedFields.length, // Can synthesize if we have some cached data
       requiredApiCalls: surgicalRequests,
-      cachedData: await this.buildCachedDataMap(availability, entityType),
+      cachedData: await this.buildCachedDataMap({ availability, entityType }),
       estimatedSavings: {
         bandwidth: bandwidthSavings,
         requests: surgicalRequests.length === 0 ? 1 : 0,
@@ -405,7 +423,7 @@ export class SyntheticResponseGenerator {
     return !!(params.filter || params.page || params.per_page);
   }
 
-  private determineOptimalStrategy(entities: MultiTierAvailabilityMatrix['entities']): MultiTierAvailabilityMatrix['optimalStrategy'] {
+  private determineOptimalStrategy(entities: MultiTierAvailabilityMatrix["entities"]): MultiTierAvailabilityMatrix["optimalStrategy"] {
     const tierCounts = {
       memory: 0,
       localStorage: 0,
@@ -427,26 +445,32 @@ export class SyntheticResponseGenerator {
                      coverage.indexedDB.length + coverage.static.length + coverage.missing.length;
     }
 
-    if (totalFields === 0) return 'memory';
+    if (totalFields === 0) return "memory";
 
-    // Find the tier with the highest field coverage
-    const maxTier = Object.entries(tierCounts)
-      .reduce((max, [tier, count]) => count > max.count ? { tier, count } : max, { tier: 'memory', count: 0 });
+    // Determine strategy based on field coverage thresholds
 
-    if (tierCounts.memory > totalFields * 0.5) return 'memory';
-    if (tierCounts.localStorage > totalFields * 0.3) return 'localStorage';
-    if (tierCounts.static > totalFields * 0.3) return 'static';
-    if (tierCounts.indexedDB > totalFields * 0.3) return 'indexedDB';
-    if (tierCounts.api > totalFields * 0.5) return 'api';
+    if (tierCounts.memory > totalFields * 0.5) return "memory";
+    if (tierCounts.localStorage > totalFields * 0.3) return "localStorage";
+    if (tierCounts.static > totalFields * 0.3) return "static";
+    if (tierCounts.indexedDB > totalFields * 0.3) return "indexedDB";
+    if (tierCounts.api > totalFields * 0.5) return "api";
 
-    return 'mixed';
+    return "mixed";
   }
 
-  private async buildCachedDataMap(
-    availability: MultiTierAvailabilityMatrix,
-    entityType: EntityType
-  ): Promise<any> {
-    const cachedData: any = {};
+  private async buildCachedDataMap({
+    availability,
+    entityType
+  }: {
+    availability: MultiTierAvailabilityMatrix;
+    entityType: EntityType;
+  }): Promise<EntityFieldAccumulation> {
+    const cachedData: EntityFieldAccumulation = {};
+
+    // Initialize the entity type if it doesn't exist
+    if (!cachedData[entityType]) {
+      cachedData[entityType] = {};
+    }
 
     for (const [entityId, coverage] of Object.entries(availability.entities)) {
       const allCachedFields = [
@@ -458,8 +482,9 @@ export class SyntheticResponseGenerator {
 
       if (allCachedFields.length > 0) {
         const { data } = await this.tierManager.getEntityFields(entityType, entityId, allCachedFields);
-        if (Object.keys(data).length > 0) {
-          cachedData[entityId] = data;
+        if (Object.keys(data).length > 0 && cachedData[entityType]) {
+          // Convert to EntityFieldData format if needed
+          cachedData[entityType][entityId] = data;
         }
       }
     }
@@ -467,44 +492,73 @@ export class SyntheticResponseGenerator {
     return cachedData;
   }
 
-  private async extractCachedEntities<T>(cachedData: any): Promise<T[]> {
-    return Object.values(cachedData) as T[];
+  private extractCachedEntities(cachedData: EntityFieldAccumulation): unknown[] {
+    const entities: unknown[] = [];
+
+    // Extract entities from the nested structure [entityType][entityId]
+    for (const entityTypeData of Object.values(cachedData)) {
+      for (const entityData of Object.values(entityTypeData)) {
+        if (typeof entityData === "object" && entityData !== null) {
+          entities.push(entityData);
+        }
+      }
+    }
+
+    return entities;
   }
 
-  private async updateCachesWithApiData<T>(entityType: EntityType, apiResults: T[]): Promise<void> {
+  private async updateCachesWithApiData({
+    entityType,
+    apiResults
+  }: {
+    entityType: EntityType;
+    apiResults: unknown[];
+  }): Promise<void> {
     for (const result of apiResults) {
       const entityId = this.extractEntityId(result);
       if (entityId) {
-        await this.fieldAccumulator.putEntityFields<T>(entityType, entityId, result);
+        await this.fieldAccumulator.putEntityFields(entityType, entityId, result);
       }
     }
   }
 
-  private extractEntityId<T>(entity: T): string | null {
-    if (typeof entity === 'object' && entity !== null && 'id' in entity) {
-      return String((entity as { id: unknown }).id);
+  private extractEntityId(entity: unknown): string | null {
+    if (this.isEntityWithId(entity)) {
+      if (typeof entity.id === "string" || typeof entity.id === "number") {
+        return String(entity.id);
+      }
     }
     return null;
+  }
+
+  private isEntityWithId(entity: unknown): entity is Record<string, unknown> & { id: unknown } {
+    return typeof entity === "object" && entity !== null && "id" in entity;
   }
 
   private extractEntityIdFromParams(params: QueryParams): string | null {
     // This would be used for single entity requests like /works/W123
     // Implementation depends on how entity IDs are passed in params
-    if (params.id) {
-      return String(params.id);
+    if (params.id && typeof params.id === "string") {
+      return params.id;
     }
     return null;
   }
 
-  private buildApiUrl(entityType: EntityType, params: QueryParams): string {
+  private buildApiUrl({
+    entityType,
+    params
+  }: {
+    entityType: EntityType;
+    params: QueryParams;
+  }): string {
     const baseUrl = `https://api.openalex.org/${entityType}`;
     const searchParams = new URLSearchParams();
 
     Object.entries(params).forEach(([key, value]) => {
       if (value !== undefined && value !== null) {
         if (Array.isArray(value)) {
-          searchParams.set(key, value.join(','));
-        } else {
+          searchParams.set(key, value.join(","));
+        } else if (typeof value === "string" || typeof value === "number" || typeof value === "boolean") {
           searchParams.set(key, String(value));
         }
       }
@@ -513,31 +567,53 @@ export class SyntheticResponseGenerator {
     return `${baseUrl}?${searchParams.toString()}`;
   }
 
-  private buildBatchApiUrl(entityType: EntityType, entityIds: string[], fields: string[]): string {
+  private buildBatchApiUrl({
+    entityType,
+    entityIds,
+    fields
+  }: {
+    entityType: EntityType;
+    entityIds: string[];
+    fields: string[];
+  }): string {
     const searchParams = new URLSearchParams({
-      filter: `id:${entityIds.join('|')}`,
-      select: fields.join(',')
+      filter: `id:${entityIds.join("|")}`,
+      select: fields.join(",")
     });
 
     return `https://api.openalex.org/${entityType}?${searchParams.toString()}`;
   }
 
-  private buildSingleEntityApiUrl(entityType: EntityType, entityId: string, fields: string[]): string {
+  private buildSingleEntityApiUrl({
+    entityType,
+    entityId,
+    fields
+  }: {
+    entityType: EntityType;
+    entityId: string;
+    fields: string[];
+  }): string {
     const searchParams = new URLSearchParams({
-      select: fields.join(',')
+      select: fields.join(",")
     });
 
     return `https://api.openalex.org/${entityType}/${entityId}?${searchParams.toString()}`;
   }
 
-  private estimateRequestCost(entityCount: number, fieldCount: number): number {
+  private estimateRequestCost({
+    entityCount,
+    fieldCount
+  }: {
+    entityCount: number;
+    fieldCount: number;
+  }): number {
     // Simple cost estimation based on entity and field count
     const baseEntityCost = 100; // bytes per entity
     const fieldCost = 50; // bytes per field
     return entityCount * (baseEntityCost + fieldCount * fieldCost);
   }
 
-  private createDefaultMetadata(): any {
+  private createDefaultMetadata(): Record<string, unknown> {
     return {
       count: 0,
       db_response_time_ms: 0,
