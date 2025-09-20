@@ -5,8 +5,9 @@
 
 import { useOpenAlexEntity } from "@/lib/hooks/use-openalex-query";
 import { EntityDetector } from "@/lib/graph/utils/entity-detection";
-import type { OpenAlexEntity, EntityType as OpenAlexEntityType } from "@/lib/openalex/types";
+import type { OpenAlexEntity } from "@/lib/openalex/types";
 import type { EntityType } from "@/config/cache";
+import { ENTITY_CACHE_TIMES } from "@/config/cache";
 import { logger } from "@/lib/logger";
 
 interface UseRawEntityDataOptions {
@@ -14,24 +15,6 @@ interface UseRawEntityDataOptions {
   enabled?: boolean;
 }
 
-/**
- * Convert OpenAlex entity type to cache entity type
- */
-function openAlexEntityTypeToCache(openAlexType: OpenAlexEntityType): EntityType {
-	const mapping: Record<OpenAlexEntityType, EntityType> = {
-		"works": "work",
-		"authors": "author",
-		"sources": "source",
-		"institutions": "institution",
-		"topics": "topic",
-		"publishers": "publisher",
-		"funders": "funder",
-		"keywords": "keyword",  // Now properly mapped to keyword entity type
-		"concepts": "concepts"  // Add concepts mapping
-	};
-
-	return mapping[openAlexType];
-}
 
 /**
  * Type guard to check if we have a valid entity type for the query
@@ -55,7 +38,13 @@ export const useRawEntityData = (options: UseRawEntityDataOptions) => {
 			throw new Error(`Unable to detect entity type for: ${entityId}`);
 		}
 
-		entityType = openAlexEntityTypeToCache(detection.entityType);
+		// Since cache configuration now uses plural forms that match OpenAlex API endpoints,
+		// we can use the detected entity type directly if it's a valid cache entity type
+		if (detection.entityType && detection.entityType in ENTITY_CACHE_TIMES) {
+			entityType = detection.entityType;
+		} else {
+			throw new Error(`Detected entity type "${detection.entityType}" is not a valid cache entity type`);
+		}
 		detectedEntityId = detection.normalizedId;
 		logger.debug("cache", "Detected entity type for raw data cache", {
 			entityId,
@@ -68,7 +57,7 @@ export const useRawEntityData = (options: UseRawEntityDataOptions) => {
 	const shouldFetch = enabled && isValidEntityData(detectedEntityId, entityType);
 
 	const query = useOpenAlexEntity<OpenAlexEntity>(
-		entityType || "work",    // Provide fallback type (won't be used when enabled=false)
+		entityType || "works",   // Provide fallback type (won't be used when enabled=false)
 		detectedEntityId || "",  // Provide fallback ID (won't be used when enabled=false)
 		undefined,               // no params needed for raw data
 		{

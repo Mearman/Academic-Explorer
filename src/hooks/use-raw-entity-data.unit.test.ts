@@ -119,7 +119,7 @@ describe("useRawEntityData", () => {
 
 			expect(mockEntityDetector.detectEntityIdentifier).toHaveBeenCalledWith("W123456789");
 			expect(vi.mocked(useOpenAlexEntity)).toHaveBeenCalledWith(
-				"work",
+				"works",
 				"W123456789",
 				undefined,
 				{ enabled: true }
@@ -141,7 +141,7 @@ describe("useRawEntityData", () => {
 			);
 
 			expect(vi.mocked(useOpenAlexEntity)).toHaveBeenCalledWith(
-				"author",
+				"authors",
 				"A123456789",
 				undefined,
 				{ enabled: true }
@@ -152,14 +152,14 @@ describe("useRawEntityData", () => {
 			const { useOpenAlexEntity } = await import("@/lib/hooks/use-openalex-query");
 
 			const testCases = [
-				{ input: "works", expected: "work" },
-				{ input: "authors", expected: "author" },
-				{ input: "sources", expected: "source" },
-				{ input: "institutions", expected: "institution" },
-				{ input: "topics", expected: "topic" },
-				{ input: "publishers", expected: "publisher" },
-				{ input: "funders", expected: "funder" },
-				{ input: "keywords", expected: "keyword" },
+				{ input: "works", expected: "works" },
+				{ input: "authors", expected: "authors" },
+				{ input: "sources", expected: "sources" },
+				{ input: "institutions", expected: "institutions" },
+				{ input: "topics", expected: "topics" },
+				{ input: "publishers", expected: "publishers" },
+				{ input: "funders", expected: "funders" },
+				{ input: "keywords", expected: "keywords" },
 				{ input: "concepts", expected: "concepts" },
 			];
 
@@ -210,7 +210,7 @@ describe("useRawEntityData", () => {
 			);
 
 			expect(vi.mocked(useOpenAlexEntity)).toHaveBeenCalledWith(
-				"work",
+				"works",
 				"W123456789",
 				undefined,
 				{ enabled: true }
@@ -225,7 +225,7 @@ describe("useRawEntityData", () => {
 			);
 
 			expect(vi.mocked(useOpenAlexEntity)).toHaveBeenCalledWith(
-				"work",
+				"works",
 				"W123456789",
 				undefined,
 				{ enabled: false }
@@ -240,7 +240,7 @@ describe("useRawEntityData", () => {
 			);
 
 			expect(vi.mocked(useOpenAlexEntity)).toHaveBeenCalledWith(
-				"work",
+				"works",
 				"",
 				undefined,
 				{ enabled: false }
@@ -255,7 +255,7 @@ describe("useRawEntityData", () => {
 			);
 
 			expect(vi.mocked(useOpenAlexEntity)).toHaveBeenCalledWith(
-				"work",
+				"works",
 				"",
 				undefined,
 				{ enabled: false }
@@ -282,7 +282,7 @@ describe("useRawEntityData", () => {
 				{
 					entityId: "W123456789",
 					detectedType: "works",
-					cacheType: "work",
+					cacheType: "works",
 				},
 				"useRawEntityData"
 			);
@@ -312,7 +312,7 @@ describe("useRawEntityData", () => {
 				"Raw entity data loaded from cache system",
 				expect.objectContaining({
 					entityId: "W123456789",
-					entityType: "work",
+					entityType: "works",
 					fromCache: true,
 					cacheStatus: "success",
 					dataAge: expect.any(Number),
@@ -340,7 +340,7 @@ describe("useRawEntityData", () => {
 				"Failed to fetch raw entity data",
 				{
 					entityId: "W123456789",
-					entityType: "work",
+					entityType: "works",
 					error: "Network error",
 				},
 				"useRawEntityData"
@@ -365,7 +365,7 @@ describe("useRawEntityData", () => {
 				"Failed to fetch raw entity data",
 				{
 					entityId: "W123456789",
-					entityType: "work",
+					entityType: "works",
 					error: "Unknown error",
 				},
 				"useRawEntityData"
@@ -502,7 +502,7 @@ describe("useRawEntityData", () => {
 			);
 
 			expect(vi.mocked(useOpenAlexEntity)).toHaveBeenCalledWith(
-				"work",
+				"works",
 				"W123456789",
 				undefined,
 				{ enabled: true }
@@ -517,7 +517,7 @@ describe("useRawEntityData", () => {
 			);
 
 			expect(vi.mocked(useOpenAlexEntity)).toHaveBeenCalledWith(
-				"work",
+				"works",
 				"W123456789",
 				undefined,
 				{ enabled: true }
@@ -534,7 +534,7 @@ describe("useRawEntityData", () => {
 			);
 
 			expect(vi.mocked(useOpenAlexEntity)).toHaveBeenCalledWith(
-				"work",  // fallback type
+				"works",  // fallback type
 				"",      // fallback ID
 				undefined,
 				{ enabled: false }
@@ -549,7 +549,7 @@ describe("useRawEntityData", () => {
 			);
 
 			expect(vi.mocked(useOpenAlexEntity)).toHaveBeenCalledWith(
-				"work",
+				"works",
 				"",
 				undefined,
 				{ enabled: false }
