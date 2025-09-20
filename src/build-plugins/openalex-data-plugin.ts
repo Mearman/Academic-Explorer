@@ -103,9 +103,118 @@ interface ParsedKey {
 }
 
 /**
+ * Detect malformed filenames that should be removed from filesystem
+ * Returns true if the filename represents a malformed double-encoded URL
+ */
+function detectMalformedFilename(filename: string): boolean {
+  // Pattern 1: Triple slashes in URL-encoded format (corrupted double-encoding)
+  // Example: https%2F%2F%2Fapi%2Eopenalex%2Eorg (should be https%2F%2Fapi.openalex.org)
+  if (filename.includes("%2F%2F%2F")) {
+    return true;
+  }
+
+  // Pattern 2: Double-encoded URLs embedded in paths
+  // Example: https%3A%2F%2Fapi.openalex.org%2Fauthors%2FAhttps%252F%252F
+  if (filename.includes("https%252F%252F")) {
+    return true;
+  }
+
+  // Pattern 3: Entity ID starting with encoded URL prefix
+  // Example: Ahttps%2F%2F (entity ID should not start with URL)
+  if (/^[A-Z]https%2F%2F/.test(filename)) {
+    return true;
+  }
+
+  return false;
+}
+
+/**
+ * Detect and clean malformed double-encoded keys
+ * Handles cases like: "https://api.openalex.org/authors/Ahttps%2F%2F%2Fapi%2Eopenalex%2Eorg%2Fauthors%2FA5025875274"
+ */
+function detectAndCleanMalformedKey(key: string): string {
+  // Pattern 1: Double-encoded URLs embedded in entity paths
+  // Example: "https://api.openalex.org/authors/Ahttps%2F%2F%2Fapi%2Eopenalex%2Eorg%2Fauthors%2FA5025875274"
+  const doubleEncodedPattern = /^https:\/\/api\.openalex\.org\/(\w+)\/[A-Z]https%2F%2F/;
+  if (doubleEncodedPattern.test(key)) {
+    // Extract the embedded encoded URL and decode it
+    const match = key.match(/^https:\/\/api\.openalex\.org\/\w+\/[A-Z](https%2F%2F.+)$/);
+    if (match) {
+      try {
+        let embeddedUrl = decodeURIComponent(match[1]);
+        // Fix malformed protocol separator
+        embeddedUrl = embeddedUrl.replace(/^https\/\/\//, "https://");
+        logger.debug("general", "Extracted embedded URL from malformed key", {
+          original: key,
+          extracted: embeddedUrl
+        });
+        return embeddedUrl;
+      } catch {
+        // Decoding failed, continue with other patterns
+      }
+    }
+  }
+
+  // Pattern 2: Entity ID starting with encoded URL
+  // Example: "Ahttps%2F%2F%2Fapi%2Eopenalex%2Eorg%2Fauthors%2FA5025875274"
+  const encodedEntityPattern = /^[A-Z]https%2F%2F/;
+  if (encodedEntityPattern.test(key)) {
+    try {
+      // Remove the prefix letter and decode
+      const withoutPrefix = key.substring(1);
+      let decodedUrl = decodeURIComponent(withoutPrefix);
+      // Fix malformed protocol separator
+      decodedUrl = decodedUrl.replace(/^https\/\/\//, "https://");
+      logger.debug("general", "Decoded malformed entity ID", {
+        original: key,
+        decoded: decodedUrl
+      });
+      return decodedUrl;
+    } catch {
+      // Decoding failed, continue
+    }
+  }
+
+  // Pattern 3: Multiple URL encoding layers
+  // Try progressive decoding until we get a valid URL or stop changing
+  let current = key;
+  let previous = "";
+  let attempts = 0;
+  const maxDecodeAttempts = 5;
+
+  while (current !== previous && attempts < maxDecodeAttempts) {
+    previous = current;
+    try {
+      const decoded = decodeURIComponent(current);
+      if (decoded !== current && (decoded.startsWith("https://") || decoded.match(/^[A-Z]\d+$/))) {
+        current = decoded;
+        attempts++;
+      } else {
+        break;
+      }
+    } catch {
+      break;
+    }
+  }
+
+  if (current !== key && attempts > 0) {
+    logger.debug("general", "Progressive decoding cleaned malformed key", {
+      original: key,
+      cleaned: current,
+      attempts
+    });
+  }
+
+  return current;
+}
+
+/**
  * Parse various key formats into a standardized structure
  */
 function parseIndexKey(key: string): ParsedKey | null {
+  // Note: Malformed key detection is now handled at the caller level
+  // to avoid recursive cleaning that masks the original malformed state
+
   // Handle full OpenAlex URLs
   if (key.startsWith("https://api.openalex.org/")) {
     return parseOpenAlexApiUrl(key);
@@ -294,12 +403,14 @@ function inferEntityTypeFromId(id: string): string {
 
 /**
  * Download entity directly with encoded filename (avoids temporary file creation)
+ * Returns: true for success, false for non-404 errors, "not_found" for 404 errors,
+ * or { redirected: true, finalUrl: string } for redirected URLs
  */
 async function downloadEntityWithEncodedFilename(
   entityType: string,
   entityId: string,
   targetFilePath: string
-): Promise<boolean> {
+): Promise<boolean | "not_found" | { redirected: true; finalUrl: string }> {
   try {
     // Entity type mapping (same as in openalex-downloader)
     const ENTITY_TYPE_TO_ENDPOINT: Record<string, string> = {
@@ -324,33 +435,119 @@ async function downloadEntityWithEncodedFilename(
 
     logger.debug("general", "Downloading entity from OpenAlex", { entityType, entityId });
 
-    // Simple fetch with error handling
-    const response = await fetch(apiUrl);
-    if (!response.ok) {
-      logger.error("general", "Failed to download entity", {
-        entityType,
-        entityId,
-        status: response.status,
-        statusText: response.statusText
-      });
-      return false;
+    // Follow redirects manually to handle chains and track final URL
+    let currentUrl = apiUrl;
+    let finalUrl = apiUrl;
+    const maxRedirects = 10; // Prevent infinite redirect loops
+    let redirectCount = 0;
+    const redirectChain: string[] = [apiUrl];
+
+    while (redirectCount < maxRedirects) {
+      logger.debug("general", "Fetching URL", { currentUrl, redirectCount });
+
+      const response = await fetch(currentUrl, { redirect: "manual" });
+
+      // Handle redirects (302, 301, etc.)
+      if (response.status >= 300 && response.status < 400) {
+        const location = response.headers.get("Location");
+        if (!location) {
+          logger.error("general", "Redirect response missing Location header", {
+            entityType,
+            entityId,
+            status: response.status,
+            currentUrl
+          });
+          return false;
+        }
+
+        // Resolve relative URLs
+        const redirectUrl = new URL(location, currentUrl).toString();
+        redirectChain.push(redirectUrl);
+
+        logger.debug("general", "Following redirect", {
+          entityType,
+          entityId,
+          status: response.status,
+          from: currentUrl,
+          to: redirectUrl,
+          redirectCount: redirectCount + 1
+        });
+
+        currentUrl = redirectUrl;
+        finalUrl = redirectUrl;
+        redirectCount++;
+        continue; // Follow the redirect
+      }
+
+      // Non-redirect response - process it
+      if (!response.ok) {
+        if (response.status === 404) {
+          logger.warn("general", "Entity not found (404) after redirect chain - will remove from index", {
+            entityType,
+            entityId,
+            status: response.status,
+            finalUrl,
+            redirectChain: redirectChain.length > 1 ? redirectChain : undefined
+          });
+          return "not_found";
+        }
+
+        logger.error("general", "Failed to download entity after redirect chain", {
+          entityType,
+          entityId,
+          status: response.status,
+          statusText: response.statusText,
+          finalUrl,
+          redirectChain: redirectChain.length > 1 ? redirectChain : undefined
+        });
+        return false;
+      }
+
+      // Success - process the response
+      const rawJsonText = await response.text();
+      if (!rawJsonText) {
+        logger.error("general", "Failed to download entity: empty response", {
+          entityType,
+          entityId,
+          finalUrl
+        });
+        return false;
+      }
+
+      // Parse and re-stringify for consistent formatting
+      const parsedData: unknown = JSON.parse(rawJsonText);
+      const prettyJson = JSON.stringify(parsedData, null, 2);
+
+      // Save directly to target path with encoded filename
+      await writeFile(targetFilePath, prettyJson);
+
+      // Determine if this was redirected
+      const wasRedirected = redirectCount > 0;
+
+      if (wasRedirected) {
+        logger.debug("general", "Downloaded and saved redirected entity after chain", {
+          entityType,
+          entityId,
+          originalUrl: apiUrl,
+          finalUrl,
+          redirectCount,
+          redirectChain
+        });
+        return { redirected: true, finalUrl };
+      } else {
+        logger.debug("general", "Downloaded and saved entity", { entityType, entityId });
+        return true;
+      }
     }
 
-    const rawJsonText = await response.text();
-    if (!rawJsonText) {
-      logger.error("general", "Failed to download entity: empty response", { entityType, entityId });
-      return false;
-    }
-
-    // Parse and re-stringify for consistent formatting
-    const parsedData: unknown = JSON.parse(rawJsonText);
-    const prettyJson = JSON.stringify(parsedData, null, 2);
-
-    // Save directly to target path with encoded filename
-    await writeFile(targetFilePath, prettyJson);
-
-    logger.debug("general", "Downloaded and saved entity", { entityType, entityId });
-    return true;
+    // If we get here, we hit the redirect limit
+    logger.error("general", "Too many redirects - redirect loop detected", {
+      entityType,
+      entityId,
+      maxRedirects,
+      redirectChain
+    });
+    return false;
   } catch (error) {
     logger.error("general", "Error downloading entity", {
       entityType,
@@ -376,21 +573,64 @@ export function openalexDataPlugin(): Plugin {
             logger.debug("general", "Processing entity type", { entityType });
 
             // 1. Load or create unified index
-            const index = await loadUnifiedIndex(dataPath, entityType);
+            let index = await loadUnifiedIndex(dataPath, entityType);
 
-            // 2. Seed missing data based on index entries
-            await seedMissingData(dataPath, entityType, index);
+            // 2. Seed missing data based on index entries and get updates to apply
+            const { keysToRemove, redirectUpdates } = await seedMissingData(dataPath, entityType, index);
 
-            // 3. Reformat existing files for consistency
+            // 3. Apply index updates: remove 404 entries and update redirected entries
+            if (keysToRemove.size > 0 || redirectUpdates.length > 0) {
+              logger.debug("general", "Applying index updates", {
+                removals: keysToRemove.size,
+                redirects: redirectUpdates.length,
+                entityType
+              });
+
+              // Create new index without removed keys and with updated redirected keys
+              const updatedIndex: UnifiedIndex = {};
+
+              for (const [key, metadata] of Object.entries(index)) {
+                // Skip keys marked for removal
+                if (keysToRemove.has(key)) {
+                  continue;
+                }
+
+                // Check if this key has a redirect update
+                const redirectUpdate = redirectUpdates.find(update => update.oldKey === key);
+                if (redirectUpdate) {
+                  // Use new key with updated metadata
+                  const fixedMetadata = { ...redirectUpdate.metadata };
+                  // Fix $ref if it exists and needs updating
+                  if ("$ref" in fixedMetadata && typeof fixedMetadata.$ref === "string") {
+                    fixedMetadata.$ref = `./${urlToEncodedKey(redirectUpdate.newKey)}.json`;
+                  }
+                  updatedIndex[redirectUpdate.newKey] = fixedMetadata;
+                } else {
+                  // Keep existing key
+                  updatedIndex[key] = metadata;
+                }
+              }
+
+              index = updatedIndex;
+
+              logger.debug("general", "Applied index updates", {
+                removedCount: keysToRemove.size,
+                redirectedCount: redirectUpdates.length,
+                totalCount: Object.keys(index).length,
+                entityType
+              });
+            }
+
+            // 4. Reformat existing files for consistency
             await reformatExistingFiles(dataPath, entityType);
 
-            // 4. Migrate query files from queries subdirectory to entity directory
+            // 5. Migrate query files from queries subdirectory to entity directory
             await migrateQueryFilesToEntityDirectory(dataPath, entityType);
 
-            // 5. Scan and update unified index with both entities and queries
+            // 6. Scan and update unified index with both entities and queries
             const unifiedIndex = await updateUnifiedIndex(dataPath, entityType, index);
 
-            // 6. Save unified index
+            // 7. Save unified index
             await saveUnifiedIndex(dataPath, entityType, unifiedIndex);
 
           } catch (error) {
@@ -637,14 +877,69 @@ function generateCanonicalQueryKeyFromEntry(entry: unknown, entityType: string):
 
 /**
  * Seed missing data based on unified index entries
+ * Returns updates to be applied to the index: removals and redirects
  */
-async function seedMissingData(dataPath: string, entityType: string, index: UnifiedIndex) {
+async function seedMissingData(dataPath: string, entityType: string, index: UnifiedIndex): Promise<{
+  keysToRemove: Set<string>;
+  redirectUpdates: Array<{ oldKey: string; newKey: string; metadata: IndexEntry }>;
+}> {
   let downloadedEntities = 0;
   let executedQueries = 0;
+  const keysToRemove = new Set<string>();
+  const redirectUpdates: Array<{ oldKey: string; newKey: string; metadata: IndexEntry }> = [];
 
-  for (const [key] of Object.entries(index)) {
+  for (const [key, metadata] of Object.entries(index)) {
+    // Check if this key contains malformed patterns and can be cleaned
+    const cleanKey = detectAndCleanMalformedKey(key);
+    if (cleanKey !== key) {
+      // This is a malformed key that got cleaned
+      logger.warn("general", "Found malformed index key - will fix", {
+        entityType,
+        originalKey: key,
+        cleanedKey: cleanKey
+      });
+
+      // Parse the cleaned key to verify it's valid and belongs to this entity type
+      const cleanedParsed = parseIndexKey(cleanKey);
+      if (cleanedParsed && cleanedParsed.entityType === entityType && cleanedParsed.type === "entity") {
+        // Valid cleaned key - add to redirect updates
+        redirectUpdates.push({
+          oldKey: key,
+          newKey: cleanKey,
+          metadata: {
+            ...metadata,
+            lastModified: new Date().toISOString()
+          }
+        });
+        logger.warn("general", "Will replace malformed key with cleaned version", {
+          entityType,
+          oldKey: key,
+          newKey: cleanKey
+        });
+      } else {
+        // Cleaned key is still invalid or doesn't belong to this entity type
+        logger.warn("general", "Cleaned key is still invalid - will remove", {
+          entityType,
+          originalKey: key,
+          cleanedKey: cleanKey,
+          cleanedEntityType: cleanedParsed?.entityType,
+          cleanedType: cleanedParsed?.type
+        });
+        keysToRemove.add(key);
+      }
+      continue; // Skip normal processing for malformed keys
+    }
+
     const parsed = parseIndexKey(key);
-    if (!parsed) continue;
+    if (!parsed) {
+      // If we can't parse it even after cleaning, mark for removal
+      logger.warn("general", "Unparseable index key - will remove", {
+        entityType,
+        key
+      });
+      keysToRemove.add(key);
+      continue;
+    }
 
     // Only process entries that belong to this entity type
     if (parsed.entityType !== entityType) continue;
@@ -662,10 +957,33 @@ async function seedMissingData(dataPath: string, entityType: string, index: Unif
           logger.debug("general", "Downloading entity", { entityType, entityId: parsed.entityId });
           await mkdir(join(dataPath, entityType), { recursive: true });
           if (parsed.entityId) {
-            const success = await downloadEntityWithEncodedFilename(entityType, parsed.entityId, entityFilePath);
+            const result = await downloadEntityWithEncodedFilename(entityType, parsed.entityId, entityFilePath);
 
-            if (success) {
+            if (result === true) {
               logger.debug("general", "Downloaded entity file", { encodedFilename });
+              downloadedEntities++;
+            } else if (result === "not_found") {
+              logger.warn("general", "Entity not found - removing from index", {
+                entityId: parsed.entityId,
+                key
+              });
+              keysToRemove.add(key);
+            } else if (typeof result === "object" && result.redirected) {
+              logger.warn("general", "Entity redirected - updating index key", {
+                entityId: parsed.entityId,
+                oldKey: key,
+                newKey: result.finalUrl
+              });
+
+              // Add redirect update
+              redirectUpdates.push({
+                oldKey: key,
+                newKey: result.finalUrl,
+                metadata: {
+                  ...metadata,
+                  lastModified: new Date().toISOString()
+                }
+              });
               downloadedEntities++;
             } else {
               logger.warn("general", "Failed to download entity: no data returned", { entityId: parsed.entityId });
@@ -721,6 +1039,22 @@ async function seedMissingData(dataPath: string, entityType: string, index: Unif
   } else {
     logger.debug("general", "All referenced data files present");
   }
+
+  if (keysToRemove.size > 0) {
+    logger.debug("general", "Found invalid entities to remove from index", {
+      count: keysToRemove.size,
+      entityType
+    });
+  }
+
+  if (redirectUpdates.length > 0) {
+    logger.debug("general", "Found redirected entities to update in index", {
+      count: redirectUpdates.length,
+      entityType
+    });
+  }
+
+  return { keysToRemove, redirectUpdates };
 }
 
 /**
@@ -818,6 +1152,28 @@ async function updateUnifiedIndex(dataPath: string, entityType: string, index: U
       if (file.endsWith(".json") && file !== "index.json") {
         const entityId = file.replace(".json", "");
         const filePath = join(entityDir, file);
+
+        // Check if this is a malformed file that should be removed
+        const isMalformed = detectMalformedFilename(entityId);
+        if (isMalformed) {
+          logger.warn("general", "Removing malformed file", {
+            entityType,
+            file,
+            entityId,
+            filePath
+          });
+          try {
+            await unlink(filePath);
+            logger.debug("general", "Successfully removed malformed file", { filePath });
+            continue; // Skip processing this file
+          } catch (error) {
+            logger.error("general", "Failed to remove malformed file", {
+              filePath,
+              error: error instanceof Error ? error.message : String(error)
+            });
+            // Continue processing even if removal failed
+          }
+        }
 
         try {
           const fileStat = await stat(filePath);
