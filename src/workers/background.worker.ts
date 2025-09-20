@@ -19,7 +19,7 @@ import { WorkerEventType } from "@/lib/graph/events/types";
 import { CustomForceManager } from "../lib/graph/custom-forces/manager";
 import type { EnhancedSimulationNode } from "../lib/graph/custom-forces/types";
 import { createUnifiedOpenAlexClient } from "@/lib/openalex/cached-client";
-import { EntityFactory, type ExpansionOptions } from "@/lib/entities";
+import type { ExpansionOptions } from "@/lib/entities";
 import type { EntityType, GraphNode, GraphEdge } from "@/lib/graph/types";
 import { RelationType } from "@/lib/graph/types";
 import type { ExpansionSettings } from "@/lib/graph/types/expansion-settings";
@@ -405,11 +405,9 @@ async function handleNodeExpansion(request: ExpandNodeRequest) {
 
 		// After validation, we can safely use entityData
 		// We've validated that entityData has required fields (id and display_name)
-		// The EntityFactory will perform additional validation internally
-		const entity = EntityFactory.createFromData(entityData as import("@/lib/openalex/types").OpenAlexEntity, client);
-
-		if (!entity) {
-			throw new Error(`Failed to create entity for ${entityType}:${entityId}`);
+		// For the worker context, we'll work with raw data to avoid type assertion issues
+		if (typeof entityData !== "object" || entityData === null) {
+			throw new Error(`Invalid entity data for ${entityType}:${entityId}`);
 		}
 
 		// Send progress update
@@ -523,14 +521,16 @@ async function handleNodeExpansion(request: ExpandNodeRequest) {
 
 function cancelExpansion(requestId: string) {
 	if (activeExpansions.has(requestId)) {
-		const expansion = activeExpansions.get(requestId)!;
-		activeExpansions.delete(requestId);
-		eventBridge.emit(WorkerEventType.DATA_FETCH_CANCELLED, {
-			requestId,
-			nodeId: expansion.nodeId,
-			entityId: expansion.entityId,
-			timestamp: Date.now()
-		}, "main");
+		const expansion = activeExpansions.get(requestId);
+		if (expansion) {
+			activeExpansions.delete(requestId);
+			eventBridge.emit(WorkerEventType.DATA_FETCH_CANCELLED, {
+				requestId,
+				nodeId: expansion.nodeId,
+				entityId: expansion.entityId,
+				timestamp: Date.now()
+			}, "main");
+		}
 	}
 }
 
