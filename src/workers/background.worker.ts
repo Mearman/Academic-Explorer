@@ -117,7 +117,7 @@ let customForceManager: CustomForceManager | null = null;
 
 // Data fetching state
 let openAlexClient: ReturnType<typeof createUnifiedOpenAlexClient> | null = null;
-const activeExpansions = new Map<string, { nodeId: string; timestamp: number }>();
+const activeExpansions = new Map<string, { nodeId: string; entityId: string; timestamp: number }>();
 
 // Initialize OpenAlex client
 function initializeOpenAlexClient() {
@@ -315,15 +315,20 @@ self.onmessage = function(event: MessageEvent<WorkerMessage>) {
 					// For update operations, extract id and pass remaining fields
 					const { id, ...updates } = forceData;
 					customForceManager?.updateForce(id, updates);
-					self.postMessage({
-						type: "custom_force_updated",
+					eventBridge.emit(WorkerEventType.CUSTOM_FORCE_UPDATED, {
+						workerId: "force-animation-worker",
+						workerType: "force-animation" as const,
 						forceId: id,
-					});
+						timestamp: Date.now()
+					}, "main");
 				} catch (error) {
-					self.postMessage({
-						type: "error",
+					eventBridge.emit(WorkerEventType.CUSTOM_FORCE_ERROR, {
+						workerId: "force-animation-worker",
+						workerType: "force-animation" as const,
 						error: `Failed to update custom force: ${error instanceof Error ? error.message : "Unknown error"}`,
-					});
+						forceId: forceData.id,
+						timestamp: Date.now()
+					}, "main");
 				}
 			}
 			break;
@@ -331,13 +336,14 @@ self.onmessage = function(event: MessageEvent<WorkerMessage>) {
 			if (data.expandRequest) {
 				const expandRequest = data.expandRequest; // Capture for use in catch
 				void handleNodeExpansion(expandRequest).catch((error: unknown) => {
-					// Note: logger is not available in worker context, post error message instead
-					self.postMessage({
-						type: "expansion_error",
+					// Note: logger is not available in worker context, emit error via EventBridge
+					eventBridge.emit(WorkerEventType.DATA_FETCH_ERROR, {
 						requestId: expandRequest.id,
 						nodeId: expandRequest.nodeId,
-						error: error instanceof Error ? error.message : "Unknown error"
-					});
+						entityId: expandRequest.entityId,
+						error: error instanceof Error ? error.message : "Unknown error",
+						timestamp: Date.now()
+					}, "main");
 				});
 			}
 			break;
@@ -355,29 +361,31 @@ async function handleNodeExpansion(request: ExpandNodeRequest) {
 	// Note: options and expansionSettings are available in request but not yet fully implemented
 
 	// Track the expansion
-	activeExpansions.set(requestId, { nodeId, timestamp: Date.now() });
+	activeExpansions.set(requestId, { nodeId, entityId, timestamp: Date.now() });
 
 	// Send progress update
-	self.postMessage({
-		type: "expansion_progress",
+	eventBridge.emit(WorkerEventType.DATA_FETCH_PROGRESS, {
 		requestId,
 		nodeId,
+		entityId,
 		progress: 0.1,
-		currentStep: "Initializing expansion"
-	});
+		currentStep: "Initializing expansion",
+		timestamp: Date.now()
+	}, "main");
 
 	try {
 		const startTime = Date.now();
 		const client = initializeOpenAlexClient();
 
 		// Send progress update
-		self.postMessage({
-			type: "expansion_progress",
+		eventBridge.emit(WorkerEventType.DATA_FETCH_PROGRESS, {
 			requestId,
 			nodeId,
+			entityId,
 			progress: 0.3,
-			currentStep: "Fetching entity data"
-		});
+			currentStep: "Fetching entity data",
+			timestamp: Date.now()
+		}, "main");
 
 		// Create entity and perform expansion
 		// Use the OpenAlex client to fetch entity data first, then create entity
@@ -395,23 +403,24 @@ async function handleNodeExpansion(request: ExpandNodeRequest) {
 			throw new Error(`Missing display_name for ${entityType}:${entityId}`);
 		}
 
-		// After validation, we can safely use entityData as OpenAlexEntity
+		// After validation, we can safely use entityData
 		// We've validated that entityData has required fields (id and display_name)
-		const validatedEntityData = entityData as import("@/lib/openalex/types").OpenAlexEntity;
-		const entity = EntityFactory.createFromData(validatedEntityData, client);
+		// The EntityFactory will perform additional validation internally
+		const entity = EntityFactory.createFromData(entityData as import("@/lib/openalex/types").OpenAlexEntity, client);
 
 		if (!entity) {
 			throw new Error(`Failed to create entity for ${entityType}:${entityId}`);
 		}
 
 		// Send progress update
-		self.postMessage({
-			type: "expansion_progress",
+		eventBridge.emit(WorkerEventType.DATA_FETCH_PROGRESS, {
 			requestId,
 			nodeId,
+			entityId,
 			progress: 0.6,
-			currentStep: "Expanding relationships"
-		});
+			currentStep: "Expanding relationships",
+			timestamp: Date.now()
+		}, "main");
 
 		// Get relationships - for now we'll use a simplified approach
 		// TODO: Implement proper relationship expansion
@@ -426,13 +435,14 @@ async function handleNodeExpansion(request: ExpandNodeRequest) {
 		};
 
 		// Send progress update
-		self.postMessage({
-			type: "expansion_progress",
+		eventBridge.emit(WorkerEventType.DATA_FETCH_PROGRESS, {
 			requestId,
 			nodeId,
+			entityId,
 			progress: 0.9,
-			currentStep: "Finalizing results"
-		});
+			currentStep: "Finalizing results",
+			timestamp: Date.now()
+		}, "main");
 
 		// Convert to graph format
 		const nodes: GraphNode[] = relationships.nodes.map((node) => ({
@@ -482,18 +492,29 @@ async function handleNodeExpansion(request: ExpandNodeRequest) {
 			}
 		};
 
-		self.postMessage({
-			type: "expansion_complete",
-			...response
-		});
+		eventBridge.emit(WorkerEventType.DATA_FETCH_COMPLETE, {
+			requestId: response.requestId,
+			nodeId,
+			entityId,
+			nodes: response.nodes,
+			edges: response.edges,
+			statistics: response.statistics ? {
+				nodesAdded: response.statistics.nodesFetched,
+				edgesAdded: response.statistics.edgesFetched,
+				apiCalls: 1, // We made one API call
+				duration: response.statistics.duration
+			} : undefined,
+			timestamp: Date.now()
+		}, "main");
 
 	} catch (error) {
-		self.postMessage({
-			type: "expansion_error",
+		eventBridge.emit(WorkerEventType.DATA_FETCH_ERROR, {
 			requestId,
 			nodeId,
-			error: error instanceof Error ? error.message : "Unknown expansion error"
-		});
+			entityId,
+			error: error instanceof Error ? error.message : "Unknown expansion error",
+			timestamp: Date.now()
+		}, "main");
 	} finally {
 		// Clean up tracking
 		activeExpansions.delete(requestId);
@@ -502,11 +523,14 @@ async function handleNodeExpansion(request: ExpandNodeRequest) {
 
 function cancelExpansion(requestId: string) {
 	if (activeExpansions.has(requestId)) {
+		const expansion = activeExpansions.get(requestId)!;
 		activeExpansions.delete(requestId);
-		self.postMessage({
-			type: "expansion_cancelled",
-			requestId
-		});
+		eventBridge.emit(WorkerEventType.DATA_FETCH_CANCELLED, {
+			requestId,
+			nodeId: expansion.nodeId,
+			entityId: expansion.entityId,
+			timestamp: Date.now()
+		}, "main");
 	}
 }
 
@@ -842,17 +866,21 @@ function syncCustomForces(customForces: AddCustomForceData[]) {
 		try {
 			customForceManager.addForce(forceData);
 		} catch (error) {
-			self.postMessage({
-				type: "error",
+			eventBridge.emit(WorkerEventType.CUSTOM_FORCE_ERROR, {
+				workerId: "force-animation-worker",
+				workerType: "force-animation" as const,
 				error: `Failed to sync custom force: ${error instanceof Error ? error.message : "Unknown error"}`,
-			});
+				timestamp: Date.now()
+			}, "main");
 		}
 	}
 
-	self.postMessage({
-		type: "custom_forces_synced",
+	eventBridge.emit(WorkerEventType.CUSTOM_FORCES_SYNCED, {
+		workerId: "force-animation-worker",
+		workerType: "force-animation" as const,
 		count: customForces.length,
-	});
+		timestamp: Date.now()
+	}, "main");
 }
 
 function addCustomForce(forceData: AddCustomForceData) {
@@ -868,15 +896,19 @@ function addCustomForce(forceData: AddCustomForceData) {
 
 	try {
 		const forceId = customForceManager.addForce(forceData);
-		self.postMessage({
-			type: "custom_force_added",
+		eventBridge.emit(WorkerEventType.CUSTOM_FORCE_ADDED, {
+			workerId: "force-animation-worker",
+			workerType: "force-animation" as const,
 			forceId,
-		});
+			timestamp: Date.now()
+		}, "main");
 	} catch (error) {
-		self.postMessage({
-			type: "error",
+		eventBridge.emit(WorkerEventType.CUSTOM_FORCE_ERROR, {
+			workerId: "force-animation-worker",
+			workerType: "force-animation" as const,
 			error: `Failed to add custom force: ${error instanceof Error ? error.message : "Unknown error"}`,
-		});
+			timestamp: Date.now()
+		}, "main");
 	}
 }
 
@@ -887,15 +919,20 @@ function removeCustomForce(forceId: string) {
 
 	try {
 		customForceManager.removeForce(forceId);
-		self.postMessage({
-			type: "custom_force_removed",
+		eventBridge.emit(WorkerEventType.CUSTOM_FORCE_REMOVED, {
+			workerId: "force-animation-worker",
+			workerType: "force-animation" as const,
 			forceId,
-		});
+			timestamp: Date.now()
+		}, "main");
 	} catch (error) {
-		self.postMessage({
-			type: "error",
+		eventBridge.emit(WorkerEventType.CUSTOM_FORCE_ERROR, {
+			workerId: "force-animation-worker",
+			workerType: "force-animation" as const,
 			error: `Failed to remove custom force: ${error instanceof Error ? error.message : "Unknown error"}`,
-		});
+			forceId,
+			timestamp: Date.now()
+		}, "main");
 	}
 }
 

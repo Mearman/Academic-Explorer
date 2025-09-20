@@ -82,12 +82,20 @@ export enum WorkerEventType {
   DATA_FETCH_PROGRESS = "worker:data-fetch-progress",
   DATA_FETCH_COMPLETE = "worker:data-fetch-complete",
   DATA_FETCH_ERROR = "worker:data-fetch-error",
+  DATA_FETCH_CANCELLED = "worker:data-fetch-cancelled",
 
   // Force simulation worker events
   FORCE_SIMULATION_PROGRESS = "worker:force-simulation-progress",
   FORCE_SIMULATION_COMPLETE = "worker:force-simulation-complete",
   FORCE_SIMULATION_ERROR = "worker:force-simulation-error",
-  FORCE_SIMULATION_STOPPED = "worker:force-simulation-stopped"
+  FORCE_SIMULATION_STOPPED = "worker:force-simulation-stopped",
+
+  // Custom force management events
+  CUSTOM_FORCES_SYNCED = "worker:custom-forces-synced",
+  CUSTOM_FORCE_ADDED = "worker:custom-force-added",
+  CUSTOM_FORCE_REMOVED = "worker:custom-force-removed",
+  CUSTOM_FORCE_UPDATED = "worker:custom-force-updated",
+  CUSTOM_FORCE_ERROR = "worker:custom-force-error"
 }
 
 // =============================================================================
@@ -355,6 +363,12 @@ export interface WorkerEventPayloads {
     error: string;
     timestamp: number;
   };
+  [WorkerEventType.DATA_FETCH_CANCELLED]: {
+    requestId: string;
+    nodeId: string;
+    entityId: string;
+    timestamp: number;
+  };
   [WorkerEventType.FORCE_SIMULATION_PROGRESS]: {
     workerId: string;
     workerType: "force-animation";
@@ -398,6 +412,37 @@ export interface WorkerEventPayloads {
   [WorkerEventType.FORCE_SIMULATION_STOPPED]: {
     workerId: string;
     workerType: "force-animation";
+    timestamp: number;
+  };
+  [WorkerEventType.CUSTOM_FORCES_SYNCED]: {
+    workerId: string;
+    workerType: "force-animation";
+    count: number;
+    timestamp: number;
+  };
+  [WorkerEventType.CUSTOM_FORCE_ADDED]: {
+    workerId: string;
+    workerType: "force-animation";
+    forceId: string;
+    timestamp: number;
+  };
+  [WorkerEventType.CUSTOM_FORCE_REMOVED]: {
+    workerId: string;
+    workerType: "force-animation";
+    forceId: string;
+    timestamp: number;
+  };
+  [WorkerEventType.CUSTOM_FORCE_UPDATED]: {
+    workerId: string;
+    workerType: "force-animation";
+    forceId: string;
+    timestamp: number;
+  };
+  [WorkerEventType.CUSTOM_FORCE_ERROR]: {
+    workerId: string;
+    workerType: "force-animation";
+    error: string;
+    forceId?: string;
     timestamp: number;
   };
 }
@@ -828,6 +873,11 @@ export const WorkerEventPayloadSchemas = {
     entityId: z.string(),
     error: z.string()
   }),
+  [WorkerEventType.DATA_FETCH_CANCELLED]: BaseEventPayloadSchema.extend({
+    requestId: z.string(),
+    nodeId: z.string(),
+    entityId: z.string()
+  }),
   [WorkerEventType.FORCE_SIMULATION_PROGRESS]: BaseEventPayloadSchema.extend({
     workerId: z.string(),
     workerType: z.literal("force-animation"),
@@ -868,6 +918,32 @@ export const WorkerEventPayloadSchemas = {
   [WorkerEventType.FORCE_SIMULATION_STOPPED]: BaseEventPayloadSchema.extend({
     workerId: z.string(),
     workerType: z.literal("force-animation")
+  }),
+  [WorkerEventType.CUSTOM_FORCES_SYNCED]: BaseEventPayloadSchema.extend({
+    workerId: z.string(),
+    workerType: z.literal("force-animation"),
+    count: z.number()
+  }),
+  [WorkerEventType.CUSTOM_FORCE_ADDED]: BaseEventPayloadSchema.extend({
+    workerId: z.string(),
+    workerType: z.literal("force-animation"),
+    forceId: z.string()
+  }),
+  [WorkerEventType.CUSTOM_FORCE_REMOVED]: BaseEventPayloadSchema.extend({
+    workerId: z.string(),
+    workerType: z.literal("force-animation"),
+    forceId: z.string()
+  }),
+  [WorkerEventType.CUSTOM_FORCE_UPDATED]: BaseEventPayloadSchema.extend({
+    workerId: z.string(),
+    workerType: z.literal("force-animation"),
+    forceId: z.string()
+  }),
+  [WorkerEventType.CUSTOM_FORCE_ERROR]: BaseEventPayloadSchema.extend({
+    workerId: z.string(),
+    workerType: z.literal("force-animation"),
+    error: z.string(),
+    forceId: z.string().optional()
   })
 };
 
