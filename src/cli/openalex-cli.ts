@@ -384,5 +384,244 @@ program
     }
   });
 
+// Cache management commands
+program
+  .command("cache:stats")
+  .description("Show synthetic cache statistics and field accumulation data")
+  .option("-f, --format <format>", "Output format (json, table)", "table")
+  .action(async (options) => {
+    const stats = await cli.getCacheStats();
+
+    if (options.format === "json") {
+      console.log(JSON.stringify(stats, null, 2));
+    } else {
+      console.log("\nSynthetic Cache Statistics:");
+      console.log("=".repeat(50));
+
+      if (stats.performance) {
+        console.log("Performance Metrics:");
+        console.log(`  Total Requests: ${stats.performance.totalRequests}`);
+        console.log(`  Cache Hit Rate: ${(stats.performance.cacheHitRate * 100).toFixed(1)}%`);
+        console.log(`  Surgical Requests: ${stats.performance.surgicalRequestCount}`);
+        console.log(`  Bandwidth Saved: ${(stats.performance.bandwidthSaved / 1024).toFixed(1)} KB`);
+        console.log("");
+      }
+
+      if (stats.storage?.memory) {
+        console.log("Memory Storage:");
+        console.log(`  Entities: ${stats.storage.memory.entities || 0}`);
+        console.log(`  Fields: ${stats.storage.memory.fields || 0}`);
+        console.log(`  Collections: ${stats.storage.memory.collections || 0}`);
+        console.log(`  Size: ${((stats.storage.memory.size || 0) / 1024).toFixed(1)} KB`);
+      }
+    }
+  });
+
+program
+  .command("cache:field-coverage <entity-type> <entity-id>")
+  .description("Show field coverage for a specific entity across all cache tiers")
+  .option("-f, --format <format>", "Output format (json, table)", "table")
+  .action(async (entityType: string, entityId: string, options) => {
+    const entityTypeValidation = StaticEntityTypeSchema.safeParse(entityType);
+    if (!entityTypeValidation.success) {
+      console.error(`Unsupported entity type: ${entityType}`);
+      console.error(`Supported types: ${SUPPORTED_ENTITIES.join(", ")}`);
+      process.exit(1);
+    }
+
+    const coverage = await cli.getFieldCoverage(entityTypeValidation.data, entityId);
+
+    if (options.format === "json") {
+      console.log(JSON.stringify(coverage, null, 2));
+    } else {
+      console.log(`\nField Coverage for ${entityType.toUpperCase()}: ${entityId}`);
+      console.log("=".repeat(50));
+
+      console.log(`Memory: ${coverage.memory.length} fields`);
+      if (coverage.memory.length > 0) {
+        console.log(`  ${coverage.memory.join(", ")}`);
+      }
+
+      console.log(`Local Storage: ${coverage.localStorage.length} fields`);
+      if (coverage.localStorage.length > 0) {
+        console.log(`  ${coverage.localStorage.join(", ")}`);
+      }
+
+      console.log(`IndexedDB: ${coverage.indexedDB.length} fields`);
+      if (coverage.indexedDB.length > 0) {
+        console.log(`  ${coverage.indexedDB.join(", ")}`);
+      }
+
+      console.log(`Static Data: ${coverage.static.length} fields`);
+      if (coverage.static.length > 0) {
+        console.log(`  ${coverage.static.join(", ")}`);
+      }
+
+      console.log(`\nTotal Unique Fields: ${coverage.total.length}`);
+    }
+  });
+
+program
+  .command("cache:popular-entities <entity-type>")
+  .description("Show well-populated entities with extensive field coverage")
+  .option("-l, --limit <limit>", "Limit results", "10")
+  .option("-f, --format <format>", "Output format (json, table)", "table")
+  .action(async (entityType: string, options) => {
+    const entityTypeValidation = StaticEntityTypeSchema.safeParse(entityType);
+    if (!entityTypeValidation.success) {
+      console.error(`Unsupported entity type: ${entityType}`);
+      console.error(`Supported types: ${SUPPORTED_ENTITIES.join(", ")}`);
+      process.exit(1);
+    }
+
+    const limit = typeof options.limit === "string" ? parseInt(options.limit, 10) : 10;
+    const entities = await cli.getWellPopulatedEntities(entityTypeValidation.data, limit);
+
+    if (options.format === "json") {
+      console.log(JSON.stringify(entities, null, 2));
+    } else {
+      console.log(`\nWell-Populated ${entityType.toUpperCase()} Entities (${entities.length}):`);
+      console.log("=".repeat(50));
+
+      entities.forEach((entity, index) => {
+        console.log(`${(index + 1).toString().padStart(3)}: ${entity.entityId} (${entity.fieldCount} fields)`);
+        if (entity.fields.length > 0) {
+          const displayFields = entity.fields.slice(0, 5);
+          const extraCount = entity.fields.length - displayFields.length;
+          const fieldsText = displayFields.join(", ");
+          const suffix = extraCount > 0 ? ` +${extraCount} more` : "";
+          console.log(`     Fields: ${fieldsText}${suffix}`);
+        }
+      });
+    }
+  });
+
+program
+  .command("cache:popular-collections")
+  .description("Show popular cached collections with high entity counts")
+  .option("-l, --limit <limit>", "Limit results", "10")
+  .option("-f, --format <format>", "Output format (json, table)", "table")
+  .action(async (options) => {
+    const limit = typeof options.limit === "string" ? parseInt(options.limit, 10) : 10;
+    const collections = await cli.getPopularCollections(limit);
+
+    if (options.format === "json") {
+      console.log(JSON.stringify(collections, null, 2));
+    } else {
+      console.log(`\nPopular Cached Collections (${collections.length}):`);
+      console.log("=".repeat(50));
+
+      collections.forEach((collection, index) => {
+        console.log(`${(index + 1).toString().padStart(3)}: ${collection.queryKey}`);
+        console.log(`     Entities: ${collection.entityCount}, Pages: ${collection.pageCount}`);
+      });
+    }
+  });
+
+program
+  .command("cache:clear")
+  .description("Clear all synthetic cache data (memory, collections)")
+  .option("--confirm", "Skip confirmation prompt")
+  .action(async (options) => {
+    if (!options.confirm) {
+      console.log("This will clear all synthetic cache data including:");
+      console.log("- Entity field accumulations in memory");
+      console.log("- Collection result mappings");
+      console.log("- Performance metrics");
+      console.log("");
+      console.log("Static data cache files will NOT be affected.");
+      console.log("");
+      console.log("To confirm, run: pnpm cli cache:clear --confirm");
+      return;
+    }
+
+    await cli.clearSyntheticCache();
+    console.log("Synthetic cache cleared successfully.");
+  });
+
+program
+  .command("static:analyze")
+  .description("Analyze static data cache usage patterns and suggest optimizations")
+  .option("-f, --format <format>", "Output format (json, table)", "table")
+  .action(async (options) => {
+    const analysis = await cli.analyzeStaticDataUsage();
+
+    if (options.format === "json") {
+      console.log(JSON.stringify(analysis, null, 2));
+    } else {
+      console.log("\nStatic Data Cache Analysis:");
+      console.log("=".repeat(50));
+
+      console.log("Entity Type Distribution:");
+      Object.entries(analysis.entityDistribution).forEach(([type, count]) => {
+        console.log(`  ${type.padEnd(12)}: ${count.toString().padStart(4)} entities`);
+      });
+
+      console.log(`\nTotal Static Entities: ${analysis.totalEntities}`);
+      console.log(`Cache Hit Potential: ${(analysis.cacheHitPotential * 100).toFixed(1)}%`);
+      console.log(`Recommended for Generation: ${analysis.recommendedForGeneration.length} entity types`);
+
+      if (analysis.recommendedForGeneration.length > 0) {
+        console.log(`  ${analysis.recommendedForGeneration.join(", ")}`);
+      }
+
+      if (analysis.gaps.length > 0) {
+        console.log(`\nIdentified Gaps: ${analysis.gaps.length}`);
+        analysis.gaps.slice(0, 5).forEach((gap, index) => {
+          console.log(`  ${(index + 1).toString().padStart(2)}: ${gap}`);
+        });
+        if (analysis.gaps.length > 5) {
+          console.log(`     +${analysis.gaps.length - 5} more gaps identified`);
+        }
+      }
+    }
+  });
+
+program
+  .command("static:generate")
+  .description("Generate optimized static data cache from usage patterns")
+  .option("--entity-type <type>", "Generate for specific entity type only")
+  .option("--dry-run", "Show what would be generated without writing files")
+  .option("--force", "Force regeneration even if files exist")
+  .action(async (options) => {
+    let entityType: StaticEntityType | undefined;
+
+    if (options.entityType) {
+      const entityTypeValidation = StaticEntityTypeSchema.safeParse(options.entityType);
+      if (!entityTypeValidation.success) {
+        console.error(`Unsupported entity type: ${options.entityType}`);
+        console.error(`Supported types: ${SUPPORTED_ENTITIES.join(", ")}`);
+        process.exit(1);
+      }
+      entityType = entityTypeValidation.data;
+    }
+
+    const result = await cli.generateStaticDataFromPatterns(entityType, {
+      dryRun: !!options.dryRun,
+      force: !!options.force
+    });
+
+    console.log(`\nStatic Data Generation ${options.dryRun ? "(Dry Run)" : "Completed"}:`);
+    console.log("=".repeat(50));
+
+    console.log(`Files ${options.dryRun ? "would be" : ""} processed: ${result.filesProcessed}`);
+    console.log(`Entities ${options.dryRun ? "would be" : ""} cached: ${result.entitiesCached}`);
+    console.log(`Queries ${options.dryRun ? "would be" : ""} cached: ${result.queriesCached}`);
+
+    if (result.errors.length > 0) {
+      console.log(`\nErrors encountered: ${result.errors.length}`);
+      result.errors.slice(0, 3).forEach((error, index) => {
+        console.log(`  ${(index + 1).toString().padStart(2)}: ${error}`);
+      });
+      if (result.errors.length > 3) {
+        console.log(`     +${result.errors.length - 3} more errors`);
+      }
+    }
+
+    if (!options.dryRun && result.filesProcessed > 0) {
+      console.log(`\nStatic data cache updated. Run 'pnpm cli static:analyze' to verify.`);
+    }
+  });
+
 // Parse and execute
 program.parse();

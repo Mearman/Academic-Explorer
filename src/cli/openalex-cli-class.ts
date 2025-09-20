@@ -12,6 +12,12 @@ import type { OpenAlexEntity, EntityType, OpenAlexResponse } from "../lib/openal
 import type { StaticEntityType } from "../lib/api/static-data-provider.js";
 import { logger } from "../lib/logger.js";
 import { z } from "zod";
+import { CachedOpenAlexClient } from "../lib/openalex/cached-client.js";
+import type {
+  FieldCoverageByTier,
+  EntityFieldData,
+  CollectionResultMapping
+} from "../lib/cache/synthetic/types.js";
 
 // Zod schemas for safe type validation
 const EntityIndexEntrySchema = z.object({
@@ -151,10 +157,12 @@ const projectRoot = resolve(__dirname, "../..");
 export class OpenAlexCLI {
   private static instance: OpenAlexCLI;
   private dataPath: string;
+  private cachedClient: CachedOpenAlexClient;
   // defaultFilenameFormat removed - now using URL encoding only
 
   constructor(dataPath?: string) {
     this.dataPath = dataPath || join(projectRoot, STATIC_DATA_PATH);
+    this.cachedClient = new CachedOpenAlexClient();
   }
 
   /**
@@ -1089,6 +1097,264 @@ export class OpenAlexCLI {
     }
 
     return stats;
+  }
+
+  /**
+   * Get synthetic cache statistics
+   */
+  async getCacheStats(): Promise<any> {
+    try {
+      return await this.cachedClient.getCacheStats();
+    } catch (error) {
+      logger.error("general", "Failed to get cache stats", { error });
+      return { enabled: false, error: "Cache stats unavailable" };
+    }
+  }
+
+  /**
+   * Get field coverage for an entity across all cache tiers
+   */
+  async getFieldCoverage(entityType: StaticEntityType, entityId: string): Promise<FieldCoverageByTier> {
+    try {
+      // Create a synthetic cache layer instance to access the method
+      const { createSyntheticCacheLayer } = await import("../lib/cache/synthetic/index.js");
+      const syntheticCache = createSyntheticCacheLayer();
+
+      // Check if entity type is supported by synthetic cache
+      const supportedTypes = ['works', 'authors', 'sources', 'institutions', 'topics', 'publishers', 'funders'];
+      if (!supportedTypes.includes(entityType)) {
+        logger.warn("general", `Entity type ${entityType} not supported by synthetic cache`);
+        return {
+          memory: [],
+          localStorage: [],
+          indexedDB: [],
+          static: [],
+          total: []
+        };
+      }
+
+      return await syntheticCache.getFieldCoverage(entityType, entityId);
+    } catch (error) {
+      logger.error("general", "Failed to get field coverage", { error });
+      return {
+        memory: [],
+        localStorage: [],
+        indexedDB: [],
+        static: [],
+        total: []
+      };
+    }
+  }
+
+  /**
+   * Get well-populated entities with extensive field coverage
+   */
+  async getWellPopulatedEntities(entityType: StaticEntityType, limit: number): Promise<Array<{
+    entityId: string;
+    fieldCount: number;
+    fields: string[];
+  }>> {
+    try {
+      // Create synthetic cache components to access the method
+      const { EntityFieldAccumulator, createDefaultCachePolicy } = await import("../lib/cache/synthetic/index.js");
+      const policy = createDefaultCachePolicy();
+      const fieldAccumulator = new EntityFieldAccumulator(policy);
+
+      // Check if entity type is supported by synthetic cache
+      const supportedTypes = ['works', 'authors', 'sources', 'institutions', 'topics', 'publishers', 'funders'];
+      if (!supportedTypes.includes(entityType)) {
+        logger.warn("general", `Entity type ${entityType} not supported by synthetic cache`);
+        return [];
+      }
+
+      return fieldAccumulator.getWellPopulatedEntities(entityType, limit);
+    } catch (error) {
+      logger.error("general", "Failed to get well-populated entities", { error });
+      return [];
+    }
+  }
+
+  /**
+   * Get popular cached collections with high entity counts
+   */
+  async getPopularCollections(limit: number): Promise<Array<{
+    queryKey: string;
+    entityCount: number;
+    pageCount: number;
+  }>> {
+    try {
+      // Create synthetic cache components to access the method
+      const { CollectionResultMapper, createDefaultCachePolicy } = await import("../lib/cache/synthetic/index.js");
+      const policy = createDefaultCachePolicy();
+      const collectionMapper = new CollectionResultMapper(policy);
+
+      return collectionMapper.getPopularCollections(limit);
+    } catch (error) {
+      logger.error("general", "Failed to get popular collections", { error });
+      return [];
+    }
+  }
+
+  /**
+   * Clear synthetic cache data
+   */
+  async clearSyntheticCache(): Promise<void> {
+    try {
+      await this.cachedClient.clearCache();
+      logger.debug("general", "Synthetic cache cleared via CLI");
+    } catch (error) {
+      logger.error("general", "Failed to clear synthetic cache", { error });
+      throw error;
+    }
+  }
+
+  /**
+   * Analyze static data cache usage patterns
+   */
+  async analyzeStaticDataUsage(): Promise<{
+    entityDistribution: Record<string, number>;
+    totalEntities: number;
+    cacheHitPotential: number;
+    recommendedForGeneration: string[];
+    gaps: string[];
+  }> {
+    try {
+      const stats = await this.getStatistics();
+      const entityDistribution: Record<string, number> = {};
+      let totalEntities = 0;
+
+      // Analyze entity distribution
+      for (const [entityType, data] of Object.entries(stats)) {
+        entityDistribution[entityType] = data.count;
+        totalEntities += data.count;
+      }
+
+      // Calculate cache hit potential based on available static data
+      const syntheticStats = await this.getCacheStats();
+      const memoryEntities = syntheticStats.storage?.memory?.entities || 0;
+      const cacheHitPotential = totalEntities > 0 ? memoryEntities / totalEntities : 0;
+
+      // Identify gaps and recommendations
+      const gaps: string[] = [];
+      const recommendedForGeneration: string[] = [];
+
+      for (const entityType of SUPPORTED_ENTITIES) {
+        const count = entityDistribution[entityType] || 0;
+        if (count === 0) {
+          gaps.push(`No static data for ${entityType}`);
+        } else if (count < 100) {
+          gaps.push(`Low coverage for ${entityType} (${count} entities)`);
+          recommendedForGeneration.push(entityType);
+        } else {
+          recommendedForGeneration.push(entityType);
+        }
+      }
+
+      return {
+        entityDistribution,
+        totalEntities,
+        cacheHitPotential,
+        recommendedForGeneration,
+        gaps
+      };
+    } catch (error) {
+      logger.error("general", "Failed to analyze static data usage", { error });
+      return {
+        entityDistribution: {},
+        totalEntities: 0,
+        cacheHitPotential: 0,
+        recommendedForGeneration: [],
+        gaps: ["Analysis failed"]
+      };
+    }
+  }
+
+  /**
+   * Generate optimized static data cache from usage patterns
+   */
+  async generateStaticDataFromPatterns(
+    entityType?: StaticEntityType,
+    options: { dryRun?: boolean; force?: boolean } = {}
+  ): Promise<{
+    filesProcessed: number;
+    entitiesCached: number;
+    queriesCached: number;
+    errors: string[];
+  }> {
+    const result = {
+      filesProcessed: 0,
+      entitiesCached: 0,
+      queriesCached: 0,
+      errors: [] as string[]
+    };
+
+    try {
+      const entityTypes = entityType ? [entityType] : SUPPORTED_ENTITIES;
+
+      for (const type of entityTypes) {
+        try {
+          // Get well-populated entities from synthetic cache
+          const wellPopulated = await this.getWellPopulatedEntities(type, 50);
+
+          for (const entityData of wellPopulated) {
+            try {
+              if (!options.dryRun) {
+                // Check if entity exists in static cache already
+                const existing = await this.loadEntity(type, entityData.entityId);
+                if (existing && !options.force) {
+                  continue; // Skip if exists and not forcing
+                }
+
+                // Fetch entity from cached client (will use synthetic cache)
+                const entityTypeAsEntityType = type as unknown as EntityType;
+                const entity = await this.cachedClient.getById(
+                  type, // endpoint
+                  entityData.entityId,
+                  { select: entityData.fields } // only fetch fields we know about
+                );
+
+                if (entity && typeof entity === 'object' && 'id' in entity && 'display_name' in entity) {
+                  await this.saveEntityToCache(type, entity as { id: string; display_name: string; [key: string]: unknown });
+                  result.entitiesCached++;
+                }
+              } else {
+                result.entitiesCached++; // Dry run counting
+              }
+
+              result.filesProcessed++;
+            } catch (error) {
+              result.errors.push(`Failed to process entity ${entityData.entityId}: ${String(error)}`);
+            }
+          }
+
+          // Generate popular collections
+          const popularCollections = await this.getPopularCollections(10);
+          for (const collection of popularCollections) {
+            try {
+              if (!options.dryRun) {
+                // Extract entity type and query params from collection query key
+                const entityTypeMatch = collection.queryKey.match(/^(\w+)\|/);
+                if (entityTypeMatch && entityTypeMatch[1] === type) {
+                  // This is a collection for the current entity type
+                  // We could regenerate the query, but for now just count it
+                  result.queriesCached++;
+                }
+              } else {
+                result.queriesCached++; // Dry run counting
+              }
+            } catch (error) {
+              result.errors.push(`Failed to process collection ${collection.queryKey}: ${String(error)}`);
+            }
+          }
+        } catch (error) {
+          result.errors.push(`Failed to process entity type ${type}: ${String(error)}`);
+        }
+      }
+    } catch (error) {
+      result.errors.push(`Generation failed: ${String(error)}`);
+    }
+
+    return result;
   }
 }
 
