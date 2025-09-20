@@ -3,17 +3,17 @@
  * Provides centralized EventBridge communication and shared event state across all components
  */
 
-import React, { useEffect, useRef, useCallback, useMemo } from 'react';
-import { eventBridge } from '@/lib/graph/events/event-bridge';
-import { logger } from '@/lib/logger';
-import { EventBridgeContext, type EventBridgeContextType, type EventHandler } from './contexts';
+import React, { useEffect, useRef, useCallback, useMemo } from "react";
+import { eventBridge } from "@/lib/graph/events/event-bridge";
+import { logger } from "@/lib/logger";
+import { EventBridgeContext, type EventBridgeContextType, type EventHandler } from "./contexts";
 
 export function EventBridgeProvider({ children }: { children: React.ReactNode }) {
   const handlersRef = useRef<Map<string, EventHandler>>(new Map());
   const initialized = useRef(false);
 
   const registerHandler = useCallback(({ handlerId, handler }: { handlerId: string; handler: EventHandler }) => {
-    logger.debug('eventbridge', 'Registering event handler', { handlerId });
+    logger.debug("eventbridge", "Registering event handler", { handlerId });
 
     // Store the handler in our local registry
     handlersRef.current.set(handlerId, handler);
@@ -23,7 +23,7 @@ export function EventBridgeProvider({ children }: { children: React.ReactNode })
   }, []);
 
   const unregisterHandler = useCallback((handlerId: string) => {
-    logger.debug('eventbridge', 'Unregistering event handler', { handlerId });
+    logger.debug("eventbridge", "Unregistering event handler", { handlerId });
 
     // Remove from our local registry
     handlersRef.current.delete(handlerId);
@@ -33,23 +33,23 @@ export function EventBridgeProvider({ children }: { children: React.ReactNode })
   }, []);
 
   const emit = useCallback(({ eventType, payload, target }: { eventType: string; payload: unknown; target?: string }) => {
-    logger.debug('eventbridge', 'Emitting event', { eventType, target });
+    logger.debug("eventbridge", "Emitting event", { eventType, target });
     eventBridge.emit(eventType, payload, target);
   }, []);
 
   const registerWorker = useCallback(({ worker, workerId }: { worker: Worker; workerId: string }) => {
-    logger.debug('eventbridge', 'Registering worker', { workerId });
+    logger.debug("eventbridge", "Registering worker", { workerId });
     eventBridge.registerWorker(worker, workerId);
   }, []);
 
   useEffect(() => {
     if (initialized.current) return;
 
-    logger.debug('eventbridge', 'EventBridgeProvider initializing');
+    logger.debug("eventbridge", "EventBridgeProvider initializing");
     initialized.current = true;
 
     return () => {
-      logger.debug('eventbridge', 'EventBridgeProvider cleaning up');
+      logger.debug("eventbridge", "EventBridgeProvider cleaning up");
 
       // Unregister all handlers we've registered
       const currentHandlers = handlersRef.current;

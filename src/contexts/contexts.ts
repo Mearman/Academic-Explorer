@@ -2,7 +2,7 @@
  * React contexts for providers
  */
 
-import { createContext } from 'react';
+import { createContext } from "react";
 
 // Background Worker Context
 export interface BackgroundWorkerContextType {

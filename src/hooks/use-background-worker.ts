@@ -119,7 +119,7 @@ export function useBackgroundWorker(options: UseBackgroundWorkerOptions = {}) {
 
 	// Debug tracking for isWorkerReady state changes
 	useEffect(() => {
-		logger.debug('worker', 'useBackgroundWorker isWorkerReady state changed', { isWorkerReady });
+		logger.debug("worker", "useBackgroundWorker isWorkerReady state changed", { isWorkerReady });
 	}, [isWorkerReady]);
 
 	// Keep workerRef in sync with the context worker
