@@ -735,7 +735,9 @@ export class GraphDataService {
 		logger.debug("graph", "GraphDataService.expandNode called", { nodeId, force }, "GraphDataService");
 
 		// Check if already expanded using TanStack Query cache (unless forced)
-		if (!force && isNodeExpanded(this.queryClient, nodeId)) {
+		const alreadyExpanded = isNodeExpanded(this.queryClient, nodeId);
+		logger.warn("graph", "Checking if node already expanded", { nodeId, alreadyExpanded, force }, "GraphDataService");
+		if (!force && alreadyExpanded) {
 			logger.debug("graph", "Node already expanded, running relationship detection only", { nodeId }, "GraphDataService");
 
 			// Even if node is already expanded, run relationship detection
