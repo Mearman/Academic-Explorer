@@ -4,9 +4,9 @@
  * Provides surgical optimization and response synthesis
  */
 
-import { logger, logError } from '@/lib/logger';
-import { OpenAlexBaseClient, OpenAlexClientConfig } from './client';
-import { OpenAlexResponse, QueryParams } from './types';
+import { logger, logError } from "@/lib/logger";
+import { OpenAlexBaseClient, OpenAlexClientConfig } from "./client";
+import { OpenAlexResponse, QueryParams } from "./types";
 import {
   SyntheticCacheLayer,
   createSyntheticCacheLayer,
@@ -14,7 +14,7 @@ import {
   OptimizedRequestPlan,
   StorageTier,
   QueryParams as SyntheticQueryParams
-} from '../cache/synthetic';
+} from "../cache/synthetic";
 
 export interface CachedOpenAlexClientConfig extends OpenAlexClientConfig {
   cacheEnabled?: boolean;
@@ -45,7 +45,7 @@ export class CachedOpenAlexClient extends OpenAlexBaseClient {
     const { filter, ...rest } = params;
     const converted: SyntheticQueryParams = {
       ...rest,
-      filter: typeof filter === 'string' ? this.parseFilterString(filter) : filter
+      filter: typeof filter === "string" ? this.parseFilterString(filter) : filter
     };
 
     return converted;
@@ -56,13 +56,13 @@ export class CachedOpenAlexClient extends OpenAlexBaseClient {
    * Converts "author.id:A123,publication_year:2023" to { "author.id": "A123", "publication_year": "2023" }
    */
   private parseFilterString(filter: string): Record<string, unknown> {
-    return filter.split(',').reduce((obj, pair) => {
-      const [key, ...valueParts] = pair.split(':');
+    return filter.split(",").reduce<Record<string, unknown>>((obj, pair) => {
+      const [key, ...valueParts] = pair.split(":");
       if (key && valueParts.length > 0) {
-        obj[key.trim()] = valueParts.join(':').trim();
+        obj[key.trim()] = valueParts.join(":").trim();
       }
       return obj;
-    }, {} as Record<string, unknown>);
+    }, {});
   }
 
   /**
@@ -90,7 +90,7 @@ export class CachedOpenAlexClient extends OpenAlexBaseClient {
       // Step 1: Generate optimization plan
       const plan = await this.cache.optimizeRequest(entityType, convertedParams);
 
-      logger.debug('cache', 'Generated optimization plan', {
+      logger.debug("cache", "Generated optimization plan", {
         entityType,
         canSynthesize: plan.canSynthesize,
         requiredApiCalls: plan.requiredApiCalls.length,
@@ -106,7 +106,7 @@ export class CachedOpenAlexClient extends OpenAlexBaseClient {
       } else {
         // Complete cache hit!
         this.requestMetrics.cacheHits++;
-        logger.debug('cache', 'Complete cache hit - no API requests needed', { entityType });
+        logger.debug("cache", "Complete cache hit - no API requests needed", { entityType });
       }
 
       // Step 3: Synthesize response from cached + API data
@@ -124,7 +124,7 @@ export class CachedOpenAlexClient extends OpenAlexBaseClient {
       // Update metrics
       this.requestMetrics.bandwidthSaved += plan.estimatedSavings.bandwidth;
 
-      logger.debug('cache', 'Cached request completed', {
+      logger.debug("cache", "Cached request completed", {
         entityType,
         resultCount: synthesizedResponse.results.length,
         bandwidthSaved: plan.estimatedSavings.bandwidth,
@@ -134,7 +134,7 @@ export class CachedOpenAlexClient extends OpenAlexBaseClient {
       return synthesizedResponse;
 
     } catch (error) {
-      logError('Synthetic cache request failed, falling back to direct API', error, 'CachedOpenAlexClient', 'cache');
+      logError("Synthetic cache request failed, falling back to direct API", error, "CachedOpenAlexClient", "cache");
 
       // Fallback to direct API request
       return super.getResponse<T>(endpoint, params);
@@ -171,7 +171,7 @@ export class CachedOpenAlexClient extends OpenAlexBaseClient {
       if (Object.keys(cachedData).length === requestedFields.length) {
         // Complete cache hit
         this.requestMetrics.cacheHits++;
-        logger.debug('cache', 'Complete cache hit for single entity', {
+        logger.debug("cache", "Complete cache hit for single entity", {
           entityType,
           entityId: id,
           fields: requestedFields
@@ -190,7 +190,7 @@ export class CachedOpenAlexClient extends OpenAlexBaseClient {
 
         this.requestMetrics.surgicalRequests++;
 
-        logger.debug('cache', 'Made surgical request for missing fields', {
+        logger.debug("cache", "Made surgical request for missing fields", {
           entityType,
           entityId: id,
           missingFields,
@@ -210,7 +210,7 @@ export class CachedOpenAlexClient extends OpenAlexBaseClient {
       return combinedData;
 
     } catch (error) {
-      logError('Cached getById failed, falling back to direct API', error, 'CachedOpenAlexClient', 'cache');
+      logError("Cached getById failed, falling back to direct API", error, "CachedOpenAlexClient", "cache");
       return super.getById<T>(endpoint, id, params);
     }
   }
@@ -257,7 +257,7 @@ export class CachedOpenAlexClient extends OpenAlexBaseClient {
   /**
    * Get detailed cache statistics
    */
-  async getCacheStats(): Promise<any> {
+  async getCacheStats(): Promise<unknown> {
     if (!this.cacheEnabled) {
       return { enabled: false };
     }
@@ -282,13 +282,13 @@ export class CachedOpenAlexClient extends OpenAlexBaseClient {
       const fieldsToPromote = fields || await this.getAvailableFields(entityType, entityId);
       await this.cache.promoteToHotTier(entityType, entityId, fieldsToPromote);
 
-      logger.debug('cache', 'Promoted entity to hot tier', {
+      logger.debug("cache", "Promoted entity to hot tier", {
         entityType,
         entityId,
         fieldCount: fieldsToPromote.length
       });
     } catch (error) {
-      logError('Failed to promote entity', error, 'CachedOpenAlexClient', 'cache');
+      logError("Failed to promote entity", error, "CachedOpenAlexClient", "cache");
     }
   }
 
@@ -301,13 +301,13 @@ export class CachedOpenAlexClient extends OpenAlexBaseClient {
     try {
       await this.cache.invalidateEntity(entityType, entityId, tiers);
 
-      logger.debug('cache', 'Invalidated entity cache', {
+      logger.debug("cache", "Invalidated entity cache", {
         entityType,
         entityId,
-        tiers: tiers || 'all'
+        tiers: tiers || "all"
       });
     } catch (error) {
-      logError('Failed to invalidate entity', error, 'CachedOpenAlexClient', 'cache');
+      logError("Failed to invalidate entity", error, "CachedOpenAlexClient", "cache");
     }
   }
 
@@ -328,9 +328,9 @@ export class CachedOpenAlexClient extends OpenAlexBaseClient {
         bandwidthSaved: 0
       };
 
-      logger.debug('cache', 'Cleared all cache data and reset metrics');
+      logger.debug("cache", "Cleared all cache data and reset metrics");
     } catch (error) {
-      logError('Failed to clear cache', error, 'CachedOpenAlexClient', 'cache');
+      logError("Failed to clear cache", error, "CachedOpenAlexClient", "cache");
     }
   }
 
@@ -339,13 +339,13 @@ export class CachedOpenAlexClient extends OpenAlexBaseClient {
    */
   setCacheEnabled(enabled: boolean): void {
     this.cacheEnabled = enabled;
-    logger.debug('cache', `Cache ${enabled ? 'enabled' : 'disabled'}`);
+    logger.debug("cache", `Cache ${enabled ? "enabled" : "disabled"}`);
   }
 
   // Private helper methods
 
   private extractEntityType(endpoint: string): EntityType | null {
-    const entityTypes: EntityType[] = ['works', 'authors', 'sources', 'institutions', 'topics', 'publishers', 'funders'];
+    const entityTypes: EntityType[] = ["works", "authors", "sources", "institutions", "topics", "publishers", "funders"];
 
     for (const type of entityTypes) {
       if (endpoint.includes(type)) {
@@ -370,7 +370,7 @@ export class CachedOpenAlexClient extends OpenAlexBaseClient {
     const firstRequest = plan.requiredApiCalls[0];
 
     switch (firstRequest.type) {
-      case 'single-entity':
+      case "single-entity":
         if (firstRequest.entityIds && firstRequest.entityIds.length === 1) {
           const entityId = firstRequest.entityIds[0];
           const data = await super.getById<T>(entityType, entityId, {
@@ -389,18 +389,18 @@ export class CachedOpenAlexClient extends OpenAlexBaseClient {
         }
         break;
 
-      case 'batch-entities':
+      case "batch-entities":
         if (firstRequest.entityIds) {
           const batchParams = {
             ...originalParams,
-            filter: `id:${firstRequest.entityIds.join('|')}`,
+            filter: `id:${firstRequest.entityIds.join("|")}`,
             select: firstRequest.fields
           };
           return super.getResponse<T>(entityType, batchParams);
         }
         break;
 
-      case 'full-collection':
+      case "full-collection":
         return super.getResponse<T>(entityType, originalParams);
     }
 
@@ -408,9 +408,9 @@ export class CachedOpenAlexClient extends OpenAlexBaseClient {
     return super.getResponse<T>(entityType, originalParams);
   }
 
-  private async updateCachesWithResults<T>(
+  private async updateCachesWithResults(
     entityType: EntityType,
-    results: T[],
+    results: unknown[],
     params: QueryParams
   ): Promise<void> {
     try {
@@ -418,7 +418,7 @@ export class CachedOpenAlexClient extends OpenAlexBaseClient {
       for (const result of results) {
         const entityId = this.extractEntityId(result);
         if (entityId) {
-          await this.cache.putEntityFields<T>(entityType, entityId, result);
+          await this.cache.putEntityFields(entityType, entityId, result);
         }
       }
 
@@ -435,13 +435,17 @@ export class CachedOpenAlexClient extends OpenAlexBaseClient {
       }
 
     } catch (error) {
-      logError('Failed to update caches with results', error, 'CachedOpenAlexClient', 'cache');
+      logError("Failed to update caches with results", error, "CachedOpenAlexClient", "cache");
     }
   }
 
-  private extractEntityId<T>(entity: T): string | null {
-    if (typeof entity === 'object' && entity !== null && 'id' in entity) {
-      return String((entity as { id: unknown }).id);
+  private hasId(entity: unknown): entity is { id: unknown } {
+    return typeof entity === "object" && entity !== null && entity !== undefined && "id" in entity;
+  }
+
+  private extractEntityId(entity: unknown): string | null {
+    if (this.hasId(entity)) {
+      return String(entity.id);
     }
     return null;
   }
