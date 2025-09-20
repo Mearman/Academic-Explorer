@@ -184,7 +184,7 @@ export class RelationshipDetectionService {
 			const existingNodes = Object.values(store.nodes).filter(isNonNull).filter(node => node.id !== nodeId);
 
 			// Detect relationships with existing nodes
-			const detectedRelationships = this.analyzeRelationships(minimalData, existingNodes);
+			const detectedRelationships = await this.analyzeRelationships(minimalData, existingNodes);
 
 			logger.debug("graph", "Relationship detection completed", {
 				nodeId,
@@ -309,7 +309,7 @@ export class RelationshipDetectionService {
 	/**
 	 * Analyze relationships between the new entity and existing graph nodes
 	 */
-	private analyzeRelationships(newEntityData: MinimalEntityData, existingNodes: GraphNode[]): DetectedRelationship[] {
+	private async analyzeRelationships(newEntityData: MinimalEntityData, existingNodes: GraphNode[]): Promise<DetectedRelationship[]> {
 		const relationships: DetectedRelationship[] = [];
 
 		logger.debug("graph", "Analyzing relationships", {
@@ -318,10 +318,22 @@ export class RelationshipDetectionService {
 			existingNodeCount: existingNodes.length
 		}, "RelationshipDetectionService");
 
+		logger.debug("graph", "Processing entity for relationships", {
+			entityId: newEntityData.id,
+			entityType: newEntityData.entityType,
+			hasReferencedWorks: "referenced_works" in newEntityData && !!newEntityData.referenced_works,
+			referencedWorksCount: ("referenced_works" in newEntityData && Array.isArray(newEntityData.referenced_works)) ? newEntityData.referenced_works.length : 0,
+			existingNodeIds: existingNodes.map(n => n.entityId || n.id)
+		}, "RelationshipDetectionService");
+
 		// Analyze relationships based on entity type
 		switch (newEntityData.entityType) {
 			case "works":
-				relationships.push(...this.analyzeWorkRelationships(newEntityData, existingNodes));
+				logger.debug("graph", "About to analyze work relationships", {
+					workId: newEntityData.id,
+					hasReferencedWorks: "referenced_works" in newEntityData && !!newEntityData.referenced_works
+				}, "RelationshipDetectionService");
+				relationships.push(...await this.analyzeWorkRelationships(newEntityData, existingNodes));
 				break;
 			case "authors":
 				relationships.push(...this.analyzeAuthorRelationships(newEntityData, existingNodes));
@@ -353,7 +365,30 @@ export class RelationshipDetectionService {
 	/**
 	 * Analyze relationships for a Work entity
 	 */
-	private analyzeWorkRelationships(workData: MinimalEntityData, existingNodes: GraphNode[]): DetectedRelationship[] {
+	/**
+	 * Fetch referenced_works for a work entity if not already present
+	 */
+	private async fetchReferencedWorksForWork(workId: string): Promise<string[] | null> {
+		try {
+			logger.debug("graph", "Fetching referenced_works for work entity", {
+				workId
+			}, "RelationshipDetectionService");
+
+			const workData = await rateLimitedOpenAlex.getWork(workId, {
+				select: ["id", "referenced_works"]
+			});
+
+			return workData.referenced_works || [];
+		} catch (error) {
+			logger.error("graph", "Failed to fetch referenced_works for work", {
+				workId,
+				error: error instanceof Error ? error.message : "Unknown error"
+			}, "RelationshipDetectionService");
+			return null;
+		}
+	}
+
+	private async analyzeWorkRelationships(workData: MinimalEntityData, existingNodes: GraphNode[]): Promise<DetectedRelationship[]> {
 		const relationships: DetectedRelationship[] = [];
 
 		// Check for author relationships
@@ -390,16 +425,44 @@ export class RelationshipDetectionService {
 			}
 		}
 
-		// Check for citation relationships
-		if (workData.referenced_works) {
-			logger.debug("graph", "Analyzing citation relationships", {
-				workId: workData.id,
-				referencedWorksCount: workData.referenced_works.length,
-				existingNodesCount: existingNodes.length,
-				sampleReferencedWorks: workData.referenced_works.slice(0, 3)
+		// Check for citation relationships - fetch referenced_works if not present
+		let referencedWorks = workData.referenced_works;
+		logger.debug("graph", "Checking referenced_works", {
+			workId: workData.id,
+			hasReferencedWorks: !!referencedWorks,
+			referencedWorksLength: referencedWorks?.length || 0
+		}, "RelationshipDetectionService");
+
+		if (!referencedWorks) {
+			logger.debug("graph", "Work entity missing referenced_works, fetching from API", {
+				workId: workData.id
 			}, "RelationshipDetectionService");
 
-			for (const referencedWorkId of workData.referenced_works) {
+			const fetchedReferencedWorks = await this.fetchReferencedWorksForWork(workData.id);
+			if (fetchedReferencedWorks) {
+				referencedWorks = fetchedReferencedWorks;
+				logger.debug("graph", "Successfully fetched referenced_works for work", {
+					workId: workData.id,
+					referencedWorksCount: referencedWorks.length,
+					sampleRefs: referencedWorks.slice(0, 3)
+				}, "RelationshipDetectionService");
+			} else {
+				logger.debug("graph", "Failed to fetch referenced_works", {
+					workId: workData.id
+				}, "RelationshipDetectionService");
+			}
+		}
+
+		if (referencedWorks && referencedWorks.length > 0) {
+			logger.debug("graph", "Analyzing citation relationships", {
+				workId: workData.id,
+				referencedWorksCount: referencedWorks.length,
+				existingNodesCount: existingNodes.length,
+				sampleReferencedWorks: referencedWorks.slice(0, 3),
+				existingNodeIds: existingNodes.map(n => n.entityId || n.id)
+			}, "RelationshipDetectionService");
+
+			for (const referencedWorkId of referencedWorks) {
 				// Both referenced_works and node IDs use full URL format, so direct comparison should work
 				const referencedNode = existingNodes.find(node =>
 					node.entityId === referencedWorkId || node.id === referencedWorkId
@@ -415,7 +478,7 @@ export class RelationshipDetectionService {
 
 					relationships.push({
 						sourceNodeId: workData.id,
-						targetNodeId: referencedNode.id, // Use the actual node ID, not the reference ID
+						targetNodeId: referencedWorkId, // Use the entity ID to match the expected pattern
 						relationType: RelationType.REFERENCES,
 						label: "references"
 					});
@@ -620,7 +683,7 @@ export class RelationshipDetectionService {
 
 					relationships.push({
 						sourceNodeId: sourceData.id,
-						targetNodeId: referencedWorkId,
+						targetNodeId: referencedWorkId, // Use the entity ID to match the expected pattern
 						relationType: RelationType.REFERENCES,
 						label: "references"
 					});
