@@ -64,11 +64,8 @@ import type { CustomForce } from "../lib/graph/custom-forces/types";
 // Type for adding a new custom force (id is optional, will be generated)
 type AddCustomForceData = Omit<CustomForce, "id"> & { id?: string };
 
-// Type for updating an existing custom force (all fields optional except id)
-type UpdateCustomForceData = Partial<Omit<CustomForce, "id">> & { id: string };
 
 // Type for worker message data that includes all possible force data
-type CustomForceMessageData = AddCustomForceData | UpdateCustomForceData;
 
 // Data fetching interfaces
 interface ExpandNodeRequest {
@@ -91,18 +88,6 @@ interface DataFetchingResponse {
   };
 }
 
-interface WorkerMessage {
-  type: "init" | "start" | "stop" | "pause" | "resume" | "update_parameters" | "sync_custom_forces" | "add_custom_force" | "remove_custom_force" | "update_custom_force" | "expand_node" | "cancel_expansion";
-  nodes?: WorkerNode[];
-  links?: WorkerLink[];
-  config?: AnimationConfig;
-  pinnedNodes?: Set<string>;
-  customForces?: AddCustomForceData[];
-  forceData?: CustomForceMessageData;
-  // Data fetching properties
-  expandRequest?: ExpandNodeRequest;
-  requestId?: string;
-}
 
 // Worker state
 let animationId: ReturnType<typeof setTimeout> | number | null = null;
@@ -234,132 +219,167 @@ function createTimerAPI(): TimerAPI {
 
 const timerAPI = createTimerAPI();
 
-// Message handler
-self.onmessage = function(event: MessageEvent<WorkerMessage>) {
-	const data = event.data;
+// Type guards for EventBridge payloads
+function isForceSimulationStartPayload(data: unknown): data is {
+	nodes: WorkerNode[];
+	links: WorkerLink[];
+	config?: AnimationConfig;
+	pinnedNodes?: Set<string>;
+} {
+	if (typeof data !== 'object' || data === null) return false;
+	if (!('nodes' in data) || !('links' in data)) return false;
+	// Direct property access after checking the property exists
+	const obj = data as Record<string, unknown>;
+	return Array.isArray(obj.nodes) && Array.isArray(obj.links);
+}
 
-	// Send ready message when first valid message is received
-	sendReadyMessage();
+function isUpdateParametersPayload(data: unknown): data is { config: AnimationConfig } {
+	return typeof data === 'object' && data !== null && 'config' in data;
+}
 
-	// Filter out EventBridge cross-context messages - these are handled by EventBridge
-	// Only process direct worker messages for force simulation control
-	// Filter out EventBridge cross-context messages
-	// Validate we have a proper message with type field
-	if (!data || typeof data !== "object" || !("type" in data)) {
-		return;
+function isCustomForcesSyncPayload(data: unknown): data is { customForces: AddCustomForceData[] } {
+	if (typeof data !== 'object' || data === null) return false;
+	if (!('customForces' in data)) return false;
+	const obj = data as Record<string, unknown>;
+	return Array.isArray(obj.customForces);
+}
+
+function isCustomForcePayload(data: unknown): data is { forceData: Record<string, unknown> } {
+	return typeof data === 'object' && data !== null && 'forceData' in data;
+}
+
+function isExpandNodePayload(data: unknown): data is { expandRequest: ExpandNodeRequest } {
+	return typeof data === 'object' && data !== null && 'expandRequest' in data;
+}
+
+function isCancelExpansionPayload(data: unknown): data is { requestId: string } {
+	if (typeof data !== 'object' || data === null) return false;
+	if (!('requestId' in data)) return false;
+	const obj = data as Record<string, unknown>;
+	return typeof obj.requestId === 'string';
+}
+
+// EventBridge message handlers - replaces self.onmessage
+eventBridge.registerMessageHandler("FORCE_SIMULATION_START", (data) => {
+	if (isForceSimulationStartPayload(data)) {
+		startAnimatedSimulation({
+			inputNodes: data.nodes,
+			inputLinks: data.links,
+			userConfig: data.config ?? {},
+			pinnedNodes: data.pinnedNodes
+		});
 	}
+});
 
-	const type = data.type;
-	const newNodes = data.nodes;
-	const newLinks = data.links;
-	const config = data.config ?? {};
-	const pinnedNodes = data.pinnedNodes;
-	const customForces = data.customForces;
-	const forceData = data.forceData;
+eventBridge.registerMessageHandler("FORCE_SIMULATION_STOP", () => {
+	stopSimulation();
+});
 
-	switch (type) {
-		case "init":
-			// Worker initialization complete, ready to receive commands
-			break;
-		case "start":
-			if (newNodes && newLinks) {
-				startAnimatedSimulation({
-					inputNodes: newNodes,
-					inputLinks: newLinks,
-					userConfig: config,
-					pinnedNodes
-				});
-			}
-			break;
-		case "stop":
-			stopSimulation();
-			break;
-		case "pause":
-			pauseSimulation();
-			break;
-		case "resume":
-			resumeSimulation();
-			break;
-		case "update_parameters":
-			updateParameters(config);
-			break;
-		case "sync_custom_forces":
-			syncCustomForces(customForces || []);
-			break;
-		case "add_custom_force":
-			if (forceData) {
-				// For add operations, forceData should be AddCustomForceData
-				// Check required properties for add operation
-				if ("name" in forceData &&
-					"type" in forceData &&
-					"config" in forceData &&
-					typeof forceData.name === "string" &&
-					typeof forceData.type === "string" &&
-					typeof forceData.config === "object") {
-					// We've verified this has the required properties for AddCustomForceData
-					const addData: AddCustomForceData = {
-						name: forceData.name,
-						type: forceData.type,
-						enabled: ("enabled" in forceData && typeof forceData.enabled === "boolean") ? forceData.enabled : true,
-						strength: ("strength" in forceData && typeof forceData.strength === "number") ? forceData.strength : 0.5,
-						priority: ("priority" in forceData && typeof forceData.priority === "number") ? forceData.priority : 0,
-						config: forceData.config,
-						...(forceData.id && typeof forceData.id === "string" && { id: forceData.id })
-					};
-					addCustomForce(addData);
-				}
-			}
-			break;
-		case "remove_custom_force":
-			if (forceData?.id) {
-				removeCustomForce(forceData.id);
-			}
-			break;
-		case "update_custom_force":
-			if (forceData?.id) {
-				try {
-					// For update operations, extract id and pass remaining fields
-					const { id, ...updates } = forceData;
-					customForceManager?.updateForce(id, updates);
-					eventBridge.emit(WorkerEventType.CUSTOM_FORCE_UPDATED, {
-						workerId: "force-animation-worker",
-						workerType: "force-animation" as const,
-						forceId: id,
-						timestamp: Date.now()
-					}, "main");
-				} catch (error) {
-					eventBridge.emit(WorkerEventType.CUSTOM_FORCE_ERROR, {
-						workerId: "force-animation-worker",
-						workerType: "force-animation" as const,
-						error: `Failed to update custom force: ${error instanceof Error ? error.message : "Unknown error"}`,
-						forceId: forceData.id,
-						timestamp: Date.now()
-					}, "main");
-				}
-			}
-			break;
-		case "expand_node":
-			if (data.expandRequest) {
-				const expandRequest = data.expandRequest; // Capture for use in catch
-				void handleNodeExpansion(expandRequest).catch((error: unknown) => {
-					// Note: logger is not available in worker context, emit error via EventBridge
-					eventBridge.emit(WorkerEventType.DATA_FETCH_ERROR, {
-						requestId: expandRequest.id,
-						nodeId: expandRequest.nodeId,
-						entityId: expandRequest.entityId,
-						error: error instanceof Error ? error.message : "Unknown error",
-						timestamp: Date.now()
-					}, "main");
-				});
-			}
-			break;
-		case "cancel_expansion":
-			if (data.requestId) {
-				cancelExpansion(data.requestId);
-			}
-			break;
+eventBridge.registerMessageHandler("FORCE_SIMULATION_PAUSE", () => {
+	pauseSimulation();
+});
+
+eventBridge.registerMessageHandler("FORCE_SIMULATION_RESUME", () => {
+	resumeSimulation();
+});
+
+eventBridge.registerMessageHandler("FORCE_SIMULATION_UPDATE_PARAMETERS", (data) => {
+	if (isUpdateParametersPayload(data)) {
+		updateParameters(data.config ?? {});
 	}
-};
+});
+
+eventBridge.registerMessageHandler("CUSTOM_FORCES_SYNC", (data) => {
+	if (isCustomForcesSyncPayload(data)) {
+		syncCustomForces(data.customForces || []);
+	}
+});
+
+eventBridge.registerMessageHandler("CUSTOM_FORCE_ADD", (data) => {
+	if (isCustomForcePayload(data)) {
+		const forceData = data.forceData;
+		if (forceData &&
+			"name" in forceData &&
+			"type" in forceData &&
+			"config" in forceData &&
+			typeof forceData.name === "string" &&
+			typeof forceData.type === "string" &&
+			typeof forceData.config === "object" &&
+			forceData.config !== null) {
+			// We've verified this has the required properties for AddCustomForceData
+			const addData: AddCustomForceData = {
+				name: forceData.name,
+				type: forceData.type,
+				enabled: ("enabled" in forceData && typeof forceData.enabled === "boolean") ? forceData.enabled : true,
+				strength: ("strength" in forceData && typeof forceData.strength === "number") ? forceData.strength : 0.5,
+				priority: ("priority" in forceData && typeof forceData.priority === "number") ? forceData.priority : 0,
+				config: forceData.config,
+				...("id" in forceData && typeof forceData.id === "string" ? { id: forceData.id } : {})
+			};
+			addCustomForce(addData);
+		}
+	}
+});
+
+eventBridge.registerMessageHandler("CUSTOM_FORCE_REMOVE", (data) => {
+	if (isCustomForcePayload(data) &&
+		data.forceData &&
+		"id" in data.forceData &&
+		typeof data.forceData.id === "string") {
+		removeCustomForce(data.forceData.id);
+	}
+});
+
+eventBridge.registerMessageHandler("CUSTOM_FORCE_UPDATE", (data) => {
+	if (isCustomForcePayload(data)) {
+		const forceData = data.forceData;
+		if (forceData &&
+			"id" in forceData &&
+			typeof forceData.id === "string") {
+			try {
+				// For update operations, extract id and pass remaining fields
+				const { id, ...updates } = forceData;
+				customForceManager?.updateForce(id, updates);
+				eventBridge.emit(WorkerEventType.CUSTOM_FORCE_UPDATED, {
+					workerId: "force-animation-worker",
+					workerType: "force-animation" as const,
+					forceId: id,
+					timestamp: Date.now()
+				}, "main");
+			} catch (error) {
+				eventBridge.emit(WorkerEventType.CUSTOM_FORCE_ERROR, {
+					workerId: "force-animation-worker",
+					workerType: "force-animation" as const,
+					error: `Failed to update custom force: ${error instanceof Error ? error.message : "Unknown error"}`,
+					forceId: forceData.id as string,
+					timestamp: Date.now()
+				}, "main");
+			}
+		}
+	}
+});
+
+eventBridge.registerMessageHandler("DATA_FETCH_EXPAND_NODE", (data) => {
+	if (isExpandNodePayload(data)) {
+		const expandRequest = data.expandRequest; // Capture for use in catch
+		void handleNodeExpansion(expandRequest).catch((error: unknown) => {
+			// Note: logger is not available in worker context, emit error via EventBridge
+			eventBridge.emit(WorkerEventType.DATA_FETCH_ERROR, {
+				requestId: expandRequest.id,
+				nodeId: expandRequest.nodeId,
+				entityId: expandRequest.entityId,
+				error: error instanceof Error ? error.message : "Unknown error",
+				timestamp: Date.now()
+			}, "main");
+		});
+	}
+});
+
+eventBridge.registerMessageHandler("DATA_FETCH_CANCEL_EXPANSION", (data) => {
+	if (isCancelExpansionPayload(data)) {
+		cancelExpansion(data.requestId);
+	}
+});
 
 // Data fetching and expansion functions
 async function handleNodeExpansion(request: ExpandNodeRequest) {
@@ -969,17 +989,4 @@ self.onerror = function(errorEvent) {
 	}, "main");
 };
 
-// Initialize worker state
-let isInitialized = false;
 
-// Function to send ready message
-const sendReadyMessage = () => {
-	if (!isInitialized) {
-		isInitialized = true;
-		eventBridge.emit(WorkerEventType.WORKER_READY, {
-			workerId: "force-animation-worker",
-			workerType: "force-animation" as const,
-			timestamp: Date.now()
-		}, "main");
-	}
-};
