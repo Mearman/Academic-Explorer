@@ -26,6 +26,25 @@ const EntityIndexEntrySchema = z.object({
   contentHash: z.string(),
 });
 
+// Cache statistics type definition
+interface CacheStats {
+  enabled: boolean;
+  performance?: {
+    totalRequests: number;
+    cacheHitRate: number;
+    surgicalRequestCount: number;
+    bandwidthSaved: number;
+  };
+  storage?: {
+    memory?: {
+      entities?: number;
+      fields?: number;
+      collections?: number;
+      size?: number;
+    };
+  };
+}
+
 // Query definition for complex queries
 const QueryDefinitionSchema = z.object({
   params: z.record(z.string(), z.unknown()).optional(),
@@ -1102,12 +1121,13 @@ export class OpenAlexCLI {
   /**
    * Get synthetic cache statistics
    */
-  async getCacheStats(): Promise<unknown> {
+  async getCacheStats(): Promise<CacheStats> {
     try {
-      return await this.cachedClient.getCacheStats();
+      const stats = await this.cachedClient.getCacheStats();
+      return stats as CacheStats;
     } catch (error) {
       logger.error("general", "Failed to get cache stats", { error });
-      return { enabled: false, error: "Cache stats unavailable" };
+      return { enabled: false };
     }
   }
 
@@ -1285,7 +1305,7 @@ export class OpenAlexCLI {
       filesProcessed: 0,
       entitiesCached: 0,
       queriesCached: 0,
-      errors: []
+      errors: [] as string[]
     };
 
     try {
@@ -1313,8 +1333,9 @@ export class OpenAlexCLI {
                   { select: entityData.fields } // only fetch fields we know about
                 );
 
-                if (entity && typeof entity === "object" && "id" in entity && "display_name" in entity) {
-                  await this.saveEntityToCache(type, entity);
+                if (entity && typeof entity === "object" && "id" in entity && "display_name" in entity &&
+                    typeof entity.id === "string" && typeof entity.display_name === "string") {
+                  await this.saveEntityToCache(type, entity as { id: string; display_name: string; [key: string]: unknown });
                   result.entitiesCached++;
                 }
               } else {
