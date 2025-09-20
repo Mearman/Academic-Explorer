@@ -49,6 +49,7 @@ export class GraphDataService {
 	private relationshipDetectionService: RelationshipDetectionService;
 
 	constructor(queryClient: QueryClient) {
+		logger.debug("graph", "GraphDataService constructor called", {}, "GraphDataService");
 		this.detector = new EntityDetector();
 		this.queryClient = queryClient;
 		this.deduplicationService = createRequestDeduplicationService(queryClient);
@@ -730,9 +731,46 @@ export class GraphDataService {
 	async expandNode(nodeId: string, options: ExpansionOptions = {}): Promise<void> {
 		const { force = false } = options;
 
+		logger.debug("graph", "GraphDataService.expandNode called", { nodeId, force }, "GraphDataService");
+
 		// Check if already expanded using TanStack Query cache (unless forced)
 		if (!force && isNodeExpanded(this.queryClient, nodeId)) {
-			logger.debug("graph", "Node already expanded, skipping expansion", { nodeId }, "GraphDataService");
+			logger.debug("graph", "Node already expanded, running relationship detection only", { nodeId }, "GraphDataService");
+
+			// Even if node is already expanded, run relationship detection
+			// in case new nodes were added since last expansion
+			const store = useGraphStore.getState();
+			const allNodeIds = Object.keys(store.nodes);
+
+			if (allNodeIds.length > 1) {
+				logger.debug("graph", "Running relationship detection for already-expanded node", {
+					nodeId,
+					totalNodes: allNodeIds.length
+				}, "GraphDataService");
+
+				try {
+					const detectedEdges = await this.relationshipDetectionService.detectRelationshipsForNodes(allNodeIds);
+
+					if (detectedEdges.length > 0) {
+						logger.debug("graph", "Found new relationships for already-expanded node", {
+							nodeId,
+							detectedEdgeCount: detectedEdges.length,
+							relationships: detectedEdges.map(e => ({
+								source: e.source,
+								target: e.target,
+								type: e.type
+							}))
+						}, "GraphDataService");
+
+						store.addEdges(detectedEdges);
+					} else {
+						logger.debug("graph", "No new relationships found for already-expanded node", { nodeId }, "GraphDataService");
+					}
+				} catch (error) {
+					logError("Failed to detect relationships for already-expanded node", error, "GraphDataService", "graph");
+				}
+			}
+
 			return;
 		}
 
@@ -984,8 +1022,8 @@ export class GraphDataService {
 		try {
 			// Define minimal fields needed for basic node display
 			const minimalFieldsMap: Partial<Record<EntityType, string[]>> = {
-				works: ["id", "display_name", "publication_year", "cited_by_count", "open_access.is_oa"],
-				authors: ["id", "display_name", "works_count", "cited_by_count"],
+				works: ["id", "display_name", "publication_year", "cited_by_count", "open_access.is_oa", "referenced_works", "authorships", "primary_location.source.id"],
+				authors: ["id", "display_name", "works_count", "cited_by_count", "affiliations"],
 				sources: ["id", "display_name", "works_count", "cited_by_count", "type"],
 				institutions: ["id", "display_name", "works_count", "cited_by_count", "country_code"],
 				topics: ["id", "display_name", "works_count", "cited_by_count"],
@@ -1109,6 +1147,7 @@ export class GraphDataService {
 	 * This efficiently fetches only the target entity type, avoiding unnecessary API calls
 	 */
 	async expandAllNodesOfType(entityType: EntityType, options: ExpansionOptions = {}): Promise<void> {
+		logger.debug("graph", "expandAllNodesOfType called", { entityType, options }, "GraphDataService");
 		const store = useGraphStore.getState();
 		// Use direct selectors instead of unstable getter function to avoid infinite loops
 		const { nodes, visibleEntityTypes } = store;
