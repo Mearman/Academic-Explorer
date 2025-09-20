@@ -92,7 +92,7 @@ interface DataFetchingResponse {
 }
 
 interface WorkerMessage {
-  type: "start" | "stop" | "pause" | "resume" | "update_parameters" | "sync_custom_forces" | "add_custom_force" | "remove_custom_force" | "update_custom_force" | "expand_node" | "cancel_expansion";
+  type: "init" | "start" | "stop" | "pause" | "resume" | "update_parameters" | "sync_custom_forces" | "add_custom_force" | "remove_custom_force" | "update_custom_force" | "expand_node" | "cancel_expansion";
   nodes?: WorkerNode[];
   links?: WorkerLink[];
   config?: AnimationConfig;
@@ -238,6 +238,9 @@ const timerAPI = createTimerAPI();
 self.onmessage = function(event: MessageEvent<WorkerMessage>) {
 	const data = event.data;
 
+	// Send ready message when first valid message is received
+	sendReadyMessage();
+
 	// Filter out EventBridge cross-context messages - these are handled by EventBridge
 	// Only process direct worker messages for force simulation control
 	// Filter out EventBridge cross-context messages
@@ -255,6 +258,9 @@ self.onmessage = function(event: MessageEvent<WorkerMessage>) {
 	const forceData = data.forceData;
 
 	switch (type) {
+		case "init":
+			// Worker initialization complete, ready to receive commands
+			break;
 		case "start":
 			if (newNodes && newLinks) {
 				startAnimatedSimulation({
@@ -963,9 +969,17 @@ self.onerror = function(errorEvent) {
 	}, "main");
 };
 
-// Send ready message
-eventBridge.emit(WorkerEventType.WORKER_READY, {
-	workerId: "force-animation-worker",
-	workerType: "force-animation" as const,
-	timestamp: Date.now()
-}, "main");
+// Initialize worker state
+let isInitialized = false;
+
+// Function to send ready message
+const sendReadyMessage = () => {
+	if (!isInitialized) {
+		isInitialized = true;
+		eventBridge.emit(WorkerEventType.WORKER_READY, {
+			workerId: "force-animation-worker",
+			workerType: "force-animation" as const,
+			timestamp: Date.now()
+		}, "main");
+	}
+};
