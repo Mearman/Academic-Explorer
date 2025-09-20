@@ -363,10 +363,25 @@ export const useGraphStore = create<GraphState>()(
 
 			// Node management
 			addNode: (node) => {
+				const existingNode = get().nodes[node.id];
+				const wasAdded = !existingNode;
+
 				set((draft) => {
 					draft.nodes[node.id] = node;
 					draft.provider?.addNode(node);
 				});
+
+				// Only restart simulation if a new node was actually added
+				if (wasAdded) {
+					// Request layout restart when node is added to apply node forces
+					const animatedStore = useAnimatedGraphStore.getState();
+					animatedStore.requestRestart();
+					logger.debug("graph", "Requested layout restart after adding new node", {
+						nodeId: node.id,
+						entityType: node.type
+					});
+				}
+
 				// Recompute caches after single node addition
 				const state = get();
 				state.recomputeEntityTypeStats();
@@ -385,12 +400,29 @@ export const useGraphStore = create<GraphState>()(
 			},
 
 			addNodes: (nodes) => {
+				// Check which nodes are actually new before adding
+				const currentNodes = get().nodes;
+				const newNodes = nodes.filter(node => !currentNodes[node.id]);
+
 				set((draft) => {
 					nodes.forEach(node => {
 						draft.nodes[node.id] = node;
 						draft.provider?.addNode(node);
 					});
 				});
+
+				// Only restart simulation if new nodes were actually added
+				if (newNodes.length > 0) {
+					// Request layout restart when nodes are added to apply node forces
+					const animatedStore = useAnimatedGraphStore.getState();
+					animatedStore.requestRestart();
+					logger.debug("graph", "Requested layout restart after adding new nodes", {
+						newNodeCount: newNodes.length,
+						totalNodeCount: nodes.length,
+						newNodeTypes: [...new Set(newNodes.map(node => node.type))]
+					});
+				}
+
 				// Recompute cached statistics after data change
 				const state = get();
 				state.recomputeEntityTypeStats();
@@ -498,45 +530,59 @@ export const useGraphStore = create<GraphState>()(
 
 			// Edge management
 			addEdge: (edge) => {
+				const existingEdge = get().edges[edge.id];
+				const wasAdded = !existingEdge;
+
 				set((draft) => {
 					draft.edges[edge.id] = edge;
 					draft.provider?.addEdge(edge);
 				});
+
+				// Only restart simulation if a new edge was actually added
+				if (wasAdded) {
+					// Request layout restart when edge is added to apply edge forces
+					const animatedStore = useAnimatedGraphStore.getState();
+					animatedStore.requestRestart();
+					logger.debug("graph", "Requested layout restart after adding new edge", {
+						edgeType: edge.type,
+						edgeId: edge.id
+					});
+				}
+
 				// Recompute node caches after single edge addition
 				const state = get();
 				state.recomputeEdgeTypeStats();
 				state.recomputeNodeCaches();
-
-				// Request layout restart when edge is added to apply edge forces
-				const animatedStore = useAnimatedGraphStore.getState();
-				animatedStore.requestRestart();
-				logger.debug("graph", "Requested layout restart after adding single edge", {
-					edgeType: edge.type,
-					edgeId: edge.id
-				});
 			},
 
 			addEdges: (edges) => {
+				// Check which edges are actually new before adding
+				const currentEdges = get().edges;
+				const newEdges = edges.filter(edge => !currentEdges[edge.id]);
+
 				set((draft) => {
 					edges.forEach(edge => {
 						draft.edges[edge.id] = edge;
 						draft.provider?.addEdge(edge);
 					});
 				});
+
+				// Only restart simulation if new edges were actually added
+				if (newEdges.length > 0) {
+					// Request layout restart when edges are added to apply edge forces
+					const animatedStore = useAnimatedGraphStore.getState();
+					animatedStore.requestRestart();
+					logger.debug("graph", "Requested layout restart after adding new edges", {
+						newEdgeCount: newEdges.length,
+						totalEdgeCount: edges.length,
+						newEdgeTypes: [...new Set(newEdges.map(edge => edge.type))]
+					});
+				}
+
 				// Recompute cached statistics after data change
 				const state = get();
 				state.recomputeEdgeTypeStats();
 				state.recomputeNodeCaches();
-
-				// Request layout restart when edges are added to apply edge forces
-				if (edges.length > 0) {
-					const animatedStore = useAnimatedGraphStore.getState();
-					animatedStore.requestRestart();
-					logger.debug("graph", "Requested layout restart after adding edges", {
-						edgeCount: edges.length,
-						edgeTypes: [...new Set(edges.map(edge => edge.type))]
-					});
-				}
 			},
 
 			removeEdge: (edgeId) => {
