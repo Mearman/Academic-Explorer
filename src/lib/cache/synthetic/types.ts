@@ -4,14 +4,14 @@
  */
 
 export enum StorageTier {
-  MEMORY = 'memory',
-  LOCAL_STORAGE = 'localStorage',
-  INDEXED_DB = 'indexedDB',
-  STATIC = 'static',
-  API = 'api'
+  MEMORY = "memory",
+  LOCAL_STORAGE = "localStorage",
+  INDEXED_DB = "indexedDB",
+  STATIC = "static",
+  API = "api"
 }
 
-export type EntityType = 'works' | 'authors' | 'sources' | 'institutions' | 'topics' | 'publishers' | 'funders';
+export type EntityType = "works" | "authors" | "sources" | "institutions" | "topics" | "publishers" | "funders";
 
 export interface EntityFieldMetadata {
   lastUpdated: string;
@@ -74,11 +74,11 @@ export interface MultiTierAvailabilityMatrix {
       missing: string[];
     };
   };
-  optimalStrategy: 'memory' | 'localStorage' | 'indexedDB' | 'static' | 'api' | 'mixed';
+  optimalStrategy: "memory" | "localStorage" | "indexedDB" | "static" | "api" | "mixed";
 }
 
 export interface SurgicalRequest {
-  type: 'single-entity' | 'batch-entities' | 'full-collection';
+  type: "single-entity" | "batch-entities" | "full-collection";
   url: string;
   entityIds?: string[];
   fields: string[];
@@ -155,7 +155,7 @@ export interface StorageTierInterface {
 }
 
 // Request optimization types
-export type RequestStrategy = 'memory-only' | 'storage-only' | 'api-fallback' | 'surgical-api' | 'hybrid';
+export type RequestStrategy = "memory-only" | "storage-only" | "api-fallback" | "surgical-api" | "hybrid";
 
 export interface QueryParams {
   select?: string[];
