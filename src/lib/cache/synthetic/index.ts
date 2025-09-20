@@ -3,7 +3,7 @@
  * Entry point for the synthetic cache architecture
  */
 
-export { StorageTier, type EntityType, type QueryParams } from './types';
+export { StorageTier, type EntityType, type QueryParams } from "./types";
 export type {
   EntityFieldMetadata,
   EntityFieldData,
@@ -20,16 +20,16 @@ export type {
   StorageTierInterface,
   RequestStrategy,
   CachePolicy
-} from './types';
+} from "./types";
 
-export { StorageTierManager } from './storage-tier-manager';
-export { EntityFieldAccumulator } from './entity-field-accumulator';
-export { CollectionResultMapper } from './collection-result-mapper';
-export { SyntheticResponseGenerator } from './synthetic-response-generator';
+export { StorageTierManager } from "./storage-tier-manager";
+export { EntityFieldAccumulator } from "./entity-field-accumulator";
+export { CollectionResultMapper } from "./collection-result-mapper";
+export { SyntheticResponseGenerator } from "./synthetic-response-generator";
 
 export {
   type SyntheticCacheLayer,
   SyntheticCacheLayerImpl,
   createDefaultCachePolicy,
   createSyntheticCacheLayer
-} from './synthetic-cache-layer';
+} from "./synthetic-cache-layer";
