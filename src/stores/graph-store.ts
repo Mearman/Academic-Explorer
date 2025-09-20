@@ -21,6 +21,7 @@ import { RelationType } from "@/lib/graph/types";
 import { DEFAULT_FORCE_PARAMS } from "@/lib/graph/force-params";
 import { graphEventSystem, entityEventSystem } from "@/lib/graph/events";
 import { logger } from "@/lib/logger";
+import { useAnimatedGraphStore } from "./animated-graph-store";
 
 // Helper function to create initial edge type stats
 const createInitialEdgeTypeStats = () => ({
@@ -505,6 +506,14 @@ export const useGraphStore = create<GraphState>()(
 				const state = get();
 				state.recomputeEdgeTypeStats();
 				state.recomputeNodeCaches();
+
+				// Request layout restart when edge is added to apply edge forces
+				const animatedStore = useAnimatedGraphStore.getState();
+				animatedStore.requestRestart();
+				logger.debug("graph", "Requested layout restart after adding single edge", {
+					edgeType: edge.type,
+					edgeId: edge.id
+				});
 			},
 
 			addEdges: (edges) => {
@@ -518,6 +527,16 @@ export const useGraphStore = create<GraphState>()(
 				const state = get();
 				state.recomputeEdgeTypeStats();
 				state.recomputeNodeCaches();
+
+				// Request layout restart when edges are added to apply edge forces
+				if (edges.length > 0) {
+					const animatedStore = useAnimatedGraphStore.getState();
+					animatedStore.requestRestart();
+					logger.debug("graph", "Requested layout restart after adding edges", {
+						edgeCount: edges.length,
+						edgeTypes: [...new Set(edges.map(edge => edge.type))]
+					});
+				}
 			},
 
 			removeEdge: (edgeId) => {
