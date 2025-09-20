@@ -129,25 +129,23 @@ export class GraphDataService {
 			}, "GraphDataService");
 
 			const nodeIds = nodes.map(node => node.id);
-			this.relationshipDetectionService.detectRelationshipsForNodes(nodeIds)
-				.then((detectedEdges) => {
-					// Add detected relationship edges to the graph
-					if (detectedEdges.length > 0) {
-						logger.debug("graph", "Adding detected relationship edges to initial graph", {
-							detectedEdgeCount: detectedEdges.length
-						}, "GraphDataService");
+			try {
+				const detectedEdges = await this.relationshipDetectionService.detectRelationshipsForNodes(nodeIds);
+				// Add detected relationship edges to the graph
+				if (detectedEdges.length > 0) {
+					logger.debug("graph", "Adding detected relationship edges to initial graph", {
+						detectedEdgeCount: detectedEdges.length
+					}, "GraphDataService");
 
-						const currentStore = useGraphStore.getState();
-						currentStore.addEdges(detectedEdges);
+					store.addEdges(detectedEdges);
 
-						// Update cached edges
-						const allEdges = Object.values(currentStore.edges).filter((edge): edge is NonNullable<typeof edge> => edge != null);
-						setCachedGraphEdges(this.queryClient, allEdges);
-					}
-				})
-				.catch((error: unknown) => {
-					logError("Failed to detect relationships for initial nodes", error, "GraphDataService", "graph");
-				});
+					// Update cached edges
+					const allEdges = Object.values(store.edges).filter((edge): edge is NonNullable<typeof edge> => edge != null);
+					setCachedGraphEdges(this.queryClient, allEdges);
+				}
+			} catch (error) {
+				logError("Failed to detect relationships for initial nodes", error, "GraphDataService", "graph");
+			}
 
 			// Layout is now handled by the ReactFlow component's useLayout hook
 			// No need for explicit layout application here
@@ -808,21 +806,38 @@ export class GraphDataService {
 
 			const relatedData = await entity.expand(context, enhancedOptions);
 
-			// Detect relationships for newly added nodes BEFORE adding to graph (synchronous)
+			// First: Add nodes and initial edges to the store
+			const currentNodes = Object.values(store.nodes).filter((node): node is NonNullable<typeof node> => node != null);
+			const currentEdges = Object.values(store.edges).filter((edge): edge is NonNullable<typeof edge> => edge != null);
+			const finalNodes = [...currentNodes, ...relatedData.nodes];
+			const finalEdges = [...currentEdges, ...relatedData.edges];
+
+			logger.debug("graph", "Adding nodes to store before relationship detection", {
+				expandedNodeId: nodeId,
+				newNodeCount: relatedData.nodes.length,
+				newEdgeCount: relatedData.edges.length,
+				totalNodeCount: finalNodes.length,
+				totalEdgeCount: finalEdges.length
+			}, "GraphDataService");
+
+			// Single atomic update to add nodes and initial edges
+			store.setGraphData(finalNodes, finalEdges);
+
+			// Second: Detect relationships for newly added nodes AFTER adding to graph
 			let detectedEdges: GraphEdge[] = [];
 			if (relatedData.nodes.length > 0) {
 				const newNodeIds = relatedData.nodes.map(n => n.id);
-				logger.debug("graph", "Starting synchronous relationship detection for expanded nodes", {
+				logger.debug("graph", "Starting relationship detection for expanded nodes", {
 					expandedNodeId: nodeId,
 					newNodeCount: newNodeIds.length,
 					entityType: node.type
 				}, "GraphDataService");
 
 				try {
-					// Run relationship detection synchronously to ensure edges are ready
+					// Run relationship detection now that nodes are in the store
 					detectedEdges = await this.relationshipDetectionService.detectRelationshipsForNodes(newNodeIds);
 
-					logger.debug("graph", "Synchronous relationship detection completed", {
+					logger.debug("graph", "Relationship detection completed", {
 						expandedNodeId: nodeId,
 						detectedEdgeCount: detectedEdges.length,
 						relationships: detectedEdges.map(e => ({
@@ -831,36 +846,29 @@ export class GraphDataService {
 							type: e.type
 						}))
 					}, "GraphDataService");
+
+					// Third: Add the detected relationship edges if any were found
+					if (detectedEdges.length > 0) {
+						const finalEdgesWithRelationships = [...finalEdges, ...detectedEdges];
+						logger.debug("graph", "Adding detected relationship edges", {
+							expandedNodeId: nodeId,
+							relationshipEdgeCount: detectedEdges.length,
+							totalEdgeCount: finalEdgesWithRelationships.length
+						}, "GraphDataService");
+
+						// Update store with relationship edges
+						store.setGraphData(finalNodes, finalEdgesWithRelationships);
+					}
 				} catch (error) {
-					logError("Failed to detect relationships for expanded nodes (synchronous)", error, "GraphDataService", "graph");
+					logError("Failed to detect relationships for expanded nodes", error, "GraphDataService", "graph");
 					// Continue with expansion even if relationship detection fails
 				}
 			}
 
-			// Combine initial edges with detected relationship edges
-			const allNewEdges = [...relatedData.edges, ...detectedEdges];
-
-			// Atomic batch update: Add all nodes and edges together using setGraphData
-			const currentNodes = Object.values(store.nodes).filter((node): node is NonNullable<typeof node> => node != null);
-			const currentEdges = Object.values(store.edges).filter((edge): edge is NonNullable<typeof edge> => edge != null);
-			const finalNodes = [...currentNodes, ...relatedData.nodes];
-			const finalEdges = [...currentEdges, ...allNewEdges];
-
-			logger.debug("graph", "Performing atomic batch update", {
-				expandedNodeId: nodeId,
-				newNodeCount: relatedData.nodes.length,
-				newEdgeCount: relatedData.edges.length,
-				detectedEdgeCount: detectedEdges.length,
-				totalNodeCount: finalNodes.length,
-				totalEdgeCount: finalEdges.length
-			}, "GraphDataService");
-
-			// Single atomic update to prevent React 19 state conflicts
-			store.setGraphData(finalNodes, finalEdges);
-
-			// Update cached graph data with final state
+			// Update cached graph data with final state (including any detected relationship edges)
+			const finalEdgesWithRelationships = detectedEdges.length > 0 ? [...finalEdges, ...detectedEdges] : finalEdges;
 			setCachedGraphNodes(this.queryClient, finalNodes);
-			setCachedGraphEdges(this.queryClient, finalEdges);
+			setCachedGraphEdges(this.queryClient, finalEdgesWithRelationships);
 
 			// Mark as expanded in TanStack Query cache
 			setNodeExpanded(this.queryClient, nodeId, true);

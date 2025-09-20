@@ -184,29 +184,8 @@ export function useDataFetchingWorker(options: UseDataFetchingWorkerOptions = {}
 	}, [failRequest, onExpandError]);
 
 
-	// Handle worker errors
-	const handleWorkerError = useCallback((error: ErrorEvent) => {
-		logger.error("graph", "Data fetching worker error", {
-			error: error.message,
-			filename: error.filename,
-			lineno: error.lineno
-		});
-
-		// Reject all pending requests
-		pendingRequestsRef.current.forEach((request) => {
-			request.reject(new Error(`Worker error: ${error.message}`));
-			onExpandError?.(request.nodeId, `Worker error: ${error.message}`);
-		});
-
-		// Clear pending requests
-		pendingRequestsRef.current.clear();
-		setActiveRequests(new Set());
-
-		// Update progress store
-		clearAll();
-		setWorkerReady(false);
-		setIsWorkerReady(false);
-	}, [onExpandError, clearAll, setWorkerReady]);
+	// Note: handleWorkerError is now defined within the worker initialization effect
+	// to avoid dependency chain issues that cause worker recreation
 
 	// Initialize worker (only once)
 	useEffect(() => {
@@ -219,21 +198,43 @@ export function useDataFetchingWorker(options: UseDataFetchingWorkerOptions = {}
 
 		logger.debug("graph", "Initializing data fetching worker");
 
+		// Create a stable error handler for this effect only
+		const stableErrorHandler = (error: ErrorEvent) => {
+			logger.error("graph", "Data fetching worker error", {
+				error: error.message,
+				filename: error.filename,
+				lineno: error.lineno
+			});
+
+			// Reject all pending requests
+			currentPendingRequests.forEach((request) => {
+				request.reject(new Error(`Worker error: ${error.message}`));
+			});
+
+			// Clear pending requests
+			currentPendingRequests.clear();
+			setActiveRequests(new Set());
+
+			// Update progress store
+			clearAll();
+			setWorkerReady(false);
+			setIsWorkerReady(false);
+		};
+
 		try {
 			workerRef.current = new Worker(
 				new URL("../workers/data-fetching.worker.ts", import.meta.url),
 				{ type: "module" }
 			);
 
-			// Add error listener
-			workerRef.current.addEventListener("error", handleWorkerError);
+			// Add error listener with stable handler
+			workerRef.current.addEventListener("error", stableErrorHandler);
 
 			// Register worker with event bridge for cross-context communication
 			eventBridge.registerWorker(workerRef.current, "data-fetching-worker");
 
 		} catch (error) {
 			logger.error("graph", "Failed to initialize data fetching worker", { error });
-			onExpandError?.("worker-init", "Failed to initialize data fetching worker");
 		}
 
 		return () => {
@@ -252,7 +253,7 @@ export function useDataFetchingWorker(options: UseDataFetchingWorkerOptions = {}
 				setWorkerReady(false);
 			}
 		};
-	}, [clearAll, onExpandError, setWorkerReady, handleWorkerError]); // Initialize only once, but include stable dependencies
+	}, []); // No dependencies - initialize once only
 
 	// Register EventBridge listeners for cross-context communication
 	useEffect(() => {

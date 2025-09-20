@@ -165,11 +165,42 @@ export const createHybridStorage = (): StateStorage => {
               });
             } catch (error) {
               indexedDBErrors++;
-              logger.error("storage", "IndexedDB background write failed", {
-                name,
-                error,
-                totalErrors: indexedDBErrors
-              });
+
+              // Handle specific IndexedDB errors
+              if (error && typeof error === "object" && "name" in error) {
+                const errorName = String(error.name);
+
+                if (errorName === "QuotaExceededError") {
+                  logger.warn("storage", "IndexedDB quota exceeded, data may not persist", {
+                    name,
+                    valueSize: value.length,
+                    totalErrors: indexedDBErrors
+                  });
+                } else if (errorName === "VersionError") {
+                  logger.warn("storage", "IndexedDB version conflict, database may need refresh", {
+                    name,
+                    totalErrors: indexedDBErrors
+                  });
+                } else if (errorName === "InvalidStateError") {
+                  logger.warn("storage", "IndexedDB invalid state, database may be corrupted", {
+                    name,
+                    totalErrors: indexedDBErrors
+                  });
+                } else {
+                  logger.error("storage", "IndexedDB background write failed", {
+                    name,
+                    error: errorName,
+                    message: error && typeof error === "object" && "message" in error ? String(error.message) : "Unknown error",
+                    totalErrors: indexedDBErrors
+                  });
+                }
+              } else {
+                logger.error("storage", "IndexedDB background write failed", {
+                  name,
+                  error: String(error),
+                  totalErrors: indexedDBErrors
+                });
+              }
             } finally {
               writeQueue.delete(name);
             }
