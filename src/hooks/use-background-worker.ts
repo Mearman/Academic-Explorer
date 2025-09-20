@@ -696,7 +696,13 @@ export function useBackgroundWorker(options: UseBackgroundWorkerOptions = {}) {
 		expansionSettings?: ExpansionSettings
 	): void => {
 		if (!workerRef.current || !isWorkerReady) {
-			throw new Error("Force animation worker not ready");
+			logger.warn("graph", "Force animation worker not ready for expandNode", {
+				nodeId,
+				hasWorker: !!workerRef.current,
+				isWorkerReady
+			});
+			onExpansionError?.(nodeId, "Worker not ready");
+			return;
 		}
 
 		// Generate unique request ID
