@@ -422,8 +422,8 @@ describe("Multi-Degree Intra-Graph Connections", () => {
 			'[data-testid*="reference"]',
 			'[data-testid*="citation"]',
 			'[data-testid*="cited"]',
-			`text="${workW1.split("/").pop()}"`,
-			'text="Advances in Machine Learning"'
+			`:text("${workW1.split("/").pop()}")`,
+			':text("Advances in Machine Learning")'
 		].join(", "))
 
 		// Verify citation elements are accessible (may be 0 if not implemented yet)
