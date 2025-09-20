@@ -163,11 +163,6 @@ export function useBackgroundWorker(options: UseBackgroundWorkerOptions = {}) {
 		const { type, positions, alpha, iteration, progress, fps, totalIterations, finalAlpha, reason, nodeCount, linkCount, config } = data;
 
 		switch (type) {
-			case "ready":
-				setIsWorkerReady(true);
-				logger.debug("graph", "Force animation worker ready");
-				break;
-
 			case "started":
 				setAnimationState(prev => ({
 					...prev,

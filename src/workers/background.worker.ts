@@ -395,15 +395,9 @@ async function handleNodeExpansion(request: ExpandNodeRequest) {
 			throw new Error(`Missing display_name for ${entityType}:${entityId}`);
 		}
 
-		// After validation, create a properly typed entity data object
-		// We've validated that entityData has required fields, so we can safely use it
-		const validatedEntityData: import("@/lib/openalex/types").OpenAlexEntity = {
-			id: entityData.id,
-			display_name: entityData.display_name,
-			...Object.fromEntries(
-				Object.entries(entityData).filter(([key]) => key !== "id" && key !== "display_name")
-			)
-		};
+		// After validation, we can safely use entityData as OpenAlexEntity
+		// We've validated that entityData has required fields (id and display_name)
+		const validatedEntityData = entityData as import("@/lib/openalex/types").OpenAlexEntity;
 		const entity = EntityFactory.createFromData(validatedEntityData, client);
 
 		if (!entity) {
