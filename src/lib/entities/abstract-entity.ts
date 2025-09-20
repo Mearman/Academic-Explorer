@@ -3,7 +3,7 @@
  * Provides base functionality for entity-specific operations like expansion, transformation, validation
  */
 
-import type { RateLimitedOpenAlexClient } from "@/lib/openalex/rate-limited-client";
+import type { CachedOpenAlexClient } from "@/lib/openalex/cached-client";
 import { logger } from "@/lib/logger";
 import type {
 	GraphNode,
@@ -42,7 +42,7 @@ export interface ExpansionResult {
 export interface EntityContext {
   entityId: string;
   entityType: EntityType;
-  client: RateLimitedOpenAlexClient;
+  client: CachedOpenAlexClient;
 }
 
 /**
@@ -51,11 +51,11 @@ export interface EntityContext {
  * Handles both full and dehydrated entities automatically
  */
 export abstract class AbstractEntity<TEntity extends OpenAlexEntity> {
-	protected readonly client: RateLimitedOpenAlexClient;
+	protected readonly client: CachedOpenAlexClient;
 	protected readonly entityType: EntityType;
 	protected readonly entityData?: TEntity;
 
-	constructor(client: RateLimitedOpenAlexClient, entityType: EntityType, entityData?: TEntity) {
+	constructor(client: CachedOpenAlexClient, entityType: EntityType, entityData?: TEntity) {
 		this.client = client;
 		this.entityType = entityType;
 		this.entityData = entityData;
@@ -266,7 +266,7 @@ export abstract class AbstractEntity<TEntity extends OpenAlexEntity> {
    */
   public async fetchMinimal(entityId: string): Promise<TEntity> {
   	try {
-  		const entity = await this.client.getEntity(entityId);
+  		const entity = await this.client.client.getEntity(entityId);
   		if (!this.validateEntityType(entity)) {
   			throw new Error(`Invalid entity returned for ${entityId}`);
   		}
@@ -279,7 +279,7 @@ export abstract class AbstractEntity<TEntity extends OpenAlexEntity> {
   			"AbstractEntity"
   		);
   		// Fallback to full entity fetch
-  		const fullEntity = await this.client.getEntity(entityId);
+  		const fullEntity = await this.client.client.getEntity(entityId);
   		if (!this.validateEntityType(fullEntity)) {
   			throw new Error(`Invalid full entity returned for ${entityId}`);
   		}
@@ -316,7 +316,7 @@ export abstract class AbstractEntity<TEntity extends OpenAlexEntity> {
   			"AbstractEntity"
   		);
   		// Fallback to full entity fetch
-  		const fullEntity = await this.client.getEntity(entityId);
+  		const fullEntity = await this.client.client.getEntity(entityId);
   		if (!this.validateEntityType(fullEntity)) {
   			throw new Error(`Invalid full entity returned for ${entityId}`);
   		}
@@ -340,32 +340,32 @@ export abstract class AbstractEntity<TEntity extends OpenAlexEntity> {
 
   	switch (this.entityType) {
   		case "works":
-  			entity = await this.client.getWork(entityId, params);
+  			entity = await this.client.client.works.getWork(entityId, params);
   			break;
   		case "authors":
-  			entity = await this.client.getAuthor(entityId, params);
+  			entity = await this.client.client.authors.getAuthor(entityId, params);
   			break;
   		case "sources":
-  			entity = await this.client.getSource(entityId, params);
+  			entity = await this.client.client.sources.getSource(entityId, params);
   			break;
   		case "institutions":
-  			entity = await this.client.getInstitution(entityId, params);
+  			entity = await this.client.client.institutions.getInstitution(entityId, params);
   			break;
   		case "topics":
-  			entity = await this.client.getTopic(entityId, params);
+  			entity = await this.client.client.topics.get(entityId, params);
   			break;
   		case "publishers":
-  			entity = await this.client.getPublisher(entityId, params);
+  			entity = await this.client.client.publishers.get(entityId, params);
   			break;
   		case "funders":
-  			entity = await this.client.getFunder(entityId, params);
+  			entity = await this.client.client.funders.get(entityId, params);
   			break;
   		case "keywords":
-  			entity = await this.client.getKeyword(entityId, params);
+  			entity = await this.client.client.keywords.getKeyword(entityId, params);
   			break;
   		default:
   			// Fallback to generic method without field selection
-  			entity = await this.client.getEntity(entityId);
+  			entity = await this.client.client.getEntity(entityId);
   			break;
   	}
 
@@ -405,7 +405,7 @@ export abstract class AbstractEntity<TEntity extends OpenAlexEntity> {
   			"AbstractEntity"
   		);
   		// Fallback to full entity fetch
-  		const fullEntity = await this.client.getEntity(entityId);
+  		const fullEntity = await this.client.client.getEntity(entityId);
   		if (!this.validateEntityType(fullEntity)) {
   			throw new Error(`Invalid full entity returned for ${entityId}`);
   		}
@@ -420,7 +420,7 @@ export abstract class AbstractEntity<TEntity extends OpenAlexEntity> {
    */
   public async fetchForFullExpansion(entityId: string): Promise<TEntity> {
   	try {
-  		const entity = await this.client.getEntity(entityId);
+  		const entity = await this.client.client.getEntity(entityId);
   		if (!this.validateEntityType(entity)) {
   			throw new Error(`Invalid entity returned for ${entityId}`);
   		}
@@ -433,7 +433,7 @@ export abstract class AbstractEntity<TEntity extends OpenAlexEntity> {
   			"AbstractEntity"
   		);
   		// Fallback to full entity fetch
-  		const fullEntity = await this.client.getEntity(entityId);
+  		const fullEntity = await this.client.client.getEntity(entityId);
   		if (!this.validateEntityType(fullEntity)) {
   			throw new Error(`Invalid full entity returned for ${entityId}`);
   		}
@@ -451,7 +451,7 @@ export abstract class AbstractEntity<TEntity extends OpenAlexEntity> {
   	}
 
   	try {
-  		const fullEntity = await this.client.getEntity(entity.id);
+  		const fullEntity = await this.client.client.getEntity(entity.id);
   		if (!this.validateEntityType(fullEntity)) {
   			throw new Error(`Invalid hydrated entity returned for ${entity.id}`);
   		}
@@ -486,7 +486,7 @@ export abstract class AbstractEntity<TEntity extends OpenAlexEntity> {
 
   		// Fetch the entity directly using the client
   		// The preferMetadata parameter is noted for potential future field selection optimization
-  		const relatedEntity = await this.client.getEntity(entityId);
+  		const relatedEntity = await this.client.client.getEntity(entityId);
 
   		return relatedEntity;
   	} catch (error) {

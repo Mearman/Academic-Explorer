@@ -4,7 +4,7 @@
  */
 
 import { AbstractEntity, type EntityContext, type ExpansionOptions, type ExpansionResult } from "./abstract-entity";
-import type { RateLimitedOpenAlexClient } from "@/lib/openalex/rate-limited-client";
+import type { CachedOpenAlexClient } from "@/lib/openalex/cached-client";
 import type { Author, Work } from "@/lib/openalex/types";
 import type { ExternalIdentifier, GraphNode, GraphEdge } from "@/lib/graph/types";
 import { RelationType as RT } from "@/lib/graph/types";
@@ -12,7 +12,7 @@ import { logger } from "@/lib/logger";
 import { ExpansionQueryBuilder } from "@/services/expansion-query-builder";
 
 export class AuthorEntity extends AbstractEntity<Author> {
-	constructor(client: RateLimitedOpenAlexClient, entityData?: Author) {
+	constructor(client: CachedOpenAlexClient, entityData?: Author) {
 		super(client, "authors", entityData);
 	}
 
@@ -78,7 +78,7 @@ export class AuthorEntity extends AbstractEntity<Author> {
 
 		try {
 			// First, fetch the author entity to get affiliation data for institution nodes
-			const author = await this.client.getAuthor(context.entityId, {
+			const author = await this.client.client.authors.getAuthor(context.entityId, {
 				select: ["id", "display_name", "affiliations"]
 			});
 
@@ -163,7 +163,7 @@ export class AuthorEntity extends AbstractEntity<Author> {
 			}, "AuthorEntity");
 
 			do {
-				const worksResponse = await this.client.getWorks({
+				const worksResponse = await this.client.client.works.getWorks({
 					filter: finalFilter,
 					per_page: 200, // Always use maximum per page
 					page: page,
@@ -317,7 +317,7 @@ export class AuthorEntity extends AbstractEntity<Author> {
    * Fetch author data with minimal fields needed for outbound edge extraction
    */
 	async fetchForOutboundEdges(entityId: string): Promise<Author> {
-		return await this.client.getAuthor(entityId, {
+		return await this.client.client.authors.getAuthor(entityId, {
 			select: [
 				"id",
 				"display_name",

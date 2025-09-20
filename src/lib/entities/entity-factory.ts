@@ -3,7 +3,7 @@
  * Implements the Factory pattern for entity creation and management
  */
 
-import type { RateLimitedOpenAlexClient } from "@/lib/openalex/rate-limited-client";
+import type { CachedOpenAlexClient } from "@/lib/openalex/cached-client";
 import type { EntityType } from "@/lib/graph/types";
 import type { OpenAlexEntity } from "@/lib/openalex/types";
 
@@ -20,7 +20,7 @@ import { detectEntityType } from "./entity-detection";
  * Factory for creating entity instances based on type
  */
 export class EntityFactory {
-	private static readonly entities = new Map<EntityType, new (client: RateLimitedOpenAlexClient, entityData?: unknown) => AbstractEntity<OpenAlexEntity>>();
+	private static readonly entities = new Map<EntityType, new (client: CachedOpenAlexClient, entityData?: unknown) => AbstractEntity<OpenAlexEntity>>();
 
 	// Instance property to satisfy no-extraneous-class rule
 	public readonly factoryType = "entity";
@@ -36,7 +36,7 @@ export class EntityFactory {
 	 */
 	private static isValidEntityConstructor(
 		constructor: unknown
-	): constructor is new (client: RateLimitedOpenAlexClient, entityData?: unknown) => AbstractEntity<OpenAlexEntity> {
+	): constructor is new (client: CachedOpenAlexClient, entityData?: unknown) => AbstractEntity<OpenAlexEntity> {
 		return typeof constructor === "function";
 	}
 
@@ -56,7 +56,7 @@ export class EntityFactory {
    */
 	static create(
 		entityType: EntityType,
-		client: RateLimitedOpenAlexClient,
+		client: CachedOpenAlexClient,
 		entityData?: OpenAlexEntity
 	): AbstractEntity<OpenAlexEntity> {
 		const EntityClass = this.entities.get(entityType);
@@ -75,7 +75,7 @@ export class EntityFactory {
    */
 	static createFromData(
 		entityData: OpenAlexEntity,
-		client: RateLimitedOpenAlexClient
+		client: CachedOpenAlexClient
 	): AbstractEntity<OpenAlexEntity> {
 		const entityType = detectEntityType(entityData);
 		return this.create(entityType, client, entityData);
@@ -100,7 +100,7 @@ export class EntityFactory {
    */
 	static register<T extends OpenAlexEntity>(
 		entityType: EntityType,
-		entityClass: new (client: RateLimitedOpenAlexClient, entityData?: T) => AbstractEntity<T>
+		entityClass: new (client: CachedOpenAlexClient, entityData?: T) => AbstractEntity<T>
 	): void {
 		if (!EntityFactory.isValidEntityConstructor(entityClass)) {
 			throw new Error(`Invalid entity class provided for registration: ${entityType}`);

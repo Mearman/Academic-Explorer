@@ -4,7 +4,7 @@
  */
 
 import { AbstractEntity, type EntityContext, type ExpansionOptions, type ExpansionResult } from "./abstract-entity";
-import type { RateLimitedOpenAlexClient } from "@/lib/openalex/rate-limited-client";
+import type { CachedOpenAlexClient } from "@/lib/openalex/cached-client";
 import type { Work } from "@/lib/openalex/types";
 import type { ExternalIdentifier, GraphNode, GraphEdge } from "@/lib/graph/types";
 import { RelationType as RT } from "@/lib/graph/types";
@@ -12,7 +12,7 @@ import { ExpansionQueryBuilder } from "@/services/expansion-query-builder";
 import { logger } from "@/lib/logger";
 
 export class WorkEntity extends AbstractEntity<Work> {
-	constructor(client: RateLimitedOpenAlexClient, entityData?: Work) {
+	constructor(client: CachedOpenAlexClient, entityData?: Work) {
 		super(client, "works", entityData);
 	}
 
@@ -127,7 +127,7 @@ export class WorkEntity extends AbstractEntity<Work> {
 				}, "WorkEntity");
 
 				do {
-					const citationsQuery = await this.client.getWorks({
+					const citationsQuery = await this.client.client.works.getWorks({
 						filter: finalFilter,
 						per_page: 200, // Always use maximum per page
 						page: page,
@@ -296,7 +296,7 @@ export class WorkEntity extends AbstractEntity<Work> {
    * Fetch work data with minimal fields needed for outbound edge extraction
    */
 	async fetchForOutboundEdges(entityId: string): Promise<Work> {
-		return await this.client.getWork(entityId, {
+		return await this.client.client.works.getWork(entityId, {
 			select: [
 				"id",
 				"display_name",
