@@ -6,7 +6,7 @@
 import { useQuery, useSuspenseQuery, UseQueryOptions, UseSuspenseQueryOptions } from "@tanstack/react-query";
 import { queryKeys, getEntityQueryKey } from "@/lib/cache/query-keys";
 import { ENTITY_CACHE_TIMES, type EntityType } from "@/config/cache";
-import { rateLimitedOpenAlex } from "@/lib/openalex/rate-limited-client";
+import { CachedOpenAlexClient } from "@/lib/openalex/cached-client";
 import type {
 	Work,
 	Author,
@@ -22,6 +22,10 @@ import type {
 	AutocompleteResult,
 	EntityType as OpenAlexEntityType,
 } from "@/lib/openalex/types";
+
+// Create cached client instance for web app use
+const cachedOpenAlex = new CachedOpenAlexClient();
+
 
 // Base hook options with entity-specific caching
 function getEntityQueryOptions<T>(entityType: EntityType): Partial<UseQueryOptions<T>> {
@@ -62,7 +66,7 @@ export function useOpenAlexEntity<T extends OpenAlexEntity>(
 			: getEntityQueryKey(entityType, id || ""),
 		queryFn: async (): Promise<T> => {
 			if (!id) throw new Error("Entity ID is required");
-			return rateLimitedOpenAlex.getEntity(id) as Promise<T>;
+			return cachedOpenAlex.getById<T>(entityType, id, params);
 		},
 		enabled: !!id,
 		...getEntityQueryOptions<T>(entityType),
@@ -76,7 +80,7 @@ export function useWork(id: string | undefined, params?: QueryParams, options?: 
 		queryKey: params ? [...queryKeys.work(id || ""), params] : queryKeys.work(id || ""),
 		queryFn: async () => {
 			if (!id) throw new Error("Work ID is required");
-			return rateLimitedOpenAlex.getWork(id, params);
+			return cachedOpenAlex.getById<Work>("works", id, params);
 		},
 		enabled: !!id,
 		...getEntityQueryOptions<Work>("work"),
@@ -87,7 +91,7 @@ export function useWork(id: string | undefined, params?: QueryParams, options?: 
 export function useWorks(params?: QueryParams, options?: Partial<UseQueryOptions<OpenAlexResponse<Work>>>) {
 	return useQuery({
 		queryKey: [...queryKeys.works(), params || {}],
-		queryFn: () => rateLimitedOpenAlex.getWorks(params),
+		queryFn: () => cachedOpenAlex.getResponse<Work>("works", params),
 		...getEntityQueryOptions<OpenAlexResponse<Work>>("work"),
 		...options,
 	});
@@ -98,7 +102,7 @@ export function useWorkSearch(query: string | undefined, params?: QueryParams, o
 		queryKey: queryKeys.searchWorks(query || "", params),
 		queryFn: () => {
 			if (!query) throw new Error("Search query is required");
-			return rateLimitedOpenAlex.searchWorks(query, params);
+			return cachedOpenAlex.getResponse<Work>("works", { search: query, ...params });
 		},
 		enabled: !!query && query.length > 0,
 		staleTime: 1000 * 60 * 5, // 5 minutes for search results
@@ -113,7 +117,7 @@ export function useAuthor(id: string | undefined, params?: QueryParams, options?
 		queryKey: params ? [...queryKeys.author(id || ""), params] : queryKeys.author(id || ""),
 		queryFn: async () => {
 			if (!id) throw new Error("Author ID is required");
-			return rateLimitedOpenAlex.getAuthor(id, params);
+			return cachedOpenAlex.getById<Author>("authors", id, params);
 		},
 		enabled: !!id,
 		...getEntityQueryOptions<Author>("author"),
@@ -124,7 +128,7 @@ export function useAuthor(id: string | undefined, params?: QueryParams, options?
 export function useAuthors(params?: QueryParams, options?: Partial<UseQueryOptions<OpenAlexResponse<Author>>>) {
 	return useQuery({
 		queryKey: [...queryKeys.authors(), params || {}],
-		queryFn: () => rateLimitedOpenAlex.getAuthors(params),
+		queryFn: () => cachedOpenAlex.getResponse<Author>("authors", params),
 		...getEntityQueryOptions<OpenAlexResponse<Author>>("author"),
 		...options,
 	});
@@ -135,7 +139,7 @@ export function useAuthorSearch(query: string | undefined, params?: QueryParams,
 		queryKey: queryKeys.searchAuthors(query || "", params),
 		queryFn: () => {
 			if (!query) throw new Error("Search query is required");
-			return rateLimitedOpenAlex.searchAuthors(query, params);
+			return cachedOpenAlex.getResponse<Author>("authors", { search: query, ...params });
 		},
 		enabled: !!query && query.length > 0,
 		staleTime: 1000 * 60 * 5,
@@ -150,7 +154,7 @@ export function useSource(id: string | undefined, params?: QueryParams, options?
 		queryKey: params ? [...queryKeys.source(id || ""), params] : queryKeys.source(id || ""),
 		queryFn: async () => {
 			if (!id) throw new Error("Source ID is required");
-			return rateLimitedOpenAlex.getSource(id, params);
+			return cachedOpenAlex.getById<Source>("sources", id, params);
 		},
 		enabled: !!id,
 		...getEntityQueryOptions<Source>("source"),
@@ -161,7 +165,7 @@ export function useSource(id: string | undefined, params?: QueryParams, options?
 export function useSources(params?: QueryParams, options?: Partial<UseQueryOptions<OpenAlexResponse<Source>>>) {
 	return useQuery({
 		queryKey: [...queryKeys.sources(), params || {}],
-		queryFn: () => rateLimitedOpenAlex.getSources(params),
+		queryFn: () => cachedOpenAlex.getResponse<Source>("sources", params),
 		...getEntityQueryOptions<OpenAlexResponse<Source>>("source"),
 		...options,
 	});
@@ -172,7 +176,7 @@ export function useSourceSearch(query: string | undefined, params?: QueryParams,
 		queryKey: queryKeys.searchSources(query || "", params),
 		queryFn: () => {
 			if (!query) throw new Error("Search query is required");
-			return rateLimitedOpenAlex.searchSources(query, params);
+			return cachedOpenAlex.getResponse<Source>("sources", { search: query, ...params });
 		},
 		enabled: !!query && query.length > 0,
 		staleTime: 1000 * 60 * 5,
@@ -187,7 +191,7 @@ export function useInstitution(id: string | undefined, params?: Record<string, u
 		queryKey: params ? [...queryKeys.institution(id || ""), params] : queryKeys.institution(id || ""),
 		queryFn: async () => {
 			if (!id) throw new Error("Institution ID is required");
-			return rateLimitedOpenAlex.getInstitution(id, params);
+			return cachedOpenAlex.getById<InstitutionEntity>("institutions", id, params);
 		},
 		enabled: !!id,
 		...getEntityQueryOptions<InstitutionEntity>("institution"),
@@ -198,7 +202,7 @@ export function useInstitution(id: string | undefined, params?: Record<string, u
 export function useInstitutions(params?: Record<string, unknown>, options?: Partial<UseQueryOptions<OpenAlexResponse<InstitutionEntity>>>) {
 	return useQuery({
 		queryKey: [...queryKeys.institutions(), params || {}],
-		queryFn: () => rateLimitedOpenAlex.getInstitutions(params),
+		queryFn: () => cachedOpenAlex.getResponse<InstitutionEntity>("institutions", params),
 		...getEntityQueryOptions<OpenAlexResponse<InstitutionEntity>>("institution"),
 		...options,
 	});
@@ -209,7 +213,7 @@ export function useInstitutionSearch(query: string | undefined, params?: Record<
 		queryKey: queryKeys.searchInstitutions(query || "", params),
 		queryFn: () => {
 			if (!query) throw new Error("Search query is required");
-			return rateLimitedOpenAlex.searchInstitutions(query, params);
+			return cachedOpenAlex.getResponse<InstitutionEntity>("institutions", { search: query, ...params });
 		},
 		enabled: !!query && query.length > 0,
 		staleTime: 1000 * 60 * 5,
@@ -224,7 +228,7 @@ export function useTopic(id: string | undefined, params?: Record<string, unknown
 		queryKey: params ? [...queryKeys.topic(id || ""), params] : queryKeys.topic(id || ""),
 		queryFn: async () => {
 			if (!id) throw new Error("Topic ID is required");
-			return rateLimitedOpenAlex.getTopic(id, params);
+			return cachedOpenAlex.getById<Topic>("topics", id, params);
 		},
 		enabled: !!id,
 		...getEntityQueryOptions<Topic>("topic"),
@@ -235,7 +239,7 @@ export function useTopic(id: string | undefined, params?: Record<string, unknown
 export function useTopics(params?: Record<string, unknown>, options?: Partial<UseQueryOptions<OpenAlexResponse<Topic>>>) {
 	return useQuery({
 		queryKey: [...queryKeys.topics(), params || {}],
-		queryFn: () => rateLimitedOpenAlex.getTopics(params),
+		queryFn: () => cachedOpenAlex.getResponse<Topic>("topics", params),
 		...getEntityQueryOptions<OpenAlexResponse<Topic>>("topic"),
 		...options,
 	});
@@ -247,7 +251,7 @@ export function usePublisher(id: string | undefined, params?: Record<string, unk
 		queryKey: params ? [...queryKeys.publisher(id || ""), params] : queryKeys.publisher(id || ""),
 		queryFn: async () => {
 			if (!id) throw new Error("Publisher ID is required");
-			return rateLimitedOpenAlex.getPublisher(id, params);
+			return cachedOpenAlex.getById<Publisher>("publishers", id, params);
 		},
 		enabled: !!id,
 		...getEntityQueryOptions<Publisher>("publisher"),
@@ -258,7 +262,7 @@ export function usePublisher(id: string | undefined, params?: Record<string, unk
 export function usePublishers(params?: Record<string, unknown>, options?: Partial<UseQueryOptions<OpenAlexResponse<Publisher>>>) {
 	return useQuery({
 		queryKey: [...queryKeys.publishers(), params || {}],
-		queryFn: () => rateLimitedOpenAlex.getPublishers(params),
+		queryFn: () => cachedOpenAlex.getResponse<Publisher>("publishers", params),
 		...getEntityQueryOptions<OpenAlexResponse<Publisher>>("publisher"),
 		...options,
 	});
@@ -270,7 +274,7 @@ export function useFunder(id: string | undefined, params?: Record<string, unknow
 		queryKey: params ? [...queryKeys.funder(id || ""), params] : queryKeys.funder(id || ""),
 		queryFn: async () => {
 			if (!id) throw new Error("Funder ID is required");
-			return rateLimitedOpenAlex.getFunder(id, params);
+			return cachedOpenAlex.getById<Funder>("funders", id, params);
 		},
 		enabled: !!id,
 		...getEntityQueryOptions<Funder>("funder"),
@@ -281,7 +285,7 @@ export function useFunder(id: string | undefined, params?: Record<string, unknow
 export function useFunders(params?: Record<string, unknown>, options?: Partial<UseQueryOptions<OpenAlexResponse<Funder>>>) {
 	return useQuery({
 		queryKey: [...queryKeys.funders(), params || {}],
-		queryFn: () => rateLimitedOpenAlex.getFunders(params),
+		queryFn: () => cachedOpenAlex.getResponse<Funder>("funders", params),
 		...getEntityQueryOptions<OpenAlexResponse<Funder>>("funder"),
 		...options,
 	});
@@ -293,7 +297,7 @@ export function useKeyword(id: string | undefined, params?: QueryParams, options
 		queryKey: params ? [...queryKeys.all, "keywords", id || "", params] : [...queryKeys.all, "keywords", id || ""],
 		queryFn: async () => {
 			if (!id) throw new Error("Keyword ID is required");
-			return rateLimitedOpenAlex.getKeyword(id, params);
+			return cachedOpenAlex.getById<Keyword>("keywords", id, params);
 		},
 		enabled: !!id,
 		staleTime: 1000 * 60 * 60 * 24, // 1 day - keywords are stable
@@ -327,7 +331,7 @@ export function useAutocomplete(query: string | undefined, entityType?: string, 
 
 	return useQuery({
 		queryKey: queryKeys.autocomplete(query || "", validEntityType),
-		queryFn: () => {
+		queryFn: async () => {
 			if (!query || query.length < 2) throw new Error("Query must be at least 2 characters");
 			// Map cache EntityType to OpenAlex EntityType for the API call
 			const openAlexEntityType = validEntityType === "search" || validEntityType === "related"
@@ -349,7 +353,8 @@ export function useAutocomplete(query: string | undefined, entityType?: string, 
 
 			const mappedType = mapToOpenAlexType(openAlexEntityType);
 			if (mappedType) {
-				return rateLimitedOpenAlex.autocomplete(query, mappedType);
+				const response = await cachedOpenAlex.getResponse<AutocompleteResult>("autocomplete", { q: query, filter: mappedType });
+				return response.results;
 			}
 			// For invalid types, return empty array to prevent API call
 			return Promise.resolve([]);
@@ -364,9 +369,10 @@ export function useAutocomplete(query: string | undefined, entityType?: string, 
 export function useAutocompleteWorks(query: string | undefined, options?: Partial<UseQueryOptions<AutocompleteResult[]>>) {
 	return useQuery({
 		queryKey: queryKeys.autocomplete(query || "", "work"),
-		queryFn: () => {
+		queryFn: async () => {
 			if (!query || query.length < 2) throw new Error("Query must be at least 2 characters");
-			return rateLimitedOpenAlex.autocompleteWorks(query);
+			const response = await cachedOpenAlex.getResponse<AutocompleteResult>("autocomplete", { q: query, filter: "display_name.search:" + query });
+			return response.results;
 		},
 		enabled: !!query && query.length >= 2,
 		staleTime: 1000 * 60 * 15,
@@ -378,9 +384,10 @@ export function useAutocompleteWorks(query: string | undefined, options?: Partia
 export function useAutocompleteAuthors(query: string | undefined, options?: Partial<UseQueryOptions<AutocompleteResult[]>>) {
 	return useQuery({
 		queryKey: queryKeys.autocomplete(query || "", "author"),
-		queryFn: () => {
+		queryFn: async () => {
 			if (!query || query.length < 2) throw new Error("Query must be at least 2 characters");
-			return rateLimitedOpenAlex.autocompleteAuthors(query);
+			const response = await cachedOpenAlex.getResponse<AutocompleteResult>("autocomplete", { q: query, filter: "display_name.search:" + query });
+			return response.results;
 		},
 		enabled: !!query && query.length >= 2,
 		staleTime: 1000 * 60 * 15,
@@ -392,9 +399,10 @@ export function useAutocompleteAuthors(query: string | undefined, options?: Part
 export function useAutocompleteSources(query: string | undefined, options?: Partial<UseQueryOptions<AutocompleteResult[]>>) {
 	return useQuery({
 		queryKey: queryKeys.autocomplete(query || "", "source"),
-		queryFn: () => {
+		queryFn: async () => {
 			if (!query || query.length < 2) throw new Error("Query must be at least 2 characters");
-			return rateLimitedOpenAlex.autocompleteSources(query);
+			const response = await cachedOpenAlex.getResponse<AutocompleteResult>("autocomplete", { q: query, filter: "display_name.search:" + query });
+			return response.results;
 		},
 		enabled: !!query && query.length >= 2,
 		staleTime: 1000 * 60 * 15,
@@ -406,9 +414,10 @@ export function useAutocompleteSources(query: string | undefined, options?: Part
 export function useAutocompleteInstitutions(query: string | undefined, options?: Partial<UseQueryOptions<AutocompleteResult[]>>) {
 	return useQuery({
 		queryKey: queryKeys.autocomplete(query || "", "institution"),
-		queryFn: () => {
+		queryFn: async () => {
 			if (!query || query.length < 2) throw new Error("Query must be at least 2 characters");
-			return rateLimitedOpenAlex.autocompleteInstitutions(query);
+			const response = await cachedOpenAlex.getResponse<AutocompleteResult>("autocomplete", { q: query, filter: "display_name.search:" + query });
+			return response.results;
 		},
 		enabled: !!query && query.length >= 2,
 		staleTime: 1000 * 60 * 15,
@@ -422,7 +431,7 @@ export function useSuspenseWork(id: string, params?: QueryParams, options?: Part
 	return useSuspenseQuery({
 		queryKey: params ? [...queryKeys.work(id), params] : queryKeys.work(id),
 		...getEntityQueryOptions<Work>("work"),
-		queryFn: () => rateLimitedOpenAlex.getWork(id, params),
+		queryFn: () => cachedOpenAlex.getById<Work>("works", id, params),
 		...options,
 	});
 }
@@ -431,7 +440,7 @@ export function useSuspenseAuthor(id: string, params?: QueryParams, options?: Pa
 	return useSuspenseQuery({
 		queryKey: params ? [...queryKeys.author(id), params] : queryKeys.author(id),
 		...getEntityQueryOptions<Author>("author"),
-		queryFn: () => rateLimitedOpenAlex.getAuthor(id, params),
+		queryFn: () => cachedOpenAlex.getById<Author>("authors", id, params),
 		...options,
 	});
 }
@@ -440,7 +449,7 @@ export function useSuspenseSource(id: string, params?: QueryParams, options?: Pa
 	return useSuspenseQuery({
 		queryKey: params ? [...queryKeys.source(id), params] : queryKeys.source(id),
 		...getEntityQueryOptions<Source>("source"),
-		queryFn: () => rateLimitedOpenAlex.getSource(id, params),
+		queryFn: () => cachedOpenAlex.getById<Source>("sources", id, params),
 		...options,
 	});
 }
@@ -449,7 +458,7 @@ export function useSuspenseInstitution(id: string, params?: Record<string, unkno
 	return useSuspenseQuery({
 		queryKey: params ? [...queryKeys.institution(id), params] : queryKeys.institution(id),
 		...getEntityQueryOptions<InstitutionEntity>("institution"),
-		queryFn: () => rateLimitedOpenAlex.getInstitution(id, params),
+		queryFn: () => cachedOpenAlex.getById<InstitutionEntity>("institutions", id, params),
 		...options,
 	});
 }
