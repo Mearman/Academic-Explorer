@@ -1,7 +1,1 @@
-{
-  "https://api.openalex.org/funders/Fqueries-index": {
-    "$ref": "./https%3A%2F%2Fapi%2Eopenalex%2Eorg%2Ffunders%2FFqueries-index.json",
-    "lastModified": "2025-09-19T15:27:24.110Z",
-    "contentHash": ""
-  }
-}
+{}

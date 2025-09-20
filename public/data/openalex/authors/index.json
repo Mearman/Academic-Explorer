@@ -1,36 +1,31 @@
 {
   "https://api.openalex.org/authors/A5017572309": {
-    "$ref": "./https%3A%2F%2Fapi%2Eopenalex%2Eorg%2Fauthors%2FA5017572309.json",
-    "lastModified": "2025-09-19T17:03:04.892Z",
+    "$ref": "./https%3A%2F%2Fapi.openalex.org%2Fauthors%2FA5017572309.json",
+    "lastModified": "2025-09-20T07:17:07.689Z",
     "contentHash": "509437b6ff068027"
   },
   "https://api.openalex.org/authors/A5017898742": {
-    "$ref": "./https%3A%2F%2Fapi%2Eopenalex%2Eorg%2Fauthors%2FA5017898742.json",
-    "lastModified": "2025-09-19T17:03:04.892Z",
+    "$ref": "./https%3A%2F%2Fapi.openalex.org%2Fauthors%2FA5017898742.json",
+    "lastModified": "2025-09-20T07:17:07.822Z",
     "contentHash": "7c2eb632b9944c5b"
   },
   "https://api.openalex.org/authors/A5025875274": {
-    "$ref": "./https%3A%2F%2Fapi%2Eopenalex%2Eorg%2Fauthors%2FA5025875274.json",
-    "lastModified": "2025-09-19T17:03:04.892Z",
+    "$ref": "./https%3A%2F%2Fapi.openalex.org%2Fauthors%2FA5025875274.json",
+    "lastModified": "2025-09-20T07:17:07.993Z",
     "contentHash": "9433bf98bee1c4f6"
   },
   "https://api.openalex.org/authors/A5032473237": {
-    "$ref": "./https%3A%2F%2Fapi%2Eopenalex%2Eorg%2Fauthors%2FA5032473237.json",
-    "lastModified": "2025-09-19T17:03:04.893Z",
+    "$ref": "./https%3A%2F%2Fapi.openalex.org%2Fauthors%2FA5032473237.json",
+    "lastModified": "2025-09-20T07:17:08.968Z",
     "contentHash": "1045c62f68339d12"
   },
   "https://api.openalex.org/authors/A5039168231": {
-    "$ref": "./https%3A%2F%2Fapi%2Eopenalex%2Eorg%2Fauthors%2FA5039168231.json",
-    "lastModified": "2025-09-19T17:03:04.893Z",
+    "$ref": "./https%3A%2F%2Fapi.openalex.org%2Fauthors%2FA5039168231.json",
+    "lastModified": "2025-09-20T07:17:09.543Z",
     "contentHash": "c75c6787f762bbb6"
   },
   "https://api.openalex.org/authors/Ahttps///api.openalex.org/authors/A5025875274": {
-    "$ref": "./https%3A%2F%2Fapi%2Eopenalex%2Eorg%2Fauthors%2FAhttps%2F%2F%2Fapi%2Eopenalex%2Eorg%2Fauthors%2FA5025875274.json",
-    "lastModified": "2025-09-19T17:03:04.892Z",
-    "contentHash": "ac19256a0908ecf0"
-  },
-  "https://api.openalex.org/authors/Ahttps%2F%2F%2Fapi%2Eopenalex%2Eorg%2Fauthors%2FA5025875274": {
-    "$ref": "./https%3A%2F%2Fapi%2Eopenalex%2Eorg%2Fauthors%2FAhttps%252F%252F%252Fapi%252Eopenalex%252Eorg%252Fauthors%252FA5025875274.json",
+    "$ref": "./https%3A%2F%2Fapi.openalex.org%2Fauthors%2FAhttps%2F%2F%2Fapi.openalex.org%2Fauthors%2FA5025875274.json",
     "lastModified": "2025-09-19T17:03:04.892Z",
     "contentHash": "ac19256a0908ecf0"
   },
@@ -43,5 +38,10 @@
     "$ref": "./https%3A%2F%2Fapi.openalex.org%2Fauthors%2FA999999995.json",
     "lastModified": "2025-09-19T19:57:43.317Z",
     "contentHash": "0000000043a1218d"
+  },
+  "https://api.openalex.org/authors/Ahttps%2F%2F%2Fapi%2Eopenalex%2Eorg%2Fauthors%2FA5025875274": {
+    "$ref": "./https%3A%2F%2Fapi.openalex.org%2Fauthors%2FAhttps%252F%252F%252Fapi%252Eopenalex%252Eorg%252Fauthors%252FA5025875274.json",
+    "lastModified": "2025-09-19T17:03:04.892Z",
+    "contentHash": "ac19256a0908ecf0"
   }
 }

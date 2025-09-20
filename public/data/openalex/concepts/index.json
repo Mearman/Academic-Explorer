@@ -1,7 +1,1 @@
-{
-  "https://api.openalex.org/concepts/Cqueries-index": {
-    "$ref": "./https%3A%2F%2Fapi%2Eopenalex%2Eorg%2Fconcepts%2FCqueries-index.json",
-    "lastModified": "2025-09-19T15:27:24.111Z",
-    "contentHash": ""
-  }
-}
+{}
