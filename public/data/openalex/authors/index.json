@@ -23,15 +23,5 @@
     "$ref": "./https%3A%2F%2Fapi.openalex.org%2Fauthors%2FA5039168231.json",
     "lastModified": "2025-09-20T07:17:09.543Z",
     "contentHash": "c75c6787f762bbb6"
-  },
-  "https://api.openalex.org/authors/A999999998": {
-    "$ref": "./https%3A%2F%2Fapi.openalex.org%2Fauthors%2FA999999998.json",
-    "lastModified": "2025-09-20T22:20:49.797Z",
-    "contentHash": "40d770198dc32ca0"
-  },
-  "https://api.openalex.org/authors/A999999995": {
-    "$ref": "./https%3A%2F%2Fapi.openalex.org%2Fauthors%2FA999999995.json",
-    "lastModified": "2025-09-20T13:09:26.022Z",
-    "contentHash": "b633ca5d70aeb1fb"
   }
 }
