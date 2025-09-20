@@ -1,3 +1,38 @@
+# [7.1.0](https://github.com/Mearman/Academic-Explorer/compare/v7.0.0...v7.1.0) (2025-09-20)
+
+
+### Bug Fixes
+
+* **accessibility:** resolve accessibility test failures ([20c4ea4](https://github.com/Mearman/Academic-Explorer/commit/20c4ea41f57f765a91eb86745f59f56d3bc9cc00))
+* **api:** improve rate limiting with request queue ([fc9dc90](https://github.com/Mearman/Academic-Explorer/commit/fc9dc90da6e260243a3dae57252703ecdbf35192))
+* **build:** remove redundant dot encoding in URL key generation ([1eb522c](https://github.com/Mearman/Academic-Explorer/commit/1eb522c4e0c8ade9bd92ce3b37ff946f2cfba3c9))
+* **ci:** resolve all remaining CI test failures ([a0e21e1](https://github.com/Mearman/Academic-Explorer/commit/a0e21e12fc552c57dbcaf57d4b6fb1d836a95d2b))
+* **data:** clean up malformed entries from OpenAlex indexes ([489e3a3](https://github.com/Mearman/Academic-Explorer/commit/489e3a3f29945d621acab694a1e2feb60d4a593c))
+* **data:** prevent unnecessary main index updates on every build ([f752418](https://github.com/Mearman/Academic-Explorer/commit/f752418119fe501626051c1b898625c65f3f94c1))
+* **data:** remove malformed double-encoded files from filesystem ([a50cc0b](https://github.com/Mearman/Academic-Explorer/commit/a50cc0b8f3f6f9463789d404b07b24d228ce1bd1))
+* **e2e:** correct CSS selector syntax for text matching ([ae0a227](https://github.com/Mearman/Academic-Explorer/commit/ae0a2277307a18476b89e259892ac2980b002a4e))
+* **graph:** improve node lookup for relationship detection ([b615c51](https://github.com/Mearman/Academic-Explorer/commit/b615c51f4d85dcbd67096727f5b8b8e44d9a25f4))
+* **tests:** resolve relationship detection service test failures ([eb6cb6e](https://github.com/Mearman/Academic-Explorer/commit/eb6cb6eba2070137823eb3372d121bbc73e995fa))
+
+
+### Features
+
+* **architecture:** add service provider pattern ([cdaba9f](https://github.com/Mearman/Academic-Explorer/commit/cdaba9f73ae01db2b5fc6857917a50a3fc010b0d))
+* **core:** enhance data fetching and storage capabilities ([045794a](https://github.com/Mearman/Academic-Explorer/commit/045794a9cabe28de98d21b0bdfa8a7bb35ebfdf3))
+* **data:** add automatic malformed file detection and cleanup ([27a0383](https://github.com/Mearman/Academic-Explorer/commit/27a038393ebe33413e6fd62ec5aff9c11a25ba86))
+* **graph:** enhance async relationship detection ([3f703fb](https://github.com/Mearman/Academic-Explorer/commit/3f703fbdbfb44e7a99027956fdf8bf142ea5806e))
+* **graph:** enhance graph service with expanded fields and debugging ([c01f741](https://github.com/Mearman/Academic-Explorer/commit/c01f741939f8a8808dbc9d1d0ec2d10ff90c4ee0))
+* **graph:** integrate layout restart on edge addition ([78ecd1f](https://github.com/Mearman/Academic-Explorer/commit/78ecd1fe39cec4d145cf6a80a4de91dda94eb029))
+* **hooks:** add automatic relationship detection hook ([ece8306](https://github.com/Mearman/Academic-Explorer/commit/ece830681d63a7ad122322bf8d06acfc39ef4185))
+* **indexing:** integrate content-based hashing for efficient updates ([3106ed1](https://github.com/Mearman/Academic-Explorer/commit/3106ed1f90faed852757e03b2c7f54f7d2a331d9))
+* **integration:** integrate service provider pattern and auto-detection ([db380ac](https://github.com/Mearman/Academic-Explorer/commit/db380ac084eadee0762345b10c9ccda3673af8c9))
+* **utils:** add content-based hashing utility ([7aeda3e](https://github.com/Mearman/Academic-Explorer/commit/7aeda3ec59c7634dd2c24b603c02112d6f60a3fa))
+
+
+### Performance Improvements
+
+* **graph:** optimize simulation restart to only trigger when nodes/edges actually added ([740e8fc](https://github.com/Mearman/Academic-Explorer/commit/740e8fc82df5c11c161768a785c4ee8361e1f27f))
+
 # [7.0.0](https://github.com/Mearman/Academic-Explorer/compare/v6.3.0...v7.0.0) (2025-09-19)
 
 
