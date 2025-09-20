@@ -22,6 +22,9 @@ export function BackgroundWorkerProvider({ children }: { children: React.ReactNo
   const [error, setError] = useState<string | null>(null);
   const handlerRegistered = useRef(false);
 
+  // Log that the provider is mounting
+  logger.debug("worker", "BackgroundWorkerProvider mounting");
+
   const getWorker = useCallback(async (): Promise<Worker> => {
     try {
       setError(null);
@@ -53,8 +56,15 @@ export function BackgroundWorkerProvider({ children }: { children: React.ReactNo
   }, []);
 
   useEffect(() => {
+    logger.debug("worker", "BackgroundWorkerProvider useEffect running", {
+      handlerRegistered: handlerRegistered.current
+    });
+
     // Only register the handler once
-    if (handlerRegistered.current) return;
+    if (handlerRegistered.current) {
+      logger.debug("worker", "BackgroundWorkerProvider handler already registered, skipping");
+      return;
+    }
 
     logger.debug("worker", "BackgroundWorkerProvider registering EventBridge handler");
 
@@ -64,17 +74,51 @@ export function BackgroundWorkerProvider({ children }: { children: React.ReactNo
       logger.debug("worker", "BackgroundWorkerProvider EventBridge message received", {
         eventType,
         payload,
+        currentWorkerState: { hasWorker: !!worker, isReady: isWorkerReady }
       });
 
-      if (eventType === "worker:ready" && isWorkerReadyPayload(payload) && payload.workerType === "force-animation") {
-        logger.debug("worker", "BackgroundWorkerProvider setting isWorkerReady to true");
-        setIsWorkerReady(true);
-        setIsInitializing(false);
+      if (eventType === "worker:ready") {
+        logger.debug("worker", "BackgroundWorkerProvider received worker:ready event", {
+          payload,
+          isValidPayload: isWorkerReadyPayload(payload),
+          workerType: isWorkerReadyPayload(payload) ? payload.workerType : "invalid"
+        });
+
+        if (isWorkerReadyPayload(payload) && payload.workerType === "force-animation") {
+          logger.debug("worker", "BackgroundWorkerProvider setting isWorkerReady to true");
+          setIsWorkerReady(true);
+          setIsInitializing(false);
+
+          // Also get the worker instance if we don't have it
+          if (!worker) {
+            logger.debug("worker", "BackgroundWorkerProvider getting worker instance after ready event");
+            getWorker().catch((err: unknown) => {
+              const errorMessage = err instanceof Error ? err.message : "Unknown error";
+              logger.error("worker", "Failed to get worker instance after ready event", { error: errorMessage });
+            });
+          }
+        }
       }
     };
 
     eventBridge.registerMessageHandler("background-worker-provider", handleWorkerReady);
     handlerRegistered.current = true;
+
+    // Immediately check if worker is already ready (race condition fallback)
+    if (checkWorkerReady()) {
+      logger.debug("worker", "BackgroundWorkerProvider found worker already ready after EventBridge registration");
+      setIsWorkerReady(true);
+      setIsInitializing(false);
+
+      // Get the worker instance if we don't have it
+      if (!worker) {
+        logger.debug("worker", "BackgroundWorkerProvider getting worker instance after finding ready state");
+        getWorker().catch((err: unknown) => {
+          const errorMessage = err instanceof Error ? err.message : "Unknown error";
+          logger.error("worker", "Failed to get worker instance after finding ready state", { error: errorMessage });
+        });
+      }
+    }
 
     return () => {
       logger.debug("worker", "BackgroundWorkerProvider unregistering EventBridge handler");
