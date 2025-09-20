@@ -7,7 +7,7 @@
 import { create } from "zustand";
 import { immer } from "zustand/middleware/immer";
 import { persist, createJSONStorage } from "zustand/middleware";
-import { updateOpenAlexEmail } from "@/lib/openalex/rate-limited-client";
+import { updateOpenAlexEmail } from "@/lib/openalex/cached-client";
 import { createHybridStorage } from "@/lib/storage/zustand-indexeddb";
 import { logger } from "@/lib/logger";
 

@@ -3,7 +3,8 @@
  * Handles OpenAlex API calls in background to prevent UI blocking during graph expansion
  */
 
-import { rateLimitedOpenAlex } from "@/lib/openalex/rate-limited-client";
+import { createUnifiedOpenAlexClient } from "@/lib/openalex/cached-client";
+import type { WorkerRequest, WorkerResponse } from "@/lib/openalex/cached-client";
 import { EntityFactory, type ExpansionOptions } from "@/lib/entities";
 import type { EntityType, GraphNode, GraphEdge } from "@/lib/graph/types";
 import type { ExpansionSettings } from "@/lib/graph/types/expansion-settings";
@@ -47,13 +48,21 @@ export interface ExpandCompletePayload {
 // Worker state
 let isReady = false;
 const currentRequests = new Map<string, AbortController>();
+const pendingApiRequests = new Map<string, AbortController>();
+
+// Create unified client instance for worker (disable worker coordination to avoid recursion)
+const unifiedClient = createUnifiedOpenAlexClient({
+  cacheEnabled: true,
+  rateLimitEnabled: true,
+  workerEnabled: false, // Disable worker coordination in worker itself
+  maxConcurrentRequests: 3
+});
 
 // Initialize worker
 function initializeWorker() {
 	try {
-		// Pre-warm the rate-limited client
-		// Note: getCachedStats method doesn't exist, using getStats instead
-		rateLimitedOpenAlex.getStats();
+		// Pre-warm the unified client
+		unifiedClient.getEnhancedMetrics();
 		isReady = true;
 
 		// Emit worker ready event via EventBridge
@@ -115,13 +124,13 @@ async function handleExpandNode(id: string, payload: ExpandNodePayload) {
 		}
 
 		// Create entity instance
-		const entity = EntityFactory.create(entityType, rateLimitedOpenAlex);
+		const entity = EntityFactory.create(entityType, unifiedClient);
 
 		// Prepare context with abort signal
 		const context = {
 			entityId,
 			entityType,
-			client: rateLimitedOpenAlex,
+			client: unifiedClient,
 			signal: abortController.signal
 		};
 
@@ -216,16 +225,119 @@ function handleSearch(id: string) {
 
 // Cancel request
 function cancelRequest(id: string) {
-	const controller = currentRequests.get(id);
-	if (controller) {
-		controller.abort();
+	// Try canceling graph expansion request
+	const expandController = currentRequests.get(id);
+	if (expandController) {
+		expandController.abort();
 		currentRequests.delete(id);
+		return;
+	}
+
+	// Try canceling API request
+	const apiController = pendingApiRequests.get(id);
+	if (apiController) {
+		apiController.abort();
+		pendingApiRequests.delete(id);
 	}
 }
 
-// Message handler
-self.onmessage = async (event: MessageEvent<DataFetchingMessage>) => {
-	const { type, id, payload } = event.data;
+// Type guard to check if message is a WorkerRequest
+function isWorkerRequest(data: unknown): data is WorkerRequest {
+	return typeof data === "object" &&
+	       data !== null &&
+	       "type" in data &&
+	       ["api-call", "batch-call", "background-fetch"].includes(data.type);
+}
+
+// Handle WorkerRequest API calls
+async function handleWorkerRequest(request: WorkerRequest): Promise<void> {
+	const startTime = Date.now();
+	let response: WorkerResponse;
+
+	try {
+		const { payload } = request;
+		const { endpoint, params, entityType } = payload;
+
+		// Create abort controller for this request
+		const abortController = new AbortController();
+		pendingApiRequests.set(request.id, abortController);
+
+		let result: unknown;
+		switch (request.type) {
+			case "api-call":
+				if (endpoint && entityType) {
+					// Use the unified client for the API call
+					result = await unifiedClient.getResponse(endpoint, params);
+				} else {
+					throw new Error("Missing endpoint or entityType for API call");
+				}
+				break;
+
+			case "batch-call":
+				if (endpoint) {
+					result = await unifiedClient.getResponse(endpoint, params);
+				} else {
+					throw new Error("Missing endpoint for batch call");
+				}
+				break;
+
+			case "background-fetch":
+				if (endpoint) {
+					result = await unifiedClient.getResponse(endpoint, params);
+				} else {
+					throw new Error("Missing endpoint for background fetch");
+				}
+				break;
+
+			default:
+				throw new Error(`Unknown request type: ${String(request.type)}`);
+		}
+
+		const duration = Date.now() - startTime;
+		response = {
+			id: request.id,
+			success: true,
+			data: result,
+			statistics: {
+				duration,
+				retries: 0, // Will be tracked by the unified client
+				bandwidth: 0 // Will be calculated by the unified client
+			}
+		};
+
+		pendingApiRequests.delete(request.id);
+		self.postMessage(response);
+
+	} catch (error) {
+		const duration = Date.now() - startTime;
+		response = {
+			id: request.id,
+			success: false,
+			error: error instanceof Error ? error.message : "Unknown error",
+			statistics: {
+				duration,
+				retries: 0,
+				bandwidth: 0
+			}
+		};
+
+		pendingApiRequests.delete(request.id);
+		self.postMessage(response);
+	}
+}
+
+// Message handler for both DataFetchingMessage and WorkerRequest
+self.onmessage = async (event: MessageEvent<DataFetchingMessage | WorkerRequest>) => {
+	const data = event.data;
+
+	// Handle WorkerRequest (for unified client API calls)
+	if (isWorkerRequest(data)) {
+		await handleWorkerRequest(data);
+		return;
+	}
+
+	// Handle legacy DataFetchingMessage (for graph expansion)
+	const { type, id, payload } = data as DataFetchingMessage;
 
 	if (!isReady && type !== "cancel") {
 		// Emit error event via EventBridge for worker not ready

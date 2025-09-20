@@ -11,7 +11,7 @@ import { clearAllCacheLayers } from "@/lib/cache/cache-invalidator";
 import { clearAppMetadata } from "@/lib/cache/metadata-store";
 import { useLayoutStore } from "@/stores/layout-store";
 import { useSettingsStore } from "@/stores/settings-store";
-import { updateOpenAlexEmail } from "@/lib/openalex/rate-limited-client";
+import { updateOpenAlexEmail } from "@/lib/openalex/cached-client";
 import { logger, logError } from "@/lib/logger";
 
 interface ResetState {
