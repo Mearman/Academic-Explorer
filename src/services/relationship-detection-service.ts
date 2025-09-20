@@ -251,6 +251,15 @@ export class RelationshipDetectionService {
 				() => this.fetchEntityWithSelect(entityId, entityType, selectFields)
 			);
 
+			// Check if entity exists before accessing its properties
+			if (!entity) {
+				logger.debug("graph", "Entity not found or could not be fetched", {
+					entityId,
+					entityType
+				}, "RelationshipDetectionService");
+				return null;
+			}
+
 			// Transform to minimal data format with null checks
 			const minimalData: MinimalEntityData = {
 				id: entity.id || "",

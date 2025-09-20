@@ -2,9 +2,9 @@ name: CI
 
 on:
   push:
-    branches: [ main, develop ]
+    branches: [main, develop]
   pull_request:
-    branches: [ main, develop ]
+    branches: [main, develop]
 
 env:
   NODE_VERSION: 20.x
@@ -32,7 +32,7 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: 'pnpm'
+          cache: "pnpm"
 
       - name: Generate cache keys
         id: cache-keys
@@ -196,7 +196,7 @@ jobs:
       - name: Run ${{ matrix.check }}
         run: pnpm nx ${{ matrix.check }}
         env:
-          NODE_OPTIONS: '--max-old-space-size=4096'
+          NODE_OPTIONS: "--max-old-space-size=4096"
 
       - name: Upload build artifact
         if: matrix.check == 'build'
@@ -220,6 +220,7 @@ jobs:
     timeout-minutes: 20
 
     strategy:
+      fail-fast: false
       matrix:
         test-type: [unit, integration, e2e]
         include:
@@ -274,13 +275,13 @@ jobs:
         if: matrix.test-type == 'e2e'
         run: pnpm nx build
         env:
-          NODE_OPTIONS: '--max-old-space-size=4096'
+          NODE_OPTIONS: "--max-old-space-size=4096"
 
       - name: Start preview server for E2E tests
         if: matrix.test-type == 'e2e'
         run: pnpm preview &
         env:
-          NODE_OPTIONS: '--max-old-space-size=4096'
+          NODE_OPTIONS: "--max-old-space-size=4096"
 
       - name: Wait for preview server to be ready
         if: matrix.test-type == 'e2e'
@@ -294,7 +295,7 @@ jobs:
       - name: Run ${{ matrix.test-type }} tests
         run: timeout ${{ matrix.timeout }}m pnpm nx ${{ matrix.command }}
         env:
-          NODE_OPTIONS: '--max-old-space-size=8192 --expose-gc'
+          NODE_OPTIONS: "--max-old-space-size=8192 --expose-gc"
 
       - name: Upload coverage artifact
         if: always() && matrix.test-type == 'unit'
@@ -303,7 +304,6 @@ jobs:
           name: coverage-${{ matrix.test-type }}-${{ github.sha }}
           path: coverage/
           retention-days: 7
-
 
       - name: Save Nx cache
         if: always()
@@ -392,7 +392,7 @@ jobs:
       - name: Start preview server for accessibility testing
         run: pnpm preview &
         env:
-          NODE_OPTIONS: '--max-old-space-size=4096'
+          NODE_OPTIONS: "--max-old-space-size=4096"
 
       - name: Wait for preview server to be ready
         run: |
@@ -405,9 +405,9 @@ jobs:
       - name: Run accessibility tests
         run: pnpm nx a11y:ci
         env:
-          NODE_OPTIONS: '--max-old-space-size=4096'
-          CHROME_PATH: '/usr/bin/google-chrome-stable'
-          PUPPETEER_EXECUTABLE_PATH: '/usr/bin/google-chrome-stable'
+          NODE_OPTIONS: "--max-old-space-size=4096"
+          CHROME_PATH: "/usr/bin/google-chrome-stable"
+          PUPPETEER_EXECUTABLE_PATH: "/usr/bin/google-chrome-stable"
 
       - name: Upload accessibility reports
         if: always()
@@ -451,7 +451,7 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: 'pnpm'
+          cache: "pnpm"
 
       - name: Restore node_modules cache
         uses: actions/cache/restore@v4
@@ -531,7 +531,7 @@ jobs:
           # Rebuild with the updated version
           pnpm nx build
         env:
-          NODE_OPTIONS: '--max-old-space-size=4096'
+          NODE_OPTIONS: "--max-old-space-size=4096"
 
       - name: Upload build artifact for deployment
         if: steps.check-release.outputs.release_created == 'true'

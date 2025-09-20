@@ -77,7 +77,7 @@ describe("RelationshipDetectionService", () => {
 	});
 
 	describe("analyzeWorkRelationships", () => {
-		it("should detect author relationships", () => {
+		it("should detect author relationships", async () => {
 			const workData = {
 				id: "https://openalex.org/W123",
 				entityType: "works" as EntityType,
@@ -104,7 +104,7 @@ describe("RelationshipDetectionService", () => {
 			];
 
 			// Access the private method via bracket notation for testing
-			const result = (service as any).analyzeWorkRelationships(workData, existingNodes);
+			const result = await (service as any).analyzeWorkRelationships(workData, existingNodes);
 
 			expect(result).toHaveLength(1);
 			expect(result[0]).toEqual({
@@ -116,7 +116,7 @@ describe("RelationshipDetectionService", () => {
 			});
 		});
 
-		it("should detect source relationships", () => {
+		it("should detect source relationships", async () => {
 			const workData = {
 				id: "https://openalex.org/W123",
 				entityType: "works" as EntityType,
@@ -140,7 +140,7 @@ describe("RelationshipDetectionService", () => {
 				}
 			];
 
-			const result = (service as any).analyzeWorkRelationships(workData, existingNodes);
+			const result = await (service as any).analyzeWorkRelationships(workData, existingNodes);
 
 			expect(result).toHaveLength(1);
 			expect(result[0]).toEqual({
@@ -151,7 +151,7 @@ describe("RelationshipDetectionService", () => {
 			});
 		});
 
-		it("should detect citation relationships", () => {
+		it("should detect citation relationships", async () => {
 			const workData = {
 				id: "https://openalex.org/W123",
 				entityType: "works" as EntityType,
@@ -170,7 +170,7 @@ describe("RelationshipDetectionService", () => {
 				}
 			];
 
-			const result = (service as any).analyzeWorkRelationships(workData, existingNodes);
+			const result = await (service as any).analyzeWorkRelationships(workData, existingNodes);
 
 			expect(result).toHaveLength(1);
 			expect(result[0]).toEqual({
@@ -181,7 +181,7 @@ describe("RelationshipDetectionService", () => {
 			});
 		});
 
-		it("should handle citation relationships correctly (real-world scenario)", () => {
+		it("should handle citation relationships correctly (real-world scenario)", async () => {
 			// This test replicates the real-world scenario: both referenced_works and graph nodes use full URL format
 			const workData = {
 				id: "https://openalex.org/W3188841554",
@@ -212,7 +212,7 @@ describe("RelationshipDetectionService", () => {
 				}
 			];
 
-			const result = (service as any).analyzeWorkRelationships(workData, existingNodes);
+			const result = await (service as any).analyzeWorkRelationships(workData, existingNodes);
 
 			expect(result).toHaveLength(2);
 			expect(result.every(r => r.relationType === RelationType.REFERENCES)).toBe(true);
@@ -443,7 +443,7 @@ describe("RelationshipDetectionService", () => {
 	});
 
 	describe("analyzeWorkRelationships - advanced scenarios", () => {
-		it("should handle works with multiple authors", () => {
+		it("should handle works with multiple authors", async () => {
 			const workData = {
 				id: "https://openalex.org/W123",
 				entityType: "works" as EntityType,
@@ -483,7 +483,7 @@ describe("RelationshipDetectionService", () => {
 				}
 			];
 
-			const result = (service as any).analyzeWorkRelationships(workData, existingNodes);
+			const result = await (service as any).analyzeWorkRelationships(workData, existingNodes);
 
 			expect(result).toHaveLength(2);
 			expect(result[0].relationType).toBe(RelationType.AUTHORED);
@@ -494,7 +494,7 @@ describe("RelationshipDetectionService", () => {
 			]);
 		});
 
-		it("should handle works with multiple referenced works", () => {
+		it("should handle works with multiple referenced works", async () => {
 			const workData = {
 				id: "https://openalex.org/W123",
 				entityType: "works" as EntityType,
@@ -525,7 +525,7 @@ describe("RelationshipDetectionService", () => {
 				}
 			];
 
-			const result = (service as any).analyzeWorkRelationships(workData, existingNodes);
+			const result = await (service as any).analyzeWorkRelationships(workData, existingNodes);
 
 			expect(result).toHaveLength(2);
 			expect(result.every(r => r.relationType === RelationType.REFERENCES)).toBe(true);
@@ -535,7 +535,7 @@ describe("RelationshipDetectionService", () => {
 			]);
 		});
 
-		it("should handle works with no matching existing nodes", () => {
+		it("should handle works with no matching existing nodes", async () => {
 			const workData = {
 				id: "https://openalex.org/W123",
 				entityType: "works" as EntityType,
@@ -561,12 +561,12 @@ describe("RelationshipDetectionService", () => {
 				}
 			];
 
-			const result = (service as any).analyzeWorkRelationships(workData, existingNodes);
+			const result = await (service as any).analyzeWorkRelationships(workData, existingNodes);
 
 			expect(result).toHaveLength(0);
 		});
 
-		it("should handle works with complex authorship data", () => {
+		it("should handle works with complex authorship data", async () => {
 			const workData = {
 				id: "https://openalex.org/W123",
 				entityType: "works" as EntityType,
@@ -598,7 +598,7 @@ describe("RelationshipDetectionService", () => {
 				}
 			];
 
-			const result = (service as any).analyzeWorkRelationships(workData, existingNodes);
+			const result = await (service as any).analyzeWorkRelationships(workData, existingNodes);
 
 			expect(result).toHaveLength(1);
 			expect(result[0].relationType).toBe(RelationType.AUTHORED);
