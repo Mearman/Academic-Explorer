@@ -16,6 +16,9 @@ dist-ssr
 coverage
 coverage-reports
 
+# Test results and artifacts
+test-results
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
