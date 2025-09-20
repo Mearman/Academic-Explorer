@@ -51,7 +51,6 @@ export interface CachedOpenAlexClientConfig extends OpenAlexClientConfig {
   cacheEnabled?: boolean;
   syntheticCache?: SyntheticCacheLayer;
   rateLimitEnabled?: boolean;
-  workerEnabled?: boolean;
   maxConcurrentRequests?: number;
 }
 
@@ -59,7 +58,7 @@ export class CachedOpenAlexClient extends OpenAlexBaseClient {
   private cache: SyntheticCacheLayer;
   private cacheEnabled: boolean;
   private rateLimitEnabled: boolean;
-  private workerEnabled: boolean;
+  private readonly maxConcurrentRequests: number;
 
   // OpenAlex API client for entity operations
   public readonly client: OpenAlexClient;
@@ -69,23 +68,13 @@ export class CachedOpenAlexClient extends OpenAlexBaseClient {
   private readonly minInterval: number;
   private readonly requestQueue: Array<() => void> = [];
   private isProcessingQueue = false;
-  private readonly maxConcurrentRequests: number;
   private activeRequests = 0;
-
-  // Worker coordination
-  private dataWorker?: Worker;
-  private pendingWorkerRequests = new Map<string, {
-    resolve: (value: unknown) => void;
-    reject: (error: Error) => void;
-    timeout: NodeJS.Timeout;
-  }>();
 
   private requestMetrics = {
     totalRequests: 0,
     cacheHits: 0,
     surgicalRequests: 0,
     bandwidthSaved: 0,
-    workerRequests: 0,
     queuedRequests: 0,
     retries: 0
   };
@@ -102,7 +91,6 @@ export class CachedOpenAlexClient extends OpenAlexBaseClient {
 
     this.cacheEnabled = config.cacheEnabled !== false;
     this.rateLimitEnabled = config.rateLimitEnabled !== false;
-    this.workerEnabled = config.workerEnabled !== false;
     this.maxConcurrentRequests = config.maxConcurrentRequests || 5;
 
     this.cache = config.syntheticCache || createSyntheticCacheLayer();
@@ -113,19 +101,14 @@ export class CachedOpenAlexClient extends OpenAlexBaseClient {
     // Calculate minimum interval between requests (in ms)
     this.minInterval = 1000 / RATE_LIMIT_CONFIG.openAlex.limit; // 125ms for 8 req/sec
 
-    // Initialize worker if enabled
-    if (this.workerEnabled && typeof Worker !== "undefined") {
-      this.initializeWorker();
-    }
-
-    logger.debug("cache", "Unified CachedOpenAlexClient initialized", {
+    logger.debug("cache", "CachedOpenAlexClient initialized", {
       cacheEnabled: this.cacheEnabled,
       rateLimitEnabled: this.rateLimitEnabled,
-      workerEnabled: this.workerEnabled,
       maxConcurrentRequests: this.maxConcurrentRequests,
       minInterval: this.minInterval
     });
   }
+
 
   /**
    * Convert OpenAlex QueryParams to SyntheticQueryParams format
@@ -266,7 +249,7 @@ export class CachedOpenAlexClient extends OpenAlexBaseClient {
           entityId: id,
           fields: requestedFields
         });
-        return cachedData;
+        return cachedData as T;
       }
 
       // Determine missing fields for surgical request
@@ -279,7 +262,6 @@ export class CachedOpenAlexClient extends OpenAlexBaseClient {
         apiData = await this.withEnhancedRequestHandling(
           () => super.getById<T>(endpoint, id, surgicalParams),
           {
-            useWorker: false, // Single entity requests stay on main thread
             entityType,
             endpoint,
             params: surgicalParams
@@ -299,7 +281,6 @@ export class CachedOpenAlexClient extends OpenAlexBaseClient {
         apiData = await this.withEnhancedRequestHandling(
           () => super.getById<T>(endpoint, id, params),
           {
-            useWorker: false,
             entityType,
             endpoint,
             params
@@ -308,7 +289,7 @@ export class CachedOpenAlexClient extends OpenAlexBaseClient {
       }
 
       // Store new data in cache
-      await this.cache.putEntityFields<T>(entityType, id, apiData);
+      await this.cache.putEntityFields(entityType, id, apiData as Partial<unknown>);
 
       // Combine cached and API data
       const combinedData = { ...cachedData, ...apiData };
@@ -320,7 +301,6 @@ export class CachedOpenAlexClient extends OpenAlexBaseClient {
       return this.withEnhancedRequestHandling(
         () => super.getById<T>(endpoint, id, params),
         {
-          useWorker: false,
           entityType,
           endpoint,
           params
@@ -440,7 +420,6 @@ export class CachedOpenAlexClient extends OpenAlexBaseClient {
         cacheHits: 0,
         surgicalRequests: 0,
         bandwidthSaved: 0,
-        workerRequests: 0,
         queuedRequests: 0,
         retries: 0
       };
@@ -495,7 +474,6 @@ export class CachedOpenAlexClient extends OpenAlexBaseClient {
               select: firstRequest.fields
             }),
             {
-              useWorker: false, // Single entity requests stay on main thread
               entityType,
               endpoint: entityType
             }
@@ -523,8 +501,6 @@ export class CachedOpenAlexClient extends OpenAlexBaseClient {
           return this.withEnhancedRequestHandling(
             () => super.getResponse<T>(entityType, batchParams),
             {
-              useWorker: true, // Batch requests can use worker
-              priority: "normal",
               entityType,
               endpoint: entityType,
               params: batchParams
@@ -537,8 +513,6 @@ export class CachedOpenAlexClient extends OpenAlexBaseClient {
         return this.withEnhancedRequestHandling(
           () => super.getResponse<T>(entityType, originalParams),
           {
-            useWorker: true, // Collection requests can use worker
-            priority: "low", // Lower priority for full collections
             entityType,
             endpoint: entityType,
             params: originalParams
@@ -550,8 +524,6 @@ export class CachedOpenAlexClient extends OpenAlexBaseClient {
     return this.withEnhancedRequestHandling(
       () => super.getResponse<T>(entityType, originalParams),
       {
-        useWorker: true,
-        priority: "normal",
         entityType,
         endpoint: entityType,
         params: originalParams
@@ -569,7 +541,7 @@ export class CachedOpenAlexClient extends OpenAlexBaseClient {
       for (const result of results) {
         const entityId = this.extractEntityId(result);
         if (entityId) {
-          await this.cache.putEntityFields(entityType, entityId, result);
+          await this.cache.putEntityFields(entityType, entityId, result as Partial<unknown>);
         }
       }
 
@@ -614,107 +586,6 @@ export class CachedOpenAlexClient extends OpenAlexBaseClient {
     }
   }
 
-  // ==================== WORKER COORDINATION ====================
-
-  /**
-   * Initialize the data fetching worker
-   */
-  private initializeWorker(): void {
-    try {
-      this.dataWorker = new Worker(
-        new URL("@/workers/data-fetching.worker.ts", import.meta.url),
-        { type: "module" }
-      );
-
-      this.dataWorker.onmessage = (event: MessageEvent<WorkerResponse>) => {
-        this.handleWorkerResponse(event.data);
-      };
-
-      this.dataWorker.onerror = (error) => {
-        logError("Worker error occurred", error, "CachedOpenAlexClient", "api");
-      };
-
-      logger.debug("api", "Data fetching worker initialized", { workerEnabled: this.workerEnabled });
-    } catch (error) {
-      logError("Failed to initialize worker", error, "CachedOpenAlexClient", "api");
-      this.workerEnabled = false;
-    }
-  }
-
-  /**
-   * Handle responses from the worker
-   */
-  private handleWorkerResponse(response: WorkerResponse): void {
-    const pending = this.pendingWorkerRequests.get(response.id);
-    if (!pending) {
-      logger.warn("api", "Received response for unknown request", { requestId: response.id });
-      return;
-    }
-
-    clearTimeout(pending.timeout);
-    this.pendingWorkerRequests.delete(response.id);
-
-    if (response.success) {
-      pending.resolve(response.data);
-      if (response.statistics) {
-        this.requestMetrics.bandwidthSaved += response.statistics.bandwidth;
-        this.requestMetrics.retries += response.statistics.retries;
-      }
-    } else {
-      pending.reject(new Error(response.error || "Worker request failed"));
-    }
-  }
-
-  /**
-   * Send request to worker for background processing
-   */
-  private async sendWorkerRequest<T>(
-    endpoint: string,
-    params?: QueryParams,
-    entityType?: EntityType,
-    priority: "high" | "normal" | "low" = "normal"
-  ): Promise<T> {
-    if (!this.dataWorker || !this.workerEnabled) {
-      throw new Error("Worker not available");
-    }
-
-    return new Promise<T>((resolve, reject) => {
-      const requestId = `req_${Date.now().toString()}_${Math.random().toString(36).slice(2, 11)}`;
-
-      const timeout = setTimeout(() => {
-        this.pendingWorkerRequests.delete(requestId);
-        reject(new Error("Worker request timeout"));
-      }, 30000); // 30 second timeout
-
-      this.pendingWorkerRequests.set(requestId, {
-        resolve,
-        reject,
-        timeout
-      });
-
-      const request: WorkerRequest = {
-        id: requestId,
-        type: "api-call",
-        payload: {
-          endpoint,
-          params,
-          entityType,
-          priority
-        },
-        timestamp: Date.now()
-      };
-
-      this.dataWorker?.postMessage(request);
-      this.requestMetrics.workerRequests++;
-
-      logger.debug("api", "Sent request to worker", {
-        requestId,
-        endpoint,
-        entityType,
-        priority
-      });
-    });
-  }
 
   // ==================== RATE LIMITING ====================
 
@@ -764,13 +635,11 @@ export class CachedOpenAlexClient extends OpenAlexBaseClient {
   }
 
   /**
-   * Enhanced request wrapper with rate limiting, retries, and worker coordination
+   * Enhanced request wrapper with rate limiting and retries
    */
   private async withEnhancedRequestHandling<T>(
     operation: () => Promise<T>,
     options: {
-      useWorker?: boolean;
-      priority?: "high" | "normal" | "low";
       maxRetries?: number;
       entityType?: EntityType;
       endpoint?: string;
@@ -779,23 +648,6 @@ export class CachedOpenAlexClient extends OpenAlexBaseClient {
   ): Promise<T> {
     const maxRetries = options.maxRetries ?? RETRY_CONFIG.rateLimited.maxAttempts;
     let lastError: unknown;
-
-    // Try worker first if enabled and appropriate
-    if (options.useWorker && this.workerEnabled && options.endpoint) {
-      try {
-        return await this.sendWorkerRequest<T>(
-          options.endpoint,
-          options.params,
-          options.entityType,
-          options.priority
-        );
-      } catch (workerError) {
-        logger.debug("api", "Worker request failed, falling back to main thread", {
-          error: workerError instanceof Error ? workerError.message : "Unknown error"
-        });
-        // Fall through to main thread processing
-      }
-    }
 
     // Main thread processing with rate limiting and retries
     for (let attempt = 0; attempt <= maxRetries; attempt++) {
@@ -895,7 +747,7 @@ export class CachedOpenAlexClient extends OpenAlexBaseClient {
           });
           if (staticEntity && typeof staticEntity === "object" && "id" in staticEntity) {
             logger.debug("static-data", "Served entity from static data", { id, entityType });
-            return staticEntity;
+            return staticEntity as T;
           }
         } catch {
           logger.debug("static-data", "Static data not available, falling back to API", { id, entityType });
@@ -906,7 +758,6 @@ export class CachedOpenAlexClient extends OpenAlexBaseClient {
     // Fallback to API with enhanced request handling
     if (apiCall) {
       return this.withEnhancedRequestHandling(apiCall, {
-        useWorker: false, // Entity requests stay on main thread for now
         entityType,
         endpoint: entityType,
         params
@@ -926,12 +777,10 @@ export class CachedOpenAlexClient extends OpenAlexBaseClient {
     cacheHitRate: number;
     surgicalRequestCount: number;
     bandwidthSaved: number;
-    workerRequests: number;
     queuedRequests: number;
     retries: number;
     averageQueueTime: number;
     activeRequests: number;
-    workerEnabled: boolean;
     rateLimitEnabled: boolean;
   } {
     return {
@@ -942,7 +791,6 @@ export class CachedOpenAlexClient extends OpenAlexBaseClient {
         : 0,
       averageQueueTime: this.minInterval,
       activeRequests: this.activeRequests,
-      workerEnabled: this.workerEnabled,
       rateLimitEnabled: this.rateLimitEnabled
     };
   }
@@ -972,18 +820,6 @@ export class CachedOpenAlexClient extends OpenAlexBaseClient {
    * Cleanup resources
    */
   destroy(): void {
-    if (this.dataWorker) {
-      this.dataWorker.terminate();
-      this.dataWorker = undefined;
-    }
-
-    // Clear pending requests
-    for (const [, pending] of this.pendingWorkerRequests) {
-      clearTimeout(pending.timeout);
-      pending.reject(new Error("Client destroyed"));
-    }
-    this.pendingWorkerRequests.clear();
-
     // Clear request queue
     this.requestQueue.length = 0;
 
@@ -993,12 +829,10 @@ export class CachedOpenAlexClient extends OpenAlexBaseClient {
 
 /**
  * Create default cached client instance with full feature set enabled
- * Worker disabled to prevent conflicts with dedicated data-fetching worker
  */
 export const cachedOpenAlex = new CachedOpenAlexClient({
   cacheEnabled: true,
   rateLimitEnabled: true,
-  workerEnabled: false, // Disabled to use dedicated data-fetching worker
   maxConcurrentRequests: 5,
   userEmail: typeof import.meta.env !== "undefined" &&
             import.meta.env.VITE_OPENALEX_EMAIL &&
@@ -1010,13 +844,11 @@ export const cachedOpenAlex = new CachedOpenAlexClient({
 
 /**
  * Enhanced client factory for custom configurations
- * Worker disabled by default to prevent conflicts with dedicated data-fetching worker
  */
 export function createUnifiedOpenAlexClient(config: CachedOpenAlexClientConfig = {}): CachedOpenAlexClient {
   return new CachedOpenAlexClient({
     cacheEnabled: true,
     rateLimitEnabled: true,
-    workerEnabled: false, // Disabled by default to use dedicated data-fetching worker
     maxConcurrentRequests: 5,
     ...config
   });
