@@ -62,8 +62,8 @@ export function getBackgroundWorker(): Promise<Worker> {
       // Register with EventBridge
       eventBridge.registerWorker(workerState.worker, "force-animation-worker");
 
-      // Send init message after EventBridge setup
-      workerState.worker.postMessage({ type: "init" });
+      // Worker initialization is now handled via EventBridge
+      // The worker will send WORKER_READY event when initialized
 
       // Set up ready callback
       const onReady = () => {
