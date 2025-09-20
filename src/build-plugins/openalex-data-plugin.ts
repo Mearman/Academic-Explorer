@@ -1330,20 +1330,12 @@ async function migrateQueryFilesToEntityDirectory(dataPath: string, entityType: 
 }
 
 /**
- * Generate a descriptive filename from a canonical URL using full URL encoding
+ * Generate a descriptive filename from a canonical URL using proper URL encoding
  */
 function generateDescriptiveFilename(canonicalUrl: string): string | null {
   try {
-    // Always use full URL encoding for both entities and queries
-    let filename = canonicalUrl
-      .replace(/^https:\/\//, "https-:")   // https:// → https-:
-      .replace(/\//g, ":")                 // / → :
-      .replace(/=/g, "-")                  // = → -
-      .replace(/"/g, "%22");               // " → %22 for JSON safety
-
-    // Add .json extension
-    filename = `${filename}.json`;
-
+    // Use the same URL encoding approach as urlToEncodedKey for consistency
+    const filename = urlToEncodedKey(canonicalUrl) + ".json";
     return filename;
   } catch {
     return null;
