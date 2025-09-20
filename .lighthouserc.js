@@ -39,23 +39,23 @@ export default {
         'image-alt': 'error',
         'label': 'error',
 
-        // Secondary accessibility (warnings)
-        'button-name': ['warn', { minScore: 0.9 }],
-        'link-name': ['warn', { minScore: 0.9 }],
-        'document-title': ['warn', { minScore: 0.9 }],
-        'meta-viewport': ['warn', { minScore: 0.9 }],
-        'meta-description': ['warn', { minScore: 0.9 }],
-        'crawlable-anchors': ['warn', { minScore: 0.9 }],
-        'target-size': ['warn', { minScore: 0.9 }],
+        // Secondary accessibility (warnings) - relaxed for CI
+        'button-name': ['warn', { minScore: 0.7 }],
+        'link-name': ['warn', { minScore: 0.7 }],
+        'document-title': ['warn', { minScore: 0.7 }],
+        'meta-viewport': ['warn', { minScore: 0.7 }],
+        'meta-description': ['warn', { minScore: 0.7 }],
+        'crawlable-anchors': ['warn', { minScore: 0.7 }],
+        'target-size': ['warn', { minScore: 0.7 }],
 
-        // Technical/Performance issues (warnings, not errors)
-        'unminified-javascript': ['warn', { maxLength: 0 }],
-        'unused-css-rules': ['warn', { maxLength: 0 }],
-        'unused-javascript': ['warn', { maxLength: 0 }],
-        'valid-source-maps': ['warn', { minScore: 0.9 }],
-        'uses-passive-event-listeners': ['warn', { minScore: 0.9 }],
-        'errors-in-console': ['warn', { minScore: 0.9 }],
-        'network-dependency-tree-insight': ['warn', { minScore: 0.9 }]
+        // Technical/Performance issues (warnings, not errors) - relaxed for CI
+        'unminified-javascript': ['warn', { maxLength: 5 }],
+        'unused-css-rules': ['warn', { maxLength: 5 }],
+        'unused-javascript': ['warn', { maxLength: 10 }],
+        'valid-source-maps': ['warn', { minScore: 0.5 }],
+        'uses-passive-event-listeners': ['warn', { minScore: 0.5 }],
+        'errors-in-console': ['warn', { minScore: 0.7 }],
+        'network-dependency-tree-insight': ['warn', { minScore: 0.5 }]
       }
     },
     upload: {

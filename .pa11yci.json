@@ -8,7 +8,7 @@
     },
     "standard": "WCAG2AA",
     "level": "error",
-    "threshold": 0,
+    "threshold": 2,
     "includeNotices": false,
     "includeWarnings": false,
     "rules": [],

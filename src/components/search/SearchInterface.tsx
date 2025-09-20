@@ -94,6 +94,7 @@ export function SearchInterface({
 						disabled={isLoading}
 						flex={1}
 						size="md"
+						aria-label="Search query input"
 					/>
 
 					<Button
