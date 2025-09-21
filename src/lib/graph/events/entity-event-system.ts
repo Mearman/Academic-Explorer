@@ -4,22 +4,22 @@
  */
 
 import { logger } from "@/lib/logger";
-import { CrossContextEventProxy } from "./context-proxy";
+import { BaseEventEmitter } from "./base-event-emitter";
 import {
   EntityEventType,
   EntityEventPayloads,
   EntityEventHandler,
   EntityListenerOptions,
   EntityFilter,
-  EntityEventPayloadSchemas
+  // EntityEventPayloadSchemas removed - not currently used
 } from "./types";
 import type { EntityType, GraphNode, GraphEdge, RelationType } from "@/lib/graph/types";
 
-export class EntityEventSystem extends CrossContextEventProxy<EntityEventType, EntityEventPayloads[EntityEventType]> {
+export class EntityEventSystem extends BaseEventEmitter<EntityEventType, EntityEventPayloads[EntityEventType]> {
   private static instance: EntityEventSystem | null = null;
 
   private constructor() {
-    super("entity-events", EntityEventPayloadSchemas);
+    super();
     logger.debug("general", "EntityEventSystem initialized");
   }
 
@@ -232,7 +232,7 @@ export class EntityEventSystem extends CrossContextEventProxy<EntityEventType, E
     };
 
     for (const eventType of Object.values(EntityEventType)) {
-      stats[eventType] = this.getTotalListenerCount(eventType);
+      stats[eventType] = this.getListenerCount(eventType);
     }
 
     return stats;
@@ -281,7 +281,7 @@ export class EntityEventSystem extends CrossContextEventProxy<EntityEventType, E
    * Clean up all entity event listeners
    */
   cleanup(): void {
-    super.cleanup();
+    this.removeAllListeners();
     logger.debug("general", "EntityEventSystem cleaned up");
   }
 
