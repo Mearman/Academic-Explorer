@@ -132,7 +132,7 @@ export function useAnimatedLayout(options: UseAnimatedLayoutOptions = {}) {
 			onLayoutChange?.();
 		}, [setNodes, onLayoutChange]),
 
-		onComplete: useCallback((positions: NodePosition[], stats: { totalIterations: number; finalAlpha: number; reason: string }) => {
+		onComplete: useCallback(({ positions, stats }: { positions: NodePosition[]; stats: { totalIterations: number; finalAlpha: number; reason: string } }) => {
 			// Update final positions in store
 			storeMethodsRef.current.updateStaticPositions(positions);
 			const statsWithDuration = { ...stats, duration: Date.now() };
@@ -169,6 +169,15 @@ export function useAnimatedLayout(options: UseAnimatedLayoutOptions = {}) {
 
 	// Sync animation state between hook and store using refs to prevent infinite loops
 	useEffect(() => {
+		logger.debug("graph", "SYNC: Updating global store with hook state", {
+			iteration: hookAnimationState.iteration,
+			alpha: hookAnimationState.alpha,
+			fps: hookAnimationState.fps,
+			progress: hookAnimationState.progress,
+			isRunning: hookAnimationState.isRunning,
+			isPaused: hookAnimationState.isPaused
+		});
+
 		storeMethodsRef.current.setAnimating(hookAnimationState.isRunning);
 		storeMethodsRef.current.setPaused(hookAnimationState.isPaused);
 		storeMethodsRef.current.setProgress(hookAnimationState.progress);
@@ -224,6 +233,14 @@ export function useAnimatedLayout(options: UseAnimatedLayoutOptions = {}) {
 
 	// Apply animated layout
 	const applyAnimatedLayout = useCallback(() => {
+
+		logger.debug("graph", "applyAnimatedLayout called", {
+			enabled,
+			useAnimation,
+			isWorkerReady,
+			isLayoutRunning: isLayoutRunningRef.current,
+		});
+
 		if (!enabled || !useAnimation || !isWorkerReady) {
 			logger.debug("graph", "Animated layout skipped", {
 				enabled,
@@ -239,6 +256,11 @@ export function useAnimatedLayout(options: UseAnimatedLayoutOptions = {}) {
 		}
 
 		const { animatedNodes, animatedLinks } = prepareAnimationData();
+
+		logger.debug("graph", "Prepared animation data", {
+			nodeCount: animatedNodes.length,
+			linkCount: animatedLinks.length,
+		});
 
 		if (animatedNodes.length === 0) {
 			logger.debug("graph", "No nodes for animated layout");
@@ -278,7 +300,14 @@ export function useAnimatedLayout(options: UseAnimatedLayoutOptions = {}) {
 
 		// Start the animation
 		const pinnedNodeSet = new Set(Object.keys(pinnedNodes).filter(key => pinnedNodes[key]));
+
+		logger.debug("graph", "About to call startAnimation", {
+			pinnedNodeSetSize: pinnedNodeSet.size,
+			startAnimationFunction: typeof startAnimation,
+		});
+
 		startAnimation(animatedNodes, animatedLinks, enhancedConfig, pinnedNodeSet);
+		logger.debug("graph", "startAnimation called successfully");
 	}, [
 		enabled,
 		useAnimation,
@@ -303,19 +332,29 @@ export function useAnimatedLayout(options: UseAnimatedLayoutOptions = {}) {
 
 	// Pause layout
 	const pauseLayout = useCallback(() => {
-		if (isLayoutRunningRef.current && !animationState.isPaused) {
+		// Use state callback to check current pause state without dependency
+		const currentPauseState = useAnimatedGraphStore.getState().isPaused;
+		logger.debug("graph", "pauseLayout called", {
+			isRunning: isLayoutRunningRef.current,
+			isPaused: currentPauseState,
+			willPause: isLayoutRunningRef.current && !currentPauseState,
+			callStack: new Error().stack?.split("\n").slice(0, 5).join("\n")
+		});
+		if (isLayoutRunningRef.current && !currentPauseState) {
 			pauseAnimation();
 			logger.debug("graph", "Animated layout paused");
 		}
-	}, [pauseAnimation, animationState.isPaused]);
+	}, [pauseAnimation]);
 
 	// Resume layout
 	const resumeLayout = useCallback(() => {
-		if (isLayoutRunningRef.current && animationState.isPaused) {
+		// Use state callback to check current pause state without dependency
+		const currentPauseState = useAnimatedGraphStore.getState().isPaused;
+		if (isLayoutRunningRef.current && currentPauseState) {
 			resumeAnimation();
 			logger.debug("graph", "Animated layout resumed");
 		}
-	}, [resumeAnimation, animationState.isPaused]);
+	}, [resumeAnimation]);
 
 	// Restart layout
 	const restartLayout = useCallback(() => {
