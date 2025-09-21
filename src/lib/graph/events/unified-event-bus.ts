@@ -52,7 +52,7 @@ export class EventBus {
   /**
    * Register a handler for a specific event type
    */
-  on(type: string, handler: EventHandler): string {
+  on(type: string, handler: EventHandler): () => void {
     if (!this.listeners.has(type)) {
       this.listeners.set(type, new Set());
     }
@@ -68,7 +68,7 @@ export class EventBus {
           e.detail &&
           typeof e.detail === "object" &&
           "type" in e.detail &&
-          typeof e.detail.type === "string") {
+          typeof (e.detail as Record<string, unknown>).type === "string") {
         const eventDetail = e.detail as { type: string; payload?: unknown };
         handler(eventDetail);
       }
@@ -84,18 +84,34 @@ export class EventBus {
       channelName: this.channelName
     });
 
-    return listenerId;
+    // Return unsubscribe function
+    return () => {
+      const typeListeners = this.listeners.get(type);
+      if (typeListeners) {
+        typeListeners.delete(handler);
+        if (typeListeners.size === 0) {
+          this.listeners.delete(type);
+        }
+      }
+      this.target.removeEventListener(type, wrappedHandler);
+
+      logger.debug("eventbus", "Event handler unregistered", {
+        type,
+        listenerId,
+        channelName: this.channelName
+      });
+    };
   }
 
   /**
    * Register a handler for one-time execution
    */
-  once(type: string, handler: EventHandler): string {
-    const onceHandler = (event: { type: string; payload?: unknown }) => {
+  once(type: string, handler: EventHandler): () => void {
+    const unsubscribe = this.on(type, (event) => {
       handler(event);
-      this.off(type, onceHandler);
-    };
-    return this.on(type, onceHandler);
+      unsubscribe();
+    });
+    return unsubscribe;
   }
 
   /**
