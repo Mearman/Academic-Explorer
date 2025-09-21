@@ -10,7 +10,7 @@ import { useAnimatedGraphStore, useRestartRequested, useClearRestartRequest } fr
 import { logger } from "@/lib/logger";
 import { AnimatedLayoutContext } from "./animated-layout-context";
 import { useReactFlow } from "@xyflow/react";
-import { broadcastEventBus } from "@/lib/graph/events/broadcast-event-bus";
+import { useEventBus } from "@/lib/graph/events";
 
 interface AnimatedLayoutProviderProps {
   children: React.ReactNode;
@@ -28,6 +28,9 @@ export const AnimatedLayoutProvider: React.FC<AnimatedLayoutProviderProps> = ({
 	fitViewAfterLayout = true,
 	autoStartOnNodeChange = false,
 }) => {
+	// Unified event bus for cross-component communication
+	const eventBus = useEventBus();
+
 	// Use stable selector to prevent infinite loops in React 19
 	const useAnimation = useAnimatedGraphStore((state) => state.useAnimatedLayout);
 
@@ -191,12 +194,18 @@ export const AnimatedLayoutProvider: React.FC<AnimatedLayoutProviderProps> = ({
 		};
 
 		const eventType = "graph:auto-trigger";
-		// Use raw event bus for custom event types
-		const listenerId = broadcastEventBus.listen(eventType, handleGraphEvent);
+		// Use unified event bus for custom event types
+		const unsubscribe = eventBus.on(eventType, (event) => {
+			if (event.payload && typeof event.payload === "object" && "type" in event.payload) {
+				// eslint-disable-next-line @typescript-eslint/consistent-type-assertions -- Required for type narrowing
+				const payload = event.payload as Record<string, unknown>;
+				if (typeof payload.type === "string") {
+					handleGraphEvent({ type: payload.type, payload: payload.payload });
+				}
+			}
+		});
 
-		return () => {
-			broadcastEventBus.removeListener(listenerId);
-		};
+		return () => { unsubscribe(); };
 	}, [autoStartOnNodeChange, enabled, useAnimation, isWorkerReady, isRunning, applyLayout, reheatLayout]);
 	// Initial trigger: Start animation when page loads with existing nodes
 	useEffect(() => {

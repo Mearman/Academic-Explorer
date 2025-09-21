@@ -40,7 +40,7 @@ import { NodeContextMenu } from "@/components/layout/NodeContextMenu";
 import { GraphToolbar } from "@/components/graph/GraphToolbar";
 import { AnimatedGraphControls } from "@/components/graph/AnimatedGraphControls";
 import { logger } from "@/lib/logger";
-import { workerEventBus } from "@/lib/graph/events/broadcast-event-bus";
+import { useEventBus } from "@/lib/graph/events";
 import { WorkerEventType } from "@/lib/graph/events/types";
 import { FIT_VIEW_PRESETS } from "@/lib/graph/constants";
 import { z } from "zod";
@@ -54,6 +54,9 @@ interface GraphNavigationProps {
 
 // Inner component that uses ReactFlow hooks
 const GraphNavigationInner: React.FC<GraphNavigationProps> = ({ className, style }) => {
+	// Unified event bus for worker communication
+	const eventBus = useEventBus();
+
 	const reactFlowInstance = useReactFlow();
 	const containerRef = useRef<HTMLDivElement>(null);
 	const contextMenuData = useContextMenu();
@@ -594,12 +597,14 @@ const GraphNavigationInner: React.FC<GraphNavigationProps> = ({ className, style
 			}
 		};
 
-		const listenerId = workerEventBus.listen(WorkerEventType.FORCE_SIMULATION_PROGRESS, handleProgress);
-		logger.debug("graph", "Registered consolidated FORCE_SIMULATION_PROGRESS handler", { listenerId });
+		const unsubscribe = eventBus.on(WorkerEventType.FORCE_SIMULATION_PROGRESS, (event) => {
+			handleProgress(event.payload);
+		});
+		logger.debug("graph", "Registered unified FORCE_SIMULATION_PROGRESS handler");
 
 		return () => {
-			workerEventBus.removeListener(listenerId);
-			logger.debug("graph", "Unregistered FORCE_SIMULATION_PROGRESS handler", { listenerId });
+			unsubscribe();
+			logger.debug("graph", "Unregistered FORCE_SIMULATION_PROGRESS handler");
 		};
 	}, [setNodes, nodes]); // Depend on nodes to re-apply if needed
 
