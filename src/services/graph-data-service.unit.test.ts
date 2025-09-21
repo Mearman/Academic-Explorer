@@ -26,6 +26,38 @@ vi.mock("@/lib/openalex/cached-client", () => ({
 		getEntity: vi.fn(),
 		search: vi.fn(),
 		searchAll: vi.fn(),
+		client: {
+			getEntity: vi.fn(),
+			works: {
+				getWorks: vi.fn(),
+				getWork: vi.fn(),
+			},
+			authors: {
+				getAuthors: vi.fn(),
+				getAuthor: vi.fn(),
+			},
+			sources: {
+				getSources: vi.fn(),
+				getSource: vi.fn(),
+			},
+			institutions: {
+				searchInstitutions: vi.fn(),
+				getInstitution: vi.fn(),
+			},
+			topics: {
+				getMultiple: vi.fn(),
+				get: vi.fn(),
+			},
+			publishers: {
+				get: vi.fn(),
+			},
+			funders: {
+				get: vi.fn(),
+			},
+			keywords: {
+				getKeyword: vi.fn(),
+			},
+		},
 	},
 }));
 
@@ -685,7 +717,11 @@ describe("GraphDataService", () => {
 		beforeEach(() => {
 			// Clear API call history from previous tests
 			vi.mocked(cachedOpenAlex.getEntity).mockClear();
-			vi.mocked(cachedOpenAlex.searchAll).mockClear();
+			vi.mocked(cachedOpenAlex.client.works.getWorks).mockClear();
+			vi.mocked(cachedOpenAlex.client.authors.getAuthors).mockClear();
+			vi.mocked(cachedOpenAlex.client.sources.getSources).mockClear();
+			vi.mocked(cachedOpenAlex.client.institutions.searchInstitutions).mockClear();
+			vi.mocked(cachedOpenAlex.client.topics.getMultiple).mockClear();
 
 			// Clear store mock call history
 			Object.values(mockStore).forEach((mockFn) => {
@@ -700,17 +736,26 @@ describe("GraphDataService", () => {
 				normalizedId: id,
 			}));
 
-			vi.mocked(cachedOpenAlex.searchAll).mockResolvedValue({
-				works: [mockWorkEntity],
-				authors: [],
-				sources: [],
-				institutions: [],
-				topics: [],
-				publishers: [],
-				funders: [],
-				keywords: [],
-				geo: [],
+			// Mock the individual client methods that are actually called in searchAndVisualize
+			vi.mocked(cachedOpenAlex.client.works.getWorks).mockResolvedValue({
+				results: [mockWorkEntity],
 				meta: { count: 1, per_page: 25, page: 1 },
+			});
+			vi.mocked(cachedOpenAlex.client.authors.getAuthors).mockResolvedValue({
+				results: [],
+				meta: { count: 0, per_page: 25, page: 1 },
+			});
+			vi.mocked(cachedOpenAlex.client.sources.getSources).mockResolvedValue({
+				results: [],
+				meta: { count: 0, per_page: 25, page: 1 },
+			});
+			vi.mocked(cachedOpenAlex.client.institutions.searchInstitutions).mockResolvedValue({
+				results: [],
+				meta: { count: 0, per_page: 25, page: 1 },
+			});
+			vi.mocked(cachedOpenAlex.client.topics.getMultiple).mockResolvedValue({
+				results: [],
+				meta: { count: 0, per_page: 25, page: 1 },
 			});
 		});
 
@@ -718,26 +763,46 @@ describe("GraphDataService", () => {
 			await service.searchAndVisualize(searchQuery, searchOptions);
 
 			expect(mockStore.setLoading).toHaveBeenCalledWith(true);
-			expect(cachedOpenAlex.searchAll).toHaveBeenCalledWith(
-				searchQuery,
-				expect.objectContaining(searchOptions)
-			);
+			// Check that the works client method was called since entityTypes is ["works"]
+			expect(cachedOpenAlex.client.works.getWorks).toHaveBeenCalledWith({
+				search: searchQuery,
+				per_page: 10 // The limit from searchOptions
+			});
 			expect(mockStore.clear).toHaveBeenCalled();
 			expect(mockStore.addNodes).toHaveBeenCalled();
 			expect(mockStore.addEdges).toHaveBeenCalled();
 			expect(mockStore.setLoading).toHaveBeenCalledWith(false);
 		});
 
-		it("should handle search errors", async () => {
+		it("should handle search errors gracefully", async () => {
 			const searchError = new Error("Search failed");
-			vi.mocked(cachedOpenAlex.searchAll).mockRejectedValue(searchError);
+			vi.mocked(cachedOpenAlex.client.works.getWorks).mockRejectedValue(searchError);
 
 			await service.searchAndVisualize(searchQuery, searchOptions);
 
-			expect(mockStore.setError).toHaveBeenCalledWith("Search failed");
+			// Individual API call failures are caught and logged but don't cause overall failure
+			// The search continues with other entity types and returns what it can
+			expect(mockStore.setError).toHaveBeenCalledWith(null); // Error state is cleared at start
+			expect(mockStore.setLoading).toHaveBeenCalledWith(false);
+			// The overall operation should still complete successfully
+			expect(mockStore.clear).toHaveBeenCalled();
+			expect(mockStore.addNodes).toHaveBeenCalled();
+		});
+
+		it("should handle critical search errors that prevent completion", async () => {
+			// Mock store.clear to throw to simulate a critical error after API calls
+			const criticalError = new Error("Critical search failure");
+			mockStore.clear.mockImplementation(() => {
+				throw criticalError;
+			});
+
+			await service.searchAndVisualize(searchQuery, searchOptions);
+
+			// Should handle the critical error and set error state
+			expect(mockStore.setError).toHaveBeenCalledWith("Critical search failure");
 			expect(logError).toHaveBeenCalledWith(
 				"Failed to search and visualize",
-				searchError,
+				criticalError,
 				"GraphDataService",
 				"graph"
 			);
@@ -747,13 +812,28 @@ describe("GraphDataService", () => {
 		it("should use default options when none provided", async () => {
 			await service.searchAndVisualize(searchQuery, {});
 
-			expect(cachedOpenAlex.searchAll).toHaveBeenCalledWith(
+			// When no entityTypes are specified, it searches all default types
+			// Check that all default entity types are searched
+			expect(cachedOpenAlex.client.works.getWorks).toHaveBeenCalledWith({
+				search: searchQuery,
+				per_page: 20 // default limit
+			});
+			expect(cachedOpenAlex.client.authors.getAuthors).toHaveBeenCalledWith({
+				search: searchQuery,
+				per_page: 20
+			});
+			expect(cachedOpenAlex.client.sources.getSources).toHaveBeenCalledWith({
+				search: searchQuery,
+				per_page: 20
+			});
+			expect(cachedOpenAlex.client.institutions.searchInstitutions).toHaveBeenCalledWith(
 				searchQuery,
-				expect.objectContaining({
-					entityTypes: undefined,
-					limit: 20,
-				})
+				{ per_page: 20 }
 			);
+			expect(cachedOpenAlex.client.topics.getMultiple).toHaveBeenCalledWith({
+				search: searchQuery,
+				per_page: 20
+			});
 		});
 	});
 
@@ -1088,17 +1168,10 @@ describe("GraphDataService", () => {
 			});
 
 			it("should transform search results with minimal connections", async () => {
-				vi.mocked(cachedOpenAlex.searchAll).mockResolvedValue({
-					works: [mockWorkEntity],
-					authors: [mockAuthorEntity],
-					sources: [],
-					institutions: [],
-					topics: [],
-					publishers: [],
-					funders: [],
-					keywords: [],
-					geo: [],
-					meta: { count: 2, per_page: 25, page: 1 },
+				// Mock the works search since entityTypes is ["works"]
+				vi.mocked(cachedOpenAlex.client.works.getWorks).mockResolvedValue({
+					results: [mockWorkEntity],
+					meta: { count: 1, per_page: 25, page: 1 },
 				});
 
 				await service.searchAndVisualize("test query", { entityTypes: ["works"] });
@@ -1108,10 +1181,6 @@ describe("GraphDataService", () => {
 						expect.objectContaining({
 							entityId: "W123456789",
 							type: "works",
-						}),
-						expect.objectContaining({
-							entityId: "A123456789",
-							type: "authors",
 						}),
 					])
 				);
@@ -1219,7 +1288,11 @@ describe("GraphDataService", () => {
 		beforeEach(() => {
 			// Clear API call history from previous tests
 			vi.mocked(cachedOpenAlex.getEntity).mockClear();
-			vi.mocked(cachedOpenAlex.searchAll).mockClear();
+			vi.mocked(cachedOpenAlex.client.works.getWorks).mockClear();
+			vi.mocked(cachedOpenAlex.client.authors.getAuthors).mockClear();
+			vi.mocked(cachedOpenAlex.client.sources.getSources).mockClear();
+			vi.mocked(cachedOpenAlex.client.institutions.searchInstitutions).mockClear();
+			vi.mocked(cachedOpenAlex.client.topics.getMultiple).mockClear();
 
 			// Clear store mock call history
 			Object.values(mockStore).forEach((mockFn) => {
@@ -1365,16 +1438,8 @@ describe("GraphDataService", () => {
 				display_name: `Work ${i}`,
 			}));
 
-			vi.mocked(cachedOpenAlex.searchAll).mockResolvedValue({
-				works: largeResultSet,
-				authors: [],
-				sources: [],
-				institutions: [],
-				topics: [],
-				publishers: [],
-				funders: [],
-				keywords: [],
-				geo: [],
+			vi.mocked(cachedOpenAlex.client.works.getWorks).mockResolvedValue({
+				results: largeResultSet,
 				meta: { count: 100, per_page: 25, page: 1 },
 			});
 
