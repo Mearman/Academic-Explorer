@@ -5,7 +5,7 @@
  */
 
 import { logger } from "@/lib/logger";
-import type { WorkerEventType, WorkerEventPayloads } from "./types";
+import { WorkerEventType, type WorkerEventPayloads } from "./types";
 
 export interface BusEvent {
   type: string;
@@ -304,9 +304,24 @@ export class WorkerEventBus {
   /**
    * Validate that a payload matches the expected structure for a worker event type
    */
-  private isValidWorkerEventPayload(payload: unknown, _eventType: string): payload is WorkerEventPayloads[keyof WorkerEventPayloads] {
-    // Basic validation - could be enhanced with more specific checks
-    return typeof payload === "object" && payload !== null;
+  private isValidWorkerEventPayload<T extends WorkerEventType>(payload: unknown, eventType: T): payload is WorkerEventPayloads[T] {
+    if (typeof payload !== "object" || payload === null || Array.isArray(payload)) {
+      return false;
+    }
+
+    // All worker events should have these base properties
+    if (!("workerId" in payload) || typeof payload.workerId !== "string" ||
+        !("timestamp" in payload) || typeof payload.timestamp !== "number") {
+      return false;
+    }
+
+    // Type-specific validation
+    switch (eventType) {
+      case WorkerEventType.WORKER_ERROR:
+        return "error" in payload && typeof payload.error === "string";
+      default:
+        return true; // Allow other events with basic validation
+    }
   }
 
   /**
