@@ -371,6 +371,9 @@ export const useGraphStore = create<GraphState>()(
 					draft.provider?.addNode(node);
 				});
 
+				// Unpin new nodes to allow movement
+				get().unpinNode(node.id);
+
 				// Only restart simulation if a new node was actually added
 				if (wasAdded) {
 					// Request layout restart when node is added to apply node forces
@@ -410,6 +413,9 @@ export const useGraphStore = create<GraphState>()(
 						draft.provider?.addNode(node);
 					});
 				});
+
+				// Unpin new nodes to allow movement
+				nodes.forEach(node => { get().unpinNode(node.id); });
 
 				// Only restart simulation if new nodes were actually added
 				if (newNodes.length > 0) {
@@ -836,6 +842,10 @@ export const useGraphStore = create<GraphState>()(
 					nodeEdgesCache: {},
 					edgeTypeStats: createInitialEdgeTypeStats(),
 				});
+
+				// Unpin all nodes on graph load to allow movement
+				get().clearAllPinnedNodes();
+
 				// Recompute all caches after setting new data
 				const state = get();
 				state.recomputeVisibleNodes();

@@ -1,6 +1,4 @@
 import { createRoot } from "react-dom/client"
-import { BackgroundWorkerProvider } from "@/contexts/BackgroundWorkerProvider"
-import { EventBridgeProvider } from "@/contexts/EventBridgeProvider"
 import { createRouter, RouterProvider, createHashHistory } from "@tanstack/react-router"
 import { TanStackDevtools } from "@tanstack/react-devtools"
 import { ReactQueryDevtoolsPanel } from "@tanstack/react-query-devtools"
@@ -125,12 +123,10 @@ if (!rootElement) {
 createRoot(rootElement).render(
 	/* <StrictMode> - Temporarily disabled to debug multiple hook instances */
 		<GlobalErrorBoundary>
-			<EventBridgeProvider>
-				<BackgroundWorkerProvider>
-					<MantineProvider
-						theme={theme}
-						defaultColorScheme="auto"
-					>
+			<MantineProvider
+				theme={theme}
+				defaultColorScheme="auto"
+			>
 					<Notifications />
 					<CacheInitializer>
 						<RouterProvider router={router} />
@@ -185,9 +181,7 @@ createRoot(rootElement).render(
 					nothingFound="Nothing found..."
 					highlightQuery
 				/>
-			</MantineProvider>
-		</BackgroundWorkerProvider>
-	</EventBridgeProvider>
+		</MantineProvider>
 	</GlobalErrorBoundary>
 	/* </StrictMode> - Temporarily disabled to debug multiple hook instances */
 )
