@@ -3,9 +3,9 @@
  * Listens for BULK_NODES_ADDED events and triggers relationship detection for all entity types
  */
 
-import { useMemo } from "react";
+import { useMemo, useEffect } from "react";
 import { useQueryClient } from "@tanstack/react-query";
-import { useBulkNodesAddedListener } from "@/lib/graph/events";
+import { useEventBus, GraphEventType } from "@/lib/graph/events";
 import { getRelationshipDetectionService } from "@/lib/services/service-provider";
 import { useGraphStore } from "@/stores/graph-store";
 import { logger } from "@/lib/logger";
@@ -13,9 +13,12 @@ import { logger } from "@/lib/logger";
 export function useAutoRelationshipDetection() {
   const queryClient = useQueryClient();
   const relationshipDetectionService = useMemo(() => getRelationshipDetectionService(queryClient), [queryClient]);
+  const eventBus = useEventBus();
 
-  useBulkNodesAddedListener((payload) => {
-    const { nodes } = payload;
+  useEffect(() => {
+    const unsubscribe = eventBus.on(GraphEventType.BULK_NODES_ADDED, (event) => {
+      const payload = event.payload as { nodes: Array<{ id: string; type: string }> };
+      const { nodes } = payload;
     if (nodes.length === 0) {
       logger.debug("graph", "No nodes in bulk addition, skipping relationship detection");
       return;
@@ -61,7 +64,10 @@ export function useAutoRelationshipDetection() {
           nodeTypes: [...new Set(nodes.map(node => node.type))]
         });
       });
-  });
+    });
+
+    return unsubscribe;
+  }, [eventBus, relationshipDetectionService]);
 
   // Return nothing - this is a side-effect only hook
   return undefined;

@@ -9,7 +9,7 @@ import { describe, it, expect, beforeEach, afterEach, vi, type Mock } from "vite
 // Mock dependencies after imports
 vi.mock("@/services/graph-data-service");
 vi.mock("@/stores/graph-store");
-vi.mock("@/hooks/use-background-worker");
+vi.mock("@/hooks/use-unified-background-worker");
 vi.mock("@/lib/logger", () => ({
 	logger: {
 		info: vi.fn(),
@@ -22,7 +22,7 @@ vi.mock("@/lib/logger", () => ({
 import { useGraphData } from "./use-graph-data";
 import { GraphDataService } from "@/services/graph-data-service";
 import { useGraphStore } from "@/stores/graph-store";
-import { useBackgroundWorker } from "@/hooks/use-background-worker";
+import { useBackgroundWorker } from "@/hooks/use-unified-background-worker";
 import { logger, logError } from "@/lib/logger";
 import type { SearchOptions } from "@/lib/graph/types";
 import React from "react";

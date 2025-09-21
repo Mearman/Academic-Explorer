@@ -7,7 +7,7 @@ import { useCallback, useMemo } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { getGraphDataService } from "@/lib/services/service-provider";
 import { useGraphStore } from "@/stores/graph-store";
-import { useBackgroundWorker } from "@/hooks/use-background-worker";
+import { useBackgroundWorker } from "@/hooks/use-unified-background-worker";
 import { useExpansionSettingsStore } from "@/stores/expansion-settings-store";
 import { logger, logError } from "@/lib/logger";
 import { safeParseExpansionTarget } from "@/lib/type-guards";

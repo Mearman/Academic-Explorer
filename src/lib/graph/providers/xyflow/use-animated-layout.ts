@@ -10,7 +10,7 @@ import { logger } from "@/lib/logger";
 import { useGraphStore } from "@/stores/graph-store";
 import { useLayoutStore } from "@/stores/layout-store";
 import { useAnimatedGraphStore } from "@/stores/animated-graph-store";
-import { useBackgroundWorker } from "@/hooks/use-background-worker";
+import { useBackgroundWorker } from "@/hooks/use-unified-background-worker";
 // FIT_VIEW_PRESETS removed - not currently used
 import { DEFAULT_FORCE_PARAMS } from "../../force-params";
 

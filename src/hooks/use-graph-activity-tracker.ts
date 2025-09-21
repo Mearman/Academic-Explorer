@@ -1,12 +1,11 @@
 /**
  * Hook for tracking graph and simulation activity
- * Focuses on graph operations, force simulation, and data fetching
+ * Uses the unified event system for improved tracking
  */
 
 import { useEffect, useCallback, useRef } from "react";
 import { useAppActivityStore } from "@/stores/app-activity-store";
-import { workerEventBus, broadcastEventBus } from "@/lib/graph/events/broadcast-event-bus";
-import { graphEventSystem } from "@/lib/graph/events";
+import { useEventBus, useEventSubscriptions } from "@/lib/graph/events";
 import {
   GraphEventType,
   EntityEventType,
@@ -36,22 +35,22 @@ function isRecordObject(value: unknown): value is Record<string, unknown> {
 }
 
 /**
- * Hook to track graph and simulation activity
+ * Hook to track graph and simulation activity using unified event system
  */
 export function useGraphActivityTracker() {
   const { addEvent } = useAppActivityStore();
-  const handlerIdRef = useRef<string | null>(null);
-  const graphListenerIdsRef = useRef<string[]>([]);
+  const bus = useEventBus("academic-explorer-activity");
+  const trackingActiveRef = useRef(false);
 
-  // Event bridge message handler focused on graph/simulation events
-  const handleGraphEvent = useCallback((event: { type: string; payload?: unknown }) => {
+  // Unified event handler for all activity events
+  const handleUnifiedEvent = useCallback((event: { type: string; payload?: unknown }) => {
     let eventType: string = "unknown";
     try {
       eventType = event.type;
       const { payload } = event;
 
       // Debug logging to see all events
-      logger.debug("ui", "Activity tracker received event", {
+      logger.debug("ui", "Unified activity tracker received event", {
         eventType,
         payloadKeys: payload && typeof payload === "object" ? Object.keys(payload) : "non-object",
         allGraphEventTypes: Object.values(GraphEventType),
@@ -186,162 +185,85 @@ export function useGraphActivityTracker() {
     }
   }, [addEvent]);
 
-  // Direct graph event handler for GraphEventSystem
-  const handleDirectGraphEvent = useCallback((params: { eventType: GraphEventType; payload: Record<string, unknown> }) => {
-    const { eventType, payload } = params;
-    try {
-      logger.debug("ui", "Activity tracker received direct graph event", {
-        eventType,
-        payloadKeys: payload && typeof payload === "object" ? Object.keys(payload) : "non-object"
-      }, "GraphActivityTracker");
+  // Set up unified event subscriptions
+  const eventSubscriptions = [
+    // Graph structure events
+    { eventType: GraphEventType.ANY_NODE_ADDED, handler: handleUnifiedEvent },
+    { eventType: GraphEventType.ANY_NODE_REMOVED, handler: handleUnifiedEvent },
+    { eventType: GraphEventType.ANY_EDGE_ADDED, handler: handleUnifiedEvent },
+    { eventType: GraphEventType.ANY_EDGE_REMOVED, handler: handleUnifiedEvent },
+    { eventType: GraphEventType.BULK_NODES_ADDED, handler: handleUnifiedEvent },
+    { eventType: GraphEventType.BULK_EDGES_ADDED, handler: handleUnifiedEvent },
+    { eventType: GraphEventType.GRAPH_CLEARED, handler: handleUnifiedEvent },
+    { eventType: GraphEventType.LAYOUT_CHANGED, handler: handleUnifiedEvent },
 
-      let description = "";
-      let duration: number | undefined;
+    // Entity events
+    { eventType: EntityEventType.ENTITY_EXPANDED, handler: handleUnifiedEvent },
 
-      switch (eventType) {
-        case GraphEventType.ANY_NODE_ADDED:
-          description = "Added node to graph";
-          break;
-        case GraphEventType.ANY_NODE_REMOVED:
-          description = "Removed node from graph";
-          break;
-        case GraphEventType.BULK_NODES_ADDED:
-          description = "Added multiple nodes to graph";
-          break;
-        case GraphEventType.ANY_EDGE_ADDED:
-          description = "Added edge to graph";
-          break;
-        case GraphEventType.BULK_EDGES_ADDED:
-          description = "Added multiple edges to graph";
-          break;
-        case GraphEventType.GRAPH_CLEARED:
-          description = "Graph cleared";
-          break;
-        default:
-          description = `Graph event: ${eventType}`;
-      }
+    // Worker/Task events
+    { eventType: "TASK_PROGRESS", handler: handleUnifiedEvent },
+    { eventType: "TASK_COMPLETED", handler: handleUnifiedEvent },
+    { eventType: "TASK_FAILED", handler: handleUnifiedEvent },
+    { eventType: "FORCE_SIMULATION_PROGRESS", handler: handleUnifiedEvent },
+    { eventType: "FORCE_SIMULATION_COMPLETE", handler: handleUnifiedEvent },
+    { eventType: "DATA_FETCH_COMPLETE", handler: handleUnifiedEvent },
+    { eventType: "QUEUE_TASK_ASSIGNED", handler: handleUnifiedEvent },
+    { eventType: "QUEUE_TASK_COMPLETED", handler: handleUnifiedEvent }
+  ];
 
+  useEventSubscriptions(bus, eventSubscriptions);
+
+  // Lifecycle tracking
+  useEffect(() => {
+    if (!trackingActiveRef.current) {
+      trackingActiveRef.current = true;
+
+      // Log initial setup
       addEvent({
         type: "system",
-        category: "data",
-        event: eventType,
-        description,
+        category: "lifecycle",
+        event: "activity_tracker_started",
+        description: "Unified graph activity tracking started",
         severity: "info",
-        duration,
         metadata: {
           data: {
-            eventType,
-            graphOperation: true,
-            payload,
+            trackingTypes: ["graph", "tasks", "simulation", "data-fetch"],
+            unifiedSystem: true,
+            eventCount: eventSubscriptions.length
           },
         },
       });
 
-    } catch (error) {
-      logger.error("ui", "Failed to process direct graph event", {
-        eventType,
-        error: error instanceof Error ? error.message : "Unknown error",
+      logger.debug("ui", "Unified graph activity tracker started", {
+        eventCount: eventSubscriptions.length,
+        trackingTypes: ["graph", "tasks", "simulation", "data-fetch"]
       }, "GraphActivityTracker");
     }
-  }, [addEvent]);
-
-  // Set up event bridge listener
-  useEffect(() => {
-    const handlerId = `graph-activity-tracker-${Date.now().toString()}`;
-    handlerIdRef.current = handlerId;
-
-    const eventType = "graph:activity-tracker";
-    // Use raw event bus for custom event types
-    broadcastEventBus.listen(eventType, handleGraphEvent);
-
-    // Log initial setup
-    addEvent({
-      type: "system",
-      category: "lifecycle",
-      event: "activity_tracker_started",
-      description: "Graph activity tracking started",
-      severity: "info",
-      metadata: {
-        data: {
-          handlerId,
-          trackingTypes: ["graph", "simulation", "data-fetch"],
-        },
-      },
-    });
-
-    logger.debug("ui", "Graph activity tracker registered", { handlerId }, "GraphActivityTracker");
 
     return () => {
-      if (handlerIdRef.current) {
-        workerEventBus.removeListener(handlerIdRef.current);
+      if (trackingActiveRef.current) {
+        trackingActiveRef.current = false;
 
         addEvent({
           type: "system",
           category: "lifecycle",
           event: "activity_tracker_stopped",
-          description: "Graph activity tracking stopped",
+          description: "Unified graph activity tracking stopped",
           severity: "info",
           metadata: {
             data: {
-              handlerId: handlerIdRef.current,
+              unifiedSystem: true
             },
           },
         });
 
-        logger.debug("ui", "Graph activity tracker unregistered", { handlerId: handlerIdRef.current }, "GraphActivityTracker");
-        handlerIdRef.current = null;
+        logger.debug("ui", "Unified graph activity tracker stopped", {}, "GraphActivityTracker");
       }
     };
-  }, [handleGraphEvent, addEvent]);
-
-  // Set up direct graph event listeners
-  useEffect(() => {
-    const listenerIds: string[] = [];
-
-    // Register for all graph events we want to track
-    const graphEventTypes = [
-      GraphEventType.ANY_NODE_ADDED,
-      GraphEventType.ANY_NODE_REMOVED,
-      GraphEventType.ANY_EDGE_ADDED,
-      GraphEventType.ANY_EDGE_REMOVED,
-      GraphEventType.BULK_NODES_ADDED,
-      GraphEventType.BULK_EDGES_ADDED,
-      GraphEventType.GRAPH_CLEARED,
-      GraphEventType.LAYOUT_CHANGED
-    ];
-
-    for (const eventType of graphEventTypes) {
-      const listenerId = graphEventSystem.onGraphEvent(eventType, (payload) => {
-        handleDirectGraphEvent({
-          eventType,
-          payload: isRecordObject(payload) ? payload : {}
-        });
-      });
-      listenerIds.push(listenerId);
-    }
-
-    graphListenerIdsRef.current = listenerIds;
-
-    logger.debug("ui", "Graph activity tracker registered direct listeners", {
-      listenerCount: listenerIds.length,
-      eventTypes: graphEventTypes
-    }, "GraphActivityTracker");
-
-    return () => {
-      // Clean up all graph event listeners
-      for (const listenerId of graphListenerIdsRef.current) {
-        graphEventSystem.off(listenerId);
-      }
-      graphListenerIdsRef.current = [];
-
-      logger.debug("ui", "Graph activity tracker unregistered direct listeners", {
-        listenerCount: listenerIds.length
-      }, "GraphActivityTracker");
-    };
-  }, [handleDirectGraphEvent]);
+  }, [addEvent]);
 
   return {
     // Expose any manual tracking methods if needed
-    isTracking: handlerIdRef.current !== null,
+    isTracking: trackingActiveRef.current,
   };
 }
