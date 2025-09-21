@@ -136,7 +136,7 @@ const GraphNavigationInner: React.FC<GraphNavigationProps> = ({ className, style
 	// Center the viewport on a node without moving the node's position
 	const lastCenterOperationRef = useRef<{ nodeId: string; timestamp: number }>({ nodeId: "", timestamp: 0 });
 
-	const centerOnNode = useCallback((nodeId: string, currentPosition?: { x: number; y: number }) => {
+	const centerOnNode = useCallback(({ nodeId, currentPosition }: { nodeId: string; currentPosition?: { x: number; y: number } }) => {
 		// Throttle centering operations to prevent spam
 		const now = Date.now();
 		if (lastCenterOperationRef.current.nodeId === nodeId &&
@@ -555,7 +555,7 @@ const GraphNavigationInner: React.FC<GraphNavigationProps> = ({ className, style
 						setPreviewEntity(matchingNode.entityId);
 
 						// Smoothly animate the selected node to the center of the viewport
-						centerOnNode(matchingNode.id, matchingNode.position);
+						centerOnNode({ nodeId: matchingNode.id, currentPosition: matchingNode.position });
 
 						logger.debug("graph", "Selected and auto-centered entity from hash URL", {
 							currentHash,
@@ -1019,6 +1019,7 @@ export const GraphNavigation: React.FC<GraphNavigationProps> = (props) => {
 			<AnimatedLayoutProvider
 				enabled={true}
 				fitViewAfterLayout={true}
+				autoStartOnNodeChange={true}
 			>
 				<GraphNavigationInner {...props} />
 			</AnimatedLayoutProvider>
