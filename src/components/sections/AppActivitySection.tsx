@@ -39,6 +39,7 @@ import {
 	IconEye,
 	IconBuildingBank,
 	IconTrendingUp,
+	IconClipboard,
 } from "@tabler/icons-react";
 import { useAppActivityStore } from "@/stores/app-activity-store";
 import type { AppActivityEvent } from "@/stores/app-activity-store";
@@ -82,6 +83,23 @@ const AppActivitySection: React.FC = () => {
 		void navigator.clipboard.writeText(text).then(() => {
 			logger.debug("ui", "Copied to clipboard", { textLength: text.length }, "AppActivitySection");
 		});
+	};
+
+	const copyAllEvents = () => {
+		const allEventsData = filteredEvents.map(event => ({
+			timestamp: new Date(event.timestamp).toLocaleString(),
+			type: event.type,
+			category: event.category,
+			severity: event.severity,
+			event: event.event,
+			description: event.description,
+			duration: event.duration,
+			metadata: event.metadata
+		}));
+
+		const jsonData = JSON.stringify(allEventsData, null, 2);
+		copyToClipboard(jsonData);
+		logger.debug("ui", "Copied all events to clipboard", { eventCount: allEventsData.length }, "AppActivitySection");
 	};
 
 	const formatTimestamp = (timestamp: number) => {
@@ -314,12 +332,7 @@ const AppActivitySection: React.FC = () => {
 					</Badge>
 				</Group>
 				<Stack gap="xs">
-					{events.slice(0, 10).map(renderEvent)}
-					{events.length > 10 && (
-						<Text size="xs" c={colors.text.secondary} ta="center">
-							... and {events.length - 10} more
-						</Text>
-					)}
+					{events.map(renderEvent)}
 				</Stack>
 			</div>
 		);
@@ -348,6 +361,11 @@ const AppActivitySection: React.FC = () => {
 							<Tooltip label="Clear all events">
 								<ActionIcon variant="subtle" size="sm" onClick={clearAllEvents}>
 									<IconClearAll size={14} />
+								</ActionIcon>
+							</Tooltip>
+							<Tooltip label="Copy all events to clipboard">
+								<ActionIcon variant="subtle" size="sm" onClick={copyAllEvents}>
+									<IconClipboard size={14} />
 								</ActionIcon>
 							</Tooltip>
 							<ActionIcon
