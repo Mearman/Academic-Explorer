@@ -144,22 +144,45 @@ export function useEnhancedBackgroundWorker(options: UseEnhancedBackgroundWorker
     progressThrottleMs = 16 // ~60fps
   } = options;
 
+  const workerFactory = useCallback(
+    () => new Worker(new URL("../workers/background.worker.ts", import.meta.url), { type: "module" }),
+    []
+  );
+
+  const handleWorkerMessage = useCallback((data: unknown) => {
+    if (data && typeof data === "object" && "type" in data) {
+      const descriptor = Object.getOwnPropertyDescriptor(data, "type");
+      const typeValue: unknown = descriptor?.value;
+      logger.debug("worker", "Direct worker message received (legacy)", {
+        type: typeof typeValue === "string" ? typeValue : String(typeValue),
+      });
+    }
+  }, []);
+
+  const handleWorkerError = useCallback((error: ErrorEvent) => {
+    const errorMessage = `Enhanced worker error: ${error.message}`;
+    logger.error("worker", "Enhanced worker error", {
+      error: error.message,
+      filename: error.filename,
+      lineno: error.lineno
+    });
+    onAnimationError?.(errorMessage);
+  }, [onAnimationError]);
+
   // Worker management using the enhanced useWebWorker hook
   const {
     postMessage,
     isLoading,
     error: workerError,
-    stats: workerStats,
     isWorkerAvailable,
     terminate
-  } = useWebWorker(
-    () => new Worker(new URL("../workers/background.worker.ts", import.meta.url), { type: "module" }),
-    {
+  } = useWebWorker({
+    workerFactory,
+    options: {
       onMessage: handleWorkerMessage,
       onError: handleWorkerError,
-      autoTerminate: true
-    }
-  );
+    },
+  });
 
   // State management
   const [animationState, setAnimationState] = useState<AnimationState>({
@@ -188,97 +211,6 @@ export function useEnhancedBackgroundWorker(options: UseEnhancedBackgroundWorker
   const progressThrottleRef = useRef<NodeJS.Timeout | null>(null);
   const animationStartTimeRef = useRef<number>(0);
   const eventListenerIds = useRef<string[]>([]);
-
-  // BroadcastChannel event handling
-  useEffect(() => {
-    logger.debug("worker", "Setting up enhanced worker event listeners");
-
-    // Worker ready
-    const workerReadyId = workerEventBus.listen(WorkerEventType.WORKER_READY, (payload: unknown) => {
-      if (payload && typeof payload === "object" && "workerType" in payload && payload.workerType === "force-animation") {
-        logger.debug("worker", "Enhanced worker ready via BroadcastChannel", payload);
-      }
-    });
-
-    // Force simulation progress
-    const forceProgressId = workerEventBus.listen(WorkerEventType.FORCE_SIMULATION_PROGRESS, (payload) => {
-      handleForceSimulationProgress(payload);
-    });
-
-    // Force simulation complete
-    const forceCompleteId = workerEventBus.listen(WorkerEventType.FORCE_SIMULATION_COMPLETE, (payload) => {
-      handleForceSimulationComplete(payload);
-    });
-
-    // Force simulation stopped
-    const forceStoppedId = workerEventBus.listen(WorkerEventType.FORCE_SIMULATION_STOPPED, (payload) => {
-      handleForceSimulationStopped(payload);
-    });
-
-    // Force simulation error
-    const forceErrorId = workerEventBus.listen(WorkerEventType.FORCE_SIMULATION_ERROR, (payload) => {
-      handleForceSimulationError(payload);
-    });
-
-    // Data fetch progress
-    const dataProgressId = workerEventBus.listen(WorkerEventType.DATA_FETCH_PROGRESS, (payload) => {
-      handleDataFetchProgress(payload);
-    });
-
-    // Data fetch complete
-    const dataCompleteId = workerEventBus.listen(WorkerEventType.DATA_FETCH_COMPLETE, (payload) => {
-      handleDataFetchComplete(payload);
-    });
-
-    // Data fetch error
-    const dataErrorId = workerEventBus.listen(WorkerEventType.DATA_FETCH_ERROR, (payload) => {
-      handleDataFetchError(payload);
-    });
-
-    // Store listener IDs for cleanup
-    eventListenerIds.current = [
-      workerReadyId,
-      forceProgressId,
-      forceCompleteId,
-      forceStoppedId,
-      forceErrorId,
-      dataProgressId,
-      dataCompleteId,
-      dataErrorId
-    ];
-
-    return () => {
-      // Clean up event listeners
-      eventListenerIds.current.forEach(id => {
-        workerEventBus.removeListener(id);
-      });
-      eventListenerIds.current = [];
-
-      // Clean up throttle
-      if (progressThrottleRef.current) {
-        clearTimeout(progressThrottleRef.current);
-        progressThrottleRef.current = null;
-      }
-    };
-  }, []);
-
-  // Direct worker message handler (for backward compatibility)
-  function handleWorkerMessage(data: unknown) {
-    // This is handled via BroadcastChannel now, but kept for compatibility
-    if (data && typeof data === "object" && "type" in data) {
-      logger.debug("worker", "Direct worker message received (legacy)", { type: data.type });
-    }
-  }
-
-  function handleWorkerError(error: ErrorEvent) {
-    const errorMessage = `Enhanced worker error: ${error.message}`;
-    logger.error("worker", "Enhanced worker error", {
-      error: error.message,
-      filename: error.filename,
-      lineno: error.lineno
-    });
-    onAnimationError?.(errorMessage);
-  }
 
   // BroadcastChannel event handlers
   const handleForceSimulationProgress = useCallback((payload: unknown) => {
@@ -489,6 +421,55 @@ export function useEnhancedBackgroundWorker(options: UseEnhancedBackgroundWorker
     }
   }, [onExpansionError]);
 
+  useEffect(() => {
+    logger.debug("worker", "Setting up enhanced worker event listeners");
+
+    const workerReadyId = workerEventBus.listen(WorkerEventType.WORKER_READY, (payload: unknown) => {
+      if (payload && typeof payload === "object" && "workerType" in payload && payload.workerType === "force-animation") {
+        logger.debug("worker", "Enhanced worker ready via BroadcastChannel", payload);
+      }
+    });
+
+    const forceProgressId = workerEventBus.listen(WorkerEventType.FORCE_SIMULATION_PROGRESS, handleForceSimulationProgress);
+    const forceCompleteId = workerEventBus.listen(WorkerEventType.FORCE_SIMULATION_COMPLETE, handleForceSimulationComplete);
+    const forceStoppedId = workerEventBus.listen(WorkerEventType.FORCE_SIMULATION_STOPPED, handleForceSimulationStopped);
+    const forceErrorId = workerEventBus.listen(WorkerEventType.FORCE_SIMULATION_ERROR, handleForceSimulationError);
+    const dataProgressId = workerEventBus.listen(WorkerEventType.DATA_FETCH_PROGRESS, handleDataFetchProgress);
+    const dataCompleteId = workerEventBus.listen(WorkerEventType.DATA_FETCH_COMPLETE, handleDataFetchComplete);
+    const dataErrorId = workerEventBus.listen(WorkerEventType.DATA_FETCH_ERROR, handleDataFetchError);
+
+    eventListenerIds.current = [
+      workerReadyId,
+      forceProgressId,
+      forceCompleteId,
+      forceStoppedId,
+      forceErrorId,
+      dataProgressId,
+      dataCompleteId,
+      dataErrorId
+    ];
+
+    return () => {
+      eventListenerIds.current.forEach(id => {
+        workerEventBus.removeListener(id);
+      });
+      eventListenerIds.current = [];
+
+      if (progressThrottleRef.current) {
+        clearTimeout(progressThrottleRef.current);
+        progressThrottleRef.current = null;
+      }
+    };
+  }, [
+    handleForceSimulationProgress,
+    handleForceSimulationComplete,
+    handleForceSimulationStopped,
+    handleForceSimulationError,
+    handleDataFetchProgress,
+    handleDataFetchComplete,
+    handleDataFetchError
+  ]);
+
   // Enhanced animation control methods
   const startAnimation = useCallback((
     nodes: ForceSimulationNode[],
@@ -524,12 +505,10 @@ export function useEnhancedBackgroundWorker(options: UseEnhancedBackgroundWorker
 
     const requestId = postMessage({
       type: "FORCE_SIMULATION_START",
-      data: {
-        nodes,
-        links,
-        config,
-        pinnedNodes
-      }
+      nodes,
+      links,
+      config,
+      pinnedNodes: pinnedNodes ? Array.from(pinnedNodes) : undefined
     });
 
     logger.debug("worker", "Enhanced animation started", {
@@ -547,16 +526,14 @@ export function useEnhancedBackgroundWorker(options: UseEnhancedBackgroundWorker
     }
 
     postMessage({
-      type: "FORCE_SIMULATION_STOP",
-      data: {}
+      type: "FORCE_SIMULATION_STOP"
     });
   }, [postMessage]);
 
   const pauseAnimation = useCallback(() => {
     if (animationState.isRunning && !animationState.isPaused) {
       postMessage({
-        type: "FORCE_SIMULATION_PAUSE",
-        data: {}
+        type: "FORCE_SIMULATION_PAUSE"
       });
     }
   }, [animationState.isRunning, animationState.isPaused, postMessage]);
@@ -564,8 +541,7 @@ export function useEnhancedBackgroundWorker(options: UseEnhancedBackgroundWorker
   const resumeAnimation = useCallback(() => {
     if (animationState.isRunning && animationState.isPaused) {
       postMessage({
-        type: "FORCE_SIMULATION_RESUME",
-        data: {}
+        type: "FORCE_SIMULATION_RESUME"
       });
     }
   }, [animationState.isRunning, animationState.isPaused, postMessage]);
@@ -574,7 +550,7 @@ export function useEnhancedBackgroundWorker(options: UseEnhancedBackgroundWorker
     if (animationState.isRunning) {
       postMessage({
         type: "FORCE_SIMULATION_UPDATE_PARAMETERS",
-        data: { config }
+        config
       });
     }
   }, [animationState.isRunning, postMessage]);
@@ -598,7 +574,7 @@ export function useEnhancedBackgroundWorker(options: UseEnhancedBackgroundWorker
 
     const requestId = postMessage({
       type: "DATA_FETCH_EXPAND_NODE",
-      data: {
+      expandRequest: {
         nodeId,
         entityId,
         entityType,
@@ -622,7 +598,6 @@ export function useEnhancedBackgroundWorker(options: UseEnhancedBackgroundWorker
     animationState,
     nodePositions,
     performanceMetrics,
-    workerStats,
     isWorkerReady: isWorkerAvailable(),
     isLoading,
     error: workerError,

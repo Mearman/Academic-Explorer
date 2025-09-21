@@ -149,7 +149,7 @@ function initializeWorker() {
 const BaseWorkerRequestSchema = z.object({
   type: z.string(),
   requestId: z.string().optional(),
-});
+}).catchall(z.unknown());
 
 const ForceSimulationStartRequestSchema = z.object({
   type: z.literal("FORCE_SIMULATION_START"),
