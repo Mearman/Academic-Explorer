@@ -2,6 +2,8 @@
 
 Academic Explorer is a client-side web application that provides access to academic literature data through the [OpenAlex API](https://docs.openalex.org/). The application allows users to search, browse, and visualize academic works, authors, institutions, and other scholarly entities. Built as a single-page application using React and Vite, it operates entirely in the browser without requiring a backend server.
 
+The application features advanced force-directed graph visualizations, comprehensive search capabilities, and real-time data exploration tools.
+
 [OpenAlex](https://openalex.org/) is a free and open catalog of the world's scholarly papers, authors, institutions, and more.
 
 **[View the live application ->](https://mearman.github.io/Academic-Explorer/#/authors/A5017898742)**
