@@ -242,14 +242,19 @@ export class CachedOpenAlexClient extends OpenAlexBaseClient {
       const cachedData = await this.cache.getEntityFields<T>(entityType, id, requestedFields);
 
       if (Object.keys(cachedData).length === requestedFields.length) {
-        // Complete cache hit
+        // Complete cache hit - all requested fields are present
         this.requestMetrics.cacheHits++;
         logger.debug("cache", "Complete cache hit for single entity", {
           entityType,
           entityId: id,
           fields: requestedFields
         });
-        return cachedData as T;
+        // All requested fields are present in cache
+        if (this.isCompleteEntity<T>(cachedData, requestedFields)) {
+          return cachedData;
+        }
+        // This should never happen given the outer condition, but TypeScript requires it
+        throw new Error("Cache data validation failed despite field count check");
       }
 
       // Determine missing fields for surgical request
@@ -288,8 +293,8 @@ export class CachedOpenAlexClient extends OpenAlexBaseClient {
         );
       }
 
-      // Store new data in cache
-      await this.cache.putEntityFields(entityType, id, apiData as Partial<unknown>);
+      // Store new data in cache (T extends Partial<T>, so this is safe)
+      await this.cache.putEntityFields<T>(entityType, id, apiData);
 
       // Combine cached and API data
       const combinedData = { ...cachedData, ...apiData };
@@ -540,8 +545,9 @@ export class CachedOpenAlexClient extends OpenAlexBaseClient {
       // Update entity field accumulator
       for (const result of results) {
         const entityId = this.extractEntityId(result);
-        if (entityId) {
-          await this.cache.putEntityFields(entityType, entityId, result as Partial<unknown>);
+        if (entityId && this.hasId(result)) {
+          // result is guaranteed to be an object with id property
+          await this.cache.putEntityFields(entityType, entityId, result);
         }
       }
 
@@ -730,12 +736,12 @@ export class CachedOpenAlexClient extends OpenAlexBaseClient {
   /**
    * Enhanced API with static data fallback
    */
-  private async getEntityWithFallback<T>(
+  private async getEntityWithFallback(
     id: string,
     entityType: EntityType,
     params?: QueryParams,
-    apiCall?: () => Promise<T>
-  ): Promise<T> {
+    apiCall?: () => Promise<unknown>
+  ): Promise<unknown> {
     // Try static data first for simple requests
     if (!params || Object.keys(params).length === 0) {
       const staticType = toStaticEntityType(entityType);
@@ -745,9 +751,9 @@ export class CachedOpenAlexClient extends OpenAlexBaseClient {
             entityType: staticType,
             entityId: cleanOpenAlexId(id)
           });
-          if (staticEntity && typeof staticEntity === "object" && "id" in staticEntity) {
+          if (this.isValidStaticEntity(staticEntity)) {
             logger.debug("static-data", "Served entity from static data", { id, entityType });
-            return staticEntity as T;
+            return staticEntity;
           }
         } catch {
           logger.debug("static-data", "Static data not available, falling back to API", { id, entityType });
@@ -828,13 +834,12 @@ export class CachedOpenAlexClient extends OpenAlexBaseClient {
     }
 
     // Type guard to ensure entityType is valid
-    const validEntityTypes: EntityType[] = ["works", "authors", "sources", "institutions", "topics", "publishers", "funders"];
-    if (!validEntityTypes.includes(entityType as EntityType)) {
+    if (!this.isValidEntityType(entityType)) {
       throw new Error(`Invalid entity type: ${entityType}`);
     }
 
-    // After validation, we know entityType is valid
-    const validatedEntityType: EntityType = entityType as EntityType;
+    // After validation, we know entityType is a valid EntityType
+    const validatedEntityType: EntityType = entityType;
 
     return this.getEntityWithFallback(
       id,
@@ -873,13 +878,12 @@ export class CachedOpenAlexClient extends OpenAlexBaseClient {
    */
   async hasStaticEntity(entityType: string, entityId: string): Promise<boolean> {
     // Type guard to ensure entityType is valid
-    const validEntityTypes: EntityType[] = ["works", "authors", "sources", "institutions", "topics", "publishers", "funders"];
-    if (!validEntityTypes.includes(entityType as EntityType)) {
+    if (!this.isValidEntityType(entityType)) {
       return false;
     }
 
-    // After validation, we know entityType is valid
-    const validatedEntityType: EntityType = entityType as EntityType;
+    // After validation, we know entityType is a valid EntityType
+    const validatedEntityType: EntityType = entityType;
     const staticType = toStaticEntityType(validatedEntityType);
     if (!staticType) {
       return false;
@@ -921,6 +925,33 @@ export class CachedOpenAlexClient extends OpenAlexBaseClient {
    */
   getUnderlyingClient(): OpenAlexClient {
     return this.client;
+  }
+
+  /**
+   * Type guard to check if a partial entity has all required fields
+   */
+  private isCompleteEntity<T>(partialEntity: Partial<T>, requiredFields: string[]): partialEntity is T {
+    return requiredFields.every(field => field in partialEntity);
+  }
+
+  /**
+   * Check if static entity data has the basic structure expected for OpenAlex entities
+   */
+  private isValidStaticEntity(entity: unknown): entity is Record<string, unknown> & { id: string } {
+    return this.hasId(entity) && typeof entity.id === "string";
+  }
+
+  /**
+   * Type guard to check if a string is a valid EntityType
+   */
+  private isValidEntityType(entityType: string): entityType is EntityType {
+    return entityType === "works" ||
+           entityType === "authors" ||
+           entityType === "sources" ||
+           entityType === "institutions" ||
+           entityType === "topics" ||
+           entityType === "publishers" ||
+           entityType === "funders";
   }
 
   /**

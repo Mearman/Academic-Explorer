@@ -484,16 +484,17 @@ export class SyntheticResponseGenerator {
       if (allCachedFields.length > 0) {
         const { data } = await this.tierManager.getEntityFields(entityType, entityId, allCachedFields);
         if (Object.keys(data).length > 0 && cachedData[entityType]) {
-          // Convert to EntityFieldData format if needed
-          cachedData[entityType][entityId] = {
+          // Convert to EntityFieldData format
+          const entityFieldData: EntityFieldData = {
             ...data,
             _metadata: {
               lastUpdated: new Date().toISOString(),
               ttl: 24 * 60 * 60 * 1000, // 24 hours
               fieldSources: {},
-              tier: "memory" as const
+              tier: StorageTier.MEMORY
             }
-          } as EntityFieldData;
+          };
+          cachedData[entityType][entityId] = entityFieldData;
         }
       }
     }
@@ -525,8 +526,8 @@ export class SyntheticResponseGenerator {
   }): Promise<void> {
     for (const result of apiResults) {
       const entityId = this.extractEntityId(result);
-      if (entityId) {
-        await this.fieldAccumulator.putEntityFields(entityType, entityId, result as Partial<unknown>);
+      if (entityId && this.isValidEntityData(result)) {
+        await this.fieldAccumulator.putEntityFields(entityType, entityId, result);
       }
     }
   }
@@ -542,6 +543,10 @@ export class SyntheticResponseGenerator {
 
   private isEntityWithId(entity: unknown): entity is Record<string, unknown> & { id: unknown } {
     return typeof entity === "object" && entity !== null && "id" in entity;
+  }
+
+  private isValidEntityData(entity: unknown): entity is Record<string, unknown> {
+    return typeof entity === "object" && entity !== null;
   }
 
   private extractEntityIdFromParams(params: QueryParams): string | null {
