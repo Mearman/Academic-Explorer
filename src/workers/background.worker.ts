@@ -18,7 +18,7 @@ import { eventBridge } from "@/lib/graph/events/event-bridge";
 import { WorkerEventType } from "@/lib/graph/events/types";
 import { logger } from "@/lib/logger";
 import { CustomForceManager } from "../lib/graph/custom-forces/manager";
-import type { EnhancedSimulationNode, CustomForceType } from "../lib/graph/custom-forces/types";
+import type { EnhancedSimulationNode } from "../lib/graph/custom-forces/types";
 import { createUnifiedOpenAlexClient } from "@/lib/openalex/cached-client";
 import type { ExpansionOptions } from "@/lib/entities";
 import type { EntityType, GraphNode, GraphEdge } from "@/lib/graph/types";
@@ -60,12 +60,11 @@ interface AnimationConfig {
 }
 
 // Import the proper CustomForce type
-import type { CustomForce } from "../lib/graph/custom-forces/types";
+import type { CustomForce, CustomForceConfig, CustomForceType } from "../lib/graph/custom-forces/types";
 
 // Type for adding a new custom force (id is optional, will be generated)
-type AddCustomForceData = Omit<CustomForce, "id" | "config"> & {
+type AddCustomForceData = Omit<CustomForce, "id"> & {
   id?: string;
-  config: unknown; // Allow any config object, will be validated by manager
 };
 
 
@@ -227,6 +226,15 @@ const timerAPI = createTimerAPI();
 function isValidCustomForceType(type: string): type is CustomForceType {
 	return ["radial", "property-x", "property-y", "property-both", "cluster", "repulsion", "attraction", "orbit"].includes(type);
 }
+
+function isValidCustomForceConfig(config: unknown): config is CustomForceConfig {
+	if (typeof config !== "object" || config === null) return false;
+	if (!("type" in config) || typeof config.type !== "string") return false;
+
+	// Basic validation - each config type must have a 'type' property
+	// The CustomForceManager will do more detailed validation
+	return isValidCustomForceType(config.type);
+}
 function isForceSimulationStartPayload(data: unknown): data is {
 	nodes: WorkerNode[];
 	links: WorkerLink[];
@@ -310,9 +318,8 @@ eventBridge.registerMessageHandler("CUSTOM_FORCE_ADD", (data) => {
 			"config" in forceData &&
 			typeof forceData.name === "string" &&
 			typeof forceData.type === "string" &&
-			typeof forceData.config === "object" &&
-			forceData.config !== null &&
-			isValidCustomForceType(forceData.type)) {
+			isValidCustomForceType(forceData.type) &&
+			isValidCustomForceConfig(forceData.config)) {
 			// We've verified this has the required properties for AddCustomForceData
 			const addData: AddCustomForceData = {
 				name: forceData.name,
@@ -1003,7 +1010,7 @@ try {
 		workerId: "force-animation-worker",
 		workerType: "force-animation" as const,
 		timestamp: Date.now()
-	}); // Remove "main" target to broadcast to all contexts
+	}, "main"); // Target main context specifically like other worker events
 	logger.debug("worker", "WORKER_READY event emitted successfully");
 } catch (error) {
 	logger.error("worker", "Failed to emit WORKER_READY event", { error });
