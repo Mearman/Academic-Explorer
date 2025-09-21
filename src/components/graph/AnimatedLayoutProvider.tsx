@@ -10,7 +10,7 @@ import { useAnimatedGraphStore, useRestartRequested, useClearRestartRequest } fr
 import { logger } from "@/lib/logger";
 import { AnimatedLayoutContext } from "./animated-layout-context";
 import { useReactFlow } from "@xyflow/react";
-import { eventBridge } from "@/lib/graph/events/event-bridge";
+import { broadcastEventBus } from "@/lib/graph/events/broadcast-event-bus";
 
 interface AnimatedLayoutProviderProps {
   children: React.ReactNode;
@@ -51,7 +51,6 @@ export const AnimatedLayoutProvider: React.FC<AnimatedLayoutProviderProps> = ({
 		alpha,
 		iteration,
 		fps,
-		performanceStats,
 		isWorkerReady,
 		applyLayout,
 		stopLayout,
@@ -166,8 +165,8 @@ export const AnimatedLayoutProvider: React.FC<AnimatedLayoutProviderProps> = ({
 			return;
 		}
 
-		const handleGraphEvent = (message: { eventType: string; payload?: unknown }) => {
-			const { eventType } = message;
+		const handleGraphEvent = (event: { type: string; payload?: unknown }) => {
+			const { type: eventType } = event;
 
 			// Only trigger on significant node/edge addition events
 			if (
@@ -191,14 +190,14 @@ export const AnimatedLayoutProvider: React.FC<AnimatedLayoutProviderProps> = ({
 			}
 		};
 
-		const handlerId = `auto-trigger-${Date.now().toString()}`;
-		eventBridge.registerMessageHandler(handlerId, handleGraphEvent);
+		const eventType = "graph:auto-trigger";
+		// Use raw event bus for custom event types
+		const listenerId = broadcastEventBus.listen(eventType, handleGraphEvent);
 
 		return () => {
-			eventBridge.unregisterMessageHandler(handlerId);
+			broadcastEventBus.removeListener(listenerId);
 		};
 	}, [autoStartOnNodeChange, enabled, useAnimation, isWorkerReady, isRunning, applyLayout, reheatLayout]);
-
 	// Initial trigger: Start animation when page loads with existing nodes
 	useEffect(() => {
 		if (!enabled || !useAnimation || !isWorkerReady || isRunning) {
@@ -215,6 +214,8 @@ export const AnimatedLayoutProvider: React.FC<AnimatedLayoutProviderProps> = ({
 		}
 	}, [enabled, useAnimation, isWorkerReady, isRunning, getNodes, applyLayout]);
 
+	// No listener here - moved to GraphNavigation for store access
+
 	// Create stable context value to prevent unnecessary re-renders
 	const contextValue = useMemo(() => ({
 		// State
@@ -226,7 +227,12 @@ export const AnimatedLayoutProvider: React.FC<AnimatedLayoutProviderProps> = ({
 		alpha,
 		iteration,
 		fps,
-		performanceStats,
+		performanceStats: {
+			averageFPS: fps || 0,
+			minFPS: fps || 0,
+			maxFPS: fps || 0,
+			frameCount: iteration || 0,
+		},
 		useAnimation,
 
 		// Actions
@@ -252,7 +258,6 @@ export const AnimatedLayoutProvider: React.FC<AnimatedLayoutProviderProps> = ({
 		alpha,
 		iteration,
 		fps,
-		performanceStats,
 		useAnimation,
 		applyLayout,
 		restartLayout,

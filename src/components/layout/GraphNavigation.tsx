@@ -40,7 +40,10 @@ import { NodeContextMenu } from "@/components/layout/NodeContextMenu";
 import { GraphToolbar } from "@/components/graph/GraphToolbar";
 import { AnimatedGraphControls } from "@/components/graph/AnimatedGraphControls";
 import { logger } from "@/lib/logger";
+import { workerEventBus } from "@/lib/graph/events/broadcast-event-bus";
+import { WorkerEventType } from "@/lib/graph/events/types";
 import { FIT_VIEW_PRESETS } from "@/lib/graph/constants";
+import { z } from "zod";
 
 import "@xyflow/react/dist/style.css";
 
@@ -136,7 +139,7 @@ const GraphNavigationInner: React.FC<GraphNavigationProps> = ({ className, style
 	// Center the viewport on a node without moving the node's position
 	const lastCenterOperationRef = useRef<{ nodeId: string; timestamp: number }>({ nodeId: "", timestamp: 0 });
 
-	const centerOnNode = useCallback(({ nodeId, currentPosition }: { nodeId: string; currentPosition?: { x: number; y: number } }) => {
+	const centerOnNode = useCallback((nodeId: string, currentPosition?: { x: number; y: number }) => {
 		// Throttle centering operations to prevent spam
 		const now = Date.now();
 		if (lastCenterOperationRef.current.nodeId === nodeId &&
@@ -484,6 +487,11 @@ const GraphNavigationInner: React.FC<GraphNavigationProps> = ({ className, style
 				removedEdges: Array.from(removedEdgeIds)
 			}, "GraphNavigation");
 
+			// Sync full state to ensure positions are updated in UI
+			const { nodes: xyNodes, edges: xyEdges } = providerRef.current.getXYFlowData();
+			setNodes(xyNodes);
+			setEdges(xyEdges);
+
 			// Restart layout simulation when new nodes are added to include them in positioning
 			if (newNodeIds.size) {
 				// Add a small delay to ensure React state updates are complete
@@ -496,10 +504,104 @@ const GraphNavigationInner: React.FC<GraphNavigationProps> = ({ className, style
 			}
 		}
 
+		// Sync positions from store to XYFlow nodes
+		const positionChanges: NodeChange<XYNode>[] = currentVisibleNodes.map((node): NodeChange<XYNode> => ({
+			id: node.id,
+			type: "position" as const,
+			position: node.position,
+		}));
+
+		if (positionChanges.length > 0) {
+			setNodes(nds => applyNodeChanges(positionChanges, nds));
+			logger.debug("graph", "Synced positions from store to XYFlow", { syncedCount: positionChanges.length }, "GraphNavigation");
+		}
+
 		// Update refs for next comparison
 		previousNodeIdsRef.current = currentNodeIds;
 		previousEdgeIdsRef.current = currentEdgeIds;
 	}, [rawNodesMap, rawEdgesMap, visibleEntityTypes, visibleEdgeTypes, setNodes, setEdges, storeNodes, storeEdges]);
+
+	// Consolidated listener for worker position updates: apply to both XYFlow and store
+	useEffect(() => {
+		// Register listener for worker position updates
+
+		const handleProgress = (message: unknown) => {
+			logger.debug("graph", "FORCE_SIMULATION_PROGRESS received", { message }); // Log payload for validation
+
+			if (
+				typeof message === "object" &&
+				message !== null &&
+				"eventType" in message &&
+				message.eventType === WorkerEventType.FORCE_SIMULATION_PROGRESS &&
+				"payload" in message &&
+				message.payload !== null &&
+				typeof message.payload === "object" &&
+				"messageType" in message.payload &&
+				message.payload.messageType === "tick" &&
+				"positions" in message.payload &&
+				Array.isArray(message.payload.positions)
+			) {
+				const positions = message.payload.positions;
+				if (!Array.isArray(positions)) return;
+				logger.debug("graph", "Valid tick payload", { count: positions.length, sample: positions.slice(0, 3) });
+
+				// Zod schema for position validation
+				const PositionSchema = z.object({
+					id: z.string().min(1),
+					x: z.number(),
+					y: z.number(),
+				});
+
+				// Validate positions using zod
+				const validPositions = positions.filter((pos) => {
+					const result = PositionSchema.safeParse(pos);
+					return result.success;
+				}).map((pos) => PositionSchema.parse(pos));
+
+				if (validPositions.length !== positions.length) {
+					logger.warn("graph", "Invalid positions filtered", {
+						original: positions.length,
+						valid: validPositions.length
+					});
+				}
+
+				if (validPositions.length > 0) {
+					// Update XYFlow nodes
+					const positionChanges: NodeChange<XYNode>[] = validPositions.map(pos => ({
+						id: pos.id,
+						type: "position" as const,
+						position: { x: pos.x, y: pos.y },
+					}));
+
+					const newNodes = applyNodeChanges(positionChanges, nodes);
+					setNodes(newNodes);
+					logger.debug("graph", "Applied position changes to XYFlow", {
+						applied: positionChanges.length,
+						newNodesLength: newNodes.length
+					});
+
+					// Update graph store
+					const store = useGraphStore.getState();
+					validPositions.forEach((pos) => {
+						if (store.nodes[pos.id]) {
+							store.updateNode(pos.id, { position: { x: pos.x, y: pos.y } });
+						}
+					});
+					logger.debug("graph", "Updated positions in graph store", { count: validPositions.length });
+				}
+			} else {
+				logger.warn("graph", "Invalid FORCE_SIMULATION_PROGRESS payload", { message });
+			}
+		};
+
+		const listenerId = workerEventBus.listen(WorkerEventType.FORCE_SIMULATION_PROGRESS, handleProgress);
+		logger.debug("graph", "Registered consolidated FORCE_SIMULATION_PROGRESS handler", { listenerId });
+
+		return () => {
+			workerEventBus.removeListener(listenerId);
+			logger.debug("graph", "Unregistered FORCE_SIMULATION_PROGRESS handler", { listenerId });
+		};
+	}, [setNodes, nodes]); // Depend on nodes to re-apply if needed
 
 	// Combined URL state synchronization and browser history navigation
 	const lastHashProcessedRef = useRef<string>("");
@@ -555,7 +657,7 @@ const GraphNavigationInner: React.FC<GraphNavigationProps> = ({ className, style
 						setPreviewEntity(matchingNode.entityId);
 
 						// Smoothly animate the selected node to the center of the viewport
-						centerOnNode({ nodeId: matchingNode.id, currentPosition: matchingNode.position });
+						centerOnNode(matchingNode.id, matchingNode.position);
 
 						logger.debug("graph", "Selected and auto-centered entity from hash URL", {
 							currentHash,
