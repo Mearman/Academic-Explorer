@@ -27,12 +27,66 @@ describe("AuthorEntity", () => {
 	beforeEach(() => {
 		vi.clearAllMocks();
 
-		// Create comprehensive mock client
+		// Create comprehensive mock client that matches the CachedOpenAlexClient structure
 		mockClient = {
 			getEntity: vi.fn(),
 			getAuthor: vi.fn(),
 			getWorks: vi.fn(),
 			search: vi.fn(),
+			client: {
+				works: {
+					getWorks: vi.fn(),
+					search: vi.fn(),
+					get: vi.fn(),
+					getMultiple: vi.fn(),
+					stream: vi.fn()
+				},
+				authors: {
+					getAuthor: vi.fn(),
+					getAuthors: vi.fn(),
+					search: vi.fn(),
+					get: vi.fn(),
+					getMultiple: vi.fn(),
+					stream: vi.fn(),
+					getWorks: vi.fn()
+				},
+				institutions: {
+					search: vi.fn(),
+					get: vi.fn(),
+					getMultiple: vi.fn(),
+					stream: vi.fn()
+				},
+				sources: {
+					search: vi.fn(),
+					get: vi.fn(),
+					getMultiple: vi.fn(),
+					stream: vi.fn()
+				},
+				topics: {
+					search: vi.fn(),
+					get: vi.fn(),
+					getMultiple: vi.fn(),
+					stream: vi.fn()
+				},
+				publishers: {
+					search: vi.fn(),
+					get: vi.fn(),
+					getMultiple: vi.fn(),
+					stream: vi.fn()
+				},
+				funders: {
+					search: vi.fn(),
+					get: vi.fn(),
+					getMultiple: vi.fn(),
+					stream: vi.fn()
+				},
+				concepts: {
+					search: vi.fn(),
+					get: vi.fn(),
+					getMultiple: vi.fn(),
+					stream: vi.fn()
+				}
+			},
 			works: {
 				search: vi.fn(),
 				get: vi.fn(),
@@ -161,14 +215,14 @@ describe("AuthorEntity", () => {
 				]
 			} as Author;
 
-			mockClient.getAuthor.mockResolvedValue(mockAuthor);
-			mockClient.getWorks.mockResolvedValue(mockWorksResponse);
+			mockClient.client.authors.getAuthor.mockResolvedValue(mockAuthor);
+			mockClient.client.works.getWorks.mockResolvedValue(mockWorksResponse);
 
 			const result = await authorEntity.expand(context, options);
 
 			expect(result.nodes).toHaveLength(3); // 2 works + 1 institution from author affiliations
 			expect(result.edges).toHaveLength(3); // 2 author-work edges + 1 author-institution edge
-			expect(mockClient.getWorks).toHaveBeenCalledWith({
+			expect(mockClient.client.works.getWorks).toHaveBeenCalledWith({
 				filter: `authorships.author.id:${entityId}`,
 				page: 1,
 				per_page: 200,
@@ -202,8 +256,8 @@ describe("AuthorEntity", () => {
 				]
 			} as Author;
 
-			mockClient.getAuthor.mockResolvedValue(mockAuthor);
-			mockClient.getWorks.mockResolvedValue(emptyResponse);
+			mockClient.client.authors.getAuthor.mockResolvedValue(mockAuthor);
+			mockClient.client.works.getWorks.mockResolvedValue(emptyResponse);
 
 			const result = await authorEntity.expand(context, options);
 
@@ -228,8 +282,8 @@ describe("AuthorEntity", () => {
 					]
 				} as Author;
 
-				mockClient.getAuthor.mockResolvedValue(mockAuthor);
-				mockClient.getWorks.mockResolvedValue(undefined as any);
+				mockClient.client.authors.getAuthor.mockResolvedValue(mockAuthor);
+				mockClient.client.works.getWorks.mockResolvedValue(undefined as any);
 
 				const result = await authorEntity.expand(context, options);
 
@@ -272,8 +326,8 @@ describe("AuthorEntity", () => {
 					]
 				} as Author;
 
-				mockClient.getAuthor.mockResolvedValue(mockAuthor);
-				mockClient.getWorks.mockResolvedValue(responseWithoutResults as any);
+				mockClient.client.authors.getAuthor.mockResolvedValue(mockAuthor);
+				mockClient.client.works.getWorks.mockResolvedValue(responseWithoutResults as any);
 
 				const result = await authorEntity.expand(context, options);
 
@@ -302,7 +356,7 @@ describe("AuthorEntity", () => {
 					results: null
 				};
 
-				mockClient.getWorks.mockResolvedValue(responseWithNullResults as any);
+				mockClient.client.works.getWorks.mockResolvedValue(responseWithNullResults as any);
 
 				const result = await authorEntity.expand(context, options);
 
@@ -320,10 +374,10 @@ describe("AuthorEntity", () => {
 					display_name: "Test Author",
 					affiliations: []
 				} as Author;
-				mockClient.getAuthor.mockResolvedValue(mockAuthor);
+				mockClient.client.authors.getAuthor.mockResolvedValue(mockAuthor);
 
 				// Mock getWorks to fail
-				mockClient.getWorks.mockRejectedValue(apiError);
+				mockClient.client.works.getWorks.mockRejectedValue(apiError);
 
 				const result = await authorEntity.expand(context, options);
 
@@ -341,10 +395,10 @@ describe("AuthorEntity", () => {
 					display_name: "Test Author",
 					affiliations: []
 				} as Author;
-				mockClient.getAuthor.mockResolvedValue(mockAuthor);
+				mockClient.client.authors.getAuthor.mockResolvedValue(mockAuthor);
 
 				// Mock getWorks to fail with rate limit error
-				mockClient.getWorks.mockRejectedValue(rateLimitError);
+				mockClient.client.works.getWorks.mockRejectedValue(rateLimitError);
 
 				const result = await authorEntity.expand(context, options);
 
