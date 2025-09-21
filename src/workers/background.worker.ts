@@ -172,52 +172,41 @@ interface TimerAPI {
 
 // Create timer API abstraction
 function createTimerAPI(): TimerAPI {
-	if ("requestAnimationFrame" in self && "cancelAnimationFrame" in self) {
-		return {
-			scheduleFrame: (callback) => self.requestAnimationFrame(callback),
-			cancelFrame: (id) => {
-				if (typeof id === "number") {
-					self.cancelAnimationFrame(id);
-				}
-			}
-		};
-	}
+        const globalScope: typeof globalThis & {
+                requestAnimationFrame?: typeof requestAnimationFrame;
+                cancelAnimationFrame?: typeof cancelAnimationFrame;
+        } = globalThis;
 
-	// Fallback to setTimeout/clearTimeout with Worker context
-	// Use a simple fallback without complex type checking
-	const workerGlobal = {
-		setTimeout: ({ callback: _callback, ms: _ms }: { callback: () => void; ms: number }): number => {
-			// Try to use worker's setTimeout if available
-			if ("setTimeout" in self && typeof self.setTimeout === "function") {
-				// Use a basic timeout fallback
-				return 1; // Return a dummy ID
-			}
-			return 0;
-		},
-		clearTimeout: (_id: number): void => {
-			// Try to use worker's clearTimeout if available
-			if ("clearTimeout" in self && typeof self.clearTimeout === "function") {
-				// No-op for simplicity
-			}
-		}
-	};
+        if (typeof globalScope.requestAnimationFrame === "function" &&
+                typeof globalScope.cancelAnimationFrame === "function") {
+                return {
+                        scheduleFrame: (callback) => globalScope.requestAnimationFrame(callback),
+                        cancelFrame: (id) => {
+                                if (typeof id === "number") {
+                                        globalScope.cancelAnimationFrame(id);
+                                }
+                        }
+                };
+        }
 
-	if (workerGlobal) {
-		return {
-			scheduleFrame: (callback) => workerGlobal.setTimeout({ callback, ms: 16 }),
-			cancelFrame: (id) => {
-				if (typeof id === "number") {
-					workerGlobal.clearTimeout(id);
-				}
-			}
-		};
-	}
+        // Fallback to setTimeout/clearTimeout with Worker context
+        if (typeof globalScope.setTimeout === "function" &&
+                typeof globalScope.clearTimeout === "function") {
+                return {
+                        scheduleFrame: (callback) => globalScope.setTimeout(callback, 16),
+                        cancelFrame: (id) => {
+                                if (typeof id === "number") {
+                                        globalScope.clearTimeout(id);
+                                }
+                        }
+                };
+        }
 
-	// No-op fallback
-	return {
-		scheduleFrame: () => 0,
-		cancelFrame: () => {}
-	};
+        // No-op fallback
+        return {
+                scheduleFrame: () => 0,
+                cancelFrame: () => {}
+        };
 }
 
 const timerAPI = createTimerAPI();
