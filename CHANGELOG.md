@@ -1,3 +1,76 @@
+# [8.0.0](https://github.com/Mearman/Academic-Explorer/compare/v7.1.0...v8.0.0) (2025-09-21)
+
+
+### Bug Fixes
+
+* add provider context to BackgroundWorker component tests ([29b3940](https://github.com/Mearman/Academic-Explorer/commit/29b39408d724986bf5cfa42220406159d89a3ad5))
+* **cache:** remove unused type parameters and improve type safety in synthetic cache types ([dbda517](https://github.com/Mearman/Academic-Explorer/commit/dbda517773dc5ffa4c5e2d5c8bdd5194ba8ecebd))
+* **cache:** resolve linting errors in collection result mapper ([9d79297](https://github.com/Mearman/Academic-Explorer/commit/9d792973292d03c425e4e4864412a24e8ed1d1a2))
+* **cache:** resolve linting errors in entity field accumulator ([52598de](https://github.com/Mearman/Academic-Explorer/commit/52598debb843a3a695b120a68802e4a187e29c21))
+* **cache:** resolve linting errors in storage tier manager ([ab5e670](https://github.com/Mearman/Academic-Explorer/commit/ab5e670415123e7858ec76f4eeab73c8e5d73519))
+* **cache:** resolve linting errors in synthetic cache layer ([b6b02bf](https://github.com/Mearman/Academic-Explorer/commit/b6b02bf684331c17e41055505efb7da335ce5b7e))
+* **cache:** resolve linting errors in synthetic response generator ([4502b6e](https://github.com/Mearman/Academic-Explorer/commit/4502b6e853a948044fe7f9d574dd7ab1e9dd7834))
+* **cache:** resolve Promise return types and interface compliance ([e97c0bb](https://github.com/Mearman/Academic-Explorer/commit/e97c0bbea7a0b4b3f81b510b6a37c6a50159fb20))
+* **cache:** update synthetic cache exports with improved type safety ([a34e189](https://github.com/Mearman/Academic-Explorer/commit/a34e1899f72e8205018aeb0053e10c09918971ae))
+* **cache:** use plural entity types throughout cache configuration ([f013ce6](https://github.com/Mearman/Academic-Explorer/commit/f013ce63fa7775ff409024b03122f79866197b50))
+* **cli:** improve cache stats validation and error handling ([87d2929](https://github.com/Mearman/Academic-Explorer/commit/87d29293ba75af8ea0aa24d3f979dba3a97dea5e))
+* **cli:** resolve linting errors in OpenAlex CLI components ([0c0803c](https://github.com/Mearman/Academic-Explorer/commit/0c0803c653dd3bf043204ce1540250d3fb36e2cb))
+* **cli:** resolve TypeScript errors and improve type safety ([233e01f](https://github.com/Mearman/Academic-Explorer/commit/233e01f1d915c85c8a4a717e5a77c246748656ee))
+* correct AuthorEntity test mock structure to match CachedOpenAlexClient ([141c47d](https://github.com/Mearman/Academic-Explorer/commit/141c47d7183763b7ff9fdb19c53bddf3c8093e9d))
+* correct GraphDataService test mocks to match implementation ([6f79ca2](https://github.com/Mearman/Academic-Explorer/commit/6f79ca2d4f4d1bba92511ac324413eaa9f457ad6))
+* correct integration test mocks and remove unused imports ([7d2adbf](https://github.com/Mearman/Academic-Explorer/commit/7d2adbf150ec535868a9e9fe4f8724949de0bd82))
+* eliminate all type assertions to improve type safety ([ddbe8d0](https://github.com/Mearman/Academic-Explorer/commit/ddbe8d083dd5c16da7df89b65c75ca2bdb664299))
+* **events:** silence EventBridge validation warnings for non-bridge messages ([916169e](https://github.com/Mearman/Academic-Explorer/commit/916169e5b810d06bba1281737e1277a2f8d8c8a2))
+* **graph:** remove unreachable code in AnimatedGraphControls status text ([24a66a1](https://github.com/Mearman/Academic-Explorer/commit/24a66a1295f2ff06da9bc6ba3706d3991e656058))
+* **hooks:** filter EventBridge cross-context messages in force animation ([6f647df](https://github.com/Mearman/Academic-Explorer/commit/6f647df691091e5a7a700024b0a55a5058a77d29))
+* **hooks:** handle worker not ready gracefully in expandNode ([fcf7520](https://github.com/Mearman/Academic-Explorer/commit/fcf7520057505a43da2f95fc74e3bca511055197))
+* **hooks:** normalize entity types to plural in useOpenAlexQuery ([23a10e7](https://github.com/Mearman/Academic-Explorer/commit/23a10e75a88eb3714ce94cd94935577566ba0075))
+* **hooks:** update useRawEntityData for plural entity types ([aa89f16](https://github.com/Mearman/Academic-Explorer/commit/aa89f1617da568c97a13354b329a88b7d21376ec))
+* improve type safety in worker-singleton event handling ([7a9812b](https://github.com/Mearman/Academic-Explorer/commit/7a9812bd53878acec70624084c04cff8ab67a28f))
+* improve type safety in worker-singleton event handling ([88be83e](https://github.com/Mearman/Academic-Explorer/commit/88be83e8279d5dad0532bc4e524ac558c4f45bc6))
+* **openalex:** eliminate all type assertions and unsafe types in cached client ([b11288e](https://github.com/Mearman/Academic-Explorer/commit/b11288e3da322516327d7f1f0998716b1a4844ef))
+* **query-keys:** update entity query key functions for plural types ([cdb7334](https://github.com/Mearman/Academic-Explorer/commit/cdb733434059aa8134520c6c0560a4bb951bf489))
+* reduce ESLint errors from 28 to 12 by fixing critical issues ([0bb53cb](https://github.com/Mearman/Academic-Explorer/commit/0bb53cb53de02bcd5d37799c84444bf5e32db303))
+* resolve BackgroundWorkerProvider worker ready state sync issue ([30d3794](https://github.com/Mearman/Academic-Explorer/commit/30d3794ea6e577a9450ec5af9406cbf625700e79))
+* resolve ESLint type assertion errors in worker and contexts ([fbf71c6](https://github.com/Mearman/Academic-Explorer/commit/fbf71c6376bf031d1768d5c7f311e1a9a4cf9081))
+* resolve type imports and event targeting in background worker ([e927a74](https://github.com/Mearman/Academic-Explorer/commit/e927a74b179d3188b85adc51e25a5cd962f24440))
+* resolve TypeScript errors for CI pipeline ([d37c2b3](https://github.com/Mearman/Academic-Explorer/commit/d37c2b369513854e49e961a16281d5e54cf54e45))
+* restore type assertions in cached-client for CI compatibility ([2de9db5](https://github.com/Mearman/Academic-Explorer/commit/2de9db5039ad16765434d51825688c8f49aa7d3e))
+* **routing:** prevent infinite loops in AuthorRoute loading ([33cc065](https://github.com/Mearman/Academic-Explorer/commit/33cc065e1cd29b113030dda4ba58ad58d37cf381))
+* **tests:** update synthetic cache tests to match improved type safety ([098f88b](https://github.com/Mearman/Academic-Explorer/commit/098f88bca2ec358e7466e9cf59aa0b622f610e07))
+* **worker:** improve initialization timing and ready signal ([0814791](https://github.com/Mearman/Academic-Explorer/commit/0814791cf7ff5ad1c05affe5cdff931ecaece5de))
+* **worker:** remove legacy direct postMessage ready handler ([973210a](https://github.com/Mearman/Academic-Explorer/commit/973210acba19bf5d86416352acb29968a9544820))
+* **worker:** remove type assertion for OpenAlexEntity validation ([5b953f7](https://github.com/Mearman/Academic-Explorer/commit/5b953f7a3fe38ac533dd4259ce5fc4757e605212))
+* **worker:** resolve TypeScript and ESLint errors ([1586629](https://github.com/Mearman/Academic-Explorer/commit/15866291eb87ff70cc1a8557b568b0eb219fc733))
+* **workers:** filter EventBridge cross-context messages ([dc1a6b2](https://github.com/Mearman/Academic-Explorer/commit/dc1a6b237197d689fc923511c705de1b41abb3c9))
+
+
+### Code Refactoring
+
+* **workers:** remove deprecated worker architecture ([b18e8de](https://github.com/Mearman/Academic-Explorer/commit/b18e8deaf13a1046bb2ee32148121f877963fac2))
+
+
+### Features
+
+* add convenience methods to CachedOpenAlexClient for static data integration ([7dc3784](https://github.com/Mearman/Academic-Explorer/commit/7dc3784f4382d0616de408c0304d4fc84aeb0419))
+* **cache:** add synthetic response cache system with multi-tier storage ([e348bfc](https://github.com/Mearman/Academic-Explorer/commit/e348bfc9cf9409f97bd760bc71086001e8c3dc21))
+* **cli:** add synthetic cache support to OpenAlex CLI ([42b8f99](https://github.com/Mearman/Academic-Explorer/commit/42b8f9929b468f51bfb63387e5be83fee30c4c2b))
+* **graph:** add worker singleton to prevent multiple instances ([819533c](https://github.com/Mearman/Academic-Explorer/commit/819533cf7f359c934b695d3c9480d9ac08bb456f))
+* **hooks:** add direct message handling for worker ready/error signals ([6c7cf60](https://github.com/Mearman/Academic-Explorer/commit/6c7cf6074ebd4e4f22d390e70b9f72ff23e41efb))
+* **hooks:** improve graph expansion tracking and fix worker call ([89e5f1c](https://github.com/Mearman/Academic-Explorer/commit/89e5f1c47824530cadf2d6e8f707e432587425a2))
+* **hooks:** integrate synthetic cache into web app OpenAlex queries ([38d55bb](https://github.com/Mearman/Academic-Explorer/commit/38d55bbcdd3eb6c3aa74c78a18f9341c4dcedba2))
+* implement EventBridge and BackgroundWorker providers ([0b15bed](https://github.com/Mearman/Academic-Explorer/commit/0b15bed9a95bab6255eca065b12a67fc0f41ca2b))
+* **network:** detect worker requests via User-Agent header ([343caa9](https://github.com/Mearman/Academic-Explorer/commit/343caa907c26df3061aadcf990639783b927b0e8))
+* **openalex:** enhance CachedOpenAlexClient with unified functionality ([3f65a33](https://github.com/Mearman/Academic-Explorer/commit/3f65a3371b42e48ce23cbb6867d827c6863bd5e5))
+* **routes:** enhance author page loading with better logging and forced expansion ([0fd223b](https://github.com/Mearman/Academic-Explorer/commit/0fd223b34c129dfe3ceb786cfdc072435af8a08a))
+* **services:** improve node expansion state logging ([1c56ba7](https://github.com/Mearman/Academic-Explorer/commit/1c56ba7037c76c1957a12ecf20cc90787b328ff2))
+* **workers:** add unified background worker architecture ([13c55a5](https://github.com/Mearman/Academic-Explorer/commit/13c55a56279bb2a22e3dfa3abe51ac980deebf5e))
+
+
+### BREAKING CHANGES
+
+* **workers:** Removes deprecated worker hook APIs
+
 # [7.1.0](https://github.com/Mearman/Academic-Explorer/compare/v7.0.0...v7.1.0) (2025-09-20)
 
 
