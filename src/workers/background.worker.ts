@@ -396,6 +396,157 @@ eventBridge.registerMessageHandler("DATA_FETCH_CANCEL_EXPANSION", (data) => {
 });
 
 // Data fetching and expansion functions
+
+/**
+ * Expand relationships for an entity based on its type
+ */
+function expandEntityRelationships(
+	params: {
+		client: CachedOpenAlexClient;
+		entityType: string;
+		entityId: string;
+		entityData: Record<string, unknown>;
+		requestId: string;
+		nodeId: string;
+	}
+): {
+	nodes: Array<{ id: string; entityId: string; type: import("@/lib/graph/types").EntityType; label: string; data: unknown }>;
+	edges: Array<{ id: string; source: string; target: string; type: string; label: string; data: unknown }>;
+} {
+	const { entityType, entityData } = params;
+	const nodes: Array<{ id: string; entityId: string; type: import("@/lib/graph/types").EntityType; label: string; data: unknown }> = [];
+	const edges: Array<{ id: string; source: string; target: string; type: string; label: string; data: unknown }> = [];
+
+	try {
+		// For now, only extract relationships from the existing entity data to avoid API complexity in worker
+		// This is a safer approach that avoids the type safety issues with the OpenAlex client in worker context
+		switch (entityType) {
+			case "authors": {
+				// Get author's institutions from affiliations
+				if (entityData.affiliations && Array.isArray(entityData.affiliations)) {
+					for (const affiliation of entityData.affiliations.slice(0, 5)) {
+						if (typeof affiliation === "object" && affiliation !== null &&
+							"institution" in affiliation && typeof affiliation.institution === "object" &&
+							affiliation.institution !== null && "id" in affiliation.institution &&
+							"display_name" in affiliation.institution) {
+							const institution = affiliation.institution;
+							const institutionId = typeof institution.id === "string" ?
+								institution.id.replace("https://openalex.org/", "") : "";
+							const institutionName = typeof institution.display_name === "string" ?
+								institution.display_name : "Unknown Institution";
+
+							if (institutionId) {
+								nodes.push({
+									id: institutionId,
+									entityId: institutionId,
+									type: "institutions",
+									label: institutionName,
+									data: institution
+								});
+
+								edges.push({
+									id: `${params.entityId}-affiliated-${institutionId}`,
+									source: params.nodeId,
+									target: institutionId,
+									type: RelationType.AFFILIATED,
+									label: "affiliated with",
+									data: affiliation
+								});
+							}
+						}
+					}
+				}
+				break;
+			}
+
+			case "works": {
+				// For works, get authors from authorships
+				if (entityData.authorships && Array.isArray(entityData.authorships)) {
+					for (const authorship of entityData.authorships.slice(0, 5)) {
+						if (typeof authorship === "object" && authorship !== null &&
+							"author" in authorship && typeof authorship.author === "object" &&
+							authorship.author !== null && "id" in authorship.author &&
+							"display_name" in authorship.author) {
+							const author = authorship.author;
+							const authorId = typeof author.id === "string" ?
+								author.id.replace("https://openalex.org/", "") : "";
+							const authorName = typeof author.display_name === "string" ?
+								author.display_name : "Unknown Author";
+
+							if (authorId) {
+								nodes.push({
+									id: authorId,
+									entityId: authorId,
+									type: "authors",
+									label: authorName,
+									data: author
+								});
+
+								edges.push({
+									id: `${authorId}-authored-${params.entityId}`,
+									source: authorId,
+									target: params.nodeId,
+									type: RelationType.AUTHORED,
+									label: "authored",
+									data: authorship
+								});
+							}
+						}
+					}
+				}
+
+				// Get host venue/source
+				if (entityData.primary_location && typeof entityData.primary_location === "object" &&
+					entityData.primary_location !== null && "source" in entityData.primary_location &&
+					typeof entityData.primary_location.source === "object" &&
+					entityData.primary_location.source !== null && "id" in entityData.primary_location.source &&
+					"display_name" in entityData.primary_location.source) {
+					const source = entityData.primary_location.source;
+					const sourceId = typeof source.id === "string" ?
+						source.id.replace("https://openalex.org/", "") : "";
+					const sourceName = typeof source.display_name === "string" ?
+						source.display_name : "Unknown Source";
+
+					if (sourceId) {
+						nodes.push({
+							id: sourceId,
+							entityId: sourceId,
+							type: "sources",
+							label: sourceName,
+							data: source
+						});
+
+						edges.push({
+							id: `${params.entityId}-published_in-${sourceId}`,
+							source: params.nodeId,
+							target: sourceId,
+							type: RelationType.PUBLISHED_IN,
+							label: "published in",
+							data: entityData.primary_location
+						});
+					}
+				}
+				break;
+			}
+
+			default:
+				// For other entity types, no expansion for now
+				break;
+		}
+	} catch (error) {
+		// If expansion fails, emit error but continue with empty relationships
+		eventBridge.emit(WorkerEventType.DATA_FETCH_ERROR, {
+			requestId: params.requestId,
+			nodeId: params.nodeId,
+			entityId: params.entityId,
+			error: error instanceof Error ? `Expansion error: ${error.message}` : "Unknown expansion error",
+			timestamp: Date.now()
+		}, "main");
+	}
+
+	return { nodes, edges };
+}
+
 async function handleNodeExpansion(request: ExpandNodeRequest) {
 	const { id: requestId, nodeId, entityId, entityType } = request;
 	// Note: options and expansionSettings are available in request but not yet fully implemented
@@ -460,17 +611,15 @@ async function handleNodeExpansion(request: ExpandNodeRequest) {
 			timestamp: Date.now()
 		}, "main");
 
-		// Get relationships - for now we'll use a simplified approach
-		// TODO: Implement proper relationship expansion
-		// For now, return empty relationships as a placeholder
-		// TODO: Implement proper relationship expansion using the entity
-		const relationships: {
-			nodes: Array<{ id: string; entityId: string; type: import("@/lib/graph/types").EntityType; label: string; data: unknown }>;
-			edges: Array<{ id: string; source: string; target: string; type: string; label: string; data: unknown }>;
-		} = {
-			nodes: [],
-			edges: []
-		};
+		// Get relationships based on entity type
+		const relationships = expandEntityRelationships({
+			client,
+			entityType,
+			entityId,
+			entityData,
+			requestId,
+			nodeId
+		});
 
 		// Send progress update
 		eventBridge.emit(WorkerEventType.DATA_FETCH_PROGRESS, {
