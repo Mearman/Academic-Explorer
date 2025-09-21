@@ -88,6 +88,12 @@ export function ApplicationLoggerPanel() {
 			"query-cache": "grape",
 			"worker": "dark",
 			"eventbridge": "emerald",
+			"eventbus": "blue",
+			"taskqueue": "orange",
+			"workerpool": "teal",
+			"resource": "purple",
+			"queuecoordinator": "violet",
+			"hooks": "pink",
 		};
 		const color = colors[category];
 		return color ?? "gray";
