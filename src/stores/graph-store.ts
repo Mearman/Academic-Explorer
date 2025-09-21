@@ -430,15 +430,27 @@ export const useGraphStore = create<GraphState>()(
 				state.recomputeLoadingNodes();
 				state.recomputeNodeCaches();
 
-				// Emit cross-context events
-				if (nodes.length > 0) {
-					graphEventSystem.emitBulkNodesAdded(nodes).catch((err: unknown) => {
-						const errorMessage = err instanceof Error ? err.message : "Unknown error";
-						logger.error("graph", "Failed to emit bulk nodes added event", {
-							error: errorMessage,
-							nodeCount: nodes.length
+				// Emit cross-context events for new nodes only
+				if (newNodes.length > 0) {
+					if (newNodes.length === 1) {
+						// Single node event for consistency
+						graphEventSystem.emitNodeAdded(newNodes[0]).catch((err: unknown) => {
+							const errorMessage = err instanceof Error ? err.message : "Unknown error";
+							logger.error("graph", "Failed to emit node added event", {
+								error: errorMessage,
+								nodeId: newNodes[0].id
+							});
 						});
-					});
+					} else {
+						// Bulk nodes event for performance
+						graphEventSystem.emitBulkNodesAdded(newNodes).catch((err: unknown) => {
+							const errorMessage = err instanceof Error ? err.message : "Unknown error";
+							logger.error("graph", "Failed to emit bulk nodes added event", {
+								error: errorMessage,
+								nodeCount: newNodes.length
+							});
+						});
+					}
 				}
 			},
 
@@ -553,6 +565,17 @@ export const useGraphStore = create<GraphState>()(
 				const state = get();
 				state.recomputeEdgeTypeStats();
 				state.recomputeNodeCaches();
+
+				// Emit cross-context events
+				if (wasAdded) {
+					graphEventSystem.emitEdgeAdded(edge).catch((err: unknown) => {
+						const errorMessage = err instanceof Error ? err.message : "Unknown error";
+						logger.error("graph", "Failed to emit edge added event", {
+							error: errorMessage,
+							edgeId: edge.id
+						});
+					});
+				}
 			},
 
 			addEdges: (edges) => {
@@ -583,6 +606,29 @@ export const useGraphStore = create<GraphState>()(
 				const state = get();
 				state.recomputeEdgeTypeStats();
 				state.recomputeNodeCaches();
+
+				// Emit cross-context events for new edges
+				if (newEdges.length > 0) {
+					if (newEdges.length === 1) {
+						// Single edge event for consistency
+						graphEventSystem.emitEdgeAdded(newEdges[0]).catch((err: unknown) => {
+							const errorMessage = err instanceof Error ? err.message : "Unknown error";
+							logger.error("graph", "Failed to emit edge added event", {
+								error: errorMessage,
+								edgeId: newEdges[0].id
+							});
+						});
+					} else {
+						// Bulk edges event for performance
+						graphEventSystem.emitBulkEdgesAdded(newEdges).catch((err: unknown) => {
+							const errorMessage = err instanceof Error ? err.message : "Unknown error";
+							logger.error("graph", "Failed to emit bulk edges added event", {
+								error: errorMessage,
+								edgeCount: newEdges.length
+							});
+						});
+					}
+				}
 			},
 
 			removeEdge: (edgeId) => {
