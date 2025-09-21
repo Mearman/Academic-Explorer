@@ -119,9 +119,10 @@ export function useUnifiedBackgroundWorker(options: UseUnifiedBackgroundWorkerOp
 
   // Initialize unified event system
   const bus = useEventBus();
+  const workerModulePath = new URL("../workers/background.worker.ts", import.meta.url).href;
   const { workerPool, stats: workerStats } = useWorkerPool(bus, {
     size: 2,
-    workerModule: new URL("../workers/background.worker.ts", import.meta.url).href
+    workerModule: workerModulePath
   });
   const { submitTask: submitQueueTask, stats: queueStats } = useTaskQueue(bus);
 
@@ -368,6 +369,7 @@ export function useUnifiedBackgroundWorker(options: UseUnifiedBackgroundWorkerOp
     try {
       const taskId = await submitQueueTask({
         id: `force-simulation-${Date.now().toString()}`,
+        workerModule: workerModulePath,
         payload: {
           type: "FORCE_SIMULATION_START",
           nodes,
@@ -405,6 +407,7 @@ export function useUnifiedBackgroundWorker(options: UseUnifiedBackgroundWorkerOp
     try {
       await submitQueueTask({
         id: `force-simulation-stop-${Date.now().toString()}`,
+        workerModule: workerModulePath,
         payload: {
           type: "FORCE_SIMULATION_STOP"
         }
@@ -428,6 +431,7 @@ export function useUnifiedBackgroundWorker(options: UseUnifiedBackgroundWorkerOp
       try {
         await submitQueueTask({
           id: `force-simulation-pause-${Date.now().toString()}`,
+          workerModule: workerModulePath,
           payload: {
             type: "FORCE_SIMULATION_PAUSE"
           }
@@ -443,6 +447,7 @@ export function useUnifiedBackgroundWorker(options: UseUnifiedBackgroundWorkerOp
       try {
         await submitQueueTask({
           id: `force-simulation-resume-${Date.now().toString()}`,
+          workerModule: workerModulePath,
           payload: {
             type: "FORCE_SIMULATION_RESUME"
           }
@@ -458,6 +463,7 @@ export function useUnifiedBackgroundWorker(options: UseUnifiedBackgroundWorkerOp
       try {
         await submitQueueTask({
           id: `force-simulation-update-${Date.now().toString()}`,
+          workerModule: workerModulePath,
           payload: {
             type: "FORCE_SIMULATION_UPDATE_PARAMETERS",
             config
@@ -486,6 +492,7 @@ export function useUnifiedBackgroundWorker(options: UseUnifiedBackgroundWorkerOp
     try {
       const taskId = await submitQueueTask({
         id: `data-fetch-${nodeId}-${Date.now().toString()}`,
+        workerModule: workerModulePath,
         payload: {
           type: "DATA_FETCH_EXPAND_NODE",
           nodeId,
