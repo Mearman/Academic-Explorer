@@ -10,6 +10,27 @@ import { getRelationshipDetectionService } from "@/lib/services/service-provider
 import { useGraphStore } from "@/stores/graph-store";
 import { logger } from "@/lib/logger";
 
+// Interface for node structure
+interface NodeLike {
+  type: string;
+  id: string;
+}
+
+// Type guard for graph nodes - filter nodes safely
+function isValidNode(value: unknown): value is NodeLike {
+  if (typeof value !== "object" || value === null) {
+    return false;
+  }
+
+  // Direct property checks - type assertion needed for safe property access
+  return (
+    Object.prototype.hasOwnProperty.call(value, "type") &&
+    Object.prototype.hasOwnProperty.call(value, "id") &&
+    typeof (value as Record<string, unknown>).type === "string" &&
+    typeof (value as Record<string, unknown>).id === "string"
+  );
+}
+
 export function useAutoRelationshipDetection() {
   const queryClient = useQueryClient();
   const relationshipDetectionService = useMemo(() => getRelationshipDetectionService(queryClient), [queryClient]);
@@ -20,7 +41,9 @@ export function useAutoRelationshipDetection() {
       if (!event.payload || typeof event.payload !== "object") return;
       const payload = event.payload;
       if (!("nodes" in payload) || !Array.isArray(payload.nodes)) return;
-      const { nodes } = payload;
+      const validNodes = payload.nodes.filter(isValidNode);
+      if (validNodes.length === 0) return;
+      const { nodes } = { nodes: validNodes };
     if (nodes.length === 0) {
       logger.debug("graph", "No nodes in bulk addition, skipping relationship detection");
       return;

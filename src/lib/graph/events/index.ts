@@ -3,7 +3,7 @@
  * Provides unified API for cross-context events, task queues, and resource coordination
  */
 
-// Legacy types (deprecated - use unified system)
+// Legacy types - use unified system
 export type {
   // Event payloads
   GraphEventPayloads,
