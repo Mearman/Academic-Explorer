@@ -38,10 +38,10 @@ export function useEventBus(channelName?: string): EventBus {
 /**
  * Hook for listening to specific event types
  */
-export function useEventListener<T = unknown>(
+export function useEventListener(
   bus: EventBus,
   eventType: string,
-  handler: (payload?: T) => void,
+  handler: (payload?: unknown) => void,
   deps: React.DependencyList = []
 ): void {
   const handlerRef = useRef(handler);
@@ -49,7 +49,7 @@ export function useEventListener<T = unknown>(
 
   useEffect(() => {
     const wrappedHandler: EventHandler = (event) => {
-      handlerRef.current(event.payload as T);
+      handlerRef.current(event.payload);
     };
 
     const listenerId = bus.on(eventType, wrappedHandler);
@@ -196,14 +196,14 @@ export function useWorkerPool(
   }, [workerPool]);
 
   const shutdown = useCallback(() => {
-    return workerPool.shutdown();
+    workerPool.shutdown();
   }, [workerPool]);
 
   useEffect(() => {
     setStats(workerPool.getStats());
 
     return () => {
-      void workerPool.shutdown();
+      workerPool.shutdown();
     };
   }, [workerPool]);
 
@@ -308,12 +308,12 @@ export function useQueuedResourceCoordinator(
   }, [coordinator]);
 
   const release = useCallback(() => {
-    return coordinator.release();
+    coordinator.release();
   }, [coordinator]);
 
   useEffect(() => {
     return () => {
-      void coordinator.release();
+      coordinator.release();
     };
   }, [coordinator]);
 
@@ -410,13 +410,13 @@ export function useTaskProgress(
 /**
  * Hook for cross-tab event broadcasting
  */
-export function useCrossTabEvent<T = unknown>(
+export function useCrossTabEvent(
   channelName: string,
   eventType: string,
-  handler: (payload?: T) => void,
+  handler: (payload?: unknown) => void,
   deps: React.DependencyList = []
 ): {
-  broadcast: (payload?: T) => void;
+  broadcast: (payload?: unknown) => void;
   isConnected: boolean;
 } {
   const bus = useEventBus(channelName);
@@ -424,7 +424,7 @@ export function useCrossTabEvent<T = unknown>(
 
   useEventListener(bus, eventType, handler, deps);
 
-  const broadcast = useCallback((payload?: T) => {
+  const broadcast = useCallback((payload?: unknown) => {
     bus.emit({ type: eventType, payload });
   }, [bus, eventType]);
 
