@@ -9,6 +9,7 @@ import { useEventBus, GraphEventType } from "@/lib/graph/events";
 import { getRelationshipDetectionService } from "@/lib/services/service-provider";
 import { useGraphStore } from "@/stores/graph-store";
 import { logger } from "@/lib/logger";
+import type { GraphEdge } from "@/lib/graph/types";
 
 // Interface for node structure
 interface NodeLike {
@@ -16,12 +17,7 @@ interface NodeLike {
   id: string;
 }
 
-// Interface for edge structure
-interface EdgeLike {
-  type: string;
-  source: string;
-  target: string;
-}
+// Note: EdgeLike interface removed - service returns proper GraphEdge objects
 
 // Interface for event structure
 interface EventLike {
@@ -43,19 +39,22 @@ function isValidNode(value: unknown): value is NodeLike {
   );
 }
 
-// Type guard for graph edges
-function isValidEdge(value: unknown): value is EdgeLike {
+// Type guard for GraphEdge objects
+function isValidGraphEdge(value: unknown): value is GraphEdge {
   if (typeof value !== "object" || value === null) {
     return false;
   }
 
   return (
+    "id" in value &&
     "type" in value &&
     "source" in value &&
     "target" in value &&
-    typeof value.type === "string" &&
+    typeof value.id === "string" &&
     typeof value.source === "string" &&
-    typeof value.target === "string"
+    typeof value.target === "string" &&
+    // type should be a valid RelationType, but string validation is sufficient for type guard
+    typeof value.type === "string"
   );
 }
 
@@ -101,16 +100,14 @@ export function useAutoRelationshipDetection() {
 
     // Trigger relationship detection asynchronously for all nodes
     relationshipDetectionService.detectRelationshipsForNodes(allNodeIds)
-      .then((detectedEdges: unknown) => {
-        // Type guard for edges array
-        if (!Array.isArray(detectedEdges)) return;
-
-        const validEdges = detectedEdges.filter(isValidEdge);
+      .then((detectedEdges: GraphEdge[]) => {
+        // Service returns properly typed GraphEdge[], but validate for safety
+        const validEdges = detectedEdges.filter(isValidGraphEdge);
         if (validEdges.length > 0) {
           logger.debug("graph", "Detected relationships between nodes", {
             edgeCount: validEdges.length,
-            edgeTypes: [...new Set(validEdges.map((edge: EdgeLike) => edge.type))],
-            edgeDetails: validEdges.map((edge: EdgeLike) => ({
+            edgeTypes: [...new Set(validEdges.map((edge: GraphEdge) => edge.type))],
+            edgeDetails: validEdges.map((edge: GraphEdge) => ({
               type: edge.type,
               source: edge.source,
               target: edge.target

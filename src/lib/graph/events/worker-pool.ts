@@ -264,6 +264,7 @@ export class WorkerPool {
     }
 
     const message = data;
+    const messagePayload = "payload" in message ? message.payload : undefined;
 
     switch (message.type) {
       case "PROGRESS":
@@ -272,17 +273,17 @@ export class WorkerPool {
           payload: {
             workerId: poolWorker.id,
             taskId: poolWorker.currentTaskId,
-            ...(message.payload && typeof message.payload === "object" ? message.payload : {})
+            ...(messagePayload && typeof messagePayload === "object" ? messagePayload : {})
           }
         });
         break;
 
       case "SUCCESS":
-        this.handleTaskCompletion(poolWorker, message.payload, undefined);
+        this.handleTaskCompletion(poolWorker, messagePayload, undefined);
         break;
 
       case "ERROR":
-        this.handleTaskCompletion(poolWorker, undefined, new Error(String(message.payload)));
+        this.handleTaskCompletion(poolWorker, undefined, new Error(String(messagePayload)));
         break;
 
       default:
@@ -291,7 +292,7 @@ export class WorkerPool {
           type: `POOL_WORKER_${String(message.type)}`,
           payload: {
             workerId: poolWorker.id,
-            ...(message.payload && typeof message.payload === "object" ? message.payload : {})
+            ...(messagePayload && typeof messagePayload === "object" ? messagePayload : {})
           }
         });
         break;

@@ -11,6 +11,20 @@ import { TaskQueue, TaskDescriptor, TaskResult, TaskStatus, createTaskQueue } fr
 import { WorkerPool, WorkerPoolOptions, createWorkerPool } from "@/lib/graph/events/worker-pool";
 import { QueuedResourceCoordinator, QueueCoordinatorOptions, createQueuedResourceCoordinator } from "@/lib/graph/events/queued-resource-coordinator";
 
+// Type guard for TaskResult
+function isTaskResult(value: unknown): value is TaskResult {
+  return (
+    value !== null &&
+    typeof value === "object" &&
+    "id" in value &&
+    typeof value.id === "string" &&
+    "duration" in value &&
+    typeof value.duration === "number" &&
+    "executedBy" in value &&
+    (value.executedBy === "main" || value.executedBy === "worker")
+  );
+}
+
 /**
  * Hook for managing EventBus instances
  */
@@ -353,18 +367,23 @@ export function useTaskProgress(
     progress: 0
   });
 
-  useEventListener(bus, "TASK_PROGRESS", (payload?: { id: string; progress: number; message?: string }) => {
-    if (payload && payload.id === taskId) {
+  useEventListener(bus, "TASK_PROGRESS", (payload?: unknown) => {
+    if (payload && typeof payload === "object" && payload !== null &&
+        "id" in payload && typeof payload.id === "string" && payload.id === taskId &&
+        "progress" in payload && typeof payload.progress === "number") {
+      // Safe to access properties since we validated above
+      const message = "message" in payload && typeof payload.message === "string" ? payload.message : undefined;
       setState(prev => ({
         ...prev,
         progress: payload.progress,
-        message: payload.message
+        message
       }));
     }
   });
 
-  useEventListener(bus, "TASK_STARTED", (payload?: { id: string }) => {
-    if (payload && payload.id === taskId) {
+  useEventListener(bus, "TASK_STARTED", (payload?: unknown) => {
+    if (payload && typeof payload === "object" && payload !== null &&
+        "id" in payload && typeof payload.id === "string" && payload.id === taskId) {
       setState(prev => ({
         ...prev,
         status: TaskStatus.RUNNING,
@@ -373,8 +392,10 @@ export function useTaskProgress(
     }
   });
 
-  useEventListener(bus, "TASK_COMPLETED", (payload?: TaskResult) => {
-    if (payload && payload.id === taskId) {
+  useEventListener(bus, "TASK_COMPLETED", (payload?: unknown) => {
+    if (payload && typeof payload === "object" && payload !== null &&
+        "id" in payload && typeof payload.id === "string" && payload.id === taskId &&
+        isTaskResult(payload)) {
       setState(prev => ({
         ...prev,
         status: TaskStatus.COMPLETED,
@@ -384,8 +405,10 @@ export function useTaskProgress(
     }
   });
 
-  useEventListener(bus, "TASK_FAILED", (payload?: TaskResult) => {
-    if (payload && payload.id === taskId) {
+  useEventListener(bus, "TASK_FAILED", (payload?: unknown) => {
+    if (payload && typeof payload === "object" && payload !== null &&
+        "id" in payload && typeof payload.id === "string" && payload.id === taskId &&
+        isTaskResult(payload)) {
       setState(prev => ({
         ...prev,
         status: TaskStatus.FAILED,
@@ -394,8 +417,9 @@ export function useTaskProgress(
     }
   });
 
-  useEventListener(bus, "TASK_CANCELLED", (payload?: { id: string }) => {
-    if (payload && payload.id === taskId) {
+  useEventListener(bus, "TASK_CANCELLED", (payload?: unknown) => {
+    if (payload && typeof payload === "object" && payload !== null &&
+        "id" in payload && typeof payload.id === "string" && payload.id === taskId) {
       setState(prev => ({
         ...prev,
         status: TaskStatus.CANCELLED,

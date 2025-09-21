@@ -788,8 +788,15 @@ export class QueuedResourceCoordinator extends ResourceCoordinator {
 
     const payload = msg.payload;
 
-    const queueTypes: readonly string[] = ["QUEUE_TASK", "TASK_ASSIGNED", "TASK_COMPLETED", "TASK_FAILED", "TASK_CANCELLED", "SYNC_QUEUE"];
-    if (!queueTypes.includes(payload.queueMessageType)) {
+    const queueTypes = ["QUEUE_TASK", "TASK_ASSIGNED", "TASK_COMPLETED", "TASK_FAILED", "TASK_CANCELLED", "SYNC_QUEUE"] as const;
+    type QueueType = typeof queueTypes[number];
+
+    function isValidQueueType(value: string): value is QueueType {
+      return queueTypes.some(type => type === value);
+    }
+
+    const messageType = payload.queueMessageType;
+    if (!isValidQueueType(messageType)) {
       return null;
     }
 
@@ -822,8 +829,9 @@ export class QueuedResourceCoordinator extends ResourceCoordinator {
       return Array.isArray(data) && data.every(isQueuedTask);
     }
 
+    // messageType is now narrowed to QueueType after the type guard check
     return {
-      type: payload.queueMessageType,
+      type: messageType,
       resourceId: msg.resourceId,
       senderId: msg.senderId,
       targetId: msg.targetId,
