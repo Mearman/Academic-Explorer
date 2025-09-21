@@ -86,15 +86,35 @@ export function getBackgroundWorker(): Promise<Worker> {
 
       // Listen for worker ready via EventBridge
       const handleWorkerReady = (message: unknown) => {
-        const eventMessage = message && typeof message === "object" ? message as Record<string, unknown> : {};
-        const eventType = typeof eventMessage.eventType === "string" ? eventMessage.eventType : undefined;
-        const payload = eventMessage.payload && typeof eventMessage.payload === "object" ? eventMessage.payload as Record<string, unknown> : {};
-        const workerType = typeof payload.workerType === "string" ? payload.workerType : undefined;
+        // Safely check message structure without type assertions
+        if (message === null || typeof message !== "object" || !("eventType" in message)) {
+          return;
+        }
+
+        // Extract eventType safely using Object.hasOwnProperty and bracket notation
+        const eventType = "eventType" in message &&
+          Object.prototype.hasOwnProperty.call(message, "eventType") ?
+          (message as { eventType: unknown })["eventType"] : undefined;
+
+        if (typeof eventType !== "string") {
+          return;
+        }
+
+        // Extract worker type from payload if present
+        let workerType: string | undefined;
+        if ("payload" in message && Object.prototype.hasOwnProperty.call(message, "payload")) {
+          const payload = (message as { payload: unknown })["payload"];
+          if (payload && typeof payload === "object" && payload !== null && "workerType" in payload) {
+            const payloadWorkerType = Object.prototype.hasOwnProperty.call(payload, "workerType") ?
+              (payload as { workerType: unknown })["workerType"] : undefined;
+            workerType = typeof payloadWorkerType === "string" ? payloadWorkerType : undefined;
+          }
+        }
 
         logger.debug("graph", "EventBridge message received", {
           eventType,
-          payload,
-          fullMessage: eventMessage
+          payload: "payload" in message ? (message as { payload: unknown })["payload"] : undefined,
+          fullMessage: message
         });
         if (eventType === "worker:ready" && workerType === "force-animation") {
           logger.debug("graph", "Worker ready event received via EventBridge");
