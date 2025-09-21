@@ -13,6 +13,7 @@ import { useAnimatedGraphStore } from "@/stores/animated-graph-store";
 import { useBackgroundWorker } from "@/hooks/use-unified-background-worker";
 // FIT_VIEW_PRESETS removed - not currently used
 import { DEFAULT_FORCE_PARAMS } from "../../force-params";
+import type { ForceSimulationConfig, ForceSimulationLink, ForceSimulationNode } from "@/lib/graph/events/enhanced-worker-types";
 
 // Import the position type
 interface NodePosition {
@@ -22,21 +23,6 @@ interface NodePosition {
 }
 
 // Extended node interface for animated simulation
-interface AnimatedNode {
-  id: string;
-  type?: EntityType;
-  x?: number;
-  y?: number;
-  fx?: number | null;
-  fy?: number | null;
-}
-
-interface AnimatedLink {
-  id: string;
-  source: string;
-  target: string;
-}
-
 interface UseAnimatedLayoutOptions {
   enabled?: boolean;
   onLayoutChange?: () => void;
@@ -204,7 +190,7 @@ export function useAnimatedLayout(options: UseAnimatedLayoutOptions = {}) {
 				["works", "authors", "sources", "institutions", "publishers", "funders", "topics", "concepts"].includes(value);
 		}
 
-		const animatedNodes: AnimatedNode[] = nodes.map((node) => {
+                const animatedNodes: ForceSimulationNode[] = nodes.map((node) => {
 			const isPinned = pinnedNodes[node.id] ?? false;
 			const entityType = isEntityType(node.data.entityType) ? node.data.entityType : undefined;
 			return {
@@ -217,7 +203,7 @@ export function useAnimatedLayout(options: UseAnimatedLayoutOptions = {}) {
 			};
 		});
 
-		const animatedLinks: AnimatedLink[] = edges
+                const animatedLinks: ForceSimulationLink[] = edges
 			.filter((edge) => {
 				const sourceExists = animatedNodes.find((n) => n.id === edge.source);
 				const targetExists = animatedNodes.find((n) => n.id === edge.target);
@@ -269,7 +255,7 @@ export function useAnimatedLayout(options: UseAnimatedLayoutOptions = {}) {
 		}
 
 		// Get optimal configuration based on graph size
-		const config = DEFAULT_FORCE_PARAMS;
+                const config: ForceSimulationConfig = DEFAULT_FORCE_PARAMS;
 
 		// Use graph store's layout configuration if available
 		const layoutOptions = currentLayout.options;
@@ -307,7 +293,12 @@ export function useAnimatedLayout(options: UseAnimatedLayoutOptions = {}) {
 			startAnimationFunction: typeof startAnimation,
 		});
 
-		startAnimation(animatedNodes, animatedLinks, enhancedConfig, pinnedNodeSet);
+                void startAnimation({
+                        nodes: animatedNodes,
+                        links: animatedLinks,
+                        config: enhancedConfig,
+                        pinnedNodes: pinnedNodeSet,
+                });
 		logger.debug("graph", "startAnimation called successfully");
 	}, [
 		enabled,
@@ -322,8 +313,8 @@ export function useAnimatedLayout(options: UseAnimatedLayoutOptions = {}) {
 
 	// Stop layout
 	const stopLayout = useCallback(() => {
-		if (isLayoutRunningRef.current) {
-			stopAnimation();
+                if (isLayoutRunningRef.current) {
+                        void stopAnimation();
 			isLayoutRunningRef.current = false;
 			storeMethodsRef.current.resetAnimation();
 			logger.debug("graph", "Animated layout stopped");
@@ -340,8 +331,8 @@ export function useAnimatedLayout(options: UseAnimatedLayoutOptions = {}) {
 			willPause: isLayoutRunningRef.current && !currentPauseState,
 			callStack: new Error().stack?.split("\n").slice(0, 5).join("\n")
 		});
-		if (isLayoutRunningRef.current && !currentPauseState) {
-			pauseAnimation();
+                if (isLayoutRunningRef.current && !currentPauseState) {
+                        void pauseAnimation();
 			logger.debug("graph", "Animated layout paused");
 		}
 	}, [pauseAnimation]);
@@ -350,8 +341,8 @@ export function useAnimatedLayout(options: UseAnimatedLayoutOptions = {}) {
 	const resumeLayout = useCallback(() => {
 		// Use state callback to check current pause state without dependency
 		const currentPauseState = useAnimatedGraphStore.getState().isPaused;
-		if (isLayoutRunningRef.current && currentPauseState) {
-			resumeAnimation();
+                if (isLayoutRunningRef.current && currentPauseState) {
+                        void resumeAnimation();
 			logger.debug("graph", "Animated layout resumed");
 		}
 	}, [resumeAnimation]);
@@ -400,7 +391,7 @@ export function useAnimatedLayout(options: UseAnimatedLayoutOptions = {}) {
 	}>) => {
 		if (isLayoutRunningRef.current && enabled && useAnimation && isWorkerReady) {
 			// Update the worker with new parameters
-			updateAnimationParameters(newParams);
+                        void updateAnimationParameters(newParams);
 			logger.debug("graph", "Updating force parameters", { newParams });
 		} else {
 			logger.debug("graph", "Cannot update parameters - animation not running", {
