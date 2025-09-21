@@ -22,9 +22,6 @@
       "$ref": "./institutions/index.json"
     },
     {
-      "$ref": "./invalid-entity-type/index.json"
-    },
-    {
       "$ref": "./publishers/index.json"
     },
     {
