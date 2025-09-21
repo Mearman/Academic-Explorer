@@ -19,7 +19,7 @@ import type {
 } from "@/lib/graph/types";
 import { RelationType } from "@/lib/graph/types";
 import { DEFAULT_FORCE_PARAMS } from "@/lib/graph/force-params";
-import { graphEventSystem, entityEventSystem } from "@/lib/graph/events";
+import { localEventBus, GraphEventType, EntityEventType } from "@/lib/graph/events";
 import { logger } from "@/lib/logger";
 import { useAnimatedGraphStore } from "./animated-graph-store";
 
@@ -393,12 +393,9 @@ export const useGraphStore = create<GraphState>()(
 				state.recomputeNodeCaches();
 
 				// Emit cross-context events
-				graphEventSystem.emitNodeAdded(node).catch((err: unknown) => {
-					const errorMessage = err instanceof Error ? err.message : "Unknown error";
-					logger.error("graph", "Failed to emit node added event", {
-						error: errorMessage,
-						nodeId: node.id
-					});
+				localEventBus.emit({
+					type: GraphEventType.ANY_NODE_ADDED,
+					payload: node
 				});
 			},
 
@@ -440,21 +437,15 @@ export const useGraphStore = create<GraphState>()(
 				if (newNodes.length > 0) {
 					if (newNodes.length === 1) {
 						// Single node event for consistency
-						graphEventSystem.emitNodeAdded(newNodes[0]).catch((err: unknown) => {
-							const errorMessage = err instanceof Error ? err.message : "Unknown error";
-							logger.error("graph", "Failed to emit node added event", {
-								error: errorMessage,
-								nodeId: newNodes[0].id
-							});
+						localEventBus.emit({
+							type: GraphEventType.ANY_NODE_ADDED,
+							payload: newNodes[0]
 						});
 					} else {
 						// Bulk nodes event for performance
-						graphEventSystem.emitBulkNodesAdded(newNodes).catch((err: unknown) => {
-							const errorMessage = err instanceof Error ? err.message : "Unknown error";
-							logger.error("graph", "Failed to emit bulk nodes added event", {
-								error: errorMessage,
-								nodeCount: newNodes.length
-							});
+						localEventBus.emit({
+							type: GraphEventType.BULK_NODES_ADDED,
+							payload: { nodes: newNodes }
 						});
 					}
 				}
@@ -511,22 +502,22 @@ export const useGraphStore = create<GraphState>()(
 
 				// Emit cross-context events
 				if (removedNodeData) {
-					graphEventSystem.emitNodeRemoved(nodeId, removedNodeData.entityId, removedNodeData.type).catch((err: unknown) => {
-						const errorMessage = err instanceof Error ? err.message : "Unknown error";
-						logger.error("graph", "Failed to emit node removed event", {
-							error: errorMessage,
+					localEventBus.emit({
+						type: GraphEventType.ANY_NODE_REMOVED,
+						payload: {
 							nodeId,
-							entityId: removedNodeData?.entityId
-						});
+							entityId: removedNodeData.entityId,
+							entityType: removedNodeData.type
+						}
 					});
 
-					entityEventSystem.emitEntityRemoved(removedNodeData.entityId, removedNodeData.type, nodeId).catch((err: unknown) => {
-						const errorMessage = err instanceof Error ? err.message : "Unknown error";
-						logger.error("graph", "Failed to emit entity removed event", {
-							error: errorMessage,
-							entityId: removedNodeData?.entityId,
+					localEventBus.emit({
+						type: EntityEventType.ENTITY_REMOVED,
+						payload: {
+							entityId: removedNodeData.entityId,
+							entityType: removedNodeData.type,
 							nodeId
-						});
+						}
 					});
 				}
 			},
@@ -574,12 +565,9 @@ export const useGraphStore = create<GraphState>()(
 
 				// Emit cross-context events
 				if (wasAdded) {
-					graphEventSystem.emitEdgeAdded(edge).catch((err: unknown) => {
-						const errorMessage = err instanceof Error ? err.message : "Unknown error";
-						logger.error("graph", "Failed to emit edge added event", {
-							error: errorMessage,
-							edgeId: edge.id
-						});
+					localEventBus.emit({
+						type: GraphEventType.ANY_EDGE_ADDED,
+						payload: edge
 					});
 				}
 			},
@@ -617,21 +605,15 @@ export const useGraphStore = create<GraphState>()(
 				if (newEdges.length > 0) {
 					if (newEdges.length === 1) {
 						// Single edge event for consistency
-						graphEventSystem.emitEdgeAdded(newEdges[0]).catch((err: unknown) => {
-							const errorMessage = err instanceof Error ? err.message : "Unknown error";
-							logger.error("graph", "Failed to emit edge added event", {
-								error: errorMessage,
-								edgeId: newEdges[0].id
-							});
+						localEventBus.emit({
+							type: GraphEventType.ANY_EDGE_ADDED,
+							payload: newEdges[0]
 						});
 					} else {
 						// Bulk edges event for performance
-						graphEventSystem.emitBulkEdgesAdded(newEdges).catch((err: unknown) => {
-							const errorMessage = err instanceof Error ? err.message : "Unknown error";
-							logger.error("graph", "Failed to emit bulk edges added event", {
-								error: errorMessage,
-								edgeCount: newEdges.length
-							});
+						localEventBus.emit({
+							type: GraphEventType.BULK_EDGES_ADDED,
+							payload: { edges: newEdges }
 						});
 					}
 				}
