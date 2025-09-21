@@ -35,7 +35,7 @@ export class EntityFieldAccumulator implements StorageTierInterface {
     const cachedEntity = this.memoryCache.get(cacheKey);
 
     if (!cachedEntity) {
-      return Promise.resolve({} as Partial<T>);
+      return Promise.resolve({});
     }
 
     // Check TTL for each field
@@ -310,7 +310,7 @@ export class EntityFieldAccumulator implements StorageTierInterface {
     // No-op: EntityFieldAccumulator doesn't handle collections
   }
 
-  getCollectionMetadata(queryKey: string): Promise<CollectionMetadata | null> {
+  getCollectionMetadata(_queryKey: string): Promise<CollectionMetadata | null> {
     return Promise.resolve(null); // EntityFieldAccumulator doesn't handle collections
   }
 

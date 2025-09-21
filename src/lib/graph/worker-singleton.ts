@@ -85,23 +85,28 @@ export function getBackgroundWorker(): Promise<Worker> {
       workerState.readyCallbacks.add(onReady);
 
       // Listen for worker ready via EventBridge
-      const handleWorkerReady = (message: any) => {
-        console.log("[worker-singleton] EventBridge message received", {
-          eventType: message.eventType,
-          payload: message.payload,
-          fullMessage: message
+      const handleWorkerReady = (message: unknown) => {
+        const eventMessage = message && typeof message === "object" ? message as Record<string, unknown> : {};
+        const eventType = typeof eventMessage.eventType === "string" ? eventMessage.eventType : undefined;
+        const payload = eventMessage.payload && typeof eventMessage.payload === "object" ? eventMessage.payload as Record<string, unknown> : {};
+        const workerType = typeof payload.workerType === "string" ? payload.workerType : undefined;
+
+        logger.debug("graph", "EventBridge message received", {
+          eventType,
+          payload,
+          fullMessage: eventMessage
         });
-        if (message.eventType === "worker:ready" && message.payload?.workerType === "force-animation") {
-          console.log("[worker-singleton] Worker ready event received via EventBridge");
+        if (eventType === "worker:ready" && workerType === "force-animation") {
+          logger.debug("graph", "Worker ready event received via EventBridge");
           clearTimeout(fallbackTimeout);
           onReady();
           eventBridge.unregisterMessageHandler("worker-singleton-ready");
         }
       };
 
-      console.log("[worker-singleton] Registering EventBridge message handler for worker-singleton-ready");
+      logger.debug("graph", "Registering EventBridge message handler for worker-singleton-ready");
       eventBridge.registerMessageHandler("worker-singleton-ready", handleWorkerReady);
-      console.log("[worker-singleton] EventBridge message handler registered successfully");
+      logger.debug("graph", "EventBridge message handler registered successfully");
 
       // Fallback timeout in case EventBridge doesn't work
       const fallbackTimeout = setTimeout(() => {

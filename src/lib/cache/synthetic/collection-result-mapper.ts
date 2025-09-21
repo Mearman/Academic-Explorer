@@ -346,8 +346,8 @@ export class CollectionResultMapper implements StorageTierInterface {
   }
 
   // Entity operations (not directly used by collection mapper but required by interface)
-  getEntityFields<T>(entityType: EntityType, entityId: string, fields: string[]): Promise<Partial<T>> {
-    return Promise.resolve({} as Partial<T>); // CollectionResultMapper doesn't handle entity fields
+  getEntityFields<T>(_entityType: EntityType, _entityId: string, _fields: string[]): Promise<Partial<T>> {
+    return Promise.resolve({}); // CollectionResultMapper doesn't handle entity fields
   }
 
   putEntityFields(): Promise<void> {
