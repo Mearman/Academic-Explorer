@@ -11,7 +11,7 @@ import { useGraphStore } from "@/stores/graph-store";
 import { useLayoutStore } from "@/stores/layout-store";
 import { useAnimatedGraphStore } from "@/stores/animated-graph-store";
 import { useBackgroundWorker } from "@/hooks/use-background-worker";
-import { FIT_VIEW_PRESETS } from "../../constants";
+// FIT_VIEW_PRESETS removed - not currently used
 import { DEFAULT_FORCE_PARAMS } from "../../force-params";
 
 // Import the position type
@@ -48,11 +48,12 @@ export function useAnimatedLayout(options: UseAnimatedLayoutOptions = {}) {
 	const {
 		enabled = true,
 		onLayoutChange,
-		fitViewAfterLayout = true,
+		// fitViewAfterLayout removed - not currently used
 		useAnimation = true,
 	} = options;
 
-	const { getNodes, getEdges, setNodes, fitView } = useReactFlow();
+	const { getNodes, getEdges, setNodes } = useReactFlow();
+	// fitView removed - not currently used
 
 	// Stable individual selectors to avoid infinite loops
 	const pinnedNodes = useGraphStore((state) => state.pinnedNodes);
@@ -98,6 +99,8 @@ export function useAnimatedLayout(options: UseAnimatedLayoutOptions = {}) {
 
 	// Animation control refs
 	const isLayoutRunningRef = useRef(false);
+	const debounceTimerRef = useRef<NodeJS.Timeout | null>(null);
+	const prevNodeCountRef = useRef(0);
 
 	// Animated force simulation hook
 	const {
@@ -107,8 +110,6 @@ export function useAnimatedLayout(options: UseAnimatedLayoutOptions = {}) {
 		resumeAnimation,
 		updateParameters: updateAnimationParameters,
 		animationState: hookAnimationState,
-		performanceStats,
-		getOptimalConfig,
 		isWorkerReady,
 	} = useBackgroundWorker({
 		onPositionUpdate: useCallback((positions: NodePosition[]) => {
@@ -132,35 +133,35 @@ export function useAnimatedLayout(options: UseAnimatedLayoutOptions = {}) {
 			onLayoutChange?.();
 		}, [setNodes, onLayoutChange]),
 
-		onComplete: useCallback(({ positions, stats }: { positions: NodePosition[]; stats: { totalIterations: number; finalAlpha: number; reason: string } }) => {
-			// Update final positions in store
-			storeMethodsRef.current.updateStaticPositions(positions);
-			const statsWithDuration = { ...stats, duration: Date.now() };
-			storeMethodsRef.current.completeAnimation(statsWithDuration);
+		// onComplete: useCallback((positions: NodePosition[], stats: { totalIterations: number; finalAlpha: number; reason: string }) => {
+		//	// Update final positions in store
+		//	storeMethodsRef.current.updateStaticPositions(positions);
+		//	const statsWithDuration = { ...stats, duration: Date.now() };
+		//	storeMethodsRef.current.completeAnimation(statsWithDuration);
+		//
+		//	// Apply positions to graph store for persistence
+		//	storeMethodsRef.current.applyPositionsToGraphStore();
+		//
+		//	// Auto-pin disabled to allow force parameter changes to work immediately
+		//	// Users can manually pin specific nodes if desired
+		//	logger.debug("graph", "Auto-pin disabled - nodes remain free to move on future parameter changes");
+		//
+		//	// Auto-fit view if enabled
+		//	if (fitViewAfterLayout) {
+		//		setTimeout(() => {
+		//			void fitView(FIT_VIEW_PRESETS.DEFAULT);
+		//			logger.debug("graph", "Auto-fitted view after animated layout completion");
+		//		}, 100);
+		//	}
+		//
+		//	isLayoutRunningRef.current = false;
+		//	logger.debug("graph", "Animated layout completed", {
+		//		...stats,
+		//		autoPinEnabled: autoPinOnLayoutStabilization,
+		//	});
+		// }, [fitViewAfterLayout, fitView, autoPinOnLayoutStabilization]),
 
-			// Apply positions to graph store for persistence
-			storeMethodsRef.current.applyPositionsToGraphStore();
-
-			// Auto-pin disabled to allow force parameter changes to work immediately
-			// Users can manually pin specific nodes if desired
-			logger.debug("graph", "Auto-pin disabled - nodes remain free to move on future parameter changes");
-
-			// Auto-fit view if enabled
-			if (fitViewAfterLayout) {
-				setTimeout(() => {
-					void fitView(FIT_VIEW_PRESETS.DEFAULT);
-					logger.debug("graph", "Auto-fitted view after animated layout completion");
-				}, 100);
-			}
-
-			isLayoutRunningRef.current = false;
-			logger.debug("graph", "Animated layout completed", {
-				...stats,
-				autoPinEnabled: autoPinOnLayoutStabilization,
-			});
-		}, [fitViewAfterLayout, fitView, autoPinOnLayoutStabilization]),
-
-		onError: useCallback((error: string) => {
+		onAnimationError: useCallback((error: string) => {
 			logger.error("graph", "Animated layout error", { error });
 			isLayoutRunningRef.current = false;
 			storeMethodsRef.current.resetAnimation();
@@ -268,7 +269,7 @@ export function useAnimatedLayout(options: UseAnimatedLayoutOptions = {}) {
 		}
 
 		// Get optimal configuration based on graph size
-		const config = getOptimalConfig(animatedNodes.length);
+		const config = DEFAULT_FORCE_PARAMS;
 
 		// Use graph store's layout configuration if available
 		const layoutOptions = currentLayout.options;
@@ -313,7 +314,6 @@ export function useAnimatedLayout(options: UseAnimatedLayoutOptions = {}) {
 		useAnimation,
 		isWorkerReady,
 		prepareAnimationData,
-		getOptimalConfig,
 		pinnedNodes,
 		currentLayout,
 		startAnimation,
@@ -365,16 +365,27 @@ export function useAnimatedLayout(options: UseAnimatedLayoutOptions = {}) {
 	}, [stopLayout, applyAnimatedLayout]);
 
 	// Reheat simulation (add energy to running simulation)
-	const reheatLayout = useCallback((alpha = 0.3) => {
+	const reheatLayout = useCallback((targetAlpha = 0.3) => {
 		if (isLayoutRunningRef.current) {
 			// For animated simulation, we restart with higher energy
-			logger.debug("graph", "Reheating animated layout", { alpha });
-			restartLayout();
+			logger.debug("graph", "Reheating animated layout", { targetAlpha });
+			restartLayout(); // Restarts with full alpha=1 for strong reheat
 		} else {
 			// Start new layout if not running
 			applyAnimatedLayout();
 		}
 	}, [restartLayout, applyAnimatedLayout]);
+
+	// Debounced reheat to prevent rapid calls
+	const debouncedReheat = useCallback((alpha = 0.3) => {
+		if (debounceTimerRef.current) {
+			clearTimeout(debounceTimerRef.current);
+		}
+		debounceTimerRef.current = setTimeout(() => {
+			reheatLayout(alpha);
+			debounceTimerRef.current = null;
+		}, 500); // 500ms debounce to prevent excessive restarts
+	}, [reheatLayout]);
 
 	// Update force parameters during animation
 	const updateParameters = useCallback((newParams: Partial<{
@@ -408,6 +419,22 @@ export function useAnimatedLayout(options: UseAnimatedLayoutOptions = {}) {
 		};
 	}, [stopLayout]);
 
+	// Auto-start animation when graph loads (nodes added) and not already animating
+	useEffect(() => {
+		const currentNodeCount = getNodes().length;
+		if (currentNodeCount > prevNodeCountRef.current &&
+			currentNodeCount > 0 &&
+			!isAnimating &&
+			enabled &&
+			useAnimation &&
+			isWorkerReady) {
+			// Auto-reheat/start initial simulation
+			logger.debug("graph", "Auto-starting layout on graph load", { nodeCount: currentNodeCount });
+			applyAnimatedLayout();
+		}
+		prevNodeCountRef.current = currentNodeCount;
+	}, [getNodes, isAnimating, enabled, useAnimation, isWorkerReady, applyAnimatedLayout]);
+
 	// Auto-sync positions with graph store when not animating (REMOVED - causing infinite loop)
 	// This sync will be handled manually when needed to avoid React 19 + Zustand + Immer loops
 	// useEffect(() => {
@@ -425,7 +452,6 @@ export function useAnimatedLayout(options: UseAnimatedLayoutOptions = {}) {
 		alpha: animationState.alpha,
 		iteration: animationState.iteration,
 		fps: animationState.fps,
-		performanceStats,
 		isWorkerReady,
 
 		// Actions
@@ -434,7 +460,7 @@ export function useAnimatedLayout(options: UseAnimatedLayoutOptions = {}) {
 		pauseLayout,
 		resumeLayout,
 		restartLayout,
-		reheatLayout,
+		reheatLayout: debouncedReheat, // Use debounced version
 		updateParameters,
 
 		// Computed properties
