@@ -249,7 +249,7 @@ export class CachedOpenAlexClient extends OpenAlexBaseClient {
           entityId: id,
           fields: requestedFields
         });
-        return cachedData;
+        return cachedData as T;
       }
 
       // Determine missing fields for surgical request
@@ -289,7 +289,7 @@ export class CachedOpenAlexClient extends OpenAlexBaseClient {
       }
 
       // Store new data in cache
-      await this.cache.putEntityFields(entityType, id, apiData);
+      await this.cache.putEntityFields(entityType, id, apiData as Partial<unknown>);
 
       // Combine cached and API data
       const combinedData = { ...cachedData, ...apiData };
@@ -541,7 +541,7 @@ export class CachedOpenAlexClient extends OpenAlexBaseClient {
       for (const result of results) {
         const entityId = this.extractEntityId(result);
         if (entityId) {
-          await this.cache.putEntityFields(entityType, entityId, result);
+          await this.cache.putEntityFields(entityType, entityId, result as Partial<unknown>);
         }
       }
 
@@ -747,7 +747,7 @@ export class CachedOpenAlexClient extends OpenAlexBaseClient {
           });
           if (staticEntity && typeof staticEntity === "object" && "id" in staticEntity) {
             logger.debug("static-data", "Served entity from static data", { id, entityType });
-            return staticEntity;
+            return staticEntity as T;
           }
         } catch {
           logger.debug("static-data", "Static data not available, falling back to API", { id, entityType });
