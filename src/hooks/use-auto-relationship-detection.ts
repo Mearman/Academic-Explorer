@@ -16,18 +16,18 @@ interface NodeLike {
   id: string;
 }
 
-// Type guard for graph nodes - filter nodes safely
+// Type guard for graph nodes - using property existence checks
 function isValidNode(value: unknown): value is NodeLike {
   if (typeof value !== "object" || value === null) {
     return false;
   }
 
-  // Direct property checks - type assertion needed for safe property access
+  // Check properties exist and have correct types without type assertion
   return (
-    Object.prototype.hasOwnProperty.call(value, "type") &&
-    Object.prototype.hasOwnProperty.call(value, "id") &&
-    typeof (value as Record<string, unknown>).type === "string" &&
-    typeof (value as Record<string, unknown>).id === "string"
+    "type" in value &&
+    "id" in value &&
+    typeof value.type === "string" &&
+    typeof value.id === "string"
   );
 }
 
