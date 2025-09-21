@@ -276,22 +276,33 @@ function handleDataFetchExpandNode(request: unknown) {
   // expandRequest is now properly typed by zod schema
   const { nodeId, entityId, entityType, options, expansionSettings } = expandRequest;
 
-  // Type guard for RelationType using string literal checks
-  const isValidRelationType = (type: string): type is RelationType => {
-    const validTypes = [
-      "authored", "affiliated", "published_in", "funded_by", "references",
-      "source_published_by", "institution_child_of", "publisher_child_of",
-      "work_has_topic", "related_to"
-    ];
-    return validTypes.includes(type);
-  };
-
   // Convert validated options to proper types if present
-  const validRelationTypes = options?.relationTypes?.filter(isValidRelationType);
-  const typedOptions: ExpansionOptions | undefined = options ? {
-    ...options,
-    relationTypes: validRelationTypes
-  } : undefined;
+  let typedOptions: ExpansionOptions | undefined = undefined;
+  if (options) {
+    // Map string values to RelationType enum values
+    const relationTypes: RelationType[] = [];
+    if (options.relationTypes) {
+      for (const type of options.relationTypes) {
+        switch (type) {
+          case "authored": relationTypes.push(RelationType.AUTHORED); break;
+          case "affiliated": relationTypes.push(RelationType.AFFILIATED); break;
+          case "published_in": relationTypes.push(RelationType.PUBLISHED_IN); break;
+          case "funded_by": relationTypes.push(RelationType.FUNDED_BY); break;
+          case "references": relationTypes.push(RelationType.REFERENCES); break;
+          case "source_published_by": relationTypes.push(RelationType.SOURCE_PUBLISHED_BY); break;
+          case "institution_child_of": relationTypes.push(RelationType.INSTITUTION_CHILD_OF); break;
+          case "publisher_child_of": relationTypes.push(RelationType.PUBLISHER_CHILD_OF); break;
+          case "work_has_topic": relationTypes.push(RelationType.WORK_HAS_TOPIC); break;
+          case "related_to": relationTypes.push(RelationType.RELATED_TO); break;
+        }
+      }
+    }
+
+    typedOptions = {
+      ...options,
+      relationTypes: relationTypes.length > 0 ? relationTypes : undefined
+    };
+  }
 
   // Type guard for ExpansionSettings
   const isValidExpansionSettings = (settings: unknown): settings is ExpansionSettings => {
