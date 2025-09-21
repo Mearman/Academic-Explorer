@@ -94,7 +94,7 @@ export function getBackgroundWorker(): Promise<Worker> {
         // Extract eventType safely using Object.hasOwnProperty and bracket notation
         const eventType = "eventType" in message &&
           Object.prototype.hasOwnProperty.call(message, "eventType") ?
-          (message as { eventType: unknown })["eventType"] : undefined;
+          message["eventType" as keyof typeof message] : undefined;
 
         if (typeof eventType !== "string") {
           return;
@@ -103,17 +103,17 @@ export function getBackgroundWorker(): Promise<Worker> {
         // Extract worker type from payload if present
         let workerType: string | undefined;
         if ("payload" in message && Object.prototype.hasOwnProperty.call(message, "payload")) {
-          const payload = (message as { payload: unknown })["payload"];
+          const payload = message["payload" as keyof typeof message];
           if (payload && typeof payload === "object" && payload !== null && "workerType" in payload) {
             const payloadWorkerType = Object.prototype.hasOwnProperty.call(payload, "workerType") ?
-              (payload as { workerType: unknown })["workerType"] : undefined;
+              payload["workerType" as keyof typeof payload] : undefined;
             workerType = typeof payloadWorkerType === "string" ? payloadWorkerType : undefined;
           }
         }
 
         logger.debug("graph", "EventBridge message received", {
           eventType,
-          payload: "payload" in message ? (message as { payload: unknown })["payload"] : undefined,
+          payload: "payload" in message ? message["payload" as keyof typeof message] : undefined,
           fullMessage: message
         });
         if (eventType === "worker:ready" && workerType === "force-animation") {
