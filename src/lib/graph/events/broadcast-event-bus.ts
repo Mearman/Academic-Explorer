@@ -1,361 +1,279 @@
 /**
- * BroadcastChannel-based Event Bus
- * Provides cross-context communication between main thread and workers using the native BroadcastChannel API
- * Based on modern browser standards for efficient multi-context messaging
+ * BroadcastChannel-based event bus implementation.
+ * Provides cross-context messaging following the patterns described in the
+ * worker off-loading and event coordination design notes.
  */
 
 import { logger } from "@/lib/logger";
-import { WorkerEventType, type WorkerEventPayloads } from "./types";
+import { WorkerEventType, WorkerEventPayloadSchemas, parseWorkerEventPayload, type WorkerEventPayloads } from "./types";
+
+function isBusEvent(value: unknown): value is BusEvent {
+  return typeof value === "object" && value !== null && "type" in value;
+}
 
 export interface BusEvent {
   type: string;
   payload?: unknown;
-  messageId?: string;
-  timestamp: number;
-  sourceContext: "main" | "worker";
-  targetContext?: "main" | "worker" | "all";
+  requestId?: string;
+  timestamp?: number;
+  source?: "local" | "remote";
 }
 
-interface EventListener {
-  id: string;
+interface ListenerEntry {
   handler: (event: BusEvent) => void;
-  once?: boolean;
+  once: boolean;
 }
 
+/**
+ * Event bus that optionally mirrors messages through BroadcastChannel.
+ * Each channel name receives its own singleton instance.
+ */
 export class BroadcastEventBus {
-  private static instance: BroadcastEventBus | null = null;
-  private channel: BroadcastChannel;
-  private listeners = new Map<string, Set<EventListener>>();
-  private currentContext: "main" | "worker";
-  private messageIdCounter = 0;
+  private static instances = new Map<string, BroadcastEventBus>();
 
-  private constructor(channelName: string = "academic-explorer-events") {
-    this.channel = new BroadcastChannel(channelName);
-    this.currentContext = typeof window === "undefined" ? "worker" : "main";
-    this.setupMessageHandling();
+  private readonly listeners = new Map<string, Map<string, ListenerEntry>>();
+  private readonly channelName: string;
+  private readonly channel?: BroadcastChannel;
+  private disposed = false;
 
-    logger.debug("eventbridge", `BroadcastEventBus initialized in ${this.currentContext} context`, {
-      channelName,
-      context: this.currentContext
-    });
-  }
+  private constructor(channelName: string) {
+    this.channelName = channelName;
 
-  /**
-   * Get singleton instance
-   */
-  static getInstance(channelName?: string): BroadcastEventBus {
-    if (!BroadcastEventBus.instance) {
-      BroadcastEventBus.instance = new BroadcastEventBus(channelName);
-    }
-    return BroadcastEventBus.instance;
-  }
-
-  /**
-   * Emit an event to the broadcast channel
-   */
-  emit(event: BusEvent): void {
-    try {
-      const messageId = `${this.currentContext}-${Date.now().toString()}-${(++this.messageIdCounter).toString()}`;
-      const enrichedEvent: BusEvent = {
-        ...event,
-        messageId,
-        timestamp: event.timestamp || Date.now(),
-        sourceContext: this.currentContext
+    if (typeof BroadcastChannel !== "undefined") {
+      this.channel = new BroadcastChannel(channelName);
+      this.channel.onmessage = event => {
+        if (isBusEvent(event.data)) {
+          this.dispatch(event.data, { fromChannel: true });
+        }
       };
-
-      this.channel.postMessage(enrichedEvent);
-
-      logger.debug("eventbridge", "Event emitted to broadcast channel", {
-        type: event.type,
-        messageId,
-        targetContext: event.targetContext,
-        sourceContext: this.currentContext
-      });
-    } catch (error) {
-      logger.error("eventbridge", "Failed to emit event to broadcast channel", {
-        type: event.type,
-        error: error instanceof Error ? error.message : "Unknown error"
-      });
+    } else {
+      logger.warn("eventbridge", "BroadcastChannel unavailable - operating in local mode", { channelName });
     }
   }
 
-  /**
-   * Listen for events of a specific type
-   */
-  listen(eventType: string, handler: (event: BusEvent) => void, options?: { once?: boolean }): string {
-    const listenerId = `${eventType}-${Date.now().toString()}-${Math.random().toString(36).substring(2)}`;
-
-    if (!this.listeners.has(eventType)) {
-      this.listeners.set(eventType, new Set());
+  static getInstance(channelName = "academic-explorer-events"): BroadcastEventBus {
+    const existing = BroadcastEventBus.instances.get(channelName);
+    if (existing) {
+      return existing;
     }
 
-    const listener: EventListener = {
-      id: listenerId,
-      handler,
-      once: options?.once
+    const instance = new BroadcastEventBus(channelName);
+    BroadcastEventBus.instances.set(channelName, instance);
+    return instance;
+  }
+
+  emit(event: BusEvent): void {
+    if (this.disposed) {
+      return;
+    }
+
+    const enriched: BusEvent = {
+      ...event,
+      timestamp: event.timestamp ?? Date.now(),
+      source: event.source ?? "local"
     };
 
-    const eventListeners = this.listeners.get(eventType);
-    if (eventListeners) {
-      eventListeners.add(listener);
-    }
+    this.dispatch(enriched, { fromChannel: false });
+  }
 
-    logger.debug("eventbridge", "Event listener registered", {
-      eventType,
-      listenerId,
-      once: options?.once
-    });
+  listen(
+    eventType: string,
+    ...[handler, options]: [(event: BusEvent) => void, { once?: boolean }?]
+  ): string {
+    const listenerId = `${eventType}-${Date.now().toString(36)}-${Math.random().toString(36).slice(2)}`;
+
+    const eventListeners = this.listeners.get(eventType);
+    const entry: ListenerEntry = {
+      handler,
+      once: options?.once ?? false
+    };
+
+    if (eventListeners) {
+      eventListeners.set(listenerId, entry);
+    } else {
+      const map = new Map<string, ListenerEntry>();
+      map.set(listenerId, entry);
+      this.listeners.set(eventType, map);
+    }
 
     return listenerId;
   }
 
-  /**
-   * Remove a specific listener
-   */
-  removeListener(listenerId: string): boolean {
-    for (const [eventType, listeners] of this.listeners.entries()) {
-      for (const listener of listeners) {
-        if (listener.id === listenerId) {
-          listeners.delete(listener);
-          if (listeners.size === 0) {
-            this.listeners.delete(eventType);
-          }
-          logger.debug("eventbridge", "Event listener removed", { listenerId, eventType });
-          return true;
-        }
-      }
-    }
-    return false;
-  }
-
-  /**
-   * Remove all listeners for an event type
-   */
-  removeAllListeners(eventType?: string): void {
-    if (eventType) {
-      this.listeners.delete(eventType);
-      logger.debug("eventbridge", "All listeners removed for event type", { eventType });
-    } else {
-      this.listeners.clear();
-      logger.debug("eventbridge", "All listeners removed");
-    }
-  }
-
-  /**
-   * Listen for an event once
-   */
-  once(eventType: string, handler: (event: BusEvent) => void): string {
+  once(...[eventType, handler]: [string, (event: BusEvent) => void]): string {
     return this.listen(eventType, handler, { once: true });
   }
 
-  /**
-   * Get the current context (main or worker)
-   */
-  getCurrentContext(): "main" | "worker" {
-    return this.currentContext;
-  }
-
-  /**
-   * Get debug information
-   */
-  getDebugInfo(): Record<string, unknown> {
-    const listenerCounts: Record<string, number> = {};
-    for (const [eventType, listeners] of this.listeners.entries()) {
-      listenerCounts[eventType] = listeners.size;
+  removeListener(listenerId: string): boolean {
+    for (const [eventType, handlers] of this.listeners.entries()) {
+      if (handlers.delete(listenerId)) {
+        if (handlers.size === 0) {
+          this.listeners.delete(eventType);
+        }
+        return true;
+      }
     }
 
-    return {
-      currentContext: this.currentContext,
-      listenerCounts,
-      totalListeners: Array.from(this.listeners.values()).reduce((sum, set) => sum + set.size, 0)
-    };
+    return false;
   }
 
-  /**
-   * Setup message handling for incoming broadcast events
-   */
-  private setupMessageHandling(): void {
-    this.channel.onmessage = (messageEvent: MessageEvent<BusEvent>) => {
-      const event = messageEvent.data;
-
-      // Skip events from the same context to avoid loops
-      if (event.sourceContext === this.currentContext) {
-        return;
-      }
-
-      // Filter by target context if specified
-      if (event.targetContext &&
-          event.targetContext !== "all" &&
-          event.targetContext !== this.currentContext) {
-        return;
-      }
-
-      this.handleIncomingEvent(event);
-    };
-  }
-
-  /**
-   * Handle incoming events from other contexts
-   */
-  private handleIncomingEvent(event: BusEvent): void {
-    const listeners = this.listeners.get(event.type);
-    if (!listeners || listeners.size === 0) {
+  removeAllListeners(eventType?: string): void {
+    if (eventType) {
+      this.listeners.delete(eventType);
       return;
     }
 
-    logger.debug("eventbridge", "Handling incoming broadcast event", {
-      type: event.type,
-      messageId: event.messageId,
-      sourceContext: event.sourceContext,
-      listenerCount: listeners.size
-    });
+    this.listeners.clear();
+  }
 
-    // Create a copy of listeners to avoid issues with concurrent modifications
-    const listenersArray = Array.from(listeners);
+  close(): void {
+    if (this.disposed) {
+      return;
+    }
 
-    for (const listener of listenersArray) {
-      try {
-        listener.handler(event);
+    this.disposed = true;
+    this.channel?.close();
+    this.listeners.clear();
+  }
 
-        // Remove one-time listeners
-        if (listener.once) {
-          listeners.delete(listener);
+  getDebugInfo(): Record<string, unknown> {
+    const listenerCounts: Record<string, number> = {};
+    for (const [eventType, handlers] of this.listeners.entries()) {
+      listenerCounts[eventType] = handlers.size;
+    }
+
+    return {
+      channelName: this.channelName,
+      listenerCounts,
+      totalListeners: Object.values(listenerCounts).reduce((sum, count) => sum + count, 0)
+    };
+  }
+
+  static resetInstance(channelName?: string): void {
+    if (channelName) {
+      const bus = BroadcastEventBus.instances.get(channelName);
+      bus?.close();
+      BroadcastEventBus.instances.delete(channelName);
+      return;
+    }
+
+    for (const bus of BroadcastEventBus.instances.values()) {
+      bus.close();
+    }
+    BroadcastEventBus.instances.clear();
+  }
+
+  private dispatch(event: BusEvent, { fromChannel }: { fromChannel: boolean }): void {
+    if (this.disposed) {
+      return;
+    }
+
+    const handlers = this.listeners.get(event.type);
+    if (handlers) {
+      for (const [listenerId, entry] of handlers.entries()) {
+        try {
+          entry.handler({
+            ...event,
+            source: fromChannel ? "remote" : (event.source ?? "local"),
+            timestamp: event.timestamp ?? Date.now()
+          });
+        } catch (error) {
+          logger.error("eventbridge", "Error running event listener", {
+            eventType: event.type,
+            listenerId,
+            error: error instanceof Error ? error.message : "Unknown error"
+          });
         }
+
+        if (entry.once) {
+          handlers.delete(listenerId);
+        }
+      }
+
+      if (handlers.size === 0) {
+        this.listeners.delete(event.type);
+      }
+    }
+
+    if (!fromChannel && this.channel) {
+      try {
+        this.channel.postMessage({
+          ...event,
+          source: "local",
+          timestamp: event.timestamp ?? Date.now()
+        });
       } catch (error) {
-        logger.error("eventbridge", "Error in broadcast event handler", {
-          type: event.type,
-          listenerId: listener.id,
+        logger.error("eventbridge", "Failed to post event to BroadcastChannel", {
+          eventType: event.type,
           error: error instanceof Error ? error.message : "Unknown error"
         });
       }
     }
-
-    // Clean up empty listener sets
-    if (listeners.size === 0) {
-      this.listeners.delete(event.type);
-    }
-  }
-
-  /**
-   * Close the broadcast channel and clean up resources
-   */
-  close(): void {
-    this.channel.close();
-    this.listeners.clear();
-    logger.debug("eventbridge", "BroadcastEventBus closed and cleaned up");
-  }
-
-  /**
-   * Reset singleton instance (primarily for testing)
-   */
-  static resetInstance(): void {
-    if (BroadcastEventBus.instance) {
-      BroadcastEventBus.instance.close();
-      BroadcastEventBus.instance = null;
-    }
   }
 }
 
-// Create typed wrapper for worker events
 export class WorkerEventBus {
-  private eventBus: BroadcastEventBus;
+  private readonly bus: BroadcastEventBus;
 
-  constructor(channelName?: string) {
-    this.eventBus = BroadcastEventBus.getInstance(channelName);
+  constructor(channelName = "academic-explorer-worker-events") {
+    this.bus = BroadcastEventBus.getInstance(channelName);
   }
 
-  /**
-   * Emit a typed worker event
-   */
   emit<T extends WorkerEventType>(
-    eventType: T,
-    payload: WorkerEventPayloads[T],
-    targetContext?: "main" | "worker" | "all"
+    ...[eventType, payload]: [T, WorkerEventPayloads[T]]
   ): void {
-    this.eventBus.emit({
+    this.bus.emit({
       type: eventType,
       payload,
-      timestamp: Date.now(),
-      sourceContext: this.eventBus.getCurrentContext(),
-      targetContext
+      timestamp: Date.now()
     });
   }
 
-  /**
-   * Listen for typed worker events
-   */
+  emitUnknown(...[eventType, payload]: [string, unknown]): void {
+    this.bus.emit({
+      type: eventType,
+      payload,
+      timestamp: Date.now()
+    });
+  }
+
   listen<T extends WorkerEventType>(
-    eventType: T,
-    handler: (payload: WorkerEventPayloads[T]) => void,
-    options?: { once?: boolean }
+    ...[eventType, handler, options]: [
+      T,
+      (payload: WorkerEventPayloads[T]) => void,
+      { once?: boolean }?
+    ]
   ): string {
-    return this.eventBus.listen(eventType, (event) => {
-      // Type-safe payload extraction
-      if (event.payload && typeof event.payload === "object" && event.payload !== null) {
-        // Validate payload structure before calling handler
-        const payload = event.payload;
-        if (this.isValidWorkerEventPayload(payload, eventType)) {
-          handler(payload);
+    const schema = WorkerEventPayloadSchemas[eventType];
+    return this.bus.listen(
+      eventType,
+      event => {
+        const parsed = parseWorkerEventPayload(event.payload, eventType, schema);
+        if (parsed !== null) {
+          handler(parsed);
         }
-      }
-    }, options);
+      },
+      options
+    );
   }
 
-  /**
-   * Validate that a payload matches the expected structure for a worker event type
-   */
-  private isValidWorkerEventPayload<T extends WorkerEventType>(payload: unknown, eventType: T): payload is WorkerEventPayloads[T] {
-    if (typeof payload !== "object" || payload === null || Array.isArray(payload)) {
-      return false;
-    }
-
-    // All worker events should have these base properties
-    if (!("workerId" in payload) || typeof payload.workerId !== "string" ||
-        !("timestamp" in payload) || typeof payload.timestamp !== "number") {
-      return false;
-    }
-
-    // Type-specific validation
-    switch (eventType) {
-      case WorkerEventType.WORKER_ERROR:
-        return "error" in payload && typeof payload.error === "string";
-      default:
-        return true; // Allow other events with basic validation
-    }
-  }
-
-  /**
-   * Listen for a worker event once
-   */
   once<T extends WorkerEventType>(
-    eventType: T,
-    handler: (payload: WorkerEventPayloads[T]) => void
+    ...[eventType, handler]: [T, (payload: WorkerEventPayloads[T]) => void]
   ): string {
     return this.listen(eventType, handler, { once: true });
   }
 
-  /**
-   * Remove listener
-   */
   removeListener(listenerId: string): boolean {
-    return this.eventBus.removeListener(listenerId);
+    return this.bus.removeListener(listenerId);
   }
 
-  /**
-   * Remove all listeners for an event type
-   */
   removeAllListeners(eventType?: WorkerEventType): void {
-    this.eventBus.removeAllListeners(eventType);
+    this.bus.removeAllListeners(eventType);
   }
 
-  /**
-   * Get debug information
-   */
   getDebugInfo(): Record<string, unknown> {
-    return this.eventBus.getDebugInfo();
+    return this.bus.getDebugInfo();
   }
 }
 
-// Export singleton instances
 export const broadcastEventBus = BroadcastEventBus.getInstance();
 export const workerEventBus = new WorkerEventBus();

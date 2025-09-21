@@ -15,9 +15,26 @@ import {
 } from "d3-force";
 import { randomLcg } from "d3-random";
 import { WorkerEventType } from "@/lib/graph/events/types";
-import { workerEventBus } from "@/lib/graph/events/broadcast-event-bus";
 import { logger } from "@/lib/logger";
 import { z } from "zod";
+
+type WorkerMessageKind = "READY" | "PROGRESS" | "SUCCESS" | "ERROR";
+
+interface WorkerOutboundMessage {
+  type: WorkerMessageKind;
+  event: WorkerEventType | string;
+  payload?: unknown;
+  requestId?: string;
+  progress?: number;
+  error?: string;
+}
+
+function emitWorkerMessage(message: WorkerOutboundMessage): void {
+  self.postMessage({
+    ...message,
+    timestamp: Date.now()
+  });
+}
 
 // Comprehensive zod schemas for type-safe worker communication
 const ForceSimulationNodeSchema = z.object({
@@ -121,27 +138,30 @@ function initializeWorker() {
     openAlexClient = createUnifiedOpenAlexClient();
 
     // Emit worker ready event
-    workerEventBus.emit(
-      WorkerEventType.WORKER_READY,
-      {
+    emitWorkerMessage({
+      type: "READY",
+      event: WorkerEventType.WORKER_READY,
+      payload: {
         workerId: "background-worker",
         workerType: "force-animation",
         timestamp: Date.now()
       }
-    );
+    });
 
     logger.debug("worker", "Enhanced background worker initialized successfully");
   } catch (error) {
     logger.error("worker", "Failed to initialize enhanced background worker", { error });
-    workerEventBus.emit(
-      WorkerEventType.WORKER_ERROR,
-      {
+    emitWorkerMessage({
+      type: "ERROR",
+      event: WorkerEventType.WORKER_ERROR,
+      error: error instanceof Error ? error.message : "Failed to initialize worker",
+      payload: {
         workerId: "background-worker",
         workerType: "force-animation",
         error: error instanceof Error ? error.message : "Failed to initialize worker",
         timestamp: Date.now()
       }
-    );
+    });
   }
 }
 
@@ -368,9 +388,10 @@ function startForceSimulation(
   isPaused = false;
 
   // Emit started event
-  workerEventBus.emit(
-    WorkerEventType.FORCE_SIMULATION_PROGRESS,
-    {
+  emitWorkerMessage({
+    type: "PROGRESS",
+    event: WorkerEventType.FORCE_SIMULATION_PROGRESS,
+    payload: {
       workerId: "background-worker",
       workerType: "force-animation",
       messageType: "started",
@@ -378,7 +399,7 @@ function startForceSimulation(
       linkCount: currentLinks.length,
       timestamp: Date.now()
     }
-  );
+  });
 
   // Start simulation with tick handler
   simulation.on("tick", handleSimulationTick);
@@ -394,14 +415,15 @@ function stopForceSimulation() {
   isAnimating = false;
   isPaused = false;
 
-  workerEventBus.emit(
-    WorkerEventType.FORCE_SIMULATION_STOPPED,
-    {
+  emitWorkerMessage({
+    type: "SUCCESS",
+    event: WorkerEventType.FORCE_SIMULATION_STOPPED,
+    payload: {
       workerId: "background-worker",
       workerType: "force-animation",
       timestamp: Date.now()
     }
-  );
+  });
 }
 
 function pauseForceSimulation() {
@@ -409,15 +431,16 @@ function pauseForceSimulation() {
     simulation.stop();
     isPaused = true;
 
-    workerEventBus.emit(
-      WorkerEventType.FORCE_SIMULATION_PROGRESS,
-      {
+    emitWorkerMessage({
+      type: "PROGRESS",
+      event: WorkerEventType.FORCE_SIMULATION_PROGRESS,
+      payload: {
         workerId: "background-worker",
         workerType: "force-animation",
         messageType: "paused",
         timestamp: Date.now()
       }
-    );
+    });
   }
 }
 
@@ -426,15 +449,16 @@ function resumeForceSimulation() {
     simulation.restart();
     isPaused = false;
 
-    workerEventBus.emit(
-      WorkerEventType.FORCE_SIMULATION_PROGRESS,
-      {
+    emitWorkerMessage({
+      type: "PROGRESS",
+      event: WorkerEventType.FORCE_SIMULATION_PROGRESS,
+      payload: {
         workerId: "background-worker",
         workerType: "force-animation",
         messageType: "resumed",
         timestamp: Date.now()
       }
-    );
+    });
   }
 }
 
@@ -482,16 +506,17 @@ function updateSimulationParameters(config: Partial<ForceSimulationConfig>) {
     }
   }
 
-  workerEventBus.emit(
-    WorkerEventType.FORCE_SIMULATION_PROGRESS,
-    {
+  emitWorkerMessage({
+    type: "PROGRESS",
+    event: WorkerEventType.FORCE_SIMULATION_PROGRESS,
+    payload: {
       workerId: "background-worker",
       workerType: "force-animation",
       messageType: "parameters_updated",
       config: animationConfig,
       timestamp: Date.now()
     }
-  );
+  });
 }
 
 function handleSimulationTick() {
@@ -513,9 +538,11 @@ function handleSimulationTick() {
   const shouldSend = frameCount % (animationConfig.sendEveryNTicks || 1) === 0;
 
   if (shouldSend) {
-    workerEventBus.emit(
-      WorkerEventType.FORCE_SIMULATION_PROGRESS,
-      {
+    emitWorkerMessage({
+      type: "PROGRESS",
+      event: WorkerEventType.FORCE_SIMULATION_PROGRESS,
+      progress,
+      payload: {
         workerId: "background-worker",
         workerType: "force-animation",
         messageType: "tick",
@@ -528,7 +555,7 @@ function handleSimulationTick() {
         linkCount: currentLinks.length,
         timestamp: Date.now()
       }
-    );
+    });
   }
 }
 
@@ -539,9 +566,10 @@ function handleSimulationEnd() {
     y: node.y || 0
   }));
 
-  workerEventBus.emit(
-    WorkerEventType.FORCE_SIMULATION_COMPLETE,
-    {
+  emitWorkerMessage({
+    type: "SUCCESS",
+    event: WorkerEventType.FORCE_SIMULATION_COMPLETE,
+    payload: {
       workerId: "background-worker",
       workerType: "force-animation",
       positions,
@@ -550,7 +578,7 @@ function handleSimulationEnd() {
       reason: "converged",
       timestamp: Date.now()
     }
-  );
+  });
 
   isAnimating = false;
   isPaused = false;
@@ -575,9 +603,12 @@ async function expandNode(
 
   try {
     // Emit progress start
-    workerEventBus.emit(
-      WorkerEventType.DATA_FETCH_PROGRESS,
-      {
+    emitWorkerMessage({
+      type: "PROGRESS",
+      event: WorkerEventType.DATA_FETCH_PROGRESS,
+      requestId,
+      progress: 0,
+      payload: {
         requestId,
         nodeId,
         entityId,
@@ -585,36 +616,42 @@ async function expandNode(
         progress: 0,
         timestamp: Date.now()
       }
-    );
+    });
 
     // Simulate data fetching with progress updates
     const steps = ["fetching", "processing", "expanding", "finalizing"];
 
     for (let i = 0; i < steps.length; i++) {
       if (abortController.signal.aborted) {
-        workerEventBus.emit(
-          WorkerEventType.DATA_FETCH_CANCELLED,
-          {
+        emitWorkerMessage({
+          type: "SUCCESS",
+          event: WorkerEventType.DATA_FETCH_CANCELLED,
+          requestId,
+          payload: {
             requestId,
             nodeId,
             entityId,
             timestamp: Date.now()
           }
-        );
+        });
         return;
       }
 
-      workerEventBus.emit(
-        WorkerEventType.DATA_FETCH_PROGRESS,
-        {
+      const stepProgress = (i + 1) / steps.length;
+      emitWorkerMessage({
+        type: "PROGRESS",
+        event: WorkerEventType.DATA_FETCH_PROGRESS,
+        requestId,
+        progress: stepProgress,
+        payload: {
           requestId,
           nodeId,
           entityId,
           currentStep: steps[i],
-          progress: (i + 1) / steps.length,
+          progress: stepProgress,
           timestamp: Date.now()
         }
-      );
+      });
 
       // Simulate async work
       await new Promise(resolve => setTimeout(resolve, 100));
@@ -642,9 +679,11 @@ async function expandNode(
       }
     ];
 
-    workerEventBus.emit(
-      WorkerEventType.DATA_FETCH_COMPLETE,
-      {
+    emitWorkerMessage({
+      type: "SUCCESS",
+      event: WorkerEventType.DATA_FETCH_COMPLETE,
+      requestId,
+      payload: {
         requestId,
         nodeId,
         entityId,
@@ -658,19 +697,22 @@ async function expandNode(
         },
         timestamp: Date.now()
       }
-    );
+    });
 
   } catch (error) {
-    workerEventBus.emit(
-      WorkerEventType.DATA_FETCH_ERROR,
-      {
+    emitWorkerMessage({
+      type: "ERROR",
+      event: WorkerEventType.DATA_FETCH_ERROR,
+      requestId,
+      error: error instanceof Error ? error.message : "Unknown error",
+      payload: {
         requestId,
         nodeId,
         entityId,
         error: error instanceof Error ? error.message : "Unknown error",
         timestamp: Date.now()
       }
-    );
+    });
   } finally {
     activeExpansions.delete(requestId);
   }
@@ -704,10 +746,15 @@ try {
   initializeWorker();
 } catch (error: unknown) {
   // Worker initialization error - log to worker event bus instead of console
-  workerEventBus.emit(WorkerEventType.WORKER_ERROR, {
-    workerId: "background-worker",
-    workerType: "force-animation",
+  emitWorkerMessage({
+    type: "ERROR",
+    event: WorkerEventType.WORKER_ERROR,
     error: String(error),
-    timestamp: Date.now()
+    payload: {
+      workerId: "background-worker",
+      workerType: "force-animation",
+      error: String(error),
+      timestamp: Date.now()
+    }
   });
 }

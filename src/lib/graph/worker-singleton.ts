@@ -4,8 +4,12 @@
  */
 
 import { WorkerEventType } from "@/lib/graph/events/types";
-import { workerEventBus } from "@/lib/graph/events/broadcast-event-bus";
 import { logger } from "@/lib/logger";
+import type { WorkerResponse } from "@/hooks/use-web-worker";
+
+const isRecord = (value: unknown): value is Record<string, unknown> => {
+  return typeof value === "object" && value !== null;
+};
 
 interface WorkerSingleton {
   worker: Worker | null;
@@ -50,6 +54,8 @@ export function getBackgroundWorker(): Promise<Worker> {
   workerState.isInitializing = true;
 
   return new Promise((resolve, reject) => {
+    let messageListener: ((event: MessageEvent<WorkerResponse>) => void) | null = null;
+
     const initializeWorker = async () => {
       try {
         // Prefer Vite/Nx worker constructor import for dev compatibility
@@ -74,6 +80,38 @@ export function getBackgroundWorker(): Promise<Worker> {
             new URL("../../workers/background.worker.ts", import.meta.url),
             { type: "module" }
           );
+        }
+
+        if (workerState.worker) {
+          messageListener = (event: MessageEvent<WorkerResponse>) => {
+            const data = event.data;
+            if (!data) {
+              return;
+            }
+
+            if (data.type === "READY" || data.event === WorkerEventType.WORKER_READY) {
+              logger.debug("graph", "Worker ready message received", { event: data.event, type: data.type });
+              onReady();
+            }
+
+            if (data.type === "ERROR" || data.event === WorkerEventType.WORKER_ERROR) {
+              const payload = isRecord(data.payload) ? data.payload : undefined;
+              const errorMessage = typeof data.error === "string"
+                ? data.error
+                : typeof payload?.error === "string"
+                  ? payload.error
+                  : "Worker error";
+              logger.error("graph", "Background worker error", { error: errorMessage });
+              workerState.errorCallbacks.forEach(callback => { callback(errorMessage); });
+            }
+          };
+
+          workerState.worker.addEventListener("message", messageListener);
+          workerState.worker.addEventListener("error", (error) => {
+            const errorMessage = error?.message ?? "Unknown worker error";
+            logger.error("graph", "Background worker error", { error: errorMessage });
+            workerState.errorCallbacks.forEach(callback => { callback(errorMessage); });
+          });
         }
       } catch (error) {
         workerState.isInitializing = false;
@@ -107,50 +145,16 @@ export function getBackgroundWorker(): Promise<Worker> {
     };
 
     function cleanup() {
-      if (readyListenerId) {
-        workerEventBus.removeListener(readyListenerId);
-      }
       if (readyTimeout !== null) {
         clearTimeout(readyTimeout);
+      }
+      if (workerState.worker && messageListener) {
+        workerState.worker.removeEventListener("message", messageListener);
       }
       workerState.readyCallbacks.delete(onReady);
     }
 
     workerState.readyCallbacks.add(onReady);
-
-    if (workerState.worker) {
-      workerState.worker.addEventListener("error", (error) => {
-        const errorMessage = error?.message ?? "Unknown worker error";
-        logger.error("graph", "Background worker error", { error: errorMessage });
-        workerState.errorCallbacks.forEach(callback => { callback(errorMessage); });
-      });
-    }
-
-    // Worker will communicate via BroadcastChannel instead of direct messages
-
-    // Worker will emit ready event via BroadcastChannel
-
-    // Listen for worker ready via BroadcastChannel
-    let readyListenerId: string | null = null;
-
-    const handleWorkerReady = (payload: unknown) => {
-      logger.debug("graph", "Worker ready event received via BroadcastChannel", { payload });
-
-      // Type guard for worker ready payload
-      if (
-        payload &&
-        typeof payload === "object" &&
-        "workerType" in payload &&
-        payload.workerType === "force-animation"
-      ) {
-        logger.debug("graph", "Worker ready event confirmed");
-        onReady();
-      }
-    };
-
-    logger.debug("graph", "Registering BroadcastChannel listener for worker ready");
-    readyListenerId = workerEventBus.listen(WorkerEventType.WORKER_READY, handleWorkerReady);
-    logger.debug("graph", "BroadcastChannel listener registered successfully");
 
     // Timeout for readiness failure (emit error instead of fallback resolve)
     readyTimeout = setTimeout(() => {
@@ -161,16 +165,7 @@ export function getBackgroundWorker(): Promise<Worker> {
       workerState.isReady = false;
       workerState.isInitializing = false;
       workerState.readyCallbacks.clear();
-
-      workerEventBus.emit(
-        WorkerEventType.WORKER_ERROR,
-        {
-          workerId: "background-worker",
-          workerType: "force-animation",
-          error: "Worker initialization timeout",
-          timestamp: Date.now()
-        }
-      );
+      workerState.errorCallbacks.forEach(callback => { callback("Worker initialization timeout"); });
 
       reject(new Error("Worker readiness timeout"));
     }, 10000); // Longer timeout for better reliability

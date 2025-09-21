@@ -1,91 +1,17 @@
-/**
- * Enhanced Background Worker Hook
- * Leverages the new BroadcastChannel-based event system for improved worker communication
- * Provides better progress tracking, error handling, and type safety
- */
-
-import { useCallback, useEffect, useRef, useState } from "react";
-import { z } from "zod";
+import { useCallback, useMemo, useRef, useState } from "react";
 import { logger } from "@/lib/logger";
-import { useWebWorker } from "./use-web-worker";
+import { useWebWorker, type WorkerRequest, type WorkerResponse } from "./use-web-worker";
 import { workerEventBus } from "@/lib/graph/events/broadcast-event-bus";
+import { WorkerEventType, isWorkerEventType } from "@/lib/graph/events/types";
 import type {
   ForceSimulationConfig,
-  ForceSimulationNode,
   ForceSimulationLink,
+  ForceSimulationNode,
   NodePosition
 } from "@/lib/graph/events/enhanced-worker-types";
-import type { EntityType, GraphNode, GraphEdge } from "@/lib/graph/types";
+import type { EntityType, GraphEdge, GraphNode } from "@/lib/graph/types";
 import type { ExpansionOptions } from "@/lib/entities";
 import type { ExpansionSettings } from "@/lib/graph/types/expansion-settings";
-import { WorkerEventType } from "@/lib/graph/events/types";
-
-// Zod schemas for worker message validation
-const NodePositionSchema = z.object({
-  id: z.string(),
-  x: z.number(),
-  y: z.number(),
-});
-
-const ForceSimulationProgressSchema = z.object({
-  type: z.literal("FORCE_SIMULATION_PROGRESS").optional(),
-  requestId: z.string().optional(),
-  messageType: z.string().optional(),
-  alpha: z.number().optional(),
-  iteration: z.number().optional(),
-  nodeCount: z.number().optional(),
-  linkCount: z.number().optional(),
-  fps: z.number().optional(),
-  progress: z.number().optional(),
-  positions: z.array(NodePositionSchema).optional(),
-});
-
-const ForceSimulationCompleteSchema = z.object({
-  type: z.literal("FORCE_SIMULATION_COMPLETE"),
-  requestId: z.string().optional(),
-  positions: z.array(NodePositionSchema),
-  totalIterations: z.number(),
-  finalAlpha: z.number(),
-  reason: z.string(),
-});
-
-const ForceSimulationStoppedSchema = z.object({
-  type: z.literal("FORCE_SIMULATION_STOPPED").optional(),
-  requestId: z.string().optional(),
-  workerType: z.string().optional(),
-});
-
-const ForceSimulationErrorSchema = z.object({
-  type: z.literal("FORCE_SIMULATION_ERROR").optional(),
-  requestId: z.string().optional(),
-  workerType: z.string().optional(),
-  error: z.string(),
-});
-
-const DataFetchProgressSchema = z.object({
-  type: z.literal("DATA_FETCH_PROGRESS").optional(),
-  requestId: z.string().optional(),
-  nodeId: z.string(),
-  progress: z.number(),
-  status: z.string().optional(),
-  currentStep: z.string().optional(),
-});
-
-const DataFetchCompleteSchema = z.object({
-  type: z.literal("DATA_FETCH_COMPLETE").optional(),
-  requestId: z.string().optional(),
-  nodeId: z.string().optional(),
-  nodes: z.array(z.unknown()).optional(), // Will be validated separately as GraphNode[]
-  edges: z.array(z.unknown()).optional(), // Will be validated separately as GraphEdge[]
-  statistics: z.unknown().optional(), // Will be validated separately
-});
-
-const DataFetchErrorSchema = z.object({
-  type: z.literal("DATA_FETCH_ERROR").optional(),
-  requestId: z.string().optional(),
-  nodeId: z.string(),
-  error: z.string(),
-});
 
 interface AnimationState {
   isRunning: boolean;
@@ -107,29 +33,67 @@ interface PerformanceMetrics {
   averageResponseTime: number;
 }
 
-interface UseEnhancedBackgroundWorkerOptions {
-  // Animation callbacks
+interface WorkerStats {
+  messagesReceived: number;
+  messagesSent: number;
+  errors: number;
+  averageResponseTime: number;
+  lastActivity: number;
+}
+
+export interface UseEnhancedBackgroundWorkerOptions {
   onPositionUpdate?: (positions: NodePosition[]) => void;
   onAnimationComplete?: (
     positions: NodePosition[],
     stats: { totalIterations: number; finalAlpha: number; reason: string }
   ) => void;
   onAnimationError?: (error: string) => void;
-
-  // Data fetching callbacks
   onExpansionProgress?: (nodeId: string, progress: { completed: number; total: number; stage: string }) => void;
   onExpansionComplete?: (result: {
     requestId: string;
     nodes: GraphNode[];
     edges: GraphEdge[];
-    statistics?: unknown
+    statistics?: unknown;
   }) => void;
   onExpansionError?: (nodeId: string, error: string) => void;
-
-  // General options
   autoStart?: boolean;
   enableProgressThrottling?: boolean;
   progressThrottleMs?: number;
+}
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === "object" && value !== null;
+}
+
+function isGraphNodeArray(value: unknown): value is GraphNode[] {
+  return Array.isArray(value) && value.every(item => isRecord(item) && typeof item.id === "string");
+}
+
+function isGraphEdgeArray(value: unknown): value is GraphEdge[] {
+  return Array.isArray(value) && value.every(item => isRecord(item) && typeof item.id === "string");
+}
+
+function toNodePositions(value: unknown): NodePosition[] {
+  if (!Array.isArray(value)) {
+    return [];
+  }
+  return value
+    .map(item => {
+      if (isRecord(item) && typeof item.id === "string") {
+        const x = typeof item.x === "number" ? item.x : 0;
+        const y = typeof item.y === "number" ? item.y : 0;
+        return { id: item.id, x, y } satisfies NodePosition;
+      }
+      return null;
+    })
+    .filter((pos): pos is NodePosition => pos !== null);
+}
+
+function createRequestId(): string {
+  if (typeof crypto !== "undefined" && "randomUUID" in crypto) {
+    return crypto.randomUUID();
+  }
+  return `req-${Date.now().toString(36)}-${Math.random().toString(36).slice(2)}`;
 }
 
 export function useEnhancedBackgroundWorker(options: UseEnhancedBackgroundWorkerOptions = {}) {
@@ -141,27 +105,9 @@ export function useEnhancedBackgroundWorker(options: UseEnhancedBackgroundWorker
     onExpansionComplete,
     onExpansionError,
     enableProgressThrottling = true,
-    progressThrottleMs = 16 // ~60fps
+    progressThrottleMs = 16
   } = options;
 
-  // Worker management using the enhanced useWebWorker hook
-  const {
-    postMessage,
-    isLoading,
-    error: workerError,
-    stats: workerStats,
-    isWorkerAvailable,
-    terminate
-  } = useWebWorker(
-    () => new Worker(new URL("../workers/background.worker.ts", import.meta.url), { type: "module" }),
-    {
-      onMessage: handleWorkerMessage,
-      onError: handleWorkerError,
-      autoTerminate: true
-    }
-  );
-
-  // State management
   const [animationState, setAnimationState] = useState<AnimationState>({
     isRunning: false,
     isPaused: false,
@@ -172,7 +118,6 @@ export function useEnhancedBackgroundWorker(options: UseEnhancedBackgroundWorker
     nodeCount: 0,
     linkCount: 0
   });
-
   const [nodePositions, setNodePositions] = useState<NodePosition[]>([]);
   const [performanceMetrics, setPerformanceMetrics] = useState<PerformanceMetrics>({
     averageFPS: 0,
@@ -182,226 +127,118 @@ export function useEnhancedBackgroundWorker(options: UseEnhancedBackgroundWorker
     totalAnimationTime: 0,
     averageResponseTime: 0
   });
+  const [workerStats, setWorkerStats] = useState<WorkerStats>({
+    messagesReceived: 0,
+    messagesSent: 0,
+    errors: 0,
+    averageResponseTime: 0,
+    lastActivity: 0
+  });
+  const [isWorkerReady, setIsWorkerReady] = useState(false);
 
-  // Refs for tracking
-  const isAnimatingRef = useRef(false);
-  const progressThrottleRef = useRef<NodeJS.Timeout | null>(null);
-  const animationStartTimeRef = useRef<number>(0);
-  const eventListenerIds = useRef<string[]>([]);
+  const lastProgressDispatchRef = useRef<number>(0);
+  const lastTickTimestampRef = useRef<number>(0);
 
-  // BroadcastChannel event handling
-  useEffect(() => {
-    logger.debug("worker", "Setting up enhanced worker event listeners");
-
-    // Worker ready
-    const workerReadyId = workerEventBus.listen(WorkerEventType.WORKER_READY, (payload: unknown) => {
-      if (payload && typeof payload === "object" && "workerType" in payload && payload.workerType === "force-animation") {
-        logger.debug("worker", "Enhanced worker ready via BroadcastChannel", payload);
+  const handleForceProgress = useCallback(
+    (message: WorkerResponse) => {
+      const payload = isRecord(message.payload) ? message.payload : undefined;
+      if (!payload) {
+        return;
       }
-    });
 
-    // Force simulation progress
-    const forceProgressId = workerEventBus.listen(WorkerEventType.FORCE_SIMULATION_PROGRESS, (payload) => {
-      handleForceSimulationProgress(payload);
-    });
+      const messageType = typeof payload.messageType === "string" ? payload.messageType : "tick";
+      const now = Date.now();
 
-    // Force simulation complete
-    const forceCompleteId = workerEventBus.listen(WorkerEventType.FORCE_SIMULATION_COMPLETE, (payload) => {
-      handleForceSimulationComplete(payload);
-    });
-
-    // Force simulation stopped
-    const forceStoppedId = workerEventBus.listen(WorkerEventType.FORCE_SIMULATION_STOPPED, (payload) => {
-      handleForceSimulationStopped(payload);
-    });
-
-    // Force simulation error
-    const forceErrorId = workerEventBus.listen(WorkerEventType.FORCE_SIMULATION_ERROR, (payload) => {
-      handleForceSimulationError(payload);
-    });
-
-    // Data fetch progress
-    const dataProgressId = workerEventBus.listen(WorkerEventType.DATA_FETCH_PROGRESS, (payload) => {
-      handleDataFetchProgress(payload);
-    });
-
-    // Data fetch complete
-    const dataCompleteId = workerEventBus.listen(WorkerEventType.DATA_FETCH_COMPLETE, (payload) => {
-      handleDataFetchComplete(payload);
-    });
-
-    // Data fetch error
-    const dataErrorId = workerEventBus.listen(WorkerEventType.DATA_FETCH_ERROR, (payload) => {
-      handleDataFetchError(payload);
-    });
-
-    // Store listener IDs for cleanup
-    eventListenerIds.current = [
-      workerReadyId,
-      forceProgressId,
-      forceCompleteId,
-      forceStoppedId,
-      forceErrorId,
-      dataProgressId,
-      dataCompleteId,
-      dataErrorId
-    ];
-
-    return () => {
-      // Clean up event listeners
-      eventListenerIds.current.forEach(id => {
-        workerEventBus.removeListener(id);
-      });
-      eventListenerIds.current = [];
-
-      // Clean up throttle
-      if (progressThrottleRef.current) {
-        clearTimeout(progressThrottleRef.current);
-        progressThrottleRef.current = null;
+      if (enableProgressThrottling && progressThrottleMs > 0 && messageType === "tick") {
+        if (now - lastProgressDispatchRef.current < progressThrottleMs) {
+          return;
+        }
+        lastProgressDispatchRef.current = now;
       }
-    };
-  }, []);
 
-  // Direct worker message handler (for backward compatibility)
-  function handleWorkerMessage(data: unknown) {
-    // This is handled via BroadcastChannel now, but kept for compatibility
-    if (data && typeof data === "object" && "type" in data) {
-      logger.debug("worker", "Direct worker message received (legacy)", { type: data.type });
-    }
-  }
+      if (messageType === "paused") {
+        setAnimationState(prev => ({
+          ...prev,
+          isRunning: false,
+          isPaused: true
+        }));
+        return;
+      }
 
-  function handleWorkerError(error: ErrorEvent) {
-    const errorMessage = `Enhanced worker error: ${error.message}`;
-    logger.error("worker", "Enhanced worker error", {
-      error: error.message,
-      filename: error.filename,
-      lineno: error.lineno
-    });
-    onAnimationError?.(errorMessage);
-  }
+      if (messageType === "resumed") {
+        setAnimationState(prev => ({
+          ...prev,
+          isRunning: true,
+          isPaused: false
+        }));
+        return;
+      }
 
-  // BroadcastChannel event handlers
-  const handleForceSimulationProgress = useCallback((payload: unknown) => {
-    // Validate the payload using zod schema
-    const validationResult = ForceSimulationProgressSchema.safeParse(payload);
-    if (!validationResult.success) {
-      logger.warn("worker", "Invalid force simulation progress payload", { payload, error: validationResult.error });
-      return;
-    }
+      if (messageType === "parameters_updated") {
+        return;
+      }
 
-    const { messageType, alpha, iteration, positions, fps, nodeCount, linkCount, progress } = validationResult.data;
-
-    switch (messageType) {
-      case "started":
-        isAnimatingRef.current = true;
-        animationStartTimeRef.current = Date.now();
+      if (messageType === "started") {
         setAnimationState(prev => ({
           ...prev,
           isRunning: true,
           isPaused: false,
-          nodeCount: nodeCount || 0,
-          linkCount: linkCount || 0
+          nodeCount: typeof payload.nodeCount === "number" ? payload.nodeCount : prev.nodeCount,
+          linkCount: typeof payload.linkCount === "number" ? payload.linkCount : prev.linkCount
         }));
-        break;
+        return;
+      }
 
-      case "tick":
-        if (positions && typeof alpha === "number" && typeof iteration === "number" && typeof progress === "number") {
-          // Throttle position updates to prevent excessive re-renders
-          if (enableProgressThrottling && !progressThrottleRef.current) {
-            setNodePositions(positions);
-            onPositionUpdate?.(positions);
+      const positions = toNodePositions(payload.positions);
+      if (positions.length > 0) {
+        setNodePositions(positions);
+        onPositionUpdate?.(positions);
+      }
 
-            setAnimationState(prev => ({
-              ...prev,
-              alpha,
-              iteration,
-              progress,
-              fps: fps || prev.fps
-            }));
+      const fps = typeof payload.fps === "number" ? payload.fps : animationState.fps;
+      const progress = typeof payload.progress === "number" ? payload.progress : animationState.progress;
+      const iteration = typeof payload.iteration === "number" ? payload.iteration : animationState.iteration;
+      const alpha = typeof payload.alpha === "number" ? payload.alpha : animationState.alpha;
+      const nodeCount = typeof payload.nodeCount === "number" ? payload.nodeCount : animationState.nodeCount;
+      const linkCount = typeof payload.linkCount === "number" ? payload.linkCount : animationState.linkCount;
 
-            // Update performance metrics
-            if (fps) {
-              setPerformanceMetrics(prev => ({
-                averageFPS: (prev.averageFPS * prev.frameCount + fps) / (prev.frameCount + 1),
-                minFPS: Math.min(prev.minFPS, fps),
-                maxFPS: Math.max(prev.maxFPS, fps),
-                frameCount: prev.frameCount + 1,
-                totalAnimationTime: Date.now() - animationStartTimeRef.current,
-                averageResponseTime: prev.averageResponseTime
-              }));
-            }
+      setAnimationState({
+        isRunning: true,
+        isPaused: false,
+        alpha,
+        iteration,
+        progress,
+        fps,
+        nodeCount,
+        linkCount
+      });
 
-            // Schedule next update
-            progressThrottleRef.current = setTimeout(() => {
-              progressThrottleRef.current = null;
-            }, progressThrottleMs);
-          }
-        }
-        break;
+      setPerformanceMetrics(prev => {
+        const frameCount = prev.frameCount + 1;
+        const newMin = frameCount === 1 ? fps : Math.min(prev.minFPS, fps);
+        const newMax = Math.max(prev.maxFPS, fps);
+        const averageFPS = ((prev.averageFPS * prev.frameCount) + fps) / frameCount;
+        const totalAnimationTime = prev.totalAnimationTime + Math.max(0, now - lastTickTimestampRef.current);
+        lastTickTimestampRef.current = now;
+        return {
+          averageFPS,
+          minFPS: newMin,
+          maxFPS: newMax,
+          frameCount,
+          totalAnimationTime,
+          averageResponseTime: prev.averageResponseTime
+        };
+      });
+    },
+    [animationState, enableProgressThrottling, onPositionUpdate, progressThrottleMs]
+  );
 
-      case "paused":
-        setAnimationState(prev => ({ ...prev, isPaused: true }));
-        break;
-
-      case "resumed":
-        setAnimationState(prev => ({ ...prev, isPaused: false }));
-        break;
-
-      case "parameters_updated":
-        logger.debug("worker", "Force parameters updated via enhanced system", payload);
-        break;
-    }
-  }, [onPositionUpdate, enableProgressThrottling, progressThrottleMs]);
-
-  const handleForceSimulationComplete = useCallback((payload: unknown) => {
-    // Validate the payload using zod schema
-    const validationResult = ForceSimulationCompleteSchema.safeParse(payload);
-    if (!validationResult.success) {
-      logger.warn("worker", "Invalid force simulation complete payload", { payload, error: validationResult.error });
-      return;
-    }
-
-    const { positions, totalIterations, finalAlpha, reason } = validationResult.data;
-
-    isAnimatingRef.current = false;
-    if (progressThrottleRef.current) {
-      clearTimeout(progressThrottleRef.current);
-      progressThrottleRef.current = null;
-    }
-
-    setNodePositions(positions);
-    onPositionUpdate?.(positions);
-    onAnimationComplete?.(positions, { totalIterations, finalAlpha, reason });
-
-    setAnimationState(prev => ({
-      ...prev,
-      isRunning: false,
-      isPaused: false,
-      progress: 1,
-      alpha: finalAlpha
-    }));
-
-    // Update final performance metrics
-    setPerformanceMetrics(prev => ({
-      ...prev,
-      totalAnimationTime: Date.now() - animationStartTimeRef.current
-    }));
-  }, [onPositionUpdate, onAnimationComplete]);
-
-  const handleForceSimulationStopped = useCallback((payload: unknown) => {
-    // Validate the payload using zod schema
-    const validationResult = ForceSimulationStoppedSchema.safeParse(payload);
-    if (!validationResult.success) {
-      logger.warn("worker", "Invalid force simulation stopped payload", { payload, error: validationResult.error });
-      return;
-    }
-
-    const { workerType } = validationResult.data;
-    if (workerType === "force-animation") {
-      isAnimatingRef.current = false;
-      if (progressThrottleRef.current) {
-        clearTimeout(progressThrottleRef.current);
-        progressThrottleRef.current = null;
+  const handleForceComplete = useCallback(
+    (message: WorkerResponse) => {
+      const payload = isRecord(message.payload) ? message.payload : undefined;
+      const positions = toNodePositions(payload?.positions);
+      if (positions.length > 0) {
+        setNodePositions(positions);
       }
 
       setAnimationState(prev => ({
@@ -409,177 +246,173 @@ export function useEnhancedBackgroundWorker(options: UseEnhancedBackgroundWorker
         isRunning: false,
         isPaused: false
       }));
-    }
-  }, []);
 
-  const handleForceSimulationError = useCallback((payload: unknown) => {
-    // Validate the payload using zod schema
-    const validationResult = ForceSimulationErrorSchema.safeParse(payload);
-    if (!validationResult.success) {
-      logger.warn("worker", "Invalid force simulation error payload", { payload, error: validationResult.error });
+      onAnimationComplete?.(positions, {
+        totalIterations: typeof payload?.totalIterations === "number" ? payload.totalIterations : animationState.iteration,
+        finalAlpha: typeof payload?.finalAlpha === "number" ? payload.finalAlpha : animationState.alpha,
+        reason: typeof payload?.reason === "string" ? payload.reason : "completed"
+      });
+    },
+    [animationState.alpha, animationState.iteration, onAnimationComplete]
+  );
+
+  const handleWorkerMessage = useCallback((message: WorkerResponse) => {
+    setWorkerStats(prev => ({
+      ...prev,
+      messagesReceived: prev.messagesReceived + 1,
+      lastActivity: Date.now()
+    }));
+
+    const eventName = message.event;
+    if (typeof eventName === "string") {
+      workerEventBus.emitUnknown(eventName, message.payload ?? {});
+    }
+
+    if (!eventName || !isWorkerEventType(eventName)) {
       return;
     }
 
-    const { workerType, error } = validationResult.data;
-    if (workerType === "force-animation") {
-      const errorMessage = `Enhanced force simulation error: ${error}`;
-      logger.error("worker", "Force simulation error via enhanced system", validationResult.data);
-      onAnimationError?.(errorMessage);
+    switch (eventName) {
+      case WorkerEventType.WORKER_READY:
+        setIsWorkerReady(true);
+        break;
+      case WorkerEventType.FORCE_SIMULATION_PROGRESS:
+        handleForceProgress(message);
+        break;
+      case WorkerEventType.FORCE_SIMULATION_COMPLETE:
+        handleForceComplete(message);
+        break;
+      case WorkerEventType.FORCE_SIMULATION_ERROR:
+      case WorkerEventType.WORKER_ERROR: {
+        const payload = isRecord(message.payload) ? message.payload : undefined;
+        const errorMessage = typeof message.error === "string"
+          ? message.error
+          : typeof payload?.error === "string"
+            ? payload.error
+            : "Worker error";
+        setAnimationState(prev => ({ ...prev, isRunning: false, isPaused: false }));
+        onAnimationError?.(errorMessage);
+        break;
+      }
+      case WorkerEventType.DATA_FETCH_PROGRESS: {
+        const payload = isRecord(message.payload) ? message.payload : undefined;
+        if (payload && typeof payload.nodeId === "string") {
+          const stage = typeof payload.currentStep === "string" ? payload.currentStep : "progress";
+          const amount = typeof payload.progress === "number" ? payload.progress : 0;
+          onExpansionProgress?.(payload.nodeId, {
+            completed: Math.round(amount * 100),
+            total: 100,
+            stage
+          });
+        }
+        break;
+      }
+      case WorkerEventType.DATA_FETCH_COMPLETE: {
+        const payload = isRecord(message.payload) ? message.payload : undefined;
+        if (payload && typeof payload.nodeId === "string") {
+          const nodes = isGraphNodeArray(payload.nodes) ? payload.nodes : [];
+          const edges = isGraphEdgeArray(payload.edges) ? payload.edges : [];
+          onExpansionComplete?.({
+            requestId: typeof payload.requestId === "string" ? payload.requestId : message.requestId ?? "",
+            nodes,
+            edges,
+            statistics: payload.statistics
+          });
+        }
+        break;
+      }
+      case WorkerEventType.DATA_FETCH_ERROR: {
+        const payload = isRecord(message.payload) ? message.payload : undefined;
+        if (payload && typeof payload.nodeId === "string") {
+          const errorMessage = typeof payload.error === "string" ? payload.error : message.error ?? "Unknown error";
+          onExpansionError?.(payload.nodeId, errorMessage);
+        }
+        break;
+      }
+      default:
+        break;
     }
+  }, [handleForceComplete, handleForceProgress, onAnimationError, onExpansionComplete, onExpansionError, onExpansionProgress]);
+
+  const handleWorkerError = useCallback((error: ErrorEvent) => {
+    setWorkerStats(prev => ({
+      ...prev,
+      errors: prev.errors + 1,
+      lastActivity: Date.now()
+    }));
+    onAnimationError?.(error.message || "Worker error");
   }, [onAnimationError]);
 
-  const handleDataFetchProgress = useCallback((payload: unknown) => {
-    // Validate the payload using zod schema
-    const validationResult = DataFetchProgressSchema.safeParse(payload);
-    if (!validationResult.success) {
-      logger.warn("worker", "Invalid data fetch progress payload", { payload, error: validationResult.error });
-      return;
+  const { postMessage, terminate, isLoading, error } = useWebWorker(
+    () => new Worker(new URL("../workers/background.worker.ts", import.meta.url), { type: "module" }),
+    {
+      onMessage: handleWorkerMessage,
+      onError: handleWorkerError
     }
+  );
 
-    const { nodeId, progress, currentStep } = validationResult.data;
-    if (nodeId && typeof progress === "number" && currentStep) {
-      onExpansionProgress?.(nodeId, {
-        completed: Math.round(progress * 100),
-        total: 100,
-        stage: currentStep
-      });
-    }
-  }, [onExpansionProgress]);
+  const sendMessage = useCallback((request: WorkerRequest) => {
+    setWorkerStats(prev => ({
+      ...prev,
+      messagesSent: prev.messagesSent + 1
+    }));
+    postMessage(request);
+  }, [postMessage]);
 
-  const handleDataFetchComplete = useCallback((payload: unknown) => {
-    // Validate the payload using zod schema
-    const validationResult = DataFetchCompleteSchema.safeParse(payload);
-    if (!validationResult.success) {
-      logger.warn("worker", "Invalid data fetch complete payload", { payload, error: validationResult.error });
-      return;
-    }
-
-    const { requestId, nodes, edges, statistics } = validationResult.data;
-    if (requestId && nodes && edges) {
-      // Validate arrays contain expected types
-      const validatedNodes = Array.isArray(nodes) && nodes.every((node): node is GraphNode =>
-        typeof node === "object" && node !== null && "id" in node && "entityId" in node
-      ) ? nodes : [];
-
-      const validatedEdges = Array.isArray(edges) && edges.every((edge): edge is GraphEdge =>
-        typeof edge === "object" && edge !== null && "id" in edge && "source" in edge && "target" in edge
-      ) ? edges : [];
-
-      // Callback with validated data structure
-      onExpansionComplete?.({
-        requestId,
-        nodes: validatedNodes,
-        edges: validatedEdges,
-        statistics
-      });
-    }
-  }, [onExpansionComplete]);
-
-  const handleDataFetchError = useCallback((payload: unknown) => {
-    // Validate the payload using zod schema
-    const validationResult = DataFetchErrorSchema.safeParse(payload);
-    if (!validationResult.success) {
-      logger.warn("worker", "Invalid data fetch error payload", { payload, error: validationResult.error });
-      return;
-    }
-
-    const { nodeId, error } = validationResult.data;
-    if (nodeId && error) {
-      onExpansionError?.(nodeId, error);
-    }
-  }, [onExpansionError]);
-
-  // Enhanced animation control methods
   const startAnimation = useCallback((
     nodes: ForceSimulationNode[],
     links: ForceSimulationLink[],
     config?: ForceSimulationConfig,
     pinnedNodes?: Set<string>
   ) => {
-    if (!isWorkerAvailable()) {
-      logger.error("worker", "Enhanced worker not available for animation start");
-      onAnimationError?.("Enhanced animation worker not ready");
-      return;
-    }
-
-    if (nodes.length === 0) {
-      logger.warn("worker", "Cannot start animation with no nodes");
-      return;
-    }
-
-    if (isAnimatingRef.current) {
-      logger.debug("worker", "Enhanced animation already running, skipping start request");
-      return;
-    }
-
-    // Reset performance metrics
-    setPerformanceMetrics({
-      averageFPS: 0,
-      minFPS: Infinity,
-      maxFPS: 0,
-      frameCount: 0,
-      totalAnimationTime: 0,
-      averageResponseTime: 0
-    });
-
-    const requestId = postMessage({
+    const requestId = createRequestId();
+    logger.debug("worker", "Starting force simulation", { requestId, nodeCount: nodes.length, linkCount: links.length });
+    sendMessage({
       type: "FORCE_SIMULATION_START",
-      data: {
-        nodes,
-        links,
-        config,
-        pinnedNodes
-      }
+      requestId,
+      nodes,
+      links,
+      config,
+      pinnedNodes: pinnedNodes ? Array.from(pinnedNodes) : []
     });
-
-    logger.debug("worker", "Enhanced animation started", {
-      nodeCount: nodes.length,
-      linkCount: links.length,
-      pinnedCount: pinnedNodes?.size || 0,
-      requestId
-    });
-  }, [isWorkerAvailable, onAnimationError, postMessage]);
+    setAnimationState(prev => ({ ...prev, isRunning: true, isPaused: false }));
+    return requestId;
+  }, [sendMessage]);
 
   const stopAnimation = useCallback(() => {
-    if (!isAnimatingRef.current) {
-      logger.debug("worker", "No enhanced animation to stop");
+    if (!animationState.isRunning) {
       return;
     }
-
-    postMessage({
-      type: "FORCE_SIMULATION_STOP",
-      data: {}
-    });
-  }, [postMessage]);
+    sendMessage({ type: "FORCE_SIMULATION_STOP" });
+    setAnimationState(prev => ({ ...prev, isRunning: false, isPaused: false }));
+  }, [animationState.isRunning, sendMessage]);
 
   const pauseAnimation = useCallback(() => {
-    if (animationState.isRunning && !animationState.isPaused) {
-      postMessage({
-        type: "FORCE_SIMULATION_PAUSE",
-        data: {}
-      });
+    if (!animationState.isRunning || animationState.isPaused) {
+      return;
     }
-  }, [animationState.isRunning, animationState.isPaused, postMessage]);
+    sendMessage({ type: "FORCE_SIMULATION_PAUSE" });
+    setAnimationState(prev => ({ ...prev, isPaused: true }));
+  }, [animationState.isPaused, animationState.isRunning, sendMessage]);
 
   const resumeAnimation = useCallback(() => {
-    if (animationState.isRunning && animationState.isPaused) {
-      postMessage({
-        type: "FORCE_SIMULATION_RESUME",
-        data: {}
-      });
+    if (!animationState.isPaused) {
+      return;
     }
-  }, [animationState.isRunning, animationState.isPaused, postMessage]);
+    sendMessage({ type: "FORCE_SIMULATION_RESUME" });
+    setAnimationState(prev => ({ ...prev, isPaused: false, isRunning: true }));
+  }, [animationState.isPaused, sendMessage]);
 
   const updateParameters = useCallback((config: Partial<ForceSimulationConfig>) => {
-    if (animationState.isRunning) {
-      postMessage({
-        type: "FORCE_SIMULATION_UPDATE_PARAMETERS",
-        data: { config }
-      });
+    if (!animationState.isRunning) {
+      return;
     }
-  }, [animationState.isRunning, postMessage]);
+    sendMessage({
+      type: "FORCE_SIMULATION_UPDATE_PARAMETERS",
+      config
+    });
+  }, [animationState.isRunning, sendMessage]);
 
-  // Enhanced node expansion
   const expandNode = useCallback((
     nodeId: string,
     entityId: string,
@@ -587,18 +420,15 @@ export function useEnhancedBackgroundWorker(options: UseEnhancedBackgroundWorker
     options?: ExpansionOptions,
     expansionSettings?: ExpansionSettings
   ) => {
-    if (!isWorkerAvailable()) {
-      logger.warn("worker", "Enhanced worker not ready for expandNode", {
-        nodeId,
-        hasWorker: isWorkerAvailable()
-      });
-      onExpansionError?.(nodeId, "Enhanced worker not ready");
-      return null;
+    if (!isWorkerReady) {
+      throw new Error("Worker not ready");
     }
 
-    const requestId = postMessage({
+    const requestId = createRequestId();
+    sendMessage({
       type: "DATA_FETCH_EXPAND_NODE",
-      data: {
+      requestId,
+      expandRequest: {
         nodeId,
         entityId,
         entityType,
@@ -606,56 +436,37 @@ export function useEnhancedBackgroundWorker(options: UseEnhancedBackgroundWorker
         expansionSettings
       }
     });
-
-    logger.debug("worker", "Enhanced node expansion started", {
-      nodeId,
-      entityId,
-      entityType,
-      requestId
-    });
-
     return requestId;
-  }, [isWorkerAvailable, onExpansionError, postMessage]);
+  }, [isWorkerReady, sendMessage]);
+
+  const performanceInsights = useMemo(() => ({
+    ...performanceMetrics,
+    isOptimal: performanceMetrics.averageFPS >= 30,
+    hasFrameDrops: performanceMetrics.minFPS < 15,
+    efficiency: performanceMetrics.frameCount > 0 ? (performanceMetrics.averageFPS / 60) * 100 : 0
+  }), [performanceMetrics]);
 
   return {
-    // State
     animationState,
     nodePositions,
     performanceMetrics,
     workerStats,
-    isWorkerReady: isWorkerAvailable(),
+    isWorkerReady,
     isLoading,
-    error: workerError,
-
-    // Animation controls
+    error,
     startAnimation,
     stopAnimation,
     pauseAnimation,
     resumeAnimation,
     updateParameters,
-
-    // Data operations
     expandNode,
-
-    // Worker management
     terminate,
-
-    // Computed properties
     isIdle: !animationState.isRunning && !animationState.isPaused && !isLoading,
     canPause: animationState.isRunning && !animationState.isPaused,
     canResume: animationState.isRunning && animationState.isPaused,
     canStop: animationState.isRunning || animationState.isPaused,
-
-    // Performance insights
-    performanceInsights: {
-      ...performanceMetrics,
-      isOptimal: performanceMetrics.averageFPS >= 30,
-      hasFrameDrops: performanceMetrics.minFPS < 15,
-      efficiency: performanceMetrics.frameCount > 0 ?
-        (performanceMetrics.averageFPS / 60) * 100 : 0
-    }
+    performanceInsights
   };
 }
 
-// Export alias for compatibility with existing code
 export const useBackgroundWorker = useEnhancedBackgroundWorker;
