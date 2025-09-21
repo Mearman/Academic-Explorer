@@ -249,7 +249,7 @@ export class CachedOpenAlexClient extends OpenAlexBaseClient {
           entityId: id,
           fields: requestedFields
         });
-        return cachedData as T;
+        return cachedData;
       }
 
       // Determine missing fields for surgical request
@@ -289,7 +289,7 @@ export class CachedOpenAlexClient extends OpenAlexBaseClient {
       }
 
       // Store new data in cache
-      await this.cache.putEntityFields(entityType, id, apiData as Partial<unknown>);
+      await this.cache.putEntityFields(entityType, id, apiData);
 
       // Combine cached and API data
       const combinedData = { ...cachedData, ...apiData };
@@ -541,7 +541,7 @@ export class CachedOpenAlexClient extends OpenAlexBaseClient {
       for (const result of results) {
         const entityId = this.extractEntityId(result);
         if (entityId) {
-          await this.cache.putEntityFields(entityType, entityId, result as Partial<unknown>);
+          await this.cache.putEntityFields(entityType, entityId, result);
         }
       }
 
@@ -747,7 +747,7 @@ export class CachedOpenAlexClient extends OpenAlexBaseClient {
           });
           if (staticEntity && typeof staticEntity === "object" && "id" in staticEntity) {
             logger.debug("static-data", "Served entity from static data", { id, entityType });
-            return staticEntity as T;
+            return staticEntity;
           }
         } catch {
           logger.debug("static-data", "Static data not available, falling back to API", { id, entityType });
@@ -814,6 +814,113 @@ export class CachedOpenAlexClient extends OpenAlexBaseClient {
       activeRequests: this.activeRequests,
       minInterval: this.minInterval
     };
+  }
+
+  // ==================== CONVENIENCE METHODS ====================
+
+  /**
+   * Get an entity by ID with static data fallback
+   */
+  async getEntity(id: string): Promise<unknown> {
+    const entityType = this.client.detectEntityType(id);
+    if (!entityType) {
+      throw new Error(`Unable to detect entity type for ID: ${id}`);
+    }
+
+    // Type guard to ensure entityType is valid
+    const validEntityTypes: EntityType[] = ["works", "authors", "sources", "institutions", "topics", "publishers", "funders"];
+    if (!validEntityTypes.includes(entityType as EntityType)) {
+      throw new Error(`Invalid entity type: ${entityType}`);
+    }
+
+    // After validation, we know entityType is valid
+    const validatedEntityType: EntityType = entityType as EntityType;
+
+    return this.getEntityWithFallback(
+      id,
+      validatedEntityType,
+      undefined,
+      () => this.client.getEntity(id)
+    );
+  }
+
+  /**
+   * Get a work by ID with static data fallback
+   */
+  async getWork(id: string, params?: QueryParams): Promise<unknown> {
+    return this.getEntityWithFallback(
+      id,
+      "works",
+      params,
+      () => this.client.works.getWork(id, params)
+    );
+  }
+
+  /**
+   * Get an author by ID with static data fallback
+   */
+  async getAuthor(id: string, params?: QueryParams): Promise<unknown> {
+    return this.getEntityWithFallback(
+      id,
+      "authors",
+      params,
+      () => this.client.authors.getAuthor(id, params)
+    );
+  }
+
+  /**
+   * Check if entity exists in static data
+   */
+  async hasStaticEntity(entityType: string, entityId: string): Promise<boolean> {
+    // Type guard to ensure entityType is valid
+    const validEntityTypes: EntityType[] = ["works", "authors", "sources", "institutions", "topics", "publishers", "funders"];
+    if (!validEntityTypes.includes(entityType as EntityType)) {
+      return false;
+    }
+
+    // After validation, we know entityType is valid
+    const validatedEntityType: EntityType = entityType as EntityType;
+    const staticType = toStaticEntityType(validatedEntityType);
+    if (!staticType) {
+      return false;
+    }
+
+    try {
+      return await staticDataProvider.hasEntity({
+        entityType: staticType,
+        entityId: cleanOpenAlexId(entityId)
+      });
+    } catch {
+      return false;
+    }
+  }
+
+  /**
+   * Get static data statistics
+   */
+  async getStaticDataStats(): Promise<unknown> {
+    return staticDataProvider.getStatistics();
+  }
+
+  /**
+   * Clear static data cache
+   */
+  clearStaticCache(): void {
+    staticDataProvider.clearCache();
+  }
+
+  /**
+   * Detect entity type from ID
+   */
+  detectEntityType(id: string): string | null {
+    return this.client.detectEntityType(id);
+  }
+
+  /**
+   * Get the underlying client (for testing)
+   */
+  getUnderlyingClient(): OpenAlexClient {
+    return this.client;
   }
 
   /**

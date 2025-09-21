@@ -59,9 +59,9 @@ describe("Cached OpenAlex Client with Static Data", () => {
         publication_year: 2015
       };
 
-      // Mock entity type detection
+      // Mock entity type detection on the underlying client
       const mockDetectEntityType = vi.fn().mockReturnValue("works");
-      cachedOpenAlex.detectEntityType = mockDetectEntityType;
+      cachedOpenAlex.client.detectEntityType = mockDetectEntityType;
 
       // Mock static data provider to return the work
       vi.mocked(staticDataProvider.getEntity).mockResolvedValue(mockWork);
@@ -80,9 +80,9 @@ describe("Cached OpenAlex Client with Static Data", () => {
         publication_year: 2023
       };
 
-      // Mock entity type detection
+      // Mock entity type detection on the underlying client
       const mockDetectEntityType = vi.fn().mockReturnValue("works");
-      cachedOpenAlex.detectEntityType = mockDetectEntityType;
+      cachedOpenAlex.client.detectEntityType = mockDetectEntityType;
 
       // Mock the underlying client's getEntity method
       const mockGetEntity = vi.fn().mockResolvedValue(mockWork);
@@ -205,9 +205,9 @@ describe("Cached OpenAlex Client with Static Data", () => {
         display_name: "Test Work"
       };
 
-      // Mock entity type detection
+      // Mock entity type detection on the underlying client
       const mockDetectEntityType = vi.fn().mockReturnValue("works");
-      cachedOpenAlex.detectEntityType = mockDetectEntityType;
+      cachedOpenAlex.client.detectEntityType = mockDetectEntityType;
 
       vi.mocked(staticDataProvider.getEntity).mockResolvedValue(mockWork);
 
