@@ -37,10 +37,13 @@ export type {
   EventEmitter
 } from "./types";
 
-// Core event system classes
+// Enhanced worker types
+export type * from "./enhanced-worker-types";
+
+// Enhanced event system classes
 export { BaseEventEmitter } from "./base-event-emitter";
-export { CrossContextEventProxy } from "./context-proxy";
-export { EventBridge, eventBridge } from "./event-bridge";
+export { BroadcastEventBus, WorkerEventBus, workerEventBus } from "./broadcast-event-bus";
+export { MessageChannelCoordinator } from "./message-channel-coordinator";
 
 // Specialized event systems
 export { GraphEventSystem, graphEventSystem } from "./graph-event-system";
