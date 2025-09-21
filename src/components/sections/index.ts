@@ -25,6 +25,8 @@ export { GraphStatsSection } from "./GraphStatsSection";
 
 export { default as NetworkActivitySection } from "./NetworkActivitySection";
 
+export { default as AppActivitySection } from "./AppActivitySection";
+
 export { NodeRepositorySection } from "./NodeRepositorySection";
 
 export { EdgeRepositorySection } from "./EdgeRepositorySection";
