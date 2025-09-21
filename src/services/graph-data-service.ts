@@ -134,9 +134,9 @@ export class GraphDataService {
 			try {
 				const detectedEdges = await this.relationshipDetectionService.detectRelationshipsForNodes(nodeIds);
 				// Add detected relationship edges to the graph
-				if (detectedEdges.length > 0) {
+				if (detectedEdges && detectedEdges.length > 0) {
 					logger.debug("graph", "Adding detected relationship edges to initial graph", {
-						detectedEdgeCount: detectedEdges.length
+						detectedEdgeCount: detectedEdges?.length || 0
 					}, "GraphDataService");
 
 					store.addEdges(detectedEdges);
@@ -189,10 +189,10 @@ export class GraphDataService {
 				this.relationshipDetectionService.detectRelationshipsForNode(existingNode.id)
 					.then((detectedEdges) => {
 						// Add detected relationship edges to the graph
-						if (detectedEdges.length > 0) {
+						if (detectedEdges && detectedEdges.length > 0) {
 							logger.debug("graph", "Adding detected relationship edges for existing node", {
 								nodeId: existingNode.id,
-								detectedEdgeCount: detectedEdges.length
+								detectedEdgeCount: detectedEdges?.length || 0
 							}, "GraphDataService");
 
 							const currentStore = useGraphStore.getState();
@@ -246,10 +246,10 @@ export class GraphDataService {
 				this.relationshipDetectionService.detectRelationshipsForNode(primaryNodeId)
 					.then((detectedEdges) => {
 						// Add detected relationship edges to the graph
-						if (detectedEdges.length > 0) {
+						if (detectedEdges && detectedEdges.length > 0) {
 							logger.debug("graph", "Adding detected relationship edges for newly added node", {
 								nodeId: primaryNodeId,
-								detectedEdgeCount: detectedEdges.length
+								detectedEdgeCount: detectedEdges?.length || 0
 							}, "GraphDataService");
 
 							const currentStore = useGraphStore.getState();
@@ -281,14 +281,14 @@ export class GraphDataService {
 			}, "GraphDataService");
 
 			// Detect relationships between all initial nodes using batch processing
-			if (nodes.length > 1) {
+			if (nodes && nodes.length > 1) {
 				const nodeIds = nodes.map(n => n.id);
 				this.relationshipDetectionService.detectRelationshipsForNodes(nodeIds)
 					.then((detectedEdges) => {
 						// Add detected relationship edges to the graph
-						if (detectedEdges.length > 0) {
+						if (detectedEdges && detectedEdges.length > 0) {
 							logger.debug("graph", "Adding detected relationship edges for initial graph nodes", {
-								detectedEdgeCount: detectedEdges.length
+								detectedEdgeCount: detectedEdges?.length || 0
 							}, "GraphDataService");
 
 							const currentStore = useGraphStore.getState();
@@ -368,7 +368,7 @@ export class GraphDataService {
 			// Get all cached OpenAlex entities from TanStack Query
 			const cachedEntities = getCachedOpenAlexEntities(this.queryClient);
 
-			if (cachedEntities.length === 0) {
+			if (!cachedEntities || cachedEntities.length === 0) {
 				logger.debug("graph", "No cached entities found to load", {}, "GraphDataService");
 				return;
 			}
@@ -619,7 +619,7 @@ export class GraphDataService {
 		const store = useGraphStore.getState();
 		const minimalNodes = store.getMinimalNodes();
 
-		if (minimalNodes.length === 0) {
+		if (!minimalNodes || minimalNodes.length === 0) {
 			logger.debug("graph", "No minimal nodes to hydrate", {}, "GraphDataService");
 			return;
 		}
@@ -689,7 +689,7 @@ export class GraphDataService {
 		const store = useGraphStore.getState();
 		const minimalNodes = store.getMinimalNodes();
 
-		if (minimalNodes.length === 0) {
+		if (!minimalNodes || minimalNodes.length === 0) {
 			logger.debug("graph", "No minimal nodes to hydrate immediately", {}, "GraphDataService");
 			return;
 		}
@@ -754,10 +754,10 @@ export class GraphDataService {
 				try {
 					const detectedEdges = await this.relationshipDetectionService.detectRelationshipsForNodes(allNodeIds);
 
-					if (detectedEdges.length > 0) {
+					if (detectedEdges && detectedEdges.length > 0) {
 						logger.debug("graph", "Found new relationships for already-expanded node", {
 							nodeId,
-							detectedEdgeCount: detectedEdges.length,
+							detectedEdgeCount: detectedEdges?.length || 0,
 							relationships: detectedEdges.map(e => ({
 								source: e.source,
 								target: e.target,
@@ -880,7 +880,7 @@ export class GraphDataService {
 
 					logger.debug("graph", "Relationship detection completed", {
 						expandedNodeId: nodeId,
-						detectedEdgeCount: detectedEdges.length,
+						detectedEdgeCount: detectedEdges?.length || 0,
 						relationships: detectedEdges.map(e => ({
 							source: e.source,
 							target: e.target,
@@ -889,11 +889,11 @@ export class GraphDataService {
 					}, "GraphDataService");
 
 					// Third: Add the detected relationship edges if any were found
-					if (detectedEdges.length > 0) {
+					if (detectedEdges && detectedEdges.length > 0) {
 						const finalEdgesWithRelationships = [...finalEdges, ...detectedEdges];
 						logger.debug("graph", "Adding detected relationship edges", {
 							expandedNodeId: nodeId,
-							relationshipEdgeCount: detectedEdges.length,
+							relationshipEdgeCount: detectedEdges?.length || 0,
 							totalEdgeCount: finalEdgesWithRelationships.length
 						}, "GraphDataService");
 
@@ -907,7 +907,7 @@ export class GraphDataService {
 			}
 
 			// Update cached graph data with final state (including any detected relationship edges)
-			const finalEdgesWithRelationships = detectedEdges.length > 0 ? [...finalEdges, ...detectedEdges] : finalEdges;
+			const finalEdgesWithRelationships = (detectedEdges && detectedEdges.length > 0) ? [...finalEdges, ...detectedEdges] : finalEdges;
 			setCachedGraphNodes(this.queryClient, finalNodes);
 			setCachedGraphEdges(this.queryClient, finalEdgesWithRelationships);
 

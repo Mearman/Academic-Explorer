@@ -135,16 +135,16 @@ export class WorkEntity extends AbstractEntity<Work> {
 						select: queryParams.select
 					});
 
-					if (citationsQuery.results.length === 0) {
+					if (!citationsQuery.results || citationsQuery.results.length === 0) {
 						break; // No more results
 					}
 
 					allCitations.push(...citationsQuery.results);
-					totalFetched += citationsQuery.results.length;
+					totalFetched += citationsQuery.results?.length || 0;
 
 					logger.debug("graph", "Fetched citations page", {
 						page,
-						pageResults: citationsQuery.results.length,
+						pageResults: citationsQuery.results?.length || 0,
 						totalFetched,
 						totalAvailable: citationsQuery.meta.count,
 						entityId: context.entityId

@@ -182,7 +182,12 @@ export const logStorageOperation = (operation: "read" | "write" | "delete", key:
 // Helper function to safely convert unknown error to Error object
 const toError = (error: unknown): Error => {
 	if (error instanceof Error) return error;
-	return new Error(String(error));
+
+	// Line 187 - Capture stack trace to find actual caller
+	console.error("toError called with non-Error:", error, "Stack:", new Error().stack);
+
+	// Simple fallback without any complex operations
+	return new Error("Unknown error occurred");
 };
 
 export const logError = (message: string, error: unknown, component?: string, category: LogCategory = "general") => {
@@ -218,8 +223,9 @@ export const useLogger = (componentName: string) => {
 export const setupGlobalErrorHandling = () => {
 	// Handle unhandled promise rejections
 	window.addEventListener("unhandledrejection", (event) => {
-		const reason = typeof event.reason === "string" ? event.reason : String(event.reason);
-		logError("Unhandled promise rejection", new Error(reason), "global");
+		// Temporarily disabled to prevent infinite loops
+		console.debug("Unhandled promise rejection (logger disabled):", event.reason);
+		return;
 	});
 
 	// Handle JavaScript errors

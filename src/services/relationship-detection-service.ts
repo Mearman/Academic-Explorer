@@ -68,7 +68,7 @@ export class RelationshipDetectionService {
 	 * Uses two-pass approach to find relationships between nodes added in the same batch
 	 */
 	async detectRelationshipsForNodes(nodeIds: string[]): Promise<GraphEdge[]> {
-		if (nodeIds.length === 0) return [];
+		if (!nodeIds || nodeIds.length === 0) return [];
 
 		logger.debug("graph", "Starting batch relationship detection with two-pass approach", {
 			nodeCount: nodeIds.length,
@@ -199,7 +199,7 @@ export class RelationshipDetectionService {
 			const newEdges = this.createEdgesFromRelationships(detectedRelationships);
 
 			// Add edges to the graph store
-			if (newEdges.length > 0) {
+			if (newEdges && newEdges.length > 0) {
 				store.addEdges(newEdges);
 				logger.debug("graph", "Added relationship edges to graph", {
 					nodeId,

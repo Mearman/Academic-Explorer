@@ -17,7 +17,9 @@ export function useAutoRelationshipDetection() {
 
   useEffect(() => {
     const unsubscribe = eventBus.on(GraphEventType.BULK_NODES_ADDED, (event) => {
-      const payload = event.payload as { nodes: Array<{ id: string; type: string }> };
+      if (!event.payload || typeof event.payload !== 'object') return;
+      const payload = event.payload;
+      if (!('nodes' in payload) || !Array.isArray(payload.nodes)) return;
       const { nodes } = payload;
     if (nodes.length === 0) {
       logger.debug("graph", "No nodes in bulk addition, skipping relationship detection");
@@ -37,7 +39,7 @@ export function useAutoRelationshipDetection() {
     // Trigger relationship detection asynchronously for all nodes
     relationshipDetectionService.detectRelationshipsForNodes(allNodeIds)
       .then((detectedEdges) => {
-        if (detectedEdges.length > 0) {
+        if (detectedEdges && detectedEdges.length > 0) {
           logger.debug("graph", "Detected relationships between nodes", {
             edgeCount: detectedEdges.length,
             edgeTypes: [...new Set(detectedEdges.map(edge => edge.type))],

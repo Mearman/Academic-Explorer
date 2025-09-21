@@ -99,6 +99,7 @@ const theme = createTheme({
 // Setup global error handling for logging
 setupGlobalErrorHandling()
 
+
 // Initialize network monitoring
 initializeNetworkMonitoring()
 

@@ -171,16 +171,16 @@ export class AuthorEntity extends AbstractEntity<Author> {
 					select: queryParams.select
 				});
 
-				if (worksResponse.results.length === 0) {
+				if (!worksResponse.results || worksResponse.results.length === 0) {
 					break; // No more results
 				}
 
 				allWorks.push(...worksResponse.results);
-				totalFetched += worksResponse.results.length;
+				totalFetched += worksResponse.results?.length || 0;
 
 				logger.debug("graph", "Fetched works page", {
 					page,
-					pageResults: worksResponse.results.length,
+					pageResults: worksResponse.results?.length || 0,
 					totalFetched,
 					totalAvailable: worksResponse.meta.count,
 					entityId: context.entityId
@@ -192,7 +192,7 @@ export class AuthorEntity extends AbstractEntity<Author> {
 					break;
 				}
 
-				if (worksResponse.results.length < 200) {
+				if (!worksResponse.results || worksResponse.results.length < 200) {
 					// Last page (partial page means no more results)
 					break;
 				}

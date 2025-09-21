@@ -415,13 +415,13 @@ export const useGraphStore = create<GraphState>()(
 				nodes.forEach(node => { get().unpinNode(node.id); });
 
 				// Only restart simulation if new nodes were actually added
-				if (newNodes.length > 0) {
+				if (newNodes && newNodes.length > 0) {
 					// Request layout restart when nodes are added to apply node forces
 					const animatedStore = useAnimatedGraphStore.getState();
 					animatedStore.requestRestart();
 					logger.debug("graph", "Requested layout restart after adding new nodes", {
-						newNodeCount: newNodes.length,
-						totalNodeCount: nodes.length,
+						newNodeCount: newNodes?.length || 0,
+						totalNodeCount: nodes?.length || 0,
 						newNodeTypes: [...new Set(newNodes.map(node => node.type))]
 					});
 				}
@@ -434,7 +434,7 @@ export const useGraphStore = create<GraphState>()(
 				state.recomputeNodeCaches();
 
 				// Emit cross-context events for new nodes only
-				if (newNodes.length > 0) {
+				if (newNodes && newNodes.length > 0) {
 					if (newNodes.length === 1) {
 						// Single node event for consistency
 						localEventBus.emit({

@@ -170,7 +170,7 @@ export const useAnimatedGraphStore = create<AnimatedGraphState>()(
 					});
 
 					logger.debug("graph", "Updated animated positions", {
-						count: positions.length,
+						count: positions?.length || 0,
 						sample: positions.slice(0, 3)
 					});
 				});
@@ -187,7 +187,7 @@ export const useAnimatedGraphStore = create<AnimatedGraphState>()(
 					});
 
 					logger.debug("graph", "Updated static positions", {
-						count: positions.length
+						count: positions?.length || 0
 					});
 				});
 			},
@@ -337,7 +337,7 @@ export const useAnimatedGraphStore = create<AnimatedGraphState>()(
 				const graphStore = useGraphStore.getState();
 				const currentPositions = state.getAllPositions();
 
-				if (currentPositions.length === 0) {
+				if (!currentPositions || currentPositions.length === 0) {
 					logger.warn("graph", "No positions to apply to graph store");
 					return;
 				}

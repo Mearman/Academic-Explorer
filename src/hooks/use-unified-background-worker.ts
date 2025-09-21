@@ -223,7 +223,7 @@ export function useUnifiedBackgroundWorker(options: UseUnifiedBackgroundWorkerOp
         break;
 
       case "tick":
-        if (positions && typeof alpha === "number" && typeof iteration === "number" && typeof progress === "number") {
+        if (Array.isArray(positions) && typeof alpha === "number" && typeof iteration === "number" && typeof progress === "number") {
           if (enableProgressThrottling && !progressThrottleRef.current) {
             setNodePositions(positions);
             onPositionUpdate?.(positions);
@@ -281,9 +281,11 @@ export function useUnifiedBackgroundWorker(options: UseUnifiedBackgroundWorkerOp
       progressThrottleRef.current = null;
     }
 
-    setNodePositions(positions);
-    onPositionUpdate?.(positions);
-    onAnimationComplete?.(positions, { totalIterations, finalAlpha, reason });
+    if (Array.isArray(positions)) {
+      setNodePositions(positions);
+      onPositionUpdate?.(positions);
+      onAnimationComplete?.(positions, { totalIterations, finalAlpha, reason });
+    }
 
     setAnimationState(prev => ({
       ...prev,
@@ -343,7 +345,7 @@ export function useUnifiedBackgroundWorker(options: UseUnifiedBackgroundWorkerOp
     config?: ForceSimulationConfig;
     pinnedNodes?: Set<string>;
   }) => {
-    if (nodes.length === 0) {
+    if (!nodes || nodes.length === 0) {
       logger.warn("worker", "Cannot start animation with no nodes");
       return;
     }
@@ -379,8 +381,8 @@ export function useUnifiedBackgroundWorker(options: UseUnifiedBackgroundWorkerOp
       currentTaskRef.current = taskId;
 
       logger.debug("worker", "Unified animation started", {
-        nodeCount: nodes.length,
-        linkCount: links.length,
+        nodeCount: nodes?.length || 0,
+        linkCount: links?.length || 0,
         pinnedCount: pinnedNodes?.size || 0,
         taskId
       });

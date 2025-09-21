@@ -100,6 +100,7 @@ export function useAnimatedLayout(options: UseAnimatedLayoutOptions = {}) {
 	// Animation control refs
 	const isLayoutRunningRef = useRef(false);
 	const debounceTimerRef = useRef<NodeJS.Timeout | null>(null);
+	const applyDebounceTimerRef = useRef<NodeJS.Timeout | null>(null);
 	const prevNodeCountRef = useRef(0);
 
 	// Animated force simulation hook
@@ -252,7 +253,7 @@ export function useAnimatedLayout(options: UseAnimatedLayoutOptions = {}) {
 		}
 
 		if (isLayoutRunningRef.current) {
-			logger.warn("graph", "Animated layout already running, skipping");
+			logger.debug("graph", "Animated layout already running, skipping");
 			return;
 		}
 
@@ -307,7 +308,7 @@ export function useAnimatedLayout(options: UseAnimatedLayoutOptions = {}) {
 			startAnimationFunction: typeof startAnimation,
 		});
 
-		startAnimation(animatedNodes, animatedLinks, enhancedConfig, pinnedNodeSet);
+		void startAnimation(animatedNodes, animatedLinks, enhancedConfig, pinnedNodeSet);
 		logger.debug("graph", "startAnimation called successfully");
 	}, [
 		enabled,
@@ -323,7 +324,7 @@ export function useAnimatedLayout(options: UseAnimatedLayoutOptions = {}) {
 	// Stop layout
 	const stopLayout = useCallback(() => {
 		if (isLayoutRunningRef.current) {
-			stopAnimation();
+			void stopAnimation();
 			isLayoutRunningRef.current = false;
 			storeMethodsRef.current.resetAnimation();
 			logger.debug("graph", "Animated layout stopped");
@@ -341,7 +342,7 @@ export function useAnimatedLayout(options: UseAnimatedLayoutOptions = {}) {
 			callStack: new Error().stack?.split("\n").slice(0, 5).join("\n")
 		});
 		if (isLayoutRunningRef.current && !currentPauseState) {
-			pauseAnimation();
+			void pauseAnimation();
 			logger.debug("graph", "Animated layout paused");
 		}
 	}, [pauseAnimation]);
@@ -351,10 +352,21 @@ export function useAnimatedLayout(options: UseAnimatedLayoutOptions = {}) {
 		// Use state callback to check current pause state without dependency
 		const currentPauseState = useAnimatedGraphStore.getState().isPaused;
 		if (isLayoutRunningRef.current && currentPauseState) {
-			resumeAnimation();
+			void resumeAnimation();
 			logger.debug("graph", "Animated layout resumed");
 		}
 	}, [resumeAnimation]);
+
+	// Debounced apply layout to prevent rapid consecutive calls
+	const debouncedApplyLayout = useCallback(() => {
+		if (applyDebounceTimerRef.current) {
+			clearTimeout(applyDebounceTimerRef.current);
+		}
+		applyDebounceTimerRef.current = setTimeout(() => {
+			applyAnimatedLayout();
+			applyDebounceTimerRef.current = null;
+		}, 100); // 100ms debounce to prevent race conditions
+	}, [applyAnimatedLayout]);
 
 	// Restart layout
 	const restartLayout = useCallback(() => {
@@ -372,9 +384,9 @@ export function useAnimatedLayout(options: UseAnimatedLayoutOptions = {}) {
 			restartLayout(); // Restarts with full alpha=1 for strong reheat
 		} else {
 			// Start new layout if not running
-			applyAnimatedLayout();
+			debouncedApplyLayout();
 		}
-	}, [restartLayout, applyAnimatedLayout]);
+	}, [restartLayout, debouncedApplyLayout]);
 
 	// Debounced reheat to prevent rapid calls
 	const debouncedReheat = useCallback((alpha = 0.3) => {
@@ -400,7 +412,7 @@ export function useAnimatedLayout(options: UseAnimatedLayoutOptions = {}) {
 	}>) => {
 		if (isLayoutRunningRef.current && enabled && useAnimation && isWorkerReady) {
 			// Update the worker with new parameters
-			updateAnimationParameters(newParams);
+			void updateAnimationParameters(newParams);
 			logger.debug("graph", "Updating force parameters", { newParams });
 		} else {
 			logger.debug("graph", "Cannot update parameters - animation not running", {
@@ -430,10 +442,10 @@ export function useAnimatedLayout(options: UseAnimatedLayoutOptions = {}) {
 			isWorkerReady) {
 			// Auto-reheat/start initial simulation
 			logger.debug("graph", "Auto-starting layout on graph load", { nodeCount: currentNodeCount });
-			applyAnimatedLayout();
+			debouncedApplyLayout();
 		}
 		prevNodeCountRef.current = currentNodeCount;
-	}, [getNodes, isAnimating, enabled, useAnimation, isWorkerReady, applyAnimatedLayout]);
+	}, [getNodes, isAnimating, enabled, useAnimation, isWorkerReady, debouncedApplyLayout]);
 
 	// Auto-sync positions with graph store when not animating (REMOVED - causing infinite loop)
 	// This sync will be handled manually when needed to avoid React 19 + Zustand + Immer loops
