@@ -456,11 +456,20 @@ export function useEnhancedBackgroundWorker(options: UseEnhancedBackgroundWorker
 
     const { requestId, nodes, edges, statistics } = validationResult.data;
     if (requestId && nodes && edges) {
+      // Validate arrays contain expected types
+      const validatedNodes = Array.isArray(nodes) && nodes.every((node): node is GraphNode =>
+        typeof node === "object" && node !== null && "id" in node && "entityId" in node
+      ) ? nodes : [];
+
+      const validatedEdges = Array.isArray(edges) && edges.every((edge): edge is GraphEdge =>
+        typeof edge === "object" && edge !== null && "id" in edge && "source" in edge && "target" in edge
+      ) ? edges : [];
+
       // Callback with validated data structure
       onExpansionComplete?.({
         requestId,
-        nodes,
-        edges,
+        nodes: validatedNodes,
+        edges: validatedEdges,
         statistics
       });
     }
