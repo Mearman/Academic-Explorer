@@ -64,8 +64,13 @@ export class EventBus {
 
     // Also register with EventTarget for consistency
     const wrappedHandler = (e: Event) => {
-      if (e instanceof CustomEvent && e.detail && typeof e.detail === "object" && "type" in e.detail) {
-        handler(e.detail as { type: string; payload?: unknown });
+      if (e instanceof CustomEvent &&
+          e.detail &&
+          typeof e.detail === "object" &&
+          "type" in e.detail &&
+          typeof e.detail.type === "string") {
+        const eventDetail = e.detail as { type: string; payload?: unknown };
+        handler(eventDetail);
       }
     };
 
