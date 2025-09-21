@@ -118,11 +118,13 @@ export function getBackgroundWorker(): Promise<Worker> {
 
     workerState.readyCallbacks.add(onReady);
 
-    workerState.worker.addEventListener("error", (error) => {
-      const errorMessage = error?.message ?? "Unknown worker error";
-      logger.error("graph", "Background worker error", { error: errorMessage });
-      workerState.errorCallbacks.forEach(callback => { callback(errorMessage); });
-    });
+    if (workerState.worker) {
+      workerState.worker.addEventListener("error", (error) => {
+        const errorMessage = error?.message ?? "Unknown worker error";
+        logger.error("graph", "Background worker error", { error: errorMessage });
+        workerState.errorCallbacks.forEach(callback => { callback(errorMessage); });
+      });
+    }
 
     // Worker will communicate via BroadcastChannel instead of direct messages
 
