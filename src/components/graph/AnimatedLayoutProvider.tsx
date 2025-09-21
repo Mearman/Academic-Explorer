@@ -197,16 +197,17 @@ export const AnimatedLayoutProvider: React.FC<AnimatedLayoutProviderProps> = ({
 		// Use unified event bus for custom event types
 		const unsubscribe = eventBus.on(eventType, (event) => {
 			if (event.payload && typeof event.payload === "object" && "type" in event.payload) {
-				// eslint-disable-next-line @typescript-eslint/consistent-type-assertions -- Required for type narrowing
-				const payload = event.payload as Record<string, unknown>;
-				if (typeof payload.type === "string") {
-					handleGraphEvent({ type: payload.type, payload: payload.payload });
+				if (typeof event.payload.type === "string") {
+					handleGraphEvent({
+						type: event.payload.type,
+						payload: "payload" in event.payload ? event.payload.payload : undefined
+					});
 				}
 			}
 		});
 
 		return () => { unsubscribe(); };
-	}, [autoStartOnNodeChange, enabled, useAnimation, isWorkerReady, isRunning, applyLayout, reheatLayout]);
+	}, [autoStartOnNodeChange, enabled, useAnimation, isWorkerReady, isRunning, applyLayout, reheatLayout, eventBus]);
 	// Initial trigger: Start animation when page loads with existing nodes
 	useEffect(() => {
 		if (!enabled || !useAnimation || !isWorkerReady || isRunning) {

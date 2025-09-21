@@ -40,13 +40,15 @@ function initializeWorker() {
 
 // Type guard for worker messages
 function isWorkerMessage(data: unknown): data is { type: string } {
-  return (
-    data !== null &&
-    typeof data === "object" &&
-    "type" in data &&
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions -- Required for type guard
-    typeof (data as Record<string, unknown>).type === "string"
-  );
+  if (data === null || typeof data !== "object") {
+    return false;
+  }
+
+  if (!("type" in data)) {
+    return false;
+  }
+
+  return typeof data.type === "string";
 }
 
 // Message handling
