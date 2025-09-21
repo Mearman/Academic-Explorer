@@ -154,7 +154,7 @@ export function getBackgroundWorker(): Promise<Worker> {
 
     // Timeout for readiness failure (emit error instead of fallback resolve)
     readyTimeout = setTimeout(() => {
-      logger.error("graph", "Worker not ready after timeout - EventBridge failure");
+      logger.error("graph", "Worker not ready after timeout - BroadcastChannel communication failure");
       cleanup();
       workerState.worker?.terminate();
       workerState.worker = null;
