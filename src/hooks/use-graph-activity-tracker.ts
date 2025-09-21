@@ -54,7 +54,7 @@ export function useGraphActivityTracker() {
         eventType,
         payloadKeys: payload && typeof payload === "object" ? Object.keys(payload) : "non-object",
         allGraphEventTypes: Object.values(GraphEventType),
-        isGraphEvent: Object.values(GraphEventType).includes(eventType)
+        isGraphEvent: isGraphEventType(eventType)
       }, "GraphActivityTracker");
 
       // Handle graph structure events
@@ -95,9 +95,11 @@ export function useGraphActivityTracker() {
           severity: "info",
           duration,
           metadata: {
-            eventType,
-            graphOperation: true,
-            payload: graphPayload,
+            data: {
+              eventType,
+              graphOperation: true,
+              payload: graphPayload,
+            },
           },
         });
       }
@@ -114,9 +116,11 @@ export function useGraphActivityTracker() {
           description,
           severity: "info",
           metadata: {
-            eventType,
-            expansion: true,
-            payload: entityPayload,
+            data: {
+              eventType,
+              expansion: true,
+              payload: entityPayload,
+            },
           },
         });
       }
@@ -130,48 +134,49 @@ export function useGraphActivityTracker() {
         let duration: number | undefined;
 
         switch (eventType) {
-            case WorkerEventType.FORCE_SIMULATION_PROGRESS:
-              description = "Force simulation progress";
-              severity = "debug";
-              break;
-            case WorkerEventType.FORCE_SIMULATION_COMPLETE:
-              description = "Force simulation completed";
-              break;
-            case WorkerEventType.FORCE_SIMULATION_ERROR:
-              description = "Force simulation error";
-              severity = "error";
-              break;
-            case WorkerEventType.DATA_FETCH_PROGRESS:
-              description = "Data fetch progress";
-              severity = "debug";
-              break;
-            case WorkerEventType.DATA_FETCH_COMPLETE:
-              description = "Data fetch completed";
-              break;
-            case WorkerEventType.DATA_FETCH_ERROR:
-              description = "Data fetch error";
-              severity = "error";
-              break;
-            default:
-              description = `Worker event: ${eventType}`;
-          }
+          case WorkerEventType.FORCE_SIMULATION_PROGRESS:
+            description = "Force simulation progress";
+            severity = "debug";
+            break;
+          case WorkerEventType.FORCE_SIMULATION_COMPLETE:
+            description = "Force simulation completed";
+            break;
+          case WorkerEventType.FORCE_SIMULATION_ERROR:
+            description = "Force simulation error";
+            severity = "error";
+            break;
+          case WorkerEventType.DATA_FETCH_PROGRESS:
+            description = "Data fetch progress";
+            severity = "debug";
+            break;
+          case WorkerEventType.DATA_FETCH_COMPLETE:
+            description = "Data fetch completed";
+            break;
+          case WorkerEventType.DATA_FETCH_ERROR:
+            description = "Data fetch error";
+            severity = "error";
+            break;
+          default:
+            description = `Worker event: ${eventType}`;
+        }
 
-          addEvent({
-            type: "system",
-            category: "background",
-            event: eventType,
-            description,
-            severity,
-            duration,
-            metadata: {
+        addEvent({
+          type: "system",
+          category: "background",
+          event: eventType,
+          description,
+          severity,
+          duration,
+          metadata: {
+            data: {
               eventType,
               simulation: eventType.includes("simulation"),
               dataFetch: eventType.includes("fetch"),
               payload: workerPayload,
             },
-          });
+          },
+        });
       }
-
     } catch (error) {
       logger.error("ui", "Failed to process graph event", {
         eventType: message.eventType,
@@ -223,9 +228,11 @@ export function useGraphActivityTracker() {
         severity: "info",
         duration,
         metadata: {
-          eventType,
-          graphOperation: true,
-          payload,
+          data: {
+            eventType,
+            graphOperation: true,
+            payload,
+          },
         },
       });
 
@@ -252,8 +259,10 @@ export function useGraphActivityTracker() {
       description: "Graph activity tracking started",
       severity: "info",
       metadata: {
-        handlerId,
-        trackingTypes: ["graph", "simulation", "data-fetch"],
+        data: {
+          handlerId,
+          trackingTypes: ["graph", "simulation", "data-fetch"],
+        },
       },
     });
 
@@ -270,7 +279,9 @@ export function useGraphActivityTracker() {
           description: "Graph activity tracking stopped",
           severity: "info",
           metadata: {
-            handlerId: handlerIdRef.current,
+            data: {
+              handlerId: handlerIdRef.current,
+            },
           },
         });
 
