@@ -28,8 +28,8 @@ import { useGraphStore } from "@/stores/graph-store";
 import { useGraphData } from "@/hooks/use-graph-data";
 import { useQueryClient } from "@tanstack/react-query";
 import { isNodeExpanded } from "@/lib/cache/graph-cache";
-import { useEntityExpansionCallback } from "@/lib/graph/events";
-import { useRef } from "react";
+import { useEventBus, EntityEventType } from "@/lib/graph/events";
+import { useRef, useEffect } from "react";
 
 
 // Pin toggle button component
@@ -348,17 +348,19 @@ const RemoveLeafNodesButton: React.FC<RemoveLeafNodesButtonProps> = ({ nodeId, c
 	const entityId = node?.entityId;
 
 	// Use cross-context entity expansion event listener instead of polling
-	useEntityExpansionCallback(
-		entityId || nodeId,
-		() => {
-			if (pendingTrimRef.current) {
-				performTrim();
+	const eventBus = useEventBus();
+	useEffect(() => {
+		const unsubscribe = eventBus.on(EntityEventType.ENTITY_EXPANDED, (event) => {
+			const payload = event.payload as { entityId: string };
+			if (payload.entityId === (entityId || nodeId)) {
+				if (pendingTrimRef.current) {
+					performTrim();
+				}
 			}
-		},
-		{
-			executeIn: "main" // Ensure UI updates happen in main thread
-		}
-	);
+		});
+
+		return unsubscribe;
+	}, [eventBus, entityId, nodeId, performTrim]);
 
 	const handleRemoveLeafNodes = (e: React.MouseEvent) => {
 		e.stopPropagation(); // Prevent node selection/dragging
