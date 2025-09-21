@@ -17,9 +17,9 @@ export function useAutoRelationshipDetection() {
 
   useEffect(() => {
     const unsubscribe = eventBus.on(GraphEventType.BULK_NODES_ADDED, (event) => {
-      if (!event.payload || typeof event.payload !== 'object') return;
+      if (!event.payload || typeof event.payload !== "object") return;
       const payload = event.payload;
-      if (!('nodes' in payload) || !Array.isArray(payload.nodes)) return;
+      if (!("nodes" in payload) || !Array.isArray(payload.nodes)) return;
       const { nodes } = payload;
     if (nodes.length === 0) {
       logger.debug("graph", "No nodes in bulk addition, skipping relationship detection");
