@@ -27,7 +27,7 @@ class ApplicationLogger {
 	private config: LoggerConfig = {
 		maxLogs: 1000,
 		enableConsoleOutput: true, // Set to false to disable browser console output
-		enableDebugLogs: false, // Set to true manually for development debugging
+		enableDebugLogs: true, // Set to true manually for development debugging
 	};
 
 	log(level: LogLevel, category: LogCategory, message: string, data?: unknown, component?: string) {
