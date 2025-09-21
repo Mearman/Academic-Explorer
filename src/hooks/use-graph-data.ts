@@ -99,7 +99,7 @@ export function useGraphData() {
 					nodeId,
 					retryCount,
 					isReady: forceWorker.isWorkerReady,
-					hasWorker: !!forceWorker.worker,
+					hasWorker: forceWorker.isWorkerReady,
 					workerState: typeof forceWorker
 				}, "useGraphData");
 			}
