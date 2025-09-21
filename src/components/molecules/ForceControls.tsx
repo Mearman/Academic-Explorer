@@ -23,6 +23,7 @@ import { AnimatedLayoutContext } from "@/components/graph/animated-layout-contex
 import { useSetUseAnimatedLayout, useIsAnimating, useRequestRestart } from "@/stores/animated-graph-store";
 import { logger } from "@/lib/logger";
 import { DEFAULT_FORCE_PARAMS, FORCE_PARAM_CONFIG } from "@/lib/graph/force-params";
+import type { GraphLayout } from "@/lib/graph/types";
 
 // Local type for component state (allows for number mutations)
 type ForceParameters = {
@@ -69,7 +70,35 @@ const useDebouncedCallback = <T extends unknown[]>(
 
 // Constrain value to min/max bounds
 const constrainValue = (value: number, min: number, max: number): number => {
-	return Math.max(min, Math.min(max, value));
+        return Math.max(min, Math.min(max, value));
+};
+
+const getForceParamsFromLayout = (layout: GraphLayout): ForceParameters => {
+        const options = layout.options ?? {};
+
+        return {
+                linkDistance: options.linkDistance ?? DEFAULT_FORCE_PARAMS.linkDistance,
+                linkStrength: options.linkStrength ?? DEFAULT_FORCE_PARAMS.linkStrength,
+                chargeStrength: options.chargeStrength ?? DEFAULT_FORCE_PARAMS.chargeStrength,
+                centerStrength: options.centerStrength ?? DEFAULT_FORCE_PARAMS.centerStrength,
+                collisionRadius: options.collisionRadius ?? DEFAULT_FORCE_PARAMS.collisionRadius,
+                collisionStrength: options.collisionStrength ?? DEFAULT_FORCE_PARAMS.collisionStrength,
+                velocityDecay: options.velocityDecay ?? DEFAULT_FORCE_PARAMS.velocityDecay,
+                alphaDecay: options.alphaDecay ?? DEFAULT_FORCE_PARAMS.alphaDecay,
+        };
+};
+
+const areForceParamsEqual = (a: ForceParameters, b: ForceParameters): boolean => {
+        return (
+                a.linkDistance === b.linkDistance &&
+                a.linkStrength === b.linkStrength &&
+                a.chargeStrength === b.chargeStrength &&
+                a.centerStrength === b.centerStrength &&
+                a.collisionRadius === b.collisionRadius &&
+                a.collisionStrength === b.collisionStrength &&
+                a.velocityDecay === b.velocityDecay &&
+                a.alphaDecay === b.alphaDecay
+        );
 };
 
 export const ForceControls: React.FC = () => {
@@ -83,19 +112,20 @@ export const ForceControls: React.FC = () => {
 	const animationContext = React.useContext(AnimatedLayoutContext);
 
 	// Initialize force parameters from current layout or defaults
-	const [forceParams, setForceParams] = useState<ForceParameters>(() => {
-		const current = currentLayout.options ?? {};
-		return {
-			linkDistance: current.linkDistance ?? DEFAULT_FORCE_PARAMS.linkDistance,
-			linkStrength: current.linkStrength ?? DEFAULT_FORCE_PARAMS.linkStrength,
-			chargeStrength: current.chargeStrength ?? DEFAULT_FORCE_PARAMS.chargeStrength,
-			centerStrength: current.centerStrength ?? DEFAULT_FORCE_PARAMS.centerStrength,
-			collisionRadius: current.collisionRadius ?? DEFAULT_FORCE_PARAMS.collisionRadius,
-			collisionStrength: current.collisionStrength ?? DEFAULT_FORCE_PARAMS.collisionStrength,
-			velocityDecay: current.velocityDecay ?? DEFAULT_FORCE_PARAMS.velocityDecay,
-			alphaDecay: current.alphaDecay ?? DEFAULT_FORCE_PARAMS.alphaDecay,
-		};
-	});
+        const [forceParams, setForceParams] = useState<ForceParameters>(() => {
+                return getForceParamsFromLayout(currentLayout);
+        });
+
+        // Keep local UI state in sync with the active layout options
+        useEffect(() => {
+                if (currentLayout.type !== "d3-force") {
+                        return;
+                }
+
+                const nextParams = getForceParamsFromLayout(currentLayout);
+
+                setForceParams(prev => (areForceParamsEqual(prev, nextParams) ? prev : nextParams));
+        }, [currentLayout]);
 
 	// Immediate parameter change handler
 	const handleParameterChangeImmediate = useCallback((
@@ -229,7 +259,7 @@ export const ForceControls: React.FC = () => {
 	const handleReset = () => {
 		logger.debug("graph", "Resetting force parameters to defaults");
 
-		setForceParams(DEFAULT_FORCE_PARAMS);
+                setForceParams({ ...DEFAULT_FORCE_PARAMS });
 
 		// Update the current layout with default parameters
 		{
