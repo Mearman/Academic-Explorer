@@ -6,6 +6,7 @@
 
 import { logger } from "@/lib/logger";
 import { EventBus } from "./unified-event-bus";
+import { z } from "zod";
 
 export interface TaskDescriptor {
   id: string;
@@ -105,7 +106,7 @@ export class TaskQueue {
     });
 
     // Start processing if not already running
-    void this.process();
+    this.process();
 
     return task.id;
   }
@@ -204,7 +205,7 @@ export class TaskQueue {
     this.queue = [];
 
     // Cancel all active tasks
-    for (const [taskId, task] of this.activeTasks.entries()) {
+    for (const [, task] of this.activeTasks.entries()) {
       task.status = TaskStatus.CANCELLED;
       if (task.worker) {
         task.worker.terminate();
@@ -226,7 +227,7 @@ export class TaskQueue {
   /**
    * Process the task queue
    */
-  private async process(): Promise<void> {
+  private process(): void {
     if (this.processing) {
       return;
     }
@@ -336,7 +337,7 @@ export class TaskQueue {
       this.activeTasks.delete(task.id);
 
       // Continue processing remaining tasks
-      void this.process();
+      this.process();
     }
   }
 
@@ -359,23 +360,53 @@ export class TaskQueue {
         if (task.timeout) {
           timeoutHandle = setTimeout(() => {
             worker.terminate();
-            reject(new Error(`Task timeout after ${task.timeout}ms`));
+            reject(new Error(`Task timeout after ${String(task.timeout)}ms`));
           }, task.timeout);
         }
 
         worker.onmessage = (e: MessageEvent) => {
-          const event = e.data as { type: string; payload?: unknown };
+          // Type guard for worker message
+          interface WorkerMessage {
+            type: string;
+            payload?: unknown;
+          }
+
+          // Zod schema for worker message validation
+          const workerMessageSchema = z.looseObject({
+            type: z.string(),
+            payload: z.unknown().optional()
+          });
+
+          function isWorkerMessage(data: unknown): data is WorkerMessage {
+            return workerMessageSchema.safeParse(data).success;
+          }
+
+          if (!isWorkerMessage(e.data)) {
+            return;
+          }
+
+          const event = e.data;
 
           switch (event.type) {
-            case "PROGRESS":
+            case "PROGRESS": {
+              const progressPayload = event.payload;
+              const payloadExtension = progressPayload &&
+                typeof progressPayload === "object" &&
+                !Array.isArray(progressPayload) &&
+                progressPayload !== null
+                ? Object.fromEntries(Object.entries(progressPayload).filter(([key, value]) =>
+                    typeof key === "string" && value !== undefined
+                  ))
+                : {};
               this.bus.emit({
                 type: "TASK_PROGRESS",
                 payload: {
                   id: task.id,
-                  ...(event.payload && typeof event.payload === "object" ? event.payload : {})
+                  ...payloadExtension
                 }
               });
               break;
+            }
 
             case "SUCCESS":
               if (timeoutHandle) {
@@ -402,8 +433,13 @@ export class TaskQueue {
               break;
 
             default:
-              // Forward other events to the bus
-              this.bus.emit(event);
+              // Forward other events to the bus - ensure they have required structure
+              if (event.type && typeof event.type === "string") {
+                this.bus.emit({
+                  type: event.type,
+                  payload: event.payload
+                });
+              }
               break;
           }
         };
@@ -420,7 +456,7 @@ export class TaskQueue {
         worker.postMessage(task.payload);
 
       } catch (error) {
-        reject(error);
+        reject(error instanceof Error ? error : new Error(String(error)));
       }
     });
   }
@@ -436,11 +472,19 @@ export class TaskQueue {
     // Create emit function for the task to report progress
     const emit = (event: { type: string; payload?: unknown }) => {
       if (event.type === "PROGRESS") {
+        const payloadExtension = event.payload &&
+          typeof event.payload === "object" &&
+          !Array.isArray(event.payload) &&
+          event.payload !== null
+          ? Object.fromEntries(Object.entries(event.payload).filter(([key, value]) =>
+              typeof key === "string" && value !== undefined
+            ))
+          : {};
         this.bus.emit({
           type: "TASK_PROGRESS",
           payload: {
             id: task.id,
-            ...(event.payload && typeof event.payload === "object" ? event.payload : {})
+            ...payloadExtension
           }
         });
       } else {
@@ -454,7 +498,7 @@ export class TaskQueue {
         task.execute(task.payload, emit),
         new Promise((_, reject) => {
           setTimeout(() => {
-            reject(new Error(`Task timeout after ${task.timeout}ms`));
+            reject(new Error(`Task timeout after ${String(task.timeout)}ms`));
           }, task.timeout);
         })
       ]);

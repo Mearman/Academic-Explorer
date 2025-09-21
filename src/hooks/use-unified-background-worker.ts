@@ -542,8 +542,8 @@ export function useUnifiedBackgroundWorker(options: UseUnifiedBackgroundWorkerOp
     expandNode,
 
     // Worker management
-    terminate: async () => {
-      await workerPool.shutdown();
+    terminate: () => {
+      workerPool.shutdown();
     },
 
     // Computed properties

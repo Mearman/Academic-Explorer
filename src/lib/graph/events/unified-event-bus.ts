@@ -67,10 +67,18 @@ export class EventBus {
       if (e instanceof CustomEvent &&
           e.detail &&
           typeof e.detail === "object" &&
-          "type" in e.detail &&
-          typeof (e.detail as Record<string, unknown>).type === "string") {
-        const eventDetail = e.detail as { type: string; payload?: unknown };
-        handler(eventDetail);
+          e.detail !== null &&
+          "type" in e.detail) {
+        // Use Object.getOwnPropertyDescriptor to safely access properties
+        const typeDescriptor = Object.getOwnPropertyDescriptor(e.detail, "type");
+        if (typeDescriptor && typeof typeDescriptor.value === "string") {
+          const payloadDescriptor = Object.getOwnPropertyDescriptor(e.detail, "payload");
+          const eventDetail: { type: string; payload?: unknown } = {
+            type: typeDescriptor.value,
+            payload: payloadDescriptor ? payloadDescriptor.value : undefined
+          };
+          handler(eventDetail);
+        }
       }
     };
 

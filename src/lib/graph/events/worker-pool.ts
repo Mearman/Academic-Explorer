@@ -151,7 +151,7 @@ export class WorkerPool {
   /**
    * Shutdown the worker pool
    */
-  async shutdown(): Promise<void> {
+  shutdown(): void {
     this.isShuttingDown = true;
 
     // Stop idle check
@@ -167,12 +167,9 @@ export class WorkerPool {
     this.taskQueue = [];
 
     // Terminate all workers
-    const terminationPromises: Promise<void>[] = [];
     for (const poolWorker of this.workers.values()) {
-      terminationPromises.push(this.terminateWorker(poolWorker.id));
+      this.terminateWorker(poolWorker.id);
     }
-
-    await Promise.all(terminationPromises);
 
     logger.debug("workerpool", "Worker pool shutdown complete");
 
@@ -259,11 +256,14 @@ export class WorkerPool {
    * Handle messages from workers
    */
   private handleWorkerMessage(poolWorker: PoolWorker, data: unknown): void {
-    if (!data || typeof data !== "object") {
+    if (!data ||
+        typeof data !== "object" ||
+        !("type" in data) ||
+        typeof data.type !== "string") {
       return;
     }
 
-    const message = data as { type: string; payload?: unknown; taskId?: string };
+    const message = data;
 
     switch (message.type) {
       case "PROGRESS":
@@ -288,7 +288,7 @@ export class WorkerPool {
       default:
         // Forward other messages to the event bus
         this.bus.emit({
-          type: `POOL_WORKER_${message.type}`,
+          type: `POOL_WORKER_${String(message.type)}`,
           payload: {
             workerId: poolWorker.id,
             ...(message.payload && typeof message.payload === "object" ? message.payload : {})
@@ -327,7 +327,7 @@ export class WorkerPool {
 
     // Restart worker if configured to do so
     if (this.options.restartOnError && !this.isShuttingDown) {
-      void this.restartWorker(poolWorker.id);
+      this.restartWorker(poolWorker.id);
     }
   }
 
@@ -357,7 +357,7 @@ export class WorkerPool {
     if (error) {
       poolWorker.errors++;
       poolWorker.status = "error";
-      task?.reject(error);
+      task?.reject(error instanceof Error ? error : new Error(String(error)));
 
       logger.debug("workerpool", "Task failed", {
         workerId: poolWorker.id,
@@ -378,7 +378,7 @@ export class WorkerPool {
 
     // Check if worker needs to be restarted due to max tasks
     if (poolWorker.tasksCompleted >= this.options.maxTasksPerWorker && !this.isShuttingDown) {
-      void this.restartWorker(poolWorker.id);
+      this.restartWorker(poolWorker.id);
     } else {
       // Try to assign next task
       this.assignNextTask();
@@ -479,7 +479,7 @@ export class WorkerPool {
   /**
    * Restart a worker
    */
-  private async restartWorker(workerId: string): Promise<void> {
+  private restartWorker(workerId: string): void {
     const oldWorker = this.workers.get(workerId);
     if (!oldWorker) {
       return;
@@ -492,7 +492,7 @@ export class WorkerPool {
     });
 
     // Terminate old worker
-    await this.terminateWorker(workerId);
+    this.terminateWorker(workerId);
 
     // Create new worker with same ID
     try {
@@ -508,7 +508,7 @@ export class WorkerPool {
   /**
    * Terminate a specific worker
    */
-  private async terminateWorker(workerId: string): Promise<void> {
+  private terminateWorker(workerId: string): void {
     const poolWorker = this.workers.get(workerId);
     if (!poolWorker) {
       return;
@@ -556,7 +556,7 @@ export class WorkerPool {
       }
 
       for (const workerId of workersToRestart) {
-        void this.restartWorker(workerId);
+        this.restartWorker(workerId);
       }
     }, 60000); // Check every minute
   }

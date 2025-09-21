@@ -118,17 +118,21 @@ export class ResourceCoordinator {
       }, this.options.acquireTimeout);
 
       // Listen for channel port response
-      const handleChannelPort = (data: ControlMessage) => {
+      const handleChannelPort = (event: MessageEvent<ControlMessage>) => {
+        const data = event.data;
         if (data.type === "CHANNEL_PORT" &&
             data.senderId === leaderId &&
             data.targetId === this.id) {
 
           clearTimeout(timeout);
-          this.channel.removeEventListener("message", handleChannelPort as unknown as EventListener);
+          this.channel.removeEventListener("message", handleChannelPort);
 
           // Extract the port from the message
-          if (data.payload && typeof data.payload === "object" && "port" in data.payload) {
-            const port = data.payload.port as MessagePort;
+          if (data.payload &&
+              typeof data.payload === "object" &&
+              "port" in data.payload &&
+              data.payload.port instanceof MessagePort) {
+            const port = data.payload.port;
             this.setupFollowerPort(leaderId, port);
             resolve(port);
           } else {
@@ -137,7 +141,7 @@ export class ResourceCoordinator {
         }
       };
 
-      this.channel.addEventListener("message", handleChannelPort as unknown as EventListener);
+      this.channel.addEventListener("message", handleChannelPort);
 
       // Send channel request
       this.sendControlMessage({
@@ -153,7 +157,7 @@ export class ResourceCoordinator {
   /**
    * Release leadership and clean up
    */
-  async release(): Promise<void> {
+  release(): void {
     if (this.heartbeatInterval) {
       clearInterval(this.heartbeatInterval);
       this.heartbeatInterval = undefined;
@@ -215,7 +219,7 @@ export class ResourceCoordinator {
           }
 
           this.lock = lock;
-          await this.becomeLeader();
+          this.becomeLeader();
 
           // Hold the lock until we're done
           return new Promise<void>((resolve) => {
@@ -241,14 +245,14 @@ export class ResourceCoordinator {
       });
 
       // Become a follower
-      await this.becomeFollower();
+      this.becomeFollower();
     }
   }
 
   /**
    * Become the leader for this resource
    */
-  private async becomeLeader(): Promise<void> {
+  private becomeLeader(): void {
     this.isLeader = true;
     this.leaderId = this.id;
     this.followers.clear();
@@ -281,7 +285,7 @@ export class ResourceCoordinator {
   /**
    * Become a follower
    */
-  private async becomeFollower(): Promise<void> {
+  private becomeFollower(): void {
     this.isLeader = false;
 
     // Listen for leader announcements
@@ -316,9 +320,9 @@ export class ResourceCoordinator {
       setTimeout(() => {
         // If no one challenged us, become leader
         if (!this.leaderId) {
-          void this.becomeLeader();
+          this.becomeLeader();
         } else {
-          void this.becomeFollower();
+          this.becomeFollower();
         }
         resolve();
       }, 1000);
@@ -421,26 +425,38 @@ export class ResourceCoordinator {
    */
   protected setupLeaderPort(followerId: string, port: MessagePort): void {
     // Store port for direct communication
-    port.onmessage = (e) => {
+    port.onmessage = (_e: MessageEvent) => {
       logger.debug("resource", "Received message from follower", {
         followerId,
-        message: e.data
+        messageReceived: true
       });
     };
     port.start();
 
-    port.onmessage = (ev) => {
+    port.onmessage = (ev: MessageEvent) => {
+      // Safe property extraction without type assertions
+      const data: unknown = ev.data;
+      let messageType = "unknown";
+
+      if (typeof data === "object" && data !== null && "type" in data) {
+        // Use Object.getOwnPropertyDescriptor to avoid type assertion
+        const descriptor = Object.getOwnPropertyDescriptor(data, "type");
+        if (descriptor && typeof descriptor.value === "string") {
+          messageType = descriptor.value;
+        }
+      }
+
       logger.debug("resource", "Received message from follower", {
         leaderId: this.id,
         followerId,
-        messageType: ev.data?.type
+        messageType
       });
 
       this.bus.emit({
         type: "FOLLOWER_MESSAGE",
         payload: {
           followerId,
-          message: ev.data
+          message: data
         }
       });
     };
@@ -460,18 +476,30 @@ export class ResourceCoordinator {
     // Store port for direct communication
     port.start();
 
-    port.onmessage = (ev) => {
+    port.onmessage = (ev: MessageEvent) => {
+      // Safe property extraction without type assertions
+      const data: unknown = ev.data;
+      let messageType = "unknown";
+
+      if (typeof data === "object" && data !== null && "type" in data) {
+        // Use Object.getOwnPropertyDescriptor to avoid type assertion
+        const descriptor = Object.getOwnPropertyDescriptor(data, "type");
+        if (descriptor && typeof descriptor.value === "string") {
+          messageType = descriptor.value;
+        }
+      }
+
       logger.debug("resource", "Received message from leader", {
         followerId: this.id,
         leaderId,
-        messageType: ev.data?.type
+        messageType
       });
 
       this.bus.emit({
         type: "LEADER_MESSAGE",
         payload: {
           leaderId,
-          message: ev.data
+          message: data
         }
       });
     };

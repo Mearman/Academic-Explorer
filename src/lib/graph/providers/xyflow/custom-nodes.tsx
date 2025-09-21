@@ -351,10 +351,15 @@ const RemoveLeafNodesButton: React.FC<RemoveLeafNodesButtonProps> = ({ nodeId, c
 	const eventBus = useEventBus();
 	useEffect(() => {
 		const unsubscribe = eventBus.on(EntityEventType.ENTITY_EXPANDED, (event) => {
-			const payload = event.payload as { entityId: string };
-			if (payload.entityId === (entityId || nodeId)) {
-				if (pendingTrimRef.current) {
-					performTrim();
+			if (event.payload &&
+				typeof event.payload === "object" &&
+				"entityId" in event.payload &&
+				typeof event.payload.entityId === "string") {
+				const payload = event.payload;
+				if (payload.entityId === (entityId || nodeId)) {
+					if (pendingTrimRef.current) {
+						performTrim();
+					}
 				}
 			}
 		});

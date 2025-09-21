@@ -8,6 +8,7 @@ import { logger } from "@/lib/logger";
 import { EventBus } from "./unified-event-bus";
 import { ResourceCoordinator, ResourceOptions, ControlMessage } from "./resource-coordinator";
 import { TaskDescriptor, TaskResult, TaskStatus } from "./unified-task-queue";
+import { z } from "zod";
 
 export interface QueuedTaskMessage {
   type: "QUEUE_TASK" | "TASK_ASSIGNED" | "TASK_COMPLETED" | "TASK_FAILED" | "TASK_CANCELLED" | "SYNC_QUEUE";
@@ -88,7 +89,7 @@ export class QueuedResourceCoordinator extends ResourceCoordinator {
   /**
    * Submit a task to the distributed queue
    */
-  async submitTask(task: TaskDescriptor): Promise<string> {
+  submitTask(task: TaskDescriptor): string {
     if (this.taskQueue.length >= this.queueOptions.maxQueueSize) {
       throw new Error("Task queue is full");
     }
@@ -272,11 +273,11 @@ export class QueuedResourceCoordinator extends ResourceCoordinator {
   /**
    * Release coordinator and clean up
    */
-  async release(): Promise<void> {
+  release(): void {
     this.stopQueueSync();
     this.clearAllTaskTimeouts();
     this.clearQueue();
-    await super.release();
+    super.release();
   }
 
   /**
@@ -316,7 +317,12 @@ export class QueuedResourceCoordinator extends ResourceCoordinator {
 
       case "TASK_ASSIGNED":
         if (msg.taskData && msg.taskData.assignedTo === this.id) {
-          this.handleTaskAssignment(msg.taskData);
+          this.handleTaskAssignment(msg.taskData).catch((error: unknown) => {
+            logger.error("queuecoordinator", "Failed to handle task assignment", {
+              taskId: msg.taskData?.id,
+              error: error instanceof Error ? error.message : String(error)
+            });
+          });
         }
         break;
 
@@ -619,7 +625,7 @@ export class QueuedResourceCoordinator extends ResourceCoordinator {
 
     const result: TaskResult = {
       id: taskId,
-      error: `Task timeout after ${this.queueOptions.taskTimeout}ms`,
+      error: `Task timeout after ${String(this.queueOptions.taskTimeout)}ms`,
       duration: this.queueOptions.taskTimeout,
       executedBy: "worker"
     };
@@ -749,28 +755,83 @@ export class QueuedResourceCoordinator extends ResourceCoordinator {
       return null;
     }
 
-    const payload = msg.payload as {
-      queueMessageType: string;
-      taskData?: QueuedTask;
-      taskResult?: TaskResult;
-      queueSnapshot?: QueuedTask[];
-    };
+    if (!msg.payload ||
+        typeof msg.payload !== "object" ||
+        !("queueMessageType" in msg.payload) ||
+        typeof msg.payload.queueMessageType !== "string") {
+      return null;
+    }
 
-    const queueTypes = ["QUEUE_TASK", "TASK_ASSIGNED", "TASK_COMPLETED", "TASK_FAILED", "TASK_CANCELLED", "SYNC_QUEUE"];
+    // Type guard for queue payload
+    interface QueuePayload {
+      queueMessageType: string;
+      taskData?: unknown;
+      taskResult?: unknown;
+      queueSnapshot?: unknown;
+    }
+
+    // Zod schema for queue payload validation
+    const queuePayloadSchema = z.looseObject({
+      queueMessageType: z.string(),
+      taskData: z.unknown().optional(),
+      taskResult: z.unknown().optional(),
+      queueSnapshot: z.unknown().optional()
+    });
+
+    function isQueuePayload(data: unknown): data is QueuePayload {
+      return queuePayloadSchema.safeParse(data).success;
+    }
+
+    if (!isQueuePayload(msg.payload)) {
+      return null;
+    }
+
+    const payload = msg.payload;
+
+    const queueTypes: readonly string[] = ["QUEUE_TASK", "TASK_ASSIGNED", "TASK_COMPLETED", "TASK_FAILED", "TASK_CANCELLED", "SYNC_QUEUE"];
     if (!queueTypes.includes(payload.queueMessageType)) {
       return null;
     }
 
+    // Helper function to safely extract task data
+    function isQueuedTask(data: unknown): data is QueuedTask {
+      return (
+        data !== null &&
+        typeof data === "object" &&
+        "id" in data &&
+        "status" in data &&
+        "createdAt" in data &&
+        "originTab" in data &&
+        "attempts" in data
+      );
+    }
+
+    // Helper function to safely extract task result
+    function isTaskResult(data: unknown): data is TaskResult {
+      return (
+        data !== null &&
+        typeof data === "object" &&
+        "id" in data &&
+        "duration" in data &&
+        "executedBy" in data
+      );
+    }
+
+    // Helper function to safely extract queue snapshot
+    function isQueuedTaskArray(data: unknown): data is QueuedTask[] {
+      return Array.isArray(data) && data.every(isQueuedTask);
+    }
+
     return {
-      type: payload.queueMessageType as QueuedTaskMessage["type"],
+      type: payload.queueMessageType,
       resourceId: msg.resourceId,
       senderId: msg.senderId,
       targetId: msg.targetId,
       payload: msg.payload,
       timestamp: msg.timestamp,
-      taskData: payload.taskData,
-      taskResult: payload.taskResult,
-      queueSnapshot: payload.queueSnapshot
+      taskData: isQueuedTask(payload.taskData) ? payload.taskData : undefined,
+      taskResult: isTaskResult(payload.taskResult) ? payload.taskResult : undefined,
+      queueSnapshot: isQueuedTaskArray(payload.queueSnapshot) ? payload.queueSnapshot : undefined
     };
   }
 
