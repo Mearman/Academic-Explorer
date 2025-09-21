@@ -307,7 +307,12 @@ export function useAnimatedLayout(options: UseAnimatedLayoutOptions = {}) {
 			startAnimationFunction: typeof startAnimation,
 		});
 
-		startAnimation(animatedNodes, animatedLinks, enhancedConfig, pinnedNodeSet);
+                void startAnimation({
+                        nodes: animatedNodes,
+                        links: animatedLinks,
+                        config: enhancedConfig,
+                        pinnedNodes: pinnedNodeSet,
+                });
 		logger.debug("graph", "startAnimation called successfully");
 	}, [
 		enabled,
@@ -323,7 +328,7 @@ export function useAnimatedLayout(options: UseAnimatedLayoutOptions = {}) {
 	// Stop layout
 	const stopLayout = useCallback(() => {
 		if (isLayoutRunningRef.current) {
-			stopAnimation();
+                        void stopAnimation();
 			isLayoutRunningRef.current = false;
 			storeMethodsRef.current.resetAnimation();
 			logger.debug("graph", "Animated layout stopped");
@@ -341,7 +346,7 @@ export function useAnimatedLayout(options: UseAnimatedLayoutOptions = {}) {
 			callStack: new Error().stack?.split("\n").slice(0, 5).join("\n")
 		});
 		if (isLayoutRunningRef.current && !currentPauseState) {
-			pauseAnimation();
+                        void pauseAnimation();
 			logger.debug("graph", "Animated layout paused");
 		}
 	}, [pauseAnimation]);
@@ -351,7 +356,7 @@ export function useAnimatedLayout(options: UseAnimatedLayoutOptions = {}) {
 		// Use state callback to check current pause state without dependency
 		const currentPauseState = useAnimatedGraphStore.getState().isPaused;
 		if (isLayoutRunningRef.current && currentPauseState) {
-			resumeAnimation();
+                        void resumeAnimation();
 			logger.debug("graph", "Animated layout resumed");
 		}
 	}, [resumeAnimation]);
@@ -400,7 +405,7 @@ export function useAnimatedLayout(options: UseAnimatedLayoutOptions = {}) {
 	}>) => {
 		if (isLayoutRunningRef.current && enabled && useAnimation && isWorkerReady) {
 			// Update the worker with new parameters
-			updateAnimationParameters(newParams);
+                        void updateAnimationParameters(newParams);
 			logger.debug("graph", "Updating force parameters", { newParams });
 		} else {
 			logger.debug("graph", "Cannot update parameters - animation not running", {
