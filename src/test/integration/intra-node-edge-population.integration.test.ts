@@ -12,9 +12,43 @@ import type { GraphNode, EntityType } from "@/lib/graph/types";
 import { RelationType } from "@/lib/graph/types";
 import type { Work, Author, Source, InstitutionEntity } from "@/lib/openalex/types";
 
-// Mock the cached client
+// Mock the cached client with proper nested structure
 vi.mock("@/lib/openalex/cached-client");
 const mockCachedOpenAlex = vi.mocked(cachedOpenAlex);
+
+// Create properly structured mock for the nested client
+const mockClient = {
+	works: {
+		getWork: vi.fn()
+	},
+	authors: {
+		getAuthor: vi.fn()
+	},
+	sources: {
+		getSource: vi.fn()
+	},
+	institutions: {
+		getInstitution: vi.fn()
+	},
+	topics: {
+		get: vi.fn()
+	},
+	publishers: {
+		get: vi.fn()
+	},
+	funders: {
+		get: vi.fn()
+	},
+	keywords: {
+		getKeyword: vi.fn()
+	}
+};
+
+// Mock the cachedOpenAlex client structure
+Object.defineProperty(mockCachedOpenAlex, "client", {
+	value: mockClient,
+	writable: true
+});
 
 // Mock logger to prevent test output noise
 vi.mock("@/lib/logger", () => ({
@@ -264,6 +298,15 @@ describe("Intra-Node Edge Population Integration Tests", () => {
 
 		// Clear all mocks
 		vi.clearAllMocks();
+
+		// Reset mock functions
+		Object.values(mockClient).forEach(service => {
+			Object.values(service).forEach(method => {
+				if (typeof method === "function") {
+					method.mockReset();
+				}
+			});
+		});
 	});
 
 	afterEach(() => {
@@ -282,7 +325,7 @@ describe("Intra-Node Edge Population Integration Tests", () => {
 			const work = createMockWork(workId, [authorId]);
 
 			// Mock API responses
-			mockCachedOpenAlex.getWork.mockResolvedValue(work);
+			mockClient.works.getWork.mockResolvedValue(work);
 
 			// First, add the author node to the graph
 			const authorNode = createTestNode(authorId, "authors", author);
@@ -327,7 +370,7 @@ describe("Intra-Node Edge Population Integration Tests", () => {
 			const work = createMockWork(workId, [], sourceId);
 
 			// Mock API responses
-			mockCachedOpenAlex.getWork.mockResolvedValue(work);
+			mockClient.works.getWork.mockResolvedValue(work);
 
 			// First, add the source node to the graph
 			const sourceNode = createTestNode(sourceId, "sources", source);
@@ -363,7 +406,7 @@ describe("Intra-Node Edge Population Integration Tests", () => {
 			const citingWork = createMockWork(citingWorkId, [], undefined, [referencedWorkId1, referencedWorkId2]);
 
 			// Mock API responses
-			mockCachedOpenAlex.getWork.mockResolvedValue(citingWork);
+			mockClient.works.getWork.mockResolvedValue(citingWork);
 
 			// First, add the referenced works to the graph
 			const referencedNode1 = createTestNode(referencedWorkId1, "works", referencedWork1);
@@ -410,7 +453,7 @@ describe("Intra-Node Edge Population Integration Tests", () => {
 			const author = createMockAuthor(authorId, [institutionId]);
 
 			// Mock API responses
-			mockCachedOpenAlex.getAuthor.mockResolvedValue(author);
+			mockClient.authors.getAuthor.mockResolvedValue(author);
 
 			// First, add the institution node to the graph
 			const institutionNode = createTestNode(institutionId, "institutions", institution);
@@ -450,10 +493,10 @@ describe("Intra-Node Edge Population Integration Tests", () => {
 			const work = createMockWork(workId, [authorId], sourceId);
 
 			// Mock API responses for all entities
-			mockCachedOpenAlex.getAuthor.mockResolvedValue(author);
-			mockCachedOpenAlex.getInstitution.mockResolvedValue(institution);
-			mockCachedOpenAlex.getSource.mockResolvedValue(source);
-			mockCachedOpenAlex.getWork.mockResolvedValue(work);
+			mockClient.authors.getAuthor.mockResolvedValue(author);
+			mockClient.institutions.getInstitution.mockResolvedValue(institution);
+			mockClient.sources.getSource.mockResolvedValue(source);
+			mockClient.works.getWork.mockResolvedValue(work);
 
 			// Create all nodes
 			const authorNode = createTestNode(authorId, "authors", author);
@@ -514,7 +557,7 @@ describe("Intra-Node Edge Population Integration Tests", () => {
 			const citingWork = createMockWork(citingWorkId, [], undefined, [referencedWorkId]);
 
 			// Mock API responses
-			mockCachedOpenAlex.getWork.mockImplementation((id: string) => {
+			mockClient.works.getWork.mockImplementation((id: string) => {
 				if (id === referencedWorkId) return Promise.resolve(referencedWork);
 				if (id === citingWorkId) return Promise.resolve(citingWork);
 				return Promise.reject(new Error(`Unknown work ID: ${id}`));
@@ -559,7 +602,7 @@ describe("Intra-Node Edge Population Integration Tests", () => {
 			const work = createMockWork(workId, [authorId]);
 
 			// Mock API responses
-			mockCachedOpenAlex.getWork.mockResolvedValue(work);
+			mockClient.works.getWork.mockResolvedValue(work);
 
 			// Add nodes to the graph
 			const authorNode = createTestNode(authorId, "authors", author);
@@ -601,8 +644,8 @@ describe("Intra-Node Edge Population Integration Tests", () => {
 			const work2 = createMockWork(workId2, [authorId]);
 
 			// Mock API responses
-			mockCachedOpenAlex.getAuthor.mockResolvedValue(author);
-			mockCachedOpenAlex.getWork.mockImplementation((id: string) => {
+			mockClient.authors.getAuthor.mockResolvedValue(author);
+			mockClient.works.getWork.mockImplementation((id: string) => {
 				if (id === workId1) return Promise.resolve(work1);
 				if (id === workId2) return Promise.resolve(work2);
 				return Promise.reject(new Error(`Unknown work ID: ${id}`));
@@ -640,7 +683,7 @@ describe("Intra-Node Edge Population Integration Tests", () => {
 			const author = createMockAuthor(authorId);
 
 			// Mock API to fail for the work
-			mockCachedOpenAlex.getWork.mockRejectedValue(new Error("API Error"));
+			mockClient.works.getWork.mockRejectedValue(new Error("API Error"));
 
 			// Add nodes to the graph
 			const authorNode = createTestNode(authorId, "authors", author);
@@ -683,7 +726,7 @@ describe("Intra-Node Edge Population Integration Tests", () => {
 			const work = createMockWork(workId, ["https://openalex.org/A123"]);
 
 			// Mock API response
-			mockCachedOpenAlex.getWork.mockResolvedValue(work);
+			mockClient.works.getWork.mockResolvedValue(work);
 
 			// Add node and detect relationships
 			const workNode = createTestNode(workId, "works", work);
@@ -692,7 +735,7 @@ describe("Intra-Node Edge Population Integration Tests", () => {
 			await relationshipService.detectRelationshipsForNode(workNode.id);
 
 			// Verify API was called with field selection (minimal fields only)
-			expect(mockCachedOpenAlex.getWork).toHaveBeenCalledWith(
+			expect(mockClient.works.getWork).toHaveBeenCalledWith(
 				workId,
 				expect.objectContaining({
 					select: [
@@ -720,7 +763,7 @@ describe("Intra-Node Edge Population Integration Tests", () => {
 			});
 
 			// Mock API responses
-			mockCachedOpenAlex.getWork.mockImplementation((id: string) => {
+			mockClient.works.getWork.mockImplementation((id: string) => {
 				const work = works.find(w => w.id === id);
 				return work ? Promise.resolve(work) : Promise.reject(new Error(`Unknown work: ${id}`));
 			});

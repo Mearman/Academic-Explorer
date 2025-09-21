@@ -62,8 +62,6 @@ import { renderHook, act, cleanup } from "@testing-library/react";
 import React from "react";
 import { useBackgroundWorker } from "./use-background-worker";
 import { getConfigByGraphSize } from "@/lib/graph/utils/performance-config";
-import { BackgroundWorkerProvider } from "@/contexts/BackgroundWorkerProvider";
-import { EventBridgeProvider } from "@/contexts/EventBridgeProvider";
 import { BackgroundWorkerContext, EventBridgeContext } from "@/contexts/contexts";
 
 // Global variables to hold context values that can be updated

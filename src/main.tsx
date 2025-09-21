@@ -1,4 +1,3 @@
-import { StrictMode } from "react"
 import { createRoot } from "react-dom/client"
 import { BackgroundWorkerProvider } from "@/contexts/BackgroundWorkerProvider"
 import { EventBridgeProvider } from "@/contexts/EventBridgeProvider"
