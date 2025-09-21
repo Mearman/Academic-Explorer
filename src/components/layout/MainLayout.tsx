@@ -14,6 +14,7 @@ import { LeftSidebarDynamic } from "./LeftSidebarDynamic";
 import { RightSidebarDynamic } from "./RightSidebarDynamic";
 import { LeftRibbon } from "./LeftRibbon";
 import { RightRibbon } from "./RightRibbon";
+import { GraphActivityTracker } from "@/components/activity/GraphActivityTracker";
 
 interface MainLayoutProps {
   children?: React.ReactNode;
@@ -85,6 +86,9 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
 
 	return (
 		<>
+			{/* Graph Activity Tracker - invisible component that tracks graph events */}
+			<GraphActivityTracker />
+
 			{/* Skip Links for Accessibility */}
 			<div
 				style={{
