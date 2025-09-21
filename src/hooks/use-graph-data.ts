@@ -8,7 +8,6 @@ import { useQueryClient } from "@tanstack/react-query";
 import { getGraphDataService } from "@/lib/services/service-provider";
 import { useGraphStore } from "@/stores/graph-store";
 import { useBackgroundWorker } from "@/hooks/use-unified-background-worker";
-import { useExpansionSettingsStore } from "@/stores/expansion-settings-store";
 import { logger, logError } from "@/lib/logger";
 import { safeParseExpansionTarget } from "@/lib/type-guards";
 import type { SearchOptions, EntityType } from "@/lib/graph/types";
@@ -139,14 +138,12 @@ export function useGraphData() {
 		}
 	}
 
-	// Get expansion settings for this entity type
-		const expansionSettingsStore = useExpansionSettingsStore.getState();
+	// Verify node type is valid
 		const expansionTarget = safeParseExpansionTarget(node.type);
 		if (!expansionTarget) {
-			logger.warn("graph", "Invalid node type for expansion settings", { nodeId, nodeType: node.type }, "useGraphData");
+			logger.warn("graph", "Invalid node type for expansion", { nodeId, nodeType: node.type }, "useGraphData");
 			return;
 		}
-		const expansionSettings = expansionSettingsStore.getSettings(expansionTarget);
 
 		// Use force worker for expansion
 		try {
@@ -157,13 +154,7 @@ export function useGraphData() {
 				workerReady: forceWorker.isWorkerReady
 			}, "useGraphData");
 
-			forceWorker.expandNode(
-				nodeId,
-				node.entityId,
-				node.type,
-				options,
-				expansionSettings
-			);
+			await service.expandNode(nodeId, options);
 		} catch (err) {
 			logger.error("graph", "Force worker expansion failed", {
 				nodeId,
