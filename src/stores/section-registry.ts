@@ -22,6 +22,7 @@ import {
 	IconCircleDot,
 	IconRoute,
 	IconWaveSquare,
+	IconBrain,
 } from "@tabler/icons-react";
 import type { SidebarSection } from "@/types/sidebar-sections";
 
@@ -38,6 +39,7 @@ const RawApiDataSection = React.lazy(() => import("@/components/sections").then(
 const GraphStatsSection = React.lazy(() => import("@/components/sections").then(m => ({ default: m.GraphStatsSection })));
 const SettingsSection = React.lazy(() => import("@/components/sections").then(m => ({ default: m.SettingsSection })));
 const NetworkActivitySection = React.lazy(() => import("@/components/sections").then(m => ({ default: m.NetworkActivitySection })));
+const AppActivitySection = React.lazy(() => import("@/components/sections").then(m => ({ default: m.AppActivitySection })));
 const NodeRepositorySection = React.lazy(() => import("@/components/sections").then(m => ({ default: m.NodeRepositorySection })));
 const EdgeRepositorySection = React.lazy(() => import("@/components/sections").then(m => ({ default: m.EdgeRepositorySection })));
 const AllNodesSection = React.lazy(() => import("@/components/sections").then(m => ({ default: m.AllNodesSection })));
@@ -202,13 +204,23 @@ export const SECTION_DEFINITIONS: ReadonlyArray<SidebarSection> = [
 		tooltip: "Monitor network requests and API activity",
 	},
 	{
+		id: "app-activity",
+		title: "Application Activity",
+		icon: IconBrain,
+		component: AppActivitySection,
+		defaultSidebar: "right",
+		category: "debugging",
+		order: 6,
+		tooltip: "Monitor application events and system activity",
+	},
+	{
 		id: "graph-stats",
 		title: "Graph Statistics",
 		icon: IconUsers,
 		component: GraphStatsSection,
 		defaultSidebar: "right",
 		category: "analysis",
-		order: 6,
+		order: 7,
 		tooltip: "Graph statistics",
 	},
 	{
@@ -218,7 +230,7 @@ export const SECTION_DEFINITIONS: ReadonlyArray<SidebarSection> = [
 		component: SettingsSection,
 		defaultSidebar: "right",
 		category: "settings",
-		order: 7,
+		order: 8,
 		tooltip: "User preferences and data management",
 	},
 ] as const;
