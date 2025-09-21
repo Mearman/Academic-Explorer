@@ -1,9 +1,9 @@
 /**
- * Cross-context event system exports
- * Provides unified API for graph, entity, node, and edge events
+ * Unified event system exports
+ * Provides unified API for cross-context events, task queues, and resource coordination
  */
 
-// Core types
+// Legacy types (deprecated - use unified system)
 export type {
   // Event payloads
   GraphEventPayloads,
@@ -40,16 +40,89 @@ export type {
 // Enhanced worker types
 export type * from "./enhanced-worker-types";
 
-// Enhanced event system classes
+// Legacy event system classes (deprecated - use unified system)
 export { BaseEventEmitter } from "./base-event-emitter";
 export { BroadcastEventBus, WorkerEventBus, workerEventBus } from "./broadcast-event-bus";
 export { MessageChannelCoordinator } from "./message-channel-coordinator";
 
-// Specialized event systems
+// Specialized event systems (deprecated - use unified system)
 export { GraphEventSystem, graphEventSystem } from "./graph-event-system";
 export { EntityEventSystem, entityEventSystem } from "./entity-event-system";
 
-// React hooks
+// UNIFIED EVENT SYSTEM (NEW)
+// Core unified components
+export {
+  EventBus,
+  createLocalEventBus,
+  createCrossTabEventBus,
+  localEventBus,
+  crossTabEventBus
+} from "./unified-event-bus";
+
+export {
+  TaskQueue,
+  TaskStatus,
+  createTaskQueue
+} from "./unified-task-queue";
+
+export {
+  WorkerPool,
+  createWorkerPool
+} from "./worker-pool";
+
+export {
+  ResourceCoordinator,
+  createResourceCoordinator
+} from "./resource-coordinator";
+
+export {
+  QueuedResourceCoordinator,
+  createQueuedResourceCoordinator
+} from "./queued-resource-coordinator";
+
+// Unified types
+export type {
+  EventHandler,
+  BusEvent
+} from "./unified-event-bus";
+
+export type {
+  TaskDescriptor,
+  TaskResult,
+  TaskProgress
+} from "./unified-task-queue";
+
+export type {
+  PoolWorker,
+  WorkerPoolOptions,
+  PoolTask
+} from "./worker-pool";
+
+export type {
+  ResourceOptions,
+  ControlMessage,
+  LeaderStatus
+} from "./resource-coordinator";
+
+export type {
+  QueuedTaskMessage,
+  QueuedTask,
+  QueueCoordinatorOptions
+} from "./queued-resource-coordinator";
+
+// Unified React hooks
+export {
+  useEventBus,
+  useEventListener,
+  useTaskQueue,
+  useWorkerPool,
+  useQueuedResourceCoordinator,
+  useTaskProgress,
+  useCrossTabEvent,
+  useEventSubscriptions
+} from "../../../hooks/use-unified-event-system";
+
+// Legacy React hooks (deprecated - use unified hooks)
 export {
   // Core hooks
   useGraphEventListener,
