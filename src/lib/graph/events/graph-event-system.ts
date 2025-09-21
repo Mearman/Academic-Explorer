@@ -4,21 +4,21 @@
  */
 
 import { logger } from "@/lib/logger";
-import { CrossContextEventProxy } from "./context-proxy";
+import { BaseEventEmitter } from "./base-event-emitter";
 import {
   GraphEventType,
   GraphEventPayloads,
   GraphEventHandler,
   GraphListenerOptions,
-  GraphEventPayloadSchemas
+  // GraphEventPayloadSchemas removed - not currently used
 } from "./types";
 import type { GraphNode, GraphEdge, RelationType, EntityType } from "@/lib/graph/types";
 
-export class GraphEventSystem extends CrossContextEventProxy<GraphEventType, GraphEventPayloads[GraphEventType]> {
+export class GraphEventSystem extends BaseEventEmitter<GraphEventType, GraphEventPayloads[GraphEventType]> {
   private static instance: GraphEventSystem | null = null;
 
   private constructor() {
-    super("graph-events", GraphEventPayloadSchemas);
+    super();
     logger.debug("general", "GraphEventSystem initialized");
   }
 
