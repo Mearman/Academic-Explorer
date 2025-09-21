@@ -5,6 +5,7 @@
 
 import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
 import { renderHook, act, cleanup } from "@testing-library/react";
+import React from "react";
 
 // Mock the performance config first, before any imports
 vi.mock("@/lib/graph/utils/performance-config", () => ({
@@ -51,10 +52,25 @@ vi.mock("@/lib/graph/worker-singleton", () => ({
 		terminate: vi.fn(),
 		postMessage: vi.fn(),
 	}),
+	isWorkerReady: vi.fn().mockReturnValue(true),
+	terminateBackgroundWorker: vi.fn(),
 }));
 
 import { useBackgroundWorker } from "./use-background-worker";
 import { eventBridge } from "@/lib/graph/events/event-bridge";
+import { BackgroundWorkerProvider } from "@/contexts/BackgroundWorkerProvider";
+import { EventBridgeProvider } from "@/contexts/EventBridgeProvider";
+
+// Test wrapper component that provides all required contexts
+function TestWrapper({ children }: { children: React.ReactNode }) {
+	return (
+		<EventBridgeProvider>
+			<BackgroundWorkerProvider>
+				{children}
+			</BackgroundWorkerProvider>
+		</EventBridgeProvider>
+	);
+}
 
 describe("useBackgroundWorker EventBridge Integration", () => {
 	beforeEach(() => {
@@ -67,7 +83,7 @@ describe("useBackgroundWorker EventBridge Integration", () => {
 
 	describe("Initialization", () => {
 		it("should register EventBridge handlers on mount", async () => {
-			renderHook(() => useBackgroundWorker());
+			renderHook(() => useBackgroundWorker(), { wrapper: TestWrapper });
 
 			// Wait for worker initialization
 			await act(async () => {
@@ -79,7 +95,7 @@ describe("useBackgroundWorker EventBridge Integration", () => {
 		});
 
 		it("should cleanup EventBridge handlers on unmount", async () => {
-			const { unmount } = renderHook(() => useBackgroundWorker());
+			const { unmount } = renderHook(() => useBackgroundWorker(), { wrapper: TestWrapper });
 
 			await act(async () => {
 				await new Promise(resolve => setTimeout(resolve, 10));
@@ -94,7 +110,7 @@ describe("useBackgroundWorker EventBridge Integration", () => {
 
 	describe("Animation Control via EventBridge", () => {
 		it("should emit FORCE_SIMULATION_START via EventBridge", async () => {
-			const { result } = renderHook(() => useBackgroundWorker());
+			const { result } = renderHook(() => useBackgroundWorker(), { wrapper: TestWrapper });
 
 			// Wait for initialization
 			await act(async () => {
@@ -127,7 +143,7 @@ describe("useBackgroundWorker EventBridge Integration", () => {
 		});
 
 		it("should emit FORCE_SIMULATION_STOP via EventBridge", async () => {
-			const { result } = renderHook(() => useBackgroundWorker());
+			const { result } = renderHook(() => useBackgroundWorker(), { wrapper: TestWrapper });
 
 			await act(async () => {
 				await new Promise(resolve => setTimeout(resolve, 10));
@@ -145,7 +161,7 @@ describe("useBackgroundWorker EventBridge Integration", () => {
 		});
 
 		it("should provide updateParameters method", async () => {
-			const { result } = renderHook(() => useBackgroundWorker());
+			const { result } = renderHook(() => useBackgroundWorker(), { wrapper: TestWrapper });
 
 			await act(async () => {
 				await new Promise(resolve => setTimeout(resolve, 10));
@@ -170,7 +186,7 @@ describe("useBackgroundWorker EventBridge Integration", () => {
 
 	describe("Node Expansion via EventBridge", () => {
 		it("should emit DATA_FETCH_EXPAND_NODE via EventBridge", async () => {
-			const { result } = renderHook(() => useBackgroundWorker());
+			const { result } = renderHook(() => useBackgroundWorker(), { wrapper: TestWrapper });
 
 			await act(async () => {
 				await new Promise(resolve => setTimeout(resolve, 10));
@@ -203,7 +219,7 @@ describe("useBackgroundWorker EventBridge Integration", () => {
 		});
 
 		it("should emit DATA_FETCH_CANCEL_EXPANSION via EventBridge", async () => {
-			const { result } = renderHook(() => useBackgroundWorker());
+			const { result } = renderHook(() => useBackgroundWorker(), { wrapper: TestWrapper });
 
 			await act(async () => {
 				await new Promise(resolve => setTimeout(resolve, 10));
@@ -225,7 +241,7 @@ describe("useBackgroundWorker EventBridge Integration", () => {
 
 	describe("State Management", () => {
 		it("should have correct initial state", () => {
-			const { result } = renderHook(() => useBackgroundWorker());
+			const { result } = renderHook(() => useBackgroundWorker(), { wrapper: TestWrapper });
 
 			expect(result.current.animationState).toEqual({
 				isRunning: false,
@@ -248,7 +264,7 @@ describe("useBackgroundWorker EventBridge Integration", () => {
 
 	describe("Performance Configuration", () => {
 		it("should return optimal configuration based on graph size", () => {
-			const { result } = renderHook(() => useBackgroundWorker());
+			const { result } = renderHook(() => useBackgroundWorker(), { wrapper: TestWrapper });
 
 			const config = result.current.getOptimalConfig(100, 50, 5);
 
