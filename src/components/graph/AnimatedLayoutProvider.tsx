@@ -4,11 +4,13 @@
  * Can be dropped into existing graph implementations
  */
 
-import React, { useEffect, useMemo } from "react";
+import React, { useEffect, useMemo, useRef } from "react";
 import { useAnimatedLayout } from "@/lib/graph/providers/xyflow/use-animated-layout";
 import { useAnimatedGraphStore, useRestartRequested, useClearRestartRequest } from "@/stores/animated-graph-store";
 import { logger } from "@/lib/logger";
 import { AnimatedLayoutContext } from "./animated-layout-context";
+import { useReactFlow } from "@xyflow/react";
+import { eventBridge } from "@/lib/graph/events/event-bridge";
 
 interface AnimatedLayoutProviderProps {
   children: React.ReactNode;
@@ -17,7 +19,6 @@ interface AnimatedLayoutProviderProps {
   fitViewAfterLayout?: boolean;
   containerDimensions?: { width: number; height: number };
   autoStartOnNodeChange?: boolean;
-  nodeChangeThreshold?: number; // Minimum number of new nodes to trigger auto-start
 }
 
 export const AnimatedLayoutProvider: React.FC<AnimatedLayoutProviderProps> = ({
@@ -29,6 +30,14 @@ export const AnimatedLayoutProvider: React.FC<AnimatedLayoutProviderProps> = ({
 }) => {
 	// Use stable selector to prevent infinite loops in React 19
 	const useAnimation = useAnimatedGraphStore((state) => state.useAnimatedLayout);
+
+	// ReactFlow hooks for node tracking
+	const { getNodes, getEdges } = useReactFlow();
+
+	// Track previous node/edge counts for change detection
+	const prevNodeCountRef = useRef(0);
+	const prevEdgeCountRef = useRef(0);
+	const autoTriggerTimeoutRef = useRef<NodeJS.Timeout | undefined>(undefined);
 
 	// Communication for restart requests from components outside this provider
 	const restartRequested = useRestartRequested();
@@ -63,22 +72,75 @@ export const AnimatedLayoutProvider: React.FC<AnimatedLayoutProviderProps> = ({
 	});
 
 	// Auto-start animation when significant node changes occur
-	// Remove applyLayout from dependencies to prevent infinite loops
 	useEffect(() => {
-		if (!autoStartOnNodeChange || !enabled || !useAnimation || !isWorkerReady || isRunning) {
+		if (!autoStartOnNodeChange || !enabled || !useAnimation || !isWorkerReady) {
 			return;
 		}
 
-		// We could implement node change detection here
-		// For now, this is a placeholder for future enhancement
-		logger.debug("graph", "Auto-start animation conditions checked", {
-			autoStartOnNodeChange,
-			enabled,
-			useAnimation,
-			isWorkerReady,
-			isRunning,
-		});
-	}, [autoStartOnNodeChange, enabled, useAnimation, isWorkerReady, isRunning]);
+		const checkNodeChanges = () => {
+			const currentNodes = getNodes();
+			const currentEdges = getEdges();
+			const currentNodeCount = currentNodes.length;
+			const currentEdgeCount = currentEdges.length;
+
+			const nodeChange = currentNodeCount - prevNodeCountRef.current;
+			const edgeChange = currentEdgeCount - prevEdgeCountRef.current;
+
+			logger.debug("graph", "Auto-trigger: checking node/edge changes", {
+				prevNodeCount: prevNodeCountRef.current,
+				currentNodeCount,
+				nodeChange,
+				prevEdgeCount: prevEdgeCountRef.current,
+				currentEdgeCount,
+				edgeChange,
+				isRunning,
+			});
+
+			// Trigger if any node/edge changes occurred (including removals)
+			if (nodeChange !== 0 || edgeChange !== 0) {
+				logger.debug("graph", "Auto-trigger: node/edge changes detected", {
+					nodeChange,
+					edgeChange,
+					action: isRunning ? "reheat" : "start",
+				});
+
+				if (isRunning) {
+					// If simulation is already running, reheat it (reset alpha)
+					reheatLayout();
+				} else {
+					// If simulation is not running, start it
+					applyLayout();
+				}
+			}
+
+			// Update previous counts
+			prevNodeCountRef.current = currentNodeCount;
+			prevEdgeCountRef.current = currentEdgeCount;
+		};
+
+		// Debounce the check to avoid too frequent triggers
+		if (autoTriggerTimeoutRef.current) {
+			clearTimeout(autoTriggerTimeoutRef.current);
+		}
+
+		autoTriggerTimeoutRef.current = setTimeout(checkNodeChanges, 500);
+
+		return () => {
+			if (autoTriggerTimeoutRef.current) {
+				clearTimeout(autoTriggerTimeoutRef.current);
+			}
+		};
+	}, [
+		autoStartOnNodeChange,
+		enabled,
+		useAnimation,
+		isWorkerReady,
+		isRunning,
+		getNodes,
+		getEdges,
+		applyLayout,
+		reheatLayout,
+	]);
 
 	// Listen for restart requests from components outside this provider
 	useEffect(() => {
@@ -97,6 +159,61 @@ export const AnimatedLayoutProvider: React.FC<AnimatedLayoutProviderProps> = ({
 			restartLayout();
 		}
 	}, [restartRequested, enabled, useAnimation, isWorkerReady, isRunning, restartLayout, clearRestartRequest]);
+
+	// Listen for graph events for immediate auto-trigger
+	useEffect(() => {
+		if (!autoStartOnNodeChange || !enabled || !useAnimation || !isWorkerReady) {
+			return;
+		}
+
+		const handleGraphEvent = (message: { eventType: string; payload?: unknown }) => {
+			const { eventType } = message;
+
+			// Only trigger on significant node/edge addition events
+			if (
+				eventType === "graph:bulk-nodes-added" ||
+				eventType === "graph:bulk-edges-added" ||
+				(eventType === "graph:node-added" && Math.random() < 0.1) // Throttle single node additions
+			) {
+				logger.debug("graph", "Auto-trigger: graph event received", {
+					eventType,
+					action: isRunning ? "reheat" : "start",
+				});
+
+				// Small delay to allow ReactFlow to update
+				setTimeout(() => {
+					if (isRunning) {
+						reheatLayout();
+					} else {
+						applyLayout();
+					}
+				}, 100);
+			}
+		};
+
+		const handlerId = `auto-trigger-${Date.now().toString()}`;
+		eventBridge.registerMessageHandler(handlerId, handleGraphEvent);
+
+		return () => {
+			eventBridge.unregisterMessageHandler(handlerId);
+		};
+	}, [autoStartOnNodeChange, enabled, useAnimation, isWorkerReady, isRunning, applyLayout, reheatLayout]);
+
+	// Initial trigger: Start animation when page loads with existing nodes
+	useEffect(() => {
+		if (!enabled || !useAnimation || !isWorkerReady || isRunning) {
+			return;
+		}
+
+		const currentNodes = getNodes();
+
+		// Start animation if we have nodes but animation isn't running
+		if (currentNodes.length > 0) {
+			setTimeout(() => {
+				applyLayout();
+			}, 500); // Small delay to ensure everything is ready
+		}
+	}, [enabled, useAnimation, isWorkerReady, isRunning, getNodes, applyLayout]);
 
 	// Create stable context value to prevent unnecessary re-renders
 	const contextValue = useMemo(() => ({
