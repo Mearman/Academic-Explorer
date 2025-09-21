@@ -40,15 +40,6 @@ export type {
 // Enhanced worker types
 export type * from "./enhanced-worker-types";
 
-// Legacy event system classes (deprecated - use unified system)
-export { BaseEventEmitter } from "./base-event-emitter";
-export { BroadcastEventBus, WorkerEventBus, workerEventBus } from "./broadcast-event-bus";
-export { MessageChannelCoordinator } from "./message-channel-coordinator";
-
-// Specialized event systems (deprecated - use unified system)
-export { GraphEventSystem, graphEventSystem } from "./graph-event-system";
-export { EntityEventSystem, entityEventSystem } from "./entity-event-system";
-
 // UNIFIED EVENT SYSTEM (NEW)
 // Core unified components
 export {
@@ -122,27 +113,6 @@ export {
   useEventSubscriptions
 } from "../../../hooks/use-unified-event-system";
 
-// Legacy React hooks (deprecated - use unified hooks)
-export {
-  // Core hooks
-  useGraphEventListener,
-  useEntityEventListener,
-
-  // Convenience hooks
-  useEntityExpansionListener,
-  useEntitySelectionListener,
-  useAnyEntityEventListener,
-  useNodeAddedListener,
-  useNodeRemovedListener,
-  useBulkNodesAddedListener,
-
-  // Utility hooks
-  useEntityExpansionCallback,
-  useConditionalEntityAction,
-
-  // Debug hooks
-  useEventSystemDebug
-} from "./hooks";
 
 // Export event type enums for easy access
 export {

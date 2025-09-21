@@ -6,7 +6,6 @@
 
 import { logger } from "@/lib/logger";
 import { EventBus } from "./unified-event-bus";
-import { MessageChannelCoordinator } from "./message-channel-coordinator";
 
 export interface ResourceOptions {
   resourceId: string;
@@ -42,7 +41,6 @@ export class ResourceCoordinator {
   protected leaderId?: string;
   protected followers = new Set<string>();
   protected channel: BroadcastChannel;
-  protected messageChannelCoordinator = new MessageChannelCoordinator();
   protected lock?: Lock;
   protected heartbeatInterval?: ReturnType<typeof setInterval>;
   protected options: Required<ResourceOptions>;
@@ -174,8 +172,7 @@ export class ResourceCoordinator {
       this.leaderId = undefined;
     }
 
-    // Close message channels
-    this.messageChannelCoordinator.cleanup();
+    // Message channels cleanup handled by EventBus
 
     // Close control channel
     this.channel.close();
@@ -386,7 +383,9 @@ export class ResourceCoordinator {
 
     try {
       // Create MessageChannel
-      const { port1, port2 } = this.messageChannelCoordinator.createChannel();
+      const channel = new MessageChannel();
+      const port1 = channel.port1;
+      const port2 = channel.port2;
 
       // Setup leader side
       this.setupLeaderPort(msg.senderId, port1);
@@ -421,7 +420,14 @@ export class ResourceCoordinator {
    * Setup leader-side port handling
    */
   protected setupLeaderPort(followerId: string, port: MessagePort): void {
-    this.messageChannelCoordinator.registerPort(followerId, port);
+    // Store port for direct communication
+    port.onmessage = (e) => {
+      logger.debug("resource", "Received message from follower", {
+        followerId,
+        message: e.data
+      });
+    };
+    port.start();
 
     port.onmessage = (ev) => {
       logger.debug("resource", "Received message from follower", {
@@ -451,7 +457,8 @@ export class ResourceCoordinator {
    * Setup follower-side port handling
    */
   protected setupFollowerPort(leaderId: string, port: MessagePort): void {
-    this.messageChannelCoordinator.registerPort(leaderId, port);
+    // Store port for direct communication
+    port.start();
 
     port.onmessage = (ev) => {
       logger.debug("resource", "Received message from leader", {

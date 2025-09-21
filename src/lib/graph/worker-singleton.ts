@@ -4,8 +4,11 @@
  */
 
 import { WorkerEventType } from "@/lib/graph/events/types";
-import { workerEventBus } from "@/lib/graph/events/broadcast-event-bus";
+import { createLocalEventBus } from "@/lib/graph/events";
 import { logger } from "@/lib/logger";
+
+// Create a unified event bus for worker communication
+const workerEventBus = createLocalEventBus();
 
 interface WorkerSingleton {
   worker: Worker | null;
@@ -108,7 +111,7 @@ export function getBackgroundWorker(): Promise<Worker> {
 
     function cleanup() {
       if (readyListenerId) {
-        workerEventBus.removeListener(readyListenerId);
+        readyListenerId();
       }
       if (readyTimeout !== null) {
         clearTimeout(readyTimeout);
@@ -131,7 +134,7 @@ export function getBackgroundWorker(): Promise<Worker> {
     // Worker will emit ready event via BroadcastChannel
 
     // Listen for worker ready via BroadcastChannel
-    let readyListenerId: string | null = null;
+    let readyListenerId: (() => void) | null = null;
 
     const handleWorkerReady = (payload: unknown) => {
       logger.debug("graph", "Worker ready event received via BroadcastChannel", { payload });
@@ -148,9 +151,11 @@ export function getBackgroundWorker(): Promise<Worker> {
       }
     };
 
-    logger.debug("graph", "Registering BroadcastChannel listener for worker ready");
-    readyListenerId = workerEventBus.listen(WorkerEventType.WORKER_READY, handleWorkerReady);
-    logger.debug("graph", "BroadcastChannel listener registered successfully");
+    logger.debug("graph", "Registering unified event bus listener for worker ready");
+    readyListenerId = workerEventBus.on(WorkerEventType.WORKER_READY, (event) => {
+      handleWorkerReady(event.payload);
+    });
+    logger.debug("graph", "Unified event bus listener registered successfully");
 
     // Timeout for readiness failure (emit error instead of fallback resolve)
     readyTimeout = setTimeout(() => {
@@ -162,15 +167,15 @@ export function getBackgroundWorker(): Promise<Worker> {
       workerState.isInitializing = false;
       workerState.readyCallbacks.clear();
 
-      workerEventBus.emit(
-        WorkerEventType.WORKER_ERROR,
-        {
+      workerEventBus.emit({
+        type: WorkerEventType.WORKER_ERROR,
+        payload: {
           workerId: "background-worker",
           workerType: "force-animation",
           error: "Worker initialization timeout",
           timestamp: Date.now()
         }
-      );
+      });
 
       reject(new Error("Worker readiness timeout"));
     }, 10000); // Longer timeout for better reliability
