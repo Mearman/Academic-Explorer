@@ -5,7 +5,7 @@
 
 import { useEffect, useCallback, useRef } from "react";
 import { useAppActivityStore } from "@/stores/app-activity-store";
-import { eventBridge } from "@/lib/graph/events/event-bridge";
+import { workerEventBus, broadcastEventBus } from "@/lib/graph/events/broadcast-event-bus";
 import { graphEventSystem } from "@/lib/graph/events";
 import {
   GraphEventType,
@@ -13,7 +13,6 @@ import {
   WorkerEventType
 } from "@/lib/graph/events/types";
 import { logger } from "@/lib/logger";
-import type { CrossContextMessage } from "@/lib/graph/events/types";
 
 // Type guards for better type safety
 const GRAPH_EVENT_VALUES: readonly string[] = Object.values(GraphEventType);
@@ -45,9 +44,11 @@ export function useGraphActivityTracker() {
   const graphListenerIdsRef = useRef<string[]>([]);
 
   // Event bridge message handler focused on graph/simulation events
-  const handleGraphEvent = useCallback((message: CrossContextMessage) => {
+  const handleGraphEvent = useCallback((event: { type: string; payload?: unknown }) => {
+    let eventType: string = "unknown";
     try {
-      const { eventType, payload } = message;
+      eventType = event.type;
+      const { payload } = event;
 
       // Debug logging to see all events
       logger.debug("ui", "Activity tracker received event", {
@@ -179,7 +180,7 @@ export function useGraphActivityTracker() {
       }
     } catch (error) {
       logger.error("ui", "Failed to process graph event", {
-        eventType: message.eventType,
+        eventType,
         error: error instanceof Error ? error.message : "Unknown error",
       }, "GraphActivityTracker");
     }
@@ -249,7 +250,9 @@ export function useGraphActivityTracker() {
     const handlerId = `graph-activity-tracker-${Date.now().toString()}`;
     handlerIdRef.current = handlerId;
 
-    eventBridge.registerMessageHandler(handlerId, handleGraphEvent);
+    const eventType = "graph:activity-tracker";
+    // Use raw event bus for custom event types
+    broadcastEventBus.listen(eventType, handleGraphEvent);
 
     // Log initial setup
     addEvent({
@@ -270,7 +273,7 @@ export function useGraphActivityTracker() {
 
     return () => {
       if (handlerIdRef.current) {
-        eventBridge.unregisterMessageHandler(handlerIdRef.current);
+        workerEventBus.removeListener(handlerIdRef.current);
 
         addEvent({
           type: "system",
