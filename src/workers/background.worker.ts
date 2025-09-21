@@ -276,18 +276,21 @@ function handleDataFetchExpandNode(request: unknown) {
   // expandRequest is now properly typed by zod schema
   const { nodeId, entityId, entityType, options, expansionSettings } = expandRequest;
 
-  // Type guard for RelationType using string literal check
+  // Type guard for RelationType using string literal checks
   const isValidRelationType = (type: string): type is RelationType => {
-    return type === "authored" || type === "affiliated" || type === "published_in" ||
-           type === "funded_by" || type === "references" || type === "source_published_by" ||
-           type === "institution_child_of" || type === "publisher_child_of" ||
-           type === "work_has_topic" || type === "related_to";
+    const validTypes = [
+      "authored", "affiliated", "published_in", "funded_by", "references",
+      "source_published_by", "institution_child_of", "publisher_child_of",
+      "work_has_topic", "related_to"
+    ];
+    return validTypes.includes(type);
   };
 
   // Convert validated options to proper types if present
+  const validRelationTypes = options?.relationTypes?.filter(isValidRelationType);
   const typedOptions: ExpansionOptions | undefined = options ? {
     ...options,
-    relationTypes: options.relationTypes?.filter(isValidRelationType)
+    relationTypes: validRelationTypes
   } : undefined;
 
   // Type guard for ExpansionSettings
@@ -453,31 +456,65 @@ function updateSimulationParameters(config: Partial<ForceSimulationConfig>) {
     // Update forces with proper d3-force typing
     const linkForce = simulation.force("link");
     if (linkForce && "distance" in linkForce && "strength" in linkForce) {
-      if (config.linkDistance !== undefined) {
-        linkForce.distance(config.linkDistance);
-      }
-      if (config.linkStrength !== undefined) {
-        linkForce.strength(config.linkStrength);
+      try {
+        if (config.linkDistance !== undefined) {
+          const distanceFn = linkForce.distance;
+          if (typeof distanceFn === "function") {
+            distanceFn.call(linkForce, config.linkDistance);
+          }
+        }
+        if (config.linkStrength !== undefined) {
+          const strengthFn = linkForce.strength;
+          if (typeof strengthFn === "function") {
+            strengthFn.call(linkForce, config.linkStrength);
+          }
+        }
+      } catch (error) {
+        logger.warn("graph", "Failed to update link force", { error });
       }
     }
 
     const chargeForce = simulation.force("charge");
     if (chargeForce && "strength" in chargeForce && config.chargeStrength !== undefined) {
-      chargeForce.strength(config.chargeStrength);
+      try {
+        const strengthFn = chargeForce.strength;
+        if (typeof strengthFn === "function") {
+          strengthFn.call(chargeForce, config.chargeStrength);
+        }
+      } catch (error) {
+        logger.warn("graph", "Failed to update charge force", { error });
+      }
     }
 
     const centerForce = simulation.force("center");
     if (centerForce && "strength" in centerForce && config.centerStrength !== undefined) {
-      centerForce.strength(config.centerStrength);
+      try {
+        const strengthFn = centerForce.strength;
+        if (typeof strengthFn === "function") {
+          strengthFn.call(centerForce, config.centerStrength);
+        }
+      } catch (error) {
+        logger.warn("graph", "Failed to update center force", { error });
+      }
     }
 
     const collisionForce = simulation.force("collision");
     if (collisionForce && "radius" in collisionForce && "strength" in collisionForce) {
-      if (config.collisionRadius !== undefined) {
-        collisionForce.radius(config.collisionRadius);
-      }
-      if (config.collisionStrength !== undefined) {
-        collisionForce.strength(config.collisionStrength);
+      try {
+        if (config.collisionRadius !== undefined) {
+          const radiusFn = collisionForce.radius;
+          if (typeof radiusFn === "function") {
+            radiusFn.call(collisionForce, config.collisionRadius);
+          }
+        }
+        if (config.collisionStrength !== undefined) {
+          const strengthFn = collisionForce.strength;
+          if (typeof strengthFn === "function") {
+            strengthFn.call(collisionForce, config.collisionStrength);
+          }
+        }
+      } catch (error) {
+        logger.warn("graph", "Failed to update collision force", { error });
       }
     }
   }
