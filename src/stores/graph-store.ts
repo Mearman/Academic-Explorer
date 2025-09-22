@@ -23,6 +23,10 @@ import { localEventBus, GraphEventType, EntityEventType } from "@/lib/graph/even
 import { logger } from "@/lib/logger";
 import { useAnimatedGraphStore } from "./animated-graph-store";
 
+// Stable empty array for React 19 compatibility (prevents new object creation)
+const EMPTY_ARRAY: GraphNode[] = [];
+const EMPTY_EDGE_ARRAY: GraphEdge[] = [];
+
 // Helper function to create initial edge type stats
 const createInitialEdgeTypeStats = () => ({
 	visible: {
@@ -271,7 +275,6 @@ export const useGraphStore = create<GraphState>()(
 			currentLayout: {
 				type: "d3-force",
 				options: {
-					seed: 42,
 					iterations: 300,
 					...DEFAULT_FORCE_PARAMS,
 					alpha: 1,
@@ -1128,12 +1131,12 @@ export const useGraphStore = create<GraphState>()(
 			// Graph algorithms (work with generic data)
 			getNeighbors: (nodeId) => {
 				const state = get();
-				return state.nodeNeighborsCache[nodeId] ?? [];
+				return state.nodeNeighborsCache[nodeId] ?? EMPTY_ARRAY;
 			},
 
 			getConnectedEdges: (nodeId) => {
 				const state = get();
-				return state.nodeEdgesCache[nodeId] ?? [];
+				return state.nodeEdgesCache[nodeId] ?? EMPTY_EDGE_ARRAY;
 			},
 
 			findShortestPath: (sourceId, targetId) => {

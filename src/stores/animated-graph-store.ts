@@ -36,6 +36,9 @@ interface AnimatedGraphState {
   // Position tracking
   animatedPositions: Record<string, NodePosition | undefined>;
   staticPositions: Record<string, NodePosition | undefined>;
+  // Cached arrays for React 19 compatibility (stable references)
+  _cachedAnimatedPositionsArray: NodePosition[];
+  _cachedStaticPositionsArray: NodePosition[];
 
   // Animation history and stats
   animationHistory: AnimationStats[];
@@ -99,6 +102,8 @@ export const useAnimatedGraphStore = create<AnimatedGraphState>()(
 
 			animatedPositions: {},
 			staticPositions: {},
+			_cachedAnimatedPositionsArray: [],
+			_cachedStaticPositionsArray: [],
 			animationHistory: [],
 			currentAnimationStart: 0,
 
@@ -169,6 +174,9 @@ export const useAnimatedGraphStore = create<AnimatedGraphState>()(
 						state.animatedPositions[pos.id] = { ...pos };
 					});
 
+					// Update cached array for React 19 compatibility
+					state._cachedAnimatedPositionsArray = positions.map(pos => ({ ...pos }));
+
 					logger.debug("graph", "Updated animated positions", {
 						count: positions?.length || 0,
 						sample: positions.slice(0, 3)
@@ -185,6 +193,9 @@ export const useAnimatedGraphStore = create<AnimatedGraphState>()(
 					positions.forEach(pos => {
 						state.staticPositions[pos.id] = { ...pos };
 					});
+
+					// Update cached array for React 19 compatibility
+					state._cachedStaticPositionsArray = positions.map(pos => ({ ...pos }));
 
 					logger.debug("graph", "Updated static positions", {
 						count: positions?.length || 0
@@ -204,14 +215,20 @@ export const useAnimatedGraphStore = create<AnimatedGraphState>()(
 			getAllPositions: () => {
 				const state = get();
 				// Return appropriate position set based on animation state
-				const positions = state.isAnimating ? state.animatedPositions : state.staticPositions;
-				return Object.values(positions).filter((position): position is NonNullable<typeof position> => position != null);
+				// Use cached arrays to prevent new object creation on each call (React 19 compatibility)
+				if (state.isAnimating) {
+					return state._cachedAnimatedPositionsArray || [];
+				}
+				return state._cachedStaticPositionsArray || [];
 			},
 
 			clearPositions: () => {
 				set((state) => {
 					state.animatedPositions = {};
 					state.staticPositions = {};
+					// Clear cached arrays for React 19 compatibility
+					state._cachedAnimatedPositionsArray = [];
+					state._cachedStaticPositionsArray = [];
 					logger.debug("graph", "Cleared all positions");
 				});
 			},
@@ -245,12 +262,18 @@ export const useAnimatedGraphStore = create<AnimatedGraphState>()(
 
 					// Move animated positions to static positions
 					state.staticPositions = {};
+					const newStaticPositions: NodePosition[] = [];
 					Object.entries(state.animatedPositions).forEach(([id, pos]) => {
 						if (pos) {
-							state.staticPositions[id] = { ...pos };
+							const newPos = { ...pos };
+							state.staticPositions[id] = newPos;
+							newStaticPositions.push(newPos);
 						}
 					});
 					state.animatedPositions = {};
+					// Update cached arrays for React 19 compatibility
+					state._cachedStaticPositionsArray = newStaticPositions;
+					state._cachedAnimatedPositionsArray = [];
 
 					logger.debug("graph", "Animation completed", {
 						...completedStats,
@@ -269,6 +292,8 @@ export const useAnimatedGraphStore = create<AnimatedGraphState>()(
 					state.iteration = 0;
 					state.fps = 0;
 					state.animatedPositions = {};
+					// Clear cached array for React 19 compatibility
+					state._cachedAnimatedPositionsArray = [];
 					logger.debug("graph", "Animation reset");
 				});
 			},
@@ -322,6 +347,8 @@ export const useAnimatedGraphStore = create<AnimatedGraphState>()(
 					positions.forEach(pos => {
 						state.staticPositions[pos.id] = { ...pos };
 					});
+					// Update cached array for React 19 compatibility
+					state._cachedStaticPositionsArray = positions.map(pos => ({ ...pos }));
 
 					logger.debug("graph", "Synced animated store with graph store", {
 						nodeCount: nodes.length,
