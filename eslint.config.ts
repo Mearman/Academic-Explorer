@@ -5,6 +5,7 @@ import reactHooks from 'eslint-plugin-react-hooks';
 import reactRefresh from 'eslint-plugin-react-refresh';
 import eslintComments from 'eslint-plugin-eslint-comments';
 import jsxA11y from 'eslint-plugin-jsx-a11y';
+import unusedImports from 'eslint-plugin-unused-imports';
 import tseslint from 'typescript-eslint';
 import noEmoji from './eslint-rules/no-emoji.js';
 import noZustandComputedFunctions from './eslint-rules/no-zustand-computed-functions.js';
@@ -30,6 +31,7 @@ export default tseslint.config([
       'react-refresh': reactRefresh,
       'eslint-comments': eslintComments,
       'jsx-a11y': jsxA11y,
+      'unused-imports': unusedImports,
       'custom': {
         rules: {
           'no-emoji': noEmoji,
@@ -53,10 +55,16 @@ export default tseslint.config([
       // Official React ESLint rules to prevent infinite loops and performance issues
       'react/jsx-no-constructed-context-values': 'error',
       'react/no-array-index-key': 'error',
-      '@typescript-eslint/no-unused-vars': [
+      // Disable the base rule as it can report incorrect errors
+      '@typescript-eslint/no-unused-vars': 'off',
+      'unused-imports/no-unused-imports': 'error',
+      'unused-imports/no-unused-vars': [
         'error',
         {
-          argsIgnorePattern: '^_', // Allow underscore-prefixed unused parameters
+          vars: 'all',
+          varsIgnorePattern: '^_',
+          args: 'after-used',
+          argsIgnorePattern: '^_',
           ignoreRestSiblings: true,
         },
       ],
