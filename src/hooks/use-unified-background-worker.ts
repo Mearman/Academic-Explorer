@@ -58,6 +58,18 @@ const ForceSimulationCompleteEnvelopeSchema = z.object({
   result: ForceSimulationCompleteSchema
 });
 
+const ForceSimulationControlAckSchema = z.object({
+  type: z.literal("FORCE_SIMULATION_CONTROL_ACK"),
+  action: z.string(),
+  status: z.string().optional(),
+  timestamp: z.number().optional()
+}).passthrough();
+
+const ForceSimulationControlAckEnvelopeSchema = z.object({
+  id: z.string().optional(),
+  result: ForceSimulationControlAckSchema
+});
+
 const DataFetchCompleteSchema = z.object({
   type: z.literal("DATA_FETCH_COMPLETE").optional(),
   requestId: z.string().optional(),
@@ -250,6 +262,18 @@ export function useUnifiedBackgroundWorker(options: UseUnifiedBackgroundWorkerOp
   }, [addActiveTask, onPositionUpdate, enableProgressThrottling, progressThrottleMs]);
 
   const handleForceSimulationComplete = useCallback((payload: unknown) => {
+    const ackResult = ForceSimulationControlAckEnvelopeSchema.safeParse(payload);
+    if (ackResult.success && ackResult.data.result.type === "FORCE_SIMULATION_CONTROL_ACK") {
+      const ackId = ackResult.data.id;
+      if (ackId) {
+        removeActiveTask(ackId);
+        if (currentTaskRef.current === ackId) {
+          currentTaskRef.current = null;
+        }
+      }
+      return;
+    }
+
     const envelopeResult = ForceSimulationCompleteEnvelopeSchema.safeParse(payload);
     if (!envelopeResult.success) {
       logger.warn("worker", "Invalid force simulation complete payload", { payload, error: envelopeResult.error });
@@ -464,8 +488,9 @@ export function useUnifiedBackgroundWorker(options: UseUnifiedBackgroundWorkerOp
       return;
     }
 
+    const stopTaskId = `force-simulation-stop-${Date.now().toString()}`;
+    addActiveTask(stopTaskId);
     try {
-      const stopTaskId = `force-simulation-stop-${Date.now().toString()}`;
       await submitQueueTask({
         id: stopTaskId,
         payload: {
@@ -482,6 +507,8 @@ export function useUnifiedBackgroundWorker(options: UseUnifiedBackgroundWorkerOp
         logger.error("worker", "Stop animation task failed", { stopTaskId, error: stopError });
       }
 
+      removeActiveTask(stopTaskId);
+
       const previousTaskId = currentTaskRef.current;
       if (previousTaskId) {
         removeActiveTask(previousTaskId);
@@ -495,9 +522,10 @@ export function useUnifiedBackgroundWorker(options: UseUnifiedBackgroundWorkerOp
         isPaused: false
       }));
     } catch (error) {
+      removeActiveTask(stopTaskId);
       logger.error("worker", "Failed to stop animation", { error });
     }
-  }, [submitQueueTask, workerModulePath, waitForTaskCompletion, removeActiveTask]);
+  }, [submitQueueTask, workerModulePath, waitForTaskCompletion, removeActiveTask, addActiveTask]);
 
   const startAnimation = useCallback(async ({
     nodes,
@@ -576,8 +604,10 @@ export function useUnifiedBackgroundWorker(options: UseUnifiedBackgroundWorkerOp
     });
 
     try {
-      const taskId = await submitQueueTask({
-        id: `force-simulation-${Date.now().toString()}`,
+      const taskId = `force-simulation-${Date.now().toString()}`;
+      addActiveTask(taskId);
+      const submittedTaskId = await submitQueueTask({
+        id: taskId,
         payload: {
           type: "FORCE_SIMULATION_START",
           nodes: seededNodes,
@@ -589,18 +619,18 @@ export function useUnifiedBackgroundWorker(options: UseUnifiedBackgroundWorkerOp
         timeout: 300000 // 5 minutes
       });
 
-      addActiveTask(taskId);
-      currentTaskRef.current = taskId;
+      currentTaskRef.current = submittedTaskId;
 
       logger.debug("worker", "Unified animation started", {
         nodeCount: seededNodes.length,
         linkCount: links?.length || 0,
         pinnedCount: pinnedNodes?.size || 0,
-        taskId
+        taskId: submittedTaskId
       });
 
-      return taskId;
+      return submittedTaskId;
     } catch (error) {
+      removeActiveTask(taskId);
       const errorMessage = `Failed to start animation: ${error instanceof Error ? error.message : String(error)}`;
       logger.error("worker", errorMessage, { error });
       onAnimationError?.(errorMessage);
@@ -610,41 +640,49 @@ export function useUnifiedBackgroundWorker(options: UseUnifiedBackgroundWorkerOp
 
   const pauseAnimation = useCallback(async () => {
     if (animationState.isRunning && !animationState.isPaused) {
+      const taskId = `force-simulation-pause-${Date.now().toString()}`;
+      addActiveTask(taskId);
       try {
         await submitQueueTask({
-          id: `force-simulation-pause-${Date.now().toString()}`,
+          id: taskId,
           payload: {
             type: "FORCE_SIMULATION_PAUSE"
           },
           workerModule: workerModulePath
         });
       } catch (error) {
+        removeActiveTask(taskId);
         logger.error("worker", "Failed to pause animation", { error });
       }
     }
-  }, [animationState.isRunning, animationState.isPaused, submitQueueTask]);
+  }, [animationState.isRunning, animationState.isPaused, submitQueueTask, addActiveTask]);
 
   const resumeAnimation = useCallback(async () => {
     if (animationState.isRunning && animationState.isPaused) {
+      const taskId = `force-simulation-resume-${Date.now().toString()}`;
+      addActiveTask(taskId);
       try {
         await submitQueueTask({
-          id: `force-simulation-resume-${Date.now().toString()}`,
+          id: taskId,
           payload: {
             type: "FORCE_SIMULATION_RESUME"
           },
           workerModule: workerModulePath
         });
       } catch (error) {
+        removeActiveTask(taskId);
         logger.error("worker", "Failed to resume animation", { error });
       }
     }
-  }, [animationState.isRunning, animationState.isPaused, submitQueueTask]);
+  }, [animationState.isRunning, animationState.isPaused, submitQueueTask, addActiveTask]);
 
   const updateParameters = useCallback(async (config: Partial<ForceSimulationConfig>) => {
     if (animationState.isRunning) {
+      const taskId = `force-simulation-update-${Date.now().toString()}`;
+      addActiveTask(taskId);
       try {
         await submitQueueTask({
-          id: `force-simulation-update-${Date.now().toString()}`,
+          id: taskId,
           payload: {
             type: "FORCE_SIMULATION_UPDATE_PARAMETERS",
             config
@@ -652,10 +690,11 @@ export function useUnifiedBackgroundWorker(options: UseUnifiedBackgroundWorkerOp
           workerModule: workerModulePath
         });
       } catch (error) {
+        removeActiveTask(taskId);
         logger.error("worker", "Failed to update parameters", { error });
       }
     }
-  }, [animationState.isRunning, submitQueueTask]);
+  }, [animationState.isRunning, submitQueueTask, addActiveTask]);
 
   const reheatAnimation = useCallback(async ({
     nodes,
@@ -677,6 +716,7 @@ export function useUnifiedBackgroundWorker(options: UseUnifiedBackgroundWorkerOp
 
     try {
       const taskId = `force-simulation-reheat-${Date.now().toString()}`;
+      addActiveTask(taskId);
       console.log("🎯 reheatAnimation payload creation:", {
         taskId,
         linkCount: links.length,
@@ -707,10 +747,13 @@ export function useUnifiedBackgroundWorker(options: UseUnifiedBackgroundWorkerOp
         taskId
       });
 
-      addActiveTask(resultTaskId ?? taskId);
+      if (resultTaskId && resultTaskId !== taskId) {
+        addActiveTask(resultTaskId);
+      }
 
-      return taskId;
+      return resultTaskId ?? taskId;
     } catch (error) {
+      removeActiveTask(taskId);
       const errorMessage = `Failed to reheat animation: ${error instanceof Error ? error.message : String(error)}`;
       logger.error("worker", errorMessage, { error });
       onAnimationError?.(errorMessage);
@@ -733,6 +776,7 @@ export function useUnifiedBackgroundWorker(options: UseUnifiedBackgroundWorkerOp
 
     try {
       const taskId = `force-simulation-update-links-${Date.now().toString()}`;
+      addActiveTask(taskId);
       console.log("🔗 updateSimulationLinks using HIGH PRIORITY task for immediate execution:", {
         taskId,
         linkCount: links.length,
@@ -760,15 +804,14 @@ export function useUnifiedBackgroundWorker(options: UseUnifiedBackgroundWorkerOp
         taskId: resultTaskId
       });
 
-      if (resultTaskId) {
+      if (resultTaskId && resultTaskId !== taskId) {
         addActiveTask(resultTaskId);
-      } else {
-        addActiveTask(taskId);
       }
 
       console.log("🔗 HIGH PRIORITY TASK SUBMITTED - should execute immediately!");
       return resultTaskId;
     } catch (error: unknown) {
+      removeActiveTask(taskId);
       const errorMessage = `Failed to update simulation links: ${error instanceof Error ? error.message : String(error)}`;
       logger.error("worker", errorMessage, { error });
       onAnimationError?.(errorMessage);
@@ -792,6 +835,7 @@ export function useUnifiedBackgroundWorker(options: UseUnifiedBackgroundWorkerOp
 
     try {
       const taskId = `force-simulation-update-nodes-${Date.now().toString()}`;
+      addActiveTask(taskId);
 
       const pinnedArray = Array.isArray(pinnedNodes)
         ? pinnedNodes
@@ -818,14 +862,13 @@ export function useUnifiedBackgroundWorker(options: UseUnifiedBackgroundWorkerOp
         taskId: resultTaskId ?? taskId
       });
 
-      if (resultTaskId) {
+      if (resultTaskId && resultTaskId !== taskId) {
         addActiveTask(resultTaskId);
-      } else {
-        addActiveTask(taskId);
       }
 
       return resultTaskId;
     } catch (error) {
+      removeActiveTask(taskId);
       const errorMessage = `Failed to update simulation nodes: ${error instanceof Error ? error.message : String(error)}`;
       logger.error("worker", errorMessage, { error });
       onAnimationError?.(errorMessage);

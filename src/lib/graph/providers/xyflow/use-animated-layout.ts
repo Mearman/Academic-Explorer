@@ -738,10 +738,16 @@ export function useAnimatedLayout(options: UseAnimatedLayoutOptions = {}) {
 					newEdgeCount
 				});
 
-				// Start simulation with all current edges (including the new ones)
-				setTimeout(() => {
-					reheatLayout(1.0);
-				}, 0);
+				// Check if this is likely auto-detected edges (small edge count)
+				// If so, let the FORCE_LAYOUT_RESTART event handle it to avoid duplicate reheats
+				if (allEdges.length <= 5) {
+					console.log("🔗 Skipping setTimeout reheat - likely auto-detected edges, letting FORCE_LAYOUT_RESTART handle it");
+				} else {
+					// Start simulation with all current edges (including the new ones)
+					setTimeout(() => {
+						reheatLayout(1.0);
+					}, 0);
+				}
 			} else {
 				console.log(`🔗 Insufficient nodes/edges for simulation`, {
 					nodeCount: Object.keys(storeNodes).length,

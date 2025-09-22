@@ -57,6 +57,14 @@ export class TaskQueue {
   private processing = false;
   private readonly maxConcurrency: number;
   private activeTasks = new Map<string, QueuedTask>();
+  private workerConnections = new Map<string, {
+    worker: Worker;
+    handlers: Map<string, {
+      resolve: (value: unknown) => void;
+      reject: (reason: Error) => void;
+      timeoutHandle?: ReturnType<typeof setTimeout>;
+    }>;
+  }>();
 
   constructor(
     private bus: EventBus,
@@ -140,10 +148,20 @@ export class TaskQueue {
     if (activeTask) {
       activeTask.status = TaskStatus.CANCELLED;
 
-      // Terminate worker if it exists
-      if (activeTask.worker) {
-        activeTask.worker.terminate();
-        activeTask.worker = undefined;
+      if (activeTask.workerModule) {
+        const connection = this.workerConnections.get(activeTask.workerModule);
+        if (connection) {
+          connection.worker.terminate();
+          this.workerConnections.delete(activeTask.workerModule);
+
+          for (const [, handler] of connection.handlers) {
+            handler.reject(new Error("Task cancelled"));
+            if (handler.timeoutHandle) {
+              clearTimeout(handler.timeoutHandle);
+            }
+          }
+          connection.handlers.clear();
+        }
       }
 
       this.activeTasks.delete(taskId);
@@ -211,11 +229,21 @@ export class TaskQueue {
     // Cancel all active tasks
     for (const [, task] of this.activeTasks.entries()) {
       task.status = TaskStatus.CANCELLED;
-      if (task.worker) {
-        task.worker.terminate();
-      }
     }
     this.activeTasks.clear();
+
+    // Terminate and clear worker connections
+    for (const [, connection] of this.workerConnections.entries()) {
+      for (const [, handler] of connection.handlers.entries()) {
+        handler.reject(new Error("Task queue cleared"));
+        if (handler.timeoutHandle) {
+          clearTimeout(handler.timeoutHandle);
+        }
+      }
+      connection.handlers.clear();
+      connection.worker.terminate();
+    }
+    this.workerConnections.clear();
 
     logger.debug("taskqueue", "Queue cleared", {
       cancelledCount,
@@ -332,12 +360,6 @@ export class TaskQueue {
         duration: taskResult.duration
       });
     } finally {
-      // Clean up
-      if (task.worker) {
-        task.worker.terminate();
-        task.worker = undefined;
-      }
-
       this.activeTasks.delete(task.id);
 
       // Continue processing remaining tasks
@@ -356,135 +378,27 @@ export class TaskQueue {
       }
 
       try {
-        const worker = new Worker(task.workerModule, { type: "module" });
-        task.worker = worker;
+        const connection = this.getWorkerConnection(task.workerModule);
 
-        // Set up timeout if specified
-        let timeoutHandle: ReturnType<typeof setTimeout> | undefined;
+        const handler = {
+          resolve,
+          reject,
+          timeoutHandle: undefined as ReturnType<typeof setTimeout> | undefined
+        };
+
+        connection.handlers.set(task.id, handler);
+
         if (task.timeout) {
-          timeoutHandle = setTimeout(() => {
-            worker.terminate();
+          handler.timeoutHandle = setTimeout(() => {
+            connection.handlers.delete(task.id);
             reject(new Error(`Task timeout after ${String(task.timeout)}ms`));
           }, task.timeout);
         }
 
-        worker.onmessage = (e: MessageEvent) => {
-          // Type guard for worker message
-          interface WorkerMessage {
-            type: string;
-            payload?: unknown;
-          }
-
-          // Zod schema for worker message validation
-          const workerMessageSchema = z.looseObject({
-            type: z.string(),
-            payload: z.unknown().optional()
-          });
-
-          function isWorkerMessage(data: unknown): data is WorkerMessage {
-            return workerMessageSchema.safeParse(data).success;
-          }
-
-          if (!isWorkerMessage(e.data)) {
-            return;
-          }
-
-          const event = e.data;
-
-          switch (event.type) {
-            case "PROGRESS": {
-              const progressPayload = event.payload;
-              const payloadExtension = progressPayload &&
-                typeof progressPayload === "object" &&
-                !Array.isArray(progressPayload) &&
-                progressPayload !== null
-                ? Object.fromEntries(Object.entries(progressPayload).filter(([key, value]) =>
-                    typeof key === "string" && value !== undefined
-                  ))
-                : {};
-              this.bus.emit({
-                type: "TASK_PROGRESS",
-                payload: {
-                  id: task.id,
-                  ...payloadExtension
-                }
-              });
-              break;
-            }
-
-            case "SUCCESS":
-              if (timeoutHandle) {
-                clearTimeout(timeoutHandle);
-              }
-              worker.terminate();
-              this.bus.emit({
-                type: "TASK_SUCCESS",
-                payload: { id: task.id, result: event.payload }
-              });
-              resolve(event.payload);
-              break;
-
-            case "ERROR":
-              if (timeoutHandle) {
-                clearTimeout(timeoutHandle);
-              }
-              worker.terminate();
-              this.bus.emit({
-                type: "TASK_ERROR",
-                payload: { id: task.id, error: event.payload }
-              });
-              reject(new Error(String(event.payload)));
-              break;
-
-            default:
-              // Forward other events to the bus - ensure they have required structure
-              if (event.type && typeof event.type === "string") {
-                this.bus.emit({
-                  type: event.type,
-                  payload: event.payload
-                });
-              }
-              break;
-          }
-        };
-
-        worker.onerror = (error: ErrorEvent) => {
-          if (timeoutHandle) {
-            clearTimeout(timeoutHandle);
-          }
-          worker.terminate();
-
-          // Create detailed error with context
-          const errorDetails = {
-            taskId: task.id,
-            workerModule: task.workerModule,
-            taskPayload: JSON.stringify(task.payload).substring(0, 200) + '...',
-            errorType: error.type || 'unknown',
-            errorMessage: error.message || 'Unknown worker error',
-            errorFilename: error.filename || 'unknown',
-            errorLineno: error.lineno || 0,
-            errorColno: error.colno || 0,
-            errorStack: error.error?.stack || 'No stack trace available',
-            taskAge: Date.now() - task.createdAt,
-            taskStartedAt: task.startedAt,
-            timestamp: new Date().toISOString()
-          };
-
-          logger.error("taskqueue", "Worker execution error with context", errorDetails);
-
-          const detailedError = new Error(
-            `Worker execution failed for task ${task.id}: ${error.message || 'Unknown error'}. ` +
-            `Module: ${task.workerModule}. Error at ${error.filename}:${error.lineno}:${error.colno}. ` +
-            `Stack: ${error.error?.stack || 'No stack trace'}`
-          );
-          reject(detailedError);
-        };
-
-        // TEMP DEBUG: Log what's being sent to worker
         if (task.payload && typeof task.payload === "object" && "type" in task.payload) {
           const payload = task.payload as { type: string; nodes?: { id: string }[]; links?: unknown[] };
           if (payload.type === "FORCE_SIMULATION_START" || payload.type === "FORCE_SIMULATION_REHEAT") {
-            console.log("🔧 TASK_QUEUE: Sending to worker", {
+            console.log("🔧 TASK_QUEUE: Sending to shared worker", {
               taskId: task.id,
               type: payload.type,
               nodesLength: payload.nodes?.length,
@@ -496,8 +410,11 @@ export class TaskQueue {
           }
         }
 
-        // Send task payload to worker
-        worker.postMessage(task.payload);
+        connection.worker.postMessage({
+          type: "EXECUTE_TASK",
+          taskId: task.id,
+          payload: task.payload
+        });
 
       } catch (error) {
         reject(error instanceof Error ? error : new Error(String(error)));
@@ -549,6 +466,151 @@ export class TaskQueue {
     } else {
       return task.execute(task.payload, emit);
     }
+  }
+
+  private getWorkerConnection(workerModule: string) {
+    let connection = this.workerConnections.get(workerModule);
+    if (!connection) {
+      const worker = new Worker(workerModule, { type: "module" });
+      const handlers = new Map<string, {
+        resolve: (value: unknown) => void;
+        reject: (reason: Error) => void;
+        timeoutHandle?: ReturnType<typeof setTimeout>;
+      }>();
+
+      worker.onmessage = (event: MessageEvent) => {
+        this.handleSharedWorkerMessage(workerModule, event.data);
+      };
+
+      worker.onerror = (error: ErrorEvent) => {
+        this.handleSharedWorkerError(workerModule, error);
+      };
+
+      worker.onmessageerror = (error: MessageEvent) => {
+        this.handleSharedWorkerError(workerModule, new ErrorEvent("messageerror", {
+          message: "Worker message error",
+          error
+        }));
+      };
+
+      connection = { worker, handlers };
+      this.workerConnections.set(workerModule, connection);
+    }
+
+    return connection;
+  }
+
+  private handleSharedWorkerMessage(workerModule: string, data: unknown) {
+    const connection = this.workerConnections.get(workerModule);
+    if (!connection) {
+      return;
+    }
+
+    const workerMessageSchema = z.looseObject({
+      type: z.string(),
+      payload: z.unknown().optional(),
+      taskId: z.string().optional()
+    });
+
+    if (!workerMessageSchema.safeParse(data).success) {
+      return;
+    }
+
+    const message = data as { type: string; payload?: unknown; taskId?: string };
+    const taskId = typeof message.taskId === "string" ? message.taskId : undefined;
+
+    switch (message.type) {
+      case "PROGRESS": {
+        const progressPayload = message.payload &&
+          typeof message.payload === "object" &&
+          !Array.isArray(message.payload) &&
+          message.payload !== null
+          ? Object.fromEntries(Object.entries(message.payload).filter(([key, value]) =>
+              typeof key === "string" && value !== undefined
+            ))
+          : {};
+
+        this.bus.emit({
+          type: "TASK_PROGRESS",
+          payload: {
+            id: taskId,
+            ...progressPayload
+          }
+        });
+        break;
+      }
+
+      case "SUCCESS": {
+        if (taskId) {
+          const handler = connection.handlers.get(taskId);
+          if (handler) {
+            if (handler.timeoutHandle) {
+              clearTimeout(handler.timeoutHandle);
+            }
+            connection.handlers.delete(taskId);
+            handler.resolve(message.payload);
+          }
+
+          this.bus.emit({
+            type: "TASK_SUCCESS",
+            payload: { id: taskId, result: message.payload }
+          });
+        }
+        break;
+      }
+
+      case "ERROR": {
+        if (taskId) {
+          const handler = connection.handlers.get(taskId);
+          if (handler) {
+            if (handler.timeoutHandle) {
+              clearTimeout(handler.timeoutHandle);
+            }
+            connection.handlers.delete(taskId);
+            handler.reject(new Error(String(message.payload)));
+          }
+
+          this.bus.emit({
+            type: "TASK_ERROR",
+            payload: { id: taskId, error: message.payload }
+          });
+        }
+        break;
+      }
+
+      default:
+        if (message.type && typeof message.type === "string") {
+          this.bus.emit({
+            type: message.type,
+            payload: message.payload
+          });
+        }
+    }
+  }
+
+  private handleSharedWorkerError(workerModule: string, error: ErrorEvent) {
+    const connection = this.workerConnections.get(workerModule);
+    if (!connection) {
+      return;
+    }
+
+    for (const [, handler] of connection.handlers.entries()) {
+      handler.reject(new Error(error.message || "Worker error"));
+      if (handler.timeoutHandle) {
+        clearTimeout(handler.timeoutHandle);
+      }
+    }
+
+    connection.handlers.clear();
+    connection.worker.terminate();
+    this.workerConnections.delete(workerModule);
+
+    this.bus.emit({
+      type: "TASK_ERROR",
+      payload: {
+        error: error.message || "Worker error"
+      }
+    });
   }
 }
 
