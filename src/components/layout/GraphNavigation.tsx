@@ -350,7 +350,7 @@ const GraphNavigationInner: React.FC<GraphNavigationProps> = ({ className, style
 		};
 
 		// Type guard to check if provider has the callback method
-		if ('setOnDataChangeCallback' in graphProvider && typeof graphProvider.setOnDataChangeCallback === 'function') {
+		if ("setOnDataChangeCallback" in graphProvider && typeof graphProvider.setOnDataChangeCallback === "function") {
 			graphProvider.setOnDataChangeCallback(forceUpdateCallback);
 		}
 
@@ -502,22 +502,25 @@ const GraphNavigationInner: React.FC<GraphNavigationProps> = ({ className, style
 					setEdges(prevEdges => applyEdgeChanges(edgeChanges, prevEdges));
 
 					// CRITICAL FIX: Trigger force simulation update for direct edge additions
-					const addedEdges = edgeChanges.filter(change => change.type === 'add');
+					const addedEdges = edgeChanges.filter(change => change.type === "add");
 					if (addedEdges.length > 0) {
-						console.log("🔗 GRAPH-NAV: Direct edge additions detected, triggering force simulation update", {
+						logger.debug("graph", "Direct edge additions detected, triggering force simulation update", {
 							addedEdgesCount: addedEdges.length,
-							edgeIds: addedEdges.map(change => change.type === 'add' ? change.item.id : 'unknown')
+							edgeIds: addedEdges.map(change => change.type === "add" ? change.item.id : "unknown")
 						});
 
-						// Import eventBus to emit the proper events for force simulation
-						import("@/lib/graph/events/unified-event-bus").then(({ eventBus }) => {
-							console.log("🔗 GRAPH-NAV: Emitting BULK_EDGES_ADDED event for force simulation");
-							eventBus.emit("BULK_EDGES_ADDED", {
-								edges: addedEdges.map(change => change.type === 'add' ? change.item.id : ''),
-								timestamp: Date.now()
+						// Import localEventBus to emit the proper events for force simulation
+						import("@/lib/graph/events/unified-event-bus").then(({ localEventBus }) => {
+							logger.debug("graph", "Emitting BULK_EDGES_ADDED event for force simulation");
+							localEventBus.emit({
+								type: "BULK_EDGES_ADDED",
+								payload: {
+									edges: addedEdges.map(change => change.type === "add" ? change.item.id : ""),
+									timestamp: Date.now()
+								}
 							});
-						}).catch(error => {
-							console.error("🔗 GRAPH-NAV: Failed to emit BULK_EDGES_ADDED event", error);
+						}).catch((error: unknown) => {
+							logger.error("graph", "Failed to emit BULK_EDGES_ADDED event", { error });
 						});
 					}
 				}
