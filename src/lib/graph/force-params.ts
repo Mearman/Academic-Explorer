@@ -12,6 +12,8 @@ export const DEFAULT_FORCE_PARAMS = {
 	collisionStrength: 1.0,
 	velocityDecay: 0.1,
 	alphaDecay: 0.03,
+	maxIterations: 1000,
+	seed: 0x12345678,
 } as const;
 
 export type ForceParameters = typeof DEFAULT_FORCE_PARAMS;
@@ -73,5 +75,19 @@ export const FORCE_PARAM_CONFIG = {
 		max: 0.1,
 		step: 0.001,
 		description: "Rate at which simulation cools down",
+	},
+	maxIterations: {
+		label: "Max Iterations",
+		min: 100,
+		max: 5000,
+		step: 100,
+		description: "Maximum number of simulation iterations",
+	},
+	seed: {
+		label: "Random Seed",
+		min: 0,
+		max: 0xFFFFFFFF,
+		step: 1,
+		description: "Seed for deterministic random number generation",
 	},
 } as const;
