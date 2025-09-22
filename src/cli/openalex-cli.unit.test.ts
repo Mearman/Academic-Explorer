@@ -3,7 +3,6 @@
  */
 
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
-import { join } from "path";
 
 // Mock the fs/promises module with spy functions that prevent real operations
 vi.mock("fs/promises", async (importOriginal) => {
@@ -124,7 +123,7 @@ vi.mock("../lib/logger.js", () => ({
 
 // Import after mocks are set up
 import { OpenAlexCLI } from "./openalex-cli-class.js";
-import { readFile, access, writeFile, mkdir, stat } from "fs/promises";
+import { readFile, access, writeFile, mkdir } from "fs/promises";
 import { logger } from "../lib/logger.js";
 
 describe("OpenAlexCLI", () => {

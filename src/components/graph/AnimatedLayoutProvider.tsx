@@ -16,7 +16,6 @@ interface AnimatedLayoutProviderProps {
   children: React.ReactNode;
   enabled?: boolean;
   onLayoutChange?: () => void;
-  fitViewAfterLayout?: boolean;
   containerDimensions?: { width: number; height: number };
   autoStartOnNodeChange?: boolean;
 }
@@ -25,7 +24,6 @@ export const AnimatedLayoutProvider: React.FC<AnimatedLayoutProviderProps> = ({
 	children,
 	enabled = true,
 	onLayoutChange,
-	fitViewAfterLayout = true,
 	autoStartOnNodeChange = false,
 }) => {
 	// Unified event bus for cross-component communication
@@ -69,7 +67,6 @@ export const AnimatedLayoutProvider: React.FC<AnimatedLayoutProviderProps> = ({
 	} = useAnimatedLayout({
 		enabled: enabled && useAnimation,
 		onLayoutChange,
-		fitViewAfterLayout,
 		useAnimation,
 	});
 
@@ -157,10 +154,13 @@ export const AnimatedLayoutProvider: React.FC<AnimatedLayoutProviderProps> = ({
 			// Clear the request flag first to prevent multiple triggers
 			clearRestartRequest();
 
-			// Restart the animation
-			restartLayout();
+			if (isRunning) {
+				reheatLayout();
+			} else {
+				restartLayout();
+			}
 		}
-	}, [restartRequested, enabled, useAnimation, isWorkerReady, isRunning, restartLayout, clearRestartRequest]);
+	}, [restartRequested, enabled, useAnimation, isWorkerReady, isRunning, restartLayout, reheatLayout, clearRestartRequest]);
 
 	// Listen for graph events for immediate auto-trigger
 	useEffect(() => {
@@ -208,21 +208,75 @@ export const AnimatedLayoutProvider: React.FC<AnimatedLayoutProviderProps> = ({
 
 		return () => { unsubscribe(); };
 	}, [autoStartOnNodeChange, enabled, useAnimation, isWorkerReady, isRunning, applyLayout, reheatLayout, eventBus]);
-	// Initial trigger: Start animation when page loads with existing nodes
+	// Initial trigger: DISABLED - causing restart loops
+	// Manual animation start via Start button is preferred
+	// useEffect(() => {
+	// 	if (!enabled || !useAnimation || !isWorkerReady || isRunning) {
+	// 		return;
+	// 	}
+
+	// 	const currentNodes = getNodes();
+
+	// 	// Start animation if we have nodes but animation isn't running
+	// 	if (currentNodes.length > 0) {
+	// 		setTimeout(() => {
+	// 			applyLayout();
+	// 		}, 500); // Small delay to ensure everything is ready
+	// 	}
+	// }, [enabled, useAnimation, isWorkerReady, isRunning, getNodes, applyLayout]);
+
+	// Separate handler for bulk expansion events (independent of autoStartOnNodeChange)
 	useEffect(() => {
-		if (!enabled || !useAnimation || !isWorkerReady || isRunning) {
+		if (!enabled || !useAnimation || !isWorkerReady) {
 			return;
 		}
 
-		const currentNodes = getNodes();
+		const handleExpansionEvent = (event: { type: string; payload?: unknown }) => {
+			const { type: eventType } = event;
 
-		// Start animation if we have nodes but animation isn't running
-		if (currentNodes.length > 0) {
-			setTimeout(() => {
-				applyLayout();
-			}, 500); // Small delay to ensure everything is ready
-		}
-	}, [enabled, useAnimation, isWorkerReady, isRunning, getNodes, applyLayout]);
+			// Only respond to bulk expansion events, not individual node/position changes
+			if (eventType === "graph:bulk-nodes-added" || eventType === "graph:bulk-edges-added") {
+				logger.debug("graph", "Bulk expansion detected during simulation", {
+					eventType,
+					isRunning,
+					action: isRunning ? "reheat" : "start",
+				});
+
+				// Small delay to allow ReactFlow to update
+				setTimeout(() => {
+					if (isRunning) {
+						// During simulation: reheat alpha to apply new edge forces
+						logger.debug("graph", "Reheating simulation for new edges");
+						reheatLayout();
+					} else {
+						// Not running: start new simulation with expanded graph
+						logger.debug("graph", "Starting simulation with expanded graph");
+						applyLayout();
+					}
+				}, 100);
+			}
+		};
+
+		// Listen directly for bulk graph events
+		const unsubscribeBulkNodes = eventBus.on("graph:bulk-nodes-added", (event) => {
+			handleExpansionEvent({
+				type: "graph:bulk-nodes-added",
+				payload: event.payload
+			});
+		});
+
+		const unsubscribeBulkEdges = eventBus.on("graph:bulk-edges-added", (event) => {
+			handleExpansionEvent({
+				type: "graph:bulk-edges-added",
+				payload: event.payload
+			});
+		});
+
+		return () => {
+			unsubscribeBulkNodes();
+			unsubscribeBulkEdges();
+		};
+	}, [enabled, useAnimation, isWorkerReady, isRunning, applyLayout, reheatLayout, eventBus]);
 
 	// No listener here - moved to GraphNavigation for store access
 

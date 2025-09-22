@@ -76,8 +76,12 @@ export class TaskQueue {
    * Add a task to the queue
    */
   enqueue(task: TaskDescriptor): string {
+    // Deep clone payload to prevent mutation issues
+    const clonedPayload = task.payload ? JSON.parse(JSON.stringify(task.payload)) : task.payload;
+
     const queuedTask: QueuedTask = {
       ...task,
+      payload: clonedPayload,
       status: TaskStatus.PENDING,
       createdAt: Date.now()
     };
@@ -449,8 +453,48 @@ export class TaskQueue {
             clearTimeout(timeoutHandle);
           }
           worker.terminate();
-          reject(new Error(error.message || "Worker error"));
+
+          // Create detailed error with context
+          const errorDetails = {
+            taskId: task.id,
+            workerModule: task.workerModule,
+            taskPayload: JSON.stringify(task.payload).substring(0, 200) + '...',
+            errorType: error.type || 'unknown',
+            errorMessage: error.message || 'Unknown worker error',
+            errorFilename: error.filename || 'unknown',
+            errorLineno: error.lineno || 0,
+            errorColno: error.colno || 0,
+            errorStack: error.error?.stack || 'No stack trace available',
+            taskAge: Date.now() - task.createdAt,
+            taskStartedAt: task.startedAt,
+            timestamp: new Date().toISOString()
+          };
+
+          logger.error("taskqueue", "Worker execution error with context", errorDetails);
+
+          const detailedError = new Error(
+            `Worker execution failed for task ${task.id}: ${error.message || 'Unknown error'}. ` +
+            `Module: ${task.workerModule}. Error at ${error.filename}:${error.lineno}:${error.colno}. ` +
+            `Stack: ${error.error?.stack || 'No stack trace'}`
+          );
+          reject(detailedError);
         };
+
+        // TEMP DEBUG: Log what's being sent to worker
+        if (task.payload && typeof task.payload === "object" && "type" in task.payload) {
+          const payload = task.payload as { type: string; nodes?: { id: string }[]; links?: unknown[] };
+          if (payload.type === "FORCE_SIMULATION_START" || payload.type === "FORCE_SIMULATION_REHEAT") {
+            console.log("🔧 TASK_QUEUE: Sending to worker", {
+              taskId: task.id,
+              type: payload.type,
+              nodesLength: payload.nodes?.length,
+              linksLength: payload.links?.length,
+              firstNodeId: payload.nodes?.[0]?.id,
+              allNodeIds: payload.nodes?.map(n => n.id),
+              linkDetails: payload.links?.slice(0, 3).map((link: any) => ({ id: link?.id, source: link?.source, target: link?.target }))
+            });
+          }
+        }
 
         // Send task payload to worker
         worker.postMessage(task.payload);

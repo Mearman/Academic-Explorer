@@ -69,6 +69,7 @@ interface AnimatedGraphState {
   updateStaticPositions: (positions: NodePosition[]) => void;
   getNodePosition: (nodeId: string) => NodePosition | undefined;
   getAllPositions: () => NodePosition[];
+  getAnimatedPositions: () => NodePosition[];
   clearPositions: () => void;
 
   // Animation lifecycle
@@ -210,6 +211,11 @@ export const useAnimatedGraphStore = create<AnimatedGraphState>()(
 					return state.animatedPositions[nodeId];
 				}
 				return state.staticPositions[nodeId];
+			},
+
+			getAnimatedPositions: () => {
+				const state = get();
+				return (state._cachedAnimatedPositionsArray || []).map(pos => ({ ...pos }));
 			},
 
 			getAllPositions: () => {
@@ -413,6 +419,7 @@ export const useSetUseAnimatedLayout = () => useAnimatedGraphStore((state) => st
 // Position tracking selectors
 export const useGetNodePosition = () => useAnimatedGraphStore((state) => state.getNodePosition);
 export const useGetAllPositions = () => useAnimatedGraphStore((state) => state.getAllPositions);
+export const useGetAnimatedPositions = () => useAnimatedGraphStore((state) => state.getAnimatedPositions);
 export const useUpdateAnimatedPositions = () => useAnimatedGraphStore((state) => state.updateAnimatedPositions);
 export const useUpdateStaticPositions = () => useAnimatedGraphStore((state) => state.updateStaticPositions);
 export const useClearPositions = () => useAnimatedGraphStore((state) => state.clearPositions);
