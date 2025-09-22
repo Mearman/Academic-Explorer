@@ -176,7 +176,7 @@ export const AnimatedGraphControls: React.FC<AnimatedGraphControlsProps> = ({
 						onClick={handleStartLayout}
 						disabled={false}
 						size="sm"
-						style={{backgroundColor: 'red'}}
+						style={{backgroundColor: "red"}}
 					>
             Start (FORCED ENABLED)
 					</Button>

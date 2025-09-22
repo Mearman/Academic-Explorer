@@ -352,12 +352,12 @@ export class WorkerPool {
       timeSinceLastUse: Date.now() - poolWorker.lastUsed,
       queueLength: this.taskQueue.length,
       availableWorkers: this.getIdleWorkerCount(),
-      errorType: error.type || 'unknown',
-      errorMessage: error.message || 'Unknown worker error',
-      errorFilename: error.filename || 'unknown',
+      errorType: error.type || "unknown",
+      errorMessage: error.message || "Unknown worker error",
+      errorFilename: error.filename || "unknown",
       errorLineno: error.lineno || 0,
       errorColno: error.colno || 0,
-      errorStack: error.error?.stack || 'No stack trace available',
+      errorStack: error.error?.stack || "No stack trace available",
       timestamp: new Date().toISOString()
     };
 
@@ -366,10 +366,10 @@ export class WorkerPool {
     // Handle current task if any
     if (poolWorker.currentTaskId) {
       const detailedError = new Error(
-        `Worker ${poolWorker.id} failed: ${error.message || 'Unknown error'}. ` +
+        `Worker ${poolWorker.id} failed: ${error.message || "Unknown error"}. ` +
         `Task: ${poolWorker.currentTaskId}. Worker completed ${poolWorker.tasksCompleted} tasks, ` +
         `had ${poolWorker.errors} errors. Error at ${error.filename}:${error.lineno}:${error.colno}. ` +
-        `Stack: ${error.error?.stack || 'No stack trace'}`
+        `Stack: ${error.error?.stack || "No stack trace"}`
       );
       this.handleTaskCompletion(poolWorker, undefined, detailedError);
     }
@@ -509,8 +509,8 @@ export class WorkerPool {
         totalErrors: idleWorker.errors,
         queueLength: this.taskQueue.length,
         errorMessage: error instanceof Error ? error.message : String(error),
-        errorStack: error instanceof Error ? error.stack : 'No stack trace',
-        taskPayload: JSON.stringify(task.payload).substring(0, 200) + '...',
+        errorStack: error instanceof Error ? error.stack : "No stack trace",
+        taskPayload: JSON.stringify(task.payload).substring(0, 200) + "...",
         timestamp: new Date().toISOString()
       };
 

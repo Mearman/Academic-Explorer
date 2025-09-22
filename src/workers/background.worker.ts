@@ -14,8 +14,7 @@ import { logger } from "@/lib/logger";
 import type {
   ForceSimulationNode,
   ForceSimulationLink,
-  ForceSimulationConfig,
-  NodePosition
+  ForceSimulationConfig
 } from "@/lib/graph/events/enhanced-worker-types";
 import { DEFAULT_FORCE_PARAMS } from "@/lib/graph/force-params";
 import type { EntityType } from "@/lib/graph/types";
@@ -606,10 +605,10 @@ self.onmessage = (e: MessageEvent) => {
     }
   } catch (error: unknown) {
     const errorMessage = error instanceof Error ? error.message : String(error);
-    const errorStack = error instanceof Error ? error.stack : 'No stack trace';
+    const errorStack = error instanceof Error ? error.stack : "No stack trace";
     const errorContext = {
-      messageData: JSON.stringify(data).substring(0, 200) + '...',
-      messageType: typeof data === 'object' && data && 'type' in data ? String(data.type) : 'unknown',
+      messageData: JSON.stringify(data).substring(0, 200) + "...",
+      messageType: typeof data === "object" && data && "type" in data ? String(data.type) : "unknown",
       errorStack,
       workerState: {
         hasSimulationEngine: !!simulationEngine
@@ -651,9 +650,9 @@ function initializeWorker() {
     logger.debug("worker", "D3 Force simulation worker initialized successfully");
   } catch (error: unknown) {
     const errorMessage = error instanceof Error ? error.message : String(error);
-    const errorStack = error instanceof Error ? error.stack : 'No stack trace';
+    const errorStack = error instanceof Error ? error.stack : "No stack trace";
     const errorContext = {
-      initializationPhase: 'worker_setup',
+      initializationPhase: "worker_setup",
       errorStack,
       workerState: {
         hasSimulationEngine: !!simulationEngine
@@ -698,13 +697,13 @@ try {
   initializeWorker();
 } catch (error: unknown) {
   const errorMessage = error instanceof Error ? error.message : String(error);
-  const errorStack = error instanceof Error ? error.stack : 'No stack trace';
+  const errorStack = error instanceof Error ? error.stack : "No stack trace";
   const errorContext = {
-    initializationPhase: 'global_init',
+    initializationPhase: "global_init",
     errorStack,
     workerEnvironment: {
       hasSimulationEngine: !!simulationEngine,
-      hasLogger: typeof logger !== 'undefined',
+      hasLogger: typeof logger !== "undefined",
       hasEventBus: !!workerEventBus
     }
   };

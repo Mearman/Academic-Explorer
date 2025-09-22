@@ -587,7 +587,7 @@ export const useGraphStore = create<GraphState>()(
 				});
 
 				// DEBUG: Expose store to window for testing
-				if (typeof window !== 'undefined') {
+				if (typeof window !== "undefined") {
 					const globalWindow = window as typeof window & { _graphStore?: unknown };
 					globalWindow._graphStore = get();
 				}
@@ -614,11 +614,11 @@ export const useGraphStore = create<GraphState>()(
 					animatedStore.requestRestart();
 
 					// Also trigger immediate reheat with events for settled simulations
-					if (typeof window !== 'undefined' && edges.length <= 5) {
+					if (typeof window !== "undefined" && edges.length <= 5) {
 						// Small number of edges likely means auto-detection, force immediate reheat
 						localEventBus.emit({
 							type: GraphEventType.FORCE_LAYOUT_RESTART,
-							payload: { reason: 'auto-detected-edges', alpha: 1.0 }
+							payload: { reason: "auto-detected-edges", alpha: 1.0 }
 						});
 					}
 				}

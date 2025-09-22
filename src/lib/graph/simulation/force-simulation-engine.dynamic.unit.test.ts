@@ -1,18 +1,18 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { ForceSimulationEngine, type SimulationCallbacks } from './force-simulation-engine';
-import { DEFAULT_FORCE_PARAMS } from '@/lib/graph/force-params';
-import type { ForceSimulationNode, ForceSimulationLink } from '@/lib/graph/events/enhanced-worker-types';
+import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
+import { ForceSimulationEngine, type SimulationCallbacks } from "./force-simulation-engine";
+import { DEFAULT_FORCE_PARAMS } from "@/lib/graph/force-params";
+import type { ForceSimulationNode, ForceSimulationLink } from "@/lib/graph/events/enhanced-worker-types";
 
-describe('ForceSimulationEngine - Dynamic Node/Edge Addition', () => {
+describe("ForceSimulationEngine - Dynamic Node/Edge Addition", () => {
   let engine: ForceSimulationEngine;
   let callbacks: SimulationCallbacks;
   let progressCallback: ReturnType<typeof vi.fn>;
   let completeCallback: ReturnType<typeof vi.fn>;
   let errorCallback: ReturnType<typeof vi.fn>;
 
-  const createTestNode = (id: string, x = 0, y = 0, type = 'works'): ForceSimulationNode => ({
+  const createTestNode = (id: string, x = 0, y = 0, type = "works"): ForceSimulationNode => ({
     id,
-    type: type as ForceSimulationNode['type'],
+    type: type as ForceSimulationNode["type"],
     x,
     y,
   });
@@ -51,12 +51,12 @@ describe('ForceSimulationEngine - Dynamic Node/Edge Addition', () => {
     }
   });
 
-  describe('Adding Nodes During Simulation', () => {
-    it('should add new nodes to running simulation immediately', () => {
+  describe("Adding Nodes During Simulation", () => {
+    it("should add new nodes to running simulation immediately", () => {
       // Start with initial nodes
       const initialNodes = [
-        createTestNode('node1', 0, 0),
-        createTestNode('node2', 100, 0),
+        createTestNode("node1", 0, 0),
+        createTestNode("node2", 100, 0),
       ];
 
       engine.start({
@@ -71,8 +71,8 @@ describe('ForceSimulationEngine - Dynamic Node/Edge Addition', () => {
 
       // Add new nodes
       const newNodes = [
-        createTestNode('node3', 200, 0),
-        createTestNode('node4', 300, 0),
+        createTestNode("node3", 200, 0),
+        createTestNode("node4", 300, 0),
       ];
 
       engine.updateNodes(newNodes, [], 0.8);
@@ -83,11 +83,11 @@ describe('ForceSimulationEngine - Dynamic Node/Edge Addition', () => {
       expect(state.pendingUpdates.length).toBe(0); // Updates applied immediately
     });
 
-    it('should handle adding nodes when simulation is not running', () => {
+    it("should handle adding nodes when simulation is not running", () => {
       // Add nodes before starting simulation
       const pendingNodes = [
-        createTestNode('pending1', 0, 0),
-        createTestNode('pending2', 100, 0),
+        createTestNode("pending1", 0, 0),
+        createTestNode("pending2", 100, 0),
       ];
 
       engine.updateNodes(pendingNodes, [], 0.5);
@@ -97,7 +97,7 @@ describe('ForceSimulationEngine - Dynamic Node/Edge Addition', () => {
       expect(state.pendingNodes.length).toBe(2);
 
       // Start simulation - should include pending nodes
-      const initialNodes = [createTestNode('initial', 50, 0)];
+      const initialNodes = [createTestNode("initial", 50, 0)];
       engine.start({ nodes: initialNodes, links: [] });
 
       state = engine.getDebugState();
@@ -107,13 +107,13 @@ describe('ForceSimulationEngine - Dynamic Node/Edge Addition', () => {
     });
   });
 
-  describe('Adding Links During Simulation', () => {
-    it('should add new links to running simulation immediately', () => {
+  describe("Adding Links During Simulation", () => {
+    it("should add new links to running simulation immediately", () => {
       // Start with disconnected nodes
       const initialNodes = [
-        createTestNode('node1', 0, 0),
-        createTestNode('node2', 100, 0),
-        createTestNode('node3', 200, 0),
+        createTestNode("node1", 0, 0),
+        createTestNode("node2", 100, 0),
+        createTestNode("node3", 200, 0),
       ];
 
       engine.start({
@@ -128,8 +128,8 @@ describe('ForceSimulationEngine - Dynamic Node/Edge Addition', () => {
 
       // Add new links
       const newLinks = [
-        createTestLink('link1', 'node1', 'node2'),
-        createTestLink('link2', 'node2', 'node3'),
+        createTestLink("link1", "node1", "node2"),
+        createTestLink("link2", "node2", "node3"),
       ];
 
       engine.updateLinks(newLinks, 0.7);
@@ -140,10 +140,10 @@ describe('ForceSimulationEngine - Dynamic Node/Edge Addition', () => {
       expect(state.pendingUpdates.length).toBe(0); // Updates applied immediately
     });
 
-    it('should handle adding links when simulation is not running', () => {
+    it("should handle adding links when simulation is not running", () => {
       // Add links before starting simulation
       const pendingLinks = [
-        createTestLink('pending1', 'node1', 'node2'),
+        createTestLink("pending1", "node1", "node2"),
       ];
 
       engine.updateLinks(pendingLinks, 0.6);
@@ -154,8 +154,8 @@ describe('ForceSimulationEngine - Dynamic Node/Edge Addition', () => {
 
       // Start simulation - should include pending links
       const initialNodes = [
-        createTestNode('node1', 0, 0),
-        createTestNode('node2', 100, 0),
+        createTestNode("node1", 0, 0),
+        createTestNode("node2", 100, 0),
       ];
       engine.start({ nodes: initialNodes, links: [] });
 
@@ -166,10 +166,10 @@ describe('ForceSimulationEngine - Dynamic Node/Edge Addition', () => {
     });
   });
 
-  describe('Combined Node and Link Addition', () => {
-    it('should handle adding nodes and links together', () => {
+  describe("Combined Node and Link Addition", () => {
+    it("should handle adding nodes and links together", () => {
       // Start with minimal graph
-      const initialNodes = [createTestNode('node1', 0, 0)];
+      const initialNodes = [createTestNode("node1", 0, 0)];
       engine.start({ nodes: initialNodes, links: [] });
 
       let state = engine.getDebugState();
@@ -178,15 +178,15 @@ describe('ForceSimulationEngine - Dynamic Node/Edge Addition', () => {
 
       // Add nodes first
       const newNodes = [
-        createTestNode('node2', 100, 0),
-        createTestNode('node3', 200, 0),
+        createTestNode("node2", 100, 0),
+        createTestNode("node3", 200, 0),
       ];
       engine.updateNodes(newNodes, [], 0.8);
 
       // Add links connecting the nodes
       const newLinks = [
-        createTestLink('link1', 'node1', 'node2'),
-        createTestLink('link2', 'node2', 'node3'),
+        createTestLink("link1", "node1", "node2"),
+        createTestLink("link2", "node2", "node3"),
       ];
       engine.updateLinks(newLinks, 0.7);
 
@@ -198,9 +198,9 @@ describe('ForceSimulationEngine - Dynamic Node/Edge Addition', () => {
     });
   });
 
-  describe('Engine State Management', () => {
-    it('should maintain correct simulation state during updates', () => {
-      const initialNodes = [createTestNode('node1')];
+  describe("Engine State Management", () => {
+    it("should maintain correct simulation state during updates", () => {
+      const initialNodes = [createTestNode("node1")];
       engine.start({ nodes: initialNodes, links: [] });
 
       let state = engine.getDebugState();
@@ -208,7 +208,7 @@ describe('ForceSimulationEngine - Dynamic Node/Edge Addition', () => {
       expect(state.isPaused).toBe(false);
 
       // Add nodes - should maintain running state
-      engine.updateNodes([createTestNode('node2')], [], 0.5);
+      engine.updateNodes([createTestNode("node2")], [], 0.5);
 
       state = engine.getDebugState();
       expect(state.isRunning).toBe(true);
@@ -216,7 +216,7 @@ describe('ForceSimulationEngine - Dynamic Node/Edge Addition', () => {
 
       // Pause and verify updates still apply
       engine.pause();
-      engine.updateNodes([createTestNode('node3')], [], 0.4);
+      engine.updateNodes([createTestNode("node3")], [], 0.4);
 
       state = engine.getDebugState();
       expect(state.isRunning).toBe(true);
@@ -224,9 +224,9 @@ describe('ForceSimulationEngine - Dynamic Node/Edge Addition', () => {
       expect(state.nodeCount).toBe(3); // Node added even when paused
     });
 
-    it('should handle simulation parameter updates', () => {
-      const initialNodes = [createTestNode('node1'), createTestNode('node2')];
-      const initialLinks = [createTestLink('link1', 'node1', 'node2')];
+    it("should handle simulation parameter updates", () => {
+      const initialNodes = [createTestNode("node1"), createTestNode("node2")];
+      const initialLinks = [createTestLink("link1", "node1", "node2")];
 
       engine.start({ nodes: initialNodes, links: initialLinks });
 
@@ -243,17 +243,17 @@ describe('ForceSimulationEngine - Dynamic Node/Edge Addition', () => {
 
       // Verify onProgress was called for parameter update
       const parameterUpdateCalls = progressCallback.mock.calls
-        .filter(call => call[0].messageType === 'parameters_updated');
+        .filter(call => call[0].messageType === "parameters_updated");
       expect(parameterUpdateCalls.length).toBeGreaterThan(0);
     });
 
-    it('should handle stopping simulation with pending updates', () => {
-      const initialNodes = [createTestNode('node1')];
+    it("should handle stopping simulation with pending updates", () => {
+      const initialNodes = [createTestNode("node1")];
       engine.start({ nodes: initialNodes, links: [] });
 
       // Add updates
-      engine.updateNodes([createTestNode('node2')], [], 0.5);
-      engine.updateLinks([createTestLink('link1', 'node1', 'node2')], 0.6);
+      engine.updateNodes([createTestNode("node2")], [], 0.5);
+      engine.updateLinks([createTestLink("link1", "node1", "node2")], 0.6);
 
       let state = engine.getDebugState();
       expect(state.nodeCount).toBe(2); // Node added
@@ -270,21 +270,21 @@ describe('ForceSimulationEngine - Dynamic Node/Edge Addition', () => {
       // Verify onComplete was called
       expect(completeCallback).toHaveBeenCalledWith(
         expect.objectContaining({
-          reason: 'stopped',
+          reason: "stopped",
         })
       );
     });
   });
 
-  describe('Error Handling', () => {
-    it('should not crash when adding invalid node types', () => {
-      const initialNodes = [createTestNode('node1')];
+  describe("Error Handling", () => {
+    it("should not crash when adding invalid node types", () => {
+      const initialNodes = [createTestNode("node1")];
       engine.start({ nodes: initialNodes, links: [] });
 
       // Add node with invalid type
       const invalidNode = {
-        id: 'invalid',
-        type: 'invalid_type' as ForceSimulationNode['type'],
+        id: "invalid",
+        type: "invalid_type" as ForceSimulationNode["type"],
         x: 0,
         y: 0,
       };
@@ -297,8 +297,8 @@ describe('ForceSimulationEngine - Dynamic Node/Edge Addition', () => {
       expect(state.nodeCount).toBe(2); // Invalid node was still processed
     });
 
-    it('should handle empty node and link arrays', () => {
-      const initialNodes = [createTestNode('node1')];
+    it("should handle empty node and link arrays", () => {
+      const initialNodes = [createTestNode("node1")];
       engine.start({ nodes: initialNodes, links: [] });
 
       expect(() => {

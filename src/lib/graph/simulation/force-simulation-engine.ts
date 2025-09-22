@@ -211,7 +211,7 @@ export class ForceSimulationEngine {
     this.simulationConfig = { ...this.simulationConfig, ...config };
 
     if (config.linkDistance !== undefined || config.linkStrength !== undefined) {
-      const linkForce = this.currentSimulation.force("link") as ReturnType<typeof forceLink<D3SimulationNode, D3SimulationLink>> | undefined;
+      const linkForce = this.currentSimulation.force("link");
       if (linkForce) {
         if (config.linkDistance !== undefined && typeof linkForce.distance === "function") {
           linkForce.distance(config.linkDistance);
@@ -223,21 +223,21 @@ export class ForceSimulationEngine {
     }
 
     if (config.chargeStrength !== undefined) {
-      const chargeForce = this.currentSimulation.force("charge") as ReturnType<typeof forceManyBody> | undefined;
+      const chargeForce = this.currentSimulation.force("charge");
       if (chargeForce && typeof chargeForce.strength === "function") {
         chargeForce.strength(config.chargeStrength);
       }
     }
 
     if (config.centerStrength !== undefined) {
-      const centerForce = this.currentSimulation.force("center") as ReturnType<typeof forceCenter> | undefined;
+      const centerForce = this.currentSimulation.force("center");
       if (centerForce && typeof centerForce.strength === "function") {
         centerForce.strength(config.centerStrength);
       }
     }
 
     if (config.collisionRadius !== undefined || config.collisionStrength !== undefined) {
-      const collisionForce = this.currentSimulation.force("collision") as ReturnType<typeof forceCollide> | undefined;
+      const collisionForce = this.currentSimulation.force("collision");
       if (collisionForce) {
         if (config.collisionRadius !== undefined && typeof collisionForce.radius === "function") {
           collisionForce.radius(config.collisionRadius);
@@ -287,7 +287,7 @@ export class ForceSimulationEngine {
     this.currentSimulation.force("link", linkForce);
 
     if (config.chargeStrength !== undefined) {
-      const chargeForce = this.currentSimulation.force("charge") as ReturnType<typeof forceManyBody> | undefined;
+      const chargeForce = this.currentSimulation.force("charge");
       chargeForce?.strength(config.chargeStrength);
     }
 
@@ -353,7 +353,7 @@ export class ForceSimulationEngine {
 
   private emitProgress(
     messageType: "started" | "tick" | "paused" | "resumed" | "parameters_updated",
-    positions?: NodePosition[] | undefined,
+    positions?: NodePosition[]  ,
     force = false
   ) {
     const now = Date.now();
@@ -510,8 +510,8 @@ export class ForceSimulationEngine {
       d3LinksCount: d3Links.length,
       d3Links: d3Links.slice(0, 3).map(l => ({
         id: l.id,
-        source: typeof l.source === 'string' ? l.source : (l.source as any)?.id || 'object',
-        target: typeof l.target === 'string' ? l.target : (l.target as any)?.id || 'object'
+        source: typeof l.source === "string" ? l.source : (l.source as any)?.id || "object",
+        target: typeof l.target === "string" ? l.target : (l.target as any)?.id || "object"
       }))
     });
 
@@ -704,7 +704,7 @@ export class ForceSimulationEngine {
         .strength(config.collisionStrength ?? DEFAULT_FORCE_PARAMS.collisionStrength);
       simulation.force("collision", collisionForce);
 
-      simulation.on("tick", () => this.handleTick(config));
+      simulation.on("tick", () => { this.handleTick(config); });
       simulation.on("end", () => {
         if (this.isRunning && !this.isPaused) {
           this.emitComplete("converged");

@@ -8,7 +8,6 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { z } from "zod";
 import { logger } from "@/lib/logger";
 import {
-  useEventBus,
   useTaskQueue,
   useTaskProgress
 } from "@/lib/graph/events";
@@ -477,7 +476,7 @@ export function useUnifiedBackgroundWorker(options: UseUnifiedBackgroundWorkerOp
 
     return {
       promise,
-      cleanup: () => cleanup()
+      cleanup: () => { cleanup(); }
     };
   }, [bus]);
 
