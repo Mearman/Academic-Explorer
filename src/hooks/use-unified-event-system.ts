@@ -209,8 +209,9 @@ export function useWorkerPool(
     return workerPool.submitTask(taskId, payload, timeout);
   }, [workerPool]);
 
-  const shutdown = useCallback(() => {
+  const shutdown = useCallback((): Promise<void> => {
     workerPool.shutdown();
+    return Promise.resolve();
   }, [workerPool]);
 
   useEffect(() => {
@@ -306,7 +307,7 @@ export function useQueuedResourceCoordinator(
   });
 
   const submitTask = useCallback((task: TaskDescriptor) => {
-    return coordinator.submitTask(task);
+    return Promise.resolve(coordinator.submitTask(task));
   }, [coordinator]);
 
   const cancelTask = useCallback((taskId: string) => {
@@ -321,8 +322,9 @@ export function useQueuedResourceCoordinator(
     coordinator.clearQueue();
   }, [coordinator]);
 
-  const release = useCallback(() => {
+  const release = useCallback((): Promise<void> => {
     coordinator.release();
+    return Promise.resolve();
   }, [coordinator]);
 
   useEffect(() => {
@@ -373,11 +375,16 @@ export function useTaskProgress(
         "progress" in payload && typeof payload.progress === "number") {
       // Safe to access properties since we validated above
       const message = "message" in payload && typeof payload.message === "string" ? payload.message : undefined;
-      setState(prev => ({
-        ...prev,
-        progress: payload.progress,
-        message
-      }));
+      setState(prev => {
+        if ("progress" in payload && typeof payload.progress === "number") {
+          return {
+            ...prev,
+            progress: payload.progress,
+            message
+          };
+        }
+        return prev;
+      });
     }
   });
 
