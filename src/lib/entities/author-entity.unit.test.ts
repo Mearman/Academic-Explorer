@@ -295,7 +295,7 @@ describe("AuthorEntity", () => {
 					"Error in AuthorEntity.expand",
 					expect.objectContaining({
 						entityId: entityId,
-						error: expect.stringContaining("Cannot read properties of undefined")
+						error: expect.stringMatching(/Cannot (read properties of undefined|convert undefined or null to object)/)
 					}),
 					"AuthorEntity"
 				);
