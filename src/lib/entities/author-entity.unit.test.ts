@@ -339,7 +339,7 @@ describe("AuthorEntity", () => {
 					"Error in AuthorEntity.expand",
 					expect.objectContaining({
 						entityId: entityId,
-						error: expect.stringContaining("Cannot read properties of undefined")
+						error: expect.stringContaining("Malformed works response: missing results property")
 					}),
 					"AuthorEntity"
 				);

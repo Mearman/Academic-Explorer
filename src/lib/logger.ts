@@ -186,6 +186,11 @@ const toError = (error: unknown): Error => {
 	// Line 187 - Capture stack trace to find actual caller
 	console.error("toError called with non-Error:", error, "Stack:", new Error().stack);
 
+	// Convert string errors to Error objects preserving the message
+	if (typeof error === "string") {
+		return new Error(error);
+	}
+
 	// Simple fallback without any complex operations
 	return new Error("Unknown error occurred");
 };
@@ -223,9 +228,12 @@ export const useLogger = (componentName: string) => {
 export const setupGlobalErrorHandling = () => {
 	// Handle unhandled promise rejections
 	window.addEventListener("unhandledrejection", (event) => {
-		// Temporarily disabled to prevent infinite loops
-		console.debug("Unhandled promise rejection (logger disabled):", event.reason);
-		return;
+		try {
+			logError("Unhandled promise rejection", event.reason, "global");
+		} catch (loggingError) {
+			// Fallback to console if logging fails to prevent infinite loops
+			console.error("Unhandled promise rejection (logger failed):", event.reason);
+		}
 	});
 
 	// Handle JavaScript errors

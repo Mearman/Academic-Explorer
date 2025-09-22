@@ -171,6 +171,11 @@ export class AuthorEntity extends AbstractEntity<Author> {
 					select: queryParams.select
 				});
 
+				// Check for malformed response (missing results property)
+				if (!Object.prototype.hasOwnProperty.call(worksResponse, "results")) {
+					throw new Error("Malformed works response: missing results property");
+				}
+
 				if (!worksResponse.results || worksResponse.results.length === 0) {
 					break; // No more results
 				}
