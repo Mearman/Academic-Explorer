@@ -891,6 +891,26 @@ export function useAnimatedLayout(options: UseAnimatedLayoutOptions = {}) {
 		return unsubscribe;
 	}, [eventBus, handleEdgeAddition]);
 
+	// Listen for FORCE_LAYOUT_RESTART events (strong reheat for settled simulations)
+	useEffect(() => {
+		console.log("🔥 LISTENER: Setting up FORCE_LAYOUT_RESTART listener");
+		const unsubscribe = eventBus.on(GraphEventType.FORCE_LAYOUT_RESTART, (event) => {
+			console.log("🔥 LISTENER: FORCE_LAYOUT_RESTART event received!", event);
+			const payload = event.payload;
+			const alpha = typeof payload === "object" && payload && "alpha" in payload
+				? Number((payload as { alpha?: unknown }).alpha) || 1.0
+				: 1.0;
+			const reason = typeof payload === "object" && payload && "reason" in payload
+				? String((payload as { reason?: unknown }).reason) || "force-restart"
+				: "force-restart";
+
+			console.log("🔥 LISTENER: Forcing strong layout reheat", { alpha, reason });
+			reheatLayout(alpha);
+		});
+		console.log("🔥 LISTENER: FORCE_LAYOUT_RESTART listener registered");
+		return unsubscribe;
+	}, [eventBus, reheatLayout]);
+
 	return {
 		// State
 		isRunning: isLayoutRunningRef.current,

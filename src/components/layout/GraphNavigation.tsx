@@ -501,32 +501,24 @@ const GraphNavigationInner: React.FC<GraphNavigationProps> = ({ className, style
 					// Apply edge changes to XYFlow
 					setEdges(prevEdges => applyEdgeChanges(edgeChanges, prevEdges));
 
-					// CRITICAL FIX: Notify provider of edge additions to trigger force simulation updates
+					// CRITICAL FIX: Trigger force simulation update for direct edge additions
 					const addedEdges = edgeChanges.filter(change => change.type === 'add');
-					if (addedEdges.length > 0 && providerRef.current) {
-						console.log("🔗 GRAPH-NAV: Notifying provider of direct edge additions", {
+					if (addedEdges.length > 0) {
+						console.log("🔗 GRAPH-NAV: Direct edge additions detected, triggering force simulation update", {
 							addedEdgesCount: addedEdges.length,
 							edgeIds: addedEdges.map(change => change.type === 'add' ? change.item.id : 'unknown')
 						});
 
-						// Convert XYEdges back to GraphEdges and notify provider
-						const graphEdges = addedEdges
-							.filter((change): change is { type: 'add'; item: XYEdge } => change.type === 'add')
-							.map(change => {
-								const xyEdge = change.item;
-								return {
-									id: xyEdge.id,
-									source: xyEdge.source,
-									target: xyEdge.target,
-									type: xyEdge.data?.type || 'unknown',
-									data: xyEdge.data
-								} as GraphEdge;
+						// Import eventBus to emit the proper events for force simulation
+						import("@/lib/graph/events/unified-event-bus").then(({ eventBus }) => {
+							console.log("🔗 GRAPH-NAV: Emitting BULK_EDGES_ADDED event for force simulation");
+							eventBus.emit("BULK_EDGES_ADDED", {
+								edges: addedEdges.map(change => change.type === 'add' ? change.item.id : ''),
+								timestamp: Date.now()
 							});
-
-						// Use the existing addEdges method which should trigger animation
-						for (const edge of graphEdges) {
-							providerRef.current.addEdge(edge);
-						}
+						}).catch(error => {
+							console.error("🔗 GRAPH-NAV: Failed to emit BULK_EDGES_ADDED event", error);
+						});
 					}
 				}
 			}

@@ -601,14 +601,26 @@ export const useGraphStore = create<GraphState>()(
 
 				// Only restart simulation if new edges were actually added
 				if (newEdges.length > 0) {
-					// Request layout restart when edges are added to apply edge forces
-					const animatedStore = useAnimatedGraphStore.getState();
-					animatedStore.requestRestart();
-					logger.debug("graph", "Requested layout restart after adding new edges", {
+					// FORCE REHEAT for auto-detected edges that arrive after simulation has settled
+					// The weak requestRestart() is not sufficient for settled simulations
+					console.log("🔥 STORE: Force reheating simulation for new edges", {
 						newEdgeCount: newEdges.length,
 						totalEdgeCount: edges.length,
 						newEdgeTypes: [...new Set(newEdges.map(edge => edge.type))]
 					});
+
+					// Use both approaches: requestRestart for normal flow + direct reheat for settled simulations
+					const animatedStore = useAnimatedGraphStore.getState();
+					animatedStore.requestRestart();
+
+					// Also trigger immediate reheat with events for settled simulations
+					if (typeof window !== 'undefined' && edges.length <= 5) {
+						// Small number of edges likely means auto-detection, force immediate reheat
+						localEventBus.emit({
+							type: GraphEventType.FORCE_LAYOUT_RESTART,
+							payload: { reason: 'auto-detected-edges', alpha: 1.0 }
+						});
+					}
 				}
 
 				// Recompute cached statistics after data change

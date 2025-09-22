@@ -21,6 +21,7 @@ export enum GraphEventType {
   // Layout and structural changes
   LAYOUT_CHANGED = "graph:layout-changed",
   GRAPH_CLEARED = "graph:cleared",
+  FORCE_LAYOUT_RESTART = "graph:force-layout-restart",
 
   // Bulk operations
   BULK_NODES_ADDED = "graph:bulk-nodes-added",
@@ -131,6 +132,11 @@ export interface GraphEventPayloads {
   [GraphEventType.GRAPH_CLEARED]: {
     previousNodeCount: number;
     previousEdgeCount: number;
+    timestamp: number;
+  };
+  [GraphEventType.FORCE_LAYOUT_RESTART]: {
+    reason: string;
+    alpha: number;
     timestamp: number;
   };
   [GraphEventType.BULK_NODES_ADDED]: {
@@ -669,6 +675,10 @@ export const GraphEventPayloadSchemas = {
   [GraphEventType.GRAPH_CLEARED]: BaseEventPayloadSchema.extend({
     previousNodeCount: z.number(),
     previousEdgeCount: z.number()
+  }),
+  [GraphEventType.FORCE_LAYOUT_RESTART]: BaseEventPayloadSchema.extend({
+    reason: z.string(),
+    alpha: z.number()
   }),
   [GraphEventType.BULK_NODES_ADDED]: BaseEventPayloadSchema.extend({
     nodes: z.array(GraphNodeSchema)
