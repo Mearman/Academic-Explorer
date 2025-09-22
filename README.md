@@ -258,3 +258,5 @@ pnpm build
 ---
 
 Part of PhD research on cultural heritage data preservation and citizen science engagement at Bangor University, Wales.
+
+_Last verified: 2025-09-22 - Application tested and confirmed functional._
