@@ -197,7 +197,7 @@ async function downloadWithRetryRaw(url: string): Promise<string | null> {
 /**
  * Download with retry logic
  */
-async function downloadWithRetry(url: string): Promise<unknown | null> {
+async function _downloadWithRetry(url: string): Promise<unknown | null> {
   for (let attempt = 1; attempt <= OPENALEX_API_CONFIG.retryAttempts; attempt++) {
     try {
       const controller = new AbortController();

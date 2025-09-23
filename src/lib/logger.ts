@@ -230,7 +230,7 @@ export const setupGlobalErrorHandling = () => {
 	window.addEventListener("unhandledrejection", (event) => {
 		try {
 			logError("Unhandled promise rejection", event.reason, "global");
-		} catch (loggingError) {
+		} catch {
 			// Fallback to console if logging fails to prevent infinite loops
 			console.error("Unhandled promise rejection (logger failed):", event.reason);
 		}
