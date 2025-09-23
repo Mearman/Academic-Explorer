@@ -120,8 +120,8 @@ vi.mock("@/stores/animated-graph-store", () => ({
 const startAnimationMock = vi.fn().mockResolvedValue("task-1");
 const stopAnimationMock = vi.fn().mockResolvedValue(undefined);
 
-vi.mock("@/hooks/use-unified-background-worker", () => ({
-        useBackgroundWorker: vi.fn(() => ({
+vi.mock("@/hooks/use-unified-execution-worker", () => ({
+        useUnifiedExecutionWorker: vi.fn(() => ({
                 startAnimation: startAnimationMock,
                 stopAnimation: stopAnimationMock,
                 pauseAnimation: vi.fn(),

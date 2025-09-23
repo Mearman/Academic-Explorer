@@ -98,16 +98,23 @@ export const AnimatedGraphControls: React.FC<AnimatedGraphControlsProps> = ({
 
 	// Animation state and actions now come from props passed by parent
 
-	const handleStartLayout = () => {
+  	const handleStartLayout = () => {
+ 		logger.debug("graph", "Start button clicked", {
+ 			enabled,
+ 			isWorkerReady,
+ 			isAnimating,
+ 			applyLayoutExists: !!applyLayout,
+ 			status: getStatusText()
+ 		});
 
-		logger.warn("graph", "TEMP DEBUG: User initiated animated layout", {
-			enabled,
-			isWorkerReady,
-			isAnimating,
-			applyLayoutExists: !!applyLayout
-		});
-		applyLayout();
-	};
+ 		logger.warn("graph", "TEMP DEBUG: User initiated animated layout", {
+ 			enabled,
+ 			isWorkerReady,
+ 			isAnimating,
+ 			applyLayoutExists: !!applyLayout
+ 		});
+ 		applyLayout();
+ 	};
 
 	// Configuration updates are now handled by parent component
 	const handleConfigChange = (key: string, value: number) => {

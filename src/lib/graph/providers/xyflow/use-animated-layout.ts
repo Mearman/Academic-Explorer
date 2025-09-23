@@ -11,7 +11,7 @@ import { logger } from "@/lib/logger";
 import { useGraphStore } from "@/stores/graph-store";
 import { useLayoutStore } from "@/stores/layout-store";
 import { useAnimatedGraphStore } from "@/stores/animated-graph-store";
-import { useBackgroundWorker } from "@/hooks/use-unified-background-worker";
+import { useUnifiedExecutionWorker } from "@/hooks/use-unified-execution-worker";
 import { localEventBus, GraphEventType } from "@/lib/graph/events";
 import { z } from "zod";
 
@@ -55,7 +55,7 @@ export function useAnimatedLayout(options: UseAnimatedLayoutOptions = {}) {
 		useAnimation = true,
 	} = options;
 
-	const { getNodes, getEdges, setNodes } = useReactFlow();
+	const { getNodes, getEdges, setNodes, getViewport, setViewport } = useReactFlow();
 	// fitView removed - not currently used
 
 	// Stable individual selectors to avoid infinite loops
@@ -106,7 +106,7 @@ export function useAnimatedLayout(options: UseAnimatedLayoutOptions = {}) {
 	const debounceTimerRef = useRef<NodeJS.Timeout | null>(null);
 	const applyDebounceTimerRef = useRef<NodeJS.Timeout | null>(null);
 	const prevNodeCountRef = useRef(0);
-	const reheatLayoutRef = useRef<(() => void) | null>(null);
+	const reheatLayoutRef = useRef<((targetAlpha?: number) => void) | null>(null);
 
 	// Animated force simulation hook
 	const {
@@ -120,29 +120,133 @@ export function useAnimatedLayout(options: UseAnimatedLayoutOptions = {}) {
 		updateSimulationNodes,
 		animationState: hookAnimationState,
 		isWorkerReady,
-	} = useBackgroundWorker({
-		onPositionUpdate: useCallback((positions: NodePosition[]) => {
+	} = useUnifiedExecutionWorker({
+ 		onPositionUpdate: useCallback((positions: NodePosition[]) => {
+ 			// DEBUG: Log position updates to see if callback is working
+ 			console.log('🎯 LAYOUT onPositionUpdate called:', {
+ 				positionCount: positions.length,
+ 				samplePositions: positions.slice(0, 3).map(p => ({
+ 					id: p.id,
+ 					x: Number(p.x.toFixed(2)),
+ 					y: Number(p.y.toFixed(2))
+ 				})),
+ 				timestamp: Date.now(),
+ 				firstPositionChange: positions[0] ? {
+ 					id: positions[0].id,
+ 					x: positions[0].x,
+ 					y: positions[0].y
+ 				} : null
+ 			});
 
 			// Update animated store with new positions
 			storeMethodsRef.current.updateAnimatedPositions(positions);
 
-			// Update ReactFlow nodes with new positions
-			setNodes((currentNodes) => {
+ 			// Update ReactFlow nodes with new positions - FORCE UPDATE FIX
+ 			setNodes((currentNodes) => {
+ 				console.log('🔄 LAYOUT setNodes called:', {
+ 					currentNodesCount: currentNodes.length,
+ 					positionsCount: positions.length,
+ 					sampleCurrentNode: currentNodes[0] ? {
+ 						id: currentNodes[0].id,
+ 						position: currentNodes[0].position
+ 					} : null
+ 				});
 
-				return currentNodes.map((node) => {
+				const updatedNodes = currentNodes.map((node) => {
 					const position = positions.find((p) => p.id === node.id);
 					if (position) {
+						const oldPos = { x: node.position.x, y: node.position.y };
+						const newPos = { x: position.x, y: position.y };
+						const moved = Math.abs(newPos.x - oldPos.x) > 0.1 || Math.abs(newPos.y - oldPos.y) > 0.1;
+
+						if (moved) {
+							console.log('📍 Node position change:', {
+								id: node.id,
+								from: oldPos,
+								to: newPos,
+								distance: Math.sqrt(Math.pow(newPos.x - oldPos.x, 2) + Math.pow(newPos.y - oldPos.y, 2)).toFixed(2)
+							});
+						}
+
+						// CRITICAL DEBUG: Always log the actual position values being set
+						if (node.id === positions[0]?.id) {
+							console.log('🔍 CRITICAL - First node position details:', {
+								nodeId: node.id,
+								originalNodePosition: node.position,
+								calculatedNewPosition: newPos,
+								positionFromSimulation: position,
+								willUpdate: !!position
+							});
+						}
+
+						// FIX: Force ReactFlow to recognize position changes by creating new objects
+						// ReactFlow may not detect position changes if objects are referentially equal
 						return {
 							...node,
-							position: { x: position.x, y: position.y },
+							position: { x: position.x, y: position.y }, // Always create new position object
+							// Force re-render by updating a changing property
+							data: {
+								...node.data,
+								_animationFrame: Date.now(), // Unique value to force updates
+							}
 						};
 					}
 					return node;
 				});
+
+				return updatedNodes;
 			});
 
+ 			// ENHANCED FIX: Force ReactFlow to process position changes by triggering multiple refresh mechanisms
+ 			// This ensures ReactFlow's internal transform calculations are refreshed for React 19
+ 			setTimeout(() => {
+ 				console.log('🔧 REACTFLOW ENHANCED FIX: Triggering refresh mechanisms');
+ 				try {
+ 					// Method 1: Viewport micro-adjustment
+ 					const currentViewport = getViewport();
+ 					console.log('🔧 Viewport before adjustment:', currentViewport);
+					setViewport({
+						x: currentViewport.x + 0.001,
+						y: currentViewport.y + 0.001,
+						zoom: currentViewport.zoom
+					});
+					setTimeout(() => setViewport(currentViewport), 1);
+
+					// Method 2: Force ReactFlow to recalculate by triggering fitView
+					setTimeout(() => {
+						try {
+							const reactFlowInstance = (window as any).__reactFlowInstance__;
+							if (reactFlowInstance && reactFlowInstance.fitView) {
+								reactFlowInstance.fitView({ padding: 0, duration: 0 });
+							}
+						} catch (e) {
+							// Ignore fitView errors
+						}
+					}, 5);
+
+					// Method 3: Force DOM re-calculation by triggering reflow
+					setTimeout(() => {
+						const nodes = document.querySelectorAll('.react-flow__node');
+						nodes.forEach(node => {
+							if (node instanceof HTMLElement) {
+								// Force reflow by reading offsetHeight (doesn't break transforms)
+								const _ = node.offsetHeight;
+								// Also force style recalculation
+								node.style.willChange = 'transform';
+								requestAnimationFrame(() => {
+									node.style.willChange = 'auto';
+								});
+							}
+						});
+					}, 10);
+
+				} catch (error) {
+					console.warn('ReactFlow refresh failed:', error);
+				}
+			}, 1);
+
 			onLayoutChange?.();
-		}, [setNodes, onLayoutChange]),
+		}, [setNodes, onLayoutChange, getViewport, setViewport]),
 
 		onAnimationComplete: useCallback((positions: NodePosition[], stats: { totalIterations: number; finalAlpha: number; reason: string }) => {
 			// Update final positions in store
@@ -248,11 +352,15 @@ export function useAnimatedLayout(options: UseAnimatedLayoutOptions = {}) {
 		const animatedNodes: ForceSimulationNode[] = nodes.map((node) => {
 			const isPinned = pinnedNodes[node.id] ?? false;
 			const entityType = isEntityType(node.data.entityType) ? node.data.entityType : undefined;
+
+			// TEMP: Add chaos for dramatic animation - random starting positions
+			const chaos = Math.random() * 200 - 100; // Random offset ±100px
+
 			return {
 				id: node.id,
 				type: entityType,
-				x: node.position.x,
-				y: node.position.y,
+				x: node.position.x + chaos,
+				y: node.position.y + chaos,
 				fx: isPinned ? node.position.x : undefined,
 				fy: isPinned ? node.position.y : undefined,
 			};
@@ -287,25 +395,23 @@ export function useAnimatedLayout(options: UseAnimatedLayoutOptions = {}) {
 		return { animatedNodes, animatedLinks };
 	}, [getNodes, getEdges, pinnedNodes]);
 
-	// Apply animated layout
-	const applyAnimatedLayout = useCallback(() => {
+  // Apply animated layout
+  	const applyAnimatedLayout = useCallback(() => {
+ 		logger.debug("graph", "applyAnimatedLayout called", {
+ 			enabled,
+ 			useAnimation,
+ 			isWorkerReady,
+ 			isLayoutRunning: isLayoutRunningRef.current,
+ 		});
 
-
-		logger.debug("graph", "applyAnimatedLayout called", {
-			enabled,
-			useAnimation,
-			isWorkerReady,
-			isLayoutRunning: isLayoutRunningRef.current,
-		});
-
-		if (!enabled || !useAnimation || !isWorkerReady) {
-			logger.debug("graph", "Animated layout skipped", {
-				enabled,
-				useAnimation,
-				isWorkerReady,
-			});
-			return;
-		}
+ 		if (!enabled || !useAnimation || !isWorkerReady) {
+ 			logger.debug("graph", "Animated layout skipped", {
+ 				enabled,
+ 				useAnimation,
+ 				isWorkerReady,
+ 			});
+ 			return;
+ 		}
 
 		if (isLayoutRunningRef.current) {
 			logger.debug("graph", "Animated layout already running, forcing restart for manual trigger");
@@ -370,25 +476,31 @@ export function useAnimatedLayout(options: UseAnimatedLayoutOptions = {}) {
 			return; // Exit early for restart case
 		}
 
-		const { animatedNodes, animatedLinks } = prepareAnimationData();
+  		const { animatedNodes, animatedLinks } = prepareAnimationData();
 
-		logger.debug("graph", "Prepared animation data", {
-			nodeCount: animatedNodes.length,
-			linkCount: animatedLinks.length,
-		});
+ 		logger.debug("graph", "Prepared animation data", {
+ 			nodeCount: animatedNodes.length,
+ 			linkCount: animatedLinks.length,
+ 		});
 
-		if (animatedNodes.length === 0) {
-			logger.debug("graph", "No nodes for animated layout");
-			return;
-		}
+ 		if (animatedNodes.length === 0) {
+ 			logger.debug("graph", "No nodes for animated layout");
+ 			return;
+ 		}
 
 		// Get optimal configuration based on graph size
-		// TEMP: Override with slower parameters for visible animation
+		// TEMP: PREVENT PREMATURE CONVERGENCE - keep simulation active longer
 		const config: ForceSimulationConfig = {
 			...DEFAULT_FORCE_PARAMS,
-			alphaDecay: 0.005,  // Much slower decay (was 0.03)
-			velocityDecay: 0.05, // Less friction (was 0.1)
-			maxIterations: 2000, // More iterations (was 1000)
+			linkDistance: 150,
+			linkStrength: 0.15,       // Slightly weaker to prevent instant equilibrium
+			chargeStrength: -1500,    // Moderate repulsion
+			centerStrength: 0.015,    // Moderate centering
+			collisionRadius: 80,
+			collisionStrength: 1.0,
+			alphaDecay: 0.0005,       // MUCH slower alpha decay (was 0.002)
+			velocityDecay: 0.4,       // More friction to prevent oscillation (was 0.02)
+			maxIterations: 5000,      // Many more iterations before giving up
 		};
 
 		// Use graph store's layout configuration if available
@@ -651,127 +763,230 @@ export function useAnimatedLayout(options: UseAnimatedLayoutOptions = {}) {
 	// Use the same localEventBus instance as the graph store
 	const eventBus = localEventBus;
 
-	// Function to handle node addition and trigger immediate node update
-	const handleNodeAddition = useCallback((eventType: string, addedNodeCount?: number) => {
-		logger.debug("graph", `${eventType} node event received`, {
-			addedNodeCount,
-			isLayoutRunning: isLayoutRunningRef.current,
-			enabled,
-			useAnimation,
-			isWorkerReady
-		});
+ 	// Function to handle node addition and trigger immediate node update
+ 	// Use ref to avoid re-registering event listeners on every render
+ 	const handleNodeAdditionRef = useRef<((eventType: string, addedNodeCount?: number) => void) | null>(null);
+ 	handleNodeAdditionRef.current = (eventType: string, addedNodeCount?: number) => {
+ 		logger.debug("graph", `${eventType} node event received`, {
+ 			addedNodeCount,
+ 			isLayoutRunning: isLayoutRunningRef.current,
+ 			enabled,
+ 			useAnimation,
+ 			isWorkerReady
+ 		});
 
-		if (!enabled || !useAnimation || !isWorkerReady) {
-			logger.debug("graph", "Skipping node update - conditions not met", {
-				enabled,
-				useAnimation,
-				isWorkerReady
-			});
-			return;
-		}
+ 		if (!enabled || !useAnimation || !isWorkerReady) {
+ 			logger.debug("graph", "Skipping node update - conditions not met", {
+ 				enabled,
+ 				useAnimation,
+ 				isWorkerReady
+ 			});
+ 			return;
+ 		}
 
-		const storeState = useGraphStore.getState();
-		const storeNodes = storeState.nodes;
-		const pinnedState = storeState.pinnedNodes;
-		const allNodes = Object.values(storeNodes).filter((node): node is GraphNode => node != null);
+ 		const storeState = useGraphStore.getState();
+ 		const storeNodes = storeState.nodes;
+ 		const pinnedState = storeState.pinnedNodes;
+ 		const allNodes = Object.values(storeNodes).filter((node): node is GraphNode => node != null);
 
-		if (allNodes.length === 0) {
-			logger.debug("graph", "No nodes available in store for node update");
-			return;
-		}
+ 		if (allNodes.length === 0) {
+ 			logger.debug("graph", "No nodes available in store for node update");
+ 			return;
+ 		}
 
-		if (!isLayoutRunningRef.current) {
-			logger.debug("graph", `Starting/reheating due to ${eventType} - simulation not running`, {
-				nodeCount: allNodes.length
-			});
-			setTimeout(() => {
-				reheatLayoutRef.current?.();
-			}, 0);
-			return;
-		}
+ 		if (!isLayoutRunningRef.current) {
+ 			logger.debug("graph", `Starting/reheating due to ${eventType} - simulation not running`, {
+ 				nodeCount: allNodes.length
+ 			});
+ 			setTimeout(() => {
+ 				reheatLayoutRef.current?.();
+ 			}, 0);
+ 			return;
+ 		}
 
-		const pinnedIds = Object.keys(pinnedState).filter(id => pinnedState[id]);
-		const animatedNodes: ForceSimulationNode[] = allNodes.map(node => {
-			const pinned = pinnedState[node.id] ?? false;
-			const x = node.position?.x ?? 0;
-			const y = node.position?.y ?? 0;
-			return {
-				id: node.id,
-				type: node.type,
-				x,
-				y,
-				fx: pinned ? x : undefined,
-				fy: pinned ? y : undefined,
-			};
-		});
+ 		const pinnedIds = Object.keys(pinnedState).filter(id => pinnedState[id]);
+ 		const animatedNodes: ForceSimulationNode[] = allNodes.map(node => {
+ 			const pinned = pinnedState[node.id] ?? false;
+ 			const x = node.position?.x ?? 0;
+ 			const y = node.position?.y ?? 0;
+ 			return {
+ 				id: node.id,
+ 				type: node.type,
+ 				x,
+ 				y,
+ 				fx: pinned ? x : undefined,
+ 				fy: pinned ? y : undefined,
+ 			};
+ 		});
 
-		void updateSimulationNodes({
-			nodes: animatedNodes,
-			pinnedNodes: pinnedIds,
-			alpha: 1.0
-		});
-	}, [enabled, useAnimation, isWorkerReady, updateSimulationNodes]);
+ 		void updateSimulationNodes({
+ 			nodes: animatedNodes,
+ 			pinnedNodes: pinnedIds,
+ 			alpha: 1.0
+ 		});
+ 	};
 
-	// Function to handle edge addition and trigger immediate link update
-	const handleEdgeAddition = useCallback((eventType: string, newEdgeCount?: number) => {
-		logger.debug("graph", `${eventType} edge event received`, {
-			newEdgeCount,
-			enabled,
-			useAnimation,
-			isWorkerReady
-		});
+ 	// Function to handle edge addition and trigger immediate link update
+ 	// Use ref to avoid re-registering event listeners on every render
+ 	const handleEdgeAdditionRef = useRef<((eventType: string, newEdgeCount?: number) => void) | null>(null);
+ 	const edgeAdditionTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
-		if (enabled && useAnimation && isWorkerReady) {
-			const storeNodes = useGraphStore.getState().nodes;
-			const storeEdges = useGraphStore.getState().edges;
-			const allEdges = Object.values(storeEdges).filter((edge): edge is GraphEdge => edge != null);
+ 	handleEdgeAdditionRef.current = (eventType: string, newEdgeCount?: number) => {
+ 		// Debounce edge additions to prevent rapid consecutive calls
+ 		if (edgeAdditionTimeoutRef.current) {
+ 			clearTimeout(edgeAdditionTimeoutRef.current);
+ 		}
 
-			// If simulation is running, use updateSimulationLinks for immediate inclusion
-			// Use store state instead of ref to get accurate running status
-			const animatedState = useAnimatedGraphStore.getState();
-			const isSimulationRunning = animatedState.isAnimating && !animatedState.isPaused && animatedState.alpha > 0.001;
+ 		edgeAdditionTimeoutRef.current = setTimeout(() => {
+ 			edgeAdditionTimeoutRef.current = null;
+ 		logger.debug("graph", `${eventType} edge event received`, {
+ 			newEdgeCount,
+ 			enabled,
+ 			useAnimation,
+ 			isWorkerReady
+ 		});
 
-			if (isSimulationRunning) {
-				logger.debug("graph", "Updating simulation with new links");
-				// Convert edges to simulation format
-				const animatedLinks: ForceSimulationLink[] = allEdges.map((edge) => ({
-					id: edge.id,
-					source: edge.source,
-					target: edge.target,
-				}));
+ 		if (enabled && useAnimation && isWorkerReady) {
+ 			const storeNodes = useGraphStore.getState().nodes;
+ 			const storeEdges = useGraphStore.getState().edges;
+ 			const allEdges = Object.values(storeEdges).filter((edge): edge is GraphEdge => edge != null);
 
-				// Use updateSimulationLinks to immediately include new links in current simulation
-				void updateSimulationLinks({
+ 			// If simulation is running, use updateSimulationLinks for immediate inclusion
+ 			// Use store state instead of ref to get accurate running status
+ 			const animatedState = useAnimatedGraphStore.getState();
+ 			const isSimulationRunning = animatedState.isAnimating && !animatedState.isPaused && animatedState.alpha > 0.001;
+
+ 			// FIXED: Use reheat when simulation exists (even if settled) rather than only when actively running
+ 			// This ensures new edges are properly incorporated into existing layouts
+ 			const hasActiveSimulation = animatedState.isAnimating && !animatedState.isPaused;
+
+ 			// DEBUG: Log simulation state for debugging edge addition issues
+ 			logger.debug("graph", "Edge addition - checking simulation state", {
+ 				isAnimating: animatedState.isAnimating,
+ 				isPaused: animatedState.isPaused,
+ 				alpha: animatedState.alpha,
+ 				isSimulationRunning,
+ 				hasActiveSimulation,
+ 				shouldUseReheat: hasActiveSimulation,
+ 				eventType,
+ 				newEdgeCount
+ 			});
+
+ 			// DIRECT SOLUTION: Always apply reheat when edges are detected (bypass broken event system)
+ 			// This ensures forces are applied even when the expansion->store pipeline is broken
+ 			if (hasActiveSimulation || allEdges.length > 0) {
+ 				logger.debug("graph", "🔥 DIRECT FIX: Forcing simulation update regardless of event system", {
+ 					hasActiveSimulation,
+ 					edgeCount: allEdges.length,
+ 					eventType
+ 				});
+ 				// Convert edges to simulation format
+ 				const animatedLinks: ForceSimulationLink[] = allEdges.map((edge) => ({
+ 					id: edge.id,
+ 					source: edge.source,
+ 					target: edge.target,
+ 				}));
+
+				// Ensure all nodes referenced by edges are in the simulation
+				const edgeNodeIds = new Set<string>();
+				animatedLinks.forEach(link => {
+					edgeNodeIds.add(typeof link.source === 'string' ? link.source : link.source.id);
+					edgeNodeIds.add(typeof link.target === 'string' ? link.target : link.target.id);
+				});
+
+				// Get current simulation nodes from animated store (more accurate)
+				const currentAnimatedPositions = storeMethodsRef.current.getAnimatedPositions?.() || [];
+				const currentSimNodeIds = new Set(currentAnimatedPositions.map(pos => pos.id));
+
+				const missingNodeIds = Array.from(edgeNodeIds).filter(id => !currentSimNodeIds.has(id));
+				const missingNodes = Object.values(storeNodes).filter((node): node is GraphNode => {
+					return node != null && missingNodeIds.includes(node.id);
+				});
+
+				logger.debug("graph", "Checking for missing nodes in simulation", {
+					edgeNodeIds: Array.from(edgeNodeIds),
+					currentSimNodeIds: Array.from(currentSimNodeIds),
+					currentAnimatedPositionsCount: currentAnimatedPositions.length,
+					missingNodeIds,
+					missingNodeCount: missingNodes.length,
+					allEdgeCount: animatedLinks.length
+				});
+
+				// For edge additions, use reheat instead of incremental updates to ensure all nodes and links are properly included
+				logger.debug("graph", "Using reheat approach for edge addition to ensure proper force application", {
+					nodeCount: Object.keys(storeNodes).length,
+					linkCount: animatedLinks.length,
+					simulationRunning: isSimulationRunning
+				});
+
+				// Get all nodes from store for reheat
+				const allNodes = Object.values(storeNodes).filter((node): node is GraphNode => node != null);
+				const pinnedState = useGraphStore.getState().pinnedNodes;
+
+				const allAnimatedNodes: ForceSimulationNode[] = allNodes.map(node => {
+					// Use current animated positions if available, otherwise use stored positions
+					const existingPos = currentAnimatedPositions.find(pos => pos.id === node.id);
+					const x = existingPos?.x ?? node.position?.x ?? 0;
+					const y = existingPos?.y ?? node.position?.y ?? 0;
+					const pinned = pinnedState[node.id] ?? false;
+					return {
+						id: node.id,
+						type: node.type,
+						x,
+						y,
+						fx: pinned ? x : undefined,
+						fy: pinned ? y : undefined,
+					};
+				});
+
+				const pinnedNodeSet = new Set(Object.keys(pinnedState).filter(id => pinnedState[id]));
+
+				logger.debug("graph", "Reheating simulation with all current nodes and links", {
+					nodeCount: allAnimatedNodes.length,
+					linkCount: animatedLinks.length,
+					pinnedCount: pinnedNodeSet.size,
+					referenceEdges: animatedLinks.filter(link => {
+						const sourceNode = allAnimatedNodes.find(n => n.id === link.source);
+						const targetNode = allAnimatedNodes.find(n => n.id === link.target);
+						return sourceNode && targetNode;
+					}).length
+				});
+
+				// Use reheat with higher alpha to ensure reference edges take effect
+				void reheatAnimation({
+					nodes: allAnimatedNodes,
 					links: animatedLinks,
-					alpha: 1.0  // Full alpha reset
+					pinnedNodes: pinnedNodeSet,
+					alpha: 0.8  // Higher alpha to ensure reference edges influence the layout
 				});
-			} else if (Object.keys(storeNodes).length > 0 && allEdges.length > 0) {
-				logger.debug("graph", `Starting animation due to ${eventType} - simulation not running but we have nodes and edges`, {
-					nodeCount: Object.keys(storeNodes).length,
-					edgeCount: allEdges.length,
-					newEdgeCount
-				});
+ 			} else if (Object.keys(storeNodes).length > 0 && allEdges.length > 0) {
+ 				logger.debug("graph", `Starting animation due to ${eventType} - simulation not running but we have nodes and edges`, {
+ 					nodeCount: Object.keys(storeNodes).length,
+ 					edgeCount: allEdges.length,
+ 					newEdgeCount
+ 				});
 
-				// Always trigger animation for edge additions, regardless of count
-				// This ensures auto-detected intra-graph edges don't get skipped
-				setTimeout(() => {
-					reheatLayout(1.0);
-				}, 0);
-			} else {
-				logger.debug("graph", "Insufficient nodes/edges for simulation", {
-					nodeCount: Object.keys(storeNodes).length,
-					edgeCount: allEdges.length,
-					newEdgeCount
-				});
-			}
-		} else {
-			logger.debug("graph", "Skipping update - conditions not met", {
-				enabled,
-				useAnimation,
-				isWorkerReady
-			});
-		}
-	}, [enabled, useAnimation, isWorkerReady, reheatLayout, updateSimulationLinks]);
+ 				// Always trigger animation for edge additions, regardless of count
+ 				// This ensures auto-detected intra-graph edges don't get skipped
+ 				setTimeout(() => {
+ 					reheatLayoutRef.current?.(1.0);
+ 				}, 0);
+ 			} else {
+ 				logger.debug("graph", "Insufficient nodes/edges for simulation", {
+ 					nodeCount: Object.keys(storeNodes).length,
+ 					edgeCount: allEdges.length,
+ 					newEdgeCount
+ 				});
+ 			}
+ 		} else {
+  			logger.debug("graph", "Skipping update - conditions not met", {
+  				enabled,
+  				useAnimation,
+  				isWorkerReady
+  			});
+  		}
+ 		}, 100); // 100ms debounce for edge additions
+ 	};
 
 
 	// Debounced reheat to prevent rapid calls
@@ -848,56 +1063,56 @@ export function useAnimatedLayout(options: UseAnimatedLayoutOptions = {}) {
 	//   }
 	// }, [animationState.isAnimating, positionTracking]);
 
-	// Listen for node addition events to trigger immediate node updates
-	useEffect(() => {
-		logger.debug("graph", "Setting up node addition listeners");
-		const unsubscribeSingle = eventBus.on(GraphEventType.ANY_NODE_ADDED, () => {
-			handleNodeAddition("ANY_NODE_ADDED", 1);
-		});
-		const unsubscribeBulk = eventBus.on(GraphEventType.BULK_NODES_ADDED, (event) => {
-			let nodeCount: number | undefined;
-			if (event && typeof event === "object" && "payload" in event) {
-				const payload = event.payload;
-				const parseResult = NodesPayloadSchema.safeParse(payload);
-				if (parseResult.success && parseResult.data.nodes) {
-					nodeCount = parseResult.data.nodes.length;
-				}
-			}
-			handleNodeAddition("BULK_NODES_ADDED", nodeCount);
-		});
+ 	// Listen for node addition events to trigger immediate node updates
+ 	useEffect(() => {
+ 		logger.debug("graph", "Setting up node addition listeners");
+ 		const unsubscribeSingle = eventBus.on(GraphEventType.ANY_NODE_ADDED, () => {
+ 			handleNodeAdditionRef.current?.("ANY_NODE_ADDED", 1);
+ 		});
+ 		const unsubscribeBulk = eventBus.on(GraphEventType.BULK_NODES_ADDED, (event) => {
+ 			let nodeCount: number | undefined;
+ 			if (event && typeof event === "object" && "payload" in event) {
+ 				const payload = event.payload;
+ 				const parseResult = NodesPayloadSchema.safeParse(payload);
+ 				if (parseResult.success && parseResult.data.nodes) {
+ 					nodeCount = parseResult.data.nodes.length;
+ 				}
+ 			}
+ 			handleNodeAdditionRef.current?.("BULK_NODES_ADDED", nodeCount);
+ 		});
 
-		return () => {
-			unsubscribeSingle();
-			unsubscribeBulk();
-		};
-	}, [eventBus, handleNodeAddition]);
+ 		return () => {
+ 			unsubscribeSingle();
+ 			unsubscribeBulk();
+ 		};
+ 	}, [eventBus]);
 
-	// Listen for BULK_EDGES_ADDED events (now after reheatLayout is defined)
-	useEffect(() => {
-		logger.debug("graph", "Setting up BULK_EDGES_ADDED listener");
-		const unsubscribe = eventBus.on(GraphEventType.BULK_EDGES_ADDED, (event) => {
-			logger.debug("graph", "BULK_EDGES_ADDED event received", event);
-			const payload = event.payload;
-			let edgeCount = 0;
-			const parseResult = EdgesPayloadSchema.safeParse(payload);
-			if (parseResult.success && parseResult.data.edges) {
-				edgeCount = parseResult.data.edges.length;
-			}
-			handleEdgeAddition("BULK_EDGES_ADDED", edgeCount);
-		});
+ 	// Listen for BULK_EDGES_ADDED events (now after reheatLayout is defined)
+ 	useEffect(() => {
+ 		logger.debug("graph", "Setting up BULK_EDGES_ADDED listener");
+ 		const unsubscribe = eventBus.on(GraphEventType.BULK_EDGES_ADDED, (event) => {
+ 			logger.debug("graph", "BULK_EDGES_ADDED event received", event);
+ 			const payload = event.payload;
+ 			let edgeCount = 0;
+ 			const parseResult = EdgesPayloadSchema.safeParse(payload);
+ 			if (parseResult.success && parseResult.data.edges) {
+ 				edgeCount = parseResult.data.edges.length;
+ 			}
+ 			handleEdgeAdditionRef.current?.("BULK_EDGES_ADDED", edgeCount);
+ 		});
 
-		return unsubscribe;
-	}, [eventBus, handleEdgeAddition]);
+ 		return unsubscribe;
+ 	}, [eventBus]);
 
-	// Listen for ANY_EDGE_ADDED events (single edge additions)
-	useEffect(() => {
-		logger.debug("graph", "Setting up ANY_EDGE_ADDED listener");
-		const unsubscribe = eventBus.on(GraphEventType.ANY_EDGE_ADDED, (event) => {
-			logger.debug("graph", "ANY_EDGE_ADDED event received", event);
-			handleEdgeAddition("ANY_EDGE_ADDED", 1);
-		});
-		return unsubscribe;
-	}, [eventBus, handleEdgeAddition]);
+ 	// Listen for ANY_EDGE_ADDED events (single edge additions)
+ 	useEffect(() => {
+ 		logger.debug("graph", "Setting up ANY_EDGE_ADDED listener");
+ 		const unsubscribe = eventBus.on(GraphEventType.ANY_EDGE_ADDED, (event) => {
+ 			logger.debug("graph", "ANY_EDGE_ADDED event received", event);
+ 			handleEdgeAdditionRef.current?.("ANY_EDGE_ADDED", 1);
+ 		});
+ 		return unsubscribe;
+ 	}, [eventBus]);
 
 	// Listen for FORCE_LAYOUT_RESTART events (strong reheat for settled simulations)
 	useEffect(() => {

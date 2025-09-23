@@ -343,6 +343,20 @@ export const AnimatedLayoutProvider: React.FC<AnimatedLayoutProviderProps> = ({
 		isRunning,
 	});
 
+	useEffect(() => {
+		if (typeof window !== "undefined") {
+			const animatedStoreState = useAnimatedGraphStore.getState();
+			(window as any).__animatedGraphDebug = {
+				isRunning,
+				isAnimating,
+				isWorkerReady,
+				useAnimation,
+				animationHistoryLength: animatedStoreState.animationHistory.length,
+				restartRequested: animatedStoreState.restartRequested,
+			};
+		}
+	}, [isRunning, isAnimating, isWorkerReady, useAnimation]);
+
 	return (
 		<AnimatedLayoutContext.Provider value={contextValue}>
 			{children}
