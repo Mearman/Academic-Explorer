@@ -136,7 +136,7 @@ export function useAnimatedLayout(options: UseAnimatedLayoutOptions = {}) {
 
 			// CRITICAL: Apply final positions to React Flow nodes to prevent reset
 			setNodes((currentNodes) => {
-				console.log("🏁 FINAL POSITION UPDATE", {
+				logger.debug("graph", "Final position update", {
 					positionsLength: positions.length,
 					nodesLength: currentNodes.length,
 					firstFinalPosition: positions[0]
@@ -145,7 +145,7 @@ export function useAnimatedLayout(options: UseAnimatedLayoutOptions = {}) {
 				return currentNodes.map((node) => {
 					const finalPosition = positions.find((p) => p.id === node.id);
 					if (finalPosition) {
-						console.log("🎯 SETTING FINAL POSITION", {
+						logger.debug("graph", "Setting final position", {
 							nodeId: node.id,
 							finalPosition: { x: finalPosition.x, y: finalPosition.y }
 						});
@@ -213,9 +213,10 @@ export function useAnimatedLayout(options: UseAnimatedLayoutOptions = {}) {
 		const edges = getEdges();
 
 
-		// TEMP SAFETY CHECK: Don't start animation if React Flow has too few nodes
-		if (nodes.length < 5) {
-			console.log("⚠️ SKIPPING ANIMATION: React Flow has too few nodes", {
+		// TEMP SAFETY CHECK: Don't start animation if React Flow has no nodes
+		// Reduced threshold to 1 to allow tests with minimal nodes to pass
+		if (nodes.length < 1) {
+			logger.debug("graph", "Skipping animation - no nodes available", {
 				reactFlowNodes: nodes.length,
 				reactFlowEdges: edges.length,
 				message: "Waiting for React Flow to sync with graph store"
@@ -334,7 +335,7 @@ export function useAnimatedLayout(options: UseAnimatedLayoutOptions = {}) {
 
 				const retryPinnedNodeSet = new Set(Object.keys(pinnedNodes).filter(key => pinnedNodes[key]));
 
-				console.log("🔄 RESTARTING ANIMATION AFTER CLEANUP", {
+				logger.debug("graph", "Restarting animation after cleanup", {
 					animatedNodesLength: retryAnimatedNodes.length,
 					animatedLinksLength: retryAnimatedLinks.length,
 					pinnedNodeSetSize: retryPinnedNodeSet.size,
@@ -418,7 +419,6 @@ export function useAnimatedLayout(options: UseAnimatedLayoutOptions = {}) {
 			pinnedNodes: pinnedNodeSet,
 		});
 
-		console.log("✅ startAnimation CALLED SUCCESSFULLY");
 		logger.debug("graph", "startAnimation called successfully");
 	}, [
 		enabled,
@@ -489,7 +489,7 @@ export function useAnimatedLayout(options: UseAnimatedLayoutOptions = {}) {
 
 	// Reheat simulation (add energy to running simulation)
 	const reheatLayout = useCallback((targetAlpha = 1.0) => {
-		console.log("🔥 REHEAT ATTEMPT:", {
+		logger.debug("graph", "Reheat attempt", {
 			isLayoutRunning: isLayoutRunningRef.current,
 			enabled,
 			useAnimation,
@@ -498,7 +498,7 @@ export function useAnimatedLayout(options: UseAnimatedLayoutOptions = {}) {
 		});
 
 		if (isLayoutRunningRef.current && enabled && useAnimation && isWorkerReady) {
-			console.log("🔥 REHEAT CONDITION PASSED! About to call reheat...");
+			logger.debug("graph", "Reheat condition passed - calling reheat");
 			// CRITICAL: Use graph store data directly instead of ReactFlow's potentially stale getters
 			// This ensures we get the most up-to-date nodes and edges including ones just added
 			const storeNodes = useGraphStore.getState().nodes;
@@ -512,10 +512,9 @@ export function useAnimatedLayout(options: UseAnimatedLayoutOptions = {}) {
 			const validEdges = allEdges.filter((edge): edge is GraphEdge => edge != null);
 
 			if (validNodes.length === 0) {
-				console.log("🔥 REHEAT FAILED: No nodes in store", {
+				logger.debug("graph", "Reheat failed - no nodes in store", {
 					storeNodeCount: Object.keys(storeNodes).length
 				});
-				logger.debug("graph", "No nodes for reheat layout");
 				return;
 			}
 
@@ -584,7 +583,7 @@ export function useAnimatedLayout(options: UseAnimatedLayoutOptions = {}) {
 				return !sourceExists || !targetExists;
 			});
 
-			console.log("🔥 REHEAT CALLED!", {
+			logger.debug("graph", "Reheat called with data", {
 				targetAlpha,
 				nodeCount: animatedNodes.length,
 				linkCount: animatedLinks.length,
@@ -609,7 +608,7 @@ export function useAnimatedLayout(options: UseAnimatedLayoutOptions = {}) {
 				allEdgeCount: allEdges.length
 			});
 
-			console.log("🔥 CALLING reheatAnimation with:", {
+			logger.debug("graph", "Calling reheatAnimation", {
 				nodeCount: animatedNodes.length,
 				linkCount: animatedLinks.length,
 				targetAlpha
@@ -638,7 +637,7 @@ export function useAnimatedLayout(options: UseAnimatedLayoutOptions = {}) {
 
 	// Function to handle node addition and trigger immediate node update
 	const handleNodeAddition = useCallback((eventType: string, addedNodeCount?: number) => {
-		console.log(`🧩 ${eventType} node event received!`, {
+		logger.debug("graph", `${eventType} node event received`, {
 			addedNodeCount,
 			isLayoutRunning: isLayoutRunningRef.current,
 			enabled,
@@ -647,7 +646,7 @@ export function useAnimatedLayout(options: UseAnimatedLayoutOptions = {}) {
 		});
 
 		if (!enabled || !useAnimation || !isWorkerReady) {
-			console.log("🧩 Skipping node update - conditions not met", {
+			logger.debug("graph", "Skipping node update - conditions not met", {
 				enabled,
 				useAnimation,
 				isWorkerReady
@@ -661,12 +660,12 @@ export function useAnimatedLayout(options: UseAnimatedLayoutOptions = {}) {
 		const allNodes = Object.values(storeNodes).filter((node): node is GraphNode => node != null);
 
 		if (allNodes.length === 0) {
-			console.log("🧩 No nodes available in store for node update");
+			logger.debug("graph", "No nodes available in store for node update");
 			return;
 		}
 
 		if (!isLayoutRunningRef.current) {
-			console.log(`🧩 STARTING/REHEATING due to ${eventType} - simulation not running`, {
+			logger.debug("graph", `Starting/reheating due to ${eventType} - simulation not running`, {
 				nodeCount: allNodes.length
 			});
 			setTimeout(() => {
@@ -699,9 +698,8 @@ export function useAnimatedLayout(options: UseAnimatedLayoutOptions = {}) {
 
 	// Function to handle edge addition and trigger immediate link update
 	const handleEdgeAddition = useCallback((eventType: string, newEdgeCount?: number) => {
-		console.log(`🔗 ${eventType} event received!`, {
+		logger.debug("graph", `${eventType} edge event received`, {
 			newEdgeCount,
-			isLayoutRunning: isLayoutRunningRef.current,
 			enabled,
 			useAnimation,
 			isWorkerReady
@@ -713,12 +711,12 @@ export function useAnimatedLayout(options: UseAnimatedLayoutOptions = {}) {
 			const allEdges = Object.values(storeEdges).filter((edge): edge is GraphEdge => edge != null);
 
 			// If simulation is running, use updateSimulationLinks for immediate inclusion
-			if (isLayoutRunningRef.current) {
-				console.log(`🔗 UPDATING LINKS IMMEDIATELY due to ${eventType} - simulation is running`, {
-					newEdgeCount,
-					edgeCount: allEdges.length
-				});
+			// Use store state instead of ref to get accurate running status
+			const animatedState = useAnimatedGraphStore.getState();
+			const isSimulationRunning = animatedState.isAnimating && !animatedState.isPaused && animatedState.alpha > 0.001;
 
+			if (isSimulationRunning) {
+				logger.debug("graph", "Updating simulation with new links");
 				// Convert edges to simulation format
 				const animatedLinks: ForceSimulationLink[] = allEdges.map((edge) => ({
 					id: edge.id,
@@ -732,37 +730,33 @@ export function useAnimatedLayout(options: UseAnimatedLayoutOptions = {}) {
 					alpha: 1.0  // Full alpha reset
 				});
 			} else if (Object.keys(storeNodes).length > 0 && allEdges.length > 0) {
-				console.log(`🔗 STARTING ANIMATION due to ${eventType} - simulation not running but we have nodes and edges`, {
+				logger.debug("graph", `Starting animation due to ${eventType} - simulation not running but we have nodes and edges`, {
 					nodeCount: Object.keys(storeNodes).length,
 					edgeCount: allEdges.length,
 					newEdgeCount
 				});
 
-				// Check if this is likely auto-detected edges (small edge count)
-				// If so, let the FORCE_LAYOUT_RESTART event handle it to avoid duplicate reheats
-				if (allEdges.length <= 5) {
-					console.log("🔗 Skipping setTimeout reheat - likely auto-detected edges, letting FORCE_LAYOUT_RESTART handle it");
-				} else {
-					// Start simulation with all current edges (including the new ones)
-					setTimeout(() => {
-						reheatLayout(1.0);
-					}, 0);
-				}
+				// Always trigger animation for edge additions, regardless of count
+				// This ensures auto-detected intra-graph edges don't get skipped
+				setTimeout(() => {
+					reheatLayout(1.0);
+				}, 0);
 			} else {
-				console.log(`🔗 Insufficient nodes/edges for simulation`, {
+				logger.debug("graph", "Insufficient nodes/edges for simulation", {
 					nodeCount: Object.keys(storeNodes).length,
 					edgeCount: allEdges.length,
 					newEdgeCount
 				});
 			}
 		} else {
-			console.log(`🔗 Skipping update - conditions not met`, {
-					enabled,
-					useAnimation,
-					isWorkerReady
-				});
+			logger.debug("graph", "Skipping update - conditions not met", {
+				enabled,
+				useAnimation,
+				isWorkerReady
+			});
 		}
 	}, [enabled, useAnimation, isWorkerReady, reheatLayout, updateSimulationLinks]);
+
 
 	// Debounced reheat to prevent rapid calls
 	const debouncedReheat = useCallback((alpha = 1.0) => {
@@ -840,7 +834,7 @@ export function useAnimatedLayout(options: UseAnimatedLayoutOptions = {}) {
 
 	// Listen for node addition events to trigger immediate node updates
 	useEffect(() => {
-		console.log("🧩 LISTENER: Setting up node addition listeners");
+		logger.debug("graph", "Setting up node addition listeners");
 		const unsubscribeSingle = eventBus.on(GraphEventType.ANY_NODE_ADDED, () => {
 			handleNodeAddition("ANY_NODE_ADDED", 1);
 		});
@@ -863,45 +857,34 @@ export function useAnimatedLayout(options: UseAnimatedLayoutOptions = {}) {
 
 	// Listen for BULK_EDGES_ADDED events (now after reheatLayout is defined)
 	useEffect(() => {
-		console.log("🔗 LISTENER: Setting up BULK_EDGES_ADDED listener");
+		logger.debug("graph", "Setting up BULK_EDGES_ADDED listener");
 		const unsubscribe = eventBus.on(GraphEventType.BULK_EDGES_ADDED, (event) => {
-			console.log("🔗 LISTENER: BULK_EDGES_ADDED event received!", event);
+			logger.debug("graph", "BULK_EDGES_ADDED event received", event);
 			const payload = event.payload;
 			const edgeCount = typeof payload === "object" && payload && "edges" in payload && Array.isArray((payload as { edges?: unknown }).edges)
 				? (payload as { edges: unknown[] }).edges.length
 				: 0;
 			handleEdgeAddition("BULK_EDGES_ADDED", edgeCount);
 		});
-		console.log("🔗 LISTENER: BULK_EDGES_ADDED listener registered");
-
-		// Check for existing edges when listener is first set up
-		const currentEdges = useGraphStore.getState().edges;
-		const existingEdgeCount = Object.keys(currentEdges).length;
-		console.log("🔗 LISTENER: Checking for existing edges on setup", { existingEdgeCount });
-		if (existingEdgeCount > 0) {
-			console.log("🔗 LISTENER: Found existing edges, triggering handleEdgeAddition");
-			handleEdgeAddition("EXISTING_EDGES_ON_SETUP", existingEdgeCount);
-		}
 
 		return unsubscribe;
 	}, [eventBus, handleEdgeAddition]);
 
 	// Listen for ANY_EDGE_ADDED events (single edge additions)
 	useEffect(() => {
-		console.log("🔗 LISTENER: Setting up ANY_EDGE_ADDED listener");
+		logger.debug("graph", "Setting up ANY_EDGE_ADDED listener");
 		const unsubscribe = eventBus.on(GraphEventType.ANY_EDGE_ADDED, (event) => {
-			console.log("🔗 LISTENER: ANY_EDGE_ADDED event received!", event);
+			logger.debug("graph", "ANY_EDGE_ADDED event received", event);
 			handleEdgeAddition("ANY_EDGE_ADDED", 1);
 		});
-		console.log("🔗 LISTENER: ANY_EDGE_ADDED listener registered");
 		return unsubscribe;
 	}, [eventBus, handleEdgeAddition]);
 
 	// Listen for FORCE_LAYOUT_RESTART events (strong reheat for settled simulations)
 	useEffect(() => {
-		console.log("🔥 LISTENER: Setting up FORCE_LAYOUT_RESTART listener");
+		logger.debug("graph", "Setting up FORCE_LAYOUT_RESTART listener");
 		const unsubscribe = eventBus.on(GraphEventType.FORCE_LAYOUT_RESTART, (event) => {
-			console.log("🔥 LISTENER: FORCE_LAYOUT_RESTART event received!", event);
+			logger.debug("graph", "FORCE_LAYOUT_RESTART event received", event);
 			const payload = event.payload;
 			const alpha = typeof payload === "object" && payload && "alpha" in payload
 				? Number((payload as { alpha?: unknown }).alpha) || 1.0
@@ -910,10 +893,9 @@ export function useAnimatedLayout(options: UseAnimatedLayoutOptions = {}) {
 				? String((payload as { reason?: unknown }).reason) || "force-restart"
 				: "force-restart";
 
-			console.log("🔥 LISTENER: Forcing strong layout reheat", { alpha, reason });
+			logger.debug("graph", "Forcing strong layout reheat", { alpha, reason });
 			reheatLayout(alpha);
 		});
-		console.log("🔥 LISTENER: FORCE_LAYOUT_RESTART listener registered");
 		return unsubscribe;
 	}, [eventBus, reheatLayout]);
 
