@@ -36,6 +36,7 @@ let startTime = 0;
 let lastProgressTime = 0;
 let lastFpsTime = 0;
 let frameCount = 0;
+let currentSimulationTaskId: string | null = null;
 const PROGRESS_THROTTLE_MS = 16; // ~60fps
 const FPS_CALCULATION_INTERVAL = 1000; // 1 second
 
@@ -95,7 +96,8 @@ function createSimulationEngine(): ForceSimulationEngine {
       workerEventBus.emit(progressEvent);
 
       const message = {
-        type: "PROGRESS",
+        type: "PROGRESS" as const,
+        taskId: currentSimulationTaskId ?? undefined,
         payload: {
           type: WorkerEventType.FORCE_SIMULATION_PROGRESS,
           ...progressEvent.payload
@@ -126,12 +128,15 @@ function createSimulationEngine(): ForceSimulationEngine {
       workerEventBus.emit(completeEvent);
 
       self.postMessage({
-        type: "SUCCESS",
+        type: "SUCCESS" as const,
+        taskId: currentSimulationTaskId ?? undefined,
         payload: {
           type: WorkerEventType.FORCE_SIMULATION_COMPLETE,
           ...completeEvent.payload
         }
       });
+
+      currentSimulationTaskId = null;
     },
 
     onError: (error, context) => {
@@ -154,7 +159,8 @@ function createSimulationEngine(): ForceSimulationEngine {
       });
 
       self.postMessage({
-        type: "ERROR",
+        type: "ERROR" as const,
+        taskId: currentSimulationTaskId ?? undefined,
         payload: `Force simulation error: ${error}. Context: ${JSON.stringify(errorPayload.context)}`
       });
     }
@@ -233,6 +239,26 @@ const forceSimulationUpdateNodesMessageSchema = z.object({
   pinnedNodes: z.array(z.string()).optional(),
   alpha: z.number().optional().default(1.0),
 });
+
+type ForceSimulationControlAction = z.infer<typeof forceSimulationControlMessageSchema>["type"];
+
+function sendControlAck(taskId: string | undefined, action: ForceSimulationControlAction, extra: Record<string, unknown> = {}) {
+  if (!taskId) {
+    return;
+  }
+
+  self.postMessage({
+    type: "SUCCESS" as const,
+    taskId,
+    payload: {
+      type: "FORCE_SIMULATION_CONTROL_ACK",
+      action,
+      status: "ok",
+      timestamp: Date.now(),
+      ...extra
+    }
+  });
+}
 
 // Schema for worker pool task wrapper
 const executeTaskMessageSchema = z.object({
@@ -347,6 +373,7 @@ self.onmessage = (e: MessageEvent) => {
           ...node,
           type: isValidEntityType(node.type) ? node.type : undefined
         }));
+        currentSimulationTaskId = data.taskId;
         startSimulation({
           nodes: validatedNodes,
           links: actualPayload.links,
@@ -357,16 +384,48 @@ self.onmessage = (e: MessageEvent) => {
         switch (actualPayload.type) {
           case "FORCE_SIMULATION_STOP":
             stopSimulation();
+            sendControlAck(data.taskId, actualPayload.type);
             break;
           case "FORCE_SIMULATION_PAUSE":
             pauseSimulation();
+            sendControlAck(data.taskId, actualPayload.type);
             break;
           case "FORCE_SIMULATION_RESUME":
             resumeSimulation();
+            sendControlAck(data.taskId, actualPayload.type);
             break;
           case "FORCE_SIMULATION_UPDATE_PARAMETERS":
             if (actualPayload.config) {
               updateSimulationParameters(actualPayload.config);
+            }
+            sendControlAck(data.taskId, actualPayload.type);
+            break;
+          case "FORCE_SIMULATION_REHEAT":
+            if (forceSimulationReheatMessageSchema.safeParse(actualPayload).success) {
+              const reheatData = forceSimulationReheatMessageSchema.parse(actualPayload);
+              const validatedNodes = reheatData.nodes.map(node => ({
+                ...node,
+                type: isValidEntityType(node.type) ? node.type : undefined
+              }));
+              reheatSimulation({
+                nodes: validatedNodes,
+                links: reheatData.links,
+                config: reheatData.config ?? DEFAULT_FORCE_PARAMS,
+                pinnedNodes: reheatData.pinnedNodes ?? [],
+                alpha: reheatData.alpha ?? 1.0
+              });
+              sendControlAck(data.taskId, actualPayload.type, {
+                nodeCount: validatedNodes.length,
+                linkCount: reheatData.links.length,
+                alpha: reheatData.alpha ?? 1.0
+              });
+            } else {
+              logger.warn("worker", "Invalid reheat payload in task", { actualPayload });
+              self.postMessage({
+                type: "ERROR" as const,
+                taskId: data.taskId,
+                payload: "Invalid reheat payload"
+              });
             }
             break;
           case "FORCE_SIMULATION_UPDATE_LINKS":
@@ -376,8 +435,17 @@ self.onmessage = (e: MessageEvent) => {
                 links: updateLinksPayload.links,
                 alpha: updateLinksPayload.alpha ?? 1.0
               });
+              sendControlAck(data.taskId, actualPayload.type, {
+                linkCount: updateLinksPayload.links.length,
+                alpha: updateLinksPayload.alpha ?? 1.0
+              });
             } else {
               logger.warn("worker", "Invalid link update payload in task", { actualPayload });
+              self.postMessage({
+                type: "ERROR" as const,
+                taskId: data.taskId,
+                payload: "Invalid link update payload"
+              });
             }
             break;
           case "FORCE_SIMULATION_UPDATE_NODES":
@@ -392,12 +460,27 @@ self.onmessage = (e: MessageEvent) => {
                 pinnedNodes: updateNodesPayload.pinnedNodes ?? [],
                 alpha: updateNodesPayload.alpha ?? 1.0
               });
+              sendControlAck(data.taskId, actualPayload.type, {
+                nodeCount: validatedNodes.length,
+                alpha: updateNodesPayload.alpha ?? 1.0,
+                pinnedCount: updateNodesPayload.pinnedNodes?.length ?? 0
+              });
             } else {
               logger.warn("worker", "Invalid node update payload in task", { actualPayload });
+              self.postMessage({
+                type: "ERROR" as const,
+                taskId: data.taskId,
+                payload: "Invalid node update payload"
+              });
             }
             break;
           default:
             logger.warn("worker", "Unknown simulation control message in task", { actualPayload });
+            self.postMessage({
+              type: "ERROR" as const,
+              taskId: data.taskId,
+              payload: `Unknown control message: ${String(actualPayload.type)}`
+            });
         }
       } else {
         logger.warn("worker", "Unknown task payload format", {
