@@ -67,12 +67,24 @@ export class RelationshipDetectionService {
 	 * Detect and create relationships for multiple nodes in batch
 	 * Uses two-pass approach to find relationships between nodes added in the same batch
 	 */
-	async detectRelationshipsForNodes(nodeIds: string[]): Promise<GraphEdge[]> {
-		if (!nodeIds || nodeIds.length === 0) return [];
+  async detectRelationshipsForNodes(nodeIds: string[]): Promise<GraphEdge[]> {
+    console.log("DEBUG: detectRelationshipsForNodes called with", nodeIds.length, "node IDs:", nodeIds);
 
-		logger.debug("graph", "Starting batch relationship detection with two-pass approach", {
-			nodeCount: nodeIds.length,
-			nodeIds
+    if (!nodeIds || nodeIds.length === 0) return [];
+
+    logger.debug("graph", "STARTING batch relationship detection with two-pass approach", {
+      nodeCount: nodeIds.length,
+      nodeIds
+    }, "RelationshipDetectionService");
+
+		// Log the node types being processed
+		const store = useGraphStore.getState();
+		const nodeTypes = nodeIds.map(id => {
+			const node = store.getNode(id);
+			return node ? `${id}(${node.type})` : `${id}(not found)`;
+		});
+		logger.debug("graph", "Processing nodes by type", {
+			nodeTypes
 		}, "RelationshipDetectionService");
 
 		const allNewEdges: GraphEdge[] = [];
@@ -129,11 +141,6 @@ export class RelationshipDetectionService {
 			const shortId = nodeId.split("/").pop();
 			if (shortId) {
 				newNode = store.getNode(shortId);
-				logger.debug("graph", "Node lookup with normalized ID", {
-					originalNodeId: nodeId,
-					normalizedNodeId: shortId,
-					found: !!newNode
-				}, "RelationshipDetectionService");
 			}
 		}
 
@@ -141,14 +148,6 @@ export class RelationshipDetectionService {
 		if (!newNode) {
 			const allNodes = Object.values(store.nodes).filter(node => node != null);
 			newNode = allNodes.find(node => node.entityId === nodeId || node.id === nodeId);
-
-			if (newNode) {
-				logger.debug("graph", "Node found via entityId lookup", {
-					searchNodeId: nodeId,
-					foundNodeId: newNode.id,
-					foundEntityId: newNode.entityId
-				}, "RelationshipDetectionService");
-			}
 		}
 
 		if (!newNode) {
@@ -237,12 +236,6 @@ export class RelationshipDetectionService {
 
 			const selectFields = fieldsMap[entityType];
 
-			logger.debug("graph", "Fetching minimal entity data", {
-				entityId,
-				entityType,
-				selectFields
-			}, "RelationshipDetectionService");
-
 			// Deduplication service is always initialized in constructor
 
 			// Fetch entity with minimal fields using deduplication service
@@ -250,6 +243,11 @@ export class RelationshipDetectionService {
 				entityId,
 				() => this.fetchEntityWithSelect(entityId, entityType, selectFields)
 			);
+
+			logger.debug("graph", "Entity fetch result", {
+				entityId,
+				entityFetched: !!entity
+			}, "RelationshipDetectionService");
 
 			// Check if entity exists before accessing its properties
 			if (!entity) {
@@ -266,6 +264,14 @@ export class RelationshipDetectionService {
 				entityType,
 				display_name: entity.display_name || ""
 			};
+
+			logger.debug("graph", "Entity fetched with fields", {
+				entityId,
+				entityType,
+				hasReferencedWorks: "referenced_works" in entity,
+				referencedWorks: "referenced_works" in entity ? (entity as any).referenced_works : undefined,
+				entityKeys: Object.keys(entity)
+			}, "RelationshipDetectionService");
 
 			// Add type-specific fields
 			switch (entityType) {
@@ -303,8 +309,7 @@ export class RelationshipDetectionService {
 				hasAuthorships: !!minimalData.authorships?.length,
 				hasAffiliations: !!minimalData.affiliations?.length,
 				hasReferences: !!minimalData.referenced_works?.length,
-				referencedWorksCount: minimalData.referenced_works?.length || 0,
-				firstFewReferences: minimalData.referenced_works?.slice(0, 3) || []
+				referencedWorksCount: minimalData.referenced_works?.length || 0
 			}, "RelationshipDetectionService");
 
 			return minimalData;
@@ -342,6 +347,7 @@ export class RelationshipDetectionService {
 					workId: newEntityData.id,
 					hasReferencedWorks: "referenced_works" in newEntityData && !!newEntityData.referenced_works
 				}, "RelationshipDetectionService");
+				console.log("DEBUG: Calling analyzeWorkRelationships for", newEntityData.id);
 				relationships.push(...await this.analyzeWorkRelationships(newEntityData, existingNodes));
 				break;
 			case "authors":
@@ -400,6 +406,22 @@ export class RelationshipDetectionService {
 	private async analyzeWorkRelationships(workData: MinimalEntityData, existingNodes: GraphNode[]): Promise<DetectedRelationship[]> {
 		const relationships: DetectedRelationship[] = [];
 
+		logger.debug("graph", "Analyzing work relationships", {
+			workId: workData.id,
+			hasReferencedWorks: !!workData.referenced_works,
+			referencedWorksCount: workData.referenced_works?.length || 0,
+			existingNodesCount: existingNodes.length
+		}, "RelationshipDetectionService");
+
+		// If referenced_works is not available in the fetched data, try to get it from the graph node data
+		if (!workData.referenced_works) {
+			const store = useGraphStore.getState();
+			const graphNode = Object.values(store.nodes).find(node => node?.entityId === workData.id);
+			if (graphNode && graphNode.entityData && (graphNode.entityData as any).referenced_works) {
+				workData.referenced_works = (graphNode.entityData as any).referenced_works;
+			}
+		}
+
 		// Check for author relationships
 		if (workData.authorships) {
 			for (const authorship of workData.authorships) {
@@ -452,8 +474,7 @@ export class RelationshipDetectionService {
 				referencedWorks = fetchedReferencedWorks;
 				logger.debug("graph", "Successfully fetched referenced_works for work", {
 					workId: workData.id,
-					referencedWorksCount: referencedWorks.length,
-					sampleRefs: referencedWorks.slice(0, 3)
+					referencedWorksCount: referencedWorks.length
 				}, "RelationshipDetectionService");
 			} else {
 				logger.debug("graph", "Failed to fetch referenced_works", {
@@ -465,10 +486,7 @@ export class RelationshipDetectionService {
 		if (referencedWorks && referencedWorks.length > 0) {
 			logger.debug("graph", "Analyzing citation relationships", {
 				workId: workData.id,
-				referencedWorksCount: referencedWorks.length,
-				existingNodesCount: existingNodes.length,
-				sampleReferencedWorks: referencedWorks.slice(0, 3),
-				existingNodeIds: existingNodes.map(n => n.entityId || n.id)
+				referencedWorksCount: referencedWorks.length
 			}, "RelationshipDetectionService");
 
 			for (const referencedWorkId of referencedWorks) {
@@ -481,7 +499,6 @@ export class RelationshipDetectionService {
 					logger.debug("graph", "Found citation relationship", {
 						sourceWork: workData.id,
 						targetWork: referencedWorkId,
-						targetNode: referencedNode.id,
 						relationshipType: RelationType.REFERENCES
 					}, "RelationshipDetectionService");
 
@@ -491,12 +508,6 @@ export class RelationshipDetectionService {
 						relationType: RelationType.REFERENCES,
 						label: "references"
 					});
-				} else {
-					logger.debug("graph", "No matching node found for citation", {
-						sourceWork: workData.id,
-						referencedWorkId,
-						existingNodeIds: existingNodes.slice(0, 5).map(n => ({ id: n.id, entityId: n.entityId }))
-					}, "RelationshipDetectionService");
 				}
 			}
 		}
@@ -591,6 +602,32 @@ export class RelationshipDetectionService {
 	}
 
 	/**
+	 * Fetch entity without field selection (for debugging)
+	 */
+	private async fetchEntityWithoutSelect(entityId: string, entityType: EntityType): Promise<OpenAlexEntity> {
+		switch (entityType) {
+			case "works":
+				return cachedOpenAlex.client.works.getWork(entityId);
+			case "authors":
+				return cachedOpenAlex.client.authors.getAuthor(entityId);
+			case "sources":
+				return cachedOpenAlex.client.sources.getSource(entityId);
+			case "institutions":
+				return cachedOpenAlex.client.institutions.getInstitution(entityId);
+			case "topics":
+				return cachedOpenAlex.client.topics.get(entityId);
+			case "publishers":
+				return cachedOpenAlex.client.publishers.get(entityId);
+			case "funders":
+				return cachedOpenAlex.client.funders.get(entityId);
+			case "keywords":
+				return cachedOpenAlex.client.keywords.getKeyword(entityId);
+			default:
+				throw new Error(`Unsupported entity type: ${entityType}`);
+		}
+	}
+
+	/**
 	 * Fetch entity with field selection based on entity type
 	 */
 	private async fetchEntityWithSelect(entityId: string, entityType: EntityType, selectFields: string[]): Promise<OpenAlexEntity> {
@@ -674,8 +711,8 @@ export class RelationshipDetectionService {
 				workTitle: sourceData.display_name,
 				referencedWorksCount: sourceData.referenced_works.length,
 				batchNodeCount: batchNodes.length,
-				referencedWorkIds: sourceData.referenced_works.slice(0, 5), // First 5 for debugging
-				batchNodeIds: batchNodes.map(n => n.entityId).slice(0, 5) // First 5 for debugging
+				referencedWorkIds: sourceData.referenced_works,
+				batchNodeIds: batchNodes.map(n => n.entityId)
 			}, "RelationshipDetectionService");
 
 			for (const referencedWorkId of sourceData.referenced_works) {

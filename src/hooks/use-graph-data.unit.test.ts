@@ -9,7 +9,7 @@ import { describe, it, expect, beforeEach, afterEach, vi, type Mock } from "vite
 // Mock dependencies after imports
 vi.mock("@/services/graph-data-service");
 vi.mock("@/stores/graph-store");
-vi.mock("@/hooks/use-unified-background-worker");
+vi.mock("@/hooks/use-unified-execution-worker");
 vi.mock("@/lib/logger", () => ({
 	logger: {
 		info: vi.fn(),
@@ -22,7 +22,7 @@ vi.mock("@/lib/logger", () => ({
 import { useGraphData } from "./use-graph-data";
 import { GraphDataService } from "@/services/graph-data-service";
 import { useGraphStore } from "@/stores/graph-store";
-import { useBackgroundWorker } from "@/hooks/use-unified-background-worker";
+import { useUnifiedExecutionWorker } from "@/hooks/use-unified-execution-worker";
 import { logger, logError } from "@/lib/logger";
 import type { SearchOptions } from "@/lib/graph/types";
 import React from "react";
@@ -41,7 +41,7 @@ const mockUseGraphStore = useGraphStore as unknown as Mock & {
   getState: Mock;
 };
 
-const mockUseBackgroundWorker = useBackgroundWorker as unknown as Mock;
+const mockUseUnifiedExecutionWorker = useUnifiedExecutionWorker as unknown as Mock;
 
 
 describe("useGraphData", () => {
@@ -126,7 +126,7 @@ describe("useGraphData", () => {
 		});
 
 		// Mock animated force simulation (not ready to force fallback to service)
-		mockUseBackgroundWorker.mockReturnValue({
+		mockUseUnifiedExecutionWorker.mockReturnValue({
 			isWorkerReady: false, // Force fallback to service for predictable tests
 			expandNode: vi.fn().mockResolvedValue(undefined),
 			cancelExpansion: vi.fn(),

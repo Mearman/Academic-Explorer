@@ -162,10 +162,12 @@ export class GraphDataService {
 	}
 
 	/**
-   * Load an entity and add it to the existing graph (without clearing)
-   * Used for progressive graph building when clicking on nodes
-   */
+    * Load an entity and add it to the existing graph (without clearing)
+    * Used for progressive graph building when clicking on nodes
+    */
 	async loadEntityIntoGraph(entityId: string): Promise<void> {
+		logger.debug("graph", "loadEntityIntoGraph called", { entityId, type: typeof entityId }, "GraphDataService");
+
 		const store = useGraphStore.getState();
 
 		try {
@@ -729,16 +731,21 @@ export class GraphDataService {
    * Expand a node to show related entities
    * This method performs incremental expansion without setting global loading state
    */
-	async expandNode(nodeId: string, options: ExpansionOptions = {}): Promise<void> {
-		const { force = false } = options;
+ 	async expandNode(nodeId: string, options: ExpansionOptions = {}): Promise<void> {
+ 		const { force = false } = options;
 
-		logger.debug("graph", "GraphDataService.expandNode called", { nodeId, force }, "GraphDataService");
+ 		console.log("DEBUG: expandNode function START", { nodeId, force });
+ 		logger.error("graph", "DEBUG: expandNode called with", { nodeId, force }, "GraphDataService");
+ 		logger.error("graph", "DEBUG: expandNode START CONSOLE LOG", { nodeId, force }, "GraphDataService");
+ 		logger.debug("graph", "GraphDataService.expandNode called", { nodeId, force }, "GraphDataService");
 
-		// Check if already expanded using TanStack Query cache (unless forced)
+ 		// Check if already expanded using TanStack Query cache (unless forced)
 		const alreadyExpanded = isNodeExpanded(this.queryClient, nodeId);
 		logger.warn("graph", "Checking if node already expanded", { nodeId, alreadyExpanded, force }, "GraphDataService");
+		logger.error("graph", "DEBUG: alreadyExpanded check", { alreadyExpanded, force, shouldSkip: !force && alreadyExpanded }, "GraphDataService");
 		if (!force && alreadyExpanded) {
 			logger.debug("graph", "Node already expanded, running relationship detection only", { nodeId }, "GraphDataService");
+			logger.error("graph", "DEBUG: Taking early return path for already expanded node - THIS SHOULD NOT HAPPEN WITH force=true", { nodeId }, "GraphDataService");
 
 			// Even if node is already expanded, run relationship detection
 			// in case new nodes were added since last expansion
@@ -784,16 +791,26 @@ export class GraphDataService {
 
 		try {
 			// Get the node to expand - use "in" operator to avoid ESLint false positive
-			if (!(nodeId in store.nodes)) return;
+			logger.error("graph", "DEBUG: Checking if node exists in store", { nodeId, exists: nodeId in store.nodes, storeNodeCount: Object.keys(store.nodes).length }, "GraphDataService");
+			if (!(nodeId in store.nodes)) {
+				logger.error("graph", "DEBUG: Node not in store, returning early", { nodeId }, "GraphDataService");
+				return;
+			}
 			const node = store.nodes[nodeId];
-			if (!node) return;
+			logger.error("graph", "DEBUG: Retrieved node from store", { nodeId, nodeExists: !!node, nodeType: node?.type }, "GraphDataService");
+			if (!node) {
+				logger.error("graph", "DEBUG: Node is null, returning early", { nodeId }, "GraphDataService");
+				return;
+			}
 
 			// Check if entity type is supported
+			logger.error("graph", "DEBUG: Checking if entity type is supported", { nodeId, entityType: node.type, isSupported: EntityFactory.isSupported(node.type) }, "GraphDataService");
 			if (!EntityFactory.isSupported(node.type)) {
 				logger.warn("graph", `Expansion not implemented for entity type: ${node.type}`, {
 					nodeId,
 					entityType: node.type
 				}, "GraphDataService");
+				logger.error("graph", "DEBUG: Entity type not supported, returning early", { nodeId, entityType: node.type }, "GraphDataService");
 				return;
 			}
 
@@ -911,23 +928,80 @@ export class GraphDataService {
 			setCachedGraphNodes(this.queryClient, finalNodes);
 			setCachedGraphEdges(this.queryClient, finalEdgesWithRelationships);
 
-			// Mark as expanded in TanStack Query cache
-			setNodeExpanded(this.queryClient, nodeId, true);
+			logger.error("graph", "DEBUG: About to check force condition", { force, nodeId }, "GraphDataService");
+   			// If force is true, run relationship detection on all nodes in the graph
+   			// This ensures relationships are detected even when no new nodes are added
+   			logger.error("graph", "FORCE CHECK START", { force, nodeId, typeofForce: typeof force }, "GraphDataService");
+   			if (force) {
+   				logger.error("graph", "INSIDE FORCE IF BLOCK", { force, nodeId }, "GraphDataService");
+  				console.log("FORCE BRANCH EXECUTING", { nodeId });
+   				const allNodeIds = Object.keys(store.nodes);
+   				logger.error("graph", "FORCE BRANCH NODES", { count: allNodeIds.length, nodeIds: allNodeIds }, "GraphDataService");
+   				if (allNodeIds.length > 1) { // Only run if there are multiple nodes
+   					logger.error("graph", "FORCE BRANCH CONDITION MET", { count: allNodeIds.length }, "GraphDataService");
+  					logger.debug("graph", "Running relationship detection on all nodes due to force=true", {
+  						expandedNodeId: nodeId,
+  						totalNodeCount: allNodeIds.length,
+  						allNodeIds
+  					}, "GraphDataService");
 
-			// Mark the node as loaded (expansion completed successfully)
-			store.markNodeAsLoaded(nodeId, {
-				// No artificial metadata - node is considered loaded when operation completes
-			});
+   					try {
+   						logger.error("graph", "DEBUG: FORCE BRANCH - Calling detectRelationshipsForNodes", { allNodeIds, count: allNodeIds.length }, "GraphDataService");
+   						const forceDetectedEdges = await this.relationshipDetectionService.detectRelationshipsForNodes(allNodeIds);
+   						logger.error("graph", "DEBUG: FORCE BRANCH - detectRelationshipsForNodes returned", { forceDetectedEdgesCount: forceDetectedEdges?.length || 0, forceDetectedEdges }, "GraphDataService");
 
-			// Layout is automatically handled by the provider when nodes/edges are added
+						if (forceDetectedEdges && forceDetectedEdges.length > 0) {
+							logger.debug("graph", "Adding force-detected relationship edges", {
+								expandedNodeId: nodeId,
+								forceDetectedEdgeCount: forceDetectedEdges.length,
+								relationships: forceDetectedEdges.map(e => ({
+									source: e.source,
+									target: e.target,
+									type: e.type
+								}))
+							}, "GraphDataService");
 
-		} catch (error) {
-			// Mark the node as error if expansion failed
-			store.markNodeAsError(nodeId);
+							// Get current graph state
+							const currentNodes = Object.values(store.nodes).filter((node): node is NonNullable<typeof node> => node != null);
+							const currentEdges = Object.values(store.edges).filter((edge): edge is NonNullable<typeof edge> => edge != null);
 
-			logError("Failed to expand node", error, "GraphDataService", "graph");
-		}
-	}
+							// Add the force-detected edges
+							const finalEdgesWithForceRelationships = [...currentEdges, ...forceDetectedEdges];
+							store.setGraphData(currentNodes, finalEdgesWithForceRelationships);
+
+							// Update cached edges
+							setCachedGraphEdges(this.queryClient, finalEdgesWithForceRelationships);
+						}
+					} catch (error) {
+						logError("Failed to detect relationships with force=true", error, "GraphDataService", "graph");
+					}
+				}
+			}
+
+
+
+  			// Mark as expanded in TanStack Query cache
+  			setNodeExpanded(this.queryClient, nodeId, true);
+
+  			// Mark the node as loaded (expansion completed successfully)
+  			store.markNodeAsLoaded(nodeId, {
+  				// No artificial metadata - node is considered loaded when operation completes
+  			});
+
+  			// Layout is automatically handled by the provider when nodes/edges are added
+
+  			console.log("DEBUG: About to reach force check", { nodeId, force });
+
+  		} catch (error) {
+  			// Mark the node as error if expansion failed
+  			store.markNodeAsError(nodeId);
+
+  			console.log("DEBUG: expandNode function ERROR", { nodeId, error: error instanceof Error ? error.message : String(error) });
+  			logError("Failed to expand node", error, "GraphDataService", "graph");
+  		} finally {
+  			console.log("DEBUG: expandNode function END", { nodeId, force });
+  		}
+ 	}
 
 	/**
    * Search and add results to graph
@@ -951,7 +1025,7 @@ export class GraphDataService {
 						case "works": {
 							const worksResponse = await cachedOpenAlex.client.works.getWorks({
 								search: query,
-								per_page: Math.min(limit, 25) // Limit per entity type
+								per_page: limit
 							});
 							entityResults = worksResponse.results;
 							break;
@@ -959,7 +1033,7 @@ export class GraphDataService {
 						case "authors": {
 							const authorsResponse = await cachedOpenAlex.client.authors.getAuthors({
 								search: query,
-								per_page: Math.min(limit, 25)
+								per_page: limit
 							});
 							entityResults = authorsResponse.results;
 							break;
@@ -967,14 +1041,14 @@ export class GraphDataService {
 						case "sources": {
 							const sourcesResponse = await cachedOpenAlex.client.sources.getSources({
 								search: query,
-								per_page: Math.min(limit, 25)
+								per_page: limit
 							});
 							entityResults = sourcesResponse.results;
 							break;
 						}
 						case "institutions": {
 							const institutionsResponse = await cachedOpenAlex.client.institutions.searchInstitutions(query, {
-								per_page: Math.min(limit, 25)
+								per_page: limit
 							});
 							entityResults = institutionsResponse.results;
 							break;
@@ -982,7 +1056,7 @@ export class GraphDataService {
 						case "topics": {
 							const topicsResponse = await cachedOpenAlex.client.topics.getMultiple({
 								search: query,
-								per_page: Math.min(limit, 25)
+								per_page: limit
 							});
 							entityResults = topicsResponse.results;
 							break;
@@ -1251,7 +1325,7 @@ export class GraphDataService {
 					}, "GraphDataService");
 
 					// Fetch only the entities of target type (efficiently)
-					for (const entityId of relatedEntityIds.slice(0, options.limit || 10)) {
+					for (const entityId of relatedEntityIds.slice(0, options.limit || relatedEntityIds.length)) {
 						// Skip if we already have this node
 						if (entityId in store.nodes) {
 							continue;
@@ -1487,7 +1561,7 @@ export class GraphDataService {
 
 		// Only create edges to authors that already exist in the graph
 		// Do NOT automatically create author nodes - they should only be created during explicit expansion
-		safeSlice(work.authorships, 0, 5).forEach((authorship) => {
+		work.authorships?.forEach((authorship) => {
 			const existingAuthorNode = store.getNode(authorship.author.id);
 
 			// Only create edge if the author node already exists in the graph
@@ -1522,7 +1596,7 @@ export class GraphDataService {
 
 		// Only create edges to referenced works that already exist in the graph
 		// Do NOT automatically create referenced work nodes - they should only be created during explicit expansion
-		safeSlice(work.referenced_works, 0, 3).forEach((citedWorkId) => {
+		work.referenced_works?.forEach((citedWorkId) => {
 			const existingCitedNode = store.getNode(citedWorkId);
 
 			// Only create edge if the referenced work node already exists in the graph
@@ -1551,7 +1625,7 @@ export class GraphDataService {
 
 		// Only create edges to institutions that already exist in the graph
 		// Do NOT automatically create institution nodes - they should only be created during explicit expansion
-		safeSlice(author.affiliations, 0, 3).forEach((affiliation) => {
+		author.affiliations?.forEach((affiliation) => {
 			const existingInstitutionNode = store.getNode(affiliation.institution.id);
 
 			// Only create edge if the institution node already exists in the graph
@@ -1607,7 +1681,7 @@ export class GraphDataService {
 
 		// Only create edges to parent institutions that already exist in the graph
 		// Do NOT automatically create parent institution nodes - they should only be created during explicit expansion
-		safeSlice(institution.lineage, 0, 2).forEach((parentId) => {
+		institution.lineage?.forEach((parentId) => {
 			if (parentId !== institution.id) {
 				const existingParentNode = store.getNode(parentId);
 

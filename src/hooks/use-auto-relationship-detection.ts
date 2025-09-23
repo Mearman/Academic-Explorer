@@ -73,20 +73,38 @@ export function useAutoRelationshipDetection() {
   const eventBus = useEventBus();
 
   useEffect(() => {
-    const unsubscribe = eventBus.on(GraphEventType.BULK_NODES_ADDED, (event: unknown) => {
-      // Type guard for the event
-      if (!isValidEvent(event)) return;
+    console.log("DEBUG: useAutoRelationshipDetection hook initialized");
 
-      if (!event.payload || typeof event.payload !== "object") return;
+    const unsubscribe = eventBus.on(GraphEventType.BULK_NODES_ADDED, (event: unknown) => {
+      console.log("DEBUG: BULK_NODES_ADDED event received", event);
+
+      // Type guard for the event
+      if (!isValidEvent(event)) {
+        console.log("DEBUG: Event failed type guard");
+        return;
+      }
+
+      if (!event.payload || typeof event.payload !== "object") {
+        console.log("DEBUG: Event payload invalid");
+        return;
+      }
       const payload = event.payload;
-      if (!("nodes" in payload) || !Array.isArray(payload.nodes)) return;
+      if (!("nodes" in payload) || !Array.isArray(payload.nodes)) {
+        console.log("DEBUG: Event payload missing nodes array");
+        return;
+      }
       const validNodes = payload.nodes.filter(isValidNode);
-      if (validNodes.length === 0) return;
+      if (validNodes.length === 0) {
+        console.log("DEBUG: No valid nodes in event");
+        return;
+      }
       const { nodes } = { nodes: validNodes };
     if (nodes.length === 0) {
       logger.debug("graph", "No nodes in bulk addition, skipping relationship detection");
       return;
     }
+
+    console.log("DEBUG: About to trigger relationship detection for", nodes.length, "nodes");
 
     logger.debug("graph", "Nodes added to graph, triggering relationship detection", {
       nodeCount: nodes.length,
@@ -113,6 +131,7 @@ export function useAutoRelationshipDetection() {
               target: edge.target
             }))
           });
+
 
           store.addEdges(validEdges);
 
