@@ -646,7 +646,7 @@ const GraphNavigationInner: React.FC<GraphNavigationProps> = ({ className, style
 			unsubscribe();
 			logger.debug("graph", "Unregistered FORCE_SIMULATION_PROGRESS handler");
 		};
-	}, [setNodes, nodes]); // Depend on nodes to re-apply if needed
+	}, [setNodes, nodes, eventBus]); // Depend on nodes and eventBus to re-apply if needed
 
 	// Combined URL state synchronization and browser history navigation
 	const lastHashProcessedRef = useRef<string>("");

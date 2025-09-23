@@ -3,7 +3,7 @@
  * Uses the unified event system for improved tracking
  */
 
-import { useEffect, useCallback, useRef } from "react";
+import { useEffect, useCallback, useRef, useMemo } from "react";
 import { useAppActivityStore } from "@/stores/app-activity-store";
 import { useEventBus, useEventSubscriptions } from "@/lib/graph/events";
 import {
@@ -185,8 +185,8 @@ export function useGraphActivityTracker() {
     }
   }, [addEvent]);
 
-  // Set up unified event subscriptions
-  const eventSubscriptions = [
+  // Set up unified event subscriptions (memoized to prevent unnecessary re-renders)
+  const eventSubscriptions = useMemo(() => [
     // Graph structure events
     { eventType: GraphEventType.ANY_NODE_ADDED, handler: handleUnifiedEvent },
     { eventType: GraphEventType.ANY_NODE_REMOVED, handler: handleUnifiedEvent },
@@ -209,7 +209,7 @@ export function useGraphActivityTracker() {
     { eventType: "DATA_FETCH_COMPLETE", handler: handleUnifiedEvent },
     { eventType: "QUEUE_TASK_ASSIGNED", handler: handleUnifiedEvent },
     { eventType: "QUEUE_TASK_COMPLETED", handler: handleUnifiedEvent }
-  ];
+  ], [handleUnifiedEvent]);
 
   useEventSubscriptions(bus, eventSubscriptions);
 
@@ -260,7 +260,7 @@ export function useGraphActivityTracker() {
         logger.debug("ui", "Unified graph activity tracker stopped", {}, "GraphActivityTracker");
       }
     };
-  }, [addEvent]);
+  }, [addEvent, eventSubscriptions.length]);
 
   return {
     // Expose any manual tracking methods if needed
