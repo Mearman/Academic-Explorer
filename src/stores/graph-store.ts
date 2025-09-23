@@ -580,6 +580,18 @@ export const useGraphStore = create<GraphState>()(
 				const currentEdges = get().edges;
 				const newEdges = edges.filter(edge => !currentEdges[edge.id]);
 
+				console.log("🔗 STORE: addEdges called", {
+					totalEdges: edges.length,
+					newEdges: newEdges.length,
+					existingCount: Object.keys(currentEdges).length
+				});
+
+				// DEBUG: Expose store to window for testing
+				if (typeof window !== 'undefined') {
+					const globalWindow = window as typeof window & { _graphStore?: unknown };
+					globalWindow._graphStore = get();
+				}
+
 				set((draft) => {
 					edges.forEach(edge => {
 						draft.edges[edge.id] = edge;
@@ -604,19 +616,26 @@ export const useGraphStore = create<GraphState>()(
 				state.recomputeEdgeTypeStats();
 				state.recomputeNodeCaches();
 
-				// Emit cross-context events for new edges
-				if (newEdges.length > 0) {
-					if (newEdges.length === 1) {
+				// Emit cross-context events for edges (both new and existing to trigger simulation updates)
+				if (edges.length > 0) {
+					// Always emit events for simulation updates, even for existing edges
+					// This ensures forces are applied when edges are "added" to a running simulation
+					if (edges.length === 1) {
 						// Single edge event for consistency
+						console.log("🔗 STORE: Emitting ANY_EDGE_ADDED", { edge: edges[0], wasNew: newEdges.length > 0 });
 						localEventBus.emit({
 							type: GraphEventType.ANY_EDGE_ADDED,
-							payload: newEdges[0]
+							payload: edges[0]
 						});
 					} else {
 						// Bulk edges event for performance
+						console.log("🔗 STORE: Emitting BULK_EDGES_ADDED", {
+							edgeCount: edges.length,
+							newCount: newEdges.length
+						});
 						localEventBus.emit({
 							type: GraphEventType.BULK_EDGES_ADDED,
-							payload: { edges: newEdges }
+							payload: { edges: edges }
 						});
 					}
 				}
@@ -1288,8 +1307,8 @@ export const useGraphStore = create<GraphState>()(
 			partialize: (state) => ({
 				currentLayout: state.currentLayout,
 				providerType: state.providerType,
-				visibleEntityTypes: Object.keys(state.visibleEntityTypes),
-				visibleEdgeTypes: Object.keys(state.visibleEdgeTypes),
+				visibleEntityTypes: state.visibleEntityTypes,
+				visibleEdgeTypes: state.visibleEdgeTypes,
 				showAllCachedNodes: state.showAllCachedNodes,
 				traversalDepth: state.traversalDepth,
 			}),
@@ -1301,28 +1320,52 @@ export const useGraphStore = create<GraphState>()(
 
 				if (!isStateObject(state)) return;
 
-				// Type guard for visibleEntityTypes array
-				if ("visibleEntityTypes" in state && Array.isArray(state.visibleEntityTypes)) {
-					// Type guard: only valid EntityType values
-					const validEntityTypes = state.visibleEntityTypes.filter((type): type is EntityType =>
-						typeof type === "string" &&
-						["works", "authors", "sources", "institutions", "topics", "concepts", "publishers", "funders", "keywords"].includes(type)
-					);
-					const visibleTypesRecord: Record<EntityType, boolean> = {
-						concepts: false,
-						topics: false,
-						keywords: false,
-						works: false,
-						authors: false,
-						sources: false,
-						institutions: false,
-						publishers: false,
-						funders: false
-					};
-					validEntityTypes.forEach(type => {
-						visibleTypesRecord[type] = true;
-					});
-					state.visibleEntityTypes = visibleTypesRecord;
+				// Type guard for visibleEntityTypes object (new format) or array (legacy format)
+				if ("visibleEntityTypes" in state) {
+					if (typeof state.visibleEntityTypes === "object" && state.visibleEntityTypes !== null && !Array.isArray(state.visibleEntityTypes)) {
+						// New object format - validate and use directly
+						const visibleTypesRecord: Record<EntityType, boolean> = {
+							concepts: false,
+							topics: false,
+							keywords: false,
+							works: false,
+							authors: false,
+							sources: false,
+							institutions: false,
+							publishers: false,
+							funders: false
+						};
+
+						// Copy valid entity types from stored object
+						Object.entries(state.visibleEntityTypes).forEach(([key, value]) => {
+							if (typeof key === "string" && typeof value === "boolean" &&
+								["works", "authors", "sources", "institutions", "topics", "concepts", "publishers", "funders", "keywords"].includes(key)) {
+								(visibleTypesRecord as any)[key] = value;
+							}
+						});
+						state.visibleEntityTypes = visibleTypesRecord;
+					} else if (Array.isArray(state.visibleEntityTypes)) {
+						// Legacy array format - convert to object
+						const validEntityTypes = state.visibleEntityTypes.filter((type): type is EntityType =>
+							typeof type === "string" &&
+							["works", "authors", "sources", "institutions", "topics", "concepts", "publishers", "funders", "keywords"].includes(type)
+						);
+						const visibleTypesRecord: Record<EntityType, boolean> = {
+							concepts: false,
+							topics: false,
+							keywords: false,
+							works: false,
+							authors: false,
+							sources: false,
+							institutions: false,
+							publishers: false,
+							funders: false
+						};
+						validEntityTypes.forEach(type => {
+							visibleTypesRecord[type] = true;
+						});
+						state.visibleEntityTypes = visibleTypesRecord;
+					}
 				}
 
 				// Type guard for visibleEdgeTypes array
