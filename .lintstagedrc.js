@@ -1,19 +1,12 @@
 export default {
-  // TypeScript and JavaScript files
-  '*.{ts,tsx,js,jsx}': [
-    // Run ESLint with auto-fix
-    'eslint --fix',
-    // Type check (without emitting files)
-    () => 'pnpm typecheck'
+  // TypeScript and JavaScript files in packages and apps
+  '{packages,apps}/**/*.{ts,tsx,js,jsx}': [
+    // Run lint for affected projects using Nx
+    'nx affected --target=lint --fix'
   ],
 
-  // JSON files
-  '*.json': [
-    'eslint --fix'
-  ],
-
-  // CSS files (if any vanilla extract files need linting)
-  '*.{css,scss}': [
-    'eslint --fix'
+  // Type check all affected projects
+  '*.{ts,tsx}': [
+    () => 'nx affected --target=typecheck'
   ]
 };
