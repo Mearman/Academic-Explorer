@@ -11,6 +11,14 @@ import {
 import { randomLcg } from "d3-random";
 
 import { logger as defaultLogger } from "@/lib/logger";
+import { z } from "zod";
+
+// Zod schemas for D3 objects
+
+const D3LinkSourceTargetSchema = z.object({
+  id: z.string().optional(),
+}).loose();
+
 import { DEFAULT_FORCE_PARAMS } from "@/lib/graph/force-params";
 import { setForceStrength, setForceDistance, setForceRadius } from "./d3-force-utils";
 
@@ -388,7 +396,7 @@ export class ForceSimulationEngine {
       fps: undefined,
       nodeCount: this.simulationNodes.length,
       linkCount: this.simulationLinks.length,
-    } as Parameters<SimulationCallbacks["onProgress"]>[0];
+    };
 
     if (messageType === "tick" && this.frameCount > 0) {
       payload.fps = this.frameCount * (1000 / this.fpsIntervalMs);
@@ -511,8 +519,14 @@ export class ForceSimulationEngine {
       d3LinksCount: d3Links.length,
       d3Links: d3Links.slice(0, 3).map(l => ({
         id: l.id,
-        source: typeof l.source === "string" ? l.source : (l.source as any)?.id || "object",
-        target: typeof l.target === "string" ? l.target : (l.target as any)?.id || "object"
+        source: typeof l.source === "string" ? l.source : (() => {
+          const parseResult = D3LinkSourceTargetSchema.safeParse(l.source);
+          return parseResult.success ? (parseResult.data.id ?? "object") : "object";
+        })(),
+        target: typeof l.target === "string" ? l.target : (() => {
+          const parseResult = D3LinkSourceTargetSchema.safeParse(l.target);
+          return parseResult.success ? (parseResult.data.id ?? "object") : "object";
+        })()
       }))
     });
 
@@ -559,8 +573,12 @@ export class ForceSimulationEngine {
       if (incoming) {
         if (typeof incoming.x === "number") existing.x = incoming.x;
         if (typeof incoming.y === "number") existing.y = incoming.y;
-        if (typeof incoming.vx === "number") (existing as D3SimulationNode & { vx?: number }).vx = incoming.vx;
-        if (typeof incoming.vy === "number") (existing as D3SimulationNode & { vy?: number }).vy = incoming.vy;
+        if (typeof incoming.vx === "number") {
+          Object.assign(existing, { vx: incoming.vx });
+        }
+        if (typeof incoming.vy === "number") {
+          Object.assign(existing, { vy: incoming.vy });
+        }
         existing.type = incoming.type ?? existing.type;
 
         if (pinnedSet.has(existing.id)) {
@@ -592,10 +610,10 @@ export class ForceSimulationEngine {
       };
 
       if (typeof node.vx === "number") {
-        (newNode as D3SimulationNode & { vx?: number }).vx = node.vx;
+        Object.assign(newNode, { vx: node.vx });
       }
       if (typeof node.vy === "number") {
-        (newNode as D3SimulationNode & { vy?: number }).vy = node.vy;
+        Object.assign(newNode, { vy: node.vy });
       }
 
       updated.push(newNode);
@@ -621,7 +639,7 @@ export class ForceSimulationEngine {
         y: node.y ?? Math.random() * 600 - 300,
         fx: isPinned ? (node.fx ?? node.x) : undefined,
         fy: isPinned ? (node.fy ?? node.y) : undefined
-      } as D3SimulationNode;
+      };
     });
 
     return this.simulationNodes;
@@ -636,10 +654,16 @@ export class ForceSimulationEngine {
     return links.map(link => {
       const sourceId = typeof link.source === "string"
         ? link.source
-        : (link.source as { id?: string }).id ?? String(link.source);
+        : (() => {
+            const parseResult = D3LinkSourceTargetSchema.safeParse(link.source);
+            return parseResult.success ? (parseResult.data.id ?? "unknown-source") : "unknown-source";
+          })();
       const targetId = typeof link.target === "string"
         ? link.target
-        : (link.target as { id?: string }).id ?? String(link.target);
+        : (() => {
+            const parseResult = D3LinkSourceTargetSchema.safeParse(link.target);
+            return parseResult.success ? (parseResult.data.id ?? "unknown-target") : "unknown-target";
+          })();
 
       const sourceNode = nodeById.get(sourceId);
       const targetNode = nodeById.get(targetId);
@@ -648,7 +672,7 @@ export class ForceSimulationEngine {
         id: link.id,
         source: sourceNode ?? sourceId,
         target: targetNode ?? targetId
-      } as D3SimulationLink;
+      };
     });
   }
 
