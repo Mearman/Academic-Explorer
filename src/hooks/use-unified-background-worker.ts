@@ -130,7 +130,7 @@ export function useUnifiedBackgroundWorker(options: UseUnifiedBackgroundWorkerOp
     onAnimationError,
     onExpansionComplete,
     onExpansionError,
-    enableProgressThrottling = true,
+    enableProgressThrottling: _enableProgressThrottling = true,
     progressThrottleMs = 16 // ~60fps
   } = options;
 
@@ -257,7 +257,7 @@ export function useUnifiedBackgroundWorker(options: UseUnifiedBackgroundWorkerOp
         setAnimationState(prev => ({ ...prev, isPaused: false }));
         break;
     }
-  }, [addActiveTask, onPositionUpdate, enableProgressThrottling, progressThrottleMs]);
+  }, [addActiveTask, onPositionUpdate, progressThrottleMs]);
 
   const handleForceSimulationComplete = useCallback((payload: unknown) => {
     const ackResult = ForceSimulationControlAckEnvelopeSchema.safeParse(payload);
@@ -653,7 +653,7 @@ export function useUnifiedBackgroundWorker(options: UseUnifiedBackgroundWorkerOp
         logger.error("worker", "Failed to pause animation", { error });
       }
     }
-  }, [animationState.isRunning, animationState.isPaused, submitQueueTask, addActiveTask]);
+  }, [animationState.isRunning, animationState.isPaused, submitQueueTask, addActiveTask, removeActiveTask, workerModulePath]);
 
   const resumeAnimation = useCallback(async () => {
     if (animationState.isRunning && animationState.isPaused) {
@@ -672,7 +672,7 @@ export function useUnifiedBackgroundWorker(options: UseUnifiedBackgroundWorkerOp
         logger.error("worker", "Failed to resume animation", { error });
       }
     }
-  }, [animationState.isRunning, animationState.isPaused, submitQueueTask, addActiveTask]);
+  }, [animationState.isRunning, animationState.isPaused, submitQueueTask, addActiveTask, removeActiveTask, workerModulePath]);
 
   const updateParameters = useCallback(async (config: Partial<ForceSimulationConfig>) => {
     if (animationState.isRunning) {
@@ -692,7 +692,7 @@ export function useUnifiedBackgroundWorker(options: UseUnifiedBackgroundWorkerOp
         logger.error("worker", "Failed to update parameters", { error });
       }
     }
-  }, [animationState.isRunning, submitQueueTask, addActiveTask]);
+  }, [animationState.isRunning, submitQueueTask, addActiveTask, removeActiveTask, workerModulePath]);
 
   const reheatAnimation = useCallback(async ({
     nodes,
@@ -757,7 +757,7 @@ export function useUnifiedBackgroundWorker(options: UseUnifiedBackgroundWorkerOp
       onAnimationError?.(errorMessage);
       return null;
     }
-  }, [submitQueueTask, addActiveTask, onAnimationError]);
+  }, [submitQueueTask, addActiveTask, removeActiveTask, workerModulePath, onAnimationError]);
 
   // Update simulation links dynamically during running simulation
   const updateSimulationLinks = useCallback(async ({
@@ -815,7 +815,7 @@ export function useUnifiedBackgroundWorker(options: UseUnifiedBackgroundWorkerOp
       onAnimationError?.(errorMessage);
       return null;
     }
-  }, [submitQueueTask, addActiveTask, onAnimationError]);
+  }, [submitQueueTask, addActiveTask, removeActiveTask, workerModulePath, onAnimationError]);
 
   const updateSimulationNodes = useCallback(async ({
     nodes,
@@ -872,7 +872,7 @@ export function useUnifiedBackgroundWorker(options: UseUnifiedBackgroundWorkerOp
       onAnimationError?.(errorMessage);
       return null;
     }
-  }, [submitQueueTask, addActiveTask, onAnimationError]);
+  }, [submitQueueTask, addActiveTask, removeActiveTask, workerModulePath, onAnimationError]);
 
   // Node expansion
   const expandNode = useCallback(async ({
@@ -917,7 +917,7 @@ export function useUnifiedBackgroundWorker(options: UseUnifiedBackgroundWorkerOp
       onExpansionError?.(nodeId, errorMessage);
       return null;
     }
-  }, [submitQueueTask, onExpansionError]);
+  }, [submitQueueTask, workerModulePath, onExpansionError]);
 
   return {
     // State
