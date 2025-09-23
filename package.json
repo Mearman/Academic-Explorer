@@ -37,7 +37,7 @@
     "@nx/vite": "^21.5.3",
     "@playwright/test": "^1.47.2",
     "@tanstack/devtools-vite": "^0.3.3",
-    "@tanstack/router-plugin": "^1.87.0",
+    "@tanstack/router-plugin": "^1.132.0",
     "@vanilla-extract/vite-plugin": "^4.0.17",
     "@vitejs/plugin-react": "^4.3.3",
     "eslint": "^9.36.0",
