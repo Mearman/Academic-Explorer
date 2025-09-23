@@ -113,6 +113,9 @@ const GraphNavigationInner: React.FC<GraphNavigationProps> = ({ className, style
 	// Container dimensions state
 	const [containerDimensions, setContainerDimensions] = React.useState<{ width: number; height: number } | undefined>();
 
+	// Force update counter to trigger re-renders when provider data changes
+	const [forceUpdateCounter, setForceUpdateCounter] = React.useState(0);
+
 	// Track previous node/edge IDs to detect changes
 	const previousNodeIdsRef = useRef<Set<string>>(new Set());
 	const previousEdgeIdsRef = useRef<Set<string>>(new Set());
@@ -255,15 +258,18 @@ const GraphNavigationInner: React.FC<GraphNavigationProps> = ({ className, style
 		pauseLayout,
 		resumeLayout,
 		stopLayout,
+		reheatLayout,
 		canPause,
 		canResume,
 		canStop,
 		canRestart
 	} = useAnimatedLayoutContext();
 
-	// Ref to capture latest restartLayout function without adding it to dependencies
-	const restartLayoutRef = useRef(restartLayout);
-	restartLayoutRef.current = restartLayout;
+	// Ref to capture latest reheatLayout function without adding it to dependencies
+	const reheatLayoutRef = useRef(reheatLayout);
+	reheatLayoutRef.current = reheatLayout;
+
+	// Note: No longer using batched reheat - direct link updates are handled by updateSimulationLinks
 
 	// Measure container dimensions
 	useEffect(() => {
@@ -336,6 +342,17 @@ const GraphNavigationInner: React.FC<GraphNavigationProps> = ({ className, style
 
 		// Set ReactFlow instance
 		graphProvider.setReactFlowInstance(reactFlowInstance);
+
+		// Set up data change callback to force re-render when provider data changes
+		const forceUpdateCallback = () => {
+			// Force re-read of provider data by updating a state counter
+			setForceUpdateCounter(prev => prev + 1);
+		};
+
+		// Type guard to check if provider has the callback method
+		if ('setOnDataChangeCallback' in graphProvider && typeof graphProvider.setOnDataChangeCallback === 'function') {
+			graphProvider.setOnDataChangeCallback(forceUpdateCallback);
+		}
 
 		// Set the provider in the store (now safe with fixed selectors)
 		const currentProvider = useGraphStore.getState().provider;
@@ -414,7 +431,9 @@ const GraphNavigationInner: React.FC<GraphNavigationProps> = ({ className, style
 
 				if (newEdgeIds.size) {
 					const newEdges = currentVisibleEdges.filter(e => newEdgeIds.has(e.id));
-					providerRef.current.addEdges(newEdges);
+					// Use store to emit events and trigger force simulation updates
+					const store = useGraphStore.getState();
+					store.addEdges(newEdges);
 				}
 
 				if (removedNodeIds.size) {
@@ -479,7 +498,36 @@ const GraphNavigationInner: React.FC<GraphNavigationProps> = ({ className, style
 				}
 
 				if (edgeChanges.length) {
+					// Apply edge changes to XYFlow
 					setEdges(prevEdges => applyEdgeChanges(edgeChanges, prevEdges));
+
+					// CRITICAL FIX: Notify provider of edge additions to trigger force simulation updates
+					const addedEdges = edgeChanges.filter(change => change.type === 'add');
+					if (addedEdges.length > 0 && providerRef.current) {
+						console.log("🔗 GRAPH-NAV: Notifying provider of direct edge additions", {
+							addedEdgesCount: addedEdges.length,
+							edgeIds: addedEdges.map(change => change.type === 'add' ? change.item.id : 'unknown')
+						});
+
+						// Convert XYEdges back to GraphEdges and notify provider
+						const graphEdges = addedEdges
+							.filter((change): change is { type: 'add'; item: XYEdge } => change.type === 'add')
+							.map(change => {
+								const xyEdge = change.item;
+								return {
+									id: xyEdge.id,
+									source: xyEdge.source,
+									target: xyEdge.target,
+									type: xyEdge.data?.type || 'unknown',
+									data: xyEdge.data
+								} as GraphEdge;
+							});
+
+						// Use the existing addEdges method which should trigger animation
+						for (const edge of graphEdges) {
+							providerRef.current.addEdge(edge);
+						}
+					}
 				}
 			}
 
@@ -495,15 +543,12 @@ const GraphNavigationInner: React.FC<GraphNavigationProps> = ({ className, style
 			setNodes(xyNodes);
 			setEdges(xyEdges);
 
-			// Restart layout simulation when new nodes are added to include them in positioning
+			// Note: Reheat for new edges is now handled by BULK_EDGES_ADDED event listener in animated layout
+			// This prevents double-triggering and ensures proper timing after relationship detection
 			if (newNodeIds.size) {
-				// Add a small delay to ensure React state updates are complete
-				setTimeout(() => {
-					restartLayoutRef.current(); // Full restart to include new nodes in D3 simulation
-					logger.debug("graph", "Restarting layout due to new nodes", {
-						newNodeCount: newNodeIds.size
-					}, "GraphNavigation");
-				}, 50); // 50ms delay to allow React state to settle
+				logger.debug("graph", "New nodes added to graph", {
+					newNodeCount: newNodeIds.size
+				}, "GraphNavigation");
 			}
 		}
 
@@ -522,7 +567,7 @@ const GraphNavigationInner: React.FC<GraphNavigationProps> = ({ className, style
 		// Update refs for next comparison
 		previousNodeIdsRef.current = currentNodeIds;
 		previousEdgeIdsRef.current = currentEdgeIds;
-	}, [rawNodesMap, rawEdgesMap, visibleEntityTypes, visibleEdgeTypes, setNodes, setEdges, storeNodes, storeEdges]);
+	}, [rawNodesMap, rawEdgesMap, visibleEntityTypes, visibleEdgeTypes, setNodes, setEdges, storeNodes, storeEdges, forceUpdateCounter]);
 
 	// Consolidated listener for worker position updates: apply to both XYFlow and store
 	useEffect(() => {
@@ -1125,8 +1170,7 @@ export const GraphNavigation: React.FC<GraphNavigationProps> = (props) => {
 		<ReactFlowProvider>
 			<AnimatedLayoutProvider
 				enabled={true}
-				fitViewAfterLayout={true}
-				autoStartOnNodeChange={true}
+				autoStartOnNodeChange={false}
 			>
 				<GraphNavigationInner {...props} />
 			</AnimatedLayoutProvider>

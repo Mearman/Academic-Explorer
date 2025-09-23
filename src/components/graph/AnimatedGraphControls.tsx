@@ -90,6 +90,7 @@ export const AnimatedGraphControls: React.FC<AnimatedGraphControlsProps> = ({
 	canStop = false,
 	canRestart = false,
 }) => {
+
 	const [showSettings, { toggle: toggleSettings }] = useDisclosure(false);
 
 	// Animation config is now handled entirely by parent component via useAnimatedLayout hook
@@ -98,6 +99,7 @@ export const AnimatedGraphControls: React.FC<AnimatedGraphControlsProps> = ({
 	// Animation state and actions now come from props passed by parent
 
 	const handleStartLayout = () => {
+
 		logger.warn("graph", "TEMP DEBUG: User initiated animated layout", {
 			enabled,
 			isWorkerReady,
@@ -136,6 +138,7 @@ export const AnimatedGraphControls: React.FC<AnimatedGraphControlsProps> = ({
 	return (
 		<Card shadow="sm" padding="md" radius="md" withBorder>
 			<Stack gap="sm">
+
 				{/* Header */}
 				<Group justify="space-between">
 					<Group gap="xs">
@@ -171,10 +174,11 @@ export const AnimatedGraphControls: React.FC<AnimatedGraphControlsProps> = ({
 					<Button
 						leftSection={<IconPlayerPlay size={16} />}
 						onClick={handleStartLayout}
-						disabled={!enabled || !isWorkerReady || isAnimating}
+						disabled={false}
 						size="sm"
+						style={{backgroundColor: 'red'}}
 					>
-            Start
+            Start (FORCED ENABLED)
 					</Button>
 
 					{canPause && (
