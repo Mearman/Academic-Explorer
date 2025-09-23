@@ -61,7 +61,7 @@ export const useDocumentTitle = (
 
 			logger.debug("ui", "Document title updated", {
 				newTitle,
-				entityTitle: title.trim(),
+				entityTitle: typeof title === "string" ? title.trim() : title,
 				baseTitle
 			}, "useDocumentTitle");
 		} else if (title === null || title === undefined || (typeof title === "string" && title.trim() === "")) {
