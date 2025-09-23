@@ -169,7 +169,7 @@ program
     try {
       entityType = detectEntityType(entityId);
       staticEntityType = toStaticEntityType(entityType);
-    } catch (error) {
+    } catch {
       console.error(`Cannot detect entity type from ID: ${entityId}`);
       console.error("Expected format: W2241997964 (works), A5017898742 (authors), S123 (sources), I123 (institutions), T123 (topics), P123 (publishers)");
       console.error("Or full URLs like: https://openalex.org/A5017898742");

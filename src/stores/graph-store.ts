@@ -580,7 +580,7 @@ export const useGraphStore = create<GraphState>()(
 				const currentEdges = get().edges;
 				const newEdges = edges.filter(edge => !currentEdges[edge.id]);
 
-				console.log("🔗 STORE: addEdges called", {
+				logger.debug("graph", "Store addEdges called", {
 					totalEdges: edges.length,
 					newEdges: newEdges.length,
 					existingCount: Object.keys(currentEdges).length
@@ -588,8 +588,8 @@ export const useGraphStore = create<GraphState>()(
 
 				// DEBUG: Expose store to window for testing
 				if (typeof window !== "undefined") {
-					const globalWindow = window as typeof window & { _graphStore?: unknown };
-					globalWindow._graphStore = get();
+					// Use dynamic property assignment to avoid type assertion
+					Object.assign(window, { _graphStore: get() });
 				}
 
 				set((draft) => {
@@ -603,7 +603,7 @@ export const useGraphStore = create<GraphState>()(
 				if (newEdges.length > 0) {
 					// FORCE REHEAT for auto-detected edges that arrive after simulation has settled
 					// The weak requestRestart() is not sufficient for settled simulations
-					console.log("🔥 STORE: Force reheating simulation for new edges", {
+					logger.debug("graph", "Store force reheating simulation for new edges", {
 						newEdgeCount: newEdges.length,
 						totalEdgeCount: edges.length,
 						newEdgeTypes: [...new Set(newEdges.map(edge => edge.type))]
@@ -634,14 +634,14 @@ export const useGraphStore = create<GraphState>()(
 					// This ensures forces are applied when edges are "added" to a running simulation
 					if (edges.length === 1) {
 						// Single edge event for consistency
-						console.log("🔗 STORE: Emitting ANY_EDGE_ADDED", { edge: edges[0], wasNew: newEdges.length > 0 });
+						logger.debug("graph", "Store emitting ANY_EDGE_ADDED", { edge: edges[0], wasNew: newEdges.length > 0 });
 						localEventBus.emit({
 							type: GraphEventType.ANY_EDGE_ADDED,
 							payload: edges[0]
 						});
 					} else {
 						// Bulk edges event for performance
-						console.log("🔗 STORE: Emitting BULK_EDGES_ADDED", {
+						logger.debug("graph", "Store emitting BULK_EDGES_ADDED", {
 							edgeCount: edges.length,
 							newCount: newEdges.length
 						});
@@ -1350,9 +1350,37 @@ export const useGraphStore = create<GraphState>()(
 
 						// Copy valid entity types from stored object
 						Object.entries(state.visibleEntityTypes).forEach(([key, value]) => {
-							if (typeof key === "string" && typeof value === "boolean" &&
-								["works", "authors", "sources", "institutions", "topics", "concepts", "publishers", "funders", "keywords"].includes(key)) {
-								(visibleTypesRecord as any)[key] = value;
+							if (typeof key === "string" && typeof value === "boolean") {
+								// Use specific property assignments to avoid type assertions
+								switch (key) {
+									case "works":
+										visibleTypesRecord.works = value;
+										break;
+									case "authors":
+										visibleTypesRecord.authors = value;
+										break;
+									case "sources":
+										visibleTypesRecord.sources = value;
+										break;
+									case "institutions":
+										visibleTypesRecord.institutions = value;
+										break;
+									case "topics":
+										visibleTypesRecord.topics = value;
+										break;
+									case "concepts":
+										visibleTypesRecord.concepts = value;
+										break;
+									case "publishers":
+										visibleTypesRecord.publishers = value;
+										break;
+									case "funders":
+										visibleTypesRecord.funders = value;
+										break;
+									case "keywords":
+										visibleTypesRecord.keywords = value;
+										break;
+								}
 							}
 						});
 						state.visibleEntityTypes = visibleTypesRecord;

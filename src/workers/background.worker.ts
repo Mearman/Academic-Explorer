@@ -4,8 +4,8 @@
  * Supports deterministic seeded layouts and real-time position updates
  */
 
-// IMMEDIATE TEST: Log when worker loads
-console.log("🚨 WORKER FILE LOADED - NEW VERSION WITH FORCE ENGINE", Date.now());
+// Log when worker loads
+// Note: Worker environment logger is set up below after imports
 
 import { z } from "zod";
 import { WorkerEventType } from "@/lib/graph/events/types";
@@ -46,7 +46,7 @@ function createSimulationEngine(): ForceSimulationEngine {
       const now = Date.now();
 
       if (payload.messageType === "tick") {
-        console.log("🚀 WORKER emitProgress called", {
+        logger.debug("worker", "Worker emitProgress called", {
           messageType: payload.messageType,
           positionsLength: payload.positions?.length,
           timeSinceLastProgress: now - lastProgressTime,
@@ -56,7 +56,7 @@ function createSimulationEngine(): ForceSimulationEngine {
 
       // Throttle progress updates except for important state changes
       if (payload.messageType === "tick" && (now - lastProgressTime) < PROGRESS_THROTTLE_MS) {
-        console.log("⏭️ WORKER throttling tick event");
+        logger.debug("worker", "Throttling tick event");
         return;
       }
 
@@ -104,7 +104,7 @@ function createSimulationEngine(): ForceSimulationEngine {
       };
 
       if (payload.messageType === "tick") {
-        console.log("📤 WORKER postMessage", { messageType: payload.messageType, payloadType: message.payload.type });
+        logger.debug("worker", "Worker postMessage", { messageType: payload.messageType, payloadType: message.payload.type });
       }
 
       self.postMessage(message);
@@ -491,7 +491,7 @@ self.onmessage = (e: MessageEvent) => {
     // Handle direct message format (for backwards compatibility)
     else if (isForceSimulationStartMessage(data)) {
       startSimulation({
-        nodes: data.nodes as ForceSimulationNode[],
+        nodes: data.nodes,
         links: data.links,
         config: data.config ?? DEFAULT_FORCE_PARAMS,
         pinnedNodes: data.pinnedNodes ?? []
@@ -518,7 +518,7 @@ self.onmessage = (e: MessageEvent) => {
 
         case "FORCE_SIMULATION_REHEAT":
           // Handle reheat with updated data
-          console.log("🔥 WORKER RECEIVED REHEAT MESSAGE!", data);
+          logger.debug("worker", "Worker received reheat message", data);
           if (forceSimulationReheatMessageSchema.safeParse(data).success) {
             const reheatData = forceSimulationReheatMessageSchema.parse(data);
             // Convert nodes to proper ForceSimulationNode format with type guard
@@ -526,14 +526,14 @@ self.onmessage = (e: MessageEvent) => {
               ...node,
               type: isValidEntityType(node.type) ? node.type : undefined
             }));
-            console.log("🔥 WORKER CALLING reheatSimulation with data:", {
+            logger.debug("worker", "Worker calling reheatSimulation", {
               nodeCount: validatedNodes.length,
               linkCount: reheatData.links.length,
               alpha: reheatData.alpha,
               linkDetails: reheatData.links.map(link => ({ id: link.id, source: link.source, target: link.target }))
             });
             try {
-              console.log("🔥 ABOUT TO CALL reheatSimulation");
+              logger.debug("worker", "About to call reheatSimulation");
               reheatSimulation({
                 nodes: validatedNodes,
                 links: reheatData.links,
@@ -541,42 +541,42 @@ self.onmessage = (e: MessageEvent) => {
                 pinnedNodes: reheatData.pinnedNodes ?? [],
                 alpha: reheatData.alpha ?? 1.0
               });
-              console.log("🔥 reheatSimulation CALL COMPLETED");
+              logger.debug("worker", "ReheatSimulation call completed");
             } catch (error) {
-              console.log("🔥 ERROR CALLING reheatSimulation:", error);
+              logger.error("worker", "Error calling reheatSimulation", { error });
             }
           } else {
-            console.log("🔥 WORKER REHEAT MESSAGE VALIDATION FAILED!", forceSimulationReheatMessageSchema.safeParse(data).error);
+            logger.error("worker", "Worker reheat message validation failed", { error: forceSimulationReheatMessageSchema.safeParse(data).error });
           }
           break;
 
         case "FORCE_SIMULATION_UPDATE_LINKS":
           // Handle dynamic link updates during running simulation
-          console.log("🔗 WORKER RECEIVED UPDATE_LINKS MESSAGE!", data);
+          logger.debug("worker", "Worker received update links message", data);
           if (forceSimulationUpdateLinksMessageSchema.safeParse(data).success) {
             const updateData = forceSimulationUpdateLinksMessageSchema.parse(data);
-            console.log("🔗 WORKER CALLING updateSimulationLinks with data:", {
+            logger.debug("worker", "Worker calling updateSimulationLinks", {
               linkCount: updateData.links.length,
               alpha: updateData.alpha,
               linkDetails: updateData.links.slice(0, 3).map(link => ({ id: link.id, source: link.source, target: link.target }))
             });
             try {
-              console.log("🔗 ABOUT TO CALL updateSimulationLinks");
+              logger.debug("worker", "About to call updateSimulationLinks");
               updateSimulationLinks({
                 links: updateData.links,
                 alpha: updateData.alpha ?? 1.0
               });
-              console.log("🔗 updateSimulationLinks CALL COMPLETED");
+              logger.debug("worker", "UpdateSimulationLinks call completed");
             } catch (error) {
-              console.log("🔗 ERROR CALLING updateSimulationLinks:", error);
+              logger.error("worker", "Error calling updateSimulationLinks", { error });
             }
           } else {
-            console.log("🔗 WORKER UPDATE_LINKS MESSAGE VALIDATION FAILED!", forceSimulationUpdateLinksMessageSchema.safeParse(data).error);
+            logger.error("worker", "Worker update links message validation failed", { error: forceSimulationUpdateLinksMessageSchema.safeParse(data).error });
           }
           break;
 
         case "FORCE_SIMULATION_UPDATE_NODES":
-          console.log("🧩 WORKER RECEIVED UPDATE_NODES MESSAGE!", data);
+          logger.debug("worker", "Worker received update nodes message", data);
           if (forceSimulationUpdateNodesMessageSchema.safeParse(data).success) {
             const updateData = forceSimulationUpdateNodesMessageSchema.parse(data);
             try {
@@ -590,10 +590,10 @@ self.onmessage = (e: MessageEvent) => {
                 alpha: updateData.alpha ?? 1.0
               });
             } catch (error) {
-              console.log("🧩 ERROR CALLING updateSimulationNodes:", error);
+              logger.error("worker", "Error calling updateSimulationNodes", { error });
             }
           } else {
-            console.log("🧩 WORKER UPDATE_NODES MESSAGE VALIDATION FAILED!", forceSimulationUpdateNodesMessageSchema.safeParse(data).error);
+            logger.error("worker", "Worker update nodes message validation failed", { error: forceSimulationUpdateNodesMessageSchema.safeParse(data).error });
           }
           break;
 
