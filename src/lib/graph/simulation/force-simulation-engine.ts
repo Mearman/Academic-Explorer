@@ -12,6 +12,7 @@ import { randomLcg } from "d3-random";
 
 import { logger as defaultLogger } from "@/lib/logger";
 import { DEFAULT_FORCE_PARAMS } from "@/lib/graph/force-params";
+import { setForceStrength, setForceDistance, setForceRadius } from "./d3-force-utils";
 
 import type {
   ForceSimulationNode,
@@ -213,37 +214,37 @@ export class ForceSimulationEngine {
     if (config.linkDistance !== undefined || config.linkStrength !== undefined) {
       const linkForce = this.currentSimulation.force("link");
       if (linkForce) {
-        if (config.linkDistance !== undefined && typeof linkForce.distance === "function") {
-          linkForce.distance(config.linkDistance);
+        if (config.linkDistance !== undefined) {
+          setForceDistance({ force: linkForce, distance: config.linkDistance });
         }
-        if (config.linkStrength !== undefined && typeof linkForce.strength === "function") {
-          linkForce.strength(config.linkStrength);
+        if (config.linkStrength !== undefined) {
+          setForceStrength({ force: linkForce, strength: config.linkStrength });
         }
       }
     }
 
     if (config.chargeStrength !== undefined) {
       const chargeForce = this.currentSimulation.force("charge");
-      if (chargeForce && typeof chargeForce.strength === "function") {
-        chargeForce.strength(config.chargeStrength);
+      if (chargeForce) {
+        setForceStrength({ force: chargeForce, strength: config.chargeStrength });
       }
     }
 
     if (config.centerStrength !== undefined) {
       const centerForce = this.currentSimulation.force("center");
-      if (centerForce && typeof centerForce.strength === "function") {
-        centerForce.strength(config.centerStrength);
+      if (centerForce) {
+        setForceStrength({ force: centerForce, strength: config.centerStrength });
       }
     }
 
     if (config.collisionRadius !== undefined || config.collisionStrength !== undefined) {
       const collisionForce = this.currentSimulation.force("collision");
       if (collisionForce) {
-        if (config.collisionRadius !== undefined && typeof collisionForce.radius === "function") {
-          collisionForce.radius(config.collisionRadius);
+        if (config.collisionRadius !== undefined) {
+          setForceRadius({ force: collisionForce, radius: config.collisionRadius });
         }
-        if (config.collisionStrength !== undefined && typeof collisionForce.strength === "function") {
-          collisionForce.strength(config.collisionStrength);
+        if (config.collisionStrength !== undefined) {
+          setForceStrength({ force: collisionForce, strength: config.collisionStrength });
         }
       }
     }
@@ -288,7 +289,9 @@ export class ForceSimulationEngine {
 
     if (config.chargeStrength !== undefined) {
       const chargeForce = this.currentSimulation.force("charge");
-      chargeForce?.strength(config.chargeStrength);
+      if (chargeForce) {
+        setForceStrength({ force: chargeForce, strength: config.chargeStrength });
+      }
     }
 
     this.resetSimulation(alpha);
@@ -435,14 +438,14 @@ export class ForceSimulationEngine {
   }
 
   private applyPendingUpdates(): boolean {
-    this.logger.debug("graph", "applyPendingUpdates - Start", {
+    this.logger.debug("graph", "Applying pending updates", {
       hasSimulation: !!this.currentSimulation,
       pendingUpdatesCount: this.pendingUpdates.length,
       pendingUpdateTypes: this.pendingUpdates.map(u => u.type)
     });
 
     if (!this.currentSimulation || this.pendingUpdates.length === 0) {
-      this.logger.debug("graph", "applyPendingUpdates - Early return", {
+      this.logger.debug("graph", "No updates to apply", {
         hasSimulation: !!this.currentSimulation,
         pendingUpdatesCount: this.pendingUpdates.length
       });
@@ -453,20 +456,16 @@ export class ForceSimulationEngine {
 
     for (const update of this.pendingUpdates) {
       if (update.type === "links" && update.links) {
-        this.logger.debug("graph", "🔗 ENGINE: applyPendingUpdates - Processing links update", {
+        this.logger.debug("graph", "Processing links update", {
           linksCount: update.links.length,
-          alpha: update.alpha
-        });
-        this.logger.debug("graph", "🔗 ENGINE: applyPendingUpdates - About to apply links and restart", {
-          alphaBefore: this.currentSimulation.alpha(),
-          targetAlpha: update.alpha,
-          linksCount: update.links.length
+          alpha: update.alpha,
+          alphaBefore: this.currentSimulation.alpha()
         });
 
         this.applyLinksImmediately(update.links, this.simulationConfig);
         this.currentSimulation.alpha(update.alpha).restart();
 
-        this.logger.debug("graph", "🔗 ENGINE: applyPendingUpdates - Links applied and simulation restarted", {
+        this.logger.debug("graph", "Links applied and simulation restarted", {
           alphaAfter: this.currentSimulation.alpha(),
           targetAlpha: update.alpha,
           simulationNodes: this.currentSimulation.nodes().length,
@@ -474,14 +473,16 @@ export class ForceSimulationEngine {
         });
         applied = true;
       } else if (update.type === "nodes" && update.nodes) {
-        this.logger.debug("graph", "🔗 ENGINE: applyPendingUpdates - Processing nodes update");
+        this.logger.debug("graph", "Processing nodes update", {
+          nodesCount: update.nodes.length
+        });
         this.applyNodesImmediately(update.nodes, update.pinnedNodes ?? [], update.alpha);
         applied = true;
       }
     }
 
     this.pendingUpdates = [];
-    this.logger.debug("graph", "🔗 ENGINE: applyPendingUpdates - Complete", { applied });
+    this.logger.debug("graph", "Pending updates applied", { applied });
 
     return applied;
   }
@@ -492,11 +493,11 @@ export class ForceSimulationEngine {
     pinnedNodes: string[] = []
   ) {
     if (!this.currentSimulation) {
-      this.logger.debug("graph", "🔗 ENGINE: applyLinksImmediately - NO CURRENT SIMULATION");
+      this.logger.warn("graph", "Cannot apply links - no current simulation");
       return;
     }
 
-    this.logger.debug("graph", "🔗 ENGINE: applyLinksImmediately - Starting link application", {
+    this.logger.debug("graph", "Starting link application", {
       inputLinksCount: links.length,
       simulationNodesCount: this.simulationNodes.length,
       inputLinks: links.slice(0, 3).map(l => ({ id: l.id, source: l.source, target: l.target })),
@@ -506,7 +507,7 @@ export class ForceSimulationEngine {
     const d3Links = this.mapLinksToSimulation(links, this.simulationNodes);
     this.simulationLinks = d3Links;
 
-    this.logger.debug("graph", "🔗 ENGINE: applyLinksImmediately - After mapping", {
+    this.logger.debug("graph", "Links mapped to simulation", {
       d3LinksCount: d3Links.length,
       d3Links: d3Links.slice(0, 3).map(l => ({
         id: l.id,
@@ -521,7 +522,7 @@ export class ForceSimulationEngine {
       .strength(config.linkStrength ?? DEFAULT_FORCE_PARAMS.linkStrength);
 
     this.currentSimulation.force("link", linkForce);
-    this.logger.debug("graph", "🔗 ENGINE: applyLinksImmediately - Link force applied to simulation", {
+    this.logger.debug("graph", "Link force applied to simulation", {
       linkDistance: config.linkDistance ?? DEFAULT_FORCE_PARAMS.linkDistance,
       linkStrength: config.linkStrength ?? DEFAULT_FORCE_PARAMS.linkStrength,
       currentAlpha: this.currentSimulation.alpha(),
