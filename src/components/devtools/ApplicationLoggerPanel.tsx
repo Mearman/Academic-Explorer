@@ -94,6 +94,7 @@ export function ApplicationLoggerPanel() {
 			"resource": "purple",
 			"queuecoordinator": "violet",
 			"hooks": "pink",
+			"execution": "cyan",
 		};
 		const color = colors[category];
 		return color ?? "gray";

@@ -32,6 +32,8 @@ import { nodeTypes } from "@/lib/graph/providers/xyflow/node-types";
 import { edgeTypes } from "@/lib/graph/providers/xyflow/edge-types";
 import { useAnimatedLayoutContext } from "@/components/graph/animated-layout-context";
 import { AnimatedLayoutProvider } from "@/components/graph/AnimatedLayoutProvider";
+import { useAnimatedGraphStore } from "@/stores/animated-graph-store";
+import { createAutoSimulationManager, type AutoSimulationState } from "@/lib/graph/simulation/auto-simulation-manager";
 import type { GraphNode, GraphEdge, EntityType, ExternalIdentifier } from "@/lib/graph/types";
 import { EntityDetector } from "@/lib/graph/utils/entity-detection";
 import { useEntityInteraction } from "@/hooks/use-entity-interaction";
@@ -56,6 +58,18 @@ interface GraphNavigationProps {
 const GraphNavigationInner: React.FC<GraphNavigationProps> = ({ className, style }) => {
 	// Unified event bus for worker communication
 	const eventBus = useEventBus();
+
+	useEffect(() => {
+		if (typeof window === "undefined") return;
+
+		(window as any).__graphStoreAddEdges = (edges: GraphEdge[]) => {
+			useGraphStore.getState().addEdges(edges);
+		};
+
+		return () => {
+			delete (window as any).__graphStoreAddEdges;
+		};
+	}, []);
 
 	const reactFlowInstance = useReactFlow();
 	const containerRef = useRef<HTMLDivElement>(null);
@@ -253,6 +267,7 @@ const GraphNavigationInner: React.FC<GraphNavigationProps> = ({ className, style
 		fps,
 		performanceStats,
 		isWorkerReady,
+		useAnimation,
 		restartLayout,
 		applyLayout,
 		pauseLayout,
@@ -265,9 +280,61 @@ const GraphNavigationInner: React.FC<GraphNavigationProps> = ({ className, style
 		canRestart
 	} = useAnimatedLayoutContext();
 
-	// Ref to capture latest reheatLayout function without adding it to dependencies
+	// Ref to capture latest layout functions without adding them to effect dependencies
 	const reheatLayoutRef = useRef(reheatLayout);
 	reheatLayoutRef.current = reheatLayout;
+	const applyLayoutRef = useRef(applyLayout);
+	applyLayoutRef.current = applyLayout;
+	const autoSimulationManagerRef = useRef(createAutoSimulationManager());
+	const nodeCount = nodes.length;
+	console.log("GraphNavigation render", { nodeCount });
+
+	useEffect(() => {
+		const manager = autoSimulationManagerRef.current;
+		if (nodeCount === 0) {
+			manager.reset();
+		}
+		const state: AutoSimulationState = {
+			nodeCount,
+			isWorkerReady,
+			useAnimation,
+			isRunning,
+		};
+
+		const decision = manager.update(state);
+
+		if (decision.shouldRequestRestart) {
+			useAnimatedGraphStore.getState().requestRestart();
+		}
+		if (decision.shouldReheatLayout) {
+			reheatLayoutRef.current();
+		}
+		if (decision.shouldApplyLayout) {
+			applyLayoutRef.current();
+		}
+
+		if (typeof window !== "undefined") {
+			(window as any).__graphAutoStartDebug = manager.getDebugState(state, decision);
+		}
+	}, [nodeCount, isWorkerReady, isRunning, useAnimation]);
+
+	useEffect(() => {
+		if (typeof window === "undefined") return;
+
+		(window as any).__graphRequestSimulationRestart = () => {
+			const animatedStore = useAnimatedGraphStore.getState();
+			animatedStore.requestRestart();
+			if (isRunning) {
+				reheatLayoutRef.current();
+			} else {
+				applyLayoutRef.current();
+			}
+		};
+
+		return () => {
+			delete (window as any).__graphRequestSimulationRestart;
+		};
+	}, [isRunning]);
 
 	// Note: No longer using batched reheat - direct link updates are handled by updateSimulationLinks
 
@@ -385,6 +452,15 @@ const GraphNavigationInner: React.FC<GraphNavigationProps> = ({ className, style
 				visibleEdgeTypes[edge.type];
 		});
 
+		if (typeof window !== "undefined") {
+			(window as any).__graphVisibleEdges = currentVisibleEdges.map(edge => ({
+				id: edge.id,
+				source: edge.source,
+				target: edge.target,
+				type: edge.type
+			}));
+		}
+
 		// Get current node and edge IDs
 		const currentNodeIds = new Set(currentVisibleNodes.map(n => n.id));
 		const currentEdgeIds = new Set(currentVisibleEdges.map(e => e.id));
@@ -422,6 +498,25 @@ const GraphNavigationInner: React.FC<GraphNavigationProps> = ({ className, style
 			if (previousNodeIdsRef.current.size === 0 && previousEdgeIdsRef.current.size === 0) {
 				providerRef.current.setNodes(currentVisibleNodes);
 				providerRef.current.setEdges(currentVisibleEdges);
+				setTimeout(() => {
+					const animatedStore = useAnimatedGraphStore.getState();
+					animatedStore.requestRestart();
+					console.log("Auto-start queue", {
+						nodeCount: currentVisibleNodes.length,
+						isWorkerReady,
+						useAnimation,
+						animatedRunning: animatedStore.isAnimating,
+						animatedAnimating: animatedStore.isAnimating
+					});
+					if (isWorkerReady && useAnimation) {
+						const { isAnimating: animatedRunning } = animatedStore;
+						if (animatedRunning) {
+							reheatLayoutRef.current();
+						} else {
+							applyLayoutRef.current();
+						}
+					}
+				}, 0);
 			} else {
 				// Use incremental provider methods for updates
 				if (newNodeIds.size) {
