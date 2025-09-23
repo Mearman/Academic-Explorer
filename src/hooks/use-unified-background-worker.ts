@@ -602,8 +602,8 @@ export function useUnifiedBackgroundWorker(options: UseUnifiedBackgroundWorkerOp
       averageResponseTime: 0
     });
 
+    const taskId = `force-simulation-${Date.now().toString()}`;
     try {
-      const taskId = `force-simulation-${Date.now().toString()}`;
       addActiveTask(taskId);
       const submittedTaskId = await submitQueueTask({
         id: taskId,
@@ -713,8 +713,8 @@ export function useUnifiedBackgroundWorker(options: UseUnifiedBackgroundWorkerOp
       return;
     }
 
+    const taskId = `force-simulation-reheat-${Date.now().toString()}`;
     try {
-      const taskId = `force-simulation-reheat-${Date.now().toString()}`;
       addActiveTask(taskId);
       console.log("🎯 reheatAnimation payload creation:", {
         taskId,
@@ -773,8 +773,8 @@ export function useUnifiedBackgroundWorker(options: UseUnifiedBackgroundWorkerOp
       return;
     }
 
+    const taskId = `force-simulation-update-links-${Date.now().toString()}`;
     try {
-      const taskId = `force-simulation-update-links-${Date.now().toString()}`;
       addActiveTask(taskId);
       console.log("🔗 updateSimulationLinks using HIGH PRIORITY task for immediate execution:", {
         taskId,
@@ -832,8 +832,8 @@ export function useUnifiedBackgroundWorker(options: UseUnifiedBackgroundWorkerOp
       return;
     }
 
+    const taskId = `force-simulation-update-nodes-${Date.now().toString()}`;
     try {
-      const taskId = `force-simulation-update-nodes-${Date.now().toString()}`;
       addActiveTask(taskId);
 
       const pinnedArray = Array.isArray(pinnedNodes)
