@@ -8,15 +8,12 @@ import { join, resolve } from "path";
 import { fileURLToPath } from "url";
 import { dirname } from "path";
 import { generateContentHash } from "../lib/utils/query-hash.js";
-import type { OpenAlexEntity, EntityType, OpenAlexResponse } from "../lib/openalex/types.js";
 import type { StaticEntityType } from "../lib/api/static-data-provider.js";
 import { logger } from "../lib/logger.js";
 import { z } from "zod";
 import { CachedOpenAlexClient } from "../lib/openalex/cached-client.js";
 import type {
-  FieldCoverageByTier,
-  EntityFieldData,
-  CollectionResultMapping
+  FieldCoverageByTier
 } from "../lib/cache/synthetic/types.js";
 
 // Zod schemas for safe type validation

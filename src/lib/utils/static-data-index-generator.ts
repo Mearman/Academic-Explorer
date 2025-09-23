@@ -1,6 +1,6 @@
-import { readdir, writeFile, stat, mkdir, readFile } from "fs/promises";
+import { readdir, writeFile, stat, readFile } from "fs/promises";
 import { join, extname, basename } from "path";
-import { downloadEntityFromOpenAlex, findMissingEntities, downloadMultipleEntities } from "./openalex-downloader";
+import { findMissingEntities, downloadMultipleEntities } from "./openalex-downloader";
 // parseQueryParams and generateQueryHash removed - no longer needed
 import { fetchOpenAlexQuery, saveQueryToCache } from "./query-cache-builder";
 import { createContentHash, hasContentChanged } from "./content-hash";

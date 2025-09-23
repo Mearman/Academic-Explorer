@@ -15,10 +15,10 @@ function AuthorRoute() {
 	const { authorId } = Route.useParams();
 	const navigate = useNavigate();
 	const graphData = useGraphData();
+
 	const loadEntity = graphData.loadEntity;
 	const loadEntityIntoGraph = graphData.loadEntityIntoGraph;
 	const expandNode = graphData.expandNode;
-	const nodeCount = useGraphStore((state) => state.totalNodeCount);
 
 	// Track which authors have been loaded to prevent infinite loops
 	const loadedAuthorsRef = useRef<Set<string>>(new Set());
@@ -58,15 +58,28 @@ function AuthorRoute() {
 	// Update document title with author name
 	useEntityDocumentTitle(author);
 
-	// Create stable callback for loading author data
+	// Create stable callback for loading author data - removed nodeCount dependency
 	const loadAuthor = useCallback(async () => {
 		try {
-			logger.debug("routing", "loadAuthor called", { authorId, loadedAuthors: Array.from(loadedAuthorsRef.current) }, "AuthorRoute");
+			// Get current node count at time of execution rather than as dependency
+			const currentNodeCount = useGraphStore.getState().totalNodeCount;
+			logger.debug("routing", "loadAuthor called", {
+				authorId,
+				currentNodeCount,
+				loadedAuthors: Array.from(loadedAuthorsRef.current)
+			}, "AuthorRoute");
 
 			// Check if this author has already been loaded to prevent infinite loops
-			if (loadedAuthorsRef.current.has(authorId)) {
-				logger.debug("routing", "Author already loaded, skipping", { authorId }, "AuthorRoute");
+			// BUT also check if graph actually has nodes - if not, we need to reload
+			if (loadedAuthorsRef.current.has(authorId) && currentNodeCount > 0) {
+				logger.debug("routing", "Author already loaded, skipping", { authorId, currentNodeCount }, "AuthorRoute");
 				return;
+			}
+
+			// TEMP DEBUG: If author was marked as loaded but graph is empty, clear the tracking
+			if (loadedAuthorsRef.current.has(authorId) && currentNodeCount === 0) {
+				logger.debug("routing", "Author marked as loaded but graph is empty - clearing tracking and reloading", { authorId, currentNodeCount }, "AuthorRoute");
+				loadedAuthorsRef.current.clear();
 			}
 
 			// Mark this author as being loaded
@@ -74,8 +87,8 @@ function AuthorRoute() {
 
 			// If graph already has nodes, use incremental loading to preserve existing entities
 			// This prevents clearing the graph when clicking on nodes or navigating
-			if (nodeCount > 0) {
-				logger.debug("routing", "Loading author into existing graph", { authorId, nodeCount }, "AuthorRoute");
+			if (currentNodeCount > 0) {
+				logger.debug("routing", "Loading author into existing graph", { authorId, currentNodeCount }, "AuthorRoute");
 				await loadEntityIntoGraph(authorId);
 			} else {
 				// If graph is empty, use full loading (clears graph for initial load)
@@ -98,7 +111,7 @@ function AuthorRoute() {
 		} catch (error) {
 			logError("Failed to load author", error, "AuthorRoute", "routing");
 		}
-	}, [authorId, nodeCount]);
+	}, [authorId, loadEntity, loadEntityIntoGraph, expandNode]);
 
 	useEffect(() => {
 		void loadAuthor();
