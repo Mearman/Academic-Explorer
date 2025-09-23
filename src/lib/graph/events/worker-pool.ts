@@ -276,7 +276,7 @@ export class WorkerPool {
                          ? messagePayload.type
                          : "POOL_TASK_PROGRESS";
 
-        logger.debug("worker-pool", "WORKERPOOL PROGRESS", {
+        logger.debug("workerpool", "WORKERPOOL PROGRESS", {
           messagePayload,
           hasType: messagePayload && typeof messagePayload === "object" && "type" in messagePayload,
           extractedType: eventType,

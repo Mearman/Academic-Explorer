@@ -178,7 +178,7 @@ function createSimulationEngine(): ForceSimulationEngine {
 // Zod schemas for type validation
 const forceSimulationNodeSchema = z.object({
   id: z.string(),
-  type: z.string().optional(),
+  type: z.enum(["works", "authors", "sources", "institutions", "topics", "concepts", "publishers", "funders", "keywords"]).optional(),
   x: z.number().optional(),
   y: z.number().optional(),
   fx: z.number().optional(),
