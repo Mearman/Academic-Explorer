@@ -54,22 +54,26 @@ export const useDocumentTitle = (
 			originalTitle.current = document.title;
 		}
 
-		// Only update title if we have a valid title
-		if (title && typeof title === "string" && title.trim()) {
-			const newTitle = `${title.trim()} - ${baseTitle}`;
+		// Safely handle title with proper type guards
+		const trimmedTitle = typeof title === "string" ? title.trim() : "";
+
+		// Only update title if we have a valid non-empty title
+		if (trimmedTitle) {
+			const newTitle = `${trimmedTitle} - ${baseTitle}`;
 			document.title = newTitle;
 
 			logger.debug("ui", "Document title updated", {
 				newTitle,
-				entityTitle: typeof title === "string" ? title.trim() : title,
+				entityTitle: trimmedTitle,
 				baseTitle
 			}, "useDocumentTitle");
-		} else if (title === null || title === undefined || (typeof title === "string" && title.trim() === "")) {
+		} else {
 			// Reset to base title if no specific title provided
 			document.title = baseTitle;
 
 			logger.debug("ui", "Document title reset to base", {
-				baseTitle
+				baseTitle,
+				receivedTitle: title
 			}, "useDocumentTitle");
 		}
 	}, [title, baseTitle]);
