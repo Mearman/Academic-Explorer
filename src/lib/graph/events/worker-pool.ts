@@ -267,7 +267,7 @@ export class WorkerPool {
     const messagePayload = "payload" in message ? message.payload : undefined;
 
     switch (message.type) {
-      case "PROGRESS":
+      case "PROGRESS": {
         // Check if the payload contains a specific event type from the worker
         const eventType = messagePayload &&
                          typeof messagePayload === "object" &&
@@ -276,7 +276,7 @@ export class WorkerPool {
                          ? messagePayload.type
                          : "POOL_TASK_PROGRESS";
 
-        console.log("🏭 WORKERPOOL PROGRESS", {
+        logger.debug("worker-pool", "WORKERPOOL PROGRESS", {
           messagePayload,
           hasType: messagePayload && typeof messagePayload === "object" && "type" in messagePayload,
           extractedType: eventType,
@@ -292,8 +292,9 @@ export class WorkerPool {
           }
         });
         break;
+      }
 
-      case "SUCCESS":
+      case "SUCCESS": {
         // Check if the payload contains a specific event type from the worker
         const successEventType = messagePayload &&
                                 typeof messagePayload === "object" &&
@@ -316,6 +317,7 @@ export class WorkerPool {
 
         this.handleTaskCompletion(poolWorker, messagePayload, undefined);
         break;
+      }
 
       case "ERROR":
         this.handleTaskCompletion(poolWorker, undefined, new Error(String(messagePayload)));
@@ -357,7 +359,7 @@ export class WorkerPool {
       errorFilename: error.filename || "unknown",
       errorLineno: error.lineno || 0,
       errorColno: error.colno || 0,
-      errorStack: error.error?.stack || "No stack trace available",
+      errorStack: (error.error instanceof Error ? error.error.stack : String(error.error)) || "No stack trace available",
       timestamp: new Date().toISOString()
     };
 
@@ -367,9 +369,9 @@ export class WorkerPool {
     if (poolWorker.currentTaskId) {
       const detailedError = new Error(
         `Worker ${poolWorker.id} failed: ${error.message || "Unknown error"}. ` +
-        `Task: ${poolWorker.currentTaskId}. Worker completed ${poolWorker.tasksCompleted} tasks, ` +
-        `had ${poolWorker.errors} errors. Error at ${error.filename}:${error.lineno}:${error.colno}. ` +
-        `Stack: ${error.error?.stack || "No stack trace"}`
+        `Task: ${poolWorker.currentTaskId}. Worker completed ${String(poolWorker.tasksCompleted)} tasks, ` +
+        `had ${String(poolWorker.errors)} errors. Error at ${error.filename}:${String(error.lineno)}:${String(error.colno)}. ` +
+        `Stack: ${(error.error instanceof Error ? error.error.stack : String(error.error)) || "No stack trace"}`
       );
       this.handleTaskCompletion(poolWorker, undefined, detailedError);
     }
