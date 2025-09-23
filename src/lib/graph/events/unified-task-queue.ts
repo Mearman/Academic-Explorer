@@ -8,6 +8,11 @@ import { logger } from "@/lib/logger";
 import { EventBus } from "./unified-event-bus";
 import { z } from "zod";
 
+// Zod schema for node objects
+const NodeSchema = z.object({
+  id: z.unknown().optional(),
+}).loose();
+
 export interface TaskDescriptor {
   id: string;
   payload: unknown;
@@ -85,7 +90,7 @@ export class TaskQueue {
    */
   enqueue(task: TaskDescriptor): string {
     // Deep clone payload to prevent mutation issues
-    const clonedPayload = task.payload ? JSON.parse(JSON.stringify(task.payload)) : task.payload;
+    const clonedPayload: unknown = task.payload ? JSON.parse(JSON.stringify(task.payload)) : task.payload;
 
     const queuedTask: QueuedTask = {
       ...task,
@@ -383,7 +388,7 @@ export class TaskQueue {
         const handler = {
           resolve,
           reject,
-          timeoutHandle: undefined as ReturnType<typeof setTimeout> | undefined
+          timeoutHandle: undefined
         };
 
         connection.handlers.set(task.id, handler);
@@ -396,16 +401,44 @@ export class TaskQueue {
         }
 
         if (task.payload && typeof task.payload === "object" && "type" in task.payload) {
-          const payload = task.payload as { type: string; nodes?: { id: string }[]; links?: unknown[] };
+          const payload = task.payload;
+          if (typeof payload.type !== "string") return;
           if (payload.type === "FORCE_SIMULATION_START" || payload.type === "FORCE_SIMULATION_REHEAT") {
-            console.log("🔧 TASK_QUEUE: Sending to shared worker", {
+            // Extract nodes and links safely
+            const nodes = ("nodes" in payload && Array.isArray(payload.nodes)) ? payload.nodes : [];
+            const links = ("links" in payload && Array.isArray(payload.links)) ? payload.links : [];
+
+            logger.debug("taskqueue", "TASK_QUEUE: Sending to shared worker", {
               taskId: task.id,
               type: payload.type,
-              nodesLength: payload.nodes?.length,
-              linksLength: payload.links?.length,
-              firstNodeId: payload.nodes?.[0]?.id,
-              allNodeIds: payload.nodes?.map(n => n.id),
-              linkDetails: payload.links?.slice(0, 3).map((link: any) => ({ id: link?.id, source: link?.source, target: link?.target }))
+              nodesLength: nodes.length,
+              linksLength: links.length,
+              firstNodeId: (() => {
+                const firstNode: unknown = nodes[0];
+                if (firstNode) {
+                  const parseResult = NodeSchema.safeParse(firstNode);
+                  return parseResult.success ? parseResult.data.id : undefined;
+                }
+                return undefined;
+              })(),
+              allNodeIds: nodes.map(n => {
+                if (n) {
+                  const parseResult = NodeSchema.safeParse(n);
+                  return parseResult.success ? parseResult.data.id : "unknown";
+                }
+                return "unknown";
+              }),
+              linkDetails: links.slice(0, 3).map((link: unknown) => {
+                if (link && typeof link === "object" && link !== null) {
+                  const linkObj = link;
+                  return {
+                    id: "id" in linkObj ? linkObj.id : undefined,
+                    source: "source" in linkObj ? linkObj.source : undefined,
+                    target: "target" in linkObj ? linkObj.target : undefined
+                  };
+                }
+                return { id: undefined, source: undefined, target: undefined };
+              })
             });
           }
         }
@@ -512,11 +545,12 @@ export class TaskQueue {
       taskId: z.string().optional()
     });
 
-    if (!workerMessageSchema.safeParse(data).success) {
+    const parseResult = workerMessageSchema.safeParse(data);
+    if (!parseResult.success) {
       return;
     }
 
-    const message = data as { type: string; payload?: unknown; taskId?: string };
+    const message = parseResult.data;
     const taskId = typeof message.taskId === "string" ? message.taskId : undefined;
 
     switch (message.type) {

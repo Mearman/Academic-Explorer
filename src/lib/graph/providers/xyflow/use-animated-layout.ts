@@ -13,6 +13,22 @@ import { useLayoutStore } from "@/stores/layout-store";
 import { useAnimatedGraphStore } from "@/stores/animated-graph-store";
 import { useBackgroundWorker } from "@/hooks/use-unified-background-worker";
 import { localEventBus, GraphEventType } from "@/lib/graph/events";
+import { z } from "zod";
+
+// Zod schemas for event payload validation
+const NodesPayloadSchema = z.object({
+	nodes: z.array(z.unknown()).optional(),
+});
+
+const EdgesPayloadSchema = z.object({
+	edges: z.array(z.unknown()).optional(),
+});
+
+const ForceRestartPayloadSchema = z.object({
+	alpha: z.unknown().optional(),
+	reason: z.unknown().optional(),
+});
+
 // FIT_VIEW_PRESETS removed - not currently used
 import { DEFAULT_FORCE_PARAMS } from "../../force-params";
 import type { ForceSimulationConfig, ForceSimulationLink, ForceSimulationNode } from "@/lib/graph/events/enhanced-worker-types";
@@ -841,9 +857,10 @@ export function useAnimatedLayout(options: UseAnimatedLayoutOptions = {}) {
 		const unsubscribeBulk = eventBus.on(GraphEventType.BULK_NODES_ADDED, (event) => {
 			let nodeCount: number | undefined;
 			if (event && typeof event === "object" && "payload" in event) {
-				const payload = (event as { payload?: unknown }).payload;
-				if (payload && typeof payload === "object" && "nodes" in payload && Array.isArray((payload as { nodes?: unknown[] }).nodes)) {
-					nodeCount = (payload as { nodes: unknown[] }).nodes.length;
+				const payload = event.payload;
+				const parseResult = NodesPayloadSchema.safeParse(payload);
+				if (parseResult.success && parseResult.data.nodes) {
+					nodeCount = parseResult.data.nodes.length;
 				}
 			}
 			handleNodeAddition("BULK_NODES_ADDED", nodeCount);
@@ -861,9 +878,11 @@ export function useAnimatedLayout(options: UseAnimatedLayoutOptions = {}) {
 		const unsubscribe = eventBus.on(GraphEventType.BULK_EDGES_ADDED, (event) => {
 			logger.debug("graph", "BULK_EDGES_ADDED event received", event);
 			const payload = event.payload;
-			const edgeCount = typeof payload === "object" && payload && "edges" in payload && Array.isArray((payload as { edges?: unknown }).edges)
-				? (payload as { edges: unknown[] }).edges.length
-				: 0;
+			let edgeCount = 0;
+			const parseResult = EdgesPayloadSchema.safeParse(payload);
+			if (parseResult.success && parseResult.data.edges) {
+				edgeCount = parseResult.data.edges.length;
+			}
 			handleEdgeAddition("BULK_EDGES_ADDED", edgeCount);
 		});
 
@@ -886,12 +905,26 @@ export function useAnimatedLayout(options: UseAnimatedLayoutOptions = {}) {
 		const unsubscribe = eventBus.on(GraphEventType.FORCE_LAYOUT_RESTART, (event) => {
 			logger.debug("graph", "FORCE_LAYOUT_RESTART event received", event);
 			const payload = event.payload;
-			const alpha = typeof payload === "object" && payload && "alpha" in payload
-				? Number((payload as { alpha?: unknown }).alpha) || 1.0
-				: 1.0;
-			const reason = typeof payload === "object" && payload && "reason" in payload
-				? String((payload as { reason?: unknown }).reason) || "force-restart"
-				: "force-restart";
+			let alpha = 1.0;
+			let reason = "force-restart";
+			const parseResult = ForceRestartPayloadSchema.safeParse(payload);
+			if (parseResult.success) {
+				if (parseResult.data.alpha !== undefined) {
+					const alphaValue = Number(parseResult.data.alpha);
+					if (!isNaN(alphaValue)) {
+						alpha = alphaValue;
+					}
+				}
+				if (parseResult.data.reason !== undefined) {
+					const reasonRaw = parseResult.data.reason;
+					if (typeof reasonRaw === "string" || typeof reasonRaw === "number") {
+						const reasonValue = String(reasonRaw);
+						if (reasonValue) {
+							reason = reasonValue;
+						}
+					}
+				}
+			}
 
 			logger.debug("graph", "Forcing strong layout reheat", { alpha, reason });
 			reheatLayout(alpha);
