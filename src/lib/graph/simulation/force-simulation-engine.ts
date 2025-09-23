@@ -388,7 +388,15 @@ export class ForceSimulationEngine {
       }
     }
 
-    const payload = {
+    const payload: {
+      messageType: "started" | "tick" | "paused" | "resumed" | "parameters_updated";
+      positions?: NodePosition[];
+      alpha?: number;
+      iteration?: number;
+      fps?: number;
+      nodeCount?: number;
+      linkCount?: number;
+    } = {
       messageType,
       positions,
       alpha: this.currentSimulation?.alpha(),
