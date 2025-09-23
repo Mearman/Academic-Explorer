@@ -1,0 +1,106 @@
+{
+  "name": "@academic-explorer/ui-components",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "packages/ui-components/src",
+  "projectType": "library",
+  "targets": {
+    "build": {
+      "executor": "nx:run-commands",
+      "dependsOn": ["^build"],
+      "options": {
+        "commands": [
+          "tsc -b",
+          "vite build"
+        ],
+        "cwd": "{projectRoot}"
+      },
+      "outputs": [
+        "{projectRoot}/dist"
+      ],
+      "cache": true
+    },
+    "typecheck": {
+      "executor": "nx:run-commands",
+      "dependsOn": ["^build"],
+      "options": {
+        "command": "tsc --noEmit",
+        "cwd": "{projectRoot}"
+      },
+      "cache": true
+    },
+    "lint": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "eslint src",
+        "cwd": "{projectRoot}"
+      },
+      "cache": true
+    },
+    "lint:fix": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "eslint src --fix",
+        "cwd": "{projectRoot}"
+      },
+      "cache": false
+    },
+    "test": {
+      "executor": "nx:run-commands",
+      "dependsOn": ["^build"],
+      "options": {
+        "command": "vitest run",
+        "cwd": "{projectRoot}"
+      },
+      "outputs": [
+        "{projectRoot}/coverage"
+      ],
+      "cache": true
+    },
+    "test:watch": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "vitest",
+        "cwd": "{projectRoot}"
+      },
+      "cache": false
+    },
+    "clean": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "rm -rf dist",
+        "cwd": "{projectRoot}"
+      },
+      "cache": false
+    },
+    "dev": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "tsc -b --watch",
+        "cwd": "{projectRoot}"
+      },
+      "cache": false
+    },
+    "storybook": {
+      "executor": "nx:run-commands",
+      "dependsOn": ["^build"],
+      "options": {
+        "command": "storybook dev -p 6006",
+        "cwd": "{projectRoot}"
+      },
+      "cache": false
+    },
+    "build-storybook": {
+      "executor": "nx:run-commands",
+      "dependsOn": ["build"],
+      "options": {
+        "command": "storybook build",
+        "cwd": "{projectRoot}"
+      },
+      "outputs": [
+        "{projectRoot}/storybook-static"
+      ],
+      "cache": true
+    }
+  },
+  "tags": ["type:library", "scope:ui", "layer:components"]
+}

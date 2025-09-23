@@ -1,0 +1,245 @@
+{
+  "name": "academic-explorer",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "apps/academic-explorer/src",
+  "projectType": "application",
+  "targets": {
+    "dev": {
+      "executor": "nx:run-commands",
+      "dependsOn": ["^build"],
+      "options": {
+        "command": "vite",
+        "cwd": "{projectRoot}"
+      }
+    },
+    "build": {
+      "executor": "nx:run-commands",
+      "dependsOn": ["typecheck", "^build"],
+      "options": {
+        "commands": [
+          "tsc -b tsconfig.app.json",
+          "vite build"
+        ],
+        "cwd": "{projectRoot}"
+      },
+      "outputs": [
+        "{projectRoot}/dist"
+      ],
+      "cache": true
+    },
+    "typecheck": {
+      "executor": "nx:run-commands",
+      "dependsOn": ["^build"],
+      "options": {
+        "command": "tsc --noEmit",
+        "cwd": "{projectRoot}"
+      },
+      "cache": true
+    },
+    "lint": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "eslint .",
+        "cwd": "{projectRoot}"
+      },
+      "cache": true
+    },
+    "test": {
+      "executor": "nx:run-commands",
+      "dependsOn": ["^build"],
+      "options": {
+        "command": "vitest run --project=unit --project=component --coverage",
+        "cwd": "{projectRoot}"
+      },
+      "cache": true
+    },
+    "test:run": {
+      "executor": "nx:run-commands",
+      "dependsOn": ["^build"],
+      "options": {
+        "command": "vitest run --project=unit --project=component --coverage",
+        "cwd": "{projectRoot}"
+      },
+      "cache": true
+    },
+    "test:unit:run": {
+      "executor": "nx:run-commands",
+      "dependsOn": ["^build"],
+      "options": {
+        "command": "vitest run --project=unit --coverage",
+        "cwd": "{projectRoot}"
+      },
+      "cache": true
+    },
+    "test:component:run": {
+      "executor": "nx:run-commands",
+      "dependsOn": ["^build"],
+      "options": {
+        "command": "vitest run --project=component",
+        "cwd": "{projectRoot}"
+      },
+      "cache": true
+    },
+    "test:integration:run": {
+      "executor": "nx:run-commands",
+      "dependsOn": ["^build"],
+      "options": {
+        "command": "vitest run --project=integration",
+        "cwd": "{projectRoot}"
+      },
+      "cache": true
+    },
+    "test:e2e:run": {
+      "executor": "nx:run-commands",
+      "dependsOn": ["build"],
+      "options": {
+        "command": "vitest run --project=e2e",
+        "cwd": "{projectRoot}"
+      },
+      "cache": true
+    },
+    "preview": {
+      "executor": "nx:run-commands",
+      "dependsOn": ["build"],
+      "options": {
+        "command": "vite preview",
+        "cwd": "{projectRoot}"
+      },
+      "cache": true
+    },
+    "lint:fix": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "eslint . --fix",
+        "cwd": "{projectRoot}"
+      },
+      "cache": true
+    },
+    "verify": {
+      "executor": "nx:run-commands",
+      "dependsOn": ["typecheck", "lint", "test:unit:run", "build"],
+      "options": {
+        "commands": [
+          "echo '✅ TypeScript checking passed'",
+          "echo '✅ Linting passed'",
+          "echo '✅ Unit tests passed'",
+          "echo '✅ Build completed successfully'",
+          "echo '🎉 All quality checks passed!'"
+        ],
+        "parallel": false,
+        "cwd": "{projectRoot}"
+      }
+    },
+    "verify:full": {
+      "executor": "nx:run-commands",
+      "dependsOn": ["typecheck", "lint", "test:unit:run", "build"],
+      "options": {
+        "commands": [
+          "echo '✅ TypeScript checking passed'",
+          "echo '✅ Linting passed'",
+          "echo '✅ Unit tests with coverage passed'",
+          "echo '✅ Build completed successfully'",
+          "echo '🎉 All quality checks passed with coverage!'"
+        ],
+        "parallel": false,
+        "cwd": "{projectRoot}"
+      }
+    },
+    "verify:parallel": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          "pnpm typecheck",
+          "pnpm lint",
+          "pnpm test:unit:run"
+        ],
+        "parallel": true,
+        "cwd": "{projectRoot}"
+      },
+      "cache": true
+    },
+    "clean": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "rm -rf dist coverage .nx/cache .tanstack node_modules/.vite",
+        "cwd": "{projectRoot}"
+      },
+      "cache": false
+    },
+    "a11y:test": {
+      "executor": "nx:run-commands",
+      "dependsOn": ["build"],
+      "options": {
+        "command": "pa11y-ci",
+        "cwd": "{projectRoot}"
+      },
+      "cache": false
+    },
+    "a11y:lighthouse": {
+      "executor": "nx:run-commands",
+      "dependsOn": ["build"],
+      "options": {
+        "command": "lhci autorun",
+        "cwd": "{projectRoot}"
+      },
+      "cache": false
+    },
+    "a11y:dev": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "pa11y-ci --config .pa11yci-dev.json",
+        "cwd": "{projectRoot}"
+      },
+      "cache": false
+    },
+    "a11y:ci": {
+      "executor": "nx:run-commands",
+      "dependsOn": ["a11y:test", "a11y:lighthouse"],
+      "options": {
+        "commands": [
+          "echo '✅ pa11y-ci accessibility tests passed'",
+          "echo '✅ Lighthouse CI accessibility audit passed'",
+          "echo '🎉 All accessibility checks passed!'"
+        ],
+        "parallel": false,
+        "cwd": "{projectRoot}"
+      },
+      "cache": true
+    },
+    "test:a11y": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "vitest run --project=component --testNamePattern=\"accessibility\" --coverage",
+        "cwd": "{projectRoot}"
+      },
+      "outputs": ["{projectRoot}/coverage"],
+      "cache": true
+    },
+    "test:a11y:e2e": {
+      "executor": "nx:run-commands",
+      "dependsOn": ["build"],
+      "options": {
+        "command": "vitest run --project=e2e --testNamePattern=\"accessibility\"",
+        "cwd": "{projectRoot}"
+      },
+      "outputs": ["{projectRoot}/coverage"],
+      "cache": true
+    },
+    "verify:a11y": {
+      "executor": "nx:run-commands",
+      "dependsOn": ["lint", "test:a11y", "a11y:ci"],
+      "options": {
+        "commands": [
+          "echo '✅ ESLint accessibility rules passed'",
+          "echo '✅ Component accessibility tests passed'",
+          "echo '✅ pa11y-ci and Lighthouse CI passed'",
+          "echo '🎉 Full accessibility verification completed!'"
+        ],
+        "parallel": false,
+        "cwd": "{projectRoot}"
+      },
+      "cache": true
+    }
+  },
+  "tags": ["type:app", "scope:academic-explorer", "layer:app"]
+}

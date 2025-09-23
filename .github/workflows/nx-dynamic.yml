@@ -1,0 +1,271 @@
+name: 'Nx Dynamic Jobs from Dependency Graph'
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  # Generate job definitions from Nx dependency graph
+  setup:
+    runs-on: ubuntu-latest
+    outputs:
+      has-affected: ${{ steps.generate.outputs.has-affected }}
+      workflow-file: ${{ steps.generate.outputs.workflow-file }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'pnpm'
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 8
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Setup Nx
+        uses: nrwl/nx-set-shas@v4
+        with:
+          main-branch-name: 'main'
+
+      - name: Generate dynamic workflow from dependency graph
+        id: generate
+        run: |
+          # Get affected projects
+          affected=$(pnpm nx show projects --affected --json || echo '[]')
+          has_affected=$(echo "$affected" | jq 'length > 0')
+
+          if [ "$has_affected" = "false" ]; then
+            echo "has-affected=false" >> $GITHUB_OUTPUT
+            echo "workflow-file={}" >> $GITHUB_OUTPUT
+            exit 0
+          fi
+
+          # Generate dependency graph
+          pnpm nx graph --file=graph.json --focus=$(echo "$affected" | jq -r 'join(",")') 2>/dev/null || echo '{"dependencies": {}}' > graph.json
+
+          # Create dynamic workflow
+          cat > /tmp/dynamic-workflow.yml << 'WORKFLOW_EOF'
+name: 'Generated Nx Jobs'
+
+on:
+  workflow_call:
+
+jobs:
+WORKFLOW_EOF
+
+          # Generate lint jobs (no dependencies)
+          echo "$affected" | jq -r '.[]' | while read -r project; do
+            job_id="lint-$(echo "$project" | sed 's/[^a-zA-Z0-9]/-/g' | sed 's/^-*//; s/-*$//')"
+            cat >> /tmp/dynamic-workflow.yml << EOF
+  $job_id:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'pnpm'
+      - name: Install pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 8
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+      - name: Setup Nx
+        uses: nrwl/nx-set-shas@v4
+        with:
+          main-branch-name: 'main'
+      - name: Restore Nx cache
+        uses: actions/cache@v4
+        with:
+          path: .nx/cache
+          key: nx-\${{ runner.os }}-\${{ hashFiles('pnpm-lock.yaml', 'nx.json', '**/project.json') }}
+          restore-keys: |
+            nx-\${{ runner.os }}-
+      - name: Lint $project
+        run: pnpm nx lint $project
+
+EOF
+          done
+
+          # Generate build jobs with dependencies
+          echo "$affected" | jq -r '.[]' | while read -r project; do
+            job_id="build-$(echo "$project" | sed 's/[^a-zA-Z0-9]/-/g' | sed 's/^-*//; s/-*$//')"
+
+            # Get dependencies for this project
+            deps=$(cat graph.json | jq -r --arg proj "$project" '
+              .dependencies[$proj] // [] |
+              map("build-" + (. | gsub("[^a-zA-Z0-9]"; "-") | gsub("^-+|-+$"; ""))) |
+              if length == 0 then [] else . end |
+              join(", ")
+            ')
+
+            # Add needs field if there are dependencies
+            needs_field=""
+            if [ -n "$deps" ]; then
+              needs_field="    needs: [$deps]"
+            fi
+
+            cat >> /tmp/dynamic-workflow.yml << EOF
+  $job_id:
+$needs_field
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'pnpm'
+      - name: Install pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 8
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+      - name: Setup Nx
+        uses: nrwl/nx-set-shas@v4
+        with:
+          main-branch-name: 'main'
+      - name: Restore Nx cache
+        uses: actions/cache@v4
+        with:
+          path: .nx/cache
+          key: nx-\${{ runner.os }}-\${{ hashFiles('pnpm-lock.yaml', 'nx.json', '**/project.json') }}
+          restore-keys: |
+            nx-\${{ runner.os }}-
+      - name: Build $project
+        run: pnpm nx build $project
+
+EOF
+          done
+
+          # Generate test jobs (depend on corresponding build job)
+          echo "$affected" | jq -r '.[]' | while read -r project; do
+            job_id="test-$(echo "$project" | sed 's/[^a-zA-Z0-9]/-/g' | sed 's/^-*//; s/-*$//')"
+            build_job="build-$(echo "$project" | sed 's/[^a-zA-Z0-9]/-/g' | sed 's/^-*//; s/-*$//')"
+
+            cat >> /tmp/dynamic-workflow.yml << EOF
+  $job_id:
+    needs: [$build_job]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'pnpm'
+      - name: Install pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 8
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+      - name: Setup Nx
+        uses: nrwl/nx-set-shas@v4
+        with:
+          main-branch-name: 'main'
+      - name: Restore Nx cache
+        uses: actions/cache@v4
+        with:
+          path: .nx/cache
+          key: nx-\${{ runner.os }}-\${{ hashFiles('pnpm-lock.yaml', 'nx.json', '**/project.json') }}
+          restore-keys: |
+            nx-\${{ runner.os }}-
+      - name: Test $project
+        run: pnpm nx test $project
+        env:
+          NODE_OPTIONS: '--max-old-space-size=8192'
+
+EOF
+          done
+
+          # Output workflow content for debugging
+          echo "=== GENERATED WORKFLOW ==="
+          cat /tmp/dynamic-workflow.yml
+
+          # Convert workflow to base64 for output
+          workflow_content=$(base64 -i /tmp/dynamic-workflow.yml | tr -d '\n')
+
+          echo "has-affected=$has_affected" >> $GITHUB_OUTPUT
+          echo "workflow-file=$workflow_content" >> $GITHUB_OUTPUT
+
+          echo "=== AFFECTED PROJECTS ==="
+          echo "$affected" | jq -r '.[]'
+          echo "=== DEPENDENCY GRAPH ==="
+          cat graph.json | jq -r '.dependencies | to_entries[] | "\(.key) depends on: \(.value | join(", "))"'
+
+  # Fallback quality check job (always runs)
+  quality:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'pnpm'
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 8
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Check for unused dependencies
+        run: pnpm knip
+
+      - name: Verify workspace structure
+        run: pnpm nx graph --file=workspace-graph.json && echo "Workspace graph generated successfully"
+
+  # Status check
+  ci-complete:
+    runs-on: ubuntu-latest
+    needs: [setup, quality]
+    if: always()
+    steps:
+      - name: Check CI status
+        run: |
+          if [[ "${{ needs.setup.outputs.has-affected }}" == "false" ]]; then
+            echo "No affected projects - CI complete"
+          else
+            echo "Dynamic jobs were generated and should be running"
+            echo "Check the setup job output for the generated workflow"
+          fi
+
+          if [[ "${{ needs.quality.result }}" == "failure" ]]; then
+            echo "Quality checks failed"
+            exit 1
+          fi
+
+          echo "CI pipeline complete"

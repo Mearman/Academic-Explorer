@@ -1,0 +1,20 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "declaration": false,
+    "outDir": "./dist",
+    "rootDir": "./src",
+    "noEmit": true,
+    "jsx": "react-jsx",
+    "types": ["vite/client", "vitest/globals"]
+  },
+  "include": ["src/**/*", "vite.config.ts", "vitest.config.ts"],
+  "exclude": ["**/*.test.*", "**/*.spec.*", "dist", "node_modules"],
+  "references": [
+    { "path": "../../packages/graph" },
+    { "path": "../../packages/shared-utils" },
+    { "path": "../../packages/simulation" },
+    { "path": "../../packages/openalex-client" },
+    { "path": "../../packages/ui-components" }
+  ]
+}

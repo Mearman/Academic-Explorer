@@ -1,0 +1,63 @@
+{
+  "name": "@academic-explorer/cli",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "apps/cli/src",
+  "projectType": "application",
+  "tags": ["app:cli"],
+  "targets": {
+    "build": {
+      "executor": "@nx/js:tsc",
+      "outputs": [
+        "{options.outputPath}"
+      ],
+      "options": {
+        "outputPath": "apps/cli/dist",
+        "main": "apps/cli/src/simple-cli.ts",
+        "tsConfig": "apps/cli/tsconfig.json",
+        "assets": []
+      }
+    },
+    "typecheck": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "tsc --noEmit",
+        "cwd": "apps/cli"
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint",
+      "outputs": [
+        "{options.outputFile}"
+      ],
+      "options": {
+        "lintFilePatterns": [
+          "apps/cli/src/**/*.ts"
+        ]
+      }
+    },
+    "test": {
+      "executor": "@nx/vite:test",
+      "outputs": [
+        "{options.coverage.reportsDirectory}"
+      ],
+      "options": {
+        "passWithNoTests": true,
+        "reportsDirectory": "coverage/apps/cli",
+        "coverage": {
+          "enabled": true,
+          "reportsDirectory": "coverage/apps/cli"
+        }
+      }
+    },
+    "clean": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "rm -rf apps/cli/dist"
+      }
+    }
+  },
+  "implicitDependencies": [
+    "@academic-explorer/openalex-client",
+    "@academic-explorer/shared-utils"
+  ]
+}

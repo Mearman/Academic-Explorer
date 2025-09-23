@@ -1,0 +1,76 @@
+{
+  "name": "@academic-explorer/shared-utils",
+  "version": "8.1.0",
+  "type": "module",
+  "description": "Shared utilities and helpers for Academic Explorer",
+  "keywords": ["utils", "helpers", "academic", "research", "typescript"],
+  "author": "Joe Mearman",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Mearman/Academic-Explorer.git",
+    "directory": "packages/shared-utils"
+  },
+  "files": [
+    "dist",
+    "src",
+    "README.md"
+  ],
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    },
+    "./logger": {
+      "import": "./dist/logger.js",
+      "types": "./dist/logger.d.ts"
+    },
+    "./type-guards": {
+      "import": "./dist/type-guards.js",
+      "types": "./dist/type-guards.d.ts"
+    },
+    "./cache": {
+      "import": "./dist/cache/index.js",
+      "types": "./dist/cache/index.d.ts"
+    },
+    "./storage": {
+      "import": "./dist/storage/index.js",
+      "types": "./dist/storage/index.d.ts"
+    }
+  },
+  "scripts": {
+    "build": "tsc -b",
+    "clean": "rm -rf dist",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint src",
+    "lint:fix": "eslint src --fix",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "dev": "tsc -b --watch"
+  },
+  "dependencies": {
+    "idb": "^8.0.3",
+    "lodash-es": "^4.17.21"
+  },
+  "devDependencies": {
+    "@types/lodash-es": "^4.17.12",
+    "typescript": "~5.9.2",
+    "vitest": "^3.2.4",
+    "eslint": "^9.36.0",
+    "fake-indexeddb": "^6.0.0"
+  },
+  "peerDependencies": {
+    "zustand": "^5.0.0"
+  },
+  "peerDependenciesMeta": {
+    "zustand": {
+      "optional": true
+    }
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}

@@ -39,3 +39,20 @@ test-results
 
 # Auto-generated acknowledgements (managed by CI)
 ACKNOWLEDGEMENTS.md
+
+# Monorepo specific
+apps/*/dist
+apps/*/node_modules
+packages/*/dist
+packages/*/node_modules
+packages/*/coverage
+
+# Package build artifacts
+*.tgz
+**/dist/
+**/lib/
+**/build/
+
+# Temporary files
+.temp/
+.tmp/

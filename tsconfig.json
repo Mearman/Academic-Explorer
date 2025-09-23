@@ -1,8 +1,37 @@
 {
+  "extends": "./tsconfig.base.json",
   "files": [],
+  "include": [],
   "references": [
-    { "path": "./tsconfig.app.json" },
-    { "path": "./tsconfig.node.json" },
-    { "path": "./tsconfig.test.json" }
+    {
+      "path": "./apps/academic-explorer"
+    },
+    {
+      "path": "./packages/core"
+    },
+    {
+      "path": "./packages/data"
+    },
+    {
+      "path": "./packages/graph"
+    },
+    {
+      "path": "./packages/layout"
+    },
+    {
+      "path": "./packages/network"
+    },
+    {
+      "path": "./packages/storage"
+    },
+    {
+      "path": "./packages/testing"
+    },
+    {
+      "path": "./packages/ui"
+    },
+    {
+      "path": "./packages/utils"
+    }
   ]
 }
