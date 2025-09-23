@@ -72,7 +72,7 @@ export async function waitForAppReady(page: Page): Promise<void> {
  */
 export async function navigateToApp(page: Page, path: string = "/"): Promise<void> {
 	// Construct the full URL with hash routing
-	const baseUrl = process.env.E2E_BASE_URL || "http://localhost:4173"
+	const baseUrl = process.env.E2E_BASE_URL || "http://localhost:5173"
 	const hashPath = path.startsWith("/") ? `#${path}` : `#/${path}`
 	const fullUrl = `${baseUrl}/${hashPath}`
 
@@ -84,17 +84,32 @@ export async function navigateToApp(page: Page, path: string = "/"): Promise<voi
  * Mock OpenAlex API responses for testing
  */
 export async function mockOpenAlexAPI(page: Page, responses: Record<string, unknown> = {}): Promise<void> {
-	// Intercept both external OpenAlex API calls and local API proxy calls
-	// Use two separate route handlers for better matching
+ 	console.log("DEBUG: mockOpenAlexAPI called with responses:", Object.keys(responses));
 
-	// Handle external OpenAlex API calls
-	await page.route(/.*openalex\.org.*/, async (route) => {
-		const url = route.request().url()
-		const urlParts = url.split("openalex.org")
-		const endpoint = urlParts[1]?.split("?")[0] || ""
-		const endpointWithoutSlash = endpoint.startsWith("/") ? endpoint.substring(1) : endpoint
+ 	// Intercept both external OpenAlex API calls and local API proxy calls
+ 	// Use two separate route handlers for better matching
 
-		const mockData = responses[endpoint] || responses[`/${endpointWithoutSlash}`] || responses[endpointWithoutSlash]
+  	// Handle external OpenAlex API calls - be more specific to avoid intercepting dev server requests
+  	await page.route(/^https?:\/\/api\.openalex\.org\/.*/, async (route) => {
+  		console.log("DEBUG: Intercepted OpenAlex API request:", route.request().url());
+ 		const url = route.request().url()
+ 		const urlParts = url.split("api.openalex.org")
+ 		let endpoint = urlParts[1]?.split("?")[0] || ""
+ 		const endpointWithoutSlash = endpoint.startsWith("/") ? endpoint.substring(1) : endpoint
+
+ 		// Clean OpenAlex IDs in the endpoint - handle both encoded and decoded URLs
+ 		let cleanEndpoint = endpoint
+ 		try {
+ 			// Decode URL-encoded parts
+ 			const decodedEndpoint = decodeURIComponent(endpoint)
+ 			// Replace full OpenAlex URLs with short IDs
+ 			cleanEndpoint = decodedEndpoint.replace(/https?:\/\/openalex\.org\//g, "")
+ 		} catch {
+ 			// If decoding fails, try direct replacement
+ 			cleanEndpoint = endpoint.replace(/https?%3A%2F%2Fopenalex\.org%2F/g, "")
+ 		}
+
+ 		const mockData = responses[cleanEndpoint] || responses[`/${cleanEndpoint}`] || responses[cleanEndpoint] || responses[endpoint] || responses[`/${endpointWithoutSlash}`] || responses[endpointWithoutSlash]
 
 
 		if (mockData) {
@@ -117,8 +132,8 @@ export async function mockOpenAlexAPI(page: Page, responses: Record<string, unkn
 		}
 	})
 
-	// Handle local API proxy calls (e.g., /api/works/W123)
-	await page.route(/.*\/api\/.*/, async (route) => {
+	// Handle local API proxy calls - be more specific to avoid intercepting Vite dev server requests
+	await page.route(/^https?:\/\/localhost:\d+\/api\/.*/, async (route) => {
 		const url = route.request().url()
 		const apiMatch = url.match(/\/api\/(.+?)(?:\?|$)/)
 		const endpoint = apiMatch ? `/${apiMatch[1]}` : ""

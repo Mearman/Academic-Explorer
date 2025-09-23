@@ -33,7 +33,8 @@ describe("OpenAlex ID Normalization", () => {
 		await mockOpenAlexAPI(page, mockAuthorData)
 
 		// Navigate to lowercase ID URL
-		await page.goto("http://localhost:4173/#/authors/a5025875274")
+		const baseUrl = process.env.E2E_BASE_URL || "http://localhost:4173"
+		await page.goto(`${baseUrl}/#/authors/a5025875274`)
 
 		// Wait for redirect to complete
 		await waitForOpenAlexData(page)
@@ -64,11 +65,12 @@ describe("OpenAlex ID Normalization", () => {
 
 		// Test various OpenAlex URL formats that should all redirect to /authors/A5025875274
 		// Use URL-encoded versions since browser transforms #/https:// to #/https:/
+		const baseUrl = process.env.E2E_BASE_URL || "http://localhost:4173"
 		const urlVariations = [
-			"http://localhost:4173/#/" + encodeURIComponent("https:/openalex.org/authors/a5025875274"),
-			"http://localhost:4173/#/" + encodeURIComponent("https:/openalex.org/authors/A5025875274"),
-			"http://localhost:4173/#/" + encodeURIComponent("https:/api.openalex.org/people/A5025875274"),
-			"http://localhost:4173/#/" + encodeURIComponent("https:/api.openalex.org/people/a5025875274")
+			`${baseUrl}/#/` + encodeURIComponent("https:/openalex.org/authors/a5025875274"),
+			`${baseUrl}/#/` + encodeURIComponent("https:/openalex.org/authors/A5025875274"),
+			`${baseUrl}/#/` + encodeURIComponent("https:/api.openalex.org/people/A5025875274"),
+			`${baseUrl}/#/` + encodeURIComponent("https:/api.openalex.org/people/a5025875274")
 		]
 
 		for (const testUrl of urlVariations) {

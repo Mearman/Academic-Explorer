@@ -13,6 +13,7 @@ function isCallableFunction(fn: unknown): fn is (...args: unknown[]) => Promise<
 }
 import { logger } from "@/lib/logger"
 import { useGraphStore } from "@/stores/graph-store"
+import { useAnimatedGraphStore } from "@/stores/animated-graph-store"
 
 let browser: Browser | undefined
 let context: BrowserContext | undefined
@@ -97,6 +98,7 @@ beforeEach(async () => {
 	globalThis.e2ePage = page
 	globalThis.e2eContext = context
 	globalThis.useGraphStore = useGraphStore // Expose useGraphStore globally
+	globalThis.useAnimatedGraphStore = useAnimatedGraphStore // Expose animated graph store for debugging and tests
 
 	// Expose accessibility testing functions globally
 	try {
@@ -124,4 +126,5 @@ declare global {
   var e2ePage: Page
   var e2eContext: BrowserContext
   var checkA11y: typeof checkA11y
+  var useAnimatedGraphStore: typeof useAnimatedGraphStore
 }
