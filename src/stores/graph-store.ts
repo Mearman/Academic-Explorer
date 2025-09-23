@@ -580,17 +580,6 @@ export const useGraphStore = create<GraphState>()(
 				const currentEdges = get().edges;
 				const newEdges = edges.filter(edge => !currentEdges[edge.id]);
 
-				logger.debug("graph", "Store addEdges called", {
-					totalEdges: edges.length,
-					newEdges: newEdges.length,
-					existingCount: Object.keys(currentEdges).length
-				});
-
-				// DEBUG: Expose store to window for testing
-				if (typeof window !== "undefined") {
-					// Use dynamic property assignment to avoid type assertion
-					Object.assign(window, { _graphStore: get() });
-				}
 
 				set((draft) => {
 					edges.forEach(edge => {
@@ -601,6 +590,12 @@ export const useGraphStore = create<GraphState>()(
 
 				// Only restart simulation if new edges were actually added
 				if (newEdges.length > 0) {
+					if (typeof window !== "undefined") {
+						const debugState = (window as any).__graphAutoDetectedEdges ?? { totalAdded: 0, lastBatch: [] };
+						debugState.totalAdded += newEdges.length;
+						debugState.lastBatch = newEdges.map(edge => edge.id);
+						(window as any).__graphAutoDetectedEdges = debugState;
+					}
 					// FORCE REHEAT for auto-detected edges that arrive after simulation has settled
 					// The weak requestRestart() is not sufficient for settled simulations
 					logger.debug("graph", "Store force reheating simulation for new edges", {
@@ -614,8 +609,8 @@ export const useGraphStore = create<GraphState>()(
 					animatedStore.requestRestart();
 
 					// Also trigger immediate reheat with events for settled simulations
-					if (typeof window !== "undefined" && edges.length <= 5) {
-						// Small number of edges likely means auto-detection, force immediate reheat
+					if (typeof window !== "undefined" && newEdges.length > 0) {
+						// Force immediate reheat for any new edges to settled simulations
 						localEventBus.emit({
 							type: GraphEventType.FORCE_LAYOUT_RESTART,
 							payload: { reason: "auto-detected-edges", alpha: 1.0 }

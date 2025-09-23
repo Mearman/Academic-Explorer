@@ -5,7 +5,10 @@
  */
 
 // Log when worker loads
-// Note: Worker environment logger is set up below after imports
+console.log("🤖 WORKER DEBUG: Background worker loaded and starting");
+self.addEventListener("message", (e) => {
+  console.log("🤖 WORKER DEBUG: Worker received message", e.data);
+});
 
 import { z } from "zod";
 import { WorkerEventType } from "@/lib/graph/events/types";
@@ -45,14 +48,21 @@ function createSimulationEngine(): ForceSimulationEngine {
     onProgress: (payload) => {
       const now = Date.now();
 
-      if (payload.messageType === "tick") {
-        logger.debug("worker", "Worker emitProgress called", {
-          messageType: payload.messageType,
-          positionsLength: payload.positions?.length,
-          timeSinceLastProgress: now - lastProgressTime,
-          throttleMs: PROGRESS_THROTTLE_MS
-        });
-      }
+       if (payload.messageType === "tick") {
+         console.log("🔄 WORKER TICK: Sending progress update", {
+           messageType: payload.messageType,
+           positionsLength: payload.positions?.length,
+           alpha: payload.alpha,
+           iteration: payload.iteration,
+           timeSinceLastProgress: now - lastProgressTime,
+           throttleMs: PROGRESS_THROTTLE_MS,
+           samplePosition: payload.positions?.[0] ? {
+             id: payload.positions[0].id,
+             x: Number(payload.positions[0].x.toFixed(2)),
+             y: Number(payload.positions[0].y.toFixed(2))
+           } : null
+         });
+       }
 
       // Throttle progress updates except for important state changes
       if (payload.messageType === "tick" && (now - lastProgressTime) < PROGRESS_THROTTLE_MS) {
@@ -352,17 +362,28 @@ function updateSimulationNodes(params: {
 
 
 
-// Message handling
-self.onmessage = (e: MessageEvent) => {
-  const data: unknown = e.data;
+  // Message handling
+  self.onmessage = (e: MessageEvent) => {
+    const data: unknown = e.data;
 
-  try {
-    // Handle worker pool task wrapper format
-    if (isExecuteTaskMessage(data)) {
-      logger.debug("worker", "Received EXECUTE_TASK message", {
-        taskId: data.taskId,
-        payloadType: typeof data.payload
-      });
+    console.log("📨 WORKER: Received message", {
+      type: data && typeof data === "object" && "type" in data ? data.type : "unknown",
+      hasTaskId: data && typeof data === "object" && "taskId" in data,
+      hasPayload: data && typeof data === "object" && "payload" in data
+    });
+
+    try {
+      // Handle worker pool task wrapper format
+      if (isExecuteTaskMessage(data)) {
+        console.log("📨 WORKER: Processing EXECUTE_TASK", {
+          taskId: data.taskId,
+          payloadType: data.payload && typeof data.payload === "object" && "type" in data.payload ? data.payload.type : "unknown"
+        });
+
+        logger.debug("worker", "Received EXECUTE_TASK message", {
+          taskId: data.taskId,
+          payloadType: typeof data.payload
+        });
 
       // Extract the actual payload and process it
       const actualPayload = data.payload;

@@ -199,7 +199,14 @@ export class WorkerPool {
     const workerId = `worker-${Date.now().toString()}-${Math.random().toString(36).substring(2)}`;
 
     try {
+      console.log("🔧 WORKER DEBUG: Creating worker", {
+        workerId,
+        modulePath: this.options.workerModule
+      });
+
       const worker = new Worker(this.options.workerModule, { type: "module" });
+
+      console.log("🔧 WORKER DEBUG: Worker created successfully", { workerId });
 
       const poolWorker: PoolWorker = {
         id: workerId,
@@ -224,6 +231,12 @@ export class WorkerPool {
       return workerId;
 
     } catch (error) {
+      console.error("🔧 WORKER DEBUG: Failed to create worker", {
+        workerId,
+        modulePath: this.options.workerModule,
+        error: error instanceof Error ? error.message : "Unknown error"
+      });
+
       logger.error("workerpool", "Failed to create worker", {
         workerId,
         error: error instanceof Error ? error.message : "Unknown error"
@@ -256,10 +269,16 @@ export class WorkerPool {
    * Handle messages from workers
    */
   private handleWorkerMessage(poolWorker: PoolWorker, data: unknown): void {
+    console.log("📨 WORKER MESSAGE DEBUG: Received message from worker", {
+      workerId: poolWorker.id,
+      data
+    });
+
     if (!data ||
         typeof data !== "object" ||
         !("type" in data) ||
         typeof data.type !== "string") {
+      console.log("📨 WORKER MESSAGE DEBUG: Invalid message format");
       return;
     }
 

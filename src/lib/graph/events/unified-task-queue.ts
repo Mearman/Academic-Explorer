@@ -89,6 +89,12 @@ export class TaskQueue {
    * Add a task to the queue
    */
   enqueue(task: TaskDescriptor): string {
+    console.log("📋 TASK QUEUE DEBUG: Enqueuing task", {
+      taskId: task.id,
+      type: task.payload && typeof task.payload === "object" && "type" in task.payload ? task.payload.type : "unknown",
+      hasWorkerModule: !!task.workerModule
+    });
+
     // Deep clone payload to prevent mutation issues
     const clonedPayload: unknown = task.payload ? JSON.parse(JSON.stringify(task.payload)) : task.payload;
 
@@ -446,6 +452,12 @@ export class TaskQueue {
             });
           }
         }
+
+        console.log("📤 TASK_QUEUE: Sending EXECUTE_TASK to worker", {
+          taskId: task.id,
+          payloadType: task.payload && typeof task.payload === "object" && "type" in task.payload ? task.payload.type : "unknown",
+          payloadKeys: task.payload && typeof task.payload === "object" ? Object.keys(task.payload) : []
+        });
 
         connection.worker.postMessage({
           type: "EXECUTE_TASK",
