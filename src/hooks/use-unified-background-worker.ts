@@ -62,7 +62,7 @@ const ForceSimulationControlAckSchema = z.object({
   action: z.string(),
   status: z.string().optional(),
   timestamp: z.number().optional()
-}).passthrough();
+}).strict();
 
 const ForceSimulationControlAckEnvelopeSchema = z.object({
   id: z.string().optional(),
@@ -219,34 +219,33 @@ export function useUnifiedBackgroundWorker(options: UseUnifiedBackgroundWorkerOp
 
       case "tick":
         if (Array.isArray(positions) && typeof alpha === "number" && typeof iteration === "number" && typeof progress === "number") {
-          if (true) { // TEMP: disable throttling
-            setNodePositions(positions);
-            nodePositionsRef.current = positions.map(pos => ({ ...pos }));
-            onPositionUpdate?.(positions);
+          // Throttling disabled for performance
+          setNodePositions(positions);
+          nodePositionsRef.current = positions.map(pos => ({ ...pos }));
+          onPositionUpdate?.(positions);
 
-            setAnimationState(prev => ({
-              ...prev,
-              alpha,
-              iteration,
-              progress,
-              fps: fps || prev.fps
+          setAnimationState(prev => ({
+            ...prev,
+            alpha,
+            iteration,
+            progress,
+            fps: fps || prev.fps
+          }));
+
+          if (fps) {
+            setPerformanceMetrics(prev => ({
+              averageFPS: (prev.averageFPS * prev.frameCount + fps) / (prev.frameCount + 1),
+              minFPS: Math.min(prev.minFPS, fps),
+              maxFPS: Math.max(prev.maxFPS, fps),
+              frameCount: prev.frameCount + 1,
+              totalAnimationTime: Date.now() - animationStartTimeRef.current,
+              averageResponseTime: prev.averageResponseTime
             }));
-
-            if (fps) {
-              setPerformanceMetrics(prev => ({
-                averageFPS: (prev.averageFPS * prev.frameCount + fps) / (prev.frameCount + 1),
-                minFPS: Math.min(prev.minFPS, fps),
-                maxFPS: Math.max(prev.maxFPS, fps),
-                frameCount: prev.frameCount + 1,
-                totalAnimationTime: Date.now() - animationStartTimeRef.current,
-                averageResponseTime: prev.averageResponseTime
-              }));
-            }
-
-            progressThrottleRef.current = setTimeout(() => {
-              progressThrottleRef.current = null;
-            }, progressThrottleMs);
           }
+
+          progressThrottleRef.current = setTimeout(() => {
+            progressThrottleRef.current = null;
+          }, progressThrottleMs);
         }
         break;
 
@@ -360,10 +359,10 @@ export function useUnifiedBackgroundWorker(options: UseUnifiedBackgroundWorkerOp
     const unsubscribers: Array<() => void> = [];
 
     const forceProgressUnsub = bus.on("TASK_PROGRESS", (event) => {
-      const payload = event.payload as Record<string, unknown> | undefined;
-      if (!payload) return;
+      if (!event.payload || typeof event.payload !== "object") return;
+      const payload = event.payload;
 
-      const taskId = typeof payload.id === "string" ? payload.id : undefined;
+      const taskId = "id" in payload && typeof payload.id === "string" ? payload.id : undefined;
       if (taskId && !activeTaskIdsRef.current.has(taskId)) {
         return;
       }
@@ -375,12 +374,12 @@ export function useUnifiedBackgroundWorker(options: UseUnifiedBackgroundWorkerOp
     unsubscribers.push(() => { forceProgressUnsub(); });
 
     const forceCompleteUnsub = bus.on("TASK_SUCCESS", (event) => {
-      const payload = event.payload as Record<string, unknown> | undefined;
-      if (!payload || typeof payload !== "object" || !("result" in payload)) {
+      if (!event.payload || typeof event.payload !== "object" || !("result" in event.payload)) {
         return;
       }
+      const payload = event.payload;
 
-      const taskId = typeof payload.id === "string" ? payload.id : undefined;
+      const taskId = "id" in payload && typeof payload.id === "string" ? payload.id : undefined;
       if (taskId && !activeTaskIdsRef.current.has(taskId)) {
         return;
       }
@@ -396,8 +395,8 @@ export function useUnifiedBackgroundWorker(options: UseUnifiedBackgroundWorkerOp
 
     const errorUnsub = bus.on("TASK_FAILED", (event) => {
       if (event.payload && typeof event.payload === "object" && "error" in event.payload) {
-        const taskPayload = event.payload as { id?: string; error?: unknown };
-        const taskId = typeof taskPayload.id === "string" ? taskPayload.id : undefined;
+        const taskPayload = event.payload;
+        const taskId = "id" in taskPayload && typeof taskPayload.id === "string" ? taskPayload.id : undefined;
         if (taskId && !activeTaskIdsRef.current.has(taskId)) {
           return;
         }
@@ -444,7 +443,7 @@ export function useUnifiedBackgroundWorker(options: UseUnifiedBackgroundWorkerOp
       const handleCompletion = (event: { payload?: unknown }) => {
         if (settled) return;
         const payload = event.payload;
-        if (payload && typeof payload === "object" && "id" in payload && (payload as { id: string }).id === taskId) {
+        if (payload && typeof payload === "object" && "id" in payload && payload.id === taskId) {
           cleanup();
           resolve();
         }
@@ -453,8 +452,8 @@ export function useUnifiedBackgroundWorker(options: UseUnifiedBackgroundWorkerOp
       const handleFailure = (event: { payload?: unknown }) => {
         if (settled) return;
         const payload = event.payload;
-        if (payload && typeof payload === "object" && "id" in payload && (payload as { id: string }).id === taskId) {
-          const errorMessage = (payload as { error?: string }).error ?? "Task failed";
+        if (payload && typeof payload === "object" && "id" in payload && payload.id === taskId) {
+          const errorMessage = ("error" in payload && typeof payload.error === "string") ? payload.error : "Task failed";
           cleanup();
           reject(new Error(errorMessage));
         }
@@ -463,7 +462,7 @@ export function useUnifiedBackgroundWorker(options: UseUnifiedBackgroundWorkerOp
       const handleCancelled = (event: { payload?: unknown }) => {
         if (settled) return;
         const payload = event.payload;
-        if (payload && typeof payload === "object" && "id" in payload && (payload as { id: string }).id === taskId) {
+        if (payload && typeof payload === "object" && "id" in payload && payload.id === taskId) {
           cleanup();
           resolve();
         }
@@ -716,7 +715,7 @@ export function useUnifiedBackgroundWorker(options: UseUnifiedBackgroundWorkerOp
     const taskId = `force-simulation-reheat-${Date.now().toString()}`;
     try {
       addActiveTask(taskId);
-      console.log("🎯 reheatAnimation payload creation:", {
+      logger.debug("worker", "reheatAnimation payload creation", {
         taskId,
         linkCount: links.length,
         nodeCount: nodes.length,
@@ -776,7 +775,7 @@ export function useUnifiedBackgroundWorker(options: UseUnifiedBackgroundWorkerOp
     const taskId = `force-simulation-update-links-${Date.now().toString()}`;
     try {
       addActiveTask(taskId);
-      console.log("🔗 updateSimulationLinks using HIGH PRIORITY task for immediate execution:", {
+      logger.debug("worker", "updateSimulationLinks using HIGH PRIORITY task for immediate execution", {
         taskId,
         linkCount: links.length,
         alpha,
@@ -807,7 +806,7 @@ export function useUnifiedBackgroundWorker(options: UseUnifiedBackgroundWorkerOp
         addActiveTask(resultTaskId);
       }
 
-      console.log("🔗 HIGH PRIORITY TASK SUBMITTED - should execute immediately!");
+      logger.debug("worker", "HIGH PRIORITY TASK SUBMITTED - should execute immediately");
       return resultTaskId;
     } catch (error: unknown) {
       removeActiveTask(taskId);
