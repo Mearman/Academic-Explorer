@@ -106,8 +106,8 @@ const NodeErrorSchema = z.object({
   code: z.string(),
 }).strict();
 
-// Schema for OpenAlex API response meta object
-const MetaSchema = z.object({
+// Schema for OpenAlex API response meta object (reserved for future use)
+const _MetaSchema = z.object({
   count: z.number().optional(),
   db_response_time_ms: z.number().optional(),
   page: z.number().optional(),
@@ -142,20 +142,20 @@ function generateCanonicalEntityUrl(entityType: StaticEntityType, entityId: stri
   return `https://api.openalex.org/${entityType}/${cleanId}`;
 }
 
-function extractEntityIdFromCanonicalUrl(canonicalUrl: string): string | null {
+function _extractEntityIdFromCanonicalUrl(canonicalUrl: string): string | null {
   const match = canonicalUrl.match(/https:\/\/api\.openalex\.org\/[^/]+\/(.+)$/);
   return match ? match[1] : null;
 }
 
-function extractEntityTypeFromCanonicalUrl(canonicalUrl: string): StaticEntityType | null {
+function _extractEntityTypeFromCanonicalUrl(canonicalUrl: string): StaticEntityType | null {
   const match = canonicalUrl.match(/https:\/\/api\.openalex\.org\/([^/]+)\//);
   const entityType = match ? match[1] : null;
   const validationResult = StaticEntityTypeSchema.safeParse(entityType);
   return validationResult.success ? validationResult.data : null;
 }
 
-// Helper function to check if file contents are different
-async function hasContentChanged(filePath: string, newContent: string): Promise<boolean> {
+// Helper function to check if file contents are different (reserved for future use)
+async function _hasContentChanged(filePath: string, newContent: string): Promise<boolean> {
   try {
     const existingContent = await readFile(filePath, "utf-8");
     return existingContent !== newContent;
@@ -352,7 +352,7 @@ export class OpenAlexCLI {
   /**
    * Save query result to cache
    */
-  async saveQueryToCache(entityType: StaticEntityType, url: string, queryOptions: QueryOptions, result: unknown, cacheOptions?: CacheOptions): Promise<void> {
+  async saveQueryToCache(entityType: StaticEntityType, url: string, queryOptions: QueryOptions, result: unknown, _cacheOptions?: CacheOptions): Promise<void> {
     try {
       const queryDir = join(this.dataPath, entityType, "queries");
       await mkdir(queryDir, { recursive: true });
@@ -687,7 +687,7 @@ export class OpenAlexCLI {
             continue;
           }
         }
-      } catch (error) {
+      } catch {
         // Query directory doesn't exist
         console.error(`Query directory not found: ${queryDir}`);
         return null;
@@ -777,7 +777,7 @@ export class OpenAlexCLI {
         if (validatedParams) {
           return this.paramsMatch(targetParams, validatedParams);
         }
-      } catch (error) {
+      } catch {
         // Continue to next matching method
       }
     }
@@ -787,7 +787,7 @@ export class OpenAlexCLI {
       try {
         const urlParams = this.normalizeQueryParams(queryDef.url);
         return this.paramsMatch(targetParams, urlParams);
-      } catch (error) {
+      } catch {
         // Continue to next matching method
       }
     }
@@ -806,7 +806,7 @@ export class OpenAlexCLI {
       // Base64url decode
       const jsonString = Buffer.from(cleanEncoded, "base64url").toString("utf-8");
       return JSON.parse(jsonString);
-    } catch (error) {
+    } catch {
       return null;
     }
   }
@@ -834,7 +834,7 @@ export class OpenAlexCLI {
       try {
         const encoded = Buffer.from(JSON.stringify(queryDef.params)).toString("base64url");
         return `${encoded}.json`;
-      } catch (error) {
+      } catch {
         return null;
       }
     }
@@ -845,7 +845,7 @@ export class OpenAlexCLI {
         const params = this.normalizeQueryParams(queryDef.url);
         const encoded = Buffer.from(JSON.stringify(params)).toString("base64url");
         return `${encoded}.json`;
-      } catch (error) {
+      } catch {
         return null;
       }
     }
@@ -895,7 +895,7 @@ export class OpenAlexCLI {
   /**
    * Update query index when adding a new cached query
    */
-  updateQueryIndex(entityType: StaticEntityType, queryDef: QueryDefinition, metadata: { lastModified?: string; contentHash?: string }): void {
+  updateQueryIndex(_entityType: StaticEntityType, _queryDef: QueryDefinition, _metadata: { lastModified?: string; contentHash?: string }): void {
     // Note: Query indexes are handled separately from unified indexes
     // This method maintains the existing query index format for backward compatibility
     // You may want to consider migrating query indexes to the unified format as well
@@ -1343,7 +1343,6 @@ export class OpenAlexCLI {
                 }
 
                 // Fetch entity from cached client (will use synthetic cache)
-                const entityTypeForClient = type;
                 const entity = await this.cachedClient.getById(
                   type, // endpoint
                   entityData.entityId,
