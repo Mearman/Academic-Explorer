@@ -1,17 +1,15 @@
 /**
- * Unified Background Worker Hook
- * Replaces the legacy background worker system with the new unified event system
- * Provides the same API for backward compatibility
+ * Unified Execution Worker Hook
+ * Provides the same API as the background worker but works with or without workers
+ * Automatically falls back to main thread execution when workers are not available
  */
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { z } from "zod";
 import { logger } from "@/lib/logger";
-import {
-  useTaskQueue,
-  useTaskProgress
-} from "@/lib/graph/events";
-import { getGlobalWorkerPool } from "@/lib/graph/worker-pool-singleton";
+import { createLocalEventBus } from "@/lib/graph/events";
+import { useUnifiedTaskSystem } from "@/lib/graph/execution/unified-task-system";
+import { ExecutionMode } from "@/lib/graph/execution";
 import type {
   ForceSimulationConfig,
   ForceSimulationNode,
@@ -22,7 +20,7 @@ import type { EntityType, GraphNode, GraphEdge } from "@/lib/graph/types";
 import type { ExpansionOptions } from "@/lib/entities";
 import type { ExpansionSettings } from "@/lib/graph/types/expansion-settings";
 
-// Zod schemas for worker message validation
+// Reuse schemas from the original hook
 const NodePositionSchema = z.object({
   id: z.string(),
   x: z.number(),
@@ -69,15 +67,6 @@ const ForceSimulationControlAckEnvelopeSchema = z.object({
   result: ForceSimulationControlAckSchema
 });
 
-const DataFetchCompleteSchema = z.object({
-  type: z.literal("DATA_FETCH_COMPLETE").optional(),
-  requestId: z.string().optional(),
-  nodeId: z.string().optional(),
-  nodes: z.array(z.unknown()).optional(),
-  edges: z.array(z.unknown()).optional(),
-  statistics: z.unknown().optional(),
-});
-
 interface AnimationState {
   isRunning: boolean;
   isPaused: boolean;
@@ -98,7 +87,7 @@ interface PerformanceMetrics {
   averageResponseTime: number;
 }
 
-interface UseUnifiedBackgroundWorkerOptions {
+interface UseUnifiedExecutionWorkerOptions {
   // Animation callbacks
   onPositionUpdate?: (positions: NodePosition[]) => void;
   onAnimationComplete?: (
@@ -117,34 +106,40 @@ interface UseUnifiedBackgroundWorkerOptions {
   }) => void;
   onExpansionError?: (nodeId: string, error: string) => void;
 
-  // General options
-  autoStart?: boolean;
-  enableProgressThrottling?: boolean;
+  // Execution options
+  executionMode?: "auto" | "worker" | "main-thread";
+  enableWorkerFallback?: boolean;
+  maxConcurrency?: number;
   progressThrottleMs?: number;
 }
 
-export function useUnifiedBackgroundWorker(options: UseUnifiedBackgroundWorkerOptions = {}) {
+export function useUnifiedExecutionWorker(options: UseUnifiedExecutionWorkerOptions = {}) {
   const {
     onPositionUpdate,
     onAnimationComplete,
     onAnimationError,
     onExpansionComplete,
     onExpansionError,
-    enableProgressThrottling: _enableProgressThrottling = true,
-    progressThrottleMs = 16 // ~60fps
+    executionMode = "auto",
+    enableWorkerFallback = true,
+    maxConcurrency = 2,
+    progressThrottleMs = 16
   } = options;
 
-  // Use global worker pool singleton to prevent multiple instances
-  const { bus, workerPool } = getGlobalWorkerPool();
-  const workerStats = workerPool.getStats();
-  const {
-    submitTask: submitQueueTask,
-    cancelTask: cancelQueueTask,
-    stats: queueStats
-  } = useTaskQueue(bus, { maxConcurrency: 2 }); // Allow 2 concurrent tasks for immediate updates
+  // Create event bus
+  const [bus] = useState(() => createLocalEventBus());
 
-  // Get the worker module path from the global pool
+  // Worker module path
   const workerModulePath = new URL("../workers/background.worker.ts", import.meta.url).href;
+
+  // Create unified task system
+  const taskSystem = useUnifiedTaskSystem({
+    mode: executionMode,
+    maxConcurrency,
+    workerModule: workerModulePath,
+    enableWorkerFallback,
+    autoInitialize: true
+  }, bus);
 
   // State management
   const [animationState, setAnimationState] = useState<AnimationState>({
@@ -186,15 +181,11 @@ export function useUnifiedBackgroundWorker(options: UseUnifiedBackgroundWorkerOp
     activeTaskIdsRef.current.delete(taskId);
   }, []);
 
-  // Task progress tracking for current animation
-  useTaskProgress(bus, currentTaskRef.current || "");
-
-  // Event handlers
+  // Event handlers (reuse from original hook with minor adjustments)
   const handleForceSimulationProgress = useCallback((payload: unknown) => {
-    // DEBUG: Remove in production
     const validationResult = ForceSimulationProgressSchema.safeParse(payload);
     if (!validationResult.success) {
-      logger.warn("worker", "Invalid force simulation progress payload", { payload, error: validationResult.error });
+      logger.warn("execution", "Invalid force simulation progress payload", { payload, error: validationResult.error });
       return;
     }
 
@@ -217,10 +208,9 @@ export function useUnifiedBackgroundWorker(options: UseUnifiedBackgroundWorkerOp
         }));
         break;
 
-      case "tick":
-        if (Array.isArray(positions) && typeof alpha === "number" && typeof iteration === "number" && typeof progress === "number") {
-          // Throttling disabled for performance
-          setNodePositions(positions);
+       case "tick":
+         if (Array.isArray(positions) && typeof alpha === "number" && typeof iteration === "number" && typeof progress === "number") {
+          // Update position reference and notify via callback
           nodePositionsRef.current = positions.map(pos => ({ ...pos }));
           onPositionUpdate?.(positions);
 
@@ -242,10 +232,6 @@ export function useUnifiedBackgroundWorker(options: UseUnifiedBackgroundWorkerOp
               averageResponseTime: prev.averageResponseTime
             }));
           }
-
-          progressThrottleRef.current = setTimeout(() => {
-            progressThrottleRef.current = null;
-          }, progressThrottleMs);
         }
         break;
 
@@ -257,7 +243,7 @@ export function useUnifiedBackgroundWorker(options: UseUnifiedBackgroundWorkerOp
         setAnimationState(prev => ({ ...prev, isPaused: false }));
         break;
     }
-  }, [addActiveTask, onPositionUpdate, progressThrottleMs]);
+  }, [addActiveTask, onPositionUpdate]);
 
   const handleForceSimulationComplete = useCallback((payload: unknown) => {
     const ackResult = ForceSimulationControlAckEnvelopeSchema.safeParse(payload);
@@ -274,7 +260,7 @@ export function useUnifiedBackgroundWorker(options: UseUnifiedBackgroundWorkerOp
 
     const envelopeResult = ForceSimulationCompleteEnvelopeSchema.safeParse(payload);
     if (!envelopeResult.success) {
-      logger.warn("worker", "Invalid force simulation complete payload", { payload, error: envelopeResult.error });
+      logger.warn("execution", "Invalid force simulation complete payload", { payload, error: envelopeResult.error });
       return;
     }
 
@@ -300,7 +286,6 @@ export function useUnifiedBackgroundWorker(options: UseUnifiedBackgroundWorkerOp
     }
 
     if (Array.isArray(positions)) {
-      setNodePositions(positions);
       nodePositionsRef.current = positions.map(pos => ({ ...pos }));
       onPositionUpdate?.(positions);
       onAnimationComplete?.(positions, { totalIterations, finalAlpha, reason });
@@ -320,41 +305,15 @@ export function useUnifiedBackgroundWorker(options: UseUnifiedBackgroundWorkerOp
     }));
   }, [onPositionUpdate, onAnimationComplete, removeActiveTask]);
 
-  const handleDataFetchComplete = useCallback((payload: unknown) => {
-    const validationResult = DataFetchCompleteSchema.safeParse(payload);
-    if (!validationResult.success) {
-      logger.warn("worker", "Invalid data fetch complete payload", { payload, error: validationResult.error });
-      return;
-    }
-
-    const { requestId, nodes, edges, statistics } = validationResult.data;
-    if (requestId && nodes && edges) {
-      const validatedNodes = Array.isArray(nodes) && nodes.every((node): node is GraphNode =>
-        typeof node === "object" && node !== null && "id" in node && "entityId" in node
-      ) ? nodes : [];
-
-      const validatedEdges = Array.isArray(edges) && edges.every((edge): edge is GraphEdge =>
-        typeof edge === "object" && edge !== null && "id" in edge && "source" in edge && "target" in edge
-      ) ? edges : [];
-
-      onExpansionComplete?.({
-        requestId,
-        nodes: validatedNodes,
-        edges: validatedEdges,
-        statistics
-      });
-    }
-  }, [onExpansionComplete]);
-
   const handleError = useCallback((error: string) => {
-    logger.error("worker", "Unified worker error", { error });
+    logger.error("execution", "Unified execution error", { error });
     onAnimationError?.(error);
     onExpansionError?.("unknown", error);
   }, [onAnimationError, onExpansionError]);
 
-  // Event listeners for unified system
+  // Event listeners
   useEffect(() => {
-    logger.debug("worker", "Setting up unified worker event listeners");
+    logger.debug("execution", "Setting up unified execution event listeners");
 
     const unsubscribers: Array<() => void> = [];
 
@@ -388,11 +347,6 @@ export function useUnifiedBackgroundWorker(options: UseUnifiedBackgroundWorkerOp
     });
     unsubscribers.push(() => { forceCompleteUnsub(); });
 
-    const dataCompleteUnsub = bus.on("DATA_FETCH_COMPLETE", (event) => {
-      handleDataFetchComplete(event.payload);
-    });
-    unsubscribers.push(() => { dataCompleteUnsub(); });
-
     const errorUnsub = bus.on("TASK_FAILED", (event) => {
       if (event.payload && typeof event.payload === "object" && "error" in event.payload) {
         const taskPayload = event.payload;
@@ -408,14 +362,6 @@ export function useUnifiedBackgroundWorker(options: UseUnifiedBackgroundWorkerOp
     });
     unsubscribers.push(() => { errorUnsub(); });
 
-    const debugMessageUnsub = bus.on("TASK_PROGRESS", (event) => {
-      const payload = event.payload;
-      if (payload && typeof payload === "object" && "type" in payload && payload.type === "debug") {
-        // Debug channel - no-op
-      }
-    });
-    unsubscribers.push(() => { debugMessageUnsub(); });
-
     return () => {
       unsubscribers.forEach(unsub => { unsub(); });
 
@@ -424,89 +370,122 @@ export function useUnifiedBackgroundWorker(options: UseUnifiedBackgroundWorkerOp
         progressThrottleRef.current = null;
       }
     };
-  }, [bus, handleForceSimulationProgress, handleForceSimulationComplete, handleDataFetchComplete, handleError, removeActiveTask]);
+  }, [bus, handleForceSimulationProgress, handleForceSimulationComplete, handleError, removeActiveTask]);
 
-  const waitForTaskCompletion = useCallback((taskId: string) => {
-    let cleanup = () => {};
-
-    const promise = new Promise<void>((resolve, reject) => {
-      let settled = false;
-
-      cleanup = () => {
-        if (settled) return;
-        settled = true;
-        completeUnsub();
-        failedUnsub();
-        cancelledUnsub();
-      };
-
-      const handleCompletion = (event: { payload?: unknown }) => {
-        if (settled) return;
-        const payload = event.payload;
-        if (payload && typeof payload === "object" && "id" in payload && payload.id === taskId) {
-          cleanup();
-          resolve();
-        }
-      };
-
-      const handleFailure = (event: { payload?: unknown }) => {
-        if (settled) return;
-        const payload = event.payload;
-        if (payload && typeof payload === "object" && "id" in payload && payload.id === taskId) {
-          const errorMessage = ("error" in payload && typeof payload.error === "string") ? payload.error : "Task failed";
-          cleanup();
-          reject(new Error(errorMessage));
-        }
-      };
-
-      const handleCancelled = (event: { payload?: unknown }) => {
-        if (settled) return;
-        const payload = event.payload;
-        if (payload && typeof payload === "object" && "id" in payload && payload.id === taskId) {
-          cleanup();
-          resolve();
-        }
-      };
-
-      const completeUnsub = bus.on("TASK_COMPLETED", handleCompletion);
-      const failedUnsub = bus.on("TASK_FAILED", handleFailure);
-      const cancelledUnsub = bus.on("TASK_CANCELLED", handleCancelled);
+  // Animation control methods (same API as original hook)
+  const startAnimation = useCallback(async ({
+    nodes,
+    links,
+    config,
+    pinnedNodes
+  }: {
+    nodes: ForceSimulationNode[];
+    links: ForceSimulationLink[];
+    config?: ForceSimulationConfig;
+    pinnedNodes?: Set<string>;
+  }) => {
+    logger.debug("execution", "Starting animation with unified execution", {
+      nodeCount: nodes?.length,
+      linkCount: links?.length,
+      pinnedCount: pinnedNodes?.size,
+      executionMode: taskSystem.getExecutionMode()
     });
 
-    return {
-      promise,
-      cleanup: () => { cleanup(); }
-    };
-  }, [bus]);
+    if (!nodes || nodes.length === 0) {
+      logger.warn("execution", "Cannot start animation with no nodes");
+      return;
+    }
 
-  // Animation control methods
+    // Cancel existing animation
+    const previousTaskId = currentTaskRef.current;
+    if (previousTaskId) {
+      await taskSystem.cancelTask(previousTaskId);
+      removeActiveTask(previousTaskId);
+      isAnimatingRef.current = false;
+      currentTaskRef.current = null;
+    }
+
+    // Merge with existing positions
+    const positionMap = new Map(nodePositionsRef.current.map(pos => [pos.id, pos]));
+    const seededNodes = nodes.map((node) => {
+      const existingPosition = positionMap.get(node.id);
+      if (!existingPosition) {
+        return node;
+      }
+
+      return {
+        ...node,
+        x: existingPosition.x,
+        y: existingPosition.y,
+        fx: typeof node.fx === "number" ? existingPosition.x : undefined,
+        fy: typeof node.fy === "number" ? existingPosition.y : undefined
+      };
+    });
+
+    // Reset performance metrics
+    setPerformanceMetrics({
+      averageFPS: 0,
+      minFPS: Infinity,
+      maxFPS: 0,
+      frameCount: 0,
+      totalAnimationTime: 0,
+      averageResponseTime: 0
+    });
+
+    const taskId = `force-simulation-${Date.now().toString()}`;
+    try {
+      addActiveTask(taskId);
+
+      const submittedTaskId = await taskSystem.submitTask({
+        id: taskId,
+        payload: {
+          type: "FORCE_SIMULATION_START",
+          nodes: seededNodes,
+          links,
+          config,
+          pinnedNodes: pinnedNodes ? Array.from(pinnedNodes) : []
+        },
+        timeout: 300000
+      });
+
+      currentTaskRef.current = submittedTaskId;
+
+      logger.debug("execution", "Animation started with unified execution", {
+        nodeCount: seededNodes.length,
+        linkCount: links?.length || 0,
+        pinnedCount: pinnedNodes?.size || 0,
+        taskId: submittedTaskId,
+        executionMode: taskSystem.getExecutionMode()
+      });
+
+      return submittedTaskId;
+    } catch (error) {
+      removeActiveTask(taskId);
+      const errorMessage = `Failed to start animation: ${error instanceof Error ? error.message : String(error)}`;
+      logger.error("execution", errorMessage, { error });
+      onAnimationError?.(errorMessage);
+      return null;
+    }
+  }, [taskSystem, addActiveTask, removeActiveTask, onAnimationError]);
+
+  // Other animation controls (similar pattern to startAnimation)
   const stopAnimation = useCallback(async () => {
     if (!currentTaskRef.current) {
-      logger.debug("worker", "No animation task to stop");
+      logger.debug("execution", "No animation task to stop");
       return;
     }
 
     const stopTaskId = `force-simulation-stop-${Date.now().toString()}`;
     addActiveTask(stopTaskId);
     try {
-      await submitQueueTask({
+      await taskSystem.submitTask({
         id: stopTaskId,
         payload: {
           type: "FORCE_SIMULATION_STOP"
-        },
-        workerModule: workerModulePath
+        }
       });
 
-      const { promise: stopPromise } = waitForTaskCompletion(stopTaskId);
-
-      try {
-        await stopPromise;
-      } catch (stopError) {
-        logger.error("worker", "Stop animation task failed", { stopTaskId, error: stopError });
-      }
-
       removeActiveTask(stopTaskId);
-
       const previousTaskId = currentTaskRef.current;
       if (previousTaskId) {
         removeActiveTask(previousTaskId);
@@ -521,178 +500,64 @@ export function useUnifiedBackgroundWorker(options: UseUnifiedBackgroundWorkerOp
       }));
     } catch (error) {
       removeActiveTask(stopTaskId);
-      logger.error("worker", "Failed to stop animation", { error });
+      logger.error("execution", "Failed to stop animation", { error });
     }
-  }, [submitQueueTask, workerModulePath, waitForTaskCompletion, removeActiveTask, addActiveTask]);
-
-  const startAnimation = useCallback(async ({
-    nodes,
-    links,
-    config,
-    pinnedNodes
-  }: {
-    nodes: ForceSimulationNode[];
-    links: ForceSimulationLink[];
-    config?: ForceSimulationConfig;
-    pinnedNodes?: Set<string>;
-  }) => {
-    if (!nodes || nodes.length === 0) {
-      logger.warn("worker", "Cannot start animation with no nodes");
-      return;
-    }
-
-    const previousTaskId = currentTaskRef.current;
-    if (previousTaskId) {
-      logger.debug("worker", "Cancelling existing animation before starting new one", {
-        currentTaskId: previousTaskId
-      });
-
-      const { promise: completionPromise, cleanup: cleanupWait } = waitForTaskCompletion(previousTaskId);
-      const cancelled = cancelQueueTask(previousTaskId);
-      if (cancelled) {
-        try {
-          await completionPromise;
-        } catch (cancelError) {
-          logger.error("worker", "Previous animation cancellation failed", {
-            taskId: previousTaskId,
-            error: cancelError
-          });
-        }
-        removeActiveTask(previousTaskId);
-      } else {
-        cleanupWait();
-      }
-
-      isAnimatingRef.current = false;
-      currentTaskRef.current = null;
-    }
-
-    // Merge incoming nodes with latest known positions so we preserve the current layout state
-    const positionMap = new Map(nodePositionsRef.current.map(pos => [pos.id, pos]));
-    const seededNodes = nodes.map((node) => {
-      const existingPosition = positionMap.get(node.id);
-      if (!existingPosition) {
-        return node;
-      }
-
-      const seededNode: ForceSimulationNode = {
-        ...node,
-        x: existingPosition.x,
-        y: existingPosition.y
-      };
-
-      if (typeof seededNode.fx === "number") {
-        seededNode.fx = existingPosition.x;
-      }
-      if (typeof seededNode.fy === "number") {
-        seededNode.fy = existingPosition.y;
-      }
-
-      return seededNode;
-    });
-
-    // Reset performance metrics for the fresh run
-    setPerformanceMetrics({
-      averageFPS: 0,
-      minFPS: Infinity,
-      maxFPS: 0,
-      frameCount: 0,
-      totalAnimationTime: 0,
-      averageResponseTime: 0
-    });
-
-    const taskId = `force-simulation-${Date.now().toString()}`;
-    try {
-      addActiveTask(taskId);
-      const submittedTaskId = await submitQueueTask({
-        id: taskId,
-        payload: {
-          type: "FORCE_SIMULATION_START",
-          nodes: seededNodes,
-          links,
-          config,
-          pinnedNodes: pinnedNodes ? Array.from(pinnedNodes) : []
-        },
-        workerModule: workerModulePath,
-        timeout: 300000 // 5 minutes
-      });
-
-      currentTaskRef.current = submittedTaskId;
-
-      logger.debug("worker", "Unified animation started", {
-        nodeCount: seededNodes.length,
-        linkCount: links?.length || 0,
-        pinnedCount: pinnedNodes?.size || 0,
-        taskId: submittedTaskId
-      });
-
-      return submittedTaskId;
-    } catch (error) {
-      removeActiveTask(taskId);
-      const errorMessage = `Failed to start animation: ${error instanceof Error ? error.message : String(error)}`;
-      logger.error("worker", errorMessage, { error });
-      onAnimationError?.(errorMessage);
-      return null;
-    }
-  }, [submitQueueTask, cancelQueueTask, nodePositionsRef, workerModulePath, waitForTaskCompletion, addActiveTask, removeActiveTask, onAnimationError]);
+  }, [taskSystem, addActiveTask, removeActiveTask]);
 
   const pauseAnimation = useCallback(async () => {
     if (animationState.isRunning && !animationState.isPaused) {
       const taskId = `force-simulation-pause-${Date.now().toString()}`;
       addActiveTask(taskId);
       try {
-        await submitQueueTask({
+        await taskSystem.submitTask({
           id: taskId,
           payload: {
             type: "FORCE_SIMULATION_PAUSE"
-          },
-          workerModule: workerModulePath
+          }
         });
       } catch (error) {
         removeActiveTask(taskId);
-        logger.error("worker", "Failed to pause animation", { error });
+        logger.error("execution", "Failed to pause animation", { error });
       }
     }
-  }, [animationState.isRunning, animationState.isPaused, submitQueueTask, addActiveTask, removeActiveTask, workerModulePath]);
+  }, [animationState.isRunning, animationState.isPaused, taskSystem, addActiveTask, removeActiveTask]);
 
   const resumeAnimation = useCallback(async () => {
     if (animationState.isRunning && animationState.isPaused) {
       const taskId = `force-simulation-resume-${Date.now().toString()}`;
       addActiveTask(taskId);
       try {
-        await submitQueueTask({
+        await taskSystem.submitTask({
           id: taskId,
           payload: {
             type: "FORCE_SIMULATION_RESUME"
-          },
-          workerModule: workerModulePath
+          }
         });
       } catch (error) {
         removeActiveTask(taskId);
-        logger.error("worker", "Failed to resume animation", { error });
+        logger.error("execution", "Failed to resume animation", { error });
       }
     }
-  }, [animationState.isRunning, animationState.isPaused, submitQueueTask, addActiveTask, removeActiveTask, workerModulePath]);
+  }, [animationState.isRunning, animationState.isPaused, taskSystem, addActiveTask, removeActiveTask]);
 
   const updateParameters = useCallback(async (config: Partial<ForceSimulationConfig>) => {
     if (animationState.isRunning) {
       const taskId = `force-simulation-update-${Date.now().toString()}`;
       addActiveTask(taskId);
       try {
-        await submitQueueTask({
+        await taskSystem.submitTask({
           id: taskId,
           payload: {
             type: "FORCE_SIMULATION_UPDATE_PARAMETERS",
             config
-          },
-          workerModule: workerModulePath
+          }
         });
       } catch (error) {
         removeActiveTask(taskId);
-        logger.error("worker", "Failed to update parameters", { error });
+        logger.error("execution", "Failed to update parameters", { error });
       }
     }
-  }, [animationState.isRunning, submitQueueTask, addActiveTask, removeActiveTask, workerModulePath]);
+  }, [animationState.isRunning, taskSystem, addActiveTask, removeActiveTask]);
 
   const reheatAnimation = useCallback(async ({
     nodes,
@@ -708,22 +573,15 @@ export function useUnifiedBackgroundWorker(options: UseUnifiedBackgroundWorkerOp
     alpha?: number;
   }) => {
     if (!nodes || nodes.length === 0) {
-      logger.warn("worker", "Cannot reheat animation with no nodes");
+      logger.warn("execution", "Cannot reheat animation with no nodes");
       return;
     }
 
     const taskId = `force-simulation-reheat-${Date.now().toString()}`;
     try {
       addActiveTask(taskId);
-      logger.debug("worker", "reheatAnimation payload creation", {
-        taskId,
-        linkCount: links.length,
-        nodeCount: nodes.length,
-        alpha,
-        linkDetails: links.slice(0, 3).map(link => ({ id: link.id, source: link.source, target: link.target }))
-      });
 
-      const resultTaskId = await submitQueueTask({
+      const resultTaskId = await taskSystem.submitTask({
         id: taskId,
         payload: {
           type: "FORCE_SIMULATION_REHEAT",
@@ -733,16 +591,16 @@ export function useUnifiedBackgroundWorker(options: UseUnifiedBackgroundWorkerOp
           pinnedNodes: pinnedNodes ? Array.from(pinnedNodes) : [],
           alpha
         },
-        workerModule: workerModulePath,
-        timeout: 300000 // 5 minutes
+        timeout: 300000
       });
 
-      logger.debug("worker", "Unified animation reheat started", {
+      logger.debug("execution", "Animation reheat started with unified execution", {
         nodeCount: nodes?.length || 0,
         linkCount: links?.length || 0,
         pinnedCount: pinnedNodes?.size || 0,
         alpha,
-        taskId
+        taskId: resultTaskId,
+        executionMode: taskSystem.getExecutionMode()
       });
 
       if (resultTaskId && resultTaskId !== taskId) {
@@ -753,13 +611,12 @@ export function useUnifiedBackgroundWorker(options: UseUnifiedBackgroundWorkerOp
     } catch (error) {
       removeActiveTask(taskId);
       const errorMessage = `Failed to reheat animation: ${error instanceof Error ? error.message : String(error)}`;
-      logger.error("worker", errorMessage, { error });
+      logger.error("execution", errorMessage, { error });
       onAnimationError?.(errorMessage);
       return null;
     }
-  }, [submitQueueTask, addActiveTask, removeActiveTask, workerModulePath, onAnimationError]);
+  }, [taskSystem, addActiveTask, removeActiveTask, onAnimationError]);
 
-  // Update simulation links dynamically during running simulation
   const updateSimulationLinks = useCallback(async ({
     links,
     alpha = 1.0
@@ -768,54 +625,46 @@ export function useUnifiedBackgroundWorker(options: UseUnifiedBackgroundWorkerOp
     alpha?: number;
   }) => {
     if (!links || links.length === 0) {
-      logger.warn("worker", "Cannot update simulation with no links");
+      logger.warn("execution", "Cannot update simulation with no links");
       return;
     }
 
     const taskId = `force-simulation-update-links-${Date.now().toString()}`;
     try {
       addActiveTask(taskId);
-      logger.debug("worker", "updateSimulationLinks using HIGH PRIORITY task for immediate execution", {
-        taskId,
-        linkCount: links.length,
-        alpha,
-        linkDetails: links.slice(0, 3).map(link => ({ id: link.id, source: link.source, target: link.target }))
-      });
 
-      // Use HIGH PRIORITY (100) to ensure immediate execution even with busy workers
-      const resultTaskId = await submitQueueTask({
+      const resultTaskId = await taskSystem.submitTask({
         id: taskId,
         payload: {
           type: "FORCE_SIMULATION_UPDATE_LINKS",
           links,
           alpha
         },
-        workerModule: workerModulePath,
-        priority: 100, // HIGH PRIORITY for immediate execution
-        timeout: 300000 // 5 minutes - same as other operations
+        priority: 100,
+        timeout: 300000
       });
 
-      logger.debug("worker", "High priority simulation links update started", {
+      logger.debug("execution", "Simulation links update started with unified execution", {
         linkCount: links?.length || 0,
         alpha,
         priority: 100,
-        taskId: resultTaskId
+        taskId: resultTaskId,
+        executionMode: taskSystem.getExecutionMode()
       });
 
       if (resultTaskId && resultTaskId !== taskId) {
         addActiveTask(resultTaskId);
       }
 
-      logger.debug("worker", "HIGH PRIORITY TASK SUBMITTED - should execute immediately");
       return resultTaskId;
     } catch (error: unknown) {
       removeActiveTask(taskId);
       const errorMessage = `Failed to update simulation links: ${error instanceof Error ? error.message : String(error)}`;
-      logger.error("worker", errorMessage, { error });
+      logger.error("execution", errorMessage, { error });
       onAnimationError?.(errorMessage);
       return null;
     }
-  }, [submitQueueTask, addActiveTask, removeActiveTask, workerModulePath, onAnimationError]);
+  }, [taskSystem, addActiveTask, removeActiveTask, onAnimationError]);
 
   const updateSimulationNodes = useCallback(async ({
     nodes,
@@ -827,7 +676,7 @@ export function useUnifiedBackgroundWorker(options: UseUnifiedBackgroundWorkerOp
     alpha?: number;
   }) => {
     if (!nodes || nodes.length === 0) {
-      logger.warn("worker", "Cannot update simulation with no nodes");
+      logger.warn("execution", "Cannot update simulation with no nodes");
       return;
     }
 
@@ -839,7 +688,7 @@ export function useUnifiedBackgroundWorker(options: UseUnifiedBackgroundWorkerOp
         ? pinnedNodes
         : Array.from(pinnedNodes ?? []);
 
-      const resultTaskId = await submitQueueTask({
+      const resultTaskId = await taskSystem.submitTask({
         id: taskId,
         payload: {
           type: "FORCE_SIMULATION_UPDATE_NODES",
@@ -847,17 +696,17 @@ export function useUnifiedBackgroundWorker(options: UseUnifiedBackgroundWorkerOp
           pinnedNodes: pinnedArray,
           alpha
         },
-        workerModule: workerModulePath,
         priority: 100,
         timeout: 300000
       });
 
-      logger.debug("worker", "High priority simulation nodes update started", {
+      logger.debug("execution", "Simulation nodes update started with unified execution", {
         nodeCount: nodes.length,
         pinnedCount: pinnedArray.length,
         alpha,
         priority: 100,
-        taskId: resultTaskId ?? taskId
+        taskId: resultTaskId ?? taskId,
+        executionMode: taskSystem.getExecutionMode()
       });
 
       if (resultTaskId && resultTaskId !== taskId) {
@@ -868,67 +717,48 @@ export function useUnifiedBackgroundWorker(options: UseUnifiedBackgroundWorkerOp
     } catch (error) {
       removeActiveTask(taskId);
       const errorMessage = `Failed to update simulation nodes: ${error instanceof Error ? error.message : String(error)}`;
-      logger.error("worker", errorMessage, { error });
+      logger.error("execution", errorMessage, { error });
       onAnimationError?.(errorMessage);
       return null;
     }
-  }, [submitQueueTask, addActiveTask, removeActiveTask, workerModulePath, onAnimationError]);
+  }, [taskSystem, addActiveTask, removeActiveTask, onAnimationError]);
 
-  // Node expansion
-  const expandNode = useCallback(async ({
-    nodeId,
-    entityId,
-    entityType,
-    options,
-    expansionSettings
-  }: {
-    nodeId: string;
-    entityId: string;
-    entityType: EntityType;
-    options?: ExpansionOptions;
-    expansionSettings?: ExpansionSettings;
-  }) => {
-    try {
-      const taskId = await submitQueueTask({
-        id: `data-fetch-${nodeId}-${Date.now().toString()}`,
-        payload: {
-          type: "DATA_FETCH_EXPAND_NODE",
-          nodeId,
-          entityId,
-          entityType,
-          options,
-          expansionSettings
-        },
-        workerModule: workerModulePath,
-        timeout: 120000 // 2 minutes
-      });
+  // Get execution statistics
+  const [systemStats, setSystemStats] = useState<Awaited<ReturnType<typeof taskSystem.getStats>>>({
+    queueLength: 0,
+    activeTasks: 0,
+    processing: false,
+    maxConcurrency: maxConcurrency,
+    strategyMode: "main-thread",
+    supportsWorkers: false,
+    initialized: false
+  });
 
-      logger.debug("worker", "Unified node expansion started", {
-        nodeId,
-        entityId,
-        entityType,
-        taskId
-      });
+  useEffect(() => {
+    const updateStats = async () => {
+      try {
+        const stats = await taskSystem.getStats();
+        setSystemStats(stats);
+      } catch (error) {
+        logger.debug("execution", "Failed to get system stats", { error });
+      }
+    };
 
-      return taskId;
-    } catch (error) {
-      const errorMessage = `Failed to expand node: ${error instanceof Error ? error.message : String(error)}`;
-      logger.error("worker", errorMessage, { nodeId, error });
-      onExpansionError?.(nodeId, errorMessage);
-      return null;
-    }
-  }, [submitQueueTask, workerModulePath, onExpansionError]);
+    updateStats();
+    const interval = setInterval(updateStats, 1000); // Update every second
+
+    return () => clearInterval(interval);
+  }, [taskSystem]);
 
   return {
     // State
     animationState,
     nodePositions,
     performanceMetrics,
-    workerStats,
-    queueStats,
-    isWorkerReady: workerStats.totalWorkers > 0,
-    isLoading: queueStats.processing,
-    error: null, // Errors are handled via callbacks
+    systemStats,
+    isWorkerReady: systemStats.initialized,
+    isLoading: systemStats.processing,
+    error: null,
 
     // Animation controls
     startAnimation,
@@ -940,16 +770,18 @@ export function useUnifiedBackgroundWorker(options: UseUnifiedBackgroundWorkerOp
     updateSimulationLinks,
     updateSimulationNodes,
 
-    // Data operations
-    expandNode,
+    // System info
+    isUsingWorkers: () => taskSystem.isUsingWorkers(),
+    getExecutionMode: () => taskSystem.getExecutionMode(),
+    isInitialized: () => taskSystem.isInitialized(),
 
     // Worker management
     terminate: () => {
-      workerPool.shutdown();
+      void taskSystem.shutdown();
     },
 
     // Computed properties
-    isIdle: !animationState.isRunning && !animationState.isPaused && !queueStats.processing,
+    isIdle: !animationState.isRunning && !animationState.isPaused && !systemStats.processing,
     canPause: animationState.isRunning && !animationState.isPaused,
     canResume: animationState.isRunning && animationState.isPaused,
     canStop: animationState.isRunning || animationState.isPaused,
@@ -964,6 +796,3 @@ export function useUnifiedBackgroundWorker(options: UseUnifiedBackgroundWorkerOp
     }
   };
 }
-
-// Export alias for compatibility with existing code
-export const useBackgroundWorker = useUnifiedBackgroundWorker;
