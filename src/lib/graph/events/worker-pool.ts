@@ -268,8 +268,23 @@ export class WorkerPool {
 
     switch (message.type) {
       case "PROGRESS":
+        // Check if the payload contains a specific event type from the worker
+        const eventType = messagePayload &&
+                         typeof messagePayload === "object" &&
+                         "type" in messagePayload &&
+                         typeof messagePayload.type === "string"
+                         ? messagePayload.type
+                         : "POOL_TASK_PROGRESS";
+
+        console.log("🏭 WORKERPOOL PROGRESS", {
+          messagePayload,
+          hasType: messagePayload && typeof messagePayload === "object" && "type" in messagePayload,
+          extractedType: eventType,
+          payloadType: messagePayload && typeof messagePayload === "object" && "type" in messagePayload ? messagePayload.type : undefined
+        });
+
         this.bus.emit({
-          type: "POOL_TASK_PROGRESS",
+          type: eventType,
           payload: {
             workerId: poolWorker.id,
             taskId: poolWorker.currentTaskId,
@@ -279,6 +294,26 @@ export class WorkerPool {
         break;
 
       case "SUCCESS":
+        // Check if the payload contains a specific event type from the worker
+        const successEventType = messagePayload &&
+                                typeof messagePayload === "object" &&
+                                "type" in messagePayload &&
+                                typeof messagePayload.type === "string"
+                                ? messagePayload.type
+                                : undefined;
+
+        // Emit the specific worker event type if available
+        if (successEventType) {
+          this.bus.emit({
+            type: successEventType,
+            payload: {
+              workerId: poolWorker.id,
+              taskId: poolWorker.currentTaskId,
+              ...(messagePayload && typeof messagePayload === "object" ? messagePayload : {})
+            }
+          });
+        }
+
         this.handleTaskCompletion(poolWorker, messagePayload, undefined);
         break;
 
@@ -306,15 +341,37 @@ export class WorkerPool {
     poolWorker.status = "error";
     poolWorker.errors++;
 
-    logger.error("workerpool", "Worker error", {
+    // Create detailed error message with context
+    const errorDetails = {
       workerId: poolWorker.id,
-      error: error.message,
-      currentTaskId: poolWorker.currentTaskId
-    });
+      currentTaskId: poolWorker.currentTaskId,
+      workerStatus: poolWorker.status,
+      tasksCompleted: poolWorker.tasksCompleted,
+      totalErrors: poolWorker.errors,
+      workerAge: Date.now() - poolWorker.createdAt,
+      timeSinceLastUse: Date.now() - poolWorker.lastUsed,
+      queueLength: this.taskQueue.length,
+      availableWorkers: this.getIdleWorkerCount(),
+      errorType: error.type || 'unknown',
+      errorMessage: error.message || 'Unknown worker error',
+      errorFilename: error.filename || 'unknown',
+      errorLineno: error.lineno || 0,
+      errorColno: error.colno || 0,
+      errorStack: error.error?.stack || 'No stack trace available',
+      timestamp: new Date().toISOString()
+    };
+
+    logger.error("workerpool", "Worker error with detailed context", errorDetails);
 
     // Handle current task if any
     if (poolWorker.currentTaskId) {
-      this.handleTaskCompletion(poolWorker, undefined, new Error(error.message || "Worker error"));
+      const detailedError = new Error(
+        `Worker ${poolWorker.id} failed: ${error.message || 'Unknown error'}. ` +
+        `Task: ${poolWorker.currentTaskId}. Worker completed ${poolWorker.tasksCompleted} tasks, ` +
+        `had ${poolWorker.errors} errors. Error at ${error.filename}:${error.lineno}:${error.colno}. ` +
+        `Stack: ${error.error?.stack || 'No stack trace'}`
+      );
+      this.handleTaskCompletion(poolWorker, undefined, detailedError);
     }
 
     this.bus.emit({
@@ -444,11 +501,20 @@ export class WorkerPool {
       idleWorker.status = "error";
       idleWorker.currentTaskId = undefined;
 
-      logger.error("workerpool", "Failed to assign task to worker", {
+      const errorDetails = {
         workerId: idleWorker.id,
         taskId: task.id,
-        error: error instanceof Error ? error.message : "Unknown error"
-      });
+        workerStatus: idleWorker.status,
+        tasksCompleted: idleWorker.tasksCompleted,
+        totalErrors: idleWorker.errors,
+        queueLength: this.taskQueue.length,
+        errorMessage: error instanceof Error ? error.message : String(error),
+        errorStack: error instanceof Error ? error.stack : 'No stack trace',
+        taskPayload: JSON.stringify(task.payload).substring(0, 200) + '...',
+        timestamp: new Date().toISOString()
+      };
+
+      logger.error("workerpool", "Failed to assign task to worker with context", errorDetails);
     }
   }
 

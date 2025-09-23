@@ -259,6 +259,24 @@ export class EventBus {
     const context = typeof window === "undefined" ? "worker" : "main";
     return `${context}-${Date.now().toString()}-${(++this.messageIdCounter).toString()}`;
   }
+
+  /**
+   * Destroy the event bus and clean up resources
+   */
+  destroy(): void {
+    // Close BroadcastChannel if it exists
+    if (this.channel) {
+      this.channel.close();
+      this.channel = undefined;
+    }
+
+    // Clear all listeners
+    this.listeners.clear();
+
+    logger.debug("eventbus", "EventBus destroyed", {
+      channelName: this.channelName
+    });
+  }
 }
 
 // Export convenience factory functions
