@@ -24,9 +24,18 @@ export class EntityDetector {
 	}
 
 	/**
-   * Detect entity type and ID type from various identifier formats
-   */
-	detectEntityIdentifier(input: string): DetectionResult {
+    * Detect entity type and ID type from various identifier formats
+    */
+ 	detectEntityIdentifier(input: string): DetectionResult {
+ 		if (!input || typeof input !== 'string') {
+ 			console.warn(`Invalid input for entity detection: ${input}, returning null result`);
+ 			return {
+ 				entityType: null,
+ 				idType: "openalex",
+ 				normalizedId: input || "",
+ 				originalInput: input || "",
+ 			};
+ 		}
 		const cleanInput = input.trim();
 
 		// Try OpenAlex ID first

@@ -49,7 +49,8 @@ export default defineConfig(({ mode }) => ({
   plugins: [
     // Only run OpenAlex data plugin in production builds, not during tests
     ...(mode !== 'test' ? [openalexDataPlugin()] : []),
-    devtools(),
+    // Temporarily disable devtools to avoid port conflicts
+    // devtools(),
     TanStackRouterVite({
       // Enable hash-based routing for GitHub Pages compatibility
       routeFilePrefix: '',

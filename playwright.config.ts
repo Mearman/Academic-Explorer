@@ -30,8 +30,8 @@ export default defineConfig({
 
 	// Shared settings for all projects
 	use: {
-		// Base URL for tests - GitHub Pages preview server
-		baseURL: process.env.E2E_BASE_URL || "http://localhost:4173",
+		// Base URL for tests - Vite dev server
+		baseURL: process.env.E2E_BASE_URL || "http://localhost:5173",
 
 		// Collect trace when retrying the failed test
 		trace: "on-first-retry",
@@ -93,18 +93,16 @@ export default defineConfig({
 	// Output directories
 	outputDir: "test-results/playwright-artifacts",
 
-	// Web server configuration
-	webServer: {
-		// Use Vite preview server for testing built application
-		command: "pnpm preview",
-		port: 4173,
-		reuseExistingServer: !process.env.CI,
-		stdout: "pipe",
-		stderr: "pipe",
-		timeout: 120000,
-		env: {
-			// Ensure hash routing works in preview
-			NODE_ENV: "production"
-		}
-	}
+	// Web server configuration - disabled since dev server runs separately
+	// webServer: {
+	// 	command: "pnpm dev",
+	// 	port: 5173,
+	// 	reuseExistingServer: !process.env.CI,
+	// 	stdout: "pipe",
+	// 	stderr: "pipe",
+	// 	timeout: 120000,
+	// 	env: {
+	// 		NODE_ENV: "development"
+	// 	}
+	// }
 })

@@ -85,8 +85,8 @@ export class AuthorEntity extends AbstractEntity<Author> {
 			// Author object is guaranteed to exist (API throws on 404)
 
 			// Create minimal institution nodes from affiliations
-			if (author.affiliations.length > 0) {
-				author.affiliations.slice(0, 3).forEach((affiliation, index) => {
+			if (author.affiliations && author.affiliations.length > 0) {
+				author.affiliations.forEach((affiliation, index) => {
 					const institutionNode: GraphNode = {
 						id: affiliation.institution.id,
 						type: "institutions" as const,

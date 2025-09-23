@@ -345,9 +345,9 @@ export class WorkEntity extends AbstractEntity<Work> {
 			});
 		}
 
-		// Add reference relationships (limit to first 5 to avoid overwhelming)
+		// Add reference relationships
 		if (work.referenced_works.length > 0) {
-			work.referenced_works.slice(0, 5).forEach(refId => {
+			work.referenced_works.forEach(refId => {
 				edges.push({
 					targetId: refId,
 					relationType: RT.REFERENCES,
