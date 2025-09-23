@@ -385,7 +385,11 @@ export class TaskQueue {
       try {
         const connection = this.getWorkerConnection(task.workerModule);
 
-        const handler = {
+        const handler: {
+          resolve: (value: unknown) => void;
+          reject: (reason?: unknown) => void;
+          timeoutHandle: ReturnType<typeof setTimeout> | undefined;
+        } = {
           resolve,
           reject,
           timeoutHandle: undefined
