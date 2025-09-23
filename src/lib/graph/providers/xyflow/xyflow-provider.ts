@@ -32,6 +32,7 @@ export class XYFlowProvider implements GraphProvider {
 	private reactFlowInstance: ReactFlowInstance | null = null;
 	private mounted = false;
 	private recalculateTimeout: ReturnType<typeof setTimeout> | null = null;
+	private onDataChangeCallback: (() => void) | null = null;
 
 	// Convert generic GraphNode to XYFlow node
 	private toXYNode(node: GraphNode): XYNode {
@@ -347,13 +348,13 @@ export class XYFlowProvider implements GraphProvider {
 	// Incremental methods for adding multiple nodes without clearing existing data
 	addNodes(nodes: GraphNode[]): void {
 		nodes.forEach(node => this.nodes.set(node.id, node));
-		// Note: updateReactFlow is a no-op, actual updates handled in React component
+		this.updateReactFlow();
 	}
 
 	// Incremental methods for adding multiple edges without clearing existing data
 	addEdges(edges: GraphEdge[]): void {
 		edges.forEach(edge => this.edges.set(edge.id, edge));
-		// Note: updateReactFlow is a no-op, actual updates handled in React component
+		this.updateReactFlow();
 	}
 
 	// Remove multiple nodes and their connected edges
@@ -518,8 +519,10 @@ export class XYFlowProvider implements GraphProvider {
 
 
 	private updateReactFlow(): void {
-		// This will be called by the React component to trigger re-renders
-		// The actual update happens through React state management
+		// Notify the React component that data has changed
+		if (this.onDataChangeCallback) {
+			this.onDataChangeCallback();
+		}
 	}
 
 	// Get current XYFlow-compatible data
@@ -533,6 +536,11 @@ export class XYFlowProvider implements GraphProvider {
 	// Set ReactFlow instance reference (called by React component)
 	setReactFlowInstance(instance: ReactFlowInstance | null): void {
 		this.reactFlowInstance = instance;
+	}
+
+	// Set callback for data changes (called by React component)
+	setOnDataChangeCallback(callback: (() => void) | null): void {
+		this.onDataChangeCallback = callback;
 	}
 
 	// Handle node click (called by React component)
