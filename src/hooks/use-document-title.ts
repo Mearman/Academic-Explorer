@@ -64,7 +64,7 @@ export const useDocumentTitle = (
 				entityTitle: title.trim(),
 				baseTitle
 			}, "useDocumentTitle");
-		} else if (title === null || title === undefined || title.trim() === "") {
+		} else if (title === null || title === undefined || (typeof title === "string" && title.trim() === "")) {
 			// Reset to base title if no specific title provided
 			document.title = baseTitle;
 
