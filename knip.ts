@@ -114,7 +114,8 @@ const config: KnipConfig = {
     "**/.nx/**",
     "**/node_modules/**",
     "**/.tmp/**",
-    "**/.cache/**"
+    "**/.cache/**",
+    "**/.github/**" // GitHub workflows contain complex YAML that can confuse knip
   ],
 
   // Plugin configurations

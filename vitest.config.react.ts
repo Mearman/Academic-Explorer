@@ -1,6 +1,6 @@
 import { defineConfig, mergeConfig } from 'vitest/config';
 import react from '@vitejs/plugin-react';
-import { baseVitestConfig } from './vitest.config.base.js';
+import { baseVitestConfig } from './vitest.config.base';
 
 /**
  * React-specific Vitest configuration for Academic Explorer monorepo
