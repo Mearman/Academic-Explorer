@@ -17,7 +17,7 @@ import { logger } from "@academic-explorer/utils";
  * Simple fetch function for OpenAlex API queries
  * This is a minimal implementation for use in the build plugin
  */
-async function fetchOpenAlexQuery(url: string): Promise<unknown | null> {
+async function fetchOpenAlexQuery(url: string): Promise<unknown> {
   try {
     const response = await fetch(url);
     if (!response.ok) {
@@ -719,7 +719,7 @@ async function loadUnifiedIndex(dataPath: string, entityType: string): Promise<U
           if (cleaned[canonicalKey]) {
             // Keep the most recent lastModified
             if (cleanEntry.lastModified && (!cleaned[canonicalKey].lastModified ||
-                cleanEntry.lastModified > cleaned[canonicalKey].lastModified)) {
+                cleanEntry.lastModified > (cleaned[canonicalKey].lastModified ?? ''))) {
               cleaned[canonicalKey] = cleanEntry;
             }
           } else {
@@ -755,7 +755,7 @@ async function loadUnifiedIndex(dataPath: string, entityType: string): Promise<U
           if (cleaned[canonicalKey]) {
             // Keep the most recent lastModified
             if (cleanEntry.lastModified && (!cleaned[canonicalKey].lastModified ||
-                cleanEntry.lastModified > cleaned[canonicalKey].lastModified)) {
+                cleanEntry.lastModified > (cleaned[canonicalKey].lastModified ?? ''))) {
               cleaned[canonicalKey] = cleanEntry;
             }
           } else {
@@ -992,7 +992,7 @@ async function seedMissingData(dataPath: string, entityType: string, index: Unif
                 key
               });
               keysToRemove.add(key);
-            } else if (typeof result === "object" && result.redirected) {
+            } else if (typeof result === "object" && "redirected" in result) {
               logger.warn("general", "Entity redirected - updating index key", {
                 entityId: parsed.entityId,
                 oldKey: key,
@@ -1021,7 +1021,7 @@ async function seedMissingData(dataPath: string, entityType: string, index: Unif
         }
       }
 
-    } else if (parsed.type === "query") {
+    } else {
       // Check if query result file exists in the entity directory
       const filename = generateFilenameFromParsedKey(parsed);
       if (!filename) continue;
@@ -1262,11 +1262,9 @@ async function updateUnifiedIndex(dataPath: string, entityType: string, index: U
             }
             // Use canonical URL as index key
 
-            if (!index[canonicalUrl]) {
-              index[canonicalUrl] = {};
-            }
+            index[canonicalUrl] ??= {};
             Object.assign(index[canonicalUrl], metadata);
-          } else if (fileType === "query") {
+          } else {
             // This is a query file
             const canonicalQueryUrl = determineCanonicalQueryUrl(entityType, entityId, fileContent);
             if (canonicalQueryUrl) {
@@ -1283,9 +1281,7 @@ async function updateUnifiedIndex(dataPath: string, entityType: string, index: U
               }
 
               if (!isDuplicate) {
-                if (!index[canonicalQueryUrl]) {
-                  index[canonicalQueryUrl] = {};
-                }
+                index[canonicalQueryUrl] ??= {};
                 Object.assign(index[canonicalQueryUrl], metadata);
                 logger.debug("general", "Added query to index", { canonicalQueryUrl });
               }
@@ -1356,7 +1352,7 @@ function determineCanonicalQueryUrl(entityType: string, filename: string, fileCo
   try {
     const decoded = Buffer.from(filename, "base64url").toString("utf-8");
     const params: unknown = JSON.parse(decoded);
-    if (params && typeof params === "object" && params !== null) {
+    if (params && typeof params === "object" && !Array.isArray(params)) {
       const searchParams = new URLSearchParams();
       for (const [key, value] of Object.entries(params)) {
         if (Array.isArray(value)) {
@@ -1377,7 +1373,7 @@ function determineCanonicalQueryUrl(entityType: string, filename: string, fileCo
     if (/^[0-9a-f]+$/i.test(filename)) {
       const decoded = Buffer.from(filename, "hex").toString("utf-8");
       const params: unknown = JSON.parse(decoded);
-      if (params && typeof params === "object" && params !== null) {
+      if (params && typeof params === "object" && !Array.isArray(params)) {
         const searchParams = new URLSearchParams();
         for (const [key, value] of Object.entries(params)) {
           if (Array.isArray(value)) {
@@ -1534,13 +1530,13 @@ function deduplicateIndexEntries(index: UnifiedIndex, entityType: string): Unifi
       // If this ID doesn't start with the expected prefix
       if (!entityId.startsWith(prefix)) {
         // Check if the prefixed version exists
-        const prefixedKey = key.replace(entityId, prefix + entityId);
+        const prefixedKey = key.replace(entityId, `${prefix}${entityId}`);
         if (index[prefixedKey]) {
           // Both versions exist, mark the non-prefixed one for removal
           keysToRemove.push(key);
           logger.debug("general", "Removing duplicate non-prefixed entry", {
             entityId,
-            keeping: prefix + entityId
+            keeping: `${prefix}${entityId}`
           });
         }
       }
@@ -1593,15 +1589,15 @@ function createContentHash(fileContent: string): string {
     const parsed: unknown = JSON.parse(fileContent);
 
     // Create a copy and remove volatile metadata fields
-    if (parsed && typeof parsed === "object" && parsed !== null) {
+    if (parsed && typeof parsed === "object" && !Array.isArray(parsed)) {
       const ObjectSchema = z.record(z.string(), z.unknown());
       const contentResult = ObjectSchema.safeParse(parsed);
       if (!contentResult.success) return createHash("sha256").update(fileContent).digest("hex").slice(0, 16);
 
       const cleanContent = { ...contentResult.data };
 
-      if (cleanContent.meta && typeof cleanContent.meta === "object" && cleanContent.meta !== null) {
-        const metaResult = ObjectSchema.safeParse(cleanContent.meta);
+      if (cleanContent['meta'] && typeof cleanContent['meta'] === "object" && !Array.isArray(cleanContent['meta'])) {
+        const metaResult = ObjectSchema.safeParse(cleanContent['meta']);
         if (!metaResult.success) return JSON.stringify(cleanContent);
 
         const metaObj = metaResult.data;
@@ -1609,11 +1605,11 @@ function createContentHash(fileContent: string): string {
         const { count: _count, db_response_time_ms: _db_response_time_ms, ...cleanMeta } = metaObj;
 
         // Normalize URLs in meta to handle URL encoding differences
-        if ("request_url" in cleanMeta && typeof cleanMeta.request_url === "string") {
-          cleanMeta.request_url = normalizeUrlForDeduplication(cleanMeta.request_url);
+        if ("request_url" in cleanMeta && typeof cleanMeta['request_url'] === "string") {
+          cleanMeta['request_url'] = normalizeUrlForDeduplication(cleanMeta['request_url']);
         }
 
-        cleanContent.meta = cleanMeta;
+        cleanContent['meta'] = cleanMeta;
       }
 
       // Create hash from cleaned content with consistent ordering
@@ -1812,11 +1808,11 @@ async function generateMainIndex(dataPath: string): Promise<void> {
     ...newMainIndexContent,
     lastModified: contentChanged
       ? new Date().toISOString()
-      : (existingMainIndex?.lastModified ?? new Date().toISOString())
+      : existingMainIndex?.lastModified ?? new Date().toISOString()
   };
 
-  // Only write if content has changed or file doesn't exist
-  if (contentChanged || !existingMainIndex) {
+  // Only write if content has changed
+  if (contentChanged) {
     await writeFile(mainIndexPath, JSON.stringify(mainIndex, null, 2), "utf-8");
     logger.debug("general", "Updated main index with JSON Schema $ref structure", {
       entityTypeCount: discoveredEntityTypes.length,
