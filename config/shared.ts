@@ -1,21 +1,17 @@
 import * as path from "path"
 
 /**
- * Shared configuration constants used across Vite and Vitest configs
+ * Shared configuration constants used across workspace
+ * Note: Individual apps/packages may have their own configs
  */
 
-// Path aliases for consistent import resolution
-export const pathAliases = {
-	"@": path.resolve(__dirname, "../src"),
+// Project root directory (workspace root)
+export const workspaceRoot = path.resolve(__dirname, "..")
+
+// Common paths for workspace-level tooling
+export const workspacePaths = {
+	apps: path.resolve(workspaceRoot, "apps"),
+	packages: path.resolve(workspaceRoot, "packages"),
+	tools: path.resolve(workspaceRoot, "tools"),
+	scripts: path.resolve(workspaceRoot, "scripts"),
 }
-
-// Common resolve configuration
-export const resolveConfig = {
-	alias: pathAliases,
-}
-
-// Test setup files
-export const testSetupFiles = ["./src/test/setup.ts"]
-
-// Project root directory
-export const projectRoot = path.resolve(__dirname, "..")

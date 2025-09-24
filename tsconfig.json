@@ -1,8 +1,28 @@
 {
+  "extends": "./tsconfig.base.json",
   "files": [],
+  "include": [],
   "references": [
-    { "path": "./tsconfig.app.json" },
-    { "path": "./tsconfig.node.json" },
-    { "path": "./tsconfig.test.json" }
+    {
+      "path": "./apps/web"
+    },
+    {
+      "path": "./apps/cli"
+    },
+    {
+      "path": "./packages/graph"
+    },
+    {
+      "path": "./packages/client"
+    },
+    {
+      "path": "./packages/utils"
+    },
+    {
+      "path": "./packages/simulation"
+    },
+    {
+      "path": "./packages/ui"
+    }
   ]
 }

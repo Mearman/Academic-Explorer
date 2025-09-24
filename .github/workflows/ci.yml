@@ -5,6 +5,16 @@ on:
     branches: [main, develop]
   pull_request:
     branches: [main, develop]
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: 'Run knip in dry-run mode (no PR creation)'
+        required: false
+        default: false
+        type: boolean
+  schedule:
+    # Run knip analysis every Monday at 9:00 AM UTC
+    - cron: '0 9 * * 1'
 
 env:
   NODE_VERSION: 20.x
@@ -53,7 +63,7 @@ jobs:
 
       - name: Install dependencies
         if: steps.cache-deps.outputs.cache-hit != 'true'
-        run: pnpm install --frozen-lockfile
+        run: pnpm install --no-frozen-lockfile
 
       - name: Cache Nx
         uses: actions/cache@v4
@@ -203,7 +213,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: dist-${{ github.sha }}
-          path: dist/
+          path: apps/web/dist/
           retention-days: 1
           compression-level: 6
 
@@ -279,7 +289,7 @@ jobs:
 
       - name: Start preview server for E2E tests
         if: matrix.test-type == 'e2e'
-        run: pnpm preview &
+        run: pnpm nx preview &
         env:
           NODE_OPTIONS: "--max-old-space-size=4096"
 
@@ -331,21 +341,180 @@ jobs:
           merge-multiple: true
 
       - name: Create coverage summary
-        run: node scripts/create-coverage-summary.js
+        run: npx tsx tools/scripts/create-coverage-summary.ts
 
       - name: Generate coverage summary
         run: |
           echo "## Coverage Report" >> $GITHUB_STEP_SUMMARY
-          node scripts/generate-coverage-report.js summary >> $GITHUB_STEP_SUMMARY
+          npx tsx tools/scripts/generate-coverage-report.ts summary >> $GITHUB_STEP_SUMMARY
 
       - name: Comment coverage on PR
         if: github.event_name == 'pull_request'
-        run: npx tsx scripts/manage-coverage-comments.ts
+        run: npx tsx tools/scripts/manage-coverage-comments.ts
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           PR_NUMBER: ${{ github.event.number }}
           REPO_OWNER: ${{ github.repository_owner }}
           REPO_NAME: ${{ github.event.repository.name }}
+
+  acknowledgements:
+    needs: [setup, quality-checks]
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    # Only run on dependency changes or manual trigger
+    if: >
+      (github.event_name == 'push' &&
+       (contains(github.event.head_commit.message, 'package.json') ||
+        contains(github.event.head_commit.message, 'pnpm-lock.yaml') ||
+        contains(github.event.head_commit.message, '[update-ack]'))) ||
+      github.event_name == 'workflow_dispatch'
+
+    permissions:
+      contents: write
+      pull-requests: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          fetch-depth: 2
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: ${{ env.PNPM_VERSION }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Restore node_modules cache
+        uses: actions/cache/restore@v4
+        with:
+          path: |
+            node_modules
+            ~/.pnpm-store
+          key: ${{ needs.setup.outputs.cache-key }}
+          fail-on-cache-miss: true
+
+      - name: Check for problematic licenses
+        run: pnpm licenses:check
+
+      - name: Generate acknowledgements
+        run: |
+          echo "Generating acknowledgements for production dependencies..."
+          pnpm licenses:generate > temp_ack.md
+
+          # Add header and metadata
+          cat > ACKNOWLEDGEMENTS.md << EOF
+          # Third-Party Acknowledgements
+
+          This document acknowledges the third-party packages used in this project and their licenses.
+
+          **Generated on:** $(date -u '+%Y-%m-%d %H:%M:%S UTC')
+          **Dependencies analyzed:** Production dependencies only
+          **Last updated:** Commit $(git rev-parse --short HEAD)
+
+          ---
+
+          EOF
+
+          cat temp_ack.md >> ACKNOWLEDGEMENTS.md
+          rm temp_ack.md
+
+      - name: Check for changes
+        id: check-changes
+        run: |
+          if git diff --quiet ACKNOWLEDGEMENTS.md; then
+            echo "changes=false" >> $GITHUB_OUTPUT
+            echo "No changes in acknowledgements"
+          else
+            echo "changes=true" >> $GITHUB_OUTPUT
+            echo "Changes detected in acknowledgements"
+            echo "Changes:"
+            git diff --no-color ACKNOWLEDGEMENTS.md | head -20
+          fi
+
+      - name: Configure git
+        if: steps.check-changes.outputs.changes == 'true'
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+
+      - name: Commit acknowledgements
+        if: steps.check-changes.outputs.changes == 'true'
+        run: |
+          git add ACKNOWLEDGEMENTS.md
+
+          COMMIT_MSG="chore(deps): update third-party acknowledgements
+
+          - Updated acknowledgements for production dependencies
+          - Generated from $(git log -1 --pretty=format:'%s' HEAD)
+          - Analysis timestamp: $(date -u '+%Y-%m-%d %H:%M:%S UTC')
+
+          [skip ci]"
+
+          git commit -m "$COMMIT_MSG"
+
+      - name: Push changes to current branch
+        if: steps.check-changes.outputs.changes == 'true' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop')
+        run: |
+          git push origin ${{ github.ref_name }}
+
+      - name: Create pull request for other branches
+        if: steps.check-changes.outputs.changes == 'true' && github.ref != 'refs/heads/main' && github.ref != 'refs/heads/develop'
+        uses: peter-evans/create-pull-request@v5
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: "chore(deps): update third-party acknowledgements"
+          title: "🔄 Update Third-Party Acknowledgements"
+          body: |
+            ## 📋 Acknowledgements Update
+
+            This PR updates the third-party acknowledgements file based on current production dependencies.
+
+            ### Changes
+            - ✅ Scanned production dependencies only
+            - ✅ Excluded private packages
+            - ✅ Verified license compatibility
+            - 🕒 Generated during CI run
+
+            ### License Status
+            All included packages use approved licenses (MIT, Apache-2.0, BSD, ISC, etc.)
+
+            ---
+            *This PR was automatically generated by the CI workflow.*
+          branch: update-acknowledgements
+          delete-branch: true
+
+      - name: Add job summary
+        if: always()
+        run: |
+          echo "## 📋 Acknowledgements Update Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+
+          if [ "${{ steps.check-changes.outputs.changes }}" == "true" ]; then
+            echo "✅ **Changes detected and committed**" >> $GITHUB_STEP_SUMMARY
+            echo "- Updated ACKNOWLEDGEMENTS.md with current dependencies" >> $GITHUB_STEP_SUMMARY
+            echo "- All licenses passed compatibility check" >> $GITHUB_STEP_SUMMARY
+
+            if [ "${{ github.ref }}" == "refs/heads/main" ] || [ "${{ github.ref }}" == "refs/heads/develop" ]; then
+              echo "- Changes pushed directly to ${{ github.ref_name }}" >> $GITHUB_STEP_SUMMARY
+            else
+              echo "- Created pull request for review" >> $GITHUB_STEP_SUMMARY
+            fi
+          else
+            echo "ℹ️ **No changes needed**" >> $GITHUB_STEP_SUMMARY
+            echo "- Acknowledgements are up to date" >> $GITHUB_STEP_SUMMARY
+          fi
+
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Trigger:** ${{ github.event_name }}" >> $GITHUB_STEP_SUMMARY
+          echo "**Branch:** ${{ github.ref_name }}" >> $GITHUB_STEP_SUMMARY
+          echo "**Timestamp:** $(date -u '+%Y-%m-%d %H:%M:%S UTC')" >> $GITHUB_STEP_SUMMARY
 
   accessibility:
     needs: [setup, quality-checks]
@@ -390,7 +559,7 @@ jobs:
           path: dist/
 
       - name: Start preview server for accessibility testing
-        run: pnpm preview &
+        run: pnpm nx preview &
         env:
           NODE_OPTIONS: "--max-old-space-size=6144"
 
@@ -432,8 +601,8 @@ jobs:
       pull-requests: write
 
     outputs:
-      released: ${{ steps.check-release.outputs.release_created }}
-      tag: ${{ steps.check-release.outputs.release_tag }}
+      released: ${{ steps.create-releases.outputs.release_created }}
+      tag: ${{ steps.create-releases.outputs.release_tag }}
 
     steps:
       - name: Checkout
@@ -462,71 +631,72 @@ jobs:
           key: ${{ needs.setup.outputs.cache-key }}
           fail-on-cache-miss: true
 
-      - name: Run semantic-release
-        id: semantic-release
+      - name: Run Nx Release
+        id: nx-release
         run: |
-          # Install semantic-release plugins
-          npm install -g \
-            semantic-release \
-            @semantic-release/commit-analyzer \
-            @semantic-release/release-notes-generator \
-            @semantic-release/changelog \
-            @semantic-release/npm \
-            @semantic-release/github
-
           # Configure git
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
 
-          # Run semantic-release to create tag and GitHub release
-          npx semantic-release
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # Run nx release version (updates files but doesn't commit)
+          pnpm release:version --skip-publish --dry-run
 
-      - name: Check if release was created
-        id: check-release
-        run: |
-          # Check if semantic-release created a new tag/release
-          LATEST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "")
-          if [ -n "$LATEST_TAG" ] && git tag --points-at ${{ github.sha }} | grep -q "$LATEST_TAG"; then
-            echo "release_created=true" >> $GITHUB_OUTPUT
-            echo "release_tag=$LATEST_TAG" >> $GITHUB_OUTPUT
-            echo "new_version=${LATEST_TAG#v}" >> $GITHUB_OUTPUT
-            echo "Release created: $LATEST_TAG against commit ${{ github.sha }}"
-          else
+          # Check if there are actual changes to make
+          if pnpm release:version --skip-publish 2>&1 | grep -q "No changes to version"; then
             echo "release_created=false" >> $GITHUB_OUTPUT
-            echo "No release created"
-          fi
-
-      - name: Update version and create follow-up commit
-        if: steps.check-release.outputs.release_created == 'true'
-        run: |
-          # Check if package.json and CHANGELOG.md have changes from semantic-release
-          if git diff --quiet HEAD package.json CHANGELOG.md; then
-            echo "No changes to commit - semantic-release didn't update files"
+            echo "No version changes needed"
             exit 0
           fi
 
-          # Check current version in package.json
-          CURRENT_VERSION=$(node -p "require('./package.json').version")
-          if [ "$CURRENT_VERSION" != "${{ steps.check-release.outputs.new_version }}" ]; then
-            echo "Version mismatch - updating package.json from $CURRENT_VERSION to ${{ steps.check-release.outputs.new_version }}"
-            npm version ${{ steps.check-release.outputs.new_version }} --no-git-tag-version
-          else
-            echo "Package.json already at correct version: $CURRENT_VERSION"
+          echo "release_created=true" >> $GITHUB_OUTPUT
+
+          # Get the new versions that would be created
+          NEW_VERSION=$(node -p "require('./package.json').version")
+          echo "new_version=$NEW_VERSION" >> $GITHUB_OUTPUT
+          echo "release_tag=v$NEW_VERSION" >> $GITHUB_OUTPUT
+
+          echo "Nx Release would create version: $NEW_VERSION"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Create GitHub releases
+        id: create-releases
+        if: steps.nx-release.outputs.release_created == 'true'
+        run: |
+          # Create tags and GitHub releases
+          pnpm release:publish
+
+          echo "release_created=true" >> $GITHUB_OUTPUT
+          echo "release_tag=${{ steps.nx-release.outputs.release_tag }}" >> $GITHUB_OUTPUT
+          echo "new_version=${{ steps.nx-release.outputs.new_version }}" >> $GITHUB_OUTPUT
+
+          echo "Created GitHub releases with tags"
+
+      - name: Update version and create follow-up commit
+        if: steps.create-releases.outputs.release_created == 'true'
+        run: |
+          # Check if there are changes from nx release version
+          if git diff --quiet HEAD; then
+            echo "No changes to commit - nx release didn't update files"
+            exit 0
           fi
 
-          # Commit the changes (semantic-release already updated the files)
-          git add package.json CHANGELOG.md
-          git commit -m "chore(release): ${{ steps.check-release.outputs.new_version }} [skip ci]
+          # Stage all changes from nx release
+          git add .
 
-          Automated version bump for release ${{ steps.check-release.outputs.release_tag }}"
+          # Create follow-up commit with version bumps and changelog updates
+          git commit -m "chore(release): bump versions [skip ci]
+
+          Automated version bumps and changelog updates:
+          - Updated package versions via nx release
+          - Generated changelogs for affected packages
+          - Release: ${{ steps.create-releases.outputs.release_tag }}"
 
           # Push the follow-up commit
           git push origin main
 
       - name: Build for release
-        if: steps.check-release.outputs.release_created == 'true'
+        if: steps.create-releases.outputs.release_created == 'true'
         run: |
           # Rebuild with the updated version
           pnpm nx build
@@ -534,11 +704,11 @@ jobs:
           NODE_OPTIONS: "--max-old-space-size=4096"
 
       - name: Upload build artifact for deployment
-        if: steps.check-release.outputs.release_created == 'true'
+        if: steps.create-releases.outputs.release_created == 'true'
         uses: actions/upload-artifact@v4
         with:
           name: dist-release-${{ github.run_id }}
-          path: dist/
+          path: apps/web/dist/
           retention-days: 1
           compression-level: 6
 
@@ -577,6 +747,216 @@ jobs:
         id: deployment
         uses: actions/deploy-pages@v4
 
+  knip-analysis:
+    needs: [setup, quality-checks]
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    # Only run on scheduled events (weekly) or manual dispatch
+    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+
+    permissions:
+      contents: write
+      pull-requests: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: ${{ env.PNPM_VERSION }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Restore node_modules cache
+        uses: actions/cache/restore@v4
+        with:
+          path: |
+            node_modules
+            ~/.pnpm-store
+          key: ${{ needs.setup.outputs.cache-key }}
+          fail-on-cache-miss: true
+
+      - name: Run knip analysis
+        id: knip-run
+        run: |
+          echo "🔍 Running knip analysis..."
+
+          if pnpm knip --reporter json > knip-report.json 2>&1; then
+            echo "knip_exit_code=0" >> $GITHUB_OUTPUT
+            echo "✅ Knip analysis completed successfully"
+          else
+            echo "knip_exit_code=$?" >> $GITHUB_OUTPUT
+            echo "⚠️ Knip found unused code"
+          fi
+
+          if [ -s knip-report.json ] && [ "$(jq '.issues | length' knip-report.json 2>/dev/null || echo 0)" -gt 0 ]; then
+            echo "has_issues=true" >> $GITHUB_OUTPUT
+            echo "📊 Knip found unused code to clean up"
+
+            UNUSED_FILES=$(jq -r '.issues[] | select(.type == "unlisted") | .file' knip-report.json 2>/dev/null | wc -l || echo 0)
+            UNUSED_DEPS=$(jq -r '.issues[] | select(.type == "dependencies") | .dependencies[]?' knip-report.json 2>/dev/null | wc -l || echo 0)
+            UNUSED_EXPORTS=$(jq -r '.issues[] | select(.type == "exports") | .exports[]?' knip-report.json 2>/dev/null | wc -l || echo 0)
+
+            echo "unused_files=$UNUSED_FILES" >> $GITHUB_OUTPUT
+            echo "unused_deps=$UNUSED_DEPS" >> $GITHUB_OUTPUT
+            echo "unused_exports=$UNUSED_EXPORTS" >> $GITHUB_OUTPUT
+
+            echo "## 🧹 Knip Analysis Summary" > knip-summary.md
+            echo "" >> knip-summary.md
+            echo "Knip found the following unused code:" >> knip-summary.md
+            echo "- 📁 Unused files: $UNUSED_FILES" >> knip-summary.md
+            echo "- 📦 Unused dependencies: $UNUSED_DEPS" >> knip-summary.md
+            echo "- 🔗 Unused exports: $UNUSED_EXPORTS" >> knip-summary.md
+            echo "" >> knip-summary.md
+
+            if [ "$UNUSED_FILES" -gt 0 ]; then
+              echo "### Unused Files" >> knip-summary.md
+              jq -r '.issues[] | select(.type == "unlisted") | "- `" + .file + "`"' knip-report.json >> knip-summary.md
+              echo "" >> knip-summary.md
+            fi
+
+            if [ "$UNUSED_DEPS" -gt 0 ]; then
+              echo "### Unused Dependencies" >> knip-summary.md
+              jq -r '.issues[] | select(.type == "dependencies") | .dependencies[]? | "- `" + . + "`"' knip-report.json >> knip-summary.md
+              echo "" >> knip-summary.md
+            fi
+
+            if [ "$UNUSED_EXPORTS" -gt 0 ]; then
+              echo "### Unused Exports" >> knip-summary.md
+              jq -r '.issues[] | select(.type == "exports") | .exports[]? | "- `" + .symbol + "` in `" + .file + "`"' knip-report.json >> knip-summary.md
+            fi
+          else
+            echo "has_issues=false" >> $GITHUB_OUTPUT
+            echo "✨ No unused code found!"
+          fi
+
+      - name: Create cleanup branch and apply fixes
+        if: steps.knip-run.outputs.has_issues == 'true' && !inputs.dry_run
+        id: apply-fixes
+        run: |
+          BRANCH_NAME="chore/knip-cleanup-$(date +%Y%m%d-%H%M%S)"
+
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git checkout -b "$BRANCH_NAME"
+
+          echo "🔧 Applying knip fixes..."
+          if pnpm knip --fix; then
+            echo "✅ Automatic fixes applied successfully"
+
+            if git diff --quiet; then
+              echo "changes_made=false" >> $GITHUB_OUTPUT
+              echo "ℹ️ No changes were made by knip --fix"
+            else
+              echo "changes_made=true" >> $GITHUB_OUTPUT
+              echo "branch_name=$BRANCH_NAME" >> $GITHUB_OUTPUT
+
+              git add .
+              git commit -m "chore: remove unused code detected by knip
+
+              This commit removes unused code identified by knip analysis:
+              - Unused files: ${{ steps.knip-run.outputs.unused_files }}
+              - Unused dependencies: ${{ steps.knip-run.outputs.unused_deps }}
+              - Unused exports: ${{ steps.knip-run.outputs.unused_exports }}
+
+              Generated automatically by CI workflow."
+
+              echo "🧪 Running verification tests..."
+              if pnpm typecheck && pnpm build && pnpm test && pnpm lint; then
+                echo "✅ All tests passed after cleanup"
+                git push origin "$BRANCH_NAME"
+                echo "📤 Pushed changes to branch"
+              else
+                echo "❌ Tests failed after cleanup"
+                exit 1
+              fi
+            fi
+          else
+            echo "❌ Failed to apply automatic fixes"
+            echo "changes_made=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Create Pull Request
+        if: steps.apply-fixes.outputs.changes_made == 'true'
+        run: |
+          PR_TITLE="🧹 chore: automated code cleanup via knip"
+
+          PR_BODY="## 🤖 Automated Code Cleanup
+
+          This PR was automatically created by the CI workflow to remove unused code.
+
+          $(cat knip-summary.md)
+
+          ## ✅ Verification
+
+          - [x] Knip analysis completed
+          - [x] Automatic fixes applied
+          - [x] TypeScript compilation passes
+          - [x] Build succeeds
+          - [x] Tests pass
+          - [x] Linting passes
+
+          ## 📋 Manual Review Needed
+
+          Please review the changes to ensure:
+          - No critical code was accidentally removed
+          - All functionality still works as expected
+          - The cleanup aligns with project goals
+
+          ---
+          🤖 Generated by CI workflow"
+
+          gh pr create \
+            --title "$PR_TITLE" \
+            --body "$PR_BODY" \
+            --base main \
+            --head "${{ steps.apply-fixes.outputs.branch_name }}" \
+            --label "automated" \
+            --label "chore" \
+            --label "knip"
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Upload knip report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: knip-report-${{ github.run_id }}
+          path: |
+            knip-report.json
+            knip-summary.md
+          retention-days: 7
+
+      - name: Add job summary
+        if: always()
+        run: |
+          echo "## 🎯 Knip Analysis Summary" >> $GITHUB_STEP_SUMMARY
+
+          if [ "${{ steps.knip-run.outputs.has_issues }}" == "true" ]; then
+            echo "🔍 **Knip found unused code**" >> $GITHUB_STEP_SUMMARY
+            echo "- Files: ${{ steps.knip-run.outputs.unused_files }}" >> $GITHUB_STEP_SUMMARY
+            echo "- Dependencies: ${{ steps.knip-run.outputs.unused_deps }}" >> $GITHUB_STEP_SUMMARY
+            echo "- Exports: ${{ steps.knip-run.outputs.unused_exports }}" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+
+            if [ "${{ steps.apply-fixes.outputs.changes_made }}" == "true" ]; then
+              echo "✅ **PR created for cleanup**" >> $GITHUB_STEP_SUMMARY
+            else
+              echo "ℹ️ **No changes needed** - Knip didn't make any modifications" >> $GITHUB_STEP_SUMMARY
+            fi
+          else
+            echo "✨ **No unused code found** - Repository is clean!" >> $GITHUB_STEP_SUMMARY
+          fi
+
   cleanup:
     needs: [release, deploy]
     runs-on: ubuntu-latest
@@ -592,4 +972,5 @@ jobs:
             dist-${{ github.sha }}
             dist-release-${{ github.run_id }}
             coverage-*-${{ github.sha }}
+            knip-report-${{ github.run_id }}
           failOnError: false

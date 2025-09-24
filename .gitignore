@@ -39,3 +39,28 @@ test-results
 
 # Auto-generated acknowledgements (managed by CI)
 ACKNOWLEDGEMENTS.md
+
+# Monorepo specific
+apps/*/dist
+apps/*/node_modules
+packages/*/dist
+packages/*/node_modules
+packages/*/coverage
+
+# Package build artifacts
+*.tgz
+**/dist/
+**/lib/
+**/build/
+
+# TypeScript build info files
+*.tsbuildinfo
+**/tsconfig.tsbuildinfo
+
+# Temporary files
+.temp/
+.tmp/# Vitest temporary compiled config files
+**/*.timestamp-*.mjs
+# Vite temporary compiled config files
+**/vite.config.ts.timestamp-*.mjs
+**/.vite-temp/
