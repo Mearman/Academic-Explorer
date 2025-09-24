@@ -62,8 +62,8 @@ export default defineConfig(({ mode }) => ({
       // Enable hash-based routing for GitHub Pages compatibility
       routeFilePrefix: '',
       routeFileIgnorePrefix: '-',
-      routesDirectory: './src/routes',
-      generatedRouteTree: './src/routeTree.gen.ts',
+      routesDirectory: path.resolve(__dirname, 'src/routes'),
+      generatedRouteTree: path.resolve(__dirname, 'src/routeTree.gen.ts'),
     }),
     vanillaExtractPlugin(),
     react(),
