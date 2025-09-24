@@ -16,9 +16,9 @@ import { z } from "zod";
 //   type QueryParams
 // } from "@academic-explorer/openalex-client";
 
-// Temporary types until package is fixed
-type _EntityType = "works" | "authors" | "sources" | "institutions" | "topics" | "concepts" | "publishers" | "funders";
-type _QueryParams = Record<string, unknown>;
+// Temporary types until package is fixed - currently unused but kept for future compatibility
+// type _EntityType = "works" | "authors" | "sources" | "institutions" | "topics" | "concepts" | "publishers" | "funders";
+// type _QueryParams = Record<string, unknown>;
 import type { StaticEntityType } from "./entity-detection.js";
 
 // Simple hash function for content hashing
@@ -87,8 +87,8 @@ const QueryIndexSchema = z.object({
 
 const UnifiedIndexSchema = z.record(z.string(), EntityIndexEntrySchema);
 
-// Static entity type schema for safe validation (matching StaticEntityType exactly)
-const StaticEntityTypeSchema = z.enum(["authors", "works", "institutions", "topics", "publishers", "funders"]);
+// Static entity type schema for safe validation (matching StaticEntityType exactly) - currently unused
+// const StaticEntityTypeSchema = z.enum(["authors", "works", "institutions", "topics", "publishers", "funders"]);
 
 // Type derived from schema
 type IndexEntry = z.infer<typeof EntityIndexEntrySchema>;
@@ -132,12 +132,12 @@ const NodeErrorSchema = z.object({
 }).strict();
 
 // Schema for OpenAlex API response meta object (reserved for future use)
-const _MetaSchema = z.object({
-  count: z.number().optional(),
-  db_response_time_ms: z.number().optional(),
-  page: z.number().optional(),
-  per_page: z.number().optional(),
-}).strict(); // Strict validation for meta properties
+// const _MetaSchema = z.object({
+//   count: z.number().optional(),
+//   db_response_time_ms: z.number().optional(),
+//   page: z.number().optional(),
+//   per_page: z.number().optional(),
+// }).strict(); // Strict validation for meta properties
 
 
 interface QueryOptions {
@@ -167,28 +167,28 @@ function generateCanonicalEntityUrl(entityType: StaticEntityType, entityId: stri
   return `https://api.openalex.org/${entityType}/${cleanId}`;
 }
 
-function _extractEntityIdFromCanonicalUrl(canonicalUrl: string): string | null {
-  const match = canonicalUrl.match(/https:\/\/api\.openalex\.org\/[^/]+\/(.+)$/);
-  return match?.[1] ?? null;
-}
+// function _extractEntityIdFromCanonicalUrl(canonicalUrl: string): string | null {
+//   const match = canonicalUrl.match(/https:\/\/api\.openalex\.org\/[^/]+\/(.+)$/);
+//   return match?.[1] ?? null;
+// }
 
-function _extractEntityTypeFromCanonicalUrl(canonicalUrl: string): StaticEntityType | null {
-  const match = canonicalUrl.match(/https:\/\/api\.openalex\.org\/([^/]+)\//);
-  const entityType = match ? match[1] : null;
-  const validationResult = StaticEntityTypeSchema.safeParse(entityType);
-  return validationResult.success ? validationResult.data : null;
-}
+// function _extractEntityTypeFromCanonicalUrl(canonicalUrl: string): StaticEntityType | null {
+//   const match = canonicalUrl.match(/https:\/\/api\.openalex\.org\/([^/]+)\//);
+//   const entityType = match ? match[1] : null;
+//   const validationResult = StaticEntityTypeSchema.safeParse(entityType);
+//   return validationResult.success ? validationResult.data : null;
+// }
 
 // Helper function to check if file contents are different (reserved for future use)
-async function _hasContentChanged(filePath: string, newContent: string): Promise<boolean> {
-  try {
-    const existingContent = await readFile(filePath, "utf-8");
-    return existingContent !== newContent;
-  } catch {
-    // File doesn't exist, so content is "different"
-    return true;
-  }
-}
+// async function _hasContentChanged(filePath: string, newContent: string): Promise<boolean> {
+//   try {
+//     const existingContent = await readFile(filePath, "utf-8");
+//     return existingContent !== newContent;
+//   } catch {
+//     // File doesn't exist, so content is "different"
+//     return true;
+//   }
+// }
 
 // Get the project root directory
 const __filename = fileURLToPath(import.meta.url);
@@ -196,7 +196,7 @@ const __dirname = dirname(__filename);
 const projectRoot = resolve(__dirname, "../..");
 
 export class OpenAlexCLI {
-  private static instance: OpenAlexCLI;
+  private static instance: OpenAlexCLI | undefined;
   private dataPath: string;
   // TODO: Re-enable when openalex-client package is fixed
   // private cachedClient: CachedOpenAlexClient;
@@ -219,7 +219,7 @@ export class OpenAlexCLI {
       const response = await fetch(url);
 
       if (!response.ok) {
-        throw new Error(`API request failed: ${response.status} ${response.statusText}`);
+        throw new Error(`API request failed: ${response.status.toString()} ${response.statusText}`);
       }
 
       return await response.json();
@@ -248,31 +248,29 @@ export class OpenAlexCLI {
     }
 
     // Fetch from API if cache miss and not cache-only
-    if (!cacheOptions.cacheOnly) {
-      try {
-        const apiResult = await this.fetchFromAPI(entityType, {
-          filter: `id:${entityId}`,
-          per_page: 1
-        });
+    try {
+      const apiResult = await this.fetchFromAPI(entityType, {
+        filter: `id:${entityId}`,
+        per_page: 1
+      });
 
-        const validatedResult = OpenAlexAPIResponseSchema.safeParse(apiResult);
-        if (validatedResult.success && validatedResult.data.results.length > 0) {
-          const entity = validatedResult.data.results[0];
+      const validatedResult = OpenAlexAPIResponseSchema.safeParse(apiResult);
+      if (validatedResult.success && validatedResult.data.results.length > 0) {
+        const entity = validatedResult.data.results[0];
 
-          // Type guard to ensure entity has required properties
-          if (entity && 'id' in entity && 'display_name' in entity &&
-              typeof entity.id === 'string' && typeof entity.display_name === 'string') {
-            // Save to cache if enabled
-            if (cacheOptions.saveToCache) {
-              await this.saveEntityToCache(entityType, entity as { id: string; display_name: string; [key: string]: unknown });
-            }
-
-            return entity as { id: string; display_name: string; [key: string]: unknown };
+        // Type guard to ensure entity has required properties
+        if (entity && 'id' in entity && 'display_name' in entity &&
+            typeof entity.id === 'string' && typeof entity.display_name === 'string') {
+          // Save to cache if enabled
+          if (cacheOptions.saveToCache) {
+            await this.saveEntityToCache(entityType, entity as { id: string; display_name: string; [key: string]: unknown });
           }
+
+          return entity as { id: string; display_name: string; [key: string]: unknown };
         }
-      } catch (error) {
-        console.error(`Failed to fetch ${entityType}/${entityId} from API:`, error);
       }
+    } catch (error) {
+      console.error(`Failed to fetch ${entityType}/${entityId} from API:`, error);
     }
 
     return null;
@@ -361,20 +359,18 @@ export class OpenAlexCLI {
     }
 
     // Fetch from API if cache miss and not cache-only
-    if (!cacheOptions.cacheOnly) {
-      try {
-        const apiResult = await this.fetchFromAPI(entityType, queryOptions);
+    try {
+      const apiResult = await this.fetchFromAPI(entityType, queryOptions);
 
-        // Save to cache if enabled
-        if (cacheOptions.saveToCache) {
-          await this.saveQueryToCache(entityType, url, queryOptions, apiResult, cacheOptions);
-        }
-
-        return apiResult;
-      } catch (error) {
-        console.error(`Failed to execute query:`, error);
-        throw error;
+      // Save to cache if enabled
+      if (cacheOptions.saveToCache) {
+        await this.saveQueryToCache(entityType, url, apiResult);
       }
+
+      return apiResult;
+    } catch (error) {
+      console.error(`Failed to execute query:`, error);
+      throw error;
     }
 
     return null;
@@ -383,7 +379,7 @@ export class OpenAlexCLI {
   /**
    * Save query result to cache
    */
-  async saveQueryToCache(entityType: StaticEntityType, url: string, queryOptions: QueryOptions, result: unknown, _cacheOptions?: CacheOptions): Promise<void> {
+  async saveQueryToCache(entityType: StaticEntityType, url: string, result: unknown): Promise<void> {
     try {
       const queryDir = join(this.dataPath, entityType, "queries");
       await mkdir(queryDir, { recursive: true });
@@ -403,16 +399,20 @@ export class OpenAlexCLI {
         const queryIndexPath = join(queryDir, "index.json");
         const { readFile } = await import("fs/promises");
         const queryIndexContent = await readFile(queryIndexPath, "utf-8");
-        const queryIndex = JSON.parse(queryIndexContent);
+        const queryIndexRaw: unknown = JSON.parse(queryIndexContent);
+        const queryIndexValidation = QueryIndexSchema.safeParse(queryIndexRaw);
 
-        // Find existing entry for this URL
-        const existingEntry = queryIndex.queries?.find((entry: QueryIndexEntry) =>
-          entry.query && entry.query.url === url
-        );
+        if (queryIndexValidation.success) {
+          const queryIndex = queryIndexValidation.data;
+          // Find existing entry for this URL
+          const existingEntry = queryIndex.queries.find((entry) =>
+            entry.query.url === url
+          );
 
-        if (existingEntry) {
-          existingContentHash = existingEntry.contentHash;
-          existingLastModified = existingEntry.lastModified;
+          if (existingEntry) {
+            existingContentHash = existingEntry.contentHash ?? null;
+            existingLastModified = existingEntry.lastModified ?? null;
+          }
         }
       } catch {
         // Query index doesn't exist or can't be read - treat as new content
@@ -509,6 +509,7 @@ export class OpenAlexCLI {
       const entities: string[] = [];
 
       for (const [key, _entry] of Object.entries(unifiedIndex)) {
+        void _entry; // Acknowledge unused variable
         // Extract entity IDs from the unified index keys
         const match = key.match(/\/([AWISTPFC]\d+)(?:\?|$)/);
         if (match) {
@@ -537,7 +538,7 @@ export class OpenAlexCLI {
     try {
       const indexPath = join(this.dataPath, entityType, "index.json");
       const indexContent = await readFile(indexPath, "utf-8");
-      const parsed = JSON.parse(indexContent);
+      const parsed: unknown = JSON.parse(indexContent);
 
       // Validate using Zod schema
       const validationResult = UnifiedIndexSchema.safeParse(parsed);
@@ -565,7 +566,7 @@ export class OpenAlexCLI {
       const indexPath = join(entityDir, "index.json");
       const content = JSON.stringify(index, null, 2);
       await writeFile(indexPath, content);
-      console.error(`Updated unified index for ${entityType} with ${Object.keys(index).length} entries`);
+      console.error(`Updated unified index for ${entityType} with ${Object.keys(index).length.toString()} entries`);
     } catch (error) {
       console.error(`Failed to save unified index for ${entityType}:`, error);
     }
@@ -590,38 +591,38 @@ export class OpenAlexCLI {
       // Load index first to find the actual file path
       const indexPath = join(this.dataPath, entityType, "index.json");
       const indexContent = await readFile(indexPath, "utf-8");
-      const index = JSON.parse(indexContent);
+      const index: unknown = JSON.parse(indexContent);
 
       // Find the entity entry in the index
       let entityEntry: { $ref: string; lastModified: string; contentHash: string } | null = null;
       const canonicalUrl = generateCanonicalEntityUrl(entityType, entityId);
 
-      // Check if the canonical URL exists directly in the index
-      if (index[canonicalUrl]) {
-        const validationResult = EntityIndexEntrySchema.safeParse(index[canonicalUrl]);
-        if (validationResult.success && validationResult.data.$ref &&
-            validationResult.data.lastModified && validationResult.data.contentHash) {
-          entityEntry = validationResult.data as { $ref: string; lastModified: string; contentHash: string };
-        }
-      } else {
-        // Search for entity ID in all keys (may be in different URL formats)
-        if (typeof index === "object" && index !== null && !Array.isArray(index)) {
-          // Type guard: check if object has string keys
-          const hasStringKeys = Object.prototype.toString.call(index) === "[object Object]";
-          if (hasStringKeys) {
-            for (const key in index) {
-              if (Object.prototype.hasOwnProperty.call(index, key)) {
-                const data = index[key];
-                // Extract entity ID from the key and compare
-                const match = key.match(/[WASITCPFKG]\d{8,10}/);
-                if (match && match[0] === entityId) {
-                  // Validate data structure with Zod
-                  const validationResult = EntityIndexEntrySchema.safeParse(data);
-                  if (validationResult.success && validationResult.data.$ref &&
-                      validationResult.data.lastModified && validationResult.data.contentHash) {
-                    entityEntry = validationResult.data as { $ref: string; lastModified: string; contentHash: string };
-                    break;
-                  }
+      // Validate the index structure first
+      const indexValidation = UnifiedIndexSchema.safeParse(index);
+      if (indexValidation.success) {
+        const validatedIndex = indexValidation.data;
+
+        // Check if the canonical URL exists directly in the index
+        if (validatedIndex[canonicalUrl]) {
+          const validationResult = EntityIndexEntrySchema.safeParse(validatedIndex[canonicalUrl]);
+          if (validationResult.success && validationResult.data.$ref &&
+              validationResult.data.lastModified && validationResult.data.contentHash) {
+            entityEntry = validationResult.data as { $ref: string; lastModified: string; contentHash: string };
+          }
+        } else {
+          // Search for entity ID in all keys (may be in different URL formats)
+          for (const key in validatedIndex) {
+            if (Object.prototype.hasOwnProperty.call(validatedIndex, key)) {
+              const data = validatedIndex[key];
+              // Extract entity ID from the key and compare
+              const match = key.match(/[WASITCPFKG]\d{8,10}/);
+              if (match && match[0] === entityId) {
+                // Validate data structure with Zod
+                const validationResult = EntityIndexEntrySchema.safeParse(data);
+                if (validationResult.success && validationResult.data.$ref &&
+                    validationResult.data.lastModified && validationResult.data.contentHash) {
+                  entityEntry = validationResult.data as { $ref: string; lastModified: string; contentHash: string };
+                  break;
                 }
               }
             }
@@ -636,7 +637,7 @@ export class OpenAlexCLI {
       // Construct actual file path from $ref
       const entityPath = join(this.dataPath, entityType, entityEntry.$ref.startsWith("./") ? entityEntry.$ref.substring(2) : entityEntry.$ref);
       const entityContent = await readFile(entityPath, "utf-8");
-      const parsed = JSON.parse(entityContent);
+      const parsed: unknown = JSON.parse(entityContent);
 
       // Validate using Zod schema
       const validatedEntity = OpenAlexEntitySchema.safeParse(parsed);
@@ -891,7 +892,7 @@ export class OpenAlexCLI {
     try {
       const queryIndexPath = join(this.dataPath, entityType, "queries", "index.json");
       const indexContent = await readFile(queryIndexPath, "utf-8");
-      const parsed = JSON.parse(indexContent);
+      const parsed: unknown = JSON.parse(indexContent);
 
       // Validate with Zod schema
       const validationResult = QueryIndexSchema.safeParse(parsed);
@@ -930,7 +931,7 @@ export class OpenAlexCLI {
       const queryIndexPath = join(queryDir, "index.json");
       const content = JSON.stringify(queryIndex, null, 2);
       await writeFile(queryIndexPath, content);
-      console.error(`Updated query index for ${entityType} with ${queryIndex.queries.length} queries`);
+      console.error(`Updated query index for ${entityType} with ${queryIndex.queries.length.toString()} queries`);
     } catch (error) {
       console.error(`Failed to save query index for ${entityType}:`, error);
     }
@@ -940,6 +941,9 @@ export class OpenAlexCLI {
    * Update query index when adding a new cached query
    */
   updateQueryIndex(_entityType: StaticEntityType, _queryDef: QueryDefinition, _metadata: { lastModified?: string; contentHash?: string }): void {
+    void _entityType; // Acknowledge unused parameters
+    void _queryDef;
+    void _metadata;
     // Note: Query indexes are handled separately from unified indexes
     // This method maintains the existing query index format for backward compatibility
     // You may want to consider migrating query indexes to the unified format as well
@@ -999,7 +1003,7 @@ export class OpenAlexCLI {
       // Use query index for comprehensive information
       const queryIndex = await this.loadQueryIndex(entityType);
       if (queryIndex) {
-        return await Promise.resolve(queryIndex.queries.map((entry: QueryIndexEntry) => {
+        return await Promise.resolve(queryIndex.queries.map((entry) => {
           const filename = this.generateFilenameFromQuery(entry.query);
           let decoded: Record<string, unknown> | null = null;
 
@@ -1103,7 +1107,7 @@ export class OpenAlexCLI {
 
     for (const entityId of entityIds) {
       const entity = await this.loadEntity(entityType, entityId);
-      if (entity?.display_name?.toLowerCase().includes(searchTerm.toLowerCase())) {
+      if (entity && entity.display_name.toLowerCase().includes(searchTerm.toLowerCase())) {
         results.push(entity);
       }
     }
@@ -1179,6 +1183,8 @@ export class OpenAlexCLI {
    * Get field coverage for an entity across all cache tiers
    */
   getFieldCoverage(_entityType: StaticEntityType, _entityId: string): Promise<FieldCoverageByTier> {
+    void _entityType; // Acknowledge unused parameters
+    void _entityId;
     // Simplified implementation for CLI - just return basic structure
     logger.warn("general", "Field coverage analysis not available in CLI mode");
     return Promise.resolve({
@@ -1198,6 +1204,8 @@ export class OpenAlexCLI {
     fieldCount: number;
     fields: string[];
   }>> {
+    void _entityType; // Acknowledge unused parameters
+    void _limit;
     try {
       // TODO: Re-enable when synthetic cache is available
       logger.warn("general", "Well-populated entities analysis not available - synthetic cache disabled");
@@ -1216,6 +1224,7 @@ export class OpenAlexCLI {
     entityCount: number;
     pageCount: number;
   }>> {
+    void _limit; // Acknowledge unused parameter
     try {
       // TODO: Re-enable when synthetic cache is available
       logger.warn("general", "Popular collections analysis not available - synthetic cache disabled");
@@ -1276,7 +1285,7 @@ export class OpenAlexCLI {
         if (count === 0) {
           gaps.push(`No static data for ${entityType}`);
         } else if (count < 100) {
-          gaps.push(`Low coverage for ${entityType} (${count} entities)`);
+          gaps.push(`Low coverage for ${entityType} (${count.toString()} entities)`);
           recommendedForGeneration.push(entityType);
         } else {
           recommendedForGeneration.push(entityType);

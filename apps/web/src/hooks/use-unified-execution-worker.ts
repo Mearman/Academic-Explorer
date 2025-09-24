@@ -114,22 +114,22 @@ export function useUnifiedExecutionWorker(options: UseUnifiedExecutionWorkerOpti
     onPositionUpdate,
     onAnimationComplete,
     onAnimationError,
-    onExpansionComplete,
+    onExpansionComplete: _onExpansionComplete,
     onExpansionError,
-    executionMode = "auto",
-    enableWorkerFallback = true,
+    executionMode: _executionMode = "auto",
+    enableWorkerFallback: _enableWorkerFallback = true,
     maxConcurrency = 2,
-    progressThrottleMs = 16
+    progressThrottleMs: _progressThrottleMs = 16
   } = options;
 
   // Create event bus
   const [bus] = useState(() => createLocalEventBus());
 
   // Worker module path
-  const workerModulePath = new URL("../workers/background.worker.ts", import.meta.url).href;
+  const _workerModulePath = new URL("../workers/background.worker.ts", import.meta.url).href;
 
   // Create unified task system
-  const taskSystem = useUnifiedTaskSystem() as TaskSystem;
+  const taskSystem = useUnifiedTaskSystem() as _TaskSystem;
 
   // State management
   const [animationState, setAnimationState] = useState<AnimationState>({
@@ -143,7 +143,7 @@ export function useUnifiedExecutionWorker(options: UseUnifiedExecutionWorkerOpti
     linkCount: 0
   });
 
-  const [nodePositions, setNodePositions] = useState<NodePosition[]>([]);
+  const [nodePositions, _setNodePositions] = useState<NodePosition[]>([]);
   const nodePositionsRef = useRef<NodePosition[]>([]);
   const [performanceMetrics, setPerformanceMetrics] = useState<PerformanceMetrics>({
     averageFPS: 0,
@@ -193,8 +193,8 @@ export function useUnifiedExecutionWorker(options: UseUnifiedExecutionWorkerOpti
           ...prev,
           isRunning: true,
           isPaused: false,
-          nodeCount: nodeCount || 0,
-          linkCount: linkCount || 0
+          nodeCount: nodeCount ?? 0,
+          linkCount: linkCount ?? 0
         }));
         break;
 
@@ -209,7 +209,7 @@ export function useUnifiedExecutionWorker(options: UseUnifiedExecutionWorkerOpti
             alpha,
             iteration,
             progress,
-            fps: fps || prev.fps
+            fps: fps ?? prev.fps
           }));
 
           if (fps) {
@@ -237,7 +237,7 @@ export function useUnifiedExecutionWorker(options: UseUnifiedExecutionWorkerOpti
 
   const handleForceSimulationComplete = useCallback((payload: unknown) => {
     const ackResult = ForceSimulationControlAckEnvelopeSchema.safeParse(payload);
-    if (ackResult.success && ackResult.data.result.type === "FORCE_SIMULATION_CONTROL_ACK") {
+    if (ackResult.success) {
       const ackId = ackResult.data.id;
       if (ackId) {
         removeActiveTask(ackId);
@@ -320,7 +320,7 @@ export function useUnifiedExecutionWorker(options: UseUnifiedExecutionWorkerOpti
         handleForceSimulationProgress(payload);
       }
     };
-    const forceProgressUnsub = bus.on("TASK_PROGRESS", forceProgressHandler);
+    const _forceProgressUnsub = bus.on("TASK_PROGRESS", forceProgressHandler);
     unsubscribers.push(() => { bus.off("TASK_PROGRESS", forceProgressHandler); });
 
     const forceCompleteHandler = (event: any) => {
@@ -336,7 +336,7 @@ export function useUnifiedExecutionWorker(options: UseUnifiedExecutionWorkerOpti
 
       handleForceSimulationComplete(payload);
     };
-    const forceCompleteUnsub = bus.on("TASK_SUCCESS", forceCompleteHandler);
+    const _forceCompleteUnsub = bus.on("TASK_SUCCESS", forceCompleteHandler);
     unsubscribers.push(() => { bus.off("TASK_SUCCESS", forceCompleteHandler); });
 
     const errorHandler = (event: any) => {
@@ -352,7 +352,7 @@ export function useUnifiedExecutionWorker(options: UseUnifiedExecutionWorkerOpti
         handleError(String(taskPayload.error));
       }
     };
-    const errorUnsub = bus.on("TASK_FAILED", errorHandler);
+    const _errorUnsub = bus.on("TASK_FAILED", errorHandler);
     unsubscribers.push(() => { bus.off("TASK_FAILED", errorHandler); });
 
     return () => {
@@ -378,13 +378,13 @@ export function useUnifiedExecutionWorker(options: UseUnifiedExecutionWorkerOpti
     pinnedNodes?: Set<string>;
   }) => {
     logger.debug("execution", "Starting animation with unified execution", {
-      ...(nodes?.length !== undefined && { nodeCount: nodes.length }),
-      ...(links?.length !== undefined && { linkCount: links.length }),
-      ...(pinnedNodes?.size !== undefined && { pinnedCount: pinnedNodes.size }),
+      nodeCount: nodes.length,
+      linkCount: links.length,
+      ...(pinnedNodes && { pinnedCount: pinnedNodes.size }),
       executionMode: taskSystem.getExecutionMode()
     });
 
-    if (!nodes || nodes.length === 0) {
+    if (nodes.length === 0) {
       logger.warn("execution", "Cannot start animation with no nodes");
       return;
     }
@@ -445,8 +445,8 @@ export function useUnifiedExecutionWorker(options: UseUnifiedExecutionWorkerOpti
 
       logger.debug("execution", "Animation started with unified execution", {
         nodeCount: seededNodes.length,
-        linkCount: links?.length || 0,
-        pinnedCount: pinnedNodes?.size || 0,
+        linkCount: links.length,
+        pinnedCount: pinnedNodes?.size ?? 0,
         taskId: submittedTaskId,
         executionMode: taskSystem.getExecutionMode()
       });
@@ -565,7 +565,7 @@ export function useUnifiedExecutionWorker(options: UseUnifiedExecutionWorkerOpti
     pinnedNodes?: Set<string>;
     alpha?: number;
   }) => {
-    if (!nodes || nodes.length === 0) {
+    if (nodes.length === 0) {
       logger.warn("execution", "Cannot reheat animation with no nodes");
       return;
     }
@@ -588,9 +588,9 @@ export function useUnifiedExecutionWorker(options: UseUnifiedExecutionWorkerOpti
       });
 
       logger.debug("execution", "Animation reheat started with unified execution", {
-        nodeCount: nodes?.length || 0,
-        linkCount: links?.length || 0,
-        pinnedCount: pinnedNodes?.size || 0,
+        nodeCount: nodes.length,
+        linkCount: links.length,
+        pinnedCount: pinnedNodes?.size ?? 0,
         alpha,
         taskId: resultTaskId,
         executionMode: taskSystem.getExecutionMode()
@@ -600,7 +600,7 @@ export function useUnifiedExecutionWorker(options: UseUnifiedExecutionWorkerOpti
         addActiveTask(resultTaskId);
       }
 
-      return resultTaskId ?? taskId;
+      return resultTaskId || taskId;
     } catch (error) {
       removeActiveTask(taskId);
       const errorMessage = `Failed to reheat animation: ${error instanceof Error ? error.message : String(error)}`;
@@ -617,7 +617,7 @@ export function useUnifiedExecutionWorker(options: UseUnifiedExecutionWorkerOpti
     links: SimulationLink[];
     alpha?: number;
   }) => {
-    if (!links || links.length === 0) {
+    if (links.length === 0) {
       logger.warn("execution", "Cannot update simulation with no links");
       return;
     }
@@ -638,7 +638,7 @@ export function useUnifiedExecutionWorker(options: UseUnifiedExecutionWorkerOpti
       });
 
       logger.debug("execution", "Simulation links update started with unified execution", {
-        linkCount: links?.length || 0,
+        linkCount: links.length,
         alpha,
         priority: 100,
         taskId: resultTaskId,
@@ -668,7 +668,7 @@ export function useUnifiedExecutionWorker(options: UseUnifiedExecutionWorkerOpti
     pinnedNodes?: Set<string> | string[];
     alpha?: number;
   }) => {
-    if (!nodes || nodes.length === 0) {
+    if (nodes.length === 0) {
       logger.warn("execution", "Cannot update simulation with no nodes");
       return;
     }
@@ -698,7 +698,7 @@ export function useUnifiedExecutionWorker(options: UseUnifiedExecutionWorkerOpti
         pinnedCount: pinnedArray.length,
         alpha,
         priority: 100,
-        taskId: resultTaskId ?? taskId,
+        taskId: resultTaskId || taskId,
         executionMode: taskSystem.getExecutionMode()
       });
 
@@ -717,7 +717,7 @@ export function useUnifiedExecutionWorker(options: UseUnifiedExecutionWorkerOpti
   }, [taskSystem, addActiveTask, removeActiveTask, onAnimationError]);
 
   // TaskSystem interface based on usage
-  interface TaskSystem {
+  interface _TaskSystem {
     submitTask(task: any): Promise<string>;
     cancelTask(taskId: string): Promise<void>;
     getExecutionMode(): string;
@@ -728,7 +728,7 @@ export function useUnifiedExecutionWorker(options: UseUnifiedExecutionWorkerOpti
   }
 
   // Get execution statistics
-  const [systemStats, setSystemStats] = useState<Awaited<ReturnType<TaskSystem["getStats"]>>>({
+  const [systemStats, setSystemStats] = useState<Awaited<ReturnType<_TaskSystem["getStats"]>>>({
     queueLength: 0,
     activeTasks: 0,
     processing: false,

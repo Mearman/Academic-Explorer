@@ -5,9 +5,9 @@
  */
 
 // Log when worker loads
-console.log("🤖 WORKER DEBUG: Background worker loaded and starting");
+logger.debug("worker", "Background worker loaded and starting", {});
 self.addEventListener("message", (e) => {
-  console.log("🤖 WORKER DEBUG: Worker received message", e.data);
+  logger.debug("worker", "Worker received message", { data: e.data });
 });
 
 import { z } from "zod";
@@ -171,7 +171,7 @@ function createSimulationEngine(): ForceSimulationEngine {
     const now = Date.now();
 
     if (event.messageType === "tick") {
-      console.log("🔄 WORKER TICK: Sending progress update", {
+      logger.debug("worker", "Sending progress update", {
         messageType: event.messageType,
         positionsLength: event.positions?.length,
         alpha: event.alpha,
@@ -481,7 +481,7 @@ function updateSimulationNodes(params: {
   self.onmessage = (e: MessageEvent) => {
     const {data} = e;
 
-    console.log("📨 WORKER: Received message", {
+    logger.debug("worker", "Received message", {
       type: data && typeof data === "object" && "type" in data ? data.type : "unknown",
       hasTaskId: data && typeof data === "object" && "taskId" in data,
       hasPayload: data && typeof data === "object" && "payload" in data
@@ -490,7 +490,7 @@ function updateSimulationNodes(params: {
     try {
       // Handle worker pool task wrapper format
       if (isExecuteTaskMessage(data)) {
-        console.log("📨 WORKER: Processing EXECUTE_TASK", {
+        logger.debug("worker", "Processing EXECUTE_TASK", {
           taskId: data.taskId,
           payloadType: data.payload && typeof data.payload === "object" && "type" in data.payload ? data.payload.type : "unknown"
         });

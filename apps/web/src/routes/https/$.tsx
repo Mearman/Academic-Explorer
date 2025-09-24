@@ -68,7 +68,7 @@ function HttpsRoute() {
 				Resolving HTTPS URL...
 			</div>
 			<div style={{ fontFamily: "monospace", backgroundColor: "#f5f5f5", padding: "10px", borderRadius: "4px" }}>
-				https://{decodeURIComponent(_splat || "")}
+				https://{decodeURIComponent(_splat ?? "")}
 			</div>
 			<div style={{ marginTop: "20px", fontSize: "14px", color: "#666" }}>
 				Detecting entity type and redirecting

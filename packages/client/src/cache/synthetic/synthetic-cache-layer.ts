@@ -15,51 +15,49 @@ export interface SyntheticCacheConfig {
 }
 
 export class SyntheticCacheLayer {
-  constructor(config: SyntheticCacheConfig = {}) {
-    // Stub implementation - no actual caching logic
-  }
+  // Stub implementation - no actual caching logic
 
-  async get(
-    entityType: EntityType,
-    entityId: string,
-    fields?: string[]
-  ): Promise<unknown | null> {
+  get(
+    _entityType: EntityType,
+    _entityId: string,
+    _fields?: string[]
+  ): Promise<null> {
     // Always return null (cache miss) in stub implementation
-    return null;
+    return Promise.resolve(null);
   }
 
   async set(
-    entityType: EntityType,
-    entityId: string,
-    data: unknown,
-    tier: StorageTier = "memory"
+    _entityType: EntityType,
+    _entityId: string,
+    _data: unknown,
+    _tier: StorageTier = "memory"
   ): Promise<void> {
     // No-op in stub implementation
   }
 
-  async has(
-    entityType: EntityType,
-    entityId: string,
-    fields?: string[]
+  has(
+    _entityType: EntityType,
+    _entityId: string,
+    _fields?: string[]
   ): Promise<boolean> {
     // Always return false (not cached) in stub implementation
-    return false;
+    return Promise.resolve(false);
   }
 
   async delete(
-    entityType: EntityType,
-    entityId: string,
-    tiers?: StorageTier[]
+    _entityType: EntityType,
+    _entityId: string,
+    _tiers?: StorageTier[]
   ): Promise<void> {
     // No-op in stub implementation
   }
 
-  async clear(tiers?: StorageTier[]): Promise<void> {
+  async clear(_tiers?: StorageTier[]): Promise<void> {
     // No-op in stub implementation
   }
 
-  async optimize(
-    entityType: EntityType,
+  optimize(
+    _entityType: EntityType,
     entityIds: string[],
     fields?: string[],
     params?: QueryParams
@@ -71,7 +69,7 @@ export class SyntheticCacheLayer {
       params: params ?? {}
     };
 
-    return {
+    return Promise.resolve({
       cacheHits: [],
       missingEntities: entityIds.map(entityId => ({
         entityId,
@@ -90,29 +88,29 @@ export class SyntheticCacheLayer {
         requests: 0
       },
       canSynthesize: false
-    };
+    });
   }
 
   async promote(
-    entityType: EntityType,
-    entityId: string,
-    fields?: string[]
+    _entityType: EntityType,
+    _entityId: string,
+    _fields?: string[]
   ): Promise<void> {
     // No-op in stub implementation
   }
 
-  async getStats(): Promise<{
+  getStats(): Promise<{
     memorySize: number;
     localStorageSize: number;
     indexedDBSize: number;
     hitRate: number;
   }> {
-    return {
+    return Promise.resolve({
       memorySize: 0,
       localStorageSize: 0,
       indexedDBSize: 0,
       hitRate: 0
-    };
+    });
   }
 
   // Additional methods called by cached-client.ts
@@ -125,58 +123,58 @@ export class SyntheticCacheLayer {
     return this.optimize(entityType, entityIds, fields, params);
   }
 
-  async synthesizeResponse(
-    plan: OptimizedRequestPlan,
-    entityType: EntityType,
+  synthesizeResponse(
+    _plan: OptimizedRequestPlan,
+    _entityType: EntityType,
     apiResponse?: unknown
   ): Promise<unknown> {
     // Return the API response as-is in stub implementation
-    return apiResponse;
+    return Promise.resolve(apiResponse);
   }
 
-  async getEntityFields(entityType: EntityType, entityId: string): Promise<string[]> {
+  getEntityFields(_entityType: EntityType, _entityId: string): Promise<string[]> {
     // Return empty fields array in stub implementation
-    return [];
+    return Promise.resolve([]);
   }
 
-  async invalidateEntity(entityType: EntityType, entityId: string, tiers?: StorageTier[]): Promise<void> {
+  async invalidateEntity(_entityType: EntityType, _entityId: string, _tiers?: StorageTier[]): Promise<void> {
     // No-op in stub implementation
   }
 
-  async prioritizeEntities(
-    entityType: EntityType,
+  prioritizeEntities(
+    _entityType: EntityType,
     entityIds: string[],
-    strategy: string
+    _strategy: string
   ): Promise<string[]> {
     // Return entities in same order in stub implementation
-    return entityIds;
+    return Promise.resolve(entityIds);
   }
 
-  async warmupCache(entityType: EntityType, entityIds: string[]): Promise<void> {
+  async warmupCache(_entityType: EntityType, _entityIds: string[]): Promise<void> {
     // No-op in stub implementation
   }
 
-  async compactCache(tiers?: StorageTier[]): Promise<void> {
+  async compactCache(_tiers?: StorageTier[]): Promise<void> {
     // No-op in stub implementation
   }
 
-  async getEntityCache(entityType: EntityType, entityId: string): Promise<unknown> {
+  getEntityCache(_entityType: EntityType, _entityId: string): Promise<unknown> {
     // Always return null in stub implementation
-    return null;
+    return Promise.resolve(null);
   }
 
   async setEntityCache(
-    entityType: EntityType,
-    entityId: string,
-    data: unknown,
-    tier?: StorageTier
+    _entityType: EntityType,
+    _entityId: string,
+    _data: unknown,
+    _tier?: StorageTier
   ): Promise<void> {
     // No-op in stub implementation
   }
 
-  async hasEntityCache(entityType: EntityType, entityId: string): Promise<boolean> {
+  hasEntityCache(_entityType: EntityType, _entityId: string): Promise<boolean> {
     // Always return false in stub implementation
-    return false;
+    return Promise.resolve(false);
   }
 
   // Additional methods for cached-client compatibility
@@ -184,11 +182,11 @@ export class SyntheticCacheLayer {
     return this.getStats();
   }
 
-  async promoteToHotTier(entityType: EntityType, entityId: string, fields?: string[]): Promise<void> {
+  async promoteToHotTier(_entityType: EntityType, _entityId: string, _fields?: string[]): Promise<void> {
     // No-op in stub implementation
   }
 
-  async putEntityFields<T>(entityType: EntityType, entityId: string, data: T): Promise<void> {
+  async putEntityFields(_entityType: EntityType, _entityId: string, _data: unknown): Promise<void> {
     // No-op in stub implementation
   }
 
@@ -197,12 +195,12 @@ export class SyntheticCacheLayer {
     return `${entityType}:${JSON.stringify(params)}`;
   }
 
-  async putCollectionPage(queryKey: string, page: number, entityIds: string[]): Promise<void> {
+  async putCollectionPage(_queryKey: string, _page: number, _entityIds: string[]): Promise<void> {
     // No-op in stub implementation
   }
 
-  async getFieldCoverage(entityType: EntityType, entityId: string): Promise<unknown> {
+  getFieldCoverage(_entityType: EntityType, _entityId: string): Promise<unknown> {
     // Return empty coverage in stub implementation
-    return {};
+    return Promise.resolve({});
   }
 }

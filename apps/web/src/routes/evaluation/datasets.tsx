@@ -62,7 +62,7 @@ function DatasetsManagement() {
 			setUploadProgress(70)
 
 			// Create dataset from parse result
-			const reviewTopic = prompt("Enter the review topic for this dataset:") || "Systematic Literature Review"
+			const reviewTopic = prompt("Enter the review topic for this dataset:") ?? "Systematic Literature Review"
 			const newDataset = createSTARDatasetFromParseResult(uploadFile, parseResult, reviewTopic)
 
 			setUploadProgress(100)

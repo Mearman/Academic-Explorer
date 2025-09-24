@@ -249,7 +249,7 @@ function ComparisonResults() {
 			totalAdditionalPapers: metricsArray.reduce((sum, m) => sum + m.additionalPapersFound, 0),
 			avgExecutionTime: completed.reduce((sum, r) => {
 				const execTime = "executionTime" in r ? r.executionTime : 0
-				return sum + (execTime || 0)
+				return sum + (execTime ?? 0)
 			}, 0) / totalResults
 		}
 	}, [displayResults])
@@ -523,7 +523,7 @@ function ComparisonResults() {
 												</p>
 												<p style={{ fontSize: "12px", color: "#9ca3af" }}>
                         Completed on {result.runDate.toLocaleDateString()} •
-													{formatTime(("executionTime" in result ? result.executionTime : 0) || 0)} • {"apiCalls" in result && typeof result.apiCalls === "number" ? result.apiCalls : "N/A"} API calls
+													{formatTime(("executionTime" in result ? result.executionTime : 0) ?? 0)} • {"apiCalls" in result && typeof result.apiCalls === "number" ? result.apiCalls : "N/A"} API calls
 												</p>
 											</div>
 
@@ -780,8 +780,8 @@ function ComparisonResults() {
 									</label>
 									<select
 										id="dataset-select"
-										value={selectedDatasetForMissingPapers || ""}
-										onChange={(e) => { setSelectedDatasetForMissingPapers(e.target.value || null); }}
+										value={selectedDatasetForMissingPapers ?? ""}
+										onChange={(e) => { setSelectedDatasetForMissingPapers(e.target.value ?? null); }}
 										style={{
 											padding: "8px 12px",
 											borderRadius: "6px",

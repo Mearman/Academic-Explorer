@@ -25,7 +25,7 @@ export function useThemeColors() {
 	// Base color utilities
 	const getColor = (color: string, shade: number = 5) => {
 		if (color in theme.colors) {
-			return theme.colors[color]?.[shade] || color;
+			return theme.colors[color]?.[shade] ?? color;
 		}
 		return color;
 	};
@@ -35,16 +35,16 @@ export function useThemeColors() {
 		// Text colors - using Mantine CSS variables for better theme integration
 		text: {
 			primary: "var(--mantine-color-text)",
-			secondary: isDark ? theme.colors.gray?.[3] : theme.colors.gray?.[6],
-			tertiary: isDark ? theme.colors.gray?.[4] : theme.colors.gray?.[5],
-			inverse: isDark ? theme.colors.gray?.[9] : theme.colors.gray?.[0],
+			secondary: isDark ? theme.colors.gray[3] : theme.colors.gray[6],
+			tertiary: isDark ? theme.colors.gray[4] : theme.colors.gray[5],
+			inverse: isDark ? theme.colors.gray[9] : theme.colors.gray[0],
 		},
 
 		// Background colors - using Mantine CSS variables for better theme integration
 		background: {
 			primary: "var(--mantine-color-body)",
-			secondary: isDark ? theme.colors.gray?.[8] : theme.colors.gray?.[0],
-			tertiary: isDark ? theme.colors.gray?.[7] : theme.colors.gray?.[1],
+			secondary: isDark ? theme.colors.gray[8] : theme.colors.gray[0],
+			tertiary: isDark ? theme.colors.gray[7] : theme.colors.gray[1],
 			overlay: isDark ? "rgba(0, 0, 0, 0.8)" : "rgba(255, 255, 255, 0.95)",
 			blur: isDark ? "rgba(31, 41, 55, 0.95)" : "rgba(255, 255, 255, 0.95)",
 		},
@@ -52,26 +52,26 @@ export function useThemeColors() {
 		// Border colors - using Mantine CSS variables for better theme integration
 		border: {
 			primary: "var(--mantine-color-default-border)",
-			secondary: isDark ? theme.colors.gray?.[6] : theme.colors.gray?.[3],
+			secondary: isDark ? theme.colors.gray[6] : theme.colors.gray[3],
 		},
 
 		// Semantic colors
-		primary: theme.colors.blue?.[5] || "#228be6",
-		success: theme.colors.green?.[5] || "#10b981",
-		warning: theme.colors.yellow?.[5] || "#f59e0b",
-		error: theme.colors.red?.[5] || "#ef4444",
-		info: theme.colors.blue?.[5] || "#228be6",
+		primary: theme.colors.blue[5],
+		success: theme.colors.green[5],
+		warning: theme.colors.yellow[5],
+		error: theme.colors.red[5],
+		info: theme.colors.blue[5],
 
 		// Academic entity colors
 		entity: {
-			work: theme.colors.blue?.[5] || "#228be6",
-			author: theme.colors?.['author']?.[5] || "#10b981",
-			source: theme.colors?.['source']?.[5] || "#8b5cf6",
-			institution: theme.colors?.['institution']?.[5] || "#f59e0b",
-			concept: theme.colors.red?.[5] || "#ef4444",
-			topic: theme.colors.red?.[5] || "#ef4444",
-			publisher: theme.colors.cyan?.[5] || "#06b6d4",
-			funder: theme.colors.pink?.[5] || "#ec4899",
+			work: theme.colors.blue[5],
+			author: theme.colors['author']?.[5] ?? "#10b981",
+			source: theme.colors['source']?.[5] ?? "#8b5cf6",
+			institution: theme.colors['institution']?.[5] ?? "#f59e0b",
+			concept: theme.colors.red[5],
+			topic: theme.colors.red[5],
+			publisher: theme.colors.cyan[5],
+			funder: theme.colors.pink[5],
 		},
 	};
 
@@ -116,7 +116,7 @@ export function useThemeColors() {
 			funders: "pink",
 		};
 
-		const colorKey = colorMap[normalizedType] || "blue";
+		const colorKey = colorMap[normalizedType] ?? "blue";
 		return getColor(colorKey, shade);
 	};
 

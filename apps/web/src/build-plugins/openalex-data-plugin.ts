@@ -12,7 +12,31 @@ import { createHash } from "crypto";
 import type { Plugin } from "vite";
 import { z } from "zod";
 import { logger } from "@academic-explorer/utils";
-// import { fetchOpenAlexQuery } from "@academic-explorer/client";
+
+/**
+ * Simple fetch function for OpenAlex API queries
+ * This is a minimal implementation for use in the build plugin
+ */
+async function fetchOpenAlexQuery(url: string): Promise<unknown | null> {
+  try {
+    const response = await fetch(url);
+    if (!response.ok) {
+      logger.error("general", "OpenAlex query failed", {
+        url,
+        status: response.status,
+        statusText: response.statusText
+      });
+      return null;
+    }
+    return await response.json();
+  } catch (error) {
+    logger.error("general", "Error fetching OpenAlex query", {
+      url,
+      error: error instanceof Error ? error.message : String(error)
+    });
+    return null;
+  }
+}
 
 // Import additional utilities for direct filename control
 

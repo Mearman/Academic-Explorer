@@ -234,7 +234,7 @@ export class OpenAlexBaseClient {
 				headers: {
 					"Accept": "application/json",
 					"User-Agent": "OpenAlex-TypeScript-Client/1.0",
-					...(this.config.headers || {}),
+					...this.config.headers,
 					...(options.headers && typeof options.headers === "object" && !Array.isArray(options.headers) && !(options.headers instanceof Headers) ? options.headers : {}),
 				},
 			});

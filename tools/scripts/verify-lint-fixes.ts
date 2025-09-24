@@ -93,9 +93,9 @@ class LintVerificationStrategy {
         this.packages.push({
           name: projectName,
           path: projectPath,
-          hasLint: !!targets.lint,
-          hasTypecheck: !!targets.typecheck,
-          hasBuild: !!targets.build
+          hasLint: !!targets['lint'],
+          hasTypecheck: !!targets['typecheck'],
+          hasBuild: !!targets['build']
         });
       }
 

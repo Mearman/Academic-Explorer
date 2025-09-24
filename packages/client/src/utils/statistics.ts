@@ -358,10 +358,13 @@ export class StatisticsApi {
 
 		for (let i = 0; i < Math.min(10, groups.length); i++) {
 			const group = groups[i];
+			if (!group) {
+				continue;
+			}
 
 			try {
 				// Get more detailed stats for each group
-				const groupFilter = `${groupBy}:${group?.key ?? ''}`;
+				const groupFilter = `${groupBy}:${group.key}`;
 				const groupStats = await this.client.getResponse<{ results: Array<{ cited_by_count?: number }> }>(entityType, {
 					filter: groupFilter,
 					per_page: 100,
@@ -376,14 +379,14 @@ export class StatisticsApi {
 				const growthRate = Math.random() * 20 - 10; // Placeholder - would need historical data
 
 				groupMetrics.push({
-					group: group?.key ?? '',
-					group_display_name: group?.key_display_name ?? '',
+					group: group.key,
+					group_display_name: group.key_display_name ?? group.key,
 					metrics: {
-						total_count: group?.count ?? 0,
+						total_count: group.count,
 						avg_citations: avgCitations,
 						median_citations: medianCitations,
 						growth_rate: growthRate,
-						market_share: ((group?.count ?? 0) / totalEntities) * 100,
+						market_share: (group.count / totalEntities) * 100,
 					},
 					rankings: {
 						by_count: i + 1,
@@ -392,7 +395,7 @@ export class StatisticsApi {
 					},
 				});
 			} catch (error) {
-				logger.warn(`Failed to get detailed stats for group ${group?.key ?? 'unknown'}`, { groupKey: group?.key ?? 'unknown', error });
+				logger.warn(`Failed to get detailed stats for group ${group.key}`, { groupKey: group.key, error });
 			}
 		}
 
@@ -536,7 +539,8 @@ export class StatisticsApi {
 			if (countryData) {
 				const distribution: Record<string, number> = {};
 				countryData.slice(0, 20).forEach((group) => {
-					distribution[group.key_display_name] = group.count;
+					const displayName = group.key_display_name ?? group.key;
+					distribution[displayName] = group.count;
 				});
 				return distribution;
 			}

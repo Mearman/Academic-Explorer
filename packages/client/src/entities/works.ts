@@ -641,8 +641,6 @@ export class WorksApi {
 export async function createDefaultWorksApi(): Promise<WorksApi> {
 	// Using dynamic import for lazy loading and avoiding circular dependencies
 	const { defaultClient } = await import("../client");
-	if (!defaultClient) {
-		throw new Error("Default client not available");
-	}
+	// defaultClient is always defined from the import
 	return new WorksApi(defaultClient);
 }

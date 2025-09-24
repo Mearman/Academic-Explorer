@@ -17,6 +17,6 @@ export {
 
 import { SyntheticCacheLayer, type SyntheticCacheConfig } from "./synthetic-cache-layer";
 
-export function createSyntheticCacheLayer(config?: SyntheticCacheConfig): SyntheticCacheLayer {
-  return new SyntheticCacheLayer(config);
+export function createSyntheticCacheLayer(_config?: SyntheticCacheConfig): SyntheticCacheLayer {
+  return new SyntheticCacheLayer();
 }

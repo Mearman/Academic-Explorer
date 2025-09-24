@@ -232,12 +232,12 @@ export const RichEntityDisplay: React.FC<RichEntityDisplayProps> = ({
 												truncate
 												style={{ maxWidth: 150, cursor: "pointer" }}
 												onClick={() => {
-													if (authorship.institutions?.[0]?.id) {
+													if (authorship.institutions[0]?.id) {
 														handleEntityClick(authorship.institutions[0].id, "institution");
 													}
 												}}
 											>
-												{authorship.institutions?.[0]?.display_name}
+												{authorship.institutions[0]?.display_name}
 											</Anchor>
 										)}
 									</Group>

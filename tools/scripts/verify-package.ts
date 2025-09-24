@@ -93,13 +93,15 @@ class PackageVerifier {
         line.includes('error') || line.includes('warning')
       );
 
-      const errorCount = (output.match(/(\d+)\s+error/g) || [])
+      const errorMatches = output.match(/(\d+)\s+error/g);
+      const errorCount = (errorMatches || [] as string[])
         .reduce((sum: number, match: string) => {
           const numberMatch = match.match(/\d+/);
           return sum + (numberMatch ? parseInt(numberMatch[0]) : 0);
         }, 0);
 
-      const warningCount = (output.match(/(\d+)\s+warning/g) || [])
+      const warningMatches = output.match(/(\d+)\s+warning/g);
+      const warningCount = (warningMatches || [] as string[])
         .reduce((sum: number, match: string) => {
           const numberMatch = match.match(/\d+/);
           return sum + (numberMatch ? parseInt(numberMatch[0]) : 0);
@@ -289,7 +291,7 @@ class PackageVerifier {
     }
 
     // Step 4: Build check (only if previous steps passed)
-    let buildResult = { passed: true, details: { skipped: true } };
+    let buildResult: { passed: boolean; details: unknown } = { passed: true, details: { skipped: true } };
     if (lintResult.passed && typecheckResult.passed && !this.skipBuild) {
       buildResult = this.runBuildCheck();
       if (!buildResult.passed) {
@@ -316,7 +318,7 @@ class PackageVerifier {
       if (!typecheckResult.passed) {
         console.log(`  - Fix TypeScript errors in source files`);
       }
-      if (!buildResult.passed && !buildResult.details.skipped) {
+      if (!buildResult.passed && !(buildResult.details as { skipped?: boolean })?.skipped) {
         console.log(`  - Fix build issues`);
       }
     }

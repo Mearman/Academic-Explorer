@@ -40,7 +40,7 @@ export const useRawEntityData = (options: UseRawEntityDataOptions) => {
 
 		// Since cache configuration now uses plural forms that match OpenAlex API endpoints,
 		// we can use the detected entity type directly if it's a valid cache entity type
-		if (detection.entityType && detection.entityType in ENTITY_CACHE_TIMES) {
+		if (detection.entityType in ENTITY_CACHE_TIMES) {
 			entityType = detection.entityType;
 		} else {
 			throw new Error(`Detected entity type "${detection.entityType}" is not a valid cache entity type`);
@@ -85,7 +85,7 @@ export const useRawEntityData = (options: UseRawEntityDataOptions) => {
 			entityType,
 			fromCache: !query.isFetching,
 			cacheStatus: query.status,
-			...(query.dataUpdatedAt !== undefined && { dataAge: Date.now() - query.dataUpdatedAt })
+			dataAge: Date.now() - query.dataUpdatedAt
 		}, "useRawEntityData");
 	}
 

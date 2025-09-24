@@ -422,7 +422,7 @@ export function useTaskProgress(
       setState(prev => ({
         ...prev,
         status: TaskStatus.FAILED,
-        error: new Error(payload.error || "Task failed")
+        error: new Error(payload.error ?? "Task failed")
       }));
     }
   });

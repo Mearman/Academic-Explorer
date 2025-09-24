@@ -104,7 +104,7 @@ export class NetworkInterceptor {
 	private interceptFetch(): void {
 		window.fetch = (input: RequestInfo | URL, init?: RequestInit): Promise<Response> => {
 			const url = typeof input === "string" ? input : input instanceof URL ? input.toString() : input.url;
-			const method = init?.method || "GET";
+			const method = init?.method ?? "GET";
 
 			const requestInfo = this.createRequestInfo(url, method, init?.headers);
 			const store = useNetworkActivityStore.getState();
@@ -243,20 +243,20 @@ export class NetworkInterceptor {
 
       					logger.debug("api", "XHR request completed", {
       						requestId: finalRequestId,
-      						url: xhrData?.url || "unknown",
+      						url: xhrData?.url ?? "unknown",
       						status: this.status,
       						size: responseSize
       					}, "NetworkInterceptor");
       				} else {
       					store.failRequest(
       						finalRequestId,
-      						this.statusText || "Request failed",
+      						this.statusText ?? "Request failed",
       						this.status
       					);
 
       					logger.error("api", "XHR request failed", {
       						requestId: finalRequestId,
-      						url: xhrData?.url || "unknown",
+      						url: xhrData?.url ?? "unknown",
       						status: this.status,
       						statusText: this.statusText
       					}, "NetworkInterceptor");
@@ -339,7 +339,7 @@ export class NetworkInterceptor {
 		}
 		if (typeof headers === "object" && headers !== null) {
 			const record = headers;
-			return record[key] || null;
+			return record[key] ?? null;
 		}
 		return null;
 	}

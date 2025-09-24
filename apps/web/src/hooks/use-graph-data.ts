@@ -69,28 +69,27 @@ export function useGraphData() {
 	}, [service]);
 
  	const expandNode = useCallback(async (nodeId: string, options?: Partial<ExpansionOptions>) => {
- 		console.log("DEBUG: useGraphData.expandNode called", { nodeId, options });
- 		console.error("DEBUG: useGraphData.expandNode called - ERROR LOG", { nodeId, options });
+ 		logger.debug("graph-hook", "useGraphData.expandNode called", { nodeId, options });
 
  		try {
- 			console.log("DEBUG: About to get store state");
+ 			logger.debug("graph-hook", "About to get store state", {});
  			const store = useGraphStore.getState();
- 			console.log("DEBUG: Got store state, node count:", Object.keys(store.nodes).length);
+ 			logger.debug("graph-hook", "Got store state", { nodeCount: Object.keys(store.nodes).length });
 
  		// Get the node to expand
  		const node = store.nodes[nodeId];
- 		console.log("DEBUG: Checking for node", { nodeId, nodeExists: !!node, allNodeIds: Object.keys(store.nodes) });
+ 		logger.debug("graph-hook", "Checking for node", { nodeId, nodeExists: !!node, allNodeIds: Object.keys(store.nodes) });
  		if (!node) {
- 			console.log("DEBUG: Node not found for expansion", { nodeId });
+ 			logger.debug("graph-hook", "Node not found for expansion", { nodeId });
  			logger.warn("graph", "Node not found for expansion", { nodeId }, "useGraphData");
  			return;
  		}
-		console.log("DEBUG: Node found, calling service.expandNode", { nodeId, nodeType: node.type });
+		logger.debug("graph-hook", "Node found, calling service.expandNode", { nodeId, nodeType: node.type });
 
  		// Check if force worker is ready, with retry logic
- 		console.log("DEBUG: Force worker ready check", { isWorkerReady: forceWorker.isWorkerReady });
+ 		logger.debug("graph-hook", "Force worker ready check", { isWorkerReady: forceWorker.isWorkerReady });
  		if (!forceWorker.isWorkerReady) {
- 			console.log("DEBUG: Force worker not ready, starting retry logic");
+ 			logger.debug("graph-hook", "Force worker not ready, starting retry logic", {});
  			logger.warn("graph", "Force worker not ready initially, waiting for readiness", { nodeId }, "useGraphData");
 
 			// Wait a short time for state propagation and retry
@@ -171,7 +170,7 @@ export function useGraphData() {
 					store.setError(err instanceof Error ? err.message : "Failed to expand node");
 				}
  		} catch (error) {
- 			console.log("DEBUG: useGraphData.expandNode ERROR", { nodeId, error: error instanceof Error ? error.message : String(error) });
+ 			logger.debug("graph-hook", "useGraphData.expandNode ERROR", { nodeId, error: error instanceof Error ? error.message : String(error) });
  		}
  	}, [forceWorker, service]);
 
@@ -227,10 +226,10 @@ export function useGraphData() {
 	const search = useCallback(async (query: string, options?: Partial<SearchOptions>) => {
 		const searchOptions: SearchOptions = {
 			query,
-			entityTypes: options?.entityTypes || ["works", "authors", "sources", "institutions"],
+			entityTypes: options?.entityTypes ?? ["works", "authors", "sources", "institutions"],
 			includeExternalIds: options?.includeExternalIds ?? true,
 			preferExternalIdResults: options?.preferExternalIdResults ?? false,
-			limit: options?.limit || 20,
+			limit: options?.limit ?? 20,
 		};
 
 		try {

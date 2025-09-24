@@ -1,12 +1,12 @@
-import tseslint from 'typescript-eslint';
 import reactConfig from '../../eslint.config.react.ts';
 
-export default tseslint.config([
+const config = [
   {
-    // Global ignores for this app - exclude test files for now
+    // Global ignores for this app - exclude test files and build plugins
     ignores: [
       'src/**/*.{test,spec}.{ts,tsx}',
       'src/test/**/*.{ts,tsx}',
+      'src/build-plugins/**/*',
     ],
   },
   ...reactConfig,
@@ -68,24 +68,7 @@ export default tseslint.config([
       '@typescript-eslint/restrict-template-expressions': 'off',
     },
   },
-  {
-    // Build plugins - also need special handling
-    files: ['src/build-plugins/**/*.{ts,js}'],
-    languageOptions: {
-      parserOptions: {
-        project: './tsconfig.config.json',
-        tsconfigRootDir: import.meta.dirname,
-      },
-    },
-    rules: {
-      'no-console': 'off',
-      '@typescript-eslint/no-explicit-any': 'off',
-      '@typescript-eslint/no-unsafe-assignment': 'off',
-      '@typescript-eslint/no-unsafe-member-access': 'off',
-      '@typescript-eslint/no-unsafe-call': 'off',
-      '@typescript-eslint/no-unsafe-return': 'off',
-      '@typescript-eslint/no-unsafe-argument': 'off',
-    },
-  },
   // Test files are handled by the base configuration with project: false
-]);
+];
+
+export default config;

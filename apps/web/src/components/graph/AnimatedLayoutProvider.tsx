@@ -48,12 +48,12 @@ export const AnimatedLayoutProvider: React.FC<AnimatedLayoutProviderProps> = ({
 	const {
 		animationState,
 		isWorkerReady,
-		startAnimation,
+		startAnimation: _startAnimation,
 		stopAnimation,
 		pauseAnimation,
 		resumeAnimation,
-		reheatAnimation,
-		updateParameters: updateSimulationParameters,
+		reheatAnimation: _reheatAnimation,
+		updateParameters: _updateSimulationParameters,
 		canPause,
 		canResume,
 		canStop,
@@ -235,7 +235,7 @@ export const AnimatedLayoutProvider: React.FC<AnimatedLayoutProviderProps> = ({
 			}
 		};
 
-		const listenerId = eventBus.on(eventType, handler);
+		const _listenerId = eventBus.on(eventType, handler);
 
 		return () => {
 			eventBus.off(eventType, handler);
@@ -305,8 +305,8 @@ export const AnimatedLayoutProvider: React.FC<AnimatedLayoutProviderProps> = ({
 			});
 		};
 
-		const bulkNodesListenerId = eventBus.on("graph:bulk-nodes-added", bulkNodesHandler);
-		const bulkEdgesListenerId = eventBus.on("graph:bulk-edges-added", bulkEdgesHandler);
+		const _bulkNodesListenerId = eventBus.on("graph:bulk-nodes-added", bulkNodesHandler);
+		const _bulkEdgesListenerId = eventBus.on("graph:bulk-edges-added", bulkEdgesHandler);
 
 		return () => {
 			eventBus.off("graph:bulk-nodes-added", bulkNodesHandler);

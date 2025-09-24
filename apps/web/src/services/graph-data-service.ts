@@ -25,19 +25,19 @@ function isEntityType(type: string): type is EntityType {
   return ["works", "authors", "sources", "institutions"].includes(type as EntityType);
 }
 // Cache functions - implement as stubs for now
-function getCachedOpenAlexEntities(queryClient: QueryClient): OpenAlexEntity[] {
+function getCachedOpenAlexEntities(_queryClient: QueryClient): OpenAlexEntity[] {
 	return [];
 }
-function setCachedGraphNodes(queryClient: QueryClient, nodes: GraphNode[]): void {
+function setCachedGraphNodes(_queryClient: QueryClient, _nodes: GraphNode[]): void {
 	// Stub implementation
 }
-function setCachedGraphEdges(queryClient: QueryClient, edges: GraphEdge[]): void {
+function setCachedGraphEdges(_queryClient: QueryClient, _edges: GraphEdge[]): void {
 	// Stub implementation
 }
-function setNodeExpanded(queryClient: QueryClient, nodeId: string, expanded: boolean): void {
+function setNodeExpanded(_queryClient: QueryClient, _nodeId: string, _expanded: boolean): void {
 	// Stub implementation
 }
-function isNodeExpanded(queryClient: QueryClient, nodeId: string): boolean {
+function isNodeExpanded(_queryClient: QueryClient, _nodeId: string): boolean {
 	return false;
 }
 
@@ -168,7 +168,7 @@ export class GraphDataService {
 				// Add detected relationship edges to the graph
 				if (detectedEdges && detectedEdges.length > 0) {
 					logger.debug("graph", "Adding detected relationship edges to initial graph", {
-						detectedEdgeCount: detectedEdges?.length || 0
+						detectedEdgeCount: detectedEdges?.length ?? 0
 					}, "GraphDataService");
 
 					store.addEdges(detectedEdges);
@@ -226,7 +226,7 @@ export class GraphDataService {
 						if (detectedEdges && detectedEdges.length > 0) {
 							logger.debug("graph", "Adding detected relationship edges for existing node", {
 								nodeId: existingNode.id,
-								detectedEdgeCount: detectedEdges?.length || 0
+								detectedEdgeCount: detectedEdges?.length ?? 0
 							}, "GraphDataService");
 
 							const currentStore = useGraphStore.getState();
@@ -283,7 +283,7 @@ export class GraphDataService {
 						if (detectedEdges && detectedEdges.length > 0) {
 							logger.debug("graph", "Adding detected relationship edges for newly added node", {
 								nodeId: primaryNodeId,
-								detectedEdgeCount: detectedEdges?.length || 0
+								detectedEdgeCount: detectedEdges?.length ?? 0
 							}, "GraphDataService");
 
 							const currentStore = useGraphStore.getState();
@@ -322,7 +322,7 @@ export class GraphDataService {
 						// Add detected relationship edges to the graph
 						if (detectedEdges && detectedEdges.length > 0) {
 							logger.debug("graph", "Adding detected relationship edges for initial graph nodes", {
-								detectedEdgeCount: detectedEdges?.length || 0
+								detectedEdgeCount: detectedEdges?.length ?? 0
 							}, "GraphDataService");
 
 							const currentStore = useGraphStore.getState();
@@ -767,7 +767,7 @@ export class GraphDataService {
  	async expandNode(nodeId: string, options: ExpansionOptions = {}): Promise<void> {
  		const { force = false } = options;
 
- 		console.log("DEBUG: expandNode function START", { nodeId, force });
+ 		logger.debug("graph-data", "expandNode function START", { nodeId, force });
  		logger.error("graph", "DEBUG: expandNode called with", { nodeId, force }, "GraphDataService");
  		logger.error("graph", "DEBUG: expandNode START CONSOLE LOG", { nodeId, force }, "GraphDataService");
  		logger.debug("graph", "GraphDataService.expandNode called", { nodeId, force }, "GraphDataService");
@@ -797,7 +797,7 @@ export class GraphDataService {
 					if (detectedEdges && detectedEdges.length > 0) {
 						logger.debug("graph", "Found new relationships for already-expanded node", {
 							nodeId,
-							detectedEdgeCount: detectedEdges?.length || 0,
+							detectedEdgeCount: detectedEdges?.length ?? 0,
 							relationships: detectedEdges.map(e => ({
 								source: e.source,
 								target: e.target,
@@ -930,7 +930,7 @@ export class GraphDataService {
 
 					logger.debug("graph", "Relationship detection completed", {
 						expandedNodeId: nodeId,
-						detectedEdgeCount: detectedEdges?.length || 0,
+						detectedEdgeCount: detectedEdges?.length ?? 0,
 						relationships: detectedEdges.map(e => ({
 							source: e.source,
 							target: e.target,
@@ -943,7 +943,7 @@ export class GraphDataService {
 						const finalEdgesWithRelationships = [...finalEdges, ...detectedEdges];
 						logger.debug("graph", "Adding detected relationship edges", {
 							expandedNodeId: nodeId,
-							relationshipEdgeCount: detectedEdges?.length || 0,
+							relationshipEdgeCount: detectedEdges?.length ?? 0,
 							totalEdgeCount: finalEdgesWithRelationships.length
 						}, "GraphDataService");
 
@@ -967,7 +967,7 @@ export class GraphDataService {
    			logger.error("graph", "FORCE CHECK START", { force, nodeId, typeofForce: typeof force }, "GraphDataService");
    			if (force) {
    				logger.error("graph", "INSIDE FORCE IF BLOCK", { force, nodeId }, "GraphDataService");
-  				console.log("FORCE BRANCH EXECUTING", { nodeId });
+  				logger.debug("graph-data", "FORCE BRANCH EXECUTING", { nodeId });
    				const allNodeIds = Object.keys(store.nodes);
    				logger.error("graph", "FORCE BRANCH NODES", { count: allNodeIds.length, nodeIds: allNodeIds }, "GraphDataService");
    				if (allNodeIds.length > 1) { // Only run if there are multiple nodes
@@ -981,7 +981,7 @@ export class GraphDataService {
    					try {
    						logger.error("graph", "DEBUG: FORCE BRANCH - Calling detectRelationshipsForNodes", { allNodeIds, count: allNodeIds.length }, "GraphDataService");
    						const forceDetectedEdges = await this.relationshipDetectionService.detectRelationshipsForNodes(allNodeIds);
-   						logger.error("graph", "DEBUG: FORCE BRANCH - detectRelationshipsForNodes returned", { forceDetectedEdgesCount: forceDetectedEdges?.length || 0, ...(forceDetectedEdges !== undefined && { forceDetectedEdges }) }, "GraphDataService");
+   						logger.error("graph", "DEBUG: FORCE BRANCH - detectRelationshipsForNodes returned", { forceDetectedEdgesCount: forceDetectedEdges?.length ?? 0, ...(forceDetectedEdges !== undefined && { forceDetectedEdges }) }, "GraphDataService");
 
 						if (forceDetectedEdges && forceDetectedEdges.length > 0) {
 							logger.debug("graph", "Adding force-detected relationship edges", {
@@ -1023,16 +1023,16 @@ export class GraphDataService {
 
   			// Layout is automatically handled by the provider when nodes/edges are added
 
-  			console.log("DEBUG: About to reach force check", { nodeId, force });
+  			logger.debug("graph-data", "About to reach force check", { nodeId, force });
 
   		} catch (error) {
   			// Mark the node as error if expansion failed
   			store.markNodeAsError(nodeId);
 
-  			console.log("DEBUG: expandNode function ERROR", { nodeId, error: error instanceof Error ? error.message : String(error) });
+  			logger.debug("graph-data", "expandNode function ERROR", { nodeId, error: error instanceof Error ? error.message : String(error) });
   			logError(logger, "Failed to expand node", error, "GraphDataService", "graph");
   		} finally {
-  			console.log("DEBUG: expandNode function END", { nodeId, force });
+  			logger.debug("graph-data", "expandNode function END", { nodeId, force });
   		}
  	}
 
@@ -1046,8 +1046,8 @@ export class GraphDataService {
 
 		try {
 			// Search each entity type using the client API
-			const limit = options.limit || 20;
-			const entityTypes = options.entityTypes || ["works", "authors", "sources", "institutions", "topics"];
+			const limit = options.limit ?? 20;
+			const entityTypes = options.entityTypes ?? ["works", "authors", "sources", "institutions", "topics"];
 			const allResults: OpenAlexEntity[] = [];
 
 			// Search each entity type and collect results
@@ -1197,7 +1197,7 @@ export class GraphDataService {
 				keywords: ["id", "display_name", "works_count", "cited_by_count"]
 			};
 
-			const fields = minimalFieldsMap[entityType] || ["id", "display_name"];
+			const fields = minimalFieldsMap[entityType] ?? ["id", "display_name"];
 
 			// Use the specific entity method with field selection for minimal data
 			const entity = await this.deduplicationService.getEntity(
@@ -1209,7 +1209,7 @@ export class GraphDataService {
 			return {
 				id: entity.id,
 				type: entityType,
-				label: entity.display_name || `${entityType} ${entity.id}`,
+				label: entity.display_name ?? `${entityType} ${entity.id}`,
 				entityId: entity.id,
 				position: { x: 0, y: 0 }, // Will be positioned by layout
 				externalIds: [], // Will be populated during full hydration
@@ -1360,7 +1360,7 @@ export class GraphDataService {
 					}, "GraphDataService");
 
 					// Fetch only the entities of target type (efficiently)
-					for (const entityId of relatedEntityIds.slice(0, options.limit || relatedEntityIds.length)) {
+					for (const entityId of relatedEntityIds.slice(0, options.limit ?? relatedEntityIds.length)) {
 						// Skip if we already have this node
 						if (entityId in store.nodes) {
 							continue;
@@ -1515,7 +1515,7 @@ export class GraphDataService {
 		};
 
 		const key = `${sourceType}-${targetType}`;
-		return relationshipMap[key] || RelationType.RELATED_TO;
+		return relationshipMap[key] ?? RelationType.RELATED_TO;
 	}
 
 	/**
@@ -1745,7 +1745,7 @@ export class GraphDataService {
 		return {
 			id: entity.id,
 			type: entityType,
-			label: entity.display_name || "Unknown Entity",
+			label: entity.display_name ?? "Unknown Entity",
 			entityId: entity.id,
 			position: { x: 0, y: 0 }, // Will be updated by layout
 			externalIds,

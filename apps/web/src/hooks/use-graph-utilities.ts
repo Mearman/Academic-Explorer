@@ -85,7 +85,7 @@ export const useGraphUtilities = () => {
 	const callServiceMethod = useCallback((
 		methodName: string,
 		args: unknown[],
-		operationName: string
+		_operationName: string
 	): GraphOperationResult | GraphUtilityResult => {
 		const service = graphUtilitiesService as unknown as Record<string, unknown>;
 
@@ -249,7 +249,7 @@ export const useGraphUtilities = () => {
 			}
 
 			// Handle GraphUtilityResult with data property
-			if (typeof result === "object" && result !== null && "data" in result && Array.isArray((result as GraphUtilityResult & { data: unknown }).data)) {
+			if (typeof result === "object" && "data" in result && Array.isArray((result as GraphUtilityResult & { data: unknown }).data)) {
 				return (result as GraphUtilityResult & { data: string[][] }).data;
 			}
 
@@ -271,13 +271,13 @@ export const useGraphUtilities = () => {
 
 		// Count nodes by type
 		nodes.forEach((node) => {
-			const count = nodesByType[node.type] || 0;
+			const count = nodesByType[node.type] ?? 0;
 			nodesByType[node.type] = count + 1;
 		});
 
 		// Count edges by type
 		edges.forEach((edge) => {
-			const count = edgesByType[edge.type] || 0;
+			const count = edgesByType[edge.type] ?? 0;
 			edgesByType[edge.type] = count + 1;
 		});
 

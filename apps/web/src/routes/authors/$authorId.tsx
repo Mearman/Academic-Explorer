@@ -121,12 +121,12 @@ function AuthorRoute() {
 				// For initial author page load, automatically expand to show works
 				// This ensures users see a full graph when directly visiting an author URL
 				const authorNodeId = `https://openalex.org/${authorId}`;
-				console.log("DEBUG: Author route calling expandNode", { authorNodeId, force: true });
+				logger.debug("routing", "Author route calling expandNode", { authorNodeId, force: true });
 				try {
 					await expandNode(authorNodeId, { force: true });
-					console.log("DEBUG: expandNode completed successfully");
+					logger.debug("routing", "expandNode completed successfully", {});
 				} catch (expansionError) {
-					console.log("DEBUG: expandNode failed", expansionError);
+					logger.debug("routing", "expandNode failed", { error: expansionError });
 					// Log expansion failures but don't prevent the author from loading
 					logger.warn("routing", "Failed to expand author on initial load", {
 						authorId,

@@ -68,7 +68,7 @@ export class RelationshipDetectionService {
 	 * Uses two-pass approach to find relationships between nodes added in the same batch
 	 */
   async detectRelationshipsForNodes(nodeIds: string[]): Promise<GraphEdge[]> {
-    console.log("DEBUG: detectRelationshipsForNodes called with", nodeIds.length, "node IDs:", nodeIds);
+    logger.debug("relationship-detection", "detectRelationshipsForNodes called", { nodeCount: nodeIds.length, nodeIds });
 
     if (!nodeIds || nodeIds.length === 0) return [];
 
@@ -260,9 +260,9 @@ export class RelationshipDetectionService {
 
 			// Transform to minimal data format with null checks
 			const minimalData: MinimalEntityData = {
-				id: entity.id || "",
+				id: entity.id ?? "",
 				entityType,
-				display_name: entity.display_name || ""
+				display_name: entity.display_name ?? ""
 			};
 
 			logger.debug("graph", "Entity fetched with fields", {
@@ -317,7 +317,7 @@ export class RelationshipDetectionService {
 				hasAuthorships: !!minimalData.authorships?.length,
 				hasAffiliations: !!minimalData.affiliations?.length,
 				hasReferences: !!minimalData.referenced_works?.length,
-				referencedWorksCount: minimalData.referenced_works?.length || 0
+				referencedWorksCount: minimalData.referenced_works?.length ?? 0
 			}, "RelationshipDetectionService");
 
 			return minimalData;
@@ -345,7 +345,7 @@ export class RelationshipDetectionService {
 			entityType: newEntityData.entityType,
 			hasReferencedWorks: "referenced_works" in newEntityData && !!newEntityData.referenced_works,
 			referencedWorksCount: ("referenced_works" in newEntityData && Array.isArray(newEntityData.referenced_works)) ? newEntityData.referenced_works.length : 0,
-			existingNodeIds: existingNodes.map(n => n.entityId || n.id)
+			existingNodeIds: existingNodes.map(n => n.entityId ?? n.id)
 		}, "RelationshipDetectionService");
 
 		// Analyze relationships based on entity type
@@ -355,7 +355,7 @@ export class RelationshipDetectionService {
 					workId: newEntityData.id,
 					hasReferencedWorks: "referenced_works" in newEntityData && !!newEntityData.referenced_works
 				}, "RelationshipDetectionService");
-				console.log("DEBUG: Calling analyzeWorkRelationships for", newEntityData.id);
+				logger.debug("relationship-detection", "Calling analyzeWorkRelationships", { entityId: newEntityData.id });
 				relationships.push(...await this.analyzeWorkRelationships(newEntityData, existingNodes));
 				break;
 			case "authors":
@@ -401,7 +401,7 @@ export class RelationshipDetectionService {
 				select: ["id", "referenced_works"]
 			});
 
-			return workData.referenced_works || [];
+			return workData.referenced_works ?? [];
 		} catch (error) {
 			logger.error("graph", "Failed to fetch referenced_works for work", {
 				workId,
@@ -417,7 +417,7 @@ export class RelationshipDetectionService {
 		logger.debug("graph", "Analyzing work relationships", {
 			workId: workData.id,
 			hasReferencedWorks: !!workData.referenced_works,
-			referencedWorksCount: workData.referenced_works?.length || 0,
+			referencedWorksCount: workData.referenced_works?.length ?? 0,
 			existingNodesCount: existingNodes.length
 		}, "RelationshipDetectionService");
 
@@ -469,7 +469,7 @@ export class RelationshipDetectionService {
 		logger.debug("graph", "Checking referenced_works", {
 			workId: workData.id,
 			hasReferencedWorks: !!referencedWorks,
-			referencedWorksLength: referencedWorks?.length || 0
+			referencedWorksLength: referencedWorks?.length ?? 0
 		}, "RelationshipDetectionService");
 
 		if (!referencedWorks) {

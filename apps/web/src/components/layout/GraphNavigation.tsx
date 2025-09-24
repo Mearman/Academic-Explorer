@@ -284,7 +284,7 @@ const GraphNavigationInner: React.FC<GraphNavigationProps> = ({ className, style
 	applyLayoutRef.current = applyLayout;
 	const autoSimulationManagerRef = useRef(createAutoSimulationManager());
 	const nodeCount = nodes.length;
-	console.log("GraphNavigation render", { nodeCount });
+	logger.debug("graph-nav", "GraphNavigation render", { nodeCount });
 
 	useEffect(() => {
 		const manager = autoSimulationManagerRef.current;
@@ -370,7 +370,7 @@ const GraphNavigationInner: React.FC<GraphNavigationProps> = ({ className, style
 					void handleGraphNodeDoubleClickWithHash(node);
 				},
 				onNodeHover: (node: GraphNode | null) => {
-					setPreviewEntity(node?.entityId || null);
+					setPreviewEntity(node ? node.entityId : null);
 				},
 			});
 			return;
@@ -384,7 +384,7 @@ const GraphNavigationInner: React.FC<GraphNavigationProps> = ({ className, style
 		providerRef.current = graphProvider;
 
 		// Set up navigation events - check if provider has setEvents method
-		if (graphProvider && typeof graphProvider === 'object' && 'setEvents' in graphProvider && typeof graphProvider.setEvents === 'function') {
+		if (typeof graphProvider === 'object' && 'setEvents' in graphProvider && typeof graphProvider.setEvents === 'function') {
 			graphProvider.setEvents({
 				onNodeClick: (node: GraphNode) => {
 					// Single click: select, pin, center, update preview (no expansion)
@@ -398,18 +398,18 @@ const GraphNavigationInner: React.FC<GraphNavigationProps> = ({ className, style
 
 				onNodeHover: (node: GraphNode | null) => {
 					// Update preview in sidebar
-					setPreviewEntity(node?.entityId || null);
+					setPreviewEntity(node ? node.entityId : null);
 				},
 			});
 		}
 
 		// Initialize with container - check if provider has initialize method
-		if (graphProvider && typeof graphProvider === 'object' && 'initialize' in graphProvider && typeof graphProvider.initialize === 'function') {
+		if (typeof graphProvider === 'object' && 'initialize' in graphProvider && typeof graphProvider.initialize === 'function') {
 			void graphProvider.initialize(containerRef.current);
 		}
 
 		// Set ReactFlow instance - check if provider has setReactFlowInstance method
-		if (graphProvider && typeof graphProvider === 'object' && 'setReactFlowInstance' in graphProvider && typeof graphProvider.setReactFlowInstance === 'function') {
+		if (typeof graphProvider === 'object' && 'setReactFlowInstance' in graphProvider && typeof graphProvider.setReactFlowInstance === 'function') {
 			graphProvider.setReactFlowInstance(reactFlowInstance);
 		}
 
@@ -420,7 +420,7 @@ const GraphNavigationInner: React.FC<GraphNavigationProps> = ({ className, style
 		};
 
 		// Type guard to check if provider has the callback method
-		if (graphProvider && typeof graphProvider === "object" && "setOnDataChangeCallback" in graphProvider && typeof graphProvider.setOnDataChangeCallback === "function") {
+		if (typeof graphProvider === "object" && "setOnDataChangeCallback" in graphProvider && typeof graphProvider.setOnDataChangeCallback === "function") {
 			graphProvider.setOnDataChangeCallback(forceUpdateCallback);
 		}
 
@@ -431,7 +431,7 @@ const GraphNavigationInner: React.FC<GraphNavigationProps> = ({ className, style
 		}
 
 		return () => {
-			if (graphProvider && typeof graphProvider === 'object' && 'destroy' in graphProvider && typeof graphProvider.destroy === 'function') {
+			if (typeof graphProvider === 'object' && 'destroy' in graphProvider && typeof graphProvider.destroy === 'function') {
 				graphProvider.destroy();
 			}
 		};
@@ -506,7 +506,7 @@ const GraphNavigationInner: React.FC<GraphNavigationProps> = ({ className, style
 				setTimeout(() => {
 					const animatedStore = useAnimatedGraphStore.getState();
 					animatedStore.requestRestart();
-					console.log("Auto-start queue", {
+					logger.debug("graph-nav", "Auto-start queue", {
 						nodeCount: currentVisibleNodes.length,
 						isWorkerReady,
 						useAnimation,
@@ -606,7 +606,7 @@ const GraphNavigationInner: React.FC<GraphNavigationProps> = ({ className, style
 					if (addedEdges.length > 0) {
 						logger.debug("graph", "Direct edge additions detected, triggering force simulation update", {
 							addedEdgesCount: addedEdges.length,
-							edgeIds: addedEdges.map(change => change.type === "add" ? change.item.id : "unknown")
+							edgeIds: addedEdges.map(change => change.item.id)
 						});
 
 						// Import localEventBus to emit the proper events for force simulation
@@ -615,7 +615,7 @@ const GraphNavigationInner: React.FC<GraphNavigationProps> = ({ className, style
 							localEventBus.emit({
 								type: "BULK_EDGES_ADDED",
 								payload: {
-									edges: addedEdges.map(change => change.type === "add" ? change.item.id : ""),
+									edges: addedEdges.map(change => change.item.id),
 									timestamp: Date.now()
 								}
 							});
@@ -891,7 +891,7 @@ const GraphNavigationInner: React.FC<GraphNavigationProps> = ({ className, style
 				["works", "authors", "sources", "institutions", "topics", "concepts", "publishers", "funders", "keywords"].includes(value);
 
 			const isExternalIdentifier = (item: unknown): item is ExternalIdentifier => {
-				if (!item || typeof item !== "object" || item === null) return false;
+				if (!item || typeof item !== "object") return false;
 
 				// Check for required properties using type predicate approach
 				if (!("type" in item) || !("value" in item) || !("url" in item)) return false;
@@ -915,8 +915,7 @@ const GraphNavigationInner: React.FC<GraphNavigationProps> = ({ className, style
 				Array.isArray(value) && value.every(isExternalIdentifier);
 
 			// Validate all required properties
-			if (node.data &&
-			    isValidString(node.data['entityId']) &&
+			if (isValidString(node.data['entityId']) &&
 			    isValidEntityType(node.data['entityType']) &&
 			    isValidString(node.data['label'])) {
 
@@ -953,7 +952,7 @@ const GraphNavigationInner: React.FC<GraphNavigationProps> = ({ className, style
 			const parsed: unknown = JSON.parse(transferData);
 
 			const isGraphNode = (value: unknown): value is GraphNode => {
-				if (!value || typeof value !== "object" || value === null) return false;
+				if (!value || typeof value !== "object") return false;
 
 				const requiredProps = ["id", "type", "label", "entityId", "position", "externalIds"];
 				for (const prop of requiredProps) {
@@ -976,7 +975,7 @@ const GraphNavigationInner: React.FC<GraphNavigationProps> = ({ className, style
 			};
 
 			const isGraphEdge = (value: unknown): value is GraphEdge => {
-				if (!value || typeof value !== "object" || value === null) return false;
+				if (!value || typeof value !== "object") return false;
 
 				const requiredProps = ["id", "source", "target", "type"];
 				for (const prop of requiredProps) {
@@ -998,7 +997,7 @@ const GraphNavigationInner: React.FC<GraphNavigationProps> = ({ className, style
 
 			// Type guard for drop data structure
 			const isValidDropData = (value: unknown): value is { type: string; node?: GraphNode; edge?: GraphEdge } => {
-				if (!value || typeof value !== "object" || value === null) return false;
+				if (!value || typeof value !== "object") return false;
 				if (!("type" in value)) return false;
 
 				// Type narrowing with safe property access
@@ -1151,7 +1150,7 @@ const GraphNavigationInner: React.FC<GraphNavigationProps> = ({ className, style
 				<Controls />
 				<MiniMap
 					nodeColor={(node) => {
-						const entityType = node.data?.['entityType'];
+						const entityType = node.data['entityType'];
 						switch (entityType) {
 							case "work": return "#e74c3c";
 							case "author": return "#3498db";

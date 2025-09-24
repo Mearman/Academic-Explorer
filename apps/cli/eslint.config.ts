@@ -1,11 +1,24 @@
 import tseslint from 'typescript-eslint';
-import baseConfig from '../../eslint.config.base.js';
+import js from '@eslint/js';
+import globals from 'globals';
 
 export default tseslint.config([
-  ...baseConfig,
   {
-    // CLI-specific configuration - override base config for all CLI TypeScript files
+    // Global ignores for CLI
+    ignores: [
+      'dist/**/*',
+      'node_modules/**/*',
+      'coverage/**/*',
+    ],
+  },
+  // Non-test TypeScript files - use strict type checking
+  {
     files: ['src/**/*.{ts,tsx}'],
+    ignores: ['src/**/*.{test,spec}.{ts,tsx}'],
+    extends: [
+      js.configs.recommended,
+      ...tseslint.configs.strictTypeChecked,
+    ],
     languageOptions: {
       parserOptions: {
         project: './tsconfig.json',
@@ -31,35 +44,25 @@ export default tseslint.config([
       '@typescript-eslint/no-redundant-type-constituents': 'off', // Allow explicit null unions for clarity
     },
   },
+  // Test files - use basic linting only, no type checking
   {
-    // Disable ALL type-aware rules for test files since they're excluded from tsconfig
     files: ['src/**/*.{test,spec}.{ts,tsx}', '**/test/**/*.{ts,tsx}'],
+    extends: [
+      js.configs.recommended,
+    ],
     languageOptions: {
+      parser: tseslint.parser,
+      globals: {
+        ...globals.node,
+        ...globals.es2020,
+      },
       parserOptions: {
-        project: false, // Disable all type-aware rules for test files
+        project: false, // No type checking for test files
       },
     },
     rules: {
-      // Core TypeScript rules that need type information
-      '@typescript-eslint/no-array-delete': 'off',
-      '@typescript-eslint/no-explicit-any': 'off',
-      '@typescript-eslint/no-floating-promises': 'off',
-      '@typescript-eslint/await-thenable': 'off',
-      '@typescript-eslint/no-unsafe-assignment': 'off',
-      '@typescript-eslint/no-unsafe-member-access': 'off',
-      '@typescript-eslint/no-unsafe-call': 'off',
-      '@typescript-eslint/no-unsafe-return': 'off',
-      '@typescript-eslint/no-unsafe-argument': 'off',
-      '@typescript-eslint/prefer-nullish-coalescing': 'off',
-      '@typescript-eslint/no-unnecessary-type-assertion': 'off',
-      '@typescript-eslint/restrict-template-expressions': 'off',
-      '@typescript-eslint/restrict-plus-operands': 'off',
-      '@typescript-eslint/no-misused-promises': 'off',
-      '@typescript-eslint/no-non-null-assertion': 'off',
-      '@typescript-eslint/prefer-optional-chain': 'off',
-      '@typescript-eslint/unbound-method': 'off',
-      '@typescript-eslint/no-confusing-void-expression': 'off',
       'no-console': 'off', // Allow console in tests
+      '@typescript-eslint/no-explicit-any': 'off', // Allow any in tests
     },
   },
 ]);

@@ -20,7 +20,7 @@
     "typecheck": "nx run-many -t typecheck",
     "clean": "nx reset && rm -rf dist coverage .nx/cache .tanstack node_modules/.vite && pnpm --filter='*' clean",
     "verify": "nx verify",
-    "verify:full": "nx verify:full",
+    "verify:full": "tsx tools/scripts/full-verify.ts",
     "verify:parallel": "nx verify:parallel",
     "verify:lint-fixes": "tsx tools/scripts/verify-lint-fixes.ts",
     "verify:package": "tsx tools/scripts/verify-package.ts",
@@ -34,7 +34,11 @@
     "prepare": "husky",
     "licenses:generate": "monorepo-license-checker --markdown --exclude-private-packages",
     "licenses:check": "tsx tools/scripts/check-licenses.ts",
-    "licenses:summary": "monorepo-license-checker --exclude-private-packages"
+    "licenses:summary": "monorepo-license-checker --exclude-private-packages",
+    "monitor-ci": "tsx scripts/monitor-ci.ts",
+    "ci:status": "tsx scripts/monitor-ci.ts status",
+    "ci:watch": "tsx scripts/monitor-ci.ts watch",
+    "ci:logs": "tsx scripts/monitor-ci.ts logs"
   },
   "devDependencies": {
     "@commitlint/cli": "^19.8.1",

@@ -239,11 +239,12 @@ export class CachedOpenAlexClient extends OpenAlexBaseClient {
     }
 
     try {
-      const requestedFields = convertedParams.select || [];
+      const requestedFields = convertedParams.select ?? [];
 
       // Check cache for entity fields
       const cachedFields = await this.cache.getEntityFields(entityType, id);
-      const cachedData = await this.cache.getEntityCache(entityType, id) as Partial<T> || {};
+      const rawCachedData = await this.cache.getEntityCache(entityType, id);
+      const cachedData: Partial<T> = rawCachedData ? (rawCachedData as Partial<T>) : {};
 
       const hasAllFields = requestedFields.every(field => cachedFields.includes(field));
       if (hasAllFields && Object.keys(cachedData).length > 0) {
@@ -255,11 +256,7 @@ export class CachedOpenAlexClient extends OpenAlexBaseClient {
           fields: requestedFields
         });
         // All requested fields are present in cache
-        if (this.isCompleteEntity<T>(cachedData, requestedFields)) {
-          return cachedData;
-        }
-        // This should never happen given the outer condition, but TypeScript requires it
-        throw new Error("Cache data validation failed despite field count check");
+        return cachedData as T;
       }
 
       // Determine missing fields for surgical request
@@ -313,7 +310,7 @@ export class CachedOpenAlexClient extends OpenAlexBaseClient {
         {
           entityType,
           endpoint,
-          params: params || {}
+          params
         }
       );
     }
@@ -383,7 +380,7 @@ export class CachedOpenAlexClient extends OpenAlexBaseClient {
     if (!this.cacheEnabled) return;
 
     try {
-      const fieldsToPromote = fields || await this.getAvailableFields(entityType, entityId);
+      const fieldsToPromote = fields ?? await this.getAvailableFields(entityType, entityId);
       await this.cache.promoteToHotTier(entityType, entityId, fieldsToPromote);
 
       logger.debug("Promoted entity to hot tier", {
@@ -408,7 +405,7 @@ export class CachedOpenAlexClient extends OpenAlexBaseClient {
       logger.debug("Invalidated entity cache", {
         entityType,
         entityId,
-        tiers: tiers || "all"
+        tiers: tiers ?? "all"
       });
     } catch (error) {
       logError("Failed to invalidate entity", error);
@@ -473,10 +470,7 @@ export class CachedOpenAlexClient extends OpenAlexBaseClient {
 
     // For simplicity, execute the first surgical request
     // In a more sophisticated implementation, we could batch or parallelize requests
-    const firstRequest = plan.requiredApiCalls[0];
-    if (!firstRequest) {
-      return undefined;
-    }
+    // firstRequest is guaranteed to exist since we checked length > 0 above
 
     // Simplified implementation - always fall back to full request
     // In a more sophisticated implementation, we would handle different request types
@@ -509,7 +503,7 @@ export class CachedOpenAlexClient extends OpenAlexBaseClient {
       if (this.isCollectionRequest(params)) {
         const convertedParams = this.convertQueryParams(params);
         const queryKey = this.cache.generateQueryKey(entityType, convertedParams);
-        const page = params.page || 1;
+        const page = params.page ?? 1;
         const entityIds = results
           .map(result => this.extractEntityId(result))
           .filter((id): id is string => id !== null);
@@ -523,7 +517,7 @@ export class CachedOpenAlexClient extends OpenAlexBaseClient {
   }
 
   private hasId(entity: unknown): entity is { id: unknown } {
-    return typeof entity === "object" && entity !== null && entity !== undefined && "id" in entity;
+    return typeof entity === "object" && entity !== null && "id" in entity;
   }
 
   private extractEntityId(entity: unknown): string | null {
@@ -534,7 +528,7 @@ export class CachedOpenAlexClient extends OpenAlexBaseClient {
   }
 
   private isCollectionRequest(params: QueryParams): boolean {
-    return !!(params.filter || params.page || params.per_page);
+    return !!(params.filter ?? params.page ?? params.per_page);
   }
 
   private async getAvailableFields(entityType: EntityType, entityId: string): Promise<string[]> {
@@ -697,17 +691,15 @@ export class CachedOpenAlexClient extends OpenAlexBaseClient {
   ): Promise<unknown> {
     // Try static data first for simple requests
     if (!params || Object.keys(params).length === 0) {
-      const staticType = toStaticEntityType(entityType);
-      if (staticType) {
-        try {
-          const result = await staticDataProvider.getStaticData(staticType, cleanOpenAlexId(id));
-          if (result.found && this.isValidStaticEntity(result.data)) {
-            logger.debug("Served entity from static data", { id, entityType });
-            return result.data;
-          }
-        } catch {
-          logger.debug("Static data not available, falling back to API", { id, entityType });
+      try {
+        const staticType = toStaticEntityType(entityType);
+        const result = await staticDataProvider.getStaticData(staticType, cleanOpenAlexId(id));
+        if (result.found && this.isValidStaticEntity(result.data)) {
+          logger.debug("Served entity from static data", { id, entityType });
+          return result.data;
         }
+      } catch {
+        logger.debug("Static data not available, falling back to API", { id, entityType });
       }
     }
 
@@ -836,19 +828,8 @@ export class CachedOpenAlexClient extends OpenAlexBaseClient {
    * Check if entity exists in static data
    */
   async hasStaticEntity(entityType: string, entityId: string): Promise<boolean> {
-    // Type guard to ensure entityType is valid
-    if (!this.isValidEntityType(entityType)) {
-      return false;
-    }
-
-    // After validation, we know entityType is a valid EntityType
-    const validatedEntityType: EntityType = entityType;
-    const staticType = toStaticEntityType(validatedEntityType);
-    if (!staticType) {
-      return false;
-    }
-
     try {
+      const staticType = toStaticEntityType(entityType);
       return await staticDataProvider.hasStaticData(staticType, cleanOpenAlexId(entityId));
     } catch {
       return false;
@@ -858,9 +839,9 @@ export class CachedOpenAlexClient extends OpenAlexBaseClient {
   /**
    * Get static data statistics
    */
-  async getStaticDataStats(): Promise<unknown> {
+  getStaticDataStats(): Promise<unknown> {
     // Static data provider doesn't have getStatistics method in stub
-    return { enabled: false, count: 0 };
+    return Promise.resolve({ enabled: false, count: 0 });
   }
 
   /**
@@ -939,7 +920,7 @@ export const cachedOpenAlex = (() => {
   };
 
   const email = typeof process !== "undefined" &&
-                process.env?.["VITE_OPENALEX_EMAIL"] &&
+                process.env['VITE_OPENALEX_EMAIL'] &&
                 typeof process.env["VITE_OPENALEX_EMAIL"] === "string" &&
                 process.env["VITE_OPENALEX_EMAIL"].trim().length > 0
     ? process.env["VITE_OPENALEX_EMAIL"]

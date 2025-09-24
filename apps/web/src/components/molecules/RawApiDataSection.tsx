@@ -179,7 +179,7 @@ export const RawApiDataSection: React.FC<RawApiDataSectionProps> = ({
 
 		if (typeof value === "object") {
 			// Type guard: ensure value is a non-null object
-			if (value === null || Array.isArray(value)) {
+			if (value === null) {
 				return (
 					<span style={{
 						color: colors.text.secondary,

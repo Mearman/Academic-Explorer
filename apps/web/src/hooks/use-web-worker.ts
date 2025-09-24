@@ -168,11 +168,11 @@ export function useWebWorker(
             break;
 
           case "ERROR":
-            setError(data.error || "Unknown worker error");
+            setError(data.error ?? "Unknown worker error");
             setIsLoading(false);
             setStats(prev => ({ ...prev, errors: prev.errors + 1 }));
             if (data.requestId && onExpansionError) {
-              onExpansionError(data.requestId, data.error || "Unknown error");
+              onExpansionError(data.requestId, data.error ?? "Unknown error");
             }
             break;
         }
@@ -249,7 +249,7 @@ export function useWebWorker(
 
     try {
       // Generate request ID if not provided
-      const requestId = data.requestId || `req-${Date.now().toString()}-${Math.random().toString(36).substring(2)}`;
+      const requestId = data.requestId ?? `req-${Date.now().toString()}-${Math.random().toString(36).substring(2)}`;
       const messageWithId: WorkerRequest = { ...data, requestId };
 
       // Track request timing

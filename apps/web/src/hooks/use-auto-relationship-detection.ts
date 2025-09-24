@@ -69,34 +69,34 @@ function isValidEvent(value: unknown): value is EventLike {
 }
 
 export function useAutoRelationshipDetection() {
-  const queryClient = useQueryClient();
+  const _queryClient = useQueryClient();
   const relationshipDetectionService = useMemo(() => getRelationshipDetectionService(), []);
   const eventBus = useEventBus();
 
   useEffect(() => {
-    console.log("DEBUG: useAutoRelationshipDetection hook initialized");
+    logger.debug("relationship-detection", "useAutoRelationshipDetection hook initialized", {});
 
     const handler = (event: any) => {
-      console.log("DEBUG: BULK_NODES_ADDED event received", event);
+      logger.debug("relationship-detection", "BULK_NODES_ADDED event received", { event });
 
       // Type guard for the event
       if (!isValidEvent(event)) {
-        console.log("DEBUG: Event failed type guard");
+        logger.debug("relationship-detection", "Event failed type guard", {});
         return;
       }
 
       if (!event.payload || typeof event.payload !== "object") {
-        console.log("DEBUG: Event payload invalid");
+        logger.debug("relationship-detection", "Event payload invalid", {});
         return;
       }
       const {payload} = event;
       if (!("nodes" in payload) || !Array.isArray(payload.nodes)) {
-        console.log("DEBUG: Event payload missing nodes array");
+        logger.debug("relationship-detection", "Event payload missing nodes array", {});
         return;
       }
       const validNodes = payload.nodes.filter(isValidNode);
       if (validNodes.length === 0) {
-        console.log("DEBUG: No valid nodes in event");
+        logger.debug("relationship-detection", "No valid nodes in event", {});
         return;
       }
       const { nodes } = { nodes: validNodes };
@@ -105,7 +105,7 @@ export function useAutoRelationshipDetection() {
       return;
     }
 
-    console.log("DEBUG: About to trigger relationship detection for", nodes.length, "nodes");
+    logger.debug("relationship-detection", "About to trigger relationship detection", { nodeCount: nodes.length });
 
     logger.debug("graph", "Nodes added to graph, triggering relationship detection", {
       nodeCount: nodes.length,

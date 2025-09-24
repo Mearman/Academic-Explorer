@@ -5,6 +5,7 @@
 
 import type { Page } from "@playwright/test"
 import { expect as vitestExpect } from "vitest"
+import { logger } from "@/lib/logger"
 
 /**
  * Wait for the Academic Explorer app to be fully loaded and interactive
@@ -84,14 +85,14 @@ export async function navigateToApp(page: Page, path: string = "/"): Promise<voi
  * Mock OpenAlex API responses for testing
  */
 export async function mockOpenAlexAPI(page: Page, responses: Record<string, unknown> = {}): Promise<void> {
- 	console.log("DEBUG: mockOpenAlexAPI called with responses:", Object.keys(responses));
+ 	logger.debug("e2e-test", "mockOpenAlexAPI called", { responseKeys: Object.keys(responses) });
 
  	// Intercept both external OpenAlex API calls and local API proxy calls
  	// Use two separate route handlers for better matching
 
   	// Handle external OpenAlex API calls - be more specific to avoid intercepting dev server requests
   	await page.route(/^https?:\/\/api\.openalex\.org\/.*/, async (route) => {
-  		console.log("DEBUG: Intercepted OpenAlex API request:", route.request().url());
+  		logger.debug("e2e-test", "Intercepted OpenAlex API request", { url: route.request().url() });
  		const url = route.request().url()
  		const urlParts = url.split("api.openalex.org")
  		let endpoint = urlParts[1]?.split("?")[0] || ""

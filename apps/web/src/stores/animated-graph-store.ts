@@ -179,7 +179,7 @@ export const useAnimatedGraphStore = create<AnimatedGraphState>()(
 					state._cachedAnimatedPositionsArray = positions.map(pos => ({ ...pos }));
 
 					logger.debug("graph", "Updated animated positions", {
-						count: positions?.length || 0,
+						count: positions.length,
 						sample: positions.slice(0, 3)
 					});
 				});
@@ -199,7 +199,7 @@ export const useAnimatedGraphStore = create<AnimatedGraphState>()(
 					state._cachedStaticPositionsArray = positions.map(pos => ({ ...pos }));
 
 					logger.debug("graph", "Updated static positions", {
-						count: positions?.length || 0
+						count: positions.length
 					});
 				});
 			},
@@ -215,7 +215,7 @@ export const useAnimatedGraphStore = create<AnimatedGraphState>()(
 
 			getAnimatedPositions: () => {
 				const state = get();
-				return (state._cachedAnimatedPositionsArray || []).map(pos => ({ ...pos }));
+				return state._cachedAnimatedPositionsArray.map(pos => ({ ...pos }));
 			},
 
 			getAllPositions: () => {
@@ -223,9 +223,9 @@ export const useAnimatedGraphStore = create<AnimatedGraphState>()(
 				// Return appropriate position set based on animation state
 				// Use cached arrays to prevent new object creation on each call (React 19 compatibility)
 				if (state.isAnimating) {
-					return state._cachedAnimatedPositionsArray || [];
+					return state._cachedAnimatedPositionsArray;
 				}
-				return state._cachedStaticPositionsArray || [];
+				return state._cachedStaticPositionsArray;
 			},
 
 			clearPositions: () => {
@@ -370,7 +370,7 @@ export const useAnimatedGraphStore = create<AnimatedGraphState>()(
 				const graphStore = useGraphStore.getState();
 				const currentPositions = state.getAllPositions();
 
-				if (!currentPositions || currentPositions.length === 0) {
+				if (currentPositions.length === 0) {
 					logger.warn("graph", "No positions to apply to graph store");
 					return;
 				}

@@ -170,12 +170,12 @@ export const GraphToolbar: React.FC<GraphToolbarProps> = ({
 		const expansionPromises = selectedNodes.map(async (node) => {
 			try {
 				// Extract entity ID from node data for expansion
-				const entityId: string = typeof node.data?.["entityId"] === "string" ? node.data["entityId"] : node.id;
+				const entityId: string = typeof node.data["entityId"] === "string" ? node.data["entityId"] : node.id;
 
 				logger.debug("graph", "Expanding node", {
 					nodeId: node.id,
 					entityId,
-					entityType: node.data?.["entityType"]
+					entityType: node.data["entityType"]
 				});
 
 				await expandNode(entityId, {
@@ -186,7 +186,7 @@ export const GraphToolbar: React.FC<GraphToolbarProps> = ({
 
 				return { nodeId: node.id, entityId, success: true };
 			} catch (error) {
-				const entityId: string = typeof node.data?.["entityId"] === "string" ? node.data["entityId"] : node.id;
+				const entityId: string = typeof node.data["entityId"] === "string" ? node.data["entityId"] : node.id;
 				logger.error("graph", "Failed to expand node", {
 					nodeId: node.id,
 					entityId,

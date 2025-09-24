@@ -81,7 +81,7 @@ describe("useEntityInteraction", () => {
 		label: "Test Work",
 		position: { x: 100, y: 200 },
 		externalIds: [],
-		entityData: entityData || {
+		entityData: entityData ?? {
 			id: entityId,
 			display_name: "Test Work",
 			publication_year: 2023,

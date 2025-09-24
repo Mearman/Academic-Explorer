@@ -418,13 +418,13 @@ export const useGraphStore = create<GraphState>()(
 				nodes.forEach(node => { get().unpinNode(node.id); });
 
 				// Only restart simulation if new nodes were actually added
-				if (newNodes && newNodes.length > 0) {
+				if (newNodes.length > 0) {
 					// Request layout restart when nodes are added to apply node forces
 					const animatedStore = useAnimatedGraphStore.getState();
 					animatedStore.requestRestart();
 					logger.debug("graph", "Requested layout restart after adding new nodes", {
-						newNodeCount: newNodes?.length || 0,
-						totalNodeCount: nodes?.length || 0,
+						newNodeCount: newNodes.length,
+						totalNodeCount: nodes.length,
 						newNodeTypes: [...new Set(newNodes.map(node => node.type))]
 					});
 				}
@@ -437,7 +437,7 @@ export const useGraphStore = create<GraphState>()(
 				state.recomputeNodeCaches();
 
 				// Emit cross-context events for new nodes only
-				if (newNodes && newNodes.length > 0) {
+				if (newNodes.length > 0) {
 					if (newNodes.length === 1) {
 						// Single node event for consistency
 						localEventBus.emit({
@@ -1333,7 +1333,7 @@ export const useGraphStore = create<GraphState>()(
 
 				// Type guard for visibleEntityTypes object (new format) or array (legacy format)
 				if ("visibleEntityTypes" in state) {
-					if (typeof state.visibleEntityTypes === "object" && state.visibleEntityTypes !== null && !Array.isArray(state.visibleEntityTypes)) {
+					if (typeof state.visibleEntityTypes === "object" && !Array.isArray(state.visibleEntityTypes)) {
 						// New object format - validate and use directly
 						const visibleTypesRecord: Record<EntityType, boolean> = {
 							concepts: false,
