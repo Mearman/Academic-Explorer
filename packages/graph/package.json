@@ -1,0 +1,73 @@
+{
+  "name": "@academic-explorer/graph",
+  "version": "8.1.0",
+  "type": "module",
+  "description": "Core graph data structures and types for Academic Explorer",
+  "keywords": ["graph", "academic", "research", "typescript"],
+  "author": "Joe Mearman",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Mearman/Academic-Explorer.git",
+    "directory": "packages/graph"
+  },
+  "files": [
+    "dist",
+    "src",
+    "README.md"
+  ],
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    },
+    "./types": {
+      "import": "./dist/types/index.js",
+      "types": "./dist/types/index.d.ts"
+    },
+    "./events": {
+      "import": "./dist/events/index.js",
+      "types": "./dist/events/index.d.ts"
+    },
+    "./hooks": {
+      "import": "./dist/hooks/index.js",
+      "types": "./dist/hooks/index.d.ts"
+    },
+    "./providers": {
+      "import": "./dist/providers/index.js",
+      "types": "./dist/providers/index.d.ts"
+    },
+    "./forces": {
+      "import": "./dist/forces/index.js",
+      "types": "./dist/forces/index.d.ts"
+    },
+    "./services": {
+      "import": "./dist/services/index.js",
+      "types": "./dist/services/index.d.ts"
+    }
+  },
+  "scripts": {
+    "build": "tsc -b",
+    "clean": "rm -rf dist",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint src",
+    "lint:fix": "eslint src --fix",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "dev": "tsc -b --watch"
+  },
+  "dependencies": {
+    "@academic-explorer/utils": "workspace:*"
+  },
+  "devDependencies": {
+    "typescript": "~5.9.2",
+    "vitest": "^3.2.4",
+    "eslint": "^9.36.0"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}

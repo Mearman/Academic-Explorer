@@ -1,0 +1,60 @@
+{
+  "name": "@academic-explorer/simulation",
+  "version": "8.1.0",
+  "type": "module",
+  "description": "Force-directed graph simulation engine for Academic Explorer",
+  "keywords": ["simulation", "force-directed", "graph", "d3", "web-workers", "typescript"],
+  "author": "Joe Mearman",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Mearman/Academic-Explorer.git",
+    "directory": "packages/simulation"
+  },
+  "files": [
+    "dist",
+    "src",
+    "README.md"
+  ],
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    },
+    "./worker": {
+      "import": "./dist/worker.js",
+      "types": "./dist/worker.d.ts"
+    },
+    "./engines": {
+      "import": "./dist/engines/index.js",
+      "types": "./dist/engines/index.d.ts"
+    }
+  },
+  "scripts": {
+    "build": "tsc -b",
+    "clean": "rm -rf dist",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint src",
+    "lint:fix": "eslint src --fix",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "dev": "tsc -b --watch"
+  },
+  "dependencies": {
+    "d3-force": "^3.0.0",
+    "d3-random": "^3.0.1"
+  },
+  "devDependencies": {
+    "@types/d3-force": "^3.0.10",
+    "@types/d3-random": "^3.0.3",
+    "typescript": "~5.9.2",
+    "vitest": "^3.2.4",
+    "eslint": "^9.36.0"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}

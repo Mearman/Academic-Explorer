@@ -1,0 +1,102 @@
+{
+  "name": "@academic-explorer/utils",
+  "version": "8.1.0",
+  "type": "module",
+  "description": "Shared utilities and helpers for Academic Explorer",
+  "keywords": [
+    "utils",
+    "helpers",
+    "academic",
+    "research",
+    "typescript"
+  ],
+  "author": "Joe Mearman",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Mearman/Academic-Explorer.git",
+    "directory": "packages/utils"
+  },
+  "files": [
+    "dist",
+    "src",
+    "README.md"
+  ],
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    },
+    "./logger": {
+      "import": "./dist/logger.js",
+      "types": "./dist/logger.d.ts"
+    },
+    "./type-guards": {
+      "import": "./dist/type-guards.js",
+      "types": "./dist/type-guards.d.ts"
+    },
+    "./cache": {
+      "import": "./dist/cache/index.js",
+      "types": "./dist/cache/index.d.ts"
+    },
+    "./storage": {
+      "import": "./dist/storage/index.js",
+      "types": "./dist/storage/index.d.ts"
+    },
+    "./date-helpers": {
+      "import": "./dist/date-helpers.js",
+      "types": "./dist/date-helpers.d.ts"
+    },
+    "./data-helpers": {
+      "import": "./dist/data.js",
+      "types": "./dist/data.d.ts"
+    },
+    "./build-info": {
+      "import": "./dist/build-info.js",
+      "types": "./dist/build-info.d.ts"
+    },
+    "./data-evaluation": {
+      "import": "./dist/data-evaluation.js",
+      "types": "./dist/data-evaluation.d.ts"
+    },
+    "./services": {
+      "import": "./dist/services.js",
+      "types": "./dist/services.d.ts"
+    }
+  },
+  "scripts": {
+    "build": "tsc -b",
+    "clean": "rm -rf dist",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint src",
+    "lint:fix": "eslint src --fix",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "dev": "tsc -b --watch"
+  },
+  "dependencies": {
+    "idb": "^8.0.3",
+    "lodash-es": "^4.17.21"
+  },
+  "devDependencies": {
+    "@types/lodash-es": "^4.17.12",
+    "eslint": "^9.36.0",
+    "fake-indexeddb": "^6.2.2",
+    "typescript": "~5.9.2",
+    "vitest": "^3.2.4"
+  },
+  "peerDependencies": {
+    "zustand": "^5.0.0"
+  },
+  "peerDependenciesMeta": {
+    "zustand": {
+      "optional": true
+    }
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}
