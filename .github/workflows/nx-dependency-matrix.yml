@@ -1,0 +1,464 @@
+name: 'Nx Dependency Matrix CI'
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  # Generate dependency-aware job matrices
+  setup:
+    runs-on: ubuntu-latest
+    outputs:
+      has-affected: ${{ steps.matrix.outputs.has-affected }}
+      projects: ${{ steps.matrix.outputs.projects }}
+      graph-academic-explorer: ${{ steps.matrix.outputs.graph-academic-explorer }}
+      openalex-client-academic-explorer: ${{ steps.matrix.outputs.openalex-client-academic-explorer }}
+      ui-components-academic-explorer: ${{ steps.matrix.outputs.ui-components-academic-explorer }}
+      shared-utils-academic-explorer: ${{ steps.matrix.outputs.shared-utils-academic-explorer }}
+      simulation-academic-explorer: ${{ steps.matrix.outputs.simulation-academic-explorer }}
+      web-academic-explorer: ${{ steps.matrix.outputs.web-academic-explorer }}
+      cli-academic-explorer: ${{ steps.matrix.outputs.cli-academic-explorer }}
+      deps-graph-academic-explorer: ${{ steps.matrix.outputs.deps-graph-academic-explorer }}
+      deps-openalex-client-academic-explorer: ${{ steps.matrix.outputs.deps-openalex-client-academic-explorer }}
+      deps-ui-components-academic-explorer: ${{ steps.matrix.outputs.deps-ui-components-academic-explorer }}
+      deps-shared-utils-academic-explorer: ${{ steps.matrix.outputs.deps-shared-utils-academic-explorer }}
+      deps-simulation-academic-explorer: ${{ steps.matrix.outputs.deps-simulation-academic-explorer }}
+      deps-web-academic-explorer: ${{ steps.matrix.outputs.deps-web-academic-explorer }}
+      deps-cli-academic-explorer: ${{ steps.matrix.outputs.deps-cli-academic-explorer }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 8
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          # cache: 'pnpm'  # Fixed: pnpm not installed yet
+
+      - name: Install dependencies
+        run: pnpm install --no-frozen-lockfile
+
+      - name: Setup Nx
+        uses: nrwl/nx-set-shas@v4
+        with:
+          main-branch-name: 'main'
+
+      - name: Generate dependency matrix
+        id: matrix
+        run: |
+          # Get affected projects
+          affected=$(pnpm nx show projects --affected --json || echo '[]')
+          has_affected=$(echo "$affected" | jq 'length > 0')
+
+          # Generate dependency graph
+          pnpm nx graph --file=graph.json 2>/dev/null || echo '{"dependencies": {}}' > graph.json
+
+          # Function to check if project is affected and get its dependencies
+          check_project() {
+            local project="$1"
+            local is_affected=$(echo "$affected" | jq --arg p "$project" 'contains([$p])')
+            local deps=$(cat graph.json | jq -r --arg p "$project" '.dependencies[$p] // [] | join(" ")')
+
+            echo "$project: affected=$is_affected, deps=[$deps]"
+
+            # Set project-specific outputs
+            local safe_name=$(echo "$project" | sed 's/[^a-zA-Z0-9]/-/g' | sed 's/^-*//; s/-*$//')
+            echo "${safe_name}=$is_affected" >> $GITHUB_OUTPUT
+            echo "deps-${safe_name}=$deps" >> $GITHUB_OUTPUT
+          }
+
+          # Check each potential project
+          check_project "@academic-explorer/graph"
+          check_project "@academic-explorer/openalex-client"
+          check_project "@academic-explorer/ui-components"
+          check_project "@academic-explorer/shared-utils"
+          check_project "@academic-explorer/simulation"
+          check_project "web"
+          check_project "@academic-explorer/cli"
+
+          echo "has-affected=$has_affected" >> $GITHUB_OUTPUT
+          echo "projects=$affected" >> $GITHUB_OUTPUT
+
+          echo "=== AFFECTED PROJECTS ==="
+          echo "$affected" | jq -r '.[]'
+          echo "=== DEPENDENCY GRAPH ==="
+          cat graph.json | jq '.dependencies'
+
+  # Lint jobs (run in parallel, no dependencies)
+  lint:
+    needs: setup
+    if: needs.setup.outputs.has-affected == 'true'
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        project: ${{ fromJson(needs.setup.outputs.projects) }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Install pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 8
+      - name: Setup Node.js and deps
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          # cache: 'pnpm'  # Fixed: pnpm not installed yet
+      - name: Install dependencies
+        run: pnpm install --no-frozen-lockfile
+      - name: Setup Nx
+        uses: nrwl/nx-set-shas@v4
+        with:
+          main-branch-name: 'main'
+      - name: Restore Nx cache
+        uses: actions/cache@v4
+        with:
+          path: .nx/cache
+          key: nx-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml', 'nx.json', '**/project.json') }}
+          restore-keys: nx-${{ runner.os }}-
+      - name: Lint ${{ matrix.project }}
+        run: pnpm nx lint ${{ matrix.project }}
+
+  # Build jobs with dependencies
+  build-graph:
+    needs: setup
+    if: needs.setup.outputs.graph-academic-explorer == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Install pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 8
+      - name: Setup Node.js and deps
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          # cache: 'pnpm'  # Fixed: pnpm not installed yet
+      - name: Install dependencies
+        run: pnpm install --no-frozen-lockfile
+      - name: Setup Nx
+        uses: nrwl/nx-set-shas@v4
+        with:
+          main-branch-name: 'main'
+      - name: Restore Nx cache
+        uses: actions/cache@v4
+        with:
+          path: .nx/cache
+          key: nx-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml', 'nx.json', '**/project.json') }}
+          restore-keys: nx-${{ runner.os }}-
+      - name: Build @academic-explorer/graph
+        run: pnpm nx build @academic-explorer/graph
+
+  build-shared-utils:
+    needs: setup
+    if: needs.setup.outputs.shared-utils-academic-explorer == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Install pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 8
+      - name: Setup Node.js and deps
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          # cache: 'pnpm'  # Fixed: pnpm not installed yet
+      - name: Install dependencies
+        run: pnpm install --no-frozen-lockfile
+      - name: Setup Nx
+        uses: nrwl/nx-set-shas@v4
+        with:
+          main-branch-name: 'main'
+      - name: Restore Nx cache
+        uses: actions/cache@v4
+        with:
+          path: .nx/cache
+          key: nx-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml', 'nx.json', '**/project.json') }}
+          restore-keys: nx-${{ runner.os }}-
+      - name: Build @academic-explorer/shared-utils
+        run: pnpm nx build @academic-explorer/shared-utils
+
+  build-simulation:
+    needs: [setup, build-graph]
+    if: needs.setup.outputs.simulation-academic-explorer == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Install pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 8
+      - name: Setup Node.js and deps
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          # cache: 'pnpm'  # Fixed: pnpm not installed yet
+      - name: Install dependencies
+        run: pnpm install --no-frozen-lockfile
+      - name: Setup Nx
+        uses: nrwl/nx-set-shas@v4
+        with:
+          main-branch-name: 'main'
+      - name: Restore Nx cache
+        uses: actions/cache@v4
+        with:
+          path: .nx/cache
+          key: nx-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml', 'nx.json', '**/project.json') }}
+          restore-keys: nx-${{ runner.os }}-
+      - name: Build @academic-explorer/simulation
+        run: pnpm nx build @academic-explorer/simulation
+
+  build-openalex-client:
+    needs: [setup, build-shared-utils]
+    if: needs.setup.outputs.openalex-client-academic-explorer == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Install pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 8
+      - name: Setup Node.js and deps
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          # cache: 'pnpm'  # Fixed: pnpm not installed yet
+      - name: Install dependencies
+        run: pnpm install --no-frozen-lockfile
+      - name: Setup Nx
+        uses: nrwl/nx-set-shas@v4
+        with:
+          main-branch-name: 'main'
+      - name: Restore Nx cache
+        uses: actions/cache@v4
+        with:
+          path: .nx/cache
+          key: nx-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml', 'nx.json', '**/project.json') }}
+          restore-keys: nx-${{ runner.os }}-
+      - name: Build @academic-explorer/openalex-client
+        run: pnpm nx build @academic-explorer/openalex-client
+
+  build-ui-components:
+    needs: [setup, build-graph, build-shared-utils]
+    if: needs.setup.outputs.ui-components-academic-explorer == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Install pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 8
+      - name: Setup Node.js and deps
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          # cache: 'pnpm'  # Fixed: pnpm not installed yet
+      - name: Install dependencies
+        run: pnpm install --no-frozen-lockfile
+      - name: Setup Nx
+        uses: nrwl/nx-set-shas@v4
+        with:
+          main-branch-name: 'main'
+      - name: Restore Nx cache
+        uses: actions/cache@v4
+        with:
+          path: .nx/cache
+          key: nx-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml', 'nx.json', '**/project.json') }}
+          restore-keys: nx-${{ runner.os }}-
+      - name: Build @academic-explorer/ui-components
+        run: pnpm nx build @academic-explorer/ui-components
+
+  build-web:
+    needs: [setup, build-graph, build-simulation, build-openalex-client, build-ui-components, build-shared-utils]
+    if: needs.setup.outputs.web-academic-explorer == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Install pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 8
+      - name: Setup Node.js and deps
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          # cache: 'pnpm'  # Fixed: pnpm not installed yet
+      - name: Install dependencies
+        run: pnpm install --no-frozen-lockfile
+      - name: Setup Nx
+        uses: nrwl/nx-set-shas@v4
+        with:
+          main-branch-name: 'main'
+      - name: Restore Nx cache
+        uses: actions/cache@v4
+        with:
+          path: .nx/cache
+          key: nx-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml', 'nx.json', '**/project.json') }}
+          restore-keys: nx-${{ runner.os }}-
+      - name: Build web
+        run: pnpm nx build web
+
+  build-cli:
+    needs: [setup, build-openalex-client, build-shared-utils]
+    if: needs.setup.outputs.cli-academic-explorer == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Install pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 8
+      - name: Setup Node.js and deps
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          # cache: 'pnpm'  # Fixed: pnpm not installed yet
+      - name: Install dependencies
+        run: pnpm install --no-frozen-lockfile
+      - name: Setup Nx
+        uses: nrwl/nx-set-shas@v4
+        with:
+          main-branch-name: 'main'
+      - name: Restore Nx cache
+        uses: actions/cache@v4
+        with:
+          path: .nx/cache
+          key: nx-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml', 'nx.json', '**/project.json') }}
+          restore-keys: nx-${{ runner.os }}-
+      - name: Build @academic-explorer/cli
+        run: pnpm nx build @academic-explorer/cli
+
+  # Test jobs (depend on build completion)
+  test:
+    needs: [setup, build-graph, build-shared-utils, build-simulation, build-openalex-client, build-ui-components, build-web, build-cli]
+    if: always() && needs.setup.outputs.has-affected == 'true'
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        project: ${{ fromJson(needs.setup.outputs.projects) }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Install pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 8
+      - name: Setup Node.js and deps
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          # cache: 'pnpm'  # Fixed: pnpm not installed yet
+      - name: Install dependencies
+        run: pnpm install --no-frozen-lockfile
+      - name: Setup Nx
+        uses: nrwl/nx-set-shas@v4
+        with:
+          main-branch-name: 'main'
+      - name: Restore Nx cache
+        uses: actions/cache@v4
+        with:
+          path: .nx/cache
+          key: nx-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml', 'nx.json', '**/project.json') }}
+          restore-keys: nx-${{ runner.os }}-
+      - name: Test ${{ matrix.project }}
+        run: pnpm nx test ${{ matrix.project }}
+        env:
+          NODE_OPTIONS: '--max-old-space-size=8192'
+
+  # Quality checks
+  quality:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Install pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 8
+      - name: Setup Node.js and deps
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          # cache: 'pnpm'  # Fixed: pnpm not installed yet
+      - name: Install dependencies
+        run: pnpm install --no-frozen-lockfile
+      - name: Check for unused dependencies
+        run: pnpm knip
+
+  # Status aggregation
+  ci-status:
+    runs-on: ubuntu-latest
+    needs: [setup, lint, build-graph, build-shared-utils, build-simulation, build-openalex-client, build-ui-components, build-web, build-cli, test, quality]
+    if: always()
+    steps:
+      - name: Check CI status
+        run: |
+          # Check if any required jobs failed
+          failed_jobs=()
+
+          if [[ "${{ needs.lint.result }}" == "failure" ]]; then
+            failed_jobs+=("lint")
+          fi
+          if [[ "${{ needs.test.result }}" == "failure" ]]; then
+            failed_jobs+=("test")
+          fi
+          if [[ "${{ needs.quality.result }}" == "failure" ]]; then
+            failed_jobs+=("quality")
+          fi
+
+          # Check build jobs
+          for job in build-graph build-shared-utils build-simulation build-openalex-client build-ui-components build-web build-cli; do
+            result_var="needs.${job}.result"
+            if [[ "${!result_var}" == "failure" ]]; then
+              failed_jobs+=("$job")
+            fi
+          done
+
+          if [ ${#failed_jobs[@]} -gt 0 ]; then
+            echo "Failed jobs: ${failed_jobs[*]}"
+            exit 1
+          fi
+
+          echo "All CI checks passed!"

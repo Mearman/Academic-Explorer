@@ -1,5 +1,9 @@
 {
   "$schema": "./node_modules/nx/schemas/nx-schema.json",
+  "workspaceLayout": {
+    "appsDir": "apps",
+    "libsDir": "packages"
+  },
   "plugins": [
     "@nx/vite/plugin",
     "@nx/eslint/plugin",
@@ -63,7 +67,7 @@
     },
     "knip:nx": {
       "cache": true,
-      "inputs": ["default", "^production", "{workspaceRoot}/knip.ts", "{workspaceRoot}/tsconfig*.json", "{workspaceRoot}/package.json", "{workspaceRoot}/scripts/knip-nx.ts"],
+      "inputs": ["default", "^production", "{workspaceRoot}/knip.ts", "{workspaceRoot}/tsconfig*.json", "{workspaceRoot}/package.json", "{workspaceRoot}/tools/scripts/knip-nx.ts"],
       "outputs": []
     },
     "knip:fix": {
@@ -138,5 +142,61 @@
         "unitTestRunner": "vitest"
       }
     }
+  },
+  "tasksRunnerOptions": {
+    "default": {
+      "runner": "nx/tasks-runners/default",
+      "options": {
+        "cacheableOperations": [
+          "build",
+          "typecheck",
+          "lint",
+          "test",
+          "test:unit:run",
+          "test:component:run",
+          "test:integration:run",
+          "test:e2e:run",
+          "build-storybook"
+        ],
+        "parallel": 3,
+        "runtimeCacheInputs": ["node -v", "pnpm -v"]
+      }
+    }
+  },
+  "release": {
+    "projectsRelationship": "independent",
+    "version": {
+      "conventionalCommits": true,
+      "generatorOptions": {
+        "fallbackCurrentVersionResolver": "disk",
+        "currentVersionResolverMetadata": {
+          "fallbackCurrentVersionResolver": "disk"
+        }
+      }
+    },
+    "changelog": {
+      "workspaceChangelog": {
+        "createRelease": "github",
+        "file": "{workspaceRoot}/CHANGELOG.md"
+      },
+      "projectChangelogs": {
+        "file": "{projectRoot}/CHANGELOG.md"
+      }
+    },
+    "groups": {
+      "default": {
+        "projects": ["*"],
+        "version": {
+          "conventionalCommits": true,
+          "generatorOptions": {
+            "packageRoot": "{projectRoot}",
+            "fallbackCurrentVersionResolver": "disk"
+          }
+        }
+      }
+    }
+  },
+  "cli": {
+    "packageManager": "pnpm"
   }
 }

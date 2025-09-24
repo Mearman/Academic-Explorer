@@ -1,0 +1,406 @@
+name: 'Nx Dynamic Job Generation CI'
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+# Cancel in-progress runs for same workflow + branch/PR
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  # Generate dynamic job definitions from dependency graph
+  setup:
+    runs-on: ubuntu-latest
+    outputs:
+      has-affected: ${{ steps.generate.outputs.has-affected }}
+      build-matrix: ${{ steps.generate.outputs.build-matrix }}
+      test-matrix: ${{ steps.generate.outputs.test-matrix }}
+      lint-matrix: ${{ steps.generate.outputs.lint-matrix }}
+      job-definitions: ${{ steps.generate.outputs.job-definitions }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 8
+
+      - name: Install dependencies
+        run: pnpm install --no-frozen-lockfile
+
+      - name: Setup Nx
+        uses: nrwl/nx-set-shas@v4
+        with:
+          main-branch-name: 'main'
+
+      - name: Restore Nx cache
+        uses: actions/cache@v4
+        with:
+          path: .nx/cache
+          key: nx-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml', 'nx.json', '**/project.json') }}
+          restore-keys: |
+            nx-${{ runner.os }}-
+
+      - name: Generate dynamic jobs from dependency graph
+        id: generate
+        run: |
+          # Get affected projects
+          affected=$(pnpm nx show projects --affected --json || echo '[]')
+          has_affected=$(echo "$affected" | jq 'length > 0')
+
+          # Generate dependency graph
+          pnpm nx graph --file=graph.json 2>/dev/null || echo '{"dependencies": {}}' > graph.json
+
+          # Create job ID mapping (sanitize project names for GitHub job IDs)
+          echo "$affected" | jq -r '.[]' | while read -r project; do
+            job_id=$(echo "$project" | sed 's/[^a-zA-Z0-9]/-/g' | sed 's/^-*//; s/-*$//')
+            echo "$project -> $job_id"
+          done
+
+          # Generate build job matrix with dependencies
+          build_matrix=$(echo "$affected" | jq -r --slurpfile deps graph.json '
+            map(. as $proj |
+              {
+                project: $proj,
+                job_id: ($proj | gsub("[^a-zA-Z0-9]"; "-") | gsub("^-+|-+$"; "")),
+                needs: (
+                  ($deps[0].dependencies[$proj] // []) |
+                  map("build-" + (. | gsub("[^a-zA-Z0-9]"; "-") | gsub("^-+|-+$"; ""))) |
+                  if length == 0 then ["setup"] else . end
+                )
+              }
+            )
+          ' | jq -s -c '.[0]')
+
+          # Generate test job matrix (depends on corresponding build job)
+          test_matrix=$(echo "$affected" | jq -r '
+            map(. as $proj |
+              {
+                project: $proj,
+                job_id: ($proj | gsub("[^a-zA-Z0-9]"; "-") | gsub("^-+|-+$"; "")),
+                needs: ["build-" + ($proj | gsub("[^a-zA-Z0-9]"; "-") | gsub("^-+|-+$"; ""))]
+              }
+            )
+          ' | jq -s -c '.[0]')
+
+          # Generate lint matrix (no dependencies)
+          lint_matrix=$(echo "$affected" | jq -c '{project: .}')
+
+          # Generate workflow file for dynamic jobs (for debugging)
+          cat > /tmp/job-definitions.json << EOF
+          {
+            "affected": $affected,
+            "build_jobs": $build_matrix,
+            "test_jobs": $test_matrix
+          }
+          EOF
+
+          echo "has-affected=$has_affected" >> $GITHUB_OUTPUT
+          echo "build-matrix=$build_matrix" >> $GITHUB_OUTPUT
+          echo "test-matrix=$test_matrix" >> $GITHUB_OUTPUT
+          echo "lint-matrix=$lint_matrix" >> $GITHUB_OUTPUT
+          echo "job-definitions=$(cat /tmp/job-definitions.json | jq -c '.')" >> $GITHUB_OUTPUT
+
+          echo "=== AFFECTED PROJECTS ==="
+          echo "$affected" | jq -r '.[]'
+          echo "=== BUILD MATRIX ==="
+          echo "$build_matrix" | jq -r '.[] | "\(.project) (job: \(.job_id), needs: \(.needs | join(", ")))"'
+          echo "=== TEST MATRIX ==="
+          echo "$test_matrix" | jq -r '.[] | "\(.project) (job: \(.job_id), needs: \(.needs | join(", ")))"'
+
+  # Lint affected projects in parallel (no dependencies)
+  lint:
+    needs: setup
+    if: needs.setup.outputs.has-affected == 'true'
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJson(needs.setup.outputs.lint-matrix) }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 8
+
+      - name: Install dependencies
+        run: pnpm install --no-frozen-lockfile
+
+      - name: Setup Nx
+        uses: nrwl/nx-set-shas@v4
+        with:
+          main-branch-name: 'main'
+
+      - name: Restore Nx cache
+        uses: actions/cache@v4
+        with:
+          path: .nx/cache
+          key: nx-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml', 'nx.json', '**/project.json') }}
+          restore-keys: |
+            nx-${{ runner.os }}-
+
+      - name: Lint ${{ matrix.project }}
+        run: pnpm nx lint ${{ matrix.project }}
+
+  # Typecheck affected projects in parallel
+  typecheck:
+    needs: setup
+    if: needs.setup.outputs.has-affected == 'true'
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJson(needs.setup.outputs.matrix) }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 8
+
+      - name: Install dependencies
+        run: pnpm install --no-frozen-lockfile
+
+      - name: Setup Nx
+        uses: nrwl/nx-set-shas@v4
+        with:
+          main-branch-name: 'main'
+
+      - name: Restore Nx cache
+        uses: actions/cache@v4
+        with:
+          path: .nx/cache
+          key: nx-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml', 'nx.json', '**/project.json') }}
+          restore-keys: |
+            nx-${{ runner.os }}-
+
+      - name: Typecheck ${{ matrix.project }}
+        run: pnpm nx typecheck ${{ matrix.project }}
+
+  # Build affected projects in parallel
+  build:
+    needs: setup
+    if: needs.setup.outputs.has-affected == 'true'
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJson(needs.setup.outputs.matrix) }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 8
+
+      - name: Install dependencies
+        run: pnpm install --no-frozen-lockfile
+
+      - name: Setup Nx
+        uses: nrwl/nx-set-shas@v4
+        with:
+          main-branch-name: 'main'
+
+      - name: Restore Nx cache
+        uses: actions/cache@v4
+        with:
+          path: .nx/cache
+          key: nx-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml', 'nx.json', '**/project.json') }}
+          restore-keys: |
+            nx-${{ runner.os }}-
+
+      - name: Build ${{ matrix.project }} (with dependencies)
+        run: pnpm nx build ${{ matrix.project }} --with-deps
+
+  # Test affected projects in parallel (after build)
+  test:
+    needs: [setup, build]
+    if: needs.setup.outputs.has-affected == 'true'
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJson(needs.setup.outputs.matrix) }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 8
+
+      - name: Install dependencies
+        run: pnpm install --no-frozen-lockfile
+
+      - name: Setup Nx
+        uses: nrwl/nx-set-shas@v4
+        with:
+          main-branch-name: 'main'
+
+      - name: Restore Nx cache
+        uses: actions/cache@v4
+        with:
+          path: .nx/cache
+          key: nx-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml', 'nx.json', '**/project.json') }}
+          restore-keys: |
+            nx-${{ runner.os }}-
+
+      - name: Test ${{ matrix.project }} (with dependencies)
+        run: pnpm nx test ${{ matrix.project }} --with-deps
+        env:
+          NODE_OPTIONS: '--max-old-space-size=8192'
+
+  # Run workspace-level quality checks
+  quality:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 8
+
+      - name: Install dependencies
+        run: pnpm install --no-frozen-lockfile
+
+      - name: Setup Nx
+        uses: nrwl/nx-set-shas@v4
+        with:
+          main-branch-name: 'main'
+
+      - name: Restore Nx cache
+        uses: actions/cache@v4
+        with:
+          path: .nx/cache
+          key: nx-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml', 'nx.json', '**/project.json') }}
+          restore-keys: |
+            nx-${{ runner.os }}-
+
+      - name: Check for unused dependencies
+        run: pnpm knip
+
+      - name: Verify workspace structure
+        run: pnpm nx graph --file=graph.json && echo "Workspace graph generated successfully"
+
+  # Aggregate all jobs for status checks
+  ci-status:
+    runs-on: ubuntu-latest
+    needs: [setup, lint, typecheck, test, build, quality]
+    if: always()
+    steps:
+      - name: Check all jobs status
+        run: |
+          if [[ "${{ needs.lint.result }}" == "failure" ||
+                "${{ needs.typecheck.result }}" == "failure" ||
+                "${{ needs.test.result }}" == "failure" ||
+                "${{ needs.build.result }}" == "failure" ||
+                "${{ needs.quality.result }}" == "failure" ]]; then
+            echo "One or more CI jobs failed"
+            exit 1
+          fi
+
+          if [[ "${{ needs.setup.outputs.has-affected }}" == "false" ]]; then
+            echo "No affected projects detected - CI passed"
+          else
+            echo "All affected projects passed CI checks"
+          fi
+
+  # Deploy only on main branch after all checks pass
+  deploy:
+    needs: [ci-status]
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 8
+
+      - name: Install dependencies
+        run: pnpm install --no-frozen-lockfile
+
+      - name: Setup Nx
+        uses: nrwl/nx-set-shas@v4
+        with:
+          main-branch-name: 'main'
+
+      - name: Restore Nx cache
+        uses: actions/cache@v4
+        with:
+          path: .nx/cache
+          key: nx-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml', 'nx.json', '**/project.json') }}
+          restore-keys: |
+            nx-${{ runner.os }}-
+
+      - name: Build for production
+        run: pnpm nx build @academic-explorer/web
+
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./apps/web/dist
+          cname: academic-explorer.joenash.uk
