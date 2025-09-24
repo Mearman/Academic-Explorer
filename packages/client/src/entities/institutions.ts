@@ -154,7 +154,7 @@ export class InstitutionsApi {
 			...options,
 			filters: {
 				...options.filters,
-				"type": type
+				type
 			}
 		};
 		return this.getInstitutions(params);
@@ -263,7 +263,7 @@ export class InstitutionsApi {
 		const params: InstitutionSearchOptions & { sample: number; seed: number } = {
 			...options,
 			sample: Math.min(count, 200), // OpenAlex limits sample to 200
-			seed: seed !== undefined ? seed : Math.floor(Math.random() * 1000000),
+			seed: seed ?? Math.floor(Math.random() * 1000000),
 		};
 
 		return this.getInstitutions(params);

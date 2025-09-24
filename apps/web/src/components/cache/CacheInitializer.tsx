@@ -38,7 +38,7 @@ export function CacheInitializer({ children }: CacheInitializerProps) {
 	useEffect(() => {
 		let isMounted = true;
 
-		async function initialize() {
+		function initialize() {
 			try {
 				logger.debug("cache", "Starting cache initialization");
 
@@ -74,7 +74,7 @@ export function CacheInitializer({ children }: CacheInitializerProps) {
 			}
 		}
 
-		void initialize();
+		initialize();
 
 		return () => {
 			isMounted = false;
@@ -103,7 +103,7 @@ export function CacheInitializer({ children }: CacheInitializerProps) {
 					<IconRefresh size={48} color="var(--mantine-color-red-6)" />
 					<Text size="lg" fw={500} c="red">Initialization Failed</Text>
 					<Text size="sm" c="dimmed">
-						{state.error || "Unable to initialize cache system"}
+						{state.error ?? "Unable to initialize cache system"}
 					</Text>
 					<Text size="xs" c="dimmed">
             Please refresh the page to try again

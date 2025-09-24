@@ -50,7 +50,7 @@ export class AutocompleteApi {
 			return [];
 		}
 
-		const cacheKey = `autocomplete_${query.trim().toLowerCase()}_${entityType || "all"}`;
+		const cacheKey = `autocomplete_${query.trim().toLowerCase()}_${entityType ?? "all"}`;
 		return this.executeWithDebounce(cacheKey, () => this.performAutocomplete(query, entityType));
 	}
 
@@ -110,7 +110,7 @@ export class AutocompleteApi {
 			return [];
 		}
 
-		const types = entityTypes || ["works", "authors", "sources", "institutions", "topics"];
+		const types = entityTypes ?? ["works", "authors", "sources", "institutions", "topics"];
 		const cacheKey = `search_${query.trim().toLowerCase()}_${types.join(",")}`;
 
 		return this.executeWithDebounce(cacheKey, async () => {
@@ -121,14 +121,14 @@ export class AutocompleteApi {
 			const results = await Promise.all(promises);
 			return results.flat().sort((a, b) => {
 				// Sort by cited_by_count (descending), then by works_count (descending)
-				const aCitations = a.cited_by_count || 0;
-				const bCitations = b.cited_by_count || 0;
+				const aCitations = a.cited_by_count ?? 0;
+				const bCitations = b.cited_by_count ?? 0;
 				if (aCitations !== bCitations) {
 					return bCitations - aCitations;
 				}
 
-				const aWorks = a.works_count || 0;
-				const bWorks = b.works_count || 0;
+				const aWorks = a.works_count ?? 0;
+				const bWorks = b.works_count ?? 0;
 				return bWorks - aWorks;
 			});
 		});
@@ -196,7 +196,7 @@ export class AutocompleteApi {
 
 		const promise = fn();
 		this.debounceCache[cacheKey] = {
-			promise: promise,
+			promise,
 			timestamp: now,
 		};
 

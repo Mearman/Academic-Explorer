@@ -16,12 +16,12 @@ interface StaticDataResult {
  * For the package, we provide a no-op implementation
  */
 class StaticDataProvider {
-	async getStaticData(entityType: StaticEntityType, id: string): Promise<StaticDataResult> {
+	async getStaticData(_entityType: StaticEntityType, _id: string): Promise<StaticDataResult> {
 		// Stub implementation - always returns not found
 		return { found: false };
 	}
 
-	async hasStaticData(entityType: StaticEntityType, id: string): Promise<boolean> {
+	async hasStaticData(_entityType: StaticEntityType, _id: string): Promise<boolean> {
 		// Stub implementation - always returns false
 		return false;
 	}

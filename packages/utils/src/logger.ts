@@ -219,7 +219,7 @@ export const setupGlobalErrorHandling = (logger: GenericLogger) => {
 
   // Handle JavaScript errors
   window.addEventListener("error", (event) => {
-    const errorMessage = (event.error instanceof Error ? event.error.message : event.message) ?? "";
+    const errorMessage = event.error instanceof Error ? event.error.message : event.message;
 
     // Filter out benign ResizeObserver errors
     if (typeof errorMessage === "string" && errorMessage.includes("ResizeObserver loop completed with undelivered notifications")) {

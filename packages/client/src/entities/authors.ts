@@ -247,7 +247,7 @@ export class AuthorsApi {
 			select: ["x_concepts"]
 		});
 
-		return author.x_concepts || [];
+		return author.x_concepts ?? [];
 	}
 
 	/**
@@ -277,7 +277,7 @@ export class AuthorsApi {
 			select: ["topics"]
 		});
 
-		return author.topics || [];
+		return author.topics ?? [];
 	}
 
 	/**
@@ -350,7 +350,7 @@ export class AuthorsApi {
 		});
 
 		// Filter by minimum works if specified
-		const minWorks = filters.min_works || 1;
+		const minWorks = filters.min_works ?? 1;
 		const filteredCollaborators = Array.from(collaboratorStats.entries())
 			.filter(([, stats]) => stats.count >= minWorks)
 			.sort(([, a], [, b]) => b.count - a.count);

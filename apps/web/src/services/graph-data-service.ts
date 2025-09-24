@@ -1122,7 +1122,7 @@ export class GraphDataService {
 				try {
 					const detection = this.detector.detectEntityIdentifier(result.id);
 					if (detection.entityType && isEntityType(detection.entityType)) {
-						searchStats[detection.entityType as EntityType]++;
+						searchStats[detection.entityType]++;
 					}
 				} catch (error) {
 					// Skip results that can't be detected

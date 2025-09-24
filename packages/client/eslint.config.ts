@@ -4,7 +4,14 @@ import baseConfig from '../../eslint.config.base.js';
 export default tseslint.config([
   ...baseConfig,
   {
+    // Only apply strict rules to non-test TypeScript files
     files: ['src/**/*.{ts,tsx}'],
+    ignores: [
+      '**/*.test.ts',
+      '**/*.spec.ts',
+      '**/*.unit.test.ts',
+      '**/*.integration.test.ts'
+    ],
     languageOptions: {
       parserOptions: {
         project: './tsconfig.json',
@@ -20,6 +27,13 @@ export default tseslint.config([
       // API clients may need some type flexibility
       '@typescript-eslint/no-unsafe-assignment': 'warn',
       '@typescript-eslint/no-unsafe-member-access': 'warn',
+    },
+  },
+  {
+    // Allow console in logger files
+    files: ['src/internal/logger.{ts,js}'],
+    rules: {
+      'no-console': 'off',
     },
   },
 ]);

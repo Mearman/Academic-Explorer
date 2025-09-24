@@ -68,7 +68,7 @@ export const CollapsibleSection = forwardRef<HTMLDivElement, CollapsibleSectionP
 			})()
 			: colorScheme;
 
-		const isDark = resolvedColorScheme === "dark";
+		const _isDark = resolvedColorScheme === "dark";
 
 		// Theme-aware colors
 		const colors = {
@@ -89,8 +89,8 @@ export const CollapsibleSection = forwardRef<HTMLDivElement, CollapsibleSectionP
 			if (storageKey && typeof window !== 'undefined') {
 				try {
 					localStorage.setItem(`collapsible-${storageKey}`, JSON.stringify(newExpanded));
-				} catch (error) {
-					console.warn('Failed to save collapsible section state:', error);
+				} catch {
+					// Silently fail if localStorage is not available
 				}
 			}
 

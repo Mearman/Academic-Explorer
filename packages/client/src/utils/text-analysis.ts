@@ -347,8 +347,8 @@ export class TextAnalysisApi {
   }> {
 		const analysis = await this.analyzeText(abstract, {
 			...options,
-			min_confidence: options.min_confidence || 0.4, // Lower threshold for research content
-			limit: options.limit || 25,
+			min_confidence: options.min_confidence ?? 0.4, // Lower threshold for research content
+			limit: options.limit ?? 25,
 		});
 
 		// Extract primary topics (highest scoring topics)

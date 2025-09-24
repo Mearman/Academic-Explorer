@@ -7,8 +7,8 @@ import { join } from "path";
 // TODO: Fix imports once files exist
 // import { fetchAndCacheQueries } from "../../apps/academic-explorer/src/lib/utils/query-cache-builder.ts";
 // import { generateAllIndexes } from "../../apps/academic-explorer/src/lib/utils/static-data-index-generator.ts";
-const fetchAndCacheQueries = (...args: any[]) => Promise.resolve({ success: 0, failed: 0, errors: [] });
-const generateAllIndexes = (...args: any[]) => Promise.resolve();
+const fetchAndCacheQueries = (..._args: unknown[]) => Promise.resolve({ success: 0, failed: 0, errors: [] });
+const generateAllIndexes = (..._args: unknown[]) => Promise.resolve();
 
 /**
  * Predefined queries to cache

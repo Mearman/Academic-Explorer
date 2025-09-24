@@ -22,4 +22,11 @@ export default tseslint.config([
       '@typescript-eslint/no-unsafe-return': 'warn',
     },
   },
+  {
+    // Logger file specifically should be allowed to use console
+    files: ['src/logger.ts'],
+    rules: {
+      'no-console': 'off',
+    },
+  },
 ]);

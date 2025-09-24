@@ -87,7 +87,7 @@ function getEntityPrefix(entityType: string): string {
     "concepts": "C",
     "autocomplete": "" // Autocomplete doesn't use entity prefixes, only queries
   };
-  return prefixMap[entityType] || "";
+  return prefixMap[entityType] ?? "";
 }
 
 /**
@@ -774,7 +774,7 @@ function convertOldIndexToUnified(oldIndex: unknown): UnifiedIndex {
   // Try parsing as old query index format
   const queryIndex = OldQueryIndexSchema.safeParse(oldIndex);
   if (queryIndex.success) {
-    const entityType = queryIndex.data.entityType || "works";
+    const entityType = queryIndex.data.entityType ?? "works";
 
     if (Array.isArray(queryIndex.data.queries)) {
       // New flexible query format
@@ -838,7 +838,7 @@ function generateCanonicalQueryKey(query: unknown, entityType: string): string |
     return `https://api.openalex.org/${entityType}?${searchParams.toString()}`;
   }
 
-  if (url && url.startsWith("https://api.openalex.org/")) {
+  if (url?.startsWith("https://api.openalex.org/")) {
     return url;
   }
 
@@ -868,7 +868,7 @@ function generateCanonicalQueryKeyFromEntry(entry: unknown, entityType: string):
     return `https://api.openalex.org/${entityType}?${searchParams.toString()}`;
   }
 
-  if (url && url.startsWith("https://api.openalex.org/")) {
+  if (url?.startsWith("https://api.openalex.org/")) {
     return url;
   }
 
@@ -1128,7 +1128,7 @@ function urlToEncodedKey(url: string): string {
  */
 function generateFilenameFromParsedKey(parsed: ParsedKey): string | null {
   // Always use full URL encoding for both entities and queries
-  const canonicalUrl = parsed.canonicalUrl;
+  const { canonicalUrl } = parsed;
   if (!canonicalUrl) return null;
 
   // Apply standard URL encoding for filename safety
@@ -1438,7 +1438,7 @@ function reverseEngineerQueryUrl(entityType: string, queryResult: unknown, _file
     return null;
   }
 
-  const results = queryResult.results;
+  const { results } = queryResult;
   if (results.length === 0) return null;
 
   // Check what fields are present in the first result
@@ -1496,6 +1496,11 @@ function deduplicateIndexEntries(index: UnifiedIndex, entityType: string): Unifi
   const prefix = getEntityPrefix(entityType);
   const keysToRemove: string[] = [];
 
+  // Skip if no prefix for this entity type
+  if (!prefix) {
+    return index;
+  }
+
   for (const key of Object.keys(index)) {
     // Check if this is a non-prefixed entity URL
     const match = key.match(/https:\/\/api\.openalex\.org\/[^/]+\/([^?]+)$/);
@@ -1542,8 +1547,8 @@ async function saveUnifiedIndex(dataPath: string, entityType: string, index: Uni
       // Create $ref pointer to the actual data file with metadata
       refIndex[canonicalUrl] = {
         $ref: `./${encodedFilename}`,
-        lastModified: metadata.lastModified || new Date().toISOString(),
-        contentHash: metadata.contentHash || ""
+        lastModified: metadata.lastModified ?? new Date().toISOString(),
+        contentHash: metadata.contentHash ?? ""
       };
     }
 
@@ -1577,7 +1582,7 @@ function createContentHash(fileContent: string): string {
 
         const metaObj = metaResult.data;
 
-        const { count, db_response_time_ms, ...cleanMeta } = metaObj;
+        const { count: _count, db_response_time_ms: _db_response_time_ms, ...cleanMeta } = metaObj;
 
         // Normalize URLs in meta to handle URL encoding differences
         if ("request_url" in cleanMeta && typeof cleanMeta.request_url === "string") {
@@ -1773,7 +1778,7 @@ async function generateMainIndex(dataPath: string): Promise<void> {
   // Compare content structure (excluding lastModified) to determine if update is needed
   let contentChanged = true;
   if (existingMainIndex) {
-    const { lastModified: existingLastModified, ...existingContent } = existingMainIndex;
+    const { lastModified: _existingLastModified, ...existingContent } = existingMainIndex;
     const contentMatches = JSON.stringify(existingContent) === JSON.stringify(newMainIndexContent);
     contentChanged = !contentMatches;
   }

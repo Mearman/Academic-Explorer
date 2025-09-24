@@ -302,7 +302,7 @@ export class OpenAlexBaseClient {
 		const response = await this.makeRequest(url);
 		const data: unknown = await response.json();
 		const validatedData = validateApiResponse(data);
-		return trustApiContract(validatedData) as unknown as T;
+		return trustApiContract(validatedData) as T;
 	}
 
 	/**
@@ -334,9 +334,7 @@ export class OpenAlexBaseClient {
 		const streamParams = { ...params };
 
 		// Only set per_page if not already provided in params
-		if (!streamParams.per_page) {
-			streamParams.per_page = batchSize;
-		}
+		streamParams.per_page ??= batchSize;
 
 		do {
 			if (cursor) {

@@ -74,7 +74,7 @@ export function calculateRetryDelay(
 	}
 
 	// Exponential backoff with jitter
-	const baseDelay = config.baseDelay;
+	const {baseDelay} = config;
 	const exponentialDelay = baseDelay * (config.exponentialBase ** attemptIndex);
 	const jitter = Math.random() * config.jitterMs;
 

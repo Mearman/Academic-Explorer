@@ -127,9 +127,7 @@ export class ForceSimulationEngine extends SimulationEventEmitter {
       this.currentSimulation.stop();
     }
 
-    if (config) {
-      this.simulationConfig = { ...this.simulationConfig, ...config };
-    }
+    this.simulationConfig = { ...this.simulationConfig, ...config };
 
     const mergedNodes = this.mergePendingNodes(nodes);
 
@@ -308,7 +306,7 @@ export class ForceSimulationEngine extends SimulationEventEmitter {
 
   /** Update links in the simulation */
   updateLinks(links: SimulationLink[], alpha = 1.0) {
-    if (!links || links.length === 0) {
+    if (links.length === 0) {
       return;
     }
 
@@ -332,7 +330,7 @@ export class ForceSimulationEngine extends SimulationEventEmitter {
 
   /** Update nodes in the simulation */
   updateNodes(nodes: SimulationNode[], pinnedNodes: Set<string> | string[] = [], alpha = 1.0) {
-    if (!nodes || nodes.length === 0) {
+    if (nodes.length === 0) {
       return;
     }
 
@@ -679,7 +677,15 @@ export class ForceSimulationEngine extends SimulationEventEmitter {
       }
 
       const positions = this.collectPositions();
-      const progressPayload: any = {
+      const progressPayload: {
+        messageType: "tick";
+        positions: NodePosition[];
+        alpha: number;
+        iteration: number;
+        nodeCount: number;
+        linkCount: number;
+        fps?: number;
+      } = {
         messageType: "tick",
         positions,
         alpha: this.currentSimulation.alpha(),

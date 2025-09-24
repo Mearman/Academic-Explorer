@@ -106,8 +106,8 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, State> {
 			timestamp: new Date().toISOString(),
 			userAgent: navigator.userAgent,
 			url: window.location.href,
-			errorStack: error.stack || undefined,
-			componentStack: errorInfo.componentStack || undefined,
+			errorStack: error.stack ?? undefined,
+			componentStack: errorInfo.componentStack ?? undefined,
 			errorBoundary: "ErrorBoundary",
 			additionalContext: {
 				reactVersion: React.version,
@@ -145,7 +145,7 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, State> {
 
 	private handleClearCache = async (): Promise<void> => {
 		if (!this.props.onClearCache) {
-			notifications?.show?.({
+			notifications.show({
 				title: "Cache Clear Not Available",
 				message: "Cache clearing functionality is not implemented",
 				color: "orange",
@@ -156,13 +156,13 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, State> {
 		this.setState({ clearingCache: true });
 		try {
 			await this.props.onClearCache();
-			notifications?.show?.({
+			notifications.show({
 				title: "Cache Cleared",
 				message: "All cached data has been cleared. Please reload the page.",
 				color: "green",
 			});
-		} catch (error) {
-			notifications?.show?.({
+		} catch {
+			notifications.show({
 				title: "Cache Clear Failed",
 				message: "Failed to clear cache. Please try reloading the page.",
 				color: "red",
@@ -203,7 +203,7 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, State> {
 
 			this.setState({ copied: true });
 
-			notifications?.show?.({
+			notifications.show({
 				title: "Debug data copied",
 				message: "Error information has been copied to your clipboard",
 				color: "green",
@@ -217,8 +217,8 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, State> {
 			this.copyTimeout = setTimeout(() => {
 				this.setState({ copied: false });
 			}, 2000);
-		} catch (clipboardError) {
-			notifications?.show?.({
+		} catch {
+			notifications.show({
 				title: "Copy failed",
 				message: "Could not copy to clipboard. Please copy manually from the debug section below.",
 				color: "red",
@@ -244,7 +244,7 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, State> {
 			const { reportUrl, showDebugInfo = false, onClearCache } = this.props;
 
 			return (
-				<Container size="md" py="xl" className={this.props.className || ''} data-testid={this.props['data-testid']}>
+				<Container size="md" py="xl" className={this.props.className ?? ''} data-testid={this.props['data-testid']}>
 					<Stack gap="lg">
 						{/* Header */}
 						<Alert
@@ -265,7 +265,7 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, State> {
 								<Group justify="space-between" align="flex-start">
 									<div>
 										<Title order={3} c="red">
-											{error?.name || "Unknown Error"}
+											{error?.name ?? "Unknown Error"}
 										</Title>
 										<Text size="sm" c="dimmed" mt={4}>
 											Error ID: {errorId}
@@ -286,7 +286,7 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, State> {
 								</Group>
 
 								<Text c="red.7" fw={500}>
-									{error?.message || "An unexpected error occurred"}
+									{error?.message ?? "An unexpected error occurred"}
 								</Text>
 
 								{/* Action Buttons */}

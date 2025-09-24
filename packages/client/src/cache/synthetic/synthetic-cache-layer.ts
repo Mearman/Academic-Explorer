@@ -67,15 +67,15 @@ export class SyntheticCacheLayer {
     // Return a plan that treats everything as cache miss
     const apiRequest = {
       entityIds,
-      fields: fields || [],
-      params: params || {}
+      fields: fields ?? [],
+      params: params ?? {}
     };
 
     return {
       cacheHits: [],
       missingEntities: entityIds.map(entityId => ({
         entityId,
-        missingFields: fields || []
+        missingFields: fields ?? []
       })),
       apiRequests: [apiRequest],
       requiredApiCalls: [apiRequest],

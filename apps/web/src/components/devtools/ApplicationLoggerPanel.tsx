@@ -43,7 +43,7 @@ export function ApplicationLoggerPanel() {
 			filtered = filtered.filter(log =>
 				log.message.toLowerCase().includes(query) ||
         log.component?.toLowerCase().includes(query) ||
-        JSON.stringify(log.data || "").toLowerCase().includes(query)
+        JSON.stringify(log.data ?? "").toLowerCase().includes(query)
 			);
 		}
 
@@ -203,7 +203,7 @@ export function ApplicationLoggerPanel() {
 					<Divider />
 
 					<Tabs value={activeTab} onChange={(value) => {
-						setActiveTab(value || "logs");
+						setActiveTab(value ?? "logs");
 					}}>
 						<Tabs.List>
 							<Tabs.Tab value="logs" leftSection={<IconInfoCircle size={14} />}>

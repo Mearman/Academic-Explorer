@@ -105,13 +105,29 @@ export default tseslint.config([
     },
   },
   {
-    // Test file rules
+    // Test file rules - disable strict type checking since test files aren't in tsconfig
     files: ['**/*.{test,spec}.{ts,tsx}', '**/test/**/*.{ts,tsx}'],
+    languageOptions: {
+      parserOptions: {
+        project: false, // Disable type-aware rules for test files
+      },
+    },
     rules: {
       '@typescript-eslint/no-explicit-any': 'off',
       '@typescript-eslint/no-non-null-assertion': 'off',
       '@typescript-eslint/no-unsafe-assignment': 'off',
       '@typescript-eslint/no-unsafe-member-access': 'off',
+      '@typescript-eslint/no-floating-promises': 'off',
+      '@typescript-eslint/await-thenable': 'off',
+      '@typescript-eslint/prefer-nullish-coalescing': 'off',
+      '@typescript-eslint/no-unnecessary-type-assertion': 'off',
+      'no-console': 'off',
+    },
+  },
+  {
+    // Logger files should be allowed to use console
+    files: ['**/logger.{ts,js}', '**/src/logger.{ts,js}', '**/src/internal/logger.{ts,js}'],
+    rules: {
       'no-console': 'off',
     },
   },

@@ -62,7 +62,7 @@ export const NodeContextMenu: React.FC<NodeContextMenuProps> = ({
 
 		if (node.externalIds.length > 0) {
 			const extId = node.externalIds[0]
-			if (extId && extId.type && extId.value) {
+			if (extId?.type && extId.value) {
 				switch (extId.type) {
 					case "doi":
 						url += `/works/doi/${encodeURIComponent(extId.value)}`

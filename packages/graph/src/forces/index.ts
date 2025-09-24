@@ -48,13 +48,13 @@ export const customForceManager: ForceManager = {
   getAllForces: (): CustomForce[] => {
     throw new Error("customForceManager.getAllForces not available in graph package - use from application layer");
   },
-  addForce: (force: CustomForce): string => {
+  addForce: (_force: CustomForce): string => {
     throw new Error("customForceManager.addForce not available in graph package - use from application layer");
   },
-  updateForce: (id: string, updates: Partial<CustomForce>): void => {
+  updateForce: (_id: string, _updates: Partial<CustomForce>): void => {
     throw new Error("customForceManager.updateForce not available in graph package - use from application layer");
   },
-  removeForce: (id: string): void => {
+  removeForce: (_id: string): void => {
     throw new Error("customForceManager.removeForce not available in graph package - use from application layer");
   },
   clearAllForces: (): void => {
@@ -63,7 +63,7 @@ export const customForceManager: ForceManager = {
   getBuiltInPresets: (): Record<string, { name: string; description: string; forces: CustomForce[] }> => {
     throw new Error("customForceManager.getBuiltInPresets not available in graph package - use from application layer");
   },
-  loadPreset: (preset: { name: string; description: string; forces: CustomForce[] }): void => {
+  loadPreset: (_preset: { name: string; description: string; forces: CustomForce[] }): void => {
     throw new Error("customForceManager.loadPreset not available in graph package - use from application layer");
   },
   getStats: (): { enabledForces: number; totalForces: number } => {

@@ -1,14 +1,12 @@
 /// <reference types="vitest" />
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
-import { TanStackRouterVite } from '@tanstack/router-plugin/vite'
+import { tanstackRouter } from '@tanstack/router-plugin/vite'
 import { vanillaExtractPlugin } from '@vanilla-extract/vite-plugin'
-import { devtools } from '@tanstack/devtools-vite'
 import { VitePWA } from 'vite-plugin-pwa'
 import path from 'path'
 import { execSync } from 'child_process'
 import { workspaceRoot } from '../../config/shared'
-import { openalexDataPlugin } from './src/build-plugins/openalex-data-plugin'
 
 // Build metadata generation
 function getBuildInfo() {
@@ -26,7 +24,7 @@ function getBuildInfo() {
       shortCommitHash,
       commitTimestamp: commitDate.toISOString(),
       branchName,
-      version: process.env.npm_package_version || '0.0.0',
+      version: process.env.npm_package_version ?? '0.0.0',
       repositoryUrl: 'https://github.com/Mearman/Academic-Explorer'
     }
   } catch (error) {
@@ -37,7 +35,7 @@ function getBuildInfo() {
       shortCommitHash: 'unknown',
       commitTimestamp: new Date().toISOString(),
       branchName: 'unknown',
-      version: process.env.npm_package_version || '0.0.0',
+      version: process.env.npm_package_version ?? '0.0.0',
       repositoryUrl: 'https://github.com/Mearman/Academic-Explorer'
     }
   }
@@ -60,7 +58,7 @@ export default defineConfig(({ mode }) => ({
     // ...(mode !== 'test' ? [openalexDataPlugin()] : []), // Temporarily disabled during monorepo refactoring
     // Temporarily disable devtools to avoid port conflicts
     // devtools(),
-    TanStackRouterVite({
+    tanstackRouter({
       // Enable hash-based routing for GitHub Pages compatibility
       routeFilePrefix: '',
       routeFileIgnorePrefix: '-',

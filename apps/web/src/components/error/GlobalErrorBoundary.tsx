@@ -274,7 +274,7 @@ export class GlobalErrorBoundary extends Component<Props, State> {
 								<Group justify="space-between" align="flex-start">
 									<div>
 										<Title order={3} c="red">
-											{error?.name || "Unknown Error"}
+											{error?.name ?? "Unknown Error"}
 										</Title>
 										<Text size="sm" c="dimmed" mt={4}>
 											Error ID: {errorId}

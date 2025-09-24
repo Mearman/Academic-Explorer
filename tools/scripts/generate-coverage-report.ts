@@ -49,7 +49,7 @@ function getStatusText(actual: number, threshold: number): string {
 }
 
 function generateReport(coverageData: CoverageData, format: ReportFormat = 'summary'): void {
-  const total = coverageData.total;
+  const { total } = coverageData;
 
   const metrics: Metric[] = [
     { name: 'Lines', key: 'lines', actual: total.lines.pct, threshold: THRESHOLDS.lines },

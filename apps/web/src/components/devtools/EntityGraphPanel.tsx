@@ -177,7 +177,7 @@ export function EntityGraphPanel() {
 				<Divider />
 
 				<Tabs value={activeTab} onChange={(value) => {
-					setActiveTab(value || "overview");
+					setActiveTab(value ?? "overview");
 				}}>
 					<Tabs.List>
 						<Tabs.Tab value="overview" leftSection={<IconInfoCircle size={14} />}>

@@ -6,7 +6,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { logger } from "@academic-explorer/utils/logger";
-import type { SimulationLink, NodePosition, SimulationNode } from "@academic-explorer/simulation/types";
+import type { SimulationLink, NodePosition } from "@academic-explorer/simulation/types";
 import type { GraphNode, GraphEdge } from "@academic-explorer/graph";
 
 export interface WebWorkerTaskSystem {
@@ -283,13 +283,13 @@ export function useWebWorker(
 
   // Submit task to worker
   const submitTask = useCallback(async (task: WorkerRequest): Promise<void> => {
-    const requestId = postMessage(task as WorkerRequest);
+    const requestId = postMessage(task);
     if (!requestId) {
       throw new Error("Failed to submit task: worker not available");
     }
     // Wait for completion or error (simplified - in real impl, use promise from queue)
     return new Promise((resolve, reject) => {
-      const timeout = setTimeout(() => reject(new Error("Task timeout")), 30000);
+      const timeout = setTimeout(() => { reject(new Error("Task timeout")); }, 30000);
       const checkStatus = () => {
         if (stats.averageResponseTime > 0) {
           clearTimeout(timeout);

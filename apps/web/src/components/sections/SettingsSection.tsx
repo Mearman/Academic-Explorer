@@ -12,7 +12,7 @@ import { clearAppMetadata } from "@academic-explorer/utils/cache";
 import { useLayoutStore } from "@/stores/layout-store";
 import { useSettingsStore } from "@/stores/settings-store";
 import { updateOpenAlexEmail } from "@academic-explorer/client";
-import { logger, logError } from "@academic-explorer/utils/logger";
+import { logger } from "@academic-explorer/utils/logger";
 
 interface ResetState {
 	clearingCache: boolean;

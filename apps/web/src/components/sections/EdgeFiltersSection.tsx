@@ -11,7 +11,7 @@ import { useThemeColors } from "@/hooks/use-theme-colors";
 import { CollapsibleSection } from "@/components/molecules/CollapsibleSection";
 import { logger } from "@academic-explorer/utils/logger";
 import { RelationType } from "@academic-explorer/graph";
-import { safeParseRelationType, RelationType as SharedRelationType } from "@academic-explorer/utils";
+import { safeParseRelationType } from "@academic-explorer/utils";
 
 interface EdgeFiltersSectionProps {
 	className?: string;

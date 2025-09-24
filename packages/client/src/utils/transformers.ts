@@ -195,7 +195,7 @@ export function extractKeywords(
 	// Count word frequencies
 	const wordCount = new Map<string, number>();
 	words.forEach(word => {
-		wordCount.set(word, (wordCount.get(word) || 0) + 1);
+		wordCount.set(word, (wordCount.get(word) ?? 0) + 1);
 	});
 
 	// Extract potential compound terms (2-3 words)
@@ -208,7 +208,7 @@ export function extractKeywords(
 		if (word1 && word2) {
 			const twoWord = `${word1} ${word2}`;
 			if (!stopWords.has(word1) && !stopWords.has(word2)) {
-				compounds.set(twoWord, (compounds.get(twoWord) || 0) + 1);
+				compounds.set(twoWord, (compounds.get(twoWord) ?? 0) + 1);
 			}
 		}
 
@@ -218,7 +218,7 @@ export function extractKeywords(
 			if (word1 && word2 && word3) {
 				const threeWord = `${word1} ${word2} ${word3}`;
 				if (!stopWords.has(word1) && !stopWords.has(word2) && !stopWords.has(word3)) {
-					compounds.set(threeWord, (compounds.get(threeWord) || 0) + 1);
+					compounds.set(threeWord, (compounds.get(threeWord) ?? 0) + 1);
 				}
 			}
 		}

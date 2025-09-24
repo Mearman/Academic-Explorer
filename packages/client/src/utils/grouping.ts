@@ -136,7 +136,7 @@ export class GroupingApi {
 
 		const groups: GroupResult[] = filteredGroups.map((group: GroupItem) => ({
 			key: group.key,
-			key_display_name: group.key_display_name || group.key,
+			key_display_name: group.key_display_name ?? group.key,
 			count: group.count,
 			...(group.cited_by_count !== undefined && { cited_by_count: group.cited_by_count }),
 			...(group.works_count !== undefined && { works_count: group.works_count }),
@@ -327,7 +327,7 @@ export class GroupingApi {
 		const {
 			primary_group_by,
 			secondary_group_by,
-			tertiary_group_by,
+			tertiary_group_by: _tertiary_group_by,
 			max_groups_per_dimension = 10,
 			...baseParams
 		} = params;
@@ -373,7 +373,7 @@ export class GroupingApi {
 							per_page: 1,
 						});
 
-						const count = crossResult.meta.count;
+						const {count} = crossResult.meta;
 
 						crossTabulation.push({
 							primary_key: primaryGroup.key,

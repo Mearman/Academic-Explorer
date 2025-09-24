@@ -44,7 +44,7 @@ export interface BaseTableProps<T> {
  * />
  * ```
  */
-export const BaseTable = forwardRef<HTMLDivElement, BaseTableProps<any>>(
+export const BaseTable = forwardRef<HTMLDivElement, BaseTableProps<unknown>>(
 	<T,>({
 		data,
 		columns,
@@ -93,7 +93,7 @@ export const BaseTable = forwardRef<HTMLDivElement, BaseTableProps<any>>(
 		};
 
 		return (
-			<Box ref={ref} className={className || ''} {...props}>
+			<Box ref={ref} className={className ?? ''} {...props}>
 				{searchable && (
 					<Group mb="md" justify="space-between">
 						<TextInput

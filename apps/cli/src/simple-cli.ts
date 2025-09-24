@@ -19,7 +19,7 @@ program
 program
   .command("detect <entity-id>")
   .description("Detect entity type from OpenAlex ID")
-  .action(async (entityId: string) => {
+  .action((entityId: string) => {
     try {
       const entityType = detectEntityType(entityId);
       console.log(`Entity ID: ${entityId}`);

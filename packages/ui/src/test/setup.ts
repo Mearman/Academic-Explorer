@@ -6,16 +6,14 @@ global.IntersectionObserver = class IntersectionObserver {
   root = null;
   rootMargin = '';
   thresholds = [];
-  constructor() {}
   observe() {}
   disconnect() {}
   unobserve() {}
   takeRecords() { return []; }
-} as any;
+} as unknown as typeof IntersectionObserver;
 
 // Mock ResizeObserver for tests
 global.ResizeObserver = class ResizeObserver {
-  constructor() {}
   observe() {}
   disconnect() {}
   unobserve() {}

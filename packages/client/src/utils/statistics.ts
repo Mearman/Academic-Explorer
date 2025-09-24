@@ -358,7 +358,6 @@ export class StatisticsApi {
 
 		for (let i = 0; i < Math.min(10, groups.length); i++) {
 			const group = groups[i];
-			if (!group) continue;
 
 			try {
 				// Get more detailed stats for each group
@@ -378,7 +377,7 @@ export class StatisticsApi {
 
 				groupMetrics.push({
 					group: group.key,
-					group_display_name: group.key_display_name ?? group.key,
+					group_display_name: group.key_display_name,
 					metrics: {
 						total_count: group.count,
 						avg_citations: avgCitations,
@@ -537,7 +536,7 @@ export class StatisticsApi {
 			if (countryData) {
 				const distribution: Record<string, number> = {};
 				countryData.slice(0, 20).forEach((group) => {
-					distribution[group.key_display_name ?? group.key] = group.count;
+					distribution[group.key_display_name] = group.count;
 				});
 				return distribution;
 			}

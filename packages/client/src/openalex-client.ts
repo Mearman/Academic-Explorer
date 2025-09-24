@@ -57,9 +57,10 @@ function isEntityGenerator<T extends EntityType>(
 
 /**
  * Type guard to validate QueryParams as Record<string, unknown>
+ * Since QueryParams extends Record<string, unknown>, this always returns true.
  */
 function isValidQueryParams(params: QueryParams): params is Record<string, unknown> {
-	return typeof params === "object" && params !== null;
+	return true;
 }
 
 /**

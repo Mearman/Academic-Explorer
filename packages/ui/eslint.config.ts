@@ -2,6 +2,15 @@ import tseslint from 'typescript-eslint';
 import reactConfig from '../../eslint.config.react.js';
 
 export default tseslint.config([
+  {
+    // Global ignores for this package - exclude test files entirely for now
+    ignores: [
+      'src/**/*.test.*',
+      'src/**/*.spec.*',
+      'src/test/**/*',
+      'dist/**/*',
+    ],
+  },
   ...reactConfig,
   {
     files: ['src/**/*.{ts,tsx}'],

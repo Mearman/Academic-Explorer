@@ -31,7 +31,7 @@ export default defineConfig({
 	// Shared settings for all projects
 	use: {
 		// Base URL for tests - Vite dev server
-		baseURL: process.env.E2E_BASE_URL || "http://localhost:5173",
+		baseURL: process.env.E2E_BASE_URL ?? "http://localhost:5173",
 
 		// Collect trace when retrying the failed test
 		trace: "on-first-retry",

@@ -332,7 +332,7 @@ program
 
     const queryOptions: QueryOptions = {
       per_page: perPage,
-      page: page
+      page
     };
 
     if (validatedOptions.filter) queryOptions.filter = validatedOptions.filter;
@@ -409,10 +409,10 @@ program
 
       if (stats.storage?.memory) {
         console.log("Memory Storage:");
-        console.log(`  Entities: ${stats.storage.memory.entities || 0}`);
-        console.log(`  Fields: ${stats.storage.memory.fields || 0}`);
-        console.log(`  Collections: ${stats.storage.memory.collections || 0}`);
-        console.log(`  Size: ${((stats.storage.memory.size || 0) / 1024).toFixed(1)} KB`);
+        console.log(`  Entities: ${stats.storage.memory.entities ?? 0}`);
+        console.log(`  Fields: ${stats.storage.memory.fields ?? 0}`);
+        console.log(`  Collections: ${stats.storage.memory.collections ?? 0}`);
+        console.log(`  Size: ${((stats.storage.memory.size ?? 0) / 1024).toFixed(1)} KB`);
       }
     }
   });
@@ -474,7 +474,7 @@ program
       process.exit(1);
     }
 
-    const limit = parseInt(String(options.limit || "10"), 10);
+    const limit = parseInt(String(options.limit ?? "10"), 10);
     const entities = await cli.getWellPopulatedEntities(entityTypeValidation.data, limit);
 
     if (options.format === "json") {
@@ -502,7 +502,7 @@ program
   .option("-l, --limit <limit>", "Limit results", "10")
   .option("-f, --format <format>", "Output format (json, table)", "table")
   .action(async (options) => {
-    const limit = parseInt(String(options.limit || "10"), 10);
+    const limit = parseInt(String(options.limit ?? "10"), 10);
     const collections = await cli.getPopularCollections(limit);
 
     if (options.format === "json") {

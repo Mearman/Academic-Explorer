@@ -927,9 +927,9 @@ const GraphNavigationInner: React.FC<GraphNavigationProps> = ({ className, style
 				// Convert XYFlow node back to GraphNode for context menu
 				const graphNode: GraphNode = {
 					id: node.id,
-					entityId: node.data['entityId'] as string,
-					type: node.data['entityType'] as EntityType,
-					label: node.data['label'] as string,
+					entityId: node.data['entityId'],
+					type: node.data['entityType'],
+					label: node.data['label'],
 					position: node.position,
 					externalIds
 				};

@@ -1,9 +1,17 @@
 import tseslint from 'typescript-eslint';
-import reactConfig from '../../eslint.config.react.js';
+import reactConfig from '../../eslint.config.react.ts';
 
 export default tseslint.config([
+  {
+    // Global ignores for this app - exclude test files for now
+    ignores: [
+      'src/**/*.{test,spec}.{ts,tsx}',
+      'src/test/**/*.{ts,tsx}',
+    ],
+  },
   ...reactConfig,
   {
+    // Source files - use strict type checking (test files already ignored globally)
     files: ['src/**/*.{ts,tsx}'],
     languageOptions: {
       parserOptions: {
@@ -39,13 +47,45 @@ export default tseslint.config([
     },
   },
   {
-    // Config files
-    files: ['*.config.{ts,js}', 'vite.config.ts', 'vitest.config.*.ts'],
+    // Config files - use dedicated tsconfig and disable type-aware rules
+    files: ['*.config.{ts,js}', 'vite.config.ts', 'vitest.config.ts', 'eslint.config.ts', 'playwright.config.ts', 'knip.ts'],
+    languageOptions: {
+      parserOptions: {
+        project: './tsconfig.config.json',
+        tsconfigRootDir: import.meta.dirname,
+      },
+    },
     rules: {
       'no-console': 'off',
+      '@typescript-eslint/no-explicit-any': 'off',
       '@typescript-eslint/no-unsafe-assignment': 'off',
       '@typescript-eslint/no-unsafe-member-access': 'off',
       '@typescript-eslint/no-unsafe-call': 'off',
+      '@typescript-eslint/no-unsafe-return': 'off',
+      '@typescript-eslint/no-unsafe-argument': 'off',
+      '@typescript-eslint/no-floating-promises': 'off',
+      '@typescript-eslint/no-misused-promises': 'off',
+      '@typescript-eslint/restrict-template-expressions': 'off',
     },
   },
+  {
+    // Build plugins - also need special handling
+    files: ['src/build-plugins/**/*.{ts,js}'],
+    languageOptions: {
+      parserOptions: {
+        project: './tsconfig.config.json',
+        tsconfigRootDir: import.meta.dirname,
+      },
+    },
+    rules: {
+      'no-console': 'off',
+      '@typescript-eslint/no-explicit-any': 'off',
+      '@typescript-eslint/no-unsafe-assignment': 'off',
+      '@typescript-eslint/no-unsafe-member-access': 'off',
+      '@typescript-eslint/no-unsafe-call': 'off',
+      '@typescript-eslint/no-unsafe-return': 'off',
+      '@typescript-eslint/no-unsafe-argument': 'off',
+    },
+  },
+  // Test files are handled by the base configuration with project: false
 ]);

@@ -119,7 +119,7 @@ export class WorksApi {
 	): Promise<OpenAlexResponse<Work>> {
 		const params: WorksQueryParams = {
 			search: query,
-			sort: options.sort || (query.trim() ? "relevance_score" : "publication_date"),
+			sort: options.sort ?? (query.trim() ? "relevance_score" : "publication_date"),
 		};
 
 		if (options.page !== undefined) params.page = options.page;
@@ -410,9 +410,7 @@ export class WorksApi {
 		const queryParams: QueryParams = { ...params };
 
 		// Only set per_page if not already provided in params
-		if (!queryParams.per_page) {
-			queryParams.per_page = batchSize;
-		}
+		queryParams.per_page ??= batchSize;
 
 		// Convert filters if provided
 		if (params.filter) {

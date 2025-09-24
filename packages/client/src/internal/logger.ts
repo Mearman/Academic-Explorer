@@ -16,7 +16,7 @@ class InternalLogger {
 	private enableConsoleOutput = false; // Disabled by default for package use
 
 	log(level: LogLevel, message: string, data?: unknown) {
-		const entry: LogEntry = {
+		const _entry: LogEntry = {
 			timestamp: new Date(),
 			level,
 			message,
@@ -28,11 +28,11 @@ class InternalLogger {
 			const logMessage = `[OpenAlex] ${message}`;
 
 			if (level === "debug") {
-				console.debug(logMessage, data || "");
+				console.debug(logMessage, data ?? "");
 			} else if (level === "warn") {
-				console.warn(logMessage, data || "");
+				console.warn(logMessage, data ?? "");
 			} else {
-				console.error(logMessage, data || "");
+				console.error(logMessage, data ?? "");
 			}
 		}
 	}

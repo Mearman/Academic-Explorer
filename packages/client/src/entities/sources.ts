@@ -93,14 +93,14 @@ export class SourcesApi {
 		params: QueryParams = {}
 	): Promise<OpenAlexResponse<Source>> {
 		const filters: SourcesFilters = {
-			"publisher": publisher,
+			publisher,
 		};
 
 		const { filter: _, ...paramsWithoutFilter } = params;
 		const queryParams = this.buildFilterParams({
 			...paramsWithoutFilter,
 			filter: filters,
-			sort: params.sort || "works_count:desc",
+			sort: params.sort ?? "works_count:desc",
 		});
 		return this.client.getResponse<Source>("sources", queryParams);
 	}
@@ -127,7 +127,7 @@ export class SourcesApi {
 		const queryParams = this.buildFilterParams({
 			...paramsWithoutFilter,
 			filter: filters,
-			sort: params.sort || "works_count:desc",
+			sort: params.sort ?? "works_count:desc",
 		});
 		return this.client.getResponse<Source>("sources", queryParams);
 	}
@@ -159,7 +159,7 @@ export class SourcesApi {
 		const queryParams = this.buildFilterParams({
 			...paramsWithoutFilter,
 			filter: filters,
-			sort: params["sort"] || "works_count:desc",
+			sort: params["sort"] ?? "works_count:desc",
 		});
 		return this.client.getResponse<Source>("sources", queryParams);
 	}
@@ -207,7 +207,7 @@ export class SourcesApi {
 	async getSourceStats(sourceId: string, params: QueryParams = {}): Promise<Source> {
 		const statsParams = {
 			...params,
-			select: params.select || [
+			select: params.select ?? [
 				"id",
 				"display_name",
 				"cited_by_count",
@@ -283,7 +283,7 @@ export class SourcesApi {
 		return this.getSources({
 			...params,
 			filter: filters,
-			sort: params.sort || "works_count:desc",
+			sort: params.sort ?? "works_count:desc",
 		});
 	}
 
@@ -306,13 +306,13 @@ export class SourcesApi {
 		params: QueryParams = {}
 	): Promise<OpenAlexResponse<Source>> {
 		const filters: SourcesFilters = {
-			"type": type,
+			type,
 		};
 
 		return this.getSources({
 			...params,
 			filter: filters,
-			sort: params.sort || "works_count:desc",
+			sort: params.sort ?? "works_count:desc",
 		});
 	}
 
@@ -349,7 +349,7 @@ export class SourcesApi {
 		return this.getSources({
 			...params,
 			filter: filters,
-			sort: params.sort || "apc_usd:desc",
+			sort: params.sort ?? "apc_usd:desc",
 		});
 	}
 

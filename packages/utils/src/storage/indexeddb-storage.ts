@@ -212,7 +212,7 @@ export const createHybridStorage = (
                   logger?.error("storage", "IndexedDB background write failed", {
                     name,
                     error: errorName,
-                    message: error && typeof error === "object" && "message" in error ? String(error.message) : "Unknown error",
+                    message: "message" in error ? String((error as {message: unknown}).message) : "Unknown error",
                     totalErrors: indexedDBErrors
                   });
                 }
@@ -296,7 +296,7 @@ export const createIndexedDBStorage = (
         const value = await db.get(config.storeName, name) as string | null;
         logger?.debug("storage", "Retrieved item from IndexedDB", {
           name,
-          hasValue: value !== undefined
+          hasValue: value !== null
         });
         return value ?? null;
       } catch (error) {

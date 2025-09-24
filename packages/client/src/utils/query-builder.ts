@@ -269,9 +269,10 @@ export class QueryBuilder<T extends EntityFilters = EntityFilters> {
 
 	/**
 	 * Type guard to safely access filters as a record
+	 * Since Partial<T> is already an object type, this always returns true.
 	 */
 	private isFiltersRecord(filters: Partial<T>): filters is Partial<T> & Record<string, unknown> {
-		return typeof filters === "object" && filters !== null;
+		return true;
 	}
 
 	/**
@@ -384,7 +385,7 @@ export function buildSortString(sorts: SortOptions | SortOptions[] | null | unde
 	return sortArray
 		.filter(sort => sort.field)
 		.map(sort => {
-			const direction = sort.direction || "asc";
+			const direction = sort.direction ?? "asc";
 			return `${sort.field}:${direction}`;
 		})
 		.join(",");

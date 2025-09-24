@@ -94,9 +94,9 @@ export class CachedOpenAlexClient extends OpenAlexBaseClient {
 
     this.cacheEnabled = config.cacheEnabled !== false;
     this.rateLimitEnabled = config.rateLimitEnabled !== false;
-    this.maxConcurrentRequests = config.maxConcurrentRequests || 5;
+    this.maxConcurrentRequests = config.maxConcurrentRequests ?? 5;
 
-    this.cache = config.syntheticCache || createSyntheticCacheLayer();
+    this.cache = config.syntheticCache ?? createSyntheticCacheLayer();
 
     // Initialize the OpenAlex API client with the same configuration
     this.client = new OpenAlexClient(config);
@@ -242,7 +242,7 @@ export class CachedOpenAlexClient extends OpenAlexBaseClient {
       const requestedFields = convertedParams.select || [];
 
       // Check cache for entity fields
-      const cachedFields = await this.cache.getEntityFields(entityType, id) as string[];
+      const cachedFields = await this.cache.getEntityFields(entityType, id);
       const cachedData = await this.cache.getEntityCache(entityType, id) as Partial<T> || {};
 
       const hasAllFields = requestedFields.every(field => cachedFields.includes(field));
@@ -256,7 +256,7 @@ export class CachedOpenAlexClient extends OpenAlexBaseClient {
         });
         // All requested fields are present in cache
         if (this.isCompleteEntity<T>(cachedData, requestedFields)) {
-          return cachedData as T;
+          return cachedData;
         }
         // This should never happen given the outer condition, but TypeScript requires it
         throw new Error("Cache data validation failed despite field count check");

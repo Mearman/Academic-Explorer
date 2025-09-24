@@ -4,7 +4,7 @@ import { join } from "path";
 import { fileURLToPath } from "url";
 // TODO: Fix import once file exists
 // import { generateAllIndexes } from "../../apps/academic-explorer/src/lib/utils/static-data-index-generator.ts";
-const generateAllIndexes = (...args: any[]) => Promise.resolve();
+const generateAllIndexes = (..._args: unknown[]) => Promise.resolve();
 
 const __dirname = fileURLToPath(new URL(".", import.meta.url));
 const STATIC_DATA_DIR = join(__dirname, "..", "public", "data", "openalex");

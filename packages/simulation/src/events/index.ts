@@ -75,7 +75,10 @@ export class SimulationEventEmitter {
       this.handlers.set(eventType, new Set());
     }
 
-    const handlers = this.handlers.get(eventType)!;
+    const handlers = this.handlers.get(eventType);
+    if (!handlers) {
+      throw new Error(`No handlers found for event type: ${eventType}`);
+    }
     handlers.add(handler as SimulationEventHandler);
 
     return {
@@ -108,8 +111,9 @@ export class SimulationEventEmitter {
       const subscription = originalOn(eventType, handler);
 
       // If this is a new event type, also add the global handler
-      if (!this.handlers.has(eventType) || this.handlers.get(eventType)!.size === 1) {
-        this.handlers.get(eventType)!.add(globalHandler);
+      const eventHandlers = this.handlers.get(eventType);
+      if (eventHandlers && (!this.handlers.has(eventType) || eventHandlers.size === 1)) {
+        eventHandlers.add(globalHandler);
       }
 
       return subscription;
@@ -127,7 +131,7 @@ export class SimulationEventEmitter {
   }
 
   // Emit an event to all subscribers
-  emit<T extends SimulationEvent>(event: T): void {
+  emit(event: SimulationEvent): void {
     const handlers = this.handlers.get(event.type);
     if (handlers) {
       handlers.forEach(handler => {

@@ -36,14 +36,14 @@ function prefixToEntityType(prefix: string): EntityType {
 export function detectEntityType(entityId: string): EntityType {
 	// Detect from ID format (W123456789, A123456789, etc.)
 	const match = entityId.match(/^https:\/\/openalex\.org\/([WASITPF])\d+$/);
-	if (match && match[1]) {
+	if (match?.[1]) {
 		const prefix = match[1];
 		return prefixToEntityType(prefix);
 	}
 
 	// Handle bare IDs
 	const bareMatch = entityId.match(/^([WASITPF])\d+$/);
-	if (bareMatch && bareMatch[1]) {
+	if (bareMatch?.[1]) {
 		const prefix = bareMatch[1];
 		return prefixToEntityType(prefix);
 	}

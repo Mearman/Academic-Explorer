@@ -17,8 +17,8 @@ import { z } from "zod";
 // } from "@academic-explorer/openalex-client";
 
 // Temporary types until package is fixed
-type EntityType = "works" | "authors" | "sources" | "institutions" | "topics" | "concepts" | "publishers" | "funders";
-type QueryParams = Record<string, unknown>;
+type _EntityType = "works" | "authors" | "sources" | "institutions" | "topics" | "concepts" | "publishers" | "funders";
+type _QueryParams = Record<string, unknown>;
 import type { StaticEntityType } from "./entity-detection.js";
 
 // Simple hash function for content hashing
@@ -203,7 +203,7 @@ export class OpenAlexCLI {
   // defaultFilenameFormat removed - now using URL encoding only
 
   constructor(dataPath?: string) {
-    this.dataPath = dataPath || join(projectRoot, STATIC_DATA_PATH);
+    this.dataPath = dataPath ?? join(projectRoot, STATIC_DATA_PATH);
     // TODO: Re-enable when openalex-client package is fixed
     // this.cachedClient = new CachedOpenAlexClient();
   }
@@ -299,7 +299,7 @@ export class OpenAlexCLI {
 
       try {
         const existingIndex = await this.loadUnifiedIndex(entityType);
-        if (existingIndex && existingIndex[canonicalUrl]) {
+        if (existingIndex?.[canonicalUrl]) {
           existingContentHash = existingIndex[canonicalUrl].contentHash;
           existingLastModified = existingIndex[canonicalUrl].lastModified;
         }
@@ -576,9 +576,7 @@ export class OpenAlexCLI {
    */
   async updateUnifiedIndex(entityType: StaticEntityType, canonicalUrl: string, entry: IndexEntry): Promise<void> {
     let index = await this.loadUnifiedIndex(entityType);
-    if (!index) {
-      index = {};
-    }
+    index ??= {};
 
     index[canonicalUrl] = entry;
     await this.saveUnifiedIndex(entityType, index);
@@ -631,7 +629,7 @@ export class OpenAlexCLI {
         }
       }
 
-      if (!entityEntry || !entityEntry.$ref) {
+      if (!entityEntry?.$ref) {
         return null;
       }
 
@@ -662,7 +660,7 @@ export class OpenAlexCLI {
   /**
    * Load query result by matching query parameters (transparently reads both formats)
    */
-  async loadQuery(entityType: StaticEntityType, queryUrl: string): Promise<unknown | null> {
+  async loadQuery(entityType: StaticEntityType, queryUrl: string): Promise<unknown> {
     try {
       // Extract target query parameters
       const targetParams = this.normalizeQueryParams(queryUrl);
@@ -899,7 +897,7 @@ export class OpenAlexCLI {
       const validationResult = QueryIndexSchema.safeParse(parsed);
       if (validationResult.success) {
         // Construct object conditionally to avoid undefined assignment to optional properties
-        const data = validationResult.data;
+        const {data} = validationResult;
         return {
           entityType: data.entityType,
           queries: data.queries.map(entry => ({
@@ -1016,7 +1014,7 @@ export class OpenAlexCLI {
           }
 
           return {
-            filename: filename || "unknown",
+            filename: filename ?? "unknown",
             decoded,
             ...(entry.contentHash !== undefined && { contentHash: entry.contentHash })
           };
@@ -1105,7 +1103,7 @@ export class OpenAlexCLI {
 
     for (const entityId of entityIds) {
       const entity = await this.loadEntity(entityType, entityId);
-      if (entity && entity.display_name?.toLowerCase().includes(searchTerm.toLowerCase())) {
+      if (entity?.display_name?.toLowerCase().includes(searchTerm.toLowerCase())) {
         results.push(entity);
       }
     }
@@ -1152,7 +1150,7 @@ export class OpenAlexCLI {
           stats[entityType] = {
             count,
             totalSize,
-            lastModified: lastModified || new Date().toISOString(),
+            lastModified: lastModified ?? new Date().toISOString(),
           };
         }
       }
@@ -1164,38 +1162,38 @@ export class OpenAlexCLI {
   /**
    * Get synthetic cache statistics
    */
-  async getCacheStats(): Promise<CacheStats> {
+  getCacheStats(): Promise<CacheStats> {
     try {
       // TODO: Re-enable when openalex-client package is fixed
       // const stats = await this.cachedClient.getCacheStats();
 
       logger.warn("general", "Cache stats not available - client disabled");
-      return { enabled: false };
+      return Promise.resolve({ enabled: false });
     } catch (error) {
       logger.error("general", "Failed to get cache stats", { error });
-      return { enabled: false };
+      return Promise.resolve({ enabled: false });
     }
   }
 
   /**
    * Get field coverage for an entity across all cache tiers
    */
-  async getFieldCoverage(entityType: StaticEntityType, entityId: string): Promise<FieldCoverageByTier> {
+  getFieldCoverage(_entityType: StaticEntityType, _entityId: string): Promise<FieldCoverageByTier> {
     // Simplified implementation for CLI - just return basic structure
     logger.warn("general", "Field coverage analysis not available in CLI mode");
-    return {
+    return Promise.resolve({
       memory: [],
       localStorage: [],
       indexedDB: [],
       static: [],
       total: []
-    };
+    });
   }
 
   /**
    * Get well-populated entities with extensive field coverage
    */
-  async getWellPopulatedEntities(entityType: StaticEntityType, limit: number): Promise<Array<{
+  getWellPopulatedEntities(_entityType: StaticEntityType, _limit: number): Promise<Array<{
     entityId: string;
     fieldCount: number;
     fields: string[];
@@ -1203,17 +1201,17 @@ export class OpenAlexCLI {
     try {
       // TODO: Re-enable when synthetic cache is available
       logger.warn("general", "Well-populated entities analysis not available - synthetic cache disabled");
-      return [];
+      return Promise.resolve([]);
     } catch (error) {
       logger.error("general", "Failed to get well-populated entities", { error });
-      return [];
+      return Promise.resolve([]);
     }
   }
 
   /**
    * Get popular cached collections with high entity counts
    */
-  async getPopularCollections(limit: number): Promise<Array<{
+  getPopularCollections(_limit: number): Promise<Array<{
     queryKey: string;
     entityCount: number;
     pageCount: number;
@@ -1221,24 +1219,25 @@ export class OpenAlexCLI {
     try {
       // TODO: Re-enable when synthetic cache is available
       logger.warn("general", "Popular collections analysis not available - synthetic cache disabled");
-      return [];
+      return Promise.resolve([]);
     } catch (error) {
       logger.error("general", "Failed to get popular collections", { error });
-      return [];
+      return Promise.resolve([]);
     }
   }
 
   /**
    * Clear synthetic cache data
    */
-  async clearSyntheticCache(): Promise<void> {
+  clearSyntheticCache(): Promise<void> {
     try {
       // TODO: Re-enable when openalex-client package is fixed
       // await this.cachedClient.clearCache();
       logger.warn("general", "Synthetic cache clear not available - client disabled");
+      return Promise.resolve();
     } catch (error) {
       logger.error("general", "Failed to clear synthetic cache", { error });
-      throw error;
+      return Promise.reject(error instanceof Error ? error : new Error(String(error)));
     }
   }
 
@@ -1265,7 +1264,7 @@ export class OpenAlexCLI {
 
       // Calculate cache hit potential based on available static data
       const syntheticStats = await this.getCacheStats();
-      const memoryEntities = syntheticStats.storage?.memory?.entities || 0;
+      const memoryEntities = syntheticStats.storage?.memory?.entities ?? 0;
       const cacheHitPotential = totalEntities > 0 ? memoryEntities / totalEntities : 0;
 
       // Identify gaps and recommendations
@@ -1273,7 +1272,7 @@ export class OpenAlexCLI {
       const recommendedForGeneration: string[] = [];
 
       for (const entityType of SUPPORTED_ENTITIES) {
-        const count = entityDistribution[entityType] || 0;
+        const count = entityDistribution[entityType] ?? 0;
         if (count === 0) {
           gaps.push(`No static data for ${entityType}`);
         } else if (count < 100) {
