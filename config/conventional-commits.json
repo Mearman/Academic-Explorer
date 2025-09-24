@@ -1,0 +1,80 @@
+{
+  "types": {
+    "feat": {
+      "description": "New features",
+      "title": "✨ Features",
+      "semverBump": "minor"
+    },
+    "fix": {
+      "description": "Bug fixes",
+      "title": "🐛 Bug Fixes",
+      "semverBump": "patch"
+    },
+    "docs": {
+      "description": "Documentation",
+      "title": "📚 Documentation",
+      "semverBump": "patch"
+    },
+    "style": {
+      "description": "Code style (formatting, etc)",
+      "title": "💄 Styles",
+      "semverBump": "patch"
+    },
+    "refactor": {
+      "description": "Code refactoring",
+      "title": "♻️ Refactoring",
+      "semverBump": "patch"
+    },
+    "perf": {
+      "description": "Performance improvements",
+      "title": "⚡ Performance",
+      "semverBump": "patch"
+    },
+    "test": {
+      "description": "Tests",
+      "title": "🧪 Tests",
+      "semverBump": "patch"
+    },
+    "build": {
+      "description": "Build system",
+      "title": "🔧 Build",
+      "semverBump": "patch"
+    },
+    "ci": {
+      "description": "CI/CD",
+      "title": "🤖 CI/CD",
+      "semverBump": "patch"
+    },
+    "chore": {
+      "description": "Maintenance",
+      "title": "🏠 Chores",
+      "semverBump": "patch"
+    },
+    "revert": {
+      "description": "Reverts",
+      "title": "⏪ Reverts",
+      "semverBump": "patch"
+    }
+  },
+  "scopes": {
+    "root": "Root monorepo changes",
+    "monorepo": "Monorepo-wide changes",
+    "web": "Web application",
+    "cli": "CLI application",
+    "academic-explorer": "Academic Explorer app",
+    "openalex-client": "OpenAlex API client package",
+    "graph": "Graph utilities package",
+    "ui-components": "UI components package",
+    "simulation": "Simulation package",
+    "shared-utils": "Shared utilities package",
+    "deps": "Dependencies",
+    "dependencies": "Dependencies",
+    "config": "Configuration",
+    "scripts": "Scripts",
+    "tools": "Development tools",
+    "release": "Release configuration",
+    "readme": "README files",
+    "docs": "Documentation",
+    "examples": "Examples"
+  }
+}
