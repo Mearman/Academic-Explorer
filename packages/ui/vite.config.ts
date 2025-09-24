@@ -2,7 +2,7 @@ import { defineConfig } from 'vite';
 import { resolve } from 'path';
 import { fileURLToPath, URL } from 'node:url';
 import react from '@vitejs/plugin-react';
-import dts from 'vite-plugin-dts/dist/index.cjs';
+import dts from 'vite-plugin-dts';
 import { vanillaExtractPlugin } from '@vanilla-extract/vite-plugin';
 
 export default defineConfig({
