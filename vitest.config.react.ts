@@ -25,7 +25,7 @@ export default defineConfig(
     plugins: [react()],
     test: {
       environment: 'jsdom',
-      setupFiles: ['./src/test/setup.ts'],
+      // setupFiles: ['./src/test/setup.ts'], // Comment out - packages should provide their own setup
       // Additional React-specific test patterns
       include: [
         'src/**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}',

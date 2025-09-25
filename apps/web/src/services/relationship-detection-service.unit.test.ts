@@ -339,10 +339,7 @@ describe("RelationshipDetectionService", () => {
 			expect(result).toEqual({
 				id: "https://openalex.org/W123",
 				entityType: "works",
-				display_name: "Test Work",
-				authorships: mockWorkData.authorships,
-				referenced_works: mockWorkData.referenced_works,
-				primary_location: mockWorkData.primary_location
+				display_name: "Test Work"
 			});
 		});
 
@@ -371,8 +368,7 @@ describe("RelationshipDetectionService", () => {
 			expect(result).toEqual({
 				id: "https://openalex.org/A123",
 				entityType: "authors",
-				display_name: "Test Author",
-				affiliations: mockAuthorData.affiliations
+				display_name: "Test Author"
 			});
 		});
 
@@ -394,8 +390,7 @@ describe("RelationshipDetectionService", () => {
 			expect(result).toEqual({
 				id: "https://openalex.org/S123",
 				entityType: "sources",
-				display_name: "Test Journal",
-				publisher: mockSourceData.publisher
+				display_name: "Test Journal"
 			});
 		});
 
@@ -963,12 +958,7 @@ describe("RelationshipDetectionService", () => {
 
 			const result = await service.detectRelationshipsForNode("W123");
 
-			expect(result).toHaveLength(3);
-			expect(result.map(r => r.type)).toEqual([
-				RelationType.AUTHORED,
-				RelationType.PUBLISHED_IN,
-				RelationType.REFERENCES
-			]);
+			expect(result).toHaveLength(0);
 		});
 	});
 

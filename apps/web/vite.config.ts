@@ -1,6 +1,7 @@
 /// <reference types="vitest" />
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
+import { vanillaExtractPlugin } from '@vanilla-extract/vite-plugin'
 import path from 'path'
 import { execSync } from 'child_process'
 import { workspaceRoot } from '../../config/shared'
@@ -56,6 +57,7 @@ export default defineConfig(({ mode }) => ({
     // Temporarily disable devtools to avoid port conflicts
     // devtools(),
     react(),
+    vanillaExtractPlugin(),
   ],
   // Configure for hash-based routing deployment
   base: './',
@@ -153,7 +155,13 @@ export default defineConfig(({ mode }) => ({
           name: 'unit',
           include: ['src/**/*.unit.test.ts'],
           environment: 'jsdom',
-          testTimeout: 30000,
+          testTimeout: 15000,
+          pool: 'forks',
+          poolOptions: {
+            forks: {
+              singleFork: true,
+            },
+          },
         },
       },
       {
@@ -172,7 +180,13 @@ export default defineConfig(({ mode }) => ({
           include: ['src/**/*.component.test.ts', 'src/**/*.component.test.tsx'],
           environment: 'jsdom',
           setupFiles: ['./src/test/setup.ts', './src/test/component-setup.ts'],
-          testTimeout: 30000,
+          testTimeout: 15000,
+          pool: 'forks',
+          poolOptions: {
+            forks: {
+              singleFork: true,
+            },
+          },
         },
       },
       {
@@ -190,7 +204,13 @@ export default defineConfig(({ mode }) => ({
           name: 'integration',
           include: ['src/**/*.integration.test.ts'],
           environment: 'node',
-          testTimeout: 45000,
+          testTimeout: 30000,
+          pool: 'forks',
+          poolOptions: {
+            forks: {
+              singleFork: true,
+            },
+          },
         },
       },
       // E2E test project disabled - no E2E tests currently exist

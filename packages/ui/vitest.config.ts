@@ -1,7 +1,7 @@
 import { defineConfig, mergeConfig } from 'vitest/config';
 import { resolve } from 'path';
 import { vanillaExtractPlugin } from '@vanilla-extract/vite-plugin';
-import reactConfig from '../../vitest.config.react.js';
+import reactConfig from '../../vitest.config.react';
 
 export default defineConfig(
   mergeConfig(reactConfig, {
