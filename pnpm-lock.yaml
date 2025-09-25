@@ -299,6 +299,9 @@ importers:
         specifier: workspace:*
         version: link:../utils
     devDependencies:
+      '@vitest/coverage-v8':
+        specifier: ^3.2.4
+        version: 3.2.4(vitest@3.2.4)
       eslint:
         specifier: ^9.36.0
         version: 9.36.0(jiti@2.6.0)
