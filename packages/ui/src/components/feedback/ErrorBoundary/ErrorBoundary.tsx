@@ -1,4 +1,5 @@
-import React, { Component, ErrorInfo, ReactNode } from "react";
+import * as React from "react";
+import { Component, ErrorInfo, ReactNode } from "react";
 import {
 	Container,
 	Stack,
@@ -74,7 +75,7 @@ interface DebugInfo {
  * </ErrorBoundary>
  * ```
  */
-export class ErrorBoundary extends Component<ErrorBoundaryProps, State> {
+export class ErrorBoundary extends React.Component<ErrorBoundaryProps, State> {
 	private copyTimeout: NodeJS.Timeout | null = null;
 
 	constructor(props: ErrorBoundaryProps) {
@@ -110,7 +111,7 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, State> {
 			componentStack: errorInfo.componentStack ?? undefined,
 			errorBoundary: "ErrorBoundary",
 			additionalContext: {
-				reactVersion: React.version,
+				reactVersion: React.version || 'unknown',
 				isDev: process.env['NODE_ENV'] === 'development',
 			},
 		};
