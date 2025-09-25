@@ -1,0 +1,211 @@
+name: Graph Package Coverage
+
+on:
+  push:
+    branches: [ main, develop ]
+    paths:
+      - 'packages/graph/**'
+      - '.github/workflows/graph-package-coverage.yml'
+  pull_request:
+    branches: [ main, develop ]
+    paths:
+      - 'packages/graph/**'
+      - '.github/workflows/graph-package-coverage.yml'
+
+jobs:
+  test-coverage:
+    name: Test Coverage for Graph Package
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [18.x, 20.x]
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'pnpm'
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: latest
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Type check
+        run: pnpm --filter @academic-explorer/graph typecheck
+
+      - name: Lint
+        run: pnpm --filter @academic-explorer/graph lint
+
+      - name: Run tests with coverage
+        run: pnpm --filter @academic-explorer/graph test:coverage:ci
+
+      - name: Upload coverage reports to Codecov
+        uses: codecov/codecov-action@v4
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          file: ./packages/graph/coverage/lcov.info
+          flags: graph-package
+          name: graph-package-coverage
+          fail_ci_if_error: true
+
+      - name: Upload coverage to Coveralls
+        uses: coverallsapp/github-action@v2
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          path-to-lcov: ./packages/graph/coverage/lcov.info
+          flag-name: graph-package-node-${{ matrix.node-version }}
+
+      - name: Upload test results
+        uses: dorny/test-reporter@v1
+        if: success() || failure()
+        with:
+          name: Graph Package Tests (Node ${{ matrix.node-version }})
+          path: ./packages/graph/coverage/junit-report.xml
+          reporter: java-junit
+
+      - name: Comment coverage on PR
+        if: github.event_name == 'pull_request'
+        uses: romeovs/lcov-reporter-action@v0.3.1
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          lcov-file: ./packages/graph/coverage/lcov.info
+          title: Graph Package Coverage Report
+
+      - name: Archive coverage reports
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: coverage-reports-${{ matrix.node-version }}
+          path: |
+            packages/graph/coverage/
+            !packages/graph/coverage/raw-coverage/
+          retention-days: 7
+
+      - name: Archive test results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: test-results-${{ matrix.node-version }}
+          path: |
+            packages/graph/coverage/junit-report.xml
+            packages/graph/coverage/test-results.json
+          retention-days: 7
+
+      - name: Check coverage thresholds
+        run: |
+          echo "Checking coverage thresholds..."
+          if [ -f "./packages/graph/coverage/coverage-summary.json" ]; then
+            echo "Coverage summary found, parsing results..."
+            node -e "
+              const fs = require('fs');
+              const coverage = JSON.parse(fs.readFileSync('./packages/graph/coverage/coverage-summary.json'));
+              const total = coverage.total;
+
+              console.log('Coverage Summary:');
+              console.log('  Statements: ' + total.statements.pct + '%');
+              console.log('  Branches: ' + total.branches.pct + '%');
+              console.log('  Functions: ' + total.functions.pct + '%');
+              console.log('  Lines: ' + total.lines.pct + '%');
+
+              const failed = [];
+              if (total.statements.pct < 90) failed.push('statements');
+              if (total.branches.pct < 90) failed.push('branches');
+              if (total.functions.pct < 90) failed.push('functions');
+              if (total.lines.pct < 90) failed.push('lines');
+
+              if (failed.length > 0) {
+                console.error('Coverage thresholds not met for: ' + failed.join(', '));
+                process.exit(1);
+              } else {
+                console.log('All coverage thresholds met! 🎉');
+              }
+            "
+          else
+            echo "Coverage summary not found, check test execution"
+            exit 1
+          fi
+
+  coverage-diff:
+    name: Coverage Diff
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'pnpm'
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: latest
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Run coverage on current branch
+        run: pnpm --filter @academic-explorer/graph test:coverage:json
+
+      - name: Save current coverage
+        run: cp packages/graph/coverage/coverage-summary.json current-coverage.json
+
+      - name: Checkout base branch
+        run: |
+          git checkout ${{ github.event.pull_request.base.ref }}
+          pnpm install --frozen-lockfile
+
+      - name: Run coverage on base branch
+        run: pnpm --filter @academic-explorer/graph test:coverage:json
+        continue-on-error: true
+
+      - name: Compare coverage
+        run: |
+          echo "## Coverage Comparison" >> coverage-diff.md
+          echo "" >> coverage-diff.md
+
+          if [ -f "packages/graph/coverage/coverage-summary.json" ]; then
+            node -e "
+              const fs = require('fs');
+              const current = JSON.parse(fs.readFileSync('current-coverage.json'));
+              const base = JSON.parse(fs.readFileSync('packages/graph/coverage/coverage-summary.json'));
+
+              const metrics = ['statements', 'branches', 'functions', 'lines'];
+
+              console.log('| Metric | Base | Current | Diff |');
+              console.log('|--------|------|---------|------|');
+
+              metrics.forEach(metric => {
+                const basePct = base.total[metric].pct;
+                const currentPct = current.total[metric].pct;
+                const diff = currentPct - basePct;
+                const diffStr = diff > 0 ? '+' + diff.toFixed(2) : diff.toFixed(2);
+                const emoji = diff > 0 ? '📈' : diff < 0 ? '📉' : '➡️';
+
+                console.log(\`| \${metric} | \${basePct}% | \${currentPct}% | \${emoji} \${diffStr}% |\`);
+              });
+            " >> coverage-diff.md
+          else
+            echo "Base coverage not available for comparison" >> coverage-diff.md
+          fi
+
+      - name: Comment PR with coverage diff
+        uses: thollander/actions-comment-pull-request@v2
+        with:
+          filePath: coverage-diff.md
+          comment_tag: coverage-diff
