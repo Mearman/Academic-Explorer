@@ -1,9 +1,6 @@
 /// <reference types="vitest" />
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
-import { tanstackRouter } from '@tanstack/router-plugin/vite'
-import { vanillaExtractPlugin } from '@vanilla-extract/vite-plugin'
-import { VitePWA } from 'vite-plugin-pwa'
 import path from 'path'
 import { execSync } from 'child_process'
 import { workspaceRoot } from '../../config/shared'
@@ -58,66 +55,7 @@ export default defineConfig(({ mode }) => ({
     // ...(mode !== 'test' ? [openalexDataPlugin()] : []), // Temporarily disabled during monorepo refactoring
     // Temporarily disable devtools to avoid port conflicts
     // devtools(),
-    tanstackRouter({
-      // Enable hash-based routing for GitHub Pages compatibility
-      routeFilePrefix: '',
-      routeFileIgnorePrefix: '-',
-      routesDirectory: path.resolve(__dirname, 'src/routes'),
-      generatedRouteTree: path.resolve(__dirname, 'src/routeTree.gen.ts'),
-    }),
-    vanillaExtractPlugin(),
     react(),
-    VitePWA({
-      registerType: 'autoUpdate',
-      workbox: {
-        globPatterns: ['**/*.{js,css,html,ico,png,svg}'],
-        runtimeCaching: [
-          {
-            urlPattern: /^https:\/\/api\.openalex\.org\/.*/,
-            handler: 'CacheFirst',
-            options: {
-              cacheName: 'openalex-api-cache',
-              cacheableResponse: {
-                statuses: [0, 200]
-              },
-              expiration: {
-                maxEntries: 1000,
-                maxAgeSeconds: 60 * 60 * 24 * 7 // 7 days
-              }
-            }
-          }
-        ]
-      },
-      manifest: {
-        name: 'Academic Explorer',
-        short_name: 'AcademicExplorer',
-        description: 'Explore academic literature through the OpenAlex API with interactive visualizations',
-        theme_color: '#228be6',
-        background_color: '#ffffff',
-        display: 'standalone',
-        orientation: 'portrait-primary',
-        scope: './',
-        start_url: './',
-        icons: [
-          {
-            src: 'pwa-192x192.svg',
-            sizes: '192x192',
-            type: 'image/svg+xml'
-          },
-          {
-            src: 'pwa-512x512.svg',
-            sizes: '512x512',
-            type: 'image/svg+xml'
-          },
-          {
-            src: 'pwa-512x512.svg',
-            sizes: '512x512',
-            type: 'image/svg+xml',
-            purpose: 'any maskable'
-          }
-        ]
-      }
-    }),
   ],
   // Configure for hash-based routing deployment
   base: './',
