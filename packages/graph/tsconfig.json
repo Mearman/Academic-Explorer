@@ -6,12 +6,10 @@
     "rootDir": "./src",
     "composite": true,
     "noEmit": false,
-    "incremental": true,
-    "tsBuildInfoFile": "./dist/.tsbuildinfo",
-    "assumeChangesOnlyAffectDirectDependencies": true
+    "tsBuildInfoFile": "./dist/.tsbuildinfo"
   },
   "include": ["src/**/*"],
-  "exclude": ["**/*.test.*", "**/*.spec.*", "**/__tests__/**", "**/test/**", "dist", "node_modules"],
+  "exclude": ["**/*.test.*", "**/*.spec.*", "dist"],
   "references": [
     { "path": "../utils" }
   ]
