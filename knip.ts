@@ -13,6 +13,7 @@ const config: KnipConfig = {
       entry: [
         "tools/scripts/*.{ts,js}",
         "config/shared.ts",
+        "config/vite-plugins/static-data-index.ts",
         "vite.config.ts",
         "nx.json",
         ".lintstagedrc.js"
@@ -27,7 +28,14 @@ const config: KnipConfig = {
     // Web application
     "apps/web": {
       entry: [
-        "src/main.tsx"
+        "src/main.tsx",
+        "src/test/setup.ts",
+        "src/test/component-setup.ts",
+        "src/test/e2e-setup.ts",
+        "src/test/msw/server.ts",
+        "src/test/msw/handlers.ts",
+        "src/build-plugins/openalex-data-plugin.ts",
+        "src/stores/data-fetching-progress-store.ts"
       ],
       project: [
         "src/**/*.{ts,tsx}"
@@ -85,7 +93,8 @@ const config: KnipConfig = {
     // UI components package
     "packages/ui": {
       entry: [
-        "src/index.ts"
+        "src/index.ts",
+        "src/test/setup.ts"
       ],
       project: [
         "src/**/*.{ts,tsx}"
