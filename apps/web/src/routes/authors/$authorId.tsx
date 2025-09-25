@@ -13,15 +13,16 @@ export const Route = createFileRoute("/authors/$authorId")({
 
 function AuthorRoute() {
 	const { authorId } = Route.useParams();
-	// DISABLED FOR DEBUGGING: Remove potential infinite loop sources
-	// const navigate = useNavigate();
-	// const graphData = useGraphData();
-	// const {loadEntity} = graphData;
-	// const {loadEntityIntoGraph} = graphData;
-	// const nodeCount = useGraphStore((state) => state.totalNodeCount);
-
-	// DISABLED FOR DEBUGGING: Check if ID needs normalization and redirect if necessary
+	const navigate = useNavigate();
+	// TEMPORARILY DISABLED: Testing for infinite loops in useGraphData hook
 	/*
+	const graphData = useGraphData();
+	const {loadEntity} = graphData;
+	const {loadEntityIntoGraph} = graphData;
+	const nodeCount = useGraphStore((state) => state.totalNodeCount);
+	*/
+
+	// Check if ID needs normalization and redirect if necessary
 	useEffect(() => {
 		if (!authorId) return;
 
@@ -46,6 +47,8 @@ function AuthorRoute() {
 		}
 	}, [authorId, navigate]);
 
+	// TEMPORARILY DISABLED: Testing for infinite loops in data loading hooks
+	/*
 	// Fetch entity data for title
 	const rawEntityData = useRawEntityData({
 		entityId: authorId,
@@ -76,22 +79,7 @@ function AuthorRoute() {
 	}, [authorId, loadEntity, loadEntityIntoGraph, nodeCount]);
 	*/
 
-	// Temporary debugging: render a simple component to see if infinite loop is elsewhere
-	return (
-		<div style={{
-			position: 'fixed',
-			top: '50%',
-			left: '50%',
-			transform: 'translate(-50%, -50%)',
-			background: 'white',
-			padding: '20px',
-			border: '1px solid #ccc',
-			borderRadius: '8px',
-			zIndex: 1000
-		}}>
-			<h2>Author Route Debug</h2>
-			<p>Author ID: {authorId}</p>
-			<p>Status: Testing without hooks</p>
-		</div>
-	);
+	// Return null - the graph is visible from MainLayout
+	// The route content is just for triggering the data load
+	return null;
 }
