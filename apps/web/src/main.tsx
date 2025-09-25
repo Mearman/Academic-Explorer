@@ -1,17 +1,17 @@
 import { createRoot } from "react-dom/client"
 import { createRouter, RouterProvider, createHashHistory } from "@tanstack/react-router"
-import { TanStackDevtools } from "@tanstack/react-devtools"
-import { ReactQueryDevtoolsPanel } from "@tanstack/react-query-devtools"
-import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools"
-import { OpenAlexCachePanel } from "./components/devtools/OpenAlexCachePanel"
-import { EntityGraphPanel } from "./components/devtools/EntityGraphPanel"
-import { ApplicationLoggerPanel } from "./components/devtools/ApplicationLoggerPanel"
+// import { TanStackDevtools } from "@tanstack/react-devtools"
+// import { ReactQueryDevtoolsPanel } from "@tanstack/react-query-devtools"
+// import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools"
+// import { OpenAlexCachePanel } from "./components/devtools/OpenAlexCachePanel"
+// import { EntityGraphPanel } from "./components/devtools/EntityGraphPanel"
+// import { ApplicationLoggerPanel } from "./components/devtools/ApplicationLoggerPanel"
 import { setupGlobalErrorHandling, logger } from "@academic-explorer/utils/logger"
 import { initializeNetworkMonitoring } from "./services/network-interceptor"
 import { MantineProvider, createTheme } from "@mantine/core"
 import { Notifications } from "@mantine/notifications"
-import { Spotlight } from "@mantine/spotlight"
-import { IconSearch } from "@tabler/icons-react"
+// import { Spotlight } from "@mantine/spotlight"
+// import { IconSearch } from "@tabler/icons-react"
 import { GlobalErrorBoundary } from "./components/error/GlobalErrorBoundary"
 import { CacheInitializer } from "./components/cache/CacheInitializer"
 
@@ -19,7 +19,7 @@ import { CacheInitializer } from "./components/cache/CacheInitializer"
 import "@mantine/core/styles.css"
 import "@mantine/notifications/styles.css"
 import "@mantine/dates/styles.css"
-import "@mantine/spotlight/styles.css"
+// import "@mantine/spotlight/styles.css"
 
 // Import the generated route tree
 import { routeTree } from "./routeTree.gen"
@@ -99,7 +99,6 @@ const theme = createTheme({
 // Setup global error handling for logging
 setupGlobalErrorHandling(logger)
 
-
 // Initialize network monitoring
 initializeNetworkMonitoring()
 
@@ -122,73 +121,15 @@ if (!rootElement) {
 }
 
 createRoot(rootElement).render(
-	/* <StrictMode> - Temporarily disabled to debug multiple hook instances */
-		<GlobalErrorBoundary>
-			<MantineProvider
-				theme={theme}
-				defaultColorScheme="auto"
-			>
-					<Notifications />
-					<CacheInitializer>
-						{/* <RouterProvider router={router} /> - Temporarily disabled to isolate infinite loop */}
-						<div style={{ padding: '20px' }}>
-							<h1>🎯 Router Test</h1>
-							<p>Testing if the application loads without the router.</p>
-							<p>If this shows, the infinite loop is in the router or route components.</p>
-							<p>Hash: {window.location.hash}</p>
-						</div>
-
-					{/* TanStack DevTools - temporarily disabled to fix React 19 infinite loops
-					{import.meta.env.DEV && (
-						<TanStackDevtools
-							config={{
-								position: "bottom-left",
-							}}
-							plugins={[
-								{
-									name: "TanStack Query",
-									render: <ReactQueryDevtoolsPanel />,
-								},
-								{
-									name: "TanStack Router",
-									render: <TanStackRouterDevtoolsPanel router={router} />,
-								},
-								{
-									name: "TanStack Table",
-									render: (
-										<div style={{ padding: "16px", color: "#666" }}>
-											<h3>React Table Devtools</h3>
-											<p>Table instances will appear here when tables are rendered in your app.</p>
-											<small>Use ReactTableDevtools component directly in pages with tables for specific debugging.</small>
-										</div>
-									),
-								},
-								{
-									name: "OpenAlex Cache",
-									render: <OpenAlexCachePanel />,
-								},
-								{
-									name: "Entity Graph",
-									render: <EntityGraphPanel />,
-								},
-								{
-									name: "App Logs",
-									render: <ApplicationLoggerPanel />,
-								},
-							]}
-						/>
-					)} */}
-				</CacheInitializer>
-				{/* <Spotlight
-					actions={[]}
-					searchProps={{
-						leftSection: <IconSearch size={16} />,
-						placeholder: "Search Academic Explorer...",
-					}}
-					nothingFound="Nothing found..."
-					highlightQuery
-				/> - Temporarily disabled to fix React 19 infinite loops */}
+	<GlobalErrorBoundary>
+		<MantineProvider
+			theme={theme}
+			defaultColorScheme="auto"
+		>
+			<Notifications />
+			<CacheInitializer>
+				<RouterProvider router={router} />
+			</CacheInitializer>
 		</MantineProvider>
 	</GlobalErrorBoundary>
-	/* </StrictMode> - Temporarily disabled to debug multiple hook instances */
 )
