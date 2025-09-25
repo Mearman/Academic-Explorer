@@ -145,7 +145,7 @@ export class TestGraphProvider extends GraphDataProvider {
       edges: limitedEdges.map(edge => ({ ...edge })),
       metadata: {
         expandedFrom: nodeId,
-        depth: options.depth || options.maxDepth || 1,
+        depth: options.maxDepth || 1,
         totalFound: relatedNodes.length,
         options,
       },

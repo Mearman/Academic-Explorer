@@ -17,7 +17,6 @@ export interface SearchQuery {
 export interface ProviderExpansionOptions {
   relationshipTypes?: string[];
   maxDepth?: number;
-  depth?: number; // Alias for maxDepth for backward compatibility
   limit?: number;
   includeMetadata?: boolean;
 }

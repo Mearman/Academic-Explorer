@@ -54,56 +54,26 @@ export interface GraphUtilitiesService {
   filterGraph(filter: unknown): GraphUtilityResult;
 }
 
+const STUB_ERROR = "Service not available in graph package - use from application layer";
+
 // Graph utilities service instance (stub)
 export const graphUtilitiesService: GraphUtilitiesService = {
-  addNode: (_node: unknown) => {
-    throw new Error("graphUtilitiesService not available in graph package - use from application layer");
-  },
-  removeNode: (_nodeId: string) => {
-    throw new Error("graphUtilitiesService not available in graph package - use from application layer");
-  },
-  updateNode: (_nodeId: string, _updates: unknown) => {
-    throw new Error("graphUtilitiesService not available in graph package - use from application layer");
-  },
-  getNode: (_nodeId: string) => {
-    throw new Error("graphUtilitiesService not available in graph package - use from application layer");
-  },
-  addEdge: (_edge: unknown) => {
-    throw new Error("graphUtilitiesService not available in graph package - use from application layer");
-  },
-  removeEdge: (_edgeId: string) => {
-    throw new Error("graphUtilitiesService not available in graph package - use from application layer");
-  },
-  updateEdge: (_edgeId: string, _updates: unknown) => {
-    throw new Error("graphUtilitiesService not available in graph package - use from application layer");
-  },
-  getEdge: (_edgeId: string) => {
-    throw new Error("graphUtilitiesService not available in graph package - use from application layer");
-  },
-  clear: () => {
-    throw new Error("graphUtilitiesService not available in graph package - use from application layer");
-  },
-  getStats: () => {
-    throw new Error("graphUtilitiesService not available in graph package - use from application layer");
-  },
-  validate: () => {
-    throw new Error("graphUtilitiesService not available in graph package - use from application layer");
-  },
-  applyLayout: (_layoutType: string, _options?: unknown) => {
-    throw new Error("graphUtilitiesService not available in graph package - use from application layer");
-  },
-  getLayoutProgress: () => {
-    throw new Error("graphUtilitiesService not available in graph package - use from application layer");
-  },
-  findNodes: (_criteria: unknown) => {
-    throw new Error("graphUtilitiesService not available in graph package - use from application layer");
-  },
-  findEdges: (_criteria: unknown) => {
-    throw new Error("graphUtilitiesService not available in graph package - use from application layer");
-  },
-  filterGraph: (_filter: unknown) => {
-    throw new Error("graphUtilitiesService not available in graph package - use from application layer");
-  }
+  addNode: () => { throw new Error(STUB_ERROR); },
+  removeNode: () => { throw new Error(STUB_ERROR); },
+  updateNode: () => { throw new Error(STUB_ERROR); },
+  getNode: () => { throw new Error(STUB_ERROR); },
+  addEdge: () => { throw new Error(STUB_ERROR); },
+  removeEdge: () => { throw new Error(STUB_ERROR); },
+  updateEdge: () => { throw new Error(STUB_ERROR); },
+  getEdge: () => { throw new Error(STUB_ERROR); },
+  clear: () => { throw new Error(STUB_ERROR); },
+  getStats: () => { throw new Error(STUB_ERROR); },
+  validate: () => { throw new Error(STUB_ERROR); },
+  applyLayout: () => { throw new Error(STUB_ERROR); },
+  getLayoutProgress: () => { throw new Error(STUB_ERROR); },
+  findNodes: () => { throw new Error(STUB_ERROR); },
+  findEdges: () => { throw new Error(STUB_ERROR); },
+  filterGraph: () => { throw new Error(STUB_ERROR); },
 };
 
 // Performance monitoring interface (graph-specific)
@@ -127,16 +97,8 @@ export interface AnalyticsService {
 
 // Analytics service instance (stub)
 export const analyticsService: AnalyticsService = {
-  trackEvent: (_event: string, _properties?: Record<string, unknown>) => {
-    throw new Error("analyticsService not available in graph package - use from application layer");
-  },
-  trackPerformance: (_metrics: GraphPerformanceMetrics) => {
-    throw new Error("analyticsService not available in graph package - use from application layer");
-  },
-  getMetrics: () => {
-    throw new Error("analyticsService not available in graph package - use from application layer");
-  },
-  reset: () => {
-    throw new Error("analyticsService not available in graph package - use from application layer");
-  }
+  trackEvent: () => { throw new Error(STUB_ERROR); },
+  trackPerformance: () => { throw new Error(STUB_ERROR); },
+  getMetrics: () => { throw new Error(STUB_ERROR); },
+  reset: () => { throw new Error(STUB_ERROR); },
 };

@@ -7,7 +7,7 @@
  * DOIs, ORCIDs, ROR IDs, ISSN-L, and OpenAlex URLs.
  */
 
-import { EntityDetector } from '../../utils/entity-detection';
+import { EntityDetectionService } from '../../services/entity-detection-service';
 
 export interface MockClientOptions {
   shouldFail?: boolean;
@@ -24,7 +24,7 @@ export class MockOpenAlexClient {
     shouldFail: false,
     requestDelay: 0,
   };
-  private entityDetector: EntityDetector = new EntityDetector();
+  // EntityDetectionService is static, no instance needed
 
   public requestHistory: Array<{ method: string; params: any; timestamp: number }> = [];
 
@@ -114,11 +114,6 @@ export class MockOpenAlexClient {
       cited_by_count: 10000000
     });
 
-    // Add legacy test data for backwards compatibility
-    this.defaultData.set('works:W123', this.defaultData.get('works:W2741809807'));
-    this.defaultData.set('authors:A123', this.defaultData.get('authors:A5017898742'));
-    this.defaultData.set('sources:S123', this.defaultData.get('sources:S4210184550'));
-    this.defaultData.set('institutions:I123', this.defaultData.get('institutions:I4210140050'));
   }
 
   /**
@@ -127,9 +122,6 @@ export class MockOpenAlexClient {
    * Uses EntityDetectionService to handle all identifier formats
    */
   private normalizeId(id: string): { normalizedId: string; entityType: string | null } {
-    // Import EntityDetectionService dynamically to avoid circular imports
-    const { EntityDetectionService } = require('../../services/entity-detection-service');
-
     const entityType = EntityDetectionService.detectEntityType(id);
     const normalizedId = EntityDetectionService.normalizeIdentifier(id);
 
@@ -168,7 +160,7 @@ export class MockOpenAlexClient {
       mockData = { ...mockData, id: actualId };
     }
 
-    return this.makeRequest('getWork', { id }, null, mockData);
+    return this.makeRequest('getWork', { id }, undefined, mockData);
   }
 
   async getAuthor(id: string): Promise<Record<string, unknown>> {
@@ -195,7 +187,7 @@ export class MockOpenAlexClient {
       mockData = { ...mockData, id: actualId };
     }
 
-    return this.makeRequest('getAuthor', { id }, null, mockData);
+    return this.makeRequest('getAuthor', { id }, undefined, mockData);
   }
 
   async getSource(id: string): Promise<Record<string, unknown>> {
@@ -222,7 +214,7 @@ export class MockOpenAlexClient {
       mockData = { ...mockData, id: actualId };
     }
 
-    return this.makeRequest('getSource', { id }, null, mockData);
+    return this.makeRequest('getSource', { id }, undefined, mockData);
   }
 
   async getInstitution(id: string): Promise<Record<string, unknown>> {
@@ -249,7 +241,7 @@ export class MockOpenAlexClient {
       mockData = { ...mockData, id: actualId };
     }
 
-    return this.makeRequest('getInstitution', { id }, null, mockData);
+    return this.makeRequest('getInstitution', { id }, undefined, mockData);
   }
 
   async get(endpoint: string, id: string): Promise<Record<string, unknown>> {
@@ -283,7 +275,7 @@ export class MockOpenAlexClient {
       mockData = { ...mockData, id: actualId };
     }
 
-    return this.makeRequest('get', { endpoint, id }, null, mockData);
+    return this.makeRequest('get', { endpoint, id }, undefined, mockData);
   }
 
   // Search methods - these MUST return { results: [...] } format
@@ -303,11 +295,11 @@ export class MockOpenAlexClient {
       return results;
     }
 
-    // Default search results for works
+    // Default search results for works with proper OpenAlex IDs
     return {
       results: [
-        { id: 'W123', display_name: 'Test Work', title: 'Test Work' },
-        { id: 'W456', display_name: 'Another Work', title: 'Another Work' }
+        { id: 'W2741809807', display_name: 'Test Work', title: 'Test Work' },
+        { id: 'W1234567890', display_name: 'Another Work', title: 'Another Work' }
       ]
     };
   }
@@ -329,8 +321,8 @@ export class MockOpenAlexClient {
 
     return {
       results: [
-        { id: 'A123', display_name: 'Test Author' },
-        { id: 'A789', display_name: 'Test Researcher' }
+        { id: 'A5017898742', display_name: 'Test Author' },
+        { id: 'A9876543210', display_name: 'Test Researcher' }
       ]
     };
   }
@@ -402,7 +394,7 @@ export class MockOpenAlexClient {
     }
   }
 
-  private async simulateFailure(mode: NonNullable<MockClientOptions['failureMode']>): Promise<never> {
+  private async simulateFailure(mode: NonNullable<MockClientOptions['failureMode']>): Promise<any> {
     switch (mode) {
       case 'network':
         const networkError = new Error('fetch failed');
