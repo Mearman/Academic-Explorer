@@ -24,7 +24,7 @@ export {
 // Graph constants and configuration
 export * from "./constants";
 
-// Pure utility functions (excluding DetectionResult to avoid conflicts)
+// Pure utility functions
 export {
   calculateClosestAttachment,
   calculateArrowPosition,
@@ -36,12 +36,6 @@ export {
 export * from "./utils/node-helpers";
 export * from "./utils/performance-config";
 
-// Export DetectionResult from utils with explicit alias
-export {
-  EntityDetector,
-  type DetectionResult as UtilsDetectionResult
-} from "./utils/entity-detection";
-
 // Event system
 export * from "./events";
 
@@ -51,14 +45,14 @@ export * from "./hooks";
 // Providers and components
 export * from "./providers";
 
-// Entity detection utilities (explicitly exported for convenience)
+// Entity detection service
 export {
   EntityDetectionService,
   detectEntityType,
   normalizeIdentifier,
   isValidIdentifier,
   detectEntity,
-  type DetectionResult as ServiceDetectionResult,
+  type DetectionResult,
 } from './services/entity-detection-service';
 
 // Force system

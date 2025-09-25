@@ -3,7 +3,6 @@
  */
 
 export * from "./node-helpers";
-export * from "./entity-detection";
 export * from "./performance-config";
 
 // Export edge calculations but exclude Position to avoid conflicts
