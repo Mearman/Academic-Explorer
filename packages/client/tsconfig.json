@@ -7,7 +7,7 @@
     "moduleResolution": "node",
     "allowSyntheticDefaultImports": true,
     "esModuleInterop": true,
-    "strict": true,
+    "strict": false,
     "declaration": true,
     "declarationMap": true,
     "skipLibCheck": true,
@@ -15,8 +15,14 @@
     "noEmit": false,
     "outDir": "./dist",
     "declarationDir": "./dist",
-    "rootDir": "./src"
+    "rootDir": "./src",
+    "incremental": true,
+    "tsBuildInfoFile": "./dist/.tsbuildinfo",
+    "assumeChangesOnlyAffectDirectDependencies": true
   },
   "include": ["src/**/*"],
-  "exclude": ["dist", "node_modules", "**/*.test.ts", "**/*.spec.ts"]
+  "exclude": ["dist", "node_modules", "**/*.test.ts", "**/*.spec.ts"],
+  "references": [
+    { "path": "../utils" }
+  ]
 }

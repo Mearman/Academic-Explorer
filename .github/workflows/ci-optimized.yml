@@ -1,0 +1,256 @@
+name: 'Optimized CI Pipeline'
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+# Cancel in-progress runs for same workflow + branch/PR
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+env:
+  NODE_VERSION: '20'
+  PNPM_VERSION: '8'
+  # Add Nx Cloud tokens for distributed caching (configure in repository secrets)
+  NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
+  NX_CLOUD_ENCRYPTION_KEY: ${{ secrets.NX_CLOUD_ENCRYPTION_KEY }}
+
+jobs:
+  # Single setup job for all subsequent jobs
+  setup:
+    runs-on: ubuntu-latest
+    outputs:
+      has-affected: ${{ steps.affected.outputs.has-affected }}
+      matrix: ${{ steps.affected.outputs.matrix }}
+      nx-cache-key: ${{ steps.cache-key.outputs.key }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js and dependencies
+        uses: ./.github/actions/setup-node-pnpm
+
+      - name: Generate cache key
+        id: cache-key
+        run: |
+          echo "key=nx-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml', 'nx.json', '**/project.json', 'package.json') }}" >> $GITHUB_OUTPUT
+
+      - name: Restore Nx cache
+        uses: actions/cache@v4
+        with:
+          path: .nx/cache
+          key: ${{ steps.cache-key.outputs.key }}
+          restore-keys: |
+            nx-${{ runner.os }}-
+
+      - name: Setup Nx
+        uses: nrwl/nx-set-shas@v4
+        with:
+          main-branch-name: 'main'
+
+      - name: Check affected projects
+        id: affected
+        run: |
+          affected=$(pnpm nx show projects --affected --json 2>/dev/null || echo '[]')
+          has_affected=$(echo "$affected" | jq 'length > 0')
+          matrix=$(echo "$affected" | jq -c '{project: .}')
+
+          echo "has-affected=$has_affected" >> $GITHUB_OUTPUT
+          echo "matrix=$matrix" >> $GITHUB_OUTPUT
+
+          echo "=== AFFECTED PROJECTS ==="
+          echo "$affected" | jq -r '.[]'
+
+  # Parallel execution of all quality checks
+  quality-checks:
+    needs: setup
+    if: needs.setup.outputs.has-affected == 'true'
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        check: [lint, typecheck, test]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js and dependencies
+        uses: ./.github/actions/setup-node-pnpm
+
+      - name: Restore Nx cache
+        uses: actions/cache@v4
+        with:
+          path: .nx/cache
+          key: ${{ needs.setup.outputs.nx-cache-key }}
+          restore-keys: |
+            nx-${{ runner.os }}-
+
+      - name: Setup Nx
+        uses: nrwl/nx-set-shas@v4
+        with:
+          main-branch-name: 'main'
+
+      - name: Run ${{ matrix.check }}
+        run: pnpm nx affected -t ${{ matrix.check }} --parallel=8
+        env:
+          NODE_OPTIONS: '--max-old-space-size=8192'
+
+  # Build after quality checks pass
+  build:
+    needs: [setup, quality-checks]
+    if: needs.setup.outputs.has-affected == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js and dependencies
+        uses: ./.github/actions/setup-node-pnpm
+
+      - name: Restore Nx cache
+        uses: actions/cache@v4
+        with:
+          path: .nx/cache
+          key: ${{ needs.setup.outputs.nx-cache-key }}
+          restore-keys: |
+            nx-${{ runner.os }}-
+
+      - name: Setup Nx
+        uses: nrwl/nx-set-shas@v4
+        with:
+          main-branch-name: 'main'
+
+      - name: Build affected projects
+        run: pnpm nx affected -t build --parallel=8
+        env:
+          NODE_OPTIONS: '--max-old-space-size=8192'
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-artifacts
+          path: |
+            apps/*/dist
+            packages/*/dist
+          retention-days: 1
+
+  # Additional checks that require build artifacts
+  extended-checks:
+    needs: [setup, build]
+    if: needs.setup.outputs.has-affected == 'true'
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        check: [test:e2e, test:a11y]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js and dependencies
+        uses: ./.github/actions/setup-node-pnpm
+
+      - name: Download build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: build-artifacts
+
+      - name: Restore Nx cache
+        uses: actions/cache@v4
+        with:
+          path: .nx/cache
+          key: ${{ needs.setup.outputs.nx-cache-key }}
+          restore-keys: |
+            nx-${{ runner.os }}-
+
+      - name: Setup Nx
+        uses: nrwl/nx-set-shas@v4
+        with:
+          main-branch-name: 'main'
+
+      - name: Run ${{ matrix.check }}
+        run: pnpm nx affected -t ${{ matrix.check }} --parallel=4
+        env:
+          NODE_OPTIONS: '--max-old-space-size=8192'
+
+  # Workspace-level quality checks
+  workspace-quality:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js and dependencies
+        uses: ./.github/actions/setup-node-pnpm
+
+      - name: Check for unused dependencies
+        run: pnpm knip
+
+      - name: Verify licenses
+        run: pnpm licenses:check
+
+      - name: Verify workspace structure
+        run: pnpm nx graph --file=graph.json && echo "Workspace graph generated successfully"
+
+  # Aggregate status check
+  ci-success:
+    runs-on: ubuntu-latest
+    needs: [setup, quality-checks, build, extended-checks, workspace-quality]
+    if: always()
+    steps:
+      - name: Check all jobs status
+        run: |
+          # Check if any required job failed
+          if [[ "${{ needs.quality-checks.result }}" == "failure" ||
+                "${{ needs.build.result }}" == "failure" ||
+                "${{ needs.extended-checks.result }}" == "failure" ||
+                "${{ needs.workspace-quality.result }}" == "failure" ]]; then
+            echo "❌ One or more CI jobs failed"
+            exit 1
+          fi
+
+          # Check if jobs were skipped due to no affected projects
+          if [[ "${{ needs.setup.outputs.has-affected }}" == "false" ]]; then
+            echo "✅ No affected projects detected - CI passed"
+          else
+            echo "✅ All affected projects passed CI checks"
+          fi
+
+  # Deploy only on main branch after all checks pass
+  deploy:
+    needs: [ci-success]
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js and dependencies
+        uses: ./.github/actions/setup-node-pnpm
+
+      - name: Build production app
+        run: pnpm nx build @academic-explorer/web
+        env:
+          NODE_OPTIONS: '--max-old-space-size=8192'
+
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./apps/web/dist
+          cname: academic-explorer.joenash.uk

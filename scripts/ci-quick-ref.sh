@@ -1,125 +1,308 @@
 #!/bin/bash
-
-# CI Monitoring Quick Reference Script
-# This script provides easy commands to monitor GitHub Actions CI status
+# CI Performance Quick Reference Script
+# Provides quick access to CI optimization commands and status
 
 set -e
 
-# Colors for output
-RED='\033[0;31m'
-GREEN='\033[0;32m'
-YELLOW='\033[1;33m'
-BLUE='\033[0;34m'
-NC='\033[0m' # No Color
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+REPO_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 
-# Ensure we're in the right directory
-cd "$(dirname "$0")/.."
+print_header() {
+    echo "=================================="
+    echo "  CI Performance Quick Reference"
+    echo "=================================="
+}
 
-echo -e "${BLUE}🔧 Academic Explorer CI Monitoring${NC}"
-echo "================================================"
+print_usage() {
+    cat << EOF
+Usage: $0 <command>
 
-# Function to check if gh CLI is installed
-check_gh_cli() {
-    if ! command -v gh &> /dev/null; then
-        echo -e "${RED}❌ GitHub CLI (gh) is not installed${NC}"
-        echo "Install it with: brew install gh"
-        echo "Then authenticate with: gh auth login"
+Commands:
+  status       - Show current CI status and performance metrics
+  cache        - Display cache status and optimization tips
+  affected     - Show affected projects for current changes
+  parallel     - Test optimal parallelization settings
+  benchmark    - Run local performance benchmarks
+  validate     - Validate Nx configuration for CI optimization
+  clean        - Clean caches and reset for fresh CI test
+  monitor      - Monitor current CI run (if any)
+  help         - Show this help message
+
+Examples:
+  $0 status              # Check CI performance status
+  $0 affected            # See what projects are affected
+  $0 benchmark           # Run local performance tests
+  $0 validate            # Validate configuration
+EOF
+}
+
+check_affected() {
+    echo "🔍 Checking affected projects..."
+    cd "$REPO_ROOT"
+
+    if ! command -v pnpm &> /dev/null; then
+        echo "❌ pnpm not found. Please install pnpm first."
         exit 1
     fi
 
-    if ! gh auth status &> /dev/null; then
-        echo -e "${YELLOW}⚠️ GitHub CLI not authenticated${NC}"
-        echo "Please run: gh auth login"
-        exit 1
+    affected=$(pnpm nx show projects --affected --json 2>/dev/null || echo '[]')
+    count=$(echo "$affected" | jq 'length')
+
+    echo "📊 Affected projects: $count"
+    if [ "$count" -gt 0 ]; then
+        echo "$affected" | jq -r '.[]' | while read -r project; do
+            echo "  - $project"
+        done
+    else
+        echo "  No affected projects found"
+    fi
+
+    # Estimate CI time based on affected projects
+    if [ "$count" -gt 0 ]; then
+        est_serial=$((count * 3))  # ~3min per project serially
+        est_parallel=$((count / 8 + 1))  # 8-way parallelism
+        est_parallel=$((est_parallel * 3))
+
+        echo ""
+        echo "⏱️  Estimated CI time:"
+        echo "   Serial execution: ~${est_serial} minutes"
+        echo "   Parallel (8-way): ~${est_parallel} minutes"
     fi
 }
 
-# Function to show usage
-show_usage() {
-    echo -e "${GREEN}Quick Commands:${NC}"
-    echo "  ./scripts/ci-quick-ref.sh status      - Show latest CI status"
-    echo "  ./scripts/ci-quick-ref.sh watch       - Watch CI in real-time"
-    echo "  ./scripts/ci-quick-ref.sh list        - List recent runs"
-    echo "  ./scripts/ci-quick-ref.sh latest-logs - Extract logs from latest failed run"
-    echo "  ./scripts/ci-quick-ref.sh help        - Show all available commands"
-    echo ""
-    echo -e "${GREEN}Direct pnpm commands:${NC}"
-    echo "  pnpm ci:status                        - Quick status check"
-    echo "  pnpm ci:watch                         - Watch CI progress"
-    echo "  pnpm monitor-ci jobs <run-id>         - Show job details"
-    echo "  pnpm ci:logs <run-id>                 - Extract error logs"
-    echo ""
-    echo -e "${GREEN}GitHub CLI commands:${NC}"
-    echo "  gh run list --workflow=nx-ci.yml      - List workflow runs"
-    echo "  gh run view <run-id>                  - View run details"
-    echo "  gh run view <run-id> --log            - View run logs"
-    echo "  gh workflow list                      - List all workflows"
-}
+show_cache_status() {
+    echo "💾 Nx Cache Status..."
+    cd "$REPO_ROOT"
 
-# Function to get latest run status
-latest_status() {
-    echo -e "${BLUE}🎯 Latest CI Status:${NC}"
-    pnpm ci:status
-}
-
-# Function to watch CI
-watch_ci() {
-    echo -e "${BLUE}👀 Watching CI (Ctrl+C to stop):${NC}"
-    pnpm ci:watch
-}
-
-# Function to list recent runs
-list_runs() {
-    echo -e "${BLUE}📋 Recent Workflow Runs:${NC}"
-    pnpm monitor-ci list nx-ci.yml 5
-}
-
-# Function to extract logs from latest failed run
-latest_logs() {
-    echo -e "${BLUE}📝 Checking for failed runs to extract logs...${NC}"
-
-    # Get latest failed run
-    latest_failed=$(gh run list --workflow=nx-ci.yml --status=failure --limit=1 --json=id --jq='.[0].id')
-
-    if [ -z "$latest_failed" ] || [ "$latest_failed" = "null" ]; then
-        echo -e "${GREEN}✅ No recent failed runs found${NC}"
-        return
+    if [ -d ".nx/cache" ]; then
+        cache_size=$(du -sh .nx/cache 2>/dev/null | cut -f1)
+        cache_files=$(find .nx/cache -type f 2>/dev/null | wc -l | tr -d ' ')
+        echo "  Local cache size: $cache_size"
+        echo "  Cached operations: $cache_files"
+    else
+        echo "  No local cache found"
     fi
 
-    echo -e "${YELLOW}Found failed run: $latest_failed${NC}"
-    echo "Extracting error logs..."
-    pnpm ci:logs "$latest_failed"
+    # Check if Nx Cloud is configured
+    if grep -q "nx-cloud" nx.json 2>/dev/null; then
+        echo "✅ Nx Cloud configured (distributed caching enabled)"
+    else
+        echo "⚠️  Nx Cloud not configured (local caching only)"
+    fi
+
+    echo ""
+    echo "🚀 Cache optimization tips:"
+    echo "  1. Enable Nx Cloud for distributed caching across CI runs"
+    echo "  2. Use proper input/output configuration for tasks"
+    echo "  3. Avoid cache invalidation with unstable inputs"
+    echo "  4. Use 'nx reset' to clear stale cache if needed"
 }
 
-# Function to show comprehensive help
-show_help() {
-    pnpm monitor-ci help
+run_benchmarks() {
+    echo "🏃 Running local performance benchmarks..."
+    cd "$REPO_ROOT"
+
+    echo ""
+    echo "1. Testing typecheck performance..."
+    time pnpm nx run-many -t typecheck --parallel=8 2>/dev/null || echo "  Typecheck benchmark failed"
+
+    echo ""
+    echo "2. Testing lint performance..."
+    time pnpm nx run-many -t lint --parallel=8 2>/dev/null || echo "  Lint benchmark failed"
+
+    echo ""
+    echo "3. Testing build performance..."
+    time pnpm nx run-many -t build --parallel=4 2>/dev/null || echo "  Build benchmark failed"
+
+    echo ""
+    echo "💡 Benchmark complete. Compare times with CI runs to identify bottlenecks."
 }
 
-# Check prerequisites
-check_gh_cli
+validate_config() {
+    echo "✅ Validating Nx configuration for CI optimization..."
+    cd "$REPO_ROOT"
 
-# Handle command line arguments
-case "${1:-help}" in
+    # Check nx.json configuration
+    echo ""
+    echo "1. Checking nx.json configuration..."
+
+    if ! jq -e '.tasksRunnerOptions.default.options.parallel' nx.json >/dev/null 2>&1; then
+        echo "  ❌ Parallelization not configured"
+    else
+        parallel=$(jq -r '.tasksRunnerOptions.default.options.parallel' nx.json)
+        echo "  ✅ Parallelization set to: $parallel"
+        if [ "$parallel" -lt 4 ]; then
+            echo "  ⚠️  Consider increasing parallel execution (recommended: 8+)"
+        fi
+    fi
+
+    # Check for Nx Cloud
+    if jq -e '.tasksRunnerOptions.default.runner' nx.json | grep -q "nx-cloud"; then
+        echo "  ✅ Nx Cloud runner configured"
+    else
+        echo "  ⚠️  Consider enabling Nx Cloud for distributed caching"
+    fi
+
+    # Check caching configuration
+    echo ""
+    echo "2. Checking task caching configuration..."
+
+    cacheable=$(jq -r '.tasksRunnerOptions.default.options.cacheableOperations[]?' nx.json 2>/dev/null | wc -l | tr -d ' ')
+    echo "  Cacheable operations: $cacheable"
+
+    # Check project configurations
+    echo ""
+    echo "3. Checking project configurations..."
+
+    projects_with_issues=0
+    for project_file in */project.json **/*/project.json; do
+        if [ -f "$project_file" ]; then
+            project_name=$(dirname "$project_file")
+
+            # Check if build task has proper inputs/outputs
+            if jq -e '.targets.build' "$project_file" >/dev/null 2>&1; then
+                if ! jq -e '.targets.build.inputs' "$project_file" >/dev/null 2>&1; then
+                    echo "  ⚠️  $project_name: build task missing inputs configuration"
+                    projects_with_issues=$((projects_with_issues + 1))
+                fi
+
+                if ! jq -e '.targets.build.outputs' "$project_file" >/dev/null 2>&1; then
+                    echo "  ⚠️  $project_name: build task missing outputs configuration"
+                    projects_with_issues=$((projects_with_issues + 1))
+                fi
+            fi
+        fi
+    done
+
+    if [ "$projects_with_issues" -eq 0 ]; then
+        echo "  ✅ All projects properly configured"
+    else
+        echo "  ⚠️  $projects_with_issues projects need attention"
+    fi
+
+    echo ""
+    echo "4. Configuration summary:"
+    echo "  - Enable Nx Cloud for maximum performance gains"
+    echo "  - Increase parallel execution to 8+ for faster CI"
+    echo "  - Ensure all tasks have proper inputs/outputs for caching"
+    echo "  - Use affected commands in CI to skip unchanged projects"
+}
+
+show_status() {
+    echo "📊 Current CI Status & Performance Metrics"
+    echo ""
+
+    # Show affected projects
+    check_affected
+
+    echo ""
+    # Show cache status
+    show_cache_status
+
+    echo ""
+    echo "🔧 Quick performance improvements:"
+    echo "  1. Run 'pnpm nx reset' to clear stale caches"
+    echo "  2. Check CI logs for slow operations"
+    echo "  3. Consider splitting large tests into smaller chunks"
+    echo "  4. Use 'nx affected' commands to skip unchanged projects"
+}
+
+clean_caches() {
+    echo "🧹 Cleaning caches for fresh CI test..."
+    cd "$REPO_ROOT"
+
+    echo "  Cleaning Nx cache..."
+    pnpm nx reset 2>/dev/null || echo "  Nx reset failed"
+
+    echo "  Cleaning node_modules..."
+    rm -rf node_modules 2>/dev/null || echo "  node_modules cleanup failed"
+
+    echo "  Cleaning project dist folders..."
+    find . -name "dist" -type d -not -path "./node_modules/*" -exec rm -rf {} + 2>/dev/null || true
+
+    echo "  Cleaning coverage folders..."
+    find . -name "coverage" -type d -not -path "./node_modules/*" -exec rm -rf {} + 2>/dev/null || true
+
+    echo "✅ Cache cleanup complete. Run 'pnpm install' to restore dependencies."
+}
+
+monitor_ci() {
+    echo "👀 Monitoring current CI run..."
+    cd "$REPO_ROOT"
+
+    if command -v gh &> /dev/null; then
+        echo "Getting latest workflow run..."
+        gh run list --limit 1
+        echo ""
+        echo "Use 'gh run view' to see details of a specific run"
+        echo "Use 'gh run watch' to follow a run in real-time"
+    else
+        echo "⚠️  GitHub CLI not installed. Install with:"
+        echo "  brew install gh"
+        echo ""
+        echo "Or check CI status at:"
+        echo "  https://github.com/$(git config --get remote.origin.url | sed 's/.*github.com[:/]\(.*\)\.git/\1/')/actions"
+    fi
+}
+
+test_parallelization() {
+    echo "🧪 Testing optimal parallelization settings..."
+    cd "$REPO_ROOT"
+
+    echo "Running typecheck with different parallel settings..."
+
+    for parallel in 1 4 8 12; do
+        echo ""
+        echo "Testing with parallel=$parallel..."
+        export NX_PARALLEL=$parallel
+        time pnpm nx run-many -t typecheck --parallel=$parallel 2>/dev/null || echo "  Failed with parallel=$parallel"
+    done
+
+    echo ""
+    echo "💡 Compare the times above to find optimal parallelization for your CI environment."
+    echo "   Consider CI runner CPU count when setting parallel in nx.json"
+}
+
+case "${1:-}" in
     "status")
-        latest_status
+        print_header
+        show_status
         ;;
-    "watch")
-        watch_ci
+    "cache")
+        print_header
+        show_cache_status
         ;;
-    "list")
-        list_runs
+    "affected")
+        print_header
+        check_affected
         ;;
-    "latest-logs")
-        latest_logs
+    "benchmark")
+        print_header
+        run_benchmarks
         ;;
-    "help")
-        show_help
+    "validate")
+        print_header
+        validate_config
+        ;;
+    "clean")
+        print_header
+        clean_caches
+        ;;
+    "monitor")
+        print_header
+        monitor_ci
+        ;;
+    "parallel")
+        print_header
+        test_parallelization
+        ;;
+    "help"|"--help"|"-h")
+        print_header
+        print_usage
         ;;
     *)
-        show_usage
+        print_header
+        print_usage
+        exit 1
         ;;
 esac
-
-echo ""
-echo -e "${BLUE}💡 Tip: Run './scripts/ci-quick-ref.sh help' for all available commands${NC}"

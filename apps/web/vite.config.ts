@@ -255,33 +255,35 @@ export default defineConfig(({ mode }) => ({
           testTimeout: 45000,
         },
       },
-      {
-        resolve: {
-    alias: {
-      '@': path.resolve(__dirname, 'src'),
-      '@academic-explorer/utils': path.resolve(workspaceRoot, 'packages/utils/src'),
-      '@academic-explorer/client': path.resolve(workspaceRoot, 'packages/client/src'),
-      '@academic-explorer/ui': path.resolve(workspaceRoot, 'packages/ui/src'),
-      '@academic-explorer/graph': path.resolve(workspaceRoot, 'packages/graph/src'),
-      '@academic-explorer/simulation': path.resolve(workspaceRoot, 'packages/simulation/src'),
-    },
-  },
-        test: {
-          name: 'e2e',
-          include: ['src/**/*.e2e.test.ts'],
-          environment: 'node',
-          testTimeout: 90000,
-          setupFiles: ['./src/test/setup.ts', './src/test/e2e-setup.ts'],
-          // Serial execution for memory efficiency
-          maxConcurrency: 1,
-          pool: 'forks',
-          poolOptions: {
-            forks: {
-              singleFork: true,
-            },
-          },
-        },
-      },
+      // E2E test project disabled - no E2E tests currently exist
+      // TODO: Re-enable when actual E2E tests are implemented
+      // {
+      //   resolve: {
+      //     alias: {
+      //       '@': path.resolve(__dirname, 'src'),
+      //       '@academic-explorer/utils': path.resolve(workspaceRoot, 'packages/utils/src'),
+      //       '@academic-explorer/client': path.resolve(workspaceRoot, 'packages/client/src'),
+      //       '@academic-explorer/ui': path.resolve(workspaceRoot, 'packages/ui/src'),
+      //       '@academic-explorer/graph': path.resolve(workspaceRoot, 'packages/graph/src'),
+      //       '@academic-explorer/simulation': path.resolve(workspaceRoot, 'packages/simulation/src'),
+      //     },
+      //   },
+      //   test: {
+      //     name: 'e2e',
+      //     include: ['src/**/*.e2e.test.ts'],
+      //     environment: 'node',
+      //     testTimeout: 90000,
+      //     setupFiles: ['./src/test/setup.ts', './src/test/e2e-setup.ts'],
+      //     // Serial execution for memory efficiency
+      //     maxConcurrency: 1,
+      //     pool: 'forks',
+      //     poolOptions: {
+      //       forks: {
+      //         singleFork: true,
+      //       },
+      //     },
+      //   },
+      // },
     ],
   },
   build: {

@@ -1,0 +1,74 @@
+# Nx ignore patterns for better cache performance
+# Exclude files that don't affect build outputs
+
+# Logs
+*.log
+logs/
+
+# Coverage reports
+coverage/
+*.lcov
+
+# Test artifacts
+test-results/
+playwright-report/
+
+# Temporary files
+*.tmp
+*.temp
+.DS_Store
+Thumbs.db
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Documentation that doesn't affect builds
+*.md
+docs/
+documentation/
+
+# Git files
+.git/
+.gitignore
+.gitattributes
+
+# CI/CD files that don't affect local builds
+.github/
+.gitlab-ci.yml
+.travis.yml
+.circleci/
+
+# License files
+LICENSE*
+COPYING*
+
+# Examples and demos (unless they're part of build)
+examples/
+demo/
+samples/
+
+# Scripts that don't affect builds
+scripts/monitor-ci.ts
+scripts/ci-quick-ref.sh
+
+# Nx cache and metadata
+.nx/
+node_modules/.cache/
+
+# Package manager files that don't affect builds
+.npmrc
+.yarnrc*
+.pnpm-debug.log*
+
+# Environment files (add specific ones if they do affect builds)
+.env.local
+.env.development
+.env.test
+.env.production

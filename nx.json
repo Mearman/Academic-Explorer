@@ -12,8 +12,16 @@
   "targetDefaults": {
     "build": {
       "cache": true,
-      "dependsOn": ["^build", "typecheck"],
-      "inputs": ["production", "^production", "{workspaceRoot}/vite.config.ts", "{workspaceRoot}/config/**/*"],
+      "dependsOn": ["^build"],
+      "inputs": [
+        "production",
+        "^production",
+        "{workspaceRoot}/vite.config.ts",
+        "{workspaceRoot}/config/**/*",
+        "{projectRoot}/vite.config.ts",
+        "{projectRoot}/tsconfig.json",
+        "{projectRoot}/package.json"
+      ],
       "outputs": ["{projectRoot}/dist"]
     },
     "test": {
@@ -58,7 +66,14 @@
     },
     "typecheck": {
       "cache": true,
-      "inputs": ["default", "^production", "{workspaceRoot}/tsconfig*.json", "{workspaceRoot}/config/**/*"]
+      "inputs": [
+        "default",
+        "^production",
+        "{workspaceRoot}/tsconfig*.json",
+        "{workspaceRoot}/config/**/*",
+        "{projectRoot}/tsconfig*.json"
+      ],
+      "outputs": ["{projectRoot}/dist/tsc"]
     },
     "knip": {
       "cache": true,
@@ -113,7 +128,10 @@
     }
   },
   "namedInputs": {
-    "default": ["{projectRoot}/**/*", "sharedGlobals"],
+    "default": [
+      "{projectRoot}/**/*",
+      "sharedGlobals"
+    ],
     "production": [
       "default",
       "!{projectRoot}/**/?(*.)+(spec|test).[jt]s?(x)?(.snap)",
@@ -122,9 +140,18 @@
       "!{projectRoot}/src/test-setup.[jt]s",
       "!{projectRoot}/test-setup.[jt]s",
       "!{projectRoot}/.eslintrc.json",
-      "!{projectRoot}/eslint.config.js"
+      "!{projectRoot}/eslint.config.js",
+      "!{projectRoot}/coverage/**/*",
+      "!{projectRoot}/.nx/**/*",
+      "!{projectRoot}/node_modules/**/*"
     ],
-    "sharedGlobals": []
+    "sharedGlobals": [
+      "{workspaceRoot}/pnpm-lock.yaml",
+      "{workspaceRoot}/package.json",
+      "{workspaceRoot}/nx.json",
+      "{workspaceRoot}/tsconfig.base.json",
+      "{workspaceRoot}/.npmrc"
+    ]
   },
   "generators": {
     "@nx/react": {
@@ -145,7 +172,7 @@
   },
   "tasksRunnerOptions": {
     "default": {
-      "runner": "nx/tasks-runners/default",
+      "runner": "@nx/nx-cloud",
       "options": {
         "cacheableOperations": [
           "build",
@@ -156,10 +183,16 @@
           "test:component:run",
           "test:integration:run",
           "test:e2e:run",
-          "build-storybook"
+          "test:a11y",
+          "test:a11y:e2e",
+          "build-storybook",
+          "knip",
+          "knip:nx"
         ],
-        "parallel": 3,
-        "runtimeCacheInputs": ["node -v", "pnpm -v"]
+        "parallel": 8,
+        "runtimeCacheInputs": ["node -v", "pnpm -v"],
+        "accessToken": "process.env.NX_CLOUD_ACCESS_TOKEN",
+        "encryptionKey": "process.env.NX_CLOUD_ENCRYPTION_KEY"
       }
     }
   },

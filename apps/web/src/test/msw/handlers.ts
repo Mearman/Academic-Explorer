@@ -35,12 +35,34 @@ const createMockWork = (id: string): Work => ({
     oa_url: null,
     any_repository_has_fulltext: false
   },
-  authorships: [],
+  authorships: [
+    {
+      author_position: "first",
+      author: {
+        id: `https://openalex.org/A${id.slice(1)}`,
+        display_name: `Mock Author for ${id}`,
+        orcid: null
+      },
+      institutions: [
+        {
+          id: `https://openalex.org/I${id.slice(1)}`,
+          display_name: `Mock Institution for ${id}`,
+          ror: null,
+          country_code: "US",
+          type: "education"
+        }
+      ],
+      countries: ["US"],
+      is_corresponding: true,
+      raw_author_name: `Mock Author for ${id}`,
+      raw_affiliation_strings: [`Mock Institution for ${id}`]
+    }
+  ],
   institution_assertions: [],
   countries_distinct_count: 1,
   institutions_distinct_count: 1,
-  corresponding_author_ids: [],
-  corresponding_institution_ids: [],
+  corresponding_author_ids: [`https://openalex.org/A${id.slice(1)}`],
+  corresponding_institution_ids: [`https://openalex.org/I${id.slice(1)}`],
   apc_list: null,
   apc_paid: null,
   fwci: 1.0,
@@ -65,18 +87,76 @@ const createMockWork = (id: string): Work => ({
   concepts: [],
   mesh: [],
   locations_count: 1,
-  locations: [],
-  best_oa_location: null,
+  locations: [
+    {
+      source: {
+        id: `https://openalex.org/S${id.slice(1)}`,
+        display_name: `Mock Source for ${id}`,
+        issn_l: "1234-5678",
+        issn: ["1234-5678", "5678-1234"],
+        is_oa: true,
+        is_in_doaj: false,
+        is_core: true,
+        host_organization: null,
+        host_organization_name: null,
+        host_organization_lineage: [],
+        type: "journal"
+      },
+      landing_page_url: `https://example.com/${id}`,
+      pdf_url: null,
+      is_oa: true,
+      version: "publishedVersion",
+      license: "cc-by"
+    }
+  ],
+  best_oa_location: {
+    source: {
+      id: `https://openalex.org/S${id.slice(1)}`,
+      display_name: `Mock Source for ${id}`,
+      issn_l: "1234-5678",
+      issn: ["1234-5678", "5678-1234"],
+      is_oa: true,
+      is_in_doaj: false,
+      is_core: true,
+      host_organization: null,
+      host_organization_name: null,
+      host_organization_lineage: [],
+      type: "journal"
+    },
+    landing_page_url: `https://example.com/${id}`,
+    pdf_url: null,
+    is_oa: true,
+    version: "publishedVersion",
+    license: "cc-by"
+  },
   sustainable_development_goals: [],
   grants: [],
   datasets: [],
   versions: [],
-  referenced_works_count: 0,
-  referenced_works: [],
-  related_works: [],
-  abstract_inverted_index: null,
+  referenced_works_count: 2,
+  referenced_works: [
+    `https://openalex.org/W${(parseInt(id.slice(1)) + 1000).toString()}`,
+    `https://openalex.org/W${(parseInt(id.slice(1)) + 2000).toString()}`
+  ],
+  related_works: [
+    `https://openalex.org/W${(parseInt(id.slice(1)) + 3000).toString()}`,
+    `https://openalex.org/W${(parseInt(id.slice(1)) + 4000).toString()}`
+  ],
+  abstract_inverted_index: {
+    "This": [0],
+    "is": [1],
+    "a": [2],
+    "mock": [3],
+    "abstract": [4],
+    "for": [5],
+    "testing": [6]
+  },
   cited_by_api_url: `https://api.openalex.org/works?filter=cites:${id}`,
-  counts_by_year: [],
+  counts_by_year: [
+    { year: 2023, cited_by_count: 5, works_count: null, oa_works_count: null },
+    { year: 2022, cited_by_count: 3, works_count: null, oa_works_count: null },
+    { year: 2021, cited_by_count: 2, works_count: null, oa_works_count: null }
+  ],
   updated_date: "2023-01-01",
   created_date: "2023-01-01"
 });

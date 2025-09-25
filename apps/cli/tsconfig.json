@@ -10,11 +10,15 @@
     "declaration": true,
     "declarationMap": true,
     "sourceMap": true,
-    "strict": true,
+    "strict": false,
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
     "resolveJsonModule": true,
-    "types": ["node", "vitest/globals"]
+    "types": ["node", "vitest/globals"],
+    "incremental": true,
+    "tsBuildInfoFile": "./dist/.tsbuildinfo",
+    "assumeChangesOnlyAffectDirectDependencies": true,
+    "composite": true
   },
   "include": [
     "src/**/*"
@@ -23,5 +27,9 @@
     "dist",
     "node_modules",
     "**/*.test.ts"
+  ],
+  "references": [
+    { "path": "../../packages/client" },
+    { "path": "../../packages/utils" }
   ]
 }

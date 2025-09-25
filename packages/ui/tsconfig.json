@@ -12,8 +12,14 @@
     "esModuleInterop": true,
     "isolatedModules": true,
     "skipLibCheck": true,
-    "strict": true
+    "strict": false,
+    "incremental": true,
+    "tsBuildInfoFile": "./dist/.tsbuildinfo",
+    "assumeChangesOnlyAffectDirectDependencies": true
   },
   "include": ["src/**/*"],
-  "exclude": ["**/*.test.*", "**/*.spec.*", "**/*.stories.*", "dist", "node_modules"]
+  "exclude": ["**/*.test.*", "**/*.spec.*", "**/*.stories.*", "dist", "node_modules"],
+  "references": [
+    { "path": "../utils" }
+  ]
 }

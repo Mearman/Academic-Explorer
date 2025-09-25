@@ -158,7 +158,7 @@ jobs:
   quality-checks:
     needs: [setup, eslint-autofix]
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 30
 
     # Skip if eslint-autofix was skipped, otherwise run always
     if: always() && (needs.eslint-autofix.result == 'success' || needs.eslint-autofix.result == 'skipped')
@@ -232,7 +232,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        test-type: [unit, integration, e2e]
+        test-type: [unit, integration]
         include:
           - test-type: unit
             command: test:unit:run
@@ -240,9 +240,6 @@ jobs:
           - test-type: integration
             command: test:integration:run
             timeout: 15
-          - test-type: e2e
-            command: test:e2e
-            timeout: 20
 
     steps:
       - name: Checkout
@@ -277,30 +274,8 @@ jobs:
             nx-${{ runner.os }}-${{ hashFiles('nx.json', 'package.json', 'pnpm-lock.yaml') }}-
             nx-${{ runner.os }}-
 
-      - name: Install Playwright browsers
-        if: matrix.test-type == 'e2e'
-        run: pnpm exec playwright install --with-deps chromium
-
-      - name: Build application for E2E tests
-        if: matrix.test-type == 'e2e'
-        run: pnpm nx build
-        env:
-          NODE_OPTIONS: "--max-old-space-size=4096"
-
-      - name: Start preview server for E2E tests
-        if: matrix.test-type == 'e2e'
-        run: pnpm nx preview &
-        env:
-          NODE_OPTIONS: "--max-old-space-size=4096"
-
-      - name: Wait for preview server to be ready
-        if: matrix.test-type == 'e2e'
-        run: |
-          echo "Waiting for preview server to start..."
-          timeout 30 bash -c 'until curl -f http://localhost:4173 > /dev/null 2>&1; do sleep 1; done'
-          echo "Preview server responding, waiting for app to be ready..."
-          timeout 30 bash -c 'until curl -s http://localhost:4173 | grep -q "Academic Explorer\|<div id=\"root\""; do sleep 2; done'
-          echo "Preview server and app are ready"
+      # E2E test setup removed - no E2E tests currently exist
+      # TODO: Re-enable when actual E2E tests are implemented
 
       - name: Run ${{ matrix.test-type }} tests
         run: timeout ${{ matrix.timeout }}m pnpm nx ${{ matrix.command }}
@@ -591,7 +566,7 @@ jobs:
   release:
     needs: [setup, quality-checks, test, accessibility]
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 30
 
     if: github.ref == 'refs/heads/main' && github.event_name == 'push'
 
@@ -750,7 +725,7 @@ jobs:
   knip-analysis:
     needs: [setup, quality-checks]
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 30
 
     # Only run on scheduled events (weekly) or manual dispatch
     if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'

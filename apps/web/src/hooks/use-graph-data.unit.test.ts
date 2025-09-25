@@ -7,7 +7,10 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { describe, it, expect, beforeEach, afterEach, vi, type Mock } from "vitest";
 
 // Mock dependencies after imports
-vi.mock("@/services/graph-data-service");
+vi.mock("@/services/graph-data-service", () => ({
+	createGraphDataService: vi.fn(),
+	GraphDataService: vi.fn(),
+}));
 vi.mock("@/stores/graph-store");
 vi.mock("@/hooks/use-unified-execution-worker");
 vi.mock("@academic-explorer/utils/logger", () => ({
@@ -20,22 +23,14 @@ vi.mock("@academic-explorer/utils/logger", () => ({
 	logError: vi.fn(),
 }));
 import { useGraphData } from "./use-graph-data";
-import { GraphDataService } from "@/services/graph-data-service";
+import { createGraphDataService } from "@/services/graph-data-service";
 import { useGraphStore } from "@/stores/graph-store";
 import { useUnifiedExecutionWorker } from "@/hooks/use-unified-execution-worker";
 import { logger, logError } from "@academic-explorer/utils/logger";
 import type { SearchOptions } from "@academic-explorer/graph";
 import React from "react";
 
-const MockedGraphDataService = GraphDataService as unknown as {
-  new (queryClient: QueryClient): {
-    loadEntityGraph: Mock;
-    loadEntityIntoGraph: Mock;
-    expandNode: Mock;
-    searchAndVisualize: Mock;
-    loadAllCachedNodes: Mock;
-  };
-};
+const mockedCreateGraphDataService = createGraphDataService as unknown as Mock;
 
 const mockUseGraphStore = useGraphStore as unknown as Mock & {
   getState: Mock;
@@ -46,7 +41,14 @@ const mockUseUnifiedExecutionWorker = useUnifiedExecutionWorker as unknown as Mo
 
 describe("useGraphData", () => {
 	let queryClient: QueryClient;
-	let mockService: ReturnType<typeof MockedGraphDataService.prototype>;
+	let mockService: {
+		loadEntityGraph: Mock;
+		loadEntityIntoGraph: Mock;
+		loadEntityIntoRepository: Mock;
+		expandNode: Mock;
+		searchAndVisualize: Mock;
+		loadAllCachedNodes: Mock;
+	};
 	let mockStore: {
     setLoading: Mock;
     setError: Mock;
@@ -77,12 +79,13 @@ describe("useGraphData", () => {
 		mockService = {
 			loadEntityGraph: vi.fn(),
 			loadEntityIntoGraph: vi.fn(),
+			loadEntityIntoRepository: vi.fn(),
 			expandNode: vi.fn(),
 			searchAndVisualize: vi.fn(),
 			loadAllCachedNodes: vi.fn(),
 		};
 
-		MockedGraphDataService.mockImplementation(() => mockService);
+		mockedCreateGraphDataService.mockReturnValue(mockService);
 
 		// Setup mock store
 		mockStore = {
@@ -172,7 +175,7 @@ describe("useGraphData", () => {
 				wrapper: createWrapper(),
 			});
 
-			expect(MockedGraphDataService).toHaveBeenCalledWith(queryClient);
+			expect(mockedCreateGraphDataService).toHaveBeenCalledWith(queryClient);
 		});
 
 		it("should return loading state from store", () => {
@@ -243,6 +246,7 @@ describe("useGraphData", () => {
 			await result.current.loadEntity(entityId);
 
 			expect(logError).toHaveBeenCalledWith(
+				logger,
 				"Failed to load entity in graph data hook",
 				error,
 				"useGraphData",
@@ -288,6 +292,7 @@ describe("useGraphData", () => {
 			await result.current.loadEntityIntoGraph(entityId);
 
 			expect(logError).toHaveBeenCalledWith(
+				logger,
 				"Failed to load entity into graph in graph data hook",
 				error,
 				"useGraphData",
@@ -402,6 +407,7 @@ describe("useGraphData", () => {
 			);
 
 			expect(logError).toHaveBeenCalledWith(
+				logger,
 				"Failed to expand node via service fallback",
 				error,
 				"useGraphData",
@@ -516,6 +522,7 @@ describe("useGraphData", () => {
 			await result.current.search(query);
 
 			expect(logError).toHaveBeenCalledWith(
+				logger,
 				"Failed to perform graph search operation",
 				error,
 				"useGraphData",
@@ -561,6 +568,7 @@ describe("useGraphData", () => {
 			result.current.loadAllCachedNodes();
 
 			expect(logError).toHaveBeenCalledWith(
+				logger,
 				"Failed to load cached nodes in graph data hook",
 				error,
 				"useGraphData",

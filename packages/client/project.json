@@ -10,6 +10,11 @@
         "command": "tsup",
         "cwd": "{projectRoot}"
       },
+      "inputs": [
+        "production",
+        "{projectRoot}/tsup.config.ts",
+        "{projectRoot}/package.json"
+      ],
       "outputs": [
         "{projectRoot}/dist"
       ],
@@ -41,10 +46,17 @@
     },
     "test": {
       "executor": "nx:run-commands",
+      "dependsOn": ["^build"],
       "options": {
         "command": "vitest run",
         "cwd": "{projectRoot}"
       },
+      "inputs": [
+        "default",
+        "^production",
+        "{workspaceRoot}/vitest.workspace.ts",
+        "{projectRoot}/vitest.config.ts"
+      ],
       "outputs": [
         "{projectRoot}/coverage"
       ],
