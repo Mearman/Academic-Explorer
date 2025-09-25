@@ -56,9 +56,9 @@ export const EdgeFiltersSection: React.FC<EdgeFiltersSectionProps> = ({
 	const toggleEdgeTypeVisibility = useGraphStore((state) => state.toggleEdgeTypeVisibility);
 	const edgeTypeStats = useGraphStore((state) => state.edgeTypeStats);
 
-	// Calculate visibility stats
-	const totalVisibleEdges = Object.values(edgeTypeStats.visible).reduce((sum, count) => sum + count, 0);
-	const totalEdges = Object.values(edgeTypeStats.total).reduce((sum, count) => sum + count, 0);
+	// Calculate visibility stats with null checks
+	const totalVisibleEdges = edgeTypeStats?.visible ? Object.values(edgeTypeStats.visible).reduce((sum, count) => sum + count, 0) : 0;
+	const totalEdges = edgeTypeStats?.total ? Object.values(edgeTypeStats.total).reduce((sum, count) => sum + count, 0) : 0;
 	const visibleTypesCount = Object.values(visibleEdgeTypes).filter(Boolean).length;
 	const totalTypesCount = Object.keys(RELATION_TYPE_CONFIG).length;
 
@@ -175,8 +175,8 @@ export const EdgeFiltersSection: React.FC<EdgeFiltersSectionProps> = ({
 						const parsedType = safeParseRelationType(edgeTypeKey);
 						if (!parsedType) return null;
 						const edgeType = edgeTypeKey as RelationType;
-						const visibleCount = edgeTypeStats.visible[edgeType] || 0;
-						const totalCount = edgeTypeStats.total[edgeType] || 0;
+						const visibleCount = edgeTypeStats?.visible?.[edgeType] || 0;
+						const totalCount = edgeTypeStats?.total?.[edgeType] || 0;
 						const isVisible = visibleEdgeTypes[edgeType] || false;
 
 						return (

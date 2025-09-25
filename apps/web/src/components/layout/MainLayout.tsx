@@ -9,6 +9,8 @@ import { IconMoon, IconSun, IconDeviceDesktop, IconMenu2, IconX, IconLayoutSideb
 import { Link } from "@tanstack/react-router";
 import { LeftSidebarDynamic } from "./LeftSidebarDynamic";
 import { RightSidebarDynamic } from "./RightSidebarDynamic";
+import { LeftRibbon } from "./LeftRibbon";
+import { RightRibbon } from "./RightRibbon";
 import { useLayoutStore } from "@/stores/layout-store";
 
 interface MainLayoutProps {
@@ -136,14 +138,14 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
 		<AppShell
 			header={{ height: 60 }}
 			navbar={{
-				width: leftSidebarWidth,
+				width: leftSidebarOpen ? leftSidebarWidth + 60 : 60,
 				breakpoint: "sm",
-				collapsed: { desktop: !leftSidebarOpen, mobile: true }
+				collapsed: { mobile: true }
 			}}
 			aside={{
-				width: rightSidebarWidth,
+				width: rightSidebarOpen ? rightSidebarWidth + 60 : 60,
 				breakpoint: "sm",
-				collapsed: { desktop: !rightSidebarOpen, mobile: true }
+				collapsed: { mobile: true }
 			}}
 			padding={0}
 		>
@@ -226,60 +228,72 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
 					height: '100%',
 					position: 'relative'
 				}}>
-					<div style={{ flex: 1, padding: '0.75rem', overflowY: 'auto' }}>
-						{/* Pinning controls */}
-						<Group justify="space-between" mb="sm" px="xs">
-							<Text size="xs" c="dimmed">Left Panel</Text>
-							<Group gap="xs">
-								{!getActiveGroup("left") && (
-									<ActionIcon
-										onClick={activateDefaultGroups}
-										variant="light"
-										size="sm"
-										color="blue"
-										aria-label="Activate tools"
-									>
-										<IconLayoutSidebar size={14} />
-									</ActionIcon>
-								)}
-								<ActionIcon
-									onClick={() => pinLeftSidebar(!leftSidebarPinned)}
-									variant="subtle"
-									size="sm"
-									aria-label={leftSidebarPinned ? "Unpin left sidebar" : "Pin left sidebar"}
-									color={leftSidebarPinned ? "blue" : "gray"}
-								>
-									{leftSidebarPinned ? <IconPinned size={14} /> : <IconPin size={14} />}
-								</ActionIcon>
-							</Group>
-						</Group>
-						<LeftSidebarDynamic />
-					</div>
-					{/* Left drag handle */}
-					<div
-						style={{
-							width: '4px',
-							height: '100%',
-							background: isDragging === 'left' ? colors.primary : 'transparent',
-							cursor: 'ew-resize',
-							position: 'absolute',
-							right: 0,
-							top: 0,
-							zIndex: 10,
-							borderRight: `1px solid ${colors.border.primary}`
-						}}
-						onMouseDown={(e) => handleDragStart('left', e)}
-						onMouseEnter={(e) => {
-							if (!isDragging) {
-								e.currentTarget.style.background = colors.border.primary;
-							}
-						}}
-						onMouseLeave={(e) => {
-							if (!isDragging) {
-								e.currentTarget.style.background = 'transparent';
-							}
-						}}
-					/>
+					{/* Always visible left ribbon */}
+					<LeftRibbon />
+
+					{/* Expandable sidebar content */}
+					{leftSidebarOpen && (
+						<>
+							<div style={{ flex: 1, padding: '0.75rem', overflowY: 'auto' }}>
+								{/* Pinning controls */}
+								<Group justify="space-between" mb="sm" px="xs">
+									<Text size="xs" c="dimmed">Left Panel</Text>
+									<Group gap="xs">
+										{/* Debug info */}
+										<Text size="xs" c="red">
+											Active: {getActiveGroup("left") || "none"}
+										</Text>
+										{!getActiveGroup("left") && (
+											<ActionIcon
+												onClick={activateDefaultGroups}
+												variant="light"
+												size="sm"
+												color="blue"
+												aria-label="Activate tools"
+											>
+												<IconLayoutSidebar size={14} />
+											</ActionIcon>
+										)}
+										<ActionIcon
+											onClick={() => pinLeftSidebar(!leftSidebarPinned)}
+											variant="subtle"
+											size="sm"
+											aria-label={leftSidebarPinned ? "Unpin left sidebar" : "Pin left sidebar"}
+											color={leftSidebarPinned ? "blue" : "gray"}
+										>
+											{leftSidebarPinned ? <IconPinned size={14} /> : <IconPin size={14} />}
+										</ActionIcon>
+									</Group>
+								</Group>
+								<LeftSidebarDynamic />
+							</div>
+							{/* Left drag handle */}
+							<div
+								style={{
+									width: '4px',
+									height: '100%',
+									background: isDragging === 'left' ? colors.primary : 'transparent',
+									cursor: 'ew-resize',
+									position: 'absolute',
+									right: 0,
+									top: 0,
+									zIndex: 10,
+									borderRight: `1px solid ${colors.border.primary}`
+								}}
+								onMouseDown={(e) => handleDragStart('left', e)}
+								onMouseEnter={(e) => {
+									if (!isDragging) {
+										e.currentTarget.style.background = colors.border.primary;
+									}
+								}}
+								onMouseLeave={(e) => {
+									if (!isDragging) {
+										e.currentTarget.style.background = 'transparent';
+									}
+								}}
+							/>
+						</>
+					)}
 				</div>
 			</AppShell.Navbar>
 
@@ -290,60 +304,72 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
 					height: '100%',
 					position: 'relative'
 				}}>
-					{/* Right drag handle */}
-					<div
-						style={{
-							width: '4px',
-							height: '100%',
-							background: isDragging === 'right' ? colors.primary : 'transparent',
-							cursor: 'ew-resize',
-							position: 'absolute',
-							left: 0,
-							top: 0,
-							zIndex: 10,
-							borderLeft: `1px solid ${colors.border.primary}`
-						}}
-						onMouseDown={(e) => handleDragStart('right', e)}
-						onMouseEnter={(e) => {
-							if (!isDragging) {
-								e.currentTarget.style.background = colors.border.primary;
-							}
-						}}
-						onMouseLeave={(e) => {
-							if (!isDragging) {
-								e.currentTarget.style.background = 'transparent';
-							}
-						}}
-					/>
-					<div style={{ flex: 1, padding: '0.75rem', overflowY: 'auto', marginLeft: '4px' }}>
-						{/* Pinning controls */}
-						<Group justify="space-between" mb="sm" px="xs">
-							<Text size="xs" c="dimmed">Right Panel</Text>
-							<Group gap="xs">
-								{!getActiveGroup("right") && (
-									<ActionIcon
-										onClick={activateDefaultGroups}
-										variant="light"
-										size="sm"
-										color="blue"
-										aria-label="Activate tools"
-									>
-										<IconLayoutSidebarRight size={14} />
-									</ActionIcon>
-								)}
-								<ActionIcon
-									onClick={() => pinRightSidebar(!rightSidebarPinned)}
-									variant="subtle"
-									size="sm"
-									aria-label={rightSidebarPinned ? "Unpin right sidebar" : "Pin right sidebar"}
-									color={rightSidebarPinned ? "blue" : "gray"}
-								>
-									{rightSidebarPinned ? <IconPinned size={14} /> : <IconPin size={14} />}
-								</ActionIcon>
-							</Group>
-						</Group>
-						<RightSidebarDynamic />
-					</div>
+					{/* Expandable sidebar content */}
+					{rightSidebarOpen && (
+						<>
+							{/* Right drag handle */}
+							<div
+								style={{
+									width: '4px',
+									height: '100%',
+									background: isDragging === 'right' ? colors.primary : 'transparent',
+									cursor: 'ew-resize',
+									position: 'absolute',
+									left: 0,
+									top: 0,
+									zIndex: 10,
+									borderLeft: `1px solid ${colors.border.primary}`
+								}}
+								onMouseDown={(e) => handleDragStart('right', e)}
+								onMouseEnter={(e) => {
+									if (!isDragging) {
+										e.currentTarget.style.background = colors.border.primary;
+									}
+								}}
+								onMouseLeave={(e) => {
+									if (!isDragging) {
+										e.currentTarget.style.background = 'transparent';
+									}
+								}}
+							/>
+							<div style={{ flex: 1, padding: '0.75rem', overflowY: 'auto', marginLeft: '4px' }}>
+								{/* Pinning controls */}
+								<Group justify="space-between" mb="sm" px="xs">
+									<Text size="xs" c="dimmed">Right Panel</Text>
+									<Group gap="xs">
+										{/* Debug info */}
+										<Text size="xs" c="red">
+											Active: {getActiveGroup("right") || "none"}
+										</Text>
+										{!getActiveGroup("right") && (
+											<ActionIcon
+												onClick={activateDefaultGroups}
+												variant="light"
+												size="sm"
+												color="blue"
+												aria-label="Activate tools"
+											>
+												<IconLayoutSidebarRight size={14} />
+											</ActionIcon>
+										)}
+										<ActionIcon
+											onClick={() => pinRightSidebar(!rightSidebarPinned)}
+											variant="subtle"
+											size="sm"
+											aria-label={rightSidebarPinned ? "Unpin right sidebar" : "Pin right sidebar"}
+											color={rightSidebarPinned ? "blue" : "gray"}
+										>
+											{rightSidebarPinned ? <IconPinned size={14} /> : <IconPin size={14} />}
+										</ActionIcon>
+									</Group>
+								</Group>
+								<RightSidebarDynamic />
+							</div>
+						</>
+					)}
+
+					{/* Always visible right ribbon */}
+					<RightRibbon />
 				</div>
 			</AppShell.Aside>
 

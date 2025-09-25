@@ -32,7 +32,7 @@ export const LayoutControls: React.FC = () => {
 	};
 
 
-	const currentOption = layoutOptions.find(opt => opt.type === currentLayout.type);
+	const currentOption = layoutOptions.find(opt => opt.type === currentLayout?.type);
 	const CurrentIcon = currentOption?.icon || IconLayout;
 
 	return (
@@ -57,7 +57,7 @@ export const LayoutControls: React.FC = () => {
 							return (
 								<Button
 									key={option.type}
-									variant={currentLayout.type === option.type ? "filled" : "subtle"}
+									variant={currentLayout?.type === option.type ? "filled" : "subtle"}
 									leftSection={<OptionIcon size={16} />}
 									onClick={() => { handleLayoutChange(); }}
 									size="sm"

@@ -45,19 +45,19 @@ export const GraphStatsSection: React.FC<GraphStatsSectionProps> = ({
 
 	// Top entity types by count
 	const topEntityTypes = useMemo(() => {
-		return Object.entries(entityTypeStats.visible)
+		return Object.entries(entityTypeStats?.visible || {})
 			.filter(([, count]) => count > 0)
 			.sort(([, a], [, b]) => b - a)
 			.slice(0, 5);
-	}, [entityTypeStats.visible]);
+	}, [entityTypeStats?.visible]);
 
 	// Top edge types by count
 	const topEdgeTypes = useMemo(() => {
-		return Object.entries(edgeTypeStats.visible)
+		return Object.entries(edgeTypeStats?.visible || {})
 			.filter(([, count]) => count > 0)
 			.sort(([, a], [, b]) => b - a)
 			.slice(0, 5);
-	}, [edgeTypeStats.visible]);
+	}, [edgeTypeStats?.visible]);
 
 	const handleExportStats = () => {
 		const stats = {
@@ -288,7 +288,7 @@ export const GraphStatsSection: React.FC<GraphStatsSectionProps> = ({
 			</CollapsibleSection>
 
 			{/* Search Results Summary */}
-			{Object.values(lastSearchStats).some(v => v > 0) && (
+			{Object.values(lastSearchStats || {}).some(v => v > 0) && (
 				<>
 					<Divider style={{ margin: "16px 0" }} />
 					<CollapsibleSection
