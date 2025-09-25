@@ -116,7 +116,7 @@ export function CacheInitializer({ children }: CacheInitializerProps) {
 	// Render app with initialized query client
 	return (
 		<QueryClientProvider client={state.queryClient}>
-			<AutoRelationshipDetector />
+			{/* <AutoRelationshipDetector /> - Temporarily disabled to fix React 19 infinite loops */}
 			{children}
 		</QueryClientProvider>
 	);

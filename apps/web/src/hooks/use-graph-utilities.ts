@@ -263,33 +263,25 @@ export const useGraphUtilities = () => {
 		}
 	}, [nodes, edges, callServiceMethod]);
 
-	// Graph statistics
-	const getGraphStats = useCallback(() => {
+	// Cached graph statistics to prevent React 19 infinite loops
+	const cachedGraphStats = useMemo(() => {
+		const store = useGraphStore.getState();
 		const components = findConnectedComponents();
-		const nodesByType: Record<string, number> = {};
-		const edgesByType: Record<string, number> = {};
-
-		// Count nodes by type
-		nodes.forEach((node) => {
-			const count = nodesByType[node.type] ?? 0;
-			nodesByType[node.type] = count + 1;
-		});
-
-		// Count edges by type
-		edges.forEach((edge) => {
-			const count = edgesByType[edge.type] ?? 0;
-			edgesByType[edge.type] = count + 1;
-		});
 
 		return {
-			totalNodes: nodes.length,
-			totalEdges: edges.length,
+			totalNodes: store.totalNodeCount,
+			totalEdges: store.totalEdgeCount,
 			connectedComponents: components.length,
 			largestComponentSize: components.length > 0 ? Math.max(...components.map((component: string[]) => component.length)) : 0,
-			nodesByType,
-			edgesByType,
+			nodesByType: store.entityTypeStats.total,
+			edgesByType: store.edgeTypeStats.total,
 		};
-	}, [nodes, edges, findConnectedComponents]);
+	}, [nodesMap, edgesMap, findConnectedComponents]);
+
+	// Graph statistics getter - returns cached value
+	const getGraphStats = useCallback(() => {
+		return cachedGraphStats;
+	}, [cachedGraphStats]);
 
 	return {
 		// Graph modification utilities
