@@ -33,11 +33,11 @@
     "clean": "rm -rf dist coverage .nx/cache .tanstack node_modules/.vite"
   },
   "dependencies": {
-    "@academic-explorer/graph": "workspace:*",
     "@academic-explorer/client": "workspace:*",
-    "@academic-explorer/utils": "workspace:*",
+    "@academic-explorer/graph": "workspace:*",
     "@academic-explorer/simulation": "workspace:*",
     "@academic-explorer/ui": "workspace:*",
+    "@academic-explorer/utils": "workspace:*",
     "@mantine/core": "^8.3.2",
     "@mantine/dates": "^8.3.2",
     "@mantine/hooks": "^8.3.2",
@@ -58,6 +58,7 @@
     "zustand": "^5.0.8"
   },
   "devDependencies": {
+    "@axe-core/playwright": "^4.10.2",
     "@tanstack/devtools-vite": "^0.3.3",
     "@tanstack/react-devtools": "^0.7.0",
     "@tanstack/react-query-devtools": "^5.90.2",
@@ -79,6 +80,7 @@
     "typescript": "~5.9.2",
     "vite": "^7.1.7",
     "vite-plugin-pwa": "^1.0.3",
-    "vitest": "^3.2.4"
+    "vitest": "^3.2.4",
+    "vitest-axe": "^0.1.0"
   }
 }
