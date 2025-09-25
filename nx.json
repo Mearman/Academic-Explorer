@@ -172,7 +172,7 @@
   },
   "tasksRunnerOptions": {
     "default": {
-      "runner": "@nx/nx-cloud",
+      "runner": "nx/tasks-runners/default",
       "options": {
         "cacheableOperations": [
           "build",
@@ -190,9 +190,7 @@
           "knip:nx"
         ],
         "parallel": 8,
-        "runtimeCacheInputs": ["node -v", "pnpm -v"],
-        "accessToken": "process.env.NX_CLOUD_ACCESS_TOKEN",
-        "encryptionKey": "process.env.NX_CLOUD_ENCRYPTION_KEY"
+        "runtimeCacheInputs": ["node -v", "pnpm -v"]
       }
     }
   },
