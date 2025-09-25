@@ -116,6 +116,18 @@ const createDefaultToolGroups = (): Record<"left" | "right", Record<string, Tool
 	};
 };
 
+// Helper function to create default active groups (first group in each sidebar)
+const createDefaultActiveGroups = (): Record<"left" | "right", string | null> => {
+	const toolGroups = createDefaultToolGroups();
+	const leftGroupIds = Object.keys(toolGroups.left);
+	const rightGroupIds = Object.keys(toolGroups.right);
+
+	return {
+		left: leftGroupIds[0] ?? null,
+		right: rightGroupIds[0] ?? null,
+	};
+};
+
 type LayoutPersistedState = Partial<Pick<LayoutState,
   | "leftSidebarOpen"
   | "leftSidebarPinned"
@@ -143,7 +155,7 @@ export const useLayoutStore = create<LayoutState>()(
 			rightSidebarHovered: false,
 			collapsedSections: {},
 			sectionPlacements: getDefaultSectionPlacements(),
-			activeGroups: { left: null, right: null },
+			activeGroups: createDefaultActiveGroups(),
 			toolGroups: createDefaultToolGroups(),
 			graphProvider: "xyflow",
 			previewEntityId: null,
@@ -687,9 +699,9 @@ export const useLayoutStore = create<LayoutState>()(
 						migrated = true;
 					}
 
-					// Add activeGroups if missing
-					if (!state.activeGroups) {
-						state.activeGroups = { left: null, right: null };
+					// Add activeGroups if missing or if they're both null
+					if (!state.activeGroups || (state.activeGroups.left === null && state.activeGroups.right === null)) {
+						state.activeGroups = createDefaultActiveGroups();
 						migrated = true;
 					}
 

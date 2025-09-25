@@ -3,11 +3,13 @@
  * Carefully re-enabled components to prevent React 19 infinite loops
  */
 
-import React from "react";
+import React, { useState, useCallback, useRef } from "react";
 import { AppShell, Group, Text, ActionIcon, useMantineColorScheme } from "@mantine/core";
-import { IconMoon, IconSun, IconDeviceDesktop, IconMenu2, IconX } from "@tabler/icons-react";
+import { IconMoon, IconSun, IconDeviceDesktop, IconMenu2, IconX, IconLayoutSidebar, IconLayoutSidebarRight, IconPinned, IconPin } from "@tabler/icons-react";
 import { Link } from "@tanstack/react-router";
-import { GraphNavigation } from "./GraphNavigation";
+import { LeftSidebarDynamic } from "./LeftSidebarDynamic";
+import { RightSidebarDynamic } from "./RightSidebarDynamic";
+import { useLayoutStore } from "@/stores/layout-store";
 
 interface MainLayoutProps {
   children?: React.ReactNode;
@@ -15,6 +17,44 @@ interface MainLayoutProps {
 
 export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
 	const { colorScheme, setColorScheme } = useMantineColorScheme();
+
+	// Layout store for sidebar state management
+	const {
+		leftSidebarOpen,
+		rightSidebarOpen,
+		leftSidebarPinned,
+		rightSidebarPinned,
+		toggleLeftSidebar,
+		toggleRightSidebar,
+		pinLeftSidebar,
+		pinRightSidebar,
+		setLeftSidebarHovered,
+		setRightSidebarHovered,
+		setActiveGroup,
+		getToolGroupsForSidebar,
+		getActiveGroup,
+	} = useLayoutStore();
+
+	// Helper to activate default groups if none are active
+	const activateDefaultGroups = useCallback(() => {
+		const leftGroups = getToolGroupsForSidebar("left");
+		const rightGroups = getToolGroupsForSidebar("right");
+		const leftActiveGroup = getActiveGroup("left");
+		const rightActiveGroup = getActiveGroup("right");
+
+		if (!leftActiveGroup && Object.keys(leftGroups).length > 0) {
+			setActiveGroup("left", Object.keys(leftGroups)[0]);
+		}
+		if (!rightActiveGroup && Object.keys(rightGroups).length > 0) {
+			setActiveGroup("right", Object.keys(rightGroups)[0]);
+		}
+	}, [getToolGroupsForSidebar, getActiveGroup, setActiveGroup]);
+
+	// Width state for dragging (using React state for immediate visual feedback)
+	const [leftSidebarWidth, setLeftSidebarWidth] = useState(300);
+	const [rightSidebarWidth, setRightSidebarWidth] = useState(300);
+	const [isDragging, setIsDragging] = useState<'left' | 'right' | null>(null);
+	const dragStartRef = useRef<{ x: number; width: number } | null>(null);
 
 	// Static theme colors to avoid hook complexity
 	const colors = {
@@ -45,9 +85,66 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
 		}
 	};
 
+	// Drag handling for sidebar resizing
+	const handleDragStart = useCallback((side: 'left' | 'right', e: React.MouseEvent) => {
+		e.preventDefault();
+		setIsDragging(side);
+		dragStartRef.current = {
+			x: e.clientX,
+			width: side === 'left' ? leftSidebarWidth : rightSidebarWidth
+		};
+	}, [leftSidebarWidth, rightSidebarWidth]);
+
+	const handleDragMove = useCallback((e: MouseEvent) => {
+		if (!isDragging || !dragStartRef.current) return;
+
+		const deltaX = e.clientX - dragStartRef.current.x;
+		const newWidth = Math.max(200, Math.min(600, dragStartRef.current.width +
+			(isDragging === 'left' ? deltaX : -deltaX)
+		));
+
+		if (isDragging === 'left') {
+			setLeftSidebarWidth(newWidth);
+		} else {
+			setRightSidebarWidth(newWidth);
+		}
+	}, [isDragging]);
+
+	const handleDragEnd = useCallback(() => {
+		setIsDragging(null);
+		dragStartRef.current = null;
+	}, []);
+
+	// Add global mouse event listeners for dragging
+	React.useEffect(() => {
+		if (isDragging) {
+			document.addEventListener('mousemove', handleDragMove);
+			document.addEventListener('mouseup', handleDragEnd);
+			document.body.style.cursor = 'ew-resize';
+			document.body.style.userSelect = 'none';
+
+			return () => {
+				document.removeEventListener('mousemove', handleDragMove);
+				document.removeEventListener('mouseup', handleDragEnd);
+				document.body.style.cursor = '';
+				document.body.style.userSelect = '';
+			};
+		}
+	}, [isDragging, handleDragMove, handleDragEnd]);
+
 	return (
 		<AppShell
 			header={{ height: 60 }}
+			navbar={{
+				width: leftSidebarWidth,
+				breakpoint: "sm",
+				collapsed: { desktop: !leftSidebarOpen, mobile: true }
+			}}
+			aside={{
+				width: rightSidebarWidth,
+				breakpoint: "sm",
+				collapsed: { desktop: !rightSidebarOpen, mobile: true }
+			}}
 			padding={0}
 		>
 			{/* Header */}
@@ -60,6 +157,27 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
 					</Group>
 
 					<Group gap="md">
+						{/* Sidebar toggle controls */}
+						<ActionIcon
+							onClick={toggleLeftSidebar}
+							variant="subtle"
+							size="lg"
+							aria-label="Toggle left sidebar"
+							color={leftSidebarOpen ? "blue" : "gray"}
+						>
+							<IconLayoutSidebar size={18} />
+						</ActionIcon>
+
+						<ActionIcon
+							onClick={toggleRightSidebar}
+							variant="subtle"
+							size="lg"
+							aria-label="Toggle right sidebar"
+							color={rightSidebarOpen ? "blue" : "gray"}
+						>
+							<IconLayoutSidebarRight size={18} />
+						</ActionIcon>
+
 						<nav style={{ display: "flex", gap: "1rem" }}>
 							<Link
 								to="/"
@@ -101,52 +219,156 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
 				</Group>
 			</AppShell.Header>
 
-			{/* Main Graph Area */}
-			<AppShell.Main
-				style={{
-					display: "flex",
-					flexDirection: "column",
-					height: "100%",
-					overflow: "hidden",
-					position: "relative"
-				}}
-			>
-				{/* 🚫 DISABLED: React Flow container disabled per user request */}
+			{/* Left Sidebar */}
+			<AppShell.Navbar p={0}>
 				<div style={{
-					flex: 1,
-					width: "100%",
-					height: "100%",
-					minHeight: 0,
-					display: "flex",
-					alignItems: "center",
-					justifyContent: "center",
-					background: "var(--mantine-color-gray-1)",
-					flexDirection: "column",
-					gap: "1rem"
+					display: 'flex',
+					height: '100%',
+					position: 'relative'
 				}}>
-					<h2>Academic Explorer</h2>
-					<p>Author route active: A5017898742</p>
-					<p>React Flow visualization disabled per user request</p>
-				</div>
-
-				{/* Route content rendered as overlay if present */}
-				{children && (
+					<div style={{ flex: 1, padding: '0.75rem', overflowY: 'auto' }}>
+						{/* Pinning controls */}
+						<Group justify="space-between" mb="sm" px="xs">
+							<Text size="xs" c="dimmed">Left Panel</Text>
+							<Group gap="xs">
+								{!getActiveGroup("left") && (
+									<ActionIcon
+										onClick={activateDefaultGroups}
+										variant="light"
+										size="sm"
+										color="blue"
+										aria-label="Activate tools"
+									>
+										<IconLayoutSidebar size={14} />
+									</ActionIcon>
+								)}
+								<ActionIcon
+									onClick={() => pinLeftSidebar(!leftSidebarPinned)}
+									variant="subtle"
+									size="sm"
+									aria-label={leftSidebarPinned ? "Unpin left sidebar" : "Pin left sidebar"}
+									color={leftSidebarPinned ? "blue" : "gray"}
+								>
+									{leftSidebarPinned ? <IconPinned size={14} /> : <IconPin size={14} />}
+								</ActionIcon>
+							</Group>
+						</Group>
+						<LeftSidebarDynamic />
+					</div>
+					{/* Left drag handle */}
 					<div
 						style={{
-							position: "absolute",
-							top: "50%",
-							left: "50%",
-							transform: "translate(-50%, -50%)",
-							zIndex: 100,
-							maxWidth: "90vw",
-							maxHeight: "90vh",
-							overflow: "auto",
-							pointerEvents: "auto"
+							width: '4px',
+							height: '100%',
+							background: isDragging === 'left' ? colors.primary : 'transparent',
+							cursor: 'ew-resize',
+							position: 'absolute',
+							right: 0,
+							top: 0,
+							zIndex: 10,
+							borderRight: `1px solid ${colors.border.primary}`
 						}}
-					>
-						{children}
+						onMouseDown={(e) => handleDragStart('left', e)}
+						onMouseEnter={(e) => {
+							if (!isDragging) {
+								e.currentTarget.style.background = colors.border.primary;
+							}
+						}}
+						onMouseLeave={(e) => {
+							if (!isDragging) {
+								e.currentTarget.style.background = 'transparent';
+							}
+						}}
+					/>
+				</div>
+			</AppShell.Navbar>
+
+			{/* Right Sidebar */}
+			<AppShell.Aside p={0}>
+				<div style={{
+					display: 'flex',
+					height: '100%',
+					position: 'relative'
+				}}>
+					{/* Right drag handle */}
+					<div
+						style={{
+							width: '4px',
+							height: '100%',
+							background: isDragging === 'right' ? colors.primary : 'transparent',
+							cursor: 'ew-resize',
+							position: 'absolute',
+							left: 0,
+							top: 0,
+							zIndex: 10,
+							borderLeft: `1px solid ${colors.border.primary}`
+						}}
+						onMouseDown={(e) => handleDragStart('right', e)}
+						onMouseEnter={(e) => {
+							if (!isDragging) {
+								e.currentTarget.style.background = colors.border.primary;
+							}
+						}}
+						onMouseLeave={(e) => {
+							if (!isDragging) {
+								e.currentTarget.style.background = 'transparent';
+							}
+						}}
+					/>
+					<div style={{ flex: 1, padding: '0.75rem', overflowY: 'auto', marginLeft: '4px' }}>
+						{/* Pinning controls */}
+						<Group justify="space-between" mb="sm" px="xs">
+							<Text size="xs" c="dimmed">Right Panel</Text>
+							<Group gap="xs">
+								{!getActiveGroup("right") && (
+									<ActionIcon
+										onClick={activateDefaultGroups}
+										variant="light"
+										size="sm"
+										color="blue"
+										aria-label="Activate tools"
+									>
+										<IconLayoutSidebarRight size={14} />
+									</ActionIcon>
+								)}
+								<ActionIcon
+									onClick={() => pinRightSidebar(!rightSidebarPinned)}
+									variant="subtle"
+									size="sm"
+									aria-label={rightSidebarPinned ? "Unpin right sidebar" : "Pin right sidebar"}
+									color={rightSidebarPinned ? "blue" : "gray"}
+								>
+									{rightSidebarPinned ? <IconPinned size={14} /> : <IconPin size={14} />}
+								</ActionIcon>
+							</Group>
+						</Group>
+						<RightSidebarDynamic />
 					</div>
-				)}
+				</div>
+			</AppShell.Aside>
+
+			{/* Main Content Area */}
+			<AppShell.Main>
+				<div style={{
+					height: "100vh",
+					padding: "1rem",
+					overflow: "auto"
+				}}>
+					{children || (
+						<div style={{
+							display: "flex",
+							alignItems: "center",
+							justifyContent: "center",
+							height: "100%",
+							flexDirection: "column",
+							gap: "1rem",
+							color: "var(--mantine-color-dimmed)"
+						}}>
+							<h2>Academic Explorer</h2>
+							<p>Sidebars restored - Navigate to view content</p>
+						</div>
+					)}
+				</div>
 			</AppShell.Main>
 		</AppShell>
 	);
