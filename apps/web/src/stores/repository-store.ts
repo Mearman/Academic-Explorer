@@ -329,7 +329,7 @@ export const useRepositoryStore = create<RepositoryState>()(
 
 					state.filteredNodes = nodes.filter(node => {
 						// Type filter
-						if (!state.nodeTypeFilter[node.type]) {
+						if (!state.nodeTypeFilter[node.entityType]) {
 							return false;
 						}
 

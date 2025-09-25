@@ -55,7 +55,7 @@ export function getNodeOpenAccess(node: GraphNode): boolean | undefined {
  * Get works count for an author node - extracted on-demand from entity data
  */
 export function getNodeWorksCount(node: GraphNode): number | undefined {
-	if (node.type === "authors" && node.entityData?.["works_count"] !== undefined) {
+	if (node.entityType === "authors" && node.entityData?.["works_count"] !== undefined) {
 		return Number(node.entityData["works_count"]);
 	}
 	return undefined;
@@ -65,7 +65,7 @@ export function getNodeWorksCount(node: GraphNode): number | undefined {
  * Get h-index for an author node - extracted on-demand from entity data
  */
 export function getNodeHIndex(node: GraphNode): number | undefined {
-	if (node.type === "authors") {
+	if (node.entityType === "authors") {
 		function isSummaryStatsRecord(value: unknown): value is Record<string, unknown> {
 			return value !== null && typeof value === "object";
 		}
@@ -82,7 +82,7 @@ export function getNodeHIndex(node: GraphNode): number | undefined {
  * Get ORCID for an author node - extracted on-demand from entity data
  */
 export function getNodeOrcid(node: GraphNode): string | undefined {
-	if (node.type === "authors") {
+	if (node.entityType === "authors") {
 		const orcid = node.entityData?.["orcid"];
 		if (orcid && typeof orcid === "string") {
 			return orcid;
@@ -95,7 +95,7 @@ export function getNodeOrcid(node: GraphNode): string | undefined {
  * Get institution name for an institution node - extracted on-demand from entity data
  */
 export function getNodeInstitutionName(node: GraphNode): string | undefined {
-	if (node.type === "institutions") {
+	if (node.entityType === "institutions") {
 		const displayName = node.entityData?.["display_name"];
 		if (displayName && typeof displayName === "string") {
 			return displayName;
@@ -108,7 +108,7 @@ export function getNodeInstitutionName(node: GraphNode): string | undefined {
  * Get country code for an institution node - extracted on-demand from entity data
  */
 export function getNodeCountryCode(node: GraphNode): string | undefined {
-	if (node.type === "institutions") {
+	if (node.entityType === "institutions") {
 		const countryCode = node.entityData?.["country_code"];
 		if (countryCode && typeof countryCode === "string") {
 			return countryCode;
@@ -121,7 +121,7 @@ export function getNodeCountryCode(node: GraphNode): string | undefined {
  * Get source type for a source node - extracted on-demand from entity data
  */
 export function getNodeSourceType(node: GraphNode): string | undefined {
-	if (node.type === "sources") {
+	if (node.entityType === "sources") {
 		const sourceType = node.entityData?.["type"];
 		if (sourceType && typeof sourceType === "string") {
 			return sourceType;

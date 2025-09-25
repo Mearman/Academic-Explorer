@@ -53,13 +53,25 @@ packages/*/coverage
 **/lib/
 **/build/
 
+# TypeScript compiled outputs in src directories
+packages/*/src/**/*.js
+packages/*/src/**/*.d.ts
+packages/*/src/**/*.js.map
+!packages/*/src/**/*.test.js
+!packages/*/src/**/*.spec.js
+
 # TypeScript build info files
 *.tsbuildinfo
 **/tsconfig.tsbuildinfo
 
 # Temporary files
 .temp/
-.tmp/# Vitest temporary compiled config files
+.tmp/
+
+# Claude development notes and plans
+.claude/
+
+# Vitest temporary compiled config files
 **/*.timestamp-*.mjs
 # Vite temporary compiled config files
 **/vite.config.ts.timestamp-*.mjs

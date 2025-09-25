@@ -205,7 +205,7 @@ export const NodeContextMenu: React.FC<NodeContextMenuProps> = ({
 						color: "#374151",
 						marginBottom: "2px"
 					}}>
-						{node.type.charAt(0).toUpperCase() + node.type.slice(1, -1)} {/* Remove 's' and capitalize */}
+						{node.entityType.charAt(0).toUpperCase() + node.entityType.slice(1, -1)} {/* Remove 's' and capitalize */}
 					</div>
 					<div style={{
 						fontSize: "11px",

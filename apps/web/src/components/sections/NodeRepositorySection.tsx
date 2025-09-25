@@ -50,7 +50,7 @@ const NodeRepositoryItem: React.FC<NodeRepositoryItemProps> = ({
 	const {colors} = themeColors;
 
 	// Get icon for entity type
-	const entityOption = entityTypeOptions.find(option => option.type === node.type);
+	const entityOption = entityTypeOptions.find(option => option.type === node.entityType);
 	const Icon = entityOption?.icon || IconFile;
 
 	const handleDragStart = useCallback((event: React.DragEvent) => {
@@ -63,7 +63,7 @@ const NodeRepositoryItem: React.FC<NodeRepositoryItemProps> = ({
 
 		logger.debug("repository", "Started dragging repository node", {
 			nodeId: node.id,
-			nodeType: node.type,
+			nodeType: node.entityType,
 			nodeLabel: node.label
 		});
 	}, [node]);
@@ -103,7 +103,7 @@ const NodeRepositoryItem: React.FC<NodeRepositoryItemProps> = ({
 						{node.label}
 					</Text>
 					<Text size="xs" style={{ color: colors.text.secondary }}>
-						{entityOption?.label || node.type}
+						{entityOption?.label || node.entityType}
 					</Text>
 				</div>
 

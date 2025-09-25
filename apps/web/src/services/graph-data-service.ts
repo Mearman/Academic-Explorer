@@ -484,19 +484,19 @@ export class GraphDataService {
 
 			logger.debug("graph", "Hydrating node to full with selective field loading", {
 				nodeId,
-				entityType: node.type,
+				entityType: node.entityType,
 				label: node.label
 			}, "GraphDataService");
 
 			// Check if we can use selective field loading for this entity type
-			if (EntityFactory.isSupported(node.type)) {
+			if (EntityFactory.isSupported(node.entityType)) {
 				// Use entity-specific selective field loading for metadata
-				const entityInstance = EntityFactory.create(node.type, cachedOpenAlex);
+				const entityInstance = EntityFactory.create(node.entityType, cachedOpenAlex);
 
 				logger.debug("graph", "Using selective field loading for metadata fields", {
 					nodeId,
 					entityId: node.entityId,
-					entityType: node.type
+					entityType: node.entityType
 				}, "GraphDataService");
 
 				const entity = await this.deduplicationService.getEntity(
@@ -505,7 +505,7 @@ export class GraphDataService {
 				);
 
 				// Extract metadata-level data from the entity
-				const fullNodeData = this.createNodeFromEntity(entity, node.type);
+				const fullNodeData = this.createNodeFromEntity(entity, node.entityType);
 
 				// Update the node with full metadata
 				store.markNodeAsLoaded(nodeId, {
@@ -524,7 +524,7 @@ export class GraphDataService {
 				// Fallback to full entity fetch for unsupported types
 				logger.debug("graph", "Fallback to full entity fetch", {
 					nodeId,
-					entityType: node.type,
+					entityType: node.entityType,
 					reason: "entity type not supported for selective loading"
 				}, "GraphDataService");
 
@@ -534,7 +534,7 @@ export class GraphDataService {
 				);
 
 				// Extract full data from the entity
-				const fullNodeData = this.createNodeFromEntity(entity, node.type);
+				const fullNodeData = this.createNodeFromEntity(entity, node.entityType);
 
 				// Update the node with full data
 				store.markNodeAsLoaded(nodeId, {
@@ -676,7 +676,7 @@ export class GraphDataService {
 
 			logger.debug("graph", `Processing minimal node ${String(i + 1)}/${String(minimalNodes.length)}`, {
 				nodeId: node.id,
-				entityType: node.type,
+				entityType: node.entityType,
 				label: node.label
 			}, "GraphDataService");
 
@@ -738,7 +738,7 @@ export class GraphDataService {
 			this.hydrateNodeToFull(node.id).catch((error: unknown) => {
 				logger.warn("graph", "Failed to hydrate minimal node in parallel batch", {
 					nodeId: node.id,
-					entityType: node.type,
+					entityType: node.entityType,
 					label: node.label,
 					error: error instanceof Error ? error.message : "Unknown error"
 				}, "GraphDataService");
@@ -830,20 +830,20 @@ export class GraphDataService {
 				return;
 			}
 			const node = store.nodes[nodeId];
-			logger.error("graph", "DEBUG: Retrieved node from store", { nodeId, nodeExists: !!node, ...(node?.type !== undefined && { nodeType: node.type }) }, "GraphDataService");
+			logger.error("graph", "DEBUG: Retrieved node from store", { nodeId, nodeExists: !!node, ...(node?.type !== undefined && { nodeType: node.entityType }) }, "GraphDataService");
 			if (!node) {
 				logger.error("graph", "DEBUG: Node is null, returning early", { nodeId }, "GraphDataService");
 				return;
 			}
 
 			// Check if entity type is supported
-			logger.error("graph", "DEBUG: Checking if entity type is supported", { nodeId, entityType: node.type, isSupported: EntityFactory.isSupported(node.type) }, "GraphDataService");
-			if (!EntityFactory.isSupported(node.type)) {
-				logger.warn("graph", `Expansion not implemented for entity type: ${node.type}`, {
+			logger.error("graph", "DEBUG: Checking if entity type is supported", { nodeId, entityType: node.entityType, isSupported: EntityFactory.isSupported(node.entityType) }, "GraphDataService");
+			if (!EntityFactory.isSupported(node.entityType)) {
+				logger.warn("graph", `Expansion not implemented for entity type: ${node.entityType}`, {
 					nodeId,
-					entityType: node.type
+					entityType: node.entityType
 				}, "GraphDataService");
-				logger.error("graph", "DEBUG: Entity type not supported, returning early", { nodeId, entityType: node.type }, "GraphDataService");
+				logger.error("graph", "DEBUG: Entity type not supported, returning early", { nodeId, entityType: node.entityType }, "GraphDataService");
 				return;
 			}
 
@@ -853,7 +853,7 @@ export class GraphDataService {
 			// Log expansion attempt
 			logger.debug("graph", "Expanding node", {
 				nodeId,
-				entityType: node.type,
+				entityType: node.entityType,
 				force,
 				limit: options.limit,
 				depth: options.depth,
@@ -861,22 +861,22 @@ export class GraphDataService {
 			}, "GraphDataService");
 
 			// Create entity instance using the factory
-			const entity = EntityFactory.create(node.type, cachedOpenAlex);
+			const entity = EntityFactory.create(node.entityType, cachedOpenAlex);
 
 			// Get expansion settings for this entity type
 			const expansionSettingsStore = useExpansionSettingsStore.getState();
 			// Safely convert entity type to expansion target with type guard
-			if (!isEntityType(node.type)) {
-				logger.error("graph", "Invalid entity type for expansion", { nodeId, entityType: node.type }, "GraphDataService");
+			if (!isEntityType(node.entityType)) {
+				logger.error("graph", "Invalid entity type for expansion", { nodeId, entityType: node.entityType }, "GraphDataService");
 				return;
 			}
-			const expansionTarget = node.type; // Already validated as EntityType, which extends ExpansionTarget
+			const expansionTarget = node.entityType; // Already validated as EntityType, which extends ExpansionTarget
 			const expansionSettings = expansionSettingsStore.getSettings(expansionTarget);
 
 			// Log expansion settings usage
 			logger.debug("graph", "Retrieved expansion settings for node expansion", {
 				nodeId,
-				entityType: node.type,
+				entityType: node.entityType,
 				expansionTarget,
 				settingsEnabled: expansionSettings.enabled,
 				settingsLimit: expansionSettings.limit,
@@ -887,7 +887,7 @@ export class GraphDataService {
 			// Expand the entity with expansion settings
 			const context = {
 				entityId: node.entityId,
-				entityType: node.type,
+				entityType: node.entityType,
 				client: cachedOpenAlex
 			};
 			const enhancedOptions = {
@@ -921,7 +921,7 @@ export class GraphDataService {
 				logger.debug("graph", "Starting relationship detection for expanded nodes", {
 					expandedNodeId: nodeId,
 					newNodeCount: newNodeIds.length,
-					entityType: node.type
+					entityType: node.entityType
 				}, "GraphDataService");
 
 				try {
@@ -1288,7 +1288,7 @@ export class GraphDataService {
 
 			// Create updated node data WITHOUT creating related entities (hydration only)
 			// This prevents automatic expansion of related entities during single-click hydration
-			const fullNodeData = this.createNodeFromEntity(fullEntity, node.type);
+			const fullNodeData = this.createNodeFromEntity(fullEntity, node.entityType);
 
 			// Update node with full data
 			store.updateNode(nodeId, {
@@ -1298,7 +1298,7 @@ export class GraphDataService {
 
 			logger.debug("graph", "Node fully hydrated (without expansion)", {
 				nodeId,
-				entityType: node.type,
+				entityType: node.entityType,
 				externalIdCount: fullNodeData.externalIds.length
 			});
 		} catch (error) {
@@ -1316,7 +1316,7 @@ export class GraphDataService {
 		const store = useGraphStore.getState();
 		// Use direct selectors instead of unstable getter function to avoid infinite loops
 		const { nodes, visibleEntityTypes } = store;
-		const allVisibleNodes = Object.values(nodes).filter((node) => node != null).filter((node) => node.type in visibleEntityTypes);
+		const allVisibleNodes = Object.values(nodes).filter((node) => node != null).filter((node) => node.entityType in visibleEntityTypes);
 
 		if (allVisibleNodes.length === 0) {
 			logger.debug("graph", "No visible nodes found to expand", { entityType }, "GraphDataService");
@@ -1354,7 +1354,7 @@ export class GraphDataService {
 
 					logger.debug("graph", `Found ${relatedEntityIds.length.toString()} ${entityType} entities related to ${node.id}`, {
 						nodeId: node.id,
-						sourceType: node.type,
+						sourceType: node.entityType,
 						targetType: entityType,
 						relatedCount: relatedEntityIds.length
 					}, "GraphDataService");
@@ -1373,7 +1373,7 @@ export class GraphDataService {
 								newNodes.push(minimalNode);
 
 								// Create edge from source node to new node
-								const relationshipType = this.determineRelationshipType(node.type, entityType);
+								const relationshipType = this.determineRelationshipType(node.entityType, entityType);
 								const edge: GraphEdge = {
 									id: `${node.id}-${relationshipType}-${entityId}`,
 									source: node.id,

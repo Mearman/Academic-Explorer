@@ -58,7 +58,7 @@ const NodeItem: React.FC<NodeItemProps> = ({
 	const pinnedNodes = useGraphStore((state) => state.pinnedNodes);
 	const isPinned = pinnedNodes[node.id] || false;
 
-	const entityTypeOption = entityTypeOptions.find(opt => opt.type === node.type);
+	const entityTypeOption = entityTypeOptions.find(opt => opt.type === node.entityType);
 	const IconComponent = entityTypeOption?.icon || IconFile;
 
 	return (
@@ -86,7 +86,7 @@ const NodeItem: React.FC<NodeItemProps> = ({
 						</Text>
 						<Group gap="xs">
 							<Badge size="xs" variant="light" color="blue">
-								{entityTypeOption?.label || node.type}
+								{entityTypeOption?.label || node.entityType}
 							</Badge>
 						</Group>
 					</div>
@@ -169,13 +169,13 @@ export const AllNodesSection: React.FC = () => {
 		// Apply visibility filter
 		if (showOnlyVisible) {
 			filtered = filtered.filter(node =>
-				visibleEntityTypes[node.type]
+				visibleEntityTypes[node.entityType]
 			);
 		}
 
 		// Group by entity type
 		const grouped = filtered.reduce<Partial<Record<EntityType, GraphNode[]>>>((acc, node) => {
-			const {type} = node;
+			const {entityType: type} = node;
 			if (!(type in acc)) {
 				acc[type] = [];
 			}

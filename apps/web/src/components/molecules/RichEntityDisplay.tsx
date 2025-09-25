@@ -572,15 +572,15 @@ export const RichEntityDisplay: React.FC<RichEntityDisplayProps> = ({
 
 	// Enhanced basic info card that works for all entity types
 	const BasicInfoCard = () => (
-		<Card padding="md" radius="md" withBorder style={{ borderColor: `var(--mantine-color-${getEntityColor(entity.type)}-5)`, borderWidth: 2 }}>
+		<Card padding="md" radius="md" withBorder style={{ borderColor: `var(--mantine-color-${getEntityColor(entity.entityType)}-5)`, borderWidth: 2 }}>
 			<Group align="flex-start" gap="md" mb="xs">
-				<ThemeIcon size="xl" color={getEntityColor(entity.type)} variant="light">
-					{getEntityIcon(entity.type, 24)}
+				<ThemeIcon size="xl" color={getEntityColor(entity.entityType)} variant="light">
+					{getEntityIcon(entity.entityType, 24)}
 				</ThemeIcon>
 				<Stack gap="xs" style={{ flex: 1 }}>
 					<Group gap="xs" wrap="wrap">
-						<Badge color={getEntityColor(entity.type)} variant="light" size="sm">
-							{entity.type.replace(/s$/, "").toUpperCase()}
+						<Badge color={getEntityColor(entity.entityType)} variant="light" size="sm">
+							{entity.entityType.replace(/s$/, "").toUpperCase()}
 						</Badge>
 						{getNodeYear(entity) && (
 							<Badge variant="light" color="gray" size="sm">
@@ -626,9 +626,9 @@ export const RichEntityDisplay: React.FC<RichEntityDisplayProps> = ({
 
 			{!isLoading && rawData && (
 				<>
-					{entity.type === "works" && <WorksDisplay work={rawData} />}
-					{entity.type === "authors" && <AuthorsDisplay author={rawData} />}
-					{entity.type === "institutions" && <InstitutionsDisplay institution={rawData} />}
+					{entity.entityType === "works" && <WorksDisplay work={rawData} />}
+					{entity.entityType === "authors" && <AuthorsDisplay author={rawData} />}
+					{entity.entityType === "institutions" && <InstitutionsDisplay institution={rawData} />}
 					{/* Add more entity types as needed */}
 				</>
 			)}

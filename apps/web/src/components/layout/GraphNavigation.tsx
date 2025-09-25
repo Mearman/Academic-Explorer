@@ -20,10 +20,10 @@ interface GraphNavigationProps {
 function convertToXYFlowNodes(graphNodes: GraphNode[]): Node[] {
 	return graphNodes.map(node => ({
 		id: node.id,
-		position: node.position || { x: Math.random() * 500, y: Math.random() * 500 },
+		position: { x: node.x || Math.random() * 500, y: node.y || Math.random() * 500 },
 		data: {
 			label: node.label || node.id,
-			entityType: node.type,
+			entityType: node.entityType,
 			entityId: node.entityId,
 		},
 		type: 'default'
@@ -41,20 +41,15 @@ function convertToXYFlowEdges(graphEdges: GraphEdge[]): Edge[] {
 	}));
 }
 
-// Stable selectors defined outside component to prevent recreation
-const selectIsLoading = (state: any) => state.isLoading;
-const selectError = (state: any) => state.error;
-const selectNodes = (state: any) => state.nodes;
-const selectEdges = (state: any) => state.edges;
 
 const GraphNavigationInner: React.FC<GraphNavigationProps> = ({ className, style }) => {
 	// CRITICAL: Use stable selectors to prevent infinite re-renders
-	const isLoading = useGraphStore(selectIsLoading);
-	const error = useGraphStore(selectError);
+	const isLoading = useGraphStore((state) => state.isLoading);
+	const error = useGraphStore((state) => state.error);
 
 	// CRITICAL: Memoize nodes and edges to prevent object recreation
-	const stableNodesMap = useGraphStore(selectNodes);
-	const stableEdgesMap = useGraphStore(selectEdges);
+	const stableNodesMap = useGraphStore((state) => state.nodes);
+	const stableEdgesMap = useGraphStore((state) => state.edges);
 
 	const graphNodes = useMemo(() => {
 		const nodes = Object.values(stableNodesMap).filter((node): node is NonNullable<typeof node> => node != null);

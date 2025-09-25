@@ -58,7 +58,7 @@ export function useGraphData() {
 				return;
 			}
 
-			logger.debug("graph", "Node found, expanding via service", { nodeId, nodeType: node.type });
+			logger.debug("graph", "Node found, expanding via service", { nodeId, nodeType: node.entityType });
 
 			// Direct service call - no worker dependency
 			store.setLoading(true);

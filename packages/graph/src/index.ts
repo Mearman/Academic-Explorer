@@ -1,12 +1,25 @@
 /**
  * @academic-explorer/graph
  *
- * Pure graph data structures and utilities for Academic Explorer
- * Zero external dependencies
+ * UI-agnostic graph data logic that can be shared across CLI, SDK, and web app
+ * Phase 1 implementation: Core Data Models & Services
  */
 
 // Core types and interfaces
 export * from "./types";
+
+// Phase 1: Core Data Models & Services
+export { GraphManager, type GraphManagerOptions, type GraphChangeEvent } from './data/graph-manager';
+export { EntityResolver, type IEntityResolver, type ExpansionOptions, type ExpansionResult } from './services/entity-resolver-interface';
+export {
+  GraphRepository,
+  IndexedDBAdapter,
+  LocalStorageAdapter,
+  createGraphRepository,
+  type GraphSnapshot,
+  type GraphHistoryEntry,
+  type StorageAdapter,
+} from './data/graph-repository';
 
 // Graph constants and configuration
 export * from "./constants";

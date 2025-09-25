@@ -85,7 +85,7 @@ export const ExternalLinksSection: React.FC<ExternalLinksSectionProps> = ({
 
 		// DOI link for works - access entityData safely
 		const {entityData} = entity;
-		if (entity.type === "works" && entityData?.['doi'] && isValidUrl(entityData['doi'])) {
+		if (entity.entityType === "works" && entityData?.['doi'] && isValidUrl(entityData['doi'])) {
 			links.push({
 				label: "DOI Resolver",
 				url: entityData['doi'],
@@ -96,7 +96,7 @@ export const ExternalLinksSection: React.FC<ExternalLinksSectionProps> = ({
 		}
 
 		// ORCID link for authors
-		if (entity.type === "authors" && entityData?.['orcid'] && isValidUrl(entityData['orcid'])) {
+		if (entity.entityType === "authors" && entityData?.['orcid'] && isValidUrl(entityData['orcid'])) {
 			links.push({
 				label: "ORCID Profile",
 				url: entityData['orcid'],
@@ -123,7 +123,7 @@ export const ExternalLinksSection: React.FC<ExternalLinksSectionProps> = ({
 		}
 
 		// Publisher website for sources
-		if (entity.type === "sources" && entityData?.['homepage_url'] && isValidUrl(entityData['homepage_url'])) {
+		if (entity.entityType === "sources" && entityData?.['homepage_url'] && isValidUrl(entityData['homepage_url'])) {
 			links.push({
 				label: "Publisher Website",
 				url: entityData['homepage_url'],

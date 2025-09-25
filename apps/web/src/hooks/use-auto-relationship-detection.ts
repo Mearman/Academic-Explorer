@@ -109,7 +109,7 @@ export function useAutoRelationshipDetection() {
 
     logger.debug("graph", "Nodes added to graph, triggering relationship detection", {
       nodeCount: nodes.length,
-      nodeTypes: [...new Set(nodes.map((node: NodeLike) => node.type))],
+      nodeTypes: [...new Set(nodes.map((node: NodeLike) => node.entityType))],
       nodeIds: nodes.map((node: NodeLike) => node.id)
     });
 
@@ -153,7 +153,7 @@ export function useAutoRelationshipDetection() {
         logger.error("graph", "Failed to detect relationships between nodes", {
           error: error instanceof Error ? error.message : "Unknown error",
           nodeCount: nodes.length,
-          nodeTypes: [...new Set(nodes.map((node: NodeLike) => node.type))]
+          nodeTypes: [...new Set(nodes.map((node: NodeLike) => node.entityType))]
         });
       });
     };

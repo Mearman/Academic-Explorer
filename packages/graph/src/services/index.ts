@@ -3,6 +3,9 @@
  * Graph utilities and service interfaces
  */
 
+// Phase 1: Core Services (Interface-only for buildability)
+export { EntityResolver, type IEntityResolver, type ExpansionOptions, type ExpansionResult } from './entity-resolver-interface';
+
 // Graph utility result interface
 export interface GraphUtilityResult {
   success: boolean;

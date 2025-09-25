@@ -3,6 +3,8 @@
  * Provider-agnostic definitions that work with any graph visualization library
  */
 
+import type { GraphSnapshot } from '../data/graph-repository';
+
 // Core entity types from OpenAlex
 export type EntityType =
   | "works"
@@ -59,16 +61,20 @@ export interface ExternalIdentifier {
 
 export interface GraphNode {
   id: string;  // Always OpenAlex ID for internal consistency
-  type: EntityType;
+  entityType: EntityType;
   label: string;
   entityId: string;  // OpenAlex ID
-  position: Position;
+  x: number;  // XY coordinates for compatibility
+  y: number;
 
   // External identifiers (DOIs, ORCIDs, etc.)
   externalIds: ExternalIdentifier[];
 
   // Raw entity data - all display data extracted on-demand via helper functions
   entityData?: Record<string, unknown>;
+
+  // Node metadata for loading states, errors, etc.
+  metadata?: Record<string, unknown>;
 }
 
 export interface GraphEdge {
@@ -113,14 +119,6 @@ export interface GraphEvents {
   onSelectionChange?: (nodes: GraphNode[], edges: GraphEdge[]) => void;
 }
 
-export interface GraphSnapshot {
-  nodes: GraphNode[];
-  edges: GraphEdge[];
-  viewport?: {
-    zoom: number;
-    center: Position;
-  };
-}
 
 export interface GraphOptions {
   interactive?: boolean;
@@ -204,3 +202,24 @@ export interface GraphCache {
   expandedNodes: Set<string>;
   fetchedRelationships: Map<string, Set<RelationType>>;
 }
+
+// Statistics for graph analysis
+export interface GraphStats {
+  nodeCount: number;
+  edgeCount: number;
+  nodesByType: Record<EntityType, number>;
+  edgesByType: Record<RelationType, number>;
+  avgDegree: number;
+  maxDegree: number;
+  density: number;
+  connectedComponents: number;
+}
+
+// Community detection results
+export interface Community {
+  id: string;
+  nodes: string[]; // Node IDs
+  size: number;
+  density: number;
+}
+

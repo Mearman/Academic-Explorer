@@ -151,14 +151,14 @@ export function useEntityInteraction(centerOnNodeFn?: (nodeId: string, position?
 		if (!node.entityId) {
 			logger.warn("graph", "Cannot interact with node - missing entityId", {
 				nodeId: node.id,
-				nodeType: node.type
+				nodeType: node.entityType
 			});
 			return Promise.resolve();
 		}
 
 		return interactWithEntity(
 			node.entityId,
-			node.type,
+			node.entityType,
 			INTERACTION_PRESETS.GRAPH_NODE_CLICK,
 			node
 		);
@@ -172,14 +172,14 @@ export function useEntityInteraction(centerOnNodeFn?: (nodeId: string, position?
 		if (!node.entityId) {
 			logger.warn("graph", "Cannot interact with node - missing entityId", {
 				nodeId: node.id,
-				nodeType: node.type
+				nodeType: node.entityType
 			});
 			return Promise.resolve();
 		}
 
 		return interactWithEntity(
 			node.entityId,
-			node.type,
+			node.entityType,
 			INTERACTION_PRESETS.GRAPH_NODE_DOUBLE_CLICK,
 			node
 		);

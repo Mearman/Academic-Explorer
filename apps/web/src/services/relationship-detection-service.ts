@@ -81,7 +81,7 @@ export class RelationshipDetectionService {
 		const store = useGraphStore.getState();
 		const nodeTypes = nodeIds.map(id => {
 			const node = store.getNode(id);
-			return node ? `${id}(${node.type})` : `${id}(not found)`;
+			return node ? `${id}(${node.entityType})` : `${id}(not found)`;
 		});
 		logger.debug("graph", "Processing nodes by type", {
 			nodeTypes

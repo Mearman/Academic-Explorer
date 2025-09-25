@@ -510,7 +510,7 @@ function updateSimulationNodes(params: {
           y: node.y ?? 0,
           fx: node.fx ?? null,
           fy: node.fy ?? null,
-          ...(isValidEntityType(node.type) && { type: node.type })
+          ...(isValidEntityType(node.entityType) && { type: node.entityType })
         }));
         currentSimulationTaskId = data.taskId;
         startSimulation({
@@ -549,7 +549,7 @@ function updateSimulationNodes(params: {
                 y: node.y ?? 0,
                 fx: node.fx ?? null,
                 fy: node.fy ?? null,
-                ...(isValidEntityType(node.type) && { type: node.type })
+                ...(isValidEntityType(node.entityType) && { type: node.entityType })
               }));
               reheatSimulation({
                 nodes: validatedNodes,
@@ -601,7 +601,7 @@ function updateSimulationNodes(params: {
                 y: node.y ?? 0,
                 fx: node.fx ?? null,
                 fy: node.fy ?? null,
-                ...(isValidEntityType(node.type) && { type: node.type })
+                ...(isValidEntityType(node.entityType) && { type: node.entityType })
               }));
               updateSimulationNodes({
                 nodes: validatedNodes,
@@ -684,7 +684,7 @@ function updateSimulationNodes(params: {
               y: node.y ?? 0,
               fx: node.fx ?? null,
               fy: node.fy ?? null,
-              ...(isValidEntityType(node.type) && { type: node.type })
+              ...(isValidEntityType(node.entityType) && { type: node.entityType })
             }));
             logger.debug("worker", "Worker calling reheatSimulation", {
               nodeCount: validatedNodes.length,
@@ -746,7 +746,7 @@ function updateSimulationNodes(params: {
                 y: node.y ?? 0,
                 fx: node.fx ?? null,
                 fy: node.fy ?? null,
-                ...(isValidEntityType(node.type) && { type: node.type })
+                ...(isValidEntityType(node.entityType) && { type: node.entityType })
               }));
               updateSimulationNodes({
                 nodes: validatedNodes,

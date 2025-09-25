@@ -70,8 +70,8 @@ export const EntityFiltersSection: React.FC = () => {
 
 			// Count nodes by type
 			for (const node of nodes) {
-				if (node?.type && node.type in total) {
-					const nodeType = node.type as EntityType;
+				if (node?.type && node.entityType in total) {
+					const nodeType = node.entityType as EntityType;
 					total[nodeType]++;
 					// Note: visibility is handled at the graph level, not per-node
 					// For now, count all nodes as visible
