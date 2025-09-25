@@ -80,8 +80,7 @@ const GraphNavigationInner: React.FC<GraphNavigationProps> = ({ className, style
 	const setProvider = useCallback((provider: any) => {
 		graphStore.setProvider(provider);
 	}, [graphStore]);
-	const storeNodes = graphStore.nodes;
-	const storeEdges = graphStore.edges;
+	// Note: Using rawNodesMap and rawEdgesMap directly to avoid infinite loops
 	const {isLoading} = graphStore;
 	const {error} = graphStore;
 	const {visibleEntityTypes} = graphStore;
@@ -468,8 +467,8 @@ const GraphNavigationInner: React.FC<GraphNavigationProps> = ({ className, style
 		// Only log when there are actual changes to avoid spam
 		if (newNodeIds.size || newEdgeIds.size || updatedNodeIds.size || removedNodeIds.size || removedEdgeIds.size) {
 			logger.debug("graph", "Store data incremental sync effect triggered", {
-				totalNodeCount: Object.keys(storeNodes).length,
-				totalEdgeCount: Object.keys(storeEdges).length,
+				totalNodeCount: Object.keys(rawNodesMap).length,
+				totalEdgeCount: Object.keys(rawEdgesMap).length,
 				visibleNodeCount: currentVisibleNodes.length,
 				visibleEdgeCount: currentVisibleEdges.length,
 				newNodes: newNodeIds.size,
@@ -645,7 +644,7 @@ const GraphNavigationInner: React.FC<GraphNavigationProps> = ({ className, style
 		// Update refs for next comparison
 		previousNodeIdsRef.current = currentNodeIds;
 		previousEdgeIdsRef.current = currentEdgeIds;
-	}, [rawNodesMap, rawEdgesMap, visibleEntityTypes, visibleEdgeTypes, setNodes, setEdges, storeNodes, storeEdges, forceUpdateCounter]);
+	}, [rawNodesMap, rawEdgesMap, visibleEntityTypes, visibleEdgeTypes, setNodes, setEdges, forceUpdateCounter]);
 
 	// Consolidated listener for worker position updates: apply to both XYFlow and store
 	useEffect(() => {
@@ -692,18 +691,20 @@ const GraphNavigationInner: React.FC<GraphNavigationProps> = ({ className, style
 				}
 
 				if (validPositions.length > 0) {
-					// Update XYFlow nodes
+					// Update XYFlow nodes using callback to get current state
 					const positionChanges: NodeChange<XYNode>[] = validPositions.map(pos => ({
 						id: pos.id,
 						type: "position" as const,
 						position: { x: pos.x, y: pos.y },
 					}));
 
-					const newNodes = applyNodeChanges(positionChanges, nodes);
-					setNodes(newNodes);
-					logger.debug("graph", "Applied position changes to XYFlow", {
-						applied: positionChanges.length,
-						newNodesLength: newNodes.length
+					setNodes(currentNodes => {
+						const newNodes = applyNodeChanges(positionChanges, currentNodes);
+						logger.debug("graph", "Applied position changes to XYFlow", {
+							applied: positionChanges.length,
+							newNodesLength: newNodes.length
+						});
+						return newNodes;
 					});
 
 					// Update graph store
@@ -733,14 +734,14 @@ const GraphNavigationInner: React.FC<GraphNavigationProps> = ({ className, style
 			eventBus.off(WorkerEventType.FORCE_SIMULATION_PROGRESS, handler);
 			logger.debug("graph", "Unregistered FORCE_SIMULATION_PROGRESS handler");
 		};
-	}, [setNodes, nodes, eventBus]); // Depend on nodes and eventBus to re-apply if needed
+	}, [setNodes, eventBus]); // Removed nodes dependency to prevent infinite loops
 
 	// Combined URL state synchronization and browser history navigation
 	const lastHashProcessedRef = useRef<string>("");
 	const nodeCountRef = useRef<number>(0);
 
-	// Stable reference to node count to avoid dependency array issues
-	const storeNodeCount = Object.keys(storeNodes).length;
+	// Use rawNodesMap to avoid dependency issues
+	const storeNodeCount = Object.keys(rawNodesMap).length;
 
 	useEffect(() => {
 		// Only process when nodes are available and hash has changed
@@ -767,7 +768,7 @@ const GraphNavigationInner: React.FC<GraphNavigationProps> = ({ className, style
 					const [entityType, entityId] = pathParts;
 
 					// Find the corresponding node in the graph
-					const matchingNode = Object.values(storeNodes).filter((node): node is NonNullable<typeof node> => node != null).find(node => {
+					const matchingNode = Object.values(rawNodesMap).filter((node): node is NonNullable<typeof node> => node != null).find(node => {
 						const cleanNodeId = EntityDetector.extractOpenAlexId(node.entityId);
 						const cleanUrlId = entityId ? EntityDetector.extractOpenAlexId(entityId) : '';
 						return node.type === entityType && cleanNodeId === cleanUrlId;
@@ -816,7 +817,7 @@ const GraphNavigationInner: React.FC<GraphNavigationProps> = ({ className, style
 
 		lastHashProcessedRef.current = currentHash;
 		nodeCountRef.current = currentNodeCount;
-	}, [storeNodeCount, storeNodes, setPreviewEntity, centerOnNode, autoPinOnLayoutStabilization]);
+	}, [storeNodeCount, rawNodesMap, setPreviewEntity, centerOnNode, autoPinOnLayoutStabilization]);
 
 	// Browser history navigation (back/forward button support for hash routing)
 	useEffect(() => {
@@ -1077,7 +1078,7 @@ const GraphNavigationInner: React.FC<GraphNavigationProps> = ({ className, style
 
 	// Loading state - only show full loading screen if there are no existing nodes
 	// This prevents the loading screen from showing during incremental expansions
-	if (isLoading && !Object.keys(storeNodes).length) {
+	if (isLoading && !Object.keys(rawNodesMap).length) {
 		return (
 			<div className={className} style={{
 				display: "flex",

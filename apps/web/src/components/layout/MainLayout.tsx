@@ -21,23 +21,20 @@ interface MainLayoutProps {
 }
 
 export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
-	const layoutStore = useLayoutStore();
-	const {leftSidebarOpen} = layoutStore;
-	const {rightSidebarOpen} = layoutStore;
-	const {leftSidebarPinned} = layoutStore;
-	const {rightSidebarPinned} = layoutStore;
-	const {leftSidebarAutoHidden} = layoutStore;
-	const {rightSidebarAutoHidden} = layoutStore;
-	const {leftSidebarHovered} = layoutStore;
-	const {rightSidebarHovered} = layoutStore;
-	const {toggleLeftSidebar} = layoutStore;
-	const {toggleRightSidebar} = layoutStore;
+	// Use direct store selectors to avoid object creation
+	const leftSidebarOpen = useLayoutStore((state) => state.leftSidebarOpen);
+	const rightSidebarOpen = useLayoutStore((state) => state.rightSidebarOpen);
+	const leftSidebarPinned = useLayoutStore((state) => state.leftSidebarPinned);
+	const rightSidebarPinned = useLayoutStore((state) => state.rightSidebarPinned);
+	const leftSidebarAutoHidden = useLayoutStore((state) => state.leftSidebarAutoHidden);
+	const rightSidebarAutoHidden = useLayoutStore((state) => state.rightSidebarAutoHidden);
+	const leftSidebarHovered = useLayoutStore((state) => state.leftSidebarHovered);
+	const rightSidebarHovered = useLayoutStore((state) => state.rightSidebarHovered);
+	const toggleLeftSidebar = useLayoutStore((state) => state.toggleLeftSidebar);
+	const toggleRightSidebar = useLayoutStore((state) => state.toggleRightSidebar);
 
-	const mantineColorScheme = useMantineColorScheme();
-	const {colorScheme} = mantineColorScheme;
-	const {setColorScheme} = mantineColorScheme;
-	const themeColors = useThemeColors();
-	const {colors} = themeColors;
+	const { colorScheme, setColorScheme } = useMantineColorScheme();
+	const { colors } = useThemeColors();
 
 	// Calculate effective visibility for each sidebar
 	const leftSidebarEffectivelyVisible = leftSidebarOpen && (!leftSidebarAutoHidden || leftSidebarHovered || leftSidebarPinned);

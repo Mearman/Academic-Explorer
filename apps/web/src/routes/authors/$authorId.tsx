@@ -13,13 +13,15 @@ export const Route = createFileRoute("/authors/$authorId")({
 
 function AuthorRoute() {
 	const { authorId } = Route.useParams();
-	const navigate = useNavigate();
-	const graphData = useGraphData();
-	const {loadEntity} = graphData;
-	const {loadEntityIntoGraph} = graphData;
-	const nodeCount = useGraphStore((state) => state.totalNodeCount);
+	// DISABLED FOR DEBUGGING: Remove potential infinite loop sources
+	// const navigate = useNavigate();
+	// const graphData = useGraphData();
+	// const {loadEntity} = graphData;
+	// const {loadEntityIntoGraph} = graphData;
+	// const nodeCount = useGraphStore((state) => state.totalNodeCount);
 
-	// Check if ID needs normalization and redirect if necessary
+	// DISABLED FOR DEBUGGING: Check if ID needs normalization and redirect if necessary
+	/*
 	useEffect(() => {
 		if (!authorId) return;
 
@@ -72,8 +74,24 @@ function AuthorRoute() {
 
 		void loadAuthor();
 	}, [authorId, loadEntity, loadEntityIntoGraph, nodeCount]);
+	*/
 
-	// Return null - the graph is visible from MainLayout
-	// The route content is just for triggering the data load
-	return null;
+	// Temporary debugging: render a simple component to see if infinite loop is elsewhere
+	return (
+		<div style={{
+			position: 'fixed',
+			top: '50%',
+			left: '50%',
+			transform: 'translate(-50%, -50%)',
+			background: 'white',
+			padding: '20px',
+			border: '1px solid #ccc',
+			borderRadius: '8px',
+			zIndex: 1000
+		}}>
+			<h2>Author Route Debug</h2>
+			<p>Author ID: {authorId}</p>
+			<p>Status: Testing without hooks</p>
+		</div>
+	);
 }
