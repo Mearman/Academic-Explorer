@@ -29,11 +29,38 @@ export {
 	AutocompleteApi
 } from "./utils/autocomplete";
 
-// Type guards (removed - legacy type-guards file cleaned up)
+// Type guards
+export {
+	isWork,
+	isAuthor,
+	isInstitution,
+	isSource,
+	isTopic,
+	isConcept,
+	isPublisher,
+	isFunder,
+	isKeyword,
+	getEntityType,
+	hasProperty,
+	isNonNull,
+	isOpenAlexEntity
+} from "./type-guards";
 
-// Client configuration utilities (removed - legacy cached-client cleaned up)
+// Client configuration utilities
+export {
+	updateOpenAlexEmail,
+	cachedOpenAlex
+} from "./cached-client";
 
-// Advanced field selection utilities (removed - legacy advanced-field-selection cleaned up)
+// Advanced field selection utilities
+export {
+	ADVANCED_FIELD_SELECTIONS,
+	createAdvancedFieldSelection
+} from "./advanced-field-selection";
+
+export type {
+	AdvancedEntityFieldSelections
+} from "./advanced-field-selection";
 
 export {
 	QueryBuilder,

@@ -254,10 +254,7 @@ export default defineConfig(({ mode }) => ({
           // TanStack suite
           'vendor-tanstack': [
             '@tanstack/react-query',
-            '@tanstack/react-table',
-            '@tanstack/react-devtools',
-            '@tanstack/react-query-devtools',
-            '@tanstack/react-router-devtools'
+            '@tanstack/react-table'
           ],
 
           // Mantine UI suite
@@ -265,8 +262,7 @@ export default defineConfig(({ mode }) => ({
             '@mantine/core',
             '@mantine/hooks',
             '@mantine/notifications',
-            '@mantine/dates',
-            '@mantine/spotlight'
+            '@mantine/dates'
           ],
 
           // Graph visualization (route-specific)
