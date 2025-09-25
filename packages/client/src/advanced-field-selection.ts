@@ -3,25 +3,43 @@
  */
 
 export interface AdvancedEntityFieldSelections {
-  works: string[];
-  authors: string[];
-  sources: string[];
-  institutions: string[];
-  topics: string[];
-  publishers: string[];
-  funders: string[];
+  works: { minimal: string[] };
+  authors: { minimal: string[] };
+  sources: { minimal: string[] };
+  institutions: { minimal: string[] };
+  topics: { minimal: string[] };
+  concepts: { minimal: string[] };
+  publishers: { minimal: string[] };
+  funders: { minimal: string[] };
 }
 
 export const ADVANCED_FIELD_SELECTIONS: AdvancedEntityFieldSelections = {
-  works: ['id', 'display_name', 'publication_year', 'type', 'open_access'],
-  authors: ['id', 'display_name', 'works_count', 'last_known_institutions'],
-  sources: ['id', 'display_name', 'type', 'publisher'],
-  institutions: ['id', 'display_name', 'country_code', 'type'],
-  topics: ['id', 'display_name', 'keywords'],
-  publishers: ['id', 'display_name', 'works_count'],
-  funders: ['id', 'display_name', 'works_count']
+  works: {
+    minimal: ['id', 'display_name', 'publication_year', 'type', 'open_access']
+  },
+  authors: {
+    minimal: ['id', 'display_name', 'works_count', 'last_known_institutions']
+  },
+  sources: {
+    minimal: ['id', 'display_name', 'type', 'publisher']
+  },
+  institutions: {
+    minimal: ['id', 'display_name', 'country_code', 'type']
+  },
+  topics: {
+    minimal: ['id', 'display_name', 'keywords']
+  },
+  concepts: {
+    minimal: ['id', 'display_name', 'keywords']
+  },
+  publishers: {
+    minimal: ['id', 'display_name', 'works_count']
+  },
+  funders: {
+    minimal: ['id', 'display_name', 'works_count']
+  }
 };
 
 export function createAdvancedFieldSelection(entityType: keyof AdvancedEntityFieldSelections): string[] {
-  return ADVANCED_FIELD_SELECTIONS[entityType] || ['id', 'display_name'];
+  return ADVANCED_FIELD_SELECTIONS[entityType]?.minimal || ['id', 'display_name'];
 }

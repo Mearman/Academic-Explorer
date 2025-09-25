@@ -223,20 +223,22 @@ export class RelationshipDetectionService {
 	 */
 	private async fetchMinimalEntityData(entityId: string, entityType: EntityType): Promise<MinimalEntityData | null> {
 		try {
-			// Use advanced type-safe field selections with full path inference
-			const fieldsMap: AdvancedEntityFieldSelections = {
-				works: ADVANCED_FIELD_SELECTIONS.works.minimal,
-				authors: ADVANCED_FIELD_SELECTIONS.authors.minimal,
-				sources: ADVANCED_FIELD_SELECTIONS.sources.minimal,
-				institutions: ADVANCED_FIELD_SELECTIONS.institutions.minimal,
-				concepts: ADVANCED_FIELD_SELECTIONS.concepts.minimal,
-				topics: ADVANCED_FIELD_SELECTIONS.topics.minimal,
-				publishers: ADVANCED_FIELD_SELECTIONS.publishers.minimal,
-				funders: ADVANCED_FIELD_SELECTIONS.funders.minimal,
-				keywords: ["id", "display_name"] // Keywords don't have strict typing yet
+			// Use advanced type-safe field selections with minimal fields
+			const getMinimalFields = (entityType: EntityType): string[] => {
+				switch (entityType) {
+					case "works": return ADVANCED_FIELD_SELECTIONS.works.minimal;
+					case "authors": return ADVANCED_FIELD_SELECTIONS.authors.minimal;
+					case "sources": return ADVANCED_FIELD_SELECTIONS.sources.minimal;
+					case "institutions": return ADVANCED_FIELD_SELECTIONS.institutions.minimal;
+					case "concepts": return ADVANCED_FIELD_SELECTIONS.concepts.minimal;
+					case "topics": return ADVANCED_FIELD_SELECTIONS.topics.minimal;
+					case "publishers": return ADVANCED_FIELD_SELECTIONS.publishers.minimal;
+					case "funders": return ADVANCED_FIELD_SELECTIONS.funders.minimal;
+					default: return ["id", "display_name"]; // Default for keywords or unknown types
+				}
 			};
 
-			const selectFields = fieldsMap[entityType];
+			const selectFields = getMinimalFields(entityType);
 
 			// Deduplication service is always initialized in constructor
 

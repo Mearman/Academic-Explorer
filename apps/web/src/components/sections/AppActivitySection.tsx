@@ -88,7 +88,7 @@ const AppActivitySection: React.FC = () => {
 	const copyAllEvents = () => {
 		const allEventsData = filteredEvents.map(event => ({
 			timestamp: new Date(event.timestamp).toLocaleString(),
-			type: event.entityType,
+			type: event.metadata?.entityType || event.type,
 			category: event.category,
 			severity: event.severity,
 			event: event.event,
@@ -126,7 +126,7 @@ const AppActivitySection: React.FC = () => {
 		}
 	};
 
-	const getTypeIcon = (type: AppActivityEvent["entityType"]) => {
+	const getTypeIcon = (type: string) => {
 		switch (type) {
 			case "user": return IconUser;
 			case "navigation": return IconRoute;
@@ -162,9 +162,9 @@ const AppActivitySection: React.FC = () => {
 				groups["errors"]?.push(event);
 			} else if (event.severity === "warning") {
 				groups["warnings"]?.push(event);
-			} else if (event.entityType === "user") {
+			} else if (event.metadata?.entityType === "user") {
 				groups["interactions"]?.push(event);
-			} else if (event.entityType === "performance") {
+			} else if (event.metadata?.entityType === "performance") {
 				groups["performance"]?.push(event);
 			} else {
 				groups["system"]?.push(event);
@@ -208,7 +208,7 @@ const AppActivitySection: React.FC = () => {
 
 	const renderEvent = (event: AppActivityEvent) => {
 		const isExpanded = expandedEvents.has(event.id);
-		const TypeIcon = getTypeIcon(event.entityType);
+		const TypeIcon = getTypeIcon(event.metadata?.entityType || event.type);
 		const SeverityIcon = getSeverityIcon(event.severity);
 
 		return (
@@ -232,7 +232,7 @@ const AppActivitySection: React.FC = () => {
 									{event.severity}
 								</Badge>
 								<Badge variant="light" size="sm">
-									{event.entityType}
+									{event.metadata?.entityType || event.type}
 								</Badge>
 								<Badge variant="outline" size="sm">
 									{event.category}
@@ -472,7 +472,7 @@ const AppActivitySection: React.FC = () => {
 							<Select
 								placeholder="Type"
 								data={typeOptions}
-								{...(filters.entityType.length === 1 ? { value: filters.entityType[0] } : {})}
+								{...(filters.type.length === 1 ? { value: filters.type[0] } : {})}
 								onChange={(value) => { setTypeFilter(value ? [value] : []); }}
 								clearable
 								size="sm"

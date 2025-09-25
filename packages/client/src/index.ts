@@ -49,7 +49,8 @@ export {
 // Client configuration utilities
 export {
 	updateOpenAlexEmail,
-	cachedOpenAlex
+	cachedOpenAlex,
+	type ClientApis
 } from "./cached-client";
 
 // Advanced field selection utilities
