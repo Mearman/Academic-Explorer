@@ -105,7 +105,7 @@ export class GraphDataService {
 			// Detect entity type
 			const detection = EntityDetectionService.detectEntity(entityId);
 
-			if (!detection || !detection.entityType) {
+			if (!detection?.entityType) {
 				throw new Error(`Unable to detect entity type for: ${entityId}`);
 			}
 
@@ -245,7 +245,7 @@ export class GraphDataService {
 			// Detect entity type
 			const detection = EntityDetectionService.detectEntity(entityId);
 
-			if (!detection || !detection.entityType) {
+			if (!detection?.entityType) {
 				throw new Error(`Unable to detect entity type for: ${entityId}`);
 			}
 
@@ -354,7 +354,7 @@ export class GraphDataService {
 			// Detect entity type
 			const detection = EntityDetectionService.detectEntity(entityId);
 
-			if (!detection || !detection.entityType) {
+			if (!detection?.entityType) {
 				throw new Error(`Unable to detect entity type for: ${entityId}`);
 			}
 
@@ -1517,7 +1517,7 @@ export class GraphDataService {
 
 		// Determine entity type
 		const detection = EntityDetectionService.detectEntity(entity.id);
-		if (!detection || !detection.entityType || !isEntityType(detection.entityType)) {
+		if (!detection?.entityType || !isEntityType(detection.entityType)) {
 			throw new Error(`Unable to determine valid entity type for: ${entity.id}`);
 		}
 		const {entityType} = detection;
@@ -1734,7 +1734,7 @@ export class GraphDataService {
 
 		return {
 			id: entity.id,
-			entityType: entityType,
+			entityType,
 			label: entity.display_name ?? "Unknown Entity",
 			entityId: entity.id,
 			x: 0,

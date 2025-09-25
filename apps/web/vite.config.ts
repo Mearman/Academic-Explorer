@@ -40,7 +40,7 @@ function getBuildInfo() {
 }
 
 // https://vite.dev/config/
-export default defineConfig(({ mode }) => ({
+export default defineConfig(({ mode: _mode }) => ({
   resolve: {
     alias: {
       '@': path.resolve(__dirname, 'src'),

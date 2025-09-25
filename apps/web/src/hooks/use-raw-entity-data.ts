@@ -34,7 +34,7 @@ export const useRawEntityData = (options: UseRawEntityDataOptions) => {
 	if (entityId) {
 		const detection = EntityDetectionService.detectEntity(entityId);
 
-		if (!detection || !detection.entityType) {
+		if (!detection?.entityType) {
 			throw new Error(`Unable to detect entity type for: ${entityId}`);
 		}
 

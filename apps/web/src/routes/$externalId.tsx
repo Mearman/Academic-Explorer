@@ -1,5 +1,5 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router"
-import { useEffect, useMemo } from "react"
+import { useEffect } from "react"
 import {
 	IconSearch,
 } from "@tabler/icons-react"

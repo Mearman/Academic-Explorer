@@ -5,7 +5,7 @@
 
 import React, { useState, useCallback, useRef } from "react";
 import { AppShell, Group, Text, ActionIcon, useMantineColorScheme } from "@mantine/core";
-import { IconMoon, IconSun, IconDeviceDesktop, IconMenu2, IconX, IconLayoutSidebar, IconLayoutSidebarRight, IconPinned, IconPin } from "@tabler/icons-react";
+import { IconMoon, IconSun, IconDeviceDesktop, IconLayoutSidebar, IconLayoutSidebarRight, IconPinned, IconPin } from "@tabler/icons-react";
 import { Link } from "@tanstack/react-router";
 import { LeftSidebarDynamic } from "./LeftSidebarDynamic";
 import { RightSidebarDynamic } from "./RightSidebarDynamic";
@@ -255,7 +255,7 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
 											</ActionIcon>
 										)}
 										<ActionIcon
-											onClick={() => pinLeftSidebar(!leftSidebarPinned)}
+											onClick={() => { pinLeftSidebar(!leftSidebarPinned); }}
 											variant="subtle"
 											size="sm"
 											aria-label={leftSidebarPinned ? "Unpin left sidebar" : "Pin left sidebar"}
@@ -280,7 +280,7 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
 									zIndex: 10,
 									borderRight: `1px solid ${colors.border.primary}`
 								}}
-								onMouseDown={(e) => handleDragStart('left', e)}
+								onMouseDown={(e) => { handleDragStart('left', e); }}
 								onMouseEnter={(e) => {
 									if (!isDragging) {
 										e.currentTarget.style.background = colors.border.primary;
@@ -320,7 +320,7 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
 									zIndex: 10,
 									borderLeft: `1px solid ${colors.border.primary}`
 								}}
-								onMouseDown={(e) => handleDragStart('right', e)}
+								onMouseDown={(e) => { handleDragStart('right', e); }}
 								onMouseEnter={(e) => {
 									if (!isDragging) {
 										e.currentTarget.style.background = colors.border.primary;
@@ -353,7 +353,7 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
 											</ActionIcon>
 										)}
 										<ActionIcon
-											onClick={() => pinRightSidebar(!rightSidebarPinned)}
+											onClick={() => { pinRightSidebar(!rightSidebarPinned); }}
 											variant="subtle"
 											size="sm"
 											aria-label={rightSidebarPinned ? "Unpin right sidebar" : "Pin right sidebar"}

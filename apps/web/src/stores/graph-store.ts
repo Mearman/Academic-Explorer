@@ -11,7 +11,6 @@ import type {
 	GraphNode,
 	GraphEdge,
 	GraphProvider,
-	ProviderType,
 	GraphLayout,
 	EntityType,
 } from "@academic-explorer/graph";

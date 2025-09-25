@@ -19,7 +19,7 @@ import { RelationType } from "@academic-explorer/graph";
 import type {
 	OpenAlexEntity,
 } from "@academic-explorer/client";
-import { ADVANCED_FIELD_SELECTIONS, type AdvancedEntityFieldSelections } from "@academic-explorer/client";
+import { ADVANCED_FIELD_SELECTIONS } from "@academic-explorer/client";
 
 /**
  * Minimal entity data needed for relationship detection

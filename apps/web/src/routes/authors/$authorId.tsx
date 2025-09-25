@@ -1,11 +1,9 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { useEffect } from "react";
+import { createFileRoute } from "@tanstack/react-router";
 import { useGraphData } from "@/hooks/use-graph-data";
 import { useGraphStore } from "@/stores/graph-store";
 import { useRawEntityData } from "@/hooks/use-raw-entity-data";
 import { useEntityDocumentTitle } from "@/hooks/use-document-title";
-import { logError, logger } from "@academic-explorer/utils/logger";
-import { EntityDetectionService } from "@academic-explorer/graph";
+import { logger } from "@academic-explorer/utils/logger";
 
 export const Route = createFileRoute("/authors/$authorId")({
 	component: AuthorRoute,
