@@ -9,7 +9,7 @@
     "tsBuildInfoFile": "./dist/.tsbuildinfo"
   },
   "include": ["src/**/*"],
-  "exclude": ["**/*.test.*", "**/*.spec.*", "dist"],
+  "exclude": ["**/*.test.*", "**/*.spec.*", "src/__tests__/**/*", "dist"],
   "references": [
     { "path": "../utils" }
   ]
