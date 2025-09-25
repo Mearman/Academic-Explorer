@@ -30,7 +30,7 @@ import { useAnimatedLayoutContext } from "@/components/graph/animated-layout-con
 import { AnimatedLayoutProvider } from "@/components/graph/AnimatedLayoutProvider";
 import { useAnimatedGraphStore } from "@/stores/animated-graph-store";
 import { createAutoSimulationManager, type AutoSimulationState } from "@academic-explorer/simulation";
-import type { GraphNode, GraphEdge, EntityType, ExternalIdentifier } from "@academic-explorer/graph";
+import type { GraphNode, GraphEdge, EntityType, ExternalIdentifier, Event } from "@academic-explorer/graph";
 import { EntityDetector } from "@academic-explorer/graph";
 import { useEntityInteraction } from "@/hooks/use-entity-interaction";
 import { useContextMenu } from "@/hooks/use-context-menu";
@@ -720,8 +720,10 @@ const GraphNavigationInner: React.FC<GraphNavigationProps> = ({ className, style
 			}
 		};
 
-		const handler = (event: { payload: unknown }) => {
-			handleProgress(event.payload);
+		const handler = (event: Event) => {
+			if (event.payload) {
+				handleProgress(event.payload);
+			}
 		};
 
 		const subscriptionId = eventBus.on(WorkerEventType.FORCE_SIMULATION_PROGRESS, handler);
