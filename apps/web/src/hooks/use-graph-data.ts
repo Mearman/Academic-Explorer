@@ -1,13 +1,12 @@
 /**
  * React hook for graph data operations
  * Provides a clean interface for loading and manipulating graph data
+ * Works with or without visualization worker for maximum compatibility
  */
 
-import { useUnifiedExecutionWorker } from "@/hooks/use-unified-execution-worker";
 import { createGraphDataService } from "@/services/graph-data-service";
 import { useGraphStore } from "@/stores/graph-store";
 import type { EntityType, ExpansionOptions, SearchOptions } from "@academic-explorer/graph";
-import { safeParseExpansionTarget } from "@academic-explorer/utils";
 import { logError, logger } from "@academic-explorer/utils/logger";
 import { useQueryClient } from "@tanstack/react-query";
 import { useCallback, useMemo } from "react";
@@ -18,30 +17,8 @@ export function useGraphData() {
 	const isLoading = useGraphStore((state) => state.isLoading);
 	const error = useGraphStore((state) => state.error);
 
-	// Enhanced background worker for data fetching and expansion
-	const forceWorker = useUnifiedExecutionWorker({
-		onExpansionProgress: (nodeId, progress) => {
-			logger.debug("graph", "Node expansion progress", { nodeId, progress }, "useGraphData");
-		},
-		onExpansionComplete: (result) => {
-			logger.debug("graph", "Node expansion completed via force worker", {
-				nodeId: result.requestId,
-				nodesAdded: result.nodes.length,
-				edgesAdded: result.edges.length
-			}, "useGraphData");
-			// The worker has fetched the data, now we need to integrate it into the graph
-			// This would typically be handled by a graph service or store
-			// TODO: Integrate expansion result into graph store
-			// const store = useGraphStore.getState();
-			// store.addNodes(result.nodes);
-			// store.addEdges(result.edges);
-		},
-		onExpansionError: (nodeId, error) => {
-			logger.error("graph", "Node expansion failed via force worker", { nodeId, error }, "useGraphData");
-			const store = useGraphStore.getState();
-			store.setError(`Failed to expand node ${nodeId}: ${error}`);
-		}
-	});
+	// CRITICAL: No worker dependency to prevent infinite loops
+	// All operations use the service directly for maximum stability
 
 
 	const loadEntity = useCallback(async (entityId: string) => {
@@ -68,111 +45,51 @@ export function useGraphData() {
 		}
 	}, [service]);
 
- 	const expandNode = useCallback(async (nodeId: string, options?: Partial<ExpansionOptions>) => {
- 		logger.debug("graph-hook", "useGraphData.expandNode called", { nodeId, options });
+	const expandNode = useCallback(async (nodeId: string, options?: Partial<ExpansionOptions>) => {
+		logger.debug("graph", "useGraphData.expandNode called", { nodeId, options });
 
- 		try {
- 			logger.debug("graph-hook", "About to get store state", {});
- 			const store = useGraphStore.getState();
- 			logger.debug("graph-hook", "Got store state", { nodeCount: Object.keys(store.nodes).length });
+		try {
+			const store = useGraphStore.getState();
 
- 		// Get the node to expand
- 		const node = store.nodes[nodeId];
- 		logger.debug("graph-hook", "Checking for node", { nodeId, nodeExists: !!node, allNodeIds: Object.keys(store.nodes) });
- 		if (!node) {
- 			logger.debug("graph-hook", "Node not found for expansion", { nodeId });
- 			logger.warn("graph", "Node not found for expansion", { nodeId }, "useGraphData");
- 			return;
- 		}
-		logger.debug("graph-hook", "Node found, calling service.expandNode", { nodeId, nodeType: node.type });
-
- 		// Check if force worker is ready, with retry logic
- 		logger.debug("graph-hook", "Force worker ready check", { isWorkerReady: forceWorker.isWorkerReady });
- 		if (!forceWorker.isWorkerReady) {
- 			logger.debug("graph-hook", "Force worker not ready, starting retry logic", {});
- 			logger.warn("graph", "Force worker not ready initially, waiting for readiness", { nodeId }, "useGraphData");
-
-			// Wait a short time for state propagation and retry
-			let retryCount = 0;
-			const maxRetries = 10;
-			const retryDelay = 100; // 100ms
-
-			while (!forceWorker.isWorkerReady && retryCount < maxRetries) {
-				await new Promise(resolve => setTimeout(resolve, retryDelay));
-				retryCount++;
-				logger.warn("graph", "Retry checking worker readiness", {
-					nodeId,
-					retryCount,
-					isReady: forceWorker.isWorkerReady,
-					hasWorker: forceWorker.isWorkerReady,
-					workerState: typeof forceWorker
-				}, "useGraphData");
+			// Get the node to expand
+			const node = store.nodes[nodeId];
+			if (!node) {
+				logger.warn("graph", "Node not found for expansion", { nodeId }, "useGraphData");
+				return;
 			}
 
-			// If still not ready after retries, fall back to service
-			if (!forceWorker.isWorkerReady) {
-				logger.warn("graph", "Force worker not ready after retries, falling back to service", { nodeId, retriesUsed: retryCount }, "useGraphData");
+			logger.debug("graph", "Node found, expanding via service", { nodeId, nodeType: node.type });
 
-				// Fallback to service
-				store.setLoading(true);
-				try {
-					logger.warn("graph", "About to call service.expandNode", { nodeId, options }, "useGraphData");
-					await service.expandNode(nodeId, options);
-					logger.warn("graph", "service.expandNode completed", { nodeId }, "useGraphData");
+			// Direct service call - no worker dependency
+			store.setLoading(true);
+			try {
+				await service.expandNode(nodeId, options);
 
 				// Recalculate depths after expansion using first pinned node
-				const pinnedNodes = Object.keys(store.pinnedNodes);
+				const pinnedNodes = Object.keys(store.pinnedNodes || {});
 				const firstPinnedNodeId = pinnedNodes[0];
 				if (firstPinnedNodeId) {
-					store.calculateNodeDepths(firstPinnedNodeId);
+					store.calculateNodeDepths?.(firstPinnedNodeId);
 				}
 
-				logger.debug("graph", "Node expansion completed via service fallback", { nodeId }, "useGraphData");
+				logger.debug("graph", "Node expansion completed via service", { nodeId }, "useGraphData");
 			} catch (err) {
-				logger.error("graph", "Service fallback expansion failed", {
+				logger.error("graph", "Service expansion failed", {
 					nodeId,
 					error: err instanceof Error ? err.message : "Unknown error"
 				}, "useGraphData");
-				logError(logger, "Failed to expand node via service fallback", err, "useGraphData", "graph");
+				logError(logger, "Failed to expand node via service", err, "useGraphData", "graph");
 				store.setError(err instanceof Error ? err.message : "Failed to expand node");
 			} finally {
 				store.setLoading(false);
 			}
-			return;
-		} else {
-			logger.debug("graph", "Worker became ready after retries", { nodeId, retriesUsed: retryCount }, "useGraphData");
-		}
-	}
-
-	// Verify node type is valid
-		const expansionTarget = safeParseExpansionTarget(node.type);
-		if (!expansionTarget) {
-			logger.warn("graph", "Invalid node type for expansion", { nodeId, nodeType: node.type }, "useGraphData");
-			return;
-		}
-
-		// Use force worker for expansion
-		try {
-			logger.debug("graph", "Starting node expansion via force worker", {
+		} catch (error) {
+			logger.error("graph", "useGraphData.expandNode ERROR", {
 				nodeId,
-				entityType: node.type,
-				options,
-				workerReady: forceWorker.isWorkerReady
+				error: error instanceof Error ? error.message : String(error)
 			}, "useGraphData");
-
-			await service.expandNode(nodeId, options);
-		} catch (err) {
-			logger.error("graph", "Force worker expansion failed", {
-				nodeId,
-				error: err instanceof Error ? err.message : "Unknown error"
-			}, "useGraphData");
-			logError(logger, "Failed to expand node via force worker", err, "useGraphData", "graph");
-					store.setError(err instanceof Error ? err.message : "Failed to expand node");
-				}
- 		} catch (error) {
- 			logger.debug("graph-hook", "useGraphData.expandNode ERROR", { nodeId, error: error instanceof Error ? error.message : String(error) });
- 		}
- 	}, [forceWorker, service]);
+		}
+	}, [service]);
 
 	const expandAllNodesOfType = useCallback(async (entityType: EntityType, options?: {
 		depth?: number;
@@ -182,8 +99,8 @@ export function useGraphData() {
 		const store = useGraphStore.getState();
 		store.setLoading(true);
 
-		// Use traversal depth from store if not specified
-		const depth = options?.depth ?? store.traversalDepth;
+		// Use default depth if store doesn't have traversalDepth
+		const depth = options?.depth ?? (store.traversalDepth || 2);
 		const limit = options?.limit ?? 10;
 		const force = options?.force ?? true;
 
@@ -201,10 +118,10 @@ export function useGraphData() {
 				force
 			});
 
-			// Recalculate depths after expansion using first pinned node
-			const pinnedNodes = Object.keys(store.pinnedNodes);
+			// Optionally recalculate depths if the method exists
+			const pinnedNodes = Object.keys(store.pinnedNodes || {});
 			const firstPinnedNodeId = pinnedNodes[0];
-			if (firstPinnedNodeId) {
+			if (firstPinnedNodeId && store.calculateNodeDepths) {
 				store.calculateNodeDepths(firstPinnedNodeId);
 			}
 

@@ -15,33 +15,70 @@ function AuthorRoute() {
 	const { authorId } = Route.useParams();
 	// const navigate = useNavigate();
 
-	// DEBUGGING: Disable all hooks to isolate infinite loop source
-	// const graphData = useGraphData();
-	// const { setProvider } = useGraphStore();
-	// const rawEntityData = useRawEntityData(authorId);
-	// useEntityDocumentTitle(rawEntityData.data);
+	// DEBUGGING: Systematically re-enable hooks one by one
+	// Step 1: ✅ useGraphStore works fine
+	const { setProvider } = useGraphStore();
 
-	logger.debug("route", "Author route loading with minimal hooks", { authorId });
+	// Step 2: Re-enable useRawEntityData (entity data fetching)
+	const rawEntityData = useRawEntityData({ entityId: authorId });
 
-	// DEBUGGING: Disable useEffect to see if that's causing loops
-	// useEffect(() => {
-	//   ... all effect logic disabled
-	// }, []);
+	// Step 3: Testing useEntityDocumentTitle hook
+	useEntityDocumentTitle(rawEntityData.data);
 
-	// Return simple debug info
+	// Step 4: ✅ Testing refactored useGraphData (no worker dependency)
+	const graphData = useGraphData();
+
+	logger.debug("route", "Author route loading with raw data display", {
+		authorId,
+		hasEntityData: !!rawEntityData.data,
+		isLoading: rawEntityData.isLoading,
+		error: rawEntityData.error
+	});
+
+	// Show loading state
+	if (rawEntityData.isLoading) {
+		return (
+			<div style={{ padding: "20px", textAlign: "center" }}>
+				<h2>Loading Author Data...</h2>
+				<p>Author ID: {authorId}</p>
+			</div>
+		);
+	}
+
+	// Show error state
+	if (rawEntityData.error) {
+		return (
+			<div style={{ padding: "20px", textAlign: "center", color: "red" }}>
+				<h2>Error Loading Author</h2>
+				<p>Author ID: {authorId}</p>
+				<p>Error: {String(rawEntityData.error)}</p>
+			</div>
+		);
+	}
+
+	// Show raw data
 	return (
-		<div style={{
-			position: "fixed",
-			top: "20px",
-			right: "20px",
-			background: "white",
-			padding: "10px",
-			border: "1px solid #ccc",
-			borderRadius: "4px",
-			zIndex: 1000
-		}}>
-			<p>Author Route: {authorId}</p>
-			<p>All hooks disabled for debugging</p>
+		<div style={{ padding: "20px", maxWidth: "100vw", overflow: "auto" }}>
+			<h1>Author Data</h1>
+			<p><strong>ID:</strong> {authorId}</p>
+
+			{rawEntityData.data ? (
+				<div>
+					<h2>Raw Author Data:</h2>
+					<pre style={{
+						background: "#f5f5f5",
+						padding: "15px",
+						borderRadius: "5px",
+						overflow: "auto",
+						fontSize: "12px",
+						border: "1px solid #ddd"
+					}}>
+						{JSON.stringify(rawEntityData.data, null, 2)}
+					</pre>
+				</div>
+			) : (
+				<p>No data available</p>
+			)}
 		</div>
 	);
 }

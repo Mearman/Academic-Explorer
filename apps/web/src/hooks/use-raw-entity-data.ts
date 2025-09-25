@@ -6,6 +6,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { EntityDetector } from "@academic-explorer/graph";
 import type { OpenAlexEntity } from "@academic-explorer/client";
+import { cachedOpenAlex } from "@academic-explorer/client";
 import type { EntityType } from "../config/cache";
 import { ENTITY_CACHE_TIMES } from "../config/cache";
 import { logger } from "@academic-explorer/utils";
@@ -63,15 +64,56 @@ export const useRawEntityData = (options: UseRawEntityDataOptions) => {
 				throw new Error("Entity type and ID required for fetching");
 			}
 
-			// This would be replaced with actual OpenAlex API call
-			// For now, return a mock response to match expected structure
 			logger.debug("api", "Fetching raw entity data", {
 				entityType,
 				entityId: detectedEntityId
 			}, "useRawEntityData");
 
-			// TODO: Replace with actual OpenAlex API client call
-			return null as OpenAlexEntity | null;
+			try {
+				let result: OpenAlexEntity;
+
+				// Call appropriate API method based on entity type
+				switch (entityType) {
+					case "works":
+						result = await cachedOpenAlex.client.works.getWork(detectedEntityId);
+						break;
+					case "authors":
+						result = await cachedOpenAlex.client.authors.getAuthor(detectedEntityId);
+						break;
+					case "sources":
+						result = await cachedOpenAlex.client.sources.getSource(detectedEntityId);
+						break;
+					case "institutions":
+						result = await cachedOpenAlex.client.institutions.getInstitution(detectedEntityId);
+						break;
+					case "topics":
+						result = await cachedOpenAlex.client.topics.get(detectedEntityId);
+						break;
+					case "publishers":
+						result = await cachedOpenAlex.client.publishers.get(detectedEntityId);
+						break;
+					case "funders":
+						result = await cachedOpenAlex.client.funders.get(detectedEntityId);
+						break;
+					default:
+						throw new Error(`Unsupported entity type: ${entityType}`);
+				}
+
+				logger.debug("api", "Successfully fetched raw entity data", {
+					entityType,
+					entityId: detectedEntityId,
+					hasData: !!result
+				}, "useRawEntityData");
+
+				return result;
+			} catch (error) {
+				logger.error("api", "Failed to fetch raw entity data from OpenAlex", {
+					entityType,
+					entityId: detectedEntityId,
+					error: error instanceof Error ? error.message : "Unknown error"
+				}, "useRawEntityData");
+				throw error;
+			}
 		},
 		enabled: shouldFetch,
 		staleTime: entityType ? ENTITY_CACHE_TIMES[entityType].stale : ENTITY_CACHE_TIMES.works.stale,

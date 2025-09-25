@@ -111,7 +111,7 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
 					position: "relative"
 				}}
 			>
-				{/* TEMPORARILY DISABLED: GraphNavigation causing React 19 infinite loops */}
+				{/* 🚫 DISABLED: React Flow container disabled per user request */}
 				<div style={{
 					flex: 1,
 					width: "100%",
@@ -126,7 +126,7 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
 				}}>
 					<h2>Academic Explorer</h2>
 					<p>Author route active: A5017898742</p>
-					<p>Graph visualization temporarily disabled while debugging React 19 compatibility</p>
+					<p>React Flow visualization disabled per user request</p>
 				</div>
 
 				{/* Route content rendered as overlay if present */}
