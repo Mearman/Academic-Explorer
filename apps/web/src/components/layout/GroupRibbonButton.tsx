@@ -285,7 +285,7 @@ export const GroupRibbonButton: React.FC<GroupRibbonButtonProps> = ({
 				<Badge
 					size="xs"
 					variant="filled"
-					color={badge.color || "blue"}
+					color={badge.color ?? "blue"}
 					style={{
 						position: "absolute",
 						top: badge.count ? "-8px" : "-4px",

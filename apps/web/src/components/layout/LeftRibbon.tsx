@@ -39,7 +39,7 @@ export const LeftRibbon: React.FC = () => {
 		const definitions = Object.keys(toolGroups)
 			.map(groupId => getGroupDefinition(groupId))
 			.filter((def): def is NonNullable<typeof def> => def !== undefined)
-			.sort((a, b) => (a.order || 999) - (b.order || 999));
+			.sort((a, b) => (a.order ?? 999) - (b.order ?? 999));
 
 		logger.debug("ui", "Left ribbon group definitions", {
 			toolGroups,
@@ -99,7 +99,7 @@ export const LeftRibbon: React.FC = () => {
 			// Find the left sidebar container and scroll to top
 			const sidebarContainer = document.querySelector('[data-mantine-component="AppShell"] > nav');
 			if (sidebarContainer) {
-				const scrollableElement = sidebarContainer.querySelector('[style*="overflow: auto"]') || sidebarContainer;
+				const scrollableElement = sidebarContainer.querySelector('[style*="overflow: auto"]') ?? sidebarContainer;
 				if (scrollableElement instanceof HTMLElement) {
 					scrollableElement.scrollTop = 0;
 				}

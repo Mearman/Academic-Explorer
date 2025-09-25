@@ -60,7 +60,7 @@ export function MissingPaperDetection({ dataset, onDetectionComplete }: MissingP
 			// Dynamic import to avoid loading the heavy detection module until needed
 			const { detectMissingPapers } = await import("@academic-explorer/utils")
 
-			const results = await detectMissingPapers(
+			const results = detectMissingPapers(
 				dataset,
 				detectionConfig,
 				(progress) => {

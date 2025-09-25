@@ -30,8 +30,6 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
 		toggleRightSidebar,
 		pinLeftSidebar,
 		pinRightSidebar,
-		setLeftSidebarHovered,
-		setRightSidebarHovered,
 		setActiveGroup,
 		getToolGroupsForSidebar,
 		getActiveGroup,
@@ -241,7 +239,7 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
 									<Group gap="xs">
 										{/* Debug info */}
 										<Text size="xs" c="red">
-											Active: {getActiveGroup("left") || "none"}
+											Active: {getActiveGroup("left") ?? "none"}
 										</Text>
 										{!getActiveGroup("left") && (
 											<ActionIcon
