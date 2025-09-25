@@ -76,15 +76,15 @@ pnpm test:full
 #### Relaxed Components (85% required)
 - `src/forces/**` - Force simulation utilities
 
-## Phase 2 Components
+## Critical Components
 
-The following Phase 2 components are monitored for coverage:
+The following core components are monitored for high coverage requirements:
 
 1. **`src/providers/base-provider.ts`** - Abstract base provider class
 2. **`src/providers/openalex-provider.ts`** - OpenAlex data provider
 3. **`src/services/entity-resolver-interface.ts`** - Entity resolution service
 
-These components must meet **95% coverage** on all metrics.
+These components must meet **95% coverage** on all metrics as they form the foundation of the graph provider architecture.
 
 ## Coverage Reports
 
@@ -198,8 +198,8 @@ Coverage verification runs during:
 Tests fail if:
 - Any test fails
 - Coverage below thresholds
-- Phase 2 components below 95%
-- Critical provider/service files untested
+- Critical components below 95%
+- Core provider/service files untested
 
 ## Troubleshooting
 
@@ -251,10 +251,10 @@ When adding new code:
 4. **Check CI integration** - Ensure all checks pass
 5. **Update thresholds** - If patterns change significantly
 
-### Adding New Phase 2 Components
+### Adding New Critical Components
 Update `scripts/verify-coverage.js`:
 ```javascript
-const PHASE_2_COMPONENTS = [
+const CRITICAL_COMPONENTS = [
   'src/providers/base-provider.ts',
   'src/providers/openalex-provider.ts',
   'src/services/entity-resolver-interface.ts',

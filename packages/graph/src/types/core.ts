@@ -64,7 +64,7 @@ export interface GraphNode {
   entityType: EntityType;
   label: string;
   entityId: string;  // OpenAlex ID
-  x: number;  // XY coordinates for compatibility
+  x: number;  // XY coordinates for graph positioning
   y: number;
 
   // External identifiers (DOIs, ORCIDs, etc.)

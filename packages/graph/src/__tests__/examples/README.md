@@ -25,7 +25,7 @@ examples/
 ├── 01-basic-usage/                     # Basic provider operations
 │   ├── basic-provider-usage.test.ts    # Basic CRUD operations
 │   ├── provider-registry.test.ts       # Registry management
-│   └── entity-detection.test.ts        # Entity type detection
+│   └── entity-detection.test.ts        # Modern EntityDetectionService patterns
 ├── 02-entity-resolution/               # Entity resolution workflows
 │   ├── author-workflow.test.ts         # Author-centered workflows
 │   ├── work-workflow.test.ts           # Publication-centered workflows
@@ -128,63 +128,89 @@ Each example test follows this structure:
 ```typescript
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import { OpenAlexGraphProvider, ProviderRegistry } from '../../providers';
+import { EntityDetectionService } from '../../services/entity-detection-service';
 import { MockOpenAlexClient } from '../fixtures/mock-client';
 
-describe('Example: Basic Provider Usage', () => {
+describe('Example: Modern Provider Usage', () => {
   let provider: OpenAlexGraphProvider;
   let registry: ProviderRegistry;
+  let detectionService: EntityDetectionService;
 
   beforeEach(async () => {
-    // Setup example with realistic test data
+    // Setup example with modern service patterns
     const mockClient = new MockOpenAlexClient();
     provider = new OpenAlexGraphProvider(mockClient);
     registry = new ProviderRegistry();
+    detectionService = new EntityDetectionService();
+
+    // Register provider with registry
+    await registry.register('openalex', provider);
   });
 
-  afterEach(() => {
-    // Cleanup
-    provider.destroy();
-    registry.destroy();
+  afterEach(async () => {
+    // Proper cleanup with error handling
+    try {
+      await provider.destroy();
+      await registry.destroy();
+    } catch (error) {
+      // Log cleanup errors for debugging
+      console.warn('Cleanup error:', error);
+    }
   });
 
-  it('demonstrates basic entity fetching', async () => {
-    // Example implementation with detailed comments
-    // explaining best practices and common patterns
+  it('demonstrates modern entity detection patterns', async () => {
+    // Example: Use EntityDetectionService for type detection
+    const entityId = 'A5017898742';
+    const detectedType = detectionService.detectEntityType(entityId);
+
+    expect(detectedType).toBe('authors');
+
+    // Fetch using detected type with proper error handling
+    const entity = await provider.getEntity(detectedType, entityId);
+    expect(entity).toBeDefined();
   });
 
-  it('shows error handling patterns', async () => {
-    // Error scenarios with recovery strategies
+  it('shows modern error handling with recovery', async () => {
+    // Example: Error scenarios with modern recovery strategies
+    // Demonstrate timeout handling, retry logic, and graceful degradation
   });
 });
 ```
 
 ## Key Testing Principles
 
-### 1. Real-World Scenarios
+### 1. Modern Architecture Focus
+Examples demonstrate current best practices only:
+- **EntityDetectionService** for entity type detection
+- **BaseProvider** and **OpenAlexProvider** patterns
+- **Provider Registry** for dynamic provider management
+- Latest service interfaces and abstractions
+
+### 2. Real-World Scenarios
 Examples use realistic academic data and common research workflows:
 - Actual author names and research topics
 - Realistic publication patterns
 - Common institutional relationships
 
-### 2. Best Practice Demonstrations
+### 3. Best Practice Demonstrations
 Each example shows:
-- Proper error handling
-- Resource cleanup
-- Performance considerations
-- Type safety patterns
+- Proper error handling with modern error types
+- Resource cleanup with provider lifecycle management
+- Performance considerations with caching and batching
+- Type safety with strict TypeScript patterns
 
-### 3. Progressive Complexity
+### 4. Progressive Complexity
 Examples build from simple to complex:
-- Basic operations → Advanced workflows
-- Single entities → Multi-entity scenarios
-- Synchronous → Asynchronous patterns
+- Basic provider operations → Advanced workflow orchestration
+- Single entities → Multi-entity relationship mapping
+- Synchronous → Asynchronous patterns with proper cancellation
 
-### 4. Production-Ready Code
+### 5. Production-Ready Code
 Examples demonstrate production-ready patterns:
-- Proper async/await usage
-- Memory leak prevention
-- Error boundary patterns
-- Performance monitoring
+- Proper async/await usage with timeout handling
+- Memory leak prevention with proper cleanup
+- Error boundary patterns with recovery strategies
+- Performance monitoring with metrics collection
 
 ## Mock Data and Fixtures
 
@@ -220,24 +246,39 @@ When adding new examples:
 /**
  * Example: [Brief Description]
  *
- * Demonstrates: [What patterns this shows]
- * Use cases: [When to use these patterns]
- * Prerequisites: [What knowledge is assumed]
+ * Demonstrates: Modern [pattern/service] usage
+ * Use cases: [When to use these current patterns]
+ * Prerequisites: Understanding of current graph provider architecture
  */
 
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';
+import { OpenAlexGraphProvider, ProviderRegistry } from '../../providers';
+import { EntityDetectionService } from '../../services/entity-detection-service';
 
-describe('Example: [Pattern Name]', () => {
-  // Setup and teardown
+describe('Example: [Modern Pattern Name]', () => {
+  let provider: OpenAlexGraphProvider;
+  let detectionService: EntityDetectionService;
 
-  it('demonstrates [specific behavior]', async () => {
-    // Given: Clear test setup
+  beforeEach(async () => {
+    // Setup with modern service architecture
+    const mockClient = new MockOpenAlexClient();
+    provider = new OpenAlexGraphProvider(mockClient);
+    detectionService = new EntityDetectionService();
+  });
 
-    // When: Action being demonstrated
+  afterEach(async () => {
+    // Proper async cleanup
+    await provider?.destroy();
+  });
+
+  it('demonstrates [specific modern behavior]', async () => {
+    // Given: Clear test setup using current services
+
+    // When: Action using EntityDetectionService and providers
 
     // Then: Expected behavior verification
 
-    // Comments: Why this pattern is useful
+    // Comments: Why this modern pattern is preferred
   });
 });
 ```

@@ -1,13 +1,14 @@
 /**
- * Example: Entity Detection and Type Resolution
+ * Example: Modern Entity Detection with EntityDetectionService
  *
- * Demonstrates: Automatic entity type detection from various identifier formats
+ * Demonstrates: Modern entity type detection using EntityDetectionService
  * Use cases: URL-based routing, external ID resolution, multi-format input handling
- * Prerequisites: Understanding of EntityType enum and external identifier formats
+ * Prerequisites: Understanding of EntityDetectionService and EntityType enum
  */
 
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import { OpenAlexGraphProvider } from '../../../providers/openalex-provider';
+import { EntityDetectionService } from '../../../services/entity-detection-service';
 import type { EntityType } from '../../../types/core';
 
 // Enhanced mock client that supports various identifier formats
@@ -108,19 +109,115 @@ class ComprehensiveMockClient {
   async institutions(): Promise<{ results: Record<string, unknown>[] }> { return { results: [] }; }
 }
 
-describe('Example: Entity Detection and Type Resolution', () => {
+describe('Example: Modern Entity Detection with EntityDetectionService', () => {
   let provider: OpenAlexGraphProvider;
   let mockClient: ComprehensiveMockClient;
+  let detectionService: EntityDetectionService;
 
   beforeEach(async () => {
     mockClient = new ComprehensiveMockClient();
     provider = new OpenAlexGraphProvider(mockClient, {
       name: 'entity-detection-test'
     });
+    detectionService = new EntityDetectionService();
   });
 
   afterEach(() => {
     provider.destroy();
+  });
+
+  describe('EntityDetectionService Direct Usage', () => {
+    it('demonstrates static entity type detection', () => {
+      // Given: Various identifier formats
+      const testCases = [
+        { id: 'W2741809807', expectedType: 'works' },
+        { id: 'A5017898742', expectedType: 'authors' },
+        { id: 'S4210184550', expectedType: 'sources' },
+        { id: 'I4210140050', expectedType: 'institutions' },
+        { id: 'T10364', expectedType: 'topics' },
+        { id: 'P4310315808', expectedType: 'publishers' },
+        { id: 'F4320332183', expectedType: 'funders' },
+        { id: 'https://doi.org/10.1038/nature', expectedType: 'works' },
+        { id: 'https://orcid.org/0000-0002-1825-0097', expectedType: 'authors' },
+        { id: '0028-0836', expectedType: 'sources' },
+        { id: 'https://ror.org/03vek6s52', expectedType: 'institutions' }
+      ];
+
+      // When: Using EntityDetectionService for type detection
+      testCases.forEach(({ id, expectedType }) => {
+        const detectedType = EntityDetectionService.detectEntityType(id);
+
+        // Then: Should correctly identify entity type
+        expect(detectedType).toBe(expectedType);
+        console.log(`✓ ${id} → ${detectedType}`);
+      });
+    });
+
+    it('demonstrates identifier normalization', () => {
+      // Given: Various formats that should normalize to OpenAlex IDs
+      const testCases = [
+        { input: 'w2741809807', expected: 'W2741809807' },
+        { input: '  A5017898742  ', expected: 'A5017898742' },
+        { input: 'https://openalex.org/S4210184550', expected: 'S4210184550' },
+        { input: 'HTTPS://OPENALEX.ORG/I4210140050', expected: 'I4210140050' }
+      ];
+
+      // When: Using EntityDetectionService for normalization
+      testCases.forEach(({ input, expected }) => {
+        const normalized = EntityDetectionService.normalizeIdentifier(input);
+
+        // Then: Should produce normalized OpenAlex ID
+        expect(normalized).toBe(expected);
+        console.log(`✓ "${input}" → "${normalized}"`);
+      });
+    });
+
+    it('demonstrates combined detection and normalization workflow', () => {
+      // Given: Raw identifier input that needs processing
+      const rawIdentifiers = [
+        'w2741809807',
+        'https://orcid.org/0000-0002-1825-0097',
+        '  0028-0836  ',
+        'https://ror.org/03vek6s52'
+      ];
+
+      // When: Processing each identifier through complete detection workflow
+      rawIdentifiers.forEach(rawId => {
+        // Step 1: Detect entity type
+        const entityType = EntityDetectionService.detectEntityType(rawId);
+        expect(entityType).toBeTruthy();
+
+        // Step 2: Normalize identifier
+        const normalizedId = EntityDetectionService.normalizeIdentifier(rawId);
+        expect(normalizedId).toBeTruthy();
+
+        // Step 3: Validate the result
+        const isValid = EntityDetectionService.isValidIdentifier(normalizedId, entityType!);
+        expect(isValid).toBe(true);
+
+        console.log(`✓ "${rawId}" → ${entityType} : ${normalizedId} (valid: ${isValid})`);
+      });
+    });
+
+    it('demonstrates error handling for invalid identifiers', () => {
+      // Given: Invalid identifier formats
+      const invalidIds = [
+        '',
+        '   ',
+        'not-an-id',
+        'X123456789',
+        'https://example.com/invalid'
+      ];
+
+      // When: Attempting to detect types for invalid identifiers
+      invalidIds.forEach(invalidId => {
+        const detectedType = EntityDetectionService.detectEntityType(invalidId);
+
+        // Then: Should return null for invalid identifiers
+        expect(detectedType).toBeNull();
+        console.log(`✓ "${invalidId}" → null (correctly rejected)`);
+      });
+    });
   });
 
   describe('OpenAlex ID Format Detection', () => {

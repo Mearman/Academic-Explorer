@@ -10,13 +10,13 @@ import { testPatterns, testUtils, assertions } from '@academic-explorer/graph/sr
 // Quick test setup with automatic teardown
 describe('My Graph Tests', () => {
   it('should test graph nodes', testPatterns.unit(async () => {
-    const node = await testUtils.createNode('works', 'W123');
+    const node = await testUtils.createNode('works', 'W2741809807');
     await assertions.isValidNode(node);
   }));
 
   it('should test providers', testPatterns.provider(async () => {
     const provider = await testUtils.createProvider('test-provider');
-    const entity = await provider.fetchEntity('W123');
+    const entity = await provider.fetchEntity('W2741809807');
     expect(entity).toBeDefined();
   }));
 });
@@ -106,7 +106,7 @@ describe('Provider Integration', () => {
       fixtures: { useRealData: true },
     });
 
-    const entity = await scenario.providers.primary.fetchEntity('W123');
+    const entity = await scenario.providers.primary.fetchEntity('W2741809807');
     expect(entity).toBeDefined();
 
     await scenario.cleanup();
@@ -121,7 +121,7 @@ describe('Performance Tests', () => {
     const scenario = await testUtils.setupPerformance();
 
     const { summary } = await testUtils.benchmark(
-      () => scenario.providers.primary.fetchEntity('W123'),
+      () => scenario.providers.primary.fetchEntity('W2741809807'),
       'fetch-entity',
       { iterations: 100 }
     );
@@ -142,7 +142,7 @@ describe('Custom Provider', () => {
     });
 
     // Provider is automatically registered and tracked
-    const result = await provider.fetchEntity('W123');
+    const result = await provider.fetchEntity('W2741809807');
     expect(result).toBeDefined();
   }));
 });
@@ -178,7 +178,7 @@ it('tracks event sequences', async () => {
 
   eventHelper.track(provider, ['requestStart', 'entityFetched', 'requestSuccess']);
 
-  await provider.fetchEntity('W123');
+  await provider.fetchEntity('W2741809807');
 
   await eventHelper.waitForSequence([
     'requestStart',
