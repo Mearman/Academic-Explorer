@@ -376,9 +376,9 @@ describe('OpenAlexGraphProvider Error Handling', () => {
     });
 
     it('should handle unknown entity prefixes', async () => {
-      await expect(provider.fetchEntity('X123456'))
+      await expect(provider.fetchEntity('X123456789'))
         .rejects
-        .toThrow('Cannot detect entity type for ID: X123456');
+        .toThrow('Cannot normalize identifier: X123456789');
     });
 
     it('should accept DOI-based IDs', async () => {
@@ -403,9 +403,9 @@ describe('OpenAlexGraphProvider Error Handling', () => {
         }
       })(mockClient as any);
 
-      await expect(testProvider.testFetchEntityData('test-id', 'keywords' as EntityType))
+      await expect(testProvider.testFetchEntityData('K12345678', 'unsupported-type' as EntityType))
         .rejects
-        .toThrow('Unsupported entity type: keywords');
+        .toThrow('Unsupported entity type: unsupported-type');
     });
   });
 

@@ -91,7 +91,7 @@ export function expectValidGraphNode(node: unknown): asserts node is GraphNode {
   const validEntityTypes: EntityType[] = [
     'works', 'authors', 'sources', 'institutions', 'publishers', 'funders', 'topics', 'concepts', 'keywords'
   ];
-  expect(validEntityTypes).toContain(n.entityType as EntityType);
+  expect(validEntityTypes).toContain(n.entityType);
 }
 
 /**
@@ -119,7 +119,7 @@ export function expectValidGraphEdge(edge: unknown): asserts edge is GraphEdge {
 
   // Validate relationship type
   const validRelationTypes = Object.values(RelationType);
-  expect(validRelationTypes).toContain(e.type as RelationType);
+  expect(validRelationTypes).toContain(e.type);
 
   // Optional fields validation
   if (e.weight !== undefined) {

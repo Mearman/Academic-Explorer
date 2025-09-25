@@ -16,6 +16,35 @@ export {
   type DetectionResult,
 } from './entity-detection-service';
 
+// Graph Analysis Service - Academic graph analysis and metrics calculation
+export {
+  GraphAnalyzer,
+  type CitationMetrics,
+  type NetworkMetrics,
+  type CollaborationMetrics,
+  type TrendAnalysis,
+  type TimeRange,
+  type AnalysisOptions,
+} from './graph-analyzer';
+
+// Contextual Field Selector - Intelligent field selection based on usage context
+export {
+  ContextualFieldSelector,
+  contextualFieldSelector,
+} from './contextual-field-selector';
+
+// Smart Entity Cache - Field-level caching with incremental saturation
+export {
+  SmartEntityCache,
+  type CachedEntity,
+  type CacheContext,
+  type FieldRequest,
+  type BatchRequest,
+  type CacheStats,
+  type EntityData,
+  type EntityDataProvider,
+} from './smart-entity-cache';
+
 // Graph utility result interface
 export interface GraphUtilityResult {
   success: boolean;

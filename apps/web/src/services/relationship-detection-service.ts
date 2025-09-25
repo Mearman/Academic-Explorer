@@ -5,7 +5,7 @@
 
 import { QueryClient } from "@tanstack/react-query";
 import { cachedOpenAlex } from "@academic-explorer/client";
-import { EntityDetector } from "@academic-explorer/graph";
+import { EntityDetectionService } from "@academic-explorer/graph";
 import { useGraphStore } from "@/stores/graph-store";
 import { logError, logger } from "@academic-explorer/utils/logger";
 import { isWork, isAuthor, isSource, isInstitution, isNonNull } from "@academic-explorer/client";
@@ -53,12 +53,12 @@ interface DetectedRelationship {
  * Service for automatically detecting relationships between newly added nodes and existing graph nodes
  */
 export class RelationshipDetectionService {
-	private detector: EntityDetector;
+	private detector: EntityDetectionService;
 	private queryClient: QueryClient;
 	private deduplicationService: RequestDeduplicationService;
 
 	constructor(queryClient: QueryClient) {
-		this.detector = new EntityDetector();
+		this.detector = new EntityDetectionService();
 		this.queryClient = queryClient;
 		this.deduplicationService = createRequestDeduplicationService(queryClient);
 	}

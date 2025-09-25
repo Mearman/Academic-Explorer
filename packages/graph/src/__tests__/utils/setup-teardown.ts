@@ -95,7 +95,7 @@ export async function setupAcademicPaperScenario(
   );
 
   // Create registry and register provider
-  const registry = new ProviderRegistry() as ProviderRegistry;
+  const registry = new ProviderRegistry();
   providerHelper.registerProvider(registry, primaryProvider);
 
   // Setup event tracking
@@ -156,7 +156,7 @@ export async function setupCollaborationScenario(
     }
   );
 
-  const registry = new ProviderRegistry() as ProviderRegistry;
+  const registry = new ProviderRegistry();
   providerHelper.registerProvider(registry, primaryProvider);
 
   if (config.events?.trackProviderEvents) {
@@ -216,7 +216,7 @@ export async function setupPerformanceScenario(
     }
   );
 
-  const registry = new ProviderRegistry() as ProviderRegistry;
+  const registry = new ProviderRegistry();
   providerHelper.registerProvider(registry, primaryProvider);
 
   if (config.events?.trackProviderEvents) {
@@ -276,7 +276,7 @@ export async function setupErrorHandlingScenario(
     }
   );
 
-  const registry = new ProviderRegistry() as ProviderRegistry;
+  const registry = new ProviderRegistry();
   providerHelper.registerProvider(registry, primaryProvider);
 
   // Track all events for error analysis
@@ -355,7 +355,7 @@ export async function setupMultiProviderScenario(
     { simulateLatency: 20 }
   );
 
-  const registry = new ProviderRegistry() as ProviderRegistry;
+  const registry = new ProviderRegistry();
   providerHelper.registerProvider(registry, primaryProvider);
   providerHelper.registerProvider(registry, authorProvider);
   providerHelper.registerProvider(registry, institutionProvider);
@@ -411,7 +411,7 @@ export async function setupEmptyScenario(
   const graphData = testScenarios.empty();
 
   const primaryProvider = providerHelper.createProvider('empty-provider');
-  const registry = new ProviderRegistry() as ProviderRegistry;
+  const registry = new ProviderRegistry();
   providerHelper.registerProvider(registry, primaryProvider);
 
   return {

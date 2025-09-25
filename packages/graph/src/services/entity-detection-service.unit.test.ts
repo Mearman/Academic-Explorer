@@ -74,7 +74,7 @@ describe('EntityDetectionService', () => {
 
       it('should reject invalid OpenAlex IDs', () => {
         expect(detectEntityType('X123456789')).toBeNull(); // Invalid prefix
-        expect(detectEntityType('W12345')).toBeNull(); // Too short
+        expect(detectEntityType('W12345')).toBeNull(); // Too short (valid pattern, but too short)
         expect(detectEntityType('W')).toBeNull(); // No digits
         expect(detectEntityType('123456789')).toBeNull(); // No prefix
       });

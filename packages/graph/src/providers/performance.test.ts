@@ -81,6 +81,46 @@ class MockGraphProvider extends GraphDataProvider {
         this.mockData.set(id, node);
       }
     });
+
+    // Add specific test entities that performance tests expect
+    const specificTestEntities = [
+      'W2741809807', // Primary test entity used in multiple performance tests
+    ];
+
+    specificTestEntities.forEach(id => {
+      const entityType = this.getEntityTypeFromId(id);
+      const node: GraphNode = {
+        id,
+        entityType,
+        entityId: id,
+        label: `Performance Test ${entityType.slice(0, -1)} ${id}`,
+        x: Math.random() * 800,
+        y: Math.random() * 600,
+        externalIds: [],
+        entityData: {
+          display_name: `Performance Test ${entityType.slice(0, -1)} ${id}`,
+          id,
+          type: entityType,
+          created_date: new Date().toISOString(),
+          cited_by_count: 245,
+          publication_year: 2023,
+          is_oa: true,
+        },
+      };
+      this.mockData.set(id, node);
+    });
+  }
+
+  private getEntityTypeFromId(id: string): EntityType {
+    const prefix = id.charAt(0).toLowerCase();
+    switch (prefix) {
+      case 'w': return 'works';
+      case 'a': return 'authors';
+      case 's': return 'sources';
+      case 'i': return 'institutions';
+      case 't': return 'topics';
+      default: return 'works';
+    }
   }
 
   async fetchEntity(id: EntityIdentifier): Promise<GraphNode> {
@@ -852,7 +892,7 @@ describe('Provider Performance Tests', () => {
         const promises = [
           // Multiple identical entity fetches
           ...Array.from({ length: 5 }, () =>
-            requestTracker.track('fetch-W1', () => provider.fetchEntity('W2741809807'))
+            requestTracker.track('fetch-W2741809807', () => provider.fetchEntity('W2741809807'))
           ),
           // Multiple identical searches
           ...Array.from({ length: 3 }, () =>
@@ -864,7 +904,7 @@ describe('Provider Performance Tests', () => {
           ),
           // Multiple identical expansions
           ...Array.from({ length: 2 }, () =>
-            requestTracker.track('expand-W1', () => provider.expandEntity('W2741809807', { limit: 5 }))
+            requestTracker.track('expand-W2741809807', () => provider.expandEntity('W2741809807', { limit: 5 }))
           ),
         ];
 

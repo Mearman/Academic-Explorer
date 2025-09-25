@@ -1,0 +1,835 @@
+/**
+ * SmartEntityCache Test Suite
+ *
+ * Comprehensive unit tests for the SmartEntityCache system covering:
+ * - Field-level caching and incremental saturation
+ * - Context-aware field selection and optimization
+ * - Cache management, invalidation, and eviction
+ * - Performance optimizations and batch operations
+ * - Error handling and edge cases
+ * - Integration testing and real-world scenarios
+ */
+
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import type { EntityType } from '../types/core';
+import { SmartEntityCache, type EntityDataProvider, type CacheContext, type FieldRequest } from './smart-entity-cache';
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// Mock entity data provider for testing
+class MockEntityDataProvider implements EntityDataProvider {
+  private responses = new Map<string, Record<string, unknown>>();
+  private latency = 0;
+  private failureRate = 0;
+
+  setResponse(key: string, data: Record<string, unknown>): void {
+    this.responses.set(key, data);
+  }
+
+  setLatency(ms: number): void {
+    this.latency = ms;
+  }
+
+  setFailureRate(rate: number): void {
+    this.failureRate = rate;
+  }
+
+  async fetchEntity(
+    id: string,
+    entityType: EntityType,
+    fields?: string[]
+  ): Promise<Record<string, unknown>> {
+    if (this.latency > 0) {
+      await new Promise(resolve => setTimeout(resolve, this.latency));
+    }
+
+    if (Math.random() < this.failureRate) {
+      throw new Error('Simulated API failure');
+    }
+
+    const key = `${entityType}:${id}`;
+    const data = this.responses.get(key);
+
+    if (!data) {
+      throw new Error(`Entity ${id} not found`);
+    }
+
+    // Return only requested fields if specified
+    if (!fields || fields.length === 0) {
+      return data;
+    }
+
+    const filtered: Record<string, unknown> = {};
+    for (const field of fields) {
+      if (field in data) {
+        filtered[field] = data[field];
+      }
+    }
+
+    return filtered;
+  }
+
+  async fetchEntities(
+    requests: Array<{ id: string; entityType: EntityType; fields?: string[] }>
+  ): Promise<Array<{ id: string; data: Record<string, unknown>; error?: string }>> {
+    if (this.latency > 0) {
+      await new Promise(resolve => setTimeout(resolve, this.latency));
+    }
+
+    return Promise.all(
+      requests.map(async req => {
+        try {
+          const data = await this.fetchEntity(req.id, req.entityType, req.fields);
+          return { id: req.id, data };
+        } catch (error) {
+          return {
+            id: req.id,
+            data: {},
+            error: error instanceof Error ? error.message : String(error)
+          };
+        }
+      })
+    );
+  }
+}
+
+// Test data
+const mockWorkData = {
+  id: 'W2741809807',
+  display_name: 'Deep learning for natural language processing',
+  publication_year: 2018,
+  cited_by_count: 1250,
+  type: 'journal-article',
+  language: 'en',
+  authorships: [
+    { author: { id: 'A5023888391', display_name: 'John Smith' } }
+  ],
+  open_access: { is_oa: true },
+  abstract_inverted_index: { 'Deep': [0], 'learning': [1] },
+};
+
+const mockAuthorData = {
+  id: 'A5023888391',
+  display_name: 'John Smith',
+  works_count: 42,
+  cited_by_count: 3500,
+  h_index: 25,
+  affiliations: [
+    { institution: { id: 'I17837204', display_name: 'MIT' } }
+  ],
+  orcid: 'https://orcid.org/0000-0000-0000-0000',
+};
+
+// Test Suite
+describe('SmartEntityCache', () => {
+  let cache: SmartEntityCache;
+  let provider: MockEntityDataProvider;
+
+  beforeEach(() => {
+    provider = new MockEntityDataProvider();
+    cache = new SmartEntityCache(provider, { maxCacheSize: 100, defaultMaxAge: 5000 });
+
+    // Setup mock data
+    provider.setResponse('works:W2741809807', mockWorkData);
+    provider.setResponse('authors:A5023888391', mockAuthorData);
+  });
+
+  afterEach(() => {
+    cache.clear();
+    vi.clearAllMocks();
+  });
+
+  describe('Core Functionality', () => {
+    describe('Field-level caching', () => {
+      it('should cache entities with requested fields', async () => {
+        const result = await cache.get('W2741809807', 'works', 'TRAVERSAL');
+
+        expect(result).toBeTruthy();
+        expect(result?.fields.has('id')).toBe(true);
+        expect(result?.fields.has('display_name')).toBe(true);
+        expect(result?.fields.has('publication_year')).toBe(true);
+        expect(result?.fields.has('abstract_inverted_index')).toBe(false);
+      });
+
+      it('should perform incremental saturation', async () => {
+        // First request with minimal fields
+        await cache.get('W2741809807', 'works', 'TRAVERSAL');
+
+        // Second request with more fields should add to existing entry
+        const result = await cache.get('W2741809807', 'works', 'ANALYSIS');
+
+        expect(result?.fields.has('id')).toBe(true);
+        expect(result?.fields.has('display_name')).toBe(true);
+        expect(result?.fields.has('publication_year')).toBe(true);
+        expect(result?.fields.has('cited_by_count')).toBe(true);
+        expect(result?.fields.has('type')).toBe(true);
+        expect(result?.fields.has('language')).toBe(true);
+      });
+
+      it('should detect cache hits when all fields are available', async () => {
+        // Prime the cache
+        await cache.get('W2741809807', 'works', 'UI_DISPLAY');
+
+        // Request subset should be a cache hit
+        const result = await cache.get('W2741809807', 'works', 'TRAVERSAL');
+
+        expect(eventSpy).toHaveBeenCalledWith(
+          expect.objectContaining({
+            type: 'hit',
+            entityId: 'W2741809807',
+            entityType: 'works',
+          })
+        );
+        expect(result?.accessCount).toBe(2);
+      });
+
+      it('should detect cache miss when fields are not available', async () => {
+        // Prime with minimal fields
+        await cache.get('W2741809807', 'works', 'TRAVERSAL');
+
+        // Request more fields should be a miss
+        await cache.get('W2741809807', 'works', 'UI_DISPLAY');
+
+        expect(eventSpy).toHaveBeenCalledWith(
+          expect.objectContaining({
+            type: 'miss',
+            entityId: 'W2741809807',
+            entityType: 'works',
+          })
+        );
+      });
+    });
+
+    describe('Context-aware field selection', () => {
+      it('should select appropriate fields for TRAVERSAL context', async () => {
+        const result = await cache.get('A5023888391', 'authors', 'TRAVERSAL');
+
+        const traversalFields = cache.getContextFields('authors', 'TRAVERSAL');
+        expect(traversalFields).toEqual(['id', 'display_name', 'works_count']);
+
+        traversalFields.forEach(field => {
+          expect(result?.fields.has(field)).toBe(true);
+        });
+      });
+
+      it('should select appropriate fields for ANALYSIS context', async () => {
+        const result = await cache.get('A5023888391', 'authors', 'ANALYSIS');
+
+        const analysisFields = cache.getContextFields('authors', 'ANALYSIS');
+        expect(analysisFields).toEqual([
+          'id', 'display_name', 'works_count', 'cited_by_count', 'h_index', 'affiliations'
+        ]);
+
+        analysisFields.forEach(field => {
+          expect(result?.fields.has(field)).toBe(true);
+        });
+      });
+
+      it('should handle EXPORT context requesting all fields', async () => {
+        const result = await cache.get('W2741809807', 'works', 'EXPORT');
+
+        // EXPORT context should request all available fields
+        expect(result?.fields.has('*') || result?.fields.size >= 8).toBe(true);
+      });
+
+      it('should support custom field sets', async () => {
+        const customFields = ['id', 'display_name', 'orcid'];
+        const result = await cache.get('A5023888391', 'authors', 'CUSTOM', customFields);
+
+        customFields.forEach(field => {
+          expect(result?.fields.has(field)).toBe(true);
+        });
+      });
+    });
+
+    describe('Batch operations', () => {
+      it('should handle batch requests efficiently', async () => {
+        const requests: BatchRequest[] = [
+          { entityId: 'W2741809807', entityType: 'works', fields: ['id', 'display_name'], context: 'TRAVERSAL', priority: 1 },
+          { entityId: 'A5023888391', entityType: 'authors', fields: ['id', 'display_name'], context: 'TRAVERSAL', priority: 1 },
+        ];
+
+        const result = await cache.getBatch(requests);
+
+        expect(result.responses).toHaveLength(2);
+        expect(result.responses[0]).toBeTruthy();
+        expect(result.responses[1]).toBeTruthy();
+        expect(result.timing.end).toBeGreaterThan(result.timing.start);
+      });
+
+      it('should optimize batch requests by deduplicating', async () => {
+        const requests: BatchRequest[] = [
+          { entityId: 'W2741809807', entityType: 'works', fields: ['id'], context: 'TRAVERSAL', priority: 1 },
+          { entityId: 'W2741809807', entityType: 'works', fields: ['display_name'], context: 'TRAVERSAL', priority: 1 },
+        ];
+
+        const result = await cache.getBatch(requests);
+
+        expect(result.optimizations.deduplicated).toBeGreaterThan(0);
+        expect(result.requests).toHaveLength(1);
+        expect(result.requests[0].fields).toContain('id');
+        expect(result.requests[0].fields).toContain('display_name');
+      });
+
+      it('should prioritize high-priority requests', async () => {
+        const requests: BatchRequest[] = [
+          { entityId: 'W2741809807', entityType: 'works', fields: ['id'], context: 'TRAVERSAL', priority: 1 },
+          { entityId: 'A5023888391', entityType: 'authors', fields: ['id'], context: 'TRAVERSAL', priority: 5 },
+        ];
+
+        const result = await cache.getBatch(requests);
+
+        // Higher priority request should be processed first
+        expect(result.requests[0].priority).toBe(5);
+        expect(result.requests[0].entityId).toBe('A5023888391');
+      });
+    });
+  });
+
+  describe('Cache Management', () => {
+    describe('Cache invalidation', () => {
+      it('should invalidate single entities', async () => {
+        await cache.get('W2741809807', 'works', 'UI_DISPLAY');
+
+        const invalidated = cache.invalidate('W2741809807');
+
+        expect(invalidated).toBe(true);
+        expect(eventSpy).toHaveBeenCalledWith(
+          expect.objectContaining({
+            type: 'invalidated',
+            entityId: 'W2741809807',
+          })
+        );
+
+        // Should not exist in cache
+        const stats = cache.getStats();
+        expect(stats.entryCount).toBe(0);
+      });
+
+      it('should invalidate by entity type', async () => {
+        await cache.get('W2741809807', 'works', 'UI_DISPLAY');
+        await cache.get('A5023888391', 'authors', 'UI_DISPLAY');
+
+        const count = cache.invalidateByType('works');
+
+        expect(count).toBe(1);
+
+        const stats = cache.getStats();
+        expect(stats.entryCount).toBe(1); // Only author should remain
+      });
+
+      it('should invalidate specific fields', async () => {
+        await cache.get('W2741809807', 'works', 'UI_DISPLAY');
+
+        const invalidated = cache.invalidateFields('W2741809807', ['cited_by_count']);
+
+        expect(invalidated).toBe(true);
+
+        // Field should be removed but entry should still exist
+        const result = await cache.get('W2741809807', 'works', 'TRAVERSAL');
+        expect(result?.fields.has('cited_by_count')).toBe(false);
+        expect(result?.fields.has('display_name')).toBe(true);
+      });
+
+      it('should handle invalidation of non-existent entries', () => {
+        const invalidated = cache.invalidate('nonexistent');
+        expect(invalidated).toBe(false);
+      });
+    });
+
+    describe('Stale data handling', () => {
+      it('should expire old entries', async () => {
+        // Use short maxAge for testing
+        const shortCache = new MockSmartEntityCache(provider, { maxAge: 100 });
+
+        await shortCache.get('W2741809807', 'works', 'UI_DISPLAY');
+
+        // Wait for expiration
+        await new Promise(resolve => setTimeout(resolve, 150));
+
+        // Should be treated as cache miss
+        const eventSpyShort = vi.fn();
+        shortCache.addEventListener(eventSpyShort);
+
+        await shortCache.get('W2741809807', 'works', 'UI_DISPLAY');
+
+        expect(eventSpyShort).toHaveBeenCalledWith(
+          expect.objectContaining({ type: 'miss' })
+        );
+      });
+    });
+
+    describe('Cache eviction', () => {
+      it('should evict LRU entries when cache is full', async () => {
+        const smallCache = new MockSmartEntityCache(provider, { maxSize: 2 });
+        const evictionSpy = vi.fn();
+        smallCache.addEventListener(evictionSpy);
+
+        // Fill cache
+        provider.setResponse('works:W1', { id: 'W1', display_name: 'Work 1' });
+        provider.setResponse('works:W2', { id: 'W2', display_name: 'Work 2' });
+        provider.setResponse('works:W3', { id: 'W3', display_name: 'Work 3' });
+
+        await smallCache.get('W1', 'works', 'TRAVERSAL');
+        await smallCache.get('W2', 'works', 'TRAVERSAL');
+
+        // This should evict W1 (least recently used)
+        await smallCache.get('W3', 'works', 'TRAVERSAL');
+
+        expect(evictionSpy).toHaveBeenCalledWith(
+          expect.objectContaining({
+            type: 'evicted',
+            entityId: 'W1',
+          })
+        );
+
+        const stats = smallCache.getStats();
+        expect(stats.evictionCount).toBe(1);
+        expect(stats.entryCount).toBe(2);
+      });
+
+      it('should update access times to influence LRU', async () => {
+        const smallCache = new MockSmartEntityCache(provider, { maxSize: 2 });
+
+        provider.setResponse('works:W1', { id: 'W1', display_name: 'Work 1' });
+        provider.setResponse('works:W2', { id: 'W2', display_name: 'Work 2' });
+        provider.setResponse('works:W3', { id: 'W3', display_name: 'Work 3' });
+
+        await smallCache.get('W1', 'works', 'TRAVERSAL');
+        await smallCache.get('W2', 'works', 'TRAVERSAL');
+
+        // Access W1 again to make it more recently used
+        await smallCache.get('W1', 'works', 'TRAVERSAL');
+
+        // This should evict W2 now (not W1)
+        await smallCache.get('W3', 'works', 'TRAVERSAL');
+
+        // W1 should still be in cache
+        const result = await smallCache.get('W1', 'works', 'TRAVERSAL');
+        expect(result).toBeTruthy();
+      });
+    });
+  });
+
+  describe('Performance Optimizations', () => {
+    describe('Request deduplication', () => {
+      it('should deduplicate identical requests', async () => {
+        const requests: BatchRequest[] = [
+          { entityId: 'W2741809807', entityType: 'works', fields: ['id'], context: 'TRAVERSAL', priority: 1 },
+          { entityId: 'W2741809807', entityType: 'works', fields: ['id'], context: 'TRAVERSAL', priority: 1 },
+        ];
+
+        const result = await cache.getBatch(requests);
+
+        expect(result.optimizations.deduplicated).toBe(1);
+        expect(result.requests).toHaveLength(1);
+      });
+    });
+
+    describe('Field merging', () => {
+      it('should merge field requests for same entity', async () => {
+        const requests: BatchRequest[] = [
+          { entityId: 'W2741809807', entityType: 'works', fields: ['id', 'display_name'], context: 'TRAVERSAL', priority: 1 },
+          { entityId: 'W2741809807', entityType: 'works', fields: ['publication_year'], context: 'ANALYSIS', priority: 1 },
+        ];
+
+        const result = await cache.getBatch(requests);
+
+        expect(result.requests).toHaveLength(1);
+        expect(result.requests[0].fields).toEqual(
+          expect.arrayContaining(['id', 'display_name', 'publication_year'])
+        );
+      });
+    });
+
+    describe('Statistics and monitoring', () => {
+      it('should track hit rate accurately', async () => {
+        // First request - miss
+        await cache.get('W2741809807', 'works', 'TRAVERSAL');
+        expect(cache.getStats().hitRate).toBe(0);
+
+        // Second request - hit
+        await cache.get('W2741809807', 'works', 'TRAVERSAL');
+        expect(cache.getStats().hitRate).toBe(0.5);
+
+        // Third request - hit
+        await cache.get('W2741809807', 'works', 'TRAVERSAL');
+        expect(cache.getStats().hitRate).toBeCloseTo(0.67, 2);
+      });
+
+      it('should track cache size and entry count', async () => {
+        await cache.get('W2741809807', 'works', 'TRAVERSAL');
+        await cache.get('A5023888391', 'authors', 'TRAVERSAL');
+
+        const stats = cache.getStats();
+        expect(stats.entryCount).toBe(2);
+        expect(stats.totalSize).toBeGreaterThan(0);
+      });
+
+      it('should track request count', async () => {
+        await cache.get('W2741809807', 'works', 'TRAVERSAL');
+        await cache.get('A5023888391', 'authors', 'TRAVERSAL');
+
+        const stats = cache.getStats();
+        expect(stats.requestCount).toBe(2);
+      });
+    });
+  });
+
+  describe('Error Handling and Edge Cases', () => {
+    describe('API failures', () => {
+      it('should handle API failures gracefully', async () => {
+        provider.setFailureRate(1); // Always fail
+
+        const result = await cache.get('W2741809807', 'works', 'TRAVERSAL');
+
+        expect(result).toBeNull();
+      });
+
+      it('should fall back to cached data on API failure', async () => {
+        // Prime cache first
+        await cache.get('W2741809807', 'works', 'TRAVERSAL');
+
+        // Set up failure for additional fields
+        provider.setFailureRate(1);
+
+        // Request more fields - should get cached data
+        const result = await cache.get('W2741809807', 'works', 'TRAVERSAL');
+
+        expect(result).toBeTruthy();
+        expect(result?.data.display_name).toBe('Deep learning for natural language processing');
+      });
+    });
+
+    describe('Malformed data handling', () => {
+      it('should handle null responses', async () => {
+        provider.setResponse('works:NONEXISTENT', null as any);
+
+        const result = await cache.get('NONEXISTENT', 'works', 'TRAVERSAL');
+
+        expect(result).toBeNull();
+      });
+
+      it('should handle incomplete data', async () => {
+        provider.setResponse('works:INCOMPLETE', { id: 'INCOMPLETE' }); // Missing display_name
+
+        const result = await cache.get('INCOMPLETE', 'works', 'TRAVERSAL');
+
+        expect(result).toBeTruthy();
+        expect(result?.data.id).toBe('INCOMPLETE');
+        expect(result?.data.display_name).toBeUndefined();
+      });
+    });
+
+    describe('Network timeout scenarios', () => {
+      it('should handle slow API responses', async () => {
+        provider.setLatency(100);
+
+        const startTime = Date.now();
+        const result = await cache.get('W2741809807', 'works', 'TRAVERSAL');
+        const duration = Date.now() - startTime;
+
+        expect(result).toBeTruthy();
+        expect(duration).toBeGreaterThanOrEqual(90); // Account for test timing variations
+      });
+    });
+
+    describe('Memory leak prevention', () => {
+      it('should clean up event listeners', () => {
+        const listener1 = vi.fn();
+        const listener2 = vi.fn();
+
+        cache.addEventListener(listener1);
+        cache.addEventListener(listener2);
+
+        cache.removeEventListener(listener1);
+
+        // Test that only one listener remains
+        cache.invalidate('test');
+
+        expect(listener1).not.toHaveBeenCalled();
+        expect(listener2).toHaveBeenCalled();
+      });
+
+      it('should clear all data on clear()', () => {
+        cache.get('W2741809807', 'works', 'TRAVERSAL');
+
+        cache.clear();
+
+        const stats = cache.getStats();
+        expect(stats.entryCount).toBe(0);
+        expect(stats.totalSize).toBe(0);
+        expect(stats.requestCount).toBe(0);
+      });
+    });
+  });
+
+  describe('Integration Testing', () => {
+    describe('Event system integration', () => {
+      it('should emit events in correct order', async () => {
+        const events: CacheEvent[] = [];
+        cache.addEventListener(event => events.push(event));
+
+        await cache.get('W2741809807', 'works', 'TRAVERSAL'); // miss
+        await cache.get('W2741809807', 'works', 'TRAVERSAL'); // hit
+        cache.invalidate('W2741809807'); // invalidated
+
+        expect(events).toHaveLength(3);
+        expect(events[0].type).toBe('miss');
+        expect(events[1].type).toBe('hit');
+        expect(events[2].type).toBe('invalidated');
+      });
+
+      it('should include relevant metadata in events', async () => {
+        const events: CacheEvent[] = [];
+        cache.addEventListener(event => events.push(event));
+
+        await cache.get('W2741809807', 'works', 'ANALYSIS');
+
+        const event = events[0];
+        expect(event.entityId).toBe('W2741809807');
+        expect(event.entityType).toBe('works');
+        expect(event.context).toBe('ANALYSIS');
+        expect(event.fields).toEqual(
+          expect.arrayContaining(['id', 'display_name'])
+        );
+        expect(event.timestamp).toBeGreaterThan(0);
+      });
+    });
+
+    describe('Statistics accuracy', () => {
+      it('should maintain accurate statistics across operations', async () => {
+        await cache.get('W2741809807', 'works', 'TRAVERSAL');
+        await cache.get('A5023888391', 'authors', 'TRAVERSAL');
+        await cache.get('W2741809807', 'works', 'TRAVERSAL'); // hit
+
+        cache.invalidate('A5023888391');
+
+        const stats = cache.getStats();
+        expect(stats.entryCount).toBe(1);
+        expect(stats.requestCount).toBe(3);
+        expect(stats.hitRate).toBeCloseTo(0.33, 2);
+      });
+    });
+  });
+
+  describe('Real-World Scenarios', () => {
+    describe('UI rendering workflow', () => {
+      it('should efficiently handle typical UI rendering pattern', async () => {
+        // Simulate typical Academic Explorer workflow:
+        // 1. Search results (minimal fields)
+        // 2. Detail view (more fields)
+        // 3. Graph traversal (relationships)
+
+        // 1. Search results
+        const searchResult = await cache.get('W2741809807', 'works', 'SEARCH');
+        expect(searchResult?.fields.has('display_name')).toBe(true);
+
+        // 2. Detail view - should reuse and extend cache
+        const detailResult = await cache.get('W2741809807', 'works', 'UI_DISPLAY');
+        expect(detailResult?.fields.has('display_name')).toBe(true);
+        expect(detailResult?.fields.has('authorships')).toBe(true);
+        expect(detailResult?.accessCount).toBe(2);
+
+        // 3. Graph traversal - should be mostly satisfied from cache
+        const traversalResult = await cache.get('W2741809807', 'works', 'TRAVERSAL');
+        expect(traversalResult?.accessCount).toBe(3);
+      });
+    });
+
+    describe('Graph analysis workflow', () => {
+      it('should handle batch analysis efficiently', async () => {
+        provider.setResponse('works:W1', { id: 'W1', display_name: 'Work 1', cited_by_count: 100 });
+        provider.setResponse('works:W2', { id: 'W2', display_name: 'Work 2', cited_by_count: 200 });
+        provider.setResponse('works:W3', { id: 'W3', display_name: 'Work 3', cited_by_count: 300 });
+
+        const analysisRequests: BatchRequest[] = [
+          { entityId: 'W1', entityType: 'works', fields: cache.getContextFields('works', 'ANALYSIS'), context: 'ANALYSIS', priority: 1 },
+          { entityId: 'W2', entityType: 'works', fields: cache.getContextFields('works', 'ANALYSIS'), context: 'ANALYSIS', priority: 1 },
+          { entityId: 'W3', entityType: 'works', fields: cache.getContextFields('works', 'ANALYSIS'), context: 'ANALYSIS', priority: 1 },
+        ];
+
+        const result = await cache.getBatch(analysisRequests);
+
+        expect(result.responses).toHaveLength(3);
+        expect(result.responses.every(r => r !== null)).toBe(true);
+
+        // All should have analysis fields
+        result.responses.forEach(response => {
+          expect(response?.fields.has('cited_by_count')).toBe(true);
+          expect(response?.fields.has('type')).toBe(true);
+        });
+      });
+    });
+
+    describe('Mixed context operations', () => {
+      it('should handle different contexts for same entity efficiently', async () => {
+        // Start with traversal
+        await cache.get('A5023888391', 'authors', 'TRAVERSAL');
+
+        // Add search context
+        await cache.get('A5023888391', 'authors', 'SEARCH');
+
+        // Add analysis context
+        const analysisResult = await cache.get('A5023888391', 'authors', 'ANALYSIS');
+
+        // Should have accumulated fields from all contexts
+        expect(analysisResult?.fields.has('display_name')).toBe(true); // all contexts
+        expect(analysisResult?.fields.has('works_count')).toBe(true); // all contexts
+        expect(analysisResult?.fields.has('h_index')).toBe(true); // analysis only
+        expect(analysisResult?.contextHistory).toContain('TRAVERSAL');
+        expect(analysisResult?.contextHistory).toContain('SEARCH');
+        expect(analysisResult?.contextHistory).toContain('ANALYSIS');
+      });
+    });
+
+    describe('High-load scenarios', () => {
+      it('should maintain performance under concurrent requests', async () => {
+        const concurrentRequests = Array.from({ length: 50 }, (_, i) => {
+          provider.setResponse(`works:W${i}`, {
+            id: `W${i}`,
+            display_name: `Work ${i}`,
+            publication_year: 2020 + (i % 5)
+          });
+          return cache.get(`W${i}`, 'works', 'TRAVERSAL');
+        });
+
+        const startTime = Date.now();
+        const results = await Promise.all(concurrentRequests);
+        const duration = Date.now() - startTime;
+
+        expect(results.every(r => r !== null)).toBe(true);
+        expect(duration).toBeLessThan(5000); // Should complete within 5 seconds
+
+        const stats = cache.getStats();
+        expect(stats.entryCount).toBe(50);
+        expect(stats.requestCount).toBe(50);
+      });
+    });
+  });
+
+  describe('Performance Benchmarks', () => {
+    it('should demonstrate cache performance improvement', async () => {
+      provider.setLatency(50); // Simulate API latency
+
+      // Measure without cache (cold)
+      const coldStartTime = Date.now();
+      await cache.get('W2741809807', 'works', 'UI_DISPLAY');
+      const coldDuration = Date.now() - coldStartTime;
+
+      // Measure with cache (warm)
+      const warmStartTime = Date.now();
+      await cache.get('W2741809807', 'works', 'UI_DISPLAY');
+      const warmDuration = Date.now() - warmStartTime;
+
+      // Cache should be significantly faster
+      expect(warmDuration).toBeLessThan(coldDuration / 2);
+      expect(warmDuration).toBeLessThan(10); // Should be nearly instant
+    });
+
+    it('should maintain good batch efficiency', async () => {
+      // Setup multiple entities
+      for (let i = 0; i < 10; i++) {
+        provider.setResponse(`works:W${i}`, {
+          id: `W${i}`,
+          display_name: `Work ${i}`
+        });
+      }
+
+      const batchRequests: BatchRequest[] = Array.from({ length: 10 }, (_, i) => ({
+        entityId: `W${i}`,
+        entityType: 'works' as EntityType,
+        fields: ['id', 'display_name'],
+        context: 'TRAVERSAL' as CacheContext,
+        priority: 1,
+      }));
+
+      const batchResult = await cache.getBatch(batchRequests);
+
+      // Should complete efficiently
+      expect(batchResult.timing.end - batchResult.timing.start).toBeLessThan(1000);
+      expect(batchResult.responses.every(r => r !== null)).toBe(true);
+    });
+
+    it('should maintain memory efficiency', async () => {
+      const initialStats = cache.getStats();
+      const initialMemoryBaseline = initialStats.totalSize;
+
+      // Add many entries
+      for (let i = 0; i < 50; i++) {
+        provider.setResponse(`works:W${i}`, {
+          id: `W${i}`,
+          display_name: `Work ${i}`.repeat(10) // Larger data
+        });
+        await cache.getEntity(`W${i}`, ['id', 'display_name']);
+      }
+
+      const finalStats = cache.getStats();
+      const memoryGrowth = finalStats.totalMemoryUsage - initialMemoryBaseline;
+
+      // Memory growth should be reasonable (less than 100KB for 50 entries)
+      expect(memoryGrowth).toBeLessThan(100000);
+      expect(finalStats.entityCount).toBeLessThanOrEqual(50);
+    });
+  });
+});
+
+// Missing fields functionality test
+describe('SmartEntityCache - Missing Fields', () => {
+  let cache: SmartEntityCache;
+  let provider: MockEntityDataProvider;
+
+  beforeEach(() => {
+    provider = new MockEntityDataProvider();
+    cache = new SmartEntityCache(provider);
+    provider.setResponse('works:W123', {
+      id: 'W123',
+      display_name: 'Test Work',
+      publication_year: 2023,
+      cited_by_count: 42
+    });
+  });
+
+  it('should correctly identify missing fields', () => {
+    // No cached entry yet
+    const missing1 = cache.getMissingFields(undefined, ['id', 'display_name']);
+    expect(missing1).toEqual(['id', 'display_name']);
+  });
+
+  it('should refresh specific fields', async () => {
+    // Prime cache
+    await cache.getEntity('W123', ['id', 'display_name']);
+
+    // Change mock data
+    provider.setResponse('works:W123', {
+      id: 'W123',
+      display_name: 'Updated Test Work', // Changed
+      publication_year: 2023,
+      cited_by_count: 42
+    });
+
+    // Refresh specific fields
+    await cache.refreshFields('W123', ['display_name']);
+
+    // Should have updated data
+    const result = await cache.getEntity('W123', ['id', 'display_name']);
+    expect(result.display_name).toBe('Updated Test Work');
+  });
+});

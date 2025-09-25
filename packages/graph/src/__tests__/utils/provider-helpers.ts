@@ -3,8 +3,7 @@
  * Simplifies setup and teardown of graph data providers in tests
  */
 
-import { EventEmitter } from 'events';
-import type { GraphNode, GraphEdge, EntityType, EntityIdentifier } from '../../types/core';
+import type { GraphNode, GraphEdge, EntityIdentifier } from '../../types/core';
 import { GraphDataProvider, ProviderRegistry, type ProviderOptions, type SearchQuery, type ProviderExpansionOptions, type GraphExpansion } from '../../providers/base-provider';
 
 /**

@@ -6,19 +6,13 @@
 import { vi } from 'vitest';
 import { EventEmitter } from 'events';
 import {
-  resetProviderHelper,
-  getProviderHelper,
-  type ProviderTestHelper
+  resetProviderHelper
 } from './provider-helpers';
 import {
-  resetEventHelper,
-  getEventHelper,
-  type EventTestHelper
+  resetEventHelper
 } from './event-helpers';
 import {
-  resetPerformanceHelper,
-  getPerformanceHelper,
-  type PerformanceTestHelper
+  resetPerformanceHelper
 } from './performance-helpers';
 
 /**
@@ -134,10 +128,10 @@ export class TestIsolationHelper {
    */
   createSuiteIsolation(config: TestIsolationConfig = {}) {
     return {
-      beforeEach: () => this.enterIsolation(config),
-      afterEach: async () => await this.exitIsolation(),
-      beforeAll: () => this.enterIsolation({ ...config, resetGlobalState: true }),
-      afterAll: async () => await this.exitIsolation(),
+      beforeEach: () => { this.enterIsolation(config); },
+      afterEach: async () => { await this.exitIsolation(); },
+      beforeAll: () => { this.enterIsolation({ ...config, resetGlobalState: true }); },
+      afterAll: async () => { await this.exitIsolation(); },
     };
   }
 
@@ -425,9 +419,9 @@ export class TestIsolationHelper {
       for (const { event, listener, options } of listeners) {
         try {
           if ('removeEventListener' in target) {
-            (target as EventTarget).removeEventListener(event, listener as EventListener, options);
+            (target).removeEventListener(event, listener as EventListener, options);
           } else if ('removeListener' in target || 'off' in target) {
-            const emitter = target as EventEmitter;
+            const emitter = target;
             if (emitter.removeListener) {
               emitter.removeListener(event, listener as (...args: any[]) => void);
             } else if ('off' in emitter) {

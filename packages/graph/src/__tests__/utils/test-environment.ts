@@ -5,8 +5,8 @@
 
 import { vi } from 'vitest';
 import { EventEmitter } from 'events';
-import type { GraphNode, GraphEdge, EntityType } from '../../types/core';
-import type { GraphDataProvider, ProviderRegistry } from '../../providers/base-provider';
+import type { GraphNode } from '../../types/core';
+import type { ProviderRegistry } from '../../providers/base-provider';
 
 /**
  * Test environment configuration
@@ -210,7 +210,7 @@ export function cleanupTestEnvironment(): void {
   globalThis.clearInterval = state.originalTimers.clearInterval;
 
   // Clear active timers
-  state.activeTimers.forEach(id => clearTimeout(id));
+  state.activeTimers.forEach(id => { clearTimeout(id); });
   state.activeTimers.clear();
 
   // Restore original fetch
@@ -225,7 +225,7 @@ export function cleanupTestEnvironment(): void {
   console.debug = state.originalConsole.debug;
 
   // Clean up mock providers
-  state.mockProviders.forEach(provider => provider.destroy());
+  state.mockProviders.forEach(provider => { provider.destroy(); });
   state.mockProviders.clear();
 
   // Clean up event emitters
@@ -245,7 +245,7 @@ export function createMockProviderRegistry(providers: MockProvider[] = []): Prov
     private defaultProvider: string | null = null;
 
     register(provider: MockProvider): void {
-      const name = provider.getProviderInfo().name;
+      const {name} = provider.getProviderInfo();
       this.providers.set(name, provider);
       if (!this.defaultProvider) {
         this.defaultProvider = name;

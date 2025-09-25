@@ -42,7 +42,7 @@ export function cleanupTestGlobals(): void {
   if (!state) return;
 
   // Clear all mocks
-  state.mockInstances.forEach(mock => mock.mockRestore());
+  state.mockInstances.forEach(mock => { mock.mockRestore(); });
   state.mockInstances.clear();
 
   // Remove event listeners
@@ -56,7 +56,7 @@ export function cleanupTestGlobals(): void {
   state.eventListeners.clear();
 
   // Clear timers
-  state.timers.forEach(id => clearTimeout(id));
+  state.timers.forEach(id => { clearTimeout(id); });
   state.timers.clear();
 
   // Clear providers
@@ -195,7 +195,7 @@ afterEach(() => {
   const state = globalThis.__TEST_GLOBAL_STATE__;
   if (state) {
     // Clear test-specific timers
-    state.timers.forEach(id => clearTimeout(id));
+    state.timers.forEach(id => { clearTimeout(id); });
     state.timers.clear();
   }
 });

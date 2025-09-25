@@ -116,7 +116,7 @@ export { expect } from 'vitest';
 export const testUtils = {
   // Environment
   setupEnv: () => import('./test-environment').then(m => m.setupTestEnvironment()),
-  cleanupEnv: () => import('./test-environment').then(m => m.cleanupTestEnvironment()),
+  cleanupEnv: () => import('./test-environment').then(m => { m.cleanupTestEnvironment(); }),
 
   // Fixtures
   createNode: (entityType: string, id?: string, options?: any) =>
@@ -132,7 +132,7 @@ export const testUtils = {
 
   // Events
   trackEvents: (emitter: any, events?: string[], label?: string) =>
-    import('./event-helpers').then(m => m.getEventHelper().track(emitter, events, label)),
+    import('./event-helpers').then(m => { m.getEventHelper().track(emitter, events, label); }),
   getEventHelper: () => import('./event-helpers').then(m => m.getEventHelper()),
 
   // Performance
@@ -234,11 +234,11 @@ export const testPatterns = {
  * Common assertion shortcuts
  */
 export const assertions = {
-  isValidNode: (node: unknown) => import('./assertion-helpers').then(m => m.expectValidGraphNode(node)),
-  isValidEdge: (edge: unknown) => import('./assertion-helpers').then(m => m.expectValidGraphEdge(edge)),
-  isValidGraph: (data: unknown) => import('./assertion-helpers').then(m => m.expectValidGraphData(data)),
-  hasPosition: (node: any) => import('./assertion-helpers').then(m => m.expectPositionInBounds(node, { minX: -Infinity, maxX: Infinity, minY: -Infinity, maxY: Infinity })),
-  hasMoved: (before: any[], after: any[]) => import('./assertion-helpers').then(m => m.expectNodesHaveMoved(before, after)),
+  isValidNode: (node: unknown) => import('./assertion-helpers').then(m => { m.expectValidGraphNode(node); }),
+  isValidEdge: (edge: unknown) => import('./assertion-helpers').then(m => { m.expectValidGraphEdge(edge); }),
+  isValidGraph: (data: unknown) => import('./assertion-helpers').then(m => { m.expectValidGraphData(data); }),
+  hasPosition: (node: any) => import('./assertion-helpers').then(m => { m.expectPositionInBounds(node, { minX: -Infinity, maxX: Infinity, minY: -Infinity, maxY: Infinity }); }),
+  hasMoved: (before: any[], after: any[]) => import('./assertion-helpers').then(m => { m.expectNodesHaveMoved(before, after); }),
   noErrors: () => import('./event-helpers').then(m => {
     const events = m.getEventHelper().getEvents().filter(e => e.type.includes('error'));
     if (events.length > 0) {
@@ -280,7 +280,7 @@ export const devUtils = {
   },
 
   memorySnapshot: (label: string) => {
-    import('./vitest-setup').then(m => m.takeMemorySnapshot(label));
+    import('./vitest-setup').then(m => { m.takeMemorySnapshot(label); });
   },
 };
 

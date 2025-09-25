@@ -1,7 +1,7 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router"
-import { useEffect, useMemo } from "react"
+import { useEffect } from "react"
 import { IconBook } from "@tabler/icons-react"
-import { EntityDetector } from "@academic-explorer/graph";
+import { EntityDetectionService } from "@academic-explorer/graph";
 import { useGraphData } from "@/hooks/use-graph-data"
 import { useGraphStore } from "@/stores/graph-store"
 import { logError, logger } from "@academic-explorer/utils/logger";
@@ -13,7 +13,6 @@ export const Route = createFileRoute("/sources/issn/$issn")({
 function ISSNSourceRoute() {
 	const { issn } = Route.useParams()
 	const navigate = useNavigate()
-	const detector = useMemo(() => new EntityDetector(), [])
 	const graphData = useGraphData()
 	const {loadEntity} = graphData
 	const {loadEntityIntoGraph} = graphData
@@ -26,9 +25,9 @@ function ISSNSourceRoute() {
 				const decodedISSN = decodeURIComponent(issn)
 
 				// Detect and normalize the ISSN
-				const detection = detector.detectEntityIdentifier(decodedISSN)
+				const detection = EntityDetectionService.detectEntity(decodedISSN)
 
-				if (detection.entityType === "sources" && detection.idType === "issn_l") {
+				if (detection && detection.entityType === "sources") {
 					// If graph already has nodes, use incremental loading to preserve existing entities
 					if (nodeCount > 0) {
 						await loadEntityIntoGraph(`issn:${detection.normalizedId}`);
@@ -53,7 +52,7 @@ function ISSNSourceRoute() {
 		}
 
 		void resolveISSN()
-	}, [issn, navigate, detector, loadEntity, loadEntityIntoGraph, nodeCount])
+	}, [issn, navigate, loadEntity, loadEntityIntoGraph, nodeCount])
 
 	return (
 		<div style={{

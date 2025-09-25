@@ -6,7 +6,9 @@
  */
 
 // Core types and interfaces
-export * from "./types";
+export * from "./types/core";
+export * from "./types/expansion-settings";
+export * from "./types/cache";
 
 // Phase 1: Core Data Models & Services
 export { GraphManager, type GraphManagerOptions, type GraphChangeEvent } from './data/graph-manager';
@@ -60,3 +62,38 @@ export * from "./forces";
 
 // Services
 export * from "./services";
+
+// Smart Caching Services - Explicit exports for discoverability
+export {
+  SmartEntityCache,
+  type CachedEntity,
+  type CacheContext,
+  type FieldRequest,
+  type BatchRequest,
+  type CacheStats,
+  type EntityData,
+  type EntityDataProvider,
+} from './services/smart-entity-cache';
+
+// Contextual Field Selector Service - Interface only
+// Implementation should be provided by applications
+
+// Additional cache types from cache-types module
+export type {
+  CacheConfig,
+  PreloadStrategy,
+  CacheOperationResult,
+  BatchOperationResult,
+  CacheEvent,
+  FieldDependency,
+  CachePriority,
+  EvictionPolicy,
+  CacheWarmingStrategy,
+  CacheInvalidationEvent,
+  SmartCache,
+  FieldUsagePattern,
+  CacheHealth,
+} from './services/cache-types';
+
+// Contextual cache context enum (alternative to interface)
+export { CacheContext as ContextualCacheContext } from './services/cache-types';

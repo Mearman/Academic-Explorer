@@ -6,7 +6,7 @@
 
 import { QueryClient } from "@tanstack/react-query";
 import { cachedOpenAlex } from "@academic-explorer/client";
-import { EntityDetector } from "@academic-explorer/graph";
+import { EntityDetectionService } from "@academic-explorer/graph";
 import { useGraphStore } from "@/stores/graph-store";
 import { useRepositoryStore } from "@/stores/repository-store";
 import { useExpansionSettingsStore } from "@/stores/expansion-settings-store";
@@ -75,7 +75,6 @@ import type {
 } from "@academic-explorer/client";
 
 export class GraphDataService {
-	private detector: EntityDetector;
 	private cache: GraphCache;
 	private queryClient: QueryClient;
 	private deduplicationService: RequestDeduplicationService;
@@ -83,7 +82,6 @@ export class GraphDataService {
 
 	constructor(queryClient: QueryClient) {
 		logger.debug("graph", "GraphDataService constructor called", {}, "GraphDataService");
-		this.detector = new EntityDetector();
 		this.queryClient = queryClient;
 		this.deduplicationService = createRequestDeduplicationService(queryClient);
 		this.relationshipDetectionService = createRelationshipDetectionService(queryClient);
@@ -105,15 +103,15 @@ export class GraphDataService {
 
 		try {
 			// Detect entity type
-			const detection = this.detector.detectEntityIdentifier(entityId);
+			const detection = EntityDetectionService.detectEntity(entityId);
 
-			if (!detection.entityType) {
+			if (!detection || !detection.entityType) {
 				throw new Error(`Unable to detect entity type for: ${entityId}`);
 			}
 
 			// Fetch entity with deduplication service and cache-first strategy
 			// For OpenAlex IDs, construct the full URL
-			const apiEntityId = detection.idType === "openalex"
+			const apiEntityId = (detection.detectionMethod === "OpenAlex ID" || detection.detectionMethod === "OpenAlex URL")
 				? `https://openalex.org/${detection.normalizedId}`
 				: detection.normalizedId;
 
@@ -245,15 +243,15 @@ export class GraphDataService {
 			}
 
 			// Detect entity type
-			const detection = this.detector.detectEntityIdentifier(entityId);
+			const detection = EntityDetectionService.detectEntity(entityId);
 
-			if (!detection.entityType) {
+			if (!detection || !detection.entityType) {
 				throw new Error(`Unable to detect entity type for: ${entityId}`);
 			}
 
 			// Fetch entity with deduplication service and cache-first strategy
 			// For OpenAlex IDs, construct the full URL
-			const apiEntityId = detection.idType === "openalex"
+			const apiEntityId = (detection.detectionMethod === "OpenAlex ID" || detection.detectionMethod === "OpenAlex URL")
 				? `https://openalex.org/${detection.normalizedId}`
 				: detection.normalizedId;
 
@@ -354,14 +352,14 @@ export class GraphDataService {
 
 		try {
 			// Detect entity type
-			const detection = this.detector.detectEntityIdentifier(entityId);
+			const detection = EntityDetectionService.detectEntity(entityId);
 
-			if (!detection.entityType) {
+			if (!detection || !detection.entityType) {
 				throw new Error(`Unable to detect entity type for: ${entityId}`);
 			}
 
 			// For OpenAlex IDs, construct the full URL
-			const apiEntityId = detection.idType === "openalex"
+			const apiEntityId = (detection.detectionMethod === "OpenAlex ID" || detection.detectionMethod === "OpenAlex URL")
 				? `https://openalex.org/${detection.normalizedId}`
 				: detection.normalizedId;
 
@@ -1110,8 +1108,8 @@ export class GraphDataService {
 			// Count results by entity type
 			for (const result of flatResults) {
 				try {
-					const detection = this.detector.detectEntityIdentifier(result.id);
-					if (detection.entityType && isEntityType(detection.entityType)) {
+					const detection = EntityDetectionService.detectEntity(result.id);
+					if (detection && detection.entityType && isEntityType(detection.entityType)) {
 						searchStats[detection.entityType]++;
 					}
 				} catch (error) {
@@ -1518,8 +1516,8 @@ export class GraphDataService {
 		const edges: GraphEdge[] = [];
 
 		// Determine entity type
-		const detection = this.detector.detectEntityIdentifier(entity.id);
-		if (!detection.entityType || !isEntityType(detection.entityType)) {
+		const detection = EntityDetectionService.detectEntity(entity.id);
+		if (!detection || !detection.entityType || !isEntityType(detection.entityType)) {
 			throw new Error(`Unable to determine valid entity type for: ${entity.id}`);
 		}
 		const {entityType} = detection;
@@ -1845,9 +1843,9 @@ export class GraphDataService {
 		const edges: GraphEdge[] = [];
 
 		results.forEach((entity, index) => {
-			const detection = this.detector.detectEntityIdentifier(entity.id);
+			const detection = EntityDetectionService.detectEntity(entity.id);
 
-			if (detection.entityType) {
+			if (detection && detection.entityType) {
 				const node = this.createNodeFromEntity(entity, detection.entityType);
 				// Position nodes in a grid layout for search results
 				const cols = Math.ceil(Math.sqrt(results.length));

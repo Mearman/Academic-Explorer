@@ -5,7 +5,7 @@ import { useGraphStore } from "@/stores/graph-store";
 import { useRawEntityData } from "@/hooks/use-raw-entity-data";
 import { useEntityDocumentTitle } from "@/hooks/use-document-title";
 import { logError, logger } from "@academic-explorer/utils/logger";
-import { EntityDetector } from "@academic-explorer/graph";
+import { EntityDetectionService } from "@academic-explorer/graph";
 
 export const Route = createFileRoute("/authors/$authorId")({
 	component: AuthorRoute,

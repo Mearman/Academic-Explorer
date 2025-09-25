@@ -3,7 +3,7 @@
  * Defines the interface for fetching and expanding graph entities from various data sources
  */
 
-import { EventEmitter } from 'events';
+import { EventEmitter } from '../utils/event-emitter';
 import type { GraphNode, EntityType, EntityIdentifier } from '../types/core';
 
 export interface SearchQuery {
@@ -136,7 +136,7 @@ export abstract class GraphDataProvider extends EventEmitter {
   // Safe event emission that catches listener errors
   protected safeEmit(event: string | symbol, ...args: any[]): boolean {
     try {
-      return this.emit(event, ...args);
+      return this.emit(String(event), ...args);
     } catch (error) {
       // Log the error but don't let it interrupt the main flow
       console.warn(`Event listener error for ${String(event)}:`, error);

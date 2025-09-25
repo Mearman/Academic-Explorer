@@ -5,7 +5,7 @@ import { useGraphStore } from "@/stores/graph-store";
 import { useRawEntityData } from "@/hooks/use-raw-entity-data";
 import { useEntityDocumentTitle } from "@/hooks/use-document-title";
 import { logError, logger } from "@academic-explorer/utils/logger";
-import { EntityDetector } from "@academic-explorer/graph";
+import { EntityDetectionService } from "@academic-explorer/graph";
 
 export const Route = createFileRoute("/works/$workId")({
 	component: WorkRoute,
@@ -23,11 +23,10 @@ function WorkRoute() {
 	useEffect(() => {
 		if (!workId) return;
 
-		const detector = new EntityDetector();
-		const detection = detector.detectEntityIdentifier(workId);
+		const detection = EntityDetectionService.detectEntity(workId);
 
 		// If ID was normalized and is different from input, redirect
-		if (detection.normalizedId && detection.normalizedId !== workId) {
+		if (detection && detection.normalizedId && detection.normalizedId !== workId) {
 			logger.debug("routing", "Redirecting to normalized work ID", {
 				originalId: workId,
 				normalizedId: detection.normalizedId

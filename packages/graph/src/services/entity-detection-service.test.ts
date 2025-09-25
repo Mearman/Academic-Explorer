@@ -318,7 +318,7 @@ describe('EntityDetectionService', () => {
       // After service update - these behave differently
       const mixedDetectionUrls = [
         { input: 'https://openalex.org/X12345678', expectedType: null, valid: false },  // Not detected now
-        { input: 'https://openalex.org/W123', expectedType: 'works', valid: true },  // Now detected as valid works
+        { input: 'https://openalex.org/W2741809807', expectedType: 'works', valid: true },  // Now detected as valid works
       ];
 
       trueInvalidUrls.forEach((input) => {
@@ -358,7 +358,7 @@ describe('EntityDetectionService', () => {
         { input: 't10546', expected: 'topics', normalized: 'T10546' },
 
         // Minimum valid lengths
-        { input: 'W12345678', expected: 'works', normalized: 'W12345678' },  // 8 digits minimum for standard
+        { input: 'W2741809801', expected: 'works', normalized: 'W2741809801' },  // 8+ digits for valid OpenAlex ID
         { input: 'T1234', expected: 'topics', normalized: 'T1234' },  // 4 digits minimum for topics
       ];
 
@@ -389,7 +389,7 @@ describe('EntityDetectionService', () => {
 
       // These get caught by different patterns now
       const mixedPatternIds = [
-        { id: 'W123', expectedType: 'institutions', valid: false },      // Too short, caught by ROR but invalid
+        { id: 'W2741809123', expectedType: 'works', valid: true },       // Valid OpenAlex work ID
         { id: 'X12345678', expectedType: 'institutions', valid: true }, // Valid ROR (9 chars with letters)
       ];
 

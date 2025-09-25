@@ -54,6 +54,32 @@ class AcademicMockClient {
           display_name: 'MIT',
           ror: 'https://ror.org/042nb2s44'
         }
+      ],
+      topics: [
+        { id: 'T10364', display_name: 'Machine Learning', score: 89.5 },
+        { id: 'T11234', display_name: 'AI Ethics', score: 76.3 }
+      ]
+    }],
+    ['A1111111111', {
+      id: 'A1111111111',
+      display_name: 'Dr. Alex Thompson',
+      ids: {
+        openalex: 'A1111111111',
+        orcid: 'https://orcid.org/0000-0004-1234-5678'
+      },
+      works_count: 32,
+      cited_by_count: 1450,
+      h_index: 22,
+      i10_index: 28,
+      last_known_institutions: [
+        {
+          id: 'I27837315',
+          display_name: 'Stanford University',
+          ror: 'https://ror.org/00f54p054'
+        }
+      ],
+      topics: [
+        { id: 'T10150', display_name: 'Computer Vision', score: 92.1 }
       ]
     }]
   ]);
@@ -102,6 +128,59 @@ class AcademicMockClient {
       primary_location: {
         source: { id: 'S137773608', display_name: 'AI & Society' }
       }
+    }],
+    ['W5555555555', {
+      id: 'W5555555555',
+      title: 'Collaborative AI Systems in Academic Research',
+      display_name: 'Collaborative AI Systems in Academic Research',
+      publication_year: 2024,
+      cited_by_count: 67,
+      is_oa: true,
+      authorships: [
+        {
+          author: { id: 'A5017898742', display_name: 'Dr. Sarah Chen' },
+          institutions: [{ id: 'I27837315', display_name: 'Stanford University' }],
+          is_corresponding: true
+        },
+        {
+          author: { id: 'A1111111111', display_name: 'Dr. Alex Thompson' },
+          institutions: [{ id: 'I27837315', display_name: 'Stanford University' }],
+          is_corresponding: false
+        }
+      ],
+      primary_location: {
+        source: { id: 'S4210184550', display_name: 'Nature Machine Intelligence' }
+      },
+      topics: [
+        { id: 'T10364', display_name: 'Machine Learning', score: 0.88 },
+        { id: 'T10150', display_name: 'Computer Vision', score: 0.82 }
+      ]
+    }],
+    ['W6666666666', {
+      id: 'W6666666666',
+      title: 'Advanced Neural Network Architectures',
+      display_name: 'Advanced Neural Network Architectures',
+      publication_year: 2024,
+      cited_by_count: 123,
+      is_oa: true,
+      authorships: [
+        {
+          author: { id: 'A5017898742', display_name: 'Dr. Sarah Chen' },
+          institutions: [{ id: 'I27837315', display_name: 'Stanford University' }],
+          is_corresponding: false
+        },
+        {
+          author: { id: 'A2742809844', display_name: 'Prof. Michael Rodriguez' },
+          institutions: [{ id: 'I121332437', display_name: 'MIT' }],
+          is_corresponding: true
+        }
+      ],
+      primary_location: {
+        source: { id: 'S4210184550', display_name: 'Nature Machine Intelligence' }
+      },
+      topics: [
+        { id: 'T10364', display_name: 'Machine Learning', score: 0.94 }
+      ]
     }]
   ]);
 
@@ -176,7 +255,57 @@ class AcademicMockClient {
   async authors(params: Record<string, unknown>): Promise<{ results: Record<string, unknown>[] }> {
     // Simulate co-author search
     if (params.filter) {
-      // Return collaborating authors
+      const filter = params.filter as any;
+
+      // Co-author search - find authors who have collaborated with the given author
+      if (filter.coauthor || filter.collaborator) {
+        const targetAuthorId = filter.coauthor || filter.collaborator;
+        // Find works by the target author, then find their co-authors
+        const authorWorks = Array.from(this.workDatabase.values())
+          .filter(work => work.authorships?.some((auth: any) => auth.author.id === targetAuthorId));
+
+        const coauthors = new Set<string>();
+        authorWorks.forEach(work => {
+          work.authorships?.forEach((auth: any) => {
+            if (auth.author.id !== targetAuthorId) {
+              coauthors.add(auth.author.id);
+            }
+          });
+        });
+
+        return {
+          results: Array.from(coauthors)
+            .map(id => this.authorDatabase.get(id))
+            .filter(Boolean)
+            .slice(0, params.per_page as number || 10)
+        };
+      }
+
+      // Institution-based author search
+      if (filter.institution) {
+        const institutionId = filter.institution.id || filter.institution;
+        return {
+          results: Array.from(this.authorDatabase.values())
+            .filter(author =>
+              author.last_known_institutions?.some((inst: any) => inst.id === institutionId)
+            )
+            .slice(0, params.per_page as number || 10)
+        };
+      }
+
+      // Topic-based author search
+      if (filter.topic) {
+        const topicId = filter.topic.id || filter.topic;
+        return {
+          results: Array.from(this.authorDatabase.values())
+            .filter(author =>
+              author.topics?.some((topic: any) => topic.id === topicId)
+            )
+            .slice(0, params.per_page as number || 10)
+        };
+      }
+
+      // General collaboration filter - return known collaborators
       return {
         results: [
           this.authorDatabase.get('A2742809844')!
@@ -588,15 +717,16 @@ describe('Example: Author-Centered Research Workflows', () => {
   ) {
     const expansion = await provider.expandEntity(authorId, { limit: 20 });
 
-    // Find co-authors from shared works
+    // Find co-authors from shared works and count collaborations
     const works = expansion.nodes.filter(node => node.entityType === 'works');
-    const collaborators = new Set<string>();
+    const collaboratorCounts = new Map<string, number>();
 
     works.forEach(work => {
       const authorships = (work.entityData as any)?.authorships || [];
       authorships.forEach((authorship: any) => {
         if (authorship.author?.id && authorship.author.id !== authorId) {
-          collaborators.add(authorship.author.id);
+          const collabId = authorship.author.id;
+          collaboratorCounts.set(collabId, (collaboratorCounts.get(collabId) || 0) + 1);
         }
       });
     });
@@ -605,17 +735,17 @@ describe('Example: Author-Centered Research Workflows', () => {
       {
         ...await provider.fetchEntity(authorId),
         role: 'center',
-        collaboration_count: collaborators.size
+        collaboration_count: collaboratorCounts.size
       }
     ];
 
     const edges: GraphEdge[] = [];
 
     // Add collaborator nodes and edges
-    for (const collaboratorId of Array.from(collaborators).slice(0, 10)) {
+    for (const [collaboratorId, collaborationCount] of Array.from(collaboratorCounts.entries()).slice(0, 10)) {
       try {
         const collaborator = await provider.fetchEntity(collaboratorId);
-        nodes.push({ ...collaborator, role: 'collaborator', collaboration_count: 1 });
+        nodes.push({ ...collaborator, role: 'collaborator', collaboration_count: collaborationCount });
 
         // Create collaboration edge through shared works
         edges.push({
@@ -634,9 +764,9 @@ describe('Example: Author-Centered Research Workflows', () => {
       nodes,
       edges,
       collaboration_stats: {
-        direct_collaborators: collaborators.size,
+        direct_collaborators: collaboratorCounts.size,
         total_collaborations: works.length,
-        avg_collaborations_per_paper: works.length > 0 ? collaborators.size / works.length : 0
+        avg_collaborations_per_paper: works.length > 0 ? collaboratorCounts.size / works.length : 0
       }
     };
   }

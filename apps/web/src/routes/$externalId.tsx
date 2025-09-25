@@ -3,7 +3,7 @@ import { useEffect, useMemo } from "react"
 import {
 	IconSearch,
 } from "@tabler/icons-react"
-import { EntityDetector } from "@academic-explorer/graph";
+import { EntityDetectionService } from "@academic-explorer/graph";
 import { useGraphData } from "@/hooks/use-graph-data"
 import { useGraphStore } from "@/stores/graph-store"
 import { logError, logger } from "@academic-explorer/utils/logger";
@@ -15,7 +15,7 @@ export const Route = createFileRoute("/$externalId")({
 function ExternalIdRoute() {
 	const { externalId } = Route.useParams()
 	const navigate = useNavigate()
-	const detector = useMemo(() => new EntityDetector(), [])
+	// EntityDetectionService uses static methods, no instance needed
 	const graphData = useGraphData()
 	const {loadEntity} = graphData
 	const {loadEntityIntoGraph} = graphData
@@ -29,34 +29,34 @@ function ExternalIdRoute() {
 
 
 				// Detect entity type and ID type
-				const detection = detector.detectEntityIdentifier(decodedId)
+				const detection = EntityDetectionService.detectEntity(decodedId)
 
-				if (detection.entityType && detection.idType !== "openalex") {
+				if (detection && detection.entityType && detection.detectionMethod !== 'OpenAlex ID' && detection.detectionMethod !== 'OpenAlex URL') {
 					// This is a recognized external ID, redirect to specific route
 					let specificRoute: string
 
-					switch (detection.idType) {
-						case "doi":
+					switch (detection.detectionMethod) {
+						case "DOI":
 							specificRoute = `/works/doi/${encodeURIComponent(detection.normalizedId)}`
 							break
-						case "orcid":
+						case "ORCID":
 							specificRoute = `/authors/orcid/${detection.normalizedId}`
 							break
-						case "ror":
+						case "ROR":
 							specificRoute = `/institutions/ror/${detection.normalizedId}`
 							break
-						case "issn_l":
+						case "ISSN":
 							specificRoute = `/sources/issn/${detection.normalizedId}`
 							break
 						default:
-							throw new Error(`Unsupported ID entityType: ${detection.idType}`)
+							throw new Error(`Unsupported detection method: ${detection.detectionMethod}`)
 					}
 
 					void navigate({
 						to: specificRoute,
 						replace: true,
 					})
-				} else if (detection.entityType && detection.idType === "openalex") {
+				} else if (detection && detection.entityType && (detection.detectionMethod === 'OpenAlex ID' || detection.detectionMethod === 'OpenAlex URL')) {
 					// This is an OpenAlex ID, navigate to specific entity route
 					const {entityType} = detection;
 					const entityRoute = `/${entityType}/${detection.normalizedId}`;
@@ -65,7 +65,7 @@ function ExternalIdRoute() {
 						to: entityRoute,
 						replace: true,
 					});
-				} else if (detection.entityType) {
+				} else if (detection && detection.entityType) {
 					// This is some other external ID, load directly
 					// If graph already has nodes, use incremental loading to preserve existing entities
 					if (nodeCount > 0) {
@@ -90,7 +90,7 @@ function ExternalIdRoute() {
 		}
 
 		void resolveExternalId()
-	}, [externalId, navigate, detector, loadEntity, loadEntityIntoGraph, nodeCount])
+	}, [externalId, navigate, loadEntity, loadEntityIntoGraph, nodeCount])
 
 	return (
 		<div style={{

@@ -3,7 +3,7 @@
  * Provides CRUD operations, querying, and statistics for graph data
  */
 
-import { EventEmitter } from 'events';
+import { EventEmitter } from '../utils/event-emitter';
 import type { GraphNode, GraphEdge, EntityType } from '../types/core';
 import type { GraphStats, Community } from '../types/core';
 import type { GraphSnapshot } from './graph-repository';
@@ -462,14 +462,14 @@ export class GraphManager {
    * Subscribe to graph changes
    */
   on(event: string, listener: (data: GraphChangeEvent) => void): void {
-    this.eventEmitter.on(event, listener);
+    this.eventEmitter.on(event, listener as (...args: unknown[]) => void);
   }
 
   /**
    * Unsubscribe from graph changes
    */
   off(event: string, listener: (data: GraphChangeEvent) => void): void {
-    this.eventEmitter.off(event, listener);
+    this.eventEmitter.off(event, listener as (...args: unknown[]) => void);
   }
 
   /**

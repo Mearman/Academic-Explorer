@@ -3,7 +3,6 @@
  * Provides comprehensive performance tracking and health monitoring for graph testing
  */
 
-import { vi } from 'vitest';
 import type { GraphDataProvider } from '../../providers/base-provider';
 
 /**
@@ -175,11 +174,11 @@ export class PerformanceTestHelper {
     const variance = durations.reduce((sum, d) => sum + Math.pow(d - avgDuration, 2), 0) / durations.length;
     const stdDevDuration = Math.sqrt(variance);
 
-    const memoryDeltas = metrics.map(m => m.memoryDelta).filter(d => d !== undefined) as number[];
+    const memoryDeltas = metrics.map(m => m.memoryDelta).filter(d => d !== undefined);
     const totalMemoryDelta = memoryDeltas.reduce((sum, d) => sum + d, 0);
     const avgMemoryDelta = memoryDeltas.length > 0 ? totalMemoryDelta / memoryDeltas.length : undefined;
 
-    const cpuTimes = metrics.map(m => m.cpuTime).filter(t => t !== undefined) as number[];
+    const cpuTimes = metrics.map(m => m.cpuTime).filter(t => t !== undefined);
     const totalCpuTime = cpuTimes.reduce((sum, t) => sum + t, 0);
 
     const summary = {
@@ -460,7 +459,7 @@ export class PerformanceTestHelper {
 
     for (const [operationName, metrics] of this.metrics) {
       const durations = metrics.map(m => m.duration);
-      const memoryDeltas = metrics.map(m => m.memoryDelta).filter(d => d !== undefined) as number[];
+      const memoryDeltas = metrics.map(m => m.memoryDelta).filter(d => d !== undefined);
 
       const avgDuration = durations.reduce((sum, d) => sum + d, 0) / durations.length;
       const minDuration = Math.min(...durations);
@@ -539,7 +538,7 @@ export class PerformanceTestHelper {
     return Promise.race([
       promise,
       new Promise<never>((_, reject) =>
-        setTimeout(() => reject(new Error(message)), timeoutMs)
+        setTimeout(() => { reject(new Error(message)); }, timeoutMs)
       ),
     ]);
   }

@@ -536,7 +536,7 @@ describe("GraphDataProvider", () => {
         limit: 2,
       };
 
-      const result = await provider.expandEntity("A5017898742", options);
+      const result = await provider.expandEntity("A456", options);
 
       expect(result.metadata.depth).toBe(3);
       expect(result.metadata.options).toEqual(options);
@@ -552,13 +552,13 @@ describe("GraphDataProvider", () => {
 
   describe("Batch Operations", () => {
     it("should implement fetchEntities with sequential calls", async () => {
-      const ids = ["W2741809807", "W3126653431", "W2963537269"];
+      const ids = ["W1", "W2", "W3"];
       const results = await provider.fetchEntities(ids);
 
       expect(results).toHaveLength(3);
-      expect(results[0].entityId).toBe("W2741809807");
-      expect(results[1].entityId).toBe("W3126653431");
-      expect(results[2].entityId).toBe("W2963537269");
+      expect(results[0].entityId).toBe("W1");
+      expect(results[1].entityId).toBe("W2");
+      expect(results[2].entityId).toBe("W3");
 
       const stats = provider.getStats();
       expect(stats.totalRequests).toBe(3);

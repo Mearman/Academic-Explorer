@@ -1,7 +1,7 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router"
-import { useEffect, useMemo } from "react"
+import { useEffect } from "react"
 import { IconSearch } from "@tabler/icons-react"
-import { EntityDetector } from "@academic-explorer/graph";
+import { EntityDetectionService } from "@academic-explorer/graph";
 import { logError, logger } from "@academic-explorer/utils/logger";
 
 export const Route = createFileRoute("/https/$")({
@@ -11,7 +11,6 @@ export const Route = createFileRoute("/https/$")({
 function HttpsRoute() {
 	const { _splat } = Route.useParams()
 	const navigate = useNavigate()
-	const detector = useMemo(() => new EntityDetector(), [])
 
 	useEffect(() => {
 		const resolveHttpsUrl = () => {
@@ -25,9 +24,9 @@ function HttpsRoute() {
 				const fullUrl = `https://${_splat}`
 
 				// Detect entity type and ID from the URL
-				const detection = detector.detectEntityIdentifier(fullUrl)
+				const detection = EntityDetectionService.detectEntity(fullUrl)
 
-				if (detection.entityType && detection.idType === "openalex") {
+				if (detection && detection.entityType && detection.detectionMethod.includes("OpenAlex")) {
 					// This is an OpenAlex URL, redirect to direct entity route
 					const entityRoute = `/${detection.entityType}/${detection.normalizedId}`
 
@@ -55,7 +54,7 @@ function HttpsRoute() {
 		}
 
 		resolveHttpsUrl()
-	}, [_splat, navigate, detector])
+	}, [_splat, navigate])
 
 	return (
 		<div style={{

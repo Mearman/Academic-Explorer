@@ -5,7 +5,6 @@
 
 import { vi } from 'vitest';
 import { EventEmitter } from 'events';
-import { waitForEvent } from './async-helpers';
 
 /**
  * Event tracking state

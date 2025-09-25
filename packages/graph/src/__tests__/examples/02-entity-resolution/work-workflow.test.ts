@@ -71,7 +71,7 @@ class PublicationMockClient {
           is_corresponding: true
         }
       ],
-      referenced_works: ['W2741809807'], // References the first paper
+      referenced_works: ['W2741809807', 'W1234567890', 'W0987654321'], // References the first paper and shares some references
       topics: [
         { id: 'T11234', display_name: 'AI Ethics', score: 0.91 }
       ]
@@ -89,6 +89,49 @@ class PublicationMockClient {
       topics: [
         { id: 'T10364', display_name: 'Natural Language Processing', score: 0.98 }
       ]
+    }],
+    ['W0987654321', {
+      id: 'W0987654321',
+      title: 'BERT: Pre-training of Deep Bidirectional Transformers',
+      display_name: 'BERT: Pre-training of Deep Bidirectional Transformers',
+      publication_year: 2018,
+      cited_by_count: 25000,
+      is_oa: true,
+      authorships: [
+        { author: { id: 'A2222222222', display_name: 'Jacob Devlin' } }
+      ],
+      topics: [
+        { id: 'T10364', display_name: 'Natural Language Processing', score: 0.95 }
+      ]
+    }],
+    ['W1122334455', {
+      id: 'W1122334455',
+      title: 'GPT-3: Language Models are Few-Shot Learners',
+      display_name: 'GPT-3: Language Models are Few-Shot Learners',
+      publication_year: 2020,
+      cited_by_count: 18000,
+      is_oa: true,
+      authorships: [
+        { author: { id: 'A3333333333', display_name: 'Tom B. Brown' } }
+      ],
+      topics: [
+        { id: 'T10364', display_name: 'Natural Language Processing', score: 0.97 }
+      ]
+    }],
+    ['W4159371628', {
+      id: 'W4159371628',
+      title: 'Vision Transformer for Image Recognition',
+      display_name: 'Vision Transformer for Image Recognition',
+      publication_year: 2021,
+      cited_by_count: 8500,
+      is_oa: true,
+      authorships: [
+        { author: { id: 'A4444444444', display_name: 'Alexey Dosovitskiy' } }
+      ],
+      topics: [
+        { id: 'T10150', display_name: 'Machine Learning', score: 0.93 }
+      ],
+      related_works: ['W2741809807'] // Related back to the main paper
     }]
   ]);
 
@@ -164,6 +207,18 @@ class PublicationMockClient {
           results: Array.from(this.workDatabase.values())
             .filter(work =>
               work.topics?.some((topic: any) => topic.id === topicId)
+            )
+            .slice(0, params.per_page as number || 10)
+        };
+      }
+
+      // Author filter for finding works by author
+      if (filter.author?.id) {
+        const authorId = filter.author.id;
+        return {
+          results: Array.from(this.workDatabase.values())
+            .filter(work =>
+              work.authorships?.some((auth: any) => auth.author.id === authorId)
             )
             .slice(0, params.per_page as number || 10)
         };

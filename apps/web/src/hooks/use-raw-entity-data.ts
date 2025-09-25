@@ -4,7 +4,7 @@
  */
 
 import { useQuery } from "@tanstack/react-query";
-import { EntityDetector } from "@academic-explorer/graph";
+import { EntityDetectionService } from "@academic-explorer/graph";
 import type { OpenAlexEntity } from "@academic-explorer/client";
 import { cachedOpenAlex } from "@academic-explorer/client";
 import type { EntityType } from "../config/cache";
@@ -32,10 +32,9 @@ export const useRawEntityData = (options: UseRawEntityDataOptions) => {
 	let detectedEntityId: string | null = null;
 
 	if (entityId) {
-		const detector = new EntityDetector();
-		const detection = detector.detectEntityIdentifier(entityId);
+		const detection = EntityDetectionService.detectEntity(entityId);
 
-		if (!detection.entityType) {
+		if (!detection || !detection.entityType) {
 			throw new Error(`Unable to detect entity type for: ${entityId}`);
 		}
 

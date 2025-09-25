@@ -70,7 +70,7 @@ export class IndexedDBAdapter implements StorageAdapter {
     return new Promise((resolve, reject) => {
       const request = indexedDB.open(this.dbName, this.version);
 
-      request.onerror = () => reject(request.error);
+      request.onerror = () => { reject(request.error); };
       request.onsuccess = () => {
         this.db = request.result;
         resolve(this.db);
@@ -99,8 +99,8 @@ export class IndexedDBAdapter implements StorageAdapter {
 
     await new Promise<void>((resolve, reject) => {
       const request = store.put({ id: key, data, timestamp: Date.now() });
-      request.onsuccess = () => resolve();
-      request.onerror = () => reject(request.error);
+      request.onsuccess = () => { resolve(); };
+      request.onerror = () => { reject(request.error); };
     });
   }
 
@@ -112,10 +112,10 @@ export class IndexedDBAdapter implements StorageAdapter {
     return new Promise<unknown | null>((resolve, reject) => {
       const request = store.get(key);
       request.onsuccess = () => {
-        const result = request.result;
+        const {result} = request;
         resolve(result ? result.data : null);
       };
-      request.onerror = () => reject(request.error);
+      request.onerror = () => { reject(request.error); };
     });
   }
 
@@ -126,8 +126,8 @@ export class IndexedDBAdapter implements StorageAdapter {
 
     await new Promise<void>((resolve, reject) => {
       const request = store.delete(key);
-      request.onsuccess = () => resolve();
-      request.onerror = () => reject(request.error);
+      request.onsuccess = () => { resolve(); };
+      request.onerror = () => { reject(request.error); };
     });
   }
 
@@ -138,8 +138,8 @@ export class IndexedDBAdapter implements StorageAdapter {
 
     return new Promise<boolean>((resolve, reject) => {
       const request = store.count(key);
-      request.onsuccess = () => resolve(request.result > 0);
-      request.onerror = () => reject(request.error);
+      request.onsuccess = () => { resolve(request.result > 0); };
+      request.onerror = () => { reject(request.error); };
     });
   }
 
@@ -157,7 +157,7 @@ export class IndexedDBAdapter implements StorageAdapter {
         }
         resolve(keys);
       };
-      request.onerror = () => reject(request.error);
+      request.onerror = () => { reject(request.error); };
     });
   }
 
@@ -170,8 +170,8 @@ export class IndexedDBAdapter implements StorageAdapter {
       entries.map(({ key, data }) =>
         new Promise<void>((resolve, reject) => {
           const request = store.put({ id: key, data, timestamp: Date.now() });
-          request.onsuccess = () => resolve();
-          request.onerror = () => reject(request.error);
+          request.onsuccess = () => { resolve(); };
+          request.onerror = () => { reject(request.error); };
         })
       )
     );
@@ -187,10 +187,10 @@ export class IndexedDBAdapter implements StorageAdapter {
         new Promise<{ key: string; data: unknown | null }>((resolve, reject) => {
           const request = store.get(key);
           request.onsuccess = () => {
-            const result = request.result;
+            const {result} = request;
             resolve({ key, data: result ? result.data : null });
           };
-          request.onerror = () => reject(request.error);
+          request.onerror = () => { reject(request.error); };
         })
       )
     );
@@ -216,7 +216,7 @@ export class IndexedDBAdapter implements StorageAdapter {
         }
       };
 
-      request.onerror = () => reject(request.error);
+      request.onerror = () => { reject(request.error); };
     });
   }
 
@@ -227,8 +227,8 @@ export class IndexedDBAdapter implements StorageAdapter {
 
     await new Promise<void>((resolve, reject) => {
       const request = store.clear();
-      request.onsuccess = () => resolve();
-      request.onerror = () => reject(request.error);
+      request.onsuccess = () => { resolve(); };
+      request.onerror = () => { reject(request.error); };
     });
   }
 }
@@ -539,7 +539,7 @@ export class GraphRepository {
     const { maxAge, maxCount, minCount = 5 } = options;
     const snapshots = await this.list(); // Already sorted by timestamp desc
 
-    let toDelete: string[] = [];
+    const toDelete: string[] = [];
 
     // Delete by age
     if (maxAge) {

@@ -1,6 +1,7 @@
 /**
  * OpenAlex-specific implementation of GraphDataProvider
  * Provides graph data from the OpenAlex academic database
+ * Integrated with SmartEntityCache for optimized data fetching
  */
 
 import {
@@ -12,6 +13,39 @@ import {
 import type { GraphNode, GraphEdge, EntityType, EntityIdentifier, ExternalIdentifier } from '../types/core';
 import { RelationType } from '../types/core';
 import { EntityDetectionService } from '../services/entity-detection-service';
+
+// Smart Entity Cache interfaces (to be implemented)
+interface CacheContext {
+  operation: 'fetch' | 'search' | 'expand' | 'traverse';
+  entityType?: EntityType;
+  depth?: number;
+  purpose?: 'visualization' | 'analysis' | 'export';
+}
+
+interface SmartEntityCache {
+  getEntity(id: string, context: CacheContext, fields?: string[]): Promise<Record<string, unknown> | null>;
+  batchGetEntities(ids: string[], context: CacheContext, fields?: string[]): Promise<Map<string, Record<string, unknown>>>;
+  preloadEntity(id: string, context: CacheContext): Promise<void>;
+  batchPreloadEntities(ids: string[], context: CacheContext): Promise<void>;
+  getCacheStats(): Promise<CacheStats>;
+  invalidateEntity(id: string): Promise<void>;
+  clear(): Promise<void>;
+}
+
+interface ContextualFieldSelector {
+  selectFieldsForContext(entityType: EntityType, context: CacheContext): string[];
+  getMinimalFields(entityType: EntityType): string[];
+  getExpansionFields(entityType: EntityType, relationType: RelationType): string[];
+}
+
+interface CacheStats {
+  hitRate: number;
+  missRate: number;
+  totalRequests: number;
+  bandwidthSaved: number;
+  fieldLevelHits: number;
+  contextOptimizations: number;
+}
 
 // Interface to avoid circular dependency with client package
 interface OpenAlexClient {
@@ -28,6 +62,8 @@ interface OpenAlexClient {
 
 interface OpenAlexProviderOptions {
   client: OpenAlexClient;
+  cache?: SmartEntityCache;
+  fieldSelector?: ContextualFieldSelector;
   name?: string;
   version?: string;
   maxConcurrentRequests?: number;
@@ -37,25 +73,46 @@ interface OpenAlexProviderOptions {
 }
 
 /**
- * OpenAlex provider for graph data
+ * OpenAlex provider for graph data with SmartEntityCache integration
  */
 export class OpenAlexGraphProvider extends GraphDataProvider {
+  private cache?: SmartEntityCache;
+  private fieldSelector?: ContextualFieldSelector;
+  private currentContext: CacheContext = { operation: 'fetch' };
+  private cacheStats = {
+    hits: 0,
+    misses: 0,
+    fallbacks: 0,
+    contextOptimizations: 0
+  };
+
   constructor(private client: OpenAlexClient, options: Omit<OpenAlexProviderOptions, 'client'> = {}) {
     super({
       name: 'openalex',
       version: '1.0.0',
       ...options,
     });
+
+    this.cache = options.cache;
+    this.fieldSelector = options.fieldSelector || this.createDefaultFieldSelector();
   }
 
   /**
-   * Fetch a single entity by ID
+   * Fetch a single entity by ID with cache integration
    */
   async fetchEntity(id: EntityIdentifier): Promise<GraphNode> {
     return this.trackRequest((async () => {
       const entityType = this.detectEntityType(id);
       const normalizedId = this.normalizeIdentifier(id);
-      const entityData = await this.fetchEntityData(normalizedId, entityType);
+
+      // Set context for single entity fetch
+      const context: CacheContext = {
+        operation: 'fetch',
+        entityType,
+        purpose: 'visualization'
+      };
+
+      const entityData = await this.fetchEntityDataWithCache(normalizedId, entityType, context);
 
       const node: GraphNode = {
         id: normalizedId,
@@ -74,18 +131,26 @@ export class OpenAlexGraphProvider extends GraphDataProvider {
   }
 
   /**
-   * Search for entities based on query
+   * Search for entities based on query with cache-aware enrichment
    */
   async searchEntities(query: SearchQuery): Promise<GraphNode[]> {
     return this.trackRequest((async () => {
       const results: GraphNode[] = [];
 
+      // Set search context
+      const context: CacheContext = {
+        operation: 'search',
+        purpose: 'visualization'
+      };
+
       // Search each entity type requested
       for (const entityType of query.entityTypes) {
         try {
-          const searchResults = await this.searchByEntityType(
+          const contextWithType = { ...context, entityType };
+          const searchResults = await this.searchByEntityTypeWithCache(
             query.query,
             entityType,
+            contextWithType,
             {
               limit: Math.floor((query.limit || 20) / query.entityTypes.length),
               offset: query.offset,
@@ -103,7 +168,7 @@ export class OpenAlexGraphProvider extends GraphDataProvider {
   }
 
   /**
-   * Expand an entity to show its relationships
+   * Expand an entity to show its relationships with cache-aware preloading
    */
   async expandEntity(nodeId: string, options: ProviderExpansionOptions): Promise<GraphExpansion> {
     return this.trackRequest((async () => {
@@ -111,25 +176,33 @@ export class OpenAlexGraphProvider extends GraphDataProvider {
       const nodes: GraphNode[] = [];
       const edges: GraphEdge[] = [];
 
-      // Get the base entity data
-      const baseEntity = await this.fetchEntityData(nodeId, entityType);
+      // Set expansion context
+      const context: CacheContext = {
+        operation: 'expand',
+        entityType,
+        depth: 1,
+        purpose: 'visualization'
+      };
+
+      // Get the base entity data with expansion-specific fields
+      const baseEntity = await this.fetchEntityDataWithCache(nodeId, entityType, context);
 
       // Expand based on entity type and available relationships
       switch (entityType) {
         case 'works':
-          await this.expandWork(nodeId, baseEntity, nodes, edges, options);
+          await this.expandWorkWithCache(nodeId, baseEntity, nodes, edges, options, context);
           break;
         case 'authors':
-          await this.expandAuthor(nodeId, baseEntity, nodes, edges, options);
+          await this.expandAuthorWithCache(nodeId, baseEntity, nodes, edges, options, context);
           break;
         case 'sources':
-          await this.expandSource(nodeId, baseEntity, nodes, edges, options);
+          await this.expandSourceWithCache(nodeId, baseEntity, nodes, edges, options, context);
           break;
         case 'institutions':
-          await this.expandInstitution(nodeId, baseEntity, nodes, edges, options);
+          await this.expandInstitutionWithCache(nodeId, baseEntity, nodes, edges, options, context);
           break;
         case 'topics':
-          await this.expandTopic(nodeId, baseEntity, nodes, edges, options);
+          await this.expandTopicWithCache(nodeId, baseEntity, nodes, edges, options, context);
           break;
         default:
           // Basic expansion for other entity types
@@ -144,6 +217,7 @@ export class OpenAlexGraphProvider extends GraphDataProvider {
           depth: 1,
           totalFound: nodes.length,
           options,
+          cacheStats: this.cacheStats
         },
       };
     })());
@@ -182,6 +256,36 @@ export class OpenAlexGraphProvider extends GraphDataProvider {
       throw new Error(`Cannot normalize identifier: ${id}`);
     }
     return normalizedId;
+  }
+
+  /**
+   * Fetch entity data with cache integration and fallback
+   */
+  private async fetchEntityDataWithCache(
+    id: string,
+    entityType: EntityType,
+    context: CacheContext
+  ): Promise<Record<string, unknown>> {
+    // Try cache first if available
+    if (this.cache && this.fieldSelector) {
+      try {
+        const contextFields = this.fieldSelector.selectFieldsForContext(entityType, context);
+        const cachedData = await this.cache.getEntity(id, context, contextFields);
+
+        if (cachedData) {
+          this.cacheStats.hits++;
+          return cachedData;
+        }
+      } catch (error) {
+        console.warn(`Cache lookup failed for ${id}:`, error);
+      }
+    }
+
+    // Fallback to direct API call
+    this.cacheStats.misses++;
+    this.cacheStats.fallbacks++;
+
+    return this.fetchEntityData(id, entityType);
   }
 
   private async fetchEntityData(id: string, entityType: EntityType): Promise<Record<string, unknown>> {
@@ -258,6 +362,27 @@ export class OpenAlexGraphProvider extends GraphDataProvider {
     return externalIds;
   }
 
+  private async searchByEntityTypeWithCache(
+    query: string,
+    entityType: EntityType,
+    context: CacheContext,
+    options: { limit?: number; offset?: number }
+  ): Promise<GraphNode[]> {
+    const searchResults = await this.searchByEntityType(query, entityType, options);
+
+    // Batch preload search results into cache for future access
+    if (this.cache && searchResults.length > 0) {
+      try {
+        const entityIds = searchResults.map(node => node.id);
+        await this.cache.batchPreloadEntities(entityIds, context);
+      } catch (error) {
+        console.warn(`Failed to preload search results:`, error);
+      }
+    }
+
+    return searchResults;
+  }
+
   private async searchByEntityType(query: string, entityType: EntityType, options: { limit?: number; offset?: number }): Promise<GraphNode[]> {
     let searchResults: any;
 
@@ -303,7 +428,39 @@ export class OpenAlexGraphProvider extends GraphDataProvider {
     }));
   }
 
-  private async expandWork(workId: string, workData: any, nodes: GraphNode[], edges: GraphEdge[], options: ProviderExpansionOptions): Promise<void> {
+  private async expandWorkWithCache(
+    workId: string,
+    workData: any,
+    nodes: GraphNode[],
+    edges: GraphEdge[],
+    options: ProviderExpansionOptions,
+    context: CacheContext
+  ): Promise<void> {
+    const relatedIds: string[] = [];
+
+    // Collect related entity IDs for batch preloading
+    if (workData.authorships) {
+      for (const authorship of workData.authorships.slice(0, options.limit || 10)) {
+        if (authorship.author?.id) {
+          relatedIds.push(authorship.author.id);
+        }
+      }
+    }
+
+    if (workData.primary_location?.source?.id) {
+      relatedIds.push(workData.primary_location.source.id);
+    }
+
+    // Batch preload related entities
+    if (this.cache && relatedIds.length > 0) {
+      try {
+        const expansionContext = { ...context, operation: 'expand' as const, depth: (context.depth || 0) + 1 };
+        await this.cache.batchPreloadEntities(relatedIds, expansionContext);
+      } catch (error) {
+        console.warn(`Failed to preload related entities:`, error);
+      }
+    }
+
     // Add authors
     if (workData.authorships) {
       for (const authorship of workData.authorships.slice(0, options.limit || 10)) {
@@ -332,7 +489,7 @@ export class OpenAlexGraphProvider extends GraphDataProvider {
 
     // Add source (journal/venue)
     if (workData.primary_location?.source?.id) {
-      const source = workData.primary_location.source;
+      const {source} = workData.primary_location;
       const sourceNode: GraphNode = {
         id: source.id,
         entityType: 'sources',
@@ -354,7 +511,14 @@ export class OpenAlexGraphProvider extends GraphDataProvider {
     }
   }
 
-  private async expandAuthor(authorId: string, authorData: any, nodes: GraphNode[], edges: GraphEdge[], options: ProviderExpansionOptions): Promise<void> {
+  private async expandAuthorWithCache(
+    authorId: string,
+    authorData: any,
+    nodes: GraphNode[],
+    edges: GraphEdge[],
+    options: ProviderExpansionOptions,
+    context: CacheContext
+  ): Promise<void> {
     // Add recent works
     try {
       const works = await this.client.works({
@@ -362,6 +526,18 @@ export class OpenAlexGraphProvider extends GraphDataProvider {
         per_page: options.limit || 10,
         sort: 'publication_year:desc',
       });
+
+      const workIds = (works.results || []).map((work: any) => String(work.id));
+
+      // Batch preload works into cache
+      if (this.cache && workIds.length > 0) {
+        try {
+          const expansionContext = { ...context, entityType: 'works' as const, depth: (context.depth || 0) + 1 };
+          await this.cache.batchPreloadEntities(workIds, expansionContext);
+        } catch (error) {
+          console.warn(`Failed to preload author works:`, error);
+        }
+      }
 
       for (const work of works.results || []) {
         const workNode: GraphNode = {
@@ -388,7 +564,14 @@ export class OpenAlexGraphProvider extends GraphDataProvider {
     }
   }
 
-  private async expandSource(sourceId: string, sourceData: any, nodes: GraphNode[], edges: GraphEdge[], options: ProviderExpansionOptions): Promise<void> {
+  private async expandSourceWithCache(
+    sourceId: string,
+    sourceData: any,
+    nodes: GraphNode[],
+    edges: GraphEdge[],
+    options: ProviderExpansionOptions,
+    context: CacheContext
+  ): Promise<void> {
     // Add recent works published in this source
     try {
       const works = await this.client.works({
@@ -396,6 +579,18 @@ export class OpenAlexGraphProvider extends GraphDataProvider {
         per_page: options.limit || 10,
         sort: 'publication_year:desc',
       });
+
+      const workIds = (works.results || []).map((work: any) => String(work.id));
+
+      // Batch preload works into cache
+      if (this.cache && workIds.length > 0) {
+        try {
+          const expansionContext = { ...context, entityType: 'works' as const, depth: (context.depth || 0) + 1 };
+          await this.cache.batchPreloadEntities(workIds, expansionContext);
+        } catch (error) {
+          console.warn(`Failed to preload source works:`, error);
+        }
+      }
 
       for (const work of works.results || []) {
         const workNode: GraphNode = {
@@ -422,13 +617,32 @@ export class OpenAlexGraphProvider extends GraphDataProvider {
     }
   }
 
-  private async expandInstitution(institutionId: string, institutionData: any, nodes: GraphNode[], edges: GraphEdge[], options: ProviderExpansionOptions): Promise<void> {
+  private async expandInstitutionWithCache(
+    institutionId: string,
+    institutionData: any,
+    nodes: GraphNode[],
+    edges: GraphEdge[],
+    options: ProviderExpansionOptions,
+    context: CacheContext
+  ): Promise<void> {
     // Add authors affiliated with this institution
     try {
       const authors = await this.client.authors({
         filter: { last_known_institutions: { id: institutionId } },
         per_page: options.limit || 10,
       });
+
+      const authorIds = (authors.results || []).map((author: any) => String(author.id));
+
+      // Batch preload authors into cache
+      if (this.cache && authorIds.length > 0) {
+        try {
+          const expansionContext = { ...context, entityType: 'authors' as const, depth: (context.depth || 0) + 1 };
+          await this.cache.batchPreloadEntities(authorIds, expansionContext);
+        } catch (error) {
+          console.warn(`Failed to preload institution authors:`, error);
+        }
+      }
 
       for (const author of authors.results || []) {
         const authorNode: GraphNode = {
@@ -455,7 +669,14 @@ export class OpenAlexGraphProvider extends GraphDataProvider {
     }
   }
 
-  private async expandTopic(topicId: string, topicData: any, nodes: GraphNode[], edges: GraphEdge[], options: ProviderExpansionOptions): Promise<void> {
+  private async expandTopicWithCache(
+    topicId: string,
+    topicData: any,
+    nodes: GraphNode[],
+    edges: GraphEdge[],
+    options: ProviderExpansionOptions,
+    context: CacheContext
+  ): Promise<void> {
     // Add recent works in this topic
     try {
       const works = await this.client.works({
@@ -463,6 +684,18 @@ export class OpenAlexGraphProvider extends GraphDataProvider {
         per_page: options.limit || 10,
         sort: 'publication_year:desc',
       });
+
+      const workIds = (works.results || []).map((work: any) => String(work.id));
+
+      // Batch preload works into cache
+      if (this.cache && workIds.length > 0) {
+        try {
+          const expansionContext = { ...context, entityType: 'works' as const, depth: (context.depth || 0) + 1 };
+          await this.cache.batchPreloadEntities(workIds, expansionContext);
+        } catch (error) {
+          console.warn(`Failed to preload topic works:`, error);
+        }
+      }
 
       for (const work of works.results || []) {
         const workNode: GraphNode = {
@@ -486,6 +719,170 @@ export class OpenAlexGraphProvider extends GraphDataProvider {
       }
     } catch (error) {
       console.warn(`Failed to expand topic ${topicId}:`, error);
+    }
+  }
+
+  // ==================== CACHE INTEGRATION METHODS ====================
+
+  /**
+   * Set the current cache context for subsequent operations
+   */
+  setCacheContext(context: CacheContext): void {
+    this.currentContext = context;
+  }
+
+  /**
+   * Preload a single entity into the cache
+   */
+  async preloadEntity(id: string, context: CacheContext): Promise<void> {
+    if (!this.cache) return;
+
+    try {
+      await this.cache.preloadEntity(id, context);
+    } catch (error) {
+      console.warn(`Failed to preload entity ${id}:`, error);
+    }
+  }
+
+  /**
+   * Batch preload multiple entities into the cache
+   */
+  async batchPreloadEntities(ids: string[], context: CacheContext): Promise<void> {
+    if (!this.cache || ids.length === 0) return;
+
+    try {
+      await this.cache.batchPreloadEntities(ids, context);
+    } catch (error) {
+      console.warn(`Failed to batch preload entities:`, error);
+    }
+  }
+
+  /**
+   * Get cache performance statistics
+   */
+  async getCacheStats(): Promise<CacheStats | null> {
+    if (!this.cache) return null;
+
+    try {
+      return await this.cache.getCacheStats();
+    } catch (error) {
+      console.warn(`Failed to get cache stats:`, error);
+      return null;
+    }
+  }
+
+  /**
+   * Get provider-level cache statistics
+   */
+  getProviderCacheStats(): {
+    hits: number;
+    misses: number;
+    fallbacks: number;
+    contextOptimizations: number;
+    hitRate: number;
+  } {
+    const total = this.cacheStats.hits + this.cacheStats.misses;
+    return {
+      ...this.cacheStats,
+      hitRate: total > 0 ? this.cacheStats.hits / total : 0
+    };
+  }
+
+  /**
+   * Invalidate cached entity data
+   */
+  async invalidateEntity(id: string): Promise<void> {
+    if (!this.cache) return;
+
+    try {
+      await this.cache.invalidateEntity(id);
+    } catch (error) {
+      console.warn(`Failed to invalidate entity ${id}:`, error);
+    }
+  }
+
+  /**
+   * Clear all cache data
+   */
+  async clearCache(): Promise<void> {
+    if (!this.cache) return;
+
+    try {
+      await this.cache.clear();
+      // Reset provider-level stats
+      this.cacheStats = {
+        hits: 0,
+        misses: 0,
+        fallbacks: 0,
+        contextOptimizations: 0
+      };
+    } catch (error) {
+      console.warn(`Failed to clear cache:`, error);
+    }
+  }
+
+  // ==================== FIELD SELECTOR HELPERS ====================
+
+  /**
+   * Create default field selector if none provided
+   */
+  private createDefaultFieldSelector(): ContextualFieldSelector {
+    return {
+      selectFieldsForContext: (entityType: EntityType, context: CacheContext): string[] => {
+        const baseFields = this.getMinimalFields(entityType);
+
+        switch (context.operation) {
+          case 'fetch':
+            return [...baseFields, 'authorships', 'primary_location', 'topics'];
+          case 'search':
+            return baseFields;
+          case 'expand':
+            return [...baseFields, ...this.getExpansionFields(entityType, RelationType.AUTHORED)];
+          case 'traverse':
+            return baseFields;
+          default:
+            return baseFields;
+        }
+      },
+
+      getMinimalFields: (entityType: EntityType): string[] => {
+        return this.getMinimalFields(entityType);
+      },
+
+      getExpansionFields: (entityType: EntityType, relationType: RelationType): string[] => {
+        return this.getExpansionFields(entityType, relationType);
+      }
+    };
+  }
+
+  private getMinimalFields(entityType: EntityType): string[] {
+    switch (entityType) {
+      case 'works':
+        return ['id', 'display_name', 'publication_year', 'type'];
+      case 'authors':
+        return ['id', 'display_name', 'orcid'];
+      case 'sources':
+        return ['id', 'display_name', 'type'];
+      case 'institutions':
+        return ['id', 'display_name', 'country_code'];
+      case 'topics':
+        return ['id', 'display_name', 'level'];
+      default:
+        return ['id', 'display_name'];
+    }
+  }
+
+  private getExpansionFields(entityType: EntityType, relationType: RelationType): string[] {
+    switch (entityType) {
+      case 'works':
+        if (relationType === RelationType.AUTHORED) {
+          return ['authorships.author.id', 'authorships.author.display_name'];
+        }
+        return ['primary_location.source.id', 'topics.id'];
+      case 'authors':
+        return ['last_known_institutions.id', 'works_count'];
+      default:
+        return [];
     }
   }
 }

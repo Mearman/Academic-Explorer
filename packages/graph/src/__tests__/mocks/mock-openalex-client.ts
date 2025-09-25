@@ -249,7 +249,7 @@ export class MockOpenAlexClient {
     const actualId = normalized.normalizedId;
 
     // Check if we have mock data for this specific ID
-    let dataKey = `${endpoint}:${actualId}`;
+    const dataKey = `${endpoint}:${actualId}`;
     let mockData = this.defaultData.get(dataKey);
 
     if (!mockData) {
@@ -280,7 +280,7 @@ export class MockOpenAlexClient {
 
   // Search methods - these MUST return { results: [...] } format
   async works(params: Record<string, unknown>): Promise<{ results: Record<string, unknown>[] }> {
-    const results = await this.makeRequest('works', params, 'search:works') as any;
+    const results = await this.makeRequest('works', params, 'search:works');
 
     // If we're returning malformed data for testing purposes, return it as-is
     if (this.options.failureMode === 'malformed' && this.options.customResponseData) {
@@ -305,7 +305,7 @@ export class MockOpenAlexClient {
   }
 
   async authors(params: Record<string, unknown>): Promise<{ results: Record<string, unknown>[] }> {
-    const results = await this.makeRequest('authors', params, 'search:authors') as any;
+    const results = await this.makeRequest('authors', params, 'search:authors');
 
     // If we're returning malformed data for testing purposes, return it as-is
     if (this.options.failureMode === 'malformed' && this.options.customResponseData) {
