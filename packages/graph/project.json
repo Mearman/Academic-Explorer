@@ -50,6 +50,21 @@
       ],
       "cache": true
     },
+    "test:unit": {
+      "executor": "nx:noop",
+      "options": {},
+      "cache": false
+    },
+    "test:integration": {
+      "executor": "nx:noop",
+      "options": {},
+      "cache": false
+    },
+    "test:component": {
+      "executor": "nx:noop",
+      "options": {},
+      "cache": false
+    },
     "test:watch": {
       "executor": "nx:run-commands",
       "options": {

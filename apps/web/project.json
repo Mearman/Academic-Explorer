@@ -97,6 +97,15 @@
       },
       "cache": true
     },
+    "test:integration": {
+      "executor": "nx:run-commands",
+      "dependsOn": ["^build"],
+      "options": {
+        "command": "vitest run --project=integration",
+        "cwd": "{projectRoot}"
+      },
+      "cache": true
+    },
     "test:e2e": {
       "executor": "nx:noop",
       "options": {},

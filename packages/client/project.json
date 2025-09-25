@@ -62,6 +62,29 @@
       ],
       "cache": true
     },
+    "test:unit": {
+      "executor": "nx:run-commands",
+      "dependsOn": ["^build"],
+      "options": {
+        "command": "vitest run --testNamePattern='.*\\.unit\\.test\\.ts$'",
+        "cwd": "{projectRoot}"
+      },
+      "cache": true
+    },
+    "test:integration": {
+      "executor": "nx:run-commands",
+      "dependsOn": ["^build"],
+      "options": {
+        "command": "vitest run --testNamePattern='.*\\.integration\\.test\\.ts$'",
+        "cwd": "{projectRoot}"
+      },
+      "cache": true
+    },
+    "test:component": {
+      "executor": "nx:noop",
+      "options": {},
+      "cache": false
+    },
     "test:watch": {
       "executor": "nx:run-commands",
       "options": {

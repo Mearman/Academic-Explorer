@@ -81,7 +81,7 @@ export class GlobalErrorBoundary extends Component<Props, State> {
 		};
 	}
 
-	override componentDidCatch(error: Error, errorInfo: ErrorInfo): void {
+	componentDidCatch(error: Error, errorInfo: ErrorInfo): void {
 		const errorId = Math.random().toString(36).substring(7);
 
 		// Generate comprehensive debug info
@@ -237,13 +237,13 @@ export class GlobalErrorBoundary extends Component<Props, State> {
 		}
 	};
 
-	override componentWillUnmount(): void {
+	componentWillUnmount(): void {
 		if (this.copyTimeout) {
 			clearTimeout(this.copyTimeout);
 		}
 	}
 
-	override render(): ReactNode {
+	render(): ReactNode {
 		if (this.state.hasError) {
 			// Custom fallback UI
 			if (this.props.fallback) {

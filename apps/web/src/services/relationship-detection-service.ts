@@ -180,7 +180,9 @@ export class RelationshipDetectionService {
 			}
 
 			// Get all existing nodes in the graph
-			const existingNodes = Object.values(store.nodes).filter(isNonNull).filter(node => node.id !== nodeId);
+			const existingNodes = Object.values(store.nodes)
+				.filter((node): node is GraphNode => isNonNull(node))
+				.filter(node => node.id !== nodeId);
 
 			// Detect relationships with existing nodes
 			const detectedRelationships = await this.analyzeRelationships(minimalData, existingNodes);
@@ -686,7 +688,7 @@ export class RelationshipDetectionService {
 			const otherBatchNodes = batchNodeIds
 				.filter(id => id !== nodeId)
 				.map(id => store.getNode(id))
-				.filter(isNonNull);
+				.filter((node): node is GraphNode => isNonNull(node));
 
 			// Analyze relationships specifically with the batch nodes
 			const detectedRelationships = this.analyzeCrossBatchRelationships(sourceData, otherBatchNodes);

@@ -1,0 +1,48 @@
+{
+  "name": "academic-explorer-monorepo",
+  "$schema": "./node_modules/nx/schemas/project-schema.json",
+  "projectType": "library",
+  "targets": {
+    "test:unit:run": {
+      "executor": "nx:run-commands",
+      "dependsOn": ["^build"],
+      "options": {
+        "command": "nx run-many -t test:unit --skip-nx-cache",
+        "cwd": "{workspaceRoot}",
+        "nodeOptions": ["--max-old-space-size=8192"]
+      },
+      "cache": true
+    },
+    "test:integration:run": {
+      "executor": "nx:run-commands",
+      "dependsOn": ["^build"],
+      "options": {
+        "command": "nx run-many -t test:integration --skip-nx-cache",
+        "cwd": "{workspaceRoot}",
+        "nodeOptions": ["--max-old-space-size=8192"]
+      },
+      "cache": true
+    },
+    "test:component:run": {
+      "executor": "nx:run-commands",
+      "dependsOn": ["^build"],
+      "options": {
+        "command": "nx run-many -t test:component --skip-nx-cache",
+        "cwd": "{workspaceRoot}",
+        "nodeOptions": ["--max-old-space-size=8192"]
+      },
+      "cache": true
+    },
+    "test:e2e:run": {
+      "executor": "nx:run-commands",
+      "dependsOn": ["^build"],
+      "options": {
+        "command": "nx run-many -t test:e2e --skip-nx-cache",
+        "cwd": "{workspaceRoot}",
+        "nodeOptions": ["--max-old-space-size=8192"]
+      },
+      "cache": true
+    }
+  },
+  "tags": ["type:workspace", "scope:monorepo"]
+}
