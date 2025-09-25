@@ -720,13 +720,15 @@ const GraphNavigationInner: React.FC<GraphNavigationProps> = ({ className, style
 			}
 		};
 
-		const unsubscribe = (eventBus as unknown as { on: (type: string, handler: (event: { payload: unknown }) => void) => () => void }).on(WorkerEventType.FORCE_SIMULATION_PROGRESS, (event) => {
+		const handler = (event: { payload: unknown }) => {
 			handleProgress(event.payload);
-		});
-		logger.debug("graph", "Registered unified FORCE_SIMULATION_PROGRESS handler");
+		};
+
+		const subscriptionId = eventBus.on(WorkerEventType.FORCE_SIMULATION_PROGRESS, handler);
+		logger.debug("graph", "Registered unified FORCE_SIMULATION_PROGRESS handler", { subscriptionId });
 
 		return () => {
-			unsubscribe();
+			eventBus.off(WorkerEventType.FORCE_SIMULATION_PROGRESS, handler);
 			logger.debug("graph", "Unregistered FORCE_SIMULATION_PROGRESS handler");
 		};
 	}, [setNodes, nodes, eventBus]); // Depend on nodes and eventBus to re-apply if needed
