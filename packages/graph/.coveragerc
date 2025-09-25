@@ -1,0 +1,36 @@
+[run]
+source = src
+omit =
+    */tests/*
+    */test/*
+    */__tests__/*
+    */*.test.ts
+    */*.spec.ts
+    */node_modules/*
+    */dist/*
+    */coverage/*
+    */*.d.ts
+    */*.config.*
+    */*.stories.*
+
+[report]
+precision = 2
+show_missing = True
+skip_covered = False
+
+[html]
+directory = coverage/html
+title = Graph Package Coverage Report
+
+[xml]
+output = coverage/cobertura.xml
+
+[json]
+output = coverage/coverage.json
+
+[paths]
+source =
+    src/
+    /Users/*/Academic Explorer/packages/graph/src/
+    /home/*/Academic Explorer/packages/graph/src/
+    /workspace/packages/graph/src/

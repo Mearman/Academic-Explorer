@@ -1,0 +1,43 @@
+{
+  "vitest": {
+    "cache": {
+      "dir": "node_modules/.cache/vitest",
+      "enabled": true,
+      "maxAge": 604800000,
+      "compression": "gzip"
+    }
+  },
+  "nyc": {
+    "cache-dir": "./coverage/.nyc_cache",
+    "temp-dir": "./coverage/.nyc_output",
+    "cache": true
+  },
+  "typescript": {
+    "incremental": true,
+    "tsBuildInfoFile": "./coverage/.tsbuildinfo"
+  },
+  "optimization": {
+    "parallel": false,
+    "singleFork": true,
+    "maxMemory": "4096MB",
+    "gcInterval": 100
+  },
+  "cleanup": {
+    "afterTests": [
+      "./coverage/.nyc_output/processinfo",
+      "./coverage/raw-coverage"
+    ],
+    "beforeTests": [],
+    "retention": {
+      "coverage": "7d",
+      "cache": "30d",
+      "artifacts": "3d"
+    }
+  },
+  "monitoring": {
+    "memoryUsage": true,
+    "testDuration": true,
+    "cacheHitRate": true,
+    "coverageGeneration": true
+  }
+}
