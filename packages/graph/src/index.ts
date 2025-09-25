@@ -10,7 +10,7 @@ export * from "./types";
 
 // Phase 1: Core Data Models & Services
 export { GraphManager, type GraphManagerOptions, type GraphChangeEvent } from './data/graph-manager';
-export { EntityResolver, type IEntityResolver, type ExpansionOptions, type ExpansionResult } from './services/entity-resolver-interface';
+export { EntityResolver, type IEntityResolver, type EntityExpansionOptions, type ExpansionResult } from './services/entity-resolver-interface';
 export {
   GraphRepository,
   IndexedDBAdapter,

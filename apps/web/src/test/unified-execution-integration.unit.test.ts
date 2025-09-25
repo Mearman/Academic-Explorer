@@ -23,8 +23,8 @@ vi.mock("@academic-explorer/utils/logger", () => ({
 
 describe("useUnifiedExecutionWorker Integration", () => {
   const createTestNodes = (): ForceSimulationNode[] => [
-    { id: "node1", type: "authors", x: 0, y: 0 },
-    { id: "node2", type: "works", x: 100, y: 100 }
+    { id: "node1", entityType: "authors", x: 0, y: 0 },
+    { id: "node2", entityType: "works", x: 100, y: 100 }
   ];
 
   const createTestLinks = (): ForceSimulationLink[] => [
@@ -185,7 +185,7 @@ describe("useUnifiedExecutionWorker Integration", () => {
       // Update nodes
       const newNodes: ForceSimulationNode[] = [
         ...createTestNodes(),
-        { id: "node3", type: "institutions", x: 50, y: 50 }
+        { id: "node3", entityType: "institutions", x: 50, y: 50 }
       ];
 
       await act(async () => {
@@ -230,7 +230,7 @@ describe("useUnifiedExecutionWorker Integration", () => {
         await result.current.reheatAnimation({
           nodes: [
             ...createTestNodes(),
-            { id: "node3", type: "topics", x: 150, y: 150 }
+            { id: "node3", entityType: "topics", x: 150, y: 150 }
           ],
           links: [
             ...createTestLinks(),

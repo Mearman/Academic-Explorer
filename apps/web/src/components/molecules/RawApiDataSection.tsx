@@ -291,7 +291,7 @@ export const RawApiDataSection: React.FC<RawApiDataSectionProps> = ({
 				padding: "2px 6px",
 				borderRadius: "4px"
 			}}>
-				[Unsupported type: {typeof value}]
+				[Unsupported entityType: {typeof value}]
 			</span>
 		);
 	};

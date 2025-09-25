@@ -21,9 +21,9 @@ describe("ForceSimulationExecutor", () => {
   });
 
   const createTestNodes = (): ForceSimulationNode[] => [
-    { id: "node1", type: "authors", x: 0, y: 0 },
-    { id: "node2", type: "works", x: 100, y: 100 },
-    { id: "node3", type: "institutions", x: -50, y: 50 }
+    { id: "node1", entityType: "authors", x: 0, y: 0 },
+    { id: "node2", entityType: "works", x: 100, y: 100 },
+    { id: "node3", entityType: "institutions", x: -50, y: 50 }
   ];
 
   const createTestLinks = (): ForceSimulationLink[] => [
@@ -33,7 +33,7 @@ describe("ForceSimulationExecutor", () => {
 
   it("should handle FORCE_SIMULATION_START task", async () => {
     const task: ForceSimulationTask = {
-      type: "FORCE_SIMULATION_START",
+      entityType: "FORCE_SIMULATION_START",
       nodes: createTestNodes(),
       links: createTestLinks(),
       pinnedNodes: ["node1"]
@@ -42,7 +42,7 @@ describe("ForceSimulationExecutor", () => {
     const result = await executor(task, emitSpy);
 
     expect(result).toMatchObject({
-      type: "FORCE_SIMULATION_CONTROL_ACK",
+      entityType: "FORCE_SIMULATION_CONTROL_ACK",
       action: "FORCE_SIMULATION_START",
       status: "ok"
     });
@@ -59,7 +59,7 @@ describe("ForceSimulationExecutor", () => {
   it("should handle FORCE_SIMULATION_STOP task", async () => {
     // Start a simulation first
     const startTask: ForceSimulationTask = {
-      type: "FORCE_SIMULATION_START",
+      entityType: "FORCE_SIMULATION_START",
       nodes: createTestNodes(),
       links: createTestLinks()
     };
@@ -69,13 +69,13 @@ describe("ForceSimulationExecutor", () => {
 
     // Stop the simulation
     const stopTask: ForceSimulationTask = {
-      type: "FORCE_SIMULATION_STOP"
+      entityType: "FORCE_SIMULATION_STOP"
     };
 
     const result = await executor(stopTask, emitSpy);
 
     expect(result).toMatchObject({
-      type: "FORCE_SIMULATION_CONTROL_ACK",
+      entityType: "FORCE_SIMULATION_CONTROL_ACK",
       action: "FORCE_SIMULATION_STOP",
       status: "ok"
     });
@@ -84,7 +84,7 @@ describe("ForceSimulationExecutor", () => {
   it("should handle FORCE_SIMULATION_PAUSE task", async () => {
     // Start a simulation first
     const startTask: ForceSimulationTask = {
-      type: "FORCE_SIMULATION_START",
+      entityType: "FORCE_SIMULATION_START",
       nodes: createTestNodes(),
       links: createTestLinks()
     };
@@ -94,13 +94,13 @@ describe("ForceSimulationExecutor", () => {
 
     // Pause the simulation
     const pauseTask: ForceSimulationTask = {
-      type: "FORCE_SIMULATION_PAUSE"
+      entityType: "FORCE_SIMULATION_PAUSE"
     };
 
     const result = await executor(pauseTask, emitSpy);
 
     expect(result).toMatchObject({
-      type: "FORCE_SIMULATION_CONTROL_ACK",
+      entityType: "FORCE_SIMULATION_CONTROL_ACK",
       action: "FORCE_SIMULATION_PAUSE",
       status: "ok"
     });
@@ -109,14 +109,14 @@ describe("ForceSimulationExecutor", () => {
   it("should handle FORCE_SIMULATION_RESUME task", async () => {
     // Start and pause a simulation first
     const startTask: ForceSimulationTask = {
-      type: "FORCE_SIMULATION_START",
+      entityType: "FORCE_SIMULATION_START",
       nodes: createTestNodes(),
       links: createTestLinks()
     };
     await executor(startTask, emitSpy);
 
     const pauseTask: ForceSimulationTask = {
-      type: "FORCE_SIMULATION_PAUSE"
+      entityType: "FORCE_SIMULATION_PAUSE"
     };
     await executor(pauseTask, emitSpy);
 
@@ -124,13 +124,13 @@ describe("ForceSimulationExecutor", () => {
 
     // Resume the simulation
     const resumeTask: ForceSimulationTask = {
-      type: "FORCE_SIMULATION_RESUME"
+      entityType: "FORCE_SIMULATION_RESUME"
     };
 
     const result = await executor(resumeTask, emitSpy);
 
     expect(result).toMatchObject({
-      type: "FORCE_SIMULATION_CONTROL_ACK",
+      entityType: "FORCE_SIMULATION_CONTROL_ACK",
       action: "FORCE_SIMULATION_RESUME",
       status: "ok"
     });
@@ -139,7 +139,7 @@ describe("ForceSimulationExecutor", () => {
   it("should handle FORCE_SIMULATION_UPDATE_PARAMETERS task", async () => {
     // Start a simulation first
     const startTask: ForceSimulationTask = {
-      type: "FORCE_SIMULATION_START",
+      entityType: "FORCE_SIMULATION_START",
       nodes: createTestNodes(),
       links: createTestLinks()
     };
@@ -149,7 +149,7 @@ describe("ForceSimulationExecutor", () => {
 
     // Update parameters
     const updateTask: ForceSimulationTask = {
-      type: "FORCE_SIMULATION_UPDATE_PARAMETERS",
+      entityType: "FORCE_SIMULATION_UPDATE_PARAMETERS",
       config: {
         linkStrength: 0.5,
         chargeStrength: -100
@@ -159,7 +159,7 @@ describe("ForceSimulationExecutor", () => {
     const result = await executor(updateTask, emitSpy);
 
     expect(result).toMatchObject({
-      type: "FORCE_SIMULATION_CONTROL_ACK",
+      entityType: "FORCE_SIMULATION_CONTROL_ACK",
       action: "FORCE_SIMULATION_UPDATE_PARAMETERS",
       status: "ok"
     });
@@ -167,7 +167,7 @@ describe("ForceSimulationExecutor", () => {
 
   it("should handle FORCE_SIMULATION_REHEAT task", async () => {
     const reheatTask: ForceSimulationTask = {
-      type: "FORCE_SIMULATION_REHEAT",
+      entityType: "FORCE_SIMULATION_REHEAT",
       nodes: createTestNodes(),
       links: createTestLinks(),
       alpha: 0.8,
@@ -177,7 +177,7 @@ describe("ForceSimulationExecutor", () => {
     const result = await executor(reheatTask, emitSpy);
 
     expect(result).toMatchObject({
-      type: "FORCE_SIMULATION_CONTROL_ACK",
+      entityType: "FORCE_SIMULATION_CONTROL_ACK",
       action: "FORCE_SIMULATION_REHEAT",
       status: "ok",
       nodeCount: 3,
@@ -192,7 +192,7 @@ describe("ForceSimulationExecutor", () => {
   it("should handle FORCE_SIMULATION_UPDATE_LINKS task", async () => {
     // Start a simulation first
     const startTask: ForceSimulationTask = {
-      type: "FORCE_SIMULATION_START",
+      entityType: "FORCE_SIMULATION_START",
       nodes: createTestNodes(),
       links: createTestLinks()
     };
@@ -207,7 +207,7 @@ describe("ForceSimulationExecutor", () => {
     ];
 
     const updateLinksTask: ForceSimulationTask = {
-      type: "FORCE_SIMULATION_UPDATE_LINKS",
+      entityType: "FORCE_SIMULATION_UPDATE_LINKS",
       links: newLinks,
       alpha: 0.7
     };
@@ -215,7 +215,7 @@ describe("ForceSimulationExecutor", () => {
     const result = await executor(updateLinksTask, emitSpy);
 
     expect(result).toMatchObject({
-      type: "FORCE_SIMULATION_CONTROL_ACK",
+      entityType: "FORCE_SIMULATION_CONTROL_ACK",
       action: "FORCE_SIMULATION_UPDATE_LINKS",
       status: "ok",
       linkCount: 2,
@@ -226,7 +226,7 @@ describe("ForceSimulationExecutor", () => {
   it("should handle FORCE_SIMULATION_UPDATE_NODES task", async () => {
     // Start a simulation first
     const startTask: ForceSimulationTask = {
-      type: "FORCE_SIMULATION_START",
+      entityType: "FORCE_SIMULATION_START",
       nodes: createTestNodes(),
       links: createTestLinks()
     };
@@ -237,11 +237,11 @@ describe("ForceSimulationExecutor", () => {
     // Update nodes
     const updatedNodes = [
       ...createTestNodes(),
-      { id: "node4", type: "topics", x: 200, y: 200 }
+      { id: "node4", entityType: "topics", x: 200, y: 200 }
     ];
 
     const updateNodesTask: ForceSimulationTask = {
-      type: "FORCE_SIMULATION_UPDATE_NODES",
+      entityType: "FORCE_SIMULATION_UPDATE_NODES",
       nodes: updatedNodes,
       pinnedNodes: ["node1", "node4"],
       alpha: 0.6
@@ -250,7 +250,7 @@ describe("ForceSimulationExecutor", () => {
     const result = await executor(updateNodesTask, emitSpy);
 
     expect(result).toMatchObject({
-      type: "FORCE_SIMULATION_CONTROL_ACK",
+      entityType: "FORCE_SIMULATION_CONTROL_ACK",
       action: "FORCE_SIMULATION_UPDATE_NODES",
       status: "ok",
       nodeCount: 4,
@@ -261,11 +261,11 @@ describe("ForceSimulationExecutor", () => {
 
   it("should reject invalid task types", async () => {
     const invalidTask = {
-      type: "INVALID_TASK_TYPE"
+      entityType: "INVALID_TASK_TYPE"
     } as ForceSimulationTask;
 
     await expect(executor(invalidTask, emitSpy)).rejects.toThrow(
-      "Unknown force simulation task type: INVALID_TASK_TYPE"
+      "Unknown force simulation task entityType: INVALID_TASK_TYPE"
     );
   });
 
@@ -285,7 +285,7 @@ describe("ForceSimulationExecutor", () => {
 
   it("should emit progress events with correct structure", async () => {
     const task: ForceSimulationTask = {
-      type: "FORCE_SIMULATION_START",
+      entityType: "FORCE_SIMULATION_START",
       nodes: createTestNodes(),
       links: createTestLinks()
     };
@@ -302,7 +302,7 @@ describe("ForceSimulationExecutor", () => {
 
     const progressEvent = progressCalls[0][0];
     expect(progressEvent.payload).toMatchObject({
-      type: "worker:force-simulation-progress",
+      entityType: "worker:force-simulation-progress",
       workerId: "main-thread",
       workerType: "force-animation",
       messageType: expect.any(String),

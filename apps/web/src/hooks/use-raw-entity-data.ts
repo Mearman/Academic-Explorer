@@ -96,7 +96,7 @@ export const useRawEntityData = (options: UseRawEntityDataOptions) => {
 						result = await cachedOpenAlex.client.funders.get(detectedEntityId);
 						break;
 					default:
-						throw new Error(`Unsupported entity type: ${entityType}`);
+						throw new Error(`Unsupported entity entityType: ${entityType}`);
 				}
 
 				logger.debug("api", "Successfully fetched raw entity data", {

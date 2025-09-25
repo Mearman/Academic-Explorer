@@ -27,7 +27,7 @@ const createMockWork = (id: string): Work => ({
   },
   language: "en",
   primary_location: null,
-  type: "article",
+  entityType: "article",
   type_crossref: "journal-article",
   indexed_in: [],
   open_access: {
@@ -49,7 +49,7 @@ const createMockWork = (id: string): Work => ({
           display_name: `Mock Institution for ${id}`,
           ror: null,
           country_code: "US",
-          type: "education"
+          entityType: "education"
         }
       ],
       countries: ["US"],
@@ -100,7 +100,7 @@ const createMockWork = (id: string): Work => ({
         host_organization: null,
         host_organization_name: null,
         host_organization_lineage: [],
-        type: "journal"
+        entityType: "journal"
       },
       landing_page_url: `https://example.com/${id}`,
       pdf_url: null,
@@ -121,7 +121,7 @@ const createMockWork = (id: string): Work => ({
       host_organization: null,
       host_organization_name: null,
       host_organization_lineage: [],
-      type: "journal"
+      entityType: "journal"
     },
     landing_page_url: `https://example.com/${id}`,
     pdf_url: null,
@@ -198,7 +198,7 @@ const createMockInstitution = (id: string): Institution => ({
   ror: null,
   display_name: `Mock Institution ${id}`,
   country_code: "US",
-  type: "education",
+  entityType: "education",
   homepage_url: null,
   image_url: null,
   image_thumbnail_url: null,

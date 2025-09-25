@@ -65,7 +65,7 @@ export interface WorkerStats {
 }
 
 interface UnifiedTask<T = unknown> {
-  type: string;
+  entityType: string;
   data?: T;
   requestId?: string;
 }
@@ -266,7 +266,7 @@ export function useWebWorker(
       }));
 
       logger.debug("worker", "Message posted to worker", {
-        type: data.type,
+        entityType: data.type,
         requestId,
         hasData: !!data.data
       });

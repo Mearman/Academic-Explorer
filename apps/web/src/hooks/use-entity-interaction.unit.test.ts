@@ -77,7 +77,7 @@ describe("useEntityInteraction", () => {
 	const createMockNode = (id: string, entityId: string, entityData?: Record<string, unknown>): GraphNode => ({
 		id,
 		entityId,
-		type: "works",
+		entityType: "works",
 		label: "Test Work",
 		position: { x: 100, y: 200 },
 		externalIds: [],

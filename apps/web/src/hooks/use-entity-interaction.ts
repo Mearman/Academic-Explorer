@@ -115,7 +115,7 @@ export function useEntityInteraction(centerOnNodeFn?: (nodeId: string, position?
 
 			// Center viewport on node if requested
 			if (options.centerOnNode && centerOnNodeFn) {
-				centerOnNodeFn(targetNode.id, targetNode.position);
+				centerOnNodeFn(targetNode.id, { x: targetNode.x, y: targetNode.y });
 			}
 
 			// Expand the node if requested

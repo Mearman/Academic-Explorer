@@ -31,7 +31,7 @@ class MockWorker {
         switch (message.type) {
           case "TEST_SUCCESS":
             response = {
-              type: "SUCCESS",
+              entityType: "SUCCESS",
               requestId: message.requestId,
               result: { processed: message.data },
               metadata: { processingTime: 100 }
@@ -41,7 +41,7 @@ class MockWorker {
           case "TEST_PROGRESS":
             // Send multiple progress updates
             response = {
-              type: "PROGRESS",
+              entityType: "PROGRESS",
               requestId: message.requestId,
               progress: 0.5,
               metadata: { step: "processing" }
@@ -49,7 +49,7 @@ class MockWorker {
             this.onmessage(new MessageEvent("message", { data: response }));
 
             response = {
-              type: "SUCCESS",
+              entityType: "SUCCESS",
               requestId: message.requestId,
               result: { completed: true }
             };
@@ -57,7 +57,7 @@ class MockWorker {
 
           case "TEST_ERROR":
             response = {
-              type: "ERROR",
+              entityType: "ERROR",
               requestId: message.requestId,
               error: "Test error message"
             };
@@ -65,7 +65,7 @@ class MockWorker {
 
           default:
             response = {
-              type: "ERROR",
+              entityType: "ERROR",
               requestId: message.requestId,
               error: "Unknown message type"
             };
@@ -136,7 +136,7 @@ describe("useWebWorker", () => {
 
       act(() => {
         const requestId = result.current.postMessage({
-          type: "TEST_SUCCESS",
+          entityType: "TEST_SUCCESS",
           data: { test: "data" }
         });
         expect(requestId).toBeTruthy();
@@ -161,7 +161,7 @@ describe("useWebWorker", () => {
 
       act(() => {
         result.current.postMessage({
-          type: "TEST_SUCCESS",
+          entityType: "TEST_SUCCESS",
           data: { test: "data" }
         });
       });
@@ -183,7 +183,7 @@ describe("useWebWorker", () => {
 
       act(() => {
         result.current.postMessage({
-          type: "TEST_PROGRESS",
+          entityType: "TEST_PROGRESS",
           data: { test: "data" }
         });
       });
@@ -201,7 +201,7 @@ describe("useWebWorker", () => {
 
       act(() => {
         result.current.postMessage({
-          type: "TEST_ERROR",
+          entityType: "TEST_ERROR",
           data: { test: "data" }
         });
       });
@@ -260,7 +260,7 @@ describe("useWebWorker", () => {
 
       act(() => {
         const requestId = result.current.postMessage({
-          type: "TEST_SUCCESS",
+          entityType: "TEST_SUCCESS",
           data: {}
         });
         expect(requestId).toBe(null);
@@ -276,7 +276,7 @@ describe("useWebWorker", () => {
 
       act(() => {
         result.current.postMessage({
-          type: "TEST_SUCCESS",
+          entityType: "TEST_SUCCESS",
           data: {}
         });
       });
@@ -293,7 +293,7 @@ describe("useWebWorker", () => {
       // Send successful message
       act(() => {
         result.current.postMessage({
-          type: "TEST_SUCCESS",
+          entityType: "TEST_SUCCESS",
           data: {}
         });
       });
@@ -303,7 +303,7 @@ describe("useWebWorker", () => {
       // Send error message
       act(() => {
         result.current.postMessage({
-          type: "TEST_ERROR",
+          entityType: "TEST_ERROR",
           data: {}
         });
       });
@@ -359,9 +359,9 @@ describe("useWebWorker", () => {
       const requestIds: (string | null)[] = [];
 
       act(() => {
-        requestIds.push(result.current.postMessage({ type: "TEST_SUCCESS", data: {} }));
-        requestIds.push(result.current.postMessage({ type: "TEST_SUCCESS", data: {} }));
-        requestIds.push(result.current.postMessage({ type: "TEST_SUCCESS", data: {} }));
+        requestIds.push(result.current.postMessage({ entityType: "TEST_SUCCESS", data: {} }));
+        requestIds.push(result.current.postMessage({ entityType: "TEST_SUCCESS", data: {} }));
+        requestIds.push(result.current.postMessage({ entityType: "TEST_SUCCESS", data: {} }));
       });
 
       expect(requestIds.every(id => id !== null)).toBe(true);
@@ -378,7 +378,7 @@ describe("useWebWorker", () => {
 
       act(() => {
         const returnedId = result.current.postMessage({
-          type: "TEST_SUCCESS",
+          entityType: "TEST_SUCCESS",
           data: {},
           requestId: customRequestId
         });
@@ -398,7 +398,7 @@ describe("useWebWorker", () => {
       // Loading state
       act(() => {
         result.current.postMessage({
-          type: "TEST_SUCCESS",
+          entityType: "TEST_SUCCESS",
           data: {}
         });
       });
@@ -414,7 +414,7 @@ describe("useWebWorker", () => {
       // Error state
       act(() => {
         result.current.postMessage({
-          type: "TEST_ERROR",
+          entityType: "TEST_ERROR",
           data: {}
         });
       });

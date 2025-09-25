@@ -73,7 +73,7 @@ describe("useGraphPersistence", () => {
 		nodes: [
 			{
 				id: "W123",
-				type: "works",
+				entityType: "works",
 				title: "Test Work",
 				entityType: "works",
 				data: { id: "W123", display_name: "Test Work" },
@@ -81,7 +81,7 @@ describe("useGraphPersistence", () => {
 			},
 			{
 				id: "A456",
-				type: "authors",
+				entityType: "authors",
 				title: "Test Author",
 				entityType: "authors",
 				data: { id: "A456", display_name: "Test Author" },
@@ -93,7 +93,7 @@ describe("useGraphPersistence", () => {
 				id: "edge1",
 				source: "W123",
 				target: "A456",
-				type: "authored_by",
+				entityType: "authored_by",
 				label: "authored by",
 			},
 		],

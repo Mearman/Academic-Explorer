@@ -26,7 +26,7 @@ function convertToXYFlowNodes(graphNodes: GraphNode[]): Node[] {
 			entityType: node.entityType,
 			entityId: node.entityId,
 		},
-		type: 'default'
+		entityType: 'default'
 	}));
 }
 
@@ -36,7 +36,7 @@ function convertToXYFlowEdges(graphEdges: GraphEdge[]): Edge[] {
 		id: edge.id,
 		source: edge.source,
 		target: edge.target,
-		type: 'default',
+		entityType: 'default',
 		label: edge.label
 	}));
 }

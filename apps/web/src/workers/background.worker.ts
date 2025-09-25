@@ -303,7 +303,7 @@ function createSimulationEngine(): ForceSimulationEngine {
 // Zod schemas for type validation
 const forceSimulationNodeSchema = z.object({
   id: z.string(),
-  type: z.enum(["works", "authors", "sources", "institutions", "topics", "concepts", "publishers", "funders", "keywords"]).optional(),
+  entityType: z.enum(["works", "authors", "sources", "institutions", "topics", "concepts", "publishers", "funders", "keywords"]).optional(),
   x: z.number().optional(),
   y: z.number().optional(),
   fx: z.number().optional(),
@@ -482,7 +482,7 @@ function updateSimulationNodes(params: {
     const {data} = e;
 
     logger.debug("worker", "Received message", {
-      type: data && typeof data === "object" && "type" in data ? data.type : "unknown",
+      entityType: data && typeof data === "object" && "type" in data ? data.type : "unknown",
       hasTaskId: data && typeof data === "object" && "taskId" in data,
       hasPayload: data && typeof data === "object" && "payload" in data
     });
@@ -510,7 +510,7 @@ function updateSimulationNodes(params: {
           y: node.y ?? 0,
           fx: node.fx ?? null,
           fy: node.fy ?? null,
-          ...(isValidEntityType(node.entityType) && { type: node.entityType })
+          ...(isValidEntityType(node.entityType) && { entityType: node.entityType })
         }));
         currentSimulationTaskId = data.taskId;
         startSimulation({
@@ -549,7 +549,7 @@ function updateSimulationNodes(params: {
                 y: node.y ?? 0,
                 fx: node.fx ?? null,
                 fy: node.fy ?? null,
-                ...(isValidEntityType(node.entityType) && { type: node.entityType })
+                ...(isValidEntityType(node.entityType) && { entityType: node.entityType })
               }));
               reheatSimulation({
                 nodes: validatedNodes,
@@ -601,7 +601,7 @@ function updateSimulationNodes(params: {
                 y: node.y ?? 0,
                 fx: node.fx ?? null,
                 fy: node.fy ?? null,
-                ...(isValidEntityType(node.entityType) && { type: node.entityType })
+                ...(isValidEntityType(node.entityType) && { entityType: node.entityType })
               }));
               updateSimulationNodes({
                 nodes: validatedNodes,
@@ -684,7 +684,7 @@ function updateSimulationNodes(params: {
               y: node.y ?? 0,
               fx: node.fx ?? null,
               fy: node.fy ?? null,
-              ...(isValidEntityType(node.entityType) && { type: node.entityType })
+              ...(isValidEntityType(node.entityType) && { entityType: node.entityType })
             }));
             logger.debug("worker", "Worker calling reheatSimulation", {
               nodeCount: validatedNodes.length,
@@ -746,7 +746,7 @@ function updateSimulationNodes(params: {
                 y: node.y ?? 0,
                 fx: node.fx ?? null,
                 fy: node.fy ?? null,
-                ...(isValidEntityType(node.entityType) && { type: node.entityType })
+                ...(isValidEntityType(node.entityType) && { entityType: node.entityType })
               }));
               updateSimulationNodes({
                 nodes: validatedNodes,
@@ -762,7 +762,7 @@ function updateSimulationNodes(params: {
           break;
 
         default:
-          logger.warn("worker", "Unknown simulation message type", { type: data.type });
+          logger.warn("worker", "Unknown simulation message type", { entityType: data.type });
       }
     } else {
       logger.warn("worker", "Unknown message type", { data });

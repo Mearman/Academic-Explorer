@@ -134,7 +134,7 @@ describe("GraphDataService", () => {
 	const mockWorkEntity: Work = {
 		id: "W123456789",
 		display_name: "Test Work",
-		type: "article",
+		entityType: "article",
 		publication_year: 2023,
 		doi: "10.1234/test",
 		authorships: [
@@ -606,7 +606,7 @@ describe("GraphDataService", () => {
 				[nodeId]: {
 					id: nodeId,
 					entityId: nodeId,
-					type: "works" as EntityType,
+					entityType: "works" as EntityType,
 					label: "Test Work",
 					entityData: {},
 					externalIds: [],
@@ -636,7 +636,7 @@ describe("GraphDataService", () => {
 					{
 						id: "related-node-1",
 						entityId: "A999999999",
-						type: "authors" as EntityType,
+						entityType: "authors" as EntityType,
 						label: "Related Author",
 						entityData: {},
 						externalIds: [],
@@ -647,7 +647,7 @@ describe("GraphDataService", () => {
 						id: "edge-1",
 						source: nodeId,
 						target: "related-node-1",
-						type: "authored",
+						entityType: "authored",
 					},
 				],
 			});
@@ -862,7 +862,7 @@ describe("GraphDataService", () => {
 					expect.arrayContaining([
 						expect.objectContaining({
 							entityId: "W123456789",
-							type: "works",
+							entityType: "works",
 							label: "Test Work",
 						}),
 					])
@@ -883,7 +883,7 @@ describe("GraphDataService", () => {
 					expect.arrayContaining([
 						expect.objectContaining({
 							entityId: "A123456789",
-							type: "authors",
+							entityType: "authors",
 							label: "Test Author",
 						}),
 					])
@@ -903,7 +903,7 @@ describe("GraphDataService", () => {
 					expect.arrayContaining([
 						expect.objectContaining({
 							entityId: "S123456789",
-							type: "sources",
+							entityType: "sources",
 							label: "Test Source",
 						}),
 					])
@@ -923,7 +923,7 @@ describe("GraphDataService", () => {
 					expect.arrayContaining([
 						expect.objectContaining({
 							entityId: "I123456789",
-							type: "institutions",
+							entityType: "institutions",
 							label: "Test Institution",
 						}),
 					])
@@ -951,7 +951,7 @@ describe("GraphDataService", () => {
 						expect.objectContaining({
 							externalIds: expect.arrayContaining([
 								expect.objectContaining({
-									type: "doi",
+									entityType: "doi",
 									value: "10.1234/test-doi",
 								}),
 							]),
@@ -979,7 +979,7 @@ describe("GraphDataService", () => {
 						expect.objectContaining({
 							externalIds: expect.arrayContaining([
 								expect.objectContaining({
-									type: "orcid",
+									entityType: "orcid",
 									value: "0000-0000-0000-0001",
 								}),
 							]),
@@ -1007,7 +1007,7 @@ describe("GraphDataService", () => {
 						expect.objectContaining({
 							externalIds: expect.arrayContaining([
 								expect.objectContaining({
-									type: "issn_l",
+									entityType: "issn_l",
 									value: "1234-5679",
 								}),
 							]),
@@ -1035,7 +1035,7 @@ describe("GraphDataService", () => {
 						expect.objectContaining({
 							externalIds: expect.arrayContaining([
 								expect.objectContaining({
-									type: "ror",
+									entityType: "ror",
 									value: "01abc23df",
 								}),
 							]),
@@ -1067,7 +1067,7 @@ describe("GraphDataService", () => {
 					expect.arrayContaining([
 						expect.objectContaining({
 							entityId: "W123456789",
-							type: "works",
+							entityType: "works",
 							entityData: expect.objectContaining({
 								publication_year: 2024,
 								cited_by_count: 150,
@@ -1145,7 +1145,7 @@ describe("GraphDataService", () => {
 					expect.arrayContaining([
 						expect.objectContaining({
 							entityId: "W123456789",
-							type: "works",
+							entityType: "works",
 							entityData: expect.objectContaining({
 								authorships: expect.arrayContaining([
 									expect.objectContaining({
@@ -1187,7 +1187,7 @@ describe("GraphDataService", () => {
 					expect.arrayContaining([
 						expect.objectContaining({
 							entityId: "W123456789",
-							type: "works",
+							entityType: "works",
 						}),
 					])
 				);
@@ -1220,7 +1220,7 @@ describe("GraphDataService", () => {
 			const unknownEntity = {
 				id: "X123456789",
 				display_name: "Unknown Entity",
-				type: "article", // Add minimal work properties
+				entityType: "article", // Add minimal work properties
 				authorships: [],
 				referenced_works: [],
 				open_access: { is_oa: false },
@@ -1242,7 +1242,7 @@ describe("GraphDataService", () => {
 			const minimalWork: Work = {
 				id: "W123456789",
 				display_name: "Minimal Work",
-				type: "article",
+				entityType: "article",
 				// Include minimum required properties for transformation
 				authorships: [],
 				referenced_works: [],
@@ -1264,7 +1264,7 @@ describe("GraphDataService", () => {
 				expect.arrayContaining([
 					expect.objectContaining({
 						entityId: "W123456789",
-						type: "works",
+						entityType: "works",
 						label: "Minimal Work",
 					}),
 				])
@@ -1380,7 +1380,7 @@ describe("GraphDataService", () => {
 				expect.arrayContaining([
 					expect.objectContaining({
 						entityId: "W123456789",
-						type: "works",
+						entityType: "works",
 						entityData: expect.objectContaining({
 							authorships: expect.arrayContaining([
 								expect.objectContaining({
@@ -1411,7 +1411,7 @@ describe("GraphDataService", () => {
 				[nodeId]: {
 					id: nodeId,
 					entityId: nodeId,
-					type: "works" as EntityType,
+					entityType: "works" as EntityType,
 					label: "Test Work",
 					entityData: {},
 					externalIds: [],
@@ -1457,7 +1457,7 @@ describe("GraphDataService", () => {
 					largeResultSet.map((work) =>
 						expect.objectContaining({
 							entityId: work.id,
-							type: "works",
+							entityType: "works",
 							label: work.display_name,
 						})
 					)

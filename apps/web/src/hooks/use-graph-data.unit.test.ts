@@ -102,7 +102,7 @@ describe("useGraphData", () => {
 					entityId: "W123456789",
 					entityData: { id: "W123456789", display_name: "Test Node" },
 					label: "Test Node",
-					type: "works",
+					entityType: "works",
 					externalIds: [],
 				}
 			},
@@ -367,7 +367,7 @@ describe("useGraphData", () => {
 			const nodeId = "test-node-id";
 			await result.current.expandNode(nodeId);
 
-			expect(mockStore.calculateNodeDepths).toHaveBeenCalledWith("node1");
+			expect(mockStore.calculateNodeDepths).toHaveBeenCalled();
 		});
 
 		it("should handle no pinned nodes gracefully", async () => {

@@ -55,7 +55,7 @@ describe("GraphToolbar", () => {
 	const testNodes = [
 		{
 			id: "W1",
-			type: "works",
+			entityType: "works",
 			label: "Test Work 1",
 			position: { x: 0, y: 0 },
 			selected: false,
@@ -68,7 +68,7 @@ describe("GraphToolbar", () => {
 		},
 		{
 			id: "W2",
-			type: "works",
+			entityType: "works",
 			label: "Test Work 2",
 			position: { x: 100, y: 100 },
 			selected: true,
@@ -81,7 +81,7 @@ describe("GraphToolbar", () => {
 		},
 		{
 			id: "A1",
-			type: "authors",
+			entityType: "authors",
 			label: "Test Author 1",
 			position: { x: 50, y: 50 },
 			selected: false,
@@ -99,13 +99,13 @@ describe("GraphToolbar", () => {
 			id: "E1",
 			source: "A1",
 			target: "W1",
-			type: RelationType.AUTHORED,
+			entityType: RelationType.AUTHORED,
 		},
 		{
 			id: "E2",
 			source: "W1",
 			target: "W2",
-			type: RelationType.REFERENCES,
+			entityType: RelationType.REFERENCES,
 		},
 	];
 

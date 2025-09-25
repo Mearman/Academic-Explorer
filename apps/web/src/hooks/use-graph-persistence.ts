@@ -111,20 +111,25 @@ export function useGraphPersistence() {
 
 		const sessionId = `session_${Date.now().toString()}`
 		const snapshot: GraphSnapshot = {
+			id: sessionId,
+			name,
+			description,
 			nodes: Object.values(store.nodes).filter((node): node is NonNullable<typeof node> => node != null),
 			edges: Object.values(store.edges).filter((edge): edge is NonNullable<typeof edge> => edge != null),
-			viewport: store.provider?.getSnapshot().viewport || {
-				zoom: 1,
-				center: { x: 0, y: 0 }
+			timestamp: Date.now(),
+			version: "1.0.0",
+			metadata: {
+				nodeCount: Object.values(store.nodes).filter(node => node != null).length,
+				edgeCount: Object.values(store.edges).filter(edge => edge != null).length,
 			}
 		}
 
 		// Calculate metadata
 		const entityCounts = {
-			works: snapshot.nodes.filter(n => n.type === "works").length,
-			authors: snapshot.nodes.filter(n => n.type === "authors").length,
-			sources: snapshot.nodes.filter(n => n.type === "sources").length,
-			institutions: snapshot.nodes.filter(n => n.type === "institutions").length,
+			works: snapshot.nodes.filter(n => n.entityType === "works").length,
+			authors: snapshot.nodes.filter(n => n.entityType === "authors").length,
+			sources: snapshot.nodes.filter(n => n.entityType === "sources").length,
+			institutions: snapshot.nodes.filter(n => n.entityType === "institutions").length,
 			total: snapshot.nodes.length
 		}
 
@@ -173,13 +178,7 @@ export function useGraphPersistence() {
 			// Apply layout and fit view
 			if (store.provider) {
 				store.provider.applyLayout(store.currentLayout)
-
-				// Restore viewport state if available, otherwise fit view
-				if (session.snapshot.viewport) {
-					store.provider.loadSnapshot(session.snapshot)
-				} else {
-					store.provider.fitView()
-				}
+				store.provider.fitView()
 			}
 
 			// Update last modified

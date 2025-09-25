@@ -4,7 +4,7 @@
  */
 
 // Phase 1: Core Services (Interface-only for buildability)
-export { EntityResolver, type IEntityResolver, type ExpansionOptions, type ExpansionResult } from './entity-resolver-interface';
+export { EntityResolver, type IEntityResolver, type EntityExpansionOptions, type ExpansionResult } from './entity-resolver-interface';
 
 // Graph utility result interface
 export interface GraphUtilityResult {

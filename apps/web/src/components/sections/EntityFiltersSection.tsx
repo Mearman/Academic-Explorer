@@ -21,15 +21,15 @@ import {
 } from "@tabler/icons-react";
 
 // Properly typed entity options without type assertions
-const entityTypeOptions: Array<{ type: EntityType; label: string; icon: React.ComponentType<{ size?: number; style?: React.CSSProperties }> }> = [
-	{ type: "works", label: "Works", icon: IconFile },
-	{ type: "authors", label: "Authors", icon: IconUser },
-	{ type: "sources", label: "Sources", icon: IconBook },
-	{ type: "institutions", label: "Institutions", icon: IconBuilding },
-	{ type: "topics", label: "Topics", icon: IconTag },
-	{ type: "publishers", label: "Publishers", icon: IconBuildingStore },
-	{ type: "funders", label: "Funders", icon: IconCoin },
-	{ type: "concepts", label: "Concepts", icon: IconBulb },
+const entityTypeOptions: Array<{ entityType: EntityType; label: string; icon: React.ComponentType<{ size?: number; style?: React.CSSProperties }> }> = [
+	{ entityType: "works", label: "Works", icon: IconFile },
+	{ entityType: "authors", label: "Authors", icon: IconUser },
+	{ entityType: "sources", label: "Sources", icon: IconBook },
+	{ entityType: "institutions", label: "Institutions", icon: IconBuilding },
+	{ entityType: "topics", label: "Topics", icon: IconTag },
+	{ entityType: "publishers", label: "Publishers", icon: IconBuildingStore },
+	{ entityType: "funders", label: "Funders", icon: IconCoin },
+	{ entityType: "concepts", label: "Concepts", icon: IconBulb },
 ];
 
 export const EntityFiltersSection: React.FC = () => {
@@ -70,7 +70,7 @@ export const EntityFiltersSection: React.FC = () => {
 
 			// Count nodes by type
 			for (const node of nodes) {
-				if (node?.type && node.entityType in total) {
+				if (node?.entityType && node.entityType in total) {
 					const nodeType = node.entityType as EntityType;
 					total[nodeType]++;
 					// Note: visibility is handled at the graph level, not per-node
@@ -125,14 +125,14 @@ export const EntityFiltersSection: React.FC = () => {
 	return (
 		<Stack gap="xs">
 			{entityTypeOptions.map(option => {
-				const totalCount = entityStats.total[option.type] || 0;
-				const visibleCount = entityStats.visible[option.type] || 0;
-				const isVisible = visibleEntityTypes[option.type] ?? false;
+				const totalCount = entityStats.total[option.entityType] || 0;
+				const visibleCount = entityStats.visible[option.entityType] || 0;
+				const isVisible = visibleEntityTypes[option.entityType] ?? false;
 				const Icon = option.icon;
 
 				return (
 					<div
-						key={option.type}
+						key={option.entityType}
 						style={{
 							display: "flex",
 							alignItems: "center",
@@ -146,7 +146,7 @@ export const EntityFiltersSection: React.FC = () => {
 					>
 						<Checkbox
 							checked={isVisible}
-							onChange={() => { handleToggleEntityType(option.type); }}
+							onChange={() => { handleToggleEntityType(option.entityType); }}
 							size="sm"
 							aria-label={`Toggle ${option.label} visibility`}
 						/>

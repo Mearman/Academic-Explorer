@@ -13,21 +13,21 @@ import type { GraphEdge } from "@academic-explorer/graph";
 import { RelationType } from "@academic-explorer/graph";
 
 const edgeTypeOptions = [
-	{ type: RelationType.AUTHORED, label: "Authored", color: "#3498db" },
-	{ type: RelationType.AFFILIATED, label: "Affiliated", color: "#2ecc71" },
-	{ type: RelationType.PUBLISHED_IN, label: "Published In", color: "#e74c3c" },
-	{ type: RelationType.FUNDED_BY, label: "Funded By", color: "#f39c12" },
-	{ type: RelationType.REFERENCES, label: "References", color: "#9b59b6" },
-	{ type: RelationType.RELATED_TO, label: "Related To", color: "#95a5a6" },
-	{ type: RelationType.SOURCE_PUBLISHED_BY, label: "Source Published By", color: "#e67e22" },
-	{ type: RelationType.INSTITUTION_CHILD_OF, label: "Institution Child Of", color: "#1abc9c" },
-	{ type: RelationType.PUBLISHER_CHILD_OF, label: "Publisher Child Of", color: "#34495e" },
-	{ type: RelationType.WORK_HAS_TOPIC, label: "Work Has Topic", color: "#8e44ad" },
-	{ type: RelationType.WORK_HAS_KEYWORD, label: "Work Has Keyword", color: "#27ae60" },
-	{ type: RelationType.AUTHOR_RESEARCHES, label: "Author Researches", color: "#2980b9" },
-	{ type: RelationType.INSTITUTION_LOCATED_IN, label: "Institution Located In", color: "#c0392b" },
-	{ type: RelationType.FUNDER_LOCATED_IN, label: "Funder Located In", color: "#d35400" },
-	{ type: RelationType.TOPIC_PART_OF_FIELD, label: "Topic Part Of Field", color: "#7f8c8d" },
+	{ entityType: RelationType.AUTHORED, label: "Authored", color: "#3498db" },
+	{ entityType: RelationType.AFFILIATED, label: "Affiliated", color: "#2ecc71" },
+	{ entityType: RelationType.PUBLISHED_IN, label: "Published In", color: "#e74c3c" },
+	{ entityType: RelationType.FUNDED_BY, label: "Funded By", color: "#f39c12" },
+	{ entityType: RelationType.REFERENCES, label: "References", color: "#9b59b6" },
+	{ entityType: RelationType.RELATED_TO, label: "Related To", color: "#95a5a6" },
+	{ entityType: RelationType.SOURCE_PUBLISHED_BY, label: "Source Published By", color: "#e67e22" },
+	{ entityType: RelationType.INSTITUTION_CHILD_OF, label: "Institution Child Of", color: "#1abc9c" },
+	{ entityType: RelationType.PUBLISHER_CHILD_OF, label: "Publisher Child Of", color: "#34495e" },
+	{ entityType: RelationType.WORK_HAS_TOPIC, label: "Work Has Topic", color: "#8e44ad" },
+	{ entityType: RelationType.WORK_HAS_KEYWORD, label: "Work Has Keyword", color: "#27ae60" },
+	{ entityType: RelationType.AUTHOR_RESEARCHES, label: "Author Researches", color: "#2980b9" },
+	{ entityType: RelationType.INSTITUTION_LOCATED_IN, label: "Institution Located In", color: "#c0392b" },
+	{ entityType: RelationType.FUNDER_LOCATED_IN, label: "Funder Located In", color: "#d35400" },
+	{ entityType: RelationType.TOPIC_PART_OF_FIELD, label: "Topic Part Of Field", color: "#7f8c8d" },
 ];
 
 interface EdgeRepositoryItemProps {
@@ -47,14 +47,14 @@ const EdgeRepositoryItem: React.FC<EdgeRepositoryItemProps> = ({
 	const {colors} = themeColors;
 
 	// Get display info for edge type
-	const edgeOption = edgeTypeOptions.find(option => option.type === edge.type);
+	const edgeOption = edgeTypeOptions.find(option => option.entityType === edge.type);
 	const edgeColor = edgeOption?.color || "#95a5a6";
 	const edgeLabel = edgeOption?.label || edge.type;
 
 	const handleDragStart = useCallback((event: React.DragEvent) => {
 		// Store edge data for drop handler
 		event.dataTransfer.setData("application/json", JSON.stringify({
-			type: "repository-edge",
+			entityType: "repository-edge",
 			edge
 		}));
 		event.dataTransfer.effectAllowed = "copy";
@@ -193,18 +193,18 @@ export const EdgeRepositorySection: React.FC = () => {
 			{/* Type filters */}
 			<Stack gap="xs">
 				<Text size="sm" style={{ fontWeight: 500, color: colors.text.primary }}>
-          Filter by type:
+          Filter by entityType:
 				</Text>
 				<ScrollArea style={{ maxHeight: "200px" }}>
 					<Stack gap="xs">
 						{edgeTypeOptions.map(option => {
-							const isChecked = edgeTypeFilter[option.type];
+							const isChecked = edgeTypeFilter[option.entityType];
 
 							return (
 								<Checkbox
-									key={option.type}
+									key={option.entityType}
 									checked={isChecked}
-									onChange={(event) => { handleTypeFilterChange(option.type, event.currentTarget.checked); }}
+									onChange={(event) => { handleTypeFilterChange(option.entityType, event.currentTarget.checked); }}
 									label={
 										<Group gap="xs">
 											<div

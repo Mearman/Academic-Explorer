@@ -56,7 +56,7 @@ const NodeRepositoryItem: React.FC<NodeRepositoryItemProps> = ({
 	const handleDragStart = useCallback((event: React.DragEvent) => {
 		// Store node data for drop handler
 		event.dataTransfer.setData("application/json", JSON.stringify({
-			type: "repository-node",
+			entityType: "repository-node",
 			node
 		}));
 		event.dataTransfer.effectAllowed = "copy";
@@ -205,7 +205,7 @@ export const NodeRepositorySection: React.FC = () => {
 			{/* Type filters */}
 			<Stack gap="xs">
 				<Text size="sm" style={{ fontWeight: 500, color: colors.text.primary }}>
-          Filter by type:
+          Filter by entityType:
 				</Text>
 				<div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "4px" }}>
 					{entityTypeOptions.map(option => {

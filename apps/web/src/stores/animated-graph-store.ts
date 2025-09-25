@@ -344,8 +344,8 @@ export const useAnimatedGraphStore = create<AnimatedGraphState>()(
 					// Extract current positions from graph store nodes
 					const positions: NodePosition[] = nodes.map((node: GraphNode) => ({
 						id: node.id,
-						x: node.position.x,
-						y: node.position.y,
+						x: node.x,
+						y: node.y,
 					}));
 
 					// Update static positions
@@ -380,7 +380,8 @@ export const useAnimatedGraphStore = create<AnimatedGraphState>()(
 					const node = graphStore.nodes[pos.id];
 					if (node) {
 						graphStore.updateNode(pos.id, {
-							position: { x: pos.x, y: pos.y }
+							x: pos.x,
+							y: pos.y
 						});
 					}
 				});

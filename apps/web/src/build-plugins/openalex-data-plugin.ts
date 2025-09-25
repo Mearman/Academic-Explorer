@@ -118,7 +118,7 @@ function getEntityPrefix(entityType: string): string {
  * Parse a unified index key to determine what type of resource it represents
  */
 interface ParsedKey {
-  type: "entity" | "query";
+  entityType: "entity" | "query";
   entityType: string;
   entityId?: string;
   queryParams?: Record<string, unknown>;
@@ -278,7 +278,7 @@ function parseOpenAlexApiUrl(url: string): ParsedKey | null {
       }
 
       return {
-        type: "query",
+        entityType: "query",
         entityType,
         queryParams,
         originalKey: url,
@@ -297,7 +297,7 @@ function parseOpenAlexApiUrl(url: string): ParsedKey | null {
       if (Object.keys(queryParams).length > 0) {
         // Entity with query params
         return {
-          type: "query",
+          entityType: "query",
           entityType,
           entityId,
           queryParams,
@@ -307,7 +307,7 @@ function parseOpenAlexApiUrl(url: string): ParsedKey | null {
       } else {
         // Pure entity
         return {
-          type: "entity",
+          entityType: "entity",
           entityType,
           entityId,
           originalKey: url,
@@ -332,19 +332,19 @@ function parseOpenAlexUrl(url: string): ParsedKey | null {
       const entityType = inferEntityTypeFromId(entityId);
 
       return {
-        type: "entity",
+        entityType: "entity",
         entityType,
         entityId,
         originalKey: url,
         canonicalUrl: `https://api.openalex.org/${entityType}/${entityId}`
       };
     } else if (pathParts.length === 2) {
-      // Entity with type: https://openalex.org/works/W2241997964
+      // Entity with entityType: https://openalex.org/works/W2241997964
       const entityType = pathParts[0];
       const entityId = pathParts[1];
 
       return {
-        type: "entity",
+        entityType: "entity",
         entityType,
         entityId,
         originalKey: url,
@@ -369,7 +369,7 @@ function parseRelativeQuery(key: string): ParsedKey | null {
     }
 
     return {
-      type: "query",
+      entityType: "query",
       entityType: path,
       queryParams,
       originalKey: key,
@@ -386,7 +386,7 @@ function parseEntityPath(key: string): ParsedKey | null {
     const [entityType, entityId] = parts;
 
     return {
-      type: "entity",
+      entityType: "entity",
       entityType,
       entityId,
       originalKey: key,
@@ -400,7 +400,7 @@ function parseDirectEntityId(key: string): ParsedKey | null {
   const entityType = inferEntityTypeFromId(key);
 
   return {
-    type: "entity",
+    entityType: "entity",
     entityType,
     entityId: key,
     originalKey: key,
@@ -1790,7 +1790,7 @@ async function generateMainIndex(dataPath: string): Promise<void> {
     $id: "https://api.openalex.org/schema/index",
     title: "OpenAlex Static Data Index",
     description: "Root index merging all entity-specific data via JSON Schema references",
-    type: "object",
+    entityType: "object",
     version: "1.0.0",
     allOf: entityRefs
   };

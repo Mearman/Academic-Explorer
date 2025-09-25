@@ -10,7 +10,7 @@ import { useGraphStore } from "@/stores/graph-store";
 import { useGraphData } from "@/hooks/use-graph-data";
 import { useThemeColors } from "@/hooks/use-theme-colors";
 import { logger } from "@academic-explorer/utils/logger";
-import type { GraphNode, EntityType } from "@academic-explorer/graph";
+import type { GraphNode, EntityType, ExpansionOptions } from "@academic-explorer/graph";
 
 import {
 	IconFile,

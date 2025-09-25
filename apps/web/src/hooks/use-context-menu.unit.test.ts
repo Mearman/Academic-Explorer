@@ -28,7 +28,7 @@ describe("useContextMenu", () => {
 		mockGraphNode = {
 			id: "test-node-1",
 			label: "Test Node",
-			type: "works",
+			entityType: "works",
 			entityId: "W123456789",
 			position: { x: 100, y: 100 },
 			externalIds: [],
@@ -190,7 +190,7 @@ describe("useContextMenu", () => {
 				clientY: 350,
 				bubbles: true,
 				cancelable: true,
-				type: "contextmenu",
+				entityType: "contextmenu",
 			} as unknown as MouseEvent;
 
 			act(() => {
@@ -357,12 +357,12 @@ describe("useContextMenu", () => {
 			const authorNode: GraphNode = {
 				id: "author-node",
 				label: "Author Node",
-				type: "authors",
+				entityType: "authors",
 				entityId: "A123456789",
 				position: { x: 50, y: 75 },
 				externalIds: [
 					{
-						type: "orcid",
+						entityType: "orcid",
 						value: "0000-0000-0000-0000",
 						url: "https://orcid.org/0000-0000-0000-0000",
 					},
@@ -390,17 +390,17 @@ describe("useContextMenu", () => {
 			const nodeWithMultipleIds: GraphNode = {
 				id: "complex-node",
 				label: "Complex Node",
-				type: "institutions",
+				entityType: "institutions",
 				entityId: "I123456789",
 				position: { x: 0, y: 0 },
 				externalIds: [
 					{
-						type: "ror",
+						entityType: "ror",
 						value: "01abc23de",
 						url: "https://ror.org/01abc23de",
 					},
 					{
-						type: "wikidata",
+						entityType: "wikidata",
 						value: "Q123456",
 						url: "https://www.wikidata.org/entity/Q123456",
 					},

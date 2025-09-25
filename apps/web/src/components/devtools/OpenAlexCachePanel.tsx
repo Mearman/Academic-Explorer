@@ -73,9 +73,9 @@ export function OpenAlexCachePanel() {
 		setIsRefreshing(false);
 	};
 
-	const clearCache = async (type: "memory" | "indexeddb" | "localstorage" | "all") => {
+	const clearCache = async (entityType: "memory" | "indexeddb" | "localstorage" | "all") => {
 		// In real implementation, this would clear actual cache layers
-		logger.debug("cache", "Clearing cache", { type }, "OpenAlexCachePanel");
+		logger.debug("cache", "Clearing cache", { entityType }, "OpenAlexCachePanel");
 
 		// Simulate clearing and refresh stats
 		await new Promise(resolve => setTimeout(resolve, 300));

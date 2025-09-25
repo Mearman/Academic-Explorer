@@ -88,7 +88,7 @@ export function useGraphActivityTracker() {
         }
 
         addEvent({
-          type: "system",
+          entityType: "system",
           category: "data",
           event: eventType,
           description,
@@ -110,7 +110,7 @@ export function useGraphActivityTracker() {
         const description = "Entity expanded with related data";
 
         addEvent({
-          type: "user",
+          entityType: "user",
           category: "data",
           event: eventType,
           description,
@@ -161,7 +161,7 @@ export function useGraphActivityTracker() {
         }
 
         addEvent({
-          type: "system",
+          entityType: "system",
           category: "background",
           event: eventType,
           description,
@@ -218,7 +218,7 @@ export function useGraphActivityTracker() {
 
       // Log initial setup
       addEvent({
-        type: "system",
+        entityType: "system",
         category: "lifecycle",
         event: "activity_tracker_started",
         description: "Unified graph activity tracking started",
@@ -243,7 +243,7 @@ export function useGraphActivityTracker() {
         trackingActiveRef.current = false;
 
         addEvent({
-          type: "system",
+          entityType: "system",
           category: "lifecycle",
           event: "activity_tracker_stopped",
           description: "Unified graph activity tracking stopped",

@@ -11,7 +11,7 @@ import { useGraphUtilities } from "@/hooks/use-graph-utilities";
 import { useGraphData } from "@/hooks/use-graph-data";
 import { useGraphStore } from "@/stores/graph-store";
 import { logger } from "@academic-explorer/utils/logger";
-import type { GraphUtilityResult } from "@academic-explorer/graph";
+import type { GraphUtilityResult, ExpansionOptions } from "@academic-explorer/graph";
 import type { GraphNode, GraphEdge } from "@academic-explorer/graph";
 
 // Extended result type for graph utility operations

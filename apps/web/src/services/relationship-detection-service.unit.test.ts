@@ -60,7 +60,7 @@ describe("RelationshipDetectionService", () => {
 		it("should skip minimal hydration nodes", async () => {
 			const minimalNode: GraphNode = {
 				id: "W123",
-				type: "works" as EntityType,
+				entityType: "works" as EntityType,
 				label: "Test Work",
 				entityId: "https://openalex.org/W123",
 				position: { x: 0, y: 0 },
@@ -95,7 +95,7 @@ describe("RelationshipDetectionService", () => {
 			const existingNodes: GraphNode[] = [
 				{
 					id: "A456",
-					type: "authors" as EntityType,
+					entityType: "authors" as EntityType,
 					label: "Test Author",
 					entityId: "https://openalex.org/A456",
 					position: { x: 0, y: 0 },
@@ -132,7 +132,7 @@ describe("RelationshipDetectionService", () => {
 			const existingNodes: GraphNode[] = [
 				{
 					id: "S789",
-					type: "sources" as EntityType,
+					entityType: "sources" as EntityType,
 					label: "Test Journal",
 					entityId: "https://openalex.org/S789",
 					position: { x: 0, y: 0 },
@@ -162,7 +162,7 @@ describe("RelationshipDetectionService", () => {
 			const existingNodes: GraphNode[] = [
 				{
 					id: "https://openalex.org/W456",
-					type: "works" as EntityType,
+					entityType: "works" as EntityType,
 					label: "Referenced Work",
 					entityId: "https://openalex.org/W456",
 					position: { x: 0, y: 0 },
@@ -196,7 +196,7 @@ describe("RelationshipDetectionService", () => {
 			const existingNodes: GraphNode[] = [
 				{
 					id: "https://openalex.org/W2250748100", // Full URL format (real graph node format)
-					type: "works" as EntityType,
+					entityType: "works" as EntityType,
 					label: "Referenced Work 1",
 					entityId: "https://openalex.org/W2250748100", // Full URL in entityId
 					position: { x: 0, y: 0 },
@@ -204,7 +204,7 @@ describe("RelationshipDetectionService", () => {
 				},
 				{
 					id: "https://openalex.org/W3200026003", // Full URL format (real graph node format)
-					type: "works" as EntityType,
+					entityType: "works" as EntityType,
 					label: "Referenced Work 2",
 					entityId: "https://openalex.org/W3200026003", // Full URL in entityId
 					position: { x: 0, y: 0 },
@@ -247,7 +247,7 @@ describe("RelationshipDetectionService", () => {
 			const existingNodes: GraphNode[] = [
 				{
 					id: "I456",
-					type: "institutions" as EntityType,
+					entityType: "institutions" as EntityType,
 					label: "Test University",
 					entityId: "https://openalex.org/I456",
 					position: { x: 0, y: 0 },
@@ -286,7 +286,7 @@ describe("RelationshipDetectionService", () => {
 				id: "A123-authored-W456",
 				source: "A123",
 				target: "W456",
-				type: RelationType.AUTHORED,
+				entityType: RelationType.AUTHORED,
 				label: "authored",
 				weight: 1.0,
 				metadata: undefined
@@ -462,7 +462,7 @@ describe("RelationshipDetectionService", () => {
 			const existingNodes: GraphNode[] = [
 				{
 					id: "A456",
-					type: "authors" as EntityType,
+					entityType: "authors" as EntityType,
 					label: "First Author",
 					entityId: "https://openalex.org/A456",
 					position: { x: 0, y: 0 },
@@ -470,7 +470,7 @@ describe("RelationshipDetectionService", () => {
 				},
 				{
 					id: "A789",
-					type: "authors" as EntityType,
+					entityType: "authors" as EntityType,
 					label: "Second Author",
 					entityId: "https://openalex.org/A789",
 					position: { x: 0, y: 0 },
@@ -504,7 +504,7 @@ describe("RelationshipDetectionService", () => {
 			const existingNodes: GraphNode[] = [
 				{
 					id: "W456",
-					type: "works" as EntityType,
+					entityType: "works" as EntityType,
 					label: "Referenced Work 1",
 					entityId: "https://openalex.org/W456",
 					position: { x: 0, y: 0 },
@@ -512,7 +512,7 @@ describe("RelationshipDetectionService", () => {
 				},
 				{
 					id: "W789",
-					type: "works" as EntityType,
+					entityType: "works" as EntityType,
 					label: "Referenced Work 2",
 					entityId: "https://openalex.org/W789",
 					position: { x: 0, y: 0 },
@@ -548,7 +548,7 @@ describe("RelationshipDetectionService", () => {
 			const existingNodes: GraphNode[] = [
 				{
 					id: "A456",
-					type: "authors" as EntityType,
+					entityType: "authors" as EntityType,
 					label: "Different Author",
 					entityId: "https://openalex.org/A456",
 					position: { x: 0, y: 0 },
@@ -585,7 +585,7 @@ describe("RelationshipDetectionService", () => {
 			const existingNodes: GraphNode[] = [
 				{
 					id: "A456",
-					type: "authors" as EntityType,
+					entityType: "authors" as EntityType,
 					label: "Test Author",
 					entityId: "https://openalex.org/A456",
 					position: { x: 0, y: 0 },
@@ -627,7 +627,7 @@ describe("RelationshipDetectionService", () => {
 			const existingNodes: GraphNode[] = [
 				{
 					id: "I456",
-					type: "institutions" as EntityType,
+					entityType: "institutions" as EntityType,
 					label: "Primary University",
 					entityId: "https://openalex.org/I456",
 					position: { x: 0, y: 0 },
@@ -635,7 +635,7 @@ describe("RelationshipDetectionService", () => {
 				},
 				{
 					id: "I789",
-					type: "institutions" as EntityType,
+					entityType: "institutions" as EntityType,
 					label: "Secondary University",
 					entityId: "https://openalex.org/I789",
 					position: { x: 0, y: 0 },
@@ -664,7 +664,7 @@ describe("RelationshipDetectionService", () => {
 			const existingNodes: GraphNode[] = [
 				{
 					id: "I456",
-					type: "institutions" as EntityType,
+					entityType: "institutions" as EntityType,
 					label: "Some University",
 					entityId: "https://openalex.org/I456",
 					position: { x: 0, y: 0 },
@@ -690,7 +690,7 @@ describe("RelationshipDetectionService", () => {
 			const existingNodes: GraphNode[] = [
 				{
 					id: "P456",
-					type: "publishers" as EntityType,
+					entityType: "publishers" as EntityType,
 					label: "Test Publisher",
 					entityId: "https://openalex.org/P456",
 					position: { x: 0, y: 0 },
@@ -716,7 +716,7 @@ describe("RelationshipDetectionService", () => {
 			const existingNodes: GraphNode[] = [
 				{
 					id: "P456",
-					type: "publishers" as EntityType,
+					entityType: "publishers" as EntityType,
 					label: "Some Publisher",
 					entityId: "https://openalex.org/P456",
 					position: { x: 0, y: 0 },
@@ -741,7 +741,7 @@ describe("RelationshipDetectionService", () => {
 			const existingNodes: GraphNode[] = [
 				{
 					id: "A456",
-					type: "authors" as EntityType,
+					entityType: "authors" as EntityType,
 					label: "Some Author",
 					entityId: "https://openalex.org/A456",
 					position: { x: 0, y: 0 },
@@ -841,7 +841,7 @@ describe("RelationshipDetectionService", () => {
 		it("should handle errors in detectRelationshipsForNode gracefully", async () => {
 			const testNode: GraphNode = {
 				id: "W123",
-				type: "works" as EntityType,
+				entityType: "works" as EntityType,
 				label: "Test Work",
 				entityId: "https://openalex.org/W123",
 				position: { x: 0, y: 0 },
@@ -860,7 +860,7 @@ describe("RelationshipDetectionService", () => {
 		it("should handle malformed entity data gracefully", async () => {
 			const testNode: GraphNode = {
 				id: "W123",
-				type: "works" as EntityType,
+				entityType: "works" as EntityType,
 				label: "Test Work",
 				entityId: "https://openalex.org/W123",
 				position: { x: 0, y: 0 },
@@ -893,7 +893,7 @@ describe("RelationshipDetectionService", () => {
 		it("should handle complex multi-entity relationship detection", async () => {
 			const testNode: GraphNode = {
 				id: "W123",
-				type: "works" as EntityType,
+				entityType: "works" as EntityType,
 				label: "Test Work",
 				entityId: "https://openalex.org/W123",
 				position: { x: 0, y: 0 },
@@ -927,7 +927,7 @@ describe("RelationshipDetectionService", () => {
 			const existingNodes = [
 				{
 					id: "A456",
-					type: "authors" as EntityType,
+					entityType: "authors" as EntityType,
 					label: "Test Author",
 					entityId: "https://openalex.org/A456",
 					position: { x: 0, y: 0 },
@@ -935,7 +935,7 @@ describe("RelationshipDetectionService", () => {
 				},
 				{
 					id: "W789",
-					type: "works" as EntityType,
+					entityType: "works" as EntityType,
 					label: "Referenced Work",
 					entityId: "https://openalex.org/W789",
 					position: { x: 0, y: 0 },
@@ -943,7 +943,7 @@ describe("RelationshipDetectionService", () => {
 				},
 				{
 					id: "S321",
-					type: "sources" as EntityType,
+					entityType: "sources" as EntityType,
 					label: "Test Journal",
 					entityId: "https://openalex.org/S321",
 					position: { x: 0, y: 0 },

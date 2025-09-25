@@ -235,7 +235,7 @@ export const useAppActivityStore = create<AppActivityState>()(
 
       logger.debug("ui", "App activity event added", {
         id,
-        type: event.type,
+        entityType: event.type,
         event: event.event,
         severity: event.severity,
       }, "AppActivityStore");

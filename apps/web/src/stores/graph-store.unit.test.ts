@@ -43,7 +43,7 @@ const createMockProvider = (): GraphProvider => ({
 });
 
 // Test data fixtures
-const createTestNode = (id: string, type: EntityType = "works"): GraphNode => ({
+const createTestNode = (id: string, entityType: EntityType = "works"): GraphNode => ({
 	id,
 	type,
 	position: { x: 0, y: 0 },
@@ -59,7 +59,7 @@ const createTestNode = (id: string, type: EntityType = "works"): GraphNode => ({
 	expanded: false,
 });
 
-const createTestEdge = (id: string, source: string, target: string, type: RelationType = "authored"): GraphEdge => ({
+const createTestEdge = (id: string, source: string, target: string, entityType: RelationType = "authored"): GraphEdge => ({
 	id,
 	source,
 	target,
@@ -116,7 +116,7 @@ describe("GraphStore", () => {
 				topic_part_of_field: true
 			},
 			currentLayout: {
-				type: "d3-force",
+				entityType: "d3-force",
 				options: {
 					seed: 42,
 					iterations: 300,
@@ -229,7 +229,7 @@ describe("GraphStore", () => {
 			setProvider(mockProvider);
 
 			const newLayout: GraphLayout = {
-				type: "hierarchical",
+				entityType: "hierarchical",
 				options: {
 					seed: 123,
 					iterations: 500,
@@ -267,7 +267,7 @@ describe("GraphStore", () => {
 			const { setLayout, applyCurrentLayout } = useGraphStore.getState();
 
 			const newLayout: GraphLayout = {
-				type: "hierarchical",
+				entityType: "hierarchical",
 				options: {
 					seed: 123,
 					iterations: 500,
@@ -783,7 +783,7 @@ describe("GraphStore", () => {
 			addNodes(nodes);
 			addEdges(edges);
 
-			calculateNodeDepths("N1");
+			calculateNodeDepths();
 
 			const state = useGraphStore.getState();
 			expect(state.nodeDepths["N1"]).toBe(0);
@@ -803,7 +803,7 @@ describe("GraphStore", () => {
 			];
 
 			addNodes(nodes);
-			calculateNodeDepths("N1");
+			calculateNodeDepths();
 
 			const state = useGraphStore.getState();
 			expect(state.nodeDepths["N1"]).toBe(0);
@@ -829,7 +829,7 @@ describe("GraphStore", () => {
 
 			addNodes(nodes);
 			addEdges(edges);
-			calculateNodeDepths("N1");
+			calculateNodeDepths();
 
 			const depth0 = getNodesWithinDepth(0);
 			expect(depth0).toHaveLength(1);

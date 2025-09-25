@@ -27,7 +27,7 @@ function HomePage() {
 		try {
 			await search(searchQuery.trim());
 		} catch (error) {
-			logError("Search failed", error, { query: searchQuery });
+			logError(logger, "Search failed", error, "HomePage");
 		}
 	}
 
@@ -36,7 +36,7 @@ function HomePage() {
 		try {
 			await search(query);
 		} catch (error) {
-			logError("Example search failed", error, { query });
+			logError(logger, "Example search failed", error, "HomePage");
 		}
 	}
 

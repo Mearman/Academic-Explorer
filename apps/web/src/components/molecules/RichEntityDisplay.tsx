@@ -65,9 +65,9 @@ export const RichEntityDisplay: React.FC<RichEntityDisplayProps> = ({
 	const entityInteraction = useEntityInteraction();
 	const {handleSidebarEntityClick} = entityInteraction;
 
-	const getEntityIcon = (type: string, size = 20) => {
+	const getEntityIcon = (entityType: string, size = 20) => {
 		const iconProps = { size };
-		switch (type) {
+		switch (entityType) {
 			case "works": return <IconFile {...iconProps} />;
 			case "authors": return <IconUser {...iconProps} />;
 			case "sources": return <IconBook {...iconProps} />;
@@ -78,8 +78,8 @@ export const RichEntityDisplay: React.FC<RichEntityDisplayProps> = ({
 		}
 	};
 
-	const getEntityColor = (type: string): string => {
-		switch (type) {
+	const getEntityColor = (entityType: string): string => {
+		switch (entityType) {
 			case "works": return "red";
 			case "authors": return "blue";
 			case "sources": return "green";

@@ -9,7 +9,7 @@ import { logger } from "@academic-explorer/utils/logger";
 
 export interface NetworkRequest {
   id: string;
-  type: "api" | "cache" | "worker" | "resource";
+  entityType: "api" | "cache" | "worker" | "resource";
   category: "foreground" | "background";
   url: string;
   method: string;
@@ -57,7 +57,7 @@ interface NetworkActivityState {
   // Filters
   filters: {
     status: string[];
-    type: string[];
+    entityType: string[];
     category: string[];
     searchTerm: string;
     timeRange: number; // hours
@@ -137,7 +137,7 @@ const computeFilteredRequests = (
 		if (filters.status.length > 0 && !filters.status.includes(req.status)) return false;
 
 		// Type filter
-		if (filters.type.length > 0 && !filters.type.includes(req.type)) return false;
+		if (filters.entityType.length > 0 && !filters.entityType.includes(req.entityType)) return false;
 
 		// Category filter
 		if (filters.category.length > 0 && !filters.category.includes(req.category)) return false;
@@ -185,7 +185,7 @@ export const useNetworkActivityStore = create<NetworkActivityState>()(
 		// Filters
 		filters: {
 			status: [],
-			type: [],
+			entityType: [],
 			category: [],
 			searchTerm: "",
 			timeRange: 24, // 24 hours default
@@ -208,7 +208,7 @@ export const useNetworkActivityStore = create<NetworkActivityState>()(
 			logger.debug("api", "Network request added", {
 				id,
 				url: request.url,
-				type: request.type,
+				entityType: request.entityType,
 				category: request.category
 			}, "NetworkActivityStore");
 
@@ -320,7 +320,7 @@ export const useNetworkActivityStore = create<NetworkActivityState>()(
 
 		setTypeFilter: (types) => {
 			set(state => {
-				state.filters.type = types;
+				state.filters.entityType = types;
 			});
 			get().recomputeFilteredRequests();
 		},
@@ -350,7 +350,7 @@ export const useNetworkActivityStore = create<NetworkActivityState>()(
 			set(state => {
 				state.filters = {
 					status: [],
-					type: [],
+					entityType: [],
 					category: [],
 					searchTerm: "",
 					timeRange: 24,

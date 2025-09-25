@@ -25,7 +25,7 @@ const NodePositionSchema = z.object({
 
 const ForceSimulationProgressSchema = z.object({
   id: z.string().optional(),
-  type: z.literal("worker:force-simulation-progress").optional(),
+  entityType: z.literal("worker:force-simulation-progress").optional(),
   requestId: z.string().optional(),
   messageType: z.string().optional(),
   alpha: z.number().optional(),
@@ -38,7 +38,7 @@ const ForceSimulationProgressSchema = z.object({
 });
 
 const ForceSimulationCompleteSchema = z.object({
-  type: z.literal("worker:force-simulation-complete"),
+  entityType: z.literal("worker:force-simulation-complete"),
   requestId: z.string().optional(),
   positions: z.array(NodePositionSchema),
   totalIterations: z.number(),
@@ -52,7 +52,7 @@ const ForceSimulationCompleteEnvelopeSchema = z.object({
 });
 
 const ForceSimulationControlAckSchema = z.object({
-  type: z.literal("FORCE_SIMULATION_CONTROL_ACK"),
+  entityType: z.literal("FORCE_SIMULATION_CONTROL_ACK"),
   action: z.string(),
   status: z.string().optional(),
   timestamp: z.number().optional()
@@ -448,7 +448,7 @@ export function useUnifiedExecutionWorker(options: UseUnifiedExecutionWorkerOpti
       const submittedTaskId = await taskSystem.submitTask({
         id: taskId,
         payload: {
-          type: "FORCE_SIMULATION_START",
+          entityType: "FORCE_SIMULATION_START",
           nodes: seededNodes,
           links,
           config,
@@ -490,7 +490,7 @@ export function useUnifiedExecutionWorker(options: UseUnifiedExecutionWorkerOpti
       await taskSystem.submitTask({
         id: stopTaskId,
         payload: {
-          type: "FORCE_SIMULATION_STOP"
+          entityType: "FORCE_SIMULATION_STOP"
         }
       });
 
@@ -521,7 +521,7 @@ export function useUnifiedExecutionWorker(options: UseUnifiedExecutionWorkerOpti
         await taskSystem.submitTask({
           id: taskId,
           payload: {
-            type: "FORCE_SIMULATION_PAUSE"
+            entityType: "FORCE_SIMULATION_PAUSE"
           }
         });
       } catch (error) {
@@ -539,7 +539,7 @@ export function useUnifiedExecutionWorker(options: UseUnifiedExecutionWorkerOpti
         await taskSystem.submitTask({
           id: taskId,
           payload: {
-            type: "FORCE_SIMULATION_RESUME"
+            entityType: "FORCE_SIMULATION_RESUME"
           }
         });
       } catch (error) {
@@ -557,7 +557,7 @@ export function useUnifiedExecutionWorker(options: UseUnifiedExecutionWorkerOpti
         await taskSystem.submitTask({
           id: taskId,
           payload: {
-            type: "FORCE_SIMULATION_UPDATE_PARAMETERS",
+            entityType: "FORCE_SIMULATION_UPDATE_PARAMETERS",
             config
           }
         });
@@ -593,7 +593,7 @@ export function useUnifiedExecutionWorker(options: UseUnifiedExecutionWorkerOpti
       const resultTaskId = await taskSystem.submitTask({
         id: taskId,
         payload: {
-          type: "FORCE_SIMULATION_REHEAT",
+          entityType: "FORCE_SIMULATION_REHEAT",
           nodes,
           links,
           config,
@@ -645,7 +645,7 @@ export function useUnifiedExecutionWorker(options: UseUnifiedExecutionWorkerOpti
       const resultTaskId = await taskSystem.submitTask({
         id: taskId,
         payload: {
-          type: "FORCE_SIMULATION_UPDATE_LINKS",
+          entityType: "FORCE_SIMULATION_UPDATE_LINKS",
           links,
           alpha
         },
@@ -700,7 +700,7 @@ export function useUnifiedExecutionWorker(options: UseUnifiedExecutionWorkerOpti
       const resultTaskId = await taskSystem.submitTask({
         id: taskId,
         payload: {
-          type: "FORCE_SIMULATION_UPDATE_NODES",
+          entityType: "FORCE_SIMULATION_UPDATE_NODES",
           nodes,
           pinnedNodes: pinnedArray,
           alpha

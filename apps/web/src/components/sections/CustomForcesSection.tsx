@@ -478,7 +478,7 @@ export const CustomForcesSection: React.FC = () => {
         config: defaultConfig,
       });
 
-      logger.debug("graph", "Custom force added via UI", { forceId, type: newForceType, name: newForceName });
+      logger.debug("graph", "Custom force added via UI", { forceId, entityType: newForceType, name: newForceName });
 
       setNewForceName("");
       setNewForceType("radial");
@@ -517,10 +517,10 @@ export const CustomForcesSection: React.FC = () => {
     logger.debug("graph", "All custom forces cleared");
   }, []);
 
-  const handleAddQuickForce = useCallback((type: "year-citation" | "radial" | "institution") => {
+  const handleAddQuickForce = useCallback((entityType: "year-citation" | "radial" | "institution") => {
     try {
       let force: CustomForce;
-      switch (type) {
+      switch (entityType) {
         case "year-citation":
           force = {
             name: "Year Citation Force",
@@ -565,9 +565,9 @@ export const CustomForcesSection: React.FC = () => {
       }
       customForceManager.addForce(force);
       setForces([]); // Fallback since getAllForces() not available
-      logger.debug("graph", "Quick force added", { type });
+      logger.debug("graph", "Quick force added", { entityType });
     } catch (error) {
-      logger.error("graph", "Failed to add quick force", { error, type });
+      logger.error("graph", "Failed to add quick force", { error, entityType });
     }
   }, []);
 
@@ -730,7 +730,7 @@ export const CustomForcesSection: React.FC = () => {
         size="md"
       >
         <Stack gap="md">
-          {Object.entries({}).map(([id, preset]) => ( // Fallback since getBuiltInPresets() not available
+          {Object.entries({} as Record<string, { name: string; description: string; forces: CustomForce[] }>).map(([id, preset]) => ( // Fallback since getBuiltInPresets() not available
             <Card key={id} withBorder p="md">
               <Stack gap="sm">
                 <div>

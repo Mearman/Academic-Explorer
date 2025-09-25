@@ -49,7 +49,7 @@ function ExternalIdRoute() {
 							specificRoute = `/sources/issn/${detection.normalizedId}`
 							break
 						default:
-							throw new Error(`Unsupported ID type: ${detection.idType}`)
+							throw new Error(`Unsupported ID entityType: ${detection.idType}`)
 					}
 
 					void navigate({

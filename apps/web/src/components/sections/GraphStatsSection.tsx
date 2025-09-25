@@ -124,8 +124,8 @@ export const GraphStatsSection: React.FC<GraphStatsSectionProps> = ({
 		</div>
 	);
 
-	const EntityTypeBar: React.FC<{ type: string; count: number; total: number }> = ({
-		type,
+	const EntityTypeBar: React.FC<{ entityType: string; count: number; total: number }> = ({
+		entityType,
 		count,
 		total
 	}) => {
@@ -139,7 +139,7 @@ export const GraphStatsSection: React.FC<GraphStatsSectionProps> = ({
 					marginBottom: "4px"
 				}}>
 					<span style={{ fontSize: "12px", textTransform: "capitalize" }}>
-						{type.replace("_", " ")}
+						{entityType.replace("_", " ")}
 					</span>
 					<Badge size="xs" variant="light">
 						{count}
@@ -258,7 +258,7 @@ export const GraphStatsSection: React.FC<GraphStatsSectionProps> = ({
 					{topEntityTypes.map(([type, count]) => (
 						<EntityTypeBar
 							key={type}
-							type={type}
+							entityType={type}
 							count={count}
 							total={totalNodeCount}
 						/>
@@ -279,7 +279,7 @@ export const GraphStatsSection: React.FC<GraphStatsSectionProps> = ({
 					{topEdgeTypes.map(([type, count]) => (
 						<EntityTypeBar
 							key={type}
-							type={type}
+							entityType={type}
 							count={count}
 							total={totalEdgeCount}
 						/>
@@ -288,7 +288,7 @@ export const GraphStatsSection: React.FC<GraphStatsSectionProps> = ({
 			</CollapsibleSection>
 
 			{/* Search Results Summary */}
-			{Object.values(lastSearchStats || {}).some(v => v > 0) && (
+			{Object.values(lastSearchStats || {}).some(v => typeof v === "number" && v > 0) && (
 				<>
 					<Divider style={{ margin: "16px 0" }} />
 					<CollapsibleSection
@@ -299,12 +299,12 @@ export const GraphStatsSection: React.FC<GraphStatsSectionProps> = ({
 					>
 						<div style={{ marginTop: "8px" }}>
 							{Object.entries(lastSearchStats)
-								.filter(([, count]) => count > 0)
+								.filter(([, count]) => typeof count === "number" && count > 0)
 								.map(([type, count]) => (
 									<StatItem
 										key={type}
 										label={type.replace("_", " ")}
-										value={count}
+										value={count as number}
 									/>
 								))
 							}

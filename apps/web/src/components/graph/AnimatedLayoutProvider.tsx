@@ -197,8 +197,8 @@ export const AnimatedLayoutProvider: React.FC<AnimatedLayoutProviderProps> = ({
 			return;
 		}
 
-		const handleGraphEvent = (event: { type: string; payload?: unknown }) => {
-			const { type: eventType } = event;
+		const handleGraphEvent = (event: { entityType: string; payload?: unknown }) => {
+			const { entityType: eventType } = event;
 
 			// Only trigger on significant node/edge addition events
 			if (
@@ -228,7 +228,7 @@ export const AnimatedLayoutProvider: React.FC<AnimatedLayoutProviderProps> = ({
 			if (event.payload && typeof event.payload === "object" && "type" in event.payload) {
 				if (typeof event.payload.type === "string") {
 					handleGraphEvent({
-						type: event.payload.type,
+						entityType: event.payload.type,
 						payload: "payload" in event.payload ? event.payload.payload : undefined
 					});
 				}
@@ -264,8 +264,8 @@ export const AnimatedLayoutProvider: React.FC<AnimatedLayoutProviderProps> = ({
 			return;
 		}
 
-		const handleExpansionEvent = (event: { type: string; payload?: unknown }) => {
-			const { type: eventType } = event;
+		const handleExpansionEvent = (event: { entityType: string; payload?: unknown }) => {
+			const { entityType: eventType } = event;
 
 			// Only respond to bulk expansion events, not individual node/position changes
 			if (eventType === "graph:bulk-nodes-added" || eventType === "graph:bulk-edges-added") {
@@ -293,14 +293,14 @@ export const AnimatedLayoutProvider: React.FC<AnimatedLayoutProviderProps> = ({
 		// Listen directly for bulk graph events
 		const bulkNodesHandler = (event: { payload?: unknown }) => {
 			handleExpansionEvent({
-				type: "graph:bulk-nodes-added",
+				entityType: "graph:bulk-nodes-added",
 				payload: event.payload
 			});
 		};
 
 		const bulkEdgesHandler = (event: { payload?: unknown }) => {
 			handleExpansionEvent({
-				type: "graph:bulk-edges-added",
+				entityType: "graph:bulk-edges-added",
 				payload: event.payload
 			});
 		};

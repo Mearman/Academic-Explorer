@@ -104,8 +104,8 @@ const NetworkActivitySection: React.FC = () => {
 		}
 	};
 
-	const getTypeIcon = (type: NetworkRequest["type"]) => {
-		switch (type) {
+	const getTypeIcon = (entityType: NetworkRequest["entityType"]) => {
+		switch (entityType) {
 			case "api": return IconApi;
 			case "cache": return IconFileDatabase;
 			case "worker": return IconCpu;
@@ -166,7 +166,7 @@ const NetworkActivitySection: React.FC = () => {
 
 	const renderRequest = (request: NetworkRequest) => {
 		const isExpanded = expandedRequests.has(request.id);
-		const TypeIcon = getTypeIcon(request.type);
+		const TypeIcon = getTypeIcon(request.entityType);
 
 		return (
 			<Card key={request.id} padding="sm" withBorder>
@@ -188,7 +188,7 @@ const NetworkActivitySection: React.FC = () => {
 									{request.status}
 								</Badge>
 								<Badge variant="light" size="sm">
-									{request.type}
+									{request.entityType}
 								</Badge>
 								<Badge variant="outline" size="sm">
 									{request.category}
@@ -411,7 +411,7 @@ const NetworkActivitySection: React.FC = () => {
 								onChange={(value) => { setTypeFilter(value ? [value] : []); }}
 								size="sm"
 								{...{clearable: true}}
-								{...(filters.type.length === 1 ? {value: filters.type[0]} : {})}
+								{...(filters.entityType.length === 1 ? {value: filters.entityType[0]} : {})}
 							/>
 						</Group>
 

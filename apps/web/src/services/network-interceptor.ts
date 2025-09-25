@@ -12,7 +12,7 @@ interface RequestContext {
   startTime: number;
   url: string;
   method: string;
-  type: NetworkRequest["type"];
+  entityType: NetworkRequest["entityType"];
   category: NetworkRequest["category"];
 }
 
@@ -29,7 +29,7 @@ export class NetworkInterceptor {
 	private xhrDataMap = new WeakMap<XMLHttpRequest, {
 		url: string;
 		method: string;
-		type: NetworkRequest["type"];
+		entityType: NetworkRequest["entityType"];
 		category: NetworkRequest["category"];
 		requestId?: string;
 	}>();
@@ -110,7 +110,7 @@ export class NetworkInterceptor {
 			const store = useNetworkActivityStore.getState();
 
 			const requestId = store.addRequest({
-				type: this.detectRequestType(url),
+				entityType: this.detectRequestType(url),
 				category: this.detectRequestCategory(url, init?.headers),
 				url,
 				method,
@@ -122,7 +122,7 @@ export class NetworkInterceptor {
 				startTime: Date.now(),
 				url,
 				method,
-				type: requestInfo.type,
+				entityType: requestInfo.entityType,
 				category: requestInfo.category,
 			});
 
@@ -193,7 +193,7 @@ export class NetworkInterceptor {
 			xhrDataMap.set(this, {
 				url: urlString,
 				method,
-				type: requestInfo.type,
+				entityType: requestInfo.entityType,
 				category: requestInfo.category,
 			});
 
@@ -207,7 +207,7 @@ export class NetworkInterceptor {
       if (requestData) {
       	const store = useNetworkActivityStore.getState();
       	const requestId = store.addRequest({
-      		type: requestData.type,
+      		entityType: requestData.entityType,
       		category: requestData.category,
       		url: requestData.url,
       		method: requestData.method,
@@ -219,7 +219,7 @@ export class NetworkInterceptor {
       		startTime: Date.now(),
       		url: requestData.url,
       		method: requestData.method,
-      		type: requestData.type,
+      		entityType: requestData.entityType,
       		category: requestData.category,
       	});
 
@@ -281,11 +281,11 @@ export class NetworkInterceptor {
    * Create request info with type and category detection
    */
 	private createRequestInfo(url: string, _method: string, headers?: HeadersInit): {
-    type: NetworkRequest["type"];
+    entityType: NetworkRequest["entityType"];
     category: NetworkRequest["category"];
   } {
 		return {
-			type: this.detectRequestType(url),
+			entityType: this.detectRequestType(url),
 			category: this.detectRequestCategory(url, headers),
 		};
 	}
@@ -293,7 +293,7 @@ export class NetworkInterceptor {
 	/**
    * Detect request type based on URL
    */
-	private detectRequestType(url: string): NetworkRequest["type"] {
+	private detectRequestType(url: string): NetworkRequest["entityType"] {
 		if (url.includes("openalex.org") || url.includes("/api/")) {
 			return "api";
 		}
@@ -356,7 +356,7 @@ export class NetworkInterceptor {
 		const store = useNetworkActivityStore.getState();
 
 		const requestId = store.addRequest({
-			type: "cache",
+			entityType: "cache",
 			category: "background",
 			url: `cache://${operation}/${key}`,
 			method: operation.toUpperCase(),
@@ -390,7 +390,7 @@ export class NetworkInterceptor {
 		const store = useNetworkActivityStore.getState();
 
 		const requestId = store.addRequest({
-			type: "worker",
+			entityType: "worker",
 			category: "background",
 			url: `worker://${operation}`,
 			method: "POST",
@@ -418,7 +418,7 @@ export class NetworkInterceptor {
 		const store = useNetworkActivityStore.getState();
 
 		store.addRequest({
-			type: "api",
+			entityType: "api",
 			category: "foreground",
 			url,
 			method: "GET",

@@ -30,7 +30,7 @@ describe("LayoutControls", () => {
 		vi.clearAllMocks();
 		mockUseGraphStore.mockReturnValue({
 			currentLayout: {
-				type: "d3-force",
+				entityType: "d3-force",
 				options: {},
 			},
 			setLayout: mockSetLayout,
@@ -101,7 +101,7 @@ describe("LayoutControls", () => {
 		// Update mock to return different layout
 		mockUseGraphStore.mockReturnValue({
 			currentLayout: {
-				type: "d3-force",
+				entityType: "d3-force",
 				options: { iterations: 100 },
 			},
 			setLayout: mockSetLayout,
@@ -120,7 +120,7 @@ describe("LayoutControls", () => {
 	it("renders with default icon when current layout is not found", () => {
 		mockUseGraphStore.mockReturnValue({
 			currentLayout: {
-				type: "unknown-layout" as any,
+				entityType: "unknown-layout" as any,
 				options: {},
 			},
 			setLayout: mockSetLayout,

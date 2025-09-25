@@ -164,12 +164,12 @@ export class RelationshipDetectionService {
 		try {
 			logger.debug("graph", "Starting relationship detection for node", {
 				nodeId,
-				entityType: newNode.type,
+				entityType: newNode.entityType,
 				label: newNode.label
 			}, "RelationshipDetectionService");
 
 			// Fetch minimal entity data
-			const minimalData = await this.fetchMinimalEntityData(newNode.entityId, newNode.type);
+			const minimalData = await this.fetchMinimalEntityData(newNode.entityId, newNode.entityType);
 
 			if (!minimalData) {
 				logger.warn("graph", "Could not fetch minimal data for relationship detection", {
@@ -192,7 +192,7 @@ export class RelationshipDetectionService {
 				detectedCount: detectedRelationships.length,
 				relationships: detectedRelationships.map(r => ({
 					target: r.targetNodeId,
-					type: r.relationType
+					entityType: r.relationType
 				}))
 			}, "RelationshipDetectionService");
 
@@ -633,7 +633,7 @@ export class RelationshipDetectionService {
 			case "keywords":
 				return cachedOpenAlex.client.keywords.getKeyword(entityId);
 			default:
-				throw new Error(`Unsupported entity type: ${entityType}`);
+				throw new Error(`Unsupported entity entityType: ${entityType}`);
 		}
 	}
 
@@ -679,7 +679,7 @@ export class RelationshipDetectionService {
 
 		try {
 			// Fetch minimal entity data for the source node
-			const sourceData = await this.fetchMinimalEntityData(sourceNode.entityId, sourceNode.type);
+			const sourceData = await this.fetchMinimalEntityData(sourceNode.entityId, sourceNode.entityType);
 			if (!sourceData) {
 				return [];
 			}

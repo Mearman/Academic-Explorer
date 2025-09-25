@@ -87,7 +87,7 @@ const createMockWork = (id: string, authorIds: string[] = [], sourceId?: string,
 	} : null,
 	referenced_works: referencedWorkIds,
 	publication_year: 2023,
-	type: "article",
+	entityType: "article",
 	open_access: {
 		is_oa: false,
 		oa_date: null,
@@ -153,7 +153,7 @@ const createMockSource = (id: string, publisherId?: string): Source => ({
 	host_organization: publisherId || null,
 	host_organization_name: publisherId ? `Test Publisher ${publisherId}` : null,
 	host_organization_lineage: publisherId ? [publisherId] : [],
-	type: "journal",
+	entityType: "journal",
 	homepage_url: `https://example.com/source/${id}`,
 	apc_prices: [],
 	apc_usd: null,
@@ -176,7 +176,7 @@ const createMockInstitution = (id: string, parentIds: string[] = []): Institutio
 	display_name: `Test Institution ${id}`,
 	ror: `https://ror.org/${id}`,
 	country_code: "US",
-	type: "education",
+	entityType: "education",
 	lineage: [id, ...parentIds],
 	homepage_url: `https://example.com/institution/${id}`,
 	image_url: null,
@@ -208,7 +208,7 @@ const createMockInstitution = (id: string, parentIds: string[] = []): Institutio
 });
 
 // Helper to create test graph nodes matching the actual GraphNode interface
-const createTestNode = (entityId: string, type: EntityType, entity: any): GraphNode => ({
+const createTestNode = (entityId: string, entityType: EntityType, entity: any): GraphNode => ({
 	id: entityId, // Use same ID pattern as production
 	entityId,
 	type,
@@ -266,7 +266,7 @@ describe("Intra-Node Edge Population Integration Tests", () => {
 				topic_part_of_field: true
 			},
 			currentLayout: {
-				type: "d3-force",
+				entityType: "d3-force",
 				options: {
 					seed: 42,
 					iterations: 300,
@@ -343,7 +343,7 @@ describe("Intra-Node Edge Population Integration Tests", () => {
 			expect(detectedEdges[0]).toMatchObject({
 				source: authorId,
 				target: workId,
-				type: RelationType.AUTHORED,
+				entityType: RelationType.AUTHORED,
 				label: "authored"
 			});
 
@@ -355,7 +355,7 @@ describe("Intra-Node Edge Population Integration Tests", () => {
 			expect(edgeValues[0]).toMatchObject({
 				source: authorId,
 				target: workId,
-				type: RelationType.AUTHORED
+				entityType: RelationType.AUTHORED
 			});
 		});
 
@@ -388,7 +388,7 @@ describe("Intra-Node Edge Population Integration Tests", () => {
 			expect(detectedEdges[0]).toMatchObject({
 				source: workId,
 				target: sourceId,
-				type: RelationType.PUBLISHED_IN,
+				entityType: RelationType.PUBLISHED_IN,
 				label: "published in"
 			});
 		});
@@ -430,14 +430,14 @@ describe("Intra-Node Edge Population Integration Tests", () => {
 			expect(citationEdge1).toMatchObject({
 				source: citingWorkId,
 				target: referencedWorkId1,
-				type: RelationType.REFERENCES,
+				entityType: RelationType.REFERENCES,
 				label: "references"
 			});
 
 			expect(citationEdge2).toMatchObject({
 				source: citingWorkId,
 				target: referencedWorkId2,
-				type: RelationType.REFERENCES,
+				entityType: RelationType.REFERENCES,
 				label: "references"
 			});
 		});
@@ -471,7 +471,7 @@ describe("Intra-Node Edge Population Integration Tests", () => {
 			expect(detectedEdges[0]).toMatchObject({
 				source: authorId,
 				target: institutionId,
-				type: RelationType.AFFILIATED,
+				entityType: RelationType.AFFILIATED,
 				label: "affiliated with"
 			});
 		});
@@ -584,7 +584,7 @@ describe("Intra-Node Edge Population Integration Tests", () => {
 			expect(citationEdge).toMatchObject({
 				source: citingWorkId,
 				target: referencedWorkId,
-				type: RelationType.REFERENCES,
+				entityType: RelationType.REFERENCES,
 				label: "references"
 			});
 		});
@@ -627,7 +627,7 @@ describe("Intra-Node Edge Population Integration Tests", () => {
 			expect(edgeValues[0]).toMatchObject({
 				source: authorId,
 				target: workId,
-				type: RelationType.AUTHORED
+				entityType: RelationType.AUTHORED
 			});
 		});
 

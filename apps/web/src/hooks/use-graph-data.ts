@@ -69,7 +69,7 @@ export function useGraphData() {
 				const pinnedNodes = Object.keys(store.pinnedNodes || {});
 				const firstPinnedNodeId = pinnedNodes[0];
 				if (firstPinnedNodeId) {
-					store.calculateNodeDepths?.(firstPinnedNodeId);
+					store.calculateNodeDepths?.();
 				}
 
 				logger.debug("graph", "Node expansion completed via service", { nodeId }, "useGraphData");
@@ -122,7 +122,7 @@ export function useGraphData() {
 			const pinnedNodes = Object.keys(store.pinnedNodes || {});
 			const firstPinnedNodeId = pinnedNodes[0];
 			if (firstPinnedNodeId && store.calculateNodeDepths) {
-				store.calculateNodeDepths(firstPinnedNodeId);
+				store.calculateNodeDepths();
 			}
 
 			logger.debug("graph", "expandAllNodesOfType completed successfully", {

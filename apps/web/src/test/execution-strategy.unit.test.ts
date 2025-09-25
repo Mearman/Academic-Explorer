@@ -51,7 +51,7 @@ describe("MainThreadExecutionStrategy", () => {
 
     const taskId = await strategy.submitTask({
       id: "test-task-1",
-      payload: { type: "TEST_TASK", data: "test" }
+      payload: { entityType: "TEST_TASK", data: "test" }
     });
 
     expect(taskId).toBe("test-task-1");
@@ -60,7 +60,7 @@ describe("MainThreadExecutionStrategy", () => {
     await new Promise(resolve => setTimeout(resolve, 10));
 
     expect(mockExecutor).toHaveBeenCalledWith(
-      { type: "TEST_TASK", data: "test" },
+      { entityType: "TEST_TASK", data: "test" },
       expect.any(Function)
     );
   });
@@ -69,14 +69,14 @@ describe("MainThreadExecutionStrategy", () => {
     const mockExecutor: TaskExecutor = vi.fn().mockResolvedValue("success");
     registry.register("TEST_TASK", mockExecutor);
 
-    const events: Array<{ type: string; payload?: unknown }> = [];
+    const events: Array<{ entityType: string; payload?: unknown }> = [];
     bus.on("TASK_ENQUEUED", (event) => events.push(event));
     bus.on("TASK_STARTED", (event) => events.push(event));
     bus.on("TASK_COMPLETED", (event) => events.push(event));
 
     await strategy.submitTask({
       id: "test-task-1",
-      payload: { type: "TEST_TASK" }
+      payload: { entityType: "TEST_TASK" }
     });
 
     // Wait for task execution
@@ -93,12 +93,12 @@ describe("MainThreadExecutionStrategy", () => {
     const mockExecutor: TaskExecutor = vi.fn().mockRejectedValue(error);
     registry.register("FAILING_TASK", mockExecutor);
 
-    const events: Array<{ type: string; payload?: unknown }> = [];
+    const events: Array<{ entityType: string; payload?: unknown }> = [];
     bus.on("TASK_FAILED", (event) => events.push(event));
 
     await strategy.submitTask({
       id: "failing-task-1",
-      payload: { type: "FAILING_TASK" }
+      payload: { entityType: "FAILING_TASK" }
     });
 
     // Wait for task execution
@@ -114,18 +114,18 @@ describe("MainThreadExecutionStrategy", () => {
   });
 
   it("should handle missing executors", async () => {
-    const events: Array<{ type: string; payload?: unknown }> = [];
+    const events: Array<{ entityType: string; payload?: unknown }> = [];
     bus.on("TASK_FAILED", (event) => events.push(event));
 
     await expect(strategy.submitTask({
       id: "unknown-task-1",
-      payload: { type: "UNKNOWN_TASK" }
-    })).rejects.toThrow("No executor registered for task type: UNKNOWN_TASK");
+      payload: { entityType: "UNKNOWN_TASK" }
+    })).rejects.toThrow("No executor registered for task entityType: UNKNOWN_TASK");
 
     expect(events).toHaveLength(1);
     expect(events[0].payload).toMatchObject({
       id: "unknown-task-1",
-      error: "No executor registered for task type: UNKNOWN_TASK"
+      error: "No executor registered for task entityType: UNKNOWN_TASK"
     });
   });
 
@@ -137,7 +137,7 @@ describe("MainThreadExecutionStrategy", () => {
 
     const taskId = await strategy.submitTask({
       id: "slow-task-1",
-      payload: { type: "SLOW_TASK" }
+      payload: { entityType: "SLOW_TASK" }
     });
 
     const cancelled = strategy.cancelTask(taskId);
@@ -157,15 +157,15 @@ describe("MainThreadExecutionStrategy", () => {
     // Submit 3 tasks when maxConcurrency is 2
     await strategy.submitTask({
       id: "concurrent-1",
-      payload: { type: "CONCURRENT_TASK" }
+      payload: { entityType: "CONCURRENT_TASK" }
     });
     await strategy.submitTask({
       id: "concurrent-2",
-      payload: { type: "CONCURRENT_TASK" }
+      payload: { entityType: "CONCURRENT_TASK" }
     });
     await strategy.submitTask({
       id: "concurrent-3",
-      payload: { type: "CONCURRENT_TASK" }
+      payload: { entityType: "CONCURRENT_TASK" }
     });
 
     // Wait a bit for processing

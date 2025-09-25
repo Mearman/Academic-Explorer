@@ -121,7 +121,7 @@ export function EntityGraphPanel() {
 		};
 	}, []);
 
-	const getTypeColor = (type: string) => {
+	const getTypeColor = (entityType: string) => {
 		const colors = {
 			"work": "blue",
 			"author": "green",
@@ -139,7 +139,7 @@ export function EntityGraphPanel() {
 			return t in colors;
 		};
 
-		return isValidType(type) ? colors[type] : "gray";
+		return isValidType(entityType) ? colors[entityType] : "gray";
 	};
 
 	if (!stats) {

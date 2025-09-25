@@ -21,8 +21,8 @@ interface ExpansionOptions {
   force?: boolean;
 }
 
-function isEntityType(type: string): type is EntityType {
-  return ["works", "authors", "sources", "institutions"].includes(type as EntityType);
+function isEntityType(entityType: string): entityType is EntityType {
+  return ["works", "authors", "sources", "institutions"].includes(entityType as EntityType);
 }
 // Cache functions - implement as stubs for now
 function getCachedOpenAlexEntities(_queryClient: QueryClient): OpenAlexEntity[] {
@@ -144,7 +144,7 @@ export class GraphDataService {
 			const primaryNodeId = nodes[0]?.id;
 			if (primaryNodeId) {
 				// Calculate node depths from the primary node
-				store.calculateNodeDepths(primaryNodeId);
+				store.calculateNodeDepths();
 
 				// Pin the primary node as the origin for traversal depth calculation
 				store.pinNode(primaryNodeId);
@@ -198,7 +198,7 @@ export class GraphDataService {
     * Used for progressive graph building when clicking on nodes
     */
 	async loadEntityIntoGraph(entityId: string): Promise<void> {
-		logger.debug("graph", "loadEntityIntoGraph called", { entityId, type: typeof entityId }, "GraphDataService");
+		logger.debug("graph", "loadEntityIntoGraph called", { entityId, entityType: typeof entityId }, "GraphDataService");
 
 		const store = useGraphStore.getState();
 
@@ -447,7 +447,7 @@ export class GraphDataService {
 			const pinnedNodes = Object.keys(store.pinnedNodes).filter(nodeId => store.pinnedNodes[nodeId]);
 			const firstPinnedNodeId = pinnedNodes[0];
 			if (firstPinnedNodeId) {
-				store.calculateNodeDepths(firstPinnedNodeId);
+				store.calculateNodeDepths();
 			}
 
 			logger.debug("graph", "Loaded all cached entities into graph", {
@@ -508,11 +508,7 @@ export class GraphDataService {
 				const fullNodeData = this.createNodeFromEntity(entity, node.entityType);
 
 				// Update the node with full metadata
-				store.markNodeAsLoaded(nodeId, {
-					label: fullNodeData.label,
-					externalIds: fullNodeData.externalIds,
-					...(fullNodeData.entityData && { entityData: fullNodeData.entityData })
-				});
+				store.markNodeAsLoaded(nodeId);
 
 				logger.debug("graph", "Node hydrated with selective field loading", {
 					nodeId,
@@ -537,11 +533,7 @@ export class GraphDataService {
 				const fullNodeData = this.createNodeFromEntity(entity, node.entityType);
 
 				// Update the node with full data
-				store.markNodeAsLoaded(nodeId, {
-					label: fullNodeData.label,
-					externalIds: fullNodeData.externalIds,
-					...(fullNodeData.entityData && { entityData: fullNodeData.entityData })
-				});
+				store.markNodeAsLoaded(nodeId);
 
 				logger.debug("graph", "Node hydrated with full entity fetch", {
 					nodeId,
@@ -801,7 +793,7 @@ export class GraphDataService {
 							relationships: detectedEdges.map(e => ({
 								source: e.source,
 								target: e.target,
-								type: e.type
+								entityType: e.type
 							}))
 						}, "GraphDataService");
 
@@ -830,7 +822,7 @@ export class GraphDataService {
 				return;
 			}
 			const node = store.nodes[nodeId];
-			logger.error("graph", "DEBUG: Retrieved node from store", { nodeId, nodeExists: !!node, ...(node?.type !== undefined && { nodeType: node.entityType }) }, "GraphDataService");
+			logger.error("graph", "DEBUG: Retrieved node from store", { nodeId, nodeExists: !!node, ...(node?.entityType !== undefined && { nodeType: node.entityType }) }, "GraphDataService");
 			if (!node) {
 				logger.error("graph", "DEBUG: Node is null, returning early", { nodeId }, "GraphDataService");
 				return;
@@ -839,7 +831,7 @@ export class GraphDataService {
 			// Check if entity type is supported
 			logger.error("graph", "DEBUG: Checking if entity type is supported", { nodeId, entityType: node.entityType, isSupported: EntityFactory.isSupported(node.entityType) }, "GraphDataService");
 			if (!EntityFactory.isSupported(node.entityType)) {
-				logger.warn("graph", `Expansion not implemented for entity type: ${node.entityType}`, {
+				logger.warn("graph", `Expansion not implemented for entity entityType: ${node.entityType}`, {
 					nodeId,
 					entityType: node.entityType
 				}, "GraphDataService");
@@ -934,7 +926,7 @@ export class GraphDataService {
 						relationships: detectedEdges.map(e => ({
 							source: e.source,
 							target: e.target,
-							type: e.type
+							entityType: e.type
 						}))
 					}, "GraphDataService");
 
@@ -990,7 +982,7 @@ export class GraphDataService {
 								relationships: forceDetectedEdges.map(e => ({
 									source: e.source,
 									target: e.target,
-									type: e.type
+									entityType: e.type
 								}))
 							}, "GraphDataService");
 
@@ -1017,9 +1009,7 @@ export class GraphDataService {
   			setNodeExpanded(this.queryClient, nodeId, true);
 
   			// Mark the node as loaded (expansion completed successfully)
-  			store.markNodeAsLoaded(nodeId, {
-  				// No artificial metadata - node is considered loaded when operation completes
-  			});
+  			store.markNodeAsLoaded(nodeId);
 
   			// Layout is automatically handled by the provider when nodes/edges are added
 
@@ -1136,7 +1126,7 @@ export class GraphDataService {
 			store.clear();
 			store.addNodes(nodes);
 			store.addEdges(edges);
-			store.updateSearchStats(searchStats);
+			store.updateSearchStats();
 
 			// Layout is now handled by the ReactFlow component's useLayout hook
 			// No need for explicit layout application here
@@ -1208,10 +1198,11 @@ export class GraphDataService {
 			// Create node with minimal data using entityData
 			return {
 				id: entity.id,
-				type: entityType,
+				entityType,
 				label: entity.display_name ?? `${entityType} ${entity.id}`,
 				entityId: entity.id,
-				position: { x: 0, y: 0 }, // Will be positioned by layout
+				x: 0,
+				y: 0, // Will be positioned by layout
 				externalIds: [], // Will be populated during full hydration
 				entityData: this.getEntityData(entity)
 			};
@@ -1293,7 +1284,8 @@ export class GraphDataService {
 			// Update node with full data
 			store.updateNode(nodeId, {
 				...fullNodeData,
-				position: node.position, // Preserve current position
+				x: node.x, // Preserve current position
+				y: node.y,
 			});
 
 			logger.debug("graph", "Node fully hydrated (without expansion)", {
@@ -1303,7 +1295,7 @@ export class GraphDataService {
 			});
 		} catch (error) {
 			logError(logger, `Failed to hydrate node ${nodeId}`, error, "GraphDataService", "graph");
-			store.markNodeAsLoading(nodeId, false); // Clear loading state on error
+			store.markNodeAsError(nodeId); // Set error state
 		}
 	}
 
@@ -1744,10 +1736,11 @@ export class GraphDataService {
 
 		return {
 			id: entity.id,
-			type: entityType,
+			entityType: entityType,
 			label: entity.display_name ?? "Unknown Entity",
 			entityId: entity.id,
-			position: { x: 0, y: 0 }, // Will be updated by layout
+			x: 0,
+			y: 0, // Will be updated by layout
 			externalIds,
 			entityData: this.getEntityData(entity),
 		};
@@ -1860,10 +1853,8 @@ export class GraphDataService {
 				const cols = Math.ceil(Math.sqrt(results.length));
 				const row = Math.floor(index / cols);
 				const col = index % cols;
-				node.position = {
-					x: col * 200 - (cols * 100),
-					y: row * 150 - 75
-				};
+				node.x = col * 200 - (cols * 100);
+				node.y = row * 150 - 75;
 				nodes.push(node);
 			}
 		});

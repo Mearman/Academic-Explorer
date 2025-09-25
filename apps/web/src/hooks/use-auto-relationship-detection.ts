@@ -14,7 +14,7 @@ import type { GraphEdge } from "@academic-explorer/graph";
 
 // Interface for node structure
 interface NodeLike {
-  type: string;
+  entityType: string;
   id: string;
 }
 
@@ -33,9 +33,9 @@ function isValidNode(value: unknown): value is NodeLike {
 
   // Check properties exist and have correct types without type assertion
   return (
-    "type" in value &&
+    "entityType" in value &&
     "id" in value &&
-    typeof value.type === "string" &&
+    typeof value.entityType === "string" &&
     typeof value.id === "string"
   );
 }
@@ -133,7 +133,7 @@ export function useAutoRelationshipDetection() {
             edgeCount: validEdges.length,
             edgeTypes: [...new Set(validEdges.map(edge => edge.type))],
             edgeDetails: validEdges.map(edge => ({
-              type: edge.type,
+              entityType: edge.type,
               source: edge.source,
               target: edge.target
             }))

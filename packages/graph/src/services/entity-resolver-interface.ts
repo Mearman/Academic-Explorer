@@ -1,118 +1,181 @@
 /**
- * Entity Resolver Interface and Types
- * Phase 1: Define interfaces without implementation dependencies
- * Full implementation will be added in Phase 3 with proper client integration
+ * Entity Resolver - Phase 2 Provider-Based Implementation
+ * Uses pluggable provider system for entity resolution and expansion
  */
 
-import type { GraphNode, EntityType } from '../types/core';
+import type { GraphNode, EntityType, EntityIdentifier } from '../types/core';
+import { ProviderRegistry, type GraphDataProvider } from '../providers/base-provider';
 
-export interface ExpansionOptions {
-  maxNodes?: number;
+export interface EntityExpansionOptions {
+  relationshipTypes?: string[];
   maxDepth?: number;
+  limit?: number;
+  includeMetadata?: boolean;
 }
 
 export interface ExpansionResult {
   nodes: GraphNode[];
-  edges: never[]; // Will be GraphEdge[] in Phase 3
-  metadata: {
-    expandedFrom: string;
+  edges: Array<{
+    id: string;
+    source: string;
+    target: string;
+    type: string;
+    metadata?: Record<string, unknown>;
+  }>;
+  expandedFrom: string;
+  metadata?: {
+    depth: number;
     totalFound: number;
-    limitReached: boolean;
+    options: EntityExpansionOptions;
   };
 }
 
-/**
- * Interface for entity resolution and graph expansion
- * Phase 1: Interface definition only
- * Phase 3: Full implementation with OpenAlex client integration
- */
 export interface IEntityResolver {
-  /**
-   * Resolve a single entity by ID and convert to GraphNode
-   */
-  resolveEntity(id: string): Promise<GraphNode>;
+  resolveEntity(id: EntityIdentifier): Promise<GraphNode>;
+  expandEntity(nodeId: string, options?: Partial<EntityExpansionOptions>): Promise<ExpansionResult>;
+  searchEntities(query: string, entityTypes: EntityType[]): Promise<GraphNode[]>;
 
-  /**
-   * Expand an entity to find related nodes and edges
-   */
-  expandEntity(nodeId: string, options?: ExpansionOptions): Promise<ExpansionResult>;
-
-  /**
-   * Search for entities based on query
-   */
-  searchEntities(query: string, entityTypes?: EntityType[], limit?: number): Promise<GraphNode[]>;
+  // Provider management
+  setProvider(provider: GraphDataProvider): void;
+  setProviderRegistry(registry: ProviderRegistry): void;
 }
 
 /**
- * Placeholder EntityResolver implementation for Phase 1
- * Returns stub data to satisfy interface requirements
- * Will be replaced with full implementation in Phase 3
+ * Phase 2: Provider-based EntityResolver implementation
  */
 export class EntityResolver implements IEntityResolver {
-  /**
-   * Stub implementation - returns placeholder GraphNode
-   * TODO: Implement with OpenAlex client in Phase 3
-   */
-  async resolveEntity(id: string): Promise<GraphNode> {
-    // Detect entity type from ID prefix
-    const entityType = this.detectEntityType(id);
+  private providerRegistry: ProviderRegistry | null = null;
+  private currentProvider: GraphDataProvider | null = null;
 
-    return {
-      id,
-      entityId: id,
-      entityType,
-      label: `Placeholder: ${id}`,
-      x: Math.random() * 800,
-      y: Math.random() * 600,
-      externalIds: [],
-      entityData: { id, placeholder: true },
-    };
-  }
-
-  /**
-   * Stub implementation - returns single node
-   * TODO: Implement full expansion logic in Phase 3
-   */
-  async expandEntity(nodeId: string, options: ExpansionOptions = {}): Promise<ExpansionResult> {
-    const baseEntity = await this.resolveEntity(nodeId);
-
-    return {
-      nodes: [baseEntity],
-      edges: [],
-      metadata: {
-        expandedFrom: nodeId,
-        totalFound: 1,
-        limitReached: false,
-      },
-    };
-  }
-
-  /**
-   * Stub implementation - returns empty array
-   * TODO: Implement search with OpenAlex client in Phase 3
-   */
-  async searchEntities(
-    query: string,
-    entityTypes: EntityType[] = [],
-    limit: number = 25
-  ): Promise<GraphNode[]> {
-    // Return empty results for now
-    console.warn('EntityResolver.searchEntities is a stub implementation. Full implementation in Phase 3.');
-    return [];
-  }
-
-  private detectEntityType(id: string): EntityType {
-    const prefix = id.charAt(0).toLowerCase();
-    switch (prefix) {
-      case 'w': return 'works';
-      case 'a': return 'authors';
-      case 's': return 'sources';
-      case 'i': return 'institutions';
-      case 't': return 'topics';
-      case 'c': return 'topics'; // Legacy concepts
-      case 'p': return 'publishers';
-      case 'f': return 'funders';
-      default: return 'works'; // Default fallback
+  constructor(provider?: GraphDataProvider, registry?: ProviderRegistry) {
+    if (registry) {
+      this.providerRegistry = registry;
     }
+    if (provider) {
+      this.currentProvider = provider;
+    }
+  }
+
+  setProvider(provider: GraphDataProvider): void {
+    this.currentProvider = provider;
+  }
+
+  setProviderRegistry(registry: ProviderRegistry): void {
+    this.providerRegistry = registry;
+  }
+
+  async resolveEntity(id: EntityIdentifier): Promise<GraphNode> {
+    const provider = this.getProvider();
+    if (!provider) {
+      throw new Error('No data provider available for entity resolution');
+    }
+
+    return provider.fetchEntity(id);
+  }
+
+  async expandEntity(nodeId: string, options: Partial<EntityExpansionOptions> = {}): Promise<ExpansionResult> {
+    const provider = this.getProvider();
+    if (!provider) {
+      throw new Error('No data provider available for entity expansion');
+    }
+
+    const fullOptions: EntityExpansionOptions = {
+      maxDepth: 1,
+      limit: 10,
+      includeMetadata: true,
+      ...options,
+    };
+
+    const expansion = await provider.expandEntity(nodeId, fullOptions);
+
+    return {
+      nodes: expansion.nodes,
+      edges: expansion.edges,
+      expandedFrom: nodeId,
+      metadata: expansion.metadata,
+    };
+  }
+
+  async searchEntities(query: string, entityTypes: EntityType[]): Promise<GraphNode[]> {
+    const provider = this.getProvider();
+    if (!provider) {
+      throw new Error('No data provider available for entity search');
+    }
+
+    return provider.searchEntities({
+      query,
+      entityTypes,
+      limit: 20,
+    });
+  }
+
+  // Batch operations
+  async resolveEntities(ids: EntityIdentifier[]): Promise<GraphNode[]> {
+    const provider = this.getProvider();
+    if (!provider) {
+      throw new Error('No data provider available for entity resolution');
+    }
+
+    // Use batch operation if available, otherwise fall back to sequential
+    if (typeof provider.fetchEntities === 'function') {
+      return provider.fetchEntities(ids);
+    }
+
+    return Promise.all(ids.map(id => provider.fetchEntity(id)));
+  }
+
+  // Provider health check
+  async isHealthy(): Promise<boolean> {
+    const provider = this.getProvider();
+    if (!provider) {
+      return false;
+    }
+
+    return provider.isHealthy();
+  }
+
+  // Get statistics from current provider
+  getProviderStats() {
+    const provider = this.getProvider();
+    return provider?.getProviderInfo() || null;
+  }
+
+  // Get all available providers from registry
+  getAvailableProviders(): string[] {
+    return this.providerRegistry?.listProviders() || [];
+  }
+
+  // Switch to a different provider from registry
+  switchProvider(providerName: string): void {
+    if (!this.providerRegistry) {
+      throw new Error('No provider registry available');
+    }
+
+    const provider = this.providerRegistry.get(providerName);
+    if (!provider) {
+      throw new Error(`Provider '${providerName}' not found in registry`);
+    }
+
+    this.currentProvider = provider;
+  }
+
+  private getProvider(): GraphDataProvider | null {
+    // Try current provider first
+    if (this.currentProvider) {
+      return this.currentProvider;
+    }
+
+    // Fall back to registry default
+    if (this.providerRegistry) {
+      return this.providerRegistry.get();
+    }
+
+    return null;
+  }
+
+  // Cleanup
+  destroy(): void {
+    this.currentProvider = null;
+    this.providerRegistry = null;
   }
 }

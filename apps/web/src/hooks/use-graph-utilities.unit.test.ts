@@ -67,7 +67,7 @@ describe("useGraphUtilities", () => {
 	const testNodes: GraphNode[] = [
 		{
 			id: "W1",
-			type: "works",
+			entityType: "works",
 			label: "Test Work 1",
 			entityId: "W1",
 			position: { x: 0, y: 0 },
@@ -76,7 +76,7 @@ describe("useGraphUtilities", () => {
 		},
 		{
 			id: "W2",
-			type: "works",
+			entityType: "works",
 			label: "Test Work 2",
 			entityId: "W2",
 			position: { x: 100, y: 100 },
@@ -85,7 +85,7 @@ describe("useGraphUtilities", () => {
 		},
 		{
 			id: "A1",
-			type: "authors",
+			entityType: "authors",
 			label: "Test Author 1",
 			entityId: "A1",
 			position: { x: 50, y: 50 },
@@ -98,13 +98,13 @@ describe("useGraphUtilities", () => {
 			id: "E1",
 			source: "A1",
 			target: "W1",
-			type: RelationType.AUTHORED,
+			entityType: RelationType.AUTHORED,
 		},
 		{
 			id: "E2",
 			source: "W1",
 			target: "W2",
-			type: RelationType.REFERENCES,
+			entityType: RelationType.REFERENCES,
 		},
 	];
 
