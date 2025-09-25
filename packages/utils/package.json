@@ -84,7 +84,6 @@
   "devDependencies": {
     "@types/lodash-es": "^4.17.12",
     "eslint": "^9.36.0",
-    "fake-indexeddb": "^6.2.2",
     "typescript": "~5.9.2",
     "vitest": "^3.2.4"
   },
