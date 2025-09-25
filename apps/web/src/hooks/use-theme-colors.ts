@@ -4,34 +4,36 @@
  */
 
 import { useMantineColorScheme, useMantineTheme } from "@mantine/core";
+import { useMemo, useCallback } from "react";
 
 export function useThemeColors() {
 	const theme = useMantineTheme();
 	const { colorScheme } = useMantineColorScheme();
 
 	// Resolve the actual color scheme when colorScheme is 'auto'
-	const resolvedColorScheme = colorScheme === "auto"
-		? (() => {
+	const resolvedColorScheme = useMemo(() => {
+		if (colorScheme === "auto") {
 			try {
 				return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
 			} catch {
 				return "light"; // Fallback to light mode if matchMedia fails
 			}
-		})()
-		: colorScheme;
+		}
+		return colorScheme;
+	}, [colorScheme]);
 
 	const isDark = resolvedColorScheme === "dark";
 
-	// Base color utilities
-	const getColor = (color: string, shade: number = 5) => {
+	// Base color utilities - memoized to prevent React 19 infinite loops
+	const getColor = useCallback((color: string, shade: number = 5) => {
 		if (color in theme.colors) {
 			return theme.colors[color]?.[shade] ?? color;
 		}
 		return color;
-	};
+	}, [theme.colors]);
 
-	// Semantic colors that adapt to light/dark mode
-	const colors = {
+	// Semantic colors that adapt to light/dark mode - cached to prevent React 19 infinite loops
+	const colors = useMemo(() => ({
 		// Text colors - using Mantine CSS variables for better theme integration
 		text: {
 			primary: "var(--mantine-color-text)",
@@ -73,7 +75,7 @@ export function useThemeColors() {
 			publisher: theme.colors.cyan[5],
 			funder: theme.colors.pink[5],
 		},
-	};
+	}), [theme.colors, isDark]);
 
 	// Type guard for valid entity color keys
 	const isValidEntityColorKey = (key: string): key is keyof typeof colors.entity => {
@@ -83,8 +85,8 @@ export function useThemeColors() {
 		return validKeys.includes(key);
 	};
 
-	// Entity color utilities
-	const getEntityColor = (entityType: string): string => {
+	// Entity color utilities - memoized to prevent React 19 infinite loops
+	const getEntityColor = useCallback((entityType: string): string => {
 		const normalizedType = entityType.toLowerCase();
 
 		if (isValidEntityColorKey(normalizedType)) {
@@ -92,33 +94,33 @@ export function useThemeColors() {
 		}
 
 		return colors.primary;
-	};
+	}, [colors]);
 
-	const getEntityColorShade = (entityType: string, shade: number = 5): string => {
+	// Cached color map to prevent new objects on each render
+	const colorMap = useMemo(() => ({
+		work: "blue",
+		works: "blue",
+		author: "author",
+		authors: "author",
+		source: "source",
+		sources: "source",
+		institution: "institution",
+		institutions: "institution",
+		concept: "red",
+		concepts: "red",
+		topic: "red",
+		topics: "red",
+		publisher: "cyan",
+		publishers: "cyan",
+		funder: "pink",
+		funders: "pink",
+	}), []);
+
+	const getEntityColorShade = useCallback((entityType: string, shade: number = 5): string => {
 		const normalizedType = entityType.toLowerCase();
-
-		const colorMap: Record<string, string> = {
-			work: "blue",
-			works: "blue",
-			author: "author",
-			authors: "author",
-			source: "source",
-			sources: "source",
-			institution: "institution",
-			institutions: "institution",
-			concept: "red",
-			concepts: "red",
-			topic: "red",
-			topics: "red",
-			publisher: "cyan",
-			publishers: "cyan",
-			funder: "pink",
-			funders: "pink",
-		};
-
 		const colorKey = colorMap[normalizedType] ?? "blue";
 		return getColor(colorKey, shade);
-	};
+	}, [colorMap, getColor]);
 
 	return {
 		colors,

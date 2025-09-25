@@ -130,9 +130,15 @@ createRoot(rootElement).render(
 			>
 					<Notifications />
 					<CacheInitializer>
-						<RouterProvider router={router} />
+						{/* <RouterProvider router={router} /> - Temporarily disabled to isolate infinite loop */}
+						<div style={{ padding: '20px' }}>
+							<h1>🎯 Router Test</h1>
+							<p>Testing if the application loads without the router.</p>
+							<p>If this shows, the infinite loop is in the router or route components.</p>
+							<p>Hash: {window.location.hash}</p>
+						</div>
 
-					{/* TanStack DevTools - unified panel for all tools */}
+					{/* TanStack DevTools - temporarily disabled to fix React 19 infinite loops
 					{import.meta.env.DEV && (
 						<TanStackDevtools
 							config={{
@@ -171,9 +177,9 @@ createRoot(rootElement).render(
 								},
 							]}
 						/>
-					)}
+					)} */}
 				</CacheInitializer>
-				<Spotlight
+				{/* <Spotlight
 					actions={[]}
 					searchProps={{
 						leftSection: <IconSearch size={16} />,
@@ -181,7 +187,7 @@ createRoot(rootElement).render(
 					}}
 					nothingFound="Nothing found..."
 					highlightQuery
-				/>
+				/> - Temporarily disabled to fix React 19 infinite loops */}
 		</MantineProvider>
 	</GlobalErrorBoundary>
 	/* </StrictMode> - Temporarily disabled to debug multiple hook instances */
