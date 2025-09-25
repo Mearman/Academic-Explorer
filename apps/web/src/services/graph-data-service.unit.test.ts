@@ -59,6 +59,13 @@ vi.mock("@academic-explorer/utils", () => ({
 			},
 		},
 	},
+	EntityFactory: {
+		createFromOpenAlex: vi.fn(),
+		createEntityFromUrl: vi.fn(),
+		toEntity: vi.fn(),
+		isSupported: vi.fn(),
+		create: vi.fn(),
+	},
 }));
 
 vi.mock("@academic-explorer/graph");
