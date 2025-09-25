@@ -57,6 +57,29 @@
     "lint:fix": "eslint src --fix",
     "test": "vitest run",
     "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage",
+    "test:coverage:watch": "vitest --coverage",
+    "test:coverage:html": "vitest run --coverage --reporter=html",
+    "test:coverage:json": "vitest run --coverage --reporter=json",
+    "test:coverage:lcov": "vitest run --coverage --reporter=lcov",
+    "test:coverage:ci": "vitest run --coverage --reporter=json --reporter=lcov --reporter=cobertura --reporter=junit",
+    "test:coverage:threshold": "vitest run --coverage --reporter=text --coverage.thresholds.global.statements=90 --coverage.thresholds.global.branches=90 --coverage.thresholds.global.functions=90 --coverage.thresholds.global.lines=90",
+    "test:ui": "vitest --ui",
+    "test:ci": "vitest run --reporter=verbose --reporter=junit --reporter=json --outputFile.junit=./coverage/junit-report.xml --outputFile.json=./coverage/test-results.json",
+    "coverage:open": "open ./coverage/index.html",
+    "coverage:serve": "npx http-server ./coverage -p 8080",
+    "coverage:clean": "rm -rf ./coverage",
+    "coverage:merge": "nyc merge ./coverage/raw-coverage ./coverage/merged-coverage.json",
+    "coverage:badges": "node scripts/generate-badges.js",
+    "coverage:verify": "node scripts/verify-coverage.js",
+    "coverage:full": "pnpm test:coverage && pnpm coverage:badges && pnpm coverage:verify",
+    "test:notify": "node scripts/test-notifications.js",
+    "test:full": "pnpm test:coverage && pnpm coverage:badges && pnpm coverage:verify && pnpm test:notify",
+    "cache:clear": "rm -rf ./coverage/.nyc_cache && rm -rf ./coverage/.nyc_output && rm -rf node_modules/.cache",
+    "cache:stats": "du -sh ./coverage/.nyc_cache ./coverage/.nyc_output node_modules/.cache 2>/dev/null || echo 'No cache directories found'",
+    "verify": "pnpm typecheck && pnpm lint && pnpm test:coverage:threshold && pnpm build",
+    "verify:ci": "pnpm typecheck && pnpm lint && pnpm test:ci && pnpm build",
+    "verify:full": "pnpm typecheck && pnpm lint && pnpm test:full && pnpm build",
     "dev": "tsc -b --watch"
   },
   "dependencies": {
@@ -65,7 +88,11 @@
   "devDependencies": {
     "typescript": "~5.9.2",
     "vitest": "^3.2.4",
-    "eslint": "^9.36.0"
+    "eslint": "^9.36.0",
+    "@vitest/coverage-v8": "^3.2.4",
+    "@vitest/ui": "^3.2.4",
+    "http-server": "^14.1.1",
+    "nyc": "^17.1.0"
   },
   "publishConfig": {
     "access": "public"

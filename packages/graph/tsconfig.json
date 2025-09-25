@@ -11,7 +11,7 @@
     "assumeChangesOnlyAffectDirectDependencies": true
   },
   "include": ["src/**/*"],
-  "exclude": ["**/*.test.*", "**/*.spec.*", "dist", "node_modules"],
+  "exclude": ["**/*.test.*", "**/*.spec.*", "**/__tests__/**", "**/test/**", "dist", "node_modules"],
   "references": [
     { "path": "../utils" }
   ]
