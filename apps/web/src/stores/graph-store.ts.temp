@@ -1,0 +1,36 @@
+/**
+ * DEBUGGING: Minimal graph store to test infinite loop issue
+ */
+
+import { create } from "zustand";
+import type { GraphNode, GraphEdge } from "@academic-explorer/graph";
+
+interface MinimalGraphState {
+	nodes: Record<string, GraphNode>;
+	edges: Record<string, GraphEdge>;
+	isLoading: boolean;
+	error: string | null;
+	// Add minimal methods
+	addNode: (node: GraphNode) => void;
+	setLoading: (loading: boolean) => void;
+	setError: (error: string | null) => void;
+}
+
+export const useGraphStore = create<MinimalGraphState>((set, get) => ({
+	// Initial state
+	nodes: {},
+	edges: {},
+	isLoading: false,
+	error: null,
+
+	// Methods
+	addNode: (node) => {
+		console.log("Adding node:", node.id);
+		set((state) => ({
+			nodes: { ...state.nodes, [node.id]: node }
+		}));
+	},
+
+	setLoading: (loading) => set({ isLoading: loading }),
+	setError: (error) => set({ error }),
+}));

@@ -5,10 +5,11 @@ import { useState } from "react"
 import { useGraphData } from "@/hooks/use-graph-data"
 import { useThemeColors } from "@/hooks/use-theme-colors"
 import { useDocumentTitle } from "@/hooks/use-document-title"
-import { pageTitle } from "../styles/layout.css"
+// import { pageTitle } from "../styles/layout.css"
 import { logError, logger } from "@academic-explorer/utils/logger";
 
 function HomePage() {
+	// Re-enabled all hooks after fixing graph store infinite loops
 	const [searchQuery, setSearchQuery] = useState("")
 	const graphData = useGraphData();
 	const {search} = graphData;
@@ -21,27 +22,21 @@ function HomePage() {
 
 	const handleSearch = async (e: React.FormEvent) => {
 		e.preventDefault()
-		if (!searchQuery.trim()) return
+		if (!searchQuery.trim()) return;
 
 		try {
-			await search(searchQuery, {
-				entityTypes: ["works", "authors", "sources", "institutions"],
-				limit: 15,
-			})
+			await search(searchQuery.trim());
 		} catch (error) {
-			logError(logger, "Search failed", error, "HomePage", "search");
+			logError("Search failed", error, { query: searchQuery });
 		}
 	}
 
 	const handleExampleSearch = async (query: string) => {
-		setSearchQuery(query)
+		setSearchQuery(query);
 		try {
-			await search(query, {
-				entityTypes: ["works", "authors", "sources", "institutions"],
-				limit: 15,
-			})
+			await search(query);
 		} catch (error) {
-			logError(logger, "Example search failed", error, "HomePage", "search");
+			logError("Example search failed", error, { query });
 		}
 	}
 
@@ -60,7 +55,7 @@ function HomePage() {
 			<Stack gap="lg" align="center">
 				<Group>
 					<IconGraph size={40} color={colors.primary} />
-					<Title order={1} className={pageTitle} ta="center">
+					<Title order={1} ta="center">
             Academic Explorer
 					</Title>
 				</Group>

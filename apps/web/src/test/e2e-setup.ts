@@ -39,7 +39,7 @@ beforeEach(async () => {
 	context = await browser.newContext({
 		viewport: { width: 1280, height: 720 },
 		// Academic Explorer specific settings
-		baseURL: process.env.E2E_BASE_URL || "http://localhost:4173",
+		baseURL: process.env.E2E_BASE_URL || "http://localhost:5173",
 		// Ignore HTTPS errors for local development
 		ignoreHTTPSErrors: true,
 		// Set user agent for consistent testing

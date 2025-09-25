@@ -13,73 +13,35 @@ export const Route = createFileRoute("/authors/$authorId")({
 
 function AuthorRoute() {
 	const { authorId } = Route.useParams();
-	const navigate = useNavigate();
-	// TEMPORARILY DISABLED: Testing for infinite loops in useGraphData hook
-	/*
-	const graphData = useGraphData();
-	const {loadEntity} = graphData;
-	const {loadEntityIntoGraph} = graphData;
-	const nodeCount = useGraphStore((state) => state.totalNodeCount);
-	*/
+	// const navigate = useNavigate();
 
-	// Check if ID needs normalization and redirect if necessary
-	useEffect(() => {
-		if (!authorId) return;
+	// DEBUGGING: Disable all hooks to isolate infinite loop source
+	// const graphData = useGraphData();
+	// const { setProvider } = useGraphStore();
+	// const rawEntityData = useRawEntityData(authorId);
+	// useEntityDocumentTitle(rawEntityData.data);
 
-		const detector = new EntityDetector();
-		const detection = detector.detectEntityIdentifier(authorId);
+	logger.debug("route", "Author route loading with minimal hooks", { authorId });
 
-		// If ID was normalized and is different from input, redirect
-		if (detection.normalizedId && detection.normalizedId !== authorId) {
-			logger.debug("routing", "Redirecting to normalized author ID", {
-				originalId: authorId,
-				normalizedId: detection.normalizedId
-			}, "AuthorRoute");
+	// DEBUGGING: Disable useEffect to see if that's causing loops
+	// useEffect(() => {
+	//   ... all effect logic disabled
+	// }, []);
 
-			// Replace current URL with normalized version, preserving query params
-			void navigate({
-				to: "/authors/$authorId",
-				params: { authorId: detection.normalizedId },
-				search: (prev) => prev, // Preserve existing search params
-				replace: true
-			});
-			return;
-		}
-	}, [authorId, navigate]);
-
-	// TEMPORARILY DISABLED: Testing for infinite loops in data loading hooks
-	/*
-	// Fetch entity data for title
-	const rawEntityData = useRawEntityData({
-		entityId: authorId,
-		enabled: !!authorId
-	});
-	const author = rawEntityData.data;
-
-	// Update document title with author name
-	useEntityDocumentTitle(author);
-
-	useEffect(() => {
-		const loadAuthor = async () => {
-			try {
-				// If graph already has nodes, use incremental loading to preserve existing entities
-				// This prevents clearing the graph when clicking on nodes or navigating
-				if (nodeCount > 0) {
-					await loadEntityIntoGraph(authorId);
-				} else {
-					// If graph is empty, use full loading (clears graph for initial load)
-					await loadEntity(authorId);
-				}
-			} catch (error) {
-				logError(logger, "Failed to load author", error, "AuthorRoute", "routing");
-			}
-		};
-
-		void loadAuthor();
-	}, [authorId, loadEntity, loadEntityIntoGraph, nodeCount]);
-	*/
-
-	// Return null - the graph is visible from MainLayout
-	// The route content is just for triggering the data load
-	return null;
+	// Return simple debug info
+	return (
+		<div style={{
+			position: "fixed",
+			top: "20px",
+			right: "20px",
+			background: "white",
+			padding: "10px",
+			border: "1px solid #ccc",
+			borderRadius: "4px",
+			zIndex: 1000
+		}}>
+			<p>Author Route: {authorId}</p>
+			<p>All hooks disabled for debugging</p>
+		</div>
+	);
 }
