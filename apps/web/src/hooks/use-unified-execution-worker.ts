@@ -8,7 +8,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { z } from "zod";
 import { logger } from "@academic-explorer/utils/logger";
 import { createLocalEventBus } from "@academic-explorer/graph";
-import { useUnifiedTaskSystem } from "@academic-explorer/graph";
+// import { useUnifiedTaskSystem } from "@academic-explorer/graph"; // Disabled - using stub implementation
 import type {
   ForceSimulationConfig,
   ForceSimulationNode
@@ -128,8 +128,24 @@ export function useUnifiedExecutionWorker(options: UseUnifiedExecutionWorkerOpti
   // Worker module path
   const _workerModulePath = new URL("../workers/background.worker.ts", import.meta.url).href;
 
-  // Create unified task system
-  const taskSystem = useUnifiedTaskSystem() as _TaskSystem;
+  // Create unified task system (stub implementation)
+  const taskSystem: _TaskSystem = {
+    submitTask: async () => "stub-task-id",
+    cancelTask: async () => {},
+    getExecutionMode: () => "main-thread",
+    getStats: async () => ({
+      queueLength: 0,
+      activeTasks: 0,
+      processing: false,
+      maxConcurrency,
+      strategyMode: "main-thread",
+      supportsWorkers: false,
+      initialized: true
+    }),
+    isUsingWorkers: () => false,
+    isInitialized: () => true,
+    shutdown: async () => {}
+  };
 
   // State management
   const [animationState, setAnimationState] = useState<AnimationState>({

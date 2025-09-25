@@ -5,7 +5,7 @@
 
 import { useEffect, useCallback, useRef, useMemo } from "react";
 import { useAppActivityStore } from "@/stores/app-activity-store";
-import { useEventBus, useEventSubscriptions } from "@academic-explorer/graph";
+import { useEventBus, useEventSubscriptions } from "@/hooks/use-unified-event-system";
 import {
   GraphEventType,
   EntityEventType,
