@@ -26,7 +26,6 @@ import { IconSearch } from "@tabler/icons-react";
 
 import { useGraphStore } from "@/stores/graph-store";
 import { useLayoutStore } from "@/stores/layout-store";
-import { createGraphProvider } from "@academic-explorer/graph";
 import { useAnimatedLayoutContext } from "@/components/graph/animated-layout-context";
 import { AnimatedLayoutProvider } from "@/components/graph/AnimatedLayoutProvider";
 import { useAnimatedGraphStore } from "@/stores/animated-graph-store";
@@ -39,7 +38,7 @@ import { NodeContextMenu } from "@/components/layout/NodeContextMenu";
 import { GraphToolbar } from "@/components/graph/GraphToolbar";
 import { AnimatedGraphControls } from "@/components/graph/AnimatedGraphControls";
 import { logger } from "@academic-explorer/utils/logger";
-import { useEventBus } from "@academic-explorer/graph";
+import { useEventBus } from "@/hooks/use-unified-event-system";
 import { WorkerEventType } from "@academic-explorer/graph";
 import { FIT_VIEW_PRESETS } from "@academic-explorer/graph";
 import { z } from "zod";
@@ -354,88 +353,72 @@ const GraphNavigationInner: React.FC<GraphNavigationProps> = ({ className, style
 		};
 	}, []);
 
-	// Initialize provider
+	// Initialize component with mock provider
 	useEffect(() => {
 		if (!containerRef.current) return;
 
 		// Only create a new provider if we don't have one yet
 		if (providerRef.current) {
-			// Update existing provider with new event handlers
-			const existingProvider = providerRef.current;
-			existingProvider.setEvents({
-				onNodeClick: (node: GraphNode) => {
-					void handleGraphNodeClick(node);
-				},
-				onNodeDoubleClick: (node: GraphNode) => {
-					void handleGraphNodeDoubleClickWithHash(node);
-				},
-				onNodeHover: (node: GraphNode | null) => {
-					setPreviewEntity(node ? node.entityId : null);
-				},
-			});
 			return;
 		}
 
-		const graphProvider = createGraphProvider("xyflow");
-		// Check that provider was created successfully
-		if (!graphProvider) {
-			throw new Error("Failed to create graph provider");
-		}
-		providerRef.current = graphProvider;
+		// Create a mock provider that implements the GraphProvider interface but doesn't do anything
+		const mockProvider: unknown = {
+			// Lifecycle
+			initialize: async () => {},
+			destroy: () => {},
 
-		// Set up navigation events - check if provider has setEvents method
-		if (typeof graphProvider === 'object' && 'setEvents' in graphProvider && typeof graphProvider.setEvents === 'function') {
-			graphProvider.setEvents({
-				onNodeClick: (node: GraphNode) => {
-					// Single click: select, pin, center, update preview (no expansion)
-					void handleGraphNodeClick(node);
-				},
+			// Data management
+			setNodes: () => {},
+			setEdges: () => {},
+			addNode: () => {},
+			addEdge: () => {},
+			removeNode: () => {},
+			removeEdge: () => {},
+			clear: () => {},
 
-				onNodeDoubleClick: (node: GraphNode) => {
-					// Double click: select, pin, center, update preview AND expand
-					void handleGraphNodeDoubleClickWithHash(node);
-				},
+			// Layout
+			applyLayout: () => {},
+			fitView: () => {},
+			center: () => {},
 
-				onNodeHover: (node: GraphNode | null) => {
-					// Update preview in sidebar
-					setPreviewEntity(node ? node.entityId : null);
-				},
-			});
-		}
+			// Interaction
+			setEvents: () => {},
+			highlightNode: () => {},
+			highlightPath: () => {},
+			clearHighlights: () => {},
 
-		// Initialize with container - check if provider has initialize method
-		if (typeof graphProvider === 'object' && 'initialize' in graphProvider && typeof graphProvider.initialize === 'function') {
-			void graphProvider.initialize(containerRef.current);
-		}
+			// State
+			getSnapshot: () => ({ nodes: [], edges: [] }),
+			loadSnapshot: () => {},
 
-		// Set ReactFlow instance - check if provider has setReactFlowInstance method
-		if (typeof graphProvider === 'object' && 'setReactFlowInstance' in graphProvider && typeof graphProvider.setReactFlowInstance === 'function') {
-			graphProvider.setReactFlowInstance(reactFlowInstance);
-		}
-
-		// Set up data change callback to force re-render when provider data changes
-		const forceUpdateCallback = () => {
-			// Force re-read of provider data by updating a state counter
-			setForceUpdateCounter(prev => prev + 1);
+			// Legacy methods for backward compatibility
+			setReactFlowInstance: () => {},
+			setOnDataChangeCallback: () => {},
+			onNodePositionsChanged: () => {},
+			addNodes: () => {},
+			removeNodes: () => {},
+			removeEdges: () => {},
+			getXYFlowData: () => ({ nodes: [], edges: [] }),
+			getXYFlowDataForNodes: () => ({ nodes: [] }),
+			getXYFlowDataForEdges: () => ({ edges: [] }),
+			handleNodeClick: () => {},
+			handleNodeDoubleClick: () => {},
+			handleNodeHover: () => {},
 		};
 
-		// Type guard to check if provider has the callback method
-		if (typeof graphProvider === "object" && "setOnDataChangeCallback" in graphProvider && typeof graphProvider.setOnDataChangeCallback === "function") {
-			graphProvider.setOnDataChangeCallback(forceUpdateCallback);
-		}
+		providerRef.current = mockProvider;
 
-		// Set the provider in the store (now safe with fixed selectors)
+		// Set the provider in the store
 		const currentProvider = useGraphStore.getState().provider;
-		if (currentProvider !== graphProvider) {
-			setProvider(graphProvider);
+		if (currentProvider !== mockProvider) {
+			setProvider(mockProvider);
 		}
 
-		return () => {
-			if (typeof graphProvider === 'object' && 'destroy' in graphProvider && typeof graphProvider.destroy === 'function') {
-				graphProvider.destroy();
-			}
-		};
-	}, [reactFlowInstance, setPreviewEntity, autoPinOnLayoutStabilization, handleGraphNodeClick, handleGraphNodeDoubleClickWithHash, setProvider]);
+		logger.debug("graph", "GraphNavigation initialized with mock provider", {
+			hasContainer: !!containerRef.current
+		}, "GraphNavigation");
+	}, [setProvider]);
 
 	// Sync store data with XYFlow using incremental updates (applying visibility filters)
 	useEffect(() => {
@@ -737,7 +720,7 @@ const GraphNavigationInner: React.FC<GraphNavigationProps> = ({ className, style
 			}
 		};
 
-		const unsubscribe = (eventBus as { on: (type: string, handler: (event: { payload: unknown }) => void) => () => void }).on(WorkerEventType.FORCE_SIMULATION_PROGRESS, (event) => {
+		const unsubscribe = (eventBus as unknown as { on: (type: string, handler: (event: { payload: unknown }) => void) => () => void }).on(WorkerEventType.FORCE_SIMULATION_PROGRESS, (event) => {
 			handleProgress(event.payload);
 		});
 		logger.debug("graph", "Registered unified FORCE_SIMULATION_PROGRESS handler");
