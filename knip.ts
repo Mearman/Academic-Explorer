@@ -128,6 +128,11 @@ const config: KnipConfig = {
     ".github/workflows/**"
   ],
 
+  // Ignore dependencies that are used but not detected correctly
+  ignoreDependencies: [
+    "@vanilla-extract/vite-plugin" // Used in vite.config.ts but knip doesn't detect it properly
+  ],
+
   // Plugin configurations
   eslint: {
     config: [
