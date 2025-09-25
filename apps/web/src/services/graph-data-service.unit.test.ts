@@ -68,8 +68,63 @@ vi.mock("@academic-explorer/utils", () => ({
 	},
 }));
 
-vi.mock("@academic-explorer/graph");
-vi.mock("@academic-explorer/graph");
+vi.mock("@academic-explorer/client", () => ({
+	cachedOpenAlex: {
+		getEntity: vi.fn(),
+		search: vi.fn(),
+		searchAll: vi.fn(),
+		client: {
+			getEntity: vi.fn(),
+			works: {
+				getWorks: vi.fn(),
+				getWork: vi.fn(),
+			},
+			authors: {
+				getAuthors: vi.fn(),
+				getAuthor: vi.fn(),
+			},
+			sources: {
+				getSources: vi.fn(),
+				getSource: vi.fn(),
+			},
+			institutions: {
+				searchInstitutions: vi.fn(),
+				getInstitution: vi.fn(),
+			},
+			topics: {
+				getMultiple: vi.fn(),
+				get: vi.fn(),
+			},
+			publishers: {
+				get: vi.fn(),
+			},
+			funders: {
+				get: vi.fn(),
+			},
+		},
+	},
+	isWork: vi.fn(),
+	isAuthor: vi.fn(),
+	isSource: vi.fn(),
+	isInstitution: vi.fn(),
+	isTopic: vi.fn(),
+	isPublisher: vi.fn(),
+	isFunder: vi.fn(),
+}));
+
+vi.mock("@academic-explorer/graph", () => ({
+	EntityDetector: vi.fn(),
+	RelationType: {
+		AUTHORED: 'authored',
+		AFFILIATED: 'affiliated',
+		PUBLISHED_IN: 'published_in',
+		CITES: 'cites',
+		CITED_BY: 'cited_by',
+		SIMILAR_TO: 'similar_to',
+		HAS_TOPIC: 'has_topic',
+		WORKS_IN_SOURCE: 'works_in_source',
+	},
+}));
 vi.mock("@/stores/graph-store", () => ({
 	useGraphStore: {
 		getState: vi.fn(),

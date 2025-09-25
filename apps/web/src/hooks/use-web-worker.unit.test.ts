@@ -4,7 +4,7 @@
  */
 
 import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
-import { renderHook, act } from "@testing-library/react";
+import { renderHook, act, waitFor } from "@testing-library/react";
 import { useWebWorker } from "./use-web-worker";
 import type { WorkerRequest, WorkerResponse } from "./use-web-worker";
 
@@ -31,7 +31,7 @@ class MockWorker {
         switch (message.type) {
           case "TEST_SUCCESS":
             response = {
-              entityType: "SUCCESS",
+              type: "SUCCESS",
               requestId: message.requestId,
               result: { processed: message.data },
               metadata: { processingTime: 100 }
@@ -41,7 +41,7 @@ class MockWorker {
           case "TEST_PROGRESS":
             // Send multiple progress updates
             response = {
-              entityType: "PROGRESS",
+              type: "PROGRESS",
               requestId: message.requestId,
               progress: 0.5,
               metadata: { step: "processing" }
@@ -49,7 +49,7 @@ class MockWorker {
             this.onmessage(new MessageEvent("message", { data: response }));
 
             response = {
-              entityType: "SUCCESS",
+              type: "SUCCESS",
               requestId: message.requestId,
               result: { completed: true }
             };
@@ -57,7 +57,7 @@ class MockWorker {
 
           case "TEST_ERROR":
             response = {
-              entityType: "ERROR",
+              type: "ERROR",
               requestId: message.requestId,
               error: "Test error message"
             };
@@ -65,7 +65,7 @@ class MockWorker {
 
           default:
             response = {
-              entityType: "ERROR",
+              type: "ERROR",
               requestId: message.requestId,
               error: "Unknown message type"
             };
@@ -136,7 +136,7 @@ describe("useWebWorker", () => {
 
       act(() => {
         const requestId = result.current.postMessage({
-          entityType: "TEST_SUCCESS",
+          type: "TEST_SUCCESS",
           data: { test: "data" }
         });
         expect(requestId).toBeTruthy();
@@ -145,10 +145,11 @@ describe("useWebWorker", () => {
       expect(result.current.isLoading).toBe(true);
       expect(result.current.stats.messagesSent).toBe(1);
 
-      // Wait for response
-      await new Promise(resolve => setTimeout(resolve, 20));
+      // Wait for worker response and state update
+      await waitFor(() => {
+        expect(result.current.isLoading).toBe(false);
+      });
 
-      expect(result.current.isLoading).toBe(false);
       expect(result.current.stats.messagesReceived).toBe(1);
       expect(onMessage).toHaveBeenCalled();
     });
@@ -161,12 +162,14 @@ describe("useWebWorker", () => {
 
       act(() => {
         result.current.postMessage({
-          entityType: "TEST_SUCCESS",
+          type: "TEST_SUCCESS",
           data: { test: "data" }
         });
       });
 
-      await new Promise(resolve => setTimeout(resolve, 20));
+      await waitFor(() => {
+        expect(onSuccess).toHaveBeenCalled();
+      });
 
       expect(onSuccess).toHaveBeenCalledWith(
         expect.objectContaining({ processed: { test: "data" } }),
@@ -183,12 +186,14 @@ describe("useWebWorker", () => {
 
       act(() => {
         result.current.postMessage({
-          entityType: "TEST_PROGRESS",
+          type: "TEST_PROGRESS",
           data: { test: "data" }
         });
       });
 
-      await new Promise(resolve => setTimeout(resolve, 20));
+      await waitFor(() => {
+        expect(onProgress).toHaveBeenCalled();
+      });
 
       expect(onProgress).toHaveBeenCalledWith(0.5, expect.any(String));
     });
@@ -201,12 +206,14 @@ describe("useWebWorker", () => {
 
       act(() => {
         result.current.postMessage({
-          entityType: "TEST_ERROR",
+          type: "TEST_ERROR",
           data: { test: "data" }
         });
       });
 
-      await new Promise(resolve => setTimeout(resolve, 20));
+      await waitFor(() => {
+        expect(result.current.error).toBe("Test error message");
+      });
 
       expect(result.current.error).toBe("Test error message");
       expect(result.current.stats.errors).toBe(1);
@@ -260,7 +267,7 @@ describe("useWebWorker", () => {
 
       act(() => {
         const requestId = result.current.postMessage({
-          entityType: "TEST_SUCCESS",
+          type: "TEST_SUCCESS",
           data: {}
         });
         expect(requestId).toBe(null);
@@ -276,7 +283,7 @@ describe("useWebWorker", () => {
 
       act(() => {
         result.current.postMessage({
-          entityType: "TEST_SUCCESS",
+          type: "TEST_SUCCESS",
           data: {}
         });
       });
@@ -293,22 +300,26 @@ describe("useWebWorker", () => {
       // Send successful message
       act(() => {
         result.current.postMessage({
-          entityType: "TEST_SUCCESS",
+          type: "TEST_SUCCESS",
           data: {}
         });
       });
 
-      await new Promise(resolve => setTimeout(resolve, 20));
+      await waitFor(() => {
+        expect(result.current.stats.messagesReceived).toBe(1);
+      });
 
       // Send error message
       act(() => {
         result.current.postMessage({
-          entityType: "TEST_ERROR",
+          type: "TEST_ERROR",
           data: {}
         });
       });
 
-      await new Promise(resolve => setTimeout(resolve, 20));
+      await waitFor(() => {
+        expect(result.current.stats.errors).toBe(1);
+      });
 
       expect(result.current.errorRate).toBe(0.5); // 1 error out of 2 messages
     });
@@ -378,7 +389,7 @@ describe("useWebWorker", () => {
 
       act(() => {
         const returnedId = result.current.postMessage({
-          entityType: "TEST_SUCCESS",
+          type: "TEST_SUCCESS",
           data: {},
           requestId: customRequestId
         });
@@ -398,15 +409,17 @@ describe("useWebWorker", () => {
       // Loading state
       act(() => {
         result.current.postMessage({
-          entityType: "TEST_SUCCESS",
+          type: "TEST_SUCCESS",
           data: {}
         });
       });
 
       expect(result.current.isIdle).toBe(false);
 
-      // Success state
-      await new Promise(resolve => setTimeout(resolve, 20));
+      // Wait for success response and state update
+      await waitFor(() => {
+        expect(result.current.isIdle).toBe(true);
+      });
 
       expect(result.current.isIdle).toBe(true);
       expect(result.current.hasError).toBe(false);
@@ -414,12 +427,15 @@ describe("useWebWorker", () => {
       // Error state
       act(() => {
         result.current.postMessage({
-          entityType: "TEST_ERROR",
+          type: "TEST_ERROR",
           data: {}
         });
       });
 
-      await new Promise(resolve => setTimeout(resolve, 20));
+      // Wait for error response and state update
+      await waitFor(() => {
+        expect(result.current.hasError).toBe(true);
+      });
 
       expect(result.current.hasError).toBe(true);
     });
