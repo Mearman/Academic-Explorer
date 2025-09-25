@@ -266,7 +266,26 @@ export const useGraphUtilities = () => {
 	// Cached graph statistics to prevent React 19 infinite loops
 	const cachedGraphStats = useMemo(() => {
 		const store = useGraphStore.getState();
-		const components = findConnectedComponents();
+
+		// Call findConnectedComponents directly instead of relying on the callback
+		// to avoid infinite dependency chain
+		let components: string[][] = [];
+		try {
+			const result = callServiceMethod("findConnectedComponents", [nodes, edges], "findConnectedComponents");
+
+			// Handle direct array result
+			if (Array.isArray(result)) {
+				components = result as string[][];
+			} else if (typeof result === "object" && "data" in result && Array.isArray((result as GraphUtilityResult & { data: unknown }).data)) {
+				components = (result as GraphUtilityResult & { data: string[][] }).data;
+			} else {
+				logger.warn("graph", "findConnectedComponents returned unexpected result in cachedGraphStats", { result });
+				components = [];
+			}
+		} catch (error) {
+			logger.error("graph", "Find connected components failed in cachedGraphStats", { error });
+			components = [];
+		}
 
 		return {
 			totalNodes: store.totalNodeCount,
@@ -276,7 +295,7 @@ export const useGraphUtilities = () => {
 			nodesByType: store.entityTypeStats.total,
 			edgesByType: store.edgeTypeStats.total,
 		};
-	}, [nodesMap, edgesMap, findConnectedComponents]);
+	}, [nodesMap, edgesMap, nodes, edges, callServiceMethod]);
 
 	// Graph statistics getter - returns cached value
 	const getGraphStats = useCallback(() => {
