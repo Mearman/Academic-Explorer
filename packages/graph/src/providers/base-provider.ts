@@ -111,42 +111,55 @@ export abstract class GraphDataProvider extends EventEmitter {
     return promise
       .then(result => {
         this.stats.successfulRequests++;
-        this.updateResponseTime(startTime);
-        this.emit('requestSuccess', { duration: Date.now() - startTime });
+        this.updateResponseTime(startTime, true);
+        this.safeEmit('requestSuccess', { duration: Date.now() - startTime });
         return result;
       })
       .catch(error => {
         this.stats.failedRequests++;
-        this.updateResponseTime(startTime);
-        this.emit('requestError', { error, duration: Date.now() - startTime });
+        this.updateResponseTime(startTime, false);
+        this.safeEmit('requestError', { error, duration: Date.now() - startTime });
         throw error;
       });
   }
 
-  private updateResponseTime(startTime: number) {
+  private updateResponseTime(startTime: number, isSuccess: boolean) {
     const duration = Date.now() - startTime;
     this.stats.lastRequestTime = Date.now();
 
-    // Update average response time
-    const totalDuration = this.stats.avgResponseTime * (this.stats.successfulRequests - 1) + duration;
-    this.stats.avgResponseTime = totalDuration / this.stats.successfulRequests;
+    // Update average response time only for successful requests
+    if (isSuccess && this.stats.successfulRequests > 0) {
+      const totalDuration = this.stats.avgResponseTime * (this.stats.successfulRequests - 1) + duration;
+      this.stats.avgResponseTime = totalDuration / this.stats.successfulRequests;
+    }
+  }
+
+  // Safe event emission that catches listener errors
+  protected safeEmit(event: string | symbol, ...args: any[]): boolean {
+    try {
+      return this.emit(event, ...args);
+    } catch (error) {
+      // Log the error but don't let it interrupt the main flow
+      console.warn(`Event listener error for ${String(event)}:`, error);
+      return false;
+    }
   }
 
   // Event hooks (can be overridden)
   protected onEntityFetched(entity: GraphNode): void {
-    this.emit('entityFetched', entity);
+    this.safeEmit('entityFetched', entity);
   }
 
   protected onError(error: Error): void {
-    this.emit('error', error);
+    this.safeEmit('error', error);
   }
 
   protected onCacheHit(entityId: string): void {
-    this.emit('cacheHit', entityId);
+    this.safeEmit('cacheHit', entityId);
   }
 
   protected onCacheMiss(entityId: string): void {
-    this.emit('cacheMiss', entityId);
+    this.safeEmit('cacheMiss', entityId);
   }
 
   // Health check
