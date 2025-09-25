@@ -170,7 +170,7 @@ describe('Example: Network Error Handling', () => {
 
       // When: Attempting to fetch an entity
       const startTime = Date.now();
-      await expect(provider.fetchEntity('A123456789')).rejects.toThrow('TIMEOUT');
+      await expect(provider.fetchEntity('A5017898742456789')).rejects.toThrow('TIMEOUT');
       const duration = Date.now() - startTime;
 
       // Then: Should fail with timeout error
@@ -200,7 +200,7 @@ describe('Example: Network Error Handling', () => {
 
       // When: Making request with custom timeout
       const startTime = Date.now();
-      await expect(customProvider.fetchEntity('A123456789')).rejects.toThrow();
+      await expect(customProvider.fetchEntity('A5017898742456789')).rejects.toThrow();
       const duration = Date.now() - startTime;
 
       // Then: Should respect custom configuration
@@ -249,7 +249,7 @@ describe('Example: Network Error Handling', () => {
       });
 
       // When: Attempting requests during network issues
-      await expect(provider.fetchEntity('A123456789')).rejects.toThrow();
+      await expect(provider.fetchEntity('A5017898742456789')).rejects.toThrow();
 
       // Then: Should handle various network errors
       expect(mockClient.getAttemptCount()).toBeGreaterThanOrEqual(1);
@@ -267,7 +267,7 @@ describe('Example: Network Error Handling', () => {
       mockClient.setFailureMode('network');
 
       // When: Attempting batch entity fetch
-      const entityIds = ['A123', 'A456', 'A789'];
+      const entityIds = ['A5017898742', 'A9876543210', 'A1111111111'];
       const results = await Promise.allSettled(
         entityIds.map(id => provider.fetchEntity(id))
       );
@@ -320,7 +320,7 @@ describe('Example: Network Error Handling', () => {
 
       // When: Making requests that encounter server errors
       try {
-        await provider.fetchEntity('A123456789');
+        await provider.fetchEntity('A5017898742456789');
       } catch (error) {
         serverErrorAttempts.push(error);
       }
@@ -352,7 +352,7 @@ describe('Example: Network Error Handling', () => {
       });
 
       // Expand should fail with server errors since it doesn't have graceful error handling
-      const expandAttempt = provider.expandEntity('A123456789', { limit: 5 });
+      const expandAttempt = provider.expandEntity('A5017898742456789', { limit: 5 });
       await expect(expandAttempt).rejects.toThrow(/HTTP (500|502|503|504)/);
 
       // Then: Search should return empty results due to graceful error handling
@@ -414,7 +414,7 @@ describe('Example: Network Error Handling', () => {
       // When: Making request that requires retries
       const startTime = Date.now();
       try {
-        await backoffProvider.fetchEntity('A123456789');
+        await backoffProvider.fetchEntity('A5017898742456789');
       } catch (error) {
         const duration = Date.now() - startTime;
 
@@ -485,11 +485,11 @@ describe('Example: Network Error Handling', () => {
       mockClient.setFailureMode('network');
 
       // When: Making requests during network issues
-      const result = await fallbackProvider.fetchEntityWithFallback('A123456789');
+      const result = await fallbackProvider.fetchEntityWithFallback('A5017898742456789');
 
       // Then: Should provide degraded but functional response
       expect(result).toMatchObject({
-        id: 'A123456789',
+        id: 'A5017898742456789',
         entityType: 'authors',
         label: expect.any(String),
         degraded: true,
@@ -508,7 +508,7 @@ describe('Example: Network Error Handling', () => {
       mockClient.setFailureMode('intermittent');
 
       // When: Making concurrent requests for same entity
-      const entityId = 'A123456789';
+      const entityId = 'A5017898742456789';
       const concurrentRequests = Array.from({ length: 5 }, () =>
         provider.fetchEntity(entityId).catch(error => ({ error: error.message }))
       );

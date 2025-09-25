@@ -121,12 +121,13 @@ const FIXTURE_TEMPLATES = {
 } as const;
 
 /**
- * Counter for generating unique IDs
+ * Counter for generating unique IDs - starts at high number to match OpenAlex format
  */
-let fixtureCounter = 1;
+let fixtureCounter = 1000000000; // Start at 1 billion for proper 10-digit IDs
 
 /**
  * Generate a unique OpenAlex-style ID for an entity type
+ * Always generates 10+ digit IDs matching real OpenAlex format
  */
 export function generateEntityId(entityType: EntityType): string {
   const prefixes: Record<EntityType, string> = {
@@ -385,7 +386,7 @@ export const testScenarios = {
    * Single node for basic testing
    */
   single: () => ({
-    nodes: [createNodeFixture('works', 'W1', { includeExternalIds: true })],
+    nodes: [createNodeFixture('works', 'W2741809807', { includeExternalIds: true })],
     edges: [],
   }),
 

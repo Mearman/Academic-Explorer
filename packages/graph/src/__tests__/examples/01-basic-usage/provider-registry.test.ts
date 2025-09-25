@@ -196,7 +196,7 @@ describe('Example: Provider Registry Management', () => {
       expect(defaultProvider?.getProviderInfo().name).toBe('openalex-primary');
 
       // Best Practice: Default provider works without specifying name
-      const entity = await defaultProvider!.fetchEntity('A123');
+      const entity = await defaultProvider!.fetchEntity('A5017898742');
       expect(entity.entityData?.source).toBe('primary');
     });
 
@@ -243,8 +243,8 @@ describe('Example: Provider Registry Management', () => {
       const workProvider = registry.get('openalex-secondary');
 
       // Then: Can use different providers for different entity types
-      const author = await authorProvider!.fetchEntity('A123');
-      const work = await workProvider!.fetchEntity('W456');
+      const author = await authorProvider!.fetchEntity('A5017898742');
+      const work = await workProvider!.fetchEntity('W2741809807');
 
       // Best Practice: Verify different provider responses
       expect(author.entityData?.source).toBe('primary');
@@ -320,8 +320,8 @@ describe('Example: Provider Registry Management', () => {
 
     it('demonstrates provider statistics collection', async () => {
       // Given: Providers have been used for some operations
-      await primaryProvider.fetchEntity('A123');
-      await secondaryProvider.fetchEntity('W456');
+      await primaryProvider.fetchEntity('A5017898742');
+      await secondaryProvider.fetchEntity('W2741809807');
 
       // When: Getting statistics from registry
       const stats = registry.getStats();
@@ -349,11 +349,11 @@ describe('Example: Provider Registry Management', () => {
     it('demonstrates provider performance comparison', async () => {
       // Given: Multiple operations on different providers
       const operations = [
-        () => primaryProvider.fetchEntity('A1'),
-        () => primaryProvider.fetchEntity('A2'),
-        () => secondaryProvider.fetchEntity('W1'),
-        () => secondaryProvider.fetchEntity('W2'),
-        () => secondaryProvider.fetchEntity('W3')
+        () => primaryProvider.fetchEntity('A5017898742'),
+        () => primaryProvider.fetchEntity('A9876543210'),
+        () => secondaryProvider.fetchEntity('W2741809807'),
+        () => secondaryProvider.fetchEntity('W1234567890'),
+        () => secondaryProvider.fetchEntity('W5555555555')
       ];
 
       // When: Performing operations
@@ -451,7 +451,7 @@ describe('Example: Provider Registry Management', () => {
 
       // When: Using provider based on A/B test
       const selectedProvider = registry.get(providerName);
-      const entity = await selectedProvider!.fetchEntity('A123');
+      const entity = await selectedProvider!.fetchEntity('A5017898742');
 
       // Then: Should use appropriate provider
       if (useProviderA) {

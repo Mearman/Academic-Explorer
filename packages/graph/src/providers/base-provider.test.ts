@@ -317,7 +317,7 @@ describe("GraphDataProvider", () => {
         id: "test",
         entityType: "works",
         label: "Test Entity",
-        entityId: "T123",
+        entityId: "T10364753",
         x: 0,
         y: 0,
         externalIds: [],
@@ -465,13 +465,13 @@ describe("GraphDataProvider", () => {
 
   describe("Abstract Method Implementations", () => {
     it("should implement fetchEntity correctly", async () => {
-      const result = await provider.fetchEntity("W123456");
+      const result = await provider.fetchEntity("W2741809807456");
 
       expect(result).toEqual({
-        id: "node-W123456",
+        id: "node-W2741809807456",
         entityType: "works",
-        label: "Entity W123456",
-        entityId: "W123456",
+        label: "Entity W2741809807456",
+        entityId: "W2741809807456",
         x: 0,
         y: 0,
         externalIds: [],
@@ -508,23 +508,23 @@ describe("GraphDataProvider", () => {
         includeMetadata: true,
       };
 
-      const result = await provider.expandEntity("W123", options);
+      const result = await provider.expandEntity("W2741809807", options);
 
       expect(result.nodes).toHaveLength(3);
       expect(result.edges).toHaveLength(3);
       expect(result.metadata).toEqual({
-        expandedFrom: "W123",
+        expandedFrom: "W2741809807",
         depth: 2,
         totalFound: 3,
         options,
       });
 
       // Check first node and edge
-      expect(result.nodes[0].id).toBe("expanded-W123-0");
+      expect(result.nodes[0].id).toBe("expanded-W2741809807-0");
       expect(result.edges[0]).toEqual({
-        id: "edge-W123-expanded-W123-0",
-        source: "W123",
-        target: "expanded-W123-0",
+        id: "edge-W2741809807-expanded-W2741809807-0",
+        source: "W2741809807",
+        target: "expanded-W2741809807-0",
         type: "related_to",
         metadata: { weight: 1 },
       });

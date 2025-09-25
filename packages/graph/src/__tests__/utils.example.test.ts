@@ -21,26 +21,26 @@ import {
 describe('Test Utilities Examples', () => {
   describe('Basic Fixture Usage', () => {
     it('creates valid graph nodes', async () => {
-      const node = createNodeFixture('works', 'W123', {
+      const node = createNodeFixture('works', 'W2741809807', {
         includeExternalIds: true,
         includeEntityData: true,
       });
 
       expectValidGraphNode(node);
-      expect(node.id).toBe('W123');
+      expect(node.id).toBe('W2741809807');
       expect(node.entityType).toBe('works');
       expect(node.externalIds).toHaveLength(1);
     });
 
     it('creates valid graph edges', async () => {
-      const edge = createEdgeFixture('W123', 'A456', 'authored', {
+      const edge = createEdgeFixture('W2741809807', 'A5017898742', 'authored', {
         weight: 1.5,
         metadata: { confidence: 0.9 },
       });
 
       expectValidGraphEdge(edge);
-      expect(edge.source).toBe('W123');
-      expect(edge.target).toBe('A456');
+      expect(edge.source).toBe('W2741809807');
+      expect(edge.target).toBe('A5017898742');
       expect(edge.weight).toBe(1.5);
     });
 

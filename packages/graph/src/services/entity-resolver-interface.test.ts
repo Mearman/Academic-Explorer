@@ -137,18 +137,18 @@ describe("EntityResolver", () => {
   let registry: ProviderRegistry;
   let mockProvider2: MockGraphDataProvider;
 
-  // Sample data
+  // Sample data with proper OpenAlex IDs
   const sampleNode: GraphNode = {
-    id: "A123",
+    id: "A5017898742",
     entityType: "authors" as EntityType,
     label: "Test Author",
-    entityId: "A123",
+    entityId: "A5017898742",
     x: 0,
     y: 0,
     externalIds: [{
       type: "orcid",
-      value: "0000-0000-0000-0000",
-      url: "https://orcid.org/0000-0000-0000-0000"
+      value: "0000-0002-1825-0097",
+      url: "https://orcid.org/0000-0002-1825-0097"
     }],
     entityData: { display_name: "Test Author" },
     metadata: {}
@@ -157,10 +157,10 @@ describe("EntityResolver", () => {
   const sampleExpansion: GraphExpansion = {
     nodes: [
       {
-        id: "W456",
+        id: "W2741809807",
         entityType: "works" as EntityType,
         label: "Test Work",
-        entityId: "W456",
+        entityId: "W2741809807",
         x: 1,
         y: 1,
         externalIds: [],
@@ -169,13 +169,13 @@ describe("EntityResolver", () => {
     ],
     edges: [{
       id: "edge1",
-      source: "A123",
-      target: "W456",
+      source: "A5017898742",
+      target: "W2741809807",
       type: "authored",
       metadata: {}
     }],
     metadata: {
-      expandedFrom: "A123",
+      expandedFrom: "A5017898742",
       depth: 1,
       totalFound: 1,
       options: { maxDepth: 1, limit: 10 }
@@ -307,12 +307,12 @@ describe("EntityResolver", () => {
 
   describe("Entity Resolution", () => {
     beforeEach(() => {
-      mockProvider.setEntity("A123", sampleNode);
+      mockProvider.setEntity("A5017898742", sampleNode);
       resolver = new EntityResolver(mockProvider);
     });
 
     it("should resolve entity successfully", async () => {
-      const result = await resolver.resolveEntity("A123");
+      const result = await resolver.resolveEntity("A5017898742");
 
       expect(result).toEqual(sampleNode);
     });
@@ -320,13 +320,13 @@ describe("EntityResolver", () => {
     it("should throw error when no provider available", async () => {
       resolver = new EntityResolver();
 
-      await expect(resolver.resolveEntity("A123")).rejects.toThrow("No data provider available for entity resolution");
+      await expect(resolver.resolveEntity("A5017898742")).rejects.toThrow("No data provider available for entity resolution");
     });
 
     it("should propagate provider errors", async () => {
       mockProvider.setNextRequestFailure();
 
-      await expect(resolver.resolveEntity("A123")).rejects.toThrow("Failed to fetch entity: A123");
+      await expect(resolver.resolveEntity("A5017898742")).rejects.toThrow("Failed to fetch entity: A5017898742");
     });
 
     it("should handle entity not found", async () => {
@@ -336,28 +336,28 @@ describe("EntityResolver", () => {
 
   describe("Batch Entity Resolution", () => {
     beforeEach(() => {
-      const node1 = { ...sampleNode, id: "A123", entityId: "A123" };
-      const node2 = { ...sampleNode, id: "A456", entityId: "A456", label: "Test Author 2" };
+      const node1 = { ...sampleNode, id: "A5017898742", entityId: "A5017898742" };
+      const node2 = { ...sampleNode, id: "A9876543210", entityId: "A9876543210", label: "Test Author 2" };
 
-      mockProvider.setEntity("A123", node1);
-      mockProvider.setEntity("A456", node2);
+      mockProvider.setEntity("A5017898742", node1);
+      mockProvider.setEntity("A9876543210", node2);
       resolver = new EntityResolver(mockProvider);
     });
 
     it("should resolve multiple entities", async () => {
-      const results = await resolver.resolveEntities(["A123", "A456"]);
+      const results = await resolver.resolveEntities(["A5017898742", "A9876543210"]);
 
       expect(results).toHaveLength(2);
-      expect(results[0].id).toBe("A123");
-      expect(results[1].id).toBe("A456");
+      expect(results[0].id).toBe("A5017898742");
+      expect(results[1].id).toBe("A9876543210");
     });
 
     it("should use batch method if available", async () => {
       const batchSpy = vi.spyOn(mockProvider, "fetchEntities");
 
-      await resolver.resolveEntities(["A123", "A456"]);
+      await resolver.resolveEntities(["A5017898742", "A9876543210"]);
 
-      expect(batchSpy).toHaveBeenCalledWith(["A123", "A456"]);
+      expect(batchSpy).toHaveBeenCalledWith(["A5017898742", "A9876543210"]);
     });
 
     it("should fall back to sequential resolution", async () => {
@@ -365,7 +365,7 @@ describe("EntityResolver", () => {
       mockProvider.fetchEntities = undefined as any;
       const fetchSpy = vi.spyOn(mockProvider, "fetchEntity");
 
-      const results = await resolver.resolveEntities(["A123", "A456"]);
+      const results = await resolver.resolveEntities(["A5017898742", "A9876543210"]);
 
       expect(fetchSpy).toHaveBeenCalledTimes(2);
       expect(results).toHaveLength(2);
@@ -374,21 +374,21 @@ describe("EntityResolver", () => {
     it("should throw error when no provider available for batch", async () => {
       resolver = new EntityResolver();
 
-      await expect(resolver.resolveEntities(["A123", "A456"])).rejects.toThrow("No data provider available for entity resolution");
+      await expect(resolver.resolveEntities(["A5017898742", "A9876543210"])).rejects.toThrow("No data provider available for entity resolution");
     });
   });
 
   describe("Entity Expansion", () => {
     beforeEach(() => {
-      mockProvider.setExpansion("A123", sampleExpansion);
+      mockProvider.setExpansion("A5017898742", sampleExpansion);
       resolver = new EntityResolver(mockProvider);
     });
 
     it("should expand entity with default options", async () => {
-      const result = await resolver.expandEntity("A123");
+      const result = await resolver.expandEntity("A5017898742");
 
       expect(result).toMatchObject({
-        expandedFrom: "A123",
+        expandedFrom: "A5017898742",
         nodes: sampleExpansion.nodes,
         edges: sampleExpansion.edges,
         metadata: sampleExpansion.metadata
@@ -403,16 +403,16 @@ describe("EntityResolver", () => {
         includeMetadata: false
       };
 
-      const result = await resolver.expandEntity("A123", options);
+      const result = await resolver.expandEntity("A5017898742", options);
 
-      expect(result.expandedFrom).toBe("A123");
+      expect(result.expandedFrom).toBe("A5017898742");
       expect(result.metadata).toBeDefined();
     });
 
     it("should use default expansion options when partial options provided", async () => {
-      const result = await resolver.expandEntity("A123", { maxDepth: 2 });
+      const result = await resolver.expandEntity("A5017898742", { maxDepth: 2 });
 
-      expect(result.expandedFrom).toBe("A123");
+      expect(result.expandedFrom).toBe("A5017898742");
       // Should merge with defaults
       expect(result.metadata?.depth).toBeDefined();
     });
@@ -440,13 +440,13 @@ describe("EntityResolver", () => {
     it("should throw error when no provider available for expansion", async () => {
       resolver = new EntityResolver();
 
-      await expect(resolver.expandEntity("A123")).rejects.toThrow("No data provider available for entity expansion");
+      await expect(resolver.expandEntity("A5017898742")).rejects.toThrow("No data provider available for entity expansion");
     });
 
     it("should propagate expansion errors", async () => {
       mockProvider.setNextRequestFailure();
 
-      await expect(resolver.expandEntity("A123")).rejects.toThrow("Expansion failed: A123");
+      await expect(resolver.expandEntity("A5017898742")).rejects.toThrow("Expansion failed: A5017898742");
     });
 
     it("should handle expansion of non-existent node", async () => {
@@ -461,8 +461,8 @@ describe("EntityResolver", () => {
   describe("Entity Search", () => {
     beforeEach(() => {
       const searchResults = [
-        { ...sampleNode, id: "A123", label: "Machine Learning Author" },
-        { ...sampleNode, id: "A456", label: "ML Researcher" }
+        { ...sampleNode, id: "A5017898742", label: "Machine Learning Author" },
+        { ...sampleNode, id: "A9876543210", label: "ML Researcher" }
       ];
       mockProvider.setSearchResults("machine learning", searchResults);
       resolver = new EntityResolver(mockProvider);
@@ -590,7 +590,7 @@ describe("EntityResolver", () => {
   describe("Provider Fallback Scenarios", () => {
     it("should fall back to registry default when current provider fails", async () => {
       mockProvider.setNextRequestFailure();
-      mockProvider2.setEntity("A123", sampleNode);
+      mockProvider2.setEntity("A5017898742", sampleNode);
 
       registry.register(mockProvider);
       registry.register(mockProvider2);
@@ -599,34 +599,34 @@ describe("EntityResolver", () => {
       resolver = new EntityResolver(mockProvider, registry);
 
       // First request with current provider should fail
-      await expect(resolver.resolveEntity("A123")).rejects.toThrow();
+      await expect(resolver.resolveEntity("A5017898742")).rejects.toThrow();
 
       // Switch to working provider
       resolver.switchProvider("test-provider-2");
-      const result = await resolver.resolveEntity("A123");
+      const result = await resolver.resolveEntity("A5017898742");
 
       expect(result).toEqual(sampleNode);
     });
 
     it("should use current provider over registry default", async () => {
-      mockProvider.setEntity("A123", { ...sampleNode, label: "Current Provider" });
-      mockProvider2.setEntity("A123", { ...sampleNode, label: "Registry Provider" });
+      mockProvider.setEntity("A5017898742", { ...sampleNode, label: "Current Provider" });
+      mockProvider2.setEntity("A5017898742", { ...sampleNode, label: "Registry Provider" });
 
       registry.register(mockProvider2);
       resolver = new EntityResolver(mockProvider, registry);
 
-      const result = await resolver.resolveEntity("A123");
+      const result = await resolver.resolveEntity("A5017898742");
 
       expect(result.label).toBe("Current Provider");
     });
 
     it("should use registry provider when no current provider", async () => {
-      mockProvider.setEntity("A123", { ...sampleNode, label: "Registry Provider" });
+      mockProvider.setEntity("A5017898742", { ...sampleNode, label: "Registry Provider" });
 
       registry.register(mockProvider);
       resolver = new EntityResolver(undefined, registry);
 
-      const result = await resolver.resolveEntity("A123");
+      const result = await resolver.resolveEntity("A5017898742");
 
       expect(result.label).toBe("Registry Provider");
     });
@@ -634,7 +634,7 @@ describe("EntityResolver", () => {
 
   describe("Event Handling and Listeners", () => {
     beforeEach(() => {
-      mockProvider.setEntity("A123", sampleNode);
+      mockProvider.setEntity("A5017898742", sampleNode);
       resolver = new EntityResolver(mockProvider);
     });
 
@@ -642,7 +642,7 @@ describe("EntityResolver", () => {
       const eventSpy = vi.fn();
       mockProvider.on("entityFetched", eventSpy);
 
-      await resolver.resolveEntity("A123");
+      await resolver.resolveEntity("A5017898742");
 
       expect(eventSpy).toHaveBeenCalledWith(sampleNode);
     });
@@ -668,7 +668,7 @@ describe("EntityResolver", () => {
       const successSpy = vi.fn();
       mockProvider.on("requestSuccess", successSpy);
 
-      await resolver.resolveEntity("A123");
+      await resolver.resolveEntity("A5017898742");
 
       expect(successSpy).toHaveBeenCalled();
     });
@@ -720,9 +720,9 @@ describe("EntityResolver", () => {
     it("should handle promise rejection correctly", async () => {
       mockProvider.setNextRequestFailure();
 
-      const promise = resolver.resolveEntity("A123");
+      const promise = resolver.resolveEntity("A5017898742");
 
-      await expect(promise).rejects.toThrow("Failed to fetch entity: A123");
+      await expect(promise).rejects.toThrow("Failed to fetch entity: A5017898742");
       expect(promise).toBeInstanceOf(Promise);
     });
 
@@ -736,7 +736,7 @@ describe("EntityResolver", () => {
       resolver = new EntityResolver(slowProvider);
 
       // Should resolve eventually
-      const promise = resolver.resolveEntity("A123");
+      const promise = resolver.resolveEntity("A5017898742");
       expect(promise).toBeInstanceOf(Promise);
 
       const result = await promise;
@@ -748,7 +748,7 @@ describe("EntityResolver", () => {
 
   describe("Caching Behavior", () => {
     beforeEach(() => {
-      mockProvider.setEntity("A123", sampleNode);
+      mockProvider.setEntity("A5017898742", sampleNode);
       resolver = new EntityResolver(mockProvider);
     });
 
@@ -758,9 +758,9 @@ describe("EntityResolver", () => {
       mockProvider.on("cacheHit", cacheSpy);
 
       // First request
-      await resolver.resolveEntity("A123");
+      await resolver.resolveEntity("A5017898742");
       // Second request (might hit cache depending on provider implementation)
-      await resolver.resolveEntity("A123");
+      await resolver.resolveEntity("A5017898742");
 
       // Verify requests went through
       const stats = mockProvider.getProviderInfo().stats;
@@ -807,11 +807,11 @@ describe("EntityResolver", () => {
 
     it("should return correct types for interface methods", async () => {
       resolver = new EntityResolver(mockProvider);
-      mockProvider.setEntity("A123", sampleNode);
-      mockProvider.setExpansion("A123", sampleExpansion);
+      mockProvider.setEntity("A5017898742", sampleNode);
+      mockProvider.setExpansion("A5017898742", sampleExpansion);
       mockProvider.setSearchResults("test", [sampleNode]);
 
-      const entityResult = await resolver.resolveEntity("A123");
+      const entityResult = await resolver.resolveEntity("A5017898742");
       expect(entityResult).toMatchObject<GraphNode>({
         id: expect.any(String),
         entityType: expect.any(String),
@@ -822,7 +822,7 @@ describe("EntityResolver", () => {
         externalIds: expect.any(Array)
       });
 
-      const expansionResult = await resolver.expandEntity("A123");
+      const expansionResult = await resolver.expandEntity("A5017898742");
       expect(expansionResult).toMatchObject<ExpansionResult>({
         nodes: expect.any(Array),
         edges: expect.any(Array),
