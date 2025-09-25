@@ -5,6 +5,7 @@
 
 import type { GraphNode, EntityType, EntityIdentifier } from '../types/core';
 import { ProviderRegistry, type GraphDataProvider } from '../providers/base-provider';
+import { EntityDetectionService } from './entity-detection-service';
 
 export interface EntityExpansionOptions {
   relationshipTypes?: string[];
@@ -34,6 +35,13 @@ export interface IEntityResolver {
   resolveEntity(id: EntityIdentifier): Promise<GraphNode>;
   expandEntity(nodeId: string, options?: Partial<EntityExpansionOptions>): Promise<ExpansionResult>;
   searchEntities(query: string, entityTypes: EntityType[]): Promise<GraphNode[]>;
+
+  // Enhanced identifier handling
+  detectAndResolveEntity(id: string): Promise<GraphNode>;
+  detectAndResolveEntities(ids: string[]): Promise<Array<{ id: string; node?: GraphNode; error?: string }>>;
+  isValidIdentifier(id: string): boolean;
+  normalizeIdentifier(id: string): string | null;
+  getSupportedIdentifierTypes(): Array<{ name: string; entityType: EntityType; description: string; examples: string[] }>;
 
   // Provider management
   setProvider(provider: GraphDataProvider): void;
@@ -70,7 +78,19 @@ export class EntityResolver implements IEntityResolver {
       throw new Error('No data provider available for entity resolution');
     }
 
-    return provider.fetchEntity(id);
+    // Try to normalize the identifier first
+    const normalizedId = EntityDetectionService.normalizeIdentifier(id);
+    const identifierToUse = normalizedId || id;
+
+    try {
+      return await provider.fetchEntity(identifierToUse);
+    } catch (error) {
+      // If normalization failed, try original identifier as fallback
+      if (normalizedId && normalizedId !== id) {
+        return await provider.fetchEntity(id);
+      }
+      throw error;
+    }
   }
 
   async expandEntity(nodeId: string, options: Partial<EntityExpansionOptions> = {}): Promise<ExpansionResult> {
@@ -109,6 +129,58 @@ export class EntityResolver implements IEntityResolver {
     });
   }
 
+  /**
+   * Enhanced entity resolution with automatic identifier detection and normalization
+   */
+  async detectAndResolveEntity(id: string): Promise<GraphNode> {
+    if (!id || typeof id !== 'string') {
+      throw new Error('Invalid identifier: must be a non-empty string');
+    }
+
+    const detectionResult = EntityDetectionService.detectEntity(id.trim());
+    if (!detectionResult) {
+      throw new Error(`Unrecognized identifier format: "${id}". Supported formats include DOI, ORCID, ROR, ISSN, OpenAlex IDs, and OpenAlex URLs.`);
+    }
+
+    const provider = this.getProvider();
+    if (!provider) {
+      throw new Error('No data provider available for entity resolution');
+    }
+
+    try {
+      // Use the normalized identifier for resolution
+      return await provider.fetchEntity(detectionResult.normalizedId);
+    } catch (error) {
+      // Enhanced error message with detection context
+      throw new Error(
+        `Failed to resolve ${detectionResult.detectionMethod} identifier "${detectionResult.originalInput}". ` +
+        `Detected as ${detectionResult.entityType} entity with normalized ID "${detectionResult.normalizedId}". ` +
+        `Original error: ${error instanceof Error ? error.message : String(error)}`
+      );
+    }
+  }
+
+  /**
+   * Check if an identifier is valid and can be detected
+   */
+  isValidIdentifier(id: string): boolean {
+    return EntityDetectionService.isValidIdentifier(id);
+  }
+
+  /**
+   * Normalize an identifier to standard format
+   */
+  normalizeIdentifier(id: string): string | null {
+    return EntityDetectionService.normalizeIdentifier(id);
+  }
+
+  /**
+   * Get supported identifier types and their patterns
+   */
+  getSupportedIdentifierTypes(): Array<{ name: string; entityType: EntityType; description: string; examples: string[] }> {
+    return EntityDetectionService.getSupportedTypes();
+  }
+
   // Batch operations
   async resolveEntities(ids: EntityIdentifier[]): Promise<GraphNode[]> {
     const provider = this.getProvider();
@@ -116,12 +188,39 @@ export class EntityResolver implements IEntityResolver {
       throw new Error('No data provider available for entity resolution');
     }
 
+    // Normalize all identifiers first
+    const normalizedIds = ids.map(id => {
+      const normalized = EntityDetectionService.normalizeIdentifier(id);
+      return normalized || id;
+    });
+
     // Use batch operation if available, otherwise fall back to sequential
     if (typeof provider.fetchEntities === 'function') {
-      return provider.fetchEntities(ids);
+      return provider.fetchEntities(normalizedIds);
     }
 
-    return Promise.all(ids.map(id => provider.fetchEntity(id)));
+    return Promise.all(normalizedIds.map(id => provider.fetchEntity(id)));
+  }
+
+  /**
+   * Batch detection and resolution with detailed error handling
+   */
+  async detectAndResolveEntities(ids: string[]): Promise<Array<{ id: string; node?: GraphNode; error?: string }>> {
+    const results: Array<{ id: string; node?: GraphNode; error?: string }> = [];
+
+    for (const id of ids) {
+      try {
+        const node = await this.detectAndResolveEntity(id);
+        results.push({ id, node });
+      } catch (error) {
+        results.push({
+          id,
+          error: error instanceof Error ? error.message : String(error)
+        });
+      }
+    }
+
+    return results;
   }
 
   // Provider health check
