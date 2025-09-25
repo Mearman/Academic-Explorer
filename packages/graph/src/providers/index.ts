@@ -13,3 +13,6 @@ export type {
   ProviderStats,
   ProviderOptions,
 } from './base-provider';
+
+// Entity detection utilities are exported via main index.ts
+// to avoid conflicts with multiple DetectionResult types

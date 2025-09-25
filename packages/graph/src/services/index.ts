@@ -6,6 +6,16 @@
 // Phase 1: Core Services (Interface-only for buildability)
 export { EntityResolver, type IEntityResolver, type EntityExpansionOptions, type ExpansionResult } from './entity-resolver-interface';
 
+// Entity Detection Service - Pure service for identifier detection and normalization
+export {
+  EntityDetectionService,
+  detectEntityType,
+  normalizeIdentifier,
+  isValidIdentifier,
+  detectEntity,
+  type DetectionResult,
+} from './entity-detection-service';
+
 // Graph utility result interface
 export interface GraphUtilityResult {
   success: boolean;
