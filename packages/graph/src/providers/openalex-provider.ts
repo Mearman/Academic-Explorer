@@ -11,6 +11,7 @@ import {
 } from './base-provider';
 import type { GraphNode, GraphEdge, EntityType, EntityIdentifier, ExternalIdentifier } from '../types/core';
 import { RelationType } from '../types/core';
+import { EntityDetectionService } from '../services/entity-detection-service';
 
 // Interface to avoid circular dependency with client package
 interface OpenAlexClient {
@@ -53,12 +54,13 @@ export class OpenAlexGraphProvider extends GraphDataProvider {
   async fetchEntity(id: EntityIdentifier): Promise<GraphNode> {
     return this.trackRequest((async () => {
       const entityType = this.detectEntityType(id);
-      const entityData = await this.fetchEntityData(id, entityType);
+      const normalizedId = this.normalizeIdentifier(id);
+      const entityData = await this.fetchEntityData(normalizedId, entityType);
 
       const node: GraphNode = {
-        id,
+        id: normalizedId,
         entityType,
-        entityId: id,
+        entityId: normalizedId,
         label: this.extractLabel(entityData, entityType),
         x: Math.random() * 800,
         y: Math.random() * 600,
@@ -167,20 +169,19 @@ export class OpenAlexGraphProvider extends GraphDataProvider {
   // Private helper methods
 
   private detectEntityType(id: string): EntityType {
-    if (id.startsWith('W')) return 'works';
-    if (id.startsWith('A')) return 'authors';
-    if (id.startsWith('S')) return 'sources';
-    if (id.startsWith('I')) return 'institutions';
-    if (id.startsWith('T')) return 'topics';
-    if (id.startsWith('P')) return 'publishers';
-    if (id.startsWith('F')) return 'funders';
-    if (id.startsWith('C')) return 'concepts';
+    const entityType = EntityDetectionService.detectEntityType(id);
+    if (!entityType) {
+      throw new Error(`Cannot detect entity type for ID: ${id}`);
+    }
+    return entityType;
+  }
 
-    // Fallback: try to detect from URL patterns or other identifiers
-    if (id.includes('doi.org')) return 'works';
-    if (id.includes('orcid.org')) return 'authors';
-
-    throw new Error(`Cannot detect entity type for ID: ${id}`);
+  private normalizeIdentifier(id: string): string {
+    const normalizedId = EntityDetectionService.normalizeIdentifier(id);
+    if (!normalizedId) {
+      throw new Error(`Cannot normalize identifier: ${id}`);
+    }
+    return normalizedId;
   }
 
   private async fetchEntityData(id: string, entityType: EntityType): Promise<Record<string, unknown>> {
@@ -199,6 +200,10 @@ export class OpenAlexGraphProvider extends GraphDataProvider {
         return this.client.get('publishers', id);
       case 'funders':
         return this.client.get('funders', id);
+      case 'concepts':
+        return this.client.get('concepts', id);
+      case 'keywords':
+        return this.client.get('keywords', id);
       default:
         throw new Error(`Unsupported entity type: ${entityType}`);
     }
