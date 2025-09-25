@@ -115,7 +115,8 @@ const config: KnipConfig = {
     "**/node_modules/**",
     "**/.tmp/**",
     "**/.cache/**",
-    "**/.github/**" // GitHub workflows contain complex YAML that can confuse knip
+    ".github/**", // GitHub workflows contain complex YAML that can confuse knip
+    ".github/workflows/**"
   ],
 
   // Plugin configurations
