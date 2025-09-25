@@ -18,7 +18,7 @@ on:
 
 env:
   NODE_VERSION: 20.x
-  PNPM_VERSION: 9
+  PNPM_VERSION: 10.16.1
 
 jobs:
   setup:

@@ -35,7 +35,7 @@ jobs:
       - name: Install pnpm
         uses: pnpm/action-setup@v2
         with:
-          version: 8
+          version: 10.16.1
 
       - name: Install dependencies
         run: pnpm install --no-frozen-lockfile
@@ -142,7 +142,7 @@ jobs:
       - name: Install pnpm
         uses: pnpm/action-setup@v2
         with:
-          version: 8
+          version: 10.16.1
 
       - name: Install dependencies
         run: pnpm install --no-frozen-lockfile
@@ -185,7 +185,7 @@ jobs:
       - name: Install pnpm
         uses: pnpm/action-setup@v2
         with:
-          version: 8
+          version: 10.16.1
 
       - name: Install dependencies
         run: pnpm install --no-frozen-lockfile
@@ -228,7 +228,7 @@ jobs:
       - name: Install pnpm
         uses: pnpm/action-setup@v2
         with:
-          version: 8
+          version: 10.16.1
 
       - name: Install dependencies
         run: pnpm install --no-frozen-lockfile
@@ -271,7 +271,7 @@ jobs:
       - name: Install pnpm
         uses: pnpm/action-setup@v2
         with:
-          version: 8
+          version: 10.16.1
 
       - name: Install dependencies
         run: pnpm install --no-frozen-lockfile
@@ -311,7 +311,7 @@ jobs:
       - name: Install pnpm
         uses: pnpm/action-setup@v2
         with:
-          version: 8
+          version: 10.16.1
 
       - name: Install dependencies
         run: pnpm install --no-frozen-lockfile
@@ -377,7 +377,7 @@ jobs:
       - name: Install pnpm
         uses: pnpm/action-setup@v2
         with:
-          version: 8
+          version: 10.16.1
 
       - name: Install dependencies
         run: pnpm install --no-frozen-lockfile
