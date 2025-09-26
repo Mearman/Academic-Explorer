@@ -6,7 +6,11 @@
 import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
 import { immer } from "zustand/middleware/immer";
+import { enableMapSet } from "immer";
 import { createHybridStorage } from "@academic-explorer/utils/storage";
+
+// Enable Immer MapSet plugin for Set support
+enableMapSet();
 import type {
 	GraphNode,
 	GraphEdge,
@@ -26,6 +30,7 @@ interface GraphState {
 	// Essential methods
 	addNode: (node: GraphNode) => void;
 	addNodes: (nodes: GraphNode[]) => void;
+	addEdge: (edge: GraphEdge) => void;
 	addEdges: (edges: GraphEdge[]) => void;
 	removeNode: (nodeId: string) => void;
 	removeEdge: (edgeId: string) => void;
@@ -39,12 +44,15 @@ interface GraphState {
 	// Selection and interaction
 	selectedNodeId: string | null;
 	hoveredNodeId: string | null;
+	selectedNodes: Record<string, boolean>;
 	selectNode: (nodeId: string | null) => void;
+	hoverNode: (nodeId: string | null) => void;
 	addToSelection: (nodeId: string) => void;
+	removeFromSelection: (nodeId: string) => void;
 	clearSelection: () => void;
 
 	// Pinning system
-	pinnedNodes: Set<string>;
+	pinnedNodes: Record<string, boolean>;
 	pinNode: (nodeId: string) => void;
 	unpinNode: (nodeId: string) => void;
 	clearAllPinnedNodes: () => void;
@@ -53,12 +61,19 @@ interface GraphState {
 	// Layout system
 	currentLayout: GraphLayout;
 	setLayout: (layout: GraphLayout) => void;
+	applyCurrentLayout: () => void;
 
 	// Visibility state
 	visibleEntityTypes: Record<EntityType, boolean>;
 	visibleEdgeTypes: Record<RelationType, boolean>;
+	toggleEntityTypeVisibility: (entityType: EntityType) => void;
 	toggleEdgeTypeVisibility: (edgeType: RelationType) => void;
 	setEntityTypeVisibility: (entityType: EntityType, visible: boolean) => void;
+	setEdgeTypeVisibility: (edgeType: RelationType, visible: boolean) => void;
+	setAllEntityTypesVisible: (visible: boolean) => void;
+	resetEntityTypesToDefaults: () => void;
+	getEntityTypeStats: () => Record<string, any>;
+	getVisibleNodes: () => GraphNode[];
 
 	// Cache settings
 	showAllCachedNodes: boolean;
@@ -72,7 +87,7 @@ interface GraphState {
 	entityTypeStats: Record<EntityType, number> & { total: number; visible: number };
 	edgeTypeStats: Record<RelationType, number> & { total: number; visible: number };
 	lastSearchStats: Record<string, unknown>;
-	updateSearchStats: () => void;
+	updateSearchStats: (stats: Record<EntityType, number>) => void;
 
 	// Node state management
 	markNodeAsLoading: (nodeId: string) => void;
@@ -80,14 +95,23 @@ interface GraphState {
 	markNodeAsError: (nodeId: string) => void;
 	calculateNodeDepths: () => void;
 	getMinimalNodes: () => GraphNode[];
+	getNodesWithinDepth: (depth: number) => GraphNode[];
+	nodeDepths: Record<string, number>;
+
+	// Graph algorithms
+	getNeighbors: (nodeId: string) => GraphNode[];
+	getConnectedEdges: (nodeId: string) => GraphEdge[];
+	findShortestPath: (sourceId: string, targetId: string) => string[];
+	getConnectedComponent: (nodeId: string) => string[];
 
 	// Computed getters (cached to prevent infinite loops)
 	cachedVisibleNodes: GraphNode[];
-	getVisibleNodes: () => GraphNode[];
 
 	// Provider reference
 	provider: GraphProvider | null;
+	providerType: string | null;
 	setProvider: (provider: GraphProvider) => void;
+	setProviderType: (providerType: string) => void;
 }
 
 export const useGraphStore = create<GraphState>()(
@@ -104,9 +128,14 @@ export const useGraphStore = create<GraphState>()(
 			// Selection and interaction
 			selectedNodeId: null,
 			hoveredNodeId: null,
+			selectedNodes: {},
+
+			// Node depths and traversal
+			nodeDepths: {},
 
 			// Pinning system
-			pinnedNodes: new Set<string>(),
+			pinnedNodes: {},
+			providerType: null,
 
 			// Layout system
 			currentLayout: {
@@ -173,8 +202,8 @@ export const useGraphStore = create<GraphState>()(
 				[RelationType.AFFILIATED]: true,
 				[RelationType.PUBLISHED_IN]: true,
 				[RelationType.FUNDED_BY]: true,
-				[RelationType.REFERENCES]: false,
-				[RelationType.RELATED_TO]: false,
+				[RelationType.REFERENCES]: true,
+				[RelationType.RELATED_TO]: true,
 				[RelationType.SOURCE_PUBLISHED_BY]: false,
 				[RelationType.INSTITUTION_CHILD_OF]: false,
 				[RelationType.PUBLISHER_CHILD_OF]: false,
@@ -191,8 +220,11 @@ export const useGraphStore = create<GraphState>()(
 				set((draft) => {
 					draft.nodes[node.id] = node;
 				});
-				// CRITICAL FIX: Don't immediately recompute to prevent infinite loops
-				// Caches will be recomputed on-demand when accessed
+				// Notify provider if available
+				const state = get();
+				if (state.provider) {
+					state.provider.addNode(node);
+				}
 			},
 
 			setGraphData: (nodes, edges) => {
@@ -221,6 +253,7 @@ export const useGraphStore = create<GraphState>()(
 			clear: () => set({
 				nodes: {},
 				edges: {},
+				nodeDepths: {},
 				cachedVisibleNodes: [],
 				error: null
 			}),
@@ -228,8 +261,8 @@ export const useGraphStore = create<GraphState>()(
 			// Cached visible nodes getter
 			getVisibleNodes: () => {
 				const state = get();
-				// Return cached version to prevent infinite loops
-				return state.cachedVisibleNodes;
+				const nodes = Object.values(state.nodes);
+				return nodes.filter(node => state.visibleEntityTypes[node.entityType]);
 			},
 
 			// Additional CRUD methods
@@ -239,6 +272,13 @@ export const useGraphStore = create<GraphState>()(
 						draft.nodes[node.id] = node;
 					});
 				});
+				// Notify provider if available
+				const state = get();
+				if (state.provider) {
+					nodes.forEach(node => {
+						state.provider!.addNode(node);
+					});
+				}
 			},
 
 			addEdges: (edges) => {
@@ -250,16 +290,42 @@ export const useGraphStore = create<GraphState>()(
 			},
 
 			removeNode: (nodeId) => {
+				const state = get();
+
+				// Find connected edges to remove
+				const connectedEdges = Object.values(state.edges).filter(edge =>
+					edge.source === nodeId || edge.target === nodeId
+				);
+
 				set((draft) => {
+					// Remove node
 					delete draft.nodes[nodeId];
-					draft.pinnedNodes.delete(nodeId);
+
+					// Remove connected edges
+					connectedEdges.forEach(edge => {
+						delete draft.edges[edge.id];
+					});
+
+					// Clean up pinning
+					delete draft.pinnedNodes[nodeId];
+
+					// Clean up selection
 					if (draft.selectedNodeId === nodeId) {
 						draft.selectedNodeId = null;
 					}
 					if (draft.hoveredNodeId === nodeId) {
 						draft.hoveredNodeId = null;
 					}
+					delete draft.selectedNodes[nodeId];
 				});
+
+				// Notify provider
+				if (state.provider) {
+					state.provider.removeNode(nodeId);
+					connectedEdges.forEach(edge => {
+						state.provider!.removeEdge(edge.id);
+					});
+				}
 			},
 
 			removeEdge: (edgeId) => {
@@ -287,41 +353,50 @@ export const useGraphStore = create<GraphState>()(
 			},
 
 			addToSelection: (nodeId) => {
-				// For now, just set as selected (single selection)
-				set({ selectedNodeId: nodeId });
+				set((draft) => {
+					draft.selectedNodes[nodeId] = true;
+				});
 			},
 
 			clearSelection: () => {
-				set({ selectedNodeId: null });
+				set((draft) => {
+					draft.selectedNodeId = null;
+					draft.selectedNodes = {};
+				});
 			},
 
 			// Pinning methods
 			pinNode: (nodeId) => {
 				set((draft) => {
-					draft.pinnedNodes.add(nodeId);
+					draft.pinnedNodes[nodeId] = true;
 				});
 			},
 
 			unpinNode: (nodeId) => {
 				set((draft) => {
-					draft.pinnedNodes.delete(nodeId);
+					delete draft.pinnedNodes[nodeId];
 				});
 			},
 
 			clearAllPinnedNodes: () => {
 				set((draft) => {
-					draft.pinnedNodes.clear();
+					draft.pinnedNodes = {};
 				});
 			},
 
 			isPinned: (nodeId) => {
 				const state = get();
-				return state.pinnedNodes.has(nodeId);
+				return !!state.pinnedNodes[nodeId];
 			},
 
 			// Layout methods
 			setLayout: (layout) => {
 				set({ currentLayout: layout });
+				// Auto-apply to provider
+				const state = get();
+				if (state.provider) {
+					state.provider.applyLayout(layout);
+				}
 			},
 
 			// Visibility methods
@@ -333,7 +408,11 @@ export const useGraphStore = create<GraphState>()(
 
 			setEntityTypeVisibility: (entityType, visible) => {
 				set((draft) => {
-					draft.visibleEntityTypes[entityType] = visible;
+					if (visible) {
+						draft.visibleEntityTypes[entityType] = true;
+					} else {
+						delete draft.visibleEntityTypes[entityType];
+					}
 				});
 			},
 
@@ -343,11 +422,17 @@ export const useGraphStore = create<GraphState>()(
 			},
 
 			setTraversalDepth: (depth) => {
-				set({ traversalDepth: depth });
+				set({ traversalDepth: Math.max(1, depth) });
 			},
 
 			// Statistics methods
-			updateSearchStats: () => {
+			updateSearchStats: (stats) => {
+				set((draft) => {
+					draft.lastSearchStats = stats;
+				});
+			},
+
+			_recomputeStats: () => {
 				set((draft) => {
 					const nodes = Object.values(draft.nodes);
 					const edges = Object.values(draft.edges);
@@ -390,13 +475,261 @@ export const useGraphStore = create<GraphState>()(
 				});
 			},
 
-			// Node state management (placeholder implementations)
+
+
+			getMinimalNodes: () => {
+				const state = get();
+				return Object.values(state.nodes);
+			},
+
+			// Missing selection methods
+			hoverNode: (nodeId) => {
+				set({ hoveredNodeId: nodeId });
+			},
+
+			removeFromSelection: (nodeId) => {
+				set((draft) => {
+					delete draft.selectedNodes[nodeId];
+				});
+			},
+
+			// Missing edge method
+			addEdge: (edge) => {
+				set((draft) => {
+					draft.edges[edge.id] = edge;
+				});
+			},
+
+			// Missing layout method
+			applyCurrentLayout: () => {
+				const state = get();
+				if (state.provider) {
+					state.provider.applyLayout(state.currentLayout);
+				}
+			},
+
+			// Missing visibility methods
+			toggleEntityTypeVisibility: (entityType) => {
+				set((draft) => {
+					if (draft.visibleEntityTypes[entityType]) {
+						delete draft.visibleEntityTypes[entityType];
+					} else {
+						draft.visibleEntityTypes[entityType] = true;
+					}
+				});
+			},
+
+			setEdgeTypeVisibility: (edgeType, visible) => {
+				set((draft) => {
+					draft.visibleEdgeTypes[edgeType] = visible;
+				});
+			},
+
+			setAllEntityTypesVisible: (visible) => {
+				set((draft) => {
+					Object.keys(draft.visibleEntityTypes).forEach(type => {
+						draft.visibleEntityTypes[type as EntityType] = visible;
+					});
+				});
+			},
+
+			resetEntityTypesToDefaults: () => {
+				set((draft) => {
+					draft.visibleEntityTypes = {
+						concepts: true,
+						topics: true,
+						keywords: true,
+						works: true,
+						authors: true,
+						sources: true,
+						institutions: true,
+						publishers: true,
+						funders: true
+					};
+				});
+			},
+
+			getEntityTypeStats: () => {
+				const state = get();
+				const nodes = Object.values(state.nodes);
+				const total: Record<EntityType, number> = {} as Record<EntityType, number>;
+				const visible: Record<EntityType, number> = {} as Record<EntityType, number>;
+				const searchResults: Record<EntityType, number> = {} as Record<EntityType, number>;
+
+				// Initialize counts for all entity types
+				const allEntityTypes: EntityType[] = ["concepts", "topics", "keywords", "works", "authors", "sources", "institutions", "publishers", "funders"];
+				allEntityTypes.forEach(type => {
+					total[type] = 0;
+					visible[type] = 0;
+					searchResults[type] = state.lastSearchStats[type] as number || 0;
+				});
+
+				// Count nodes
+				nodes.forEach(node => {
+					total[node.entityType]++;
+					if (state.visibleEntityTypes[node.entityType]) {
+						visible[node.entityType]++;
+					}
+				});
+
+				return { total, visible, searchResults };
+			},
+
+			// Missing node depth and traversal methods
+			calculateNodeDepths: () => {
+				const state = get();
+				const nodes = state.nodes;
+				const edges = state.edges;
+
+				// Simple BFS implementation to calculate depths
+				const depths: Record<string, number> = {};
+				const visited = new Set<string>();
+				const queue: Array<{id: string, depth: number}> = [];
+
+				// Find the first pinned node or first node as root
+				const pinnedNodeIds = Object.keys(state.pinnedNodes).filter(id => state.pinnedNodes[id]);
+				const rootNode = pinnedNodeIds[0] || Object.keys(nodes)[0];
+
+				if (rootNode) {
+					queue.push({ id: rootNode, depth: 0 });
+					depths[rootNode] = 0;
+					visited.add(rootNode);
+
+					while (queue.length > 0) {
+						const { id: currentId, depth } = queue.shift()!;
+
+						// Find connected nodes
+						Object.values(edges).forEach(edge => {
+							const connectedId = edge.source === currentId ? edge.target :
+											   edge.target === currentId ? edge.source : null;
+
+							if (connectedId && !visited.has(connectedId) && nodes[connectedId]) {
+								visited.add(connectedId);
+								depths[connectedId] = depth + 1;
+								queue.push({ id: connectedId, depth: depth + 1 });
+							}
+						});
+					}
+				}
+
+				set((draft) => {
+					draft.nodeDepths = depths;
+				});
+			},
+
+			getNodesWithinDepth: (depth) => {
+				const state = get();
+				const nodes = Object.values(state.nodes);
+
+				// If no depths calculated, return empty array unless depth is Infinity
+				if (Object.keys(state.nodeDepths).length === 0) {
+					return depth === Infinity ? nodes : [];
+				}
+
+				return nodes.filter(node => {
+					const nodeDepth = state.nodeDepths[node.id];
+					return nodeDepth !== undefined && (depth === Infinity || nodeDepth <= depth);
+				});
+			},
+
+			// Graph algorithm implementations
+			getNeighbors: (nodeId) => {
+				const state = get();
+				const neighbors: GraphNode[] = [];
+				const edges = Object.values(state.edges);
+
+				edges.forEach(edge => {
+					if (edge.source === nodeId && state.nodes[edge.target]) {
+						neighbors.push(state.nodes[edge.target]);
+					} else if (edge.target === nodeId && state.nodes[edge.source]) {
+						neighbors.push(state.nodes[edge.source]);
+					}
+				});
+
+				return neighbors;
+			},
+
+			getConnectedEdges: (nodeId) => {
+				const state = get();
+				return Object.values(state.edges).filter(edge =>
+					edge.source === nodeId || edge.target === nodeId
+				);
+			},
+
+			findShortestPath: (sourceId, targetId) => {
+				const state = get();
+				if (sourceId === targetId) return [sourceId];
+				if (!state.nodes[sourceId] || !state.nodes[targetId]) return [];
+
+				const visited = new Set<string>();
+				const queue: Array<{id: string, path: string[]}> = [];
+				const edges = Object.values(state.edges);
+
+				queue.push({ id: sourceId, path: [sourceId] });
+				visited.add(sourceId);
+
+				while (queue.length > 0) {
+					const { id: currentId, path } = queue.shift()!;
+
+					// Find neighbors
+					for (const edge of edges) {
+						const nextId = edge.source === currentId ? edge.target :
+									  edge.target === currentId ? edge.source : null;
+
+						if (nextId && !visited.has(nextId) && state.nodes[nextId]) {
+							const newPath = [...path, nextId];
+
+							if (nextId === targetId) {
+								return newPath;
+							}
+
+							visited.add(nextId);
+							queue.push({ id: nextId, path: newPath });
+						}
+					}
+				}
+
+				return []; // No path found
+			},
+
+			getConnectedComponent: (nodeId) => {
+				const state = get();
+				const visited = new Set<string>();
+				const component: string[] = [];
+				const queue = [nodeId];
+				const edges = Object.values(state.edges);
+
+				if (!state.nodes[nodeId]) {
+					return [nodeId]; // Return the node ID even if not found
+				}
+
+				while (queue.length > 0) {
+					const currentId = queue.shift()!;
+					if (visited.has(currentId)) continue;
+
+					visited.add(currentId);
+					component.push(currentId);
+
+					// Find connected nodes
+					edges.forEach(edge => {
+						const connectedId = edge.source === currentId ? edge.target :
+										   edge.target === currentId ? edge.source : null;
+
+						if (connectedId && !visited.has(connectedId) && state.nodes[connectedId]) {
+							queue.push(connectedId);
+						}
+					});
+				}
+
+				return component;
+			},
+
+			// Missing state management methods
 			markNodeAsLoading: (nodeId) => {
-				// Could add loading state to node metadata
 				set((draft) => {
 					if (draft.nodes[nodeId]) {
 						draft.nodes[nodeId].metadata = {
-							...(draft.nodes[nodeId].metadata ?? {}),
+							...draft.nodes[nodeId].metadata,
 							loading: true
 						};
 					}
@@ -407,7 +740,7 @@ export const useGraphStore = create<GraphState>()(
 				set((draft) => {
 					if (draft.nodes[nodeId]) {
 						draft.nodes[nodeId].metadata = {
-							...(draft.nodes[nodeId].metadata ?? {}),
+							...draft.nodes[nodeId].metadata,
 							loading: false
 						};
 					}
@@ -418,7 +751,7 @@ export const useGraphStore = create<GraphState>()(
 				set((draft) => {
 					if (draft.nodes[nodeId]) {
 						draft.nodes[nodeId].metadata = {
-							...(draft.nodes[nodeId].metadata ?? {}),
+							...draft.nodes[nodeId].metadata,
 							loading: false,
 							error: true
 						};
@@ -426,18 +759,23 @@ export const useGraphStore = create<GraphState>()(
 				});
 			},
 
-			calculateNodeDepths: () => {
-				// Placeholder - could implement BFS depth calculation
-				console.log("calculateNodeDepths not implemented");
-			},
-
-			getMinimalNodes: () => {
-				const state = get();
-				return Object.values(state.nodes);
-			},
-
 			// Provider methods
-			setProvider: (provider) => set({ provider }),
+			setProvider: (provider) => {
+				const state = get();
+				set({ provider });
+
+				// Transfer existing data to provider
+				if (provider) {
+					const nodes = Object.values(state.nodes);
+					const edges = Object.values(state.edges);
+					provider.setNodes(nodes);
+					provider.setEdges(edges);
+				}
+			},
+
+			setProviderType: (providerType) => {
+				set({ providerType });
+			},
 		})),
 		{
 			name: "graph-layout-storage",

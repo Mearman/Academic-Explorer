@@ -75,7 +75,6 @@ describe("useGraphPersistence", () => {
 				id: "W123",
 				entityType: "works",
 				title: "Test Work",
-				entityType: "works",
 				data: { id: "W123", display_name: "Test Work" },
 				position: { x: 100, y: 100 },
 			},
@@ -83,7 +82,6 @@ describe("useGraphPersistence", () => {
 				id: "A456",
 				entityType: "authors",
 				title: "Test Author",
-				entityType: "authors",
 				data: { id: "A456", display_name: "Test Author" },
 				position: { x: 200, y: 200 },
 			},
@@ -210,6 +208,7 @@ describe("useGraphPersistence", () => {
 
 			expect(sessions).toEqual([]);
 			expect(logError).toHaveBeenCalledWith(
+				expect.any(Object), // logger object
 				"Failed to load graph sessions from storage",
 				expect.any(Error),
 				"useGraphPersistence",
@@ -305,6 +304,7 @@ describe("useGraphPersistence", () => {
 			}).toThrow("Failed to save session. Storage might be full.");
 
 			expect(logError).toHaveBeenCalledWith(
+				expect.any(Object), // logger object
 				"Failed to save graph session to storage",
 				expect.any(Error),
 				"useGraphPersistence",
@@ -388,6 +388,7 @@ describe("useGraphPersistence", () => {
 
 			expect(success).toBe(false);
 			expect(logError).toHaveBeenCalledWith(
+				expect.any(Object), // logger object
 				"Failed to load graph session from storage",
 				expect.any(Error),
 				"useGraphPersistence",
@@ -440,6 +441,7 @@ describe("useGraphPersistence", () => {
 
 			expect(success).toBe(false);
 			expect(logError).toHaveBeenCalledWith(
+				expect.any(Object), // logger object
 				"Failed to delete graph session from storage",
 				expect.any(Error),
 				"useGraphPersistence",
@@ -517,6 +519,7 @@ describe("useGraphPersistence", () => {
 
 			expect(success).toBe(false);
 			expect(logError).toHaveBeenCalledWith(
+				expect.any(Object), // logger object
 				"Failed to update graph session in storage",
 				expect.any(Error),
 				"useGraphPersistence",

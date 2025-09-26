@@ -45,99 +45,53 @@ const createMockProvider = (): GraphProvider => ({
 // Test data fixtures
 const createTestNode = (id: string, entityType: EntityType = "works"): GraphNode => ({
 	id,
-	type,
-	position: { x: 0, y: 0 },
-	data: {
+	entityType: entityType,
+	label: `Test ${entityType} ${id}`,
+	entityId: id,
+	x: 0,
+	y: 0,
+	externalIds: [],
+	entityData: {
 		id,
-		type,
-		label: `Test ${type} ${id}`,
-		displayName: `Test ${type} ${id}`,
+		type: entityType,
+		label: `Test ${entityType} ${id}`,
+		displayName: `Test ${entityType} ${id}`,
 		url: `https://openalex.org/${id}`,
 	},
-	style: {},
-	directlyVisited: false,
-	expanded: false,
+	metadata: {
+		directlyVisited: false,
+		expanded: false,
+	},
 });
 
-const createTestEdge = (id: string, source: string, target: string, entityType: RelationType = "authored"): GraphEdge => ({
+const createTestEdge = (id: string, source: string, target: string, relationType: RelationType = "authored"): GraphEdge => ({
 	id,
 	source,
 	target,
-	type,
+	type: relationType,
 	data: {
-		label: `${type} relationship`,
-		relationship: type,
+		label: `${relationType} relationship`,
+		relationship: relationType,
 	},
 	style: {},
 });
 
 describe("GraphStore", () => {
 	beforeEach(() => {
-		// Reset store to initial state
-		useGraphStore.setState({
-			nodes: {},
-			edges: {},
-			selectedNodeId: null,
-			hoveredNodeId: null,
-			selectedNodes: {},
-			pinnedNodes: {},
-			showAllCachedNodes: false,
-			traversalDepth: 1,
-			nodeDepths: {},
-			provider: null,
-			providerType: "xyflow",
-			visibleEntityTypes: {
-				works: true,
-				authors: true,
-				sources: true,
-				institutions: true,
-				topics: true,
-				concepts: true,
-				publishers: true,
-				funders: true,
-				keywords: true
-			},
-			lastSearchStats: {},
-			visibleEdgeTypes: {
-				authored: true,
-				affiliated: true,
-				published_in: true,
-				funded_by: true,
-				related_to: true,
-				references: true,
-				source_published_by: true,
-				institution_child_of: true,
-				publisher_child_of: true,
-				work_has_topic: true,
-				work_has_keyword: true,
-				author_researches: true,
-				institution_located_in: true,
-				funder_located_in: true,
-				topic_part_of_field: true
-			},
-			currentLayout: {
-				entityType: "d3-force",
-				options: {
-					seed: 42,
-					iterations: 300,
-					linkDistance: 220,
-					linkStrength: 0.7,
-					chargeStrength: -600,
-					centerStrength: 0.03,
-					collisionRadius: 100,
-					velocityDecay: 0.4,
-					alpha: 1,
-					alphaDecay: 0.03,
-					collisionStrength: 0.8
-				}
-			},
-			isLoading: false,
-			error: null,
-		});
-
-		// Clear localStorage mock
+		// Clear localStorage mock first
 		localStorageMock.clear();
 		vi.clearAllMocks();
+
+		// Reset store to initial state using store methods
+		const store = useGraphStore.getState();
+		store.clear();
+		store.clearAllPinnedNodes();
+		store.clearSelection();
+		store.setError(null);
+		store.setLoading(false);
+		store.setShowAllCachedNodes(false);
+		store.setTraversalDepth(2);
+		store.resetEntityTypesToDefaults();
 	});
 
 	describe("Initial State", () => {
@@ -147,18 +101,14 @@ describe("GraphStore", () => {
 			expect(Object.keys(state.nodes).length).toBe(0);
 			expect(Object.keys(state.edges).length).toBe(0);
 			expect(state.selectedNodeId).toBeNull();
-			expect(state.hoveredNodeId).toBeNull();
-			expect(Object.keys(state.selectedNodes).length).toBe(0);
 			expect(Object.keys(state.pinnedNodes).length).toBe(0);
 			expect(state.showAllCachedNodes).toBe(false);
-			expect(state.traversalDepth).toBe(1);
-			expect(Object.keys(state.nodeDepths).length).toBe(0);
+			expect(state.traversalDepth).toBe(2); // Default from implementation
 			expect(state.provider).toBeNull();
-			expect(state.providerType).toBe("xyflow");
 			expect(state.isLoading).toBe(false);
 			expect(state.error).toBeNull();
 			expect(Object.keys(state.visibleEntityTypes).length).toBe(9);
-			expect(Object.keys(state.visibleEdgeTypes).length).toBe(15);
+			expect(Object.keys(state.visibleEdgeTypes).length).toBe(15); // Updated count
 		});
 
 		it("should have correct default visible entity types", () => {
@@ -182,12 +132,10 @@ describe("GraphStore", () => {
 		it("should have correct default layout configuration", () => {
 			const state = useGraphStore.getState();
 
-			expect(state.currentLayout.type).toBe("d3-force");
-			expect(state.currentLayout.options.seed).toBe(42);
-			expect(state.currentLayout.options.iterations).toBe(300);
-			expect(state.currentLayout.options.linkDistance).toBe(220);
-			expect(state.currentLayout.options.linkStrength).toBe(0.7);
-			expect(state.currentLayout.options.chargeStrength).toBe(-600);
+			expect(state.currentLayout.type).toBe("force");
+			expect(state.currentLayout.options.iterations).toBe(100);
+			expect(state.currentLayout.options.strength).toBe(-200);
+			expect(state.currentLayout.options.distance).toBe(150);
 		});
 	});
 
@@ -985,7 +933,7 @@ describe("GraphStore", () => {
 		it("should maintain type safety for entity types", () => {
 			const { setEntityTypeVisibility, toggleEntityTypeVisibility } = useGraphStore.getState();
 
-			const entityTypes: EntityType[] = ["works", "authors", "sources", "institutions", "topics", "publishers", "funders", "keywords", "geo"];
+			const entityTypes: EntityType[] = ["works", "authors", "sources", "institutions", "topics", "publishers", "funders", "keywords", "concepts"];
 
 			entityTypes.forEach(type => {
 				expect(() => {

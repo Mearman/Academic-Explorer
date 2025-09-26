@@ -110,7 +110,9 @@ export function useGraphPersistence() {
 		}
 
 		const sessionId = `session_${Date.now().toString()}`
-		const snapshot: GraphSnapshot = {
+
+		// Create base snapshot from store data
+		const baseSnapshot: GraphSnapshot = {
 			id: sessionId,
 			name,
 			description,
@@ -121,6 +123,23 @@ export function useGraphPersistence() {
 			metadata: {
 				nodeCount: Object.values(store.nodes).filter(node => node != null).length,
 				edgeCount: Object.values(store.edges).filter(edge => edge != null).length,
+			}
+		}
+
+		// Try to get additional snapshot data from provider (like viewport)
+		let snapshot: GraphSnapshot & { viewport?: { zoom: number; center: { x: number; y: number } } }
+		if (store.provider && store.provider.getSnapshot) {
+			const providerSnapshot = store.provider.getSnapshot()
+			// Merge provider snapshot data with base snapshot
+			snapshot = { ...baseSnapshot, ...providerSnapshot }
+		} else {
+			// Add default viewport when no provider
+			snapshot = {
+				...baseSnapshot,
+				viewport: {
+					zoom: 1,
+					center: { x: 0, y: 0 }
+				}
 			}
 		}
 
@@ -175,10 +194,18 @@ export function useGraphPersistence() {
 			store.addNodes(session.snapshot.nodes)
 			store.addEdges(session.snapshot.edges)
 
-			// Apply layout and fit view
+			// Apply layout and restore view state
 			if (store.provider) {
 				store.provider.applyLayout(store.currentLayout)
-				store.provider.fitView()
+
+				const snapshotWithViewport = session.snapshot as any
+				if (snapshotWithViewport.viewport && store.provider.loadSnapshot) {
+					// Load provider snapshot if viewport is available
+					store.provider.loadSnapshot(session.snapshot)
+				} else {
+					// Only fit view if no viewport available (fallback)
+					store.provider.fitView()
+				}
 			}
 
 			// Update last modified

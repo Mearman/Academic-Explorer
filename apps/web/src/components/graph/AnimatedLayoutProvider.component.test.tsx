@@ -10,13 +10,25 @@ import { AnimatedLayoutProvider } from "./AnimatedLayoutProvider";
 import { useAnimatedLayoutContext } from "./animated-layout-context";
 
 // Mock the animated graph store
-vi.mock("@/stores/animated-graph-store", () => ({
-	useAnimatedGraphStore: vi.fn(() => ({
+vi.mock("@/stores/animated-graph-store", () => {
+	const mockState = {
 		useAnimatedLayout: true,
-	})),
-	useRestartRequested: vi.fn(() => false),
-	useClearRestartRequest: vi.fn(() => vi.fn()),
-}));
+		animationHistory: [],
+		restartRequested: false,
+	};
+
+	const mockStore = vi.fn((selector) => {
+		return selector ? selector(mockState) : mockState;
+	});
+
+	mockStore.getState = vi.fn(() => mockState);
+
+	return {
+		useAnimatedGraphStore: mockStore,
+		useRestartRequested: vi.fn(() => false),
+		useClearRestartRequest: vi.fn(() => vi.fn()),
+	};
+});
 
 // Mock the shared utils including logger and animated layout hook
 vi.mock("@academic-explorer/utils", () => ({
