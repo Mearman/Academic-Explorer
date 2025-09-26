@@ -291,8 +291,8 @@ describe('Example: Network Error Handling', () => {
       // Given: Intermittent connectivity issues
       mockClient.setFailureMode('intermittent');
 
-      // When: Making many concurrent requests
-      const requestPromises = Array.from({ length: 10 }, (_, i) =>
+      // When: Making many concurrent requests (increased count for statistical reliability)
+      const requestPromises = Array.from({ length: 50 }, (_, i) =>
         provider.fetchEntity(`A${i.toString().padStart(8, '0')}`).catch(error => ({ error: error.message }))
       );
 
@@ -304,7 +304,7 @@ describe('Example: Network Error Handling', () => {
 
       expect(successes.length).toBeGreaterThan(0); // Some should succeed
       expect(failures.length).toBeGreaterThan(0); // Some should fail
-      expect(successes.length + failures.length).toBe(10);
+      expect(successes.length + failures.length).toBe(50);
 
       // Best Practice: Success rate should be reasonable with intermittent issues
       const successRate = successes.length / results.length;
