@@ -99,16 +99,6 @@ jobs:
 
       # Use nx typecheck instead of global tsc --build to avoid composite project dependencies
 
-      - name: Build dependencies first for typecheck
-        if: matrix.check == 'typecheck'
-        run: |
-          if [ "${{ needs.setup.outputs.has-affected }}" = "true" ]; then
-            timeout 8m pnpm nx affected -t build --parallel=2
-          else
-            timeout 8m pnpm nx run-many -t build --parallel=2
-          fi
-        env:
-          NODE_OPTIONS: '--max-old-space-size=8192'
 
       - name: Run ${{ matrix.check }}
         run: |
