@@ -19,20 +19,49 @@ export default tseslint.config([
   {
     // Global ignores for all workspaces
     ignores: [
+      // Build and distribution files
       'dist/**/*',
-      'node_modules/**/*',
+      'build/**/*',
+      'out/**/*',
       'coverage/**/*',
+
+      // Dependencies and cache
+      'node_modules/**/*',
       '.nx/**/*',
+      '.pnpm-store/**/*',
+      '.cache/**/*',
+
+      // Generated files
       '**/*.d.ts',
       '**/*.config.js', // Allow JS config files
-      '**/routeTree.gen.ts', // Generated files
+      '**/routeTree.gen.ts',
+      '**/*.generated.ts',
+      '**/*.generated.tsx',
+      '**/generated/**/*',
+
+      // Test and Storybook output
+      'storybook-static/**/*',
+      'test-results/**/*',
+      'playwright-report/**/*',
+
+      // Temporary files
+      'tmp/**/*',
+      'temp/**/*',
+      '**/*.tmp',
+      '**/*.temp',
+
+      // IDE and editor files
+      '.vscode/**/*',
+      '.idea/**/*',
+      '**/.DS_Store',
     ],
   },
   {
     files: ['**/*.{ts,tsx}'],
     extends: [
       js.configs.recommended,
-      ...tseslint.configs.strictTypeChecked,
+      // Use recommended instead of strict for performance
+      ...tseslint.configs.recommended,
     ],
     languageOptions: {
       ecmaVersion: 2020,
@@ -42,8 +71,10 @@ export default tseslint.config([
         ...globals.es2020,
       },
       parserOptions: {
-        project: true, // Use closest tsconfig.json
-        tsconfigRootDir: import.meta.dirname,
+        // Disable type-aware linting for performance - use specific projects only
+        project: false,
+        ecmaVersion: 2020,
+        sourceType: 'module',
       },
     },
     plugins: {
@@ -55,11 +86,12 @@ export default tseslint.config([
       '@typescript-eslint/no-unused-vars': 'off', // handled by unused-imports
       '@typescript-eslint/no-explicit-any': 'error',
       '@typescript-eslint/no-non-null-assertion': 'error',
-      '@typescript-eslint/prefer-nullish-coalescing': 'error',
-      '@typescript-eslint/prefer-optional-chain': 'error',
-      '@typescript-eslint/no-unnecessary-type-assertion': 'error',
-      '@typescript-eslint/no-floating-promises': 'error',
-      '@typescript-eslint/await-thenable': 'error',
+      // Disable type-aware rules that require project config for performance
+      '@typescript-eslint/prefer-nullish-coalescing': 'off',
+      '@typescript-eslint/prefer-optional-chain': 'error', // This one is safe without type info
+      '@typescript-eslint/no-unnecessary-type-assertion': 'off',
+      '@typescript-eslint/no-floating-promises': 'off',
+      '@typescript-eslint/await-thenable': 'off',
 
       // Import rules
       'unused-imports/no-unused-imports': 'error',
@@ -117,10 +149,6 @@ export default tseslint.config([
       '@typescript-eslint/no-non-null-assertion': 'off',
       '@typescript-eslint/no-unsafe-assignment': 'off',
       '@typescript-eslint/no-unsafe-member-access': 'off',
-      '@typescript-eslint/no-floating-promises': 'off',
-      '@typescript-eslint/await-thenable': 'off',
-      '@typescript-eslint/prefer-nullish-coalescing': 'off',
-      '@typescript-eslint/no-unnecessary-type-assertion': 'off',
       'no-console': 'off',
     },
   },

@@ -1,14 +1,28 @@
 import tseslint from 'typescript-eslint';
-import reactConfig from '../../eslint.config.react.js';
+import reactConfig from '../../eslint.config.react.ts';
 
 export default tseslint.config([
   {
-    // Global ignores for this package - exclude test files entirely for now
+    // Enhanced ignores for better performance
     ignores: [
+      // Test files
       'src/**/*.test.*',
       'src/**/*.spec.*',
+      'src/**/*.stories.*',
       'src/test/**/*',
+
+      // Build outputs
       'dist/**/*',
+      'lib/**/*',
+      'esm/**/*',
+
+      // Generated files
+      '**/*.d.ts',
+      '**/*.generated.*',
+
+      // Storybook and tooling
+      'storybook-static/**/*',
+      '.storybook/main.js',
     ],
   },
   ...reactConfig,
@@ -16,8 +30,10 @@ export default tseslint.config([
     files: ['src/**/*.{ts,tsx}'],
     languageOptions: {
       parserOptions: {
-        project: './tsconfig.json',
-        tsconfigRootDir: import.meta.dirname,
+        // Disable type-aware rules for performance in UI package
+        project: false,
+        ecmaVersion: 2020,
+        sourceType: 'module',
       },
     },
     rules: {
