@@ -182,6 +182,17 @@ export class EntityDetectionService {
     for (const pattern of this.patterns) {
       for (const regex of pattern.patterns) {
         if (regex.test(trimmedId)) {
+          // Check if normalization succeeds to ensure valid identifier
+          try {
+            const normalized = pattern.normalize.call(this, trimmedId);
+            if (normalized === null) {
+              continue; // Pattern matched but normalization failed, try next pattern
+            }
+          } catch (error) {
+            // Normalization failed, try next pattern
+            continue;
+          }
+
           // Special handling for OpenAlex IDs - determine type from prefix
           if (pattern.name === 'OpenAlex URL' || pattern.name === 'OpenAlex ID') {
             const entityType = this.detectOpenAlexEntityType(trimmedId);

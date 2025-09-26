@@ -379,9 +379,9 @@ describe('EntityDetectionService', () => {
 
     describe('Invalid OpenAlex IDs', () => {
       const trueInvalidIds = [
-        { id: 'T12', expectedType: 'institutions', valid: false },       // Caught by ROR pattern
-        { id: 'W', expectedType: 'institutions', valid: false },         // Caught by ROR pattern
-        { id: 'T', expectedType: 'institutions', valid: false },         // Caught by ROR pattern
+        { id: 'T12', expectedType: null, valid: false },                 // Too short for any pattern
+        { id: 'W', expectedType: null, valid: false },                   // Too short for any pattern
+        { id: 'T', expectedType: null, valid: false },                   // Too short for any pattern
         { id: '', expectedType: null, valid: false },                    // Empty string
         { id: '   ', expectedType: null, valid: false },                 // Only whitespace
         { id: '12345678', expectedType: null, valid: false },            // No prefix, no letters
@@ -536,7 +536,7 @@ describe('EntityDetectionService', () => {
       ];
 
       const casesToCheckSpecifically = [
-        { input: '123456789', expectDetected: false, expectValid: false }, // All numeric, no letters - doesn't match ROR
+        { input: '123456789', expectDetected: false, expectValid: false }, // All numeric - not a valid ROR (no letters)
         { input: 'X12345678', expectDetected: true, expectValid: true }, // 9 chars with letters - valid ROR
       ];
 

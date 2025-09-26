@@ -211,11 +211,10 @@ describe('OpenAlexGraphProvider', () => {
     it('should throw error for unknown entity types', () => {
       const detectEntityType = (provider as any).detectEntityType.bind(provider);
 
-      // X123456789 is incorrectly detected as 'institutions' due to a bug in the detection service
-      expect(() => detectEntityType('X123456789')).not.toThrow();
-      expect(detectEntityType('X123456789')).toBe('institutions');
+      // X123456789 now properly throws an error for unknown entity types
+      expect(() => detectEntityType('X123456789')).toThrow('Cannot detect entity type for ID: X123456789');
 
-      // But truly invalid IDs should still throw
+      // Truly invalid IDs should also throw
       expect(() => detectEntityType('invalid-id')).toThrow('Cannot detect entity type for ID: invalid-id');
     });
   });
@@ -877,12 +876,8 @@ describe('OpenAlexGraphProvider', () => {
     });
 
     it('should handle unknown entity types in expansion', async () => {
-      // X123456789 gets incorrectly detected as institutions, but expansion fails gracefully
-      // Due to the bug in EntityDetectionService, this doesn't throw - instead returns empty results
-      const expansion = await provider.expandEntity('X123456789', {});
-      expect(expansion.nodes).toHaveLength(0);
-      expect(expansion.edges).toHaveLength(0);
-      expect(expansion.metadata.totalFound).toBe(0);
+      // Unknown entity types now throw an error during entity type detection
+      await expect(provider.expandEntity('X123456789', {})).rejects.toThrow('Cannot detect entity type for ID: X123456789');
     });
   });
 

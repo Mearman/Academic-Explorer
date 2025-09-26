@@ -378,7 +378,7 @@ describe('OpenAlexGraphProvider Error Handling', () => {
     it('should handle unknown entity prefixes', async () => {
       await expect(provider.fetchEntity('X123456789'))
         .rejects
-        .toThrow('Cannot normalize identifier: X123456789');
+        .toThrow('Cannot detect entity type for ID: X123456789');
     });
 
     it('should accept DOI-based IDs', async () => {

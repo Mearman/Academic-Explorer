@@ -291,7 +291,10 @@ describe('SmartEntityCache', () => {
 
       it('should log errors when batch operations fail', async () => {
         const loggerErrorSpy = vi.spyOn(logger, 'error').mockImplementation(() => {});
-        provider.setFailureRate(1); // Always fail
+
+        // Mock the fetchEntities method to throw an error
+        const originalFetchEntities = provider.fetchEntities;
+        provider.fetchEntities = vi.fn().mockRejectedValue(new Error('Batch operation failed'));
 
         const requests: FieldRequest[] = [
           { id: 'W2741809807', entityType: 'works', fields: ['id', 'display_name'] },
@@ -300,20 +303,23 @@ describe('SmartEntityCache', () => {
 
         await cache.batchEnsureFields(requests);
 
+        // Batch operations log general batch failure messages
         expect(loggerErrorSpy).toHaveBeenCalledWith(
           'cache',
-          'Failed to fetch fields id, display_name for W2741809807:',
+          'Batch request failed for works:',
           { args: [expect.any(Error)] },
           'SmartEntityCache'
         );
 
         expect(loggerErrorSpy).toHaveBeenCalledWith(
           'cache',
-          'Failed to fetch fields id, display_name for A5023888391:',
+          'Batch request failed for authors:',
           { args: [expect.any(Error)] },
           'SmartEntityCache'
         );
 
+        // Restore original method
+        provider.fetchEntities = originalFetchEntities;
         loggerErrorSpy.mockRestore();
       });
     });

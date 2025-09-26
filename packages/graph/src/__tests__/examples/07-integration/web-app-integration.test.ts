@@ -701,7 +701,7 @@ describe('Example: Web Application Integration', () => {
     it('demonstrates memory management and cleanup', async () => {
       // Given: Large graph operations
       for (let i = 0; i < 20; i++) {
-        await graphHook.fetchEntity(`A${1000 + i}`);
+        await graphHook.fetchEntity(`A${50000000 + i}`);
       }
 
       let initialNodeCount = stateManager.getState().nodes.length;

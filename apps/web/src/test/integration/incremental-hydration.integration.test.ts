@@ -177,7 +177,7 @@ describe("Entity Data Storage Integration", () => {
 			const testNode = {
 				id: "https://openalex.org/W123456789",
 				entityId: "https://openalex.org/W123456789",
-				type: "entityType: "works" as const," as const,
+				type: "works" as const,
 				label: "Minimal Work Node",
 				position: { x: 0, y: 0 },
 				externalIds: [],

@@ -211,7 +211,7 @@ const createMockInstitution = (id: string, parentIds: string[] = []): Institutio
 const createTestNode = (entityId: string, entityType: EntityType, entity: any): GraphNode => ({
 	id: entityId, // Use same ID pattern as production
 	entityId,
-	type,
+	type: entityType,
 	label: entity.display_name,
 	position: { x: 0, y: 0 },
 	externalIds: [],
