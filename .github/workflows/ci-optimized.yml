@@ -112,10 +112,10 @@ jobs:
       - name: Run ${{ matrix.check }}
         run: |
           if [ "${{ needs.setup.outputs.has-affected }}" = "true" ]; then
-            timeout 8m pnpm nx affected -t ${{ matrix.check }} --parallel=2
+            timeout 10m pnpm nx affected -t ${{ matrix.check }} --parallel=2
           else
             # Run on all projects when no affected projects detected
-            timeout 8m pnpm nx run-many -t ${{ matrix.check }} --parallel=2
+            timeout 10m pnpm nx run-many -t ${{ matrix.check }} --parallel=2
           fi
         env:
           NODE_OPTIONS: '--max-old-space-size=8192'
