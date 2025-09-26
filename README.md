@@ -1,23 +1,45 @@
 # Academic Explorer
 
-Academic Explorer is a client-side web application that provides access to academic literature data through the [OpenAlex API](https://docs.openalex.org/). The application allows users to search, browse, and visualize academic works, authors, institutions, and other scholarly entities. Built as a single-page application using React and Vite, it operates entirely in the browser without requiring a backend server.
+> A comprehensive monorepo for exploring academic literature through interactive knowledge graphs and data visualizations.
 
-The application features advanced force-directed graph visualizations, comprehensive search capabilities, and real-time data exploration tools.
+Academic Explorer is a TypeScript-based research platform that provides intuitive access to academic literature via the [OpenAlex API](https://docs.openalex.org/). Built as a modern monorepo, it combines a powerful React web application with a sophisticated CLI tool for academic data exploration and management.
 
-[OpenAlex](https://openalex.org/) is a free and open catalog of the world's scholarly papers, authors, institutions, and more.
+**[View Live Application](https://mearman.github.io/Academic-Explorer/#/authors/A5017898742)**
 
-**[View the live application ->](https://mearman.github.io/Academic-Explorer/#/authors/A5017898742)**
+## Monorepo Structure
 
-## Features
+This repository is organized as an Nx-managed monorepo with shared packages and focused applications:
 
-- **OpenAlex API Integration**: Access to works, authors, institutions, topics, publishers, funders, and concepts
-- **Synthetic Response Cache**: Intelligent field-level caching with surgical API optimization (40-99% bandwidth savings)
-- **Multi-Layer Storage**: Memory → localStorage → IndexedDB → Static Data → API with tier-aware coordination
-- **Entity-Centric Routing**: Direct entity access via OpenAlex IDs, DOIs, ORCIDs, and external identifiers
-- **Data Visualizations**: Force-directed graphs with deterministic layouts
-- **Progressive Web App**: Installable with offline capabilities
-- **CLI Data Management**: Comprehensive cache analysis and static data generation
-- **Accessibility Testing**: WCAG2AA standards with automated testing
+```
+Academic Explorer/
+├── apps/
+│   ├── cli/                    # Command-line interface
+│   └── web/                    # React SPA application
+├── packages/
+│   ├── client/                 # OpenAlex API client
+│   ├── graph/                  # Graph data structures
+│   ├── simulation/             # Force simulation engine
+│   ├── ui/                     # UI components
+│   └── utils/                  # Shared utilities
+├── config/                     # Shared configuration
+├── scripts/                    # Build and utility scripts
+├── tools/                      # Development tools
+├── nx.json                     # Nx workspace configuration
+├── package.json               # Root package configuration
+├── pnpm-workspace.yaml        # PNPM workspace definition
+└── README.md                  # This file
+```
+
+### [Applications](apps/README.md)
+- **[`apps/web`](apps/README.md)** - React SPA for interactive OpenAlex exploration
+- **[`apps/cli`](apps/README.md)** - Command-line interface for data management
+
+### [Shared Packages](packages/README.md)
+- **[`packages/client`](packages/README.md)** - TypeScript OpenAlex API client with caching
+- **[`packages/graph`](packages/README.md)** - Core graph data structures and entity management
+- **[`packages/simulation`](packages/README.md)** - Force-directed graph simulation engine
+- **[`packages/ui`](packages/README.md)** - Reusable UI components with Mantine
+- **[`packages/utils`](packages/README.md)** - Shared utilities and type guards
 
 ## Quick Start
 
@@ -25,238 +47,179 @@ The application features advanced force-directed graph visualizations, comprehen
 # Install dependencies
 pnpm install
 
-# Start development server
+# Start web application
 pnpm dev
 
-# Run tests
-pnpm test
+# Use CLI tool
+pnpm cli stats
+pnpm cli search authors "machine learning"
 
-# Build for production
-pnpm build
+# Run quality checks
+pnpm verify
 ```
-
-## Technology Stack
-
-- **Frontend**: React 19 + Vite + TanStack Router
-- **Styling**: Vanilla Extract CSS-in-JS + Mantine Core
-- **State Management**: Zustand + Immer
-- **Storage**: IndexedDB (idb) + localStorage fallback
-- **Testing**: Vitest + MSW + Playwright
-- **Build**: Nx for caching and orchestration
 
 ## Development Commands
 
-### Primary Commands
+### Essential Commands
 ```bash
-pnpm dev              # Development server
-pnpm typecheck        # TypeScript checking
-pnpm build            # Production build
-pnpm test             # All tests with coverage
+pnpm dev              # Start web development server
+pnpm cli              # OpenAlex CLI tool
+pnpm build            # Build all projects
+pnpm test             # Run all tests
+pnpm typecheck        # TypeScript validation
 pnpm lint             # ESLint checking
-pnpm verify           # Full quality pipeline
+pnpm verify           # Complete quality pipeline
 ```
 
-### Testing
+### Nx Monorepo Commands
 ```bash
-pnpm test             # All tests (unit + component)
-pnpm test:ui          # Vitest UI interface
-pnpm test:unit        # Unit tests only
-pnpm test:component   # Component tests only
-pnpm test:integration # Integration tests
-pnpm test:e2e         # End-to-end tests
-pnpm test:a11y        # Accessibility tests
+nx graph              # View dependency graph
+nx affected:test      # Test only changed projects
+nx affected:build     # Build only changed projects
+nx run-many -t test   # Run tests across all projects
 ```
 
-### Code Quality
+### CLI Features
 ```bash
-pnpm knip             # Find unused code
-pnpm licenses:check   # License compliance
-pnpm clean            # Clean build artifacts
+# Entity operations
+pnpm cli get A5017898742
+pnpm cli search works "neural networks"
+pnpm cli list authors --limit 10
+
+# Cache management
+pnpm cli cache:stats
+pnpm cli cache:field-coverage authors A123
+pnpm cli cache:clear --confirm
+
+# Static data generation
+pnpm cli static:analyze
+pnpm cli static:generate
 ```
 
-## Entity Navigation
+## Core Features
 
-Access entities directly via URL patterns:
+### Web Application
+- **Interactive Knowledge Graphs** - Force-directed visualizations with deterministic layouts
+- **Entity-Centric Routing** - Direct access via OpenAlex IDs, DOIs, ORCIDs
+- **Multi-Tier Caching** - Memory → localStorage → IndexedDB → Static → API
+- **Progressive Web App** - Installable with offline capabilities
+- **Accessibility First** - WCAG2AA compliance with automated testing
 
-- **Direct Access**: `/authors/A123456789`
-- **Generic Route**: `/entity/authors/A123456789`
-- **HTTPS URLs**: `/https/openalex.org/A123456789`
-- **DOIs**: `/doi/10.1038/nature.2023.12345`
-- **Auto-detection**: `/$bareId` for automatic entity type detection
+### CLI Tool
+- **Intelligent Caching** - Field-level entity caching with 80-99% bandwidth savings
+- **Surgical API Requests** - Fetch only missing entity fields
+- **Cache Analytics** - Field coverage analysis and usage patterns
+- **Static Data Generation** - Pre-computed entity and query optimization
+
+### Synthetic Response Cache
+Advanced caching system with surgical API optimization:
+- **EntityFieldAccumulator** - Field-level caching with TTL policies
+- **CollectionResultMapper** - Query result mapping with pagination
+- **SyntheticResponseGenerator** - Response synthesis from cached + API data
+- **StorageTierManager** - Multi-tier storage coordination
+
+## Technology Stack
+
+- **Frontend**: React + Vite + TanStack Router + XYFlow
+- **Styling**: Vanilla Extract CSS-in-JS + Mantine UI
+- **State**: Zustand + Immer with persistence
+- **Storage**: IndexedDB + localStorage with fallbacks
+- **Testing**: Vitest + MSW + Playwright + React Testing Library
+- **Build**: Nx for caching and orchestration
+- **Language**: TypeScript with strict configuration
+
+## OpenAlex Integration
+
+### Supported Entity Types
+- **W** - Works (papers, articles, books)
+- **A** - Authors (researchers, scientists)
+- **S** - Sources (journals, repositories)
+- **I** - Institutions (universities, organizations)
+- **P** - Publishers
+- **F** - Funders (grants, funding agencies)
+- **T** - Topics (research areas, subjects)
+
+### URL Patterns
+```
+/authors/A123456789                    # Direct author access
+/works/W2741809807                     # Direct work access
+/entity/institutions/I27837315         # Generic entity route
+/doi/10.1038/nature.2023.12345         # DOI resolution
+/$bareId                               # Auto-detection
+```
 
 ## Architecture
 
-### Multi-Layer Caching
-Request flow: Memory -> localStorage -> IndexedDB -> Static Data Cache -> OpenAlex API
-
-### Entity Types
-- **W**: Works (papers, articles)
-- **A**: Authors (researchers)
-- **S**: Sources (journals, repositories)
-- **I**: Institutions (universities, organizations)
-- **P**: Publishers
-- **F**: Funders
-- **T**: Topics (research areas)
-- **C**: Concepts (deprecated, use Topics)
-
-### Component Structure
-Following [Atomic Design](https://atomicdesign.bradfrost.com/) methodology:
+### Component Architecture
+Following Atomic Design methodology:
 ```
-src/components/
-├── atoms/           # Basic UI elements
-├── molecules/       # Component combinations
-├── organisms/       # Complex components
-├── templates/       # Page layouts
-└── entity-displays/ # Entity-specific presentations
+apps/web/src/components/
+├── atoms/           # Button, Input, Icon
+├── molecules/       # SearchBox, EntityCard
+├── organisms/       # GraphVisualization, EntityList
+├── templates/       # PageLayout, EntityLayout
+└── entity-displays/ # AuthorDisplay, WorkDisplay
 ```
-
-### Synthetic Response Cache System
-Intelligent multi-tier caching with surgical API optimization:
-
-**Architecture**:
-- **EntityFieldAccumulator**: Field-level entity caching with TTL policies
-- **CollectionResultMapper**: Query result mapping with pagination support
-- **SyntheticResponseGenerator**: Response synthesis from cached + API data
-- **StorageTierManager**: Coordinates data across memory, localStorage, IndexedDB, static cache
-
-**Storage Tiers**:
-- **Memory**: Hot data for immediate access
-- **localStorage**: Warm data with fast retrieval
-- **IndexedDB**: Cold data for bulk storage
-- **Static Data Cache**: Pre-computed entities and queries
-- **OpenAlex API**: Live data source with rate limiting
-
-**Optimization Features**:
-- **Surgical Requests**: Fetch only missing entity fields (80-99% bandwidth savings)
-- **Field Accumulation**: Build complete entities from partial API requests over time
-- **Collection Warming**: Populate individual entity caches from collection requests
-- **TTL Management**: Field-specific time-to-live policies for optimal freshness
-- **Request Deduplication**: Eliminate redundant API calls through intelligent caching
 
 ### Force Simulation System
-Graph visualizations use D3 force simulation with deterministic behavior:
-
-- **Web Worker Execution**: Force calculations run in background workers to prevent UI blocking
-- **Animated Streaming**: Real-time position updates streamed from worker to main thread
-- **Deterministic Layout**: Fixed random seeds ensure consistent graph positioning across sessions
-- **Custom Forces**: Specialized force calculations for academic entity relationships
-- **Performance Scaling**: Dynamic configuration based on graph size (nodes/edges)
-
-### Request System
-API communication follows a structured pipeline:
-
-- **Rate Limiting**: Built-in rate limiting for OpenAlex API compliance
-- **Query Building**: Structured query construction with field selection
-- **Response Caching**: Multi-layer response caching with entity-specific TTL
-- **Error Handling**: Structured error handling with retry logic
-- **Background Processing**: API calls executed in web workers for large operations
+- **Web Worker Execution** - Non-blocking force calculations
+- **Deterministic Layouts** - Fixed seeds for consistent positioning
+- **Animated Streaming** - Real-time position updates
+- **Custom Forces** - Academic entity relationship modeling
+- **Performance Scaling** - Dynamic configuration based on graph size
 
 ### Worker System
-Web Workers handle computationally intensive operations:
+- **Data Fetching Worker** - Background OpenAlex API operations
+- **Force Animation Worker** - D3 force simulation execution
+- **Event Bridge** - Cross-context communication
+- **Progress Reporting** - Real-time operation updates
 
-- **Data Fetching Worker**: Handles OpenAlex API calls for graph expansion
-- **Force Animation Worker**: Runs D3 force simulations for graph layout
-- **Event Bridge**: Cross-context communication system between main thread and workers
-- **Message Passing**: Structured message protocols for worker communication
-- **Progress Reporting**: Real-time progress updates for long-running operations
+## Research Context
 
-### Event System
-Centralized event management for cross-component communication:
+Part of PhD research on **cultural heritage data preservation and citizen science engagement** at Bangor University, Wales.
 
-- **Event Bridge**: Central communication hub for main thread and worker contexts
-- **Graph Events**: Node addition, removal, selection, and layout events
-- **Entity Events**: Data loading, caching, and update events
-- **Worker Events**: Background task progress and completion events
-- **Cross-Context**: Message serialization for communication between execution contexts
-
-### Hook System
-Custom React hooks provide reusable functionality:
-
-- **Entity Data Hooks**: `use-raw-entity-data` for OpenAlex entity fetching with caching
-- **Graph Hooks**: `use-graph-data`, `use-graph-persistence` for graph state management
-- **Simulation Hooks**: `use-animated-force-simulation` for D3 force simulation integration
-- **Worker Hooks**: `use-data-fetching-worker` for background API operations
-- **Utility Hooks**: `use-context-menu`, `use-document-title`, `use-theme-colors` for UI functionality
-
-## OpenAlex CLI Tool
-
-Comprehensive command-line interface for data management and cache analysis:
-
-### Entity Operations
-```bash
-# List entities
-pnpm cli list authors
-pnpm cli stats
-
-# Get specific entity
-pnpm cli get A5017898742
-pnpm cli get-typed authors A5017898742
-
-# Search entities
-pnpm cli search authors "machine learning" --limit 10
-
-# Query with filters
-pnpm cli fetch works --filter "author.id:A123" --select "id,display_name"
-```
-
-### Cache Management
-```bash
-# Cache statistics and performance metrics
-pnpm cli cache:stats
-pnpm cli cache:stats --format json
-
-# Field coverage analysis
-pnpm cli cache:field-coverage authors A5017898742
-pnpm cli cache:field-coverage works W123 --format json
-
-# Popular entities and collections
-pnpm cli cache:popular-entities authors --limit 20
-pnpm cli cache:popular-collections --limit 15
-
-# Cache management
-pnpm cli cache:clear --confirm
-```
-
-### Static Data Generation
-```bash
-# Analyze usage patterns
-pnpm cli static:analyze
-
-# Generate optimized static cache
-pnpm cli static:generate --dry-run
-pnpm cli static:generate --entity-type authors
-pnpm cli static:generate --force
-```
-
-### Cache Options
-All data commands support cache control:
-- `--no-cache`: Skip cache, fetch directly from API
-- `--cache-only`: Use cache only, don't fetch if not found
-- `--no-save`: Don't save API results to cache
-
-## Memory Considerations
-
-Tests run sequentially due to memory constraints. Parallel execution causes out-of-memory errors.
+**Research Focus**: Bridging computational methods with cultural heritage accessibility through crowdsourced data repositories and ML/CV techniques.
 
 ## Contributing
 
-1. Check TypeScript compliance: `pnpm typecheck`
-2. Run full test suite: `pnpm test`
-3. Verify build: `pnpm build`
-4. Check linting: `pnpm lint`
-5. Run complete verification: `pnpm verify`
+### Quality Pipeline
+```bash
+pnpm typecheck        # TypeScript validation
+pnpm test             # Full test suite
+pnpm build            # Production build
+pnpm lint             # Code quality
+pnpm verify           # Complete verification
+```
+
+### Development Guidelines
+- **Memory Constraints**: Tests run serially to prevent OOM errors
+- **No `any` Types**: Use `unknown` with type guards
+- **DRY Principle**: Create abstractions over duplication
+- **Deterministic Layouts**: Fixed seeds for reproducible graphs
 
 ## Deployment
 
-Built for GitHub Pages with hash-based routing. Deploy via:
-
+### Web Application
+Built for GitHub Pages with hash-based routing:
 ```bash
 pnpm build
-# Deploy dist/ folder to GitHub Pages
+# Deploy apps/web/dist/ to GitHub Pages
 ```
+
+### CLI Tool
+Distributed as part of the monorepo:
+```bash
+pnpm cli --help
+```
+
+## Performance
+
+- **Bundle Size**: Code splitting with 800kB warnings
+- **Caching**: 40-99% bandwidth savings with surgical requests
+- **Memory**: Optimized for large graph datasets
+- **Testing**: Serial execution prevents OOM crashes
+- **Build**: Nx caching and affected builds
 
 ---
 
-Part of PhD research on cultural heritage data preservation and citizen science engagement at Bangor University, Wales.
-
-_Last verified: 2025-09-22-045525 - Application tested and confirmed functional. All quality checks passing (typecheck, build, lint). Playwright testing successful at localhost:5173/#/authors/A5025875274._
+*PhD Research • Bangor University • Cultural Heritage + Computational Methods*

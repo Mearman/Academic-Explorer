@@ -257,12 +257,12 @@ All query builders are fully typed for their respective entity filters:
 ```typescript
 // TypeScript will enforce valid field names and value types
 const worksQuery = createWorksQuery()
-  .addFilter('publication_year', 2023) // ✓ Valid
-  .addFilter('invalid_field', 'value'); // ✗ TypeScript error
+  .addFilter('publication_year', 2023) // Valid
+  .addFilter('invalid_field', 'value'); // TypeScript error
 
 const authorsQuery = createAuthorsQuery()
-  .addFilter('works_count', '>100') // ✓ Valid for authors
-  .addFilter('publication_year', 2023); // ✗ Not valid for authors
+  .addFilter('works_count', '>100') // Valid for authors
+  .addFilter('publication_year', 2023); // Not valid for authors
 ```
 
 This ensures compile-time validation of all query parameters and prevents runtime errors from invalid field names or value types.

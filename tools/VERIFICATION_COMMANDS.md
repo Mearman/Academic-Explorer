@@ -126,11 +126,11 @@ pnpm verify:lint-fixes
 - `1` - Verification failed (has errors)
 
 ### Status Indicators
-- ✅ - Check passed
-- ❌ - Check failed
-- ⚠️ - Warnings present
-- ⏭️ - Step skipped
-- ⏹️ - Stopped early
+- Check passed
+- Check failed
+- Warnings present
+- Step skipped
+- Stopped early
 
 ### Error Categories
 
@@ -146,26 +146,26 @@ pnpm verify:lint-fixes
 
 ### Sample Output Interpretation
 ```bash
-🚀 VERIFYING PACKAGE: web
+VERIFYING PACKAGE: web
 ==================================================
-✅ Found package: web at /path/to/apps/web
+Found package: web at /path/to/apps/web
 
-🔍 Running ESLint...
-❌ ESLint found issues:
-📊 Summary: 25 errors, 150 warnings
+Running ESLint...
+ESLint found issues:
+Summary: 25 errors, 150 warnings
 
-🔧 Running TypeScript compilation...
-❌ TypeScript compilation failed: 5 errors
+Running TypeScript compilation...
+TypeScript compilation failed: 5 errors
 
-⏭️ Skipping build due to previous failures
+Skipping build due to previous failures
 
-📊 VERIFICATION SUMMARY
+VERIFICATION SUMMARY
 --------------------------------
 Package: web
-Lint:    ❌ FAILED
-Types:   ❌ FAILED
-Build:   ❌ FAILED
-Overall: ❌ FAILED
+Lint:    FAILED
+Types:   FAILED
+Build:   FAILED
+Overall: FAILED
 ```
 
 ## Troubleshooting

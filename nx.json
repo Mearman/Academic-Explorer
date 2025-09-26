@@ -229,10 +229,16 @@
     "changelog": {
       "workspaceChangelog": {
         "createRelease": "github",
-        "file": "{workspaceRoot}/CHANGELOG.md"
+        "file": "{workspaceRoot}/CHANGELOG.md",
+        "renderOptions": {
+          "authors": false
+        }
       },
       "projectChangelogs": {
-        "file": "{projectRoot}/CHANGELOG.md"
+        "file": "{projectRoot}/CHANGELOG.md",
+        "renderOptions": {
+          "authors": false
+        }
       }
     },
     "git": {
