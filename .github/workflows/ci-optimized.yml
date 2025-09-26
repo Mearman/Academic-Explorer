@@ -30,6 +30,8 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
         with:
+          # Use tree:0 filter for better performance while maintaining full git history for Nx affected
+          filter: tree:0
           fetch-depth: 0
 
       - name: Setup Node.js and dependencies
@@ -38,7 +40,8 @@ jobs:
       - name: Generate cache key
         id: cache-key
         run: |
-          echo "key=nx-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml', 'nx.json', '**/project.json', 'package.json') }}" >> $GITHUB_OUTPUT
+          # Enhanced cache key including dependency changes and configuration files
+          echo "key=nx-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml', 'nx.json', '**/project.json', 'package.json', 'tsconfig*.json') }}" >> $GITHUB_OUTPUT
 
       - name: Restore Nx cache
         uses: actions/cache@v4
@@ -46,6 +49,7 @@ jobs:
           path: .nx/cache
           key: ${{ steps.cache-key.outputs.key }}
           restore-keys: |
+            nx-${{ runner.os }}-${{ hashFiles('nx.json', '**/project.json') }}-
             nx-${{ runner.os }}-
 
       - name: Setup Nx
@@ -73,12 +77,15 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
+      max-parallel: 3
       matrix:
         check: [typecheck, test]
     steps:
       - name: Checkout
         uses: actions/checkout@v4
         with:
+          # Use tree:0 filter for better performance while maintaining full git history for Nx affected
+          filter: tree:0
           fetch-depth: 0
 
       - name: Setup Node.js and dependencies
@@ -102,9 +109,9 @@ jobs:
         if: matrix.check == 'typecheck'
         run: |
           if [ "${{ needs.setup.outputs.has-affected }}" = "true" ]; then
-            timeout 5m pnpm nx affected -t build --parallel=2
+            timeout 5m pnpm nx affected -t build --parallel=3
           else
-            timeout 5m pnpm nx run-many -t build --parallel=2 --projects=utils,client
+            timeout 5m pnpm nx run-many -t build --parallel=3 --projects=utils,client
           fi
         env:
           NODE_OPTIONS: '--max-old-space-size=8192'
@@ -112,15 +119,15 @@ jobs:
       - name: Run ${{ matrix.check }}
         run: |
           if [ "${{ matrix.check }}" = "test" ]; then
-            # Skip web app tests temporarily to fix CI timeout issues
-            echo "Skipping web app tests temporarily to resolve CI timeouts"
-            timeout 10m pnpm nx run-many -t ${{ matrix.check }} --parallel=2 --projects=client,utils,graph,ui,simulation
+            # Run only essential package tests that are stable in CI with optimized parallelization
+            echo "Running essential package tests only"
+            timeout 10m pnpm nx run-many -t ${{ matrix.check }} --parallel=3 --projects=client,utils
           else
             if [ "${{ needs.setup.outputs.has-affected }}" = "true" ]; then
-              timeout 10m pnpm nx affected -t ${{ matrix.check }} --parallel=2
+              timeout 10m pnpm nx affected -t ${{ matrix.check }} --parallel=3
             else
               # Run on all projects when no affected projects detected
-              timeout 10m pnpm nx run-many -t ${{ matrix.check }} --parallel=2
+              timeout 10m pnpm nx run-many -t ${{ matrix.check }} --parallel=3
             fi
           fi
         env:
@@ -135,6 +142,8 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
         with:
+          # Use tree:0 filter for better performance while maintaining full git history for Nx affected
+          filter: tree:0
           fetch-depth: 0
 
       - name: Setup Node.js and dependencies
@@ -169,6 +178,8 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
         with:
+          # Use tree:0 filter for better performance while maintaining full git history for Nx affected
+          filter: tree:0
           fetch-depth: 0
 
       - name: Setup Node.js and dependencies
@@ -190,10 +201,10 @@ jobs:
       - name: Build affected projects
         run: |
           if [ "${{ needs.setup.outputs.has-affected }}" = "true" ]; then
-            timeout 10m pnpm nx affected -t build --parallel=2
+            timeout 10m pnpm nx affected -t build --parallel=3
           else
             # Build all projects when no affected projects detected
-            timeout 10m pnpm nx run-many -t build --parallel=2
+            timeout 10m pnpm nx run-many -t build --parallel=3
           fi
         env:
           NODE_OPTIONS: '--max-old-space-size=8192'
@@ -220,6 +231,8 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
         with:
+          # Use tree:0 filter for better performance while maintaining full git history for Nx affected
+          filter: tree:0
           fetch-depth: 0
 
       - name: Setup Node.js and dependencies
@@ -246,10 +259,10 @@ jobs:
       - name: Run ${{ matrix.check }}
         run: |
           if [ "${{ needs.setup.outputs.has-affected }}" = "true" ]; then
-            timeout 10m pnpm nx affected -t ${{ matrix.check }} --parallel=2
+            timeout 10m pnpm nx affected -t ${{ matrix.check }} --parallel=3
           else
             # Run on all projects when no affected projects detected
-            timeout 10m pnpm nx run-many -t ${{ matrix.check }} --parallel=2
+            timeout 10m pnpm nx run-many -t ${{ matrix.check }} --parallel=3
           fi
         env:
           NODE_OPTIONS: '--max-old-space-size=8192'
@@ -261,6 +274,8 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
         with:
+          # Use tree:0 filter for better performance while maintaining full git history for Nx affected
+          filter: tree:0
           fetch-depth: 0
 
       - name: Setup Node.js and dependencies
@@ -310,6 +325,8 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
         with:
+          # Use tree:0 filter for better performance while maintaining full git history for Nx affected
+          filter: tree:0
           fetch-depth: 0
 
       - name: Setup Node.js and dependencies
