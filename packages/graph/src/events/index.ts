@@ -3,7 +3,6 @@
  * Exports for the unified event bus system
  */
 
-import { logger } from '@academic-explorer/utils/logger';
 
 // Event types enum
 export enum GraphEventType {
@@ -131,7 +130,7 @@ class LocalEventBus implements EventBus {
         try {
           handler(eventWithTimestamp);
         } catch (error) {
-          logger.error('events', `Event handler error for ${event.type}`, { error, eventType: event.type });
+          console.error(`Event handler error for ${event.type}:`, error);
         }
       });
     }
@@ -179,7 +178,7 @@ class CrossTabEventBus implements EventBus {
     try {
       this.channel.postMessage(event);
     } catch (error) {
-      logger.error('events', 'Failed to broadcast event', { error, eventType: event.type });
+      console.error(`Failed to broadcast event ${event.type}:`, error);
     }
   }
 

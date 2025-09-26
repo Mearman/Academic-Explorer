@@ -618,7 +618,7 @@ export class GraphAnalyzer {
           const metrics = await this.calculateCitationMetrics(nodeId, options);
           return { nodeId, metrics };
         } catch (error) {
-          logger.warn("analysis", `Citation analysis failed for ${nodeId}`, { error });
+          console.warn(`Citation analysis failed for ${nodeId}:`, error);
           return null;
         }
       });

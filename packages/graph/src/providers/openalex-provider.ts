@@ -4,7 +4,6 @@
  * Integrated with SmartEntityCache for optimized data fetching
  */
 
-import { logger } from '@academic-explorer/utils/logger';
 import {
   GraphDataProvider,
   type SearchQuery,
@@ -173,7 +172,7 @@ export class OpenAlexGraphProvider extends GraphDataProvider {
 
           results.push(...searchResults);
         } catch (error) {
-          logger.warn('api', `Search failed for entity type ${entityType}`, { error, entityType });
+          console.warn(`Search failed for entity type ${entityType}:`, error);
         }
       }
 
@@ -291,7 +290,7 @@ export class OpenAlexGraphProvider extends GraphDataProvider {
           return cachedData;
         }
       } catch (error) {
-        logger.warn('cache', `Cache lookup failed for ${id}`, { error, id });
+        console.warn(`Cache lookup failed for ${id}:`, error);
       }
     }
 
@@ -390,7 +389,7 @@ export class OpenAlexGraphProvider extends GraphDataProvider {
         const entityIds = searchResults.map(node => node.id);
         await this.cache.batchPreloadEntities(entityIds, context);
       } catch (error) {
-        logger.warn('cache', 'Failed to preload search results', { error });
+        console.warn('Failed to preload search results:', error);
       }
     }
 
@@ -432,7 +431,7 @@ export class OpenAlexGraphProvider extends GraphDataProvider {
     // Convert results to GraphNode format with defensive checks
     const results = searchResults.results;
     if (!Array.isArray(results)) {
-      logger.warn('api', 'Search results is not an array', { results, entityType });
+      console.warn('Search results is not an array:', { results, entityType });
       return [];
     }
 
@@ -480,7 +479,7 @@ export class OpenAlexGraphProvider extends GraphDataProvider {
         const expansionContext = { ...context, operation: 'expand' as const, depth: (context.depth || 0) + 1 };
         await this.cache.batchPreloadEntities(relatedIds, expansionContext);
       } catch (error) {
-        logger.warn('cache', 'Failed to preload related entities', { error });
+        console.warn('Failed to preload related entities:', error);
       }
     }
 
@@ -558,7 +557,7 @@ export class OpenAlexGraphProvider extends GraphDataProvider {
           const expansionContext = { ...context, entityType: 'works' as const, depth: (context.depth || 0) + 1 };
           await this.cache.batchPreloadEntities(workIds, expansionContext);
         } catch (error) {
-          logger.warn('cache', 'Failed to preload author works', { error });
+          console.warn('Failed to preload author works:', error);
         }
       }
 
@@ -584,7 +583,7 @@ export class OpenAlexGraphProvider extends GraphDataProvider {
         });
       }
     } catch (error) {
-      logger.warn('api', `Failed to expand author ${authorId}`, { error, authorId });
+      console.warn(`Failed to expand author ${authorId}:`, error);
     }
   }
 
@@ -613,7 +612,7 @@ export class OpenAlexGraphProvider extends GraphDataProvider {
           const expansionContext = { ...context, entityType: 'works' as const, depth: (context.depth || 0) + 1 };
           await this.cache.batchPreloadEntities(workIds, expansionContext);
         } catch (error) {
-          logger.warn('cache', 'Failed to preload source works', { error });
+          console.warn('Failed to preload source works:', error);
         }
       }
 
@@ -639,7 +638,7 @@ export class OpenAlexGraphProvider extends GraphDataProvider {
         });
       }
     } catch (error) {
-      logger.warn('api', `Failed to expand source ${sourceId}`, { error, sourceId });
+      console.warn(`Failed to expand source ${sourceId}:`, error);
     }
   }
 
@@ -667,7 +666,7 @@ export class OpenAlexGraphProvider extends GraphDataProvider {
           const expansionContext = { ...context, entityType: 'authors' as const, depth: (context.depth || 0) + 1 };
           await this.cache.batchPreloadEntities(authorIds, expansionContext);
         } catch (error) {
-          logger.warn('cache', 'Failed to preload institution authors', { error });
+          console.warn('Failed to preload institution authors:', error);
         }
       }
 
@@ -693,7 +692,7 @@ export class OpenAlexGraphProvider extends GraphDataProvider {
         });
       }
     } catch (error) {
-      logger.warn('api', `Failed to expand institution ${institutionId}`, { error, institutionId });
+      console.warn(`Failed to expand institution ${institutionId}:`, error);
     }
   }
 
@@ -722,7 +721,7 @@ export class OpenAlexGraphProvider extends GraphDataProvider {
           const expansionContext = { ...context, entityType: 'works' as const, depth: (context.depth || 0) + 1 };
           await this.cache.batchPreloadEntities(workIds, expansionContext);
         } catch (error) {
-          logger.warn('cache', 'Failed to preload topic works', { error });
+          console.warn('Failed to preload topic works:', error);
         }
       }
 
@@ -748,7 +747,7 @@ export class OpenAlexGraphProvider extends GraphDataProvider {
         });
       }
     } catch (error) {
-      logger.warn('api', `Failed to expand topic ${topicId}`, { error, topicId });
+      console.warn(`Failed to expand topic ${topicId}:`, error);
     }
   }
 
@@ -770,7 +769,7 @@ export class OpenAlexGraphProvider extends GraphDataProvider {
     try {
       await this.cache.preloadEntity(id, context);
     } catch (error) {
-      logger.warn('cache', `Failed to preload entity ${id}`, { error, id });
+      console.warn(`Failed to preload entity ${id}:`, error);
     }
   }
 
@@ -783,7 +782,7 @@ export class OpenAlexGraphProvider extends GraphDataProvider {
     try {
       await this.cache.batchPreloadEntities(ids, context);
     } catch (error) {
-      logger.warn('cache', 'Failed to batch preload entities', { error });
+      console.warn('Failed to batch preload entities:', error);
     }
   }
 
@@ -796,7 +795,7 @@ export class OpenAlexGraphProvider extends GraphDataProvider {
     try {
       return await this.cache.getCacheStats();
     } catch (error) {
-      logger.warn('cache', 'Failed to get cache stats', { error });
+      console.warn('Failed to get cache stats:', error);
       return null;
     }
   }
@@ -827,7 +826,7 @@ export class OpenAlexGraphProvider extends GraphDataProvider {
     try {
       await this.cache.invalidateEntity(id);
     } catch (error) {
-      logger.warn('cache', `Failed to invalidate entity ${id}`, { error, id });
+      console.warn(`Failed to invalidate entity ${id}:`, error);
     }
   }
 
@@ -847,7 +846,7 @@ export class OpenAlexGraphProvider extends GraphDataProvider {
         contextOptimizations: 0
       };
     } catch (error) {
-      logger.warn('cache', 'Failed to clear cache', { error });
+      console.warn('Failed to clear cache:', error);
     }
   }
 

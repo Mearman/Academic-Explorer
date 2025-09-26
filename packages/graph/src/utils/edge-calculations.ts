@@ -5,7 +5,6 @@
  * This module supports continuous recalculation during force-directed layout simulation.
  */
 
-import { logger } from "@academic-explorer/utils/logger";
 
 // Local Position enum to avoid external dependency
 export enum Position {
@@ -109,7 +108,7 @@ export function calculateClosestAttachment(
 	}
 
 	if (!bestSourcePoint || !bestTargetPoint) {
-		logger.error("graph", "Failed to calculate closest attachment points", {
+		console.error("Failed to calculate closest attachment points:", {
 			sourceNode: { x: sourceNode.x, y: sourceNode.y },
 			targetNode: { x: targetNode.x, y: targetNode.y }
 		});
@@ -178,7 +177,7 @@ export function batchCalculateAttachments(
 			const attachment = calculateClosestAttachment(sourceNode, targetNode);
 			attachments.set(edge.id, attachment);
 		} else {
-			logger.warn("graph", "Missing node for edge calculation", {
+			console.warn("Missing node for edge calculation:", {
 				edgeId: edge.id,
 				sourceId: edge.source,
 				targetId: edge.target,
