@@ -1,9 +1,15 @@
 {
   "name": "@academic-explorer/cli",
-  "version": "8.1.0",
+  "version": "8.2.0",
   "type": "module",
   "description": "Command-line interface for OpenAlex data access",
-  "keywords": ["cli", "openalex", "academic", "research", "typescript"],
+  "keywords": [
+    "cli",
+    "openalex",
+    "academic",
+    "research",
+    "typescript"
+  ],
   "author": "Joe Mearman",
   "license": "MIT",
   "repository": {

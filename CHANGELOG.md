@@ -1,3 +1,64 @@
+# 9.0.0 (2025-09-26)
+
+### 🚀 Features
+
+- **config:** restore release automation with proper version workflow ([f7d3e058](https://github.com/Mearman/Academic-Explorer/commit/f7d3e058))
+- **config:** refactor ci workflow with modern nx best practices ([ffe23237](https://github.com/Mearman/Academic-Explorer/commit/ffe23237))
+- **monorepo:** add workspace configuration and tooling ([0ac08153](https://github.com/Mearman/Academic-Explorer/commit/0ac08153))
+- **ci:** make accessibility job non-blocking ([9dd9c576](https://github.com/Mearman/Academic-Explorer/commit/9dd9c576))
+- **ci:** add accessibility testing job to GitHub Actions workflow ([3d6cc73d](https://github.com/Mearman/Academic-Explorer/commit/3d6cc73d))
+- **hooks:** add husky and lint-staged for automatic linting fixes ([cf113050](https://github.com/Mearman/Academic-Explorer/commit/cf113050))
+- **ci:** tag and release against original commit with separate version bump ([8cf7456d](https://github.com/Mearman/Academic-Explorer/commit/8cf7456d))
+- **ci:** implement custom release workflow with proper tag and version flow ([d33671b7](https://github.com/Mearman/Academic-Explorer/commit/d33671b7))
+- **ci:** improve Nx caching strategy for better performance ([34db9f0d](https://github.com/Mearman/Academic-Explorer/commit/34db9f0d))
+- **ci:** add GitHub Actions CI workflow and dependabot ([807d75a7](https://github.com/Mearman/Academic-Explorer/commit/807d75a7))
+
+### 🩹 Fixes
+
+- **config:** add write permissions for release job to allow git push ([a5f237dd](https://github.com/Mearman/Academic-Explorer/commit/a5f237dd))
+- **config:** add first-release flag to nx release command ([abb49a70](https://github.com/Mearman/Academic-Explorer/commit/abb49a70))
+- **config:** remove tree filter from release checkout ([3beb1f09](https://github.com/Mearman/Academic-Explorer/commit/3beb1f09))
+- **config:** add workflow dispatch trigger to enable manual ci runs ([1b29d760](https://github.com/Mearman/Academic-Explorer/commit/1b29d760))
+- **config:** resolve json parsing error in affected projects detection ([f948a3e6](https://github.com/Mearman/Academic-Explorer/commit/f948a3e6))
+- **config:** resolve lint job hanging by bypassing nx eslint plugin ([b912c6ce](https://github.com/Mearman/Academic-Explorer/commit/b912c6ce))
+- **config:** resolve remaining CI failures - eslint flags and typecheck dependencies ([2abdc24d](https://github.com/Mearman/Academic-Explorer/commit/2abdc24d))
+- **config:** resolve coverage job tsx execution and cache dependency ([a1427e45](https://github.com/Mearman/Academic-Explorer/commit/a1427e45))
+- **ci:** resolve node options and script execution issues ([9ffffb11](https://github.com/Mearman/Academic-Explorer/commit/9ffffb11))
+- **config:** add dependency installation step to quality-checks ([a0774382](https://github.com/Mearman/Academic-Explorer/commit/a0774382))
+- **config:** ensure packages build before typecheck in CI ([97bdc976](https://github.com/Mearman/Academic-Explorer/commit/97bdc976))
+- **ci:** standardize pnpm version across all CI workflows ([0995798f](https://github.com/Mearman/Academic-Explorer/commit/0995798f))
+- **ci:** update pnpm version to 10.16.1 for CI/local consistency ([a97b05df](https://github.com/Mearman/Academic-Explorer/commit/a97b05df))
+- **ci:** resolve all remaining CI test failures ([a0e21e12](https://github.com/Mearman/Academic-Explorer/commit/a0e21e12))
+- **tests:** resolve relationship detection service test failures ([eb6cb6eb](https://github.com/Mearman/Academic-Explorer/commit/eb6cb6eb))
+- **ci:** revert release job to blocking ([bcb31aa3](https://github.com/Mearman/Academic-Explorer/commit/bcb31aa3))
+- **ci:** make release job non-blocking to handle API failures ([5a5f5097](https://github.com/Mearman/Academic-Explorer/commit/5a5f5097))
+- **accessibility:** resolve pa11y-ci and Lighthouse CI configuration issues ([94abb7fe](https://github.com/Mearman/Academic-Explorer/commit/94abb7fe))
+- **ci:** resolve accessibility test failures ([4a34d3a1](https://github.com/Mearman/Academic-Explorer/commit/4a34d3a1))
+- **ci:** comprehensive CI pipeline fixes for accessibility and coverage ([38c41640](https://github.com/Mearman/Academic-Explorer/commit/38c41640))
+- **ci:** use pnpm nx commands for proper execution ([6cec9f3d](https://github.com/Mearman/Academic-Explorer/commit/6cec9f3d))
+- **tests:** make e2e test variables explicitly nullable ([affada56](https://github.com/Mearman/Academic-Explorer/commit/affada56))
+- **ci:** resolve cache save failures and missing coverage artifacts ([4fe78bcd](https://github.com/Mearman/Academic-Explorer/commit/4fe78bcd))
+- **e2e:** improve app loading detection and reliability ([e48bc51a](https://github.com/Mearman/Academic-Explorer/commit/e48bc51a))
+- **ci:** add preview server setup for E2E tests ([89286f06](https://github.com/Mearman/Academic-Explorer/commit/89286f06))
+- **ci:** resolve CI failures and ESLint issues ([088aa836](https://github.com/Mearman/Academic-Explorer/commit/088aa836))
+- **ci:** handle version already updated by semantic-release ([4882d10a](https://github.com/Mearman/Academic-Explorer/commit/4882d10a))
+- **ci:** add GITHUB_TOKEN environment variable for semantic-release ([f8d10570](https://github.com/Mearman/Academic-Explorer/commit/f8d10570))
+- **ci:** replace manual changelog with semantic-release built-in functionality ([30b7c8b4](https://github.com/Mearman/Academic-Explorer/commit/30b7c8b4))
+- **ci:** remove empty files before semantic-release upload ([c1b72bc2](https://github.com/Mearman/Academic-Explorer/commit/c1b72bc2))
+- **ci:** add setup job dependency to release job for cache key access ([c0d41771](https://github.com/Mearman/Academic-Explorer/commit/c0d41771))
+- **release:** correct repository URL in semantic-release configuration ([4d04b227](https://github.com/Mearman/Academic-Explorer/commit/4d04b227))
+
+### 🔥 Performance
+
+- **config:** implement comprehensive pipeline performance optimizations ([c6ee58b3](https://github.com/Mearman/Academic-Explorer/commit/c6ee58b3))
+- **config:** build only core packages for typecheck to prevent ui timeout ([55bc279e](https://github.com/Mearman/Academic-Explorer/commit/55bc279e))
+- **config:** optimize ci build performance and prevent timeouts ([95a475eb](https://github.com/Mearman/Academic-Explorer/commit/95a475eb))
+- optimize TypeScript compilation and CI performance ([decd092e](https://github.com/Mearman/Academic-Explorer/commit/decd092e))
+
+### ❤️ Thank You
+
+- Joseph Mearman
+
 # [8.1.0](https://github.com/Mearman/Academic-Explorer/compare/v8.0.0...v8.1.0) (2025-09-22)
 
 

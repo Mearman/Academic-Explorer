@@ -1,9 +1,16 @@
 {
   "name": "@academic-explorer/simulation",
-  "version": "8.1.0",
+  "version": "8.2.0",
   "type": "module",
   "description": "Force-directed graph simulation engine for Academic Explorer",
-  "keywords": ["simulation", "force-directed", "graph", "d3", "web-workers", "typescript"],
+  "keywords": [
+    "simulation",
+    "force-directed",
+    "graph",
+    "d3",
+    "web-workers",
+    "typescript"
+  ],
   "author": "Joe Mearman",
   "license": "MIT",
   "repository": {

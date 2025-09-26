@@ -1,9 +1,14 @@
 {
   "name": "@academic-explorer/graph",
-  "version": "8.1.0",
+  "version": "8.2.0",
   "type": "module",
   "description": "Core graph data structures and types for Academic Explorer",
-  "keywords": ["graph", "academic", "research", "typescript"],
+  "keywords": [
+    "graph",
+    "academic",
+    "research",
+    "typescript"
+  ],
   "author": "Joe Mearman",
   "license": "MIT",
   "repository": {

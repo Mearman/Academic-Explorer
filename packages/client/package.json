@@ -1,6 +1,6 @@
 {
   "name": "@academic-explorer/client",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "TypeScript client for the OpenAlex API with comprehensive entity support and utilities",
   "keywords": [
     "openalex",
