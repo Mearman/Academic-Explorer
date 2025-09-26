@@ -105,7 +105,7 @@ export function SearchInterface({
             Search
 					</Button>
 
-					{(query ?? startDate ?? endDate) && (
+					{(Boolean(query) || startDate !== null || endDate !== null) && (
 						<Button
 							variant="subtle"
 							onClick={handleClearFilters}

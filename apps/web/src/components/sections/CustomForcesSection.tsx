@@ -500,15 +500,9 @@ export const CustomForcesSection: React.FC = () => {
   }, []);
 
   const handleLoadPreset = useCallback((presetId: string) => {
-    const presets: Record<string, { name: string; description: string; forces: CustomForce[]; }> = {}; // Fallback since getBuiltInPresets() not available
-    const preset = presets[presetId];
-
-    if (preset) {
-      customForceManager.loadPreset(preset);
-      setForces([]); // Fallback since getAllForces() not available
-      closePresetModal();
-      logger.debug("graph", "Force preset loaded", { presetId, name: preset.name });
-    }
+    // Fallback implementation - customForceManager.getBuiltInPresets() not available
+    logger.debug("graph", "Preset loading not implemented", { presetId });
+    closePresetModal();
   }, [closePresetModal]);
 
   const handleClearAll = useCallback(() => {
@@ -650,8 +644,8 @@ export const CustomForcesSection: React.FC = () => {
             <ForceItem
               key={force.id}
               force={force}
-              onUpdate={(updates) => { force.id && handleUpdateForce(force.id, updates); }}
-              onRemove={() => { force.id && handleRemoveForce(force.id); }}
+              onUpdate={(updates) => { if (force.id) handleUpdateForce(force.id, updates); }}
+              onRemove={() => { if (force.id) handleRemoveForce(force.id); }}
             />
           ))}
         </Stack>

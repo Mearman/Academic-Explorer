@@ -162,13 +162,13 @@ export const AllEdgesSection: React.FC = () => {
 
 	// Convert edges record to array
 	const edgeArray = useMemo(() => {
-		return Object.values(edges).filter((edge): edge is GraphEdge => edge !== undefined);
+		return Object.values(edges);
 	}, [edges]);
 
 	// Get node labels for display
 	const getNodeLabel = useCallback((nodeId: string) => {
 		const node = nodes[nodeId];
-		return node?.label || nodeId;
+		return node.label || nodeId;
 	}, [nodes]);
 
 	// Filter and group edges
@@ -243,21 +243,19 @@ export const AllEdgesSection: React.FC = () => {
 
 	const handleHighlightEdge = useCallback((edgeId: string) => {
 		const edge = edges[edgeId];
-		if (edge) {
-			logger.debug("graph", "Highlighting edge endpoints", {
-				edgeId,
-				source: edge.source,
-				target: edge.target
-			});
+		logger.debug("graph", "Highlighting edge endpoints", {
+			edgeId,
+			source: edge.source,
+			target: edge.target
+		});
 
-			// Clear previous selection and select both endpoints
-			clearSelection();
-			addToSelection(edge.source);
-			addToSelection(edge.target);
+		// Clear previous selection and select both endpoints
+		clearSelection();
+		addToSelection(edge.source);
+		addToSelection(edge.target);
 
-			// Set primary selection to source node
-			selectNode(edge.source);
-		}
+		// Set primary selection to source node
+		selectNode(edge.source);
 	}, [edges, clearSelection, addToSelection, selectNode]);
 
 	const handleRemoveEdge = useCallback((edgeId: string) => {
@@ -364,7 +362,7 @@ export const AllEdgesSection: React.FC = () => {
 				<Stack gap="md">
 					{relationTypeOptions.map(({ type, label, icon: IconComponent, description }) => {
 						const typeEdges = edgesByType[type] ?? [];
-						const totalCount = edgeTypeStats[type] ?? 0;
+						const totalCount = edgeTypeStats[type];
 						const visibleCount = typeEdges.length; // Use actual visible count from filtered edges
 						const isTypeVisible = visibleCount > 0;
 

@@ -150,7 +150,7 @@ export const AllNodesSection: React.FC = () => {
 
 	// Convert nodes record to array
 	const nodeArray = useMemo(() => {
-		return Object.values(nodes).filter((node): node is GraphNode => node !== undefined);
+		return Object.values(nodes);
 	}, [nodes]);
 
 	// Filter and group nodes
@@ -357,7 +357,7 @@ export const AllNodesSection: React.FC = () => {
 				<Stack gap="md">
 					{entityTypeOptions.map(({ type, label, icon: IconComponent }) => {
 						const typeNodes = nodesByType[type] ?? [];
-						const totalCount = entityTypeStats[type] ?? 0;
+						const totalCount = entityTypeStats[type];
 						const visibleCount = typeNodes.length; // Use actual visible count from filtered nodes
 						const isTypeVisible = visibleEntityTypes[type];
 

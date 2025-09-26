@@ -159,15 +159,15 @@ const AppActivitySection: React.FC = () => {
 
 		filteredEvents.forEach(event => {
 			if (event.severity === "error") {
-				groups["errors"]?.push(event);
+				groups["errors"].push(event);
 			} else if (event.severity === "warning") {
-				groups["warnings"]?.push(event);
+				groups["warnings"].push(event);
 			} else if (event.metadata?.entityType === "user") {
-				groups["interactions"]?.push(event);
+				groups["interactions"].push(event);
 			} else if (event.metadata?.entityType === "performance") {
-				groups["performance"]?.push(event);
+				groups["performance"].push(event);
 			} else {
-				groups["system"]?.push(event);
+				groups["system"].push(event);
 			}
 		});
 
@@ -525,19 +525,19 @@ const AppActivitySection: React.FC = () => {
 						</Text>
 					) : (
 						<>
-							{renderEventGroup({ title: "Errors", events: eventGroups["errors"] ?? [], color: "red" })}
-							{(eventGroups["errors"]?.length ?? 0) > 0 && <Divider />}
+							{renderEventGroup({ title: "Errors", events: eventGroups["errors"], color: "red" })}
+							{eventGroups["errors"].length > 0 && <Divider />}
 
-							{renderEventGroup({ title: "Warnings", events: eventGroups["warnings"] ?? [], color: "orange" })}
-							{(eventGroups["warnings"]?.length ?? 0) > 0 && <Divider />}
+							{renderEventGroup({ title: "Warnings", events: eventGroups["warnings"], color: "orange" })}
+							{eventGroups["warnings"].length > 0 && <Divider />}
 
-							{renderEventGroup({ title: "User Interactions", events: eventGroups["interactions"] ?? [], color: "blue" })}
-							{(eventGroups["interactions"]?.length ?? 0) > 0 && <Divider />}
+							{renderEventGroup({ title: "User Interactions", events: eventGroups["interactions"], color: "blue" })}
+							{eventGroups["interactions"].length > 0 && <Divider />}
 
-							{renderEventGroup({ title: "Performance", events: eventGroups["performance"] ?? [], color: "yellow" })}
-							{(eventGroups["performance"]?.length ?? 0) > 0 && <Divider />}
+							{renderEventGroup({ title: "Performance", events: eventGroups["performance"], color: "yellow" })}
+							{eventGroups["performance"].length > 0 && <Divider />}
 
-							{renderEventGroup({ title: "System Events", events: eventGroups["system"] ?? [], color: "gray" })}
+							{renderEventGroup({ title: "System Events", events: eventGroups["system"], color: "gray" })}
 						</>
 					)}
 				</Stack>
