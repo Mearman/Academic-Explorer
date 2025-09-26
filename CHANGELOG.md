@@ -1,3 +1,15 @@
+## 9.0.2 (2025-09-26)
+
+### 🩹 Fixes
+
+- **config:** remove --yes flag to fix mutually exclusive options ([673e5e52](https://github.com/Mearman/Academic-Explorer/commit/673e5e52))
+- **config:** improve lint error handling to prevent blocking releases ([eabbbf85](https://github.com/Mearman/Academic-Explorer/commit/eabbbf85))
+- **config:** use --skip-publish flag to prevent npm publishing in ci ([753eb338](https://github.com/Mearman/Academic-Explorer/commit/753eb338))
+
+### ❤️ Thank You
+
+- Joseph Mearman
+
 ## 9.0.1 (2025-09-26)
 
 ### 🩹 Fixes
