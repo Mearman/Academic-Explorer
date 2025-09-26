@@ -39,11 +39,18 @@ documentation/
 .gitignore
 .gitattributes
 
-# CI/CD files that don't affect local builds
-.github/
+# CI/CD files that don't affect local builds (keep .github/ for workflows)
 .gitlab-ci.yml
 .travis.yml
 .circleci/
+
+# CI temporary files and artifacts
+.github/tmp/
+coverage-reports/
+.lighthouseci/
+pa11y-results.json
+knip-report.json
+knip-summary.md
 
 # License files
 LICENSE*

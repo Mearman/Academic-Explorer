@@ -15,7 +15,13 @@ const config: KnipConfig = {
     "**/*.test-helpers.ts",
     // Library exports (used by external consumers)
     "packages/*/src/index.ts",
-    "packages/*/src/**/index.ts"
+    "packages/*/src/**/index.ts",
+    // Package.json files with library entries
+    "packages/*/package.json",
+    // Test setup files referenced in vitest config
+    "apps/web/src/test/setup.ts",
+    "apps/web/src/test/component-setup.ts",
+    "apps/web/src/test/e2e-setup.ts"
   ],
   ignoreExportsUsedInFile: true,
   workspaces: {
@@ -26,8 +32,7 @@ const config: KnipConfig = {
         "config/shared.ts",
         "config/vite-plugins/static-data-index.ts",
         "vite.config.ts",
-        "nx.json",
-        ".lintstagedrc.js"
+        "nx.json"
       ],
       project: [
         "tools/scripts/**/*.{ts,js}",
@@ -73,9 +78,6 @@ const config: KnipConfig = {
 
     // Graph package
     "packages/graph": {
-      entry: [
-        "src/index.ts"
-      ],
       project: [
         "src/**/*.ts"
       ]
@@ -83,9 +85,6 @@ const config: KnipConfig = {
 
     // Simulation package
     "packages/simulation": {
-      entry: [
-        "src/index.ts"
-      ],
       project: [
         "src/**/*.ts"
       ]
@@ -93,9 +92,6 @@ const config: KnipConfig = {
 
     // OpenAlex client package
     "packages/client": {
-      entry: [
-        "src/index.ts"
-      ],
       project: [
         "src/**/*.ts"
       ]
@@ -104,7 +100,6 @@ const config: KnipConfig = {
     // UI components package
     "packages/ui": {
       entry: [
-        "src/index.ts",
         "src/test/setup.ts"
       ],
       project: [
@@ -118,9 +113,6 @@ const config: KnipConfig = {
 
     // Shared utilities package
     "packages/utils": {
-      entry: [
-        "src/index.ts"
-      ],
       project: [
         "src/**/*.ts"
       ]
@@ -141,7 +133,8 @@ const config: KnipConfig = {
 
   // Ignore dependencies that are used but not detected correctly
   ignoreDependencies: [
-    "@vanilla-extract/vite-plugin" // Used in vite.config.ts but knip doesn't detect it properly
+    "@vanilla-extract/vite-plugin", // Used in vite.config.ts but knip doesn't detect it properly
+    "@mantine/notifications" // Optional peerDependency for UI components
   ],
 
   // Plugin configurations

@@ -56,13 +56,34 @@
     },
     "lint:fix": {
       "cache": true,
-      "inputs": ["default", "{workspaceRoot}/eslint.config.ts"],
-      "outputs": ["{projectRoot}/**/*.{js,jsx,ts,tsx}"]
+      "inputs": [
+        "default",
+        "{workspaceRoot}/eslint.config.ts",
+        "{workspaceRoot}/eslint.config.*.ts",
+        "{projectRoot}/eslint.config.ts"
+      ],
+      "outputs": ["{projectRoot}/**/*.{js,jsx,ts,tsx}"],
+      "options": {
+        "fix": true,
+        "cache": true,
+        "cacheLocation": "{workspaceRoot}/.nx/cache/eslint/"
+      }
     },
     "lint": {
       "cache": true,
-      "inputs": ["default", "{workspaceRoot}/eslint.config.ts"],
-      "outputs": ["{options.outputFile}"]
+      "inputs": [
+        "default",
+        "{workspaceRoot}/eslint.config.ts",
+        "{workspaceRoot}/eslint.config.*.ts",
+        "{projectRoot}/eslint.config.ts"
+      ],
+      "outputs": ["{options.outputFile}"],
+      "options": {
+        "maxWarnings": 0,
+        "cache": true,
+        "cacheLocation": "{workspaceRoot}/.nx/cache/eslint/",
+        "fix": false
+      }
     },
     "typecheck": {
       "cache": true,
@@ -73,7 +94,10 @@
         "{workspaceRoot}/config/**/*",
         "{projectRoot}/tsconfig*.json"
       ],
-      "outputs": ["{projectRoot}/dist/tsc"]
+      "outputs": ["{projectRoot}/dist/tsc"],
+      "options": {
+        "cacheableOperations": ["typecheck"]
+      }
     },
     "knip": {
       "cache": true,
@@ -178,6 +202,7 @@
           "build",
           "typecheck",
           "lint",
+          "lint:fix",
           "test",
           "test:unit:run",
           "test:component:run",
@@ -185,12 +210,15 @@
           "test:e2e:run",
           "test:a11y",
           "test:a11y:e2e",
+          "preview",
           "build-storybook",
           "knip",
           "knip:nx"
         ],
-        "parallel": 8,
-        "runtimeCacheInputs": ["node -v", "pnpm -v"]
+        "parallel": 4,
+        "runtimeCacheInputs": ["node -v", "pnpm -v"],
+        "useDaemonProcess": true,
+        "cacheDirectory": ".nx/cache"
       }
     }
   },
