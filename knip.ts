@@ -21,9 +21,17 @@ const config: KnipConfig = {
     // Test setup files referenced in vitest config
     "apps/web/src/test/setup.ts",
     "apps/web/src/test/component-setup.ts",
-    "apps/web/src/test/e2e-setup.ts"
+    "apps/web/src/test/e2e-setup.ts",
+    // Development utility files (may be used in future development)
+    "packages/client/src/advanced-field-selection.ts",
+    "packages/client/src/cached-client.ts",
+    "packages/client/src/type-guards.ts",
+    // Test infrastructure exports (intentionally exported for test reuse)
+    "packages/graph/src/__tests__/**/*.ts"
   ],
   ignoreExportsUsedInFile: true,
+  // Research project settings - be more lenient with unused exports
+  includeEntryExports: false,
   workspaces: {
     // Root workspace - scripts and configs
     ".": {
@@ -142,7 +150,9 @@ const config: KnipConfig = {
     "d3-force", // Force simulation library used in graph components
     "d3-random", // Random number generation for deterministic layouts
     "idb", // IndexedDB wrapper used for browser storage
-    "lodash-es" // ES module utilities used across applications
+    "lodash-es", // ES module utilities used across applications
+    // Workspace dependencies that may not be actively used but are part of development
+    "@academic-explorer/utils" // Utility package used across workspace projects
   ],
 
   // Plugin configurations

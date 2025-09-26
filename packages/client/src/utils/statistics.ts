@@ -237,7 +237,7 @@ export class StatisticsApi {
 		const trendAnalysis = this.getTrendAnalysis();
 
 		// Collaboration metrics (for applicable entity types)
-		let collaborationMetrics;
+		let collaborationMetrics: EntityAnalytics['collaboration_metrics'] | undefined;
 		if (entityType === "works" || entityType === "authors") {
 			collaborationMetrics = this.getCollaborationMetrics();
 		}

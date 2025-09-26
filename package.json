@@ -32,6 +32,7 @@
     "nx": "nx",
     "knip": "knip",
     "knip:workspace": "knip --workspace",
+    "knip:ci": "tsx tools/scripts/knip-ci.ts",
     "release": "nx release",
     "release:version": "nx release version",
     "release:publish": "nx release publish",

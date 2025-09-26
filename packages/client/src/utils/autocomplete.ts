@@ -226,8 +226,9 @@ export class AutocompleteApi {
 				// Search across all entity types
 				return await this.search(trimmedQuery);
 			}
-		} catch (error) {
-			logger.warn(`[AutocompleteApi] Autocomplete failed for query "${query}"`, { query, error });
+		} catch (error: unknown) {
+			const errorDetails = this.formatErrorForLogging(error);
+			logger.warn(`[AutocompleteApi] Autocomplete failed for query "${query}"`, { query, error: errorDetails });
 			return [];
 		}
 	}
@@ -354,6 +355,40 @@ export class AutocompleteApi {
 			cacheSize: entries.length,
 			oldestEntry: timestamps.length > 0 ? Math.min(...timestamps) : null,
 			newestEntry: timestamps.length > 0 ? Math.max(...timestamps) : null,
+		};
+	}
+
+	/**
+	 * Format unknown error for safe logging using type guards
+	 */
+	private formatErrorForLogging(error: unknown): Record<string, unknown> {
+		if (error instanceof Error) {
+			return {
+				name: error.name,
+				message: error.message,
+				stack: error.stack,
+			};
+		}
+
+		if (typeof error === 'string') {
+			return { message: error };
+		}
+
+		if (typeof error === 'object' && error !== null) {
+			// Safely extract properties from object-like errors
+			const errorObj = error as Record<string, unknown>;
+			return {
+				message: typeof errorObj.message === 'string' ? errorObj.message : 'Unknown error',
+				name: typeof errorObj.name === 'string' ? errorObj.name : 'UnknownError',
+				code: typeof errorObj.code === 'string' || typeof errorObj.code === 'number' ? errorObj.code : undefined,
+				status: typeof errorObj.status === 'number' ? errorObj.status : undefined,
+			};
+		}
+
+		// Fallback for primitive types or null
+		return {
+			message: 'Unknown error occurred',
+			value: String(error),
 		};
 	}
 }

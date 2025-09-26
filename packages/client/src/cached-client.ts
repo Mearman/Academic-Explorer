@@ -11,6 +11,8 @@ import { TopicsApi } from './entities/topics';
 import { logger } from '@academic-explorer/utils';
 import { PublishersApi } from './entities/publishers';
 import { FundersApi } from './entities/funders';
+import { KeywordsApi } from './entities/keywords';
+import type { OpenAlexEntity } from './types';
 
 export interface ClientApis {
   works: WorksApi;
@@ -20,8 +22,8 @@ export interface ClientApis {
   topics: TopicsApi;
   publishers: PublishersApi;
   funders: FundersApi;
-  keywords: any; // Stub for keywords
-  getEntity: (id: string) => Promise<any>; // Generic entity getter
+  keywords: KeywordsApi;
+  getEntity: (id: string) => Promise<OpenAlexEntity | null>;
 }
 
 export class CachedOpenAlexClient extends OpenAlexBaseClient {
@@ -40,8 +42,8 @@ export class CachedOpenAlexClient extends OpenAlexBaseClient {
       topics: new TopicsApi(this),
       publishers: new PublishersApi(this),
       funders: new FundersApi(this),
-      keywords: {}, // Stub implementation
-      getEntity: async (id: string) => {
+      keywords: new KeywordsApi(this),
+      getEntity: async (id: string): Promise<OpenAlexEntity | null> => {
         // Basic entity getter stub
         logger.warn('client', 'CachedOpenAlexClient.getEntity: Stub implementation', { id });
         return null;

@@ -262,8 +262,9 @@ export class GroupingApi {
 					total_count: group.count,
 					...(growthRate !== undefined && { growth_rate: growthRate }),
 				});
-			} catch (error) {
-				logger.warn(`[GroupingApi] Failed to get temporal trends for group ${group.key}`, { groupKey: group.key, error });
+			} catch (error: unknown) {
+				const errorMessage = error instanceof Error ? error.message : String(error);
+				logger.warn(`[GroupingApi] Failed to get temporal trends for group ${group.key}`, { groupKey: group.key, error: errorMessage });
 			}
 		}
 
@@ -382,8 +383,9 @@ export class GroupingApi {
 							percentage_of_total: (count / primary.total_count) * 100,
 							percentage_of_primary: (count / primaryGroup.count) * 100,
 						});
-					} catch (error) {
-						logger.warn(`[GroupingApi] Failed cross-tabulation for ${primaryGroup.key} x ${secondaryGroup.key}`, { primaryKey: primaryGroup.key, secondaryKey: secondaryGroup.key, error });
+					} catch (error: unknown) {
+						const errorMessage = error instanceof Error ? error.message : String(error);
+						logger.warn(`[GroupingApi] Failed cross-tabulation for ${primaryGroup.key} x ${secondaryGroup.key}`, { primaryKey: primaryGroup.key, secondaryKey: secondaryGroup.key, error: errorMessage });
 					}
 				}
 			}
@@ -500,8 +502,9 @@ export class GroupingApi {
 					group_total: group.count,
 					top_performers: performersWithRank,
 				});
-			} catch (error) {
-				logger.warn(`[GroupingApi] Failed to get top performers for group ${group.key}`, { groupKey: group.key, error });
+			} catch (error: unknown) {
+				const errorMessage = error instanceof Error ? error.message : String(error);
+				logger.warn(`[GroupingApi] Failed to get top performers for group ${group.key}`, { groupKey: group.key, error: errorMessage });
 			}
 		}
 
@@ -635,8 +638,9 @@ export class GroupingApi {
 						};
 						// stats.median is already included in percentiles as p50
 					}
-				} catch (error) {
-					logger.warn(`[GroupingApi] Failed to calculate percentiles for group ${group.key}`, { groupKey: group.key, error });
+				} catch (error: unknown) {
+					const errorMessage = error instanceof Error ? error.message : String(error);
+					logger.warn(`[GroupingApi] Failed to calculate percentiles for group ${group.key}`, { groupKey: group.key, error: errorMessage });
 				}
 			}
 

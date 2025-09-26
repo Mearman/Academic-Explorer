@@ -5,7 +5,7 @@
 
 import { OpenAlexBaseClient } from "../client";
 import type { OpenAlexEntity, EntityType, QueryParams, SampleParams, OpenAlexResponse } from "../types";
-import { logger } from "../internal/logger";
+import { logger, logError } from "../internal/logger";
 
 /**
  * Advanced sampling options
@@ -147,8 +147,9 @@ export class SamplingApi {
 					count: stratum.count,
 					sample_count: stratumSample.results.length,
 				});
-			} catch (error) {
-				logger.warn(`Failed to sample from stratum ${stratum.key}`, { stratumKey: stratum.key, error });
+			} catch (error: unknown) {
+				logError(`Failed to sample from stratum ${stratum.key}`, error);
+				logger.warn(`Failed to sample from stratum ${stratum.key}`, { stratumKey: stratum.key });
 				strataInfo.push({
 					stratum: stratum.key_display_name || stratum.key,
 					count: stratum.count,
@@ -222,8 +223,9 @@ export class SamplingApi {
 					count: periodSample.meta.count,
 					sample_count: periodSample.results.length,
 				});
-			} catch (error) {
-				logger.warn(`Failed to sample from period ${period.name}`, { periodName: period.name, error });
+			} catch (error: unknown) {
+				logError(`Failed to sample from period ${period.name}`, error);
+				logger.warn(`Failed to sample from period ${period.name}`, { periodName: period.name });
 				temporalDistribution.push({
 					period: period.name,
 					count: 0,
