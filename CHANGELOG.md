@@ -1,3 +1,14 @@
+## 9.0.1 (2025-09-26)
+
+### 🩹 Fixes
+
+- **config:** allow ci to continue on lint errors for research project ([e9913264](https://github.com/Mearman/Academic-Explorer/commit/e9913264))
+- **config:** disable npm publishing in nx release for research project ([fd54c445](https://github.com/Mearman/Academic-Explorer/commit/fd54c445))
+
+### ❤️ Thank You
+
+- Joseph Mearman
+
 # 9.0.0 (2025-09-26)
 
 ### 🚀 Features
