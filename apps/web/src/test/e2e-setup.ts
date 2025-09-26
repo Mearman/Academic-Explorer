@@ -11,7 +11,7 @@ import { injectAxe, checkA11y, configureAxe } from "@axe-core/playwright"
 function isCallableFunction(fn: unknown): fn is (...args: unknown[]) => Promise<unknown> {
 	return typeof fn === "function"
 }
-import { logger } from "@academic-explorer/utils/logger";
+import { logger } from "@academic-explorer/utils";
 import { useGraphStore } from "@/stores/graph-store"
 import { useAnimatedGraphStore } from "@/stores/animated-graph-store"
 

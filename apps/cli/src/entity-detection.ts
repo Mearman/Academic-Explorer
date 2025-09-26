@@ -68,7 +68,7 @@ export type StaticEntityType = typeof SUPPORTED_ENTITIES[number];
 /**
  * Convert EntityType to StaticEntityType
  */
-export function toStaticEntityType(entityType: EntityType): StaticEntityType {
+function toStaticEntityType(entityType: EntityType): StaticEntityType {
 	if (SUPPORTED_ENTITIES.includes(entityType as StaticEntityType)) {
 		return entityType as StaticEntityType;
 	}

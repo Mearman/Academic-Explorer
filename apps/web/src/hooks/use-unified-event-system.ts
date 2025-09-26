@@ -82,7 +82,7 @@ export function useEventListener(
 /**
  * Hook for managing TaskQueue
  */
-export function useTaskQueue(
+function useTaskQueue(
   bus: EventBus,
   options: { maxConcurrency?: number } = {}
 ): {
@@ -154,7 +154,7 @@ export function useTaskQueue(
 /**
  * Hook for managing WorkerPool
  */
-export function useWorkerPool(
+function useWorkerPool(
   bus: EventBus,
   options: WorkerPoolOptions
 ): {
@@ -227,7 +227,7 @@ export function useWorkerPool(
 /**
  * Hook for managing QueuedResourceCoordinator
  */
-export function useQueuedResourceCoordinator(
+function useQueuedResourceCoordinator(
   bus: EventBus,
   options: QueueCoordinatorOptions
 ): {
@@ -338,7 +338,7 @@ export function useQueuedResourceCoordinator(
 /**
  * Hook for task progress tracking
  */
-export function useTaskProgress(
+function useTaskProgress(
   bus: EventBus,
   taskId: string
 ): {
@@ -436,7 +436,7 @@ export function useTaskProgress(
 /**
  * Hook for cross-tab event broadcasting
  */
-export function useCrossTabEvent(
+function useCrossTabEvent(
   channelName: string,
   eventType: string,
   handler: (payload?: unknown) => void,
@@ -467,7 +467,7 @@ export function useCrossTabEvent(
 /**
  * Hook for managing multiple event subscriptions
  */
-export function useEventSubscriptions(
+function useEventSubscriptions(
   bus: EventBus,
   subscriptions: Array<{
     eventType: string;
