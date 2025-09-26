@@ -16,9 +16,7 @@
       "executor": "nx:run-commands",
       "dependsOn": ["^build"],
       "options": {
-        "commands": [
-          "vite build"
-        ],
+        "command": "vite build",
         "cwd": "{projectRoot}",
         "nodeOptions": ["--max-old-space-size=8192"]
       },
