@@ -19,7 +19,7 @@ The Query Builder provides a fluent, type-safe interface for constructing OpenAl
 import { createWorksQuery, buildSortString, SELECT_PRESETS } from '@academic-explorer/openalex-client';
 
 // Create a query for open access machine learning papers from 2023
-const query = createWorksQuery()
+const _query = createWorksQuery()
   .addFilter('publication_year', 2023)
   .addFilter('is_oa', true)
   .addSearch('default.search', 'machine learning')
@@ -30,7 +30,7 @@ const filterString = query.buildFilterString();
 // Result: "publication_year:2023,is_oa:true,default.search:\"machine learning\",cited_by_count:>10"
 
 // Create complete API parameters
-const apiParams = {
+const _apiParams = {
   filter: filterString,
   sort: buildSortString({ field: 'cited_by_count', direction: 'desc' }),
   select: SELECT_PRESETS.WORKS_DETAILED.join(','),
@@ -45,7 +45,7 @@ const apiParams = {
 The main class for building queries with method chaining:
 
 ```typescript
-const query = new QueryBuilder<WorksFilters>()
+const _query = new QueryBuilder<WorksFilters>()
   .addFilter('publication_year', 2023)
   .addFilters({ 'is_oa': true, 'has_doi': true })
   .addDateRange('from_publication_date', 'to_publication_date', '2023-01-01', '2023-12-31')
@@ -58,9 +58,9 @@ Type-specific query builders for convenience:
 
 ```typescript
 // Specialized builders for each entity type
-const worksQuery = createWorksQuery({ 'publication_year': 2023 });
-const authorsQuery = createAuthorsQuery({ 'works_count': '>100' });
-const sourcesQuery = createSourcesQuery({ 'is_oa': true });
+const _worksQuery = createWorksQuery({ 'publication_year': 2023 });
+const _authorsQuery = createAuthorsQuery({ 'works_count': '>100' });
+const _sourcesQuery = createSourcesQuery({ 'is_oa': true });
 // ... etc for all entity types
 ```
 
@@ -76,7 +76,7 @@ const filters: WorksFilters = {
   'is_oa': true,
   'authorships.author.id': ['A1234', 'A5678'] // Becomes: A1234|A5678
 };
-const filterString = buildFilterString(filters);
+const _filterString = buildFilterString(filters);
 // Result: "publication_year:2023,is_oa:true,authorships.author.id:A1234|A5678"
 ```
 
@@ -85,7 +85,7 @@ const filterString = buildFilterString(filters);
 Handles sorting parameters:
 
 ```typescript
-const sortString = buildSortString([
+const _sortString = buildSortString([
   { field: 'publication_year', direction: 'desc' },
   { field: 'cited_by_count', direction: 'desc' }
 ]);
@@ -97,7 +97,7 @@ const sortString = buildSortString([
 Creates field selection strings:
 
 ```typescript
-const selectString = buildSelectString(['id', 'display_name', 'publication_year']);
+const _selectString = buildSelectString(['id', 'display_name', 'publication_year']);
 // Result: "id,display_name,publication_year"
 ```
 
@@ -117,7 +117,7 @@ if (validation.isValid) {
 Escapes special characters in filter values:
 
 ```typescript
-const escaped = escapeFilterValue('machine "learning" & AI');
+const _escaped = escapeFilterValue('machine "learning" & AI');
 // Handles quotes, spaces, and special characters properly
 ```
 
@@ -130,7 +130,7 @@ Common sort field names:
 ```typescript
 import { SORT_FIELDS } from '@academic-explorer/openalex-client';
 
-const sort = buildSortString({
+const _sort = buildSortString({
   field: SORT_FIELDS.CITED_BY_COUNT,
   direction: 'desc'
 });
@@ -144,8 +144,8 @@ Predefined field selection sets:
 import { SELECT_PRESETS } from '@academic-explorer/openalex-client';
 
 // Use predefined field selections
-const basicFields = SELECT_PRESETS.BASIC; // ['id', 'display_name', 'cited_by_count']
-const detailedFields = SELECT_PRESETS.WORKS_DETAILED; // Comprehensive field list
+const _basicFields = SELECT_PRESETS.BASIC; // ['id', 'display_name', 'cited_by_count']
+const _detailedFields = SELECT_PRESETS.WORKS_DETAILED; // Comprehensive field list
 ```
 
 ## Advanced Features
@@ -155,7 +155,7 @@ const detailedFields = SELECT_PRESETS.WORKS_DETAILED; // Comprehensive field lis
 Support for comparison operators:
 
 ```typescript
-const query = createWorksQuery()
+const _query = createWorksQuery()
   .addFilter('cited_by_count', 100, '>') // Greater than
   .addFilter('publication_year', 2020, '>=') // Greater than or equal
   .addFilter('is_oa', false, '!='); // Not equal
@@ -166,7 +166,7 @@ const query = createWorksQuery()
 Arrays are automatically converted to OR logic:
 
 ```typescript
-const query = createWorksQuery()
+const _query = createWorksQuery()
   .addFilter('authorships.author.id', ['A1234', 'A5678', 'A9012']);
 // Result: authorships.author.id:A1234|A5678|A9012
 ```
@@ -176,7 +176,7 @@ const query = createWorksQuery()
 Automatic date validation and normalization:
 
 ```typescript
-const query = createWorksQuery()
+const _query = createWorksQuery()
   .addDateRange('from_publication_date', 'to_publication_date',
     '2020-01-01T00:00:00Z', // ISO format
     '2023-12-31' // Simple format
@@ -189,12 +189,12 @@ const query = createWorksQuery()
 Build base queries and create variants:
 
 ```typescript
-const baseQuery = createWorksQuery({ 'is_oa': true });
+const _baseQuery = createWorksQuery({ 'is_oa': true });
 
-const recentQuery = baseQuery.clone()
+const _recentQuery = _baseQuery.clone()
   .addFilter('publication_year', 2023);
 
-const highImpactQuery = baseQuery.clone()
+const _highImpactQuery = _baseQuery.clone()
   .addFilter('cited_by_count', 100, '>');
 ```
 
@@ -203,7 +203,7 @@ const highImpactQuery = baseQuery.clone()
 Graceful handling of invalid inputs:
 
 ```typescript
-const query = createWorksQuery()
+const _query = createWorksQuery()
   .addFilter('publication_year', null) // Ignored
   .addSearch('title.search', '') // Ignored
   .addFilter('cited_by_count', 0); // Valid zero value
@@ -226,7 +226,7 @@ import { createWorksQuery, buildSortString, SELECT_PRESETS } from '@academic-exp
 
 const client = new OpenAlexBaseClient();
 
-const query = createWorksQuery()
+const _query = createWorksQuery()
   .addFilter('publication_year', 2023)
   .addFilter('is_oa', true);
 
@@ -237,7 +237,7 @@ const params = {
   per_page: 25
 };
 
-const response = await client.request('works', params);
+const _response = await client.request('works', params);
 ```
 
 ## Examples
@@ -256,11 +256,11 @@ All query builders are fully typed for their respective entity filters:
 
 ```typescript
 // TypeScript will enforce valid field names and value types
-const worksQuery = createWorksQuery()
+const _worksQuery = createWorksQuery()
   .addFilter('publication_year', 2023) // Valid
   .addFilter('invalid_field', 'value'); // TypeScript error
 
-const authorsQuery = createAuthorsQuery()
+const _authorsQuery = createAuthorsQuery()
   .addFilter('works_count', '>100') // Valid for authors
   .addFilter('publication_year', 2023); // Not valid for authors
 ```
