@@ -9,6 +9,31 @@ import { logger } from "@academic-explorer/utils/logger";
 import type { SimulationLink, NodePosition } from "@academic-explorer/simulation/types";
 import type { GraphNode, GraphEdge } from "@academic-explorer/graph";
 
+// Type guards for safe type checking
+function isMetadataWithNodeId(metadata: unknown): metadata is { nodeId: string } {
+  return typeof metadata === "object" &&
+         metadata !== null &&
+         "nodeId" in metadata &&
+         typeof (metadata as { nodeId: unknown }).nodeId === "string";
+}
+
+function isExpansionResult(result: unknown): result is {
+  requestId: string;
+  nodes: GraphNode[];
+  edges: GraphEdge[];
+  links?: SimulationLink[];
+  positions?: NodePosition[];
+} {
+  return typeof result === "object" &&
+         result !== null &&
+         "requestId" in result &&
+         typeof (result as { requestId: unknown }).requestId === "string" &&
+         "nodes" in result &&
+         Array.isArray((result as { nodes: unknown }).nodes) &&
+         "edges" in result &&
+         Array.isArray((result as { edges: unknown }).edges);
+}
+
 export interface WebWorkerTaskSystem {
   submitTask: (task: WorkerRequest) => Promise<void>;
   getStats: () => WorkerStats;
@@ -70,7 +95,7 @@ interface UnifiedTask<T = unknown> {
   requestId?: string;
 }
 
-interface TaskSystem<T = unknown> {
+interface _TaskSystem<T = unknown> {
   submitTask: (task: UnifiedTask<T>) => Promise<void>;
   getStats: () => WorkerStats;
   isWorkerReady: boolean;
@@ -152,8 +177,8 @@ export function useWebWorker(
           case "PROGRESS":
             if (typeof data.progress === "number") {
               onProgress?.(data.progress, data.requestId);
-              if (data.requestId && typeof data.metadata === "object" && 'nodeId' in data.metadata) {
-                onExpansionProgress?.((data.metadata as any).nodeId as string, data.progress);
+              if (data.requestId && isMetadataWithNodeId(data.metadata)) {
+                onExpansionProgress?.(data.metadata.nodeId, data.progress);
               }
             }
             break;
@@ -162,8 +187,8 @@ export function useWebWorker(
             setError(null);
             setIsLoading(false);
             onSuccess?.(data.result, data.requestId);
-            if (data.requestId && onExpansionComplete && typeof data.result === "object") {
-              onExpansionComplete(data.result as {requestId: string; nodes: GraphNode[]; edges: GraphEdge[]; links?: SimulationLink[]; positions?: NodePosition[] });
+            if (data.requestId && onExpansionComplete && isExpansionResult(data.result)) {
+              onExpansionComplete(data.result);
             }
             break;
 

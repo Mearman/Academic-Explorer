@@ -9,7 +9,8 @@ vi.mock('../internal/logger', () => ({
 		warn: vi.fn(),
 		debug: vi.fn(),
 		error: vi.fn()
-	}
+	},
+	logError: vi.fn()
 }));
 
 import { logger } from '../internal/logger';

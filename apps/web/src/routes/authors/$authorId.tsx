@@ -16,6 +16,8 @@ function AuthorRoute() {
 	// DEBUGGING: Systematically re-enable hooks one by one
 	// Step 1: ✅ useGraphStore works fine
 	const { setProvider } = useGraphStore();
+	// eslint-disable-next-line @typescript-eslint/no-unused-vars
+	const _ = setProvider; // Placeholder to prevent ESLint warning
 
 	// Step 2: Re-enable useRawEntityData (entity data fetching)
 	const rawEntityData = useRawEntityData({ entityId: authorId });
@@ -25,6 +27,8 @@ function AuthorRoute() {
 
 	// Step 4: ✅ Testing refactored useGraphData (no worker dependency)
 	const graphData = useGraphData();
+	// eslint-disable-next-line @typescript-eslint/no-unused-vars
+	const _unused = graphData; // Placeholder to prevent ESLint warning
 
 	logger.debug("route", "Author route loading with raw data display", {
 		authorId,

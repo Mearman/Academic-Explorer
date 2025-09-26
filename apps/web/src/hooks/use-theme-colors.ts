@@ -83,7 +83,7 @@ export function useThemeColors() {
 			"work", "author", "source", "institution", "concept", "topic", "publisher", "funder"
 		];
 		return validKeys.includes(key);
-	}, []);
+	}, [colors]);
 
 	// Entity color utilities - memoized to prevent React 19 infinite loops
 	const getEntityColor = useCallback((entityType: string): string => {

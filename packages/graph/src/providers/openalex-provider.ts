@@ -4,6 +4,7 @@
  * Integrated with SmartEntityCache for optimized data fetching
  */
 
+import { logger } from '@academic-explorer/utils/logger';
 import {
   GraphDataProvider,
   type SearchQuery,
@@ -13,6 +14,55 @@ import {
 import type { GraphNode, GraphEdge, EntityType, EntityIdentifier, ExternalIdentifier } from '../types/core';
 import { RelationType } from '../types/core';
 import { EntityDetectionService } from '../services/entity-detection-service';
+
+// OpenAlex entity interfaces - extending Record<string, unknown> for compatibility
+interface OpenAlexEntity extends Record<string, unknown> {
+  id: string;
+  display_name: string;
+  ids?: Record<string, string>;
+}
+
+interface OpenAlexWork extends OpenAlexEntity {
+  title?: string;
+  publication_year?: number;
+  type?: string;
+  authorships?: Array<{
+    author?: OpenAlexEntity & {
+      orcid?: string;
+    };
+  }>;
+  primary_location?: {
+    source?: OpenAlexEntity;
+  };
+  topics?: OpenAlexEntity[];
+}
+
+interface OpenAlexAuthor extends OpenAlexEntity {
+  orcid?: string;
+  last_known_institutions?: OpenAlexEntity[];
+  works_count?: number;
+}
+
+interface OpenAlexSource extends OpenAlexEntity {
+  type?: string;
+}
+
+interface OpenAlexInstitution extends OpenAlexEntity {
+  country_code?: string;
+}
+
+interface OpenAlexTopic extends OpenAlexEntity {
+  level?: number;
+}
+
+interface OpenAlexSearchResponse {
+  results: Record<string, unknown>[];
+  meta?: {
+    count?: number;
+    per_page?: number;
+    page?: number;
+  };
+}
 
 // Smart Entity Cache interfaces (to be implemented)
 interface CacheContext {
@@ -159,7 +209,7 @@ export class OpenAlexGraphProvider extends GraphDataProvider {
 
           results.push(...searchResults);
         } catch (error) {
-          console.warn(`Search failed for entity type ${entityType}:`, error);
+          logger.warn('api', `Search failed for entity type ${entityType}`, { error, entityType });
         }
       }
 
@@ -277,7 +327,7 @@ export class OpenAlexGraphProvider extends GraphDataProvider {
           return cachedData;
         }
       } catch (error) {
-        console.warn(`Cache lookup failed for ${id}:`, error);
+        logger.warn('cache', `Cache lookup failed for ${id}`, { error, id });
       }
     }
 
@@ -376,7 +426,7 @@ export class OpenAlexGraphProvider extends GraphDataProvider {
         const entityIds = searchResults.map(node => node.id);
         await this.cache.batchPreloadEntities(entityIds, context);
       } catch (error) {
-        console.warn(`Failed to preload search results:`, error);
+        logger.warn('cache', 'Failed to preload search results', { error });
       }
     }
 
@@ -384,7 +434,7 @@ export class OpenAlexGraphProvider extends GraphDataProvider {
   }
 
   private async searchByEntityType(query: string, entityType: EntityType, options: { limit?: number; offset?: number }): Promise<GraphNode[]> {
-    let searchResults: any;
+    let searchResults: OpenAlexSearchResponse;
 
     switch (entityType) {
       case 'works':
@@ -415,22 +465,31 @@ export class OpenAlexGraphProvider extends GraphDataProvider {
         return [];
     }
 
-    // Convert results to GraphNode format
-    return (searchResults.results || []).map((item: any) => ({
-      id: item.id,
-      entityType,
-      entityId: item.id,
-      label: this.extractLabel(item, entityType),
-      x: Math.random() * 800,
-      y: Math.random() * 600,
-      externalIds: this.extractExternalIds(item, entityType),
-      entityData: item,
-    }));
+    // Convert results to GraphNode format with defensive checks
+    const results = searchResults.results;
+    if (!Array.isArray(results)) {
+      logger.warn('api', 'Search results is not an array', { results, entityType });
+      return [];
+    }
+
+    return results.map((item) => {
+      const itemRecord = item as Record<string, unknown>;
+      return {
+        id: String(itemRecord.id),
+        entityType,
+        entityId: String(itemRecord.id),
+        label: this.extractLabel(itemRecord, entityType),
+        x: Math.random() * 800,
+        y: Math.random() * 600,
+        externalIds: this.extractExternalIds(itemRecord, entityType),
+        entityData: itemRecord,
+      };
+    });
   }
 
   private async expandWorkWithCache(
     workId: string,
-    workData: any,
+    workData: Record<string, unknown>,
     nodes: GraphNode[],
     edges: GraphEdge[],
     options: ProviderExpansionOptions,
@@ -439,16 +498,16 @@ export class OpenAlexGraphProvider extends GraphDataProvider {
     const relatedIds: string[] = [];
 
     // Collect related entity IDs for batch preloading
-    if (workData.authorships) {
-      for (const authorship of workData.authorships.slice(0, options.limit || 10)) {
-        if (authorship.author?.id) {
-          relatedIds.push(authorship.author.id);
-        }
+    const authorships = workData.authorships as Array<{author?: {id?: string}}>|| [];
+    for (const authorship of authorships.slice(0, options.limit || 10)) {
+      if (authorship.author?.id) {
+        relatedIds.push(authorship.author.id);
       }
     }
 
-    if (workData.primary_location?.source?.id) {
-      relatedIds.push(workData.primary_location.source.id);
+    const primaryLocation = workData.primary_location as {source?: {id?: string}} || {};
+    if (primaryLocation.source?.id) {
+      relatedIds.push(primaryLocation.source.id);
     }
 
     // Batch preload related entities
@@ -457,44 +516,43 @@ export class OpenAlexGraphProvider extends GraphDataProvider {
         const expansionContext = { ...context, operation: 'expand' as const, depth: (context.depth || 0) + 1 };
         await this.cache.batchPreloadEntities(relatedIds, expansionContext);
       } catch (error) {
-        console.warn(`Failed to preload related entities:`, error);
+        logger.warn('cache', 'Failed to preload related entities', { error });
       }
     }
 
     // Add authors
-    if (workData.authorships) {
-      for (const authorship of workData.authorships.slice(0, options.limit || 10)) {
-        if (authorship.author?.id) {
-          const authorNode: GraphNode = {
-            id: authorship.author.id,
-            entityType: 'authors',
-            entityId: authorship.author.id,
-            label: authorship.author.display_name || 'Unknown Author',
-            x: Math.random() * 800,
-            y: Math.random() * 600,
-            externalIds: this.extractExternalIds(authorship.author, 'authors'),
-            entityData: authorship.author,
-          };
+    for (const authorship of authorships.slice(0, options.limit || 10)) {
+      if (authorship.author?.id) {
+        const author = authorship.author as Record<string, unknown>;
+        const authorNode: GraphNode = {
+          id: authorship.author.id,
+          entityType: 'authors',
+          entityId: authorship.author.id,
+          label: String(author.display_name) || 'Unknown Author',
+          x: Math.random() * 800,
+          y: Math.random() * 600,
+          externalIds: this.extractExternalIds(author, 'authors'),
+          entityData: author,
+        };
 
-          nodes.push(authorNode);
-          edges.push({
-            id: `${workId}-authored-${authorship.author.id}`,
-            source: authorship.author.id,
-            target: workId,
-            type: RelationType.AUTHORED,
-          });
-        }
+        nodes.push(authorNode);
+        edges.push({
+          id: `${workId}-authored-${authorship.author.id}`,
+          source: authorship.author.id,
+          target: workId,
+          type: RelationType.AUTHORED,
+        });
       }
     }
 
     // Add source (journal/venue)
-    if (workData.primary_location?.source?.id) {
-      const {source} = workData.primary_location;
+    if (primaryLocation.source?.id) {
+      const source = primaryLocation.source as Record<string, unknown>;
       const sourceNode: GraphNode = {
-        id: source.id,
+        id: primaryLocation.source.id,
         entityType: 'sources',
-        entityId: source.id,
-        label: source.display_name || 'Unknown Source',
+        entityId: primaryLocation.source.id,
+        label: String(source.display_name) || 'Unknown Source',
         x: Math.random() * 800,
         y: Math.random() * 600,
         externalIds: this.extractExternalIds(source, 'sources'),
@@ -503,9 +561,9 @@ export class OpenAlexGraphProvider extends GraphDataProvider {
 
       nodes.push(sourceNode);
       edges.push({
-        id: `${workId}-published-in-${source.id}`,
+        id: `${workId}-published-in-${primaryLocation.source.id}`,
         source: workId,
-        target: source.id,
+        target: primaryLocation.source.id,
         type: RelationType.PUBLISHED_IN,
       });
     }
@@ -513,7 +571,7 @@ export class OpenAlexGraphProvider extends GraphDataProvider {
 
   private async expandAuthorWithCache(
     authorId: string,
-    authorData: any,
+    authorData: Record<string, unknown>,
     nodes: GraphNode[],
     edges: GraphEdge[],
     options: ProviderExpansionOptions,
@@ -527,7 +585,8 @@ export class OpenAlexGraphProvider extends GraphDataProvider {
         sort: 'publication_year:desc',
       });
 
-      const workIds = (works.results || []).map((work: any) => String(work.id));
+      const workResults = Array.isArray(works.results) ? works.results : [];
+      const workIds = workResults.map((work) => String((work as Record<string, unknown>).id));
 
       // Batch preload works into cache
       if (this.cache && workIds.length > 0) {
@@ -535,38 +594,39 @@ export class OpenAlexGraphProvider extends GraphDataProvider {
           const expansionContext = { ...context, entityType: 'works' as const, depth: (context.depth || 0) + 1 };
           await this.cache.batchPreloadEntities(workIds, expansionContext);
         } catch (error) {
-          console.warn(`Failed to preload author works:`, error);
+          logger.warn('cache', 'Failed to preload author works', { error });
         }
       }
 
-      for (const work of works.results || []) {
+      for (const work of workResults) {
+        const workRecord = work as Record<string, unknown>;
         const workNode: GraphNode = {
-          id: String(work.id),
+          id: String(workRecord.id),
           entityType: 'works',
-          entityId: String(work.id),
-          label: this.extractLabel(work, 'works'),
+          entityId: String(workRecord.id),
+          label: this.extractLabel(workRecord, 'works'),
           x: Math.random() * 800,
           y: Math.random() * 600,
-          externalIds: this.extractExternalIds(work, 'works'),
-          entityData: work,
+          externalIds: this.extractExternalIds(workRecord, 'works'),
+          entityData: workRecord,
         };
 
         nodes.push(workNode);
         edges.push({
-          id: `${authorId}-authored-${work.id}`,
+          id: `${authorId}-authored-${workRecord.id}`,
           source: authorId,
-          target: String(work.id),
+          target: String(workRecord.id),
           type: RelationType.AUTHORED,
         });
       }
     } catch (error) {
-      console.warn(`Failed to expand author ${authorId}:`, error);
+      logger.warn('api', `Failed to expand author ${authorId}`, { error, authorId });
     }
   }
 
   private async expandSourceWithCache(
     sourceId: string,
-    sourceData: any,
+    sourceData: Record<string, unknown>,
     nodes: GraphNode[],
     edges: GraphEdge[],
     options: ProviderExpansionOptions,
@@ -580,7 +640,8 @@ export class OpenAlexGraphProvider extends GraphDataProvider {
         sort: 'publication_year:desc',
       });
 
-      const workIds = (works.results || []).map((work: any) => String(work.id));
+      const workResults = Array.isArray(works.results) ? works.results : [];
+      const workIds = workResults.map((work) => String((work as Record<string, unknown>).id));
 
       // Batch preload works into cache
       if (this.cache && workIds.length > 0) {
@@ -588,38 +649,39 @@ export class OpenAlexGraphProvider extends GraphDataProvider {
           const expansionContext = { ...context, entityType: 'works' as const, depth: (context.depth || 0) + 1 };
           await this.cache.batchPreloadEntities(workIds, expansionContext);
         } catch (error) {
-          console.warn(`Failed to preload source works:`, error);
+          logger.warn('cache', 'Failed to preload source works', { error });
         }
       }
 
-      for (const work of works.results || []) {
+      for (const work of workResults) {
+        const workRecord = work as Record<string, unknown>;
         const workNode: GraphNode = {
-          id: String(work.id),
+          id: String(workRecord.id),
           entityType: 'works',
-          entityId: String(work.id),
-          label: this.extractLabel(work, 'works'),
+          entityId: String(workRecord.id),
+          label: this.extractLabel(workRecord, 'works'),
           x: Math.random() * 800,
           y: Math.random() * 600,
-          externalIds: this.extractExternalIds(work, 'works'),
-          entityData: work,
+          externalIds: this.extractExternalIds(workRecord, 'works'),
+          entityData: workRecord,
         };
 
         nodes.push(workNode);
         edges.push({
-          id: `${work.id}-published-in-${sourceId}`,
-          source: String(work.id),
+          id: `${workRecord.id}-published-in-${sourceId}`,
+          source: String(workRecord.id),
           target: sourceId,
           type: RelationType.PUBLISHED_IN,
         });
       }
     } catch (error) {
-      console.warn(`Failed to expand source ${sourceId}:`, error);
+      logger.warn('api', `Failed to expand source ${sourceId}`, { error, sourceId });
     }
   }
 
   private async expandInstitutionWithCache(
     institutionId: string,
-    institutionData: any,
+    institutionData: Record<string, unknown>,
     nodes: GraphNode[],
     edges: GraphEdge[],
     options: ProviderExpansionOptions,
@@ -632,7 +694,8 @@ export class OpenAlexGraphProvider extends GraphDataProvider {
         per_page: options.limit || 10,
       });
 
-      const authorIds = (authors.results || []).map((author: any) => String(author.id));
+      const authorResults = Array.isArray(authors.results) ? authors.results : [];
+      const authorIds = authorResults.map((author) => String((author as Record<string, unknown>).id));
 
       // Batch preload authors into cache
       if (this.cache && authorIds.length > 0) {
@@ -640,38 +703,39 @@ export class OpenAlexGraphProvider extends GraphDataProvider {
           const expansionContext = { ...context, entityType: 'authors' as const, depth: (context.depth || 0) + 1 };
           await this.cache.batchPreloadEntities(authorIds, expansionContext);
         } catch (error) {
-          console.warn(`Failed to preload institution authors:`, error);
+          logger.warn('cache', 'Failed to preload institution authors', { error });
         }
       }
 
-      for (const author of authors.results || []) {
+      for (const author of authorResults) {
+        const authorRecord = author as Record<string, unknown>;
         const authorNode: GraphNode = {
-          id: String(author.id),
+          id: String(authorRecord.id),
           entityType: 'authors',
-          entityId: String(author.id),
-          label: this.extractLabel(author, 'authors'),
+          entityId: String(authorRecord.id),
+          label: this.extractLabel(authorRecord, 'authors'),
           x: Math.random() * 800,
           y: Math.random() * 600,
-          externalIds: this.extractExternalIds(author, 'authors'),
-          entityData: author,
+          externalIds: this.extractExternalIds(authorRecord, 'authors'),
+          entityData: authorRecord,
         };
 
         nodes.push(authorNode);
         edges.push({
-          id: `${author.id}-affiliated-${institutionId}`,
-          source: String(author.id),
+          id: `${authorRecord.id}-affiliated-${institutionId}`,
+          source: String(authorRecord.id),
           target: institutionId,
           type: RelationType.AFFILIATED,
         });
       }
     } catch (error) {
-      console.warn(`Failed to expand institution ${institutionId}:`, error);
+      logger.warn('api', `Failed to expand institution ${institutionId}`, { error, institutionId });
     }
   }
 
   private async expandTopicWithCache(
     topicId: string,
-    topicData: any,
+    topicData: Record<string, unknown>,
     nodes: GraphNode[],
     edges: GraphEdge[],
     options: ProviderExpansionOptions,
@@ -685,7 +749,8 @@ export class OpenAlexGraphProvider extends GraphDataProvider {
         sort: 'publication_year:desc',
       });
 
-      const workIds = (works.results || []).map((work: any) => String(work.id));
+      const workResults = Array.isArray(works.results) ? works.results : [];
+      const workIds = workResults.map((work) => String((work as Record<string, unknown>).id));
 
       // Batch preload works into cache
       if (this.cache && workIds.length > 0) {
@@ -693,32 +758,33 @@ export class OpenAlexGraphProvider extends GraphDataProvider {
           const expansionContext = { ...context, entityType: 'works' as const, depth: (context.depth || 0) + 1 };
           await this.cache.batchPreloadEntities(workIds, expansionContext);
         } catch (error) {
-          console.warn(`Failed to preload topic works:`, error);
+          logger.warn('cache', 'Failed to preload topic works', { error });
         }
       }
 
-      for (const work of works.results || []) {
+      for (const work of workResults) {
+        const workRecord = work as Record<string, unknown>;
         const workNode: GraphNode = {
-          id: String(work.id),
+          id: String(workRecord.id),
           entityType: 'works',
-          entityId: String(work.id),
-          label: this.extractLabel(work, 'works'),
+          entityId: String(workRecord.id),
+          label: this.extractLabel(workRecord, 'works'),
           x: Math.random() * 800,
           y: Math.random() * 600,
-          externalIds: this.extractExternalIds(work, 'works'),
-          entityData: work,
+          externalIds: this.extractExternalIds(workRecord, 'works'),
+          entityData: workRecord,
         };
 
         nodes.push(workNode);
         edges.push({
-          id: `${work.id}-has-topic-${topicId}`,
-          source: String(work.id),
+          id: `${workRecord.id}-has-topic-${topicId}`,
+          source: String(workRecord.id),
           target: topicId,
           type: RelationType.WORK_HAS_TOPIC,
         });
       }
     } catch (error) {
-      console.warn(`Failed to expand topic ${topicId}:`, error);
+      logger.warn('api', `Failed to expand topic ${topicId}`, { error, topicId });
     }
   }
 
@@ -740,7 +806,7 @@ export class OpenAlexGraphProvider extends GraphDataProvider {
     try {
       await this.cache.preloadEntity(id, context);
     } catch (error) {
-      console.warn(`Failed to preload entity ${id}:`, error);
+      logger.warn('cache', `Failed to preload entity ${id}`, { error, id });
     }
   }
 
@@ -753,7 +819,7 @@ export class OpenAlexGraphProvider extends GraphDataProvider {
     try {
       await this.cache.batchPreloadEntities(ids, context);
     } catch (error) {
-      console.warn(`Failed to batch preload entities:`, error);
+      logger.warn('cache', 'Failed to batch preload entities', { error });
     }
   }
 
@@ -766,7 +832,7 @@ export class OpenAlexGraphProvider extends GraphDataProvider {
     try {
       return await this.cache.getCacheStats();
     } catch (error) {
-      console.warn(`Failed to get cache stats:`, error);
+      logger.warn('cache', 'Failed to get cache stats', { error });
       return null;
     }
   }
@@ -797,7 +863,7 @@ export class OpenAlexGraphProvider extends GraphDataProvider {
     try {
       await this.cache.invalidateEntity(id);
     } catch (error) {
-      console.warn(`Failed to invalidate entity ${id}:`, error);
+      logger.warn('cache', `Failed to invalidate entity ${id}`, { error, id });
     }
   }
 
@@ -817,7 +883,7 @@ export class OpenAlexGraphProvider extends GraphDataProvider {
         contextOptimizations: 0
       };
     } catch (error) {
-      console.warn(`Failed to clear cache:`, error);
+      logger.warn('cache', 'Failed to clear cache', { error });
     }
   }
 

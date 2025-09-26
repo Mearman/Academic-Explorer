@@ -3,6 +3,7 @@
  * Defines the interface for fetching and expanding graph entities from various data sources
  */
 
+import { logger } from '@academic-explorer/utils/logger';
 import { EventEmitter } from '../utils/event-emitter';
 import type { GraphNode, EntityType, EntityIdentifier } from '../types/core';
 
@@ -134,12 +135,12 @@ export abstract class GraphDataProvider extends EventEmitter {
   }
 
   // Safe event emission that catches listener errors
-  protected safeEmit(event: string | symbol, ...args: any[]): boolean {
+  protected safeEmit(event: string | symbol, ...args: unknown[]): boolean {
     try {
       return this.emit(String(event), ...args);
     } catch (error) {
       // Log the error but don't let it interrupt the main flow
-      console.warn(`Event listener error for ${String(event)}:`, error);
+      logger.warn('event', `Event listener error for ${String(event)}`, { error, event: String(event) });
       return false;
     }
   }

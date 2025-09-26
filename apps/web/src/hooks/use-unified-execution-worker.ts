@@ -16,6 +16,23 @@ import type {
 import type { SimulationLink, NodePosition } from "@academic-explorer/simulation/types";
 import type { GraphNode, GraphEdge } from "@academic-explorer/graph";
 
+// Type guards for safe event handling
+function isEventWithPayload(event: unknown): event is { payload: Record<string, unknown> } {
+  return typeof event === "object" &&
+         event !== null &&
+         "payload" in event &&
+         typeof (event as { payload: unknown }).payload === "object" &&
+         (event as { payload: unknown }).payload !== null;
+}
+
+function isPayloadWithResult(payload: Record<string, unknown>): payload is { result: unknown } {
+  return "result" in payload;
+}
+
+function isPayloadWithError(payload: Record<string, unknown>): payload is { error: unknown; id?: string } {
+  return "error" in payload;
+}
+
 // Reuse schemas from the original hook
 const NodePositionSchema = z.object({
   id: z.string(),
@@ -107,6 +124,43 @@ interface UseUnifiedExecutionWorkerOptions {
   enableWorkerFallback?: boolean;
   maxConcurrency?: number;
   progressThrottleMs?: number;
+}
+
+// TaskSystem interface and related types
+interface TaskSubmission {
+  id: string;
+  payload: TaskPayload;
+  priority?: number;
+  timeout?: number;
+}
+
+interface TaskPayload {
+  entityType: string;
+  nodes?: ForceSimulationNode[];
+  links?: SimulationLink[];
+  config?: ForceSimulationConfig;
+  pinnedNodes?: string[];
+  alpha?: number;
+}
+
+interface SystemStats {
+  queueLength: number;
+  activeTasks: number;
+  processing: boolean;
+  maxConcurrency: number;
+  strategyMode: string;
+  supportsWorkers: boolean;
+  initialized: boolean;
+}
+
+interface _TaskSystem {
+  submitTask(task: TaskSubmission): Promise<string>;
+  cancelTask(taskId: string): Promise<void>;
+  getExecutionMode(): string;
+  getStats(): Promise<SystemStats>;
+  isUsingWorkers(): boolean;
+  isInitialized(): boolean;
+  shutdown(): Promise<void>;
 }
 
 export function useUnifiedExecutionWorker(options: UseUnifiedExecutionWorkerOptions = {}) {
@@ -323,8 +377,8 @@ export function useUnifiedExecutionWorker(options: UseUnifiedExecutionWorkerOpti
 
     const unsubscribers: Array<() => void> = [];
 
-    const forceProgressHandler = (event: any) => {
-      if (!event.payload || typeof event.payload !== "object") return;
+    const forceProgressHandler = (event: unknown) => {
+      if (!isEventWithPayload(event)) return;
       const {payload} = event;
 
       const taskId = "id" in payload && typeof payload.id === "string" ? payload.id : undefined;
@@ -339,8 +393,8 @@ export function useUnifiedExecutionWorker(options: UseUnifiedExecutionWorkerOpti
     const _forceProgressUnsub = bus.on("TASK_PROGRESS", forceProgressHandler);
     unsubscribers.push(() => { bus.off("TASK_PROGRESS", forceProgressHandler); });
 
-    const forceCompleteHandler = (event: any) => {
-      if (!event.payload || typeof event.payload !== "object" || !("result" in event.payload)) {
+    const forceCompleteHandler = (event: unknown) => {
+      if (!isEventWithPayload(event) || !isPayloadWithResult(event.payload)) {
         return;
       }
       const {payload} = event;
@@ -355,8 +409,8 @@ export function useUnifiedExecutionWorker(options: UseUnifiedExecutionWorkerOpti
     const _forceCompleteUnsub = bus.on("TASK_SUCCESS", forceCompleteHandler);
     unsubscribers.push(() => { bus.off("TASK_SUCCESS", forceCompleteHandler); });
 
-    const errorHandler = (event: any) => {
-      if (event.payload && typeof event.payload === "object" && "error" in event.payload) {
+    const errorHandler = (event: unknown) => {
+      if (isEventWithPayload(event) && isPayloadWithError(event.payload)) {
         const taskPayload = event.payload;
         const taskId = "id" in taskPayload && typeof taskPayload.id === "string" ? taskPayload.id : undefined;
         if (taskId && !activeTaskIdsRef.current.has(taskId)) {
@@ -732,19 +786,8 @@ export function useUnifiedExecutionWorker(options: UseUnifiedExecutionWorkerOpti
     }
   }, [taskSystem, addActiveTask, removeActiveTask, onAnimationError]);
 
-  // TaskSystem interface based on usage
-  interface _TaskSystem {
-    submitTask(task: any): Promise<string>;
-    cancelTask(taskId: string): Promise<void>;
-    getExecutionMode(): string;
-    getStats(): Promise<any>;
-    isUsingWorkers(): boolean;
-    isInitialized(): boolean;
-    shutdown(): Promise<void>;
-  }
-
   // Get execution statistics
-  const [systemStats, setSystemStats] = useState<Awaited<ReturnType<_TaskSystem["getStats"]>>>({
+  const [systemStats, setSystemStats] = useState<SystemStats>({
     queueLength: 0,
     activeTasks: 0,
     processing: false,
