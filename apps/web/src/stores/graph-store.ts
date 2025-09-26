@@ -276,7 +276,9 @@ export const useGraphStore = create<GraphState>()(
 				const state = get();
 				if (state.provider) {
 					nodes.forEach(node => {
-						state.provider!.addNode(node);
+						if (state.provider) {
+							state.provider.addNode(node);
+						}
 					});
 				}
 			},
@@ -298,16 +300,23 @@ export const useGraphStore = create<GraphState>()(
 				);
 
 				set((draft) => {
-					// Remove node
-					delete draft.nodes[nodeId];
+					// Remove node using destructuring
+					const { [nodeId]: removedNode, ...remainingNodes } = draft.nodes;
+					draft.nodes = remainingNodes;
 
-					// Remove connected edges
-					connectedEdges.forEach(edge => {
-						delete draft.edges[edge.id];
+					// Remove connected edges using destructuring
+					const edgeIdsToRemove = new Set(connectedEdges.map(edge => edge.id));
+					const remainingEdges: Record<string, GraphEdge> = {};
+					Object.entries(draft.edges).forEach(([edgeId, edge]) => {
+						if (!edgeIdsToRemove.has(edgeId)) {
+							remainingEdges[edgeId] = edge;
+						}
 					});
+					draft.edges = remainingEdges;
 
-					// Clean up pinning
-					delete draft.pinnedNodes[nodeId];
+					// Clean up pinning using destructuring
+					const { [nodeId]: removedPin, ...remainingPinned } = draft.pinnedNodes;
+					draft.pinnedNodes = remainingPinned;
 
 					// Clean up selection
 					if (draft.selectedNodeId === nodeId) {
@@ -316,29 +325,31 @@ export const useGraphStore = create<GraphState>()(
 					if (draft.hoveredNodeId === nodeId) {
 						draft.hoveredNodeId = null;
 					}
-					delete draft.selectedNodes[nodeId];
+					const { [nodeId]: removedSelection, ...remainingSelected } = draft.selectedNodes;
+					draft.selectedNodes = remainingSelected;
 				});
 
 				// Notify provider
 				if (state.provider) {
 					state.provider.removeNode(nodeId);
 					connectedEdges.forEach(edge => {
-						state.provider!.removeEdge(edge.id);
+						if (state.provider) {
+							state.provider.removeEdge(edge.id);
+						}
 					});
 				}
 			},
 
 			removeEdge: (edgeId) => {
 				set((draft) => {
-					delete draft.edges[edgeId];
+					const { [edgeId]: removedEdge, ...remainingEdges } = draft.edges;
+					draft.edges = remainingEdges;
 				});
 			},
 
 			updateNode: (nodeId, updates) => {
 				set((draft) => {
-					if (draft.nodes[nodeId]) {
-						draft.nodes[nodeId] = { ...draft.nodes[nodeId], ...updates };
-					}
+					draft.nodes[nodeId] = { ...draft.nodes[nodeId], ...updates };
 				});
 			},
 
@@ -374,7 +385,8 @@ export const useGraphStore = create<GraphState>()(
 
 			unpinNode: (nodeId) => {
 				set((draft) => {
-					delete draft.pinnedNodes[nodeId];
+					const { [nodeId]: removedPin, ...remainingPinned } = draft.pinnedNodes;
+					draft.pinnedNodes = remainingPinned;
 				});
 			},
 
@@ -386,7 +398,7 @@ export const useGraphStore = create<GraphState>()(
 
 			isPinned: (nodeId) => {
 				const state = get();
-				return !!state.pinnedNodes[nodeId];
+				return Boolean(state.pinnedNodes[nodeId]);
 			},
 
 			// Layout methods
@@ -411,7 +423,7 @@ export const useGraphStore = create<GraphState>()(
 					if (visible) {
 						draft.visibleEntityTypes[entityType] = true;
 					} else {
-						delete draft.visibleEntityTypes[entityType];
+						draft.visibleEntityTypes[entityType] = false;
 					}
 				});
 			},
@@ -489,7 +501,8 @@ export const useGraphStore = create<GraphState>()(
 
 			removeFromSelection: (nodeId) => {
 				set((draft) => {
-					delete draft.selectedNodes[nodeId];
+					const { [nodeId]: removedSelection, ...remainingSelected } = draft.selectedNodes;
+					draft.selectedNodes = remainingSelected;
 				});
 			},
 
@@ -511,11 +524,7 @@ export const useGraphStore = create<GraphState>()(
 			// Missing visibility methods
 			toggleEntityTypeVisibility: (entityType) => {
 				set((draft) => {
-					if (draft.visibleEntityTypes[entityType]) {
-						delete draft.visibleEntityTypes[entityType];
-					} else {
-						draft.visibleEntityTypes[entityType] = true;
-					}
+					draft.visibleEntityTypes[entityType] = !draft.visibleEntityTypes[entityType];
 				});
 			},
 
@@ -596,7 +605,9 @@ export const useGraphStore = create<GraphState>()(
 					visited.add(rootNode);
 
 					while (queue.length > 0) {
-						const { id: currentId, depth } = queue.shift()!;
+						const current = queue.shift();
+						if (!current) break;
+						const { id: currentId, depth } = current;
 
 						// Find connected nodes
 						Object.values(edges).forEach(edge => {
@@ -669,7 +680,9 @@ export const useGraphStore = create<GraphState>()(
 				visited.add(sourceId);
 
 				while (queue.length > 0) {
-					const { id: currentId, path } = queue.shift()!;
+					const current = queue.shift();
+					if (!current) break;
+					const { id: currentId, path } = current;
 
 					// Find neighbors
 					for (const edge of edges) {
@@ -704,7 +717,8 @@ export const useGraphStore = create<GraphState>()(
 				}
 
 				while (queue.length > 0) {
-					const currentId = queue.shift()!;
+					const currentId = queue.shift();
+					if (!currentId) break;
 					if (visited.has(currentId)) continue;
 
 					visited.add(currentId);
