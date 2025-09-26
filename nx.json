@@ -238,6 +238,7 @@
     "git": {
       "commitMessage": "chore(release): version packages [skip ci]"
     },
+    "publish": false,
     "groups": {
       "default": {
         "projects": ["*"],
