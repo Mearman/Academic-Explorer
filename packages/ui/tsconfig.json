@@ -4,7 +4,6 @@
     "declaration": true,
     "outDir": "./dist",
     "rootDir": "./src",
-    "composite": true,
     "noEmit": false,
     "jsx": "react-jsx",
     "moduleResolution": "bundler",
@@ -14,12 +13,8 @@
     "skipLibCheck": true,
     "strict": false,
     "incremental": true,
-    "tsBuildInfoFile": "./dist/.tsbuildinfo",
     "assumeChangesOnlyAffectDirectDependencies": true
   },
   "include": ["src/**/*"],
   "exclude": ["**/*.test.*", "**/*.spec.*", "**/*.stories.*", "dist", "node_modules"],
-  "references": [
-    { "path": "../utils" }
-  ]
 }
