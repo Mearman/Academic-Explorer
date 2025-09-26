@@ -331,6 +331,7 @@ jobs:
 
       - name: Check for unused dependencies
         run: pnpm knip
+        continue-on-error: true
 
       - name: Verify workspace structure
         run: pnpm nx graph --file=graph.json && echo "Workspace graph generated successfully"

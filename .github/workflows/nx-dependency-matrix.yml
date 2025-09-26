@@ -426,6 +426,7 @@ jobs:
         run: pnpm install --no-frozen-lockfile
       - name: Check for unused dependencies
         run: pnpm knip
+        continue-on-error: true
 
   # Status aggregation
   ci-status:

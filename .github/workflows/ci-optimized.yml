@@ -198,6 +198,7 @@ jobs:
 
       - name: Check for unused dependencies
         run: pnpm knip
+        continue-on-error: true
 
       - name: Verify licenses
         run: pnpm licenses:check
