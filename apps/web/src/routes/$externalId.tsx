@@ -31,7 +31,7 @@ function ExternalIdRoute() {
 				// Detect entity type and ID type
 				const detection = EntityDetectionService.detectEntity(decodedId)
 
-				if (detection && detection.entityType && detection.detectionMethod !== 'OpenAlex ID' && detection.detectionMethod !== 'OpenAlex URL') {
+				if (detection?.entityType && detection.detectionMethod !== 'OpenAlex ID' && detection.detectionMethod !== 'OpenAlex URL') {
 					// This is a recognized external ID, redirect to specific route
 					let specificRoute: string
 
@@ -56,7 +56,7 @@ function ExternalIdRoute() {
 						to: specificRoute,
 						replace: true,
 					})
-				} else if (detection && detection.entityType && (detection.detectionMethod === 'OpenAlex ID' || detection.detectionMethod === 'OpenAlex URL')) {
+				} else if (detection?.entityType && (detection.detectionMethod === 'OpenAlex ID' || detection.detectionMethod === 'OpenAlex URL')) {
 					// This is an OpenAlex ID, navigate to specific entity route
 					const {entityType} = detection;
 					const entityRoute = `/${entityType}/${detection.normalizedId}`;
@@ -65,7 +65,7 @@ function ExternalIdRoute() {
 						to: entityRoute,
 						replace: true,
 					});
-				} else if (detection && detection.entityType) {
+				} else if (detection?.entityType) {
 					// This is some other external ID, load directly
 					// If graph already has nodes, use incremental loading to preserve existing entities
 					if (nodeCount > 0) {

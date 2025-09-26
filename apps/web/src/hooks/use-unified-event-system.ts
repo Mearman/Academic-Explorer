@@ -31,11 +31,9 @@ function isTaskResult(value: unknown): value is TaskResult {
 export function useEventBus(channelName?: string): EventBus {
   const busRef = useRef<EventBus | null>(null);
 
-  if (!busRef.current) {
-    busRef.current = channelName
-      ? createCrossTabEventBus(channelName)
-      : createLocalEventBus();
-  }
+  busRef.current ??= channelName
+    ? createCrossTabEventBus(channelName)
+    : createLocalEventBus();
 
   useEffect(() => {
     return () => {
@@ -98,9 +96,7 @@ export function useTaskQueue(
   const taskQueueRef = useRef<TaskQueue | null>(null);
   const [stats, setStats] = useState({ queueLength: 0, activeTasks: 0, processing: false, maxConcurrency: 1 });
 
-  if (!taskQueueRef.current) {
-    taskQueueRef.current = createTaskQueue(bus, options);
-  }
+  taskQueueRef.current ??= createTaskQueue(bus, options);
 
   const taskQueue = taskQueueRef.current;
 
@@ -178,9 +174,7 @@ export function useWorkerPool(
     totalErrors: 0
   });
 
-  if (!workerPoolRef.current) {
-    workerPoolRef.current = createWorkerPool(bus, options);
-  }
+  workerPoolRef.current ??= createWorkerPool(bus, options);
 
   const workerPool = workerPoolRef.current;
 
@@ -260,9 +254,7 @@ export function useQueuedResourceCoordinator(
     queueCapacity: 0
   });
 
-  if (!coordinatorRef.current) {
-    coordinatorRef.current = createQueuedResourceCoordinator(bus, options);
-  }
+  coordinatorRef.current ??= createQueuedResourceCoordinator(bus, options);
 
   const coordinator = coordinatorRef.current;
 
@@ -368,7 +360,7 @@ export function useTaskProgress(
   });
 
   useEventListener(bus, "TASK_PROGRESS", (payload?: unknown) => {
-    if (payload && typeof payload === "object" && payload !== null &&
+    if (payload && typeof payload === "object" &&
         "id" in payload && typeof payload.id === "string" && payload.id === taskId &&
         "progress" in payload && typeof payload.progress === "number") {
       // Safe to access properties since we validated above
@@ -392,7 +384,7 @@ export function useTaskProgress(
   });
 
   useEventListener(bus, "TASK_STARTED", (payload?: unknown) => {
-    if (payload && typeof payload === "object" && payload !== null &&
+    if (payload && typeof payload === "object" &&
         "id" in payload && typeof payload.id === "string" && payload.id === taskId) {
       setState(prev => ({
         ...prev,
@@ -403,7 +395,7 @@ export function useTaskProgress(
   });
 
   useEventListener(bus, "TASK_COMPLETED", (payload?: unknown) => {
-    if (payload && typeof payload === "object" && payload !== null &&
+    if (payload && typeof payload === "object" &&
         "id" in payload && typeof payload.id === "string" && payload.id === taskId &&
         isTaskResult(payload)) {
       setState(prev => ({
@@ -416,7 +408,7 @@ export function useTaskProgress(
   });
 
   useEventListener(bus, "TASK_FAILED", (payload?: unknown) => {
-    if (payload && typeof payload === "object" && payload !== null &&
+    if (payload && typeof payload === "object" &&
         "id" in payload && typeof payload.id === "string" && payload.id === taskId &&
         isTaskResult(payload)) {
       setState(prev => ({
@@ -428,7 +420,7 @@ export function useTaskProgress(
   });
 
   useEventListener(bus, "TASK_CANCELLED", (payload?: unknown) => {
-    if (payload && typeof payload === "object" && payload !== null &&
+    if (payload && typeof payload === "object" &&
         "id" in payload && typeof payload.id === "string" && payload.id === taskId) {
       setState(prev => ({
         ...prev,

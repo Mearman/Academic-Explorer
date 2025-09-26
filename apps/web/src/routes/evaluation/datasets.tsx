@@ -221,7 +221,7 @@ function DatasetsManagement() {
 								</div>
 							</div>
 
-							{dataset.metadata && typeof dataset.metadata['description'] === 'string' && (
+							{"description" in dataset.metadata && typeof dataset.metadata.description === "string" && (
 								<p style={{
 									fontSize: "13px",
 									color: "#6b7280",

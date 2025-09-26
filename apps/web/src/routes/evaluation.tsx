@@ -33,7 +33,7 @@ function EvaluationDashboard() {
 					lineHeight: "1.6",
 					maxWidth: "800px"
 				}}>
-          Evaluate Academic Explorer's literature discovery capabilities against published systematic literature reviews
+          Evaluate Academic Explorer&apos;s literature discovery capabilities against published systematic literature reviews
           using the STAR (Systematic Literature Review) methodology. This provides quantitative metrics for precision,
           recall, and F1-score analysis required for PhD thesis evaluation.
 				</p>
@@ -260,7 +260,7 @@ function EvaluationDashboard() {
 						<span style={{ display: "inline-flex", alignItems: "center", gap: "4px" }}>
 							<IconBulb size={14} />
 							<strong>PhD Evaluation Context:</strong>
-						</span> This evaluation demonstrates Academic Explorer's ability to
+						</span> This evaluation demonstrates Academic Explorer&apos;s ability to
             improve upon existing systematic reviews by identifying previously missed papers and providing more
             efficient literature discovery pathways. Results provide quantitative evidence for thesis Chapter 6 evaluation.
 					</p>

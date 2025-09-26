@@ -130,10 +130,10 @@ export function useUnifiedExecutionWorker(options: UseUnifiedExecutionWorkerOpti
 
   // Create unified task system (stub implementation)
   const taskSystem: _TaskSystem = {
-    submitTask: async () => "stub-task-id",
+    submitTask: () => Promise.resolve("stub-task-id"),
     cancelTask: async () => {},
     getExecutionMode: () => "main-thread",
-    getStats: async () => ({
+    getStats: () => Promise.resolve({
       queueLength: 0,
       activeTasks: 0,
       processing: false,
@@ -764,8 +764,8 @@ export function useUnifiedExecutionWorker(options: UseUnifiedExecutionWorkerOpti
       }
     };
 
-    updateStats();
-    const interval = setInterval(updateStats, 1000); // Update every second
+    void updateStats();
+    const interval = setInterval(() => { void updateStats(); }, 1000); // Update every second
 
     return () => { clearInterval(interval); };
   }, [taskSystem]);

@@ -117,10 +117,10 @@ function ComparisonResults() {
 	}, [])
 
 	// Real Academic Explorer search function using OpenAlex API
-	const performAcademicExplorerSearch = async (dataset: STARDataset): Promise<WorkReference[]> => {
+	const performAcademicExplorerSearch = (dataset: STARDataset): WorkReference[] => {
 		try {
 			// Use the optimized search based on the STAR dataset criteria
-			const results = await searchBasedOnSTARDataset(dataset, DEFAULT_SEARCH_CONFIG)
+			const results = searchBasedOnSTARDataset(dataset, DEFAULT_SEARCH_CONFIG)
 
 			// Calculate and log search coverage for debugging
 			const coverage = calculateSearchCoverage(results, dataset)
@@ -338,11 +338,11 @@ function ComparisonResults() {
 											{dataset.name}
 										</h3>
 										<p style={{ fontSize: "14px", color: "#6b7280" }}>
-											{dataset.originalPaperCount ?? 'Unknown'} papers • {dataset.reviewTopic ?? 'No topic specified'}
+											{dataset.originalPaperCount} papers • {dataset.reviewTopic}
 										</p>
 										{run?.progress && (
 											<div style={{ fontSize: "12px", color: "#3b82f6", marginTop: "4px" }}>
-												{run.progress?.message ?? 'Processing...'} ({run.progress?.progress ?? 0}%)
+												{run.progress?.message ?? "Processing..."} ({run.progress?.progress ?? 0}%)
 											</div>
 										)}
 									</div>
@@ -519,7 +519,7 @@ function ComparisonResults() {
 													{result.datasetName}
 												</h3>
 												<p style={{ fontSize: "14px", color: "#6b7280", marginBottom: "8px" }}>
-                        Query: "{result.searchCriteria.query}"
+                        Query: &quot;{result.searchCriteria.query}&quot;
 												</p>
 												<p style={{ fontSize: "12px", color: "#9ca3af" }}>
                         Completed on {result.runDate.toLocaleDateString()} •
@@ -781,7 +781,7 @@ function ComparisonResults() {
 									<select
 										id="dataset-select"
 										value={selectedDatasetForMissingPapers ?? ""}
-										onChange={(e) => { setSelectedDatasetForMissingPapers(e.target.value ?? null); }}
+										onChange={(e) => { setSelectedDatasetForMissingPapers(e.target.value || null); }}
 										style={{
 											padding: "8px 12px",
 											borderRadius: "6px",
@@ -794,7 +794,7 @@ function ComparisonResults() {
 										<option value="">Choose a dataset...</option>
 										{starDatasets.map((dataset) => (
 											<option key={dataset.id} value={dataset.id}>
-												{dataset.name} ({dataset.originalPaperCount ?? 'Unknown'} papers)
+												{dataset.name} ({dataset.originalPaperCount} papers)
 											</option>
 										))}
 									</select>
@@ -856,7 +856,7 @@ function ComparisonResults() {
 							</span>
 						</h3>
 						<p style={{ fontSize: "14px", color: "#78350f", lineHeight: "1.5", margin: 0 }}>
-              These results demonstrate Academic Explorer's quantitative performance improvements over traditional
+              These results demonstrate Academic Explorer&apos;s quantitative performance improvements over traditional
               systematic review methodologies. The precision/recall metrics and additional papers discovered provide
               statistical evidence for Chapter 6 evaluation. Export individual results for detailed statistical analysis
               and inclusion in thesis appendices.
