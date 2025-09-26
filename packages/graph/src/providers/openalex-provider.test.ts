@@ -7,6 +7,7 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { OpenAlexGraphProvider } from './openalex-provider';
 import type { SearchQuery, ProviderExpansionOptions } from './base-provider';
 import { RelationType } from '../types/core';
+import { logger } from '@academic-explorer/utils';
 
 // Mock OpenAlex client interface
 interface MockOpenAlexClient {
@@ -571,7 +572,7 @@ describe('OpenAlexGraphProvider', () => {
       mockClient.works.mockResolvedValue({ results: [createMockWork('W3126653431')] });
       mockClient.authors.mockRejectedValue(new Error('Authors search failed'));
 
-      const consoleSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
+      const loggerSpy = vi.spyOn(logger, 'warn').mockImplementation(() => {});
 
       const query: SearchQuery = {
         query: 'quantum computing',
@@ -583,12 +584,14 @@ describe('OpenAlexGraphProvider', () => {
 
       expect(results).toHaveLength(1);
       expect(results[0].entityType).toBe('works');
-      expect(consoleSpy).toHaveBeenCalledWith(
-        'Search failed for entity type authors:',
-        expect.any(Error)
+      expect(loggerSpy).toHaveBeenCalledWith(
+        'provider',
+        'Search failed for entity type authors',
+        { error: expect.any(Error) },
+        'OpenAlexProvider'
       );
 
-      consoleSpy.mockRestore();
+      loggerSpy.mockRestore();
     });
 
     it('should handle offset parameter correctly', async () => {
@@ -810,18 +813,20 @@ describe('OpenAlexGraphProvider', () => {
       mockClient.getAuthor.mockResolvedValue(mockAuthor);
       mockClient.works.mockRejectedValue(new Error('Works API failed'));
 
-      const consoleSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
+      const loggerSpy = vi.spyOn(logger, 'warn').mockImplementation(() => {});
 
       const expansion = await provider.expandEntity('A5017898742', {});
 
       expect(expansion.nodes).toHaveLength(0);
       expect(expansion.edges).toHaveLength(0);
-      expect(consoleSpy).toHaveBeenCalledWith(
-        'Failed to expand author A5017898742:',
-        expect.any(Error)
+      expect(loggerSpy).toHaveBeenCalledWith(
+        'provider',
+        'Failed to expand author A5017898742',
+        { error: expect.any(Error) },
+        'OpenAlexProvider'
       );
 
-      consoleSpy.mockRestore();
+      loggerSpy.mockRestore();
     });
 
     it('should handle works without authorships', async () => {

@@ -148,7 +148,7 @@ export class EntityDetectionService {
         /^https?:\/\/ror\.org\/([a-z0-9]{9})$/i,
         /^ror\.org\/([a-z0-9]{9})$/i,
         // Raw ROR ID - must be exactly 9 chars and mixed alphanumeric (contains letters)
-        /^([a-z0-9]*[a-z][a-z0-9]*|[0-9]*[a-z][0-9a-z]*)$/i,
+        /^([a-z0-9]{9})$/i,
       ],
       normalize: (match: string): string | null => {
         let rorId = match;

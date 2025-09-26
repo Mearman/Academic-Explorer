@@ -922,7 +922,8 @@ describe('Provider System Integration Tests', () => {
             aggregatedData.push(await entityResolver.resolveEntity('M002'));
           }
         } catch (error) {
-          console.warn(`Provider ${providerName} failed:`, error);
+          // Note: This would use logger.warn in real implementation
+          // logger.warn('provider', `Provider ${providerName} failed`, { error });
         }
       }
 

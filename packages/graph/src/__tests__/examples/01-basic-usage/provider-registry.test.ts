@@ -19,7 +19,8 @@ class MockOpenAlexClient {
     return {
       id,
       display_name: `Author from ${this.name}`,
-      ids: { openalex: id }
+      ids: { openalex: id },
+      source: this.name
     };
   }
 

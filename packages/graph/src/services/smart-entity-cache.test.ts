@@ -11,6 +11,7 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import type { EntityType } from '../types/core';
 import { SmartEntityCache, type EntityDataProvider, type CacheContext, type FieldRequest } from './smart-entity-cache';
+import { logger } from '@academic-explorer/utils';
 
 // Mock entity data provider for testing
 class MockEntityDataProvider implements EntityDataProvider {
@@ -287,6 +288,34 @@ describe('SmartEntityCache', () => {
         expect(work.id).toBe('W2741809807');
         expect(author.id).toBe('A5023888391');
       });
+
+      it('should log errors when batch operations fail', async () => {
+        const loggerErrorSpy = vi.spyOn(logger, 'error').mockImplementation(() => {});
+        provider.setFailureRate(1); // Always fail
+
+        const requests: FieldRequest[] = [
+          { id: 'W2741809807', entityType: 'works', fields: ['id', 'display_name'] },
+          { id: 'A5023888391', entityType: 'authors', fields: ['id', 'display_name'] },
+        ];
+
+        await cache.batchEnsureFields(requests);
+
+        expect(loggerErrorSpy).toHaveBeenCalledWith(
+          'cache',
+          'Failed to fetch fields id, display_name for W2741809807:',
+          { args: [expect.any(Error)] },
+          'SmartEntityCache'
+        );
+
+        expect(loggerErrorSpy).toHaveBeenCalledWith(
+          'cache',
+          'Failed to fetch fields id, display_name for A5023888391:',
+          { args: [expect.any(Error)] },
+          'SmartEntityCache'
+        );
+
+        loggerErrorSpy.mockRestore();
+      });
     });
   });
 
@@ -450,6 +479,23 @@ describe('SmartEntityCache', () => {
           .rejects.toThrow('Simulated API failure');
       });
 
+      it('should log errors when API failures occur', async () => {
+        const loggerErrorSpy = vi.spyOn(logger, 'error').mockImplementation(() => {});
+        provider.setFailureRate(1); // Always fail
+
+        await expect(cache.getEntity('W2741809807', ['id', 'display_name']))
+          .rejects.toThrow('Simulated API failure');
+
+        expect(loggerErrorSpy).toHaveBeenCalledWith(
+          'cache',
+          'Failed to fetch fields id, display_name for W2741809807:',
+          { args: [expect.any(Error)] },
+          'SmartEntityCache'
+        );
+
+        loggerErrorSpy.mockRestore();
+      });
+
       it('should fall back to cached data on API failure', async () => {
         // Prime cache first
         await cache.getEntity('W2741809807', ['id', 'display_name']);
@@ -477,11 +523,11 @@ describe('SmartEntityCache', () => {
       });
 
       it('should handle incomplete data', async () => {
-        provider.setResponse('works:INCOMPLETE', { id: 'INCOMPLETE' }); // Missing display_name
+        provider.setResponse('works:W1234567890', { id: 'W1234567890' }); // Missing display_name
 
-        const result = await cache.getEntity('INCOMPLETE', ['id', 'display_name']);
+        const result = await cache.getEntity('W1234567890', ['id', 'display_name']);
 
-        expect(result.id).toBe('INCOMPLETE');
+        expect(result.id).toBe('W1234567890');
         expect(result.display_name).toBeUndefined();
       });
     });
