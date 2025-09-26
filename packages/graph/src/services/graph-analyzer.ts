@@ -309,7 +309,7 @@ export class GraphAnalyzer {
     const provider = this.getProvider();
 
     // Fetch entity and its citation network
-    const entity = await provider.fetchEntity(nodeId);
+    const _entity = await provider.fetchEntity(nodeId);
     const expansion = await provider.expandEntity(nodeId, {
       relationshipTypes: [RelationType.REFERENCES],
       maxDepth: 2,
@@ -618,7 +618,7 @@ export class GraphAnalyzer {
           const metrics = await this.calculateCitationMetrics(nodeId, options);
           return { nodeId, metrics };
         } catch (error) {
-          console.warn(`Citation analysis failed for ${nodeId}:`, error);
+          logger.warn("analysis", `Citation analysis failed for ${nodeId}`, { error });
           return null;
         }
       });

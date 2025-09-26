@@ -15,12 +15,7 @@ import type { GraphNode, GraphEdge, EntityType, EntityIdentifier, ExternalIdenti
 import { RelationType } from '../types/core';
 import { EntityDetectionService } from '../services/entity-detection-service';
 
-// OpenAlex entity interfaces - extending Record<string, unknown> for compatibility
-interface OpenAlexEntity extends Record<string, unknown> {
-  id: string;
-  display_name: string;
-  ids?: Record<string, string>;
-}
+// OpenAlex entity interfaces removed - unused after refactoring
 
 // Removed unused interfaces - they were not being used in the implementation
 

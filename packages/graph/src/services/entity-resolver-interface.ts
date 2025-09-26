@@ -459,7 +459,7 @@ export class EntityResolver implements IEntityResolver {
       try {
         const entities = normalizedIds.map(id => ({ id, context }));
         return await this.cache.batchEnsureFields(entities, context);
-      } catch (error) {
+      } catch (_error) {
         // Fall back to provider on cache failure
         return this.resolveEntitiesWithProvider(normalizedIds);
       }
@@ -486,8 +486,7 @@ export class EntityResolver implements IEntityResolver {
 
     try {
       await this.cache.preloadForContext(normalizedIds, context);
-    } catch (error) {
-      // Preloading failures should not block execution
+    } catch (_error) {
       // Preloading failures should not block execution
       // Error is logged in production via application layer
     }
@@ -531,8 +530,7 @@ export class EntityResolver implements IEntityResolver {
       try {
         // This will populate the cache with fresh data
         await this.cache.getEntity(normalizedId, this.defaultContext);
-      } catch (error) {
-        // Cache population failure shouldn't affect the result
+      } catch (_error) {
         // Cache population failure shouldn't affect the result
         // Error is logged in production via application layer
       }
@@ -670,7 +668,7 @@ export class EntityResolver implements IEntityResolver {
 
     try {
       await this.cache.preloadForContext(normalizedIds, enhancedContext);
-    } catch (error) {
+    } catch (_error) {
       // Batch preload failures should not block execution
       // Error is logged in production via application layer
     }
