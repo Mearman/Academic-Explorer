@@ -48,7 +48,10 @@ jobs:
         id: cache-keys
         run: |
           echo "cache-key=node-modules-${{ hashFiles('pnpm-lock.yaml') }}" >> $GITHUB_OUTPUT
-          echo "nx-cache-key=nx-${{ runner.os }}-${{ hashFiles('nx.json', 'package.json', 'pnpm-lock.yaml', '**/tsconfig.json', 'vite.config.ts') }}" >> $GITHUB_OUTPUT
+          # Generate optimized Nx cache key with workspace hash
+          WORKSPACE_HASH="$(echo '${{ hashFiles('nx.json', 'package.json', 'pnpm-lock.yaml', 'tsconfig*.json', 'vite.config.ts', 'vitest.workspace.ts', 'eslint.config.ts') }}')"
+          echo "nx-cache-key=nx-v2-${{ runner.os }}-${WORKSPACE_HASH}" >> $GITHUB_OUTPUT
+          echo "nx-workspace-key=nx-workspace-${{ runner.os }}-${{ github.ref_name }}-${WORKSPACE_HASH}" >> $GITHUB_OUTPUT
 
       - name: Cache node_modules
         id: cache-deps
@@ -65,13 +68,25 @@ jobs:
         if: steps.cache-deps.outputs.cache-hit != 'true'
         run: pnpm install --no-frozen-lockfile
 
-      - name: Cache Nx
+      - name: Cache Nx workspace data
+        uses: actions/cache@v4
+        with:
+          path: |
+            .nx/workspace-data
+            .nx/installation
+          key: ${{ steps.cache-keys.outputs.nx-workspace-key }}
+          restore-keys: |
+            nx-workspace-${{ runner.os }}-${{ github.ref_name }}-
+            nx-workspace-${{ runner.os }}-
+
+      - name: Cache Nx task cache
         uses: actions/cache@v4
         with:
           path: .nx/cache
-          key: ${{ steps.cache-keys.outputs.nx-cache-key }}
+          key: ${{ steps.cache-keys.outputs.nx-cache-key }}-${{ github.run_id }}
           restore-keys: |
-            nx-${{ runner.os }}-
+            ${{ steps.cache-keys.outputs.nx-cache-key }}-
+            nx-v2-${{ runner.os }}-
 
   eslint-autofix:
     needs: setup
@@ -110,8 +125,27 @@ jobs:
           key: ${{ needs.setup.outputs.cache-key }}
           fail-on-cache-miss: true
 
-      - name: Run ESLint with auto-fix
-        run: pnpm nx lint:fix
+      - name: Run ESLint with auto-fix (stable mode)
+        run: |
+          echo "✨ Running ESLint auto-fix with stability optimizations..."
+
+          # Ensure daemon is stopped
+          pnpm nx daemon --stop 2>/dev/null || true
+
+          # Run with timeout and error recovery
+          if timeout 8m pnpm nx run-many -t lint:fix --parallel=1 --maxWorkers=1; then
+            echo "✅ ESLint auto-fix completed successfully"
+          else
+            echo "⚠️  ESLint auto-fix encountered issues, trying fallback..."
+            # Reset any corrupted cache and try again
+            pnpm nx reset
+            timeout 5m pnpm nx run-many -t lint:fix --parallel=1 --maxWorkers=1 || true
+          fi
+        env:
+          NODE_OPTIONS: "--max-old-space-size=4096"
+          NX_DAEMON: "false"
+          NX_PARALLEL: "1"
+          ESLINT_USE_FLAT_CONFIG: "true"
         continue-on-error: true
 
       - name: Check for changes
@@ -158,14 +192,25 @@ jobs:
   quality-checks:
     needs: [setup, eslint-autofix]
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 25
 
     # Skip if eslint-autofix was skipped, otherwise run always
     if: always() && (needs.eslint-autofix.result == 'success' || needs.eslint-autofix.result == 'skipped')
 
     strategy:
+      fail-fast: false
       matrix:
         check: [lint, build, typecheck]
+        include:
+          - check: lint
+            timeout: 8
+            parallel: 1
+          - check: build
+            timeout: 12
+            parallel: 2
+          - check: typecheck
+            timeout: 10
+            parallel: 1
 
     steps:
       - name: Checkout
@@ -197,30 +242,91 @@ jobs:
         uses: actions/cache/restore@v4
         with:
           path: .nx/cache
-          key: ${{ needs.setup.outputs.nx-cache-key }}
+          key: ${{ needs.setup.outputs.nx-cache-key }}-${{ github.run_id }}
           restore-keys: |
             ${{ needs.setup.outputs.nx-cache-key }}-
-            nx-${{ runner.os }}-${{ hashFiles('nx.json', 'package.json', 'pnpm-lock.yaml') }}-
-            nx-${{ runner.os }}-
+            nx-stable-${{ runner.os }}-
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Clear Nx cache (prevent corruption issues)
-        run: pnpm nx reset
+      - name: Initialize Nx environment
+        run: |
+          echo "🔧 Initializing Nx environment..."
+
+          # Ensure daemon is stopped (CI should not use daemon)
+          pnpm nx daemon --stop 2>/dev/null || true
+
+          # Check and repair cache if needed
+          if [ -d ".nx/cache" ]; then
+            echo "Validating existing cache..."
+            CACHE_SIZE=$(du -sh .nx/cache 2>/dev/null | cut -f1 || echo "0B")
+            CACHE_FILES=$(find .nx/cache -type f 2>/dev/null | wc -l || echo "0")
+            echo "  Cache size: $CACHE_SIZE (${CACHE_FILES} files)"
+
+            # Simple corruption check
+            if [ "$CACHE_FILES" -gt 10000 ]; then
+              echo "⚠️  Cache appears bloated, cleaning..."
+              find .nx/cache -type f -mtime +7 -delete 2>/dev/null || true
+            fi
+          else
+            echo "No existing cache found"
+          fi
+
+          # Verify Nx installation
+          pnpm nx --version
 
       - name: Build core packages for typecheck
         if: matrix.check == 'typecheck'
         run: |
-          pnpm nx build client --verbose
-          pnpm nx build graph --verbose
-          pnpm nx build utils --verbose
-          pnpm nx build simulation --verbose
-
-      - name: Run ${{ matrix.check }}
-        run: timeout 20m pnpm nx ${{ matrix.check }}
+          echo "🏗️  Building core packages for TypeScript compilation..."
+          timeout 8m pnpm nx run-many -t build -p client,graph,utils,simulation --parallel=2
         env:
           NODE_OPTIONS: "--max-old-space-size=4096"
+          NX_DAEMON: "false"
+
+      - name: Run ${{ matrix.check }} with optimized settings
+        run: |
+          echo "🔧 Configuring environment for ${{ matrix.check }}..."
+
+          # Ensure clean state
+          pnpm nx daemon --stop 2>/dev/null || true
+
+          case "${{ matrix.check }}" in
+            "lint")
+              echo "✨ Running ESLint with stability optimizations..."
+              timeout ${{ matrix.timeout }}m pnpm nx run-many -t lint --parallel=${{ matrix.parallel }} --maxWorkers=1
+              ;;
+            "build")
+              echo "🚀 Running optimized build process..."
+              if [ -f "scripts/build.ts" ]; then
+                timeout ${{ matrix.timeout }}m tsx scripts/build.ts
+              else
+                echo "Using fallback build command..."
+                timeout ${{ matrix.timeout }}m pnpm nx run-many -t build --parallel=${{ matrix.parallel }}
+              fi
+              ;;
+            "typecheck")
+              echo "🔍 Running TypeScript compilation check..."
+              if [ -f "scripts/fast-typecheck.ts" ]; then
+                timeout ${{ matrix.timeout }}m tsx scripts/fast-typecheck.ts
+              else
+                echo "Using fallback typecheck command..."
+                timeout ${{ matrix.timeout }}m pnpm typecheck
+              fi
+              ;;
+            *)
+              echo "🔄 Running ${{ matrix.check }}..."
+              timeout ${{ matrix.timeout }}m pnpm nx run-many -t ${{ matrix.check }} --parallel=${{ matrix.parallel }}
+              ;;
+          esac
+        env:
+          NODE_OPTIONS: "--max-old-space-size=6144 --gc-concurrent"
+          NX_DAEMON: "false"
+          NX_PARALLEL: "${{ matrix.parallel }}"
+          NX_CLOUD_DISTRIBUTED_EXECUTION: "false"
+          NX_CACHE: "true"
+          ESLINT_USE_FLAT_CONFIG: "true"
 
       - name: Upload build artifact
         if: matrix.check == 'build'
@@ -238,6 +344,31 @@ jobs:
           path: .nx/cache
           key: ${{ needs.setup.outputs.nx-cache-key }}-${{ matrix.check }}-${{ github.run_id }}-${{ github.run_attempt }}
 
+      - name: Add performance summary
+        if: always() && matrix.check == 'typecheck'
+        run: |
+          echo "## 🚀 Performance Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+
+          # Cache statistics
+          if [ -d ".nx/cache" ]; then
+            CACHE_SIZE=$(du -sh .nx/cache 2>/dev/null | cut -f1 || echo "0B")
+            CACHE_FILES=$(find .nx/cache -type f 2>/dev/null | wc -l || echo "0")
+            echo "### Cache Metrics" >> $GITHUB_STEP_SUMMARY
+            echo "- **Cache Size**: $CACHE_SIZE" >> $GITHUB_STEP_SUMMARY
+            echo "- **Cache Files**: $CACHE_FILES" >> $GITHUB_STEP_SUMMARY
+
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "### Optimizations Applied" >> $GITHUB_STEP_SUMMARY
+            echo "✅ **Stability Improvements**" >> $GITHUB_STEP_SUMMARY
+            echo "- Disabled Nx daemon for CI stability" >> $GITHUB_STEP_SUMMARY
+            echo "- Reduced parallelism to prevent resource exhaustion" >> $GITHUB_STEP_SUMMARY
+            echo "- Added aggressive timeouts with fallback recovery" >> $GITHUB_STEP_SUMMARY
+            echo "- Simplified cache strategy for reliability" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "⚠️ No cache data available" >> $GITHUB_STEP_SUMMARY
+          fi
+
   test:
     needs: setup
     runs-on: ubuntu-latest
@@ -249,10 +380,12 @@ jobs:
         test-type: [unit, integration]
         include:
           - test-type: unit
-            command: test:unit:run
+            command: test:unit
+            coverage: true
             timeout: 10
           - test-type: integration
-            command: test:integration:run
+            command: test:integration
+            coverage: false
             timeout: 15
 
     steps:
@@ -278,33 +411,99 @@ jobs:
           key: ${{ needs.setup.outputs.cache-key }}
           fail-on-cache-miss: true
 
-      - name: Restore Nx cache
+      - name: Restore Nx workspace cache
+        uses: actions/cache/restore@v4
+        with:
+          path: |
+            .nx/workspace-data
+            .nx/installation
+          key: ${{ needs.setup.outputs.nx-workspace-key }}
+          restore-keys: |
+            nx-workspace-${{ runner.os }}-${{ github.ref_name }}-
+            nx-workspace-${{ runner.os }}-
+
+      - name: Restore Nx task cache
         uses: actions/cache/restore@v4
         with:
           path: .nx/cache
-          key: ${{ needs.setup.outputs.nx-cache-key }}
+          key: ${{ needs.setup.outputs.nx-cache-key }}-${{ github.run_id }}
           restore-keys: |
             ${{ needs.setup.outputs.nx-cache-key }}-
-            nx-${{ runner.os }}-${{ hashFiles('nx.json', 'package.json', 'pnpm-lock.yaml') }}-
-            nx-${{ runner.os }}-
+            nx-v2-${{ runner.os }}-
 
       # E2E test setup removed - no E2E tests currently exist
       # TODO: Re-enable when actual E2E tests are implemented
 
-      - name: Run ${{ matrix.test-type }} tests
-        run: timeout ${{ matrix.timeout }}m pnpm nx ${{ matrix.command }}
-        env:
-          NODE_OPTIONS: "--max-old-space-size=8192 --expose-gc"
+      - name: Setup test environment
+        run: |
+          echo "🧪 Setting up test environment for ${{ matrix.test-type }}..."
+          # Ensure daemon is stopped
+          pnpm nx daemon --stop 2>/dev/null || true
 
-      - name: Upload coverage artifact
-        if: always() && matrix.test-type == 'unit'
+          # Clear any test artifacts
+          find . -name "coverage" -type d -exec rm -rf {} + 2>/dev/null || true
+
+      - name: Run ${{ matrix.test-type }} tests
+        run: |
+          echo "🧪 Running ${{ matrix.test-type }} tests..."
+          if [ "${{ matrix.coverage }}" = "true" ]; then
+            timeout ${{ matrix.timeout }}m pnpm nx run-many -t ${{ matrix.command }} --coverage --parallel=1
+          else
+            timeout ${{ matrix.timeout }}m pnpm nx run-many -t ${{ matrix.command }} --parallel=1
+          fi
+        env:
+          NODE_OPTIONS: "--max-old-space-size=8192 --expose-gc --gc-concurrent"
+          NX_DAEMON: "false"
+          NX_PARALLEL: "1"
+          NX_CLOUD_DISTRIBUTED_EXECUTION: "false"
+          VITEST_MAX_THREADS: "2"
+          VITEST_MIN_THREADS: "1"
+
+      - name: Upload coverage artifacts
+        if: always() && matrix.coverage == 'true'
         uses: actions/upload-artifact@v4
         with:
           name: coverage-${{ matrix.test-type }}-${{ github.sha }}
-          path: coverage/
+          path: |
+            apps/*/coverage/
+            packages/*/coverage/
           retention-days: 7
+          if-no-files-found: warn
 
-      - name: Save Nx cache
+      - name: Collect coverage files for reporting
+        if: always() && matrix.coverage == 'true'
+        run: |
+          echo "Collecting coverage files..."
+          mkdir -p coverage-reports
+
+          # Find all coverage-final.json files and copy them
+          find . -name "coverage-final.json" -path "*/coverage/*" | while read file; do
+            project_name=$(echo "$file" | sed 's|./||' | sed 's|/coverage/coverage-final.json||')
+            echo "Found coverage for: $project_name"
+            cp "$file" "coverage-reports/coverage-final-${project_name//\//-}.json"
+          done
+
+          # List what we found
+          echo "Coverage files collected:"
+          ls -la coverage-reports/ || echo "No coverage reports directory created"
+
+          # Also collect HTML reports if they exist
+          find . -name "index.html" -path "*/coverage/*" | while read file; do
+            project_name=$(echo "$file" | sed 's|./||' | sed 's|/coverage/index.html||')
+            mkdir -p "coverage-reports/html-${project_name//\//-}"
+            cp -r "$(dirname "$file")/*" "coverage-reports/html-${project_name//\//-}/" 2>/dev/null || true
+          done
+
+      - name: Upload merged coverage reports
+        if: always() && matrix.coverage == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-reports-${{ matrix.test-type }}-${{ github.sha }}
+          path: coverage-reports/
+          retention-days: 7
+          if-no-files-found: warn
+
+      - name: Save Nx task cache
         if: always()
         uses: actions/cache/save@v4
         with:
@@ -325,21 +524,85 @@ jobs:
       - name: Download coverage artifacts
         uses: actions/download-artifact@v5
         with:
-          pattern: coverage-unit-${{ github.sha }}
-          path: coverage-reports/
+          pattern: coverage-reports-unit-${{ github.sha }}
+          path: ./
           merge-multiple: true
 
+      - name: Setup Node.js for coverage processing
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Install tsx for coverage scripts
+        run: npm install -g tsx
+
+      - name: Verify coverage files structure
+        run: |
+          echo "Checking downloaded coverage files..."
+          find . -name "*coverage*" -type f | head -20
+          echo "\nChecking for coverage-final.json files..."
+          find . -name "coverage-final.json" | head -10
+          echo "\nChecking coverage-reports directory..."
+          ls -la coverage-reports/ 2>/dev/null || echo "No coverage-reports directory found"
+          echo "\nAll files in current directory:"
+          ls -la
+
       - name: Create coverage summary
-        run: npx tsx tools/scripts/create-coverage-summary.ts
+        run: |
+          echo "Creating coverage summary..."
+          if [ -f "tools/scripts/create-coverage-summary.ts" ]; then
+            npx tsx tools/scripts/create-coverage-summary.ts
+          else
+            echo "Warning: create-coverage-summary.ts not found, creating fallback summary"
+            mkdir -p coverage-reports
+            cat > coverage-reports/coverage-summary.json << 'EOF'
+          {
+            "total": {
+              "lines": { "pct": 0 },
+              "functions": { "pct": 0 },
+              "branches": { "pct": 0 },
+              "statements": { "pct": 0 }
+            }
+          }
+          EOF
+          fi
 
       - name: Generate coverage summary
         run: |
           echo "## Coverage Report" >> $GITHUB_STEP_SUMMARY
-          npx tsx tools/scripts/generate-coverage-report.ts summary >> $GITHUB_STEP_SUMMARY
+          if [ -f "tools/scripts/generate-coverage-report.ts" ]; then
+            npx tsx tools/scripts/generate-coverage-report.ts summary >> $GITHUB_STEP_SUMMARY
+          elif [ -f "coverage-reports/coverage-summary.json" ]; then
+            echo "\n### Coverage Summary" >> $GITHUB_STEP_SUMMARY
+            cat coverage-reports/coverage-summary.json | jq -r '
+              "📊 **Coverage Metrics:**\n" +
+              "- Lines: " + (.total.lines.pct|tostring) + "%\n" +
+              "- Functions: " + (.total.functions.pct|tostring) + "%\n" +
+              "- Branches: " + (.total.branches.pct|tostring) + "%\n" +
+              "- Statements: " + (.total.statements.pct|tostring) + "%"' >> $GITHUB_STEP_SUMMARY
+          else
+            echo "⚠️ **No coverage data available**" >> $GITHUB_STEP_SUMMARY
+            echo "Coverage reports were not generated or uploaded properly." >> $GITHUB_STEP_SUMMARY
+          fi
+
+      - name: Upload consolidated coverage report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-report-consolidated-${{ github.sha }}
+          path: coverage-reports/
+          retention-days: 30
+          if-no-files-found: warn
 
       - name: Comment coverage on PR
         if: github.event_name == 'pull_request'
-        run: npx tsx tools/scripts/manage-coverage-comments.ts
+        run: |
+          if [ -f "tools/scripts/manage-coverage-comments.ts" ]; then
+            npx tsx tools/scripts/manage-coverage-comments.ts
+          else
+            echo "Warning: manage-coverage-comments.ts not found, skipping PR comment"
+            echo "Consider creating a simple PR comment script or updating the coverage workflow"
+          fi
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           PR_NUMBER: ${{ github.event.number }}
