@@ -2,7 +2,52 @@
  * ESLint rule to prevent emoji usage and suggest Mantine icons
  */
 
-const EMOJI_REGEX = /[\u{1F300}-\u{1F9FF}]|[\u{2600}-\u{26FF}]|[\u{2700}-\u{27BF}]|[\u{1F100}-\u{1F1FF}]|[\u{1F200}-\u{1F2FF}]|[\u{1F000}-\u{1F02F}]|[\u{1F0A0}-\u{1F0FF}]|[\u{1F900}-\u{1F9FF}]|[\u{FE00}-\u{FE0F}]|[\u{1F600}-\u{1F64F}]|[\u{1F680}-\u{1F6FF}]|[\u{2328}]|[\u{23CF}]|[\u{23E9}-\u{23F3}]|[\u{23F8}-\u{23FA}]|[\u{25AA}-\u{25AB}]|[\u{25B6}]|[\u{25C0}]|[\u{25FB}-\u{25FE}]|[\u{2B05}-\u{2B07}]|[\u{2B1B}-\u{2B1C}]|[\u{2B50}]|[\u{2B55}]|[\u{3030}]|[\u{303D}]|[\u{3297}]|[\u{3299}]/gu;
+// Unicode ranges for modern emoji detection
+// Focus on newer emoji blocks while allowing traditional symbols
+const EMOJI_RANGES = [
+  // Core modern emoji blocks (post-2010)
+  [0x1F600, 0x1F64F], // Emoticons (😀-🙏)
+  [0x1F300, 0x1F5FF], // Miscellaneous Symbols and Pictographs (🌀-🗿)
+  [0x1F680, 0x1F6FF], // Transport and Map Symbols (🚀-🛿)
+  [0x1F1E0, 0x1F1FF], // Regional Indicator Symbols (🇠-🇿)
+
+  // Extended emoji blocks (post-2015)
+  [0x1F900, 0x1F9FF], // Supplemental Symbols and Pictographs (🤀-🧿)
+  [0x1F780, 0x1F7FF], // Geometric Shapes Extended (🞀-🟿)
+  [0x1F100, 0x1F1FF], // Enclosed Alphanumeric Supplement (🄀-🇿)
+  [0x1F200, 0x1F2FF], // Enclosed Ideographic Supplement (🈀-🋿)
+  [0x1F000, 0x1F02F], // Mahjong Tiles (🀀-🀯)
+  [0x1F0A0, 0x1F0FF], // Playing Cards (🂠-🃿)
+
+  // Emoji modifiers
+  [0x1F3FB, 0x1F3FF], // Skin tone modifiers (🏻-🏿)
+
+  // Specific modern emoji symbols (commonly problematic)
+  [0x2B50, 0x2B50],   // Star ⭐
+  [0x2B55, 0x2B55],   // Circle ⭕
+  [0x2B05, 0x2B07],   // Arrows (⬅-⬇)
+  [0x2B1B, 0x2B1C],   // Squares (⬛-⬜)
+
+  // Media control symbols that are commonly used as emoji
+  [0x23E9, 0x23F3],   // Media symbols (⏩-⏳)
+  [0x23F8, 0x23FA],   // Media symbols (⏸-⏺)
+  [0x25B6, 0x25B6],   // Play button ▶
+  [0x25C0, 0x25C0],   // Reverse button ◀
+];
+
+// Generate regex pattern from ranges
+function createEmojiRegex() {
+  const rangePatterns = EMOJI_RANGES.map(([start, end]) => {
+    if (start === end) {
+      return `\\u{${start.toString(16).toUpperCase()}}`;
+    }
+    return `\\u{${start.toString(16).toUpperCase()}}-\\u{${end.toString(16).toUpperCase()}}`;
+  });
+
+  return new RegExp(`[${rangePatterns.join('')}]`, 'gu');
+}
+
+const EMOJI_REGEX = createEmojiRegex();
 
 const COMMON_ICON_SUGGESTIONS = {
   '✅': 'IconCheck',
@@ -38,7 +83,7 @@ const COMMON_ICON_SUGGESTIONS = {
   '💻': 'IconDeviceLaptop',
 };
 
-export default {
+const noEmojiRule = {
   meta: {
     type: 'problem',
     docs: {
@@ -97,6 +142,43 @@ export default {
           checkForEmojis(node.value, node.value.value);
         }
       },
+
+      // For markdown files - check text content
+      Program(node) {
+        // This will catch markdown text content when processed by @eslint/markdown
+        const sourceCode = context.getSourceCode();
+        const text = sourceCode.getText();
+
+        // Only check if this looks like markdown content (not a code block)
+        if (text && !text.includes('function') && !text.includes('const ') && !text.includes('import ')) {
+          const matches = [...text.matchAll(EMOJI_REGEX)];
+          for (const match of matches) {
+            if (match.index !== undefined) {
+              const emoji = match[0];
+              const suggestion = COMMON_ICON_SUGGESTIONS[emoji];
+
+              context.report({
+                node,
+                messageId: suggestion ? 'noEmoji' : 'noEmojiGeneric',
+                data: {
+                  emoji,
+                  suggestion: suggestion || 'appropriate Mantine icons from @tabler/icons-react',
+                },
+                loc: {
+                  start: sourceCode.getLocFromIndex(match.index),
+                  end: sourceCode.getLocFromIndex(match.index + emoji.length)
+                }
+              });
+            }
+          }
+        }
+      },
     };
+  },
+};
+
+export default {
+  rules: {
+    'no-emoji': noEmojiRule,
   },
 };
