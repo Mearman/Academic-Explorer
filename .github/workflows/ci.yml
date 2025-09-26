@@ -523,8 +523,14 @@ jobs:
         with:
           node-version: ${{ env.NODE_VERSION }}
 
-      - name: Install tsx for coverage scripts
-        run: npm install -g tsx
+      - name: Restore node_modules cache
+        uses: actions/cache/restore@v4
+        with:
+          path: |
+            node_modules
+            ~/.pnpm-store
+          key: ${{ needs.setup.outputs.cache-key }}
+          fail-on-cache-miss: true
 
       - name: Verify coverage files structure
         run: |
@@ -541,7 +547,7 @@ jobs:
         run: |
           echo "Creating coverage summary..."
           if [ -f "tools/scripts/create-coverage-summary.ts" ]; then
-            npx tsx tools/scripts/create-coverage-summary.ts
+            pnpm exec tsx tools/scripts/create-coverage-summary.ts
           else
             echo "Warning: create-coverage-summary.ts not found, creating fallback summary"
             mkdir -p coverage-reports
