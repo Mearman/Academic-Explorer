@@ -49,7 +49,11 @@ const EntityFactory = {
 	create(entityType: EntityType, client: any) {
 		return {
 			fetchWithMetadata: async (entityId: string): Promise<OpenAlexEntity> => {
-				return await client.client.getEntity(entityId);
+				const result = await client.client.getEntity(entityId);
+				if (!result) {
+					throw new Error(`Entity not found: ${entityId}`);
+				}
+				return result;
 			},
 			expand(context: { entityId: string; entityType: EntityType; client: any }, options: ExpansionOptions): Promise<{ nodes: GraphNode[]; edges: GraphEdge[] }> {
 				return Promise.resolve({ nodes: [], edges: [] });
@@ -117,7 +121,13 @@ export class GraphDataService {
 
 			const entity = await this.deduplicationService.getEntity(
 				apiEntityId,
-				() => cachedOpenAlex.client.getEntity(apiEntityId)
+				async () => {
+					const result = await cachedOpenAlex.client.getEntity(apiEntityId);
+					if (!result) {
+						throw new Error(`Entity not found: ${apiEntityId}`);
+					}
+					return result;
+				}
 			);
 
 			// Entity successfully fetched
@@ -257,7 +267,13 @@ export class GraphDataService {
 
 			const entity = await this.deduplicationService.getEntity(
 				apiEntityId,
-				() => cachedOpenAlex.client.getEntity(apiEntityId)
+				async () => {
+					const result = await cachedOpenAlex.client.getEntity(apiEntityId);
+					if (!result) {
+						throw new Error(`Entity not found: ${apiEntityId}`);
+					}
+					return result;
+				}
 			);
 
 			// Entity successfully fetched
@@ -365,7 +381,13 @@ export class GraphDataService {
 
 			const entity = await this.deduplicationService.getEntity(
 				apiEntityId,
-				() => cachedOpenAlex.client.getEntity(apiEntityId)
+				async () => {
+					const result = await cachedOpenAlex.client.getEntity(apiEntityId);
+					if (!result) {
+						throw new Error(`Entity not found: ${apiEntityId}`);
+					}
+					return result;
+				}
 			);
 
 			// Entity successfully fetched
@@ -524,7 +546,13 @@ export class GraphDataService {
 
 				const entity = await this.deduplicationService.getEntity(
 					node.entityId,
-					() => cachedOpenAlex.client.getEntity(node.entityId)
+					async () => {
+						const result = await cachedOpenAlex.client.getEntity(node.entityId);
+						if (!result) {
+							throw new Error(`Entity not found: ${node.entityId}`);
+						}
+						return result;
+					}
 				);
 
 				// Extract full data from the entity
@@ -1156,9 +1184,14 @@ export class GraphDataService {
 				return await cachedOpenAlex.client.funders.get(entityId, params);
 			case "keywords":
 				return await cachedOpenAlex.client.keywords.getKeyword(entityId, params);
-			default:
+			default: {
 				// Fallback to generic method without field selection
-				return await cachedOpenAlex.client.getEntity(entityId);
+				const result = await cachedOpenAlex.client.getEntity(entityId);
+				if (!result) {
+					throw new Error(`Entity not found: ${entityId}`);
+				}
+				return result;
+			}
 		}
 	}
 
@@ -1266,7 +1299,13 @@ export class GraphDataService {
 			// Fetch full entity data without field restrictions
 			const fullEntity = await this.deduplicationService.getEntity(
 				node.entityId,
-				() => cachedOpenAlex.client.getEntity(node.entityId)
+				async () => {
+					const result = await cachedOpenAlex.client.getEntity(node.entityId);
+					if (!result) {
+						throw new Error(`Entity not found: ${node.entityId}`);
+					}
+					return result;
+				}
 			);
 
 			// Create updated node data WITHOUT creating related entities (hydration only)

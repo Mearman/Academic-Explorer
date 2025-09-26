@@ -175,6 +175,23 @@ export function useGraphPersistence() {
 		}
 	}, [loadSessions])
 
+	// Type guard for snapshot with viewport
+	const hasViewport = (snapshot: unknown): snapshot is GraphSnapshot & { viewport: { zoom: number; center: { x: number; y: number } } } => {
+		if (!snapshot || typeof snapshot !== "object") return false
+		const viewportProp = getProperty(snapshot, "viewport")
+		if (!viewportProp || typeof viewportProp !== "object") return false
+
+		const zoom = getProperty(viewportProp, "zoom")
+		const center = getProperty(viewportProp, "center")
+
+		if (typeof zoom !== "number" || !center || typeof center !== "object") return false
+
+		const x = getProperty(center, "x")
+		const y = getProperty(center, "y")
+
+		return typeof x === "number" && typeof y === "number"
+	}
+
 	// Load a session by ID
 	const loadSession = useCallback((sessionId: string): boolean => {
 		try {
@@ -198,8 +215,7 @@ export function useGraphPersistence() {
 			if (store.provider) {
 				store.provider.applyLayout(store.currentLayout)
 
-				const snapshotWithViewport = session.snapshot as any
-				if (snapshotWithViewport.viewport) {
+				if (hasViewport(session.snapshot)) {
 					// Load provider snapshot if viewport is available
 					store.provider.loadSnapshot(session.snapshot)
 				} else {

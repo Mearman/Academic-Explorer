@@ -2,6 +2,8 @@
  * Unified Event System Hooks
  * React hooks for integrating with the unified EventBus, TaskQueue, and QueuedResourceCoordinator
  * Based on the ChatGPT document specification for React integration
+ *
+ * Note: Some exports are intentionally unused and kept for future implementation
  */
 
 import { useCallback, useEffect, useRef, useState } from "react";
@@ -76,13 +78,16 @@ export function useEventListener(
       bus.off(eventType, wrappedHandler);
       logger.debug("hooks", "Event listener removed", { eventType, listenerId });
     };
+    // Disable exhaustive-deps warning for spread element - this is intentional API design
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [bus, eventType, ...deps]);
 }
 
 /**
  * Hook for managing TaskQueue
+ * @internal - Intentionally unused, available for future implementation
  */
-function useTaskQueue(
+export function useTaskQueue(
   bus: EventBus,
   options: { maxConcurrency?: number } = {}
 ): {
@@ -153,8 +158,9 @@ function useTaskQueue(
 
 /**
  * Hook for managing WorkerPool
+ * @internal - Intentionally unused, available for future implementation
  */
-function useWorkerPool(
+export function useWorkerPool(
   bus: EventBus,
   options: WorkerPoolOptions
 ): {
@@ -226,8 +232,9 @@ function useWorkerPool(
 
 /**
  * Hook for managing QueuedResourceCoordinator
+ * @internal - Intentionally unused, available for future implementation
  */
-function useQueuedResourceCoordinator(
+export function useQueuedResourceCoordinator(
   bus: EventBus,
   options: QueueCoordinatorOptions
 ): {
@@ -337,8 +344,9 @@ function useQueuedResourceCoordinator(
 
 /**
  * Hook for task progress tracking
+ * @internal - Intentionally unused, available for future implementation
  */
-function useTaskProgress(
+export function useTaskProgress(
   bus: EventBus,
   taskId: string
 ): {
@@ -435,8 +443,9 @@ function useTaskProgress(
 
 /**
  * Hook for cross-tab event broadcasting
+ * @internal - Intentionally unused, available for future implementation
  */
-function useCrossTabEvent(
+export function useCrossTabEvent(
   channelName: string,
   eventType: string,
   handler: (payload?: unknown) => void,
@@ -466,8 +475,9 @@ function useCrossTabEvent(
 
 /**
  * Hook for managing multiple event subscriptions
+ * @internal - Intentionally unused, available for future implementation
  */
-function useEventSubscriptions(
+export function useEventSubscriptions(
   bus: EventBus,
   subscriptions: Array<{
     eventType: string;

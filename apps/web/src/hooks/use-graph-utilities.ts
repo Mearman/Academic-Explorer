@@ -295,7 +295,7 @@ export const useGraphUtilities = () => {
 			nodesByType: store.entityTypeStats.total,
 			edgesByType: store.edgeTypeStats.total,
 		};
-	}, [nodesMap, edgesMap, nodes, edges, callServiceMethod]);
+	}, [nodes, edges, callServiceMethod]);
 
 	// Graph statistics getter - returns cached value
 	const getGraphStats = useCallback(() => {

@@ -94,7 +94,7 @@ export function useThemeColors() {
 		}
 
 		return colors.primary;
-	}, [colors]);
+	}, [colors, isValidEntityColorKey]);
 
 	// Cached color map to prevent new objects on each render
 	const colorMap = useMemo(() => ({

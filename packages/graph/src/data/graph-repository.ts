@@ -251,35 +251,36 @@ export class LocalStorageAdapter implements StorageAdapter {
         timestamp: Date.now(),
       });
       localStorage.setItem(this.getKey(key), serialized);
+      return Promise.resolve();
     } catch (error) {
-      throw new Error(`Failed to save to localStorage: ${error}`);
+      return Promise.reject(new Error(`Failed to save to localStorage: ${error}`));
     }
   }
 
   async load(key: string): Promise<unknown> {
     try {
       const item = localStorage.getItem(this.getKey(key));
-      if (!item) return null;
+      if (!item) return Promise.resolve(null);
 
       const parsed = JSON.parse(item);
-      return parsed.data;
+      return Promise.resolve(parsed.data);
     } catch {
       // Failed to load from localStorage - return null
-      return null;
+      return Promise.resolve(null);
     }
   }
 
   async remove(key: string): Promise<void> {
     localStorage.removeItem(this.getKey(key));
+    return Promise.resolve();
   }
 
   async exists(key: string): Promise<boolean> {
-    return localStorage.getItem(this.getKey(key)) !== null;
+    return Promise.resolve(localStorage.getItem(this.getKey(key)) !== null);
   }
 
   async list(prefix?: string): Promise<string[]> {
     const keys: string[] = [];
-    const fullPrefix = this.getKey(prefix || '');
 
     for (let i = 0; i < localStorage.length; i++) {
       const key = localStorage.key(i);
@@ -291,7 +292,7 @@ export class LocalStorageAdapter implements StorageAdapter {
       }
     }
 
-    return keys;
+    return Promise.resolve(keys);
   }
 
   async saveMany(entries: Array<{ key: string; data: unknown }>): Promise<void> {
@@ -321,7 +322,7 @@ export class LocalStorageAdapter implements StorageAdapter {
         }
       }
     }
-    return size;
+    return Promise.resolve(size);
   }
 
   async clear(): Promise<void> {
@@ -337,6 +338,8 @@ export class LocalStorageAdapter implements StorageAdapter {
     for (const key of keysToRemove) {
       localStorage.removeItem(key);
     }
+
+    return Promise.resolve();
   }
 }
 
@@ -397,7 +400,7 @@ export class GraphRepository {
 
   async getHistory(snapshotId: string): Promise<GraphHistoryEntry[]> {
     const data = await this.storage.load(`history:${snapshotId}`);
-    return (data as GraphHistoryEntry[]) || [];
+    return data ? (data as GraphHistoryEntry[]) : [];
   }
 
   private async addHistoryEntry(snapshotId: string, entry: GraphHistoryEntry): Promise<void> {
