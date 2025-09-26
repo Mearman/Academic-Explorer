@@ -209,9 +209,13 @@ jobs:
       - name: Clear Nx cache (prevent corruption issues)
         run: pnpm nx reset
 
-      - name: Build packages first (if typecheck)
+      - name: Build core packages for typecheck
         if: matrix.check == 'typecheck'
-        run: timeout 15m pnpm nx build
+        run: |
+          pnpm nx build client --verbose
+          pnpm nx build graph --verbose
+          pnpm nx build utils --verbose
+          pnpm nx build simulation --verbose
 
       - name: Run ${{ matrix.check }}
         run: timeout 20m pnpm nx ${{ matrix.check }}
