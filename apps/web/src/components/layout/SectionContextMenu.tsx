@@ -66,7 +66,7 @@ export const SectionContextMenu: React.FC<SectionContextMenuProps> = ({
 			closeOnEscape
 		>
 			<Menu.Target>
-				{trigger || defaultTrigger}
+				{trigger ?? defaultTrigger}
 			</Menu.Target>
 
 			<Menu.Dropdown>

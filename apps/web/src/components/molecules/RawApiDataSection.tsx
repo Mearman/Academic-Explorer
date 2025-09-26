@@ -114,7 +114,7 @@ export const RawApiDataSection: React.FC<RawApiDataSectionProps> = ({
 					fontSize: "12px",
 					fontWeight: "500"
 				}}>
-					"{value}"
+					&ldquo;{value}&rdquo;
 				</span>
 			);
 		}
@@ -177,22 +177,7 @@ export const RawApiDataSection: React.FC<RawApiDataSectionProps> = ({
 			);
 		}
 
-		if (typeof value === "object") {
-			// Type guard: ensure value is a non-null object
-			if (value === null) {
-				return (
-					<span style={{
-						color: colors.text.secondary,
-						fontStyle: "italic",
-						fontSize: "12px",
-						backgroundColor: "#fef2f2",
-						padding: "2px 6px",
-						borderRadius: "4px"
-					}}>
-						[Unexpected value type]
-					</span>
-				);
-			}
+		if (typeof value === "object" && value !== null) {
 			const entries = Object.entries(value);
 
 			if (entries.length === 0) {
@@ -306,7 +291,7 @@ export const RawApiDataSection: React.FC<RawApiDataSectionProps> = ({
 
 			const a = document.createElement("a");
 			a.href = url;
-			a.download = `openalex-${entityId?.split("/").pop() || "entity"}-data.json`;
+			a.download = `openalex-${entityId?.split("/").pop() ?? "entity"}-data.json`;
 			document.body.appendChild(a);
 			a.click();
 			document.body.removeChild(a);

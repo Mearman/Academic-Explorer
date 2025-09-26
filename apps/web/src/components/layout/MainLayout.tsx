@@ -337,7 +337,7 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
 									<Group gap="xs">
 										{/* Debug info */}
 										<Text size="xs" c="red">
-											Active: {getActiveGroup("right") || "none"}
+											Active: {getActiveGroup("right") ?? "none"}
 										</Text>
 										{!getActiveGroup("right") && (
 											<ActionIcon
@@ -378,7 +378,7 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
 					padding: "1rem",
 					overflow: "auto"
 				}}>
-					{children || (
+					{children ?? (
 						<div style={{
 							display: "flex",
 							alignItems: "center",

@@ -49,7 +49,7 @@ export const RightRibbon: React.FC = () => {
 		const definitions = Object.keys(toolGroups)
 			.map(groupId => getGroupDefinition(groupId))
 			.filter((def): def is NonNullable<typeof def> => def !== undefined)
-			.sort((a, b) => (a.order || 999) - (b.order || 999));
+			.sort((a, b) => (a.order ?? 999) - (b.order ?? 999));
 
 		logger.debug("ui", "Right ribbon group definitions", {
 			toolGroups,
@@ -63,7 +63,7 @@ export const RightRibbon: React.FC = () => {
 	}, [toolGroups, activeGroupId, registryVersion]);
 
 	// Determine which entity to show indicator for
-	const displayEntityId = hoveredNodeId || selectedNodeId || previewEntityId;
+	const displayEntityId = hoveredNodeId ?? selectedNodeId ?? previewEntityId;
 	const hasEntity = Boolean(displayEntityId);
 
 	const handleGroupActivate = (groupId: string) => {
@@ -88,7 +88,7 @@ export const RightRibbon: React.FC = () => {
 			// Find the right sidebar container and scroll to top
 			const sidebarContainer = document.querySelector('[data-mantine-component="AppShell"] > aside');
 			if (sidebarContainer) {
-				const scrollableElement = sidebarContainer.querySelector('[style*="overflow: auto"]') || sidebarContainer;
+				const scrollableElement = sidebarContainer.querySelector('[style*="overflow: auto"]') ?? sidebarContainer;
 				if (scrollableElement instanceof HTMLElement) {
 					scrollableElement.scrollTop = 0;
 				}

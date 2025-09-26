@@ -4,7 +4,7 @@
  * Can be dropped into existing graph implementations
  */
 
-import React, { useEffect, useMemo, useRef } from "react";
+import React, { useEffect, useMemo, useRef, useCallback } from "react";
 import { useAnimatedGraphStore, useRestartRequested, useClearRestartRequest } from "@/stores/animated-graph-store";
 import { logger } from "@academic-explorer/utils/logger";
 import { AnimatedLayoutContext } from "./animated-layout-context";
@@ -76,27 +76,33 @@ export const AnimatedLayoutProvider: React.FC<AnimatedLayoutProviderProps> = ({
 
 	// Create layout management functions with mock implementations
 	// These functions expect different parameters than the unified worker provides
-	const applyLayout = () => {
+	const applyLayout = useCallback(() => {
 		logger.debug("graph", "Apply layout called but not implemented");
-	};
-	const stopLayout = () => {
+	}, []);
+
+	const stopLayout = useCallback(() => {
 		void stopAnimation();
-	};
-	const pauseLayout = () => {
+	}, [stopAnimation]);
+
+	const pauseLayout = useCallback(() => {
 		void pauseAnimation();
-	};
-	const resumeLayout = () => {
+	}, [pauseAnimation]);
+
+	const resumeLayout = useCallback(() => {
 		void resumeAnimation();
-	};
-	const reheatLayout = () => {
+	}, [resumeAnimation]);
+
+	const reheatLayout = useCallback(() => {
 		logger.debug("graph", "Reheat layout called but not implemented");
-	};
-	const updateParameters = (params: unknown) => {
+	}, []);
+
+	const updateParameters = useCallback((params: unknown) => {
 		logger.debug("graph", "Update parameters called", { params });
-	};
-	const restartLayout = () => {
+	}, []);
+
+	const restartLayout = useCallback(() => {
 		logger.debug("graph", "Restart layout called but not implemented");
-	};
+	}, []);
 	const canRestart = isIdle;
 
 	// Auto-start animation when significant node changes occur
@@ -382,7 +388,7 @@ export const AnimatedLayoutProvider: React.FC<AnimatedLayoutProviderProps> = ({
 	useEffect(() => {
 		if (typeof window !== "undefined") {
 			const animatedStoreState = useAnimatedGraphStore.getState();
-			(window as any).__animatedGraphDebug = {
+			(window as Window & { __animatedGraphDebug?: unknown }).__animatedGraphDebug = {
 				isRunning,
 				isAnimating,
 				isWorkerReady,

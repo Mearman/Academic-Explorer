@@ -600,7 +600,7 @@ export const RichEntityDisplay: React.FC<RichEntityDisplayProps> = ({
 						<Group gap="xs">
 							<IconQuote size={14} />
 							<Text size="xs" c="dimmed">
-								{formatNumber(getNodeCitationCount(entity) || 0)} citations
+								{formatNumber(getNodeCitationCount(entity) ?? 0)} citations
 							</Text>
 						</Group>
 					)}
