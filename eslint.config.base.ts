@@ -88,7 +88,7 @@ export default tseslint.config([
       '@typescript-eslint/no-non-null-assertion': 'error',
       // Disable type-aware rules that require project config for performance
       '@typescript-eslint/prefer-nullish-coalescing': 'off',
-      '@typescript-eslint/prefer-optional-chain': 'error', // This one is safe without type info
+      '@typescript-eslint/prefer-optional-chain': 'off', // Type-aware rule - disable for performance
       '@typescript-eslint/no-unnecessary-type-assertion': 'off',
       '@typescript-eslint/no-floating-promises': 'off',
       '@typescript-eslint/await-thenable': 'off',
