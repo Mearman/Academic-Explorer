@@ -3,6 +3,17 @@ import { GroupingApi } from "./grouping";
 import type { OpenAlexBaseClient } from "../client";
 import type { OpenAlexResponse } from "../types";
 
+// Mock the logger
+vi.mock('../internal/logger', () => ({
+	logger: {
+		warn: vi.fn(),
+		debug: vi.fn(),
+		error: vi.fn()
+	}
+}));
+
+import { logger } from '../internal/logger';
+
 // Mock the client
 const mockClient = {
 	getResponse: vi.fn(),
@@ -183,7 +194,7 @@ describe("GroupingApi", () => {
 		});
 
 		it("should handle errors in temporal breakdown gracefully", async () => {
-			const consoleWarnSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
+			const loggerWarnSpy = vi.mocked(logger.warn);
 
 			const mockMainGroupsResponse: OpenAlexResponse<{ group_by?: Array<{ key: string; key_display_name: string; count: number }> }> = {
 				results: [],
@@ -208,8 +219,8 @@ describe("GroupingApi", () => {
 
 			const result = await groupingApi.getTemporalTrends("works", "type");
 
-			expect(consoleWarnSpy).toHaveBeenCalledWith(
-				"[api] Failed to get temporal trends for group error-group",
+			expect(loggerWarnSpy).toHaveBeenCalledWith(
+				"[GroupingApi] Failed to get temporal trends for group error-group",
 				expect.objectContaining({
 					groupKey: "error-group",
 					error: expect.any(Error)
@@ -218,7 +229,7 @@ describe("GroupingApi", () => {
 			expect(result.trends).toEqual([]);
 			expect(result.overall_trend).toHaveLength(1);
 
-			consoleWarnSpy.mockRestore();
+			loggerWarnSpy.mockClear();
 		});
 	});
 
@@ -353,7 +364,7 @@ describe("GroupingApi", () => {
 		});
 
 		it("should handle API errors gracefully", async () => {
-			const consoleWarnSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
+			const loggerWarnSpy = vi.mocked(logger.warn);
 
 			const mockGroupResponse: OpenAlexResponse<{ group_by?: Array<{ key: string; key_display_name: string; count: number }> }> = {
 				results: [],
@@ -369,8 +380,8 @@ describe("GroupingApi", () => {
 
 			const result = await groupingApi.getTopPerformersByGroup("authors", "field");
 
-			expect(consoleWarnSpy).toHaveBeenCalledWith(
-				"[api] Failed to get top performers for group error-group",
+			expect(loggerWarnSpy).toHaveBeenCalledWith(
+				"[GroupingApi] Failed to get top performers for group error-group",
 				expect.objectContaining({
 					groupKey: "error-group",
 					error: expect.any(Error)
@@ -378,7 +389,7 @@ describe("GroupingApi", () => {
 			);
 			expect(result.groups).toHaveLength(0);
 
-			consoleWarnSpy.mockRestore();
+			loggerWarnSpy.mockClear();
 		});
 	});
 
@@ -475,7 +486,7 @@ describe("GroupingApi", () => {
 		});
 
 		it("should handle percentile calculation errors gracefully", async () => {
-			const consoleWarnSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
+			const loggerWarnSpy = vi.mocked(logger.warn);
 
 			const mockGroupResponse: OpenAlexResponse<{ group_by?: Array<{ key: string; key_display_name: string; count: number; cited_by_count?: number }> }> = {
 				results: [],
@@ -493,8 +504,8 @@ describe("GroupingApi", () => {
 				calculate_percentiles: true,
 			});
 
-			expect(consoleWarnSpy).toHaveBeenCalledWith(
-				"[api] Failed to calculate percentiles for group error-group",
+			expect(loggerWarnSpy).toHaveBeenCalledWith(
+				"[GroupingApi] Failed to calculate percentiles for group error-group",
 				expect.objectContaining({
 					groupKey: "error-group",
 					error: expect.any(Error)
@@ -502,7 +513,7 @@ describe("GroupingApi", () => {
 			);
 			expect(result.groups[0].stats.percentiles).toBeUndefined();
 
-			consoleWarnSpy.mockRestore();
+			loggerWarnSpy.mockClear();
 		});
 	});
 

@@ -3,6 +3,17 @@ import { SamplingApi } from "./sampling";
 import type { OpenAlexBaseClient } from "../client";
 import type { OpenAlexResponse } from "../types";
 
+// Mock the logger
+vi.mock('../internal/logger', () => ({
+	logger: {
+		warn: vi.fn(),
+		debug: vi.fn(),
+		error: vi.fn()
+	}
+}));
+
+import { logger } from '../internal/logger';
+
 // Mock the client
 const mockClient = {
 	getResponse: vi.fn(),
@@ -170,7 +181,7 @@ describe("SamplingApi", () => {
 		});
 
 		it("should handle sampling errors gracefully", async () => {
-			const consoleWarnSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
+			const loggerWarnSpy = vi.mocked(logger.warn);
 
 			const mockGroupResponse: OpenAlexResponse<{ group_by?: Array<{ key: string; key_display_name: string; count: number }> }> = {
 				results: [],
@@ -188,8 +199,8 @@ describe("SamplingApi", () => {
 				sample_size: 10,
 			});
 
-			expect(consoleWarnSpy).toHaveBeenCalledWith(
-				"[api] Failed to sample from stratum error-stratum",
+			expect(loggerWarnSpy).toHaveBeenCalledWith(
+				"Failed to sample from stratum error-stratum",
 				expect.objectContaining({
 					stratumKey: "error-stratum",
 					error: expect.any(Error)
@@ -198,7 +209,7 @@ describe("SamplingApi", () => {
 			expect(result.samples).toEqual([]);
 			expect(result.strata_info[0].sample_count).toBe(0);
 
-			consoleWarnSpy.mockRestore();
+			loggerWarnSpy.mockClear();
 		});
 	});
 
@@ -270,7 +281,7 @@ describe("SamplingApi", () => {
 		});
 
 		it("should handle period sampling errors gracefully", async () => {
-			const consoleWarnSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
+			const loggerWarnSpy = vi.mocked(logger.warn);
 
 			mockClient.getResponse
 				.mockRejectedValueOnce(new Error("Period 1 error"))
@@ -286,7 +297,7 @@ describe("SamplingApi", () => {
 
 			const result = await samplingApi.temporallyDiverseSample("works", { sample_size: 40 });
 
-			expect(consoleWarnSpy).toHaveBeenCalledTimes(2);
+			expect(loggerWarnSpy).toHaveBeenCalledTimes(2);
 			expect(result.samples).toHaveLength(2);
 			expect(result.temporal_distribution[0]).toEqual({
 				period: "Recent (2020-now)",
@@ -294,7 +305,7 @@ describe("SamplingApi", () => {
 				sample_count: 0,
 			});
 
-			consoleWarnSpy.mockRestore();
+			loggerWarnSpy.mockClear();
 		});
 	});
 

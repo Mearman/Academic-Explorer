@@ -3,6 +3,17 @@ import { TextAnalysisApi } from "./text-analysis";
 import type { OpenAlexBaseClient } from "../client";
 import type { TextAnalysis } from "../types";
 
+// Mock the logger
+vi.mock('../internal/logger', () => ({
+	logger: {
+		warn: vi.fn(),
+		debug: vi.fn(),
+		error: vi.fn()
+	}
+}));
+
+import { logger } from '../internal/logger';
+
 // Mock the client
 const mockClient = {
 	get: vi.fn(),
@@ -148,8 +159,8 @@ describe("TextAnalysisApi", () => {
 				meta: { count: 1, processing_time_ms: 100, text_length: 20 },
 			};
 
-			// Mock console.warn to avoid noise in test output
-			const consoleWarnSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
+			// Mock logger to capture warning calls
+			const loggerWarnSpy = vi.mocked(logger.warn);
 
 			mockClient.get
 				.mockResolvedValueOnce(mockResponse)
@@ -160,15 +171,15 @@ describe("TextAnalysisApi", () => {
 
 			expect(result).toHaveLength(1);
 			expect(result[0]).toEqual(mockResponse);
-			expect(consoleWarnSpy).toHaveBeenCalledWith(
-				"[api] Failed to analyze text: Failed text...",
+			expect(loggerWarnSpy).toHaveBeenCalledWith(
+				"[TextAnalysisApi] Failed to analyze text: Failed text...",
 				expect.objectContaining({
 					text: "Failed text",
 					error: expect.any(Error)
 				})
 			);
 
-			consoleWarnSpy.mockRestore();
+			loggerWarnSpy.mockClear();
 		});
 
 		it("should process texts in correct batch sizes", async () => {
