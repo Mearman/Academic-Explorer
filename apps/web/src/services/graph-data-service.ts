@@ -41,22 +41,22 @@ function isNodeExpanded(_queryClient: QueryClient, _nodeId: string): boolean {
 	return false;
 }
 
-// EntityFactory stub implementation
-class EntityFactory {
-	static isSupported(entityType: EntityType): boolean {
+// EntityFactory namespace implementation
+const EntityFactory = {
+	isSupported(entityType: EntityType): boolean {
 		return ["works", "authors", "sources", "institutions"].includes(entityType);
-	}
-	static create(entityType: EntityType, client: any) {
+	},
+	create(entityType: EntityType, client: any) {
 		return {
 			fetchWithMetadata: async (entityId: string): Promise<OpenAlexEntity> => {
 				return await client.client.getEntity(entityId);
 			},
-			expand: async (context: { entityId: string; entityType: EntityType; client: any }, options: ExpansionOptions): Promise<{ nodes: GraphNode[]; edges: GraphEdge[] }> => {
-				return { nodes: [], edges: [] };
+			expand(context: { entityId: string; entityType: EntityType; client: any }, options: ExpansionOptions): Promise<{ nodes: GraphNode[]; edges: GraphEdge[] }> {
+				return Promise.resolve({ nodes: [], edges: [] });
 			}
 		};
 	}
-}
+} as const;
 import type {
 	GraphNode,
 	GraphEdge,
@@ -164,15 +164,15 @@ export class GraphDataService {
 			try {
 				const detectedEdges = await this.relationshipDetectionService.detectRelationshipsForNodes(nodeIds);
 				// Add detected relationship edges to the graph
-				if (detectedEdges && detectedEdges.length > 0) {
+				if (detectedEdges.length > 0) {
 					logger.debug("graph", "Adding detected relationship edges to initial graph", {
-						detectedEdgeCount: detectedEdges?.length ?? 0
+						detectedEdgeCount: detectedEdges.length
 					}, "GraphDataService");
 
 					store.addEdges(detectedEdges);
 
 					// Update cached edges
-					const allEdges = Object.values(store.edges).filter((edge) => edge != null);
+					const allEdges = Object.values(store.edges).filter((edge): edge is NonNullable<typeof edge> => edge != null);
 					setCachedGraphEdges(this.queryClient, allEdges);
 				}
 			} catch (error) {
@@ -221,17 +221,17 @@ export class GraphDataService {
 				this.relationshipDetectionService.detectRelationshipsForNode(existingNode.id)
 					.then((detectedEdges) => {
 						// Add detected relationship edges to the graph
-						if (detectedEdges && detectedEdges.length > 0) {
+						if (detectedEdges.length > 0) {
 							logger.debug("graph", "Adding detected relationship edges for existing node", {
 								nodeId: existingNode.id,
-								detectedEdgeCount: detectedEdges?.length ?? 0
+								detectedEdgeCount: detectedEdges.length
 							}, "GraphDataService");
 
 							const currentStore = useGraphStore.getState();
 							currentStore.addEdges(detectedEdges);
 
 							// Update cached edges
-							const allEdges = Object.values(currentStore.edges).filter((edge) => edge != null);
+							const allEdges = Object.values(currentStore.edges).filter((edge): edge is NonNullable<typeof edge> => edge != null);
 							setCachedGraphEdges(this.queryClient, allEdges);
 						}
 					})
@@ -278,17 +278,17 @@ export class GraphDataService {
 				this.relationshipDetectionService.detectRelationshipsForNode(primaryNodeId)
 					.then((detectedEdges) => {
 						// Add detected relationship edges to the graph
-						if (detectedEdges && detectedEdges.length > 0) {
+						if (detectedEdges.length > 0) {
 							logger.debug("graph", "Adding detected relationship edges for newly added node", {
 								nodeId: primaryNodeId,
-								detectedEdgeCount: detectedEdges?.length ?? 0
+								detectedEdgeCount: detectedEdges.length
 							}, "GraphDataService");
 
 							const currentStore = useGraphStore.getState();
 							currentStore.addEdges(detectedEdges);
 
 							// Update cached edges
-							const allEdges = Object.values(currentStore.edges).filter((edge) => edge != null);
+							const allEdges = Object.values(currentStore.edges).filter((edge): edge is NonNullable<typeof edge> => edge != null);
 							setCachedGraphEdges(this.queryClient, allEdges);
 						}
 					})
@@ -318,16 +318,16 @@ export class GraphDataService {
 				this.relationshipDetectionService.detectRelationshipsForNodes(nodeIds)
 					.then((detectedEdges) => {
 						// Add detected relationship edges to the graph
-						if (detectedEdges && detectedEdges.length > 0) {
+						if (detectedEdges.length > 0) {
 							logger.debug("graph", "Adding detected relationship edges for initial graph nodes", {
-								detectedEdgeCount: detectedEdges?.length ?? 0
+								detectedEdgeCount: detectedEdges.length
 							}, "GraphDataService");
 
 							const currentStore = useGraphStore.getState();
 							currentStore.addEdges(detectedEdges);
 
 							// Update cached edges
-							const allEdges = Object.values(currentStore.edges).filter((edge) => edge != null);
+							const allEdges = Object.values(currentStore.edges).filter((edge): edge is NonNullable<typeof edge> => edge != null);
 							setCachedGraphEdges(this.queryClient, allEdges);
 						}
 					})
@@ -611,7 +611,7 @@ export class GraphDataService {
 				currentStore.addEdges(allDetectedEdges);
 
 				// Update cached edges
-				const updatedEdges = Object.values(currentStore.edges).filter((edge) => edge != null);
+				const updatedEdges = Object.values(currentStore.edges).filter((edge): edge is NonNullable<typeof edge> => edge != null);
 				setCachedGraphEdges(this.queryClient, updatedEdges);
 			}
 			processedCount += batch.length;
@@ -784,10 +784,10 @@ export class GraphDataService {
 				try {
 					const detectedEdges = await this.relationshipDetectionService.detectRelationshipsForNodes(allNodeIds);
 
-					if (detectedEdges && detectedEdges.length > 0) {
+					if (detectedEdges.length > 0) {
 						logger.debug("graph", "Found new relationships for already-expanded node", {
 							nodeId,
-							detectedEdgeCount: detectedEdges?.length ?? 0,
+							detectedEdgeCount: detectedEdges.length,
 							relationships: detectedEdges.map(e => ({
 								source: e.source,
 								target: e.target,
@@ -920,7 +920,7 @@ export class GraphDataService {
 
 					logger.debug("graph", "Relationship detection completed", {
 						expandedNodeId: nodeId,
-						detectedEdgeCount: detectedEdges?.length ?? 0,
+						detectedEdgeCount: detectedEdges.length,
 						relationships: detectedEdges.map(e => ({
 							source: e.source,
 							target: e.target,
@@ -929,11 +929,11 @@ export class GraphDataService {
 					}, "GraphDataService");
 
 					// Third: Add the detected relationship edges if any were found
-					if (detectedEdges && detectedEdges.length > 0) {
+					if (detectedEdges.length > 0) {
 						const finalEdgesWithRelationships = [...finalEdges, ...detectedEdges];
 						logger.debug("graph", "Adding detected relationship edges", {
 							expandedNodeId: nodeId,
-							relationshipEdgeCount: detectedEdges?.length ?? 0,
+							relationshipEdgeCount: detectedEdges.length,
 							totalEdgeCount: finalEdgesWithRelationships.length
 						}, "GraphDataService");
 
@@ -947,7 +947,7 @@ export class GraphDataService {
 			}
 
 			// Update cached graph data with final state (including any detected relationship edges)
-			const finalEdgesWithRelationships = (detectedEdges && detectedEdges.length > 0) ? [...finalEdges, ...detectedEdges] : finalEdges;
+			const finalEdgesWithRelationships = detectedEdges.length > 0 ? [...finalEdges, ...detectedEdges] : finalEdges;
 			setCachedGraphNodes(this.queryClient, finalNodes);
 			setCachedGraphEdges(this.queryClient, finalEdgesWithRelationships);
 

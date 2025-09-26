@@ -26,7 +26,7 @@ function InstitutionRoute() {
 		const detection = EntityDetectionService.detectEntity(institutionId);
 
 		// If ID was normalized and is different from input, redirect
-		if (detection && detection.normalizedId && detection.normalizedId !== institutionId) {
+		if (detection?.normalizedId && detection.normalizedId !== institutionId) {
 			logger.debug("routing", "Redirecting to normalized institution ID", {
 				originalId: institutionId,
 				normalizedId: detection.normalizedId

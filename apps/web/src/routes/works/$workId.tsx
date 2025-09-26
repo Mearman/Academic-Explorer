@@ -26,7 +26,7 @@ function WorkRoute() {
 		const detection = EntityDetectionService.detectEntity(workId);
 
 		// If ID was normalized and is different from input, redirect
-		if (detection && detection.normalizedId && detection.normalizedId !== workId) {
+		if (detection?.normalizedId && detection.normalizedId !== workId) {
 			logger.debug("routing", "Redirecting to normalized work ID", {
 				originalId: workId,
 				normalizedId: detection.normalizedId

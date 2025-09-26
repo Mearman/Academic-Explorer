@@ -175,7 +175,7 @@ function SearchPage() {
 						) : hasResults ? (
 							<Stack>
 								<Text size="sm" c="dimmed">
-                  Found {searchResults.length} results for "{searchFilters.query}"
+                  Found {searchResults.length} results for &quot;{searchFilters.query}&quot;
 									{searchFilters.startDate || searchFilters.endDate ? (
 										<span>
 											{" "}with date filters applied
@@ -201,7 +201,7 @@ function SearchPage() {
 								variant="light"
 							>
 								<Text size="sm">
-                  No academic works found for "{searchFilters.query}". Try different search terms or adjust your filters.
+                  No academic works found for &quot;{searchFilters.query}&quot;. Try different search terms or adjust your filters.
 								</Text>
 							</Alert>
 						)}

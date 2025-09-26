@@ -134,7 +134,7 @@ function ComparisonResults() {
 	}
 
 	// Run comparison for a specific dataset
-	const runComparison = async (datasetId: string) => {
+	const runComparison = (datasetId: string) => {
 		const dataset = starDatasets.find(d => d.id === datasetId)
 		if (!dataset) return
 
@@ -152,7 +152,7 @@ function ComparisonResults() {
 			const startTime = performance.now()
 
 			// Step 1: Perform Academic Explorer search
-			const academicExplorerResults = await performAcademicExplorerSearch(dataset)
+			const academicExplorerResults = performAcademicExplorerSearch(dataset)
 
 			// Step 2: Run comparison with progress tracking
 			const comparisonResults = compareAcademicExplorerResults(
@@ -342,7 +342,7 @@ function ComparisonResults() {
 										</p>
 										{run?.progress && (
 											<div style={{ fontSize: "12px", color: "#3b82f6", marginTop: "4px" }}>
-												{run.progress?.message ?? "Processing..."} ({run.progress?.progress ?? 0}%)
+												{run.progress.message ?? "Processing..."} ({run.progress.progress ?? 0}%)
 											</div>
 										)}
 									</div>

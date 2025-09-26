@@ -26,7 +26,7 @@ function HttpsRoute() {
 				// Detect entity type and ID from the URL
 				const detection = EntityDetectionService.detectEntity(fullUrl)
 
-				if (detection && detection.entityType && detection.detectionMethod.includes("OpenAlex")) {
+				if (detection?.entityType && detection.detectionMethod.includes("OpenAlex")) {
 					// This is an OpenAlex URL, redirect to direct entity route
 					const entityRoute = `/${detection.entityType}/${detection.normalizedId}`
 
