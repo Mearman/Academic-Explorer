@@ -299,21 +299,11 @@ jobs:
               ;;
             "build")
               echo "🚀 Running optimized build process..."
-              if [ -f "scripts/build.ts" ]; then
-                timeout ${{ matrix.timeout }}m tsx scripts/build.ts
-              else
-                echo "Using fallback build command..."
-                timeout ${{ matrix.timeout }}m pnpm nx run-many -t build --parallel=${{ matrix.parallel }}
-              fi
+              timeout ${{ matrix.timeout }}m pnpm nx run-many -t build --parallel=${{ matrix.parallel }}
               ;;
             "typecheck")
               echo "🔍 Running TypeScript compilation check..."
-              if [ -f "scripts/fast-typecheck.ts" ]; then
-                timeout ${{ matrix.timeout }}m tsx scripts/fast-typecheck.ts
-              else
-                echo "Using fallback typecheck command..."
-                timeout ${{ matrix.timeout }}m pnpm typecheck
-              fi
+              timeout ${{ matrix.timeout }}m pnpm typecheck
               ;;
             *)
               echo "🔄 Running ${{ matrix.check }}..."
@@ -321,7 +311,7 @@ jobs:
               ;;
           esac
         env:
-          NODE_OPTIONS: "--max-old-space-size=6144 --gc-concurrent"
+          NODE_OPTIONS: "--max-old-space-size=6144"
           NX_DAEMON: "false"
           NX_PARALLEL: "${{ matrix.parallel }}"
           NX_CLOUD_DISTRIBUTED_EXECUTION: "false"
@@ -452,7 +442,7 @@ jobs:
             timeout ${{ matrix.timeout }}m pnpm nx run-many -t ${{ matrix.command }} --parallel=1
           fi
         env:
-          NODE_OPTIONS: "--max-old-space-size=8192 --expose-gc --gc-concurrent"
+          NODE_OPTIONS: "--max-old-space-size=8192 --expose-gc"
           NX_DAEMON: "false"
           NX_PARALLEL: "1"
           NX_CLOUD_DISTRIBUTED_EXECUTION: "false"
