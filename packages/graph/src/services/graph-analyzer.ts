@@ -813,10 +813,10 @@ export class GraphAnalyzer {
 
   private extractPublicationYear(work: GraphNode): number | null {
     // Extract year from entityData - this would depend on the actual data structure
-    const data = work.entityData as any;
-    return data?.publication_year ||
-           data?.publicationYear ||
-           (data?.publication_date ? new Date(data.publication_date).getFullYear() : null);
+    const data = work.entityData as Record<string, unknown>;
+    return (data?.publication_year as number) ||
+           (data?.publicationYear as number) ||
+           (data?.publication_date ? new Date(data.publication_date as string).getFullYear() : null);
   }
 
   private calculateCitationVelocity(citationsByYear: Array<{ year: number; count: number }>): number {
@@ -834,18 +834,18 @@ export class GraphAnalyzer {
     return previous === 0 ? recent : (recent - previous) / previous;
   }
 
-  private async calculateHIndex(nodeId: string, provider: GraphDataProvider): Promise<number> {
+  private async calculateHIndex(_nodeId: string, _provider: GraphDataProvider): Promise<number> {
     // Simplified h-index calculation for a single entity
     // In a real implementation, this would calculate h-index across all papers by an author
     return 1; // Placeholder
   }
 
-  private async calculateI10Index(nodeId: string, provider: GraphDataProvider): Promise<number> {
+  private async calculateI10Index(_nodeId: string, _provider: GraphDataProvider): Promise<number> {
     // Simplified i10-index calculation
     return 0; // Placeholder
   }
 
-  private async calculateSelfCitations(nodeId: string, citingWorks: GraphNode[], provider: GraphDataProvider): Promise<number> {
+  private async calculateSelfCitations(_nodeId: string, _citingWorks: GraphNode[], _provider: GraphDataProvider): Promise<number> {
     // Calculate self-citations by checking author overlap
     return 0; // Placeholder - would require author comparison
   }
@@ -862,8 +862,8 @@ export class GraphAnalyzer {
   }
 
   private extractCitationCount(work: GraphNode): number {
-    const data = work.entityData as any;
-    return data?.cited_by_count || data?.citationCount || 0;
+    const data = work.entityData as Record<string, unknown>;
+    return (data?.cited_by_count as number) || (data?.citationCount as number) || 0;
   }
 
   private calculateQuartiles(values: number[]): [number, number, number, number] {
@@ -912,7 +912,7 @@ export class GraphAnalyzer {
     let totalCoefficient = 0;
     let nodeCount = 0;
 
-    for (const [nodeId, neighbors] of adjacency) {
+    for (const [_nodeId, neighbors] of adjacency) {
       if (neighbors.size < 2) continue;
 
       let triangles = 0;
@@ -942,7 +942,7 @@ export class GraphAnalyzer {
     let triangles = 0;
     let triplets = 0;
 
-    for (const [nodeId, neighbors] of adjacency) {
+    for (const [_nodeId, neighbors] of adjacency) {
       const degree = neighbors.size;
       if (degree < 2) continue;
 
@@ -965,7 +965,7 @@ export class GraphAnalyzer {
     return triplets > 0 ? (3 * triangles) / triplets : 0;
   }
 
-  private async detectCommunities(graphData: GraphData, adjacency: Map<string, Set<string>>): Promise<Array<{ id: string; nodes: string[]; size: number; density: number; modularity: number }>> {
+  private async detectCommunities(graphData: GraphData, _adjacency: Map<string, Set<string>>): Promise<Array<{ id: string; nodes: string[]; size: number; density: number; modularity: number }>> {
     // Simplified community detection - in practice would use Louvain or similar algorithms
     return [{
       id: 'community_1',
@@ -998,7 +998,7 @@ export class GraphAnalyzer {
   private calculateDegreeDistribution(adjacency: Map<string, Set<string>>): Array<{ degree: number; frequency: number }> {
     const degreeCount = new Map<number, number>();
 
-    for (const [nodeId, neighbors] of adjacency) {
+    for (const [_nodeId, neighbors] of adjacency) {
       const degree = neighbors.size;
       degreeCount.set(degree, (degreeCount.get(degree) || 0) + 1);
     }
@@ -1008,7 +1008,7 @@ export class GraphAnalyzer {
       .sort((a, b) => a.degree - b.degree);
   }
 
-  private calculatePathMetrics(adjacency: Map<string, Set<string>>): { diameter: number; averagePathLength: number } {
+  private calculatePathMetrics(_adjacency: Map<string, Set<string>>): { diameter: number; averagePathLength: number } {
     // Simplified path calculation - would use BFS for all pairs
     return {
       diameter: -1, // Placeholder - expensive to calculate
@@ -1016,12 +1016,12 @@ export class GraphAnalyzer {
     };
   }
 
-  private calculateSmallWorldness(adjacency: Map<string, Set<string>>, avgPathLength: number, clusteringCoeff: number): number {
+  private calculateSmallWorldness(_adjacency: Map<string, Set<string>>, _avgPathLength: number, _clusteringCoeff: number): number {
     // Small-worldness calculation (Watts-Strogatz)
     return -1; // Placeholder - requires reference random network
   }
 
-  private calculateScaleFreeness(degreeDistribution: Array<{ degree: number; frequency: number }>): number {
+  private calculateScaleFreeness(_degreeDistribution: Array<{ degree: number; frequency: number }>): number {
     // Power-law fit quality
     return -1; // Placeholder - requires power-law fitting
   }
@@ -1058,7 +1058,7 @@ export class GraphAnalyzer {
 
   private async buildCollaborationNetwork(
     collaborationData: Array<{ workId: string; collaborators: string[]; year: number; impact: number }>,
-    provider: GraphDataProvider
+    _provider: GraphDataProvider
   ): Promise<{ directCollaborators: Array<{ nodeId: string; collaborations: number; sharedWorks: string[]; strengthScore: number }>; collaborationStrength: number }> {
     const collaboratorMap = new Map<string, { collaborations: number; sharedWorks: string[]; totalImpact: number }>();
 
@@ -1086,7 +1086,7 @@ export class GraphAnalyzer {
     return { directCollaborators, collaborationStrength };
   }
 
-  private async analyzeInstitutionalCollaboration(authorId: string, collaborationData: Array<{ workId: string; collaborators: string[]; year: number; impact: number }>, provider: GraphDataProvider): Promise<{ primaryInstitution?: string; institutionalDiversity: number; crossInstitutionalRate: number; topInstitutions: Array<{ institutionId: string; collaborations: number; impactScore: number }> }> {
+  private async analyzeInstitutionalCollaboration(_authorId: string, _collaborationData: Array<{ workId: string; collaborators: string[]; year: number; impact: number }>, _provider: GraphDataProvider): Promise<{ primaryInstitution?: string; institutionalDiversity: number; crossInstitutionalRate: number; topInstitutions: Array<{ institutionId: string; collaborations: number; impactScore: number }> }> {
     // Placeholder - would require institutional affiliation data
     return {
       institutionalDiversity: 1,
@@ -1095,7 +1095,7 @@ export class GraphAnalyzer {
     };
   }
 
-  private async analyzeDisciplinaryReach(worksIds: string[], provider: GraphDataProvider): Promise<{ primaryFields: string[]; fieldDiversity: number; interdisciplinaryRate: number; emergingFields: string[] }> {
+  private async analyzeDisciplinaryReach(_worksIds: string[], _provider: GraphDataProvider): Promise<{ primaryFields: string[]; fieldDiversity: number; interdisciplinaryRate: number; emergingFields: string[] }> {
     // Placeholder - would require topic/field classification
     return {
       primaryFields: ['Computer Science'],
@@ -1144,7 +1144,7 @@ export class GraphAnalyzer {
     };
   }
 
-  private async analyzeCollaborationImpact(collaborationData: Array<{ workId: string; collaborators: string[]; year: number; impact: number }>, provider: GraphDataProvider): Promise<{ soloWorkImpact: number; collaborativeWorkImpact: number; collaborationPremium: number }> {
+  private async analyzeCollaborationImpact(collaborationData: Array<{ workId: string; collaborators: string[]; year: number; impact: number }>, _provider: GraphDataProvider): Promise<{ soloWorkImpact: number; collaborativeWorkImpact: number; collaborationPremium: number }> {
     const soloWorks = collaborationData.filter(c => c.collaborators.length === 0);
     const collabWorks = collaborationData.filter(c => c.collaborators.length > 0);
 
@@ -1205,7 +1205,7 @@ export class GraphAnalyzer {
     };
   }
 
-  private async analyzeResearchTopicsEvolution(analysisData: GraphData, timeRange: TimeRange, provider: GraphDataProvider): Promise<{ currentTopics: Array<{ topic: string; prevalence: number; trend: 'emerging' | 'stable' | 'declining'; firstAppeared: number; lastAppeared: number }>; topicTransitions: Array<{ from: string; to: string; transitionYear: number; strength: number }>; emergingAreas: string[] }> {
+  private async analyzeResearchTopicsEvolution(_analysisData: GraphData, timeRange: TimeRange, _provider: GraphDataProvider): Promise<{ currentTopics: Array<{ topic: string; prevalence: number; trend: 'emerging' | 'stable' | 'declining'; firstAppeared: number; lastAppeared: number }>; topicTransitions: Array<{ from: string; to: string; transitionYear: number; strength: number }>; emergingAreas: string[] }> {
     // Placeholder - would require topic extraction and analysis
     return {
       currentTopics: [
@@ -1222,7 +1222,7 @@ export class GraphAnalyzer {
     };
   }
 
-  private async calculateImpactEvolution(analysisData: GraphData, timeRange: TimeRange, provider: GraphDataProvider): Promise<{ impactByYear: Array<{ year: number; totalCitations: number; hIndex: number }>; impactAcceleration: number; sustainedImpact: boolean; breakthrough_works: string[] }> {
+  private async calculateImpactEvolution(analysisData: GraphData, timeRange: TimeRange, _provider: GraphDataProvider): Promise<{ impactByYear: Array<{ year: number; totalCitations: number; hIndex: number }>; impactAcceleration: number; sustainedImpact: boolean; breakthrough_works: string[] }> {
     const impactByYear: Array<{ year: number; totalCitations: number; hIndex: number }> = [];
 
     for (let year = timeRange.startYear; year <= timeRange.endYear; year++) {
@@ -1258,7 +1258,7 @@ export class GraphAnalyzer {
     };
   }
 
-  private analyzeNetworkEvolution(analysisData: GraphData, timeRange: TimeRange): { networkExpansion: Array<{ year: number; collaboratorCount: number }>; institutionalMobility: Array<{ year: number; institution: string; transitionType: 'join' | 'leave' | 'visit' }>; collaborationMaturity: number } {
+  private analyzeNetworkEvolution(_analysisData: GraphData, _timeRange: TimeRange): { networkExpansion: Array<{ year: number; collaboratorCount: number }>; institutionalMobility: Array<{ year: number; institution: string; transitionType: 'join' | 'leave' | 'visit' }>; collaborationMaturity: number } {
     // Placeholder - would require temporal network analysis
     return {
       networkExpansion: [],
@@ -1268,15 +1268,15 @@ export class GraphAnalyzer {
   }
 
   private generateFutureProjections(
-    publicationTrends: any,
-    impactEvolution: any,
-    researchTopics: any
+    publicationTrends: { yearlyOutput: Array<{ year: number; count: number; impactSum: number }> },
+    impactEvolution: { impactByYear: Array<{ year: number; totalCitations: number; hIndex: number }> },
+    _researchTopics: { currentTopics: Array<{ topic: string; prevalence: number; trend: 'emerging' | 'stable' | 'declining'; firstAppeared: number; lastAppeared: number }> }
   ): { expectedOutput: number; impactProjection: number; emergingTopicAlignment: number; confidence: number } {
     // Simple linear projection based on recent trends
-    const recentOutput = publicationTrends.yearlyOutput.slice(-3).map((y: any) => y.count);
+    const recentOutput = publicationTrends.yearlyOutput.slice(-3).map(y => y.count);
     const avgRecentOutput = recentOutput.reduce((sum: number, count: number) => sum + count, 0) / recentOutput.length;
 
-    const recentImpact = impactEvolution.impactByYear.slice(-3).map((y: any) => y.totalCitations);
+    const recentImpact = impactEvolution.impactByYear.slice(-3).map(y => y.totalCitations);
     const avgRecentImpact = recentImpact.reduce((sum: number, citations: number) => sum + citations, 0) / recentImpact.length;
 
     return {
@@ -1297,20 +1297,23 @@ export class GraphAnalyzer {
       let score = 0;
 
       switch (analysisType) {
-        case 'citation':
+        case 'citation': {
           const citationMetric = metric as CitationMetrics;
           score = citationMetric.totalCitations * 0.5 + citationMetric.hIndex * 10 + citationMetric.recentCitations * 0.3;
           break;
-        case 'collaboration':
+        }
+        case 'collaboration': {
           const collabMetric = metric as CollaborationMetrics;
           score = collabMetric.collaborationNetwork.directCollaborators.length * 2 +
                   collabMetric.institutionalCollaboration.institutionalDiversity * 5;
           break;
-        case 'trends':
+        }
+        case 'trends': {
           const trendMetric = metric as TrendAnalysis;
           score = trendMetric.publicationTrends.yearlyOutput.reduce((sum, y) => sum + y.count, 0) +
                   trendMetric.futureProjections.expectedOutput * 2;
           break;
+        }
       }
 
       scores.push({ nodeId, score });
