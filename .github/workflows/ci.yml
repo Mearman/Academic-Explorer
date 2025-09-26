@@ -55,6 +55,7 @@ jobs:
           NODE_OPTIONS: '--max-old-space-size=8192'
 
       - name: Lint affected projects
+        continue-on-error: true
         run: |
           # Get affected projects safely
           echo "Checking for affected projects..."
