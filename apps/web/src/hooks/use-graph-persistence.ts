@@ -116,19 +116,19 @@ export function useGraphPersistence() {
 			id: sessionId,
 			name,
 			description,
-			nodes: Object.values(store.nodes).filter((node): node is NonNullable<typeof node> => node != null),
-			edges: Object.values(store.edges).filter((edge): edge is NonNullable<typeof edge> => edge != null),
+			nodes: Object.values(store.nodes).filter((node): node is NonNullable<typeof node> => node !== null),
+			edges: Object.values(store.edges).filter((edge): edge is NonNullable<typeof edge> => edge !== null),
 			timestamp: Date.now(),
 			version: "1.0.0",
 			metadata: {
-				nodeCount: Object.values(store.nodes).filter(node => node != null).length,
-				edgeCount: Object.values(store.edges).filter(edge => edge != null).length,
+				nodeCount: Object.values(store.nodes).filter(node => node !== null).length,
+				edgeCount: Object.values(store.edges).filter(edge => edge !== null).length,
 			}
 		}
 
 		// Try to get additional snapshot data from provider (like viewport)
 		let snapshot: GraphSnapshot & { viewport?: { zoom: number; center: { x: number; y: number } } }
-		if (store.provider && store.provider.getSnapshot) {
+		if (store.provider?.getSnapshot) {
 			const providerSnapshot = store.provider.getSnapshot()
 			// Merge provider snapshot data with base snapshot
 			snapshot = { ...baseSnapshot, ...providerSnapshot }
@@ -199,7 +199,7 @@ export function useGraphPersistence() {
 				store.provider.applyLayout(store.currentLayout)
 
 				const snapshotWithViewport = session.snapshot as any
-				if (snapshotWithViewport.viewport && store.provider.loadSnapshot) {
+				if (snapshotWithViewport.viewport && store.provider?.loadSnapshot) {
 					// Load provider snapshot if viewport is available
 					store.provider.loadSnapshot(session.snapshot)
 				} else {

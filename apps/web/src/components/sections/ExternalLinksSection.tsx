@@ -147,7 +147,7 @@ export const ExternalLinksSection: React.FC<ExternalLinksSectionProps> = ({
 		if (isIdsRecord(idsRecord) && isIdsWithWikipedia(idsRecord) && isValidUrl(idsRecord.wikipedia)) {
 			links.push({
 				label: "Wikipedia",
-				url: String(idsRecord.wikipedia),
+				url: idsRecord.wikipedia,
 				icon: <IconExternalLink size={16} />,
 				description: "View Wikipedia article",
 				type: "wikipedia"
@@ -158,7 +158,7 @@ export const ExternalLinksSection: React.FC<ExternalLinksSectionProps> = ({
 		if (isIdsRecord(idsRecord) && isIdsWithWikidata(idsRecord) && isValidUrl(idsRecord.wikidata)) {
 			links.push({
 				label: "Wikidata",
-				url: String(idsRecord.wikidata),
+				url: idsRecord.wikidata,
 				icon: <IconExternalLink size={16} />,
 				description: "View Wikidata entry",
 				type: "wikidata"
