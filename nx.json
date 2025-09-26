@@ -235,6 +235,9 @@
         "file": "{projectRoot}/CHANGELOG.md"
       }
     },
+    "git": {
+      "commitMessage": "chore(release): version packages [skip ci]"
+    },
     "groups": {
       "default": {
         "projects": ["*"],

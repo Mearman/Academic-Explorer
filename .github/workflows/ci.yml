@@ -193,9 +193,36 @@ jobs:
         env:
           NODE_OPTIONS: '--max-old-space-size=8192'
 
+  # Release automation (main branch only)
+  release:
+    needs: [ci, workspace-quality]
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push' && success()
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          filter: tree:0
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Setup Node.js and dependencies
+        uses: ./.github/actions/setup-node-pnpm
+
+      - name: Setup Git user
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+      - name: Run Nx release
+        run: pnpm nx release --yes
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NODE_OPTIONS: '--max-old-space-size=8192'
+
   # Deploy to GitHub Pages (main branch only)
   deploy:
-    needs: [ci, workspace-quality]
+    needs: [ci, workspace-quality, release]
     if: github.ref == 'refs/heads/main' && github.event_name == 'push' && success()
     runs-on: ubuntu-latest
     steps:
@@ -223,7 +250,7 @@ jobs:
   # Aggregate status check for branch protection
   ci-success:
     runs-on: ubuntu-latest
-    needs: [ci, workspace-quality, extended-checks]
+    needs: [ci, workspace-quality, extended-checks, release, deploy]
     if: always()
     steps:
       - name: Check CI status
@@ -242,6 +269,17 @@ jobs:
           # Extended checks are optional (may be skipped)
           if [[ "${{ needs.extended-checks.result }}" == "failure" ]]; then
             echo "❌ Extended checks failed"
+            exit 1
+          fi
+
+          # Release and deploy are main-branch only (may be skipped on PRs)
+          if [[ "${{ needs.release.result }}" == "failure" ]]; then
+            echo "❌ Release job failed"
+            exit 1
+          fi
+
+          if [[ "${{ needs.deploy.result }}" == "failure" ]]; then
+            echo "❌ Deploy job failed"
             exit 1
           fi
 
