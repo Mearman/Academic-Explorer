@@ -206,12 +206,15 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
+      - name: Clear Nx cache (prevent corruption issues)
+        run: pnpm nx reset
+
       - name: Build packages first (if typecheck)
         if: matrix.check == 'typecheck'
-        run: pnpm nx build
+        run: timeout 15m pnpm nx build
 
       - name: Run ${{ matrix.check }}
-        run: pnpm nx ${{ matrix.check }}
+        run: timeout 20m pnpm nx ${{ matrix.check }}
         env:
           NODE_OPTIONS: "--max-old-space-size=4096"
 
