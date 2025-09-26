@@ -8,7 +8,7 @@ import { AuthorsApi } from './entities/authors';
 import { SourcesApi } from './entities/sources';
 import { InstitutionsApi } from './entities/institutions';
 import { TopicsApi } from './entities/topics';
-import { logger } from '@academic-explorer/shared-utils';
+import { logger } from '@academic-explorer/utils';
 import { PublishersApi } from './entities/publishers';
 import { FundersApi } from './entities/funders';
 
@@ -43,7 +43,7 @@ export class CachedOpenAlexClient extends OpenAlexBaseClient {
       keywords: {}, // Stub implementation
       getEntity: async (id: string) => {
         // Basic entity getter stub
-        logger.warn('CachedOpenAlexClient.getEntity: Stub implementation', { id });
+        logger.warn('client', 'CachedOpenAlexClient.getEntity: Stub implementation', { id });
         return null;
       }
     };
@@ -51,7 +51,7 @@ export class CachedOpenAlexClient extends OpenAlexBaseClient {
 
   updateConfig(_config: Partial<OpenAlexClientConfig>) {
     // Stub implementation - in real client would update configuration
-    logger.warn('CachedOpenAlexClient.updateConfig: Stub implementation');
+    logger.warn('client', 'CachedOpenAlexClient.updateConfig: Stub implementation');
   }
 }
 

@@ -285,6 +285,10 @@ importers:
         version: 0.1.0(vitest@3.2.4)
 
   packages/client:
+    dependencies:
+      '@academic-explorer/utils':
+        specifier: workspace:*
+        version: link:../utils
     devDependencies:
       '@types/node':
         specifier: ^24.5.2
