@@ -38,7 +38,7 @@ export interface GraphHistoryEntry {
 export interface StorageAdapter {
   // Core CRUD operations
   save(key: string, data: unknown): Promise<void>;
-  load(key: string): Promise<unknown | null>;
+  load(key: string): Promise<unknown>;
   remove(key: string): Promise<void>;
   exists(key: string): Promise<boolean>;
 
@@ -47,7 +47,7 @@ export interface StorageAdapter {
 
   // Bulk operations
   saveMany(entries: Array<{ key: string; data: unknown }>): Promise<void>;
-  loadMany(keys: string[]): Promise<Array<{ key: string; data: unknown | null }>>;
+  loadMany(keys: string[]): Promise<Array<{ key: string; data: unknown }>>;
 
   // Storage info
   getStorageSize(): Promise<number>;
@@ -104,12 +104,12 @@ export class IndexedDBAdapter implements StorageAdapter {
     });
   }
 
-  async load(key: string): Promise<unknown | null> {
+  async load(key: string): Promise<unknown> {
     const db = await this.getDB();
     const transaction = db.transaction(['graphs'], 'readonly');
     const store = transaction.objectStore('graphs');
 
-    return new Promise<unknown | null>((resolve, reject) => {
+    return new Promise<unknown>((resolve, reject) => {
       const request = store.get(key);
       request.onsuccess = () => {
         const {result} = request;
@@ -177,14 +177,14 @@ export class IndexedDBAdapter implements StorageAdapter {
     );
   }
 
-  async loadMany(keys: string[]): Promise<Array<{ key: string; data: unknown | null }>> {
+  async loadMany(keys: string[]): Promise<Array<{ key: string; data: unknown }>> {
     const db = await this.getDB();
     const transaction = db.transaction(['graphs'], 'readonly');
     const store = transaction.objectStore('graphs');
 
     return Promise.all(
       keys.map(key =>
-        new Promise<{ key: string; data: unknown | null }>((resolve, reject) => {
+        new Promise<{ key: string; data: unknown }>((resolve, reject) => {
           const request = store.get(key);
           request.onsuccess = () => {
             const {result} = request;
@@ -256,15 +256,15 @@ export class LocalStorageAdapter implements StorageAdapter {
     }
   }
 
-  async load(key: string): Promise<unknown | null> {
+  async load(key: string): Promise<unknown> {
     try {
       const item = localStorage.getItem(this.getKey(key));
       if (!item) return null;
 
       const parsed = JSON.parse(item);
       return parsed.data;
-    } catch (error) {
-      console.warn(`Failed to load from localStorage: ${error}`);
+    } catch {
+      // Failed to load from localStorage - return null
       return null;
     }
   }
@@ -300,7 +300,7 @@ export class LocalStorageAdapter implements StorageAdapter {
     }
   }
 
-  async loadMany(keys: string[]): Promise<Array<{ key: string; data: unknown | null }>> {
+  async loadMany(keys: string[]): Promise<Array<{ key: string; data: unknown }>> {
     const results = await Promise.all(
       keys.map(async (key) => ({
         key,
