@@ -97,6 +97,13 @@ jobs:
         with:
           main-branch-name: 'main'
 
+      # Build packages first if typecheck is running (needs compiled .d.ts files)
+      - name: Build dependencies for typecheck
+        if: matrix.check == 'typecheck'
+        run: pnpm nx affected -t build --parallel=8
+        env:
+          NODE_OPTIONS: '--max-old-space-size=8192'
+
       - name: Run ${{ matrix.check }}
         run: pnpm nx affected -t ${{ matrix.check }} --parallel=8
         env:
