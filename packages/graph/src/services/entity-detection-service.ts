@@ -188,7 +188,7 @@ export class EntityDetectionService {
             if (normalized === null) {
               continue; // Pattern matched but normalization failed, try next pattern
             }
-          } catch (_error) {
+          } catch {
             // Normalization failed, try next pattern
             continue;
           }
