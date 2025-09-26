@@ -48,8 +48,8 @@ const EdgeRepositoryItem: React.FC<EdgeRepositoryItemProps> = ({
 
 	// Get display info for edge type
 	const edgeOption = edgeTypeOptions.find(option => option.entityType === edge.type);
-	const edgeColor = edgeOption?.color || "#95a5a6";
-	const edgeLabel = edgeOption?.label || edge.type;
+	const edgeColor = edgeOption?.color ?? "#95a5a6";
+	const edgeLabel = edgeOption?.label ?? edge.type;
 
 	const handleDragStart = useCallback((event: React.DragEvent) => {
 		// Store edge data for drop handler

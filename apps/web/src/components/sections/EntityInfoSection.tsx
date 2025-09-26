@@ -54,7 +54,7 @@ export const EntityInfoSection: React.FC<EntityInfoSectionProps> = ({
 	}, []);
 
 	// Determine which entity to show - now includes route fallback
-	const displayEntityId = hoveredNodeId || selectedNodeId || previewEntityId || routeEntityId;
+	const displayEntityId = hoveredNodeId ?? selectedNodeId ?? previewEntityId ?? routeEntityId;
 	const entityNode = displayEntityId ? nodesMap[displayEntityId] : undefined;
 
 	// Fetch raw entity data if we have a route entity but no graph node

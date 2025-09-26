@@ -51,7 +51,7 @@ const NodeRepositoryItem: React.FC<NodeRepositoryItemProps> = ({
 
 	// Get icon for entity type
 	const entityOption = entityTypeOptions.find(option => option.type === node.entityType);
-	const Icon = entityOption?.icon || IconFile;
+	const Icon = entityOption?.icon ?? IconFile;
 
 	const handleDragStart = useCallback((event: React.DragEvent) => {
 		// Store node data for drop handler
@@ -103,7 +103,7 @@ const NodeRepositoryItem: React.FC<NodeRepositoryItemProps> = ({
 						{node.label}
 					</Text>
 					<Text size="xs" style={{ color: colors.text.secondary }}>
-						{entityOption?.label || node.entityType}
+						{entityOption?.label ?? node.entityType}
 					</Text>
 				</div>
 

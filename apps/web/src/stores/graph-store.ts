@@ -396,7 +396,7 @@ export const useGraphStore = create<GraphState>()(
 				set((draft) => {
 					if (draft.nodes[nodeId]) {
 						draft.nodes[nodeId].metadata = {
-							...(draft.nodes[nodeId].metadata || {}),
+							...(draft.nodes[nodeId].metadata ?? {}),
 							loading: true
 						};
 					}
@@ -407,7 +407,7 @@ export const useGraphStore = create<GraphState>()(
 				set((draft) => {
 					if (draft.nodes[nodeId]) {
 						draft.nodes[nodeId].metadata = {
-							...(draft.nodes[nodeId].metadata || {}),
+							...(draft.nodes[nodeId].metadata ?? {}),
 							loading: false
 						};
 					}
@@ -418,7 +418,7 @@ export const useGraphStore = create<GraphState>()(
 				set((draft) => {
 					if (draft.nodes[nodeId]) {
 						draft.nodes[nodeId].metadata = {
-							...(draft.nodes[nodeId].metadata || {}),
+							...(draft.nodes[nodeId].metadata ?? {}),
 							loading: false,
 							error: true
 						};

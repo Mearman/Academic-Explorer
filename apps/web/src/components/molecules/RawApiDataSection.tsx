@@ -177,7 +177,7 @@ export const RawApiDataSection: React.FC<RawApiDataSectionProps> = ({
 			);
 		}
 
-		if (typeof value === "object" && value !== null) {
+		if (typeof value === "object") {
 			const entries = Object.entries(value);
 
 			if (entries.length === 0) {

@@ -107,7 +107,7 @@ const computeNetworkStats = (requests: Record<string, NetworkRequest>): NetworkS
 
 	const recentRequests = requestList.filter(req => req.startTime > oneSecondAgo);
 	const completedRequests = requestList.filter(req => req.endTime !== undefined);
-	const totalDuration = completedRequests.reduce((sum, req) => sum + (req.duration || 0), 0);
+	const totalDuration = completedRequests.reduce((sum, req) => sum + (req.duration ?? 0), 0);
 
 	return {
 		totalRequests: requestList.length,
@@ -118,7 +118,7 @@ const computeNetworkStats = (requests: Record<string, NetworkRequest>): NetworkS
 		deduplicatedCount: requestList.filter(req => req.status === "deduplicated").length,
 		averageResponseTime: completedRequests.length > 0 ? totalDuration / completedRequests.length : 0,
 		requestsPerSecond: recentRequests.length,
-		totalDataTransferred: requestList.reduce((sum, req) => sum + (req.size || 0), 0),
+		totalDataTransferred: requestList.reduce((sum, req) => sum + (req.size ?? 0), 0),
 	};
 };
 

@@ -56,10 +56,10 @@ const NodeItem: React.FC<NodeItemProps> = ({
 	const themeColors = useThemeColors();
 	const {colors} = themeColors;
 	const pinnedNodes = useGraphStore((state) => state.pinnedNodes);
-	const isPinned = pinnedNodes[node.id] || false;
+	const isPinned = pinnedNodes.has(node.id);
 
 	const entityTypeOption = entityTypeOptions.find(opt => opt.type === node.entityType);
-	const IconComponent = entityTypeOption?.icon || IconFile;
+	const IconComponent = entityTypeOption?.icon ?? IconFile;
 
 	return (
 		<Card
@@ -86,7 +86,7 @@ const NodeItem: React.FC<NodeItemProps> = ({
 						</Text>
 						<Group gap="xs">
 							<Badge size="xs" variant="light" color="blue">
-								{entityTypeOption?.label || node.entityType}
+								{entityTypeOption?.label ?? node.entityType}
 							</Badge>
 						</Group>
 					</div>
@@ -356,9 +356,9 @@ export const AllNodesSection: React.FC = () => {
 			<ScrollArea style={{ height: "calc(100vh - 400px)" }}>
 				<Stack gap="md">
 					{entityTypeOptions.map(({ type, label, icon: IconComponent }) => {
-						const typeNodes = nodesByType[type] || [];
-						const totalCount = entityTypeStats.total[type] || 0;
-						const visibleCount = entityTypeStats.visible[type] || 0;
+						const typeNodes = nodesByType[type] ?? [];
+						const totalCount = entityTypeStats[type] ?? 0;
+						const visibleCount = typeNodes.length; // Use actual visible count from filtered nodes
 						const isTypeVisible = visibleEntityTypes[type];
 
 						if (typeNodes.length === 0) return null;

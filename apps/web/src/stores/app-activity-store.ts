@@ -145,7 +145,7 @@ const calculatePerformanceScore = (events: AppActivityEvent[]): number | undefin
   const performanceEvents = events.filter(e => e.type === "performance" && e.duration);
   if (performanceEvents.length === 0) return undefined;
 
-  const averageDuration = performanceEvents.reduce((sum, e) => sum + (e.duration || 0), 0) / performanceEvents.length;
+  const averageDuration = performanceEvents.reduce((sum, e) => sum + (e.duration ?? 0), 0) / performanceEvents.length;
   // Score from 0-100 where lower duration = higher score
   return Math.max(0, Math.min(100, 100 - (averageDuration / 10)));
 };

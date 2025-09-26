@@ -139,6 +139,8 @@ export const VerticalStackSidebar: React.FC<VerticalStackSidebarProps> = ({ side
 
 	return (
 		<div
+			role="region"
+			aria-label={`${side} sidebar content - Drop tools here to add to group`}
 			style={{
 				height: "100%",
 				overflow: "auto",
@@ -161,10 +163,20 @@ export const VerticalStackSidebar: React.FC<VerticalStackSidebarProps> = ({ side
 						<div key={sectionId}>
 							{/* Collapsible tool header */}
 							<div
+								role="button"
+								tabIndex={0}
+								aria-label={`${section.title} - Drag to reorder or press Enter to toggle collapse`}
+								aria-expanded={!isCollapsed}
 								draggable
 								onDragStart={(e) => { handleToolDragStart(sectionId, e); }}
 								onDrop={(e) => { handleToolDrop(sectionId, e); }}
 								onDragOver={handleDragOver}
+								onKeyDown={(e) => {
+									if (e.key === 'Enter' || e.key === ' ') {
+										e.preventDefault();
+										handleToggleCollapse(sectionId);
+									}
+								}}
 								style={{
 									display: "flex",
 									alignItems: "center",

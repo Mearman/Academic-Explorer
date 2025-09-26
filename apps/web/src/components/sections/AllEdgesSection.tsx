@@ -69,7 +69,7 @@ const EdgeItem: React.FC<EdgeItemProps> = ({
 	const {colors} = themeColors;
 
 	const relationTypeOption = relationTypeOptions.find(opt => opt.type === edge.type);
-	const IconComponent = relationTypeOption?.icon || IconLink;
+	const IconComponent = relationTypeOption?.icon ?? IconLink;
 
 	return (
 		<Card
@@ -93,7 +93,7 @@ const EdgeItem: React.FC<EdgeItemProps> = ({
 					<div style={{ flex: 1, minWidth: 0 }}>
 						<Group gap="xs" mb="xs">
 							<Text size="sm" fw={500}>
-								{relationTypeOption?.label || edge.type}
+								{relationTypeOption?.label ?? edge.type}
 							</Text>
 							{edge.weight && (
 								<Badge size="xs" variant="light" color="blue">
@@ -103,11 +103,11 @@ const EdgeItem: React.FC<EdgeItemProps> = ({
 						</Group>
 						<Group gap="xs" align="center">
 							<Text size="xs" c="dimmed" truncate style={{ maxWidth: "80px" }} title={sourceNodeLabel}>
-								{sourceNodeLabel || edge.source}
+								{sourceNodeLabel ?? edge.source}
 							</Text>
 							<IconArrowRight size={12} color={colors.text.secondary} />
 							<Text size="xs" c="dimmed" truncate style={{ maxWidth: "80px" }} title={targetNodeLabel}>
-								{targetNodeLabel || edge.target}
+								{targetNodeLabel ?? edge.target}
 							</Text>
 						</Group>
 						{relationTypeOption?.description && (
@@ -182,7 +182,7 @@ export const AllEdgesSection: React.FC = () => {
 				const sourceLabel = getNodeLabel(edge.source).toLowerCase();
 				const targetLabel = getNodeLabel(edge.target).toLowerCase();
 				const edgeType = edge.type.toLowerCase();
-				const edgeLabel = edge.label?.toLowerCase() || "";
+				const edgeLabel = edge.label?.toLowerCase() ?? "";
 
 				return sourceLabel.includes(searchLower) ||
                targetLabel.includes(searchLower) ||
@@ -195,8 +195,10 @@ export const AllEdgesSection: React.FC = () => {
 		// Apply visibility filter
 		if (showOnlyVisible) {
 			filtered = filtered.filter(edge => {
-				const visibleCount = edgeTypeStats.visible[edge.type] || 0;
-				return visibleCount > 0;
+				// Check if this edge type has visible edges
+				// Since edgeTypeStats.visible is a total number, check per-type stats
+				const typeCount = edgeTypeStats[edge.type] || 0;
+				return typeCount > 0;
 			});
 		}
 
@@ -361,9 +363,9 @@ export const AllEdgesSection: React.FC = () => {
 			<ScrollArea style={{ height: "calc(100vh - 400px)" }}>
 				<Stack gap="md">
 					{relationTypeOptions.map(({ type, label, icon: IconComponent, description }) => {
-						const typeEdges = edgesByType[type] || [];
-						const totalCount = edgeTypeStats.total[type] || 0;
-						const visibleCount = edgeTypeStats.visible[type] || 0;
+						const typeEdges = edgesByType[type] ?? [];
+						const totalCount = edgeTypeStats[type] ?? 0;
+						const visibleCount = typeEdges.length; // Use actual visible count from filtered edges
 						const isTypeVisible = visibleCount > 0;
 
 						if (typeEdges.length === 0) return null;

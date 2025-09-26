@@ -65,7 +65,7 @@ const RadialConfigForm: React.FC<ForceConfigFormProps> = ({ config, onChange }) 
       <NumberInput
         label="Radius"
         description="Target radius for radial layout"
-        value={radialConfig.radius || 200}
+        value={radialConfig.radius ?? 200}
         onChange={(value) => { onChange({ ...radialConfig, radius: typeof value === "number" ? value : 200 }); }}
         min={50}
         max={500}
@@ -74,13 +74,13 @@ const RadialConfigForm: React.FC<ForceConfigFormProps> = ({ config, onChange }) 
       <Group grow>
         <NumberInput
           label="Center X"
-          value={(radialConfig['centerX']) || 0}
+          value={(radialConfig['centerX']) ?? 0}
           onChange={(value) => { onChange({ ...radialConfig, centerX: typeof value === "number" ? value : 0 }); }}
           step={10}
         />
         <NumberInput
           label="Center Y"
-          value={(radialConfig['centerY']) || 0}
+          value={(radialConfig['centerY']) ?? 0}
           onChange={(value) => { onChange({ ...radialConfig, centerY: typeof value === "number" ? value : 0 }); }}
           step={10}
         />
@@ -88,7 +88,7 @@ const RadialConfigForm: React.FC<ForceConfigFormProps> = ({ config, onChange }) 
       <NumberInput
         label="Inner Radius (optional)"
         description="For annular layouts"
-        value={(radialConfig['innerRadius']) || 0}
+        value={(radialConfig['innerRadius']) ?? 0}
         onChange={(value) => { onChange({ ...radialConfig, innerRadius: typeof value === "number" ? value : 0 }); }}
         min={0}
         max={400}
@@ -97,7 +97,7 @@ const RadialConfigForm: React.FC<ForceConfigFormProps> = ({ config, onChange }) 
       <Switch
         label="Even Distribution"
         description="Distribute nodes evenly around circle"
-        checked={(radialConfig['evenDistribution']) || false}
+        checked={(radialConfig['evenDistribution']) ?? false}
         onChange={(event) => { onChange({ ...radialConfig, evenDistribution: event.currentTarget.checked }); }}
       />
     </Stack>
@@ -115,8 +115,8 @@ const PropertyConfigForm: React.FC<ForceConfigFormProps> = ({ config, onChange }
       <Select
         label="Property Name"
         description="Node property to use for positioning"
-        value={(propertyConfig['propertyName']) || ""}
-        onChange={(value) => { onChange({ ...propertyConfig, propertyName: value || "" }); }}
+        value={(propertyConfig['propertyName']) ?? ""}
+        onChange={(value) => { onChange({ ...propertyConfig, propertyName: value ?? "" }); }}
         data={[
           { value: "publication_year", label: "Publication Year" },
           { value: "cited_by_count", label: "Citation Count" },
@@ -131,21 +131,21 @@ const PropertyConfigForm: React.FC<ForceConfigFormProps> = ({ config, onChange }
         <NumberInput
           label="Min Value"
           description="Minimum coordinate"
-          value={(propertyConfig['minValue']) || -400}
+          value={(propertyConfig['minValue']) ?? -400}
           onChange={(value) => { onChange({ ...propertyConfig, minValue: typeof value === "number" ? value : -400 }); }}
           step={10}
         />
         <NumberInput
           label="Max Value"
           description="Maximum coordinate"
-          value={(propertyConfig['maxValue']) || 400}
+          value={(propertyConfig['maxValue']) ?? 400}
           onChange={(value) => { onChange({ ...propertyConfig, maxValue: typeof value === "number" ? value : 400 }); }}
           step={10}
         />
       </Group>
       <Select
         label="Scale Type"
-        value={(propertyConfig['scaleType'] as string | undefined) || "linear"}
+        value={(propertyConfig['scaleType'] as string | undefined) ?? "linear"}
         onChange={(value) => {
           const validScaleTypes = ["linear", "log", "sqrt", "pow"] as const;
           const isValidScaleType = (val: string | null): val is typeof validScaleTypes[number] => {
@@ -165,7 +165,7 @@ const PropertyConfigForm: React.FC<ForceConfigFormProps> = ({ config, onChange }
       {propertyConfig['scaleType'] === "pow" && (
         <NumberInput
           label="Scale Exponent"
-          value={(propertyConfig['scaleExponent']) || 2}
+          value={(propertyConfig['scaleExponent']) ?? 2}
           onChange={(value) => { onChange({ ...propertyConfig, scaleExponent: typeof value === "number" ? value : 2 }); }}
           min={0.1}
           max={5}
@@ -175,7 +175,7 @@ const PropertyConfigForm: React.FC<ForceConfigFormProps> = ({ config, onChange }
       )}
       <Switch
         label="Reverse Scale"
-        checked={(propertyConfig['reverse']) || false}
+        checked={(propertyConfig['reverse']) ?? false}
         onChange={(event) => { onChange({ ...propertyConfig, reverse: event.currentTarget.checked }); }}
       />
     </Stack>
@@ -192,8 +192,8 @@ const ClusterConfigForm: React.FC<ForceConfigFormProps> = ({ config, onChange })
       <Select
         label="Property Name"
         description="Property to group nodes by"
-        value={(clusterConfig['propertyName']) || ""}
-        onChange={(value) => { onChange({ ...clusterConfig, propertyName: value || "" }); }}
+        value={(clusterConfig['propertyName']) ?? ""}
+        onChange={(value) => { onChange({ ...clusterConfig, propertyName: value ?? "" }); }}
         data={[
           { value: "type", label: "Entity Type" },
           { value: "institution_id", label: "Institution" },
@@ -205,7 +205,7 @@ const ClusterConfigForm: React.FC<ForceConfigFormProps> = ({ config, onChange })
       <NumberInput
         label="Cluster Spacing"
         description="Distance between cluster centers"
-        value={(clusterConfig['spacing']) || 150}
+        value={(clusterConfig['spacing']) ?? 150}
         onChange={(value) => { onChange({ ...clusterConfig, spacing: typeof value === "number" ? value : 150 }); }}
         min={50}
         max={500}
@@ -213,7 +213,7 @@ const ClusterConfigForm: React.FC<ForceConfigFormProps> = ({ config, onChange })
       />
       <Select
         label="Arrangement"
-        value={(clusterConfig['arrangement'] as string | undefined) || "circular"}
+        value={(clusterConfig['arrangement'] as string | undefined) ?? "circular"}
         onChange={(value) => {
           const validArrangements = ["grid", "circular", "random"] as const;
           const isValidArrangement = (val: string | null): val is typeof validArrangements[number] => {
@@ -500,8 +500,8 @@ export const CustomForcesSection: React.FC = () => {
   }, []);
 
   const handleLoadPreset = useCallback((presetId: string) => {
-    const presets = {}; // Fallback since getBuiltInPresets() not available
-    const preset = presets[presetId];
+    const presets: Record<string, { name: string; [key: string]: unknown }> = {}; // Fallback since getBuiltInPresets() not available
+    const preset = presets[presetId] as { name: string; [key: string]: unknown } | undefined;
 
     if (preset) {
       customForceManager.loadPreset(preset);

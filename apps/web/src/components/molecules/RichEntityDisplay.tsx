@@ -320,7 +320,7 @@ export const RichEntityDisplay: React.FC<RichEntityDisplayProps> = ({
 										}
 									}}
 								>
-									{author.last_known_institutions?.[0]?.display_name}
+									{author.last_known_institutions[0].display_name}
 								</Anchor>
 							</Group>
 						)}

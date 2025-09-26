@@ -217,11 +217,11 @@ export function useGraphPersistence() {
 				if (session.id === sessionId) {
 					return {
 						...session,
-						name: updates.name || session.name,
+						name: updates.name ?? session.name,
 						lastModified: new Date(),
 						metadata: {
 							...session.metadata,
-							description: updates.description !== undefined ? updates.description : session.metadata?.description
+							description: updates.description ?? session.metadata?.description
 						}
 					}
 				}

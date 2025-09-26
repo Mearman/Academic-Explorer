@@ -45,32 +45,40 @@ export const AnimatedLayoutProvider: React.FC<AnimatedLayoutProviderProps> = ({
 	const clearRestartRequest = useClearRestartRequest();
 
 	// Use the unified execution worker for animation
-	const {
-		animationState,
-		isWorkerReady,
-		startAnimation: _startAnimation,
-		stopAnimation,
-		pauseAnimation,
-		resumeAnimation,
-		reheatAnimation: _reheatAnimation,
-		updateParameters: _updateSimulationParameters,
-		canPause,
-		canResume,
-		canStop,
-		isIdle,
-	} = useUnifiedExecutionWorker(
+	const unifiedWorker = useUnifiedExecutionWorker(
 		onLayoutChange ? { onPositionUpdate: onLayoutChange } : {}
 	);
 
-	// Extract animation state properties
-	const {
-		isRunning,
-		isPaused,
-		alpha,
-		iteration,
-		progress,
-		fps
-	} = animationState;
+	// Access properties individually with type assertions to avoid unsafe assignments
+	const animationState = unifiedWorker.animationState as {
+		isRunning: boolean;
+		isPaused: boolean;
+		alpha: number;
+		iteration: number;
+		progress: number;
+		fps: number;
+		nodeCount: number;
+		linkCount: number;
+	};
+	const isWorkerReady = unifiedWorker.isWorkerReady as boolean;
+	const _startAnimation = unifiedWorker.startAnimation;
+	const {stopAnimation} = unifiedWorker;
+	const {pauseAnimation} = unifiedWorker;
+	const {resumeAnimation} = unifiedWorker;
+	const _reheatAnimation = unifiedWorker.reheatAnimation;
+	const _updateSimulationParameters = unifiedWorker.updateParameters;
+	const {canPause} = unifiedWorker;
+	const {canResume} = unifiedWorker;
+	const {canStop} = unifiedWorker;
+	const {isIdle} = unifiedWorker;
+
+	// Extract animation state properties safely
+	const {isRunning} = animationState;
+	const {isPaused} = animationState;
+	const {alpha} = animationState;
+	const {iteration} = animationState;
+	const {progress} = animationState;
+	const {fps} = animationState;
 
 	const isAnimating = isRunning && !isPaused;
 

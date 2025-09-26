@@ -134,7 +134,7 @@ export const createNewGroup = (_primarySectionId: string): ToolGroupDefinition =
  * Get the next available order number (for placing new groups at the end)
  */
 const getNextOrderNumber = (): number => {
-	const maxOrder = Math.max(...Object.values(GROUP_DEFINITIONS).map(def => def.order || 0));
+	const maxOrder = Math.max(...Object.values(GROUP_DEFINITIONS).map(def => def.order ?? 0));
 	return maxOrder + 1;
 };
 

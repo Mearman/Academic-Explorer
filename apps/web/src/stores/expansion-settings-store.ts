@@ -246,7 +246,7 @@ export const useExpansionSettingsStore = create<ExpansionSettingsState>()(
 				if (sorts.length > 0) {
 					const sortSummary = sorts
 						.sort((a, b) => a.priority - b.priority)
-						.map(s => `${s.direction === "desc" ? "↓" : "↑"}${s.label || s.property}`)
+						.map(s => `${s.direction === "desc" ? "↓" : "↑"}${s.label ?? s.property}`)
 						.join(", ");
 					parts.push(sortSummary);
 				}

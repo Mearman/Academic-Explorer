@@ -267,6 +267,13 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
 							</div>
 							{/* Left drag handle */}
 							<div
+								role="slider"
+								aria-label="Resize left sidebar"
+								aria-orientation="vertical"
+								aria-valuenow={leftSidebarWidth}
+								aria-valuemin={200}
+								aria-valuemax={600}
+								tabIndex={0}
 								style={{
 									width: '4px',
 									height: '100%',
@@ -279,6 +286,16 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
 									borderRight: `1px solid ${colors.border.primary}`
 								}}
 								onMouseDown={(e) => { handleDragStart('left', e); }}
+								onKeyDown={(e) => {
+									// Handle keyboard resize with arrow keys
+									if (e.key === 'ArrowLeft') {
+										e.preventDefault();
+										setLeftSidebarWidth(prev => Math.max(200, prev - 20));
+									} else if (e.key === 'ArrowRight') {
+										e.preventDefault();
+										setLeftSidebarWidth(prev => Math.min(600, prev + 20));
+									}
+								}}
 								onMouseEnter={(e) => {
 									if (!isDragging) {
 										e.currentTarget.style.background = colors.border.primary;
@@ -307,6 +324,13 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
 						<>
 							{/* Right drag handle */}
 							<div
+								role="slider"
+								aria-label="Resize right sidebar"
+								aria-orientation="vertical"
+								aria-valuenow={rightSidebarWidth}
+								aria-valuemin={200}
+								aria-valuemax={600}
+								tabIndex={0}
 								style={{
 									width: '4px',
 									height: '100%',
@@ -319,6 +343,16 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
 									borderLeft: `1px solid ${colors.border.primary}`
 								}}
 								onMouseDown={(e) => { handleDragStart('right', e); }}
+								onKeyDown={(e) => {
+									// Handle keyboard resize with arrow keys
+									if (e.key === 'ArrowLeft') {
+										e.preventDefault();
+										setRightSidebarWidth(prev => Math.min(600, prev + 20));
+									} else if (e.key === 'ArrowRight') {
+										e.preventDefault();
+										setRightSidebarWidth(prev => Math.max(200, prev - 20));
+									}
+								}}
 								onMouseEnter={(e) => {
 									if (!isDragging) {
 										e.currentTarget.style.background = colors.border.primary;

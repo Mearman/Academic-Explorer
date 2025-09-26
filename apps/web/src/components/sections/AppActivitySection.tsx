@@ -88,7 +88,7 @@ const AppActivitySection: React.FC = () => {
 	const copyAllEvents = () => {
 		const allEventsData = filteredEvents.map(event => ({
 			timestamp: new Date(event.timestamp).toLocaleString(),
-			type: event.metadata?.entityType || event.type,
+			type: event.metadata?.entityType ?? event.type,
 			category: event.category,
 			severity: event.severity,
 			event: event.event,
@@ -208,7 +208,7 @@ const AppActivitySection: React.FC = () => {
 
 	const renderEvent = (event: AppActivityEvent) => {
 		const isExpanded = expandedEvents.has(event.id);
-		const TypeIcon = getTypeIcon(event.metadata?.entityType || event.type);
+		const TypeIcon = getTypeIcon(event.metadata?.entityType ?? event.type);
 		const SeverityIcon = getSeverityIcon(event.severity);
 
 		return (
@@ -232,7 +232,7 @@ const AppActivitySection: React.FC = () => {
 									{event.severity}
 								</Badge>
 								<Badge variant="light" size="sm">
-									{event.metadata?.entityType || event.type}
+									{event.metadata?.entityType ?? event.type}
 								</Badge>
 								<Badge variant="outline" size="sm">
 									{event.category}

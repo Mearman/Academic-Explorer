@@ -50,9 +50,7 @@ export const useDocumentTitle = (
 
 	useEffect(() => {
 		// Store original title on first mount
-		if (originalTitle.current === null) {
-			originalTitle.current = document.title;
-		}
+		originalTitle.current ??= document.title;
 
 		// Safely handle title with proper type guards
 		const trimmedTitle = typeof title === "string" ? title.trim() : "";

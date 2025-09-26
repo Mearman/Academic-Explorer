@@ -168,6 +168,9 @@ export const RightRibbon: React.FC = () => {
 
 		return (
 			<div
+				role="button"
+				tabIndex={0}
+				aria-label={`Drop zone ${index} - Drop group here to reorder`}
 				style={{
 					height: shouldShowDropZone ? "40px" : "0px",
 					width: shouldShowDropZone ? "40px" : "40px",
@@ -210,7 +213,7 @@ export const RightRibbon: React.FC = () => {
 						if (index === 0) {
 						// Dropping at the beginning
 							const firstGroup = groupDefinitions[0];
-							if (firstGroup && firstGroup.id !== groupReorderData) {
+							if (firstGroup.id !== groupReorderData) {
 								if (isFromSameSidebar) {
 									handleGroupReorder(groupReorderData, firstGroup.id, true, e);
 								} else {
@@ -220,7 +223,7 @@ export const RightRibbon: React.FC = () => {
 						} else if (index === groupDefinitions.length) {
 						// Dropping at the end
 							const lastGroup = groupDefinitions[groupDefinitions.length - 1];
-							if (lastGroup && lastGroup.id !== groupReorderData) {
+							if (lastGroup.id !== groupReorderData) {
 								if (isFromSameSidebar) {
 									handleGroupReorder(groupReorderData, lastGroup.id, false, e);
 								} else {
@@ -233,7 +236,7 @@ export const RightRibbon: React.FC = () => {
 						} else {
 						// Dropping between groups
 							const targetGroup = groupDefinitions[index - 1];
-							if (targetGroup && targetGroup.id !== groupReorderData) {
+							if (targetGroup.id !== groupReorderData) {
 								if (isFromSameSidebar) {
 									handleGroupReorder(groupReorderData, targetGroup.id, false, e);
 								} else {
@@ -262,7 +265,7 @@ export const RightRibbon: React.FC = () => {
 			leftGroups: Object.keys(leftGroups),
 			rightGroups: Object.keys(rightGroups),
 			targetGroupExists: targetGroupId in rightGroups,
-			targetGroupSections: rightGroups[targetGroupId]?.sections
+			targetGroupSections: rightGroups[targetGroupId].sections
 		});
 
 		// Remove from left sidebar groups
@@ -383,6 +386,8 @@ export const RightRibbon: React.FC = () => {
 
 	return (
 		<div
+			role="region"
+			aria-label="Right sidebar - Drop tools here to create new groups"
 			onDrop={handleEmptyAreaDrop}
 			onDragOver={handleDragOver}
 			style={{

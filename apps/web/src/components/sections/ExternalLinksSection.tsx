@@ -32,7 +32,7 @@ export const ExternalLinksSection: React.FC<ExternalLinksSectionProps> = ({
 	const nodesMap = useGraphStore((state) => state.nodes);
 
 	// Determine which entity to show
-	const displayEntityId = hoveredNodeId || selectedNodeId || previewEntityId;
+	const displayEntityId = hoveredNodeId ?? selectedNodeId ?? previewEntityId;
 	const entityNode = displayEntityId ? nodesMap[displayEntityId] : undefined;
 
 	const handleLinkClick = (url: string, linkType: string) => {

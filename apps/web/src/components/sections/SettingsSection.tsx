@@ -161,8 +161,8 @@ export const SettingsSection: React.FC = () => {
 			const result = await clearAllCacheLayers();
 
 			logger.debug("ui", "Cache layers cleared", {
-				clearedLayers: (result as any)?.clearedLayers || [],
-				errors: (result as any)?.errors || []
+				clearedLayers: (result as any)?.clearedLayers ?? [],
+				errors: (result as any)?.errors ?? []
 			});
 
 			// Clear app metadata
