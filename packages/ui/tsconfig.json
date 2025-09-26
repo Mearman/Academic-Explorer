@@ -13,8 +13,13 @@
     "skipLibCheck": true,
     "strict": false,
     "incremental": true,
+    "composite": true,
+    "tsBuildInfoFile": "./dist/.tsbuildinfo",
     "assumeChangesOnlyAffectDirectDependencies": true
   },
   "include": ["src/**/*"],
   "exclude": ["**/*.test.*", "**/*.spec.*", "**/*.stories.*", "dist", "node_modules"],
+  "references": [
+    { "path": "../utils" }
+  ]
 }
