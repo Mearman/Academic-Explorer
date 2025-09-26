@@ -18,7 +18,7 @@
 
 ## 8.2.1 (2025-09-26)
 
-### 🩹 Fixes
+### Fixes
 
 - **ci:** resolve final lint and test issues for successful pipeline ([ee46a170](https://github.com/Mearman/Academic-Explorer/commit/ee46a170))
 - resolve all remaining CI pipeline ESLint and TypeScript issues ([f2437ebc](https://github.com/Mearman/Academic-Explorer/commit/f2437ebc))
@@ -32,13 +32,13 @@
 - Updated graph to 8.2.1
 - Updated utils to 8.2.1
 
-### ❤️ Thank You
+### Thank You
 
 - Joseph Mearman
 
 ## 8.2.0 (2025-09-26)
 
-### 🚀 Features
+### Features
 
 - **graph:** complete Phase 2 provider architecture with full TypeScript compliance ([88b2a245](https://github.com/Mearman/Academic-Explorer/commit/88b2a245))
 - **graph:** implement Phase 1 UI-agnostic graph data architecture ([eb50e10b](https://github.com/Mearman/Academic-Explorer/commit/eb50e10b))
@@ -48,7 +48,7 @@
 - **web:** add missing test dependencies for accessibility testing ([82281013](https://github.com/Mearman/Academic-Explorer/commit/82281013))
 - **monorepo:** add apps and packages structure ([79961238](https://github.com/Mearman/Academic-Explorer/commit/79961238))
 
-### 🩹 Fixes
+### Fixes
 
 - **web:** resolve remaining eslint and typescript issues ([d5d67dd9](https://github.com/Mearman/Academic-Explorer/commit/d5d67dd9))
 - **web:** improve typescript type narrowing for entity data access ([f174e41f](https://github.com/Mearman/Academic-Explorer/commit/f174e41f))
@@ -100,7 +100,7 @@
 - **lint:** resolve major linting violations across monorepo ([dabe58f4](https://github.com/Mearman/Academic-Explorer/commit/dabe58f4))
 - **config:** resolve build and test configuration issues ([7c83e5d4](https://github.com/Mearman/Academic-Explorer/commit/7c83e5d4))
 
-### 🔥 Performance
+### Performance
 
 - **config:** disable type-aware eslint rules for performance ([741a1a43](https://github.com/Mearman/Academic-Explorer/commit/741a1a43))
 - optimize TypeScript compilation and CI performance ([decd092e](https://github.com/Mearman/Academic-Explorer/commit/decd092e))
@@ -112,6 +112,6 @@
 - Updated graph to 8.2.0
 - Updated utils to 8.2.0
 
-### ❤️ Thank You
+### Thank You
 
 - Joseph Mearman

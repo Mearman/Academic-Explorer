@@ -23,7 +23,7 @@
 
 ## 8.2.1 (2025-09-26)
 
-### 🩹 Fixes
+### Fixes
 
 - **ci:** resolve final lint and test issues for successful pipeline ([ee46a170](https://github.com/Mearman/Academic-Explorer/commit/ee46a170))
 - **ci:** revert logger usage to console statements for successful build ([adeca5ae](https://github.com/Mearman/Academic-Explorer/commit/adeca5ae))
@@ -37,13 +37,13 @@
 
 - Updated utils to 8.2.1
 
-### ❤️ Thank You
+### Thank You
 
 - Joseph Mearman
 
 ## 8.2.0 (2025-09-26)
 
-### 🚀 Features
+### Features
 
 - **graph:** add comprehensive coverage tooling and automation ([5a73ff64](https://github.com/Mearman/Academic-Explorer/commit/5a73ff64))
 - **graph:** update package exports for EntityDetectionService ([c6a0cf94](https://github.com/Mearman/Academic-Explorer/commit/c6a0cf94))
@@ -55,7 +55,7 @@
 - **graph:** implement Phase 1 UI-agnostic graph data architecture ([eb50e10b](https://github.com/Mearman/Academic-Explorer/commit/eb50e10b))
 - **monorepo:** add apps and packages structure ([79961238](https://github.com/Mearman/Academic-Explorer/commit/79961238))
 
-### 🩹 Fixes
+### Fixes
 
 - **lint:** complete type guard and union type fixes ([84b883ed](https://github.com/Mearman/Academic-Explorer/commit/84b883ed))
 - **monorepo:** resolve remaining ci issues for complete pipeline ([297acfb3](https://github.com/Mearman/Academic-Explorer/commit/297acfb3))
@@ -65,7 +65,7 @@
 - resolve nx task configuration, typescript errors, and react component issues ([a954d719](https://github.com/Mearman/Academic-Explorer/commit/a954d719))
 - **lint:** resolve major linting violations across monorepo ([dabe58f4](https://github.com/Mearman/Academic-Explorer/commit/dabe58f4))
 
-### 🔥 Performance
+### Performance
 
 - optimize TypeScript compilation and CI performance ([decd092e](https://github.com/Mearman/Academic-Explorer/commit/decd092e))
 
@@ -73,6 +73,6 @@
 
 - Updated utils to 8.2.0
 
-### ❤️ Thank You
+### Thank You
 
 - Joseph Mearman

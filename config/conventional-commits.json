@@ -2,57 +2,57 @@
   "types": {
     "feat": {
       "description": "New features",
-      "title": "✨ Features",
+      "title": "Features",
       "semverBump": "minor"
     },
     "fix": {
       "description": "Bug fixes",
-      "title": "🐛 Bug Fixes",
+      "title": "Bug Fixes",
       "semverBump": "patch"
     },
     "docs": {
       "description": "Documentation",
-      "title": "📚 Documentation",
+      "title": "Documentation",
       "semverBump": "patch"
     },
     "style": {
       "description": "Code style (formatting, etc)",
-      "title": "💄 Styles",
+      "title": "Styles",
       "semverBump": "patch"
     },
     "refactor": {
       "description": "Code refactoring",
-      "title": "♻️ Refactoring",
+      "title": "Refactoring",
       "semverBump": "patch"
     },
     "perf": {
       "description": "Performance improvements",
-      "title": "⚡ Performance",
+      "title": "Performance",
       "semverBump": "patch"
     },
     "test": {
       "description": "Tests",
-      "title": "🧪 Tests",
+      "title": "Tests",
       "semverBump": "patch"
     },
     "build": {
       "description": "Build system",
-      "title": "🔧 Build",
+      "title": "Build",
       "semverBump": "patch"
     },
     "ci": {
       "description": "CI/CD",
-      "title": "🤖 CI/CD",
+      "title": "CI/CD",
       "semverBump": "patch"
     },
     "chore": {
       "description": "Maintenance",
-      "title": "🏠 Chores",
+      "title": "Chores",
       "semverBump": "patch"
     },
     "revert": {
       "description": "Reverts",
-      "title": "⏪ Reverts",
+      "title": "Reverts",
       "semverBump": "patch"
     }
   },

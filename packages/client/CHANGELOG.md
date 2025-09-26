@@ -14,7 +14,7 @@
 
 ## 1.1.1 (2025-09-26)
 
-### 🩹 Fixes
+### Fixes
 
 - **test:** include error object in sampling logger calls to match test expectations ([f2a71f6c](https://github.com/Mearman/Academic-Explorer/commit/f2a71f6c))
 - resolve all remaining CI pipeline ESLint and TypeScript issues ([f2437ebc](https://github.com/Mearman/Academic-Explorer/commit/f2437ebc))
@@ -26,17 +26,17 @@
 
 - Updated utils to 8.2.1
 
-### ❤️ Thank You
+### Thank You
 
 - Joseph Mearman
 
 ## 1.1.0 (2025-09-26)
 
-### 🚀 Features
+### Features
 
 - **monorepo:** add apps and packages structure ([79961238](https://github.com/Mearman/Academic-Explorer/commit/79961238))
 
-### 🩹 Fixes
+### Fixes
 
 - **tests:** fix client package test failures by properly mocking logger ([dcf9d0eb](https://github.com/Mearman/Academic-Explorer/commit/dcf9d0eb))
 - **lint:** complete type guard and union type fixes ([84b883ed](https://github.com/Mearman/Academic-Explorer/commit/84b883ed))
@@ -53,7 +53,7 @@
 - **client:** resolve TypeScript null safety issues in statistics ([82855fe0](https://github.com/Mearman/Academic-Explorer/commit/82855fe0))
 - **lint:** resolve major linting violations across monorepo ([dabe58f4](https://github.com/Mearman/Academic-Explorer/commit/dabe58f4))
 
-### 🔥 Performance
+### Performance
 
 - optimize TypeScript compilation and CI performance ([decd092e](https://github.com/Mearman/Academic-Explorer/commit/decd092e))
 
@@ -61,6 +61,6 @@
 
 - Updated utils to 8.2.0
 
-### ❤️ Thank You
+### Thank You
 
 - Joseph Mearman

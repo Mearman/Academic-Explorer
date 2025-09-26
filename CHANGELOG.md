@@ -10,50 +10,50 @@
 
 ## 9.0.4 (2025-09-26)
 
-### 🩹 Fixes
+### Fixes
 
 - **config:** update github pages deployment to use modern actions/deploy-pages ([ad40f9bf](https://github.com/Mearman/Academic-Explorer/commit/ad40f9bf))
 
-### ❤️ Thank You
+### Thank You
 
 - Joseph Mearman
 
 ## 9.0.3 (2025-09-26)
 
-### 🩹 Fixes
+### Fixes
 
 - **ci:** resolve test pipeline hanging issues ([0f7ca1f0](https://github.com/Mearman/Academic-Explorer/commit/0f7ca1f0))
 
-### ❤️ Thank You
+### Thank You
 
 - Joseph Mearman
 
 ## 9.0.2 (2025-09-26)
 
-### 🩹 Fixes
+### Fixes
 
 - **config:** remove --yes flag to fix mutually exclusive options ([673e5e52](https://github.com/Mearman/Academic-Explorer/commit/673e5e52))
 - **config:** improve lint error handling to prevent blocking releases ([eabbbf85](https://github.com/Mearman/Academic-Explorer/commit/eabbbf85))
 - **config:** use --skip-publish flag to prevent npm publishing in ci ([753eb338](https://github.com/Mearman/Academic-Explorer/commit/753eb338))
 
-### ❤️ Thank You
+### Thank You
 
 - Joseph Mearman
 
 ## 9.0.1 (2025-09-26)
 
-### 🩹 Fixes
+### Fixes
 
 - **config:** allow ci to continue on lint errors for research project ([e9913264](https://github.com/Mearman/Academic-Explorer/commit/e9913264))
 - **config:** disable npm publishing in nx release for research project ([fd54c445](https://github.com/Mearman/Academic-Explorer/commit/fd54c445))
 
-### ❤️ Thank You
+### Thank You
 
 - Joseph Mearman
 
 # 9.0.0 (2025-09-26)
 
-### 🚀 Features
+### Features
 
 - **config:** restore release automation with proper version workflow ([f7d3e058](https://github.com/Mearman/Academic-Explorer/commit/f7d3e058))
 - **config:** refactor ci workflow with modern nx best practices ([ffe23237](https://github.com/Mearman/Academic-Explorer/commit/ffe23237))
@@ -66,7 +66,7 @@
 - **ci:** improve Nx caching strategy for better performance ([34db9f0d](https://github.com/Mearman/Academic-Explorer/commit/34db9f0d))
 - **ci:** add GitHub Actions CI workflow and dependabot ([807d75a7](https://github.com/Mearman/Academic-Explorer/commit/807d75a7))
 
-### 🩹 Fixes
+### Fixes
 
 - **config:** add write permissions for release job to allow git push ([a5f237dd](https://github.com/Mearman/Academic-Explorer/commit/a5f237dd))
 - **config:** add first-release flag to nx release command ([abb49a70](https://github.com/Mearman/Academic-Explorer/commit/abb49a70))
@@ -101,14 +101,14 @@
 - **ci:** add setup job dependency to release job for cache key access ([c0d41771](https://github.com/Mearman/Academic-Explorer/commit/c0d41771))
 - **release:** correct repository URL in semantic-release configuration ([4d04b227](https://github.com/Mearman/Academic-Explorer/commit/4d04b227))
 
-### 🔥 Performance
+### Performance
 
 - **config:** implement comprehensive pipeline performance optimizations ([c6ee58b3](https://github.com/Mearman/Academic-Explorer/commit/c6ee58b3))
 - **config:** build only core packages for typecheck to prevent ui timeout ([55bc279e](https://github.com/Mearman/Academic-Explorer/commit/55bc279e))
 - **config:** optimize ci build performance and prevent timeouts ([95a475eb](https://github.com/Mearman/Academic-Explorer/commit/95a475eb))
 - optimize TypeScript compilation and CI performance ([decd092e](https://github.com/Mearman/Academic-Explorer/commit/decd092e))
 
-### ❤️ Thank You
+### Thank You
 
 - Joseph Mearman
 
