@@ -1,3 +1,18 @@
+## 8.3.0 (2025-09-26)
+
+### 🚀 Features
+
+- ACHIEVE 100% TEST PERFECTION (840/840 ✅) ([2056e999](https://github.com/Mearman/Academic-Explorer/commit/2056e999))
+
+### 🧱 Updated Dependencies
+
+- Updated client to 1.2.0
+- Updated utils to 8.3.0
+
+### ❤️ Thank You
+
+- Joseph Mearman
+
 ## 8.2.1 (2025-09-26)
 
 ### 🧱 Updated Dependencies

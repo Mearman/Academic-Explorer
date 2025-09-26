@@ -1,3 +1,13 @@
+## 8.3.0 (2025-09-26)
+
+### 🚀 Features
+
+- **ci:** achieve perfect CI pipeline with zero warnings and issues ([333e68cd](https://github.com/Mearman/Academic-Explorer/commit/333e68cd))
+
+### ❤️ Thank You
+
+- Joseph Mearman
+
 ## 8.2.1 (2025-09-26)
 
 ### 🩹 Fixes

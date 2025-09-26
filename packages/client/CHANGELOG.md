@@ -1,3 +1,17 @@
+## 1.2.0 (2025-09-26)
+
+### 🚀 Features
+
+- **ci:** achieve perfect CI pipeline with zero warnings and issues ([333e68cd](https://github.com/Mearman/Academic-Explorer/commit/333e68cd))
+
+### 🧱 Updated Dependencies
+
+- Updated utils to 8.3.0
+
+### ❤️ Thank You
+
+- Joseph Mearman
+
 ## 1.1.1 (2025-09-26)
 
 ### 🩹 Fixes

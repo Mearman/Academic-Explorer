@@ -1,3 +1,26 @@
+## 8.3.0 (2025-09-26)
+
+### 🚀 Features
+
+- ACHIEVE 100% TEST PERFECTION (840/840 ✅) ([2056e999](https://github.com/Mearman/Academic-Explorer/commit/2056e999))
+- MASSIVE test fixes achieving 829/840 passing tests ([86c9293c](https://github.com/Mearman/Academic-Explorer/commit/86c9293c))
+- **lint:** ACHIEVE ABSOLUTE PERFECTION - zero warnings, zero eslint-disable ([32f34e9d](https://github.com/Mearman/Academic-Explorer/commit/32f34e9d))
+- **ci:** achieve perfect CI pipeline with zero warnings and issues ([333e68cd](https://github.com/Mearman/Academic-Explorer/commit/333e68cd))
+
+### 🩹 Fixes
+
+- use modern catch syntax without unused error parameter ([09c2b707](https://github.com/Mearman/Academic-Explorer/commit/09c2b707))
+- prefix unused error parameter to resolve ESLint warning ([35572349](https://github.com/Mearman/Academic-Explorer/commit/35572349))
+- **lint:** achieve ABSOLUTE ZERO WARNINGS - perfect CI pipeline ([60e97070](https://github.com/Mearman/Academic-Explorer/commit/60e97070))
+
+### 🧱 Updated Dependencies
+
+- Updated utils to 8.3.0
+
+### ❤️ Thank You
+
+- Joseph Mearman
+
 ## 8.2.1 (2025-09-26)
 
 ### 🩹 Fixes

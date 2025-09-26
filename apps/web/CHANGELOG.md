@@ -1,3 +1,21 @@
+## 8.3.0 (2025-09-26)
+
+### 🚀 Features
+
+- ACHIEVE 100% TEST PERFECTION (840/840 ✅) ([2056e999](https://github.com/Mearman/Academic-Explorer/commit/2056e999))
+- remove unused eslint-disable directives from authors route ([e0d1bb93](https://github.com/Mearman/Academic-Explorer/commit/e0d1bb93))
+
+### 🧱 Updated Dependencies
+
+- Updated simulation to 8.3.0
+- Updated client to 1.2.0
+- Updated graph to 8.3.0
+- Updated utils to 8.3.0
+
+### ❤️ Thank You
+
+- Joseph Mearman
+
 ## 8.2.1 (2025-09-26)
 
 ### 🩹 Fixes
