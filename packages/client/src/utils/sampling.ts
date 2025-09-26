@@ -149,7 +149,7 @@ export class SamplingApi {
 				});
 			} catch (error: unknown) {
 				logError(`Failed to sample from stratum ${stratum.key}`, error);
-				logger.warn(`Failed to sample from stratum ${stratum.key}`, { stratumKey: stratum.key });
+				logger.warn(`Failed to sample from stratum ${stratum.key}`, { stratumKey: stratum.key, error });
 				strataInfo.push({
 					stratum: stratum.key_display_name || stratum.key,
 					count: stratum.count,
@@ -225,7 +225,7 @@ export class SamplingApi {
 				});
 			} catch (error: unknown) {
 				logError(`Failed to sample from period ${period.name}`, error);
-				logger.warn(`Failed to sample from period ${period.name}`, { periodName: period.name });
+				logger.warn(`Failed to sample from period ${period.name}`, { periodName: period.name, error });
 				temporalDistribution.push({
 					period: period.name,
 					count: 0,
