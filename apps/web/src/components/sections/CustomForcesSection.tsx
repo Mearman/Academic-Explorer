@@ -500,8 +500,8 @@ export const CustomForcesSection: React.FC = () => {
   }, []);
 
   const handleLoadPreset = useCallback((presetId: string) => {
-    const presets: Record<string, { name: string; [key: string]: unknown }> = {}; // Fallback since getBuiltInPresets() not available
-    const preset = presets[presetId] as { name: string; [key: string]: unknown } | undefined;
+    const presets: Record<string, { name: string; description: string; forces: CustomForce[]; }> = {}; // Fallback since getBuiltInPresets() not available
+    const preset = presets[presetId];
 
     if (preset) {
       customForceManager.loadPreset(preset);

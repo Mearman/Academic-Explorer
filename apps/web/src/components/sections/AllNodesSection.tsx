@@ -56,7 +56,7 @@ const NodeItem: React.FC<NodeItemProps> = ({
 	const themeColors = useThemeColors();
 	const {colors} = themeColors;
 	const pinnedNodes = useGraphStore((state) => state.pinnedNodes);
-	const isPinned = pinnedNodes.has(node.id);
+	const isPinned = pinnedNodes[node.id] ?? false;
 
 	const entityTypeOption = entityTypeOptions.find(opt => opt.type === node.entityType);
 	const IconComponent = entityTypeOption?.icon ?? IconFile;
