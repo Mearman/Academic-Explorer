@@ -148,9 +148,9 @@ export class RequestDeduplicationService {
 
 					// Check if this is an entity query containing our target
 					const {queryKey} = query;
-					if (Array.isArray(queryKey) && queryKey[0] === "entity" && isOpenAlexEntity(query.state.data)) {
-						const entityData = query.state.data;
-						return entityData.id === entityId;
+					const data = query.state.data;
+					if (Array.isArray(queryKey) && queryKey[0] === "entity" && isOpenAlexEntity(data)) {
+						return data.id === entityId;
 					}
 
 					return false;
