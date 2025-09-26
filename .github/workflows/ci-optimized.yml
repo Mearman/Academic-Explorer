@@ -100,12 +100,24 @@ jobs:
       # Build packages first if typecheck is running (needs compiled .d.ts files)
       - name: Build dependencies for typecheck
         if: matrix.check == 'typecheck'
-        run: pnpm nx affected -t build --parallel=8
+        run: |
+          if [ "${{ needs.setup.outputs.has-affected }}" = "true" ]; then
+            pnpm nx affected -t build --parallel=8
+          else
+            # Build all core packages when no affected projects detected
+            pnpm nx run-many -t build --projects=client,graph,utils,simulation,ui --parallel=8
+          fi
         env:
           NODE_OPTIONS: '--max-old-space-size=8192'
 
       - name: Run ${{ matrix.check }}
-        run: pnpm nx affected -t ${{ matrix.check }} --parallel=8
+        run: |
+          if [ "${{ needs.setup.outputs.has-affected }}" = "true" ]; then
+            pnpm nx affected -t ${{ matrix.check }} --parallel=8
+          else
+            # Run on all projects when no affected projects detected
+            pnpm nx run-many -t ${{ matrix.check }} --parallel=8
+          fi
         env:
           NODE_OPTIONS: '--max-old-space-size=8192'
 
@@ -137,7 +149,13 @@ jobs:
           main-branch-name: 'main'
 
       - name: Build affected projects
-        run: pnpm nx affected -t build --parallel=8
+        run: |
+          if [ "${{ needs.setup.outputs.has-affected }}" = "true" ]; then
+            pnpm nx affected -t build --parallel=8
+          else
+            # Build all projects when no affected projects detected
+            pnpm nx run-many -t build --parallel=8
+          fi
         env:
           NODE_OPTIONS: '--max-old-space-size=8192'
 
@@ -187,7 +205,13 @@ jobs:
           main-branch-name: 'main'
 
       - name: Run ${{ matrix.check }}
-        run: pnpm nx affected -t ${{ matrix.check }} --parallel=4
+        run: |
+          if [ "${{ needs.setup.outputs.has-affected }}" = "true" ]; then
+            pnpm nx affected -t ${{ matrix.check }} --parallel=4
+          else
+            # Run on all projects when no affected projects detected
+            pnpm nx run-many -t ${{ matrix.check }} --parallel=4
+          fi
         env:
           NODE_OPTIONS: '--max-old-space-size=8192'
 
