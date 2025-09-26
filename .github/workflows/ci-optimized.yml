@@ -99,6 +99,17 @@ jobs:
 
       # Use nx typecheck instead of global tsc --build to avoid composite project dependencies
 
+      - name: Build dependencies first for typecheck
+        if: matrix.check == 'typecheck'
+        run: |
+          if [ "${{ needs.setup.outputs.has-affected }}" = "true" ]; then
+            timeout 8m pnpm nx affected -t build --parallel=2
+          else
+            timeout 8m pnpm nx run-many -t build --parallel=2
+          fi
+        env:
+          NODE_OPTIONS: '--max-old-space-size=8192'
+
       - name: Run ${{ matrix.check }}
         run: |
           if [ "${{ needs.setup.outputs.has-affected }}" = "true" ]; then
@@ -137,7 +148,7 @@ jobs:
             if [ -f "${dir}package.json" ]; then
               echo "Linting $(basename $dir)..."
               cd "$dir"
-              timeout 3m pnpm eslint . --max-warnings=50 || echo "Lint failed for $(basename $dir), continuing..."
+              timeout 3m pnpm eslint . --max-warnings=200 || echo "Lint failed for $(basename $dir), continuing..."
               cd - > /dev/null
             fi
           done

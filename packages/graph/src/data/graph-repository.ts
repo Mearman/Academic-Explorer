@@ -70,7 +70,7 @@ export class IndexedDBAdapter implements StorageAdapter {
     return new Promise((resolve, reject) => {
       const request = indexedDB.open(this.dbName, this.version);
 
-      request.onerror = () => { reject(request.error); };
+      request.onerror = () => { reject(new Error(request.error?.message ?? 'Failed to open IndexedDB')); };
       request.onsuccess = () => {
         this.db = request.result;
         resolve(this.db);
@@ -100,7 +100,7 @@ export class IndexedDBAdapter implements StorageAdapter {
     await new Promise<void>((resolve, reject) => {
       const request = store.put({ id: key, data, timestamp: Date.now() });
       request.onsuccess = () => { resolve(); };
-      request.onerror = () => { reject(request.error); };
+      request.onerror = () => { reject(new Error(request.error?.message ?? 'Failed to open IndexedDB')); };
     });
   }
 
@@ -115,7 +115,7 @@ export class IndexedDBAdapter implements StorageAdapter {
         const {result} = request;
         resolve(result ? result.data : null);
       };
-      request.onerror = () => { reject(request.error); };
+      request.onerror = () => { reject(new Error(request.error?.message ?? 'Failed to open IndexedDB')); };
     });
   }
 
@@ -127,7 +127,7 @@ export class IndexedDBAdapter implements StorageAdapter {
     await new Promise<void>((resolve, reject) => {
       const request = store.delete(key);
       request.onsuccess = () => { resolve(); };
-      request.onerror = () => { reject(request.error); };
+      request.onerror = () => { reject(new Error(request.error?.message ?? 'Failed to open IndexedDB')); };
     });
   }
 
@@ -139,7 +139,7 @@ export class IndexedDBAdapter implements StorageAdapter {
     return new Promise<boolean>((resolve, reject) => {
       const request = store.count(key);
       request.onsuccess = () => { resolve(request.result > 0); };
-      request.onerror = () => { reject(request.error); };
+      request.onerror = () => { reject(new Error(request.error?.message ?? 'Failed to open IndexedDB')); };
     });
   }
 
@@ -157,7 +157,7 @@ export class IndexedDBAdapter implements StorageAdapter {
         }
         resolve(keys);
       };
-      request.onerror = () => { reject(request.error); };
+      request.onerror = () => { reject(new Error(request.error?.message ?? 'Failed to open IndexedDB')); };
     });
   }
 
@@ -171,7 +171,7 @@ export class IndexedDBAdapter implements StorageAdapter {
         new Promise<void>((resolve, reject) => {
           const request = store.put({ id: key, data, timestamp: Date.now() });
           request.onsuccess = () => { resolve(); };
-          request.onerror = () => { reject(request.error); };
+          request.onerror = () => { reject(new Error(request.error?.message ?? 'Failed to open IndexedDB')); };
         })
       )
     );
@@ -190,7 +190,7 @@ export class IndexedDBAdapter implements StorageAdapter {
             const {result} = request;
             resolve({ key, data: result ? result.data : null });
           };
-          request.onerror = () => { reject(request.error); };
+          request.onerror = () => { reject(new Error(request.error?.message ?? 'Failed to open IndexedDB')); };
         })
       )
     );
@@ -216,7 +216,7 @@ export class IndexedDBAdapter implements StorageAdapter {
         }
       };
 
-      request.onerror = () => { reject(request.error); };
+      request.onerror = () => { reject(new Error(request.error?.message ?? 'Failed to open IndexedDB')); };
     });
   }
 
@@ -228,7 +228,7 @@ export class IndexedDBAdapter implements StorageAdapter {
     await new Promise<void>((resolve, reject) => {
       const request = store.clear();
       request.onsuccess = () => { resolve(); };
-      request.onerror = () => { reject(request.error); };
+      request.onerror = () => { reject(new Error(request.error?.message ?? 'Failed to open IndexedDB')); };
     });
   }
 }

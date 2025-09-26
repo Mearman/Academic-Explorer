@@ -221,7 +221,8 @@ export class GraphManager {
     const parent = new Map<string, string>();
 
     while (queue.length > 0) {
-      const current = queue.shift()!;
+      const current = queue.shift();
+      if (!current) continue;
       const neighbors = this.adjacencyList.get(current) || new Set();
 
       for (const neighbor of neighbors) {
@@ -236,11 +237,13 @@ export class GraphManager {
             let node = to;
             while (node !== from) {
               path.unshift(node);
-              node = parent.get(node)!;
+              const parentNode = parent.get(node);
+              if (!parentNode) break;
+              node = parentNode;
             }
             path.unshift(from);
 
-            return path.map(id => this.nodes.get(id)!);
+            return path.map(id => this.nodes.get(id)).filter((node): node is GraphNode => node !== undefined);
           }
         }
       }
@@ -338,8 +341,8 @@ export class GraphManager {
     const stack = [startId];
 
     while (stack.length > 0) {
-      const nodeId = stack.pop()!;
-      if (visited.has(nodeId)) continue;
+      const nodeId = stack.pop();
+      if (!nodeId || visited.has(nodeId)) continue;
 
       visited.add(nodeId);
       const node = this.nodes.get(nodeId);
