@@ -217,7 +217,7 @@ export const useNetworkActivityStore = create<NetworkActivityState>()(
 
 		updateRequest: (id, updates) => {
 			set(state => {
-				const request = state.requests[id];
+				const request = state.requests[id] as NetworkRequest | undefined;
 				if (request) {
 					Object.assign(request, updates);
 				}
@@ -230,7 +230,7 @@ export const useNetworkActivityStore = create<NetworkActivityState>()(
 			const endTime = Date.now();
 
 			set(state => {
-				const request = state.requests[id];
+				const request = state.requests[id] as NetworkRequest | undefined;
 				if (request) {
 					request.status = "success";
 					request.endTime = endTime;
@@ -247,7 +247,7 @@ export const useNetworkActivityStore = create<NetworkActivityState>()(
 			const endTime = Date.now();
 
 			set(state => {
-				const request = state.requests[id];
+				const request = state.requests[id] as NetworkRequest | undefined;
 				if (request) {
 					request.status = "error";
 					request.endTime = endTime;

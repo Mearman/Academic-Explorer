@@ -121,7 +121,7 @@ export const createNewGroup = (_primarySectionId: string): ToolGroupDefinition =
 	const newDefinition: ToolGroupDefinition = {
 		id: groupId,
 		title: "New Group",
-		icon: dataInputDef?.icon ?? (() => null), // Placeholder icon with fallback
+		icon: dataInputDef.icon, // Placeholder icon with fallback
 		description: "Dynamic group",
 		category: "dynamic",
 	};
@@ -158,7 +158,7 @@ export const updateGroupDefinition = (groupId: string, sections: string[], getSe
 	if (!primarySection) return;
 
 	// Preserve existing order if group already exists, otherwise assign new order
-	const existingDefinition = GROUP_DEFINITIONS[groupId];
+	const existingDefinition = GROUP_DEFINITIONS[groupId] as ToolGroupDefinition | undefined;
 	const order = existingDefinition?.order ?? getNextOrderNumber();
 
 	// Type guard for icon component
@@ -167,7 +167,7 @@ export const updateGroupDefinition = (groupId: string, sections: string[], getSe
 	}
 
 	// Use icon if it's a valid component, otherwise use default
-	const fallbackIcon = GROUP_DEFINITIONS["data-input"]?.icon ?? (() => null);
+	const fallbackIcon = GROUP_DEFINITIONS["data-input"].icon;
 	const iconComponent = isIconComponent(primarySection.icon)
 		? primarySection.icon
 		: fallbackIcon;
@@ -176,8 +176,8 @@ export const updateGroupDefinition = (groupId: string, sections: string[], getSe
 		id: groupId,
 		title: primarySection.title,
 		icon: iconComponent,
-		description: primarySection.tooltip || `Group containing ${primarySection.title}`,
-		category: primarySection.category || "General",
+		description: primarySection.tooltip ?? `Group containing ${primarySection.title}`,
+		category: primarySection.category ?? "General",
 		order,
 	};
 

@@ -283,8 +283,8 @@ export const getSectionsSorted = (sections: SidebarSection[]): SidebarSection[] 
 	return [...sections].sort((a, b) => {
 		// Sort by category first, then by order
 		if (a.category !== b.category) {
-			return (a.category || "").localeCompare(b.category || "");
+			return (a.category ?? "").localeCompare(b.category ?? "");
 		}
-		return (a.order || 0) - (b.order || 0);
+		return (a.order ?? 0) - (b.order ?? 0);
 	});
 };

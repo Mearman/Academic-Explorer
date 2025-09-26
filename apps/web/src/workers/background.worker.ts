@@ -411,9 +411,7 @@ function startSimulation(params: {
   config?: ForceSimulationConfig;
   pinnedNodes?: string[];
 }) {
-  if (!simulationEngine) {
-    simulationEngine = createSimulationEngine();
-  }
+  simulationEngine ??= createSimulationEngine();
 
   startTime = Date.now();
   simulationEngine.start(params);
@@ -442,9 +440,7 @@ function reheatSimulation(params: {
   pinnedNodes?: string[];
   alpha?: number;
 }) {
-  if (!simulationEngine) {
-    simulationEngine = createSimulationEngine();
-  }
+  simulationEngine ??= createSimulationEngine();
 
   simulationEngine.reheat(params);
 }
@@ -453,9 +449,7 @@ function updateSimulationLinks(params: {
   links: ForceSimulationLink[];
   alpha?: number;
 }) {
-  if (!simulationEngine) {
-    simulationEngine = createSimulationEngine();
-  }
+  simulationEngine ??= createSimulationEngine();
 
   simulationEngine.updateLinks(params.links, params.alpha);
 }
@@ -465,9 +459,7 @@ function updateSimulationNodes(params: {
   pinnedNodes?: string[];
   alpha?: number;
 }) {
-  if (!simulationEngine) {
-    simulationEngine = createSimulationEngine();
-  }
+  simulationEngine ??= createSimulationEngine();
 
   simulationEngine.updateNodes(params.nodes, params.pinnedNodes ?? [], params.alpha);
 }
@@ -515,7 +507,7 @@ function updateSimulationNodes(params: {
         currentSimulationTaskId = data.taskId;
         startSimulation({
           nodes: validatedNodes,
-          links: validateLinks(actualPayload.links ?? []),
+          links: validateLinks(actualPayload.links),
           config: createSafeConfig(actualPayload.config),
           pinnedNodes: actualPayload.pinnedNodes ?? []
         });

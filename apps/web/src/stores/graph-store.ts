@@ -398,7 +398,7 @@ export const useGraphStore = create<GraphState>()(
 
 			isPinned: (nodeId) => {
 				const state = get();
-				return Boolean(state.pinnedNodes[nodeId]);
+				return state.pinnedNodes[nodeId] ?? false;
 			},
 
 			// Layout methods
@@ -614,7 +614,7 @@ export const useGraphStore = create<GraphState>()(
 							const connectedId = edge.source === currentId ? edge.target :
 											   edge.target === currentId ? edge.source : null;
 
-							if (connectedId && !visited.has(connectedId) && nodes[connectedId]) {
+							if (connectedId && !visited.has(connectedId)) {
 								visited.add(connectedId);
 								depths[connectedId] = depth + 1;
 								queue.push({ id: connectedId, depth: depth + 1 });
@@ -639,7 +639,7 @@ export const useGraphStore = create<GraphState>()(
 
 				return nodes.filter(node => {
 					const nodeDepth = state.nodeDepths[node.id];
-					return nodeDepth !== undefined && (depth === Infinity || nodeDepth <= depth);
+					return nodeDepth <= depth;
 				});
 			},
 
@@ -650,9 +650,9 @@ export const useGraphStore = create<GraphState>()(
 				const edges = Object.values(state.edges);
 
 				edges.forEach(edge => {
-					if (edge.source === nodeId && state.nodes[edge.target]) {
+					if (edge.source === nodeId) {
 						neighbors.push(state.nodes[edge.target]);
-					} else if (edge.target === nodeId && state.nodes[edge.source]) {
+					} else if (edge.target === nodeId) {
 						neighbors.push(state.nodes[edge.source]);
 					}
 				});
@@ -670,7 +670,6 @@ export const useGraphStore = create<GraphState>()(
 			findShortestPath: (sourceId, targetId) => {
 				const state = get();
 				if (sourceId === targetId) return [sourceId];
-				if (!state.nodes[sourceId] || !state.nodes[targetId]) return [];
 
 				const visited = new Set<string>();
 				const queue: Array<{id: string, path: string[]}> = [];
@@ -689,7 +688,7 @@ export const useGraphStore = create<GraphState>()(
 						const nextId = edge.source === currentId ? edge.target :
 									  edge.target === currentId ? edge.source : null;
 
-						if (nextId && !visited.has(nextId) && state.nodes[nextId]) {
+						if (nextId && !visited.has(nextId)) {
 							const newPath = [...path, nextId];
 
 							if (nextId === targetId) {
@@ -712,9 +711,6 @@ export const useGraphStore = create<GraphState>()(
 				const queue = [nodeId];
 				const edges = Object.values(state.edges);
 
-				if (!state.nodes[nodeId]) {
-					return [nodeId]; // Return the node ID even if not found
-				}
 
 				while (queue.length > 0) {
 					const currentId = queue.shift();
@@ -729,7 +725,7 @@ export const useGraphStore = create<GraphState>()(
 						const connectedId = edge.source === currentId ? edge.target :
 										   edge.target === currentId ? edge.source : null;
 
-						if (connectedId && !visited.has(connectedId) && state.nodes[connectedId]) {
+						if (connectedId && !visited.has(connectedId)) {
 							queue.push(connectedId);
 						}
 					});
@@ -741,35 +737,29 @@ export const useGraphStore = create<GraphState>()(
 			// Missing state management methods
 			markNodeAsLoading: (nodeId) => {
 				set((draft) => {
-					if (draft.nodes[nodeId]) {
-						draft.nodes[nodeId].metadata = {
-							...draft.nodes[nodeId].metadata,
-							loading: true
-						};
-					}
+					draft.nodes[nodeId].metadata = {
+						...draft.nodes[nodeId].metadata,
+						loading: true
+					};
 				});
 			},
 
 			markNodeAsLoaded: (nodeId) => {
 				set((draft) => {
-					if (draft.nodes[nodeId]) {
-						draft.nodes[nodeId].metadata = {
-							...draft.nodes[nodeId].metadata,
-							loading: false
-						};
-					}
+					draft.nodes[nodeId].metadata = {
+						...draft.nodes[nodeId].metadata,
+						loading: false
+					};
 				});
 			},
 
 			markNodeAsError: (nodeId) => {
 				set((draft) => {
-					if (draft.nodes[nodeId]) {
-						draft.nodes[nodeId].metadata = {
-							...draft.nodes[nodeId].metadata,
-							loading: false,
-							error: true
-						};
-					}
+					draft.nodes[nodeId].metadata = {
+						...draft.nodes[nodeId].metadata,
+						loading: false,
+						error: true
+					};
 				});
 			},
 
@@ -779,12 +769,10 @@ export const useGraphStore = create<GraphState>()(
 				set({ provider });
 
 				// Transfer existing data to provider
-				if (provider) {
-					const nodes = Object.values(state.nodes);
-					const edges = Object.values(state.edges);
-					provider.setNodes(nodes);
-					provider.setEdges(edges);
-				}
+				const nodes = Object.values(state.nodes);
+				const edges = Object.values(state.edges);
+				provider.setNodes(nodes);
+				provider.setEdges(edges);
 			},
 
 			setProviderType: (providerType) => {

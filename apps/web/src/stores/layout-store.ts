@@ -254,25 +254,20 @@ export const useLayoutStore = create<LayoutState>()(
 			addSectionToGroup: (sidebar, groupId, sectionId) =>
 				set((state) => {
 					const toolGroups = state.toolGroups[sidebar];
-					// Type guard for group existence
-					function isValidGroup(g: ToolGroup | undefined): g is ToolGroup {
-						return g !== undefined;
-					}
-					const group = toolGroups[groupId];
-					const groupExists = isValidGroup(group);
+					const hasGroup = groupId in toolGroups;
+					const group = hasGroup ? toolGroups[groupId] : undefined;
 
-					const existingGroupSections = groupExists ? group.sections : undefined;
 					logger.debug("ui", `addSectionToGroup called`, {
 						sidebar,
 						groupId,
 						sectionId,
-						groupExists,
+						groupExists: hasGroup,
 						existingGroupIds: Object.keys(toolGroups),
-						existingGroupSections
+						existingGroupSections: group?.sections
 					});
 
 					// Handle existing group
-					if (group) {
+					if (hasGroup && group) {
 						// If group already contains the section, do nothing
 						if (group.sections.includes(sectionId)) {
 							logger.debug("ui", `Section ${sectionId} already in group ${groupId}, skipping`);
@@ -301,7 +296,7 @@ export const useLayoutStore = create<LayoutState>()(
 
 					// Update existing group or create new one from registry
 					let updatedGroup: ToolGroup;
-					if (group) {
+					if (hasGroup && group) {
 						// Update existing group
 						updatedGroup = {
 							...group,
@@ -321,8 +316,8 @@ export const useLayoutStore = create<LayoutState>()(
 						sidebar,
 						groupId,
 						sectionId,
-						isNewGroup: !group,
-						...(group?.sections !== undefined && { oldSections: group.sections }),
+						isNewGroup: !hasGroup,
+						...(hasGroup && group && { oldSections: group.sections }),
 						newSections: updatedGroup.sections
 					});
 
@@ -347,10 +342,10 @@ export const useLayoutStore = create<LayoutState>()(
 			removeSectionFromGroup: (sidebar, groupId, sectionId) =>
 				set((state) => {
 					const toolGroups = state.toolGroups[sidebar];
-					const group: ToolGroup | undefined = toolGroups[groupId];
+					const hasGroup = groupId in toolGroups;
+					const group = hasGroup ? toolGroups[groupId] : undefined;
 
-					if (!(groupId in toolGroups)) return state;
-					if (!group) return state;
+					if (!hasGroup || !group) return state;
 
 					const updatedSections = group.sections.filter(id => id !== sectionId);
 					const newActiveSection = group.activeSection === sectionId
@@ -359,7 +354,7 @@ export const useLayoutStore = create<LayoutState>()(
 
 					// If group becomes empty, remove it entirely
 					if (updatedSections.length === 0) {
-						const { [groupId]: removedGroup, ...remainingGroups } = toolGroups;
+						const { [groupId]: _removedGroup, ...remainingGroups } = toolGroups;
 						const newActiveGroup = state.activeGroups[sidebar] === groupId
 							? null
 							: state.activeGroups[sidebar];
@@ -402,10 +397,10 @@ export const useLayoutStore = create<LayoutState>()(
 			setActiveTabInGroup: (sidebar, groupId, sectionId) =>
 				set((state) => {
 					const toolGroups = state.toolGroups[sidebar];
-					const group: ToolGroup | undefined = toolGroups[groupId];
+					const hasGroup = groupId in toolGroups;
+					const group = hasGroup ? toolGroups[groupId] : undefined;
 
-					if (!(groupId in toolGroups)) return state;
-					if (!group?.sections.includes(sectionId)) return state;
+					if (!hasGroup || !group?.sections.includes(sectionId)) return state;
 
 					const updatedGroup = {
 						...group,
@@ -563,10 +558,10 @@ export const useLayoutStore = create<LayoutState>()(
 
 					// Remove from source sidebar
 					if (sourceSidebar === "left") {
-						const { [sourceGroupId]: removed, ...remaining } = newToolGroups.left;
+						const { [sourceGroupId]: _removed, ...remaining } = newToolGroups.left;
 						newToolGroups.left = remaining;
 					} else {
-						const { [sourceGroupId]: removed, ...remaining } = newToolGroups.right;
+						const { [sourceGroupId]: _removed, ...remaining } = newToolGroups.right;
 						newToolGroups.right = remaining;
 					}
 
@@ -652,16 +647,16 @@ export const useLayoutStore = create<LayoutState>()(
 						}
 					}
 					// Validate optional object fields
-					if (typedState.collapsedSections !== undefined && typedState.collapsedSections !== null && typeof typedState.collapsedSections !== "object") {
+					if (typedState.collapsedSections !== undefined && typeof typedState.collapsedSections !== "object") {
 						return false;
 					}
-					if (typedState.sectionPlacements !== undefined && typedState.sectionPlacements !== null && typeof typedState.sectionPlacements !== "object") {
+					if (typedState.sectionPlacements !== undefined && typeof typedState.sectionPlacements !== "object") {
 						return false;
 					}
-					if (typedState.activeGroups !== undefined && typedState.activeGroups !== null && typeof typedState.activeGroups !== "object") {
+					if (typedState.activeGroups !== undefined && typeof typedState.activeGroups !== "object") {
 						return false;
 					}
-					if (typedState.toolGroups !== undefined && typedState.toolGroups !== null && typeof typedState.toolGroups !== "object") {
+					if (typedState.toolGroups !== undefined && typeof typedState.toolGroups !== "object") {
 						return false;
 					}
 					// Validate optional string fields
