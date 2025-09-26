@@ -66,9 +66,18 @@
       "executor": "nx:run-commands",
       "dependsOn": ["^build"],
       "options": {
-        "command": "vitest run --testNamePattern='.*\\.unit\\.test\\.ts$'",
+        "command": "vitest run --testNamePattern='.*\\.unit\\.test\\.ts$' --coverage",
         "cwd": "{projectRoot}"
       },
+      "inputs": [
+        "default",
+        "^production",
+        "{workspaceRoot}/vitest.workspace.ts",
+        "{projectRoot}/vitest.config.ts"
+      ],
+      "outputs": [
+        "{projectRoot}/coverage"
+      ],
       "cache": true
     },
     "test:integration": {
@@ -78,6 +87,15 @@
         "command": "vitest run --testNamePattern='.*\\.integration\\.test\\.ts$'",
         "cwd": "{projectRoot}"
       },
+      "inputs": [
+        "default",
+        "^production",
+        "{workspaceRoot}/vitest.workspace.ts",
+        "{projectRoot}/vitest.config.ts"
+      ],
+      "outputs": [
+        "{projectRoot}/coverage"
+      ],
       "cache": true
     },
     "test:component": {

@@ -84,8 +84,18 @@
       "dependsOn": ["^build"],
       "options": {
         "command": "vitest run --project=unit --coverage",
-        "cwd": "{projectRoot}"
+        "cwd": "{projectRoot}",
+        "nodeOptions": ["--max-old-space-size=8192"]
       },
+      "inputs": [
+        "default",
+        "^production",
+        "{workspaceRoot}/vitest.workspace.ts",
+        "{projectRoot}/vitest.config.ts"
+      ],
+      "outputs": [
+        "{projectRoot}/coverage"
+      ],
       "cache": true
     },
     "test:component": {
@@ -102,8 +112,18 @@
       "dependsOn": ["^build"],
       "options": {
         "command": "vitest run --project=integration",
-        "cwd": "{projectRoot}"
+        "cwd": "{projectRoot}",
+        "nodeOptions": ["--max-old-space-size=8192"]
       },
+      "inputs": [
+        "default",
+        "^production",
+        "{workspaceRoot}/vitest.workspace.ts",
+        "{projectRoot}/vitest.config.ts"
+      ],
+      "outputs": [
+        "{projectRoot}/coverage"
+      ],
       "cache": true
     },
     "test:e2e": {
