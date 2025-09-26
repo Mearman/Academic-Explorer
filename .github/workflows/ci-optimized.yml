@@ -97,8 +97,17 @@ jobs:
         with:
           main-branch-name: 'main'
 
-      # Use nx typecheck instead of global tsc --build to avoid composite project dependencies
-
+      # Build packages first for typecheck to have declaration files available
+      - name: Build packages for typecheck
+        if: matrix.check == 'typecheck'
+        run: |
+          if [ "${{ needs.setup.outputs.has-affected }}" = "true" ]; then
+            timeout 5m pnpm nx affected -t build --parallel=2
+          else
+            timeout 5m pnpm nx run-many -t build --parallel=2 --projects=@academic-explorer/utils,@academic-explorer/client
+          fi
+        env:
+          NODE_OPTIONS: '--max-old-space-size=8192'
 
       - name: Run ${{ matrix.check }}
         run: |
