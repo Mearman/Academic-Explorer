@@ -243,19 +243,21 @@ export const AllEdgesSection: React.FC = () => {
 
 	const handleHighlightEdge = useCallback((edgeId: string) => {
 		const edge = edges[edgeId];
-		logger.debug("graph", "Highlighting edge endpoints", {
-			edgeId,
-			source: edge.source,
-			target: edge.target
-		});
+		if (edge) {
+			logger.debug("graph", "Highlighting edge endpoints", {
+				edgeId,
+				source: edge.source,
+				target: edge.target
+			});
 
-		// Clear previous selection and select both endpoints
-		clearSelection();
-		addToSelection(edge.source);
-		addToSelection(edge.target);
+			// Clear previous selection and select both endpoints
+			clearSelection();
+			addToSelection(edge.source);
+			addToSelection(edge.target);
 
-		// Set primary selection to source node
-		selectNode(edge.source);
+			// Set primary selection to source node
+			selectNode(edge.source);
+		}
 	}, [edges, clearSelection, addToSelection, selectNode]);
 
 	const handleRemoveEdge = useCallback((edgeId: string) => {
