@@ -165,7 +165,7 @@ jobs:
 
     strategy:
       matrix:
-        check: [typecheck, lint, build]
+        check: [lint, build, typecheck]
 
     steps:
       - name: Checkout
@@ -202,6 +202,10 @@ jobs:
             ${{ needs.setup.outputs.nx-cache-key }}-
             nx-${{ runner.os }}-${{ hashFiles('nx.json', 'package.json', 'pnpm-lock.yaml') }}-
             nx-${{ runner.os }}-
+
+      - name: Build packages first (if typecheck)
+        if: matrix.check == 'typecheck'
+        run: pnpm nx build
 
       - name: Run ${{ matrix.check }}
         run: pnpm nx ${{ matrix.check }}
