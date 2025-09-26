@@ -199,6 +199,10 @@ jobs:
     needs: [ci, workspace-quality]
     if: github.ref == 'refs/heads/main' && github.event_name == 'push' && success()
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+      id-token: write
     steps:
       - name: Checkout
         uses: actions/checkout@v4
