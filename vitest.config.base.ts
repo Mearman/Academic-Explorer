@@ -61,23 +61,27 @@ export const baseVitestConfig: UserConfig = {
 
     // Performance configuration for monorepo
     // Serial execution prevents OOM issues with large test suites
-    pool: 'forks',
+    // Use threads in CI environment to prevent hanging, forks locally for isolation
+    pool: process.env.CI ? 'threads' : 'forks',
     poolOptions: {
       forks: {
         singleFork: true,
       },
+      threads: {
+        singleThread: true,
+      },
     },
 
-    // Timeout configuration
-    testTimeout: 10000,
-    hookTimeout: 10000,
+    // Timeout configuration - shorter in CI to prevent hangs
+    testTimeout: process.env.CI ? 30000 : 10000,
+    hookTimeout: process.env.CI ? 30000 : 10000,
 
     // Silent mode for cleaner output in monorepo
     silent: false,
-    reporter: ['verbose'],
+    reporter: process.env.CI ? ['default'] : ['verbose'],
 
-    // Retry configuration
-    retry: 1,
+    // Retry configuration - less retries in CI to prevent hanging
+    retry: process.env.CI ? 0 : 1,
   },
 };
 

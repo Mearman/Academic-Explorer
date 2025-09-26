@@ -54,7 +54,6 @@
       "inputs": [
         "default",
         "^production",
-        "{workspaceRoot}/vitest.workspace.ts",
         "{projectRoot}/vitest.config.ts"
       ],
       "outputs": [
@@ -72,7 +71,6 @@
       "inputs": [
         "default",
         "^production",
-        "{workspaceRoot}/vitest.workspace.ts",
         "{projectRoot}/vitest.config.ts"
       ],
       "outputs": [
@@ -90,7 +88,6 @@
       "inputs": [
         "default",
         "^production",
-        "{workspaceRoot}/vitest.workspace.ts",
         "{projectRoot}/vitest.config.ts"
       ],
       "outputs": [

@@ -104,27 +104,20 @@ jobs:
 
       - name: Test affected projects
         run: |
-          # Run only stable package tests in CI
-          echo "Checking for affected projects..."
-          affected_output=$(pnpm nx show projects --affected --json 2>/dev/null | tail -n 1 || echo '[]')
-          echo "Raw affected output: $affected_output"
+          # Run package tests directly with pnpm to avoid Nx orchestration issues
+          echo "Running essential package tests using direct pnpm execution..."
 
-          affected_projects=$(echo "$affected_output" | jq -r '.[]' 2>/dev/null || echo "")
-          echo "Affected projects: $affected_projects"
-
-          if echo "$affected_projects" | grep -E "(client|utils)" > /dev/null 2>&1; then
-            echo "Running tests for stable packages only (client and utils)"
-            timeout 10m pnpm nx run-many -t test --parallel=3 --projects=client,utils
-          else
-            echo "No affected stable projects need testing, checking if any packages need testing..."
-            # Always run essential package tests to ensure they still work
-            if [ -d "packages/client" ] && [ -d "packages/utils" ]; then
-              echo "Running essential package tests to maintain CI reliability"
-              timeout 10m pnpm nx run-many -t test --parallel=3 --projects=client,utils
-            else
-              echo "No test packages available"
-            fi
+          if [ -d "packages/client" ]; then
+            echo "Testing client package..."
+            timeout 5m pnpm --filter=client test || exit 1
           fi
+
+          if [ -d "packages/utils" ]; then
+            echo "Testing utils package..."
+            timeout 2m pnpm --filter=utils test || exit 1
+          fi
+
+          echo "All package tests completed successfully!"
         env:
           NODE_OPTIONS: '--max-old-space-size=8192'
 

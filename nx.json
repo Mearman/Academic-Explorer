@@ -25,27 +25,27 @@
     },
     "test": {
       "cache": true,
-      "inputs": ["default", "^production", "{workspaceRoot}/vitest.workspace.ts", "{workspaceRoot}/config/**/*"],
+      "inputs": ["default", "^production", "{workspaceRoot}/config/**/*"],
       "outputs": ["{projectRoot}/coverage"]
     },
     "test:unit:run": {
       "cache": true,
-      "inputs": ["default", "^production", "{workspaceRoot}/vitest.workspace.ts", "{workspaceRoot}/config/**/*"],
+      "inputs": ["default", "^production", "{workspaceRoot}/config/**/*"],
       "outputs": ["{projectRoot}/coverage"]
     },
     "test:component:run": {
       "cache": true,
-      "inputs": ["default", "^production", "{workspaceRoot}/vitest.workspace.ts", "{workspaceRoot}/config/**/*"],
+      "inputs": ["default", "^production", "{workspaceRoot}/config/**/*"],
       "outputs": ["{projectRoot}/coverage"]
     },
     "test:integration:run": {
       "cache": true,
-      "inputs": ["default", "^production", "{workspaceRoot}/vitest.workspace.ts", "{workspaceRoot}/config/**/*"],
+      "inputs": ["default", "^production", "{workspaceRoot}/config/**/*"],
       "outputs": ["{projectRoot}/coverage"]
     },
     "test:e2e:run": {
       "cache": true,
-      "inputs": ["default", "^production", "{workspaceRoot}/vitest.workspace.ts", "{workspaceRoot}/config/**/*", "{workspaceRoot}/playwright.config.ts"],
+      "inputs": ["default", "^production", "{workspaceRoot}/config/**/*", "{workspaceRoot}/playwright.config.ts"],
       "outputs": ["{projectRoot}/coverage"]
     },
     "preview": {
@@ -128,13 +128,13 @@
     },
     "test:a11y": {
       "cache": true,
-      "inputs": ["default", "^production", "{workspaceRoot}/vitest.workspace.ts", "{workspaceRoot}/config/**/*"],
+      "inputs": ["default", "^production", "{workspaceRoot}/config/**/*"],
       "outputs": ["{projectRoot}/coverage"]
     },
     "test:a11y:e2e": {
       "cache": true,
       "dependsOn": ["build"],
-      "inputs": ["default", "^production", "{workspaceRoot}/vitest.workspace.ts", "{workspaceRoot}/config/**/*", "{workspaceRoot}/playwright.config.ts"],
+      "inputs": ["default", "^production", "{workspaceRoot}/config/**/*", "{workspaceRoot}/playwright.config.ts"],
       "outputs": ["{projectRoot}/coverage"]
     },
     "verify:a11y": {
