@@ -7,6 +7,17 @@ import type { KnipConfig } from 'knip';
  * without complex plugin configurations that may have path issues.
  */
 const config: KnipConfig = {
+  ignore: [
+    // Test utilities and helpers (intentionally exported for reuse)
+    "**/__tests__/utils/**",
+    "**/__tests__/mocks/**",
+    "**/test-*.ts",
+    "**/*.test-helpers.ts",
+    // Library exports (used by external consumers)
+    "packages/*/src/index.ts",
+    "packages/*/src/**/index.ts"
+  ],
+  ignoreExportsUsedInFile: true,
   workspaces: {
     // Root workspace - scripts and configs
     ".": {
