@@ -29,8 +29,8 @@
       "@academic-explorer/utils/*": ["../../packages/utils/src/*"],
       "@academic-explorer/simulation": ["../../packages/simulation/src/index.ts"],
       "@academic-explorer/simulation/*": ["../../packages/simulation/src/*"],
-      "@academic-explorer/client": ["../../packages/client/src/index.ts"],
-      "@academic-explorer/client/*": ["../../packages/client/src/*"],
+      "@academic-explorer/client": ["../../packages/client/dist/index.d.ts"],
+      "@academic-explorer/client/*": ["../../packages/client/dist/*"],
       "@academic-explorer/ui": ["../../packages/ui/src/index.ts"],
       "@academic-explorer/ui/*": ["../../packages/ui/src/*"]
     },
