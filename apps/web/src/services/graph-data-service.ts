@@ -1124,7 +1124,7 @@ export class GraphDataService {
 			store.clear();
 			store.addNodes(nodes);
 			store.addEdges(edges);
-			store.updateSearchStats();
+			store.updateSearchStats(searchStats);
 
 			// Layout is now handled by the ReactFlow component's useLayout hook
 			// No need for explicit layout application here

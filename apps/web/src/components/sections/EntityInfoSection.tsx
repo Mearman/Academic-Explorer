@@ -12,6 +12,7 @@ import { useGraphStore } from "@/stores/graph-store";
 import { useThemeColors } from "@/hooks/use-theme-colors";
 import { useRawEntityData } from "@/hooks/use-raw-entity-data";
 import { logger } from "@academic-explorer/utils/logger";
+import type { GraphNode } from "@academic-explorer/graph";
 
 interface EntityInfoSectionProps {
 	className?: string;
@@ -37,7 +38,7 @@ export const EntityInfoSection: React.FC<EntityInfoSectionProps> = ({
 	React.useEffect(() => {
 		const updateRouteEntity = () => {
 			const currentHash = window.location.hash || '';
-			const entityRouteMatch = currentHash.match(/\/(?:authors|works|sources|institutions|topics|publishers|funders)\/([^\/]+)/);
+			const entityRouteMatch = currentHash.match(/\/(?:authors|works|sources|institutions|topics|publishers|funders)\/([^/]+)/);
 			const entityId = entityRouteMatch ? entityRouteMatch[1] : null;
 			setRouteEntityId(entityId);
 		};
@@ -177,23 +178,36 @@ export const EntityInfoSection: React.FC<EntityInfoSectionProps> = ({
 	}
 
 	// Use graph node if available, otherwise create a minimal GraphNode from raw data
-	let entity: any = entityNode;
+	let entity: GraphNode | undefined = entityNode;
 
 	if (!entityNode && rawEntityData.data) {
 		// Convert raw OpenAlex entity to minimal GraphNode format for RichEntityDisplay
 		const rawEntity = rawEntityData.data;
-		entity = {
-			entityId: rawEntity.id,
-			entityType: rawEntity.id.charAt(0) === 'A' ? 'authors' :
-						rawEntity.id.charAt(0) === 'W' ? 'works' :
-						rawEntity.id.charAt(0) === 'S' ? 'sources' :
-						rawEntity.id.charAt(0) === 'I' ? 'institutions' :
-						rawEntity.id.charAt(0) === 'T' ? 'topics' :
-						rawEntity.id.charAt(0) === 'P' ? 'publishers' : 'works',
-			// Add any other required GraphNode properties
-			x: 0,
-			y: 0,
-		};
+		// Type guard to ensure rawEntity has an id property
+		if (typeof rawEntity === 'object' && 'id' in rawEntity && typeof rawEntity.id === 'string') {
+			const entityType = rawEntity.id.charAt(0) === 'A' ? 'authors' :
+							 rawEntity.id.charAt(0) === 'W' ? 'works' :
+							 rawEntity.id.charAt(0) === 'S' ? 'sources' :
+							 rawEntity.id.charAt(0) === 'I' ? 'institutions' :
+							 rawEntity.id.charAt(0) === 'T' ? 'topics' :
+							 rawEntity.id.charAt(0) === 'P' ? 'publishers' : 'works' as const;
+
+			// Extract display name for label
+			const label = ('display_name' in rawEntity && typeof rawEntity.display_name === 'string')
+				? rawEntity.display_name
+				: rawEntity.id;
+
+			entity = {
+				id: rawEntity.id,
+				entityType,
+				label,
+				entityId: rawEntity.id,
+				x: 0,
+				y: 0,
+				externalIds: [],
+				entityData: rawEntity as unknown as Record<string, unknown>
+			};
+		}
 	}
 
 	return (
@@ -211,7 +225,7 @@ export const EntityInfoSection: React.FC<EntityInfoSectionProps> = ({
 				Entity Information
 			</div>
 
-			<RichEntityDisplay entity={entity} />
+			{entity && <RichEntityDisplay entity={entity} />}
 		</div>
 	);
 };

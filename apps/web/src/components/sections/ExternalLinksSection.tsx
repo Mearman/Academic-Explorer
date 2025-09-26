@@ -63,6 +63,15 @@ export const ExternalLinksSection: React.FC<ExternalLinksSectionProps> = ({
 		return value !== null && typeof value === "object" && !Array.isArray(value);
 	};
 
+	// Type guard for IDs object with specific properties
+	const isIdsWithWikipedia = (ids: Record<string, unknown>): ids is Record<string, unknown> & { wikipedia: unknown } => {
+		return 'wikipedia' in ids;
+	};
+
+	const isIdsWithWikidata = (ids: Record<string, unknown>): ids is Record<string, unknown> & { wikidata: unknown } => {
+		return 'wikidata' in ids;
+	};
+
 	const generateLinks = (entity: GraphNode) => {
 		const links: Array<{
 			label: string;
@@ -134,10 +143,11 @@ export const ExternalLinksSection: React.FC<ExternalLinksSectionProps> = ({
 		}
 
 		// Wikipedia link
-		if (isIdsRecord(entityData?.['ids']) && isValidUrl((entityData as any)?.['ids']?.['wikipedia'])) {
+		const idsRecord = entityData?.['ids'];
+		if (isIdsRecord(idsRecord) && isIdsWithWikipedia(idsRecord) && isValidUrl(idsRecord.wikipedia)) {
 			links.push({
 				label: "Wikipedia",
-				url: (entityData as any)?.['ids']?.['wikipedia'],
+				url: String(idsRecord.wikipedia),
 				icon: <IconExternalLink size={16} />,
 				description: "View Wikipedia article",
 				type: "wikipedia"
@@ -145,10 +155,10 @@ export const ExternalLinksSection: React.FC<ExternalLinksSectionProps> = ({
 		}
 
 		// Wikidata link
-		if (isIdsRecord(entityData?.['ids']) && isValidUrl((entityData as any)?.['ids']?.['wikidata'])) {
+		if (isIdsRecord(idsRecord) && isIdsWithWikidata(idsRecord) && isValidUrl(idsRecord.wikidata)) {
 			links.push({
 				label: "Wikidata",
-				url: (entityData as any)?.['ids']?.['wikidata'],
+				url: String(idsRecord.wikidata),
 				icon: <IconExternalLink size={16} />,
 				description: "View Wikidata entry",
 				type: "wikidata"

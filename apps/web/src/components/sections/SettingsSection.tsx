@@ -160,9 +160,14 @@ export const SettingsSection: React.FC = () => {
 			// Clear all cache layers (IndexedDB, localStorage cache, memory)
 			const result = await clearAllCacheLayers();
 
+			// Type guard for cache result structure
+			const isCacheResult = (value: unknown): value is { clearedLayers?: string[]; errors?: unknown[] } => {
+				return value !== null && typeof value === 'object';
+			};
+
 			logger.debug("ui", "Cache layers cleared", {
-				clearedLayers: (result as any)?.clearedLayers ?? [],
-				errors: (result as any)?.errors ?? []
+				clearedLayers: isCacheResult(result) ? (result.clearedLayers ?? []) : [],
+				errors: isCacheResult(result) ? (result.errors ?? []) : []
 			});
 
 			// Clear app metadata

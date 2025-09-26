@@ -53,11 +53,6 @@ export function useGraphData() {
 
 			// Get the node to expand
 			const node = store.nodes[nodeId];
-			if (!node) {
-				logger.warn("graph", "Node not found for expansion", { nodeId }, "useGraphData");
-				return;
-			}
-
 			logger.debug("graph", "Node found, expanding via service", { nodeId, nodeType: node.entityType });
 
 			// Direct service call - no worker dependency
@@ -66,10 +61,10 @@ export function useGraphData() {
 				await service.expandNode(nodeId, options);
 
 				// Recalculate depths after expansion using first pinned node
-				const pinnedNodes = Object.keys(store.pinnedNodes || {});
+				const pinnedNodes = Object.keys(store.pinnedNodes);
 				const firstPinnedNodeId = pinnedNodes[0];
 				if (firstPinnedNodeId) {
-					store.calculateNodeDepths?.();
+					store.calculateNodeDepths();
 				}
 
 				logger.debug("graph", "Node expansion completed via service", { nodeId }, "useGraphData");
@@ -119,9 +114,9 @@ export function useGraphData() {
 			});
 
 			// Optionally recalculate depths if the method exists
-			const pinnedNodes = Object.keys(store.pinnedNodes || {});
+			const pinnedNodes = Object.keys(store.pinnedNodes);
 			const firstPinnedNodeId = pinnedNodes[0];
-			if (firstPinnedNodeId && store.calculateNodeDepths) {
+			if (firstPinnedNodeId) {
 				store.calculateNodeDepths();
 			}
 
