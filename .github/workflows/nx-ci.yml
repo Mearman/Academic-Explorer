@@ -57,7 +57,7 @@ jobs:
         id: generate
         run: |
           # Get affected projects
-          affected=$(pnpm nx show projects --affected --json || echo '[]')
+          affected=$(pnpm nx show projects --affected --json 2>/dev/null | tail -n 1 || echo '[]')
           has_affected=$(echo "$affected" | jq 'length > 0')
 
           # Generate dependency graph
