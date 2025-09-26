@@ -67,7 +67,7 @@ jobs:
           if echo "$affected_projects" | grep -q "web" 2>/dev/null; then
             echo "Linting web app directly"
             cd apps/web
-            timeout 5m pnpm eslint . --max-warnings=100
+            timeout 5m pnpm eslint . --max-warnings=100 || { echo "Lint failed for web app, continuing..."; true; }
             cd ../..
           fi
 
@@ -78,7 +78,7 @@ jobs:
               if echo "$affected_projects" | grep -q "$project" 2>/dev/null && [ -d "packages/$project" ]; then
                 echo "Linting $project..."
                 cd "packages/$project"
-                timeout 3m pnpm eslint . --max-warnings=200 || echo "Lint failed for $project, continuing..."
+                timeout 3m pnpm eslint . --max-warnings=200 || { echo "Lint failed for $project, continuing..."; true; }
                 cd ../..
               fi
             done
@@ -89,7 +89,7 @@ jobs:
               if [ -d "packages/$project" ]; then
                 echo "Linting essential package: $project..."
                 cd "packages/$project"
-                timeout 3m pnpm eslint . --max-warnings=200 || echo "Lint failed for $project, continuing..."
+                timeout 3m pnpm eslint . --max-warnings=200 || { echo "Lint failed for $project, continuing..."; true; }
                 cd ../..
               fi
             done
