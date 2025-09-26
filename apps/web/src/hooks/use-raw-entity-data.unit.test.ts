@@ -14,7 +14,9 @@ vi.mock("@academic-explorer/utils", () => ({
 }));
 
 vi.mock("@academic-explorer/graph", () => ({
-	EntityDetector: vi.fn(),
+	EntityDetectionService: {
+		detectEntity: vi.fn(),
+	},
 }));
 
 vi.mock("@academic-explorer/utils/logger", () => ({
@@ -34,9 +36,6 @@ const mockUseOpenAlexEntity = {
 	dataUpdatedAt: 0,
 };
 
-const mockEntityDetector = {
-	detectEntityIdentifier: vi.fn(),
-};
 
 const mockLogger = {
 	debug: vi.fn(),
@@ -51,25 +50,23 @@ describe("useRawEntityData", () => {
 
 		// Get the mocked modules
 		const { useOpenAlexEntity } = await import("@academic-explorer/utils");
-		const { EntityDetector } = await import("@academic-explorer/graph");
+		const { EntityDetectionService } = await import("@academic-explorer/graph");
 		const { logger } = await import("@academic-explorer/utils/logger");
 
 		// Setup default mock implementations
 		vi.mocked(useOpenAlexEntity).mockReturnValue(mockUseOpenAlexEntity);
-		vi.mocked(EntityDetector).mockImplementation(() => mockEntityDetector as any);
+		vi.mocked(EntityDetectionService.detectEntity).mockReturnValue({
+			entityType: "works",
+			idType: "openalex",
+			normalizedId: "W123456789",
+			originalInput: "W123456789",
+		});
 
 		// Setup logger mocks
 		vi.mocked(logger.debug).mockImplementation(mockLogger.debug);
 		vi.mocked(logger.info).mockImplementation(mockLogger.info);
 		vi.mocked(logger.error).mockImplementation(mockLogger.error);
 
-		// Setup default entity detection
-		mockEntityDetector.detectEntityIdentifier.mockReturnValue({
-			entityType: "works",
-			idType: "openalex",
-			normalizedId: "W123456789",
-			originalInput: "W123456789",
-		});
 	});
 
 	afterEach(() => {
