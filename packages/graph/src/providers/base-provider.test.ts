@@ -5,7 +5,7 @@
  */
 
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
-import { EventEmitter } from "events";
+import { EventEmitter } from "../utils/event-emitter";
 import {
   GraphDataProvider,
   ProviderRegistry,

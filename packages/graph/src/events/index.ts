@@ -1,8 +1,8 @@
-/* eslint-disable no-console */
 /**
  * Event System Types and Utilities
  * Exports for the unified event bus system
  */
+import { logger } from '@academic-explorer/utils';
 
 
 // Event types enum
@@ -131,7 +131,7 @@ class LocalEventBus implements EventBus {
         try {
           handler(eventWithTimestamp);
         } catch (error) {
-          console.error(`Event handler error for ${event.type}:`, error);
+          logger.error('event', `Event handler error for ${event.type}`, { error }, 'LocalEventBus');
         }
       });
     }
@@ -179,7 +179,7 @@ class CrossTabEventBus implements EventBus {
     try {
       this.channel.postMessage(event);
     } catch (error) {
-      console.error(`Failed to broadcast event ${event.type}:`, error);
+      logger.error('event', `Failed to broadcast event ${event.type}`, { error }, 'CrossTabEventBus');
     }
   }
 

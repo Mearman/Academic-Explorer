@@ -1,10 +1,10 @@
-/* eslint-disable no-console */
 /**
  * Abstract base class for graph data providers
  * Defines the interface for fetching and expanding graph entities from various data sources
  */
 
 import { EventEmitter } from '../utils/event-emitter';
+import { logger } from '@academic-explorer/utils';
 import type { GraphNode, EntityType, EntityIdentifier } from '../types/core';
 
 export interface SearchQuery {
@@ -140,7 +140,7 @@ export abstract class GraphDataProvider extends EventEmitter {
       return this.emit(String(event), ...args);
     } catch (error) {
       // Log the error but don't let it interrupt the main flow
-      console.warn(`Event listener error for ${String(event)}:`, error);
+      logger.warn('provider', `Event listener error for ${String(event)}`, { error }, 'GraphDataProvider');
       return false;
     }
   }

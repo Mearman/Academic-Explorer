@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 /**
  * Graph Repository
  * Persistence layer abstraction for graph data with multiple storage backends

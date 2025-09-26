@@ -10,9 +10,8 @@
  * Uses the Phase 2 provider architecture for data access with caching for performance.
  */
 
-/* eslint-disable no-console */
-
 import type { GraphNode, GraphEdge, GraphData, EntityType } from '../types/core';
+import { logger } from '@academic-explorer/utils';
 import { RelationType } from '../types/core';
 import type { GraphDataProvider } from '../providers/base-provider';
 
@@ -620,7 +619,7 @@ export class GraphAnalyzer {
           const metrics = await this.calculateCitationMetrics(nodeId, options);
           return { nodeId, metrics };
         } catch (error) {
-          console.warn(`Citation analysis failed for ${nodeId}:`, error);
+          logger.warn('analysis', `Citation analysis failed for ${nodeId}`, { error }, 'GraphAnalyzer');
           return null;
         }
       });
@@ -674,7 +673,7 @@ export class GraphAnalyzer {
           }
         }
       } catch (error) {
-        console.warn(`Analysis failed for ${nodeId}:`, error);
+        logger.warn('analysis', `Analysis failed for ${nodeId}`, { error }, 'GraphAnalyzer');
       }
     }
 
@@ -1049,7 +1048,7 @@ export class GraphAnalyzer {
           impact: this.extractCitationCount(work),
         });
       } catch (error) {
-        console.warn(`Failed to get collaboration data for work ${workId}:`, error);
+        logger.warn('analysis', `Failed to get collaboration data for work ${workId}`, { error }, 'GraphAnalyzer');
       }
     }
 

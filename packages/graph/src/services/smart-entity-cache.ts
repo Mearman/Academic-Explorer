@@ -15,6 +15,7 @@
  */
 
 import type { EntityType } from '../types/core';
+import { logger } from '@academic-explorer/utils';
 
 /**
  * Context information for cache operations and decision making
@@ -480,7 +481,6 @@ export class SmartEntityCache {
         if ((now - timestamp) > maxAge) {
           entity.cachedFields.delete(field);
           entity.fieldTimestamps.delete(field);
-          // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
           delete entity.data[field];
           entity.errors.delete(field);
         }
@@ -510,7 +510,6 @@ export class SmartEntityCache {
     for (const field of fields) {
       entity.cachedFields.delete(field);
       entity.fieldTimestamps.delete(field);
-      // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
       delete entity.data[field];
       entity.errors.delete(field);
     }
@@ -749,26 +748,18 @@ export class SmartEntityCache {
   }
 
   private log(level: 'debug' | 'warn' | 'error', message: string, ...args: unknown[]): void {
-    // Simple logging implementation - can be replaced with proper logger
-    // Suppress console usage in production builds
-    if (process.env.NODE_ENV === 'development') {
-      const timestamp = new Date().toISOString();
-      const prefix = `[SmartEntityCache] ${timestamp} [${level.toUpperCase()}]`;
+    const data = args.length > 0 ? { args } : undefined;
 
-      switch (level) {
-        case 'debug':
-          // eslint-disable-next-line no-console
-          console.debug(prefix, message, ...args);
-          break;
-        case 'warn':
-          // eslint-disable-next-line no-console
-          console.warn(prefix, message, ...args);
-          break;
-        case 'error':
-          // eslint-disable-next-line no-console
-          console.error(prefix, message, ...args);
-          break;
-      }
+    switch (level) {
+      case 'debug':
+        logger.debug('cache', message, data, 'SmartEntityCache');
+        break;
+      case 'warn':
+        logger.warn('cache', message, data, 'SmartEntityCache');
+        break;
+      case 'error':
+        logger.error('cache', message, data, 'SmartEntityCache');
+        break;
     }
   }
 }

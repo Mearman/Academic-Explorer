@@ -4,6 +4,7 @@
  */
 
 import { DEFAULT_FORCE_PARAMS } from "../constants/force-params";
+import { logger } from "@academic-explorer/utils";
 
 // Extended Navigator interface for device memory API
 interface NavigatorWithDeviceMemory extends Navigator {
@@ -229,7 +230,7 @@ export function getOptimalPerformanceConfig(
 ): PerformanceConfig {
 	const device = deviceCapabilities ?? detectDeviceCapabilities();
 
-	console.debug("Calculating optimal performance config:", {
+	logger.debug("performance", "Calculating optimal performance config", {
 		graphMetrics,
 		deviceCapabilities: device,
 	});
@@ -307,7 +308,7 @@ export function getOptimalPerformanceConfig(
 		adjustedProfile.maxIterations = Math.max(adjustedProfile.maxIterations * 0.7, 100);
 	}
 
-	console.debug("Optimal performance config calculated:", {
+	logger.debug("performance", "Optimal performance config calculated", {
 		baseProfile: graphMetrics.estimatedComplexity,
 		adjustments: {
 			lowPowerMode: device.isLowPowerMode,

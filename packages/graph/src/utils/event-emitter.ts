@@ -3,6 +3,8 @@
  * Replaces Node.js events module for browser compatibility
  */
 
+import { logger } from "@academic-explorer/utils";
+
 type EventListener = (...args: unknown[]) => void;
 
 export class EventEmitter {
@@ -10,16 +12,18 @@ export class EventEmitter {
   private maxListeners = 10;
 
   on(event: string, listener: EventListener): this {
-    if (!this.events.has(event)) {
-      this.events.set(event, new Set());
+    // Ensure the event has a listeners set
+    let listeners = this.events.get(event);
+    if (!listeners) {
+      listeners = new Set();
+      this.events.set(event, listeners);
     }
 
-    const listeners = this.events.get(event)!;
     listeners.add(listener);
 
     // Warn if too many listeners (like Node.js EventEmitter)
     if (listeners.size > this.maxListeners) {
-      console.warn(`Possible EventEmitter memory leak detected. ${listeners.size} listeners added to event "${event}". Use setMaxListeners() to increase limit.`);
+      logger.warn("event-emitter", `Possible EventEmitter memory leak detected. ${listeners.size} listeners added to event "${event}". Use setMaxListeners() to increase limit.`);
     }
 
     return this;
@@ -51,7 +55,7 @@ export class EventEmitter {
       try {
         listener(...args);
       } catch (error) {
-        console.error('EventEmitter error:', error);
+        logger.error("event-emitter", "EventEmitter listener error", { error });
       }
     }
 
