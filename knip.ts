@@ -134,7 +134,15 @@ const config: KnipConfig = {
   // Ignore dependencies that are used but not detected correctly
   ignoreDependencies: [
     "@vanilla-extract/vite-plugin", // Used in vite.config.ts but knip doesn't detect it properly
-    "@mantine/notifications" // Optional peerDependency for UI components
+    "@mantine/notifications", // Optional peerDependency for UI components
+    // Module resolution dependencies added for runtime and test environments
+    "@types/d3-force", // Type definitions for d3-force used in graph visualizations
+    "@types/d3-random", // Type definitions for d3-random used in force simulations
+    "@types/lodash-es", // Type definitions for lodash-es utility functions
+    "d3-force", // Force simulation library used in graph components
+    "d3-random", // Random number generation for deterministic layouts
+    "idb", // IndexedDB wrapper used for browser storage
+    "lodash-es" // ES module utilities used across applications
   ],
 
   // Plugin configurations
