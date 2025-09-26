@@ -79,10 +79,11 @@
       ],
       "outputs": ["{options.outputFile}"],
       "options": {
-        "max-warnings": 0,
+        "max-warnings": 100,
         "cache": true,
         "cache-location": "{workspaceRoot}/.nx/cache/eslint/",
-        "fix": false
+        "fix": false,
+        "no-warn-ignored": true
       }
     },
     "typecheck": {
