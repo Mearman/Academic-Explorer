@@ -246,9 +246,7 @@ export const useAppActivityStore = create<AppActivityState>()(
     updateEvent: (id, updates) => {
       set(state => {
         const existingEvent = state.events[id];
-        if (existingEvent) {
-          Object.assign(existingEvent, updates);
-        }
+        Object.assign(existingEvent, updates);
       });
 
       get().recomputeAll();
@@ -256,7 +254,7 @@ export const useAppActivityStore = create<AppActivityState>()(
 
     removeEvent: (id) => {
       set(state => {
-        const { [id]: removed, ...rest } = state.events;
+        const { [id]: _removed, ...rest } = state.events;
         state.events = rest;
       });
 

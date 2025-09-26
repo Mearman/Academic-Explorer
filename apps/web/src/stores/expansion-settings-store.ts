@@ -125,7 +125,7 @@ export const useExpansionSettingsStore = create<ExpansionSettingsState>()(
 					const newPriority = Math.max(0, ...sorts.map(s => s.priority)) + 1;
 					const newCriteria: SortCriteria = { ...criteria, priority: newPriority };
 
-					if (!settings.sorts) settings.sorts = [];
+					settings.sorts ??= [];
 					settings.sorts.push(newCriteria);
 					state.settings[target] = settings;
 				});
@@ -136,11 +136,9 @@ export const useExpansionSettingsStore = create<ExpansionSettingsState>()(
 			updateSortCriteria: (target: ExpansionTarget, index: number, criteriaUpdate: Partial<SortCriteria>) => {
 				set((state) => {
 					const settings = state.settings[target];
-					if (!settings.sorts) settings.sorts = [];
+					settings.sorts ??= [];
 					const existingCriteria = settings.sorts[index];
-					if (existingCriteria) {
-						settings.sorts[index] = { ...existingCriteria, ...criteriaUpdate };
-					}
+					settings.sorts[index] = { ...existingCriteria, ...criteriaUpdate };
 					state.settings[target] = settings;
 				});
 
@@ -150,7 +148,7 @@ export const useExpansionSettingsStore = create<ExpansionSettingsState>()(
 			removeSortCriteria: (target: ExpansionTarget, index: number) => {
 				set((state) => {
 					const settings = state.settings[target];
-					if (!settings.sorts) settings.sorts = [];
+					settings.sorts ??= [];
 					settings.sorts.splice(index, 1);
 
 					// Renumber priorities to maintain sequence
@@ -167,13 +165,11 @@ export const useExpansionSettingsStore = create<ExpansionSettingsState>()(
 			reorderSortCriteria: (target: ExpansionTarget, fromIndex: number, toIndex: number) => {
 				set((state) => {
 					const settings = state.settings[target];
-					if (!settings.sorts) settings.sorts = [];
+					settings.sorts ??= [];
 
 					// Move the item
 					const [movedItem] = settings.sorts.splice(fromIndex, 1);
-					if (movedItem) {
-						settings.sorts.splice(toIndex, 0, movedItem);
-					}
+					settings.sorts.splice(toIndex, 0, movedItem);
 
 					// Renumber priorities to maintain sequence
 					settings.sorts.forEach((sort, i) => {
@@ -189,7 +185,7 @@ export const useExpansionSettingsStore = create<ExpansionSettingsState>()(
 			addFilterCriteria: (target: ExpansionTarget, criteria: FilterCriteria) => {
 				set((state) => {
 					const settings = state.settings[target];
-					if (!settings.filters) settings.filters = [];
+					settings.filters ??= [];
 					settings.filters.push(criteria);
 					state.settings[target] = settings;
 				});
@@ -200,11 +196,9 @@ export const useExpansionSettingsStore = create<ExpansionSettingsState>()(
 			updateFilterCriteria: (target: ExpansionTarget, index: number, criteriaUpdate: Partial<FilterCriteria>) => {
 				set((state) => {
 					const settings = state.settings[target];
-					if (!settings.filters) settings.filters = [];
+					settings.filters ??= [];
 					const existingCriteria = settings.filters[index];
-					if (existingCriteria) {
-						settings.filters[index] = { ...existingCriteria, ...criteriaUpdate };
-					}
+					settings.filters[index] = { ...existingCriteria, ...criteriaUpdate };
 					state.settings[target] = settings;
 				});
 
@@ -214,7 +208,7 @@ export const useExpansionSettingsStore = create<ExpansionSettingsState>()(
 			removeFilterCriteria: (target: ExpansionTarget, index: number) => {
 				set((state) => {
 					const settings = state.settings[target];
-					if (!settings.filters) settings.filters = [];
+					settings.filters ??= [];
 					settings.filters.splice(index, 1);
 					state.settings[target] = settings;
 				});
@@ -225,11 +219,9 @@ export const useExpansionSettingsStore = create<ExpansionSettingsState>()(
 			toggleFilterEnabled: (target: ExpansionTarget, index: number) => {
 				set((state) => {
 					const settings = state.settings[target];
-					if (!settings.filters) settings.filters = [];
+					settings.filters ??= [];
 					const filter = settings.filters[index];
-					if (filter) {
-						filter.enabled = !filter.enabled;
-					}
+					filter.enabled = !filter.enabled;
 					state.settings[target] = settings;
 				});
 

@@ -241,7 +241,7 @@ export class NetworkInterceptor {
 
       					logger.debug("api", "XHR request completed", {
       						requestId: finalRequestId,
-      						url: xhrData?.url || "unknown",
+      						url: xhrData.url || "unknown",
       						status: this.status,
       						size: responseSize
       					}, "NetworkInterceptor");
@@ -254,7 +254,7 @@ export class NetworkInterceptor {
 
       					logger.error("api", "XHR request failed", {
       						requestId: finalRequestId,
-      						url: xhrData?.url || "unknown",
+      						url: xhrData.url || "unknown",
       						status: this.status,
       						statusText: this.statusText
       					}, "NetworkInterceptor");
@@ -335,7 +335,7 @@ export class NetworkInterceptor {
 			const found = headers.find(([k]) => k.toLowerCase() === key.toLowerCase());
 			return found ? found[1] : null;
 		}
-		if (typeof headers === "object" && headers !== null) {
+		if (typeof headers === "object") {
 			const record = headers;
 			return record[key] || null;
 		}

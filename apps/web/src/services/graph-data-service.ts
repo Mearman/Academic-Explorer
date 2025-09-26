@@ -1030,7 +1030,7 @@ export class GraphDataService {
 		try {
 			// Search each entity type using the client API
 			const limit = options.limit ?? 20;
-			const entityTypes = options.entityTypes ?? ["works", "authors", "sources", "institutions", "topics"];
+			const {entityTypes} = options;
 			const allResults: OpenAlexEntity[] = [];
 
 			// Search each entity type and collect results
@@ -1808,7 +1808,7 @@ export class GraphDataService {
 
 		// Use Object.assign to safely copy all enumerable properties
 		// Safe since OpenAlexEntity is guaranteed to be a valid record-like object
-		return Object.assign({}, entity as Record<string, unknown>);
+		return Object.assign({}, entity as unknown as Record<string, unknown>);
 	}
 
 	private getEntityData(entity: OpenAlexEntity): Record<string, unknown> {

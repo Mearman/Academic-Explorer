@@ -338,7 +338,7 @@ export const useAnimatedGraphStore = create<AnimatedGraphState>()(
 			// Integration with base graph store
 			syncWithGraphStore: () => {
 				const graphStore = useGraphStore.getState();
-				const nodes = Object.values(graphStore.nodes).filter((node): node is NonNullable<typeof node> => node != null);
+				const nodes = Object.values(graphStore.nodes).filter((node): node is NonNullable<typeof node> => Boolean(node));
 
 				set((state) => {
 					// Extract current positions from graph store nodes
@@ -377,13 +377,10 @@ export const useAnimatedGraphStore = create<AnimatedGraphState>()(
 
 				// Update graph store nodes with current positions
 				currentPositions.forEach(pos => {
-					const node = graphStore.nodes[pos.id];
-					if (node) {
-						graphStore.updateNode(pos.id, {
-							x: pos.x,
-							y: pos.y
-						});
-					}
+					graphStore.updateNode(pos.id, {
+						x: pos.x,
+						y: pos.y
+					});
 				});
 
 				logger.debug("graph", "Applied positions to graph store", {

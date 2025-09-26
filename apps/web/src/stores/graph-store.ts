@@ -578,8 +578,8 @@ export const useGraphStore = create<GraphState>()(
 			// Missing node depth and traversal methods
 			calculateNodeDepths: () => {
 				const state = get();
-				const nodes = state.nodes;
-				const edges = state.edges;
+				const {nodes} = state;
+				const {edges} = state;
 
 				// Simple BFS implementation to calculate depths
 				const depths: Record<string, number> = {};
