@@ -1,3 +1,23 @@
+## 8.2.1 (2025-09-26)
+
+### 🩹 Fixes
+
+- **ci:** resolve final lint and test issues for successful pipeline ([ee46a170](https://github.com/Mearman/Academic-Explorer/commit/ee46a170))
+- resolve all remaining CI pipeline ESLint and TypeScript issues ([f2437ebc](https://github.com/Mearman/Academic-Explorer/commit/f2437ebc))
+- resolve CI pipeline test failures and lint issues ([ed0f4008](https://github.com/Mearman/Academic-Explorer/commit/ed0f4008))
+- **ci:** resolve all ESLint hanging and build issues ([564eb14a](https://github.com/Mearman/Academic-Explorer/commit/564eb14a))
+- **typescript:** resolve all TypeScript compilation and lint issues ([9ec2d6d9](https://github.com/Mearman/Academic-Explorer/commit/9ec2d6d9))
+
+### 🧱 Updated Dependencies
+
+- Updated client to 1.1.1
+- Updated graph to 8.2.1
+- Updated utils to 8.2.1
+
+### ❤️ Thank You
+
+- Joseph Mearman
+
 ## 8.2.0 (2025-09-26)
 
 ### 🚀 Features

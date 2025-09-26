@@ -1,3 +1,13 @@
+## 8.2.1 (2025-09-26)
+
+### 🩹 Fixes
+
+- **ci:** resolve test pipeline hanging issues ([0f7ca1f0](https://github.com/Mearman/Academic-Explorer/commit/0f7ca1f0))
+
+### ❤️ Thank You
+
+- Joseph Mearman
+
 ## 8.2.0 (2025-09-26)
 
 ### 🚀 Features

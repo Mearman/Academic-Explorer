@@ -1,3 +1,13 @@
+## 9.0.3 (2025-09-26)
+
+### 🩹 Fixes
+
+- **ci:** resolve test pipeline hanging issues ([0f7ca1f0](https://github.com/Mearman/Academic-Explorer/commit/0f7ca1f0))
+
+### ❤️ Thank You
+
+- Joseph Mearman
+
 ## 9.0.2 (2025-09-26)
 
 ### 🩹 Fixes

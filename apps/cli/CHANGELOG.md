@@ -1,3 +1,10 @@
+## 8.2.1 (2025-09-26)
+
+### 🧱 Updated Dependencies
+
+- Updated client to 1.1.1
+- Updated utils to 8.2.1
+
 ## 8.2.0 (2025-09-26)
 
 ### 🚀 Features

@@ -1,3 +1,21 @@
+## 1.1.1 (2025-09-26)
+
+### 🩹 Fixes
+
+- **test:** include error object in sampling logger calls to match test expectations ([f2a71f6c](https://github.com/Mearman/Academic-Explorer/commit/f2a71f6c))
+- resolve all remaining CI pipeline ESLint and TypeScript issues ([f2437ebc](https://github.com/Mearman/Academic-Explorer/commit/f2437ebc))
+- resolve CI pipeline test failures and lint issues ([ed0f4008](https://github.com/Mearman/Academic-Explorer/commit/ed0f4008))
+- **ci:** resolve all ESLint hanging and build issues ([564eb14a](https://github.com/Mearman/Academic-Explorer/commit/564eb14a))
+- **ci:** resolve test pipeline hanging issues ([0f7ca1f0](https://github.com/Mearman/Academic-Explorer/commit/0f7ca1f0))
+
+### 🧱 Updated Dependencies
+
+- Updated utils to 8.2.1
+
+### ❤️ Thank You
+
+- Joseph Mearman
+
 ## 1.1.0 (2025-09-26)
 
 ### 🚀 Features
