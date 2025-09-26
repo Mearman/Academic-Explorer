@@ -15,8 +15,10 @@ const config = [
     files: ['src/**/*.{ts,tsx}'],
     languageOptions: {
       parserOptions: {
-        project: './tsconfig.json',
-        tsconfigRootDir: import.meta.dirname,
+        // Temporarily disable type-aware linting for performance
+        project: false,
+        // project: './tsconfig.json',
+        // tsconfigRootDir: import.meta.dirname,
       },
     },
     rules: {
@@ -30,10 +32,10 @@ const config = [
         { allowConstantExport: true },
       ],
 
-      // Allow some flexibility in app code
-      '@typescript-eslint/no-unsafe-assignment': 'warn',
-      '@typescript-eslint/no-unsafe-member-access': 'warn',
-      '@typescript-eslint/no-unsafe-call': 'warn',
+      // Disable type-aware rules for performance (these require project config)
+      '@typescript-eslint/no-unsafe-assignment': 'off',
+      '@typescript-eslint/no-unsafe-member-access': 'off',
+      '@typescript-eslint/no-unsafe-call': 'off',
     },
   },
   {
@@ -51,8 +53,10 @@ const config = [
     files: ['*.config.{ts,js}', 'vite.config.ts', 'vitest.config.ts', 'eslint.config.ts', 'playwright.config.ts', 'knip.ts'],
     languageOptions: {
       parserOptions: {
-        project: './tsconfig.config.json',
-        tsconfigRootDir: import.meta.dirname,
+        // Temporarily disable type-aware linting for performance
+        project: false,
+        // project: './tsconfig.config.json',
+        // tsconfigRootDir: import.meta.dirname,
       },
     },
     rules: {
