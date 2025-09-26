@@ -36,4 +36,31 @@ export default tseslint.config([
       'no-console': 'off',
     },
   },
+  {
+    // Disable project-aware TypeScript rules for markdown code blocks
+    files: ['**/*.md/*.{js,ts,jsx,tsx}'],
+    languageOptions: {
+      parserOptions: {
+        project: false, // Disable type-aware linting for markdown code blocks
+      },
+    },
+    rules: {
+      '@typescript-eslint/no-unused-vars': 'off',
+      '@typescript-eslint/no-explicit-any': 'off',
+      '@typescript-eslint/no-unsafe-assignment': 'off',
+      '@typescript-eslint/no-unsafe-member-access': 'off',
+      '@typescript-eslint/no-unsafe-call': 'off',
+      '@typescript-eslint/no-unsafe-return': 'off',
+      '@typescript-eslint/no-unsafe-argument': 'off',
+      '@typescript-eslint/no-floating-promises': 'off',
+      '@typescript-eslint/await-thenable': 'off',
+      '@typescript-eslint/prefer-nullish-coalescing': 'off',
+      '@typescript-eslint/prefer-optional-chain': 'off',
+      '@typescript-eslint/no-unnecessary-type-assertion': 'off',
+      'no-console': 'off',
+      'no-undef': 'off',
+      'no-unused-vars': 'off',
+      'unused-imports/no-unused-imports': 'off',
+    },
+  },
 ]);
