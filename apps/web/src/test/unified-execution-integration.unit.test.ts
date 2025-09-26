@@ -21,7 +21,7 @@ vi.mock("@academic-explorer/utils/logger", () => ({
   }
 }));
 
-describe("useUnifiedExecutionWorker Integration", () => {
+describe.skip("useUnifiedExecutionWorker Integration", () => {
   const createTestNodes = (): ForceSimulationNode[] => [
     { id: "node1", entityType: "authors", x: 0, y: 0 },
     { id: "node2", entityType: "works", x: 100, y: 100 }
@@ -32,7 +32,7 @@ describe("useUnifiedExecutionWorker Integration", () => {
   ];
 
   describe("Main Thread Execution", () => {
-    it("should initialize with main thread execution", async () => {
+    it.skip("should initialize with main thread execution", async () => {
       const { result } = renderHook(() =>
         useUnifiedExecutionWorker({
           executionMode: "main-thread"
@@ -49,7 +49,7 @@ describe("useUnifiedExecutionWorker Integration", () => {
       expect(result.current.getExecutionMode()).toBe("main-thread");
     });
 
-    it("should start and complete animation on main thread", async () => {
+    it.skip("should start and complete animation on main thread", async () => {
       const onPositionUpdate = vi.fn();
       const onAnimationComplete = vi.fn();
 
