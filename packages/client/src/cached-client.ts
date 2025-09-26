@@ -8,7 +8,7 @@ import { AuthorsApi } from './entities/authors';
 import { SourcesApi } from './entities/sources';
 import { InstitutionsApi } from './entities/institutions';
 import { TopicsApi } from './entities/topics';
-import { logger } from '@academic-explorer/utils/logger';
+import { logger } from '@academic-explorer/shared-utils';
 import { PublishersApi } from './entities/publishers';
 import { FundersApi } from './entities/funders';
 
