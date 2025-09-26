@@ -91,7 +91,7 @@ export function sanitizeObject<T extends Record<string, unknown>>(
  * Check if a search query is valid (not empty, not just whitespace)
  */
 export function isValidSearchQuery(query: unknown): query is string {
-  return isString(query) && !isEmpty(query.trim());
+  return isString(query) && query.trim().length > 0;
 }
 
 /**
