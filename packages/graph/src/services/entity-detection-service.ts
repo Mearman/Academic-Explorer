@@ -212,7 +212,7 @@ export class EntityDetectionService {
         if (regex.test(trimmedId)) {
           try {
             return pattern.normalize.call(this, trimmedId);
-          } catch (error) {
+          } catch (_error) {
             // Continue to next pattern if normalization fails
             continue;
           }

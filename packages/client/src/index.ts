@@ -50,6 +50,7 @@ export {
 export {
 	updateOpenAlexEmail,
 	cachedOpenAlex,
+	CachedOpenAlexClient,
 	type ClientApis
 } from "./cached-client";
 

@@ -472,7 +472,7 @@ export class ContextualFieldSelector {
   /**
    * Get minimal fields for basic entity identification
    */
-  getMinimalFields(entityType: EntityType): string[] {
+  getMinimalFields(_entityType: EntityType): string[] {
     return [...CORE_FIELDS];
   }
 

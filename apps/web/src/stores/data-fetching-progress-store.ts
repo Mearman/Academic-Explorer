@@ -110,7 +110,7 @@ export const useDataFetchingProgressStore = create<DataFetchingProgressState>()(
 
 		removeRequest: (nodeId: string) =>
 		{ set((state) => {
-			const { [nodeId]: removed, ...rest } = state.requests;
+			const { [nodeId]: _removed, ...rest } = state.requests;
 			state.requests = rest;
 		}); },
 

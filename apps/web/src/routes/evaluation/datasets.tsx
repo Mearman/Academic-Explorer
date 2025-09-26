@@ -176,14 +176,7 @@ function DatasetsManagement() {
 								borderRadius: "12px",
 								border: "1px solid #e5e7eb",
 								padding: "20px",
-								boxShadow: "0 1px 3px rgba(0, 0, 0, 0.1)",
-								transition: "box-shadow 0.2s"
-							}}
-							onMouseEnter={(e) => {
-								e.currentTarget.style.boxShadow = "0 4px 6px rgba(0, 0, 0, 0.1)"
-							}}
-							onMouseLeave={(e) => {
-								e.currentTarget.style.boxShadow = "0 1px 3px rgba(0, 0, 0, 0.1)"
+								boxShadow: "0 1px 3px rgba(0, 0, 0, 0.1)"
 							}}
 						>
 							<div style={{ marginBottom: "16px" }}>

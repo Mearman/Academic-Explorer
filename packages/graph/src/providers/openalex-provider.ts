@@ -22,38 +22,7 @@ interface OpenAlexEntity extends Record<string, unknown> {
   ids?: Record<string, string>;
 }
 
-interface OpenAlexWork extends OpenAlexEntity {
-  title?: string;
-  publication_year?: number;
-  type?: string;
-  authorships?: Array<{
-    author?: OpenAlexEntity & {
-      orcid?: string;
-    };
-  }>;
-  primary_location?: {
-    source?: OpenAlexEntity;
-  };
-  topics?: OpenAlexEntity[];
-}
-
-interface OpenAlexAuthor extends OpenAlexEntity {
-  orcid?: string;
-  last_known_institutions?: OpenAlexEntity[];
-  works_count?: number;
-}
-
-interface OpenAlexSource extends OpenAlexEntity {
-  type?: string;
-}
-
-interface OpenAlexInstitution extends OpenAlexEntity {
-  country_code?: string;
-}
-
-interface OpenAlexTopic extends OpenAlexEntity {
-  level?: number;
-}
+// Removed unused interfaces - they were not being used in the implementation
 
 interface OpenAlexSearchResponse {
   results: Record<string, unknown>[];
@@ -379,7 +348,7 @@ export class OpenAlexGraphProvider extends GraphDataProvider {
     }
   }
 
-  private extractExternalIds(data: Record<string, unknown>, entityType: EntityType): ExternalIdentifier[] {
+  private extractExternalIds(data: Record<string, unknown>, _entityType: EntityType): ExternalIdentifier[] {
     const externalIds: ExternalIdentifier[] = [];
 
     // Extract IDs based on entity type

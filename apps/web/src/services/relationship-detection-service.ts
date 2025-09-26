@@ -264,7 +264,7 @@ export class RelationshipDetectionService {
 				entityId,
 				entityType,
 				hasReferencedWorks: "referenced_works" in entity,
-				referencedWorks: "referenced_works" in entity ? (entity as any).referenced_works : undefined,
+				referencedWorks: "referenced_works" in entity ? (entity as { referenced_works?: string[] }).referenced_works : undefined,
 				entityKeys: Object.keys(entity)
 			}, "RelationshipDetectionService");
 
@@ -420,8 +420,8 @@ export class RelationshipDetectionService {
 		if (!workData.referenced_works) {
 			const store = useGraphStore.getState();
 			const graphNode = Object.values(store.nodes).find(node => node.entityId === workData.id);
-			if (graphNode?.entityData && (graphNode.entityData as any).referenced_works) {
-				workData.referenced_works = (graphNode.entityData as any).referenced_works;
+			if (graphNode?.entityData && (graphNode.entityData as { referenced_works?: string[] }).referenced_works) {
+				workData.referenced_works = (graphNode.entityData as { referenced_works?: string[] }).referenced_works;
 			}
 		}
 

@@ -46,7 +46,7 @@ const EntityFactory = {
 	isSupported(entityType: EntityType): boolean {
 		return ["works", "authors", "sources", "institutions"].includes(entityType);
 	},
-	create(entityType: EntityType, client: any) {
+	create(_entityType: EntityType, client: typeof cachedOpenAlex) {
 		return {
 			fetchWithMetadata: async (entityId: string): Promise<OpenAlexEntity> => {
 				const result = await client.client.getEntity(entityId);
@@ -55,7 +55,7 @@ const EntityFactory = {
 				}
 				return result;
 			},
-			expand(context: { entityId: string; entityType: EntityType; client: any }, options: ExpansionOptions): Promise<{ nodes: GraphNode[]; edges: GraphEdge[] }> {
+			expand(_context: { entityId: string; entityType: EntityType; client: typeof cachedOpenAlex }, _options: ExpansionOptions): Promise<{ nodes: GraphNode[]; edges: GraphEdge[] }> {
 				return Promise.resolve({ nodes: [], edges: [] });
 			}
 		};

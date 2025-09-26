@@ -425,12 +425,12 @@ export class EntityResolver implements IEntityResolver {
     if (this.cache) {
       try {
         return await this.cache.getEntity(identifierToUse, context);
-      } catch (error) {
+      } catch (_error) {
         // If cache fails with normalized ID and it differs from original, try original
         if (normalizedId && normalizedId !== id) {
           try {
             return await this.cache.getEntity(id, context);
-          } catch (fallbackError) {
+          } catch (_fallbackError) {
             // If cache fails completely, fall back to provider
             return this.resolveEntityWithProvider(id);
           }

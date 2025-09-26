@@ -72,7 +72,11 @@ interface GraphState {
 	setEdgeTypeVisibility: (edgeType: RelationType, visible: boolean) => void;
 	setAllEntityTypesVisible: (visible: boolean) => void;
 	resetEntityTypesToDefaults: () => void;
-	getEntityTypeStats: () => Record<string, any>;
+	getEntityTypeStats: () => {
+		total: Record<EntityType, number>;
+		visible: Record<EntityType, number>;
+		searchResults: Record<EntityType, number>;
+	};
 	getVisibleNodes: () => GraphNode[];
 
 	// Cache settings
