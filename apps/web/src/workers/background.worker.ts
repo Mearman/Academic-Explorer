@@ -545,15 +545,15 @@ function updateSimulationNodes(params: {
               }));
               reheatSimulation({
                 nodes: validatedNodes,
-                links: validateLinks(reheatData.links ?? []),
+                links: validateLinks(reheatData.links),
                 config: createSafeConfig(reheatData.config),
                 pinnedNodes: reheatData.pinnedNodes ?? [],
-                alpha: reheatData.alpha ?? 1.0
+                alpha: reheatData.alpha
               });
               sendControlAck(data.taskId, actualPayload.type, {
                 nodeCount: validatedNodes.length,
                 linkCount: reheatData.links.length,
-                alpha: reheatData.alpha ?? 1.0
+                alpha: reheatData.alpha
               });
             } else {
               logger.warn("worker", "Invalid reheat payload in task", { actualPayload });
@@ -568,12 +568,12 @@ function updateSimulationNodes(params: {
             if (forceSimulationUpdateLinksMessageSchema.safeParse(actualPayload).success) {
               const updateLinksPayload = forceSimulationUpdateLinksMessageSchema.parse(actualPayload);
               updateSimulationLinks({
-                links: validateLinks(updateLinksPayload.links ?? []),
-                alpha: updateLinksPayload.alpha ?? 1.0
+                links: validateLinks(updateLinksPayload.links),
+                alpha: updateLinksPayload.alpha
               });
               sendControlAck(data.taskId, actualPayload.type, {
                 linkCount: updateLinksPayload.links.length,
-                alpha: updateLinksPayload.alpha ?? 1.0
+                alpha: updateLinksPayload.alpha
               });
             } else {
               logger.warn("worker", "Invalid link update payload in task", { actualPayload });
@@ -598,11 +598,11 @@ function updateSimulationNodes(params: {
               updateSimulationNodes({
                 nodes: validatedNodes,
                 pinnedNodes: updateNodesPayload.pinnedNodes ?? [],
-                alpha: updateNodesPayload.alpha ?? 1.0
+                alpha: updateNodesPayload.alpha
               });
               sendControlAck(data.taskId, actualPayload.type, {
                 nodeCount: validatedNodes.length,
-                alpha: updateNodesPayload.alpha ?? 1.0,
+                alpha: updateNodesPayload.alpha,
                 pinnedCount: updateNodesPayload.pinnedNodes?.length ?? 0
               });
             } else {
@@ -639,7 +639,7 @@ function updateSimulationNodes(params: {
           fx: node.fx ?? null,
           fy: node.fy ?? null
         })),
-        links: validateLinks(data.links ?? []),
+        links: validateLinks(data.links),
         config: createSafeConfig(data.config),
         pinnedNodes: data.pinnedNodes ?? []
       });
@@ -688,10 +688,10 @@ function updateSimulationNodes(params: {
               logger.debug("worker", "About to call reheatSimulation");
               reheatSimulation({
                 nodes: validatedNodes,
-                links: validateLinks(reheatData.links ?? []),
+                links: validateLinks(reheatData.links),
                 config: createSafeConfig(reheatData.config),
                 pinnedNodes: reheatData.pinnedNodes ?? [],
-                alpha: reheatData.alpha ?? 1.0
+                alpha: reheatData.alpha
               });
               logger.debug("worker", "ReheatSimulation call completed");
             } catch (error) {
@@ -715,8 +715,8 @@ function updateSimulationNodes(params: {
             try {
               logger.debug("worker", "About to call updateSimulationLinks");
               updateSimulationLinks({
-                links: validateLinks(updateData.links ?? []),
-                alpha: updateData.alpha ?? 1.0
+                links: validateLinks(updateData.links),
+                alpha: updateData.alpha
               });
               logger.debug("worker", "UpdateSimulationLinks call completed");
             } catch (error) {
@@ -743,7 +743,7 @@ function updateSimulationNodes(params: {
               updateSimulationNodes({
                 nodes: validatedNodes,
                 pinnedNodes: updateData.pinnedNodes ?? [],
-                alpha: updateData.alpha ?? 1.0
+                alpha: updateData.alpha
               });
             } catch (error) {
               logger.error("worker", "Error calling updateSimulationNodes", { error });
