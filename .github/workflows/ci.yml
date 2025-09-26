@@ -55,20 +55,37 @@ jobs:
 
       - name: Lint affected projects
         run: |
+          # Get affected projects safely
+          echo "Checking for affected projects..."
+          affected_output=$(pnpm nx show projects --affected --json 2>/dev/null | tail -n 1 || echo '[]')
+          affected_projects=$(echo "$affected_output" | jq -r '.[]' 2>/dev/null || echo "")
+          echo "Affected projects: $affected_projects"
+
           # Use direct ESLint for web app to avoid Nx hanging issues
-          if pnpm nx show projects --affected --json | jq -r '.[]' | grep -q "web"; then
+          if echo "$affected_projects" | grep -q "web" 2>/dev/null; then
             echo "Linting web app directly"
             cd apps/web
             timeout 5m pnpm eslint . --max-warnings=100
             cd ../..
           fi
 
-          # Lint packages using Nx
-          if pnpm nx show projects --affected --json | jq -r '.[]' | grep -E "(client|utils|graph|simulation|ui)"; then
+          # Lint packages using direct ESLint
+          if echo "$affected_projects" | grep -E "(client|utils|graph|simulation|ui)" > /dev/null 2>&1; then
             echo "Linting affected packages"
             for project in client utils graph simulation ui; do
-              if pnpm nx show projects --affected --json | jq -r '.[]' | grep -q "$project"; then
+              if echo "$affected_projects" | grep -q "$project" 2>/dev/null && [ -d "packages/$project" ]; then
                 echo "Linting $project..."
+                cd "packages/$project"
+                timeout 3m pnpm eslint . --max-warnings=200 || echo "Lint failed for $project, continuing..."
+                cd ../..
+              fi
+            done
+          else
+            echo "No affected packages need linting or linting all essential packages..."
+            # Lint essential packages regardless
+            for project in client utils; do
+              if [ -d "packages/$project" ]; then
+                echo "Linting essential package: $project..."
                 cd "packages/$project"
                 timeout 3m pnpm eslint . --max-warnings=200 || echo "Lint failed for $project, continuing..."
                 cd ../..
@@ -86,13 +103,25 @@ jobs:
       - name: Test affected projects
         run: |
           # Run only stable package tests in CI
-          affected_projects=$(pnpm nx show projects --affected --json | jq -r '.[]')
+          echo "Checking for affected projects..."
+          affected_output=$(pnpm nx show projects --affected --json 2>/dev/null | tail -n 1 || echo '[]')
+          echo "Raw affected output: $affected_output"
 
-          if echo "$affected_projects" | grep -E "(client|utils)"; then
-            echo "Running tests for stable packages only"
+          affected_projects=$(echo "$affected_output" | jq -r '.[]' 2>/dev/null || echo "")
+          echo "Affected projects: $affected_projects"
+
+          if echo "$affected_projects" | grep -E "(client|utils)" > /dev/null 2>&1; then
+            echo "Running tests for stable packages only (client and utils)"
             timeout 10m pnpm nx run-many -t test --parallel=3 --projects=client,utils
           else
-            echo "No affected projects need testing or only unstable projects affected"
+            echo "No affected stable projects need testing, checking if any packages need testing..."
+            # Always run essential package tests to ensure they still work
+            if [ -d "packages/client" ] && [ -d "packages/utils" ]; then
+              echo "Running essential package tests to maintain CI reliability"
+              timeout 10m pnpm nx run-many -t test --parallel=3 --projects=client,utils
+            else
+              echo "No test packages available"
+            fi
           fi
         env:
           NODE_OPTIONS: '--max-old-space-size=8192'
