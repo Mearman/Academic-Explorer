@@ -78,12 +78,12 @@ export function useThemeColors() {
 	}), [theme.colors, isDark]);
 
 	// Type guard for valid entity color keys
-	const isValidEntityColorKey = (key: string): key is keyof typeof colors.entity => {
+	const isValidEntityColorKey = useCallback((key: string): key is keyof typeof colors.entity => {
 		const validKeys = [
 			"work", "author", "source", "institution", "concept", "topic", "publisher", "funder"
 		];
 		return validKeys.includes(key);
-	};
+	}, []);
 
 	// Entity color utilities - memoized to prevent React 19 infinite loops
 	const getEntityColor = useCallback((entityType: string): string => {

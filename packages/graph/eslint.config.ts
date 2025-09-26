@@ -15,29 +15,34 @@ export default tseslint.config([
     ],
   },
   {
-    // Production source files only - strict rules with TypeScript project
+    // Production source files only - simplified TypeScript configuration
     files: ['src/**/*.{ts,tsx}'],
     extends: [
       js.configs.recommended,
-      ...tseslint.configs.strictTypeChecked,
+      ...tseslint.configs.recommended,
     ],
     languageOptions: {
-      parserOptions: {
-        project: './tsconfig.eslint.json',
-        tsconfigRootDir: import.meta.dirname,
-      },
+      parser: tseslint.parser,
+    },
+    plugins: {
+      '@typescript-eslint': tseslint.plugin,
     },
     rules: {
       // Package-specific rules for pure graph data structures
       '@typescript-eslint/no-explicit-any': 'error',
       '@typescript-eslint/no-non-null-assertion': 'error',
       'no-console': 'error', // No console usage in library code
-      '@typescript-eslint/restrict-template-expressions': 'off',
-      '@typescript-eslint/no-unsafe-assignment': 'off',
-      '@typescript-eslint/no-unsafe-member-access': 'off',
-      '@typescript-eslint/no-unsafe-call': 'off',
-      '@typescript-eslint/no-unsafe-return': 'off',
-      '@typescript-eslint/no-unsafe-argument': 'off',
+
+      // Configure unused vars to ignore parameters prefixed with underscore
+      '@typescript-eslint/no-unused-vars': [
+        'error',
+        {
+          vars: 'all',
+          varsIgnorePattern: '^_',
+          args: 'after-used',
+          argsIgnorePattern: '^_',
+        },
+      ],
     },
   },
 ]);

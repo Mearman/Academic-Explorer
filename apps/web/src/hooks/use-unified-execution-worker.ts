@@ -4,7 +4,7 @@
  * Automatically falls back to main thread execution when workers are not available
  */
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { z } from "zod";
 import { logger } from "@academic-explorer/utils/logger";
 import { createLocalEventBus } from "@academic-explorer/graph";
@@ -129,7 +129,7 @@ export function useUnifiedExecutionWorker(options: UseUnifiedExecutionWorkerOpti
   const _workerModulePath = new URL("../workers/background.worker.ts", import.meta.url).href;
 
   // Create unified task system (stub implementation)
-  const taskSystem: _TaskSystem = {
+  const taskSystem: _TaskSystem = useMemo(() => ({
     submitTask: () => Promise.resolve("stub-task-id"),
     cancelTask: async () => {},
     getExecutionMode: () => "main-thread",
@@ -145,7 +145,7 @@ export function useUnifiedExecutionWorker(options: UseUnifiedExecutionWorkerOpti
     isUsingWorkers: () => false,
     isInitialized: () => true,
     shutdown: async () => {}
-  };
+  }), [maxConcurrency]);
 
   // State management
   const [animationState, setAnimationState] = useState<AnimationState>({

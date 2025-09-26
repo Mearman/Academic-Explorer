@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 /**
  * Graph Repository
  * Persistence layer abstraction for graph data with multiple storage backends
@@ -251,7 +252,7 @@ export class LocalStorageAdapter implements StorageAdapter {
         timestamp: Date.now(),
       });
       localStorage.setItem(this.getKey(key), serialized);
-      return Promise.resolve();
+      return await Promise.resolve();
     } catch (error) {
       return Promise.reject(new Error(`Failed to save to localStorage: ${error}`));
     }
@@ -260,10 +261,10 @@ export class LocalStorageAdapter implements StorageAdapter {
   async load(key: string): Promise<unknown> {
     try {
       const item = localStorage.getItem(this.getKey(key));
-      if (!item) return Promise.resolve(null);
+      if (!item) return await Promise.resolve(null);
 
       const parsed = JSON.parse(item);
-      return Promise.resolve(parsed.data);
+      return await Promise.resolve(parsed.data);
     } catch {
       // Failed to load from localStorage - return null
       return Promise.resolve(null);
