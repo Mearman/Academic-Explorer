@@ -2,9 +2,11 @@
  * ESLint rule to prevent emoji usage and suggest Mantine icons
  */
 
+import { ESLintUtils } from '@typescript-eslint/utils';
+
 // Unicode ranges for modern emoji detection
 // Focus on newer emoji blocks while allowing traditional symbols
-const EMOJI_RANGES = [
+const EMOJI_RANGES: [number, number][] = [
   // Core modern emoji blocks (post-2010)
   [0x1F600, 0x1F64F], // Emoticons (😀-🙏)
   [0x1F300, 0x1F5FF], // Miscellaneous Symbols and Pictographs (🌀-🗿)
@@ -36,7 +38,7 @@ const EMOJI_RANGES = [
 ];
 
 // Generate regex pattern from ranges
-function createEmojiRegex() {
+function createEmojiRegex(): RegExp {
   const rangePatterns = EMOJI_RANGES.map(([start, end]) => {
     if (start === end) {
       return `\\u{${start.toString(16).toUpperCase()}}`;
@@ -49,7 +51,7 @@ function createEmojiRegex() {
 
 const EMOJI_REGEX = createEmojiRegex();
 
-const COMMON_ICON_SUGGESTIONS = {
+const COMMON_ICON_SUGGESTIONS: Record<string, string> = {
   '✅': 'IconCheck',
   '❌': 'IconX',
   '⚠️': 'IconAlertTriangle',
@@ -83,13 +85,18 @@ const COMMON_ICON_SUGGESTIONS = {
   '💻': 'IconDeviceLaptop',
 };
 
-const noEmojiRule = {
+type MessageIds = 'noEmoji' | 'noEmojiGeneric';
+
+const createRule = ESLintUtils.RuleCreator(
+  name => `https://github.com/Mearman/Academic-Explorer/blob/main/eslint-rules/${name}.ts`
+);
+
+export const noEmojiRule = createRule<[], MessageIds>({
+  name: 'no-emoji',
   meta: {
     type: 'problem',
     docs: {
       description: 'disallow emoji usage, suggest Mantine icons instead',
-      category: 'Best Practices',
-      recommended: true,
     },
     fixable: null,
     schema: [],
@@ -98,12 +105,12 @@ const noEmojiRule = {
       noEmojiGeneric: 'Avoid using emojis ({{emoji}}). Use appropriate Mantine icons from @tabler/icons-react instead.',
     },
   },
-
+  defaultOptions: [],
   create(context) {
-    function checkForEmojis(node, text) {
+    function checkForEmojis(node: any, text: string): void {
       if (!text) return;
 
-      const matches = [...text.matchAll(EMOJI_REGEX)];
+      const matches = Array.from(text.matchAll(EMOJI_REGEX));
 
       for (const match of matches) {
         const emoji = match[0];
@@ -151,7 +158,7 @@ const noEmojiRule = {
 
         // Only check if this looks like markdown content (not a code block)
         if (text && !text.includes('function') && !text.includes('const ') && !text.includes('import ')) {
-          const matches = [...text.matchAll(EMOJI_REGEX)];
+          const matches = Array.from(text.matchAll(EMOJI_REGEX));
           for (const match of matches) {
             if (match.index !== undefined) {
               const emoji = match[0];
@@ -175,7 +182,7 @@ const noEmojiRule = {
       },
     };
   },
-};
+});
 
 export default {
   rules: {

@@ -4,7 +4,7 @@ import eslintComments from "eslint-plugin-eslint-comments";
 import unusedImports from "eslint-plugin-unused-imports";
 import tseslint from "typescript-eslint";
 import markdownPlugin from "@eslint/markdown";
-import noEmojiPlugin from "./eslint-rules/no-emoji.js";
+import noEmojiPlugin from "./eslint-rules/no-emoji.ts";
 
 /**
  * Base ESLint configuration for Academic Explorer monorepo
