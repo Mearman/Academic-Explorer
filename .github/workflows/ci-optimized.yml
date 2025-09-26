@@ -97,8 +97,7 @@ jobs:
         with:
           main-branch-name: 'main'
 
-      # Typecheck uses tsc --build --incremental which handles dependencies automatically
-      # Skip separate build step to avoid hanging issues
+      # Use nx typecheck instead of global tsc --build to avoid composite project dependencies
 
       - name: Run ${{ matrix.check }}
         run: |
