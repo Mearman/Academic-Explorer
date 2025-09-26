@@ -70,7 +70,7 @@ export class RelationshipDetectionService {
   async detectRelationshipsForNodes(nodeIds: string[]): Promise<GraphEdge[]> {
     logger.debug("relationship-detection", "detectRelationshipsForNodes called", { nodeCount: nodeIds.length, nodeIds });
 
-    if (!nodeIds || nodeIds.length === 0) return [];
+    if (nodeIds.length === 0) return [];
 
     logger.debug("graph", "STARTING batch relationship detection with two-pass approach", {
       nodeCount: nodeIds.length,
@@ -146,7 +146,7 @@ export class RelationshipDetectionService {
 
 		// If still not found, try checking entityId field
 		if (!newNode) {
-			const allNodes = Object.values(store.nodes).filter(node => node != null);
+			const allNodes = Object.values(store.nodes);
 			newNode = allNodes.find(node => node.entityId === nodeId || node.id === nodeId);
 		}
 
@@ -200,7 +200,7 @@ export class RelationshipDetectionService {
 			const newEdges = this.createEdgesFromRelationships(detectedRelationships);
 
 			// Add edges to the graph store
-			if (newEdges && newEdges.length > 0) {
+			if (newEdges.length > 0) {
 				store.addEdges(newEdges);
 				logger.debug("graph", "Added relationship edges to graph", {
 					nodeId,
@@ -253,20 +253,11 @@ export class RelationshipDetectionService {
 				entityFetched: !!entity
 			}, "RelationshipDetectionService");
 
-			// Check if entity exists before accessing its properties
-			if (!entity) {
-				logger.debug("graph", "Entity not found or could not be fetched", {
-					entityId,
-					entityType
-				}, "RelationshipDetectionService");
-				return null;
-			}
-
-			// Transform to minimal data format with null checks
+			// Transform to minimal data format
 			const minimalData: MinimalEntityData = {
-				id: entity.id ?? "",
+				id: entity.id,
 				entityType,
-				display_name: entity.display_name ?? ""
+				display_name: entity.display_name
 			};
 
 			logger.debug("graph", "Entity fetched with fields", {
@@ -282,9 +273,9 @@ export class RelationshipDetectionService {
 				case "works": {
 					if (isWork(entity)) {
 						Object.assign(minimalData, {
-							...(entity.authorships && { authorships: entity.authorships }),
+							authorships: entity.authorships,
 							...(entity.primary_location && { primary_location: entity.primary_location }),
-							...(entity.referenced_works && { referenced_works: entity.referenced_works })
+							referenced_works: entity.referenced_works
 						});
 					}
 					break;
@@ -292,7 +283,7 @@ export class RelationshipDetectionService {
 				case "authors": {
 					if (isAuthor(entity)) {
 						Object.assign(minimalData, {
-							...(entity.affiliations && { affiliations: entity.affiliations })
+							affiliations: entity.affiliations
 						});
 					}
 					break;
@@ -349,7 +340,7 @@ export class RelationshipDetectionService {
 			entityType: newEntityData.entityType,
 			hasReferencedWorks: "referenced_works" in newEntityData && !!newEntityData.referenced_works,
 			referencedWorksCount: ("referenced_works" in newEntityData && Array.isArray(newEntityData.referenced_works)) ? newEntityData.referenced_works.length : 0,
-			existingNodeIds: existingNodes.map(n => n.entityId ?? n.id)
+			existingNodeIds: existingNodes.map(n => n.entityId)
 		}, "RelationshipDetectionService");
 
 		// Analyze relationships based on entity type
@@ -405,7 +396,7 @@ export class RelationshipDetectionService {
 				select: ["id", "referenced_works"]
 			});
 
-			return workData.referenced_works ?? [];
+			return workData.referenced_works;
 		} catch (error) {
 			logger.error("graph", "Failed to fetch referenced_works for work", {
 				workId,
@@ -428,7 +419,7 @@ export class RelationshipDetectionService {
 		// If referenced_works is not available in the fetched data, try to get it from the graph node data
 		if (!workData.referenced_works) {
 			const store = useGraphStore.getState();
-			const graphNode = Object.values(store.nodes).find(node => node?.entityId === workData.id);
+			const graphNode = Object.values(store.nodes).find(node => node.entityId === workData.id);
 			if (graphNode?.entityData && (graphNode.entityData as any).referenced_works) {
 				workData.referenced_works = (graphNode.entityData as any).referenced_works;
 			}

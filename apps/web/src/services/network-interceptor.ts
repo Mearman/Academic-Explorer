@@ -56,9 +56,7 @@ export class NetworkInterceptor {
    * Get singleton instance
    */
 	static getInstance(): NetworkInterceptor {
-		if (!NetworkInterceptor.instance) {
-			NetworkInterceptor.instance = new NetworkInterceptor();
-		}
+		NetworkInterceptor.instance ??= new NetworkInterceptor();
 		return NetworkInterceptor.instance;
 	}
 
@@ -243,20 +241,20 @@ export class NetworkInterceptor {
 
       					logger.debug("api", "XHR request completed", {
       						requestId: finalRequestId,
-      						url: xhrData?.url ?? "unknown",
+      						url: xhrData?.url || "unknown",
       						status: this.status,
       						size: responseSize
       					}, "NetworkInterceptor");
       				} else {
       					store.failRequest(
       						finalRequestId,
-      						this.statusText ?? "Request failed",
+      						this.statusText || "Request failed",
       						this.status
       					);
 
       					logger.error("api", "XHR request failed", {
       						requestId: finalRequestId,
-      						url: xhrData?.url ?? "unknown",
+      						url: xhrData?.url || "unknown",
       						status: this.status,
       						statusText: this.statusText
       					}, "NetworkInterceptor");
@@ -313,7 +311,7 @@ export class NetworkInterceptor {
 		// Check for worker User-Agent first
 		if (headers) {
 			const userAgent = this.getHeaderValue(headers, "User-Agent");
-			if (userAgent && userAgent.includes("data-fetching-worker")) {
+			if (userAgent?.includes("data-fetching-worker")) {
 				return "background";
 			}
 		}
@@ -339,7 +337,7 @@ export class NetworkInterceptor {
 		}
 		if (typeof headers === "object" && headers !== null) {
 			const record = headers;
-			return record[key] ?? null;
+			return record[key] || null;
 		}
 		return null;
 	}

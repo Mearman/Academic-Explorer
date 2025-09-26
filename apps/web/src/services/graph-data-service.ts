@@ -172,7 +172,7 @@ export class GraphDataService {
 					store.addEdges(detectedEdges);
 
 					// Update cached edges
-					const allEdges = Object.values(store.edges).filter((edge): edge is NonNullable<typeof edge> => edge != null);
+					const allEdges = Object.values(store.edges);
 					setCachedGraphEdges(this.queryClient, allEdges);
 				}
 			} catch (error) {
@@ -202,7 +202,7 @@ export class GraphDataService {
 
 		try {
 			// Check if the node already exists (regardless of hydration level)
-			const existingNode = Object.values(store.nodes).filter((node): node is NonNullable<typeof node> => node != null).find(
+			const existingNode = Object.values(store.nodes).find(
 				node => node.entityId === entityId
 			);
 
@@ -231,7 +231,7 @@ export class GraphDataService {
 							currentStore.addEdges(detectedEdges);
 
 							// Update cached edges
-							const allEdges = Object.values(currentStore.edges).filter((edge): edge is NonNullable<typeof edge> => edge != null);
+							const allEdges = Object.values(currentStore.edges);
 							setCachedGraphEdges(this.queryClient, allEdges);
 						}
 					})
@@ -288,7 +288,7 @@ export class GraphDataService {
 							currentStore.addEdges(detectedEdges);
 
 							// Update cached edges
-							const allEdges = Object.values(currentStore.edges).filter((edge): edge is NonNullable<typeof edge> => edge != null);
+							const allEdges = Object.values(currentStore.edges);
 							setCachedGraphEdges(this.queryClient, allEdges);
 						}
 					})
@@ -313,7 +313,7 @@ export class GraphDataService {
 			}, "GraphDataService");
 
 			// Detect relationships between all initial nodes using batch processing
-			if (nodes && nodes.length > 1) {
+			if (nodes.length > 1) {
 				const nodeIds = nodes.map(n => n.id);
 				this.relationshipDetectionService.detectRelationshipsForNodes(nodeIds)
 					.then((detectedEdges) => {
@@ -327,7 +327,7 @@ export class GraphDataService {
 							currentStore.addEdges(detectedEdges);
 
 							// Update cached edges
-							const allEdges = Object.values(currentStore.edges).filter((edge): edge is NonNullable<typeof edge> => edge != null);
+							const allEdges = Object.values(currentStore.edges);
 							setCachedGraphEdges(this.queryClient, allEdges);
 						}
 					})
@@ -400,7 +400,7 @@ export class GraphDataService {
 			// Get all cached OpenAlex entities from TanStack Query
 			const cachedEntities = getCachedOpenAlexEntities(this.queryClient);
 
-			if (!cachedEntities || cachedEntities.length === 0) {
+			if (cachedEntities.length === 0) {
 				logger.debug("graph", "No cached entities found to load", {}, "GraphDataService");
 				return;
 			}
@@ -564,7 +564,7 @@ export class GraphDataService {
 	 */
 	async detectRelationshipsForAllNodes(): Promise<void> {
 		const store = useGraphStore.getState();
-		const allNodes = Object.values(store.nodes).filter((node): node is NonNullable<typeof node> => node != null);
+		const allNodes = Object.values(store.nodes);
 
 		logger.debug("graph", "Starting relationship detection for all nodes", {
 			nodeCount: allNodes.length
@@ -611,7 +611,7 @@ export class GraphDataService {
 				currentStore.addEdges(allDetectedEdges);
 
 				// Update cached edges
-				const updatedEdges = Object.values(currentStore.edges).filter((edge): edge is NonNullable<typeof edge> => edge != null);
+				const updatedEdges = Object.values(currentStore.edges);
 				setCachedGraphEdges(this.queryClient, updatedEdges);
 			}
 			processedCount += batch.length;
@@ -643,7 +643,7 @@ export class GraphDataService {
 		const store = useGraphStore.getState();
 		const minimalNodes = store.getMinimalNodes();
 
-		if (!minimalNodes || minimalNodes.length === 0) {
+		if (minimalNodes.length === 0) {
 			logger.debug("graph", "No minimal nodes to hydrate", {}, "GraphDataService");
 			return;
 		}
@@ -662,7 +662,6 @@ export class GraphDataService {
 
 		for (let i = 0; i < minimalNodes.length; i++) {
 			const node = minimalNodes[i];
-			if (!node) continue;
 
 			logger.debug("graph", `Processing minimal node ${String(i + 1)}/${String(minimalNodes.length)}`, {
 				nodeId: node.id,
@@ -714,7 +713,7 @@ export class GraphDataService {
 		const store = useGraphStore.getState();
 		const minimalNodes = store.getMinimalNodes();
 
-		if (!minimalNodes || minimalNodes.length === 0) {
+		if (minimalNodes.length === 0) {
 			logger.debug("graph", "No minimal nodes to hydrate immediately", {}, "GraphDataService");
 			return;
 		}
@@ -820,11 +819,7 @@ export class GraphDataService {
 				return;
 			}
 			const node = store.nodes[nodeId];
-			logger.error("graph", "DEBUG: Retrieved node from store", { nodeId, nodeExists: !!node, ...(node?.entityType !== undefined && { nodeType: node.entityType }) }, "GraphDataService");
-			if (!node) {
-				logger.error("graph", "DEBUG: Node is null, returning early", { nodeId }, "GraphDataService");
-				return;
-			}
+			logger.error("graph", "DEBUG: Retrieved node from store", { nodeId, nodeExists: !!node, nodeType: node.entityType }, "GraphDataService");
 
 			// Check if entity type is supported
 			logger.error("graph", "DEBUG: Checking if entity type is supported", { nodeId, entityType: node.entityType, isSupported: EntityFactory.isSupported(node.entityType) }, "GraphDataService");
@@ -888,8 +883,8 @@ export class GraphDataService {
 			const relatedData = await entity.expand(context, enhancedOptions);
 
 			// First: Add nodes and initial edges to the store
-			const currentNodes = Object.values(store.nodes).filter((node) => node != null);
-			const currentEdges = Object.values(store.edges).filter((edge): edge is NonNullable<typeof edge> => edge != null);
+			const currentNodes = Object.values(store.nodes);
+			const currentEdges = Object.values(store.edges);
 			const finalNodes = [...currentNodes, ...relatedData.nodes];
 			const finalEdges = [...currentEdges, ...relatedData.edges];
 
@@ -971,9 +966,9 @@ export class GraphDataService {
    					try {
    						logger.error("graph", "DEBUG: FORCE BRANCH - Calling detectRelationshipsForNodes", { allNodeIds, count: allNodeIds.length }, "GraphDataService");
    						const forceDetectedEdges = await this.relationshipDetectionService.detectRelationshipsForNodes(allNodeIds);
-   						logger.error("graph", "DEBUG: FORCE BRANCH - detectRelationshipsForNodes returned", { forceDetectedEdgesCount: forceDetectedEdges?.length ?? 0, ...(forceDetectedEdges !== undefined && { forceDetectedEdges }) }, "GraphDataService");
+   						logger.error("graph", "DEBUG: FORCE BRANCH - detectRelationshipsForNodes returned", { forceDetectedEdgesCount: forceDetectedEdges.length, forceDetectedEdges }, "GraphDataService");
 
-						if (forceDetectedEdges && forceDetectedEdges.length > 0) {
+						if (forceDetectedEdges.length > 0) {
 							logger.debug("graph", "Adding force-detected relationship edges", {
 								expandedNodeId: nodeId,
 								forceDetectedEdgeCount: forceDetectedEdges.length,
@@ -985,8 +980,8 @@ export class GraphDataService {
 							}, "GraphDataService");
 
 							// Get current graph state
-							const currentNodes = Object.values(store.nodes).filter((node) => node != null);
-							const currentEdges = Object.values(store.edges).filter((edge): edge is NonNullable<typeof edge> => edge != null);
+							const currentNodes = Object.values(store.nodes);
+							const currentEdges = Object.values(store.edges);
 
 							// Add the force-detected edges
 							const finalEdgesWithForceRelationships = [...currentEdges, ...forceDetectedEdges];
@@ -1109,7 +1104,7 @@ export class GraphDataService {
 			for (const result of flatResults) {
 				try {
 					const detection = EntityDetectionService.detectEntity(result.id);
-					if (detection && detection.entityType && isEntityType(detection.entityType)) {
+					if (detection?.entityType && isEntityType(detection.entityType)) {
 						searchStats[detection.entityType]++;
 					}
 				} catch (error) {
@@ -1197,7 +1192,7 @@ export class GraphDataService {
 			return {
 				id: entity.id,
 				entityType,
-				label: entity.display_name ?? `${entityType} ${entity.id}`,
+				label: entity.display_name || `${entityType} ${entity.id}`,
 				entityId: entity.id,
 				x: 0,
 				y: 0, // Will be positioned by layout
@@ -1261,7 +1256,6 @@ export class GraphDataService {
 			return;
 		}
 		const node = store.nodes[nodeId];
-		if (!node) return;
 
 		// No artificial hydration checks - proceed with field-level hydration as needed
 
@@ -1306,7 +1300,7 @@ export class GraphDataService {
 		const store = useGraphStore.getState();
 		// Use direct selectors instead of unstable getter function to avoid infinite loops
 		const { nodes, visibleEntityTypes } = store;
-		const allVisibleNodes = Object.values(nodes).filter((node) => node != null).filter((node) => node.entityType in visibleEntityTypes);
+		const allVisibleNodes = Object.values(nodes).filter((node) => node.entityType in visibleEntityTypes);
 
 		if (allVisibleNodes.length === 0) {
 			logger.debug("graph", "No visible nodes found to expand", { entityType }, "GraphDataService");
@@ -1586,7 +1580,7 @@ export class GraphDataService {
 
 		// Only create edges to authors that already exist in the graph
 		// Do NOT automatically create author nodes - they should only be created during explicit expansion
-		work.authorships?.forEach((authorship) => {
+		work.authorships.forEach((authorship) => {
 			const existingAuthorNode = store.getNode(authorship.author.id);
 
 			// Only create edge if the author node already exists in the graph
@@ -1621,7 +1615,7 @@ export class GraphDataService {
 
 		// Only create edges to referenced works that already exist in the graph
 		// Do NOT automatically create referenced work nodes - they should only be created during explicit expansion
-		work.referenced_works?.forEach((citedWorkId) => {
+		work.referenced_works.forEach((citedWorkId) => {
 			const existingCitedNode = store.getNode(citedWorkId);
 
 			// Only create edge if the referenced work node already exists in the graph
@@ -1650,7 +1644,7 @@ export class GraphDataService {
 
 		// Only create edges to institutions that already exist in the graph
 		// Do NOT automatically create institution nodes - they should only be created during explicit expansion
-		author.affiliations?.forEach((affiliation) => {
+		author.affiliations.forEach((affiliation) => {
 			const existingInstitutionNode = store.getNode(affiliation.institution.id);
 
 			// Only create edge if the institution node already exists in the graph
@@ -1735,7 +1729,7 @@ export class GraphDataService {
 		return {
 			id: entity.id,
 			entityType,
-			label: entity.display_name ?? "Unknown Entity",
+			label: entity.display_name || "Unknown Entity",
 			entityId: entity.id,
 			x: 0,
 			y: 0, // Will be updated by layout
@@ -1750,10 +1744,8 @@ export class GraphDataService {
 	private extractExternalIds(entity: OpenAlexEntity, entityType: EntityType): ExternalIdentifier[] {
 		const externalIds: ExternalIdentifier[] = [];
 
-		// Type guard for basic entity validation
-		if (!entity || typeof entity !== "object") {
-			return externalIds;
-		}
+		// Type guard for basic entity validation - OpenAlexEntity is guaranteed to be an object
+		// No validation needed as type system ensures entity is a valid object
 
 		switch (entityType) {
 			case "works": {
@@ -1812,22 +1804,11 @@ export class GraphDataService {
 	 */
 	private convertEntityToRecord(entity: OpenAlexEntity): Record<string, unknown> {
 		// All OpenAlex entities are guaranteed to be objects with string keys
-		if (typeof entity !== "object" || entity === null) {
-			throw new Error("Invalid entity data: entity must be a non-null object");
-		}
-
-		// Type guard to ensure we have a valid record-like object
-		function isRecord(value: unknown): value is Record<string, unknown> {
-			return typeof value === "object" && value !== null && !Array.isArray(value);
-		}
-
-		if (!isRecord(entity)) {
-			throw new Error("Entity is not a valid record object");
-		}
+		// No validation needed as OpenAlexEntity type ensures non-null object
 
 		// Use Object.assign to safely copy all enumerable properties
-		// Safe since we've validated entity as a record-like object
-		return Object.assign({}, entity);
+		// Safe since OpenAlexEntity is guaranteed to be a valid record-like object
+		return Object.assign({}, entity as Record<string, unknown>);
 	}
 
 	private getEntityData(entity: OpenAlexEntity): Record<string, unknown> {
@@ -1845,7 +1826,7 @@ export class GraphDataService {
 		results.forEach((entity, index) => {
 			const detection = EntityDetectionService.detectEntity(entity.id);
 
-			if (detection && detection.entityType) {
+			if (detection?.entityType) {
 				const node = this.createNodeFromEntity(entity, detection.entityType);
 				// Position nodes in a grid layout for search results
 				const cols = Math.ceil(Math.sqrt(results.length));

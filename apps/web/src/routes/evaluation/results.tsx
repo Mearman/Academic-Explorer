@@ -347,7 +347,9 @@ function ComparisonResults() {
 										)}
 									</div>
 									<button
-										onClick={() => void runComparison(dataset.id)}
+										onClick={() => {
+											runComparison(dataset.id);
+										}}
 										disabled={isRunningComparison || isRunning}
 										style={{
 											padding: "8px 16px",
