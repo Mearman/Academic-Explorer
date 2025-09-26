@@ -47,7 +47,7 @@
     "lint": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "eslint .",
+        "command": "eslint . --max-warnings=100",
         "cwd": "{projectRoot}"
       },
       "cache": true

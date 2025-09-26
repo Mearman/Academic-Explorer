@@ -6,7 +6,6 @@
   },
   "plugins": [
     "@nx/vite/plugin",
-    "@nx/eslint/plugin",
     "@nx/playwright/plugin"
   ],
   "targetDefaults": {
@@ -77,14 +76,7 @@
         "{workspaceRoot}/eslint.config.*.ts",
         "{projectRoot}/eslint.config.ts"
       ],
-      "outputs": ["{options.outputFile}"],
-      "options": {
-        "max-warnings": 100,
-        "cache": true,
-        "cache-location": "{workspaceRoot}/.nx/cache/eslint/",
-        "fix": false,
-        "no-warn-ignored": true
-      }
+      "outputs": []
     },
     "typecheck": {
       "cache": true,

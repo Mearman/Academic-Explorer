@@ -76,3 +76,5 @@ packages/*/src/**/*.js.map
 # Vite temporary compiled config files
 **/vite.config.ts.timestamp-*.mjs
 **/.vite-temp/
+
+graph.json
