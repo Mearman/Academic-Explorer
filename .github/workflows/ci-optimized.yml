@@ -97,18 +97,8 @@ jobs:
         with:
           main-branch-name: 'main'
 
-      # Build packages first if typecheck is running (needs compiled .d.ts files)
-      - name: Build dependencies for typecheck
-        if: matrix.check == 'typecheck'
-        run: |
-          if [ "${{ needs.setup.outputs.has-affected }}" = "true" ]; then
-            pnpm nx affected -t build --parallel=8
-          else
-            # Build all core packages when no affected projects detected
-            pnpm nx run-many -t build --projects=client,graph,utils,simulation,ui --parallel=8
-          fi
-        env:
-          NODE_OPTIONS: '--max-old-space-size=8192'
+      # Typecheck uses tsc --build --incremental which handles dependencies automatically
+      # Skip separate build step to avoid hanging issues
 
       - name: Run ${{ matrix.check }}
         run: |
