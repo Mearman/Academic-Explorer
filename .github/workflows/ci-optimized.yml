@@ -104,7 +104,7 @@ jobs:
           if [ "${{ needs.setup.outputs.has-affected }}" = "true" ]; then
             timeout 5m pnpm nx affected -t build --parallel=2
           else
-            timeout 5m pnpm nx run-many -t build --parallel=2 --projects=@academic-explorer/utils,@academic-explorer/client
+            timeout 5m pnpm nx run-many -t build --parallel=2 --projects=utils,client
           fi
         env:
           NODE_OPTIONS: '--max-old-space-size=8192'
@@ -310,7 +310,7 @@ jobs:
         uses: ./.github/actions/setup-node-pnpm
 
       - name: Build production app
-        run: pnpm nx build @academic-explorer/web
+        run: pnpm nx build web
         env:
           NODE_OPTIONS: '--max-old-space-size=8192'
 
