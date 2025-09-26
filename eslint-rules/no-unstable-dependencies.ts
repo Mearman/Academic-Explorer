@@ -3,6 +3,10 @@
  * Prevents React 19 infinite loop issues from unstable references
  */
 
+import { ESLintUtils } from '@typescript-eslint/utils';
+
+type MessageIds = 'unstableComputed' | 'objectArrayDependency' | 'functionCallDependency' | 'storeComputedFunction';
+
 const ruleMessages = {
   unstableComputed: 'Avoid computed values in hook dependencies. Use useMemo with stable dependencies instead.',
   objectArrayDependency: 'Avoid object/array literals in hook dependencies. Extract to variables or use stable references.',
@@ -15,15 +19,15 @@ const REACT_HOOKS = [
   'useImperativeHandle', 'useDebugValue'
 ];
 
-function isObjectOrArrayLiteral(node) {
+function isObjectOrArrayLiteral(node: any): boolean {
   return node.type === 'ObjectExpression' || node.type === 'ArrayExpression';
 }
 
-function isFunctionCall(node) {
+function isFunctionCall(node: any): boolean {
   return node.type === 'CallExpression';
 }
 
-function isComputedExpression(node) {
+function isComputedExpression(node: any): boolean {
   // Check for expressions that compute new values
   return node.type === 'BinaryExpression' ||
          node.type === 'ConditionalExpression' ||
@@ -31,7 +35,7 @@ function isComputedExpression(node) {
          (node.type === 'MemberExpression' && node.computed);
 }
 
-function isStoreComputedFunction(node) {
+function isStoreComputedFunction(node: any): boolean {
   // Check for patterns like store.getFilteredItems() or useStore(state => state.getItems())
   if (node.type === 'CallExpression' &&
       node.callee &&
@@ -44,10 +48,10 @@ function isStoreComputedFunction(node) {
   return false;
 }
 
-function checkDependencyArray(context, dependencyArray) {
+function checkDependencyArray(context: any, dependencyArray: any): void {
   if (!dependencyArray || !dependencyArray.elements) return;
 
-  dependencyArray.elements.forEach(dep => {
+  dependencyArray.elements.forEach((dep: any) => {
     if (!dep) return;
 
     if (isObjectOrArrayLiteral(dep)) {
@@ -74,19 +78,22 @@ function checkDependencyArray(context, dependencyArray) {
   });
 }
 
-export default {
+const createRule = ESLintUtils.RuleCreator(
+  name => `https://github.com/Mearman/Academic-Explorer/blob/main/eslint-rules/${name}.ts`
+);
+
+export const noUnstableDependenciesRule = createRule<[], MessageIds>({
+  name: 'no-unstable-dependencies',
   meta: {
     type: 'problem',
     docs: {
       description: 'Prevent unstable dependencies in React hooks that cause infinite loops',
-      category: 'Possible Errors',
-      recommended: true
     },
     fixable: null,
     schema: [],
     messages: ruleMessages
   },
-
+  defaultOptions: [],
   create(context) {
     return {
       CallExpression(node) {
@@ -124,4 +131,10 @@ export default {
       }
     };
   }
+});
+
+export default {
+  rules: {
+    'no-unstable-dependencies': noUnstableDependenciesRule,
+  },
 };

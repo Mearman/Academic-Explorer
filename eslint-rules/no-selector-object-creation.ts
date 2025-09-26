@@ -3,6 +3,10 @@
  * Specifically targets useStore(state => ...) patterns that create new objects
  */
 
+import { ESLintUtils } from '@typescript-eslint/utils';
+
+type MessageIds = 'selectorObjectCreation' | 'selectorArrayMethods' | 'selectorSpread' | 'selectorObjectLiteral';
+
 const ruleMessages = {
   selectorObjectCreation: 'Avoid creating new objects/arrays in Zustand selectors. Use cached state or split into multiple stable selectors.',
   selectorArrayMethods: 'Avoid array methods like .filter(), .map() in selectors. Use cached computed state instead.',
@@ -10,7 +14,7 @@ const ruleMessages = {
   selectorObjectLiteral: 'Avoid object literals in selectors. Split into multiple selectors or use cached state.'
 };
 
-function isZustandSelector(node) {
+function isZustandSelector(node: any): boolean {
   // Check if this is a useStore call: useStore(state => ...)
   if (node.type === 'CallExpression' &&
       node.callee &&
@@ -26,7 +30,7 @@ function isZustandSelector(node) {
   return false;
 }
 
-function hasArrayMethods(node) {
+function hasArrayMethods(node: any): boolean {
   const problematicMethods = [
     'filter', 'map', 'reduce', 'forEach', 'find', 'some', 'every',
     'slice', 'concat', 'flat', 'flatMap', 'sort', 'reverse'
@@ -43,7 +47,7 @@ function hasArrayMethods(node) {
   return false;
 }
 
-function hasObjectMethods(node) {
+function hasObjectMethods(node: any): boolean {
   // Check for Object.values(), Object.keys(), Object.entries()
   if (node.type === 'CallExpression' &&
       node.callee &&
@@ -56,18 +60,18 @@ function hasObjectMethods(node) {
   return false;
 }
 
-function hasSpreadOperator(node) {
+function hasSpreadOperator(node: any): boolean {
   if (node.type === 'ObjectExpression') {
-    return node.properties.some(prop => prop.type === 'SpreadElement');
+    return node.properties.some((prop: any) => prop.type === 'SpreadElement');
   }
   if (node.type === 'ArrayExpression') {
-    return node.elements.some(elem => elem && elem.type === 'SpreadElement');
+    return node.elements.some((elem: any) => elem && elem.type === 'SpreadElement');
   }
   return false;
 }
 
-function checkSelectorFunction(context, selectorFunction) {
-  function traverse(node) {
+function checkSelectorFunction(context: any, selectorFunction: any): void {
+  function traverse(node: any): void {
     if (!node) return;
 
     // Check for array methods
@@ -134,19 +138,22 @@ function checkSelectorFunction(context, selectorFunction) {
   }
 }
 
-export default {
+const createRule = ESLintUtils.RuleCreator(
+  name => `https://github.com/Mearman/Academic-Explorer/blob/main/eslint-rules/${name}.ts`
+);
+
+export const noSelectorObjectCreationRule = createRule<[], MessageIds>({
+  name: 'no-selector-object-creation',
   meta: {
     type: 'problem',
     docs: {
       description: 'Prevent object/array creation in Zustand selectors that cause React 19 infinite loops',
-      category: 'Possible Errors',
-      recommended: true
     },
     fixable: null,
     schema: [],
     messages: ruleMessages
   },
-
+  defaultOptions: [],
   create(context) {
     return {
       CallExpression(node) {
@@ -157,4 +164,10 @@ export default {
       }
     };
   }
+});
+
+export default {
+  rules: {
+    'no-selector-object-creation': noSelectorObjectCreationRule,
+  },
 };

@@ -3,13 +3,17 @@
  * Prevents React 19 + Zustand + Immer infinite loop issues
  */
 
+import { ESLintUtils } from '@typescript-eslint/utils';
+
+type MessageIds = 'computedFunction' | 'arrayObjectCreation' | 'filterMapReduce';
+
 const ruleMessages = {
   computedFunction: 'Avoid computed functions in Zustand stores that return new objects. Use cached state + recomputation pattern instead.',
   arrayObjectCreation: 'Avoid creating new arrays/objects in store getters. Cache the result in state and recompute on mutations.',
   filterMapReduce: 'Array methods like .filter(), .map(), .reduce() in store getters create new objects. Use cached computed state instead.'
 };
 
-function isZustandStoreCall(node) {
+function isZustandStoreCall(node: any): boolean {
   // Check if this is inside a create() call from zustand
   let parent = node.parent;
   while (parent) {
@@ -23,7 +27,7 @@ function isZustandStoreCall(node) {
   return false;
 }
 
-function hasArrayObjectMethods(node) {
+function hasArrayObjectMethods(node: any): boolean {
   // Check for .filter(), .map(), .reduce(), Object.values(), Object.keys(), etc.
   const problematicMethods = [
     'filter', 'map', 'reduce', 'forEach', 'find', 'some', 'every',
@@ -50,16 +54,16 @@ function hasArrayObjectMethods(node) {
   return false;
 }
 
-function hasObjectArrayLiteralCreation(node) {
+function hasObjectArrayLiteralCreation(node: any): boolean {
   // Check for object literals {} or array literals []
   return node.type === 'ObjectExpression' || node.type === 'ArrayExpression';
 }
 
-function checkFunctionBody(context, functionNode) {
+function checkFunctionBody(context: any, functionNode: any): void {
   if (!functionNode.body) return;
 
   // Walk through function body to find problematic patterns
-  function traverse(node) {
+  function traverse(node: any): void {
     if (!node) return;
 
     // Check for array/object methods that create new instances
@@ -95,19 +99,22 @@ function checkFunctionBody(context, functionNode) {
   traverse(functionNode.body);
 }
 
-export default {
+const createRule = ESLintUtils.RuleCreator(
+  name => `https://github.com/Mearman/Academic-Explorer/blob/main/eslint-rules/${name}.ts`
+);
+
+export const noZustandComputedFunctionsRule = createRule<[], MessageIds>({
+  name: 'no-zustand-computed-functions',
   meta: {
     type: 'problem',
     docs: {
       description: 'Prevent computed functions in Zustand stores that cause React 19 infinite loops',
-      category: 'Possible Errors',
-      recommended: true
     },
     fixable: null,
     schema: [],
     messages: ruleMessages
   },
-
+  defaultOptions: [],
   create(context) {
     return {
       Property(node) {
@@ -141,4 +148,10 @@ export default {
       }
     };
   }
+});
+
+export default {
+  rules: {
+    'no-zustand-computed-functions': noZustandComputedFunctionsRule,
+  },
 };

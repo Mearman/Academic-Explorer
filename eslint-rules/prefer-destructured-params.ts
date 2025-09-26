@@ -3,13 +3,20 @@
  * Encourages better API design by promoting object parameters with destructuring.
  */
 
-export default {
+import { ESLintUtils } from '@typescript-eslint/utils';
+
+type MessageIds = 'useDestructuring';
+
+const createRule = ESLintUtils.RuleCreator(
+  name => `https://github.com/Mearman/Academic-Explorer/blob/main/eslint-rules/${name}.ts`
+);
+
+export const preferDestructuredParamsRule = createRule<[], MessageIds>({
+  name: 'prefer-destructured-params',
   meta: {
     type: 'suggestion',
     docs: {
       description: 'Warn when functions have more than one parameter that isn\'t destructured',
-      category: 'Best Practices',
-      recommended: false,
     },
     fixable: null,
     schema: [],
@@ -17,9 +24,9 @@ export default {
       useDestructuring: 'Functions with more than one parameter should use destructuring. Consider using an object parameter with destructuring instead of {{count}} separate parameters.',
     },
   },
-
+  defaultOptions: [],
   create(context) {
-    function checkFunction(node) {
+    function checkFunction(node: any): void {
       const params = node.params;
 
       // Skip if function has 1 or fewer parameters
@@ -34,13 +41,13 @@ export default {
       }
 
       // Check if function has rest parameters (...args) - this is acceptable
-      const hasRestParam = params.some(param => param.type === 'RestElement');
+      const hasRestParam = params.some((param: any) => param.type === 'RestElement');
       if (hasRestParam) {
         return;
       }
 
       // Skip if any parameter is an ObjectPattern (partial destructuring)
-      const hasObjectPattern = params.some(param => param.type === 'ObjectPattern');
+      const hasObjectPattern = params.some((param: any) => param.type === 'ObjectPattern');
       if (hasObjectPattern) {
         return;
       }
@@ -79,11 +86,17 @@ export default {
       FunctionDeclaration: checkFunction,
       FunctionExpression: checkFunction,
       ArrowFunctionExpression: checkFunction,
-      MethodDefinition: (node) => {
+      MethodDefinition: (node: any) => {
         if (node.value && (node.value.type === 'FunctionExpression' || node.value.type === 'ArrowFunctionExpression')) {
           checkFunction(node.value);
         }
       },
     };
+  },
+});
+
+export default {
+  rules: {
+    'prefer-destructured-params': preferDestructuredParamsRule,
   },
 };

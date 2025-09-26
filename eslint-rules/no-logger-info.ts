@@ -2,13 +2,20 @@
  * ESLint rule to discourage logger.info usage and suggest appropriate logging levels
  */
 
-export default {
+import { ESLintUtils } from '@typescript-eslint/utils';
+
+type MessageIds = 'avoidLoggerInfo';
+
+const createRule = ESLintUtils.RuleCreator(
+  name => `https://github.com/Mearman/Academic-Explorer/blob/main/eslint-rules/${name}.ts`
+);
+
+export const noLoggerInfoRule = createRule<[], MessageIds>({
+  name: 'no-logger-info',
   meta: {
     type: 'suggestion',
     docs: {
       description: 'Discourage logger.info usage to reduce log noise',
-      category: 'Best Practices',
-      recommended: false,
     },
     fixable: null,
     schema: [],
@@ -16,7 +23,7 @@ export default {
       avoidLoggerInfo: 'Avoid logger.info() as it creates log noise. Use logger.debug() for development details, logger.warn() for issues, or logger.error() for failures.',
     },
   },
-
+  defaultOptions: [],
   create(context) {
     return {
       CallExpression(node) {
@@ -35,5 +42,11 @@ export default {
         }
       },
     };
+  },
+});
+
+export default {
+  rules: {
+    'no-logger-info': noLoggerInfoRule,
   },
 };
