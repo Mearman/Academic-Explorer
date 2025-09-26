@@ -27,7 +27,7 @@ export function useThemeColors() {
 	// Base color utilities - memoized to prevent React 19 infinite loops
 	const getColor = useCallback((color: string, shade: number = 5) => {
 		if (color in theme.colors) {
-			return theme.colors[color]?.[shade] ?? color;
+			return theme.colors[color][shade];
 		}
 		return color;
 	}, [theme.colors]);
@@ -67,9 +67,9 @@ export function useThemeColors() {
 		// Academic entity colors
 		entity: {
 			work: theme.colors.blue[5],
-			author: theme.colors['author']?.[5] ?? "#10b981",
-			source: theme.colors['source']?.[5] ?? "#8b5cf6",
-			institution: theme.colors['institution']?.[5] ?? "#f59e0b",
+			author: "#10b981",
+			source: "#8b5cf6",
+			institution: "#f59e0b",
 			concept: theme.colors.red[5],
 			topic: theme.colors.red[5],
 			publisher: theme.colors.cyan[5],

@@ -116,13 +116,13 @@ export function useGraphPersistence() {
 			id: sessionId,
 			name,
 			description,
-			nodes: Object.values(store.nodes).filter((node): node is NonNullable<typeof node> => node !== null),
-			edges: Object.values(store.edges).filter((edge): edge is NonNullable<typeof edge> => edge !== null),
+			nodes: Object.values(store.nodes),
+			edges: Object.values(store.edges),
 			timestamp: Date.now(),
 			version: "1.0.0",
 			metadata: {
-				nodeCount: Object.values(store.nodes).filter(node => node !== null).length,
-				edgeCount: Object.values(store.edges).filter(edge => edge !== null).length,
+				nodeCount: Object.values(store.nodes).length,
+				edgeCount: Object.values(store.edges).length,
 			}
 		}
 
@@ -199,7 +199,7 @@ export function useGraphPersistence() {
 				store.provider.applyLayout(store.currentLayout)
 
 				const snapshotWithViewport = session.snapshot as any
-				if (snapshotWithViewport.viewport && store.provider?.loadSnapshot) {
+				if (snapshotWithViewport.viewport) {
 					// Load provider snapshot if viewport is available
 					store.provider.loadSnapshot(session.snapshot)
 				} else {
