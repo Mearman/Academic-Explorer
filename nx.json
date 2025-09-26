@@ -227,13 +227,6 @@
       }
     },
     "changelog": {
-      "workspaceChangelog": {
-        "createRelease": "github",
-        "file": "{workspaceRoot}/CHANGELOG.md",
-        "renderOptions": {
-          "authors": false
-        }
-      },
       "projectChangelogs": {
         "file": "{projectRoot}/CHANGELOG.md",
         "renderOptions": {
@@ -245,8 +238,28 @@
       "commitMessage": "chore(release): version packages [skip ci]"
     },
     "groups": {
-      "default": {
-        "projects": ["*"],
+      "workspace": {
+        "projects": ["academic-explorer-monorepo"],
+        "projectsRelationship": "fixed",
+        "version": {
+          "conventionalCommits": true,
+          "generatorOptions": {
+            "fallbackCurrentVersionResolver": "disk"
+          }
+        },
+        "changelog": {
+          "projectChangelogs": {
+            "createRelease": "github",
+            "file": "{workspaceRoot}/CHANGELOG.md",
+            "renderOptions": {
+              "authors": false
+            }
+          }
+        }
+      },
+      "projects": {
+        "projects": ["packages/*", "apps/*", "tools/*"],
+        "projectsRelationship": "independent",
         "version": {
           "conventionalCommits": true,
           "generatorOptions": {
