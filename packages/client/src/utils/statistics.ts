@@ -394,7 +394,7 @@ export class StatisticsApi {
 						by_growth: 0, // Will be calculated after sorting
 					},
 				});
-			} catch (error) {
+			} catch (error: unknown) {
 				logger.warn(`Failed to get detailed stats for group ${group.key}`, { groupKey: group.key, error });
 			}
 		}

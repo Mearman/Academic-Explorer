@@ -50,74 +50,211 @@ jobs:
 
       # Run affected tasks using Nx's built-in parallelization
       - name: Build affected projects
-        run: pnpm nx affected -t build --parallel=3
+        run: |
+          echo "🏗️ Building affected projects with warning detection..."
+
+          # Capture build output to check for warnings
+          build_output=$(pnpm nx affected -t build --parallel=3 2>&1)
+          build_exit_code=$?
+
+          # Display build output
+          echo "$build_output"
+
+          # Check for build warnings/issues
+          warning_count=0
+          if echo "$build_output" | grep -i "warning" > /dev/null; then
+            warning_count=$(echo "$build_output" | grep -ic "warning")
+            echo "⚠️  Build completed with $warning_count warnings"
+          fi
+
+          # Check for TypeScript errors
+          if echo "$build_output" | grep -E "(error TS|Type.*error)" > /dev/null; then
+            echo "❌ Build contains TypeScript errors"
+            exit 1
+          fi
+
+          # Check overall build success
+          if [ $build_exit_code -ne 0 ]; then
+            echo "❌ Build failed with exit code $build_exit_code"
+            exit 1
+          fi
+
+          if [ $warning_count -eq 0 ]; then
+            echo "✅ Build completed successfully with zero warnings"
+          else
+            echo "✅ Build completed successfully but with $warning_count warnings"
+            echo "💡 Consider fixing build warnings for cleaner pipeline output"
+          fi
         env:
           NODE_OPTIONS: '--max-old-space-size=8192'
 
       - name: Lint affected projects
-        continue-on-error: true
         run: |
           # Get affected projects safely
-          echo "Checking for affected projects..."
+          echo "🔍 Checking for affected projects..."
           affected_output=$(pnpm nx show projects --affected --json 2>/dev/null | tail -n 1 || echo '[]')
           affected_projects=$(echo "$affected_output" | jq -r '.[]' 2>/dev/null || echo "")
-          echo "Affected projects: $affected_projects"
+          echo "📋 Affected projects: $affected_projects"
 
-          # Use direct ESLint for web app to avoid Nx hanging issues
+          # Initialize success tracking
+          lint_success=true
+
+          # Lint web app with zero warnings tolerance
           if echo "$affected_projects" | grep -q "web" 2>/dev/null; then
-            echo "Linting web app directly"
+            echo "🔧 Linting web app (zero warnings tolerance)..."
             cd apps/web
-            timeout 5m pnpm eslint . --max-warnings=100 || { echo "Lint failed for web app, continuing..."; true; }
+            if ! timeout 4m pnpm eslint . --max-warnings=0; then
+              echo "❌ Web app lint failed with warnings/errors"
+              lint_success=false
+            else
+              echo "✅ Web app lint passed with zero warnings"
+            fi
             cd ../..
           fi
 
-          # Lint packages using direct ESLint
-          if echo "$affected_projects" | grep -E "(client|utils|graph|simulation|ui)" > /dev/null 2>&1; then
-            echo "Linting affected packages"
-            for project in client utils graph simulation ui; do
-              if echo "$affected_projects" | grep -q "$project" 2>/dev/null && [ -d "packages/$project" ]; then
-                echo "Linting $project..."
-                cd "packages/$project"
-                timeout 3m pnpm eslint . --max-warnings=200 || { echo "Lint failed for $project, continuing..."; true; }
-                cd ../..
+          # Lint packages with zero warnings tolerance
+          for project in client utils graph simulation ui; do
+            if echo "$affected_projects" | grep -q "$project" 2>/dev/null && [ -d "packages/$project" ]; then
+              echo "🔧 Linting package: $project (zero warnings tolerance)..."
+              cd "packages/$project"
+              if ! timeout 2m pnpm eslint . --max-warnings=0; then
+                echo "❌ Package $project lint failed with warnings/errors"
+                lint_success=false
+              else
+                echo "✅ Package $project lint passed with zero warnings"
               fi
-            done
-          else
-            echo "No affected packages need linting or linting all essential packages..."
-            # Lint essential packages regardless
+              cd ../..
+            fi
+          done
+
+          # Always lint critical packages regardless of affected status
+          if ! echo "$affected_projects" | grep -E "(client|utils)" > /dev/null 2>&1; then
+            echo "🛡️ Linting critical packages (client, utils) regardless of affected status..."
             for project in client utils; do
               if [ -d "packages/$project" ]; then
-                echo "Linting essential package: $project..."
+                echo "🔧 Linting critical package: $project..."
                 cd "packages/$project"
-                timeout 3m pnpm eslint . --max-warnings=200 || { echo "Lint failed for $project, continuing..."; true; }
+                if ! timeout 2m pnpm eslint . --max-warnings=0; then
+                  echo "❌ Critical package $project lint failed"
+                  lint_success=false
+                else
+                  echo "✅ Critical package $project lint passed"
+                fi
                 cd ../..
               fi
             done
+          fi
+
+          # Check final result and exit appropriately
+          if [ "$lint_success" = true ]; then
+            echo "🎉 All linting passed with zero warnings!"
+          else
+            echo "💥 Linting failed - fix all warnings and errors before proceeding"
+            exit 1
           fi
         env:
           NODE_OPTIONS: '--max-old-space-size=8192'
 
       - name: Type check affected projects
-        run: pnpm nx affected -t typecheck --parallel=3
+        run: |
+          echo "🔍 Running TypeScript type checking with validation..."
+
+          # Capture typecheck output
+          typecheck_output=$(pnpm nx affected -t typecheck --parallel=3 2>&1)
+          typecheck_exit_code=$?
+
+          # Display output
+          echo "$typecheck_output"
+
+          # Check for TypeScript errors
+          error_count=0
+          if echo "$typecheck_output" | grep -E "(error TS|Type.*error)" > /dev/null; then
+            error_count=$(echo "$typecheck_output" | grep -cE "(error TS|Type.*error)")
+            echo "❌ TypeScript found $error_count type errors"
+            echo ""
+            echo "📋 Type Errors Found:"
+            echo "$typecheck_output" | grep -E "(error TS|Type.*error)" | head -10
+            exit 1
+          fi
+
+          # Check for overall success
+          if [ $typecheck_exit_code -ne 0 ]; then
+            echo "❌ Type checking failed with exit code $typecheck_exit_code"
+            exit 1
+          fi
+
+          echo "✅ TypeScript type checking passed with zero errors"
         env:
           NODE_OPTIONS: '--max-old-space-size=8192'
 
       - name: Test affected projects
         run: |
-          # Run package tests directly with pnpm to avoid Nx orchestration issues
-          echo "Running essential package tests using direct pnpm execution..."
+          # Run package tests with enhanced error reporting
+          echo "🧪 Running critical package tests with enhanced validation..."
 
+          test_success=true
+          total_tests=0
+          passed_tests=0
+
+          # Test client package
           if [ -d "packages/client" ]; then
-            echo "Testing client package..."
-            timeout 5m pnpm --filter=client test || exit 1
+            echo "🔬 Testing client package..."
+            if timeout 5m pnpm --filter=client test; then
+              echo "✅ Client package tests passed"
+              passed_tests=$((passed_tests + 1))
+            else
+              echo "❌ Client package tests failed"
+              test_success=false
+            fi
+            total_tests=$((total_tests + 1))
           fi
 
+          # Test utils package
           if [ -d "packages/utils" ]; then
-            echo "Testing utils package..."
-            timeout 2m pnpm --filter=utils test || exit 1
+            echo "🔬 Testing utils package..."
+            if timeout 2m pnpm --filter=utils test; then
+              echo "✅ Utils package tests passed"
+              passed_tests=$((passed_tests + 1))
+            else
+              echo "❌ Utils package tests failed"
+              test_success=false
+            fi
+            total_tests=$((total_tests + 1))
           fi
 
-          echo "All package tests completed successfully!"
+          # Test other affected packages if they exist
+          affected_output=$(pnpm nx show projects --affected --json 2>/dev/null | tail -n 1 || echo '[]')
+          affected_projects=$(echo "$affected_output" | jq -r '.[]' 2>/dev/null || echo "")
+
+          for project in graph simulation ui; do
+            if echo "$affected_projects" | grep -q "$project" 2>/dev/null && [ -d "packages/$project" ] && [ -f "packages/$project/package.json" ]; then
+              if grep -q '"test"' "packages/$project/package.json" 2>/dev/null; then
+                echo "🔬 Testing affected package: $project..."
+                if timeout 3m pnpm --filter="$project" test; then
+                  echo "✅ Package $project tests passed"
+                  passed_tests=$((passed_tests + 1))
+                else
+                  echo "❌ Package $project tests failed"
+                  test_success=false
+                fi
+                total_tests=$((total_tests + 1))
+              fi
+            fi
+          done
+
+          # Report results
+          echo ""
+          echo "📊 Test Summary:"
+          echo "   Total packages tested: $total_tests"
+          echo "   Packages passed: $passed_tests"
+          echo "   Packages failed: $((total_tests - passed_tests))"
+
+          if [ "$test_success" = true ]; then
+            echo "🎉 All tests passed successfully!"
+          else
+            echo "💥 Some tests failed - fix failing tests before proceeding"
+            exit 1
+          fi
         env:
           NODE_OPTIONS: '--max-old-space-size=8192'
 
@@ -274,54 +411,115 @@ jobs:
     steps:
       - name: Check CI status
         run: |
-          echo "=== CI Status Summary ==="
-          echo "Main CI: ${{ needs.ci.result }}"
-          echo "Workspace Quality: ${{ needs.workspace-quality.result }}"
-          echo "Extended Checks: ${{ needs.extended-checks.result }}"
-          echo "Release: ${{ needs.release.result }}"
-          echo "Deploy: ${{ needs.deploy.result }}"
+          echo "🏁 =========================================="
+          echo "🔍         CI PIPELINE STATUS REPORT      "
+          echo "🏁 =========================================="
           echo ""
 
-          # Check REQUIRED jobs (must succeed)
+          # Job status summary with emojis
+          echo "📋 Job Status Summary:"
+          echo "   🔧 Main CI:           ${{ needs.ci.result }}"
+          echo "   🔍 Workspace Quality: ${{ needs.workspace-quality.result }}"
+          echo "   🧪 Extended Checks:   ${{ needs.extended-checks.result }}"
+          echo "   🚀 Release:           ${{ needs.release.result }}"
+          echo "   🌐 Deploy:            ${{ needs.deploy.result }}"
+          echo ""
+
+          # Initialize counters
+          required_passed=0
+          required_total=0
+          optional_passed=0
+          optional_total=0
           failed_required=false
 
-          if [[ "${{ needs.ci.result }}" != "success" ]]; then
-            echo "❌ Main CI job failed (REQUIRED)"
+          # Check REQUIRED jobs (must succeed)
+          echo "🛡️  REQUIRED JOBS VALIDATION:"
+
+          # Main CI
+          required_total=$((required_total + 1))
+          if [[ "${{ needs.ci.result }}" == "success" ]]; then
+            echo "   ✅ Main CI job passed"
+            required_passed=$((required_passed + 1))
+          else
+            echo "   ❌ Main CI job failed (CRITICAL FAILURE)"
             failed_required=true
           fi
 
-          if [[ "${{ needs.workspace-quality.result }}" != "success" ]]; then
-            echo "❌ Workspace quality checks failed (REQUIRED)"
+          # Workspace Quality
+          required_total=$((required_total + 1))
+          if [[ "${{ needs.workspace-quality.result }}" == "success" ]]; then
+            echo "   ✅ Workspace quality checks passed"
+            required_passed=$((required_passed + 1))
+          else
+            echo "   ❌ Workspace quality checks failed (CRITICAL FAILURE)"
             failed_required=true
           fi
 
-          if [[ "${{ needs.release.result }}" == "failure" ]]; then
-            echo "❌ Release job failed (REQUIRED)"
-            failed_required=true
+          # Release (only on main branch)
+          if [[ "${{ github.ref }}" == "refs/heads/main" ]]; then
+            required_total=$((required_total + 1))
+            if [[ "${{ needs.release.result }}" == "success" ]]; then
+              echo "   ✅ Release job passed"
+              required_passed=$((required_passed + 1))
+            elif [[ "${{ needs.release.result }}" == "failure" ]]; then
+              echo "   ❌ Release job failed (CRITICAL FAILURE)"
+              failed_required=true
+            elif [[ "${{ needs.release.result }}" == "skipped" ]]; then
+              echo "   ⏭️  Release job skipped (conditional)"
+              required_passed=$((required_passed + 1))
+            fi
           fi
 
-          # Check OPTIONAL jobs (failures are warnings only)
-          if [[ "${{ needs.extended-checks.result }}" == "failure" ]]; then
-            echo "⚠️  Extended checks failed (OPTIONAL - not blocking CI success)"
+          echo ""
+          echo "📊 OPTIONAL JOBS STATUS:"
+
+          # Extended Checks
+          optional_total=$((optional_total + 1))
+          if [[ "${{ needs.extended-checks.result }}" == "success" ]]; then
+            echo "   ✅ Extended checks passed"
+            optional_passed=$((optional_passed + 1))
+          elif [[ "${{ needs.extended-checks.result }}" == "failure" ]]; then
+            echo "   ⚠️  Extended checks failed (non-blocking)"
           elif [[ "${{ needs.extended-checks.result }}" == "skipped" ]]; then
-            echo "⏭️  Extended checks skipped (conditional job)"
+            echo "   ⏭️  Extended checks skipped (conditional)"
+            optional_passed=$((optional_passed + 1))
           fi
 
-          if [[ "${{ needs.deploy.result }}" == "failure" ]]; then
-            echo "⚠️  Deploy job failed (OPTIONAL - not blocking CI success)"
+          # Deploy
+          optional_total=$((optional_total + 1))
+          if [[ "${{ needs.deploy.result }}" == "success" ]]; then
+            echo "   ✅ Deploy job passed"
+            optional_passed=$((optional_passed + 1))
+          elif [[ "${{ needs.deploy.result }}" == "failure" ]]; then
+            echo "   ⚠️  Deploy job failed (non-blocking)"
           elif [[ "${{ needs.deploy.result }}" == "skipped" ]]; then
-            echo "⏭️  Deploy skipped (main branch only)"
+            echo "   ⏭️  Deploy skipped (main branch only)"
+            optional_passed=$((optional_passed + 1))
           fi
+
+          echo ""
+          echo "📈 FINAL SUMMARY:"
+          echo "   Required jobs: $required_passed/$required_total passed"
+          echo "   Optional jobs: $optional_passed/$optional_total passed"
+          echo ""
 
           # Exit with failure only if required jobs failed
           if [[ "$failed_required" == "true" ]]; then
+            echo "💥 =========================================="
+            echo "❌         CI PIPELINE FAILED              "
+            echo "💥 =========================================="
+            echo "🚨 One or more REQUIRED jobs failed"
+            echo "🔧 Fix the issues above and try again"
             echo ""
-            echo "❌ CI pipeline failed due to required job failures"
             exit 1
           fi
 
-          echo ""
-          echo "✅ All required CI checks passed successfully"
-          if [[ "${{ needs.extended-checks.result }}" == "failure" || "${{ needs.deploy.result }}" == "failure" ]]; then
-            echo "ℹ️  Some optional jobs failed but CI is considered successful"
+          echo "🎉 =========================================="
+          echo "✅         CI PIPELINE SUCCESSFUL          "
+          echo "🎉 =========================================="
+          echo "🚀 All required checks passed!"
+
+          if [[ "$optional_passed" -lt "$optional_total" ]]; then
+            echo "ℹ️  Note: Some optional jobs failed but pipeline is successful"
           fi
+          echo ""

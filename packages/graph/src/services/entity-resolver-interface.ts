@@ -425,12 +425,12 @@ export class EntityResolver implements IEntityResolver {
     if (this.cache) {
       try {
         return await this.cache.getEntity(identifierToUse, context);
-      } catch (_error) {
+      } catch {
         // If cache fails with normalized ID and it differs from original, try original
         if (normalizedId && normalizedId !== id) {
           try {
             return await this.cache.getEntity(id, context);
-          } catch (_fallbackError) {
+          } catch {
             // If cache fails completely, fall back to provider
             return this.resolveEntityWithProvider(id);
           }
@@ -459,7 +459,7 @@ export class EntityResolver implements IEntityResolver {
       try {
         const entities = normalizedIds.map(id => ({ id, context }));
         return await this.cache.batchEnsureFields(entities, context);
-      } catch (_error) {
+      } catch {
         // Fall back to provider on cache failure
         return this.resolveEntitiesWithProvider(normalizedIds);
       }
@@ -486,7 +486,7 @@ export class EntityResolver implements IEntityResolver {
 
     try {
       await this.cache.preloadForContext(normalizedIds, context);
-    } catch (_error) {
+    } catch {
       // Preloading failures should not block execution
       // Error is logged in production via application layer
     }
@@ -530,7 +530,7 @@ export class EntityResolver implements IEntityResolver {
       try {
         // This will populate the cache with fresh data
         await this.cache.getEntity(normalizedId, this.defaultContext);
-      } catch (_error) {
+      } catch {
         // Cache population failure shouldn't affect the result
         // Error is logged in production via application layer
       }
@@ -668,7 +668,7 @@ export class EntityResolver implements IEntityResolver {
 
     try {
       await this.cache.preloadForContext(normalizedIds, enhancedContext);
-    } catch (_error) {
+    } catch {
       // Batch preload failures should not block execution
       // Error is logged in production via application layer
     }

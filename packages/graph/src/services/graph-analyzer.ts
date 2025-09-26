@@ -10,6 +10,8 @@
  * Uses the Phase 2 provider architecture for data access with caching for performance.
  */
 
+/* eslint-disable no-console */
+
 import type { GraphNode, GraphEdge, GraphData, EntityType } from '../types/core';
 import { RelationType } from '../types/core';
 import type { GraphDataProvider } from '../providers/base-provider';
@@ -661,7 +663,7 @@ export class GraphAnalyzer {
           case 'collaboration':
             metrics[nodeId] = await this.analyzeCollaborations(nodeId, options);
             break;
-          case 'trends':
+          case 'trends': {
             // Use default time range for trends
             const timeRange: TimeRange = {
               startYear: new Date().getFullYear() - 10,
@@ -669,6 +671,7 @@ export class GraphAnalyzer {
             };
             metrics[nodeId] = await this.detectTrends(timeRange, 'authors', nodeId, options);
             break;
+          }
         }
       } catch (error) {
         console.warn(`Analysis failed for ${nodeId}:`, error);

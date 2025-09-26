@@ -9,6 +9,7 @@
  */
 
 import type { EntityType } from '../types/core';
+import { logger } from '@academic-explorer/utils';
 
 /**
  * Detection result containing the detected entity type and normalized identifier
@@ -212,8 +213,13 @@ export class EntityDetectionService {
         if (regex.test(trimmedId)) {
           try {
             return pattern.normalize.call(this, trimmedId);
-          } catch (_error) {
-            // Continue to next pattern if normalization fails
+          } catch (error) {
+            // Log normalization failure and continue to next pattern
+            logger.debug('entity-detection', `Normalization failed for pattern ${pattern.name}`, {
+              input: trimmedId,
+              pattern: pattern.name,
+              error
+            });
             continue;
           }
         }
