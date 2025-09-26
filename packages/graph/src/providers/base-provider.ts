@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 /**
  * Abstract base class for graph data providers
  * Defines the interface for fetching and expanding graph entities from various data sources

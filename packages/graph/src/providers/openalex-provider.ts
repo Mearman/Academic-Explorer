@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 /**
  * OpenAlex-specific implementation of GraphDataProvider
  * Provides graph data from the OpenAlex academic database

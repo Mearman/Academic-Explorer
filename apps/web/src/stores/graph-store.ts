@@ -305,7 +305,7 @@ export const useGraphStore = create<GraphState>()(
 
 				set((draft) => {
 					// Remove node using destructuring
-					const { [nodeId]: removedNode, ...remainingNodes } = draft.nodes;
+					const { [nodeId]: _removedNode, ...remainingNodes } = draft.nodes;
 					draft.nodes = remainingNodes;
 
 					// Remove connected edges using destructuring
@@ -319,7 +319,7 @@ export const useGraphStore = create<GraphState>()(
 					draft.edges = remainingEdges;
 
 					// Clean up pinning using destructuring
-					const { [nodeId]: removedPin, ...remainingPinned } = draft.pinnedNodes;
+					const { [nodeId]: _removedPin, ...remainingPinned } = draft.pinnedNodes;
 					draft.pinnedNodes = remainingPinned;
 
 					// Clean up selection
@@ -329,7 +329,7 @@ export const useGraphStore = create<GraphState>()(
 					if (draft.hoveredNodeId === nodeId) {
 						draft.hoveredNodeId = null;
 					}
-					const { [nodeId]: removedSelection, ...remainingSelected } = draft.selectedNodes;
+					const { [nodeId]: _removedSelection, ...remainingSelected } = draft.selectedNodes;
 					draft.selectedNodes = remainingSelected;
 				});
 
@@ -346,7 +346,7 @@ export const useGraphStore = create<GraphState>()(
 
 			removeEdge: (edgeId) => {
 				set((draft) => {
-					const { [edgeId]: removedEdge, ...remainingEdges } = draft.edges;
+					const { [edgeId]: _removedEdge, ...remainingEdges } = draft.edges;
 					draft.edges = remainingEdges;
 				});
 			},
@@ -389,7 +389,7 @@ export const useGraphStore = create<GraphState>()(
 
 			unpinNode: (nodeId) => {
 				set((draft) => {
-					const { [nodeId]: removedPin, ...remainingPinned } = draft.pinnedNodes;
+					const { [nodeId]: _removedPin, ...remainingPinned } = draft.pinnedNodes;
 					draft.pinnedNodes = remainingPinned;
 				});
 			},
@@ -505,7 +505,7 @@ export const useGraphStore = create<GraphState>()(
 
 			removeFromSelection: (nodeId) => {
 				set((draft) => {
-					const { [nodeId]: removedSelection, ...remainingSelected } = draft.selectedNodes;
+					const { [nodeId]: _removedSelection, ...remainingSelected } = draft.selectedNodes;
 					draft.selectedNodes = remainingSelected;
 				});
 			},

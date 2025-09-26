@@ -268,7 +268,7 @@ export const useNetworkActivityStore = create<NetworkActivityState>()(
 
 		removeRequest: (id) => {
 			set(state => {
-				const { [id]: removed, ...rest } = state.requests;
+				const { [id]: _removed, ...rest } = state.requests;
 				state.requests = rest;
 			});
 

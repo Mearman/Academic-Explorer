@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 /**
  * Event System Types and Utilities
  * Exports for the unified event bus system
