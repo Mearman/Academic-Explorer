@@ -1,3 +1,13 @@
+## 9.0.4 (2025-09-26)
+
+### 🩹 Fixes
+
+- **config:** update github pages deployment to use modern actions/deploy-pages ([ad40f9bf](https://github.com/Mearman/Academic-Explorer/commit/ad40f9bf))
+
+### ❤️ Thank You
+
+- Joseph Mearman
+
 ## 9.0.3 (2025-09-26)
 
 ### 🩹 Fixes
