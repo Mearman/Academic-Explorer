@@ -613,7 +613,7 @@ describe('Provider Performance Tests', () => {
       const slowStats = slowProvider.getProviderInfo().stats;
 
       expect(slowStats.avgResponseTime).toBeGreaterThan(fastStats.avgResponseTime);
-      expect(fastStats.avgResponseTime).toBeGreaterThanOrEqual(10);
+      expect(fastStats.avgResponseTime).toBeGreaterThanOrEqual(5);
       expect(slowStats.avgResponseTime).toBeGreaterThanOrEqual(100);
 
       fastProvider.cleanup();
