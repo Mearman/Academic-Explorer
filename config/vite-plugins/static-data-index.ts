@@ -1,7 +1,14 @@
 import type { Plugin, ResolvedConfig, ViteDevServer } from "vite";
-import { join, basename } from "path";
+import { join, basename, resolve, dirname } from "path";
 import { watch } from "chokidar";
 import { existsSync } from "fs";
+import { fileURLToPath } from "url";
+
+// Get absolute path to the index generator
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+const indexGeneratorPath = resolve(__dirname, "../../apps/web/src/lib/utils/static-data-index-generator.js");
+
 import {
   generateAllIndexes,
   generateIndexWithAutoDownload,
