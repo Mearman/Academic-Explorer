@@ -49,6 +49,19 @@ const config = [
     },
   },
   {
+    // Service worker files should be allowed to use console for debugging
+    files: [
+      'src/workers/**/*.{ts,js}',
+      'src/**/*worker*.{ts,js}',
+      'src/**/*.worker.{ts,js}',
+      'src/**/*sw.{ts,js}',
+    ],
+    rules: {
+      'no-console': 'off',
+      '@typescript-eslint/no-explicit-any': 'warn', // Allow any for service worker event types
+    },
+  },
+  {
     // Config files - use dedicated tsconfig and disable type-aware rules
     files: ['*.config.{ts,js}', 'vite.config.ts', 'vitest.config.ts', 'eslint.config.ts', 'playwright.config.ts', 'knip.ts'],
     languageOptions: {
