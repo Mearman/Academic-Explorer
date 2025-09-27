@@ -190,10 +190,66 @@ function generateCanonicalEntityUrl(entityType: StaticEntityType, entityId: stri
 //   }
 // }
 
-// Get the project root directory
+// Get the project root directory (workspace root)
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
-const projectRoot = resolve(__dirname, "../..");
+const projectRoot = resolve(__dirname, "../../..");
+
+/**
+ * Check if running in development mode within the repo
+ */
+function isDevelopmentMode(): boolean {
+  // Check NODE_ENV first (most reliable)
+  if (typeof process !== 'undefined' && process.env?.NODE_ENV) {
+    const nodeEnv = process.env.NODE_ENV.toLowerCase();
+    if (nodeEnv === 'development' || nodeEnv === 'dev') return true;
+    if (nodeEnv === 'production') return false;
+  }
+
+  // Check if we're running from within the Academic Explorer repo structure
+  try {
+    const currentPath = process.cwd();
+    const expectedRepoName = "Academic Explorer";
+
+    // Check if current working directory contains repo structure indicators
+    if (currentPath.includes(expectedRepoName) ||
+        currentPath.includes("academic-explorer")) {
+      return true;
+    }
+
+    // Check if we can find package.json with academic-explorer workspace name
+    const packageJsonPath = resolve(projectRoot, "package.json");
+    try {
+      const { readFileSync, existsSync } = require("fs");
+      if (existsSync(packageJsonPath)) {
+        const packageJson = JSON.parse(readFileSync(packageJsonPath, "utf-8"));
+        if (packageJson.name === "academic-explorer") {
+          return true;
+        }
+      }
+    } catch {
+      // Continue to other checks
+    }
+  } catch {
+    // Ignore path resolution errors
+  }
+
+  // Default to false for production/distribution mode
+  return false;
+}
+
+/**
+ * Get the appropriate static data path based on environment
+ */
+function getStaticDataPath(): string {
+  if (isDevelopmentMode()) {
+    // In development, save to apps/web/public/data/openalex so the web app can read it
+    return join(projectRoot, "apps", "web", "public", "data", "openalex");
+  } else {
+    // In production/distribution, use the standard path
+    return join(projectRoot, STATIC_DATA_PATH);
+  }
+}
 
 export class OpenAlexCLI {
   private static instance: OpenAlexCLI | undefined;
@@ -203,7 +259,7 @@ export class OpenAlexCLI {
   // defaultFilenameFormat removed - now using URL encoding only
 
   constructor(dataPath?: string) {
-    this.dataPath = dataPath ?? join(projectRoot, STATIC_DATA_PATH);
+    this.dataPath = dataPath ?? getStaticDataPath();
     // TODO: Re-enable when openalex-client package is fixed
     // this.cachedClient = new CachedOpenAlexClient();
   }

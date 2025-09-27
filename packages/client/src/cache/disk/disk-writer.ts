@@ -4,11 +4,29 @@
  * with atomic operations, file locking, and metadata generation
  */
 
-import { promises as fs } from 'node:fs';
-import { join, dirname } from 'node:path';
-import { randomUUID } from 'node:crypto';
 import type { EntityType, OpenAlexResponse, OpenAlexEntity } from '../../types';
 import { logger, logError } from '../../internal/logger';
+
+// Dynamic imports for Node.js modules to avoid browser bundling issues
+let fs: any;
+let path: any;
+let crypto: any;
+
+/**
+ * Initialize Node.js modules (required before using any file operations)
+ */
+async function initializeNodeModules(): Promise<void> {
+  if (!fs || !path || !crypto) {
+    const [fsModule, pathModule, cryptoModule] = await Promise.all([
+      import('node:fs'),
+      import('node:path'),
+      import('node:crypto')
+    ]);
+    fs = fsModule.promises;
+    path = pathModule;
+    crypto = cryptoModule;
+  }
+}
 
 /**
  * Configuration for disk cache writer
@@ -141,6 +159,9 @@ export class DiskCacheWriter {
    */
   private async _writeToCache(data: InterceptedData): Promise<void> {
     try {
+      // Initialize Node.js modules
+      await initializeNodeModules();
+
       // Validate input data
       this.validateInterceptedData(data);
 
@@ -160,7 +181,7 @@ export class DiskCacheWriter {
 
       try {
         // Ensure directory structure exists
-        await this.ensureDirectoryStructure(dirname(filePaths.dataFile));
+        await this.ensureDirectoryStructure(path.dirname(filePaths.dataFile));
 
         // Prepare content and metadata
         const content = JSON.stringify(data.responseData, null, 2);
@@ -359,8 +380,8 @@ export class DiskCacheWriter {
     // Sanitize entity ID for filesystem
     const sanitizedId = this.sanitizeFilename(entityId);
 
-    const dataFile = join(this.config.basePath, entityType, `${sanitizedId}.json`);
-    const metadataFile = join(this.config.basePath, entityType, `${sanitizedId}.meta.json`);
+    const dataFile = path.join(this.config.basePath, entityType, `${sanitizedId}.json`);
+    const metadataFile = path.join(this.config.basePath, entityType, `${sanitizedId}.meta.json`);
 
     return { dataFile, metadataFile };
   }
@@ -393,7 +414,7 @@ export class DiskCacheWriter {
    * Write file atomically using temporary file
    */
   private async writeFileAtomic(filePath: string, content: string): Promise<void> {
-    const tempPath = `${filePath}.tmp.${randomUUID()}`;
+    const tempPath = `${filePath}.tmp.${crypto.randomUUID()}`;
 
     try {
       // Write to temporary file first
@@ -419,7 +440,7 @@ export class DiskCacheWriter {
    * Acquire file lock for concurrent access control
    */
   private async acquireFileLock(filePath: string): Promise<string> {
-    const lockId = randomUUID();
+    const lockId = crypto.randomUUID();
     const maxWaitTime = this.config.lockTimeoutMs;
     const startTime = Date.now();
 
@@ -470,8 +491,7 @@ export class DiskCacheWriter {
    * Generate content hash for integrity verification
    */
   private async generateContentHash(content: string): Promise<string> {
-    const { createHash } = await import('node:crypto');
-    return createHash('sha256').update(content, 'utf8').digest('hex');
+    return crypto.createHash('sha256').update(content, 'utf8').digest('hex');
   }
 
   /**

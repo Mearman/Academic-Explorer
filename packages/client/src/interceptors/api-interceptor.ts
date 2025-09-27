@@ -128,9 +128,41 @@ export class ApiInterceptor {
    * Check if running in development mode
    */
   private isDevelopmentMode(): boolean {
-    return process.env.NODE_ENV === "development" ||
-           process.env.NODE_ENV === "dev" ||
-           process.env.NODE_ENV === undefined;
+    // Check NODE_ENV first (most reliable)
+    if (typeof process !== 'undefined' && process.env?.NODE_ENV) {
+      const nodeEnv = process.env.NODE_ENV.toLowerCase();
+      if (nodeEnv === 'development' || nodeEnv === 'dev') return true;
+      if (nodeEnv === 'production') return false;
+    }
+
+    // Check Vite's __DEV__ flag
+    if (typeof globalThis !== 'undefined' && '__DEV__' in globalThis) {
+      try {
+        const devFlag = (globalThis as any).__DEV__;
+        return devFlag === true;
+      } catch {
+        // Ignore errors if __DEV__ is not accessible
+      }
+    }
+
+    // Check browser-based indicators
+    try {
+      if (typeof globalThis !== 'undefined' && 'window' in globalThis) {
+        const win = (globalThis as any).window;
+        if (win && win.location && win.location.hostname) {
+          const hostname = win.location.hostname;
+          // Local development indicators
+          if (hostname === 'localhost' || hostname === '127.0.0.1' || hostname.endsWith('.local')) {
+            return true;
+          }
+        }
+      }
+    } catch {
+      // Ignore errors in browser detection
+    }
+
+    // Default to development if uncertain (fail-safe for dev mode)
+    return true;
   }
 
   /**
