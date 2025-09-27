@@ -1,14 +1,15 @@
 import { createFileRoute } from "@tanstack/react-router"
 import { useState } from "react"
 import { useQuery } from "@tanstack/react-query"
-import { Title, Text, Stack, Alert, Container, Card } from "@mantine/core"
+import { Title, Text, Stack, Alert, Container, Card, Badge, Anchor } from "@mantine/core"
 import { IconInfoCircle } from "@tabler/icons-react"
 import { SearchInterface } from "../components/search/SearchInterface"
 import { BaseTable } from "../components/tables/BaseTable"
 import { formatPublicationYear, formatLargeNumber } from "@academic-explorer/utils"
 import { pageTitle, pageDescription } from "../styles/layout.css"
 import type { ColumnDef } from "@tanstack/react-table"
-import { logger } from "@academic-explorer/utils";
+import { logger } from "@academic-explorer/utils"
+import { cachedOpenAlex, type Work, createWorksQuery, type WorksFilters } from "@academic-explorer/client"
 
 interface SearchFilters {
   query: string;
@@ -16,54 +17,54 @@ interface SearchFilters {
   endDate: Date | null;
 }
 
-// Mock academic work data for demonstration
-interface MockWork {
-  id: string;
-  title: string;
-  display_name: string;
-  authors: string[];
-  publication_year: number;
-  cited_by_count: number;
-  journal: string;
-  is_open_access: boolean;
-}
+// Real OpenAlex API search function
+const searchWorks = async (filters: SearchFilters): Promise<Work[]> => {
+	if (!filters.query.trim()) return [];
 
-// Mock data generator
-const generateMockData = (query: string): MockWork[] => {
-	if (!query.trim()) return [];
+	try {
+		logger.debug('search', 'Searching works with filters', { filters });
 
-	return [
-		{
-			id: "1",
-			title: `Advanced Research on ${query}: A Computational Approach`,
-			display_name: `Advanced Research on ${query}: A Computational Approach`,
-			authors: ["Dr. Sarah Johnson", "Prof. Michael Chen"],
-			publication_year: 2023,
-			cited_by_count: 47,
-			journal: "Journal of Advanced Computing",
-			is_open_access: true,
-		},
-		{
-			id: "2",
-			title: `Machine Learning Applications in ${query} Studies`,
-			display_name: `Machine Learning Applications in ${query} Studies`,
-			authors: ["Dr. Emily Rodriguez", "Prof. David Kim", "Dr. Lisa Wang"],
-			publication_year: 2022,
-			cited_by_count: 89,
-			journal: "Nature Machine Intelligence",
-			is_open_access: false,
-		},
-		{
-			id: "3",
-			title: `The Future of ${query}: Trends and Predictions`,
-			display_name: `The Future of ${query}: Trends and Predictions`,
-			authors: ["Prof. Robert Taylor"],
-			publication_year: 2024,
-			cited_by_count: 23,
-			journal: "Science Advances",
-			is_open_access: true,
-		},
-	];
+		const queryBuilder = createWorksQuery();
+
+		// Add search query
+		queryBuilder.addSearch('display_name.search' as keyof WorksFilters, filters.query);
+
+		// Add date filters if provided
+		if (filters.startDate) {
+			const startYear = filters.startDate.getFullYear();
+			queryBuilder.addFilter('publication_year', `>=${startYear}` as any);
+		}
+
+		if (filters.endDate) {
+			const endYear = filters.endDate.getFullYear();
+			queryBuilder.addFilter('publication_year', `<=${endYear}` as any);
+		}
+
+		const response = await cachedOpenAlex.client.works.searchWorks(filters.query, {
+			filters: queryBuilder.build(),
+			select: [
+				'id',
+				'display_name',
+				'authorships',
+				'publication_year',
+				'cited_by_count',
+				'primary_location',
+				'open_access',
+				'doi'
+			],
+			per_page: 20
+		});
+
+		logger.debug('search', 'Search completed', {
+			resultsCount: response.results.length,
+			total: response.meta.count
+		});
+
+		return response.results;
+	} catch (error) {
+		logger.error('search', 'Search failed', { error, filters });
+		throw error;
+	}
 };
 
 function SearchPage() {
@@ -73,46 +74,66 @@ function SearchPage() {
 		endDate: null,
 	});
 
-	const { data: searchResults, isLoading } = useQuery({
+	const { data: searchResults, isLoading, error } = useQuery({
 		queryKey: ["search", searchFilters],
-		queryFn: () => {
-			// Simulate API delay
-			return new Promise<MockWork[]>((resolve) => {
-				setTimeout(() => {
-					resolve(generateMockData(searchFilters.query));
-				}, 800);
-			});
-		},
+		queryFn: () => searchWorks(searchFilters),
 		enabled: Boolean(searchFilters.query.trim()),
+		retry: 1,
+		staleTime: 5 * 60 * 1000, // 5 minutes
 	});
 
-	const columns: ColumnDef<MockWork>[] = [
+	const columns: ColumnDef<Work>[] = [
 		{
-			accessorKey: "title",
+			accessorKey: "display_name",
 			header: "Title",
-			cell: ({ row }) => (
-				<div>
-					<Text fw={500} size="sm" lineClamp={2}>
-						{row.original.title}
-					</Text>
-					<Text size="xs" c="dimmed">
-						{row.original.authors.join(", ")}
-					</Text>
-				</div>
-			),
+			cell: ({ row }) => {
+				const work = row.original;
+				const authors = work.authorships?.slice(0, 3).map(a => a.author?.display_name).filter(Boolean) || [];
+				const moreAuthors = (work.authorships?.length || 0) > 3;
+
+				return (
+					<div>
+						<Text fw={500} size="sm" lineClamp={2}>
+							{work.display_name}
+						</Text>
+						<Text size="xs" c="dimmed">
+							{authors.length > 0 ? (
+								<span>
+									{authors.join(", ")}
+									{moreAuthors && ` +${(work.authorships?.length || 0) - 3} more`}
+								</span>
+							) : (
+								"No authors listed"
+							)}
+						</Text>
+						{work.doi && (
+							<Anchor href={`https://doi.org/${work.doi}`} target="_blank" size="xs" c="dimmed">
+								DOI: {work.doi}
+							</Anchor>
+						)}
+					</div>
+				);
+			},
 		},
 		{
-			accessorKey: "journal",
-			header: "Journal",
-			cell: ({ row }) => (
-				<Text size="sm">{row.original.journal}</Text>
-			),
+			accessorKey: "primary_location",
+			header: "Source",
+			cell: ({ row }) => {
+				const location = row.original.primary_location;
+				return (
+					<Text size="sm">
+						{location?.source?.display_name || "Unknown"}
+					</Text>
+				);
+			},
 		},
 		{
 			accessorKey: "publication_year",
 			header: "Year",
 			cell: ({ row }) => (
-				<Text size="sm">{formatPublicationYear(row.original.publication_year)}</Text>
+				<Text size="sm">
+					{row.original.publication_year ? formatPublicationYear(row.original.publication_year) : "N/A"}
+				</Text>
 			),
 		},
 		{
@@ -120,22 +141,26 @@ function SearchPage() {
 			header: "Citations",
 			cell: ({ row }) => (
 				<Text size="sm" fw={500}>
-					{formatLargeNumber(row.original.cited_by_count)}
+					{formatLargeNumber(row.original.cited_by_count || 0)}
 				</Text>
 			),
 		},
 		{
-			accessorKey: "is_open_access",
+			accessorKey: "open_access",
 			header: "Access",
-			cell: ({ row }) => (
-				<Text
-					size="sm"
-					c={row.original.is_open_access ? "green" : "gray"}
-					fw={row.original.is_open_access ? 500 : 400}
-				>
-					{row.original.is_open_access ? "Open Access" : "Closed"}
-				</Text>
-			),
+			cell: ({ row }) => {
+				const isOpen = row.original.open_access?.is_oa || false;
+
+				return (
+					<Badge
+						size="sm"
+						color={isOpen ? "green" : "gray"}
+						variant={isOpen ? "light" : "outline"}
+					>
+						{isOpen ? "Open Access" : "Closed"}
+					</Badge>
+				);
+			},
 		},
 	];
 
@@ -151,11 +176,11 @@ function SearchPage() {
 			<Stack gap="xl">
 				<div>
 					<Title order={1} className={pageTitle}>
-            Academic Search Demo
+            Academic Search
 					</Title>
 					<Text className={pageDescription}>
-            Explore Phase 1 functionality: TanStack React Table, Mantine Dates, enhanced search utilities,
-            and debounced search with date filtering.
+            Search the OpenAlex database of academic works with advanced filtering capabilities.
+            Results are cached for improved performance.
 					</Text>
 				</div>
 
@@ -170,8 +195,19 @@ function SearchPage() {
 					<Card withBorder>
 						{isLoading ? (
 							<Text ta="center" py="xl">
-                Searching...
+                Searching OpenAlex database...
 							</Text>
+						) : error ? (
+							<Alert
+								icon={<IconInfoCircle />}
+								title="Search Error"
+								color="red"
+								variant="light"
+							>
+								<Text size="sm">
+									Failed to search OpenAlex: {String(error)}. Please try again.
+								</Text>
+							</Alert>
 						) : hasResults ? (
 							<Stack>
 								<Text size="sm" c="dimmed">
@@ -189,7 +225,7 @@ function SearchPage() {
 									searchable={false} // Search is handled by the SearchInterface
 									onRowClick={(work) => {
 										logger.debug("ui", "Work clicked in search results", { workId: work.id, workTitle: work.display_name }, "SearchPage");
-										// Could navigate to work detail page
+										// Navigate to work detail page if needed
 									}}
 								/>
 							</Stack>
@@ -215,8 +251,8 @@ function SearchPage() {
                 Enter a search term to explore academic literature
 							</Text>
 							<Text size="sm" c="dimmed" ta="center">
-                This demo showcases the Phase 1 enhancements including debounced search,
-                date filtering, sortable tables, and enhanced data utilities.
+                Search millions of academic works from OpenAlex with real-time results,
+                date filtering, and advanced search capabilities.
 							</Text>
 						</Stack>
 					</Card>
