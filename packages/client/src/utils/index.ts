@@ -30,3 +30,22 @@ export * from "./transformers";
 
 // Re-export hydration helpers
 export * from "./hydration-helpers";
+
+// Re-export ID resolver utilities
+export {
+	IdResolver,
+	createIdResolver,
+	isValidDOI,
+	isValidORCID,
+	isValidROR,
+	isValidISSN,
+	isValidPMID,
+	isValidWikidata,
+	isValidOpenAlex,
+	validateExternalId,
+	normalizeExternalId,
+	normalizeToUrl,
+	type ExternalIdType,
+	type IdValidationResult,
+	type IdValidationConfig
+} from "./id-resolver";
