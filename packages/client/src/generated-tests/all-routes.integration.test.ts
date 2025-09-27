@@ -7,7 +7,7 @@
  * IMPORTANT: These tests require internet connection and respect OpenAlex rate limits.
  * Run sparingly and consider using environment variables to control execution.
  *
- * Generated on: 2025-09-27T10:13:56.969Z
+ * Generated on: 2025-09-27T10:30:34.493Z
  * Total test cases: 308
  */
 
@@ -90,10 +90,12 @@ conditionalDescribe("OpenAlex API Integration Tests", () => {
           } else {
             // Collection operations
             if (api.getWorks) {
+              
               result = await api.getWorks({
                 per_page: 1,
                 select: ["id", "display_name"]
               });
+              
             }
           }
 
@@ -143,10 +145,12 @@ conditionalDescribe("OpenAlex API Integration Tests", () => {
           } else {
             // Collection operations
             if (api.getWorks) {
+              
               result = await api.getWorks({
                 per_page: 1,
                 select: ["id", "display_name"]
               });
+              
             }
           }
 
@@ -196,10 +200,12 @@ conditionalDescribe("OpenAlex API Integration Tests", () => {
           } else {
             // Collection operations
             if (api.getWorks) {
+              
               result = await api.getWorks({
                 per_page: 1,
                 select: ["id", "display_name"]
               });
+              
             }
           }
 
@@ -249,10 +255,12 @@ conditionalDescribe("OpenAlex API Integration Tests", () => {
           } else {
             // Collection operations
             if (api.getWorks) {
+              
               result = await api.getWorks({
                 per_page: 1,
                 select: ["id", "display_name"]
               });
+              
             }
           }
 
@@ -302,10 +310,12 @@ conditionalDescribe("OpenAlex API Integration Tests", () => {
           } else {
             // Collection operations
             if (api.getWorks) {
+              
               result = await api.getWorks({
                 per_page: 1,
                 select: ["id", "display_name"]
               });
+              
             }
           }
 
@@ -359,10 +369,12 @@ conditionalDescribe("OpenAlex API Integration Tests", () => {
           } else {
             // Collection operations
             if (api.getAuthors) {
+              
               result = await api.getAuthors({
                 per_page: 1,
                 select: ["id", "display_name"]
               });
+              
             }
           }
 
@@ -412,10 +424,12 @@ conditionalDescribe("OpenAlex API Integration Tests", () => {
           } else {
             // Collection operations
             if (api.getAuthors) {
+              
               result = await api.getAuthors({
                 per_page: 1,
                 select: ["id", "display_name"]
               });
+              
             }
           }
 
@@ -465,10 +479,12 @@ conditionalDescribe("OpenAlex API Integration Tests", () => {
           } else {
             // Collection operations
             if (api.getAuthors) {
+              
               result = await api.getAuthors({
                 per_page: 1,
                 select: ["id", "display_name"]
               });
+              
             }
           }
 
@@ -518,10 +534,12 @@ conditionalDescribe("OpenAlex API Integration Tests", () => {
           } else {
             // Collection operations
             if (api.getAuthors) {
+              
               result = await api.getAuthors({
                 per_page: 1,
                 select: ["id", "display_name"]
               });
+              
             }
           }
 
@@ -571,10 +589,12 @@ conditionalDescribe("OpenAlex API Integration Tests", () => {
           } else {
             // Collection operations
             if (api.getAuthors) {
+              
               result = await api.getAuthors({
                 per_page: 1,
                 select: ["id", "display_name"]
               });
+              
             }
           }
 
@@ -628,10 +648,12 @@ conditionalDescribe("OpenAlex API Integration Tests", () => {
           } else {
             // Collection operations
             if (api.getConcepts) {
+              
               result = await api.getConcepts({
                 per_page: 1,
                 select: ["id", "display_name"]
               });
+              
             }
           }
 
@@ -681,10 +703,12 @@ conditionalDescribe("OpenAlex API Integration Tests", () => {
           } else {
             // Collection operations
             if (api.getConcepts) {
+              
               result = await api.getConcepts({
                 per_page: 1,
                 select: ["id", "display_name"]
               });
+              
             }
           }
 
@@ -734,10 +758,12 @@ conditionalDescribe("OpenAlex API Integration Tests", () => {
           } else {
             // Collection operations
             if (api.getConcepts) {
+              
               result = await api.getConcepts({
                 per_page: 1,
                 select: ["id", "display_name"]
               });
+              
             }
           }
 
@@ -787,10 +813,12 @@ conditionalDescribe("OpenAlex API Integration Tests", () => {
           } else {
             // Collection operations
             if (api.getConcepts) {
+              
               result = await api.getConcepts({
                 per_page: 1,
                 select: ["id", "display_name"]
               });
+              
             }
           }
 
@@ -840,10 +868,12 @@ conditionalDescribe("OpenAlex API Integration Tests", () => {
           } else {
             // Collection operations
             if (api.getConcepts) {
+              
               result = await api.getConcepts({
                 per_page: 1,
                 select: ["id", "display_name"]
               });
+              
             }
           }
 
@@ -897,10 +927,12 @@ conditionalDescribe("OpenAlex API Integration Tests", () => {
           } else {
             // Collection operations
             if (api.getFunders) {
+              
               result = await api.getFunders({
                 per_page: 1,
                 select: ["id", "display_name"]
               });
+              
             }
           }
 
@@ -950,10 +982,12 @@ conditionalDescribe("OpenAlex API Integration Tests", () => {
           } else {
             // Collection operations
             if (api.getFunders) {
+              
               result = await api.getFunders({
                 per_page: 1,
                 select: ["id", "display_name"]
               });
+              
             }
           }
 
@@ -1003,10 +1037,12 @@ conditionalDescribe("OpenAlex API Integration Tests", () => {
           } else {
             // Collection operations
             if (api.getFunders) {
+              
               result = await api.getFunders({
                 per_page: 1,
                 select: ["id", "display_name"]
               });
+              
             }
           }
 
@@ -1056,10 +1092,12 @@ conditionalDescribe("OpenAlex API Integration Tests", () => {
           } else {
             // Collection operations
             if (api.getFunders) {
+              
               result = await api.getFunders({
                 per_page: 1,
                 select: ["id", "display_name"]
               });
+              
             }
           }
 
@@ -1109,10 +1147,12 @@ conditionalDescribe("OpenAlex API Integration Tests", () => {
           } else {
             // Collection operations
             if (api.getFunders) {
+              
               result = await api.getFunders({
                 per_page: 1,
                 select: ["id", "display_name"]
               });
+              
             }
           }
 
@@ -1166,10 +1206,12 @@ conditionalDescribe("OpenAlex API Integration Tests", () => {
           } else {
             // Collection operations
             if (api.getInstitutions) {
+              
               result = await api.getInstitutions({
                 per_page: 1,
                 select: ["id", "display_name"]
               });
+              
             }
           }
 
@@ -1219,10 +1261,12 @@ conditionalDescribe("OpenAlex API Integration Tests", () => {
           } else {
             // Collection operations
             if (api.getInstitutions) {
+              
               result = await api.getInstitutions({
                 per_page: 1,
                 select: ["id", "display_name"]
               });
+              
             }
           }
 
@@ -1272,10 +1316,12 @@ conditionalDescribe("OpenAlex API Integration Tests", () => {
           } else {
             // Collection operations
             if (api.getInstitutions) {
+              
               result = await api.getInstitutions({
                 per_page: 1,
                 select: ["id", "display_name"]
               });
+              
             }
           }
 
@@ -1325,10 +1371,12 @@ conditionalDescribe("OpenAlex API Integration Tests", () => {
           } else {
             // Collection operations
             if (api.getInstitutions) {
+              
               result = await api.getInstitutions({
                 per_page: 1,
                 select: ["id", "display_name"]
               });
+              
             }
           }
 
@@ -1378,10 +1426,12 @@ conditionalDescribe("OpenAlex API Integration Tests", () => {
           } else {
             // Collection operations
             if (api.getInstitutions) {
+              
               result = await api.getInstitutions({
                 per_page: 1,
                 select: ["id", "display_name"]
               });
+              
             }
           }
 
@@ -1435,10 +1485,12 @@ conditionalDescribe("OpenAlex API Integration Tests", () => {
           } else {
             // Collection operations
             if (api.getPublishers) {
+              
               result = await api.getPublishers({
                 per_page: 1,
                 select: ["id", "display_name"]
               });
+              
             }
           }
 
@@ -1488,10 +1540,12 @@ conditionalDescribe("OpenAlex API Integration Tests", () => {
           } else {
             // Collection operations
             if (api.getPublishers) {
+              
               result = await api.getPublishers({
                 per_page: 1,
                 select: ["id", "display_name"]
               });
+              
             }
           }
 
@@ -1541,10 +1595,12 @@ conditionalDescribe("OpenAlex API Integration Tests", () => {
           } else {
             // Collection operations
             if (api.getPublishers) {
+              
               result = await api.getPublishers({
                 per_page: 1,
                 select: ["id", "display_name"]
               });
+              
             }
           }
 
@@ -1594,10 +1650,12 @@ conditionalDescribe("OpenAlex API Integration Tests", () => {
           } else {
             // Collection operations
             if (api.getPublishers) {
+              
               result = await api.getPublishers({
                 per_page: 1,
                 select: ["id", "display_name"]
               });
+              
             }
           }
 
@@ -1647,10 +1705,12 @@ conditionalDescribe("OpenAlex API Integration Tests", () => {
           } else {
             // Collection operations
             if (api.getPublishers) {
+              
               result = await api.getPublishers({
                 per_page: 1,
                 select: ["id", "display_name"]
               });
+              
             }
           }
 
@@ -1704,10 +1764,12 @@ conditionalDescribe("OpenAlex API Integration Tests", () => {
           } else {
             // Collection operations
             if (api.getSources) {
+              
               result = await api.getSources({
                 per_page: 1,
                 select: ["id", "display_name"]
               });
+              
             }
           }
 
@@ -1757,10 +1819,12 @@ conditionalDescribe("OpenAlex API Integration Tests", () => {
           } else {
             // Collection operations
             if (api.getSources) {
+              
               result = await api.getSources({
                 per_page: 1,
                 select: ["id", "display_name"]
               });
+              
             }
           }
 
@@ -1810,10 +1874,12 @@ conditionalDescribe("OpenAlex API Integration Tests", () => {
           } else {
             // Collection operations
             if (api.getSources) {
+              
               result = await api.getSources({
                 per_page: 1,
                 select: ["id", "display_name"]
               });
+              
             }
           }
 
@@ -1863,10 +1929,12 @@ conditionalDescribe("OpenAlex API Integration Tests", () => {
           } else {
             // Collection operations
             if (api.getSources) {
+              
               result = await api.getSources({
                 per_page: 1,
                 select: ["id", "display_name"]
               });
+              
             }
           }
 
@@ -1920,10 +1988,12 @@ conditionalDescribe("OpenAlex API Integration Tests", () => {
           } else {
             // Collection operations
             if (api.getKeywords) {
+              
               result = await api.getKeywords({
                 per_page: 1,
                 select: ["id", "display_name"]
               });
+              
             }
           }
 
@@ -1973,10 +2043,12 @@ conditionalDescribe("OpenAlex API Integration Tests", () => {
           } else {
             // Collection operations
             if (api.getKeywords) {
+              
               result = await api.getKeywords({
                 per_page: 1,
                 select: ["id", "display_name"]
               });
+              
             }
           }
 
@@ -2026,10 +2098,12 @@ conditionalDescribe("OpenAlex API Integration Tests", () => {
           } else {
             // Collection operations
             if (api.getKeywords) {
+              
               result = await api.getKeywords({
                 per_page: 1,
                 select: ["id", "display_name"]
               });
+              
             }
           }
 
@@ -2079,10 +2153,12 @@ conditionalDescribe("OpenAlex API Integration Tests", () => {
           } else {
             // Collection operations
             if (api.getKeywords) {
+              
               result = await api.getKeywords({
                 per_page: 1,
                 select: ["id", "display_name"]
               });
+              
             }
           }
 
@@ -2140,10 +2216,12 @@ conditionalDescribe("OpenAlex API Integration Tests", () => {
           } else {
             // Collection operations
             if (api.getTopics) {
+              
               result = await api.getTopics({
                 per_page: 1,
                 select: ["id", "display_name"]
               });
+              
             }
           }
 
@@ -2193,10 +2271,12 @@ conditionalDescribe("OpenAlex API Integration Tests", () => {
           } else {
             // Collection operations
             if (api.getTopics) {
+              
               result = await api.getTopics({
                 per_page: 1,
                 select: ["id", "display_name"]
               });
+              
             }
           }
 
@@ -2246,10 +2326,12 @@ conditionalDescribe("OpenAlex API Integration Tests", () => {
           } else {
             // Collection operations
             if (api.getTopics) {
+              
               result = await api.getTopics({
                 per_page: 1,
                 select: ["id", "display_name"]
               });
+              
             }
           }
 
@@ -2299,10 +2381,12 @@ conditionalDescribe("OpenAlex API Integration Tests", () => {
           } else {
             // Collection operations
             if (api.getTopics) {
+              
               result = await api.getTopics({
                 per_page: 1,
                 select: ["id", "display_name"]
               });
+              
             }
           }
 

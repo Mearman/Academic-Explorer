@@ -8,7 +8,7 @@
  * - All parameter combinations (filters, pagination, field selection, etc.)
  * - External ID support (DOI, ORCID, ROR, ISSN, Wikidata, PMID)
  *
- * Generated on: 2025-09-27T10:13:56.964Z
+ * Generated on: 2025-09-27T10:30:34.489Z
  * Total test cases: 308
  */
 
@@ -116,9 +116,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<Work>("works", true);
 
         if (true) {
+          
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<Work>);
+          
         } else {
+          
           mockClient.getById.mockResolvedValue(mockResponse as Work);
+          
         }
 
         // Extract the expected parameters from the path
@@ -159,7 +163,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getWorks) {
+              
               result = await api.getWorks(expectedParams);
+              
             }
           }
 
@@ -168,9 +174,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (true) {
+            
             expect(mockClient.getResponse).toHaveBeenCalled();
+            
           } else {
+            
             expect(mockClient.getById).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -195,9 +205,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (true) {
+          
           mockClient.getResponse.mockRejectedValue(error);
+          
         } else {
+          
           mockClient.getById.mockRejectedValue(error);
+          
         }
 
         const api = apis.works as any;
@@ -209,7 +223,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getWorks) {
+              
               await expect(api.getWorks()).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -228,9 +244,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<Work>("works", true);
 
         if (true) {
+          
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<Work>);
+          
         } else {
+          
           mockClient.getById.mockResolvedValue(mockResponse as Work);
+          
         }
 
         // Extract the expected parameters from the path
@@ -271,7 +291,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getWorks) {
+              
               result = await api.getWorks(expectedParams);
+              
             }
           }
 
@@ -280,9 +302,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (true) {
+            
             expect(mockClient.getResponse).toHaveBeenCalled();
+            
           } else {
+            
             expect(mockClient.getById).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -346,9 +372,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (true) {
+          
           mockClient.getResponse.mockRejectedValue(error);
+          
         } else {
+          
           mockClient.getById.mockRejectedValue(error);
+          
         }
 
         const api = apis.works as any;
@@ -360,7 +390,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getWorks) {
+              
               await expect(api.getWorks()).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -379,9 +411,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<Work>("works", true);
 
         if (true) {
+          
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<Work>);
+          
         } else {
+          
           mockClient.getById.mockResolvedValue(mockResponse as Work);
+          
         }
 
         // Extract the expected parameters from the path
@@ -422,7 +458,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getWorks) {
+              
               result = await api.getWorks(expectedParams);
+              
             }
           }
 
@@ -431,9 +469,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (true) {
+            
             expect(mockClient.getResponse).toHaveBeenCalled();
+            
           } else {
+            
             expect(mockClient.getById).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -497,9 +539,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (true) {
+          
           mockClient.getResponse.mockRejectedValue(error);
+          
         } else {
+          
           mockClient.getById.mockRejectedValue(error);
+          
         }
 
         const api = apis.works as any;
@@ -511,7 +557,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getWorks) {
+              
               await expect(api.getWorks()).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -530,9 +578,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<Work>("works", true);
 
         if (true) {
+          
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<Work>);
+          
         } else {
+          
           mockClient.getById.mockResolvedValue(mockResponse as Work);
+          
         }
 
         // Extract the expected parameters from the path
@@ -573,7 +625,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getWorks) {
+              
               result = await api.getWorks(expectedParams);
+              
             }
           }
 
@@ -582,9 +636,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (true) {
+            
             expect(mockClient.getResponse).toHaveBeenCalled();
+            
           } else {
+            
             expect(mockClient.getById).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -609,9 +667,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (true) {
+          
           mockClient.getResponse.mockRejectedValue(error);
+          
         } else {
+          
           mockClient.getById.mockRejectedValue(error);
+          
         }
 
         const api = apis.works as any;
@@ -623,7 +685,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getWorks) {
+              
               await expect(api.getWorks()).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -642,9 +706,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<Work>("works", true);
 
         if (true) {
+          
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<Work>);
+          
         } else {
+          
           mockClient.getById.mockResolvedValue(mockResponse as Work);
+          
         }
 
         // Extract the expected parameters from the path
@@ -685,7 +753,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getWorks) {
+              
               result = await api.getWorks(expectedParams);
+              
             }
           }
 
@@ -694,9 +764,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (true) {
+            
             expect(mockClient.getResponse).toHaveBeenCalled();
+            
           } else {
+            
             expect(mockClient.getById).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -721,9 +795,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (true) {
+          
           mockClient.getResponse.mockRejectedValue(error);
+          
         } else {
+          
           mockClient.getById.mockRejectedValue(error);
+          
         }
 
         const api = apis.works as any;
@@ -735,7 +813,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getWorks) {
+              
               await expect(api.getWorks()).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -754,9 +834,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<Work>("works", true);
 
         if (true) {
+          
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<Work>);
+          
         } else {
+          
           mockClient.getById.mockResolvedValue(mockResponse as Work);
+          
         }
 
         // Extract the expected parameters from the path
@@ -797,7 +881,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getWorks) {
+              
               result = await api.getWorks(expectedParams);
+              
             }
           }
 
@@ -806,9 +892,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (true) {
+            
             expect(mockClient.getResponse).toHaveBeenCalled();
+            
           } else {
+            
             expect(mockClient.getById).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -833,9 +923,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (true) {
+          
           mockClient.getResponse.mockRejectedValue(error);
+          
         } else {
+          
           mockClient.getById.mockRejectedValue(error);
+          
         }
 
         const api = apis.works as any;
@@ -847,7 +941,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getWorks) {
+              
               await expect(api.getWorks()).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -866,9 +962,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<Work>("works", false);
 
         if (false) {
+          
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<Work>);
+          
         } else {
+          
           mockClient.getById.mockResolvedValue(mockResponse as Work);
+          
         }
 
         // Extract the expected parameters from the path
@@ -909,7 +1009,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getWorks) {
+              
               result = await api.getWorks(expectedParams);
+              
             }
           }
 
@@ -918,9 +1020,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (false) {
+            
             expect(mockClient.getResponse).toHaveBeenCalled();
+            
           } else {
+            
             expect(mockClient.getById).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -945,9 +1051,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (false) {
+          
           mockClient.getResponse.mockRejectedValue(error);
+          
         } else {
+          
           mockClient.getById.mockRejectedValue(error);
+          
         }
 
         const api = apis.works as any;
@@ -959,7 +1069,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getWorks) {
+              
               await expect(api.getWorks()).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -978,9 +1090,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<Work>("works", false);
 
         if (false) {
+          
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<Work>);
+          
         } else {
+          
           mockClient.getById.mockResolvedValue(mockResponse as Work);
+          
         }
 
         // Extract the expected parameters from the path
@@ -1021,7 +1137,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getWorks) {
+              
               result = await api.getWorks(expectedParams);
+              
             }
           }
 
@@ -1030,9 +1148,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (false) {
+            
             expect(mockClient.getResponse).toHaveBeenCalled();
+            
           } else {
+            
             expect(mockClient.getById).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -1057,9 +1179,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (false) {
+          
           mockClient.getResponse.mockRejectedValue(error);
+          
         } else {
+          
           mockClient.getById.mockRejectedValue(error);
+          
         }
 
         const api = apis.works as any;
@@ -1071,7 +1197,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getWorks) {
+              
               await expect(api.getWorks()).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -1090,9 +1218,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<Work>("works", false);
 
         if (false) {
+          
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<Work>);
+          
         } else {
+          
           mockClient.getById.mockResolvedValue(mockResponse as Work);
+          
         }
 
         // Extract the expected parameters from the path
@@ -1133,7 +1265,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getWorks) {
+              
               result = await api.getWorks(expectedParams);
+              
             }
           }
 
@@ -1142,9 +1276,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (false) {
+            
             expect(mockClient.getResponse).toHaveBeenCalled();
+            
           } else {
+            
             expect(mockClient.getById).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -1169,9 +1307,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (false) {
+          
           mockClient.getResponse.mockRejectedValue(error);
+          
         } else {
+          
           mockClient.getById.mockRejectedValue(error);
+          
         }
 
         const api = apis.works as any;
@@ -1183,7 +1325,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getWorks) {
+              
               await expect(api.getWorks()).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -1202,9 +1346,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<Work>("works", false);
 
         if (false) {
+          
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<Work>);
+          
         } else {
+          
           mockClient.getById.mockResolvedValue(mockResponse as Work);
+          
         }
 
         // Extract the expected parameters from the path
@@ -1245,7 +1393,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getWorks) {
+              
               result = await api.getWorks(expectedParams);
+              
             }
           }
 
@@ -1254,9 +1404,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (false) {
+            
             expect(mockClient.getResponse).toHaveBeenCalled();
+            
           } else {
+            
             expect(mockClient.getById).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -1281,9 +1435,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (false) {
+          
           mockClient.getResponse.mockRejectedValue(error);
+          
         } else {
+          
           mockClient.getById.mockRejectedValue(error);
+          
         }
 
         const api = apis.works as any;
@@ -1295,7 +1453,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getWorks) {
+              
               await expect(api.getWorks()).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -1314,9 +1474,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<Work>("works", true);
 
         if (true) {
+          
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<Work>);
+          
         } else {
+          
           mockClient.getById.mockResolvedValue(mockResponse as Work);
+          
         }
 
         // Extract the expected parameters from the path
@@ -1357,7 +1521,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getWorks) {
+              
               result = await api.getWorks(expectedParams);
+              
             }
           }
 
@@ -1366,9 +1532,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (true) {
+            
             expect(mockClient.getResponse).toHaveBeenCalled();
+            
           } else {
+            
             expect(mockClient.getById).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -1393,9 +1563,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (true) {
+          
           mockClient.getResponse.mockRejectedValue(error);
+          
         } else {
+          
           mockClient.getById.mockRejectedValue(error);
+          
         }
 
         const api = apis.works as any;
@@ -1407,7 +1581,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getWorks) {
+              
               await expect(api.getWorks()).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -1426,9 +1602,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<Work>("works", false);
 
         if (false) {
+          
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<Work>);
+          
         } else {
+          
           mockClient.getById.mockResolvedValue(mockResponse as Work);
+          
         }
 
         // Extract the expected parameters from the path
@@ -1469,7 +1649,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getWorks) {
+              
               result = await api.getWorks(expectedParams);
+              
             }
           }
 
@@ -1478,9 +1660,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (false) {
+            
             expect(mockClient.getResponse).toHaveBeenCalled();
+            
           } else {
+            
             expect(mockClient.getById).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -1522,9 +1708,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (false) {
+          
           mockClient.getResponse.mockRejectedValue(error);
+          
         } else {
+          
           mockClient.getById.mockRejectedValue(error);
+          
         }
 
         const api = apis.works as any;
@@ -1536,7 +1726,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getWorks) {
+              
               await expect(api.getWorks()).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -1555,9 +1747,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<Work>("works", true);
 
         if (true) {
+          
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<Work>);
+          
         } else {
+          
           mockClient.getById.mockResolvedValue(mockResponse as Work);
+          
         }
 
         // Extract the expected parameters from the path
@@ -1598,7 +1794,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getWorks) {
+              
               result = await api.getWorks(expectedParams);
+              
             }
           }
 
@@ -1607,9 +1805,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (true) {
+            
             expect(mockClient.getResponse).toHaveBeenCalled();
+            
           } else {
+            
             expect(mockClient.getById).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -1634,9 +1836,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (true) {
+          
           mockClient.getResponse.mockRejectedValue(error);
+          
         } else {
+          
           mockClient.getById.mockRejectedValue(error);
+          
         }
 
         const api = apis.works as any;
@@ -1648,7 +1854,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getWorks) {
+              
               await expect(api.getWorks()).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -1667,9 +1875,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<Work>("works", true);
 
         if (true) {
+          
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<Work>);
+          
         } else {
+          
           mockClient.getById.mockResolvedValue(mockResponse as Work);
+          
         }
 
         // Extract the expected parameters from the path
@@ -1710,7 +1922,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getWorks) {
+              
               result = await api.getWorks(expectedParams);
+              
             }
           }
 
@@ -1719,9 +1933,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (true) {
+            
             expect(mockClient.getResponse).toHaveBeenCalled();
+            
           } else {
+            
             expect(mockClient.getById).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -1768,9 +1986,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (true) {
+          
           mockClient.getResponse.mockRejectedValue(error);
+          
         } else {
+          
           mockClient.getById.mockRejectedValue(error);
+          
         }
 
         const api = apis.works as any;
@@ -1782,7 +2004,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getWorks) {
+              
               await expect(api.getWorks()).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -1801,9 +2025,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<Work>("works", true);
 
         if (true) {
+          
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<Work>);
+          
         } else {
+          
           mockClient.getById.mockResolvedValue(mockResponse as Work);
+          
         }
 
         // Extract the expected parameters from the path
@@ -1844,7 +2072,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getWorks) {
+              
               result = await api.getWorks(expectedParams);
+              
             }
           }
 
@@ -1853,9 +2083,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (true) {
+            
             expect(mockClient.getResponse).toHaveBeenCalled();
+            
           } else {
+            
             expect(mockClient.getById).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -1902,9 +2136,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (true) {
+          
           mockClient.getResponse.mockRejectedValue(error);
+          
         } else {
+          
           mockClient.getById.mockRejectedValue(error);
+          
         }
 
         const api = apis.works as any;
@@ -1916,7 +2154,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getWorks) {
+              
               await expect(api.getWorks()).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -1935,9 +2175,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<Work>("works", true);
 
         if (true) {
+          
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<Work>);
+          
         } else {
+          
           mockClient.getById.mockResolvedValue(mockResponse as Work);
+          
         }
 
         // Extract the expected parameters from the path
@@ -1978,7 +2222,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getWorks) {
+              
               result = await api.getWorks(expectedParams);
+              
             }
           }
 
@@ -1987,9 +2233,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (true) {
+            
             expect(mockClient.getResponse).toHaveBeenCalled();
+            
           } else {
+            
             expect(mockClient.getById).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -2036,9 +2286,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (true) {
+          
           mockClient.getResponse.mockRejectedValue(error);
+          
         } else {
+          
           mockClient.getById.mockRejectedValue(error);
+          
         }
 
         const api = apis.works as any;
@@ -2050,7 +2304,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getWorks) {
+              
               await expect(api.getWorks()).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -2069,9 +2325,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<Work>("works", true);
 
         if (true) {
+          
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<Work>);
+          
         } else {
+          
           mockClient.getById.mockResolvedValue(mockResponse as Work);
+          
         }
 
         // Extract the expected parameters from the path
@@ -2112,7 +2372,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getWorks) {
+              
               result = await api.getWorks(expectedParams);
+              
             }
           }
 
@@ -2121,9 +2383,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (true) {
+            
             expect(mockClient.getResponse).toHaveBeenCalled();
+            
           } else {
+            
             expect(mockClient.getById).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -2170,9 +2436,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (true) {
+          
           mockClient.getResponse.mockRejectedValue(error);
+          
         } else {
+          
           mockClient.getById.mockRejectedValue(error);
+          
         }
 
         const api = apis.works as any;
@@ -2184,7 +2454,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getWorks) {
+              
               await expect(api.getWorks()).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -2203,9 +2475,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<Work>("works", true);
 
         if (true) {
+          
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<Work>);
+          
         } else {
+          
           mockClient.getById.mockResolvedValue(mockResponse as Work);
+          
         }
 
         // Extract the expected parameters from the path
@@ -2246,7 +2522,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getWorks) {
+              
               result = await api.getWorks(expectedParams);
+              
             }
           }
 
@@ -2255,9 +2533,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (true) {
+            
             expect(mockClient.getResponse).toHaveBeenCalled();
+            
           } else {
+            
             expect(mockClient.getById).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -2304,9 +2586,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (true) {
+          
           mockClient.getResponse.mockRejectedValue(error);
+          
         } else {
+          
           mockClient.getById.mockRejectedValue(error);
+          
         }
 
         const api = apis.works as any;
@@ -2318,7 +2604,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getWorks) {
+              
               await expect(api.getWorks()).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -2337,9 +2625,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<Work>("works", true);
 
         if (true) {
+          
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<Work>);
+          
         } else {
+          
           mockClient.getById.mockResolvedValue(mockResponse as Work);
+          
         }
 
         // Extract the expected parameters from the path
@@ -2380,7 +2672,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getWorks) {
+              
               result = await api.getWorks(expectedParams);
+              
             }
           }
 
@@ -2389,9 +2683,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (true) {
+            
             expect(mockClient.getResponse).toHaveBeenCalled();
+            
           } else {
+            
             expect(mockClient.getById).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -2438,9 +2736,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (true) {
+          
           mockClient.getResponse.mockRejectedValue(error);
+          
         } else {
+          
           mockClient.getById.mockRejectedValue(error);
+          
         }
 
         const api = apis.works as any;
@@ -2452,7 +2754,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getWorks) {
+              
               await expect(api.getWorks()).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -2471,9 +2775,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<Work>("works", true);
 
         if (true) {
+          
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<Work>);
+          
         } else {
+          
           mockClient.getById.mockResolvedValue(mockResponse as Work);
+          
         }
 
         // Extract the expected parameters from the path
@@ -2514,7 +2822,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getWorks) {
+              
               result = await api.getWorks(expectedParams);
+              
             }
           }
 
@@ -2523,9 +2833,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (true) {
+            
             expect(mockClient.getResponse).toHaveBeenCalled();
+            
           } else {
+            
             expect(mockClient.getById).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -2572,9 +2886,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (true) {
+          
           mockClient.getResponse.mockRejectedValue(error);
+          
         } else {
+          
           mockClient.getById.mockRejectedValue(error);
+          
         }
 
         const api = apis.works as any;
@@ -2586,7 +2904,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getWorks) {
+              
               await expect(api.getWorks()).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -2605,9 +2925,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<Work>("works", true);
 
         if (true) {
+          
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<Work>);
+          
         } else {
+          
           mockClient.getById.mockResolvedValue(mockResponse as Work);
+          
         }
 
         // Extract the expected parameters from the path
@@ -2648,7 +2972,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getWorks) {
+              
               result = await api.getWorks(expectedParams);
+              
             }
           }
 
@@ -2657,9 +2983,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (true) {
+            
             expect(mockClient.getResponse).toHaveBeenCalled();
+            
           } else {
+            
             expect(mockClient.getById).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -2706,9 +3036,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (true) {
+          
           mockClient.getResponse.mockRejectedValue(error);
+          
         } else {
+          
           mockClient.getById.mockRejectedValue(error);
+          
         }
 
         const api = apis.works as any;
@@ -2720,7 +3054,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getWorks) {
+              
               await expect(api.getWorks()).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -2739,9 +3075,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<Work>("works", true);
 
         if (true) {
+          
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<Work>);
+          
         } else {
+          
           mockClient.getById.mockResolvedValue(mockResponse as Work);
+          
         }
 
         // Extract the expected parameters from the path
@@ -2782,7 +3122,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getWorks) {
+              
               result = await api.getWorks(expectedParams);
+              
             }
           }
 
@@ -2791,9 +3133,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (true) {
+            
             expect(mockClient.getResponse).toHaveBeenCalled();
+            
           } else {
+            
             expect(mockClient.getById).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -2840,9 +3186,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (true) {
+          
           mockClient.getResponse.mockRejectedValue(error);
+          
         } else {
+          
           mockClient.getById.mockRejectedValue(error);
+          
         }
 
         const api = apis.works as any;
@@ -2854,7 +3204,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getWorks) {
+              
               await expect(api.getWorks()).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -2873,9 +3225,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<Work>("works", true);
 
         if (true) {
+          
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<Work>);
+          
         } else {
+          
           mockClient.getById.mockResolvedValue(mockResponse as Work);
+          
         }
 
         // Extract the expected parameters from the path
@@ -2916,7 +3272,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getWorks) {
+              
               result = await api.getWorks(expectedParams);
+              
             }
           }
 
@@ -2925,9 +3283,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (true) {
+            
             expect(mockClient.getResponse).toHaveBeenCalled();
+            
           } else {
+            
             expect(mockClient.getById).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -2974,9 +3336,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (true) {
+          
           mockClient.getResponse.mockRejectedValue(error);
+          
         } else {
+          
           mockClient.getById.mockRejectedValue(error);
+          
         }
 
         const api = apis.works as any;
@@ -2988,7 +3354,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getWorks) {
+              
               await expect(api.getWorks()).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -3007,9 +3375,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<Work>("works", true);
 
         if (true) {
+          
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<Work>);
+          
         } else {
+          
           mockClient.getById.mockResolvedValue(mockResponse as Work);
+          
         }
 
         // Extract the expected parameters from the path
@@ -3050,7 +3422,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getWorks) {
+              
               result = await api.getWorks(expectedParams);
+              
             }
           }
 
@@ -3059,9 +3433,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (true) {
+            
             expect(mockClient.getResponse).toHaveBeenCalled();
+            
           } else {
+            
             expect(mockClient.getById).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -3108,9 +3486,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (true) {
+          
           mockClient.getResponse.mockRejectedValue(error);
+          
         } else {
+          
           mockClient.getById.mockRejectedValue(error);
+          
         }
 
         const api = apis.works as any;
@@ -3122,7 +3504,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getWorks) {
+              
               await expect(api.getWorks()).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -3141,9 +3525,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<Work>("works", true);
 
         if (true) {
+          
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<Work>);
+          
         } else {
+          
           mockClient.getById.mockResolvedValue(mockResponse as Work);
+          
         }
 
         // Extract the expected parameters from the path
@@ -3184,7 +3572,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getWorks) {
+              
               result = await api.getWorks(expectedParams);
+              
             }
           }
 
@@ -3193,9 +3583,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (true) {
+            
             expect(mockClient.getResponse).toHaveBeenCalled();
+            
           } else {
+            
             expect(mockClient.getById).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -3242,9 +3636,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (true) {
+          
           mockClient.getResponse.mockRejectedValue(error);
+          
         } else {
+          
           mockClient.getById.mockRejectedValue(error);
+          
         }
 
         const api = apis.works as any;
@@ -3256,7 +3654,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getWorks) {
+              
               await expect(api.getWorks()).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -3275,9 +3675,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<Work>("works", true);
 
         if (true) {
+          
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<Work>);
+          
         } else {
+          
           mockClient.getById.mockResolvedValue(mockResponse as Work);
+          
         }
 
         // Extract the expected parameters from the path
@@ -3318,7 +3722,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getWorks) {
+              
               result = await api.getWorks(expectedParams);
+              
             }
           }
 
@@ -3327,9 +3733,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (true) {
+            
             expect(mockClient.getResponse).toHaveBeenCalled();
+            
           } else {
+            
             expect(mockClient.getById).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -3376,9 +3786,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (true) {
+          
           mockClient.getResponse.mockRejectedValue(error);
+          
         } else {
+          
           mockClient.getById.mockRejectedValue(error);
+          
         }
 
         const api = apis.works as any;
@@ -3390,7 +3804,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getWorks) {
+              
               await expect(api.getWorks()).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -3409,9 +3825,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<Work>("works", true);
 
         if (true) {
+          
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<Work>);
+          
         } else {
+          
           mockClient.getById.mockResolvedValue(mockResponse as Work);
+          
         }
 
         // Extract the expected parameters from the path
@@ -3452,7 +3872,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getWorks) {
+              
               result = await api.getWorks(expectedParams);
+              
             }
           }
 
@@ -3461,9 +3883,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (true) {
+            
             expect(mockClient.getResponse).toHaveBeenCalled();
+            
           } else {
+            
             expect(mockClient.getById).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -3510,9 +3936,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (true) {
+          
           mockClient.getResponse.mockRejectedValue(error);
+          
         } else {
+          
           mockClient.getById.mockRejectedValue(error);
+          
         }
 
         const api = apis.works as any;
@@ -3524,7 +3954,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getWorks) {
+              
               await expect(api.getWorks()).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -3543,9 +3975,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<Work>("works", true);
 
         if (true) {
+          
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<Work>);
+          
         } else {
+          
           mockClient.getById.mockResolvedValue(mockResponse as Work);
+          
         }
 
         // Extract the expected parameters from the path
@@ -3586,7 +4022,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getWorks) {
+              
               result = await api.getWorks(expectedParams);
+              
             }
           }
 
@@ -3595,9 +4033,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (true) {
+            
             expect(mockClient.getResponse).toHaveBeenCalled();
+            
           } else {
+            
             expect(mockClient.getById).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -3644,9 +4086,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (true) {
+          
           mockClient.getResponse.mockRejectedValue(error);
+          
         } else {
+          
           mockClient.getById.mockRejectedValue(error);
+          
         }
 
         const api = apis.works as any;
@@ -3658,7 +4104,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getWorks) {
+              
               await expect(api.getWorks()).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -3677,9 +4125,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<Work>("works", true);
 
         if (true) {
+          
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<Work>);
+          
         } else {
+          
           mockClient.getById.mockResolvedValue(mockResponse as Work);
+          
         }
 
         // Extract the expected parameters from the path
@@ -3720,7 +4172,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getWorks) {
+              
               result = await api.getWorks(expectedParams);
+              
             }
           }
 
@@ -3729,9 +4183,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (true) {
+            
             expect(mockClient.getResponse).toHaveBeenCalled();
+            
           } else {
+            
             expect(mockClient.getById).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -3778,9 +4236,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (true) {
+          
           mockClient.getResponse.mockRejectedValue(error);
+          
         } else {
+          
           mockClient.getById.mockRejectedValue(error);
+          
         }
 
         const api = apis.works as any;
@@ -3792,7 +4254,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getWorks) {
+              
               await expect(api.getWorks()).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -3811,9 +4275,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<Work>("works", true);
 
         if (true) {
+          
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<Work>);
+          
         } else {
+          
           mockClient.getById.mockResolvedValue(mockResponse as Work);
+          
         }
 
         // Extract the expected parameters from the path
@@ -3854,7 +4322,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getWorks) {
+              
               result = await api.getWorks(expectedParams);
+              
             }
           }
 
@@ -3863,9 +4333,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (true) {
+            
             expect(mockClient.getResponse).toHaveBeenCalled();
+            
           } else {
+            
             expect(mockClient.getById).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -3912,9 +4386,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (true) {
+          
           mockClient.getResponse.mockRejectedValue(error);
+          
         } else {
+          
           mockClient.getById.mockRejectedValue(error);
+          
         }
 
         const api = apis.works as any;
@@ -3926,7 +4404,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getWorks) {
+              
               await expect(api.getWorks()).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -3945,9 +4425,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<Work>("works", true);
 
         if (true) {
+          
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<Work>);
+          
         } else {
+          
           mockClient.getById.mockResolvedValue(mockResponse as Work);
+          
         }
 
         // Extract the expected parameters from the path
@@ -3988,7 +4472,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getWorks) {
+              
               result = await api.getWorks(expectedParams);
+              
             }
           }
 
@@ -3997,9 +4483,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (true) {
+            
             expect(mockClient.getResponse).toHaveBeenCalled();
+            
           } else {
+            
             expect(mockClient.getById).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -4046,9 +4536,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (true) {
+          
           mockClient.getResponse.mockRejectedValue(error);
+          
         } else {
+          
           mockClient.getById.mockRejectedValue(error);
+          
         }
 
         const api = apis.works as any;
@@ -4060,7 +4554,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getWorks) {
+              
               await expect(api.getWorks()).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -4079,9 +4575,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<Work>("works", true);
 
         if (true) {
+          
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<Work>);
+          
         } else {
+          
           mockClient.getById.mockResolvedValue(mockResponse as Work);
+          
         }
 
         // Extract the expected parameters from the path
@@ -4122,7 +4622,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getWorks) {
+              
               result = await api.getWorks(expectedParams);
+              
             }
           }
 
@@ -4131,9 +4633,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (true) {
+            
             expect(mockClient.getResponse).toHaveBeenCalled();
+            
           } else {
+            
             expect(mockClient.getById).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -4180,9 +4686,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (true) {
+          
           mockClient.getResponse.mockRejectedValue(error);
+          
         } else {
+          
           mockClient.getById.mockRejectedValue(error);
+          
         }
 
         const api = apis.works as any;
@@ -4194,7 +4704,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getWorks) {
+              
               await expect(api.getWorks()).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -4213,9 +4725,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<Work>("works", true);
 
         if (true) {
+          
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<Work>);
+          
         } else {
+          
           mockClient.getById.mockResolvedValue(mockResponse as Work);
+          
         }
 
         // Extract the expected parameters from the path
@@ -4256,7 +4772,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getWorks) {
+              
               result = await api.getWorks(expectedParams);
+              
             }
           }
 
@@ -4265,9 +4783,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (true) {
+            
             expect(mockClient.getResponse).toHaveBeenCalled();
+            
           } else {
+            
             expect(mockClient.getById).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -4314,9 +4836,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (true) {
+          
           mockClient.getResponse.mockRejectedValue(error);
+          
         } else {
+          
           mockClient.getById.mockRejectedValue(error);
+          
         }
 
         const api = apis.works as any;
@@ -4328,7 +4854,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getWorks) {
+              
               await expect(api.getWorks()).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -4347,9 +4875,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<Work>("works", true);
 
         if (true) {
+          
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<Work>);
+          
         } else {
+          
           mockClient.getById.mockResolvedValue(mockResponse as Work);
+          
         }
 
         // Extract the expected parameters from the path
@@ -4390,7 +4922,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getWorks) {
+              
               result = await api.getWorks(expectedParams);
+              
             }
           }
 
@@ -4399,9 +4933,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (true) {
+            
             expect(mockClient.getResponse).toHaveBeenCalled();
+            
           } else {
+            
             expect(mockClient.getById).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -4448,9 +4986,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (true) {
+          
           mockClient.getResponse.mockRejectedValue(error);
+          
         } else {
+          
           mockClient.getById.mockRejectedValue(error);
+          
         }
 
         const api = apis.works as any;
@@ -4462,7 +5004,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getWorks) {
+              
               await expect(api.getWorks()).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -4481,9 +5025,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<Work>("works", true);
 
         if (true) {
+          
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<Work>);
+          
         } else {
+          
           mockClient.getById.mockResolvedValue(mockResponse as Work);
+          
         }
 
         // Extract the expected parameters from the path
@@ -4524,7 +5072,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getWorks) {
+              
               result = await api.getWorks(expectedParams);
+              
             }
           }
 
@@ -4533,9 +5083,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (true) {
+            
             expect(mockClient.getResponse).toHaveBeenCalled();
+            
           } else {
+            
             expect(mockClient.getById).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -4582,9 +5136,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (true) {
+          
           mockClient.getResponse.mockRejectedValue(error);
+          
         } else {
+          
           mockClient.getById.mockRejectedValue(error);
+          
         }
 
         const api = apis.works as any;
@@ -4596,7 +5154,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getWorks) {
+              
               await expect(api.getWorks()).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -4615,9 +5175,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<Work>("works", true);
 
         if (true) {
+          
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<Work>);
+          
         } else {
+          
           mockClient.getById.mockResolvedValue(mockResponse as Work);
+          
         }
 
         // Extract the expected parameters from the path
@@ -4658,7 +5222,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getWorks) {
+              
               result = await api.getWorks(expectedParams);
+              
             }
           }
 
@@ -4667,9 +5233,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (true) {
+            
             expect(mockClient.getResponse).toHaveBeenCalled();
+            
           } else {
+            
             expect(mockClient.getById).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -4716,9 +5286,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (true) {
+          
           mockClient.getResponse.mockRejectedValue(error);
+          
         } else {
+          
           mockClient.getById.mockRejectedValue(error);
+          
         }
 
         const api = apis.works as any;
@@ -4730,7 +5304,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getWorks) {
+              
               await expect(api.getWorks()).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -4749,9 +5325,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<Work>("works", true);
 
         if (true) {
+          
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<Work>);
+          
         } else {
+          
           mockClient.getById.mockResolvedValue(mockResponse as Work);
+          
         }
 
         // Extract the expected parameters from the path
@@ -4792,7 +5372,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getWorks) {
+              
               result = await api.getWorks(expectedParams);
+              
             }
           }
 
@@ -4801,9 +5383,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (true) {
+            
             expect(mockClient.getResponse).toHaveBeenCalled();
+            
           } else {
+            
             expect(mockClient.getById).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -4850,9 +5436,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (true) {
+          
           mockClient.getResponse.mockRejectedValue(error);
+          
         } else {
+          
           mockClient.getById.mockRejectedValue(error);
+          
         }
 
         const api = apis.works as any;
@@ -4864,7 +5454,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getWorks) {
+              
               await expect(api.getWorks()).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -4883,9 +5475,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<Work>("works", true);
 
         if (true) {
+          
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<Work>);
+          
         } else {
+          
           mockClient.getById.mockResolvedValue(mockResponse as Work);
+          
         }
 
         // Extract the expected parameters from the path
@@ -4926,7 +5522,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getWorks) {
+              
               result = await api.getWorks(expectedParams);
+              
             }
           }
 
@@ -4935,9 +5533,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (true) {
+            
             expect(mockClient.getResponse).toHaveBeenCalled();
+            
           } else {
+            
             expect(mockClient.getById).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -4984,9 +5586,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (true) {
+          
           mockClient.getResponse.mockRejectedValue(error);
+          
         } else {
+          
           mockClient.getById.mockRejectedValue(error);
+          
         }
 
         const api = apis.works as any;
@@ -4998,7 +5604,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getWorks) {
+              
               await expect(api.getWorks()).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -5017,9 +5625,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<Work>("works", true);
 
         if (true) {
+          
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<Work>);
+          
         } else {
+          
           mockClient.getById.mockResolvedValue(mockResponse as Work);
+          
         }
 
         // Extract the expected parameters from the path
@@ -5060,7 +5672,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getWorks) {
+              
               result = await api.getWorks(expectedParams);
+              
             }
           }
 
@@ -5069,9 +5683,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (true) {
+            
             expect(mockClient.getResponse).toHaveBeenCalled();
+            
           } else {
+            
             expect(mockClient.getById).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -5118,9 +5736,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (true) {
+          
           mockClient.getResponse.mockRejectedValue(error);
+          
         } else {
+          
           mockClient.getById.mockRejectedValue(error);
+          
         }
 
         const api = apis.works as any;
@@ -5132,7 +5754,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getWorks) {
+              
               await expect(api.getWorks()).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -5151,9 +5775,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<Work>("works", true);
 
         if (true) {
+          
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<Work>);
+          
         } else {
+          
           mockClient.getById.mockResolvedValue(mockResponse as Work);
+          
         }
 
         // Extract the expected parameters from the path
@@ -5194,7 +5822,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getWorks) {
+              
               result = await api.getWorks(expectedParams);
+              
             }
           }
 
@@ -5203,9 +5833,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (true) {
+            
             expect(mockClient.getResponse).toHaveBeenCalled();
+            
           } else {
+            
             expect(mockClient.getById).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -5252,9 +5886,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (true) {
+          
           mockClient.getResponse.mockRejectedValue(error);
+          
         } else {
+          
           mockClient.getById.mockRejectedValue(error);
+          
         }
 
         const api = apis.works as any;
@@ -5266,7 +5904,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getWorks) {
+              
               await expect(api.getWorks()).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -5285,9 +5925,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<Work>("works", true);
 
         if (true) {
+          
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<Work>);
+          
         } else {
+          
           mockClient.getById.mockResolvedValue(mockResponse as Work);
+          
         }
 
         // Extract the expected parameters from the path
@@ -5328,7 +5972,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getWorks) {
+              
               result = await api.getWorks(expectedParams);
+              
             }
           }
 
@@ -5337,9 +5983,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (true) {
+            
             expect(mockClient.getResponse).toHaveBeenCalled();
+            
           } else {
+            
             expect(mockClient.getById).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -5386,9 +6036,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (true) {
+          
           mockClient.getResponse.mockRejectedValue(error);
+          
         } else {
+          
           mockClient.getById.mockRejectedValue(error);
+          
         }
 
         const api = apis.works as any;
@@ -5400,7 +6054,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getWorks) {
+              
               await expect(api.getWorks()).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -5419,9 +6075,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<Work>("works", true);
 
         if (true) {
+          
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<Work>);
+          
         } else {
+          
           mockClient.getById.mockResolvedValue(mockResponse as Work);
+          
         }
 
         // Extract the expected parameters from the path
@@ -5462,7 +6122,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getWorks) {
+              
               result = await api.getWorks(expectedParams);
+              
             }
           }
 
@@ -5471,9 +6133,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (true) {
+            
             expect(mockClient.getResponse).toHaveBeenCalled();
+            
           } else {
+            
             expect(mockClient.getById).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -5520,9 +6186,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (true) {
+          
           mockClient.getResponse.mockRejectedValue(error);
+          
         } else {
+          
           mockClient.getById.mockRejectedValue(error);
+          
         }
 
         const api = apis.works as any;
@@ -5534,7 +6204,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getWorks) {
+              
               await expect(api.getWorks()).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -5553,9 +6225,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<Work>("works", true);
 
         if (true) {
+          
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<Work>);
+          
         } else {
+          
           mockClient.getById.mockResolvedValue(mockResponse as Work);
+          
         }
 
         // Extract the expected parameters from the path
@@ -5596,7 +6272,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getWorks) {
+              
               result = await api.getWorks(expectedParams);
+              
             }
           }
 
@@ -5605,9 +6283,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (true) {
+            
             expect(mockClient.getResponse).toHaveBeenCalled();
+            
           } else {
+            
             expect(mockClient.getById).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -5654,9 +6336,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (true) {
+          
           mockClient.getResponse.mockRejectedValue(error);
+          
         } else {
+          
           mockClient.getById.mockRejectedValue(error);
+          
         }
 
         const api = apis.works as any;
@@ -5668,7 +6354,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getWorks) {
+              
               await expect(api.getWorks()).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -5687,9 +6375,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<Work>("works", true);
 
         if (true) {
+          
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<Work>);
+          
         } else {
+          
           mockClient.getById.mockResolvedValue(mockResponse as Work);
+          
         }
 
         // Extract the expected parameters from the path
@@ -5730,7 +6422,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getWorks) {
+              
               result = await api.getWorks(expectedParams);
+              
             }
           }
 
@@ -5739,9 +6433,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (true) {
+            
             expect(mockClient.getResponse).toHaveBeenCalled();
+            
           } else {
+            
             expect(mockClient.getById).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -5788,9 +6486,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (true) {
+          
           mockClient.getResponse.mockRejectedValue(error);
+          
         } else {
+          
           mockClient.getById.mockRejectedValue(error);
+          
         }
 
         const api = apis.works as any;
@@ -5802,7 +6504,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getWorks) {
+              
               await expect(api.getWorks()).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -5821,9 +6525,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<Work>("works", true);
 
         if (true) {
+          
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<Work>);
+          
         } else {
+          
           mockClient.getById.mockResolvedValue(mockResponse as Work);
+          
         }
 
         // Extract the expected parameters from the path
@@ -5864,7 +6572,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getWorks) {
+              
               result = await api.getWorks(expectedParams);
+              
             }
           }
 
@@ -5873,9 +6583,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (true) {
+            
             expect(mockClient.getResponse).toHaveBeenCalled();
+            
           } else {
+            
             expect(mockClient.getById).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -5922,9 +6636,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (true) {
+          
           mockClient.getResponse.mockRejectedValue(error);
+          
         } else {
+          
           mockClient.getById.mockRejectedValue(error);
+          
         }
 
         const api = apis.works as any;
@@ -5936,7 +6654,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getWorks) {
+              
               await expect(api.getWorks()).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -5955,9 +6675,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<Work>("works", true);
 
         if (true) {
+          
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<Work>);
+          
         } else {
+          
           mockClient.getById.mockResolvedValue(mockResponse as Work);
+          
         }
 
         // Extract the expected parameters from the path
@@ -5998,7 +6722,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getWorks) {
+              
               result = await api.getWorks(expectedParams);
+              
             }
           }
 
@@ -6007,9 +6733,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (true) {
+            
             expect(mockClient.getResponse).toHaveBeenCalled();
+            
           } else {
+            
             expect(mockClient.getById).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -6056,9 +6786,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (true) {
+          
           mockClient.getResponse.mockRejectedValue(error);
+          
         } else {
+          
           mockClient.getById.mockRejectedValue(error);
+          
         }
 
         const api = apis.works as any;
@@ -6070,7 +6804,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getWorks) {
+              
               await expect(api.getWorks()).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -6089,9 +6825,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<Work>("works", true);
 
         if (true) {
+          
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<Work>);
+          
         } else {
+          
           mockClient.getById.mockResolvedValue(mockResponse as Work);
+          
         }
 
         // Extract the expected parameters from the path
@@ -6132,7 +6872,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getWorks) {
+              
               result = await api.getWorks(expectedParams);
+              
             }
           }
 
@@ -6141,9 +6883,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (true) {
+            
             expect(mockClient.getResponse).toHaveBeenCalled();
+            
           } else {
+            
             expect(mockClient.getById).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -6190,9 +6936,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (true) {
+          
           mockClient.getResponse.mockRejectedValue(error);
+          
         } else {
+          
           mockClient.getById.mockRejectedValue(error);
+          
         }
 
         const api = apis.works as any;
@@ -6204,7 +6954,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getWorks) {
+              
               await expect(api.getWorks()).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -6223,9 +6975,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<Work>("works", true);
 
         if (true) {
+          
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<Work>);
+          
         } else {
+          
           mockClient.getById.mockResolvedValue(mockResponse as Work);
+          
         }
 
         // Extract the expected parameters from the path
@@ -6266,7 +7022,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getWorks) {
+              
               result = await api.getWorks(expectedParams);
+              
             }
           }
 
@@ -6275,9 +7033,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (true) {
+            
             expect(mockClient.getResponse).toHaveBeenCalled();
+            
           } else {
+            
             expect(mockClient.getById).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -6324,9 +7086,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (true) {
+          
           mockClient.getResponse.mockRejectedValue(error);
+          
         } else {
+          
           mockClient.getById.mockRejectedValue(error);
+          
         }
 
         const api = apis.works as any;
@@ -6338,7 +7104,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getWorks) {
+              
               await expect(api.getWorks()).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -6357,9 +7125,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<Work>("works", true);
 
         if (true) {
+          
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<Work>);
+          
         } else {
+          
           mockClient.getById.mockResolvedValue(mockResponse as Work);
+          
         }
 
         // Extract the expected parameters from the path
@@ -6400,7 +7172,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getWorks) {
+              
               result = await api.getWorks(expectedParams);
+              
             }
           }
 
@@ -6409,9 +7183,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (true) {
+            
             expect(mockClient.getResponse).toHaveBeenCalled();
+            
           } else {
+            
             expect(mockClient.getById).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -6458,9 +7236,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (true) {
+          
           mockClient.getResponse.mockRejectedValue(error);
+          
         } else {
+          
           mockClient.getById.mockRejectedValue(error);
+          
         }
 
         const api = apis.works as any;
@@ -6472,7 +7254,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getWorks) {
+              
               await expect(api.getWorks()).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -6491,9 +7275,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<Work>("works", true);
 
         if (true) {
+          
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<Work>);
+          
         } else {
+          
           mockClient.getById.mockResolvedValue(mockResponse as Work);
+          
         }
 
         // Extract the expected parameters from the path
@@ -6534,7 +7322,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getWorks) {
+              
               result = await api.getWorks(expectedParams);
+              
             }
           }
 
@@ -6543,9 +7333,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (true) {
+            
             expect(mockClient.getResponse).toHaveBeenCalled();
+            
           } else {
+            
             expect(mockClient.getById).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -6592,9 +7386,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (true) {
+          
           mockClient.getResponse.mockRejectedValue(error);
+          
         } else {
+          
           mockClient.getById.mockRejectedValue(error);
+          
         }
 
         const api = apis.works as any;
@@ -6606,7 +7404,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getWorks) {
+              
               await expect(api.getWorks()).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -6625,9 +7425,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<Work>("works", true);
 
         if (true) {
+          
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<Work>);
+          
         } else {
+          
           mockClient.getById.mockResolvedValue(mockResponse as Work);
+          
         }
 
         // Extract the expected parameters from the path
@@ -6668,7 +7472,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getWorks) {
+              
               result = await api.getWorks(expectedParams);
+              
             }
           }
 
@@ -6677,9 +7483,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (true) {
+            
             expect(mockClient.getResponse).toHaveBeenCalled();
+            
           } else {
+            
             expect(mockClient.getById).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -6726,9 +7536,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (true) {
+          
           mockClient.getResponse.mockRejectedValue(error);
+          
         } else {
+          
           mockClient.getById.mockRejectedValue(error);
+          
         }
 
         const api = apis.works as any;
@@ -6740,7 +7554,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getWorks) {
+              
               await expect(api.getWorks()).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -6759,9 +7575,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<Work>("works", true);
 
         if (true) {
+          
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<Work>);
+          
         } else {
+          
           mockClient.getById.mockResolvedValue(mockResponse as Work);
+          
         }
 
         // Extract the expected parameters from the path
@@ -6802,7 +7622,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getWorks) {
+              
               result = await api.getWorks(expectedParams);
+              
             }
           }
 
@@ -6811,9 +7633,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (true) {
+            
             expect(mockClient.getResponse).toHaveBeenCalled();
+            
           } else {
+            
             expect(mockClient.getById).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -6860,9 +7686,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (true) {
+          
           mockClient.getResponse.mockRejectedValue(error);
+          
         } else {
+          
           mockClient.getById.mockRejectedValue(error);
+          
         }
 
         const api = apis.works as any;
@@ -6874,7 +7704,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getWorks) {
+              
               await expect(api.getWorks()).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -6893,9 +7725,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<Work>("works", true);
 
         if (true) {
+          
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<Work>);
+          
         } else {
+          
           mockClient.getById.mockResolvedValue(mockResponse as Work);
+          
         }
 
         // Extract the expected parameters from the path
@@ -6936,7 +7772,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getWorks) {
+              
               result = await api.getWorks(expectedParams);
+              
             }
           }
 
@@ -6945,9 +7783,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (true) {
+            
             expect(mockClient.getResponse).toHaveBeenCalled();
+            
           } else {
+            
             expect(mockClient.getById).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -6994,9 +7836,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (true) {
+          
           mockClient.getResponse.mockRejectedValue(error);
+          
         } else {
+          
           mockClient.getById.mockRejectedValue(error);
+          
         }
 
         const api = apis.works as any;
@@ -7008,7 +7854,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getWorks) {
+              
               await expect(api.getWorks()).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -7027,9 +7875,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<Work>("works", true);
 
         if (true) {
+          
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<Work>);
+          
         } else {
+          
           mockClient.getById.mockResolvedValue(mockResponse as Work);
+          
         }
 
         // Extract the expected parameters from the path
@@ -7070,7 +7922,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getWorks) {
+              
               result = await api.getWorks(expectedParams);
+              
             }
           }
 
@@ -7079,9 +7933,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (true) {
+            
             expect(mockClient.getResponse).toHaveBeenCalled();
+            
           } else {
+            
             expect(mockClient.getById).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -7128,9 +7986,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (true) {
+          
           mockClient.getResponse.mockRejectedValue(error);
+          
         } else {
+          
           mockClient.getById.mockRejectedValue(error);
+          
         }
 
         const api = apis.works as any;
@@ -7142,7 +8004,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getWorks) {
+              
               await expect(api.getWorks()).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -7161,9 +8025,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<Work>("works", true);
 
         if (true) {
+          
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<Work>);
+          
         } else {
+          
           mockClient.getById.mockResolvedValue(mockResponse as Work);
+          
         }
 
         // Extract the expected parameters from the path
@@ -7204,7 +8072,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getWorks) {
+              
               result = await api.getWorks(expectedParams);
+              
             }
           }
 
@@ -7213,9 +8083,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (true) {
+            
             expect(mockClient.getResponse).toHaveBeenCalled();
+            
           } else {
+            
             expect(mockClient.getById).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -7262,9 +8136,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (true) {
+          
           mockClient.getResponse.mockRejectedValue(error);
+          
         } else {
+          
           mockClient.getById.mockRejectedValue(error);
+          
         }
 
         const api = apis.works as any;
@@ -7276,7 +8154,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getWorks) {
+              
               await expect(api.getWorks()).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -7295,9 +8175,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<Work>("works", true);
 
         if (true) {
+          
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<Work>);
+          
         } else {
+          
           mockClient.getById.mockResolvedValue(mockResponse as Work);
+          
         }
 
         // Extract the expected parameters from the path
@@ -7338,7 +8222,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getWorks) {
+              
               result = await api.getWorks(expectedParams);
+              
             }
           }
 
@@ -7347,9 +8233,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (true) {
+            
             expect(mockClient.getResponse).toHaveBeenCalled();
+            
           } else {
+            
             expect(mockClient.getById).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -7396,9 +8286,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (true) {
+          
           mockClient.getResponse.mockRejectedValue(error);
+          
         } else {
+          
           mockClient.getById.mockRejectedValue(error);
+          
         }
 
         const api = apis.works as any;
@@ -7410,7 +8304,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getWorks) {
+              
               await expect(api.getWorks()).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -7429,9 +8325,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<Work>("works", true);
 
         if (true) {
+          
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<Work>);
+          
         } else {
+          
           mockClient.getById.mockResolvedValue(mockResponse as Work);
+          
         }
 
         // Extract the expected parameters from the path
@@ -7472,7 +8372,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getWorks) {
+              
               result = await api.getWorks(expectedParams);
+              
             }
           }
 
@@ -7481,9 +8383,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (true) {
+            
             expect(mockClient.getResponse).toHaveBeenCalled();
+            
           } else {
+            
             expect(mockClient.getById).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -7530,9 +8436,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (true) {
+          
           mockClient.getResponse.mockRejectedValue(error);
+          
         } else {
+          
           mockClient.getById.mockRejectedValue(error);
+          
         }
 
         const api = apis.works as any;
@@ -7544,7 +8454,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getWorks) {
+              
               await expect(api.getWorks()).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -7563,9 +8475,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<Work>("works", true);
 
         if (true) {
+          
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<Work>);
+          
         } else {
+          
           mockClient.getById.mockResolvedValue(mockResponse as Work);
+          
         }
 
         // Extract the expected parameters from the path
@@ -7606,7 +8522,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getWorks) {
+              
               result = await api.getWorks(expectedParams);
+              
             }
           }
 
@@ -7615,9 +8533,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (true) {
+            
             expect(mockClient.getResponse).toHaveBeenCalled();
+            
           } else {
+            
             expect(mockClient.getById).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -7664,9 +8586,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (true) {
+          
           mockClient.getResponse.mockRejectedValue(error);
+          
         } else {
+          
           mockClient.getById.mockRejectedValue(error);
+          
         }
 
         const api = apis.works as any;
@@ -7678,7 +8604,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getWorks) {
+              
               await expect(api.getWorks()).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -7697,9 +8625,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<Work>("works", true);
 
         if (true) {
+          
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<Work>);
+          
         } else {
+          
           mockClient.getById.mockResolvedValue(mockResponse as Work);
+          
         }
 
         // Extract the expected parameters from the path
@@ -7740,7 +8672,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getWorks) {
+              
               result = await api.getWorks(expectedParams);
+              
             }
           }
 
@@ -7749,9 +8683,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (true) {
+            
             expect(mockClient.getResponse).toHaveBeenCalled();
+            
           } else {
+            
             expect(mockClient.getById).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -7798,9 +8736,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (true) {
+          
           mockClient.getResponse.mockRejectedValue(error);
+          
         } else {
+          
           mockClient.getById.mockRejectedValue(error);
+          
         }
 
         const api = apis.works as any;
@@ -7812,7 +8754,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getWorks) {
+              
               await expect(api.getWorks()).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -7831,9 +8775,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<Work>("works", true);
 
         if (true) {
+          
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<Work>);
+          
         } else {
+          
           mockClient.getById.mockResolvedValue(mockResponse as Work);
+          
         }
 
         // Extract the expected parameters from the path
@@ -7874,7 +8822,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getWorks) {
+              
               result = await api.getWorks(expectedParams);
+              
             }
           }
 
@@ -7883,9 +8833,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (true) {
+            
             expect(mockClient.getResponse).toHaveBeenCalled();
+            
           } else {
+            
             expect(mockClient.getById).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -7932,9 +8886,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (true) {
+          
           mockClient.getResponse.mockRejectedValue(error);
+          
         } else {
+          
           mockClient.getById.mockRejectedValue(error);
+          
         }
 
         const api = apis.works as any;
@@ -7946,7 +8904,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getWorks) {
+              
               await expect(api.getWorks()).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -7965,9 +8925,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<Work>("works", true);
 
         if (true) {
+          
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<Work>);
+          
         } else {
+          
           mockClient.getById.mockResolvedValue(mockResponse as Work);
+          
         }
 
         // Extract the expected parameters from the path
@@ -8008,7 +8972,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getWorks) {
+              
               result = await api.getWorks(expectedParams);
+              
             }
           }
 
@@ -8017,9 +8983,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (true) {
+            
             expect(mockClient.getResponse).toHaveBeenCalled();
+            
           } else {
+            
             expect(mockClient.getById).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -8066,9 +9036,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (true) {
+          
           mockClient.getResponse.mockRejectedValue(error);
+          
         } else {
+          
           mockClient.getById.mockRejectedValue(error);
+          
         }
 
         const api = apis.works as any;
@@ -8080,7 +9054,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getWorks) {
+              
               await expect(api.getWorks()).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -8099,9 +9075,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<Work>("works", true);
 
         if (true) {
+          
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<Work>);
+          
         } else {
+          
           mockClient.getById.mockResolvedValue(mockResponse as Work);
+          
         }
 
         // Extract the expected parameters from the path
@@ -8142,7 +9122,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getWorks) {
+              
               result = await api.getWorks(expectedParams);
+              
             }
           }
 
@@ -8151,9 +9133,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (true) {
+            
             expect(mockClient.getResponse).toHaveBeenCalled();
+            
           } else {
+            
             expect(mockClient.getById).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -8200,9 +9186,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (true) {
+          
           mockClient.getResponse.mockRejectedValue(error);
+          
         } else {
+          
           mockClient.getById.mockRejectedValue(error);
+          
         }
 
         const api = apis.works as any;
@@ -8214,7 +9204,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getWorks) {
+              
               await expect(api.getWorks()).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -8233,9 +9225,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<Work>("works", true);
 
         if (true) {
+          
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<Work>);
+          
         } else {
+          
           mockClient.getById.mockResolvedValue(mockResponse as Work);
+          
         }
 
         // Extract the expected parameters from the path
@@ -8276,7 +9272,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getWorks) {
+              
               result = await api.getWorks(expectedParams);
+              
             }
           }
 
@@ -8285,9 +9283,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (true) {
+            
             expect(mockClient.getResponse).toHaveBeenCalled();
+            
           } else {
+            
             expect(mockClient.getById).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -8334,9 +9336,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (true) {
+          
           mockClient.getResponse.mockRejectedValue(error);
+          
         } else {
+          
           mockClient.getById.mockRejectedValue(error);
+          
         }
 
         const api = apis.works as any;
@@ -8348,7 +9354,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getWorks) {
+              
               await expect(api.getWorks()).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -8367,9 +9375,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<Work>("works", true);
 
         if (true) {
+          
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<Work>);
+          
         } else {
+          
           mockClient.getById.mockResolvedValue(mockResponse as Work);
+          
         }
 
         // Extract the expected parameters from the path
@@ -8410,7 +9422,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getWorks) {
+              
               result = await api.getWorks(expectedParams);
+              
             }
           }
 
@@ -8419,9 +9433,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (true) {
+            
             expect(mockClient.getResponse).toHaveBeenCalled();
+            
           } else {
+            
             expect(mockClient.getById).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -8468,9 +9486,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (true) {
+          
           mockClient.getResponse.mockRejectedValue(error);
+          
         } else {
+          
           mockClient.getById.mockRejectedValue(error);
+          
         }
 
         const api = apis.works as any;
@@ -8482,7 +9504,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getWorks) {
+              
               await expect(api.getWorks()).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -8501,9 +9525,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<Work>("works", true);
 
         if (true) {
+          
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<Work>);
+          
         } else {
+          
           mockClient.getById.mockResolvedValue(mockResponse as Work);
+          
         }
 
         // Extract the expected parameters from the path
@@ -8544,7 +9572,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getWorks) {
+              
               result = await api.getWorks(expectedParams);
+              
             }
           }
 
@@ -8553,9 +9583,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (true) {
+            
             expect(mockClient.getResponse).toHaveBeenCalled();
+            
           } else {
+            
             expect(mockClient.getById).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -8602,9 +9636,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (true) {
+          
           mockClient.getResponse.mockRejectedValue(error);
+          
         } else {
+          
           mockClient.getById.mockRejectedValue(error);
+          
         }
 
         const api = apis.works as any;
@@ -8616,7 +9654,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getWorks) {
+              
               await expect(api.getWorks()).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -8635,9 +9675,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<Work>("works", true);
 
         if (true) {
+          
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<Work>);
+          
         } else {
+          
           mockClient.getById.mockResolvedValue(mockResponse as Work);
+          
         }
 
         // Extract the expected parameters from the path
@@ -8678,7 +9722,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getWorks) {
+              
               result = await api.getWorks(expectedParams);
+              
             }
           }
 
@@ -8687,9 +9733,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (true) {
+            
             expect(mockClient.getResponse).toHaveBeenCalled();
+            
           } else {
+            
             expect(mockClient.getById).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -8736,9 +9786,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (true) {
+          
           mockClient.getResponse.mockRejectedValue(error);
+          
         } else {
+          
           mockClient.getById.mockRejectedValue(error);
+          
         }
 
         const api = apis.works as any;
@@ -8750,7 +9804,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getWorks) {
+              
               await expect(api.getWorks()).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -8769,9 +9825,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<Work>("works", true);
 
         if (true) {
+          
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<Work>);
+          
         } else {
+          
           mockClient.getById.mockResolvedValue(mockResponse as Work);
+          
         }
 
         // Extract the expected parameters from the path
@@ -8812,7 +9872,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getWorks) {
+              
               result = await api.getWorks(expectedParams);
+              
             }
           }
 
@@ -8821,9 +9883,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (true) {
+            
             expect(mockClient.getResponse).toHaveBeenCalled();
+            
           } else {
+            
             expect(mockClient.getById).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -8870,9 +9936,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (true) {
+          
           mockClient.getResponse.mockRejectedValue(error);
+          
         } else {
+          
           mockClient.getById.mockRejectedValue(error);
+          
         }
 
         const api = apis.works as any;
@@ -8884,7 +9954,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getWorks) {
+              
               await expect(api.getWorks()).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -8903,9 +9975,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<Work>("works", true);
 
         if (true) {
+          
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<Work>);
+          
         } else {
+          
           mockClient.getById.mockResolvedValue(mockResponse as Work);
+          
         }
 
         // Extract the expected parameters from the path
@@ -8946,7 +10022,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getWorks) {
+              
               result = await api.getWorks(expectedParams);
+              
             }
           }
 
@@ -8955,9 +10033,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (true) {
+            
             expect(mockClient.getResponse).toHaveBeenCalled();
+            
           } else {
+            
             expect(mockClient.getById).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -9004,9 +10086,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (true) {
+          
           mockClient.getResponse.mockRejectedValue(error);
+          
         } else {
+          
           mockClient.getById.mockRejectedValue(error);
+          
         }
 
         const api = apis.works as any;
@@ -9018,7 +10104,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getWorks) {
+              
               await expect(api.getWorks()).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -9037,9 +10125,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<Work>("works", true);
 
         if (true) {
+          
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<Work>);
+          
         } else {
+          
           mockClient.getById.mockResolvedValue(mockResponse as Work);
+          
         }
 
         // Extract the expected parameters from the path
@@ -9080,7 +10172,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getWorks) {
+              
               result = await api.getWorks(expectedParams);
+              
             }
           }
 
@@ -9089,9 +10183,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (true) {
+            
             expect(mockClient.getResponse).toHaveBeenCalled();
+            
           } else {
+            
             expect(mockClient.getById).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -9138,9 +10236,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (true) {
+          
           mockClient.getResponse.mockRejectedValue(error);
+          
         } else {
+          
           mockClient.getById.mockRejectedValue(error);
+          
         }
 
         const api = apis.works as any;
@@ -9152,7 +10254,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getWorks) {
+              
               await expect(api.getWorks()).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -9171,9 +10275,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<Work>("works", true);
 
         if (true) {
+          
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<Work>);
+          
         } else {
+          
           mockClient.getById.mockResolvedValue(mockResponse as Work);
+          
         }
 
         // Extract the expected parameters from the path
@@ -9214,7 +10322,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getWorks) {
+              
               result = await api.getWorks(expectedParams);
+              
             }
           }
 
@@ -9223,9 +10333,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (true) {
+            
             expect(mockClient.getResponse).toHaveBeenCalled();
+            
           } else {
+            
             expect(mockClient.getById).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -9272,9 +10386,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (true) {
+          
           mockClient.getResponse.mockRejectedValue(error);
+          
         } else {
+          
           mockClient.getById.mockRejectedValue(error);
+          
         }
 
         const api = apis.works as any;
@@ -9286,7 +10404,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getWorks) {
+              
               await expect(api.getWorks()).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -9305,9 +10425,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<Work>("works", true);
 
         if (true) {
+          
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<Work>);
+          
         } else {
+          
           mockClient.getById.mockResolvedValue(mockResponse as Work);
+          
         }
 
         // Extract the expected parameters from the path
@@ -9348,7 +10472,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getWorks) {
+              
               result = await api.getWorks(expectedParams);
+              
             }
           }
 
@@ -9357,9 +10483,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (true) {
+            
             expect(mockClient.getResponse).toHaveBeenCalled();
+            
           } else {
+            
             expect(mockClient.getById).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -9406,9 +10536,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (true) {
+          
           mockClient.getResponse.mockRejectedValue(error);
+          
         } else {
+          
           mockClient.getById.mockRejectedValue(error);
+          
         }
 
         const api = apis.works as any;
@@ -9420,7 +10554,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getWorks) {
+              
               await expect(api.getWorks()).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -9439,9 +10575,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<Work>("works", true);
 
         if (true) {
+          
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<Work>);
+          
         } else {
+          
           mockClient.getById.mockResolvedValue(mockResponse as Work);
+          
         }
 
         // Extract the expected parameters from the path
@@ -9482,7 +10622,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getWorks) {
+              
               result = await api.getWorks(expectedParams);
+              
             }
           }
 
@@ -9491,9 +10633,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (true) {
+            
             expect(mockClient.getResponse).toHaveBeenCalled();
+            
           } else {
+            
             expect(mockClient.getById).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -9540,9 +10686,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (true) {
+          
           mockClient.getResponse.mockRejectedValue(error);
+          
         } else {
+          
           mockClient.getById.mockRejectedValue(error);
+          
         }
 
         const api = apis.works as any;
@@ -9554,7 +10704,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getWorks) {
+              
               await expect(api.getWorks()).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -9573,9 +10725,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<Work>("works", true);
 
         if (true) {
+          
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<Work>);
+          
         } else {
+          
           mockClient.getById.mockResolvedValue(mockResponse as Work);
+          
         }
 
         // Extract the expected parameters from the path
@@ -9616,7 +10772,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getWorks) {
+              
               result = await api.getWorks(expectedParams);
+              
             }
           }
 
@@ -9625,9 +10783,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (true) {
+            
             expect(mockClient.getResponse).toHaveBeenCalled();
+            
           } else {
+            
             expect(mockClient.getById).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -9674,9 +10836,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (true) {
+          
           mockClient.getResponse.mockRejectedValue(error);
+          
         } else {
+          
           mockClient.getById.mockRejectedValue(error);
+          
         }
 
         const api = apis.works as any;
@@ -9688,7 +10854,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getWorks) {
+              
               await expect(api.getWorks()).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -9707,9 +10875,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<Work>("works", true);
 
         if (true) {
+          
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<Work>);
+          
         } else {
+          
           mockClient.getById.mockResolvedValue(mockResponse as Work);
+          
         }
 
         // Extract the expected parameters from the path
@@ -9750,7 +10922,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getWorks) {
+              
               result = await api.getWorks(expectedParams);
+              
             }
           }
 
@@ -9759,9 +10933,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (true) {
+            
             expect(mockClient.getResponse).toHaveBeenCalled();
+            
           } else {
+            
             expect(mockClient.getById).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -9808,9 +10986,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (true) {
+          
           mockClient.getResponse.mockRejectedValue(error);
+          
         } else {
+          
           mockClient.getById.mockRejectedValue(error);
+          
         }
 
         const api = apis.works as any;
@@ -9822,7 +11004,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getWorks) {
+              
               await expect(api.getWorks()).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -9841,9 +11025,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<Work>("works", true);
 
         if (true) {
+          
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<Work>);
+          
         } else {
+          
           mockClient.getById.mockResolvedValue(mockResponse as Work);
+          
         }
 
         // Extract the expected parameters from the path
@@ -9884,7 +11072,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getWorks) {
+              
               result = await api.getWorks(expectedParams);
+              
             }
           }
 
@@ -9893,9 +11083,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (true) {
+            
             expect(mockClient.getResponse).toHaveBeenCalled();
+            
           } else {
+            
             expect(mockClient.getById).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -9942,9 +11136,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (true) {
+          
           mockClient.getResponse.mockRejectedValue(error);
+          
         } else {
+          
           mockClient.getById.mockRejectedValue(error);
+          
         }
 
         const api = apis.works as any;
@@ -9956,7 +11154,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getWorks) {
+              
               await expect(api.getWorks()).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -9975,9 +11175,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<Work>("works", true);
 
         if (true) {
+          
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<Work>);
+          
         } else {
+          
           mockClient.getById.mockResolvedValue(mockResponse as Work);
+          
         }
 
         // Extract the expected parameters from the path
@@ -10018,7 +11222,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getWorks) {
+              
               result = await api.getWorks(expectedParams);
+              
             }
           }
 
@@ -10027,9 +11233,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (true) {
+            
             expect(mockClient.getResponse).toHaveBeenCalled();
+            
           } else {
+            
             expect(mockClient.getById).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -10076,9 +11286,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (true) {
+          
           mockClient.getResponse.mockRejectedValue(error);
+          
         } else {
+          
           mockClient.getById.mockRejectedValue(error);
+          
         }
 
         const api = apis.works as any;
@@ -10090,7 +11304,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getWorks) {
+              
               await expect(api.getWorks()).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -10109,9 +11325,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<Work>("works", true);
 
         if (true) {
+          
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<Work>);
+          
         } else {
+          
           mockClient.getById.mockResolvedValue(mockResponse as Work);
+          
         }
 
         // Extract the expected parameters from the path
@@ -10152,7 +11372,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getWorks) {
+              
               result = await api.getWorks(expectedParams);
+              
             }
           }
 
@@ -10161,9 +11383,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (true) {
+            
             expect(mockClient.getResponse).toHaveBeenCalled();
+            
           } else {
+            
             expect(mockClient.getById).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -10210,9 +11436,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (true) {
+          
           mockClient.getResponse.mockRejectedValue(error);
+          
         } else {
+          
           mockClient.getById.mockRejectedValue(error);
+          
         }
 
         const api = apis.works as any;
@@ -10224,7 +11454,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getWorks) {
+              
               await expect(api.getWorks()).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -10243,9 +11475,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<Work>("works", true);
 
         if (true) {
+          
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<Work>);
+          
         } else {
+          
           mockClient.getById.mockResolvedValue(mockResponse as Work);
+          
         }
 
         // Extract the expected parameters from the path
@@ -10286,7 +11522,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getWorks) {
+              
               result = await api.getWorks(expectedParams);
+              
             }
           }
 
@@ -10295,9 +11533,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (true) {
+            
             expect(mockClient.getResponse).toHaveBeenCalled();
+            
           } else {
+            
             expect(mockClient.getById).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -10344,9 +11586,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (true) {
+          
           mockClient.getResponse.mockRejectedValue(error);
+          
         } else {
+          
           mockClient.getById.mockRejectedValue(error);
+          
         }
 
         const api = apis.works as any;
@@ -10358,7 +11604,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getWorks) {
+              
               await expect(api.getWorks()).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -10377,9 +11625,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<Work>("works", true);
 
         if (true) {
+          
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<Work>);
+          
         } else {
+          
           mockClient.getById.mockResolvedValue(mockResponse as Work);
+          
         }
 
         // Extract the expected parameters from the path
@@ -10420,7 +11672,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getWorks) {
+              
               result = await api.getWorks(expectedParams);
+              
             }
           }
 
@@ -10429,9 +11683,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (true) {
+            
             expect(mockClient.getResponse).toHaveBeenCalled();
+            
           } else {
+            
             expect(mockClient.getById).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -10478,9 +11736,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (true) {
+          
           mockClient.getResponse.mockRejectedValue(error);
+          
         } else {
+          
           mockClient.getById.mockRejectedValue(error);
+          
         }
 
         const api = apis.works as any;
@@ -10492,7 +11754,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getWorks) {
+              
               await expect(api.getWorks()).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -10511,9 +11775,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<Work>("works", true);
 
         if (true) {
+          
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<Work>);
+          
         } else {
+          
           mockClient.getById.mockResolvedValue(mockResponse as Work);
+          
         }
 
         // Extract the expected parameters from the path
@@ -10554,7 +11822,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getWorks) {
+              
               result = await api.getWorks(expectedParams);
+              
             }
           }
 
@@ -10563,9 +11833,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (true) {
+            
             expect(mockClient.getResponse).toHaveBeenCalled();
+            
           } else {
+            
             expect(mockClient.getById).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -10612,9 +11886,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (true) {
+          
           mockClient.getResponse.mockRejectedValue(error);
+          
         } else {
+          
           mockClient.getById.mockRejectedValue(error);
+          
         }
 
         const api = apis.works as any;
@@ -10626,7 +11904,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getWorks) {
+              
               await expect(api.getWorks()).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -10645,9 +11925,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<Work>("works", true);
 
         if (true) {
+          
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<Work>);
+          
         } else {
+          
           mockClient.getById.mockResolvedValue(mockResponse as Work);
+          
         }
 
         // Extract the expected parameters from the path
@@ -10688,7 +11972,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getWorks) {
+              
               result = await api.getWorks(expectedParams);
+              
             }
           }
 
@@ -10697,9 +11983,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (true) {
+            
             expect(mockClient.getResponse).toHaveBeenCalled();
+            
           } else {
+            
             expect(mockClient.getById).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -10746,9 +12036,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (true) {
+          
           mockClient.getResponse.mockRejectedValue(error);
+          
         } else {
+          
           mockClient.getById.mockRejectedValue(error);
+          
         }
 
         const api = apis.works as any;
@@ -10760,7 +12054,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getWorks) {
+              
               await expect(api.getWorks()).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -10779,9 +12075,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<Work>("works", true);
 
         if (true) {
+          
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<Work>);
+          
         } else {
+          
           mockClient.getById.mockResolvedValue(mockResponse as Work);
+          
         }
 
         // Extract the expected parameters from the path
@@ -10822,7 +12122,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getWorks) {
+              
               result = await api.getWorks(expectedParams);
+              
             }
           }
 
@@ -10831,9 +12133,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (true) {
+            
             expect(mockClient.getResponse).toHaveBeenCalled();
+            
           } else {
+            
             expect(mockClient.getById).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -10880,9 +12186,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (true) {
+          
           mockClient.getResponse.mockRejectedValue(error);
+          
         } else {
+          
           mockClient.getById.mockRejectedValue(error);
+          
         }
 
         const api = apis.works as any;
@@ -10894,7 +12204,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getWorks) {
+              
               await expect(api.getWorks()).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -10913,9 +12225,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<Work>("works", true);
 
         if (true) {
+          
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<Work>);
+          
         } else {
+          
           mockClient.getById.mockResolvedValue(mockResponse as Work);
+          
         }
 
         // Extract the expected parameters from the path
@@ -10956,7 +12272,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getWorks) {
+              
               result = await api.getWorks(expectedParams);
+              
             }
           }
 
@@ -10965,9 +12283,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (true) {
+            
             expect(mockClient.getResponse).toHaveBeenCalled();
+            
           } else {
+            
             expect(mockClient.getById).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -11014,9 +12336,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (true) {
+          
           mockClient.getResponse.mockRejectedValue(error);
+          
         } else {
+          
           mockClient.getById.mockRejectedValue(error);
+          
         }
 
         const api = apis.works as any;
@@ -11028,7 +12354,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getWorks) {
+              
               await expect(api.getWorks()).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -11047,9 +12375,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<Work>("works", true);
 
         if (true) {
+          
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<Work>);
+          
         } else {
+          
           mockClient.getById.mockResolvedValue(mockResponse as Work);
+          
         }
 
         // Extract the expected parameters from the path
@@ -11090,7 +12422,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getWorks) {
+              
               result = await api.getWorks(expectedParams);
+              
             }
           }
 
@@ -11099,9 +12433,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (true) {
+            
             expect(mockClient.getResponse).toHaveBeenCalled();
+            
           } else {
+            
             expect(mockClient.getById).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -11148,9 +12486,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (true) {
+          
           mockClient.getResponse.mockRejectedValue(error);
+          
         } else {
+          
           mockClient.getById.mockRejectedValue(error);
+          
         }
 
         const api = apis.works as any;
@@ -11162,7 +12504,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getWorks) {
+              
               await expect(api.getWorks()).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -11181,9 +12525,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<Work>("works", true);
 
         if (true) {
+          
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<Work>);
+          
         } else {
+          
           mockClient.getById.mockResolvedValue(mockResponse as Work);
+          
         }
 
         // Extract the expected parameters from the path
@@ -11224,7 +12572,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getWorks) {
+              
               result = await api.getWorks(expectedParams);
+              
             }
           }
 
@@ -11233,9 +12583,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (true) {
+            
             expect(mockClient.getResponse).toHaveBeenCalled();
+            
           } else {
+            
             expect(mockClient.getById).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -11282,9 +12636,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (true) {
+          
           mockClient.getResponse.mockRejectedValue(error);
+          
         } else {
+          
           mockClient.getById.mockRejectedValue(error);
+          
         }
 
         const api = apis.works as any;
@@ -11296,7 +12654,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getWorks) {
+              
               await expect(api.getWorks()).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -11315,9 +12675,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<Work>("works", true);
 
         if (true) {
+          
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<Work>);
+          
         } else {
+          
           mockClient.getById.mockResolvedValue(mockResponse as Work);
+          
         }
 
         // Extract the expected parameters from the path
@@ -11358,7 +12722,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getWorks) {
+              
               result = await api.getWorks(expectedParams);
+              
             }
           }
 
@@ -11367,9 +12733,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (true) {
+            
             expect(mockClient.getResponse).toHaveBeenCalled();
+            
           } else {
+            
             expect(mockClient.getById).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -11416,9 +12786,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (true) {
+          
           mockClient.getResponse.mockRejectedValue(error);
+          
         } else {
+          
           mockClient.getById.mockRejectedValue(error);
+          
         }
 
         const api = apis.works as any;
@@ -11430,7 +12804,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getWorks) {
+              
               await expect(api.getWorks()).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -11449,9 +12825,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<Work>("works", true);
 
         if (true) {
+          
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<Work>);
+          
         } else {
+          
           mockClient.getById.mockResolvedValue(mockResponse as Work);
+          
         }
 
         // Extract the expected parameters from the path
@@ -11492,7 +12872,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getWorks) {
+              
               result = await api.getWorks(expectedParams);
+              
             }
           }
 
@@ -11501,9 +12883,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (true) {
+            
             expect(mockClient.getResponse).toHaveBeenCalled();
+            
           } else {
+            
             expect(mockClient.getById).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -11550,9 +12936,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (true) {
+          
           mockClient.getResponse.mockRejectedValue(error);
+          
         } else {
+          
           mockClient.getById.mockRejectedValue(error);
+          
         }
 
         const api = apis.works as any;
@@ -11564,7 +12954,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getWorks) {
+              
               await expect(api.getWorks()).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -11583,9 +12975,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<Work>("works", true);
 
         if (true) {
+          
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<Work>);
+          
         } else {
+          
           mockClient.getById.mockResolvedValue(mockResponse as Work);
+          
         }
 
         // Extract the expected parameters from the path
@@ -11626,7 +13022,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getWorks) {
+              
               result = await api.getWorks(expectedParams);
+              
             }
           }
 
@@ -11635,9 +13033,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (true) {
+            
             expect(mockClient.getResponse).toHaveBeenCalled();
+            
           } else {
+            
             expect(mockClient.getById).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -11684,9 +13086,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (true) {
+          
           mockClient.getResponse.mockRejectedValue(error);
+          
         } else {
+          
           mockClient.getById.mockRejectedValue(error);
+          
         }
 
         const api = apis.works as any;
@@ -11698,7 +13104,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getWorks) {
+              
               await expect(api.getWorks()).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -11717,9 +13125,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<Work>("works", true);
 
         if (true) {
+          
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<Work>);
+          
         } else {
+          
           mockClient.getById.mockResolvedValue(mockResponse as Work);
+          
         }
 
         // Extract the expected parameters from the path
@@ -11760,7 +13172,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getWorks) {
+              
               result = await api.getWorks(expectedParams);
+              
             }
           }
 
@@ -11769,9 +13183,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (true) {
+            
             expect(mockClient.getResponse).toHaveBeenCalled();
+            
           } else {
+            
             expect(mockClient.getById).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -11818,9 +13236,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (true) {
+          
           mockClient.getResponse.mockRejectedValue(error);
+          
         } else {
+          
           mockClient.getById.mockRejectedValue(error);
+          
         }
 
         const api = apis.works as any;
@@ -11832,7 +13254,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getWorks) {
+              
               await expect(api.getWorks()).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -11851,9 +13275,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<Work>("works", true);
 
         if (true) {
+          
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<Work>);
+          
         } else {
+          
           mockClient.getById.mockResolvedValue(mockResponse as Work);
+          
         }
 
         // Extract the expected parameters from the path
@@ -11894,7 +13322,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getWorks) {
+              
               result = await api.getWorks(expectedParams);
+              
             }
           }
 
@@ -11903,9 +13333,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (true) {
+            
             expect(mockClient.getResponse).toHaveBeenCalled();
+            
           } else {
+            
             expect(mockClient.getById).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -11952,9 +13386,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (true) {
+          
           mockClient.getResponse.mockRejectedValue(error);
+          
         } else {
+          
           mockClient.getById.mockRejectedValue(error);
+          
         }
 
         const api = apis.works as any;
@@ -11966,7 +13404,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getWorks) {
+              
               await expect(api.getWorks()).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -11985,9 +13425,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<Work>("works", true);
 
         if (true) {
+          
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<Work>);
+          
         } else {
+          
           mockClient.getById.mockResolvedValue(mockResponse as Work);
+          
         }
 
         // Extract the expected parameters from the path
@@ -12028,7 +13472,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getWorks) {
+              
               result = await api.getWorks(expectedParams);
+              
             }
           }
 
@@ -12037,9 +13483,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (true) {
+            
             expect(mockClient.getResponse).toHaveBeenCalled();
+            
           } else {
+            
             expect(mockClient.getById).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -12086,9 +13536,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (true) {
+          
           mockClient.getResponse.mockRejectedValue(error);
+          
         } else {
+          
           mockClient.getById.mockRejectedValue(error);
+          
         }
 
         const api = apis.works as any;
@@ -12100,7 +13554,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getWorks) {
+              
               await expect(api.getWorks()).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -12119,9 +13575,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<Work>("works", true);
 
         if (true) {
+          
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<Work>);
+          
         } else {
+          
           mockClient.getById.mockResolvedValue(mockResponse as Work);
+          
         }
 
         // Extract the expected parameters from the path
@@ -12162,7 +13622,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getWorks) {
+              
               result = await api.getWorks(expectedParams);
+              
             }
           }
 
@@ -12171,9 +13633,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (true) {
+            
             expect(mockClient.getResponse).toHaveBeenCalled();
+            
           } else {
+            
             expect(mockClient.getById).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -12220,9 +13686,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (true) {
+          
           mockClient.getResponse.mockRejectedValue(error);
+          
         } else {
+          
           mockClient.getById.mockRejectedValue(error);
+          
         }
 
         const api = apis.works as any;
@@ -12234,7 +13704,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getWorks) {
+              
               await expect(api.getWorks()).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -12253,9 +13725,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<Work>("works", true);
 
         if (true) {
+          
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<Work>);
+          
         } else {
+          
           mockClient.getById.mockResolvedValue(mockResponse as Work);
+          
         }
 
         // Extract the expected parameters from the path
@@ -12296,7 +13772,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getWorks) {
+              
               result = await api.getWorks(expectedParams);
+              
             }
           }
 
@@ -12305,9 +13783,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (true) {
+            
             expect(mockClient.getResponse).toHaveBeenCalled();
+            
           } else {
+            
             expect(mockClient.getById).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -12354,9 +13836,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (true) {
+          
           mockClient.getResponse.mockRejectedValue(error);
+          
         } else {
+          
           mockClient.getById.mockRejectedValue(error);
+          
         }
 
         const api = apis.works as any;
@@ -12368,7 +13854,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getWorks) {
+              
               await expect(api.getWorks()).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -12387,9 +13875,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<Work>("works", true);
 
         if (true) {
+          
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<Work>);
+          
         } else {
+          
           mockClient.getById.mockResolvedValue(mockResponse as Work);
+          
         }
 
         // Extract the expected parameters from the path
@@ -12430,7 +13922,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getWorks) {
+              
               result = await api.getWorks(expectedParams);
+              
             }
           }
 
@@ -12439,9 +13933,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (true) {
+            
             expect(mockClient.getResponse).toHaveBeenCalled();
+            
           } else {
+            
             expect(mockClient.getById).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -12488,9 +13986,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (true) {
+          
           mockClient.getResponse.mockRejectedValue(error);
+          
         } else {
+          
           mockClient.getById.mockRejectedValue(error);
+          
         }
 
         const api = apis.works as any;
@@ -12502,7 +14004,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getWorks) {
+              
               await expect(api.getWorks()).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -12521,9 +14025,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<Work>("works", true);
 
         if (true) {
+          
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<Work>);
+          
         } else {
+          
           mockClient.getById.mockResolvedValue(mockResponse as Work);
+          
         }
 
         // Extract the expected parameters from the path
@@ -12564,7 +14072,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getWorks) {
+              
               result = await api.getWorks(expectedParams);
+              
             }
           }
 
@@ -12573,9 +14083,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (true) {
+            
             expect(mockClient.getResponse).toHaveBeenCalled();
+            
           } else {
+            
             expect(mockClient.getById).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -12622,9 +14136,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (true) {
+          
           mockClient.getResponse.mockRejectedValue(error);
+          
         } else {
+          
           mockClient.getById.mockRejectedValue(error);
+          
         }
 
         const api = apis.works as any;
@@ -12636,7 +14154,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getWorks) {
+              
               await expect(api.getWorks()).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -12655,9 +14175,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<Work>("works", true);
 
         if (true) {
+          
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<Work>);
+          
         } else {
+          
           mockClient.getById.mockResolvedValue(mockResponse as Work);
+          
         }
 
         // Extract the expected parameters from the path
@@ -12698,7 +14222,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getWorks) {
+              
               result = await api.getWorks(expectedParams);
+              
             }
           }
 
@@ -12707,9 +14233,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (true) {
+            
             expect(mockClient.getResponse).toHaveBeenCalled();
+            
           } else {
+            
             expect(mockClient.getById).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -12756,9 +14286,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (true) {
+          
           mockClient.getResponse.mockRejectedValue(error);
+          
         } else {
+          
           mockClient.getById.mockRejectedValue(error);
+          
         }
 
         const api = apis.works as any;
@@ -12770,7 +14304,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getWorks) {
+              
               await expect(api.getWorks()).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -12789,9 +14325,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<Work>("works", true);
 
         if (true) {
+          
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<Work>);
+          
         } else {
+          
           mockClient.getById.mockResolvedValue(mockResponse as Work);
+          
         }
 
         // Extract the expected parameters from the path
@@ -12832,7 +14372,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getWorks) {
+              
               result = await api.getWorks(expectedParams);
+              
             }
           }
 
@@ -12841,9 +14383,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (true) {
+            
             expect(mockClient.getResponse).toHaveBeenCalled();
+            
           } else {
+            
             expect(mockClient.getById).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -12890,9 +14436,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (true) {
+          
           mockClient.getResponse.mockRejectedValue(error);
+          
         } else {
+          
           mockClient.getById.mockRejectedValue(error);
+          
         }
 
         const api = apis.works as any;
@@ -12904,7 +14454,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getWorks) {
+              
               await expect(api.getWorks()).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -12923,9 +14475,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<Work>("works", true);
 
         if (true) {
+          
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<Work>);
+          
         } else {
+          
           mockClient.getById.mockResolvedValue(mockResponse as Work);
+          
         }
 
         // Extract the expected parameters from the path
@@ -12966,7 +14522,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getWorks) {
+              
               result = await api.getWorks(expectedParams);
+              
             }
           }
 
@@ -12975,9 +14533,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (true) {
+            
             expect(mockClient.getResponse).toHaveBeenCalled();
+            
           } else {
+            
             expect(mockClient.getById).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -13024,9 +14586,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (true) {
+          
           mockClient.getResponse.mockRejectedValue(error);
+          
         } else {
+          
           mockClient.getById.mockRejectedValue(error);
+          
         }
 
         const api = apis.works as any;
@@ -13038,7 +14604,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getWorks) {
+              
               await expect(api.getWorks()).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -13057,9 +14625,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<Work>("works", true);
 
         if (true) {
+          
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<Work>);
+          
         } else {
+          
           mockClient.getById.mockResolvedValue(mockResponse as Work);
+          
         }
 
         // Extract the expected parameters from the path
@@ -13100,7 +14672,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getWorks) {
+              
               result = await api.getWorks(expectedParams);
+              
             }
           }
 
@@ -13109,9 +14683,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (true) {
+            
             expect(mockClient.getResponse).toHaveBeenCalled();
+            
           } else {
+            
             expect(mockClient.getById).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -13158,9 +14736,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (true) {
+          
           mockClient.getResponse.mockRejectedValue(error);
+          
         } else {
+          
           mockClient.getById.mockRejectedValue(error);
+          
         }
 
         const api = apis.works as any;
@@ -13172,7 +14754,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getWorks) {
+              
               await expect(api.getWorks()).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -13191,9 +14775,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<Work>("works", true);
 
         if (true) {
+          
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<Work>);
+          
         } else {
+          
           mockClient.getById.mockResolvedValue(mockResponse as Work);
+          
         }
 
         // Extract the expected parameters from the path
@@ -13234,7 +14822,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getWorks) {
+              
               result = await api.getWorks(expectedParams);
+              
             }
           }
 
@@ -13243,9 +14833,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (true) {
+            
             expect(mockClient.getResponse).toHaveBeenCalled();
+            
           } else {
+            
             expect(mockClient.getById).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -13292,9 +14886,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (true) {
+          
           mockClient.getResponse.mockRejectedValue(error);
+          
         } else {
+          
           mockClient.getById.mockRejectedValue(error);
+          
         }
 
         const api = apis.works as any;
@@ -13306,7 +14904,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getWorks) {
+              
               await expect(api.getWorks()).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -13325,9 +14925,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<Work>("works", true);
 
         if (true) {
+          
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<Work>);
+          
         } else {
+          
           mockClient.getById.mockResolvedValue(mockResponse as Work);
+          
         }
 
         // Extract the expected parameters from the path
@@ -13368,7 +14972,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getWorks) {
+              
               result = await api.getWorks(expectedParams);
+              
             }
           }
 
@@ -13377,9 +14983,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (true) {
+            
             expect(mockClient.getResponse).toHaveBeenCalled();
+            
           } else {
+            
             expect(mockClient.getById).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -13426,9 +15036,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (true) {
+          
           mockClient.getResponse.mockRejectedValue(error);
+          
         } else {
+          
           mockClient.getById.mockRejectedValue(error);
+          
         }
 
         const api = apis.works as any;
@@ -13440,7 +15054,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getWorks) {
+              
               await expect(api.getWorks()).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -13459,9 +15075,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<Work>("works", true);
 
         if (true) {
+          
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<Work>);
+          
         } else {
+          
           mockClient.getById.mockResolvedValue(mockResponse as Work);
+          
         }
 
         // Extract the expected parameters from the path
@@ -13502,7 +15122,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getWorks) {
+              
               result = await api.getWorks(expectedParams);
+              
             }
           }
 
@@ -13511,9 +15133,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (true) {
+            
             expect(mockClient.getResponse).toHaveBeenCalled();
+            
           } else {
+            
             expect(mockClient.getById).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -13560,9 +15186,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (true) {
+          
           mockClient.getResponse.mockRejectedValue(error);
+          
         } else {
+          
           mockClient.getById.mockRejectedValue(error);
+          
         }
 
         const api = apis.works as any;
@@ -13574,7 +15204,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getWorks) {
+              
               await expect(api.getWorks()).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -13593,9 +15225,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<Work>("works", true);
 
         if (true) {
+          
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<Work>);
+          
         } else {
+          
           mockClient.getById.mockResolvedValue(mockResponse as Work);
+          
         }
 
         // Extract the expected parameters from the path
@@ -13636,7 +15272,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getWorks) {
+              
               result = await api.getWorks(expectedParams);
+              
             }
           }
 
@@ -13645,9 +15283,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (true) {
+            
             expect(mockClient.getResponse).toHaveBeenCalled();
+            
           } else {
+            
             expect(mockClient.getById).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -13694,9 +15336,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (true) {
+          
           mockClient.getResponse.mockRejectedValue(error);
+          
         } else {
+          
           mockClient.getById.mockRejectedValue(error);
+          
         }
 
         const api = apis.works as any;
@@ -13708,7 +15354,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getWorks) {
+              
               await expect(api.getWorks()).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -13727,9 +15375,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<Work>("works", true);
 
         if (true) {
+          
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<Work>);
+          
         } else {
+          
           mockClient.getById.mockResolvedValue(mockResponse as Work);
+          
         }
 
         // Extract the expected parameters from the path
@@ -13770,7 +15422,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getWorks) {
+              
               result = await api.getWorks(expectedParams);
+              
             }
           }
 
@@ -13779,9 +15433,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (true) {
+            
             expect(mockClient.getResponse).toHaveBeenCalled();
+            
           } else {
+            
             expect(mockClient.getById).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -13828,9 +15486,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (true) {
+          
           mockClient.getResponse.mockRejectedValue(error);
+          
         } else {
+          
           mockClient.getById.mockRejectedValue(error);
+          
         }
 
         const api = apis.works as any;
@@ -13842,7 +15504,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getWorks) {
+              
               await expect(api.getWorks()).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -13861,9 +15525,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<Work>("works", true);
 
         if (true) {
+          
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<Work>);
+          
         } else {
+          
           mockClient.getById.mockResolvedValue(mockResponse as Work);
+          
         }
 
         // Extract the expected parameters from the path
@@ -13904,7 +15572,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getWorks) {
+              
               result = await api.getWorks(expectedParams);
+              
             }
           }
 
@@ -13913,9 +15583,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (true) {
+            
             expect(mockClient.getResponse).toHaveBeenCalled();
+            
           } else {
+            
             expect(mockClient.getById).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -13962,9 +15636,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (true) {
+          
           mockClient.getResponse.mockRejectedValue(error);
+          
         } else {
+          
           mockClient.getById.mockRejectedValue(error);
+          
         }
 
         const api = apis.works as any;
@@ -13976,7 +15654,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getWorks) {
+              
               await expect(api.getWorks()).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -13995,9 +15675,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<Work>("works", true);
 
         if (true) {
+          
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<Work>);
+          
         } else {
+          
           mockClient.getById.mockResolvedValue(mockResponse as Work);
+          
         }
 
         // Extract the expected parameters from the path
@@ -14038,7 +15722,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getWorks) {
+              
               result = await api.getWorks(expectedParams);
+              
             }
           }
 
@@ -14047,9 +15733,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (true) {
+            
             expect(mockClient.getResponse).toHaveBeenCalled();
+            
           } else {
+            
             expect(mockClient.getById).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -14096,9 +15786,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (true) {
+          
           mockClient.getResponse.mockRejectedValue(error);
+          
         } else {
+          
           mockClient.getById.mockRejectedValue(error);
+          
         }
 
         const api = apis.works as any;
@@ -14110,7 +15804,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getWorks) {
+              
               await expect(api.getWorks()).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -14129,9 +15825,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<Work>("works", true);
 
         if (true) {
+          
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<Work>);
+          
         } else {
+          
           mockClient.getById.mockResolvedValue(mockResponse as Work);
+          
         }
 
         // Extract the expected parameters from the path
@@ -14172,7 +15872,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getWorks) {
+              
               result = await api.getWorks(expectedParams);
+              
             }
           }
 
@@ -14181,9 +15883,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (true) {
+            
             expect(mockClient.getResponse).toHaveBeenCalled();
+            
           } else {
+            
             expect(mockClient.getById).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -14230,9 +15936,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (true) {
+          
           mockClient.getResponse.mockRejectedValue(error);
+          
         } else {
+          
           mockClient.getById.mockRejectedValue(error);
+          
         }
 
         const api = apis.works as any;
@@ -14244,7 +15954,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getWorks) {
+              
               await expect(api.getWorks()).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -14263,9 +15975,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<Work>("works", true);
 
         if (true) {
+          
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<Work>);
+          
         } else {
+          
           mockClient.getById.mockResolvedValue(mockResponse as Work);
+          
         }
 
         // Extract the expected parameters from the path
@@ -14306,7 +16022,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getWorks) {
+              
               result = await api.getWorks(expectedParams);
+              
             }
           }
 
@@ -14315,9 +16033,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (true) {
+            
             expect(mockClient.getResponse).toHaveBeenCalled();
+            
           } else {
+            
             expect(mockClient.getById).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -14364,9 +16086,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (true) {
+          
           mockClient.getResponse.mockRejectedValue(error);
+          
         } else {
+          
           mockClient.getById.mockRejectedValue(error);
+          
         }
 
         const api = apis.works as any;
@@ -14378,7 +16104,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getWorks) {
+              
               await expect(api.getWorks()).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -14397,9 +16125,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<Work>("works", true);
 
         if (true) {
+          
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<Work>);
+          
         } else {
+          
           mockClient.getById.mockResolvedValue(mockResponse as Work);
+          
         }
 
         // Extract the expected parameters from the path
@@ -14440,7 +16172,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getWorks) {
+              
               result = await api.getWorks(expectedParams);
+              
             }
           }
 
@@ -14449,9 +16183,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (true) {
+            
             expect(mockClient.getResponse).toHaveBeenCalled();
+            
           } else {
+            
             expect(mockClient.getById).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -14498,9 +16236,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (true) {
+          
           mockClient.getResponse.mockRejectedValue(error);
+          
         } else {
+          
           mockClient.getById.mockRejectedValue(error);
+          
         }
 
         const api = apis.works as any;
@@ -14512,7 +16254,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getWorks) {
+              
               await expect(api.getWorks()).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -14531,9 +16275,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<Work>("works", true);
 
         if (true) {
+          
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<Work>);
+          
         } else {
+          
           mockClient.getById.mockResolvedValue(mockResponse as Work);
+          
         }
 
         // Extract the expected parameters from the path
@@ -14574,7 +16322,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getWorks) {
+              
               result = await api.getWorks(expectedParams);
+              
             }
           }
 
@@ -14583,9 +16333,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (true) {
+            
             expect(mockClient.getResponse).toHaveBeenCalled();
+            
           } else {
+            
             expect(mockClient.getById).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -14632,9 +16386,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (true) {
+          
           mockClient.getResponse.mockRejectedValue(error);
+          
         } else {
+          
           mockClient.getById.mockRejectedValue(error);
+          
         }
 
         const api = apis.works as any;
@@ -14646,7 +16404,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getWorks) {
+              
               await expect(api.getWorks()).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -14665,9 +16425,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<Work>("works", true);
 
         if (true) {
+          
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<Work>);
+          
         } else {
+          
           mockClient.getById.mockResolvedValue(mockResponse as Work);
+          
         }
 
         // Extract the expected parameters from the path
@@ -14708,7 +16472,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getWorks) {
+              
               result = await api.getWorks(expectedParams);
+              
             }
           }
 
@@ -14717,9 +16483,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (true) {
+            
             expect(mockClient.getResponse).toHaveBeenCalled();
+            
           } else {
+            
             expect(mockClient.getById).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -14766,9 +16536,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (true) {
+          
           mockClient.getResponse.mockRejectedValue(error);
+          
         } else {
+          
           mockClient.getById.mockRejectedValue(error);
+          
         }
 
         const api = apis.works as any;
@@ -14780,7 +16554,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getWorks) {
+              
               await expect(api.getWorks()).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -14799,9 +16575,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<Work>("works", true);
 
         if (true) {
+          
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<Work>);
+          
         } else {
+          
           mockClient.getById.mockResolvedValue(mockResponse as Work);
+          
         }
 
         // Extract the expected parameters from the path
@@ -14842,7 +16622,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getWorks) {
+              
               result = await api.getWorks(expectedParams);
+              
             }
           }
 
@@ -14851,9 +16633,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (true) {
+            
             expect(mockClient.getResponse).toHaveBeenCalled();
+            
           } else {
+            
             expect(mockClient.getById).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -14878,9 +16664,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (true) {
+          
           mockClient.getResponse.mockRejectedValue(error);
+          
         } else {
+          
           mockClient.getById.mockRejectedValue(error);
+          
         }
 
         const api = apis.works as any;
@@ -14892,7 +16682,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getWorks) {
+              
               await expect(api.getWorks()).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -14911,9 +16703,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<Work>("works", true);
 
         if (true) {
+          
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<Work>);
+          
         } else {
+          
           mockClient.getById.mockResolvedValue(mockResponse as Work);
+          
         }
 
         // Extract the expected parameters from the path
@@ -14954,7 +16750,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getWorks) {
+              
               result = await api.getWorks(expectedParams);
+              
             }
           }
 
@@ -14963,9 +16761,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (true) {
+            
             expect(mockClient.getResponse).toHaveBeenCalled();
+            
           } else {
+            
             expect(mockClient.getById).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -14990,9 +16792,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (true) {
+          
           mockClient.getResponse.mockRejectedValue(error);
+          
         } else {
+          
           mockClient.getById.mockRejectedValue(error);
+          
         }
 
         const api = apis.works as any;
@@ -15004,7 +16810,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getWorks) {
+              
               await expect(api.getWorks()).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -15023,9 +16831,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<Work>("works", true);
 
         if (true) {
+          
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<Work>);
+          
         } else {
+          
           mockClient.getById.mockResolvedValue(mockResponse as Work);
+          
         }
 
         // Extract the expected parameters from the path
@@ -15066,7 +16878,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getWorks) {
+              
               result = await api.getWorks(expectedParams);
+              
             }
           }
 
@@ -15075,9 +16889,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (true) {
+            
             expect(mockClient.getResponse).toHaveBeenCalled();
+            
           } else {
+            
             expect(mockClient.getById).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -15102,9 +16920,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (true) {
+          
           mockClient.getResponse.mockRejectedValue(error);
+          
         } else {
+          
           mockClient.getById.mockRejectedValue(error);
+          
         }
 
         const api = apis.works as any;
@@ -15116,7 +16938,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getWorks) {
+              
               await expect(api.getWorks()).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -15135,9 +16959,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<Work>("works", true);
 
         if (true) {
+          
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<Work>);
+          
         } else {
+          
           mockClient.getById.mockResolvedValue(mockResponse as Work);
+          
         }
 
         // Extract the expected parameters from the path
@@ -15178,7 +17006,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getWorks) {
+              
               result = await api.getWorks(expectedParams);
+              
             }
           }
 
@@ -15187,9 +17017,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (true) {
+            
             expect(mockClient.getResponse).toHaveBeenCalled();
+            
           } else {
+            
             expect(mockClient.getById).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -15214,9 +17048,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (true) {
+          
           mockClient.getResponse.mockRejectedValue(error);
+          
         } else {
+          
           mockClient.getById.mockRejectedValue(error);
+          
         }
 
         const api = apis.works as any;
@@ -15228,7 +17066,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getWorks) {
+              
               await expect(api.getWorks()).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -15247,9 +17087,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<Work>("works", true);
 
         if (true) {
+          
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<Work>);
+          
         } else {
+          
           mockClient.getById.mockResolvedValue(mockResponse as Work);
+          
         }
 
         // Extract the expected parameters from the path
@@ -15290,7 +17134,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getWorks) {
+              
               result = await api.getWorks(expectedParams);
+              
             }
           }
 
@@ -15299,9 +17145,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (true) {
+            
             expect(mockClient.getResponse).toHaveBeenCalled();
+            
           } else {
+            
             expect(mockClient.getById).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -15326,9 +17176,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (true) {
+          
           mockClient.getResponse.mockRejectedValue(error);
+          
         } else {
+          
           mockClient.getById.mockRejectedValue(error);
+          
         }
 
         const api = apis.works as any;
@@ -15340,7 +17194,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getWorks) {
+              
               await expect(api.getWorks()).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -15359,9 +17215,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<Work>("works", true);
 
         if (true) {
+          
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<Work>);
+          
         } else {
+          
           mockClient.getById.mockResolvedValue(mockResponse as Work);
+          
         }
 
         // Extract the expected parameters from the path
@@ -15402,7 +17262,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getWorks) {
+              
               result = await api.getWorks(expectedParams);
+              
             }
           }
 
@@ -15411,9 +17273,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (true) {
+            
             expect(mockClient.getResponse).toHaveBeenCalled();
+            
           } else {
+            
             expect(mockClient.getById).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -15438,9 +17304,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (true) {
+          
           mockClient.getResponse.mockRejectedValue(error);
+          
         } else {
+          
           mockClient.getById.mockRejectedValue(error);
+          
         }
 
         const api = apis.works as any;
@@ -15452,7 +17322,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getWorks) {
+              
               await expect(api.getWorks()).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -15471,9 +17343,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<Work>("works", true);
 
         if (true) {
+          
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<Work>);
+          
         } else {
+          
           mockClient.getById.mockResolvedValue(mockResponse as Work);
+          
         }
 
         // Extract the expected parameters from the path
@@ -15514,7 +17390,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getWorks) {
+              
               result = await api.getWorks(expectedParams);
+              
             }
           }
 
@@ -15523,9 +17401,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (true) {
+            
             expect(mockClient.getResponse).toHaveBeenCalled();
+            
           } else {
+            
             expect(mockClient.getById).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -15550,9 +17432,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (true) {
+          
           mockClient.getResponse.mockRejectedValue(error);
+          
         } else {
+          
           mockClient.getById.mockRejectedValue(error);
+          
         }
 
         const api = apis.works as any;
@@ -15564,7 +17450,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getWorks) {
+              
               await expect(api.getWorks()).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -15583,9 +17471,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<Work>("works", true);
 
         if (true) {
+          
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<Work>);
+          
         } else {
+          
           mockClient.getById.mockResolvedValue(mockResponse as Work);
+          
         }
 
         // Extract the expected parameters from the path
@@ -15626,7 +17518,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getWorks) {
+              
               result = await api.getWorks(expectedParams);
+              
             }
           }
 
@@ -15635,9 +17529,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (true) {
+            
             expect(mockClient.getResponse).toHaveBeenCalled();
+            
           } else {
+            
             expect(mockClient.getById).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -15662,9 +17560,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (true) {
+          
           mockClient.getResponse.mockRejectedValue(error);
+          
         } else {
+          
           mockClient.getById.mockRejectedValue(error);
+          
         }
 
         const api = apis.works as any;
@@ -15676,7 +17578,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getWorks) {
+              
               await expect(api.getWorks()).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -15695,9 +17599,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<Work>("works", true);
 
         if (true) {
+          
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<Work>);
+          
         } else {
+          
           mockClient.getById.mockResolvedValue(mockResponse as Work);
+          
         }
 
         // Extract the expected parameters from the path
@@ -15738,7 +17646,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getWorks) {
+              
               result = await api.getWorks(expectedParams);
+              
             }
           }
 
@@ -15747,9 +17657,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (true) {
+            
             expect(mockClient.getResponse).toHaveBeenCalled();
+            
           } else {
+            
             expect(mockClient.getById).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -15774,9 +17688,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (true) {
+          
           mockClient.getResponse.mockRejectedValue(error);
+          
         } else {
+          
           mockClient.getById.mockRejectedValue(error);
+          
         }
 
         const api = apis.works as any;
@@ -15788,7 +17706,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getWorks) {
+              
               await expect(api.getWorks()).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -15807,9 +17727,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<Work>("works", true);
 
         if (true) {
+          
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<Work>);
+          
         } else {
+          
           mockClient.getById.mockResolvedValue(mockResponse as Work);
+          
         }
 
         // Extract the expected parameters from the path
@@ -15850,7 +17774,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getWorks) {
+              
               result = await api.getWorks(expectedParams);
+              
             }
           }
 
@@ -15859,9 +17785,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (true) {
+            
             expect(mockClient.getResponse).toHaveBeenCalled();
+            
           } else {
+            
             expect(mockClient.getById).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -15886,9 +17816,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (true) {
+          
           mockClient.getResponse.mockRejectedValue(error);
+          
         } else {
+          
           mockClient.getById.mockRejectedValue(error);
+          
         }
 
         const api = apis.works as any;
@@ -15900,7 +17834,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getWorks) {
+              
               await expect(api.getWorks()).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -15919,9 +17855,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<Work>("works", true);
 
         if (true) {
+          
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<Work>);
+          
         } else {
+          
           mockClient.getById.mockResolvedValue(mockResponse as Work);
+          
         }
 
         // Extract the expected parameters from the path
@@ -15962,7 +17902,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getWorks) {
+              
               result = await api.getWorks(expectedParams);
+              
             }
           }
 
@@ -15971,9 +17913,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (true) {
+            
             expect(mockClient.getResponse).toHaveBeenCalled();
+            
           } else {
+            
             expect(mockClient.getById).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -15998,9 +17944,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (true) {
+          
           mockClient.getResponse.mockRejectedValue(error);
+          
         } else {
+          
           mockClient.getById.mockRejectedValue(error);
+          
         }
 
         const api = apis.works as any;
@@ -16012,7 +17962,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getWorks) {
+              
               await expect(api.getWorks()).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -16031,9 +17983,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<Work>("works", true);
 
         if (true) {
+          
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<Work>);
+          
         } else {
+          
           mockClient.getById.mockResolvedValue(mockResponse as Work);
+          
         }
 
         // Extract the expected parameters from the path
@@ -16074,7 +18030,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getWorks) {
+              
               result = await api.getWorks(expectedParams);
+              
             }
           }
 
@@ -16083,9 +18041,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (true) {
+            
             expect(mockClient.getResponse).toHaveBeenCalled();
+            
           } else {
+            
             expect(mockClient.getById).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -16110,9 +18072,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (true) {
+          
           mockClient.getResponse.mockRejectedValue(error);
+          
         } else {
+          
           mockClient.getById.mockRejectedValue(error);
+          
         }
 
         const api = apis.works as any;
@@ -16124,7 +18090,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getWorks) {
+              
               await expect(api.getWorks()).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -16143,9 +18111,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<Work>("works", true);
 
         if (true) {
+          
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<Work>);
+          
         } else {
+          
           mockClient.getById.mockResolvedValue(mockResponse as Work);
+          
         }
 
         // Extract the expected parameters from the path
@@ -16186,7 +18158,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getWorks) {
+              
               result = await api.getWorks(expectedParams);
+              
             }
           }
 
@@ -16195,9 +18169,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (true) {
+            
             expect(mockClient.getResponse).toHaveBeenCalled();
+            
           } else {
+            
             expect(mockClient.getById).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -16222,9 +18200,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (true) {
+          
           mockClient.getResponse.mockRejectedValue(error);
+          
         } else {
+          
           mockClient.getById.mockRejectedValue(error);
+          
         }
 
         const api = apis.works as any;
@@ -16236,7 +18218,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getWorks) {
+              
               await expect(api.getWorks()).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -16255,9 +18239,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<Work>("works", true);
 
         if (true) {
+          
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<Work>);
+          
         } else {
+          
           mockClient.getById.mockResolvedValue(mockResponse as Work);
+          
         }
 
         // Extract the expected parameters from the path
@@ -16298,7 +18286,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getWorks) {
+              
               result = await api.getWorks(expectedParams);
+              
             }
           }
 
@@ -16307,9 +18297,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (true) {
+            
             expect(mockClient.getResponse).toHaveBeenCalled();
+            
           } else {
+            
             expect(mockClient.getById).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -16334,9 +18328,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (true) {
+          
           mockClient.getResponse.mockRejectedValue(error);
+          
         } else {
+          
           mockClient.getById.mockRejectedValue(error);
+          
         }
 
         const api = apis.works as any;
@@ -16348,7 +18346,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getWorks) {
+              
               await expect(api.getWorks()).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -16367,9 +18367,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<Work>("works", true);
 
         if (true) {
+          
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<Work>);
+          
         } else {
+          
           mockClient.getById.mockResolvedValue(mockResponse as Work);
+          
         }
 
         // Extract the expected parameters from the path
@@ -16410,7 +18414,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getWorks) {
+              
               result = await api.getWorks(expectedParams);
+              
             }
           }
 
@@ -16419,9 +18425,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (true) {
+            
             expect(mockClient.getResponse).toHaveBeenCalled();
+            
           } else {
+            
             expect(mockClient.getById).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -16446,9 +18456,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (true) {
+          
           mockClient.getResponse.mockRejectedValue(error);
+          
         } else {
+          
           mockClient.getById.mockRejectedValue(error);
+          
         }
 
         const api = apis.works as any;
@@ -16460,7 +18474,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getWorks) {
+              
               await expect(api.getWorks()).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -16479,9 +18495,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<Work>("works", true);
 
         if (true) {
+          
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<Work>);
+          
         } else {
+          
           mockClient.getById.mockResolvedValue(mockResponse as Work);
+          
         }
 
         // Extract the expected parameters from the path
@@ -16522,7 +18542,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getWorks) {
+              
               result = await api.getWorks(expectedParams);
+              
             }
           }
 
@@ -16531,9 +18553,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (true) {
+            
             expect(mockClient.getResponse).toHaveBeenCalled();
+            
           } else {
+            
             expect(mockClient.getById).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -16558,9 +18584,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (true) {
+          
           mockClient.getResponse.mockRejectedValue(error);
+          
         } else {
+          
           mockClient.getById.mockRejectedValue(error);
+          
         }
 
         const api = apis.works as any;
@@ -16572,7 +18602,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getWorks) {
+              
               await expect(api.getWorks()).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -16591,9 +18623,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<Work>("works", true);
 
         if (true) {
+          
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<Work>);
+          
         } else {
+          
           mockClient.getById.mockResolvedValue(mockResponse as Work);
+          
         }
 
         // Extract the expected parameters from the path
@@ -16634,7 +18670,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getWorks) {
+              
               result = await api.getWorks(expectedParams);
+              
             }
           }
 
@@ -16643,9 +18681,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (true) {
+            
             expect(mockClient.getResponse).toHaveBeenCalled();
+            
           } else {
+            
             expect(mockClient.getById).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -16670,9 +18712,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (true) {
+          
           mockClient.getResponse.mockRejectedValue(error);
+          
         } else {
+          
           mockClient.getById.mockRejectedValue(error);
+          
         }
 
         const api = apis.works as any;
@@ -16684,7 +18730,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getWorks) {
+              
               await expect(api.getWorks()).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -16703,9 +18751,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<Work>("works", true);
 
         if (true) {
+          
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<Work>);
+          
         } else {
+          
           mockClient.getById.mockResolvedValue(mockResponse as Work);
+          
         }
 
         // Extract the expected parameters from the path
@@ -16746,7 +18798,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getWorks) {
+              
               result = await api.getWorks(expectedParams);
+              
             }
           }
 
@@ -16755,9 +18809,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (true) {
+            
             expect(mockClient.getResponse).toHaveBeenCalled();
+            
           } else {
+            
             expect(mockClient.getById).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -16799,9 +18857,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (true) {
+          
           mockClient.getResponse.mockRejectedValue(error);
+          
         } else {
+          
           mockClient.getById.mockRejectedValue(error);
+          
         }
 
         const api = apis.works as any;
@@ -16813,7 +18875,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getWorks) {
+              
               await expect(api.getWorks()).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -16832,9 +18896,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<Work>("works", true);
 
         if (true) {
+          
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<Work>);
+          
         } else {
+          
           mockClient.getById.mockResolvedValue(mockResponse as Work);
+          
         }
 
         // Extract the expected parameters from the path
@@ -16875,7 +18943,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getWorks) {
+              
               result = await api.getWorks(expectedParams);
+              
             }
           }
 
@@ -16884,9 +18954,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (true) {
+            
             expect(mockClient.getResponse).toHaveBeenCalled();
+            
           } else {
+            
             expect(mockClient.getById).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -16928,9 +19002,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (true) {
+          
           mockClient.getResponse.mockRejectedValue(error);
+          
         } else {
+          
           mockClient.getById.mockRejectedValue(error);
+          
         }
 
         const api = apis.works as any;
@@ -16942,7 +19020,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getWorks) {
+              
               await expect(api.getWorks()).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -16961,9 +19041,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<Work>("works", true);
 
         if (true) {
+          
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<Work>);
+          
         } else {
+          
           mockClient.getById.mockResolvedValue(mockResponse as Work);
+          
         }
 
         // Extract the expected parameters from the path
@@ -17004,7 +19088,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getWorks) {
+              
               result = await api.getWorks(expectedParams);
+              
             }
           }
 
@@ -17013,9 +19099,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (true) {
+            
             expect(mockClient.getResponse).toHaveBeenCalled();
+            
           } else {
+            
             expect(mockClient.getById).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -17057,9 +19147,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (true) {
+          
           mockClient.getResponse.mockRejectedValue(error);
+          
         } else {
+          
           mockClient.getById.mockRejectedValue(error);
+          
         }
 
         const api = apis.works as any;
@@ -17071,7 +19165,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getWorks) {
+              
               await expect(api.getWorks()).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -17090,9 +19186,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<Work>("works", true);
 
         if (true) {
+          
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<Work>);
+          
         } else {
+          
           mockClient.getById.mockResolvedValue(mockResponse as Work);
+          
         }
 
         // Extract the expected parameters from the path
@@ -17133,7 +19233,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getWorks) {
+              
               result = await api.getWorks(expectedParams);
+              
             }
           }
 
@@ -17142,9 +19244,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (true) {
+            
             expect(mockClient.getResponse).toHaveBeenCalled();
+            
           } else {
+            
             expect(mockClient.getById).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -17186,9 +19292,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (true) {
+          
           mockClient.getResponse.mockRejectedValue(error);
+          
         } else {
+          
           mockClient.getById.mockRejectedValue(error);
+          
         }
 
         const api = apis.works as any;
@@ -17200,7 +19310,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getWorks) {
+              
               await expect(api.getWorks()).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -17219,9 +19331,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<Work>("works", true);
 
         if (true) {
+          
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<Work>);
+          
         } else {
+          
           mockClient.getById.mockResolvedValue(mockResponse as Work);
+          
         }
 
         // Extract the expected parameters from the path
@@ -17262,7 +19378,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getWorks) {
+              
               result = await api.getWorks(expectedParams);
+              
             }
           }
 
@@ -17271,9 +19389,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (true) {
+            
             expect(mockClient.getResponse).toHaveBeenCalled();
+            
           } else {
+            
             expect(mockClient.getById).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -17315,9 +19437,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (true) {
+          
           mockClient.getResponse.mockRejectedValue(error);
+          
         } else {
+          
           mockClient.getById.mockRejectedValue(error);
+          
         }
 
         const api = apis.works as any;
@@ -17329,7 +19455,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getWorks) {
+              
               await expect(api.getWorks()).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -17348,9 +19476,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<Work>("works", true);
 
         if (true) {
+          
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<Work>);
+          
         } else {
+          
           mockClient.getById.mockResolvedValue(mockResponse as Work);
+          
         }
 
         // Extract the expected parameters from the path
@@ -17391,7 +19523,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getWorks) {
+              
               result = await api.getWorks(expectedParams);
+              
             }
           }
 
@@ -17400,9 +19534,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (true) {
+            
             expect(mockClient.getResponse).toHaveBeenCalled();
+            
           } else {
+            
             expect(mockClient.getById).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -17444,9 +19582,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (true) {
+          
           mockClient.getResponse.mockRejectedValue(error);
+          
         } else {
+          
           mockClient.getById.mockRejectedValue(error);
+          
         }
 
         const api = apis.works as any;
@@ -17458,7 +19600,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getWorks) {
+              
               await expect(api.getWorks()).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -17477,9 +19621,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<Work>("works", true);
 
         if (true) {
+          
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<Work>);
+          
         } else {
+          
           mockClient.getById.mockResolvedValue(mockResponse as Work);
+          
         }
 
         // Extract the expected parameters from the path
@@ -17520,7 +19668,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getWorks) {
+              
               result = await api.getWorks(expectedParams);
+              
             }
           }
 
@@ -17529,9 +19679,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (true) {
+            
             expect(mockClient.getResponse).toHaveBeenCalled();
+            
           } else {
+            
             expect(mockClient.getById).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -17556,9 +19710,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (true) {
+          
           mockClient.getResponse.mockRejectedValue(error);
+          
         } else {
+          
           mockClient.getById.mockRejectedValue(error);
+          
         }
 
         const api = apis.works as any;
@@ -17570,7 +19728,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getWorks) {
+              
               await expect(api.getWorks()).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -17589,9 +19749,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<Work>("works", true);
 
         if (true) {
+          
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<Work>);
+          
         } else {
+          
           mockClient.getById.mockResolvedValue(mockResponse as Work);
+          
         }
 
         // Extract the expected parameters from the path
@@ -17632,7 +19796,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getWorks) {
+              
               result = await api.getWorks(expectedParams);
+              
             }
           }
 
@@ -17641,9 +19807,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (true) {
+            
             expect(mockClient.getResponse).toHaveBeenCalled();
+            
           } else {
+            
             expect(mockClient.getById).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -17668,9 +19838,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (true) {
+          
           mockClient.getResponse.mockRejectedValue(error);
+          
         } else {
+          
           mockClient.getById.mockRejectedValue(error);
+          
         }
 
         const api = apis.works as any;
@@ -17682,7 +19856,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getWorks) {
+              
               await expect(api.getWorks()).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -17701,9 +19877,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<Work>("works", true);
 
         if (true) {
+          
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<Work>);
+          
         } else {
+          
           mockClient.getById.mockResolvedValue(mockResponse as Work);
+          
         }
 
         // Extract the expected parameters from the path
@@ -17744,7 +19924,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getWorks) {
+              
               result = await api.getWorks(expectedParams);
+              
             }
           }
 
@@ -17753,9 +19935,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (true) {
+            
             expect(mockClient.getResponse).toHaveBeenCalled();
+            
           } else {
+            
             expect(mockClient.getById).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -17780,9 +19966,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (true) {
+          
           mockClient.getResponse.mockRejectedValue(error);
+          
         } else {
+          
           mockClient.getById.mockRejectedValue(error);
+          
         }
 
         const api = apis.works as any;
@@ -17794,7 +19984,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getWorks) {
+              
               await expect(api.getWorks()).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -17813,9 +20005,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<Work>("works", true);
 
         if (true) {
+          
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<Work>);
+          
         } else {
+          
           mockClient.getById.mockResolvedValue(mockResponse as Work);
+          
         }
 
         // Extract the expected parameters from the path
@@ -17856,7 +20052,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getWorks) {
+              
               result = await api.getWorks(expectedParams);
+              
             }
           }
 
@@ -17865,9 +20063,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (true) {
+            
             expect(mockClient.getResponse).toHaveBeenCalled();
+            
           } else {
+            
             expect(mockClient.getById).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -17892,9 +20094,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (true) {
+          
           mockClient.getResponse.mockRejectedValue(error);
+          
         } else {
+          
           mockClient.getById.mockRejectedValue(error);
+          
         }
 
         const api = apis.works as any;
@@ -17906,7 +20112,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getWorks) {
+              
               await expect(api.getWorks()).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -17925,9 +20133,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<Work>("works", true);
 
         if (true) {
+          
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<Work>);
+          
         } else {
+          
           mockClient.getById.mockResolvedValue(mockResponse as Work);
+          
         }
 
         // Extract the expected parameters from the path
@@ -17968,7 +20180,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getWorks) {
+              
               result = await api.getWorks(expectedParams);
+              
             }
           }
 
@@ -17977,9 +20191,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (true) {
+            
             expect(mockClient.getResponse).toHaveBeenCalled();
+            
           } else {
+            
             expect(mockClient.getById).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -18004,9 +20222,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (true) {
+          
           mockClient.getResponse.mockRejectedValue(error);
+          
         } else {
+          
           mockClient.getById.mockRejectedValue(error);
+          
         }
 
         const api = apis.works as any;
@@ -18018,7 +20240,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getWorks) {
+              
               await expect(api.getWorks()).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -18041,9 +20265,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<Author>("authors", true);
 
         if (true) {
+          
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<Author>);
+          
         } else {
+          
           mockClient.getById.mockResolvedValue(mockResponse as Author);
+          
         }
 
         // Extract the expected parameters from the path
@@ -18084,7 +20312,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getAuthors) {
+              
               result = await api.getAuthors(expectedParams);
+              
             }
           }
 
@@ -18093,9 +20323,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (true) {
+            
             expect(mockClient.getResponse).toHaveBeenCalled();
+            
           } else {
+            
             expect(mockClient.getById).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -18120,9 +20354,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (true) {
+          
           mockClient.getResponse.mockRejectedValue(error);
+          
         } else {
+          
           mockClient.getById.mockRejectedValue(error);
+          
         }
 
         const api = apis.authors as any;
@@ -18134,7 +20372,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getAuthors) {
+              
               await expect(api.getAuthors()).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -18153,9 +20393,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<Author>("authors", false);
 
         if (false) {
+          
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<Author>);
+          
         } else {
+          
           mockClient.getById.mockResolvedValue(mockResponse as Author);
+          
         }
 
         // Extract the expected parameters from the path
@@ -18196,7 +20440,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getAuthors) {
+              
               result = await api.getAuthors(expectedParams);
+              
             }
           }
 
@@ -18205,9 +20451,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (false) {
+            
             expect(mockClient.getResponse).toHaveBeenCalled();
+            
           } else {
+            
             expect(mockClient.getById).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -18232,9 +20482,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (false) {
+          
           mockClient.getResponse.mockRejectedValue(error);
+          
         } else {
+          
           mockClient.getById.mockRejectedValue(error);
+          
         }
 
         const api = apis.authors as any;
@@ -18246,7 +20500,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getAuthors) {
+              
               await expect(api.getAuthors()).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -18265,9 +20521,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<Author>("authors", false);
 
         if (false) {
+          
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<Author>);
+          
         } else {
+          
           mockClient.getById.mockResolvedValue(mockResponse as Author);
+          
         }
 
         // Extract the expected parameters from the path
@@ -18308,7 +20568,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getAuthors) {
+              
               result = await api.getAuthors(expectedParams);
+              
             }
           }
 
@@ -18317,9 +20579,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (false) {
+            
             expect(mockClient.getResponse).toHaveBeenCalled();
+            
           } else {
+            
             expect(mockClient.getById).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -18344,9 +20610,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (false) {
+          
           mockClient.getResponse.mockRejectedValue(error);
+          
         } else {
+          
           mockClient.getById.mockRejectedValue(error);
+          
         }
 
         const api = apis.authors as any;
@@ -18358,7 +20628,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getAuthors) {
+              
               await expect(api.getAuthors()).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -18377,9 +20649,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<Author>("authors", false);
 
         if (false) {
+          
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<Author>);
+          
         } else {
+          
           mockClient.getById.mockResolvedValue(mockResponse as Author);
+          
         }
 
         // Extract the expected parameters from the path
@@ -18420,7 +20696,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getAuthors) {
+              
               result = await api.getAuthors(expectedParams);
+              
             }
           }
 
@@ -18429,9 +20707,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (false) {
+            
             expect(mockClient.getResponse).toHaveBeenCalled();
+            
           } else {
+            
             expect(mockClient.getById).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -18456,9 +20738,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (false) {
+          
           mockClient.getResponse.mockRejectedValue(error);
+          
         } else {
+          
           mockClient.getById.mockRejectedValue(error);
+          
         }
 
         const api = apis.authors as any;
@@ -18470,7 +20756,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getAuthors) {
+              
               await expect(api.getAuthors()).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -18489,9 +20777,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<Author>("authors", false);
 
         if (false) {
+          
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<Author>);
+          
         } else {
+          
           mockClient.getById.mockResolvedValue(mockResponse as Author);
+          
         }
 
         // Extract the expected parameters from the path
@@ -18532,7 +20824,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getAuthors) {
+              
               result = await api.getAuthors(expectedParams);
+              
             }
           }
 
@@ -18541,9 +20835,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (false) {
+            
             expect(mockClient.getResponse).toHaveBeenCalled();
+            
           } else {
+            
             expect(mockClient.getById).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -18568,9 +20866,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (false) {
+          
           mockClient.getResponse.mockRejectedValue(error);
+          
         } else {
+          
           mockClient.getById.mockRejectedValue(error);
+          
         }
 
         const api = apis.authors as any;
@@ -18582,7 +20884,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getAuthors) {
+              
               await expect(api.getAuthors()).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -18601,9 +20905,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<Author>("authors", false);
 
         if (false) {
+          
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<Author>);
+          
         } else {
+          
           mockClient.getById.mockResolvedValue(mockResponse as Author);
+          
         }
 
         // Extract the expected parameters from the path
@@ -18644,7 +20952,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getAuthors) {
+              
               result = await api.getAuthors(expectedParams);
+              
             }
           }
 
@@ -18653,9 +20963,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (false) {
+            
             expect(mockClient.getResponse).toHaveBeenCalled();
+            
           } else {
+            
             expect(mockClient.getById).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -18680,9 +20994,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (false) {
+          
           mockClient.getResponse.mockRejectedValue(error);
+          
         } else {
+          
           mockClient.getById.mockRejectedValue(error);
+          
         }
 
         const api = apis.authors as any;
@@ -18694,7 +21012,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getAuthors) {
+              
               await expect(api.getAuthors()).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -18713,9 +21033,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<Author>("authors", false);
 
         if (false) {
+          
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<Author>);
+          
         } else {
+          
           mockClient.getById.mockResolvedValue(mockResponse as Author);
+          
         }
 
         // Extract the expected parameters from the path
@@ -18756,7 +21080,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getAuthors) {
+              
               result = await api.getAuthors(expectedParams);
+              
             }
           }
 
@@ -18765,9 +21091,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (false) {
+            
             expect(mockClient.getResponse).toHaveBeenCalled();
+            
           } else {
+            
             expect(mockClient.getById).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -18792,9 +21122,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (false) {
+          
           mockClient.getResponse.mockRejectedValue(error);
+          
         } else {
+          
           mockClient.getById.mockRejectedValue(error);
+          
         }
 
         const api = apis.authors as any;
@@ -18806,7 +21140,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getAuthors) {
+              
               await expect(api.getAuthors()).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -18825,9 +21161,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<Author>("authors", true);
 
         if (true) {
+          
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<Author>);
+          
         } else {
+          
           mockClient.getById.mockResolvedValue(mockResponse as Author);
+          
         }
 
         // Extract the expected parameters from the path
@@ -18868,7 +21208,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getAuthors) {
+              
               result = await api.getAuthors(expectedParams);
+              
             }
           }
 
@@ -18877,9 +21219,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (true) {
+            
             expect(mockClient.getResponse).toHaveBeenCalled();
+            
           } else {
+            
             expect(mockClient.getById).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -18904,9 +21250,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (true) {
+          
           mockClient.getResponse.mockRejectedValue(error);
+          
         } else {
+          
           mockClient.getById.mockRejectedValue(error);
+          
         }
 
         const api = apis.authors as any;
@@ -18918,7 +21268,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getAuthors) {
+              
               await expect(api.getAuthors()).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -18937,9 +21289,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<Author>("authors", true);
 
         if (true) {
+          
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<Author>);
+          
         } else {
+          
           mockClient.getById.mockResolvedValue(mockResponse as Author);
+          
         }
 
         // Extract the expected parameters from the path
@@ -18980,7 +21336,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getAuthors) {
+              
               result = await api.getAuthors(expectedParams);
+              
             }
           }
 
@@ -18989,9 +21347,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (true) {
+            
             expect(mockClient.getResponse).toHaveBeenCalled();
+            
           } else {
+            
             expect(mockClient.getById).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -19016,9 +21378,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (true) {
+          
           mockClient.getResponse.mockRejectedValue(error);
+          
         } else {
+          
           mockClient.getById.mockRejectedValue(error);
+          
         }
 
         const api = apis.authors as any;
@@ -19030,7 +21396,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getAuthors) {
+              
               await expect(api.getAuthors()).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -19049,9 +21417,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<Author>("authors", false);
 
         if (false) {
+          
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<Author>);
+          
         } else {
+          
           mockClient.getById.mockResolvedValue(mockResponse as Author);
+          
         }
 
         // Extract the expected parameters from the path
@@ -19092,7 +21464,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getAuthors) {
+              
               result = await api.getAuthors(expectedParams);
+              
             }
           }
 
@@ -19101,9 +21475,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (false) {
+            
             expect(mockClient.getResponse).toHaveBeenCalled();
+            
           } else {
+            
             expect(mockClient.getById).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -19145,9 +21523,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (false) {
+          
           mockClient.getResponse.mockRejectedValue(error);
+          
         } else {
+          
           mockClient.getById.mockRejectedValue(error);
+          
         }
 
         const api = apis.authors as any;
@@ -19159,7 +21541,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getAuthors) {
+              
               await expect(api.getAuthors()).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -19178,9 +21562,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<Author>("authors", false);
 
         if (false) {
+          
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<Author>);
+          
         } else {
+          
           mockClient.getById.mockResolvedValue(mockResponse as Author);
+          
         }
 
         // Extract the expected parameters from the path
@@ -19221,7 +21609,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getAuthors) {
+              
               result = await api.getAuthors(expectedParams);
+              
             }
           }
 
@@ -19230,9 +21620,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (false) {
+            
             expect(mockClient.getResponse).toHaveBeenCalled();
+            
           } else {
+            
             expect(mockClient.getById).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -19274,9 +21668,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (false) {
+          
           mockClient.getResponse.mockRejectedValue(error);
+          
         } else {
+          
           mockClient.getById.mockRejectedValue(error);
+          
         }
 
         const api = apis.authors as any;
@@ -19288,7 +21686,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getAuthors) {
+              
               await expect(api.getAuthors()).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -19307,9 +21707,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<Author>("authors", true);
 
         if (true) {
+          
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<Author>);
+          
         } else {
+          
           mockClient.getById.mockResolvedValue(mockResponse as Author);
+          
         }
 
         // Extract the expected parameters from the path
@@ -19350,7 +21754,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getAuthors) {
+              
               result = await api.getAuthors(expectedParams);
+              
             }
           }
 
@@ -19359,9 +21765,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (true) {
+            
             expect(mockClient.getResponse).toHaveBeenCalled();
+            
           } else {
+            
             expect(mockClient.getById).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -19408,9 +21818,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (true) {
+          
           mockClient.getResponse.mockRejectedValue(error);
+          
         } else {
+          
           mockClient.getById.mockRejectedValue(error);
+          
         }
 
         const api = apis.authors as any;
@@ -19422,7 +21836,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getAuthors) {
+              
               await expect(api.getAuthors()).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -19441,9 +21857,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<Author>("authors", true);
 
         if (true) {
+          
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<Author>);
+          
         } else {
+          
           mockClient.getById.mockResolvedValue(mockResponse as Author);
+          
         }
 
         // Extract the expected parameters from the path
@@ -19484,7 +21904,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getAuthors) {
+              
               result = await api.getAuthors(expectedParams);
+              
             }
           }
 
@@ -19493,9 +21915,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (true) {
+            
             expect(mockClient.getResponse).toHaveBeenCalled();
+            
           } else {
+            
             expect(mockClient.getById).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -19542,9 +21968,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (true) {
+          
           mockClient.getResponse.mockRejectedValue(error);
+          
         } else {
+          
           mockClient.getById.mockRejectedValue(error);
+          
         }
 
         const api = apis.authors as any;
@@ -19556,7 +21986,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getAuthors) {
+              
               await expect(api.getAuthors()).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -19575,9 +22007,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<Author>("authors", true);
 
         if (true) {
+          
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<Author>);
+          
         } else {
+          
           mockClient.getById.mockResolvedValue(mockResponse as Author);
+          
         }
 
         // Extract the expected parameters from the path
@@ -19618,7 +22054,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getAuthors) {
+              
               result = await api.getAuthors(expectedParams);
+              
             }
           }
 
@@ -19627,9 +22065,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (true) {
+            
             expect(mockClient.getResponse).toHaveBeenCalled();
+            
           } else {
+            
             expect(mockClient.getById).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -19676,9 +22118,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (true) {
+          
           mockClient.getResponse.mockRejectedValue(error);
+          
         } else {
+          
           mockClient.getById.mockRejectedValue(error);
+          
         }
 
         const api = apis.authors as any;
@@ -19690,7 +22136,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getAuthors) {
+              
               await expect(api.getAuthors()).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -19709,9 +22157,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<Author>("authors", true);
 
         if (true) {
+          
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<Author>);
+          
         } else {
+          
           mockClient.getById.mockResolvedValue(mockResponse as Author);
+          
         }
 
         // Extract the expected parameters from the path
@@ -19752,7 +22204,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getAuthors) {
+              
               result = await api.getAuthors(expectedParams);
+              
             }
           }
 
@@ -19761,9 +22215,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (true) {
+            
             expect(mockClient.getResponse).toHaveBeenCalled();
+            
           } else {
+            
             expect(mockClient.getById).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -19810,9 +22268,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (true) {
+          
           mockClient.getResponse.mockRejectedValue(error);
+          
         } else {
+          
           mockClient.getById.mockRejectedValue(error);
+          
         }
 
         const api = apis.authors as any;
@@ -19824,7 +22286,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getAuthors) {
+              
               await expect(api.getAuthors()).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -19843,9 +22307,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<Author>("authors", true);
 
         if (true) {
+          
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<Author>);
+          
         } else {
+          
           mockClient.getById.mockResolvedValue(mockResponse as Author);
+          
         }
 
         // Extract the expected parameters from the path
@@ -19886,7 +22354,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getAuthors) {
+              
               result = await api.getAuthors(expectedParams);
+              
             }
           }
 
@@ -19895,9 +22365,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (true) {
+            
             expect(mockClient.getResponse).toHaveBeenCalled();
+            
           } else {
+            
             expect(mockClient.getById).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -19944,9 +22418,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (true) {
+          
           mockClient.getResponse.mockRejectedValue(error);
+          
         } else {
+          
           mockClient.getById.mockRejectedValue(error);
+          
         }
 
         const api = apis.authors as any;
@@ -19958,7 +22436,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getAuthors) {
+              
               await expect(api.getAuthors()).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -19977,9 +22457,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<Author>("authors", true);
 
         if (true) {
+          
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<Author>);
+          
         } else {
+          
           mockClient.getById.mockResolvedValue(mockResponse as Author);
+          
         }
 
         // Extract the expected parameters from the path
@@ -20020,7 +22504,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getAuthors) {
+              
               result = await api.getAuthors(expectedParams);
+              
             }
           }
 
@@ -20029,9 +22515,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (true) {
+            
             expect(mockClient.getResponse).toHaveBeenCalled();
+            
           } else {
+            
             expect(mockClient.getById).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -20078,9 +22568,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (true) {
+          
           mockClient.getResponse.mockRejectedValue(error);
+          
         } else {
+          
           mockClient.getById.mockRejectedValue(error);
+          
         }
 
         const api = apis.authors as any;
@@ -20092,7 +22586,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getAuthors) {
+              
               await expect(api.getAuthors()).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -20111,9 +22607,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<Author>("authors", true);
 
         if (true) {
+          
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<Author>);
+          
         } else {
+          
           mockClient.getById.mockResolvedValue(mockResponse as Author);
+          
         }
 
         // Extract the expected parameters from the path
@@ -20154,7 +22654,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getAuthors) {
+              
               result = await api.getAuthors(expectedParams);
+              
             }
           }
 
@@ -20163,9 +22665,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (true) {
+            
             expect(mockClient.getResponse).toHaveBeenCalled();
+            
           } else {
+            
             expect(mockClient.getById).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -20212,9 +22718,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (true) {
+          
           mockClient.getResponse.mockRejectedValue(error);
+          
         } else {
+          
           mockClient.getById.mockRejectedValue(error);
+          
         }
 
         const api = apis.authors as any;
@@ -20226,7 +22736,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getAuthors) {
+              
               await expect(api.getAuthors()).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -20245,9 +22757,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<Author>("authors", true);
 
         if (true) {
+          
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<Author>);
+          
         } else {
+          
           mockClient.getById.mockResolvedValue(mockResponse as Author);
+          
         }
 
         // Extract the expected parameters from the path
@@ -20288,7 +22804,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getAuthors) {
+              
               result = await api.getAuthors(expectedParams);
+              
             }
           }
 
@@ -20297,9 +22815,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (true) {
+            
             expect(mockClient.getResponse).toHaveBeenCalled();
+            
           } else {
+            
             expect(mockClient.getById).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -20346,9 +22868,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (true) {
+          
           mockClient.getResponse.mockRejectedValue(error);
+          
         } else {
+          
           mockClient.getById.mockRejectedValue(error);
+          
         }
 
         const api = apis.authors as any;
@@ -20360,7 +22886,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getAuthors) {
+              
               await expect(api.getAuthors()).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -20379,9 +22907,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<Author>("authors", true);
 
         if (true) {
+          
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<Author>);
+          
         } else {
+          
           mockClient.getById.mockResolvedValue(mockResponse as Author);
+          
         }
 
         // Extract the expected parameters from the path
@@ -20422,7 +22954,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getAuthors) {
+              
               result = await api.getAuthors(expectedParams);
+              
             }
           }
 
@@ -20431,9 +22965,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (true) {
+            
             expect(mockClient.getResponse).toHaveBeenCalled();
+            
           } else {
+            
             expect(mockClient.getById).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -20480,9 +23018,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (true) {
+          
           mockClient.getResponse.mockRejectedValue(error);
+          
         } else {
+          
           mockClient.getById.mockRejectedValue(error);
+          
         }
 
         const api = apis.authors as any;
@@ -20494,7 +23036,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getAuthors) {
+              
               await expect(api.getAuthors()).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -20513,9 +23057,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<Author>("authors", true);
 
         if (true) {
+          
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<Author>);
+          
         } else {
+          
           mockClient.getById.mockResolvedValue(mockResponse as Author);
+          
         }
 
         // Extract the expected parameters from the path
@@ -20556,7 +23104,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getAuthors) {
+              
               result = await api.getAuthors(expectedParams);
+              
             }
           }
 
@@ -20565,9 +23115,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (true) {
+            
             expect(mockClient.getResponse).toHaveBeenCalled();
+            
           } else {
+            
             expect(mockClient.getById).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -20614,9 +23168,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (true) {
+          
           mockClient.getResponse.mockRejectedValue(error);
+          
         } else {
+          
           mockClient.getById.mockRejectedValue(error);
+          
         }
 
         const api = apis.authors as any;
@@ -20628,7 +23186,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getAuthors) {
+              
               await expect(api.getAuthors()).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -20647,9 +23207,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<Author>("authors", true);
 
         if (true) {
+          
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<Author>);
+          
         } else {
+          
           mockClient.getById.mockResolvedValue(mockResponse as Author);
+          
         }
 
         // Extract the expected parameters from the path
@@ -20690,7 +23254,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getAuthors) {
+              
               result = await api.getAuthors(expectedParams);
+              
             }
           }
 
@@ -20699,9 +23265,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (true) {
+            
             expect(mockClient.getResponse).toHaveBeenCalled();
+            
           } else {
+            
             expect(mockClient.getById).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -20748,9 +23318,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (true) {
+          
           mockClient.getResponse.mockRejectedValue(error);
+          
         } else {
+          
           mockClient.getById.mockRejectedValue(error);
+          
         }
 
         const api = apis.authors as any;
@@ -20762,7 +23336,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getAuthors) {
+              
               await expect(api.getAuthors()).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -20781,9 +23357,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<Author>("authors", true);
 
         if (true) {
+          
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<Author>);
+          
         } else {
+          
           mockClient.getById.mockResolvedValue(mockResponse as Author);
+          
         }
 
         // Extract the expected parameters from the path
@@ -20824,7 +23404,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getAuthors) {
+              
               result = await api.getAuthors(expectedParams);
+              
             }
           }
 
@@ -20833,9 +23415,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (true) {
+            
             expect(mockClient.getResponse).toHaveBeenCalled();
+            
           } else {
+            
             expect(mockClient.getById).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -20882,9 +23468,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (true) {
+          
           mockClient.getResponse.mockRejectedValue(error);
+          
         } else {
+          
           mockClient.getById.mockRejectedValue(error);
+          
         }
 
         const api = apis.authors as any;
@@ -20896,7 +23486,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getAuthors) {
+              
               await expect(api.getAuthors()).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -20915,9 +23507,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<Author>("authors", true);
 
         if (true) {
+          
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<Author>);
+          
         } else {
+          
           mockClient.getById.mockResolvedValue(mockResponse as Author);
+          
         }
 
         // Extract the expected parameters from the path
@@ -20958,7 +23554,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getAuthors) {
+              
               result = await api.getAuthors(expectedParams);
+              
             }
           }
 
@@ -20967,9 +23565,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (true) {
+            
             expect(mockClient.getResponse).toHaveBeenCalled();
+            
           } else {
+            
             expect(mockClient.getById).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -20994,9 +23596,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (true) {
+          
           mockClient.getResponse.mockRejectedValue(error);
+          
         } else {
+          
           mockClient.getById.mockRejectedValue(error);
+          
         }
 
         const api = apis.authors as any;
@@ -21008,7 +23614,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getAuthors) {
+              
               await expect(api.getAuthors()).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -21027,9 +23635,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<Author>("authors", true);
 
         if (true) {
+          
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<Author>);
+          
         } else {
+          
           mockClient.getById.mockResolvedValue(mockResponse as Author);
+          
         }
 
         // Extract the expected parameters from the path
@@ -21070,7 +23682,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getAuthors) {
+              
               result = await api.getAuthors(expectedParams);
+              
             }
           }
 
@@ -21079,9 +23693,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (true) {
+            
             expect(mockClient.getResponse).toHaveBeenCalled();
+            
           } else {
+            
             expect(mockClient.getById).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -21106,9 +23724,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (true) {
+          
           mockClient.getResponse.mockRejectedValue(error);
+          
         } else {
+          
           mockClient.getById.mockRejectedValue(error);
+          
         }
 
         const api = apis.authors as any;
@@ -21120,7 +23742,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getAuthors) {
+              
               await expect(api.getAuthors()).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -21139,9 +23763,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<Author>("authors", true);
 
         if (true) {
+          
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<Author>);
+          
         } else {
+          
           mockClient.getById.mockResolvedValue(mockResponse as Author);
+          
         }
 
         // Extract the expected parameters from the path
@@ -21182,7 +23810,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getAuthors) {
+              
               result = await api.getAuthors(expectedParams);
+              
             }
           }
 
@@ -21191,9 +23821,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (true) {
+            
             expect(mockClient.getResponse).toHaveBeenCalled();
+            
           } else {
+            
             expect(mockClient.getById).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -21218,9 +23852,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (true) {
+          
           mockClient.getResponse.mockRejectedValue(error);
+          
         } else {
+          
           mockClient.getById.mockRejectedValue(error);
+          
         }
 
         const api = apis.authors as any;
@@ -21232,7 +23870,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getAuthors) {
+              
               await expect(api.getAuthors()).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -21251,9 +23891,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<Author>("authors", true);
 
         if (true) {
+          
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<Author>);
+          
         } else {
+          
           mockClient.getById.mockResolvedValue(mockResponse as Author);
+          
         }
 
         // Extract the expected parameters from the path
@@ -21294,7 +23938,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getAuthors) {
+              
               result = await api.getAuthors(expectedParams);
+              
             }
           }
 
@@ -21303,9 +23949,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (true) {
+            
             expect(mockClient.getResponse).toHaveBeenCalled();
+            
           } else {
+            
             expect(mockClient.getById).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -21330,9 +23980,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (true) {
+          
           mockClient.getResponse.mockRejectedValue(error);
+          
         } else {
+          
           mockClient.getById.mockRejectedValue(error);
+          
         }
 
         const api = apis.authors as any;
@@ -21344,7 +23998,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getAuthors) {
+              
               await expect(api.getAuthors()).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -21363,9 +24019,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<Author>("authors", true);
 
         if (true) {
+          
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<Author>);
+          
         } else {
+          
           mockClient.getById.mockResolvedValue(mockResponse as Author);
+          
         }
 
         // Extract the expected parameters from the path
@@ -21406,7 +24066,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getAuthors) {
+              
               result = await api.getAuthors(expectedParams);
+              
             }
           }
 
@@ -21415,9 +24077,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (true) {
+            
             expect(mockClient.getResponse).toHaveBeenCalled();
+            
           } else {
+            
             expect(mockClient.getById).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -21459,9 +24125,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (true) {
+          
           mockClient.getResponse.mockRejectedValue(error);
+          
         } else {
+          
           mockClient.getById.mockRejectedValue(error);
+          
         }
 
         const api = apis.authors as any;
@@ -21473,7 +24143,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getAuthors) {
+              
               await expect(api.getAuthors()).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -21492,9 +24164,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<Author>("authors", true);
 
         if (true) {
+          
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<Author>);
+          
         } else {
+          
           mockClient.getById.mockResolvedValue(mockResponse as Author);
+          
         }
 
         // Extract the expected parameters from the path
@@ -21535,7 +24211,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getAuthors) {
+              
               result = await api.getAuthors(expectedParams);
+              
             }
           }
 
@@ -21544,9 +24222,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (true) {
+            
             expect(mockClient.getResponse).toHaveBeenCalled();
+            
           } else {
+            
             expect(mockClient.getById).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -21588,9 +24270,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (true) {
+          
           mockClient.getResponse.mockRejectedValue(error);
+          
         } else {
+          
           mockClient.getById.mockRejectedValue(error);
+          
         }
 
         const api = apis.authors as any;
@@ -21602,7 +24288,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getAuthors) {
+              
               await expect(api.getAuthors()).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -21621,9 +24309,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<Author>("authors", true);
 
         if (true) {
+          
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<Author>);
+          
         } else {
+          
           mockClient.getById.mockResolvedValue(mockResponse as Author);
+          
         }
 
         // Extract the expected parameters from the path
@@ -21664,7 +24356,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getAuthors) {
+              
               result = await api.getAuthors(expectedParams);
+              
             }
           }
 
@@ -21673,9 +24367,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (true) {
+            
             expect(mockClient.getResponse).toHaveBeenCalled();
+            
           } else {
+            
             expect(mockClient.getById).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -21700,9 +24398,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (true) {
+          
           mockClient.getResponse.mockRejectedValue(error);
+          
         } else {
+          
           mockClient.getById.mockRejectedValue(error);
+          
         }
 
         const api = apis.authors as any;
@@ -21714,7 +24416,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getAuthors) {
+              
               await expect(api.getAuthors()).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -21733,9 +24437,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<Author>("authors", true);
 
         if (true) {
+          
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<Author>);
+          
         } else {
+          
           mockClient.getById.mockResolvedValue(mockResponse as Author);
+          
         }
 
         // Extract the expected parameters from the path
@@ -21776,7 +24484,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getAuthors) {
+              
               result = await api.getAuthors(expectedParams);
+              
             }
           }
 
@@ -21785,9 +24495,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (true) {
+            
             expect(mockClient.getResponse).toHaveBeenCalled();
+            
           } else {
+            
             expect(mockClient.getById).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -21812,9 +24526,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (true) {
+          
           mockClient.getResponse.mockRejectedValue(error);
+          
         } else {
+          
           mockClient.getById.mockRejectedValue(error);
+          
         }
 
         const api = apis.authors as any;
@@ -21826,7 +24544,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getAuthors) {
+              
               await expect(api.getAuthors()).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -21845,9 +24565,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<Author>("authors", true);
 
         if (true) {
+          
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<Author>);
+          
         } else {
+          
           mockClient.getById.mockResolvedValue(mockResponse as Author);
+          
         }
 
         // Extract the expected parameters from the path
@@ -21888,7 +24612,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getAuthors) {
+              
               result = await api.getAuthors(expectedParams);
+              
             }
           }
 
@@ -21897,9 +24623,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (true) {
+            
             expect(mockClient.getResponse).toHaveBeenCalled();
+            
           } else {
+            
             expect(mockClient.getById).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -21924,9 +24654,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (true) {
+          
           mockClient.getResponse.mockRejectedValue(error);
+          
         } else {
+          
           mockClient.getById.mockRejectedValue(error);
+          
         }
 
         const api = apis.authors as any;
@@ -21938,7 +24672,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getAuthors) {
+              
               await expect(api.getAuthors()).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -21957,9 +24693,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<Author>("authors", true);
 
         if (true) {
+          
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<Author>);
+          
         } else {
+          
           mockClient.getById.mockResolvedValue(mockResponse as Author);
+          
         }
 
         // Extract the expected parameters from the path
@@ -22000,7 +24740,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getAuthors) {
+              
               result = await api.getAuthors(expectedParams);
+              
             }
           }
 
@@ -22009,9 +24751,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (true) {
+            
             expect(mockClient.getResponse).toHaveBeenCalled();
+            
           } else {
+            
             expect(mockClient.getById).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -22036,9 +24782,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (true) {
+          
           mockClient.getResponse.mockRejectedValue(error);
+          
         } else {
+          
           mockClient.getById.mockRejectedValue(error);
+          
         }
 
         const api = apis.authors as any;
@@ -22050,7 +24800,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getAuthors) {
+              
               await expect(api.getAuthors()).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -22073,9 +24825,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<unknown>("concepts", true);
 
         if (true) {
+          
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<unknown>);
+          
         } else {
+          
           mockClient.getById.mockResolvedValue(mockResponse as unknown);
+          
         }
 
         // Extract the expected parameters from the path
@@ -22116,7 +24872,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getConcepts) {
+              
               result = await api.getConcepts(expectedParams);
+              
             }
           }
 
@@ -22125,9 +24883,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (true) {
+            
             expect(mockClient.getResponse).toHaveBeenCalled();
+            
           } else {
+            
             expect(mockClient.getById).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -22152,9 +24914,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (true) {
+          
           mockClient.getResponse.mockRejectedValue(error);
+          
         } else {
+          
           mockClient.getById.mockRejectedValue(error);
+          
         }
 
         const api = apis.concepts as any;
@@ -22166,7 +24932,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getConcepts) {
+              
               await expect(api.getConcepts()).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -22185,9 +24953,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<unknown>("concepts", true);
 
         if (true) {
+          
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<unknown>);
+          
         } else {
+          
           mockClient.getById.mockResolvedValue(mockResponse as unknown);
+          
         }
 
         // Extract the expected parameters from the path
@@ -22228,7 +25000,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getConcepts) {
+              
               result = await api.getConcepts(expectedParams);
+              
             }
           }
 
@@ -22237,9 +25011,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (true) {
+            
             expect(mockClient.getResponse).toHaveBeenCalled();
+            
           } else {
+            
             expect(mockClient.getById).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -22264,9 +25042,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (true) {
+          
           mockClient.getResponse.mockRejectedValue(error);
+          
         } else {
+          
           mockClient.getById.mockRejectedValue(error);
+          
         }
 
         const api = apis.concepts as any;
@@ -22278,7 +25060,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getConcepts) {
+              
               await expect(api.getConcepts()).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -22297,9 +25081,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<unknown>("concepts", false);
 
         if (false) {
+          
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<unknown>);
+          
         } else {
+          
           mockClient.getById.mockResolvedValue(mockResponse as unknown);
+          
         }
 
         // Extract the expected parameters from the path
@@ -22340,7 +25128,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getConcepts) {
+              
               result = await api.getConcepts(expectedParams);
+              
             }
           }
 
@@ -22349,9 +25139,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (false) {
+            
             expect(mockClient.getResponse).toHaveBeenCalled();
+            
           } else {
+            
             expect(mockClient.getById).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -22376,9 +25170,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (false) {
+          
           mockClient.getResponse.mockRejectedValue(error);
+          
         } else {
+          
           mockClient.getById.mockRejectedValue(error);
+          
         }
 
         const api = apis.concepts as any;
@@ -22390,7 +25188,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getConcepts) {
+              
               await expect(api.getConcepts()).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -22409,9 +25209,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<unknown>("concepts", false);
 
         if (false) {
+          
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<unknown>);
+          
         } else {
+          
           mockClient.getById.mockResolvedValue(mockResponse as unknown);
+          
         }
 
         // Extract the expected parameters from the path
@@ -22452,7 +25256,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getConcepts) {
+              
               result = await api.getConcepts(expectedParams);
+              
             }
           }
 
@@ -22461,9 +25267,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (false) {
+            
             expect(mockClient.getResponse).toHaveBeenCalled();
+            
           } else {
+            
             expect(mockClient.getById).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -22488,9 +25298,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (false) {
+          
           mockClient.getResponse.mockRejectedValue(error);
+          
         } else {
+          
           mockClient.getById.mockRejectedValue(error);
+          
         }
 
         const api = apis.concepts as any;
@@ -22502,7 +25316,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getConcepts) {
+              
               await expect(api.getConcepts()).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -22521,9 +25337,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<unknown>("concepts", false);
 
         if (false) {
+          
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<unknown>);
+          
         } else {
+          
           mockClient.getById.mockResolvedValue(mockResponse as unknown);
+          
         }
 
         // Extract the expected parameters from the path
@@ -22564,7 +25384,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getConcepts) {
+              
               result = await api.getConcepts(expectedParams);
+              
             }
           }
 
@@ -22573,9 +25395,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (false) {
+            
             expect(mockClient.getResponse).toHaveBeenCalled();
+            
           } else {
+            
             expect(mockClient.getById).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -22600,9 +25426,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (false) {
+          
           mockClient.getResponse.mockRejectedValue(error);
+          
         } else {
+          
           mockClient.getById.mockRejectedValue(error);
+          
         }
 
         const api = apis.concepts as any;
@@ -22614,7 +25444,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getConcepts) {
+              
               await expect(api.getConcepts()).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -22633,9 +25465,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<unknown>("concepts", false);
 
         if (false) {
+          
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<unknown>);
+          
         } else {
+          
           mockClient.getById.mockResolvedValue(mockResponse as unknown);
+          
         }
 
         // Extract the expected parameters from the path
@@ -22676,7 +25512,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getConcepts) {
+              
               result = await api.getConcepts(expectedParams);
+              
             }
           }
 
@@ -22685,9 +25523,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (false) {
+            
             expect(mockClient.getResponse).toHaveBeenCalled();
+            
           } else {
+            
             expect(mockClient.getById).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -22729,9 +25571,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (false) {
+          
           mockClient.getResponse.mockRejectedValue(error);
+          
         } else {
+          
           mockClient.getById.mockRejectedValue(error);
+          
         }
 
         const api = apis.concepts as any;
@@ -22743,7 +25589,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getConcepts) {
+              
               await expect(api.getConcepts()).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -22762,9 +25610,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<unknown>("concepts", true);
 
         if (true) {
+          
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<unknown>);
+          
         } else {
+          
           mockClient.getById.mockResolvedValue(mockResponse as unknown);
+          
         }
 
         // Extract the expected parameters from the path
@@ -22805,7 +25657,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getConcepts) {
+              
               result = await api.getConcepts(expectedParams);
+              
             }
           }
 
@@ -22814,9 +25668,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (true) {
+            
             expect(mockClient.getResponse).toHaveBeenCalled();
+            
           } else {
+            
             expect(mockClient.getById).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -22863,9 +25721,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (true) {
+          
           mockClient.getResponse.mockRejectedValue(error);
+          
         } else {
+          
           mockClient.getById.mockRejectedValue(error);
+          
         }
 
         const api = apis.concepts as any;
@@ -22877,7 +25739,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getConcepts) {
+              
               await expect(api.getConcepts()).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -22896,9 +25760,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<unknown>("concepts", true);
 
         if (true) {
+          
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<unknown>);
+          
         } else {
+          
           mockClient.getById.mockResolvedValue(mockResponse as unknown);
+          
         }
 
         // Extract the expected parameters from the path
@@ -22939,7 +25807,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getConcepts) {
+              
               result = await api.getConcepts(expectedParams);
+              
             }
           }
 
@@ -22948,9 +25818,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (true) {
+            
             expect(mockClient.getResponse).toHaveBeenCalled();
+            
           } else {
+            
             expect(mockClient.getById).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -22997,9 +25871,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (true) {
+          
           mockClient.getResponse.mockRejectedValue(error);
+          
         } else {
+          
           mockClient.getById.mockRejectedValue(error);
+          
         }
 
         const api = apis.concepts as any;
@@ -23011,7 +25889,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getConcepts) {
+              
               await expect(api.getConcepts()).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -23030,9 +25910,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<unknown>("concepts", true);
 
         if (true) {
+          
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<unknown>);
+          
         } else {
+          
           mockClient.getById.mockResolvedValue(mockResponse as unknown);
+          
         }
 
         // Extract the expected parameters from the path
@@ -23073,7 +25957,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getConcepts) {
+              
               result = await api.getConcepts(expectedParams);
+              
             }
           }
 
@@ -23082,9 +25968,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (true) {
+            
             expect(mockClient.getResponse).toHaveBeenCalled();
+            
           } else {
+            
             expect(mockClient.getById).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -23131,9 +26021,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (true) {
+          
           mockClient.getResponse.mockRejectedValue(error);
+          
         } else {
+          
           mockClient.getById.mockRejectedValue(error);
+          
         }
 
         const api = apis.concepts as any;
@@ -23145,7 +26039,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getConcepts) {
+              
               await expect(api.getConcepts()).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -23164,9 +26060,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<unknown>("concepts", true);
 
         if (true) {
+          
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<unknown>);
+          
         } else {
+          
           mockClient.getById.mockResolvedValue(mockResponse as unknown);
+          
         }
 
         // Extract the expected parameters from the path
@@ -23207,7 +26107,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getConcepts) {
+              
               result = await api.getConcepts(expectedParams);
+              
             }
           }
 
@@ -23216,9 +26118,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (true) {
+            
             expect(mockClient.getResponse).toHaveBeenCalled();
+            
           } else {
+            
             expect(mockClient.getById).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -23265,9 +26171,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (true) {
+          
           mockClient.getResponse.mockRejectedValue(error);
+          
         } else {
+          
           mockClient.getById.mockRejectedValue(error);
+          
         }
 
         const api = apis.concepts as any;
@@ -23279,7 +26189,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getConcepts) {
+              
               await expect(api.getConcepts()).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -23298,9 +26210,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<unknown>("concepts", true);
 
         if (true) {
+          
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<unknown>);
+          
         } else {
+          
           mockClient.getById.mockResolvedValue(mockResponse as unknown);
+          
         }
 
         // Extract the expected parameters from the path
@@ -23341,7 +26257,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getConcepts) {
+              
               result = await api.getConcepts(expectedParams);
+              
             }
           }
 
@@ -23350,9 +26268,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (true) {
+            
             expect(mockClient.getResponse).toHaveBeenCalled();
+            
           } else {
+            
             expect(mockClient.getById).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -23399,9 +26321,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (true) {
+          
           mockClient.getResponse.mockRejectedValue(error);
+          
         } else {
+          
           mockClient.getById.mockRejectedValue(error);
+          
         }
 
         const api = apis.concepts as any;
@@ -23413,7 +26339,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getConcepts) {
+              
               await expect(api.getConcepts()).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -23432,9 +26360,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<unknown>("concepts", true);
 
         if (true) {
+          
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<unknown>);
+          
         } else {
+          
           mockClient.getById.mockResolvedValue(mockResponse as unknown);
+          
         }
 
         // Extract the expected parameters from the path
@@ -23475,7 +26407,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getConcepts) {
+              
               result = await api.getConcepts(expectedParams);
+              
             }
           }
 
@@ -23484,9 +26418,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (true) {
+            
             expect(mockClient.getResponse).toHaveBeenCalled();
+            
           } else {
+            
             expect(mockClient.getById).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -23533,9 +26471,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (true) {
+          
           mockClient.getResponse.mockRejectedValue(error);
+          
         } else {
+          
           mockClient.getById.mockRejectedValue(error);
+          
         }
 
         const api = apis.concepts as any;
@@ -23547,7 +26489,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getConcepts) {
+              
               await expect(api.getConcepts()).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -23566,9 +26510,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<unknown>("concepts", true);
 
         if (true) {
+          
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<unknown>);
+          
         } else {
+          
           mockClient.getById.mockResolvedValue(mockResponse as unknown);
+          
         }
 
         // Extract the expected parameters from the path
@@ -23609,7 +26557,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getConcepts) {
+              
               result = await api.getConcepts(expectedParams);
+              
             }
           }
 
@@ -23618,9 +26568,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (true) {
+            
             expect(mockClient.getResponse).toHaveBeenCalled();
+            
           } else {
+            
             expect(mockClient.getById).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -23645,9 +26599,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (true) {
+          
           mockClient.getResponse.mockRejectedValue(error);
+          
         } else {
+          
           mockClient.getById.mockRejectedValue(error);
+          
         }
 
         const api = apis.concepts as any;
@@ -23659,7 +26617,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getConcepts) {
+              
               await expect(api.getConcepts()).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -23678,9 +26638,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<unknown>("concepts", true);
 
         if (true) {
+          
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<unknown>);
+          
         } else {
+          
           mockClient.getById.mockResolvedValue(mockResponse as unknown);
+          
         }
 
         // Extract the expected parameters from the path
@@ -23721,7 +26685,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getConcepts) {
+              
               result = await api.getConcepts(expectedParams);
+              
             }
           }
 
@@ -23730,9 +26696,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (true) {
+            
             expect(mockClient.getResponse).toHaveBeenCalled();
+            
           } else {
+            
             expect(mockClient.getById).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -23757,9 +26727,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (true) {
+          
           mockClient.getResponse.mockRejectedValue(error);
+          
         } else {
+          
           mockClient.getById.mockRejectedValue(error);
+          
         }
 
         const api = apis.concepts as any;
@@ -23771,7 +26745,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getConcepts) {
+              
               await expect(api.getConcepts()).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -23790,9 +26766,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<unknown>("concepts", true);
 
         if (true) {
+          
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<unknown>);
+          
         } else {
+          
           mockClient.getById.mockResolvedValue(mockResponse as unknown);
+          
         }
 
         // Extract the expected parameters from the path
@@ -23833,7 +26813,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getConcepts) {
+              
               result = await api.getConcepts(expectedParams);
+              
             }
           }
 
@@ -23842,9 +26824,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (true) {
+            
             expect(mockClient.getResponse).toHaveBeenCalled();
+            
           } else {
+            
             expect(mockClient.getById).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -23869,9 +26855,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (true) {
+          
           mockClient.getResponse.mockRejectedValue(error);
+          
         } else {
+          
           mockClient.getById.mockRejectedValue(error);
+          
         }
 
         const api = apis.concepts as any;
@@ -23883,7 +26873,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getConcepts) {
+              
               await expect(api.getConcepts()).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -23902,9 +26894,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<unknown>("concepts", true);
 
         if (true) {
+          
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<unknown>);
+          
         } else {
+          
           mockClient.getById.mockResolvedValue(mockResponse as unknown);
+          
         }
 
         // Extract the expected parameters from the path
@@ -23945,7 +26941,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getConcepts) {
+              
               result = await api.getConcepts(expectedParams);
+              
             }
           }
 
@@ -23954,9 +26952,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (true) {
+            
             expect(mockClient.getResponse).toHaveBeenCalled();
+            
           } else {
+            
             expect(mockClient.getById).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -23981,9 +26983,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (true) {
+          
           mockClient.getResponse.mockRejectedValue(error);
+          
         } else {
+          
           mockClient.getById.mockRejectedValue(error);
+          
         }
 
         const api = apis.concepts as any;
@@ -23995,7 +27001,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getConcepts) {
+              
               await expect(api.getConcepts()).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -24014,9 +27022,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<unknown>("concepts", true);
 
         if (true) {
+          
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<unknown>);
+          
         } else {
+          
           mockClient.getById.mockResolvedValue(mockResponse as unknown);
+          
         }
 
         // Extract the expected parameters from the path
@@ -24057,7 +27069,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getConcepts) {
+              
               result = await api.getConcepts(expectedParams);
+              
             }
           }
 
@@ -24066,9 +27080,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (true) {
+            
             expect(mockClient.getResponse).toHaveBeenCalled();
+            
           } else {
+            
             expect(mockClient.getById).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -24110,9 +27128,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (true) {
+          
           mockClient.getResponse.mockRejectedValue(error);
+          
         } else {
+          
           mockClient.getById.mockRejectedValue(error);
+          
         }
 
         const api = apis.concepts as any;
@@ -24124,7 +27146,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getConcepts) {
+              
               await expect(api.getConcepts()).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -24143,9 +27167,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<unknown>("concepts", true);
 
         if (true) {
+          
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<unknown>);
+          
         } else {
+          
           mockClient.getById.mockResolvedValue(mockResponse as unknown);
+          
         }
 
         // Extract the expected parameters from the path
@@ -24186,7 +27214,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getConcepts) {
+              
               result = await api.getConcepts(expectedParams);
+              
             }
           }
 
@@ -24195,9 +27225,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (true) {
+            
             expect(mockClient.getResponse).toHaveBeenCalled();
+            
           } else {
+            
             expect(mockClient.getById).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -24239,9 +27273,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (true) {
+          
           mockClient.getResponse.mockRejectedValue(error);
+          
         } else {
+          
           mockClient.getById.mockRejectedValue(error);
+          
         }
 
         const api = apis.concepts as any;
@@ -24253,7 +27291,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getConcepts) {
+              
               await expect(api.getConcepts()).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -24272,9 +27312,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<unknown>("concepts", true);
 
         if (true) {
+          
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<unknown>);
+          
         } else {
+          
           mockClient.getById.mockResolvedValue(mockResponse as unknown);
+          
         }
 
         // Extract the expected parameters from the path
@@ -24315,7 +27359,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getConcepts) {
+              
               result = await api.getConcepts(expectedParams);
+              
             }
           }
 
@@ -24324,9 +27370,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (true) {
+            
             expect(mockClient.getResponse).toHaveBeenCalled();
+            
           } else {
+            
             expect(mockClient.getById).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -24351,9 +27401,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (true) {
+          
           mockClient.getResponse.mockRejectedValue(error);
+          
         } else {
+          
           mockClient.getById.mockRejectedValue(error);
+          
         }
 
         const api = apis.concepts as any;
@@ -24365,7 +27419,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getConcepts) {
+              
               await expect(api.getConcepts()).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -24384,9 +27440,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<unknown>("concepts", true);
 
         if (true) {
+          
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<unknown>);
+          
         } else {
+          
           mockClient.getById.mockResolvedValue(mockResponse as unknown);
+          
         }
 
         // Extract the expected parameters from the path
@@ -24427,7 +27487,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getConcepts) {
+              
               result = await api.getConcepts(expectedParams);
+              
             }
           }
 
@@ -24436,9 +27498,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (true) {
+            
             expect(mockClient.getResponse).toHaveBeenCalled();
+            
           } else {
+            
             expect(mockClient.getById).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -24463,9 +27529,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (true) {
+          
           mockClient.getResponse.mockRejectedValue(error);
+          
         } else {
+          
           mockClient.getById.mockRejectedValue(error);
+          
         }
 
         const api = apis.concepts as any;
@@ -24477,7 +27547,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getConcepts) {
+              
               await expect(api.getConcepts()).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -24500,9 +27572,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<Funder>("funders", true);
 
         if (true) {
+          
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<Funder>);
+          
         } else {
+          
           mockClient.getById.mockResolvedValue(mockResponse as Funder);
+          
         }
 
         // Extract the expected parameters from the path
@@ -24543,7 +27619,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getFunders) {
+              
               result = await api.getFunders(expectedParams);
+              
             }
           }
 
@@ -24552,9 +27630,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (true) {
+            
             expect(mockClient.getResponse).toHaveBeenCalled();
+            
           } else {
+            
             expect(mockClient.getById).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -24579,9 +27661,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (true) {
+          
           mockClient.getResponse.mockRejectedValue(error);
+          
         } else {
+          
           mockClient.getById.mockRejectedValue(error);
+          
         }
 
         const api = apis.funders as any;
@@ -24593,7 +27679,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getFunders) {
+              
               await expect(api.getFunders()).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -24612,9 +27700,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<Funder>("funders", true);
 
         if (true) {
+          
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<Funder>);
+          
         } else {
+          
           mockClient.getById.mockResolvedValue(mockResponse as Funder);
+          
         }
 
         // Extract the expected parameters from the path
@@ -24655,7 +27747,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getFunders) {
+              
               result = await api.getFunders(expectedParams);
+              
             }
           }
 
@@ -24664,9 +27758,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (true) {
+            
             expect(mockClient.getResponse).toHaveBeenCalled();
+            
           } else {
+            
             expect(mockClient.getById).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -24691,9 +27789,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (true) {
+          
           mockClient.getResponse.mockRejectedValue(error);
+          
         } else {
+          
           mockClient.getById.mockRejectedValue(error);
+          
         }
 
         const api = apis.funders as any;
@@ -24705,7 +27807,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getFunders) {
+              
               await expect(api.getFunders()).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -24724,9 +27828,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<Funder>("funders", false);
 
         if (false) {
+          
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<Funder>);
+          
         } else {
+          
           mockClient.getById.mockResolvedValue(mockResponse as Funder);
+          
         }
 
         // Extract the expected parameters from the path
@@ -24767,7 +27875,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getFunders) {
+              
               result = await api.getFunders(expectedParams);
+              
             }
           }
 
@@ -24776,9 +27886,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (false) {
+            
             expect(mockClient.getResponse).toHaveBeenCalled();
+            
           } else {
+            
             expect(mockClient.getById).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -24803,9 +27917,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (false) {
+          
           mockClient.getResponse.mockRejectedValue(error);
+          
         } else {
+          
           mockClient.getById.mockRejectedValue(error);
+          
         }
 
         const api = apis.funders as any;
@@ -24817,7 +27935,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getFunders) {
+              
               await expect(api.getFunders()).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -24836,9 +27956,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<Funder>("funders", false);
 
         if (false) {
+          
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<Funder>);
+          
         } else {
+          
           mockClient.getById.mockResolvedValue(mockResponse as Funder);
+          
         }
 
         // Extract the expected parameters from the path
@@ -24879,7 +28003,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getFunders) {
+              
               result = await api.getFunders(expectedParams);
+              
             }
           }
 
@@ -24888,9 +28014,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (false) {
+            
             expect(mockClient.getResponse).toHaveBeenCalled();
+            
           } else {
+            
             expect(mockClient.getById).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -24915,9 +28045,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (false) {
+          
           mockClient.getResponse.mockRejectedValue(error);
+          
         } else {
+          
           mockClient.getById.mockRejectedValue(error);
+          
         }
 
         const api = apis.funders as any;
@@ -24929,7 +28063,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getFunders) {
+              
               await expect(api.getFunders()).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -24948,9 +28084,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<Funder>("funders", false);
 
         if (false) {
+          
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<Funder>);
+          
         } else {
+          
           mockClient.getById.mockResolvedValue(mockResponse as Funder);
+          
         }
 
         // Extract the expected parameters from the path
@@ -24991,7 +28131,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getFunders) {
+              
               result = await api.getFunders(expectedParams);
+              
             }
           }
 
@@ -25000,9 +28142,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (false) {
+            
             expect(mockClient.getResponse).toHaveBeenCalled();
+            
           } else {
+            
             expect(mockClient.getById).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -25044,9 +28190,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (false) {
+          
           mockClient.getResponse.mockRejectedValue(error);
+          
         } else {
+          
           mockClient.getById.mockRejectedValue(error);
+          
         }
 
         const api = apis.funders as any;
@@ -25058,7 +28208,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getFunders) {
+              
               await expect(api.getFunders()).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -25077,9 +28229,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<Funder>("funders", true);
 
         if (true) {
+          
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<Funder>);
+          
         } else {
+          
           mockClient.getById.mockResolvedValue(mockResponse as Funder);
+          
         }
 
         // Extract the expected parameters from the path
@@ -25120,7 +28276,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getFunders) {
+              
               result = await api.getFunders(expectedParams);
+              
             }
           }
 
@@ -25129,9 +28287,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (true) {
+            
             expect(mockClient.getResponse).toHaveBeenCalled();
+            
           } else {
+            
             expect(mockClient.getById).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -25178,9 +28340,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (true) {
+          
           mockClient.getResponse.mockRejectedValue(error);
+          
         } else {
+          
           mockClient.getById.mockRejectedValue(error);
+          
         }
 
         const api = apis.funders as any;
@@ -25192,7 +28358,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getFunders) {
+              
               await expect(api.getFunders()).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -25211,9 +28379,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<Funder>("funders", true);
 
         if (true) {
+          
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<Funder>);
+          
         } else {
+          
           mockClient.getById.mockResolvedValue(mockResponse as Funder);
+          
         }
 
         // Extract the expected parameters from the path
@@ -25254,7 +28426,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getFunders) {
+              
               result = await api.getFunders(expectedParams);
+              
             }
           }
 
@@ -25263,9 +28437,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (true) {
+            
             expect(mockClient.getResponse).toHaveBeenCalled();
+            
           } else {
+            
             expect(mockClient.getById).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -25312,9 +28490,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (true) {
+          
           mockClient.getResponse.mockRejectedValue(error);
+          
         } else {
+          
           mockClient.getById.mockRejectedValue(error);
+          
         }
 
         const api = apis.funders as any;
@@ -25326,7 +28508,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getFunders) {
+              
               await expect(api.getFunders()).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -25345,9 +28529,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<Funder>("funders", true);
 
         if (true) {
+          
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<Funder>);
+          
         } else {
+          
           mockClient.getById.mockResolvedValue(mockResponse as Funder);
+          
         }
 
         // Extract the expected parameters from the path
@@ -25388,7 +28576,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getFunders) {
+              
               result = await api.getFunders(expectedParams);
+              
             }
           }
 
@@ -25397,9 +28587,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (true) {
+            
             expect(mockClient.getResponse).toHaveBeenCalled();
+            
           } else {
+            
             expect(mockClient.getById).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -25446,9 +28640,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (true) {
+          
           mockClient.getResponse.mockRejectedValue(error);
+          
         } else {
+          
           mockClient.getById.mockRejectedValue(error);
+          
         }
 
         const api = apis.funders as any;
@@ -25460,7 +28658,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getFunders) {
+              
               await expect(api.getFunders()).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -25479,9 +28679,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<Funder>("funders", true);
 
         if (true) {
+          
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<Funder>);
+          
         } else {
+          
           mockClient.getById.mockResolvedValue(mockResponse as Funder);
+          
         }
 
         // Extract the expected parameters from the path
@@ -25522,7 +28726,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getFunders) {
+              
               result = await api.getFunders(expectedParams);
+              
             }
           }
 
@@ -25531,9 +28737,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (true) {
+            
             expect(mockClient.getResponse).toHaveBeenCalled();
+            
           } else {
+            
             expect(mockClient.getById).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -25580,9 +28790,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (true) {
+          
           mockClient.getResponse.mockRejectedValue(error);
+          
         } else {
+          
           mockClient.getById.mockRejectedValue(error);
+          
         }
 
         const api = apis.funders as any;
@@ -25594,7 +28808,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getFunders) {
+              
               await expect(api.getFunders()).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -25613,9 +28829,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<Funder>("funders", true);
 
         if (true) {
+          
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<Funder>);
+          
         } else {
+          
           mockClient.getById.mockResolvedValue(mockResponse as Funder);
+          
         }
 
         // Extract the expected parameters from the path
@@ -25656,7 +28876,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getFunders) {
+              
               result = await api.getFunders(expectedParams);
+              
             }
           }
 
@@ -25665,9 +28887,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (true) {
+            
             expect(mockClient.getResponse).toHaveBeenCalled();
+            
           } else {
+            
             expect(mockClient.getById).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -25714,9 +28940,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (true) {
+          
           mockClient.getResponse.mockRejectedValue(error);
+          
         } else {
+          
           mockClient.getById.mockRejectedValue(error);
+          
         }
 
         const api = apis.funders as any;
@@ -25728,7 +28958,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getFunders) {
+              
               await expect(api.getFunders()).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -25747,9 +28979,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<Funder>("funders", true);
 
         if (true) {
+          
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<Funder>);
+          
         } else {
+          
           mockClient.getById.mockResolvedValue(mockResponse as Funder);
+          
         }
 
         // Extract the expected parameters from the path
@@ -25790,7 +29026,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getFunders) {
+              
               result = await api.getFunders(expectedParams);
+              
             }
           }
 
@@ -25799,9 +29037,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (true) {
+            
             expect(mockClient.getResponse).toHaveBeenCalled();
+            
           } else {
+            
             expect(mockClient.getById).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -25848,9 +29090,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (true) {
+          
           mockClient.getResponse.mockRejectedValue(error);
+          
         } else {
+          
           mockClient.getById.mockRejectedValue(error);
+          
         }
 
         const api = apis.funders as any;
@@ -25862,7 +29108,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getFunders) {
+              
               await expect(api.getFunders()).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -25881,9 +29129,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<Funder>("funders", true);
 
         if (true) {
+          
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<Funder>);
+          
         } else {
+          
           mockClient.getById.mockResolvedValue(mockResponse as Funder);
+          
         }
 
         // Extract the expected parameters from the path
@@ -25924,7 +29176,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getFunders) {
+              
               result = await api.getFunders(expectedParams);
+              
             }
           }
 
@@ -25933,9 +29187,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (true) {
+            
             expect(mockClient.getResponse).toHaveBeenCalled();
+            
           } else {
+            
             expect(mockClient.getById).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -25960,9 +29218,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (true) {
+          
           mockClient.getResponse.mockRejectedValue(error);
+          
         } else {
+          
           mockClient.getById.mockRejectedValue(error);
+          
         }
 
         const api = apis.funders as any;
@@ -25974,7 +29236,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getFunders) {
+              
               await expect(api.getFunders()).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -25993,9 +29257,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<Funder>("funders", true);
 
         if (true) {
+          
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<Funder>);
+          
         } else {
+          
           mockClient.getById.mockResolvedValue(mockResponse as Funder);
+          
         }
 
         // Extract the expected parameters from the path
@@ -26036,7 +29304,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getFunders) {
+              
               result = await api.getFunders(expectedParams);
+              
             }
           }
 
@@ -26045,9 +29315,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (true) {
+            
             expect(mockClient.getResponse).toHaveBeenCalled();
+            
           } else {
+            
             expect(mockClient.getById).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -26072,9 +29346,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (true) {
+          
           mockClient.getResponse.mockRejectedValue(error);
+          
         } else {
+          
           mockClient.getById.mockRejectedValue(error);
+          
         }
 
         const api = apis.funders as any;
@@ -26086,7 +29364,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getFunders) {
+              
               await expect(api.getFunders()).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -26105,9 +29385,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<Funder>("funders", true);
 
         if (true) {
+          
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<Funder>);
+          
         } else {
+          
           mockClient.getById.mockResolvedValue(mockResponse as Funder);
+          
         }
 
         // Extract the expected parameters from the path
@@ -26148,7 +29432,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getFunders) {
+              
               result = await api.getFunders(expectedParams);
+              
             }
           }
 
@@ -26157,9 +29443,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (true) {
+            
             expect(mockClient.getResponse).toHaveBeenCalled();
+            
           } else {
+            
             expect(mockClient.getById).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -26184,9 +29474,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (true) {
+          
           mockClient.getResponse.mockRejectedValue(error);
+          
         } else {
+          
           mockClient.getById.mockRejectedValue(error);
+          
         }
 
         const api = apis.funders as any;
@@ -26198,7 +29492,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getFunders) {
+              
               await expect(api.getFunders()).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -26217,9 +29513,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<Funder>("funders", true);
 
         if (true) {
+          
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<Funder>);
+          
         } else {
+          
           mockClient.getById.mockResolvedValue(mockResponse as Funder);
+          
         }
 
         // Extract the expected parameters from the path
@@ -26260,7 +29560,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getFunders) {
+              
               result = await api.getFunders(expectedParams);
+              
             }
           }
 
@@ -26269,9 +29571,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (true) {
+            
             expect(mockClient.getResponse).toHaveBeenCalled();
+            
           } else {
+            
             expect(mockClient.getById).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -26313,9 +29619,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (true) {
+          
           mockClient.getResponse.mockRejectedValue(error);
+          
         } else {
+          
           mockClient.getById.mockRejectedValue(error);
+          
         }
 
         const api = apis.funders as any;
@@ -26327,7 +29637,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getFunders) {
+              
               await expect(api.getFunders()).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -26346,9 +29658,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<Funder>("funders", true);
 
         if (true) {
+          
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<Funder>);
+          
         } else {
+          
           mockClient.getById.mockResolvedValue(mockResponse as Funder);
+          
         }
 
         // Extract the expected parameters from the path
@@ -26389,7 +29705,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getFunders) {
+              
               result = await api.getFunders(expectedParams);
+              
             }
           }
 
@@ -26398,9 +29716,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (true) {
+            
             expect(mockClient.getResponse).toHaveBeenCalled();
+            
           } else {
+            
             expect(mockClient.getById).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -26425,9 +29747,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (true) {
+          
           mockClient.getResponse.mockRejectedValue(error);
+          
         } else {
+          
           mockClient.getById.mockRejectedValue(error);
+          
         }
 
         const api = apis.funders as any;
@@ -26439,7 +29765,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getFunders) {
+              
               await expect(api.getFunders()).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -26458,9 +29786,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<Funder>("funders", true);
 
         if (true) {
+          
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<Funder>);
+          
         } else {
+          
           mockClient.getById.mockResolvedValue(mockResponse as Funder);
+          
         }
 
         // Extract the expected parameters from the path
@@ -26501,7 +29833,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getFunders) {
+              
               result = await api.getFunders(expectedParams);
+              
             }
           }
 
@@ -26510,9 +29844,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (true) {
+            
             expect(mockClient.getResponse).toHaveBeenCalled();
+            
           } else {
+            
             expect(mockClient.getById).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -26537,9 +29875,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (true) {
+          
           mockClient.getResponse.mockRejectedValue(error);
+          
         } else {
+          
           mockClient.getById.mockRejectedValue(error);
+          
         }
 
         const api = apis.funders as any;
@@ -26551,7 +29893,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getFunders) {
+              
               await expect(api.getFunders()).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -26574,9 +29918,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<Institution>("institutions", true);
 
         if (true) {
+          
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<Institution>);
+          
         } else {
+          
           mockClient.getById.mockResolvedValue(mockResponse as Institution);
+          
         }
 
         // Extract the expected parameters from the path
@@ -26617,7 +29965,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getInstitutions) {
+              
               result = await api.getInstitutions(expectedParams);
+              
             }
           }
 
@@ -26626,9 +29976,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (true) {
+            
             expect(mockClient.getResponse).toHaveBeenCalled();
+            
           } else {
+            
             expect(mockClient.getById).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -26653,9 +30007,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (true) {
+          
           mockClient.getResponse.mockRejectedValue(error);
+          
         } else {
+          
           mockClient.getById.mockRejectedValue(error);
+          
         }
 
         const api = apis.institutions as any;
@@ -26667,7 +30025,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getInstitutions) {
+              
               await expect(api.getInstitutions()).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -26686,9 +30046,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<Institution>("institutions", true);
 
         if (true) {
+          
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<Institution>);
+          
         } else {
+          
           mockClient.getById.mockResolvedValue(mockResponse as Institution);
+          
         }
 
         // Extract the expected parameters from the path
@@ -26729,7 +30093,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getInstitutions) {
+              
               result = await api.getInstitutions(expectedParams);
+              
             }
           }
 
@@ -26738,9 +30104,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (true) {
+            
             expect(mockClient.getResponse).toHaveBeenCalled();
+            
           } else {
+            
             expect(mockClient.getById).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -26765,9 +30135,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (true) {
+          
           mockClient.getResponse.mockRejectedValue(error);
+          
         } else {
+          
           mockClient.getById.mockRejectedValue(error);
+          
         }
 
         const api = apis.institutions as any;
@@ -26779,7 +30153,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getInstitutions) {
+              
               await expect(api.getInstitutions()).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -26798,9 +30174,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<Institution>("institutions", true);
 
         if (true) {
+          
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<Institution>);
+          
         } else {
+          
           mockClient.getById.mockResolvedValue(mockResponse as Institution);
+          
         }
 
         // Extract the expected parameters from the path
@@ -26841,7 +30221,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getInstitutions) {
+              
               result = await api.getInstitutions(expectedParams);
+              
             }
           }
 
@@ -26850,9 +30232,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (true) {
+            
             expect(mockClient.getResponse).toHaveBeenCalled();
+            
           } else {
+            
             expect(mockClient.getById).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -26877,9 +30263,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (true) {
+          
           mockClient.getResponse.mockRejectedValue(error);
+          
         } else {
+          
           mockClient.getById.mockRejectedValue(error);
+          
         }
 
         const api = apis.institutions as any;
@@ -26891,7 +30281,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getInstitutions) {
+              
               await expect(api.getInstitutions()).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -26910,9 +30302,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<Institution>("institutions", true);
 
         if (true) {
+          
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<Institution>);
+          
         } else {
+          
           mockClient.getById.mockResolvedValue(mockResponse as Institution);
+          
         }
 
         // Extract the expected parameters from the path
@@ -26953,7 +30349,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getInstitutions) {
+              
               result = await api.getInstitutions(expectedParams);
+              
             }
           }
 
@@ -26962,9 +30360,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (true) {
+            
             expect(mockClient.getResponse).toHaveBeenCalled();
+            
           } else {
+            
             expect(mockClient.getById).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -26989,9 +30391,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (true) {
+          
           mockClient.getResponse.mockRejectedValue(error);
+          
         } else {
+          
           mockClient.getById.mockRejectedValue(error);
+          
         }
 
         const api = apis.institutions as any;
@@ -27003,7 +30409,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getInstitutions) {
+              
               await expect(api.getInstitutions()).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -27022,9 +30430,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<Institution>("institutions", false);
 
         if (false) {
+          
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<Institution>);
+          
         } else {
+          
           mockClient.getById.mockResolvedValue(mockResponse as Institution);
+          
         }
 
         // Extract the expected parameters from the path
@@ -27065,7 +30477,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getInstitutions) {
+              
               result = await api.getInstitutions(expectedParams);
+              
             }
           }
 
@@ -27074,9 +30488,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (false) {
+            
             expect(mockClient.getResponse).toHaveBeenCalled();
+            
           } else {
+            
             expect(mockClient.getById).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -27101,9 +30519,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (false) {
+          
           mockClient.getResponse.mockRejectedValue(error);
+          
         } else {
+          
           mockClient.getById.mockRejectedValue(error);
+          
         }
 
         const api = apis.institutions as any;
@@ -27115,7 +30537,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getInstitutions) {
+              
               await expect(api.getInstitutions()).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -27134,9 +30558,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<Institution>("institutions", false);
 
         if (false) {
+          
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<Institution>);
+          
         } else {
+          
           mockClient.getById.mockResolvedValue(mockResponse as Institution);
+          
         }
 
         // Extract the expected parameters from the path
@@ -27177,7 +30605,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getInstitutions) {
+              
               result = await api.getInstitutions(expectedParams);
+              
             }
           }
 
@@ -27186,9 +30616,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (false) {
+            
             expect(mockClient.getResponse).toHaveBeenCalled();
+            
           } else {
+            
             expect(mockClient.getById).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -27213,9 +30647,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (false) {
+          
           mockClient.getResponse.mockRejectedValue(error);
+          
         } else {
+          
           mockClient.getById.mockRejectedValue(error);
+          
         }
 
         const api = apis.institutions as any;
@@ -27227,7 +30665,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getInstitutions) {
+              
               await expect(api.getInstitutions()).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -27246,9 +30686,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<Institution>("institutions", true);
 
         if (true) {
+          
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<Institution>);
+          
         } else {
+          
           mockClient.getById.mockResolvedValue(mockResponse as Institution);
+          
         }
 
         // Extract the expected parameters from the path
@@ -27289,7 +30733,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getInstitutions) {
+              
               result = await api.getInstitutions(expectedParams);
+              
             }
           }
 
@@ -27298,9 +30744,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (true) {
+            
             expect(mockClient.getResponse).toHaveBeenCalled();
+            
           } else {
+            
             expect(mockClient.getById).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -27325,9 +30775,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (true) {
+          
           mockClient.getResponse.mockRejectedValue(error);
+          
         } else {
+          
           mockClient.getById.mockRejectedValue(error);
+          
         }
 
         const api = apis.institutions as any;
@@ -27339,7 +30793,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getInstitutions) {
+              
               await expect(api.getInstitutions()).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -27358,9 +30814,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<Institution>("institutions", true);
 
         if (true) {
+          
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<Institution>);
+          
         } else {
+          
           mockClient.getById.mockResolvedValue(mockResponse as Institution);
+          
         }
 
         // Extract the expected parameters from the path
@@ -27401,7 +30861,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getInstitutions) {
+              
               result = await api.getInstitutions(expectedParams);
+              
             }
           }
 
@@ -27410,9 +30872,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (true) {
+            
             expect(mockClient.getResponse).toHaveBeenCalled();
+            
           } else {
+            
             expect(mockClient.getById).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -27437,9 +30903,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (true) {
+          
           mockClient.getResponse.mockRejectedValue(error);
+          
         } else {
+          
           mockClient.getById.mockRejectedValue(error);
+          
         }
 
         const api = apis.institutions as any;
@@ -27451,7 +30921,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getInstitutions) {
+              
               await expect(api.getInstitutions()).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -27470,9 +30942,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<Institution>("institutions", false);
 
         if (false) {
+          
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<Institution>);
+          
         } else {
+          
           mockClient.getById.mockResolvedValue(mockResponse as Institution);
+          
         }
 
         // Extract the expected parameters from the path
@@ -27513,7 +30989,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getInstitutions) {
+              
               result = await api.getInstitutions(expectedParams);
+              
             }
           }
 
@@ -27522,9 +31000,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (false) {
+            
             expect(mockClient.getResponse).toHaveBeenCalled();
+            
           } else {
+            
             expect(mockClient.getById).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -27566,9 +31048,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (false) {
+          
           mockClient.getResponse.mockRejectedValue(error);
+          
         } else {
+          
           mockClient.getById.mockRejectedValue(error);
+          
         }
 
         const api = apis.institutions as any;
@@ -27580,7 +31066,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getInstitutions) {
+              
               await expect(api.getInstitutions()).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -27599,9 +31087,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<Institution>("institutions", true);
 
         if (true) {
+          
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<Institution>);
+          
         } else {
+          
           mockClient.getById.mockResolvedValue(mockResponse as Institution);
+          
         }
 
         // Extract the expected parameters from the path
@@ -27642,7 +31134,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getInstitutions) {
+              
               result = await api.getInstitutions(expectedParams);
+              
             }
           }
 
@@ -27651,9 +31145,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (true) {
+            
             expect(mockClient.getResponse).toHaveBeenCalled();
+            
           } else {
+            
             expect(mockClient.getById).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -27678,9 +31176,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (true) {
+          
           mockClient.getResponse.mockRejectedValue(error);
+          
         } else {
+          
           mockClient.getById.mockRejectedValue(error);
+          
         }
 
         const api = apis.institutions as any;
@@ -27692,7 +31194,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getInstitutions) {
+              
               await expect(api.getInstitutions()).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -27711,9 +31215,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<Institution>("institutions", true);
 
         if (true) {
+          
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<Institution>);
+          
         } else {
+          
           mockClient.getById.mockResolvedValue(mockResponse as Institution);
+          
         }
 
         // Extract the expected parameters from the path
@@ -27754,7 +31262,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getInstitutions) {
+              
               result = await api.getInstitutions(expectedParams);
+              
             }
           }
 
@@ -27763,9 +31273,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (true) {
+            
             expect(mockClient.getResponse).toHaveBeenCalled();
+            
           } else {
+            
             expect(mockClient.getById).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -27812,9 +31326,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (true) {
+          
           mockClient.getResponse.mockRejectedValue(error);
+          
         } else {
+          
           mockClient.getById.mockRejectedValue(error);
+          
         }
 
         const api = apis.institutions as any;
@@ -27826,7 +31344,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getInstitutions) {
+              
               await expect(api.getInstitutions()).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -27845,9 +31365,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<Institution>("institutions", true);
 
         if (true) {
+          
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<Institution>);
+          
         } else {
+          
           mockClient.getById.mockResolvedValue(mockResponse as Institution);
+          
         }
 
         // Extract the expected parameters from the path
@@ -27888,7 +31412,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getInstitutions) {
+              
               result = await api.getInstitutions(expectedParams);
+              
             }
           }
 
@@ -27897,9 +31423,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (true) {
+            
             expect(mockClient.getResponse).toHaveBeenCalled();
+            
           } else {
+            
             expect(mockClient.getById).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -27946,9 +31476,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (true) {
+          
           mockClient.getResponse.mockRejectedValue(error);
+          
         } else {
+          
           mockClient.getById.mockRejectedValue(error);
+          
         }
 
         const api = apis.institutions as any;
@@ -27960,7 +31494,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getInstitutions) {
+              
               await expect(api.getInstitutions()).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -27979,9 +31515,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<Institution>("institutions", true);
 
         if (true) {
+          
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<Institution>);
+          
         } else {
+          
           mockClient.getById.mockResolvedValue(mockResponse as Institution);
+          
         }
 
         // Extract the expected parameters from the path
@@ -28022,7 +31562,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getInstitutions) {
+              
               result = await api.getInstitutions(expectedParams);
+              
             }
           }
 
@@ -28031,9 +31573,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (true) {
+            
             expect(mockClient.getResponse).toHaveBeenCalled();
+            
           } else {
+            
             expect(mockClient.getById).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -28080,9 +31626,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (true) {
+          
           mockClient.getResponse.mockRejectedValue(error);
+          
         } else {
+          
           mockClient.getById.mockRejectedValue(error);
+          
         }
 
         const api = apis.institutions as any;
@@ -28094,7 +31644,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getInstitutions) {
+              
               await expect(api.getInstitutions()).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -28113,9 +31665,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<Institution>("institutions", true);
 
         if (true) {
+          
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<Institution>);
+          
         } else {
+          
           mockClient.getById.mockResolvedValue(mockResponse as Institution);
+          
         }
 
         // Extract the expected parameters from the path
@@ -28156,7 +31712,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getInstitutions) {
+              
               result = await api.getInstitutions(expectedParams);
+              
             }
           }
 
@@ -28165,9 +31723,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (true) {
+            
             expect(mockClient.getResponse).toHaveBeenCalled();
+            
           } else {
+            
             expect(mockClient.getById).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -28214,9 +31776,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (true) {
+          
           mockClient.getResponse.mockRejectedValue(error);
+          
         } else {
+          
           mockClient.getById.mockRejectedValue(error);
+          
         }
 
         const api = apis.institutions as any;
@@ -28228,7 +31794,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getInstitutions) {
+              
               await expect(api.getInstitutions()).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -28247,9 +31815,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<Institution>("institutions", true);
 
         if (true) {
+          
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<Institution>);
+          
         } else {
+          
           mockClient.getById.mockResolvedValue(mockResponse as Institution);
+          
         }
 
         // Extract the expected parameters from the path
@@ -28290,7 +31862,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getInstitutions) {
+              
               result = await api.getInstitutions(expectedParams);
+              
             }
           }
 
@@ -28299,9 +31873,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (true) {
+            
             expect(mockClient.getResponse).toHaveBeenCalled();
+            
           } else {
+            
             expect(mockClient.getById).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -28348,9 +31926,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (true) {
+          
           mockClient.getResponse.mockRejectedValue(error);
+          
         } else {
+          
           mockClient.getById.mockRejectedValue(error);
+          
         }
 
         const api = apis.institutions as any;
@@ -28362,7 +31944,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getInstitutions) {
+              
               await expect(api.getInstitutions()).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -28381,9 +31965,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<Institution>("institutions", true);
 
         if (true) {
+          
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<Institution>);
+          
         } else {
+          
           mockClient.getById.mockResolvedValue(mockResponse as Institution);
+          
         }
 
         // Extract the expected parameters from the path
@@ -28424,7 +32012,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getInstitutions) {
+              
               result = await api.getInstitutions(expectedParams);
+              
             }
           }
 
@@ -28433,9 +32023,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (true) {
+            
             expect(mockClient.getResponse).toHaveBeenCalled();
+            
           } else {
+            
             expect(mockClient.getById).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -28482,9 +32076,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (true) {
+          
           mockClient.getResponse.mockRejectedValue(error);
+          
         } else {
+          
           mockClient.getById.mockRejectedValue(error);
+          
         }
 
         const api = apis.institutions as any;
@@ -28496,7 +32094,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getInstitutions) {
+              
               await expect(api.getInstitutions()).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -28515,9 +32115,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<Institution>("institutions", true);
 
         if (true) {
+          
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<Institution>);
+          
         } else {
+          
           mockClient.getById.mockResolvedValue(mockResponse as Institution);
+          
         }
 
         // Extract the expected parameters from the path
@@ -28558,7 +32162,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getInstitutions) {
+              
               result = await api.getInstitutions(expectedParams);
+              
             }
           }
 
@@ -28567,9 +32173,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (true) {
+            
             expect(mockClient.getResponse).toHaveBeenCalled();
+            
           } else {
+            
             expect(mockClient.getById).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -28616,9 +32226,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (true) {
+          
           mockClient.getResponse.mockRejectedValue(error);
+          
         } else {
+          
           mockClient.getById.mockRejectedValue(error);
+          
         }
 
         const api = apis.institutions as any;
@@ -28630,7 +32244,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getInstitutions) {
+              
               await expect(api.getInstitutions()).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -28649,9 +32265,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<Institution>("institutions", true);
 
         if (true) {
+          
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<Institution>);
+          
         } else {
+          
           mockClient.getById.mockResolvedValue(mockResponse as Institution);
+          
         }
 
         // Extract the expected parameters from the path
@@ -28692,7 +32312,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getInstitutions) {
+              
               result = await api.getInstitutions(expectedParams);
+              
             }
           }
 
@@ -28701,9 +32323,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (true) {
+            
             expect(mockClient.getResponse).toHaveBeenCalled();
+            
           } else {
+            
             expect(mockClient.getById).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -28750,9 +32376,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (true) {
+          
           mockClient.getResponse.mockRejectedValue(error);
+          
         } else {
+          
           mockClient.getById.mockRejectedValue(error);
+          
         }
 
         const api = apis.institutions as any;
@@ -28764,7 +32394,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getInstitutions) {
+              
               await expect(api.getInstitutions()).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -28783,9 +32415,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<Institution>("institutions", true);
 
         if (true) {
+          
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<Institution>);
+          
         } else {
+          
           mockClient.getById.mockResolvedValue(mockResponse as Institution);
+          
         }
 
         // Extract the expected parameters from the path
@@ -28826,7 +32462,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getInstitutions) {
+              
               result = await api.getInstitutions(expectedParams);
+              
             }
           }
 
@@ -28835,9 +32473,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (true) {
+            
             expect(mockClient.getResponse).toHaveBeenCalled();
+            
           } else {
+            
             expect(mockClient.getById).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -28884,9 +32526,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (true) {
+          
           mockClient.getResponse.mockRejectedValue(error);
+          
         } else {
+          
           mockClient.getById.mockRejectedValue(error);
+          
         }
 
         const api = apis.institutions as any;
@@ -28898,7 +32544,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getInstitutions) {
+              
               await expect(api.getInstitutions()).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -28917,9 +32565,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<Institution>("institutions", true);
 
         if (true) {
+          
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<Institution>);
+          
         } else {
+          
           mockClient.getById.mockResolvedValue(mockResponse as Institution);
+          
         }
 
         // Extract the expected parameters from the path
@@ -28960,7 +32612,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getInstitutions) {
+              
               result = await api.getInstitutions(expectedParams);
+              
             }
           }
 
@@ -28969,9 +32623,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (true) {
+            
             expect(mockClient.getResponse).toHaveBeenCalled();
+            
           } else {
+            
             expect(mockClient.getById).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -29018,9 +32676,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (true) {
+          
           mockClient.getResponse.mockRejectedValue(error);
+          
         } else {
+          
           mockClient.getById.mockRejectedValue(error);
+          
         }
 
         const api = apis.institutions as any;
@@ -29032,7 +32694,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getInstitutions) {
+              
               await expect(api.getInstitutions()).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -29051,9 +32715,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<Institution>("institutions", true);
 
         if (true) {
+          
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<Institution>);
+          
         } else {
+          
           mockClient.getById.mockResolvedValue(mockResponse as Institution);
+          
         }
 
         // Extract the expected parameters from the path
@@ -29094,7 +32762,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getInstitutions) {
+              
               result = await api.getInstitutions(expectedParams);
+              
             }
           }
 
@@ -29103,9 +32773,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (true) {
+            
             expect(mockClient.getResponse).toHaveBeenCalled();
+            
           } else {
+            
             expect(mockClient.getById).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -29152,9 +32826,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (true) {
+          
           mockClient.getResponse.mockRejectedValue(error);
+          
         } else {
+          
           mockClient.getById.mockRejectedValue(error);
+          
         }
 
         const api = apis.institutions as any;
@@ -29166,7 +32844,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getInstitutions) {
+              
               await expect(api.getInstitutions()).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -29185,9 +32865,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<Institution>("institutions", true);
 
         if (true) {
+          
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<Institution>);
+          
         } else {
+          
           mockClient.getById.mockResolvedValue(mockResponse as Institution);
+          
         }
 
         // Extract the expected parameters from the path
@@ -29228,7 +32912,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getInstitutions) {
+              
               result = await api.getInstitutions(expectedParams);
+              
             }
           }
 
@@ -29237,9 +32923,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (true) {
+            
             expect(mockClient.getResponse).toHaveBeenCalled();
+            
           } else {
+            
             expect(mockClient.getById).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -29286,9 +32976,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (true) {
+          
           mockClient.getResponse.mockRejectedValue(error);
+          
         } else {
+          
           mockClient.getById.mockRejectedValue(error);
+          
         }
 
         const api = apis.institutions as any;
@@ -29300,7 +32994,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getInstitutions) {
+              
               await expect(api.getInstitutions()).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -29319,9 +33015,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<Institution>("institutions", true);
 
         if (true) {
+          
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<Institution>);
+          
         } else {
+          
           mockClient.getById.mockResolvedValue(mockResponse as Institution);
+          
         }
 
         // Extract the expected parameters from the path
@@ -29362,7 +33062,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getInstitutions) {
+              
               result = await api.getInstitutions(expectedParams);
+              
             }
           }
 
@@ -29371,9 +33073,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (true) {
+            
             expect(mockClient.getResponse).toHaveBeenCalled();
+            
           } else {
+            
             expect(mockClient.getById).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -29398,9 +33104,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (true) {
+          
           mockClient.getResponse.mockRejectedValue(error);
+          
         } else {
+          
           mockClient.getById.mockRejectedValue(error);
+          
         }
 
         const api = apis.institutions as any;
@@ -29412,7 +33122,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getInstitutions) {
+              
               await expect(api.getInstitutions()).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -29431,9 +33143,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<Institution>("institutions", true);
 
         if (true) {
+          
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<Institution>);
+          
         } else {
+          
           mockClient.getById.mockResolvedValue(mockResponse as Institution);
+          
         }
 
         // Extract the expected parameters from the path
@@ -29474,7 +33190,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getInstitutions) {
+              
               result = await api.getInstitutions(expectedParams);
+              
             }
           }
 
@@ -29483,9 +33201,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (true) {
+            
             expect(mockClient.getResponse).toHaveBeenCalled();
+            
           } else {
+            
             expect(mockClient.getById).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -29510,9 +33232,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (true) {
+          
           mockClient.getResponse.mockRejectedValue(error);
+          
         } else {
+          
           mockClient.getById.mockRejectedValue(error);
+          
         }
 
         const api = apis.institutions as any;
@@ -29524,7 +33250,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getInstitutions) {
+              
               await expect(api.getInstitutions()).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -29543,9 +33271,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<Institution>("institutions", true);
 
         if (true) {
+          
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<Institution>);
+          
         } else {
+          
           mockClient.getById.mockResolvedValue(mockResponse as Institution);
+          
         }
 
         // Extract the expected parameters from the path
@@ -29586,7 +33318,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getInstitutions) {
+              
               result = await api.getInstitutions(expectedParams);
+              
             }
           }
 
@@ -29595,9 +33329,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (true) {
+            
             expect(mockClient.getResponse).toHaveBeenCalled();
+            
           } else {
+            
             expect(mockClient.getById).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -29622,9 +33360,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (true) {
+          
           mockClient.getResponse.mockRejectedValue(error);
+          
         } else {
+          
           mockClient.getById.mockRejectedValue(error);
+          
         }
 
         const api = apis.institutions as any;
@@ -29636,7 +33378,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getInstitutions) {
+              
               await expect(api.getInstitutions()).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -29655,9 +33399,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<Institution>("institutions", true);
 
         if (true) {
+          
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<Institution>);
+          
         } else {
+          
           mockClient.getById.mockResolvedValue(mockResponse as Institution);
+          
         }
 
         // Extract the expected parameters from the path
@@ -29698,7 +33446,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getInstitutions) {
+              
               result = await api.getInstitutions(expectedParams);
+              
             }
           }
 
@@ -29707,9 +33457,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (true) {
+            
             expect(mockClient.getResponse).toHaveBeenCalled();
+            
           } else {
+            
             expect(mockClient.getById).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -29734,9 +33488,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (true) {
+          
           mockClient.getResponse.mockRejectedValue(error);
+          
         } else {
+          
           mockClient.getById.mockRejectedValue(error);
+          
         }
 
         const api = apis.institutions as any;
@@ -29748,7 +33506,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getInstitutions) {
+              
               await expect(api.getInstitutions()).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -29767,9 +33527,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<Institution>("institutions", true);
 
         if (true) {
+          
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<Institution>);
+          
         } else {
+          
           mockClient.getById.mockResolvedValue(mockResponse as Institution);
+          
         }
 
         // Extract the expected parameters from the path
@@ -29810,7 +33574,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getInstitutions) {
+              
               result = await api.getInstitutions(expectedParams);
+              
             }
           }
 
@@ -29819,9 +33585,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (true) {
+            
             expect(mockClient.getResponse).toHaveBeenCalled();
+            
           } else {
+            
             expect(mockClient.getById).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -29863,9 +33633,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (true) {
+          
           mockClient.getResponse.mockRejectedValue(error);
+          
         } else {
+          
           mockClient.getById.mockRejectedValue(error);
+          
         }
 
         const api = apis.institutions as any;
@@ -29877,7 +33651,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getInstitutions) {
+              
               await expect(api.getInstitutions()).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -29896,9 +33672,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<Institution>("institutions", true);
 
         if (true) {
+          
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<Institution>);
+          
         } else {
+          
           mockClient.getById.mockResolvedValue(mockResponse as Institution);
+          
         }
 
         // Extract the expected parameters from the path
@@ -29939,7 +33719,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getInstitutions) {
+              
               result = await api.getInstitutions(expectedParams);
+              
             }
           }
 
@@ -29948,9 +33730,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (true) {
+            
             expect(mockClient.getResponse).toHaveBeenCalled();
+            
           } else {
+            
             expect(mockClient.getById).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -29992,9 +33778,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (true) {
+          
           mockClient.getResponse.mockRejectedValue(error);
+          
         } else {
+          
           mockClient.getById.mockRejectedValue(error);
+          
         }
 
         const api = apis.institutions as any;
@@ -30006,7 +33796,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getInstitutions) {
+              
               await expect(api.getInstitutions()).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -30025,9 +33817,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<Institution>("institutions", true);
 
         if (true) {
+          
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<Institution>);
+          
         } else {
+          
           mockClient.getById.mockResolvedValue(mockResponse as Institution);
+          
         }
 
         // Extract the expected parameters from the path
@@ -30068,7 +33864,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getInstitutions) {
+              
               result = await api.getInstitutions(expectedParams);
+              
             }
           }
 
@@ -30077,9 +33875,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (true) {
+            
             expect(mockClient.getResponse).toHaveBeenCalled();
+            
           } else {
+            
             expect(mockClient.getById).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -30121,9 +33923,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (true) {
+          
           mockClient.getResponse.mockRejectedValue(error);
+          
         } else {
+          
           mockClient.getById.mockRejectedValue(error);
+          
         }
 
         const api = apis.institutions as any;
@@ -30135,7 +33941,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getInstitutions) {
+              
               await expect(api.getInstitutions()).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -30154,9 +33962,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<Institution>("institutions", true);
 
         if (true) {
+          
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<Institution>);
+          
         } else {
+          
           mockClient.getById.mockResolvedValue(mockResponse as Institution);
+          
         }
 
         // Extract the expected parameters from the path
@@ -30197,7 +34009,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getInstitutions) {
+              
               result = await api.getInstitutions(expectedParams);
+              
             }
           }
 
@@ -30206,9 +34020,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (true) {
+            
             expect(mockClient.getResponse).toHaveBeenCalled();
+            
           } else {
+            
             expect(mockClient.getById).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -30250,9 +34068,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (true) {
+          
           mockClient.getResponse.mockRejectedValue(error);
+          
         } else {
+          
           mockClient.getById.mockRejectedValue(error);
+          
         }
 
         const api = apis.institutions as any;
@@ -30264,7 +34086,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getInstitutions) {
+              
               await expect(api.getInstitutions()).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -30283,9 +34107,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<Institution>("institutions", true);
 
         if (true) {
+          
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<Institution>);
+          
         } else {
+          
           mockClient.getById.mockResolvedValue(mockResponse as Institution);
+          
         }
 
         // Extract the expected parameters from the path
@@ -30326,7 +34154,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getInstitutions) {
+              
               result = await api.getInstitutions(expectedParams);
+              
             }
           }
 
@@ -30335,9 +34165,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (true) {
+            
             expect(mockClient.getResponse).toHaveBeenCalled();
+            
           } else {
+            
             expect(mockClient.getById).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -30362,9 +34196,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (true) {
+          
           mockClient.getResponse.mockRejectedValue(error);
+          
         } else {
+          
           mockClient.getById.mockRejectedValue(error);
+          
         }
 
         const api = apis.institutions as any;
@@ -30376,7 +34214,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getInstitutions) {
+              
               await expect(api.getInstitutions()).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -30395,9 +34235,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<Institution>("institutions", true);
 
         if (true) {
+          
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<Institution>);
+          
         } else {
+          
           mockClient.getById.mockResolvedValue(mockResponse as Institution);
+          
         }
 
         // Extract the expected parameters from the path
@@ -30438,7 +34282,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getInstitutions) {
+              
               result = await api.getInstitutions(expectedParams);
+              
             }
           }
 
@@ -30447,9 +34293,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (true) {
+            
             expect(mockClient.getResponse).toHaveBeenCalled();
+            
           } else {
+            
             expect(mockClient.getById).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -30474,9 +34324,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (true) {
+          
           mockClient.getResponse.mockRejectedValue(error);
+          
         } else {
+          
           mockClient.getById.mockRejectedValue(error);
+          
         }
 
         const api = apis.institutions as any;
@@ -30488,7 +34342,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getInstitutions) {
+              
               await expect(api.getInstitutions()).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -30511,9 +34367,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<Publisher>("publishers", true);
 
         if (true) {
+          
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<Publisher>);
+          
         } else {
+          
           mockClient.getById.mockResolvedValue(mockResponse as Publisher);
+          
         }
 
         // Extract the expected parameters from the path
@@ -30554,7 +34414,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getPublishers) {
+              
               result = await api.getPublishers(expectedParams);
+              
             }
           }
 
@@ -30563,9 +34425,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (true) {
+            
             expect(mockClient.getResponse).toHaveBeenCalled();
+            
           } else {
+            
             expect(mockClient.getById).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -30590,9 +34456,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (true) {
+          
           mockClient.getResponse.mockRejectedValue(error);
+          
         } else {
+          
           mockClient.getById.mockRejectedValue(error);
+          
         }
 
         const api = apis.publishers as any;
@@ -30604,7 +34474,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getPublishers) {
+              
               await expect(api.getPublishers()).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -30623,9 +34495,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<Publisher>("publishers", true);
 
         if (true) {
+          
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<Publisher>);
+          
         } else {
+          
           mockClient.getById.mockResolvedValue(mockResponse as Publisher);
+          
         }
 
         // Extract the expected parameters from the path
@@ -30666,7 +34542,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getPublishers) {
+              
               result = await api.getPublishers(expectedParams);
+              
             }
           }
 
@@ -30675,9 +34553,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (true) {
+            
             expect(mockClient.getResponse).toHaveBeenCalled();
+            
           } else {
+            
             expect(mockClient.getById).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -30702,9 +34584,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (true) {
+          
           mockClient.getResponse.mockRejectedValue(error);
+          
         } else {
+          
           mockClient.getById.mockRejectedValue(error);
+          
         }
 
         const api = apis.publishers as any;
@@ -30716,7 +34602,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getPublishers) {
+              
               await expect(api.getPublishers()).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -30735,9 +34623,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<Publisher>("publishers", false);
 
         if (false) {
+          
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<Publisher>);
+          
         } else {
+          
           mockClient.getById.mockResolvedValue(mockResponse as Publisher);
+          
         }
 
         // Extract the expected parameters from the path
@@ -30778,7 +34670,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getPublishers) {
+              
               result = await api.getPublishers(expectedParams);
+              
             }
           }
 
@@ -30787,9 +34681,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (false) {
+            
             expect(mockClient.getResponse).toHaveBeenCalled();
+            
           } else {
+            
             expect(mockClient.getById).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -30814,9 +34712,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (false) {
+          
           mockClient.getResponse.mockRejectedValue(error);
+          
         } else {
+          
           mockClient.getById.mockRejectedValue(error);
+          
         }
 
         const api = apis.publishers as any;
@@ -30828,7 +34730,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getPublishers) {
+              
               await expect(api.getPublishers()).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -30847,9 +34751,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<Publisher>("publishers", false);
 
         if (false) {
+          
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<Publisher>);
+          
         } else {
+          
           mockClient.getById.mockResolvedValue(mockResponse as Publisher);
+          
         }
 
         // Extract the expected parameters from the path
@@ -30890,7 +34798,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getPublishers) {
+              
               result = await api.getPublishers(expectedParams);
+              
             }
           }
 
@@ -30899,9 +34809,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (false) {
+            
             expect(mockClient.getResponse).toHaveBeenCalled();
+            
           } else {
+            
             expect(mockClient.getById).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -30926,9 +34840,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (false) {
+          
           mockClient.getResponse.mockRejectedValue(error);
+          
         } else {
+          
           mockClient.getById.mockRejectedValue(error);
+          
         }
 
         const api = apis.publishers as any;
@@ -30940,7 +34858,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getPublishers) {
+              
               await expect(api.getPublishers()).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -30959,9 +34879,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<Publisher>("publishers", false);
 
         if (false) {
+          
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<Publisher>);
+          
         } else {
+          
           mockClient.getById.mockResolvedValue(mockResponse as Publisher);
+          
         }
 
         // Extract the expected parameters from the path
@@ -31002,7 +34926,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getPublishers) {
+              
               result = await api.getPublishers(expectedParams);
+              
             }
           }
 
@@ -31011,9 +34937,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (false) {
+            
             expect(mockClient.getResponse).toHaveBeenCalled();
+            
           } else {
+            
             expect(mockClient.getById).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -31055,9 +34985,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (false) {
+          
           mockClient.getResponse.mockRejectedValue(error);
+          
         } else {
+          
           mockClient.getById.mockRejectedValue(error);
+          
         }
 
         const api = apis.publishers as any;
@@ -31069,7 +35003,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getPublishers) {
+              
               await expect(api.getPublishers()).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -31088,9 +35024,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<Publisher>("publishers", true);
 
         if (true) {
+          
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<Publisher>);
+          
         } else {
+          
           mockClient.getById.mockResolvedValue(mockResponse as Publisher);
+          
         }
 
         // Extract the expected parameters from the path
@@ -31131,7 +35071,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getPublishers) {
+              
               result = await api.getPublishers(expectedParams);
+              
             }
           }
 
@@ -31140,9 +35082,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (true) {
+            
             expect(mockClient.getResponse).toHaveBeenCalled();
+            
           } else {
+            
             expect(mockClient.getById).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -31189,9 +35135,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (true) {
+          
           mockClient.getResponse.mockRejectedValue(error);
+          
         } else {
+          
           mockClient.getById.mockRejectedValue(error);
+          
         }
 
         const api = apis.publishers as any;
@@ -31203,7 +35153,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getPublishers) {
+              
               await expect(api.getPublishers()).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -31222,9 +35174,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<Publisher>("publishers", true);
 
         if (true) {
+          
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<Publisher>);
+          
         } else {
+          
           mockClient.getById.mockResolvedValue(mockResponse as Publisher);
+          
         }
 
         // Extract the expected parameters from the path
@@ -31265,7 +35221,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getPublishers) {
+              
               result = await api.getPublishers(expectedParams);
+              
             }
           }
 
@@ -31274,9 +35232,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (true) {
+            
             expect(mockClient.getResponse).toHaveBeenCalled();
+            
           } else {
+            
             expect(mockClient.getById).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -31323,9 +35285,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (true) {
+          
           mockClient.getResponse.mockRejectedValue(error);
+          
         } else {
+          
           mockClient.getById.mockRejectedValue(error);
+          
         }
 
         const api = apis.publishers as any;
@@ -31337,7 +35303,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getPublishers) {
+              
               await expect(api.getPublishers()).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -31356,9 +35324,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<Publisher>("publishers", true);
 
         if (true) {
+          
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<Publisher>);
+          
         } else {
+          
           mockClient.getById.mockResolvedValue(mockResponse as Publisher);
+          
         }
 
         // Extract the expected parameters from the path
@@ -31399,7 +35371,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getPublishers) {
+              
               result = await api.getPublishers(expectedParams);
+              
             }
           }
 
@@ -31408,9 +35382,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (true) {
+            
             expect(mockClient.getResponse).toHaveBeenCalled();
+            
           } else {
+            
             expect(mockClient.getById).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -31457,9 +35435,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (true) {
+          
           mockClient.getResponse.mockRejectedValue(error);
+          
         } else {
+          
           mockClient.getById.mockRejectedValue(error);
+          
         }
 
         const api = apis.publishers as any;
@@ -31471,7 +35453,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getPublishers) {
+              
               await expect(api.getPublishers()).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -31490,9 +35474,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<Publisher>("publishers", true);
 
         if (true) {
+          
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<Publisher>);
+          
         } else {
+          
           mockClient.getById.mockResolvedValue(mockResponse as Publisher);
+          
         }
 
         // Extract the expected parameters from the path
@@ -31533,7 +35521,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getPublishers) {
+              
               result = await api.getPublishers(expectedParams);
+              
             }
           }
 
@@ -31542,9 +35532,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (true) {
+            
             expect(mockClient.getResponse).toHaveBeenCalled();
+            
           } else {
+            
             expect(mockClient.getById).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -31591,9 +35585,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (true) {
+          
           mockClient.getResponse.mockRejectedValue(error);
+          
         } else {
+          
           mockClient.getById.mockRejectedValue(error);
+          
         }
 
         const api = apis.publishers as any;
@@ -31605,7 +35603,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getPublishers) {
+              
               await expect(api.getPublishers()).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -31624,9 +35624,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<Publisher>("publishers", true);
 
         if (true) {
+          
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<Publisher>);
+          
         } else {
+          
           mockClient.getById.mockResolvedValue(mockResponse as Publisher);
+          
         }
 
         // Extract the expected parameters from the path
@@ -31667,7 +35671,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getPublishers) {
+              
               result = await api.getPublishers(expectedParams);
+              
             }
           }
 
@@ -31676,9 +35682,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (true) {
+            
             expect(mockClient.getResponse).toHaveBeenCalled();
+            
           } else {
+            
             expect(mockClient.getById).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -31703,9 +35713,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (true) {
+          
           mockClient.getResponse.mockRejectedValue(error);
+          
         } else {
+          
           mockClient.getById.mockRejectedValue(error);
+          
         }
 
         const api = apis.publishers as any;
@@ -31717,7 +35731,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getPublishers) {
+              
               await expect(api.getPublishers()).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -31736,9 +35752,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<Publisher>("publishers", true);
 
         if (true) {
+          
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<Publisher>);
+          
         } else {
+          
           mockClient.getById.mockResolvedValue(mockResponse as Publisher);
+          
         }
 
         // Extract the expected parameters from the path
@@ -31779,7 +35799,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getPublishers) {
+              
               result = await api.getPublishers(expectedParams);
+              
             }
           }
 
@@ -31788,9 +35810,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (true) {
+            
             expect(mockClient.getResponse).toHaveBeenCalled();
+            
           } else {
+            
             expect(mockClient.getById).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -31815,9 +35841,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (true) {
+          
           mockClient.getResponse.mockRejectedValue(error);
+          
         } else {
+          
           mockClient.getById.mockRejectedValue(error);
+          
         }
 
         const api = apis.publishers as any;
@@ -31829,7 +35859,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getPublishers) {
+              
               await expect(api.getPublishers()).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -31848,9 +35880,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<Publisher>("publishers", true);
 
         if (true) {
+          
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<Publisher>);
+          
         } else {
+          
           mockClient.getById.mockResolvedValue(mockResponse as Publisher);
+          
         }
 
         // Extract the expected parameters from the path
@@ -31891,7 +35927,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getPublishers) {
+              
               result = await api.getPublishers(expectedParams);
+              
             }
           }
 
@@ -31900,9 +35938,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (true) {
+            
             expect(mockClient.getResponse).toHaveBeenCalled();
+            
           } else {
+            
             expect(mockClient.getById).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -31927,9 +35969,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (true) {
+          
           mockClient.getResponse.mockRejectedValue(error);
+          
         } else {
+          
           mockClient.getById.mockRejectedValue(error);
+          
         }
 
         const api = apis.publishers as any;
@@ -31941,7 +35987,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getPublishers) {
+              
               await expect(api.getPublishers()).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -31960,9 +36008,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<Publisher>("publishers", true);
 
         if (true) {
+          
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<Publisher>);
+          
         } else {
+          
           mockClient.getById.mockResolvedValue(mockResponse as Publisher);
+          
         }
 
         // Extract the expected parameters from the path
@@ -32003,7 +36055,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getPublishers) {
+              
               result = await api.getPublishers(expectedParams);
+              
             }
           }
 
@@ -32012,9 +36066,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (true) {
+            
             expect(mockClient.getResponse).toHaveBeenCalled();
+            
           } else {
+            
             expect(mockClient.getById).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -32056,9 +36114,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (true) {
+          
           mockClient.getResponse.mockRejectedValue(error);
+          
         } else {
+          
           mockClient.getById.mockRejectedValue(error);
+          
         }
 
         const api = apis.publishers as any;
@@ -32070,7 +36132,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getPublishers) {
+              
               await expect(api.getPublishers()).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -32089,9 +36153,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<Publisher>("publishers", true);
 
         if (true) {
+          
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<Publisher>);
+          
         } else {
+          
           mockClient.getById.mockResolvedValue(mockResponse as Publisher);
+          
         }
 
         // Extract the expected parameters from the path
@@ -32132,7 +36200,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getPublishers) {
+              
               result = await api.getPublishers(expectedParams);
+              
             }
           }
 
@@ -32141,9 +36211,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (true) {
+            
             expect(mockClient.getResponse).toHaveBeenCalled();
+            
           } else {
+            
             expect(mockClient.getById).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -32168,9 +36242,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (true) {
+          
           mockClient.getResponse.mockRejectedValue(error);
+          
         } else {
+          
           mockClient.getById.mockRejectedValue(error);
+          
         }
 
         const api = apis.publishers as any;
@@ -32182,7 +36260,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getPublishers) {
+              
               await expect(api.getPublishers()).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -32201,9 +36281,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<Publisher>("publishers", true);
 
         if (true) {
+          
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<Publisher>);
+          
         } else {
+          
           mockClient.getById.mockResolvedValue(mockResponse as Publisher);
+          
         }
 
         // Extract the expected parameters from the path
@@ -32244,7 +36328,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getPublishers) {
+              
               result = await api.getPublishers(expectedParams);
+              
             }
           }
 
@@ -32253,9 +36339,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (true) {
+            
             expect(mockClient.getResponse).toHaveBeenCalled();
+            
           } else {
+            
             expect(mockClient.getById).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -32280,9 +36370,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (true) {
+          
           mockClient.getResponse.mockRejectedValue(error);
+          
         } else {
+          
           mockClient.getById.mockRejectedValue(error);
+          
         }
 
         const api = apis.publishers as any;
@@ -32294,7 +36388,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getPublishers) {
+              
               await expect(api.getPublishers()).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -32317,9 +36413,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<Source>("sources", true);
 
         if (true) {
+          
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<Source>);
+          
         } else {
+          
           mockClient.getById.mockResolvedValue(mockResponse as Source);
+          
         }
 
         // Extract the expected parameters from the path
@@ -32360,7 +36460,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getSources) {
+              
               result = await api.getSources(expectedParams);
+              
             }
           }
 
@@ -32369,9 +36471,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (true) {
+            
             expect(mockClient.getResponse).toHaveBeenCalled();
+            
           } else {
+            
             expect(mockClient.getById).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -32396,9 +36502,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (true) {
+          
           mockClient.getResponse.mockRejectedValue(error);
+          
         } else {
+          
           mockClient.getById.mockRejectedValue(error);
+          
         }
 
         const api = apis.sources as any;
@@ -32410,7 +36520,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getSources) {
+              
               await expect(api.getSources()).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -32429,9 +36541,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<Source>("sources", true);
 
         if (true) {
+          
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<Source>);
+          
         } else {
+          
           mockClient.getById.mockResolvedValue(mockResponse as Source);
+          
         }
 
         // Extract the expected parameters from the path
@@ -32472,7 +36588,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getSources) {
+              
               result = await api.getSources(expectedParams);
+              
             }
           }
 
@@ -32481,9 +36599,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (true) {
+            
             expect(mockClient.getResponse).toHaveBeenCalled();
+            
           } else {
+            
             expect(mockClient.getById).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -32508,9 +36630,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (true) {
+          
           mockClient.getResponse.mockRejectedValue(error);
+          
         } else {
+          
           mockClient.getById.mockRejectedValue(error);
+          
         }
 
         const api = apis.sources as any;
@@ -32522,7 +36648,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getSources) {
+              
               await expect(api.getSources()).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -32541,9 +36669,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<Source>("sources", true);
 
         if (true) {
+          
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<Source>);
+          
         } else {
+          
           mockClient.getById.mockResolvedValue(mockResponse as Source);
+          
         }
 
         // Extract the expected parameters from the path
@@ -32584,7 +36716,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getSources) {
+              
               result = await api.getSources(expectedParams);
+              
             }
           }
 
@@ -32593,9 +36727,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (true) {
+            
             expect(mockClient.getResponse).toHaveBeenCalled();
+            
           } else {
+            
             expect(mockClient.getById).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -32620,9 +36758,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (true) {
+          
           mockClient.getResponse.mockRejectedValue(error);
+          
         } else {
+          
           mockClient.getById.mockRejectedValue(error);
+          
         }
 
         const api = apis.sources as any;
@@ -32634,7 +36776,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getSources) {
+              
               await expect(api.getSources()).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -32653,9 +36797,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<Source>("sources", false);
 
         if (false) {
+          
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<Source>);
+          
         } else {
+          
           mockClient.getById.mockResolvedValue(mockResponse as Source);
+          
         }
 
         // Extract the expected parameters from the path
@@ -32696,7 +36844,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getSources) {
+              
               result = await api.getSources(expectedParams);
+              
             }
           }
 
@@ -32705,9 +36855,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (false) {
+            
             expect(mockClient.getResponse).toHaveBeenCalled();
+            
           } else {
+            
             expect(mockClient.getById).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -32732,9 +36886,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (false) {
+          
           mockClient.getResponse.mockRejectedValue(error);
+          
         } else {
+          
           mockClient.getById.mockRejectedValue(error);
+          
         }
 
         const api = apis.sources as any;
@@ -32746,7 +36904,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getSources) {
+              
               await expect(api.getSources()).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -32765,9 +36925,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<Source>("sources", false);
 
         if (false) {
+          
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<Source>);
+          
         } else {
+          
           mockClient.getById.mockResolvedValue(mockResponse as Source);
+          
         }
 
         // Extract the expected parameters from the path
@@ -32808,7 +36972,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getSources) {
+              
               result = await api.getSources(expectedParams);
+              
             }
           }
 
@@ -32817,9 +36983,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (false) {
+            
             expect(mockClient.getResponse).toHaveBeenCalled();
+            
           } else {
+            
             expect(mockClient.getById).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -32844,9 +37014,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (false) {
+          
           mockClient.getResponse.mockRejectedValue(error);
+          
         } else {
+          
           mockClient.getById.mockRejectedValue(error);
+          
         }
 
         const api = apis.sources as any;
@@ -32858,7 +37032,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getSources) {
+              
               await expect(api.getSources()).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -32877,9 +37053,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<Source>("sources", true);
 
         if (true) {
+          
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<Source>);
+          
         } else {
+          
           mockClient.getById.mockResolvedValue(mockResponse as Source);
+          
         }
 
         // Extract the expected parameters from the path
@@ -32920,7 +37100,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getSources) {
+              
               result = await api.getSources(expectedParams);
+              
             }
           }
 
@@ -32929,9 +37111,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (true) {
+            
             expect(mockClient.getResponse).toHaveBeenCalled();
+            
           } else {
+            
             expect(mockClient.getById).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -32956,9 +37142,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (true) {
+          
           mockClient.getResponse.mockRejectedValue(error);
+          
         } else {
+          
           mockClient.getById.mockRejectedValue(error);
+          
         }
 
         const api = apis.sources as any;
@@ -32970,7 +37160,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getSources) {
+              
               await expect(api.getSources()).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -32989,9 +37181,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<Source>("sources", true);
 
         if (true) {
+          
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<Source>);
+          
         } else {
+          
           mockClient.getById.mockResolvedValue(mockResponse as Source);
+          
         }
 
         // Extract the expected parameters from the path
@@ -33032,7 +37228,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getSources) {
+              
               result = await api.getSources(expectedParams);
+              
             }
           }
 
@@ -33041,9 +37239,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (true) {
+            
             expect(mockClient.getResponse).toHaveBeenCalled();
+            
           } else {
+            
             expect(mockClient.getById).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -33090,9 +37292,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (true) {
+          
           mockClient.getResponse.mockRejectedValue(error);
+          
         } else {
+          
           mockClient.getById.mockRejectedValue(error);
+          
         }
 
         const api = apis.sources as any;
@@ -33104,7 +37310,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getSources) {
+              
               await expect(api.getSources()).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -33123,9 +37331,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<Source>("sources", true);
 
         if (true) {
+          
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<Source>);
+          
         } else {
+          
           mockClient.getById.mockResolvedValue(mockResponse as Source);
+          
         }
 
         // Extract the expected parameters from the path
@@ -33166,7 +37378,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getSources) {
+              
               result = await api.getSources(expectedParams);
+              
             }
           }
 
@@ -33175,9 +37389,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (true) {
+            
             expect(mockClient.getResponse).toHaveBeenCalled();
+            
           } else {
+            
             expect(mockClient.getById).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -33224,9 +37442,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (true) {
+          
           mockClient.getResponse.mockRejectedValue(error);
+          
         } else {
+          
           mockClient.getById.mockRejectedValue(error);
+          
         }
 
         const api = apis.sources as any;
@@ -33238,7 +37460,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getSources) {
+              
               await expect(api.getSources()).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -33257,9 +37481,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<Source>("sources", true);
 
         if (true) {
+          
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<Source>);
+          
         } else {
+          
           mockClient.getById.mockResolvedValue(mockResponse as Source);
+          
         }
 
         // Extract the expected parameters from the path
@@ -33300,7 +37528,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getSources) {
+              
               result = await api.getSources(expectedParams);
+              
             }
           }
 
@@ -33309,9 +37539,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (true) {
+            
             expect(mockClient.getResponse).toHaveBeenCalled();
+            
           } else {
+            
             expect(mockClient.getById).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -33358,9 +37592,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (true) {
+          
           mockClient.getResponse.mockRejectedValue(error);
+          
         } else {
+          
           mockClient.getById.mockRejectedValue(error);
+          
         }
 
         const api = apis.sources as any;
@@ -33372,7 +37610,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getSources) {
+              
               await expect(api.getSources()).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -33391,9 +37631,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<Source>("sources", true);
 
         if (true) {
+          
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<Source>);
+          
         } else {
+          
           mockClient.getById.mockResolvedValue(mockResponse as Source);
+          
         }
 
         // Extract the expected parameters from the path
@@ -33434,7 +37678,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getSources) {
+              
               result = await api.getSources(expectedParams);
+              
             }
           }
 
@@ -33443,9 +37689,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (true) {
+            
             expect(mockClient.getResponse).toHaveBeenCalled();
+            
           } else {
+            
             expect(mockClient.getById).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -33492,9 +37742,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (true) {
+          
           mockClient.getResponse.mockRejectedValue(error);
+          
         } else {
+          
           mockClient.getById.mockRejectedValue(error);
+          
         }
 
         const api = apis.sources as any;
@@ -33506,7 +37760,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getSources) {
+              
               await expect(api.getSources()).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -33525,9 +37781,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<Source>("sources", true);
 
         if (true) {
+          
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<Source>);
+          
         } else {
+          
           mockClient.getById.mockResolvedValue(mockResponse as Source);
+          
         }
 
         // Extract the expected parameters from the path
@@ -33568,7 +37828,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getSources) {
+              
               result = await api.getSources(expectedParams);
+              
             }
           }
 
@@ -33577,9 +37839,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (true) {
+            
             expect(mockClient.getResponse).toHaveBeenCalled();
+            
           } else {
+            
             expect(mockClient.getById).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -33626,9 +37892,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (true) {
+          
           mockClient.getResponse.mockRejectedValue(error);
+          
         } else {
+          
           mockClient.getById.mockRejectedValue(error);
+          
         }
 
         const api = apis.sources as any;
@@ -33640,7 +37910,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getSources) {
+              
               await expect(api.getSources()).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -33659,9 +37931,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<Source>("sources", true);
 
         if (true) {
+          
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<Source>);
+          
         } else {
+          
           mockClient.getById.mockResolvedValue(mockResponse as Source);
+          
         }
 
         // Extract the expected parameters from the path
@@ -33702,7 +37978,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getSources) {
+              
               result = await api.getSources(expectedParams);
+              
             }
           }
 
@@ -33711,9 +37989,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (true) {
+            
             expect(mockClient.getResponse).toHaveBeenCalled();
+            
           } else {
+            
             expect(mockClient.getById).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -33760,9 +38042,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (true) {
+          
           mockClient.getResponse.mockRejectedValue(error);
+          
         } else {
+          
           mockClient.getById.mockRejectedValue(error);
+          
         }
 
         const api = apis.sources as any;
@@ -33774,7 +38060,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getSources) {
+              
               await expect(api.getSources()).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -33793,9 +38081,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<Source>("sources", true);
 
         if (true) {
+          
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<Source>);
+          
         } else {
+          
           mockClient.getById.mockResolvedValue(mockResponse as Source);
+          
         }
 
         // Extract the expected parameters from the path
@@ -33836,7 +38128,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getSources) {
+              
               result = await api.getSources(expectedParams);
+              
             }
           }
 
@@ -33845,9 +38139,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (true) {
+            
             expect(mockClient.getResponse).toHaveBeenCalled();
+            
           } else {
+            
             expect(mockClient.getById).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -33894,9 +38192,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (true) {
+          
           mockClient.getResponse.mockRejectedValue(error);
+          
         } else {
+          
           mockClient.getById.mockRejectedValue(error);
+          
         }
 
         const api = apis.sources as any;
@@ -33908,7 +38210,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getSources) {
+              
               await expect(api.getSources()).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -33927,9 +38231,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<Source>("sources", true);
 
         if (true) {
+          
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<Source>);
+          
         } else {
+          
           mockClient.getById.mockResolvedValue(mockResponse as Source);
+          
         }
 
         // Extract the expected parameters from the path
@@ -33970,7 +38278,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getSources) {
+              
               result = await api.getSources(expectedParams);
+              
             }
           }
 
@@ -33979,9 +38289,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (true) {
+            
             expect(mockClient.getResponse).toHaveBeenCalled();
+            
           } else {
+            
             expect(mockClient.getById).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -34028,9 +38342,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (true) {
+          
           mockClient.getResponse.mockRejectedValue(error);
+          
         } else {
+          
           mockClient.getById.mockRejectedValue(error);
+          
         }
 
         const api = apis.sources as any;
@@ -34042,7 +38360,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getSources) {
+              
               await expect(api.getSources()).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -34061,9 +38381,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<Source>("sources", true);
 
         if (true) {
+          
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<Source>);
+          
         } else {
+          
           mockClient.getById.mockResolvedValue(mockResponse as Source);
+          
         }
 
         // Extract the expected parameters from the path
@@ -34104,7 +38428,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getSources) {
+              
               result = await api.getSources(expectedParams);
+              
             }
           }
 
@@ -34113,9 +38439,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (true) {
+            
             expect(mockClient.getResponse).toHaveBeenCalled();
+            
           } else {
+            
             expect(mockClient.getById).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -34162,9 +38492,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (true) {
+          
           mockClient.getResponse.mockRejectedValue(error);
+          
         } else {
+          
           mockClient.getById.mockRejectedValue(error);
+          
         }
 
         const api = apis.sources as any;
@@ -34176,7 +38510,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getSources) {
+              
               await expect(api.getSources()).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -34195,9 +38531,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<Source>("sources", true);
 
         if (true) {
+          
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<Source>);
+          
         } else {
+          
           mockClient.getById.mockResolvedValue(mockResponse as Source);
+          
         }
 
         // Extract the expected parameters from the path
@@ -34238,7 +38578,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getSources) {
+              
               result = await api.getSources(expectedParams);
+              
             }
           }
 
@@ -34247,9 +38589,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (true) {
+            
             expect(mockClient.getResponse).toHaveBeenCalled();
+            
           } else {
+            
             expect(mockClient.getById).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -34296,9 +38642,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (true) {
+          
           mockClient.getResponse.mockRejectedValue(error);
+          
         } else {
+          
           mockClient.getById.mockRejectedValue(error);
+          
         }
 
         const api = apis.sources as any;
@@ -34310,7 +38660,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getSources) {
+              
               await expect(api.getSources()).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -34329,9 +38681,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<Source>("sources", true);
 
         if (true) {
+          
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<Source>);
+          
         } else {
+          
           mockClient.getById.mockResolvedValue(mockResponse as Source);
+          
         }
 
         // Extract the expected parameters from the path
@@ -34372,7 +38728,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getSources) {
+              
               result = await api.getSources(expectedParams);
+              
             }
           }
 
@@ -34381,9 +38739,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (true) {
+            
             expect(mockClient.getResponse).toHaveBeenCalled();
+            
           } else {
+            
             expect(mockClient.getById).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -34430,9 +38792,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (true) {
+          
           mockClient.getResponse.mockRejectedValue(error);
+          
         } else {
+          
           mockClient.getById.mockRejectedValue(error);
+          
         }
 
         const api = apis.sources as any;
@@ -34444,7 +38810,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getSources) {
+              
               await expect(api.getSources()).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -34463,9 +38831,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<Source>("sources", true);
 
         if (true) {
+          
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<Source>);
+          
         } else {
+          
           mockClient.getById.mockResolvedValue(mockResponse as Source);
+          
         }
 
         // Extract the expected parameters from the path
@@ -34506,7 +38878,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getSources) {
+              
               result = await api.getSources(expectedParams);
+              
             }
           }
 
@@ -34515,9 +38889,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (true) {
+            
             expect(mockClient.getResponse).toHaveBeenCalled();
+            
           } else {
+            
             expect(mockClient.getById).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -34564,9 +38942,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (true) {
+          
           mockClient.getResponse.mockRejectedValue(error);
+          
         } else {
+          
           mockClient.getById.mockRejectedValue(error);
+          
         }
 
         const api = apis.sources as any;
@@ -34578,7 +38960,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getSources) {
+              
               await expect(api.getSources()).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -34597,9 +38981,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<Source>("sources", true);
 
         if (true) {
+          
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<Source>);
+          
         } else {
+          
           mockClient.getById.mockResolvedValue(mockResponse as Source);
+          
         }
 
         // Extract the expected parameters from the path
@@ -34640,7 +39028,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getSources) {
+              
               result = await api.getSources(expectedParams);
+              
             }
           }
 
@@ -34649,9 +39039,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (true) {
+            
             expect(mockClient.getResponse).toHaveBeenCalled();
+            
           } else {
+            
             expect(mockClient.getById).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -34676,9 +39070,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (true) {
+          
           mockClient.getResponse.mockRejectedValue(error);
+          
         } else {
+          
           mockClient.getById.mockRejectedValue(error);
+          
         }
 
         const api = apis.sources as any;
@@ -34690,7 +39088,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getSources) {
+              
               await expect(api.getSources()).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -34709,9 +39109,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<Source>("sources", true);
 
         if (true) {
+          
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<Source>);
+          
         } else {
+          
           mockClient.getById.mockResolvedValue(mockResponse as Source);
+          
         }
 
         // Extract the expected parameters from the path
@@ -34752,7 +39156,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getSources) {
+              
               result = await api.getSources(expectedParams);
+              
             }
           }
 
@@ -34761,9 +39167,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (true) {
+            
             expect(mockClient.getResponse).toHaveBeenCalled();
+            
           } else {
+            
             expect(mockClient.getById).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -34788,9 +39198,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (true) {
+          
           mockClient.getResponse.mockRejectedValue(error);
+          
         } else {
+          
           mockClient.getById.mockRejectedValue(error);
+          
         }
 
         const api = apis.sources as any;
@@ -34802,7 +39216,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getSources) {
+              
               await expect(api.getSources()).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -34821,9 +39237,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<Source>("sources", true);
 
         if (true) {
+          
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<Source>);
+          
         } else {
+          
           mockClient.getById.mockResolvedValue(mockResponse as Source);
+          
         }
 
         // Extract the expected parameters from the path
@@ -34864,7 +39284,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getSources) {
+              
               result = await api.getSources(expectedParams);
+              
             }
           }
 
@@ -34873,9 +39295,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (true) {
+            
             expect(mockClient.getResponse).toHaveBeenCalled();
+            
           } else {
+            
             expect(mockClient.getById).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -34900,9 +39326,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (true) {
+          
           mockClient.getResponse.mockRejectedValue(error);
+          
         } else {
+          
           mockClient.getById.mockRejectedValue(error);
+          
         }
 
         const api = apis.sources as any;
@@ -34914,7 +39344,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getSources) {
+              
               await expect(api.getSources()).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -34933,9 +39365,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<Source>("sources", true);
 
         if (true) {
+          
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<Source>);
+          
         } else {
+          
           mockClient.getById.mockResolvedValue(mockResponse as Source);
+          
         }
 
         // Extract the expected parameters from the path
@@ -34976,7 +39412,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getSources) {
+              
               result = await api.getSources(expectedParams);
+              
             }
           }
 
@@ -34985,9 +39423,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (true) {
+            
             expect(mockClient.getResponse).toHaveBeenCalled();
+            
           } else {
+            
             expect(mockClient.getById).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -35012,9 +39454,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (true) {
+          
           mockClient.getResponse.mockRejectedValue(error);
+          
         } else {
+          
           mockClient.getById.mockRejectedValue(error);
+          
         }
 
         const api = apis.sources as any;
@@ -35026,7 +39472,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getSources) {
+              
               await expect(api.getSources()).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -35045,9 +39493,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<Source>("sources", true);
 
         if (true) {
+          
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<Source>);
+          
         } else {
+          
           mockClient.getById.mockResolvedValue(mockResponse as Source);
+          
         }
 
         // Extract the expected parameters from the path
@@ -35088,7 +39540,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getSources) {
+              
               result = await api.getSources(expectedParams);
+              
             }
           }
 
@@ -35097,9 +39551,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (true) {
+            
             expect(mockClient.getResponse).toHaveBeenCalled();
+            
           } else {
+            
             expect(mockClient.getById).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -35141,9 +39599,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (true) {
+          
           mockClient.getResponse.mockRejectedValue(error);
+          
         } else {
+          
           mockClient.getById.mockRejectedValue(error);
+          
         }
 
         const api = apis.sources as any;
@@ -35155,7 +39617,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getSources) {
+              
               await expect(api.getSources()).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -35174,9 +39638,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<Source>("sources", true);
 
         if (true) {
+          
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<Source>);
+          
         } else {
+          
           mockClient.getById.mockResolvedValue(mockResponse as Source);
+          
         }
 
         // Extract the expected parameters from the path
@@ -35217,7 +39685,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getSources) {
+              
               result = await api.getSources(expectedParams);
+              
             }
           }
 
@@ -35226,9 +39696,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (true) {
+            
             expect(mockClient.getResponse).toHaveBeenCalled();
+            
           } else {
+            
             expect(mockClient.getById).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -35253,9 +39727,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (true) {
+          
           mockClient.getResponse.mockRejectedValue(error);
+          
         } else {
+          
           mockClient.getById.mockRejectedValue(error);
+          
         }
 
         const api = apis.sources as any;
@@ -35267,7 +39745,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getSources) {
+              
               await expect(api.getSources()).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -35286,9 +39766,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<Source>("sources", true);
 
         if (true) {
+          
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<Source>);
+          
         } else {
+          
           mockClient.getById.mockResolvedValue(mockResponse as Source);
+          
         }
 
         // Extract the expected parameters from the path
@@ -35329,7 +39813,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getSources) {
+              
               result = await api.getSources(expectedParams);
+              
             }
           }
 
@@ -35338,9 +39824,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (true) {
+            
             expect(mockClient.getResponse).toHaveBeenCalled();
+            
           } else {
+            
             expect(mockClient.getById).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -35365,9 +39855,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (true) {
+          
           mockClient.getResponse.mockRejectedValue(error);
+          
         } else {
+          
           mockClient.getById.mockRejectedValue(error);
+          
         }
 
         const api = apis.sources as any;
@@ -35379,7 +39873,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getSources) {
+              
               await expect(api.getSources()).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -35398,9 +39894,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<Source>("sources", true);
 
         if (true) {
+          
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<Source>);
+          
         } else {
+          
           mockClient.getById.mockResolvedValue(mockResponse as Source);
+          
         }
 
         // Extract the expected parameters from the path
@@ -35441,7 +39941,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getSources) {
+              
               result = await api.getSources(expectedParams);
+              
             }
           }
 
@@ -35450,9 +39952,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (true) {
+            
             expect(mockClient.getResponse).toHaveBeenCalled();
+            
           } else {
+            
             expect(mockClient.getById).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -35477,9 +39983,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (true) {
+          
           mockClient.getResponse.mockRejectedValue(error);
+          
         } else {
+          
           mockClient.getById.mockRejectedValue(error);
+          
         }
 
         const api = apis.sources as any;
@@ -35491,7 +40001,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getSources) {
+              
               await expect(api.getSources()).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -35510,9 +40022,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<Source>("sources", true);
 
         if (true) {
+          
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<Source>);
+          
         } else {
+          
           mockClient.getById.mockResolvedValue(mockResponse as Source);
+          
         }
 
         // Extract the expected parameters from the path
@@ -35553,7 +40069,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getSources) {
+              
               result = await api.getSources(expectedParams);
+              
             }
           }
 
@@ -35562,9 +40080,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (true) {
+            
             expect(mockClient.getResponse).toHaveBeenCalled();
+            
           } else {
+            
             expect(mockClient.getById).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -35589,9 +40111,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (true) {
+          
           mockClient.getResponse.mockRejectedValue(error);
+          
         } else {
+          
           mockClient.getById.mockRejectedValue(error);
+          
         }
 
         const api = apis.sources as any;
@@ -35603,7 +40129,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getSources) {
+              
               await expect(api.getSources()).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -35626,9 +40154,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<Keyword>("keywords", true);
 
         if (true) {
+          
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<Keyword>);
+          
         } else {
+          
           mockClient.getById.mockResolvedValue(mockResponse as Keyword);
+          
         }
 
         // Extract the expected parameters from the path
@@ -35669,7 +40201,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getKeywords) {
+              
               result = await api.getKeywords(expectedParams);
+              
             }
           }
 
@@ -35678,9 +40212,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (true) {
+            
             expect(mockClient.getResponse).toHaveBeenCalled();
+            
           } else {
+            
             expect(mockClient.getById).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -35705,9 +40243,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (true) {
+          
           mockClient.getResponse.mockRejectedValue(error);
+          
         } else {
+          
           mockClient.getById.mockRejectedValue(error);
+          
         }
 
         const api = apis.keywords as any;
@@ -35719,7 +40261,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getKeywords) {
+              
               await expect(api.getKeywords()).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -35738,9 +40282,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<Keyword>("keywords", false);
 
         if (false) {
+          
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<Keyword>);
+          
         } else {
+          
           mockClient.getById.mockResolvedValue(mockResponse as Keyword);
+          
         }
 
         // Extract the expected parameters from the path
@@ -35781,7 +40329,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getKeywords) {
+              
               result = await api.getKeywords(expectedParams);
+              
             }
           }
 
@@ -35790,9 +40340,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (false) {
+            
             expect(mockClient.getResponse).toHaveBeenCalled();
+            
           } else {
+            
             expect(mockClient.getById).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -35817,9 +40371,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (false) {
+          
           mockClient.getResponse.mockRejectedValue(error);
+          
         } else {
+          
           mockClient.getById.mockRejectedValue(error);
+          
         }
 
         const api = apis.keywords as any;
@@ -35831,7 +40389,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getKeywords) {
+              
               await expect(api.getKeywords()).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -35850,9 +40410,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<Keyword>("keywords", false);
 
         if (false) {
+          
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<Keyword>);
+          
         } else {
+          
           mockClient.getById.mockResolvedValue(mockResponse as Keyword);
+          
         }
 
         // Extract the expected parameters from the path
@@ -35893,7 +40457,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getKeywords) {
+              
               result = await api.getKeywords(expectedParams);
+              
             }
           }
 
@@ -35902,9 +40468,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (false) {
+            
             expect(mockClient.getResponse).toHaveBeenCalled();
+            
           } else {
+            
             expect(mockClient.getById).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -35929,9 +40499,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (false) {
+          
           mockClient.getResponse.mockRejectedValue(error);
+          
         } else {
+          
           mockClient.getById.mockRejectedValue(error);
+          
         }
 
         const api = apis.keywords as any;
@@ -35943,7 +40517,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getKeywords) {
+              
               await expect(api.getKeywords()).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -35962,9 +40538,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<Keyword>("keywords", true);
 
         if (true) {
+          
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<Keyword>);
+          
         } else {
+          
           mockClient.getById.mockResolvedValue(mockResponse as Keyword);
+          
         }
 
         // Extract the expected parameters from the path
@@ -36005,7 +40585,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getKeywords) {
+              
               result = await api.getKeywords(expectedParams);
+              
             }
           }
 
@@ -36014,9 +40596,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (true) {
+            
             expect(mockClient.getResponse).toHaveBeenCalled();
+            
           } else {
+            
             expect(mockClient.getById).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -36063,9 +40649,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (true) {
+          
           mockClient.getResponse.mockRejectedValue(error);
+          
         } else {
+          
           mockClient.getById.mockRejectedValue(error);
+          
         }
 
         const api = apis.keywords as any;
@@ -36077,7 +40667,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getKeywords) {
+              
               await expect(api.getKeywords()).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -36096,9 +40688,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<Keyword>("keywords", true);
 
         if (true) {
+          
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<Keyword>);
+          
         } else {
+          
           mockClient.getById.mockResolvedValue(mockResponse as Keyword);
+          
         }
 
         // Extract the expected parameters from the path
@@ -36139,7 +40735,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getKeywords) {
+              
               result = await api.getKeywords(expectedParams);
+              
             }
           }
 
@@ -36148,9 +40746,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (true) {
+            
             expect(mockClient.getResponse).toHaveBeenCalled();
+            
           } else {
+            
             expect(mockClient.getById).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -36197,9 +40799,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (true) {
+          
           mockClient.getResponse.mockRejectedValue(error);
+          
         } else {
+          
           mockClient.getById.mockRejectedValue(error);
+          
         }
 
         const api = apis.keywords as any;
@@ -36211,7 +40817,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getKeywords) {
+              
               await expect(api.getKeywords()).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -36230,9 +40838,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<Keyword>("keywords", true);
 
         if (true) {
+          
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<Keyword>);
+          
         } else {
+          
           mockClient.getById.mockResolvedValue(mockResponse as Keyword);
+          
         }
 
         // Extract the expected parameters from the path
@@ -36273,7 +40885,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getKeywords) {
+              
               result = await api.getKeywords(expectedParams);
+              
             }
           }
 
@@ -36282,9 +40896,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (true) {
+            
             expect(mockClient.getResponse).toHaveBeenCalled();
+            
           } else {
+            
             expect(mockClient.getById).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -36309,9 +40927,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (true) {
+          
           mockClient.getResponse.mockRejectedValue(error);
+          
         } else {
+          
           mockClient.getById.mockRejectedValue(error);
+          
         }
 
         const api = apis.keywords as any;
@@ -36323,7 +40945,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getKeywords) {
+              
               await expect(api.getKeywords()).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -36342,9 +40966,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<Keyword>("keywords", true);
 
         if (true) {
+          
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<Keyword>);
+          
         } else {
+          
           mockClient.getById.mockResolvedValue(mockResponse as Keyword);
+          
         }
 
         // Extract the expected parameters from the path
@@ -36385,7 +41013,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getKeywords) {
+              
               result = await api.getKeywords(expectedParams);
+              
             }
           }
 
@@ -36394,9 +41024,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (true) {
+            
             expect(mockClient.getResponse).toHaveBeenCalled();
+            
           } else {
+            
             expect(mockClient.getById).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -36438,9 +41072,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (true) {
+          
           mockClient.getResponse.mockRejectedValue(error);
+          
         } else {
+          
           mockClient.getById.mockRejectedValue(error);
+          
         }
 
         const api = apis.keywords as any;
@@ -36452,7 +41090,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getKeywords) {
+              
               await expect(api.getKeywords()).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -36471,9 +41111,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<Keyword>("keywords", true);
 
         if (true) {
+          
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<Keyword>);
+          
         } else {
+          
           mockClient.getById.mockResolvedValue(mockResponse as Keyword);
+          
         }
 
         // Extract the expected parameters from the path
@@ -36514,7 +41158,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getKeywords) {
+              
               result = await api.getKeywords(expectedParams);
+              
             }
           }
 
@@ -36523,9 +41169,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (true) {
+            
             expect(mockClient.getResponse).toHaveBeenCalled();
+            
           } else {
+            
             expect(mockClient.getById).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -36567,9 +41217,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (true) {
+          
           mockClient.getResponse.mockRejectedValue(error);
+          
         } else {
+          
           mockClient.getById.mockRejectedValue(error);
+          
         }
 
         const api = apis.keywords as any;
@@ -36581,7 +41235,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getKeywords) {
+              
               await expect(api.getKeywords()).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -36604,9 +41260,15 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<unknown>("text", false);
 
         if (false) {
-          mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<unknown>);
+          
+          // Text analysis methods use client.get() not getResponse
+          mockClient.get.mockResolvedValue(mockResponse as unknown);
+          
         } else {
-          mockClient.getById.mockResolvedValue(mockResponse as unknown);
+          
+          // Text analysis methods use client.get() not getById
+          mockClient.get.mockResolvedValue(mockResponse as unknown);
+          
         }
 
         // Extract the expected parameters from the path
@@ -36647,7 +41309,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getText) {
-              result = await api.getText(expectedParams);
+              
+              // Text analysis methods require options parameter with title
+              result = await api.getText({
+                title: "type 1 diabetes research for children",
+                ...expectedParams
+              });
+              
             }
           }
 
@@ -36656,9 +41324,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (false) {
-            expect(mockClient.getResponse).toHaveBeenCalled();
+            
+            expect(mockClient.get).toHaveBeenCalled();
+            
           } else {
-            expect(mockClient.getById).toHaveBeenCalled();
+            
+            expect(mockClient.get).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -36683,9 +41355,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (false) {
-          mockClient.getResponse.mockRejectedValue(error);
+          
+          mockClient.get.mockRejectedValue(error);
+          
         } else {
-          mockClient.getById.mockRejectedValue(error);
+          
+          mockClient.get.mockRejectedValue(error);
+          
         }
 
         const api = apis.text as any;
@@ -36697,7 +41373,10 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getText) {
-              await expect(api.getText()).rejects.toThrow("Test error");
+              
+              // Text analysis methods require options parameter
+              await expect(api.getText({ title: "test title for error handling" })).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -36716,9 +41395,15 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<unknown>("text", false);
 
         if (false) {
-          mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<unknown>);
+          
+          // Text analysis methods use client.get() not getResponse
+          mockClient.get.mockResolvedValue(mockResponse as unknown);
+          
         } else {
-          mockClient.getById.mockResolvedValue(mockResponse as unknown);
+          
+          // Text analysis methods use client.get() not getById
+          mockClient.get.mockResolvedValue(mockResponse as unknown);
+          
         }
 
         // Extract the expected parameters from the path
@@ -36759,7 +41444,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getText) {
-              result = await api.getText(expectedParams);
+              
+              // Text analysis methods require options parameter with title
+              result = await api.getText({
+                title: "type 1 diabetes research for children",
+                ...expectedParams
+              });
+              
             }
           }
 
@@ -36768,9 +41459,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (false) {
-            expect(mockClient.getResponse).toHaveBeenCalled();
+            
+            expect(mockClient.get).toHaveBeenCalled();
+            
           } else {
-            expect(mockClient.getById).toHaveBeenCalled();
+            
+            expect(mockClient.get).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -36795,9 +41490,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (false) {
-          mockClient.getResponse.mockRejectedValue(error);
+          
+          mockClient.get.mockRejectedValue(error);
+          
         } else {
-          mockClient.getById.mockRejectedValue(error);
+          
+          mockClient.get.mockRejectedValue(error);
+          
         }
 
         const api = apis.text as any;
@@ -36809,7 +41508,10 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getText) {
-              await expect(api.getText()).rejects.toThrow("Test error");
+              
+              // Text analysis methods require options parameter
+              await expect(api.getText({ title: "test title for error handling" })).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -36828,9 +41530,15 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<unknown>("text", false);
 
         if (false) {
-          mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<unknown>);
+          
+          // Text analysis methods use client.get() not getResponse
+          mockClient.get.mockResolvedValue(mockResponse as unknown);
+          
         } else {
-          mockClient.getById.mockResolvedValue(mockResponse as unknown);
+          
+          // Text analysis methods use client.get() not getById
+          mockClient.get.mockResolvedValue(mockResponse as unknown);
+          
         }
 
         // Extract the expected parameters from the path
@@ -36871,7 +41579,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getText) {
-              result = await api.getText(expectedParams);
+              
+              // Text analysis methods require options parameter with title
+              result = await api.getText({
+                title: "type 1 diabetes research for children",
+                ...expectedParams
+              });
+              
             }
           }
 
@@ -36880,9 +41594,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (false) {
-            expect(mockClient.getResponse).toHaveBeenCalled();
+            
+            expect(mockClient.get).toHaveBeenCalled();
+            
           } else {
-            expect(mockClient.getById).toHaveBeenCalled();
+            
+            expect(mockClient.get).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -36907,9 +41625,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (false) {
-          mockClient.getResponse.mockRejectedValue(error);
+          
+          mockClient.get.mockRejectedValue(error);
+          
         } else {
-          mockClient.getById.mockRejectedValue(error);
+          
+          mockClient.get.mockRejectedValue(error);
+          
         }
 
         const api = apis.text as any;
@@ -36921,7 +41643,10 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getText) {
-              await expect(api.getText()).rejects.toThrow("Test error");
+              
+              // Text analysis methods require options parameter
+              await expect(api.getText({ title: "test title for error handling" })).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -36940,9 +41665,15 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<unknown>("text", false);
 
         if (false) {
-          mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<unknown>);
+          
+          // Text analysis methods use client.get() not getResponse
+          mockClient.get.mockResolvedValue(mockResponse as unknown);
+          
         } else {
-          mockClient.getById.mockResolvedValue(mockResponse as unknown);
+          
+          // Text analysis methods use client.get() not getById
+          mockClient.get.mockResolvedValue(mockResponse as unknown);
+          
         }
 
         // Extract the expected parameters from the path
@@ -36983,7 +41714,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getText) {
-              result = await api.getText(expectedParams);
+              
+              // Text analysis methods require options parameter with title
+              result = await api.getText({
+                title: "type 1 diabetes research for children",
+                ...expectedParams
+              });
+              
             }
           }
 
@@ -36992,9 +41729,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (false) {
-            expect(mockClient.getResponse).toHaveBeenCalled();
+            
+            expect(mockClient.get).toHaveBeenCalled();
+            
           } else {
-            expect(mockClient.getById).toHaveBeenCalled();
+            
+            expect(mockClient.get).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -37019,9 +41760,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (false) {
-          mockClient.getResponse.mockRejectedValue(error);
+          
+          mockClient.get.mockRejectedValue(error);
+          
         } else {
-          mockClient.getById.mockRejectedValue(error);
+          
+          mockClient.get.mockRejectedValue(error);
+          
         }
 
         const api = apis.text as any;
@@ -37033,7 +41778,10 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getText) {
-              await expect(api.getText()).rejects.toThrow("Test error");
+              
+              // Text analysis methods require options parameter
+              await expect(api.getText({ title: "test title for error handling" })).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -37056,9 +41804,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<Topic>("topics", true);
 
         if (true) {
+          
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<Topic>);
+          
         } else {
+          
           mockClient.getById.mockResolvedValue(mockResponse as Topic);
+          
         }
 
         // Extract the expected parameters from the path
@@ -37099,7 +41851,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getTopics) {
+              
               result = await api.getTopics(expectedParams);
+              
             }
           }
 
@@ -37108,9 +41862,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (true) {
+            
             expect(mockClient.getResponse).toHaveBeenCalled();
+            
           } else {
+            
             expect(mockClient.getById).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -37135,9 +41893,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (true) {
+          
           mockClient.getResponse.mockRejectedValue(error);
+          
         } else {
+          
           mockClient.getById.mockRejectedValue(error);
+          
         }
 
         const api = apis.topics as any;
@@ -37149,7 +41911,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getTopics) {
+              
               await expect(api.getTopics()).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -37168,9 +41932,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<Topic>("topics", false);
 
         if (false) {
+          
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<Topic>);
+          
         } else {
+          
           mockClient.getById.mockResolvedValue(mockResponse as Topic);
+          
         }
 
         // Extract the expected parameters from the path
@@ -37211,7 +41979,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getTopics) {
+              
               result = await api.getTopics(expectedParams);
+              
             }
           }
 
@@ -37220,9 +41990,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (false) {
+            
             expect(mockClient.getResponse).toHaveBeenCalled();
+            
           } else {
+            
             expect(mockClient.getById).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -37247,9 +42021,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (false) {
+          
           mockClient.getResponse.mockRejectedValue(error);
+          
         } else {
+          
           mockClient.getById.mockRejectedValue(error);
+          
         }
 
         const api = apis.topics as any;
@@ -37261,7 +42039,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getTopics) {
+              
               await expect(api.getTopics()).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -37280,9 +42060,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<Topic>("topics", false);
 
         if (false) {
+          
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<Topic>);
+          
         } else {
+          
           mockClient.getById.mockResolvedValue(mockResponse as Topic);
+          
         }
 
         // Extract the expected parameters from the path
@@ -37323,7 +42107,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getTopics) {
+              
               result = await api.getTopics(expectedParams);
+              
             }
           }
 
@@ -37332,9 +42118,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (false) {
+            
             expect(mockClient.getResponse).toHaveBeenCalled();
+            
           } else {
+            
             expect(mockClient.getById).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -37359,9 +42149,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (false) {
+          
           mockClient.getResponse.mockRejectedValue(error);
+          
         } else {
+          
           mockClient.getById.mockRejectedValue(error);
+          
         }
 
         const api = apis.topics as any;
@@ -37373,7 +42167,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getTopics) {
+              
               await expect(api.getTopics()).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -37392,9 +42188,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<Topic>("topics", true);
 
         if (true) {
+          
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<Topic>);
+          
         } else {
+          
           mockClient.getById.mockResolvedValue(mockResponse as Topic);
+          
         }
 
         // Extract the expected parameters from the path
@@ -37435,7 +42235,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getTopics) {
+              
               result = await api.getTopics(expectedParams);
+              
             }
           }
 
@@ -37444,9 +42246,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (true) {
+            
             expect(mockClient.getResponse).toHaveBeenCalled();
+            
           } else {
+            
             expect(mockClient.getById).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -37493,9 +42299,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (true) {
+          
           mockClient.getResponse.mockRejectedValue(error);
+          
         } else {
+          
           mockClient.getById.mockRejectedValue(error);
+          
         }
 
         const api = apis.topics as any;
@@ -37507,7 +42317,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getTopics) {
+              
               await expect(api.getTopics()).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -37526,9 +42338,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<Topic>("topics", true);
 
         if (true) {
+          
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<Topic>);
+          
         } else {
+          
           mockClient.getById.mockResolvedValue(mockResponse as Topic);
+          
         }
 
         // Extract the expected parameters from the path
@@ -37569,7 +42385,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getTopics) {
+              
               result = await api.getTopics(expectedParams);
+              
             }
           }
 
@@ -37578,9 +42396,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (true) {
+            
             expect(mockClient.getResponse).toHaveBeenCalled();
+            
           } else {
+            
             expect(mockClient.getById).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -37627,9 +42449,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (true) {
+          
           mockClient.getResponse.mockRejectedValue(error);
+          
         } else {
+          
           mockClient.getById.mockRejectedValue(error);
+          
         }
 
         const api = apis.topics as any;
@@ -37641,7 +42467,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getTopics) {
+              
               await expect(api.getTopics()).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -37660,9 +42488,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<Topic>("topics", true);
 
         if (true) {
+          
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<Topic>);
+          
         } else {
+          
           mockClient.getById.mockResolvedValue(mockResponse as Topic);
+          
         }
 
         // Extract the expected parameters from the path
@@ -37703,7 +42535,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getTopics) {
+              
               result = await api.getTopics(expectedParams);
+              
             }
           }
 
@@ -37712,9 +42546,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (true) {
+            
             expect(mockClient.getResponse).toHaveBeenCalled();
+            
           } else {
+            
             expect(mockClient.getById).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -37761,9 +42599,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (true) {
+          
           mockClient.getResponse.mockRejectedValue(error);
+          
         } else {
+          
           mockClient.getById.mockRejectedValue(error);
+          
         }
 
         const api = apis.topics as any;
@@ -37775,7 +42617,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getTopics) {
+              
               await expect(api.getTopics()).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -37794,9 +42638,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<Topic>("topics", true);
 
         if (true) {
+          
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<Topic>);
+          
         } else {
+          
           mockClient.getById.mockResolvedValue(mockResponse as Topic);
+          
         }
 
         // Extract the expected parameters from the path
@@ -37837,7 +42685,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getTopics) {
+              
               result = await api.getTopics(expectedParams);
+              
             }
           }
 
@@ -37846,9 +42696,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (true) {
+            
             expect(mockClient.getResponse).toHaveBeenCalled();
+            
           } else {
+            
             expect(mockClient.getById).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -37873,9 +42727,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (true) {
+          
           mockClient.getResponse.mockRejectedValue(error);
+          
         } else {
+          
           mockClient.getById.mockRejectedValue(error);
+          
         }
 
         const api = apis.topics as any;
@@ -37887,7 +42745,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getTopics) {
+              
               await expect(api.getTopics()).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -37906,9 +42766,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<Topic>("topics", true);
 
         if (true) {
+          
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<Topic>);
+          
         } else {
+          
           mockClient.getById.mockResolvedValue(mockResponse as Topic);
+          
         }
 
         // Extract the expected parameters from the path
@@ -37949,7 +42813,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getTopics) {
+              
               result = await api.getTopics(expectedParams);
+              
             }
           }
 
@@ -37958,9 +42824,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (true) {
+            
             expect(mockClient.getResponse).toHaveBeenCalled();
+            
           } else {
+            
             expect(mockClient.getById).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -37985,9 +42855,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (true) {
+          
           mockClient.getResponse.mockRejectedValue(error);
+          
         } else {
+          
           mockClient.getById.mockRejectedValue(error);
+          
         }
 
         const api = apis.topics as any;
@@ -37999,7 +42873,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getTopics) {
+              
               await expect(api.getTopics()).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -38018,9 +42894,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<Topic>("topics", true);
 
         if (true) {
+          
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<Topic>);
+          
         } else {
+          
           mockClient.getById.mockResolvedValue(mockResponse as Topic);
+          
         }
 
         // Extract the expected parameters from the path
@@ -38061,7 +42941,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getTopics) {
+              
               result = await api.getTopics(expectedParams);
+              
             }
           }
 
@@ -38070,9 +42952,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (true) {
+            
             expect(mockClient.getResponse).toHaveBeenCalled();
+            
           } else {
+            
             expect(mockClient.getById).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -38097,9 +42983,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (true) {
+          
           mockClient.getResponse.mockRejectedValue(error);
+          
         } else {
+          
           mockClient.getById.mockRejectedValue(error);
+          
         }
 
         const api = apis.topics as any;
@@ -38111,7 +43001,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getTopics) {
+              
               await expect(api.getTopics()).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -38130,9 +43022,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<Topic>("topics", true);
 
         if (true) {
+          
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<Topic>);
+          
         } else {
+          
           mockClient.getById.mockResolvedValue(mockResponse as Topic);
+          
         }
 
         // Extract the expected parameters from the path
@@ -38173,7 +43069,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getTopics) {
+              
               result = await api.getTopics(expectedParams);
+              
             }
           }
 
@@ -38182,9 +43080,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (true) {
+            
             expect(mockClient.getResponse).toHaveBeenCalled();
+            
           } else {
+            
             expect(mockClient.getById).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -38226,9 +43128,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (true) {
+          
           mockClient.getResponse.mockRejectedValue(error);
+          
         } else {
+          
           mockClient.getById.mockRejectedValue(error);
+          
         }
 
         const api = apis.topics as any;
@@ -38240,7 +43146,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getTopics) {
+              
               await expect(api.getTopics()).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -38259,9 +43167,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<Topic>("topics", true);
 
         if (true) {
+          
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<Topic>);
+          
         } else {
+          
           mockClient.getById.mockResolvedValue(mockResponse as Topic);
+          
         }
 
         // Extract the expected parameters from the path
@@ -38302,7 +43214,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getTopics) {
+              
               result = await api.getTopics(expectedParams);
+              
             }
           }
 
@@ -38311,9 +43225,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (true) {
+            
             expect(mockClient.getResponse).toHaveBeenCalled();
+            
           } else {
+            
             expect(mockClient.getById).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -38355,9 +43273,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (true) {
+          
           mockClient.getResponse.mockRejectedValue(error);
+          
         } else {
+          
           mockClient.getById.mockRejectedValue(error);
+          
         }
 
         const api = apis.topics as any;
@@ -38369,7 +43291,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getTopics) {
+              
               await expect(api.getTopics()).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -38388,9 +43312,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<Topic>("topics", true);
 
         if (true) {
+          
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<Topic>);
+          
         } else {
+          
           mockClient.getById.mockResolvedValue(mockResponse as Topic);
+          
         }
 
         // Extract the expected parameters from the path
@@ -38431,7 +43359,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getTopics) {
+              
               result = await api.getTopics(expectedParams);
+              
             }
           }
 
@@ -38440,9 +43370,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (true) {
+            
             expect(mockClient.getResponse).toHaveBeenCalled();
+            
           } else {
+            
             expect(mockClient.getById).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -38467,9 +43401,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (true) {
+          
           mockClient.getResponse.mockRejectedValue(error);
+          
         } else {
+          
           mockClient.getById.mockRejectedValue(error);
+          
         }
 
         const api = apis.topics as any;
@@ -38481,7 +43419,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getTopics) {
+              
               await expect(api.getTopics()).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
@@ -38500,9 +43440,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const mockResponse = createMockResponse<Topic>("topics", true);
 
         if (true) {
+          
           mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<Topic>);
+          
         } else {
+          
           mockClient.getById.mockResolvedValue(mockResponse as Topic);
+          
         }
 
         // Extract the expected parameters from the path
@@ -38543,7 +43487,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           } else {
             // Collection operations (list, filter, etc.)
             if (api.getTopics) {
+              
               result = await api.getTopics(expectedParams);
+              
             }
           }
 
@@ -38552,9 +43498,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
           // Verify the correct client method was called
           if (true) {
+            
             expect(mockClient.getResponse).toHaveBeenCalled();
+            
           } else {
+            
             expect(mockClient.getById).toHaveBeenCalled();
+            
           }
 
         } catch (error) {
@@ -38579,9 +43529,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         const error = new OpenAlexApiError("Test error", 404);
 
         if (true) {
+          
           mockClient.getResponse.mockRejectedValue(error);
+          
         } else {
+          
           mockClient.getById.mockRejectedValue(error);
+          
         }
 
         const api = apis.topics as any;
@@ -38593,7 +43547,9 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else {
             if (api.getTopics) {
+              
               await expect(api.getTopics()).rejects.toThrow("Test error");
+              
             }
           }
         } catch (error) {
