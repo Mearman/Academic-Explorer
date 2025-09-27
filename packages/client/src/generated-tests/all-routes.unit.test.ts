@@ -8,7 +8,7 @@
  * - All parameter combinations (filters, pagination, field selection, etc.)
  * - External ID support (DOI, ORCID, ROR, ISSN, Wikidata, PMID)
  *
- * Generated on: 2025-09-27T10:30:34.489Z
+ * Generated on: 2025-09-27T10:43:54.629Z
  * Total test cases: 308
  */
 

@@ -5,6 +5,9 @@
 
 import type { EntityFilters, WorksFilters, AuthorsFilters, EntityType } from "@academic-explorer/client";
 
+// Re-export core types for convenience
+export type { EntityFilters, WorksFilters, AuthorsFilters, EntityType };
+
 // Core filter operator types
 export type FilterOperator = "=" | "!=" | ">" | ">=" | "<" | "<=" | "contains" | "search" | "between";
 export type LogicalOperator = "AND" | "OR" | "NOT";

@@ -9,13 +9,13 @@ import { IconX, IconAlertCircle } from "@tabler/icons-react";
 import { useThemeColors } from "@/hooks/use-theme-colors";
 import type { FilterFieldProps, FilterCondition, FilterFieldConfig, EntityFilters } from "../types/filter-ui";
 
-// Field type components
-import { TextFilter } from "../fields/TextFilter";
-import { NumericFilter } from "../fields/NumericFilter";
-import { DateFilter } from "../fields/DateFilter";
-import { BooleanFilter } from "../fields/BooleanFilter";
-import { EnumFilter } from "../fields/EnumFilter";
-import { EntityFilter } from "../fields/EntityFilter";
+// Field type components - TODO: Implement these components
+// import { TextFilter } from "../fields/TextFilter";
+// import { NumericFilter } from "../fields/NumericFilter";
+// import { DateFilter } from "../fields/DateFilter";
+// import { BooleanFilter } from "../fields/BooleanFilter";
+// import { EnumFilter } from "../fields/EnumFilter";
+// import { EntityFilter } from "../fields/EntityFilter";
 
 interface FilterFieldWrapperProps<T extends EntityFilters = EntityFilters> extends FilterFieldProps<T> {
   showRemoveButton?: boolean;
@@ -82,25 +82,25 @@ export function FilterField<T extends EntityFilters = EntityFilters>({
     switch (config.type) {
       case "text":
       case "search":
-        return <TextFilter {...fieldProps} />;
+        return <Text size="sm" c="dimmed">Text Filter (TODO: Implement)</Text>;
 
       case "number":
-        return <NumericFilter {...fieldProps} />;
+        return <Text size="sm" c="dimmed">Numeric Filter (TODO: Implement)</Text>;
 
       case "date":
       case "dateRange":
-        return <DateFilter {...fieldProps} />;
+        return <Text size="sm" c="dimmed">Date Filter (TODO: Implement)</Text>;
 
       case "boolean":
-        return <BooleanFilter {...fieldProps} />;
+        return <Text size="sm" c="dimmed">Boolean Filter (TODO: Implement)</Text>;
 
       case "select":
       case "multiSelect":
-        return <EnumFilter {...fieldProps} />;
+        return <Text size="sm" c="dimmed">Enum Filter (TODO: Implement)</Text>;
 
       case "entity":
       case "entityMulti":
-        return <EntityFilter {...fieldProps} />;
+        return <Text size="sm" c="dimmed">Entity Filter (TODO: Implement)</Text>;
 
       default:
         return (

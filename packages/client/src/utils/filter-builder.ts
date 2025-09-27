@@ -361,14 +361,4 @@ export function buildFilterString(
   return builder.buildFromObject(filters);
 }
 
-// Export type utilities for external use
-export type {
-  EntityFilters,
-  FilterBuilderOptions,
-  FilterValidationResult,
-  FilterCondition,
-  FilterExpression,
-  FilterValue,
-  FilterOperator,
-  FilterLogicalOperator
-};
+// Types are already exported above - no need to re-export
