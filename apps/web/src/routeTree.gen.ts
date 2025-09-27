@@ -14,6 +14,8 @@ import { Route as GraphRouteImport } from './routes/graph'
 import { Route as ExploreRouteImport } from './routes/explore'
 import { Route as EvaluationRouteImport } from './routes/evaluation'
 import { Route as ErrorTestRouteImport } from './routes/error-test'
+import { Route as CacheRouteImport } from './routes/cache'
+import { Route as BrowseRouteImport } from './routes/browse'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as ExternalIdRouteImport } from './routes/$externalId'
 import { Route as IndexRouteImport } from './routes/index'
@@ -54,6 +56,16 @@ const EvaluationRoute = EvaluationRouteImport.update({
 const ErrorTestRoute = ErrorTestRouteImport.update({
   id: '/error-test',
   path: '/error-test',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CacheRoute = CacheRouteImport.update({
+  id: '/cache',
+  path: '/cache',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const BrowseRoute = BrowseRouteImport.update({
+  id: '/browse',
+  path: '/browse',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AboutRoute = AboutRouteImport.update({
@@ -142,6 +154,8 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/$externalId': typeof ExternalIdRoute
   '/about': typeof AboutRoute
+  '/browse': typeof BrowseRoute
+  '/cache': typeof CacheRoute
   '/error-test': typeof ErrorTestRoute
   '/evaluation': typeof EvaluationRouteWithChildren
   '/explore': typeof ExploreRouteWithChildren
@@ -165,6 +179,8 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/$externalId': typeof ExternalIdRoute
   '/about': typeof AboutRoute
+  '/browse': typeof BrowseRoute
+  '/cache': typeof CacheRoute
   '/error-test': typeof ErrorTestRoute
   '/evaluation': typeof EvaluationRouteWithChildren
   '/explore': typeof ExploreRouteWithChildren
@@ -189,6 +205,8 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/$externalId': typeof ExternalIdRoute
   '/about': typeof AboutRoute
+  '/browse': typeof BrowseRoute
+  '/cache': typeof CacheRoute
   '/error-test': typeof ErrorTestRoute
   '/evaluation': typeof EvaluationRouteWithChildren
   '/explore': typeof ExploreRouteWithChildren
@@ -214,6 +232,8 @@ export interface FileRouteTypes {
     | '/'
     | '/$externalId'
     | '/about'
+    | '/browse'
+    | '/cache'
     | '/error-test'
     | '/evaluation'
     | '/explore'
@@ -237,6 +257,8 @@ export interface FileRouteTypes {
     | '/'
     | '/$externalId'
     | '/about'
+    | '/browse'
+    | '/cache'
     | '/error-test'
     | '/evaluation'
     | '/explore'
@@ -260,6 +282,8 @@ export interface FileRouteTypes {
     | '/'
     | '/$externalId'
     | '/about'
+    | '/browse'
+    | '/cache'
     | '/error-test'
     | '/evaluation'
     | '/explore'
@@ -284,6 +308,8 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   ExternalIdRoute: typeof ExternalIdRoute
   AboutRoute: typeof AboutRoute
+  BrowseRoute: typeof BrowseRoute
+  CacheRoute: typeof CacheRoute
   ErrorTestRoute: typeof ErrorTestRoute
   EvaluationRoute: typeof EvaluationRouteWithChildren
   ExploreRoute: typeof ExploreRouteWithChildren
@@ -336,6 +362,20 @@ declare module '@tanstack/react-router' {
       path: '/error-test'
       fullPath: '/error-test'
       preLoaderRoute: typeof ErrorTestRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/cache': {
+      id: '/cache'
+      path: '/cache'
+      fullPath: '/cache'
+      preLoaderRoute: typeof CacheRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/browse': {
+      id: '/browse'
+      path: '/browse'
+      fullPath: '/browse'
+      preLoaderRoute: typeof BrowseRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/about': {
@@ -482,6 +522,8 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   ExternalIdRoute: ExternalIdRoute,
   AboutRoute: AboutRoute,
+  BrowseRoute: BrowseRoute,
+  CacheRoute: CacheRoute,
   ErrorTestRoute: ErrorTestRoute,
   EvaluationRoute: EvaluationRouteWithChildren,
   ExploreRoute: ExploreRouteWithChildren,
