@@ -22,8 +22,10 @@ import { TopicsApi } from "../entities/topics";
 import { PublishersApi } from "../entities/publishers";
 import { FundersApi } from "../entities/funders";
 import { KeywordsApi } from "../entities/keywords";
+import { ConceptsApi } from "../entities/concepts";
+import { TextApi } from "../entities/text";
 import type {
-  Work, Author, Source, Institution, Topic, Publisher, Funder, Keyword,
+  Work, Author, Source, Institution, Topic, Publisher, Funder, Keyword, Concept,
   OpenAlexResponse, QueryParams
 } from "../types";
 
@@ -44,9 +46,11 @@ describe("OpenAlex API Routes - Generated Tests", () => {
     sources: SourcesApi;
     institutions: InstitutionsApi;
     topics: TopicsApi;
+    concepts: ConceptsApi;
     publishers: PublishersApi;
     funders: FundersApi;
     keywords: KeywordsApi;
+    text: TextApi;
   };
 
   beforeEach(() => {
@@ -70,9 +74,11 @@ describe("OpenAlex API Routes - Generated Tests", () => {
       sources: new SourcesApi(mockClient),
       institutions: new InstitutionsApi(mockClient),
       topics: new TopicsApi(mockClient),
+      concepts: new ConceptsApi(mockClient),
       publishers: new PublishersApi(mockClient),
       funders: new FundersApi(mockClient),
       keywords: new KeywordsApi(mockClient),
+      text: new TextApi(mockClient),
     };
   });
 
@@ -130,38 +136,19 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         }
 
         try {
-          // Determine which method to call based on the test case
-          const api = apis.W2741809807 as any;
+          // W2741809807 is a specific work ID, route to WorksApi
+          const api = apis.works;
           let result;
 
-          if (!true && false) {
-            // Single entity by ID
-            const idPart = basePath.split('/')[2];
-            if (api.getW274180980) {
-              result = await api.getW274180980(idPart, expectedParams);
-            }
-          } else if ("list" === "autocomplete") {
-            // Autocomplete operation
-            if (api.autocomplete) {
-              result = await api.autocomplete(expectedParams.q || '', expectedParams);
-            }
-          } else if ("list" === "search") {
-            // Search operation
-            if (api.searchW2741809807) {
-              result = await api.searchW2741809807(expectedParams.search || '', expectedParams);
-            }
-          } else {
-            // Collection operations (list, filter, etc.)
-            if (api.getW2741809807) {
-              result = await api.getW2741809807(expectedParams);
-            }
-          }
+          // This is a specific work ID lookup
+          const workId = basePath.replace('/', ''); // Remove leading slash to get "W2741809807"
+          result = await api.getWork(workId, expectedParams);
 
           // Verify the result
           expect(result).toBeDefined();
 
           // Verify the correct client method was called
-          if (true) {
+          if (false) {
             expect(mockClient.getResponse).toHaveBeenCalled();
           } else {
             expect(mockClient.getById).toHaveBeenCalled();
@@ -171,7 +158,7 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           // Some test cases might not have corresponding API methods yet
           // This is expected for comprehensive route testing
           if (error instanceof Error && error.message.includes('not a function')) {
-            console.warn(`API method not implemented for route: /W2741809807`);
+            console.warn(`API method not implemented for work ID route: /W2741809807`);
             expect(true).toBe(true); // Mark as passing but log warning
           } else {
             throw error;
@@ -188,30 +175,20 @@ describe("OpenAlex API Routes - Generated Tests", () => {
       it("should handle errors correctly for /W2741809807", async () => {
         const error = new OpenAlexApiError("Test error", 404);
 
-        if (true) {
-          mockClient.getResponse.mockRejectedValue(error);
-        } else {
-          mockClient.getById.mockRejectedValue(error);
-        }
+        // W2741809807 is a work ID lookup, so should use getById
+        mockClient.getById.mockRejectedValue(error);
 
-        const api = apis.W2741809807 as any;
+        const api = apis.works;
 
         try {
-          if (!true && false) {
-            if (api.getW274180980) {
-              await expect(api.getW274180980("invalid_id")).rejects.toThrow("Test error");
-            }
-          } else {
-            if (api.getW2741809807) {
-              await expect(api.getW2741809807()).rejects.toThrow("Test error");
-            }
-          }
-        } catch (error) {
-          if (error instanceof Error && error.message.includes('not a function')) {
+          // Test that the work lookup properly propagates errors
+          await expect(api.getWork("W2741809807")).rejects.toThrow("Test error");
+        } catch (testError) {
+          if (testError instanceof Error && testError.message.includes('not a function')) {
             // API method not implemented yet - skip error test
             expect(true).toBe(true);
           } else {
-            throw error;
+            throw testError;
           }
         }
       });
