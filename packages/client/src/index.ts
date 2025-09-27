@@ -23,6 +23,9 @@ export { InstitutionsApi } from "./entities/institutions";
 export { TopicsApi } from "./entities/topics";
 export { PublishersApi } from "./entities/publishers";
 export { FundersApi } from "./entities/funders";
+export { KeywordsApi } from "./entities/keywords";
+export { TextAnalysisApi } from "./entities/text-analysis";
+export { ConceptsApi } from "./entities/concepts";
 
 // Utilities
 export {
@@ -125,6 +128,29 @@ export type {
 	EntityType,
 	OpenAlexEntity
 } from "./types";
+
+// Text Analysis API types
+export type {
+	TextAnalysisOptions,
+	TextAnalysisEntity,
+	TextAnalysisKeyword,
+	TextAnalysisTopic,
+	TextAnalysisConcept,
+	TextAnalysisResponse,
+	KeywordsResponse,
+	TopicsResponse,
+	ConceptsResponse
+} from "./entities/text-analysis";
+
+// Concepts API types
+export type {
+	StrictConceptsQueryParams,
+	ConceptsQueryParams,
+	ConceptSortOption,
+	ConceptSelectField,
+	SearchConceptsOptions,
+	AutocompleteOptions
+} from "./entities/concepts";
 
 // Re-export everything from types for convenience
 export * from "./types";

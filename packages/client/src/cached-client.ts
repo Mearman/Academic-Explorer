@@ -12,6 +12,8 @@ import { logger } from '@academic-explorer/utils';
 import { PublishersApi } from './entities/publishers';
 import { FundersApi } from './entities/funders';
 import { KeywordsApi } from './entities/keywords';
+import { TextAnalysisApi } from './entities/text-analysis';
+import { ConceptsApi } from './entities/concepts';
 import type { OpenAlexEntity } from './types';
 
 export interface ClientApis {
@@ -23,6 +25,8 @@ export interface ClientApis {
   publishers: PublishersApi;
   funders: FundersApi;
   keywords: KeywordsApi;
+  textAnalysis: TextAnalysisApi;
+  concepts: ConceptsApi;
   getEntity: (id: string) => Promise<OpenAlexEntity | null>;
 }
 
@@ -43,6 +47,8 @@ export class CachedOpenAlexClient extends OpenAlexBaseClient {
       publishers: new PublishersApi(this),
       funders: new FundersApi(this),
       keywords: new KeywordsApi(this),
+      textAnalysis: new TextAnalysisApi(this),
+      concepts: new ConceptsApi(this),
       getEntity: async (id: string): Promise<OpenAlexEntity | null> => {
         // Basic entity getter stub
         logger.warn('client', 'CachedOpenAlexClient.getEntity: Stub implementation', { id });

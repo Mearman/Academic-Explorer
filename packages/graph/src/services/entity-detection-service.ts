@@ -140,13 +140,14 @@ export class EntityDetectionService {
       },
     },
 
-    // ROR patterns (URLs first, then more restrictive plain ID)
+    // ROR patterns (URLs first, then ror: prefix, then more restrictive plain ID)
     {
       name: 'ROR',
       entityType: 'institutions',
       patterns: [
         /^https?:\/\/ror\.org\/([a-z0-9]{9})$/i,
         /^ror\.org\/([a-z0-9]{9})$/i,
+        /^ror:([a-z0-9]{9})$/i,
         // Raw ROR ID - must be exactly 9 chars and mixed alphanumeric (contains letters)
         /^([a-z0-9]{9})$/i,
       ],
@@ -159,8 +160,14 @@ export class EntityDetectionService {
           rorId = urlMatch[1];
         }
 
-        // Validate ROR format (exactly 9 characters, alphanumeric, must contain at least one letter)
-        if (/^[a-z0-9]{9}$/i.test(rorId) && /[a-z]/i.test(rorId)) {
+        // Extract ROR ID from ror: prefix
+        const prefixMatch = rorId.match(/^ror:([a-z0-9]{9})$/i);
+        if (prefixMatch) {
+          rorId = prefixMatch[1];
+        }
+
+        // Validate ROR format and checksum
+        if (this.validateRorFormat(rorId)) {
           return `https://ror.org/${rorId.toLowerCase()}`;
         }
 
@@ -329,6 +336,31 @@ export class EntityDetectionService {
   }
 
   /**
+   * Validate ROR format
+   *
+   * ROR IDs are 9-character base32 identifiers.
+   * They use characters 0-9 and a-v (excluding i, l, o, u to avoid confusion).
+   * For now, this performs format validation without checksum verification.
+   */
+  private static validateRorFormat(rorId: string): boolean {
+    if (!rorId || typeof rorId !== 'string') {
+      return false;
+    }
+
+    const normalized = rorId.toLowerCase();
+
+    // Basic format validation: exactly 9 characters, alphanumeric, must contain at least one letter
+    if (!/^[a-z0-9]{9}$/i.test(normalized) || !/[a-z]/i.test(normalized)) {
+      return false;
+    }
+
+    // Validate against ROR base32 character set (0-9, a-v, excluding i, l, o, u)
+    const validRorChars = /^[0-9a-hjkmnp-tv-z]{9}$/;
+    return validRorChars.test(normalized);
+  }
+
+
+  /**
    * Validate ORCID format (basic check - doesn't verify checksum)
    */
   private static validateOrcidFormat(orcid: string): boolean {
@@ -368,7 +400,7 @@ export class EntityDetectionService {
         name: 'ROR',
         entityType: 'institutions',
         description: 'Research Organization Registry identifier',
-        examples: ['05dxps055', 'https://ror.org/05dxps055'],
+        examples: ['05dxps055', 'ror:05dxps055', 'https://ror.org/05dxps055', 'ror.org/05dxps055'],
       },
       {
         name: 'ISSN',

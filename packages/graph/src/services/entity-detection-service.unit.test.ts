@@ -166,11 +166,36 @@ describe('EntityDetectionService', () => {
         expect(detectEntityType('ror.org/05dxps055')).toBe('institutions');
       });
 
+      it('should detect ROR prefix format', () => {
+        expect(detectEntityType('ror:05dxps055')).toBe('institutions');
+        expect(detectEntityType('ror:01an7q238')).toBe('institutions');
+        expect(detectEntityType('ROR:05dxps055')).toBe('institutions'); // case insensitive
+        expect(detectEntityType('ror:05DXPS055')).toBe('institutions'); // case insensitive
+      });
+
       it('should reject invalid ROR IDs', () => {
         expect(detectEntityType('05dxps05')).toBeNull(); // Too short
         expect(detectEntityType('05dxps0555')).toBeNull(); // Too long
         expect(detectEntityType('05dxps-55')).toBeNull(); // Invalid character
         expect(detectEntityType('')).toBeNull(); // Empty
+        expect(detectEntityType('ror:')).toBeNull(); // Empty ROR after prefix
+        expect(detectEntityType('ror:123456789')).toBeNull(); // All numbers (no letters)
+      });
+
+      it('should reject ROR IDs with invalid base32 characters', () => {
+        // ROR uses base32 excluding i, l, o, u
+        expect(detectEntityType('05dxpsi55')).toBeNull(); // Contains 'i'
+        expect(detectEntityType('05dxpsl55')).toBeNull(); // Contains 'l'
+        expect(detectEntityType('05dxpso55')).toBeNull(); // Contains 'o'
+        expect(detectEntityType('05dxpsu55')).toBeNull(); // Contains 'u'
+      });
+
+      it('should validate real ROR IDs with correct checksums', () => {
+        // These are actual ROR IDs with valid checksums
+        expect(detectEntityType('05dxps055')).toBe('institutions'); // MIT
+        expect(detectEntityType('01an7q238')).toBe('institutions'); // Harvard
+        expect(detectEntityType('00hj8s172')).toBe('institutions'); // Stanford
+        expect(detectEntityType('04gyf1771')).toBe('institutions'); // University of Cambridge
       });
     });
 
@@ -266,6 +291,20 @@ describe('EntityDetectionService', () => {
 
       it('should preserve existing ROR URLs', () => {
         expect(normalizeIdentifier('https://ror.org/05dxps055')).toBe('https://ror.org/05dxps055');
+        expect(normalizeIdentifier('ror.org/05dxps055')).toBe('https://ror.org/05dxps055');
+      });
+
+      it('should normalize ROR prefix format', () => {
+        expect(normalizeIdentifier('ror:05dxps055')).toBe('https://ror.org/05dxps055');
+        expect(normalizeIdentifier('ROR:05dxps055')).toBe('https://ror.org/05dxps055');
+        expect(normalizeIdentifier('ror:05DXPS055')).toBe('https://ror.org/05dxps055'); // lowercase
+      });
+
+      it('should return null for invalid ROR IDs', () => {
+        expect(normalizeIdentifier('05dxps05')).toBeNull(); // Too short
+        expect(normalizeIdentifier('05dxpsi55')).toBeNull(); // Invalid character 'i'
+        expect(normalizeIdentifier('ror:123456789')).toBeNull(); // All numbers
+        expect(normalizeIdentifier('ror:')).toBeNull(); // Empty after prefix
       });
     });
 
@@ -335,6 +374,36 @@ describe('EntityDetectionService', () => {
       });
     });
 
+    it('should handle ROR detection with prefix format', () => {
+      const result = detectEntity('ror:05dxps055');
+      expect(result).toEqual({
+        entityType: 'institutions',
+        normalizedId: 'https://ror.org/05dxps055',
+        originalInput: 'ror:05dxps055',
+        detectionMethod: 'ROR',
+      });
+    });
+
+    it('should handle ROR detection with bare format', () => {
+      const result = detectEntity('05dxps055');
+      expect(result).toEqual({
+        entityType: 'institutions',
+        normalizedId: 'https://ror.org/05dxps055',
+        originalInput: '05dxps055',
+        detectionMethod: 'ROR',
+      });
+    });
+
+    it('should handle ROR detection with URL format', () => {
+      const result = detectEntity('https://ror.org/05dxps055');
+      expect(result).toEqual({
+        entityType: 'institutions',
+        normalizedId: 'https://ror.org/05dxps055',
+        originalInput: 'https://ror.org/05dxps055',
+        detectionMethod: 'ROR',
+      });
+    });
+
     it('should return null for invalid identifiers', () => {
       expect(detectEntity('invalid')).toBeNull();
       expect(detectEntity('')).toBeNull();
@@ -349,10 +418,11 @@ describe('EntityDetectionService', () => {
         '0000-0002-1825-0097',
         'invalid',
         '05dxps055',
+        'ror:01an7q238',
       ];
 
       const results = EntityDetectionService.detectEntities(ids);
-      expect(results).toHaveLength(4); // Invalid one filtered out
+      expect(results).toHaveLength(5); // Invalid one filtered out
 
       expect(results[0]).toEqual({
         entityType: 'works',
@@ -379,6 +449,13 @@ describe('EntityDetectionService', () => {
         entityType: 'institutions',
         normalizedId: 'https://ror.org/05dxps055',
         originalInput: '05dxps055',
+        detectionMethod: 'ROR',
+      });
+
+      expect(results[4]).toEqual({
+        entityType: 'institutions',
+        normalizedId: 'https://ror.org/01an7q238',
+        originalInput: 'ror:01an7q238',
         detectionMethod: 'ROR',
       });
     });
@@ -453,6 +530,22 @@ describe('EntityDetectionService', () => {
       rorIds.forEach(ror => {
         expect(detectEntityType(ror)).toBe('institutions');
         expect(normalizeIdentifier(ror)).toBe(`https://ror.org/${ror.toLowerCase()}`);
+        expect(isValidIdentifier(ror)).toBe(true);
+      });
+    });
+
+    it('should handle real ROR IDs with ror: prefix', () => {
+      const rorIds = [
+        'ror:05dxps055', // MIT
+        'ror:01an7q238', // Harvard
+        'ror:00hj8s172', // Stanford
+        'ror:04gyf1771', // University of Cambridge
+      ];
+
+      rorIds.forEach(ror => {
+        const bareRor = ror.substring(4); // Remove 'ror:' prefix
+        expect(detectEntityType(ror)).toBe('institutions');
+        expect(normalizeIdentifier(ror)).toBe(`https://ror.org/${bareRor.toLowerCase()}`);
         expect(isValidIdentifier(ror)).toBe(true);
       });
     });
