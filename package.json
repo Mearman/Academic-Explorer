@@ -14,7 +14,7 @@
   },
   "scripts": {
     "dev": "pnpm --filter @academic-explorer/web dev",
-    "cli": "tsx apps/cli/src/simple-cli.ts",
+    "cli": "tsx apps/cli/src/openalex-cli.ts",
     "build": "tsx scripts/build.ts",
     "test": "nx run-many -t test",
     "lint": "nx run-many -t lint",

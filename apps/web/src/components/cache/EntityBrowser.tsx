@@ -1,23 +1,24 @@
-import { useState, useEffect, useMemo } from 'react';
-import { 
-  Box, 
-  Group, 
-  Text, 
-  Card, 
-  Badge, 
-  TextInput, 
-  MultiSelect, 
+import { useState, useEffect, useMemo, useRef } from 'react';
+import {
+  Box,
+  Group,
+  Text,
+  Card,
+  Badge,
+  TextInput,
+  MultiSelect,
   Select,
   Stack,
   Alert,
   ActionIcon,
   Tooltip,
   Container,
-  Paper
+  Paper,
+  VisuallyHidden
 } from '@mantine/core';
-import { 
-  IconSearch, 
-  IconRefresh, 
+import {
+  IconSearch,
+  IconRefresh,
   IconDatabase,
   IconInfoCircle,
   IconExternalLink,
@@ -70,7 +71,7 @@ const SORT_OPTIONS = [
 
 export function EntityBrowser({ className }: EntityBrowserProps) {
   const navigate = useNavigate();
-  
+
   const [state, setState] = useState<EntityBrowserState>({
     entities: [],
     stats: null,
@@ -79,6 +80,11 @@ export function EntityBrowser({ className }: EntityBrowserProps) {
     hasMore: false,
     totalMatching: 0,
   });
+
+  // Accessibility state for screen reader announcements
+  const [announcement, setAnnouncement] = useState('');
+  const statusRegionRef = useRef<HTMLDivElement>(null);
+  const resultRegionRef = useRef<HTMLDivElement>(null);
 
   // Filter state - simplified for browsing
   const [searchQuery, setSearchQuery] = useState('');
