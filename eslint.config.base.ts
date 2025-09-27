@@ -192,12 +192,46 @@ export default tseslint.config([
     // Code blocks in markdown files - relax rules for examples
     files: ["**/*.md/*.{js,ts,jsx,tsx}"],
     rules: {
+      // Variable and import rules - common in code samples
       "@typescript-eslint/no-unused-vars": "off",
       "@typescript-eslint/no-explicit-any": "off",
       "no-console": "off",
       "no-undef": "off",
       "no-unused-vars": "off",
       "unused-imports/no-unused-imports": "off",
+      "unused-imports/no-unused-vars": "off",
+
+      // TypeScript strict rules - often not relevant in samples
+      "@typescript-eslint/no-non-null-assertion": "off",
+      "@typescript-eslint/no-unsafe-assignment": "off",
+      "@typescript-eslint/no-unsafe-member-access": "off",
+      "@typescript-eslint/no-unsafe-call": "off",
+      "@typescript-eslint/no-unsafe-return": "off",
+      "@typescript-eslint/no-unsafe-argument": "off",
+      "@typescript-eslint/restrict-template-expressions": "off",
+      "@typescript-eslint/prefer-nullish-coalescing": "off",
+      "@typescript-eslint/prefer-optional-chain": "off",
+      "@typescript-eslint/no-unnecessary-type-assertion": "off",
+      "@typescript-eslint/no-floating-promises": "off",
+      "@typescript-eslint/await-thenable": "off",
+
+      // General JavaScript rules that might be strict for samples
+      "prefer-const": "off",
+      "no-var": "off",
+      "object-shorthand": "off",
+      "prefer-destructuring": "off",
+
+      // Comment and import rules not needed in samples
+      "eslint-comments/disable-enable-pair": "off",
+      "eslint-comments/no-unused-disable": "off",
+      "eslint-comments/no-unlimited-disable": "off",
+
+      // Allow any patterns in code samples
+      "no-empty": "off",
+      "no-unreachable": "off",
+      "@typescript-eslint/no-empty-function": "off",
+      "@typescript-eslint/ban-types": "off",
+      "@typescript-eslint/no-inferrable-types": "off",
     },
   },
 ]);

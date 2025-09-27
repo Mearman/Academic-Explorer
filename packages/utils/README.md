@@ -21,5 +21,5 @@ import { createMemoryCache } from '@academic-explorer/utils/cache';
 import { createStorageManager } from '@academic-explorer/utils/storage';
 
 logger.debug('api', 'Processing request', { data });
-const _cache = createMemoryCache<string>(1000);
+const cache = createMemoryCache<string>(1000);
 ```

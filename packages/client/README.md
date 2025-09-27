@@ -16,7 +16,7 @@ TypeScript client for the OpenAlex API with entity support and utilities.
 ```typescript
 import { cachedOpenAlex, createWorksQuery } from '@academic-explorer/client';
 
-const _works = await cachedOpenAlex.works(createWorksQuery({
+const works = await cachedOpenAlex.works(createWorksQuery({
   filter: { author: 'A123456789' },
   select: ['id', 'title', 'publication_year']
 }));

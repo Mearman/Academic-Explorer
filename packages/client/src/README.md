@@ -19,7 +19,7 @@ A comprehensive TypeScript client for the [OpenAlex API](https://docs.openalex.o
 import { OpenAlexClient, createOpenAlexClient } from '@academic-explorer/openalex-client';
 
 // Create client with configuration
-const _client = createOpenAlexClient({
+const client = createOpenAlexClient({
   userEmail: 'researcher@university.edu' // Recommended for best performance
 });
 
@@ -33,10 +33,10 @@ import { openAlex } from '@academic-explorer/openalex-client';
 
 ```typescript
 // Get a single work
-const _work = await client.works.getWork('W2741809807');
+const work = await client.works.getWork('W2741809807');
 
 // Search for works
-const _works = await client.works.searchWorks('machine learning', {
+const works = await client.works.searchWorks('machine learning', {
   filters: {
     'publication_year': 2023,
     'is_oa': true,
@@ -47,7 +47,7 @@ const _works = await client.works.searchWorks('machine learning', {
 });
 
 // Get works by author
-const _authorWorks = await client.works.getWorksByAuthor('A5023888391');
+const authorWorks = await client.works.getWorksByAuthor('A5023888391');
 
 // Stream large datasets efficiently
 for await (const batch of client.works.streamWorks({ filter: 'publication_year:2023' })) {
@@ -60,42 +60,42 @@ for await (const batch of client.works.streamWorks({ filter: 'publication_year:2
 
 ```typescript
 // Get author details
-const _author = await client.authors.getAuthor('A5023888391');
+const author = await client.authors.getAuthor('A5023888391');
 
 // Search authors
-const _authors = await client.authors.searchAuthors('albert einstein');
+const authors = await client.authors.searchAuthors('albert einstein');
 
 // Get authors by institution
-const _institutionAuthors = await client.authors.getAuthorsByInstitution('I27837315');
+const institutionAuthors = await client.authors.getAuthorsByInstitution('I27837315');
 
 // Analyze collaborators
-const _collaborators = await client.authors.getAuthorCollaborators('A5023888391');
+const collaborators = await client.authors.getAuthorCollaborators('A5023888391');
 ```
 
 ### Sources (Journals, Conferences)
 
 ```typescript
 // Get journal information
-const _journal = await client.sources.getSource('S4210194219');
+const journal = await client.sources.getSource('S4210194219');
 
 // Find open access sources
-const _oaSources = await client.sources.getOpenAccessSources();
+const oaSources = await client.sources.getOpenAccessSources();
 
 // Get sources by publisher
-const _publisherSources = await client.sources.getSourcesByPublisher('elsevier');
+const publisherSources = await client.sources.getSourcesByPublisher('elsevier');
 ```
 
 ### Institutions
 
 ```typescript
 // Get institution details
-const _institution = await client.institutions.getInstitution('I27837315');
+const institution = await client.institutions.getInstitution('I27837315');
 
 // Search institutions
-const _institutions = await client.institutions.searchInstitutions('stanford university');
+const institutions = await client.institutions.searchInstitutions('stanford university');
 
 // Get institutions by country
-const _usInstitutions = await client.institutions.getInstitutionsByCountry('US');
+const usInstitutions = await client.institutions.getInstitutionsByCountry('US');
 ```
 
 ## Advanced Usage
@@ -115,7 +115,7 @@ const query = createWorksQuery()
   .addSearch('default.search', 'climate change')
   .addSort('cited_by_count', 'desc');
 
-const _works = await client.works.getWorks({
+const works = await client.works.getWorks({
   filter: query.buildFilterString(),
   sort: query.buildSortString(),
   per_page: 50
@@ -144,13 +144,13 @@ Get search suggestions:
 
 ```typescript
 // General autocomplete
-const _suggestions = await client.autocomplete.autocomplete('stanf');
+const suggestions = await client.autocomplete.autocomplete('stanf');
 
 // Entity-specific autocomplete
-const _authorSuggestions = await client.autocomplete.autocompleteAuthors('john sm');
+const authorSuggestions = await client.autocomplete.autocompleteAuthors('john sm');
 
 // Cross-entity search
-const _searchResults = await client.autocomplete.search('machine learning', ['works', 'authors']);
+const searchResults = await client.autocomplete.search('machine learning', ['works', 'authors']);
 ```
 
 ### Batch Processing
@@ -179,14 +179,14 @@ Automatically detect and fetch entities by ID:
 
 ```typescript
 // Automatically detects entity type and fetches appropriately
-const _entity = await client.getEntity('W2741809807'); // Work
-const _entity2 = await client.getEntity('A5023888391'); // Author
+const entity = await client.getEntity('W2741809807'); // Work
+const entity2 = await client.getEntity('A5023888391'); // Author
 
 // Check entity type
-const _entityType = client.detectEntityType('W2741809807'); // 'works'
+const entityType = client.detectEntityType('W2741809807'); // 'works'
 
 // Validate OpenAlex ID
-const _isValid = client.isValidOpenAlexId('W2741809807'); // true
+const isValid = client.isValidOpenAlexId('W2741809807'); // true
 ```
 
 ## Configuration
@@ -194,7 +194,7 @@ const _isValid = client.isValidOpenAlexId('W2741809807'); // true
 ### Client Options
 
 ```typescript
-const _client = createOpenAlexClient({
+const client = createOpenAlexClient({
   // Required: Your email for best performance (recommended by OpenAlex)
   userEmail: 'researcher@university.edu',
 
@@ -240,7 +240,7 @@ The client automatically handles OpenAlex rate limits:
 
 ```typescript
 // Check rate limit status
-const _stats = _client.getStats();
+const stats = client.getStats();
 console.log('Requests today: ' + stats.rateLimit.requestsToday);
 console.log('Requests remaining: ' + stats.rateLimit.requestsRemaining);
 console.log('Reset time: ' + stats.rateLimit.dailyResetTime);
@@ -254,7 +254,7 @@ The client provides detailed error information:
 import { OpenAlexApiError, OpenAlexRateLimitError } from '@academic-explorer/openalex-client';
 
 try {
-  const _work = await _client.works.getWork('invalid-id');
+  const work = await client.works.getWork('invalid-id');
 } catch (error) {
   if (error instanceof OpenAlexRateLimitError) {
     console.log('Rate limit exceeded. Retry after: ' + error.retryAfter + 'ms');
@@ -281,7 +281,7 @@ import type {
 } from '@academic-explorer/openalex-client';
 
 // Type-safe filtering
-const _filters: WorksFilters = {
+const filters: WorksFilters = {
   'publication_year': 2023,
   'authorships.author.id': ['A123', 'A456'],
   'is_oa': true,
@@ -289,7 +289,7 @@ const _filters: WorksFilters = {
 };
 
 // Type-safe responses
-const _response: OpenAlexResponse<Work> = await _client.works.getWorks({ filter: buildFilterString(_filters) });
+const response: OpenAlexResponse<Work> = await client.works.getWorks({ filter: buildFilterString(filters) });
 ```
 
 ## Entity Types
@@ -328,7 +328,7 @@ filters['type'] = '!article';             // not an article
 
 ```typescript
 // Publication date filtering
-const _filters: WorksFilters = {
+const filters: WorksFilters = {
   'from_publication_date': '2020-01-01',
   'to_publication_date': '2023-12-31',
   'publication_year': 2023
@@ -339,7 +339,7 @@ const _filters: WorksFilters = {
 
 ```typescript
 // Different search types
-const _filters: WorksFilters = {
+const filters: WorksFilters = {
   'default.search': 'machine learning',           // Full-text search
   'title.search': 'neural networks',             // Title search only
   'display_name.search': 'deep learning'         // Display name search
