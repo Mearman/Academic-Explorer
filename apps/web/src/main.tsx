@@ -101,10 +101,11 @@ declare module "@tanstack/react-router" {
 // Register service worker for OpenAlex API interception
 registerOpenAlexServiceWorker().then((registered) => {
   if (registered) {
-    console.log('🔧 OpenAlex Service Worker registered - API requests will be intercepted');
+    // Service worker registered successfully - API requests will be intercepted
   }
 }).catch((error) => {
-  console.warn('⚠️ Failed to register OpenAlex Service Worker:', error);
+  // Failed to register OpenAlex Service Worker - will fall back to direct API calls
+  void error; // Suppress unused variable warning
 });
 
 const rootElement = document.getElementById("root");
