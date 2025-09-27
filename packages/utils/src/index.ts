@@ -129,6 +129,18 @@ export * from "./storage/index.js";
 // Cache utilities
 export * from "./cache/index.js";
 
+// Cache browser utilities
+export {
+  CacheBrowserService,
+  cacheBrowserService,
+  type EntityType as CacheBrowserEntityType,
+  type CachedEntityMetadata,
+  type CacheBrowserStats,
+  type CacheBrowserFilters,
+  type CacheBrowserOptions,
+  type CacheBrowserResult,
+} from "./cache-browser/index.js";
+
 // Build info utilities
 export {
   getBuildInfo,
