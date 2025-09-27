@@ -181,3 +181,76 @@ export {
   type RelationshipDetectionService,
   type GraphDataService
 } from "./services.js";
+
+// Environment detection and configuration
+export {
+  // Environment Detection
+  EnvironmentDetector,
+  EnvironmentMode,
+  getCurrentEnvironmentMode,
+  isDevelopment,
+  isProduction,
+  isTest,
+  getBuildContext,
+
+  // Cache Configuration
+  CacheConfigFactory,
+  getCurrentCacheConfig as getCurrentEnvironmentCacheConfig,
+  getOptimizedCacheConfig,
+  getStaticDataUrl,
+  getOpenAlexDataUrl,
+
+  // Cache Strategies
+  CacheStrategySelector,
+  getCurrentCacheStrategy,
+  getCacheStrategyConfig,
+  CacheStrategy,
+  CacheOperation,
+  CachePriority,
+  CacheStorageType,
+
+  // Mode Switching
+  ModeSwitcher,
+  getCurrentCacheConfiguration,
+  getCurrentStrategyConfiguration,
+  isCacheOperationSupported,
+  getDefaultCachePriority,
+  isDebugMode,
+  getEnvironmentDescription,
+  initializeResearchEnvironment,
+  initializeProductionEnvironment,
+  initializeDevelopmentEnvironment,
+
+  // Types
+  type BuildContext,
+  type StaticDataPaths,
+  type CacheStorageConfig as EnvironmentCacheStorageConfig,
+  type NetworkConfig,
+  type CacheConfig as EnvironmentCacheConfig,
+  type CacheStrategyConfig,
+  type ModeOptions,
+  type RuntimeEnvironmentConfig
+} from "./environment/index.js";
+
+// Static data index generator utilities
+export {
+  StaticDataIndexGenerator,
+  generateAllIndexes,
+  generateIndexForEntityType,
+  validateIndex,
+  repairIndex,
+  createIndexGenerator,
+  CURRENT_SCHEMA_VERSION,
+  DEFAULT_INDEX_CONFIG,
+  type EntityType as StaticDataEntityType,
+  type EntityFileMetadata,
+  type EntityTypeIndex,
+  type MasterIndex,
+  type IndexValidationResult,
+  type IndexValidationError,
+  type IndexValidationWarning,
+  type IndexRepairAction,
+  type IndexGenerationConfig,
+  type IndexGenerationProgress,
+  type IndexGenerationResult,
+} from "./static-data/index.js";
