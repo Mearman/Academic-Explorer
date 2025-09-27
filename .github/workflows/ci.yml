@@ -355,21 +355,11 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
-      - name: Run Nx release (projects)
+      - name: Run Nx release
         run: |
-          echo "🚀 Releasing individual projects..."
-          pnpm nx release --group=projects --skip-publish || {
-            echo "ℹ️ No project releases needed"
-          }
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          NODE_OPTIONS: '--max-old-space-size=8192'
-
-      - name: Run Nx release (workspace)
-        run: |
-          echo "🎯 Creating workspace release with GitHub release..."
-          pnpm nx release --group=workspace --skip-publish || {
-            echo "ℹ️ No workspace release needed"
+          echo "🚀 Creating workspace release with GitHub release..."
+          pnpm nx release --skip-publish || {
+            echo "ℹ️ No release needed"
           }
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
