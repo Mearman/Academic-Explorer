@@ -6,6 +6,7 @@ import { TanStackRouterVite } from '@tanstack/router-vite-plugin'
 import path from 'path'
 import { execSync } from 'child_process'
 import { workspaceRoot } from '../../config/shared'
+import { staticDataIndexPlugin } from '../../config/vite-plugins/static-data-index'
 
 // Build metadata generation
 function getBuildInfo() {
@@ -55,6 +56,13 @@ export default defineConfig(({ mode: _mode }) => ({
   plugins: [
     // TanStack Router Plugin - must be before React plugin
     TanStackRouterVite(),
+    // Static data index plugin for OpenAlex entity caching
+    staticDataIndexPlugin({
+      autoDownload: false, // Disable auto-download for now
+      validate: true, // Enable validation
+      verbose: false, // Disable verbose logging for cleaner output
+      debounceMs: 500 // 500ms debounce for file changes
+    }),
     // Only run OpenAlex data plugin in production builds, not during tests
     // ...(mode !== 'test' ? [openalexDataPlugin()] : []), // Temporarily disabled during monorepo refactoring
     // Temporarily disable devtools to avoid port conflicts
