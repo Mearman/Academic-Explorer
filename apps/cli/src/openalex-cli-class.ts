@@ -603,7 +603,7 @@ export class OpenAlexCLI {
         const validatedIndex = indexValidation.data;
 
         // Check if the canonical URL exists directly in the index
-        if (validatedIndex[canonicalUrl]) {
+        if (canonicalUrl in validatedIndex) {
           const validationResult = EntityIndexEntrySchema.safeParse(validatedIndex[canonicalUrl]);
           if (validationResult.success && validationResult.data.$ref &&
               validationResult.data.lastModified && validationResult.data.contentHash) {
