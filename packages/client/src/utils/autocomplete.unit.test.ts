@@ -94,6 +94,8 @@ describe("AutocompleteApi", () => {
 			]);
 			expect(mockGet).toHaveBeenCalledWith("autocomplete/authors", {
 				q: "john smith",
+				format: "json",
+				per_page: 25,
 			});
 		});
 	});
@@ -114,6 +116,8 @@ describe("AutocompleteApi", () => {
 			]);
 			expect(mockGet).toHaveBeenCalledWith("autocomplete/works", {
 				q: "neural networks",
+				format: "json",
+				per_page: 25,
 			});
 		});
 
@@ -132,6 +136,8 @@ describe("AutocompleteApi", () => {
 			]);
 			expect(mockGet).toHaveBeenCalledWith("autocomplete/authors", {
 				q: "jane doe",
+				format: "json",
+				per_page: 25,
 			});
 		});
 
@@ -304,10 +310,14 @@ describe("AutocompleteApi", () => {
 			expect(mockGet).toHaveBeenCalledWith("works/autocomplete", {
 				q: "machine learning",
 				from_publication_date: "2020-01-01",
+				format: "json",
+				per_page: 25,
 			});
 			expect(mockGet).toHaveBeenCalledWith("authors/autocomplete", {
 				q: "machine learning",
 				from_publication_date: "2020-01-01",
+				format: "json",
+				per_page: 25,
 			});
 		});
 
@@ -498,6 +508,8 @@ describe("AutocompleteApi", () => {
 					from_publication_date: "2020-01-01",
 					to_publication_date: "2023-12-31",
 					is_oa: true,
+					format: "json",
+					per_page: 25,
 				})
 			);
 

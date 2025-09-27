@@ -79,6 +79,7 @@ export class BaseAutocompleteApi {
 		options: AutocompleteOptions
 	): Promise<AutocompleteResponse<T>> {
 		const params: QueryParams & AutocompleteOptions = {
+			...options,
 			q: options.q.trim(),
 			per_page: options.per_page ?? 25,
 			format: options.format ?? 'json',
