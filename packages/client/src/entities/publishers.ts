@@ -9,7 +9,8 @@ import type {
 	Source,
 	Work,
 	OpenAlexResponse,
-	QueryParams
+	QueryParams,
+	AutocompleteResult
 } from "../types";
 import { OpenAlexBaseClient } from "../client";
 
@@ -54,6 +55,47 @@ export class PublishersApi {
 			...params,
 			search: query,
 		});
+	}
+
+	/**
+   * Autocomplete publishers by name for quick search suggestions
+   * @param query - Search query string for autocomplete suggestions
+   * @returns Promise resolving to array of publisher autocomplete results
+   *
+   * @example
+   * ```typescript
+   * const suggestions = await publishersApi.autocomplete('springer');
+   * console.log(`Found ${suggestions.length} publisher suggestions`);
+   *
+   * // Iterate through suggestions
+   * suggestions.forEach(publisher => {
+   *   console.log(`${publisher.display_name} (${publisher.works_count} works)`);
+   * });
+   * ```
+   */
+	async autocomplete(query: string): Promise<AutocompleteResult[]> {
+		if (!query.trim()) {
+			return [];
+		}
+
+		try {
+			const endpoint = "autocomplete/publishers";
+			const queryParams: QueryParams & { q: string } = {
+				q: query.trim(),
+			};
+
+			const response = await this.client.getResponse<AutocompleteResult>(endpoint, queryParams);
+
+			return response.results.map(result => ({
+				...result,
+				entity_type: "publisher" as const,
+			}));
+		} catch (error: unknown) {
+			// Log error but return empty array for graceful degradation
+			const errorMessage = error instanceof Error ? error.message : "Unknown error";
+			console.warn(`[PublishersApi] Autocomplete failed for query "${query}": ${errorMessage}`);
+			return [];
+		}
 	}
 
 	/**

@@ -3,9 +3,10 @@
  * Provides comprehensive methods for interacting with journal/conference sources
  */
 
-import type { Source, SourcesFilters, QueryParams, OpenAlexResponse, Work } from "../types";
+import type { Source, SourcesFilters, QueryParams, OpenAlexResponse, Work, AutocompleteResult } from "../types";
 import { OpenAlexBaseClient } from "../client";
 import { buildFilterString } from "../utils/query-builder";
+import { logger } from "../internal/logger";
 
 export class SourcesApi {
 	constructor(private client: OpenAlexBaseClient) {}
@@ -83,6 +84,47 @@ export class SourcesApi {
 			filter: searchFilters,
 		});
 		return this.client.getResponse<Source>("sources", queryParams);
+	}
+
+	/**
+   * Autocomplete sources by name/title for quick search suggestions
+   * @param query - Search query string for autocomplete suggestions
+   * @returns Promise resolving to array of source autocomplete results
+   *
+   * @example
+   * ```typescript
+   * const suggestions = await sourcesApi.autocomplete('nature');
+   * logger.debug("api", `Found ${suggestions.length} source suggestions`);
+   *
+   * // Iterate through suggestions
+   * suggestions.forEach(source => {
+   *   logger.debug("api", `${source.display_name} (${source.cited_by_count} citations)`);
+   * });
+   * ```
+   */
+	async autocomplete(query: string): Promise<AutocompleteResult[]> {
+		if (!query.trim()) {
+			return [];
+		}
+
+		try {
+			const endpoint = "autocomplete/sources";
+			const queryParams: QueryParams & { q: string } = {
+				q: query.trim(),
+			};
+
+			const response = await this.client.getResponse<AutocompleteResult>(endpoint, queryParams);
+
+			return response.results.map(result => ({
+				...result,
+				entity_type: "source" as const,
+			}));
+		} catch (error: unknown) {
+			// Log error but return empty array for graceful degradation
+			const errorMessage = error instanceof Error ? error.message : "Unknown error";
+			logger.warn(`Autocomplete failed for query "${query}": ${errorMessage}`, { query, error });
+			return [];
+		}
 	}
 
 	/**

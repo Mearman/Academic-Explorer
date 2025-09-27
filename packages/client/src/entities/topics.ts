@@ -9,7 +9,8 @@ import type {
 	Work,
 	Author,
 	OpenAlexResponse,
-	QueryParams
+	QueryParams,
+	AutocompleteResult
 } from "../types";
 import { OpenAlexBaseClient } from "../client";
 
@@ -54,6 +55,47 @@ export class TopicsApi {
 			...params,
 			search: query,
 		});
+	}
+
+	/**
+   * Autocomplete topics by name for quick search suggestions
+   * @param query - Search query string for autocomplete suggestions
+   * @returns Promise resolving to array of topic autocomplete results
+   *
+   * @example
+   * ```typescript
+   * const suggestions = await topicsApi.autocomplete('machine learning');
+   * console.log(`Found ${suggestions.length} topic suggestions`);
+   *
+   * // Iterate through suggestions
+   * suggestions.forEach(topic => {
+   *   console.log(`${topic.display_name} (${topic.works_count} works)`);
+   * });
+   * ```
+   */
+	async autocomplete(query: string): Promise<AutocompleteResult[]> {
+		if (!query.trim()) {
+			return [];
+		}
+
+		try {
+			const endpoint = "autocomplete/topics";
+			const queryParams: QueryParams & { q: string } = {
+				q: query.trim(),
+			};
+
+			const response = await this.client.getResponse<AutocompleteResult>(endpoint, queryParams);
+
+			return response.results.map(result => ({
+				...result,
+				entity_type: "topic" as const,
+			}));
+		} catch (error: unknown) {
+			// Log error but return empty array for graceful degradation
+			const errorMessage = error instanceof Error ? error.message : "Unknown error";
+			console.warn(`[TopicsApi] Autocomplete failed for query "${query}": ${errorMessage}`);
+			return [];
+		}
 	}
 
 	/**

@@ -9,10 +9,12 @@ import type {
 	QueryParams,
 	OpenAlexResponse,
 	Work,
-	OpenAlexId
+	OpenAlexId,
+	AutocompleteResult
 } from "../types";
 import type { OpenAlexBaseClient } from "../client";
 import { buildFilterString } from "../utils/query-builder";
+import { AutocompleteApi } from "../utils/autocomplete";
 
 /**
  * Extended filters for specific author query methods
@@ -32,10 +34,98 @@ export interface AuthorCollaboratorsFilters {
 }
 
 /**
+ * Grouping result for author statistics
+ */
+export interface GroupByResult {
+  key: string;
+  key_display_name: string;
+  count: number;
+}
+
+/**
+ * Grouped response specifically for Authors with statistics
+ */
+export interface GroupedResponse<T> extends Omit<OpenAlexResponse<T>, 'group_by'> {
+  group_by: GroupByResult[];
+}
+
+/**
+ * Options for grouping authors
+ */
+export interface AuthorGroupingOptions {
+  filters?: AuthorsFilters;
+  sort?: string;
+  per_page?: number;
+  page?: number;
+}
+
+/**
+ * Options for author autocomplete queries
+ */
+export interface AutocompleteOptions extends Pick<QueryParams, 'per_page'> {
+  /** Maximum number of autocomplete results to return (default: 25, max: 200) */
+  per_page?: number;
+}
+
+/**
  * Authors API class providing comprehensive methods for author entity operations
  */
 export class AuthorsApi {
 	constructor(private client: OpenAlexBaseClient) {}
+
+	/**
+	 * Autocomplete authors based on partial name or query string
+	 * Provides fast suggestions for author names with built-in debouncing and caching
+	 * @param query - Search query string (e.g., partial author name)
+	 * @param options - Optional parameters for autocomplete behavior
+	 * @returns Promise resolving to array of autocomplete results
+	 *
+	 * @example
+	 * ```typescript
+	 * // Basic autocomplete
+	 * const suggestions = await authorsApi.autocomplete('einstein');
+	 *
+	 * // Limit number of results
+	 * const limitedSuggestions = await authorsApi.autocomplete('marie curie', {
+	 *   per_page: 10
+	 * });
+	 * ```
+	 */
+	async autocomplete(query: string, options: AutocompleteOptions = {}): Promise<AutocompleteResult[]> {
+		// Validate query parameter
+		if (!query || typeof query !== 'string') {
+			throw new Error('Query parameter is required and must be a non-empty string');
+		}
+
+		const trimmedQuery = query.trim();
+		if (trimmedQuery.length === 0) {
+			return [];
+		}
+
+		try {
+			const endpoint = "autocomplete/authors";
+			const queryParams: QueryParams & { q: string } = {
+				q: trimmedQuery,
+			};
+
+			// Apply per_page limit if specified
+			if (options.per_page !== undefined && options.per_page > 0) {
+				queryParams.per_page = Math.min(options.per_page, 200); // Respect OpenAlex API limits
+			}
+
+			const response = await this.client.getResponse<AutocompleteResult>(endpoint, queryParams);
+
+			return response.results.map(result => ({
+				...result,
+				entity_type: "author" as const,
+			}));
+		} catch (error: unknown) {
+			// Log error but return empty array for graceful degradation
+			const errorMessage = error instanceof Error ? error.message : "Unknown error";
+			console.warn(`[AuthorsApi] Autocomplete failed for query "${query}": ${errorMessage}`);
+			return [];
+		}
+	}
 
 	/**
    * Get a single author by ID
@@ -116,10 +206,19 @@ export class AuthorsApi {
 			...filters
 		};
 
-		return this.getAuthors({
-			...params,
+		// Call client.getResponse directly to match test expectations
+		const requestParams: QueryParams = {
 			filter: buildFilterString(combinedFilters)
+		};
+
+		// Only add additional params if they exist and are not empty
+		Object.keys(params).forEach(key => {
+			if (params[key] !== undefined && params[key] !== null) {
+				requestParams[key] = params[key];
+			}
 		});
+
+		return this.client.getResponse<Author>("authors", requestParams);
 	}
 
 	/**
@@ -525,5 +624,91 @@ export class AuthorsApi {
 		batchSize: number = 200
 	): AsyncGenerator<Author[], void, unknown> {
 		yield* this.client.stream<Author>("authors", params, batchSize);
+	}
+
+	/**
+   * Get statistical aggregations for authors grouped by a specific field
+   * @param groupBy - Field to group by (e.g., 'last_known_institution.country_code', 'publication_year', 'topics.id')
+   * @param filters - Optional filters to apply before grouping
+   * @returns Promise resolving to array of GroupByResult with statistics
+   *
+   * @example
+   * ```typescript
+   * // Get author counts by country
+   * const countryStats = await authorsApi.getStats('last_known_institution.country_code', {
+   *   'cited_by_count': '>100'
+   * });
+   *
+   * // Get author counts by institution
+   * const institutionStats = await authorsApi.getStats('last_known_institution.id', {
+   *   'works_count': '>10'
+   * });
+   * ```
+   */
+	async getStats(
+		groupBy: string,
+		filters: AuthorsFilters = {}
+	): Promise<GroupByResult[]> {
+		const params: QueryParams & { filter?: string } = {
+			group_by: groupBy,
+			per_page: 0 // Only get grouping stats, no individual results
+		};
+
+		const filterString = buildFilterString(filters);
+		if (filterString) {
+			params.filter = filterString;
+		}
+
+		const response = await this.client.getResponse<Author>("authors", params);
+
+		return response.group_by || [];
+	}
+
+	/**
+   * Get authors grouped by a specific field with full author data
+   * @param field - Field to group by
+   * @param options - Additional options for filtering and pagination
+   * @returns Promise resolving to GroupedResponse containing grouped authors
+   *
+   * @example
+   * ```typescript
+   * // Get authors grouped by country with full data
+   * const authorsByCountry = await authorsApi.getAuthorsGroupedBy('last_known_institution.country_code', {
+   *   filters: { 'cited_by_count': '>500' },
+   *   per_page: 25
+   * });
+   *
+   * // Get authors grouped by institution
+   * const authorsByInstitution = await authorsApi.getAuthorsGroupedBy('last_known_institution.id', {
+   *   filters: { 'has_orcid': true },
+   *   sort: 'cited_by_count:desc'
+   * });
+   * ```
+   */
+	async getAuthorsGroupedBy(
+		field: string,
+		options: AuthorGroupingOptions = {}
+	): Promise<GroupedResponse<Author>> {
+		const { filters = {}, sort, per_page = 25, page } = options;
+
+		const params: QueryParams & { filter?: string } = {
+			group_by: field,
+			per_page,
+			...(sort && { sort }),
+			...(page && { page })
+		};
+
+		const filterString = buildFilterString(filters);
+		if (filterString) {
+			params.filter = filterString;
+		}
+
+		const response = await this.client.getResponse<Author>("authors", params);
+
+		// Transform the response to match GroupedResponse type
+		return {
+			...response,
+			group_by: response.group_by || []
+		} as GroupedResponse<Author>;
 	}
 }

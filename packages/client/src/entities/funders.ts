@@ -9,7 +9,8 @@ import type {
 	Work,
 	Institution,
 	OpenAlexResponse,
-	QueryParams
+	QueryParams,
+	AutocompleteResult
 } from "../types";
 import { OpenAlexBaseClient } from "../client";
 
@@ -54,6 +55,47 @@ export class FundersApi {
 			...params,
 			search: query,
 		});
+	}
+
+	/**
+   * Autocomplete funders by name for quick search suggestions
+   * @param query - Search query string for autocomplete suggestions
+   * @returns Promise resolving to array of funder autocomplete results
+   *
+   * @example
+   * ```typescript
+   * const suggestions = await fundersApi.autocomplete('national science');
+   * console.log(`Found ${suggestions.length} funder suggestions`);
+   *
+   * // Iterate through suggestions
+   * suggestions.forEach(funder => {
+   *   console.log(`${funder.display_name} (${funder.works_count} works funded)`);
+   * });
+   * ```
+   */
+	async autocomplete(query: string): Promise<AutocompleteResult[]> {
+		if (!query.trim()) {
+			return [];
+		}
+
+		try {
+			const endpoint = "autocomplete/funders";
+			const queryParams: QueryParams & { q: string } = {
+				q: query.trim(),
+			};
+
+			const response = await this.client.getResponse<AutocompleteResult>(endpoint, queryParams);
+
+			return response.results.map(result => ({
+				...result,
+				entity_type: "funder" as const,
+			}));
+		} catch (error: unknown) {
+			// Log error but return empty array for graceful degradation
+			const errorMessage = error instanceof Error ? error.message : "Unknown error";
+			console.warn(`[FundersApi] Autocomplete failed for query "${query}": ${errorMessage}`);
+			return [];
+		}
 	}
 
 	/**

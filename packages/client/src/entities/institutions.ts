@@ -3,9 +3,10 @@
  * Provides comprehensive methods for querying and retrieving institution data
  */
 
-import type { InstitutionEntity, InstitutionsFilters, QueryParams, OpenAlexResponse, Work, Author } from "../types";
+import type { InstitutionEntity, InstitutionsFilters, QueryParams, OpenAlexResponse, Work, Author, AutocompleteResult } from "../types";
 import { OpenAlexBaseClient } from "../client";
 import { buildFilterString } from "../utils/query-builder";
+import { AutocompleteOptions } from "../utils/autocomplete";
 
 /**
  * Extended query parameters specific to institutions API
@@ -27,6 +28,7 @@ export interface InstitutionSearchOptions {
   per_page?: number;
   select?: string[];
 }
+
 
 /**
  * Comprehensive Institutions API class providing methods for institution data access
@@ -55,6 +57,67 @@ export class InstitutionsApi {
    */
 	async getInstitution(id: string, params: QueryParams = {}): Promise<InstitutionEntity> {
 		return this.client.getById<InstitutionEntity>("institutions", id, params);
+	}
+
+	/**
+   * Get autocomplete suggestions for institutions based on a search query
+   *
+   * Uses the OpenAlex institutions autocomplete endpoint to provide fast,
+   * relevant suggestions for institution names and aliases.
+   *
+   * @param query - Search query string for institution name or alias
+   * @param options - Optional autocomplete parameters including per_page limit
+   * @returns Promise resolving to array of institution autocomplete suggestions
+   *
+   * @example
+   * ```typescript
+   * // Basic autocomplete
+   * const suggestions = await institutionsApi.autocomplete('harvard');
+   *
+   * // With per_page limit
+   * const suggestions = await institutionsApi.autocomplete('university', {
+   *   q: 'university',
+   *   per_page: 5
+   * });
+   * ```
+   */
+	async autocomplete(query: string, options?: Partial<AutocompleteOptions>): Promise<AutocompleteResult[]> {
+		// Parameter validation
+		if (!query || typeof query !== 'string') {
+			return [];
+		}
+
+		const trimmedQuery = query.trim();
+		if (!trimmedQuery) {
+			return [];
+		}
+
+		try {
+			// Build query parameters following OpenAlex API specification
+			const queryParams: QueryParams & { q: string } = {
+				q: trimmedQuery,
+			};
+
+			// Add per_page if specified in options
+			if (options?.per_page && options.per_page > 0) {
+				queryParams.per_page = Math.min(options.per_page, 200); // OpenAlex API limit
+			}
+
+			// Make request to OpenAlex institutions autocomplete endpoint
+			const endpoint = "autocomplete/institutions";
+			const response = await this.client.getResponse<AutocompleteResult>(endpoint, queryParams);
+
+			// Return results with entity_type set to institution
+			return response.results.map(result => ({
+				...result,
+				entity_type: "institution" as const,
+			}));
+
+		} catch (error: unknown) {
+			// Format error for logging using type guards
+			const errorDetails = this.formatErrorForLogging(error);
+			return [];
+		}
 	}
 
 	/**
@@ -420,5 +483,43 @@ export class InstitutionsApi {
 		if (select) queryParams.select = select;
 
 		return queryParams;
+	}
+
+	/**
+	 * Format unknown error for safe logging using type guards
+	 *
+	 * @private
+	 * @param error - Unknown error object to format
+	 * @returns Formatted error object safe for logging
+	 */
+	private formatErrorForLogging(error: unknown): Record<string, unknown> {
+		if (error instanceof Error) {
+			return {
+				name: error.name,
+				message: error.message,
+				stack: error.stack,
+			};
+		}
+
+		if (typeof error === 'string') {
+			return { message: error };
+		}
+
+		if (typeof error === 'object' && error !== null) {
+			// Safely extract properties from object-like errors
+			const errorObj = error as Record<string, unknown>;
+			return {
+				message: typeof errorObj.message === 'string' ? errorObj.message : 'Unknown error',
+				name: typeof errorObj.name === 'string' ? errorObj.name : 'UnknownError',
+				code: typeof errorObj.code === 'string' || typeof errorObj.code === 'number' ? errorObj.code : undefined,
+				status: typeof errorObj.status === 'number' ? errorObj.status : undefined,
+			};
+		}
+
+		// Fallback for primitive types or null
+		return {
+			message: 'Unknown error occurred',
+			value: String(error),
+		};
 	}
 }

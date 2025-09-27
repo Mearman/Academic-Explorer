@@ -8,6 +8,7 @@ import type {
 	WorksFilters,
 	QueryParams,
 	OpenAlexResponse,
+	AutocompleteResult,
 } from "../types";
 import { OpenAlexBaseClient } from "../client";
 import { buildFilterString } from "../utils/query-builder";
@@ -36,6 +37,52 @@ export interface RelatedWorksOptions {
   limit?: number;
   filters?: WorksFilters;
   select?: string[];
+}
+
+/**
+ * Options for autocomplete functionality
+ */
+export interface AutocompleteOptions {
+  /** Number of results to return (default: 10, max: 50) */
+  per_page?: number;
+  /** Additional query parameters for filtering */
+  filters?: Record<string, unknown>;
+}
+
+/**
+ * Group by result for a single aggregation bucket
+ */
+export interface GroupByResult {
+  key: string;
+  key_display_name: string;
+  count: number;
+}
+
+/**
+ * Response structure for grouped Works API results
+ */
+export interface GroupedResponse<T> {
+  results: T[];
+  meta: {
+    count: number;
+    db_response_time_ms: number;
+    page: number;
+    per_page: number;
+    groups_count?: number;
+  };
+  group_by: GroupByResult[];
+}
+
+/**
+ * Options for grouping works
+ */
+export interface GroupWorksOptions {
+  filters?: WorksFilters;
+  sort?: "relevance_score" | "cited_by_count" | "publication_date" | "created_date";
+  page?: number;
+  per_page?: number;
+  select?: string[];
+  group_limit?: number;
 }
 
 /**
@@ -526,6 +573,91 @@ export class WorksApi {
 	}
 
 	/**
+   * Get statistical aggregations for works grouped by a specific field
+   *
+   * @param groupBy - Field to group works by (e.g., 'publication_year', 'authorships.institutions.country_code')
+   * @param filters - Optional filters to apply before grouping
+   * @returns Promise resolving to grouped statistical results
+   *
+   * @example
+   * ```typescript
+   * const yearStats = await worksApi.getStats('publication_year', {
+   *   'authorships.author.id': 'A5017898742',
+   *   'is_oa': true
+   * });
+   * ```
+   */
+	async getStats(
+		groupBy: string,
+		filters?: WorksFilters
+	): Promise<GroupedResponse<Work>> {
+		const queryParams: QueryParams = {
+			per_page: 0, // Only aggregation data, no individual works
+			group_by: groupBy,
+		};
+
+		// Convert filters if provided
+		if (filters) {
+			queryParams.filter = buildFilterString(filters);
+		}
+
+		const response = await this.client.getResponse<Work>("works", queryParams);
+
+		// Ensure group_by data exists for typed response
+		if (!response.group_by) {
+			throw new Error(`No grouping data returned for field: ${groupBy}`);
+		}
+
+		return response as GroupedResponse<Work>;
+	}
+
+	/**
+   * Get works grouped by a specific field with full work data
+   *
+   * @param field - Field to group works by (e.g., 'publication_year', 'type', 'primary_location.source.id')
+   * @param options - Options for filtering, pagination, and field selection
+   * @returns Promise resolving to grouped works with metadata
+   *
+   * @example
+   * ```typescript
+   * const worksByYear = await worksApi.getWorksGroupedBy('publication_year', {
+   *   filters: { 'authorships.author.id': 'A5017898742' },
+   *   per_page: 50,
+   *   select: ['id', 'display_name', 'publication_year', 'cited_by_count']
+   * });
+   * ```
+   */
+	async getWorksGroupedBy(
+		field: string,
+		options: GroupWorksOptions = {}
+	): Promise<GroupedResponse<Work>> {
+		const queryParams: QueryParams = {
+			group_by: field,
+			per_page: options.per_page ?? 25, // Default to showing some works
+		};
+
+		// Add optional parameters
+		if (options.page !== undefined) queryParams.page = options.page;
+		if (options.sort !== undefined) queryParams.sort = options.sort;
+		if (options.select !== undefined) queryParams.select = options.select;
+		if (options.group_limit !== undefined) queryParams.group_limit = options.group_limit;
+
+		// Convert filters if provided
+		if (options.filters) {
+			queryParams.filter = buildFilterString(options.filters);
+		}
+
+		const response = await this.client.getResponse<Work>("works", queryParams);
+
+		// Ensure group_by data exists for typed response
+		if (!response.group_by) {
+			throw new Error(`No grouping data returned for field: ${field}`);
+		}
+
+		return response as GroupedResponse<Work>;
+	}
+
+	/**
    * Get works by publication year range
    *
    * @param startYear - Start year (inclusive)
@@ -553,6 +685,74 @@ export class WorksApi {
 		// Merge with existing filters if present
 		const mergedFilter = this.mergeFilters(filters, params.filter);
 		return this.getWorks({ ...params, filter: mergedFilter });
+	}
+
+	/**
+   * Autocomplete works based on a search query
+   * Uses the OpenAlex autocomplete endpoint for fast, typeahead-style search results
+   *
+   * @param query - Search query string (minimum 1 character)
+   * @param options - Optional autocomplete parameters
+   * @returns Promise resolving to array of autocomplete results
+   *
+   * @example
+   * ```typescript
+   * const suggestions = await worksApi.autocomplete('machine learning', {
+   *   per_page: 20
+   * });
+   * ```
+   */
+	async autocomplete(
+		query: string,
+		options: AutocompleteOptions = {}
+	): Promise<AutocompleteResult[]> {
+		// Validate query parameter
+		if (typeof query !== "string") {
+			throw new Error("Query must be a string");
+		}
+
+		const trimmedQuery = query.trim();
+		if (trimmedQuery.length === 0) {
+			return [];
+		}
+
+		try {
+			// Build query parameters
+			const queryParams: QueryParams & { q: string } = {
+				q: trimmedQuery,
+			};
+
+			// Add optional parameters
+			if (options.per_page !== undefined) {
+				if (options.per_page < 1 || options.per_page > 50) {
+					throw new Error("per_page must be between 1 and 50");
+				}
+				queryParams.per_page = options.per_page;
+			}
+
+			// Add additional filters if provided
+			if (options.filters) {
+				Object.assign(queryParams, options.filters);
+			}
+
+			// Make request to OpenAlex autocomplete endpoint
+			const response = await this.client.getResponse<AutocompleteResult>(
+				"autocomplete/works",
+				queryParams
+			);
+
+			// Map results to ensure consistent entity_type
+			return response.results.map(result => ({
+				...result,
+				entity_type: "work" as const,
+			}));
+		} catch (error: unknown) {
+			// Enhanced error handling
+			if (error instanceof Error) {
+				throw new Error(`Works autocomplete failed: ${error.message}`);
+			}
+			throw new Error("Works autocomplete failed with unknown error");
+		}
 	}
 
 	/**
