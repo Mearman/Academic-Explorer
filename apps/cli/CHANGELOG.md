@@ -1,3 +1,14 @@
+## 8.3.1 (2025-09-27)
+
+### 🩹 Fixes
+
+- **cli:** resolve unnecessary conditional ESLint warning ([236e5f69](https://github.com/Mearman/Academic-Explorer/commit/236e5f69))
+- **cli:** resolve ESLint errors and warnings ([3f6c3efe](https://github.com/Mearman/Academic-Explorer/commit/3f6c3efe))
+
+### 🧱 Updated Dependencies
+
+- Updated client to 1.2.1
+
 ## 8.3.0 (2025-09-26)
 
 ### 🚀 Features

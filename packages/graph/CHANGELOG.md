@@ -1,3 +1,9 @@
+## 8.3.1 (2025-09-27)
+
+### 🩹 Fixes
+
+- **graph:** relax flaky performance test threshold for ci environments ([37534b24](https://github.com/Mearman/Academic-Explorer/commit/37534b24))
+
 ## 8.3.0 (2025-09-26)
 
 ### 🚀 Features

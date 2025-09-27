@@ -1,3 +1,10 @@
+## 8.3.1 (2025-09-27)
+
+### 🧱 Updated Dependencies
+
+- Updated client to 1.2.1
+- Updated graph to 8.3.1
+
 ## 8.3.0 (2025-09-26)
 
 ### 🚀 Features

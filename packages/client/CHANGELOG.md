@@ -1,3 +1,9 @@
+## 1.2.1 (2025-09-27)
+
+### 🩹 Fixes
+
+- **client:** disable project-aware TypeScript rules for markdown code blocks ([a7dd0f65](https://github.com/Mearman/Academic-Explorer/commit/a7dd0f65))
+
 ## 1.2.0 (2025-09-26)
 
 ### 🚀 Features
