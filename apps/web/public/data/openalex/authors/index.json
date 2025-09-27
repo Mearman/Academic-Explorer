@@ -1,6 +1,12 @@
 {
-  "entityType": "authors",
-  "entityCount": 0,
-  "lastUpdated": "2025-09-27T13:55:39.686Z",
-  "entities": []
+  "lastUpdated": "2025-09-27T16:51:55.744Z",
+  "path": "authors",
+  "files": {
+    "A5017898742": {
+      "$ref": "./A5017898742.json",
+      "retrieved_at": "2025-09-27T16:51:55.733Z",
+      "contentHash": "-bh7ofa"
+    }
+  },
+  "directories": {}
 }
