@@ -676,16 +676,18 @@ export class InstitutionsApi {
    * @param options - Institution search options
    * @returns Formatted query parameters
    */
-	private buildQueryParams(options: InstitutionSearchOptions = {}): QueryParams {
-		const { filters, sort, page, per_page, select, ...otherOptions } = options;
+	private buildQueryParams(options: InstitutionSearchOptions & { filter?: any } = {}): QueryParams {
+		const { filters, filter, sort, page, per_page, select, ...otherOptions } = options;
 
 		const queryParams: QueryParams = {
 			...otherOptions
 		};
 
 		// Handle filters using standardized FilterBuilder utility
-		if (filters && Object.keys(filters).length > 0) {
-			queryParams.filter = buildFilterString(filters);
+		// Support both 'filters' (plural) and 'filter' (singular) for test compatibility
+		const filtersToProcess = filters || filter;
+		if (filtersToProcess && typeof filtersToProcess === 'object' && Object.keys(filtersToProcess).length > 0) {
+			queryParams.filter = buildFilterString(filtersToProcess);
 		}
 
 		// Add other parameters

@@ -8,7 +8,7 @@
  * - All parameter combinations (filters, pagination, field selection, etc.)
  * - External ID support (DOI, ORCID, ROR, ISSN, Wikidata, PMID)
  *
- * Generated on: 2025-09-27T10:05:27.953Z
+ * Generated on: 2025-09-27T10:11:46.887Z
  * Total test cases: 308
  */
 
@@ -38618,7 +38618,7 @@ describe("OpenAlex API Routes - Generated Tests", () => {
       case 'orcid':
         return '0000-0002-1825-0097';
       case 'ror':
-        return 'https://ror.org/0123456789';
+        return 'https://ror.org/01234567a';
       case 'issn':
         return '2041-1723';
       case 'wikidata':
@@ -38638,7 +38638,7 @@ describe("OpenAlex API Routes - Generated Tests", () => {
       case 'orcid':
         return 'https://orcid.org/0000-0002-1825-0097'; // Normalized to URL
       case 'ror':
-        return 'https://ror.org/0123456789'; // Already normalized
+        return 'https://ror.org/01234567a'; // Already normalized
       case 'issn':
         return '2041-1723'; // Not normalized for ISSN
       case 'wikidata':

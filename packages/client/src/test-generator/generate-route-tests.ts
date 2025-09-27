@@ -550,7 +550,7 @@ ${tests.map(test => `
       case 'orcid':
         return '0000-0002-1825-0097';
       case 'ror':
-        return 'https://ror.org/0123456789';
+        return 'https://ror.org/01234567a';
       case 'issn':
         return '2041-1723';
       case 'wikidata':
@@ -570,7 +570,7 @@ ${tests.map(test => `
       case 'orcid':
         return 'https://orcid.org/0000-0002-1825-0097'; // Normalized to URL
       case 'ror':
-        return 'https://ror.org/0123456789'; // Already normalized
+        return 'https://ror.org/01234567a'; // Already normalized
       case 'issn':
         return '2041-1723'; // Not normalized for ISSN
       case 'wikidata':
@@ -931,7 +931,7 @@ export class TestDataFactory {
     return {
       id: 'I27837315',
       display_name: 'Test University',
-      ror: 'https://ror.org/01234567',
+      ror: 'https://ror.org/01234567a',
       country_code: 'US',
       type: 'education',
       works_count: 50000,

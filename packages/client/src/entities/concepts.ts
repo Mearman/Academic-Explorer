@@ -83,6 +83,11 @@ function toQueryParams(params: StrictConceptsQueryParams): QueryParams {
 		result.select = params.select;
 	}
 
+	// Convert filter object to filter string if it exists and is an object
+	if (params.filter && typeof params.filter === 'object' && !isString(params.filter)) {
+		result.filter = buildFilterString(params.filter);
+	}
+
 	return result;
 }
 

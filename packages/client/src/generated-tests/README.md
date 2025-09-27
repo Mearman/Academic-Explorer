@@ -37,4 +37,4 @@ pnpm test generated-tests/
 - Tests are automatically generated from OpenAlex documentation
 - Some test cases may show warnings for API methods not yet implemented
 
-Generated on: 2025-09-27T10:05:27.958Z
+Generated on: 2025-09-27T10:11:46.892Z

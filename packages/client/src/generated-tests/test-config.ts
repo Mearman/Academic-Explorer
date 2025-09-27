@@ -65,7 +65,7 @@ export class TestDataFactory {
     return {
       id: 'I27837315',
       display_name: 'Test University',
-      ror: 'https://ror.org/01234567',
+      ror: 'https://ror.org/01234567a',
       country_code: 'US',
       type: 'education',
       works_count: 50000,

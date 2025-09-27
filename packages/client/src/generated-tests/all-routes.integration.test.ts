@@ -7,7 +7,7 @@
  * IMPORTANT: These tests require internet connection and respect OpenAlex rate limits.
  * Run sparingly and consider using environment variables to control execution.
  *
- * Generated on: 2025-09-27T10:05:27.957Z
+ * Generated on: 2025-09-27T10:11:46.892Z
  * Total test cases: 308
  */
 

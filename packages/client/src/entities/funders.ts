@@ -13,6 +13,7 @@ import type {
 	AutocompleteResult
 } from "../types";
 import { OpenAlexBaseClient } from "../client";
+import { buildFilterString } from "../utils/query-builder";
 
 /**
  * FundersApi provides methods for interacting with OpenAlex funders
@@ -36,12 +37,48 @@ export class FundersApi {
 	}
 
 	/**
+   * Get a single funder by its OpenAlex ID (alias for get)
+   * @param id - The OpenAlex ID for the funder (e.g., 'F4320306076')
+   * @param params - Optional query parameters for additional data
+   * @returns Promise resolving to the funder object
+   */
+	async getFunder(id: string, params: QueryParams = {}): Promise<Funder> {
+		return this.get(id, params);
+	}
+
+	/**
    * Get multiple funders with optional filtering and sorting
    * @param params - Query parameters for filtering, sorting, and pagination
    * @returns Promise resolving to paginated funders response
    */
 	async getMultiple(params: QueryParams & FundersFilters = {}): Promise<OpenAlexResponse<Funder>> {
 		return this.client.getResponse<Funder>("funders", params);
+	}
+
+	/**
+   * Get multiple funders with optional filtering and sorting (alias for getMultiple)
+   * @param params - Query parameters for filtering, sorting, and pagination
+   * @returns Promise resolving to paginated funders response
+   */
+	async getFunders(params: QueryParams & FundersFilters & { filter?: any } = {}): Promise<OpenAlexResponse<Funder>> {
+		const processedParams = this.buildQueryParams(params);
+		return this.client.getResponse<Funder>("funders", processedParams);
+	}
+
+	/**
+	 * Build query parameters with proper filter processing
+	 * @private
+	 */
+	private buildQueryParams(params: QueryParams & FundersFilters & { filter?: any } = {}): QueryParams {
+		const { filter, ...otherParams } = params;
+		const queryParams: QueryParams = { ...otherParams };
+
+		// Handle filter object conversion to string
+		if (filter && typeof filter === 'object' && Object.keys(filter).length > 0) {
+			queryParams.filter = buildFilterString(filter);
+		}
+
+		return queryParams;
 	}
 
 	/**
