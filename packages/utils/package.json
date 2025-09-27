@@ -69,6 +69,10 @@
     "./environment": {
       "import": "./dist/environment/index.js",
       "types": "./dist/environment/index.d.ts"
+    },
+    "./static-data/cache-utilities": {
+      "import": "./dist/static-data/cache-utilities.js",
+      "types": "./dist/static-data/cache-utilities.d.ts"
     }
   },
   "scripts": {
