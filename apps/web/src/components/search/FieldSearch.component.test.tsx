@@ -1,0 +1,211 @@
+import { render, screen, fireEvent } from "@testing-library/react";
+import { describe, it, expect, vi } from "vitest";
+import { MantineProvider } from "@mantine/core";
+import { FieldSearch, type FieldSearchValues } from "./FieldSearch";
+
+// Test wrapper with Mantine provider
+const TestWrapper = ({ children }: { children: React.ReactNode }) => (
+  <MantineProvider>{children}</MantineProvider>
+);
+
+describe("FieldSearch Component", () => {
+  it("renders all search input fields with correct labels", () => {
+    render(
+      <TestWrapper>
+        <FieldSearch />
+      </TestWrapper>
+    );
+
+    expect(screen.getByLabelText("Search by work title")).toBeInTheDocument();
+    expect(screen.getByLabelText("Search by abstract content")).toBeInTheDocument();
+    expect(screen.getByLabelText("Search by author name")).toBeInTheDocument();
+    expect(screen.getByLabelText("Search by institution name")).toBeInTheDocument();
+  });
+
+  it("shows default placeholder text", () => {
+    render(
+      <TestWrapper>
+        <FieldSearch />
+      </TestWrapper>
+    );
+
+    expect(screen.getByPlaceholderText("Search by title...")).toBeInTheDocument();
+    expect(screen.getByPlaceholderText("Search by abstract content...")).toBeInTheDocument();
+    expect(screen.getByPlaceholderText("Search by author name...")).toBeInTheDocument();
+    expect(screen.getByPlaceholderText("Search by institution name...")).toBeInTheDocument();
+  });
+
+  it("accepts custom placeholder text", () => {
+    const customPlaceholders = {
+      title: "Custom title placeholder",
+      author: "Custom author placeholder",
+    };
+
+    render(
+      <TestWrapper>
+        <FieldSearch placeholders={customPlaceholders} />
+      </TestWrapper>
+    );
+
+    expect(screen.getByPlaceholderText("Custom title placeholder")).toBeInTheDocument();
+    expect(screen.getByPlaceholderText("Custom author placeholder")).toBeInTheDocument();
+    // Should still show default for fields not customized
+    expect(screen.getByPlaceholderText("Search by abstract content...")).toBeInTheDocument();
+    expect(screen.getByPlaceholderText("Search by institution name...")).toBeInTheDocument();
+  });
+
+  it("calls onChange callback when field values change", () => {
+    const mockOnChange = vi.fn();
+
+    render(
+      <TestWrapper>
+        <FieldSearch onChange={mockOnChange} />
+      </TestWrapper>
+    );
+
+    const titleInput = screen.getByLabelText("Search by work title");
+    fireEvent.change(titleInput, { target: { value: "test title" } });
+
+    expect(mockOnChange).toHaveBeenCalledWith({
+      title: "test title",
+      abstract: "",
+      author: "",
+      institution: "",
+    });
+  });
+
+  it("calls onSearch callback when search button is clicked", () => {
+    const mockOnSearch = vi.fn();
+
+    render(
+      <TestWrapper>
+        <FieldSearch onSearch={mockOnSearch} />
+      </TestWrapper>
+    );
+
+    // Add some text to enable the search button
+    const titleInput = screen.getByLabelText("Search by work title");
+    fireEvent.change(titleInput, { target: { value: "test title" } });
+
+    const searchButton = screen.getByRole("button", { name: /search/i });
+    fireEvent.click(searchButton);
+
+    expect(mockOnSearch).toHaveBeenCalledWith({
+      title: "test title",
+      abstract: "",
+      author: "",
+      institution: "",
+    });
+  });
+
+  it("disables search button when no fields have values", () => {
+    render(
+      <TestWrapper>
+        <FieldSearch />
+      </TestWrapper>
+    );
+
+    const searchButton = screen.getByRole("button", { name: /search/i });
+    expect(searchButton).toBeDisabled();
+  });
+
+  it("enables search button when at least one field has a value", () => {
+    render(
+      <TestWrapper>
+        <FieldSearch />
+      </TestWrapper>
+    );
+
+    const titleInput = screen.getByLabelText("Search by work title");
+    fireEvent.change(titleInput, { target: { value: "test" } });
+
+    const searchButton = screen.getByRole("button", { name: /search/i });
+    expect(searchButton).toBeEnabled();
+  });
+
+  it("shows clear button when fields have values", () => {
+    render(
+      <TestWrapper>
+        <FieldSearch />
+      </TestWrapper>
+    );
+
+    // Initially no clear button
+    expect(screen.queryByRole("button", { name: /clear all/i })).not.toBeInTheDocument();
+
+    // Add some text
+    const titleInput = screen.getByLabelText("Search by work title");
+    fireEvent.change(titleInput, { target: { value: "test" } });
+
+    // Clear button should appear
+    expect(screen.getByRole("button", { name: /clear all/i })).toBeInTheDocument();
+  });
+
+  it("clears all fields when clear button is clicked", () => {
+    const mockOnChange = vi.fn();
+
+    render(
+      <TestWrapper>
+        <FieldSearch onChange={mockOnChange} />
+      </TestWrapper>
+    );
+
+    // Add text to multiple fields
+    const titleInput = screen.getByLabelText("Search by work title");
+    const authorInput = screen.getByLabelText("Search by author name");
+
+    fireEvent.change(titleInput, { target: { value: "test title" } });
+    fireEvent.change(authorInput, { target: { value: "test author" } });
+
+    // Click clear button
+    const clearButton = screen.getByRole("button", { name: /clear all/i });
+    fireEvent.click(clearButton);
+
+    // Verify all fields are cleared
+    expect(mockOnChange).toHaveBeenLastCalledWith({
+      title: "",
+      abstract: "",
+      author: "",
+      institution: "",
+    });
+  });
+
+  it("accepts initial values", () => {
+    const initialValues: Partial<FieldSearchValues> = {
+      title: "Initial title",
+      author: "Initial author",
+    };
+
+    render(
+      <TestWrapper>
+        <FieldSearch initialValues={initialValues} />
+      </TestWrapper>
+    );
+
+    expect(screen.getByDisplayValue("Initial title")).toBeInTheDocument();
+    expect(screen.getByDisplayValue("Initial author")).toBeInTheDocument();
+  });
+
+  it("disables all inputs when loading", () => {
+    render(
+      <TestWrapper>
+        <FieldSearch isLoading={true} />
+      </TestWrapper>
+    );
+
+    expect(screen.getByLabelText("Search by work title")).toBeDisabled();
+    expect(screen.getByLabelText("Search by abstract content")).toBeDisabled();
+    expect(screen.getByLabelText("Search by author name")).toBeDisabled();
+    expect(screen.getByLabelText("Search by institution name")).toBeDisabled();
+  });
+
+  it("hides search button when showSearchButton is false", () => {
+    render(
+      <TestWrapper>
+        <FieldSearch showSearchButton={false} />
+      </TestWrapper>
+    );
+
+    expect(screen.queryByRole("button", { name: /search/i })).not.toBeInTheDocument();
+  });
+});
