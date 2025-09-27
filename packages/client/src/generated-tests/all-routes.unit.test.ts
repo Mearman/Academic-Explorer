@@ -3,12 +3,12 @@
  *
  * This file contains comprehensive unit tests for all 308 OpenAlex API routes
  * found in the documentation. Tests are automatically generated and cover:
- * - All entity types (W2741809807, authors, concepts, funders, institutions, publishers, sources, works, keywords, topics)
+ * - All entity types (W2741809807, authors, concepts, funders, institutions, publishers, sources, works, keywords, text, topics)
  * - All operation types (get, list, search, filter, group, autocomplete, text-analysis)
  * - All parameter combinations (filters, pagination, field selection, etc.)
  * - External ID support (DOI, ORCID, ROR, ISSN, Wikidata, PMID)
  *
- * Generated on: 2025-09-27T08:09:42.573Z
+ * Generated on: 2025-09-27T08:30:36.346Z
  * Total test cases: 308
  */
 
@@ -6657,118 +6657,6 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
         try {
           if (!true && false) {
-            if (api.getConcept) {
-              await expect(api.getConcept("invalid_id")).rejects.toThrow("Test error");
-            }
-          } else {
-            if (api.getConcepts) {
-              await expect(api.getConcepts()).rejects.toThrow("Test error");
-            }
-          }
-        } catch (error) {
-          if (error instanceof Error && error.message.includes('not a function')) {
-            // API method not implemented yet - skip error test
-            expect(true).toBe(true);
-          } else {
-            throw error;
-          }
-        }
-      });
-    });
-
-    describe("Get single concept by ID", () => {
-      it("should handle /text/concepts?title=type%201%20diabetes%20research%20for%20children - test_158", async () => {
-        const mockResponse = createMockResponse<unknown>("concepts", false);
-
-        if (false) {
-          mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<unknown>);
-        } else {
-          mockClient.getById.mockResolvedValue(mockResponse as unknown);
-        }
-
-        // Extract the expected parameters from the path
-        const pathParts = "/text/concepts?title=type%201%20diabetes%20research%20for%20children".split('?');
-        const basePath = pathParts[0];
-        const queryString = pathParts[1] || '';
-
-        // Build expected call parameters
-        const expectedParams: QueryParams = {};
-        if (queryString) {
-          const searchParams = new URLSearchParams(queryString);
-          for (const [key, value] of searchParams.entries()) {
-            expectedParams[key] = value;
-          }
-        }
-
-        try {
-          // Determine which method to call based on the test case
-          const api = apis.concepts as any;
-          let result;
-
-          if (!false && false) {
-            // Single entity by ID
-            const idPart = basePath.split('/')[2];
-            if (api.getConcept) {
-              result = await api.getConcept(idPart, expectedParams);
-            }
-          } else if ("text-analysis" === "autocomplete") {
-            // Autocomplete operation
-            if (api.autocomplete) {
-              result = await api.autocomplete(expectedParams.q || '', expectedParams);
-            }
-          } else if ("text-analysis" === "search") {
-            // Search operation
-            if (api.searchConcepts) {
-              result = await api.searchConcepts(expectedParams.search || '', expectedParams);
-            }
-          } else {
-            // Collection operations (list, filter, etc.)
-            if (api.getConcepts) {
-              result = await api.getConcepts(expectedParams);
-            }
-          }
-
-          // Verify the result
-          expect(result).toBeDefined();
-
-          // Verify the correct client method was called
-          if (false) {
-            expect(mockClient.getResponse).toHaveBeenCalled();
-          } else {
-            expect(mockClient.getById).toHaveBeenCalled();
-          }
-
-        } catch (error) {
-          // Some test cases might not have corresponding API methods yet
-          // This is expected for comprehensive route testing
-          if (error instanceof Error && error.message.includes('not a function')) {
-            console.warn(`API method not implemented for route: /text/concepts?title=type%201%20diabetes%20research%20for%20children`);
-            expect(true).toBe(true); // Mark as passing but log warning
-          } else {
-            throw error;
-          }
-        }
-      });
-
-      
-
-      
-
-      
-
-      it("should handle errors correctly for /text/concepts?title=type%201%20diabetes%20research%20for%20children", async () => {
-        const error = new OpenAlexApiError("Test error", 404);
-
-        if (false) {
-          mockClient.getResponse.mockRejectedValue(error);
-        } else {
-          mockClient.getById.mockRejectedValue(error);
-        }
-
-        const api = apis.concepts as any;
-
-        try {
-          if (!false && false) {
             if (api.getConcept) {
               await expect(api.getConcept("invalid_id")).rejects.toThrow("Test error");
             }
@@ -18442,118 +18330,6 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
         try {
           if (!true && false) {
-            if (api.getWork) {
-              await expect(api.getWork("invalid_id")).rejects.toThrow("Test error");
-            }
-          } else {
-            if (api.getWorks) {
-              await expect(api.getWorks()).rejects.toThrow("Test error");
-            }
-          }
-        } catch (error) {
-          if (error instanceof Error && error.message.includes('not a function')) {
-            // API method not implemented yet - skip error test
-            expect(true).toBe(true);
-          } else {
-            throw error;
-          }
-        }
-      });
-    });
-
-    describe("Get single work by ID", () => {
-      it("should handle /text?title=type%201%20diabetes%20research%20for%20children - test_161", async () => {
-        const mockResponse = createMockResponse<Work>("works", false);
-
-        if (false) {
-          mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<Work>);
-        } else {
-          mockClient.getById.mockResolvedValue(mockResponse as Work);
-        }
-
-        // Extract the expected parameters from the path
-        const pathParts = "/text?title=type%201%20diabetes%20research%20for%20children".split('?');
-        const basePath = pathParts[0];
-        const queryString = pathParts[1] || '';
-
-        // Build expected call parameters
-        const expectedParams: QueryParams = {};
-        if (queryString) {
-          const searchParams = new URLSearchParams(queryString);
-          for (const [key, value] of searchParams.entries()) {
-            expectedParams[key] = value;
-          }
-        }
-
-        try {
-          // Determine which method to call based on the test case
-          const api = apis.works as any;
-          let result;
-
-          if (!false && false) {
-            // Single entity by ID
-            const idPart = basePath.split('/')[2];
-            if (api.getWork) {
-              result = await api.getWork(idPart, expectedParams);
-            }
-          } else if ("text-analysis" === "autocomplete") {
-            // Autocomplete operation
-            if (api.autocomplete) {
-              result = await api.autocomplete(expectedParams.q || '', expectedParams);
-            }
-          } else if ("text-analysis" === "search") {
-            // Search operation
-            if (api.searchWorks) {
-              result = await api.searchWorks(expectedParams.search || '', expectedParams);
-            }
-          } else {
-            // Collection operations (list, filter, etc.)
-            if (api.getWorks) {
-              result = await api.getWorks(expectedParams);
-            }
-          }
-
-          // Verify the result
-          expect(result).toBeDefined();
-
-          // Verify the correct client method was called
-          if (false) {
-            expect(mockClient.getResponse).toHaveBeenCalled();
-          } else {
-            expect(mockClient.getById).toHaveBeenCalled();
-          }
-
-        } catch (error) {
-          // Some test cases might not have corresponding API methods yet
-          // This is expected for comprehensive route testing
-          if (error instanceof Error && error.message.includes('not a function')) {
-            console.warn(`API method not implemented for route: /text?title=type%201%20diabetes%20research%20for%20children`);
-            expect(true).toBe(true); // Mark as passing but log warning
-          } else {
-            throw error;
-          }
-        }
-      });
-
-      
-
-      
-
-      
-
-      it("should handle errors correctly for /text?title=type%201%20diabetes%20research%20for%20children", async () => {
-        const error = new OpenAlexApiError("Test error", 404);
-
-        if (false) {
-          mockClient.getResponse.mockRejectedValue(error);
-        } else {
-          mockClient.getById.mockRejectedValue(error);
-        }
-
-        const api = apis.works as any;
-
-        try {
-          if (!false && false) {
             if (api.getWork) {
               await expect(api.getWork("invalid_id")).rejects.toThrow("Test error");
             }
@@ -36834,14 +36610,130 @@ describe("OpenAlex API Routes - Generated Tests", () => {
       });
     });
 
-    describe("Get single keyword by ID", () => {
-      it("should handle /text/keywords?title=type%201%20diabetes%20research%20for%20children - test_159", async () => {
-        const mockResponse = createMockResponse<Keyword>("keywords", false);
+  });
+
+  describe("Text Entity Routes", () => {
+
+    describe("Get single tex by ID", () => {
+      it("should handle /text/concepts?title=type%201%20diabetes%20research%20for%20children - test_158", async () => {
+        const mockResponse = createMockResponse<unknown>("text", false);
 
         if (false) {
-          mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<Keyword>);
+          mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<unknown>);
         } else {
-          mockClient.getById.mockResolvedValue(mockResponse as Keyword);
+          mockClient.getById.mockResolvedValue(mockResponse as unknown);
+        }
+
+        // Extract the expected parameters from the path
+        const pathParts = "/text/concepts?title=type%201%20diabetes%20research%20for%20children".split('?');
+        const basePath = pathParts[0];
+        const queryString = pathParts[1] || '';
+
+        // Build expected call parameters
+        const expectedParams: QueryParams = {};
+        if (queryString) {
+          const searchParams = new URLSearchParams(queryString);
+          for (const [key, value] of searchParams.entries()) {
+            expectedParams[key] = value;
+          }
+        }
+
+        try {
+          // Determine which method to call based on the test case
+          const api = apis.text as any;
+          let result;
+
+          if (!false && false) {
+            // Single entity by ID
+            const idPart = basePath.split('/')[2];
+            if (api.getTex) {
+              result = await api.getTex(idPart, expectedParams);
+            }
+          } else if ("text-analysis" === "autocomplete") {
+            // Autocomplete operation
+            if (api.autocomplete) {
+              result = await api.autocomplete(expectedParams.q || '', expectedParams);
+            }
+          } else if ("text-analysis" === "search") {
+            // Search operation
+            if (api.searchText) {
+              result = await api.searchText(expectedParams.search || '', expectedParams);
+            }
+          } else {
+            // Collection operations (list, filter, etc.)
+            if (api.getText) {
+              result = await api.getText(expectedParams);
+            }
+          }
+
+          // Verify the result
+          expect(result).toBeDefined();
+
+          // Verify the correct client method was called
+          if (false) {
+            expect(mockClient.getResponse).toHaveBeenCalled();
+          } else {
+            expect(mockClient.getById).toHaveBeenCalled();
+          }
+
+        } catch (error) {
+          // Some test cases might not have corresponding API methods yet
+          // This is expected for comprehensive route testing
+          if (error instanceof Error && error.message.includes('not a function')) {
+            console.warn(`API method not implemented for route: /text/concepts?title=type%201%20diabetes%20research%20for%20children`);
+            expect(true).toBe(true); // Mark as passing but log warning
+          } else {
+            throw error;
+          }
+        }
+      });
+
+      
+
+      
+
+      
+
+      it("should handle errors correctly for /text/concepts?title=type%201%20diabetes%20research%20for%20children", async () => {
+        const error = new OpenAlexApiError("Test error", 404);
+
+        if (false) {
+          mockClient.getResponse.mockRejectedValue(error);
+        } else {
+          mockClient.getById.mockRejectedValue(error);
+        }
+
+        const api = apis.text as any;
+
+        try {
+          if (!false && false) {
+            if (api.getTex) {
+              await expect(api.getTex("invalid_id")).rejects.toThrow("Test error");
+            }
+          } else {
+            if (api.getText) {
+              await expect(api.getText()).rejects.toThrow("Test error");
+            }
+          }
+        } catch (error) {
+          if (error instanceof Error && error.message.includes('not a function')) {
+            // API method not implemented yet - skip error test
+            expect(true).toBe(true);
+          } else {
+            throw error;
+          }
+        }
+      });
+    });
+
+    describe("Get single tex by ID", () => {
+      it("should handle /text/keywords?title=type%201%20diabetes%20research%20for%20children - test_159", async () => {
+        const mockResponse = createMockResponse<unknown>("text", false);
+
+        if (false) {
+          mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<unknown>);
+        } else {
+          mockClient.getById.mockResolvedValue(mockResponse as unknown);
         }
 
         // Extract the expected parameters from the path
@@ -36860,14 +36752,14 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
         try {
           // Determine which method to call based on the test case
-          const api = apis.keywords as any;
+          const api = apis.text as any;
           let result;
 
           if (!false && false) {
             // Single entity by ID
             const idPart = basePath.split('/')[2];
-            if (api.getKeyword) {
-              result = await api.getKeyword(idPart, expectedParams);
+            if (api.getTex) {
+              result = await api.getTex(idPart, expectedParams);
             }
           } else if ("text-analysis" === "autocomplete") {
             // Autocomplete operation
@@ -36876,13 +36768,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else if ("text-analysis" === "search") {
             // Search operation
-            if (api.searchKeywords) {
-              result = await api.searchKeywords(expectedParams.search || '', expectedParams);
+            if (api.searchText) {
+              result = await api.searchText(expectedParams.search || '', expectedParams);
             }
           } else {
             // Collection operations (list, filter, etc.)
-            if (api.getKeywords) {
-              result = await api.getKeywords(expectedParams);
+            if (api.getText) {
+              result = await api.getText(expectedParams);
             }
           }
 
@@ -36923,16 +36815,16 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           mockClient.getById.mockRejectedValue(error);
         }
 
-        const api = apis.keywords as any;
+        const api = apis.text as any;
 
         try {
           if (!false && false) {
-            if (api.getKeyword) {
-              await expect(api.getKeyword("invalid_id")).rejects.toThrow("Test error");
+            if (api.getTex) {
+              await expect(api.getTex("invalid_id")).rejects.toThrow("Test error");
             }
           } else {
-            if (api.getKeywords) {
-              await expect(api.getKeywords()).rejects.toThrow("Test error");
+            if (api.getText) {
+              await expect(api.getText()).rejects.toThrow("Test error");
             }
           }
         } catch (error) {
@@ -36946,18 +36838,14 @@ describe("OpenAlex API Routes - Generated Tests", () => {
       });
     });
 
-  });
-
-  describe("Topics Entity Routes", () => {
-
-    describe("Get single topic by ID", () => {
+    describe("Get single tex by ID", () => {
       it("should handle /text/topics?title=type%201%20diabetes%20research%20for%20children - test_160", async () => {
-        const mockResponse = createMockResponse<Topic>("topics", false);
+        const mockResponse = createMockResponse<unknown>("text", false);
 
         if (false) {
-          mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<Topic>);
+          mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<unknown>);
         } else {
-          mockClient.getById.mockResolvedValue(mockResponse as Topic);
+          mockClient.getById.mockResolvedValue(mockResponse as unknown);
         }
 
         // Extract the expected parameters from the path
@@ -36976,14 +36864,14 @@ describe("OpenAlex API Routes - Generated Tests", () => {
 
         try {
           // Determine which method to call based on the test case
-          const api = apis.topics as any;
+          const api = apis.text as any;
           let result;
 
           if (!false && false) {
             // Single entity by ID
             const idPart = basePath.split('/')[2];
-            if (api.getTopic) {
-              result = await api.getTopic(idPart, expectedParams);
+            if (api.getTex) {
+              result = await api.getTex(idPart, expectedParams);
             }
           } else if ("text-analysis" === "autocomplete") {
             // Autocomplete operation
@@ -36992,13 +36880,13 @@ describe("OpenAlex API Routes - Generated Tests", () => {
             }
           } else if ("text-analysis" === "search") {
             // Search operation
-            if (api.searchTopics) {
-              result = await api.searchTopics(expectedParams.search || '', expectedParams);
+            if (api.searchText) {
+              result = await api.searchText(expectedParams.search || '', expectedParams);
             }
           } else {
             // Collection operations (list, filter, etc.)
-            if (api.getTopics) {
-              result = await api.getTopics(expectedParams);
+            if (api.getText) {
+              result = await api.getText(expectedParams);
             }
           }
 
@@ -37039,16 +36927,16 @@ describe("OpenAlex API Routes - Generated Tests", () => {
           mockClient.getById.mockRejectedValue(error);
         }
 
-        const api = apis.topics as any;
+        const api = apis.text as any;
 
         try {
           if (!false && false) {
-            if (api.getTopic) {
-              await expect(api.getTopic("invalid_id")).rejects.toThrow("Test error");
+            if (api.getTex) {
+              await expect(api.getTex("invalid_id")).rejects.toThrow("Test error");
             }
           } else {
-            if (api.getTopics) {
-              await expect(api.getTopics()).rejects.toThrow("Test error");
+            if (api.getText) {
+              await expect(api.getText()).rejects.toThrow("Test error");
             }
           }
         } catch (error) {
@@ -37061,6 +36949,122 @@ describe("OpenAlex API Routes - Generated Tests", () => {
         }
       });
     });
+
+    describe("Get single tex by ID", () => {
+      it("should handle /text?title=type%201%20diabetes%20research%20for%20children - test_161", async () => {
+        const mockResponse = createMockResponse<unknown>("text", false);
+
+        if (false) {
+          mockClient.getResponse.mockResolvedValue(mockResponse as OpenAlexResponse<unknown>);
+        } else {
+          mockClient.getById.mockResolvedValue(mockResponse as unknown);
+        }
+
+        // Extract the expected parameters from the path
+        const pathParts = "/text?title=type%201%20diabetes%20research%20for%20children".split('?');
+        const basePath = pathParts[0];
+        const queryString = pathParts[1] || '';
+
+        // Build expected call parameters
+        const expectedParams: QueryParams = {};
+        if (queryString) {
+          const searchParams = new URLSearchParams(queryString);
+          for (const [key, value] of searchParams.entries()) {
+            expectedParams[key] = value;
+          }
+        }
+
+        try {
+          // Determine which method to call based on the test case
+          const api = apis.text as any;
+          let result;
+
+          if (!false && false) {
+            // Single entity by ID
+            const idPart = basePath.split('/')[2];
+            if (api.getTex) {
+              result = await api.getTex(idPart, expectedParams);
+            }
+          } else if ("text-analysis" === "autocomplete") {
+            // Autocomplete operation
+            if (api.autocomplete) {
+              result = await api.autocomplete(expectedParams.q || '', expectedParams);
+            }
+          } else if ("text-analysis" === "search") {
+            // Search operation
+            if (api.searchText) {
+              result = await api.searchText(expectedParams.search || '', expectedParams);
+            }
+          } else {
+            // Collection operations (list, filter, etc.)
+            if (api.getText) {
+              result = await api.getText(expectedParams);
+            }
+          }
+
+          // Verify the result
+          expect(result).toBeDefined();
+
+          // Verify the correct client method was called
+          if (false) {
+            expect(mockClient.getResponse).toHaveBeenCalled();
+          } else {
+            expect(mockClient.getById).toHaveBeenCalled();
+          }
+
+        } catch (error) {
+          // Some test cases might not have corresponding API methods yet
+          // This is expected for comprehensive route testing
+          if (error instanceof Error && error.message.includes('not a function')) {
+            console.warn(`API method not implemented for route: /text?title=type%201%20diabetes%20research%20for%20children`);
+            expect(true).toBe(true); // Mark as passing but log warning
+          } else {
+            throw error;
+          }
+        }
+      });
+
+      
+
+      
+
+      
+
+      it("should handle errors correctly for /text?title=type%201%20diabetes%20research%20for%20children", async () => {
+        const error = new OpenAlexApiError("Test error", 404);
+
+        if (false) {
+          mockClient.getResponse.mockRejectedValue(error);
+        } else {
+          mockClient.getById.mockRejectedValue(error);
+        }
+
+        const api = apis.text as any;
+
+        try {
+          if (!false && false) {
+            if (api.getTex) {
+              await expect(api.getTex("invalid_id")).rejects.toThrow("Test error");
+            }
+          } else {
+            if (api.getText) {
+              await expect(api.getText()).rejects.toThrow("Test error");
+            }
+          }
+        } catch (error) {
+          if (error instanceof Error && error.message.includes('not a function')) {
+            // API method not implemented yet - skip error test
+            expect(true).toBe(true);
+          } else {
+            throw error;
+          }
+        }
+      });
+    });
+
+  });
+
+  describe("Topics Entity Routes", () => {
 
     describe("List topics", () => {
       it("should handle /topics - test_162", async () => {
