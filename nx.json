@@ -216,7 +216,7 @@
     }
   },
   "release": {
-    "projectsRelationship": "independent",
+    "projectsRelationship": "fixed",
     "projects": ["packages/*", "apps/*", "tools/*"],
     "version": {
       "conventionalCommits": true,
