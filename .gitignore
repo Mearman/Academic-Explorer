@@ -53,12 +53,14 @@ packages/*/coverage
 **/lib/
 **/build/
 
-# TypeScript compiled outputs in src directories
-packages/*/src/**/*.js
-packages/*/src/**/*.d.ts
-packages/*/src/**/*.js.map
-!packages/*/src/**/*.test.js
-!packages/*/src/**/*.spec.js
+# TypeScript compiled outputs (anywhere in project)
+**/*.js
+**/*.d.ts
+**/*.js.map
+**/*.d.ts.map
+# Allow third-party and build outputs only
+!**/dist/**
+!**/node_modules/**
 
 # TypeScript build info files
 *.tsbuildinfo
