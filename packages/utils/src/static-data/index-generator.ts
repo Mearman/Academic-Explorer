@@ -280,26 +280,58 @@ export class StaticDataIndexGenerator {
     // Generate statistics
     const stats = this.computeEntityTypeStats(entities);
 
-    // Create index structure
+    // Read existing index to check if content has changed
+    let existingIndex: EntityTypeIndex | null = null;
+
+    try {
+      const indexContent = await this.fs.readFile(indexPath, 'utf8');
+      const parsedData = JSON.parse(indexContent) as unknown;
+      if (isRecord(parsedData)) {
+        existingIndex = parsedData as unknown as EntityTypeIndex;
+      }
+    } catch {
+      // Index doesn't exist or is invalid, will be created
+    }
+
+    // Check if content has actually changed (excluding generatedAt field)
+    const newTotalEntities = Object.keys(entities).length;
+    const newTotalSize = Object.values(entities).reduce((sum, entity) => sum + entity.fileSize, 0);
+
+    const contentChanged = !existingIndex ||
+      existingIndex.entityType !== entityType ||
+      existingIndex.schemaVersion !== this.config.schemaVersion ||
+      existingIndex.totalEntities !== newTotalEntities ||
+      existingIndex.totalSize !== newTotalSize ||
+      JSON.stringify(existingIndex.entities) !== JSON.stringify(entities) ||
+      JSON.stringify(existingIndex.stats) !== JSON.stringify(stats);
+
+    // Create index structure with conditional generatedAt
     const index: EntityTypeIndex = {
       entityType,
       directoryPath: entityDir,
-      generatedAt: Date.now(),
+      generatedAt: contentChanged ? Date.now() : (existingIndex?.generatedAt || Date.now()),
       schemaVersion: this.config.schemaVersion,
-      totalEntities: Object.keys(entities).length,
-      totalSize: Object.values(entities).reduce((sum, entity) => sum + entity.fileSize, 0),
+      totalEntities: newTotalEntities,
+      totalSize: newTotalSize,
       entities,
       stats,
     };
 
-    // Write index to file
-    await this.fs.writeFile(indexPath, JSON.stringify(index, null, 2), 'utf8');
-
-    logger.debug(logCategory, `Index generated successfully for ${entityType}`, {
-      indexPath,
-      totalEntities: index.totalEntities,
-      totalSize: index.totalSize,
-    });
+    // Only write if content has changed
+    if (contentChanged) {
+      await this.fs.writeFile(indexPath, JSON.stringify(index, null, 2), 'utf8');
+      logger.debug(logCategory, `Index updated for ${entityType} (content changed)`, {
+        indexPath,
+        totalEntities: index.totalEntities,
+        totalSize: index.totalSize,
+      });
+    } else {
+      logger.debug(logCategory, `Index unchanged for ${entityType} (skipped write)`, {
+        indexPath,
+        totalEntities: index.totalEntities,
+        totalSize: index.totalSize,
+      });
+    }
 
     return indexPath;
   }
