@@ -8,10 +8,18 @@
  */
 import { readFile, writeFile, readdir, stat, access, mkdir, unlink } from "fs/promises";
 import { join } from "path";
-import { createHash } from "crypto";
 import type { Plugin } from "vite";
 import { z } from "zod";
 import { logger } from "@academic-explorer/utils";
+import {
+  generateContentHash,
+  parseOpenAlexUrl,
+  getCacheFilePath,
+  sanitizeFilename,
+  type EntityType,
+  type DirectoryIndex,
+  type IndexEntry
+} from "@academic-explorer/utils/static-data/cache-utilities";
 
 /**
  * Simple fetch function for OpenAlex API queries
@@ -1202,7 +1210,7 @@ async function updateUnifiedIndex(dataPath: string, entityType: string, index: U
         try {
           const fileStat = await stat(filePath);
           const fileContent = await readFile(filePath, "utf-8");
-          const contentHash = createContentHash(fileContent);
+          const contentHash = generateContentHash(JSON.parse(fileContent));
 
           // Determine file type based on content structure only
           let fileType: "entity" | "query" = "entity";
@@ -1581,49 +1589,6 @@ async function saveUnifiedIndex(dataPath: string, entityType: string, index: Uni
 }
 
 
-/**
- * Create content hash excluding volatile metadata fields and normalizing URLs
- */
-function createContentHash(fileContent: string): string {
-  try {
-    const parsed: unknown = JSON.parse(fileContent);
-
-    // Create a copy and remove volatile metadata fields
-    if (parsed && typeof parsed === "object" && !Array.isArray(parsed)) {
-      const ObjectSchema = z.record(z.string(), z.unknown());
-      const contentResult = ObjectSchema.safeParse(parsed);
-      if (!contentResult.success) return createHash("sha256").update(fileContent).digest("hex").slice(0, 16);
-
-      const cleanContent = { ...contentResult.data };
-
-      if (cleanContent['meta'] && typeof cleanContent['meta'] === "object" && !Array.isArray(cleanContent['meta'])) {
-        const metaResult = ObjectSchema.safeParse(cleanContent['meta']);
-        if (!metaResult.success) return JSON.stringify(cleanContent);
-
-        const metaObj = metaResult.data;
-
-        const { count: _count, db_response_time_ms: _db_response_time_ms, ...cleanMeta } = metaObj;
-
-        // Normalize URLs in meta to handle URL encoding differences
-        if ("request_url" in cleanMeta && typeof cleanMeta['request_url'] === "string") {
-          cleanMeta['request_url'] = normalizeUrlForDeduplication(cleanMeta['request_url']);
-        }
-
-        cleanContent['meta'] = cleanMeta;
-      }
-
-      // Create hash from cleaned content with consistent ordering
-      const cleanedJson = JSON.stringify(cleanContent, Object.keys(cleanContent).sort());
-      return createHash("sha256").update(cleanedJson).digest("hex").slice(0, 16);
-    }
-
-    // If not an object, use the parsed content directly
-    return createHash("sha256").update(JSON.stringify(parsed)).digest("hex").slice(0, 16);
-  } catch {
-    // If parsing fails, use original content
-    return createHash("sha256").update(fileContent).digest("hex").slice(0, 16);
-  }
-}
 
 /**
  * Normalize URL by decoding URL-encoded characters for deduplication

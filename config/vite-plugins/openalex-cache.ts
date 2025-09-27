@@ -7,6 +7,14 @@ import type { Plugin, ResolvedConfig } from "vite";
 import { join } from "path";
 import { existsSync } from "fs";
 import { readFile, writeFile, mkdir } from "fs/promises";
+import {
+  generateContentHash,
+  parseOpenAlexUrl,
+  getCacheFilePath,
+  sanitizeFilename,
+  type DirectoryIndex,
+  type IndexEntry
+} from "../../packages/utils/src/static-data/cache-utilities.js";
 
 export interface OpenAlexCachePluginOptions {
   /** Custom static data directory path (relative to project root) */
@@ -48,69 +56,10 @@ export function openalexCachePlugin(options: OpenAlexCachePluginOptions = {}): P
   const isDevelopment = () => config.command === 'serve';
 
   /**
-   * Parse OpenAlex URL into path-based cache structure
+   * Get cache path for a request using shared utilities
    */
-  const parseOpenAlexUrl = (url: string): { pathSegments: string[]; isQuery: boolean; queryString: string } | null => {
-    try {
-      const urlObj = new URL(url);
-      const pathSegments = urlObj.pathname.split('/').filter(Boolean);
-
-      if (pathSegments.length === 0) {
-        return null;
-      }
-
-      return {
-        pathSegments,
-        isQuery: !!urlObj.search,
-        queryString: urlObj.search
-      };
-    } catch {
-      return null;
-    }
-  };
-
-  /**
-   * Sanitize filename by replacing problematic characters
-   */
-  const sanitizeFilename = (filename: string): string => {
-    return filename
-      .replace(/[/\\]/g, '_')      // Replace path separators
-      .replace(/[<>"|*?]/g, '_')   // Replace Windows-forbidden characters (keeping : for queries)
-      .replace(/\s+/g, '_')        // Replace whitespace with underscores
-      .replace(/_{2,}/g, '_')      // Collapse multiple underscores
-      .trim();
-  };
-
-  /**
-   * Generate cache path for a request based on path segments
-   */
-  const getCachePath = (url: string, parsedUrl: { pathSegments: string[]; isQuery: boolean; queryString: string }): string | null => {
-    try {
-      const { pathSegments, isQuery, queryString } = parsedUrl;
-
-      if (isQuery) {
-        // For queries: /authors?filter=... → authors/queries/filter=display_name.search:mearman.json
-        const baseDir = join(staticDataDir, ...pathSegments);
-        const queryFilename = sanitizeFilename(queryString.slice(1)); // Remove leading '?' and sanitize
-        return join(baseDir, 'queries', `${queryFilename}.json`);
-      } else if (pathSegments.length === 2) {
-        // For single entities: /authors/A123 → authors/A123.json
-        const [baseType, entityId] = pathSegments;
-        return join(staticDataDir, baseType, `${entityId}.json`);
-      } else if (pathSegments.length > 2) {
-        // For nested paths: /authors/A123/works → authors/A123/works.json
-        const fileName = pathSegments[pathSegments.length - 1];
-        const dirPath = pathSegments.slice(0, -1);
-        return join(staticDataDir, ...dirPath, `${fileName}.json`);
-      } else if (pathSegments.length === 1) {
-        // For root collections: /authors → authors/index.json
-        return join(staticDataDir, pathSegments[0], 'index.json');
-      }
-
-      return null;
-    } catch {
-      return null;
-    }
+  const getCachePath = (url: string): string | null => {
+    return getCacheFilePath(url, staticDataDir);
   };
 
   /**
@@ -189,13 +138,8 @@ export function openalexCachePlugin(options: OpenAlexCachePluginOptions = {}): P
       const indexPath = join(dirPath, 'index.json');
       const { readdirSync, statSync } = await import('fs');
 
-      // Read existing index
-      let index: {
-        lastUpdated: string;
-        path: string;
-        files: Record<string, { $ref: string; retrieved_at?: string; contentHash?: string }>;
-        directories: Record<string, { $ref: string; last_modified: string }>;
-      } = {
+      // Read existing index using unified structure
+      let index: DirectoryIndex = {
         lastUpdated: new Date().toISOString(),
         path: dirPath.replace(staticDataDir, '').replace(/^\//, '') || '/',
         files: {},
@@ -229,15 +173,15 @@ export function openalexCachePlugin(options: OpenAlexCachePluginOptions = {}): P
         if (stats.isDirectory()) {
           index.directories[item] = {
             $ref: relativePath,
-            last_modified: stats.mtime.toISOString()
+            lastModified: stats.mtime.toISOString()
           };
         } else if (item.endsWith('.json')) {
-          let file_retrieved_at: string | undefined;
+          let file_lastModified: string = stats.mtime.toISOString();
           let file_contentHash: string | undefined;
 
           // Use provided metadata if this is the newly cached file
           if (newFileName && item === newFileName && retrieved_at && contentHash) {
-            file_retrieved_at = retrieved_at;
+            file_lastModified = retrieved_at;
             file_contentHash = contentHash;
           } else {
             // Try to read cache entry metadata for backwards compatibility
@@ -246,23 +190,29 @@ export function openalexCachePlugin(options: OpenAlexCachePluginOptions = {}): P
               const cacheEntry = JSON.parse(fileContent);
 
               // Extract metadata from old cache format (wrapped)
-              if (cacheEntry.retrieved_at && cacheEntry.contentHash) {
-                file_retrieved_at = cacheEntry.retrieved_at;
+              if (cacheEntry.retrieved_at) {
+                file_lastModified = cacheEntry.retrieved_at;
+              }
+              if (cacheEntry.contentHash) {
                 file_contentHash = cacheEntry.contentHash;
               }
-              // For new cache format (raw data), metadata is only available from provided params
+              // For new cache format (raw data), generate content hash if not provided
+              if (!file_contentHash) {
+                file_contentHash = generateContentHash(cacheEntry);
+              }
             } catch {
-              // Skip files that can't be read or parsed
+              // Skip files that can't be read or parsed - use file system time
             }
           }
 
           // Use base name without .json extension as the key
           const baseName = item.replace(/\.json$/, '');
-          index.files[baseName] = {
+          const indexEntry: IndexEntry = {
             $ref: relativePath,
-            ...(file_retrieved_at && { retrieved_at: file_retrieved_at }),
-            ...(file_contentHash && { contentHash: file_contentHash })
+            lastModified: file_lastModified,
+            contentHash: file_contentHash || 'unknown'
           };
+          index.files[baseName] = indexEntry;
         }
       }
 
@@ -290,7 +240,7 @@ export function openalexCachePlugin(options: OpenAlexCachePluginOptions = {}): P
       let rootIndex: {
         lastUpdated: string;
         path: string;
-        entityTypes: Record<string, { $ref: string; last_modified: string }>;
+        entityTypes: Record<string, { $ref: string; lastModified: string }>;
       } = {
         lastUpdated: new Date().toISOString(),
         path: '/',
@@ -328,7 +278,7 @@ export function openalexCachePlugin(options: OpenAlexCachePluginOptions = {}): P
             if (hasContent) {
               rootIndex.entityTypes[item] = {
                 $ref: `./${item}`,
-                last_modified: stats.mtime.toISOString()
+                lastModified: stats.mtime.toISOString()
               };
             }
           }
@@ -347,28 +297,6 @@ export function openalexCachePlugin(options: OpenAlexCachePluginOptions = {}): P
     }
   };
 
-  /**
-   * Generate content hash excluding metadata field
-   */
-  const generateContentHash = (data: unknown): string => {
-    try {
-      // Create a copy of the data without the meta field
-      const dataToHash = typeof data === 'object' && data !== null && 'meta' in data
-        ? Object.fromEntries(Object.entries(data).filter(([key]) => key !== 'meta'))
-        : data;
-
-      const content = JSON.stringify(dataToHash);
-      let hash = 0;
-      for (let i = 0; i < content.length; i++) {
-        const char = content.charCodeAt(i);
-        hash = ((hash << 5) - hash) + char;
-        hash = hash & hash; // Convert to 32bit integer
-      }
-      return hash.toString(36);
-    } catch {
-      return 'hash-error';
-    }
-  };
 
   return {
     name: "openalex-cache",
@@ -396,7 +324,7 @@ export function openalexCachePlugin(options: OpenAlexCachePluginOptions = {}): P
             return next();
           }
 
-          const cachePath = getCachePath(fullUrl, parsedUrl);
+          const cachePath = getCachePath(fullUrl);
           if (!cachePath) {
             return next();
           }
