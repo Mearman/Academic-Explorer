@@ -217,6 +217,7 @@
   },
   "release": {
     "projectsRelationship": "independent",
+    "projects": ["packages/*", "apps/*", "tools/*"],
     "version": {
       "conventionalCommits": true,
       "generatorOptions": {
@@ -243,29 +244,6 @@
     },
     "git": {
       "commitMessage": "chore(release): version packages [skip ci]"
-    },
-    "groups": {
-      "workspace": {
-        "projects": ["academic-explorer-monorepo"],
-        "projectsRelationship": "fixed",
-        "version": {
-          "conventionalCommits": true,
-          "generatorOptions": {
-            "fallbackCurrentVersionResolver": "disk"
-          }
-        }
-      },
-      "projects": {
-        "projects": ["packages/*", "apps/*", "tools/*"],
-        "projectsRelationship": "independent",
-        "version": {
-          "conventionalCommits": true,
-          "generatorOptions": {
-            "packageRoot": "{projectRoot}",
-            "fallbackCurrentVersionResolver": "disk"
-          }
-        }
-      }
     }
   },
   "cli": {
