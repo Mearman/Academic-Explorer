@@ -1,11 +1,40 @@
 /**
- * OpenAlex Autocomplete and Search API
- * Provides autocomplete functionality and advanced search across all OpenAlex entity types
+ * OpenAlex Autocomplete API Base Infrastructure
+ * Provides shared types and base class for autocomplete functionality across all OpenAlex entity types
  */
 
 import type { AutocompleteResult, EntityType, QueryParams } from "../types";
 import { OpenAlexBaseClient } from "../client";
 import { logger } from "../internal/logger";
+
+/**
+ * Autocomplete request options interface
+ */
+export interface AutocompleteOptions {
+  /** Search query string */
+  q: string;
+  /** Number of results to return per page (max 200) */
+  per_page?: number;
+  /** Response format (currently only 'json' supported) */
+  format?: 'json';
+}
+
+/**
+ * Autocomplete API response format matching OpenAlex API structure
+ */
+export interface AutocompleteResponse<T = AutocompleteResult> {
+  /** Array of autocomplete results */
+  results: T[];
+  /** Metadata about the request */
+  meta?: {
+    /** Total number of results available */
+    count?: number;
+    /** Current page number */
+    page?: number;
+    /** Number of results per page */
+    per_page?: number;
+  };
+}
 
 interface DebouncedPromiseCache {
   [key: string]: {
@@ -26,158 +55,97 @@ function isValidCachedPromise<T>(
 }
 
 /**
- * AutocompleteApi provides methods for searching and autocompleting OpenAlex entities
- * with built-in debouncing for performance optimization
+ * Base AutocompleteApi class providing shared autocomplete logic and utilities
+ * Designed to be extended by entity-specific implementations
  */
-export class AutocompleteApi {
-	private client: OpenAlexBaseClient;
+export class BaseAutocompleteApi {
+	protected client: OpenAlexBaseClient;
 	private debounceCache: DebouncedPromiseCache = {};
-	private readonly DEBOUNCE_DELAY = 300; // milliseconds
-	private readonly CACHE_TTL = 30000; // 30 seconds
+	protected readonly DEBOUNCE_DELAY = 300; // milliseconds
+	protected readonly CACHE_TTL = 30000; // 30 seconds
 
 	constructor(client: OpenAlexBaseClient) {
 		this.client = client;
 	}
 
 	/**
-   * General autocomplete across entity types with debouncing
+   * Core autocomplete method for making requests to OpenAlex autocomplete endpoints
+   * @param endpoint - The autocomplete endpoint path
+   * @param options - Autocomplete request options
+   * @returns Promise resolving to autocomplete response
+   */
+	protected async makeAutocompleteRequest<T = AutocompleteResult>(
+		endpoint: string,
+		options: AutocompleteOptions
+	): Promise<AutocompleteResponse<T>> {
+		const params: QueryParams & AutocompleteOptions = {
+			q: options.q.trim(),
+			per_page: options.per_page ?? 25,
+			format: options.format ?? 'json',
+		};
+
+		try {
+			const response = await this.client.get<AutocompleteResponse<T>>(endpoint, params);
+			return response;
+		} catch (error: unknown) {
+			const errorDetails = this.formatErrorForLogging(error);
+			logger.warn(`[AutocompleteApi] Request failed for endpoint "${endpoint}"`, {
+				endpoint,
+				options,
+				error: errorDetails
+			});
+			// Return empty response on error
+			return { results: [] };
+		}
+	}
+
+	/**
+   * General autocomplete with debouncing for any entity type
    * @param query - Search query string
-   * @param entityType - Optional specific entity type to search
+   * @param entityType - Specific entity type to search
    * @returns Promise resolving to array of autocomplete results
    */
-	async autocomplete(query: string, entityType?: EntityType): Promise<AutocompleteResult[]> {
+	protected async autocomplete(query: string, entityType: EntityType): Promise<AutocompleteResult[]> {
 		if (!query.trim()) {
 			return [];
 		}
 
-		const cacheKey = `autocomplete_${query.trim().toLowerCase()}_${entityType ?? "all"}`;
-		return this.executeWithDebounce(cacheKey, () => this.performAutocomplete(query, entityType));
-	}
-
-	/**
-   * Work-specific autocomplete for papers, articles, and publications
-   * @param query - Search query string
-   * @returns Promise resolving to array of work autocomplete results
-   */
-	async autocompleteWorks(query: string): Promise<AutocompleteResult[]> {
-		return this.autocomplete(query, "works");
-	}
-
-	/**
-   * Author-specific autocomplete for researchers and academics
-   * @param query - Search query string
-   * @returns Promise resolving to array of author autocomplete results
-   */
-	async autocompleteAuthors(query: string): Promise<AutocompleteResult[]> {
-		return this.autocomplete(query, "authors");
-	}
-
-	/**
-   * Source-specific autocomplete for journals, conferences, and publications
-   * @param query - Search query string
-   * @returns Promise resolving to array of source autocomplete results
-   */
-	async autocompleteSources(query: string): Promise<AutocompleteResult[]> {
-		return this.autocomplete(query, "sources");
-	}
-
-	/**
-   * Institution-specific autocomplete for universities and research organizations
-   * @param query - Search query string
-   * @returns Promise resolving to array of institution autocomplete results
-   */
-	async autocompleteInstitutions(query: string): Promise<AutocompleteResult[]> {
-		return this.autocomplete(query, "institutions");
-	}
-
-	/**
-   * Topic-specific autocomplete for research topics and fields
-   * @param query - Search query string
-   * @returns Promise resolving to array of topic autocomplete results
-   */
-	async autocompleteTopics(query: string): Promise<AutocompleteResult[]> {
-		return this.autocomplete(query, "topics");
+		const cacheKey = `autocomplete_${query.trim().toLowerCase()}_${entityType}`;
+		return this.executeWithDebounce(cacheKey, () =>
+			this.performAutocomplete(query, entityType)
+		);
 	}
 
 	/**
    * Cross-entity search across multiple entity types
    * @param query - Search query string
-   * @param entityTypes - Optional array of entity types to search (defaults to all)
+   * @param entityTypes - Array of entity types to search
    * @returns Promise resolving to array of search results across entity types
    */
-	async search(query: string, entityTypes?: EntityType[]): Promise<AutocompleteResult[]> {
+	protected async searchMultipleTypes(
+		query: string,
+		entityTypes: EntityType[]
+	): Promise<AutocompleteResult[]> {
 		if (!query.trim()) {
 			return [];
 		}
 
-		const types = entityTypes ?? ["works", "authors", "sources", "institutions", "topics"];
-		const cacheKey = `search_${query.trim().toLowerCase()}_${types.join(",")}`;
+		const cacheKey = `search_${query.trim().toLowerCase()}_${entityTypes.join(",")}`;
 
 		return this.executeWithDebounce(cacheKey, async () => {
-			const promises = types.map(type =>
+			const promises = entityTypes.map(type =>
 				this.performAutocomplete(query, type).catch((): AutocompleteResult[] => [])
 			);
 
 			const results = await Promise.all(promises);
-			return results.flat().sort((a, b) => {
-				// Sort by cited_by_count (descending), then by works_count (descending)
-				const aCitations = a.cited_by_count ?? 0;
-				const bCitations = b.cited_by_count ?? 0;
-				if (aCitations !== bCitations) {
-					return bCitations - aCitations;
-				}
-
-				const aWorks = a.works_count ?? 0;
-				const bWorks = b.works_count ?? 0;
-				return bWorks - aWorks;
-			});
-		});
-	}
-
-	/**
-   * Advanced search with custom filters
-   * @param query - Search query string
-   * @param filters - Key-value pairs for additional search filters
-   * @returns Promise resolving to array of filtered search results
-   */
-	async searchWithFilters(query: string, filters: Record<string, unknown>): Promise<AutocompleteResult[]> {
-		if (!query.trim()) {
-			return [];
-		}
-
-		const cacheKey = `search_filtered_${query.trim().toLowerCase()}_${JSON.stringify(filters)}`;
-
-		return this.executeWithDebounce(cacheKey, async () => {
-			// Determine which entity types to search based on filters
-			const entityTypes = this.inferEntityTypesFromFilters(filters);
-
-			const promises = entityTypes.map(async type => {
-				try {
-					const endpoint = `${type}/autocomplete`;
-					const params: QueryParams & { q: string } = {
-						q: query.trim(),
-						...this.formatFiltersForEntityType(filters),
-					};
-
-					const response = await this.client.get<{ results: AutocompleteResult[] }>(endpoint, params);
-					return response.results.map(result => ({
-						...result,
-						entity_type: this.mapEntityTypeToSingular(type),
-					}));
-				} catch {
-					return [] satisfies AutocompleteResult[];
-				}
-			});
-
-			const results = await Promise.all(promises);
-			return results.flat();
+			return this.sortAutocompleteResults(results.flat());
 		});
 	}
 
 	/**
    * Execute function with debouncing to prevent excessive API calls
    */
-	private async executeWithDebounce<T>(
+	protected async executeWithDebounce<T>(
 		cacheKey: string,
 		fn: () => Promise<T>
 	): Promise<T> {
@@ -204,39 +172,50 @@ export class AutocompleteApi {
 	}
 
 	/**
-   * Perform the actual autocomplete request
+   * Perform autocomplete request for a specific entity type
    */
-	private async performAutocomplete(query: string, entityType?: EntityType): Promise<AutocompleteResult[]> {
+	protected async performAutocomplete(query: string, entityType: EntityType): Promise<AutocompleteResult[]> {
 		try {
-			const trimmedQuery = query.trim();
+			const endpoint = `autocomplete/${entityType}`;
+			const options: AutocompleteOptions = {
+				q: query.trim(),
+			};
 
-			if (entityType) {
-				// Use specific entity autocomplete endpoint
-				const endpoint = `autocomplete/${entityType}`;
-				const queryParams: QueryParams & { q: string } = {
-					q: trimmedQuery,
-				};
-				const response = await this.client.get<{ results: AutocompleteResult[] }>(endpoint, queryParams);
+			const response = await this.makeAutocompleteRequest(endpoint, options);
 
-				return response.results.map(result => ({
-					...result,
-					entity_type: this.mapEntityTypeToSingular(entityType),
-				}));
-			} else {
-				// Search across all entity types
-				return await this.search(trimmedQuery);
-			}
+			return response.results.map(result => ({
+				...result,
+				entity_type: this.mapEntityTypeToSingular(entityType),
+			}));
 		} catch (error: unknown) {
 			const errorDetails = this.formatErrorForLogging(error);
-			logger.warn(`[AutocompleteApi] Autocomplete failed for query "${query}"`, { query, error: errorDetails });
+			logger.warn(`[AutocompleteApi] Autocomplete failed for query "${query}"`, { query, entityType, error: errorDetails });
 			return [];
 		}
 	}
 
 	/**
+   * Sort autocomplete results by relevance (cited_by_count, then works_count)
+   */
+	protected sortAutocompleteResults(results: AutocompleteResult[]): AutocompleteResult[] {
+		return results.sort((a, b) => {
+			// Sort by cited_by_count (descending), then by works_count (descending)
+			const aCitations = a.cited_by_count ?? 0;
+			const bCitations = b.cited_by_count ?? 0;
+			if (aCitations !== bCitations) {
+				return bCitations - aCitations;
+			}
+
+			const aWorks = a.works_count ?? 0;
+			const bWorks = b.works_count ?? 0;
+			return bWorks - aWorks;
+		});
+	}
+
+	/**
    * Map plural entity type to singular form for AutocompleteResult
    */
-	private mapEntityTypeToSingular(entityType: EntityType): AutocompleteResult["entity_type"] {
+	protected mapEntityTypeToSingular(entityType: EntityType): AutocompleteResult["entity_type"] {
 		const mapping: Record<EntityType, AutocompleteResult["entity_type"]> = {
 			"works": "work",
 			"authors": "author",
@@ -253,67 +232,22 @@ export class AutocompleteApi {
 	}
 
 	/**
-   * Infer which entity types to search based on filter keys
+   * Validate autocomplete options
    */
-	private inferEntityTypesFromFilters(filters: Record<string, unknown>): EntityType[] {
-		const allTypes: EntityType[] = ["works", "authors", "sources", "institutions", "topics"];
-
-		// If no specific entity filters, search all types
-		const filterKeys = Object.keys(filters);
-		if (filterKeys.length === 0) {
-			return allTypes;
+	protected validateAutocompleteOptions(options: AutocompleteOptions): void {
+		if (!options.q || !options.q.trim()) {
+			throw new Error('Query string is required and cannot be empty');
 		}
 
-		const entityTypes = new Set<EntityType>();
-
-		// Check for entity-specific filter patterns
-		for (const key of filterKeys) {
-			if (key.startsWith("authorships.") || key.includes("author")) {
-				entityTypes.add("works");
-				entityTypes.add("authors");
-			}
-			if (key.startsWith("host_venue.") || key.includes("source")) {
-				entityTypes.add("sources");
-			}
-			if (key.includes("institution")) {
-				entityTypes.add("institutions");
-				entityTypes.add("works");
-			}
-			if (key.includes("topic") || key.includes("concept")) {
-				entityTypes.add("topics");
-			}
-			if (key.includes("funder")) {
-				entityTypes.add("funders");
-			}
-			if (key.includes("publisher")) {
-				entityTypes.add("publishers");
+		if (options.per_page !== undefined) {
+			if (options.per_page < 1 || options.per_page > 200) {
+				throw new Error('per_page must be between 1 and 200');
 			}
 		}
 
-		return entityTypes.size > 0 ? Array.from(entityTypes) : allTypes;
-	}
-
-	/**
-   * Format filters for specific entity type endpoints
-   */
-	private formatFiltersForEntityType(
-		filters: Record<string, unknown>
-	): Record<string, unknown> {
-		// OpenAlex autocomplete endpoints might not support all filters
-		// Return basic filters that are commonly supported
-		const basicFilters: Record<string, unknown> = {};
-
-		if (filters["from_publication_date"]) {
-			basicFilters["from_publication_date"] = filters["from_publication_date"];
+		if (options.format !== undefined && options.format !== 'json') {
+			throw new Error('Only json format is currently supported');
 		}
-		if (filters["to_publication_date"]) {
-			basicFilters["to_publication_date"] = filters["to_publication_date"];
-		}
-		if (filters["is_oa"] !== undefined) {
-			basicFilters["is_oa"] = filters["is_oa"];
-		}
-
-		return basicFilters;
 	}
 
 	/**
@@ -361,7 +295,7 @@ export class AutocompleteApi {
 	/**
 	 * Format unknown error for safe logging using type guards
 	 */
-	private formatErrorForLogging(error: unknown): Record<string, unknown> {
+	protected formatErrorForLogging(error: unknown): Record<string, unknown> {
 		if (error instanceof Error) {
 			return {
 				name: error.name,
@@ -392,3 +326,196 @@ export class AutocompleteApi {
 		};
 	}
 }
+
+/**
+ * Complete AutocompleteApi implementation extending the base class
+ * Provides entity-specific autocomplete methods for backward compatibility
+ */
+export class CompleteAutocompleteApi extends BaseAutocompleteApi {
+	/**
+	 * General autocomplete across entity types with debouncing
+	 * @param query - Search query string
+	 * @param entityType - Optional specific entity type to search
+	 * @returns Promise resolving to array of autocomplete results
+	 */
+	async autocomplete(query: string, entityType?: EntityType): Promise<AutocompleteResult[]> {
+		if (!query.trim()) {
+			return [];
+		}
+
+		if (entityType) {
+			return super.autocomplete(query, entityType);
+		} else {
+			// Search across all entity types
+			const allTypes: EntityType[] = ["works", "authors", "sources", "institutions", "topics"];
+			return this.searchMultipleTypes(query, allTypes);
+		}
+	}
+
+	/**
+	 * Work-specific autocomplete for papers, articles, and publications
+	 * @param query - Search query string
+	 * @returns Promise resolving to array of work autocomplete results
+	 */
+	async autocompleteWorks(query: string): Promise<AutocompleteResult[]> {
+		return this.autocomplete(query, "works");
+	}
+
+	/**
+	 * Author-specific autocomplete for researchers and academics
+	 * @param query - Search query string
+	 * @returns Promise resolving to array of author autocomplete results
+	 */
+	async autocompleteAuthors(query: string): Promise<AutocompleteResult[]> {
+		return this.autocomplete(query, "authors");
+	}
+
+	/**
+	 * Source-specific autocomplete for journals, conferences, and publications
+	 * @param query - Search query string
+	 * @returns Promise resolving to array of source autocomplete results
+	 */
+	async autocompleteSources(query: string): Promise<AutocompleteResult[]> {
+		return this.autocomplete(query, "sources");
+	}
+
+	/**
+	 * Institution-specific autocomplete for universities and research organizations
+	 * @param query - Search query string
+	 * @returns Promise resolving to array of institution autocomplete results
+	 */
+	async autocompleteInstitutions(query: string): Promise<AutocompleteResult[]> {
+		return this.autocomplete(query, "institutions");
+	}
+
+	/**
+	 * Topic-specific autocomplete for research topics and fields
+	 * @param query - Search query string
+	 * @returns Promise resolving to array of topic autocomplete results
+	 */
+	async autocompleteTopics(query: string): Promise<AutocompleteResult[]> {
+		return this.autocomplete(query, "topics");
+	}
+
+	/**
+	 * Cross-entity search across multiple entity types
+	 * @param query - Search query string
+	 * @param entityTypes - Optional array of entity types to search (defaults to all)
+	 * @returns Promise resolving to array of search results across entity types
+	 */
+	async search(query: string, entityTypes?: EntityType[]): Promise<AutocompleteResult[]> {
+		if (!query.trim()) {
+			return [];
+		}
+
+		const types = entityTypes ?? ["works", "authors", "sources", "institutions", "topics"];
+		return this.searchMultipleTypes(query, types);
+	}
+
+	/**
+	 * Advanced search with custom filters
+	 * @param query - Search query string
+	 * @param filters - Key-value pairs for additional search filters
+	 * @returns Promise resolving to array of filtered search results
+	 */
+	async searchWithFilters(query: string, filters: Record<string, unknown>): Promise<AutocompleteResult[]> {
+		if (!query.trim()) {
+			return [];
+		}
+
+		const cacheKey = `search_filtered_${query.trim().toLowerCase()}_${JSON.stringify(filters)}`;
+
+		return this.executeWithDebounce(cacheKey, async () => {
+			// Determine which entity types to search based on filters
+			const entityTypes = this.inferEntityTypesFromFilters(filters);
+
+			const promises = entityTypes.map(async type => {
+				try {
+					const endpoint = `${type}/autocomplete`;
+					const params: AutocompleteOptions = {
+						q: query.trim(),
+						...this.formatFiltersForEntityType(filters),
+					};
+
+					const response = await this.makeAutocompleteRequest(endpoint, params);
+					return response.results.map(result => ({
+						...result,
+						entity_type: this.mapEntityTypeToSingular(type),
+					}));
+				} catch {
+					return [] satisfies AutocompleteResult[];
+				}
+			});
+
+			const results = await Promise.all(promises);
+			return results.flat();
+		});
+	}
+
+	/**
+	 * Infer which entity types to search based on filter keys
+	 */
+	private inferEntityTypesFromFilters(filters: Record<string, unknown>): EntityType[] {
+		const allTypes: EntityType[] = ["works", "authors", "sources", "institutions", "topics"];
+
+		// If no specific entity filters, search all types
+		const filterKeys = Object.keys(filters);
+		if (filterKeys.length === 0) {
+			return allTypes;
+		}
+
+		const entityTypes = new Set<EntityType>();
+
+		// Check for entity-specific filter patterns
+		for (const key of filterKeys) {
+			if (key.startsWith("authorships.") || key.includes("author")) {
+				entityTypes.add("works");
+				entityTypes.add("authors");
+			}
+			if (key.startsWith("host_venue.") || key.includes("source")) {
+				entityTypes.add("sources");
+			}
+			if (key.includes("institution")) {
+				entityTypes.add("institutions");
+				entityTypes.add("works");
+			}
+			if (key.includes("topic") || key.includes("concept")) {
+				entityTypes.add("topics");
+			}
+			if (key.includes("funder")) {
+				entityTypes.add("funders");
+			}
+			if (key.includes("publisher")) {
+				entityTypes.add("publishers");
+			}
+		}
+
+		return entityTypes.size > 0 ? Array.from(entityTypes) : allTypes;
+	}
+
+	/**
+	 * Format filters for specific entity type endpoints
+	 */
+	private formatFiltersForEntityType(
+		filters: Record<string, unknown>
+	): Record<string, unknown> {
+		// OpenAlex autocomplete endpoints might not support all filters
+		// Return basic filters that are commonly supported
+		const basicFilters: Record<string, unknown> = {};
+
+		if (filters["from_publication_date"]) {
+			basicFilters["from_publication_date"] = filters["from_publication_date"];
+		}
+		if (filters["to_publication_date"]) {
+			basicFilters["to_publication_date"] = filters["to_publication_date"];
+		}
+		if (filters["is_oa"] !== undefined) {
+			basicFilters["is_oa"] = filters["is_oa"];
+		}
+
+		return basicFilters;
+	}
+}
+
+// Export the complete implementation as AutocompleteApi for backward compatibility
+export { CompleteAutocompleteApi as AutocompleteApi };
