@@ -239,7 +239,7 @@
     },
     "groups": {
       "workspace": {
-        "projects": ["."],
+        "projects": ["academic-explorer-monorepo"],
         "projectsRelationship": "fixed",
         "version": {
           "conventionalCommits": true,
