@@ -217,7 +217,7 @@
   },
   "release": {
     "projectsRelationship": "fixed",
-    "projects": ["packages/*", "apps/*", "tools/*"],
+    "projects": [".", "packages/*", "apps/*", "tools/*"],
     "version": {
       "conventionalCommits": true,
       "generatorOptions": {
