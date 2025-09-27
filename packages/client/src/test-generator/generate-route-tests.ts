@@ -111,6 +111,33 @@ function categorizeApiPaths(paths: string[]): RouteTestCase[] {
     let requiresId = false;
     let externalIdType: RouteTestCase['externalIdType'];
 
+    // Check if the first path part is actually an entity ID (e.g., /W2741809807)
+    if (pathParts.length === 1) {
+      const potentialId = pathParts[0];
+      // Check if this looks like an OpenAlex entity ID
+      if (/^[WASITPFK]\d+$/.test(potentialId)) {
+        // Determine entity type from ID prefix
+        const prefix = potentialId.charAt(0);
+        switch (prefix) {
+          case 'W': entity = 'works'; break;
+          case 'A': entity = 'authors'; break;
+          case 'S': entity = 'sources'; break;
+          case 'I': entity = 'institutions'; break;
+          case 'T': entity = 'topics'; break;
+          case 'P': entity = 'publishers'; break;
+          case 'F': entity = 'funders'; break;
+          case 'K': entity = 'keywords'; break;
+          default: entity = 'works'; // fallback
+        }
+        operation = 'get';
+        isCollection = false;
+        requiresId = true;
+      } else {
+        // Regular entity collection endpoint
+        isCollection = true;
+      }
+    }
+
     // Handle special endpoints
     if (entity === 'autocomplete') {
       // Pattern: /autocomplete/{entity}
@@ -255,8 +282,10 @@ import { TopicsApi } from "../entities/topics";
 import { PublishersApi } from "../entities/publishers";
 import { FundersApi } from "../entities/funders";
 import { KeywordsApi } from "../entities/keywords";
+import { ConceptsApi } from "../entities/concepts";
+import { TextAnalysisApi } from "../entities/text-analysis";
 import type {
-  Work, Author, Source, Institution, Topic, Publisher, Funder, Keyword,
+  Work, Author, Source, Institution, Topic, Publisher, Funder, Keyword, Concept,
   OpenAlexResponse, QueryParams
 } from "../types";
 
@@ -280,6 +309,8 @@ describe("OpenAlex API Routes - Generated Tests", () => {
     publishers: PublishersApi;
     funders: FundersApi;
     keywords: KeywordsApi;
+    concepts: ConceptsApi;
+    text: TextAnalysisApi;
   };
 
   beforeEach(() => {
@@ -306,6 +337,8 @@ describe("OpenAlex API Routes - Generated Tests", () => {
       publishers: new PublishersApi(mockClient),
       funders: new FundersApi(mockClient),
       keywords: new KeywordsApi(mockClient),
+      concepts: new ConceptsApi(mockClient),
+      text: new TextAnalysisApi(mockClient),
     };
   });
 
@@ -467,7 +500,7 @@ ${tests.map(test => `
 
           expect(mockClient.getById).toHaveBeenCalledWith(
             "${entity}",
-            externalId,
+            getNormalizedExternalId("${test.externalIdType}"),
             {}
           );
         }
@@ -524,6 +557,26 @@ ${tests.map(test => `
         return 'wikidata:Q123456';
       case 'pmid':
         return 'pmid:12345678';
+      default:
+        return 'test_id';
+    }
+  }
+
+  // Helper function to get the normalized ID that the implementation will pass to the client
+  function getNormalizedExternalId(type: string): string {
+    switch (type) {
+      case 'doi':
+        return 'https://doi.org/10.1234/test'; // Already normalized
+      case 'orcid':
+        return 'https://orcid.org/0000-0002-1825-0097'; // Normalized to URL
+      case 'ror':
+        return 'https://ror.org/0123456789'; // Already normalized
+      case 'issn':
+        return '2041-1723'; // Not normalized for ISSN
+      case 'wikidata':
+        return 'wikidata:Q123456'; // Not normalized for Wikidata
+      case 'pmid':
+        return 'pmid:12345678'; // Not normalized for PMID
       default:
         return 'test_id';
     }
@@ -660,6 +713,8 @@ conditionalDescribe("OpenAlex API Integration Tests", () => {
     publishers: PublishersApi;
     funders: FundersApi;
     keywords: KeywordsApi;
+    concepts: ConceptsApi;
+    text: TextAnalysisApi;
   };
 
   beforeAll(() => {

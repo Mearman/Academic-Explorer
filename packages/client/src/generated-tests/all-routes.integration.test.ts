@@ -7,7 +7,7 @@
  * IMPORTANT: These tests require internet connection and respect OpenAlex rate limits.
  * Run sparingly and consider using environment variables to control execution.
  *
- * Generated on: 2025-09-27T08:30:36.350Z
+ * Generated on: 2025-09-27T10:05:27.957Z
  * Total test cases: 308
  */
 
@@ -38,6 +38,8 @@ conditionalDescribe("OpenAlex API Integration Tests", () => {
     publishers: PublishersApi;
     funders: FundersApi;
     keywords: KeywordsApi;
+    concepts: ConceptsApi;
+    text: TextAnalysisApi;
   };
 
   beforeAll(() => {
@@ -66,29 +68,82 @@ conditionalDescribe("OpenAlex API Integration Tests", () => {
   // Test a representative sample of routes to verify they work end-to-end
   describe("Representative Route Sampling", () => {
 
-    describe("W2741809807 Integration", () => {
+    describe("Works Integration", () => {
 
-      it("should list w2741809807", async () => {
-        const api = apis.W2741809807 as any;
+      it("should get single work by id", async () => {
+        const api = apis.works as any;
 
         try {
           let result;
 
-          if (!true && false) {
+          if (!false && true) {
             // Get by ID - use a known test ID
-            const testId = getKnownTestId("W2741809807");
-            if (api.getW274180980) {
-              result = await api.getW274180980(testId, { select: ["id", "display_name"] });
+            const testId = getKnownTestId("works");
+            if (api.getWork) {
+              result = await api.getWork(testId, { select: ["id", "display_name"] });
             }
-          } else if ("list" === "search") {
+          } else if ("get" === "search") {
             // Search operation
-            if (api.searchW2741809807) {
-              result = await api.searchW2741809807("test", { per_page: 1 });
+            if (api.searchWorks) {
+              result = await api.searchWorks("test", { per_page: 1 });
             }
           } else {
             // Collection operations
-            if (api.getW2741809807) {
-              result = await api.getW2741809807({
+            if (api.getWorks) {
+              result = await api.getWorks({
+                per_page: 1,
+                select: ["id", "display_name"]
+              });
+            }
+          }
+
+          // Verify response structure
+          if (result) {
+            if (false) {
+              expect(result).toHaveProperty('results');
+              expect(result).toHaveProperty('meta');
+              expect(Array.isArray(result.results)).toBe(true);
+            } else {
+              expect(result).toHaveProperty('id');
+            }
+          }
+
+          // Add delay between requests to respect rate limits
+          await new Promise(resolve => setTimeout(resolve, 250));
+
+        } catch (error) {
+          // Log but don't fail for methods not yet implemented
+          if (error instanceof Error && error.message.includes('not a function')) {
+            console.warn(`Integration test skipped - method not implemented: /works/W2168909179`);
+            expect(true).toBe(true);
+          } else {
+            console.error(`Integration test failed for /works/W2168909179:`, error);
+            throw error;
+          }
+        }
+      }, 45000); // Longer timeout for real API calls
+
+      it("should list works", async () => {
+        const api = apis.works as any;
+
+        try {
+          let result;
+
+          if (!true && true) {
+            // Get by ID - use a known test ID
+            const testId = getKnownTestId("works");
+            if (api.getWork) {
+              result = await api.getWork(testId, { select: ["id", "display_name"] });
+            }
+          } else if ("get" === "search") {
+            // Search operation
+            if (api.searchWorks) {
+              result = await api.searchWorks("test", { per_page: 1 });
+            }
+          } else {
+            // Collection operations
+            if (api.getWorks) {
+              result = await api.getWorks({
                 per_page: 1,
                 select: ["id", "display_name"]
               });
@@ -116,6 +171,165 @@ conditionalDescribe("OpenAlex API Integration Tests", () => {
             expect(true).toBe(true);
           } else {
             console.error(`Integration test failed for /W2741809807:`, error);
+            throw error;
+          }
+        }
+      }, 45000); // Longer timeout for real API calls
+
+      it("should search works", async () => {
+        const api = apis.works as any;
+
+        try {
+          let result;
+
+          if (!true && false) {
+            // Get by ID - use a known test ID
+            const testId = getKnownTestId("works");
+            if (api.getWork) {
+              result = await api.getWork(testId, { select: ["id", "display_name"] });
+            }
+          } else if ("search" === "search") {
+            // Search operation
+            if (api.searchWorks) {
+              result = await api.searchWorks("test", { per_page: 1 });
+            }
+          } else {
+            // Collection operations
+            if (api.getWorks) {
+              result = await api.getWorks({
+                per_page: 1,
+                select: ["id", "display_name"]
+              });
+            }
+          }
+
+          // Verify response structure
+          if (result) {
+            if (true) {
+              expect(result).toHaveProperty('results');
+              expect(result).toHaveProperty('meta');
+              expect(Array.isArray(result.results)).toBe(true);
+            } else {
+              expect(result).toHaveProperty('id');
+            }
+          }
+
+          // Add delay between requests to respect rate limits
+          await new Promise(resolve => setTimeout(resolve, 250));
+
+        } catch (error) {
+          // Log but don't fail for methods not yet implemented
+          if (error instanceof Error && error.message.includes('not a function')) {
+            console.warn(`Integration test skipped - method not implemented: /autocomplete/works?filter=publication\_year:2010\&search=frogs\&q=greenhou`);
+            expect(true).toBe(true);
+          } else {
+            console.error(`Integration test failed for /autocomplete/works?filter=publication\_year:2010\&search=frogs\&q=greenhou:`, error);
+            throw error;
+          }
+        }
+      }, 45000); // Longer timeout for real API calls
+
+      it("should search works", async () => {
+        const api = apis.works as any;
+
+        try {
+          let result;
+
+          if (!true && false) {
+            // Get by ID - use a known test ID
+            const testId = getKnownTestId("works");
+            if (api.getWork) {
+              result = await api.getWork(testId, { select: ["id", "display_name"] });
+            }
+          } else if ("search" === "search") {
+            // Search operation
+            if (api.searchWorks) {
+              result = await api.searchWorks("test", { per_page: 1 });
+            }
+          } else {
+            // Collection operations
+            if (api.getWorks) {
+              result = await api.getWorks({
+                per_page: 1,
+                select: ["id", "display_name"]
+              });
+            }
+          }
+
+          // Verify response structure
+          if (result) {
+            if (true) {
+              expect(result).toHaveProperty('results');
+              expect(result).toHaveProperty('meta');
+              expect(Array.isArray(result.results)).toBe(true);
+            } else {
+              expect(result).toHaveProperty('id');
+            }
+          }
+
+          // Add delay between requests to respect rate limits
+          await new Promise(resolve => setTimeout(resolve, 250));
+
+        } catch (error) {
+          // Log but don't fail for methods not yet implemented
+          if (error instanceof Error && error.message.includes('not a function')) {
+            console.warn(`Integration test skipped - method not implemented: /autocomplete/works?filter=publication\_year:2010\&search=frogs\&q=greenhou`);
+            expect(true).toBe(true);
+          } else {
+            console.error(`Integration test failed for /autocomplete/works?filter=publication\_year:2010\&search=frogs\&q=greenhou:`, error);
+            throw error;
+          }
+        }
+      }, 45000); // Longer timeout for real API calls
+
+      it("should get single work by pmid", async () => {
+        const api = apis.works as any;
+
+        try {
+          let result;
+
+          if (!false && true) {
+            // Get by ID - use a known test ID
+            const testId = getKnownTestId("works");
+            if (api.getWork) {
+              result = await api.getWork(testId, { select: ["id", "display_name"] });
+            }
+          } else if ("get" === "search") {
+            // Search operation
+            if (api.searchWorks) {
+              result = await api.searchWorks("test", { per_page: 1 });
+            }
+          } else {
+            // Collection operations
+            if (api.getWorks) {
+              result = await api.getWorks({
+                per_page: 1,
+                select: ["id", "display_name"]
+              });
+            }
+          }
+
+          // Verify response structure
+          if (result) {
+            if (false) {
+              expect(result).toHaveProperty('results');
+              expect(result).toHaveProperty('meta');
+              expect(Array.isArray(result.results)).toBe(true);
+            } else {
+              expect(result).toHaveProperty('id');
+            }
+          }
+
+          // Add delay between requests to respect rate limits
+          await new Promise(resolve => setTimeout(resolve, 250));
+
+        } catch (error) {
+          // Log but don't fail for methods not yet implemented
+          if (error instanceof Error && error.message.includes('not a function')) {
+            console.warn(`Integration test skipped - method not implemented: /works/pmid:14907713`);
+            expect(true).toBe(true);
+          } else {
+            console.error(`Integration test failed for /works/pmid:14907713:`, error);
             throw error;
           }
         }
@@ -1677,275 +1891,6 @@ conditionalDescribe("OpenAlex API Integration Tests", () => {
             expect(true).toBe(true);
           } else {
             console.error(`Integration test failed for /sources?filter=continent:asia:`, error);
-            throw error;
-          }
-        }
-      }, 45000); // Longer timeout for real API calls
-
-    });
-  
-    describe("Works Integration", () => {
-
-      it("should get single work by id", async () => {
-        const api = apis.works as any;
-
-        try {
-          let result;
-
-          if (!false && true) {
-            // Get by ID - use a known test ID
-            const testId = getKnownTestId("works");
-            if (api.getWork) {
-              result = await api.getWork(testId, { select: ["id", "display_name"] });
-            }
-          } else if ("get" === "search") {
-            // Search operation
-            if (api.searchWorks) {
-              result = await api.searchWorks("test", { per_page: 1 });
-            }
-          } else {
-            // Collection operations
-            if (api.getWorks) {
-              result = await api.getWorks({
-                per_page: 1,
-                select: ["id", "display_name"]
-              });
-            }
-          }
-
-          // Verify response structure
-          if (result) {
-            if (false) {
-              expect(result).toHaveProperty('results');
-              expect(result).toHaveProperty('meta');
-              expect(Array.isArray(result.results)).toBe(true);
-            } else {
-              expect(result).toHaveProperty('id');
-            }
-          }
-
-          // Add delay between requests to respect rate limits
-          await new Promise(resolve => setTimeout(resolve, 250));
-
-        } catch (error) {
-          // Log but don't fail for methods not yet implemented
-          if (error instanceof Error && error.message.includes('not a function')) {
-            console.warn(`Integration test skipped - method not implemented: /works/W2168909179`);
-            expect(true).toBe(true);
-          } else {
-            console.error(`Integration test failed for /works/W2168909179:`, error);
-            throw error;
-          }
-        }
-      }, 45000); // Longer timeout for real API calls
-
-      it("should list works", async () => {
-        const api = apis.works as any;
-
-        try {
-          let result;
-
-          if (!true && false) {
-            // Get by ID - use a known test ID
-            const testId = getKnownTestId("works");
-            if (api.getWork) {
-              result = await api.getWork(testId, { select: ["id", "display_name"] });
-            }
-          } else if ("list" === "search") {
-            // Search operation
-            if (api.searchWorks) {
-              result = await api.searchWorks("test", { per_page: 1 });
-            }
-          } else {
-            // Collection operations
-            if (api.getWorks) {
-              result = await api.getWorks({
-                per_page: 1,
-                select: ["id", "display_name"]
-              });
-            }
-          }
-
-          // Verify response structure
-          if (result) {
-            if (true) {
-              expect(result).toHaveProperty('results');
-              expect(result).toHaveProperty('meta');
-              expect(Array.isArray(result.results)).toBe(true);
-            } else {
-              expect(result).toHaveProperty('id');
-            }
-          }
-
-          // Add delay between requests to respect rate limits
-          await new Promise(resolve => setTimeout(resolve, 250));
-
-        } catch (error) {
-          // Log but don't fail for methods not yet implemented
-          if (error instanceof Error && error.message.includes('not a function')) {
-            console.warn(`Integration test skipped - method not implemented: /works`);
-            expect(true).toBe(true);
-          } else {
-            console.error(`Integration test failed for /works:`, error);
-            throw error;
-          }
-        }
-      }, 45000); // Longer timeout for real API calls
-
-      it("should search works", async () => {
-        const api = apis.works as any;
-
-        try {
-          let result;
-
-          if (!true && false) {
-            // Get by ID - use a known test ID
-            const testId = getKnownTestId("works");
-            if (api.getWork) {
-              result = await api.getWork(testId, { select: ["id", "display_name"] });
-            }
-          } else if ("search" === "search") {
-            // Search operation
-            if (api.searchWorks) {
-              result = await api.searchWorks("test", { per_page: 1 });
-            }
-          } else {
-            // Collection operations
-            if (api.getWorks) {
-              result = await api.getWorks({
-                per_page: 1,
-                select: ["id", "display_name"]
-              });
-            }
-          }
-
-          // Verify response structure
-          if (result) {
-            if (true) {
-              expect(result).toHaveProperty('results');
-              expect(result).toHaveProperty('meta');
-              expect(Array.isArray(result.results)).toBe(true);
-            } else {
-              expect(result).toHaveProperty('id');
-            }
-          }
-
-          // Add delay between requests to respect rate limits
-          await new Promise(resolve => setTimeout(resolve, 250));
-
-        } catch (error) {
-          // Log but don't fail for methods not yet implemented
-          if (error instanceof Error && error.message.includes('not a function')) {
-            console.warn(`Integration test skipped - method not implemented: /autocomplete/works?filter=publication\_year:2010\&search=frogs\&q=greenhou`);
-            expect(true).toBe(true);
-          } else {
-            console.error(`Integration test failed for /autocomplete/works?filter=publication\_year:2010\&search=frogs\&q=greenhou:`, error);
-            throw error;
-          }
-        }
-      }, 45000); // Longer timeout for real API calls
-
-      it("should search works", async () => {
-        const api = apis.works as any;
-
-        try {
-          let result;
-
-          if (!true && false) {
-            // Get by ID - use a known test ID
-            const testId = getKnownTestId("works");
-            if (api.getWork) {
-              result = await api.getWork(testId, { select: ["id", "display_name"] });
-            }
-          } else if ("search" === "search") {
-            // Search operation
-            if (api.searchWorks) {
-              result = await api.searchWorks("test", { per_page: 1 });
-            }
-          } else {
-            // Collection operations
-            if (api.getWorks) {
-              result = await api.getWorks({
-                per_page: 1,
-                select: ["id", "display_name"]
-              });
-            }
-          }
-
-          // Verify response structure
-          if (result) {
-            if (true) {
-              expect(result).toHaveProperty('results');
-              expect(result).toHaveProperty('meta');
-              expect(Array.isArray(result.results)).toBe(true);
-            } else {
-              expect(result).toHaveProperty('id');
-            }
-          }
-
-          // Add delay between requests to respect rate limits
-          await new Promise(resolve => setTimeout(resolve, 250));
-
-        } catch (error) {
-          // Log but don't fail for methods not yet implemented
-          if (error instanceof Error && error.message.includes('not a function')) {
-            console.warn(`Integration test skipped - method not implemented: /autocomplete/works?filter=publication\_year:2010\&search=frogs\&q=greenhou`);
-            expect(true).toBe(true);
-          } else {
-            console.error(`Integration test failed for /autocomplete/works?filter=publication\_year:2010\&search=frogs\&q=greenhou:`, error);
-            throw error;
-          }
-        }
-      }, 45000); // Longer timeout for real API calls
-
-      it("should get single work by pmid", async () => {
-        const api = apis.works as any;
-
-        try {
-          let result;
-
-          if (!false && true) {
-            // Get by ID - use a known test ID
-            const testId = getKnownTestId("works");
-            if (api.getWork) {
-              result = await api.getWork(testId, { select: ["id", "display_name"] });
-            }
-          } else if ("get" === "search") {
-            // Search operation
-            if (api.searchWorks) {
-              result = await api.searchWorks("test", { per_page: 1 });
-            }
-          } else {
-            // Collection operations
-            if (api.getWorks) {
-              result = await api.getWorks({
-                per_page: 1,
-                select: ["id", "display_name"]
-              });
-            }
-          }
-
-          // Verify response structure
-          if (result) {
-            if (false) {
-              expect(result).toHaveProperty('results');
-              expect(result).toHaveProperty('meta');
-              expect(Array.isArray(result.results)).toBe(true);
-            } else {
-              expect(result).toHaveProperty('id');
-            }
-          }
-
-          // Add delay between requests to respect rate limits
-          await new Promise(resolve => setTimeout(resolve, 250));
-
-        } catch (error) {
-          // Log but don't fail for methods not yet implemented
-          if (error instanceof Error && error.message.includes('not a function')) {
-            console.warn(`Integration test skipped - method not implemented: /works/pmid:14907713`);
-            expect(true).toBe(true);
-          } else {
-            console.error(`Integration test failed for /works/pmid:14907713:`, error);
             throw error;
           }
         }

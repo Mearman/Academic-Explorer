@@ -11,9 +11,9 @@ This directory contains automatically generated comprehensive tests for all Open
 ## Coverage Statistics
 
 - **Total routes tested**: 308
-- **Entities covered**: 11 (W2741809807, authors, concepts, funders, institutions, publishers, sources, works, keywords, text, topics)
-- **Operation types**: 7 (list, get, filter, group, search, autocomplete, text-analysis)
-- **Routes with external ID support**: 8
+- **Entities covered**: 10 (works, authors, concepts, funders, institutions, publishers, sources, keywords, text, topics)
+- **Operation types**: 7 (get, list, filter, group, search, autocomplete, text-analysis)
+- **Routes with external ID support**: 7
 - **Routes with filter support**: 157
 - **Routes with search support**: 23
 
@@ -37,4 +37,4 @@ pnpm test generated-tests/
 - Tests are automatically generated from OpenAlex documentation
 - Some test cases may show warnings for API methods not yet implemented
 
-Generated on: 2025-09-27T08:30:36.351Z
+Generated on: 2025-09-27T10:05:27.958Z
